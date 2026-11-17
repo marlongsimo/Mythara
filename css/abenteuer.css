@@ -2504,3 +2504,42 @@ button.shop-angebot.paket:hover .paket-faecher img { transform: translateX(calc(
 .paket-kauf .shop-preis b { font-size: 30px; color: #f0dcff; } .paket-kauf .shop-preis s { font-size: 17px; }
 @media (max-width: 700px) { button.shop-angebot.paket { grid-template-columns: 1fr; justify-items: center; text-align: center; } .shop-angebot.paket .shop-angebot-text { justify-items: center; } .shop-angebot.paket .shop-angebot-text .my-link { justify-self: center; } .paket-faecher { width: 230px; height: 170px; } .paket-faecher img { height: 164px; } .shop-angebot.paket .shop-angebot-kauf { padding-right: 0; } }
 @media (prefers-reduced-motion: reduce) { .paket-faecher img { transition: none; } }
+
+/* ---------- Skin-Bereich beim Händler: Reiter, Filter, Raster, Skin-Ansicht ---------- */
+.sk-reiter { display: flex; gap: 4px; border-bottom: 1px solid rgba(176, 138, 69, .5); margin: 4px 0 16px; }
+.sk-reiter button { padding: 11px 18px; background: none; border: 0; border-bottom: 3px solid transparent; cursor: pointer; font: 600 14px var(--schrift-titel); letter-spacing: .08em; color: #b9ae99; }
+.sk-reiter button.an { color: #f6dc9c; border-bottom-color: #e2b860; }
+.sk-reiter em { font: 600 11px var(--schrift-ui); font-style: normal; margin-left: 6px; padding: 2px 7px; border-radius: 99px; background: rgba(233, 199, 126, .16); color: #e9c77e; }
+.sk-pakete { display: grid; gap: 12px; margin-bottom: 18px; }
+.sk-paket { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 8px 18px; align-items: center; width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit; padding: 12px 18px 8px; overflow: hidden; border-radius: 14px; border: 1px solid #b48cf0; background: radial-gradient(120% 160% at 10% 50%, rgba(140, 70, 220, .38), transparent 60%), #130e1b; }
+.sk-paket:hover, .sk-paket:focus-visible { border-color: #e2c8ff; }
+.sk-paket-band { position: absolute; top: 0; left: 0; padding: 3px 12px; font: 600 10px var(--schrift-ui); letter-spacing: .14em; text-transform: uppercase; background: #a878f0; color: #1a0b2e; border-radius: 0 0 8px 0; }
+.paket-faecher.klein { width: 190px; height: 132px; } .paket-faecher.klein img { height: 130px; transform: translateX(calc(-50% + var(--i) * 48px)) rotate(calc(var(--i) * 11deg)); }
+.sk-paket-text b { display: block; font: 600 22px var(--schrift-titel); color: #ecd9ff; } .sk-paket-text small, .sk-paket-preis small { color: #cfc2e4; font-size: 13px; }
+.sk-paket-preis { display: grid; justify-items: end; } .sk-paket-preis .shop-preis b { font-size: 24px; color: #f0dcff; } .sk-paket-preis i { font-style: normal; color: #b9a7ff; }
+.sk-filter { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 14px; }
+.sk-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; } .sk-chips::-webkit-scrollbar { display: none; }
+.sk-chips button { flex: none; padding: 8px 14px; border-radius: 99px; cursor: pointer; border: 1px solid rgba(176, 138, 69, .5); background: rgba(10, 10, 14, .6); font: 600 12px var(--schrift-ui); letter-spacing: .06em; color: #cfc6b3; }
+.sk-chips button.an { background: #e9c77e; border-color: #e9c77e; color: #1a1408; }
+.sk-schalter { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #cfc6b3; white-space: nowrap; cursor: pointer; } .sk-schalter input { accent-color: #e9c77e; width: 17px; height: 17px; }
+.sk-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+.sk-kachel { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; color: inherit; font: inherit; padding: 10px 10px 12px; border-radius: 12px; border: 1px solid rgba(176, 138, 69, .5); background: radial-gradient(100% 70% at 50% 62%, color-mix(in srgb, var(--k, #b08a45) 30%, transparent), transparent 72%), #121018; transition: transform .15s, border-color .15s; }
+.sk-kachel:hover, .sk-kachel:focus-visible { transform: translateY(-3px); border-color: #f0d488; }
+.sk-kachel img { height: 190px; width: 100%; object-fit: contain; margin-bottom: 6px; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .8)); }
+.sk-kachel b { font: 600 16px var(--schrift-titel); color: #f6dc9c; line-height: 1.15; } .sk-kachel span { font-size: 13px; color: #b9ae99; }
+.sk-kachel .sk-preis { margin-top: 6px; font-weight: 600; font-size: 14px; color: #efe6d4; } .sk-preis i { font-style: normal; color: #b9a7ff; }
+.sk-kachel.zu img { filter: grayscale(.75) brightness(.65) drop-shadow(0 8px 10px rgba(0, 0, 0, .8)); } .sk-kachel.zu .sk-preis { color: #b9ae99; }
+.sk-kachel .sk-schloss { color: #d9a08a; margin-top: 3px; }
+.sk-marke { position: absolute; top: 8px; left: 8px; z-index: 1; padding: 3px 8px; border-radius: 6px; font: 600 10px var(--schrift-ui); font-style: normal; letter-spacing: .08em; text-transform: uppercase; }
+.sk-marke.paket { background: #a878f0; color: #1a0b2e; } .sk-marke.hat { background: rgba(20, 40, 24, .85); color: #9fe0a0; border: 1px solid rgba(159, 224, 160, .5); } .sk-marke.an { background: #e9c77e; color: #1a1408; }
+.sk-leer { grid-column: 1 / -1; margin: 0; padding: 30px; text-align: center; color: #b9ae99; border: 1px dashed rgba(176, 138, 69, .5); border-radius: 12px; }
+.sk-schleier { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 14px; background: rgba(5, 4, 8, .84); backdrop-filter: blur(6px); } .sk-schleier[hidden] { display: none; }
+.sk-detail { position: relative; width: min(760px, 100%); max-height: 94vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 22px; border-radius: 16px; border: 1px solid #e2b860; background: radial-gradient(90% 80% at 25% 60%, color-mix(in srgb, var(--k, #b08a45) 34%, transparent), transparent 70%), #14111a; }
+.sk-zu { position: absolute; top: 8px; right: 10px; z-index: 1; background: none; border: 0; cursor: pointer; font-size: 22px; color: #b9ae99; padding: 6px; }
+.sk-buehne { display: grid; place-items: end center; min-height: 340px; } .sk-buehne img { max-height: 420px; max-width: 100%; filter: drop-shadow(0 14px 20px #000); }
+.sk-vergleich { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+.sk-vergleich button { padding: 7px 13px; border-radius: 99px; cursor: pointer; border: 1px solid rgba(176, 138, 69, .5); background: none; font-size: 13px; color: #cfc6b3; } .sk-vergleich button.an { background: rgba(233, 199, 126, .18); border-color: #e9c77e; color: #f6dc9c; }
+.sk-detail-text { display: grid; gap: 8px; align-content: start; justify-items: start; } .sk-detail-text h2 { margin: 0; font: 600 30px var(--schrift-titel); color: #f6dc9c; } .sk-detail-text p { margin: 0; color: #d6ccb8; }
+.sk-detail-text .btn i, .sk-detail-text .skin-preis i, .sk-tipp i { font-style: normal; color: #b9a7ff; } .sk-detail-text .btn { width: 100%; }
+.sk-tipp { margin-top: 4px; padding: 10px 12px; border-radius: 8px; background: rgba(140, 70, 220, .18); border: 1px solid rgba(180, 140, 240, .5); font-size: 14px; }
+@media (max-width: 640px) { .sk-paket { grid-template-columns: 1fr; justify-items: center; text-align: center; padding-top: 26px; } .sk-paket-preis { justify-items: center; } .sk-detail { grid-template-columns: 1fr; gap: 12px; padding: 16px; } .sk-buehne { min-height: 0; } .sk-buehne img { max-height: 290px; } .sk-raster { grid-template-columns: repeat(2, 1fr); gap: 9px; } .sk-kachel img { height: 160px; } .sk-reiter button { padding: 10px 12px; font-size: 13px; } .sk-chips { flex: 1 1 100%; } }
