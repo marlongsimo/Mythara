@@ -11,5 +11,5 @@ http.createServer((req, res) => {
   let f = path.join(WURZEL, p); if (!f.startsWith(WURZEL)) { res.writeHead(403); return res.end(); }
   if (fs.existsSync(f) && fs.statSync(f).isDirectory()) f = path.join(f, "index.html");
   if (!fs.existsSync(f)) { res.writeHead(404); return res.end("nicht gefunden"); }
-  res.writeHead(200, { "Content-Type": TYP[f.split(".").pop().toLowerCase()] || "application/octet-stream", "Cache-Control": "no-store" }); fs.createReadStream(f).pipe(res);
+  res.writeHead(200, { "Content-Type": TYP[f.split(".").pop().toLowerCase()] || "application/octet-stream", "Content-Length": fs.statSync(f).size, "Cache-Control": "no-store" }); fs.createReadStream(f).pipe(res);
 }).listen(PORT, () => console.log("Mythara-Testserver auf http://localhost:" + PORT + "/ (auch unter /abenteuer/)"));
