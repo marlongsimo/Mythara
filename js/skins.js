@@ -37,8 +37,12 @@
   /* VORBEREITET, NOCH NICHT IM SPIEL: Bilder liegen bereit, die Einträge werden bei „Go“ nach SKINS und PAKETE verschoben
      (dazu ein Eintrag für das Paket in der Datenbank). Solange sie hier stehen, zeigt das Spiel nichts davon. */
   const WARTET = {
-    pakete: { goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
+    pakete: { unter_dem_eis: { name: "Unter dem Eis", text: "Reif auf Pelz und Stahl, Eiszapfen an den Säumen, Schneekristalle auf dem Wappenrock: die Garde des versunkenen Veyrholm." },
+      goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
     skins: {
+      duellant_s3: { held: "duellant", name: "Frostklinge", paket: "unter_dem_eis", text: "Eine Krone aus Eis, Rüstung mit Reif überzogen, ein Schwert wie ein gefrorener Bach. Isolde, wie sie unter dem Gletscher Wache hielte." },
+      gelehrter_s1: { held: "gelehrter", name: "Eisgelehrte", paket: "unter_dem_eis", text: "Ein Buch mit Schneekristall, ein Stab mit blauem Eis, eine Flocke, die über ihrer Hand schwebt. Lyra in den Archiven von Veyrholm." },
+      wildnislaeufer_s2: { held: "wildnislaeufer", name: "Frostläufer", paket: "unter_dem_eis", text: "Pelz voller Reif, Pfeile mit Federn aus Eis, ein Bogen, an dem Zapfen hängen. Kael auf der Jagd über den Gletscher." },
       duellant_s2: { held: "duellant", name: "Gardehauptfrau", paket: "goldene_garde", text: "Eine Krone im Haar, Plattenrüstung in Weiß und Gold, das Schwert gezogen. Isolde an der Spitze der Garde." },
       kopfgeldjaeger_s2: { held: "kopfgeldjaeger", name: "Gardeschütze", paket: "goldene_garde", text: "Weißer Pelz über der Schulter, der Löwe auf der Brust, eine Armbrust aus Gold. Orin im Dienst der Krone." },
       elementarist_s2: { held: "elementarist", name: "Gardemagier", paket: "goldene_garde", text: "Roben in Elfenbein und Blau, ein Stab mit einer Sonne an der Spitze, Licht in der offenen Hand. Vaelin als Hofmagier." },

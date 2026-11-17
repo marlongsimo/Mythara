@@ -32,7 +32,7 @@ if grund == "alpha":
     al = np.asarray(roh.convert("RGBA").getchannel("A")).astype(np.float32) / 255; al = np.where(al < 0.5, 0, np.clip((al - 0.5) / 0.4, 0, 1)); rgb = a.astype(np.float32)   # halbdurchsichtigen Schein um die Figur weglassen
 elif grund in ("weiss", "schach"):
     for i, g in enumerate(ndi.sum(hg, lab, range(1, n + 1)), 1):          # eingeschlossene helle Flächen (zwischen Arm und Körper)
-        if g > 220 and i not in rand: weg |= (lab == i)
+        if g > int(os.environ.get("HELLE_INSELN", 220)) and i not in rand: weg |= (lab == i)   # HELLE_INSELN sehr groß setzen, wenn die Figur selbst weiß ist (Eis, Pelz)
     weg = ndi.binary_dilation(weg, iterations=2 if grund == "schach" else 1)
     if grund == "schach":                                                 # übrig gebliebene Krümel des Musters entfernen
         l2, n2 = ndi.label(~weg); gr = ndi.sum(~weg, l2, range(1, n2 + 1)); weg |= np.isin(l2, [i for i, g in enumerate(gr, 1) if g < 1500])
