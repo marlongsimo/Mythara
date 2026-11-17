@@ -25,7 +25,9 @@ inseln = np.zeros_like(weg)
 if grund == "schwarz" and os.environ.get("INSELN"):                     # helle Figur auf Schwarz: eingeschlossene schwarze Flächen (in Haarschlaufen, Ringen) entfernen –
     oben = int(a.shape[0] * float(os.environ.get("INSELN_BIS", 1)))     # nur bis zu dieser Höhe (0..1), damit dunkler Stoff weiter unten ganz bleibt
     for i, g in enumerate(ndi.sum(hg, lab, range(1, n + 1)), 1):
-        if g > int(os.environ["INSELN"]) and i not in rand and np.nonzero(lab == i)[0].max() < oben: inseln |= (lab == i)
+        if g > int(os.environ["INSELN"]) and i not in rand and np.nonzero(lab == i)[0].max() < oben:
+            xs = np.nonzero(lab == i)[1] / a.shape[1]; rnd = float(os.environ.get("INSELN_RAND", 1))   # INSELN_RAND (0..0.5): nur in den äußeren Streifen links und rechts
+            if rnd >= 0.5 or xs.max() < rnd or xs.min() > 1 - rnd: inseln |= (lab == i)
 if grund == "alpha":
     al = np.asarray(roh.convert("RGBA").getchannel("A")).astype(np.float32) / 255; al = np.where(al < 0.5, 0, np.clip((al - 0.5) / 0.4, 0, 1)); rgb = a.astype(np.float32)   # halbdurchsichtigen Schein um die Figur weglassen
 elif grund in ("weiss", "schach"):
