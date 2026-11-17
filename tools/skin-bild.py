@@ -7,7 +7,7 @@ und img/figuren/ganz/<skin>-gross.webp (Händler, Heldenkarte).
 weiss = weißer Grund (auch mit blassem Schachbrett), schwarz = schwarzer Grund, schach = aufgemaltes grau-weißes Schachbrett,
 alpha = das Bild hat schon echte Transparenz. Gemalte Hintergründe lassen sich so nicht entfernen. Braucht Pillow, numpy und scipy.
 """
-import sys, numpy as np
+import sys, os, numpy as np
 from PIL import Image, ImageFilter
 from scipy import ndimage as ndi
 quelle, skin, held, grund = sys.argv[1:5]; kopf = float(sys.argv[5]) if len(sys.argv) > 5 else 0.5; pruef = sys.argv[6] if len(sys.argv) > 6 else None
@@ -19,8 +19,13 @@ elif grund == "weiss":
 elif grund == "schach":
     hg = ((mx - mn) < 18) & (mn > 180)
 else:
-    hg = mx < 9
+    hg = mx < int(os.environ.get("SCHWELLE", 9))     # SCHWELLE höher (z. B. 34), wenn um eine helle Figur ein schwarzer Saum bleibt
 lab, n = ndi.label(hg); rand = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])); rand = rand[rand > 0]; weg = np.isin(lab, rand)
+inseln = np.zeros_like(weg)
+if grund == "schwarz" and os.environ.get("INSELN"):                     # helle Figur auf Schwarz: eingeschlossene schwarze Flächen (in Haarschlaufen, Ringen) entfernen –
+    oben = int(a.shape[0] * float(os.environ.get("INSELN_BIS", 1)))     # nur bis zu dieser Höhe (0..1), damit dunkler Stoff weiter unten ganz bleibt
+    for i, g in enumerate(ndi.sum(hg, lab, range(1, n + 1)), 1):
+        if g > int(os.environ["INSELN"]) and i not in rand and np.nonzero(lab == i)[0].max() < oben: inseln |= (lab == i)
 if grund == "alpha":
     al = np.asarray(roh.convert("RGBA").getchannel("A")).astype(np.float32) / 255; al = np.where(al < 0.5, 0, np.clip((al - 0.5) / 0.4, 0, 1)); rgb = a.astype(np.float32)   # halbdurchsichtigen Schein um die Figur weglassen
 elif grund in ("weiss", "schach"):
@@ -32,7 +37,8 @@ elif grund in ("weiss", "schach"):
     al = np.asarray(Image.fromarray(np.where(weg, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8))).astype(np.float32); al = np.clip((al - 70) / 185, 0, 1)
     rgb = a.astype(np.float32); k = (al < 0.98) & (al > 0); rgb[k] = np.clip((rgb[k] - 255 * (1 - al[k, None])) / np.maximum(al[k, None], 0.05), 0, 255)   # weißen Schimmer am Rand entfernen
 else:
-    figur = ndi.binary_fill_holes(ndi.binary_closing(~weg, structure=ndi.generate_binary_structure(2, 1), iterations=7))                                      # schmale Einschnitte in schwarzen Stoff schließen
+    figur = ndi.binary_fill_holes(ndi.binary_closing(~weg, structure=ndi.generate_binary_structure(2, 1), iterations=int(os.environ.get("SCHLIESSEN", 7)))) & ~ndi.binary_dilation(inseln, iterations=1)
+    l2, n2 = ndi.label(figur); gr = ndi.sum(figur, l2, range(1, n2 + 1)); figur &= ~np.isin(l2, [i for i, g in enumerate(gr, 1) if g < 500])   # lose Krümel                                      # schmale Einschnitte in schwarzen Stoff schließen
     al = np.asarray(Image.fromarray(np.where(figur, 255, 0).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8))).astype(np.float32) / 255; al = np.clip((al - 0.3) / 0.7, 0, 1); rgb = a.astype(np.float32)
 fig = Image.fromarray(np.dstack([rgb.astype(np.uint8), (al * 255).astype(np.uint8)]), "RGBA"); fig = fig.crop(fig.getchannel("A").point(lambda v: 255 if v > 20 else 0).getbbox())
 W, H = Image.open(f"img/figuren/ganz/{held}.webp").size

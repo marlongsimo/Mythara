@@ -18,6 +18,7 @@
     inquisitor_s1: { held: "inquisitor", name: "Sonnenrichter", text: "Ein Strahlenkranz aus Gold, Roben in Rot und Elfenbein, das Weihrauchfass in der Faust. Seran, wie ihn die Schuldigen fürchten." },
     wanderheiler_s1: { held: "wanderheiler", name: "Lebenshüter", text: "Kräuter im Gürtel, eine Laterne am blühenden Stab, Licht in der offenen Hand. Brogar nach einem langen Sommer auf der Straße." },
     schildwaechter_s1: { held: "schildwaechter", name: "Löwenwacht", text: "Ein Löwenfell über nachtblauem Umhang, das Schwert vor sich in den Boden gestellt. Torvald als Hauptmann einer Wache, die es nicht mehr gibt." },
+    lichtbringer_s1: { held: "lichtbringer", name: "Morgenweihe", text: "Ein Strahlenkranz mit weißen Lilien, Gewänder in Elfenbein und Nachtblau, ein Kristall, der wie die Sonne leuchtet. Elara am Tag ihrer Weihe." },
     tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
     schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },
