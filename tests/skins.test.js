@@ -43,8 +43,10 @@ const shot = async (p, n) => { if (process.env.SHOT_DIR) await p.screenshot({ pa
     await p.click('[data-shop-feld="skins"]'); await p.waitForSelector(".skin-karte"); await shot(p, "skins-haendler");
     const k = await p.evaluate(() => [...document.querySelectorAll(".skin-karte")].map((e) => ({ t: e.textContent, kauf: Boolean(e.querySelector("[data-skin-kauf]:not([disabled])")), zu: Boolean(e.querySelector("button[disabled]")) })));
     check(k.length === 2 && /Wolfsblut/.test(k[0].t) && /Skin für Ragnar/.test(k[0].t) && k[0].kauf && /Rabenschatten/.test(k[1].t) && k[1].zu && /brauchst du erst Vex/.test(k[1].t), "Der Reiter zeigt beide Skins mit Namen: Wolfsblut ist kaufbar, Rabenschatten erst mit Vex");
-    await p.click('[data-skin-kauf="berserker_wolfsblut"]'); await p.waitForSelector('[data-skin-anlegen="berserker_wolfsblut"]');
+    await p.click('[data-skin-kauf="berserker_wolfsblut"]'); await p.waitForSelector(".shop-meldung");
     check(DB.waehrung === 350 && DB.besitz.includes("berserker_wolfsblut") && DB.aktiv.berserker === "berserker_wolfsblut" && /gehört jetzt dir/.test(await p.textContent(".shop-meldung")), "Gekauft: 650 Seelensplitter weg, der Skin gehört dem Konto und ist gleich angelegt");
+    const nach = await p.evaluate(() => ({ karten: [...document.querySelectorAll(".skin-karte")].map((e) => e.textContent), text: document.querySelector("[data-skins]").textContent }));
+    check(nach.karten.length === 1 && /Rabenschatten/.test(nach.karten[0]) && !nach.karten.some((t) => /Wolfsblut/.test(t)) && /Heldenhalle/.test(nach.text) && !(await p.$("[data-skin-anlegen]")), "Der gekaufte Skin ist aus dem Händler verschwunden; an- und abgelegt wird in der Heldenhalle");
     check(await p.evaluate(() => window.ABF.bild("berserker") === "img/figuren/berserker_wolfsblut.jpg" && window.ABF.ganzBild("berserker") === "img/figuren/ganz/berserker_wolfsblut.webp" && window.ABF.bild("berserker", null) === "img/figuren/berserker.jpg" && window.ABF.bild("schildwaechter") === "img/figuren/schildwaechter.jpg"), "Ragnars Bilder kommen jetzt vom Skin, andere Helden bleiben unverändert");
     // Heldenhalle: Aussehen wählen
     await p.evaluate(() => window.MYTHARA.zeigeHub()); await p.click('.dorf-ort[data-hub="helden"]'); await p.waitForSelector('#hub-seite [data-klasse="krieger"]');

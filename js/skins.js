@@ -61,28 +61,26 @@
   /* ---------- Händler: Reiter „Skins“ ---------- */
   function shop(meldung) {
     if (!stand || !window.MYTHARA) return;
-    const karten = katalog().map((k) => { const s = F().SKINS[k.id], d = F().FIGUREN[k.held], an = stand.aktiv && stand.aktiv[k.held] === k.id, fehlt2 = Math.max(0, k.preis - stand.waehrung);
-      const knopf = k.besitzt
-        ? `<button class="btn${an ? " ghost" : ""}" data-skin-anlegen="${k.id}" data-held="${k.held}" data-an="${an ? 1 : 0}">${an ? "Ablegen" : "Anlegen"}</button><small class="skin-hat">✓ In deinem Besitz${an ? " · angelegt" : ""}</small>`
-        : !k.hat_held ? `<button class="btn" disabled>Kaufen</button><small class="shop-fehlt">Dafür brauchst du erst ${esc(d.name)} in deiner Sammlung.</small>`
+    // Gekaufte Skins verschwinden aus dem Händler; an- und abgelegt werden sie auf der Heldenkarte in der Heldenhalle
+    const karten = katalog().filter((k) => !k.besitzt).map((k) => { const s = F().SKINS[k.id], d = F().FIGUREN[k.held], fehlt2 = Math.max(0, k.preis - stand.waehrung);
+      const knopf = !k.hat_held ? `<button class="btn" disabled>Kaufen</button><small class="shop-fehlt">Dafür brauchst du erst ${esc(d.name)} in deiner Sammlung.</small>`
         : `<button class="btn" data-skin-kauf="${k.id}" ${fehlt2 ? "disabled" : ""}><i>${WZ()}</i> Für ${k.preis} ${WN()} kaufen</button>${fehlt2 ? `<small class="shop-fehlt">Dir fehlen ${fehlt2} ${WN()}.</small>` : ""}`;
-      return `<article class="skin-karte${k.besitzt ? " hat" : ""}" style="--k:${F().KLASSEN[d.klasse].farbe}"><div class="skin-bild"><img src="${gross(k.id)}" alt="${esc(d.name)} – ${esc(s.name)}" loading="lazy"></div>
+      return `<article class="skin-karte" style="--k:${F().KLASSEN[d.klasse].farbe}"><div class="skin-bild"><img src="${gross(k.id)}" alt="${esc(d.name)} – ${esc(s.name)}" loading="lazy"></div>
         <div class="skin-text"><p class="shop-eyebrow">Skin für ${esc(d.name)}</p><h2>${esc(s.name)}</h2><p>${esc(s.text || "")}</p><p class="skin-preis"><i>${WZ()}</i> ${k.preis} ${WN()}</p><div class="skin-knoepfe">${knopf}</div></div></article>`; }).join("");
     window.MYTHARA.seite("shop", `<div class="shop" data-shop data-skins><button class="hub-zurueck shop-zurueck" data-shop-zurueck>← Zum Händler</button>
       <div class="shop-kopf"><div><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Skins</h1><p class="hub-untertitel">Ein anderes Aussehen für deine Helden – im Kampf, in der Heldenhalle und für deine Gegner in der Arena sichtbar. Skins ändern nichts an Werten oder Fähigkeiten.</p></div>
         <p class="shop-konto"><i>${WZ()}</i> <b>${stand.waehrung}</b> ${WN()}</p></div>
       ${meldung ? `<p class="shop-meldung" role="status">${esc(meldung)}</p>` : ""}
-      <div class="skin-liste">${karten || `<p class="note">Der Händler hat gerade keine Skins.</p>`}</div></div>`);
+      <div class="skin-liste">${karten || `<p class="note">${katalog().length ? "Du besitzt alle Skins, die der Händler führt. An- und ablegen kannst du sie auf den Heldenkarten in der Heldenhalle." : "Der Händler hat gerade keine Skins."}</p>`}</div>
+      ${katalog().some((k) => k.besitzt) && karten ? `<p class="note">Deine gekauften Skins findest du auf den Heldenkarten in der Heldenhalle. Dort legst du sie an und ab.</p>` : ""}</div>`);
     const z = $("[data-shop-zurueck]"); if (z) z.onclick = () => window.MYTHARA.shop();
     document.querySelectorAll("[data-skin-kauf]").forEach((b) => { b.onclick = async () => {
       const id = b.dataset.skinKauf, k = katalog().find((x) => x.id === id), s = F().SKINS[id], d = F().FIGUREN[k.held];
       if (!confirm(`„${s.name}“ für ${d.name} kaufen? Das kostet ${k.preis} ${WN()}.`)) return; b.disabled = true;
       try { uebernehmen(await netz().rpc("rpg_skin_buy", { p_id: id })); if (window.ARENA && window.ARENA.pruefen) window.ARENA.pruefen(true).catch(() => {});
         try { uebernehmen(await netz().rpc("rpg_skin_equip", { p_held: k.held, p_skin: id })); } catch (e) { /* gekauft ist er; anlegen geht auch später */ }
-        shop(`„${s.name}“ gehört jetzt dir und ist angelegt. Ändern kannst du das hier oder auf ${d.name}s Heldenkarte.`); }
+        shop(`„${s.name}“ gehört jetzt dir und ist angelegt. An- und ablegen kannst du ihn auf der Heldenkarte von ${d.name} in der Heldenhalle.`); }
       catch (e) { await laden(); shop(e.message); } }; });
-    document.querySelectorAll("[data-skin-anlegen]").forEach((b) => { b.onclick = async () => { b.disabled = true;
-      try { uebernehmen(await netz().rpc("rpg_skin_equip", { p_held: b.dataset.held, p_skin: b.dataset.an === "1" ? null : b.dataset.skinAnlegen })); shop(); } catch (e) { await laden(); shop(e.message); } }; });
   }
   /** Kachel für die Übersicht des Händlers (leer, solange es keine Skins gibt) */
   function shopKachel() {
