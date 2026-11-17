@@ -34,14 +34,15 @@
   };
   /* Pakete: mehrere Skins zusammen günstiger, für begrenzte Zeit (Preis, Laufzeit und Inhalt kommen aus der Datenbank, Migration 030) */
   const PAKETE = { schattenreich: { name: "Aus dem Schattenreich", text: "Drei Helden, wie sie auf der anderen Seite aussehen: schwarz, violett und mit Raben im Gefolge." } };
-  /* VORBEREITET, NOCH NICHT IM SPIEL: Bilder liegen bereit, die Einträge werden bei „Go“ nach SKINS und PAKETE verschoben
-     (dazu ein Eintrag für das Paket in der Datenbank). Solange sie hier stehen, zeigt das Spiel nichts davon. */
+  /* FAHRPLAN: fünf Pakete, je sieben Tage, nahtlos hintereinander (Start jeweils 20 Uhr deutscher Zeit). Die Termine stehen
+     maßgeblich in der Datenbank (Migration 031: Paket von/bis, Skin „ab“); „ab“ hier sorgt nur dafür, dass vor dem Start
+     nichts zu sehen ist, auch wenn die Migration noch fehlt. Nach dem Paket bleiben die Skins einzeln erhältlich. */
   const WARTET = {
-    pakete: { unter_dem_eis: { name: "Unter dem Eis", text: "Reif auf Pelz und Stahl, Eiszapfen an den Säumen, Schneekristalle auf dem Wappenrock: die Garde des versunkenen Veyrholm." },
-      glut_und_asche: { name: "Glut und Asche", text: "Verkohlter Stoff, an dessen Säumen es noch glimmt, Runen aus Glut und überall die Waage: die Richter, die nach dem Brand kommen." },
-      mondbaendiger: { name: "Mondbändiger", text: "Nachtblau und Silber, Mondphasen auf dem Wappenrock, ein Mond aus Licht in der offenen Hand: drei, die der Nacht befehlen." },
-      sonnengott: { name: "Sonnengott", text: "Weiß, Gold und Weinrot, ein Strahlenkranz über dem Kopf, Sonnen auf Rüstung und Tuch: die Auserwählten eines Gottes, der am Mittag herrscht." },
-      goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
+    pakete: { unter_dem_eis: { ab: "2026-11-27T20:00:00+01:00", name: "Unter dem Eis", text: "Reif auf Pelz und Stahl, Eiszapfen an den Säumen, Schneekristalle auf dem Wappenrock: die Garde des versunkenen Veyrholm." },
+      glut_und_asche: { ab: "2026-12-04T20:00:00+01:00", name: "Glut und Asche", text: "Verkohlter Stoff, an dessen Säumen es noch glimmt, Runen aus Glut und überall die Waage: die Richter, die nach dem Brand kommen." },
+      mondbaendiger: { ab: "2026-12-11T20:00:00+01:00", name: "Mondbändiger", text: "Nachtblau und Silber, Mondphasen auf dem Wappenrock, ein Mond aus Licht in der offenen Hand: drei, die der Nacht befehlen." },
+      sonnengott: { ab: "2026-12-25T20:00:00+01:00", name: "Sonnengott", text: "Weiß, Gold und Weinrot, ein Strahlenkranz über dem Kopf, Sonnen auf Rüstung und Tuch: die Auserwählten eines Gottes, der am Mittag herrscht." },
+      goldene_garde: { ab: "2026-12-18T20:00:00+01:00", name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
     skins: {
       duellant_s3: { held: "duellant", name: "Frostklinge", paket: "unter_dem_eis", text: "Eine Krone aus Eis, Rüstung mit Reif überzogen, ein Schwert wie ein gefrorener Bach. Isolde, wie sie unter dem Gletscher Wache hielte." },
       gelehrter_s1: { held: "gelehrter", name: "Eisgelehrte", paket: "unter_dem_eis", text: "Ein Buch mit Schneekristall, ein Stab mit blauem Eis, eine Flocke, die über ihrer Hand schwebt. Lyra in den Archiven von Veyrholm." },
@@ -60,7 +61,10 @@
       elementarist_s2: { held: "elementarist", name: "Gardemagier", paket: "goldene_garde", text: "Roben in Elfenbein und Blau, ein Stab mit einer Sonne an der Spitze, Licht in der offenen Hand. Vaelin als Hofmagier." },
     },
   };
-  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS, PAKETE, WARTET }; return; }   // für Tests
+  Object.assign(PAKETE, WARTET.pakete); Object.assign(SKINS, WARTET.skins);
+  /** Ist dieser Skin schon im Spiel? (Skins eines Pakets erst ab dessen Start) */
+  const offen = (id, jetzt) => { const s = SKINS[id], p = s && s.paket && PAKETE[s.paket]; return Boolean(s) && !(p && p.ab && new Date(p.ab).getTime() > (jetzt || Date.now())); };
+  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS, PAKETE, WARTET, offen }; return; }   // für Tests
   /* Bildwahl in den Heldendaten ergänzen: ABF.bild(held, skin) und ABF.ganzBild(held, skin).
      skin: undefined = der eigene angelegte Skin, null = normales Aussehen, sonst der genannte Skin (nur wenn er zum Helden passt).
      ABF.SKIN.eigen = angelegte Skins des eigenen Kontos { held: skin }, ABF.SKIN.gegner = die des Arena-Gegners. */
@@ -79,7 +83,7 @@
   /** Laufende Pakete laden (ohne Migration 030: keine) */
   async function paketeLaden() {
     pakete = [];
-    try { const r = await netz().rpc("rpg_skin_bundles_list", {}); if (r && r.konto) pakete = (r.pakete || []).filter((p) => PAKETE[p.id] && p.skins.every((id) => SKINS[id]) && new Date(p.bis).getTime() > Date.now()); } catch (e) { /* ohne Pakete */ }
+    try { const r = await netz().rpc("rpg_skin_bundles_list", {}); if (r && r.konto) pakete = (r.pakete || []).filter((p) => PAKETE[p.id] && !(PAKETE[p.id].ab && new Date(PAKETE[p.id].ab).getTime() > Date.now()) && p.skins.every((id) => SKINS[id]) && new Date(p.bis).getTime() > Date.now()); } catch (e) { /* ohne Pakete */ }
     return pakete;
   }
   /** Sonderangebot für die Startseite des Händlers (über dem Held der Woche): aufgefächerte Vorschau, Preis, Restzeit */
@@ -137,7 +141,7 @@
     return stand;
   }
   /** Nur Skins, die das Spiel auch kennt (Bilder und Name) */
-  const katalog = () => (stand ? stand.katalog.filter((k) => F().SKINS[k.id] && F().SKINS[k.id].held === k.held) : []);
+  const katalog = () => (stand ? stand.katalog.filter((k) => F().SKINS[k.id] && F().SKINS[k.id].held === k.held && (k.besitzt || offen(k.id))) : []);
   const da = () => katalog().length > 0;
 
   /* ---------- Händler: Bereich „Skins“ ----------

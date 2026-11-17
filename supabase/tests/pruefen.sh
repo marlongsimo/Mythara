@@ -162,6 +162,18 @@ psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "update public.rpg_skin_bundles set von =
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent, verlängert nicht
 test "$(psql -tA -d "$DB" -c "select count(*) from public.rpg_skin_bundles where bis < now() + interval '7 days' - interval '30 minutes'")" = 1 && echo "✓ Erneutes Einspielen von 030 verlängert das Paket nicht"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 030_rpg_skin_pakete_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+# Migration 031 (Fahrplan der Skin-Pakete): braucht 029 und 030; der Rückbau stellt rpg_skins und rpg_skin_buy wieder her
+SK_VOR=$(psql -q -At -d "$DB" -c "select md5(pg_get_functiondef('public.rpg_skins()'::regprocedure) || pg_get_functiondef('public.rpg_skin_buy(text)'::regprocedure))")
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../031_rpg_skin_fahrplan.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "update public.rpg_skin_bundles set preis = 1 where id = 'sonnengott'"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../031_rpg_skin_fahrplan.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent, überschreibt nichts
+test "$(psql -tA -d "$DB" -c "select preis from public.rpg_skin_bundles where id = 'sonnengott'")" = 1 && echo "✓ Erneutes Einspielen von 031 überschreibt angepasste Preise und Termine nicht"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "update public.rpg_skin_bundles set preis = 1365 where id = 'sonnengott'"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 031_rpg_skin_fahrplan_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../031_rpg_skin_fahrplan_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../031_rpg_skin_fahrplan_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+SK_NACH=$(psql -q -At -d "$DB" -c "select md5(pg_get_functiondef('public.rpg_skins()'::regprocedure) || pg_get_functiondef('public.rpg_skin_buy(text)'::regprocedure))")
+if [ "$SK_VOR" = "$SK_NACH" ] && [ "$(psql -tA -d "$DB" -c "select count(*) from public.rpg_skin_bundles")" = 1 ]; then echo "✓ Nach dem Rückbau von 031 sind rpg_skins und rpg_skin_buy wie vorher, nur das Schattenreich-Paket bleibt"; else echo "✗ Der Rückbau von 031 hinterlässt Reste"; exit 1; fi
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin\_bundle%'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin\_bundle%'")" = 0 && echo "✓ Nach dem Rückbau von 030 sind Tabellen und Funktionen wieder weg"
