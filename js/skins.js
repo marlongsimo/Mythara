@@ -38,11 +38,15 @@
      (dazu ein Eintrag für das Paket in der Datenbank). Solange sie hier stehen, zeigt das Spiel nichts davon. */
   const WARTET = {
     pakete: { unter_dem_eis: { name: "Unter dem Eis", text: "Reif auf Pelz und Stahl, Eiszapfen an den Säumen, Schneekristalle auf dem Wappenrock: die Garde des versunkenen Veyrholm." },
+      glut_und_asche: { name: "Glut und Asche", text: "Verkohlter Stoff, an dessen Säumen es noch glimmt, Runen aus Glut und überall die Waage: die Richter, die nach dem Brand kommen." },
       goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
     skins: {
       duellant_s3: { held: "duellant", name: "Frostklinge", paket: "unter_dem_eis", text: "Eine Krone aus Eis, Rüstung mit Reif überzogen, ein Schwert wie ein gefrorener Bach. Isolde, wie sie unter dem Gletscher Wache hielte." },
       gelehrter_s1: { held: "gelehrter", name: "Eisgelehrte", paket: "unter_dem_eis", text: "Ein Buch mit Schneekristall, ein Stab mit blauem Eis, eine Flocke, die über ihrer Hand schwebt. Lyra in den Archiven von Veyrholm." },
       wildnislaeufer_s2: { held: "wildnislaeufer", name: "Frostläufer", paket: "unter_dem_eis", text: "Pelz voller Reif, Pfeile mit Federn aus Eis, ein Bogen, an dem Zapfen hängen. Kael auf der Jagd über den Gletscher." },
+      berserker_s1: { held: "berserker", name: "Aschenhammer", paket: "glut_und_asche", text: "Geschwärzte Platten, ein Weihrauchfass an der Kette, ein Hammer, in dessen Rissen Glut steht. Ragnar als Vollstrecker des Urteils." },
+      schattenmagier_s2: { held: "schattenmagier", name: "Glutrichterin", paket: "glut_und_asche", text: "Ein Reif aus Eisen über dem Haar, ein brennendes Buch, die Waage am Gürtel. Morwen, die das Urteil schon kennt." },
+      inquisitor_s2: { held: "inquisitor", name: "Aschenrichter", paket: "glut_und_asche", text: "Eine Robe wie verkohltes Pergament, ein Stab, auf dem Feuer brennt, das Buch aufgeschlagen. Seran, wenn er nicht mehr fragt." },
       duellant_s2: { held: "duellant", name: "Gardehauptfrau", paket: "goldene_garde", text: "Eine Krone im Haar, Plattenrüstung in Weiß und Gold, das Schwert gezogen. Isolde an der Spitze der Garde." },
       kopfgeldjaeger_s2: { held: "kopfgeldjaeger", name: "Gardeschütze", paket: "goldene_garde", text: "Weißer Pelz über der Schulter, der Löwe auf der Brust, eine Armbrust aus Gold. Orin im Dienst der Krone." },
       elementarist_s2: { held: "elementarist", name: "Gardemagier", paket: "goldene_garde", text: "Roben in Elfenbein und Blau, ein Stab mit einer Sonne an der Spitze, Licht in der offenen Hand. Vaelin als Hofmagier." },
