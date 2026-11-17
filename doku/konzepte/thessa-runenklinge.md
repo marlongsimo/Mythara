@@ -24,3 +24,18 @@ Stellschrauben, falls zu stark: Schaden der Rückkopplung, Schwelle der Runenhau
 Herkunft: Schreiberin des Wachtordens, die die Runen eines reißenden Siegels auf die eigene Haut gesetzt hat.
 
 Vor dem Einbau: Turnier auf Stufe 1, 5 und 10; Eintrag im Heldenkatalog der Datenbank; neue Fassung der Arena-Funktion; Entscheidung, wie man sie bekommt.
+
+## Simulation (Arbeitskopie, Rechner gegen Rechner, Thessa mit zwei zufälligen Helden gegen drei zufällige)
+
+Skin „Runenkönigin“ liegt bereit (Kennung `runenklinge_s1`).
+
+| Fassung | Stufe 1 | Stufe 5 | Stufe 10 |
+|---|---|---|---|
+| Entwurf wie oben (TP 10/24/42, RK 13, 1W8) | 42 % | 35 % | 33 % |
+| + 7 TP, RK 14 | 48 % | 42 % | 39 % |
+| TP 15/33/56, RK 14, Runenklinge 1W10, Entladung +2W6, Rückkopplung ab Stufe 1 | 47 % | 53 % | 51 % |
+
+Je Zelle 60 bis 120 Kämpfe, Unsicherheit etwa ±5 Punkte. Ein durchschnittlicher Held liegt bei 50 %.
+Befund: Mit den Lebenspunkten einer Zauberin fällt sie vorn in drei von vier Kämpfen, auf Stufe 1 in der zweiten Runde.
+Der Rechner-Gegner spielt sie nicht gut (geht mit den Zauberplätzen nicht haushälterisch um, nutzt den Runenschritt kaum);
+ein Mensch dürfte mehr herausholen. Ziel für die Freigabe: 54 bis 58 %.
