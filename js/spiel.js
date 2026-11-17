@@ -56,9 +56,10 @@
     return `<g transform="translate(0 ${fuss}) scale(1 ${streck.toFixed(3)})"><image class="fig-ganz${aktiv ? " dran" : ""}" href="${skin && F.ganzBild && F.FIGUREN[name] ? F.ganzBild(name, skin) : "img/figuren/ganz/" + name + ".webp"}" x="${(-breit / 2).toFixed(1)}" y="${(-hoch).toFixed(1)}" width="${breit.toFixed(1)}" height="${hoch.toFixed(1)}" preserveAspectRatio="xMidYMax meet" style="--k:${farbe}"/></g>`;
   }
   const params = new URLSearchParams(location.search);
-  /* Prototyp „schlanker Kampfbildschirm“ (große Bildschirme): nur mit ?kampf=neu, merkt sich die Wahl für diesen Tab; ?kampf=alt schaltet zurück */
-  try { if (params.get("kampf") === "neu") sessionStorage.setItem("ab_kampf_neu", "1"); if (params.get("kampf") === "alt") sessionStorage.removeItem("ab_kampf_neu");
-    if (sessionStorage.getItem("ab_kampf_neu")) { document.body.classList.add("kampf-schlank"); document.addEventListener("click", (ev) => { const l = ev.target.closest("#log"); if (l) l.classList.toggle("offen"); }); } } catch (e) { /* privat */ }
+  /* Schlanker Kampfbildschirm auf großen Bildschirmen (ab 1200 px): kleine Initiative über der Karte, große Karte, Chronik als aufklappbarer Streifen.
+     ?kampf=alt holt für diesen Tab die frühere Ansicht zurück, ?kampf=neu schaltet wieder um. */
+  { let alt = false; try { if (params.get("kampf") === "alt") sessionStorage.setItem("ab_kampf_alt", "1"); if (params.get("kampf") === "neu") sessionStorage.removeItem("ab_kampf_alt"); alt = Boolean(sessionStorage.getItem("ab_kampf_alt")); } catch (e) { /* privat */ }
+    if (!alt) { document.body.classList.add("kampf-schlank"); document.addEventListener("click", (ev) => { const l = ev.target.closest("#log"); if (l) l.classList.toggle("offen"); }); } }
   // Erst wenn alle Skripte geladen sind (sonst fehlt bei langsamem Laden noch die Abenteuer-Oberfläche und das Fortsetzen fällt aus)
   const bereit = new Promise((r) => (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", r, { once: true }) : r()));
   // Tempo der Gegnerzüge (Einstellungen): langsam 2,4 s, normal 1,6 s, schnell 0,8 s; im Testmodus sofort

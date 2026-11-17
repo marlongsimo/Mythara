@@ -2585,7 +2585,7 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
 .start-liste h2 { margin: 0 0 8px; font: 600 20px var(--schrift-titel); color: #f6dc9c; } .start-liste ul { margin: 0 0 10px; padding-left: 20px; display: grid; gap: 5px; color: #efe6d4; } .start-liste em { color: #9fe0a0; font-style: normal; font-size: 13px; }
 @media (max-width: 700px) { .start-inhalt { grid-template-columns: 1fr; } .start-bilder img { max-height: 230px; } }
 
-/* ---------- Prototyp: schlanker Kampfbildschirm (nur mit ?kampf=neu, nur große Bildschirme) ---------- */
+/* ---------- Schlanker Kampfbildschirm (große Bildschirme; ?kampf=alt zeigt die frühere Ansicht) ---------- */
 @media (min-width: 1200px) {
   body.kampf-schlank.im-kampf .spiel { grid-template-columns: 196px minmax(0, 1fr) 310px; grid-template-rows: auto auto auto auto auto 1fr; gap: 8px 18px; }
   body.kampf-schlank.im-kampf .kampf-kopf { height: 44px; padding: 0 16px; border-radius: 12px; gap: 14px; box-shadow: 0 0 0 1px rgba(217,178,106,.3); }
@@ -2617,3 +2617,4 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
   body.kampf-schlank.im-kampf .panel { grid-row: 3 / span 3; max-height: calc(100vh - 80px); }
 }
 @media (min-width: 1200px) { body.kampf-schlank.im-kampf .log:not(.offen)::before { display: none; } }
+@media (min-width: 1200px) { body.kampf-schlank.im-kampf .reihe { flex-wrap: wrap; row-gap: 4px; } }
