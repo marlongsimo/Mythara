@@ -84,7 +84,7 @@ const R = require('../js/regeln.js'), S = require('../js/szenen.js'), D = requir
   // Gegenstände wirken
   { const st = R.neuesSpiel(3, { figuren: ['schildwaechter', 'elementarist', 'lichtbringer'], stufe: 1, vorher: { schildwaechter: { stufe: 1, tp: 12, tot: false, plaetze: [0, 0], genutzt: {}, rucksack: [{ id: 'heiltrank', n: 1 }, { id: 'stiefel', n: 1 }, { id: 'amulett', n: 1 }] } } });
     const t = st.figuren.find((f) => f.fid === 'schildwaechter');
-    check(R.bewegungVon(t) === 4 && R.rkEff(st, t) === F.FIGUREN.schildwaechter.rk[0] + 1, 'Gegenstände: Stiefel +1 Bewegung, Amulett +1 RK');
+    check(R.bewegungVon(t) === F.KLASSEN.krieger.bewegung + 1 && R.rkEff(st, t) === F.FIGUREN.schildwaechter.rk[0] + 1, 'Gegenstände: Stiefel +1 Bewegung, Amulett +1 RK');
     check(R.aktionenVon(st.figuren.find((f) => f.fid === 'elementarist'), st).every((a) => a.id !== 'grosser_trank'), 'Ohne Großen Heiltrank keine Aktion dafür'); }
   // Zufall: Einstiege und Ereignisse
   { const einst = new Set(), erlebt = new Set(); for (let i = 1; i <= 30; i++) { const A = S.neu(i, { gruppe: ['schildwaechter', 'elementarist', 'lichtbringer'] }); einst.add(A.merker.einstieg); A.szene = 'garten_danach'; S.weiter(A); if (A.szene !== 'turm') erlebt.add(A.szene); }

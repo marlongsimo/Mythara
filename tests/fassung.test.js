@@ -16,7 +16,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
     check(!fehler.length, "keine Skriptfehler" + (fehler.length ? ": " + fehler.join(" | ") : "")); await p.close(); }
   // 2) online liegt eine neuere Fassung: einmal frisch laden, danach Ruhe
   { const ctx = await b.newContext(), p = await ctx.newPage(); let frisch = 0, neu = 0;
-    await p.route(/index\.html\?(.*&)?frisch=/, (r) => { frisch++; r.fulfill({ status: 200, contentType: "text/html", body: html.replace(/regeln\.js\?v=(\d+)/, (m, n) => "regeln.js?v=" + (Number(n) + 1)) }); });
+    await p.route(/spiel\.html\?(.*&)?frisch=/, (r) => { frisch++; r.fulfill({ status: 200, contentType: "text/html", body: html.replace(/regeln\.js\?v=(\d+)/, (m, n) => "regeln.js?v=" + (Number(n) + 1)) }); });
     p.on("framenavigated", (f) => { if (f === p.mainFrame() && /[?&]neu=/.test(f.url())) neu++; });
     await p.goto(URL); await p.waitForFunction(() => window.MYTHARA && window.MYTHARA.neuLaden);
     const geladen = await p.waitForURL(/[?&]neu=\d+/, { timeout: 12000 }).then(() => true, () => false);
