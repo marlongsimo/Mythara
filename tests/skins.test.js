@@ -93,5 +93,7 @@ const shot = async (p, n) => { if (process.env.SHOT_DIR) await p.screenshot({ pa
     check(!(await p.$("[data-paket]")), "Nach Ablauf der sieben Tage ist die Kachel verschwunden"); await ctx.close(); }
   { const R = require("../js/regeln.js"), sql = fs.readFileSync(path.join(WURZEL, "supabase/029_rpg_skins.sql"), "utf8"), SK = require("../js/skins.js").SKINS;
     check(Object.keys(SK).length >= 5 && /hero_id \|\| '_s' \|\| n, c\.hero_id, 650/.test(sql) && Object.entries(SK).every(([id, s]) => R.FD.FIGUREN[s.held] && s.name && s.text && (new RegExp("'" + id + "', '" + s.held + "', 650").test(sql) || new RegExp("^" + s.held + "_s[123]$").test(id))), "Jeder Skin im Spiel hat einen Platz in der Migration: namentlich oder als Vorab-Platz <held>_s1 bis _s3 (" + Object.values(SK).map((s) => s.name).join(", ") + ")"); }
+  { const M = require("../js/skins.js"), W = M.WARTET;
+    check(Object.keys(W.skins).every((id) => !M.SKINS[id] && ["img/figuren/" + id + ".jpg", "img/figuren/ganz/" + id + ".webp", "img/figuren/ganz/" + id + "-gross.webp"].every((f) => fs.existsSync(path.join(WURZEL, f)))) && Object.keys(W.pakete).every((id) => !M.PAKETE[id]), "Vorbereitete Pakete (" + Object.values(W.pakete).map((x) => x.name).join(", ") + "): Bilder liegen bereit, im Spiel ist noch nichts davon sichtbar"); }
   await b.close(); console.log(ok ? "\nSKINS IN ORDNUNG" : "\nSKINS: FEHLER"); process.exit(ok ? 0 : 1);
 })();

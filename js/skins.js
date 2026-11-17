@@ -34,7 +34,17 @@
   };
   /* Pakete: mehrere Skins zusammen günstiger, für begrenzte Zeit (Preis, Laufzeit und Inhalt kommen aus der Datenbank, Migration 030) */
   const PAKETE = { schattenreich: { name: "Aus dem Schattenreich", text: "Drei Helden, wie sie auf der anderen Seite aussehen: schwarz, violett und mit Raben im Gefolge." } };
-  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS, PAKETE }; return; }   // für Tests
+  /* VORBEREITET, NOCH NICHT IM SPIEL: Bilder liegen bereit, die Einträge werden bei „Go“ nach SKINS und PAKETE verschoben
+     (dazu ein Eintrag für das Paket in der Datenbank). Solange sie hier stehen, zeigt das Spiel nichts davon. */
+  const WARTET = {
+    pakete: { goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
+    skins: {
+      duellant_s2: { held: "duellant", name: "Gardehauptfrau", paket: "goldene_garde", text: "Eine Krone im Haar, Plattenrüstung in Weiß und Gold, das Schwert gezogen. Isolde an der Spitze der Garde." },
+      kopfgeldjaeger_s2: { held: "kopfgeldjaeger", name: "Gardeschütze", paket: "goldene_garde", text: "Weißer Pelz über der Schulter, der Löwe auf der Brust, eine Armbrust aus Gold. Orin im Dienst der Krone." },
+      elementarist_s2: { held: "elementarist", name: "Gardemagier", paket: "goldene_garde", text: "Roben in Elfenbein und Blau, ein Stab mit einer Sonne an der Spitze, Licht in der offenen Hand. Vaelin als Hofmagier." },
+    },
+  };
+  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS, PAKETE, WARTET }; return; }   // für Tests
   /* Bildwahl in den Heldendaten ergänzen: ABF.bild(held, skin) und ABF.ganzBild(held, skin).
      skin: undefined = der eigene angelegte Skin, null = normales Aussehen, sonst der genannte Skin (nur wenn er zum Helden passt).
      ABF.SKIN.eigen = angelegte Skins des eigenen Kontos { held: skin }, ABF.SKIN.gegner = die des Arena-Gegners. */
