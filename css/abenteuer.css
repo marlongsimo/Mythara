@@ -2489,3 +2489,18 @@ header.top { justify-content: flex-end; }
 .skin-wahl-punkt.an { border-color: #f0d488; background: rgba(240, 212, 136, .12); } .skin-wahl-punkt.an img { border-color: #f0d488; } .skin-wahl-punkt.an small { color: #9fe0a0; }
 .skin-wahl-punkt.zu img { filter: grayscale(.7) brightness(.7); } .skin-wahl-punkt:disabled { opacity: .5; cursor: default; }
 @media (max-width: 520px) { .skin-karte { grid-template-columns: 1fr; text-align: center; } .skin-bild img { max-height: 260px; margin: 0 auto; } .skin-knoepfe { justify-items: center; } }
+
+/* ---------- Skin-Paket: Sonderangebot beim Händler ---------- */
+button.shop-angebot.paket { width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit; grid-template-columns: auto 1fr auto; background: radial-gradient(120% 140% at 12% 50%, rgba(140, 70, 220, .38), transparent 62%), linear-gradient(135deg, #1a1024, #0d0a12); border-color: #b48cf0; box-shadow: 0 0 34px rgba(140, 70, 220, .3); }
+button.shop-angebot.paket:hover, button.shop-angebot.paket:focus-visible { border-color: #e2c8ff; }
+.shop-angebot.paket .shop-angebot-band { background: linear-gradient(180deg, #d5b4ff, #8b55d6); color: #1a0b2e; }
+.paket-faecher { position: relative; display: block; width: 250px; height: 190px; margin: 0 4px; }
+.paket-faecher img { position: absolute; left: 50%; bottom: 0; height: 182px; width: auto; transform-origin: 50% 105%; transform: translateX(calc(-50% + var(--i) * 62px)) rotate(calc(var(--i) * 11deg)) scale(calc(1 - (var(--i) * var(--i)) * .07)); filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .8)); transition: transform .25s; }
+.paket-faecher img:nth-child(2) { z-index: 1; }
+button.shop-angebot.paket:hover .paket-faecher img { transform: translateX(calc(-50% + var(--i) * 74px)) rotate(calc(var(--i) * 14deg)) scale(calc(1.03 - (var(--i) * var(--i)) * .07)); }
+.shop-angebot.paket .shop-angebot-text b { color: #ecd9ff; } .shop-angebot.paket .shop-angebot-kauf .shop-preis b { color: #f0dcff; }
+.shop-angebot.paket .shop-angebot-kauf { display: grid; } .shop-angebot.paket .shop-angebot-text .my-link { text-decoration: underline; }
+.paket-kauf { display: grid; gap: 8px; justify-items: start; margin: 4px 0 20px; padding: 16px 18px; border: 1px solid #b48cf0; border-radius: 10px; background: rgba(60, 30, 100, .28); }
+.paket-kauf .shop-preis b { font-size: 30px; color: #f0dcff; } .paket-kauf .shop-preis s { font-size: 17px; }
+@media (max-width: 700px) { button.shop-angebot.paket { grid-template-columns: 1fr; justify-items: center; text-align: center; } .shop-angebot.paket .shop-angebot-text { justify-items: center; } .shop-angebot.paket .shop-angebot-text .my-link { justify-self: center; } .paket-faecher { width: 230px; height: 170px; } .paket-faecher img { height: 164px; } .shop-angebot.paket .shop-angebot-kauf { padding-right: 0; } }
+@media (prefers-reduced-motion: reduce) { .paket-faecher img { transition: none; } }

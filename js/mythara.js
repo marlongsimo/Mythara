@@ -229,6 +229,7 @@
     if (!meldung) seiteZeigen("shop", `<div class="shop" data-shop><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Einen Moment …</h1></div>`);
     let s = null, fehler = null;
     try { await netz().ensureUser(); s = await netz().rpc("rpg_shop_week", {}); kaufStand = s && s.konto ? s : null; } catch (e) { fehler = e; }
+    if (window.SKINS && s && s.konto) { await window.SKINS.laden().catch(() => {}); await window.SKINS.paketeLaden().catch(() => {}); } // Skins und laufende Skin-Pakete
     if (!document.querySelector("[data-shop]")) return;
     if (fehler && !rpcFehlt(fehler)) return seiteZeigen("shop", `<div class="shop-bald"><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Keine Verbindung</h1><p class="hub-untertitel">${esc(fehler.message)}</p></div>`);
     if (s && !s.konto) return seiteZeigen("shop", `<div class="shop-bald"><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Nur für Spielerkonten</h1><p class="hub-untertitel">Der Händler tauscht ${name} gegen Helden und Ausstattung. Beides gibt es nur mit einem Konto.</p></div>`);
@@ -237,6 +238,7 @@
     seiteZeigen("shop", `<div class="shop" data-shop><div class="shop-kopf"><div><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Was darf es sein?</h1>
         <p class="hub-untertitel">${name} bekommst du für Siege in der Arena.</p></div>${s ? `<p class="shop-stand"><i>${zeichen}</i> ${s.waehrung} ${name}</p>` : ""}</div>
       ${meldung ? `<p class="fb" role="status">${esc(meldung)}</p>` : ""}
+      ${window.SKINS && s ? window.SKINS.angebotHtml() : ""}
       ${!s ? "" : s.alle || !wd ? `<div class="shop-angebot leer" data-woche><span class="shop-angebot-band">Held der Woche</span><p class="shop-angebot-alle"><b>✓ Du hast alle Helden freigeschaltet.</b><span>Der Händler hat dir keinen Helden mehr anzubieten – vorerst.</span></p></div>`
         : `<div class="shop-angebot ${s.gekauft ? "gekauft" : ""}" data-woche="${s.held}" style="--k:${window.ABF.KLASSEN[wd.klasse].farbe}"><span class="shop-angebot-band">★ Sonderangebot · Held der Woche</span><span class="shop-angebot-rabatt">−50 %</span>
             <img class="shop-angebot-bild" src="${window.ABF.bild(s.held)}" alt="">
@@ -253,6 +255,7 @@
           <b>Heldentoken</b><span>${s ? `Schaltet in der Heldenhalle einen Helden deiner Wahl frei. ${s.token_preis} ${name}.` : "Folgt bald."}</span><em class="shop-uhr">${s ? `Im Besitz: ${s.tokens}` : ""}</em></button>
         ${window.SKINS ? window.SKINS.shopKachel() : ""}
       </div></div>`);
+    if (window.SKINS) window.SKINS.angebotBinden();
     document.querySelectorAll("[data-shop-ansehen]").forEach((b) => { b.onclick = () => { const f = b.dataset.shopAnsehen; fenster(window.ABF.FIGUREN[f].name, window.ABH_HELDEN.detail(f, 1, "")); }; });
     { const wk = document.querySelector("[data-woche-kauf]"); if (wk) wk.onclick = async () => {
         if (!confirm(`${wd.name} für ${s.angebot} ${name} in deine Sammlung holen?`)) return; wk.disabled = true;

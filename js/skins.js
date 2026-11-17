@@ -25,11 +25,16 @@
     wildnislaeufer_s1: { held: "wildnislaeufer", name: "Eichenhüter", text: "Eichenlaub auf dem Umhang, ein Wolfsfell über der Schulter, ein Bogen, an dem grünes Licht entlangläuft. Kael, wenn der Wald ihn zu den Seinen zählt." },
     duellant_s1: { held: "duellant", name: "Eulenritterin", text: "Eine Schleiereule auf der Schulter, Rüstung mit goldenem Baum, ein Umhang wie der Sternenhimmel. Isolde, die keinen Schritt zu viel macht." },
     schattenlaeufer_s1: { held: "schattenlaeufer", name: "Nachtkrähe", text: "Eine Kapuze voller Runen, eine Krähe auf der Schulter, zwei Dolche, an denen violetter Rauch hängt. Darian in der Nacht, in der er nicht vorhat, ungesehen zu bleiben." },
+    assassine_s1: { held: "assassine", name: "Schattenfürst", paket: "schattenreich", text: "Eine Krone über der Kapuze, das Gesicht verhüllt, Klingen aus violettem Licht. Vex, wie er im Schattenreich herrscht." },
+    tiergefaehrte_s2: { held: "tiergefaehrte", name: "Schattenjägerin", paket: "schattenreich", text: "Rabenfedern auf dem Umhang, Pfeile mit violetten Federn, ein Bogen wie eine Sichel. Faye auf der Jagd im Schattenreich." },
+    wanderheiler_s2: { held: "wanderheiler", name: "Schattenheiler", paket: "schattenreich", text: "Schwarze Roben mit einem Raben im Mond, ein Stab mit violettem Kristall. Brogar, der auch im Schattenreich Wunden schließt." },
     tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
     schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },
   };
-  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS }; return; }   // für Tests
+  /* Pakete: mehrere Skins zusammen günstiger, für begrenzte Zeit (Preis, Laufzeit und Inhalt kommen aus der Datenbank, Migration 030) */
+  const PAKETE = { schattenreich: { name: "Aus dem Schattenreich", text: "Drei Helden, wie sie auf der anderen Seite aussehen: schwarz, violett und mit Raben im Gefolge." } };
+  if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS, PAKETE }; return; }   // für Tests
   /* Bildwahl in den Heldendaten ergänzen: ABF.bild(held, skin) und ABF.ganzBild(held, skin).
      skin: undefined = der eigene angelegte Skin, null = normales Aussehen, sonst der genannte Skin (nur wenn er zum Helden passt).
      ABF.SKIN.eigen = angelegte Skins des eigenen Kontos { held: skin }, ABF.SKIN.gegner = die des Arena-Gegners. */
@@ -43,7 +48,54 @@
   const fehlt = (e) => Boolean(e && (e.code === "PGRST202" || e.code === "42883" || /Could not find the function|schema cache|does not exist/i.test(e.roh || e.message || "")));
   const WN = () => (window.ARENA ? window.ARENA.WAEHRUNG : "Seelensplitter"), WZ = () => (window.ARENA ? window.ARENA.ZEICHEN : "◈");
   const gross = (id) => "img/figuren/ganz/" + id + "-gross.webp";
-  let stand = null, arenaFehlt = false;
+  let stand = null, arenaFehlt = false, pakete = [], paketUhr = null;
+  const restZeit = (bis) => { const ms = new Date(bis).getTime() - Date.now(); if (ms <= 0) return "0 Min."; const t = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4); return t ? `${t} T. ${h} Std.` : h ? `${h} Std. ${m} Min.` : `${Math.max(1, m)} Min.`; };
+  /** Laufende Pakete laden (ohne Migration 030: keine) */
+  async function paketeLaden() {
+    pakete = [];
+    try { const r = await netz().rpc("rpg_skin_bundles_list", {}); if (r && r.konto) pakete = (r.pakete || []).filter((p) => PAKETE[p.id] && p.skins.every((id) => SKINS[id]) && new Date(p.bis).getTime() > Date.now()); } catch (e) { /* ohne Pakete */ }
+    return pakete;
+  }
+  /** Sonderangebot für die Startseite des Händlers (über dem Held der Woche): aufgefächerte Vorschau, Preis, Restzeit */
+  function angebotHtml() {
+    return pakete.map((p) => { const P = PAKETE[p.id], n = p.skins.length;
+      const faecher = p.skins.map((id, i) => `<img src="${gross(id)}" alt="" style="--i:${i - (n - 1) / 2}">`).join("");
+      return `<button class="shop-angebot paket${p.gekauft ? " gekauft" : ""}" data-paket="${p.id}"><span class="shop-angebot-band">★ Sonderangebot · Skin-Paket</span>${p.gekauft ? "" : `<span class="shop-angebot-rabatt">−${Math.round(100 * (1 - p.preis / p.einzeln))} %</span>`}
+        <span class="paket-faecher" aria-hidden="true">${faecher}</span>
+        <span class="shop-angebot-text"><b>${esc(P.name)}</b><small>${n} Skins: ${p.skins.map((id) => esc(F().FIGUREN[SKINS[id].held].name)).join(", ")}</small><span class="my-link">Ansehen</span></span>
+        <span class="shop-angebot-kauf">${p.gekauft ? `<span class="shop-gekauft">✓ In deinem Besitz</span>` : `<span class="shop-preis"><s><i>${WZ()}</i> ${p.einzeln}</s> <b><i>${WZ()}</i> ${p.preis}</b> <span>${WN()}</span></span>`}
+          <em class="shop-uhr">Noch <strong data-paket-uhr="${p.id}">${restZeit(p.bis)}</strong></em></span></button>`; }).join("");
+  }
+  function angebotBinden() {
+    document.querySelectorAll("[data-paket]").forEach((b) => { b.onclick = () => paketZeigen(b.dataset.paket); });
+    clearInterval(paketUhr); if (!pakete.length) return;
+    paketUhr = setInterval(() => { const els = document.querySelectorAll("[data-paket-uhr]"); if (!els.length) return clearInterval(paketUhr);
+      els.forEach((el) => { const p = pakete.find((x) => x.id === el.dataset.paketUhr); if (!p || new Date(p.bis).getTime() <= Date.now()) { clearInterval(paketUhr); if (window.MYTHARA && document.querySelector("[data-paket]")) window.MYTHARA.shop(); } else el.textContent = restZeit(p.bis); }); }, 30000);
+  }
+  /** Paketseite: die einzelnen Skins und der Kauf als Paket */
+  function paketZeigen(id, meldung) {
+    const p = pakete.find((x) => x.id === id); if (!p || !window.MYTHARA) return;
+    const P = PAKETE[id], geld = stand ? stand.waehrung : 0, fehlt2 = Math.max(0, p.preis - geld);
+    const karten = p.skins.map((sid) => { const s = SKINS[sid], d = F().FIGUREN[s.held], hat = p.hat.includes(sid) || p.gekauft;
+      return `<article class="skin-karte${hat ? " hat" : ""}" style="--k:${F().KLASSEN[d.klasse].farbe}"><div class="skin-bild"><img src="${gross(sid)}" alt="${esc(d.name)} – ${esc(s.name)}" loading="lazy"></div>
+        <div class="skin-text"><p class="shop-eyebrow">Skin für ${esc(d.name)}</p><h2>${esc(s.name)}</h2><p>${esc(s.text || "")}</p>${hat ? `<small class="skin-hat">✓ In deinem Besitz</small>` : ""}</div></article>`; }).join("");
+    window.MYTHARA.seite("shop", `<div class="shop" data-shop data-paketseite="${id}"><button class="hub-zurueck shop-zurueck" data-shop-zurueck>← Zum Händler</button>
+      <div class="shop-kopf"><div><p class="shop-eyebrow">Sonderangebot · noch ${restZeit(p.bis)}</p><h1 class="hub-gruss">${esc(P.name)}</h1><p class="hub-untertitel">${esc(P.text)}</p></div>
+        <p class="shop-konto"><i>${WZ()}</i> <b>${geld}</b> ${WN()}</p></div>
+      ${meldung ? `<p class="shop-meldung" role="status">${esc(meldung)}</p>` : ""}
+      <div class="paket-kauf">${p.gekauft ? `<span class="shop-gekauft">✓ Dieses Paket gehört dir. An- und ablegen kannst du die Skins auf den Heldenkarten in der Heldenhalle.</span>`
+        : `<p class="shop-preis"><s><i>${WZ()}</i> ${p.einzeln}</s> <b><i>${WZ()}</i> ${p.preis}</b> <span>${WN()} für alle ${p.skins.length} Skins</span></p>
+           <button class="btn gross" data-paket-kauf ${fehlt2 ? "disabled" : ""}>Paket für <i>${WZ()}</i> ${p.preis} kaufen</button>
+           ${fehlt2 ? `<small class="shop-fehlt">Dir fehlen ${fehlt2} ${WN()}.</small>` : ""}${p.hat.length ? `<small class="note">${p.hat.length === 1 ? "Einen der Skins" : p.hat.length + " der Skins"} besitzt du schon; der Paketpreis bleibt gleich.</small>` : ""}
+           <small class="note">Das Paket gilt auch für Helden, die du noch nicht hast: Die Skins warten in der Heldenhalle, bis der Held zu dir stößt.</small>`}</div>
+      <div class="skin-liste">${karten}</div></div>`);
+    const z = $("[data-shop-zurueck]"); if (z) z.onclick = () => window.MYTHARA.shop();
+    const k = $("[data-paket-kauf]"); if (k) k.onclick = async () => {
+      if (!confirm(`„${P.name}“ kaufen? Das kostet ${p.preis} ${WN()}.`)) return; k.disabled = true;
+      try { await netz().rpc("rpg_skin_bundle_buy", { p_id: id }); await laden(); await paketeLaden(); if (window.ARENA && window.ARENA.pruefen) window.ARENA.pruefen(true).catch(() => {});
+        paketZeigen(id, `„${P.name}“ gehört jetzt dir. Anlegen kannst du die Skins auf den Heldenkarten in der Heldenhalle.`); }
+      catch (e) { await laden(); await paketeLaden(); if (pakete.find((x) => x.id === id)) paketZeigen(id, e.message); else window.MYTHARA.shop(e.message); } };
+  }
 
   function uebernehmen(s) {
     stand = s && s.konto ? s : null;
@@ -120,5 +172,5 @@
     if (wurzel) wurzel.querySelectorAll(".arena-team.gegner img[data-skin-held]").forEach((im) => { im.src = F().bild(im.dataset.skinHeld, F().SKIN.gegner[im.dataset.skinHeld] || null); });
   }
 
-  window.SKINS = { laden, shop, shopKachel, wahlHtml, wahlBinden, arena, da, zustand: () => stand };
+  window.SKINS = { laden, shop, shopKachel, wahlHtml, wahlBinden, arena, da, zustand: () => stand, paketeLaden, angebotHtml, angebotBinden, paketZeigen };
 })();

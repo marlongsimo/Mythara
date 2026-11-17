@@ -156,6 +156,15 @@ psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 026_rpg_heldentoken_test.sql
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 029_rpg_skins_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+# Migration 030 (Skin-Pakete): braucht 029; rein additiv
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "update public.rpg_skin_bundles set von = von - interval '1 hour', bis = bis - interval '1 hour'"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent, verlängert nicht
+test "$(psql -tA -d "$DB" -c "select count(*) from public.rpg_skin_bundles where bis < now() + interval '7 days' - interval '30 minutes'")" = 1 && echo "✓ Erneutes Einspielen von 030 verlängert das Paket nicht"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 030_rpg_skin_pakete_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin\_bundle%'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin\_bundle%'")" = 0 && echo "✓ Nach dem Rückbau von 030 sind Tabellen und Funktionen wieder weg"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin%' or proname = 'rpg_arena_skins'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin%'")" = 0 && echo "✓ Nach dem Rückbau von 029 sind Tabellen und Funktionen wieder weg"
