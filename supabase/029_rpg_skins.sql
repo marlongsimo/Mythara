@@ -15,7 +15,8 @@
 --      damit jeder den Skin des Gegners sieht.
 -- Skins ändern nur das Aussehen. Werte, Fähigkeiten und Kämpfe bleiben unberührt.
 --
--- Einen weiteren Skin legt später eine Zeile im Katalog an (insert into rpg_skin_items …) plus die Bilder im Spiel.
+-- Für jeden Helden sind drei weitere Plätze schon angelegt (<held>_s1 bis _s3, je 650). Ein neuer Skin braucht dann nur
+-- noch Bilder und Namen im Spiel. Ein anderer Preis: update rpg_skin_items set preis = … where id = '…'.
 --
 -- NUR FÜR DAS RPG. Rückbau: 029_rpg_skins_rueckbau.sql
 -- Unverändert in den Supabase SQL Editor einfügen und ausführen. Mehrfaches Ausführen ist unschädlich.
@@ -57,6 +58,11 @@ alter table public.rpg_skin_equipped enable row level security;
 revoke all on public.rpg_skin_items, public.rpg_skin_owned, public.rpg_skin_equipped from anon, authenticated;
 
 insert into public.rpg_skin_items (id, hero_id, preis, reihe) values ('berserker_wolfsblut', 'berserker', 650, 10), ('assassine_rabenschatten', 'assassine', 650, 20), ('gelehrter_sternenkunde', 'gelehrter', 650, 30)
+  on conflict (id) do nothing;
+-- Vorab-Plätze: je Held drei weitere Skins (<held>_s1 bis <held>_s3) zu 650 Seelensplittern. Das Spiel zeigt einen Platz erst,
+-- wenn es Bilder und einen Namen dafür hat – neue Skins brauchen deshalb kein weiteres SQL.
+insert into public.rpg_skin_items (id, hero_id, preis, reihe)
+  select c.hero_id || '_s' || n, c.hero_id, 650, 100 + n from public.rpg_hero_catalog c cross join generate_series(1, 3) n
   on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------

@@ -35,7 +35,7 @@ async function seite(b, DB) {
 const shot = async (p, n) => { if (process.env.SHOT_DIR) await p.screenshot({ path: process.env.SHOT_DIR + "/" + n + ".png" }); };
 (async () => {
   const b = await chromium.launch(); console.log("Helden-Skins");
-  for (const id of ["berserker_wolfsblut", "assassine_rabenschatten", "gelehrter_sternenkunde"]) check(["img/figuren/" + id + ".jpg", "img/figuren/ganz/" + id + ".webp", "img/figuren/ganz/" + id + "-gross.webp"].every((f) => fs.existsSync(path.join(WURZEL, f))), `Bilder für ${id}: Porträt, Kampffigur und großes Bild sind da`);
+  for (const id of Object.keys(require("../js/skins.js").SKINS)) check(["img/figuren/" + id + ".jpg", "img/figuren/ganz/" + id + ".webp", "img/figuren/ganz/" + id + "-gross.webp"].every((f) => fs.existsSync(path.join(WURZEL, f))), `Bilder für ${id}: Porträt, Kampffigur und großes Bild sind da`);
   { const DB = welt({ waehrung: 1000, helden: ["schildwaechter", "berserker"] }), { p, fehler, fehlend, ctx } = await seite(b, DB);
     await p.waitForFunction(() => window.SKINS && window.SKINS.da(), null, { timeout: 15000 });
     await p.click('.dorf-ort[data-hub="shop"]'); await p.waitForSelector('[data-shop-feld="skins"]');
@@ -68,6 +68,6 @@ const shot = async (p, n) => { if (process.env.SHOT_DIR) await p.screenshot({ pa
     check(!(await p.$('[data-shop-feld="skins"]')) && !fehler.length && await p.evaluate(() => window.ABF.bild("berserker") === "img/figuren/berserker.jpg"), "Ohne Migration 029: keine Kachel, keine Fehlermeldung, alle Bilder normal");
     await ctx.close(); }
   { const R = require("../js/regeln.js"), sql = fs.readFileSync(path.join(WURZEL, "supabase/029_rpg_skins.sql"), "utf8"), SK = require("../js/skins.js").SKINS;
-    check(Object.keys(SK).length === 3 && Object.entries(SK).every(([id, s]) => R.FD.FIGUREN[s.held] && s.name && new RegExp("'" + id + "', '" + s.held + "', 650").test(sql)), "Jeder Skin im Spiel steht mit seinem Helden und 650 Seelensplittern in der Migration (" + Object.values(SK).map((s) => s.name).join(", ") + ")"); }
+    check(Object.keys(SK).length >= 5 && /hero_id \|\| '_s' \|\| n, c\.hero_id, 650/.test(sql) && Object.entries(SK).every(([id, s]) => R.FD.FIGUREN[s.held] && s.name && s.text && (new RegExp("'" + id + "', '" + s.held + "', 650").test(sql) || new RegExp("^" + s.held + "_s[123]$").test(id))), "Jeder Skin im Spiel hat einen Platz in der Migration: namentlich oder als Vorab-Platz <held>_s1 bis _s3 (" + Object.values(SK).map((s) => s.name).join(", ") + ")"); }
   await b.close(); console.log(ok ? "\nSKINS IN ORDNUNG" : "\nSKINS: FEHLER"); process.exit(ok ? 0 : 1);
 })();

@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
 """
 Mythara – Bilder für einen Helden-Skin erzeugen: freistellen und in die drei Formate schneiden.
-  python3 tools/skin-bild.py <bild> <skin_id> <held_id> <weiss|schwarz> [Kopfmitte 0..1] [Pruefbild]
+  python3 tools/skin-bild.py <bild> <skin_id> <held_id> <weiss|schwarz|schach|alpha> [Kopfmitte 0..1] [Pruefbild]
 Erzeugt img/figuren/<skin>.jpg (Porträt), img/figuren/ganz/<skin>.webp (Kampffigur im Seitenverhältnis des Helden)
 und img/figuren/ganz/<skin>-gross.webp (Händler, Heldenkarte).
-Geht nur bei einfarbig weißem (auch mit aufgemaltem Schachbrett) oder schwarzem Hintergrund – gemalte Hintergründe
-lassen sich so nicht entfernen. Braucht Pillow, numpy und scipy.
+weiss = weißer Grund (auch mit blassem Schachbrett), schwarz = schwarzer Grund, schach = aufgemaltes grau-weißes Schachbrett,
+alpha = das Bild hat schon echte Transparenz. Gemalte Hintergründe lassen sich so nicht entfernen. Braucht Pillow, numpy und scipy.
 """
 import sys, numpy as np
 from PIL import Image, ImageFilter
 from scipy import ndimage as ndi
 quelle, skin, held, grund = sys.argv[1:5]; kopf = float(sys.argv[5]) if len(sys.argv) > 5 else 0.5; pruef = sys.argv[6] if len(sys.argv) > 6 else None
-a = np.asarray(Image.open(quelle).convert("RGB")).astype(np.int16); mn, mx = a.min(2), a.max(2)
-if grund == "weiss":
+roh = Image.open(quelle); a = np.asarray(roh.convert("RGB")).astype(np.int16); mn, mx = a.min(2), a.max(2)
+if grund == "alpha":
+    hg = np.asarray(roh.convert("RGBA").getchannel("A")) < 128
+elif grund == "weiss":
     hg = (mn > 226) & ((mx - mn) < 14); hg[:14, :14] = True
+elif grund == "schach":
+    hg = ((mx - mn) < 18) & (mn > 180)
 else:
     hg = mx < 9
 lab, n = ndi.label(hg); rand = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])); rand = rand[rand > 0]; weg = np.isin(lab, rand)
-if grund == "weiss":
+if grund == "alpha":
+    al = np.asarray(roh.convert("RGBA").getchannel("A")).astype(np.float32) / 255; al = np.where(al < 0.5, 0, np.clip((al - 0.5) / 0.4, 0, 1)); rgb = a.astype(np.float32)   # halbdurchsichtigen Schein um die Figur weglassen
+elif grund in ("weiss", "schach"):
     for i, g in enumerate(ndi.sum(hg, lab, range(1, n + 1)), 1):          # eingeschlossene helle Flächen (zwischen Arm und Körper)
         if g > 220 and i not in rand: weg |= (lab == i)
-    weg = ndi.binary_dilation(weg, iterations=1)
+    weg = ndi.binary_dilation(weg, iterations=2 if grund == "schach" else 1)
+    if grund == "schach":                                                 # übrig gebliebene Krümel des Musters entfernen
+        l2, n2 = ndi.label(~weg); gr = ndi.sum(~weg, l2, range(1, n2 + 1)); weg |= np.isin(l2, [i for i, g in enumerate(gr, 1) if g < 1500])
     al = np.asarray(Image.fromarray(np.where(weg, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8))).astype(np.float32); al = np.clip((al - 70) / 185, 0, 1)
     rgb = a.astype(np.float32); k = (al < 0.98) & (al > 0); rgb[k] = np.clip((rgb[k] - 255 * (1 - al[k, None])) / np.maximum(al[k, None], 0.05), 0, 255)   # weißen Schimmer am Rand entfernen
 else:

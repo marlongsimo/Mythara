@@ -13,6 +13,7 @@ create function pg_temp.fehler(sql text, muster text, t text) returns void langu
 begin begin execute sql; exception when others then if sqlerrm ~ muster then raise notice '✓ % (%)', t, sqlerrm; return; end if; raise exception '✗ %: unerwartete Meldung „%“', t, sqlerrm; end;
   raise exception '✗ %: kein Fehler', t; end $$;
 create function pg_temp.geld(p int) returns integer language sql security definer as $$ select betrag from public.rpg_wallet where user_id = ('00000000-0000-0000-0000-0000000029a' || p)::uuid; $$;
+create function pg_temp.helden() returns integer language sql security definer as $$ select count(*)::int from public.rpg_hero_catalog; $$;
 grant execute on all functions in schema pg_temp to authenticated;
 set role authenticated;
 
@@ -35,7 +36,7 @@ select pg_temp.ok(public.rpg_skin_equip('berserker', 'berserker_wolfsblut')->'ak
 select pg_temp.ok(public.rpg_skin_equip('berserker', null)->'aktiv' = '{}'::jsonb, 'Abgelegt: Ragnar sieht wieder normal aus');
 select pg_temp.ok(public.rpg_skin_equip('berserker', 'berserker_wolfsblut')->'aktiv'->>'berserker' = 'berserker_wolfsblut', 'Wieder angelegt');
 
-select pg_temp.ok(jsonb_array_length(public.rpg_skins()->'katalog') = 3 and public.rpg_skins()->'katalog'->2->>'id' = 'gelehrter_sternenkunde' and public.rpg_skins()->'katalog'->1->>'id' = 'assassine_rabenschatten' and public.rpg_skins()->'katalog'->1->>'held' = 'assassine' and not (public.rpg_skins()->'katalog'->1->>'hat_held')::boolean, 'Drei Skins im Katalog: Wolfsblut, Rabenschatten (Vex – Anna hat Vex nicht) und Sternenkunde');
+select pg_temp.ok(jsonb_array_length(public.rpg_skins()->'katalog') = 3 + 3 * pg_temp.helden() and public.rpg_skins()->'katalog' @> '[{"id":"inquisitor_s1","held":"inquisitor","preis":650}]'::jsonb and public.rpg_skins()->'katalog'->2->>'id' = 'gelehrter_sternenkunde' and public.rpg_skins()->'katalog'->1->>'id' = 'assassine_rabenschatten' and public.rpg_skins()->'katalog'->1->>'held' = 'assassine' and not (public.rpg_skins()->'katalog'->1->>'hat_held')::boolean, 'Katalog: Wolfsblut, Rabenschatten (Vex – Anna hat Vex nicht), Sternenkunde und je Held drei Vorab-Plätze zu 650');
 select pg_temp.als(2);
 select pg_temp.ok(not (public.rpg_skins()->'katalog'->0->>'hat_held')::boolean, 'Ben hat Ragnar nicht: Der Katalog zeigt das an');
 select pg_temp.fehler('select public.rpg_skin_buy(''berserker_wolfsblut'')', 'Helden hast du noch nicht', 'Ohne den Helden kein Kauf');

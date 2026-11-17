@@ -7,12 +7,18 @@
  *
  * Bilder je Skin: img/figuren/<skin>.jpg (Porträt), img/figuren/ganz/<skin>.webp (Kampffigur im Seitenverhältnis des Helden),
  * img/figuren/ganz/<skin>-gross.webp (Händler, Heldenkarte) – erzeugt mit tools/skin-bild.py.
+ * Neue Skins bekommen die Kennung <held>_s1 bis <held>_s3: Diese Plätze legt Migration 029 für jeden Helden schon an
+ * (je 650 Seelensplitter), sodass ein neuer Skin ohne weiteres SQL erscheint, sobald er hier und als Bild vorhanden ist.
  */
 (function () {
   "use strict";
   const SKINS = {
     berserker_wolfsblut: { held: "berserker", name: "Wolfsblut", text: "Wolfsfell über der Schulter, Runen aus Glut auf der Haut. Ragnar, wie ihn seine Feinde in Erinnerung behalten." },
     assassine_rabenschatten: { held: "assassine", name: "Rabenschatten", text: "Ein Umhang aus violettem Rauch, ein Rabe auf der Schulter, Klingen, die nachglühen. Vex, wenn er gesehen werden will." },
+    inquisitor_s1: { held: "inquisitor", name: "Sonnenrichter", text: "Ein Strahlenkranz aus Gold, Roben in Rot und Elfenbein, das Weihrauchfass in der Faust. Seran, wie ihn die Schuldigen fürchten." },
+    wanderheiler_s1: { held: "wanderheiler", name: "Lebenshüter", text: "Kräuter im Gürtel, eine Laterne am blühenden Stab, Licht in der offenen Hand. Brogar nach einem langen Sommer auf der Straße." },
+    tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
+    schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },
   };
   if (typeof module !== "undefined" && module.exports) { module.exports = { SKINS }; return; }   // für Tests
