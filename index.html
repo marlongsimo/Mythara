@@ -37,7 +37,7 @@
   {"@context":"https://schema.org","@type":"VideoGame","name":"Mythara","url":"https://mythara-dungeon.de/","image":"https://mythara-dungeon.de/img/vorstellung/teilen.jpg","description":"Rundenbasiertes Fantasy-Rollenspiel für den Browser mit Kampagnen, taktischen Kämpfen und Arena.","genre":["Rollenspiel","Rundenstrategie"],"gamePlatform":"Webbrowser","applicationCategory":"Game","operatingSystem":"Any","inLanguage":"de","playMode":["SinglePlayer","MultiPlayer","CoOp"],"numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":6},"publisher":{"@type":"Organization","name":"Case Unlocked","url":"https://case-unlocked.de/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"}}
   </script>
   <script type="application/ld+json">
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was kostet Mythara?", "acceptedAnswer": {"@type": "Answer", "text": "Nichts. Mythara ist in der Open Beta und läuft kostenlos im Browser."}}, {"@type": "Question", "name": "Brauche ich eine App oder ein Konto?", "acceptedAnswer": {"@type": "Answer", "text": "Keine App. Als Gast kannst du sofort loslegen. Mit einem kostenlosen Konto sammelst du Helden, lässt sie aufsteigen und hast Kampagnen und Rang auf jedem Gerät."}}, {"@type": "Question", "name": "Kann ich allein spielen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. In der Arena spielst du allein gegen andere, und jede Kampagne lässt sich im Solo-Mode von einer Person steuern."}}, {"@type": "Question", "name": "Muss ich Rollenspiel-Regeln kennen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Das Spiel rechnet und würfelt für dich und erklärt beim ersten Mal jeden Schritt. Wer Pen & Paper kennt, findet sich sofort zurecht."}}, {"@type": "Question", "name": "Welche Geräte gehen?", "acceptedAnswer": {"@type": "Answer", "text": "Jedes aktuelle Handy, Tablet oder jeder Laptop mit Browser. Auf dem Handy lässt sich Mythara wie eine App auf den Startbildschirm legen."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was kostet Mythara?", "acceptedAnswer": {"@type": "Answer", "text": "Nichts. Es gibt auch keinen Laden mit echtem Geld. Alles im Spiel wird erspielt, kaufen kann man sich keinen Vorteil."}}, {"@type": "Question", "name": "Brauche ich eine App oder ein Konto?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Mythara läuft im Browser, und als Gast kannst du sofort anfangen. Ein kostenloses Konto lohnt sich, sobald du Helden sammeln und auf mehreren Geräten weiterspielen willst."}}, {"@type": "Question", "name": "Kann ich allein spielen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Jede Kampagne lässt sich von einer Person steuern, und in der Arena spielst du ohnehin allein gegen andere."}}, {"@type": "Question", "name": "Muss ich Rollenspiel-Regeln kennen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Das Spiel rechnet und würfelt für dich und erklärt beim ersten Mal jeden Schritt. Wer Pen & Paper kennt, fühlt sich schnell zu Hause."}}, {"@type": "Question", "name": "Welche Geräte gehen?", "acceptedAnswer": {"@type": "Answer", "text": "Jedes aktuelle Handy, Tablet oder jeder Laptop mit Browser. Auf dem Handy kannst du Mythara wie eine App auf den Startbildschirm legen."}}]}
   </script>
   <meta name="theme-color" content="#0b0a0e">
   <link rel="icon" href="img/app/mythara-64.png" type="image/png">
@@ -124,10 +124,9 @@
     /* Kampf */
     .kampf { background: radial-gradient(80% 60% at 20% 30%, rgba(127, 182, 255, .08), transparent 60%), var(--tinte); border-block: 1px solid var(--linie); }
     .zwei { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; }
-    .bildrahmen { border-radius: 14px; overflow: hidden; border: 1px solid var(--linie); box-shadow: 0 30px 80px rgba(0, 0, 0, .65), 0 0 0 6px rgba(233, 199, 126, .05); transform: perspective(1400px) rotateY(4deg) rotateX(2deg); transition: transform .5s; }
-    .bildrahmen:hover { transform: none; }
+    .bildrahmen { border-radius: 14px; overflow: hidden; border: 1px solid var(--linie); box-shadow: 0 30px 80px rgba(0, 0, 0, .65), 0 0 0 6px rgba(233, 199, 126, .05); }
     .punkte { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 16px; }
-    .punkte li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+    .punkte li { padding-left: 16px; border-left: 2px solid var(--linie); }
     .punkte i { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font: 600 18px/1 Cinzel, serif; font-style: normal; color: var(--gold-hell); background: linear-gradient(180deg, rgba(233, 199, 126, .2), rgba(233, 199, 126, .04)); border: 1px solid var(--linie); }
     .punkte b { display: block; color: var(--gold-hell); font-weight: 600; }
     .punkte span { color: #cfc6b3; font-size: 15.5px; }
@@ -221,51 +220,40 @@
         <p class="einladung" id="einladung" hidden></p>
         <ul class="marken"><li class="live">Open Beta</li><li>Kostenlos im Browser</li><li>Kein Download</li></ul>
         <img class="logo" src="img/mythara/logo-neu.webp" srcset="img/mythara/logo-neu-800.webp 800w, img/mythara/logo-neu.webp 2156w" sizes="(max-width: 700px) 80vw, 460px" alt="Mythara" width="2156" height="724" fetchpriority="high">
-        <h1>Sammle Helden. Führe sie Zug um Zug. <em>Schreibe deine Legende.</em></h1>
-        <p class="lead">Mythara ist ein rundenbasiertes Rollenspiel für den Browser: Kampagnen mit Entscheidungen, die bleiben, taktische Kämpfe auf gemalten Karten und eine Arena mit Rangliste.</p>
+        <h1>Ein Rollenspiel zum Würfeln, <em>wie ich es selbst immer spielen wollte.</em></h1>
+        <p class="lead">Pen &amp; Paper ohne Spielleiter, im Browser. Ein Tablet in die Mitte, jeder nimmt sein Handy, und in zwei Minuten wird gewürfelt. Allein und gegen andere geht es auch.</p>
         <div class="reihe">
           <a class="knopf haupt" href="spiel.html">Jetzt kostenlos spielen</a>
           <a class="knopf rand" href="#spielarten">Mehr erfahren</a>
         </div>
-        <p class="klein-text">Als Gast sofort loslegen. Mit Konto behältst du Helden, Stufen und Rang auf jedem Gerät.</p>
+        <p class="klein-text">Du kannst als Gast sofort anfangen. Ein Konto brauchst du erst, wenn du deine Helden behalten willst.</p>
       </div>
     </section>
-
-    <div class="band" aria-label="Mythara in Zahlen">
-      <div class="innen">
-        <div><b>15</b><span>Helden</span></div>
-        <div><b>5</b><span>Klassen</span></div>
-        <div><b>6</b><span>Kampagnen</span></div>
-        <div><b>10</b><span>Heldenstufen</span></div>
-      </div>
-    </div>
 
     <section class="block" id="spielarten">
       <div class="innen">
         <div class="kopfteil mitte ein">
-          <p class="augenbraue">Drei Arten zu spielen</p>
           <h2>Allein, am Tisch oder gegeneinander</h2>
-          <p class="lead">Dieselben Helden, dieselben Regeln – und jedes Mal ein anderes Spiel.</p>
+          <p class="lead">Die Regeln sind überall dieselben.</p>
         </div>
         <div class="arten">
-          <article class="art ein"><img src="img/mythara/karte-kampagnen.webp" alt="" loading="lazy"><small>Kampagne</small><h3>Geschichten mit Folgen</h3><p>Sechs Abenteuer von einer Stunde bis zu einem langen Abend. Das Spiel merkt sich, wem ihr vertraut und wen ihr verschont – und führt zu verschiedenen Enden.</p></article>
-          <article class="art ein"><img src="img/dorf/arena.webp" alt="" loading="lazy"><small>Arena</small><h3>Drei gegen drei</h3><p>Stell ein Team aus drei Helden auf und tritt gegen andere Spieler an. Ranked, Normal, Arcade oder privat gegen Freunde.</p></article>
-          <article class="art ein"><img src="img/mythara/karte-helden.webp" alt="" loading="lazy"><small>Spieleabend</small><h3>Ein Tisch, viele Handys</h3><p>Ein Tablet in der Mitte, jeder steuert seinen Helden am eigenen Handy. Ohne Spielleiter, ohne App, ohne Vorbereitung.</p></article>
+          <article class="art ein"><img src="img/mythara/karte-kampagnen.webp" alt="" loading="lazy"><small>Kampagne</small><h3>Geschichten mit Folgen</h3><p>Sechs Abenteuer mit mehreren Enden. Verschont ihr die alte Unke am Mühlteich, hat das Dorf später eine Wächterin.</p></article>
+          <article class="art ein"><img src="img/dorf/arena.webp" alt="" loading="lazy"><small>Arena</small><h3>Drei gegen drei</h3><p>Drei gegen drei, eine Minute pro Zug. Mit Rangliste oder privat gegen Freunde.</p></article>
+          <article class="art ein"><img src="img/mythara/karte-helden.webp" alt="" loading="lazy"><small>Spieleabend</small><h3>Ein Tisch, viele Handys</h3><p>Mein liebster Teil. Das Tablet ist die Karte, das Handy dein Held. Niemand muss Spielleiter sein oder etwas vorbereiten.</p></article>
         </div>
       </div>
     </section>
 
     <section class="block kampf" id="kampf">
       <div class="innen zwei">
-        <div class="bildrahmen ein"><img src="img/vorstellung/kampf-siegel.webp" alt="Ein Kampf in Mythara: Helden und Gegner stehen als Figuren auf einer gemalten Karte" width="1200" height="840" loading="lazy"></div>
+        <div class="bildrahmen ein"><img src="img/vorstellung/kampf-echt.webp" alt="Ein Kampf in Mythara: fünf Helden stehen am alten Wehr einer großen Unke und Irrlichtern gegenüber, über dem Ziel steht die Trefferchance" width="1200" height="881" loading="lazy"></div>
         <div class="ein">
-          <p class="augenbraue">Der Kampf</p>
-          <h2>Taktik, die man in Minuten lernt</h2>
-          <p class="lead">Wer am Zug ist, läuft, greift an oder setzt eine Fähigkeit ein. Gewürfelt wird offen, und vor jedem Angriff siehst du deine Trefferchance.</p>
+          <h2>Schnell gelernt, danach wird es knifflig</h2>
+          <p class="lead">Laufen, angreifen, Fähigkeit einsetzen. Gewürfelt wird offen mit dem W20, und du siehst vorher, wie deine Chancen stehen.</p>
           <ul class="punkte">
-            <li><i>I</i><div><b>Stellung entscheidet</b><span>Deckung, Reichweite und Engstellen zählen. Ein guter Zug schlägt einen starken Helden.</span></div></li>
-            <li><i>II</i><div><b>Jeder Kampf hat eine Idee</b><span>Eine Laterne anzünden, eine Botin schützen, drei Menschen aus dem Eis schlagen.</span></div></li>
-            <li><i>III</i><div><b>Helden wachsen</b><span>Von Stufe 1 bis 10: neue Fähigkeiten, Meisterschaften und Ausrüstung.</span></div></li>
+            <li><div><b>Stellung schlägt Stärke</b><span>Deckung, Reichweite und Engstellen zählen. Wer seinen Heiler vorne stehen lässt, merkt das schnell.</span></div></li>
+            <li><div><b>Kein Kampf wie der davor</b><span>Mal bringt ihr eine Botin durch den Pass, mal schlagt ihr Menschen aus dem Eis.</span></div></li>
+            <li><div><b>Helden wachsen mit</b><span>Zehn Stufen, und mit jeder spielt sich ein Held etwas anders.</span></div></li>
           </ul>
         </div>
       </div>
@@ -274,9 +262,8 @@
     <section class="block" id="helden">
       <div class="innen">
         <div class="kopfteil mitte ein">
-          <p class="augenbraue">15 Helden, fünf Klassen</p>
-          <h2>Jeder spielt sich anders</h2>
-          <p class="lead">Baue dein Team. Jeder Held hat eigene Fähigkeiten, eine eigene Rolle und eine eigene Geschichte.</p>
+          <h2>Fünfzehn Helden, jeder mit eigenem Kopf</h2>
+          <p class="lead">Faye kämpft zusammen mit ihrem Wolf Grau. Brogar flickt erst und fragt dann. Vex redet am liebsten gar nicht. Such dir aus, mit wem du losziehst.</p>
         </div>
         <div class="klassen ein" id="klassen" role="group" aria-label="Nach Klasse filtern">
           <button class="an" data-klasse="alle">Alle</button><button data-klasse="krieger">Krieger</button><button data-klasse="zauberer">Zauberer</button><button data-klasse="schurke">Schurken</button><button data-klasse="kleriker">Kleriker</button><button data-klasse="waldlaeufer">Waldläufer</button>
@@ -287,9 +274,8 @@
 
     <section class="block kampagnen" id="kampagnen">
       <div class="innen kopfteil ein">
-        <p class="augenbraue">Die Splitterlande</p>
-        <h2>Sieben Siegel. Sechs Kampagnen.</h2>
-        <p class="lead">Vor dreihundert Jahren führten Magier einen Krieg, den niemand gewann. Was er hervorbrachte, wurde in sieben Siegel gebunden. Jetzt werden sie schwach.</p>
+        <h2>Sieben Siegel, sechs Geschichten</h2>
+        <p class="lead">Sieben alte Siegel werden schwach. Es fängt klein an: mit Kröten im Kornspeicher von Weidenhain.</p>
       </div>
       <div class="schiene" id="kampagnen-liste" tabindex="0" aria-label="Kampagnen, seitlich scrollen"></div>
     </section>
@@ -298,24 +284,33 @@
       <div class="hg" aria-hidden="true"></div>
       <div class="innen">
         <div class="text ein">
-          <p class="augenbraue">Arena · Ranked Season</p>
-          <h2>Steig auf. Rang für Rang.</h2>
-          <p class="lead">Drei Helden, eine Minute je Zug, ein Gegner auf deinem Niveau. Siege bringen Rangpunkte, Erfahrung und Seelensplitter für neue Helden.</p>
+          <h2>Gegen echte Spieler, Zug um Zug</h2>
+          <p class="lead">Drei Helden, ein Gegner auf deinem Niveau. Neue Helden holst du dir mit Siegen. Kaufen kann man hier nichts.</p>
           <div class="raenge"><span>Ranked-Duell</span><span>Horde</span><span>Königsmord</span><span>Privat gegen Freunde</span></div>
           <div class="reihe"><a class="knopf haupt" href="spiel.html">In die Arena</a></div>
         </div>
       </div>
     </section>
 
+    <section class="block" id="warum">
+      <div class="innen">
+        <div class="kopfteil mitte ein">
+          <h2>Warum es Mythara gibt</h2>
+          <p class="lead">Mythara ist kein Studio-Projekt. Dahinter steht jemand, der Würfelabende liebt und wollte, dass so ein Abend ohne Vorbereitung losgehen kann.</p>
+          <p class="lead">Die Bilder sind mit KI entstanden, ein Zeichner war nicht drin. Die Balance ist noch nicht perfekt. Wenn etwas hakt: Im Profil-Menü steht „Feedback geben“. Das landet direkt bei mir, und ich lese alles.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="block" id="fragen">
       <div class="innen">
-        <div class="kopfteil mitte ein"><p class="augenbraue">Häufige Fragen</p><h2>Kurz beantwortet</h2></div>
+        <div class="kopfteil mitte ein"><h2>Kurz beantwortet</h2></div>
         <div class="fragen ein">
-          <details><summary>Was kostet Mythara?</summary><p>Nichts. Mythara ist in der Open Beta und läuft kostenlos im Browser.</p></details>
-          <details><summary>Brauche ich eine App oder ein Konto?</summary><p>Keine App. Als Gast kannst du sofort loslegen. Mit einem kostenlosen Konto sammelst du Helden, lässt sie aufsteigen und hast Kampagnen und Rang auf jedem Gerät.</p></details>
-          <details><summary>Kann ich allein spielen?</summary><p>Ja. In der Arena spielst du allein gegen andere, und jede Kampagne lässt sich im Solo-Mode von einer Person steuern.</p></details>
-          <details><summary>Muss ich Rollenspiel-Regeln kennen?</summary><p>Nein. Das Spiel rechnet und würfelt für dich und erklärt beim ersten Mal jeden Schritt. Wer Pen &amp; Paper kennt, findet sich sofort zurecht.</p></details>
-          <details><summary>Welche Geräte gehen?</summary><p>Jedes aktuelle Handy, Tablet oder jeder Laptop mit Browser. Auf dem Handy lässt sich Mythara wie eine App auf den Startbildschirm legen.</p></details>
+          <details><summary>Was kostet Mythara?</summary><p>Nichts. Es gibt auch keinen Laden mit echtem Geld. Alles im Spiel wird erspielt, kaufen kann man sich keinen Vorteil.</p></details>
+          <details><summary>Brauche ich eine App oder ein Konto?</summary><p>Nein. Mythara läuft im Browser, und als Gast kannst du sofort anfangen. Ein kostenloses Konto lohnt sich, sobald du Helden sammeln und auf mehreren Geräten weiterspielen willst.</p></details>
+          <details><summary>Kann ich allein spielen?</summary><p>Ja. Jede Kampagne lässt sich von einer Person steuern, und in der Arena spielst du ohnehin allein gegen andere.</p></details>
+          <details><summary>Muss ich Rollenspiel-Regeln kennen?</summary><p>Nein. Das Spiel rechnet und würfelt für dich und erklärt beim ersten Mal jeden Schritt. Wer Pen &amp; Paper kennt, fühlt sich schnell zu Hause.</p></details>
+          <details><summary>Welche Geräte gehen?</summary><p>Jedes aktuelle Handy, Tablet oder jeder Laptop mit Browser. Auf dem Handy kannst du Mythara wie eine App auf den Startbildschirm legen.</p></details>
         </div>
       </div>
     </section>
@@ -323,9 +318,8 @@
     <section class="block schluss">
       <div class="hg" aria-hidden="true"></div>
       <div class="innen ein">
-        <p class="augenbraue">Das Dorf wartet</p>
-        <h2>Bereit für deinen ersten Zug?</h2>
-        <p class="lead" style="margin-inline:auto">Fang mit dem Erntefest von Weidenhain an: eine Stunde, drei Kämpfe, zwei Enden.</p>
+        <h2>In Weidenhain ist gerade Erntefest</h2>
+        <p class="lead" style="margin-inline:auto">Und im Kornspeicher stimmt etwas nicht. Eine Stunde, drei Kämpfe, zwei Enden. Ein guter Anfang.</p>
         <div class="reihe"><a class="knopf haupt" href="spiel.html">Jetzt kostenlos spielen</a><a class="knopf rand" href="spiel.html">Einloggen / Registrieren</a></div>
       </div>
     </section>
@@ -373,9 +367,6 @@
       var kopf = document.getElementById("kopf"), hg = document.getElementById("auftakt-hg"), ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
       function rollen() { var y = scrollY; kopf.classList.toggle("fest", y > 40); if (!ruhig && y < innerHeight) hg.style.transform = "translateY(" + y * 0.25 + "px) scale(" + (1 + y / 6000) + ")"; }
       addEventListener("scroll", rollen, { passive: true }); rollen();
-      document.documentElement.classList.add("js");
-      if ("IntersectionObserver" in window) { var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("da"); io.unobserve(e.target); } }); }, { threshold: 0, rootMargin: "0px 0px -6% 0px" }); document.querySelectorAll(".ein").forEach(function (el) { io.observe(el); }); }
-      else document.querySelectorAll(".ein").forEach(function (el) { el.classList.add("da"); });
     })();
   </script>
 </body>
