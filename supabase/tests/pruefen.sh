@@ -184,6 +184,17 @@ if [ "$SK_VOR" = "$SK_NACH" ] && [ "$(psql -tA -d "$DB" -c "select count(*) from
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../030_rpg_skin_pakete_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin\_bundle%'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin\_bundle%'")" = 0 && echo "✓ Nach dem Rückbau von 030 sind Tabellen und Funktionen wieder weg"
+# Migration 033 (Helden freigeben, Start-Angebot): braucht 006, 008, 023, 026 (Heldenpreis) und 029; ändert keine bestehende Funktion
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../023_rpg_erfahrungspakete.sql 2>/dev/null
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../033_rpg_helden_freigabe.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../033_rpg_helden_freigabe.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 033_rpg_helden_freigabe_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../033_rpg_helden_freigabe_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../033_rpg_helden_freigabe_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_launch%' or proname like 'rpg\_admin\_hero%' or proname = 'rpg_hero_katalog'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_launch%' or relname = 'rpg_hero_geplant'")" = 0 && echo "✓ Nach dem Rückbau von 033 sind Tabellen und Funktionen wieder weg (der freigegebene Held bleibt im Katalog)"
+# Aufräumen für die folgenden Prüfungen: die im Test freigegebene Heldin wieder entfernen
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "delete from public.rpg_skin_equipped where hero_id = 'runenklinge'; delete from public.rpg_skin_owned where skin_id like 'runenklinge%'; delete from public.rpg_skin_items where hero_id = 'runenklinge'; delete from public.rpg_hero_token_log where hero_id = 'runenklinge'; delete from public.rpg_hero_collection where hero_id = 'runenklinge'; delete from public.rpg_hero_catalog where hero_id = 'runenklinge';"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../023_rpg_erfahrungspakete_rueckbau.sql 2>/dev/null
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin%' or proname = 'rpg_arena_skins'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin%'")" = 0 && echo "✓ Nach dem Rückbau von 029 sind Tabellen und Funktionen wieder weg"

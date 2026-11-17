@@ -28,6 +28,7 @@
     assassine_s1: { held: "assassine", name: "Schattenfürst", paket: "schattenreich", text: "Eine Krone über der Kapuze, das Gesicht verhüllt, Klingen aus violettem Licht. Vex, wie er im Schattenreich herrscht." },
     tiergefaehrte_s2: { held: "tiergefaehrte", name: "Schattenjägerin", paket: "schattenreich", text: "Rabenfedern auf dem Umhang, Pfeile mit violetten Federn, ein Bogen wie eine Sichel. Faye auf der Jagd im Schattenreich." },
     wanderheiler_s2: { held: "wanderheiler", name: "Schattenheiler", paket: "schattenreich", text: "Schwarze Roben mit einem Raben im Mond, ein Stab mit violettem Kristall. Brogar, der auch im Schattenreich Wunden schließt." },
+    runenklinge_s1: { held: "runenklinge", name: "Runenkönigin", text: "Eine Krone aus Dornen und Rubinen, Samt in Weinrot, Runen, die violett statt blau brennen. Thessa, wenn sie die Zeichen nicht mehr abschreibt, sondern befiehlt." },
     tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
     schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },

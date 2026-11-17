@@ -229,7 +229,8 @@
     if (!meldung) seiteZeigen("shop", `<div class="shop" data-shop><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Einen Moment …</h1></div>`);
     let s = null, fehler = null;
     try { await netz().ensureUser(); s = await netz().rpc("rpg_shop_week", {}); kaufStand = s && s.konto ? s : null; } catch (e) { fehler = e; }
-    if (window.SKINS && s && s.konto) { await window.SKINS.laden().catch(() => {}); await window.SKINS.paketeLaden().catch(() => {}); } // Skins und laufende Skin-Pakete
+    if (window.SKINS && s && s.konto) { await window.SKINS.laden().catch(() => {}); await window.SKINS.paketeLaden().catch(() => {}); }
+    if (window.FREIGABE && s && s.konto) await window.FREIGABE.laden().catch(() => {}); // Start-Angebot für einen neuen Helden // Skins und laufende Skin-Pakete
     if (!document.querySelector("[data-shop]")) return;
     if (fehler && !rpcFehlt(fehler)) return seiteZeigen("shop", `<div class="shop-bald"><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Keine Verbindung</h1><p class="hub-untertitel">${esc(fehler.message)}</p></div>`);
     if (s && !s.konto) return seiteZeigen("shop", `<div class="shop-bald"><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Nur für Spielerkonten</h1><p class="hub-untertitel">Der Händler tauscht ${name} gegen Helden und Ausstattung. Beides gibt es nur mit einem Konto.</p></div>`);
@@ -238,6 +239,7 @@
     seiteZeigen("shop", `<div class="shop" data-shop><div class="shop-kopf"><div><p class="shop-eyebrow">Der Händler</p><h1 class="hub-gruss">Was darf es sein?</h1>
         <p class="hub-untertitel">${name} bekommst du für Siege in der Arena.</p></div>${s ? `<p class="shop-stand"><i>${zeichen}</i> ${s.waehrung} ${name}</p>` : ""}</div>
       ${meldung ? `<p class="fb" role="status">${esc(meldung)}</p>` : ""}
+      ${window.FREIGABE && s ? window.FREIGABE.angebotHtml() : ""}
       ${window.SKINS && s ? window.SKINS.angebotHtml() : ""}
       ${!s ? "" : s.alle || !wd ? `<div class="shop-angebot leer" data-woche><span class="shop-angebot-band">Held der Woche</span><p class="shop-angebot-alle"><b>✓ Du hast alle Helden freigeschaltet.</b><span>Der Händler hat dir keinen Helden mehr anzubieten – vorerst.</span></p></div>`
         : `<div class="shop-angebot ${s.gekauft ? "gekauft" : ""}" data-woche="${s.held}" style="--k:${window.ABF.KLASSEN[wd.klasse].farbe}"><span class="shop-angebot-band">★ Sonderangebot · Held der Woche</span><span class="shop-angebot-rabatt">−50 %</span>
@@ -256,6 +258,7 @@
         ${window.SKINS ? window.SKINS.shopKachel() : ""}
       </div></div>`);
     if (window.SKINS) window.SKINS.angebotBinden();
+    if (window.FREIGABE) window.FREIGABE.angebotBinden();
     document.querySelectorAll("[data-shop-ansehen]").forEach((b) => { b.onclick = () => { const f = b.dataset.shopAnsehen; fenster(window.ABF.FIGUREN[f].name, window.ABH_HELDEN.detail(f, 1, "")); }; });
     { const wk = document.querySelector("[data-woche-kauf]"); if (wk) wk.onclick = async () => {
         if (!confirm(`${wd.name} für ${s.angebot} ${name} in deine Sammlung holen?`)) return; wk.disabled = true;
@@ -309,10 +312,11 @@
 
   /* ---------- Admin-Bereich (nur Admins): Codes · Kampfstatistiken · Rechner-Gegner ---------- */
   let adminTab = null;
-  const ADMIN_TABS = [["codes", "Codes", "Code-Übersicht"], ["stats", "Kampfstatistiken", "Arena-Auswertung"], ["bots", "Rechner-Gegner", "Rechner-Gegner"], ["saison", "Ranked", "Ranked-Saison"], ["post", "Nachrichten", "Nachrichten"]];
+  const ADMIN_TABS = [["codes", "Codes", "Code-Übersicht"], ["stats", "Kampfstatistiken", "Arena-Auswertung"], ["bots", "Rechner-Gegner", "Rechner-Gegner"], ["saison", "Ranked", "Ranked-Saison"], ["post", "Nachrichten", "Nachrichten"], ["helden", "Helden", "Helden-Freigabe"]];
   function adminBereich(tab) {
     if (!smAktiv() || !SM.istAdmin()) return toast("Den Admin-Bereich gibt es nur für Admins.");
     adminTab = ADMIN_TABS.some((t) => t[0] === tab) ? tab : "codes";
+    if (adminTab === "helden") return window.FREIGABE ? window.FREIGABE.admin() : toast("Die Helden-Freigabe ist gerade nicht verfügbar.");
     if (adminTab === "post") return window.FEEDBACK ? window.FEEDBACK.admin() : toast("Die Nachrichten sind gerade nicht verfügbar.");
     return adminTab === "stats" ? arenaAuswertung() : adminTab === "bots" ? botEinstellungen() : adminTab === "saison" ? saisonVerwalten() : codeUebersicht();
   }
@@ -767,6 +771,7 @@
     try { sessionStorage.setItem(HUB, profil && profil.konto ? "konto" : "gast"); } catch (e) { /* privat */ }
     const ep = $("#einst-panel"); if (ep && ep.parentElement !== document.body) document.body.appendChild(ep); // Einstellungen auch von hier aus
     scannerStopp(); zeige("hub"); hubKopf(); hubListen();
+    if (window.FREIGABE) window.FREIGABE.pruefen().catch(() => {}); // neu freigegebene Helden aus dem Heldenkatalog
     if (window.SKINS && profil && profil.konto) window.SKINS.laden().catch(() => {}); // angelegte Skins der eigenen Helden
     if (window.WERBEN) window.WERBEN.hub(Boolean(profil && profil.konto)).catch(() => {}); // Freunde werben: Werber eintragen, Hinweis im Dorf
   }
