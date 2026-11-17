@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /tests/
+Disallow: /tools/
+Disallow: /supabase/
+Disallow: /server/
+Disallow: /doku/
+Disallow: /prototyp/

@@ -1,6 +1,6 @@
 /*
  * Mythara – reguläre Enden aller Abenteuer (für die Heldensammlung, js/sammlung.js)
- * NICHT VON HAND ÄNDERN: wird aus daten/*.js erzeugt mit  node abenteuer/tools/kampagne.js enden
+ * NICHT VON HAND ÄNDERN: wird aus daten/*.js erzeugt mit  node tools/kampagne.js enden
  * Muss zu public.rpg_adventure_endings in der Datenbank passen (dieselbe Ausgabe liefert die SQL-Zeilen).
  */
 (function (root) {
