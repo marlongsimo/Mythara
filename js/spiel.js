@@ -51,9 +51,9 @@
   }
   const TISCH = (() => { const q = new URLSearchParams(location.search).get("tisch"); try { if (q === "1") localStorage.setItem("ab_tisch", "an"); if (q === "0") localStorage.setItem("ab_tisch", "aus"); const v = localStorage.getItem("ab_tisch"); if (v) return v === "an"; } catch (e) { if (q) return q === "1"; } return TISCH_STANDARD; })();
   /** Ganze Figur als SVG-Bild, Füße auf dem Feld (0,0 = Feldmitte) */
-  function ganzFigur(name, farbe, aktiv) {
+  function ganzFigur(name, farbe, aktiv, skin) {
     const hoch = (GANZ_HOCH[name] || GANZ_HOCH_STANDARD) * GANZ_MASS * Z, breit = hoch * GANZ[name], streck = 1 / Math.cos(TISCH_WINKEL * Math.PI / 180), fuss = 12;
-    return `<g transform="translate(0 ${fuss}) scale(1 ${streck.toFixed(3)})"><image class="fig-ganz${aktiv ? " dran" : ""}" href="img/figuren/ganz/${name}.webp" x="${(-breit / 2).toFixed(1)}" y="${(-hoch).toFixed(1)}" width="${breit.toFixed(1)}" height="${hoch.toFixed(1)}" preserveAspectRatio="xMidYMax meet" style="--k:${farbe}"/></g>`;
+    return `<g transform="translate(0 ${fuss}) scale(1 ${streck.toFixed(3)})"><image class="fig-ganz${aktiv ? " dran" : ""}" href="${skin && F.ganzBild && F.FIGUREN[name] ? F.ganzBild(name, skin) : "img/figuren/ganz/" + name + ".webp"}" x="${(-breit / 2).toFixed(1)}" y="${(-hoch).toFixed(1)}" width="${breit.toFixed(1)}" height="${hoch.toFixed(1)}" preserveAspectRatio="xMidYMax meet" style="--k:${farbe}"/></g>`;
   }
   const params = new URLSearchParams(location.search);
   // Erst wenn alle Skripte geladen sind (sonst fehlt bei langsamem Laden noch die Abenteuer-Oberfläche und das Fortsetzen fällt aus)
@@ -82,6 +82,8 @@
   let ARENA = null;
   const heldA = (f) => Boolean(f && (f.fidA || f.art === "arenaheld" || f.art === "arenawolf")); // Held oder Wolf des anderen Spielers
   const wolfA = (f) => f.art === "wolf" || f.art === "arenawolf";
+  /** Skin einer Figur: eigene Helden tragen den angelegten Skin, Helden des Arena-Gegners den seinen (oder keinen) */
+  const skinVon = (f) => (!F.skinFuer ? null : f && f.fidA ? F.skinFuer(f.fidA, F.SKIN.gegner[f.fidA] || null) : f && f.fid ? F.skinFuer(f.fid) : null);
   const kroneA = (f) => Boolean(ARENA && st && st.arena && st.arena.koenig && f && st.arena.koenig[ARENA.seite] === f.id); // der eigene Anführer (Königsmord)
 
   /* ---------- Arena: Mitrechnen ----------
@@ -739,9 +741,9 @@
           else o += `<rect x="${cx - w / 2}" y="${cy + 23}" width="${w}" height="6" fill="#1b1612" rx="2"/><rect x="${cx - w / 2}" y="${cy + 23}" width="${w * anteil}" height="6" rx="2" fill="#e8c46a"/>`;
           continue;
         }
-        const href = wolfA(f) ? "img/figuren/wolf.jpg" : F.bild(f.fid || f.fidA);
+        const href = wolfA(f) ? "img/figuren/wolf.jpg" : F.bild(f.fid || f.fidA, skinVon(f));
         const ganz = TISCH && !unten ? (wolfA(f) ? "wolf" : GANZ[f.fid || f.fidA] ? f.fid || f.fidA : null) : null; // stehende Figur als Miniatur
-        o += `<g transform="translate(${cx} ${cy})" opacity="${f.tot ? 0.5 : 1}">${titel}${ganz ? ganzFigur(ganz, heldA(f) ? "#4f8cff" : farbeVon(f), f === akt && !st.ende) : B.portraet(href, wolfA(f) ? 17 : 21, heldA(f) ? "#4f8cff" : farbeVon(f), "c" + f.id, unten)}${kroneA(f) && !unten ? `<g transform="translate(17 -17)"><circle r="9.5" fill="#3a2a08" stroke="#f5c842" stroke-width="1.5"/><text y="4.5" text-anchor="middle" font-size="13" fill="#ffe08a">♛</text></g>` : ""}${heldA(f) && !unten ? `<g transform="translate(17 -17)"><circle r="9" fill="#12233f" stroke="#4f8cff" stroke-width="1.5"/><path d="M-4 -4 L4 4 M4 -4 L-4 4" stroke="#cfe0ff" stroke-width="2" stroke-linecap="round"/></g>` : ""}${f.z && f.z.versteckt ? '<circle r="25" fill="none" stroke="#b58cff" stroke-width="2" stroke-dasharray="3 3"/>' : ""}</g>`;
+        o += `<g transform="translate(${cx} ${cy})" opacity="${f.tot ? 0.5 : 1}">${titel}${ganz ? ganzFigur(ganz, heldA(f) ? "#4f8cff" : farbeVon(f), f === akt && !st.ende, skinVon(f)) : B.portraet(href, wolfA(f) ? 17 : 21, heldA(f) ? "#4f8cff" : farbeVon(f), "c" + f.id, unten)}${kroneA(f) && !unten ? `<g transform="translate(17 -17)"><circle r="9.5" fill="#3a2a08" stroke="#f5c842" stroke-width="1.5"/><text y="4.5" text-anchor="middle" font-size="13" fill="#ffe08a">♛</text></g>` : ""}${heldA(f) && !unten ? `<g transform="translate(17 -17)"><circle r="9" fill="#12233f" stroke="#4f8cff" stroke-width="1.5"/><path d="M-4 -4 L4 4 M4 -4 L-4 4" stroke="#cfe0ff" stroke-width="2" stroke-linecap="round"/></g>` : ""}${f.z && f.z.versteckt ? '<circle r="25" fill="none" stroke="#b58cff" stroke-width="2" stroke-dasharray="3 3"/>' : ""}</g>`;
         if (f.tot) o += `<text x="${cx}" y="${cy + 7}" text-anchor="middle" font-size="22" fill="#fff">✝</text>`;
         else if (unten) o += `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">${st.schwierigkeit === "hardcore" && f.art !== "wolf" ? (f.stabil ? "stabil" : `${f.todes.e}✓ ${f.todes.f}✗`) : "am Boden"}</text>`;
       }
@@ -765,7 +767,7 @@
     { const hg = k.bild ? `url("${k.bild}")` : ""; if (svg.dataset.hg !== hg) { svg.dataset.hg = hg; svg.style.backgroundImage = hg; svg.style.backgroundSize = "100% 100%"; svg.style.backgroundRepeat = "no-repeat"; } }
     svgSetzen(svg, o);
 
-    const mini = (f) => heldA(f) ? `<img class="mini" src="${wolfA(f) ? "img/figuren/wolf.jpg" : F.bild(f.fidA)}" alt="">` : f.seite === "gegner" ? `<svg class="mini" viewBox="-26 -26 52 52" aria-hidden="true">${B.gegner(f.art)}</svg>` : `<img class="mini" src="${F.bild(f.fid)}" alt="">`;
+    const mini = (f) => heldA(f) ? `<img class="mini" src="${wolfA(f) ? "img/figuren/wolf.jpg" : F.bild(f.fidA, skinVon(f))}" alt="">` : f.seite === "gegner" ? `<svg class="mini" viewBox="-26 -26 52 52" aria-hidden="true">${B.gegner(f.art)}</svg>` : `<img class="mini" src="${F.bild(f.fid)}" alt="">`;
     { const reiheHtml = `<span class="runde">Runde ${st.runde}${st.arena ? ` von ${st.arena.runden}` : ""}${st.schwierigkeit === "hardcore" ? " · Hardcore" : ""}</span>` + st.reihe.map((id, i) => { const f = R.fig(st, id), b = besitzerVon(f); return `<span class="${i === st.am && !st.ende ? "dran" : ""} ${f.tp <= 0 ? "down" : ""} ${heldA(f) ? "gh" : f.seite === "gegner" ? "g" : st.arena && R.teamVon(st, f) ? "eh" : ""}" ${f.seite === "gegner" ? `data-info="${f.id}"` : ""}>${mini(f)}${kroneA(f) ? `<i class="krone" title="Dein Anführer">♛</i>` : ""}${esc(st.arena && R.teamVon(st, f) ? f.name.replace(/ \([^)]*\)$/, "") : f.name)}${st.arena && R.teamVon(st, f) ? ` <small>${esc(st.arena.namen[R.teamVon(st, f) - 1])}</small>` : ""}${b ? ` <small>📱 ${esc(spielerName(b))}</small>` : ""}</span>`; }).join(""); const re = $("#reihe"); if (re.dataset.h !== reiheHtml) { re.dataset.h = reiheHtml; re.innerHTML = reiheHtml; } } // nur bei Änderung neu anlegen (sonst blitzen die Porträts auf)
     bilderWarm();
 
@@ -960,7 +962,7 @@
       const rest = (name) => { const k = Object.keys(g.z || {}).find((x) => g.z[x] && ZUSTAND_KURZ[x] && ZUSTAND_KURZ[x][0] === name.replace(/ \(.*$/, "")), v = k && g.z[k], n = v && typeof v === "object" ? v.rest : typeof v === "number" && v > 0 && v < 20 && k !== "segen" ? v : null;
         return { text: k ? ZUSTAND_KURZ[k][1] : "", n: k === "spiegel" ? null : n }; };
       const eff = zz.length ? `<ul class="gi-eff">${zz.map((z) => { const r = rest(z); return `<li><b>${esc(z)}</b><span>${esc(r.text)}${r.n ? ` (noch ${r.n})` : ""}</span></li>`; }).join("")}</ul>` : `<p class="gi-keine">Keine Effekte aktiv.</p>`;
-      el.innerHTML = `<div class="gi-kopf"><img class="gi-bild" src="${wolf ? "img/figuren/wolf.jpg" : F.bild(eigen ? g.fid : g.fidA)}" alt=""><div><b>${esc(g.name)}</b><small>${eigen ? (wolf ? "Begleiter" : "Held") : "Gegnerischer Held"}${g.stufe ? " · Stufe " + g.stufe : ""}</small></div><button class="link" id="gi-zu" aria-label="Schließen">✕</button></div>
+      el.innerHTML = `<div class="gi-kopf"><img class="gi-bild" src="${wolf ? "img/figuren/wolf.jpg" : F.bild(eigen ? g.fid : g.fidA, skinVon(g))}" alt=""><div><b>${esc(g.name)}</b><small>${eigen ? (wolf ? "Begleiter" : "Held") : "Gegnerischer Held"}${g.stufe ? " · Stufe " + g.stufe : ""}</small></div><button class="link" id="gi-zu" aria-label="Schließen">✕</button></div>
         <div class="gi-tp"><i style="width:${an * 100}%"></i><span>❤ ${Math.max(0, g.tp)} / ${g.tpMax}</span></div><ul class="gi-werte"><li><span>Rüstungsklasse</span><b>${R.rkEff ? R.rkEff(st, g) : g.rk}</b></li></ul>${eff}`;
       return;
     }

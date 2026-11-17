@@ -251,6 +251,7 @@
           <b>Erfahrung</b><span>Pakete mit 50, 150 oder 350 EP – auf Vorrat, einsetzbar bei jedem Helden.</span><em class="shop-uhr">Täglich begrenzt</em></button>
         <button class="shop-feld token" data-shop-feld="token" ${s ? "" : "disabled"}><span class="shop-feld-bilder woche"><img class="token" src="img/shop/heldentoken.webp" alt=""></span>
           <b>Heldentoken</b><span>${s ? `Schaltet in der Heldenhalle einen Helden deiner Wahl frei. ${s.token_preis} ${name}.` : "Folgt bald."}</span><em class="shop-uhr">${s ? `Im Besitz: ${s.tokens}` : ""}</em></button>
+        ${window.SKINS ? window.SKINS.shopKachel() : ""}
       </div></div>`);
     document.querySelectorAll("[data-shop-ansehen]").forEach((b) => { b.onclick = () => { const f = b.dataset.shopAnsehen; fenster(window.ABF.FIGUREN[f].name, window.ABH_HELDEN.detail(f, 1, "")); }; });
     { const wk = document.querySelector("[data-woche-kauf]"); if (wk) wk.onclick = async () => {
@@ -258,7 +259,7 @@
         try { const r = await netz().rpc("rpg_shop_week_buy", {}); kaufStand = r; waehrungZeigen(r.waehrung); if (A && A.pruefen) A.pruefen(true).catch(() => {}); if (SM) await SM.laden(true); shopZeigen(`${wd.name} gehört jetzt zu deiner Sammlung.`); }
         catch (e) { shopZeigen(e.message); } }; }
     shopUhr = setInterval(() => { const el = $("#shop-uhr"); if (!el) return clearInterval(shopUhr); if (new Date(s.bis).getTime() <= Date.now()) { clearInterval(shopUhr); return shopZeigen(); } el.textContent = uhr(); }, 30000);
-    document.querySelectorAll("[data-shop-feld]").forEach((b) => { b.onclick = () => { clearInterval(shopUhr); if (b.dataset.shopFeld === "token") shopHelden(); else if (b.dataset.shopFeld === "erfahrung") xpShop(); else if (window.ABKOS) window.ABKOS.ausstattung(); }; });
+    document.querySelectorAll("[data-shop-feld]").forEach((b) => { b.onclick = () => { clearInterval(shopUhr); if (b.dataset.shopFeld === "token") shopHelden(); else if (b.dataset.shopFeld === "skins") window.SKINS.shop(); else if (b.dataset.shopFeld === "erfahrung") xpShop(); else if (window.ABKOS) window.ABKOS.ausstattung(); }; });
   }
   /** „3 Tage 4 Std.“ / „5 Std. 12 Min“ / „12 Min“ bis zu einem Zeitpunkt */
   const restZeit = (bis) => { const ms = Math.max(0, new Date(bis).getTime() - Date.now()), t = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4);
@@ -467,7 +468,8 @@
         ${k.tokens < 1 && k.waehrung < k.preis ? `<small class="shop-fehlt">Dir fehlen ${k.preis - k.waehrung} ${wName} – oder ein Heldentoken vom Händler.</small>` : ""}<p class="my-fb" id="held-kauf-fb" role="status"></p></div>` : "";
     const gesperrt = !frei(fid) ? `<div class="sm-gesperrt">${SM.SCHLOSS}<span><b>Noch gesperrt.</b> ${esc(SM.gesperrtText())}</span></div>${kaufHtml}` : "";
     seiteZeigen("helden", `<div class="hub-helden" data-heldenseite>${HL.klassenLeiste(klasse).replace('id="klassen-zurueck"', 'data-held-klassen')}${HL.klassenKopf(klasse)}
-      <div class="hub-held-reihe">${helden.map((f) => HL.kachel(f, { an: f === fid, gesperrt: !frei(f), status: !frei(f) ? "gesperrt" : "" })).join("")}</div>${HL.detail(fid, 1, gesperrt).replace('<article class="held"', `<article class="held${gesperrt ? " gesperrt" : ""}"`)}${smAktiv() && SM.fortschritt(fid) ? `<div class="xp-kauf">${SM.stufeHtml(fid)}<button class="btn" data-xp-kauf="${fid}" ${SM.fortschritt(fid).bis ? "" : "disabled"}>✦ Erfahrungspaket einsetzen</button></div>` : ""}</div>`);
+      <div class="hub-held-reihe">${helden.map((f) => HL.kachel(f, { an: f === fid, gesperrt: !frei(f), status: !frei(f) ? "gesperrt" : "" })).join("")}</div>${HL.detail(fid, 1, gesperrt).replace('<article class="held"', `<article class="held${gesperrt ? " gesperrt" : ""}"`)}${smAktiv() && SM.fortschritt(fid) ? `<div class="xp-kauf">${SM.stufeHtml(fid)}<button class="btn" data-xp-kauf="${fid}" ${SM.fortschritt(fid).bis ? "" : "disabled"}>✦ Erfahrungspaket einsetzen</button></div>` : ""}${window.SKINS && frei(fid) && istKonto() ? window.SKINS.wahlHtml(fid) : ""}</div>`);
+    if (window.SKINS) window.SKINS.wahlBinden(fid, () => heldenSeite(klasse, fid));
     document.querySelectorAll("[data-held-mit]").forEach((b) => { b.onclick = async () => {
       const mit = b.dataset.heldMit, d = F.FIGUREN[fid], fb = $("#held-kauf-fb");
       if (!confirm(mit === "token" ? `${d.name} mit einem Heldentoken freischalten?` : `${d.name} für ${kaufStand.preis} ${wName} freischalten?`)) return;
@@ -761,6 +763,7 @@
     try { sessionStorage.setItem(HUB, profil && profil.konto ? "konto" : "gast"); } catch (e) { /* privat */ }
     const ep = $("#einst-panel"); if (ep && ep.parentElement !== document.body) document.body.appendChild(ep); // Einstellungen auch von hier aus
     scannerStopp(); zeige("hub"); hubKopf(); hubListen();
+    if (window.SKINS && profil && profil.konto) window.SKINS.laden().catch(() => {}); // angelegte Skins der eigenen Helden
     if (window.WERBEN) window.WERBEN.hub(Boolean(profil && profil.konto)).catch(() => {}); // Freunde werben: Werber eintragen, Hinweis im Dorf
   }
   function avatarHtml() {

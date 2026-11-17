@@ -353,7 +353,7 @@
   const KARTE = (k) => (k === "garten" ? R.KARTE_GARTEN : ((window.ABD_ALLE || {}).grauwacht || { KARTEN: {} }).KARTEN[String(k || "").toUpperCase()]) || R.KARTE_GARTEN;
   const kos = () => window.ABKOS, bildVon = (name, klasse) => (kos() ? kos().traeger(name, klasse) : "");
   const teamHtml = (t, name, mein, seiteNr) => `<div class="arena-team ${mein ? "mein" : "gegner"}" data-team-seite="${seiteNr || ""}"><h3>${bildVon(name)}<b class="arena-team-name">${esc(name)}${mein ? " (du)" : ""}</b><span>Ø ${komma(t.schnitt)}</span></h3><div class="arena-team-helden">${t.team.map((h) => { const d = F.FIGUREN[h.held] || { name: h.held, klasse: "krieger" };
-    return `<div class="arena-held fest" style="--k:${F.KLASSEN[d.klasse].farbe}"><img src="${F.bild(h.held)}" alt=""><b>${esc(d.name)}</b>${F.meistertitel(h.held, h.stufe) ? `<small class="meister">♛ ${esc(F.meistertitel(h.held, h.stufe))}</small>` : ""}<em>Stufe ${h.stufe}</em></div>`; }).join("")}</div></div>`;
+    return `<div class="arena-held fest" style="--k:${F.KLASSEN[d.klasse].farbe}"><img src="${F.bild(h.held, mein ? undefined : (F.SKIN && F.SKIN.gegner[h.held]) || null)}" data-skin-held="${h.held}" alt=""><b>${esc(d.name)}</b>${F.meistertitel(h.held, h.stufe) ? `<small class="meister">♛ ${esc(F.meistertitel(h.held, h.stufe))}</small>` : ""}<em>Stufe ${h.stufe}</em></div>`; }).join("")}</div></div>`;
   /** Rang beider Seiten in der Aufstellung (Migration 024); fehlt die Funktion oder läuft keine Saison, bleibt die Zeile weg */
   const rangMerk = {};
   async function raengeZeigen(m) {
@@ -375,6 +375,7 @@
       <div class="knoepfe"><button class="btn ghost klein" id="arena-abbrechen">Abbrechen</button></div>`);
     raengeZeigen(m);
     if (kos()) kos().arena(m.id, $("[data-arena]")); // Profilbild und Rahmen beider Teilnehmer
+    if (window.SKINS) window.SKINS.arena(m.id, ich, $("[data-arena]")); // Skins des Gegners
     $("#arena-abbrechen").onclick = async () => { stoppUhr(); Z.kampf = null; Z.anfGeaendert = null; try { await rpc("rpg_arena_cancel", { p_match_id: m.id }); } catch (e) { /* schon beendet */ } await trennen(); Z.match = null; zeigen(); };
     let k = modusVon(m), bekannt = !SERVER, privat = false; const team = (ich === 1 ? m.host : m.gast).team || [];
     const zeichneModus = () => { const el = $("#arena-modus-text"); if (!el) return; if (!bekannt) { el.innerHTML = `<p class="arena-los">Der Modus wird geladen …</p>`; return; } const anf = anfuehrerIdx(m);

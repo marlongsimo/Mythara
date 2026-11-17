@@ -96,7 +96,7 @@
     const gewaehlt = kacheln.find((k) => k.an), info = gewaehlt || kacheln.find((k) => k.id === offen) || null;
     if (offen && !kacheln.some((k) => k.id === offen)) offen = null;
     const hinweis = ($("#hinweis") || {}).textContent || "";
-    const kopf = () => { const held = a.fid || a.fidA, bild = held && F.FIGUREN[held] ? `<img src="${F.bild(held)}" alt="">` : `<span class="kh-mon">☠</span>`, p = Math.max(0, Math.round(100 * a.tp / a.tpMax));
+    const kopf = () => { const held = a.fid || a.fidA, bild = held && F.FIGUREN[held] ? `<img src="${F.bild(held, a.fidA ? (F.SKIN && F.SKIN.gegner[held]) || null : undefined)}" alt="">` : `<span class="kh-mon">☠</span>`, p = Math.max(0, Math.round(100 * a.tp / a.tpMax));
       // Zauberplätze (Kleriker, Magier …): gefüllt = noch da, hohl = verbraucht; Kreise = Grad 1, Rauten = Grad 2
       const pm = a.plaetzeMax || [0, 0], pr = a.plaetze || [0, 0], reihe = (n, max, voll, leer) => voll.repeat(Math.max(0, Math.min(n, max))) + leer.repeat(Math.max(0, max - n));
       const plaetze = pm[0] + pm[1] > 0 ? `<i class="kh-plaetze" role="img" aria-label="Zauberplätze: Grad 1 noch ${pr[0]} von ${pm[0]}${pm[1] ? `, Grad 2 noch ${pr[1]} von ${pm[1]}` : ""}"><small>Zauber</small><u>${reihe(pr[0], pm[0], "●", "○")}</u>${pm[1] ? `<u class="g2">${reihe(pr[1], pm[1], "◆", "◇")}</u>` : ""}</i>` : "";

@@ -152,6 +152,13 @@ ENDE_VOR=$(psql -q -At -d "$DB" -c "select md5(regexp_replace(lower(pg_get_funct
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../026_rpg_heldentoken.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../026_rpg_heldentoken.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 026_rpg_heldentoken_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+# Migration 029 (Helden-Skins): braucht 006 und 008; rein additiv, der Rückbau entfernt alles wieder
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 029_rpg_skins_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../029_rpg_skins_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_skin%' or proname = 'rpg_arena_skins'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_skin%'")" = 0 && echo "✓ Nach dem Rückbau von 029 sind Tabellen und Funktionen wieder weg"
 # Migration 028 (Freunde werben): braucht 002, 006 und 026; rein additiv, der Rückbau entfernt alles wieder
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent

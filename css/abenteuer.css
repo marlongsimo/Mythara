@@ -2468,3 +2468,24 @@ header.top { justify-content: flex-end; }
 .werben-liste li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; background: rgba(255, 255, 255, .04); border-radius: 6px; }
 .werben-liste span { color: #b9ae99; font-size: 14px; } .werben-liste span.ok { color: #9fe0a0; }
 .werben #werben-fb { color: #9fe0a0; min-height: 1.2em; margin: 0; }
+
+/* ---------- Helden-Skins: Händler und Auswahl auf der Heldenkarte ---------- */
+.shop-feld-bilder.skin img { height: 96px; width: auto; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .7)); }
+.skin-liste { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); }
+.skin-karte { display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 16px; align-items: center; padding: 16px; border: 1px solid #b08a45; border-radius: 10px; background: radial-gradient(120% 90% at 20% 60%, color-mix(in srgb, var(--k, #b08a45) 26%, transparent), transparent 70%), rgba(10, 10, 12, .88); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.skin-karte.hat { border-color: #7fb27f; }
+.skin-bild img { width: 100%; max-height: 300px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, .75)); }
+.skin-text h2 { margin: 2px 0 6px; font: 600 24px var(--schrift-titel); color: #f0d488; }
+.skin-text p { margin: 0 0 8px; color: #d6ccb8; }
+.skin-preis { font: 600 16px var(--schrift-ui); color: #efe6d4; } .skin-preis i, .skin-knoepfe i { font-style: normal; color: #b9a7ff; }
+.skin-knoepfe { display: grid; gap: 6px; justify-items: start; }
+.skin-hat { color: #9fe0a0; }
+.skin-wahl { margin: 14px 0 0; padding: 12px 14px; border: 1px solid rgba(176, 138, 69, .5); border-radius: 8px; background: rgba(10, 10, 12, .6); }
+.skin-wahl h3 { margin: 0 0 8px; font: 600 15px var(--schrift-titel); letter-spacing: .06em; color: #f0d488; }
+.skin-wahl-reihe { display: flex; flex-wrap: wrap; gap: 10px; }
+.skin-wahl-punkt { display: grid; justify-items: center; gap: 2px; padding: 8px 10px; min-width: 96px; cursor: pointer; color: #efe6d4; background: rgba(255, 255, 255, .04); border: 1px solid rgba(176, 138, 69, .4); border-radius: 8px; }
+.skin-wahl-punkt img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(176, 138, 69, .6); }
+.skin-wahl-punkt b { font: 600 14px var(--schrift-ui); } .skin-wahl-punkt small { font-size: 12px; color: #b9ae99; }
+.skin-wahl-punkt.an { border-color: #f0d488; background: rgba(240, 212, 136, .12); } .skin-wahl-punkt.an img { border-color: #f0d488; } .skin-wahl-punkt.an small { color: #9fe0a0; }
+.skin-wahl-punkt.zu img { filter: grayscale(.7) brightness(.7); } .skin-wahl-punkt:disabled { opacity: .5; cursor: default; }
+@media (max-width: 520px) { .skin-karte { grid-template-columns: 1fr; text-align: center; } .skin-bild img { max-height: 260px; margin: 0 auto; } .skin-knoepfe { justify-items: center; } }
