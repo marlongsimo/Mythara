@@ -6,7 +6,7 @@
  * Aufruf: node tests/stufen-browser.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 const EP = { schildwaechter: 1350, lichtbringer: 260, wildnislaeufer: 0 }; // Stufe 6, Stufe 3, Stufe 1
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 async function seite(b, mit007) {

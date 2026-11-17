@@ -4,7 +4,7 @@
  * Aufruf: node tests/heldentoken.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 function welt(helden, waehrung) {
   const DB = { waehrung, tokens: 0, helden: helden.slice(), woche: ALLE.find((h) => !helden.includes(h)) || null, rufe: [] };

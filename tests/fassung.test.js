@@ -4,11 +4,11 @@
  * Aufruf: node tests/fassung.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const fs = require("fs"), path = require("path");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 (async () => {
   const b = await chromium.launch(); console.log("Veraltete Fassung erkennen");
-  const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+  const html = fs.readFileSync(path.join(__dirname, "..", "spiel.html"), "utf8");
   // 1) gleiche Fassung: kein Neuladen
   { const p = await (await b.newContext()).newPage(); const fehler = []; p.on("pageerror", (e) => fehler.push(e.message)); let frisch = 0; p.on("request", (r) => { if (/[?&]frisch=/.test(r.url())) frisch++; });
     await p.goto(URL); await p.waitForFunction(() => window.MYTHARA && window.MYTHARA.neuLaden); await p.waitForTimeout(5500);

@@ -4,7 +4,7 @@
  * Aufruf: node tests/profil.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const KATALOG = [["w_glut", "wuerfel", 150], ["w_frost", "wuerfel", 150], ["r_lorbeer", "rahmen", 150], ["r_krone", "rahmen", 150], ["r_bronze", "rahmen", 75]].map(([id, art, preis], reihe) => ({ id, art, preis, reihe }));
 const DB = { bild: "schildwaechter", waehrung: 72, besitz: ["w_glut", "r_lorbeer", "r_krone"], aktiv: { wuerfel: null, rahmen: null }, rufe: [], codes: [], erstellt: [] };

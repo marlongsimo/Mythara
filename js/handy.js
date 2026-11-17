@@ -460,14 +460,14 @@
     if (!amEnde && !confirm("Den Spieltisch verlassen? Deine Figur steuert dann der Tisch.")) return;
     try { await H.client.leave(); } catch (e) { /* schon zu */ }
     H.spiel = null; H.row = null;
-    if (amEnde) { location.href = "index.html"; return; } // nach dem Ende: zurück zur Startseite
+    if (amEnde) { location.href = "spiel.html"; return; } // nach dem Ende: zurück zur Startseite
     render();
   };
   /** Nach dem Ende der Kampagne: kurzer Abschluss statt der Beitrittsseite */
   function viewAbschluss(app) {
     app.innerHTML = `<section class="karte-h"><p class="eyebrow">Kampagne beendet</p><h1>${esc(H.endeGesehen.titel || "Das Ende")}</h1>
       <p class="note">Der Spieltisch hat die Kampagne abgeschlossen. ${SM && SM.zustand().konto ? "Neue Enden und Belohnungen findest du auf der Startseite unter „Charaktere“ und in deiner Chronik." : "Danke fürs Mitspielen!"}</p>
-      <div class="knoepfe"><a class="btn breit" href="index.html">Zur Startseite</a></div></section>`;
+      <div class="knoepfe"><a class="btn breit" href="spiel.html">Zur Startseite</a></div></section>`;
   }
 
   (async () => {

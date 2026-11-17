@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
   const zu = async (p, fid) => { if (!(await p.$(`[data-fid="${fid}"]`))) { const k = await p.evaluate((f) => window.ABF.FIGUREN[f].klasse, fid); await p.click(`[data-klasse="${k}"]`); } };
   const T = await page({ width: 1100, height: 900 }, 'Tisch'), H = {};
   try {
-    await T.goto(BASE + '/abenteuer/index.html?schnell&testlauf'); await T.evaluate(() => localStorage.clear()); await T.reload();
+    await T.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf'); await T.evaluate(() => localStorage.clear()); await T.reload();
     await T.click('#my-gast-start'); await T.click('.dorf-ort[data-hub="kampagnen"]'); await T.click('.gilde-knoepfe [data-hub="neu"]'); await T.click('[data-neu-abenteuer="rabenmoor"]');
     await T.waitForSelector('#kodex:not([hidden])'); for (let i = 0; i < 6; i++) await T.click('#kodex-weiter');
     await T.click('#live'); await until(T, () => Boolean(document.querySelector('.beitritt .code')));

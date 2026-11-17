@@ -26,7 +26,7 @@
  *       Mit --kalibrieren werden die Kämpfe vorher für Normal und Hardcore kalibriert. Am Ende eine Zusammenfassung.
  *   node tools/kampagne.js freigeben <id>
  *       Freigabe in einem Schritt: entfernt META.entwurf, erzeugt js/enden.js, ergänzt die Enden in Migration 006
- *       und im lokalen Datenbanktest, zählt die Versionsnummern in index.html/handy.html hoch und gibt die
+ *       und im lokalen Datenbanktest, zählt die Versionsnummern in spiel.html/handy.html hoch und gibt die
  *       SQL-Zeile für Supabase aus (nur die neuen Enden dieses Abenteuers).
  *
  * Reguläres Ende = Szene mit art "ende", nicht D.NIEDERLAGE und nicht als niederlage: true markiert.
@@ -355,7 +355,7 @@ function freigeben(id) {
     if (re2.test(tt)) { fs.writeFileSync(test, tt.replace(re2, `rpg_adventure_endings) = ${gesamt}, 'Katalog: 15 Helden, ${gesamt} Enden'`)); schritte.push(`Datenbanktest erwartet jetzt ${gesamt} Enden`); }
   }
   // Versionsnummern hochzählen, damit Browser die neuen Dateien laden
-  if (neuFrei || neu.length) for (const h of ["index.html", "handy.html"]) {
+  if (neuFrei || neu.length) for (const h of ["spiel.html", "handy.html"]) {
     const hp = path.join(WURZEL, h); if (!fs.existsSync(hp)) continue; let html = fs.readFileSync(hp, "utf8"), geaendert = false;
     for (const f of [`daten/${id}.js`, "js/enden.js"]) html = html.replace(new RegExp(`(${f.replace(/[.\/]/g, "\\$&")}\\?v=)(\\d+)`), (_, a, n) => { geaendert = true; return a + (+n + 1); });
     if (geaendert) { fs.writeFileSync(hp, html); schritte.push(`${h}: Versionsnummern erhöht`); }

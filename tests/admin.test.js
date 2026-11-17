@@ -4,7 +4,7 @@
  * Aufruf: node tests/admin.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const DB = { e: { aktiv: true, wartezeit: 30, staerke_von: 1, staerke_bis: 1, stufe_von: -1, stufe_bis: 1, schnitt_max: 0.5, geaendert: null, von: null }, gesetzt: [], rufe: [], saisonRufe: [], saisons: [{ id: 1, name: "Season 0", beginn: new Date(Date.now() - 10 * 864e5).toISOString(), ende: new Date(Date.now() + 32 * 864e5).toISOString(), status: "laeuft", abgerechnet: null, spieler: 7, kaempfe: 41, gegen_bot: 30, je_rang: { 0: 5, 1: 2 } }] };
 const bot = () => ({ einstellungen: DB.e, statistik: { kaempfe: 12, siege_spieler: 5, aufgaben: 1, laufend: 2, abgebrochen: 0, runden: 6.4, heute: 3,

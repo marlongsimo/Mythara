@@ -23,7 +23,7 @@ const D = require('../daten/rabenmoor.js');
   const b = require('./alle-helden').alleHeldenFrei(await chromium.launch()), p = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
   p.setDefaultTimeout(20000); p.on('pageerror', (e) => errs.push(e.message)); p.on('dialog', (d) => d.accept());
   p.on('console', (m) => { if (m.type() === 'error' && !/favicon|404|ERR_|Failed to load resource/.test(m.text())) errs.push(m.text()); });
-  await p.goto(BASE + '/abenteuer/index.html?schnell&testlauf'); await p.evaluate(() => localStorage.clear()); await p.reload();
+  await p.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf'); await p.evaluate(() => localStorage.clear()); await p.reload();
   await p.click('#my-gast-start'); await p.click('.hub-nav-punkt[data-hub="welt"]');
   check(await until(p, () => Boolean(document.querySelector('[data-welt="rabenmoor"]'))), 'Kampagnenwelt listet das Moor');
   await p.click('[data-welt="rabenmoor"]');

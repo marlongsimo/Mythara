@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
   const T = await page({ width: 1100, height: 900 }, 'Tisch'), H = {};
   const beitreten = async (n, code) => { const P = H[n] = await page({ width: 390, height: 844 }, n); await P.goto(BASE + '/abenteuer/handy.html#' + code); await P.fill('#name', n); await P.click('#rein'); return P; };
   try {
-    await T.goto(BASE + '/abenteuer/index.html?schnell&testlauf'); await T.evaluate(() => localStorage.clear()); await T.reload();
+    await T.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf'); await T.evaluate(() => localStorage.clear()); await T.reload();
     await T.click('#my-gast-start'); await T.click('.dorf-ort[data-hub="kampagnen"]'); await T.click('.gilde-knoepfe [data-hub="neu"]'); await T.click('[data-neu-abenteuer="grauwacht"]');
     await T.waitForSelector('#kodex:not([hidden])'); for (let i = 0; i < 6; i++) await T.click('#kodex-weiter');
     await T.click('#live'); await until(T, () => Boolean(document.querySelector('.beitritt .code')));

@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
   const NAME = 'Test_' + Math.random().toString(36).slice(2, 8), PW = 'Mythara-' + Math.random().toString(36).slice(2, 10);
 
   const A = await page('A');
-  await A.goto(BASE + '/abenteuer/index.html?konten&kampagnen'); await A.evaluate(() => localStorage.clear()); await A.goto(BASE + '/abenteuer/index.html?konten&kampagnen');
+  await A.goto(BASE + '/abenteuer/spiel.html?konten&kampagnen'); await A.evaluate(() => localStorage.clear()); await A.goto(BASE + '/abenteuer/spiel.html?konten&kampagnen');
   // Als Gast eine Kampagne anlegen
   const kid = await A.evaluate(() => window.AB.liveClient().rpc('rpg_create_campaign', { p_title: 'Kontotest' }));
   await A.click('#my-reg');
@@ -30,7 +30,7 @@ const { chromium } = require('playwright');
 
   // Name ist für andere vergeben
   const B = await page('B');
-  await B.goto(BASE + '/abenteuer/index.html?konten');
+  await B.goto(BASE + '/abenteuer/spiel.html?konten');
   await B.click('#my-reg'); await B.fill('#my-reg-name', NAME.toUpperCase());
   check(await until(B, () => /schon vergeben/.test(document.querySelector('#my-name-info').textContent)), 'Anderer Browser: Name (auch in Großbuchstaben) vergeben');
 
@@ -46,7 +46,7 @@ const { chromium } = require('playwright');
   check(await until(A, (n) => new RegExp('Angemeldet als ' + n).test(document.querySelector('#my-konto').textContent), NAME), 'Anmelden (Groß/Klein egal) klappt');
 
   // Anderer Browser: Kampagne ist da
-  await B.goto(BASE + '/abenteuer/index.html?konten');
+  await B.goto(BASE + '/abenteuer/spiel.html?konten');
   await B.fill('#my-name', NAME); await B.fill('#my-pw', PW); await B.click('#my-anmelden .my-knopf');
   check(await until(B, (n) => new RegExp('Angemeldet als ' + n).test(document.querySelector('#my-konto').textContent), NAME), 'Zweiter Browser: angemeldet');
   check(await B.evaluate((id) => window.AB.liveClient().rpc('rpg_my_campaigns', {}).then((l) => l.some((c) => c.id === id)), kid), 'Zweiter Browser: dieselbe Kampagne verfügbar');

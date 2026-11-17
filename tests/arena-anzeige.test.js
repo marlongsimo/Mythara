@@ -7,7 +7,7 @@
  * Aufruf: node tests/arena-anzeige.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright");
-const BASIS = "http://localhost:8765/abenteuer/index.html?testlauf";
+const BASIS = "http://localhost:8765/abenteuer/spiel.html?testlauf";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 (async () => {
   const b = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });

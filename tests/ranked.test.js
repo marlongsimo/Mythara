@@ -5,7 +5,7 @@
  * Aufruf: node tests/ranked.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden"); const attrappe = require("./arena-server-attrappe");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell&arena=server";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell&arena=server";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const S = attrappe(); S.db.nutzer["tok-A"] = "nutzer-A";
 const ID = "00000000-0000-0000-0000-00000000c001";

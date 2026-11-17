@@ -3,15 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script>
-    /* Umzug: Mythara liegt jetzt unter mythara-dungeon.de. Wer das Spiel noch über Case Unlocked öffnet, wird dorthin geleitet –
-       aber nur, wenn die neue Adresse sicher (https) antwortet. Sonst bleibt alles, wie es ist. Unter der neuen Adresse tut das Skript nichts. */
-    (function () {
-      if (!/(^|\.)case-unlocked\.de$/.test(location.hostname)) return;
-      var neu = "https://mythara-dungeon.de/", ziel = neu + (location.pathname.split("/").pop() || "index.html") + location.search + location.hash;
-      fetch(neu + "verbindung.js", { mode: "no-cors", cache: "no-store" }).then(function () { location.replace(ziel); }).catch(function () { /* neue Adresse nicht erreichbar: hier weiterspielen */ });
-    })();
-  </script>
   <meta name="robots" content="noindex">
   <title>Abenteuer – Charakterbogen | Case Unlocked</title>
   <meta name="theme-color" content="#14110d">
@@ -41,7 +32,7 @@
   <script src="js/rpg-netz.js?v=2"></script>
   <script src="js/enden.js?v=3"></script>
   <script src="js/sammlung.js?v=11"></script>
-  <script src="js/handy.js?v=32"></script>
+  <script src="js/handy.js?v=33"></script>
   <script src="js/app.js?v=1"></script>
 </body>
 </html>

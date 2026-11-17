@@ -4,7 +4,7 @@
  * Aufruf: node tests/erfahrung.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const PAKETE = [["klein", 50, 90, 3], ["mittel", 150, 250, 2], ["gross", 350, 550, 1]];
 const DB = { waehrung: 700, heute: { klein: 0, mittel: 0, gross: 0 }, besitz: { klein: 0, mittel: 0, gross: 0 }, xp: { berserker: 80, trickser: 99999 }, kaeufe: [], einsatz: [] };

@@ -4,7 +4,7 @@
  * Aufruf: node tests/kampf-handy.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright");
-const BASIS = "http://localhost:8765/abenteuer/index.html?testlauf";
+const BASIS = "http://localhost:8765/abenteuer/spiel.html?testlauf";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 async function kampf(b, vp, zusatz, handy) {
   const p = await (await b.newContext({ viewport: vp, isMobile: Boolean(handy), hasTouch: Boolean(handy) })).newPage(), fehler = []; p.on("pageerror", (e) => fehler.push(e.message));

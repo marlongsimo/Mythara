@@ -4,13 +4,13 @@
  * Hinein kommen: die Heldendaten (js/figuren.js), die Regeln (js/regeln.js), die Arena-Karten (aus daten/grauwacht.js),
  * der Rechenkern (server/arena-kern.js) und der Netzteil (server/arena-funktion.js).
  * Nach jeder Änderung an den Regeln oder Helden neu bauen und die Function neu ausrollen – sonst rechnet der Server
- * mit alten Regeln. Die Versionsnummer der Regeln (aus index.html) steht im Kopf der gebauten Datei.
+ * mit alten Regeln. Die Versionsnummer der Regeln (aus spiel.html) steht im Kopf der gebauten Datei.
  * Aufruf: node tools/arena-funktion-bauen.js
  */
 const fs = require("fs"), path = require("path");
 const wurzel = path.join(__dirname, ".."), lies = (p) => fs.readFileSync(path.join(wurzel, p), "utf8");
 const KARTEN = require(path.join(wurzel, "daten/grauwacht.js")).KARTEN;
-const html = lies("index.html"), ver = (name) => (new RegExp(name.replace(".", "\\.") + "\\?v=(\\d+)").exec(html) || [])[1] || "?";
+const html = lies("spiel.html"), ver = (name) => (new RegExp(name.replace(".", "\\.") + "\\?v=(\\d+)").exec(html) || [])[1] || "?";
 const teile = [
   "// @ts-nocheck",
   "// Mythara – Edge Function „arena“: Der Server rechnet den Arena-Kampf. GEBAUTE DATEI – nicht von Hand ändern.",

@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
   const until = async (p, fn, arg, ms = 30000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await p.evaluate(fn, arg).catch(() => false)) return true; await p.waitForTimeout(300); } return false; };
   const PW = 'Mythara-Test-1', N = () => 'Test_' + Math.random().toString(36).slice(2, 8);
   const registrieren = async (p, name) => {
-    await p.goto(BASE + '/abenteuer/index.html'); await p.click('#my-reg');
+    await p.goto(BASE + '/abenteuer/spiel.html'); await p.click('#my-reg');
     await p.fill('#my-reg-name', name); await p.fill('#my-reg-pw', PW); await p.fill('#my-reg-pw2', PW); await p.click('#my-reg-form .my-knopf');
     return until(p, () => !document.querySelector('#hub').hidden);
   };
@@ -23,7 +23,7 @@ const { chromium } = require('playwright');
 
   // Gast: keine Freunde
   const G = await page('Gast');
-  await G.goto(BASE + '/abenteuer/index.html?testlauf'); await G.click('#my-gast-start'); await G.click('.hub-nav-punkt[data-hub="freunde"]');
+  await G.goto(BASE + '/abenteuer/spiel.html?testlauf'); await G.click('#my-gast-start'); await G.click('.hub-nav-punkt[data-hub="freunde"]');
   check(await until(G, () => /Spielerkonto/.test(document.querySelector('.kampagnen').textContent)), 'Gast: Freunde-Fenster verweist aufs Konto');
 
   // A sucht B und schickt eine Anfrage
@@ -68,7 +68,7 @@ const { chromium } = require('playwright');
   check(await until(A, (n) => window.AB.LIVE.client.players.some((p) => p.player_name === n), nB), 'Tisch sieht B mit seinem Benutzernamen');
   check(await until(A, (n) => document.querySelector('#ei-da').textContent.includes(n), nB, 10000), 'Einladen-Schritt: „Schon da“ nennt B');
   await A.evaluate(() => window.AB.LIVE.client.leave().catch(() => {}));
-  await B.goto(BASE + '/abenteuer/index.html'); await until(B, () => !document.querySelector('#hub').hidden);
+  await B.goto(BASE + '/abenteuer/spiel.html'); await until(B, () => !document.querySelector('#hub').hidden);
   check(await until(B, () => /Freundestest/.test(document.querySelector('#hub-aktuell').textContent) && /Mitspieler/.test(document.querySelector('#hub-aktuell').textContent)), 'B: „Freundestest“ unter Aktuelle Kampagnen als Mitspieler');
   await B.click('.hub-nav-punkt[data-hub="kampagnen"]');
   check(await until(B, () => Boolean(document.querySelector('[data-k="mitspielen"]'))), 'B: In „Meine Kampagnen“ gibt es „Zum Spieltisch“');

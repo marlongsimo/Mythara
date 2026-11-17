@@ -181,7 +181,7 @@ console.log('Probekampf mit allen Mechaniken (Automatik)');
   const { chromium } = require('playwright'), P = require('../tools/mechanik-sim.js');
   const b = require('./alle-helden').alleHeldenFrei(await chromium.launch()), p = await b.newPage({ viewport: { width: 1100, height: 950 } }), fehler = [];
   p.on('pageerror', (e) => fehler.push(e.message));
-  await p.goto((process.env.BASE || 'http://localhost:8765') + '/abenteuer/index.html?schnell&testlauf');
+  await p.goto((process.env.BASE || 'http://localhost:8765') + '/abenteuer/spiel.html?schnell&testlauf');
   for (const name of ['markt', 'tor']) {
     const opts = Object.assign({ figuren: ['schildwaechter', 'elementarist', 'lichtbringer', 'kopfgeldjaeger'], stufe: 2, karte: P.PLATZ, keinAnfuehrer: true, zusatzGegner: 0 }, P.PROBE[name](4));
     await p.evaluate((o) => window.AB.kampfStarten(o, () => {}), opts); await p.waitForTimeout(300);

@@ -5,7 +5,7 @@
  * Aufruf: node tests/live-arena-server.test.js   (Webserver auf Port 8765; dauert mehrere Minuten)
  */
 const { chromium } = require("playwright");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell&arena=server";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell&arena=server";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const warte = (p, fn, arg, t = 30000) => p.waitForFunction(fn, arg, { timeout: t }).then(() => true, () => false);
 async function konto(b) {

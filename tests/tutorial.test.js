@@ -6,7 +6,7 @@
  * Aufruf: node tests/tutorial.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright");
-const URL = "http://localhost:8765/abenteuer/index.html";
+const URL = "http://localhost:8765/abenteuer/spiel.html";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 async function seite(b, w, h, zustand) {
   const p = await (await b.newContext({ viewport: { width: w, height: h } })).newPage(); const fehler = []; p.on("pageerror", (e) => fehler.push(e.message)); p.on("dialog", (d) => d.accept());

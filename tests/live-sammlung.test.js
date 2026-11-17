@@ -30,7 +30,7 @@ const STARTER = ['schildwaechter', 'elementarist', 'trickser', 'lichtbringer', '
 
   // ---------- Gast: Starter-Set ----------
   const G = await page('Gast');
-  await G.goto(BASE + '/abenteuer/index.html'); await G.evaluate(() => localStorage.clear()); await G.goto(BASE + '/abenteuer/index.html');
+  await G.goto(BASE + '/abenteuer/spiel.html'); await G.evaluate(() => localStorage.clear()); await G.goto(BASE + '/abenteuer/spiel.html');
   await G.click('#my-gast-start');
   const g = await wahl(G);
   check(g.frei.length === 5 && STARTER.every((f) => g.frei.includes(f)) && g.zu.length === 10, `Gast: genau das Starter-Set ist wählbar (${g.frei.join(', ')})`);
@@ -42,7 +42,7 @@ const STARTER = ['schildwaechter', 'elementarist', 'trickser', 'lichtbringer', '
   // ---------- Neues Konto: drei Startrunden ----------
   const NAME = 'Test_' + Math.random().toString(36).slice(2, 8), PW = 'Mythara-' + Math.random().toString(36).slice(2, 10);
   const A = await page('Konto');
-  await A.goto(BASE + '/abenteuer/index.html'); await A.evaluate(() => localStorage.clear()); await A.goto(BASE + '/abenteuer/index.html');
+  await A.goto(BASE + '/abenteuer/spiel.html'); await A.evaluate(() => localStorage.clear()); await A.goto(BASE + '/abenteuer/spiel.html');
   await A.click('#my-reg'); await A.fill('#my-reg-name', NAME);
   await until(A, () => /ist frei/.test(document.querySelector('#my-name-info').textContent));
   await A.fill('#my-reg-pw', PW); await A.fill('#my-reg-pw2', PW); await A.click('#my-reg-form .my-knopf');

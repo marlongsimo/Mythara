@@ -3,7 +3,7 @@
   "short_name": "Mythara",
   "description": "Das Strategie-Rollenspiel für den Spieltisch: rundenweise Taktik, Kampagnen mit Entscheidungen und 15 Helden im Browser.",
   "lang": "de",
-  "start_url": "./index.html",
+  "start_url": "./spiel.html",
   "scope": "./",
   "display": "standalone",
   "display_override": ["fullscreen", "standalone"],

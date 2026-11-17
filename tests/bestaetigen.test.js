@@ -4,7 +4,7 @@
  * Aufruf: node tests/bestaetigen.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright");
-const BASIS = "http://localhost:8765/abenteuer/index.html?testlauf&schnell";
+const BASIS = "http://localhost:8765/abenteuer/spiel.html?testlauf&schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 async function kampf(b, handy) {
   const p = await (await b.newContext(handy ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : { viewport: { width: 1280, height: 900 } })).newPage(), fehler = []; p.on("pageerror", (e) => fehler.push(e.message));

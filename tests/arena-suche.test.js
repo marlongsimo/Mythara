@@ -5,7 +5,7 @@
  * Aufruf: node tests/arena-suche.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell&arena=suche";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell&arena=suche";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 // Nachgebildeter Server
 const DB = { kaempfe: [], nr: 0, teams: {}, suchend: {}, xp: { A: { schildwaechter: 1350, lichtbringer: 260 }, B: { berserker: 850 }, C: {} } };

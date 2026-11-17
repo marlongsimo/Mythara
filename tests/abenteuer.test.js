@@ -7,7 +7,7 @@
  * Aufruf: python3 -m http.server 8765 &  ·  node tests/abenteuer.test.js
  */
 const BASE = process.env.BASE || 'http://localhost:8765';
-const URL = BASE + '/abenteuer/index.html';
+const URL = BASE + '/abenteuer/spiel.html';
 const { chromium } = require('playwright');
 const R = require('../js/regeln.js'), F = R.FD;
 (async () => {

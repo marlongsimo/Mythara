@@ -22,7 +22,7 @@ const K = require('../tools/kampagne.js');
   // Reihenfolge im Hub: nach Schwierigkeit, dann META.reihe; Entwürfe nur mit ?entwurf
   {
     const p = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await p.goto(BASE + '/abenteuer/index.html?schnell&testlauf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
+    await p.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
     await p.click('#my-gast-start'); await p.click('.dorf-ort[data-hub="kampagnen"]'); await p.click('.gilde-knoepfe [data-hub="neu"]');
     const reihe = await p.evaluate(() => [...document.querySelectorAll('[data-neu-abenteuer]')].map((x) => x.dataset.neuAbenteuer));
     const soll = K.ids().filter((id) => !K.ALLE[id].META.entwurf).sort((x, y) => (K.ALLE[x].META.schwierigkeit || 1) - (K.ALLE[y].META.schwierigkeit || 1) || (K.ALLE[x].META.reihe || 0) - (K.ALLE[y].META.reihe || 0));
@@ -38,7 +38,7 @@ const K = require('../tools/kampagne.js');
     p.on('pageerror', (e) => errs.push(e.message + ' @ ' + String(e.stack).split('\n').slice(1, 4).join(' < '))); p.on('dialog', (d) => d.accept());
     const shot = async (n) => { if (SHOTS) { await p.waitForTimeout(300); await p.screenshot({ path: `${SHOTS}/${id}-${n}.png` }); } };
     try {
-      await p.goto(BASE + '/abenteuer/index.html?schnell&testlauf&entwurf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
+      await p.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf&entwurf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
       await p.click('#my-gast-start'); await p.click('.dorf-ort[data-hub="kampagnen"]'); await p.click('.gilde-knoepfe [data-hub="neu"]');
       await shot('1-hub');
       await p.click(`[data-neu-abenteuer="${id}"]`);

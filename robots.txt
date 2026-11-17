@@ -6,3 +6,5 @@ Disallow: /supabase/
 Disallow: /server/
 Disallow: /doku/
 Disallow: /prototyp/
+
+Sitemap: https://mythara-dungeon.de/sitemap.xml

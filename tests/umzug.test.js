@@ -1,33 +1,36 @@
 /*
- * Mythara – Umzug auf mythara-dungeon.de: Wer das Spiel über Case Unlocked öffnet, wird zur neuen Adresse geleitet
- * (mit Seite und Parametern), aber nur, wenn sie über https antwortet. Unter der neuen Adresse passiert nichts.
- * Dazu: keine Kopfzeile auf der Startseite, neues Symbol für den Startbildschirm.
- * Aufruf: node tests/umzug.test.js
+ * Mythara – Startseite und Spiel: Die Startseite (index.html) beschreibt das Spiel und ist für Suchmaschinen gedacht,
+ * das Spiel selbst liegt unter spiel.html. Wer schon spielt (Link mit Angaben, App vom Startbildschirm, angemeldet),
+ * wird von der Startseite direkt ins Spiel geleitet.
+ * Aufruf: node tools/testserver.js   und   node tests/umzug.test.js
  */
 const { chromium } = require("playwright"); const fs = require("fs"), path = require("path");
-const WURZEL = path.join(__dirname, ".."); let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
-const TYP = { html: "text/html", js: "text/javascript", css: "text/css", png: "image/png", webp: "image/webp", svg: "image/svg+xml", woff2: "font/woff2", webmanifest: "application/manifest+json", jpg: "image/jpeg" };
-const datei = (route, teil) => { const p = path.join(WURZEL, decodeURIComponent(teil.split("?")[0].split("#")[0]) || "index.html"); if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) return route.fulfill({ status: 404, body: "" }); route.fulfill({ status: 200, contentType: TYP[p.split(".").pop()] || "application/octet-stream", body: fs.readFileSync(p) }); };
+const WURZEL = path.join(__dirname, ".."), BASE = "http://localhost:8765"; let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 (async () => {
-  const b = await chromium.launch();
-  async function seite(neuDa) { const c = await b.newContext({ viewport: { width: 420, height: 900 }, serviceWorkers: "block" }); const p = await c.newPage();
-    await c.route("https://case-unlocked.de/abenteuer/**", (r) => datei(r, new URL(r.request().url()).pathname.replace("/abenteuer/", "")));
-    await c.route("https://mythara-dungeon.de/**", (r) => (neuDa ? datei(r, new URL(r.request().url()).pathname.slice(1) || "index.html") : r.abort("connectionrefused")));
-    await c.route(/supabase\.co/, (r) => r.fulfill({ status: 200, contentType: "application/json", body: "{}" }));
-    return { c, p }; }
-  console.log("Umzug");
-  { const { c, p } = await seite(true); await p.goto("https://case-unlocked.de/abenteuer/index.html?x=1#y"); await p.waitForURL(/mythara-dungeon\.de/, { timeout: 15000 }).catch(() => {});
-    check(p.url() === "https://mythara-dungeon.de/index.html?x=1#y", "Case Unlocked leitet zur neuen Adresse weiter, Seite und Parameter bleiben erhalten: " + p.url());
-    await p.waitForTimeout(1500); check(/mythara-dungeon\.de\/index\.html/.test(p.url()), "Unter der neuen Adresse wird nicht weitergeleitet"); await c.close(); }
-  { const { c, p } = await seite(true); await p.goto("https://case-unlocked.de/abenteuer/handy.html?code=ABEN-123456"); await p.waitForURL(/mythara-dungeon\.de/, { timeout: 15000 }).catch(() => {});
-    check(p.url() === "https://mythara-dungeon.de/handy.html?code=ABEN-123456", "Auch Handy-Links mit Einladungscode kommen an: " + p.url()); await c.close(); }
-  { const { c, p } = await seite(false); await p.goto("https://case-unlocked.de/abenteuer/index.html"); await p.waitForTimeout(2500);
-    check(/case-unlocked\.de\/abenteuer\/index\.html/.test(p.url()) && await p.evaluate(() => Boolean(window.MYTHARA)), "Antwortet die neue Adresse nicht sicher, bleibt das Spiel auf Case Unlocked spielbar"); await c.close(); }
-  { const { c, p } = await seite(true); await p.goto("https://mythara-dungeon.de/index.html"); await p.waitForTimeout(2000);
-    const r = await p.evaluate(() => { const h = document.querySelector("header.top"); return { kopf: h ? getComputedStyle(h).display : "fehlt", zurueck: Boolean(document.querySelector("header.top .back")), apple: document.querySelector('link[rel="apple-touch-icon"]').getAttribute("href"), text: document.body.innerText }; });
-    check(r.kopf === "none" && !r.zurueck && !/← Case Unlocked/.test(r.text), "Auf der Startseite gibt es keine Kopfzeile und keinen Link „← Case Unlocked“ mehr");
+  const b = await chromium.launch(); const neu = async () => { const c = await b.newContext({ viewport: { width: 420, height: 900 }, serviceWorkers: "block" }); await c.route(/supabase\.co/, (r) => r.fulfill({ status: 200, contentType: "application/json", body: "{}" })); return { c, p: await c.newPage() }; };
+  console.log("Startseite und Spiel");
+  { const { c, p } = await neu(); const fehler = [], fehlend = []; p.on("pageerror", (e) => fehler.push(String(e))); p.on("response", (r) => { if (r.status() >= 400) fehlend.push(r.url()); });
+    await p.goto(BASE + "/index.html"); await p.waitForTimeout(1200);
+    const r = await p.evaluate(() => ({ url: location.pathname, h1: (document.querySelector("h1") || {}).textContent || "", knopf: [...document.querySelectorAll(".kopf a")].map((a) => a.textContent.trim() + "→" + a.getAttribute("href")).pop(), helden: document.querySelectorAll(".held").length, kampagnen: document.querySelectorAll(".kampagne").length, breit: document.documentElement.scrollWidth <= innerWidth, robots: (document.querySelector('meta[name="robots"]') || {}).content || "", canon: document.querySelector('link[rel="canonical"]').href, ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => { try { return JSON.parse(s.textContent)["@type"]; } catch (e) { return "KAPUTT"; } }) }));
+    check(r.url === "/index.html" && /Helden/.test(r.h1), "Ein neuer Besucher sieht die Startseite mit der Beschreibung des Spiels");
+    check(r.knopf === "Einloggen / Registrieren→spiel.html", "Oben rechts führt „Einloggen / Registrieren“ zur Anmeldeseite (spiel.html)");
+    check(r.helden === 15 && r.kampagnen === 6 && r.breit, "Alle 15 Helden und 6 Kampagnen werden gezeigt, die Seite passt in Handybreite");
+    check(!/noindex/.test(r.robots) && r.canon === "https://mythara-dungeon.de/" && r.ld.join() === "VideoGame,FAQPage", "Für Suchmaschinen: nicht gesperrt, Adresse eindeutig, Angaben zu Spiel und Fragen lesbar");
+    check(!fehler.length && !fehlend.length, "keine Skriptfehler, keine fehlenden Dateien" + (fehlend.length ? ": " + fehlend.join(", ") : ""));
+    await p.click(".kopf a.knopf"); await p.waitForURL(/spiel\.html/, { timeout: 10000 }).catch(() => {}); await p.waitForTimeout(1500);
+    const s = await p.evaluate(() => ({ url: location.pathname, spiel: Boolean(window.MYTHARA), kopf: getComputedStyle(document.querySelector("header.top")).display, robots: (document.querySelector('meta[name="robots"]') || {}).content || "", apple: document.querySelector('link[rel="apple-touch-icon"]').getAttribute("href"), logo: document.querySelector(".my-logo img").getAttribute("src") }));
+    check(s.url === "/spiel.html" && s.spiel && s.kopf === "none", "Der Knopf öffnet das Spiel mit der Anmeldeseite, ohne Kopfzeile");
+    check(/noindex/.test(s.robots) && /logo-neu/.test(s.logo), "Das Spiel selbst ist für Suchmaschinen ausgenommen und zeigt das neue Logo");
     const man = JSON.parse(fs.readFileSync(path.join(WURZEL, "manifest.webmanifest"), "utf8"));
-    check([r.apple, ...man.icons.map((i) => i.src)].every((s) => /mythara-/.test(s) && fs.existsSync(path.join(WURZEL, s))), "Das neue Symbol ist für iPhone und Android hinterlegt, alle Dateien sind da");
+    check(man.start_url === "./spiel.html" && [s.apple, ...man.icons.map((i) => i.src)].every((x) => /mythara-/.test(x) && fs.existsSync(path.join(WURZEL, x))), "Die App vom Startbildschirm öffnet direkt das Spiel; das Symbol ist hinterlegt");
     await c.close(); }
+  { const { c, p } = await neu(); const wege = []; p.on("framenavigated", (f) => { if (f === p.mainFrame()) wege.push(f.url().replace(BASE, "")); });
+    await p.goto(BASE + "/index.html?tisch=ABCD-123456&ab=grauwacht"); await p.waitForURL(/spiel\.html/, { timeout: 8000 }).catch(() => {});
+    check(wege.includes("/spiel.html?tisch=ABCD-123456&ab=grauwacht"), "Alte Links mit Angaben (Spieltisch, Einladung) landen mit allen Angaben im Spiel: " + wege.join(" → ")); await c.close(); }
+  { const { c, p } = await neu(); await p.goto(BASE + "/handy.html"); await p.evaluate(() => localStorage.setItem("mr-rpg-auth", "{}")); await p.goto(BASE + "/index.html"); await p.waitForURL(/spiel\.html/, { timeout: 8000 }).catch(() => {});
+    check(/\/spiel\.html$/.test(p.url()), "Wer angemeldet ist, kommt von der Startseite direkt ins Spiel");
+    await p.goto(BASE + "/index.html?start"); await p.waitForTimeout(1200); check(/index\.html\?start$/.test(p.url()), "Mit ?start bleibt man auch angemeldet auf der Startseite"); await c.close(); }
+  const sm = fs.readFileSync(path.join(WURZEL, "sitemap.xml"), "utf8"), rb = fs.readFileSync(path.join(WURZEL, "robots.txt"), "utf8");
+  check(/<loc>https:\/\/mythara-dungeon\.de\/<\/loc>/.test(sm) && /Sitemap: https:\/\/mythara-dungeon\.de\/sitemap\.xml/.test(rb) && /Allow: \//.test(rb), "Sitemap und robots.txt nennen die Startseite");
   await b.close(); console.log(ok ? "\nUMZUG IN ORDNUNG" : "\nUMZUG: FEHLER"); process.exit(ok ? 0 : 1);
 })();

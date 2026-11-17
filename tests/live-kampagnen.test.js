@@ -30,7 +30,7 @@ const { chromium } = require('playwright');
   // ---------- Allein ----------
   const ctx = await b.newContext({ viewport: { width: 1200, height: 900 } });
   const T = await page(ctx, 'Tisch');
-  await T.goto(BASE + '/abenteuer/index.html?schnell&kampagnen'); await T.evaluate(() => localStorage.clear()); await T.goto(BASE + '/abenteuer/index.html?schnell&kampagnen');
+  await T.goto(BASE + '/abenteuer/spiel.html?schnell&kampagnen'); await T.evaluate(() => localStorage.clear()); await T.goto(BASE + '/abenteuer/spiel.html?schnell&kampagnen');
   check(await T.isVisible('#my-gast-start'), 'Startbildschirm mit „Als Gast spielen“');
   await einstieg(T, 'allein');
   for (const f of ['schildwaechter', 'lichtbringer', 'wildnislaeufer']) await nimm(T, f);
@@ -48,7 +48,7 @@ const { chromium } = require('playwright');
   await T.click('#sz-pause');
   check(await until(T, async () => !document.querySelector('#hub').hidden) && await until(T, (id) => window.AB.liveClient().rpc('rpg_my_campaigns', {}).then((l) => l.find((c) => c.id === id).status === 'pausiert'), k1.id), 'Pause: Kampagne pausiert');
   await T.evaluate(() => { for (const k of Object.keys(localStorage)) if (!['mr-rpg-auth', 'mr_kampagnen'].includes(k)) localStorage.removeItem(k); });
-  await T.goto(BASE + '/abenteuer/index.html?schnell');
+  await T.goto(BASE + '/abenteuer/spiel.html?schnell');
   check(await T.isVisible('#mythara') && !(await T.$('#fortsetzen')), 'Neuer Tag: kein Browser-Spielstand mehr');
   await until(T, () => !document.querySelector('#hub').hidden); await T.click('.hub-nav-punkt[data-hub="kampagnen"]');
   check(await until(T, (id) => Boolean(document.querySelector(`[data-kampagne="${id}"]`)) && /Pausiert/.test(document.querySelector(`[data-kampagne="${id}"]`).textContent), k1.id), 'Meine Kampagnen: Kampagne als „Pausiert“ gelistet');
@@ -59,7 +59,7 @@ const { chromium } = require('playwright');
   // Zweiter Tisch (gleiche Anmeldung) setzt dieselbe Kampagne fort: Versionskonflikt
   await T.waitForTimeout(3500); // Tisch 1 hat fertig gespeichert, bevor Tisch 2 lädt
   const T2 = await page(ctx, 'Tisch 2');
-  await T2.goto(BASE + '/abenteuer/index.html?schnell');
+  await T2.goto(BASE + '/abenteuer/spiel.html?schnell');
   await until(T2, () => Boolean(window.KAMPAGNE)); await T2.evaluate(() => window.KAMPAGNE.bibliothek()); await until(T2, (id) => Boolean(document.querySelector(`[data-k="allein"][data-id="${id}"]`)), k1.id);
   await T2.click(`[data-k="allein"][data-id="${k1.id}"]`);
   await until(T2, () => window.ABT.A() && window.ABT.A().szene === 'halmbruck');
@@ -85,7 +85,7 @@ const { chromium } = require('playwright');
 
   // Fremder sieht nichts
   const ctxF = await b.newContext(); const Fp = await page(ctxF, 'Fremd');
-  await Fp.goto(BASE + '/abenteuer/index.html?kampagnen');
+  await Fp.goto(BASE + '/abenteuer/spiel.html?kampagnen');
   await Fp.click('#my-gast-start'); await Fp.click('.hub-nav-punkt[data-hub="kampagnen"]');
   check(await until(Fp, () => /Am Brett hängt noch nichts/.test(document.querySelector('.kampagnen').textContent)), 'Fremder Browser: keine fremden Kampagnen');
   check(await Fp.evaluate((id) => window.AB.liveClient().rpc('rpg_load_campaign', { p_campaign_id: id }).then(() => false, (e) => /gehörst nicht/.test(e.message)), k1.id), 'Fremder kann die Kampagne nicht laden');
@@ -94,7 +94,7 @@ const { chromium } = require('playwright');
   // ---------- Mit Handys ----------
   const ctxL = await b.newContext({ viewport: { width: 1024, height: 900 } });
   const L = await page(ctxL, 'Live-Tisch');
-  await L.goto(BASE + '/abenteuer/index.html?schnell&kampagnen');
+  await L.goto(BASE + '/abenteuer/spiel.html?schnell&kampagnen');
   await einstieg(L, 'live');
   if (!(await until(L, () => Boolean(document.querySelector('.beitritt .code'))))) console.log('DIAG L', JSON.stringify(await L.evaluate(() => [(document.querySelector('#intro-fehler') || {}).textContent, [...document.querySelectorAll('main > section')].filter((x) => !x.hidden).map((x) => x.id)])));
   const code = (await L.textContent('.beitritt .code')).trim();

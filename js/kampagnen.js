@@ -274,7 +274,7 @@
 
 
   /* ---------- Einladen: nach „Coop-Mode“, vor der Heldenwahl ---------- */
-  // Freunde (Konto), Gäste per Kampagnen-Code (handy.html?k=…) und auf Wunsch ein anderes Gerät als Spieltisch (index.html?tisch=…)
+  // Freunde (Konto), Gäste per Kampagnen-Code (handy.html?k=…) und auf Wunsch ein anderes Gerät als Spieltisch (spiel.html?tisch=…)
   let einl = null; // { gast, tisch, uhr, freunde, offen, mitglieder }
   const linkUrl = (pfad) => new URL(pfad, location.href).href;
   const codeBox = (url, code, titel, text) => `<div class="beitritt"><div class="qr">${window.AB.qrSvg(url)}</div><div>
@@ -332,7 +332,7 @@
       ? codeBox(linkUrl("handy.html?k=" + encodeURIComponent(einl.gast)), einl.gast, "Gäste einladen", `QR-Code mit dem Handy scannen – oder <b>${esc(kurzUrl("handy.html"))}</b> öffnen und den Code eingeben. Wer beitritt, gehört fest zur Kampagne, auch ohne Konto. Der Code gilt 7 Tage.`)
       : `<p class="note">Gäste-Code gerade nicht verfügbar${einl.gastFehler ? ` (${esc(einl.gastFehler)})` : ""}. Gäste können bei der Heldenwahl über den Raum-Code beitreten.</p>`;
     const tisch = einl.tisch
-      ? codeBox(linkUrl("index.html?tisch=" + encodeURIComponent(einl.tisch) + "&ab=" + encodeURIComponent(window.AB.SETUP().abenteuer || "grauwacht")), einl.tisch, "Code für das Tisch-Gerät", `Auf dem Gerät, das in der Mitte liegen soll, QR-Code scannen – oder <b>${esc(kurzUrl("index.html"))}</b> öffnen, „Als Spieltisch verbinden“ wählen und den Code eingeben. Der Code gilt einmal.`) + `<p class="note ei-warte">Warte auf das Tisch-Gerät …</p>`
+      ? codeBox(linkUrl("spiel.html?tisch=" + encodeURIComponent(einl.tisch) + "&ab=" + encodeURIComponent(window.AB.SETUP().abenteuer || "grauwacht")), einl.tisch, "Code für das Tisch-Gerät", `Auf dem Gerät, das in der Mitte liegen soll, QR-Code scannen – oder <b>${esc(kurzUrl("spiel.html"))}</b> öffnen, „Als Spieltisch verbinden“ wählen und den Code eingeben. Der Code gilt einmal.`) + `<p class="note ei-warte">Warte auf das Tisch-Gerät …</p>`
       : `<p class="note">Dieses Gerät ist der Spieltisch. Soll ein anderes Gerät (z. B. ein Tablet oder Fernseher) in der Mitte liegen, verbinde es mit einem Tisch-Code.</p>`;
     el.innerHTML = `<div class="ei-kopf"><div><p class="eyebrow">Coop-Mode</p><h1>Wer spielt mit?</h1></div>
         ${istHost() ? `<label class="ei-titel">Name der Kampagne <input id="ei-titel" maxlength="80" value="${esc(K.titel || "")}"></label>` : `<p class="note">${esc(K.titel || "")}</p>`}</div>
@@ -403,8 +403,8 @@
       code = await rpc("rpg_create_link", { p_campaign_id: id, p_art: "tisch" });
     } catch (e) { o.hidden = true; toast(e.message); return; }
     o.innerHTML = `<div class="karte-box kampagnen" role="dialog" aria-labelledby="tw-titel"><div class="k-kopf"><h2 id="tw-titel">Spieltisch wechseln</h2><button class="link" id="tw-zu">Abbrechen</button></div>
-      <p class="note">„${esc(titel)}“ auf einem anderen Gerät weiterspielen: Dort diesen QR-Code scannen – oder <b>${esc(kurzUrl("index.html"))}</b> öffnen, „Als Spieltisch verbinden“ wählen und den Code eingeben.</p>
-      ${codeBox(linkUrl("index.html?tisch=" + encodeURIComponent(code)), code, "Code für das neue Tisch-Gerät", "Der Code gilt einmal und 24 Stunden. Der Spielstand ist gesichert; sobald das neue Gerät verbunden ist, endet die Runde hier.")}
+      <p class="note">„${esc(titel)}“ auf einem anderen Gerät weiterspielen: Dort diesen QR-Code scannen – oder <b>${esc(kurzUrl("spiel.html"))}</b> öffnen, „Als Spieltisch verbinden“ wählen und den Code eingeben.</p>
+      ${codeBox(linkUrl("spiel.html?tisch=" + encodeURIComponent(code)), code, "Code für das neue Tisch-Gerät", "Der Code gilt einmal und 24 Stunden. Der Spielstand ist gesichert; sobald das neue Gerät verbunden ist, endet die Runde hier.")}
       <p class="note ei-warte">Warte auf das neue Gerät …</p></div>`;
     $("#tw-zu").onclick = zu;
     clearInterval(wechselUhr);
@@ -448,7 +448,7 @@
     toast(`Dieses Gerät ist jetzt der Spieltisch von „${d.titel}“.`);
     return d;
   }
-  // Aufruf über den QR-Code: index.html?tisch=CODE
+  // Aufruf über den QR-Code: spiel.html?tisch=CODE
   (() => {
     const p = new URLSearchParams(location.search), code = p.get("tisch"), ab = p.get("ab"); if (!code) return;
     p.delete("tisch"); p.delete("ab"); history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);

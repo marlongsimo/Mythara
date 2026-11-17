@@ -5,7 +5,7 @@
  * Aufruf: node tests/haendler.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden");
-const URL = "http://localhost:8765/abenteuer/index.html?schnell";
+const URL = "http://localhost:8765/abenteuer/spiel.html?schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const KATALOG = [["w_obsidian", "wuerfel", 75], ["w_elfenbein", "wuerfel", 75], ["w_smaragd", "wuerfel", 75], ["w_rubin", "wuerfel", 75], ["w_glut", "wuerfel", 150], ["w_frost", "wuerfel", 150], ["w_arkan", "wuerfel", 150], ["w_gold", "wuerfel", 150],
   ["r_bronze", "rahmen", 75], ["r_silber", "rahmen", 75], ["r_eisen", "rahmen", 75], ["r_wald", "rahmen", 75], ["r_gold", "rahmen", 150], ["r_flammen", "rahmen", 150], ["r_frost", "rahmen", 150], ["r_splitter", "rahmen", 150], ["r_dornen", "rahmen", 75], ["r_zahnrad", "rahmen", 75], ["r_lorbeer", "rahmen", 150], ["r_krone", "rahmen", 150], ["r_schwingen", "rahmen", 150], ["r_stern", "rahmen", 150], ["r_runen", "rahmen", 150]].map(([id, art, preis]) => ({ id, art, preis }));

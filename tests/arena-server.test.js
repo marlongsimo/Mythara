@@ -7,7 +7,7 @@
  */
 const { chromium } = require("playwright"); const { ALLE } = require("./alle-helden"); const attrappe = require("./arena-server-attrappe.js"); const R = require("../js/regeln.js");
 const FX = Boolean(process.env.EFFEKTE); // EFFEKTE=1: mit Effekten und Klängen (langsamer); prüft zusätzlich, dass beide Spieler Würfel und Treffer hören
-const URL = "http://localhost:8765/abenteuer/index.html?" + (FX ? "" : "schnell&") + "arena=server" + (process.env.HANDY ? "&handy=neu" : ""); // HANDY=1: neue Handy-Bedienung (nur für Bilder; der Ablauf unten bedient die bisherigen Knöpfe)
+const URL = "http://localhost:8765/abenteuer/spiel.html?" + (FX ? "" : "schnell&") + "arena=server" + (process.env.HANDY ? "&handy=neu" : ""); // HANDY=1: neue Handy-Bedienung (nur für Bilder; der Ablauf unten bedient die bisherigen Knöpfe)
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 const S = attrappe(); Object.assign(S.db.nutzer, { "tok-A": "nutzer-A", "tok-B": "nutzer-B" });
 const ID = "00000000-0000-0000-0000-00000000d001";
@@ -203,7 +203,7 @@ const stand = () => R.laden(S.db.kaempfe[ID].st);
         if (n === "rpg_my_wallet") return j(r, { konto: true, waehrung: 0 }); if (n === "rpg_arena_list") return j(r, { konto: true, waehrung: 0, heute: 0, offen: [], mein: null }); if (n === "rpg_arena_modes") return j(r, {});
         if (n === "rpg_arena_invites") return kennt ? j(r, { an_mich: [], von_mir: null }) : j(r, { code: "PGRST202", message: "Could not find the function public.rpg_arena_invites without parameters in the schema cache" }, 404);
         if (n === "rpg_arena_squad") return j(r, { konto: true, team: null }); return j(r, { code: "P0001", message: "nicht erwartet: " + n }, 400); });
-      await p.goto("http://localhost:8765/abenteuer/index.html?schnell"); await p.waitForSelector('.dorf-ort[data-hub="arena"]', { timeout: 20000 }); await p.click('.dorf-ort[data-hub="arena"]');
+      await p.goto("http://localhost:8765/abenteuer/spiel.html?schnell"); await p.waitForSelector('.dorf-ort[data-hub="arena"]', { timeout: 20000 }); await p.click('.dorf-ort[data-hub="arena"]');
       await p.waitForSelector(".arena-arten, #arena-erstellen", { timeout: 20000 }); const neu = Boolean(await p.$(".arena-arten")), alt = Boolean(await p.$("#arena-erstellen")); await ctx.close(); return { neu, alt }; };
     const mit = await ohne(true), nicht = await ohne(false);
     check(mit.neu && !mit.alt, "Ohne Link, Datenbank kennt die Server-Arena: Alle sehen die neue Arena mit den drei Spielarten");

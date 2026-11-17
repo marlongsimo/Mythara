@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
   const neu = async (vp) => { const p = await b.newPage({ viewport: vp }); p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => { if (m.type() === 'error' && !/\/rpc\/rpg_(my_heroes|campaign_heroes|hero_levels|campaign_levels|award_xp)\b/.test((m.location() || {}).url || '')) errs.push(m.text()); }); return p; };
 
   const p = await neu({ width: 1280, height: 900 });
-  await p.goto(BASE + '/abenteuer/index.html'); await p.evaluate(() => localStorage.clear()); await p.reload();
+  await p.goto(BASE + '/abenteuer/spiel.html'); await p.evaluate(() => localStorage.clear()); await p.reload();
   check(await p.isVisible('#mythara') && !(await p.isVisible('#intro')), 'Start: Mythara-Bildschirm, Abenteuer-Titel verborgen');
   check(await p.title() === 'Mythara spielen – Das Strategie-Rollenspiel für den Spieltisch | Case Unlocked', 'Seitentitel Mythara');
   check(await p.evaluate(() => { const i = document.querySelector('.my-logo img'); return i.complete && i.naturalWidth > 0; }), 'Logo geladen');
@@ -27,7 +27,7 @@ const { chromium } = require('playwright');
   await Promise.all([p.waitForURL(/handy\.html#ABEN-123456$/), p.click('#my-beitreten')]);
   check(/handy\.html#ABEN-123456$/.test(p.url()), 'Vollständiger Code führt zur Handy-Ansicht mit Code');
   // Gast ohne Registrierung und zurück
-  await p.goto(BASE + '/abenteuer/index.html');
+  await p.goto(BASE + '/abenteuer/spiel.html');
   await p.click('#my-gast-start');
   check(await p.isVisible('#hub') && !(await p.isVisible('#mythara')), 'Als Gast spielen → Spielerseite');
   check(/Gast/.test(await p.textContent('#hub-profil')) && await p.isVisible('#hub-gast-hinweis'), 'Spielerseite zeigt „Gast“ und den Hinweis aufs Konto');
@@ -53,16 +53,16 @@ const { chromium } = require('playwright');
   check(await p.evaluate(() => { const t = document.querySelector('#hub-seite .hilfe').textContent; return /Wie gewürfelt wird/.test(t) && /Rettungswürfe/.test(t) && /alle TP kommen zurück/.test(t) && document.querySelectorAll('#hub-seite .hilfe-teil').length >= 12; }), 'Hilfe erklärt die Grundlagen: Würfeln, Rettungswürfe, Heilen (aufklappbare Abschnitte)');
   await p.click('[data-hilfe-zu="rettung"]');
   check(await p.evaluate(() => document.querySelector('#hilfe-rettung').open), 'Inhaltsverzeichnis öffnet den gewählten Abschnitt');
-  await p.goto(BASE + '/abenteuer/index.html');
+  await p.goto(BASE + '/abenteuer/spiel.html');
   await until(p, () => !document.querySelector('#hub').hidden);
   await p.click('#hub-profil-knopf'); await p.click('#hub-menue [data-profil="anmelden"]');
   check(await p.isVisible('#mythara') && await p.isVisible('#my-name'), 'Profilmenü → Anmelden führt zur Startseite');
   // QR: ohne Kamera-Unterstützung eine Erklärung
-  await p.evaluate(() => sessionStorage.clear()); await p.goto(BASE + '/abenteuer/index.html');
+  await p.evaluate(() => sessionStorage.clear()); await p.goto(BASE + '/abenteuer/spiel.html');
   await p.click('#my-qr');
   check(/Kamera deines Handys/.test(await p.textContent('#my-scanner')), 'QR-Code scannen: Hinweis zur Handy-Kamera');
   // Konten: Benutzername und Passwort
-  await p.goto(BASE + '/abenteuer/index.html');
+  await p.goto(BASE + '/abenteuer/spiel.html');
   check(await p.isVisible('#my-name') && await p.isVisible('#my-pw') && await p.isVisible('#my-reg') && !(await p.$('#my-mail')), 'Anmeldung mit Benutzername und Passwort (keine E-Mail)');
   await p.click('[data-auge="my-pw"]');
   check(await p.getAttribute('#my-pw', 'type') === 'text', 'Passwort anzeigen');
@@ -79,7 +79,7 @@ const { chromium } = require('playwright');
   check(/stimmen nicht überein/.test(await p.textContent('#my-konto-fb')), 'Abweichende Wiederholung abgewiesen');
   // Handy
   const h = await neu({ width: 390, height: 844 });
-  await h.goto(BASE + '/abenteuer/index.html');
+  await h.goto(BASE + '/abenteuer/spiel.html');
   check(await h.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Handy: kein seitliches Scrollen');
   check(await h.evaluate(() => document.querySelector('#my-gast-titel').getBoundingClientRect().top < document.querySelector('#my-konto-titel').getBoundingClientRect().top), 'Handy: Gastzugang steht oben');
   check(errs.length === 0, 'keine Konsolenfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));

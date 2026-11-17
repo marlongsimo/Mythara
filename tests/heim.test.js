@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
   p.setDefaultTimeout(15000); p.on('pageerror', (e) => errs.push(e.message)); p.on('dialog', (d) => d.accept());
   const sichtbar = (id) => p.evaluate((id) => !document.querySelector('#' + id).hidden, id);
   try {
-    await p.goto(BASE + '/abenteuer/index.html?schnell&testlauf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
+    await p.goto(BASE + '/abenteuer/spiel.html?schnell&testlauf'); await p.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }); await p.reload();
     await p.click('#my-gast-start');
     check(await sichtbar('hub'), 'Spielerseite (Startseite) offen');
     check(await p.evaluate(() => getComputedStyle(document.querySelector('header.top')).display === 'none'), 'Im Dorf gibt es keine Kopfzeile (MYTHARA als Weg nach Hause erscheint erst im Abenteuer)');

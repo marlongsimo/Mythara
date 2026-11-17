@@ -6,7 +6,7 @@
  * Aufruf: node tests/reichweite.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright"); const R = require("../js/regeln.js");
-const BASIS = "http://localhost:8765/abenteuer/index.html?testlauf&schnell";
+const BASIS = "http://localhost:8765/abenteuer/spiel.html?testlauf&schnell";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 console.log("Reichweiten");
 // Regeln: jede Fähigkeit jedes Helden
