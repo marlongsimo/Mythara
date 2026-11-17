@@ -22,6 +22,7 @@
     elementarist_s1: { held: "elementarist", name: "Sternenrufer", text: "Eine Robe wie der Nachthimmel, ein Buch, aus dem Licht aufsteigt, Sternbilder, die um seine Hände kreisen. Vaelin, wenn das Feuer vom Himmel kommt." },
     trickser_s1: { held: "trickser", name: "Kartenlegerin", text: "Violette Tücher, Münzen und ein Mond am Gürtel, drei Karten, die über ihrer Hand schweben. Silra, wenn sie dir die Zukunft verkauft und die Börse gleich mitnimmt." },
     kopfgeldjaeger_s1: { held: "kopfgeldjaeger", name: "Waldjäger", text: "Ein Wolfsfell über dem Laubumhang, eine Armbrust mit Zielrohr, eine Laterne am Gürtel. Orin auf einer Fährte, die er seit Wochen hält." },
+    wildnislaeufer_s1: { held: "wildnislaeufer", name: "Eichenhüter", text: "Eichenlaub auf dem Umhang, ein Wolfsfell über der Schulter, ein Bogen, an dem grünes Licht entlangläuft. Kael, wenn der Wald ihn zu den Seinen zählt." },
     tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
     schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },
