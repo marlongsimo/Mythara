@@ -24,6 +24,7 @@
     kopfgeldjaeger_s1: { held: "kopfgeldjaeger", name: "Waldjäger", text: "Ein Wolfsfell über dem Laubumhang, eine Armbrust mit Zielrohr, eine Laterne am Gürtel. Orin auf einer Fährte, die er seit Wochen hält." },
     wildnislaeufer_s1: { held: "wildnislaeufer", name: "Eichenhüter", text: "Eichenlaub auf dem Umhang, ein Wolfsfell über der Schulter, ein Bogen, an dem grünes Licht entlangläuft. Kael, wenn der Wald ihn zu den Seinen zählt." },
     duellant_s1: { held: "duellant", name: "Eulenritterin", text: "Eine Schleiereule auf der Schulter, Rüstung mit goldenem Baum, ein Umhang wie der Sternenhimmel. Isolde, die keinen Schritt zu viel macht." },
+    schattenlaeufer_s1: { held: "schattenlaeufer", name: "Nachtkrähe", text: "Eine Kapuze voller Runen, eine Krähe auf der Schulter, zwei Dolche, an denen violetter Rauch hängt. Darian in der Nacht, in der er nicht vorhat, ungesehen zu bleiben." },
     tiergefaehrte_s1: { held: "tiergefaehrte", name: "Herbstjägerin", text: "Ein Umhang aus Herbstlaub, ein Bogen voller Glut, und hinter ihr der Geist eines Hirschs. Faye, wenn der Wald mit ihr zieht." },
     schattenmagier_s1: { held: "schattenmagier", name: "Rabenkönigin", text: "Federn und violettes Feuer, ein Rabe auf dem Stab, Monde auf dem Kleid. Morwen, wie sie in Albträumen erscheint." },
     gelehrter_sternenkunde: { held: "gelehrter", name: "Sternenkunde", text: "Nachtblauer Samt mit goldenen Sternbildern, eine Armillarsphäre aus Licht in der Hand. Lyra, wie sie in den Archiven von Veyrholm gemalt worden wäre." },
