@@ -36,7 +36,7 @@
   const TISCH_STANDARD = true, TISCH_WINKEL = window.matchMedia("(max-width: 700px)").matches ? 22 : 27;
   document.documentElement.style.setProperty("--tisch-winkel", TISCH_WINKEL + "deg");
   const GANZ_MASS = 0.8; // alle Miniaturen gemeinsam größer oder kleiner (1 = Helden 1,25 Felder hoch)
-  const GANZ = { schildwaechter: 0.589, berserker: 0.654, duellant: 0.435, gelehrter: 0.561, elementarist: 0.593, schattenmagier: 0.633, schattenlaeufer: 0.563, trickser: 0.535, assassine: 0.567, lichtbringer: 0.535, wanderheiler: 0.628, inquisitor: 0.561, wildnislaeufer: 0.524, tiergefaehrte: 0.611, kopfgeldjaeger: 0.648, wolf: 0.472, sera: 0.659 }; // Breite : Höhe
+  const GANZ = { schildwaechter: 0.589, berserker: 0.654, duellant: 0.435, gelehrter: 0.561, elementarist: 0.593, schattenmagier: 0.633, runenklinge: 0.561, schattenlaeufer: 0.563, trickser: 0.535, assassine: 0.567, lichtbringer: 0.535, wanderheiler: 0.628, inquisitor: 0.561, wildnislaeufer: 0.524, tiergefaehrte: 0.611, kopfgeldjaeger: 0.648, wolf: 0.472, sera: 0.659 }; // Breite : Höhe
   const GANZ_HOCH = { wolf: 0.8, sera: 1.15 }, GANZ_HOCH_STANDARD = 1.25; // Höhe in Feldern
   // Gegner mit Ganzkörperbild (img/gegner/ganz/<art>.webp): [Breite : Höhe, Höhe in Feldern, schwebt?] – Kampagne für Kampagne ergänzen
   const GANZ_GEGNER = { schlammkroete: [1.106, 0.8], irrlicht: [0.489, 0.7, true], alte_unke: [1.144, 1.6], moorleiche: [0.55, 1.25], alwine: [0.52, 1.4, true],

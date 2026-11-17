@@ -137,6 +137,11 @@
         return { typ: "ende" };
       }
       merk = merk || {};
+      if (f.fid === "runenklinge" && st.zug.aktion && st.zug.bonus) { // Thessa: Runenschritt, um heranzukommen; Entladung vor dem Schlag
+        const nah = (n) => st.figuren.filter((o) => o.seite !== f.seite && R.lebt(o) && Math.max(Math.abs(o.x - f.x), Math.abs(o.y - f.y)) <= n).length;
+        if (!(st.zug.bewegung > 0) && !st.zug.schritt && !nah(1) && nah(4) && R.verfuegbar(st, "runenschritt")) return { typ: "aktion", aktion: "runenschritt", ziel: f.id };
+        if (!f.z.entladung && nah(1) && R.verfuegbar(st, "entladung") && (f.tp < f.tpMax * 0.6 || f.plaetze[0] + f.plaetze[1] > 2 || nah(2) > 1)) return { typ: "aktion", aktion: "entladung", ziel: f.id };
+      }
       const s = merk.staerke == null ? 1 : Math.max(0, Math.min(1, merk.staerke)), traege = Math.random() < (1 - s) * 0.6; // träge: kein Stellungsspiel in diesem Schritt
       // Verschenkter Zug: Je schwächer, desto öfter bleibt die Aktion eines Helden ungenutzt (er läuft nur). Einmal je Zug ausgelost.
       const zugKey = f.id + ":" + st.runde; if (merk.patzKey !== zugKey) { merk.patzKey = zugKey; merk.patzt = Math.random() < (1 - s) * PATZER; }

@@ -515,6 +515,8 @@
   function rkEff(st, z, a, spec = {}) {
     let rk = z.rk + (hatDing(z, "amulett") ? 1 : 0);
     if (z.z.schild) rk += 2;
+    // Thessa, Runenhaut: +2 RK ab zwei übrigen Zauberplätzen (Meisterschaft Stufe 5: ab einem), +1 bei genau einem
+    if (istFigA(z, "runenklinge")) { const n = (z.plaetze || [0, 0])[0] + (z.plaetze || [0, 0])[1]; rk += n >= 2 || (n >= 1 && hsA(z) >= 5) ? 2 : n === 1 ? 1 : 0; }
     { const kreis = heldZ(st, z) ? st.figuren.filter((l) => istFigA(l, "lichtbringer") && gleichesTeam(st, l, z) && lebt(l) && l.z.schutzkreis > st.runde && abstand(l, z) <= 2) : [];
       if (kreis.length) rk += kreis.some((l) => hsA(l) >= 10) ? 3 : 2; }
     if (z.z.analyse === st.runde) rk -= 2;
@@ -744,6 +746,8 @@
       erg.schaden = s;
       st.log.push({ t: `${a.name}: ${spec.name}${st.arena ? " auf " + z.name : ""} – W20 ${w}${vtext} + ${spec.bonus} = ${total} gegen RK ${rk}: ${krit ? "kritischer Treffer" : "Treffer"}, ${s} Schaden.${spec.zusatzText || ""}`, art: a.seite === "gegner" ? "gegner" : "wurf", wurf: w });
       schaden(st, z, s, { krit });
+      // Thessa, Rückkopplung: Wer sie im Nahkampf trifft, nimmt 1W4 + 1 (Meisterschaft Stufe 8: 1W8 + 1)
+      if (spec.nah && istFigA(z, "runenklinge") && lebt(a) && a.seite !== z.seite) { const rk2 = W(st.r, hsA(z) >= 8 ? 8 : 4) + 1; st.log.push({ t: `Rückkopplung: ${a.name} nimmt ${rk2} Schaden.` }); schaden(st, a, rk2); }
       if (spec.nachTreffer) spec.nachTreffer(erg);
       if (a.seite === "spieler" && st.zug) st.zug.getroffen.push(z.id);
     } else {
@@ -780,6 +784,9 @@
     if (waffe && kl.waffenExtraNah && abstand(f, z) <= 1) extra.push(kl.waffenExtraNah); // Krieger: nur im Nahkampf
     let krit = 20, zusatz = "";
     if (f.z.raserei && a.attr === "STR") extra.push("0W1+1");
+    // Thessa: Entladung (+2W6 auf den nächsten Treffer der Runenklinge); Meisterschaft Stufe 8: +1W6, Stufe 10: +2W6
+    const entladung = Boolean(f.z.entladung && a.id === "runenklinge"); if (entladung) extra.push("2W6");
+    if (istFig(f, "runenklinge") && a.id === "runenklinge" && hs(f) >= 8) extra.push(hs(f) >= 10 ? "2W6" : "1W6");
     // Darian, Schattenstoß (ab Stufe 2): Angriff aus dem Versteck +1W6 und kritisch ab 19
     const schattenstoss = istFig(f, "schattenlaeufer") && FD.altStufe(f.stufe) >= 2 && f.z.versteckt;
     if (schattenstoss) extra.push("1W6");
@@ -808,6 +815,7 @@
       hinterhaltImmer: istFig(f, "trickser") && hs(f) >= 10 && /dolch/.test(a.id),
       nachTreffer: () => {
         if (giftAktiv && lebt(z)) { z.z.vergiftet = 1; delete f.z.gift; }
+        if (entladung) { delete f.z.entladung; for (const o of st.figuren.filter((o) => o !== z && o.seite !== f.seite && lebt(o) && abstand(o, z) <= 1)) { const s2 = W(st.r, 6); st.log.push({ t: `Die Entladung springt auf ${o.name} über: ${s2} Schaden.` }); schaden(st, o, s2); } }
         // Seran, Sühne: Jeder Waffentreffer auf sein Brandmal-Ziel heilt ihn um 1W4
         if (istFig(f, "inquisitor") && z.z.brandmal === f.id && a.art === "angriff" && f.tp > 0 && f.tp < f.tpMax) heilen(st, f, W(st.r, 4), `${f.name}: Sühne`);
         // Brogars Kräutermesser: ab Stufe 5 vergiftet der erste Treffer je Kampf (Betäubungskraut); ab Stufe 10 heilt jeder Treffer den am schwersten Verletzten in 5 Feldern
@@ -867,7 +875,8 @@
       case "rettungswurf": case "geschoss": case "albtraum": case "bannkreis": case "spott": case "analyse":
         return gegner.filter((o) => inReich(o, a.reichweite));
       case "kontrolle": return gegner.filter((o) => inReich(o, a.reichweite) && (!a.nurUntot || GEGNER[o.art].untot || (a.entzaubert && zauberAuf(o).length)) && !(a.zustand === "netz" && o.z.festgehalten) && !(a.zustand === "liegend" && o.z.liegend));
-      case "flaeche": return gegner.filter((o) => inReich(o, a.reichweite));
+      case "flaeche": if (a.umSelbst) return gegner.some((o) => abstand(f, o) <= a.groesse) ? [f] : []; return gegner.filter((o) => inReich(o, a.reichweite)); // umSelbst (Runensturm): Kreis um die Figur selbst
+      case "entladung": return f.z.entladung ? [] : [f];
       case "stoss": case "entwaffnen": return gegner.filter((o) => weite(f, o) <= 1);
       case "mal": {
         const feld = a.mal === "jaeger" ? "mal_jaeger" : "brandmal";
@@ -1071,7 +1080,8 @@
       case "gift": f.z.gift = true; st.log.push({ t: `${f.name} bestreicht die Klinge mit Gift.` }); break;
       case "rueckzug": f.z.rueckzug = true; st.log.push({ t: `${f.name} zieht sich geschickt zurück.` }); break;
       case "spurt": st.zug.bewegung += st.zug.basis || 6; st.log.push({ t: `${f.name} spurtet.` }); break;
-      case "schattenschritt": st.zug.schritt = 6; st.log.push({ t: `${f.name} tritt in die Schatten.` }); break;
+      case "schattenschritt": st.zug.schritt = a.weite || 6; st.log.push({ t: a.weite ? `${f.name} schreibt einen Runenschritt.` : `${f.name} tritt in die Schatten.` }); break;
+      case "entladung": f.z.entladung = true; st.log.push({ t: `${f.name} lädt die Klinge auf.` }); break;
       case "spiegelbilder": f.z.spiegel = a.bilder || 3; st.log.push({ t: `${f.name} teilt sich in ${a.bilder === 4 ? "vier" : "drei"} Spiegelbilder.`, art: "gut" }); break;
       case "segen": {
         const zs2 = spielerFiguren(st).filter((o) => o.tp > 0 && !o.z.segen && abstand(f, o) <= (a.reichweite || 5)).sort((x, y) => abstand(f, x) - abstand(f, y)).slice(0, a.ziele || 3);
@@ -1223,7 +1233,7 @@
     f.gehandeltRunde = st.runde;
     // Elara, Meisterschaft: Der Schutzkreis heilt jede Runde
     if (istFig(f, "lichtbringer") && hs(f) >= 10 && f.z.schutzkreis > st.runde && lebt(f)) for (const o of st.figuren) if (o.seite === "spieler" && !o.tot && o.tp > 0 && o.tp < o.tpMax && abstand(f, o) <= 2) heilen(st, o, W(st.r, 6), `${f.name}: Schutzkreis`);
-    delete f.z.ruecksichtslos;
+    delete f.z.ruecksichtslos; delete f.z.entladung;
     let bew = f.seite === "gegner" ? Math.round((GEGNER[f.art].bewegung != null ? GEGNER[f.art].bewegung : 6) * (st.gegnerTempo || 1)) : bewegungVon(f);
     // Segen der Kampagne: Leichte Füße (+1), Ortskunde (+2 in der ersten Runde)
     if (f.seite === "spieler" && f.fid && st.segen && st.segen.length) bew += (st.segen.includes("fuesse") ? 1 : 0) + (st.segen.includes("ortskunde") && st.runde === 1 ? 2 : 0);

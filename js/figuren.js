@@ -134,6 +134,24 @@
       moment: "Das Flüstern: Sie sieht, wer ein Angebot des Abts bekommen hat.",
     },
 
+    /* Thessa – die vierte Zauberin, für die vordere Reihe. Noch nicht freigegeben: Sie steht nicht in REIHE (siehe FREIGABE),
+       das Spiel zeigt sie deshalb nirgends an. Die Regeln kennen sie schon. Werte nach Simulation, siehe doku/konzepte. */
+    runenklinge: {
+      name: "Thessa", titel: "Die Runenklinge", klasse: "zauberer", rolle: "vorn, Nahkampf mit Magie", spruch: "Ich schreibe es dir ins Fleisch.",
+      werte: { INT: 16, KON: 14, GES: 13, WEI: 12, CHA: 10, STR: 8 }, rk: [14, 14, 14], tpMinus: -3, tpJeStufe: 3, ruestung: "Runenhaut",
+      faehig: [
+        { id: "runenklinge", name: "Runenklinge", typ: "aktion", ab: 1, art: "angriff", reichweite: 1, attr: "INT", schaden: "1W10", magisch: true, text: "Nahkampf. Du schlägst mit Intelligenz statt mit Stärke zu." },
+        { id: "runenhaut", name: "Runenhaut", typ: "passiv", ab: 1, text: "+2 RK, solange du mindestens zwei Zauberplätze übrig hast; +1 RK bei genau einem. Jeder ausgegebene Platz macht dich verwundbarer." },
+        { id: "rueckkopplung", name: "Rückkopplung", typ: "passiv", ab: 1, text: "Wer dich im Nahkampf trifft, nimmt 1W4 + 1 Schaden." },
+        { id: "runenschritt", name: "Runenschritt", typ: "bonus", ab: 1, art: "schattenschritt", weite: 3, pro: { kampf: 2 }, text: "Bis zu 3 Felder versetzen, über Hindernisse hinweg und ohne Gelegenheitsangriffe." },
+        { id: "entladung", name: "Entladung", typ: "bonus", ab: 1, art: "entladung", platz: 1, text: "Kostet einen Zauberplatz: Dein nächster Treffer mit der Runenklinge in diesem Zug macht +2W6, und jeder weitere Gegner neben dem Ziel nimmt 1W6." },
+        { id: "runensturm", name: "Runensturm", typ: "aktion", ab: 3, art: "flaeche", form: "kreis", groesse: 1, reichweite: 1, umSelbst: true, schaden: "3W6", rettung: "GES", attr: "INT", halb: true, zustand: "verlangsamt", dauer: 1, platz: 2, text: "Alle Gegner neben dir: GES-Rettungswurf, sonst 3W6 und 1 Runde verlangsamt; bei Erfolg halber Schaden." },
+      ],
+      aussen: { name: "Runenkunde", text: "Liest und schreibt die Zeichen der Siegel; erkennt, was ein Siegel hält und was es schwächt." },
+      versuchung: "„Ich zeige dir die Rune, die alles bindet.“ Wahr, aber sie bindet auch die, die sie schreibt.",
+      moment: "Vor einem Siegel: Sie liest ohne Probe, in welchem Zustand es ist.",
+    },
+
     /* ============ Schurken ============ */
     schattenlaeufer: {
       name: "Darian", titel: "Der Schattenläufer", klasse: "schurke", rolle: "Mitte, Fallen, Bewegung", spruch: "Ich war nie hier.",
@@ -288,12 +306,16 @@
     },
   };
   const REIHE = ["schildwaechter", "berserker", "duellant", "gelehrter", "elementarist", "schattenmagier", "schattenlaeufer", "trickser", "assassine", "lichtbringer", "wanderheiler", "inquisitor", "wildnislaeufer", "tiergefaehrte", "kopfgeldjaeger"];
+  /* Freigabe neuer Helden: Zeitpunkt (ISO, z. B. "2027-01-15T20:00:00+01:00") oder null = noch nicht. Erst ab dann steht der Held in REIHE
+     und damit in Heldenhalle, Heldenwahl und Arena-Auswahl. In der Datenbank gehört dazu der Eintrag im Heldenkatalog (Migration 032). */
+  const FREIGABE = { runenklinge: null };
+  for (const [fid, ab] of Object.entries(FREIGABE)) if (ab && new Date(ab).getTime() <= Date.now() && FIGUREN[fid] && !REIHE.includes(fid)) REIHE.splice(REIHE.indexOf("schattenmagier") + 1, 0, fid);
 
   const mod = (v) => Math.floor((v - 10) / 2);
   /** TP: Stufe 1 = Würfel + KON, je weitere Stufe halber Würfel + 1 + KON */
   function tpAlt(fid, stufe) {
     const d = FIGUREN[fid], w = KLASSEN[d.klasse].wuerfel, kon = mod(d.werte.KON);
-    return w + kon + (stufe - 1) * (w / 2 + 1 + kon) - (d.tpMinus || 0) + (KLASSEN[d.klasse].tpJeStufe || 0) * stufe;
+    return w + kon + (stufe - 1) * (w / 2 + 1 + kon) - (d.tpMinus || 0) + ((KLASSEN[d.klasse].tpJeStufe || 0) + (d.tpJeStufe || 0)) * stufe;
   }
   const tpVon = (fid, stufe) => (STUFEN10.aktiv ? tp10(fid, stufe) : tpAlt(fid, stufe));
   /** Alle Fähigkeiten der Figur bis zur Stufe (Klasse + eigene), in Anzeige-Reihenfolge */
@@ -361,6 +383,7 @@
     wanderheiler: { 5: "Lebenshauch 2× je Kampf; Kräutermesser mit Betäubungskraut: der erste Treffer je Kampf vergiftet das Ziel", 8: "Bewahren verteilt 6 × Stufe statt 5 × Stufe; Kräutermesser 1W6 statt 1W4", 10: "Massenheilwort heilt alle Verbündeten in 5 Feldern; jeder Treffer mit dem Kräutermesser heilt den am schwersten Verletzten in 5 Feldern um 1W4", titel: "Der Barmherzige" },
     inquisitor: { 5: "Brandmal 2× je Kampf ohne Zauberplatz", 8: "Befehle („Flieh!“, „Knie!“) treffen auch Ziele daneben", 10: "Gerechter Zorn +3W6, und das Brandmal-Ziel kann nicht fliehen", titel: "Hammer der Wahrheit" },
     wildnislaeufer: { 5: "Jägermal +1W8 statt +1W6", 8: "Fesselnder Pfeil 3× je Rast", 10: "Doppelschuss trifft drei Ziele", titel: "Falke des Nordens" },
+    runenklinge: { 5: "Runenhaut gibt +2 RK schon ab einem Zauberplatz", 8: "Runenklinge +1W6 Schaden, Rückkopplung 1W8 + 1", 10: "Runenklinge +2W6 Schaden; die erste Entladung jedes Kampfes kostet keinen Zauberplatz", titel: "Herrin der Runen" },
     tiergefaehrte: { 5: "Grau hat 10 Lebenspunkte mehr", 8: "Grau: Umreißen 3× je Rast", 10: "Grau greift zweimal je Zug an", titel: "Herrin der Wölfe" },
     kopfgeldjaeger: { 5: "Netz mit 5 Feldern Reichweite, Befreien gegen SG +2", 8: "Fangschuss zweimal je Runde", 10: "Erlegen 2× je Kampf, +4W6 statt +2W6", titel: "Der Unentrinnbare" },
   };
@@ -381,6 +404,7 @@
     inquisitor: [[5, "brandmal", { freiJeKampf: 2 }], [8, "befehl", { radius: 1 }], [8, "befehl_knie", { radius: 1 }]],
     wildnislaeufer: [[8, "fesselpfeil", { pro: { rast: 3 } }], [10, "doppelschuss", { ziele: 3 }]],
     tiergefaehrte: [[8, "wolf_umreissen", { pro: { rast: 3 } }]],
+    runenklinge: [[10, "entladung", { freiJeRast: 1 }]],
     kopfgeldjaeger: [[5, "netz", { reichweite: 5, sgPlus: 2 }], [10, "erlegen", { pro: { kampf: 2 } }]],
   };
   /** Meistertitel eines Helden (ab Stufe 10), sonst null – und der Titel, der gerade gilt */
@@ -451,7 +475,7 @@
   /** Hardcore ist vorerst abgeschaltet: Der Modus wird neu entwickelt, sobald alles andere steht. Neue Kampagnen und Kämpfe
    *  starten in Normal; bereits laufende Hardcore-Kampagnen spielen unverändert weiter. */
   const HARDCORE = false;
-  const API = { HARDCORE, SEGEN, XP_BIS, XP_FAKTOR, xpFuer, stufeAusXp, KLASSEN, PLAETZE, KLASSE_FAEHIG, FIGUREN, REIHE, tpVon, faehigVon, bild, mod,
+  const API = { HARDCORE, SEGEN, XP_BIS, XP_FAKTOR, xpFuer, stufeAusXp, KLASSEN, PLAETZE, KLASSE_FAEHIG, FIGUREN, REIHE, FREIGABE, tpVon, faehigVon, bild, mod,
     STUFEN10, altStufe, neuAb, uebung, plaetzeVon, rkVon, werteVon, hauptAttr, tp10, tpAlt, AUFSTIEG, BESSER, stufenpfad, meistertitel, titelVon, SCHWIERIGKEIT,
     /** höchste Stufe des geltenden Modells (für „alle Fähigkeiten dieser Figur“) */
     maxStufe: () => (STUFEN10.aktiv ? 10 : 3) };

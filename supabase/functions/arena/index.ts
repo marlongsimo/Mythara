@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Mythara – Edge Function „arena“: Der Server rechnet den Arena-Kampf. GEBAUTE DATEI – nicht von Hand ändern.
 // Quelle: server/*.js und js/{figuren,regeln}.js · bauen mit: node tools/arena-funktion-bauen.js
-// Stand der Regeln: regeln.js v85, figuren.js v31
+// Stand der Regeln: regeln.js v86, figuren.js v32
 
 /* ===== js/figuren.js ===== */
 /*
@@ -138,6 +138,24 @@
       aussen: { name: "Blendwerk", text: "Erzeugt Geräusche und Trugbilder als Ablenkung, erkennt Illusionen." },
       versuchung: "„Niemand wird je wieder sehen, wer du wirklich bist.“ Wahr, auch nicht die, die dich lieben.",
       moment: "Das Flüstern: Sie sieht, wer ein Angebot des Abts bekommen hat.",
+    },
+
+    /* Thessa – die vierte Zauberin, für die vordere Reihe. Noch nicht freigegeben: Sie steht nicht in REIHE (siehe FREIGABE),
+       das Spiel zeigt sie deshalb nirgends an. Die Regeln kennen sie schon. Werte nach Simulation, siehe doku/konzepte. */
+    runenklinge: {
+      name: "Thessa", titel: "Die Runenklinge", klasse: "zauberer", rolle: "vorn, Nahkampf mit Magie", spruch: "Ich schreibe es dir ins Fleisch.",
+      werte: { INT: 16, KON: 14, GES: 13, WEI: 12, CHA: 10, STR: 8 }, rk: [14, 14, 14], tpMinus: -3, tpJeStufe: 3, ruestung: "Runenhaut",
+      faehig: [
+        { id: "runenklinge", name: "Runenklinge", typ: "aktion", ab: 1, art: "angriff", reichweite: 1, attr: "INT", schaden: "1W10", magisch: true, text: "Nahkampf. Du schlägst mit Intelligenz statt mit Stärke zu." },
+        { id: "runenhaut", name: "Runenhaut", typ: "passiv", ab: 1, text: "+2 RK, solange du mindestens zwei Zauberplätze übrig hast; +1 RK bei genau einem. Jeder ausgegebene Platz macht dich verwundbarer." },
+        { id: "rueckkopplung", name: "Rückkopplung", typ: "passiv", ab: 1, text: "Wer dich im Nahkampf trifft, nimmt 1W4 + 1 Schaden." },
+        { id: "runenschritt", name: "Runenschritt", typ: "bonus", ab: 1, art: "schattenschritt", weite: 3, pro: { kampf: 2 }, text: "Bis zu 3 Felder versetzen, über Hindernisse hinweg und ohne Gelegenheitsangriffe." },
+        { id: "entladung", name: "Entladung", typ: "bonus", ab: 1, art: "entladung", platz: 1, text: "Kostet einen Zauberplatz: Dein nächster Treffer mit der Runenklinge in diesem Zug macht +2W6, und jeder weitere Gegner neben dem Ziel nimmt 1W6." },
+        { id: "runensturm", name: "Runensturm", typ: "aktion", ab: 3, art: "flaeche", form: "kreis", groesse: 1, reichweite: 1, umSelbst: true, schaden: "3W6", rettung: "GES", attr: "INT", halb: true, zustand: "verlangsamt", dauer: 1, platz: 2, text: "Alle Gegner neben dir: GES-Rettungswurf, sonst 3W6 und 1 Runde verlangsamt; bei Erfolg halber Schaden." },
+      ],
+      aussen: { name: "Runenkunde", text: "Liest und schreibt die Zeichen der Siegel; erkennt, was ein Siegel hält und was es schwächt." },
+      versuchung: "„Ich zeige dir die Rune, die alles bindet.“ Wahr, aber sie bindet auch die, die sie schreibt.",
+      moment: "Vor einem Siegel: Sie liest ohne Probe, in welchem Zustand es ist.",
     },
 
     /* ============ Schurken ============ */
@@ -294,12 +312,16 @@
     },
   };
   const REIHE = ["schildwaechter", "berserker", "duellant", "gelehrter", "elementarist", "schattenmagier", "schattenlaeufer", "trickser", "assassine", "lichtbringer", "wanderheiler", "inquisitor", "wildnislaeufer", "tiergefaehrte", "kopfgeldjaeger"];
+  /* Freigabe neuer Helden: Zeitpunkt (ISO, z. B. "2027-01-15T20:00:00+01:00") oder null = noch nicht. Erst ab dann steht der Held in REIHE
+     und damit in Heldenhalle, Heldenwahl und Arena-Auswahl. In der Datenbank gehört dazu der Eintrag im Heldenkatalog (Migration 032). */
+  const FREIGABE = { runenklinge: null };
+  for (const [fid, ab] of Object.entries(FREIGABE)) if (ab && new Date(ab).getTime() <= Date.now() && FIGUREN[fid] && !REIHE.includes(fid)) REIHE.splice(REIHE.indexOf("schattenmagier") + 1, 0, fid);
 
   const mod = (v) => Math.floor((v - 10) / 2);
   /** TP: Stufe 1 = Würfel + KON, je weitere Stufe halber Würfel + 1 + KON */
   function tpAlt(fid, stufe) {
     const d = FIGUREN[fid], w = KLASSEN[d.klasse].wuerfel, kon = mod(d.werte.KON);
-    return w + kon + (stufe - 1) * (w / 2 + 1 + kon) - (d.tpMinus || 0) + (KLASSEN[d.klasse].tpJeStufe || 0) * stufe;
+    return w + kon + (stufe - 1) * (w / 2 + 1 + kon) - (d.tpMinus || 0) + ((KLASSEN[d.klasse].tpJeStufe || 0) + (d.tpJeStufe || 0)) * stufe;
   }
   const tpVon = (fid, stufe) => (STUFEN10.aktiv ? tp10(fid, stufe) : tpAlt(fid, stufe));
   /** Alle Fähigkeiten der Figur bis zur Stufe (Klasse + eigene), in Anzeige-Reihenfolge */
@@ -367,6 +389,7 @@
     wanderheiler: { 5: "Lebenshauch 2× je Kampf; Kräutermesser mit Betäubungskraut: der erste Treffer je Kampf vergiftet das Ziel", 8: "Bewahren verteilt 6 × Stufe statt 5 × Stufe; Kräutermesser 1W6 statt 1W4", 10: "Massenheilwort heilt alle Verbündeten in 5 Feldern; jeder Treffer mit dem Kräutermesser heilt den am schwersten Verletzten in 5 Feldern um 1W4", titel: "Der Barmherzige" },
     inquisitor: { 5: "Brandmal 2× je Kampf ohne Zauberplatz", 8: "Befehle („Flieh!“, „Knie!“) treffen auch Ziele daneben", 10: "Gerechter Zorn +3W6, und das Brandmal-Ziel kann nicht fliehen", titel: "Hammer der Wahrheit" },
     wildnislaeufer: { 5: "Jägermal +1W8 statt +1W6", 8: "Fesselnder Pfeil 3× je Rast", 10: "Doppelschuss trifft drei Ziele", titel: "Falke des Nordens" },
+    runenklinge: { 5: "Runenhaut gibt +2 RK schon ab einem Zauberplatz", 8: "Runenklinge +1W6 Schaden, Rückkopplung 1W8 + 1", 10: "Runenklinge +2W6 Schaden; die erste Entladung jedes Kampfes kostet keinen Zauberplatz", titel: "Herrin der Runen" },
     tiergefaehrte: { 5: "Grau hat 10 Lebenspunkte mehr", 8: "Grau: Umreißen 3× je Rast", 10: "Grau greift zweimal je Zug an", titel: "Herrin der Wölfe" },
     kopfgeldjaeger: { 5: "Netz mit 5 Feldern Reichweite, Befreien gegen SG +2", 8: "Fangschuss zweimal je Runde", 10: "Erlegen 2× je Kampf, +4W6 statt +2W6", titel: "Der Unentrinnbare" },
   };
@@ -387,6 +410,7 @@
     inquisitor: [[5, "brandmal", { freiJeKampf: 2 }], [8, "befehl", { radius: 1 }], [8, "befehl_knie", { radius: 1 }]],
     wildnislaeufer: [[8, "fesselpfeil", { pro: { rast: 3 } }], [10, "doppelschuss", { ziele: 3 }]],
     tiergefaehrte: [[8, "wolf_umreissen", { pro: { rast: 3 } }]],
+    runenklinge: [[10, "entladung", { freiJeRast: 1 }]],
     kopfgeldjaeger: [[5, "netz", { reichweite: 5, sgPlus: 2 }], [10, "erlegen", { pro: { kampf: 2 } }]],
   };
   /** Meistertitel eines Helden (ab Stufe 10), sonst null – und der Titel, der gerade gilt */
@@ -457,7 +481,7 @@
   /** Hardcore ist vorerst abgeschaltet: Der Modus wird neu entwickelt, sobald alles andere steht. Neue Kampagnen und Kämpfe
    *  starten in Normal; bereits laufende Hardcore-Kampagnen spielen unverändert weiter. */
   const HARDCORE = false;
-  const API = { HARDCORE, SEGEN, XP_BIS, XP_FAKTOR, xpFuer, stufeAusXp, KLASSEN, PLAETZE, KLASSE_FAEHIG, FIGUREN, REIHE, tpVon, faehigVon, bild, mod,
+  const API = { HARDCORE, SEGEN, XP_BIS, XP_FAKTOR, xpFuer, stufeAusXp, KLASSEN, PLAETZE, KLASSE_FAEHIG, FIGUREN, REIHE, FREIGABE, tpVon, faehigVon, bild, mod,
     STUFEN10, altStufe, neuAb, uebung, plaetzeVon, rkVon, werteVon, hauptAttr, tp10, tpAlt, AUFSTIEG, BESSER, stufenpfad, meistertitel, titelVon, SCHWIERIGKEIT,
     /** höchste Stufe des geltenden Modells (für „alle Fähigkeiten dieser Figur“) */
     maxStufe: () => (STUFEN10.aktiv ? 10 : 3) };
@@ -984,6 +1008,8 @@
   function rkEff(st, z, a, spec = {}) {
     let rk = z.rk + (hatDing(z, "amulett") ? 1 : 0);
     if (z.z.schild) rk += 2;
+    // Thessa, Runenhaut: +2 RK ab zwei übrigen Zauberplätzen (Meisterschaft Stufe 5: ab einem), +1 bei genau einem
+    if (istFigA(z, "runenklinge")) { const n = (z.plaetze || [0, 0])[0] + (z.plaetze || [0, 0])[1]; rk += n >= 2 || (n >= 1 && hsA(z) >= 5) ? 2 : n === 1 ? 1 : 0; }
     { const kreis = heldZ(st, z) ? st.figuren.filter((l) => istFigA(l, "lichtbringer") && gleichesTeam(st, l, z) && lebt(l) && l.z.schutzkreis > st.runde && abstand(l, z) <= 2) : [];
       if (kreis.length) rk += kreis.some((l) => hsA(l) >= 10) ? 3 : 2; }
     if (z.z.analyse === st.runde) rk -= 2;
@@ -1213,6 +1239,8 @@
       erg.schaden = s;
       st.log.push({ t: `${a.name}: ${spec.name}${st.arena ? " auf " + z.name : ""} – W20 ${w}${vtext} + ${spec.bonus} = ${total} gegen RK ${rk}: ${krit ? "kritischer Treffer" : "Treffer"}, ${s} Schaden.${spec.zusatzText || ""}`, art: a.seite === "gegner" ? "gegner" : "wurf", wurf: w });
       schaden(st, z, s, { krit });
+      // Thessa, Rückkopplung: Wer sie im Nahkampf trifft, nimmt 1W4 + 1 (Meisterschaft Stufe 8: 1W8 + 1)
+      if (spec.nah && istFigA(z, "runenklinge") && lebt(a) && a.seite !== z.seite) { const rk2 = W(st.r, hsA(z) >= 8 ? 8 : 4) + 1; st.log.push({ t: `Rückkopplung: ${a.name} nimmt ${rk2} Schaden.` }); schaden(st, a, rk2); }
       if (spec.nachTreffer) spec.nachTreffer(erg);
       if (a.seite === "spieler" && st.zug) st.zug.getroffen.push(z.id);
     } else {
@@ -1249,6 +1277,9 @@
     if (waffe && kl.waffenExtraNah && abstand(f, z) <= 1) extra.push(kl.waffenExtraNah); // Krieger: nur im Nahkampf
     let krit = 20, zusatz = "";
     if (f.z.raserei && a.attr === "STR") extra.push("0W1+1");
+    // Thessa: Entladung (+2W6 auf den nächsten Treffer der Runenklinge); Meisterschaft Stufe 8: +1W6, Stufe 10: +2W6
+    const entladung = Boolean(f.z.entladung && a.id === "runenklinge"); if (entladung) extra.push("2W6");
+    if (istFig(f, "runenklinge") && a.id === "runenklinge" && hs(f) >= 8) extra.push(hs(f) >= 10 ? "2W6" : "1W6");
     // Darian, Schattenstoß (ab Stufe 2): Angriff aus dem Versteck +1W6 und kritisch ab 19
     const schattenstoss = istFig(f, "schattenlaeufer") && FD.altStufe(f.stufe) >= 2 && f.z.versteckt;
     if (schattenstoss) extra.push("1W6");
@@ -1277,6 +1308,7 @@
       hinterhaltImmer: istFig(f, "trickser") && hs(f) >= 10 && /dolch/.test(a.id),
       nachTreffer: () => {
         if (giftAktiv && lebt(z)) { z.z.vergiftet = 1; delete f.z.gift; }
+        if (entladung) { delete f.z.entladung; for (const o of st.figuren.filter((o) => o !== z && o.seite !== f.seite && lebt(o) && abstand(o, z) <= 1)) { const s2 = W(st.r, 6); st.log.push({ t: `Die Entladung springt auf ${o.name} über: ${s2} Schaden.` }); schaden(st, o, s2); } }
         // Seran, Sühne: Jeder Waffentreffer auf sein Brandmal-Ziel heilt ihn um 1W4
         if (istFig(f, "inquisitor") && z.z.brandmal === f.id && a.art === "angriff" && f.tp > 0 && f.tp < f.tpMax) heilen(st, f, W(st.r, 4), `${f.name}: Sühne`);
         // Brogars Kräutermesser: ab Stufe 5 vergiftet der erste Treffer je Kampf (Betäubungskraut); ab Stufe 10 heilt jeder Treffer den am schwersten Verletzten in 5 Feldern
@@ -1336,7 +1368,8 @@
       case "rettungswurf": case "geschoss": case "albtraum": case "bannkreis": case "spott": case "analyse":
         return gegner.filter((o) => inReich(o, a.reichweite));
       case "kontrolle": return gegner.filter((o) => inReich(o, a.reichweite) && (!a.nurUntot || GEGNER[o.art].untot || (a.entzaubert && zauberAuf(o).length)) && !(a.zustand === "netz" && o.z.festgehalten) && !(a.zustand === "liegend" && o.z.liegend));
-      case "flaeche": return gegner.filter((o) => inReich(o, a.reichweite));
+      case "flaeche": if (a.umSelbst) return gegner.some((o) => abstand(f, o) <= a.groesse) ? [f] : []; return gegner.filter((o) => inReich(o, a.reichweite)); // umSelbst (Runensturm): Kreis um die Figur selbst
+      case "entladung": return f.z.entladung ? [] : [f];
       case "stoss": case "entwaffnen": return gegner.filter((o) => weite(f, o) <= 1);
       case "mal": {
         const feld = a.mal === "jaeger" ? "mal_jaeger" : "brandmal";
@@ -1540,7 +1573,8 @@
       case "gift": f.z.gift = true; st.log.push({ t: `${f.name} bestreicht die Klinge mit Gift.` }); break;
       case "rueckzug": f.z.rueckzug = true; st.log.push({ t: `${f.name} zieht sich geschickt zurück.` }); break;
       case "spurt": st.zug.bewegung += st.zug.basis || 6; st.log.push({ t: `${f.name} spurtet.` }); break;
-      case "schattenschritt": st.zug.schritt = 6; st.log.push({ t: `${f.name} tritt in die Schatten.` }); break;
+      case "schattenschritt": st.zug.schritt = a.weite || 6; st.log.push({ t: a.weite ? `${f.name} schreibt einen Runenschritt.` : `${f.name} tritt in die Schatten.` }); break;
+      case "entladung": f.z.entladung = true; st.log.push({ t: `${f.name} lädt die Klinge auf.` }); break;
       case "spiegelbilder": f.z.spiegel = a.bilder || 3; st.log.push({ t: `${f.name} teilt sich in ${a.bilder === 4 ? "vier" : "drei"} Spiegelbilder.`, art: "gut" }); break;
       case "segen": {
         const zs2 = spielerFiguren(st).filter((o) => o.tp > 0 && !o.z.segen && abstand(f, o) <= (a.reichweite || 5)).sort((x, y) => abstand(f, x) - abstand(f, y)).slice(0, a.ziele || 3);
@@ -1692,7 +1726,7 @@
     f.gehandeltRunde = st.runde;
     // Elara, Meisterschaft: Der Schutzkreis heilt jede Runde
     if (istFig(f, "lichtbringer") && hs(f) >= 10 && f.z.schutzkreis > st.runde && lebt(f)) for (const o of st.figuren) if (o.seite === "spieler" && !o.tot && o.tp > 0 && o.tp < o.tpMax && abstand(f, o) <= 2) heilen(st, o, W(st.r, 6), `${f.name}: Schutzkreis`);
-    delete f.z.ruecksichtslos;
+    delete f.z.ruecksichtslos; delete f.z.entladung;
     let bew = f.seite === "gegner" ? Math.round((GEGNER[f.art].bewegung != null ? GEGNER[f.art].bewegung : 6) * (st.gegnerTempo || 1)) : bewegungVon(f);
     // Segen der Kampagne: Leichte Füße (+1), Ortskunde (+2 in der ersten Runde)
     if (f.seite === "spieler" && f.fid && st.segen && st.segen.length) bew += (st.segen.includes("fuesse") ? 1 : 0) + (st.segen.includes("ortskunde") && st.runde === 1 ? 2 : 0);
@@ -3046,6 +3080,11 @@ const ARENA_KARTEN = {"TURM":{"name":"Der Glockenturm","b":12,"h":9,"bild":"img/
         return { typ: "ende" };
       }
       merk = merk || {};
+      if (f.fid === "runenklinge" && st.zug.aktion && st.zug.bonus) { // Thessa: Runenschritt, um heranzukommen; Entladung vor dem Schlag
+        const nah = (n) => st.figuren.filter((o) => o.seite !== f.seite && R.lebt(o) && Math.max(Math.abs(o.x - f.x), Math.abs(o.y - f.y)) <= n).length;
+        if (!(st.zug.bewegung > 0) && !st.zug.schritt && !nah(1) && nah(4) && R.verfuegbar(st, "runenschritt")) return { typ: "aktion", aktion: "runenschritt", ziel: f.id };
+        if (!f.z.entladung && nah(1) && R.verfuegbar(st, "entladung") && (f.tp < f.tpMax * 0.6 || f.plaetze[0] + f.plaetze[1] > 2 || nah(2) > 1)) return { typ: "aktion", aktion: "entladung", ziel: f.id };
+      }
       const s = merk.staerke == null ? 1 : Math.max(0, Math.min(1, merk.staerke)), traege = Math.random() < (1 - s) * 0.6; // träge: kein Stellungsspiel in diesem Schritt
       // Verschenkter Zug: Je schwächer, desto öfter bleibt die Aktion eines Helden ungenutzt (er läuft nur). Einmal je Zug ausgelost.
       const zugKey = f.id + ":" + st.runde; if (merk.patzKey !== zugKey) { merk.patzKey = zugKey; merk.patzt = Math.random() < (1 - s) * PATZER; }
@@ -3240,7 +3279,7 @@ const ARENA_KARTEN = {"TURM":{"name":"Der Glockenturm","b":12,"h":9,"bild":"img/
 
 
 /* ===== Stand der Regeln (für den Abgleich mit dem Spiel) ===== */
-const ARENA_REGELN_V = "85.31";
+const ARENA_REGELN_V = "86.32";
 
 /* ===== server/arena-funktion.js ===== */
 /*
