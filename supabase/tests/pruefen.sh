@@ -152,6 +152,13 @@ ENDE_VOR=$(psql -q -At -d "$DB" -c "select md5(regexp_replace(lower(pg_get_funct
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../026_rpg_heldentoken.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../026_rpg_heldentoken.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 026_rpg_heldentoken_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+# Migration 028 (Freunde werben): braucht 002, 006 und 026; rein additiv, der Rückbau entfernt alles wieder
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -o /dev/null -f 028_rpg_freunde_werben_test.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  //"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../028_rpg_freunde_werben_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"     # zweimal: idempotent
+test "$(psql -tA -d "$DB" -c "select count(*) from pg_proc where proname like 'rpg\_referral%'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_class where relname like 'rpg\_referral%'")" = 0 && test "$(psql -tA -d "$DB" -c "select count(*) from pg_trigger where tgname = 'rpg_referral_bei_ende'")" = 0 && echo "✓ Nach dem Rückbau von 028 sind Tabelle, Funktionen und Trigger wieder weg"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f ../026_rpg_heldentoken_rueckbau.sql 2>&1 | sed "s/^psql:[^ ]* NOTICE:  /  /"
 ENDE_NACH=$(psql -q -At -d "$DB" -c "select md5(regexp_replace(lower(pg_get_functiondef('public.rpg_claim_ending(uuid)'::regprocedure)), '[[:space:]]+', '', 'g'))")
 if [ "$ENDE_VOR" = "$ENDE_NACH" ]; then echo "✓ Nach dem Rückbau von 026 ist rpg_claim_ending wie vorher"; else echo "✗ Der Rückbau von 026 stellt rpg_claim_ending nicht wieder her"; exit 1; fi

@@ -761,6 +761,7 @@
     try { sessionStorage.setItem(HUB, profil && profil.konto ? "konto" : "gast"); } catch (e) { /* privat */ }
     const ep = $("#einst-panel"); if (ep && ep.parentElement !== document.body) document.body.appendChild(ep); // Einstellungen auch von hier aus
     scannerStopp(); zeige("hub"); hubKopf(); hubListen();
+    if (window.WERBEN) window.WERBEN.hub(Boolean(profil && profil.konto)).catch(() => {}); // Freunde werben: Werber eintragen, Hinweis im Dorf
   }
   function avatarHtml() {
     const k = profil && profil.konto && profil.avatar_key && window.ABF.FIGUREN[profil.avatar_key] ? profil.avatar_key : null;

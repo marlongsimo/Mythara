@@ -21,7 +21,12 @@
        Wer die Adresse im Browser öffnet, sieht immer diese Seite – auch angemeldet. Mit ?start bleibt man in jedem Fall hier. */
     (function () {
       try {
-        var q = location.search;
+        var q = location.search, von = /[?&]von=([^&#]+)/.exec(q);
+        if (von) { // Einladungslink: Namen merken, auf der Startseite bleiben (der Name geht nicht mit in Lesezeichen)
+          von = decodeURIComponent(von[1]);
+          if (/^[A-Za-z0-9_ÄÖÜäöüß]{3,20}$/.test(von)) { localStorage.setItem("mythara_von", von); window.MYTHARA_VON = von; }
+          history.replaceState(null, "", location.pathname + location.hash); return;
+        }
         if (/[?&]start\b/.test(q)) return;
         var app = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true;
         if (q.length > 1 || app) location.replace("spiel.html" + q + location.hash);
@@ -85,6 +90,8 @@
     .klein-text { margin: 16px 0 0; font-size: 14px; color: var(--leise); }
     .marken { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; padding: 0; list-style: none; }
     .marken li { font: 600 11px/1 Inter, sans-serif; letter-spacing: .16em; text-transform: uppercase; padding: 8px 12px; border-radius: 99px; border: 1px solid var(--linie); background: rgba(11, 10, 14, .55); color: var(--gold); backdrop-filter: blur(6px); }
+    .einladung { display: inline-block; margin: 0 0 14px; padding: 9px 16px; border-radius: 8px; font: 600 15px/1.3 Inter, sans-serif; color: var(--gold-hell); background: linear-gradient(90deg, rgba(163, 38, 43, .7), rgba(11, 10, 14, .7)); border: 1px solid var(--gold); backdrop-filter: blur(6px); }
+    .einladung[hidden] { display: none; }
     .marken li.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #6fe08a; margin-right: 8px; box-shadow: 0 0 10px #6fe08a; animation: puls 2s infinite; }
     @keyframes puls { 50% { opacity: .35; } }
 
@@ -211,6 +218,7 @@
     <section class="auftakt">
       <div class="hg" id="auftakt-hg" aria-hidden="true"></div>
       <div class="innen">
+        <p class="einladung" id="einladung" hidden></p>
         <ul class="marken"><li class="live">Open Beta</li><li>Kostenlos im Browser</li><li>Kein Download</li></ul>
         <img class="logo" src="img/mythara/logo-neu.webp" srcset="img/mythara/logo-neu-800.webp 800w, img/mythara/logo-neu.webp 2156w" sizes="(max-width: 700px) 80vw, 460px" alt="Mythara" width="2156" height="724" fetchpriority="high">
         <h1>Sammle Helden. Führe sie Zug um Zug. <em>Schreibe deine Legende.</em></h1>
@@ -361,6 +369,7 @@
         return '<article class="kampagne"><img src="img/' + k[0] + '/titel.webp" alt="" loading="lazy"><div><h3>' + k[1] + "</h3><p>" + k[2] + '</p><footer><span>' + k[4] + '</span><span class="schwere" aria-label="Schwierigkeit ' + k[3] + ' von 5">' + p + "</span></footer></div></article>";
       }).join("");
 
+      if (window.MYTHARA_VON) { var ein = document.getElementById("einladung"); ein.textContent = window.MYTHARA_VON + " lädt dich nach Mythara ein. Beende deine erste Kampagne, und ihr bekommt beide einen Heldentoken."; ein.hidden = false; }
       var kopf = document.getElementById("kopf"), hg = document.getElementById("auftakt-hg"), ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
       function rollen() { var y = scrollY; kopf.classList.toggle("fest", y > 40); if (!ruhig && y < innerHeight) hg.style.transform = "translateY(" + y * 0.25 + "px) scale(" + (1 + y / 6000) + ")"; }
       addEventListener("scroll", rollen, { passive: true }); rollen();
