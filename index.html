@@ -17,14 +17,14 @@
   <link rel="apple-touch-icon" href="img/app/mythara-180.png">
   <link rel="manifest" href="manifest.webmanifest">
   <script>
-    /* Wer schon spielt, landet direkt im Spiel: Links mit Angaben (Einladung, Spieltisch), die App vom Startbildschirm und angemeldete Spieler.
-       Alle anderen – auch Suchmaschinen – sehen diese Seite. Mit ?start bleibt man in jedem Fall hier. */
+    /* Direkt ins Spiel geht es nur für Links mit Angaben (Einladung, Spieltisch) und für die App vom Startbildschirm.
+       Wer die Adresse im Browser öffnet, sieht immer diese Seite – auch angemeldet. Mit ?start bleibt man in jedem Fall hier. */
     (function () {
       try {
         var q = location.search;
         if (/[?&]start\b/.test(q)) return;
         var app = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true;
-        if (q.length > 1 || app || localStorage.getItem("mr-rpg-auth")) location.replace("spiel.html" + q + location.hash);
+        if (q.length > 1 || app) location.replace("spiel.html" + q + location.hash);
       } catch (e) { /* ohne Speicherzugriff: Startseite zeigen */ }
     })();
   </script>

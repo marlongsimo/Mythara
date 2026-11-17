@@ -27,9 +27,8 @@ const WURZEL = path.join(__dirname, ".."), BASE = "http://localhost:8765"; let o
   { const { c, p } = await neu(); const wege = []; p.on("framenavigated", (f) => { if (f === p.mainFrame()) wege.push(f.url().replace(BASE, "")); });
     await p.goto(BASE + "/index.html?tisch=ABCD-123456&ab=grauwacht"); await p.waitForURL(/spiel\.html/, { timeout: 8000 }).catch(() => {});
     check(wege.includes("/spiel.html?tisch=ABCD-123456&ab=grauwacht"), "Alte Links mit Angaben (Spieltisch, Einladung) landen mit allen Angaben im Spiel: " + wege.join(" → ")); await c.close(); }
-  { const { c, p } = await neu(); await p.goto(BASE + "/handy.html"); await p.evaluate(() => localStorage.setItem("mr-rpg-auth", "{}")); await p.goto(BASE + "/index.html"); await p.waitForURL(/spiel\.html/, { timeout: 8000 }).catch(() => {});
-    check(/\/spiel\.html$/.test(p.url()), "Wer angemeldet ist, kommt von der Startseite direkt ins Spiel");
-    await p.goto(BASE + "/index.html?start"); await p.waitForTimeout(1200); check(/index\.html\?start$/.test(p.url()), "Mit ?start bleibt man auch angemeldet auf der Startseite"); await c.close(); }
+  { const { c, p } = await neu(); await p.goto(BASE + "/handy.html"); await p.evaluate(() => localStorage.setItem("mr-rpg-auth", "{}")); await p.goto(BASE + "/index.html"); await p.waitForTimeout(1500);
+    check(/\/index\.html$/.test(p.url()) && await p.evaluate(() => Boolean(document.querySelector(".auftakt"))), "Auch wer angemeldet ist, sieht unter der Adresse die Startseite (kein Sprung ins Spiel)"); await c.close(); }
   const sm = fs.readFileSync(path.join(WURZEL, "sitemap.xml"), "utf8"), rb = fs.readFileSync(path.join(WURZEL, "robots.txt"), "utf8");
   check(/<loc>https:\/\/mythara-dungeon\.de\/<\/loc>/.test(sm) && /Sitemap: https:\/\/mythara-dungeon\.de\/sitemap\.xml/.test(rb) && /Allow: \//.test(rb), "Sitemap und robots.txt nennen die Startseite");
   await b.close(); console.log(ok ? "\nUMZUG IN ORDNUNG" : "\nUMZUG: FEHLER"); process.exit(ok ? 0 : 1);
