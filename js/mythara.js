@@ -309,10 +309,11 @@
 
   /* ---------- Admin-Bereich (nur Admins): Codes · Kampfstatistiken · Rechner-Gegner ---------- */
   let adminTab = null;
-  const ADMIN_TABS = [["codes", "Codes", "Code-Übersicht"], ["stats", "Kampfstatistiken", "Arena-Auswertung"], ["bots", "Rechner-Gegner", "Rechner-Gegner"], ["saison", "Ranked", "Ranked-Saison"]];
+  const ADMIN_TABS = [["codes", "Codes", "Code-Übersicht"], ["stats", "Kampfstatistiken", "Arena-Auswertung"], ["bots", "Rechner-Gegner", "Rechner-Gegner"], ["saison", "Ranked", "Ranked-Saison"], ["post", "Nachrichten", "Nachrichten"]];
   function adminBereich(tab) {
     if (!smAktiv() || !SM.istAdmin()) return toast("Den Admin-Bereich gibt es nur für Admins.");
     adminTab = ADMIN_TABS.some((t) => t[0] === tab) ? tab : "codes";
+    if (adminTab === "post") return window.FEEDBACK ? window.FEEDBACK.admin() : toast("Die Nachrichten sind gerade nicht verfügbar.");
     return adminTab === "stats" ? arenaAuswertung() : adminTab === "bots" ? botEinstellungen() : adminTab === "saison" ? saisonVerwalten() : codeUebersicht();
   }
   /** Ranked-Saison: Stand sehen, die laufende beenden (verteilt die Belohnungen) und eine neue beginnen (Migration 022) */
@@ -782,9 +783,11 @@
       ${konto ? `<button class="hub-rund" id="hub-glocke" aria-label="Anfragen" title="Freundschafts- und Gruppenanfragen"><span class="my-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a6 6 0 0 0-6 6v4.5L4 16v1.5h16V16l-2-3.5V8a6 6 0 0 0-6-6zM9.5 19.5a2.5 2.5 0 0 0 5 0z"/></svg></span><span class="hub-zahl" data-zahl="alle" hidden></span></button>` : ""}
       ${window.NEUIGKEITEN ? window.NEUIGKEITEN.knopf() : ""}
       <button class="hub-rund" id="hub-einst" aria-label="Einstellungen" title="Einstellungen"><span class="my-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 4.6v-2.2l-2.4-.6a7 7 0 0 0-.7-1.7l1.3-2.1-1.6-1.6-2.1 1.3a7 7 0 0 0-1.7-.7L13.1 3h-2.2l-.6 2.5a7 7 0 0 0-1.7.7L6.5 4.9 4.9 6.5l1.3 2.1a7 7 0 0 0-.7 1.7L3 10.9v2.2l2.5.6c.2.6.4 1.2.7 1.7l-1.3 2.1 1.6 1.6 2.1-1.3c.5.3 1.1.5 1.7.7l.6 2.5h2.2l.6-2.5c.6-.2 1.2-.4 1.7-.7l2.1 1.3 1.6-1.6-1.3-2.1c.3-.5.5-1.1.7-1.7z"/></svg></span></button>
-      <div class="hub-menue" id="hub-menue" hidden>${konto ? `<button data-profil="profil">Mein Profil</button>${smAktiv() && SM.istAdmin() ? `<button data-profil="admin">Admin-Bereich</button>` : ""}<button data-profil="tutorial">Tutorial ansehen</button><button data-profil="abmelden">Abmelden</button>` : `<button data-profil="anmelden">Anmelden</button><button data-profil="registrieren">Konto erstellen</button>`}</div>`;
+      <div class="hub-menue" id="hub-menue" hidden>${konto ? `<button data-profil="profil">Mein Profil</button>${smAktiv() && SM.istAdmin() ? `<button data-profil="admin">Admin-Bereich</button>` : ""}<button data-profil="tutorial">Tutorial ansehen</button>${window.FEEDBACK ? `<button data-profil="feedback">Feedback geben</button>` : ""}<button data-profil="abmelden">Abmelden</button>` : `<button data-profil="anmelden">Anmelden</button><button data-profil="registrieren">Konto erstellen</button>`}</div>`;
     arenaKachel();
     $("#hub-profil-knopf").onclick = () => { const m = $("#hub-menue"); m.hidden = !m.hidden; $("#hub-profil-knopf").setAttribute("aria-expanded", String(!m.hidden)); };
+    if (window.FEEDBACK && konto && smAktiv() && SM.istAdmin()) window.FEEDBACK.ungelesen().then((n) => { adminPost = n; const b = document.querySelector('#hub-menue [data-profil="admin"]'), pk = $("#hub-profil-knopf");
+      if (b) b.innerHTML = "Admin-Bereich" + (n ? ` <span class="hub-zahl menue">${n}</span>` : ""); if (pk) pk.classList.toggle("post", n > 0); }).catch(() => {});
     if (window.NEUIGKEITEN) window.NEUIGKEITEN.binden().catch(() => {}); // Megafon: Neuigkeiten vom Game Developer (der Händler ist im Dorf und in der Leiste erreichbar)
     $("#hub-einst").onclick = () => { const t = $("#titel-einst"); if (t) t.click(); };
     const gl = $("#hub-glocke"); if (gl) gl.onclick = anfragenZeigen;
@@ -904,12 +907,14 @@
     if (window.AB.abenteuerWaehlen) window.AB.abenteuerWaehlen(id);
     neuesAbenteuer();
   }
+  let adminPost = 0; // ungelesene Nachrichten (Feedback), nur für Admins
   function profilAktion(was) {
     const m = $("#hub-menue"); if (m) m.hidden = true;
     $("#qr-overlay").hidden = true;
     adminTab = null;
     if (was === "abmelden") return abmelden();
-    if (was === "admin") return adminBereich("codes");
+    if (was === "feedback") return window.FEEDBACK && window.FEEDBACK.zeigen();
+    if (was === "admin") return adminBereich(adminPost > 0 ? "post" : "codes");
     if (was === "profil" || was === "bild") return profilSeite("bild");
     if (was === "kosmetik") return profilSeite("aussehen");
     if (was === "code") return profilSeite("code");
