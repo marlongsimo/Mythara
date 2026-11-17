@@ -40,6 +40,7 @@
     pakete: { unter_dem_eis: { name: "Unter dem Eis", text: "Reif auf Pelz und Stahl, Eiszapfen an den Säumen, Schneekristalle auf dem Wappenrock: die Garde des versunkenen Veyrholm." },
       glut_und_asche: { name: "Glut und Asche", text: "Verkohlter Stoff, an dessen Säumen es noch glimmt, Runen aus Glut und überall die Waage: die Richter, die nach dem Brand kommen." },
       mondbaendiger: { name: "Mondbändiger", text: "Nachtblau und Silber, Mondphasen auf dem Wappenrock, ein Mond aus Licht in der offenen Hand: drei, die der Nacht befehlen." },
+      sonnengott: { name: "Sonnengott", text: "Weiß, Gold und Weinrot, ein Strahlenkranz über dem Kopf, Sonnen auf Rüstung und Tuch: die Auserwählten eines Gottes, der am Mittag herrscht." },
       goldene_garde: { name: "Die Goldene Garde", text: "Weißer Stahl, nachtblaue Umhänge, der goldene Löwe auf dem Wappenrock: die Leibwache eines Reiches, das es nicht mehr gibt." } },
     skins: {
       duellant_s3: { held: "duellant", name: "Frostklinge", paket: "unter_dem_eis", text: "Eine Krone aus Eis, Rüstung mit Reif überzogen, ein Schwert wie ein gefrorener Bach. Isolde, wie sie unter dem Gletscher Wache hielte." },
@@ -51,6 +52,9 @@
       schildwaechter_s2: { held: "schildwaechter", name: "Mondwächter", paket: "mondbaendiger", text: "Silberne Platten, ein Schwert mit einer Mondsichel im Heft, die Mondphasen auf dem Rock. Torvald auf Nachtwache." },
       lichtbringer_s2: { held: "lichtbringer", name: "Mondpriesterin", paket: "mondbaendiger", text: "Roben in Weiß und Nachtblau, ein Stab, der den Vollmond trägt, ein zweiter Mond über der Hand. Elara, wenn sie die Nacht segnet." },
       trickser_s2: { held: "trickser", name: "Mondspielerin", paket: "mondbaendiger", text: "Karten mit Mondsicheln, die um ihre Hand kreisen, ein Dolch aus Mondstein am Gürtel. Silra, die bei Vollmond nie verliert." },
+      inquisitor_s3: { held: "inquisitor", name: "Sonnenpriester", paket: "sonnengott", text: "Ein Stab mit einer Sonne an der Spitze, eine zweite über der Hand, Roben in Weiß und Weinrot. Seran als Stimme des Sonnengottes." },
+      schattenlaeufer_s2: { held: "schattenlaeufer", name: "Sonnenklinge", paket: "sonnengott", text: "Eine helle Kapuze unter dem Strahlenkranz, Augen wie Glut, zwei Klingen aus Sonnenlicht. Darian, der diesmal aus dem Licht kommt." },
+      tiergefaehrte_s3: { held: "tiergefaehrte", name: "Sonnenjägerin", paket: "sonnengott", text: "Rotes Haar unter dem Strahlenkranz, goldene Beinschienen, ein Bogen, an dem eine Sonne brennt. Faye auf der Jagd am hellen Tag." },
       duellant_s2: { held: "duellant", name: "Gardehauptfrau", paket: "goldene_garde", text: "Eine Krone im Haar, Plattenrüstung in Weiß und Gold, das Schwert gezogen. Isolde an der Spitze der Garde." },
       kopfgeldjaeger_s2: { held: "kopfgeldjaeger", name: "Gardeschütze", paket: "goldene_garde", text: "Weißer Pelz über der Schulter, der Löwe auf der Brust, eine Armbrust aus Gold. Orin im Dienst der Krone." },
       elementarist_s2: { held: "elementarist", name: "Gardemagier", paket: "goldene_garde", text: "Roben in Elfenbein und Blau, ein Stab mit einer Sonne an der Spitze, Licht in der offenen Hand. Vaelin als Hofmagier." },
