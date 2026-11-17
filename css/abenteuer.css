@@ -2584,3 +2584,36 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
 .start-bilder img { max-height: 330px; max-width: 100%; height: auto; margin: 0 auto; filter: drop-shadow(0 12px 18px #000); } .start-bilder figcaption { margin-top: 6px; font: 600 14px var(--schrift-titel); color: #e3efff; }
 .start-liste h2 { margin: 0 0 8px; font: 600 20px var(--schrift-titel); color: #f6dc9c; } .start-liste ul { margin: 0 0 10px; padding-left: 20px; display: grid; gap: 5px; color: #efe6d4; } .start-liste em { color: #9fe0a0; font-style: normal; font-size: 13px; }
 @media (max-width: 700px) { .start-inhalt { grid-template-columns: 1fr; } .start-bilder img { max-height: 230px; } }
+
+/* ---------- Prototyp: schlanker Kampfbildschirm (nur mit ?kampf=neu, nur große Bildschirme) ---------- */
+@media (min-width: 1200px) {
+  body.kampf-schlank.im-kampf .spiel { grid-template-columns: 196px minmax(0, 1fr) 310px; grid-template-rows: auto auto auto auto auto 1fr; gap: 8px 18px; }
+  body.kampf-schlank.im-kampf .kampf-kopf { height: 44px; padding: 0 16px; border-radius: 12px; gap: 14px; box-shadow: 0 0 0 1px rgba(217,178,106,.3); }
+  body.kampf-schlank.im-kampf .kk-logo { font-size: 19px; } body.kampf-schlank.im-kampf .kk-trenner { height: 22px; }
+  body.kampf-schlank.im-kampf .kk-titel { display: flex; align-items: baseline; gap: 10px; } body.kampf-schlank.im-kampf .kk-titel b { font-size: 15px; } body.kampf-schlank.im-kampf .kk-titel span { font-size: 14px; }
+  body.kampf-schlank.im-kampf .kk-chip { height: 28px; padding: 0 12px; font-size: 12px; } body.kampf-schlank.im-kampf .kk-chip b { font-size: 15px; }
+  body.kampf-schlank.im-kampf .reihe { grid-column: 2; grid-row: 3; margin: 0; padding: 4px 10px; gap: 7px; flex-wrap: nowrap; justify-content: center; background: none; box-shadow: none; min-height: 52px; }
+  body.kampf-schlank.im-kampf .reihe span { flex-direction: row; font-size: 0; max-width: none; gap: 0; }
+  body.kampf-schlank.im-kampf .reihe span.runde { font-size: 11px; padding: 4px 10px; margin-right: 6px; }
+  body.kampf-schlank.im-kampf .reihe .mini { width: 32px; height: 32px; border-radius: 50%; }
+  body.kampf-schlank.im-kampf .reihe span.down .mini { opacity: .35; filter: grayscale(1); }
+  body.kampf-schlank.im-kampf .reihe span.dran { font-size: 13px; gap: 8px; padding-right: 12px; border-radius: 24px; background: rgba(0,0,0,.4); box-shadow: inset 0 0 0 1px rgba(246,220,156,.5); }
+  body.kampf-schlank.im-kampf .reihe span.dran .mini { width: 44px; height: 44px; }
+  body.kampf-schlank.im-kampf .reihe span small { display: none; }
+  body.kampf-schlank.im-kampf .karte-wrap { grid-row: 4; }
+  body.kampf-schlank.im-kampf #karte { width: min(100%, calc((100vh - 265px) * 4 / 3)); transform: rotateX(18deg) scale(.95); margin-bottom: calc(min(100%, (100vh - 265px) * 4 / 3) * -0.07); }
+  body.kampf-schlank.im-kampf .log { grid-column: 2; grid-row: 5; max-height: 36px; overflow: hidden; padding: 7px 14px; border-radius: 10px; cursor: pointer; position: relative; }
+  body.kampf-schlank.im-kampf .log:not(.offen) li:not(:first-child) { display: none; }
+  body.kampf-schlank.im-kampf .log:not(.offen) li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 90px; border: 0; margin: 0; }
+  body.kampf-schlank.im-kampf .log:not(.offen)::after { content: "Chronik ▾"; position: absolute; right: 12px; top: 8px; font: 600 11px var(--schrift-titel); letter-spacing: .08em; color: #d9b26a; }
+  body.kampf-schlank.im-kampf .log.offen { max-height: 240px; overflow-y: auto; }
+  body.kampf-schlank.im-kampf .gruppe-kampf { grid-row: 3 / span 3; gap: 7px; }
+  body.kampf-schlank.im-kampf .gruppe-kampf h3 { font-size: 11px; }
+  body.kampf-schlank.im-kampf .gk-held { grid-template-columns: 38px 1fr; gap: 9px; padding: 6px 9px; border-radius: 10px; }
+  body.kampf-schlank.im-kampf .gk-held.dran { transform: none; }
+  body.kampf-schlank.im-kampf .gk-bild { width: 38px; height: 38px; border-radius: 50%; }
+  body.kampf-schlank.im-kampf .gk-info b { font-size: 14px; margin-bottom: 3px; }
+  body.kampf-schlank.im-kampf .gk-info small, body.kampf-schlank.im-kampf .gk-werte { display: none; }
+  body.kampf-schlank.im-kampf .panel { grid-row: 3 / span 3; max-height: calc(100vh - 80px); }
+}
+@media (min-width: 1200px) { body.kampf-schlank.im-kampf .log:not(.offen)::before { display: none; } }
