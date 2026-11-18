@@ -58,6 +58,8 @@
   const params = new URLSearchParams(location.search);
   /* Schlanker Kampfbildschirm auf großen Bildschirmen (ab 1200 px): kleine Initiative über der Karte, große Karte, Chronik als aufklappbarer Streifen.
      ?kampf=alt holt für diesen Tab die frühere Ansicht zurück, ?kampf=neu schaltet wieder um. */
+  /* Prototyp: Kampagnenszenen auf Pergament – nur mit ?szene=1 (für diesen Tab), ?szene=0 schaltet ab */
+  try { if (params.get("szene") === "1") sessionStorage.setItem("ab_szene_blatt", "1"); if (params.get("szene") === "0") sessionStorage.removeItem("ab_szene_blatt"); if (sessionStorage.getItem("ab_szene_blatt")) document.body.classList.add("szene-blatt"); } catch (e) { /* privat */ }
   /* Dorf, Fenster, Meldungen, Händler und Arena in Holz, Eisen und Pergament. ?dorf=0 holt für diesen Tab das frühere Aussehen zurück, ?dorf=1 schaltet wieder um */
   { let aus = false; try { if (params.get("dorf") === "0") sessionStorage.setItem("ab_dorf_aus", "1"); if (params.get("dorf") === "1") sessionStorage.removeItem("ab_dorf_aus"); aus = Boolean(sessionStorage.getItem("ab_dorf_aus")); } catch (e) { /* privat */ }
     if (!aus) document.body.classList.add("dorf-holz"); }

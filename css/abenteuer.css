@@ -2756,3 +2756,26 @@ body.dorf-holz .rang-chronik li, body.dorf-holz .rang-kaempfe li { background: l
 body.dorf-holz .rang-chronik li *, body.dorf-holz .rang-kaempfe li * { color: #3b230e; }
 body.dorf-holz .rang-chronik li.sieg .rang-ausgang { color: #1f5a1c; } body.dorf-holz .rang-chronik li.niederlage .rang-ausgang { color: #8a1c14; }
 body.dorf-holz .rang-chronik li .rang-delta { font-weight: 600; } body.dorf-holz .rang-chronik li.sieg .rang-delta { color: #1f5a1c; } body.dorf-holz .rang-chronik li.niederlage .rang-delta { color: #8a1c14; }
+
+/* ---------- Prototyp (?szene=1): Kampagnenszenen als Pergamentblatt mit Tintenschrift ---------- */
+/* Das Blatt: Ränder und eingerollte Ecken bleiben unverzerrt, nur die Mitte dehnt sich */
+body.szene-blatt .sz-blatt { background: none; box-shadow: none; border-radius: 0; overflow: visible; padding: 14px 18px 10px; border: 62px solid transparent; border-image: url("../img/mythara/pergament-blatt.webp") 110 fill / 62px / 0 stretch; filter: drop-shadow(0 22px 34px rgba(0,0,0,.65)); }
+body.szene-blatt .sz-blatt::before, body.szene-blatt .sz-blatt::after { display: none; }
+body.szene-blatt .sz-ort { color: #6a3d12; }
+body.szene-blatt .sz-blatt h1 { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #2a1606; filter: none; text-shadow: none; }
+body.szene-blatt .sz-zier { background: linear-gradient(90deg, transparent, rgba(90, 52, 16, .8), transparent) center / 100% 1px no-repeat, radial-gradient(circle, #6a3d12 0 3px, transparent 4px) center / 14px 14px no-repeat; }
+body.szene-blatt .sz-blatt .erzaehlung p { color: #2f1b09; text-shadow: none; }
+body.szene-blatt .sz-blatt .erzaehlung p:first-child::first-letter { color: #7a1a18; text-shadow: none; }
+body.szene-blatt .sz-blatt .erzaehlung b, body.szene-blatt .sz-blatt .erzaehlung strong, body.szene-blatt .sz-blatt .erzaehlung em { color: #1f1206; }
+body.szene-blatt .sz-blatt, body.szene-blatt .sz-blatt p, body.szene-blatt .sz-blatt li, body.szene-blatt .sz-blatt small, body.szene-blatt .sz-blatt .note { color: #3b230e; }
+body.szene-blatt .sz-blatt .akt-gruppe { color: #6a3d12; }
+body.szene-blatt .sz-blatt .hilfe { background: rgba(90, 52, 16, .12); border-color: rgba(90, 52, 16, .4); color: #3b230e; }
+body.szene-blatt .sz-nachhall, body.szene-blatt .sz-rueckschau, body.szene-blatt .sz-moment { background: rgba(90, 52, 16, .1); border-color: rgba(90, 52, 16, .45); color: #3b230e; }
+body.szene-blatt .sz-nachhall *, body.szene-blatt .sz-rueckschau *, body.szene-blatt .sz-moment * { color: #3b230e; }
+/* Entscheidungen: Hauptknopf in rotem Samt, Wahlmöglichkeiten als Eisenplatten */
+body.szene-blatt .szene .interaktion .btn:not(.ghost):not(.klein) { border-radius: 3px; color: #fff1c8; background: linear-gradient(180deg, #8f1d24, #5a1016); box-shadow: 0 0 0 1px #d9b26a, inset 0 0 0 2px rgba(0,0,0,.3), 0 6px 12px rgba(0,0,0,.45); text-shadow: 0 1px 2px #000; }
+body.szene-blatt .szene .interaktion .btn.ghost:not(.klein) { border-radius: 3px; color: #f1e3c4; background: linear-gradient(180deg, #423a32, #1d1a16); box-shadow: 0 0 0 1px #6b5a45, inset 0 1px 0 rgba(255,235,200,.16), 0 6px 12px rgba(0,0,0,.45); }
+body.szene-blatt .szene .interaktion .btn.ghost:not(.klein):hover:not(:disabled) { box-shadow: 0 0 0 1px #f6dc9c, inset 0 1px 0 rgba(255,235,200,.16), 0 6px 12px rgba(0,0,0,.45); }
+/* Gruppe und Chronik daneben: Holz mit Eisenrand */
+body.szene-blatt .sz-gruppe, body.szene-blatt .sz-chronik { border: 5px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.35); background: linear-gradient(rgba(14, 8, 4, .66), rgba(10, 6, 3, .86)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+@media (max-width: 700px) { body.szene-blatt .sz-blatt { border-width: 34px; border-image-width: 34px; padding: 10px 16px 6px; } body.szene-blatt .sz-blatt .erzaehlung p { font-size: 19px; } }
