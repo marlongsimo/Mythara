@@ -347,3 +347,12 @@ if (TEILE.includes("R")) {
       if (r.sieger === tA) frueh++; else if (!r.sieger) frueh += 0.5; }
     console.log(`R|${ka}|${kb}|${pv}|${start}|${n}|${(100 * frueh / n).toFixed(1)}|${(sa / n).toFixed(2)}|${(sb / n).toFixed(2)}|${(rd / n).toFixed(1)}|${(100 * aufg / n).toFixed(0)}|${(100 * pk.siegel / n).toFixed(0)}|${(100 * pk.zeit / n).toFixed(0)}|${(ra / n).toFixed(1)}|${(rb / n).toFixed(1)}|${(wechsel / n).toFixed(2)}`); }
 }
+
+/* ---------- Teil S: Streuung der Endstufe je Raumzahl (flache oder steile Kurve über --folge) ---------- */
+if (TEILE.includes("S")) {
+  const o = { einstieg: true, heilung: true }, FOLGE = (process.argv.find((x) => x.startsWith("--folge=")) || "--folge=LLLLL").split("=")[1];
+  console.log(`\nTeil S – Endstufe je Raumzahl, Folge ${FOLGE} nach dem Einstieg (${N} Gruppen je Zeile)`);
+  for (let k = 2; k <= 5; k++) { zs = 4711; const l = [], rd = []; for (let i = 0; i < N; i++) { const e = weg(FOLGE.slice(0, k), 20000 + i, zieh(3), o); l.push(e.stufe); rd.push(e.runden); } l.sort((a, b) => a - b);
+    const q = (p) => l[Math.floor(p * (l.length - 1))].toFixed(1), voll = k + 1;
+    console.log(`  ${k} Räume: Ø ${(l.reduce((a, b) => a + b, 0) / N).toFixed(2)} · Median ${q(0.5)} · untere 10 % bis ${q(0.1)} · obere 10 % ab ${q(0.9)} · volle Stufe ${voll} erreicht: ${pct(l.filter((x) => x >= voll - 0.01).length, N)} · mindestens eine Stufe verpasst: ${pct(l.filter((x) => x <= voll - 1).length, N)} · Runden Ø ${(rd.reduce((a, b) => a + b, 0) / N).toFixed(1)}`); }
+}
