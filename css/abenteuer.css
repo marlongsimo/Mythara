@@ -2797,3 +2797,26 @@ body.szene-blatt .sz-blatt .joch { background: linear-gradient(rgba(14, 8, 4, .6
 body.szene-blatt .sz-blatt .joch, body.szene-blatt .sz-blatt .joch * { color: #f1e3c4; }
 body.szene-blatt .szene .szene-kopf { padding-top: 18px; padding-bottom: 18px; align-items: center; }
 @media (min-width: 1100px) { body.szene-blatt .szene .szene-kopf { padding-top: 0; padding-bottom: 0; } }
+
+/* ---------- Heldenhalle innen: Holz, Eisen und gerahmte Porträts ---------- */
+body.dorf-holz .klassen-leiste button:not(.link) { border: 1px solid #6b5a45; background: linear-gradient(180deg, #423a32, #1d1a16); color: #e6d6b4; box-shadow: inset 0 1px 0 rgba(255,235,200,.14); }
+body.dorf-holz .klassen-leiste button.an { color: #fff1c8; border-color: #d9b26a; background: linear-gradient(180deg, color-mix(in srgb, var(--k) 70%, #3a1410), color-mix(in srgb, var(--k) 35%, #1a0c08)); }
+/* Klassenkopf und Heldentafel: Holzfläche im Eisenrahmen, die Klassenfarbe bleibt als feine Innenlinie */
+body.dorf-holz .klassen-kopf, body.dorf-holz .held { border: 6px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px color-mix(in srgb, var(--k) 70%, #d9b26a), 0 14px 28px rgba(0,0,0,.55);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--k) 22%, rgba(14, 8, 4, .7)) 0%, rgba(10, 6, 3, .86) 55%), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+body.dorf-holz .klassen-merkmal { background: rgba(10, 6, 3, .5); }
+/* Heldenkarten: Bild im Eisenrahmen mit Goldkante, Name auf dunklem Holz */
+body.dorf-holz .fkarte { border: 4px solid #2c2722; border-radius: 3px; background: linear-gradient(180deg, #33241a, #1a110b); box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.4), 0 8px 16px rgba(0,0,0,.5); }
+body.dorf-holz .fkarte:hover:not(:disabled), body.dorf-holz .fkarte.an, body.dorf-holz .fkarte.gewaehlt { box-shadow: 0 0 0 2px #f6dc9c, 0 0 18px rgba(246,200,110,.4), 0 8px 16px rgba(0,0,0,.5); }
+/* Porträt auf der Tafel: wie ein gerahmtes Bild an der Wand */
+body.dorf-holz .held-bild img, body.dorf-holz .held-bild > .marke { border: 5px solid #2c2722; border-radius: 2px; box-shadow: 0 0 0 1px #d9b26a, 0 0 0 4px #1a1612, 0 0 0 5px #6b5a45, 0 12px 22px rgba(0,0,0,.6); }
+/* Werte: Eisenplatten */
+body.dorf-holz .held-kern span, body.dorf-holz .held-werte span, body.dorf-holz .attr span { border: 1px solid #6b5a45; border-radius: 2px; background: linear-gradient(180deg, #3a332c, #1b1815); box-shadow: inset 0 1px 0 rgba(255,235,200,.14), inset 0 -2px 4px rgba(0,0,0,.45); }
+body.dorf-holz .held-werte span.haupt { border-color: var(--k); box-shadow: inset 0 0 0 1px var(--k), inset 0 1px 0 rgba(255,235,200,.14); }
+/* Reiter und Fähigkeiten */
+body.dorf-holz .held-reiter { border-bottom-color: rgba(217,178,106,.4); }
+body.dorf-holz .held-reiter button.an { color: #fff1c8; border-bottom-color: #d9b26a; background: linear-gradient(180deg, transparent, rgba(217,178,106,.12)); }
+body.dorf-holz .faehig li { background: rgba(14, 8, 4, .62); border: 1px solid rgba(217,178,106,.28); border-radius: 2px; }
+body.dorf-holz .faehig li.merkmal, body.dorf-holz .faehig li.klasse { background: linear-gradient(180deg, color-mix(in srgb, var(--k) 38%, rgba(14, 8, 4, .8)), rgba(14, 8, 4, .8)); border-color: color-mix(in srgb, var(--k) 70%, #d9b26a); }
+body.dorf-holz .held-faehig li { background: rgba(14, 8, 4, .62); border: 1px solid rgba(217,178,106,.28); border-radius: 2px; }
+body.dorf-holz .held-faehig li.klassen-merkmal { border-color: var(--k); border-left: 3px solid var(--k); background: linear-gradient(180deg, color-mix(in srgb, var(--k) 34%, rgba(14, 8, 4, .82)), rgba(14, 8, 4, .82)); }
