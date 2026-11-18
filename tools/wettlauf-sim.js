@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F] [--variante=A|B|C|D]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -143,4 +143,68 @@ if (TEILE.includes("F")) {
       if (r.fehler) continue; n++; diff += d; if (d >= 2) ab2++; if (dn >= 2) ab2nach++; runden += (ea.runden + eb.runden) / 2 + r.runden;
       if (d >= 0.5) { mitUnter++; const aGewinnt = r.sieger === (seite ? 2 : 1) ? 1 : r.sieger ? 0 : 0.5; schwachSieg += sa < sb ? aGewinnt : 1 - aGewinnt; } }
     console.log(`\n${V.name} (${n} Partien, Pläne zufällig)\n  Die schwächere Gruppe gewinnt ${pct(schwachSieg, mitUnter)} (${mitUnter} Partien mit Unterschied)\n  Stufenabstand nach dem Weg Ø ${(diff / n).toFixed(2)} · mindestens zwei Stufen Abstand: ${pct(ab2, n)}${V.ausgleich ? ` (nach dem Angleichen ${pct(ab2nach, n)})` : ""}\n  Gruppen, die höchstens Stufe 2 erreichen: ${pct(frueh, 2 * n)} · Runden je Partie Ø ${(runden / n).toFixed(1)}`); }
+}
+
+/* ---------- Teil G: das Finale mit Siegel (nur in dieser Rechnung, nicht im Spiel) ----------
+ * Siegel = das freie Feld, das der Kartenmitte am nächsten liegt. „Am Siegel“ steht, wer darauf oder direkt daneben steht (auch schräg).
+ * Am Ende jeder Runde bekommt die Seite mit mehr stehenden Helden am Siegel einen Punkt, bei Gleichstand niemand.
+ * Zurückerobern: Holt die zurückliegende Seite zwei Runden in Folge den Punkt, verliert die führende einen. Sieg: drei Punkte oder alle Gegner besiegt.
+ * Nach acht Runden: mehr Punkte, dann mehr Helden am Siegel, dann mehr übrige Trefferpunkte.
+ * Spielweise „siegel“: Wer nicht am Siegel steht, läuft zuerst so nah wie möglich heran und kämpft von dort; „duell“: der gewöhnliche Arena-Bot. */
+function siegelFeld(st) { const k = st.karte, mx = (k.b - 1) / 2, my = (k.h - 1) / 2; let best = null;
+  for (let x = 0; x < k.b; x++) for (let y = 0; y < k.h; y++) { if (k.block.has(x + "," + y)) continue; const d = Math.hypot(x - mx, y - my); if (!best || d < best.d) best = { x, y, d }; }
+  return best; }
+const amSiegel = (f, s) => Math.max(Math.abs(f.x - s.x), Math.abs(f.y - s.y)) <= 1;
+function finale(e1, g1, e2, g2, seed, karte, o = {}) {
+  let jetzt = 1000000; const t1 = g1.map((held) => ({ held, stufe: e1.stufen[held] })), t2 = g2.map((held) => ({ held, stufe: e2.stufen[held] }));
+  const m = { staerke: 1, seed, modus: "duell", karte, begegnung: "kobolde", kampfstufe: Math.max(...t1.concat(t2).map((x) => x.stufe)), host_name: "A", guest_name: "B", bot: false, host_team: t1, guest_team: t2 };
+  const st = K.start(m, 0, 0, jetzt).st, S = siegelFeld(st), spiel = { 1: (o.spiel || {})[1] || "siegel", 2: (o.spiel || {})[2] || "siegel" };
+  for (const f of st.figuren) { const tm = R.teamVon(st, f), e = tm === 1 ? e1 : tm === 2 ? e2 : null; if (!e || !e.leben || e.leben[f.fid] == null || f.tpMax == null) continue; const a = Math.min(1, e.leben[f.fid]); f.tp = Math.max(1, Math.round(f.tpMax * (a + (1 - a) / 2))); }
+  const P = { 1: (o.vorsprung || {})[1] || 0, 2: (o.vorsprung || {})[2] || 0 }, folge = { 1: 0, 2: 0 }, M = { erste: null, zurueck: 0, wechsel: 0, halter: 0 };
+  const steht = (tm) => st.figuren.filter((f) => f.seite === "spieler" && f.tp > 0 && !f.tot && R.teamVon(st, f) === tm && amSiegel(f, S)).length;
+  const leben = (tm) => st.figuren.filter((f) => f.seite === "spieler" && R.teamVon(st, f) === tm).reduce((a, f) => a + Math.max(0, f.tp), 0);
+  const aus = (sieger, grund) => ({ sieger, grund, runden: Math.min(st.runde, 8), punkte: P, M });
+  let runde = st.runde, merk = { lauf: 0 }, wer = null, gelaufen = null;
+  for (let i = 0; i < 6000; i++) {
+    if (st.runde !== runde) { // Rundenende werten
+      const a = steht(1), b = steht(2), h = a > b ? 1 : b > a ? 2 : 0;
+      if (h) { const an = 3 - h; if (M.erste == null) M.erste = runde; if (M.halter && M.halter !== h) M.wechsel++; M.halter = h;
+        if (P[h] < P[an]) { folge[h]++; if (folge[h] >= 2) { P[an]--; folge[h] = 0; M.zurueck++; } } else folge[h] = 0;
+        folge[an] = 0; P[h]++; if (P[h] >= 3) return aus(h, "siegel"); }
+      if (runde >= 8) { const a2 = steht(1), b2 = steht(2); return aus(P[1] !== P[2] ? (P[1] > P[2] ? 1 : 2) : a2 !== b2 ? (a2 > b2 ? 1 : 2) : leben(1) === leben(2) ? 0 : leben(1) > leben(2) ? 1 : 2, "zeit"); }
+      runde = st.runde; }
+    if (st.ende) return aus(st.arena.sieger || 0, "besiegt");
+    const f = R.aktiv(st), tm = R.teamVon(st, f); if (!tm) return { fehler: 1 };
+    const k = f.id + ":" + st.runde; if (wer !== k) { wer = k; merk = { lauf: 0 }; gelaufen = false; }
+    jetzt += 1500; let w = null;
+    if (spiel[tm] === "siegel" && !gelaufen && f.fid && st.zug && st.zug.bewegung > 0 && !amSiegel(f, S)) { gelaufen = true;
+      let best = null; for (const [kk, kosten] of R.erreichbar(st, f, st.zug.bewegung)) { const [x, y] = kk.split(",").map(Number); if (x === f.x && y === f.y) continue; if (st.figuren.some((g) => g !== f && g.tp > 0 && g.x === x && g.y === y)) continue;
+        const d = Math.max(Math.abs(x - S.x), Math.abs(y - S.y)), wert = (d <= 1 ? 0 : d) * 100 + kosten; if (!best || wert < best.wert) best = { x, y, wert, d }; }
+      if (best && best.d < Math.max(Math.abs(f.x - S.x), Math.abs(f.y - S.y))) { w = { typ: "bewegen", x: best.x, y: best.y }; merk.lauf = 3; } }
+    if (spiel[tm] === "siegel" && amSiegel(f, S)) merk.lauf = 3; // wer am Siegel steht, bleibt dort
+    if (!w) { w = BOT.entscheide(st, merk); if (w.typ === "bewegen") merk.lauf++; }
+    let r = K.zug(st, tm, w, jetzt); if (r.fehler) r = K.zug(st, tm, { typ: "ende" }, jetzt); if (r.fehler) return { fehler: 1 };
+  }
+  return { fehler: 1 };
+}
+if (TEILE.includes("G")) {
+  const o = { einstieg: true, heilung: true }, PL = Object.values(PLAENE).filter((p) => p !== "LSS"), schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
+  const angleichen = (ea, ga, eb, gb) => { const sa = schnitt(ea, ga), sb = schnitt(eb, gb); if (Math.abs(sa - sb) <= 1) return; const [es, gs, ziel] = sa < sb ? [ea, ga, sb - 1] : [eb, gb, sa - 1]; let n = 0; while (schnitt(es, gs) < ziel - 1e-9 && n++ < 40) es.stufen[gs.slice().sort((x, y) => es.stufen[x] - es.stufen[y])[0]]++; };
+  const lauf = (name, fn) => { zs = 4711; let n = 0, schwach = 0, mitU = 0, rd = 0, erste = 0, ersteN = 0, zur = 0, mehrfach = 0, grund = { siegel: 0, besiegt: 0, zeit: 0 }, extra = 0, extraN = 0;
+    for (let i = 0; i < N; i++) { const x = fn(i); if (!x || x.r.fehler) continue; const r = x.r; n++; rd += r.runden; grund[r.grund]++; if (r.M.erste != null) { erste += r.M.erste; ersteN++; } zur += r.M.zurueck; if (r.M.wechsel >= 2) mehrfach++;
+      if (x.schwach) { mitU++; if (r.sieger === x.schwach) schwach++; else if (!r.sieger) schwach += 0.5; }
+      if (x.seiteA) { extraN++; if (r.sieger === x.seiteA) extra++; else if (!r.sieger) extra += 0.5; } }
+    console.log(`\n${name} (${n} Finals)\n  ${extraN ? `Die erstgenannte Seite gewinnt ${pct(extra, extraN)} · ` : ""}${mitU ? `die Gruppe mit weniger Stufen gewinnt ${pct(schwach, mitU)} (${mitU} mit Unterschied) · ` : ""}Dauer Ø ${(rd / n).toFixed(1)} Runden\n  Ende durch: drei Siegelpunkte ${pct(grund.siegel, n)} · Gegner besiegt ${pct(grund.besiegt, n)} · Zeit nach acht Runden ${pct(grund.zeit, n)}\n  Erste Siegelkontrolle in Runde Ø ${ersteN ? (erste / ersteN).toFixed(1) : "–"} · Rückeroberungen je Final Ø ${(zur / n).toFixed(2)} · das Siegel wechselt mindestens zweimal: ${pct(mehrfach, n)}`); };
+  const partie = (i, pa, pb, opt) => { const ga = zieh(3), gb = zieh(3), ea = weg(pa, 20000 + i, ga, o), eb = weg(pb, 40000 + i, gb, o), sa0 = schnitt(ea, ga), sb0 = schnitt(eb, gb); angleichen(ea, ga, eb, gb);
+    const seite = i % 2, op = opt(seite), r = seite ? finale(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], op) : finale(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], op);
+    return { r, seiteA: seite ? 2 : 1, schwach: Math.abs(sa0 - sb0) >= 0.5 ? ((sa0 < sb0) === !seite ? 1 : 2) : 0 }; };
+  const zufall = (i) => [PL[Math.floor(zf() * PL.length)], PL[Math.floor(zf() * PL.length)]];
+  console.log(`\nTeil G – Finale mit Siegel, Regelstand D (sicherer Einstieg, volle Heilung, höchstens eine Stufe Abstand); ${N} Finals je Block`);
+  lauf("1 · Beide spielen aufs Siegel", (i) => { const [pa, pb] = zufall(i); const x = partie(i, pa, pb, () => ({})); x.seiteA = 0; return x; });
+  lauf("2 · Beide spielen ein gewöhnliches Duell (nur die Wertung zählt das Siegel)", (i) => { const [pa, pb] = zufall(i); const x = partie(i, pa, pb, () => ({ spiel: { 1: "duell", 2: "duell" } })); x.seiteA = 0; return x; });
+  lauf("3 · Siegelspieler gegen Duellspieler (gleiche Wegepläne)", (i) => { const [pa] = zufall(i); const x = partie(i, pa, pa, (s) => ({ spiel: s ? { 1: "duell", 2: "siegel" } : { 1: "siegel", 2: "duell" } })); x.schwach = 0; return x; });
+  lauf("4 · Schleichweg ohne Siegelpunkt gegen „erst leicht, dann schwer“", (i) => { const x = partie(i, "LSS", "LLSS", () => ({})); x.schwach = 0; return x; });
+  lauf("5 · Schleichweg mit einem Siegelpunkt Vorsprung gegen „erst leicht, dann schwer“", (i) => { const x = partie(i, "LSS", "LLSS", (s) => ({ vorsprung: s ? { 2: 1 } : { 1: 1 } })); x.schwach = 0; return x; });
+  lauf("6 · Schleichweg ohne Siegelpunkt gegen „nur leicht“", (i) => { const x = partie(i, "LSS", "LLLL", () => ({})); x.schwach = 0; return x; });
+  lauf("7 · Schleichweg mit einem Siegelpunkt Vorsprung gegen „nur leicht“", (i) => { const x = partie(i, "LSS", "LLLL", (s) => ({ vorsprung: s ? { 2: 1 } : { 1: 1 } })); x.schwach = 0; return x; });
 }

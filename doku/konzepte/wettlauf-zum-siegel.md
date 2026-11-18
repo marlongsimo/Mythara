@@ -268,3 +268,35 @@ Vereinfachungen: Der sichere Einstiegsraum ist als „gelingt immer, drei Runden
 - **Die Spieldauer** bleibt bei 23 bis 24 Runden. Eigens gebaute, kürzere Räume sind dafür nötig, die Regeln ändern daran nichts.
 
 Vorläufiger Regelstand: Variante D. Der zusätzliche Segen für die zurückliegende Gruppe entfällt zugunsten des Angleichens, solange er nicht eigens dagegen getestet ist.
+
+## Dritte Durchrechnung: das Finale mit Siegel
+
+160 Finals je Block, Regelstand D. Aufruf: `node tools/wettlauf-sim.js 160 --teil=G`. Das Siegel gibt es nur in dieser Rechnung, nicht im Spiel.
+
+Nachgebildet: Siegel in der Kartenmitte, „am Siegel“ steht, wer darauf oder direkt daneben steht. Punkt je Runde für die Seite mit mehr Helden am Siegel, Zurückerobern nach zwei Runden in Folge, Sieg bei drei Punkten oder besiegtem Gegner, Wertung nach acht Runden. Spielweise „Siegel“: zuerst ans Siegel laufen, von dort kämpfen. Spielweise „Duell“: der gewöhnliche Arena-Bot.
+
+| Block | Ergebnis | Dauer | Ende durch drei Punkte | Gegner besiegt | Zeit | erste Kontrolle | Siegel wechselt ≥ 2-mal |
+|---|---|---|---|---|---|---|---|
+| 1 · beide spielen aufs Siegel | schwächere Gruppe gewinnt 41 % | 4,2 Runden | 86 % | 14 % | 1 % | Runde 1,2 | 4 % |
+| 2 · beide spielen ein Duell | schwächere Gruppe gewinnt 40 % | 5,4 Runden | 36 % | 53 % | 12 % | Runde 1,9 | 2 % |
+| 3 · Siegelspieler gegen Duellspieler | Siegelspieler gewinnt 53 % | 4,8 Runden | 61 % | 31 % | 9 % | Runde 1,5 | 1 % |
+| 4 · Schleichweg ohne Punkt gegen „erst leicht, dann schwer“ | Schleichweg gewinnt 47 % | 4,3 Runden | 90 % | 9 % | 1 % | Runde 1,2 | 4 % |
+| 5 · Schleichweg mit Punkt gegen „erst leicht, dann schwer“ | Schleichweg gewinnt 56 % | 3,7 Runden | 94 % | 5 % | 1 % | Runde 1,2 | 1 % |
+| 6 · Schleichweg ohne Punkt gegen „nur leicht“ | Schleichweg gewinnt 55 % | 4,1 Runden | 89 % | 10 % | 1 % | Runde 1,2 | 2 % |
+| 7 · Schleichweg mit Punkt gegen „nur leicht“ | Schleichweg gewinnt 54 % | 3,6 Runden | 90 % | 9 % | 1 % | Runde 1,2 | 1 % |
+
+Rückeroberungen je Final: 0,00 bis 0,07.
+
+- **Das Finale ist zu kurz und zu starr.** Wer in der ersten Runde am Siegel steht, hält es fast immer bis zum Schluss. Das Siegel wechselt in höchstens 4 % der Finals zweimal, zurückerobert wird praktisch nie.
+- **Die Stufen zählen kaum noch.** Die schwächere Gruppe gewinnt 40 bis 41 %, mehr als das Ziel von 25 bis 35 %. Entschieden wird über Reihenfolge und Startstellung.
+- **Siegel spielen ist nicht klar besser als kämpfen** (53 %). Das wäre gut, wenn das Finale länger dauerte.
+- **Der Schleichweg ist mit dem Angleichen schon ohne Siegelpunkt etwa ausgeglichen** (47 und 55 %). Der Punkt hebt ihn gegen „erst leicht, dann schwer“ auf 56 %, gegen „nur leicht“ ändert er nichts Messbares. Bei 160 Finals liegt die Unsicherheit bei etwa ±8 Punkten.
+
+Grenzen: Die Spielweise „Siegel“ ist eine einfache Faustregel. Der Rechner drängt niemanden gezielt vom Siegel und blockiert keine Zugänge. Die Karten sind Arena-Karten ohne eigene Engstellen.
+
+### Was am Finale als Nächstes zu prüfen ist
+
+1. Gewertet wird erst ab Runde 2, damit die Startstellung nicht entscheidet.
+2. Fünf Siegelpunkte statt drei, Wertung nach zehn Runden.
+3. Einen Punkt gibt es nur bei alleiniger Kontrolle, also wenn kein gegnerischer Held am Siegel steht.
+4. Ein eigener Siegelsaal, in dem beide Seiten gleich weit vom Siegel starten.
