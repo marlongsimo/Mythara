@@ -302,3 +302,67 @@ Grenzen: Die Spielweise „Siegel“ ist eine einfache Faustregel. Der Rechner d
 2. Fünf Siegelpunkte statt drei, Wertung nach zehn Runden.
 3. Einen Punkt gibt es nur bei alleiniger Kontrolle, also wenn kein gegnerischer Held am Siegel steht.
 4. Ein eigener Siegelsaal, in dem beide Seiten gleich weit vom Siegel starten.
+
+## Vierte Durchrechnung: das Finale mit Siegel, korrigiert
+
+Aufruf: `node tools/wettlauf-sim.js 160 --teil=H` (Regelvarianten) und `--teil=G` (Schleichweg). Wege mit sicherem Einstieg und voller Heilung nach Niederlage. Gezählt wird jetzt nach Mannschaft.
+
+Spielweise „alt“: zuerst ans Siegel laufen, von dort kämpfen. Spielweise „neu“: ans Siegel nur, wenn dort die Überzahl fehlt; Gegner am Siegel bevorzugt angreifen und wegstoßen; wer hält, bleibt stehen.
+
+### Regelvarianten, mit Angleichen auf höchstens eine Stufe (160 Finals je Zeile)
+
+| Regel | Spielweise | schwächere gewinnt | Runden | Siegelwechsel | verdrängt | zurückerobert | längste Kontrolle | beide kontrollieren | Ende durch Siegel / besiegt / Zeit |
+|---|---|---|---|---|---|---|---|---|---|
+| A bisher | alt | 42 % | 5,6 | 0,31 | – | 0,09 | 2,4 | 28 % | 68 / 26 / 6 % |
+| B ab Runde 2 | alt | 40 % | 5,9 | 0,25 | – | 0,04 | 2,6 | 24 % | 59 / 32 / 9 % |
+| C fünf Punkte, zehn Runden | alt | 50 % | 6,7 | 0,31 | – | 0,11 | 3,3 | 26 % | 39 / 51 / 10 % |
+| D nur alleinige Kontrolle | alt | 45 % | 6,3 | 0,01 | – | 0,00 | 0,5 | 1 % | 9 / 59 / 31 % |
+| B+D | alt | 45 % | 6,3 | 0,01 | – | 0,00 | 0,6 | 1 % | 8 / 59 / 34 % |
+| C+D | alt | 45 % | 6,9 | 0,00 | – | 0,00 | 0,7 | 0 % | 7 / 73 / 21 % |
+| B+C+D | alt | 41 % | 7,4 | 0,02 | – | 0,00 | 0,7 | 2 % | 4 / 63 / 33 % |
+| A bisher | neu | 46 % | 5,6 | 0,31 | 3,94 | 0,04 | 2,3 | 28 % | 68 / 21 / 11 % |
+| B ab Runde 2 | neu | 44 % | 5,9 | 0,43 | 4,20 | 0,06 | 2,5 | 34 % | 63 / 26 / 11 % |
+| C fünf Punkte, zehn Runden | neu | 46 % | 6,6 | 0,38 | 5,04 | 0,08 | 3,4 | 33 % | 39 / 54 / 7 % |
+| D nur alleinige Kontrolle | neu | 48 % | 6,2 | 0,01 | 4,82 | 0,00 | 0,6 | 1 % | 12 / 55 / 33 % |
+| B+D | neu | 50 % | 6,4 | 0,01 | 5,09 | 0,00 | 0,6 | 1 % | 11 / 56 / 33 % |
+| C+D | neu | 48 % | 7,3 | 0,01 | 5,61 | 0,00 | 0,8 | 1 % | 12 / 62 / 26 % |
+| B+C+D | neu | 45 % | 7,3 | 0,02 | 5,79 | 0,00 | 0,9 | 2 % | 10 / 63 / 28 % |
+
+„Verdrängt“ zählt jeden Gegner, der durch eine eigene Aktion nicht mehr am Siegel steht, also auch besiegte.
+
+### Gegenprobe ohne Angleichen der Stufen (200 Finals je Zeile, Spielweise neu)
+
+| Regel | schwächere gewinnt | Runden | Siegelwechsel | beide kontrollieren | Ende durch Siegel / besiegt / Zeit |
+|---|---|---|---|---|---|
+| A bisher | 34 % | 5,3 | 0,32 | 29 % | 65 / 29 / 7 % |
+| B ab Runde 2 | 31 % | 5,4 | 0,28 | 25 % | 63 / 32 / 6 % |
+| C fünf Punkte, zehn Runden | 36 % | 6,4 | 0,38 | 32 % | 38 / 55 / 8 % |
+
+### Schleichweg und Spielweisen (160 Finals je Zeile, Regel A, mit Angleichen)
+
+| Paarung | Ergebnis |
+|---|---|
+| Siegelspieler gegen Duellspieler | Siegelspieler gewinnt 84 % |
+| Schleichweg ohne Punkt gegen „erst leicht, dann schwer“ | 49 % |
+| Schleichweg mit Punkt gegen „erst leicht, dann schwer“ | 43 % |
+| Schleichweg ohne Punkt gegen „nur leicht“ | 49 % |
+| Schleichweg mit Punkt gegen „nur leicht“ | 55 % |
+
+### Was die korrigierten Zahlen sagen
+
+- **Das Siegel selbst gleicht aus.** Ohne Angleichen gewinnt die schwächere Gruppe im Siegel-Finale 31 bis 36 %, also im Zielbereich. Mit Angleichen sind es 40 bis 50 %, die Stufen zählen dann kaum noch. Das Angleichen ist mit Siegel vermutlich überflüssig.
+- **Aufs Siegel spielen ist Pflicht.** Wer nur kämpft, verliert 84 % gegen einen Siegelspieler.
+- **Das Siegel wechselt selten.** Etwa 0,3 Wechsel je Final, in rund 30 % der Finals kontrollieren beide Seiten einmal. Zurückerobert wird fast nie.
+- **„Nur alleinige Kontrolle“ (D) funktioniert so nicht.** Beide Seiten stehen am Siegel, niemand bekommt Punkte, und das Finale wird zum gewöhnlichen Kampf mit Zeitwertung.
+- **„Fünf Punkte“ (C) verlängert das Finale** auf 6,4 bis 6,9 Runden, verschiebt das Ende aber zum Auslöschen (über die Hälfte).
+- **„Ab Runde 2“ (B) ändert wenig.**
+- **Der Siegelpunkt für den Schleichweg ist nicht messbar wertvoll** (43 bis 55 % mit, 49 % ohne; Unsicherheit etwa ±8 Punkte).
+
+Das Ziel „sieben bis zehn Runden, mehrfach umkämpft“ erreicht keine der Varianten. Der Grund liegt in der Wertung: Bei drei gegen drei auf neun Feldern kippt die Überzahl erst, wenn ein Held fällt, und dann bleibt sie gekippt.
+
+### Was am Finale als Nächstes zu prüfen ist
+
+1. **Gefallene kehren zurück:** Wer im Finale fällt, steht nach zwei Runden am eigenen Eingang wieder auf. Dann kann die Überzahl mehrfach kippen.
+2. **Nur das Siegelfeld zählt:** Den Punkt bekommt, wer auf dem Siegel selbst steht. Wegstoßen wird dadurch entscheidend.
+3. **Das Siegel wandert:** Alle zwei Runden springt es auf eines von drei Feldern.
+4. Variante C (ohne Angleichen) als Grundlage für alle drei.

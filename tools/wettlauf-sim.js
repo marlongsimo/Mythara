@@ -239,7 +239,7 @@ if (TEILE.includes("H")) {
   const BLOECKE = []; for (const ki of ["siegel", "kontrolle"]) for (const [name, regel] of REGELN) BLOECKE.push({ ki, name, regel });
   const nur = (process.argv.find((a) => a.startsWith("--bloecke=")) || "").split("=")[1], wahl = nur ? nur.split(",").map(Number) : BLOECKE.map((_, i) => i + 1);
   for (const nr of wahl) { const B = BLOECKE[nr - 1]; zs = 4711; let n = 0, schwach = 0, mitU = 0, rd = 0, wechsel = 0, verdr = 0, zur = 0, serie = 0, beide = 0, grund = { siegel: 0, besiegt: 0, zeit: 0 };
-    for (let i = 0; i < N; i++) { const pa = PL[Math.floor(zf() * PL.length)], pb = PL[Math.floor(zf() * PL.length)], ga = zieh(3), gb = zieh(3), ea = weg(pa, 20000 + i, ga, o), eb = weg(pb, 40000 + i, gb, o), sa0 = schnitt(ea, ga), sb0 = schnitt(eb, gb); angleichen(ea, ga, eb, gb);
+    for (let i = 0; i < N; i++) { const pa = PL[Math.floor(zf() * PL.length)], pb = PL[Math.floor(zf() * PL.length)], ga = zieh(3), gb = zieh(3), ea = weg(pa, 20000 + i, ga, o), eb = weg(pb, 40000 + i, gb, o), sa0 = schnitt(ea, ga), sb0 = schnitt(eb, gb); if (!process.argv.includes("--ohne-angleichen")) angleichen(ea, ga, eb, gb);
       const seite = i % 2, op = { regel: B.regel, spiel: { 1: B.ki, 2: B.ki } }, r = seite ? finale(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], op) : finale(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], op);
       if (r.fehler) continue; n++; rd += r.runden; grund[r.grund]++; wechsel += r.M.wechsel; verdr += r.M.verdraengt; zur += r.M.zurueck; serie += r.M.laengste; if (r.M.hatte[1] && r.M.hatte[2]) beide++;
       if (Math.abs(sa0 - sb0) >= 0.5) { mitU++; const sw = (sa0 < sb0) === !seite ? 1 : 2; if (r.sieger === sw) schwach++; else if (!r.sieger) schwach += 0.5; } }
