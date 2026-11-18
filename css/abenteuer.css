@@ -2622,7 +2622,7 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
 /* Der große Würfel rollt über die Karte (js/wuerfel3d.js): im Ergebnisfeld dann nur der Text, ohne den kleinen Würfel */
 .wurf.ohne-w20 .w20-box { display: none; }
 
-/* ---------- Prototyp: Banner hinter den Seitenleisten im Kampf (nur mit ?banner=1, große Bildschirme) ---------- */
+/* ---------- Kampfbildschirm in Holz, Eisen, Samt und Pergament – große Bildschirme (?banner=0 zeigt das frühere Aussehen) ---------- */
 @media (min-width: 1200px) {
   body.kampf-banner.kampf-schlank.im-kampf .spiel { grid-template-columns: 236px minmax(0, 1fr) 330px; }
   body.kampf-banner.kampf-schlank.im-kampf .gruppe-kampf { background: url("../img/mythara/banner-loewe.webp") top center / 100% auto no-repeat; min-height: calc(100vh - 78px); padding: 64px 34px 40px; gap: 9px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.6)); }
@@ -2663,6 +2663,12 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
   /* Aktionsleiste unter der Karte: dunkles Holz statt Nachtblau */
   body.kampf-banner.kampf-schlank.im-kampf .karte-wrap .leiste { background: linear-gradient(180deg, #3a2716, #1c120a); box-shadow: 0 0 0 1px rgba(217,178,106,.45), inset 0 1px 0 rgba(255,220,160,.12), 0 14px 30px rgba(0,0,0,.6); }
   body.kampf-banner.kampf-schlank.im-kampf .panel .schritte, body.kampf-banner.kampf-schlank.im-kampf .panel .zug-schritte { font-size: 11px; }
+  /* Knöpfe unter der Karte: Eisenplatten; „Zug beenden“ in rotem Samt */
+  body.kampf-banner.kampf-schlank.im-kampf .l-knopf { border: 1px solid #6b5a45; background: linear-gradient(180deg, #423a32, #1d1a16); box-shadow: inset 0 1px 0 rgba(255,235,200,.16), inset 0 -2px 4px rgba(0,0,0,.5); color: #f1e3c4; }
+  body.kampf-banner.kampf-schlank.im-kampf .l-knopf:not(:disabled):hover { border-color: #d9b26a; }
+  body.kampf-banner.kampf-schlank.im-kampf .l-knopf.gewaehlt { border-color: #f6dc9c; background: linear-gradient(180deg, #7a551c, #3c2a0e); }
+  body.kampf-banner.kampf-schlank.im-kampf .l-knopf[data-l="ende"] { border-color: #d9b26a; background: linear-gradient(180deg, #8f1d24, #5a1016); color: #fff1c8; }
+  body.kampf-banner.kampf-schlank.im-kampf .l-tp { background: #1c0d0a; border-color: rgba(217,178,106,.4); }
   /* oben: Holzbalken mit Eisenbändern statt des dunklen Balkens */
   body.kampf-banner.kampf-schlank.im-kampf .kampf-kopf { height: 62px; padding: 0 58px; border-radius: 0; box-shadow: none; filter: drop-shadow(0 8px 14px rgba(0,0,0,.6));
     background: url("../img/mythara/balken-zier.webp") center / auto 100% no-repeat, url("../img/mythara/balken-links.webp") left center / auto 100% no-repeat, url("../img/mythara/balken-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/balken-mitte.webp") center / calc(100% - 100px) 100% no-repeat; }
@@ -2674,7 +2680,7 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
   body.kampf-banner.kampf-schlank.im-kampf .kk-chip { background: rgba(10, 6, 3, .55); }
 }
 
-/* ---------- Prototyp (?banner=1), Handy: dasselbe Material – Tisch, Holz, Eisen, Pergament – auf dem unveränderten Handy-Layout ---------- */
+/* ---------- Handy: dasselbe Material – Tisch, Holz, Eisen, Pergament – auf dem unveränderten Handy-Layout ---------- */
 body.kampf-banner.kh-an.im-kampf { background: #120b07; }
 body.kampf-banner.kh-an #reihe { margin: 0 0 6px; padding: 9px 10px; background: url("../img/mythara/balken-mitte.webp") center / 100% 100% no-repeat; box-shadow: 0 6px 12px rgba(0,0,0,.6); }
 body.kampf-banner.kh-an #reihe span { background: rgba(14, 8, 4, .7); border-color: rgba(217,178,106,.4); color: #e6d6b4; }

@@ -58,8 +58,9 @@
   const params = new URLSearchParams(location.search);
   /* Schlanker Kampfbildschirm auf großen Bildschirmen (ab 1200 px): kleine Initiative über der Karte, große Karte, Chronik als aufklappbarer Streifen.
      ?kampf=alt holt für diesen Tab die frühere Ansicht zurück, ?kampf=neu schaltet wieder um. */
-  /* Prototyp: Banner hinter den beiden Seitenleisten im Kampf – nur mit ?banner=1 (für diesen Tab), ?banner=0 schaltet ab */
-  try { if (params.get("banner") === "1") sessionStorage.setItem("ab_banner", "1"); if (params.get("banner") === "0") sessionStorage.removeItem("ab_banner"); if (sessionStorage.getItem("ab_banner")) document.body.classList.add("kampf-banner"); } catch (e) { /* privat */ }
+  /* Kampfbildschirm in Holz, Eisen, Samt und Pergament (PC ab 1200 px und Handy). ?banner=0 holt für diesen Tab das frühere dunkelblaue Aussehen zurück, ?banner=1 schaltet wieder um */
+  { let aus = false; try { if (params.get("banner") === "0") sessionStorage.setItem("ab_banner_aus", "1"); if (params.get("banner") === "1") sessionStorage.removeItem("ab_banner_aus"); aus = Boolean(sessionStorage.getItem("ab_banner_aus")); } catch (e) { /* privat */ }
+    if (!aus) document.body.classList.add("kampf-banner"); }
   { let alt = false; try { if (params.get("kampf") === "alt") sessionStorage.setItem("ab_kampf_alt", "1"); if (params.get("kampf") === "neu") sessionStorage.removeItem("ab_kampf_alt"); alt = Boolean(sessionStorage.getItem("ab_kampf_alt")); } catch (e) { /* privat */ }
     if (!alt) { document.body.classList.add("kampf-schlank"); document.addEventListener("click", (ev) => { const l = ev.target.closest("#log"); if (l) l.classList.toggle("offen"); }); } }
   // Erst wenn alle Skripte geladen sind (sonst fehlt bei langsamem Laden noch die Abenteuer-Oberfläche und das Fortsetzen fällt aus)
