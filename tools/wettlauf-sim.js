@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T] [--beute=ding|dingPassend|segen] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T,U] [--paarung=A-B,C-M,…] [--beute=ding|dingPassend|segen] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -43,9 +43,10 @@ function weg(plan, seed, gruppe, o = {}) {
   const beuteGeben = (i) => { if (!o.beute) return;
     if (o.beute === "segen") { const frei = SEGEN_POOL.filter((x) => !segen.includes(x)); if (frei.length) segen.push(frei[Math.floor(zb(i) * frei.length)]); B.vergeben++; B.wirksam++; return; }
     if (o.beute === "splitter") { B.splitter++; B.vergeben++; return; }
+    if (o.beute === "mix" && i >= 4 && zb(i + 300) < 0.5) { const frei = SEGEN_POOL.filter((x) => !segen.includes(x)); segen.push(frei[Math.floor(zb(i) * frei.length)]); B.vergeben++; B.wirksam++; B.segenN = (B.segenN || 0) + 1; return; }
     let id = DING_POOL[Math.floor(zb(i) * DING_POOL.length)], f = gruppe[Math.floor(zb(i + 50) * gruppe.length)];
-    if (o.beute === "dingPassend") { for (let n = 0; n < 12 && !gruppe.some((g) => passt(id, g)); n++) id = DING_POOL[Math.floor(zb(i + 100 + n) * DING_POOL.length)]; const l = gruppe.filter((g) => passt(id, g) && !(dinge[g] || []).includes(id)); if (l.length) f = l[Math.floor(zb(i + 70) * l.length)]; }
-    (dinge[f] = dinge[f] || []).push(id); B.vergeben++; if (passt(id, f)) B.wirksam++; };
+    if (o.beute === "dingPassend" || o.beute === "mix") { for (let n = 0; n < 12 && !gruppe.some((g) => passt(id, g)); n++) id = DING_POOL[Math.floor(zb(i + 100 + n) * DING_POOL.length)]; const l = gruppe.filter((g) => passt(id, g) && !(dinge[g] || []).includes(id)); if (l.length) f = l[Math.floor(zb(i + 70) * l.length)]; }
+    (dinge[f] = dinge[f] || []).push(id); B.vergeben++; B.dingN = (B.dingN || 0) + 1; if (passt(id, f)) B.wirksam++; };
   [...plan].forEach((art, i) => {
     if (art === "R") { zust = null; return; } // Rast: alles voll
     if (o.einstieg && i === 0) { for (const f of gruppe) stufen[f] = 2; runden += 3; kaempfe++; siege++; zust = null; return; }
@@ -392,4 +393,40 @@ if (TEILE.includes("T")) {
       if (r.fehler) continue; n++; if (hat) gest++; const t5 = eb.B.tief[1]; if (t5) { if (t5.sieg) raumSieg++; raumRd += t5.runden; raumTp += t5.tp; }
       lb += eb.leben ? gb.reduce((a, f) => a + Math.min(1, eb.leben[f]), 0) / 3 : 1; stB += gb.reduce((a, f) => a + eb.stufen[f], 0) / 3; rd += r.runden; if (r.sieger === (seite ? 2 : 1)) sA++; else if (!r.sieger) sA += 0.5; }
     console.log(`T|${mit ? "mit Splitter" : "ohne"}|n=${n}|gestört ${pct(gest, n)}|Seite mit Splitter gewinnt ${(100 * sA / n).toFixed(1)} %|Gegner: Raum 5 gewonnen ${pct(raumSieg, n)}, Runden ${(raumRd / n).toFixed(1)}, Leben nach Raum 5 ${pct(raumTp, n)}, Endstufe ${(stB / n).toFixed(2)}, Leben vor dem Finale ${pct(lb, n)}|Finale ${(rd / n).toFixed(1)} Runden`); }
+}
+
+/* ---------- Teil U: der Riss mit Entscheidung nach jedem Raum ----------
+ * Beide Seiten spielen ihre Räume gleichzeitig. Nach dem zweiten Raum entscheidet jede Seite nach jedem Raum neu: weitergehen (höchstens fünf Räume) oder abbiegen (endgültig).
+ * Jede Seite sieht die eigene Stufe, die Stufe und Tiefe des Gegners und ob er schon abgebogen ist. Wer früher abbiegt, steht am Siegel und bekommt einen Siegelpunkt je Etappe Vorsprung.
+ * Beute: Raum vier ein passender Gegenstand, Raum fünf ein Gegenstand oder ein Segen (je zur Hälfte). Flache Kurve, Finale G2.
+ *  A Vorsicht:    biegt ab, sobald sie in der Stufe nicht hinten liegt; geht weiter, solange sie hinten liegt. Ist der Gegner abgebogen, biegt sie sofort ab.
+ *  B Verfolger:   geht weiter, solange der Gegner weitergeht; ist er abgebogen, nimmt sie genau einen Raum mehr.
+ *  C Rechner:     wählt nach der Auszahlungstabelle der festen Raumzahlen; kennt sie die Tiefe des Gegners noch nicht, rechnet sie mit allen noch möglichen gleich wahrscheinlich.
+ *  D Tiefengeher: geht immer bis Raum fünf. */
+if (TEILE.includes("U")) {
+  const o = { einstieg: true, heilung: true, beute: "mix" }, FOLGE = "LLLLL", G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true };
+  const W = { 2: { 2: 0.5, 3: 0.435, 4: 0.39, 5: 0.42 }, 3: { 3: 0.5, 4: 0.46, 5: 0.40 }, 4: { 4: 0.5, 5: 0.45 }, 5: { 5: 0.5 } }, wert = (ich, er) => (ich <= er ? W[ich][er] : 1 - W[er][ich]);
+  const REGEL = {
+    A: (d, ich, er) => (er.ab != null ? true : ich.stufe >= er.stufe - 0.01),
+    B: (d, ich, er) => (er.ab != null ? d > er.ab : false),
+    C: (d, ich, er) => { const ziele = er.ab != null ? [er.ab] : [d, d + 1, d + 2, d + 3].filter((x) => x <= 5); const erw = (m) => ziele.reduce((a, k) => a + wert(m, k), 0) / ziele.length; let best = d, bw = erw(d); for (let m = d + 1; m <= 5; m++) if (erw(m) > bw + 1e-9) { best = m; bw = erw(m); } return best === d; },
+    D: () => false };
+  const NAMEN = { A: "Vorsicht", B: "Verfolger", C: "Rechner", D: "Tiefengeher" }, alle = ["A", "B", "C", "D"];
+  const wahl = ((process.argv.find((x) => x.startsWith("--paarung=")) || "").split("=")[1] || "").split(",").filter(Boolean);
+  const paarungen = wahl.length ? wahl.map((x) => x.split("-")) : [].concat(...alle.map((a, i) => alle.slice(i).map((b) => [a, b])), alle.map((a) => [a, "M"]));
+  const schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
+  for (const [s1, s2] of paarungen) { zs = 4711; let n = 0, sieg1 = 0, r1 = 0, r2 = 0, st1 = 0, st2 = 0, vorP = 0, ungleich = 0, ausg1 = 0, ausg2 = 0, frueh = 0, spaet = 0, gleichV = 0, nied = 0, rd = 0, d1 = 0, se1 = 0, d2 = 0, se2 = 0; const tiefe1 = { 2: 0, 3: 0, 4: 0, 5: 0 }, tiefe2 = { 2: 0, 3: 0, 4: 0, 5: 0 };
+    for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), andere = alle.filter((x) => x !== s1), t2 = s2 === "M" ? andere[Math.floor(zf() * andere.length)] : s2;
+      const ea = {}, eb = {}; for (let k = 2; k <= 5; k++) { ea[k] = weg(FOLGE.slice(0, k), 20000 + i, ga, o); eb[k] = weg(FOLGE.slice(0, k), 40000 + i, gb, o); }
+      const A = { ab: null, ausgeloest: false }, Bz = { ab: null, ausgeloest: false };
+      for (let d = 2; d <= 5 && (A.ab == null || Bz.ab == null); d++) { const ia = { stufe: schnitt(ea[d], ga), ab: A.ab }, ib = { stufe: schnitt(eb[d], gb), ab: Bz.ab };
+        const wa = A.ab == null && (d === 5 || REGEL[s1](d, ia, ib)), wb = Bz.ab == null && (d === 5 || REGEL[t2](d, ib, ia));
+        if (wa) { A.ab = d; if (ib.ab != null && d < 5) A.ausgeloest = true; } if (wb) { Bz.ab = d; if (ia.ab != null && d < 5) Bz.ausgeloest = true; } }
+      const ka = A.ab, kb = Bz.ab, Ea = ea[ka], Eb = eb[kb], seite = i % 2, tA = seite ? 2 : 1, tB = 3 - tA, vor = Math.abs(ka - kb), fr = ka < kb ? tA : kb < ka ? tB : 0;
+      const V = Object.assign({}, G2, vor ? { start: { [fr]: vor }, vorn: fr } : {}), r = seite ? finale2(Eb, gb, Ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(Ea, ga, Eb, gb, 60000 + i, KARTEN[i % 7], V);
+      if (r.fehler) continue; n++; r1 += ka; r2 += kb; tiefe1[ka]++; tiefe2[kb]++; st1 += schnitt(Ea, ga); st2 += schnitt(Eb, gb); vorP += vor; if (vor) ungleich++; if (A.ausgeloest) ausg1++; if (Bz.ausgeloest) ausg2++; rd += r.runden;
+      d1 += Ea.B.dingN || 0; se1 += Ea.B.segenN || 0; d2 += Eb.B.dingN || 0; se2 += Eb.B.segenN || 0;
+      if (r.sieger === tA) sieg1++; else if (!r.sieger) sieg1 += 0.5; else { nied++; if (ka < kb) frueh++; else if (ka > kb) spaet++; else gleichV++; } }
+    const vt = (t) => [2, 3, 4, 5].map((k) => `${k}: ${pct(t[k], n)}`).join(", ");
+    console.log(`\n${NAMEN[s1]} gegen ${s2 === "M" ? "eine zufällige der drei anderen" : NAMEN[s2]} (${n} Partien)\n  ${NAMEN[s1]} gewinnt ${(100 * sieg1 / n).toFixed(1)} % · Räume Ø ${(r1 / n).toFixed(2)} gegen ${(r2 / n).toFixed(2)} · Endstufe Ø ${(st1 / n).toFixed(2)} gegen ${(st2 / n).toFixed(2)} · Finale Ø ${(rd / n).toFixed(1)} Runden\n  Abbiegen nach Raum – ${NAMEN[s1]}: ${vt(tiefe1)} · Gegenseite: ${vt(tiefe2)}\n  Partien mit ungleicher Tiefe ${pct(ungleich, n)} · Siegelpunkte Vorsprung bei Finalbeginn Ø ${(vorP / n).toFixed(2)} · Abbiegen ausgelöst durch das Abbiegen des Gegners: ${NAMEN[s1]} ${pct(ausg1, n)}, Gegenseite ${pct(ausg2, n)}\n  Niederlagen von ${NAMEN[s1]}: früher abgebogen ${pct(frueh, nied)}, später abgebogen ${pct(spaet, nied)}, gleich tief ${pct(gleichV, nied)}\n  Beute je Partie – ${NAMEN[s1]}: ${(d1 / n).toFixed(2)} Gegenstände, ${(se1 / n).toFixed(2)} Segen · Gegenseite: ${(d2 / n).toFixed(2)} Gegenstände, ${(se2 / n).toFixed(2)} Segen`); }
 }
