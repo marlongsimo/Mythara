@@ -551,3 +551,40 @@ Vorläufiger Regelstand für den Riss: jeder Raum +1 Stufe, tiefe Räume geben z
 1. Die flache Kurve mit größerer Stichprobe nachrechnen, besonders „zwei gegen vier“.
 2. Beute nachbilden, damit Tiefe einen zweiten Lohn hat.
 3. Die Entscheidung zum Abbiegen nachbilden: Die Seite sieht die Tiefe des Gegners und reagiert darauf.
+
+## Neunte Durchrechnung: die flache Kurve, abgesichert
+
+600 Partien je ungleicher Paarung, 300 je gleicher. Jeder Raum +1 Stufe, ein Siegelpunkt je Etappe Vorsprung ohne Obergrenze, die frühere Gruppe steht am Siegel, Finale G2. Aufruf: `node tools/wettlauf-sim.js 600 --teil=R --folge=LLLLL --punkte=1` und `--teil=S`.
+
+### Siegquote der Seite mit weniger Räumen
+
+| Räume | Startpunkte | frühere Seite gewinnt | Runden im Finale | Sieg aus dem Punkterückstand | Ende durch Punkte |
+|---|---|---|---|---|---|
+| 2 gegen 3 | 1 | 43,5 % | 7,9 | 57 % | 97 % |
+| 2 gegen 4 | 2 | 38,7 % | 7,1 | 61 % | 98 % |
+| 2 gegen 5 | 3 | 45,2 % | 5,9 | 55 % | 100 % |
+| 3 gegen 4 | 1 | 44,0 % | 7,9 | 56 % | 97 % |
+| 3 gegen 5 | 2 | 40,5 % | 7,3 | 60 % | 97 % |
+| 4 gegen 5 | 1 | 46,3 % | 8,4 | 54 % | 94 % |
+| gleich viele Räume | 0 | 44 bis 50 % | 9,2 bis 9,5 | – | 84 bis 88 % |
+
+Bei 600 Partien liegt die Unsicherheit bei etwa ±4 Punkten.
+
+### Streuung der Endstufe (600 Gruppen je Zeile)
+
+| Räume | Durchschnitt | Median | untere 10 % | obere 10 % | volle Stufe erreicht | Runden auf dem Weg |
+|---|---|---|---|---|---|---|
+| 2 | 2,93 | 3 | bis 3 | ab 3 | 93 % | 7,3 |
+| 3 | 3,87 | 4 | bis 3 | ab 4 | 88 % | 11,4 |
+| 4 | 4,84 | 5 | bis 4 | ab 5 | 85 % | 15,3 |
+| 5 | 5,83 | 6 | bis 5 | ab 6 | 84 % | 19,0 |
+
+### Was die Zahlen sagen
+
+- **Die flache Kurve ist stabil.** Alle sechs Paarungen liegen zwischen 39 und 46 % für die frühere Seite. Keine Raumzahl gewinnt unabhängig von der Wahl des Gegners deutlich.
+- **Tiefe ist durchgehend leicht im Vorteil,** um 4 bis 11 Punkte. Am schwächsten sind die Paarungen mit zwei Etappen Abstand (39 und 41 %).
+- **„Zwei gegen vier“ ist kein Ausreißer mehr** (38,7 statt 34 %), bleibt aber die ungünstigste Wahl.
+- **Die Streuung ist eng:** höchstens eine Stufe zwischen den unteren und oberen zehn Prozent.
+- **Vorbehalt:** In dieser Rechnung sind alle Räume nach dem Einstieg leicht. Werden tiefe Räume schwerer, wächst die Streuung wieder.
+
+Da Tiefe schon ohne Beute leicht vorn liegt, darf Beute den tiefen Weg nur wenig stärker machen, oder der Siegelvorsprung muss mitwachsen.
