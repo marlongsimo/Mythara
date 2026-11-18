@@ -487,3 +487,67 @@ Bisher gerechnet ist davon nur der Sonderfall „eine Etappe weniger“. Der Sie
 1. Den Wettlauf mit freier Zahl von Räumen rechnen: zwei bis fünf Räume je Seite, Vorsprung als Siegelpunkte, Finale G2.
 2. Danach die Heldenanalyse auf Stufe 1, 3, 5 und 7 mit größerer Stichprobe.
 3. Danach acht kurze Räume und ein Siegelsaal als eigene Karten.
+
+## Achte Durchrechnung: der Riss mit freier Raumzahl
+
+150 Partien je Zelle, gleiche Gruppen und Startwerte, Finale G2, ohne Angleichen. Aufruf: `node tools/wettlauf-sim.js 150 --teil=R` (steile Kurve) und `--folge=LLLLL` (flache Kurve).
+
+Nachgebildet: Jede Seite nimmt zwei bis fünf Räume in fester Folge. Die frühere Gruppe steht bei Finalbeginn am Siegel und bekommt Startpunkte: keine, einen je Etappe Vorsprung, oder einen je Etappe und höchstens zwei. Nicht nachgebildet: Beute, Störungen, und dass Spieler ihre Entscheidung an der Tiefe des Gegners ausrichten. Die Tabellen sind die Auszahlung fester Strategien gegeneinander.
+
+Die Zahlen sind die **Siegquote der Seite mit weniger Räumen**. Wo zwei Spalten dieselben Startpunkte bedeuten (Vorsprung eine oder zwei Etappen), zeigt ihr Unterschied nur das Rauschen der Rechnung, bis zu zehn Punkte.
+
+### Steile Kurve: Einstieg +1, leicht +1, leicht +1, schwer +2, schwer +2
+
+Endstufe nach zwei, drei, vier, fünf Räumen: 2,9 · 3,9 · 5,4 · 7,3.
+
+| Räume | ohne Startpunkte | ein Punkt je Etappe | höchstens zwei Punkte |
+|---|---|---|---|
+| 2 gegen 3 | 36 % | 41 % | 44 % |
+| 2 gegen 4 | 23 % | 35 % | 33 % |
+| 2 gegen 5 | 7 % | 35 % | 17 % |
+| 3 gegen 4 | 29 % | 38 % | 38 % |
+| 3 gegen 5 | 15 % | 27 % | 29 % |
+| 4 gegen 5 | 31 % | 35 % | 45 % |
+
+Tiefer gehen gewinnt gegen jede kürzere Wahl, auch mit Startpunkten. Fünf Räume sind die immer richtige Entscheidung. **Das Erfolgskriterium ist verfehlt.**
+
+### Flache Kurve: jeder Raum +1 Stufe
+
+Endstufe nach zwei, drei, vier, fünf Räumen: 2,9 · 3,9 · 4,8 · 5,8.
+
+| Räume | ohne Startpunkte | ein Punkt je Etappe | höchstens zwei Punkte |
+|---|---|---|---|
+| 2 gegen 3 | 38 % | 47 % | 47 % |
+| 2 gegen 4 | 21 % | 34 % | 36 % |
+| 2 gegen 5 | 12 % | 46 % | 27 % |
+| 3 gegen 4 | 31 % | 48 % | 47 % |
+| 3 gegen 5 | 25 % | 42 % | 39 % |
+| 4 gegen 5 | 46 % | 53 % | 43 % |
+
+Mit einem Punkt je Etappe ohne Obergrenze liegen fünf von sechs Paarungen zwischen 42 und 53 %. Nur „zwei gegen vier“ fällt mit 34 % ab. Gleiche Raumzahlen gegeneinander ergeben 44 bis 53 %.
+
+### Dauer
+
+| Räume | Runden auf dem Weg (steil / flach) | Runden im Finale |
+|---|---|---|
+| 2 | 7,3 | 6 bis 9 |
+| 3 | 11,5 | |
+| 4 | 18,0 / 15,5 | |
+| 5 | 23,7 / 19,1 | |
+
+Fünf Räume und ein Finale sind rund 28 bis 33 Runden. Das ist mit den Grauwacht-Begegnungen zu lang; eigene kurze Räume sind nötig.
+
+### Was die Zahlen sagen
+
+- **Ohne Startpunkte lohnt sich frühes Ankommen nie.** Am Siegel zu stehen reicht als Vorteil nicht.
+- **Die Stufenkurve entscheidet.** Mit +2 für schwere Räume ist Tiefe nicht einzuholen. Mit +1 je Raum und einem Siegelpunkt je Etappe Vorsprung sind früh und stark etwa gleichwertig.
+- **Die Obergrenze von zwei Punkten macht den sehr frühen Ausstieg wertlos** (zwei gegen fünf: 27 statt 46 %).
+- **Tiefe muss anders belohnt werden als mit Stufen:** Beute, Segen und Splitter statt einer zweiten Stufe.
+
+Vorläufiger Regelstand für den Riss: jeder Raum +1 Stufe, tiefe Räume geben zusätzlich Beute. Ein Siegelpunkt je Etappe Vorsprung, ohne Obergrenze. Die frühere Gruppe steht am Siegel.
+
+### Nächster Schritt
+
+1. Die flache Kurve mit größerer Stichprobe nachrechnen, besonders „zwei gegen vier“.
+2. Beute nachbilden, damit Tiefe einen zweiten Lohn hat.
+3. Die Entscheidung zum Abbiegen nachbilden: Die Seite sieht die Tiefe des Gegners und reagiert darauf.
