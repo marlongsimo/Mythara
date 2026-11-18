@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T,U] [--paarung=A-B,C-M,…] [--beute=ding|dingPassend|segen|mix] [--stell=0|A|B|C] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T,U] [--paarung=A-B,C-M,…] [--beute=ding|dingPassend|segen|mix] [--stell=0|A|B|C|AB|A2] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -365,11 +365,11 @@ if (TEILE.includes("R")) {
   const alle = []; for (let a = 2; a <= 5; a++) for (let b = a; b <= 5; b++) alle.push([a, b]);
   const pw = (process.argv.find((x) => x.startsWith("--paare=")) || "").split("=")[1], paare = pw ? pw.split(",").map((x) => x.split("-").map(Number)) : alle;
   const punkteWahl = ((process.argv.find((x) => x.startsWith("--punkte=")) || "--punkte=0,1,2").split("=")[1]).split(",").map(Number);
-  for (const [ka, kb] of paare) for (const pv of ka === kb ? [0] : punkteWahl) { zs = 4711; const vor = kb - ka, start = pv === 0 ? 0 : pv === 1 ? vor + (VAR === "B" && vor ? 1 : 0) : Math.min(2, vor);
+  for (const [ka, kb] of paare) for (const pv of ka === kb ? [0] : punkteWahl) { zs = 4711; const vor = kb - ka, start = pv === 0 ? 0 : pv === 2 || VAR === "A2" ? Math.min(2, vor) : VAR === "B" && vor ? vor + 1 : VAR === "AB" && vor ? Math.min(3, vor + 1) : vor;
     let n = 0, frueh = 0, sa = 0, sb = 0, rd = 0, aufg = 0, pk = { siegel: 0, besiegt: 0, zeit: 0 }, ra = 0, rb = 0, wechsel = 0, la = 0, lb = 0, verg = 0, wirk = 0;
     const lebenS = (e, g) => (e.leben ? g.reduce((a, f) => a + Math.min(1, e.leben[f]), 0) / g.length : 1);
     for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), ea = weg(FOLGE.slice(0, ka), 20000 + i, ga, o), eb = weg(FOLGE.slice(0, kb), 40000 + i, gb, o), seite = i % 2, tA = seite ? 2 : 1;
-      const V = Object.assign({}, G2, vor ? { start: { [tA]: start }, vorn: tA } : {}, VAR === "A" && vor ? { ohneHeil: 3 - tA } : {}), r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], V);
+      const V = Object.assign({}, G2, vor ? { start: { [tA]: start }, vorn: tA } : {}, /^A/.test(VAR) && vor ? { ohneHeil: 3 - tA } : {}), r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], V);
       if (r.fehler) continue; n++; sa += schnitt(ea, ga); sb += schnitt(eb, gb); rd += r.runden; pk[r.grund]++; ra += ea.runden; rb += eb.runden; wechsel += r.M.wechsel; if (r.aufgeholt) aufg++;
       la += lebenS(ea, ga); lb += lebenS(eb, gb); verg += ea.B.vergeben + eb.B.vergeben; wirk += ea.B.wirksam + eb.B.wirksam;
       if (r.sieger === tA) frueh++; else if (!r.sieger) frueh += 0.5; }
