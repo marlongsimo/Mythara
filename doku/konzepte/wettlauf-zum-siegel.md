@@ -684,3 +684,59 @@ Frühes Ankommen muss mehr wert werden, bis in der Auszahlungstabelle keine Raum
 3. Räume vier und fünf geben keine Stufe mehr, nur noch Beute.
 
 Ziel: Auf „tief“ ist „früh“ die bessere Antwort, auf „früh“ ist „etwas tiefer“ die bessere Antwort.
+
+## Zwölfte Durchrechnung: drei Stellschrauben für das frühe Abbiegen
+
+300 Partien je Paarung, feste Raumzahlen, Seiten wechseln in jeder zweiten Partie. Flache Kurve, Finale G2, Beute wie festgelegt (Raum vier Gegenstand, Raum fünf Gegenstand oder Segen). Aufruf: `node tools/wettlauf-sim.js 300 --teil=R --folge=LLLLL --punkte=1 --beute=mix --stell=0|A|B|C`.
+
+- **Kontrolle:** bisheriger Regelstand.
+- **A später Nachteil:** Die später ankommende Seite bekommt vor dem Finale keine Heilung.
+- **B früher Bonus:** zwei Siegelpunkte für die erste Etappe Vorsprung, danach einer je Etappe.
+- **C flache Progression:** Räume vier und fünf geben keine Stufe, nur Beute.
+
+### Siegquote der früheren Seite
+
+| Räume | Kontrolle | A | B | C |
+|---|---|---|---|---|
+| 2 gegen 3 | 46 % | 47 % | 49 % | 43 % |
+| 2 gegen 4 | 35 % | 40 % | 49 % | 57 % |
+| 2 gegen 5 | 40 % | 43 % | 58 % | 61 % |
+| 3 gegen 4 | 44 % | 51 % | 50 % | 63 % |
+| 3 gegen 5 | 41 % | 43 % | 54 % | 70 % |
+| 4 gegen 5 | 42 % | 52 % | 56 % | 59 % |
+| Zugewinn der früheren Seite im Mittel | – | +4,6 | +11,2 | +17,4 |
+
+### Mittlere Siegquote jeder Raumzahl gegen die drei anderen
+
+| Räume | Kontrolle | A | B | C |
+|---|---|---|---|---|
+| 2 | 40 % | 43 % | 52 % | 54 % |
+| 3 | 46 % | 49 % | 52 % | 63 % |
+| 4 | 55 % | 54 % | 52 % | 46 % |
+| 5 | 59 % | 54 % | 44 % | 37 % |
+
+### Beste Antwort auf die Raumzahl des Gegners
+
+| Gegner nimmt | Kontrolle | A | B | C |
+|---|---|---|---|---|
+| 2 Räume | 4 (65 %) | 4 (60 %) | 3 (51 %) | 3 (57 %) |
+| 3 Räume | 5 (59 %) | 5 (57 %) | 3 (50 %) | 3 (50 %) |
+| 4 Räume | 5 (58 %) | 3 (51 %) | 3 (50 %) | 3 (63 %) |
+| 5 Räume | 5 (50 %) | 4 (52 %) | 2 (58 %) | 3 (70 %) |
+
+Unsicherheit je Zelle etwa ±6 Punkte. Endstufen und Leben vor dem Finale: Kontrolle, A und B gleich (Stufen 2,9 / 3,9 / 4,8 / 5,8, Leben 80 / 76 / 71 / 69 %). Bei C bleiben alle ab Raum drei auf Stufe 3,9, das Leben der tiefen Seite fällt auf 65 %. Finale: 6 bis 8,5 Runden, bei B mit vier Startpunkten nur 4,6.
+
+### Was die Zahlen sagen
+
+- **Kontrolle:** Fünf Räume sind die beste Antwort auf fast alles. Kein Kreislauf.
+- **A erzeugt als einzige Variante einen Kreislauf:** auf fünf antwortet man mit vier, auf vier mit drei, auf drei mit fünf. Die Vorteile im Kreis sind aber klein (51 bis 57 %) und liegen teils im Rauschen.
+- **B dreht das Bild um.** Zwei, drei und vier Räume sind gleich gut, fünf Räume sind die schlechteste Wahl. Mit drei bis vier Startpunkten ist das Finale fast entschieden und zu kurz.
+- **C schießt weit über das Ziel.** Drei Räume sind die beste Antwort auf alles, tiefe Räume lohnen sich nicht mehr.
+
+Vorläufige Wahl: A als Grundlage. B ist in voller Stärke zu viel, C scheidet aus.
+
+### Nächster Schritt
+
+1. A mit größerer Stichprobe absichern, vor allem „3 gegen 4“ und „4 gegen 5“.
+2. A mit halbem B: zwei Siegelpunkte für die erste Etappe, insgesamt höchstens drei.
+3. Danach die Strategien wieder aufeinander reagieren lassen, mit der neuen Auszahlungstabelle.
