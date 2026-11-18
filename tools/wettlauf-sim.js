@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T,U] [--paarung=A-B,C-M,…] [--beute=ding|dingPassend|segen] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T,U] [--paarung=A-B,C-M,…] [--beute=ding|dingPassend|segen|mix] [--stell=0|A|B|C] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -59,6 +59,7 @@ function weg(plan, seed, gruppe, o = {}) {
     if (!sieg && o.heilung) { zust = null; return; }
     for (const f of gruppe) { const z = zust[f], alt = stufen[f];
       if (z.tot || !sieg) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, alt) / 2); if (!sieg) continue; if (st.figuren.find((x) => x.fid === f).tp <= 0) continue; } // gefallen: halbe TP, keine Stufe
+      if (o.keineStufeAb != null && i >= o.keineStufeAb) continue;
       stufen[f] = Math.min(10, alt + (art === "S" ? 2 : 1)); z.tp += F.tpVon(f, stufen[f]) - F.tpVon(f, alt); z.stufe = stufen[f]; }
   });
   const tp = zust ? gruppe.reduce((a, f) => a + zust[f].tp / F.tpVon(f, stufen[f]), 0) / gruppe.length : 1;
@@ -273,7 +274,7 @@ function finale2(e1, g1, e2, g2, seed, karte, V = {}) {
   let jetzt = 1000000; const t1 = g1.map((held) => ({ held, stufe: e1.stufen[held] })), t2 = g2.map((held) => ({ held, stufe: e2.stufen[held] }));
   const m = { staerke: 1, seed, modus: "duell", karte, begegnung: "kobolde", kampfstufe: Math.max(...t1.concat(t2).map((x) => x.stufe)), host_name: "A", guest_name: "B", bot: false, host_team: t1, guest_team: t2 };
   const st = K.start(m, 0, 0, jetzt).st, ZIEL = V.ziel || 3, MAX = V.max || 10, held = (f) => f.art !== "wolf" && (f.fid || f.fidA), helden = (tm) => st.figuren.filter((f) => held(f) && R.teamVon(st, f) === tm);
-  for (const f of st.figuren) { const tm = R.teamVon(st, f), e = tm === 1 ? e1 : tm === 2 ? e2 : null, hid = f.fid || f.fidA; if (!e || !e.leben || e.leben[hid] == null || f.tpMax == null) continue; const a = Math.min(1, e.leben[hid]); f.tp = Math.max(1, Math.round(f.tpMax * (a + (1 - a) / 2))); }
+  for (const f of st.figuren) { const tm = R.teamVon(st, f), e = tm === 1 ? e1 : tm === 2 ? e2 : null, hid = f.fid || f.fidA; if (!e || !e.leben || e.leben[hid] == null || f.tpMax == null) continue; const a = Math.min(1, e.leben[hid]); f.tp = Math.max(1, Math.round(f.tpMax * (V.ohneHeil === tm ? a : a + (1 - a) / 2))); }
   /* Beute ins Finale tragen: Gegenstände in den Rucksack des Helden; Segen gelten nur, während die eigene Seite am Zug ist; Wachtfeuer als drei Trefferpunkte mehr */
   const beute = { 1: e1, 2: e2 }, segenVon = (tm) => ((beute[tm] && beute[tm].segen) || []).filter((x) => x !== "wachtfeuer");
   for (const f of st.figuren) { const tm = R.teamVon(st, f), e = beute[tm], hid = f.fid || f.fidA; if (!e || !hid || f.art === "wolf" || f.art === "arenawolf") continue;
@@ -360,15 +361,15 @@ if (TEILE.includes("K")) {
  * Räume in fester Folge: Einstieg (+1 Stufe, sicher), leicht (+1), leicht (+1), schwer (+2), schwer (+2). Beute ist nicht nachgebildet.
  * Die frühere Gruppe steht bei Finalbeginn am Siegel. Startpunkte: 0 = keine, 1 = einer je Etappe Vorsprung, 2 = einer je Etappe, höchstens zwei. Finale: G2. */
 if (TEILE.includes("R")) {
-  const BEUTE = (process.argv.find((x) => x.startsWith("--beute=")) || "").split("=")[1] || null, o = { einstieg: true, heilung: true, beute: BEUTE === "splitter" ? null : BEUTE }, FOLGE = (process.argv.find((x) => x.startsWith("--folge=")) || "--folge=LLLSS").split("=")[1], G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true }, schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
+  const BEUTE = (process.argv.find((x) => x.startsWith("--beute=")) || "").split("=")[1] || null, VAR = (process.argv.find((x) => x.startsWith("--stell=")) || "").split("=")[1] || "0", o = { einstieg: true, heilung: true, beute: BEUTE === "splitter" ? null : BEUTE, keineStufeAb: VAR === "C" ? 3 : null }, FOLGE = (process.argv.find((x) => x.startsWith("--folge=")) || "--folge=LLLSS").split("=")[1], G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true }, schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
   const alle = []; for (let a = 2; a <= 5; a++) for (let b = a; b <= 5; b++) alle.push([a, b]);
   const pw = (process.argv.find((x) => x.startsWith("--paare=")) || "").split("=")[1], paare = pw ? pw.split(",").map((x) => x.split("-").map(Number)) : alle;
   const punkteWahl = ((process.argv.find((x) => x.startsWith("--punkte=")) || "--punkte=0,1,2").split("=")[1]).split(",").map(Number);
-  for (const [ka, kb] of paare) for (const pv of ka === kb ? [0] : punkteWahl) { zs = 4711; const vor = kb - ka, start = pv === 0 ? 0 : pv === 1 ? vor : Math.min(2, vor);
+  for (const [ka, kb] of paare) for (const pv of ka === kb ? [0] : punkteWahl) { zs = 4711; const vor = kb - ka, start = pv === 0 ? 0 : pv === 1 ? vor + (VAR === "B" && vor ? 1 : 0) : Math.min(2, vor);
     let n = 0, frueh = 0, sa = 0, sb = 0, rd = 0, aufg = 0, pk = { siegel: 0, besiegt: 0, zeit: 0 }, ra = 0, rb = 0, wechsel = 0, la = 0, lb = 0, verg = 0, wirk = 0;
     const lebenS = (e, g) => (e.leben ? g.reduce((a, f) => a + Math.min(1, e.leben[f]), 0) / g.length : 1);
     for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), ea = weg(FOLGE.slice(0, ka), 20000 + i, ga, o), eb = weg(FOLGE.slice(0, kb), 40000 + i, gb, o), seite = i % 2, tA = seite ? 2 : 1;
-      const V = Object.assign({}, G2, vor ? { start: { [tA]: start }, vorn: tA } : {}), r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], V);
+      const V = Object.assign({}, G2, vor ? { start: { [tA]: start }, vorn: tA } : {}, VAR === "A" && vor ? { ohneHeil: 3 - tA } : {}), r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], V);
       if (r.fehler) continue; n++; sa += schnitt(ea, ga); sb += schnitt(eb, gb); rd += r.runden; pk[r.grund]++; ra += ea.runden; rb += eb.runden; wechsel += r.M.wechsel; if (r.aufgeholt) aufg++;
       la += lebenS(ea, ga); lb += lebenS(eb, gb); verg += ea.B.vergeben + eb.B.vergeben; wirk += ea.B.wirksam + eb.B.wirksam;
       if (r.sieger === tA) frueh++; else if (!r.sieger) frueh += 0.5; }
