@@ -58,8 +58,9 @@
   const params = new URLSearchParams(location.search);
   /* Schlanker Kampfbildschirm auf großen Bildschirmen (ab 1200 px): kleine Initiative über der Karte, große Karte, Chronik als aufklappbarer Streifen.
      ?kampf=alt holt für diesen Tab die frühere Ansicht zurück, ?kampf=neu schaltet wieder um. */
-  /* Prototyp: Dorf, Fenster und Meldungen im selben Material – nur mit ?dorf=1 (für diesen Tab), ?dorf=0 schaltet ab */
-  try { if (params.get("dorf") === "1") sessionStorage.setItem("ab_dorf_holz", "1"); if (params.get("dorf") === "0") sessionStorage.removeItem("ab_dorf_holz"); if (sessionStorage.getItem("ab_dorf_holz")) document.body.classList.add("dorf-holz"); } catch (e) { /* privat */ }
+  /* Dorf, Fenster, Meldungen, Händler und Arena in Holz, Eisen und Pergament. ?dorf=0 holt für diesen Tab das frühere Aussehen zurück, ?dorf=1 schaltet wieder um */
+  { let aus = false; try { if (params.get("dorf") === "0") sessionStorage.setItem("ab_dorf_aus", "1"); if (params.get("dorf") === "1") sessionStorage.removeItem("ab_dorf_aus"); aus = Boolean(sessionStorage.getItem("ab_dorf_aus")); } catch (e) { /* privat */ }
+    if (!aus) document.body.classList.add("dorf-holz"); }
   /* Kampfbildschirm in Holz, Eisen, Samt und Pergament (PC ab 1200 px und Handy). ?banner=0 holt für diesen Tab das frühere dunkelblaue Aussehen zurück, ?banner=1 schaltet wieder um */
   { let aus = false; try { if (params.get("banner") === "0") sessionStorage.setItem("ab_banner_aus", "1"); if (params.get("banner") === "1") sessionStorage.removeItem("ab_banner_aus"); aus = Boolean(sessionStorage.getItem("ab_banner_aus")); } catch (e) { /* privat */ }
     if (!aus) document.body.classList.add("kampf-banner"); }

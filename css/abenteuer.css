@@ -2737,3 +2737,22 @@ body.dorf-holz .k-kopf #fenster-zu { flex: none; width: 42px; height: 44px; padd
 body.dorf-holz .k-kopf #fenster-zu::after { content: "✕"; font: 600 15px/44px Inter, sans-serif; color: #ffe1cf; text-shadow: 0 1px 2px #3a0808; }
 body.dorf-holz .k-kopf #fenster-zu:hover { transform: scale(1.1) rotate(8deg); }
 body.dorf-holz .k-kopf { align-items: center; }
+
+/* ---------- Händler und Arena im selben Material ---------- */
+/* Seitenrahmen: Eisen statt der dünnen Goldlinie */
+body.dorf-holz .hub-seite-inhalt, body.dorf-holz .dorf { border: 6px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.45), 0 18px 40px rgba(0,0,0,.6); }
+body.dorf-holz .hub-zurueck { border: 1px solid #6b5a45; background: linear-gradient(180deg, #423a32, #1d1a16); color: #f1e3c4; box-shadow: inset 0 1px 0 rgba(255,235,200,.16); }
+/* Händler: die drei Abteilungen als Holztafeln mit Eisenrand; das Angebot als Auslage auf dunklem Holz */
+body.dorf-holz .shop-feld, body.dorf-holz .shop-feld.ausstattung, body.dorf-holz .arena-art, body.dorf-holz .arena-art.privat { border: 5px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.35), 0 10px 22px rgba(0,0,0,.55);
+  background: linear-gradient(rgba(14, 8, 4, .62), rgba(10, 6, 3, .82)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+body.dorf-holz .shop-feld:hover:not(:disabled), body.dorf-holz .shop-feld:focus-visible, body.dorf-holz .arena-art:hover:not(:disabled), body.dorf-holz .arena-art:focus-visible { box-shadow: 0 0 0 1px #f6dc9c, inset 0 0 0 1px rgba(217,178,106,.5), 0 14px 26px rgba(0,0,0,.6); }
+body.dorf-holz .shop-feld em, body.dorf-holz .shop-feld small { color: #e2c58a; }
+body.dorf-holz .shop-angebot { border-radius: 4px; }
+body.dorf-holz .shop-meldung { background: url("../img/mythara/rolle-mitte.webp") center / 100% 100% no-repeat; border: 0; border-radius: 0; color: #3b230e; padding: 12px 20px; }
+/* Arena: Rangkarte auf Holz, Kämpfe als Aushang auf Pergamentstreifen */
+body.dorf-holz .rang-karte { border: 6px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px color-mix(in srgb, var(--rg) 60%, transparent), 0 14px 28px rgba(0,0,0,.6);
+  background: linear-gradient(rgba(14, 8, 4, .6), rgba(10, 6, 3, .84)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+body.dorf-holz .rang-chronik li, body.dorf-holz .rang-kaempfe li { background: linear-gradient(180deg, #d9bd86, #c4a268 60%, #b08d55); border: 1px solid #7a5a2c; border-radius: 2px; color: #3b230e; box-shadow: inset 0 0 22px rgba(90, 52, 16, .35), 0 5px 10px rgba(0,0,0,.5); }
+body.dorf-holz .rang-chronik li *, body.dorf-holz .rang-kaempfe li * { color: #3b230e; }
+body.dorf-holz .rang-chronik li.sieg .rang-ausgang { color: #1f5a1c; } body.dorf-holz .rang-chronik li.niederlage .rang-ausgang { color: #8a1c14; }
+body.dorf-holz .rang-chronik li .rang-delta { font-weight: 600; } body.dorf-holz .rang-chronik li.sieg .rang-delta { color: #1f5a1c; } body.dorf-holz .rang-chronik li.niederlage .rang-delta { color: #8a1c14; }
