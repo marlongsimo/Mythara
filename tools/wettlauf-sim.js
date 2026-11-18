@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -39,7 +39,7 @@ function weg(plan, seed, gruppe) {
       stufen[f] = Math.min(10, alt + (art === "S" ? 2 : 1)); z.tp += F.tpVon(f, stufen[f]) - F.tpVon(f, alt); z.stufe = stufen[f]; }
   });
   const tp = zust ? gruppe.reduce((a, f) => a + zust[f].tp / F.tpVon(f, stufen[f]), 0) / gruppe.length : 1;
-  return { stufe: gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length, runden, siege, kaempfe, tp };
+  return { stufe: gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length, runden, siege, kaempfe, tp, stufen, leben: zust ? Object.fromEntries(gruppe.map((f) => [f, zust[f].tp / F.tpVon(f, stufen[f])])) : null };
 }
 if (TEILE.includes("A")) {
   console.log(`\nTeil A – der Weg (${N} Gruppen je Plan, Start auf Stufe 1)`);
@@ -82,4 +82,45 @@ if (TEILE.includes("C")) {
     (zeile[h] = zeile[h] || []).push(n ? Math.round(100 * s / n) : null); }
   console.log("  " + "Held".padEnd(20) + "St. 1   St. 3   St. 5   St. 7   Spanne");
   for (const h of HELDEN) { const z = zeile[h], w = z.filter((x) => x != null); console.log("  " + F.FIGUREN[h].name.padEnd(20) + z.map((x) => (x == null ? "–" : x + " %").padEnd(8)).join("") + (Math.max(...w) - Math.min(...w)) + " Punkte"); }
+}
+
+/* ---------- Teil D: Streuung der Wege und der schwere Raum je Stufe ---------- */
+if (TEILE.includes("D")) {
+  console.log(`\nTeil D – Streuung der Endstufe (${N} Gruppen je Plan)`);
+  for (const [name, plan] of Object.entries(PLAENE)) { const l = []; for (let i = 0; i < N; i++) l.push(weg(plan, 500 + i, zieh(3)).stufe); l.sort((a, b) => a - b);
+    const q = (p) => l[Math.floor(p * (l.length - 1))].toFixed(1), anteil = (fn) => pct(l.filter(fn).length, l.length);
+    console.log(`  ${name.padEnd(28)} Median ${q(0.5)} · untere 10 % bis ${q(0.1)} · obere 10 % ab ${q(0.9)} · Endstufe 1–2: ${anteil((x) => x <= 2)} · Endstufe 7+: ${anteil((x) => x >= 7)}`); }
+  console.log(`\n  Ein einzelner Raum mit vollen Trefferpunkten, je nach Stufe der Gruppe (${N} Gruppen je Zeile)`);
+  for (const stufe of [1, 2, 3, 4, 5]) { const erg = {};
+    for (const [art, liste] of [["leicht", LEICHT], ["schwer", SCHWER]]) { let si = 0, rd = 0; for (let i = 0; i < N; i++) { const g = zieh(3), st = raum(9000 + i, g, Object.fromEntries(g.map((f) => [f, stufe])), liste[i % 3], null); if (st.ende === "sieg") si++; rd += st.runde; } erg[art] = `${pct(si, N)} (Ø ${(rd / N).toFixed(1)} Runden)`; }
+    console.log(`  Stufe ${stufe}: leichter Raum gewonnen ${erg.leicht} · schwerer Raum gewonnen ${erg.schwer}`); }
+}
+
+/* ---------- Teil E: Finale mit den Stufen und dem Leben, die der Weg tatsächlich ergeben hat ---------- */
+function duellMit(e1, g1, e2, g2, seed, karte) {
+  let jetzt = 1000000; const t1 = g1.map((held) => ({ held, stufe: e1.stufen[held] })), t2 = g2.map((held) => ({ held, stufe: e2.stufen[held] }));
+  const m = { staerke: 1, seed, modus: "duell", karte, begegnung: "kobolde", kampfstufe: Math.max(...t1.concat(t2).map((x) => x.stufe)), host_name: "A", guest_name: "B", bot: true, host_team: t1, guest_team: t2 };
+  const st = K.start(m, 0, 0, jetzt).st; let merk = { lauf: 0 }, wer = null;
+  // Leben vom Weg mitnehmen; vor dem Finale kommt die Hälfte des Fehlenden zurück (Konzept)
+  for (const f of st.figuren) { const tm = R.teamVon(st, f), e = tm === 1 ? e1 : tm === 2 ? e2 : null; if (!e || !e.leben || e.leben[f.fid] == null || f.tpMax == null) continue; const a = Math.min(1, e.leben[f.fid]); f.tp = Math.max(1, Math.round(f.tpMax * (a + (1 - a) / 2))); }
+  for (let i = 0; i < 5000; i++) {
+    if (st.ende) return { sieger: st.arena.sieger || 0, runden: st.runde };
+    const a = R.aktiv(st), tm = R.teamVon(st, a); if (!tm) return { fehler: 1 };
+    if (tm === 2) { jetzt = Math.max(jetzt, st.arena.bot.bis) + 50; if (!K.zeit(st, jetzt).schritte.length) return { fehler: 1 }; continue; }
+    const k = a.id + ":" + st.runde; if (wer !== k) { wer = k; merk = { lauf: 0 }; }
+    jetzt += 1500; const w = BOT.entscheide(st, merk); if (w.typ === "bewegen") merk.lauf++;
+    let r = K.zug(st, 1, w, jetzt); if (r.fehler) r = K.zug(st, 1, { typ: "ende" }, jetzt); if (r.fehler) return { fehler: 1 };
+  }
+  return { fehler: 1 };
+}
+if (TEILE.includes("E")) {
+  console.log(`\nTeil E – Finale Plan gegen Plan, mit Stufen und Leben vom Weg (${N} Partien je Zeile; ohne Siegelpunkte, ohne Beute)`);
+  const PAARE = [["LLSS", "LLLL"], ["LLSS", "LSRS"], ["LLSS", "SSSS"], ["LLSS", "LSS"], ["LLLL", "LSS"], ["LSRS", "LSS"], ["LLLL", "LSRS"]], NAME = Object.fromEntries(Object.entries(PLAENE).map(([n, p]) => [p, n]));
+  let hoeher = 0, hoeherN = 0;
+  for (const [pa, pb] of PAARE) { let s = 0, n = 0, da = 0, db = 0;
+    for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), ea = weg(pa, 20000 + i, ga), eb = weg(pb, 40000 + i, gb), seite = i % 2, r = seite ? duellMit(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7]) : duellMit(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7]);
+      if (r.fehler) continue; n++; da += ea.stufe; db += eb.stufe; const aGewinnt = r.sieger === (seite ? 2 : 1) ? 1 : r.sieger ? 0 : 0.5; s += aGewinnt;
+      if (Math.abs(ea.stufe - eb.stufe) >= 0.5) { hoeherN++; hoeher += ea.stufe > eb.stufe ? aGewinnt : 1 - aGewinnt; } }
+    console.log(`  „${NAME[pa]}“ (Ø Stufe ${(da / n).toFixed(1)}) gegen „${NAME[pb]}“ (Ø Stufe ${(db / n).toFixed(1)}): der erste gewinnt ${pct(s, n)}`); }
+  console.log(`  Über alle Paarungen: Die Gruppe mit der höheren Stufe gewinnt ${pct(hoeher, hoeherN)} (${hoeherN} Partien mit Unterschied) – die schwächere also ${pct(hoeherN - hoeher, hoeherN)}`);
 }
