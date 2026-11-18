@@ -400,3 +400,35 @@ Bei B kehren je Final 1,21 Helden zurück, 0,49 davon fallen erneut.
 1. B mit fünf Siegelpunkten und Wertung nach zwölf Runden.
 2. B und D zusammen.
 3. Erst danach den Siegelsaal als eigene Karte bauen.
+
+## Sechste Durchrechnung: Rückkehr mit fünf Punkten und mit wanderndem Siegel
+
+200 Finals je Test, gleiche Gruppen, Pläne und Startwerte. Aufruf: `node tools/wettlauf-sim.js 200 --teil=K --test=A,B,E,F,G`. Die Rechner-Gegner würfeln ihre kleinen Fehler frei aus; zwei Läufe desselben Tests weichen deshalb um einige Punkte voneinander ab (A und B hier gegenüber der fünften Durchrechnung um 2 bis 6 Punkte).
+
+| Kennzahl | A Kontrolle | B Rückkehr | E Rückkehr, fünf Punkte, zwölf Runden | F Rückkehr, wanderndes Siegel | G alles zusammen | Ziel |
+|---|---|---|---|---|---|---|
+| schwächere Gruppe gewinnt | 32 % | 32 % | 32 % | 30 % | 25 % | 25–35 % |
+| Dauer in Runden | 5,4 | 6,0 | 8,1 | 5,8 | 8,2 | 7–10 |
+| beide kontrollieren mindestens einmal | 29 % | 35 % | 45 % | 43 % | 62 % | ab 50 % |
+| Siegelwechsel je Final | 0,35 | 0,54 | 0,80 | 0,67 | 1,27 | |
+| mindestens zwei Wechsel | 6 % | 14 % | 23 % | 20 % | 39 % | |
+| Wechsel der Überzahl | 0,10 | 0,31 | 0,69 | 0,29 | 0,58 | |
+| Sieg nach erstem Punkterückstand | 26 % | 24 % | 29 % | 26 % | 37 % | |
+| abgezogene Punkte (Zurückerobern) | 0,04 | 0,07 | 0,18 | 0,12 | 0,33 | |
+| Ende durch Punkte | 64 % | 77 % | 54 % | 82 % | 47 % | häufigster Ausgang |
+| Ende durch Besiegen | 32 % | 17 % | 33 % | 18 % | 43 % | unter 25 % |
+| Ende durch Zeit | 5 % | 7 % | 14 % | 1 % | 10 % | |
+| Punkte des Führenden am Ende | 2,4 | 2,6 | 3,9 | 2,7 | 3,8 | |
+| Rückkehrer je Final / erneut gefallen | – | 1,17 / 0,46 | 2,69 / 1,67 | 1,10 / 0,43 | 2,74 / 1,53 | |
+| Siege mit einem Rückkehrer des Siegers am Siegel | – | 22 % | 41 % | 17 % | 44 % | |
+| Seite mit dem ersten Verlust gewinnt | 24 % | 28 % | 30 % | 23 % | 34 % | |
+| Siegelsprünge ohne Wechsel der Kontrolle | – | – | – | 45 % | 47 % | |
+
+- **E (fünf Punkte) erreicht die Dauer** (8,1 Runden) und hält die Siegquote der schwächeren Gruppe bei 32 %. Rückkehrer entscheiden mit: In 41 % der Siege steht ein Rückkehrer des Siegers am Siegel. Verfehlt wird das Kriterium „Besiegen unter 25 %“ (33 %).
+- **F (wanderndes Siegel) bleibt kurz** (5,8 Runden), endet aber am häufigsten durch Punkte (82 %). Knapp die Hälfte der Sprünge ändert die Kontrolle nicht.
+- **G (alles zusammen) erreicht als einzige Fassung „beide kontrollieren“ über 50 %** (62 %) und hat die meisten Wechsel, endet aber in 43 % der Finals durch Besiegen.
+- **Das offene Problem ist das Auslöschen in langen Finals.** Je länger das Finale dauert, desto öfter liegen einmal alle drei Helden einer Seite gleichzeitig am Boden.
+
+### Nächster Schritt
+
+Das Auslöschen beendet das Finale nicht mehr: Liegt eine ganze Gruppe am Boden, bekommt der Gegner einen Siegelpunkt, und die Gruppe steht in der nächsten Runde am eigenen Eingang wieder auf. Zu rechnen für E und G.
