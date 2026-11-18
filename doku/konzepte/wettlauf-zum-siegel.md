@@ -588,3 +588,48 @@ Bei 600 Partien liegt die Unsicherheit bei etwa ±4 Punkten.
 - **Vorbehalt:** In dieser Rechnung sind alle Räume nach dem Einstieg leicht. Werden tiefe Räume schwerer, wächst die Streuung wieder.
 
 Da Tiefe schon ohne Beute leicht vorn liegt, darf Beute den tiefen Weg nur wenig stärker machen, oder der Siegelvorsprung muss mitwachsen.
+
+## Zehnte Durchrechnung: Beute für die Räume vier und fünf
+
+400 Partien je Zelle, flache Kurve, ein Siegelpunkt je Etappe Vorsprung, Finale G2. Belohnt werden nur gewonnene Räume vier und fünf, zusätzliche Stufen gibt es keine. Aufruf: `node tools/wettlauf-sim.js 400 --teil=R --folge=LLLLL --punkte=1 --beute=ding|dingPassend|segen` und `--teil=T`.
+
+### Siegquote der früheren Seite
+
+| Räume | ohne Beute (600) | Gegenstand, zufälliger Held | Gegenstand, passender Held | Gruppensegen |
+|---|---|---|---|---|
+| 2 gegen 4 | 38,7 % | 40,5 % | 37,5 % | 34,5 % |
+| 2 gegen 5 | 45,2 % | 42,3 % | 40,5 % | 38,5 % |
+| 3 gegen 4 | 44,0 % | 47,3 % | 49,8 % | 44,8 % |
+| 3 gegen 5 | 40,5 % | 38,8 % | 40,8 % | 39,0 % |
+| 4 gegen 5 | 46,3 % | 46,5 % | 46,0 % | 42,5 % |
+| mittlere Verschiebung | – | +0,1 | 0,0 | −3,1 |
+
+Unsicherheit je Zelle etwa ±5 Punkte. Endstufen, Leben vor dem Finale (69 bis 80 %) und Dauer des Finales (5,9 bis 8,5 Runden) sind in allen Fassungen praktisch gleich.
+
+- **Gegenstand:** kein messbarer Einfluss, weder zufällig noch passend vergeben. Bei zufälliger Vergabe wirken 65 % der Gegenstände beim Empfänger, bei passender 99 %.
+- **Gruppensegen:** verschiebt um rund drei Punkte zugunsten der tieferen Seite, in einzelnen Paarungen bis sieben. Gerechnet nur mit Scharfe Klingen, Leichte Füße und Wachtfeuer; verteidigende Segen lassen sich im Duell nicht sauber einer Seite zurechnen. Der wahre Wert liegt eher höher.
+- In „4 gegen 5“ bekommt auch die frühere Seite einen Gegenstand oder Segen, in „2 gegen 4“ und „3 gegen 4“ die spätere nur einen.
+
+### Splitter (fünf gegen fünf Räume, eine Seite stört den fünften Raum der anderen)
+
+| | ohne Störung | mit Störung |
+|---|---|---|
+| Gegner gewinnt Raum fünf | 99 % | 80 % |
+| Runden in Raum fünf | 3,7 | 5,2 |
+| Leben nach Raum fünf | 58 % | 37 % |
+| Endstufe des Gegners | 5,83 | 5,64 |
+| Leben vor dem Finale | 69 % | 72 % |
+| Seite mit Splitter gewinnt das Finale | 48,8 % | 49,0 % |
+
+- **Die Störung wirkt im Raum deutlich,** kostet den Gegner anderthalb Runden, ein Fünftel seines Lebens und in jedem fünften Fall die Stufe.
+- **Auf den Ausgang wirkt sie nicht.** Die volle Heilung nach einer Niederlage und die halbe Heilung vor dem Finale gleichen den Schaden aus.
+- **Strukturproblem:** Ein Splitter aus Raum vier trifft nur einen Gegner, der selbst fünf Räume nimmt. Ein Splitter aus Raum fünf hat kein Ziel mehr.
+
+### Was die Zahlen sagen
+
+- Nach den vereinbarten Grenzen: Gegenstand unkritisch (unter 3 Punkten), Gruppensegen im Bereich „genauer untersuchen“ (3 bis 7 Punkte), Splitter wirkungslos.
+- **Gegenstände sind die sichere Belohnung für tiefe Räume.** Sie geben das Gefühl von Beute, ohne das Gleichgewicht zu verschieben.
+- **Segen sind die starke Belohnung** und sollten selten sein, höchstens einer je Partie.
+- **Der Splitter braucht eine Wirkung im Finale,** sonst ist er als Lohn für Tiefe nichts wert.
+
+Vorläufiger Regelstand: Raum vier gibt einen Gegenstand, Raum fünf einen Gegenstand oder Segen zur Wahl. Der Splitter wird neu gedacht.
