@@ -432,3 +432,58 @@ Bei B kehren je Final 1,21 Helden zurück, 0,49 davon fallen erneut.
 ### Nächster Schritt
 
 Das Auslöschen beendet das Finale nicht mehr: Liegt eine ganze Gruppe am Boden, bekommt der Gegner einen Siegelpunkt, und die Gruppe steht in der nächsten Runde am eigenen Eingang wieder auf. Zu rechnen für E und G.
+
+## Siebte Durchrechnung: Auslöschen beendet das Finale nicht
+
+200 Finals je Test, gleiche Gruppen, Pläne und Startwerte. Aufruf: `node tools/wettlauf-sim.js 200 --teil=K --test=E,E2,G,G2`.
+
+Regel: Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde wieder normal.
+
+| Kennzahl | E | E2 (E mit der Regel) | G | G2 (G mit der Regel) | Ziel |
+|---|---|---|---|---|---|
+| schwächere Gruppe gewinnt | 30 % | 34 % | 24 % | 28 % | 25–35 % |
+| Dauer in Runden | 8,4 | 9,0 | 8,3 | 9,3 | 7–10 |
+| beide kontrollieren mindestens einmal | 44 % | 52 % | 60 % | 75 % | ab 50 % |
+| Siegelwechsel je Final | 0,85 | 1,08 | 1,33 | 1,64 | |
+| mindestens zwei Wechsel | 27 % | 35 % | 41 % | 54 % | |
+| Wechsel der Überzahl | 0,79 | 0,83 | 0,66 | 0,89 | |
+| Ende durch Punkte | 57 % | 86 % | 50 % | 88 % | häufigster Ausgang |
+| Ende durch Besiegen | 29 % | 0 % | 41 % | 0 % | unter 25 % |
+| Ende durch Zeit | 15 % | 15 % | 10 % | 13 % | |
+| Punkte des Führenden am Ende | 3,9 | 4,7 | 3,8 | 4,8 | |
+| Gruppenauslöschungen je Final (= Punkte daraus) | – | 0,38 | – | 0,56 | |
+| Finals mit Auslöschung | – | 29 % | – | 42 % | |
+| Sieg nach eigener Auslöschung | – | 13 % (62 Fälle) | – | 13 % (90 Fälle) | |
+| entscheidender Punkt durch Auslöschen | – | 7 % | – | 9 % | |
+| Rückkehrer je Final / erneut gefallen | 2,86 / 1,67 | 3,89 / 2,13 | 2,98 / 1,70 | 4,49 / 2,36 | |
+| Siege mit Rückkehrer des Siegers am Siegel | 42 % | 45 % | 44 % | 53 % | |
+| Sieg nach erstem Punkterückstand | 27 % | 26 % | 36 % | 35 % | |
+
+- **Mit der Regel erfüllen E2 und G2 alle Ziele.** Das Siegel ist die Siegbedingung, die Dauer liegt bei rund neun Runden, es gibt keine Endlosschleife (höchstens 15 % laufen in die Zeitwertung).
+- **G2 ist der lebendigere Kampf:** 75 % der Finals mit Kontrolle beider Seiten, 1,64 Wechsel. E2 ist die einfachere Regel und erreicht die Ziele knapp.
+- **Auslöschen bleibt wertvoll, entscheidet aber nicht allein.** Es bringt einen Punkt, der entscheidende Punkt kommt nur in 7 bis 9 % der Finals daher. Wer ausgelöscht wurde, gewinnt noch 13 %.
+- **Die Rückkehr ist viel in Gebrauch:** rund vier Rückkehrer je Final, gut die Hälfte fällt erneut. Ob sich das für Spieler gut anfühlt, kann nur ein spielbarer Prototyp zeigen.
+
+**Vorläufiger Regelstand des Finales: G2.** Fünf Siegelpunkte, Wertung nach zwölf Runden, das Siegel springt alle zwei Runden, Gefallene kehren nach zwei Runden zurück, Auslöschen gibt einen Punkt statt des Siegs. E2 bleibt die einfachere Vergleichsfassung.
+
+## Leitbild: der Riss
+
+Das Bild für den Modus: Zwei Jäger steigen mit je drei ausgewählten Helden in einen Riss, von zwei Seiten, und kämpfen sich durch denselben Dungeon zum Siegel vor.
+
+- **Wer zuerst am Siegel ist, hat einen Vorteil.** Der andere kommt in einen Kampf, der schon begonnen hat.
+- **Wer den längeren Weg nimmt, kommt stärker an:** mehr Stufen, mehr Beute, mehr Segen.
+
+Das ist der Schleichweg, zu Ende gedacht. Statt vier fester Etappen und einer einzelnen Abkürzung entscheidet jede Seite selbst, wie viele Räume sie nimmt:
+
+- Zwischen zwei und fünf Räume je Seite. Nach jedem Raum die Wahl: weiter in die Tiefe oder jetzt zum Siegel.
+- Ankunft: Wer zuerst ankommt, besetzt das Siegel und sammelt für jede Etappe Vorsprung einen Siegelpunkt (höchstens zwei). Der Spätere tritt in ein laufendes Finale ein.
+- Der Spätere hat dafür je Etappe eine oder zwei Stufen und ein Beutestück mehr.
+- Beide sehen, wie tief der andere schon ist, und wann er zum Siegel abbiegt.
+
+Bisher gerechnet ist davon nur der Sonderfall „eine Etappe weniger“. Der Siegelpunkt war dort nicht messbar wertvoll (43 bis 55 %), mit dem Finale G2 und zwei möglichen Punkten ist das neu zu rechnen.
+
+### Nächster Schritt
+
+1. Den Wettlauf mit freier Zahl von Räumen rechnen: zwei bis fünf Räume je Seite, Vorsprung als Siegelpunkte, Finale G2.
+2. Danach die Heldenanalyse auf Stufe 1, 3, 5 und 7 mit größerer Stichprobe.
+3. Danach acht kurze Räume und ein Siegelsaal als eigene Karten.
