@@ -15,7 +15,8 @@
   /** Nachhall: was die letzte Entscheidung bewirkt hat (über der Szene) */
   const nachhallHtml = (n) => (n && n.length ? `<div class="sz-nachhall" role="status">${n.map((x) => (x.art === "moment" && momentTeil(x.t) ? momentHtml(momentTeil(x.t)) : `<p class="nh-${x.art}"><small>${{ entscheidung: "Eure Entscheidung", geheim: "Im Geheimen entschieden", abschluss: "", folge: "Das hat Folgen" }[x.art] || ""}</small>${fett(x.t)}</p>`)).join("")}</div>` : "");
   /** Rückschau am Ende */
-  const rueckschauHtml = (r) => (!r ? "" : `<div class="sz-rueckschau">${r.zeilen.length ? `<h3>Was ihr getan habt</h3><ul>${r.zeilen.map((z) => `<li>${fett(z)}</li>`).join("")}</ul>` : ""}${r.andere.length ? `<h3>Was hätte sein können</h3><ul class="andere">${r.andere.map((z) => `<li>${fett(z)}</li>`).join("")}</ul>` : ""}${r.enden > 1 ? `<p class="note">Diese Geschichte hat ${r.enden} Enden. Ihr habt eines davon erlebt.</p>` : ""}</div>`);
+  /** Rückschau am Ende: zwei aufklappbare Abschnitte, damit der Endbildschirm kurz bleibt (der erste ist offen, wenn er kurz ist) */
+  const rueckschauHtml = (r) => (!r ? "" : `<div class="sz-rueckschau">${r.zeilen.length ? `<details${r.zeilen.length <= 4 ? " open" : ""}><summary><h3>Was ihr getan habt</h3><span>${r.zeilen.length}</span></summary><ul>${r.zeilen.map((z) => `<li>${fett(z)}</li>`).join("")}</ul></details>` : ""}${r.andere.length ? `<details><summary><h3>Was hätte sein können</h3><span>${r.andere.length}</span></summary><ul class="andere">${r.andere.map((z) => `<li>${fett(z)}</li>`).join("")}</ul></details>` : ""}${r.enden > 1 ? `<p class="note">Diese Geschichte hat ${r.enden} Enden. Ihr habt eines davon erlebt.</p>` : ""}</div>`);
   const KEY = "ab_abenteuer";
   let A = null, hilfeAn = true, letzterWurf = null;
   const SCHNELL = new URLSearchParams(location.search).has("schnell");

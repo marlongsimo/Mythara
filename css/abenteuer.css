@@ -2840,3 +2840,43 @@ body.dorf-holz .hub-gast-hinweis *, body.dorf-holz .hub-gast-hinweis a { color: 
 body.dorf-holz .f-liste li { background: rgba(14, 8, 4, .6); border: 1px solid rgba(217,178,106,.3); border-radius: 2px; }
 body.dorf-holz .f-suche input, body.dorf-holz .karte-box input[type="text"], body.dorf-holz .karte-box input[type="search"], body.dorf-holz .karte-box textarea { background: #120b07; border: 1px solid #6b5a45; border-radius: 2px; color: #f1e3c4; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
 body.dorf-holz .f-unter { border-bottom: 1px solid rgba(217,178,106,.3); padding-bottom: 4px; }
+
+/* ---------- Endbildschirm der Kampagne: Rückschau aufklappbar, langes Pergament ohne verzerrte Flecken ---------- */
+.sz-rueckschau details + details { margin-top: 10px; }
+.sz-rueckschau summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; padding: 4px 0; }
+.sz-rueckschau summary::-webkit-details-marker { display: none; }
+.sz-rueckschau summary h3 { margin: 0; }
+.sz-rueckschau summary span { font: 600 12px Inter, sans-serif; padding: 2px 8px; border-radius: 10px; background: rgba(217,180,106,.18); color: #d9b46a; }
+.sz-rueckschau summary::after { content: "anzeigen ▾"; margin-left: auto; font: 600 12px Inter, sans-serif; color: #d9b46a; }
+.sz-rueckschau details[open] summary::after { content: "einklappen ▴"; }
+.sz-rueckschau details[open] summary { margin-bottom: 8px; }
+body.szene-blatt .sz-rueckschau summary span { background: rgba(90, 52, 16, .18); color: #5a3410; }
+body.szene-blatt .sz-rueckschau summary::after, body.szene-blatt .sz-rueckschau h3 { color: #5a3410; }
+body.szene-blatt .sz-rueckschau li::before { color: #7a1a18; }
+
+/* ---------- Kampf auf mittleren Bildschirmen (Tablets, etwa 700–1199 px): dasselbe Material auf dem unveränderten Layout ---------- */
+@media (max-width: 1199px) {
+  body.kampf-banner.im-kampf:not(.kh-an) { background: radial-gradient(105% 85% at 50% 40%, rgba(10, 6, 3, .5) 0%, rgba(8, 5, 3, .74) 55%, rgba(4, 2, 1, .93) 100%), url("../img/mythara/tisch-holz.webp") center / cover no-repeat fixed, #120b07; }
+  body.kampf-banner.im-kampf:not(.kh-an) > header { background: rgba(10, 6, 3, .6); border-bottom-color: rgba(217,178,106,.3); }
+  /* Zugreihenfolge: auf dem Holzbalken */
+  body.kampf-banner.im-kampf:not(.kh-an) .reihe { padding: 12px 56px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
+    background: url("../img/mythara/balken-links.webp") left center / auto 100% no-repeat, url("../img/mythara/balken-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/balken-mitte.webp") center / calc(100% - 90px) 100% no-repeat; }
+  body.kampf-banner.im-kampf:not(.kh-an) .reihe span { background: rgba(14, 8, 4, .72); border-color: rgba(217,178,106,.4); color: #e6d6b4; }
+  body.kampf-banner.im-kampf:not(.kh-an) .reihe span.dran { background: rgba(70, 46, 14, .92); border-color: #f6dc9c; color: #fff1c8; }
+  /* Karte: Eisenrahmen statt Goldlinie */
+  body.kampf-banner.im-kampf:not(.kh-an) .karte-wrap { border-color: #6b5a45; box-shadow: 0 0 0 4px #2c2722, 0 0 0 5px #6b5a45, 0 18px 36px rgba(0,0,0,.6); }
+  /* Leiste und Knöpfe unter der Karte */
+  body.kampf-banner.im-kampf:not(.kh-an) .karte-wrap .leiste { background: linear-gradient(180deg, #3a2716, #1c120a); border-top-color: rgba(217,178,106,.45); }
+  body.kampf-banner.im-kampf:not(.kh-an) .l-knopf { border: 1px solid #6b5a45; background: linear-gradient(180deg, #423a32, #1d1a16); box-shadow: inset 0 1px 0 rgba(255,235,200,.16), inset 0 -2px 4px rgba(0,0,0,.5); color: #f1e3c4; }
+  body.kampf-banner.im-kampf:not(.kh-an) .l-knopf.gewaehlt { border-color: #f6dc9c; background: linear-gradient(180deg, #7a551c, #3c2a0e); }
+  body.kampf-banner.im-kampf:not(.kh-an) .l-knopf[data-l="ende"] { border-color: #d9b26a; background: linear-gradient(180deg, #8f1d24, #5a1016); color: #fff1c8; }
+  body.kampf-banner.im-kampf:not(.kh-an) .l-tp { background: #1c0d0a; border-color: rgba(217,178,106,.4); }
+  /* Spalte mit Held und Fähigkeiten: Holz im Eisenrahmen */
+  body.kampf-banner.im-kampf:not(.kh-an) .panel { border: 6px solid #2c2722; border-radius: 3px; padding: 12px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.4), 0 14px 28px rgba(0,0,0,.55);
+    background: linear-gradient(rgba(14, 8, 4, .66), rgba(10, 6, 3, .86)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+  body.kampf-banner.im-kampf:not(.kh-an) .panel .akt { background: rgba(16, 9, 5, .62); border-color: rgba(217,178,106,.3); }
+  body.kampf-banner.im-kampf:not(.kh-an) .panel .akt.gewaehlt { background: rgba(70, 46, 14, .88); border-color: #f6dc9c; }
+  body.kampf-banner.im-kampf:not(.kh-an) .panel .akt-gruppe { color: #f6dc9c; }
+  /* Chronik */
+  body.kampf-banner.im-kampf:not(.kh-an) .log { background: rgba(14, 8, 4, .7); border: 1px solid rgba(217,178,106,.3); border-radius: 2px; }
+}
