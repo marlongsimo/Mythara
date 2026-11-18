@@ -42,7 +42,7 @@ async function seite(b, vp) {
   const { p, fehler } = await seite(b);
   await p.click("#hub-profil-knopf");
   const menue = await p.evaluate(() => [...document.querySelectorAll("#hub-menue button")].map((x) => x.textContent));
-  check(menue.join(" | ") === "Mein Profil | Admin-Bereich | Tutorial ansehen | Abmelden", "Profilmenü aufgeräumt: " + menue.join(" · "));
+  check(menue.join(" | ") === "Mein Profil | Admin-Bereich | Tutorial ansehen | Feedback geben | Abmelden", "Profilmenü aufgeräumt: " + menue.join(" · "));
   await p.click('[data-profil="profil"]'); await p.waitForSelector(".profil-kopf");
   const kopf = () => p.evaluate(() => ({ h: document.querySelector("#qr-overlay h2").textContent, name: document.querySelector(".profil-wer b").textContent, zeilen: [...document.querySelectorAll(".profil-wer small")].map((x) => x.textContent).join(" | "), bild: (document.querySelector(".profil-bild img") || {}).src || "", rahmen: document.querySelector(".profil-bild").dataset.rahmen, wuerfel: document.querySelector(".profil-wuerfel").dataset.wuerfel,
     tabs: [...document.querySelectorAll("[data-profil-tab]")].map((x) => x.textContent + (x.classList.contains("an") ? "*" : "")).join(" | ") }));
