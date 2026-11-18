@@ -33,17 +33,19 @@ Entwicklungsziel: eine Partie unter 30 Minuten. Belegt ist das noch nicht, mit d
 
 Beide Seiten spielen ihre Räume **gleichzeitig**, jede in ihrem eigenen Flügel. Niemand wartet auf den anderen.
 
+Raum 1 ist immer derselbe leichte Einstieg. Danach folgen vier Räume in **geloster Reihenfolge**: zwei schwere Räume und zwei Beuteräume. Die Reihenfolge wird zu Beginn der Partie gelost und ist für beide Seiten dieselbe.
+
 | Raum | Was dort wartet | Lohn bei Sieg |
 |---|---|---|
-| 1 Einstieg | ein leichter Kampf, den jede Gruppe schafft | +1 Stufe |
-| 2 | Kampf | +1 Stufe |
-| 3 | Kampf | +1 Stufe |
-| 4 | Kampf | +1 Stufe und ein Gegenstand |
-| 5 | Kampf | +1 Stufe und ein Gegenstand oder ein Segen, zur Wahl |
+| Einstieg (immer Raum 1) | ein leichter Kampf, den jede Gruppe schafft | +1 Stufe |
+| Schwerer Raum (zweimal) | ein harter Kampf mit echter Gefahr zu fallen | +1 Stufe |
+| Beuteraum (zweimal) | ein kurzer, leichter Kampf | ein Gegenstand, keine Stufe. Im zweiten Beuteraum zur Wahl auch ein Segen |
+
+**Was kommt, ist verdeckt.** Welcher Raum als nächster wartet, sieht man erst, wenn man ihn betritt. Weil es immer zwei schwere und zwei Beuteräume sind, lässt sich der Rest mit jedem Raum besser abschätzen: Nach Raum 4 steht fest, was Raum 5 ist.
 
 Regeln für den Weg:
 
-- **Die Stufe bekommt, wer am Ende des Raums noch steht.** Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf, ohne die Stufe.
+- **Die Stufe bekommt, wer am Ende des Raums noch steht** (Einstieg und schwere Räume). Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf, ohne die Stufe.
 - **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn: keine Stufe, keine Beute. Dafür stehen alle drei Helden wieder auf, mit vollen Trefferpunkten, Zauberplätzen und Tränken. Der Raum wird nicht wiederholt, er zählt aber als gespielte Etappe.
 - **Schaden bleibt.** Trefferpunkte, Zauberplätze und Tränke werden von Raum zu Raum mitgenommen.
 - **Gegenstand:** Wahl aus drei Angeboten, für einen Helden der Gruppe. Jeder Held trägt höchstens zwei.
@@ -54,7 +56,7 @@ Regeln für den Weg:
 
 Die ersten zwei Räume nimmt jede Seite. Danach entscheidet sie nach jedem Raum neu:
 
-- **Weiter:** in den nächsten Raum, höchstens bis Raum 5.
+- **Weiter:** in den nächsten Raum, höchstens bis Raum 5. Ob dort ein schwerer Raum oder ein Beuteraum wartet, ist nicht bekannt.
 - **Zum Siegel:** Die Gruppe biegt ab. Die Entscheidung ist endgültig.
 
 Was man sieht:
@@ -88,6 +90,16 @@ Haben beide gleich viele Räume gespielt, bekommt niemand Siegelpunkte. Beide be
 **Zur Heilung:** Das ist genau die Regel aus der Rechnung, keine neue. Dort hieß sie „der Spätere hat einen Nachteil: keine Heilung vor dem Finale". Die Heilung der früheren Gruppe galt in allen Durchrechnungen. Der Prototyp bildet diese Fassung ab. Beispiel: Ein Held mit 10 von 30 Trefferpunkten startet als Früherer mit 20, als Späterer mit 10. Gefallene Helden stehen in beiden Gruppen mit mindestens einem Trefferpunkt auf. Zauberplätze und Tränke kommen bei niemandem zurück.
 
 Die Stufen werden nicht angeglichen. Der Vorsprung ist der Lohn des Wegs.
+
+### Warten am Siegel
+
+Wer früher abbiegt, wartet am Siegel, bis der andere ankommt. In dieser Zeit:
+
+- **Aufstellen:** Er stellt seine drei Helden selbst auf, auf freien Feldern bis zwei Schritte um das erste Siegelfeld. Er sieht dabei, auf welche Felder das Siegel später springt.
+- **Die Siegelpunkte zählen sichtbar hoch:** 2, sobald der Gegner seinen nächsten Raum beendet hat, 3 nach dem zweiten. Mehr als 3 gibt es nicht. Das sind dieselben Punkte wie in der Tabelle oben, nur laufen sie jetzt während des Wartens ein.
+- **Zuschauen:** Mit einem Knopf wechselt er in den Raum des Gegners und sieht dessen Kampf, mit einem zweiten zurück ans Siegel.
+
+Wer noch im Riss ist, sieht davon nichts: weder die Punkte noch, dass ihm jemand zuschaut.
 
 ### 5. Das Finale
 
@@ -140,7 +152,7 @@ Der Modus steht neben dem heutigen Ranked, er ersetzt es nicht.
 
 - **Störungen und Splitter.** In der Rechnung wirkten sie im Raum, aber nicht auf den Ausgang, und sie trafen nur einen Gegner, der selbst bis Raum 5 geht. Sie kommen erst wieder, wenn sie eine Wirkung im Finale haben.
 - **Angleichen der Stufen.** Mit dem Siegel-Finale gewinnt die schwächere Gruppe schon rund ein Drittel der Finals. Mit Angleichen zählten die Stufen fast nichts mehr.
-- **Schatzkammer, Rastplatz und Wegewahl zwischen zwei Pfaden.** Der Riss hat einen Weg. Die Entscheidung ist das Abbiegen.
+- **Rastplatz und Wegewahl zwischen zwei Pfaden.** Der Riss hat einen Weg, für beide denselben. Die Entscheidung ist das Abbiegen. Die Beuteräume sind seit der zweiten Fassung wieder drin, als Teil des gelosten Wegs.
 - **Zwei Stufen für schwere Räume.** Damit war Tiefe nicht einzuholen.
 
 ## Worauf sich die Regeln stützen
@@ -215,19 +227,27 @@ Gebaut ist Stufe 1: gegen den Rechner, auf einem Gerät, ohne Server und ohne Da
 
 Zauberplätze, Tränke und Verbrauchtes kommen in beiden Fällen so ins Finale, wie sie nach dem letzten Raum waren.
 
-**Die fünf Räume** nutzen vorhandene Karten und Gegner aus Grauwacht, mit weniger Gegnern und weniger Leben. Gemessen mit 200 Gruppen, vom Rechner gespielt:
+**Die Räume** nutzen vorhandene Karten und Gegner aus Grauwacht, mit weniger Gegnern und weniger Leben. Gemessen mit 400 Gruppen, vom Rechner gespielt (`tools/riss-raeume.js`):
 
-| Raum | Runden | Gefallene Helden je Raum |
+| Raum | Runden | Gruppe gewinnt | Gefallene Helden je Raum |
+|---|---|---|---|
+| Einstieg | 1,7 | 100 % | 0,07 |
+| Beuteraum | 2,2 bis 2,3 | 100 % | 0,02 bis 0,08 |
+| Schwerer Raum | 3,5 bis 3,9 | 92 bis 98 % | 0,20 bis 0,35 |
+
+Alle fünf Räume zusammen dauern rund 13,5 Runden, die Gruppe kommt im Schnitt mit Stufe 3,7 von 4 an. Der schwere Raum ist damit der einzige, in dem regelmäßig Helden fallen und manchmal die ganze Gruppe.
+
+**Ganze Partien,** Rechner gegen Rechner, je 300 (`tools/riss-partien.js`): Weg 9,0 Runden je Seite, Finale 7,3 Runden, 291 von 300 Finals enden durch Siegelpunkte.
+
+| Die frühere Gruppe gewinnt bei | gerechnete Heilung | ohne Heilung |
 |---|---|---|
-| 1 Der Einstieg | 1,7 | 0,07 |
-| 2 Die Koboldgänge | 2,6 | 0,14 |
-| 3 Die Gruft | 2,9 | 0,16 |
-| 4 Die Pilzgrotte | 3,0 | 0,07 |
-| 5 Die Tiefe | 3,3 | 0,02 |
+| 1 Raum Vorsprung | 63 von 125 | 63 von 125 |
+| 2 Räumen Vorsprung | 41 von 78 | 46 von 78 |
+| 3 Räumen Vorsprung | 10 von 18 | 8 von 18 |
 
-Alle fünf Räume zusammen dauern 13,5 Runden. Verloren wurde praktisch kein Raum. Die Räume sind damit kurz, aber eher zu sicher: Die Gefahr der Tiefe liegt im Prototyp fast nur im späten Ankommen.
+Nach eigener Raumzahl gewinnen Gruppen mit 2, 3, 4 und 5 Räumen jeweils rund die Hälfte ihrer Partien (55 von 103, 106 von 212, 81 von 168, 58 von 117). Früh und tief sind im Rechner also gleich viel wert. Die Heilung macht in dieser Fassung keinen messbaren Unterschied. Beides gilt für den Rechner, der nach festen Wahrscheinlichkeiten abbiegt, nicht für Menschen.
 
-**Ganze Partien,** Rechner gegen Rechner, je 120: Weg 8,9 Runden je Seite, Finale 7,5 Runden, 117 von 120 Finals enden durch Siegelpunkte. Die frühere Gruppe gewinnt mit der gerechneten Heilung 47 von 90 Partien, ohne Heilung 38 von 90. Das ist bei dieser Zahl nur ein Hinweis, kein Ergebnis.
+**Fester Weg:** Die erste Fassung (fünf Räume, jeder gibt eine Stufe, Beute in Raum 4 und 5) lässt sich zum Vergleich mit `?rissweg=fest` spielen.
 
 **Mitschrift:** Jede Partie wird auf dem Gerät gespeichert und lässt sich im Spiel ansehen und kopieren: Helden, Räume mit Runden und Sekunden, jede Entscheidung mit Bedenkzeit und dem, was vom Gegner zu hören war, Beute, Raumzahl beider Seiten, Startpunkte, jede Rundenwertung, Auslöschungen, Rückkehrer, Dauer von Weg und Finale, Heilungseinstellung.
 
@@ -235,6 +255,8 @@ Alle fünf Räume zusammen dauern 13,5 Runden. Verloren wurde praktisch kein Rau
 
 - **Zauberplätze und Tränke im Finale.** In der Rechnung begannen beide Gruppen das Finale mit frischen Zauberplätzen und Tränken, nur die Trefferpunkte kamen vom Weg. Der Prototyp folgt dem Regeltext und nimmt alles mit. Das trifft die tiefere Gruppe etwas stärker.
 - **Zauberplätze beim Aufstieg.** In der Rechnung kamen die Plätze einer neuen Stufe nicht dazu. Im Prototyp kommen sie dazu.
+- **Geloster Weg.** Die Rechnung kannte nur den festen Weg, in dem jeder Raum eine Stufe gibt. Für den gelosten Weg mit Beuteräumen ohne Stufe gibt es nur die Zahlen oben.
+- **Warten am Siegel.** Der Rechner geht seinen Weg vorab. Beim Warten werden seine restlichen Räume mit demselben Zufall noch einmal gespielt, ein Zug alle 2,3 Sekunden; so lange dauert das Warten. Mit „Nicht warten" lässt es sich überspringen. Kommt der Rechner früher an, wartet er nicht sichtbar und stellt sich selbst auf.
 - **Der Einstieg** ist ein echter, leichter Kampf. In der Rechnung galt er als sicher gewonnen und ohne Schaden.
 - **Was man vom Gegner hört.** Der Rechner geht seinen Weg nicht gleichzeitig, sondern vorab. Nach jedem eigenen Raum zeigt das Spiel ihn gleich weit oder einen Raum zurück, mit je halber Wahrscheinlichkeit. Bleibt er zwei Räume zurück, ist er abgebogen. Das Abbiegen ist also einen Raum lang verdeckt, nicht länger.
 - **Der Rechner biegt nach festen Wahrscheinlichkeiten ab** (nach Raum 2 zu 20 %, nach Raum 3 zu 45 %, nach Raum 4 zu 60 %, angeschlagen häufiger). Er reagiert nicht auf den Spieler.
@@ -244,15 +266,15 @@ Alle fünf Räume zusammen dauern 13,5 Runden. Verloren wurde praktisch kein Rau
 
 ### Noch nicht geprüft
 
-- Von Hand gespielt hat den Prototyp noch niemand. Der Test spielt die eigenen Züge mit dem Rechner-Helfer.
+- Von Hand gespielt ist bisher eine Partie der ersten Fassung (fester Weg). Den gelosten Weg, das Aufstellen und das Zuschauen hat noch niemand von Hand gespielt; der Test spielt die eigenen Züge mit dem Rechner-Helfer.
 - Echte Geräte. Geprüft sind Bildschirmfotos in PC- und Handygröße.
 - Der Tischmodus mit Handys.
 
 ## Die Regeln auf einen Blick
 
 - Drei Helden je Seite, alle auf Stufe 1.
-- Zwei bis fünf Räume. Jeder gewonnene Raum gibt eine Stufe, Raum 4 einen Gegenstand, Raum 5 einen Gegenstand oder Segen.
+- Zwei bis fünf Räume. Raum 1 ist der leichte Einstieg (+1 Stufe). Danach zwei schwere Räume (+1 Stufe) und zwei Beuteräume (ein Gegenstand, im zweiten auch ein Segen) in geloster Reihenfolge, für beide gleich und im Voraus verdeckt.
 - Nach Raum 2 nach jedem Raum: weiter oder zum Siegel. Die Tiefe des Gegners ist sichtbar, sein Abbiegen nicht.
-- Wer früher ankommt, steht am Siegel und hat 2 Siegelpunkte für die erste Etappe Vorsprung, 1 für jede weitere, höchstens 3. Wer später kommt, wird vor dem Finale nicht geheilt.
+- Wer früher ankommt, stellt seine Helden am Siegel auf, kann dem Gegner zuschauen und sammelt Siegelpunkte: 2 für den ersten Raum Vorsprung, 1 für jeden weiteren, höchstens 3. Wer später kommt, wird vor dem Finale nicht geheilt.
 - Finale: je Runde ein Punkt für die Seite mit mehr Helden am Siegel. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden zurück. Auslöschen gibt dem Gegner einen Punkt.
 - Sieg bei fünf Siegelpunkten, sonst Wertung nach zwölf Runden.

@@ -10,13 +10,24 @@
  */
 (function (root) {
   "use strict";
-  /* Die fünf Räume: kurz gehalten (wenige Gegner mit wenig Leben). n = Gegnerzahl wie für so viele Helden, skala = Anteil ihrer Trefferpunkte */
+  /* Der feste Weg der ersten Fassung (nur noch über ?rissweg=fest): fünf kurze Räume, jeder gibt eine Stufe, Raum 4 und 5 dazu Beute.
+     n = Gegnerzahl wie für so viele Helden, skala = Anteil ihrer Trefferpunkte */
   const RAEUME = [
     { name: "Der Einstieg", karte: "GARTEN", begegnung: "garten", n: 2, skala: 0.4, text: "Der Riss schließt sich hinter euch. Ein paar Rostkäfer, mehr nicht." },
     { name: "Die Koboldgänge", karte: "TURM", begegnung: "kobolde", n: 2, skala: 0.7, text: "Enge Gänge, schnelle Schatten." },
     { name: "Die Gruft", karte: "GRUFT", begegnung: "kaefer_kobolde", n: 3, skala: 0.8, text: "Hier unten liegt, was der Riss nicht mehr hergibt." },
     { name: "Die Pilzgrotte", karte: "PILZE", begegnung: "gruft", n: 2, skala: 0.8, text: "Ab hier gibt der Riss Beute her." },
     { name: "Die Tiefe", karte: "SCHACHT", begegnung: "pilze", n: 2, skala: 0.8, text: "Tiefer geht es nicht. Wer hier besteht, kommt stark am Siegel an." }];
+  /* Der geloste Weg: Raum 1 ist immer der leichte Einstieg (E). Die Räume 2 bis 5 sind zwei schwere Räume (S: +1 Stufe, echte Gefahr)
+     und zwei Beuteräume (B: kurzer Kampf, ein Gegenstand, keine Stufe) in geloster Reihenfolge – für beide Seiten dieselbe.
+     Schwere Räume wachsen mit ihrem Platz im Weg (skalaJe je Platz nach dem zweiten). */
+  const EINSTIEG = RAEUME[0];
+  const SCHWER = [
+    { name: "Die Gruft", karte: "GRUFT", begegnung: "gruft", n: 2, skala: 0.9, skalaJe: 0, text: "Knochenwächter. Hier wird es ernst: Wer am Ende steht, steigt auf." },
+    { name: "Die Tiefe", karte: "SCHACHT", begegnung: "netz", n: 2, skala: 0.9, skalaJe: 0, text: "Netze in der Dunkelheit. Ein schwerer Raum: Wer am Ende steht, steigt auf." }];
+  const BEUTE = [
+    { name: "Die Schatzkammer", karte: "TURM", begegnung: "kobolde", n: 2, skala: 0.6, text: "Kobolde über einer offenen Truhe. Ein kurzer Kampf, dann gehört die Beute euch. Eine Stufe gibt es hier nicht." },
+    { name: "Das Pilzlager", karte: "PILZE", begegnung: "kaefer_kobolde", n: 2, skala: 0.6, text: "Zwischen den Pilzen liegt, was andere verloren haben. Ein kurzer Kampf, dann Beute. Eine Stufe gibt es hier nicht." }];
   /* Beute: nur, was auch im Duell wirkt (wie in der Rechnung) */
   const DING_POOL = ["amulett", "eulenmantel", "gluecksbringer", "stiefel", "wetzstein", "ring", "schleifstein", "feder", "eisenspitzen", "stab"], SEGEN_POOL = ["klingen", "fuesse", "wachtfeuer"];
   const NAH = new Set(["krieger", "schurke"]), ZAUBER = new Set(["zauberer", "kleriker"]);
@@ -31,12 +42,21 @@
 
     /* ---------- der Weg ---------- */
     /** Neue Gruppe: drei Helden, alle Stufe 1 */
-    function neu(gruppe, name) {
-      return { name: name || "", gruppe: gruppe.slice(0, 3), stufen: Object.fromEntries(gruppe.map((f) => [f, 1])), zust: null, dinge: {}, segen: [], raeume: 0, runden: 0, abgebogen: false, verlauf: [] };
+    function neu(gruppe, name, folge) {
+      return { folge: folge || null, name: name || "", gruppe: gruppe.slice(0, 3), stufen: Object.fromEntries(gruppe.map((f) => [f, 1])), zust: null, dinge: {}, segen: [], raeume: 0, runden: 0, abgebogen: false, verlauf: [] };
+    }
+    /** Reihenfolge losen: "E" und danach zwei schwere und zwei Beuteräume, gemischt. zf: Zufall 0..1 */
+    const folgeLosen = (zf) => "E" + ["S", "S", "B", "B"].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]).join("");
+    /** Raum i (0 bis 4) dieser Gruppe: { art: "E" | "S" | "B" | "F" (fester Weg), name, text, karte, begegnung, n, skala } */
+    function raumVon(W, i) {
+      if (!W.folge) return Object.assign({ art: "F" }, RAEUME[i]);
+      const art = W.folge[i]; if (art === "E") return Object.assign({ art }, EINSTIEG);
+      const k = [...W.folge.slice(0, i)].filter((x) => x === art).length, d = (art === "S" ? SCHWER : BEUTE)[k % 2];
+      return Object.assign({ art }, d, { skala: d.skala + (d.skalaJe || 0) * Math.max(0, i - 1) });
     }
     /** Angaben für R.neuesSpiel / AB.kampfStarten: Raum i (0 bis 4) */
     function raumOpts(W, i) {
-      an(); const r = RAEUME[i], g = W.gruppe;
+      an(); const r = raumVon(W, i), g = W.gruppe;
       return { figuren: g.slice(), stufenListe: g.map((f) => W.stufen[f]), stufe: Math.round(g.reduce((a, f) => a + W.stufen[f], 0) / g.length), karte: karteVon(r.karte), begegnung: r.begegnung,
         gegner: R.gegnerFuer(r.begegnung, r.n, null, r.skala, false, 0), vorher: W.zust ? R.neuerKampf(W.zust) : null, schwierigkeit: "normal", segen: W.segen.slice(), bedrohung: 0 };
     }
@@ -46,13 +66,14 @@
     }
     /** Raum abrechnen. Zurück: { sieg, runden, auf: [fid …], gefallen: [fid …] } */
     function raumEnde(W, i, st) {
-      const sieg = st.ende === "sieg", out = { raum: i + 1, sieg, runden: st.runde, auf: [], gefallen: [] };
+      const sieg = st.ende === "sieg", art = raumVon(W, i).art, out = { raum: i + 1, art, sieg, runden: st.runde, auf: [], gefallen: [] };
       W.raeume = i + 1; W.runden += st.runde;
       const fertig = () => { out.stufen = Object.assign({}, W.stufen); out.leben = leben(W); W.verlauf.push(out); return out; };
       if (!sieg) { W.zust = null; return fertig(); } // Gruppe verloren: kein Lohn, alle stehen voll geheilt wieder auf
       const zust = R.nachKampf(st);
       for (const f of W.gruppe) { const z = zust[f], alt = W.stufen[f], fig = st.figuren.find((x) => x.fid === f);
         if (z.tot || !fig || fig.tp <= 0) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, alt) / 2); out.gefallen.push(f); continue; } // gefallen: halbe Trefferpunkte, keine Stufe
+        if (art === "B") continue; // Beuteraum: keine Stufe
         const neuS = Math.min(10, alt + 1), pa = plaetzeVon(f, alt), pn = plaetzeVon(f, neuS);
         W.stufen[f] = neuS; z.tp += F.tpVon(f, neuS) - F.tpVon(f, alt); z.stufe = neuS; out.auf.push(f);
         z.plaetze = pn.map((n, k) => Math.max(0, Math.min(n, ((z.plaetze || [])[k] || 0) + n - (pa[k] || 0)))); } // neue Zauberplätze der Stufe kommen dazu
@@ -60,10 +81,11 @@
     }
     /** Beute nach Raum 4 (ein Gegenstand) und Raum 5 (Gegenstand oder Segen). zf: Zufall 0..1. Zurück: null oder { dinge: [3 Kennungen], segen: [Kennungen] } */
     function beuteAngebot(W, i, zf) {
-      if (i < 3) return null;
+      const art = raumVon(W, i).art, zweiter = art === "B" && [...W.folge.slice(0, i)].includes("B");
+      if (art === "F" ? i < 3 : art !== "B") return null;
       const frei = DING_POOL.filter((id) => W.gruppe.some((f) => passt(id, f) && !(W.dinge[f] || []).includes(id) && (W.dinge[f] || []).length < 2));
       const dinge = frei.map((id) => [zf(), id]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
-      return { dinge, segen: i >= 4 && !W.segen.length ? SEGEN_POOL.slice() : [] };
+      return { dinge, segen: (art === "F" ? i >= 4 : zweiter) && !W.segen.length ? SEGEN_POOL.slice() : [] };
     }
     const kannTragen = (W, id, fid) => passt(id, fid) && !(W.dinge[fid] || []).includes(id) && (W.dinge[fid] || []).length < 2;
     function beuteNehmen(W, wahl) {
@@ -81,11 +103,15 @@
     /* ---------- der Weg des Rechner-Gegners ---------- */
     /** Ein Raum, vom Rechner gespielt (beide Seiten ziehen von selbst) */
     function raumAuto(W, i, seed) {
-      const st = R.neuesSpiel(seed, raumOpts(W, i)); raumDinge(W, st); let z = 0;
+      const opts = raumOpts(W, i), wieder = { seed, opts: Object.assign({}, opts, { vorher: opts.vorher ? JSON.parse(JSON.stringify(opts.vorher)) : null }), dinge: JSON.parse(JSON.stringify(W.dinge)) }; // zum Nachspielen (Zuschauen)
+      const st = R.neuesSpiel(seed, opts); raumDinge(W, st); st.wieder = wieder; let z = 0;
       while (!st.ende && z++ < 900) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); }
       if (!st.ende) st.ende = "niederlage";
       return st;
     }
+    /** Einen vom Rechner gespielten Raum noch einmal aufbauen (gleicher Zufall, gleicher Verlauf, wenn wieder autoZug und gegnerZug ziehen) */
+    function raumWieder(w) { an(); const st = R.neuesSpiel(w.seed, Object.assign({}, w.opts, { vorher: w.opts.vorher ? JSON.parse(JSON.stringify(w.opts.vorher)) : null })); raumDinge({ dinge: w.dinge }, st); return st; }
+    const raumSchritt = (st) => { if (st.ende) return; if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); };
     /** Biegt der Rechner nach diesem Raum ab? Er kennt nur den eigenen Zustand. */
     function botBiegtAb(W, zf) {
       if (W.raeume < MIN_RAEUME) return false; if (W.raeume >= MAX_RAEUME) return true;
@@ -100,11 +126,11 @@
       return null;
     }
     /** Der ganze Weg des Rechners: Räume, Beute, Abbiegen. Zurück: W (mit W.raeume und W.verlauf) */
-    function botWeg(gruppe, seed, name) {
+    function botWeg(gruppe, seed, name, folge) {
       let zs = (seed >>> 0) || 7; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; return zs / 0x7fffffff; };
-      const W = neu(gruppe, name);
+      const W = neu(gruppe, name, folge);
       for (let i = 0; i < MAX_RAEUME; i++) {
-        const st = raumAuto(W, i, seed * 13 + i + 1), e = raumEnde(W, i, st);
+        const st = raumAuto(W, i, seed * 13 + i + 1), e = raumEnde(W, i, st); e.wieder = st.wieder;
         if (e.sieg) e.beute = botBeute(W, i, zf);
         if (botBiegtAb(W, zf)) break;
       }
@@ -143,10 +169,23 @@
       st.riss = { P, folge: { 1: 0, 2: 0 }, gefallenIn: {}, gesperrt: {}, eingang, orte, ort: 0, runde: st.runde, ziel: ZIEL, max: RUNDEN, segen: { 1: W1.segen.filter((x) => x !== "wachtfeuer"), 2: W2.segen.filter((x) => x !== "wachtfeuer") },
         frueh, vor: Math.abs(vor), start: { 1: P[1], 2: P[2] }, heilung, aus: null, botStaerke: o.staerke != null ? o.staerke : 1, merk: { wer: null, lauf: 0, gelaufen: false, n: 0 },
         M: { wechsel: 0, halter: 0, zurueck: 0, rueck: 0, aus: 0, spruenge: 0, runden: [] } };
-      if (frueh) for (const f of helden(st, frueh)) { const p = naechstFrei(st, orte[0].x, orte[0].y, true); if (p) { f.x = p.x; f.y = p.y; } } // wer zuerst ankommt, steht schon am Siegel
+      if (frueh) { // wer zuerst ankommt, steht schon am Siegel: auf den gewählten Feldern (o.aufstellung, nur im erlaubten Bereich), sonst so nah wie möglich
+        const wahl = (frueh === 1 && o.aufstellung) || {}, erlaubt = new Set(aufstellFelder(st).map((p) => p.x + "," + p.y)), h = helden(st, frueh);
+        for (const f of h) { f.x = -9; f.y = -9; }
+        for (const f of h) { const w = wahl[hid(f)]; if (w && erlaubt.has(w.x + "," + w.y) && !st.figuren.some((g) => g !== f && g.tp > 0 && g.x === w.x && g.y === w.y)) { f.x = w.x; f.y = w.y; } }
+        for (const f of h) if (f.x < 0) { const p = naechstFrei(st, orte[0].x, orte[0].y, true); f.x = p.x; f.y = p.y; }
+        for (const w of st.figuren) if ((w.art === "wolf" || w.art === "arenawolf") && w.besitzer && R.teamVon(st, w) === frueh) { const b = st.figuren.find((g) => g.id === w.besitzer), p = b && naechstFrei(st, b.x, b.y, true); if (p) { w.x = p.x; w.y = p.y; } } }
       st.log.push({ t: frueh ? `${st.arena.namen[frueh - 1]} steht schon am Siegel und beginnt mit ${P[frueh]} Siegelpunkten.` : "Beide Gruppen kommen gleichzeitig an. Niemand beginnt mit Siegelpunkten.", art: "gut", tm: 0 });
       punkteZeigen(st); vor_(st);
       return st;
+    }
+    /** Wo die frühere Gruppe ihre Helden aufstellen darf: freie Felder bis zwei Schritte um das erste Siegelfeld */
+    function aufstellFelder(st) { const S = st.riss.orte[0], out = []; for (let x = S.x - 2; x <= S.x + 2; x++) for (let y = S.y - 2; y <= S.y + 2; y++) if (frei(st, x, y)) out.push({ x, y }); return out; }
+    /** Der Siegelsaal für die Aufstellung vor dem Finale: Größe, gesperrte Felder, Siegelfelder, erlaubte Felder, Bild */
+    function saal() {
+      const k = karteVon("SIEGEL"), st = { karte: { b: k.b, h: k.h, block: new Set(k.hindernisse.map(([, x, y]) => x + "," + y)) }, figuren: [] };
+      const mitte = naechstFrei(st, (k.b - 1) / 2, (k.h - 1) / 2); st.riss = { orte: [mitte, naechstFrei(st, mitte.x - 3, mitte.y), naechstFrei(st, mitte.x + 3, mitte.y)] };
+      return { b: k.b, h: k.h, bild: k.bild || null, block: [...st.karte.block], orte: st.riss.orte.map((p) => ({ x: p.x, y: p.y })), felder: aufstellFelder(st) };
     }
     const siegel = (st) => st.riss.orte[st.riss.ort], naechstesSiegel = (st) => st.riss.orte[(st.riss.ort + 1) % st.riss.orte.length];
     const dist = (st, f) => { const S = siegel(st); return Math.max(Math.abs(f.x - S.x), Math.abs(f.y - S.y)); }, inZone = (st, f) => dist(st, f) <= 1;
@@ -249,7 +288,7 @@
       for (let i = 0; i < 9000 && !st.riss.aus; i++) { const w = finaleBot(st); if (finaleZug(st, w)) finaleZug(st, { typ: "ende" }); }
       return st;
     }
-    return { RAEUME, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, botBiegtAb, botWeg,
+    return { RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
       startPunkte, finaleNeu, vor: vor_, nach, finaleBot, finaleZug, finaleAuto, siegel, naechstesSiegel, inZone, steht, helden };
   }
 

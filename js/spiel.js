@@ -1019,7 +1019,8 @@
     st = o.st || null; window.AB.st = st; kampfEnde = null; wahl = null; tipp = null; letzteTP = {}; letzterLog = st ? st.log.length : 0;
     clearInterval(uhrTakt); uhrVersatz = 0; uhrTakt = setInterval(zugUhrTakt, 500);
     pruefAus();
-    if (st) pruefErsteller();
+    if (st && o.ohnePruef) { /* Kampf nur auf diesem Gerät (Rissgänger gegen den Rechner): niemand rechnet nach, also wird nichts mitgeschrieben */ }
+    else if (st) pruefErsteller();
     else if (o.server) { /* Serverkampf: Der Server rechnet, hier wird nur angezeigt – nichts mitzurechnen */ }
     else { // Beigetretener: eigenen Kampf aus derselben Zufallszahl aufbauen (der Anführer des Erstellers bleibt unbekannt)
       let s = null; try { s = o.schatten ? o.schatten() : null; if (s && s.arena.koenig) s.arena.koenig[3 - o.seite] = null; } catch (e) { s = null; }
