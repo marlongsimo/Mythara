@@ -271,6 +271,8 @@ Vorläufiger Regelstand: Variante D. Der zusätzliche Segen für die zurücklieg
 
 ## Dritte Durchrechnung: das Finale mit Siegel
 
+> **Ungültig.** In der Wertung dieser Rechnung steckte ein Fehler: Am Rundenende wurden nur die Helden der Seite gezählt, die gerade am Zug war. Die Seite mit dem ersten Zug der Runde bekam dadurch fast immer den Punkt. Die Zahlen dieses Abschnitts dürfen nicht verwendet werden. Die korrigierte Rechnung steht im Abschnitt „Vierte Durchrechnung“.
+
 160 Finals je Block, Regelstand D. Aufruf: `node tools/wettlauf-sim.js 160 --teil=G`. Das Siegel gibt es nur in dieser Rechnung, nicht im Spiel.
 
 Nachgebildet: Siegel in der Kartenmitte, „am Siegel“ steht, wer darauf oder direkt daneben steht. Punkt je Runde für die Seite mit mehr Helden am Siegel, Zurückerobern nach zwei Runden in Folge, Sieg bei drei Punkten oder besiegtem Gegner, Wertung nach acht Runden. Spielweise „Siegel“: zuerst ans Siegel laufen, von dort kämpfen. Spielweise „Duell“: der gewöhnliche Arena-Bot.
