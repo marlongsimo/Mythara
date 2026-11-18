@@ -2820,3 +2820,23 @@ body.dorf-holz .faehig li { background: rgba(14, 8, 4, .62); border: 1px solid r
 body.dorf-holz .faehig li.merkmal, body.dorf-holz .faehig li.klasse { background: linear-gradient(180deg, color-mix(in srgb, var(--k) 38%, rgba(14, 8, 4, .8)), rgba(14, 8, 4, .8)); border-color: color-mix(in srgb, var(--k) 70%, #d9b26a); }
 body.dorf-holz .held-faehig li { background: rgba(14, 8, 4, .62); border: 1px solid rgba(217,178,106,.28); border-radius: 2px; }
 body.dorf-holz .held-faehig li.klassen-merkmal { border-color: var(--k); border-left: 3px solid var(--k); background: linear-gradient(180deg, color-mix(in srgb, var(--k) 34%, rgba(14, 8, 4, .82)), rgba(14, 8, 4, .82)); }
+
+/* ---------- Taverne, Stadttor und Dorf-Übersicht im selben Material ---------- */
+/* Kacheln (Stadttor und Übersicht): Bild im Eisenrahmen, Text auf dunklem Holz */
+body.dorf-holz .hub-kachel { border: 5px solid #2c2722; border-radius: 3px; background-color: #1a110b; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.4), 0 12px 24px rgba(0,0,0,.55); }
+body.dorf-holz .hub-kachel:hover, body.dorf-holz .hub-kachel:focus-visible { box-shadow: 0 0 0 1px #f6dc9c, inset 0 0 0 1px rgba(217,178,106,.6), 0 0 22px rgba(246,200,110,.3), 0 12px 24px rgba(0,0,0,.55); }
+body.dorf-holz .hub-kachel.welt.bald { background: linear-gradient(rgba(14, 8, 4, .7), rgba(10, 6, 3, .88)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat; }
+body.dorf-holz .hub-welt-bild { border: 5px solid #2c2722; border-radius: 2px; box-shadow: 0 0 0 1px #d9b26a, 0 12px 24px rgba(0,0,0,.55); }
+/* große Knöpfe: Eisen, die Hauptaktion in rotem Samt */
+body.dorf-holz .my-knopf { border: 1px solid #6b5a45; border-radius: 3px; background: linear-gradient(180deg, #423a32, #1d1a16); box-shadow: inset 0 1px 0 rgba(255,235,200,.16), 0 6px 12px rgba(0,0,0,.45); }
+body.dorf-holz .my-knopf.rot { border-color: #d9b26a; background: linear-gradient(180deg, #8f1d24, #5a1016); box-shadow: inset 0 0 0 2px rgba(0,0,0,.3), 0 6px 12px rgba(0,0,0,.45); }
+/* Seitenspalte „Aktuelle Kampagnen / Zuletzt gespielt“: Holztafel */
+body.dorf-holz .hub-seite { border: 6px solid #2c2722; border-radius: 3px; box-shadow: 0 0 0 1px #6b5a45, inset 0 0 0 1px rgba(217,178,106,.4), 0 14px 28px rgba(0,0,0,.55); background: linear-gradient(rgba(14, 8, 4, .66), rgba(10, 6, 3, .86)), url("../img/mythara/tisch-holz.webp") center / cover no-repeat, #1a110b; }
+body.dorf-holz .hub-liste li { background: rgba(14, 8, 4, .6); border-color: rgba(217,178,106,.3); border-radius: 2px; }
+/* Hinweis für Gäste: ein Zettel aus Pergament */
+body.dorf-holz .hub-gast-hinweis { border: 1px solid #7a5a2c; border-radius: 2px; background: linear-gradient(180deg, #d9bd86, #c4a268 60%, #b08d55); box-shadow: inset 0 0 22px rgba(90, 52, 16, .35), 0 5px 10px rgba(0,0,0,.5); color: #3b230e; }
+body.dorf-holz .hub-gast-hinweis *, body.dorf-holz .hub-gast-hinweis a { color: #3b230e; } body.dorf-holz .hub-gast-hinweis b { color: #1f1206; }
+/* Taverne: Gästeliste als Holzzeilen, Suche als eingelassenes Feld */
+body.dorf-holz .f-liste li { background: rgba(14, 8, 4, .6); border: 1px solid rgba(217,178,106,.3); border-radius: 2px; }
+body.dorf-holz .f-suche input, body.dorf-holz .karte-box input[type="text"], body.dorf-holz .karte-box input[type="search"], body.dorf-holz .karte-box textarea { background: #120b07; border: 1px solid #6b5a45; border-radius: 2px; color: #f1e3c4; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+body.dorf-holz .f-unter { border-bottom: 1px solid rgba(217,178,106,.3); padding-bottom: 4px; }
