@@ -149,6 +149,7 @@
         start: performance.now() + (verzug || 0), dauer: ruhig ? 1 : o.schnell ? 850 : 1350, Mf: endlage(zahl), a1: [Math.random() - 0.5, Math.random() - 0.5, Math.random() * 0.4], a2: [Math.random() - 0.5, Math.random() + 0.3, Math.random() - 0.5],
         w1: (9 + Math.random() * 5) * (Math.random() < 0.5 ? -1 : 1), w2: 5 + Math.random() * 4, letzt: -1, glanz: null, blass: false, fertig: null };
       w.fertig = () => {
+        if (o.schlicht) return fertig(w); // Rettungswurf: eine 20 oder 1 ist dort nichts Besonderes
         if (zahl === 20) { w.glanz = "rgba(255,214,110,1)"; spruehen(ziel.x, ziel.y, "#ffd97a", 46); klang("krit", 1); }
         else if (zahl === 1) { w.glanz = "rgba(210,40,40,.95)"; spruehen(ziel.x, ziel.y, "#b3262f", 14); klang("patzer", 1); }
         fertig(w);

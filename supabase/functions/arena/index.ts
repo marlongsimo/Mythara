@@ -1483,12 +1483,12 @@
         if (rw.erfolg && a.halb) {
           // Zaubertrick: Auch wer widersteht, wird gestreift – halber Schaden, aber kein Zustand und keine Zusatzwirkung
           const h2 = Math.max(1, Math.floor((roll(r, a.schaden).total + (a.plusAttr ? mod(f.werte[a.attr]) : 0)) / 2));
-          st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} widersteht (Rettungswurf ${rw.total} gegen SG ${sg}): nur gestreift, ${h2} Schaden.`, art: "wurf" });
+          st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} widersteht (Rettungswurf ${rw.total} gegen SG ${sg}): nur gestreift, ${h2} Schaden.`, art: "wurf", wurf: rw.w, rett: 1 });
           schaden(st, ziel, h2);
-        } else if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} widersteht (Rettungswurf ${rw.total} gegen SG ${sg}).`, art: "wurf" });
+        } else if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} widersteht (Rettungswurf ${rw.total} gegen SG ${sg}).`, art: "wurf", wurf: rw.w, rett: 1 });
         else {
           const s = roll(r, a.schaden).total + (a.plusAttr ? mod(f.werte[a.attr]) : 0) + (a.brandmal && ziel.z.brandmal === f.id ? roll(r, brandW(f)).total : 0);
-          st.log.push({ t: `${f.name}: ${a.name} – Rettungswurf ${rw.total} gegen SG ${sg} misslingt, ${s} Schaden.`, art: "wurf" });
+          st.log.push({ t: `${f.name}: ${a.name} – Rettungswurf ${rw.total} gegen SG ${sg} misslingt, ${s} Schaden.`, art: "wurf", wurf: rw.w, rett: 1 });
           schaden(st, ziel, s);
           if (a.zustand && lebt(ziel)) setzeZustand(st, ziel, a, f);
           // Elaras Heiliges Licht: Der Treffer heilt den am schwersten Verletzten in der Nähe (auch sie selbst)
@@ -1501,7 +1501,7 @@
         const sg = SG(f, a.attr), betroffen = a.radius ? flaecheZiele(st, f, { form: "kreis", groesse: a.radius }, ziel) : [ziel];
         for (const o of betroffen) {
           const rw = rettung(st, o, a.rettung, sg);
-          if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${o.name} widersteht (${rw.total} gegen SG ${sg}).`, art: "wurf" });
+          if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${o.name} widersteht (${rw.total} gegen SG ${sg}).`, art: "wurf", wurf: rw.w, rett: 1 });
           else if (a.entzaubert && !(GEGNER[o.art] && GEGNER[o.art].untot)) {
             // Bannen gegen Lebende: nimmt alle Verstärkungen
             const weg = zauberAuf(o); for (const k of weg) { delete o.z[k]; if (k === "segen") delete o.z.segenBis; }
@@ -1514,32 +1514,32 @@
         const sg = SG(f, a.attr), betroffen = flaecheZiele(st, f, a, ziel), teile = [];
         for (const o of betroffen) {
           const rw = rettung(st, o, a.rettung, sg); let s = roll(r, a.schaden).total; if (rw.erfolg && a.halb) s = Math.floor(s / 2);
-          teile.push(`${o.name} ${s}${rw.erfolg ? " (halb)" : ""}`);
+          teile.push(`${o.name} ${s}${rw.erfolg ? " (halb)" : ""}`); if (teile.w == null) teile.w = rw.w;
           schaden(st, o, s);
           if (!rw.erfolg && lebt(o)) { if (a.zustand) setzeZustand(st, o, a, f); if (a.stoss) schieben(st, o, f, a.stoss); }
         }
-        st.log.push({ t: `${f.name}: ${a.name} – ${teile.join(", ") || "niemand getroffen"}.`, art: "wurf" });
+        st.log.push({ t: `${f.name}: ${a.name} – ${teile.join(", ") || "niemand getroffen"}.`, art: "wurf", wurf: teile.w, rett: teile.w == null ? undefined : 1 });
         break;
       }
       case "albtraum": {
         const sg = SG(f, a.attr);
         for (const o of flaecheZiele(st, f, { form: "kreis", groesse: a.radius || 1 }, ziel)) {
           const rw = rettung(st, o, a.rettung, sg), s = rw.erfolg ? roll(r, "1W8").total : roll(r, a.schaden).total;
-          st.log.push({ t: `${f.name}: Albtraum – ${o.name} ${rw.erfolg ? "widersteht halb" : "schreit auf"}, ${s} Schaden.`, art: "wurf" });
+          st.log.push({ t: `${f.name}: Albtraum – ${o.name} ${rw.erfolg ? "widersteht halb" : "schreit auf"}, ${s} Schaden.`, art: "wurf", wurf: rw.w, rett: 1 });
           schaden(st, o, s); if (!rw.erfolg && lebt(o)) o.z.veraengstigt = { rest: 1, von: f.id };
         }
         break;
       }
       case "stoss": {
         const sg = SG(f, a.attr), rw = rettung(st, ziel, a.rettung, sg);
-        if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} hält stand (${rw.total} gegen SG ${sg}).`, art: "wurf" });
-        else { schieben(st, ziel, f, a.felder || 1); ziel.z.liegend = true; st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} fliegt zurück und liegt am Boden.`, art: "gut" }); }
+        if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} hält stand (${rw.total} gegen SG ${sg}).`, art: "wurf", wurf: rw.w, rett: 1 });
+        else { schieben(st, ziel, f, a.felder || 1); ziel.z.liegend = true; st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} fliegt zurück und liegt am Boden.`, art: "gut", wurf: rw.w, rett: 1 }); }
         break;
       }
       case "entwaffnen": {
         const sg = SG(f, a.attr), rw = rettung(st, ziel, a.rettung, sg);
-        if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} hält fest (${rw.total} gegen SG ${sg}).`, art: "wurf" });
-        else { ziel.z.entwaffnet = a.dauer || 2; st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} verliert den Halt und macht ${a.dauer || 2} Runden nur halben Schaden.`, art: "gut" }); }
+        if (rw.erfolg) st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} hält fest (${rw.total} gegen SG ${sg}).`, art: "wurf", wurf: rw.w, rett: 1 });
+        else { ziel.z.entwaffnet = a.dauer || 2; st.log.push({ t: `${f.name}: ${a.name} – ${ziel.name} verliert den Halt und macht ${a.dauer || 2} Runden nur halben Schaden.`, art: "gut", wurf: rw.w, rett: 1 }); }
         break;
       }
       case "spott": ziel.z.spott = f.id; st.log.push({ t: `${f.name} verspottet ${ziel.name}.` }); break;
@@ -1588,7 +1588,7 @@
         for (const o of gegnerFiguren(st).filter((o) => lebt(o) && abstand(f, o) <= a.reichweite)) {
           const untot = Boolean(GEGNER[o.art] && GEGNER[o.art].untot), rw = rettung(st, o, "WEI", sg);
           if (!rw.erfolg) { if (untot) o.z.veraengstigt = { rest: 2, von: f.id }; else setzeZustand(st, o, { zustand: "geblendet", dauer: 1, attr: a.attr }, f); }
-          st.log.push({ t: `${f.name}: ${a.name} – ${o.name} ${rw.erfolg ? "widersteht" : untot ? "flieht" : "ist geblendet"}.`, art: "wurf" });
+          st.log.push({ t: `${f.name}: ${a.name} – ${o.name} ${rw.erfolg ? "widersteht" : untot ? "flieht" : "ist geblendet"}.`, art: "wurf", wurf: rw.w, rett: 1 });
         }
         break;
       }
@@ -2080,8 +2080,8 @@
       const nach = lebende.filter((f) => weite(g, f) <= 1);
       for (const f of nach) {
         const rw = rettung(st, f, "KON", d.sporen.sg);
-        if (rw.erfolg) st.log.push({ t: `${g.name}: Sporen – ${f.name} hält die Luft an.`, art: "gegner" });
-        else { const s = roll(st.r, d.sporen.schaden).total; f.z.vergiftet = 1; st.log.push({ t: `${g.name}: Sporen – ${f.name} hustet, ${s} Schaden, vergiftet.`, art: "gegner" }); schaden(st, f, s); }
+        if (rw.erfolg) st.log.push({ t: `${g.name}: Sporen – ${f.name} hält die Luft an.`, art: "gegner", wurf: rw.w, rett: 1 });
+        else { const s = roll(st.r, d.sporen.schaden).total; f.z.vergiftet = 1; st.log.push({ t: `${g.name}: Sporen – ${f.name} hustet, ${s} Schaden, vergiftet.`, art: "gegner", wurf: rw.w, rett: 1 }); schaden(st, f, s); }
       }
       if (!st.ende) weiter(st); return;
     }
@@ -2105,9 +2105,9 @@
     if (d.atem && g.atemBereit && weite(g, ziel) <= 3) {
       const betroffen = st.figuren.filter((f) => f.seite === "spieler" && lebt(f) && weite(g, f) <= 3 && weite(g, f) >= 1 && (() => { const vx = ziel.x - g.x, vy = ziel.y - g.y, fx = f.x - g.x, fy = f.y - g.y; return (vx * fx + vy * fy) / (Math.hypot(vx, vy) * Math.hypot(fx, fy) || 1) >= 0.7; })());
       const teile = [];
-      for (const f of betroffen) { const rw = rettung(st, f, d.atem.rettung || "GES", d.atem.sg); let s = roll(st.r, d.atem.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); teile.push(`${f.name} ${s}`); schaden(st, f, s); }
+      for (const f of betroffen) { const rw = rettung(st, f, d.atem.rettung || "GES", d.atem.sg); let s = roll(st.r, d.atem.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); teile.push(`${f.name} ${s}`); if (teile.w == null) teile.w = rw.w; schaden(st, f, s); }
       g.atemBereit = false; g.atemRunde = st.runde;
-      st.log.push({ t: `${g.name}: ${d.atem.name || "Glutatem"} – ${teile.join(", ") || "niemand getroffen"}.`, art: "gegner" });
+      st.log.push({ t: `${g.name}: ${d.atem.name || "Glutatem"} – ${teile.join(", ") || "niemand getroffen"}.`, art: "gegner", wurf: teile.w, rett: teile.w == null ? undefined : 1 });
       if (!st.ende) weiter(st); return;
     }
     // Netzweber: Netz auf Entfernung
@@ -2191,9 +2191,9 @@
     let ziel = ziele.filter((f) => weite(g, f) <= reich && sicht(st, g, f)).sort((a, b) => a.tp - b.tp)[0];
     if (g.phase2 && g.atemBereit && (ziel || nah())) {
       const z = ziel || nah(), betroffen = st.figuren.filter((f) => f.seite === "spieler" && lebt(f) && weite(f, z) <= 1 && !(pakt.includes(f.fid) && !g.gebunden)), teile = [];
-      for (const f of betroffen) { const rw = rettung(st, f, "WEI", d.atem.sg); let s = roll(st.r, d.atem.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); teile.push(`${f.name} ${s}`); schaden(st, f, s); }
+      for (const f of betroffen) { const rw = rettung(st, f, "WEI", d.atem.sg); let s = roll(st.r, d.atem.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); teile.push(`${f.name} ${s}`); if (teile.w == null) teile.w = rw.w; schaden(st, f, s); }
       g.atemBereit = false; g.atemRunde = st.runde;
-      st.log.push({ t: `${g.name}: Fluchwelle – ${teile.join(", ") || "niemand"}.`, art: "gegner" });
+      st.log.push({ t: `${g.name}: Fluchwelle – ${teile.join(", ") || "niemand"}.`, art: "gegner", wurf: teile.w, rett: teile.w == null ? undefined : 1 });
       if (!st.ende) weiter(st); return;
     }
     if (!ziel && st.zug.bewegung > 0) {
@@ -2468,9 +2468,9 @@
       if (mk) {
         m.marken = m.marken.filter((x) => x !== mk);
         const getroffen = st.figuren.filter((f) => f.seite === "spieler" && lebt(f) && mk.felder.some(([x, y]) => x === f.x && y === f.y)), teile = [];
-        for (const f of getroffen) { const rw = rettung(st, f, mk.rettung, mk.sg); let s = roll(st.r, mk.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); else if (mk.liegend) f.z.liegend = true; teile.push(`${f.name} ${s}`); schaden(st, f, s); if (st.ende) return true; }
+        for (const f of getroffen) { const rw = rettung(st, f, mk.rettung, mk.sg); let s = roll(st.r, mk.schaden).total; if (rw.erfolg) s = Math.floor(s / 2); else if (mk.liegend) f.z.liegend = true; teile.push(`${f.name} ${s}`); if (teile.w == null) teile.w = rw.w; schaden(st, f, s); if (st.ende) return true; }
         m.stat.getroffen += teile.length; m.stat.ausgewichen += Math.max(0, (mk.n || 0) - teile.length);
-        st.log.push({ t: `${g.name}: ${mk.name} – ${teile.length ? teile.join(", ") : "alle sind ausgewichen"}.`, art: teile.length ? "gegner" : "gut" });
+        st.log.push({ t: `${g.name}: ${mk.name} – ${teile.length ? teile.join(", ") : "alle sind ausgewichen"}.`, art: teile.length ? "gegner" : "gut", wurf: teile.w, rett: teile.w == null ? undefined : 1 });
         if (!lebt(g)) { weiter(st); return true; }
       }
     }

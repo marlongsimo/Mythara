@@ -12,6 +12,8 @@
   const ruhig = () => params.has("schnell") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) || (() => { try { return localStorage.getItem("ab_effekte") === "aus"; } catch (e) { return false; } })();
   const Z = 60;
   /** Klang zum Effekt (js/klang.js); verzug in Millisekunden */
+  /** Wie lange der Würfel für diese Chronikzeilen braucht: der große rollt länger als der kleine (js/spiel.js sagt, welcher kommt) */
+  const wurfZeit = (zeilen) => (window.AB_WURFZEIT ? window.AB_WURFZEIT(zeilen) : 620);
   const klang = (name, verzug, laut) => { if (window.ABKLANG) window.ABKLANG.spiel(name, { verzug: verzug || 0, laut }); };
   let alt = null, stimmung = null, partikel = [], kanal = null, ctx = null, laeuft = false, bossGezeigt = null, endeGezeigt = null;
 
@@ -310,7 +312,7 @@
     const krit = logTreffer.some((l) => /kritischer Treffer|kritisch/i.test(l.t) && l.art !== "gegner");
     // Fernangriffe und Zauber: Erst fällt der Würfel (etwa 0,6 s), dann fliegt das Geschoss vom Angreifer (wer vor diesem Bild am Zug war) zu jedem Getroffenen.
     // Wer verfehlt, richtet keinen Schaden an – dann fliegt auch nichts. Zahl und Treffer folgen beim Einschlag.
-    const schuetze = st.figuren.find((f) => f.id === akteur), gArt = geschossArt(logTreffer), wuerfel = !gewuerfelt && logTreffer.some((l) => l.wurf) ? (window.AB_WURFZEIT ? window.AB_WURFZEIT(logTreffer) : 620) : 0; let nr = 0;
+    const schuetze = st.figuren.find((f) => f.id === akteur), gArt = geschossArt(logTreffer), wuerfel = !gewuerfelt && logTreffer.some((l) => l.wurf) ? wurfZeit(logTreffer) : 0; let nr = 0;
     for (const f of st.figuren) {
       const v = vorher.tp[f.id]; if (v == null || v === f.tp) continue;
       const d = f.tp - v, p = figurPos(f.id); if (!p) continue;
@@ -335,12 +337,12 @@
     // Neue Zustände: je Figur höchstens ein Zeichen je Art (nach dem Würfel)
     for (const f of st.figuren) { if (f.tp <= 0 || !vorher.z || !vorher.z[f.id]) continue;
       const arten = [...new Set(neu.z[f.id].filter((k) => !vorher.z[f.id].includes(k)).map((k) => ZUSTAND_FX[k]))].filter((a) => !(a === "schild" && beschirmt[f.id]));
-      arten.forEach((a, i) => setTimeout(() => marke(f.id, a), (logNeu.some((l) => l.wurf) ? 620 : 0) + 150 + i * 350)); }
+      arten.forEach((a, i) => setTimeout(() => marke(f.id, a), (logNeu.some((l) => l.wurf) ? wurfZeit(logNeu) : 0) + 150 + i * 350)); }
     // Blutung: Bei jedem Schaden durch die Wunde (und wenn sie geschlagen wird) fällt ein Blutstropfen an der Figur herab
     for (const l of logNeu) { const m = /^(.+?) blutet(?:: \d+ Schaden)?\.$/.exec(l.t || ""); if (!m) continue;
-      const f = st.figuren.find((x) => x.name === m[1]); if (f) setTimeout(() => marke(f.id, "blut"), /Schaden/.test(l.t) ? 80 : (logNeu.some((x) => x.wurf) ? 620 : 0) + 300); }
+      const f = st.figuren.find((x) => x.name === m[1]); if (f) setTimeout(() => marke(f.id, "blut"), /Schaden/.test(l.t) ? 80 : (logNeu.some((x) => x.wurf) ? wurfZeit(logNeu) : 0) + 300); }
     // Netz: Wer neu im Netz hängt, bekommt es übergeworfen (nach dem Würfel)
-    for (const f of st.figuren) if (neu.netz[f.id] && vorher.netz && !vorher.netz[f.id]) setTimeout(() => netz(f.id), logNeu.some((l) => l.wurf) ? 620 : 0);
+    for (const f of st.figuren) if (neu.netz[f.id] && vorher.netz && !vorher.netz[f.id]) setTimeout(() => netz(f.id), logNeu.some((l) => l.wurf) ? wurfZeit(logNeu) : 0);
     if (krit) { setTimeout(() => { blitz("gold"); beben(); }, wuerfel + 160); }
     const gefallen = st.figuren.find((f) => f.seite === "gegner" && vorher.tp[f.id] > 0 && f.tp <= 0 && istBoss(R, f) && !f.geflohen);
     if (gefallen) setTimeout(() => { beben(); blitz("gold"); bossFall(gefallen); }, 500);
