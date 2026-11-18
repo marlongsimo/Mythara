@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F,G,H,K,R,S,T] [--beute=ding|dingPassend|segen] [--paare=2-3,2-5,…] [--punkte=0,1,2] [--test=A,B,C,D,E,F,G,E2,G2] [--bloecke=1,2,…] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -19,11 +19,17 @@ let zs = 4711; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; r
 const zieh = (n, ohne = []) => HELDEN.filter((h) => !ohne.includes(h)).map((h) => [zf(), h]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
 const pct = (a, b) => (b ? Math.round(100 * a / b) + " %" : "–");
 
+/* Beute: nur Gegenstände und Segen, die auch im Duell wirken. Segen gelten in der Arena für die Seite am Zug; deshalb nur solche, die beim eigenen Zug zählen, plus Wachtfeuer (von Hand angerechnet). */
+const DING_POOL = ["amulett", "eulenmantel", "gluecksbringer", "stiefel", "wetzstein", "ring", "schleifstein", "feder", "eisenspitzen", "stab"], SEGEN_POOL = ["klingen", "fuesse", "wachtfeuer"];
+const NAH = new Set(["krieger", "schurke"]), ZAUBER = new Set(["zauberer", "kleriker"]);
+const passt = (id, fid) => { const k = F.FIGUREN[fid].klasse; return id === "ring" || id === "schleifstein" ? NAH.has(k) : id === "feder" || id === "eisenspitzen" ? k === "waldlaeufer" : id === "stab" ? ZAUBER.has(k) : true; };
+
 /* ---------- Teil A: der Weg ---------- */
 const LEICHT = ["garten", "kobolde", "kaefer_kobolde"], SCHWER = ["gruft", "pilze", "netz"];
 const PLAENE = { "nur leicht": "LLLL", "nur schwer": "SSSS", "gemischt mit Rast": "LSRS", "erst leicht, dann schwer": "LLSS", "Schleichweg (drei Etappen)": "LSS" };
-function raum(seed, gruppe, stufen, beg, vorher) {
-  const st = R.neuesSpiel(seed, { figuren: gruppe, stufenListe: gruppe.map((f) => stufen[f]), stufe: Math.round(gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length), begegnung: beg, vorher, schwierigkeit: "normal" }); let z = 0;
+function raum(seed, gruppe, stufen, beg, vorher, x = {}) {
+  const st = R.neuesSpiel(seed, { figuren: gruppe, stufenListe: gruppe.map((f) => stufen[f]), stufe: Math.round(gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length), begegnung: beg, vorher, schwierigkeit: "normal", segen: x.segen || [], bedrohung: x.bedrohung || 0 }); let z = 0;
+  for (const f of st.figuren) for (const id of (x.dinge || {})[f.fid] || []) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((d) => d.id === id)) f.rucksack.push({ id, n: 1 }); }
   while (!st.ende && z++ < 900) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); }
   return st;
 }
@@ -31,11 +37,23 @@ function raum(seed, gruppe, stufen, beg, vorher) {
  *  o.heilung: Nach einem verlorenen Raum sind alle wieder voll geheilt (statt halber Trefferpunkte). */
 function weg(plan, seed, gruppe, o = {}) {
   const stufen = Object.fromEntries(gruppe.map((f) => [f, 1])); let zust = null, runden = 0, siege = 0, kaempfe = 0;
+  /* Beute (o.beute) nur für gewonnene Räume ab dem vierten: "ding" = Gegenstand an einen zufälligen Helden, "dingPassend" = an einen Helden, der ihn nutzen kann,
+     "segen" = ein Gruppensegen, "splitter" = ein Splitter (stört den nächsten Raum des Gegners, siehe o.stoerung = Raumnummern mit erhöhter Bedrohung) */
+  const dinge = {}, segen = [], B = { splitter: 0, vergeben: 0, wirksam: 0, tief: [] }, zb = (n) => { let h = (seed * 2654435761 + n * 40503) >>> 0; h ^= h >>> 13; h = Math.imul(h, 1274126177) >>> 0; return (h >>> 8) / 16777216; };
+  const beuteGeben = (i) => { if (!o.beute) return;
+    if (o.beute === "segen") { const frei = SEGEN_POOL.filter((x) => !segen.includes(x)); if (frei.length) segen.push(frei[Math.floor(zb(i) * frei.length)]); B.vergeben++; B.wirksam++; return; }
+    if (o.beute === "splitter") { B.splitter++; B.vergeben++; return; }
+    let id = DING_POOL[Math.floor(zb(i) * DING_POOL.length)], f = gruppe[Math.floor(zb(i + 50) * gruppe.length)];
+    if (o.beute === "dingPassend") { for (let n = 0; n < 12 && !gruppe.some((g) => passt(id, g)); n++) id = DING_POOL[Math.floor(zb(i + 100 + n) * DING_POOL.length)]; const l = gruppe.filter((g) => passt(id, g) && !(dinge[g] || []).includes(id)); if (l.length) f = l[Math.floor(zb(i + 70) * l.length)]; }
+    (dinge[f] = dinge[f] || []).push(id); B.vergeben++; if (passt(id, f)) B.wirksam++; };
   [...plan].forEach((art, i) => {
     if (art === "R") { zust = null; return; } // Rast: alles voll
     if (o.einstieg && i === 0) { for (const f of gruppe) stufen[f] = 2; runden += 3; kaempfe++; siege++; zust = null; return; }
-    const st = raum(seed * 13 + i, gruppe, stufen, (art === "S" ? SCHWER : LEICHT)[(seed + i) % 3], zust ? R.neuerKampf(zust) : null);
+    const gestoert = (o.stoerung || []).includes(i);
+    const st = raum(seed * 13 + i, gruppe, stufen, (art === "S" ? SCHWER : LEICHT)[(seed + i) % 3], zust ? R.neuerKampf(zust) : null, { dinge, segen, bedrohung: gestoert ? 2 : 0 });
     kaempfe++; runden += st.runde; const sieg = st.ende === "sieg"; if (sieg) siege++;
+    if (i >= 3) B.tief.push({ sieg, runden: st.runde, gestoert, tp: st.figuren.filter((x) => x.seite === "spieler" && x.fid).reduce((a, x) => a + Math.max(0, x.tp) / x.tpMax, 0) / gruppe.length });
+    if (sieg && i >= 3) beuteGeben(i);
     zust = R.nachKampf(st);
     if (!sieg && o.heilung) { zust = null; return; }
     for (const f of gruppe) { const z = zust[f], alt = stufen[f];
@@ -43,7 +61,7 @@ function weg(plan, seed, gruppe, o = {}) {
       stufen[f] = Math.min(10, alt + (art === "S" ? 2 : 1)); z.tp += F.tpVon(f, stufen[f]) - F.tpVon(f, alt); z.stufe = stufen[f]; }
   });
   const tp = zust ? gruppe.reduce((a, f) => a + zust[f].tp / F.tpVon(f, stufen[f]), 0) / gruppe.length : 1;
-  return { stufe: gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length, runden, siege, kaempfe, tp, stufen, leben: zust ? Object.fromEntries(gruppe.map((f) => [f, zust[f].tp / F.tpVon(f, stufen[f])])) : null };
+  return { stufe: gruppe.reduce((a, f) => a + stufen[f], 0) / gruppe.length, runden, siege, kaempfe, tp, stufen, dinge, segen, B, leben: zust ? Object.fromEntries(gruppe.map((f) => [f, zust[f].tp / F.tpVon(f, stufen[f])])) : null };
 }
 if (TEILE.includes("A")) {
   console.log(`\nTeil A – der Weg (${N} Gruppen je Plan, Start auf Stufe 1)`);
@@ -255,6 +273,11 @@ function finale2(e1, g1, e2, g2, seed, karte, V = {}) {
   const m = { staerke: 1, seed, modus: "duell", karte, begegnung: "kobolde", kampfstufe: Math.max(...t1.concat(t2).map((x) => x.stufe)), host_name: "A", guest_name: "B", bot: false, host_team: t1, guest_team: t2 };
   const st = K.start(m, 0, 0, jetzt).st, ZIEL = V.ziel || 3, MAX = V.max || 10, held = (f) => f.art !== "wolf" && (f.fid || f.fidA), helden = (tm) => st.figuren.filter((f) => held(f) && R.teamVon(st, f) === tm);
   for (const f of st.figuren) { const tm = R.teamVon(st, f), e = tm === 1 ? e1 : tm === 2 ? e2 : null, hid = f.fid || f.fidA; if (!e || !e.leben || e.leben[hid] == null || f.tpMax == null) continue; const a = Math.min(1, e.leben[hid]); f.tp = Math.max(1, Math.round(f.tpMax * (a + (1 - a) / 2))); }
+  /* Beute ins Finale tragen: Gegenstände in den Rucksack des Helden; Segen gelten nur, während die eigene Seite am Zug ist; Wachtfeuer als drei Trefferpunkte mehr */
+  const beute = { 1: e1, 2: e2 }, segenVon = (tm) => ((beute[tm] && beute[tm].segen) || []).filter((x) => x !== "wachtfeuer");
+  for (const f of st.figuren) { const tm = R.teamVon(st, f), e = beute[tm], hid = f.fid || f.fidA; if (!e || !hid || f.art === "wolf" || f.art === "arenawolf") continue;
+    for (const id of (e.dinge || {})[hid] || []) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((d) => d.id === id)) f.rucksack.push({ id, n: 1 }); }
+    if ((e.segen || []).includes("wachtfeuer")) { f.tp += 3; f.tpMax += 3; } }
   const frei = (x, y) => x >= 0 && y >= 0 && x < st.karte.b && y < st.karte.h && !st.karte.block.has(x + "," + y), naechstFrei = (zx, zy, ohneFiguren) => { let best = null; for (let x = 0; x < st.karte.b; x++) for (let y = 0; y < st.karte.h; y++) { if (!frei(x, y)) continue; if (ohneFiguren && st.figuren.some((g) => g.tp > 0 && g.x === x && g.y === y)) continue; const d = Math.hypot(x - zx, y - zy); if (!best || d < best.d) best = { x, y, d }; } return best; };
   const mitte = siegelFeld(st), ORTE = V.wandert ? [mitte, naechstFrei(mitte.x - 3, mitte.y), naechstFrei(mitte.x + 3, mitte.y)] : [mitte]; let S = ORTE[0], ort = 0;
   const eingang = {}; for (const tm of [1, 2]) helden(tm).forEach((f) => { eingang[f.id] = { x: f.x, y: f.y }; });
@@ -312,6 +335,7 @@ function finale2(e1, g1, e2, g2, seed, karte, V = {}) {
       if (!w) { w = BOT.entscheide(st, merk); if (w.typ === "bewegen") merk.lauf++;
         if (w.typ === "aktion" && feinde.length && !feinde.some((g) => g.id === w.ziel)) { const ziel = st.figuren.find((g) => g.id === w.ziel); if (ziel && held(ziel) && R.teamVon(st, ziel) !== tm) { const z = vorrang(erreicht(w.aktion)); if (z) w = { typ: "aktion", aktion: w.aktion, ziel: z.id }; } } } }
     if (!w) { w = BOT.entscheide(st, merk); if (w.typ === "bewegen") merk.lauf++; }
+    st.segen = segenVon(tm);
     let r = K.zug(st, tm, w, jetzt); if (r.fehler) r = K.zug(st, tm, { typ: "ende" }, jetzt); if (r.fehler) return { fehler: 1 };
     merkeGefallene();
   }
@@ -335,17 +359,19 @@ if (TEILE.includes("K")) {
  * Räume in fester Folge: Einstieg (+1 Stufe, sicher), leicht (+1), leicht (+1), schwer (+2), schwer (+2). Beute ist nicht nachgebildet.
  * Die frühere Gruppe steht bei Finalbeginn am Siegel. Startpunkte: 0 = keine, 1 = einer je Etappe Vorsprung, 2 = einer je Etappe, höchstens zwei. Finale: G2. */
 if (TEILE.includes("R")) {
-  const o = { einstieg: true, heilung: true }, FOLGE = (process.argv.find((x) => x.startsWith("--folge=")) || "--folge=LLLSS").split("=")[1], G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true }, schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
+  const BEUTE = (process.argv.find((x) => x.startsWith("--beute=")) || "").split("=")[1] || null, o = { einstieg: true, heilung: true, beute: BEUTE === "splitter" ? null : BEUTE }, FOLGE = (process.argv.find((x) => x.startsWith("--folge=")) || "--folge=LLLSS").split("=")[1], G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true }, schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
   const alle = []; for (let a = 2; a <= 5; a++) for (let b = a; b <= 5; b++) alle.push([a, b]);
   const pw = (process.argv.find((x) => x.startsWith("--paare=")) || "").split("=")[1], paare = pw ? pw.split(",").map((x) => x.split("-").map(Number)) : alle;
   const punkteWahl = ((process.argv.find((x) => x.startsWith("--punkte=")) || "--punkte=0,1,2").split("=")[1]).split(",").map(Number);
   for (const [ka, kb] of paare) for (const pv of ka === kb ? [0] : punkteWahl) { zs = 4711; const vor = kb - ka, start = pv === 0 ? 0 : pv === 1 ? vor : Math.min(2, vor);
-    let n = 0, frueh = 0, sa = 0, sb = 0, rd = 0, aufg = 0, pk = { siegel: 0, besiegt: 0, zeit: 0 }, ra = 0, rb = 0, wechsel = 0;
+    let n = 0, frueh = 0, sa = 0, sb = 0, rd = 0, aufg = 0, pk = { siegel: 0, besiegt: 0, zeit: 0 }, ra = 0, rb = 0, wechsel = 0, la = 0, lb = 0, verg = 0, wirk = 0;
+    const lebenS = (e, g) => (e.leben ? g.reduce((a, f) => a + Math.min(1, e.leben[f]), 0) / g.length : 1);
     for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), ea = weg(FOLGE.slice(0, ka), 20000 + i, ga, o), eb = weg(FOLGE.slice(0, kb), 40000 + i, gb, o), seite = i % 2, tA = seite ? 2 : 1;
       const V = Object.assign({}, G2, vor ? { start: { [tA]: start }, vorn: tA } : {}), r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], V);
       if (r.fehler) continue; n++; sa += schnitt(ea, ga); sb += schnitt(eb, gb); rd += r.runden; pk[r.grund]++; ra += ea.runden; rb += eb.runden; wechsel += r.M.wechsel; if (r.aufgeholt) aufg++;
+      la += lebenS(ea, ga); lb += lebenS(eb, gb); verg += ea.B.vergeben + eb.B.vergeben; wirk += ea.B.wirksam + eb.B.wirksam;
       if (r.sieger === tA) frueh++; else if (!r.sieger) frueh += 0.5; }
-    console.log(`R|${ka}|${kb}|${pv}|${start}|${n}|${(100 * frueh / n).toFixed(1)}|${(sa / n).toFixed(2)}|${(sb / n).toFixed(2)}|${(rd / n).toFixed(1)}|${(100 * aufg / n).toFixed(0)}|${(100 * pk.siegel / n).toFixed(0)}|${(100 * pk.zeit / n).toFixed(0)}|${(ra / n).toFixed(1)}|${(rb / n).toFixed(1)}|${(wechsel / n).toFixed(2)}`); }
+    console.log(`R|${ka}|${kb}|${pv}|${start}|${n}|${(100 * frueh / n).toFixed(1)}|${(sa / n).toFixed(2)}|${(sb / n).toFixed(2)}|${(rd / n).toFixed(1)}|${(100 * aufg / n).toFixed(0)}|${(100 * pk.siegel / n).toFixed(0)}|${(100 * pk.zeit / n).toFixed(0)}|${(ra / n).toFixed(1)}|${(rb / n).toFixed(1)}|${(wechsel / n).toFixed(2)}|${(100 * la / n).toFixed(0)}|${(100 * lb / n).toFixed(0)}|${(verg / n).toFixed(2)}|${verg ? (100 * wirk / verg).toFixed(0) : "-"}`); }
 }
 
 /* ---------- Teil S: Streuung der Endstufe je Raumzahl (flache oder steile Kurve über --folge) ---------- */
@@ -355,4 +381,15 @@ if (TEILE.includes("S")) {
   for (let k = 2; k <= 5; k++) { zs = 4711; const l = [], rd = []; for (let i = 0; i < N; i++) { const e = weg(FOLGE.slice(0, k), 20000 + i, zieh(3), o); l.push(e.stufe); rd.push(e.runden); } l.sort((a, b) => a - b);
     const q = (p) => l[Math.floor(p * (l.length - 1))].toFixed(1), voll = k + 1;
     console.log(`  ${k} Räume: Ø ${(l.reduce((a, b) => a + b, 0) / N).toFixed(2)} · Median ${q(0.5)} · untere 10 % bis ${q(0.1)} · obere 10 % ab ${q(0.9)} · volle Stufe ${voll} erreicht: ${pct(l.filter((x) => x >= voll - 0.01).length, N)} · mindestens eine Stufe verpasst: ${pct(l.filter((x) => x <= voll - 1).length, N)} · Runden Ø ${(rd.reduce((a, b) => a + b, 0) / N).toFixed(1)}`); }
+}
+
+/* ---------- Teil T: Splitter – eine Seite stört den fünften Raum der anderen (beide nehmen fünf Räume) ---------- */
+if (TEILE.includes("T")) {
+  const G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true }, FOLGE = "LLLLL";
+  for (const mit of [false, true]) { zs = 4711; let n = 0, sA = 0, raumSieg = 0, raumRd = 0, raumTp = 0, lb = 0, rd = 0, stB = 0, gest = 0;
+    for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), ea = weg(FOLGE, 20000 + i, ga, { einstieg: true, heilung: true, beute: "splitter" }), hat = mit && ea.B.splitter > 0 && ea.B.tief[0] && ea.B.tief[0].sieg; // der Splitter aus Raum vier trifft Raum fünf
+      const eb = weg(FOLGE, 40000 + i, gb, { einstieg: true, heilung: true, stoerung: hat ? [4] : [] }), seite = i % 2, r = seite ? finale2(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7], G2) : finale2(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7], G2);
+      if (r.fehler) continue; n++; if (hat) gest++; const t5 = eb.B.tief[1]; if (t5) { if (t5.sieg) raumSieg++; raumRd += t5.runden; raumTp += t5.tp; }
+      lb += eb.leben ? gb.reduce((a, f) => a + Math.min(1, eb.leben[f]), 0) / 3 : 1; stB += gb.reduce((a, f) => a + eb.stufen[f], 0) / 3; rd += r.runden; if (r.sieger === (seite ? 2 : 1)) sA++; else if (!r.sieger) sA += 0.5; }
+    console.log(`T|${mit ? "mit Splitter" : "ohne"}|n=${n}|gestört ${pct(gest, n)}|Seite mit Splitter gewinnt ${(100 * sA / n).toFixed(1)} %|Gegner: Raum 5 gewonnen ${pct(raumSieg, n)}, Runden ${(raumRd / n).toFixed(1)}, Leben nach Raum 5 ${pct(raumTp, n)}, Endstufe ${(stB / n).toFixed(2)}, Leben vor dem Finale ${pct(lb, n)}|Finale ${(rd / n).toFixed(1)} Runden`); }
 }
