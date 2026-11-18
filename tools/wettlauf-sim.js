@@ -406,7 +406,11 @@ if (TEILE.includes("T")) {
  *  D Tiefengeher: geht immer bis Raum fünf. */
 if (TEILE.includes("U")) {
   const o = { einstieg: true, heilung: true, beute: "mix" }, FOLGE = "LLLLL", G2 = { rueckkehr: true, wandert: true, ziel: 5, max: 12, keinAus: true };
-  const W = { 2: { 2: 0.5, 3: 0.435, 4: 0.39, 5: 0.42 }, 3: { 3: 0.5, 4: 0.46, 5: 0.40 }, 4: { 4: 0.5, 5: 0.45 }, 5: { 5: 0.5 } }, wert = (ich, er) => (ich <= er ? W[ich][er] : 1 - W[er][ich]);
+  const UV = (process.argv.find((x) => x.startsWith("--stell=")) || "").split("=")[1] || "0"; // 0 = bisher, A = später Nachteil, AB = dazu zwei Punkte für die erste Etappe (höchstens drei)
+  const TAB = { 0: { 2: { 2: 0.5, 3: 0.435, 4: 0.39, 5: 0.42 }, 3: { 3: 0.5, 4: 0.46, 5: 0.40 }, 4: { 4: 0.5, 5: 0.45 }, 5: { 5: 0.5 } },
+    A: { 2: { 2: 0.5, 3: 0.471, 4: 0.413, 5: 0.461 }, 3: { 3: 0.5, 4: 0.469, 5: 0.451 }, 4: { 4: 0.5, 5: 0.529 }, 5: { 5: 0.5 } },
+    AB: { 2: { 2: 0.5, 3: 0.568, 4: 0.545, 5: 0.461 }, 3: { 3: 0.5, 4: 0.585, 5: 0.59 }, 4: { 4: 0.5, 5: 0.62 }, 5: { 5: 0.5 } } };
+  const W = TAB[UV], wert = (ich, er) => (ich <= er ? W[ich][er] : 1 - W[er][ich]);
   const REGEL = {
     A: (d, ich, er) => (er.ab != null ? true : ich.stufe >= er.stufe - 0.01),
     B: (d, ich, er) => (er.ab != null ? d > er.ab : false),
@@ -424,7 +428,7 @@ if (TEILE.includes("U")) {
         const wa = A.ab == null && (d === 5 || REGEL[s1](d, ia, ib)), wb = Bz.ab == null && (d === 5 || REGEL[t2](d, ib, ia));
         if (wa) { A.ab = d; if (ib.ab != null && d < 5) A.ausgeloest = true; } if (wb) { Bz.ab = d; if (ia.ab != null && d < 5) Bz.ausgeloest = true; } }
       const ka = A.ab, kb = Bz.ab, Ea = ea[ka], Eb = eb[kb], seite = i % 2, tA = seite ? 2 : 1, tB = 3 - tA, vor = Math.abs(ka - kb), fr = ka < kb ? tA : kb < ka ? tB : 0;
-      const V = Object.assign({}, G2, vor ? { start: { [fr]: vor }, vorn: fr } : {}), r = seite ? finale2(Eb, gb, Ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(Ea, ga, Eb, gb, 60000 + i, KARTEN[i % 7], V);
+      const V = Object.assign({}, G2, vor ? { start: { [fr]: UV === "AB" ? Math.min(3, vor + 1) : vor }, vorn: fr } : {}, vor && UV !== "0" ? { ohneHeil: 3 - fr } : {}), r = seite ? finale2(Eb, gb, Ea, ga, 60000 + i, KARTEN[i % 7], V) : finale2(Ea, ga, Eb, gb, 60000 + i, KARTEN[i % 7], V);
       if (r.fehler) continue; n++; r1 += ka; r2 += kb; tiefe1[ka]++; tiefe2[kb]++; st1 += schnitt(Ea, ga); st2 += schnitt(Eb, gb); vorP += vor; if (vor) ungleich++; if (A.ausgeloest) ausg1++; if (Bz.ausgeloest) ausg2++; rd += r.runden;
       d1 += Ea.B.dingN || 0; se1 += Ea.B.segenN || 0; d2 += Eb.B.dingN || 0; se2 += Eb.B.segenN || 0;
       if (r.sieger === tA) sieg1++; else if (!r.sieger) sieg1 += 0.5; else { nied++; if (ka < kb) frueh++; else if (ka > kb) spaet++; else gleichV++; } }

@@ -740,3 +740,44 @@ Vorläufige Wahl: A als Grundlage. B ist in voller Stärke zu viel, C scheidet a
 1. A mit größerer Stichprobe absichern, vor allem „3 gegen 4“ und „4 gegen 5“.
 2. A mit halbem B: zwei Siegelpunkte für die erste Etappe, insgesamt höchstens drei.
 3. Danach die Strategien wieder aufeinander reagieren lassen, mit der neuen Auszahlungstabelle.
+
+## Dreizehnte Durchrechnung: A abgesichert, A mit halbem Bonus
+
+Feste Raumzahlen, Seiten wechseln in jeder zweiten Partie, Beute wie festgelegt. Aufruf: `node tools/wettlauf-sim.js 800 --teil=R --folge=LLLLL --punkte=1 --beute=mix --stell=A|AB|A2`.
+
+- **A:** später Nachteil (keine Heilung vor dem Finale), ein Siegelpunkt je Etappe Vorsprung. 800 Partien je Paarung, Unsicherheit etwa ±3,5 Punkte.
+- **A mit halbem B:** dazu zwei Punkte für die erste Etappe, insgesamt höchstens drei. 400 Partien je Paarung, etwa ±5 Punkte. „2 gegen 5“ ist mit A gleich und von dort übernommen.
+- **Alternative:** A mit höchstens zwei Punkten insgesamt. Weicht nur bei „2 gegen 5“ ab.
+
+### Siegquote der früheren Seite
+
+| Räume | A (800) | A mit halbem B (400) | Startpunkte A / halber B | Finale in Runden A / halber B |
+|---|---|---|---|---|
+| 2 gegen 3 | 47,1 % | 56,8 % | 1 / 2 | 7,8 / 7,0 |
+| 2 gegen 4 | 41,3 % | 54,5 % | 2 / 3 | 6,9 / 5,6 |
+| 2 gegen 5 | 46,1 % | 46,1 % | 3 / 3 | 5,9 / 5,9 |
+| 3 gegen 4 | 46,9 % | 58,5 % | 1 / 2 | 8,0 / 6,9 |
+| 3 gegen 5 | 45,1 % | 59,0 % | 2 / 3 | 7,1 / 5,7 |
+| 4 gegen 5 | 52,9 % | 62,0 % | 1 / 2 | 8,1 / 7,2 |
+
+Alternative, „2 gegen 5“ mit höchstens zwei Punkten: 32,1 %.
+
+### Mittlere Siegquote und beste Antwort
+
+| Räume | Mittel A | Mittel halber B | beste Antwort darauf bei A | beste Antwort darauf bei halbem B |
+|---|---|---|---|---|
+| 2 | 44,8 % | 52,5 % | 4 (58,7 %) | 5 (53,9 %) |
+| 3 | 48,3 % | 53,6 % | 5 (54,9 %) | 2 (56,8 %) |
+| 4 | 54,9 % | 49,7 % | 4 (50 %) | 3 (58,5 %) |
+| 5 | 52,0 % | 44,3 % | 4 (52,9 %) | 4 (62,0 %) |
+
+### Was die Zahlen sagen
+
+- **Der Kreis bei A hat sich nicht bestätigt.** „3 gegen 4“ liegt mit 800 Partien bei 46,9 statt 51,3 %. Vier Räume sind damit die beste oder fast beste Antwort auf alles, und „beide nehmen vier Räume“ ist ein stabiler Zustand. A allein ersetzt nur „immer fünf“ durch „immer vier“.
+- **A mit halbem B erzeugt einen vollständigen Kreis:** auf fünf antwortet man mit vier, auf vier mit drei, auf drei mit zwei, auf zwei mit fünf. Die Vorteile liegen bei 54 bis 62 %, also außerhalb des Rauschens, bis auf „fünf gegen zwei“ (53,9 %).
+- **Die Regel im Kreis ist einfach:** einen Raum früher abbiegen als der Gegner schlägt ihn. Wer aber sehr früh abbiegt, verliert gegen den, der ganz durchgeht.
+- **Fünf Räume sind bei halbem B im Mittel die schwächste Wahl** (44,3 %), aber die richtige Antwort auf zwei Räume.
+- **Die Alternative scheidet aus.** Mit höchstens zwei Punkten ist der sehr frühe Ausstieg wertlos (32 %).
+- **Preis des halben Bonus:** Mit drei Startpunkten dauert das Finale nur 5,6 bis 5,9 Runden.
+
+Offene Frage: Bei festen Raumzahlen ist „einen Raum früher“ die beste Antwort. In der echten Partie kann man aber nicht früher abbiegen als ein Gegner, der schon abgebogen ist. Ob der Kreis das Reagieren überlebt, zeigt die nächste Durchrechnung.
