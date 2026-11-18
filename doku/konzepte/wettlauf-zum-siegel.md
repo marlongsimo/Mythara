@@ -781,3 +781,60 @@ Alternative, „2 gegen 5“ mit höchstens zwei Punkten: 32,1 %.
 - **Preis des halben Bonus:** Mit drei Startpunkten dauert das Finale nur 5,6 bis 5,9 Runden.
 
 Offene Frage: Bei festen Raumzahlen ist „einen Raum früher“ die beste Antwort. In der echten Partie kann man aber nicht früher abbiegen als ein Gegner, der schon abgebogen ist. Ob der Kreis das Reagieren überlebt, zeigt die nächste Durchrechnung.
+
+## Vierzehnte Durchrechnung: Strategien mit „A mit halbem Bonus“
+
+300 Partien je Paarung. Regeln wie in der dreizehnten Durchrechnung (später Nachteil, zwei Punkte für die erste Etappe Vorsprung, höchstens drei), der Rechner benutzt die neue Auszahlungstabelle. Aufruf: `node tools/wettlauf-sim.js 300 --teil=U --stell=AB`.
+
+### Siegquote der Zeile gegen die Spalte
+
+| | Vorsicht | Verfolger | Rechner | Tiefengeher | zufällige der drei anderen |
+|---|---|---|---|---|---|
+| Vorsicht | – | 58 % | 45 % | 42 % | 51 % |
+| Verfolger | 42 % | – | 44 % | 50 % | 49 % |
+| Rechner | 55 % | 56 % | 51 % | 63 % | 58 % |
+| Tiefengeher | 58 % | 50 % | 37 % | – | 47 % |
+
+Unsicherheit je Zelle etwa ±6 Punkte.
+
+### Wer wann abbiegt (gegen die Mischung)
+
+| Strategie | Räume im Schnitt | Abbiegen nach Raum 2 / 3 / 4 / 5 | durch den Gegner ausgelöst |
+|---|---|---|---|
+| Vorsicht | 2,1 | 94 / 0 / 3 / 3 % | 3 % |
+| Verfolger | 4,1 | 0 / 27 / 36 / 37 % | 63 % |
+| Rechner | 3,6 | 0 / 73 / 0 / 27 % | 0 % |
+| Tiefengeher | 5,0 | 0 / 0 / 0 / 100 % | 0 % |
+
+Der Rechner biegt von sich aus nach Raum drei ab. Ist der Gegner schon nach Raum zwei abgebogen, geht er bis Raum fünf durch.
+
+### Was die Zahlen sagen
+
+- **Es wird jetzt freiwillig abgebogen,** und alle vier Raumzahlen kommen vor. In der elften Durchrechnung ging jede überlegte Strategie immer bis Raum fünf.
+- **Unter den einfachen Strategien gibt es einen Kreis:** Vorsicht schlägt Verfolger, Tiefengeher schlägt Vorsicht, Verfolger und Tiefengeher sind gleichauf.
+- **Der Rechner schlägt alle** (55 bis 63 %, 58 % gegen die Mischung). Er nutzt aus, dass er das Abbiegen des Gegners sieht und danach die beste Antwort wählt.
+- **Zwei Rechner gegeneinander biegen immer beide nach Raum drei ab.** Mit vollem Wissen ist die Entscheidung wieder festgelegt.
+
+### Warum das so ist
+
+Aus der Auszahlungstabelle lässt sich die Partie rückwärts durchrechnen. Sehen beide alles, gilt:
+
+- Nach Raum vier: Abbiegen ist immer besser (62 % gegen den, der weitergeht). Beide biegen ab.
+- Nach Raum drei: Abbiegen ist immer besser (mindestens 58,5 %). Beide biegen ab.
+- Nach Raum zwei: Weitergehen ist besser, weil der Gegner auf frühes Abbiegen mit fünf Räumen antwortet (dann nur 46 %).
+
+Das Ergebnis ist „beide biegen nach Raum drei ab“. Der Kreis der festen Raumzahlen überlebt das offene Reagieren nicht, weil niemand vor einem Gegner abbiegen kann, der schon abgebogen ist.
+
+### Verdeckte Wahl als Ausweg
+
+Wählen beide ihre Raumzahl verdeckt und sehen sie erst am Siegel, ist die Partie genau die Auszahlungstabelle. Dann gibt es keine beste Raumzahl, nur eine ausgewogene Mischung: etwa 59 % zwei Räume, 19 % vier, 22 % fünf. Drei Räume sind dagegen knapp schlechter (49,6 statt 50 %). Jede Raumzahl bis auf drei ist dann gleich gut, und die Kunst liegt im Einschätzen des Gegners.
+
+### Offene Entscheidung
+
+Wie viel sehen die Seiten voneinander?
+
+1. **Alles offen:** nachvollziehbar, aber mit festgelegter bester Spielweise (beide nach Raum drei).
+2. **Tiefe offen, Abbiegen verdeckt:** Man sieht, wie tief der Gegner ist, aber nicht, ob er schon zum Siegel abgebogen ist, bis man selbst ankommt.
+3. **Ganz verdeckt:** Beide legen ihre Raumzahl vorab fest.
+
+In echten Partien kommt hinzu, was die Rechnung nicht abbildet: verlorene Räume, angeschlagene Helden und Beute, die zur eigenen Gruppe passt oder nicht. Diese Lage ist für jede Seite anders und macht die Entscheidung auch bei offener Sicht weniger eindeutig.
