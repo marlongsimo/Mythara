@@ -248,3 +248,23 @@ Bei 40 Duellen je Zelle liegt die Unsicherheit bei etwa ±15 Punkten. Belastbar 
 2. Trostlohn bei Niederlage: volle Heilung statt halbem Leben.
 3. Stufen vor dem Finale angleichen: Die zurückliegende Gruppe wird bis auf eine Stufe herangezogen.
 4. Danach die Siegelregeln nachbilden, sobald der Rechner-Gegner das Siegel kennt.
+
+## Zweite Durchrechnung: vier Regelvarianten
+
+300 Partien je Variante, beide Seiten mit zufälligem Wegeplan, überall dieselben Gruppen und derselbe Zufall. Aufruf: `node tools/wettlauf-sim.js 300 --teil=F`.
+
+| Variante | schwächere Gruppe gewinnt | Stufenabstand Ø | mindestens zwei Stufen Abstand | Gruppen bis höchstens Stufe 2 | Runden je Partie |
+|---|---|---|---|---|---|
+| A – bisher | 17 % | 2,54 | 62 % | 31 % | 22,7 |
+| B – sicherer Einstieg | 20 % | 1,88 | 54 % | 13 % | 22,7 |
+| C – dazu volle Heilung nach Niederlage | 23 % | 1,54 | 44 % | 7 % | 23,5 |
+| D – dazu vor dem Finale höchstens eine Stufe Abstand | 33 % | 1,54 | 44 % (im Finale 0 %) | 7 % | 23,8 |
+
+Vereinfachungen: Der sichere Einstiegsraum ist als „gelingt immer, drei Runden, kein Schaden“ gerechnet. Das Finale ist weiter ein gewöhnliches Duell ohne Siegelpunkte.
+
+- **Der sichere Einstieg** beseitigt vor allem das frühe Ausscheiden (31 auf 13 %), ändert am Finale aber wenig.
+- **Die volle Heilung** halbiert das frühe Ausscheiden noch einmal (auf 7 %) und senkt den Abstand weiter.
+- **Erst das Angleichen** bringt die schwächere Gruppe in den Zielbereich von 25 bis 35 %.
+- **Die Spieldauer** bleibt bei 23 bis 24 Runden. Eigens gebaute, kürzere Räume sind dafür nötig, die Regeln ändern daran nichts.
+
+Vorläufiger Regelstand: Variante D. Der zusätzliche Segen für die zurückliegende Gruppe entfällt zugunsten des Angleichens, solange er nicht eigens dagegen getestet ist.

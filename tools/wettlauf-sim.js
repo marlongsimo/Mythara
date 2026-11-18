@@ -8,7 +8,7 @@
  *
  * Vereinfachungen: Das Finale ist ein gewöhnliches Arena-Duell (ohne Siegelpunkte, alle mit vollen Trefferpunkten, ohne Beute),
  * Störungen und Beute sind nicht nachgebildet. Gesteuert wird alles von den eingebauten Rechner-Gegnern.
- * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E]
+ * Aufruf: node tools/wettlauf-sim.js [N=60] [--teil=A,B,C,D,E,F] [--variante=A|B|C|D]
  */
 "use strict";
 const R = require("../js/regeln.js"), D = require("../daten/grauwacht.js"), kern = require("../server/arena-kern.js"), botF = require("../server/arena-bot.js"), F = R.FD;
@@ -27,13 +27,17 @@ function raum(seed, gruppe, stufen, beg, vorher) {
   while (!st.ende && z++ < 900) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); }
   return st;
 }
-function weg(plan, seed, gruppe) {
+/** o.einstieg: Die erste Etappe ist ein fester Einstiegsraum, der sicher gelingt (+1 Stufe, drei Runden, kein Schaden – vereinfacht).
+ *  o.heilung: Nach einem verlorenen Raum sind alle wieder voll geheilt (statt halber Trefferpunkte). */
+function weg(plan, seed, gruppe, o = {}) {
   const stufen = Object.fromEntries(gruppe.map((f) => [f, 1])); let zust = null, runden = 0, siege = 0, kaempfe = 0;
   [...plan].forEach((art, i) => {
     if (art === "R") { zust = null; return; } // Rast: alles voll
+    if (o.einstieg && i === 0) { for (const f of gruppe) stufen[f] = 2; runden += 3; kaempfe++; siege++; zust = null; return; }
     const st = raum(seed * 13 + i, gruppe, stufen, (art === "S" ? SCHWER : LEICHT)[(seed + i) % 3], zust ? R.neuerKampf(zust) : null);
     kaempfe++; runden += st.runde; const sieg = st.ende === "sieg"; if (sieg) siege++;
     zust = R.nachKampf(st);
+    if (!sieg && o.heilung) { zust = null; return; }
     for (const f of gruppe) { const z = zust[f], alt = stufen[f];
       if (z.tot || !sieg) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, alt) / 2); if (!sieg) continue; if (st.figuren.find((x) => x.fid === f).tp <= 0) continue; } // gefallen: halbe TP, keine Stufe
       stufen[f] = Math.min(10, alt + (art === "S" ? 2 : 1)); z.tp += F.tpVon(f, stufen[f]) - F.tpVon(f, alt); z.stufe = stufen[f]; }
@@ -123,4 +127,20 @@ if (TEILE.includes("E")) {
       if (Math.abs(ea.stufe - eb.stufe) >= 0.5) { hoeherN++; hoeher += ea.stufe > eb.stufe ? aGewinnt : 1 - aGewinnt; } }
     console.log(`  „${NAME[pa]}“ (Ø Stufe ${(da / n).toFixed(1)}) gegen „${NAME[pb]}“ (Ø Stufe ${(db / n).toFixed(1)}): der erste gewinnt ${pct(s, n)}`); }
   console.log(`  Über alle Paarungen: Die Gruppe mit der höheren Stufe gewinnt ${pct(hoeher, hoeherN)} (${hoeherN} Partien mit Unterschied) – die schwächere also ${pct(hoeherN - hoeher, hoeherN)}`);
+}
+
+/* ---------- Teil F: vier Regelvarianten gegeneinander (gleiche Gruppen, gleiche Pläne, gleicher Zufall) ---------- */
+if (TEILE.includes("F")) {
+  const VAR = { A: { name: "A – bisher", o: {} }, B: { name: "B – sicherer Einstieg", o: { einstieg: true } }, C: { name: "C – Einstieg und volle Heilung nach Niederlage", o: { einstieg: true, heilung: true } }, D: { name: "D – wie C, vor dem Finale höchstens eine Stufe Abstand", o: { einstieg: true, heilung: true }, ausgleich: true } };
+  const welche = ((process.argv.find((a) => a.startsWith("--variante=")) || "--variante=A,B,C,D").split("=")[1]).split(","), PL = Object.values(PLAENE);
+  const schnitt = (e, g) => g.reduce((a, f) => a + e.stufen[f], 0) / g.length;
+  for (const v of welche) { const V = VAR[v]; zs = 4711; let n = 0, schwachSieg = 0, mitUnter = 0, diff = 0, ab2 = 0, ab2nach = 0, frueh = 0, runden = 0;
+    for (let i = 0; i < N; i++) { const ga = zieh(3), gb = zieh(3), pa = PL[Math.floor(zf() * PL.length)], pb = PL[Math.floor(zf() * PL.length)];
+      const ea = weg(pa, 20000 + i, ga, V.o), eb = weg(pb, 40000 + i, gb, V.o), sa = schnitt(ea, ga), sb = schnitt(eb, gb), d = Math.abs(sa - sb);
+      if (ea.stufe <= 2) frueh++; if (eb.stufe <= 2) frueh++;
+      if (V.ausgleich && d > 1) { const [es, gs, ziel] = sa < sb ? [ea, ga, sb - 1] : [eb, gb, sa - 1]; let schutz = 0; while (schnitt(es, gs) < ziel - 1e-9 && schutz++ < 40) { const f = gs.slice().sort((x, y) => es.stufen[x] - es.stufen[y])[0]; es.stufen[f]++; } }
+      const dn = Math.abs(schnitt(ea, ga) - schnitt(eb, gb)), seite = i % 2, r = seite ? duellMit(eb, gb, ea, ga, 60000 + i, KARTEN[i % 7]) : duellMit(ea, ga, eb, gb, 60000 + i, KARTEN[i % 7]);
+      if (r.fehler) continue; n++; diff += d; if (d >= 2) ab2++; if (dn >= 2) ab2nach++; runden += (ea.runden + eb.runden) / 2 + r.runden;
+      if (d >= 0.5) { mitUnter++; const aGewinnt = r.sieger === (seite ? 2 : 1) ? 1 : r.sieger ? 0 : 0.5; schwachSieg += sa < sb ? aGewinnt : 1 - aGewinnt; } }
+    console.log(`\n${V.name} (${n} Partien, Pläne zufällig)\n  Die schwächere Gruppe gewinnt ${pct(schwachSieg, mitUnter)} (${mitUnter} Partien mit Unterschied)\n  Stufenabstand nach dem Weg Ø ${(diff / n).toFixed(2)} · mindestens zwei Stufen Abstand: ${pct(ab2, n)}${V.ausgleich ? ` (nach dem Angleichen ${pct(ab2nach, n)})` : ""}\n  Gruppen, die höchstens Stufe 2 erreichen: ${pct(frueh, 2 * n)} · Runden je Partie Ø ${(runden / n).toFixed(1)}`); }
 }
