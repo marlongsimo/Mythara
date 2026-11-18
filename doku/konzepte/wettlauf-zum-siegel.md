@@ -366,3 +366,37 @@ Das Ziel „sieben bis zehn Runden, mehrfach umkämpft“ erreicht keine der Var
 2. **Nur das Siegelfeld zählt:** Den Punkt bekommt, wer auf dem Siegel selbst steht. Wegstoßen wird dadurch entscheidend.
 3. **Das Siegel wandert:** Alle zwei Runden springt es auf eines von drei Feldern.
 4. Variante C (ohne Angleichen) als Grundlage für alle drei.
+
+## Fünfte Durchrechnung: drei Finale-Ideen einzeln
+
+200 Finals je Test, überall dieselben Gruppen, Pläne und Zufallswerte. Wege wie Variante C (sicherer Einstieg, volle Heilung nach Niederlage), **ohne Angleichen der Stufen**. Drei Siegelpunkte, Wertung nach zehn Runden, Spielweise „Kontrolle“. Aufruf: `node tools/wettlauf-sim.js 200 --teil=K`.
+
+**Entschieden:** Die Stufen werden vor dem Finale nicht angeglichen. Der Vorsprung bleibt der Lohn des Wegs, das Siegel sorgt für die Aufholchance.
+
+| Kennzahl | A Kontrolle | B Gefallene kehren zurück | C nur das Siegelfeld zählt | D das Siegel wandert | Ziel |
+|---|---|---|---|---|---|
+| schwächere Gruppe gewinnt | 34 % | 36 % | 41 % | 36 % | 25–35 % |
+| Dauer in Runden | 5,3 | 6,1 | 4,3 | 5,3 | 7–10 |
+| beide kontrollieren mindestens einmal | 23 % | 39 % | 24 % | 35 % | ab 50 % |
+| Siegelwechsel je Final | 0,27 | 0,57 | 0,26 | 0,48 | deutlich mehr |
+| mindestens zwei Wechsel | 4 % | 14 % | 2 % | 12 % | |
+| Wechsel der zahlenmäßigen Überlegenheit | 0,10 | 0,35 | 0,04 | 0,09 | |
+| Sieg nach erstem Punkterückstand | 23 % | 28 % | 25 % | 24 % | |
+| abgezogene Punkte (Zurückerobern) | 0,02 | 0,09 | 0,10 | 0,07 | |
+| Runden ohne eigene Kontrolle je Gruppe | 3,0 | 3,6 | 1,7 | 2,8 | |
+| Ende durch Siegelpunkte | 72 % | 77 % | 80 % | 65 % | häufigster Ausgang |
+| Ende durch Besiegen | 25 % | 17 % | 21 % | 35 % | |
+| Ende durch Zeit | 4 % | 7 % | 0 % | 1 % | |
+
+Bei B kehren je Final 1,21 Helden zurück, 0,49 davon fallen erneut.
+
+- **Die Rückkehr der Gefallenen (B) wirkt am stärksten.** Siegelwechsel und Wechsel der Überzahl verdoppeln bis verdreifachen sich, beide Seiten kontrollieren in 39 statt 23 % der Finals, und das Finale endet häufiger durch Punkte. Die Siegquote der schwächeren Gruppe bleibt im Rahmen.
+- **Das wandernde Siegel (D) bringt ebenfalls Bewegung,** verschiebt das Ende aber zum Besiegen.
+- **Nur das Siegelfeld (C) macht das Finale kürzer und zufälliger.** Allein ist es keine Verbesserung.
+- **Keine Idee erreicht die Ziele allein.** Sieben bis zehn Runden sind mit drei Siegelpunkten kaum möglich, weil drei Punkte nach etwa fünf Runden beisammen sind.
+
+### Nächster Schritt
+
+1. B mit fünf Siegelpunkten und Wertung nach zwölf Runden.
+2. B und D zusammen.
+3. Erst danach den Siegelsaal als eigene Karte bauen.
