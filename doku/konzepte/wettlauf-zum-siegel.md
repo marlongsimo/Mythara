@@ -163,3 +163,88 @@ So kann man reagieren („er ist schon Stufe 4, ich muss den schweren Raum nehme
 5. Wie stark hängt die Siegquote vom einzelnen Helden ab, über die Stufen 1 bis 7?
 
 Das Werkzeug dafür ist `tools/wettlauf-sim.js`. Die Ergebnisse stehen im Abschnitt „Erste Zahlen“.
+
+## Erste Zahlen
+
+Gerechnet mit `tools/wettlauf-sim.js`. Als Räume dienen vorhandene Grauwacht-Begegnungen, das Finale ist ein gewöhnliches Arena-Duell. Siegelpunkte, Beute und Störungen sind nicht nachgebildet, gespielt wird von den Rechner-Gegnern.
+
+### Der Weg (150 Dreiergruppen je Plan, Start auf Stufe 1)
+
+| Wegeplan | Endstufe Ø | Median | Endstufe 1–2 | Endstufe 7+ | Räume gewonnen | Runden gesamt | Leben am Ende |
+|---|---|---|---|---|---|---|---|
+| nur leicht | 4,0 | 5 | 16 % | 0 % | 74 % | 17,8 | 66 % |
+| erst leicht, dann schwer | 4,6 | 5 | 22 % | 38 % | 65 % | 20,2 | 64 % |
+| gemischt mit Rast | 3,8 | 4 | 32 % | 0 % | 60 % | 15,6 | 72 % |
+| Schleichweg (drei Etappen) | 3,5 | 4 | 43 % | 0 % | 54 % | 15,2 | 61 % |
+| nur schwer | 4,2 | 3 | 41 % | 34 % | 40 % | 19,0 | 62 % |
+
+### Ein einzelner Raum je Stufe der Gruppe (150 Gruppen je Zeile, volle Trefferpunkte)
+
+| Stufe | leichter Raum gewonnen | schwerer Raum gewonnen |
+|---|---|---|
+| 1 | 76 % | 37 % |
+| 2 | 93 % | 60 % |
+| 3 | 99 % | 82 % |
+| 4 | 100 % | 91 % |
+| 5 | 100 % | 97 % |
+
+### Finale mit Stufenvorsprung (120 Duelle je Zeile, Siegquote der höheren Gruppe)
+
+| Vorsprung | Grundstufe 3 | Grundstufe 5 |
+|---|---|---|
+| keiner | 47 % | 49 % |
+| 1 Stufe | 64 % | 67 % |
+| 2 Stufen | 82 % | 80 % |
+| 3 Stufen | 89 % | 82 % |
+
+### Finale Plan gegen Plan, mit Stufen und Leben vom Weg (80 Partien je Zeile)
+
+| Paarung | Stufen Ø | der Erstgenannte gewinnt |
+|---|---|---|
+| erst leicht, dann schwer – nur leicht | 5,1 gegen 4,3 | 59 % |
+| erst leicht, dann schwer – gemischt mit Rast | 4,7 gegen 4,0 | 55 % |
+| erst leicht, dann schwer – nur schwer | 4,6 gegen 4,2 | 53 % |
+| erst leicht, dann schwer – Schleichweg | 4,8 gegen 3,4 | 56 % |
+| nur leicht – Schleichweg | 4,1 gegen 3,4 | 64 % |
+| gemischt mit Rast – Schleichweg | 3,9 gegen 3,7 | 55 % |
+| nur leicht – gemischt mit Rast | 4,3 gegen 4,2 | 54 % |
+
+Über alle 507 Partien mit Stufenunterschied gewinnt die höhere Gruppe **81 %**, die schwächere **19 %** (Ziel: 25 bis 35 %).
+
+### Helden über die Stufen (40 Duelle je Held und Stufe, der Held mit zwei zufälligen Gefährten gegen drei zufällige)
+
+| Held | Stufe 1 | Stufe 3 | Stufe 5 | Stufe 7 |
+|---|---|---|---|---|
+| Torvald | 53 % | 45 % | 43 % | 48 % |
+| Ragnar | 60 % | 60 % | 43 % | 60 % |
+| Isolde | 40 % | 60 % | 55 % | 40 % |
+| Lyra | 53 % | 45 % | 43 % | 28 % |
+| Vaelin | 55 % | 50 % | 45 % | 43 % |
+| Morwen | 48 % | 30 % | 40 % | 50 % |
+| Darian | 35 % | 38 % | 50 % | 53 % |
+| Silra | 50 % | 60 % | 58 % | 58 % |
+| Vex | 58 % | 63 % | 48 % | 43 % |
+| Elara | 60 % | 48 % | 60 % | 60 % |
+| Brogar | 70 % | 65 % | 45 % | 53 % |
+| Seran | 58 % | 68 % | 38 % | 48 % |
+| Kael | 33 % | 40 % | 63 % | 35 % |
+| Faye | 53 % | 65 % | 73 % | 65 % |
+| Orin | 35 % | 15 % | 35 % | 33 % |
+
+Bei 40 Duellen je Zelle liegt die Unsicherheit bei etwa ±15 Punkten. Belastbar sind nur die durchgehenden Muster.
+
+### Was die Zahlen sagen
+
+- **Die Pläne sind untereinander ausgeglichen.** Kein Wegeplan gewinnt gegen einen anderen mehr als 64 %.
+- **Die einzelne Partie ist es nicht.** Wer mit mehr Stufen ankommt, gewinnt vier von fünf Finals. Das Schneeball-Risiko ist bestätigt.
+- **Der Schneeball beginnt im ersten Raum.** Auf Stufe 1 scheitert jede vierte Gruppe schon am leichten Raum, und 16 bis 43 % der Gruppen kommen kaum über Stufe 2 hinaus.
+- **Der schwere Raum ist ab Stufe 2 bis 3 gut machbar.** Die Steigerung „erst leicht, dann schwer“ stimmt.
+- **Der Schleichweg verliert ohne Siegelpunkt 55 bis 64 %.** Der Siegelpunkt muss also etwa 5 bis 15 Prozentpunkte wert sein.
+- **Helden:** Orin ist auf allen vier Stufen schwach, Faye ab Stufe 3 durchgehend stark. Brogar und Seran sind früh stark und fallen später ab, Darian wächst mit den Stufen. Lyra fällt auf Stufe 7 ab.
+
+### Nächste Schritte der Durchrechnung
+
+1. Fester Einstiegsraum, den beide Seiten sicher gewinnen.
+2. Trostlohn bei Niederlage: volle Heilung statt halbem Leben.
+3. Stufen vor dem Finale angleichen: Die zurückliegende Gruppe wird bis auf eine Stufe herangezogen.
+4. Danach die Siegelregeln nachbilden, sobald der Rechner-Gegner das Siegel kennt.
