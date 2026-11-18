@@ -12,7 +12,7 @@ Wer früh am Siegel ist, besetzt es und sammelt Vorsprung. Wer tiefer geht, komm
 
 Am Siegel entscheidet kein Kampf bis zum letzten Helden, sondern die Kontrolle über das Siegel.
 
-Eine Partie soll unter 30 Minuten dauern.
+Entwicklungsziel: eine Partie unter 30 Minuten. Belegt ist das noch nicht, mit den Ersatz-Begegnungen der Rechnung dauert sie länger.
 
 ## Was den Modus ausmacht
 
@@ -44,7 +44,7 @@ Beide Seiten spielen ihre Räume **gleichzeitig**, jede in ihrem eigenen Flügel
 Regeln für den Weg:
 
 - **Die Stufe bekommt, wer am Ende des Raums noch steht.** Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf, ohne die Stufe.
-- **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn. Dafür sind alle wieder voll geheilt.
+- **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn: keine Stufe, keine Beute. Dafür stehen alle drei Helden wieder auf, mit vollen Trefferpunkten, Zauberplätzen und Tränken. Der Raum wird nicht wiederholt, er zählt aber als gespielte Etappe.
 - **Schaden bleibt.** Trefferpunkte, Zauberplätze und Tränke werden von Raum zu Raum mitgenommen.
 - **Gegenstand:** Wahl aus drei Angeboten, für einen Helden der Gruppe. Jeder Held trägt höchstens zwei.
 - **Segen:** gilt für die ganze Gruppe bis zum Ende der Partie. Höchstens einer je Partie.
@@ -62,20 +62,30 @@ Was man sieht:
 - **Sichtbar:** in welchem Raum der Gegner zuletzt gekämpft hat, die Stufe seiner Helden und ihre Trefferpunkte.
 - **Verdeckt:** ob er schon zum Siegel abgebogen ist. Das erfährt man erst, wenn man selbst am Siegel ankommt.
 
-Man hört den anderen im Riss kämpfen. Wird es still, weiß man nicht, ob er rastet oder schon am Siegel steht.
+Man hört den anderen im Riss kämpfen. Wird es still, weiß man nicht, ob er noch im Raum steht oder schon am Siegel.
 
 ### 4. Ankunft am Siegel
 
-Wer zuerst abbiegt, kommt zuerst an.
+Wer nach weniger Räumen abbiegt, kommt zuerst an. Es zählt die Zahl der gespielten Räume, nicht die Uhr.
+
+Eine **Etappe** ist ein Raum. Der Vorsprung ist der Unterschied der gespielten Räume:
+
+| Vorsprung | Beispiel | Siegelpunkte der früheren Gruppe |
+|---|---|---|
+| 1 Raum | 3 gegen 4 | 2 |
+| 2 Räume | 2 gegen 4 | 3 |
+| 3 Räume | 2 gegen 5 | 3 (Obergrenze) |
 
 | | Die frühere Gruppe | Die spätere Gruppe |
 |---|---|---|
 | Stellung | steht schon am Siegel | kommt am eigenen Eingang an |
-| Siegelpunkte | 2 für die erste Etappe Vorsprung, 1 für jede weitere, höchstens 3 | keine |
+| Siegelpunkte | 2 oder 3, siehe oben | keine |
 | Heilung | bekommt die Hälfte der fehlenden Trefferpunkte zurück | keine |
 | Stärke | weniger Stufen, weniger Beute | je Raum eine Stufe mehr, dazu die Beute der tiefen Räume |
 
-Kommen beide gleichzeitig an, bekommt niemand Siegelpunkte, und beide bekommen die Hälfte der fehlenden Trefferpunkte zurück.
+Haben beide gleich viele Räume gespielt, bekommt niemand Siegelpunkte. Beide bekommen die Hälfte der fehlenden Trefferpunkte zurück und starten am eigenen Eingang.
+
+**Zur Heilung:** Das ist genau die Regel aus der Rechnung, keine neue. Dort hieß sie „der Spätere hat einen Nachteil: keine Heilung vor dem Finale". Die Heilung der früheren Gruppe galt in allen Durchrechnungen. Der Prototyp bildet diese Fassung ab. Beispiel: Ein Held mit 10 von 30 Trefferpunkten startet als Früherer mit 20, als Späterer mit 10. Gefallene Helden stehen in beiden Gruppen mit mindestens einem Trefferpunkt auf. Zauberplätze und Tränke kommen bei niemandem zurück.
 
 Die Stufen werden nicht angeglichen. Der Vorsprung ist der Lohn des Wegs.
 
@@ -89,6 +99,21 @@ Das Finale ist ein Kampf um das Siegel.
 - **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert die führende Seite einen ihrer Punkte.
 - **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit halben Trefferpunkten am eigenen Eingang wieder auf.
 - **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde wieder.
+
+**Am Ende jeder Runde,** in dieser Reihenfolge:
+
+1. Wertung: Die Seite mit mehr Helden am Siegel holt die Runde.
+2. Zurückerobern: Liegt diese Seite zurück und hat sie auch die Runde davor geholt, verliert die führende Seite einen Punkt. Die Zählung beginnt danach neu.
+3. Die Seite, die die Runde geholt hat, bekommt ihren Punkt.
+4. Prüfung auf Sieg, nach Runde zwölf die Schlusswertung.
+5. Nach jeder zweiten Runde springt das Siegel. Gewertet wird also immer am alten Feld.
+6. Gefallene, deren zwei Runden um sind, stehen auf.
+
+Dazu gilt:
+
+- Ein Punktestand fällt nie unter null. Zurückerobern trifft nur eine Seite, die führt, und die hat mindestens einen Punkt.
+- Bei Gleichstand der Punkte liegt niemand zurück, es wird nichts abgezogen.
+- Der Punkt für das Auslöschen wird sofort vergeben, mitten in der Runde. Bringt er den fünften Punkt, ist die Partie sofort vorbei. Sonst kann in derselben Runde noch die normale Wertung folgen.
 
 **Gewonnen hat,** wer zuerst **fünf Siegelpunkte** hat.
 
@@ -127,9 +152,9 @@ Alles gerechnet mit den Rechner-Gegnern und vorhandenen Grauwacht-Begegnungen al
 | Bleibt das Finale offen? | Die schwächere Gruppe gewinnt 28 bis 34 % der Finals. |
 | Wird um das Siegel gekämpft? | In 75 % der Finals kontrollieren beide Seiten mindestens einmal, in 54 % wechselt das Siegel mindestens zweimal. |
 | Entscheidet das Siegel? | 88 % der Finals enden durch Siegelpunkte, der Rest durch die Zeit. |
-| Wie lang ist das Finale? | Rund neun Runden, mit Startpunkten sechs bis sieben. |
+| Wie lang ist das Finale? | Rund neun Runden, wenn beide bei null beginnen. Sechs bis sieben Runden, wenn die frühere Gruppe mit Siegelpunkten beginnt. |
 | Zählt Auslöschen noch? | Es bringt einen von fünf Punkten. Wer ausgelöscht wurde, gewinnt noch 13 %. |
-| Ist die Stufenkurve stabil? | 84 bis 93 % der Gruppen erreichen die volle Stufe, die Streuung liegt bei höchstens einer Stufe. |
+| Ist die Stufenkurve stabil? | Volle Stufe heißt: alle drei Helden haben in jedem gespielten Raum ihre Stufe geholt, nach vier Räumen also alle Stufe 5. Das schaffen 84 bis 93 % der Gruppen. Der Rest liegt höchstens eine Stufe darunter. |
 | Verschiebt Beute das Gleichgewicht? | Gegenstände nicht messbar, ein Segen um etwa drei Punkte. |
 | Ist früh so gut wie tief? | Bei verdeckter Wahl hat jede Raumzahl eine Antwort: Einen Raum früher schlägt den Gegner, ganz durchgehen schlägt den sehr frühen Ausstieg. |
 
