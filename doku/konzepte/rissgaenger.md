@@ -232,10 +232,10 @@ Zauberplätze, Tränke und Verbrauchtes kommen in beiden Fällen so ins Finale, 
 | Raum | Runden | Gruppe gewinnt | Gefallene Helden je Raum |
 |---|---|---|---|
 | Einstieg | 1,7 | 100 % | 0,07 |
-| Beuteraum | 2,2 bis 2,3 | 100 % | 0,02 bis 0,08 |
-| Schwerer Raum | 3,5 bis 3,9 | 92 bis 98 % | 0,20 bis 0,35 |
+| Beuteraum | 2,3 | 100 % | 0,02 bis 0,08 |
+| Schwerer Raum | 3,5 bis 3,8 | 93 bis 98 % | 0,20 bis 0,35 |
 
-Alle fünf Räume zusammen dauern rund 13,5 Runden, die Gruppe kommt im Schnitt mit Stufe 3,7 von 4 an. Der schwere Raum ist damit der einzige, in dem regelmäßig Helden fallen und manchmal die ganze Gruppe.
+Alle fünf Räume zusammen dauern rund 13,6 Runden, die Gruppe kommt im Schnitt mit Stufe 3,7 von 4 an. Der schwere Raum ist damit der einzige, in dem regelmäßig Helden fallen und manchmal die ganze Gruppe.
 
 **Ganze Partien,** Rechner gegen Rechner, je 300 (`tools/riss-partien.js`): Weg 9,0 Runden je Seite, Finale 7,3 Runden, 291 von 300 Finals enden durch Siegelpunkte.
 
