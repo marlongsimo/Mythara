@@ -2880,3 +2880,49 @@ body.szene-blatt .sz-rueckschau li::before { color: #7a1a18; }
   /* Chronik */
   body.kampf-banner.im-kampf:not(.kh-an) .log { background: rgba(14, 8, 4, .7); border: 1px solid rgba(217,178,106,.3); border-radius: 2px; }
 }
+
+/* ---------- Rissgänger (Prototyp, nur mit ?riss=1) ---------- */
+.riss-zugang { position: fixed; left: 14px; bottom: 14px; z-index: 40; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(160,120,255,.6); background: linear-gradient(180deg, #2a1f47, #17112b); color: #e6dcff; font: 600 15px var(--schrift-titel); letter-spacing: .03em; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.55), 0 0 18px rgba(140,100,255,.25); }
+.riss-zugang small { margin-left: 6px; font: 500 11px "Inter", sans-serif; color: #b9a6ee; text-transform: uppercase; letter-spacing: .08em; }
+.riss-zugang:hover { filter: brightness(1.15); }
+.riss { max-width: 980px; }
+.riss-marke { margin-left: 8px; padding: 2px 9px; border-radius: 10px; vertical-align: middle; font: 600 12px "Inter", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #e6dcff; background: rgba(140,100,255,.28); box-shadow: inset 0 0 0 1px rgba(160,120,255,.6); text-shadow: none; }
+.riss-schritt { margin: 0; font: 600 13px "Inter", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #b9a6ee; }
+.riss-h2 { margin: 18px 0 8px; font: 600 20px var(--schrift-titel); color: #e9c77e; }
+.riss-regeln { margin: 6px 0 14px; padding: 12px 16px; border-radius: 12px; background: rgba(10,11,15,.62); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); color: #e9dcc0; font-size: 16px; line-height: 1.45; }
+.riss-regeln ul { margin: 0; padding-left: 20px; } .riss-regeln li { margin: 4px 0; } .riss-regeln b { color: #f6dc9c; }
+.riss-schalter { display: grid; gap: 4px; margin: 4px 0 14px; font: 600 14px "Inter", sans-serif; color: #e9dcc0; }
+.riss-schalter select { padding: 9px 10px; border-radius: 9px; border: 1px solid rgba(255,255,255,.25); background: #14161d; color: #f2ead8; font: 400 15px "Inter", sans-serif; max-width: 100%; }
+.riss-lohn { margin: 0 0 12px; color: #f6dc9c; font-size: 16px; }
+.riss-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 14px; }
+.riss-gruppe { padding: 10px 12px; border-radius: 12px; background: rgba(10,11,15,.62); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); min-width: 0; }
+.riss-gruppe h3 { margin: 0 0 8px; font: 600 16px var(--schrift-titel); color: #e9c77e; }
+.riss-gruppe-helden { display: grid; gap: 8px; }
+.riss-held { display: grid; grid-template-columns: 46px 1fr; gap: 10px; align-items: center; }
+.riss-held img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid var(--k, #d9b46a); }
+.riss-held b { font: 600 15px var(--schrift-titel); color: #f2ead8; } .riss-held span { margin-left: 8px; font: 600 13px "Inter", sans-serif; color: #f6dc9c; }
+.riss-held small { display: block; font-size: 12px; color: #b9ad94; }
+.riss-tp { display: block; height: 6px; margin: 4px 0 2px; border-radius: 3px; background: rgba(255,255,255,.14); overflow: hidden; } .riss-tp u { display: block; height: 100%; background: #c8474b; }
+.riss-segen { margin: 8px 0 0; font-size: 14px; color: #cfe3ff; }
+.riss-ergebnis { margin: 8px 0 12px; padding: 10px 14px; border-radius: 10px; font-size: 16px; line-height: 1.4; color: #f2ead8; background: rgba(10,11,15,.62); box-shadow: inset 3px 0 0 #8c8c8c; }
+.riss-ergebnis.gut { box-shadow: inset 3px 0 0 #6fbf73; } .riss-ergebnis.schlecht { box-shadow: inset 3px 0 0 #d0575b; }
+.riss-verdeckt { margin: 0 0 10px; font-style: italic; color: #cbbcf5; font-size: 16px; }
+.riss-wege { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.riss-wege > div { padding: 10px 12px; border-radius: 10px; background: rgba(10,11,15,.5); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+.riss-wege b { display: block; font: 600 16px var(--schrift-titel); color: #f6dc9c; } .riss-wege small { color: #e0d4ba; font-size: 14px; line-height: 1.4; }
+.riss-beute { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+.riss-ding { display: grid; gap: 4px; justify-items: start; text-align: left; padding: 12px; border-radius: 12px; border: 2px solid rgba(255,255,255,.14); background: rgba(10,11,15,.62); color: #f2ead8; cursor: pointer; }
+.riss-ding i { font-style: normal; font-size: 24px; color: #f6dc9c; } .riss-ding b { font: 600 15px var(--schrift-titel); } .riss-ding small { font-size: 13px; color: #cfc3a8; line-height: 1.35; }
+.riss-ding.segen { border-color: rgba(120,170,255,.4); } .riss-ding.an { border-color: #f6dc9c; background: rgba(217,180,106,.16); }
+.riss-tabelle { border-collapse: collapse; margin: 8px 0 12px; font-size: 15px; color: #f2ead8; background: rgba(10,11,15,.62); border-radius: 10px; overflow: hidden; }
+.riss-tabelle th, .riss-tabelle td { padding: 7px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.08); } .riss-tabelle th { font: 600 13px "Inter", sans-serif; color: #e9c77e; }
+.riss-tabelle tr.gut td:nth-child(4) { color: #9fdba3; } .riss-tabelle tr.schlecht td:nth-child(4) { color: #f0a0a3; }
+.riss-mitschrift { color: #f2ead8; font-size: 15px; } .riss-mitschrift .riss-tabelle { width: 100%; font-size: 13px; } .riss-mitschrift .riss-tabelle th, .riss-mitschrift .riss-tabelle td { padding: 5px 8px; }
+.riss-leiste { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 14px; align-items: center; white-space: nowrap; padding: 5px 14px; border-radius: 16px; font: 600 13px "Inter", sans-serif; color: #e6dcff; background: rgba(16,12,30,.92); box-shadow: inset 0 0 0 1px rgba(160,120,255,.6); pointer-events: none; }
+.riss-leiste b { color: #fff; font-size: 15px; } .riss-leiste small { color: #b9a6ee; font-weight: 500; } .riss-leiste .gut { color: #9fdba3; } .riss-leiste .schlecht { color: #f0a0a3; }
+#karte rect.feld.riss-siegel { fill: rgba(246,200,66,.38); stroke: #ffd75e; stroke-width: 5; animation: riss-puls 1.6s ease-in-out infinite; }
+#karte rect.feld.riss-zone { fill: rgba(246,200,66,.12); stroke: rgba(255,215,94,.55); stroke-width: 2; }
+#karte rect.feld.riss-naechst { fill: rgba(160,120,255,.14); stroke: #b79bff; stroke-width: 3; stroke-dasharray: 9 7; }
+@keyframes riss-puls { 50% { fill: rgba(246,200,66,.2); } }
+@media (max-width: 700px) { .riss-zwei, .riss-wege { grid-template-columns: 1fr; } .riss-leiste { bottom: auto; top: 78px; gap: 2px 10px; font-size: 11px; padding: 4px 10px; width: max-content; max-width: 96vw; flex-wrap: wrap; justify-content: center; white-space: normal; } .riss-leiste b { font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) { #karte rect.feld.riss-siegel { animation: none; } }

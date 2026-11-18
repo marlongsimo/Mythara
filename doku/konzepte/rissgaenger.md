@@ -2,7 +2,7 @@
 
 Spielmodus für Mythara. Regelstand für den ersten spielbaren Prototyp.
 
-Stand: Die Regeln sind durchgerechnet, gebaut ist noch nichts. Wie die Regeln entstanden sind, steht mit allen Zahlen in `wettlauf-zum-siegel.md`.
+Stand: Die Regeln sind durchgerechnet. Der Prototyp gegen den Rechner ist gebaut (siehe „Stand des Prototyps"). Wie die Regeln entstanden sind, steht mit allen Zahlen in `wettlauf-zum-siegel.md`.
 
 ## Worum es geht
 
@@ -197,6 +197,56 @@ Jede Partie schreibt mit: Raumzahl beider Seiten, Abbiegezeitpunkt, Stufen, Sieg
 4. Rangliste und Tisch gegen Tisch. Erst hier muss der Server alles mitrechnen.
 
 Nach jeder Stufe wird entschieden, ob es weitergeht.
+
+## Stand des Prototyps
+
+Gebaut ist Stufe 1: gegen den Rechner, auf einem Gerät, ohne Server und ohne Datenbank. Die Arena und das Ranked sind unberührt.
+
+**Aufruf:** `spiel.html?riss=1`. Im Dorf erscheint dann unten links der Knopf „Rissgänger". Der Schalter gilt für den Tab, `?riss=0` schaltet ihn ab. Ohne Schalter ist nichts zu sehen.
+
+**Dateien:** `js/riss-kern.js` (Regeln ohne Bildschirm), `js/riss.js` (Oberfläche), `tests/riss.test.js` (eine ganze Partie im Browser), `tools/riss-raeume.js` und `tools/riss-partien.js` (Messungen).
+
+**Heilungsschalter:** vor dem Start wählbar, oder fest über `?rissheil=keine`.
+
+| Einstellung | Frühe Gruppe | Späte Gruppe | Gleichauf |
+|---|---|---|---|
+| Gerechnete Regel (Voreinstellung) | Hälfte der fehlenden Trefferpunkte | keine Heilung | beide die Hälfte |
+| Testvariante | keine Heilung | keine Heilung | keine Heilung |
+
+Zauberplätze, Tränke und Verbrauchtes kommen in beiden Fällen so ins Finale, wie sie nach dem letzten Raum waren.
+
+**Die fünf Räume** nutzen vorhandene Karten und Gegner aus Grauwacht, mit weniger Gegnern und weniger Leben. Gemessen mit 200 Gruppen, vom Rechner gespielt:
+
+| Raum | Runden | Gefallene Helden je Raum |
+|---|---|---|
+| 1 Der Einstieg | 1,7 | 0,07 |
+| 2 Die Koboldgänge | 2,6 | 0,14 |
+| 3 Die Gruft | 2,9 | 0,16 |
+| 4 Die Pilzgrotte | 3,0 | 0,07 |
+| 5 Die Tiefe | 3,3 | 0,02 |
+
+Alle fünf Räume zusammen dauern 13,5 Runden. Verloren wurde praktisch kein Raum. Die Räume sind damit kurz, aber eher zu sicher: Die Gefahr der Tiefe liegt im Prototyp fast nur im späten Ankommen.
+
+**Ganze Partien,** Rechner gegen Rechner, je 120: Weg 8,9 Runden je Seite, Finale 7,5 Runden, 117 von 120 Finals enden durch Siegelpunkte. Die frühere Gruppe gewinnt mit der gerechneten Heilung 47 von 90 Partien, ohne Heilung 38 von 90. Das ist bei dieser Zahl nur ein Hinweis, kein Ergebnis.
+
+**Mitschrift:** Jede Partie wird auf dem Gerät gespeichert und lässt sich im Spiel ansehen und kopieren: Helden, Räume mit Runden und Sekunden, jede Entscheidung mit Bedenkzeit und dem, was vom Gegner zu hören war, Beute, Raumzahl beider Seiten, Startpunkte, jede Rundenwertung, Auslöschungen, Rückkehrer, Dauer von Weg und Finale, Heilungseinstellung.
+
+### Wo der Prototyp von den Regeln oder der Rechnung abweicht
+
+- **Zauberplätze und Tränke im Finale.** In der Rechnung begannen beide Gruppen das Finale mit frischen Zauberplätzen und Tränken, nur die Trefferpunkte kamen vom Weg. Der Prototyp folgt dem Regeltext und nimmt alles mit. Das trifft die tiefere Gruppe etwas stärker.
+- **Zauberplätze beim Aufstieg.** In der Rechnung kamen die Plätze einer neuen Stufe nicht dazu. Im Prototyp kommen sie dazu.
+- **Der Einstieg** ist ein echter, leichter Kampf. In der Rechnung galt er als sicher gewonnen und ohne Schaden.
+- **Was man vom Gegner hört.** Der Rechner geht seinen Weg nicht gleichzeitig, sondern vorab. Nach jedem eigenen Raum zeigt das Spiel ihn gleich weit oder einen Raum zurück, mit je halber Wahrscheinlichkeit. Bleibt er zwei Räume zurück, ist er abgebogen. Das Abbiegen ist also einen Raum lang verdeckt, nicht länger.
+- **Der Rechner biegt nach festen Wahrscheinlichkeiten ab** (nach Raum 2 zu 20 %, nach Raum 3 zu 45 %, nach Raum 4 zu 60 %, angeschlagen häufiger). Er reagiert nicht auf den Spieler.
+- **Zuguhr:** im Finale eine Minute je Held wie in der Arena, in den Räumen keine.
+- **Leihhelden** wechseln wöchentlich nach einer festen Rechnung auf dem Gerät, nicht vom Server.
+- **Keine Belohnung,** kein Speichern: Wer die Seite neu lädt, verliert die Partie.
+
+### Noch nicht geprüft
+
+- Von Hand gespielt hat den Prototyp noch niemand. Der Test spielt die eigenen Züge mit dem Rechner-Helfer.
+- Echte Geräte. Geprüft sind Bildschirmfotos in PC- und Handygröße.
+- Der Tischmodus mit Handys.
 
 ## Die Regeln auf einen Blick
 
