@@ -633,3 +633,54 @@ Unsicherheit je Zelle etwa ±5 Punkte. Endstufen, Leben vor dem Finale (69 bis 8
 - **Der Splitter braucht eine Wirkung im Finale,** sonst ist er als Lohn für Tiefe nichts wert.
 
 Vorläufiger Regelstand: Raum vier gibt einen Gegenstand, Raum fünf einen Gegenstand oder Segen zur Wahl. Der Splitter wird neu gedacht.
+
+## Elfte Durchrechnung: vier Strategien für das Abbiegen
+
+300 Partien je Paarung. Flache Kurve, ein Siegelpunkt je Etappe Vorsprung, Finale G2. Beute: Raum vier ein passender Gegenstand, Raum fünf ein Gegenstand oder ein Segen (je zur Hälfte), kein Splitter. Aufruf: `node tools/wettlauf-sim.js 300 --teil=U`.
+
+Beide Seiten spielen ihre Räume gleichzeitig und entscheiden ab dem zweiten Raum nach jedem Raum neu. Solange niemand abgebogen ist, sind beide gleich tief. Die Regeln benutzen deshalb Stufe und Abbiegen des Gegners:
+
+- **A Vorsicht:** biegt ab, sobald sie in der Stufe nicht hinten liegt. Ist der Gegner abgebogen, biegt sie sofort ab.
+- **B Verfolger:** geht weiter, solange der Gegner weitergeht. Ist er abgebogen, nimmt sie genau einen Raum mehr.
+- **C Rechner:** wählt nach der Auszahlungstabelle der festen Raumzahlen.
+- **D Tiefengeher:** immer fünf Räume.
+
+### Siegquote der Zeile gegen die Spalte
+
+| | Vorsicht | Verfolger | Rechner | Tiefengeher | zufällige der drei anderen |
+|---|---|---|---|---|---|
+| Vorsicht | 49 % | 45 % | 38 % | 42 % | 38 % |
+| Verfolger | 55 % | 46 % | 48 % | 50 % | 51 % |
+| Rechner | 62 % | 52 % | 48 % | 47 % | 54 % |
+| Tiefengeher | 58 % | 50 % | 53 % | 51 % | 49 % |
+
+Unsicherheit je Zelle etwa ±6 Punkte. Werte unter der Diagonale sind aus der Gegenrichtung errechnet.
+
+### Wer wann abbiegt
+
+| Strategie | Räume im Schnitt (gegen die Mischung) | Abbiegen nach Raum 2 / 3 / 4 / 5 | Abbiegen durch den Gegner ausgelöst | Beute je Partie |
+|---|---|---|---|---|
+| Vorsicht | 2,2 | 94 / 0 / 0 / 5 % | 0 % | 0,1 Gegenstände |
+| Verfolger | 4,5 | 0 / 27 / 0 / 73 % | 27 % | 1,1 Gegenstände, 0,4 Segen |
+| Rechner | 4,7 | 0 / 0 / 27 / 73 % | 27 % | 1,3 Gegenstände, 0,4 Segen |
+| Tiefengeher | 5,0 | 0 / 0 / 0 / 100 % | 0 % | 1,5 Gegenstände, 0,5 Segen |
+
+Gegen Vorsicht antwortet der Verfolger mit drei Räumen, der Rechner mit vier. 88 bis 95 % der Niederlagen der Vorsicht fallen in Partien, in denen sie früher abgebogen war.
+
+### Was die Zahlen sagen
+
+- **Niemand biegt freiwillig ab.** Verfolger, Rechner und Tiefengeher gehen gegeneinander immer bis Raum fünf. Sechs der zehn Paarungen sind dadurch dieselbe Partie: fünf gegen fünf.
+- **Früh abbiegen verliert.** Vorsicht gewinnt gegen keine der anderen mehr als 45 %.
+- **Das Abbiegen ist nur eine Antwort, kein eigener Zug.** Es wird ausschließlich durch das Abbiegen des Gegners ausgelöst (27 % der Partien gegen die Mischung).
+- **Der Rechner ist am stabilsten** (54 % gegen die Mischung), aber nur, weil er auf Vorsicht mit vier Räumen antwortet. Sonst ist er ein Tiefengeher.
+- **Das Dilemma fehlt.** Mit den jetzigen Werten ist „tief gehen“ die beste Antwort auf alles. Der Riss ist bei festen Wegen ausgeglichen genug, erzeugt aber noch keine riskante Entscheidung.
+
+### Nächster Schritt
+
+Frühes Ankommen muss mehr wert werden, bis in der Auszahlungstabelle keine Raumzahl mehr die beste Antwort auf alle anderen ist. Zu rechnen als feste Raumzahlen gegeneinander:
+
+1. Der Spätere hat einen Nachteil: keine Heilung vor dem Finale.
+2. Zwei Siegelpunkte für die erste Etappe Vorsprung, danach einer je Etappe.
+3. Räume vier und fünf geben keine Stufe mehr, nur noch Beute.
+
+Ziel: Auf „tief“ ist „früh“ die bessere Antwort, auf „früh“ ist „etwas tiefer“ die bessere Antwort.
