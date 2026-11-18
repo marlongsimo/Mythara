@@ -55,6 +55,11 @@
     w_glut: { tief: "#4a1006", hell: "#f08a20", kante: "#ffb040", zahl: "#fff2c8", schein: "rgba(255,120,30,.9)" },
     w_frost: { tief: "#16406e", hell: "#cfeeff", kante: "#e6f8ff", zahl: "#06223c", schein: "rgba(140,210,255,.9)" },
     w_arkan: { tief: "#1a0b3a", hell: "#9a5cf0", kante: "#d0a0ff", zahl: "#f4e6ff", schein: "rgba(170,90,255,.95)" },
+    w_s0_bronze: { tief: "#7a4520", hell: "#f0b98a", kante: "#f0b98a", zahl: "#3a1f0c", schein: "rgba(201,133,82,.9)" },
+    w_s0_silber: { tief: "#5c6672", hell: "#f4f8fc", kante: "#f4f8fc", zahl: "#20262e", schein: "rgba(195,204,214,.9)" },
+    w_s0_gold: { tief: "#7a5410", hell: "#fff0b0", kante: "#fff0b0", zahl: "#2a1a04", schein: "rgba(230,181,60,.9)" },
+    w_s0_platin: { tief: "#0f4a45", hell: "#d4fff9", kante: "#d4fff9", zahl: "#06302c", schein: "rgba(88,207,196,.9)" },
+    w_s0_meister: { tief: "#3d1163", hell: "#f0d9ff", kante: "#f0d9ff", zahl: "#2a0a48", schein: "rgba(176,108,240,.95)" },
     w_gold: { tief: "#7a5010", hell: "#fff0b0", kante: "#fff0b0", zahl: "#2a1a04", schein: "rgba(255,210,100,.9)" },
   };
   const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];

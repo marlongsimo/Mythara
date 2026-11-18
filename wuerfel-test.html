@@ -46,7 +46,7 @@
     (function () {
       var $ = function (s) { return document.querySelector(s); }, brett = $("#brett"), erg = $("#ergebnis");
       var NAMEN = { standard: "Standard", w_obsidian: "Obsidian", w_elfenbein: "Elfenbein", w_smaragd: "Smaragd", w_rubin: "Rubin", w_glut: "Glut", w_frost: "Frost", w_arkan: "Arkan", w_gold: "Gold" };
-      $("#design").innerHTML = Object.keys(window.W3D.DESIGNS).map(function (k) { return '<option value="' + k + '">' + NAMEN[k] + "</option>"; }).join("");
+      $("#design").innerHTML = Object.keys(window.W3D.DESIGNS).map(function (k) { return '<option value="' + k + '">' + (NAMEN[k] || k.replace("w_s0_", "Saison 0 · ")) + "</option>"; }).join("");
       /* Ton: Wurfgeräusch aus dem Spiel, Aufsprünge und Glanzmomente erzeugt */
       var ac = null, wurfTon = [1, 2, 3, 4].map(function (n) { var a = new Audio("ton/fx/wuerfel" + n + ".mp3"); a.preload = "auto"; return a; });
       function pieps(freq, dauer, laut, art, verzug) { if (!ac) return; var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (verzug || 0); o.type = art || "sine"; o.frequency.setValueAtTime(freq, t); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(laut, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dauer); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dauer + 0.02); }

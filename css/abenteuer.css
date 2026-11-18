@@ -2618,3 +2618,6 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
 }
 @media (min-width: 1200px) { body.kampf-schlank.im-kampf .log:not(.offen)::before { display: none; } }
 @media (min-width: 1200px) { body.kampf-schlank.im-kampf .reihe { flex-wrap: wrap; row-gap: 4px; } }
+
+/* Der große Würfel rollt über die Karte (js/wuerfel3d.js): im Ergebnisfeld dann nur der Text, ohne den kleinen Würfel */
+.wurf.ohne-w20 .w20-box { display: none; }

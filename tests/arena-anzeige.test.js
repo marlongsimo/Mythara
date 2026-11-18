@@ -34,7 +34,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
         const neu = voll.log.slice(vorLog), wurf = neu.some((l) => l.wurf && (l.art === "wurf" || l.art === "gegner"));
         const istGekuerzt = voll.log.length > GRENZE; gekuerzt = gekuerzt || istGekuerzt;
         wurfEl.classList.remove("an"); wurfEl.innerHTML = "";
-        window.AB.arenaStand(sicht()); schritte++; await warte(wurf ? 760 : 60);
+        window.AB.arenaStand(sicht()); schritte++; await warte(wurf ? 1750 : 60); // der große Würfel rollt 1,35 s, dann erscheint das Ergebnis
         if (wurf) { wuerfe++; const da = wurfEl.classList.contains("an") && wurfEl.innerHTML.length > 20; if (da) gezeigt++; if (istGekuerzt && voll.log.length > GRENZE * 4) { spaet++; if (da) spaetGezeigt++; } }
       }
       return { wuerfe, gezeigt, spaet, spaetGezeigt, gekuerzt, zeilen: voll.log.length, runde: voll.runde }; });

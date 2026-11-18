@@ -591,16 +591,21 @@
 
   /* Erst der Würfel, dann die Wirkung: Bringt ein neuer Wurf Schaden, zeigt das Bild noch gut eine halbe Sekunde die alten Lebenspunkte
      (Balken, Leisten, am Boden liegen, Kampfende) – so lange rollt der Würfel. Danach wird mit den echten Werten neu gezeichnet. */
-  const WURFZEIT = 620; let gezeigt = { st: null, tp: {} }, wurfWarten = null, fxLage = null;
+  const WURFZEIT = 620, ROLLZEIT = 1950; // ROLLZEIT: der große Würfel rollt 1,35 s (js/wuerfel3d.js), dann erscheint der Balken mit dem Ergebnis, und erst gut eine halbe Sekunde später wirkt die Aktion
+  /** Rollt für diese neuen Chronikzeilen der große Würfel? Kampagne: nur bei Würfen der eigenen Helden. Arena: bei allen. */
+  function wurfZeile(zeilen) { const w = zeilen.filter((l) => l.art === "wurf" || (l.art === "gut" && / heilt /.test(l.t))).pop(), g = zeilen.filter((l) => l.art === "gegner" && l.wurf).pop(); return { w, g, zeig: w || g }; }
+  function rolltGross(zeilen) { if (!window.W3D || TEMPO === 0 || !st) return false; const z = wurfZeile(zeilen); return Boolean(z.zeig && z.zeig.wurf && (st.arena || z.zeig === z.w)); }
+  window.AB_WURFZEIT = (zeilen) => (rolltGross(zeilen || []) ? ROLLZEIT : WURFZEIT);
+  let gezeigt = { st: null, tp: {} }, wurfWarten = null, fxLage = null;
   function render() {
     if (!st) return renderSicht();
     if (gezeigt.st !== st) { gezeigt = { st, tp: {} }; clearTimeout(wurfWarten); wurfWarten = null; }
     const anders = st.figuren.filter((f) => gezeigt.tp[f.id] != null && gezeigt.tp[f.id] > f.tp);
     const neuerWurf = st.log.slice(letzterLog).some((l) => l.wurf && (l.art === "wurf" || l.art === "gegner"));
     if (TEMPO !== 0 && anders.length && (wurfWarten || neuerWurf)) {
-      const echt = anders.map((f) => [f, f.tp]), ende = st.ende; anders.forEach((f) => { f.tp = gezeigt.tp[f.id]; }); st.ende = null; fxLage = { wartet: true };
+      const echt = anders.map((f) => [f, f.tp]), ende = st.ende, wurfDauer = wurfWarten ? 0 : window.AB_WURFZEIT(st.log.slice(letzterLog)); anders.forEach((f) => { f.tp = gezeigt.tp[f.id]; }); st.ende = null; fxLage = { wartet: true };
       try { renderSicht(); } finally { echt.forEach(([f, tp]) => { f.tp = tp; }); st.ende = ende; fxLage = null; }
-      if (!wurfWarten) { const fuer = st; wurfWarten = setTimeout(() => { wurfWarten = null; if (st !== fuer) return; fxLage = { nachWurf: true }; try { gezeigt.tp = {}; render(); } finally { fxLage = null; } }, WURFZEIT); }
+      if (!wurfWarten) { const fuer = st; wurfWarten = setTimeout(() => { wurfWarten = null; if (st !== fuer) return; fxLage = { nachWurf: true }; try { gezeigt.tp = {}; render(); } finally { fxLage = null; } }, wurfDauer); }
       return;
     }
     renderSicht(); for (const f of st.figuren) gezeigt.tp[f.id] = f.tp;
@@ -824,7 +829,7 @@
     }
   }
   /** Neue Würfe der Spielerfiguren groß einblenden */
-  let wurfTimer = null;
+  let wurfTimer = null, wurfNr = 0;
   /** Neue Einträge aus dem Verlauf erscheinen kurz als Banner oben auf der Karte */
   function zeigeMeldungen(neu) {
     if (TEMPO === 0 || !neu.length) return;
@@ -841,16 +846,22 @@
   function zeigeWurf() {
     const neu = st.log.slice(letzterLog); letzterLog = st.log.length;
     zeigeMeldungen(neu);
-    const w = neu.filter((l) => l.art === "wurf" || (l.art === "gut" && / heilt /.test(l.t))).pop();
-    const g = neu.filter((l) => l.art === "gegner" && l.wurf).pop();
-    const zeig = w || g;
+    const { w, g, zeig } = wurfZeile(neu), gross = rolltGross(neu);
     if (!zeig || TEMPO === 0) return;
     const el = $("#wurf"), gegnerWurf = zeig === g && !w;
     const gut = /verfehlt|widersteht|weicht/.test(zeig.t) ? gegnerWurf : /Treffer|Schaden|heilt/.test(zeig.t) ? !gegnerWurf : null;
-    if (zeig.wurf && window.ABW) window.ABW.rollen(el, zeig.wurf, zeig.t.replace(/^[^:]+: /, ""), { titel: zeig.t.split(":")[0], gut });
-    else el.innerHTML = `<div class="w20-erg da"><span>${esc(zeig.t)}</span></div>`;
-    el.classList.toggle("gegner", gegnerWurf);
-    el.classList.add("an"); clearTimeout(wurfTimer); wurfTimer = setTimeout(() => el.classList.remove("an"), 2800);
+    const text = () => {
+      if (zeig.wurf && window.ABW) window.ABW.rollen(el, zeig.wurf, zeig.t.replace(/^[^:]+: /, ""), { titel: zeig.t.split(":")[0], gut, sofort: gross });
+      else el.innerHTML = `<div class="w20-erg da"><span>${esc(zeig.t)}</span></div>`;
+      el.classList.toggle("gegner", gegnerWurf); el.classList.toggle("ohne-w20", gross);
+      el.classList.add("an"); clearTimeout(wurfTimer); wurfTimer = setTimeout(() => el.classList.remove("an"), 2800); };
+    if (!gross) return text();
+    // Der große Würfel rollt über die Karte; das Ergebnis erscheint erst, wenn er liegt. Eigene Würfe im eigenen Design, fremde im Standard.
+    const k = $("#karte").getBoundingClientRect(), nr = ++wurfNr, eigen = !st.arena || !ARENA || zeig.tm == null || zeig.tm === ARENA.seite;
+    el.classList.remove("an"); clearTimeout(wurfTimer);
+    const x = Math.max(70, Math.min(innerWidth - 70, k.left + k.width / 2)), y = Math.max(90, Math.min(innerHeight - 190, k.top + k.height * 0.24)); // oberes Kartendrittel: das Ergebnisfeld bleibt frei
+    window.W3D.wurf({ zahl: zeig.wurf, ziel: { x, y }, design: eigen && window.ABKOS ? window.ABKOS.aktiv().wuerfel || "standard" : "standard" })
+      .then(() => { if (nr !== wurfNr) return; text(); setTimeout(() => { if (nr === wurfNr) window.W3D.weg(); }, 1500); });
   }
 
   function zeigeEnde() {

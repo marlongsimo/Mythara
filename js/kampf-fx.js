@@ -310,7 +310,7 @@
     const krit = logTreffer.some((l) => /kritischer Treffer|kritisch/i.test(l.t) && l.art !== "gegner");
     // Fernangriffe und Zauber: Erst fällt der Würfel (etwa 0,6 s), dann fliegt das Geschoss vom Angreifer (wer vor diesem Bild am Zug war) zu jedem Getroffenen.
     // Wer verfehlt, richtet keinen Schaden an – dann fliegt auch nichts. Zahl und Treffer folgen beim Einschlag.
-    const schuetze = st.figuren.find((f) => f.id === akteur), gArt = geschossArt(logTreffer), wuerfel = !gewuerfelt && logTreffer.some((l) => l.wurf) ? 620 : 0; let nr = 0;
+    const schuetze = st.figuren.find((f) => f.id === akteur), gArt = geschossArt(logTreffer), wuerfel = !gewuerfelt && logTreffer.some((l) => l.wurf) ? (window.AB_WURFZEIT ? window.AB_WURFZEIT(logTreffer) : 620) : 0; let nr = 0;
     for (const f of st.figuren) {
       const v = vorher.tp[f.id]; if (v == null || v === f.tp) continue;
       const d = f.tp - v, p = figurPos(f.id); if (!p) continue;
