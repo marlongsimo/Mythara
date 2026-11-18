@@ -2621,3 +2621,14 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
 
 /* Der große Würfel rollt über die Karte (js/wuerfel3d.js): im Ergebnisfeld dann nur der Text, ohne den kleinen Würfel */
 .wurf.ohne-w20 .w20-box { display: none; }
+
+/* ---------- Prototyp: Banner hinter den Seitenleisten im Kampf (nur mit ?banner=1, große Bildschirme) ---------- */
+@media (min-width: 1200px) {
+  body.kampf-banner.kampf-schlank.im-kampf .spiel { grid-template-columns: 236px minmax(0, 1fr) 330px; }
+  body.kampf-banner.kampf-schlank.im-kampf .gruppe-kampf { background: url("../img/mythara/banner-loewe.webp") top center / 100% auto no-repeat; min-height: calc(100vh - 78px); padding: 64px 34px 40px; gap: 9px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.6)); }
+  body.kampf-banner.kampf-schlank.im-kampf .gruppe-kampf h3 { text-align: center; color: #f6dc9c; text-shadow: 0 1px 4px #000; margin-bottom: 4px; }
+  body.kampf-banner.kampf-schlank.im-kampf .gk-held { background: rgba(14, 8, 8, .78); box-shadow: 0 0 0 1px rgba(217,178,106,.4), 0 6px 14px rgba(0,0,0,.5); }
+  body.kampf-banner.kampf-schlank.im-kampf .gk-held.dran { box-shadow: 0 0 0 2px #f6dc9c, 0 0 22px rgba(246,200,110,.45); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel { background: linear-gradient(180deg, rgba(10,6,6,.25), rgba(10,6,6,.5)), url("../img/mythara/banner-loewe.webp") top center / 100% auto no-repeat, #1a0808; box-shadow: none; border-radius: 0; padding: 78px 44px 30px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.6)); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .aktiv, body.kampf-banner.kampf-schlank.im-kampf .panel .hinweis { background: rgba(14, 8, 8, .72); border-radius: 10px; padding: 8px 10px; }
+}
