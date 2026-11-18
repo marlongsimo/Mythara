@@ -2703,12 +2703,14 @@ body.kampf-banner.kh-an .kh-k.an { border-color: #f6dc9c; background: linear-gra
 body.kampf-banner.kh-an .kh-ende { border: 1px solid #d9b26a; background: linear-gradient(180deg, #8f1d24, #5a1016); box-shadow: inset 0 0 0 2px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,220,160,.25), 0 3px 8px rgba(0,0,0,.5); color: #fff1c8; text-shadow: 0 1px 2px #000; }
 
 /* ---------- Prototyp (?dorf=1): Dorf-Navigation, Fenster, Meldungen und Ergebnisbalken in Holz, Eisen und Pergament ---------- */
-/* Navigation: der Holzbalken; der gewählte Ort als Samtfeld */
-body.dorf-holz .hub-nav { border: 0; border-radius: 0; box-shadow: none; padding: 10px 64px; filter: drop-shadow(0 8px 14px rgba(0,0,0,.6));
-  background: url("../img/mythara/balken-links.webp") left center / auto 100% no-repeat, url("../img/mythara/balken-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/balken-mitte.webp") center / calc(100% - 100px) 100% no-repeat; }
-body.dorf-holz .hub-nav-punkt { color: #f6ead0; text-shadow: 0 1px 3px #000; border-color: transparent; }
-body.dorf-holz .hub-nav-punkt:hover { background: rgba(10, 6, 3, .35); }
-body.dorf-holz .hub-nav-punkt.an { background: linear-gradient(180deg, #8f1d24, #5a1016); border-color: #d9b26a; box-shadow: inset 0 0 0 2px rgba(0,0,0,.3); }
+/* Navigation: oben der Holzbalken, daran hängt jeder Ort als Holzschild an zwei Ketten */
+body.dorf-holz .hub-nav { border: 0; border-radius: 0; box-shadow: none; padding: 30px 46px 6px; gap: 2px; align-items: flex-start; filter: drop-shadow(0 8px 12px rgba(0,0,0,.6));
+  background: url("../img/mythara/balken-links.webp") left top / auto 44px no-repeat, url("../img/mythara/balken-rechts.webp") right top / auto 44px no-repeat, url("../img/mythara/balken-mitte.webp") center top / calc(100% - 70px) 44px no-repeat; }
+body.dorf-holz .hub-nav-punkt { flex: none; width: 126px; height: 84px; padding: 34px 8px 6px; border: 0; border-radius: 0; flex-direction: column; justify-content: center; gap: 1px; background: url("../img/mythara/schild-kette.webp") center / 100% 100% no-repeat; color: #f6ead0; font-size: 14px; line-height: 1.1; text-align: center; white-space: normal; text-shadow: 0 1px 3px #000, 0 0 6px rgba(0,0,0,.7); transform-origin: 50% 0; transition: transform .25s, filter .25s; }
+body.dorf-holz .hub-nav-punkt .my-ico { width: 17px; height: 17px; }
+body.dorf-holz .hub-nav-punkt:hover { background-color: transparent; transform: rotate(-1.5deg); filter: brightness(1.15); }
+body.dorf-holz .hub-nav-punkt.an { background: url("../img/mythara/schild-kette.webp") center / 100% 100% no-repeat; border: 0; box-shadow: none; color: #ffe9a8; filter: brightness(1.3) drop-shadow(0 0 7px rgba(246,200,110,.75)); }
+@media (max-width: 760px) { body.dorf-holz .hub-nav { padding: 24px 30px 4px; justify-content: flex-start; background-size: auto 36px, auto 36px, calc(100% - 56px) 36px; } body.dorf-holz .hub-nav-punkt { width: 104px; height: 70px; padding: 29px 6px 4px; font-size: 12px; } body.dorf-holz .hub-nav-punkt .my-ico { width: 14px; height: 14px; } }
 /* runde Knöpfe und Profil: Eisen */
 body.dorf-holz .hub-rund, body.dorf-holz #hub-profil-knopf { border: 1px solid #6b5a45; background: linear-gradient(180deg, #423a32, #1d1a16); box-shadow: inset 0 1px 0 rgba(255,235,200,.16), 0 4px 10px rgba(0,0,0,.5); }
 /* Orte im Dorf: kleine Holzschilder */
@@ -2730,3 +2732,8 @@ body.dorf-holz .toast, body.dorf-holz .wurf { border: 0; border-radius: 0; box-s
 body.dorf-holz .wurf *, body.dorf-holz .toast * { color: #3b230e; }
 body.dorf-holz .wurf .w20-erg b { color: #1f1206; }
 body.dorf-holz .wurf b.krit { color: #2c6a1c; } body.dorf-holz .wurf b.patzer { color: #8a1c14; }
+/* Fenster schließen: ein Wachssiegel */
+body.dorf-holz .k-kopf #fenster-zu { flex: none; width: 42px; height: 44px; padding: 0; font-size: 0; text-decoration: none; background: url("../img/mythara/siegel.webp") center / contain no-repeat; filter: drop-shadow(0 3px 5px rgba(0,0,0,.6)); transition: transform .2s; }
+body.dorf-holz .k-kopf #fenster-zu::after { content: "✕"; font: 600 15px/44px Inter, sans-serif; color: #ffe1cf; text-shadow: 0 1px 2px #3a0808; }
+body.dorf-holz .k-kopf #fenster-zu:hover { transform: scale(1.1) rotate(8deg); }
+body.dorf-holz .k-kopf { align-items: center; }
