@@ -2650,6 +2650,19 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
   body.kampf-banner.kampf-schlank.im-kampf .panel .aktiv .kopf-klein b { display: block; font-size: 18px; color: #fff1c8; text-shadow: 0 2px 4px #000; }
   body.kampf-banner.kampf-schlank.im-kampf .panel .aktiv .kopf-klein .werte { display: block; font-size: 11.5px; color: #d9cdb4; }
   body.kampf-banner.kampf-schlank.im-kampf .panel .aktiv > .werte { display: block; font-size: 12.5px; color: #e6d6b4; }
+  /* Grund: warmes Dunkel statt Nachtblau, passend zu Holz, Eisen und Samt */
+  body.kampf-banner.kampf-schlank.im-kampf { background: radial-gradient(110% 85% at 50% 34%, #33241a 0%, #1a110b 48%, #070403 100%); }
+  /* unten: die Chronik als Pergamentrolle, Schrift in Tinte */
+  body.kampf-banner.kampf-schlank.im-kampf .log { background: url("../img/mythara/rolle-links.webp") left center / auto 100% no-repeat, url("../img/mythara/rolle-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/rolle-mitte.webp") center / calc(100% - 50px) 100% no-repeat; box-shadow: none; border-radius: 0; max-height: 62px; height: 62px; padding: 19px 64px 0; color: #3b230e; filter: drop-shadow(0 8px 12px rgba(0,0,0,.55)); }
+  body.kampf-banner.kampf-schlank.im-kampf .log li, body.kampf-banner.kampf-schlank.im-kampf .log li * { color: #3b230e; text-shadow: none; }
+  body.kampf-banner.kampf-schlank.im-kampf .log li b { color: #1f1206; }
+  body.kampf-banner.kampf-schlank.im-kampf .log:not(.offen)::after { color: #5a3410; right: 70px; top: 21px; }
+  body.kampf-banner.kampf-schlank.im-kampf .log:not(.offen) li { padding-right: 96px; }
+  body.kampf-banner.kampf-schlank.im-kampf .log.offen { height: 250px; max-height: 250px; padding: 46px 78px 40px; overflow-y: auto; }
+  body.kampf-banner.kampf-schlank.im-kampf .log.offen::before { color: #5a3410; }
+  /* Aktionsleiste unter der Karte: dunkles Holz statt Nachtblau */
+  body.kampf-banner.kampf-schlank.im-kampf .karte-wrap .leiste { background: linear-gradient(180deg, #3a2716, #1c120a); box-shadow: 0 0 0 1px rgba(217,178,106,.45), inset 0 1px 0 rgba(255,220,160,.12), 0 14px 30px rgba(0,0,0,.6); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .schritte, body.kampf-banner.kampf-schlank.im-kampf .panel .zug-schritte { font-size: 11px; }
   /* oben: Holzbalken mit Eisenbändern statt des dunklen Balkens */
   body.kampf-banner.kampf-schlank.im-kampf .kampf-kopf { height: 62px; padding: 0 58px; border-radius: 0; box-shadow: none; filter: drop-shadow(0 8px 14px rgba(0,0,0,.6));
     background: url("../img/mythara/balken-zier.webp") center / auto 100% no-repeat, url("../img/mythara/balken-links.webp") left center / auto 100% no-repeat, url("../img/mythara/balken-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/balken-mitte.webp") center / calc(100% - 100px) 100% no-repeat; }
