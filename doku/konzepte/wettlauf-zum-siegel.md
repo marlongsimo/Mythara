@@ -31,41 +31,53 @@ Beide Seiten wählen ihren nächsten Raum **gleichzeitig und verdeckt**. Dann sp
 
 | Raum | Was passiert | Lohn |
 |---|---|---|
-| Leichter Kampf | zwei bis drei schwache Gegner | +1 Stufe für alle |
-| Schwerer Kampf | ein Anführer mit Gefolge | +2 Stufen und ein Beutestück |
+| Leichter Kampf | zwei bis drei schwache Gegner | +1 Stufe |
+| Schwerer Kampf | ein Anführer mit Gefolge | +2 Stufen, ein Beutestück und **ein Splitter Unruhe** |
 | Schatzkammer | kein Kampf, eine kleine Probe oder ein Rätsel | zwei Beutestücke, keine Stufe |
 | Rastplatz | kein Kampf | alle Trefferpunkte und Plätze zurück, ein Segen |
 | Schleichweg | kein Kampf | überspringt eine Etappe, siehe „Vorsprung“ |
 
+Nur der schwere Kampf bringt einen Splitter. So wächst nicht alles zugleich: Wer sicher spielt, wird stärker, kann aber nicht stören.
+
 Regeln für den Weg:
 
 - **Schaden bleibt.** Trefferpunkte, verbrauchte Zauberplätze und Tränke werden von Raum zu Raum mitgenommen, wie in einem Kampagnenabschnitt.
-- **Fällt ein Held,** steht er im nächsten Raum mit halben Trefferpunkten wieder auf, bekommt aber die Stufe aus dem verlorenen Raum nicht.
-- **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn, und die Etappe ist verbraucht.
+- **Die Stufe bekommt, wer am Ende des Raums noch steht.** Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf, bekommt die Stufe aus diesem Raum aber nicht.
+- **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn, auch nicht für einzelne besiegte Gegner. Die Etappe ist verbraucht, alle stehen mit halben Trefferpunkten wieder auf.
+- **Der Rastplatz** heilt alle vollständig, auch Helden, die zuvor gefallen waren.
+- **Beute:** Jeder Held trägt höchstens zwei Gegenstände. Ein drittes ersetzt eines der beiden. Segen gelten für die ganze Gruppe und sind nicht begrenzt.
 - **Kämpfe sind kurz.** Kleine Karten, wenige Gegner, Ziel sind zwei bis drei Runden. Für jeden Zug gibt es eine Uhr.
 
 ### 3. In die Quere kommen
 
-Für jeden gewonnenen Raum gibt es einen **Splitter Unruhe**. Damit löst man zwischen zwei Etappen eine Störung aus, die den nächsten Raum des Gegners trifft:
+Für jeden gewonnenen **schweren** Raum gibt es einen **Splitter Unruhe**. Damit löst man zwischen zwei Etappen eine Störung aus, die den nächsten Raum des Gegners trifft:
 
 - **Aufgescheucht (1 Splitter):** Im nächsten Kampf des Gegners steht ein zusätzliches Monster.
 - **Fackeln aus (1 Splitter):** Im nächsten Kampf des Gegners reicht Fernkampf nur drei Felder weit.
-- **Brücke eingerissen (2 Splitter):** Der Gegner kann in der nächsten Etappe nur einen der beiden Pfade wählen.
-- **Späher (1 Splitter):** Man sieht, welchen Raum der Gegner als Nächstes wählt, bevor man selbst wählt.
+- **Brücke eingerissen (2 Splitter, höchstens einmal je Partie):** Der Gegner kann in der nächsten Etappe nur einen der beiden Pfade wählen. Der Rastplatz bleibt immer erreichbar.
+- **Späher (1 Splitter):** Der Gegner wählt seinen nächsten Raum zuerst und verbindlich. Man selbst sieht die Wahl und entscheidet danach.
 
-Höchstens eine Störung je Etappe und Seite. Der Gegner sieht vor seinem Raum, was ihn erwartet.
+Höchstens eine Störung je Etappe und Seite. Splitter lassen sich ansparen, höchstens zwei zugleich. Der Gegner sieht vor seinem Raum, was ihn erwartet.
+
+Die Störungen sind unterschiedlich stark. „Fackeln aus“ trifft Gruppen mit viel Fernkampf härter als andere und muss in der Erprobung besonders beobachtet werden.
 
 ### 4. Das Finale am Siegel (etwa 8 Minuten)
 
 Nach vier Etappen treffen beide Gruppen im Siegelsaal aufeinander, mit den Stufen, der Beute und den Wunden, die sie mitgebracht haben.
 
-- In der Mitte liegt das Siegel. Wer am Ende seiner Runde mit mehr Helden daneben steht, bekommt einen Siegelpunkt.
+Das Finale ist ein Kampf um Stellung, nicht um Auslöschung.
+
+- In der Mitte liegt das Siegel, mit mehreren Zugängen und Engstellen.
+- Am Ende jeder vollen Runde zählt, wer mit mehr Helden neben dem Siegel steht. Diese Seite bekommt einen Siegelpunkt. **Bei Gleichstand** bekommt niemand einen Punkt.
+- **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert der Führende einen seiner Punkte.
 - **Gewonnen hat,** wer zuerst **drei Siegelpunkte** hat oder alle gegnerischen Helden besiegt.
+- **Nach acht Runden** gewinnt, wer mehr Siegelpunkte hat. Bei Gleichstand die Seite mit mehr Helden am Siegel, danach die mit mehr übrigen Trefferpunkten.
 - Gefallene Helden kommen im Finale nicht zurück.
+- **Vor dem Finale** bekommt jede Seite die Hälfte ihrer fehlenden Trefferpunkte zurück, damit niemand halbtot antritt.
 
 ### Vorsprung: der Schleichweg
 
-Wer einen Schleichweg nimmt, ist eine Etappe früher am Siegel und beginnt das Finale mit **einem Siegelpunkt** und der besseren Stellung. Dafür fehlen ihm die Stufen dieser Etappe. Der Schleichweg ist höchstens einmal je Partie möglich.
+Wer einen Schleichweg nimmt, ist eine Etappe früher am Siegel und beginnt das Finale mit **einem Siegelpunkt** und der besseren Stellung. Der Preis ist klar: Die übersprungene Etappe bringt **gar keinen Lohn**, also keine Stufe, keine Beute, keinen Splitter. Der Schleichweg ist höchstens einmal je Partie möglich.
 
 Das ist die Kernfrage des Modus: schnell und schwach oder spät und stark.
 
@@ -112,7 +124,7 @@ So kann man reagieren („er ist schon Stufe 4, ich muss den schweren Raum nehme
 ## Risiken und wie ich ihnen begegnen würde
 
 - **Die Partie dauert zu lang.** Ziel sind 25 Minuten. Stellschrauben: Zahl der Etappen (vier, notfalls drei), Größe der Räume, Zuguhr. Das lässt sich vorab simulieren.
-- **Wer vorn liegt, gewinnt sicher.** Dagegen: Das Finale entscheidet über Siegelpunkte, nicht nur über Stärke. Wer nach drei Etappen zwei oder mehr Stufen zurückliegt, bekommt am letzten Rastplatz einen zusätzlichen Segen.
+- **Wer vorn liegt, gewinnt sicher (Schneeball).** Das ist das größte Risiko. Dagegen: Nur schwere Räume bringen Splitter, es wächst also nicht alles zugleich. Das Finale entscheidet über Stellung und Siegelpunkte, Punkte lassen sich zurückerobern. Wer nach drei Etappen zwei oder mehr Stufen zurückliegt, bekommt vor dem Finale einen zusätzlichen Segen. Ziel: Die schwächere Gruppe gewinnt 25 bis 35 % der Finals.
 - **Warten auf den Gegner.** Beide Seiten spielen ihre Räume gleichzeitig. Wer früher fertig ist, sieht den Stand des Gegners und plant seine Störung.
 - **Helden sind auf niedrigen Stufen sehr verschieden stark.** Manche glänzen erst ab Stufe 5. Das muss für die Stufen 1 bis 7 eigens durchgerechnet werden.
 - **Schummeln.** Solange die Räume im Browser gerechnet werden, lässt sich das Ergebnis fälschen. Für Freundesspiele ist das hinnehmbar, für eine Rangliste muss der Server mitrechnen.
@@ -134,10 +146,20 @@ So kann man reagieren („er ist schon Stufe 4, ich muss den schweren Raum nehme
 - Der Zurückliegende gewinnt das Finale in etwa einem Drittel der Fälle.
 - Eine Partie dauert im Mittel unter 30 Minuten.
 
-## Offene Entscheidungen
+## Vorläufig entschieden
 
-1. **Dauer:** vier Etappen (etwa 25 Minuten) oder drei (etwa 18 Minuten)?
-2. **Helden:** nur eigene plus Leihhelden, oder in diesem Modus alle Helden für alle?
-3. **Verdeckte oder offene Wegwahl?** Verdeckt ist spannender, offen ist leichter zu verstehen.
-4. **Name:** „Wettlauf zum Siegel“ ist ein Arbeitstitel.
-5. **Soll der Modus das heutige Ranked eines Tages ersetzen oder daneben stehen?**
+1. **Dauer:** vier Etappen. Drei Etappen werden zum Vergleich mitgerechnet.
+2. **Helden:** eigene Helden plus drei Leihhelden je Woche.
+3. **Wegwahl:** verdeckt und gleichzeitig.
+4. **Name:** „Wettlauf zum Siegel“ bleibt Arbeitstitel.
+5. **Verhältnis zum Ranked:** eigener Modus daneben.
+
+## Was die Durchrechnung messen muss
+
+1. Wie oft gewinnt die Gruppe, die den Schleichweg nimmt?
+2. Wie oft gewinnt die Gruppe mit mehr Stufen?
+3. Wie oft gewinnt die Gruppe, die zuerst am Siegel ist?
+4. Wie oft gewinnt die Gruppe, die nach den Etappen zurückliegt? Ziel: 25 bis 35 %.
+5. Wie stark hängt die Siegquote vom einzelnen Helden ab, über die Stufen 1 bis 7?
+
+Das Werkzeug dafür ist `tools/wettlauf-sim.js`. Die Ergebnisse stehen im Abschnitt „Erste Zahlen“.
