@@ -2629,6 +2629,20 @@ button.shop-angebot.paket.start:hover, button.shop-angebot.paket.start:focus-vis
   body.kampf-banner.kampf-schlank.im-kampf .gruppe-kampf h3 { text-align: center; color: #f6dc9c; text-shadow: 0 1px 4px #000; margin-bottom: 4px; }
   body.kampf-banner.kampf-schlank.im-kampf .gk-held { background: rgba(14, 8, 8, .78); box-shadow: 0 0 0 1px rgba(217,178,106,.4), 0 6px 14px rgba(0,0,0,.5); }
   body.kampf-banner.kampf-schlank.im-kampf .gk-held.dran { box-shadow: 0 0 0 2px #f6dc9c, 0 0 22px rgba(246,200,110,.45); }
-  body.kampf-banner.kampf-schlank.im-kampf .panel { background: linear-gradient(180deg, rgba(10,6,6,.25), rgba(10,6,6,.5)), url("../img/mythara/banner-loewe.webp") top center / 100% auto no-repeat, #1a0808; box-shadow: none; border-radius: 0; padding: 78px 44px 30px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.6)); }
-  body.kampf-banner.kampf-schlank.im-kampf .panel .aktiv, body.kampf-banner.kampf-schlank.im-kampf .panel .hinweis { background: rgba(14, 8, 8, .72); border-radius: 10px; padding: 8px 10px; }
+  /* rechts: Holztafel mit Beschlägen (hochkant); höchstens doppelt so hoch wie breit, damit die Verzierung nicht verzerrt */
+  body.kampf-banner.kampf-schlank.im-kampf .spiel { grid-template-columns: 236px minmax(0, 1fr) 384px; }
+  body.kampf-banner.kampf-schlank.im-kampf .panel { background: linear-gradient(rgba(12, 7, 4, .6), rgba(12, 7, 4, .6)) center / calc(100% - 96px) calc(100% - 112px) no-repeat, url("../img/mythara/tafel-holz.webp") center / 100% 100% no-repeat; box-shadow: none; border-radius: 0; padding: 70px 60px 68px; max-height: min(calc(100vh - 84px), 720px); overflow: hidden; display: flex; flex-direction: column; filter: drop-shadow(0 14px 22px rgba(0,0,0,.6)); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel > * { flex: none; }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .aktionen { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #8a5d1e transparent; }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .akt { background: rgba(16, 9, 5, .62); border-color: rgba(217,178,106,.3); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .akt.gewaehlt, body.kampf-banner.kampf-schlank.im-kampf .panel .akt.an { background: rgba(70, 46, 14, .85); border-color: #f6dc9c; }
+  /* oben: Holzbalken mit Eisenbändern statt des dunklen Balkens */
+  body.kampf-banner.kampf-schlank.im-kampf .kampf-kopf { height: 62px; padding: 0 58px; border-radius: 0; box-shadow: none; filter: drop-shadow(0 8px 14px rgba(0,0,0,.6));
+    background: url("../img/mythara/balken-zier.webp") center / auto 100% no-repeat, url("../img/mythara/balken-links.webp") left center / auto 100% no-repeat, url("../img/mythara/balken-rechts.webp") right center / auto 100% no-repeat, url("../img/mythara/balken-mitte.webp") center / calc(100% - 100px) 100% no-repeat; }
+  body.kampf-banner.kampf-schlank.im-kampf .kk-logo { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #ffe6ad; text-shadow: 0 2px 4px #000, 0 0 10px rgba(0,0,0,.8); }
+  body.kampf-banner.kampf-schlank.im-kampf .kk-titel b { color: #fff1c8; text-shadow: 0 2px 4px #000, 0 0 10px rgba(0,0,0,.8); }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .hinweis { font-size: 13px; line-height: 1.4; max-height: 7.2em; overflow: hidden; }
+  body.kampf-banner.kampf-schlank.im-kampf .panel .akt-gruppe { color: #f6dc9c; }
+  body.kampf-banner.kampf-schlank.im-kampf .kk-titel span { color: #e6d6b4; text-shadow: 0 1px 3px #000; }
+  body.kampf-banner.kampf-schlank.im-kampf .kk-chip { background: rgba(10, 6, 3, .55); }
 }
