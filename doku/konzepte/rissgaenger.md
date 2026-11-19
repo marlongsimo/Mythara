@@ -130,6 +130,7 @@ Beide Gruppen stehen an ihrem Eingang, es steht 0 : 0.
 
 - **Am Siegel** steht ein Held, der auf dem Siegelfeld oder direkt daneben steht, auch schräg. Jedes dieser Felder trägt eine Rune am Boden.
 - **Siegelpunkt:** Am Ende jeder Runde bekommt die Seite einen Punkt, die mehr stehende Helden am Siegel hat. Bei Gleichstand bekommt niemand einen.
+- **Wer das Siegel gerade hält,** zeigen die Leiste und die Runen jederzeit an: grün für die eigene Seite, rot für den Gegner, weiß für „umkämpft" (gleich viele Helden, niemand bekäme den Punkt), golden für „frei" (niemand dort). Das ist nur Anzeige, die Regel ist dieselbe.
 - **Das Siegel wandert:** Nach jeder zweiten Runde springt es auf das nächste von drei Feldern. Das nächste Feld ist mit einer blassen Rune markiert.
 - **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge die Runde, verliert die führende Seite einen ihrer Punkte. Die Seite bekommt ihren Rundenpunkt zusätzlich.
 - **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit vollen Trefferpunkten am eigenen Eingang wieder auf.
@@ -245,6 +246,19 @@ Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust a
 - **Kommt man hoch genug?** Die Helden gehen bis Stufe 10, der Riss reicht für Stufe 6. Mehr braucht entweder eine flachere Kurve oder mehr Räume.
 - **Rückkehr im Finale.** Im Rechner fällt knapp jeder zweite Rückkehrer erneut, auch mit vollen Trefferpunkten: Sie kommen einzeln vom Eingang und laufen in eine geschlossene Gruppe.
 - **Gegen Menschen:** Wie geht die gemeinsame Uhr mit unterschiedlich schnellen Geräten und Animationen um?
+
+## Vorgemerkt
+
+Ideen aus dem Vergleich mit anderen Spielen. Nichts davon ist gebaut; die ersten von Hand gespielten Partien sollen möglichst nah am gerechneten Stand bleiben.
+
+| Idee | Wann |
+|---|---|
+| **Geräusche vom Gegner:** Bosskampf, Aufstieg, aufgehobener Fund, gefallene Gruppe sind zu hören – nie, in welchem Raum | nach den ersten Partien |
+| **Wahl nach dem Boss:** Der Boss hinterlässt sicher etwas, zur Wahl aus drei (offensiv, defensiv, beweglich) | nach den ersten Partien, im Vergleich mit der Zufallsbeute |
+| **Monster heilen sich im verlassenen Raum** (etwa 20 %) | nur, wenn Raus-und-wieder-rein nachweislich zu billig ist |
+| **Bosswissen im Finale:** Nur wer den Boss besiegt hat, sieht, wohin das Siegel als Nächstes springt | später, als eigener Test |
+
+Verworfen: steigende Gefahr über die Zeit, Aufgaben für bestimmte Klassen, Beute erst sichern müssen, Verlängerung nach zwölf Runden.
 
 ## Wie es weitergeht
 

@@ -3105,3 +3105,12 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 /* Rissgänger, Karte: verlassene Räume (Monster stehen noch) und gewonnene mit liegenden Funden lassen sich wieder betreten */
 .rk-raum.hell.offen { background: radial-gradient(circle, rgba(160,120,255,.28), rgba(40,24,80,.55)); border-color: #b79bff; box-shadow: 0 0 20px rgba(150,110,255,.55); }
 .rk-raum.hell.offenbar { cursor: pointer; } .rk-raum.hell.offenbar:hover, .rk-raum.hell.offenbar:focus-visible { filter: brightness(1.25); outline: none; }
+
+/* Rissgänger, Finale: Wer hält das Siegel? Die Runen und die Leiste zeigen es an (ohne Animation, nichts verzögert den Kampf) */
+#karte image.riss-rune.eigen { filter: hue-rotate(55deg) saturate(1.5) brightness(1.15) drop-shadow(0 0 7px rgba(120,230,140,.95)); opacity: 1; }
+#karte image.riss-rune.gegner { filter: hue-rotate(-45deg) saturate(1.9) brightness(1.05) drop-shadow(0 0 7px rgba(255,90,90,.95)); opacity: 1; }
+#karte image.riss-rune.umkaempft { filter: grayscale(1) brightness(1.9) drop-shadow(0 0 7px rgba(255,255,255,.95)); opacity: 1; }
+#karte[data-siegel="eigen"] rect.feld.riss-siegel { stroke: #7fe08f; } #karte[data-siegel="eigen"] rect.feld.riss-zone { stroke: rgba(127,224,143,.5); fill: rgba(127,224,143,.07); }
+#karte[data-siegel="gegner"] rect.feld.riss-siegel { stroke: #ff7b7b; } #karte[data-siegel="gegner"] rect.feld.riss-zone { stroke: rgba(255,123,123,.5); fill: rgba(255,123,123,.07); }
+#karte[data-siegel="umkaempft"] rect.feld.riss-siegel { stroke: #fff; stroke-dasharray: 6 5; } #karte[data-siegel="umkaempft"] rect.feld.riss-zone { stroke: rgba(255,255,255,.55); stroke-dasharray: 5 5; fill: rgba(255,255,255,.05); }
+.riss-leiste .rl-am em { font-style: normal; font-weight: 700; } .riss-leiste .rl-am.eigen em { color: #9fdba3; } .riss-leiste .rl-am.gegner em { color: #f0a0a3; } .riss-leiste .rl-am.umkaempft em { color: #fff; } .riss-leiste .rl-am.frei em { color: #e9c77e; }

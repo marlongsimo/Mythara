@@ -83,6 +83,14 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(await p.evaluate(() => { const st = window.RISS.zustand().st, K = window.RISS.kern(); return [1, 2].every((t) => K.helden(st, t).every((f) => (f.plaetze || []).every((n, k) => n === (f.plaetzeMax || f.plaetze)[k]))) && st.riss.rueckLeben === 1; }), "im Finale sind die Zauberplätze frisch, Rückkehrer stehen mit vollen Trefferpunkten auf");
   await p.waitForSelector("#riss-leiste:not([hidden])");
   check(await p.evaluate(() => document.querySelectorAll("#karte rect.feld.riss-siegel").length === 1 && document.querySelectorAll("#karte rect.feld.riss-zone").length >= 3 && document.querySelectorAll("#karte rect.feld.riss-naechst").length === 1), "Siegelfeld, Zone und nächstes Feld sind markiert");
+  const stand = await p.evaluate(() => { const Z = window.RISS.zustand(), st = Z.st, K = window.RISS.kern(), S = K.siegel(st), h = K.helden(st, 1), g = K.helden(st, 2), far = (f, k) => { f.x = 1 + k; f.y = 7; }, an = (f, dx) => { f.x = S.x + dx; f.y = S.y + 1; };
+    const zeig = () => { window.AB.render(); window.RISS.anzeige(); return document.querySelector("#karte").dataset.siegel + "|" + document.querySelector("#riss-leiste .rl-am em").textContent + "|" + [...document.querySelectorAll("#karte image.riss-rune:not(.naechst)")].every((b) => b.classList.contains(document.querySelector("#karte").dataset.siegel)); };
+    const alt = h.concat(g).map((f) => [f, f.x, f.y]), out = [];
+    h.forEach(far); g.forEach((f, k) => { f.x = 3 + k; f.y = 2; }); out.push(zeig());
+    an(h[0], -1); out.push(zeig()); an(g[0], 1); out.push(zeig()); an(g[1], 0); out.push(zeig());
+    for (const [f, x, y] of alt) { f.x = x; f.y = y; } window.AB.render(); window.RISS.anzeige(); return out; });
+  if (!(stand[0].startsWith("frei|"))) console.log("    ", JSON.stringify(stand));
+  check(stand[0].startsWith("frei|") && stand[1] === "eigen|Du hältst das Siegel|true" && stand[2] === "umkaempft|Siegel umkämpft|true" && stand[3] === "gegner|Der Gegner hält das Siegel|true", "Leiste und Runen zeigen, wer das Siegel hält: frei, eigen, umkämpft, Gegner");
   // Finale: Die eigenen Züge spielt hier der Rechner-Helfer über die echten (eingehängten) Regeln; fremde Helden lassen sich nicht steuern
   let fremd = null;
   for (let i = 0; i < 3000; i++) {

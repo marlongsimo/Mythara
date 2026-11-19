@@ -613,7 +613,7 @@
     window.AB.arenaStart({ st, seite: 1, ohnePruef: true, ende: (s) => setTimeout(() => finaleEnde(s), 2600) });
     Z.takt = setInterval(botTakt, 250);
     let offen = false; const karte = $("#karte");
-    if (karte) { Z.beob = new MutationObserver(() => { if (offen) return; offen = true; requestAnimationFrame(() => { offen = false; marken(); }); }); Z.beob.observe(karte, { childList: true, subtree: true }); }
+    if (karte) { Z.beob = new MutationObserver(() => { if (offen) return; offen = true; requestAnimationFrame(() => { offen = false; marken(); leiste(); }); }); Z.beob.observe(karte, { childList: true, subtree: true }); }
     marken(); leiste();
   }
   /** Der Rechner zieht: ein Schritt, dann eine Pause (gesetzt in einhaengen: lang genug für Würfel und Wirkung) */
@@ -632,7 +632,9 @@
     karte.querySelectorAll("rect.feld").forEach((r) => { const x = +r.dataset.x, y = +r.dataset.y, d = S ? Math.max(Math.abs(x - S.x), Math.abs(y - S.y)) : 9;
       const kl = d === 0 ? "riss-siegel" : d === 1 && !st.karte.block.has(x + "," + y) ? "riss-zone" : N && x === N.x && y === N.y ? "riss-naechst" : "";
       for (const c of ["riss-siegel", "riss-zone", "riss-naechst"]) if (r.classList.contains(c) !== (c === kl)) r.classList.toggle(c, c === kl); });
-    runen(karte, S, N);
+    runen(karte, S, N); const stand = S ? siegelStand(K.steht(st, 1), K.steht(st, 2)) : "";
+    karte.querySelectorAll("image.riss-rune:not(.naechst)").forEach((b) => { for (const c of ["eigen", "gegner", "umkaempft", "frei"]) if (b.classList.contains(c) !== (c === stand)) b.classList.toggle(c, c === stand); });
+    karte.dataset.siegel = stand;
   }
   /** Runen am Boden: eine auf jedem Feld der Siegelzone (dort zählen Helden), die in der Mitte am hellsten; eine blasse auf dem Feld, auf das das Siegel als Nächstes springt */
   function runen(karte, S, N) {
@@ -645,12 +647,16 @@
       b.setAttribute("class", r.kl); b.dataset.k = k; b.setAttribute("href", "img/riss/siegel-rune.gif"); b.setAttribute("x", r.x * G + G / 2 - w / 2); b.setAttribute("y", r.y * G + G / 2 - w / 2); b.setAttribute("width", w); b.setAttribute("height", w);
       eltern.insertBefore(b, erste); } // flach am Boden, unter Feldern und Figuren
   }
+  /** Wer hält das Siegel gerade? eigen (mehr eigene Helden am Siegel), gegner, umkaempft (gleich viele, mindestens einer je Seite) oder frei (niemand dort).
+   *  Nur Anzeige: Die Wertung am Rundenende rechnet genauso (bei Gleichstand bekommt niemand den Punkt). */
+  const siegelStand = (a, b) => (a > b ? "eigen" : b > a ? "gegner" : a > 0 ? "umkaempft" : "frei");
+  const STAND_TEXT = { eigen: "Du hältst das Siegel", gegner: "Der Gegner hält das Siegel", umkaempft: "Siegel umkämpft", frei: "Siegel frei" };
   function leiste() {
     let el = document.getElementById("riss-leiste"); const st = Z.st;
     if (!st || !st.riss || st.ende) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-leiste"; el.className = "riss-leiste"; document.body.appendChild(el); }
     const X = st.riss, a = K.steht(st, 1), b = K.steht(st, 2), springt = X.runde % 2 === 0 ? "springt nach dieser Runde" : "springt nach der nächsten Runde";
-    const html = `<span class="rl-punkte">Siegel <b>${X.P[1]}</b> : <b>${X.P[2]}</b> <small>bis ${X.ziel}</small></span><span class="rl-am ${a > b ? "gut" : b > a ? "schlecht" : ""}">Am Siegel: du <b>${a}</b> · Gegner <b>${b}</b></span><span>Runde ${Math.min(X.runde, X.max)}/${X.max} · ${springt}</span>`;
+    const html = `<span class="rl-punkte">Siegel <b>${X.P[1]}</b> : <b>${X.P[2]}</b> <small>bis ${X.ziel}</small></span><span class="rl-am ${siegelStand(a, b)}"><em>${STAND_TEXT[siegelStand(a, b)]}</em> · du <b>${a}</b> · Gegner <b>${b}</b></span><span>Runde ${Math.min(X.runde, X.max)}/${X.max} · ${springt}</span>`;
     el.hidden = false; if (el.dataset.html !== html) { el.dataset.html = html; el.innerHTML = html; }
   }
   function finaleAufraeumen() {
@@ -747,5 +753,5 @@
   window.addEventListener("pagehide", () => { if (!laeuft()) return; try { const L = Object.assign({}, Z.log, { abgebrochen: "Seite verlassen oder neu geladen", phase: Z.st ? "finale" : "weg", minuten: { gesamt: Math.round((Date.now() - Z.beginn) / 6000) / 10 } });
     if (Z.st && Z.st.riss) { L.punkte = [Z.st.riss.P[1], Z.st.riss.P[2]]; L.finalRunden = Z.st.riss.runde; L.runden = Z.st.riss.M.runden; }
     const alle = mitschrift(); alle.push(L); localStorage.setItem(SPEICHER, JSON.stringify(alle.slice(-60))); } catch (e) { /* privat */ } });
-  window.RISS = { stufenKachel, laeuft, feldAufheben, zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
+  window.RISS = { anzeige: () => { marken(); leiste(); }, stufenKachel, laeuft, feldAufheben, zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
 })();
