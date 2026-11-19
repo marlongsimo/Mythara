@@ -22,7 +22,7 @@
   const NAMEN = ["Varn der Stille", "Ilka Aschenhand", "Der Graue Tomas", "Mirelle vom Spalt", "Odo Rissläufer", "Senna Dunkelwasser"];
   const SCHNELL = params.has("schnell"), TAKT = +params.get("risstakt") || (SCHNELL ? 60 : 2300); // so lange dauert beim Warten ein Zug des Gegners
   let K = null;
-  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", zeit: Math.max(20, +params.get("risszeit") || 240), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
+  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", zeit: Math.max(20, +params.get("risszeit") || 300), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
 
   /* ---------- Hilfen ---------- */
   function skript(src) { return new Promise((ok, nein) => { if (document.querySelector(`script[data-riss="${src}"]`)) return ok(); const s = document.createElement("script"); s.src = src; s.dataset.riss = src; s.onload = ok; s.onerror = () => nein(new Error("Datei fehlt: " + src)); document.head.appendChild(s); }); }
@@ -114,7 +114,7 @@
       if (Z.wahl.includes(f)) Z.wahl = Z.wahl.filter((x) => x !== f); else if (Z.wahl.length < 3) Z.wahl.push(f); else return; start(); };
     $("#riss-heilung").onchange = (ev) => { Z.heilung = ev.target.value === "keine" ? "keine" : "gerechnet"; };
     $("#riss-art").onchange = (ev) => { Z.art = ev.target.value === "abbiegen" ? "abbiegen" : "karte"; start(); };
-    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 240; start(); };
+    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; start(); };
     $("#riss-gegner").onchange = (ev) => { Z.gegnerZiel = +ev.target.value || 0; };
     $("#riss-los").onclick = los; $("#riss-mitschrift").onclick = mitschriftZeigen;
   }

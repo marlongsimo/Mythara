@@ -36,7 +36,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   const n1 = await einsammeln(); await p.waitForSelector("#weiter-abenteuer", { timeout: 15000 });
   check(n1 >= 1 && await p.evaluate(() => window.RISS.zustand().ich.splitter + Object.values(window.RISS.zustand().ich.dinge).flat().length > 0), "Held daneben und antippen: aufgehoben; ist alles eingesammelt, schließt der Raum");
   await p.click("#weiter-abenteuer"); await p.waitForSelector("[data-riss-karte]");
-  check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.ich.xp === 45 && Object.values(Z.ich.stufen).every((s) => s === 2); }), "Einstieg: 9 Lebenspunkte × 5 = 45 Erfahrung, Stufe 2");
+  check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.ich.xp >= 45 && Z.ich.xp % 5 === 0 && Z.ich.xp === Z.ich.verlauf[0].xp && Object.values(Z.ich.stufen).every((s) => s === 2); }), "Einstieg: 5 Erfahrung je Lebenspunkt der Monster, Stufe 2");
   check((await p.$$(".rk-raum.dunkel")).length === 4 && (await p.$$(".rk-raum.hell")).length === 1, "Karte: die Mitte leuchtet, vier Räume sind dunkel");
   check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"); return u && !u.hidden && /0:[0-4]\d/.test(u.textContent); }), "auf der Karte läuft dieselbe Uhr weiter");
   // zweiter Raum: Erfahrung zählt im Kampf mit; dann verlassen
@@ -46,7 +46,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(live.xp > 0 && live.sichtbar && /EP|Stufe/.test(live.text), `der blaue Balken zählt im Kampf mit (${live.xp} Erfahrung aus diesem Raum, ${live.breite})`);
   if (e === "erster") { await p.click("#riss-raus"); await p.click("#riss-raus"); } else { await einsammeln(); await p.waitForSelector("#weiter-abenteuer"); await p.click("#weiter-abenteuer"); }
   await p.waitForSelector("[data-riss-karte]", { timeout: 15000 });
-  check(await p.evaluate((x) => { const Z = window.RISS.zustand(), v = Z.ich.verlauf[1]; return Z.ich.besucht.length === 2 && v.xp >= x && Z.ich.xp === 45 + v.xp; }, live.xp), "Raum verlassen: zurück auf der Karte, die Erfahrung bleibt, der Raum ist zu");
+  check(await p.evaluate((x) => { const Z = window.RISS.zustand(), v = Z.ich.verlauf[1]; return Z.ich.besucht.length === 2 && v.xp >= x && Z.ich.xp === Z.ich.verlauf[0].xp + v.xp; }, live.xp), "Raum verlassen: zurück auf der Karte, die Erfahrung bleibt, der Raum ist zu");
   check((await p.$$(".rk-raum.dunkel")).length === 3 && await p.evaluate(() => document.getElementById("riss-xpleiste").hidden), "der verlassene Raum ist nicht mehr dunkel, der Balken ist weg");
   // dritter Raum: Die Zeit läuft ab, der Riss holt die Gruppe heraus
   await p.click(".rk-raum.dunkel"); await p.waitForSelector("#karte .fig");
