@@ -22,6 +22,7 @@
     #ez-tasten button { position: relative; width: 72px; height: 72px; border-radius: 50%; border: 2px solid #b79bff; background: rgba(34,28,51,.85); color: #efe8d8; font: inherit; display: grid; place-items: center; align-content: center; overflow: hidden; touch-action: none; cursor: pointer; }
     #ez-tasten b { position: relative; font-size: 18px; } #ez-tasten small { position: relative; font-size: 9px; color: #d9cdf5; text-align: center; line-height: 1.05; }
     #ez-tasten i { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); } #ez-tasten button.zu { border-color: #4b4460; color: #8d84a6; }
+    @media (max-width: 700px) { #ez-oben { top: 84px; left: max(8px, env(safe-area-inset-left)); transform: none; font-size: 12px; } #ez-hilfe { display: none; } }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
   </style>
@@ -34,6 +35,6 @@
   <div class="ez-kasten" id="ez-hilfe">Klicken oder tippen: laufen · auf einen Gegner: angreifen · Q und E: Fähigkeiten · Ziel: den Siegelwächter besiegen</div>
   <div id="ez-tasten"><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button></div></div>
-  <script src="spiel.js?v=mwo5jhsp"></script>
+  <script src="spiel.js?v=mwo5p2d9"></script>
 </body>
 </html>
