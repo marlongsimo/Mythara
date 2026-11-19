@@ -1,0 +1,17 @@
+# Mythara Echtzeit – Spielserver bei Render (kostenloser Tarif, zum Ausprobieren).
+# Der kostenlose Dienst schläft bei Leerlauf ein; die erste Verbindung danach dauert etwa eine Minute.
+services:
+  - type: web
+    name: mythara-echtzeit
+    runtime: node
+    plan: free
+    branch: feature/realtime-engine
+    rootDir: realtime
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node server/dist/server.js
+    healthCheckPath: /
+    envVars:
+      - key: ERLAUBTE_HERKUNFT
+        value: https://mythara-dungeon.de
+      - key: NODE_VERSION
+        value: "22"

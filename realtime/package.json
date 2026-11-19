@@ -1,0 +1,15 @@
+{
+  "name": "mythara-realtime",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Mythara Echtzeit: gemeinsame Simulation, Node-Spielserver, Phaser-Client",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "tsc --noEmit",
+    "start": "node server/dist/server.js",
+    "test": "node test/sim.test.mjs"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": { "ws": "^8.18.0" },
+  "devDependencies": { "@types/node": "^22.0.0", "@types/ws": "^8.5.12", "esbuild": "^0.25.0", "phaser": "^3.90.0", "typescript": "^5.6.0" }
+}
