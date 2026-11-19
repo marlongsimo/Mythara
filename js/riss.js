@@ -419,17 +419,16 @@
     };
     zeichne();
   }
-  const ORT = [{ x: 50, y: 13, n: "Norden" }, { x: 87, y: 50, n: "Osten" }, { x: 50, y: 87, n: "Süden" }, { x: 13, y: 50, n: "Westen" }];
+  const ORT = [{ x: 49.9, y: 12.4, n: "Norden" }, { x: 85.7, y: 48.4, n: "Osten" }, { x: 49.6, y: 84.3, n: "Süden" }, { x: 13.3, y: 48.4, n: "Westen" }]; // Mittelpunkte der Räume auf dem Kartenbild (img/mythara/riss-karte.webp), in Prozent
   function karteZeigen() {
     const W = Z.ich, C = K.KARTE, e = KZ.ergebnis, S = K.kStufe(W.xp), stufe = S.stufe;
-    const linien = ORT.map((p, k) => `<line x1="50" y1="50" x2="${p.x}" y2="${p.y}"/><line x1="${p.x}" y1="${p.y}" x2="${ORT[(k + 1) % 4].x}" y2="${ORT[(k + 1) % 4].y}"/>`).join("");
     const raum = (k) => { const da = W.besucht.includes(k), d = da ? K.kDef(W, k) : null, v = da ? W.verlauf.find((x) => x.ort === k) : null;
       return `<button type="button" class="rk-raum ${da ? "hell" + (v && !v.sieg ? " verloren" : "") : "dunkel"}${W.ort === k ? " hier" : ""}" style="left:${ORT[k].x}%;top:${ORT[k].y}%" ${da ? "disabled" : `data-ort="${k}"`}>
         <i>${da ? (d.boss ? "☠" : d.id === "schwer" ? "⚔" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : ORT[k].n}</b><small>${da ? (v && v.sieg ? "geschafft" : v && v.abgebrochen ? "verlassen" : "verloren") : "unerkundet"}</small></button>`; };
     const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen" : "die Gruppe ist gefallen und steht voll geheilt wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.funde || []).map((x) => ` · ${esc(R.GEGENSTAENDE[x.ding].name)} für ${esc(F.FIGUREN[x.held].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
     seite(`<div data-riss-karte><p class="riss-schritt">Die Karte des Risses</p><h1 class="hub-gruss">Wohin jetzt?</h1>${letztes}
-      <div class="riss-karte-zwei"><div class="riss-karte" id="riss-karte"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${linien}</svg>
-          <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="left:50%;top:50%"><i>⟁</i><b>Mitte</b><small>geschafft</small></span>${[0, 1, 2, 3].map(raum).join("")}</div>
+      <div class="riss-karte-zwei"><div class="riss-karte" id="riss-karte">
+          <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="left:49.5%;top:48.4%"><b>Mitte</b><small>geschafft</small></span>${[0, 1, 2, 3].map(raum).join("")}</div>
         <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>

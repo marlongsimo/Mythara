@@ -3006,3 +3006,16 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 .riss-fund-blatt h2 { margin: 0; font: 600 22px var(--schrift-titel); color: #ffe9a8; } .riss-fund-blatt p { margin: 0; font-size: 15px; line-height: 1.4; }
 .riss-fund-helden { display: flex; flex-wrap: wrap; gap: 8px; } .riss-fund-helden .rs-held:disabled { opacity: .4; cursor: default; }
 @media (max-width: 700px) { .riss-xpleiste { bottom: auto; top: 78px; gap: 6px; font-size: 11px; padding: 4px 10px; } .riss-xpleiste i { width: 90px; } }
+
+/* Rissgänger: die Karte als Bild – fünf runde Räume, verbunden über Gänge. Dunkle Räume liegen im Schatten, beendete leuchten. */
+.riss-karte { aspect-ratio: 1100 / 1005; background: #2b2013 url(../img/mythara/riss-karte.webp) center / 100% 100% no-repeat; box-shadow: 0 0 0 2px rgba(217,180,106,.55), 0 8px 24px rgba(0,0,0,.55); border-radius: 10px; overflow: hidden; }
+.rk-raum { width: 23.4%; border-width: 3px; align-content: end; padding-bottom: 5%; }
+.rk-raum.mitte { width: 31.5%; }
+.rk-raum i { font-size: clamp(20px, 3.4vw, 34px); align-self: center; }
+.rk-raum b, .rk-raum small { padding: 1px 8px; border-radius: 9px; background: rgba(10,8,6,.78); }
+.rk-raum.dunkel { background: radial-gradient(circle, rgba(6,5,10,.93) 55%, rgba(6,5,10,.8)); border-color: rgba(60,48,30,.9); color: #b9ad94; align-content: center; padding-bottom: 4px; }
+.rk-raum.dunkel b, .rk-raum.dunkel small { background: none; }
+.rk-raum.dunkel:hover, .rk-raum.dunkel:focus-visible { border-color: #ffd75e; color: #ffe9a8; box-shadow: 0 0 22px rgba(246,200,66,.55); outline: none; }
+.rk-raum.hell { background: radial-gradient(circle, rgba(255,214,120,.2), rgba(255,190,80,0) 70%); border-color: #ffd75e; box-shadow: 0 0 26px rgba(246,200,66,.65), inset 0 0 30px rgba(255,200,90,.25); }
+.rk-raum.hell.verloren { background: radial-gradient(circle, rgba(120,20,24,.5), rgba(60,10,12,.35)); border-color: #d0575b; box-shadow: 0 0 18px rgba(208,87,91,.5); }
+.rk-raum.hier { outline: 3px solid #fff; outline-offset: -6px; }
