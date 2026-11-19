@@ -152,7 +152,7 @@
       boss: { name: "Die Ritterhalle", karte: "HALLE", begegnung: "ritter", n: 2, skala: 0.6, boss: "grabritter", xp: 150, kurz: "Bossraum", text: "Ein Grabritter hält die Halle. Wer ihn fällt, findet oft etwas bei ihm." },
       truhe1: Object.assign({}, BEUTE[0], { xp: 75, kurz: "Leichter Raum", text: "Kobolde in engen Gängen. Schnell erledigt." }),
       truhe2: Object.assign({}, BEUTE[1], { xp: 75, kurz: "Leichter Raum", text: "Käfer und Kobolde zwischen den Pilzen. Schnell erledigt." }) };
-    const K = { ZEIT: 240, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 6, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
+    const K = { ZEIT: 240, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 10, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
     /** Erfahrung: XP_LP je Lebenspunkt, den ein Monster verloren hat. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
     const xpBis = (stufe) => { let x = 0; for (let n = 2; n <= stufe; n++) x += K.XP_STUFE_1 + K.XP_STUFE_JE * (n - 2); return x; };
     /** Zurück: { stufe, in (Erfahrung in dieser Stufe), bis (so viel braucht die nächste), voll } */
