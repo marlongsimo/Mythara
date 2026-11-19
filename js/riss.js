@@ -387,15 +387,22 @@
     const jetzt = Date.now();
     for (const d of D.liste) if (!d.weg && d.ab <= jetzt) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) ? " greifbar" : "");
     karte.querySelectorAll("rect.feld").forEach((r) => { const kl = (wo[r.dataset.x + "," + r.dataset.y] || "").split(" "); for (const c of ["riss-drop", "riss-drop-segen", "greifbar"]) if (r.classList.contains(c) !== kl.includes(c)) r.classList.toggle(c, kl.includes(c)); });
-    splitterBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt && !d.ding));
+    feldBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt));
   }
-  /** Die Erbsplitter als Bild auf dem Feld (das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu) */
-  function splitterBilder(karte, liste) {
-    const erste = karte.querySelector("rect.feld"); if (!erste) return; const eltern = erste.parentNode, G = +erste.getAttribute("width") || 60, soll = new Set(liste.map((d) => d.x + "," + d.y));
-    eltern.querySelectorAll("image.riss-splitter-bild").forEach((b) => { if (!soll.has(b.dataset.k)) b.remove(); else soll.delete(b.dataset.k); });
-    for (const k of soll) { const [x, y] = k.split(",").map(Number), b = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      b.setAttribute("class", "riss-splitter-bild"); b.dataset.k = k; b.setAttribute("href", "img/mythara/erbsplitter.gif"); b.setAttribute("x", x * G - G * 0.05); b.setAttribute("y", y * G - G * 0.05); b.setAttribute("width", G * 1.1); b.setAttribute("height", G * 1.1);
-      eltern.appendChild(b); } // über den Feldern, aber ohne Klicks abzufangen (pointer-events: none): Antippen trifft weiter das Feld
+  /* Bilder für Funde: Sobald es zu einem Gegenstand ein eigenes Bild gibt (img/riss/fund-<Kennung>.gif), hier eintragen – sonst steht sein Zeichen auf dem Feld */
+  const FUND_BILDER = new Set([]);
+  const fundBild = (id) => (FUND_BILDER.has(id) ? `img/riss/fund-${id}.gif` : null);
+  /** Was auf dem Feld liegt, als Bild: Erbsplitter (animiert, aufrecht wie die Figuren) oder der Fund selbst (sein Bild, sonst sein Zeichen).
+   *  Das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu. */
+  function feldBilder(karte, liste) {
+    const erste = karte.querySelector("rect.feld"); if (!erste) return; const eltern = erste.parentNode, G = +erste.getAttribute("width") || 60, NS = "http://www.w3.org/2000/svg", soll = new Map();
+    for (const d of liste) { const k = d.x + "," + d.y + ":" + (d.ding || "splitter"); if (d.ding || ![...soll.keys()].some((q) => q.startsWith(d.x + "," + d.y + ":"))) soll.set(k, d); }
+    eltern.querySelectorAll(".riss-feldbild").forEach((b) => { if (!soll.has(b.dataset.k)) b.remove(); else soll.delete(b.dataset.k); });
+    for (const [k, d] of soll) { const cx = d.x * G + G / 2, fuss = d.y * G + G * 0.96, src = d.ding ? fundBild(d.ding) : "img/mythara/erbsplitter.gif", g = document.createElementNS(NS, "g");
+      g.setAttribute("class", "riss-feldbild" + (d.ding ? " fund" : "")); g.dataset.k = k; g.setAttribute("transform", `translate(${cx} ${fuss}) scale(1 1.12)`); // leicht gestreckt wie die Figuren: steht aufrecht auf dem gekippten Brett
+      if (src) { const b = document.createElementNS(NS, "image"), h = G * 1.25; b.setAttribute("href", src); b.setAttribute("x", -h / 2); b.setAttribute("y", -h); b.setAttribute("width", h); b.setAttribute("height", h); g.appendChild(b); }
+      else { const t = document.createElementNS(NS, "text"); t.setAttribute("x", 0); t.setAttribute("y", -G * 0.22); t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", G * 0.62); t.textContent = R.GEGENSTAENDE[d.ding].sym || "◆"; g.appendChild(t); }
+      eltern.appendChild(g); } // über den Feldern, aber ohne Klicks abzufangen (pointer-events: none): Antippen trifft weiter das Feld
   }
   /** Antippen der Karte: Liegt dort etwas und steht ein Held daneben, wird aufgehoben (statt zu laufen) */
   function karteKlick(ev) {
@@ -420,7 +427,7 @@
   /** Ein Fund für einen Helden: Wer bekommt ihn? (Die Zeit läuft weiter.) */
   function fundFenster(d) {
     fundFensterZu(); const g = R.GEGENSTAENDE[d.ding], el = document.createElement("div"); el.id = "riss-fund"; el.className = "riss-fund"; KZ.fenster = el;
-    el.innerHTML = `<div class="riss-fund-blatt" role="dialog" aria-label="Fund"><p class="riss-schritt">Fund</p><h2>${esc(g.name)}</h2><p>${esc(g.text)}</p><b>Für wen?</b>
+    el.innerHTML = `<div class="riss-fund-blatt" role="dialog" aria-label="Fund"><p class="riss-schritt">Fund</p>${fundBild(d.ding) ? `<img class="riss-fund-bild" src="${fundBild(d.ding)}" alt="">` : `<i class="riss-fund-zeichen" aria-hidden="true">${g.sym || "◆"}</i>`}<h2>${esc(g.name)}</h2><p>${esc(g.text)}</p><b>Für wen?</b>
       <div class="riss-fund-helden">${Z.ich.gruppe.map((f) => `<button type="button" class="rs-held" data-wer="${f}" ${K.kannTragen(Z.ich, d.ding, f) ? "" : "disabled"} style="--k:${F.KLASSEN[F.FIGUREN[f].klasse].farbe}"><img src="${F.bild(f)}" alt=""><b>${esc(F.FIGUREN[f].name)}</b></button>`).join("")}</div>
       <button type="button" class="btn ghost klein" data-zu>Liegen lassen</button></div>`;
     el.onclick = (ev) => { const b = ev.target.closest("[data-wer]"); if (b && !b.disabled) { fundFensterZu(); aufheben(d, b.dataset.wer); return; } if (ev.target.closest("[data-zu]") || ev.target === el) fundFensterZu(); };
