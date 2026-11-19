@@ -7,7 +7,7 @@
  * Aufruf: node tests/riss.test.js   (Webserver auf Port 8765)
  */
 const { chromium } = require("playwright");
-const URL = "http://localhost:8765/spiel.html?schnell";
+const URL = "http://localhost:8765/spiel.html?schnell&rissart=abbiegen";
 let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") + m); if (!c) ok = false; };
 (async () => {
   const b = await chromium.launch(), fehler = [];

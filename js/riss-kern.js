@@ -91,7 +91,7 @@
     const kannTragen = (W, id, fid) => passt(id, fid) && !(W.dinge[fid] || []).includes(id) && (W.dinge[fid] || []).length < 2;
     function beuteNehmen(W, wahl) {
       if (!wahl) return;
-      if (wahl.segen && SEGEN_POOL.includes(wahl.segen) && !W.segen.length) { W.segen.push(wahl.segen); return; }
+      if (wahl.segen && SEGEN_POOL.includes(wahl.segen) && !W.segen.includes(wahl.segen)) { W.segen.push(wahl.segen); return; }
       if (wahl.ding && W.gruppe.includes(wahl.held) && kannTragen(W, wahl.ding, wahl.held)) {
         (W.dinge[wahl.held] = W.dinge[wahl.held] || []).push(wahl.ding);
         if (W.zust && W.zust[wahl.held]) { const r = W.zust[wahl.held].rucksack = W.zust[wahl.held].rucksack || []; if (!r.some((d) => d.id === wahl.ding)) r.push({ id: wahl.ding, n: 1 }); } }
@@ -138,6 +138,99 @@
       W.abgebogen = true; return W;
     }
 
+
+    /* ---------- Spielart „Karte“: vier Minuten, eine Karte mit fünf Räumen, Erfahrung je Monster, Beute, Truhen, ein Boss ----------
+     * Raum „M“ in der Mitte ist der Einstieg. Danach läuft die Zeit. Außen liegen vier Räume im Ring (0 Norden, 1 Osten, 2 Süden, 3 Westen):
+     * jeder ist mit der Mitte und mit seinen beiden Nachbarn verbunden. Was in welchem Raum wartet, wird gelost und ist für beide Seiten gleich:
+     * ein schwerer Raum, ein Bossraum und zwei leichte Räume. Unerkundete Räume sind dunkel.
+     * Jedes besiegte Monster lässt etwas fallen: selten einen Segen (DROP, der Boss DROP_BOSS), sonst Erbsplitter. Aufgehoben wird es von einem Helden, der daneben steht.
+     * Die Zeit läuft für beide Seiten gleich und ohne Abzüge: Was Zeit kostet (hinlaufen und aufheben), dauert einfach so lange.
+     * Vor dem Finale verkauft die Siegelwächterin für Erbsplitter Heilung, Tränke, Gegenstände und Segen.
+     * Erfahrung gibt es je besiegtem Monster für die ganze Gruppe; je XP_STUFE Punkte steigt die Gruppe eine Stufe. */
+    const K_RAEUME = {
+      schwer: Object.assign({}, SCHWER[0], { xp: 125, kurz: "Schwerer Raum" }),
+      boss: { name: "Die Ritterhalle", karte: "HALLE", begegnung: "ritter", n: 2, skala: 0.6, boss: "grabritter", xp: 150, kurz: "Bossraum", text: "Ein Grabritter hält die Halle. Wer ihn fällt, findet oft etwas bei ihm." },
+      truhe1: Object.assign({}, BEUTE[0], { xp: 75, kurz: "Leichter Raum", text: "Kobolde in engen Gängen. Schnell erledigt." }),
+      truhe2: Object.assign({}, BEUTE[1], { xp: 75, kurz: "Leichter Raum", text: "Käfer und Kobolde zwischen den Pilzen. Schnell erledigt." }) };
+    const K = { ZEIT: 240, XP_STUFE: 100, STUFE_MAX: 6, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
+    const karteLosen = (zf) => ["schwer", "boss", "truhe1", "truhe2"].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
+    function neuK(gruppe, name, karte) { return Object.assign(neu(gruppe, name), { karte: karte.slice(), xp: 0, splitter: 0, ort: null, besucht: [], traenke: {}, kaeufe: [] }); }
+    const kDef = (W, ort) => (ort === "M" ? Object.assign({ id: "einstieg", xp: 100, kurz: "Einstieg" }, EINSTIEG) : Object.assign({ id: W.karte[ort] }, K_RAEUME[W.karte[ort]]));
+    /** Wie viele Wegstücke von einem Raum zum anderen (Mitte oder Nachbar: eins, gegenüber: zwei) */
+    const kSchritte = (von, nach) => (von == null || von === "M" || nach === "M" ? 1 : Math.abs(von - nach) === 2 ? 2 : 1);
+    function kOpts(W, ort) {
+      an(); const r = kDef(W, ort), g = W.gruppe;
+      return { figuren: g.slice(), stufenListe: g.map((f) => W.stufen[f]), stufe: Math.round(stufeSchnitt(W)), karte: karteVon(r.karte), begegnung: r.begegnung,
+        gegner: R.gegnerFuer(r.begegnung, r.n, null, r.skala, false, 0), vorher: W.zust ? R.neuerKampf(W.zust) : null, schwierigkeit: "normal", segen: W.segen.slice(), bedrohung: 0 };
+    }
+    /** Ein Gegenstand, den jemand in der Gruppe noch tragen kann (oder null) */
+    function dingZufall(W, zf) { const l = DING_POOL.filter((id) => W.gruppe.some((f) => kannTragen(W, id, f))); return l.length ? l[Math.floor(zf() * l.length)] : null; }
+    function dingAngebot(W, zf, n) { return DING_POOL.filter((id) => W.gruppe.some((f) => kannTragen(W, id, f))).map((id) => [zf(), id]).sort((a, b) => a[0] - b[0]).slice(0, n || 3).map((x) => x[1]); }
+    /** Die Siegelwächterin: was sie dieser Gruppe anbietet. Zurück: [{ typ: "heilung" | "trank" | "ding" | "segen", id?, preis }] */
+    function ladenAngebot(W, zf) {
+      const P = K.PREIS, dinge = dingAngebot(W, zf, 3);
+      return [{ typ: "heilung", preis: P.heilung }, { typ: "trank", preis: P.trank }].concat(dinge.map((id) => ({ typ: "ding", id, preis: P.ding })), SEGEN_POOL.filter((x) => !W.segen.includes(x)).map((id) => ({ typ: "segen", id, preis: P.segen })));
+    }
+    /** Kaufen. held: für Trank und Gegenstand. Zurück: true, wenn gekauft */
+    function ladenKauf(W, a, held) {
+      if (!a || W.splitter < a.preis) return false;
+      if (a.typ === "heilung") { if (lebenSchnitt(W) >= 1) return false; W.zust = null; } // alle stehen mit vollen Trefferpunkten im Finale
+      else if (a.typ === "trank") { if (!W.gruppe.includes(held)) return false; W.traenke[held] = (W.traenke[held] || 0) + 1; }
+      else if (a.typ === "ding") { if (!W.gruppe.includes(held) || !kannTragen(W, a.id, held)) return false; beuteNehmen(W, { ding: a.id, held }); }
+      else if (a.typ === "segen") { if (W.segen.includes(a.id)) return false; beuteNehmen(W, { segen: a.id }); }
+      else return false;
+      W.splitter -= a.preis; W.kaeufe.push({ typ: a.typ, id: a.id || null, held: held || null, preis: a.preis }); return true;
+    }
+    /** Der Rechner kauft ein: erst Heilung, wenn er angeschlagen ist, dann Segen, Gegenstände, Tränke */
+    function botLaden(W, zf) {
+      const a = ladenAngebot(W, zf), irgendwer = () => W.gruppe[Math.floor(zf() * W.gruppe.length)];
+      if (lebenSchnitt(W) < 0.7) ladenKauf(W, a.find((x) => x.typ === "heilung"));
+      for (const x of a.filter((y) => y.typ === "segen")) { ladenKauf(W, x); break; }
+      for (const x of a.filter((y) => y.typ === "ding")) { const l = W.gruppe.filter((f) => kannTragen(W, x.id, f)); if (l.length) ladenKauf(W, x, l[Math.floor(zf() * l.length)]); }
+      for (let n = 0; n < 3; n++) ladenKauf(W, a.find((x) => x.typ === "trank"), irgendwer());
+    }
+    /** Raum abrechnen – auch einen, den die Zeit abgebrochen hat: Erfahrung für jedes besiegte Monster, Beute nach Zufall, Stufen für die Gruppe.
+     *  Zurück: { ort, id, sieg, abgebrochen, runden, xp, besiegt, gegner, drops: [Kennungen], stufeVor, stufe, gefallen: [fid …] } */
+    function kEnde(W, ort, st, zf, abgebrochen, verlassen) { // verlassen: selbst gegangen – der Raum gilt als besucht
+      const def = kDef(W, ort), sieg = st.ende === "sieg", ab = Boolean(abgebrochen) && !sieg, gegner = st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]), tot = gegner.filter((f) => f.tp <= 0);
+      const gew = (f) => (f.art === def.boss ? 3 : 1), summe = gegner.reduce((a, f) => a + gew(f), 0) || 1, xp = Math.round(def.xp * tot.reduce((a, f) => a + gew(f), 0) / summe);
+      const out = { ort, id: def.id, sieg, abgebrochen: ab, runden: st.runde, xp, besiegt: tot.length, gegner: gegner.length, bossBesiegt: tot.some((f) => f.art === def.boss), drops: [], splitter: 0, gefallen: [], stufeVor: Math.max(...W.gruppe.map((f) => W.stufen[f])) };
+      out.tot = tot.map((f) => ({ id: f.id, boss: f.art === def.boss })); // was sie fallen lassen, entscheidet kDrop (aufgehoben wird im Raum)
+      W.runden += st.runde; W.ort = ort; if (!ab || verlassen) { W.besucht.push(ort); W.raeume = W.besucht.length; }
+      let zust = null;
+      if (sieg || ab) { zust = R.nachKampf(st); // gewonnen oder von der Zeit herausgeholt: Zustand bleibt, Gefallene stehen mit halben Trefferpunkten auf
+        for (const f of W.gruppe) { const z = zust[f], fig = st.figuren.find((x) => x.fid === f); if (z.tot || !fig || fig.tp <= 0) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, W.stufen[f]) / 2); out.gefallen.push(f); } } }
+      W.zust = zust; W.xp += xp; // Gruppe verloren: zust bleibt leer – alle stehen voll geheilt wieder auf
+      const neuS = Math.min(K.STUFE_MAX, 1 + Math.floor(W.xp / K.XP_STUFE));
+      for (const f of W.gruppe) { const alt = W.stufen[f]; if (neuS <= alt) continue; W.stufen[f] = neuS;
+        if (zust) { const z = zust[f], pa = plaetzeVon(f, alt), pn = plaetzeVon(f, neuS); z.tp += F.tpVon(f, neuS) - F.tpVon(f, alt); z.stufe = neuS; z.plaetze = pn.map((n, k) => Math.max(0, Math.min(n, ((z.plaetze || [])[k] || 0) + n - (pa[k] || 0)))); } }
+      out.stufe = neuS; out.stufen = Object.assign({}, W.stufen); out.leben = leben(W); out.xpGesamt = W.xp; W.verlauf.push(out); return out;
+    }
+    /** Was ein besiegtes Monster fallen lässt: selten einen Segen, den die Gruppe noch nicht hat (der Boss oft), sonst Erbsplitter. Zurück: { segen } oder { splitter } */
+    function kDrop(W, boss, zf, schon) {
+      const frei = SEGEN_POOL.filter((x) => !W.segen.includes(x) && !(schon || []).includes(x));
+      if (frei.length && zf() < (boss ? K.DROP_BOSS : K.DROP)) return { segen: frei[Math.floor(zf() * frei.length)] };
+      const [a, b] = boss ? K.SPLITTER_BOSS : K.SPLITTER; return { splitter: a + Math.floor(zf() * (b - a + 1)) };
+    }
+    /** Aufheben */
+    function kNimm(W, d) { if (d.segen) beuteNehmen(W, { segen: d.segen }); else W.splitter += d.splitter || 0; }
+    /** Der Rechner auf der Karte: Einstieg, dann in zufälliger Reihenfolge so viele Räume, wie die Zeit hergibt (sekRunde Sekunden je Kampfrunde) */
+    function botKarte(gruppe, seed, name, karte, zeitSek, sekRunde) {
+      let zs = (seed >>> 0) || 7; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; return zs / 0x7fffffff; };
+      const W = neuK(gruppe, name, karte), sek = sekRunde || K.BOT_SEK_RUNDE; let rest = zeitSek == null ? K.ZEIT : zeitSek;
+      const nimm = (e) => { e.splitter = 0; e.segen = []; for (const t of e.tot) { const d = kDrop(W, t.boss, zf); kNimm(W, d); if (d.segen) e.segen.push(d.segen); else e.splitter += d.splitter; } }; // der Rechner hebt alles auf, was seine besiegten Monster fallen lassen
+      const spiel = (ort, runden) => { const st = R.neuesSpiel(seed * 13 + (ort === "M" ? 9 : ort) + 1, kOpts(W, ort)); raumDinge(W, st); let z = 0;
+        while (!st.ende && z++ < 900 && st.runde <= runden) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); } return st; };
+      { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); nimm(e); }
+      for (const ort of [0, 1, 2, 3].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1])) {
+        if (rest < sek) break;
+        const st = spiel(ort, Math.floor(rest / sek)), e = kEnde(W, ort, st, zf, !st.ende); nimm(e);
+        rest -= Math.min(rest, st.runde * sek); if (e.abgebrochen) break;
+      }
+      botLaden(W, zf);
+      W.abgebogen = true; return W;
+    }
+
     /* ---------- das Finale ---------- */
     const held = (f) => f.art !== "wolf" && f.art !== "arenawolf" && Boolean(f.fid || f.fidA), hid = (f) => f.fid || f.fidA;
     const helden = (st, tm) => st.figuren.filter((f) => held(f) && R.teamVon(st, f) === tm), lebt = (f) => f.tp > 0 && !f.tot;
@@ -154,7 +247,8 @@
      * o: { heilung: "gerechnet" (frühere Gruppe: Hälfte der fehlenden Trefferpunkte, spätere keine; gleichauf: beide) | "keine" (niemand), namen, staerke }
      */
     function finaleNeu(seed, W1, W2, o = {}) {
-      an(); const W = { 1: W1, 2: W2 }, vor = W2.raeume - W1.raeume, frueh = vor > 0 ? 1 : vor < 0 ? 2 : 0, heilung = o.heilung === "keine" ? "keine" : "gerechnet";
+      an(); const W = { 1: W1, 2: W2 }, vor = o.gleich ? 0 : W2.raeume - W1.raeume, // o.gleich: beide kommen gleichzeitig an (Spielart „Karte“)
+         frueh = vor > 0 ? 1 : vor < 0 ? 2 : 0, heilung = o.heilung === "keine" ? "keine" : "gerechnet";
       const st = R.neueArena(seed, { modus: "duell", runden: RUNDEN, karte: karteVon("SIEGEL"), begegnung: "kobolde", namen: o.namen || [W1.name || "Du", W2.name || "Gegner"],
         teams: [W1, W2].map((w) => w.gruppe.map((f) => ({ fid: f, stufe: w.stufen[f] }))) });
       // Vom Weg kommen die Trefferpunkte (mit oder ohne Heilung) und die Beute mit. Zauberplätze, Tränke und Fähigkeiten sind im Finale frisch – außer mit o.frisch === false.
@@ -162,6 +256,7 @@
         for (const f of helden(st, tm)) { const id = hid(f), a = l[id] == null ? 1 : l[id], z = z0 && z0[id];
           if (z && o.frisch === false) { f.plaetze = z.plaetze.slice(); f.genutzt = Object.assign({}, z.genutzt); f.rucksack = JSON.parse(JSON.stringify(z.rucksack || [])); } // sonst: frische Zauberplätze, Tränke und Fähigkeiten (wie in der Rechnung)
           for (const d of w.dinge[id] || []) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d)) f.rucksack.push({ id: d, n: 1 }); }
+          if (w.traenke && w.traenke[id]) { f.rucksack = f.rucksack || []; const t = f.rucksack.find((x) => x.id === "heiltrank"); if (t) t.n = (t.n || 0) + w.traenke[id]; else f.rucksack.push({ id: "heiltrank", n: w.traenke[id] }); }
           if (w.segen.includes("wachtfeuer")) f.tpMax += 3;
           f.tp = Math.max(1, Math.round(f.tpMax * (heilt ? a + (1 - a) / 2 : a))); } }
       const k = st.karte, mitte = naechstFrei(st, (k.b - 1) / 2, (k.h - 1) / 2), orte = [mitte, naechstFrei(st, mitte.x - 3, mitte.y), naechstFrei(st, mitte.x + 3, mitte.y)].map((p) => ({ x: p.x, y: p.y }));
@@ -290,7 +385,7 @@
       for (let i = 0; i < 9000 && !st.riss.aus; i++) { const w = finaleBot(st); if (finaleZug(st, w)) finaleZug(st, { typ: "ende" }); }
       return st;
     }
-    return { RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
+    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
       startPunkte, finaleNeu, vor: vor_, nach, finaleBot, finaleZug, finaleAuto, siegel, naechstesSiegel, inZone, steht, helden };
   }
 

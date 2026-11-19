@@ -273,6 +273,37 @@ Nach eigener Raumzahl: 2 Räume 60 von 103, 3 Räume 109 von 212, 4 Räume 76 vo
 - Echte Geräte. Geprüft sind Bildschirmfotos in PC- und Handygröße.
 - Der Tischmodus mit Handys.
 
+## Zweite Spielart: Karte mit Zeit
+
+Entstanden aus den ersten von Hand gespielten Partien. Dort kam „früh gegen tief" entweder nicht vor (beide gleich tief) oder war einseitig (3 Startpunkte, Finale nach zwei Runden), und wer früh am Siegel war, wartete über drei Minuten. Die zweite Spielart ersetzt das Abbiegen durch eine gemeinsame Uhr. Sie ist im Prototyp die Voreinstellung; die erste bleibt wählbar (Auswahl „Spielart" oder `?rissart=abbiegen`).
+
+### Ablauf
+
+1. **Die Mitte.** Der erste Raum ist der leichte Einstieg. Alle beginnen auf Stufe 1.
+2. **Die Karte.** Danach öffnet sich die Karte: die Mitte und vier Räume im Ring darum, verbunden mit der Mitte und mit ihren beiden Nachbarn. Für beide Seiten dieselbe Karte. Ab jetzt läuft die Zeit: vier Minuten (wählbar 3, 4 oder 5).
+3. **Dunkel und hell.** Unerkundete Räume sind dunkel; was drin ist, sieht man erst beim Betreten. In den vier Räumen liegen ein schwerer Raum, ein Bossraum und zwei leichte Räume, die Verteilung wird gelost. Beendete Räume leuchten. Nach jedem Raum landet man wieder auf der Karte.
+4. **Erfahrung.** Jedes besiegte Monster gibt Erfahrung für die ganze Gruppe, auch wenn der Raum nicht fertig wird. Je 100 Erfahrung steigt die Gruppe eine Stufe (höchstens Stufe 6). Einstieg 100, leichter Raum 75, schwerer Raum 125, Bossraum 150 (der Boss zählt dreifach).
+5. **Erbsplitter und Segen.** Jedes besiegte Monster lässt etwas liegen: zu 8 % einen zufälligen Segen (der Boss zu 50 %), sonst 1 bis 20 Erbsplitter (der Boss 15 bis 40). Aufgehoben wird es, sobald ein stehender Held auf dem Feld oder daneben steht. Ist der Raum gewonnen, sammelt die Gruppe den Rest ein.
+6. **Raum verlassen.** Mitten im Kampf kann man gehen. Erfahrung und Aufgehobenes bleiben, was noch liegt, ist verloren, und der Raum ist danach zu.
+7. **Die Zeit ist um.** Der Riss holt beide Gruppen im selben Moment in den Siegelsaal, auch mitten aus einem Kampf. Die Uhr läuft für beide gleich, ohne Anhalten und ohne Abzüge: Niemand wartet.
+8. **Die Siegelwächterin.** Vor dem Finale, ohne Zeitdruck, tauscht jede Seite ihre Erbsplitter: Heilung der ganzen Gruppe 50, Heiltrank für einen Helden 25, Gegenstand 60 (drei zur Wahl), Segen 90. Was übrig bleibt, verfällt.
+9. **Das Finale** wie oben, aber beide beginnen am eigenen Eingang mit 0 : 0. Trefferpunkte kommen vom Weg mit; Heilung gibt es nur bei der Wächterin. Zauberplätze, Tränke und Fähigkeiten sind frisch.
+
+Vom Gegner hört man auf der Karte nur, dass er im Riss ist. Was er erkundet und wie stark er ist, zeigt sich am Siegel.
+
+### Was verworfen wurde
+
+- **Truhen mit Glückswürfen und Zeitstrafe** und **Sonderaufgaben, die Zeit kosten:** Beides zieht Zeit von der eigenen Uhr ab oder braucht sie zusätzlich. Mit Abzug käme eine Seite früher am Siegel an und müsste wieder warten. Das Hinlaufen zum Aufheben kostet schon Zeit, ohne die Uhr zu verschieben.
+- **Gegenstände als Beute von Monstern:** Gegenstände gibt es nur bei der Wächterin, Monster lassen Segen fallen.
+
+### Stand und erste Zahlen
+
+Gebaut in `js/riss-kern.js` und `js/riss.js`, Test `tests/riss-karte.test.js`. Rechner gegen Rechner, 200 Partien mit vier Minuten: Der Rechner schafft im Schnitt 2,2 der vier äußeren Räume, kommt mit Stufe 4,1 an, sammelt rund 150 Erbsplitter und trägt knapp 2 Segen. Das Finale dauert rund 8,6 Runden, die Seiten gewinnen gleich oft (102 zu 98).
+
+Nicht gerechnet und nicht von Hand gespielt: ob vier Minuten für einen Menschen passen (aus den bisherigen Partien: 40 bis 100 Sekunden je Raum, also zwei bis vier Räume), ob das Aufheben eine echte Entscheidung ist (Nahkämpfer stehen beim Töten ohnehin daneben), und ob die Preise der Wächterin stimmen. Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles auf und verlässt keinen Raum.
+
+Gegen Menschen ist offen, wie die Uhr mit unterschiedlich schnellen Geräten und Animationen umgeht.
+
 ## Die Regeln auf einen Blick
 
 - Drei Helden je Seite, alle auf Stufe 1.
