@@ -3089,3 +3089,5 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 #karte rect.feld.riss-drop.greifbar { fill: rgba(255,80,80,.2); stroke: #ffb0b0; stroke-width: 4; stroke-dasharray: none; }
 .riss-xpleiste span, .riss-splitter { color: #ff9d9d; }
 .riss-fund-zeichen { font-style: normal; font-size: 46px; line-height: 1; text-shadow: 0 0 16px rgba(255,215,94,.8); } .riss-fund-bild { width: 96px; height: 96px; object-fit: contain; }
+.riss-ding-bild { width: 56px; height: 56px; object-fit: contain; display: block; }
+#karte .riss-feldbild.fund image { filter: drop-shadow(0 0 6px rgba(255,215,94,.9)); }

@@ -390,7 +390,7 @@
     feldBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt));
   }
   /* Bilder für Funde: Sobald es zu einem Gegenstand ein eigenes Bild gibt (img/riss/fund-<Kennung>.gif), hier eintragen – sonst steht sein Zeichen auf dem Feld */
-  const FUND_BILDER = new Set([]);
+  const FUND_BILDER = new Set(["gluecksbringer", "eulenmantel", "amulett"]);
   const fundBild = (id) => (FUND_BILDER.has(id) ? `img/riss/fund-${id}.gif` : null);
   /** Was auf dem Feld liegt, als Bild: Erbsplitter (animiert, aufrecht wie die Figuren) oder der Fund selbst (sein Bild, sonst sein Zeichen).
    *  Das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu. */
@@ -494,7 +494,7 @@
     const zeichne = () => {
       const karte = (a, k) => { const d = a.typ === "ding" ? R.GEGENSTAENDE[a.id] : a.typ === "segen" ? F.SEGEN[a.id] : null, voll = a.typ === "heilung" && K.lebenSchnitt(W) >= 1, hat = a.typ === "segen" && W.segen.includes(a.id);
         const name = a.typ === "heilung" ? "Heilung der Wächterin" : a.typ === "trank" ? "Heiltrank" : (a.typ === "segen" ? "Segen: " : "") + d.name, text = a.typ === "heilung" ? "Alle Helden gehen mit vollen Trefferpunkten ins Finale." : a.typ === "trank" ? "Ein zusätzlicher Heiltrank für einen Helden." : d.text + (a.typ === "segen" ? " Gilt für die ganze Gruppe." : "");
-        return `<button type="button" class="riss-ding${a.typ === "segen" ? " segen" : ""}${wahl === a ? " an" : ""}" data-k="${k}" ${W.splitter < a.preis || voll || hat ? "disabled" : ""}><i>${a.typ === "heilung" ? "✚" : a.typ === "trank" ? "⚱" : a.typ === "segen" ? d.zeichen : d.sym || "◆"}</i><b>${esc(name)}</b><small>${esc(text)}</small><em>${hat ? "gekauft" : voll ? "alle sind gesund" : "◈ " + a.preis}</em></button>`; };
+        return `<button type="button" class="riss-ding${a.typ === "segen" ? " segen" : ""}${wahl === a ? " an" : ""}" data-k="${k}" ${W.splitter < a.preis || voll || hat ? "disabled" : ""}><i>${a.typ === "heilung" ? "✚" : a.typ === "trank" ? "⚱" : a.typ === "segen" ? d.zeichen : fundBild(a.id) ? `<img class="riss-ding-bild" src="${fundBild(a.id)}" alt="">` : d.sym || "◆"}</i><b>${esc(name)}</b><small>${esc(text)}</small><em>${hat ? "gekauft" : voll ? "alle sind gesund" : "◈ " + a.preis}</em></button>`; };
       const brauchtHeld = wahl && (wahl.typ === "trank" || wahl.typ === "ding");
       seite(`<div data-riss-laden><p class="riss-schritt">Vor dem Siegelsaal</p><h1 class="hub-gruss">Die Siegelwächterin</h1>
         <p class="hub-untertitel">„Erbsplitter gegen das, was ihr dort drin braucht. Wählt klug – am Siegel nützen sie euch nichts mehr.“</p>
