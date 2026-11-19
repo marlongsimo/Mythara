@@ -199,10 +199,10 @@
      *  Zurück: { ort, id, sieg, abgebrochen, runden, xp, besiegt, gegner, drops: [Kennungen], stufeVor, stufe, gefallen: [fid …] } */
     function kEnde(W, ort, st, zf, abgebrochen, verlassen) { // verlassen: selbst gegangen – der Raum gilt als besucht
       const def = kDef(W, ort), sieg = st.ende === "sieg", ab = Boolean(abgebrochen) && !sieg, gegner = st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]), tot = gegner.filter((f) => f.tp <= 0);
-      const xp = kXp(st);
+      W.raumXp = W.raumXp || {}; const gesamt = kXp(st), xp = Math.max(0, gesamt - (W.raumXp[ort] || 0)); W.raumXp[ort] = Math.max(gesamt, W.raumXp[ort] || 0); // wer einen Raum wieder betritt, bekommt für schon besiegte Monster nichts noch einmal
       const out = { ort, id: def.id, sieg, abgebrochen: ab, runden: st.runde, xp, besiegt: tot.length, gegner: gegner.length, bossBesiegt: tot.some((f) => f.art === def.boss), drops: [], splitter: 0, gefallen: [], stufeVor: Math.max(...W.gruppe.map((f) => W.stufen[f])) };
       out.tot = tot.map((f) => ({ id: f.id, boss: f.art === def.boss })); // was sie fallen lassen, entscheidet kDrop (aufgehoben wird im Raum)
-      W.runden += st.runde; W.ort = ort; if (!ab || verlassen) { W.besucht.push(ort); W.raeume = W.besucht.length; }
+      W.runden += st.runde; W.ort = ort; if (!ab && !W.besucht.includes(ort)) { W.besucht.push(ort); W.raeume = W.besucht.length; } // fertig ist ein Raum, wenn er gewonnen oder die Gruppe darin gefallen ist; ein verlassener bleibt offen
       let zust = null;
       if (sieg || ab) { zust = R.nachKampf(st); // gewonnen oder von der Zeit herausgeholt: Zustand bleibt, Gefallene stehen mit halben Trefferpunkten auf
         for (const f of W.gruppe) { const z = zust[f], fig = st.figuren.find((x) => x.fid === f); if (z.tot || !fig || fig.tp <= 0) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, W.stufen[f]) / 2); out.gefallen.push(f); } } }

@@ -53,9 +53,17 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(live.xp > 0 && live.sichtbar && /EP|Stufe/.test(live.text), `der blaue Balken zählt im Kampf mit (${live.xp} Erfahrung aus diesem Raum, ${live.breite})`);
   if (e === "erster") { await p.click("#riss-raus"); await p.click("#riss-raus"); } else { await einsammeln(); await p.waitForSelector("#weiter-abenteuer"); await p.click("#weiter-abenteuer"); }
   await p.waitForSelector("[data-riss-karte]", { timeout: 15000 });
-  check(await p.evaluate((x) => { const Z = window.RISS.zustand(), v = Z.ich.verlauf[1]; return Z.ich.besucht.length === 2 && v.xp >= x && Z.ich.xp === Z.ich.verlauf[0].xp + v.xp; }, live.xp), "Raum verlassen: zurück auf der Karte, die Erfahrung bleibt, der Raum ist zu");
-  check((await p.$$(".rk-raum.dunkel")).length === 3 && await p.evaluate(() => document.getElementById("riss-xpleiste").hidden), "der verlassene Raum ist nicht mehr dunkel, der Balken ist weg");
-  // dritter Raum: Die Zeit läuft ab, der Riss holt die Gruppe heraus
+  const nachGehen = await p.evaluate((x) => { const Z = window.RISS.zustand(), v = Z.ich.verlauf[1], m = Object.values(window.RISS.karteZustand().raeume).find((r) => !r.sieg && !r.zu); return { ok: Z.ich.besucht.length === 1 && v.xp >= x && Z.ich.xp === Z.ich.verlauf[0].xp + v.xp, xp: Z.ich.xp, monster: m ? m.monster.map((q) => q.tp).join(",") : null, lebend: m ? m.monster.filter((q) => q.tp > 0).length : 0, liegt: m ? m.liegt.length : 0 }; }, live.xp);
+  if (e === "erster") {
+    check(nachGehen.ok && nachGehen.lebend >= 1, "Raum verlassen: zurück auf der Karte, die Erfahrung bleibt, der Raum merkt sich seine Monster (" + nachGehen.monster + ")");
+    check((await p.$$(".rk-raum.dunkel")).length === 3 && (await p.$$(".rk-raum.offen[data-ort]")).length === 1 && await p.evaluate(() => document.getElementById("riss-xpleiste").hidden), "der verlassene Raum ist auf der Karte als verlassen markiert und anwählbar");
+    await p.click(".rk-raum.offen[data-ort]"); await p.waitForSelector("#karte .fig"); await p.waitForTimeout(500);
+    const wieder = await p.evaluate(() => { const st = window.AB.st, g = st.figuren.filter((f) => f.seite === "gegner" && window.AB.R.GEGNER[f.art]), K = window.RISS.karteZustand(); return { monster: g.map((q) => Math.max(0, q.tp)).sort().join(","), liegt: K.drops.liste.filter((d) => !d.weg).length, balken: document.querySelector("#riss-xpleiste small").textContent }; });
+    check(wieder.monster === nachGehen.monster.split(",").sort().join(",") && wieder.liegt === nachGehen.liegt, "wieder betreten: Monster und Funde sind wie beim Verlassen (" + wieder.monster + ", " + wieder.liegt + " am Boden)");
+    await p.click("#riss-raus"); await p.click("#riss-raus"); await p.waitForSelector("[data-riss-karte]", { timeout: 15000 });
+    check(await p.evaluate((xp) => window.RISS.zustand().ich.xp === xp, nachGehen.xp), "für schon besiegte Monster gibt es beim zweiten Besuch keine Erfahrung noch einmal");
+  }
+  // nächster Raum: Die Zeit läuft ab, der Riss holt die Gruppe heraus
   await p.click(".rk-raum.dunkel"); await p.waitForSelector("#karte .fig");
   await p.waitForSelector("#riss-waechterin", { timeout: 70000 });
   check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"); return (!u || u.hidden) && !window.AB.st && document.getElementById("riss-raus").hidden && window.ABR.bewegen === window.AB.R.bewegen; }), "Zeit um: Der Riss holt die Gruppe aus dem Kampf, Uhr und Knopf sind weg");

@@ -3102,3 +3102,6 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 #karte image.riss-rune.mitte { filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,210,90,1)) drop-shadow(0 0 18px rgba(255,170,40,.7)); }
 .riss-segen img { width: 26px; height: 26px; object-fit: contain; vertical-align: middle; }
 .riss-ding em { color: #ff9d9d; }
+/* Rissgänger, Karte: verlassene Räume (Monster stehen noch) und gewonnene mit liegenden Funden lassen sich wieder betreten */
+.rk-raum.hell.offen { background: radial-gradient(circle, rgba(160,120,255,.28), rgba(40,24,80,.55)); border-color: #b79bff; box-shadow: 0 0 20px rgba(150,110,255,.55); }
+.rk-raum.hell.offenbar { cursor: pointer; } .rk-raum.hell.offenbar:hover, .rk-raum.hell.offenbar:focus-visible { filter: brightness(1.25); outline: none; }

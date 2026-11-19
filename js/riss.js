@@ -114,7 +114,7 @@
         <li><b>Erfahrung gibt es, sobald ein Monster am Boden liegt:</b> je mehr Lebenspunkte es hatte, desto mehr. Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
         <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: einen Helden daneben stellen und das Feld antippen. Bei einem Fund wählst du, wer ihn bekommt.</li>
         <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
-        <li><b>Raum verlassen:</b> Mitten im Kampf kannst du gehen. Erfahrung und Aufgehobenes bleiben, der Raum ist danach zu.</li>
+        <li><b>Raum verlassen und wiederkommen:</b> Mitten im Kampf kannst du gehen und später zurückkehren. Der Raum bleibt, wie du ihn verlassen hast: Monster behalten ihren Schaden, Funde bleiben liegen.</li>
         <li><b>Vor dem Finale erscheint die Siegelwächterin.</b> Bei ihr kaufst du für Erbsplitter Heilung, Tränke, Gegenstände und Segen.</li>
         <li><b>Ist die Zeit um, holt der Riss beide Gruppen in den Siegelsaal</b> – auch mitten aus einem Kampf. Niemand wartet, niemand beginnt mit Punkten.</li>
         <li><b>Deinen Gegner hörst du nur werkeln.</b> Was er erkundet und wie stark er ist, siehst du erst am Siegel.</li>` : `        <li><b>Alle beginnen auf Stufe 1.</b> Raum 1 ist leicht und gibt eine Stufe.</li>
@@ -458,7 +458,7 @@
     if (!st) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
     const jetzt = Date.now(), D = KZ.drops, liegt = D ? st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0 && D.zeit[f.id] != null && D.zeit[f.id] <= jetzt).reduce((a, f) => a + f.tpMax, 0) : 0;
-    const xp = Z.ich.xp + K.KARTE.XP_LP * liegt, s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
+    const xp = Z.ich.xp + Math.max(0, K.KARTE.XP_LP * liegt - (KZ.xpVor || 0)), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
     if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) stufenKachel(s.stufe); KZ.liveStufe = s.stufe;
     const hin = KZ.hinweis && KZ.hinweis.bis > Date.now() ? KZ.hinweis.t : "", plus = KZ.plus && KZ.plus.bis > Date.now() ? KZ.plus.n : 0;
     const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small${hin ? ' class="hin"' : ""}>${hin ? esc(hin) : s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span${plus ? ' class="plus"' : ""}>◈ ${Z.ich.splitter}${plus ? ` <em>+${plus}</em>` : ""}</span>`;
@@ -469,7 +469,7 @@
     Z.karte = K.karteLosen(Math.random); Z.ich = K.neuK(Z.wahl, "Du", Z.karte);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botKarte(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.karte, Z.zeit);
-    clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null });
+    clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null, raeume: {} });
     Z.log = { v: 5, art: "karte", wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
     uebergang(() => kampfK("M")); // der Film, dann direkt in den ersten Raum – dort läuft die Uhr an
   }
@@ -479,16 +479,36 @@
     raumEinhaengen();
     window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
-    if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); window.AB.render(); }
+    if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); raumWiederherstellen(ort, window.AB.st); window.AB.render(); }
     const karte = $("#karte"); if (karte) karte.addEventListener("click", karteKlick, true); // vor dem Spiel: Aufheben statt Laufen
     clearInterval(KZ.wache); KZ.wache = setInterval(kampfWache, 250); kampfWache();
     rausKnopf(true); uhrAn(); hudEin(); // die Uhr läuft ab dem ersten Raum – für beide Seiten gleich lang
   }
+  const monsterVon = (st) => st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]);
+  /** Beim Gehen: festhalten, wie der Raum dasteht – welche Monster noch leben (mit Lebenspunkten und Platz) und was noch am Boden liegt */
+  function raumMerken(ort, st, sieg, gefallen) {
+    const D = KZ.drops, alt = KZ.raeume[ort] || { besuche: 0 };
+    KZ.raeume[ort] = { besuche: alt.besuche + 1, sieg, zu: Boolean(gefallen), monster: monsterVon(st).map((f) => ({ art: f.art, tp: Math.max(0, f.tp), tpMax: f.tpMax, x: f.x, y: f.y })),
+      liegt: D.liste.filter((d) => !d.weg).map((d) => ({ x: d.x, y: d.y, splitter: d.splitter, ding: d.ding })) };
+  }
+  /** Beim Wiederbetreten: Monster und Funde stehen und liegen wie beim Verlassen. Die Helden kommen neu herein, mit ihrem jetzigen Zustand. */
+  function raumWiederherstellen(ort, st) {
+    const M = KZ.raeume[ort], D = KZ.drops; KZ.xpVor = (Z.ich.raumXp || {})[ort] || 0; if (!M) return;
+    const neu = monsterVon(st), frei = M.monster.slice();
+    for (const f of neu) { let k = frei.findIndex((m) => m.art === f.art); if (k < 0) k = 0; const m = frei.splice(k, 1)[0]; if (!m) { f.tp = 0; continue; }
+      f.tp = m.tp; f.tpMax = m.tpMax; if (m.x >= 0 && !st.figuren.some((g) => g !== f && g.tp > 0 && g.x === m.x && g.y === m.y)) { f.x = m.x; f.y = m.y; }
+      if (f.tp <= 0) { D.gesehen[f.id] = true; D.zeit[f.id] = 0; } } // schon besiegt: lässt nichts mehr fallen
+    for (const d of M.liegt) D.liste.push(Object.assign({ weg: false, ab: 0 }, d));
+    if (neu.every((f) => f.tp <= 0)) { KZ.frei = true; KZ.gemeldet = true; st.log.push({ t: "Der Raum ist schon frei. Sammelt ein, was noch liegt – oder geht zur Karte.", art: "gut" }); }
+    else st.log.push({ t: "Ihr seid zurück. Die Monster stehen, wie ihr sie verlassen habt.", art: "" });
+  }
   function nachK(ort, st, dauer) {
     const D = KZ.drops, sieg = st.ende === "sieg", liegen = D.liste.filter((d) => !d.weg).length;
+    raumMerken(ort, st, sieg, !sieg && !KZ.verlassen && !KZ.zeitAb);
     const e = K.kEnde(Z.ich, ort, st, Math.random, KZ.zeitAb || KZ.verlassen, KZ.verlassen); e.splitter = D.splitter; e.funde = D.funde.slice(); e.liegen = liegen; e.verlassen = KZ.verlassen && !sieg; KZ.ergebnis = e;
     Z.log.ich.raeume.push({ ort, id: e.id, sieg: e.sieg, abgebrochen: e.abgebrochen, verlassen: e.verlassen, runden: e.runden, xp: e.xp, besiegt: e.besiegt, gegner: e.gegner, gefallen: e.gefallen.length, splitter: e.splitter, funde: e.funde, liegenGelassen: liegen, sekunden: Math.round(dauer / 1000), restSek: Math.max(0, Math.round(KZ.rest / 1000)) });
-    if (KZ.fertig) return; if (KZ.zeitAb || (KZ.laeuft && KZ.rest <= 0) || Z.ich.besucht.length >= 5) return teleport(); karteZeigen(); uhrAn();
+    const allesFertig = [0, 1, 2, 3].every((k) => { const m = KZ.raeume[k]; return m && (m.zu || (m.sieg && !m.liegt.length)); }); // nichts mehr zu holen
+    if (KZ.fertig) return; if (KZ.zeitAb || (KZ.laeuft && KZ.rest <= 0) || allesFertig) return teleport(); karteZeigen(); uhrAn();
   }
   /** Vor dem Finale: die Siegelwächterin verkauft für Erbsplitter, was im Endkampf hilft (ohne Zeitdruck) */
   function laden() {
@@ -515,23 +535,25 @@
   const ORT = [{ x: 49.9, y: 12.4, n: "Norden" }, { x: 85.7, y: 48.4, n: "Osten" }, { x: 49.6, y: 84.3, n: "Süden" }, { x: 13.3, y: 48.4, n: "Westen" }]; // Mittelpunkte der Räume auf dem Kartenbild (img/mythara/riss-karte.webp), in Prozent
   function karteZeigen() {
     const W = Z.ich, C = K.KARTE, e = KZ.ergebnis, S = K.kStufe(W.xp), stufe = S.stufe;
-    const raum = (k) => { const da = W.besucht.includes(k), d = da ? K.kDef(W, k) : null, v = da ? W.verlauf.find((x) => x.ort === k) : null;
-      return `<button type="button" class="rk-raum ${da ? "hell" + (v && !v.sieg ? " verloren" : "") : "dunkel"}${W.ort === k ? " hier" : ""}" style="left:${ORT[k].x}%;top:${ORT[k].y}%" ${da ? "disabled" : `data-ort="${k}"`}>
-        <i>${da ? (d.boss ? "☠" : d.id === "schwer" ? "⚔" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : ORT[k].n}</b><small>${da ? (v && v.sieg ? "geschafft" : v && v.abgebrochen ? "verlassen" : "verloren") : "unerkundet"}</small></button>`; };
-    const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen" : "die Gruppe ist gefallen und steht voll geheilt wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.funde || []).map((x) => ` · ${esc(R.GEGENSTAENDE[x.ding].name)} für ${esc(F.FIGUREN[x.held].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
+    const raum = (k) => { const m = KZ.raeume[k], da = Boolean(m), d = da ? K.kDef(W, k) : null, rest = da ? m.monster.filter((x) => x.tp > 0).length : 0, liegt = da ? m.liegt.length : 0;
+      const zu = da && (m.zu || (m.sieg && !liegt)), art = !da ? "dunkel" : m.zu ? "hell verloren" : m.sieg ? "hell" : "hell offen"; // offen: verlassen, die Monster stehen noch
+      const stand = !da ? "unerkundet" : m.zu ? "verloren" : m.sieg ? (liegt ? `noch ${liegt} ${liegt === 1 ? "Fund" : "Funde"}` : "geschafft") : `verlassen · ${rest} ${rest === 1 ? "Monster" : "Monster"}`;
+      return `<button type="button" class="rk-raum ${art}${zu ? "" : " offenbar"}${W.ort === k ? " hier" : ""}" style="left:${ORT[k].x}%;top:${ORT[k].y}%" ${zu ? "disabled" : `data-ort="${k}"`}>
+        <i>${da ? (d.boss ? "☠" : d.id === "schwer" ? "⚔" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : ORT[k].n}</b><small>${stand}</small></button>`; };
+    const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen – du kannst zurückkommen" : "die Gruppe ist gefallen und steht voll geheilt wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.funde || []).map((x) => ` · ${esc(R.GEGENSTAENDE[x.ding].name)} für ${esc(F.FIGUREN[x.held].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
     seite(`<div data-riss-karte><p class="riss-schritt">Die Karte des Risses</p><h1 class="hub-gruss">Wohin jetzt?</h1>${letztes}
       <div class="riss-karte-zwei"><div class="riss-karte" id="riss-karte">
           <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="left:49.5%;top:48.4%"><b>Mitte</b><small>geschafft</small></span>${[0, 1, 2, 3].map(raum).join("")}</div>
         <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>
-          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst.</p></div></div></div>`);
+          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst – und du kannst jeden Raum wieder betreten, solange dort noch Monster stehen oder etwas liegt.</p></div></div></div>`);
     $("#riss-karte").onclick = (ev) => { const b = ev.target.closest("[data-ort]"); if (!b || KZ.imKampf) return; const k = +b.dataset.ort;
       if (KZ.rest <= 0) return zeitUm(); kampfK(k); };
   }
   /** Die Zeit ist um (oder alles erkundet): Der Riss holt beide Gruppen in den Siegelsaal */
   function teleport() {
-    const voll = Z.ich.besucht.length >= 5 && KZ.rest > 0; Z.log.restSek = Math.max(0, Math.round(KZ.rest / 1000));
+    const voll = KZ.rest > 0; Z.log.restSek = Math.max(0, Math.round(KZ.rest / 1000));
     uhrEnde(); Z.ich.abgebogen = true; Z.wegEnde = Date.now(); const B = Z.bot;
     seite(`<p class="riss-schritt">${voll ? "Alles erkundet" : "Die Zeit ist um"}</p><h1 class="hub-gruss">Der Riss holt euch in den Siegelsaal</h1>
       <p class="riss-ergebnis gut">Beide Gruppen kommen gleichzeitig an, jede an ihrem Eingang. Niemand beginnt mit Siegelpunkten. Vorher wartet noch die Siegelwächterin: Bei ihr tauschst du deine <b>${Z.ich.splitter} Erbsplitter</b> gegen Heilung, Tränke, Gegenstände und Segen.</p>
