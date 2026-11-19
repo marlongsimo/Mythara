@@ -390,7 +390,7 @@
     feldBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt));
   }
   /* Bilder für Funde: Sobald es zu einem Gegenstand ein eigenes Bild gibt (img/riss/fund-<Kennung>.gif), hier eintragen – sonst steht sein Zeichen auf dem Feld */
-  const FUND_BILDER = new Set(["gluecksbringer", "eulenmantel", "amulett"]);
+  const FUND_BILDER = new Set(["gluecksbringer", "eulenmantel", "amulett", "stiefel"]);
   const fundBild = (id) => (FUND_BILDER.has(id) ? `img/riss/fund-${id}.gif` : null);
   /** Was auf dem Feld liegt, als Bild: Erbsplitter (animiert, aufrecht wie die Figuren) oder der Fund selbst (sein Bild, sonst sein Zeichen).
    *  Das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu. */
