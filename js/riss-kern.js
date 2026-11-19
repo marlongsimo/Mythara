@@ -140,7 +140,7 @@
 
 
     /* ---------- Spielart „Karte“: vier Minuten, eine Karte mit fünf Räumen, Erfahrung je Monster, Beute, Truhen, ein Boss ----------
-     * Raum „M“ in der Mitte ist der Einstieg. Danach läuft die Zeit. Außen liegen vier Räume im Ring (0 Norden, 1 Osten, 2 Süden, 3 Westen):
+     * Raum „M“ in der Mitte ist der Einstieg. Die Zeit läuft ab seinem Betreten. Außen liegen vier Räume im Ring (0 Norden, 1 Osten, 2 Süden, 3 Westen):
      * jeder ist mit der Mitte und mit seinen beiden Nachbarn verbunden. Was in welchem Raum wartet, wird gelost und ist für beide Seiten gleich:
      * ein schwerer Raum, ein Bossraum und zwei leichte Räume. Unerkundete Räume sind dunkel.
      * Jedes besiegte Monster lässt etwas fallen: selten einen Fund für einen Helden (DROP, der Boss DROP_BOSS), sonst Erbsplitter. Aufgehoben wird von Hand: ein Held daneben, dann antippen.
@@ -227,7 +227,7 @@
       const nimm = (e) => { e.splitter = 0; e.funde = []; for (const t of e.tot) { const d = kDrop(W, t.boss, zf); if (d.ding) { const l = W.gruppe.filter((f) => kannTragen(W, d.ding, f)); if (!l.length) continue; kNimm(W, d, l[Math.floor(zf() * l.length)]); e.funde.push(d.ding); } else { kNimm(W, d); e.splitter += d.splitter; } } }; // der Rechner hebt alles auf, was seine besiegten Monster fallen lassen
       const spiel = (ort, runden) => { const st = R.neuesSpiel(seed * 13 + (ort === "M" ? 9 : ort) + 1, kOpts(W, ort)); raumDinge(W, st); let z = 0;
         while (!st.ende && z++ < 900 && st.runde <= runden) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); } return st; };
-      { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); nimm(e); }
+      { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); nimm(e); rest -= st.runde * sek; } // die Zeit läuft ab dem ersten Raum
       for (const ort of [0, 1, 2, 3].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1])) {
         if (rest < sek) break;
         const st = spiel(ort, Math.floor(rest / sek)), e = kEnde(W, ort, st, zf, !st.ende); nimm(e);

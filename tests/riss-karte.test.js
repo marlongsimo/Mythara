@@ -25,7 +25,9 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
       const a = window.AB.R.aktiv(st); if (a.seite === "spieler") window.AB.R.autoZug(st); else window.AB.R.gegnerZug(st); window.AB.render(); return null; }, bis); if (e) return e; } return null; };
   const einsammeln = async () => p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, h = st.figuren.find((f) => f.fid && f.tp > 0); let n = 0;
     for (const d of D.liste.filter((x) => !x.weg)) { h.x = d.x; h.y = d.y; if (window.RISS.feldAufheben(d.x, d.y)) n++; const w = document.querySelector("#riss-fund [data-wer]:not([disabled])"); if (w) w.click(); } return n; });
-  await p.click("#riss-kampf"); let e = await spielen(); await p.waitForTimeout(500);
+  await p.click("#riss-kampf"); await p.waitForSelector("#karte .fig");
+  check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"), K = window.RISS.karteZustand(); return K.laeuft && u && !u.hidden; }), "die Uhr läuft ab dem ersten Raum");
+  let e = await spielen(); await p.waitForTimeout(500);
   const offen = await p.evaluate(() => { const K = window.RISS.karteZustand(), st = window.AB.st; return { frei: K.frei, ende: st && st.ende, liegt: K.drops.liste.filter((d) => !d.weg).length, marken: document.querySelectorAll("#karte rect.feld.riss-drop, #karte rect.feld.riss-drop-segen").length, splitter: window.RISS.zustand().ich.splitter, knopf: document.querySelector("#riss-raus").textContent, weiter: Boolean(document.querySelector("#ende:not([hidden]) #weiter-abenteuer")) }; });
   check(e === "frei" && offen.frei && !offen.ende && !offen.weiter && offen.liegt >= 1, `alle Monster besiegt: Der Raum bleibt offen, ${offen.liegt} Funde liegen noch`);
   check(offen.splitter === 0 && offen.marken >= 1 && /Zur Karte/.test(offen.knopf), "nichts wird von selbst aufgehoben; die Felder sind markiert, der Knopf heißt „Zur Karte“");
@@ -36,7 +38,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   await p.click("#weiter-abenteuer"); await p.waitForSelector("[data-riss-karte]");
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.ich.xp === 45 && Object.values(Z.ich.stufen).every((s) => s === 2); }), "Einstieg: 9 Lebenspunkte × 5 = 45 Erfahrung, Stufe 2");
   check((await p.$$(".rk-raum.dunkel")).length === 4 && (await p.$$(".rk-raum.hell")).length === 1, "Karte: die Mitte leuchtet, vier Räume sind dunkel");
-  check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"); return u && !u.hidden && /0:[0-4]\d/.test(u.textContent); }), "die Uhr läuft, sobald die Karte offen ist");
+  check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"); return u && !u.hidden && /0:[0-4]\d/.test(u.textContent); }), "auf der Karte läuft dieselbe Uhr weiter");
   // zweiter Raum: Erfahrung zählt im Kampf mit; dann verlassen
   await p.click(".rk-raum.dunkel"); await p.waitForSelector("#riss-raus:not([hidden])");
   e = await spielen("erster"); await p.waitForTimeout(500);

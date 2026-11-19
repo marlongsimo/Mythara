@@ -84,7 +84,7 @@
       <p class="hub-untertitel">Ein Riss öffnet sich. Zwei Gruppen steigen von zwei Seiten hinein und kämpfen sich zum Siegel.</p></div>
       <div class="riss-regeln"><ul>
         ${Z.art === "karte" ? `<li><b>Alle beginnen auf Stufe 1.</b> Der erste Raum ist die Mitte des Risses und leicht.</li>
-        <li><b>Danach öffnet sich die Karte, und die Zeit läuft:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für vier dunkle Räume – ein schwerer, ein Boss, zwei leichte. Für beide Seiten dieselben, und die Uhr läuft für beide gleich.</li>
+        <li><b>Die Zeit läuft ab dem ersten Raum:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für alles, für beide Seiten genau gleich lang. Nach der Mitte öffnet sich die Karte mit vier dunklen Räumen – ein schwerer, ein Boss, zwei leichte, für beide dieselben.</li>
         <li><b>Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert.</b> Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
         <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: einen Helden daneben stellen und das Feld antippen. Bei einem Fund wählst du, wer ihn bekommt.</li>
         <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
@@ -263,9 +263,9 @@
     if (Z.art !== "karte" || !Z.ich || !Z.ich.karte || KZ.fertig) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-uhr"; el.className = "riss-uhr"; document.body.appendChild(el); }
     el.hidden = false; el.classList.toggle("knapp", KZ.rest <= 30000); el.classList.toggle("steht", !KZ.laeuft);
-    const t = `<small>${KZ.laeuft ? "Der Riss schließt sich in" : "Die Zeit läuft ab der Karte"}</small><b>${mmss(KZ.rest)}</b>`; if (el.dataset.t !== t) { el.dataset.t = t; el.innerHTML = t; }
+    const t = `<small>${KZ.laeuft ? "Der Riss schließt sich in" : "Die Zeit läuft ab dem ersten Raum"}</small><b>${mmss(KZ.rest)}</b>`; if (el.dataset.t !== t) { el.dataset.t = t; el.innerHTML = t; }
   }
-  /* Die Uhr läuft ab dem Öffnen der Karte durch – für beide Seiten gleich, ohne Anhalten und ohne Abzüge. So kommen beide im selben Moment am Siegel an. */
+  /* Die Uhr läuft ab dem Betreten des ersten Raums durch – für beide Seiten gleich, ohne Anhalten und ohne Abzüge. So kommen beide im selben Moment am Siegel an. */
   function uhrAn() { if (KZ.fertig || KZ.laeuft) return; KZ.laeuft = true; KZ.endeZeit = Date.now() + Z.zeit * 1000; KZ.rest = Z.zeit * 1000; if (!KZ.takt) KZ.takt = setInterval(uhrTakt, 250); uhrZeigen(); }
   function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); xpLeiste(null); fundFensterZu(); uhrZeigen(); }
   function uhrTakt() {
@@ -375,7 +375,7 @@
     Z.log = { v: 5, art: "karte", wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
     const r = K.kDef(Z.ich, "M");
     seite(`<p class="riss-schritt">Die Mitte des Risses</p><h1 class="hub-gruss">${esc(r.name)}</h1><p class="hub-untertitel">${esc(r.text)}</p>
-      <p class="riss-lohn">Sobald dieser Raum geschafft ist, öffnet sich die Karte – und die Zeit läuft: ${mmss(Z.zeit * 1000)} Minuten, dann holt der Riss beide Gruppen im selben Moment in den Siegelsaal.</p>
+      <p class="riss-lohn">Die Zeit läuft, sobald du den Raum betrittst: ${mmss(Z.zeit * 1000)} Minuten für alles, dann holt der Riss beide Gruppen im selben Moment in den Siegelsaal. Ist dieser Raum geschafft, öffnet sich die Karte.</p>
       ${gruppeHtml("Deine Gruppe", Z.ich.gruppe, Z.ich.stufen, K.leben(Z.ich), Z.ich.dinge, Z.ich.segen)}
       <div class="knoepfe"><button class="btn" id="riss-kampf">In den Riss</button></div>`);
     $("#riss-kampf").onclick = () => kampfK("M");
@@ -389,7 +389,7 @@
     if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); window.AB.render(); }
     const karte = $("#karte"); if (karte) karte.addEventListener("click", karteKlick, true); // vor dem Spiel: Aufheben statt Laufen
     clearInterval(KZ.wache); KZ.wache = setInterval(kampfWache, 250); kampfWache();
-    rausKnopf(true);
+    rausKnopf(true); uhrAn(); // die Uhr läuft ab dem ersten Raum – für beide Seiten gleich lang
   }
   function nachK(ort, st, dauer) {
     const D = KZ.drops, sieg = st.ende === "sieg", liegen = D.liste.filter((d) => !d.weg).length;
