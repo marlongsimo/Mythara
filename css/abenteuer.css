@@ -3098,3 +3098,5 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 #karte rect.feld.riss-siegel { fill: rgba(246,200,66,.2); stroke: rgba(255,215,94,.9); stroke-width: 3; animation: none; }
 #karte rect.feld.riss-zone { fill: rgba(246,200,66,.07); stroke: rgba(255,215,94,.4); stroke-width: 1.5; }
 #karte rect.feld.riss-naechst { fill: rgba(160,120,255,.08); stroke: #b79bff; stroke-width: 2; stroke-dasharray: 7 6; }
+#karte image.riss-rune.rand { opacity: .8; filter: drop-shadow(0 0 5px rgba(255,200,80,.8)); }
+#karte image.riss-rune.mitte { filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,210,90,1)) drop-shadow(0 0 18px rgba(255,170,40,.7)); }

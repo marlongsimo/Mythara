@@ -602,10 +602,12 @@
       for (const c of ["riss-siegel", "riss-zone", "riss-naechst"]) if (r.classList.contains(c) !== (c === kl)) r.classList.toggle(c, c === kl); });
     runen(karte, S, N);
   }
-  /** Die Rune am Boden: groß über dem Siegel und seiner Zone (dort zählen Helden), klein und blass auf dem Feld, auf das es als Nächstes springt */
+  /** Runen am Boden: eine auf jedem Feld der Siegelzone (dort zählen Helden), die in der Mitte am hellsten; eine blasse auf dem Feld, auf das das Siegel als Nächstes springt */
   function runen(karte, S, N) {
     const erste = karte.querySelector("rect.feld"); if (!erste) return; const eltern = erste.parentNode, G = +erste.getAttribute("width") || 60, soll = new Map();
-    if (S) soll.set(`siegel:${S.x},${S.y}`, { x: S.x, y: S.y, g: 3, kl: "riss-rune" }); if (N) soll.set(`naechst:${N.x},${N.y}`, { x: N.x, y: N.y, g: 1.15, kl: "riss-rune naechst" });
+    if (S) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const x = S.x + dx, y = S.y + dy; if (Z.st.karte.block.has(x + "," + y) || x < 0 || y < 0 || x >= Z.st.karte.b || y >= Z.st.karte.h) continue;
+      soll.set(`zone:${x},${y}`, { x, y, g: dx || dy ? 0.82 : 0.98, kl: "riss-rune" + (dx || dy ? " rand" : " mitte") }); } // eine kleine Rune auf jedem Feld, das für die Wertung zählt
+    if (N) soll.set(`naechst:${N.x},${N.y}`, { x: N.x, y: N.y, g: 0.9, kl: "riss-rune naechst" });
     eltern.querySelectorAll("image.riss-rune").forEach((b) => { if (!soll.has(b.dataset.k)) b.remove(); else soll.delete(b.dataset.k); });
     for (const [k, r] of soll) { const b = document.createElementNS("http://www.w3.org/2000/svg", "image"), w = r.g * G;
       b.setAttribute("class", r.kl); b.dataset.k = k; b.setAttribute("href", "img/riss/siegel-rune.gif"); b.setAttribute("x", r.x * G + G / 2 - w / 2); b.setAttribute("y", r.y * G + G / 2 - w / 2); b.setAttribute("width", w); b.setAttribute("height", w);
