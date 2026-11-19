@@ -292,6 +292,10 @@ Entstanden aus den ersten von Hand gespielten Partien. Dort kam „früh gegen t
 
 Vom Gegner hört man auf der Karte nur, dass er im Riss ist. Was er erkundet und wie stark er ist, zeigt sich am Siegel.
 
+### Figuren in Bewegung
+
+Im Rissgänger bewegen sich die Figuren beim Kämpfen, ohne zusätzliche Bilder: Die vorhandenen Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich und leuchten auf, Getroffene zucken vom Angreifer weg, Gefallene kippen um, Geheilte federn kurz hoch. Das gilt für alle Helden, alle Skins und alle Monster. Abschalten: `?rissbewegung=0`; wer im Gerät „Bewegung reduzieren" eingestellt hat, sieht es nicht. Die Kampfeffekte (`js/kampf-fx.js`) melden dafür, wer wen wann trifft; außerhalb des Rissgängers hört niemand zu.
+
 ### Was verworfen wurde
 
 - **Truhen mit Glückswürfen und Zeitstrafe** und **Sonderaufgaben, die Zeit kosten:** Beides zieht Zeit von der eigenen Uhr ab oder braucht sie zusätzlich. Mit Abzug käme eine Seite früher am Siegel an und müsste wieder warten. Das Hinlaufen zum Aufheben kostet schon Zeit, ohne die Uhr zu verschieben.

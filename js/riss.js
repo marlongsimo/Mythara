@@ -662,6 +662,44 @@
     if (leer) leer.onclick = () => { if (leer.dataset.sicher !== "1") { leer.dataset.sicher = "1"; leer.textContent = "Wirklich leeren?"; return; } try { localStorage.removeItem(SPEICHER); } catch (e) { /* privat */ } hin.textContent = "Mitschrift geleert."; leer.disabled = true; kop.disabled = true; };
   }
 
+  /* ---------- Figuren bewegen sich (nur im Rissgänger; …?rissbewegung=0 schaltet es ab) ----------
+   * Die vorhandenen Standbilder werden per Code bewegt: Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß,
+   * Zaubernde heben sich, Getroffene zucken zurück, Gefallene kippen um. Das gilt für alle Helden, alle Skins und alle Monster,
+   * ohne ein einziges zusätzliches Bild. Die Kampfeffekte (js/kampf-fx.js) melden, wer wen wann trifft. */
+  const BEWEGT = params.get("rissbewegung") !== "0" && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const figEl = (id) => document.querySelector(`#karte .fig[data-id="${id}"] .fig-schweb`) || document.querySelector(`#karte .fig[data-id="${id}"]`);
+  const feldMass = () => { const r = document.querySelector("#karte rect.feld"); return r ? +r.getAttribute("width") || 60 : 60; };
+  function spiele(id, bilder, dauer, verzug, easing) {
+    setTimeout(() => { const el = figEl(id); if (!el || !el.animate) return; el.style.transformBox = "fill-box"; el.style.transformOrigin = "50% 100%";
+      try { el.animate(bilder, { duration: dauer, easing: easing || "ease-out" }); } catch (e) { /* ohne Bewegung */ } }, Math.max(0, verzug || 0));
+  }
+  function bewegung(e) {
+    const st = window.AB && window.AB.st; if (!BEWEGT || !st || !(KZ.imKampf || Z.st)) return;
+    const F2 = (id) => st.figuren.find((f) => f.id === id), a = e.von != null ? F2(e.von) : null, z = F2(e.zu), G = feldMass(); if (!z) return;
+    const dx = a ? (z.x - a.x) * G : 0, dy = a ? (z.y - a.y) * G : 0, lang = Math.hypot(dx, dy) || 1, ux = dx / lang, uy = dy / lang, seite = ux >= 0 ? 1 : -1;
+    if (e.typ === "treffer") {
+      const wann = e.wann || 0;
+      if (a && e.feind) {
+        if (e.zauber) spiele(a.id, [{ transform: "translate(0,0) scale(1)", filter: "brightness(1)" }, { transform: "translate(0,-9px) scale(1.07)", filter: "brightness(1.5) drop-shadow(0 0 8px rgba(160,200,255,.9))", offset: .45 }, { transform: "translate(0,0) scale(1)", filter: "brightness(1)" }], 620, (e.ab || 0) - 120, "ease-in-out");
+        else if (e.fern) spiele(a.id, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 5}px,${-uy * 5}px) rotate(${-seite * 5}deg)`, offset: .3 }, { transform: `translate(${-ux * 10}px,${-uy * 10}px) rotate(${-seite * 9}deg)`, offset: .45 }, { transform: "translate(0,0) rotate(0deg)" }], 480, (e.ab || 0) - 60);
+        else { const weit = Math.max(10, Math.min(lang - G * 0.55, G * 1.1)) * (e.krit ? 1.15 : 1); // Nahkampf: ausholen, vorspringen, zurück
+          spiele(a.id, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 9}px,${-uy * 9}px) rotate(${-seite * 7}deg)`, offset: .28, easing: "ease-in" }, { transform: `translate(${ux * weit}px,${uy * weit}px) rotate(${seite * 11}deg)`, offset: .52, easing: "ease-out" }, { transform: `translate(${ux * weit * 0.9}px,${uy * weit * 0.9}px) rotate(${seite * 6}deg)`, offset: .64 }, { transform: "translate(0,0) rotate(0deg)" }], e.krit ? 620 : 540, wann - 280, "linear"); }
+      }
+      // Getroffen: zurückzucken (weg vom Angreifer); wer fällt, kippt danach um
+      const kx = a ? ux : 0, ky = a ? uy : -0.4, stoss = e.krit ? 13 : 8;
+      if (e.faellt) spiele(z.id, [{ transform: "translate(0,0) rotate(0deg)", opacity: 1 }, { transform: `translate(${kx * stoss}px,${ky * stoss}px) rotate(${seite * 14}deg)`, offset: .22 }, { transform: `translate(${kx * stoss * 1.6}px,${ky * stoss + 4}px) rotate(${seite * 78}deg)`, opacity: .85, offset: .8, easing: "ease-in" }, { transform: `translate(${kx * stoss * 1.6}px,${ky * stoss + 4}px) rotate(${seite * 84}deg)`, opacity: .7 }], 640, wann);
+      else spiele(z.id, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${kx * stoss}px,${ky * stoss}px) rotate(${seite * (e.krit ? 12 : 7)}deg)`, offset: .3 }, { transform: `translate(${-kx * 3}px,${-ky * 3}px) rotate(${-seite * 2}deg)`, offset: .7 }, { transform: "translate(0,0) rotate(0deg)" }], e.krit ? 420 : 320, wann);
+    } else if (e.typ === "heil") {
+      if (a) spiele(a.id, [{ transform: "translate(0,0) scale(1)", filter: "brightness(1)" }, { transform: "translate(0,-7px) scale(1.05)", filter: "brightness(1.35)", offset: .45 }, { transform: "translate(0,0) scale(1)", filter: "brightness(1)" }], 560, 0, "ease-in-out");
+      spiele(z.id, [{ transform: "translate(0,0) scale(1)" }, { transform: "translate(0,-6px) scale(1.04,1.08)", offset: .4 }, { transform: "translate(0,0) scale(1)" }], 520, 120, "ease-in-out");
+    } else if (e.typ === "zauber") {
+      if (a && bewegung.letzter !== a.id + ":" + st.log.length) { bewegung.letzter = a.id + ":" + st.log.length; // ein Zauber auf mehrere Ziele: nur einmal heben
+        spiele(a.id, [{ transform: "translate(0,0) scale(1)", filter: "brightness(1)" }, { transform: "translate(0,-9px) scale(1.07)", filter: "brightness(1.5) drop-shadow(0 0 8px rgba(190,150,255,.9))", offset: .45 }, { transform: "translate(0,0) scale(1)", filter: "brightness(1)" }], 620, (e.ab || 0) - 120, "ease-in-out"); }
+      spiele(z.id, [{ transform: "translate(0,0)" }, { transform: "translate(-3px,0)", offset: .2 }, { transform: "translate(3px,0)", offset: .4 }, { transform: "translate(-2px,0)", offset: .6 }, { transform: "translate(2px,0)", offset: .8 }, { transform: "translate(0,0)" }], 360, (e.ab || 0) + 120, "linear");
+    }
+  }
+  window.ABFX_MELDER = bewegung;
+
   /* ---------- Zugang: ein Knopf im Dorf, solange der Schalter an ist ---------- */
   function knopf() {
     let b = document.getElementById("riss-zugang");

@@ -121,6 +121,8 @@
     wrap.appendChild(d); setTimeout(() => d.remove(), dauer);
   }
   /** Nahkampf: Ein roter Hieb fährt über das Ziel, von der Seite des Angreifers her */
+  /** Wer zuhören will (z. B. Figuren, die sich beim Angriff bewegen: js/riss.js), bekommt Treffer, Heilung und Zauber gemeldet. Ohne Zuhörer geschieht nichts. */
+  function melde(e) { try { if (typeof window.ABFX_MELDER === "function") window.ABFX_MELDER(e); } catch (x) { /* ein fremder Zuhörer darf die Effekte nicht stören */ } }
   function hieb(von, zu) {
     const a = figurPos(von), p = figurPos(zu), wrap = $(".karte-wrap"); if (!p) return;
     const d = document.createElement("div"); d.className = "fx-hieb" + (a && a.x > p.x ? " links" : ""); d.innerHTML = `<i style="background-image:url(${FXBILD.hieb})"></i>`;
@@ -321,16 +323,17 @@
         const wann = fern ? (amZiel ? wuerfel + 120 : flug(schuetze.id, f.id, gArt, wuerfel + nr++ * 90) || wuerfel + 180) : wuerfel + 180; // auch im Nahkampf erst nach dem Würfel
         // Klang: Zauber schwellen an (Höhepunkt 0,3 s nach Beginn) und beginnen deshalb vor dem Einschlag; Hieb, Pfeil und Dolch klingen beim Treffer
         if (amZiel || (fern && gArt === "kugel")) klang("zauber", Math.max(0, wann - 300)); else klang("hieb", wann, kr ? 1.25 : 1);
+        melde({ typ: "treffer", von: schuetze && schuetze.id !== f.id ? schuetze.id : null, zu: f.id, fern: Boolean(fern), zauber: Boolean(amZiel || (fern && gArt === "kugel")), art: gArt, wann, ab: wuerfel, krit: kr, faellt: f.tp <= 0, feind: Boolean(schuetze && schuetze.seite !== f.seite) });
         setTimeout(() => { zahl(f.id, "−" + Math.abs(d), kr ? "krit" : f.seite === "gegner" ? "schaden" : "wunde"); wolke(p.x, p.y, kr ? "gold" : amZiel && (gArt === "muenzen" || gArt === "licht") ? "gold" : amZiel && gArt === "schatten" ? "blut" : amZiel && gArt === "ranke" ? "heil" : amZiel && gArt !== "feuer" ? "eis" : f.seite === "gegner" ? "feuer" : "blut", kr ? 70 : amZiel || !gArt ? 10 : 26);
           if (amZiel) saeule(f.id, gArt);
           else if (!gArt && schuetze && schuetze.id !== f.id && schuetze.seite !== f.seite && Math.max(Math.abs(schuetze.x - f.x), Math.abs(schuetze.y - f.y)) <= 2) hieb(schuetze.id, f.id); // gewöhnlicher Nahkampftreffer
           const g = document.querySelector(`#karte .fig[data-id="${f.id}"]`); if (g) { g.classList.remove("fx-treffer"); void g.getBoundingClientRect(); g.classList.add("fx-treffer"); } }, wann);
-      } else { zahl(f.id, "+" + d, "heil"); wolke(p.x, p.y, "heil", 6); saeule(f.id, "heil"); klang("heil"); }
+      } else { zahl(f.id, "+" + d, "heil"); wolke(p.x, p.y, "heil", 6); saeule(f.id, "heil"); klang("heil"); melde({ typ: "heil", von: schuetze && schuetze.id !== f.id ? schuetze.id : null, zu: f.id }); }
     }
     // Zauber ohne Schaden (Furcht, Schattenfesseln, Untote vertreiben …): Der Effekt erscheint bei allen, die die Chronik als betroffen nennt
     if (gArt && AM_ZIEL[gArt] && schuetze) { const re = geschossRe(gArt), zeilen = logTreffer.filter((l) => re.test(l.t) && !/widersteht|verfehlt|weicht|niemand/.test(l.t));
       for (const f of st.figuren) { if (f.id === schuetze.id || f.seite === schuetze.seite || f.tp <= 0 || vorher.tp[f.id] !== f.tp) continue;
-        if (zeilen.some((l) => l.t.replace(/^[^:]+: /, "").includes(f.name))) { klang("zauber", Math.max(0, wuerfel - 180)); setTimeout(() => saeule(f.id, gArt), wuerfel + 120); } } }
+        if (zeilen.some((l) => l.t.replace(/^[^:]+: /, "").includes(f.name))) { klang("zauber", Math.max(0, wuerfel - 180)); setTimeout(() => saeule(f.id, gArt), wuerfel + 120); melde({ typ: "zauber", von: schuetze.id, zu: f.id, art: gArt, ab: wuerfel }); } } }
     // Schutz: Steigt die Rüstungsklasse einer Figur (Schild des Glaubens, Schutzhaltung, Schutzkreis …), leuchtet ein Schild auf
     const beschirmt = {};
     for (const f of st.figuren) { const v = vorher.rk && vorher.rk[f.id]; if (v != null && f.rk > v && f.tp > 0) { beschirmt[f.id] = true; schild(f.id); } }
