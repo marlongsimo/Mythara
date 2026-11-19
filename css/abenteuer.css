@@ -3081,3 +3081,9 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 @media (min-width: 1200px) { .riss-aufstieg { left: 34px; bottom: 150px; top: auto; width: 196px; justify-content: center; } .riss-aufstieg.an { animation-name: riss-aufstieg-links; } }
 @keyframes riss-aufstieg-links { 0% { opacity: 0; transform: translateY(24px) scale(.85); } 10% { opacity: 1; transform: scale(1.06); } 18% { transform: none; } 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-18px); } }
 @media (max-width: 700px) { .riss-aufstieg { top: 112px; padding: 4px 14px 4px 10px; gap: 8px; border-radius: 12px; } .riss-aufstieg i { font-size: 18px; } .riss-aufstieg small { display: none; } .riss-aufstieg b { font-size: 16px; } }
+
+/* Rissgänger: Erbsplitter als Bild auf dem Feld (statt der türkisen Fläche); der Rahmen zeigt nur noch, ob ein Held nah genug steht */
+#karte image.riss-splitter-bild { pointer-events: none; filter: brightness(1.35) drop-shadow(0 0 5px rgba(255,70,70,.95)) drop-shadow(0 0 12px rgba(255,40,40,.6)); }
+#karte rect.feld.riss-drop { fill: rgba(200,30,40,.1); stroke: rgba(255,120,120,.55); stroke-width: 2; stroke-dasharray: 5 5; animation: none; }
+#karte rect.feld.riss-drop.greifbar { fill: rgba(255,80,80,.2); stroke: #ffb0b0; stroke-width: 4; stroke-dasharray: none; }
+.riss-xpleiste span, .riss-splitter { color: #ff9d9d; }

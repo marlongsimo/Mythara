@@ -373,7 +373,8 @@
   function fundeErfassen(st) {
     const D = KZ.drops;
     for (const f of st.figuren) { if (f.seite !== "gegner" || !R.GEGNER[f.art] || f.tp > 0 || D.gesehen[f.id]) continue; D.gesehen[f.id] = true;
-      const d = K.kDrop(Z.ich, f.art === D.boss, Math.random); D.liste.push(Object.assign({ x: f.x, y: f.y, weg: false }, d)); }
+      const ab = Date.now() + (SCHNELL ? 0 : (window.AB_WURFZEIT ? window.AB_WURFZEIT(st.log.slice(-6)) : 620) + 350); // erst wenn Würfel und Treffer zu sehen waren, liegt das Monster wirklich am Boden
+      D.zeit[f.id] = ab; const d = K.kDrop(Z.ich, f.art === D.boss, Math.random); D.liste.push(Object.assign({ x: f.x, y: f.y, weg: false, ab }, d)); }
   }
   const heldDaneben = (st, d) => st.figuren.find((x) => x.seite === "spieler" && x.fid && x.tp > 0 && !x.tot && Math.max(Math.abs(x.x - d.x), Math.abs(x.y - d.y)) <= 1);
   /** Im Kampf, vier Mal je Sekunde: Funde erfassen und markieren, Erfahrung mitzählen, Knopf und Ende nachführen */
@@ -383,8 +384,18 @@
     fundeErfassen(st); xpLeiste(st); rausText();
     if (KZ.frei && !KZ.schluss && !D.liste.some((d) => !d.weg) && !KZ.fenster) { st.ende = "sieg"; KZ.schluss = true; window.AB.render(); } // alles eingesammelt: Der Raum ist fertig
     const karte = $("#karte"); if (!karte) return; const wo = {};
-    for (const d of D.liste) if (!d.weg) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) ? " greifbar" : "");
+    const jetzt = Date.now();
+    for (const d of D.liste) if (!d.weg && d.ab <= jetzt) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) ? " greifbar" : "");
     karte.querySelectorAll("rect.feld").forEach((r) => { const kl = (wo[r.dataset.x + "," + r.dataset.y] || "").split(" "); for (const c of ["riss-drop", "riss-drop-segen", "greifbar"]) if (r.classList.contains(c) !== kl.includes(c)) r.classList.toggle(c, kl.includes(c)); });
+    splitterBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt && !d.ding));
+  }
+  /** Die Erbsplitter als Bild auf dem Feld (das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu) */
+  function splitterBilder(karte, liste) {
+    const erste = karte.querySelector("rect.feld"); if (!erste) return; const eltern = erste.parentNode, G = +erste.getAttribute("width") || 60, soll = new Set(liste.map((d) => d.x + "," + d.y));
+    eltern.querySelectorAll("image.riss-splitter-bild").forEach((b) => { if (!soll.has(b.dataset.k)) b.remove(); else soll.delete(b.dataset.k); });
+    for (const k of soll) { const [x, y] = k.split(",").map(Number), b = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      b.setAttribute("class", "riss-splitter-bild"); b.dataset.k = k; b.setAttribute("href", "img/mythara/erbsplitter.gif"); b.setAttribute("x", x * G - G * 0.05); b.setAttribute("y", y * G - G * 0.05); b.setAttribute("width", G * 1.1); b.setAttribute("height", G * 1.1);
+      eltern.appendChild(b); } // über den Feldern, aber ohne Klicks abzufangen (pointer-events: none): Antippen trifft weiter das Feld
   }
   /** Antippen der Karte: Liegt dort etwas und steht ein Held daneben, wird aufgehoben (statt zu laufen) */
   function karteKlick(ev) {
@@ -394,7 +405,7 @@
   }
   /** Zurück: true, wenn auf dem Feld etwas lag (aufgehoben oder Hinweis gezeigt) */
   function feldAufheben(x, y) {
-    const st = window.AB.st, D = KZ.drops, hier = D.liste.filter((d) => !d.weg && d.x === x && d.y === y); if (!hier.length) return false;
+    const st = window.AB.st, D = KZ.drops, hier = D.liste.filter((d) => !d.weg && d.ab <= Date.now() && d.x === x && d.y === y); if (!hier.length) return false;
     const h = heldDaneben(st, hier[0]); if (!h) { hudHinweis("Zu weit weg – ein Held muss daneben stehen"); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
     for (const d of hier) { if (d.ding) { fundFenster(d); break; } aufheben(d, null); }
     kampfWache(); return true;
@@ -437,7 +448,8 @@
     let el = document.getElementById("riss-xpleiste");
     if (!st) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
-    const xp = Z.ich.xp + K.kXp(st), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
+    const jetzt = Date.now(), D = KZ.drops, liegt = D ? st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0 && D.zeit[f.id] != null && D.zeit[f.id] <= jetzt).reduce((a, f) => a + f.tpMax, 0) : 0;
+    const xp = Z.ich.xp + K.KARTE.XP_LP * liegt, s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
     if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) stufenKachel(s.stufe); KZ.liveStufe = s.stufe;
     const hin = KZ.hinweis && KZ.hinweis.bis > Date.now() ? KZ.hinweis.t : "", plus = KZ.plus && KZ.plus.bis > Date.now() ? KZ.plus.n : 0;
     const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small${hin ? ' class="hin"' : ""}>${hin ? esc(hin) : s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span${plus ? ' class="plus"' : ""}>◈ ${Z.ich.splitter}${plus ? ` <em>+${plus}</em>` : ""}</span>`;
@@ -454,7 +466,7 @@
   }
   function kampfK(ort) {
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });
-    KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
+    KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
     raumEinhaengen();
     window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
