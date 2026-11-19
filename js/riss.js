@@ -22,7 +22,7 @@
   const NAMEN = ["Varn der Stille", "Ilka Aschenhand", "Der Graue Tomas", "Mirelle vom Spalt", "Odo Rissläufer", "Senna Dunkelwasser"];
   const SCHNELL = params.has("schnell"), TAKT = +params.get("risstakt") || (SCHNELL ? 60 : 2300); // so lange dauert beim Warten ein Zug des Gegners
   let K = null;
-  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", zeit: Math.max(20, +params.get("risszeit") || 300), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
+  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", tempo: params.get("risstempo") === "normal" ? "normal" : "schnell", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", zeit: Math.max(20, +params.get("risszeit") || 300), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
 
   /* ---------- Hilfen ---------- */
   function skript(src) { return new Promise((ok, nein) => { if (document.querySelector(`script[data-riss="${src}"]`)) return ok(); const s = document.createElement("script"); s.src = src; s.dataset.riss = src; s.onload = ok; s.onerror = () => nein(new Error("Datei fehlt: " + src)); document.head.appendChild(s); }); }
@@ -36,7 +36,26 @@
   /** Zurück aus einem Kampf: Was noch über dem Bild liegt (Würfel, Ergebnisrolle, Banner), gehört nicht auf die nächste Seite */
   function kampfBildWeg() { const w = $("#wurf"); if (w) w.classList.remove("an"); const b = $("#fx-banner"); if (b) { b.className = "fx-banner"; b.innerHTML = ""; } if (window.W3D && window.W3D.weg) window.W3D.weg(); }
   const zumHub = () => { kampfBildWeg(); window.MYTHARA.zeigeHub(); };
-  const seite = (html) => window.MYTHARA.seite("arena", `<div data-riss class="riss">${html}</div>`);
+  /* Der Riss hat seine eigene Ebene über dem Dorf: Vorraum, Karte, Wächterin und Ergebnis liegen bildschirmfüllend darauf, ohne Dorf-Kopf.
+     Im Kampf ist sie ausgeblendet; danach erscheint die nächste Seite darauf, ohne dass sich das Dorf dazwischen aufbaut. */
+  function ebene() {
+    let el = document.getElementById("riss-ebene");
+    if (!el) { el = document.createElement("div"); el.id = "riss-ebene"; el.className = "riss-ebene"; el.hidden = true; document.body.appendChild(el);
+      el.addEventListener("click", (ev) => { if (ev.target.closest("[data-riss-zu]")) schliessen(); }); }
+    return el;
+  }
+  const mitten = () => Boolean(Z.log && !Z.log.fertig && (Z.ich || Z.st)); // läuft eine Partie?
+  function seite(html) {
+    const el = ebene(); el.innerHTML = `<div class="riss-ebene-innen"><button type="button" class="hub-zurueck riss-zu" data-riss-zu>${mitten() ? "✕ Partie abbrechen" : "← Zum Dorf"}</button><div data-riss class="riss">${html}</div></div>`;
+    el.hidden = false; el.scrollTop = 0; document.body.classList.add("riss-offen");
+  }
+  function ebeneAus() { const el = document.getElementById("riss-ebene"); if (el) el.hidden = true; document.body.classList.remove("riss-offen"); }
+  function schliessen() {
+    const b = document.querySelector("#riss-ebene [data-riss-zu]");
+    if (mitten() && b && b.dataset.sicher !== "1") { b.dataset.sicher = "1"; b.textContent = "Wirklich abbrechen? Die Partie ist dann weg."; return; }
+    warteStopp(); uhrEnde(); vorraumStopp(); if (Z.log && !Z.log.fertig) Z.log = null; Z.ich = null;
+    const el = ebene(); el.innerHTML = ""; ebeneAus(); window.MYTHARA.zeigeHub();
+  }
   const zufall = () => Math.floor(Math.random() * 1e9);
   const woche = () => Math.floor((Date.now() / 86400000 + 3) / 7);
   /** Wählbare Helden: die eigenen und drei Leihhelden, die jede Woche wechseln */
@@ -131,6 +150,8 @@
         <select id="riss-art"><option value="karte"${Z.art === "karte" ? " selected" : ""}>Karte mit Zeit: Räume frei wählen, am Ende holt der Riss beide ans Siegel</option><option value="abbiegen"${Z.art === "abbiegen" ? " selected" : ""}>Abbiegen: fester Weg, selbst entscheiden, wann es zum Siegel geht</option></select></label>
       ${Z.art === "karte" ? `<label class="riss-schalter">Zeit auf der Karte
         <select id="riss-zeit">${[180, 240, 300].map((n) => `<option value="${n}"${Z.zeit === n ? " selected" : ""}>${n / 60} Minuten</option>`).join("")}${[180, 240, 300].includes(Z.zeit) ? "" : `<option value="${Z.zeit}" selected>${Z.zeit} Sekunden</option>`}</select></label>` : ""}
+      ${Z.art === "karte" ? `<label class="riss-schalter">Tempo im Riss
+        <select id="riss-tempo"><option value="schnell"${Z.tempo === "schnell" ? " selected" : ""}>zügig: kurze Würfel, schnelle Monster</option><option value="normal"${Z.tempo === "normal" ? " selected" : ""}>wie in der Kampagne</option></select></label>` : ""}
       <label class="riss-schalter"${Z.art === "karte" ? " hidden" : ""}>Der Gegner biegt ab (nur zum Testen)
         <select id="riss-gegner"><option value="0">zufällig, wie im echten Spiel</option>${[2, 3, 4, 5].map((n) => `<option value="${n}"${Z.gegnerZiel === n ? " selected" : ""}>immer nach Raum ${n}</option>`).join("")}</select></label></details>
       <p class="note">Prototyp gegen den Rechner. Es gibt keine Belohnung, und nichts wird an den Server geschickt. Lädst du die Seite neu, ist die Partie weg.</p>`);
@@ -138,6 +159,7 @@
     $("#riss-heilung").onchange = (ev) => { Z.heilung = ev.target.value === "keine" ? "keine" : "gerechnet"; };
     $("#riss-art").onchange = (ev) => { Z.art = ev.target.value === "abbiegen" ? "abbiegen" : "karte"; Z.einstOffen = true; start(); };
     if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; Z.einstOffen = true; start(); };
+    if ($("#riss-tempo")) $("#riss-tempo").onchange = (ev) => { Z.tempo = ev.target.value === "normal" ? "normal" : "schnell"; };
     $("#riss-gegner").onchange = (ev) => { Z.gegnerZiel = +ev.target.value || 0; };
     $("#riss-suchen").onclick = suchen; $("#riss-bearbeiten").onclick = teamBearbeiten; $("#riss-mitschrift").onclick = mitschriftZeigen;
   }
@@ -198,7 +220,7 @@
     $("#riss-kampf").onclick = () => raum(i);
   }
   function raum(i) {
-    const t0 = Date.now();
+    const t0 = Date.now(); ebeneAus();
     window.AB.kampfStarten(K.raumOpts(Z.ich, i), (st) => { zumHub(); raumNach(i, st, Date.now() - t0); });
     if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); window.AB.render(); }
   }
@@ -281,7 +303,7 @@
     W.fertigeRaeume += Z.bot.raeume - W.raum; W.raum = Z.bot.raeume; W.sim = null; raumFertig();
   }
   function zuschauenAn() {
-    const W = Z.warte; if (!W || W.fertig || W.zuschauen) return; W.zuschauen = true; W.geschaut++;
+    const W = Z.warte; if (!W || W.fertig || W.zuschauen) return; W.zuschauen = true; W.geschaut++; ebeneAus();
     window.AB.arenaStart({ gast: true, server: true, seite: 1, ende: () => {} });
     if (W.sim) zeigeSim(); zuschauLeiste();
   }
@@ -327,7 +349,7 @@
   function uhrAn() { if (KZ.fertig || KZ.laeuft) return; KZ.laeuft = true; KZ.endeZeit = Date.now() + Z.zeit * 1000; KZ.rest = Z.zeit * 1000; if (!KZ.takt) KZ.takt = setInterval(uhrTakt, 250); uhrZeigen(); }
   function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); xpLeiste(null); fundFensterZu(); hudAus(); uhrZeigen(); }
   function uhrTakt() {
-    if (!KZ.laeuft) return; KZ.rest = KZ.endeZeit - Date.now(); uhrZeigen();
+    if (!KZ.laeuft) return; KZ.rest = KZ.endeZeit - Date.now(); uhrZeigen(); zeitMarken();
     if (KZ.rest <= 0) zeitUm();
   }
   /** Den laufenden Kampf beenden (Zeit um, selbst gegangen oder fertig eingesammelt): Der Kampfbildschirm meldet sich dann wie nach einem Ende zurück.
@@ -337,6 +359,22 @@
     let n = 0; const t = setInterval(() => { const b = document.getElementById("weiter-abenteuer");
       if (!KZ.imKampf || n++ > 40) return clearInterval(t);
       if (b && !document.getElementById("ende").hidden) { clearInterval(t); b.click(); } else window.AB.render(); }, 150);
+  }
+  /* Töne ohne Dateien (ein paar kurze Sinustöne), so laut wie die Klänge des Spiels eingestellt sind */
+  let audio = null;
+  function ton(folge, laut) {
+    try { const v = (window.ABKLANG && window.ABKLANG.laut ? Number(window.ABKLANG.laut()) : 0.6) * (laut || 1); if (!(v > 0)) return;
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === "suspended") audio.resume();
+      let t = audio.currentTime + 0.01; for (const [hz, ms, art] of folge) { const o = audio.createOscillator(), g = audio.createGain(); o.type = art || "sine"; o.frequency.value = hz;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.min(0.35, 0.22 * v), t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + ms / 1000);
+        o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + ms / 1000 + 0.02); t += ms / 1000 * 0.8; } } catch (e) { /* ohne Ton */ }
+  }
+  const TON = { splitter: [[1320, 70, "triangle"], [1760, 110, "triangle"]], fund: [[880, 90, "triangle"], [1175, 90, "triangle"], [1568, 180, "triangle"]], aufstieg: [[523, 110], [659, 110], [784, 110], [1047, 260]], marke: [[660, 140], [440, 200]], tick: [[880, 60, "square"]] };
+  /** Die Uhr macht sich bemerkbar: bei 1:00, 0:30 und 0:10 ein Ton und ein Puls, in den letzten zehn Sekunden jede Sekunde ein Tick */
+  function zeitMarken() {
+    if (!KZ.laeuft || KZ.fertig) return; const s = Math.ceil(KZ.rest / 1000), el = document.getElementById("riss-uhr");
+    for (const m of [60, 30, 10]) if (s <= m && !KZ.marken[m] && s > m - 3) { KZ.marken[m] = true; ton(TON.marke); if (el) { el.classList.remove("puls"); void el.offsetWidth; el.classList.add("puls"); } hudHinweis(m === 60 ? "Noch eine Minute" : `Noch ${m} Sekunden`); }
+    if (s <= 10 && s > 0 && KZ.tick !== s) { KZ.tick = s; ton(TON.tick, 0.7); }
   }
   /** Die Zeit ist um: Der Riss holt die Gruppe heraus – auch mitten aus einem Kampf */
   function zeitUm() {
@@ -385,7 +423,13 @@
   function kampfWache() {
     const st = window.AB.st, D = KZ.drops; if (!KZ.imKampf || !st || !D) return;
     if (st.ende === "sieg" && !KZ.schluss) { raumOffenHalten(st); if (!st.ende) window.AB.render(); } // falls das Ende an der Schicht vorbei kam
-    fundeErfassen(st); xpLeiste(st); rausText();
+    fundeErfassen(st); xpLeiste(st); rausText(); zeitMarken();
+    // Kein Zwischenklick: Ist der Raum zu Ende, geht es von selbst zur Karte (der Hinweis „Sieg – Weiter“ ist im Riss ausgeblendet)
+    if (st.ende) { const w = document.getElementById("weiter-abenteuer"), e = document.getElementById("ende"); if (w && e && !e.hidden) { if (!KZ.endeSeit) KZ.endeSeit = Date.now(); else if (Date.now() - KZ.endeSeit > (SCHNELL ? 0 : 650)) { KZ.endeSeit = 0; w.click(); return; } } return; }
+    KZ.endeSeit = 0;
+    // Zugende von selbst: Kann der Held am Zug nichts mehr tun (keine Aktion, keine Bonusaktion, keine Bewegung), endet sein Zug nach einem Augenblick
+    { const a = heldAmZug(st), z = st.zug, fertig = a && z && !z.aktion && !(z.bewegung > 0) && !R.aktionenVon(a, st).some((x) => x.typ === "bonus" && z.bonus && R.verfuegbar(st, x.id)) && !KZ.fenster;
+      const k = fertig ? a.id + ":" + st.runde : ""; if (k && KZ.leerWer === k) { if (Date.now() - KZ.leerSeit > (SCHNELL ? 0 : 700) && !KZ.schluss) { KZ.leerWer = ""; const b = document.getElementById("ende-zug") || document.querySelector('#leiste [data-l="ende"]'); if (b) b.click(); } } else { KZ.leerWer = k; KZ.leerSeit = Date.now(); } }
     if (KZ.frei && !KZ.schluss && !D.liste.some((d) => !d.weg) && !KZ.fenster) { st.ende = "sieg"; KZ.schluss = true; window.AB.render(); } // alles eingesammelt: Der Raum ist fertig
     const karte = $("#karte"); if (!karte) return; const wo = {};
     const jetzt = Date.now();
@@ -431,6 +475,7 @@
     d.weg = true; K.kNimm(Z.ich, d, held); const st = window.AB.st;
     if (d.ding) { KZ.drops.funde.push({ ding: d.ding, held }); const f = st && st.figuren.find((x) => x.fid === held); if (f) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d.ding)) f.rucksack.push({ id: d.ding, n: 1 }); } }
     else KZ.drops.splitter += d.splitter || 0;
+    ton(d.ding ? TON.fund : TON.splitter);
     if (d.ding) hudHinweis(`${F.FIGUREN[held].name}: ${R.GEGENSTAENDE[d.ding].name}`); else { KZ.plus = { n: d.splitter, bis: Date.now() + 1600 }; } // kein Banner oben: Die Leiste unten zählt mit
     xpLeiste(st);
   }
@@ -447,7 +492,7 @@
   /** Kachel mitten im Kampf: Das Team steigt auf (Pfeil nach oben, neue Stufe). Die Werte der neuen Stufe gelten ab dem nächsten Raum. */
   function stufenKachel(stufe) {
     let el = document.getElementById("riss-aufstieg"); if (!el) { el = document.createElement("div"); el.id = "riss-aufstieg"; el.className = "riss-aufstieg"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-    el.innerHTML = `<i aria-hidden="true">▲</i><div><small>Das Team steigt auf</small><b>Stufe ${stufe}</b></div>`;
+    el.innerHTML = `<i aria-hidden="true">▲</i><div><small>Das Team steigt auf</small><b>Stufe ${stufe}</b></div>`; ton(TON.aufstieg);
     el.hidden = false; el.classList.remove("an"); void el.offsetWidth; el.classList.add("an");
     clearTimeout(KZ.aufstiegUhr); KZ.aufstiegUhr = setTimeout(() => { el.classList.remove("an"); el.hidden = true; }, 3200);
   }
@@ -477,15 +522,23 @@
     Z.karte = K.karteLosen(Math.random); Z.ich = K.neuK(Z.wahl, "Du", Z.karte);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botKarte(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.karte, Z.zeit);
-    clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null, raeume: {} });
+    clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null, raeume: {}, marken: {}, tick: 0 });
     Z.log = { v: 5, art: "karte", wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
-    uebergang(() => kampfK("M")); // der Film, dann direkt in den ersten Raum – dort läuft die Uhr an
+    vorladen(); uebergang(() => kampfK("M")); // der Film, dann direkt in den ersten Raum – dort läuft die Uhr an
+  }
+  /** Bilder vorab holen, damit beim Betreten eines Raums nichts nachspringt: Raumkarten, Kartenbild, Erbsplitter, Funde, Rune */
+  function vorladen() {
+    const l = ["img/mythara/riss-karte.webp", "img/mythara/erbsplitter.gif", "img/riss/siegel-rune.gif", "img/riss/laden-heilung.gif", "img/riss/laden-heiltrank.gif"].concat([...FUND_BILDER].map((id) => `img/riss/fund-${id}.gif`), [...SEGEN_BILDER].map((id) => `img/riss/segen-${id}.gif`));
+    for (const ort of ["M", 0, 1, 2, 3]) { try { const k = K.kOpts(Z.ich, ort).karte; if (k && k.bild) l.push(k.bild); } catch (e) { /* ohne Bild */ } }
+    try { const s = K.saal(); if (s.bild) l.push(s.bild); } catch (e) { /* ohne Bild */ }
+    Z.vorgeladen = l.map((src) => { const b = new Image(); b.src = src; return b; });
   }
   function kampfK(ort) {
-    const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });
+    ebeneAus(); document.body.classList.add("riss-raum"); window.AB_EILE = Z.tempo !== "normal"; // im Riss läuft die Uhr: kürzere Würfel, zügige Monster
+    const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false, endeSeit: 0, leerWer: "", leerSeit: 0 });
     KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
     raumEinhaengen();
-    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
+    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; window.AB_EILE = false; document.body.classList.remove("riss-raum"); clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
     if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); raumWiederherstellen(ort, window.AB.st); window.AB.render(); }
     const karte = $("#karte"); if (karte) karte.addEventListener("click", karteKlick, true); // vor dem Spiel: Aufheben statt Laufen
@@ -606,7 +659,7 @@
   }
   function aushaengen() { if (Z.orig) for (const k of Object.keys(Z.orig)) R[k] = Z.orig[k]; Z.orig = null; }
   function finale() {
-    warteStopp();
+    warteStopp(); ebeneAus(); window.AB_EILE = false;
     const st = Z.st = K.finaleNeu(Z.seed, Z.ich, Z.bot, { heilung: Z.art === "karte" ? "keine" : Z.heilung, namen: ["Du", Z.bot.name], aufstellung: Z.warte ? Z.warte.platz : null, gleich: Z.art === "karte" });
     Z.finalBeginn = Date.now(); Z.botBis = Date.now() + 1500;
     einhaengen();
@@ -745,6 +798,7 @@
     let b = document.getElementById("riss-zugang");
     if (!b) { b = document.createElement("button"); b.id = "riss-zugang"; b.className = "riss-zugang"; b.type = "button"; b.innerHTML = "⟁ Rissgänger <small>Prototyp</small>"; b.onclick = zeigen; document.body.appendChild(b); }
     const hub = $("#hub"); b.hidden = !(hub && !hub.hidden) || Boolean(document.querySelector("[data-riss]"));
+    const sp = $("#spiel"); if (sp && !sp.hidden) ebeneAus(); // im Kampf liegt die Ebene nie darüber
   }
   setInterval(knopf, 700);
   /** Läuft gerade eine Partie? (Dann lädt das Spiel sich nicht von selbst neu, siehe js/mythara.js) */

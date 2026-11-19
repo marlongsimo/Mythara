@@ -193,6 +193,20 @@ Der Modus lebt von wenigen, wiederkehrenden Fragen:
 - **Erbsplitter und Funde** liegen als animierte Bilder aufrecht auf dem Feld. Ein heller Rahmen zeigt, dass ein Held nah genug steht.
 - **Figuren in Bewegung:** Die Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich, Getroffene zucken zurück, Gefallene kippen um. Wer nach links angreift, dreht sich dafür um. Das gilt für alle Helden, alle Skins und alle Monster.
 
+## Spielfluss
+
+Damit sich der Weg durch den Riss zügig anfühlt, gilt seit dem Fluss-Paket:
+
+- **Tempo im Riss:** Solange die Uhr läuft, fallen die Würfel etwa halb so lang und die Monster ziehen zügig. Im Finale gilt das gewohnte Tempo. In den Einstellungen lässt sich „wie in der Kampagne“ wählen (Adresse: `risstempo=normal`).
+- **Kein Zwischenklick:** Ist ein Raum zu Ende, geht es von selbst zur Karte. Die Tafel „Sieg – Weiter“ gibt es im Riss nicht.
+- **Eigene Ebene:** Vorraum, Karte, Siegelwächterin und Ergebnis liegen bildschirmfüllend über dem Dorf. Zwischen Kampf und Karte baut sich das Dorf nicht mehr auf. Oben links steht „Zum Dorf“, während einer Partie „Partie abbrechen“ (mit Nachfrage).
+- **Zugende von selbst:** Hat der Held am Zug keine Aktion, keine nutzbare Bonusaktion und keine Bewegung mehr, endet sein Zug nach einem Augenblick. Das macht vor allem das Einsammeln im offenen Raum flüssig.
+- **Gefühl für die Zeit:** Bei 1:00, 0:30 und 0:10 gibt es einen Ton, einen Puls der Uhr und einen Hinweis; in den letzten zehn Sekunden tickt jede Sekunde. Aufheben und Stufenaufstieg haben einen eigenen Ton.
+- **Bilder vorab:** Raumkarten, Kartenbild und Fundbilder werden beim Start geladen.
+- **Der Rechner hält sich ans Aufheben:** Je drei Funde kosten ihn eine Runde seiner Zeit, und er hebt nur auf, was noch in die Zeit passt.
+
+Nicht geprüft: wie es sich auf einem echten Handy anfühlt. Mit dem höheren Tempo passen mehr Züge in fünf Minuten – möglich, dass die Zeit wieder auf vier Minuten zurück sollte.
+
 ## Stand des Prototyps
 
 Gebaut ist die Partie gegen den Rechner, auf einem Gerät, ohne Server und ohne Datenbank. Arena und Ranked sind unberührt.

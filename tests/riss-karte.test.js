@@ -17,10 +17,10 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(await p.isDisabled("#riss-suchen") && (await p.$$("#riss-team .riss-platz.leer")).length === 3, "beim ersten Mal ist das Team leer");
   check(await p.evaluate(() => document.querySelector("#riss-art").value === "karte" && Boolean(document.querySelector("#riss-zeit"))), "Spielart „Karte“ ist die Voreinstellung, die Zeit ist wählbar");
   await p.click("#riss-bearbeiten"); await p.waitForSelector("#riss-helden");
-  await p.evaluate(() => window.scrollTo(0, 300)); const y0 = await p.evaluate(() => window.scrollY);
-  for (let i = 0; i < 3; i++) await p.click(`#riss-helden [data-held]:nth-child(${i + 1})`);
-  check(y0 > 0 && await p.evaluate((y) => Math.abs(window.scrollY - y) < 40, y0) && (await p.$$("#riss-helden .an")).length === 3, "Helden antippen: Die Seite springt nicht nach oben");
-  await p.click("#riss-speichern"); await p.waitForSelector("#riss-suchen:not([disabled])");
+  await p.setViewportSize({ width: 420, height: 420 }); await p.evaluate(() => { document.getElementById("riss-ebene").scrollTop = 200; }); const y0 = await p.evaluate(() => document.getElementById("riss-ebene").scrollTop);
+  for (let i = 0; i < 3; i++) await p.evaluate((n) => document.querySelector(`#riss-helden [data-held]:nth-child(${n})`).click(), i + 1); // direkt klicken: p.click würde selbst zum Helden rollen
+  check(y0 > 0 && await p.evaluate((y) => Math.abs(document.getElementById("riss-ebene").scrollTop - y) < 40, y0) && (await p.$$("#riss-helden .an")).length === 3, "Helden antippen: Die Seite springt nicht nach oben");
+  await p.setViewportSize({ width: 1280, height: 720 }); await p.click("#riss-speichern"); await p.waitForSelector("#riss-suchen:not([disabled])");
   check(await p.evaluate(() => JSON.parse(localStorage.getItem("ab_riss_team")).length === 3 && document.querySelectorAll("#riss-team .riss-platz img").length === 3), "das Team ist gespeichert und steht oben");
   await p.click("#riss-suchen"); await p.waitForSelector("#karte .fig"); // nach dem Start geht es (nach dem Film, hier übersprungen) direkt in den ersten Raum
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.karte.slice().sort().join() === "boss,schwer,truhe1,truhe2" && Z.bot.karte.join() === Z.karte.join() && window.RISS.laeuft(); }), "Karte gelost (ein schwerer Raum, ein Boss, zwei leichte), für beide gleich; die Partie läuft (kein Neuladen)");
@@ -43,14 +43,15 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   const fern = await p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, d = D.liste.find((x) => !x.weg); for (const f of st.figuren) if (f.fid) { f.x = d.x > 5 ? 1 : 10; f.y = 7; } return window.RISS.feldAufheben(d.x, d.y) === false && !d.weg; });
   check(fern, "zu weit weg: Antippen hebt nichts auf");
   const kosten = await p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, R = window.AB.R; let k = 0; while (!(R.aktiv(st).fid && R.aktiv(st).tp > 0 && st.zug.aktion) && k++ < 12) R.zugEnde(st);
-    const l = D.liste.filter((x) => !x.weg && !x.ding), h = R.aktiv(st); if (l.length < 2) return null; const andere = st.figuren.find((f) => f.fid && f !== h && f.tp > 0), vor = window.RISS.zustand().ich.splitter;
+    const offen = D.liste.filter((x) => !x.weg), l = offen.filter((x) => !x.ding && offen.filter((o) => o.x === x.x && o.y === x.y).length === 1), h = R.aktiv(st); if (l.length < 2) return null; const andere = st.figuren.find((f) => f.fid && f !== h && f.tp > 0), vor = window.RISS.zustand().ich.splitter;
     andere.x = l[0].x; andere.y = l[0].y; h.x = 0; h.y = 8; const fremd = window.RISS.feldAufheben(l[0].x, l[0].y) === false && !l[0].weg; // ein anderer Held steht daneben, ist aber nicht am Zug
     andere.x = 11; andere.y = 8; h.x = l[0].x; h.y = l[0].y; window.RISS.feldAufheben(l[0].x, l[0].y); const eins = l[0].weg && st.zug.aktion === false && window.RISS.zustand().ich.splitter > vor;
     h.x = l[1].x; h.y = l[1].y; window.RISS.feldAufheben(l[1].x, l[1].y); return { fremd, eins, zwei: !l[1].weg }; });
+  if (kosten && !(kosten.fremd && kosten.eins && kosten.zwei)) console.log("kosten", JSON.stringify(kosten));
   if (kosten) check(kosten.fremd && kosten.eins && kosten.zwei, "Aufheben macht nur der Held am Zug, es kostet seine Aktion, und ohne Aktion geht kein zweites Mal");
-  const n1 = await einsammeln(); await p.waitForSelector("#weiter-abenteuer", { timeout: 15000 });
+  const n1 = await einsammeln();
   check(n1 >= 1 && await p.evaluate(() => window.RISS.zustand().ich.splitter + Object.values(window.RISS.zustand().ich.dinge).flat().length > 0), "Held daneben und antippen: aufgehoben; ist alles eingesammelt, schließt der Raum");
-  await p.click("#weiter-abenteuer"); await p.waitForSelector("[data-riss-karte]");
+  await p.waitForSelector("[data-riss-karte]", { timeout: 15000 });
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.ich.xp >= 45 && Z.ich.xp % 5 === 0 && Z.ich.xp === Z.ich.verlauf[0].xp && Object.values(Z.ich.stufen).every((s) => s === 2); }), "Einstieg: 5 Erfahrung je Lebenspunkt der Monster, Stufe 2");
   check((await p.$$(".rk-raum.dunkel")).length === 4 && (await p.$$(".rk-raum.hell")).length === 1, "Karte: die Mitte leuchtet, vier Räume sind dunkel");
   check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"); return u && !u.hidden && /0:[0-4]\d/.test(u.textContent); }), "auf der Karte läuft dieselbe Uhr weiter");
@@ -59,7 +60,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   e = await spielen("erster"); await p.waitForTimeout(500);
   const live = await p.evaluate(() => { const st = window.AB.st, K = window.RISS.kern(), el = document.querySelector("#riss-xpleiste"); return { xp: K.kXp(st), sichtbar: el && !el.hidden, breite: el && el.querySelector("u").style.width, text: el && el.textContent }; });
   check(live.xp > 0 && live.sichtbar && /EP|Stufe/.test(live.text), `der blaue Balken zählt im Kampf mit (${live.xp} Erfahrung aus diesem Raum, ${live.breite})`);
-  if (e === "erster") { await p.click("#riss-raus"); await p.click("#riss-raus"); } else { await einsammeln(); await p.waitForSelector("#weiter-abenteuer"); await p.click("#weiter-abenteuer"); }
+  if (e === "erster") { await p.click("#riss-raus"); await p.click("#riss-raus"); } else { await einsammeln(); }
   await p.waitForSelector("[data-riss-karte]", { timeout: 15000 });
   const nachGehen = await p.evaluate((x) => { const Z = window.RISS.zustand(), v = Z.ich.verlauf[1], m = Object.values(window.RISS.karteZustand().raeume).find((r) => !r.sieg && !r.zu); return { ok: Z.ich.besucht.length === 1 && v.xp >= x && Z.ich.xp === Z.ich.verlauf[0].xp + v.xp, xp: Z.ich.xp, monster: m ? m.monster.map((q) => q.tp).join(",") : null, lebend: m ? m.monster.filter((q) => q.tp > 0).length : 0, liegt: m ? m.liegt.length : 0 }; }, live.xp);
   if (e === "erster") {

@@ -231,14 +231,13 @@
     function botKarte(gruppe, seed, name, karte, zeitSek, sekRunde) {
       let zs = (seed >>> 0) || 7; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; return zs / 0x7fffffff; };
       const W = neuK(gruppe, name, karte), sek = sekRunde || K.BOT_SEK_RUNDE; let rest = zeitSek == null ? K.ZEIT : zeitSek;
-      const nimm = (e) => { e.splitter = 0; e.funde = []; for (const t of e.tot) { const d = kDrop(W, t.boss, zf); if (d.ding) { const l = W.gruppe.filter((f) => kannTragen(W, d.ding, f)); if (!l.length) continue; kNimm(W, d, l[Math.floor(zf() * l.length)]); e.funde.push(d.ding); } else { kNimm(W, d); e.splitter += d.splitter; } } }; // der Rechner hebt alles auf, was seine besiegten Monster fallen lassen
+      const nimm = (e) => { e.splitter = 0; e.funde = []; let frei = Math.floor(rest / sek) * 3, n = 0; for (const t of e.tot) { if (frei <= 0) break; frei--; n++; const d = kDrop(W, t.boss, zf); if (d.ding) { const l = W.gruppe.filter((f) => kannTragen(W, d.ding, f)); if (!l.length) continue; kNimm(W, d, l[Math.floor(zf() * l.length)]); e.funde.push(d.ding); } else { kNimm(W, d); e.splitter += d.splitter; } } rest -= Math.min(rest, Math.ceil(n / 3) * sek); }; // auch für den Rechner kostet Aufheben eine Aktion: je drei Funde eine Runde seiner Zeit, und nur, was noch in die Zeit passt
       const spiel = (ort, runden) => { const st = R.neuesSpiel(seed * 13 + (ort === "M" ? 9 : ort) + 1, kOpts(W, ort)); raumDinge(W, st); let z = 0;
         while (!st.ende && z++ < 900 && st.runde <= runden) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); } return st; };
-      { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); nimm(e); rest -= st.runde * sek; } // die Zeit läuft ab dem ersten Raum
+      { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); rest -= st.runde * sek; nimm(e); } // die Zeit läuft ab dem ersten Raum
       for (const ort of [0, 1, 2, 3].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1])) {
         if (rest < sek) break;
-        const st = spiel(ort, Math.floor(rest / sek)), e = kEnde(W, ort, st, zf, !st.ende); nimm(e);
-        rest -= Math.min(rest, st.runde * sek); if (e.abgebrochen) break;
+        const st = spiel(ort, Math.floor(rest / sek)), e = kEnde(W, ort, st, zf, !st.ende); rest -= Math.min(rest, st.runde * sek); nimm(e); if (e.abgebrochen) break;
       }
       botLaden(W, zf);
       W.abgebogen = true; return W;

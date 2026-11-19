@@ -76,7 +76,7 @@
   const bereit = new Promise((r) => (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", r, { once: true }) : r()));
   // Tempo der Gegnerzüge (Einstellungen): langsam 2,4 s, normal 1,6 s, schnell 0,8 s; im Testmodus sofort
   const TEMPI = { langsam: 2400, normal: 1600, schnell: 800 };
-  const tempo = () => { if (params.has("schnell")) return 0; let t = "normal"; try { t = localStorage.getItem("ab_tempo") || "normal"; } catch (e) { /* privat */ } return TEMPI[t] || TEMPI.normal; };
+  const tempo = () => { if (params.has("schnell")) return 0; if (window.AB_EILE) return 520; /* Rissgänger: die Uhr läuft, Monster ziehen zügig */ let t = "normal"; try { t = localStorage.getItem("ab_tempo") || "normal"; } catch (e) { /* privat */ } return TEMPI[t] || TEMPI.normal; };
   const TEMPO = params.has("schnell") ? 0 : 1;
   const SLUG = params.get("liveslug") || "abenteuer"; // ?liveslug= nur für Tests
   const SPEICHER = "ab_tisch", SETUP_KEY = "ab_setup";
@@ -607,7 +607,7 @@
   /** Rollt für diese neuen Chronikzeilen der große Würfel? Kampagne: nur bei Würfen der eigenen Helden. Arena: bei allen. */
   function wurfZeile(zeilen) { const w = zeilen.filter((l) => l.art === "wurf" || (l.art === "gut" && (/ heilt /.test(l.t) || l.rett))).pop(), g = zeilen.filter((l) => l.art === "gegner" && l.wurf).pop(); return { w, g, zeig: w || g }; }
   function rolltGross(zeilen) { if (!window.W3D || TEMPO === 0 || !st) return false; const z = wurfZeile(zeilen); return Boolean(z.zeig && z.zeig.wurf && (st.arena || z.zeig === z.w || z.zeig.rett)); } // rett: Rettungswurf – in der Kampagne würfelt dann ein eigener Held
-  window.AB_WURFZEIT = (zeilen) => (rolltGross(zeilen || []) ? ROLLZEIT : WURFZEIT);
+  window.AB_WURFZEIT = (zeilen) => (rolltGross(zeilen || []) ? (window.AB_EILE ? 1150 : ROLLZEIT) : (window.AB_EILE ? 380 : WURFZEIT)); // AB_EILE (js/riss.js): der Würfel rollt kürzer
   let gezeigt = { st: null, tp: {} }, wurfWarten = null, fxLage = null;
   function render() {
     if (!st) return renderSicht();
@@ -866,14 +866,14 @@
       if (zeig.wurf && window.ABW) window.ABW.rollen(el, zeig.wurf, zeig.t.replace(/^[^:]+: /, ""), { titel: zeig.t.split(":")[0], gut: zeig.rett && gut == null ? undefined : gut, sofort: gross });
       else el.innerHTML = `<div class="w20-erg da"><span>${esc(zeig.t)}</span></div>`;
       el.classList.toggle("gegner", gegnerWurf); el.classList.toggle("ohne-w20", gross);
-      el.classList.add("an"); clearTimeout(wurfTimer); wurfTimer = setTimeout(() => el.classList.remove("an"), 2800); };
+      el.classList.add("an"); clearTimeout(wurfTimer); wurfTimer = setTimeout(() => el.classList.remove("an"), window.AB_EILE ? 1500 : 2800); };
     if (!gross) return text();
     // Der große Würfel rollt über die Karte; das Ergebnis erscheint erst, wenn er liegt. Eigene Würfe im eigenen Design, fremde im Standard.
     const k = $("#karte").getBoundingClientRect(), nr = ++wurfNr, eigen = !st.arena || !ARENA || zeig.tm == null || zeig.tm === ARENA.seite;
     el.classList.remove("an"); clearTimeout(wurfTimer);
     const x = Math.max(70, Math.min(innerWidth - 70, k.left + k.width / 2)), y = Math.max(90, Math.min(innerHeight - 190, k.top + k.height * 0.24)); // oberes Kartendrittel: das Ergebnisfeld bleibt frei
-    window.W3D.wurf({ zahl: zeig.wurf, ziel: { x, y }, schlicht: Boolean(zeig.rett), design: eigen && window.ABKOS ? window.ABKOS.aktiv().wuerfel || "standard" : "standard" })
-      .then(() => { if (nr !== wurfNr) return; text(); setTimeout(() => { if (nr === wurfNr) window.W3D.weg(); }, 1500); });
+    window.W3D.wurf({ zahl: zeig.wurf, ziel: { x, y }, schnell: Boolean(window.AB_EILE), schlicht: Boolean(zeig.rett), design: eigen && window.ABKOS ? window.ABKOS.aktiv().wuerfel || "standard" : "standard" })
+      .then(() => { if (nr !== wurfNr) return; text(); setTimeout(() => { if (nr === wurfNr) window.W3D.weg(); }, window.AB_EILE ? 800 : 1500); });
   }
 
   function zeigeEnde() {
