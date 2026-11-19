@@ -92,15 +92,26 @@
     try { await bereit(); if (window.ABSAMMLUNG) await window.ABSAMMLUNG.laden().catch(() => null); } catch (e) { return seite(`<h1 class="hub-gruss">Rissgänger</h1><p class="note">${esc(e.message)}</p>`); }
     start();
   }
+  /* ---------- Vorraum: Team (gespeichert), Gegner suchen, Gegner gefunden, Countdown ---------- */
+  const TEAM = "ab_riss_team";
+  function teamLaden() { try { const l = JSON.parse(localStorage.getItem(TEAM) || "[]"); return Array.isArray(l) ? l.filter((f) => F.FIGUREN[f]).slice(0, 3) : []; } catch (e) { return []; } }
+  function teamSpeichern(l) { try { localStorage.setItem(TEAM, JSON.stringify(l.slice(0, 3))); } catch (e) { /* privat */ } }
+  const platzHtml = (f) => (f ? `<div class="riss-platz" style="--k:${F.KLASSEN[F.FIGUREN[f].klasse].farbe}"><img src="${F.bild(f)}" alt=""><b>${esc(F.FIGUREN[f].name)}</b><small>${esc(F.KLASSEN[F.FIGUREN[f].klasse].name)}</small></div>` : `<div class="riss-platz leer"><i>?</i><b>frei</b><small>&nbsp;</small></div>`);
+  const teamHtml = (l) => `<div class="riss-team" id="riss-team">${[0, 1, 2].map((k) => platzHtml(l[k])).join("")}</div>`;
   function start() {
-    warteStopp(); uhrEnde(); if (Z.log && !Z.log.fertig) Z.log = null;
-    const { eigene, leih } = wahlHelden(); Z.wahl = Z.wahl.filter((f) => eigene.includes(f) || leih.includes(f));
+    warteStopp(); uhrEnde(); vorraumStopp(); if (Z.log && !Z.log.fertig) Z.log = null;
+    const { eigene, leih } = wahlHelden(); if (!Z.teamGeladen) { Z.wahl = teamLaden(); Z.teamGeladen = true; }
+    Z.wahl = Z.wahl.filter((f) => eigene.includes(f) || leih.includes(f)); const voll = Z.wahl.length === 3;
     seite(`<div class="riss-kopf"><h1 class="hub-gruss">Rissgänger <span class="riss-marke">Prototyp</span></h1>
       <p class="hub-untertitel">Ein Riss öffnet sich. Zwei Gruppen steigen von zwei Seiten hinein und kämpfen sich zum Siegel.</p></div>
+      <h2 class="riss-h2">Dein Team</h2>${teamHtml(Z.wahl)}
+      <p class="note">${voll ? "Dieses Team ist gespeichert. Alle Helden beginnen im Riss auf Stufe 1." : "Noch kein vollständiges Team: Wähle drei Helden, sie werden für das nächste Mal gespeichert."}</p>
+      <div class="knoepfe"><button class="btn" id="riss-suchen" ${voll ? "" : "disabled"}>Gegner suchen</button><button class="btn ghost" id="riss-bearbeiten">${Z.wahl.length ? "Team bearbeiten" : "Team wählen"}</button><button class="btn ghost" id="riss-mitschrift">Mitschrift (${mitschrift().length})</button></div>
+      <details class="riss-klappe"><summary>So wird gespielt</summary>
       <div class="riss-regeln"><ul>
         ${Z.art === "karte" ? `<li><b>Alle beginnen auf Stufe 1.</b> Der erste Raum ist die Mitte des Risses und leicht.</li>
         <li><b>Die Zeit läuft ab dem ersten Raum:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für alles, für beide Seiten genau gleich lang. Nach der Mitte öffnet sich die Karte mit vier dunklen Räumen – ein schwerer, ein Boss, zwei leichte, für beide dieselben.</li>
-        <li><b>Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert.</b> Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
+        <li><b>Erfahrung gibt es, sobald ein Monster am Boden liegt:</b> je mehr Lebenspunkte es hatte, desto mehr. Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
         <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: einen Helden daneben stellen und das Feld antippen. Bei einem Fund wählst du, wer ihn bekommt.</li>
         <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
         <li><b>Raum verlassen:</b> Mitten im Kampf kannst du gehen. Erfahrung und Aufgehobenes bleiben, der Raum ist danach zu.</li>
@@ -112,9 +123,8 @@
         <li><b>Du hörst, wie tief dein Gegner ist</b> – aber nicht, wer in seiner Gruppe ist, wie stark sie ist und ob er schon zum Siegel abgebogen ist.</li>
         <li><b>Wer nach weniger Räumen abbiegt,</b> stellt seine Helden am Siegel auf und sammelt Siegelpunkte, solange der andere noch im Riss ist: 2 für den ersten Raum, 1 für jeden weiteren, höchstens 3. Wer tiefer geht, kommt stärker an.</li>`}
         <li><b>Am Siegel:</b> Am Ende jeder Runde bekommt einen Punkt, wer mehr Helden am Siegel hat. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden mit vollen Trefferpunkten zurück. Fünf Punkte gewinnen, sonst wird nach zwölf Runden gewertet.</li>
-        <li><b>Im Finale sind Zauberplätze, Tränke und Fähigkeiten wieder frisch.</b> Nur die Trefferpunkte und die Beute kommen vom Weg mit.</li></ul></div>
-      <h2 class="riss-h2">Wähle drei Helden</h2>
-      <div class="arena-helden" id="riss-helden">${eigene.map((f) => heldKarte(f, "Stufe 1", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}${leih.map((f) => heldKarte(f, "Leihheld", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}</div>
+        <li><b>Im Finale sind Zauberplätze, Tränke und Fähigkeiten wieder frisch.</b> Nur die Trefferpunkte und die Beute kommen vom Weg mit.</li></ul></div></details>
+      <details class="riss-klappe" id="riss-einstellungen"${Z.einstOffen ? " open" : ""}><summary>Einstellungen</summary>
       <label class="riss-schalter"${Z.art === "karte" ? " hidden" : ""}>Heilung vor dem Finale
         <select id="riss-heilung"><option value="gerechnet"${Z.heilung === "gerechnet" ? " selected" : ""}>Gerechnete Regel: frühere Gruppe halbe fehlende Trefferpunkte, spätere keine</option><option value="keine"${Z.heilung === "keine" ? " selected" : ""}>Testvariante: niemand wird geheilt</option></select></label>
       <label class="riss-schalter">Spielart
@@ -122,21 +132,54 @@
       ${Z.art === "karte" ? `<label class="riss-schalter">Zeit auf der Karte
         <select id="riss-zeit">${[180, 240, 300].map((n) => `<option value="${n}"${Z.zeit === n ? " selected" : ""}>${n / 60} Minuten</option>`).join("")}${[180, 240, 300].includes(Z.zeit) ? "" : `<option value="${Z.zeit}" selected>${Z.zeit} Sekunden</option>`}</select></label>` : ""}
       <label class="riss-schalter"${Z.art === "karte" ? " hidden" : ""}>Der Gegner biegt ab (nur zum Testen)
-        <select id="riss-gegner"><option value="0">zufällig, wie im echten Spiel</option>${[2, 3, 4, 5].map((n) => `<option value="${n}"${Z.gegnerZiel === n ? " selected" : ""}>immer nach Raum ${n}</option>`).join("")}</select></label>
-      <div class="knoepfe"><button class="btn" id="riss-los" ${Z.wahl.length === 3 ? "" : "disabled"}>In den Riss</button><button class="btn ghost" id="riss-mitschrift">Mitschrift (${mitschrift().length})</button></div>
+        <select id="riss-gegner"><option value="0">zufällig, wie im echten Spiel</option>${[2, 3, 4, 5].map((n) => `<option value="${n}"${Z.gegnerZiel === n ? " selected" : ""}>immer nach Raum ${n}</option>`).join("")}</select></label></details>
       <p class="note">Prototyp gegen den Rechner. Es gibt keine Belohnung, und nichts wird an den Server geschickt. Lädst du die Seite neu, ist die Partie weg.</p>`);
-    $("#riss-helden").onclick = (ev) => { const b = ev.target.closest("[data-held]"); if (!b) return; const f = b.dataset.held;
-      if (Z.wahl.includes(f)) Z.wahl = Z.wahl.filter((x) => x !== f); else if (Z.wahl.length < 3) Z.wahl.push(f); else return; start(); };
+    $("#riss-einstellungen").ontoggle = (ev) => { Z.einstOffen = ev.target.open; };
     $("#riss-heilung").onchange = (ev) => { Z.heilung = ev.target.value === "keine" ? "keine" : "gerechnet"; };
-    $("#riss-art").onchange = (ev) => { Z.art = ev.target.value === "abbiegen" ? "abbiegen" : "karte"; start(); };
-    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; start(); };
+    $("#riss-art").onchange = (ev) => { Z.art = ev.target.value === "abbiegen" ? "abbiegen" : "karte"; Z.einstOffen = true; start(); };
+    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; Z.einstOffen = true; start(); };
     $("#riss-gegner").onchange = (ev) => { Z.gegnerZiel = +ev.target.value || 0; };
-    $("#riss-los").onclick = los; $("#riss-mitschrift").onclick = mitschriftZeigen;
+    $("#riss-suchen").onclick = suchen; $("#riss-bearbeiten").onclick = teamBearbeiten; $("#riss-mitschrift").onclick = mitschriftZeigen;
+  }
+  /** Team wählen: Antippen wählt und wählt ab, ohne dass die Seite neu aufgebaut wird (sie springt also nicht nach oben). Gespeichert wird mit dem Knopf. */
+  function teamBearbeiten() {
+    const { eigene, leih } = wahlHelden(); let wahl = Z.wahl.slice();
+    seite(`<p class="riss-schritt">Rissgänger</p><h1 class="hub-gruss">Dein Team</h1>
+      <div class="riss-team-fest">${teamHtml(wahl)}<div class="knoepfe"><button class="btn" id="riss-speichern" ${wahl.length === 3 ? "" : "disabled"}>Team speichern</button><button class="btn ghost" id="riss-abbrechen">Abbrechen</button><span class="note" id="riss-zahl"></span></div></div>
+      <div class="arena-helden" id="riss-helden">${eigene.map((f) => heldKarte(f, "Stufe 1", wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}${leih.map((f) => heldKarte(f, "Leihheld", wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}</div>`);
+    const zeig = () => { $("#riss-team").outerHTML = teamHtml(wahl); $("#riss-speichern").disabled = wahl.length !== 3; $("#riss-zahl").textContent = wahl.length === 3 ? "" : `${wahl.length} von 3 gewählt`;
+      document.querySelectorAll("#riss-helden [data-held]").forEach((b) => b.classList.toggle("an", wahl.includes(b.dataset.held))); };
+    zeig();
+    $("#riss-helden").onclick = (ev) => { const b = ev.target.closest("[data-held]"); if (!b) return; const f = b.dataset.held;
+      if (wahl.includes(f)) wahl = wahl.filter((x) => x !== f); else if (wahl.length < 3) wahl.push(f); else { if (window.MYTHARA.toast) window.MYTHARA.toast("Drei Helden sind gewählt. Tippe einen an, um ihn herauszunehmen."); return; } zeig(); };
+    $("#riss-speichern").onclick = () => { if (wahl.length !== 3) return; Z.wahl = wahl.slice(); teamSpeichern(Z.wahl); start(); };
+    $("#riss-abbrechen").onclick = start;
+  }
+  function vorraumStopp() { clearTimeout(Z.suchUhr); clearInterval(Z.zaehlUhr); Z.suchUhr = Z.zaehlUhr = null; }
+  /** Gegner suchen (gegen den Rechner dauert das nur einen Moment), dann zeigt sich der Gegner und ein Countdown läuft */
+  function suchen() {
+    if (Z.wahl.length !== 3) return; vorraumStopp();
+    seite(`<div data-riss-suche><p class="riss-schritt">Rissgänger</p><h1 class="hub-gruss">Suche einen Gegner …</h1>${teamHtml(Z.wahl)}
+      <div class="riss-sucht" role="status"><i></i><span>Der Riss sucht eine zweite Gruppe.</span></div>
+      <div class="knoepfe"><button class="btn ghost" id="riss-suche-ab">Abbrechen</button></div></div>`);
+    $("#riss-suche-ab").onclick = start;
+    Z.suchUhr = setTimeout(gefunden, SCHNELL ? 0 : 2200 + Math.random() * 2600);
+  }
+  function gefunden() {
+    if (!document.querySelector("[data-riss-suche]")) return; vorraumStopp();
+    Z.seedVor = zufall(); const name = NAMEN[Z.seedVor % NAMEN.length]; let rest = SCHNELL ? 0 : Math.max(0, params.has("risscountdown") ? +params.get("risscountdown") : 10);
+    seite(`<div data-riss-gefunden><p class="riss-schritt">Gegner gefunden</p><h1 class="hub-gruss">Du gegen ${esc(name)}</h1>
+      <div class="riss-duell"><div><small>Du</small>${teamHtml(Z.wahl)}</div><b>gegen</b><div><small>${esc(name)}</small><div class="riss-team">${[0, 1, 2].map(() => `<div class="riss-platz leer verdeckt"><i>?</i><b>verdeckt</b><small>&nbsp;</small></div>`).join("")}</div></div></div>
+      <p class="note">Wer in der anderen Gruppe ist, siehst du erst am Siegel.</p>
+      <div class="riss-countdown" role="timer"><small>Der Riss öffnet sich in</small><b id="riss-count">${rest}</b></div></div>`);
+    if (!rest) return los();
+    Z.zaehlUhr = setInterval(() => { if (!document.querySelector("[data-riss-gefunden]")) return vorraumStopp(); rest--; const el = $("#riss-count"); if (el) { el.textContent = Math.max(0, rest); el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
+      if (rest <= 0) { vorraumStopp(); los(); } }, 1000);
   }
   function los() {
     if (Z.wahl.length !== 3) return;
     if (Z.art === "karte") return losK();
-    Z.seed = zufall(); Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.karte = null;
+    Z.seed = Z.seedVor || zufall(); Z.seedVor = null; Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.karte = null;
     Z.folge = Z.fest ? null : K.folgeLosen(Math.random);
     Z.ich = K.neu(Z.wahl, "Du", Z.folge);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
@@ -372,7 +415,7 @@
     document.body.appendChild(el);
   }
   function fundFensterZu() { if (KZ.fenster) { KZ.fenster.remove(); KZ.fenster = null; } }
-  /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Lebenspunkt, den ein Monster verliert */
+  /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Monster, das fällt */
   function xpLeiste(st) {
     let el = document.getElementById("riss-xpleiste");
     if (!st) { if (el) el.hidden = true; return; }
@@ -382,7 +425,7 @@
     el.hidden = false; if (el.dataset.h !== html) { el.dataset.h = html; el.innerHTML = html; }
   }
   function losK() {
-    Z.seed = zufall(); Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.folge = null;
+    Z.seed = Z.seedVor || zufall(); Z.seedVor = null; Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.folge = null;
     Z.karte = K.karteLosen(Math.random); Z.ich = K.neuK(Z.wahl, "Du", Z.karte);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botKarte(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.karte, Z.zeit);
@@ -442,7 +485,7 @@
         <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>
-          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert (${C.XP_LP} je Punkt). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst.</p></div></div></div>`);
+          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst.</p></div></div></div>`);
     $("#riss-karte").onclick = (ev) => { const b = ev.target.closest("[data-ort]"); if (!b || KZ.imKampf) return; const k = +b.dataset.ort;
       if (KZ.rest <= 0) return zeitUm(); kampfK(k); };
   }

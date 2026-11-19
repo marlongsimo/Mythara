@@ -3024,3 +3024,24 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 .riss-film { position: fixed; inset: 0; z-index: 300; background: #000; opacity: 0; transition: opacity .5s ease; }
 .riss-film.an { opacity: 1; } .riss-film.weg { opacity: 0; pointer-events: none; }
 .riss-film video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+
+/* Rissgänger: Vorraum – Team, Suche, Gegner gefunden, Countdown */
+.riss-team { display: grid; grid-template-columns: repeat(3, minmax(0, 150px)); gap: 10px; margin: 6px 0 10px; }
+.riss-platz { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border-radius: 12px; background: rgba(10,11,15,.62); box-shadow: inset 0 0 0 2px var(--k, rgba(255,255,255,.2)); text-align: center; }
+.riss-platz img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid var(--k, #d9b46a); }
+.riss-platz b { font: 600 14px var(--schrift-titel); color: #f2ead8; } .riss-platz small { font-size: 12px; color: #b9ad94; }
+.riss-platz.leer { box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); opacity: .7; } .riss-platz.leer i { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.3); font-style: normal; font-size: 26px; color: #b9ad94; }
+.riss-platz.verdeckt { opacity: 1; box-shadow: inset 0 0 0 2px rgba(160,120,255,.5); } .riss-platz.verdeckt i { border-color: rgba(160,120,255,.6); color: #cbbcf5; }
+.riss-team-fest { position: sticky; top: 0; z-index: 5; margin: 0 -6px 10px; padding: 6px 6px 8px; background: rgba(12,12,16,.94); border-bottom: 1px solid rgba(217,180,106,.4); }
+.riss-team-fest .riss-team { grid-template-columns: repeat(3, minmax(0, 120px)); } .riss-team-fest .riss-platz { padding: 6px 4px; } .riss-team-fest .riss-platz img, .riss-team-fest .riss-platz.leer i { width: 46px; height: 46px; }
+.riss-klappe { margin: 10px 0; border-radius: 12px; background: rgba(10,11,15,.5); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+.riss-klappe summary { padding: 10px 14px; cursor: pointer; font: 600 15px var(--schrift-titel); color: #e9c77e; } .riss-klappe > *:not(summary) { margin-left: 14px; margin-right: 14px; } .riss-klappe .riss-regeln { background: none; box-shadow: none; padding: 0 0 6px; margin-top: 0; }
+.riss-sucht { display: flex; gap: 14px; align-items: center; margin: 14px 0; font: 400 18px var(--schrift-text); color: #e6dcff; }
+.riss-sucht i { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(160,120,255,.3); border-top-color: #b79bff; animation: riss-dreh 1s linear infinite; }
+@keyframes riss-dreh { to { transform: rotate(360deg); } }
+.riss-duell { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; margin: 8px 0; } .riss-duell > b { font: 600 18px var(--schrift-titel); color: #e9c77e; }
+.riss-duell small { font: 600 12px "Inter", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #b9a6ee; }
+.riss-countdown { display: grid; justify-items: center; margin: 16px 0 4px; } .riss-countdown small { font: 600 13px "Inter", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #b9a6ee; }
+.riss-countdown b { font: 700 96px/1 var(--schrift-titel); color: #fff; text-shadow: 0 0 30px rgba(120,150,255,.8); } .riss-countdown b.tick { animation: riss-zaehl .7s ease-out; }
+@media (max-width: 700px) { .riss-duell { grid-template-columns: 1fr; justify-items: center; } .riss-platz img, .riss-platz.leer i { width: 56px; height: 56px; } .riss-countdown b { font-size: 72px; } }
+@media (prefers-reduced-motion: reduce) { .riss-sucht i, .riss-countdown b.tick { animation: none; } }

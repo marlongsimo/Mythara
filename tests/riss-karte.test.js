@@ -13,10 +13,16 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   const p = await (await b.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: "block" })).newPage(); p.on("pageerror", (e) => fehler.push(e.message));
   await p.goto(URL); await p.click("#my-gast-start"); await p.waitForSelector(".dorf-ort"); await p.waitForSelector("#riss-zugang:not([hidden])");
   check(await p.evaluate(() => document.body.classList.contains("fackeln") && !window.RISS.laeuft()), "Fackeln sind Standard; noch läuft keine Partie");
-  await p.click("#riss-zugang"); await p.waitForSelector("#riss-helden");
+  await p.click("#riss-zugang"); await p.waitForSelector("#riss-suchen");
+  check(await p.isDisabled("#riss-suchen") && (await p.$$("#riss-team .riss-platz.leer")).length === 3, "beim ersten Mal ist das Team leer");
   check(await p.evaluate(() => document.querySelector("#riss-art").value === "karte" && Boolean(document.querySelector("#riss-zeit"))), "Spielart „Karte“ ist die Voreinstellung, die Zeit ist wählbar");
+  await p.click("#riss-bearbeiten"); await p.waitForSelector("#riss-helden");
+  await p.evaluate(() => window.scrollTo(0, 300)); const y0 = await p.evaluate(() => window.scrollY);
   for (let i = 0; i < 3; i++) await p.click(`#riss-helden [data-held]:nth-child(${i + 1})`);
-  await p.click("#riss-los"); await p.waitForSelector("#karte .fig"); // nach dem Start geht es (nach dem Film, hier übersprungen) direkt in den ersten Raum
+  check(y0 > 0 && await p.evaluate((y) => Math.abs(window.scrollY - y) < 40, y0) && (await p.$$("#riss-helden .an")).length === 3, "Helden antippen: Die Seite springt nicht nach oben");
+  await p.click("#riss-speichern"); await p.waitForSelector("#riss-suchen:not([disabled])");
+  check(await p.evaluate(() => JSON.parse(localStorage.getItem("ab_riss_team")).length === 3 && document.querySelectorAll("#riss-team .riss-platz img").length === 3), "das Team ist gespeichert und steht oben");
+  await p.click("#riss-suchen"); await p.waitForSelector("#karte .fig"); // nach dem Start geht es (nach dem Film, hier übersprungen) direkt in den ersten Raum
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.karte.slice().sort().join() === "boss,schwer,truhe1,truhe2" && Z.bot.karte.join() === Z.karte.join() && window.RISS.laeuft(); }), "Karte gelost (ein schwerer Raum, ein Boss, zwei leichte), für beide gleich; die Partie läuft (kein Neuladen)");
   // Kampf vom Rechner-Helfer spielen lassen. bis: "erster" = bis das erste Monster liegt, sonst bis alle liegen (der Raum bleibt dann offen)
   const spielen = async (bis) => { await p.waitForSelector("#karte .fig");

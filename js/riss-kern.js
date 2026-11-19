@@ -146,19 +146,19 @@
      * Jedes besiegte Monster lässt etwas fallen: selten einen Fund für einen Helden (DROP, der Boss DROP_BOSS), sonst Erbsplitter. Aufgehoben wird von Hand: ein Held daneben, dann antippen.
      * Die Zeit läuft für beide Seiten gleich und ohne Abzüge: Was Zeit kostet (hinlaufen und aufheben), dauert einfach so lange.
      * Vor dem Finale verkauft die Siegelwächterin für Erbsplitter Heilung, Tränke, Gegenstände und Segen.
-     * Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert, für die ganze Gruppe (siehe kStufe). */
+     * Erfahrung gibt es, sobald ein Monster am Boden liegt: XP_LP je Lebenspunkt, den es hatte, für die ganze Gruppe (siehe kStufe). */
     const K_RAEUME = {
       schwer: Object.assign({}, SCHWER[0], { xp: 125, kurz: "Schwerer Raum" }),
       boss: { name: "Die Ritterhalle", karte: "HALLE", begegnung: "ritter", n: 2, skala: 0.6, boss: "grabritter", xp: 150, kurz: "Bossraum", text: "Ein Grabritter hält die Halle. Wer ihn fällt, findet oft etwas bei ihm." },
       truhe1: Object.assign({}, BEUTE[0], { xp: 75, kurz: "Leichter Raum", text: "Kobolde in engen Gängen. Schnell erledigt." }),
       truhe2: Object.assign({}, BEUTE[1], { xp: 75, kurz: "Leichter Raum", text: "Käfer und Kobolde zwischen den Pilzen. Schnell erledigt." }) };
     const K = { ZEIT: 300, LP_FAKTOR: 1.15, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 10, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
-    /** Erfahrung: XP_LP je Lebenspunkt, den ein Monster verloren hat. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
+    /** Erfahrung: XP_LP je Lebenspunkt eines besiegten Monsters. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
     const xpBis = (stufe) => { let x = 0; for (let n = 2; n <= stufe; n++) x += K.XP_STUFE_1 + K.XP_STUFE_JE * (n - 2); return x; };
     /** Zurück: { stufe, in (Erfahrung in dieser Stufe), bis (so viel braucht die nächste), voll } */
     function kStufe(xp) { let st = 1; while (st < K.STUFE_MAX && xp >= xpBis(st + 1)) st++; const voll = st >= K.STUFE_MAX; return { stufe: st, in: voll ? 0 : xp - xpBis(st), bis: voll ? 0 : xpBis(st + 1) - xpBis(st), voll }; }
-    /** Erfahrung aus einem laufenden oder beendeten Kampf: jeder verlorene Lebenspunkt der Monster zählt */
-    const kXp = (st) => K.XP_LP * st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]).reduce((a, f) => a + Math.max(0, f.tpMax - Math.max(0, f.tp)), 0);
+    /** Erfahrung aus einem laufenden oder beendeten Kampf: Sie zählt erst, wenn ein Monster am Boden liegt – dann für alle seine Lebenspunkte */
+    const kXp = (st) => K.XP_LP * st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0).reduce((a, f) => a + f.tpMax, 0);
     const karteLosen = (zf) => ["schwer", "boss", "truhe1", "truhe2"].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     function neuK(gruppe, name, karte) { return Object.assign(neu(gruppe, name), { karte: karte.slice(), xp: 0, splitter: 0, ort: null, besucht: [], traenke: {}, kaeufe: [] }); }
     const kDef = (W, ort) => (ort === "M" ? Object.assign({ id: "einstieg", xp: 100, kurz: "Einstieg" }, EINSTIEG) : Object.assign({ id: W.karte[ort] }, K_RAEUME[W.karte[ort]]));
