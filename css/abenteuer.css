@@ -3056,3 +3056,28 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 @keyframes riss-pfeil { from { transform: translateY(3px); } to { transform: translateY(-5px); } }
 @media (max-width: 700px) { .riss-aufstieg { top: 18%; padding: 10px 18px 10px 14px; gap: 10px; } .riss-aufstieg i { font-size: 32px; } .riss-aufstieg b { font-size: 26px; } }
 @media (prefers-reduced-motion: reduce) { .riss-aufstieg.an { animation: none; opacity: 1; } .riss-aufstieg i { animation: none; } }
+
+/* Rissgänger im Raum: eine einzige Leiste (Raum verlassen · Stufe und Erfahrung · Erbsplitter · Uhr). Am PC unter dem Spielfeld, am Handy in der Lücke über der Karte.
+   Der Bereich über dem Spielfeld gehört dem Würfel und dem Ergebnis. */
+.riss-hud { position: fixed; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 66; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 18px; background: rgba(10,14,28,.95); box-shadow: inset 0 0 0 1px rgba(110,150,255,.6), 0 6px 18px rgba(0,0,0,.6); max-width: 98vw; }
+.riss-hud > * { position: static !important; transform: none !important; box-shadow: none !important; background: none !important; margin: 0; }
+.riss-hud .riss-raus { padding: 6px 12px; border-radius: 14px; border: 1px solid rgba(160,120,255,.55); font-size: 12px; white-space: nowrap; pointer-events: auto; }
+.riss-hud .riss-raus.frei { border-color: #ffd75e; background: rgba(246,200,66,.16) !important; }
+.riss-hud .riss-xpleiste { padding: 2px 10px; gap: 8px; } .riss-hud .riss-xpleiste i { width: 150px; }
+.riss-hud .riss-xpleiste small.hin { color: #ffd98a; font-weight: 600; }
+.riss-hud .riss-xpleiste span em { font-style: normal; color: #fff; animation: riss-plus 1.6s ease-out both; }
+@keyframes riss-plus { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+.riss-hud .riss-uhr { display: flex; align-items: baseline; gap: 6px; padding: 2px 12px 2px 10px; border-left: 1px solid rgba(255,255,255,.18); border-radius: 0; }
+.riss-hud .riss-uhr small { display: none; } .riss-hud .riss-uhr b { font-size: 20px; } .riss-hud .riss-uhr b::before { content: "⏱ "; font-size: 13px; opacity: .7; }
+.riss-hud .riss-uhr.knapp b { color: #ff9a9d; }
+.riss-aufstieg { top: auto; bottom: 58px; padding: 9px 20px 9px 14px; gap: 10px; } .riss-aufstieg i { font-size: 30px; } .riss-aufstieg b { font-size: 24px; }
+@media (max-width: 700px) {
+  .riss-hud { bottom: auto; top: 76px; gap: 2px; padding: 3px; border-radius: 14px; }
+  .riss-hud .riss-raus { padding: 5px 8px; font-size: 11px; } .riss-hud .riss-xpleiste { padding: 1px 6px; gap: 5px; font-size: 11px; } .riss-hud .riss-xpleiste i { width: 54px; }
+  .riss-hud .riss-xpleiste small:not(.hin) { display: none; } .riss-hud .riss-uhr { padding: 1px 8px 1px 6px; } .riss-hud .riss-uhr b { font-size: 16px; } .riss-hud .riss-uhr b::before { content: ""; }
+  .riss-aufstieg { bottom: auto; top: 116px; }
+}
+/* Aufstiegs-Kachel: am PC links im freien Feld unter der Gruppe, am Handy als schmale Zeile unter der Leiste – nichts verdeckt Karte oder Knöpfe */
+@media (min-width: 1200px) { .riss-aufstieg { left: 34px; bottom: 150px; top: auto; width: 196px; justify-content: center; } .riss-aufstieg.an { animation-name: riss-aufstieg-links; } }
+@keyframes riss-aufstieg-links { 0% { opacity: 0; transform: translateY(24px) scale(.85); } 10% { opacity: 1; transform: scale(1.06); } 18% { transform: none; } 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-18px); } }
+@media (max-width: 700px) { .riss-aufstieg { top: 112px; padding: 4px 14px 4px 10px; gap: 8px; border-radius: 12px; } .riss-aufstieg i { font-size: 18px; } .riss-aufstieg small { display: none; } .riss-aufstieg b { font-size: 16px; } }

@@ -325,7 +325,7 @@
   }
   /* Die Uhr läuft ab dem Betreten des ersten Raums durch – für beide Seiten gleich, ohne Anhalten und ohne Abzüge. So kommen beide im selben Moment am Siegel an. */
   function uhrAn() { if (KZ.fertig || KZ.laeuft) return; KZ.laeuft = true; KZ.endeZeit = Date.now() + Z.zeit * 1000; KZ.rest = Z.zeit * 1000; if (!KZ.takt) KZ.takt = setInterval(uhrTakt, 250); uhrZeigen(); }
-  function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); xpLeiste(null); fundFensterZu(); uhrZeigen(); }
+  function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); xpLeiste(null); fundFensterZu(); hudAus(); uhrZeigen(); }
   function uhrTakt() {
     if (!KZ.laeuft) return; KZ.rest = KZ.endeZeit - Date.now(); uhrZeigen();
     if (KZ.rest <= 0) zeitUm();
@@ -395,7 +395,7 @@
   /** Zurück: true, wenn auf dem Feld etwas lag (aufgehoben oder Hinweis gezeigt) */
   function feldAufheben(x, y) {
     const st = window.AB.st, D = KZ.drops, hier = D.liste.filter((d) => !d.weg && d.x === x && d.y === y); if (!hier.length) return false;
-    const h = heldDaneben(st, hier[0]); if (!h) { if (window.MYTHARA.toast) window.MYTHARA.toast("Zu weit weg: Ein Held muss daneben stehen."); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
+    const h = heldDaneben(st, hier[0]); if (!h) { hudHinweis("Zu weit weg – ein Held muss daneben stehen"); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
     for (const d of hier) { if (d.ding) { fundFenster(d); break; } aufheben(d, null); }
     kampfWache(); return true;
   }
@@ -403,7 +403,8 @@
     d.weg = true; K.kNimm(Z.ich, d, held); const st = window.AB.st;
     if (d.ding) { KZ.drops.funde.push({ ding: d.ding, held }); const f = st && st.figuren.find((x) => x.fid === held); if (f) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d.ding)) f.rucksack.push({ id: d.ding, n: 1 }); } }
     else KZ.drops.splitter += d.splitter || 0;
-    if (window.MYTHARA.toast) window.MYTHARA.toast(d.ding ? `${F.FIGUREN[held].name} bekommt: ${R.GEGENSTAENDE[d.ding].name}` : `+${d.splitter} Erbsplitter`);
+    if (d.ding) hudHinweis(`${F.FIGUREN[held].name}: ${R.GEGENSTAENDE[d.ding].name}`); else { KZ.plus = { n: d.splitter, bis: Date.now() + 1600 }; } // kein Banner oben: Die Leiste unten zählt mit
+    xpLeiste(st);
   }
   /** Ein Fund für einen Helden: Wer bekommt ihn? (Die Zeit läuft weiter.) */
   function fundFenster(d) {
@@ -422,6 +423,15 @@
     el.hidden = false; el.classList.remove("an"); void el.offsetWidth; el.classList.add("an");
     clearTimeout(KZ.aufstiegUhr); KZ.aufstiegUhr = setTimeout(() => { el.classList.remove("an"); el.hidden = true; }, 3200);
   }
+  /** Kurzer Hinweis in der Leiste unten (statt einer Meldung über dem Spielfeld) */
+  function hudHinweis(t) { KZ.hinweis = { t, bis: Date.now() + 2200 }; if (window.AB.st) xpLeiste(window.AB.st); }
+  /** Im Raum sitzen Knopf, Erfahrung, Erbsplitter und Uhr zusammen in EINER Leiste – der Bereich über dem Spielfeld bleibt frei */
+  function hudEin() {
+    let h = document.getElementById("riss-hud"); if (!h) { h = document.createElement("div"); h.id = "riss-hud"; h.className = "riss-hud"; document.body.appendChild(h); }
+    for (const id of ["riss-raus", "riss-xpleiste", "riss-uhr"]) { const el = document.getElementById(id); if (el && el.parentElement !== h) h.appendChild(el); }
+    h.hidden = false;
+  }
+  function hudAus() { const h = document.getElementById("riss-hud"); if (!h) return; for (const el of [...h.children]) document.body.appendChild(el); h.hidden = true; }
   /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Monster, das fällt */
   function xpLeiste(st) {
     let el = document.getElementById("riss-xpleiste");
@@ -429,7 +439,8 @@
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
     const xp = Z.ich.xp + K.kXp(st), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
     if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) stufenKachel(s.stufe); KZ.liveStufe = s.stufe;
-    const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small>${s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span>◈ ${Z.ich.splitter}</span>`;
+    const hin = KZ.hinweis && KZ.hinweis.bis > Date.now() ? KZ.hinweis.t : "", plus = KZ.plus && KZ.plus.bis > Date.now() ? KZ.plus.n : 0;
+    const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small${hin ? ' class="hin"' : ""}>${hin ? esc(hin) : s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span${plus ? ' class="plus"' : ""}>◈ ${Z.ich.splitter}${plus ? ` <em>+${plus}</em>` : ""}</span>`;
     el.hidden = false; if (el.dataset.h !== html) { el.dataset.h = html; el.innerHTML = html; }
   }
   function losK() {
@@ -445,12 +456,12 @@
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });
     KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
     raumEinhaengen();
-    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null);
+    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
     if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); window.AB.render(); }
     const karte = $("#karte"); if (karte) karte.addEventListener("click", karteKlick, true); // vor dem Spiel: Aufheben statt Laufen
     clearInterval(KZ.wache); KZ.wache = setInterval(kampfWache, 250); kampfWache();
-    rausKnopf(true); uhrAn(); // die Uhr läuft ab dem ersten Raum – für beide Seiten gleich lang
+    rausKnopf(true); uhrAn(); hudEin(); // die Uhr läuft ab dem ersten Raum – für beide Seiten gleich lang
   }
   function nachK(ort, st, dauer) {
     const D = KZ.drops, sieg = st.ende === "sieg", liegen = D.liste.filter((d) => !d.weg).length;
