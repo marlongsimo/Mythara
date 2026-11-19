@@ -38,7 +38,7 @@ Ist die Mitte geschafft, öffnet sich die Karte: die Mitte und vier Räume im Ri
 - **Freie Wahl.** Jeder Raum ist von der Karte aus jederzeit wählbar. Die Wege kosten keine Zeit.
 - **Der Gegner** ist nur zu hören. Was er erkundet, wer in seiner Gruppe ist und wie stark sie ist, zeigt sich erst am Siegel.
 
-| Raum | Monster | Lebenspunkte | Erfahrung, wenn alle fallen |
+| Raum | Monster | Lebenspunkte aller Monster zusammen | Erfahrung, wenn alle fallen |
 |---|---|---|---|
 | Mitte (Einstieg) | 3 Rostkäfer | 12 | 60 |
 | Leichter Raum (zweimal) | 4 Kobolde oder Käfer | 20 | 100 |
@@ -65,8 +65,9 @@ In allen fünf Räumen zusammen stecken 700 Erfahrung. Wer jedes Monster besiegt
 | sonst Erbsplitter | 1 bis 20 | 15 bis 40 |
 
 - Es erscheint erst, wenn das Monster wirklich am Boden liegt, also nach Würfel und Treffer.
-- **Aufgehoben wird von Hand:** Ein stehender Held muss auf dem Feld oder daneben stehen, dann tippt man das Feld an. Nichts wird von selbst eingesammelt.
-- Bei einem Fund fragt das Spiel, wer ihn bekommt. Jeder Held trägt höchstens zwei.
+- **Aufgehoben wird von Hand:** Ein stehender Held muss auf dem Feld oder daneben stehen (auch schräg), dann tippt man das Feld an. Nichts wird von selbst eingesammelt.
+- **Was das Aufheben kostet:** keine Aktion und keine Bewegungspunkte. Es zählt jeder stehende Held, nicht nur der, der am Zug ist. Der Preis ist allein das Hinlaufen: Wer nicht daneben steht, muss einen Helden mit dessen Bewegung dorthin bringen, und das kostet Züge und damit Zeit. Für Monster, die im Nahkampf fallen, ist Aufheben deshalb praktisch umsonst. Das ist der Stand im Prototyp und als Regel noch nicht entschieden, siehe „Was noch offen ist".
+- Bei einem Fund fragt das Spiel, wer ihn bekommt. Jeder Held trägt höchstens zwei verschiedene Gegenstände; ersetzen kann man nicht. Es fallen nur Gegenstände, die mindestens ein Held der Gruppe noch tragen kann. Kann niemand mehr etwas tragen, fallen Erbsplitter.
 
 **Der Raum bleibt offen.** Sind alle Monster besiegt, endet der Raum nicht von selbst. Man sammelt ein oder geht mit „Zur Karte". Ist alles eingesammelt, schließt er.
 
@@ -75,14 +76,28 @@ In allen fünf Räumen zusammen stecken 700 Erfahrung. Wer jedes Monster besiegt
 **Was bleibt, was nicht.**
 
 - Trefferpunkte, Zauberplätze und Tränke werden von Raum zu Raum mitgenommen.
-- Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf.
-- Fällt die ganze Gruppe, ist der Raum zu. Dafür stehen alle wieder auf, voll geheilt.
+- Erfahrung, Erbsplitter und Funde, die einmal aufgehoben sind, gehen nie wieder verloren.
+
+**Wann Gefallene wieder aufstehen.** Genau bei zwei Ereignissen:
+
+| Ereignis | Folge |
+|---|---|
+| Der Raum ist gewonnen | Gefallene stehen mit halben Trefferpunkten auf |
+| Die ganze Gruppe liegt am Boden | Der Raum ist zu. Alle drei stehen mit halben Trefferpunkten auf; wer mehr hatte, verliert den Rest |
+
+Wer einen Raum nur verlässt, nimmt Gefallene als Gefallene mit: Sie setzen im nächsten Raum aus, bis ein Raum gewonnen ist. Ein Raumwechsel belebt niemanden wieder. Wen die Zeit am Boden erwischt, der kommt mit 1 Trefferpunkt am Siegel an.
+
+Volle Heilung gibt es im Riss nirgends umsonst, nur bei der Wächterin. (Erste Fassung: Nach einer Gruppenniederlage standen alle voll geheilt auf. Das machte die Niederlage zu einer kostenlosen Heilung.)
+
+**Erkunden.** Was in einem dunklen Raum wartet, sieht man beim Betreten. Man darf sofort wieder gehen; das kostet nur die echte Zeit dafür, rund zehn Sekunden.
 
 ### 5. Die Zeit ist um
 
 Der Riss holt beide Gruppen im selben Moment in den Siegelsaal – auch mitten aus einem Kampf. Erfahrung für besiegte Monster und alles Aufgehobene bleiben. Was noch am Boden liegt, ist verloren.
 
-Ist vorher in allen Räumen nichts mehr zu holen, geht es sofort weiter.
+Ist vorher in allen Räumen nichts mehr zu holen, geht es gegen den Rechner sofort weiter. Gegen einen Menschen erst, wenn beide Seiten fertig sind; sonst läuft die Uhr für beide ab.
+
+Stufen, die im letzten Raum noch erreicht wurden, gelten im Finale.
 
 ### 6. Die Siegelwächterin
 
@@ -99,26 +114,50 @@ Vor dem Siegelsaal, ohne Zeitdruck, tauscht jede Seite ihre Erbsplitter.
 
 Segen gelten für die ganze Gruppe. Erbsplitter, die übrig bleiben, verfallen.
 
+- Jeder Segen lässt sich einmal kaufen; alle drei zusammen sind erlaubt.
+- Die drei Gegenstände werden aus denen gezogen, die mindestens ein Held der Gruppe noch tragen kann. Jeder ist einmal zu haben.
+- Heiltränke lassen sich mehrfach kaufen.
+- Stiefel des Wanderers und Leichte Füße addieren sich: Ein Held mit beidem läuft zwei Felder weiter.
+
 ### 7. Das Finale
 
 Beide Gruppen stehen an ihrem Eingang, es steht 0 : 0.
 
 - Trefferpunkte kommen vom Weg mit. Heilung gibt es nur bei der Wächterin.
-- Zauberplätze, Tränke und Fähigkeiten sind wieder frisch.
+- Zauberplätze, Tränke und Fähigkeiten sind wieder auf dem Ausgangswert ihrer Stufe; gekaufte Tränke kommen dazu.
 
 **Die Regeln am Siegel**
 
 - **Am Siegel** steht ein Held, der auf dem Siegelfeld oder direkt daneben steht, auch schräg. Jedes dieser Felder trägt eine Rune am Boden.
 - **Siegelpunkt:** Am Ende jeder Runde bekommt die Seite einen Punkt, die mehr stehende Helden am Siegel hat. Bei Gleichstand bekommt niemand einen.
 - **Das Siegel wandert:** Nach jeder zweiten Runde springt es auf das nächste von drei Feldern. Das nächste Feld ist mit einer blassen Rune markiert.
-- **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert die führende Seite einen ihrer Punkte.
+- **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge die Runde, verliert die führende Seite einen ihrer Punkte. Die Seite bekommt ihren Rundenpunkt zusätzlich.
 - **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit vollen Trefferpunkten am eigenen Eingang wieder auf.
-- **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner sofort einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde.
-- **Zugzeit:** eine Minute je Held.
+- **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner sofort einen Siegelpunkt, mitten in der Runde. Alle drei stehen sofort am eigenen Eingang mit halben Trefferpunkten wieder auf, auch wer schon auf seine Rückkehr wartete, und handeln ab der nächsten Runde. Die normale Wertung am Ende derselben Runde findet trotzdem statt: Eine Auslöschung kann also zwei Punkte in einer Runde bedeuten. Die Mitschrift hält jede Auslöschung fest.
+- **Zugzeit:** höchstens eine Minute je Zug eines Helden. Läuft sie ab, endet sein Zug.
 
-**Am Ende jeder Runde,** in dieser Reihenfolge: Wertung, Zurückerobern, Punkt, Prüfung auf Sieg, Sprung des Siegels, Rückkehr der Gefallenen.
+**Am Ende jeder Runde,** in dieser Reihenfolge:
 
-**Gewonnen hat,** wer zuerst **fünf Siegelpunkte** hat. Nach zwölf Runden gewinnt, wer mehr Siegelpunkte hat; bei Gleichstand die Seite mit mehr Helden am Siegel, danach die mit mehr Trefferpunkten.
+1. **Wer hat die Runde?** Die Seite mit mehr stehenden Helden am Siegel. Bei Gleichstand niemand; dann passiert in den Schritten 2 und 3 nichts, und beide Zählungen fürs Zurückerobern beginnen neu.
+2. **Zurückerobern.** Liegt die Seite, die die Runde hat, in diesem Moment nach Punkten zurück, zählt die Runde für sie mit. Ist es die zweite solche Runde in Folge, verliert die führende Seite einen Punkt, und die Zählung beginnt bei null. Liegt sie nicht zurück (Gleichstand oder Führung), beginnt die Zählung neu.
+3. **Rundenpunkt.** Die Seite, die die Runde hat, bekommt ihren Punkt.
+4. **Sieg?** Hat diese Seite fünf Punkte, ist die Partie vorbei. Nach Runde zwölf folgt die Schlusswertung.
+5. **Sprung.** Nach jeder zweiten Runde springt das Siegel. Gewertet wird also immer am alten Feld.
+6. **Rückkehr.** Gefallene, deren zwei Runden um sind, stehen auf.
+
+**Beispiel.** A führt 3 : 1.
+
+| Runde | Am Siegel | Was passiert | Stand A : B |
+|---|---|---|---|
+| 1 | B hat mehr | B liegt zurück: erste Runde der Zählung. B bekommt den Punkt | 3 : 2 |
+| 2 | B hat mehr | B liegt noch zurück: zweite Runde in Folge, A verliert einen Punkt. Dann bekommt B den Punkt | 2 : 3 |
+| 3 | B hat mehr | B führt jetzt: kein Zurückerobern, die Zählung beginnt neu. B bekommt den Punkt | 2 : 4 |
+
+Daraus folgt: Ein Punktestand fällt nie unter null. Drei Runden in Folge ziehen nur einmal ab; ein zweiter Abzug braucht zwei weitere Runden im Rückstand. Wer durch den Rundenpunkt gleichzieht oder in Führung geht, erobert danach nichts mehr zurück.
+
+**Gewonnen hat,** wer zuerst **fünf Siegelpunkte** hat.
+
+**Nach zwölf Runden** entscheidet der Reihe nach: mehr Siegelpunkte, mehr Helden am Siegel, mehr Trefferpunkte, wer das Siegel zuletzt gehalten hat, und zuletzt das Los. Ein Unentschieden gibt es nicht.
 
 ## Die Funde
 
@@ -192,13 +231,16 @@ Rechner gegen Rechner, 300 Partien mit fünf Minuten.
 | Bossraum | 3,2 | 89 % | 0,24 |
 | Schwerer Raum | 3,6 | 93 % | 0,30 |
 
-Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust auf und verlässt keinen Raum. Seine Zahlen sagen deshalb wenig darüber, wie viel ein Mensch in fünf Minuten schafft.
+Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust auf und verlässt keinen Raum. Seine Zahlen sind ein Funktionstest und eine erste Plausibilitätsprüfung, kein Beleg für die Balance: Die beiden wichtigsten Entscheidungen eines Menschen, Zeit einteilen und einsammeln, bildet er gar nicht ab. Dass beide Seiten gleich oft gewinnen, zeigt nur, dass die Ausgangslage symmetrisch ist. Die Zahlen stammen von vor der Änderung, dass eine gefallene Gruppe nur mit halben Trefferpunkten aufsteht.
 
 ## Was noch offen ist
 
 - **Reichen fünf Minuten?** Aus den von Hand gespielten Partien der ersten Spielart: 40 bis 100 Sekunden je Raum. Die neue Fassung mit Aufheben und zäheren Monstern hat noch niemand von Hand zu Ende gespielt.
-- **Ist das Aufheben eine Entscheidung?** Nahkämpfer stehen beim Töten ohnehin daneben. Laufen muss man nur für Monster, die aus der Ferne fallen. Im offenen Raum ziehen die Helden weiter reihum, mit ihrer Bewegung je Zug.
-- **Ist Wiederkommen zu billig?** Rausgehen und neu hereinkommen stellt die Gruppe wieder geordnet an den Eingang. Eine mögliche Bremse: Die Monster heilen sich bis zur Rückkehr ein Stück.
+- **Was soll das Aufheben kosten?** Heute nichts außer dem Hinlaufen. Damit ist es für Nahkämpfer praktisch umsonst, und Gruppen mit Fernkämpfern sind im Nachteil. Die naheliegende Regel: Aufheben macht der Held, der am Zug ist, und es kostet seine Aktion, solange im Raum noch ein Monster steht. Dann ist jede Hand voll Erbsplitter ein Angriff weniger. Das ist die wichtigste offene Regelentscheidung.
+- **Ist Wiederkommen zu billig?** Rausgehen und neu hereinkommen stellt die Gruppe wieder geordnet an den Eingang; Gefallene bleiben dabei am Boden. Eine mögliche weitere Bremse: Die Monster heilen sich bis zur Rückkehr ein Stück.
+- **Zwei Punkte in einer Runde.** Auslöschung und Rundenwertung können zusammenfallen, mit Zurückerobern sogar ein Umschwung von drei Punkten (einmal von Hand gespielt gesehen: aus 1 : 4 wurde 3 : 3). Die Mitschrift hält es fest; geändert wird erst, wenn es öfter Partien entscheidet.
+- **Bewegung im Finale.** Das Siegel springt, also zählt jedes Feld Bewegung doppelt. Ob Leichte Füße (dazu die Stiefel) die anderen Segen aussticht, ist nicht gemessen.
+- **Glück bei den Gegenständen.** Vier der zehn Funde nützen nur bestimmten Klassen. Der Wert eines Funds hängt deshalb von der Gruppe ab.
 - **Stimmen die Preise der Wächterin?** Zwei leichte Räume bringen rund 80 Erbsplitter. Ob das eine Stufe aufwiegt, ist nicht gemessen.
 - **Kommt man hoch genug?** Die Helden gehen bis Stufe 10, der Riss reicht für Stufe 6. Mehr braucht entweder eine flachere Kurve oder mehr Räume.
 - **Rückkehr im Finale.** Im Rechner fällt knapp jeder zweite Rückkehrer erneut, auch mit vollen Trefferpunkten: Sie kommen einzeln vom Eingang und laufen in eine geschlossene Gruppe.
