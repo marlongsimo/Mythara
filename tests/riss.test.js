@@ -28,13 +28,13 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(!(await p.isDisabled("#riss-los")), "mit drei Helden startbar");
   await p.selectOption("#riss-heilung", "keine"); check(await p.evaluate(() => window.RISS.zustand().heilung === "keine"), "Heilungsschalter: Testvariante wählbar");
   await p.selectOption("#riss-heilung", "gerechnet");
+  await p.selectOption("#riss-gegner", "4");
   await p.click("#riss-los"); await p.waitForSelector("#riss-kampf");
   const folge = await p.evaluate(() => window.RISS.zustand().folge);
   check(/^E[SB]{4}$/.test(folge) && folge.split("S").length === 3 && folge.split("B").length === 3, `Weg gelost: Einstieg, dann zwei schwere und zwei Beuteräume (${folge})`);
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.bot.folge === Z.ich.folge && Z.bot.raeume >= 2 && Z.bot.raeume <= 5 && Object.values(Z.ich.stufen).every((s) => s === 1); }), "der Rechner geht denselben Weg (2 bis 5 Räume), eigene Helden auf Stufe 1");
   // für diesen Test: ein Gegner, der mindestens vier Räume geht (damit man früh am Siegel wartet)
-  await p.evaluate(() => { const Z = window.RISS.zustand(), K = window.RISS.kern(); for (let s = 1; s < 400 && Z.bot.raeume < 4; s++) Z.bot = K.botWeg(Z.bot.gruppe, s * 131, Z.bot.name, Z.folge); });
-  check(await p.evaluate(() => window.RISS.zustand().bot.raeume >= 4), "Testaufbau: Gegner mit mindestens vier Räumen");
+  check(await p.evaluate(() => window.RISS.zustand().bot.raeume === 4), "Testschalter: Der Gegner biegt wie gewählt nach Raum 4 ab");
 
   const raumSpielen = async () => {
     await p.click("#riss-kampf"); await p.waitForSelector("#karte .fig");

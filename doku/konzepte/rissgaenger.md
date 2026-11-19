@@ -233,20 +233,22 @@ Zauberplätze, Tränke und Fähigkeiten sind in beiden Fällen zu Beginn des Fin
 | Raum | Runden | Gruppe gewinnt | Gefallene Helden je Raum |
 |---|---|---|---|
 | Einstieg | 1,7 | 100 % | 0,07 |
-| Beuteraum | 2,3 | 100 % | 0,02 bis 0,08 |
-| Schwerer Raum | 3,5 bis 3,8 | 93 bis 98 % | 0,20 bis 0,35 |
+| Beuteraum | 2,2 bis 2,4 | 99 bis 100 % | 0,02 bis 0,09 |
+| Schwerer Raum | 4,2 bis 4,4 | 86 bis 91 % | 0,30 bis 0,51 |
 
-Alle fünf Räume zusammen dauern rund 13,6 Runden, die Gruppe kommt im Schnitt mit Stufe 3,7 von 4 an. Der schwere Raum ist damit der einzige, in dem regelmäßig Helden fallen und manchmal die ganze Gruppe.
+Alle fünf Räume zusammen dauern rund 15 Runden, die Gruppe kommt im Schnitt mit Stufe 3,5 von 4 an. Die schweren Räume wurden nach der ersten von Hand gespielten Partie härter gestellt (drei statt zwei Gegnergruppen mit weniger Leben): Ein Mensch hatte beide in zwei Runden und ohne Verlust gewonnen. Der Rechner spielt die Räume schwächer als ein Mensch; seine Zahlen sind eine Obergrenze für die Gefahr.
 
-**Ganze Partien,** Rechner gegen Rechner, je 300 (`tools/riss-partien.js`): Weg 9,0 Runden je Seite, Finale rund 6,8 Runden, etwa 290 von 300 Finals enden durch Siegelpunkte.
+**Ganze Partien,** Rechner gegen Rechner, 300 Stück (`tools/riss-partien.js`), mit frischen Zaubern im Finale und voller Rückkehr: Weg 9,9 Runden je Seite, Finale rund 6,8 Runden, 281 von 300 Finals enden durch Siegelpunkte. Je Finale kehren 3,9 Helden zurück, 1,7 davon fallen erneut.
 
-| Die frühere Gruppe gewinnt bei | gerechnete Heilung | ohne Heilung |
-|---|---|---|
-| 1 Raum Vorsprung | 63 von 125 | 63 von 125 |
-| 2 Räumen Vorsprung | 41 von 78 | 46 von 78 |
-| 3 Räumen Vorsprung | 10 von 18 | 8 von 18 |
+| Die frühere Gruppe gewinnt bei | Partien |
+|---|---|
+| 1 Raum Vorsprung | 65 von 125 |
+| 2 Räumen Vorsprung | 45 von 78 |
+| 3 Räumen Vorsprung | 12 von 18 |
 
-Nach eigener Raumzahl gewinnen Gruppen mit 2, 3, 4 und 5 Räumen jeweils rund die Hälfte ihrer Partien (55 von 103, 106 von 212, 81 von 168, 58 von 117). Früh und tief sind im Rechner also gleich viel wert. Die Heilung macht in dieser Fassung keinen messbaren Unterschied. Beides gilt für den Rechner, der nach festen Wahrscheinlichkeiten abbiegt, nicht für Menschen.
+Nach eigener Raumzahl: 2 Räume 60 von 103, 3 Räume 109 von 212, 4 Räume 76 von 168, 5 Räume 55 von 117. Früh liegt damit leicht vorn (zusammen 122 von 221), tief leicht hinten. Das ist bei diesen Zahlen noch im Bereich des Zufalls, aber die Richtung ist zu beobachten: Härtere Räume kosten die tiefe Gruppe mehr. Ohne Heilung wurde diese Fassung nicht neu gemessen. Alles gilt für den Rechner, der nach festen Wahrscheinlichkeiten abbiegt, nicht für Menschen.
+
+**Testschalter für den Gegner:** Vor dem Start lässt sich festlegen, nach welchem Raum der Rechner abbiegt (oder `?rissgegner=2` bis `5`). So lassen sich früh gegen tief und das Warten am Siegel gezielt spielen. Die Mitschrift hält die Einstellung fest.
 
 **Fester Weg:** Die erste Fassung (fünf Räume, jeder gibt eine Stufe, Beute in Raum 4 und 5) lässt sich zum Vergleich mit `?rissweg=fest` spielen.
 

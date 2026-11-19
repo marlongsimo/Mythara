@@ -22,7 +22,7 @@
   const NAMEN = ["Varn der Stille", "Ilka Aschenhand", "Der Graue Tomas", "Mirelle vom Spalt", "Odo Rissläufer", "Senna Dunkelwasser"];
   const SCHNELL = params.has("schnell"), TAKT = +params.get("risstakt") || (SCHNELL ? 60 : 2300); // so lange dauert beim Warten ein Zug des Gegners
   let K = null;
-  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
+  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
 
   /* ---------- Hilfen ---------- */
   function skript(src) { return new Promise((ok, nein) => { if (document.querySelector(`script[data-riss="${src}"]`)) return ok(); const s = document.createElement("script"); s.src = src; s.dataset.riss = src; s.onload = ok; s.onerror = () => nein(new Error("Datei fehlt: " + src)); document.head.appendChild(s); }); }
@@ -94,11 +94,14 @@
       <div class="arena-helden" id="riss-helden">${eigene.map((f) => heldKarte(f, "Stufe 1", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}${leih.map((f) => heldKarte(f, "Leihheld", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}</div>
       <label class="riss-schalter">Heilung vor dem Finale
         <select id="riss-heilung"><option value="gerechnet"${Z.heilung === "gerechnet" ? " selected" : ""}>Gerechnete Regel: frühere Gruppe halbe fehlende Trefferpunkte, spätere keine</option><option value="keine"${Z.heilung === "keine" ? " selected" : ""}>Testvariante: niemand wird geheilt</option></select></label>
+      <label class="riss-schalter">Der Gegner biegt ab (nur zum Testen)
+        <select id="riss-gegner"><option value="0">zufällig, wie im echten Spiel</option>${[2, 3, 4, 5].map((n) => `<option value="${n}"${Z.gegnerZiel === n ? " selected" : ""}>immer nach Raum ${n}</option>`).join("")}</select></label>
       <div class="knoepfe"><button class="btn" id="riss-los" ${Z.wahl.length === 3 ? "" : "disabled"}>In den Riss</button><button class="btn ghost" id="riss-mitschrift">Mitschrift (${mitschrift().length})</button></div>
       <p class="note">Prototyp gegen den Rechner. Es gibt keine Belohnung, und nichts wird an den Server geschickt. Lädst du die Seite neu, ist die Partie weg.</p>`);
     $("#riss-helden").onclick = (ev) => { const b = ev.target.closest("[data-held]"); if (!b) return; const f = b.dataset.held;
       if (Z.wahl.includes(f)) Z.wahl = Z.wahl.filter((x) => x !== f); else if (Z.wahl.length < 3) Z.wahl.push(f); else return; start(); };
     $("#riss-heilung").onchange = (ev) => { Z.heilung = ev.target.value === "keine" ? "keine" : "gerechnet"; };
+    $("#riss-gegner").onchange = (ev) => { Z.gegnerZiel = +ev.target.value || 0; };
     $("#riss-los").onclick = los; $("#riss-mitschrift").onclick = mitschriftZeigen;
   }
   function los() {
@@ -107,8 +110,8 @@
     Z.folge = Z.fest ? null : K.folgeLosen(Math.random);
     Z.ich = K.neu(Z.wahl, "Du", Z.folge);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
-    Z.bot = K.botWeg(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.folge); // der Rechner geht seinen Weg für sich; gezeigt wird davon nur, was man hören darf
-    Z.log = { v: 3, wann: new Date().toISOString(), heilung: Z.heilung, weg: Z.fest ? "fest" : "gelost", folge: Z.folge, ich: { helden: Z.wahl.slice(), raeume: [], entscheidungen: [], beute: [] }, gegner: { helden: gegner } };
+    Z.bot = K.botWeg(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.folge, Z.gegnerZiel); // der Rechner geht seinen Weg für sich; gezeigt wird davon nur, was man hören darf
+    Z.log = { v: 3, wann: new Date().toISOString(), heilung: Z.heilung, weg: Z.fest ? "fest" : "gelost", folge: Z.folge, ich: { helden: Z.wahl.slice(), raeume: [], entscheidungen: [], beute: [] }, gegner: { helden: gegner, fest: Z.gegnerZiel || null } };
     raumVor(0);
   }
 

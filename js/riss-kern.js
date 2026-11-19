@@ -16,15 +16,15 @@
     { name: "Der Einstieg", karte: "GARTEN", begegnung: "garten", n: 2, skala: 0.4, text: "Der Riss schließt sich hinter euch. Ein paar Rostkäfer, mehr nicht." },
     { name: "Die Koboldgänge", karte: "TURM", begegnung: "kobolde", n: 2, skala: 0.7, text: "Enge Gänge, schnelle Schatten." },
     { name: "Die Gruft", karte: "GRUFT", begegnung: "kaefer_kobolde", n: 3, skala: 0.8, text: "Hier unten liegt, was der Riss nicht mehr hergibt." },
-    { name: "Die Pilzgrotte", karte: "PILZE", begegnung: "gruft", n: 2, skala: 0.8, text: "Ab hier gibt der Riss Beute her." },
+    { name: "Die Pilzgrotte", karte: "PILZE", begegnung: "gruft", n: 3, skala: 0.6, text: "Ab hier gibt der Riss Beute her." },
     { name: "Die Tiefe", karte: "SCHACHT", begegnung: "pilze", n: 2, skala: 0.8, text: "Tiefer geht es nicht. Wer hier besteht, kommt stark am Siegel an." }];
   /* Der geloste Weg: Raum 1 ist immer der leichte Einstieg (E). Die Räume 2 bis 5 sind zwei schwere Räume (S: +1 Stufe, echte Gefahr)
      und zwei Beuteräume (B: kurzer Kampf, ein Gegenstand, keine Stufe) in geloster Reihenfolge – für beide Seiten dieselbe.
      Schwere Räume wachsen mit ihrem Platz im Weg (skalaJe je Platz nach dem zweiten). */
   const EINSTIEG = RAEUME[0];
   const SCHWER = [
-    { name: "Die Gruft", karte: "GRUFT", begegnung: "gruft", n: 2, skala: 0.9, skalaJe: 0, text: "Knochenwächter. Hier wird es ernst: Wer am Ende steht, steigt auf." },
-    { name: "Die Tiefe", karte: "SCHACHT", begegnung: "netz", n: 2, skala: 0.9, skalaJe: 0, text: "Netze in der Dunkelheit. Ein schwerer Raum: Wer am Ende steht, steigt auf." }];
+    { name: "Die Gruft", karte: "GRUFT", begegnung: "gruft", n: 3, skala: 0.6, skalaJe: 0, text: "Knochenwächter. Hier wird es ernst: Wer am Ende steht, steigt auf." },
+    { name: "Die Tiefe", karte: "SCHACHT", begegnung: "netz", n: 3, skala: 0.6, skalaJe: 0, text: "Netze in der Dunkelheit. Ein schwerer Raum: Wer am Ende steht, steigt auf." }];
   const BEUTE = [
     { name: "Die Schatzkammer", karte: "TURM", begegnung: "kobolde", n: 2, skala: 0.6, text: "Kobolde über einer offenen Truhe. Ein kurzer Kampf, dann gehört die Beute euch. Eine Stufe gibt es hier nicht." },
     { name: "Das Pilzlager", karte: "PILZE", begegnung: "kaefer_kobolde", n: 2, skala: 0.6, text: "Zwischen den Pilzen liegt, was andere verloren haben. Ein kurzer Kampf, dann Beute. Eine Stufe gibt es hier nicht." }];
@@ -127,13 +127,13 @@
       return null;
     }
     /** Der ganze Weg des Rechners: Räume, Beute, Abbiegen. Zurück: W (mit W.raeume und W.verlauf) */
-    function botWeg(gruppe, seed, name, folge) {
+    function botWeg(gruppe, seed, name, folge, ziel) { // ziel (2 bis 5): feste Raumzahl statt des Zufalls, zum Testen
       let zs = (seed >>> 0) || 7; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; return zs / 0x7fffffff; };
       const W = neu(gruppe, name, folge);
       for (let i = 0; i < MAX_RAEUME; i++) {
         const st = raumAuto(W, i, seed * 13 + i + 1), e = raumEnde(W, i, st); e.wieder = st.wieder;
         if (e.sieg) e.beute = botBeute(W, i, zf);
-        if (botBiegtAb(W, zf)) break;
+        if (ziel ? W.raeume >= Math.max(MIN_RAEUME, ziel) : botBiegtAb(W, zf)) break;
       }
       W.abgebogen = true; return W;
     }
