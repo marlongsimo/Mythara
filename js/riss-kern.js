@@ -155,6 +155,21 @@
     const K = { ZEIT: 300, LP_FAKTOR: 1.15, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 10, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
     /** Erfahrung: XP_LP je Lebenspunkt eines besiegten Monsters. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
     const xpBis = (stufe) => { let x = 0; for (let n = 2; n <= stufe; n++) x += K.XP_STUFE_1 + K.XP_STUFE_JE * (n - 2); return x; };
+    /**
+     * Aufstieg mitten im Kampf: Die Helden im laufenden Raum bekommen die neue Stufe sofort.
+     * Höchstleben und Leben steigen um den Unterschied (wer am Boden liegt, bekommt nur das Höchstleben), Zauberplätze ebenso;
+     * die Fähigkeiten der Stufe gelten, sobald der Held wieder am Zug ist. warten: Kennungen (fid), die noch nicht aufsteigen (der Held, der gerade am Zug ist).
+     * Zurück: Liste der aufgestiegenen fid.
+     */
+    function kAufLive(W, st, neuS, warten) {
+      const auf = [];
+      for (const f of st.figuren) { const fid = f.fid; if (!fid || f.seite !== "spieler" || W.gruppe.indexOf(fid) < 0 || f.tot) continue; const alt = f.stufe || 1; if (neuS <= alt || (warten && warten.indexOf(fid) >= 0)) continue;
+        const dtp = F.tpVon(fid, neuS) - F.tpVon(fid, alt), pa = plaetzeVon(fid, alt), pn = plaetzeVon(fid, neuS);
+        f.stufe = neuS; f.tpMax += dtp; if (f.tp > 0) f.tp += dtp;
+        if (pn.length) { f.plaetze = pn.map((n, k) => Math.max(0, ((f.plaetze || [])[k] || 0) + n - (pa[k] || 0))); f.plaetzeMax = pn.map((n, k) => ((f.plaetzeMax || [])[k] || 0) + n - (pa[k] || 0)); }
+        W.stufen[fid] = neuS; auf.push(fid); }
+      return auf;
+    }
     /** Zurück: { stufe, in (Erfahrung in dieser Stufe), bis (so viel braucht die nächste), voll } */
     function kStufe(xp) { let st = 1; while (st < K.STUFE_MAX && xp >= xpBis(st + 1)) st++; const voll = st >= K.STUFE_MAX; return { stufe: st, in: voll ? 0 : xp - xpBis(st), bis: voll ? 0 : xpBis(st + 1) - xpBis(st), voll }; }
     /** Erfahrung aus einem laufenden oder beendeten Kampf: Sie zählt erst, wenn ein Monster am Boden liegt – dann für alle seine Lebenspunkte */
@@ -397,7 +412,7 @@
       for (let i = 0; i < 9000 && !st.riss.aus; i++) { const w = finaleBot(st); if (finaleZug(st, w)) finaleZug(st, { typ: "ende" }); }
       return st;
     }
-    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, kXp, kStufe, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
+    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, kXp, kStufe, kAufLive, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
       startPunkte, finaleNeu, vor: vor_, nach, finaleBot, finaleZug, finaleAuto, siegel, naechstesSiegel, inZone, steht, helden };
   }
 

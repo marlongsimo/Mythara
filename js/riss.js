@@ -505,6 +505,13 @@
     h.hidden = false;
   }
   function hudAus() { const h = document.getElementById("riss-hud"); if (!h) return; for (const el of [...h.children]) document.body.appendChild(el); h.hidden = true; }
+  /** Aufstieg mitten im Kampf: Alle Helden steigen sofort auf (Leben und Zauberplätze um den Unterschied); wer gerade am Zug ist, erst wenn sein Zug vorbei ist */
+  function aufLive(st) {
+    if (!KZ.aufZiel || !st || st.ende || !KZ.imKampf) return; const a = R.aktiv(st), warten = a && a.fid && !KZ.frei ? [a.fid] : [];
+    const auf = K.kAufLive(Z.ich, st, KZ.aufZiel, warten); if (!auf.length) return;
+    st.log.push({ t: `Stufe ${KZ.aufZiel}: ${auf.map((f) => (st.figuren.find((x) => x.fid === f) || {}).name || f).join(", ")} ${auf.length > 1 ? "steigen" : "steigt"} auf – mehr Leben${auf.some((f) => (st.figuren.find((x) => x.fid === f) || {}).plaetze && st.figuren.find((x) => x.fid === f).plaetze.length) ? ", mehr Zauberplätze" : ""}, neue Fähigkeiten ab dem nächsten Zug.`, art: "gut" });
+    window.AB.render();
+  }
   /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Monster, das fällt */
   function xpLeiste(st) {
     let el = document.getElementById("riss-xpleiste");
@@ -512,7 +519,8 @@
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
     const jetzt = Date.now(), D = KZ.drops, liegt = D ? st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0 && D.zeit[f.id] != null && D.zeit[f.id] <= jetzt).reduce((a, f) => a + f.tpMax, 0) : 0;
     const xp = Z.ich.xp + Math.max(0, K.KARTE.XP_LP * liegt - (KZ.xpVor || 0)), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
-    if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) stufenKachel(s.stufe); KZ.liveStufe = s.stufe;
+    if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) { stufenKachel(s.stufe); KZ.aufZiel = s.stufe; } KZ.liveStufe = s.stufe;
+    aufLive(st);
     const hin = KZ.hinweis && KZ.hinweis.bis > Date.now() ? KZ.hinweis.t : "", plus = KZ.plus && KZ.plus.bis > Date.now() ? KZ.plus.n : 0;
     const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small${hin ? ' class="hin"' : ""}>${hin ? esc(hin) : s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span${plus ? ' class="plus"' : ""}>◈ ${Z.ich.splitter}${plus ? ` <em>+${plus}</em>` : ""}</span>`;
     el.hidden = false; if (el.dataset.h !== html) { el.dataset.h = html; el.innerHTML = html; }
@@ -536,7 +544,7 @@
   function kampfK(ort) {
     ebeneAus(); document.body.classList.add("riss-raum"); window.AB_EILE = Z.tempo !== "normal"; // im Riss läuft die Uhr: kürzere Würfel, zügige Monster
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false, endeSeit: 0, leerWer: "", leerSeit: 0 });
-    KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
+    KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe; KZ.aufZiel = 0;
     raumEinhaengen();
     window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; window.AB_EILE = false; document.body.classList.remove("riss-raum"); clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });

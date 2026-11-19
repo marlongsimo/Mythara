@@ -193,6 +193,16 @@ Der Modus lebt von wenigen, wiederkehrenden Fragen:
 - **Erbsplitter und Funde** liegen als animierte Bilder aufrecht auf dem Feld. Ein heller Rahmen zeigt, dass ein Held nah genug steht.
 - **Figuren in Bewegung:** Die Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich, Getroffene zucken zurück, Gefallene kippen um. Wer nach links angreift, dreht sich dafür um. Das gilt für alle Helden, alle Skins und alle Monster.
 
+## Aufstieg mitten im Kampf
+
+Erreicht die Gruppe eine neue Stufe, während ein Raum läuft, steigen die Helden sofort auf – nicht erst nach dem Raum:
+
+- Höchstleben und Leben steigen um den Unterschied zwischen alter und neuer Stufe. Wer am Boden liegt, bekommt nur das höhere Höchstleben.
+- Zauberplätze steigen um den Unterschied, verbrauchte bleiben verbraucht.
+- Die Fähigkeiten der neuen Stufe gelten, sobald der Held das nächste Mal am Zug ist. Der Held, der gerade am Zug ist, steigt deshalb erst auf, wenn sein Zug vorbei ist.
+- Die Monster werden dadurch nicht stärker.
+- Der Rechner steigt weiterhin erst nach dem Raum auf (kleiner Nachteil für ihn).
+
 ## Spielfluss
 
 Damit sich der Weg durch den Riss zügig anfühlt, gilt seit dem Fluss-Paket:
