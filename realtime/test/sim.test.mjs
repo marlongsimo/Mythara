@@ -49,7 +49,7 @@ try {
   ws.close();
   // ---------- 3. Client im Browser ----------
   const { chromium } = require("playwright"), br = await chromium.launch();
-  for (const [name, url, erwartet] of [["über den Server", `http://localhost:8765/echtzeit/?server=ws://localhost:${PORT}`, "server"], ["ohne Server", "http://localhost:8765/echtzeit/", "lokal"]]) {
+  for (const [name, url, erwartet] of [["über den Server", `http://localhost:8765/echtzeit/?server=ws://localhost:${PORT}`, "server"], ["ohne Server", "http://localhost:8765/echtzeit/?server=", "lokal"]]) {
     const p = await br.newPage({ viewport: { width: 1280, height: 720 } }), fehler = []; p.on("pageerror", (e) => fehler.push(String(e))); p.on("console", (m) => { if (m.type() === "error") fehler.push(m.text()); });
     await p.goto(url); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 15000 });
     const art = await p.evaluate(() => window.EZ.netz.art); check(art === erwartet, `Client ${name}: verbunden (${art})`);

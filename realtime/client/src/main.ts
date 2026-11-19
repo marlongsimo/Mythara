@@ -10,7 +10,7 @@ import { verbinde, Netz } from "./netz";
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
-const SERVER = P.get("server") ?? "";
+const SERVER = P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; // ?server= (leer) erzwingt das Rechnen im Browser
 const HELD = HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter";
 const KW = 64, KHOCH = 32, WAND = 30; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
 const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
@@ -37,7 +37,7 @@ class Spiel extends Phaser.Scene {
     this.input.keyboard?.on("keydown", (ev: KeyboardEvent) => { const k = ev.key.toLowerCase(); if (k === "q" || k === "e") this.faehig(k); else if (k === "s") this.netz.sende({ t: "halt" }); });
     for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as "q" | "e"); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    verbinde(SERVER, HELD, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z }; });
+    verbinde(SERVER, HELD, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z }; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
   /** Boden als ein Bild: Rauten in zwei Tönen */
