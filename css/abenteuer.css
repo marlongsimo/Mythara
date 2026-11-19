@@ -3101,3 +3101,4 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 #karte image.riss-rune.rand { opacity: .8; filter: drop-shadow(0 0 5px rgba(255,200,80,.8)); }
 #karte image.riss-rune.mitte { filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,210,90,1)) drop-shadow(0 0 18px rgba(255,170,40,.7)); }
 .riss-segen img { width: 26px; height: 26px; object-fit: contain; vertical-align: middle; }
+.riss-ding em { color: #ff9d9d; }
