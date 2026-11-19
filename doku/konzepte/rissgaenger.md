@@ -237,7 +237,7 @@ Zauberplätze, Tränke und Verbrauchtes kommen in beiden Fällen so ins Finale, 
 
 Alle fünf Räume zusammen dauern rund 13,6 Runden, die Gruppe kommt im Schnitt mit Stufe 3,7 von 4 an. Der schwere Raum ist damit der einzige, in dem regelmäßig Helden fallen und manchmal die ganze Gruppe.
 
-**Ganze Partien,** Rechner gegen Rechner, je 300 (`tools/riss-partien.js`): Weg 9,0 Runden je Seite, Finale 7,3 Runden, 291 von 300 Finals enden durch Siegelpunkte.
+**Ganze Partien,** Rechner gegen Rechner, je 300 (`tools/riss-partien.js`): Weg 9,0 Runden je Seite, Finale rund 6,8 Runden, etwa 290 von 300 Finals enden durch Siegelpunkte.
 
 | Die frühere Gruppe gewinnt bei | gerechnete Heilung | ohne Heilung |
 |---|---|---|

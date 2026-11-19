@@ -194,8 +194,8 @@
     /** Vor jedem Schritt: Der Segen gilt für die Seite, die am Zug ist */
     function vor_(st) { const X = st.riss; if (!X || st.ende) return; const a = R.aktiv(st), tm = a ? R.teamVon(st, a) : 0; st.segen = tm ? X.segen[tm].slice() : []; }
     const sagen = (st, t, art) => st.log.push({ t, art: art || "gut", tm: 0 });
-    function schluss(st, sieger, grund, text) {
-      const X = st.riss; X.aus = { sieger, grund, runden: Math.min(st.runde, X.max), punkte: { 1: X.P[1], 2: X.P[2] } };
+    function schluss(st, sieger, grund, text, runde) {
+      const X = st.riss; X.aus = { sieger, grund, runden: Math.min(runde || st.runde, X.max), punkte: { 1: X.P[1], 2: X.P[2] } };
       R.arenaSicht(st, 0); punkteZeigen(st); st.arena.sieger = sieger; st.arena.grund = text; st.ende = "arena";
       st.log.push({ t: `${text} Siegelpunkte ${st.arena.namen[0]} ${X.P[1]} : ${X.P[2]} ${st.arena.namen[1]} – Sieg für ${st.arena.namen[sieger - 1]}.`, art: "ende", tm: 0 });
     }
@@ -218,10 +218,10 @@
         sagen(st, `Runde ${alt}: ${N[h - 1]} hält das Siegel (${Math.max(a, b)} gegen ${Math.min(a, b)}) und bekommt einen Siegelpunkt. Stand ${P[1]} : ${P[2]}.`, h === 1 ? "gut" : "schlecht"); }
       else sagen(st, `Runde ${alt}: Niemand hält das Siegel (${a} gegen ${b}). Stand ${P[1]} : ${P[2]}.`, "");
       zeile.stand = [P[1], P[2]]; X.M.runden.push(zeile); punkteZeigen(st);
-      if (h && P[h] >= X.ziel) return schluss(st, h, "siegel", `${N[h - 1]} hat ${X.ziel} Siegelpunkte.`);
+      if (h && P[h] >= X.ziel) return schluss(st, h, "siegel", `${N[h - 1]} hat ${X.ziel} Siegelpunkte.`, alt);
       if (alt >= X.max) { const l = (t) => helden(st, t).reduce((s, f) => s + Math.max(0, f.tp), 0);
         const s = P[1] !== P[2] ? (P[1] > P[2] ? 1 : 2) : a !== b ? (a > b ? 1 : 2) : l(1) >= l(2) ? 1 : 2;
-        return schluss(st, s, "zeit", `Zwölf Runden sind um.`); }
+        return schluss(st, s, "zeit", `Zwölf Runden sind um.`, alt); }
       X.runde = st.runde;
       if ((X.runde - 1) % 2 === 0 && X.runde > 1) { X.ort = (X.ort + 1) % X.orte.length; X.M.spruenge++; sagen(st, "Das Siegel springt auf ein anderes Feld.", ""); }
       for (const tm of [1, 2]) for (const f of helden(st, tm)) { if (lebt(f) || X.gefallenIn[f.id] == null || X.runde - X.gefallenIn[f.id] < 2) continue; aufstehen(st, f); sagen(st, `${f.name} kehrt am eigenen Eingang zurück.`, tm === 1 ? "gut" : "schlecht"); }
