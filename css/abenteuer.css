@@ -3045,3 +3045,14 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 .riss-countdown b { font: 700 96px/1 var(--schrift-titel); color: #fff; text-shadow: 0 0 30px rgba(120,150,255,.8); } .riss-countdown b.tick { animation: riss-zaehl .7s ease-out; }
 @media (max-width: 700px) { .riss-duell { grid-template-columns: 1fr; justify-items: center; } .riss-platz img, .riss-platz.leer i { width: 56px; height: 56px; } .riss-countdown b { font-size: 72px; } }
 @media (prefers-reduced-motion: reduce) { .riss-sucht i, .riss-countdown b.tick { animation: none; } }
+
+/* Rissgänger: Kachel „Das Team steigt auf“ mitten im Kampf */
+.riss-aufstieg { position: fixed; left: 50%; top: 22%; z-index: 90; display: flex; gap: 14px; align-items: center; padding: 14px 26px 14px 20px; border-radius: 16px; background: linear-gradient(180deg, rgba(18,34,78,.97), rgba(8,16,40,.97)); box-shadow: inset 0 0 0 2px #6fb0ff, 0 0 40px rgba(60,130,255,.6), 0 12px 30px rgba(0,0,0,.6); color: #eaf2ff; pointer-events: none; transform: translate(-50%, 0); opacity: 0; }
+.riss-aufstieg.an { animation: riss-aufstieg 3.2s ease both; }
+.riss-aufstieg i { font-style: normal; font-size: 44px; line-height: 1; color: #7fc0ff; text-shadow: 0 0 18px rgba(90,160,255,.9); animation: riss-pfeil .7s ease-in-out infinite alternate; }
+.riss-aufstieg small { display: block; font: 600 12px "Inter", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #a9c6ff; }
+.riss-aufstieg b { display: block; font: 600 34px/1.1 var(--schrift-titel); color: #fff; }
+@keyframes riss-aufstieg { 0% { opacity: 0; transform: translate(-50%, 24px) scale(.85); } 10% { opacity: 1; transform: translate(-50%, 0) scale(1.06); } 18% { transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -18px); } }
+@keyframes riss-pfeil { from { transform: translateY(3px); } to { transform: translateY(-5px); } }
+@media (max-width: 700px) { .riss-aufstieg { top: 18%; padding: 10px 18px 10px 14px; gap: 10px; } .riss-aufstieg i { font-size: 32px; } .riss-aufstieg b { font-size: 26px; } }
+@media (prefers-reduced-motion: reduce) { .riss-aufstieg.an { animation: none; opacity: 1; } .riss-aufstieg i { animation: none; } }

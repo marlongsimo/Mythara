@@ -415,12 +415,20 @@
     document.body.appendChild(el);
   }
   function fundFensterZu() { if (KZ.fenster) { KZ.fenster.remove(); KZ.fenster = null; } }
+  /** Kachel mitten im Kampf: Das Team steigt auf (Pfeil nach oben, neue Stufe). Die Werte der neuen Stufe gelten ab dem nächsten Raum. */
+  function stufenKachel(stufe) {
+    let el = document.getElementById("riss-aufstieg"); if (!el) { el = document.createElement("div"); el.id = "riss-aufstieg"; el.className = "riss-aufstieg"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+    el.innerHTML = `<i aria-hidden="true">▲</i><div><small>Das Team steigt auf</small><b>Stufe ${stufe}</b></div>`;
+    el.hidden = false; el.classList.remove("an"); void el.offsetWidth; el.classList.add("an");
+    clearTimeout(KZ.aufstiegUhr); KZ.aufstiegUhr = setTimeout(() => { el.classList.remove("an"); el.hidden = true; }, 3200);
+  }
   /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Monster, das fällt */
   function xpLeiste(st) {
     let el = document.getElementById("riss-xpleiste");
     if (!st) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
     const xp = Z.ich.xp + K.kXp(st), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
+    if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) stufenKachel(s.stufe); KZ.liveStufe = s.stufe;
     const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small>${s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span>◈ ${Z.ich.splitter}</span>`;
     el.hidden = false; if (el.dataset.h !== html) { el.dataset.h = html; el.innerHTML = html; }
   }
@@ -435,7 +443,7 @@
   }
   function kampfK(ort) {
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });
-    KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, funde: [] };
+    KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe;
     raumEinhaengen();
     window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null);
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
@@ -625,5 +633,5 @@
   window.addEventListener("pagehide", () => { if (!laeuft()) return; try { const L = Object.assign({}, Z.log, { abgebrochen: "Seite verlassen oder neu geladen", phase: Z.st ? "finale" : "weg", minuten: { gesamt: Math.round((Date.now() - Z.beginn) / 6000) / 10 } });
     if (Z.st && Z.st.riss) { L.punkte = [Z.st.riss.P[1], Z.st.riss.P[2]]; L.finalRunden = Z.st.riss.runde; L.runden = Z.st.riss.M.runden; }
     const alle = mitschrift(); alle.push(L); localStorage.setItem(SPEICHER, JSON.stringify(alle.slice(-60))); } catch (e) { /* privat */ } });
-  window.RISS = { laeuft, feldAufheben, zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
+  window.RISS = { stufenKachel, laeuft, feldAufheben, zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
 })();
