@@ -60,7 +60,7 @@
   function gruppeHtml(titel, gruppe, stufen, leben, dinge, segen) {
     return `<div class="riss-gruppe"><h3>${esc(titel)}</h3><div class="riss-gruppe-helden">${gruppe.map((f) => { const d = F.FIGUREN[f], l = Math.round(100 * (leben ? leben[f] : 1));
       return `<div class="riss-held" style="--k:${F.KLASSEN[d.klasse].farbe}"><img src="${F.bild(f)}" alt=""><div><b>${esc(d.name)}</b><span>Stufe ${stufen[f]}</span><i class="riss-tp"><u style="width:${l}%"></u></i><small>${l} % Leben${dinge && (dinge[f] || []).length ? " · " + dinge[f].map((id) => esc(R.GEGENSTAENDE[id].name)).join(", ") : ""}</small></div></div>`; }).join("")}</div>
-      ${segen && segen.length ? `<p class="riss-segen">Segen: ${segen.map((id) => `${F.SEGEN[id].zeichen} ${esc(F.SEGEN[id].name)}`).join(", ")}</p>` : ""}</div>`;
+      ${segen && segen.length ? `<p class="riss-segen">Segen: ${segen.map((id) => `${segenBild(id) ? `<img src="${segenBild(id)}" alt="">` : F.SEGEN[id].zeichen} ${esc(F.SEGEN[id].name)}`).join(", ")}</p>` : ""}</div>`;
   }
   /** Was man vom Gegner sieht: nur, wie tief er zuletzt war. Seine Helden, Stufen und sein Zustand bleiben verdeckt, bis man sich am Siegel trifft –
    *  und ob er schon abgebogen ist, erst recht. */
@@ -391,6 +391,8 @@
   }
   /* Bilder für Funde: Sobald es zu einem Gegenstand ein eigenes Bild gibt (img/riss/fund-<Kennung>.gif), hier eintragen – sonst steht sein Zeichen auf dem Feld */
   const FUND_BILDER = new Set(["gluecksbringer", "eulenmantel", "amulett", "stiefel", "ring", "wetzstein", "stab", "eisenspitzen", "feder", "schleifstein"]);
+  const SEGEN_BILDER = new Set(["wachtfeuer", "fuesse", "klingen"]);
+  const segenBild = (id) => (SEGEN_BILDER.has(id) ? `img/riss/segen-${id}.gif` : null);
   const fundBild = (id) => (FUND_BILDER.has(id) ? `img/riss/fund-${id}.gif` : null);
   /** Was auf dem Feld liegt, als Bild: Erbsplitter (animiert, aufrecht wie die Figuren) oder der Fund selbst (sein Bild, sonst sein Zeichen).
    *  Das Spielfeld wird bei jedem Schritt neu gezeichnet – fehlende Bilder kommen hier wieder dazu. */
@@ -494,7 +496,7 @@
     const zeichne = () => {
       const karte = (a, k) => { const d = a.typ === "ding" ? R.GEGENSTAENDE[a.id] : a.typ === "segen" ? F.SEGEN[a.id] : null, voll = a.typ === "heilung" && K.lebenSchnitt(W) >= 1, hat = a.typ === "segen" && W.segen.includes(a.id);
         const name = a.typ === "heilung" ? "Heilung der Wächterin" : a.typ === "trank" ? "Heiltrank" : (a.typ === "segen" ? "Segen: " : "") + d.name, text = a.typ === "heilung" ? "Alle Helden gehen mit vollen Trefferpunkten ins Finale." : a.typ === "trank" ? "Ein zusätzlicher Heiltrank für einen Helden." : d.text + (a.typ === "segen" ? " Gilt für die ganze Gruppe." : "");
-        return `<button type="button" class="riss-ding${a.typ === "segen" ? " segen" : ""}${wahl === a ? " an" : ""}" data-k="${k}" ${W.splitter < a.preis || voll || hat ? "disabled" : ""}><i>${a.typ === "heilung" ? "✚" : a.typ === "trank" ? "⚱" : a.typ === "segen" ? d.zeichen : fundBild(a.id) ? `<img class="riss-ding-bild" src="${fundBild(a.id)}" alt="">` : d.sym || "◆"}</i><b>${esc(name)}</b><small>${esc(text)}</small><em>${hat ? "gekauft" : voll ? "alle sind gesund" : "◈ " + a.preis}</em></button>`; };
+        return `<button type="button" class="riss-ding${a.typ === "segen" ? " segen" : ""}${wahl === a ? " an" : ""}" data-k="${k}" ${W.splitter < a.preis || voll || hat ? "disabled" : ""}><i>${a.typ === "heilung" ? "✚" : a.typ === "trank" ? "⚱" : a.typ === "segen" ? (segenBild(a.id) ? `<img class="riss-ding-bild" src="${segenBild(a.id)}" alt="">` : d.zeichen) : fundBild(a.id) ? `<img class="riss-ding-bild" src="${fundBild(a.id)}" alt="">` : d.sym || "◆"}</i><b>${esc(name)}</b><small>${esc(text)}</small><em>${hat ? "gekauft" : voll ? "alle sind gesund" : "◈ " + a.preis}</em></button>`; };
       const brauchtHeld = wahl && (wahl.typ === "trank" || wahl.typ === "ding");
       seite(`<div data-riss-laden><p class="riss-schritt">Vor dem Siegelsaal</p><h1 class="hub-gruss">Die Siegelwächterin</h1>
         <p class="hub-untertitel">„Erbsplitter gegen das, was ihr dort drin braucht. Wählt klug – am Siegel nützen sie euch nichts mehr.“</p>
@@ -673,17 +675,19 @@
     setTimeout(() => { const el = figEl(id); if (!el || !el.animate) return; el.style.transformBox = "fill-box"; el.style.transformOrigin = "50% 100%";
       try { el.animate(bilder, { duration: dauer, easing: easing || "ease-out" }); } catch (e) { /* ohne Bewegung */ } }, Math.max(0, verzug || 0));
   }
+  /** Die Bilder schauen von Haus aus nach rechts (oder nach vorn). Liegt das Ziel links, dreht sich die Figur für die Bewegung um und danach zurück. */
+  const mitBlick = (bilder, links) => (links ? bilder.map((b, i) => Object.assign({}, b, { transform: b.transform + ` scaleX(${i > 0 && i < bilder.length - 1 ? -1 : 1})` })) : bilder);
   function bewegung(e) {
     const st = window.AB && window.AB.st; if (!BEWEGT || !st || !(KZ.imKampf || Z.st)) return;
     const F2 = (id) => st.figuren.find((f) => f.id === id), a = e.von != null ? F2(e.von) : null, z = F2(e.zu), G = feldMass(); if (!z) return;
-    const dx = a ? (z.x - a.x) * G : 0, dy = a ? (z.y - a.y) * G : 0, lang = Math.hypot(dx, dy) || 1, ux = dx / lang, uy = dy / lang, seite = ux >= 0 ? 1 : -1;
+    const dx = a ? (z.x - a.x) * G : 0, dy = a ? (z.y - a.y) * G : 0, lang = Math.hypot(dx, dy) || 1, ux = dx / lang, uy = dy / lang, seite = ux >= 0 ? 1 : -1, links = Boolean(a) && ux < -0.2;
     if (e.typ === "treffer") {
       const wann = e.wann || 0;
       if (a && e.feind) {
-        if (e.zauber) spiele(a.id, [{ transform: "translate(0,0) scale(1)", filter: "brightness(1)" }, { transform: "translate(0,-9px) scale(1.07)", filter: "brightness(1.5) drop-shadow(0 0 8px rgba(160,200,255,.9))", offset: .45 }, { transform: "translate(0,0) scale(1)", filter: "brightness(1)" }], 620, (e.ab || 0) - 120, "ease-in-out");
-        else if (e.fern) spiele(a.id, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 5}px,${-uy * 5}px) rotate(${-seite * 5}deg)`, offset: .3 }, { transform: `translate(${-ux * 10}px,${-uy * 10}px) rotate(${-seite * 9}deg)`, offset: .45 }, { transform: "translate(0,0) rotate(0deg)" }], 480, (e.ab || 0) - 60);
+        if (e.zauber) spiele(a.id, mitBlick([{ transform: "translate(0,0) scale(1)", filter: "brightness(1)" }, { transform: "translate(0,-3px) scale(1.02)", filter: "brightness(1.1)", offset: .15 }, { transform: "translate(0,-9px) scale(1.07)", filter: "brightness(1.5) drop-shadow(0 0 8px rgba(160,200,255,.9))", offset: .45 }, { transform: "translate(0,-3px) scale(1.02)", filter: "brightness(1.1)", offset: .85 }, { transform: "translate(0,0) scale(1)", filter: "brightness(1)" }], links), 700, (e.ab || 0) - 120, "ease-in-out");
+        else if (e.fern) spiele(a.id, mitBlick([{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 5}px,${-uy * 5}px) rotate(${-seite * 5}deg)`, offset: .3 }, { transform: `translate(${-ux * 10}px,${-uy * 10}px) rotate(${-seite * 9}deg)`, offset: .45 }, { transform: `translate(${-ux * 2}px,${-uy * 2}px) rotate(${-seite * 2}deg)`, offset: .85 }, { transform: "translate(0,0) rotate(0deg)" }], links), 560, (e.ab || 0) - 60);
         else { const weit = Math.max(10, Math.min(lang - G * 0.55, G * 1.1)) * (e.krit ? 1.15 : 1); // Nahkampf: ausholen, vorspringen, zurück
-          spiele(a.id, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 9}px,${-uy * 9}px) rotate(${-seite * 7}deg)`, offset: .28, easing: "ease-in" }, { transform: `translate(${ux * weit}px,${uy * weit}px) rotate(${seite * 11}deg)`, offset: .52, easing: "ease-out" }, { transform: `translate(${ux * weit * 0.9}px,${uy * weit * 0.9}px) rotate(${seite * 6}deg)`, offset: .64 }, { transform: "translate(0,0) rotate(0deg)" }], e.krit ? 620 : 540, wann - 280, "linear"); }
+          spiele(a.id, mitBlick([{ transform: "translate(0,0) rotate(0deg)" }, { transform: `translate(${-ux * 9}px,${-uy * 9}px) rotate(${-seite * 7}deg)`, offset: .28, easing: "ease-in" }, { transform: `translate(${ux * weit}px,${uy * weit}px) rotate(${seite * 11}deg)`, offset: .52, easing: "ease-out" }, { transform: `translate(${ux * weit * 0.9}px,${uy * weit * 0.9}px) rotate(${seite * 6}deg)`, offset: .64 }, { transform: `translate(${ux * 4}px,${uy * 4}px) rotate(0deg)`, offset: .9 }, { transform: "translate(0,0) rotate(0deg)" }], links), e.krit ? 660 : 580, wann - 300, "linear"); }
       }
       // Getroffen: zurückzucken (weg vom Angreifer); wer fällt, kippt danach um
       const kx = a ? ux : 0, ky = a ? uy : -0.4, stoss = e.krit ? 13 : 8;
