@@ -193,6 +193,41 @@ Der Modus lebt von wenigen, wiederkehrenden Fragen:
 - **Erbsplitter und Funde** liegen als animierte Bilder aufrecht auf dem Feld. Ein heller Rahmen zeigt, dass ein Held nah genug steht.
 - **Figuren in Bewegung:** Die Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich, Getroffene zucken zurück, Gefallene kippen um. Wer nach links angreift, dreht sich dafür um. Das gilt für alle Helden, alle Skins und alle Monster.
 
+## Kartenform „Pfade“ (Voreinstellung)
+
+Die Abschnitte oben beschreiben die erste Kartenform, den **Ring** (fünf Räume, fünf Minuten, alle Räume frei wählbar). Er bleibt in den Einstellungen wählbar (`risskarte=ring`). Voreingestellt ist jetzt die Form **Pfade**. Alles, was hier nicht steht, gilt wie beim Ring.
+
+**Aufbau:** dreizehn Räume als Netz, acht Minuten.
+
+- In der Mitte der Einstieg.
+- Darum ein innerer Ring aus vier Räumen. Jeder führt zur Mitte und zu zwei äußeren Räumen.
+- Außen ein Ring aus acht Räumen, reihum miteinander verbunden.
+
+**Was wo liegt** – gelost, für beide Seiten gleich:
+
+| Lage | Räume | Erfahrung (gemessen) | Besonderheit |
+|---|---|---|---|
+| innen | 4 leichte Räume | etwa 175 bis 200 | der Weg nach außen |
+| außen | 4 Bosse | etwa 400 bis 500 | Boss gibt doppelte Erfahrung je Lebenspunkt; Fund nur zu 25 %, Splitter wie bei jedem Monster; deutlich gefährlicher |
+| außen | 2 schwere Räume | etwa 250 bis 300 | gefährlich, gewöhnliche Erfahrung |
+| außen | 2 Splitterkammern | etwa 240 | acht kleine Monster, also acht Funde |
+
+**Wege:** Betreten darf man nur Räume, die an die Mitte oder an einen **freigeräumten** Raum grenzen. Freigeräumt ist ein Raum, wenn alle Monster besiegt sind. Ein verlassener oder verlorener Raum öffnet nichts.
+
+**Was man weiß:** Alle Räume sind dunkel. Vor einem erreichbaren Raum steht nur eine Ahnung – „Etwas Großes atmet dahinter“ (Boss), „Waffen klirren im Dunkeln“ (schwer), „Es glitzert und wimmelt“ (Splitterkammer), „Leises Scharren“ (leicht). Welcher Boss, welche Monster und was hinter den noch nicht erreichbaren Räumen liegt, weiß man nicht.
+
+**Stufe 10** kostet 2160 Erfahrung. Erreichbar ist sie nur über die Bosse: Mitte, ein innerer Raum und dann vier bis fünf äußere Räume, die meisten davon Bosse. Wer das tut, hat weniger Erbsplitter für die Wächterin und kommt angeschlagener ins Finale.
+
+**Zahlen vom Rechner** (`node tools/riss-pfade.js`, 120 Wege je Zeile; nur Plausibilität, kein Beweis – ein Mensch spielt anders und anders schnell):
+
+| Weg | 25 s je Kampfrunde | 30 s je Kampfrunde |
+|---|---|---|
+| zufällig | Stufe Ø 7,8 · Stufe 10 in 10 von 120 · 216 Splitter | Stufe Ø 7,0 · Stufe 10 in 2 von 120 · 179 Splitter |
+| gezielt auf Bosse | Stufe Ø 8,5 · Stufe 10 in 37 von 120 · 171 Splitter | Stufe Ø 7,4 · Stufe 10 in 8 von 120 · 132 Splitter |
+| gezielt auf Splitter | Stufe Ø 7,1 · nie Stufe 10 · 278 Splitter | Stufe Ø 6,4 · nie Stufe 10 · 233 Splitter |
+
+Offen: Die Stufen liegen insgesamt hoch (meist 6 bis 9), der Abstand bei den Splittern zwischen Bossweg und Splitterweg ist noch klein, und das Finale ist für Gruppen auf Stufe 8 bis 10 nie abgestimmt worden.
+
 ## Aufstieg mitten im Kampf
 
 Erreicht die Gruppe eine neue Stufe, während ein Raum läuft, steigen die Helden sofort auf – nicht erst nach dem Raum:

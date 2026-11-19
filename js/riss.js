@@ -22,7 +22,7 @@
   const NAMEN = ["Varn der Stille", "Ilka Aschenhand", "Der Graue Tomas", "Mirelle vom Spalt", "Odo Rissläufer", "Senna Dunkelwasser"];
   const SCHNELL = params.has("schnell"), TAKT = +params.get("risstakt") || (SCHNELL ? 60 : 2300); // so lange dauert beim Warten ein Zug des Gegners
   let K = null;
-  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", tempo: params.get("risstempo") === "normal" ? "normal" : "schnell", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", zeit: Math.max(20, +params.get("risszeit") || 300), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
+  const Z = { wahl: [], heilung: params.get("rissheil") === "keine" ? "keine" : "gerechnet", fest: params.get("rissweg") === "fest", tempo: params.get("risstempo") === "normal" ? "normal" : "schnell", art: params.get("rissart") === "abbiegen" ? "abbiegen" : "karte", form: params.get("risskarte") === "ring" ? "ring" : "pfade", zeit: Math.max(20, +params.get("risszeit") || (params.get("risskarte") === "ring" ? 300 : 480)), zeitFest: Boolean(+params.get("risszeit")), gegnerZiel: [2, 3, 4, 5].includes(+params.get("rissgegner")) ? +params.get("rissgegner") : 0, folge: null, ich: null, bot: null, seed: 0, st: null, orig: null, botRuft: false, botBis: 0, takt: null, beob: null, log: null, beginn: 0, wegEnde: 0, sicht: 0, warte: null };
 
   /* ---------- Hilfen ---------- */
   function skript(src) { return new Promise((ok, nein) => { if (document.querySelector(`script[data-riss="${src}"]`)) return ok(); const s = document.createElement("script"); s.src = src; s.dataset.riss = src; s.onload = ok; s.onerror = () => nein(new Error("Datei fehlt: " + src)); document.head.appendChild(s); }); }
@@ -129,7 +129,7 @@
       <details class="riss-klappe"><summary>So wird gespielt</summary>
       <div class="riss-regeln"><ul>
         ${Z.art === "karte" ? `<li><b>Alle beginnen auf Stufe 1.</b> Der erste Raum ist die Mitte des Risses und leicht.</li>
-        <li><b>Die Zeit läuft ab dem ersten Raum:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für alles, für beide Seiten genau gleich lang. Nach der Mitte öffnet sich die Karte mit vier dunklen Räumen – ein schwerer, ein Boss, zwei leichte, für beide dieselben.</li>
+        <li><b>Die Zeit läuft ab dem ersten Raum:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für alles, für beide Seiten genau gleich lang. ${Z.form === "pfade" ? "Nach der Mitte öffnet sich die Karte: zwölf dunkle Räume, verbunden wie ein Netz, für beide dieselben. Betreten kannst du nur, was an die Mitte oder an einen freigeräumten Raum grenzt – und du hörst nur, was hinter der Tür ist. Bosse geben doppelte Erfahrung, aber kaum Splitter; wer bis Stufe 10 will, muss ihnen nachgehen." : "Nach der Mitte öffnet sich die Karte mit vier dunklen Räumen – ein schwerer, ein Boss, zwei leichte, für beide dieselben."}</li>
         <li><b>Erfahrung gibt es, sobald ein Monster am Boden liegt:</b> je mehr Lebenspunkte es hatte, desto mehr. Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
         <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: Der Held, der am Zug ist, muss daneben stehen, dann tippst du das Feld an. <b>Aufheben kostet seine Aktion</b> – immer, auch im leeren Raum. Bei einem Fund wählst du, wer ihn bekommt.</li>
         <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
@@ -148,8 +148,10 @@
         <select id="riss-heilung"><option value="gerechnet"${Z.heilung === "gerechnet" ? " selected" : ""}>Gerechnete Regel: frühere Gruppe halbe fehlende Trefferpunkte, spätere keine</option><option value="keine"${Z.heilung === "keine" ? " selected" : ""}>Testvariante: niemand wird geheilt</option></select></label>
       <label class="riss-schalter">Spielart
         <select id="riss-art"><option value="karte"${Z.art === "karte" ? " selected" : ""}>Karte mit Zeit: Räume frei wählen, am Ende holt der Riss beide ans Siegel</option><option value="abbiegen"${Z.art === "abbiegen" ? " selected" : ""}>Abbiegen: fester Weg, selbst entscheiden, wann es zum Siegel geht</option></select></label>
+      ${Z.art === "karte" ? `<label class="riss-schalter">Form der Karte
+        <select id="riss-form"><option value="pfade"${Z.form === "pfade" ? " selected" : ""}>Pfade: 13 Räume, nur verbundene Wege, 8 Minuten</option><option value="ring"${Z.form === "ring" ? " selected" : ""}>Ring: 5 Räume, frei wählbar, 5 Minuten</option></select></label>` : ""}
       ${Z.art === "karte" ? `<label class="riss-schalter">Zeit auf der Karte
-        <select id="riss-zeit">${[180, 240, 300].map((n) => `<option value="${n}"${Z.zeit === n ? " selected" : ""}>${n / 60} Minuten</option>`).join("")}${[180, 240, 300].includes(Z.zeit) ? "" : `<option value="${Z.zeit}" selected>${Z.zeit} Sekunden</option>`}</select></label>` : ""}
+        <select id="riss-zeit">${[180, 240, 300, 480].map((n) => `<option value="${n}"${Z.zeit === n ? " selected" : ""}>${n / 60} Minuten</option>`).join("")}${[180, 240, 300, 480].includes(Z.zeit) ? "" : `<option value="${Z.zeit}" selected>${Z.zeit} Sekunden</option>`}</select></label>` : ""}
       ${Z.art === "karte" ? `<label class="riss-schalter">Tempo im Riss
         <select id="riss-tempo"><option value="schnell"${Z.tempo === "schnell" ? " selected" : ""}>zügig: kurze Würfel, schnelle Monster</option><option value="normal"${Z.tempo === "normal" ? " selected" : ""}>wie in der Kampagne</option></select></label>` : ""}
       <label class="riss-schalter"${Z.art === "karte" ? " hidden" : ""}>Der Gegner biegt ab (nur zum Testen)
@@ -158,7 +160,8 @@
     $("#riss-einstellungen").ontoggle = (ev) => { Z.einstOffen = ev.target.open; };
     $("#riss-heilung").onchange = (ev) => { Z.heilung = ev.target.value === "keine" ? "keine" : "gerechnet"; };
     $("#riss-art").onchange = (ev) => { Z.art = ev.target.value === "abbiegen" ? "abbiegen" : "karte"; Z.einstOffen = true; start(); };
-    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; Z.einstOffen = true; start(); };
+    if ($("#riss-form")) $("#riss-form").onchange = (ev) => { Z.form = ev.target.value === "ring" ? "ring" : "pfade"; if (!Z.zeitFest) Z.zeit = Z.form === "ring" ? 300 : 480; Z.einstOffen = true; start(); };
+    if ($("#riss-zeit")) $("#riss-zeit").onchange = (ev) => { Z.zeit = +ev.target.value || 300; Z.zeitFest = true; Z.einstOffen = true; start(); };
     if ($("#riss-tempo")) $("#riss-tempo").onchange = (ev) => { Z.tempo = ev.target.value === "normal" ? "normal" : "schnell"; };
     $("#riss-gegner").onchange = (ev) => { Z.gegnerZiel = +ev.target.value || 0; };
     $("#riss-suchen").onclick = suchen; $("#riss-bearbeiten").onclick = teamBearbeiten; $("#riss-mitschrift").onclick = mitschriftZeigen;
@@ -517,8 +520,8 @@
     let el = document.getElementById("riss-xpleiste");
     if (!st) { if (el) el.hidden = true; return; }
     if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
-    const jetzt = Date.now(), D = KZ.drops, liegt = D ? st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0 && D.zeit[f.id] != null && D.zeit[f.id] <= jetzt).reduce((a, f) => a + f.tpMax, 0) : 0;
-    const xp = Z.ich.xp + Math.max(0, K.KARTE.XP_LP * liegt - (KZ.xpVor || 0)), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
+    const jetzt = Date.now(), D = KZ.drops, liegt = D ? st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0 && D.zeit[f.id] != null && D.zeit[f.id] <= jetzt).reduce((a, f) => a + K.kXpFig(f, KZ.def), 0) : 0;
+    const xp = Z.ich.xp + Math.max(0, liegt - (KZ.xpVor || 0)), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
     if (KZ.liveStufe != null && s.stufe > KZ.liveStufe) { stufenKachel(s.stufe); KZ.aufZiel = s.stufe; } KZ.liveStufe = s.stufe;
     aufLive(st);
     const hin = KZ.hinweis && KZ.hinweis.bis > Date.now() ? KZ.hinweis.t : "", plus = KZ.plus && KZ.plus.bis > Date.now() ? KZ.plus.n : 0;
@@ -527,24 +530,24 @@
   }
   function losK() {
     Z.seed = Z.seedVor || zufall(); Z.seedVor = null; Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.folge = null;
-    Z.karte = K.karteLosen(Math.random); Z.ich = K.neuK(Z.wahl, "Du", Z.karte);
+    Z.karte = Z.form === "pfade" ? K.netzLosen(Math.random) : K.karteLosen(Math.random); Z.ich = K.neuK(Z.wahl, "Du", Z.karte);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botKarte(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.karte, Z.zeit);
     clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null, raeume: {}, marken: {}, tick: 0 });
-    Z.log = { v: 5, art: "karte", wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
+    Z.log = { v: 6, art: "karte", form: Z.form, wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
     vorladen(); uebergang(() => kampfK("M")); // der Film, dann direkt in den ersten Raum – dort läuft die Uhr an
   }
   /** Bilder vorab holen, damit beim Betreten eines Raums nichts nachspringt: Raumkarten, Kartenbild, Erbsplitter, Funde, Rune */
   function vorladen() {
     const l = ["img/mythara/riss-karte.webp", "img/mythara/erbsplitter.gif", "img/riss/siegel-rune.gif", "img/riss/laden-heilung.gif", "img/riss/laden-heiltrank.gif"].concat([...FUND_BILDER].map((id) => `img/riss/fund-${id}.gif`), [...SEGEN_BILDER].map((id) => `img/riss/segen-${id}.gif`));
-    for (const ort of ["M", 0, 1, 2, 3]) { try { const k = K.kOpts(Z.ich, ort).karte; if (k && k.bild) l.push(k.bild); } catch (e) { /* ohne Bild */ } }
+    for (const ort of ["M"].concat(Z.karte.map((x, k) => k))) { try { const k = K.kOpts(Z.ich, ort).karte; if (k && k.bild) l.push(k.bild); } catch (e) { /* ohne Bild */ } }
     try { const s = K.saal(); if (s.bild) l.push(s.bild); } catch (e) { /* ohne Bild */ }
     Z.vorgeladen = l.map((src) => { const b = new Image(); b.src = src; return b; });
   }
   function kampfK(ort) {
     ebeneAus(); document.body.classList.add("riss-raum"); window.AB_EILE = Z.tempo !== "normal"; // im Riss läuft die Uhr: kürzere Würfel, zügige Monster
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false, endeSeit: 0, leerWer: "", leerSeit: 0 });
-    KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe; KZ.aufZiel = 0;
+    KZ.drops = { boss: def.boss || null, gesehen: {}, zeit: {}, liste: [], splitter: 0, funde: [] }; KZ.liveStufe = K.kStufe(Z.ich.xp).stufe; KZ.aufZiel = 0; KZ.def = def;
     raumEinhaengen();
     window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; window.AB_EILE = false; document.body.classList.remove("riss-raum"); clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null); hudAus();
       const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
@@ -576,7 +579,7 @@
     raumMerken(ort, st, sieg, !sieg && !KZ.verlassen && !KZ.zeitAb);
     const e = K.kEnde(Z.ich, ort, st, Math.random, KZ.zeitAb || KZ.verlassen, KZ.verlassen); e.splitter = D.splitter; e.funde = D.funde.slice(); e.liegen = liegen; e.verlassen = KZ.verlassen && !sieg; KZ.ergebnis = e;
     Z.log.ich.raeume.push({ ort, id: e.id, sieg: e.sieg, abgebrochen: e.abgebrochen, verlassen: e.verlassen, runden: e.runden, xp: e.xp, besiegt: e.besiegt, gegner: e.gegner, gefallen: e.gefallen.length, splitter: e.splitter, funde: e.funde, liegenGelassen: liegen, sekunden: Math.round(dauer / 1000), restSek: Math.max(0, Math.round(KZ.rest / 1000)) });
-    const allesFertig = [0, 1, 2, 3].every((k) => { const m = KZ.raeume[k]; return m && (m.zu || (m.sieg && !m.liegt.length)); }); // nichts mehr zu holen
+    const allesFertig = Z.karte.map((x, k) => k).every((k) => { const m = KZ.raeume[k]; return m && (m.zu || (m.sieg && !m.liegt.length)); }); // nichts mehr zu holen
     if (KZ.fertig) return; if (KZ.zeitAb || (KZ.laeuft && KZ.rest <= 0) || allesFertig) return teleport(); karteZeigen(); uhrAn();
   }
   /** Vor dem Finale: die Siegelwächterin verkauft für Erbsplitter, was im Endkampf hilft (ohne Zeitdruck) */
@@ -604,21 +607,22 @@
   const ORT = [{ x: 49.9, y: 12.4, n: "Norden" }, { x: 85.7, y: 48.4, n: "Osten" }, { x: 49.6, y: 84.3, n: "Süden" }, { x: 13.3, y: 48.4, n: "Westen" }]; // Mittelpunkte der Räume auf dem Kartenbild (img/mythara/riss-karte.webp), in Prozent
   function karteZeigen() {
     const W = Z.ich, C = K.KARTE, e = KZ.ergebnis, S = K.kStufe(W.xp), stufe = S.stufe;
+    const N = W.netz ? K.NETZ : null, wege = K.kWege(W), ort = (k) => (N ? N.orte[k] : ORT[k]);
     const raum = (k) => { const m = KZ.raeume[k], da = Boolean(m), d = da ? K.kDef(W, k) : null, rest = da ? m.monster.filter((x) => x.tp > 0).length : 0, liegt = da ? m.liegt.length : 0;
-      const zu = da && (m.zu || (m.sieg && !liegt)), art = !da ? "dunkel" : m.zu ? "hell verloren" : m.sieg ? "hell" : "hell offen"; // offen: verlassen, die Monster stehen noch
+      const fern = wege.indexOf(k) < 0, zu = fern || (da && (m.zu || (m.sieg && !liegt))), art = !da ? "dunkel" : m.zu ? "hell verloren" : m.sieg ? "hell" : "hell offen"; // offen: verlassen, die Monster stehen noch
       const stand = !da ? "unerkundet" : m.zu ? "verloren" : m.sieg ? (liegt ? `noch ${liegt} ${liegt === 1 ? "Fund" : "Funde"}` : "geschafft") : `verlassen · ${rest} ${rest === 1 ? "Monster" : "Monster"}`;
-      return `<button type="button" class="rk-raum ${art}${zu ? "" : " offenbar"}${W.ort === k ? " hier" : ""}" style="left:${ORT[k].x}%;top:${ORT[k].y}%" ${zu ? "disabled" : `data-ort="${k}"`}>
-        <i>${da ? (d.boss ? "☠" : d.id === "schwer" ? "⚔" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : ORT[k].n}</b><small>${stand}</small></button>`; };
+      return `<button type="button" class="rk-raum ${art}${fern && !da ? " fern" : ""}${zu ? "" : " offenbar"}${W.ort === k ? " hier" : ""}" style="left:${ort(k).x}%;top:${ort(k).y}%" ${zu ? "disabled" : `data-ort="${k}"`}>
+        <i>${da ? (d.boss ? "☠" : d.id === "schwer" || d.klasse === "schwer" ? "⚔" : d.klasse === "splitter" ? "◈" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : N ? (fern ? "" : esc(K.kOmen(W, k))) : ORT[k].n}</b><small>${N && !da ? (fern ? "" : "unerkundet") : stand}</small></button>`; };
     const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen – du kannst zurückkommen" + (e.gefallen.length ? ". Wer am Boden lag, setzt aus, bis ein Raum gewonnen ist" : "") : "die Gruppe ist gefallen. Der Raum ist zu, alle stehen mit halben Trefferpunkten wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.funde || []).map((x) => ` · ${esc(R.GEGENSTAENDE[x.ding].name)} für ${esc(F.FIGUREN[x.held].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
     seite(`<div data-riss-karte><p class="riss-schritt">Die Karte des Risses</p><h1 class="hub-gruss">Wohin jetzt?</h1>${letztes}
-      <div class="riss-karte-zwei"><div class="riss-karte" id="riss-karte">
-          <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="left:49.5%;top:48.4%"><b>Mitte</b><small>geschafft</small></span>${[0, 1, 2, 3].map(raum).join("")}</div>
+      <div class="riss-karte-zwei"><div class="riss-karte${N ? " netz" : ""}" id="riss-karte">${N ? `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${Object.keys(N.kanten).map((v) => N.kanten[v].filter((n) => n !== "M" && (v === "M" || +v < n)).map((n) => { const a = N.orte[v], b = N.orte[n], frei = (v === "M" || W.frei.indexOf(+v) >= 0) || W.frei.indexOf(n) >= 0; return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"${frei ? ' class="frei"' : ""}/>`; }).join("")).join("")}</svg>` : ""}
+          <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="${N ? "left:50%;top:50%" : "left:49.5%;top:48.4%"}"><b>Mitte</b><small>${N ? "" : "geschafft"}</small></span>${W.karte.map((x, k) => raum(k)).join("")}</div>
         <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>
-          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: Der Held am Zug muss daneben stehen, dann das Feld antippen – das kostet seine Aktion. Der Raum bleibt offen, bis du zur Karte gehst – und du kannst jeden Raum wieder betreten, solange dort noch Monster stehen oder etwas liegt.</p></div></div></div>`);
+          <p class="note">${N ? "Du kannst nur Räume betreten, die an die Mitte oder an einen freigeräumten Raum grenzen. Was drin wartet, weißt du nicht – du hörst nur, was hinter der Tür ist. Innen liegen vier leichte Räume, außen vier Bosse, zwei schwere Räume und zwei Splitterkammern. Bosse geben doppelte Erfahrung, aber kaum Splitter." : "Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume."} Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round((N ? C.DROP_BOSS_NETZ : C.DROP_BOSS) * 100)} %). Aufheben: Der Held am Zug muss daneben stehen, dann das Feld antippen – das kostet seine Aktion. Der Raum bleibt offen, bis du zur Karte gehst – und du kannst jeden Raum wieder betreten, solange dort noch Monster stehen oder etwas liegt.</p></div></div></div>`);
     $("#riss-karte").onclick = (ev) => { const b = ev.target.closest("[data-ort]"); if (!b || KZ.imKampf) return; const k = +b.dataset.ort;
-      if (KZ.rest <= 0) return zeitUm(); kampfK(k); };
+      if (KZ.rest <= 0) return zeitUm(); if (K.kWege(Z.ich).indexOf(k) < 0) return; kampfK(k); };
   }
   /** Die Zeit ist um (oder alles erkundet): Der Riss holt beide Gruppen in den Siegelsaal */
   function teleport() {

@@ -3126,3 +3126,17 @@ body.riss-raum #ende { display: none !important; }
 .riss-hud .riss-uhr.puls b { animation: riss-uhr-puls .9s ease-out 2; }
 @keyframes riss-uhr-puls { 0% { transform: scale(1); } 30% { transform: scale(1.45); color: #ffd75e; } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .riss-ebene, .riss-ebene-innen, .riss-hud .riss-uhr.puls b { animation: none; } }
+
+/* Riss, Kartenform „Pfade“: dreizehn Räume als Netz, ohne Kartenbild */
+.riss-karte.netz { aspect-ratio: 1; background: radial-gradient(circle at 50% 50%, #241a3e 0%, #0d0a18 62%, #05040a 100%); box-shadow: inset 0 0 0 2px rgba(160,120,255,.35), 0 8px 24px rgba(0,0,0,.55); }
+.riss-karte.netz line { stroke: rgba(150,130,210,.22); stroke-width: .5; stroke-dasharray: 1.4 1.4; }
+.riss-karte.netz line.frei { stroke: rgba(255,215,94,.75); stroke-width: .7; stroke-dasharray: none; }
+.riss-karte.netz .rk-raum { width: 17.5%; border-width: 2px; padding: 2px; align-content: center; }
+.riss-karte.netz .rk-raum.mitte { width: 15%; }
+.riss-karte.netz .rk-raum i { font-size: clamp(13px, 2.4vw, 20px); }
+.riss-karte.netz .rk-raum b { font-size: clamp(8px, 1.15vw, 10.5px); line-height: 1.1; padding: 0 2px; background: none; }
+.riss-karte.netz .rk-raum small { font-size: clamp(7px, 1vw, 9.5px); padding: 0 2px; background: none; }
+.riss-karte.netz .rk-raum.dunkel { border-color: rgba(183,155,255,.75); color: #d9cdf5; box-shadow: 0 0 14px rgba(140,100,255,.4); }
+.riss-karte.netz .rk-raum.dunkel.fern { border-color: rgba(70,60,95,.6); color: #4d4763; box-shadow: none; cursor: default; opacity: .75; }
+.riss-karte.netz .rk-raum.fern:hover { border-color: rgba(70,60,95,.6); box-shadow: none; }
+@media (max-width: 760px) { .riss-karte.netz .rk-raum b { font-size: 8px; } .riss-karte.netz .rk-raum small { display: none; } }

@@ -152,7 +152,30 @@
       boss: { name: "Die Ritterhalle", karte: "HALLE", begegnung: "ritter", n: 2, skala: 0.6, boss: "grabritter", xp: 150, kurz: "Bossraum", text: "Ein Grabritter hält die Halle. Wer ihn fällt, findet oft etwas bei ihm." },
       truhe1: Object.assign({}, BEUTE[0], { xp: 75, kurz: "Leichter Raum", text: "Kobolde in engen Gängen. Schnell erledigt." }),
       truhe2: Object.assign({}, BEUTE[1], { xp: 75, kurz: "Leichter Raum", text: "Käfer und Kobolde zwischen den Pilzen. Schnell erledigt." }) };
-    const K = { ZEIT: 300, LP_FAKTOR: 1.15, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 10, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
+    /* ---------- Kartenform „Pfade“: dreizehn Räume, verbunden wie ein Netz ----------
+     * Mitte, darum ein innerer Ring aus vier Räumen (0 bis 3), außen ein Ring aus acht (4 bis 11). Jeder innere Raum führt zur Mitte und zu zwei äußeren,
+     * die äußeren sind reihum miteinander verbunden. Betreten darf man nur Räume, die an die Mitte oder an einen freigeräumten Raum grenzen.
+     * Innen liegen vier leichte Räume, außen vier Bosse, zwei schwere Räume und zwei Splitterkammern – gelost, für beide Seiten gleich.
+     * Bosse geben doppelte Erfahrung je Lebenspunkt, lassen aber selten einen Fund und nur gewöhnlich viele Splitter fallen. */
+    const NETZ = (() => { const kanten = { M: [0, 1, 2, 3] }, orte = { M: { x: 50, y: 50 } }, p = (r, w) => ({ x: Math.round((50 + r * Math.cos(w * Math.PI / 180)) * 10) / 10, y: Math.round((50 + r * Math.sin(w * Math.PI / 180)) * 10) / 10 });
+      for (let i = 0; i < 4; i++) { kanten[i] = ["M", 4 + 2 * i, 5 + 2 * i]; orte[i] = p(21, -90 + 90 * i); }
+      for (let j = 0; j < 8; j++) { kanten[4 + j] = [Math.floor(j / 2), 4 + (j + 1) % 8, 4 + (j + 7) % 8]; orte[4 + j] = p(41, -112.5 + 45 * j); }
+      return { kanten, orte, innen: ["n_kobolde", "n_kaefer", "n_gruft", "n_pilze"], aussen: ["b_ritter", "b_hauptmann", "b_bestie", "b_hirte", "s_asche", "s_netz", "p_schwarm", "p_brut"] }; })();
+    const OMEN = { boss: "Etwas Großes atmet dahinter", schwer: "Waffen klirren im Dunkeln", splitter: "Es glitzert und wimmelt", leicht: "Leises Scharren" };
+    Object.assign(K_RAEUME, {
+      n_kobolde: { name: "Der Koboldgang", karte: "TURM", klasse: "leicht", kurz: "Leichter Raum", g: [["schattenkobold", 5, 0.8]] },
+      n_kaefer: { name: "Das Käfernest", karte: "PILZE", klasse: "leicht", kurz: "Leichter Raum", g: [["rostkaefer", 3, 0.7], ["schattenkobold", 2, 0.8]] },
+      n_gruft: { name: "Die kleine Gruft", karte: "GRUFT", klasse: "leicht", kurz: "Leichter Raum", g: [["knochenwaechter", 3, 0.75]] },
+      n_pilze: { name: "Der Pilzgrund", karte: "PILZE", klasse: "leicht", kurz: "Leichter Raum", g: [["pilzbrut", 2, 0.6], ["schattenkobold", 2, 0.8]] },
+      b_ritter: { name: "Die Ritterhalle", karte: "HALLE", klasse: "boss", bed: 6, kurz: "Boss", boss: "grabritter", xpBoss: 2, g: [["grabritter", 1, 0.45], ["knochenwaechter", 2, 0.3]] },
+      b_hauptmann: { name: "Das Lager des Hauptmanns", karte: "SCHACHT", klasse: "boss", bed: 6, kurz: "Boss", boss: "jaegerhauptmann", xpBoss: 2, g: [["jaegerhauptmann", 1, 0.6], ["siegeljaeger", 2, 0.35]] },
+      b_bestie: { name: "Der Zwinger", karte: "TURM", klasse: "boss", bed: 6, kurz: "Boss", boss: "kettenbestie", xpBoss: 2, g: [["kettenbestie", 1, 0.5], ["aschehund", 1, 0.3]] },
+      b_hirte: { name: "Die Halle des Eisenhirten", karte: "GRUFT", klasse: "boss", bed: 6, kurz: "Boss", boss: "eisenhirte", xpBoss: 2, g: [["eisenhirte", 1, 0.3], ["frostknecht", 1, 0.3]] },
+      s_asche: { name: "Die Aschegrube", karte: "HALLE", klasse: "schwer", bed: 4, kurz: "Schwerer Raum", g: [["aschehund", 3, 0.48]] },
+      s_netz: { name: "Die Tiefe", karte: "SCHACHT", klasse: "schwer", bed: 4, kurz: "Schwerer Raum", g: [["netzweber", 2, 0.36], ["knochenwaechter", 3, 0.36]] },
+      p_schwarm: { name: "Die Koboldhöhle", karte: "TURM", klasse: "splitter", bed: 2, kurz: "Splitterkammer", g: [["schattenkobold", 8, 0.55]] },
+      p_brut: { name: "Die Brutkammer", karte: "PILZE", klasse: "splitter", bed: 2, kurz: "Splitterkammer", g: [["rostkaefer", 8, 0.45]] } });
+    const K = { ZEIT_NETZ: 480, DROP_BOSS_NETZ: 0.25, ZEIT: 300, LP_FAKTOR: 1.15, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 10, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
     /** Erfahrung: XP_LP je Lebenspunkt eines besiegten Monsters. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
     const xpBis = (stufe) => { let x = 0; for (let n = 2; n <= stufe; n++) x += K.XP_STUFE_1 + K.XP_STUFE_JE * (n - 2); return x; };
     /**
@@ -173,16 +196,29 @@
     /** Zurück: { stufe, in (Erfahrung in dieser Stufe), bis (so viel braucht die nächste), voll } */
     function kStufe(xp) { let st = 1; while (st < K.STUFE_MAX && xp >= xpBis(st + 1)) st++; const voll = st >= K.STUFE_MAX; return { stufe: st, in: voll ? 0 : xp - xpBis(st), bis: voll ? 0 : xpBis(st + 1) - xpBis(st), voll }; }
     /** Erfahrung aus einem laufenden oder beendeten Kampf: Sie zählt erst, wenn ein Monster am Boden liegt – dann für alle seine Lebenspunkte */
-    const kXp = (st) => K.XP_LP * st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0).reduce((a, f) => a + f.tpMax, 0);
+    /** Erfahrung für ein Monster: XP_LP je Lebenspunkt; der Boss eines Pfad-Raums zählt mehrfach (def.xpBoss) */
+    const kXpFig = (f, def) => K.XP_LP * f.tpMax * (def && def.xpBoss && f.art === def.boss ? def.xpBoss : 1);
+    const kXp = (st, def) => st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art] && f.tp <= 0).reduce((a, f) => a + kXpFig(f, def), 0);
+    /** Pfade losen: vier innere Räume, acht äußere */
+    const netzLosen = (zf) => { const m = (l) => l.map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]); return m(NETZ.innen).concat(m(NETZ.aussen)); };
+    /** Welche Räume darf die Gruppe gerade betreten? Im Ring alle vier; auf den Pfaden nur, was an die Mitte oder an einen freigeräumten Raum grenzt. */
+    function kWege(W) {
+      if (!W.netz) return [0, 1, 2, 3];
+      const von = ["M"].concat(W.frei || []), aus = [];
+      for (const v of von) for (const n of NETZ.kanten[v]) if (n !== "M" && aus.indexOf(n) < 0) aus.push(n);
+      return aus;
+    }
+    /** Die Ahnung vor einem dunklen Raum: was man hört, bevor man ihn betritt */
+    const kOmen = (W, ort) => OMEN[kDef(W, ort).klasse] || "Stille";
     const karteLosen = (zf) => ["schwer", "boss", "truhe1", "truhe2"].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
-    function neuK(gruppe, name, karte) { return Object.assign(neu(gruppe, name), { karte: karte.slice(), xp: 0, splitter: 0, ort: null, besucht: [], traenke: {}, kaeufe: [] }); }
+    function neuK(gruppe, name, karte) { return Object.assign(neu(gruppe, name), { karte: karte.slice(), netz: karte.length > 4, frei: [], xp: 0, splitter: 0, ort: null, besucht: [], traenke: {}, kaeufe: [] }); }
     const kDef = (W, ort) => (ort === "M" ? Object.assign({ id: "einstieg", xp: 100, kurz: "Einstieg" }, EINSTIEG) : Object.assign({ id: W.karte[ort] }, K_RAEUME[W.karte[ort]]));
     /** Wie viele Wegstücke von einem Raum zum anderen (Mitte oder Nachbar: eins, gegenüber: zwei) */
     const kSchritte = (von, nach) => (von == null || von === "M" || nach === "M" ? 1 : Math.abs(von - nach) === 2 ? 2 : 1);
     function kOpts(W, ort) {
       an(); const r = kDef(W, ort), g = W.gruppe;
-      return { figuren: g.slice(), stufenListe: g.map((f) => W.stufen[f]), stufe: Math.round(stufeSchnitt(W)), karte: karteVon(r.karte), begegnung: r.begegnung,
-        gegner: R.gegnerFuer(r.begegnung, r.n, null, r.skala, false, 0).map((g) => (g.art === r.boss ? g : Object.assign({}, g, { tpFaktor: g.tpFaktor * K.LP_FAKTOR }))), /* alle außer dem Boss sind etwas zäher */ vorher: W.zust ? R.neuerKampf(W.zust) : null, schwierigkeit: "normal", segen: W.segen.slice(), bedrohung: 0 };
+      return { figuren: g.slice(), stufenListe: g.map((f) => W.stufen[f]), stufe: Math.round(stufeSchnitt(W)), karte: karteVon(r.karte), begegnung: r.begegnung || "garten",
+        gegner: (r.g ? r.g.map((x) => ({ art: x[0], anzahl: x[1], tpFaktor: x[2] })) : R.gegnerFuer(r.begegnung, r.n, null, r.skala, false, 0)).map((g) => (g.art === r.boss ? g : Object.assign({}, g, { tpFaktor: g.tpFaktor * K.LP_FAKTOR }))), /* alle außer dem Boss sind etwas zäher */ vorher: W.zust ? R.neuerKampf(W.zust) : null, schwierigkeit: "normal", segen: W.segen.slice(), bedrohung: r.bed || 0 };
     }
     /** Ein Gegenstand, den jemand in der Gruppe noch tragen kann (oder null) */
     function dingZufall(W, zf) { const l = DING_POOL.filter((id) => W.gruppe.some((f) => kannTragen(W, id, f))); return l.length ? l[Math.floor(zf() * l.length)] : null; }
@@ -214,10 +250,10 @@
      *  Zurück: { ort, id, sieg, abgebrochen, runden, xp, besiegt, gegner, drops: [Kennungen], stufeVor, stufe, gefallen: [fid …] } */
     function kEnde(W, ort, st, zf, abgebrochen, verlassen) { // verlassen: selbst gegangen – der Raum gilt als besucht
       const def = kDef(W, ort), sieg = st.ende === "sieg", ab = Boolean(abgebrochen) && !sieg, gegner = st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]), tot = gegner.filter((f) => f.tp <= 0);
-      W.raumXp = W.raumXp || {}; const gesamt = kXp(st), xp = Math.max(0, gesamt - (W.raumXp[ort] || 0)); W.raumXp[ort] = Math.max(gesamt, W.raumXp[ort] || 0); // wer einen Raum wieder betritt, bekommt für schon besiegte Monster nichts noch einmal
+      W.raumXp = W.raumXp || {}; const gesamt = kXp(st, def), xp = Math.max(0, gesamt - (W.raumXp[ort] || 0)); W.raumXp[ort] = Math.max(gesamt, W.raumXp[ort] || 0); // wer einen Raum wieder betritt, bekommt für schon besiegte Monster nichts noch einmal
       const out = { ort, id: def.id, sieg, abgebrochen: ab, runden: st.runde, xp, besiegt: tot.length, gegner: gegner.length, bossBesiegt: tot.some((f) => f.art === def.boss), drops: [], splitter: 0, gefallen: [], stufeVor: Math.max(...W.gruppe.map((f) => W.stufen[f])) };
       out.tot = tot.map((f) => ({ id: f.id, boss: f.art === def.boss })); // was sie fallen lassen, entscheidet kDrop (aufgehoben wird im Raum)
-      W.runden += st.runde; W.ort = ort; if (!ab && !W.besucht.includes(ort)) { W.besucht.push(ort); W.raeume = W.besucht.length; } // fertig ist ein Raum, wenn er gewonnen oder die Gruppe darin gefallen ist; ein verlassener bleibt offen
+      W.runden += st.runde; W.ort = ort; if (sieg && W.frei && W.frei.indexOf(ort) < 0 && ort !== "M") W.frei.push(ort); if (!ab && !W.besucht.includes(ort)) { W.besucht.push(ort); W.raeume = W.besucht.length; } // fertig ist ein Raum, wenn er gewonnen oder die Gruppe darin gefallen ist; ein verlassener bleibt offen
       /* Wann Gefallene wieder aufstehen – genau zwei Ereignisse:
          • Der Raum ist gewonnen: Gefallene stehen mit halben Trefferpunkten auf.
          • Die ganze Gruppe liegt am Boden: Der Raum ist zu, ALLE stehen mit halben Trefferpunkten auf (keine volle Heilung – die gibt es nur bei der Wächterin).
@@ -237,8 +273,8 @@
     /** Was ein besiegtes Monster fallen lässt: selten einen Fund für einen Helden (ein Gegenstand, den jemand noch tragen kann; der Boss oft), sonst Erbsplitter.
      *  Zurück: { ding } oder { splitter } */
     function kDrop(W, boss, zf) {
-      const id = zf() < (boss ? K.DROP_BOSS : K.DROP) ? dingZufall(W, zf) : null; if (id) return { ding: id };
-      const [a, b] = boss ? K.SPLITTER_BOSS : K.SPLITTER; return { splitter: a + Math.floor(zf() * (b - a + 1)) };
+      const id = zf() < (boss ? (W.netz ? K.DROP_BOSS_NETZ : K.DROP_BOSS) : K.DROP) ? dingZufall(W, zf) : null; if (id) return { ding: id };
+      const [a, b] = boss && !W.netz ? K.SPLITTER_BOSS : K.SPLITTER; return { splitter: a + Math.floor(zf() * (b - a + 1)) };
     }
     /** Aufheben. held: wer den Fund bekommt */
     function kNimm(W, d, held) { if (d.ding) beuteNehmen(W, { ding: d.ding, held }); else W.splitter += d.splitter || 0; }
@@ -250,8 +286,9 @@
       const spiel = (ort, runden) => { const st = R.neuesSpiel(seed * 13 + (ort === "M" ? 9 : ort) + 1, kOpts(W, ort)); raumDinge(W, st); let z = 0;
         while (!st.ende && z++ < 900 && st.runde <= runden) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); } return st; };
       { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); rest -= st.runde * sek; nimm(e); } // die Zeit läuft ab dem ersten Raum
-      for (const ort of [0, 1, 2, 3].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1])) {
-        if (rest < sek) break;
+      const dran = [];
+      while (rest >= sek) { // der Rechner nimmt irgendeinen Raum, den er erreichen kann und noch nicht versucht hat
+        const kand = kWege(W).filter((o) => dran.indexOf(o) < 0); if (!kand.length) break; const ort = kand[Math.floor(zf() * kand.length)]; dran.push(ort);
         const st = spiel(ort, Math.floor(rest / sek)), e = kEnde(W, ort, st, zf, !st.ende); rest -= Math.min(rest, st.runde * sek); nimm(e); if (e.abgebrochen) break;
       }
       botLaden(W, zf);
@@ -412,7 +449,7 @@
       for (let i = 0; i < 9000 && !st.riss.aus; i++) { const w = finaleBot(st); if (finaleZug(st, w)) finaleZug(st, { typ: "ende" }); }
       return st;
     }
-    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, kXp, kStufe, kAufLive, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
+    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, kXp, kXpFig, kStufe, kAufLive, NETZ, netzLosen, kWege, kOmen, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
       startPunkte, finaleNeu, vor: vor_, nach, finaleBot, finaleZug, finaleAuto, siegel, naechstesSiegel, inZone, steht, helden };
   }
 
