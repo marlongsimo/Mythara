@@ -600,6 +600,16 @@
     karte.querySelectorAll("rect.feld").forEach((r) => { const x = +r.dataset.x, y = +r.dataset.y, d = S ? Math.max(Math.abs(x - S.x), Math.abs(y - S.y)) : 9;
       const kl = d === 0 ? "riss-siegel" : d === 1 && !st.karte.block.has(x + "," + y) ? "riss-zone" : N && x === N.x && y === N.y ? "riss-naechst" : "";
       for (const c of ["riss-siegel", "riss-zone", "riss-naechst"]) if (r.classList.contains(c) !== (c === kl)) r.classList.toggle(c, c === kl); });
+    runen(karte, S, N);
+  }
+  /** Die Rune am Boden: groß über dem Siegel und seiner Zone (dort zählen Helden), klein und blass auf dem Feld, auf das es als Nächstes springt */
+  function runen(karte, S, N) {
+    const erste = karte.querySelector("rect.feld"); if (!erste) return; const eltern = erste.parentNode, G = +erste.getAttribute("width") || 60, soll = new Map();
+    if (S) soll.set(`siegel:${S.x},${S.y}`, { x: S.x, y: S.y, g: 3, kl: "riss-rune" }); if (N) soll.set(`naechst:${N.x},${N.y}`, { x: N.x, y: N.y, g: 1.15, kl: "riss-rune naechst" });
+    eltern.querySelectorAll("image.riss-rune").forEach((b) => { if (!soll.has(b.dataset.k)) b.remove(); else soll.delete(b.dataset.k); });
+    for (const [k, r] of soll) { const b = document.createElementNS("http://www.w3.org/2000/svg", "image"), w = r.g * G;
+      b.setAttribute("class", r.kl); b.dataset.k = k; b.setAttribute("href", "img/riss/siegel-rune.gif"); b.setAttribute("x", r.x * G + G / 2 - w / 2); b.setAttribute("y", r.y * G + G / 2 - w / 2); b.setAttribute("width", w); b.setAttribute("height", w);
+      eltern.insertBefore(b, erste); } // flach am Boden, unter Feldern und Figuren
   }
   function leiste() {
     let el = document.getElementById("riss-leiste"); const st = Z.st;
