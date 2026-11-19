@@ -11,7 +11,8 @@ export interface Netz { art: "server" | "lokal"; sende(e: Eingabe): void; ende()
 
 function lokal(held: string, beiZustand: (z: Zustand) => void): Netz {
   const sim = new Sim(held, (Date.now() & 0x7fffffff) || 1); let n = 0;
-  const takt = setInterval(() => { sim.schritt(); if (++n % ZUSTAND_JE === 0) beiZustand(sim.zustand()); }, 1000 / TICK);
+  let zuletzt = performance.now(), rest = 0; // nach der echten Zeit rechnen: Hängt der Browser kurz, werden die Schritte nachgeholt (höchstens fünf auf einmal)
+  const takt = setInterval(() => { const jetzt = performance.now(); rest = Math.min(rest + jetzt - zuletzt, 5000 / TICK); zuletzt = jetzt; let neu = false; while (rest >= 1000 / TICK) { rest -= 1000 / TICK; sim.schritt(); if (++n % ZUSTAND_JE === 0) neu = true; } if (neu) beiZustand(sim.zustand()); }, 1000 / TICK / 2);
   return { art: "lokal", sende: (e) => sim.eingabe(e), ende: () => clearInterval(takt) };
 }
 

@@ -23,6 +23,8 @@
     #ez-tasten b { position: relative; font-size: 18px; } #ez-tasten small { position: relative; font-size: 9px; color: #d9cdf5; text-align: center; line-height: 1.05; }
     #ez-tasten i { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); } #ez-tasten button.zu { border-color: #4b4460; color: #8d84a6; }
     @media (max-width: 700px) { #ez-oben { top: 84px; left: max(8px, env(safe-area-inset-left)); transform: none; font-size: 12px; } #ez-hilfe { display: none; } }
+    #ez-stick { position: fixed; z-index: 4; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.06); pointer-events: none; } #ez-stick[hidden] { display: none; }
+    #ez-stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%, -50%); }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
   </style>
@@ -32,7 +34,8 @@
   <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small><i class="ez-balken xp"><u id="ez-xp" style="width:0"></u></i></div>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
-  <div class="ez-kasten" id="ez-hilfe">Klicken oder tippen: laufen · auf einen Gegner: angreifen · Q und E: Fähigkeiten · Ziel: den Siegelwächter besiegen</div>
+  <div class="ez-kasten" id="ez-hilfe"></div>
+  <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button></div></div>
   <script src="spiel.js?v=__V__"></script>

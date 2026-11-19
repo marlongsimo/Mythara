@@ -17,27 +17,28 @@ const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH
 const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
-interface Bild { c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
+interface Bild { hoch: number; ganz: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
 
 class Spiel extends Phaser.Scene {
-  netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse; klickMarke!: Phaser.GameObjects.Ellipse;
-  zeiger = { x: 0, y: 0 }; letzterLauf = 0; gehalten = false;
+  netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
+  zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
-  preload() { const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); }
+  preload() { const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
     const s = iso(SIEGEL.x, SIEGEL.y); this.add.ellipse(s.x, s.y, 80, 40, 0xb79bff, 0.25).setStrokeStyle(2, 0xd9cdf5, 0.8).setDepth(1); this.add.text(s.x, s.y - 6, "SIEGEL", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#e6dcff" }).setOrigin(0.5).setDepth(1);
-    this.klickMarke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0x8dffb0, 0.9).setDepth(2).setVisible(false);
     this.zielMarke = this.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setDepth(2).setVisible(false);
     this.groesse(); this.scale.on("resize", () => this.groesse());
     this.input.mouse?.disableContextMenu();
-    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { this.gehalten = true; this.klick(p, true); });
-    this.input.on("pointermove", (p: Phaser.Input.Pointer) => { const w = this.zuWelt(p); this.zeiger = w; if (this.gehalten && this.time.now - this.letzterLauf > 160) this.klick(p, false); });
-    this.input.on("pointerup", () => { this.gehalten = false; });
-    this.input.keyboard?.on("keydown", (ev: KeyboardEvent) => { const k = ev.key.toLowerCase(); if (k === "q" || k === "e") this.faehig(k); else if (k === "s") this.netz.sende({ t: "halt" }); });
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => this.druck(p));
+    this.input.on("pointermove", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) this.knueppel(p); else if (!p.wasTouch) this.zeiger = this.zuWelt(p); });
+    this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { this.stick = null; $("#ez-stick").hidden = true; this.richtung(0, 0); } });
+    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "q" || k === "e")) this.faehig(k); };
+    window.addEventListener("keydown", (ev) => { if (!ev.repeat) taste(ev, true); }); window.addEventListener("keyup", (ev) => taste(ev, false));
+    window.addEventListener("blur", () => { this.tasten = {}; this.richtung(0, 0); });
     for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as "q" | "e"); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    verbinde(SERVER, HELD, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z }; });
+    verbinde(SERVER, HELD, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z }; $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel wählen – zugeschlagen wird in Reichweite · Q und E: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel wählen – zugeschlagen wird in Reichweite · Q und E: Fähigkeiten in Mausrichtung"; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
   /** Boden als ein Bild: Rauten in zwei Tönen */
@@ -51,13 +52,23 @@ class Spiel extends Phaser.Scene {
       g.fillStyle(0x1d1928, 1); g.beginPath(); g.moveTo(p.x + KW / 2, o); g.lineTo(p.x, o + KHOCH / 2); g.lineTo(p.x, p.y + KHOCH / 2); g.lineTo(p.x + KW / 2, p.y); g.closePath(); g.fillPath();
       if (!fels(i - 1, j) || !fels(i, j - 1) || !fels(i + 1, j) || !fels(i, j + 1)) g.setAlpha(fels(i, j + 1) && fels(i + 1, j) ? 1 : 0.82); } }
   zuWelt(p: Phaser.Input.Pointer) { const w = this.cameras.main.getWorldPoint(p.x, p.y); return welt(w.x, w.y); }
-  /** Klick oder Tippen: auf einen Gegner = angreifen, sonst dorthin laufen */
-  klick(p: Phaser.Input.Pointer, neu: boolean) {
-    if (!this.netz || !this.z) return; const w = this.zuWelt(p); this.zeiger = w; this.letzterLauf = this.time.now;
-    if (neu) { let best: [number, number] | null = null; for (const e of this.z.w) { if (e[3] === 0 || e[10]) continue; const d = Math.hypot(e[4] - w.x, e[5] - w.y - 0.25); if (d < (HANDY ? 1.25 : 0.95) && (!best || d < best[0])) best = [d, e[0]]; }
-      if (best) { this.netz.sende({ t: "ziel", id: best[1] }); return; } }
-    this.netz.sende({ t: "lauf", x: w.x, y: w.y }); if (neu) { const s = iso(w.x, w.y); this.klickMarke.setPosition(s.x, s.y).setVisible(true).setScale(1).setAlpha(1); this.tweens.add({ targets: this.klickMarke, scale: 0.3, alpha: 0, duration: 450 }); }
+  /** Laufrichtung senden. sx, sy: Richtung am Bildschirm (rechts, unten positiv); die Welt liegt um 45 Grad gedreht darunter. */
+  richtung(sx: number, sy: number) {
+    if (!this.netz) return; let x = sx + sy, y = sy - sx; const l = Math.hypot(x, y), staerke = Math.min(1, Math.hypot(sx, sy)); if (l > 0.01) { x = x / l * staerke; y = y / l * staerke; } else { x = 0; y = 0; }
+    const jetzt = this.time.now, g = this.gesendet, steht = x === 0 && y === 0; if (!steht && jetzt - g.t < 60 && Math.hypot(x - g.x, y - g.y) < 0.6) return; // nicht öfter als nötig
+    if (steht && g.x === 0 && g.y === 0) return; this.gesendet = { x, y, t: jetzt }; this.netz.sende({ t: "richtung", x, y });
   }
+  /** Klick oder Tipp: auf einen Gegner = als Ziel wählen (angegriffen wird in Reichweite). Am Handy sonst: Steuerknüppel unter dem Finger. */
+  druck(p: Phaser.Input.Pointer) {
+    if (!this.netz || !this.z) return; const w = this.zuWelt(p); if (!p.wasTouch) this.zeiger = w;
+    let best: [number, number] | null = null; for (const e of this.z.w) { if (e[3] === 0 || e[10]) continue; const d = Math.hypot(e[4] - w.x, e[5] - w.y - 0.25); if (d < (p.wasTouch ? 1.3 : 0.95) && (!best || d < best[0])) best = [d, e[0]]; }
+    if (best) { this.netz.sende({ t: "ziel", id: best[1] }); const ich = this.z.w.find((e) => e[0] === this.ichId), g = this.z.w.find((e) => e[0] === best![1]);
+      if (ich && g && Math.hypot(ich[4] - g[4], ich[5] - g[5]) > HELDEN[ich[2]].reich + 0.9) this.hinweis(g[4], g[5], "zu weit weg"); return; }
+    if (p.wasTouch && !this.stick) { this.stick = { id: p.id, x: p.x, y: p.y }; const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; ($("#ez-stick i") as HTMLElement).style.transform = "translate(-50%, -50%)"; }
+  }
+  knueppel(p: Phaser.Input.Pointer) { const st = this.stick!, dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
+    if (l < 8) this.richtung(0, 0); else { const k = Math.min(1, l / m); this.richtung(dx / l * k, dy / l * k); } }
+  hinweis(x: number, y: number, t: string) { const q = iso(x, y), o = this.add.text(q.x, q.y - 70, t, { fontFamily: "Inter, sans-serif", fontSize: "13px", color: "#ffd98a", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: q.y - 95, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
   /** Fähigkeit in Richtung des Mauszeigers; am Handy auf das aktuelle Ziel, sonst in Blickrichtung */
   faehig(taste: "q" | "e") { if (!this.netz || !this.z) return; let ziel = this.zeiger; const ich = this.z.w.find((e) => e[0] === this.ichId);
     if (HANDY && ich) { const zi = this.z.w.find((e) => e[0] === this.z!.ich.zielId) || this.z.w.filter((e) => e[3] !== 0 && !e[10]).sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
@@ -67,19 +78,21 @@ class Spiel extends Phaser.Scene {
   figur(e: Zustand["w"][number]): Bild {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
-    const kopf = this.add.image(0, -r - 8, typ), mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
-    const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
-    const rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1);
-    const balken = this.add.graphics(), name = this.add.text(0, -2 * r - 26, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
-    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
+    const ganz = Boolean(held && HELDEN[typ].figur), hoch = ganz ? 116 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
+    if (ganz) { kopf = this.add.image(0, 6, "figur-" + typ).setOrigin(0.5, 1); kopf.setScale(hoch / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: steht mit den Füßen auf dem Ring
+    else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
+      const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
+      rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
+    const balken = this.add.graphics(), name = this.add.text(0, -hoch - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
+    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { hoch, ganz, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); return b;
   }
   zustand(z: Zustand) {
     this.z = z; this.ichId = z.ich.id; const da = new Set<number>(), jetzt = this.time.now;
     for (const e of z.w) { da.add(e[0]); let b = this.bilder.get(e[0]); if (!b) b = this.figur(e);
       const hier = this.ort(b, jetzt); b.von = Math.hypot(hier.x - e[4], hier.y - e[5]) > 3 ? { x: e[4], y: e[5] } : hier; b.nach = { x: e[4], y: e[5] }; b.t0 = jetzt; // große Sprünge (Blinzeln, Wiederkehr) nicht nachziehen
-      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot);
-      if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -2 * r - 16; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
+      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX(sx < 0); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
+      if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.hoch - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (b.held ? " · " + e[9] : "") + (e[12] ? " ✦" : ""); if (b.name.text !== text) b.name.setText(text);
       b.ring.setStrokeStyle(e[11] ? 5 : 3, e[11] ? 0xffe08a : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
     for (const [id, b] of this.bilder) if (!da.has(id)) { const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.destroy(); b.c.destroy(); this.bilder.delete(id); }
@@ -93,7 +106,7 @@ class Spiel extends Phaser.Scene {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
     const b = "id" in ev ? this.bilder.get(ev.id) : undefined;
     if (ev.a === "schaden" && b) zahl(b.nach.x, b.nach.y, String(ev.n), b.team === 0 ? "#ff8a8a" : "#ffffff");
-    else if (ev.a === "hieb" && b) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true });
+    else if (ev.a === "hieb" && b) { if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
     else if (ev.a === "auf" && b) zahl(b.nach.x, b.nach.y, "▲ Stufe " + ev.stufe, "#8fc0ff", true);
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, "#ff9aa8");
     else if (ev.a === "knall") { const p = iso(ev.x, ev.y), o = this.add.ellipse(p.x, p.y, ev.r * KW, ev.r * KHOCH, 0xff8a2a, 0.6).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.15, duration: 380, onComplete: () => o.destroy() }); this.cameras.main.shake(120, 0.004); }

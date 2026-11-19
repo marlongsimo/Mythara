@@ -7,14 +7,15 @@ import { DT, HELDEN, MONSTER, K } from "./config";
 import { Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar } from "./karte";
 
 export type Eingabe =
-  | { t: "lauf"; x: number; y: number }      // zu einem Punkt laufen
-  | { t: "ziel"; id: number }                // einen Gegner angreifen (hinlaufen, dann von selbst zuschlagen)
+  | { t: "richtung"; x: number; y: number }  // direkt steuern: Laufrichtung in der Welt (Länge 0 bis 1), 0/0 = stehen bleiben
+  | { t: "lauf"; x: number; y: number }      // zu einem Punkt laufen (Wegsuche)
+  | { t: "ziel"; id: number }                // einen Gegner als Ziel wählen: Der Held schlägt zu, sobald und solange er in Reichweite ist (id 0 = kein Ziel)
   | { t: "faehig"; taste: "q" | "e"; x: number; y: number } // Fähigkeit in Richtung des Punktes
   | { t: "halt" }
   | { t: "neu" };                            // nach dem Ende: neuer Riss
 
 export interface Wesen { id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number; stufe: number; xp: number;
-  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; bollwerk: number; betaeubt: number; tot: boolean; wieder: number; heim: Punkt; neuWeg: number; schlag: number; warn: number; warnX: number; warnY: number; fuehrer: number }
+  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; bollwerk: number; betaeubt: number; tot: boolean; wieder: number; heim: Punkt; neuWeg: number; schlag: number; warn: number; warnX: number; warnY: number; fuehrer: number; rx: number; ry: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; schaden: number; von: number; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "knall"; x: number; y: number; r: number } | { a: "auf"; id: number; stufe: number }
   | { a: "warn"; x: number; y: number; r: number; t: number } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number };
@@ -30,7 +31,7 @@ export class Sim {
   private zf(): number { this.zs = (this.zs + 0x6d2b79f5) >>> 0; let t = this.zs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
   private neu(held: boolean, typ: string, team: number, p: Punkt, bot: boolean): Wesen {
     const lp = held ? HELDEN[typ].lp : MONSTER[typ].lp;
-    const w: Wesen = { id: this.lauf++, held, typ, team, bot, x: p.x, y: p.y, r: held ? K.R_HELD : MONSTER[typ].r, blick: 0, lp, max: lp, stufe: 1, xp: 0, pfad: [], zielId: 0, cdA: 0, cdQ: 0, cdE: 0, bollwerk: 0, betaeubt: 0, tot: false, wieder: 0, heim: { x: p.x, y: p.y }, neuWeg: 0, schlag: K.BOSS_SCHLAG.alle, warn: 0, warnX: 0, warnY: 0, fuehrer: 0 };
+    const w: Wesen = { id: this.lauf++, held, typ, team, bot, x: p.x, y: p.y, r: held ? K.R_HELD : MONSTER[typ].r, blick: 0, lp, max: lp, stufe: 1, xp: 0, pfad: [], zielId: 0, cdA: 0, cdQ: 0, cdE: 0, bollwerk: 0, betaeubt: 0, tot: false, wieder: 0, heim: { x: p.x, y: p.y }, neuWeg: 0, schlag: K.BOSS_SCHLAG.alle, warn: 0, warnX: 0, warnY: 0, fuehrer: 0, rx: 0, ry: 0 };
     this.wesen.push(w); return w;
   }
   private aufbau(): void {
@@ -49,9 +50,10 @@ export class Sim {
     if (e.t === "neu") { if (this.phase === "sieg") this.aufbau(); return; }
     if (h.tot || this.phase !== "lauf") return;
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
-    if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.pfad = weg(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { const z = this.nach(e.id); if (z && !z.tot && z.team !== h.team) { h.zielId = z.id; h.neuWeg = 0; } }
-    else if (e.t === "halt") { h.pfad = []; h.zielId = 0; }
+    if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = []; } } // nie schneller als das Tempo des Helden
+    else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = weg(h, { x: e.x, y: e.y }); }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (z && !z.tot && z.team !== h.team) h.zielId = z.id; }
+    else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
     else if (e.t === "faehig") { if ((e.taste !== "q" && e.taste !== "e") || !zahl(e.x) || !zahl(e.y)) return; this.faehigkeit(h, e.taste, { x: e.x, y: e.y }); }
   }
 
@@ -113,8 +115,12 @@ export class Sim {
             if (w.typ === "elementarist" && w.cdQ <= 0 && abstand(w, ziel) < K.FEUER.reich && frei(w, ziel)) this.faehigkeit(w, "q", ziel);
             if (w.typ === "schildwaechter" && w.cdQ <= 0 && abstand(w, ziel) < K.STOSS.weite) this.faehigkeit(w, "q", ziel); }
           else if (f && !f.tot && abstand(w, f) > 2.4) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = weg(w, { x: f.x - Math.cos(f.blick) * 1.2, y: f.y - Math.sin(f.blick) * 1.2 }); w.neuWeg = 0.4; } }
-        } else if (ziel) this.jagen(w, ziel, D.reich);
-        else if (!w.pfad.length) { const o = this.naechsterGegner(w, D.nah ? 2.2 : D.reich); if (o && w.cdA <= 0) this.angriff(w, o); } // wer steht, wehrt sich von selbst
+        } else { // der Held des Spielers: Er läuft nur, wohin gesteuert wird. Ein gewähltes Ziel greift er an, sobald und solange es in Reichweite ist.
+          const faehrt = w.rx !== 0 || w.ry !== 0;
+          if (faehrt) { w.x += w.rx * D.tempo * DT; w.y += w.ry * D.tempo * DT; w.blick = Math.atan2(w.ry, w.rx); }
+          if (ziel) { if (abstand(w, ziel) - ziel.r <= D.reich && frei(w, ziel)) { w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); if (w.cdA <= 0) this.angriff(w, ziel); } }
+          else if (!faehrt && !w.pfad.length) { const o = this.naechsterGegner(w, D.nah ? 2.2 : D.reich); if (o && w.cdA <= 0) this.angriff(w, o); } // wer steht und kein Ziel hat, wehrt sich von selbst
+        }
       } else {
         const D = MONSTER[w.typ]; if (ziel && (abstand(ziel, w.heim) > K.LEINE || ziel.tot)) { ziel = undefined; w.zielId = 0; }
         if (!ziel) { const o = this.naechsterGegner(w, K.AGGRO); if (o && abstand(o, w.heim) <= K.LEINE) { ziel = o; w.zielId = o.id; } }
