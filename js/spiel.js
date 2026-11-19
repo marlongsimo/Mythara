@@ -62,6 +62,9 @@
   { let aus = false; try { if (params.get("szene") === "0") sessionStorage.setItem("ab_szene_aus", "1"); if (params.get("szene") === "1") sessionStorage.removeItem("ab_szene_aus"); aus = Boolean(sessionStorage.getItem("ab_szene_aus")); } catch (e) { /* privat */ }
     if (!aus) document.body.classList.add("szene-blatt"); }
   /* Dorf, Fenster, Meldungen, Händler und Arena in Holz, Eisen und Pergament. ?dorf=0 holt für diesen Tab das frühere Aussehen zurück, ?dorf=1 schaltet wieder um */
+  /* Fackeln neben dem Wappen im Dorf: Prototyp, nur mit …?fackel=1 (gilt für diesen Tab; ?fackel=0 schaltet sie ab) */
+  { let an = false; try { if (params.get("fackel") === "1") sessionStorage.setItem("ab_fackel", "1"); if (params.get("fackel") === "0") sessionStorage.removeItem("ab_fackel"); an = Boolean(sessionStorage.getItem("ab_fackel")); } catch (e) { an = params.get("fackel") === "1"; }
+    document.body.classList.toggle("fackeln", an); }
   { let aus = false; try { if (params.get("dorf") === "0") sessionStorage.setItem("ab_dorf_aus", "1"); if (params.get("dorf") === "1") sessionStorage.removeItem("ab_dorf_aus"); aus = Boolean(sessionStorage.getItem("ab_dorf_aus")); } catch (e) { /* privat */ }
     if (!aus) document.body.classList.add("dorf-holz"); }
   /* Kampfbildschirm in Holz, Eisen, Samt und Pergament (PC ab 1200 px und Handy). ?banner=0 holt für diesen Tab das frühere dunkelblaue Aussehen zurück, ?banner=1 schaltet wieder um */
