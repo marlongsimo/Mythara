@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="robots" content="noindex">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Rissgefecht – Versuch</title>
   <link rel="icon" href="img/favicon.svg">
   <style>
@@ -39,12 +41,34 @@
     .rg-kauf { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
     .rg-ding { display: grid; gap: 3px; padding: 10px; border-radius: 10px; border: 1px solid #b79bff; background: #221c33; color: inherit; font: inherit; text-align: left; cursor: pointer; } .rg-ding small { color: #b9ad94; font-size: 12px; } .rg-ding em { font-style: normal; color: #ff9aa8; font-weight: 600; } .rg-ding:disabled { opacity: .45; cursor: default; } .rg-ding.hat { opacity: 1; border-color: #5fd08a; }
     .rg-tab { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; } .rg-tab th, .rg-tab td { padding: 4px 6px; text-align: left; border-bottom: 1px solid #2f2a3e; } .rg-tab tr.gut td:nth-child(2) { color: #8dffb0; } .rg-tab tr.schlecht td:nth-child(2) { color: #ff9a9d; }
+    #rg-stick, #rg-tasten, #rg-dreh, #rg-voll { display: none; }
+    /* Handy: das Feld füllt den ganzen Bildschirm, Anzeigen liegen darüber */
+    body.handy #rg { display: block; } body.handy #rg-feld { position: fixed; inset: 0; cursor: default; }
+    body.handy #rg-kopf { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: auto; z-index: 3; background: rgba(12,10,18,.72); border-radius: 0 0 12px 12px; padding: 3px 14px; gap: 10px; min-height: 0; font-size: 12px; flex-wrap: nowrap; white-space: nowrap; pointer-events: none; }
+    body.handy .rg-stand { font-size: 17px; } body.handy .rg-zeit { font-size: 15px; min-width: 40px; } body.handy .rg-halten { width: 60px; }
+    body.handy #rg-fuss { position: fixed; top: 6px; left: max(8px, env(safe-area-inset-left)); width: auto; z-index: 3; background: rgba(12,10,18,.6); border-radius: 10px; padding: 5px 9px; min-height: 0; display: grid; gap: 4px; justify-items: start; pointer-events: none; max-width: 34vw; }
+    body.handy .rg-ich { min-width: 120px; font-size: 12px; } body.handy .rg-meld { display: grid; min-width: 0; font-size: 11px; }
+    body.handy #rg-stick { display: block; position: fixed; z-index: 4; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.06); pointer-events: none; }
+    body.handy #rg-stick[hidden] { display: none; } #rg-stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%, -50%); }
+    body.handy #rg-tasten { display: block; position: fixed; z-index: 4; right: max(14px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: 230px; height: 190px; } body.handy #rg-tasten[hidden] { display: none; }
+    #rg-tasten button { position: absolute; border-radius: 50%; border: 2px solid #b79bff; background: rgba(34,28,51,.82); color: #efe8d8; font: inherit; display: grid; place-items: center; align-content: center; overflow: hidden; touch-action: none; -webkit-tap-highlight-color: transparent; }
+    #rg-tasten button b { position: relative; font-size: 17px; } #rg-tasten button small { position: relative; font-size: 9px; line-height: 1.05; text-align: center; color: #d9cdf5; max-width: 90%; }
+    #rg-tasten button i { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); } #rg-tasten button.zu { border-color: #4b4460; color: #8d84a6; }
+    #rg-angriff { right: 0; bottom: 0; width: 112px; height: 112px; border-color: #ffd75e !important; background: rgba(90,67,26,.85) !important; } #rg-angriff b { font-size: 30px !important; } #rg-angriff small { font-size: 12px !important; color: #ffe9a8 !important; } #rg-angriff.an { background: rgba(160,110,30,.95) !important; box-shadow: 0 0 22px rgba(246,200,66,.6); }
+    #rg-tasten [data-taste="q"] { right: 124px; bottom: 6px; width: 70px; height: 70px; } #rg-tasten [data-taste="e"] { right: 104px; bottom: 88px; width: 70px; height: 70px; } #rg-tasten [data-taste="f"] { right: 18px; bottom: 124px; width: 60px; height: 60px; border-color: #5fd08a; }
+    body.handy #rg-voll { display: block; position: fixed; z-index: 4; top: 6px; right: max(8px, env(safe-area-inset-right)); width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,.3); background: rgba(12,10,18,.6); color: #efe8d8; font-size: 18px; }
+    @media (orientation: portrait) { body.handy #rg-dreh { display: grid; position: fixed; inset: 0; z-index: 9; place-items: center; text-align: center; padding: 24px; background: #0a0910; font-size: 18px; line-height: 1.5; } }
+    body.handy .rg-blatt { padding: 12px 14px; } body.handy .rg-blatt h1 { font-size: 22px; } body.handy .rg-held img { width: 54px; height: 54px; } body.handy .rg-regeln { font-size: 13px; }
     @media (max-width: 700px) { #rg-kopf, #rg-fuss { gap: 8px; font-size: 12px; } .rg-meld { display: none; } .rg-halten { width: 54px; } }
   </style>
 </head>
 <body>
   <div id="rg"><div id="rg-kopf"></div><canvas id="rg-feld" width="1600" height="1000"></canvas><div id="rg-fuss"></div></div>
+  <div id="rg-stick" hidden><i></i></div>
+  <div id="rg-tasten" hidden><button type="button" data-taste="f"></button><button type="button" data-taste="e"></button><button type="button" data-taste="q"></button><button type="button" id="rg-angriff"><b>⚔</b><small>Angriff</small></button></div>
+  <button type="button" id="rg-voll" aria-label="Vollbild">⛶</button>
+  <div id="rg-dreh"><div>↻<br><b>Bitte das Handy quer halten</b><br><small>Das Rissgefecht wird im Querformat gespielt.</small></div></div>
   <div id="rg-fenster" hidden></div>
-  <script src="js/rissgefecht.js?v=1"></script>
+  <script src="js/rissgefecht.js?v=2"></script>
 </body>
 </html>

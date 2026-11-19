@@ -52,6 +52,25 @@ let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t
     await p.waitForFunction(() => window.RG.S.ich.cdQ === 0, null, { timeout: 5000 }); await p.keyboard.press("q"); await p.waitForTimeout(150); check(await p.evaluate(() => window.RG.S.ich.cdQ > 5), "Taste Q löst die Fähigkeit aus, danach läuft die Abklingzeit");
     await p.screenshot({ path: process.env.RG_BILD || "/dev/null" }).catch(() => {});
     check(fehler.length === 0, "von Hand: keine Skriptfehler" + (fehler.length ? " – " + fehler[0] : "")); await p.close(); }
+  // Handy im Querformat: Feld füllt den Bildschirm, Kamera folgt, Angriffsknopf zielt von selbst
+  { const k = await b.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 }), p = await k.newPage(); const fehler = []; p.on("pageerror", (e) => fehler.push(String(e)));
+    await p.goto("http://localhost:8765/rissgefecht.html?seed=9&handy=1"); await p.waitForSelector("#rg-los");
+    await p.tap('[data-held="schildwaechter"]'); await p.tap("#rg-los"); await p.waitForFunction(() => window.RG.S.phase === "runde");
+    await p.waitForFunction(() => !document.querySelector("#rg-tasten").hidden, null, { timeout: 3000 }).catch(() => {});
+    check(await p.evaluate(() => { const c = document.querySelector("#rg-feld").getBoundingClientRect(), t = document.querySelector("#rg-tasten"); return window.RG.HANDY && Math.round(c.width) === innerWidth && Math.round(c.height) === innerHeight && !t.hidden && getComputedStyle(t).display !== "none" && window.RG.KAM.z > 1; }), "Handy quer: Das Feld füllt den ganzen Bildschirm, die Knöpfe sind da, die Kamera ist nah am Helden");
+    // Steuerknüppel: Finger aufs Feld, nach rechts ziehen
+    const x0 = await p.evaluate(() => window.RG.S.ich.x); const cdp = await k.newCDPSession(p);
+    const finger = (typ, x, y) => cdp.send("Input.dispatchTouchEvent", { type: typ, touchPoints: typ === "touchEnd" ? [] : [{ x, y, id: 1 }] });
+    await finger("touchStart", 150, 250); await finger("touchMove", 210, 250); await p.waitForTimeout(600);
+    check(await p.evaluate(() => !document.querySelector("#rg-stick").hidden), "wo der Finger liegt, erscheint der Steuerknüppel"); await finger("touchEnd");
+    check(await p.evaluate((v) => window.RG.S.ich.x > v + 50, x0), "Knüppel nach rechts: der Held läuft nach rechts");
+    // Torvald macht Schaden: Gegner in die Nähe stellen, Angriffsknopf halten – er läuft heran und schlägt zu
+    const erg = await p.evaluate(async () => { const S = window.RG.S, h = S.ich, g = S.helden.find((o) => o.team === 1); for (const o of S.helden) if (o !== h && o !== g) { o.x = o.team === 0 ? 100 : 1500; o.y = 900; o.bot = false; } g.bot = false; g.x = h.x + 190; g.y = h.y; const lp = g.lp;
+      const a = document.querySelector("#rg-angriff"); a.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 7, clientX: 760, clientY: 320, bubbles: true })); await new Promise((r) => setTimeout(r, 1800)); a.dispatchEvent(new PointerEvent("pointerup", { pointerId: 7, bubbles: true }));
+      return { schaden: Math.round(lp - g.lp), abstand: Math.round(Math.hypot(g.x - h.x, g.y - h.y)), ziel: Boolean(S.autoZiel) }; });
+    check(erg.schaden > 0 && erg.abstand < 120, `Angriffsknopf halten: Torvald läuft von selbst an den Gegner heran und trifft (${erg.schaden} Schaden, Abstand ${erg.abstand})`);
+    await p.screenshot({ path: process.env.RG_HANDY || "/dev/null" }).catch(() => {});
+    check(fehler.length === 0, "Handy: keine Skriptfehler" + (fehler.length ? " – " + fehler[0] : "")); await k.close(); }
   await b.close();
   const st = {}; for (const s of stat.stufen) st[s] = (st[s] || 0) + 1;
   console.log(`\n${N} Rechnerpartien: Team A ${stat.siege[0]} : ${stat.siege[1]} Team B · Runden Ø ${(stat.runden / N).toFixed(1)} (Entscheidungsrunde in ${stat.entscheidung}) · Rundendauer Ø ${(stat.dauer / stat.runden).toFixed(0)} s`);

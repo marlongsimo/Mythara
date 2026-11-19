@@ -9,6 +9,8 @@
   const P = new URLSearchParams(location.search), AUTO = P.get("auto") === "1", TEMPO = Math.max(1, Math.min(60, +P.get("tempo") || 1));
   const $ = (s) => document.querySelector(s), esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const W = 1600, H = 1000, DT = 1 / 60, R_HELD = 22;
+  const HANDY = P.get("handy") === "1" || (P.get("handy") !== "0" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches), SICHT_H = 620; // am Handy folgt die Kamera dem Helden und zeigt so viel Welt in der Höhe
+  if (HANDY) document.body.classList.add("handy");
   /* Alle Zahlen sind Startwerte für den Versuch, nichts davon ist abgestimmt. */
   const K = { RUNDE: 100, RUNDEN_JE: 5, KAUFZEIT: 25, HALTEN: 18, ZONE_R: 135, START_ES: 40, SIEG: 50, NIEDERLAGE: 35, SERIE: 5, SERIE_MAX: 15, WAECHTER_ES: 10,
     XP_STUFE: [0, 70, 170, 300, 470], XP_RUNDE: 20, XP_SIEG: 10, XP_KILL: 25, XP_HILFE: 10, XP_WAECHTER: 25, XP_WAECHTER_HILFE: 10, LP_JE_STUFE: 0.12, SCHADEN_JE_STUFE: 0.10, WIEDER: 0.5,
@@ -173,7 +175,14 @@
   }
 
   /* ---------- ein Rechenschritt ---------- */
-  const EIN = { x: 0, y: 0, feuer: false, q: false, e: false, f: false, zielX: W / 2, zielY: H / 2, zielFest: false };
+  const EIN = { x: 0, y: 0, feuer: false, q: false, e: false, f: false, zielX: W / 2, zielY: H / 2, zielFest: false, selbst: HANDY, winkel: 0 };
+  /** Zielhilfe am Handy: der nächste sichtbare Gegner in Reichweite, sonst ein Risswächter in der Nähe */
+  function autoZiel(h) {
+    const D = HELDEN[h.typ], weit = D.nah ? D.reich + 190 : D.reich + 60; let best = null;
+    for (const o of feinde(h)) { if (!sichtbar(h, o)) continue; const d = dist(h, o); if (d < weit && (!best || d < best[0])) best = [d, o]; }
+    if (!best) for (const m of S.monster) { if (m.tot) continue; const d = dist(h, m); if (d < weit && sicht(h, m) && (!best || d < best[0])) best = [d, m]; }
+    return best ? best[1] : null;
+  }
   function schritt() {
     if (S.phase !== "runde") return;
     S.zeit -= DT;
@@ -181,7 +190,14 @@
       for (const k of ["cdA", "cdQ", "cdE", "betaeubt", "langsam", "bollwerk", "schleier"]) if (h[k] > 0) h[k] = Math.max(0, h[k] - DT);
       let bx = 0, by = 0;
       if (h.bot) [bx, by] = h.betaeubt > 0 ? [0, 0] : denken(h);
-      else { bx = EIN.x; by = EIN.y; if (!EIN.zielFest) h.ziel = Math.atan2(EIN.zielY - h.y, EIN.zielX - h.x); else h.ziel = EIN.winkel; if (EIN.feuer) angriff(h); if (EIN.q) { EIN.q = false; faehigkeit(h, "q"); } if (EIN.e) { EIN.e = false; faehigkeit(h, "e"); } if (EIN.f) { EIN.f = false; trank(h); } }
+      else { bx = EIN.x; by = EIN.y; const laeuft = Math.hypot(bx, by) > 0.05;
+        if (EIN.zielFest) { h.ziel = EIN.winkel; S.autoZiel = null; }
+        else if (EIN.selbst) { const z = autoZiel(h); S.autoZiel = z; if (z) h.ziel = Math.atan2(z.y - h.y, z.x - h.x); else if (laeuft) h.ziel = Math.atan2(by, bx); }
+        else h.ziel = Math.atan2(EIN.zielY - h.y, EIN.zielX - h.x);
+        if (EIN.feuer) { const z = S.autoZiel, D = HELDEN[h.typ]; if (EIN.selbst && !EIN.zielFest && D.nah && z && dist(h, z) - z.r > D.reich * 0.85 && !laeuft) { const d = dist(h, z); bx = (z.x - h.x) / d; by = (z.y - h.y) / d; } angriff(h); } // Nahkämpfer laufen beim Angriffsknopf von selbst an den Gegner heran
+        if (EIN.q) { EIN.q = false; faehigkeit(h, "q"); }
+        if (EIN.e) { EIN.e = false; const alt = h.ziel; if (EIN.selbst && !EIN.zielFest && h.typ === "elementarist" && laeuft) h.ziel = Math.atan2(by, bx); faehigkeit(h, "e"); h.ziel = alt; } // Blinzeln geht am Handy in Laufrichtung
+        if (EIN.f) { EIN.f = false; trank(h); } }
       const l = Math.hypot(bx, by); if (l > 0.01 && !(h.betaeubt > 0)) { let v = HELDEN[h.typ].tempo * (h.langsam > 0 ? 0.5 : 1) * (h.schleier > 0 ? 1.3 : 1); h.x += bx / Math.max(1, l) * v * DT; h.y += by / Math.max(1, l) * v * DT; }
       for (const f of S.felder) if (f.team !== h.team && dist(h, f) < f.r) h.langsam = Math.max(h.langsam, 0.3);
       schieben(h); }
@@ -270,10 +286,10 @@
         <li><b>Wer fällt, setzt die Runde aus.</b> Leben bleibt zwischen den Runden, wie es ist; Gefallene kommen mit halbem Leben zurück.</li>
         <li><b>Erfahrung</b> gibt es für Runden, besiegte Gegner und die Risswächter oben und unten. Stufen machen stärker – bis zum Seitenwechsel.</li>
         <li><b>Erbsplitter</b> gehören dem Team: ${K.SIEG} für den Sieg, ${K.NIEDERLAGE} für die Niederlage (mehr bei einer Serie). Zwischen den Runden kaufst du Heilung, Tränke und Segen.</li>
-        <li><b>Steuerung:</b> WASD laufen · Maus zielen · linke Maustaste angreifen · Q und E Fähigkeiten · F Heiltrank. Am Handy: links laufen, rechts zielen und angreifen.</li></ul>
+        <li><b>Steuerung:</b> ${HANDY ? "Finger aufs Feld legen und ziehen: laufen. Den großen Knopf rechts halten: angreifen – dein Held zielt von selbst auf den nächsten Gegner, Nahkämpfer laufen dabei an ihn heran. Vom Knopf wegziehen: selbst zielen. Q und E sind die Fähigkeiten, F der Heiltrank." : "WASD laufen · Maus zielen · linke Maustaste angreifen · Q und E Fähigkeiten · F Heiltrank."}</li></ul>
       <div class="rg-knoepfe"><button type="button" class="rg-btn" id="rg-los">Partie starten</button></div>
       <p class="rg-klein">Versuch gegen den Rechner. Nichts wird gespeichert oder verschickt. Alle Zahlen sind Startwerte.</p>`);
-    $("#rg-fenster").onclick = (ev) => { const b = ev.target.closest("[data-held]"); if (b) { S.wahl = b.dataset.held; zeigeStart(); } else if (ev.target.id === "rg-los") matchStart(); };
+    $("#rg-fenster").onclick = (ev) => { const b = ev.target.closest("[data-held]"); if (b) { S.wahl = b.dataset.held; zeigeStart(); } else if (ev.target.id === "rg-los") { if (HANDY) vollbild(); matchStart(); } };
   }
   function zeigeKauf() {
     const t = S.ich.team, L = S.letzte, gewonnen = L.sieger === t, team = S.helden.filter((h) => h.team === t);
@@ -297,11 +313,21 @@
 
   /* ---------- Zeichnen ---------- */
   const cv = $("#rg-feld"), cx = cv.getContext("2d"), BILDER = {}; for (const k of KENN) { const b = new Image(); b.src = HELDEN[k].bild; BILDER[k] = b; }
-  let mass = 1;
-  function groesse() { const b = window.innerWidth, h = window.innerHeight - $("#rg-kopf").offsetHeight - $("#rg-fuss").offsetHeight; mass = Math.min(b / W, h / H); cv.style.width = Math.floor(W * mass) + "px"; cv.style.height = Math.floor(H * mass) + "px"; const d = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.floor(W * mass * d); cv.height = Math.floor(H * mass * d); cx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0); }
+  const KAM = { x: W / 2, y: H / 2, z: 1 }; // Mittelpunkt der Ansicht in der Welt und Bildpunkte je Welteinheit
+  function groesse() {
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    if (HANDY) { const b = window.innerWidth, h = window.innerHeight; cv.style.width = b + "px"; cv.style.height = h + "px"; cv.width = Math.floor(b * d); cv.height = Math.floor(h * d); KAM.z = Math.max(cv.height / SICHT_H, cv.width / W); }
+    else { const b = window.innerWidth, h = window.innerHeight - $("#rg-kopf").offsetHeight - $("#rg-fuss").offsetHeight, mass = Math.min(b / W, h / H); cv.style.width = Math.floor(W * mass) + "px"; cv.style.height = Math.floor(H * mass) + "px"; cv.width = Math.floor(W * mass * d); cv.height = Math.floor(H * mass * d); KAM.z = cv.width / W; KAM.x = W / 2; KAM.y = H / 2; }
+  }
+  function kamera() {
+    if (HANDY) { const h = S.ich && !S.ich.tot ? S.ich : (S.helden.find((o) => S.ich && o.team === S.ich.team && !o.tot) || ZONE), bw = cv.width / KAM.z / 2, bh = cv.height / KAM.z / 2;
+      const zx = bw >= W / 2 ? W / 2 : klemm(h.x, bw, W - bw), zy = bh >= H / 2 ? H / 2 : klemm(h.y, bh, H - bh); KAM.x += (zx - KAM.x) * 0.2; KAM.y += (zy - KAM.y) * 0.2; }
+    cx.setTransform(1, 0, 0, 1, 0, 0); cx.fillStyle = "#0a0910"; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.setTransform(KAM.z, 0, 0, KAM.z, cv.width / 2 - KAM.x * KAM.z, cv.height / 2 - KAM.y * KAM.z);
+  }
   function zeichnen() {
     const t = S.ich ? S.ich.team : 0, meine = S.helden.filter((h) => h.team === t && !h.tot);
-    cx.fillStyle = "#15131d"; cx.fillRect(0, 0, W, H);
+    kamera(); cx.fillStyle = "#15131d"; cx.fillRect(0, 0, W, H); cx.strokeStyle = "#5b5170"; cx.lineWidth = 4; cx.strokeRect(0, 0, W, H);
     cx.strokeStyle = "rgba(255,255,255,.035)"; cx.lineWidth = 1; cx.beginPath(); for (let x = 0; x <= W; x += 80) { cx.moveTo(x, 0); cx.lineTo(x, H); } for (let y = 0; y <= H; y += 80) { cx.moveTo(0, y); cx.lineTo(W, y); } cx.stroke();
     // Startbereiche
     for (const s of [0, 1]) { const team = S.seiten.indexOf(s); cx.fillStyle = team === t ? "rgba(90,150,255,.10)" : "rgba(255,90,90,.10)"; cx.fillRect(s === 0 ? 0 : W - 200, 330, 200, 340); }
@@ -325,6 +351,9 @@
       if (h.betaeubt > 0) { cx.fillStyle = "#ffe08a"; cx.font = "20px serif"; cx.fillText("✦", h.x, h.y - h.r - 20); }
       cx.beginPath(); cx.moveTo(h.x + Math.cos(h.ziel) * (h.r + 4), h.y + Math.sin(h.ziel) * (h.r + 4)); cx.lineTo(h.x + Math.cos(h.ziel) * (h.r + 16), h.y + Math.sin(h.ziel) * (h.r + 16)); cx.lineWidth = 4; cx.strokeStyle = eigen ? "#cfe0ff" : "#ffc9c9"; cx.stroke();
       balken(h, eigen ? "#5fd08a" : "#ff6a6a"); cx.fillStyle = "#fff"; cx.font = "600 13px Inter, sans-serif"; cx.fillText(h.name + " · " + h.stufe, h.x, h.y - h.r - 16); cx.restore(); }
+    if (S.ich && !S.ich.tot && S.phase === "runde") { const h = S.ich, D = HELDEN[h.typ];
+      if (D.nah) { cx.beginPath(); cx.arc(h.x, h.y, D.reich + h.r, h.ziel - 1.1, h.ziel + 1.1); cx.lineWidth = 3; cx.strokeStyle = h.cdA > 0 ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.38)"; cx.stroke(); } // so weit reicht der Hieb
+      const z = S.autoZiel; if (EIN.selbst && z && !z.tot) { cx.beginPath(); cx.arc(z.x, z.y, z.r + 9, 0, 6.283); cx.lineWidth = 3; cx.setLineDash([6, 5]); cx.strokeStyle = "#ffe08a"; cx.stroke(); cx.setLineDash([]); } }
     for (const g of S.geschosse) { cx.beginPath(); cx.arc(g.x, g.y, g.r, 0, 6.283); cx.fillStyle = g.art === "feuer" ? "#ff8a2a" : g.art === "licht" ? "#fff2a8" : "#9ad0ff"; cx.fill(); }
     for (const b of S.bilder) { cx.save();
       if (b.art === "kreis") { cx.globalAlpha = Math.min(1, b.t * 3); cx.beginPath(); cx.arc(b.x, b.y, b.r, 0, 6.283); cx.fillStyle = b.farbe; cx.fill(); }
@@ -342,6 +371,10 @@
     const fuss = `<span class="rg-ich"><b>${h.name}</b> Stufe ${h.stufe}<i class="rg-balken"><u style="width:${Math.round(100 * h.lp / h.max)}%"></u></i><small>${h.tot ? "gefallen – du schaust zu" : Math.round(h.lp) + " / " + h.max}</small><i class="rg-balken xp"><u style="width:${naechste ? Math.round(100 * (h.xp - vor) / (naechste - vor)) : 100}%"></u></i></span>
       ${cd(h.cdQ, D.q.zeit, D.q.name, "q")}${cd(h.cdE, D.e.zeit, D.e.name, "e")}<span class="rg-cd${h.trank ? "" : " zu"}" data-taste="f"><b>F</b><small>Trank ${h.trank}</small></span>
       <span class="rg-meld">${S.meldungen.slice(-3).map((m) => `<em class="${m.art}">${esc(m.text)}</em>`).join("")}</span>`;
+    if (HANDY) { for (const [taste, z, max, name] of [["q", h.cdQ, D.q.zeit, D.q.name], ["e", h.cdE, D.e.zeit, D.e.name], ["f", h.trank ? 0 : 1, 1, "Trank " + h.trank]]) { const el = document.querySelector(`#rg-tasten [data-taste="${taste}"]`); if (!el) continue; const txt = `<i style="height:${z > 0 ? Math.round(100 * z / max) : 0}%"></i><b>${z > 0 && taste !== "f" ? Math.ceil(z) : taste.toUpperCase()}</b><small>${name}</small>`; if (el.dataset.h !== txt) { el.dataset.h = txt; el.innerHTML = txt; el.classList.toggle("zu", z > 0); } }
+      if (ang) { const txt = HELDEN[h.typ].nah ? "Hieb" : "Schuss"; if (ang.dataset.h !== txt) { ang.dataset.h = txt; ang.querySelector("small").textContent = txt; } $("#rg-tasten").hidden = S.phase !== "runde" || h.tot; }
+      const fussH = `<span class="rg-ich"><b>${h.name}</b> Stufe ${h.stufe}<i class="rg-balken"><u style="width:${Math.round(100 * h.lp / h.max)}%"></u></i><small>${h.tot ? "gefallen – du schaust zu" : Math.round(h.lp) + " / " + h.max}</small><i class="rg-balken xp"><u style="width:${naechste ? Math.round(100 * (h.xp - vor) / (naechste - vor)) : 100}%"></u></i></span><span class="rg-meld">${S.meldungen.slice(-2).map((m) => `<em class="${m.art}">${esc(m.text)}</em>`).join("")}</span>`;
+      const neuH = kopf + "|" + fussH; if (neuH === hudAlt) return; hudAlt = neuH; $("#rg-kopf").innerHTML = kopf; $("#rg-fuss").innerHTML = fussH; return; }
     const neu = kopf + "|" + fuss; if (neu === hudAlt) return; hudAlt = neu; $("#rg-kopf").innerHTML = kopf; $("#rg-fuss").innerHTML = fuss;
   }
 
@@ -350,18 +383,28 @@
   const achse = () => { EIN.x = (TASTEN.d || TASTEN.arrowright ? 1 : 0) - (TASTEN.a || TASTEN.arrowleft ? 1 : 0); EIN.y = (TASTEN.s || TASTEN.arrowdown ? 1 : 0) - (TASTEN.w || TASTEN.arrowup ? 1 : 0); };
   window.addEventListener("keydown", (ev) => { const k = ev.key.toLowerCase(); if (S.phase === "runde" && ["w", "a", "s", "d", "q", "e", "f", " ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) ev.preventDefault(); TASTEN[k] = true; achse(); if (k === "q") EIN.q = true; if (k === "e") EIN.e = true; if (k === "f") EIN.f = true; if (k === " ") EIN.feuer = true; });
   window.addEventListener("keyup", (ev) => { const k = ev.key.toLowerCase(); TASTEN[k] = false; achse(); if (k === " ") EIN.feuer = false; });
-  const zuWelt = (ev) => { const r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) / r.width * W, y: (ev.clientY - r.top) / r.height * H }; };
-  cv.addEventListener("mousemove", (ev) => { const p = zuWelt(ev); EIN.zielX = p.x; EIN.zielY = p.y; EIN.zielFest = false; });
+  const zuWelt = (ev) => { const r = cv.getBoundingClientRect(), d = cv.width / r.width; return { x: KAM.x + ((ev.clientX - r.left) - r.width / 2) * d / KAM.z, y: KAM.y + ((ev.clientY - r.top) - r.height / 2) * d / KAM.z }; };
+  cv.addEventListener("mousemove", (ev) => { if (HANDY && !ev.buttons) return; const p = zuWelt(ev); EIN.zielX = p.x; EIN.zielY = p.y; EIN.zielFest = false; EIN.selbst = false; });
   cv.addEventListener("mousedown", (ev) => { if (ev.button === 0) EIN.feuer = true; }); window.addEventListener("mouseup", () => { EIN.feuer = false; });
   cv.addEventListener("contextmenu", (ev) => ev.preventDefault());
-  // Berührung: linke Hälfte laufen, rechte Hälfte zielen und angreifen
-  const finger = {};
-  const beruehr = (ev) => { ev.preventDefault(); for (const t of ev.changedTouches) { if (ev.type === "touchstart") finger[t.identifier] = { links: t.clientX < window.innerWidth / 2, x0: t.clientX, y0: t.clientY }; const f = finger[t.identifier]; if (!f) continue;
-      const dx = t.clientX - f.x0, dy = t.clientY - f.y0, l = Math.hypot(dx, dy);
-      if (ev.type === "touchend" || ev.type === "touchcancel") { if (f.links) { EIN.x = 0; EIN.y = 0; } else EIN.feuer = false; delete finger[t.identifier]; continue; }
-      if (f.links) { if (l > 12) { EIN.x = dx / Math.max(l, 50); EIN.y = dy / Math.max(l, 50); } else { EIN.x = 0; EIN.y = 0; } } else if (l > 14) { EIN.zielFest = true; EIN.winkel = Math.atan2(dy, dx); EIN.feuer = true; } } };
-  for (const e of ["touchstart", "touchmove", "touchend", "touchcancel"]) cv.addEventListener(e, beruehr, { passive: false });
+  // Berührung: Wo der Finger das Feld berührt, entsteht der Steuerknüppel. Rechts liegen die Knöpfe.
+  let stick = null; const knauf = $("#rg-stick"), knopf = $("#rg-stick i");
+  const stickAus = () => { stick = null; EIN.x = 0; EIN.y = 0; if (knauf) knauf.hidden = true; };
+  cv.addEventListener("touchstart", (ev) => { ev.preventDefault(); if (stick) return; const t = ev.changedTouches[0]; stick = { id: t.identifier, x: t.clientX, y: t.clientY }; knauf.hidden = false; knauf.style.left = t.clientX + "px"; knauf.style.top = t.clientY + "px"; knopf.style.transform = "translate(-50%, -50%)"; }, { passive: false });
+  cv.addEventListener("touchmove", (ev) => { ev.preventDefault(); if (!stick) return; for (const t of ev.changedTouches) { if (t.identifier !== stick.id) continue; const dx = t.clientX - stick.x, dy = t.clientY - stick.y, l = Math.hypot(dx, dy), m = 46, k = Math.min(1, l / m);
+    if (l > 8) { EIN.x = dx / l * k; EIN.y = dy / l * k; } else { EIN.x = 0; EIN.y = 0; } knopf.style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; } }, { passive: false });
+  for (const e of ["touchend", "touchcancel"]) cv.addEventListener(e, (ev) => { ev.preventDefault(); if (stick && [...ev.changedTouches].some((t) => t.identifier === stick.id)) stickAus(); }, { passive: false });
+  // Angriffsknopf: halten = angreifen (zielt von selbst auf den nächsten Gegner), ziehen = selbst zielen
+  const ang = $("#rg-angriff"); let angStart = null;
+  if (ang) { ang.addEventListener("pointerdown", (ev) => { ev.preventDefault(); try { ang.setPointerCapture(ev.pointerId); } catch (e) { /* ohne */ } angStart = { x: ev.clientX, y: ev.clientY }; EIN.feuer = true; EIN.selbst = true; EIN.zielFest = false; ang.classList.add("an"); });
+    ang.addEventListener("pointermove", (ev) => { if (!angStart) return; const dx = ev.clientX - angStart.x, dy = ev.clientY - angStart.y; if (Math.hypot(dx, dy) > 22) { EIN.zielFest = true; EIN.winkel = Math.atan2(dy, dx); } else EIN.zielFest = false; });
+    for (const e of ["pointerup", "pointercancel"]) ang.addEventListener(e, () => { angStart = null; EIN.feuer = false; EIN.zielFest = false; ang.classList.remove("an"); }); }
+  for (const b of document.querySelectorAll("#rg-tasten [data-taste]")) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); EIN.selbst = true; EIN[b.dataset.taste] = true; });
   $("#rg-fuss").addEventListener("pointerdown", (ev) => { const b = ev.target.closest("[data-taste]"); if (b) { EIN[b.dataset.taste] = true; ev.preventDefault(); } });
+  /** Vollbild im Querformat (wo der Browser es erlaubt; auf dem iPhone geht nur „Zum Home-Bildschirm“) */
+  function vollbild() { const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen; if (!f || document.fullscreenElement) return; try { Promise.resolve(f.call(el, { navigationUI: "hide" })).then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {}); }).catch(() => {}); } catch (e) { /* ohne Vollbild */ } }
+  if ($("#rg-voll")) $("#rg-voll").addEventListener("click", vollbild);
+  window.addEventListener("orientationchange", () => setTimeout(groesse, 250)); document.addEventListener("fullscreenchange", () => setTimeout(groesse, 100));
   window.addEventListener("resize", groesse);
 
   /* ---------- Schleife ---------- */
@@ -374,6 +417,6 @@
   }
   /** Für Tests: sek Sekunden Spielzeit sofort rechnen (ohne Bilder). Kaufphasen werden dabei beendet. */
   function vor(sek) { let n = Math.round(sek / DT); while (n-- > 0 && S.phase !== "ende") { if (S.phase === "kauf") kaufFertig(); if (S.phase === "runde") schritt(); } return S.phase; }
-  window.RG = { S, K, HELDEN, vor, start: matchStart, kaufen, kaufFertig, sicht, wegpunkt, MAUERN };
+  window.RG = { S, K, HELDEN, EIN, KAM, HANDY, vor, start: matchStart, kaufen, kaufFertig, sicht, wegpunkt, MAUERN };
   groesse(); zeigeStart(); requestAnimationFrame(takt); if (AUTO) matchStart();
 })();
