@@ -1,322 +1,225 @@
 # Rissgänger
 
-Spielmodus für Mythara. Regelstand für den ersten spielbaren Prototyp.
+Spielmodus für Mythara. Dieses Dokument beschreibt den Stand, wie er im Prototyp gebaut ist.
 
-Stand: Die Regeln sind durchgerechnet. Der Prototyp gegen den Rechner ist gebaut (siehe „Stand des Prototyps"). Wie die Regeln entstanden sind, steht mit allen Zahlen in `wettlauf-zum-siegel.md`.
+Wie es dazu kam, steht in `rissgaenger-erste-fassung.md` (die erste Spielart „Abbiegen" mit allen Zwischenschritten) und in `wettlauf-zum-siegel.md` (die Rechnungen davor).
 
 ## Worum es geht
 
-Ein Riss öffnet sich. Zwei Rissgänger steigen von zwei Seiten hinein, jeder mit drei Helden, und kämpfen sich durch denselben Dungeon zum Siegel in der Mitte.
+Ein Riss öffnet sich. Zwei Rissgänger steigen hinein, jeder mit drei Helden. Beide haben dieselbe Karte und dieselben fünf Minuten, um stärker zu werden und Erbsplitter zu sammeln. Dann holt der Riss beide im selben Moment in den Siegelsaal, und dort entscheidet der Kampf um das Siegel.
 
-Wer früh am Siegel ist, besetzt es und sammelt Vorsprung. Wer tiefer geht, kommt stärker an. Beide sehen, wie weit der andere ist, aber nicht, ob er schon zum Siegel abgebogen ist.
-
-Am Siegel entscheidet kein Kampf bis zum letzten Helden, sondern die Kontrolle über das Siegel.
-
-Entwicklungsziel: eine Partie unter 30 Minuten. Belegt ist das noch nicht, mit den Ersatz-Begegnungen der Rechnung dauert sie länger.
+Eine Partie dauert rund zwölf bis fünfzehn Minuten.
 
 ## Was den Modus ausmacht
 
-- **Alle beginnen gleich.** Jeder Held startet auf Stufe 1, egal wie weit er im Konto ist. Sammlung und Spielzeit geben keinen Vorsprung.
-- **Eine Entscheidung, die sich wiederholt.** Nach jedem Raum: weiter in die Tiefe oder jetzt zum Siegel.
-- **Zwei gleichwertige Wege zum Sieg.** Früh ankommen oder stark ankommen.
-- **Ein Finale, das offen bleibt.** Wer zurückliegt, kann das Siegel zurückerobern.
+- **Alle beginnen gleich.** Jeder Held startet auf Stufe 1, egal wie weit er im Konto ist.
+- **Dieselbe Zeit für beide.** Die Uhr läuft durch, ohne Anhalten und ohne Abzüge. Niemand wartet auf den anderen.
+- **Die Zeit ist die Währung.** Jede Minute geht entweder in Erfahrung (kämpfen) oder in Erbsplitter (einsammeln). Beides zugleich reicht die Zeit nicht.
+- **Ein Finale, das offen bleibt.** Am Siegel zählt nicht, wer den anderen auslöscht, sondern wer das Siegel hält – und wer zurückliegt, kann es zurückerobern.
 
 ## Ablauf einer Partie
 
-### 1. Aufbruch
+### 1. Der Vorraum
 
-- Jede Seite wählt drei Helden: aus den eigenen und aus drei Leihhelden, die jede Woche wechseln.
-- Alle beginnen auf **Stufe 1** mit vollen Trefferpunkten und ohne Ausrüstung.
-- Die Helden des Gegners sieht man erst am Siegel.
+- Oben steht das eigene Team aus drei Helden. Es wird gespeichert und lässt sich bearbeiten. Zur Wahl stehen die eigenen Helden und drei Leihhelden, die jede Woche wechseln.
+- „Gegner suchen" findet einen Gegner. Danach zeigt das Spiel „Du gegen …" mit verdeckter Gegnergruppe und zählt zehn Sekunden herunter.
+- Dann läuft ein kurzer Film: Der Riss öffnet sich (sechs Sekunden, ohne Text, ohne Überspringen).
 
-### 2. Der Weg durch den Riss
+### 2. Die Mitte
 
-Beide Seiten spielen ihre Räume **gleichzeitig**, jede in ihrem eigenen Flügel. Niemand wartet auf den anderen.
+Nach dem Film steht die Gruppe im ersten Raum, der Mitte des Risses. Er ist leicht. **Ab hier läuft die Uhr: fünf Minuten für alles.**
 
-Raum 1 ist immer derselbe leichte Einstieg. Danach folgen vier Räume in **geloster Reihenfolge**: zwei schwere Räume und zwei Beuteräume. Die Reihenfolge wird zu Beginn der Partie gelost und ist für beide Seiten dieselbe.
+### 3. Die Karte
 
-| Raum | Was dort wartet | Lohn bei Sieg |
+Ist die Mitte geschafft, öffnet sich die Karte: die Mitte und vier Räume im Ring darum.
+
+- **Dunkel und hell.** Unerkundete Räume sind dunkel; was drin ist, sieht man erst beim Betreten. Beendete Räume leuchten.
+- **Vier Räume, gelost.** Hinter den vier dunklen Räumen liegen ein schwerer Raum, ein Bossraum und zwei leichte Räume. Die Verteilung wird je Partie gelost und ist für beide Seiten dieselbe.
+- **Freie Wahl.** Jeder Raum ist von der Karte aus jederzeit wählbar. Die Wege kosten keine Zeit.
+- **Der Gegner** ist nur zu hören. Was er erkundet, wer in seiner Gruppe ist und wie stark sie ist, zeigt sich erst am Siegel.
+
+| Raum | Monster | Lebenspunkte | Erfahrung, wenn alle fallen |
+|---|---|---|---|
+| Mitte (Einstieg) | 3 Rostkäfer | 12 | 60 |
+| Leichter Raum (zweimal) | 4 Kobolde oder Käfer | 20 | 100 |
+| Bossraum | Grabritter und 3 Knochenwächter | 38 | 190 |
+| Schwerer Raum | 5 Knochenwächter | 50 | 250 |
+
+Die Monster stammen aus Grauwacht. Alle außer dem Boss haben 15 % mehr Lebenspunkte als dort.
+
+### 4. Im Raum
+
+**Erfahrung.** Sobald ein Monster am Boden liegt, gibt es 5 Erfahrung je Lebenspunkt, den es hatte – für die ganze Gruppe. Für ein nur angeschlagenes Monster gibt es nichts. Ein blauer Balken zählt mit, und wenn das Team aufsteigt, erscheint eine Kachel mit Pfeil nach oben. Die Werte der neuen Stufe gelten ab dem nächsten Raum.
+
+| Stufe | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|
+| Erfahrung | 40 | 130 | 270 | 460 | 700 | 990 | 1330 | 1720 | 2160 |
+
+In allen fünf Räumen zusammen stecken 700 Erfahrung. Wer jedes Monster besiegt, erreicht genau Stufe 6.
+
+**Erbsplitter und Funde.** Jedes besiegte Monster lässt etwas liegen:
+
+| | Monster | Boss |
 |---|---|---|
-| Einstieg (immer Raum 1) | ein leichter Kampf, den jede Gruppe schafft | +1 Stufe |
-| Schwerer Raum (zweimal) | ein harter Kampf mit echter Gefahr zu fallen | +1 Stufe |
-| Beuteraum (zweimal) | ein kurzer, leichter Kampf | ein Gegenstand, keine Stufe. Im zweiten Beuteraum zur Wahl auch ein Segen |
+| Fund für einen Helden | 8 % | 50 % |
+| sonst Erbsplitter | 1 bis 20 | 15 bis 40 |
 
-**Was kommt, ist verdeckt.** Welcher Raum als nächster wartet, sieht man erst, wenn man ihn betritt. Weil es immer zwei schwere und zwei Beuteräume sind, lässt sich der Rest mit jedem Raum besser abschätzen: Nach Raum 4 steht fest, was Raum 5 ist.
+- Es erscheint erst, wenn das Monster wirklich am Boden liegt, also nach Würfel und Treffer.
+- **Aufgehoben wird von Hand:** Ein stehender Held muss auf dem Feld oder daneben stehen, dann tippt man das Feld an. Nichts wird von selbst eingesammelt.
+- Bei einem Fund fragt das Spiel, wer ihn bekommt. Jeder Held trägt höchstens zwei.
 
-Regeln für den Weg:
+**Der Raum bleibt offen.** Sind alle Monster besiegt, endet der Raum nicht von selbst. Man sammelt ein oder geht mit „Zur Karte". Ist alles eingesammelt, schließt er.
 
-- **Die Stufe bekommt, wer am Ende des Raums noch steht** (Einstieg und schwere Räume). Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf, ohne die Stufe.
-- **Verliert die ganze Gruppe einen Raum,** gibt es keinen Lohn: keine Stufe, keine Beute. Dafür stehen alle drei Helden wieder auf, mit vollen Trefferpunkten, Zauberplätzen und Tränken. Der Raum wird nicht wiederholt, er zählt aber als gespielte Etappe.
-- **Schaden bleibt.** Trefferpunkte, Zauberplätze und Tränke werden von Raum zu Raum mitgenommen.
-- **Gegenstand:** Wahl aus drei Angeboten, für einen Helden der Gruppe. Jeder Held trägt höchstens zwei.
-- **Segen:** gilt für die ganze Gruppe bis zum Ende der Partie. Höchstens einer je Partie.
-- **Räume sind kurz.** Ziel sind zwei bis drei Runden je Raum, mit einer Uhr für jeden Zug.
+**Verlassen und wiederkommen.** Man kann einen Raum jederzeit verlassen, auch mitten im Kampf. Er bleibt, wie man ihn verlassen hat: Monster behalten ihren Schaden und ihren Platz, Funde bleiben liegen. Von der Karte aus lässt er sich wieder betreten, solange dort noch Monster stehen oder etwas liegt. Die Helden kommen dann neu herein, mit ihrem jetzigen Zustand. Für schon besiegte Monster gibt es keine Erfahrung ein zweites Mal.
 
-### 3. Weiter oder zum Siegel
+**Was bleibt, was nicht.**
 
-Die ersten zwei Räume nimmt jede Seite. Danach entscheidet sie nach jedem Raum neu:
+- Trefferpunkte, Zauberplätze und Tränke werden von Raum zu Raum mitgenommen.
+- Ein gefallener Held steht im nächsten Raum mit halben Trefferpunkten wieder auf.
+- Fällt die ganze Gruppe, ist der Raum zu. Dafür stehen alle wieder auf, voll geheilt.
 
-- **Weiter:** in den nächsten Raum, höchstens bis Raum 5. Ob dort ein schwerer Raum oder ein Beuteraum wartet, ist nicht bekannt.
-- **Zum Siegel:** Die Gruppe biegt ab. Die Entscheidung ist endgültig.
+### 5. Die Zeit ist um
 
-Was man sieht:
+Der Riss holt beide Gruppen im selben Moment in den Siegelsaal – auch mitten aus einem Kampf. Erfahrung für besiegte Monster und alles Aufgehobene bleiben. Was noch am Boden liegt, ist verloren.
 
-- **Sichtbar:** in welchem Raum der Gegner zuletzt gekämpft hat. Mehr nicht.
-- **Verdeckt:** seine Helden, ihre Stufen und Trefferpunkte – und ob er schon zum Siegel abgebogen ist. Das erfährt man erst, wenn man selbst am Siegel ankommt.
+Ist vorher in allen Räumen nichts mehr zu holen, geht es sofort weiter.
 
-Man hört den anderen im Riss kämpfen. Wird es still, weiß man nicht, ob er noch im Raum steht oder schon am Siegel.
+### 6. Die Siegelwächterin
 
-### 4. Ankunft am Siegel
+Vor dem Siegelsaal, ohne Zeitdruck, tauscht jede Seite ihre Erbsplitter.
 
-Wer nach weniger Räumen abbiegt, kommt zuerst an. Es zählt die Zahl der gespielten Räume, nicht die Uhr.
-
-Eine **Etappe** ist ein Raum. Der Vorsprung ist der Unterschied der gespielten Räume:
-
-| Vorsprung | Beispiel | Siegelpunkte der früheren Gruppe |
+| Angebot | Preis | Wirkung |
 |---|---|---|
-| 1 Raum | 3 gegen 4 | 2 |
-| 2 Räume | 2 gegen 4 | 3 |
-| 3 Räume | 2 gegen 5 | 3 (Obergrenze) |
+| Heilung der Wächterin | 50 | Alle Helden gehen mit vollen Trefferpunkten ins Finale |
+| Heiltrank | 25 | Ein zusätzlicher Heiltrank für einen Helden |
+| Gegenstand (drei zur Wahl) | 60 | Für einen Helden, siehe Liste unten |
+| Segen: Scharfe Klingen | 90 | Der erste Treffer jeder Figur macht 1W6 Schaden mehr |
+| Segen: Leichte Füße | 90 | Alle bewegen sich 1 Feld weiter |
+| Segen: Wachtfeuer | 90 | Alle haben 3 Lebenspunkte mehr |
 
-| | Die frühere Gruppe | Die spätere Gruppe |
-|---|---|---|
-| Stellung | steht schon am Siegel | kommt am eigenen Eingang an |
-| Siegelpunkte | 2 oder 3, siehe oben | keine |
-| Heilung | bekommt die Hälfte der fehlenden Trefferpunkte zurück | keine |
-| Stärke | weniger Stufen, weniger Beute | je Raum eine Stufe mehr, dazu die Beute der tiefen Räume |
+Segen gelten für die ganze Gruppe. Erbsplitter, die übrig bleiben, verfallen.
 
-Haben beide gleich viele Räume gespielt, bekommt niemand Siegelpunkte. Beide bekommen die Hälfte der fehlenden Trefferpunkte zurück und starten am eigenen Eingang.
+### 7. Das Finale
 
-**Zur Heilung:** Das ist genau die Regel aus der Rechnung, keine neue. Dort hieß sie „der Spätere hat einen Nachteil: keine Heilung vor dem Finale". Die Heilung der früheren Gruppe galt in allen Durchrechnungen. Der Prototyp bildet diese Fassung ab. Beispiel: Ein Held mit 10 von 30 Trefferpunkten startet als Früherer mit 20, als Späterer mit 10. Gefallene Helden stehen in beiden Gruppen mit mindestens einem Trefferpunkt auf. Zauberplätze, Tränke und Fähigkeiten sind im Finale bei allen frisch.
+Beide Gruppen stehen an ihrem Eingang, es steht 0 : 0.
 
-Die Stufen werden nicht angeglichen. Der Vorsprung ist der Lohn des Wegs.
+- Trefferpunkte kommen vom Weg mit. Heilung gibt es nur bei der Wächterin.
+- Zauberplätze, Tränke und Fähigkeiten sind wieder frisch.
 
-### Warten am Siegel
+**Die Regeln am Siegel**
 
-Wer früher abbiegt, wartet am Siegel, bis der andere ankommt. In dieser Zeit:
-
-- **Aufstellen:** Er stellt seine drei Helden selbst auf, auf freien Feldern bis zwei Schritte um das erste Siegelfeld. Er sieht dabei, auf welche Felder das Siegel später springt.
-- **Die Siegelpunkte zählen sichtbar hoch:** 2, sobald der Gegner seinen nächsten Raum beendet hat, 3 nach dem zweiten. Mehr als 3 gibt es nicht. Das sind dieselben Punkte wie in der Tabelle oben, nur laufen sie jetzt während des Wartens ein.
-- **Zuschauen:** Mit einem Knopf wechselt er in den Raum des Gegners und sieht dessen Kampf, mit einem zweiten zurück ans Siegel.
-
-Wer noch im Riss ist, sieht davon nichts: weder die Punkte noch, dass ihm jemand zuschaut.
-
-### 5. Das Finale
-
-Das Finale ist ein Kampf um das Siegel.
-
-- **Am Siegel** steht ein Held, der auf dem Siegelfeld oder direkt daneben steht, auch schräg.
+- **Am Siegel** steht ein Held, der auf dem Siegelfeld oder direkt daneben steht, auch schräg. Jedes dieser Felder trägt eine Rune am Boden.
 - **Siegelpunkt:** Am Ende jeder Runde bekommt die Seite einen Punkt, die mehr stehende Helden am Siegel hat. Bei Gleichstand bekommt niemand einen.
-- **Das Siegel wandert:** Alle zwei Runden springt es auf das nächste von drei Feldern im Saal. Die Reihenfolge ist sichtbar.
+- **Das Siegel wandert:** Nach jeder zweiten Runde springt es auf das nächste von drei Feldern. Das nächste Feld ist mit einer blassen Rune markiert.
 - **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert die führende Seite einen ihrer Punkte.
-- **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit vollen Trefferpunkten am eigenen Eingang wieder auf. (Erste Fassung: mit halben. Im Spiel fielen sie damit meist sofort wieder.)
-- **Frisch ins Finale:** Zauberplätze, Tränke und Fähigkeiten sind zu Beginn des Finales wieder voll. Vom Weg kommen nur die Trefferpunkte und die Beute mit.
-- **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde wieder.
+- **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit vollen Trefferpunkten am eigenen Eingang wieder auf.
+- **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner sofort einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde.
+- **Zugzeit:** eine Minute je Held.
 
-**Am Ende jeder Runde,** in dieser Reihenfolge:
+**Am Ende jeder Runde,** in dieser Reihenfolge: Wertung, Zurückerobern, Punkt, Prüfung auf Sieg, Sprung des Siegels, Rückkehr der Gefallenen.
 
-1. Wertung: Die Seite mit mehr Helden am Siegel holt die Runde.
-2. Zurückerobern: Liegt diese Seite zurück und hat sie auch die Runde davor geholt, verliert die führende Seite einen Punkt. Die Zählung beginnt danach neu.
-3. Die Seite, die die Runde geholt hat, bekommt ihren Punkt.
-4. Prüfung auf Sieg, nach Runde zwölf die Schlusswertung.
-5. Nach jeder zweiten Runde springt das Siegel. Gewertet wird also immer am alten Feld.
-6. Gefallene, deren zwei Runden um sind, stehen auf.
+**Gewonnen hat,** wer zuerst **fünf Siegelpunkte** hat. Nach zwölf Runden gewinnt, wer mehr Siegelpunkte hat; bei Gleichstand die Seite mit mehr Helden am Siegel, danach die mit mehr Trefferpunkten.
 
-Dazu gilt:
+## Die Funde
 
-- Ein Punktestand fällt nie unter null. Zurückerobern trifft nur eine Seite, die führt, und die hat mindestens einen Punkt.
-- Bei Gleichstand der Punkte liegt niemand zurück, es wird nichts abgezogen.
-- Der Punkt für das Auslöschen wird sofort vergeben, mitten in der Runde. Bringt er den fünften Punkt, ist die Partie sofort vorbei. Sonst kann in derselben Runde noch die normale Wertung folgen.
+Zehn Gegenstände, jeder mit eigenem Bild. Sie fallen von Monstern und stehen bei der Wächterin zur Wahl.
 
-**Gewonnen hat,** wer zuerst **fünf Siegelpunkte** hat.
-
-**Nach zwölf Runden** gewinnt, wer mehr Siegelpunkte hat. Bei Gleichstand die Seite mit mehr Helden am Siegel, danach die mit mehr übrigen Trefferpunkten.
-
-## Nach der Partie
-
-- Beide Seiten bekommen Seelensplitter und etwas Erfahrung für die eingesetzten Helden, der Sieger mehr.
-- Stufen und Beute aus dem Riss gelten nur in dieser Partie.
-- Eine Rangliste gibt es erst, wenn sich der Modus bewährt hat.
-
-## Spielformen
-
-| Form | Wer steuert | Wann |
-|---|---|---|
-| Gegen den Rechner | ein Mensch, drei Helden | zuerst |
-| Privat | zwei Menschen mit Einladungscode | danach |
-| Offene Suche | zwei Menschen | wenn die privaten Partien tragen |
-| Tisch gegen Tisch | zwei Runden, jeder Mensch ein Held | später |
-
-Der Modus steht neben dem heutigen Ranked, er ersetzt es nicht.
-
-## Was bewusst nicht drin ist
-
-- **Störungen und Splitter.** In der Rechnung wirkten sie im Raum, aber nicht auf den Ausgang, und sie trafen nur einen Gegner, der selbst bis Raum 5 geht. Sie kommen erst wieder, wenn sie eine Wirkung im Finale haben.
-- **Angleichen der Stufen.** Mit dem Siegel-Finale gewinnt die schwächere Gruppe schon rund ein Drittel der Finals. Mit Angleichen zählten die Stufen fast nichts mehr.
-- **Rastplatz und Wegewahl zwischen zwei Pfaden.** Der Riss hat einen Weg, für beide denselben. Die Entscheidung ist das Abbiegen. Die Beuteräume sind seit der zweiten Fassung wieder drin, als Teil des gelosten Wegs.
-- **Zwei Stufen für schwere Räume.** Damit war Tiefe nicht einzuholen.
-
-## Worauf sich die Regeln stützen
-
-Alles gerechnet mit den Rechner-Gegnern und vorhandenen Grauwacht-Begegnungen als Ersatz für eigene Räume.
-
-| Frage | Ergebnis |
+| Fund | Wirkung |
 |---|---|
-| Bleibt das Finale offen? | Die schwächere Gruppe gewinnt 28 bis 34 % der Finals. |
-| Wird um das Siegel gekämpft? | In 75 % der Finals kontrollieren beide Seiten mindestens einmal, in 54 % wechselt das Siegel mindestens zweimal. |
-| Entscheidet das Siegel? | 88 % der Finals enden durch Siegelpunkte, der Rest durch die Zeit. |
-| Wie lang ist das Finale? | Rund neun Runden, wenn beide bei null beginnen. Sechs bis sieben Runden, wenn die frühere Gruppe mit Siegelpunkten beginnt. |
-| Zählt Auslöschen noch? | Es bringt einen von fünf Punkten. Wer ausgelöscht wurde, gewinnt noch 13 %. |
-| Ist die Stufenkurve stabil? | Volle Stufe heißt: alle drei Helden haben in jedem gespielten Raum ihre Stufe geholt, nach vier Räumen also alle Stufe 5. Das schaffen 84 bis 93 % der Gruppen. Der Rest liegt höchstens eine Stufe darunter. |
-| Verschiebt Beute das Gleichgewicht? | Gegenstände nicht messbar, ein Segen um etwa drei Punkte. |
-| Ist früh so gut wie tief? | Bei verdeckter Wahl hat jede Raumzahl eine Antwort: Einen Raum früher schlägt den Gegner, ganz durchgehen schlägt den sehr frühen Ausstieg. |
+| Amulett der Abtei | +1 Rüstungsklasse |
+| Eulenmantel | Fernangriffe gegen den Träger haben Nachteil |
+| Glücksbringer | +1 auf alle Rettungswürfe |
+| Stiefel des Wanderers | +1 Feld Bewegung je Zug |
+| Wetzstein | Kritisch schon bei 19 und 20 |
+| Ring der Stärke | +1 auf Angriffe im Nahkampf (nur Krieger und Schurken) |
+| Geschliffene Klinge | +1 Schaden im Nahkampf (nur Krieger und Schurken) |
+| Falkenfeder | +1 auf Angriffe auf Entfernung (nur Waldläufer) |
+| Eisenspitzen | +1 Schaden auf Entfernung (nur Waldläufer) |
+| Stab der Brüder | Rettungswurf-SG +1 (nur Zauberer und Kleriker) |
 
-## Was die Rechnung nicht beantworten kann
+## Die Entscheidungen
 
-- **Fühlt sich das Abbiegen riskant an?** Bei offener Sicht war die beste Spielweise berechenbar (beide nach Raum 3). Die verdeckte Abbiege-Entscheidung soll das ändern. Gerechnet ist sie nicht.
-- **Wird zu oft nach Raum 2 abgebogen?** Bei ganz verdeckter Wahl wären zwei Räume die häufigste Wahl. Wenn sich das im Spiel bestätigt, sinkt der Bonus für die erste Etappe von zwei auf einen Punkt.
-- **Die Rückkehr im Finale:** Im Schnitt kehren vier Helden je Final zurück, gut die Hälfte fällt erneut. Ob sich das gut anfühlt, zeigt nur das Spielen.
-- **Die Dauer.** Mit den Ersatz-Begegnungen dauern fünf Räume und ein Finale rund 30 Runden. Das ist zu lang. Eigene kurze Räume sind nötig.
-- **Die Helden.** Auf niedrigen Stufen sind sie sehr verschieden stark. Orin war in der Rechnung durchgehend schwach, Faye ab Stufe 3 durchgehend stark. Das wird nach dem ersten Gesamttest untersucht, nicht davor.
-- **Segen im Finale.** Verteidigende Segen ließen sich im Duell nicht sauber einer Seite zurechnen. Ihr Wert ist eher unterschätzt.
+Der Modus lebt von wenigen, wiederkehrenden Fragen:
 
-## Der Prototyp
+- **Welcher Raum zuerst?** Der schwere Raum und der Boss bringen die meiste Erfahrung, kosten aber Zeit und Leben. Die leichten Räume gehen schnell.
+- **Einsammeln oder weiterkämpfen?** Erfahrung hängt an den Lebenspunkten der Monster, Erbsplitter an ihrer Zahl. Ein leichter Raum bringt 100 Erfahrung und rund 40 Erbsplitter, der schwere 250 Erfahrung und rund 50 Erbsplitter. Wer leichte Räume abräumt und alles aufhebt, wird reich, aber nicht stark.
+- **Bleiben oder gehen?** Ein Raum, der schlecht läuft, lässt sich verlassen und später fertig spielen.
+- **Wofür die Erbsplitter?** Heilung macht eine angeschlagene Gruppe wieder ganz, Segen und Gegenstände machen sie stärker.
 
-### Was gebaut wird
+## Darstellung
 
-1. Fünf kurze Räume und ein Siegelsaal mit drei Siegelfeldern und zwei Eingängen.
-2. Der Weg: Stufenaufstieg nach jedem Raum, Beute in Raum 4 und 5, Zustand von Raum zu Raum.
-3. Die Entscheidung nach jedem Raum, mit Anzeige der gegnerischen Tiefe.
-4. Das Finale mit Siegelpunkten, wanderndem Siegel, Rückkehr und Zurückerobern.
-5. Ein Rechner-Gegner, der seinen Weg wählt und im Finale um das Siegel spielt.
-
-Zuerst gegen den Rechner, als Fun-Modus in der Arena. Das läuft im Browser und braucht weder Server noch Datenbank.
-
-### Was dabei gemessen wird
-
-- Wann biegen Spieler ab, und biegen sie freiwillig früh ab?
-- Ändern sie ihre Entscheidung, wenn der Gegner tiefer geht?
-- Empfinden sie das Warten als Risiko?
-- Ist das Finale spannend, oder steht der Sieger schon fest?
-- Dauert eine Partie unter 30 Minuten?
-
-Jede Partie schreibt mit: Raumzahl beider Seiten, Abbiegezeitpunkt, Stufen, Siegelpunkte bei Finalbeginn, Dauer von Weg und Finale, Ausgang.
-
-### Reihenfolge
-
-1. Gegen den Rechner.
-2. Privat gegen Freunde mit Einladungscode.
-3. Offene Suche im Fun-Bereich.
-4. Rangliste und Tisch gegen Tisch. Erst hier muss der Server alles mitrechnen.
-
-Nach jeder Stufe wird entschieden, ob es weitergeht.
+- **Karte:** ein gemaltes Kartenbild mit fünf runden Kammern; dunkle Räume liegen im Schatten, beendete leuchten golden, verlassene violett.
+- **Im Raum:** eine einzige Leiste mit „Raum verlassen", Stufe und Erfahrung, Erbsplittern und der Uhr. Der Bereich über dem Spielfeld gehört dem Würfel.
+- **Erbsplitter und Funde** liegen als animierte Bilder aufrecht auf dem Feld. Ein heller Rahmen zeigt, dass ein Held nah genug steht.
+- **Figuren in Bewegung:** Die Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich, Getroffene zucken zurück, Gefallene kippen um. Wer nach links angreift, dreht sich dafür um. Das gilt für alle Helden, alle Skins und alle Monster.
 
 ## Stand des Prototyps
 
-Gebaut ist Stufe 1: gegen den Rechner, auf einem Gerät, ohne Server und ohne Datenbank. Die Arena und das Ranked sind unberührt.
+Gebaut ist die Partie gegen den Rechner, auf einem Gerät, ohne Server und ohne Datenbank. Arena und Ranked sind unberührt.
 
-**Aufruf:** `spiel.html?riss=1`. Im Dorf erscheint dann unten links der Knopf „Rissgänger". Der Schalter gilt für den Tab, `?riss=0` schaltet ihn ab. Ohne Schalter ist nichts zu sehen.
+**Aufruf:** `spiel.html?riss=1`, dann im Dorf unten links „Rissgänger". Ohne den Schalter ist nichts zu sehen.
 
-**Dateien:** `js/riss-kern.js` (Regeln ohne Bildschirm), `js/riss.js` (Oberfläche), `tests/riss.test.js` (eine ganze Partie im Browser), `tools/riss-raeume.js` und `tools/riss-partien.js` (Messungen).
-
-**Heilungsschalter:** vor dem Start wählbar, oder fest über `?rissheil=keine`.
-
-| Einstellung | Frühe Gruppe | Späte Gruppe | Gleichauf |
-|---|---|---|---|
-| Gerechnete Regel (Voreinstellung) | Hälfte der fehlenden Trefferpunkte | keine Heilung | beide die Hälfte |
-| Testvariante | keine Heilung | keine Heilung | keine Heilung |
-
-Zauberplätze, Tränke und Fähigkeiten sind in beiden Fällen zu Beginn des Finales frisch.
-
-**Die Räume** nutzen vorhandene Karten und Gegner aus Grauwacht, mit weniger Gegnern und weniger Leben. Gemessen mit 400 Gruppen, vom Rechner gespielt (`tools/riss-raeume.js`):
-
-| Raum | Runden | Gruppe gewinnt | Gefallene Helden je Raum |
-|---|---|---|---|
-| Einstieg | 1,7 | 100 % | 0,07 |
-| Beuteraum | 2,2 bis 2,4 | 99 bis 100 % | 0,02 bis 0,09 |
-| Schwerer Raum | 4,2 bis 4,4 | 86 bis 91 % | 0,30 bis 0,51 |
-
-Alle fünf Räume zusammen dauern rund 15 Runden, die Gruppe kommt im Schnitt mit Stufe 3,5 von 4 an. Die schweren Räume wurden nach der ersten von Hand gespielten Partie härter gestellt (drei statt zwei Gegnergruppen mit weniger Leben): Ein Mensch hatte beide in zwei Runden und ohne Verlust gewonnen. Der Rechner spielt die Räume schwächer als ein Mensch; seine Zahlen sind eine Obergrenze für die Gefahr.
-
-**Ganze Partien,** Rechner gegen Rechner, 300 Stück (`tools/riss-partien.js`), mit frischen Zaubern im Finale und voller Rückkehr: Weg 9,9 Runden je Seite, Finale rund 6,8 Runden, 281 von 300 Finals enden durch Siegelpunkte. Je Finale kehren 3,9 Helden zurück, 1,7 davon fallen erneut.
-
-| Die frühere Gruppe gewinnt bei | Partien |
+| Schalter | Wirkung |
 |---|---|
-| 1 Raum Vorsprung | 65 von 125 |
-| 2 Räumen Vorsprung | 45 von 78 |
-| 3 Räumen Vorsprung | 12 von 18 |
+| Auswahl „Zeit" oder `?risszeit=180` | 3, 4 oder 5 Minuten (Voreinstellung 5) |
+| Auswahl „Spielart" oder `?rissart=abbiegen` | die erste Spielart |
+| `?rissbewegung=0` | Figuren bewegen sich nicht |
+| `?rissfilm=0` | ohne Film |
 
-Nach eigener Raumzahl: 2 Räume 60 von 103, 3 Räume 109 von 212, 4 Räume 76 von 168, 5 Räume 55 von 117. Früh liegt damit leicht vorn (zusammen 122 von 221), tief leicht hinten. Das ist bei diesen Zahlen noch im Bereich des Zufalls, aber die Richtung ist zu beobachten: Härtere Räume kosten die tiefe Gruppe mehr. Ohne Heilung wurde diese Fassung nicht neu gemessen. Alles gilt für den Rechner, der nach festen Wahrscheinlichkeiten abbiegt, nicht für Menschen.
+**Dateien:** `js/riss-kern.js` (Regeln ohne Bildschirm), `js/riss.js` (Oberfläche), `tests/riss-karte.test.js` und `tests/riss.test.js` (je eine ganze Partie im Browser), `riss-intro.html` (der Film für sich).
 
-**Testschalter für den Gegner:** Vor dem Start lässt sich festlegen, nach welchem Raum der Rechner abbiegt (oder `?rissgegner=2` bis `5`). So lassen sich früh gegen tief und das Warten am Siegel gezielt spielen. Die Mitschrift hält die Einstellung fest.
+**Mitschrift:** Jede Partie wird auf dem Gerät gespeichert und lässt sich im Spiel ansehen und kopieren: je Raum Runden, Sekunden, Erfahrung, Erbsplitter, Funde und Liegengelassenes; die Käufe; jede Rundenwertung des Finales mit Gefallenen; die Dauer. Bricht eine Partie ab, bleibt ein Eintrag mit dem letzten Stand.
 
-**Fester Weg:** Die erste Fassung (fünf Räume, jeder gibt eine Stufe, Beute in Raum 4 und 5) lässt sich zum Vergleich mit `?rissweg=fest` spielen.
+**Was der Prototyp nicht kann:** gegen Menschen spielen, eine Partie speichern (Neuladen beendet sie), Belohnungen vergeben. Das Team liegt auf dem Gerät, nicht im Konto.
 
-**Mitschrift:** Jede Partie wird auf dem Gerät gespeichert und lässt sich im Spiel ansehen und kopieren: Helden, Räume mit Runden und Sekunden, jede Entscheidung mit Bedenkzeit und dem, was vom Gegner zu hören war, Beute, Raumzahl beider Seiten, Startpunkte, jede Rundenwertung, Auslöschungen, Rückkehrer, Dauer von Weg und Finale, Heilungseinstellung.
+## Erste Zahlen
 
-### Wo der Prototyp von den Regeln oder der Rechnung abweicht
+Rechner gegen Rechner, 300 Partien mit fünf Minuten.
 
-- **Zauberplätze und Tränke im Finale** sind frisch, wie in der Rechnung. Die erste Fassung des Prototyps nahm sie vom Weg mit; im Spiel stand die Heilerin dann ohne Zauber im Finale.
-- **Zauberplätze beim Aufstieg.** In der Rechnung kamen die Plätze einer neuen Stufe nicht dazu. Im Prototyp kommen sie dazu.
-- **Geloster Weg.** Die Rechnung kannte nur den festen Weg, in dem jeder Raum eine Stufe gibt. Für den gelosten Weg mit Beuteräumen ohne Stufe gibt es nur die Zahlen oben.
-- **Warten am Siegel.** Der Rechner geht seinen Weg vorab. Beim Warten werden seine restlichen Räume mit demselben Zufall noch einmal gespielt, ein Zug alle 2,3 Sekunden; so lange dauert das Warten. Mit „Nicht warten" lässt es sich überspringen. Kommt der Rechner früher an, wartet er nicht sichtbar und stellt sich selbst auf.
-- **Der Einstieg** ist ein echter, leichter Kampf. In der Rechnung galt er als sicher gewonnen und ohne Schaden.
-- **Was man vom Gegner hört.** Der Rechner geht seinen Weg nicht gleichzeitig, sondern vorab. Nach jedem eigenen Raum zeigt das Spiel ihn gleich weit oder einen Raum zurück, mit je halber Wahrscheinlichkeit. Bleibt er zwei Räume zurück, ist er abgebogen. Das Abbiegen ist also einen Raum lang verdeckt, nicht länger.
-- **Der Rechner biegt nach festen Wahrscheinlichkeiten ab** (nach Raum 2 zu 20 %, nach Raum 3 zu 45 %, nach Raum 4 zu 60 %, angeschlagen häufiger). Er reagiert nicht auf den Spieler.
-- **Zuguhr:** im Finale eine Minute je Held wie in der Arena, in den Räumen keine.
-- **Leihhelden** wechseln wöchentlich nach einer festen Rechnung auf dem Gerät, nicht vom Server.
-- **Keine Belohnung,** kein Speichern: Wer die Seite neu lädt, verliert die Partie.
+| | Wert |
+|---|---|
+| Äußere Räume, die der Rechner schafft | 2,5 von 4 |
+| Stufe bei der Ankunft | 4,6 |
+| Erbsplitter je Partie | rund 145 |
+| Finale | 8,8 Runden |
+| Finals, die durch Siegelpunkte enden | 253 von 300, der Rest nach zwölf Runden |
+| Sieg der einen Seite | 145 von 300 |
 
-### Noch nicht geprüft
+| Raum | Runden | Gruppe gewinnt | Gefallene Helden |
+|---|---|---|---|
+| Mitte | 1,7 | 100 % | 0,07 |
+| Leichter Raum | 2,2 | 100 % | 0,02 bis 0,05 |
+| Bossraum | 3,2 | 89 % | 0,24 |
+| Schwerer Raum | 3,6 | 93 % | 0,30 |
 
-- Von Hand gespielt ist bisher eine Partie der ersten Fassung (fester Weg). Den gelosten Weg, das Aufstellen und das Zuschauen hat noch niemand von Hand gespielt; der Test spielt die eigenen Züge mit dem Rechner-Helfer.
-- Echte Geräte. Geprüft sind Bildschirmfotos in PC- und Handygröße.
-- Der Tischmodus mit Handys.
+Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust auf und verlässt keinen Raum. Seine Zahlen sagen deshalb wenig darüber, wie viel ein Mensch in fünf Minuten schafft.
 
-## Zweite Spielart: Karte mit Zeit
+## Was noch offen ist
 
-Entstanden aus den ersten von Hand gespielten Partien. Dort kam „früh gegen tief" entweder nicht vor (beide gleich tief) oder war einseitig (3 Startpunkte, Finale nach zwei Runden), und wer früh am Siegel war, wartete über drei Minuten. Die zweite Spielart ersetzt das Abbiegen durch eine gemeinsame Uhr. Sie ist im Prototyp die Voreinstellung; die erste bleibt wählbar (Auswahl „Spielart" oder `?rissart=abbiegen`).
+- **Reichen fünf Minuten?** Aus den von Hand gespielten Partien der ersten Spielart: 40 bis 100 Sekunden je Raum. Die neue Fassung mit Aufheben und zäheren Monstern hat noch niemand von Hand zu Ende gespielt.
+- **Ist das Aufheben eine Entscheidung?** Nahkämpfer stehen beim Töten ohnehin daneben. Laufen muss man nur für Monster, die aus der Ferne fallen. Im offenen Raum ziehen die Helden weiter reihum, mit ihrer Bewegung je Zug.
+- **Ist Wiederkommen zu billig?** Rausgehen und neu hereinkommen stellt die Gruppe wieder geordnet an den Eingang. Eine mögliche Bremse: Die Monster heilen sich bis zur Rückkehr ein Stück.
+- **Stimmen die Preise der Wächterin?** Zwei leichte Räume bringen rund 80 Erbsplitter. Ob das eine Stufe aufwiegt, ist nicht gemessen.
+- **Kommt man hoch genug?** Die Helden gehen bis Stufe 10, der Riss reicht für Stufe 6. Mehr braucht entweder eine flachere Kurve oder mehr Räume.
+- **Rückkehr im Finale.** Im Rechner fällt knapp jeder zweite Rückkehrer erneut, auch mit vollen Trefferpunkten: Sie kommen einzeln vom Eingang und laufen in eine geschlossene Gruppe.
+- **Gegen Menschen:** Wie geht die gemeinsame Uhr mit unterschiedlich schnellen Geräten und Animationen um?
 
-### Ablauf
+## Wie es weitergeht
 
-0. **Der Vorraum.** Oben steht das eigene Team aus drei Helden; es wird auf dem Gerät gespeichert und lässt sich bearbeiten. „Gegner suchen" findet einen Gegner (im Prototyp den Rechner, nach ein paar Sekunden), dann zeigt das Spiel „Du gegen …" mit verdeckter Gegnergruppe und zählt zehn Sekunden herunter.
-1. **Die Mitte.** Nach dem Start läuft ein kurzer Film (der Riss öffnet sich, sechs Sekunden, ohne Text und ohne Überspringen), dann steht die Gruppe direkt im ersten Raum, dem leichten Einstieg. Alle beginnen auf Stufe 1.
-2. **Die Karte.** Danach öffnet sich die Karte: die Mitte und vier Räume im Ring darum, verbunden mit der Mitte und mit ihren beiden Nachbarn. Für beide Seiten dieselbe Karte. Die Zeit läuft schon ab dem Betreten des ersten Raums: fünf Minuten für alles (wählbar 3, 4 oder 5), für beide Seiten genau gleich lang. Alle Monster außer dem Boss haben 15 % mehr Lebenspunkte als in den Kampagnen-Begegnungen, aus denen sie stammen; bei den kleinen macht das Runden mehr aus (3 werden 4, 4 werden 5).
-3. **Dunkel und hell.** Unerkundete Räume sind dunkel; was drin ist, sieht man erst beim Betreten. In den vier Räumen liegen ein schwerer Raum, ein Bossraum und zwei leichte Räume, die Verteilung wird gelost. Beendete Räume leuchten. Nach jedem Raum landet man wieder auf der Karte.
-4. **Erfahrung.** Sobald ein Monster am Boden liegt, gibt es 5 Erfahrung je Lebenspunkt, den es hatte, für die ganze Gruppe – auch wenn der Raum nicht fertig wird. Für ein nur angeschlagenes Monster gibt es nichts. Im Kampf zählt ein blauer Balken mit. Stufe 2 kostet 40 Erfahrung, jede weitere 50 mehr als die davor (Stufe 3 bei 130, Stufe 4 bei 270, Stufe 5 bei 460, Stufe 6 bei 700 und so weiter bis Stufe 10 bei 2160). Mit den fünf Räumen des Prototyps sind rund 600 Erfahrung zu holen, also Stufe 5. Die neue Stufe gilt ab dem nächsten Raum.
-5. **Erbsplitter und Funde.** Jedes besiegte Monster lässt etwas liegen: zu 8 % einen Fund für einen Helden (der Boss zu 50 %), sonst 1 bis 20 Erbsplitter (der Boss 15 bis 40). Aufgehoben wird von Hand: Ein stehender Held muss auf dem Feld oder daneben stehen, dann tippt man das Feld an. Bei einem Fund fragt das Spiel, wer ihn bekommt. Nichts wird von selbst eingesammelt.
-6. **Der Raum bleibt offen, und man kann wiederkommen.** Sind alle Monster besiegt, endet der Raum nicht von selbst: Man sammelt ein oder geht mit „Zur Karte". Solange Monster stehen, heißt der Knopf „Raum verlassen". In beiden Fällen bleibt der Raum, wie man ihn verlassen hat: Monster behalten ihren Schaden und ihren Platz, Funde bleiben liegen. Er lässt sich von der Karte aus wieder betreten, solange dort noch Monster stehen oder etwas liegt; die Helden kommen dann neu herein, mit ihrem jetzigen Zustand. Für schon besiegte Monster gibt es keine Erfahrung ein zweites Mal. Fällt die ganze Gruppe in einem Raum, ist er zu.
-7. **Die Zeit ist um.** Der Riss holt beide Gruppen im selben Moment in den Siegelsaal, auch mitten aus einem Kampf. Die Uhr läuft für beide gleich, ohne Anhalten und ohne Abzüge: Niemand wartet.
-8. **Die Siegelwächterin.** Vor dem Finale, ohne Zeitdruck, tauscht jede Seite ihre Erbsplitter: Heilung der ganzen Gruppe 50, Heiltrank für einen Helden 25, Gegenstand 60 (drei zur Wahl), Segen 90. Was übrig bleibt, verfällt.
-9. **Das Finale** wie oben, aber beide beginnen am eigenen Eingang mit 0 : 0. Trefferpunkte kommen vom Weg mit; Heilung gibt es nur bei der Wächterin. Zauberplätze, Tränke und Fähigkeiten sind frisch.
+1. Von Hand spielen und die Mitschriften auswerten: Dauer, Raumwahl, Aufheben, Käufe.
+2. Privat gegen Freunde mit Einladungscode. Dafür braucht es den Server.
+3. Offene Suche im Fun-Bereich.
+4. Rangliste und Tisch gegen Tisch.
 
-Vom Gegner hört man auf der Karte nur, dass er im Riss ist. Was er erkundet und wie stark er ist, zeigt sich am Siegel.
-
-### Figuren in Bewegung
-
-Im Rissgänger bewegen sich die Figuren beim Kämpfen, ohne zusätzliche Bilder: Die vorhandenen Standbilder werden per Code bewegt. Nahkämpfer holen aus und springen zum Ziel, Schützen gehen in den Rückstoß, Zaubernde heben sich und leuchten auf, Getroffene zucken vom Angreifer weg, Gefallene kippen um, Geheilte federn kurz hoch. Das gilt für alle Helden, alle Skins und alle Monster. Abschalten: `?rissbewegung=0`; wer im Gerät „Bewegung reduzieren" eingestellt hat, sieht es nicht. Die Kampfeffekte (`js/kampf-fx.js`) melden dafür, wer wen wann trifft; außerhalb des Rissgängers hört niemand zu.
-
-### Was verworfen wurde
-
-- **Truhen mit Glückswürfen und Zeitstrafe** und **Sonderaufgaben, die Zeit kosten:** Beides zieht Zeit von der eigenen Uhr ab oder braucht sie zusätzlich. Mit Abzug käme eine Seite früher am Siegel an und müsste wieder warten. Das Hinlaufen zum Aufheben kostet schon Zeit, ohne die Uhr zu verschieben.
-- **Segen als Fund für einen einzelnen Helden:** Segen wirken in den Regeln immer für die ganze Gruppe. Ein Fund „für wen?" ist deshalb ein Gegenstand (jeder Held trägt höchstens zwei). Segen für die Gruppe gibt es bei der Wächterin.
-- **Automatisches Einsammeln** nach dem Sieg: Aufheben ist die Zeitfrage des Modus und geschieht nur von Hand.
-
-### Stand und erste Zahlen
-
-Gebaut in `js/riss-kern.js` und `js/riss.js`, Test `tests/riss-karte.test.js`. Rechner allein, 200 Gruppen mit vier Minuten: Er schafft im Schnitt 2,4 der vier äußeren Räume und kommt mit Stufe 4,4 an. Erfahrung je Raum: Einstieg 45, leichter Raum 80, Bossraum 160, schwerer Raum 216.
-
-Nicht gerechnet und kaum von Hand gespielt: ob vier Minuten für einen Menschen passen, wie viel Zeit das Aufheben wirklich kostet (im offenen Raum ziehen die Helden weiter reihum, mit ihrer Bewegung je Zug) und ob die Preise der Wächterin stimmen. Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust auf und verlässt keinen Raum – er ist beim Einsammeln also im Vorteil.
-
-**Abbruch einer Partie.** Das Spiel lädt sich von selbst neu, wenn eine neue Fassung online ist. Eine Rissgänger-Partie ist nicht gespeichert und ging dabei verloren (einmal mitten im Siegelkampf passiert). Während einer Partie wird jetzt nicht mehr neu geladen, und wird die Seite trotzdem verlassen, bleibt ein Eintrag in der Mitschrift.
-
-Gegen Menschen ist offen, wie die Uhr mit unterschiedlich schnellen Geräten und Animationen umgeht.
+Nach jeder Stufe wird entschieden, ob es weitergeht.
 
 ## Die Regeln auf einen Blick
 
-- Drei Helden je Seite, alle auf Stufe 1.
-- Zwei bis fünf Räume. Raum 1 ist der leichte Einstieg (+1 Stufe). Danach zwei schwere Räume (+1 Stufe) und zwei Beuteräume (ein Gegenstand, im zweiten auch ein Segen) in geloster Reihenfolge, für beide gleich und im Voraus verdeckt.
-- Nach Raum 2 nach jedem Raum: weiter oder zum Siegel. Die Tiefe des Gegners ist sichtbar, sein Abbiegen nicht.
-- Wer früher ankommt, stellt seine Helden am Siegel auf, kann dem Gegner zuschauen und sammelt Siegelpunkte: 2 für den ersten Raum Vorsprung, 1 für jeden weiteren, höchstens 3. Wer später kommt, wird vor dem Finale nicht geheilt.
+- Drei Helden je Seite, alle auf Stufe 1. Dieselbe Karte und dieselben fünf Minuten für beide.
+- Fünf Räume: die Mitte, zwei leichte, ein schwerer, ein Boss. Die vier äußeren sind dunkel, bis man sie betritt.
+- Erfahrung, sobald ein Monster am Boden liegt: 5 je Lebenspunkt, für die ganze Gruppe.
+- Jedes besiegte Monster lässt Erbsplitter liegen, selten einen Fund. Aufheben: Held daneben, Feld antippen.
+- Räume bleiben offen und lassen sich verlassen und wieder betreten.
+- Ist die Zeit um, holt der Riss beide gleichzeitig heraus. Die Siegelwächterin tauscht Erbsplitter gegen Heilung, Tränke, Gegenstände und Segen.
 - Finale: je Runde ein Punkt für die Seite mit mehr Helden am Siegel. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden zurück. Auslöschen gibt dem Gegner einen Punkt.
 - Sieg bei fünf Siegelpunkten, sonst Wertung nach zwölf Runden.
