@@ -79,9 +79,9 @@
   /* Ablauf: je Szene ein Clip (einmal, das letzte Bild bleibt stehen), eine Zeile Text, weiche Überblendung zur nächsten */
   const PLAN = [
     { text: "In den Splitterlanden steht eine Ruine, die niemand mehr betritt.", dauer: 4300 },
-    { text: "Bis in einer Nacht der Boden zu leuchten beginnt.", dauer: 4500 },
+    { text: "Bis in einer Gewitternacht der Boden zu leuchten beginnt.", dauer: 4500 },
     { text: "Ein Riss öffnet sich.", dauer: 4000 },
-    { text: "Wer hineingreift, kommt als Erster ans Siegel – oder gar nicht zurück.", dauer: 3900 }];
+    { text: "Wer hineingreift, den zieht er hinab – bis zum Siegel.", dauer: 3900 }];
   let lauf = 0, uhren = [];
   const spaeter = (fn, ms) => { const n = lauf, t = setTimeout(() => { if (n === lauf) fn(); }, ms); uhren.push(t); return t; };
   function stopp() { lauf++; uhren.forEach(clearTimeout); uhren = []; }
