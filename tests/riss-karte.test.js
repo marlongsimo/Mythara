@@ -29,8 +29,10 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
     for (let i = 0; i < 900; i++) { const e = await p.evaluate((bis) => { const st = window.AB.st; if (!st) return "weg"; const g = st.figuren.filter((f) => f.seite === "gegner" && window.AB.R.GEGNER[f.art]);
       if (st.ende) return st.ende; if (g.every((f) => f.tp <= 0)) return "frei"; if (bis === "erster" && g.some((f) => f.tp <= 0)) return "erster";
       const a = window.AB.R.aktiv(st); if (a.seite === "spieler") window.AB.R.autoZug(st); else window.AB.R.gegnerZug(st); window.AB.render(); return null; }, bis); if (e) return e; } return null; };
-  const einsammeln = async () => p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, h = st.figuren.find((f) => f.fid && f.tp > 0); let n = 0;
-    for (const d of D.liste.filter((x) => !x.weg)) { h.x = d.x; h.y = d.y; if (window.RISS.feldAufheben(d.x, d.y)) n++; const w = document.querySelector("#riss-fund [data-wer]:not([disabled])"); if (w) w.click(); } return n; });
+  // Einsammeln im Test: Der Held am Zug wird neben den Fund gestellt, hebt auf (das kostet seine Aktion) und beendet den Zug
+  const einsammeln = async () => p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, R = window.AB.R; let n = 0;
+    for (const d of D.liste.filter((x) => !x.weg)) { let k = 0; while (!(R.aktiv(st).fid && R.aktiv(st).tp > 0 && st.zug.aktion) && k++ < 12) R.zugEnde(st);
+      const h = R.aktiv(st); h.x = d.x; h.y = d.y; if (window.RISS.feldAufheben(d.x, d.y)) n++; const w = document.querySelector("#riss-fund [data-wer]:not([disabled])"); if (w) w.click(); if (!st.ende) R.zugEnde(st); } return n; });
   check(await p.evaluate(() => { const u = document.querySelector("#riss-uhr"), K = window.RISS.karteZustand(); return K.laeuft && u && !u.hidden; }), "die Uhr läuft ab dem ersten Raum");
   let e = await spielen(); await p.waitForTimeout(500);
   const offen = await p.evaluate(() => { const K = window.RISS.karteZustand(), st = window.AB.st; return { frei: K.frei, ende: st && st.ende, liegt: K.drops.liste.filter((d) => !d.weg).length, marken: document.querySelectorAll("#karte rect.feld.riss-drop, #karte rect.feld.riss-drop-segen").length, splitter: window.RISS.zustand().ich.splitter, knopf: document.querySelector("#riss-raus").textContent, weiter: Boolean(document.querySelector("#ende:not([hidden]) #weiter-abenteuer")) }; });
@@ -40,6 +42,12 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   check(offen.splitter === 0 && offen.marken >= 1 && /Zur Karte/.test(offen.knopf), "nichts wird von selbst aufgehoben; die Felder sind markiert, der Knopf heißt „Zur Karte“");
   const fern = await p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, d = D.liste.find((x) => !x.weg); for (const f of st.figuren) if (f.fid) { f.x = d.x > 5 ? 1 : 10; f.y = 7; } return window.RISS.feldAufheben(d.x, d.y) === false && !d.weg; });
   check(fern, "zu weit weg: Antippen hebt nichts auf");
+  const kosten = await p.evaluate(() => { const D = window.RISS.karteZustand().drops, st = window.AB.st, R = window.AB.R; let k = 0; while (!(R.aktiv(st).fid && R.aktiv(st).tp > 0 && st.zug.aktion) && k++ < 12) R.zugEnde(st);
+    const l = D.liste.filter((x) => !x.weg && !x.ding), h = R.aktiv(st); if (l.length < 2) return null; const andere = st.figuren.find((f) => f.fid && f !== h && f.tp > 0), vor = window.RISS.zustand().ich.splitter;
+    andere.x = l[0].x; andere.y = l[0].y; h.x = 0; h.y = 8; const fremd = window.RISS.feldAufheben(l[0].x, l[0].y) === false && !l[0].weg; // ein anderer Held steht daneben, ist aber nicht am Zug
+    andere.x = 11; andere.y = 8; h.x = l[0].x; h.y = l[0].y; window.RISS.feldAufheben(l[0].x, l[0].y); const eins = l[0].weg && st.zug.aktion === false && window.RISS.zustand().ich.splitter > vor;
+    h.x = l[1].x; h.y = l[1].y; window.RISS.feldAufheben(l[1].x, l[1].y); return { fremd, eins, zwei: !l[1].weg }; });
+  if (kosten) check(kosten.fremd && kosten.eins && kosten.zwei, "Aufheben macht nur der Held am Zug, es kostet seine Aktion, und ohne Aktion geht kein zweites Mal");
   const n1 = await einsammeln(); await p.waitForSelector("#weiter-abenteuer", { timeout: 15000 });
   check(n1 >= 1 && await p.evaluate(() => window.RISS.zustand().ich.splitter + Object.values(window.RISS.zustand().ich.dinge).flat().length > 0), "Held daneben und antippen: aufgehoben; ist alles eingesammelt, schließt der Raum");
   await p.click("#weiter-abenteuer"); await p.waitForSelector("[data-riss-karte]");

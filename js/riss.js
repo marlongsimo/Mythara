@@ -112,7 +112,7 @@
         ${Z.art === "karte" ? `<li><b>Alle beginnen auf Stufe 1.</b> Der erste Raum ist die Mitte des Risses und leicht.</li>
         <li><b>Die Zeit läuft ab dem ersten Raum:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für alles, für beide Seiten genau gleich lang. Nach der Mitte öffnet sich die Karte mit vier dunklen Räumen – ein schwerer, ein Boss, zwei leichte, für beide dieselben.</li>
         <li><b>Erfahrung gibt es, sobald ein Monster am Boden liegt:</b> je mehr Lebenspunkte es hatte, desto mehr. Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
-        <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: einen Helden daneben stellen und das Feld antippen. Bei einem Fund wählst du, wer ihn bekommt.</li>
+        <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: Der Held, der am Zug ist, muss daneben stehen, dann tippst du das Feld an. <b>Aufheben kostet seine Aktion</b> – immer, auch im leeren Raum. Bei einem Fund wählst du, wer ihn bekommt.</li>
         <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
         <li><b>Raum verlassen und wiederkommen:</b> Mitten im Kampf kannst du gehen und später zurückkehren. Der Raum bleibt, wie du ihn verlassen hast: Monster behalten ihren Schaden, Funde bleiben liegen.</li>
         <li><b>Vor dem Finale erscheint die Siegelwächterin.</b> Bei ihr kaufst du für Erbsplitter Heilung, Tränke, Gegenstände und Segen.</li>
@@ -376,7 +376,11 @@
       const ab = Date.now() + (SCHNELL ? 0 : (window.AB_WURFZEIT ? window.AB_WURFZEIT(st.log.slice(-6)) : 620) + 350); // erst wenn Würfel und Treffer zu sehen waren, liegt das Monster wirklich am Boden
       D.zeit[f.id] = ab; const d = K.kDrop(Z.ich, f.art === D.boss, Math.random); D.liste.push(Object.assign({ x: f.x, y: f.y, weg: false, ab }, d)); }
   }
-  const heldDaneben = (st, d) => st.figuren.find((x) => x.seite === "spieler" && x.fid && x.tp > 0 && !x.tot && Math.max(Math.abs(x.x - d.x), Math.abs(x.y - d.y)) <= 1);
+  /** Aufheben kostet immer eine Aktion, und es hebt der Held auf, der am Zug ist: Er muss auf dem Feld oder daneben stehen.
+   *  Zurück: der Held am Zug, wenn er nah genug steht – sonst null */
+  const heldAmZug = (st) => { const a = st.ende ? null : R.aktiv(st); return a && a.seite === "spieler" && a.fid && a.tp > 0 && !a.tot ? a : null; };
+  const heldDaneben = (st, d) => { const a = heldAmZug(st); return a && Math.max(Math.abs(a.x - d.x), Math.abs(a.y - d.y)) <= 1 ? a : null; };
+  const hatAktion = (st) => Boolean(st.zug && st.zug.aktion);
   /** Im Kampf, vier Mal je Sekunde: Funde erfassen und markieren, Erfahrung mitzählen, Knopf und Ende nachführen */
   function kampfWache() {
     const st = window.AB.st, D = KZ.drops; if (!KZ.imKampf || !st || !D) return;
@@ -385,7 +389,7 @@
     if (KZ.frei && !KZ.schluss && !D.liste.some((d) => !d.weg) && !KZ.fenster) { st.ende = "sieg"; KZ.schluss = true; window.AB.render(); } // alles eingesammelt: Der Raum ist fertig
     const karte = $("#karte"); if (!karte) return; const wo = {};
     const jetzt = Date.now();
-    for (const d of D.liste) if (!d.weg && d.ab <= jetzt) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) ? " greifbar" : "");
+    for (const d of D.liste) if (!d.weg && d.ab <= jetzt) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) && hatAktion(st) ? " greifbar" : "");
     karte.querySelectorAll("rect.feld").forEach((r) => { const kl = (wo[r.dataset.x + "," + r.dataset.y] || "").split(" "); for (const c of ["riss-drop", "riss-drop-segen", "greifbar"]) if (r.classList.contains(c) !== kl.includes(c)) r.classList.toggle(c, kl.includes(c)); });
     feldBilder(karte, D.liste.filter((d) => !d.weg && d.ab <= jetzt));
   }
@@ -415,10 +419,14 @@
   /** Zurück: true, wenn auf dem Feld etwas lag (aufgehoben oder Hinweis gezeigt) */
   function feldAufheben(x, y) {
     const st = window.AB.st, D = KZ.drops, hier = D.liste.filter((d) => !d.weg && d.ab <= Date.now() && d.x === x && d.y === y); if (!hier.length) return false;
-    const h = heldDaneben(st, hier[0]); if (!h) { hudHinweis("Zu weit weg – ein Held muss daneben stehen"); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
-    for (const d of hier) { if (d.ding) { fundFenster(d); break; } aufheben(d, null); }
-    kampfWache(); return true;
+    const h = heldDaneben(st, hier[0]); if (!h) { hudHinweis(heldAmZug(st) ? "Zu weit weg – der Held am Zug muss daneben stehen" : "Aufheben kann nur ein Held, der am Zug ist"); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
+    if (!hatAktion(st)) { hudHinweis(`${h.name} hat seine Aktion schon verbraucht`); return true; }
+    const fund = hier.find((d) => d.ding); if (fund) { fundFenster(fund, h); return true; } // die Aktion kostet es erst, wenn der Fund vergeben ist
+    let n = 0; for (const d of hier) { aufheben(d, null); n += d.splitter || 0; }
+    aktionVerbrauchen(st, `${h.name} hebt ${n} Erbsplitter auf.`); return true;
   }
+  /** Die Aktion des Helden am Zug ist weg – wie nach einem Angriff */
+  function aktionVerbrauchen(st, text) { if (st.zug) st.zug.aktion = false; st.log.push({ t: text, art: "gut" }); window.AB.render(); kampfWache(); }
   function aufheben(d, held) {
     d.weg = true; K.kNimm(Z.ich, d, held); const st = window.AB.st;
     if (d.ding) { KZ.drops.funde.push({ ding: d.ding, held }); const f = st && st.figuren.find((x) => x.fid === held); if (f) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d.ding)) f.rucksack.push({ id: d.ding, n: 1 }); } }
@@ -427,12 +435,12 @@
     xpLeiste(st);
   }
   /** Ein Fund für einen Helden: Wer bekommt ihn? (Die Zeit läuft weiter.) */
-  function fundFenster(d) {
+  function fundFenster(d, heber) {
     fundFensterZu(); const g = R.GEGENSTAENDE[d.ding], el = document.createElement("div"); el.id = "riss-fund"; el.className = "riss-fund"; KZ.fenster = el;
-    el.innerHTML = `<div class="riss-fund-blatt" role="dialog" aria-label="Fund"><p class="riss-schritt">Fund</p>${fundBild(d.ding) ? `<img class="riss-fund-bild" src="${fundBild(d.ding)}" alt="">` : `<i class="riss-fund-zeichen" aria-hidden="true">${g.sym || "◆"}</i>`}<h2>${esc(g.name)}</h2><p>${esc(g.text)}</p><b>Für wen?</b>
+    el.innerHTML = `<div class="riss-fund-blatt" role="dialog" aria-label="Fund"><p class="riss-schritt">Fund</p>${fundBild(d.ding) ? `<img class="riss-fund-bild" src="${fundBild(d.ding)}" alt="">` : `<i class="riss-fund-zeichen" aria-hidden="true">${g.sym || "◆"}</i>`}<h2>${esc(g.name)}</h2><p>${esc(g.text)}</p><b>Für wen? <small>(Aufheben kostet ${heber ? esc(heber.name) : "den Helden am Zug"} die Aktion)</small></b>
       <div class="riss-fund-helden">${Z.ich.gruppe.map((f) => `<button type="button" class="rs-held" data-wer="${f}" ${K.kannTragen(Z.ich, d.ding, f) ? "" : "disabled"} style="--k:${F.KLASSEN[F.FIGUREN[f].klasse].farbe}"><img src="${F.bild(f)}" alt=""><b>${esc(F.FIGUREN[f].name)}</b></button>`).join("")}</div>
       <button type="button" class="btn ghost klein" data-zu>Liegen lassen</button></div>`;
-    el.onclick = (ev) => { const b = ev.target.closest("[data-wer]"); if (b && !b.disabled) { fundFensterZu(); aufheben(d, b.dataset.wer); return; } if (ev.target.closest("[data-zu]") || ev.target === el) fundFensterZu(); };
+    el.onclick = (ev) => { const b = ev.target.closest("[data-wer]"); if (b && !b.disabled) { fundFensterZu(); const st = window.AB.st; if (!st || !hatAktion(st)) return; aufheben(d, b.dataset.wer); aktionVerbrauchen(st, `${heber ? heber.name : "Ein Held"} hebt ${R.GEGENSTAENDE[d.ding].name} auf – für ${F.FIGUREN[b.dataset.wer].name}.`); return; } if (ev.target.closest("[data-zu]") || ev.target === el) fundFensterZu(); };
     document.body.appendChild(el);
   }
   function fundFensterZu() { if (KZ.fenster) { KZ.fenster.remove(); KZ.fenster = null; } }
@@ -547,7 +555,7 @@
         <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>
-          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst – und du kannst jeden Raum wieder betreten, solange dort noch Monster stehen oder etwas liegt.</p></div></div></div>`);
+          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es, sobald ein Monster am Boden liegt (${C.XP_LP} je Lebenspunkt, den es hatte). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: Der Held am Zug muss daneben stehen, dann das Feld antippen – das kostet seine Aktion. Der Raum bleibt offen, bis du zur Karte gehst – und du kannst jeden Raum wieder betreten, solange dort noch Monster stehen oder etwas liegt.</p></div></div></div>`);
     $("#riss-karte").onclick = (ev) => { const b = ev.target.closest("[data-ort]"); if (!b || KZ.imKampf) return; const k = +b.dataset.ort;
       if (KZ.rest <= 0) return zeitUm(); kampfK(k); };
   }

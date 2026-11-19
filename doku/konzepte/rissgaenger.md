@@ -65,9 +65,9 @@ In allen fünf Räumen zusammen stecken 700 Erfahrung. Wer jedes Monster besiegt
 | sonst Erbsplitter | 1 bis 20 | 15 bis 40 |
 
 - Es erscheint erst, wenn das Monster wirklich am Boden liegt, also nach Würfel und Treffer.
-- **Aufgehoben wird von Hand:** Ein stehender Held muss auf dem Feld oder daneben stehen (auch schräg), dann tippt man das Feld an. Nichts wird von selbst eingesammelt.
-- **Was das Aufheben kostet:** keine Aktion und keine Bewegungspunkte. Es zählt jeder stehende Held, nicht nur der, der am Zug ist. Der Preis ist allein das Hinlaufen: Wer nicht daneben steht, muss einen Helden mit dessen Bewegung dorthin bringen, und das kostet Züge und damit Zeit. Für Monster, die im Nahkampf fallen, ist Aufheben deshalb praktisch umsonst. Das ist der Stand im Prototyp und als Regel noch nicht entschieden, siehe „Was noch offen ist".
-- Bei einem Fund fragt das Spiel, wer ihn bekommt. Jeder Held trägt höchstens zwei verschiedene Gegenstände; ersetzen kann man nicht. Es fallen nur Gegenstände, die mindestens ein Held der Gruppe noch tragen kann. Kann niemand mehr etwas tragen, fallen Erbsplitter.
+- **Aufgehoben wird von Hand, und es kostet immer eine Aktion.** Aufheben kann nur der Held, der am Zug ist. Er muss auf dem Feld oder daneben stehen (auch schräg); dann tippt man das Feld an. Das verbraucht seine Aktion wie ein Angriff – auch dann, wenn im Raum kein Monster mehr steht. Je Zug hebt ein Held also ein Feld auf. Nichts wird von selbst eingesammelt.
+- Damit ist jede Hand voll Erbsplitter ein Angriff weniger, und Nah- und Fernkämpfer zahlen denselben Preis.
+- Bei einem Fund fragt das Spiel, wer ihn bekommt; die Aktion kostet es den, der ihn aufhebt. Jeder Held trägt höchstens zwei verschiedene Gegenstände; ersetzen kann man nicht. Es fallen nur Gegenstände, die mindestens ein Held der Gruppe noch tragen kann. Kann niemand mehr etwas tragen, fallen Erbsplitter.
 
 **Der Raum bleibt offen.** Sind alle Monster besiegt, endet der Raum nicht von selbst. Man sammelt ein oder geht mit „Zur Karte". Ist alles eingesammelt, schließt er.
 
@@ -236,7 +236,7 @@ Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust a
 ## Was noch offen ist
 
 - **Reichen fünf Minuten?** Aus den von Hand gespielten Partien der ersten Spielart: 40 bis 100 Sekunden je Raum. Die neue Fassung mit Aufheben und zäheren Monstern hat noch niemand von Hand zu Ende gespielt.
-- **Was soll das Aufheben kosten?** Heute nichts außer dem Hinlaufen. Damit ist es für Nahkämpfer praktisch umsonst, und Gruppen mit Fernkämpfern sind im Nachteil. Die naheliegende Regel: Aufheben macht der Held, der am Zug ist, und es kostet seine Aktion, solange im Raum noch ein Monster steht. Dann ist jede Hand voll Erbsplitter ein Angriff weniger. Das ist die wichtigste offene Regelentscheidung.
+- **Wie schwer wiegt die Aktion fürs Aufheben?** Ein Raum mit vier Monstern braucht vier Aktionen zum Einsammeln, zusätzlich zum Kampf. Wie viel dann in fünf Minuten noch geht, hat niemand gemessen. Der Rechner hebt weiter alles ohne Kosten auf und ist damit im Vorteil.
 - **Ist Wiederkommen zu billig?** Rausgehen und neu hereinkommen stellt die Gruppe wieder geordnet an den Eingang; Gefallene bleiben dabei am Boden. Eine mögliche weitere Bremse: Die Monster heilen sich bis zur Rückkehr ein Stück.
 - **Zwei Punkte in einer Runde.** Auslöschung und Rundenwertung können zusammenfallen, mit Zurückerobern sogar ein Umschwung von drei Punkten (einmal von Hand gespielt gesehen: aus 1 : 4 wurde 3 : 3). Die Mitschrift hält es fest; geändert wird erst, wenn es öfter Partien entscheidet.
 - **Bewegung im Finale.** Das Siegel springt, also zählt jedes Feld Bewegung doppelt. Ob Leichte Füße (dazu die Stiefel) die anderen Segen aussticht, ist nicht gemessen.
@@ -260,7 +260,7 @@ Nach jeder Stufe wird entschieden, ob es weitergeht.
 - Drei Helden je Seite, alle auf Stufe 1. Dieselbe Karte und dieselben fünf Minuten für beide.
 - Fünf Räume: die Mitte, zwei leichte, ein schwerer, ein Boss. Die vier äußeren sind dunkel, bis man sie betritt.
 - Erfahrung, sobald ein Monster am Boden liegt: 5 je Lebenspunkt, für die ganze Gruppe.
-- Jedes besiegte Monster lässt Erbsplitter liegen, selten einen Fund. Aufheben: Held daneben, Feld antippen.
+- Jedes besiegte Monster lässt Erbsplitter liegen, selten einen Fund. Aufheben: Der Held am Zug steht daneben und gibt seine Aktion dafür.
 - Räume bleiben offen und lassen sich verlassen und wieder betreten.
 - Ist die Zeit um, holt der Riss beide gleichzeitig heraus. Die Siegelwächterin tauscht Erbsplitter gegen Heilung, Tränke, Gegenstände und Segen.
 - Finale: je Runde ein Punkt für die Seite mit mehr Helden am Siegel. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden zurück. Auslöschen gibt dem Gegner einen Punkt.
