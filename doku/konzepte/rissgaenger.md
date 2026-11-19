@@ -279,7 +279,7 @@ Entstanden aus den ersten von Hand gespielten Partien. Dort kam „früh gegen t
 
 ### Ablauf
 
-1. **Die Mitte.** Der erste Raum ist der leichte Einstieg. Alle beginnen auf Stufe 1.
+1. **Die Mitte.** Nach dem Start läuft ein kurzer Film (der Riss öffnet sich, sechs Sekunden, ohne Text und ohne Überspringen), dann steht die Gruppe direkt im ersten Raum, dem leichten Einstieg. Alle beginnen auf Stufe 1.
 2. **Die Karte.** Danach öffnet sich die Karte: die Mitte und vier Räume im Ring darum, verbunden mit der Mitte und mit ihren beiden Nachbarn. Für beide Seiten dieselbe Karte. Die Zeit läuft schon ab dem Betreten des ersten Raums: fünf Minuten für alles (wählbar 3, 4 oder 5), für beide Seiten genau gleich lang. Alle Monster außer dem Boss haben 15 % mehr Lebenspunkte als in den Kampagnen-Begegnungen, aus denen sie stammen; bei den kleinen macht das Runden mehr aus (3 werden 4, 4 werden 5).
 3. **Dunkel und hell.** Unerkundete Räume sind dunkel; was drin ist, sieht man erst beim Betreten. In den vier Räumen liegen ein schwerer Raum, ein Bossraum und zwei leichte Räume, die Verteilung wird gelost. Beendete Räume leuchten. Nach jedem Raum landet man wieder auf der Karte.
 4. **Erfahrung.** Jeder Lebenspunkt, den ein Monster verliert, gibt 5 Erfahrung für die ganze Gruppe – auch wenn das Monster nicht fällt und der Raum nicht fertig wird. Im Kampf zählt ein blauer Balken mit. Stufe 2 kostet 40 Erfahrung, jede weitere 50 mehr als die davor (Stufe 3 bei 130, Stufe 4 bei 270, Stufe 5 bei 460, Stufe 6 bei 700 und so weiter bis Stufe 10 bei 2160). Mit den fünf Räumen des Prototyps sind rund 600 Erfahrung zu holen, also Stufe 5. Die neue Stufe gilt ab dem nächsten Raum.

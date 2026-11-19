@@ -71,6 +71,21 @@
   /** Nach jedem eigenen Raum: Der Gegner ist gleich weit oder einen Raum zurück (er spielt gleichzeitig, aber nicht gleich schnell) */
   function sichtNeu() { const mein = Z.ich.raeume, lag = Math.random() < 0.5 ? 1 : 0; Z.sicht = Math.max(Z.sicht, Math.min(Z.bot.raeume, Math.max(1, mein - lag))); }
 
+  /* ---------- Übergang: der Riss öffnet sich (Film ohne Text und ohne Überspringen), danach geht es direkt in den ersten Raum ---------- */
+  const FILM = "img/riss/riss-uebergang";
+  function uebergang(weiter) {
+    if (SCHNELL || params.get("rissfilm") === "0") return weiter();
+    const el = document.createElement("div"); el.id = "riss-film"; el.className = "riss-film";
+    el.innerHTML = `<video playsinline preload="auto" poster="${FILM}.jpg"><source src="${FILM}.mp4" type="video/mp4"><source src="${FILM}.webm" type="video/webm"></video>`;
+    document.body.appendChild(el); const v = el.querySelector("video"); let fertig = false, notaus = null;
+    const ende = () => { if (fertig) return; fertig = true; clearTimeout(notaus); el.classList.add("weg"); try { v.pause(); } catch (e) { /* schon aus */ } weiter(); setTimeout(() => el.remove(), 700); };
+    const laut = window.ABMUSIK && window.ABMUSIK.laut ? Number(window.ABMUSIK.laut()) : 1; v.volume = Math.max(0, Math.min(1, isFinite(laut) ? laut : 1)); v.muted = !(v.volume > 0); // Ton so laut wie die Musik des Spiels (stumm, wenn sie aus ist)
+    v.addEventListener("ended", ende); v.addEventListener("error", ende);
+    notaus = setTimeout(ende, 11000); // falls der Film nicht lädt oder hängt: nach elf Sekunden geht es trotzdem weiter
+    requestAnimationFrame(() => el.classList.add("an"));
+    const p = v.play(); if (p && p.catch) p.catch(() => { v.muted = true; const q = v.play(); if (q && q.catch) q.catch(ende); }); // ohne Ton, falls der Browser Ton hier nicht erlaubt
+  }
+
   /* ---------- Start ---------- */
   async function zeigen() {
     seite(`<h1 class="hub-gruss">Rissgänger</h1><p class="hub-untertitel">Einen Moment …</p>`);
@@ -127,7 +142,7 @@
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botWeg(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.folge, Z.gegnerZiel); // der Rechner geht seinen Weg für sich; gezeigt wird davon nur, was man hören darf
     Z.log = { v: 3, wann: new Date().toISOString(), heilung: Z.heilung, weg: Z.fest ? "fest" : "gelost", folge: Z.folge, ich: { helden: Z.wahl.slice(), raeume: [], entscheidungen: [], beute: [] }, gegner: { helden: gegner, fest: Z.gegnerZiel || null } };
-    raumVor(0);
+    uebergang(() => raumVor(0));
   }
 
   /* ---------- der Weg ---------- */
@@ -373,12 +388,7 @@
     Z.bot = K.botKarte(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.karte, Z.zeit);
     clearInterval(KZ.takt); Object.assign(KZ, { rest: Z.zeit * 1000, laeuft: false, takt: null, imKampf: false, zeitAb: false, verlassen: false, ergebnis: null, fertig: false, drops: null });
     Z.log = { v: 5, art: "karte", wann: new Date().toISOString(), heilung: "keine", zeit: Z.zeit, karte: Z.karte.slice(), ich: { helden: Z.wahl.slice(), raeume: [], kaeufe: [] }, gegner: { helden: gegner } };
-    const r = K.kDef(Z.ich, "M");
-    seite(`<p class="riss-schritt">Die Mitte des Risses</p><h1 class="hub-gruss">${esc(r.name)}</h1><p class="hub-untertitel">${esc(r.text)}</p>
-      <p class="riss-lohn">Die Zeit läuft, sobald du den Raum betrittst: ${mmss(Z.zeit * 1000)} Minuten für alles, dann holt der Riss beide Gruppen im selben Moment in den Siegelsaal. Ist dieser Raum geschafft, öffnet sich die Karte.</p>
-      ${gruppeHtml("Deine Gruppe", Z.ich.gruppe, Z.ich.stufen, K.leben(Z.ich), Z.ich.dinge, Z.ich.segen)}
-      <div class="knoepfe"><button class="btn" id="riss-kampf">In den Riss</button></div>`);
-    $("#riss-kampf").onclick = () => kampfK("M");
+    uebergang(() => kampfK("M")); // der Film, dann direkt in den ersten Raum – dort läuft die Uhr an
   }
   function kampfK(ort) {
     const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });

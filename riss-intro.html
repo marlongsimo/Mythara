@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Rissgänger – Mythara</title>
 <style>
-  /* Die vier Clips als ein durchgehender Film: ohne Schnitt aneinandergereiht, Zwischenbilder berechnet (img/riss/riss-film.*) */
+  /* Die vier Clips als ein durchgehender Film: der Film, der im Spiel als Übergang in den ersten Raum läuft (img/riss/riss-uebergang.*) */
   html, body { height: 100%; margin: 0; background: #000; }
   main { position: fixed; inset: 0; display: grid; place-items: center; }
   video { width: min(100vw, calc(100vh * 552 / 308)); aspect-ratio: 552 / 308; background: #000; display: block; }
@@ -17,16 +17,17 @@
 </head>
 <body>
 <main>
-  <video id="film" autoplay muted loop playsinline preload="auto" poster="img/riss/riss-film.jpg">
-    <source src="img/riss/riss-film.mp4" type="video/mp4"><source src="img/riss/riss-film.webm" type="video/webm">
+  <video id="film" autoplay muted loop playsinline preload="auto" poster="img/riss/riss-uebergang.jpg">
+    <source src="img/riss/riss-uebergang.mp4" type="video/mp4"><source src="img/riss/riss-uebergang.webm" type="video/webm">
   </video>
-  <nav id="leiste"><button type="button" id="schleife">Schleife: an</button><button type="button" id="neu">Von vorn</button><a href="img/riss/riss-film.gif" download>Als GIF</a><a href="img/riss/riss-film.mp4" download>Als Video</a></nav>
+  <nav id="leiste"><button type="button" id="schleife">Schleife: an</button><button type="button" id="neu">Von vorn</button><button type="button" id="ton">Ton: aus</button></nav>
 </main>
 <script>
 (function () {
   const v = document.getElementById("film"), l = document.getElementById("leiste"), s = document.getElementById("schleife");
   s.onclick = () => { v.loop = !v.loop; s.textContent = "Schleife: " + (v.loop ? "an" : "aus"); if (v.loop && v.ended) v.play(); };
   document.getElementById("neu").onclick = () => { v.currentTime = 0; v.play(); };
+  document.getElementById("ton").onclick = (e) => { v.muted = !v.muted; e.target.textContent = "Ton: " + (v.muted ? "aus" : "an"); };
   v.addEventListener("click", () => l.classList.toggle("an")); // am Handy: Antippen zeigt die Knöpfe
   v.addEventListener("ended", () => l.classList.add("an"));
 })();
