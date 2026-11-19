@@ -2958,3 +2958,4 @@ body.szene-blatt .sz-rueckschau li::before { color: #7a1a18; }
 .riss-zuschau b { color: #fff; }
 @media (max-width: 700px) { .riss-warte-kopf { grid-template-columns: 1fr; } .riss-zaehler b { font-size: 48px; } .riss-zuschau { bottom: auto; top: 78px; font-size: 11px; gap: 6px; padding: 4px 6px 4px 10px; } }
 @media (prefers-reduced-motion: reduce) { .riss-zaehler.neu b { animation: none; } }
+.riss-gehoert { margin: 4px 0 6px; font-size: 18px; color: #e6dcff; } .riss-gehoert b { color: #fff; }

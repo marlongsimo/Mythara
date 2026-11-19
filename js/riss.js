@@ -62,11 +62,11 @@
       return `<div class="riss-held" style="--k:${F.KLASSEN[d.klasse].farbe}"><img src="${F.bild(f)}" alt=""><div><b>${esc(d.name)}</b><span>Stufe ${stufen[f]}</span><i class="riss-tp"><u style="width:${l}%"></u></i><small>${l} % Leben${dinge && (dinge[f] || []).length ? " · " + dinge[f].map((id) => esc(R.GEGENSTAENDE[id].name)).join(", ") : ""}</small></div></div>`; }).join("")}</div>
       ${segen && segen.length ? `<p class="riss-segen">Segen: ${segen.map((id) => `${F.SEGEN[id].zeichen} ${esc(F.SEGEN[id].name)}`).join(", ")}</p>` : ""}</div>`;
   }
-  /** Was man vom Gegner sieht: wie tief er zuletzt war, mit Stufen und Leben von dort. Ob er abgebogen ist, bleibt verdeckt. */
+  /** Was man vom Gegner sieht: nur, wie tief er zuletzt war. Seine Helden, Stufen und sein Zustand bleiben verdeckt, bis man sich am Siegel trifft –
+   *  und ob er schon abgebogen ist, erst recht. */
   function gegnerSicht() {
-    const B = Z.bot, n = Z.sicht; if (!n) return `<div class="riss-gruppe"><h3>${esc(B.name)}</h3><p class="note">Noch nichts zu hören.</p></div>`;
-    const v = B.verlauf[n - 1];
-    return gruppeHtml(`${B.name} – zuletzt gehört: Raum ${n}`, B.gruppe, v.stufen, v.leben);
+    const B = Z.bot, n = Z.sicht;
+    return `<div class="riss-gruppe riss-gegner"><h3>${esc(B.name)}</h3><p class="riss-gehoert">${n ? `Zuletzt gehört: <b>Raum ${n}</b>` : "Noch nichts zu hören."}</p><p class="note">Wer in der Gruppe ist und wie stark sie ist, siehst du erst am Siegel.</p></div>`;
   }
   /** Nach jedem eigenen Raum: Der Gegner ist gleich weit oder einen Raum zurück (er spielt gleichzeitig, aber nicht gleich schnell) */
   function sichtNeu() { const mein = Z.ich.raeume, lag = Math.random() < 0.5 ? 1 : 0; Z.sicht = Math.max(Z.sicht, Math.min(Z.bot.raeume, Math.max(1, mein - lag))); }
@@ -86,9 +86,10 @@
         <li><b>Alle beginnen auf Stufe 1.</b> Raum 1 ist leicht und gibt eine Stufe.</li>
         ${Z.fest ? `<li><b>Fester Weg:</b> Jeder gewonnene Raum gibt eine Stufe, Raum 4 und 5 dazu Beute.</li>` : `<li><b>Danach ist gelost, was kommt:</b> zwei schwere Räume (+1 Stufe, echte Gefahr) und zwei Beuteräume (kurzer Kampf, ein Gegenstand, keine Stufe). Die Reihenfolge ist für beide Seiten dieselbe – und du siehst sie erst, wenn du den Raum betrittst.</li>`}
         <li><b>Nach Raum 2 entscheidest du nach jedem Raum:</b> weiter in die Tiefe oder zum Siegel. Höchstens fünf Räume.</li>
-        <li><b>Du siehst, wie tief dein Gegner ist</b> – aber nicht, ob er schon zum Siegel abgebogen ist.</li>
+        <li><b>Du hörst, wie tief dein Gegner ist</b> – aber nicht, wer in seiner Gruppe ist, wie stark sie ist und ob er schon zum Siegel abgebogen ist.</li>
         <li><b>Wer nach weniger Räumen abbiegt,</b> stellt seine Helden am Siegel auf und sammelt Siegelpunkte, solange der andere noch im Riss ist: 2 für den ersten Raum, 1 für jeden weiteren, höchstens 3. Wer tiefer geht, kommt stärker an.</li>
-        <li><b>Am Siegel:</b> Am Ende jeder Runde bekommt einen Punkt, wer mehr Helden am Siegel hat. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden zurück. Fünf Punkte gewinnen, sonst wird nach zwölf Runden gewertet.</li></ul></div>
+        <li><b>Am Siegel:</b> Am Ende jeder Runde bekommt einen Punkt, wer mehr Helden am Siegel hat. Das Siegel springt alle zwei Runden. Gefallene kehren nach zwei Runden mit vollen Trefferpunkten zurück. Fünf Punkte gewinnen, sonst wird nach zwölf Runden gewertet.</li>
+        <li><b>Im Finale sind Zauberplätze, Tränke und Fähigkeiten wieder frisch.</b> Nur die Trefferpunkte und die Beute kommen vom Weg mit.</li></ul></div>
       <h2 class="riss-h2">Wähle drei Helden</h2>
       <div class="arena-helden" id="riss-helden">${eigene.map((f) => heldKarte(f, "Stufe 1", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}${leih.map((f) => heldKarte(f, "Leihheld", Z.wahl.includes(f) ? "an" : "", `data-held="${f}"`)).join("")}</div>
       <label class="riss-schalter">Heilung vor dem Finale
@@ -107,7 +108,7 @@
     Z.ich = K.neu(Z.wahl, "Du", Z.folge);
     const gegner = F.REIHE.slice().map((f) => [Math.random(), f]).sort((a, b) => a[0] - b[0]).slice(0, 3).map((x) => x[1]);
     Z.bot = K.botWeg(gegner, Z.seed % 100000 + 17, NAMEN[Z.seed % NAMEN.length], Z.folge); // der Rechner geht seinen Weg für sich; gezeigt wird davon nur, was man hören darf
-    Z.log = { v: 2, wann: new Date().toISOString(), heilung: Z.heilung, weg: Z.fest ? "fest" : "gelost", folge: Z.folge, ich: { helden: Z.wahl.slice(), raeume: [], entscheidungen: [], beute: [] }, gegner: { helden: gegner } };
+    Z.log = { v: 3, wann: new Date().toISOString(), heilung: Z.heilung, weg: Z.fest ? "fest" : "gelost", folge: Z.folge, ich: { helden: Z.wahl.slice(), raeume: [], entscheidungen: [], beute: [] }, gegner: { helden: gegner } };
     raumVor(0);
   }
 
@@ -246,7 +247,7 @@
       <div class="riss-zwei">${gruppeHtml("Deine Gruppe", Z.ich.gruppe, Z.ich.stufen, K.leben(Z.ich), Z.ich.dinge, Z.ich.segen)}${gruppeHtml(`${Z.bot.name} – ${b} Räume`, Z.bot.gruppe, Z.bot.stufen, K.leben(Z.bot), Z.bot.dinge, Z.bot.segen)}</div>
       <div class="riss-regeln"><ul><li>Am Siegel steht, wer auf dem leuchtenden Feld oder direkt daneben steht, auch schräg.</li><li>Am Ende jeder Runde: ein Siegelpunkt für die Seite mit mehr Helden am Siegel.</li>
         <li>Nach jeder zweiten Runde springt das Siegel auf das gestrichelte Feld.</li><li>Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert die führende einen.</li>
-        <li>Gefallene kehren nach zwei Runden am eigenen Eingang zurück. Liegt eine ganze Gruppe am Boden, bekommt der Gegner einen Punkt.</li><li>Fünf Siegelpunkte gewinnen. Sonst wird nach zwölf Runden gewertet.</li></ul><p class="note">${esc(heilText(Z.heilung))}</p></div>
+        <li>Gefallene kehren nach zwei Runden am eigenen Eingang zurück, mit vollen Trefferpunkten. Liegt eine ganze Gruppe am Boden, bekommt der Gegner einen Punkt.</li><li>Fünf Siegelpunkte gewinnen. Sonst wird nach zwölf Runden gewertet.</li></ul><p class="note">Zauberplätze, Tränke und Fähigkeiten sind für das Finale wieder frisch. ${esc(heilText(Z.heilung))}</p></div>
       <div class="knoepfe"><button class="btn" id="riss-finale">Zum Siegel</button></div>`);
     $("#riss-finale").onclick = finale;
   }

@@ -27,7 +27,7 @@ Entwicklungsziel: eine Partie unter 30 Minuten. Belegt ist das noch nicht, mit d
 
 - Jede Seite wählt drei Helden: aus den eigenen und aus drei Leihhelden, die jede Woche wechseln.
 - Alle beginnen auf **Stufe 1** mit vollen Trefferpunkten und ohne Ausrüstung.
-- Die Helden des Gegners sieht man, wenn beide gewählt haben.
+- Die Helden des Gegners sieht man erst am Siegel.
 
 ### 2. Der Weg durch den Riss
 
@@ -61,8 +61,8 @@ Die ersten zwei Räume nimmt jede Seite. Danach entscheidet sie nach jedem Raum 
 
 Was man sieht:
 
-- **Sichtbar:** in welchem Raum der Gegner zuletzt gekämpft hat, die Stufe seiner Helden und ihre Trefferpunkte.
-- **Verdeckt:** ob er schon zum Siegel abgebogen ist. Das erfährt man erst, wenn man selbst am Siegel ankommt.
+- **Sichtbar:** in welchem Raum der Gegner zuletzt gekämpft hat. Mehr nicht.
+- **Verdeckt:** seine Helden, ihre Stufen und Trefferpunkte – und ob er schon zum Siegel abgebogen ist. Das erfährt man erst, wenn man selbst am Siegel ankommt.
 
 Man hört den anderen im Riss kämpfen. Wird es still, weiß man nicht, ob er noch im Raum steht oder schon am Siegel.
 
@@ -87,7 +87,7 @@ Eine **Etappe** ist ein Raum. Der Vorsprung ist der Unterschied der gespielten R
 
 Haben beide gleich viele Räume gespielt, bekommt niemand Siegelpunkte. Beide bekommen die Hälfte der fehlenden Trefferpunkte zurück und starten am eigenen Eingang.
 
-**Zur Heilung:** Das ist genau die Regel aus der Rechnung, keine neue. Dort hieß sie „der Spätere hat einen Nachteil: keine Heilung vor dem Finale". Die Heilung der früheren Gruppe galt in allen Durchrechnungen. Der Prototyp bildet diese Fassung ab. Beispiel: Ein Held mit 10 von 30 Trefferpunkten startet als Früherer mit 20, als Späterer mit 10. Gefallene Helden stehen in beiden Gruppen mit mindestens einem Trefferpunkt auf. Zauberplätze und Tränke kommen bei niemandem zurück.
+**Zur Heilung:** Das ist genau die Regel aus der Rechnung, keine neue. Dort hieß sie „der Spätere hat einen Nachteil: keine Heilung vor dem Finale". Die Heilung der früheren Gruppe galt in allen Durchrechnungen. Der Prototyp bildet diese Fassung ab. Beispiel: Ein Held mit 10 von 30 Trefferpunkten startet als Früherer mit 20, als Späterer mit 10. Gefallene Helden stehen in beiden Gruppen mit mindestens einem Trefferpunkt auf. Zauberplätze, Tränke und Fähigkeiten sind im Finale bei allen frisch.
 
 Die Stufen werden nicht angeglichen. Der Vorsprung ist der Lohn des Wegs.
 
@@ -109,7 +109,8 @@ Das Finale ist ein Kampf um das Siegel.
 - **Siegelpunkt:** Am Ende jeder Runde bekommt die Seite einen Punkt, die mehr stehende Helden am Siegel hat. Bei Gleichstand bekommt niemand einen.
 - **Das Siegel wandert:** Alle zwei Runden springt es auf das nächste von drei Feldern im Saal. Die Reihenfolge ist sichtbar.
 - **Zurückerobern:** Holt die Seite, die zurückliegt, zwei Runden in Folge den Punkt, verliert die führende Seite einen ihrer Punkte.
-- **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit halben Trefferpunkten am eigenen Eingang wieder auf.
+- **Gefallene kehren zurück:** Wer fällt, steht zwei Runden später mit vollen Trefferpunkten am eigenen Eingang wieder auf. (Erste Fassung: mit halben. Im Spiel fielen sie damit meist sofort wieder.)
+- **Frisch ins Finale:** Zauberplätze, Tränke und Fähigkeiten sind zu Beginn des Finales wieder voll. Vom Weg kommen nur die Trefferpunkte und die Beute mit.
 - **Auslöschen:** Liegen alle drei Helden einer Gruppe am Boden, bekommt der Gegner einen Siegelpunkt. Die Gruppe steht am eigenen Eingang mit halben Trefferpunkten wieder auf und handelt ab der nächsten Runde wieder.
 
 **Am Ende jeder Runde,** in dieser Reihenfolge:
@@ -225,7 +226,7 @@ Gebaut ist Stufe 1: gegen den Rechner, auf einem Gerät, ohne Server und ohne Da
 | Gerechnete Regel (Voreinstellung) | Hälfte der fehlenden Trefferpunkte | keine Heilung | beide die Hälfte |
 | Testvariante | keine Heilung | keine Heilung | keine Heilung |
 
-Zauberplätze, Tränke und Verbrauchtes kommen in beiden Fällen so ins Finale, wie sie nach dem letzten Raum waren.
+Zauberplätze, Tränke und Fähigkeiten sind in beiden Fällen zu Beginn des Finales frisch.
 
 **Die Räume** nutzen vorhandene Karten und Gegner aus Grauwacht, mit weniger Gegnern und weniger Leben. Gemessen mit 400 Gruppen, vom Rechner gespielt (`tools/riss-raeume.js`):
 
@@ -253,7 +254,7 @@ Nach eigener Raumzahl gewinnen Gruppen mit 2, 3, 4 und 5 Räumen jeweils rund di
 
 ### Wo der Prototyp von den Regeln oder der Rechnung abweicht
 
-- **Zauberplätze und Tränke im Finale.** In der Rechnung begannen beide Gruppen das Finale mit frischen Zauberplätzen und Tränken, nur die Trefferpunkte kamen vom Weg. Der Prototyp folgt dem Regeltext und nimmt alles mit. Das trifft die tiefere Gruppe etwas stärker.
+- **Zauberplätze und Tränke im Finale** sind frisch, wie in der Rechnung. Die erste Fassung des Prototyps nahm sie vom Weg mit; im Spiel stand die Heilerin dann ohne Zauber im Finale.
 - **Zauberplätze beim Aufstieg.** In der Rechnung kamen die Plätze einer neuen Stufe nicht dazu. Im Prototyp kommen sie dazu.
 - **Geloster Weg.** Die Rechnung kannte nur den festen Weg, in dem jeder Raum eine Stufe gibt. Für den gelosten Weg mit Beuteräumen ohne Stufe gibt es nur die Zahlen oben.
 - **Warten am Siegel.** Der Rechner geht seinen Weg vorab. Beim Warten werden seine restlichen Räume mit demselben Zufall noch einmal gespielt, ein Zug alle 2,3 Sekunden; so lange dauert das Warten. Mit „Nicht warten" lässt es sich überspringen. Kommt der Rechner früher an, wartet er nicht sichtbar und stellt sich selbst auf.

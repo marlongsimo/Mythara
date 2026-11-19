@@ -31,6 +31,7 @@
   /* Beute: nur, was auch im Duell wirkt (wie in der Rechnung) */
   const DING_POOL = ["amulett", "eulenmantel", "gluecksbringer", "stiefel", "wetzstein", "ring", "schleifstein", "feder", "eisenspitzen", "stab"], SEGEN_POOL = ["klingen", "fuesse", "wachtfeuer"];
   const NAH = new Set(["krieger", "schurke"]), ZAUBER = new Set(["zauberer", "kleriker"]);
+  const RUECK_LEBEN = 1; // Rückkehrer stehen mit vollen Trefferpunkten auf (erste Fassung: 0,5 – sie fielen meist sofort wieder)
   const ZIEL = 5, RUNDEN = 12, MIN_RAEUME = 2, MAX_RAEUME = 5;
 
   function kern(R, KARTEN, botFabrik) {
@@ -156,19 +157,19 @@
       an(); const W = { 1: W1, 2: W2 }, vor = W2.raeume - W1.raeume, frueh = vor > 0 ? 1 : vor < 0 ? 2 : 0, heilung = o.heilung === "keine" ? "keine" : "gerechnet";
       const st = R.neueArena(seed, { modus: "duell", runden: RUNDEN, karte: karteVon("SIEGEL"), begegnung: "kobolde", namen: o.namen || [W1.name || "Du", W2.name || "Gegner"],
         teams: [W1, W2].map((w) => w.gruppe.map((f) => ({ fid: f, stufe: w.stufen[f] }))) });
-      // Zustand vom Weg mitnehmen: Trefferpunkte (mit oder ohne Heilung), Zauberplätze, Tränke, Verbrauchtes, Beute
+      // Vom Weg kommen die Trefferpunkte (mit oder ohne Heilung) und die Beute mit. Zauberplätze, Tränke und Fähigkeiten sind im Finale frisch – außer mit o.frisch === false.
       for (const tm of [1, 2]) { const w = W[tm], l = leben(w), z0 = w.zust ? R.neuerKampf(JSON.parse(JSON.stringify(w.zust))) : null, heilt = heilung === "gerechnet" && (frueh === tm || !frueh);
         for (const f of helden(st, tm)) { const id = hid(f), a = l[id] == null ? 1 : l[id], z = z0 && z0[id];
-          if (z) { f.plaetze = z.plaetze.slice(); f.genutzt = Object.assign({}, z.genutzt); f.rucksack = JSON.parse(JSON.stringify(z.rucksack || [])); }
+          if (z && o.frisch === false) { f.plaetze = z.plaetze.slice(); f.genutzt = Object.assign({}, z.genutzt); f.rucksack = JSON.parse(JSON.stringify(z.rucksack || [])); } // sonst: frische Zauberplätze, Tränke und Fähigkeiten (wie in der Rechnung)
           for (const d of w.dinge[id] || []) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d)) f.rucksack.push({ id: d, n: 1 }); }
           if (w.segen.includes("wachtfeuer")) f.tpMax += 3;
           f.tp = Math.max(1, Math.round(f.tpMax * (heilt ? a + (1 - a) / 2 : a))); } }
       const k = st.karte, mitte = naechstFrei(st, (k.b - 1) / 2, (k.h - 1) / 2), orte = [mitte, naechstFrei(st, mitte.x - 3, mitte.y), naechstFrei(st, mitte.x + 3, mitte.y)].map((p) => ({ x: p.x, y: p.y }));
       const eingang = {}; for (const tm of [1, 2]) for (const f of helden(st, tm)) eingang[f.id] = { x: f.x, y: f.y };
       const P = { 1: frueh === 1 ? startPunkte(vor) : 0, 2: frueh === 2 ? startPunkte(-vor) : 0 };
-      st.riss = { P, folge: { 1: 0, 2: 0 }, gefallenIn: {}, gesperrt: {}, eingang, orte, ort: 0, runde: st.runde, ziel: ZIEL, max: RUNDEN, segen: { 1: W1.segen.filter((x) => x !== "wachtfeuer"), 2: W2.segen.filter((x) => x !== "wachtfeuer") },
-        frueh, vor: Math.abs(vor), start: { 1: P[1], 2: P[2] }, heilung, aus: null, botStaerke: o.staerke != null ? o.staerke : 1, merk: { wer: null, lauf: 0, gelaufen: false, n: 0 },
-        M: { wechsel: 0, halter: 0, zurueck: 0, rueck: 0, aus: 0, spruenge: 0, runden: [] } };
+      st.riss = { P, folge: { 1: 0, 2: 0 }, gefallenIn: {}, warZurueck: {}, gesperrt: {}, eingang, orte, ort: 0, runde: st.runde, ziel: ZIEL, max: RUNDEN, segen: { 1: W1.segen.filter((x) => x !== "wachtfeuer"), 2: W2.segen.filter((x) => x !== "wachtfeuer") },
+        rueckLeben: o.rueckLeben != null ? o.rueckLeben : RUECK_LEBEN, frueh, vor: Math.abs(vor), start: { 1: P[1], 2: P[2] }, heilung, aus: null, botStaerke: o.staerke != null ? o.staerke : 1, merk: { wer: null, lauf: 0, gelaufen: false, n: 0 },
+        M: { wechsel: 0, halter: 0, zurueck: 0, rueck: 0, wieder: 0, aus: 0, spruenge: 0, runden: [] } };
       if (frueh) { // wer zuerst ankommt, steht schon am Siegel: auf den gewählten Feldern (o.aufstellung, nur im erlaubten Bereich), sonst so nah wie möglich
         const wahl = (frueh === 1 && o.aufstellung) || {}, erlaubt = new Set(aufstellFelder(st).map((p) => p.x + "," + p.y)), h = helden(st, frueh);
         for (const f of h) { f.x = -9; f.y = -9; }
@@ -205,13 +206,14 @@
       st.ende = null; st.arena.sieger = null; st.arena.grund = null;
     }
     const sichtStellen = (st) => { if (st.ende) return; const a = R.aktiv(st); R.arenaSicht(st, a ? R.teamVon(st, a) : 0); };
-    function aufstehen(st, f) {
+    /** anteil: mit wie viel Leben (Rückkehr nach zwei Runden: X.rueckLeben, nach Auslöschen: die Hälfte) */
+    function aufstehen(st, f, anteil) {
       const X = st.riss, e = X.eingang[f.id], p = naechstFrei(st, e.x, e.y, true); if (p) { f.x = p.x; f.y = p.y; }
-      f.tp = Math.ceil(f.tpMax / 2); f.tot = false; f.z = {}; delete f.todes; delete X.gefallenIn[f.id]; X.M.rueck++;
+      f.tp = Math.max(1, Math.ceil(f.tpMax * (anteil || 0.5))); f.tot = false; f.z = {}; delete f.todes; delete X.gefallenIn[f.id]; X.warZurueck[f.id] = true; X.M.rueck++;
     }
     function rundenEnde(st) {
       const X = st.riss, P = X.P, alt = X.runde, a = steht(st, 1), b = steht(st, 2), h = a > b ? 1 : b > a ? 2 : 0, N = st.arena.namen;
-      const zeile = { runde: alt, am: [a, b], holt: h, abzug: 0 };
+      const zeile = { runde: alt, am: [a, b], holt: h, abzug: 0, boden: [1, 2].map((t) => helden(st, t).filter((f) => !lebt(f)).length) };
       if (h) { const an2 = 3 - h; if (X.M.halter && X.M.halter !== h) X.M.wechsel++; X.M.halter = h;
         if (P[h] < P[an2]) { X.folge[h]++; if (X.folge[h] >= 2) { P[an2]--; X.folge[h] = 0; X.M.zurueck++; zeile.abzug = an2; sagen(st, `Zurückerobert: ${N[h - 1]} holt das Siegel zwei Runden in Folge. ${N[an2 - 1]} verliert einen Siegelpunkt.`, h === 1 ? "gut" : "schlecht"); } } else X.folge[h] = 0;
         X.folge[an2] = 0; P[h]++;
@@ -224,14 +226,14 @@
         return schluss(st, s, "zeit", `Zwölf Runden sind um.`, alt); }
       X.runde = st.runde;
       if ((X.runde - 1) % 2 === 0 && X.runde > 1) { X.ort = (X.ort + 1) % X.orte.length; X.M.spruenge++; sagen(st, "Das Siegel springt auf ein anderes Feld.", ""); }
-      for (const tm of [1, 2]) for (const f of helden(st, tm)) { if (lebt(f) || X.gefallenIn[f.id] == null || X.runde - X.gefallenIn[f.id] < 2) continue; aufstehen(st, f); sagen(st, `${f.name} kehrt am eigenen Eingang zurück.`, tm === 1 ? "gut" : "schlecht"); }
+      for (const tm of [1, 2]) for (const f of helden(st, tm)) { if (lebt(f) || X.gefallenIn[f.id] == null || X.runde - X.gefallenIn[f.id] < 2) continue; aufstehen(st, f, X.rueckLeben); sagen(st, `${f.name} kehrt am eigenen Eingang zurück.`, tm === 1 ? "gut" : "schlecht"); }
     }
     /** Nach jedem Schritt des Finales (bewegen, handeln, Zugende). zugEnde: die ursprüngliche Funktion der Regeln */
     function nach(st, zugEnde) {
       const X = st.riss; if (!X || X.aus) return;
       zugEnde = zugEnde || R.zugEnde;
       for (let n = 0; n < 12; n++) {
-        for (const tm of [1, 2]) for (const f of helden(st, tm)) if (!lebt(f) && X.gefallenIn[f.id] == null) X.gefallenIn[f.id] = st.runde;
+        for (const tm of [1, 2]) for (const f of helden(st, tm)) if (!lebt(f) && X.gefallenIn[f.id] == null) { X.gefallenIn[f.id] = st.runde; if (X.warZurueck[f.id]) X.M.wieder++; }
         if (st.ende) {
           const weg1 = !helden(st, 1).some(lebt), weg2 = !helden(st, 2).some(lebt); weiterspielen(st);
           if (weg1 || weg2) { // Auslöschen: ein Siegelpunkt für den Gegner, die Gruppe steht am eigenen Eingang wieder auf und handelt ab der nächsten Runde

@@ -54,6 +54,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   await p.waitForSelector("#riss-siegel");
   check(Boolean(await p.$("#riss-weiter")) && Boolean(await p.$(".riss-verdeckt")) && (await p.$$(".riss-weg .offen")).length === 3, "nach Raum 2: weiter oder zum Siegel; der nächste Raum und das Abbiegen des Gegners bleiben verdeckt");
   check(await p.evaluate(() => { const Z = window.RISS.zustand(); return Z.sicht >= 1 && Z.sicht <= 2; }), "vom Gegner ist höchstens so viel zu hören, wie man selbst gespielt hat");
+  check(await p.evaluate(() => { const g = document.querySelector(".riss-gegner"), Z = window.RISS.zustand(); return Boolean(g) && !g.querySelector("img") && !/Stufe \d/.test(g.textContent) && !Z.bot.gruppe.some((f) => g.textContent.includes(window.ABF.FIGUREN[f].name)); }), "Helden und Stufen des Gegners bleiben auf dem Weg verdeckt");
 
   console.log("Früh am Siegel");
   await p.click("#riss-siegel"); await p.waitForSelector("[data-riss-warte]");
@@ -77,6 +78,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   const start = await p.evaluate(() => { const Z = window.RISS.zustand(), st = Z.st, R = window.AB.R; return { P: st.riss.P, runden: st.arena.runden, pruef: window.AB.arenaPruef(), stehen: Z.ich.gruppe.every((f) => { const h = st.figuren.find((x) => (x.fid || x.fidA) === f && R.teamVon(st, x) === 1 && x.art !== "wolf" && x.art !== "arenawolf"), w = Z.warte.platz[f]; return h && h.x === w.x && h.y === w.y; }) }; });
   check(start.P[1] === 3 && start.P[2] === 0 && start.runden === 12, `Finale beginnt ${start.P[1]} : ${start.P[2]}, zwölf Runden`);
   check(start.stehen, "die Helden stehen dort, wo sie aufgestellt wurden");
+  check(await p.evaluate(() => { const st = window.RISS.zustand().st, K = window.RISS.kern(); return [1, 2].every((t) => K.helden(st, t).every((f) => (f.plaetze || []).every((n, k) => n === (f.plaetzeMax || f.plaetze)[k]))) && st.riss.rueckLeben === 1; }), "im Finale sind die Zauberplätze frisch, Rückkehrer stehen mit vollen Trefferpunkten auf");
   await p.waitForSelector("#riss-leiste:not([hidden])");
   check(await p.evaluate(() => document.querySelectorAll("#karte rect.feld.riss-siegel").length === 1 && document.querySelectorAll("#karte rect.feld.riss-zone").length >= 3 && document.querySelectorAll("#karte rect.feld.riss-naechst").length === 1), "Siegelfeld, Zone und nächstes Feld sind markiert");
   // Finale: Die eigenen Züge spielt hier der Rechner-Helfer über die echten (eingehängten) Regeln; fremde Helden lassen sich nicht steuern
@@ -95,7 +97,7 @@ let ok = true; const check = (c, m) => { console.log((c ? "  ✓ " : "  ✗ ") +
   await p.waitForSelector("#riss-nochmal", { timeout: 20000 });
   const L = await p.evaluate(() => window.RISS.mitschrift().slice(-1)[0]);
   check(Boolean(L) && (L.punkte[0] >= 5 || L.punkte[1] >= 5 || L.finalRunden >= 12) && [1, 2].includes(L.sieger), `Partie entschieden: ${L && L.punkte.join(" : ")} nach ${L && L.finalRunden} Runden (${L && L.grund})`);
-  check(Boolean(L) && L.v === 2 && L.folge === folge && L.ich.raeume.length === 2 && L.ich.entscheidungen.length === 1 && L.heilung === "gerechnet" && Boolean(L.minuten) && L.runden.length >= 1 && L.gegner.raeume >= 4, "Mitschrift: Weg, Räume, Entscheidungen, Heilung, Dauer, Rundenwertung");
+  check(Boolean(L) && L.v === 3 && L.runden.every((x) => Array.isArray(x.boden)) && L.folge === folge && L.ich.raeume.length === 2 && L.ich.entscheidungen.length === 1 && L.heilung === "gerechnet" && Boolean(L.minuten) && L.runden.length >= 1 && L.gegner.raeume >= 4, "Mitschrift: Weg, Räume, Entscheidungen, Heilung, Dauer, Rundenwertung");
   check(Boolean(L && L.warten) && L.warten.zugeschaut === 1 && L.warten.uebersprungen === false && Boolean(L.warten.aufstellung), "Mitschrift: Warten, Zuschauen, Aufstellung");
   check(await p.evaluate(abdruck) === vorher && await p.evaluate(() => !window.AB.arenaAn() && document.getElementById("riss-leiste").hidden), "nach dem Finale: Regeln im Urzustand, Arena beendet, Leiste weg");
   await p.click("#riss-mitschrift"); await p.waitForSelector(".riss-mitschrift .riss-tabelle");
