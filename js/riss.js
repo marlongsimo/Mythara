@@ -78,15 +78,16 @@
     start();
   }
   function start() {
-    warteStopp(); uhrEnde();
+    warteStopp(); uhrEnde(); if (Z.log && !Z.log.fertig) Z.log = null;
     const { eigene, leih } = wahlHelden(); Z.wahl = Z.wahl.filter((f) => eigene.includes(f) || leih.includes(f));
     seite(`<div class="riss-kopf"><h1 class="hub-gruss">Rissgänger <span class="riss-marke">Prototyp</span></h1>
       <p class="hub-untertitel">Ein Riss öffnet sich. Zwei Gruppen steigen von zwei Seiten hinein und kämpfen sich zum Siegel.</p></div>
       <div class="riss-regeln"><ul>
         ${Z.art === "karte" ? `<li><b>Alle beginnen auf Stufe 1.</b> Der erste Raum ist die Mitte des Risses und leicht.</li>
         <li><b>Danach öffnet sich die Karte, und die Zeit läuft:</b> ${Math.round(Z.zeit / 60 * 10) / 10} Minuten für vier dunkle Räume – ein schwerer, ein Boss, zwei leichte. Für beide Seiten dieselben, und die Uhr läuft für beide gleich.</li>
-        <li><b>Erfahrung gibt es für jedes besiegte Monster.</b> Sie hebt die ganze Gruppe.</li>
-        <li><b>Erbsplitter und Segen:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Segen (der Boss oft). Ein Held muss daneben stehen, um sie aufzuheben. Ist der Raum gewonnen, sammelt die Gruppe den Rest ein.</li>
+        <li><b>Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert.</b> Sie hebt die ganze Gruppe; der blaue Balken im Kampf zählt mit.</li>
+        <li><b>Erbsplitter und Funde:</b> Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (der Boss oft). Aufgehoben wird von Hand: einen Helden daneben stellen und das Feld antippen. Bei einem Fund wählst du, wer ihn bekommt.</li>
+        <li><b>Der Raum bleibt offen,</b> auch wenn alle Monster besiegt sind: Du entscheidest, ob du noch einsammelst oder zur Karte gehst. Die Zeit läuft weiter.</li>
         <li><b>Raum verlassen:</b> Mitten im Kampf kannst du gehen. Erfahrung und Aufgehobenes bleiben, der Raum ist danach zu.</li>
         <li><b>Vor dem Finale erscheint die Siegelwächterin.</b> Bei ihr kaufst du für Erbsplitter Heilung, Tränke, Gegenstände und Segen.</li>
         <li><b>Ist die Zeit um, holt der Riss beide Gruppen in den Siegelsaal</b> – auch mitten aus einem Kampf. Niemand wartet, niemand beginnt mit Punkten.</li>
@@ -266,14 +267,15 @@
   }
   /* Die Uhr läuft ab dem Öffnen der Karte durch – für beide Seiten gleich, ohne Anhalten und ohne Abzüge. So kommen beide im selben Moment am Siegel an. */
   function uhrAn() { if (KZ.fertig || KZ.laeuft) return; KZ.laeuft = true; KZ.endeZeit = Date.now() + Z.zeit * 1000; KZ.rest = Z.zeit * 1000; if (!KZ.takt) KZ.takt = setInterval(uhrTakt, 250); uhrZeigen(); }
-  function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); uhrZeigen(); }
+  function uhrEnde() { KZ.laeuft = false; KZ.fertig = true; clearInterval(KZ.takt); KZ.takt = null; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); xpLeiste(null); fundFensterZu(); uhrZeigen(); }
   function uhrTakt() {
     if (!KZ.laeuft) return; KZ.rest = KZ.endeZeit - Date.now(); uhrZeigen();
     if (KZ.rest <= 0) zeitUm();
   }
-  /** Den laufenden Kampf abbrechen (Zeit um oder selbst gegangen): Der Kampfbildschirm meldet sich dann wie nach einem Ende zurück */
+  /** Den laufenden Kampf beenden (Zeit um, selbst gegangen oder fertig eingesammelt): Der Kampfbildschirm meldet sich dann wie nach einem Ende zurück.
+   *  Sind alle Monster besiegt, gilt der Raum als gewonnen. */
   function kampfAbbrechen() {
-    const st = window.AB.st; if (st && !st.ende) st.ende = "rueckzug";
+    const st = window.AB.st; KZ.schluss = true; if (st && !st.ende) st.ende = KZ.frei ? "sieg" : "rueckzug";
     let n = 0; const t = setInterval(() => { const b = document.getElementById("weiter-abenteuer");
       if (!KZ.imKampf || n++ > 40) return clearInterval(t);
       if (b && !document.getElementById("ende").hidden) { clearInterval(t); b.click(); } else window.AB.render(); }, 150);
@@ -282,28 +284,87 @@
   function zeitUm() {
     KZ.rest = 0; KZ.laeuft = false; uhrZeigen();
     if (!KZ.imKampf) return teleport();
-    KZ.zeitAb = true; kampfAbbrechen();
+    KZ.zeitAb = true; fundFensterZu(); kampfAbbrechen();
   }
-  /** Knopf im Kampf: den Raum verlassen und zurück zur Karte (Erfahrung und Aufgehobenes bleiben, was noch liegt, ist verloren) */
+  /** Knopf im Kampf: den Raum verlassen und zurück zur Karte. Solange Monster stehen, bleibt nur die Erfahrung und was aufgehoben ist;
+   *  sind alle besiegt, heißt er „Zur Karte“ und schließt den gewonnenen Raum ab (was noch liegt, bleibt liegen). */
   function rausKnopf(an) {
     let b = document.getElementById("riss-raus");
     if (!an) { if (b) b.hidden = true; return; }
-    if (!b) { b = document.createElement("button"); b.id = "riss-raus"; b.type = "button"; b.className = "riss-raus"; b.textContent = "Raum verlassen"; document.body.appendChild(b);
-      b.onclick = () => { if (!KZ.imKampf || KZ.zeitAb || KZ.verlassen) return; if (b.dataset.sicher !== "1") { b.dataset.sicher = "1"; b.textContent = "Wirklich gehen?"; setTimeout(() => { b.dataset.sicher = ""; b.textContent = "Raum verlassen"; }, 2500); return; } KZ.verlassen = true; rausKnopf(false); kampfAbbrechen(); }; }
-    b.dataset.sicher = ""; b.textContent = "Raum verlassen"; b.hidden = false;
+    if (!b) { b = document.createElement("button"); b.id = "riss-raus"; b.type = "button"; b.className = "riss-raus"; document.body.appendChild(b);
+      b.onclick = () => { if (!KZ.imKampf || KZ.zeitAb || KZ.schluss) return;
+        if (!KZ.frei && b.dataset.sicher !== "1") { b.dataset.sicher = "1"; b.textContent = "Wirklich gehen?"; setTimeout(() => { if (b.dataset.sicher === "1") { b.dataset.sicher = ""; rausText(); } }, 2500); return; }
+        if (!KZ.frei) KZ.verlassen = true; rausKnopf(false); kampfAbbrechen(); }; }
+    b.dataset.sicher = ""; b.hidden = false; rausText();
   }
-  /** Im Kampf: Besiegte Monster lassen Segen oder Erbsplitter liegen. Aufgehoben wird, sobald ein stehender Held daneben steht. */
+  function rausText() { const b = document.getElementById("riss-raus"); if (!b || b.dataset.sicher === "1") return; const offen = KZ.drops ? KZ.drops.liste.filter((d) => !d.weg).length : 0;
+    const t = KZ.frei ? (offen ? `Zur Karte (${offen} liegt noch)` : "Zur Karte") : "Raum verlassen"; if (b.textContent !== t) b.textContent = t; b.classList.toggle("frei", Boolean(KZ.frei)); }
+  /** Der Raum bleibt nach dem letzten Monster offen, solange noch etwas liegt: Dafür hängt sich eine dünne Schicht hinter die Regeln (nur für diesen Kampf) */
+  function raumEinhaengen() {
+    const o = KZ.orig = { bewegen: R.bewegen, handeln: R.handeln, zugEnde: R.zugEnde, gegnerZug: R.gegnerZug, autoZug: R.autoZug };
+    const huelle = (k) => function (s, ...a) { const r = o[k].call(this, s, ...a); if (KZ.imKampf && s === window.AB.st) raumOffenHalten(s); return r; };
+    for (const k of Object.keys(o)) R[k] = huelle(k);
+  }
+  function raumAushaengen() { if (KZ.orig) for (const k of Object.keys(KZ.orig)) R[k] = KZ.orig[k]; KZ.orig = null; }
+  function raumOffenHalten(st) {
+    if (KZ.schluss || st.ende !== "sieg") return;
+    fundeErfassen(st); KZ.frei = true;
+    if (KZ.drops.liste.some((d) => !d.weg)) { st.ende = null; if (!KZ.gemeldet) { KZ.gemeldet = true; st.log.push({ t: "Der Raum ist frei. Sammelt ein, was noch liegt – oder geht zur Karte.", art: "gut" }); } }
+  }
+  /** Besiegte Monster lassen etwas liegen: Erbsplitter oder selten einen Fund für einen Helden */
+  function fundeErfassen(st) {
+    const D = KZ.drops;
+    for (const f of st.figuren) { if (f.seite !== "gegner" || !R.GEGNER[f.art] || f.tp > 0 || D.gesehen[f.id]) continue; D.gesehen[f.id] = true;
+      const d = K.kDrop(Z.ich, f.art === D.boss, Math.random); D.liste.push(Object.assign({ x: f.x, y: f.y, weg: false }, d)); }
+  }
+  const heldDaneben = (st, d) => st.figuren.find((x) => x.seite === "spieler" && x.fid && x.tp > 0 && !x.tot && Math.max(Math.abs(x.x - d.x), Math.abs(x.y - d.y)) <= 1);
+  /** Im Kampf, vier Mal je Sekunde: Funde erfassen und markieren, Erfahrung mitzählen, Knopf und Ende nachführen */
   function kampfWache() {
     const st = window.AB.st, D = KZ.drops; if (!KZ.imKampf || !st || !D) return;
-    for (const f of st.figuren) { if (f.seite !== "gegner" || !R.GEGNER[f.art] || f.tp > 0 || D.gesehen[f.id]) continue; D.gesehen[f.id] = true;
-      const d = K.kDrop(Z.ich, f.art === D.boss, Math.random, D.liste.filter((x) => x.segen && !x.weg).map((x) => x.segen)); D.liste.push(Object.assign({ x: f.x, y: f.y, weg: false }, d)); }
-    for (const d of D.liste) { if (d.weg) continue; const h = st.figuren.find((x) => x.seite === "spieler" && x.fid && x.tp > 0 && !x.tot && Math.max(Math.abs(x.x - d.x), Math.abs(x.y - d.y)) <= 1); if (h || d.x < 0) aufheben(d, h); }
-    const karte = $("#karte"); if (!karte) return; const wo = {}; for (const d of D.liste) if (!d.weg) wo[d.x + "," + d.y] = d.segen ? "riss-drop-segen" : (wo[d.x + "," + d.y] || "riss-drop");
-    karte.querySelectorAll("rect.feld").forEach((r) => { const kl = wo[r.dataset.x + "," + r.dataset.y] || ""; for (const c of ["riss-drop", "riss-drop-segen"]) if (r.classList.contains(c) !== (c === kl)) r.classList.toggle(c, c === kl); });
+    if (st.ende === "sieg" && !KZ.schluss) { raumOffenHalten(st); if (!st.ende) window.AB.render(); } // falls das Ende an der Schicht vorbei kam
+    fundeErfassen(st); xpLeiste(st); rausText();
+    if (KZ.frei && !KZ.schluss && !D.liste.some((d) => !d.weg) && !KZ.fenster) { st.ende = "sieg"; KZ.schluss = true; window.AB.render(); } // alles eingesammelt: Der Raum ist fertig
+    const karte = $("#karte"); if (!karte) return; const wo = {};
+    for (const d of D.liste) if (!d.weg) wo[d.x + "," + d.y] = (d.ding ? "riss-drop-segen" : wo[d.x + "," + d.y] || "riss-drop") + (heldDaneben(st, d) ? " greifbar" : "");
+    karte.querySelectorAll("rect.feld").forEach((r) => { const kl = (wo[r.dataset.x + "," + r.dataset.y] || "").split(" "); for (const c of ["riss-drop", "riss-drop-segen", "greifbar"]) if (r.classList.contains(c) !== kl.includes(c)) r.classList.toggle(c, kl.includes(c)); });
   }
-  function aufheben(d, h) {
-    d.weg = true; K.kNimm(Z.ich, d); KZ.drops.splitter += d.splitter || 0; if (d.segen) { KZ.drops.segen.push(d.segen); const st = window.AB.st; if (st && st.segen && !st.segen.includes(d.segen)) st.segen.push(d.segen); }
-    if (window.MYTHARA.toast && !KZ.still) window.MYTHARA.toast(d.segen ? `${h ? h.name + " hebt einen Segen auf" : "Segen"}: ${F.SEGEN[d.segen].name}` : `+${d.splitter} Erbsplitter`);
+  /** Antippen der Karte: Liegt dort etwas und steht ein Held daneben, wird aufgehoben (statt zu laufen) */
+  function karteKlick(ev) {
+    const st = window.AB.st, D = KZ.drops; if (!KZ.imKampf || !st || !D || KZ.schluss) return;
+    const r = document.elementsFromPoint(ev.clientX, ev.clientY).find((e) => e.matches && e.matches("#karte rect.feld")); if (!r) return;
+    if (feldAufheben(+r.dataset.x, +r.dataset.y)) { ev.stopPropagation(); ev.preventDefault(); }
+  }
+  /** Zurück: true, wenn auf dem Feld etwas lag (aufgehoben oder Hinweis gezeigt) */
+  function feldAufheben(x, y) {
+    const st = window.AB.st, D = KZ.drops, hier = D.liste.filter((d) => !d.weg && d.x === x && d.y === y); if (!hier.length) return false;
+    const h = heldDaneben(st, hier[0]); if (!h) { if (window.MYTHARA.toast) window.MYTHARA.toast("Zu weit weg: Ein Held muss daneben stehen."); return false; } // nicht daneben: der Klick läuft weiter (hinlaufen)
+    for (const d of hier) { if (d.ding) { fundFenster(d); break; } aufheben(d, null); }
+    kampfWache(); return true;
+  }
+  function aufheben(d, held) {
+    d.weg = true; K.kNimm(Z.ich, d, held); const st = window.AB.st;
+    if (d.ding) { KZ.drops.funde.push({ ding: d.ding, held }); const f = st && st.figuren.find((x) => x.fid === held); if (f) { f.rucksack = f.rucksack || []; if (!f.rucksack.some((x) => x.id === d.ding)) f.rucksack.push({ id: d.ding, n: 1 }); } }
+    else KZ.drops.splitter += d.splitter || 0;
+    if (window.MYTHARA.toast) window.MYTHARA.toast(d.ding ? `${F.FIGUREN[held].name} bekommt: ${R.GEGENSTAENDE[d.ding].name}` : `+${d.splitter} Erbsplitter`);
+  }
+  /** Ein Fund für einen Helden: Wer bekommt ihn? (Die Zeit läuft weiter.) */
+  function fundFenster(d) {
+    fundFensterZu(); const g = R.GEGENSTAENDE[d.ding], el = document.createElement("div"); el.id = "riss-fund"; el.className = "riss-fund"; KZ.fenster = el;
+    el.innerHTML = `<div class="riss-fund-blatt" role="dialog" aria-label="Fund"><p class="riss-schritt">Fund</p><h2>${esc(g.name)}</h2><p>${esc(g.text)}</p><b>Für wen?</b>
+      <div class="riss-fund-helden">${Z.ich.gruppe.map((f) => `<button type="button" class="rs-held" data-wer="${f}" ${K.kannTragen(Z.ich, d.ding, f) ? "" : "disabled"} style="--k:${F.KLASSEN[F.FIGUREN[f].klasse].farbe}"><img src="${F.bild(f)}" alt=""><b>${esc(F.FIGUREN[f].name)}</b></button>`).join("")}</div>
+      <button type="button" class="btn ghost klein" data-zu>Liegen lassen</button></div>`;
+    el.onclick = (ev) => { const b = ev.target.closest("[data-wer]"); if (b && !b.disabled) { fundFensterZu(); aufheben(d, b.dataset.wer); return; } if (ev.target.closest("[data-zu]") || ev.target === el) fundFensterZu(); };
+    document.body.appendChild(el);
+  }
+  function fundFensterZu() { if (KZ.fenster) { KZ.fenster.remove(); KZ.fenster = null; } }
+  /** Blauer Balken im Kampf: die Erfahrung der Gruppe, sie wächst mit jedem Lebenspunkt, den ein Monster verliert */
+  function xpLeiste(st) {
+    let el = document.getElementById("riss-xpleiste");
+    if (!st) { if (el) el.hidden = true; return; }
+    if (!el) { el = document.createElement("div"); el.id = "riss-xpleiste"; el.className = "riss-xpleiste"; document.body.appendChild(el); }
+    const xp = Z.ich.xp + K.kXp(st), s = K.kStufe(xp), alt = K.kStufe(Z.ich.xp).stufe;
+    const html = `<b>Stufe ${alt}${s.stufe > alt ? ` → ${s.stufe}` : ""}</b><i><u style="width:${s.voll ? 100 : Math.round(100 * s.in / s.bis)}%"></u></i><small>${s.voll ? "höchste Stufe" : `${s.in} / ${s.bis} EP`}</small><span>◈ ${Z.ich.splitter}</span>`;
+    el.hidden = false; if (el.dataset.h !== html) { el.dataset.h = html; el.innerHTML = html; }
   }
   function losK() {
     Z.seed = zufall(); Z.beginn = Date.now(); Z.sicht = 0; Z.warte = null; Z.folge = null;
@@ -320,21 +381,21 @@
     $("#riss-kampf").onclick = () => kampfK("M");
   }
   function kampfK(ort) {
-    const t0 = Date.now(), def = K.kDef(Z.ich, ort); KZ.imKampf = true; KZ.zeitAb = false; KZ.verlassen = false;
-    KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, segen: [] };
-    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { kampfWache(); KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; rausKnopf(false); zumHub(); nachK(ort, st, Date.now() - t0); });
+    const t0 = Date.now(), def = K.kDef(Z.ich, ort); Object.assign(KZ, { imKampf: true, zeitAb: false, verlassen: false, frei: false, schluss: false, gemeldet: false });
+    KZ.drops = { boss: def.boss || null, gesehen: {}, liste: [], splitter: 0, funde: [] };
+    raumEinhaengen();
+    window.AB.kampfStarten(K.kOpts(Z.ich, ort), (st) => { KZ.imKampf = false; clearInterval(KZ.wache); KZ.wache = null; raumAushaengen(); fundFensterZu(); rausKnopf(false); xpLeiste(null);
+      const k = $("#karte"); if (k) k.removeEventListener("click", karteKlick, true); zumHub(); nachK(ort, st, Date.now() - t0); });
     if (window.AB.st) { K.raumDinge(Z.ich, window.AB.st); window.AB.render(); }
-    clearInterval(KZ.wache); KZ.wache = setInterval(kampfWache, 250);
-    if (ort !== "M") rausKnopf(true);
+    const karte = $("#karte"); if (karte) karte.addEventListener("click", karteKlick, true); // vor dem Spiel: Aufheben statt Laufen
+    clearInterval(KZ.wache); KZ.wache = setInterval(kampfWache, 250); kampfWache();
+    rausKnopf(true);
   }
   function nachK(ort, st, dauer) {
-    const D = KZ.drops, sieg = st.ende === "sieg";
-    if (sieg) { KZ.still = true; for (const d of D.liste) if (!d.weg) aufheben(d, null); KZ.still = false; } // der Raum ist frei: Was noch liegt, wird eingesammelt
-    const liegen = D.liste.filter((d) => !d.weg).length;
-    const e = K.kEnde(Z.ich, ort, st, Math.random, KZ.zeitAb || KZ.verlassen, KZ.verlassen), def = K.kDef(Z.ich, ort); e.splitter = D.splitter; e.segen = D.segen.slice(); e.liegen = liegen; e.verlassen = KZ.verlassen && !sieg; KZ.ergebnis = e; void def;
-    Z.log.ich.raeume.push({ ort, id: e.id, sieg: e.sieg, abgebrochen: e.abgebrochen, verlassen: e.verlassen, runden: e.runden, xp: e.xp, besiegt: e.besiegt, gegner: e.gegner, gefallen: e.gefallen.length, splitter: e.splitter, segen: e.segen, liegenGelassen: liegen, sekunden: Math.round(dauer / 1000), restSek: Math.max(0, Math.round(KZ.rest / 1000)) });
-    const weiter = () => { if (KZ.fertig) return; if (KZ.zeitAb || (KZ.laeuft && KZ.rest <= 0) || Z.ich.besucht.length >= 5) return teleport(); karteZeigen(); uhrAn(); };
-    weiter();
+    const D = KZ.drops, sieg = st.ende === "sieg", liegen = D.liste.filter((d) => !d.weg).length;
+    const e = K.kEnde(Z.ich, ort, st, Math.random, KZ.zeitAb || KZ.verlassen, KZ.verlassen); e.splitter = D.splitter; e.funde = D.funde.slice(); e.liegen = liegen; e.verlassen = KZ.verlassen && !sieg; KZ.ergebnis = e;
+    Z.log.ich.raeume.push({ ort, id: e.id, sieg: e.sieg, abgebrochen: e.abgebrochen, verlassen: e.verlassen, runden: e.runden, xp: e.xp, besiegt: e.besiegt, gegner: e.gegner, gefallen: e.gefallen.length, splitter: e.splitter, funde: e.funde, liegenGelassen: liegen, sekunden: Math.round(dauer / 1000), restSek: Math.max(0, Math.round(KZ.rest / 1000)) });
+    if (KZ.fertig) return; if (KZ.zeitAb || (KZ.laeuft && KZ.rest <= 0) || Z.ich.besucht.length >= 5) return teleport(); karteZeigen(); uhrAn();
   }
   /** Vor dem Finale: die Siegelwächterin verkauft für Erbsplitter, was im Endkampf hilft (ohne Zeitdruck) */
   function laden() {
@@ -360,19 +421,19 @@
   }
   const ORT = [{ x: 50, y: 13, n: "Norden" }, { x: 87, y: 50, n: "Osten" }, { x: 50, y: 87, n: "Süden" }, { x: 13, y: 50, n: "Westen" }];
   function karteZeigen() {
-    const W = Z.ich, C = K.KARTE, e = KZ.ergebnis, xpIn = W.xp % C.XP_STUFE, stufe = Math.max(...W.gruppe.map((f) => W.stufen[f]));
+    const W = Z.ich, C = K.KARTE, e = KZ.ergebnis, S = K.kStufe(W.xp), stufe = S.stufe;
     const linien = ORT.map((p, k) => `<line x1="50" y1="50" x2="${p.x}" y2="${p.y}"/><line x1="${p.x}" y1="${p.y}" x2="${ORT[(k + 1) % 4].x}" y2="${ORT[(k + 1) % 4].y}"/>`).join("");
     const raum = (k) => { const da = W.besucht.includes(k), d = da ? K.kDef(W, k) : null, v = da ? W.verlauf.find((x) => x.ort === k) : null;
       return `<button type="button" class="rk-raum ${da ? "hell" + (v && !v.sieg ? " verloren" : "") : "dunkel"}${W.ort === k ? " hier" : ""}" style="left:${ORT[k].x}%;top:${ORT[k].y}%" ${da ? "disabled" : `data-ort="${k}"`}>
         <i>${da ? (d.boss ? "☠" : d.id === "schwer" ? "⚔" : "◆") : "?"}</i><b>${da ? esc(d.kurz) : ORT[k].n}</b><small>${da ? (v && v.sieg ? "geschafft" : v && v.abgebrochen ? "verlassen" : "verloren") : "unerkundet"}</small></button>`; };
-    const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen" : "die Gruppe ist gefallen und steht voll geheilt wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.segen || []).map((x) => ` · Segen: ${esc(F.SEGEN[x].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
+    const letztes = e ? `<p class="riss-ergebnis ${e.sieg ? "gut" : "schlecht"}">${esc(K.kDef(W, e.ort).name)}: ${e.sieg ? "geschafft" : e.verlassen ? "verlassen" : "die Gruppe ist gefallen und steht voll geheilt wieder auf"} · ${e.besiegt} von ${e.gegner} Monstern besiegt · +${e.xp} Erfahrung${e.splitter ? ` · +${e.splitter} Erbsplitter` : ""}${(e.funde || []).map((x) => ` · ${esc(R.GEGENSTAENDE[x.ding].name)} für ${esc(F.FIGUREN[x.held].name)}`).join("")}${e.liegen ? ` · ${e.liegen} Fund${e.liegen === 1 ? "" : "e"} liegen gelassen` : ""}${e.stufe > e.stufeVor ? ` · <b>Stufe ${e.stufe}</b>` : ""}${e.gefallen.length ? ` · gefallen: ${e.gefallen.map((f) => esc(F.FIGUREN[f].name)).join(", ")}` : ""}</p>` : "";
     seite(`<div data-riss-karte><p class="riss-schritt">Die Karte des Risses</p><h1 class="hub-gruss">Wohin jetzt?</h1>${letztes}
       <div class="riss-karte-zwei"><div class="riss-karte" id="riss-karte"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${linien}</svg>
           <span class="rk-raum hell mitte${W.ort === "M" ? " hier" : ""}" style="left:50%;top:50%"><i>⟁</i><b>Mitte</b><small>geschafft</small></span>${[0, 1, 2, 3].map(raum).join("")}</div>
-        <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${stufe >= C.STUFE_MAX ? 100 : xpIn}%"></u></i><small>${stufe >= C.STUFE_MAX ? "höchste Stufe" : `${xpIn} von ${C.XP_STUFE} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
+        <div><p class="riss-splitter">◈ <b>${W.splitter}</b> Erbsplitter</p><div class="riss-xp"><b>Stufe ${stufe}</b><i><u style="width:${S.voll ? 100 : Math.round(100 * S.in / S.bis)}%"></u></i><small>${S.voll ? "höchste Stufe" : `${S.in} von ${S.bis} Erfahrung bis Stufe ${stufe + 1}`}</small></div>
           ${gruppeHtml("Deine Gruppe", W.gruppe, W.stufen, K.leben(W), W.dinge, W.segen)}
           <p class="riss-verdeckt">Du hörst ${esc(Z.bot.name)} irgendwo im Riss werkeln.</p>
-          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es für jedes besiegte Monster, auch wenn die Zeit dich herausholt. Jedes Monster lässt Erbsplitter fallen – oder selten einen Segen (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben muss sie ein Held, der daneben steht. Im Kampf kannst du einen Raum jederzeit verlassen.</p></div></div></div>`);
+          <p class="note">Dunkle Räume sind unerkundet: ein schwerer Raum, ein Boss und zwei leichte Räume. Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert (${C.XP_LP} je Punkt). Jedes besiegte Monster lässt Erbsplitter liegen – oder selten einen Fund für einen Helden (${Math.round(C.DROP * 100)} %, der Boss ${Math.round(C.DROP_BOSS * 100)} %). Aufheben: einen Helden daneben stellen und das Feld antippen. Der Raum bleibt offen, bis du zur Karte gehst.</p></div></div></div>`);
     $("#riss-karte").onclick = (ev) => { const b = ev.target.closest("[data-ort]"); if (!b || KZ.imKampf) return; const k = +b.dataset.ort;
       if (KZ.rest <= 0) return zeitUm(); kampfK(k); };
   }
@@ -467,12 +528,12 @@
     const X = st.riss, aus = X.aus || { sieger: st.arena.sieger, grund: "abbruch", runden: st.runde, punkte: X.P }, sieg = aus.sieger === 1, jetzt = Date.now(), W = Z.warte;
     const kopie = JSON.parse(JSON.stringify({ aus, M: X.M, start: X.start, frueh: X.frueh, vor: X.vor }));
     finaleAufraeumen(); zumHub();
-    Object.assign(Z.log.gegner, { raeume: Z.bot.raeume, xp: Z.bot.xp, splitter: Z.bot.splitter, kaeufe: Z.bot.kaeufe, verlauf: Z.bot.verlauf.map((v) => ({ raum: v.raum, art: v.art, id: v.id, xp: v.xp, abgebrochen: v.abgebrochen, splitter: v.splitter, segen: v.segen, sieg: v.sieg, runden: v.runden, gefallen: v.gefallen.length, beute: v.beute || null })) });
+    Object.assign(Z.log.gegner, { raeume: Z.bot.raeume, xp: Z.bot.xp, splitter: Z.bot.splitter, kaeufe: Z.bot.kaeufe, verlauf: Z.bot.verlauf.map((v) => ({ raum: v.raum, art: v.art, id: v.id, xp: v.xp, abgebrochen: v.abgebrochen, splitter: v.splitter, funde: v.funde, sieg: v.sieg, runden: v.runden, gefallen: v.gefallen.length, beute: v.beute || null })) });
     Object.assign(Z.log, { raeume: [Z.ich.raeume, Z.bot.raeume], stufen: [K.stufeSchnitt(Z.ich), K.stufeSchnitt(Z.bot)].map((x) => Math.round(x * 100) / 100), frueh: kopie.frueh, startPunkte: [kopie.start[1], kopie.start[2]], sieger: aus.sieger, sieg, grund: aus.grund, punkte: [aus.punkte[1], aus.punkte[2]],
       finalRunden: aus.runden, wegRunden: [Z.ich.runden, Z.bot.runden], auslöschungen: kopie.M.aus, rueckkehrer: kopie.M.rueck, zurueckerobert: kopie.M.zurueck, siegelwechsel: kopie.M.wechsel, runden: kopie.M.runden,
       warten: W ? { sekunden: Math.round((Z.finalBeginn - W.beginn) / 1000), zugeschaut: W.geschaut, uebersprungen: W.uebersprungen, aufstellung: W.platz } : null,
       minuten: { weg: Math.round((Z.wegEnde - Z.beginn) / 6000) / 10, finale: Math.round((jetzt - Z.finalBeginn) / 6000) / 10, gesamt: Math.round((jetzt - Z.beginn) / 6000) / 10 } });
-    const alle = mitschrift(); alle.push(Z.log); try { localStorage.setItem(SPEICHER, JSON.stringify(alle.slice(-60))); } catch (e) { /* privat */ }
+    Z.log.fertig = true; const alle = mitschrift(); alle.push(Z.log); try { localStorage.setItem(SPEICHER, JSON.stringify(alle.slice(-60))); } catch (e) { /* privat */ }
     const L = Z.log, grund = aus.grund === "siegel" ? `${sieg ? "Du hast" : esc(Z.bot.name) + " hat"} fünf Siegelpunkte.` : "Zwölf Runden sind um. Es zählen die Siegelpunkte.";
     seite(`<p class="riss-schritt">Ende der Partie</p><h1 class="hub-gruss">${sieg ? "Der Riss gehört dir" : "Der Riss schließt sich"}</h1>
       <p class="riss-ergebnis ${sieg ? "gut" : "schlecht"}">${sieg ? "Sieg" : "Niederlage"}: Siegelpunkte <b>${L.punkte[0]} : ${L.punkte[1]}</b>. ${grund}</p>
@@ -506,5 +567,11 @@
     const hub = $("#hub"); b.hidden = !(hub && !hub.hidden) || Boolean(document.querySelector("[data-riss]"));
   }
   setInterval(knopf, 700);
-  window.RISS = { zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
+  /** Läuft gerade eine Partie? (Dann lädt das Spiel sich nicht von selbst neu, siehe js/mythara.js) */
+  const laeuft = () => Boolean(Z.log && !Z.log.fertig && (Z.ich || Z.st));
+  /** Wird die Seite mitten in einer Partie verlassen oder neu geladen, bleibt wenigstens ein Eintrag in der Mitschrift */
+  window.addEventListener("pagehide", () => { if (!laeuft()) return; try { const L = Object.assign({}, Z.log, { abgebrochen: "Seite verlassen oder neu geladen", phase: Z.st ? "finale" : "weg", minuten: { gesamt: Math.round((Date.now() - Z.beginn) / 6000) / 10 } });
+    if (Z.st && Z.st.riss) { L.punkte = [Z.st.riss.P[1], Z.st.riss.P[2]]; L.finalRunden = Z.st.riss.runde; L.runden = Z.st.riss.M.runden; }
+    const alle = mitschrift(); alle.push(L); localStorage.setItem(SPEICHER, JSON.stringify(alle.slice(-60))); } catch (e) { /* privat */ } });
+  window.RISS = { laeuft, feldAufheben, zeigen, zustand: () => Z, karteZustand: () => KZ, laden, kern: () => K, mitschrift };
 })();

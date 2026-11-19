@@ -282,9 +282,9 @@ Entstanden aus den ersten von Hand gespielten Partien. Dort kam „früh gegen t
 1. **Die Mitte.** Der erste Raum ist der leichte Einstieg. Alle beginnen auf Stufe 1.
 2. **Die Karte.** Danach öffnet sich die Karte: die Mitte und vier Räume im Ring darum, verbunden mit der Mitte und mit ihren beiden Nachbarn. Für beide Seiten dieselbe Karte. Ab jetzt läuft die Zeit: vier Minuten (wählbar 3, 4 oder 5).
 3. **Dunkel und hell.** Unerkundete Räume sind dunkel; was drin ist, sieht man erst beim Betreten. In den vier Räumen liegen ein schwerer Raum, ein Bossraum und zwei leichte Räume, die Verteilung wird gelost. Beendete Räume leuchten. Nach jedem Raum landet man wieder auf der Karte.
-4. **Erfahrung.** Jedes besiegte Monster gibt Erfahrung für die ganze Gruppe, auch wenn der Raum nicht fertig wird. Je 100 Erfahrung steigt die Gruppe eine Stufe (höchstens Stufe 6). Einstieg 100, leichter Raum 75, schwerer Raum 125, Bossraum 150 (der Boss zählt dreifach).
-5. **Erbsplitter und Segen.** Jedes besiegte Monster lässt etwas liegen: zu 8 % einen zufälligen Segen (der Boss zu 50 %), sonst 1 bis 20 Erbsplitter (der Boss 15 bis 40). Aufgehoben wird es, sobald ein stehender Held auf dem Feld oder daneben steht. Ist der Raum gewonnen, sammelt die Gruppe den Rest ein.
-6. **Raum verlassen.** Mitten im Kampf kann man gehen. Erfahrung und Aufgehobenes bleiben, was noch liegt, ist verloren, und der Raum ist danach zu.
+4. **Erfahrung.** Jeder Lebenspunkt, den ein Monster verliert, gibt 5 Erfahrung für die ganze Gruppe – auch wenn das Monster nicht fällt und der Raum nicht fertig wird. Im Kampf zählt ein blauer Balken mit. Stufe 2 kostet 40 Erfahrung, jede weitere 50 mehr als die davor (Stufe 3 bei 130, Stufe 4 bei 270, Stufe 5 bei 460, Stufe 6 bei 700). Die neue Stufe gilt ab dem nächsten Raum.
+5. **Erbsplitter und Funde.** Jedes besiegte Monster lässt etwas liegen: zu 8 % einen Fund für einen Helden (der Boss zu 50 %), sonst 1 bis 20 Erbsplitter (der Boss 15 bis 40). Aufgehoben wird von Hand: Ein stehender Held muss auf dem Feld oder daneben stehen, dann tippt man das Feld an. Bei einem Fund fragt das Spiel, wer ihn bekommt. Nichts wird von selbst eingesammelt.
+6. **Der Raum bleibt offen.** Sind alle Monster besiegt, endet der Raum nicht von selbst: Man sammelt ein oder geht mit „Zur Karte". Solange Monster stehen, heißt der Knopf „Raum verlassen": Erfahrung und Aufgehobenes bleiben, was noch liegt, ist verloren, und der Raum ist danach zu.
 7. **Die Zeit ist um.** Der Riss holt beide Gruppen im selben Moment in den Siegelsaal, auch mitten aus einem Kampf. Die Uhr läuft für beide gleich, ohne Anhalten und ohne Abzüge: Niemand wartet.
 8. **Die Siegelwächterin.** Vor dem Finale, ohne Zeitdruck, tauscht jede Seite ihre Erbsplitter: Heilung der ganzen Gruppe 50, Heiltrank für einen Helden 25, Gegenstand 60 (drei zur Wahl), Segen 90. Was übrig bleibt, verfällt.
 9. **Das Finale** wie oben, aber beide beginnen am eigenen Eingang mit 0 : 0. Trefferpunkte kommen vom Weg mit; Heilung gibt es nur bei der Wächterin. Zauberplätze, Tränke und Fähigkeiten sind frisch.
@@ -294,13 +294,16 @@ Vom Gegner hört man auf der Karte nur, dass er im Riss ist. Was er erkundet und
 ### Was verworfen wurde
 
 - **Truhen mit Glückswürfen und Zeitstrafe** und **Sonderaufgaben, die Zeit kosten:** Beides zieht Zeit von der eigenen Uhr ab oder braucht sie zusätzlich. Mit Abzug käme eine Seite früher am Siegel an und müsste wieder warten. Das Hinlaufen zum Aufheben kostet schon Zeit, ohne die Uhr zu verschieben.
-- **Gegenstände als Beute von Monstern:** Gegenstände gibt es nur bei der Wächterin, Monster lassen Segen fallen.
+- **Segen als Fund für einen einzelnen Helden:** Segen wirken in den Regeln immer für die ganze Gruppe. Ein Fund „für wen?" ist deshalb ein Gegenstand (jeder Held trägt höchstens zwei). Segen für die Gruppe gibt es bei der Wächterin.
+- **Automatisches Einsammeln** nach dem Sieg: Aufheben ist die Zeitfrage des Modus und geschieht nur von Hand.
 
 ### Stand und erste Zahlen
 
-Gebaut in `js/riss-kern.js` und `js/riss.js`, Test `tests/riss-karte.test.js`. Rechner gegen Rechner, 200 Partien mit vier Minuten: Der Rechner schafft im Schnitt 2,2 der vier äußeren Räume, kommt mit Stufe 4,1 an, sammelt rund 150 Erbsplitter und trägt knapp 2 Segen. Das Finale dauert rund 8,6 Runden, die Seiten gewinnen gleich oft (102 zu 98).
+Gebaut in `js/riss-kern.js` und `js/riss.js`, Test `tests/riss-karte.test.js`. Rechner allein, 200 Gruppen mit vier Minuten: Er schafft im Schnitt 2,4 der vier äußeren Räume und kommt mit Stufe 4,4 an. Erfahrung je Raum: Einstieg 45, leichter Raum 80, Bossraum 160, schwerer Raum 216.
 
-Nicht gerechnet und nicht von Hand gespielt: ob vier Minuten für einen Menschen passen (aus den bisherigen Partien: 40 bis 100 Sekunden je Raum, also zwei bis vier Räume), ob das Aufheben eine echte Entscheidung ist (Nahkämpfer stehen beim Töten ohnehin daneben), und ob die Preise der Wächterin stimmen. Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles auf und verlässt keinen Raum.
+Nicht gerechnet und kaum von Hand gespielt: ob vier Minuten für einen Menschen passen, wie viel Zeit das Aufheben wirklich kostet (im offenen Raum ziehen die Helden weiter reihum, mit ihrer Bewegung je Zug) und ob die Preise der Wächterin stimmen. Der Rechner rechnet mit 30 Sekunden je Kampfrunde, hebt alles ohne Zeitverlust auf und verlässt keinen Raum – er ist beim Einsammeln also im Vorteil.
+
+**Abbruch einer Partie.** Das Spiel lädt sich von selbst neu, wenn eine neue Fassung online ist. Eine Rissgänger-Partie ist nicht gespeichert und ging dabei verloren (einmal mitten im Siegelkampf passiert). Während einer Partie wird jetzt nicht mehr neu geladen, und wird die Seite trotzdem verlassen, bleibt ein Eintrag in der Mitschrift.
 
 Gegen Menschen ist offen, wie die Uhr mit unterschiedlich schnellen Geräten und Animationen umgeht.
 

@@ -143,16 +143,22 @@
      * Raum „M“ in der Mitte ist der Einstieg. Danach läuft die Zeit. Außen liegen vier Räume im Ring (0 Norden, 1 Osten, 2 Süden, 3 Westen):
      * jeder ist mit der Mitte und mit seinen beiden Nachbarn verbunden. Was in welchem Raum wartet, wird gelost und ist für beide Seiten gleich:
      * ein schwerer Raum, ein Bossraum und zwei leichte Räume. Unerkundete Räume sind dunkel.
-     * Jedes besiegte Monster lässt etwas fallen: selten einen Segen (DROP, der Boss DROP_BOSS), sonst Erbsplitter. Aufgehoben wird es von einem Helden, der daneben steht.
+     * Jedes besiegte Monster lässt etwas fallen: selten einen Fund für einen Helden (DROP, der Boss DROP_BOSS), sonst Erbsplitter. Aufgehoben wird von Hand: ein Held daneben, dann antippen.
      * Die Zeit läuft für beide Seiten gleich und ohne Abzüge: Was Zeit kostet (hinlaufen und aufheben), dauert einfach so lange.
      * Vor dem Finale verkauft die Siegelwächterin für Erbsplitter Heilung, Tränke, Gegenstände und Segen.
-     * Erfahrung gibt es je besiegtem Monster für die ganze Gruppe; je XP_STUFE Punkte steigt die Gruppe eine Stufe. */
+     * Erfahrung gibt es für jeden Lebenspunkt, den ein Monster verliert, für die ganze Gruppe (siehe kStufe). */
     const K_RAEUME = {
       schwer: Object.assign({}, SCHWER[0], { xp: 125, kurz: "Schwerer Raum" }),
       boss: { name: "Die Ritterhalle", karte: "HALLE", begegnung: "ritter", n: 2, skala: 0.6, boss: "grabritter", xp: 150, kurz: "Bossraum", text: "Ein Grabritter hält die Halle. Wer ihn fällt, findet oft etwas bei ihm." },
       truhe1: Object.assign({}, BEUTE[0], { xp: 75, kurz: "Leichter Raum", text: "Kobolde in engen Gängen. Schnell erledigt." }),
       truhe2: Object.assign({}, BEUTE[1], { xp: 75, kurz: "Leichter Raum", text: "Käfer und Kobolde zwischen den Pilzen. Schnell erledigt." }) };
-    const K = { ZEIT: 240, XP_STUFE: 100, STUFE_MAX: 6, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
+    const K = { ZEIT: 240, XP_LP: 5, XP_STUFE_1: 40, XP_STUFE_JE: 50, STUFE_MAX: 6, DROP: 0.08, DROP_BOSS: 0.5, SPLITTER: [1, 20], SPLITTER_BOSS: [15, 40], PREIS: { heilung: 50, trank: 25, ding: 60, segen: 90 }, BOT_SEK_RUNDE: 30 };
+    /** Erfahrung: XP_LP je Lebenspunkt, den ein Monster verloren hat. Stufe 2 kostet XP_STUFE_1, jede weitere XP_STUFE_JE mehr als die davor. */
+    const xpBis = (stufe) => { let x = 0; for (let n = 2; n <= stufe; n++) x += K.XP_STUFE_1 + K.XP_STUFE_JE * (n - 2); return x; };
+    /** Zurück: { stufe, in (Erfahrung in dieser Stufe), bis (so viel braucht die nächste), voll } */
+    function kStufe(xp) { let st = 1; while (st < K.STUFE_MAX && xp >= xpBis(st + 1)) st++; const voll = st >= K.STUFE_MAX; return { stufe: st, in: voll ? 0 : xp - xpBis(st), bis: voll ? 0 : xpBis(st + 1) - xpBis(st), voll }; }
+    /** Erfahrung aus einem laufenden oder beendeten Kampf: jeder verlorene Lebenspunkt der Monster zählt */
+    const kXp = (st) => K.XP_LP * st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]).reduce((a, f) => a + Math.max(0, f.tpMax - Math.max(0, f.tp)), 0);
     const karteLosen = (zf) => ["schwer", "boss", "truhe1", "truhe2"].map((x) => [zf(), x]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     function neuK(gruppe, name, karte) { return Object.assign(neu(gruppe, name), { karte: karte.slice(), xp: 0, splitter: 0, ort: null, besucht: [], traenke: {}, kaeufe: [] }); }
     const kDef = (W, ort) => (ort === "M" ? Object.assign({ id: "einstieg", xp: 100, kurz: "Einstieg" }, EINSTIEG) : Object.assign({ id: W.karte[ort] }, K_RAEUME[W.karte[ort]]));
@@ -193,7 +199,7 @@
      *  Zurück: { ort, id, sieg, abgebrochen, runden, xp, besiegt, gegner, drops: [Kennungen], stufeVor, stufe, gefallen: [fid …] } */
     function kEnde(W, ort, st, zf, abgebrochen, verlassen) { // verlassen: selbst gegangen – der Raum gilt als besucht
       const def = kDef(W, ort), sieg = st.ende === "sieg", ab = Boolean(abgebrochen) && !sieg, gegner = st.figuren.filter((f) => f.seite === "gegner" && R.GEGNER[f.art]), tot = gegner.filter((f) => f.tp <= 0);
-      const gew = (f) => (f.art === def.boss ? 3 : 1), summe = gegner.reduce((a, f) => a + gew(f), 0) || 1, xp = Math.round(def.xp * tot.reduce((a, f) => a + gew(f), 0) / summe);
+      const xp = kXp(st);
       const out = { ort, id: def.id, sieg, abgebrochen: ab, runden: st.runde, xp, besiegt: tot.length, gegner: gegner.length, bossBesiegt: tot.some((f) => f.art === def.boss), drops: [], splitter: 0, gefallen: [], stufeVor: Math.max(...W.gruppe.map((f) => W.stufen[f])) };
       out.tot = tot.map((f) => ({ id: f.id, boss: f.art === def.boss })); // was sie fallen lassen, entscheidet kDrop (aufgehoben wird im Raum)
       W.runden += st.runde; W.ort = ort; if (!ab || verlassen) { W.besucht.push(ort); W.raeume = W.besucht.length; }
@@ -201,24 +207,24 @@
       if (sieg || ab) { zust = R.nachKampf(st); // gewonnen oder von der Zeit herausgeholt: Zustand bleibt, Gefallene stehen mit halben Trefferpunkten auf
         for (const f of W.gruppe) { const z = zust[f], fig = st.figuren.find((x) => x.fid === f); if (z.tot || !fig || fig.tp <= 0) { z.tot = false; z.tp = Math.ceil(F.tpVon(f, W.stufen[f]) / 2); out.gefallen.push(f); } } }
       W.zust = zust; W.xp += xp; // Gruppe verloren: zust bleibt leer – alle stehen voll geheilt wieder auf
-      const neuS = Math.min(K.STUFE_MAX, 1 + Math.floor(W.xp / K.XP_STUFE));
+      const neuS = kStufe(W.xp).stufe;
       for (const f of W.gruppe) { const alt = W.stufen[f]; if (neuS <= alt) continue; W.stufen[f] = neuS;
         if (zust) { const z = zust[f], pa = plaetzeVon(f, alt), pn = plaetzeVon(f, neuS); z.tp += F.tpVon(f, neuS) - F.tpVon(f, alt); z.stufe = neuS; z.plaetze = pn.map((n, k) => Math.max(0, Math.min(n, ((z.plaetze || [])[k] || 0) + n - (pa[k] || 0)))); } }
       out.stufe = neuS; out.stufen = Object.assign({}, W.stufen); out.leben = leben(W); out.xpGesamt = W.xp; W.verlauf.push(out); return out;
     }
-    /** Was ein besiegtes Monster fallen lässt: selten einen Segen, den die Gruppe noch nicht hat (der Boss oft), sonst Erbsplitter. Zurück: { segen } oder { splitter } */
-    function kDrop(W, boss, zf, schon) {
-      const frei = SEGEN_POOL.filter((x) => !W.segen.includes(x) && !(schon || []).includes(x));
-      if (frei.length && zf() < (boss ? K.DROP_BOSS : K.DROP)) return { segen: frei[Math.floor(zf() * frei.length)] };
+    /** Was ein besiegtes Monster fallen lässt: selten einen Fund für einen Helden (ein Gegenstand, den jemand noch tragen kann; der Boss oft), sonst Erbsplitter.
+     *  Zurück: { ding } oder { splitter } */
+    function kDrop(W, boss, zf) {
+      const id = zf() < (boss ? K.DROP_BOSS : K.DROP) ? dingZufall(W, zf) : null; if (id) return { ding: id };
       const [a, b] = boss ? K.SPLITTER_BOSS : K.SPLITTER; return { splitter: a + Math.floor(zf() * (b - a + 1)) };
     }
-    /** Aufheben */
-    function kNimm(W, d) { if (d.segen) beuteNehmen(W, { segen: d.segen }); else W.splitter += d.splitter || 0; }
+    /** Aufheben. held: wer den Fund bekommt */
+    function kNimm(W, d, held) { if (d.ding) beuteNehmen(W, { ding: d.ding, held }); else W.splitter += d.splitter || 0; }
     /** Der Rechner auf der Karte: Einstieg, dann in zufälliger Reihenfolge so viele Räume, wie die Zeit hergibt (sekRunde Sekunden je Kampfrunde) */
     function botKarte(gruppe, seed, name, karte, zeitSek, sekRunde) {
       let zs = (seed >>> 0) || 7; const zf = () => { zs = (zs * 1103515245 + 12345) & 0x7fffffff; return zs / 0x7fffffff; };
       const W = neuK(gruppe, name, karte), sek = sekRunde || K.BOT_SEK_RUNDE; let rest = zeitSek == null ? K.ZEIT : zeitSek;
-      const nimm = (e) => { e.splitter = 0; e.segen = []; for (const t of e.tot) { const d = kDrop(W, t.boss, zf); kNimm(W, d); if (d.segen) e.segen.push(d.segen); else e.splitter += d.splitter; } }; // der Rechner hebt alles auf, was seine besiegten Monster fallen lassen
+      const nimm = (e) => { e.splitter = 0; e.funde = []; for (const t of e.tot) { const d = kDrop(W, t.boss, zf); if (d.ding) { const l = W.gruppe.filter((f) => kannTragen(W, d.ding, f)); if (!l.length) continue; kNimm(W, d, l[Math.floor(zf() * l.length)]); e.funde.push(d.ding); } else { kNimm(W, d); e.splitter += d.splitter; } } }; // der Rechner hebt alles auf, was seine besiegten Monster fallen lassen
       const spiel = (ort, runden) => { const st = R.neuesSpiel(seed * 13 + (ort === "M" ? 9 : ort) + 1, kOpts(W, ort)); raumDinge(W, st); let z = 0;
         while (!st.ende && z++ < 900 && st.runde <= runden) { if (R.aktiv(st).seite === "gegner") R.gegnerZug(st); else R.autoZug(st); } return st; };
       { const st = spiel("M", 99), e = kEnde(W, "M", st, zf, false); nimm(e); }
@@ -385,7 +391,7 @@
       for (let i = 0; i < 9000 && !st.riss.aus; i++) { const w = finaleBot(st); if (finaleZug(st, w)) finaleZug(st, { typ: "ende" }); }
       return st;
     }
-    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
+    return { KARTE: K, K_RAEUME, karteLosen, neuK, kDef, kSchritte, kOpts, kEnde, botKarte, kDrop, kNimm, kXp, kStufe, dingZufall, dingAngebot, ladenAngebot, ladenKauf, RAEUME, folgeLosen, raumVon, saal, aufstellFelder, DING_POOL, SEGEN_POOL, ZIEL, RUNDEN, MIN_RAEUME, MAX_RAEUME, passt, kannTragen, neu, raumOpts, raumDinge, raumEnde, beuteAngebot, beuteNehmen, leben, lebenSchnitt, stufeSchnitt, raumAuto, raumWieder, raumSchritt, botBiegtAb, botWeg,
       startPunkte, finaleNeu, vor: vor_, nach, finaleBot, finaleZug, finaleAuto, siegel, naechstesSiegel, inZone, steht, helden };
   }
 

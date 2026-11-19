@@ -1033,6 +1033,7 @@
   const fassung = (html) => (String(html).match(/\.(?:js|css)\?v=\d+/g) || []).join("|");
   let fassungGeprueft = 0;
   async function fassungPruefen() {
+    if (window.RISS && window.RISS.laeuft && window.RISS.laeuft()) return; // Rissgänger-Partien sind nicht gespeichert: mittendrin nicht neu laden, danach wird nachgeholt
     if (Date.now() - fassungGeprueft < 5 * 60000 || location.protocol === "file:") return; fassungGeprueft = Date.now();
     try { const r = await fetch(location.pathname + "?frisch=" + Date.now(), { cache: "no-store" }); if (!r.ok) return; const neu = fassung(await r.text()), alt = fassung([...document.querySelectorAll("script[src], link[rel=stylesheet]")].map((e) => e.getAttribute("src") || e.getAttribute("href")).join(" "));
       if (neu && alt && neu !== alt) neuLaden(); } catch (e) { /* offline: später wieder */ }

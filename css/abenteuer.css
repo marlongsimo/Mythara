@@ -2988,7 +2988,7 @@ body.szene-blatt .sz-rueckschau li::before { color: #7a1a18; }
 .riss-raus[data-sicher="1"] { border-color: #e0575b; color: #ffb3b5; }
 @media (prefers-reduced-motion: reduce) { #karte rect.feld.riss-drop, #karte rect.feld.riss-drop-segen { animation: none; } }
 
-/* Fackeln links und rechts vom Wappen im Dorf (Prototyp, nur mit ?fackel=1) */
+/* Fackeln links und rechts vom Wappen im Dorf (Standard; …?fackel=0 schaltet sie für den Tab ab) */
 body.fackeln .hub-kopf { position: relative; --fackel-ab: calc(min(380px, 60vw) / 2 + 34px); }
 body.fackeln .hub-kopf::before, body.fackeln .hub-kopf::after { content: ""; position: absolute; top: 50%; left: 50%; width: 62px; height: 184px; background: url(../img/mythara/fackel.gif) center / contain no-repeat; pointer-events: none; filter: drop-shadow(0 0 18px rgba(255,150,40,.55)); }
 body.fackeln .hub-kopf::before { transform: translate(calc(-50% - var(--fackel-ab)), -50%); }
@@ -2996,3 +2996,13 @@ body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab
 @media (max-width: 760px) { body.fackeln .hub-kopf::before, body.fackeln .hub-kopf::after { display: none; } }
 @media (max-width: 560px) { body.fackeln .hub-kopf { --fackel-ab: calc(min(230px, 60vw) / 2 + 22px); } body.fackeln .hub-kopf::before, body.fackeln .hub-kopf::after { display: block; top: 0; width: 38px; height: 112px; transform: translate(calc(-50% - var(--fackel-ab)), 0); } body.fackeln .hub-kopf::after { transform: translate(calc(-50% + var(--fackel-ab)), 0) scaleX(-1); } }
 @media (prefers-reduced-motion: reduce) { body.fackeln .hub-kopf::before, body.fackeln .hub-kopf::after { display: none; } }
+#karte rect.feld.greifbar { stroke-dasharray: none; stroke-width: 5; cursor: pointer; }
+.riss-raus.frei { border-color: #ffd75e; color: #ffe9a8; }
+.riss-xpleiste { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 10px; align-items: center; white-space: nowrap; padding: 5px 14px; border-radius: 16px; font: 600 13px "Inter", sans-serif; color: #dbe9ff; background: rgba(10,16,32,.93); box-shadow: inset 0 0 0 1px rgba(90,150,255,.7); pointer-events: none; }
+.riss-xpleiste i { display: block; width: 180px; height: 9px; border-radius: 5px; background: rgba(255,255,255,.14); overflow: hidden; } .riss-xpleiste u { display: block; height: 100%; background: linear-gradient(90deg, #2f7dff, #7fc0ff); transition: width .5s ease; }
+.riss-xpleiste b { color: #fff; } .riss-xpleiste small { color: #a9c6ff; font-weight: 500; } .riss-xpleiste span { color: #9fe8e0; }
+.riss-fund { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.55); }
+.riss-fund-blatt { width: min(100%, 420px); padding: 16px 18px; border-radius: 14px; background: #16131f; box-shadow: inset 0 0 0 2px #ffd75e, 0 12px 40px rgba(0,0,0,.7); color: #f2ead8; display: grid; gap: 8px; }
+.riss-fund-blatt h2 { margin: 0; font: 600 22px var(--schrift-titel); color: #ffe9a8; } .riss-fund-blatt p { margin: 0; font-size: 15px; line-height: 1.4; }
+.riss-fund-helden { display: flex; flex-wrap: wrap; gap: 8px; } .riss-fund-helden .rs-held:disabled { opacity: .4; cursor: default; }
+@media (max-width: 700px) { .riss-xpleiste { bottom: auto; top: 78px; gap: 6px; font-size: 11px; padding: 4px 10px; } .riss-xpleiste i { width: 90px; } }
