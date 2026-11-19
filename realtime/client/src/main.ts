@@ -17,15 +17,17 @@ const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH
 const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
-interface Bild { hoch: number; ganz: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
+interface Bild { hoch: number; ganz: boolean; laeuft: boolean; still: number; schlag: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
 
 class Spiel extends Phaser.Scene {
   netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
-  preload() { const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); }
+  preload() { const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
+    for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, { start: 0, end: 7 }), frameRate: 11, repeat: -1 });
+      if (HELDEN[k].hieb) this.anims.create({ key: "hieb-" + k, frames: this.anims.generateFrameNumbers("hieb-" + k, { start: 0, end: 7 }), frameRate: 20, repeat: 0 }); }
     const s = iso(SIEGEL.x, SIEGEL.y); this.add.ellipse(s.x, s.y, 80, 40, 0xb79bff, 0.25).setStrokeStyle(2, 0xd9cdf5, 0.8).setDepth(1); this.add.text(s.x, s.y - 6, "SIEGEL", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#e6dcff" }).setOrigin(0.5).setDepth(1);
     this.zielMarke = this.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setDepth(2).setVisible(false);
     this.groesse(); this.scale.on("resize", () => this.groesse());
@@ -78,19 +80,22 @@ class Spiel extends Phaser.Scene {
   figur(e: Zustand["w"][number]): Bild {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
-    const ganz = Boolean(held && HELDEN[typ].figur), hoch = ganz ? 116 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
-    if (ganz) { kopf = this.add.image(0, 6, "figur-" + typ).setOrigin(0.5, 1); kopf.setScale(hoch / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: steht mit den Füßen auf dem Ring
+    const ganz = Boolean(held && HELDEN[typ].figur), hoch = ganz ? 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
+    if (ganz) { kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(0.5, 0.94); kopf.setScale(hoch / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
       rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
     const balken = this.add.graphics(), name = this.add.text(0, -hoch - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
-    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { hoch, ganz, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
+    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); return b;
   }
   zustand(z: Zustand) {
     this.z = z; this.ichId = z.ich.id; const da = new Set<number>(), jetzt = this.time.now;
     for (const e of z.w) { da.add(e[0]); let b = this.bilder.get(e[0]); if (!b) b = this.figur(e);
       const hier = this.ort(b, jetzt); b.von = Math.hypot(hier.x - e[4], hier.y - e[5]) > 3 ? { x: e[4], y: e[5] } : hier; b.nach = { x: e[4], y: e[5] }; b.t0 = jetzt; // große Sprünge (Blinzeln, Wiederkehr) nicht nachziehen
+      if (b.ganz && HELDEN[b.typ].lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
+        const bewegt = Math.hypot(b.nach.x - b.von.x, b.nach.y - b.von.y) > 0.03 && !e[10]; if (bewegt) b.still = 0; else b.still++; const soll = bewegt || (b.laeuft && b.still < 3), sp = b.kopf as Phaser.GameObjects.Sprite;
+        if (soll !== b.laeuft) { b.laeuft = soll; if (!b.schlag) this.haltung(b); } void sp; }
       b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX(sx < 0); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.hoch - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (b.held ? " · " + e[9] : "") + (e[12] ? " ✦" : ""); if (b.name.text !== text) b.name.setText(text);
@@ -101,12 +106,16 @@ class Spiel extends Phaser.Scene {
     for (const ev of z.ev) this.ereignis(ev);
     this.anzeige(z);
   }
+  /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
+  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite; sp.setAngle(0).setX(0);
+    if (b.laeuft) { sp.play("lauf-" + b.typ); sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); sp.setOrigin(0.5, 0.94).setScale(b.hoch / sp.height); } }
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
     const b = "id" in ev ? this.bilder.get(ev.id) : undefined;
     if (ev.a === "schaden" && b) zahl(b.nach.x, b.nach.y, String(ev.n), b.team === 0 ? "#ff8a8a" : "#ffffff");
-    else if (ev.a === "hieb" && b) { if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
+    else if (ev.a === "hieb" && b) { if (b.ganz && HELDEN[b.typ].hieb) { const sp = b.kopf as Phaser.GameObjects.Sprite; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(0.5, 0.955).setScale(b.hoch / (0.91 * 176)); sp.play("hieb-" + b.typ); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); }
+      else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
     else if (ev.a === "auf" && b) zahl(b.nach.x, b.nach.y, "▲ Stufe " + ev.stufe, "#8fc0ff", true);
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, "#ff9aa8");
     else if (ev.a === "knall") { const p = iso(ev.x, ev.y), o = this.add.ellipse(p.x, p.y, ev.r * KW, ev.r * KHOCH, 0xff8a2a, 0.6).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.15, duration: 380, onComplete: () => o.destroy() }); this.cameras.main.shake(120, 0.004); }

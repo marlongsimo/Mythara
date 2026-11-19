@@ -7,10 +7,10 @@ export const DT = 1 / TICK;
 export const ZUSTAND_JE = 1;       // jeder Schritt geht an den Client: 20 Zustände je Sekunde (direkte Steuerung soll sich unmittelbar anfühlen)
 export const PROTOKOLL = 1;
 
-export interface HeldDef { name: string; klasse: string; bild: string; figur?: string; /* ganze Figur von schräg oben, freigestellt, blickt nach rechts */ lp: number; tempo: number; reich: number; schaden: number; takt: number; nah: boolean; flug?: number;
+export interface HeldDef { name: string; klasse: string; bild: string; figur?: string; /* ganze Figur von schräg oben, freigestellt, blickt nach rechts */ lauf?: string; hieb?: string; /* Bildblätter mit je acht Bildern (laufen, zuschlagen), 4 x 2, je 176 Pixel */ lp: number; tempo: number; reich: number; schaden: number; takt: number; nah: boolean; flug?: number;
   q: { name: string; zeit: number; text: string }; e: { name: string; zeit: number; text: string } }
 export const HELDEN: Record<string, HeldDef> = {
-  schildwaechter: { name: "Torvald", klasse: "Krieger", bild: "img/figuren/schildwaechter.jpg", figur: "img/echtzeit/torvald.webp", lp: 320, tempo: 4.2, reich: 1.35, schaden: 26, takt: 0.8, nah: true,
+  schildwaechter: { name: "Torvald", klasse: "Krieger", bild: "img/figuren/schildwaechter.jpg", figur: "img/echtzeit/torvald.webp", lauf: "img/echtzeit/torvald-lauf.webp", hieb: "img/echtzeit/torvald-hieb.webp", lp: 320, tempo: 4.2, reich: 1.35, schaden: 26, takt: 0.8, nah: true,
     q: { name: "Schildstoß", zeit: 7, text: "Stürmt vor: Schaden und kurze Betäubung für den ersten Gegner." }, e: { name: "Bollwerk", zeit: 12, text: "3 Sekunden lang 60 % weniger Schaden." } },
   elementarist: { name: "Vaelin", klasse: "Magier", bild: "img/figuren/elementarist.jpg", lp: 190, tempo: 4.2, reich: 6, schaden: 20, takt: 0.75, nah: false, flug: 14,
     q: { name: "Feuerball", zeit: 6, text: "Explodiert am Ziel und trifft alle im Umkreis." }, e: { name: "Blinzeln", zeit: 10, text: "Springt ein Stück in Zielrichtung." } },
