@@ -11,7 +11,7 @@ p.on("pageerror", (e) => fehler.push(String(e))); p.on("console", (m) => { if (m
 await p.goto("http://localhost:8765/fabrik/vorschau/"); await p.waitForFunction(() => window.FABRIK && window.FABRIK.zustand().geladen, null, { timeout: 30000 });
 const z = () => p.evaluate(() => window.FABRIK.zustand()), warte = (ms) => p.waitForTimeout(ms), bild = async (n) => { if (bilder) await p.screenshot({ path: `${bilder}/${n}.png` }); };
 let s = await z(); check(s.anim === "ruhe" && s.sichtbar.includes("koerper"), "Start: die Figur steht in Ruhe, der Körper ist zu sehen");
-check(["waffe.langschwert.vorn", "schild.baum.vorn", "ruestung.brust.platte", "ruestung.bein.schiene", "ruestung.hand.leder", "ruestung.fuss.stiefel"].every((e) => s.sichtbar.includes(e) || e.endsWith(".vorn")), "Anfangsausrüstung liegt als eigene Ebenen auf der Figur");
+check(Object.values(s.tragen).length === 6 && Object.values(s.tragen).every((t) => s.sichtbar.some((e) => e === t || e.startsWith(t + "."))), "Anfangsausrüstung: alle sechs Plätze belegt, jedes Teil als eigene Ebene sichtbar");
 await bild("1-start");
 // acht Richtungen laufen: Taste(n) -> erwartete Zeile (0 = Osten, im Uhrzeigersinn)
 const wege = [["d", 0], ["d+s", 1], ["s", 2], ["a+s", 3], ["a", 4], ["a+w", 5], ["w", 6], ["d+w", 7]]; let richtig = 0, bewegt = 0;
