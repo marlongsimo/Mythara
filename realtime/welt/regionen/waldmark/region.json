@@ -1,0 +1,23 @@
+{
+ "id": "waldmark",
+ "name": "Waldmark",
+ "ursprung": [
+  200,
+  200
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "dorf",
+ "stufe": 1,
+ "entwurf": true,
+ "gesperrt": [
+  [
+   14,
+   6,
+   82,
+   58
+  ]
+ ]
+}

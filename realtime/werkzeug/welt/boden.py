@@ -240,8 +240,26 @@ def lade_region(name):
         zeilen = [z for z in f.read().split('\n') if z]
     nr = {a['zeichen']: k for k, a in enumerate(arten)}
     karte = np.array([[nr[c] for c in z] for z in zeilen], dtype=np.int16)
-    # Über den Rand der Region hinaus gilt vorerst das Randfeld weiter (bis dort eine Nachbarregion liegt)
-    return ordner, region, arten, np.pad(karte, RAND, mode='edge')
+    # Über den Rand hinaus: Wo eine Nachbarregion liegt, gilt deren Gelände (so entsteht an der Grenze keine Kante), sonst das eigene Randfeld
+    voll = np.pad(karte, RAND, mode='edge')
+    x0, y0 = region['ursprung'][0] * CHUNK - RAND, region['ursprung'][1] * CHUNK - RAND
+    for n in sorted(os.listdir(os.path.join(WELT, 'regionen'))):
+        o2 = os.path.join(WELT, 'regionen', n)
+        if n == name or not os.path.exists(os.path.join(o2, 'region.json')):
+            continue
+        with open(os.path.join(o2, 'region.json'), encoding='utf8') as f:
+            r2 = json.load(f)
+        nx, ny = r2['ursprung'][0] * CHUNK - x0, r2['ursprung'][1] * CHUNK - y0           # Lage des Nachbarn im eigenen Feld
+        nb, nh = r2['chunks'][0] * CHUNK, r2['chunks'][1] * CHUNK
+        ax, ay, bx, by = max(0, nx), max(0, ny), min(voll.shape[1], nx + nb), min(voll.shape[0], ny + nh)
+        if ax >= bx or ay >= by:
+            continue
+        with open(os.path.join(o2, 'gelaende.txt'), encoding='utf8') as f:
+            z2 = [z for z in f.read().split('\n') if z]
+        for j in range(ay, by):
+            for i in range(ax, bx):
+                voll[j, i] = nr[z2[j - ny][i - nx]]
+    return ordner, region, arten, voll
 
 
 def main():
