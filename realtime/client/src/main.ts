@@ -178,7 +178,22 @@ class Spiel extends Phaser.Scene {
     const sda = new Set<number>(); for (const g of z.g) { sda.add(g[0]); let s = this.schuesse.get(g[0]); const p = iso(g[1], g[2]); if (!s) { s = this.add.circle(p.x, p.y - 24, g[3] === "feuer" ? 10 : g[3] === "erlegen" ? 7 : g[3] === "blitz" ? 5 : 3.5, g[3] === "feuer" ? 0xff8a2a : g[3] === "blitz" ? 0x9ad0ff : 0xe8dcc0); this.schuesse.set(g[0], s); } this.tweens.add({ targets: s, x: p.x, y: p.y - 24, duration: 1000 * ZUSTAND_JE / TICK }); s.setDepth(10 + (g[1] + g[2]) * 10 + 8); }
     for (const [id, s] of this.schuesse) if (!sda.has(id)) { s.destroy(); this.schuesse.delete(id); }
     for (const ev of z.ev) this.ereignis(ev);
+    this.schleuse(z);
     this.anzeige(z);
+  }
+  /* ---------- Die Schleuse im Mühlgraben: Hebel am Ufer, Ring zeigt das Schließen, oben steht das Ziel ---------- */
+  hebel: { c: Phaser.GameObjects.Container; griff: Phaser.GameObjects.Rectangle; ring: Phaser.GameObjects.Graphics; schein: Phaser.GameObjects.Ellipse; offen: boolean } | null = null;
+  schleuse(z: Zustand) {
+    const sl = z.sl; if (!sl) return; const [x, y, offen, fort] = sl;
+    if (!this.hebel) { const p = iso(x, y), c = this.add.container(p.x, p.y).setDepth(tief(x, y));
+      const schein = this.add.ellipse(0, 0, 92, 46, 0x8fd8ff, 0.18).setStrokeStyle(2, 0x8fd8ff, 0.7); this.tweens.add({ targets: schein, alpha: { from: 1, to: 0.35 }, scale: { from: 0.95, to: 1.08 }, duration: 900, yoyo: true, repeat: -1 });
+      const sockel = this.add.ellipse(0, 2, 34, 16, 0x3a3a3a).setStrokeStyle(2, 0x1a1a1a), pfosten = this.add.rectangle(0, -20, 9, 40, 0x6b4a2a).setStrokeStyle(2, 0x2a1a0c);
+      const griff = this.add.rectangle(0, -36, 6, 36, 0x9a7a4a).setStrokeStyle(2, 0x2a1a0c).setOrigin(0.5, 1).setAngle(-40), knauf = this.add.circle(0, -38, 5, 0xc9a85a).setStrokeStyle(2, 0x2a1a0c);
+      const ring = this.add.graphics(), schild = this.add.text(30, -6, "Schleuse", { fontFamily: "Cinzel, Georgia, serif", fontSize: "15px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0, 0.5).setResolution(2);
+      c.add([schein, ring, sockel, pfosten, griff, knauf, schild]); this.hebel = { c, griff, ring, schein, offen: true }; }
+    const H = this.hebel; H.ring.clear(); if (offen && fort > 0) { H.ring.lineStyle(6, 0x000000, 0.55).beginPath().arc(0, -10, 40, 0, Math.PI * 2).strokePath(); H.ring.lineStyle(5, 0xffd75e, 1).beginPath().arc(0, -10, 40, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fort).strokePath(); }
+    if (H.offen && !offen) { H.offen = false; this.tweens.add({ targets: H.griff, angle: 40, duration: 450, ease: "Back.easeOut" }); H.schein.setVisible(false); }
+    const zi = $("#ez-ziel"); if (!this.gewonnen && kampfJetzt) { const soll = offen ? (fort > 0 ? `Schleuse schließen … ${Math.ceil((1 - fort) * 3)} s` : "Schließe die Schleuse am Mühlhaus – drei Sekunden am Hebel stehen") : kampfJetzt.ziel; if (zi.textContent !== soll) zi.textContent = soll; }
   }
   /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
   haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = FIG(b.typ, b.held), L = D.laufMass || [0.5, 0.946, 0.91]; sp.setAngle(0).setX(0);
@@ -209,6 +224,10 @@ class Spiel extends Phaser.Scene {
       const ring = this.add.ellipse(x, y, 60, 26).setStrokeStyle(4, 0xffd75e, 1).setDepth(99990); this.tweens.add({ targets: ring, scaleX: 3, scaleY: 3, alpha: 0, duration: 900, onComplete: () => ring.destroy() });
       const o = this.add.text(x, y - 120, (ich ? "" : HELDEN[b.typ].name + " · ") + "Stufe " + ev.s + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: ich ? "28px" : "20px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999);
       this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 1100, duration: 1300, onComplete: () => o.destroy() }); if (ich) { this.cameras.main.flash(260, 255, 230, 160); } }
+    else if (ev.a === "auftauchen") { /* eine Kröte kriecht aus dem Graben: Wasser spritzt */ const p = iso(ev.x, ev.y); for (let i = 0; i < 2; i++) { const o = this.add.ellipse(p.x, p.y, 40, 18).setStrokeStyle(3, 0x9fd8ff, 0.9).setDepth(3); this.tweens.add({ targets: o, scale: 2.6, alpha: 0, delay: i * 180, duration: 700, onComplete: () => o.destroy() }); }
+      zahl(ev.x, ev.y - 0.4, "aus dem Graben!", "#9fd8ff"); }
+    else if (ev.a === "schleuse") { const p = iso(ev.x, ev.y), o = this.add.text(p.x, p.y - 110, "Die Schleuse ist zu!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "26px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999);
+      this.tweens.add({ targets: o, y: o.y - 40, alpha: 0, delay: 1400, duration: 1200, onComplete: () => o.destroy() }); this.cameras.main.flash(220, 160, 210, 255); }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, FLACH ? "#8fd8ff" : "#ff9aa8");
     else if (ev.a === "laden") { /* Spezialangriff: Die Fläche am Boden füllt sich, während der Gegner lädt */ const p = iso(ev.x, ev.y), rx = ev.r * (FLACH ? ZELLE : KW * 0.705), ry = ev.r * (FLACH ? ZELLE : KHOCH * 0.705);
       const rand = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0xb8ff3a, 0.12).setStrokeStyle(3, 0xd8ff5a, 0.95).setDepth(3), kern = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0x9be020, 0.45).setDepth(3).setScale(0.05);

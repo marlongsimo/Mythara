@@ -7,7 +7,7 @@
  */
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string }) => STUFENBONUS(w.held ? HELDENSTUFE[w.typ] || 1 : 1);
-import { karteJetzt, karteNehmen, KartenStand, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar } from "./karte";
+import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar } from "./karte";
 
 export type Taste = "q" | "e" | "r";
 export type Eingabe =
@@ -26,13 +26,13 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; wach: boolean }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
-export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number } | { a: "stufe"; id: number; s: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
+export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
   | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
   w: Array<[number, number, string, number, number, number, number, number, number, number, number, number, number]>; // id, held, typ, team, x, y, blick, lp, max, bits, tot, schutz, modus
-  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number } }
+  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; sl?: [number, number, number, number]; /* Schleuse: x, y, offen (1/0), Fortschritt beim Schließen 0–1 */ /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number } }
 
 export class Sim {
   tick = 0; zeit = 0; phase: "lauf" | "sieg" = "lauf"; splitter = 0; besiegt = 0; monsterZahl = 0;
@@ -40,6 +40,8 @@ export class Sim {
   private lauf = 1; private zs: number; private begleiter: string[];
   /** heldTyp: der Held des Spielers. begleiter: bis zu zwei weitere Helden, die der Rechner spielt. */
   /* eigene Karte, Gegnerstärke und Heldenstufen dieser Partie (beim Anlegen übernommen, vor jedem Schritt wieder eingesetzt) */
+  /* Schleuse dieses Kampfes (oder keine): offen, Fortschritt beim Schließen, Zeit bis zur nächsten Welle */
+  sl: (SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }) | null = null;
   private karte: KartenStand = karteJetzt(); private staerke = { ...STAERKE }; private stufen: Record<string, number> = { ...HELDENSTUFE }; private epStand: Record<string, number> = { ...HELDENEP };
   private bereit(): void { karteNehmen(this.karte); Object.assign(STAERKE, this.staerke); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; Object.assign(HELDENSTUFE, this.stufen); }
   constructor(public heldTyp = "schildwaechter", seed = 1, begleiter: string[] = []) { this.zs = (seed >>> 0) || 1; if (!HELDEN[this.heldTyp]) this.heldTyp = "schildwaechter";
@@ -56,6 +58,7 @@ export class Sim {
     const ich = this.neu(true, this.heldTyp, 0, START[0], false);
     this.begleiter.forEach((b, i) => { this.neu(true, b, 0, START[i + 1], true).fuehrer = ich.id; });
     for (const l of LAGER) this.neu(false, l.art, 1, l, true, l.gruppe); this.monsterZahl = LAGER.length;
+    const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
   }
   get ich(): Wesen { return this.wesen[0]; }
   /** Erfahrung für jeden Helden im Team; wer dabei eine Stufe erreicht, wird sofort stärker und bekommt sein Leben ganz zurück */
@@ -101,7 +104,7 @@ export class Sim {
     this.besiegt++; const B = STAERKE.beute, [a, b] = B || K.SPLITTER; let n = a + Math.floor(this.zf() * (b - a + 1)); if (B && MONSTER[z.typ].boss) n *= STAERKE.bossMal;
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); }
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
-    if (this.besiegt >= this.monsterZahl) this.phase = "sieg";
+    if (this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.phase = "sieg"; /* bei offener Schleuse kommen noch welche */
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
@@ -285,6 +288,7 @@ export class Sim {
       if (w.pfad.length && w.aushol <= 0) { let rest = this.tempo(w) * DT; // laufen (Wegpunkte)
         while (rest > 0 && w.pfad.length) { const p = w.pfad[0], d = abstand(w, p); if (d <= rest) { w.x = p.x; w.y = p.y; rest -= d; w.pfad.shift(); } else { w.blick = Math.atan2(p.y - w.y, p.x - w.x); w.x += (p.x - w.x) / d * rest; w.y += (p.y - w.y) / d * rest; rest = 0; } } }
     }
+    if (this.sl && this.sl.offen && this.phase === "lauf") this.schleuse(this.sl);
     for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) { const a = this.wesen[i], b = this.wesen[j]; if (a.tot || b.tot) continue; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } }
     for (const w of this.wesen) if (!w.tot) schieben(w);
     for (const g of this.geschosse) { const z = g.zielId ? this.nach(g.zielId) : undefined; if (z && !z.tot) { g.zx = z.x; g.zy = z.y; }
@@ -296,6 +300,15 @@ export class Sim {
     this.geschosse = this.geschosse.filter((g) => g.tempo > 0);
   }
 
+  /** Offene Schleuse: Gegner kriechen in Wellen aus dem Wasser und sammeln sich am Hebel. Wer drei Sekunden ungestört am Hebel steht, schließt sie; ein Treffer fängt von vorn an. */
+  private schleuse(sl: SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }): void {
+    const h = this.ich, nah = !h.tot && Math.hypot(h.x - sl.x, h.y - sl.y) < 1.4;
+    if (nah && h.ruhe > 0.05) { sl.fort = Math.min(1, sl.fort + DT / 3); if (sl.fort >= 1) { sl.offen = false; this.ev.push({ a: "schleuse", x: sl.x, y: sl.y }); if (this.besiegt >= this.monsterZahl) this.phase = "sieg"; return; } } else sl.fort = 0;
+    sl.warte -= DT; if (sl.warte > 0 || sl.raus >= sl.gesamt) return; sl.warte = sl.takt;
+    if (this.wesen.filter((w) => !w.held && !w.tot && w.gruppe >= 100).length >= sl.max) return;
+    const p = sl.quellen[Math.floor(this.zf() * sl.quellen.length)], m = this.neu(false, sl.art, 1, { x: p.x, y: p.y }, true, 100 + this.lauf);
+    m.wach = true; m.heim = { x: sl.x, y: sl.y }; /* sie ziehen zum Hebel und verteidigen ihn */ this.monsterZahl++; sl.raus++; this.ev.push({ a: "auftauchen", id: m.id, x: p.x, y: p.y });
+  }
   /** Der Zustand für den Client (kompakt). Die Ereignisse seit dem letzten Abruf sind enthalten und werden danach geleert. */
   zustand(): Zustand { this.bereit();
     const r = (v: number) => Math.round(v * 100) / 100, h = this.ich, ev = this.ev; this.ev = [];
@@ -303,6 +316,7 @@ export class Sim {
     return { tick: this.tick, phase: this.phase, zeit: Math.round(this.zeit * 10) / 10, splitter: this.splitter, besiegt: this.besiegt, monster: this.monsterZahl, b: this.beute.map((q) => [q.id, q.x, q.y, q.n]),
       w: this.wesen.filter((w) => w.held || !w.tot).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
       g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: this.stufen[h.typ] || 1, ep: this.epStand[h.typ] || 0 },
+      sl: this.sl ? [r(this.sl.x), r(this.sl.y), this.sl.offen ? 1 : 0, r(this.sl.fort)] : undefined,
       st: Object.fromEntries(this.wesen.filter((w) => w.held && w.team === 0).map((w) => [w.typ, [this.stufen[w.typ] || 1, this.epStand[w.typ] || 0]])) };
   }
 }

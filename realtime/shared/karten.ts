@@ -3,7 +3,10 @@
  * Zeilen als Text: „.“ frei, „~“ Wasser (versperrt den Weg, nicht die Sicht), Buchstaben sind Hindernisse (M Mauer, K Kiste/Sack, T Baum/Schilf).
  */
 import type { Lager } from "./karte";
-export interface KampfKarte { name: string; bild: string; zeilen: string[]; start: number[][]; lager: Lager[] }
+/** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
+ *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */
+export interface Schleuse { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number /* danach ist der Graben leer */ }
+export interface KampfKarte { name: string; bild: string; zeilen: string[]; start: number[][]; lager: Lager[]; schleuse?: Schleuse }
 const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, x: x + 0.5, y: y + 0.5, gruppe });
 
 /* Reihenfolge der Kampagnen (wie auf der Weltkarte) und ihrer Kämpfe. Danach richtet sich, was freigeschaltet ist – auf dem Server und im Spiel gleich. */
@@ -29,7 +32,9 @@ export const KARTEN: Record<string, KampfKarte> = {
   muehle: { name: "Am Mühlgraben", bild: "img/weidenhain/muehle.webp",
     zeilen: ["TTT...~~.MMM", "TTTKK.~~KMMM", "TT....~~..MM", "..K...~~..K.", "............", "..K...~~....", "TT....~~.KKT", "TT....~~..TT", "TTT...~~..TT"],
     start: [[0, 4], [1, 3], [1, 5]],
-    lager: [L("schlammkroete", 4, 2, 1), L("schlammkroete", 5, 4, 1), L("irrlicht", 8, 4, 2), L("schlammkroete", 9, 5, 2), L("irrlicht", 9, 7, 3), L("schlammkroete", 11, 5, 3)] },
+    lager: [L("schlammkroete", 4, 2, 1), L("schlammkroete", 5, 4, 1), L("irrlicht", 8, 4, 2), L("schlammkroete", 9, 5, 2), L("irrlicht", 9, 7, 3), L("schlammkroete", 11, 5, 3)],
+    /* der Hebel am Ufer vor dem Mühlhaus; die Kröten kriechen an beiden Ufern aus dem Graben */
+    schleuse: { x: 8.5, y: 3.2, quellen: [[5.5, 7.5], [8.5, 7.5], [5.5, 1.5], [8.5, 6.5]], art: "schlammkroete", takt: 10, erst: 7, max: 3, gesamt: 8 } },
   /* Das alte Wehr: ein Streifen Ufer zwischen Mühlteich oben und dem Abfluss unten */
   wehr: { name: "Das alte Wehr", bild: "img/weidenhain/wehr.webp",
     zeilen: ["TT~~~~~~~~~T", "TTT~~~~~~MMT", ".TT......MM.", "............", ".T..........", "TTT.......K.", "............", "MMMMMMMMMMMM", "T~~~~~~~~~~~"],

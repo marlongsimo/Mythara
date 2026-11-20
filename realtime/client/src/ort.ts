@@ -51,7 +51,8 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
   agnes: { name: "Agnes", feld: 240, koerper: 0.877, fuss: 0.984, sonst: { wer: "Agnes", text: "Gib auf dich acht da drinnen." },
     reden: [{ wenn: ["hanne"], setzt: "agnes", schluss: "Ich halte die Augen offen",
       zeilen: [{ wer: "Agnes, Witwe des Müllers", text: "Mein Mann hat die Mühle dreißig Jahre geführt. Seit er tot ist, steht sie leer, und am Graben kümmert sich niemand mehr." }, { wer: "Agnes", text: "Die Kröten kommen von dort. Vom Wehr herauf, immer nachts." }],
-      fragen: [{ knopf: "Was ist am Wehr?", zeilen: [{ wer: "Agnes", text: "Eine sitzt dort, größer als alle anderen. Die Leute nennen sie die alte Unke. Sie war immer da. Aber früher blieb sie, wo sie war." }] }] }] },
+      fragen: [{ knopf: "Was ist am Wehr?", zeilen: [{ wer: "Agnes", text: "Eine sitzt dort, größer als alle anderen. Die Leute nennen sie die alte Unke. Sie war immer da. Aber früher blieb sie, wo sie war." }] },
+        { knopf: "Wie hält man sie auf?", zeilen: [{ wer: "Agnes", text: "Am Mühlhaus ist eine Schleuse. Steht sie offen, kriechen sie aus dem Graben nach, eine nach der anderen." }, { wer: "Agnes", text: "Mein Mann hat sie jeden Abend zugemacht. Seit er tot ist, macht das keiner mehr. Den Hebel musst du ein paar Atemzüge halten, er klemmt." }] }] }] },
 };
 /* Wohin der Pfeil am Boden zeigt: die erste Zeile, deren Bedingung passt. Stehen Leute mit offenem Gespräch da, zeigt er zuerst zu ihnen (zum nächsten). */
 const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["tebbe_gefunden"], stelle: "wehr" }, { wenn: ["tebbe"], stelle: "muehle" }, { wenn: ["hanne"], stelle: "scheune" }] };
