@@ -59,7 +59,7 @@ export async function kontoStart(): Promise<boolean> {
 
 /** Das Profil oben links: zeigt den Namen; ein Klick öffnet Anmelden oder Abmelden. */
 export function kontoKnopf() {
-  const el = $("#ez-profil"); if (!el) return; $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
+  const el = $("#ez-profil"); if (!el) return; { let n = 0; try { n = Number(localStorage.getItem("ez_seelen")) || 0; } catch { /* privat */ } const se = $("#ez-seelen"); if (se) se.textContent = "◈ " + n; } $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
   el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); if (name) fenster(); else zurAnmeldung(); };
 }
 /** Vor dem Spiel: Wer nicht angemeldet ist, kommt einmal je Besuch auf die Anmeldeseite (anmelden.html, gestaltet wie die des Würfelspiels). Dort meldet man sich an, legt ein Konto an oder spielt als Gast weiter. */

@@ -91,6 +91,7 @@
     body.stadt #ez-zoom { top: 146px; } @media (max-width: 700px) { body.stadt #ez-zoom { top: 110px; } #ez-zoom button { width: 28px; height: 28px; } }
     body.stadt #ez-dorf-titel { display: none; }
     body.stadt #ez-profil { display: flex; align-items: center; gap: 10px; top: 8px; left: max(8px, env(safe-area-inset-left)); padding: 6px 14px 6px 6px; border-radius: 40px; border: 1px solid rgba(255,215,94,.45); }
+    #ez-seelen { margin-left: 6px; padding: 5px 11px; border-radius: 999px; background: rgba(40,90,150,.35); border: 1px solid rgba(143,216,255,.6); color: #cfeeff; font: 600 14px Inter, sans-serif; white-space: nowrap; }
     #ez-profil img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid #ffd75e; } #ez-profil b { display: block; font-size: 15px; color: #fff; } #ez-profil small { font-size: 11px; color: #cfc3a8; }
     body.stadt #ez-karte { display: block; position: fixed; z-index: 3; top: 8px; right: max(8px, env(safe-area-inset-right)); width: 190px; aspect-ratio: 1671 / 941; border-radius: 12px; border: 2px solid rgba(255,215,94,.6); background: url(../img/echtzeit/waldmark.webp) center / 100% 100%; box-shadow: 0 4px 14px rgba(0,0,0,.6); pointer-events: none; }
     #ez-karte span { position: absolute; left: 50%; bottom: -24px; transform: translateX(-50%); padding: 2px 12px; border-radius: 10px; background: rgba(12,10,18,.75); font-family: Cinzel, Georgia, serif; font-size: 13px; color: #ffd98a; white-space: nowrap; }
@@ -112,7 +113,7 @@
   <div class="ez-kasten" id="ez-hilfe"></div>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
-  <div class="ez-kasten" id="ez-profil"><img id="ez-profil-bild" alt=""><div><b id="ez-profil-name">Test</b><small id="ez-profil-held"></small></div></div>
+  <div class="ez-kasten" id="ez-profil"><img id="ez-profil-bild" alt=""><div><b id="ez-profil-name">Gast</b><small id="ez-profil-held"></small></div><span id="ez-seelen" title="Seelensplitter">◈ 0</span></div>
   <div id="ez-zoom" hidden><button type="button" data-z="-1" aria-label="kleiner">−</button><b>100 %</b><button type="button" data-z="1" aria-label="größer">+</button></div>
   <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
   <div id="ez-stick" hidden><i></i></div>

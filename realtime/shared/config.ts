@@ -112,8 +112,10 @@ export interface MonsterDef { name: string; bild: string; figur?: string; fuss?:
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
    Stufe 1 ist Einsteigerniveau (0,6-fach), je Stufe 0,15 mehr. Leben wächst je weiterem Helden um die Hälfte, der Schaden um ein Zehntel. Im Riss gilt 1. */
-export const STAERKE = { lp: 1, schaden: 1 };
-export function setzeStaerke(stufe: number, helden: number): void { const g = 0.45 + 0.15 * stufe, n = Math.max(1, Math.min(3, helden)); STAERKE.lp = g * (0.5 + 0.5 * n); STAERKE.schaden = g * (1 + 0.1 * (n - 1)); }
+export const STAERKE: { lp: number; schaden: number; beute: [number, number] | null; bossMal: number } = { lp: 1, schaden: 1, beute: null, bossMal: 6 };
+/* beute: Seelensplitter je besiegtem Gegner (von–bis), nach Stufe der Aufgabe: Stufe 1 gibt 2–5, jede weitere Stufe 1–2 mehr. Ein Boss gibt das Sechsfache.
+   Ist beute gesetzt (Kampagne), bleiben die Splitter am Boden liegen und werden im Darüberlaufen aufgehoben; der Kampf läuft nach dem Sieg weiter, bis man ihn verlässt. */
+export function setzeStaerke(stufe: number, helden: number): void { const g = 0.45 + 0.15 * stufe, n = Math.max(1, Math.min(3, helden)); STAERKE.lp = g * (0.5 + 0.5 * n); STAERKE.schaden = g * (1 + 0.1 * (n - 1)); STAERKE.beute = [1 + stufe, 3 + 2 * stufe]; }
 export const MONSTER: Record<string, MonsterDef> = {
   knochenwaechter: { name: "Knochenwächter", bild: "img/gegner/knochenwaechter.jpg", figur: "img/echtzeit/kw.webp", fuss: [0.62, 0.95], gross: 1.065, lauf: "img/echtzeit/kw-lauf.webp", laufMass: [0.52, 0.93, 0.65], hieb: "img/echtzeit/kw-hieb.webp", hiebMass: [0.55, 0.935, 0.75], links: true, lp: 150, tempo: 3.3, angriffswert: { nah: 70, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 35 }, r: 0.38, untot: true, anfaellig: "wucht",
     angriff: { name: "Kurzschwert", art: "nah", schaden: [10, 20], takt: 1.2, reich: 1.5, aushol: 0.45 } }, // aushol: so lange holt er sichtbar aus – wer dann außer Reichweite ist, wird nicht getroffen
