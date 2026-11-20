@@ -128,6 +128,7 @@ class Spiel extends Phaser.Scene {
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
       if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
+    window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[] }; if (m.t === "namen" && m.liste) { this.spielerNamen.clear(); for (const s of m.liste) this.spielerNamen.set(s.id, s); } });
     /* Zwischenbuchungen des Servers: Die Werte aus der Datenbank gleich merken (falls der Tab danach abstürzt) */
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; ep?: Record<string, number>; seelen?: number }; if (m.t === "gebucht" && m.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } } });
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; text?: string }; if (m.t !== "koopstart") return; /* gemeinsamer Start in der Gruppe */
@@ -196,7 +197,7 @@ class Spiel extends Phaser.Scene {
     c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { angelegt: 0, oben, modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); if (ganz && FIG(typ, held).ruhe) this.haltung(b); return b;
   }
-  gefallen = false;
+  gefallen = false; /** gemeinsame Welt: Name und Stufe der Spieler je Heldenkennung (vom Server) */ spielerNamen = new Map<number, { name: string; stufe: number }>();
   zustand(z: Zustand) {
     this.z = z; this.ichId = z.ich.id;
     if (FLACH && kampfJetzt && !this.gefallen && !this.verlaesst) { const ich = z.w.find((e) => e[0] === z.ich.id); if (ich && ich[10]) { /* gefallen: zurück in die Waldmark (Erbeutetes wird vorher gutgeschrieben) */
@@ -208,7 +209,7 @@ class Spiel extends Phaser.Scene {
         if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
       b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = FLACH ? Math.cos(e[6]) : Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
-      const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
+      const bits = e[9], sn = b.held ? this.spielerNamen.get(e[0]) : undefined, text = (sn ? `${sn.name} · St. ${sn.stufe}` : b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
     for (const [id, b] of this.bilder) if (!da.has(id) && b.typ === "laich") this.laichWeg(b.c.x, b.c.y);
     for (const [id, b] of this.bilder) if (!da.has(id)) { const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.destroy(); b.c.destroy(); this.bilder.delete(id); }
@@ -250,7 +251,7 @@ class Spiel extends Phaser.Scene {
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
-    const b = "id" in ev ? this.bilder.get(ev.id) : undefined;
+    const b = "id" in ev && ev.id !== undefined ? this.bilder.get(ev.id) : undefined;
     if (ev.a === "schaden" && b) zahl(b.nach.x, b.nach.y, String(ev.n), ev.art === "gift" ? "#9be36a" : ev.art === "blut" ? "#e0605a" : ev.art === "brand" ? "#ffa64d" : ev.art === "licht" ? "#fff2a8" : b.team === 0 ? "#ff8a8a" : "#ffffff");
     else if (ev.a === "null" && b) zahl(b.nach.x, b.nach.y, "0", "#8fa3c8"); // Trefferwurf verloren: die blaue Null
     else if (ev.a === "block" && b) zahl(b.nach.x, b.nach.y, "Block", "#bfd6ff");
@@ -263,7 +264,7 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
-    else if (ev.a === "ep" && kampfJetzt) { if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; for (const h of team) epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
+    else if (ev.a === "ep" && kampfJetzt) { if (ev.id !== undefined && ev.id !== this.ichId) return; /* gemeinsame Welt: nur die eigenen EP anzeigen */ if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; for (const h of team) epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
       const xp = document.getElementById("ez-xpleiste"); if (xp) { xp.classList.remove("plus"); void xp.offsetWidth; xp.classList.add("plus"); } }
     else if (ev.a === "stufe") { /* Stufenaufstieg mitten im Kampf: Lichtsäule, Ring und Schrift über dem Helden */ const b = this.bilder.get(ev.id); if (!b) return; const x = b.c.x, y = b.c.y, ich = ev.id === this.ichId;
       const saeule = this.add.rectangle(x, y - 60, 70, 170, 0xffe9a8, 0.35).setDepth(99990).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: saeule, scaleX: 0.2, alpha: 0, duration: 1100, onComplete: () => saeule.destroy() });

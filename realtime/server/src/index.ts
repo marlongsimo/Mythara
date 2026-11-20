@@ -14,7 +14,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
-import { KARTEN, FEIN, darfKaempfen, ORTSTUFE } from "../../shared/karten";
+import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
 import { weltVerbindung } from "./welt";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
@@ -31,7 +31,13 @@ const neuerKampf = (karte: string, ort: string, team: string[]): Kampf => ({ kar
 const BUCHUNG_RUHE = Number(process.env.BUCHUNG_RUHE_MS) || 5000, BUCHUNG_SPAETESTENS = Number(process.env.BUCHUNG_SPAETESTENS_MS) || 30000;
 interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: Kampf;
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
-  /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string } }
+  /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
+  /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string }
+/** Eine gemeinsame Kampfwelt: eine Simulation für alle Spieler dort; Gegner kehren zurück, EP nach Schadensanteil (shared/sim.ts, Sim.welt) */
+interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number }
+const zonen = new Map<string, Zone>();
+function namenMelden(Z: Zone) { const m = JSON.stringify({ t: "namen", liste: [...Z.spieler].map((q) => { const w = Z.sim.nach(q.heldId || 0) as { stufe?: number } | undefined; return { id: q.heldId, name: q.name || "Wanderer", stufe: (w && w.stufe) || 1 }; }) });
+  for (const q of Z.spieler) if (q.ws.readyState === WebSocket.OPEN) q.ws.send(m); }
 const plaetze = new Set<Platz>();
 /* ---------- Koop-Gruppen: nur im Arbeitsspeicher, über einen Code aus sechs Buchstaben. Der Anführer spielt die Kampagne, bis zu zwei Mitspieler kommen in seine Kämpfe. ---------- */
 interface Warter { ws: WebSocket; nutzer: string; name: string; held: string; bereit?: boolean }
@@ -72,10 +78,10 @@ async function siegEintragen(p: Platz): Promise<void> { const k = p.kampf; if (!
  *  Schlägt eine Buchung fehl, bleibt der Betrag offen und geht mit der nächsten mit. schluss: Der Kampf ist vorbei – dann noch einmal alles Offene (mit bis zu drei Versuchen)
  *  und der Spieler bekommt {t:"gutschrift", ep, seelen} mit den Werten aus der Datenbank. Zwischenbuchungen meldet der Server als {t:"gebucht", ep, seelen}. */
 async function buchen(p: Platz, schluss = false): Promise<void> {
-  const sim = p.sim || (p.haupt && p.haupt.sim), k = p.kampf; if (!k || !sim || !k.nutzer) return;
+  const sim = p.sim || (p.haupt && p.haupt.sim) || (p.zone && p.zone.sim), k = p.kampf; if (!k || !sim || !k.nutzer) return;
   if (schluss) { if (k.ende) return; k.ende = true; k.fertig = true; /* ab jetzt zählt nichts mehr dazu */ }
   if (k.bucht) { if (!schluss) return; k.nochmal = true; return new Promise<void>((ok) => k.wartende.push(ok)); } /* läuft gerade eine: danach den Rest */
-  const ep = k.ep - k.gebuchtEp, seelen = sim.splitter - k.gebuchtS, sende = (o: object) => { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify(o)); };
+  const ep = k.ep - k.gebuchtEp, seelen = seelenVon(p, sim) - k.gebuchtS, sende = (o: object) => { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify(o)); };
   const fertig = (o: object) => { if (k.ende) { sende({ t: "gutschrift", ...o }); for (const w of k.wartende.splice(0)) w(); } };
   if (ep <= 0 && seelen <= 0) { fertig(k.stand || { leer: true }); return; }
   k.bucht = true; k.seit = Date.now(); const epHeld: Record<string, number> = {}; for (const h of k.team) epHeld[h] = ep; let ok = false;
@@ -86,13 +92,15 @@ async function buchen(p: Platz, schluss = false): Promise<void> {
     catch (e) { console.error("Gutschrift fehlgeschlagen (bleibt offen):", (e as Error).message, ep, "EP", seelen, "Splitter"); }
   }
   k.bucht = false;
-  if (k.nochmal || (k.ende && ok && (k.ep > k.gebuchtEp || sim.splitter > k.gebuchtS))) { k.nochmal = false; return buchen(p); } /* inzwischen kam der Schluss oder neue Beute */
-  if (k.ende) { if (ok) fertig(k.stand as object); else { console.error("Gutschrift endgültig fehlgeschlagen:", k.nutzer, k.ort + "/" + k.karte, k.ep - k.gebuchtEp, "EP", sim.splitter - k.gebuchtS, "Splitter"); fertig({ fehler: true }); } }
+  if (k.nochmal || (k.ende && ok && (k.ep > k.gebuchtEp || seelenVon(p, sim) > k.gebuchtS))) { k.nochmal = false; return buchen(p); } /* inzwischen kam der Schluss oder neue Beute */
+  if (k.ende) { if (ok) fertig(k.stand as object); else { console.error("Gutschrift endgültig fehlgeschlagen:", k.nutzer, k.ort + "/" + k.karte, k.ep - k.gebuchtEp, "EP", seelenVon(p, sim) - k.gebuchtS, "Splitter"); fertig({ fehler: true }); } }
 }
 /** Im Takt: Ist seit einer Weile Ruhe nach neuer Beute (oder lange nicht gebucht), zwischendurch buchen */
-function zwischenbuchen(q: Platz, sim: Sim, jetzt: number): void { const k = q.kampf; if (!k || k.ende || k.bucht || !k.nutzer) return;
-  if (k.ep !== k.letzterEp || sim.splitter !== k.letzterS) { k.letzterEp = k.ep; k.letzterS = sim.splitter; k.geaendert = jetzt; }
-  if ((k.ep > k.gebuchtEp || sim.splitter > k.gebuchtS) && (jetzt - k.geaendert >= BUCHUNG_RUHE || jetzt - k.seit >= BUCHUNG_SPAETESTENS)) void buchen(q); }
+/** Seelensplitter eines Spielers: in der gemeinsamen Welt nur die selbst aufgehobenen, sonst alle des Kampfes */
+const seelenVon = (q: Platz, sim: Sim): number => (q.zone && q.heldId ? sim.splitterVon(q.heldId) : sim.splitter);
+function zwischenbuchen(q: Platz, sim: Sim, jetzt: number): void { const k = q.kampf; if (!k || k.ende || k.bucht || !k.nutzer) return; const sp = seelenVon(q, sim);
+  if (k.ep !== k.letzterEp || sp !== k.letzterS) { k.letzterEp = k.ep; k.letzterS = sp; k.geaendert = jetzt; }
+  if ((k.ep > k.gebuchtEp || sp > k.gebuchtS) && (jetzt - k.geaendert >= BUCHUNG_RUHE || jetzt - k.seit >= BUCHUNG_SPAETESTENS)) void buchen(q); }
 
 const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -119,8 +127,16 @@ wss.on("connection", (ws, req) => {
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen
     let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
-    if (karte && !p.sim && !p.haupt) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
+    if (karte && !p.sim && !p.haupt && !p.zone) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
+        if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
+          const [aktiv, profil] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>]);
+          const typ = aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : held; let Z = zonen.get(karte);
+          if (!Z) { setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort] || 1, 1); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
+            Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
+          for (const q of [...Z.spieler]) if (q.kampf && q.kampf.nutzer === nutzer) { try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal */
+          p.zone = Z; p.heldId = Z.sim.beitreten(typ, Number(ep[typ]) || 0); p.name = (profil[0] && profil[0].handle) || "Wanderer"; p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
+          if (frist) clearTimeout(frist); console.log("Welt:", p.name, "betritt", karte, "·", Z.spieler.size, "dort"); if (ws.readyState === WebSocket.OPEN) los(); namenMelden(Z); return; }
         if (mitglied) { /* Koop-Mitspieler: in den laufenden Kampf des Anführers; der Fortschritt zählt auch für ihn */
           const R = raeume.get(raum), H = R && R.kampf; if (!R || !H || !H.sim || !H.kampf || H.kampf.karte !== karte || H.kampf.ort !== ort || H.kampf.fertig) { console.log("Koop abgelehnt: kein laufender Kampf in", raum); ws.close(4404, "kein gemeinsamer kampf"); return; }
           if ((H.mit || new Set()).size >= 2) { ws.close(4409, "gruppe voll"); return; }
@@ -134,10 +150,11 @@ wss.on("connection", (ws, req) => {
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
-    try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }
+    try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); else if (p.zone && p.heldId) p.zone.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }
   });
   const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist); void buchen(p, true); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
     if (p.haupt) { p.haupt.mit?.delete(p); if (p.haupt.sim && p.heldId) p.haupt.sim.freigeben(p.heldId); } /* sein Held kämpft als Begleiter weiter */
+    if (p.zone && p.heldId) { const Z = p.zone; void buchen(p, true).finally(() => { Z.sim.verlassen(p.heldId!); Z.spieler.delete(p); if (!Z.spieler.size) Z.leerSeit = Date.now(); namenMelden(Z); }); } /* erst gutschreiben, dann verschwindet sein Held */
     if (p.mit) for (const m of p.mit) { void buchen(m, true).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
     if (p.raum) { const R = raeume.get(p.raum); if (R && R.kampf === p) { R.kampf = null; R.zuletzt = Date.now(); gruppeMelden(R); } } }; ws.on("close", weg); ws.on("error", weg);
 });
@@ -192,6 +209,14 @@ function dorf(R: Raum, w: Warter, e: { t?: string; ort?: string | null; merker?:
 let n = 0;
 setInterval(() => {
   n++; const jetzt = Date.now();
+  for (const [key, Z] of zonen) { /* gemeinsame Kampfwelten: ein Schritt für alle, jeder bekommt seinen Blick und nur seine EP */
+    if (!Z.spieler.size) { if (Z.leerSeit && jetzt - Z.leerSeit > 120000) { zonen.delete(key); console.log("Welt: Zone", key, "geschlossen"); } continue; }
+    try { Z.sim.schritt(); } catch (err) { console.error("Welt-Schritt:", (err as Error).stack); continue; }
+    const z = Z.sim.zustand(); let stufe = false;
+    for (const q of Z.spieler) { if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
+      if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
+      if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt); }
+    if (stufe) namenMelden(Z); }
   for (const p of plaetze) {
     if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
     if (!p.sim) continue;
