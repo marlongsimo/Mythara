@@ -39,6 +39,7 @@
     .ez-mit { display: flex; flex-wrap: wrap; gap: 8px; } .ez-mit button { padding: 8px 12px; border-radius: 999px; border: 1px solid #4b4460; background: #1a1626; color: inherit; font: inherit; cursor: pointer; } .ez-mit button small { color: #b9ad94; } .ez-mit button.an { border-color: #6aa5ff; background: #1c2a4a; }
     .ez-knoepfe { display: flex; align-items: center; gap: 16px; margin-top: 16px; } #ez-los { padding: 12px 26px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 16px Inter, sans-serif; cursor: pointer; } .ez-knoepfe a { color: #d9cdf5; font-size: 13px; }
     @media (max-width: 560px) { .ez-helden { gap: 5px; } .ez-held img { width: 44px; height: 44px; } .ez-held b { font-size: 12px; } }
+    body.dorf #ez-dunkel { display: none; }
     body.dorf #ez-ich, body.dorf #ez-oben, body.dorf #ez-art, body.dorf #ez-tasten, body.dorf #ez-hilfe { display: none; }
     #ez-dorf-hilfe, #ez-dorf-titel { display: none; } body.dorf #ez-dorf-hilfe { display: block; bottom: 8px; left: max(8px, env(safe-area-inset-left)); font-size: 11px; color: #b9ad94; } body.dorf #ez-dorf-titel { display: block; top: 8px; left: 50%; transform: translateX(-50%); font-family: Cinzel, Georgia, serif; color: #ffd98a; font-size: 15px; }
     #ez-dorf-knopf { position: fixed; z-index: 5; left: 50%; bottom: 64px; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.6); } #ez-dorf-knopf[hidden] { display: none; } #ez-dorf-knopf.bald { border-color: #4b4460; background: #1a1626; color: #b9ad94; }
@@ -55,7 +56,7 @@
   <div class="ez-kasten" id="ez-art">…</div>
   <div class="ez-kasten" id="ez-hilfe"></div>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
-  <div class="ez-kasten" id="ez-dorf-titel">Das Dorf</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
+  <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
   <div id="ez-wahl" hidden></div>
