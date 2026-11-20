@@ -9,6 +9,7 @@ import { KB, KH, fels, SIEGEL } from "../../shared/karte";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
+import { Dorf } from "./dorf";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -53,7 +54,7 @@ class Spiel extends Phaser.Scene {
     for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as Taste); });
     $("#ez-modus").addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (this.netz) this.netz.sende({ t: "modus" }); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    wahlZeigen((held, mit) => this.starte(held, mit));
+    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
   }
   /** Nach der Heldenwahl: verbinden und loslegen */
   starte(held: string, mit: string[]) {
@@ -70,7 +71,7 @@ class Spiel extends Phaser.Scene {
       const w = this.add.image(p.x, p.y, "wand", art).setOrigin(0.5, (KHOCH / 2 + WAND) / (KHOCH + WAND)).setDepth(10 + (i + j + 1) * 10 + 4), l = WL[i + "," + j] || [0.4, 0];
       const h = Math.min(1, 0.25 + l[0] * 0.75), f = (v: number) => Math.max(0, Math.min(255, Math.round(255 * v))); w.setTint(Phaser.Display.Color.GetColor(f(h * (1 + 0.12 * l[1])), f(h), f(h * (1 - 0.28 * l[1])))); } }
   /** Ein weicher Lichtfleck als Textur (für Fackelschein und Glut) */
-  licht() { const t = this.textures.createCanvas("schein", 128, 128); if (!t) return; const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,190,110,1)"); g.addColorStop(0.35, "rgba(255,140,60,.45)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); }
+  licht() { if (this.textures.exists("schein")) return; const t = this.textures.createCanvas("schein", 128, 128); if (!t) return; const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,190,110,1)"); g.addColorStop(0.35, "rgba(255,140,60,.45)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); }
   /** Fackeln an den Wänden, mit flackerndem Schein auf Wand und Boden */
   fackeln() { this.anims.create({ key: "fackel", frames: this.anims.generateFrameNumbers("fackel", { start: 0, end: 8 }), frameRate: 11, repeat: -1 });
     for (const f of DEKOR.fackeln) { const p = iso(f.x, f.y), tief = 10 + (f.x + f.y) * 10 - 0.5, y = p.y - WAND * 0.42;
@@ -135,8 +136,8 @@ class Spiel extends Phaser.Scene {
   /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
   haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = FIG(b.typ, b.held), L = D.laufMass || [0.5, 0.946, 0.91]; sp.setAngle(0).setX(0);
     if (b.modus === 1 && D.schild) { // zweite Waffe: Schild erhoben
-      if (b.laeuft) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.play("schild-" + b.typ); }
-      else { sp.stop(); if (D.schildStand) { const F = D.schildFuss || [0.5, 0.95, 1]; sp.setTexture("schildstand-" + b.typ); sp.setOrigin(F[0], F[1]).setScale(b.hoch * F[2] / sp.height); } else { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.setTexture("schild-" + b.typ, 0); } } }
+      if (b.laeuft) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.855 * 176)); sp.play("schild-" + b.typ); }
+      else { sp.stop(); if (D.schildStand) { const F = D.schildFuss || [0.5, 0.95, 1]; sp.setTexture("schildstand-" + b.typ); sp.setOrigin(F[0], F[1]).setScale(b.hoch * F[2] / sp.height); } else { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.855 * 176)); sp.setTexture("schild-" + b.typ, 0); } } }
     else if (b.laeuft && D.lauf) { sp.play("lauf-" + b.typ); sp.setOrigin(L[0], L[1]).setScale(b.hoch / (L[2] * 176)); } else if (D.ruhe) { const M = D.ruheMass || [0.5, 0.945, 0.91]; sp.play("ruhe-" + b.typ); sp.setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); const F = D.fuss || [0.5, 0.94]; sp.setOrigin(F[0], F[1]).setScale(b.hoch * (D.gross || 1) / sp.height); } }
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
@@ -175,8 +176,8 @@ class Spiel extends Phaser.Scene {
 
 /* ---------- Heldenwahl vor dem Start ---------- */
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
-function wahlZeigen(los: (held: string, mit: string[]) => void) {
-  const el = $("#ez-wahl"); if (P.get("los") === "1") { el.hidden = true; los(WAHL.held, WAHL.mit); return; }
+function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => void) {
+  const el = $("#ez-wahl"); if (P.get("los") === "1" && !zurueck) { el.hidden = true; los(WAHL.held, WAHL.mit); return; }
   const zeichne = () => { const D = HELDEN[WAHL.held], w = (x: { nah: number; fern: number; magie: number }) => `Nahkampf ${x.nah} · Fernkampf ${x.fern} · Magie ${x.magie}`;
     el.innerHTML = `<div class="ez-blatt"><p class="ez-klein">Mythara · Splitterlande · Beta</p><h1>Wähle deinen Helden</h1>
       <div class="ez-helden">${HELDENREIHE.map((k) => `<button type="button" class="ez-held${k === WAHL.held ? " an" : ""}" data-held="${k}"><img src="../${HELDEN[k].bild}" alt=""><b>${esc(HELDEN[k].name)}</b><small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
@@ -186,13 +187,16 @@ function wahlZeigen(los: (held: string, mit: string[]) => void) {
           ${(["q", "e", "r"] as const).map((t) => `<li><b>${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
       <h3>Begleiter (spielt der Rechner, höchstens zwei)</h3>
       <div class="ez-mit">${HELDENREIHE.filter((k) => k !== WAHL.held).map((k) => `<button type="button" class="${WAHL.mit.includes(k) ? "an" : ""}" data-mit="${k}">${esc(HELDEN[k].name)} <small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
-      <div class="ez-knoepfe"><button type="button" id="ez-los">In den Riss</button><a href="../">← zur Startseite</a></div>
+      <div class="ez-knoepfe"><button type="button" id="ez-los">In den Riss</button>${zurueck ? `<button type="button" id="ez-zurueck">Zurück ins Dorf</button>` : ""}<a href="../">← zur Startseite</a></div>
       <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen, in der Siegelkammer der Knochenfürst. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
   zeichne(); el.hidden = false;
   el.onclick = (ev) => { const t = ev.target as HTMLElement, h = t.closest<HTMLElement>("[data-held]"), m = t.closest<HTMLElement>("[data-mit]");
     if (h) { WAHL.held = h.dataset.held as string; WAHL.mit = WAHL.mit.filter((x) => x !== WAHL.held); zeichne(); }
     else if (m) { const k = m.dataset.mit as string; if (WAHL.mit.includes(k)) WAHL.mit = WAHL.mit.filter((x) => x !== k); else if (WAHL.mit.length < 2) WAHL.mit.push(k); zeichne(); }
-    else if (t.id === "ez-los") { el.hidden = true; los(WAHL.held, WAHL.mit.slice()); } };
+    else if (t.id === "ez-los") { el.hidden = true; los(WAHL.held, WAHL.mit.slice()); }
+    else if (t.id === "ez-zurueck" && zurueck) { el.hidden = true; zurueck(); } };
 }
 
-new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: [Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+(window as unknown as Record<string, unknown>).EZ_WAHL = wahlZeigen;
+const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1"; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
+new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: OHNE_DORF ? [Spiel] : [Dorf, Spiel], input: { activePointers: 3 }, render: { antialias: true } });

@@ -100,7 +100,7 @@ try {
   // ---------- 7. Client im Browser ----------
   const { chromium } = require("playwright"), br = await chromium.launch();
   { const p = await br.newPage({ viewport: { width: 1280, height: 760 } }), fehler = []; p.on("pageerror", (e) => fehler.push(String(e)));
-    await p.goto("http://localhost:8765/echtzeit/?server="); await p.waitForSelector("#ez-los");
+    await p.goto("http://localhost:8765/echtzeit/?dorf=0&server="); await p.waitForSelector("#ez-los");
     check((await p.$$(".ez-held")).length === 5 && await p.evaluate(() => /Torvald/.test(document.querySelector(".ez-karte h2").textContent) && /Angriff:/.test(document.querySelector(".ez-karte").textContent)), "Heldenwahl: fünf Helden, der gewählte mit Werten, Waffen und Fähigkeiten");
     await p.click('[data-held="assassine"]'); await p.click('[data-mit="lichtbringer"]'); await p.click('[data-mit="schildwaechter"]'); await p.click('[data-mit="elementarist"]');
     check(await p.evaluate(() => /Vex/.test(document.querySelector(".ez-karte h2").textContent) && document.querySelectorAll(".ez-mit .an").length === 2 && /Dolch.*7–18/.test(document.querySelector(".ez-karte").textContent)), "Vex gewählt: Karte zeigt Dolch 7–18; höchstens zwei Begleiter lassen sich wählen");
