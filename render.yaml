@@ -9,6 +9,14 @@ services:
     rootDir: realtime
     buildCommand: npm ci --include=dev && npm run build
     startCommand: node server/dist/server.js
+    # Nur neu bauen, wenn sich am Server etwas ändert – reine Änderungen am Spiel im Browser starten ihn nicht neu
+    buildFilter:
+      paths:
+        - realtime/server/**
+        - realtime/shared/**
+        - realtime/package.json
+        - realtime/package-lock.json
+        - realtime/build.mjs
     healthCheckPath: /
     envVars:
       - key: ERLAUBTE_HERKUNFT
