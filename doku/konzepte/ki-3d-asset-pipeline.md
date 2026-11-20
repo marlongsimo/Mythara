@@ -44,7 +44,7 @@ Folgerung: Entweder liegt diese Arbeit an einem anderen Ort (anderer Rechner, an
 | Prüfung | Ergebnis |
 |---|---|
 | Blender als Python-Paket (`pip install bpy`) | läuft: Version 5.3 unter Python 3.13; Blender 4.0 ist als Paket nicht mehr erhältlich |
-| Rendern ohne Bildschirm | Cycles auf CPU funktioniert (256 px, 16 Abtastungen: etwa 2 s je Bild auf 4 Kernen); EEVEE nicht, weil der Container keine Grafiktreiber hat |
+| Rendern ohne Bildschirm | Cycles auf CPU funktioniert (256 px, 16 Abtastungen: 0,6 bis 2 s je Bild auf 4 Kernen); EEVEE läuft nur mit nachinstallierten Software-Grafiktreibern und ist dann rund 25-mal langsamer – gerendert wird mit Cycles |
 | Import/Export | GLB und FBX funktionieren, Rigify ist enthalten |
 | Grafikkarte | keine – lokale Image-to-3D-Modelle sind hier nicht ausführbar |
 
@@ -124,7 +124,66 @@ Jeder Schritt liest nur das Ergebnis des vorigen aus `arbeit/`, schreibt sein ei
 
 ## 3. Technologieauswahl
 
-*(wird nach Abschluss der Recherche ergänzt)*
+Stand der Recherche: 20.11.2026, aus den offiziellen Preis-, Doku- und Lizenzseiten der Anbieter. Qualitätsaussagen sind Einschätzungen – es wurden keine Testmodelle erzeugt. Preise und Bedingungen ändern sich; vor dem ersten bezahlten Lauf werden sie noch einmal gegen die verlinkten Seiten geprüft. Keine Rechtsberatung.
+
+### 3.1 Vergleich
+
+| Dienst | Mehrere Ansichten | Getrennte Teile | Rig | Animation | Formate | Zugang | Preis je Modell etwa | Kommerzielle Nutzung |
+|---|---|---|---|---|---|---|---|---|
+| **Meshy** (Modell 7.1) | 1–4 Bilder | „Auto Split“, für 3D-Druck gedacht | Zwei- und Vierbeiner; Skelett wählbar (u. a. Mixamo, Rigify, Unreal) | große Bibliothek (Angriff, Parade, Zauber, Tod …), dazu Bewegung aus Text | GLB, FBX, OBJ, USDZ u. a. | API nur mit bezahltem Tarif (ab 20 $/Monat, 1 000 Credits) | 0,60 $ mit Textur | bezahlter Tarif: Ergebnis gehört dem Kunden; kostenloser Tarif: gehört Meshy, CC BY 4.0 |
+| **Tripo** (v3.1 / P2) | 2–4 Ansichten | Teile-Erzeugung (nur ohne Textur), Segmentierung | acht Arten: Zweibeiner, Vierbeiner, Sechs-/Achtbeiner, Vogel, Schlange, Wasserwesen | 11 bzw. 101 Vorlagen für Zweibeiner, je ein Gang für andere | GLB, FBX | Guthaben im Voraus, 0,01 $ je Credit | 0,30–0,40 $ | laut Bedingungen für zahlende Nutzer; Stellung von Guthaben-Kunden nicht bestätigt; Recht: Hongkong |
+| Rodin Gen-2.5 | 1–5 Bilder | nicht dokumentiert | nein | nein | GLB, FBX, USDZ | 120 $/Monat direkt oder über fal | 0,40 $ | über fal ja |
+| Hunyuan 3D (Tencent Cloud / fal) | ja | Teile-Erzeugung | ja | nicht bestätigt | GLB u. a. | ja | 0,23–0,53 $ | über fal ja; bei Tencent nicht bestätigt |
+| Stability (SF3D, SPAR3D) | nein | nein | nein | nein | GLB | ja | 0,04–0,10 $ | nach Stability-Bedingungen; nur für einfache Gegenstände |
+
+Lokale Modelle scheiden vorerst aus, aus zwei Gründen:
+
+- **Rechner:** Alle brauchen eine Grafikkarte mit 8 bis 29 GB Speicher; diese Umgebung hat keine.
+- **Lizenz:** Hunyuan3D (alle offenen Fassungen, auch die Teile- und Bewegungsmodelle) gilt laut Lizenz nicht in der EU, im Vereinigten Königreich und in Südkorea – ausdrücklich auch für die erzeugten Ergebnisse. Für ein in Deutschland vertriebenes Spiel ist das ein Ausschluss. TRELLIS ist selbst frei, hängt aber an einer Bibliothek, die nur für Forschung erlaubt ist. Sauber wären nur TripoSG (ohne Textur) und UniRig fürs Rig, beide MIT – eine Möglichkeit, falls später ein Rechner mit Grafikkarte bereitsteht.
+
+Quellen: docs.meshy.ai/en/api/pricing, …/rigging-and-animation, …/multi-image-to-3d, meshy.ai/terms-of-use · developers.tripo3d.com/en/pricing, …/docs/animations-rig.md, …/terms · fal.ai/hunyuan-3d · docs.stability.ai/pricing · Lizenzdateien der Projekte Hunyuan3D-2, TRELLIS, nvdiffrast, TripoSG, UniRig auf GitHub.
+
+### 3.2 Entscheidung
+
+**Erster Dienst: Meshy.** Die ganze Kette liegt in einer Schnittstelle: mehrere Ansichten, erzwungene A- oder T-Haltung, Zielwert für die Polygonzahl, Texturen, Rig. Ausschlaggebend ist, dass sich das Skelett bei der Bestellung wählen lässt. Mit einem bekannten Skelett kann die Fabrik in Blender über eine feste Knochenzuordnung eigene Animationen übertragen, statt je Figur Animationen zu kaufen. Die Eigentumsfrage ist im bezahlten Tarif klar geregelt.
+
+**Zweiter Dienst: Tripo.** Für alles, was Meshy nicht riggt (Spinnen, Schlangen, Vögel, Wasserwesen), und für die Zerlegung in Teile. Je Modell günstiger, das Rig aber fünfmal so teuer. Vor produktiver Nutzung ist schriftlich zu klären, ob Guthaben-Kunden als zahlende Nutzer mit vollen Rechten gelten.
+
+**Ohne Dienst: Blender.** Aufbereitung, Rig-Zuweisung als Rückfallweg (Rigify mit automatischer Gewichtung), Animationsübertragung, Rendern, Prüfung – alles lokal auf dem Prozessor und kostenlos.
+
+Die Adapter in `fabrik/dienste/` haben dieselbe Schnittstelle; ein Wechsel des Dienstes ändert nichts an den Schritten danach.
+
+### 3.3 Skelett und Animationen
+
+- **Gemeinsames Humanoid-Skelett:** das der *Universal Animation Library* von Quaternius (CC0, zwei Pakete mit zusammen über 250 Bewegungen: Gehen, Laufen, Nahkampf mit Waffen, Treffer, Tod und mehr). Damit sind Skelett und Bewegungen frei von Lizenzfragen und dürfen im Repository liegen.
+- **Weg einer Figur aufs Skelett:** Meshy liefert die Figur mit einem Skelett bekannter Bauart; die Fabrik ordnet dessen Knochen fest dem gemeinsamen Skelett zu und überträgt die Bewegungen mit einem eigenen kleinen Übertragungsskript (Drehungen kopieren, einbacken). Fertige Zusatzprogramme dafür gibt es, ihr Betrieb ohne Oberfläche ist aber nicht belegt.
+- **Abdeckung der neun Pflichtanimationen:** Ruhe, Gehen, Laufen, Angriff, Treffer und Tod sind in der Bibliothek zu erwarten; Block, Ausweichen und Zaubern werden beim Einrichten in Phase 6 geprüft. Was fehlt, wird einmalig bei Meshy als Bewegung bestellt (wenige Cent) und in die Bibliothek aufgenommen – nicht je Figur.
+- **Mixamo wird nicht eingebaut:** Es gibt keine offizielle Schnittstelle, automatischer Zugriff auf die Website ist vertraglich ungeklärt, und die Rohdateien dürfen nicht weitergegeben werden.
+- **Kreaturen:** Rig über Meshy (Vierbeiner) oder Tripo (übrige Formen), Bewegungen aus deren Vorlagen. Das Angebot ist dünn (meist nur ein Gang); Angriff und Tod für Kreaturen bleiben absehbar ein Punkt für „manuelle Prüfung“ oder für Bewegung aus Text.
+
+### 3.4 Kosten
+
+Rechenbasis: Meshy 0,02 $ je Credit im kleinsten bezahlten Tarif, Tripo 0,01 $ je Credit.
+
+| Posten | Meshy | Tripo |
+|---|---|---|
+| Figur: Modell mit Textur | 30 Credits | 30 Credits |
+| Polygonzahl anpassen | 5 | 10 |
+| Rig | 5 | 25 |
+| **Figur gesamt** | **40 Credits ≈ 0,80 $** | **65 Credits ≈ 0,65 $** |
+| acht Animationen vom Dienst (entfällt mit eigener Bibliothek) | +0,48 $ | +0,80 $ |
+| **Ausrüstungsteil oder Gebäude** | 0,30–0,70 $ | 0,30–0,40 $ |
+
+Mit zwei bis drei Versuchen je brauchbarer Figur (Annahme) liegt eine Figur bei etwa 1,50 bis 2,50 $. Fehlgeschlagene Aufträge werden erstattet, unbrauchbare Ergebnisse nicht. Für den Einstieg reicht der kleinste Meshy-Tarif: 20 $ im Monat, 1 000 Credits, das sind rund 25 Figuren oder der Krieger samt Ausrüstung mit reichlich Wiederholungen.
+
+### 3.5 Was vor dem ersten bezahlten Lauf zu beachten ist
+
+1. Meshy-Zugang muss ein **bezahlter** Tarif sein; im kostenlosen gehören die Ergebnisse Meshy.
+2. Meshy löscht Ergebnisse der Schnittstelle nach drei Tagen – die Fabrik lädt sofort herunter und archiviert.
+3. Meshy darf hochgeladene Inhalte zum Training verwenden; Widerspruch per E-Mail an den Support ist möglich.
+4. Die Rechte an den Referenzbildern müssen bei euch liegen; beide Dienste geben die Haftung für Eingaben an den Kunden weiter.
+5. Ob rein KI-erzeugte Modelle urheberrechtlich geschützt sind, ist unsicher. Die Fabrik hält die eigene Nachbearbeitung im Protokoll fest.
+6. Der Schlüssel kommt nur als Umgebungsvariable (`MESHY_API_KEY`) in die Sitzung, nie in den Quellcode oder ins Repository.
 
 ---
 
@@ -337,7 +396,7 @@ Die Phasen 4 bis 9 lassen sich vollständig ohne Kosten bauen und prüfen, mit e
 ### Fragen an dich
 
 1. **Wo liegt die bisherige Character Pipeline** (Blender-Skripte, Warrior-Grundrig, acht Richtungen, Charaktervorschau)? Im Repository ist sie nicht. Wenn es sie gibt: bitte hochladen, dann baue ich darauf auf. Wenn nicht: Ich baue Rig und Rendering wie oben beschrieben neu.
-2. **Dienst und Budget** – siehe Abschnitt 3.
+2. **Dienst und Budget.** Empfehlung: Meshy im kleinsten bezahlten Tarif (20 $/Monat). Wenn du einverstanden bist: Zugang anlegen und den Schlüssel als Umgebungsvariable `MESHY_API_KEY` für die Sitzung hinterlegen, dazu eine Obergrenze je Lauf nennen. Bis dahin entsteht alles ohne Kosten.
 3. **Referenzbilder für den Krieger.** Vorhanden ist `img/figuren/schildwaechter.jpg` (Torvald). Für ein gutes Ergebnis wären vier Ansichten in neutraler Haltung besser; soll ich mit dem vorhandenen Bild beginnen?
 4. **Ort des Quellcodes.** Der Client-Quellcode liegt nur auf `feature/realtime-engine`, mein Arbeitszweig geht von `main` ab. Vorschlag: Die Fabrik kommt als eigenständiger Ordner `fabrik/` auf den Arbeitszweig und berührt das Spiel nicht.
 5. **Ablage großer Dateien:** Git LFS oder außerhalb des Repositorys?
