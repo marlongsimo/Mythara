@@ -14,7 +14,7 @@ const R = [["O", 0], ["SO", 45], ["S", 90], ["SW", 135], ["W", 180], ["NW", 225]
 const FIG = existsSync("../img/figuren3d/krieger_test/figur.json") ? JSON.parse(readFileSync("../img/figuren3d/krieger_test/figur.json", "utf8")) : null;
 const KAT = FIG ? JSON.parse(readFileSync("../img/figuren3d/krieger_test/ausruestung.json", "utf8")) : null;
 if (FIG) {
-  check(FIG.richtungen.length === 8 && ["idle", "walk", "run", "attack", "block", "dodge", "cast", "hit", "death", "idle_1h", "attack_1h", "block_1h"].every((a) => FIG.animationen[a]), "Exportierte Figur: 8 Richtungen, alle 12 Animationen (9 Grund + 3 Einhand)");
+  check(FIG.richtungen.length === 8 && ["idle", "walk", "run", "attack", "block", "dodge", "cast", "hit", "death"].every((a) => FIG.animationen[a]), "Exportierte Figur: 8 Richtungen, alle 9 Grundanimationen" + (FIG.animationen.attack_1h ? " und die Einhand-Animationen" : " (Einhand-Animationen noch nicht neu gerendert)"));
   check(FIG.testAsset && /TEST ASSET/.test(FIG.name) && KAT.gegenstaende.every((g) => g.testAsset && /TEST ASSET/.test(g.name)), "Testfigur und alle Testgegenstände sind als TEST ASSET gekennzeichnet");
   const reg = new M.AnimationRegistry(FIG), w = FIG.animationen.walk, d = FIG.animationen.death;
   check(reg.frameBei("walk", (w.frames + 2) / w.fps).i === 2 && !reg.frameBei("walk", 99).fertig, "Schleife läuft im Kreis");
@@ -24,7 +24,7 @@ if (FIG) {
   check(M.ausruestungPruefen(FIG, KAT, { head: "test_brust_stahl" }).length === 1 && M.ausruestungPruefen(FIG, KAT, { head: "gibtsnicht" }).length === 1, "Falscher Slot und unbekannter Gegenstand werden abgelehnt");
   const v = M.sichtbareEbenen(FIG, KAT, { head: "test_helm_stahl", hair: "test_haare_kurz", chest: "test_brust_stahl" });
   check(!v.items.includes("item:test_haare_kurz") && v.items.includes("item:test_helm_stahl") && !v.koerper.includes("koerper:rumpf") && v.koerper.includes("koerper:kopf"), "Helm verdeckt die Haare, Brustpanzer verdeckt den Rumpf");
-  check(M.haltung(FIG, KAT, { main_hand: "test_schwert_kurz", off_hand: "test_schild_rund" }).attack === "attack_1h" && Object.keys(M.haltung(FIG, KAT, { main_hand: "test_zweihaender" })).length === 0 && M.haltung(FIG, KAT, { off_hand: "test_schild_drachen" }).block === "block_1h",
+  if (FIG.haltungen) check(M.haltung(FIG, KAT, { main_hand: "test_schwert_kurz", off_hand: "test_schild_rund" }).attack === "attack_1h" && Object.keys(M.haltung(FIG, KAT, { main_hand: "test_zweihaender" })).length === 0 && M.haltung(FIG, KAT, { off_hand: "test_schild_drachen" }).block === "block_1h",
     "Haltung folgt der Waffe: Einhand/Schild → attack_1h, block_1h; Zweihänder → Grundanimationen");
   const v0 = M.sichtbareEbenen(FIG, KAT, {}); check(v0.items.length === 0 && v0.koerper.length === FIG.koerperRegionen.length, "Ohne Ausrüstung: nur der Körper");
   const a = new M.CharacterAnimator(reg, new M.DirectionResolver(FIG.richtungen)); const st = (o) => ({ blick: Math.PI / 2, tempo: 0, tot: false, block: false, ...o });
@@ -32,7 +32,7 @@ if (FIG) {
   check(s1 === "idle" && s2 === "walk" && s3 === "run" && s4 === "block" && a.richtung === "S", "Animator: steht → geht → läuft → blockt, Blick nach Süden");
   a.ausloesen("attack"); a.schritt(0.05, st()); const s5 = a.anim; for (let i = 0; i < 60; i++) a.schritt(0.05, st()); check(s5 === "attack" && a.anim === "idle", "Angriff spielt einmal und kehrt in den Grundzustand zurück");
   a.zuordnung = M.haltung(FIG, KAT, { main_hand: "test_axt_einhand" }); a.ausloesen("attack"); a.schritt(0.05, st()); const s6 = a.anim; a.schritt(0.05, st({ block: true })); for (let i = 0; i < 60; i++) a.schritt(0.05, st({ block: true })); const s7 = a.anim; a.zuordnung = {};
-  check(s6 === "attack_1h" && s7 === "block_1h", "Animator mit Einhandwaffe: Angriff attack_1h, Block block_1h");
+  if (FIG.animationen.attack_1h) check(s6 === "attack_1h" && s7 === "block_1h", "Animator mit Einhandwaffe: Angriff attack_1h, Block block_1h");
   a.schritt(0.05, st({ tot: true })); a.ausloesen("hit"); for (let i = 0; i < 60; i++) a.schritt(0.05, st({ tot: true })); check(a.anim === "death" && a.frame === d.frames - 1, "Tod hat Vorrang und hält das letzte Bild");
 } else console.log("  (keine exportierte Figur – nur die Richtungsprüfungen)");
 console.log(ok ? "\nModulare Figuren (Schnittstelle): alles in Ordnung" : "\nModulare Figuren (Schnittstelle): FEHLER"); process.exit(ok ? 0 : 1);

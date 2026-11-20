@@ -10,6 +10,7 @@ import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import { heldenhalle } from "./halle";
 import { gruppe, mitreise, gruppenMerker, dorfAnmelden, dorfSende, dorfVerlassen, serverZusatz, mitPause, koopHeld } from "./gruppe";
+import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld } from "./welt";
 import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel, istHaupt, wertung } from "./hud";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
@@ -189,11 +190,11 @@ export class Ort extends Phaser.Scene {
         if (hoch) this.add.image(x, y, "zaun").setOrigin(ZAUN.fx, ZAUN.fy).setScale(k).setDepth((y + y1) / 2); else this.add.image(x1, y1, "zaun").setOrigin(1 - ZAUN.fx, ZAUN.fy).setScale(k).setFlipX(true).setDepth((y + y1) / 2);
         for (let t = 0; t <= 1.001; t += 0.04) { const px = x + (x1 - x) * t, py = y + (y1 - y) * t; this.zu.add(this.feld(px, py)); this.zu.add(this.feld(px, py - 12)); }
         x = x1; y = y1; } } }
-  init() { const t = team(); let h = gruppe() ? koopHeld() : t ? t.held : ""; /* in der Gruppe: der im Aufbruchslager gewählte Held */ try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("eingang") === "1") { localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("eingang"); history.replaceState(null, "", "?" + P.toString()); } /* von der Weltkarte kommend steht man am Ortseingang; der Fortschritt bleibt */
+  init() { let h = gruppe() ? koopHeld() : lokalerHeld(); /* ein Held je Spieler (gewechselt wird nur in der Waldmark) */ /* in der Gruppe: der im Aufbruchslager gewählte Held */ try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("eingang") === "1") { localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("eingang"); history.replaceState(null, "", "?" + P.toString()); } /* von der Weltkarte kommend steht man am Ortseingang; der Fortschritt bleibt */
       if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
-  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L && L.lauf) this.load.spritesheet("lauf-" + l[0], `../img/echtzeit/${L.lauf.blatt}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
+  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L && L.lauf) this.load.spritesheet("lauf-" + l[0], `../img/echtzeit/${L.lauf.blatt}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); } heldenLaden(this);
     if (MEUTE[ortName]) this.load.spritesheet("meute", "../img/echtzeit/meute.webp", { frameWidth: 300, frameHeight: 300 });
-    if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); for (const k of gruppe() ? Object.keys(HELDEN) : [this.held]) { const D = HELDEN[k]; if (D.figur) this.load.image("figur-" + k, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + k, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); } this.load.image(this.held, "../" + HELDEN[this.held].bild); /* in einer Gruppe: alle Helden, für die Mitspieler */ }
+    if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); for (const k of Object.keys(HELDEN)) { const D = HELDEN[k]; if (D.figur) this.load.image("figur-" + k, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + k, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); } this.load.image(this.held, "../" + HELDEN[this.held].bild); /* in einer Gruppe: alle Helden, für die Mitspieler */ }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
     const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
@@ -214,6 +215,8 @@ export class Ort extends Phaser.Scene {
       { const t = team(); hudTeam(gruppe() ? [this.held] : t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }
       hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.halle() }, { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; hudProfil(this.held); }); } }]);
       const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
+    /* gemeinsame Welt: andere Spieler im Dorf (Gruppenmitglieder zeigt schon die Gruppe) */ this.mit = new Mitspieler(this, { f: 1, gross: GROSS, tiefe: (y) => y, auslassen: (n) => this.andere.has(n) });
+    weltBetreten(ortName, { spieler: (l) => this.mit.liste(l), fort: (id) => this.mit.weg(id) });
     if (gruppe()) dorfAnmelden(ortName, this.merker, { merker: (m) => this.merkerDazu(m), pos: (n, h, x, y, f, l) => this.anderer(n, h, x, y, f, l), weg: (n) => { const a = this.andere.get(n); if (a) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); } },
       sage: (von, id, setzt) => this.mithoeren(von, id, setzt), tuer: (kampf, von) => { if (this.gesperrt) return; const kn = $("#ez-dorf-knopf"); kn.textContent = von + " öffnet die Tür …"; kn.hidden = false; this.time.delayedCall(700, () => this.tuerAuf(kampf)); } });
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
@@ -225,6 +228,7 @@ export class Ort extends Phaser.Scene {
   offen(id: string): Rede | null { if (!this.da(id)) return null; for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
   merke(m: string) { this.merker[m] = true; if (!mitreise()) { try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } } if (gruppe()) dorfSende({ t: "merker", setzt: m }); this.sicht(); }
   /* ---------- Gemeinsames Dorf ---------- */
+  mit!: Mitspieler;
   andere = new Map<string, { sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; held: string; x: number; y: number; zx: number; zy: number; laeuft: boolean; zuletzt: number }>();
   gesendet = { x: 0, y: 0, t: 0 };
   /** Fortschritt der Gruppe übernehmen (vom Server); der Anführer speichert ihn in seinem Spielstand */
@@ -352,6 +356,7 @@ export class Ort extends Phaser.Scene {
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     this.figur.setPosition(o.x, o.y + 3).setDepth(o.y); this.ring.setPosition(o.x, o.y).setDepth(o.y - 0.01);
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; }
+    weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
     if (gruppe()) { const jetzt = this.time.now, g = this.gesendet, bewegt = Math.hypot(o.x - g.x, o.y - g.y) > 2; if ((bewegt && jetzt - g.t > 100) || jetzt - g.t > 1000) { this.gesendet = { x: o.x, y: o.y, t: jetzt }; dorfSende({ t: "pos", x: o.x, y: o.y, f: this.figur.flipX ? 1 : 0, l: this.laeuft ? 1 : 0 }); }
       const k = $("#ez-karte"); for (const [n, a] of this.andere) { if (jetzt - a.zuletzt > 6000) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); const u = k.querySelector(`u[data-n="${CSS.escape(n)}"]`); if (u) u.remove(); continue; }
         a.x += (a.zx - a.x) * Math.min(1, d * 10); a.y += (a.zy - a.y) * Math.min(1, d * 10); a.sp.setPosition(a.x, a.y + 3).setDepth(a.y); a.nm.setPosition(a.x, a.y - GROSS - 14);

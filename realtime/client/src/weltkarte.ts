@@ -3,6 +3,7 @@ import { HELDEN } from "../../shared/config";
 import { sternText } from "./hud";
 import { gruppe, gruppeAufloesen, lagerTafel, gruppenListe, gruppeVerbinden, dorfSende } from "./gruppe";
 import { kontoName } from "./konto";
+import { weltHeld, lokalerHeld } from "./welt";
 type Ziel = { id: string; nr: number; name: string; ort: string; x: number; y: number; text: string; dauer: string };
 /* x, y in Prozent des Kartenbilds */
 const SPIELBAR = new Set(["weidenhain", "rabenmoor"]);
@@ -17,8 +18,8 @@ const ZIELE: Ziel[] = [
 const HIER = { x: 49.5, y: 67.6 };
 
 /** Das Team für Kampagnen: ein Anführer und bis zu zwei Begleiter. Vorläufig auf dem Gerät gemerkt. */
-export const team = (): { held: string; mit: string[] } | null => { try { const t = JSON.parse(localStorage.getItem("ez_team") || "null"); if (t && HELDEN[t.held]) return { held: t.held, mit: (Array.isArray(t.mit) ? t.mit : []).filter((m: string) => HELDEN[m] && m !== t.held).slice(0, 2) }; } catch { /* privat */ } return null; };
-const teamText = () => { const t = team(); return t ? [t.held, ...t.mit].map((h) => HELDEN[h].name).join(", ") : "noch nicht gewählt"; };
+export const team = (): { held: string; mit: string[] } | null => ({ held: lokalerHeld(), mit: [] }); /* ein Held je Spieler, keine Begleiter */
+const teamText = () => { const t = team(); return t ? HELDEN[t.held].name : "noch nicht gewählt"; };
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck?: () => void, wort?: { los: string; zurueck: string }) => void;
 /** Gibt es einen angefangenen Stand dieser Kampagne? */
 const weiter = (id: string) => { try { return Object.keys(JSON.parse(localStorage.getItem("ez_ort_" + id) || "{}") || {}).length > 0; } catch { return false; } };
@@ -32,10 +33,10 @@ export function weltkarte(zu: () => void) {
   w.innerHTML = `<div class="blatt"><img src="../img/echtzeit/weltkarte.webp" alt="Karte der Splitterlande" draggable="false">`
     + `<i class="hier" style="left:${HIER.x}%;top:${HIER.y}%"><b>Waldmark</b></i>`
     + ZIELE.map((z) => `<button type="button" class="ziel${z.nr <= fertig ? " fertig" : z.nr > fertig + 1 ? " zu" : ""}" data-id="${z.id}" style="left:${z.x}%;top:${z.y}%"><span>${z.nr <= fertig ? "✓" : z.nr > fertig + 1 ? "🔒" : z.nr}</span><b>${z.ort}</b>${SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<i class="sterne">${sternText(z.id)}</i>` : ""}</button>`).join("")
-    + `</div><button type="button" class="schliessen" aria-label="Karte schließen">✕</button><h2>Wohin soll die Reise gehen?</h2><button type="button" class="team">⚔ Mein Team: <b></b></button><div class="info" hidden></div>`;
+    + `</div><button type="button" class="schliessen" aria-label="Karte schließen">✕</button><h2>Wohin soll die Reise gehen?</h2><button type="button" class="team">⚔ Mein Held: <b></b></button><div class="info" hidden></div>`;
   const info = w.querySelector(".info") as HTMLElement, tk = w.querySelector(".team") as HTMLElement, tb = tk.querySelector("b") as HTMLElement; tb.textContent = teamText();
   tk.onclick = () => { w.style.visibility = "hidden"; const zurueck = () => { w.style.visibility = ""; tb.textContent = teamText(); };
-    (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL((held, mit) => { try { localStorage.setItem("ez_team", JSON.stringify({ held, mit })); for (const z of ZIELE) { localStorage.removeItem("ez_k_" + z.id); localStorage.removeItem("ez_ort_" + z.id); localStorage.removeItem("ez_ort_" + z.id + "_pos"); } /* ein neues Team beginnt Kampagnen von vorn */ } catch { /* privat */ } zurueck(); }, zurueck, { los: "Dieses Team nehmen", zurueck: "Zurück zur Karte" }); };
+    (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL((held) => { weltHeld(held); /* nur hier (Waldmark) erlaubt; der Server speichert den aktiven Helden */ zurueck(); }, zurueck, { los: "Mit diesem Helden ziehen", zurueck: "Zurück zur Karte" }); };
   const ende = () => { w.hidden = true; w.style.visibility = ""; w.innerHTML = ""; removeEventListener("keydown", taste, true); zu(); };
   const taste = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); ende(); } };
   addEventListener("keydown", taste, true); (w.querySelector(".schliessen") as HTMLElement).onclick = ende;

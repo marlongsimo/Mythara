@@ -15,6 +15,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE } from "../../shared/karten";
+import { weltVerbindung } from "./welt";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -107,6 +108,8 @@ wss.on("connection", (ws, req) => {
   const url = new URL(req.url || "/", "http://x"), held0 = url.searchParams.get("held") || "schildwaechter", held = HELDEN[held0] ? held0 : "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x] && x !== held).slice(0, 2);
   const karte = url.searchParams.get("kampf") || "", ort = url.searchParams.get("ort") || "", raum = (url.searchParams.get("raum") || "").toUpperCase(), mitglied = url.searchParams.get("mitglied") === "1";
   if (url.searchParams.get("warte") === "1") { warten(ws, raum, url.searchParams.get("fuehrer") === "1"); return; } /* Wartebereich einer Koop-Gruppe */
+  if (url.searchParams.get("welt") === "1") { if (!SB_URL || !SB_KEY) { ws.close(4400, "welt nicht eingerichtet"); return; } /* gemeinsame Welt: wer ist wo (welt.ts) */
+    weltVerbindung(ws, url, { nutzerAus, sb, epLesen, gruppeHat: (c, n) => { const R = raeume.get(c); return Boolean(R && [...R.warten].some((w) => w.nutzer === n)); } }); return; }
   const p: Platz = { ws, sim: null, zuletzt: Date.now(), fenster: Date.now(), zahl: 0 }; plaetze.add(p);
   console.log("Verbindung:", karte ? `Kampf ${ort}/${karte}` : "Riss", "· Held", held, "· Begleiter", mit.length);
   const los = () => ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));

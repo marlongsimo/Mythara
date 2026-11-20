@@ -295,7 +295,22 @@
     #ez-zurueck { padding: 12px 18px; border-radius: 10px; border: 1px solid #4b4460; background: #1a1626; color: #d9cdf5; font: 600 14px Inter, sans-serif; cursor: pointer; }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
-  </style>
+  
+    /* ---------- Chat der gemeinsamen Welt (unten Mitte) ---------- */
+    .ez-chat { position: fixed; left: 50%; bottom: 10px; transform: translateX(-50%); width: min(560px, calc(100vw - 24px)); z-index: 7; /* unter Weltkarte, Dialogen und Tafeln */ display: flex; flex-direction: column;
+      background: linear-gradient(#2a2118, #1c1611); border: 2px solid #8a6a3a; border-radius: 10px; box-shadow: 0 6px 22px rgba(0,0,0,.55), inset 0 0 0 1px #3d2f1f; font: 14px/1.35 Inter, system-ui, sans-serif; }
+    .ez-chat .reiter { display: flex; gap: 4px; padding: 6px 6px 0; }
+    .ez-chat .reiter button { flex: 1; background: #2e2519; color: #d9c9a3; border: 1px solid #5a4528; border-bottom: 0; border-radius: 7px 7px 0 0; padding: 5px 4px; font: 600 13px Cinzel, Georgia, serif; cursor: pointer; }
+    .ez-chat .reiter button.an { background: linear-gradient(#5b4426, #3b2c19); color: #ffe7a8; border-color: #c89b52; }
+    .ez-chat .reiter .klapp { flex: 0 0 34px; }
+    .ez-chat .liste { height: 118px; overflow-y: auto; margin: 0 6px; padding: 6px 10px; background: #efe2c3; color: #2a2014; border: 1px solid #c8b083; border-radius: 0 0 6px 6px; }
+    .ez-chat .liste p { margin: 2px 0; } .ez-chat .liste time { color: #7a6748; font-size: 12px; } .ez-chat .liste b { color: #5a2a10; }
+    .ez-chat .liste .k-system { color: #7a5a20; font-style: italic; } .ez-chat .liste .k-gruppe b { color: #1f5a8a; } .ez-chat .liste .leer { color: #8a7a5a; }
+    .ez-chat .eingabe { display: flex; gap: 6px; padding: 6px; } .ez-chat .eingabe input { flex: 1; min-width: 0; background: #1a140e; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 6px 8px; font: inherit; }
+    .ez-chat .eingabe select, .ez-chat .eingabe button { background: #2e2519; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 4px 8px; font: inherit; cursor: pointer; }
+    .ez-chat.zu .liste, .ez-chat.zu .eingabe { display: none; } .ez-chat.zu .klapp { transform: rotate(180deg); }
+    @media (max-width: 700px) { .ez-chat { bottom: auto; top: 64px; width: calc(100vw - 24px); } .ez-chat .liste { height: 90px; } .ez-chat .reiter button { font-size: 11px; padding: 4px 2px; } }
+</style>
 </head>
 <body>
   <div id="ez-start" class="vorhang" role="status" aria-live="polite"><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><p class="was">Die Waldmark erwacht</p><p class="tipp"></p></div></div>
@@ -326,6 +341,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwpjjn2k"></script>
+  <script src="spiel.js?v=mwpk3ndu"></script>
 </body>
 </html>

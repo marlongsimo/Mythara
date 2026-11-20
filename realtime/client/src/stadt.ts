@@ -10,6 +10,7 @@ import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "./hud";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import Phaser from "phaser";
+import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem } from "./welt";
 import { HELDEN } from "../../shared/config";
 
 const F = 1.5, BW = 1671, BH = 941, TEMPO = 125, GROSS = 112; // GROSS: Körperhöhe des Helden am Bildschirm, passend zu Türen und Tischen im Bild // Vergrößerung, Bildgröße, Lauftempo in Bildpunkten der Vorlage je Sekunde
@@ -70,11 +71,15 @@ export class Stadt extends Phaser.Scene {
   held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
   leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; pfad: number[][] = []; zielOrt: (typeof ORTE)[number] | null = null;
   constructor() { super("dorf"); }
-  init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter";
+  mit!: Mitspieler;
+  init(d: { held?: string }) { let h = (d && d.held) || lokalerHeld(); /* ein Held je Spieler */ this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter";
     { const q = new URLSearchParams(location.search); if (q.get("von") === "tor") { /* aus einer Kampagne zurück: man steht vor dem Stadttor */ for (const [x, y] of [[1395, 335], [1380, 345], [1360, 350]]) if (frei(x, y)) { this.ort = { x, y }; break; } q.delete("von"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q.toString() : "")); } } }
-  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); heldenLaden(this); /* für Mitspieler */ }
   create() {
-    document.body.classList.add("dorf", "stadt"); this.profil(); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
+    document.body.classList.add("dorf", "stadt"); this.profil();
+    /* gemeinsame Welt: andere Spieler in der Waldmark; der Server nennt den aktiven Helden */ this.mit = new Mitspieler(this, { f: F, gross: GROSS, tiefe: (y) => y });
+    if (new URLSearchParams(location.search).get("von") === "tod") { setTimeout(() => chatSystem("Du bist gefallen und in der Waldmark wieder zu dir gekommen."), 300); const q = new URLSearchParams(location.search); q.delete("von"); history.replaceState(null, "", "?" + q.toString()); }
+    weltBetreten("waldmark", { spieler: (l) => this.mit.liste(l), fort: (id) => this.mit.weg(id), ich: (i) => { if (i.held !== this.held) this.scene.restart({ held: i.held }); } }); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
     this.cameras.main.setBackgroundColor("#0d140b"); const bild = this.add.image(0, 0, "waldmark").setOrigin(0, 0).setDepth(0), Q = bild.width / BW; bild.setScale(F / Q); // Q: so viel größer als die Vermessung ist die Bilddatei
     const quelle = this.textures.get("waldmark").getSourceImage() as HTMLImageElement;
     VORN.forEach((v, n) => { // Ausschnitt des Bildes in der Form des Umrisses: liegt über dem Helden, solange der dahinter steht
@@ -149,7 +154,7 @@ export class Stadt extends Phaser.Scene {
   betreten(ziel?: (typeof ORTE)[number]) { const o = ziel || this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
     else if (o.tat === "halle") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; heldenhalle(() => { this.gesperrt = false; this.profil(); }); }
-    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; weltkarte(() => { this.gesperrt = false; this.profil(); }); }
+    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; weltkarte(() => { this.gesperrt = false; if (lokalerHeld() !== this.held) { this.scene.restart({ held: lokalerHeld() }); return; } this.profil(); }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.rx, ry = this.ry;
@@ -166,6 +171,7 @@ export class Stadt extends Phaser.Scene {
     const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; }
+    weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
     let nah: typeof this.nah = null; for (const q of ORTE) if (Math.hypot(o.x - q.x, o.y - q.y) < q.r) nah = q;
     if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.tat === "bald" ? nah.name : nah.text + (HANDY ? "" : "  [E]"); }
   }
