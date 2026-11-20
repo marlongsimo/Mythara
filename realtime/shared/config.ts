@@ -65,7 +65,7 @@ export const HELDEN: Record<string, HeldDef> = {
   schildwaechter: { name: "Torvald", titel: "Der Schildwächter", klasse: "Krieger", rolle: "Verteidiger an der Front", bild: "img/figuren/schildwaechter.jpg", figur: "img/echtzeit/torvald.webp", lauf: "img/echtzeit/torvald-lauf.webp", hieb: "img/echtzeit/torvald-hieb.webp", schild: "img/echtzeit/torvald-schild.webp",
     lp: 320, tempo: 3.3, angriff: { nah: 100, fern: 55, magie: 25 }, abwehr: { nah: 90, fern: 80, magie: 45 },
     modi: [{ name: "Langschwert", art: "nah", schaden: [18, 30], takt: 0.9, reich: 1.6, text: "Nahkampf. Treffer verlangsamen den Gegner kurz (Festnageln)." },
-      { name: "Schild", art: "nah", schaden: [5, 14], takt: 1.2, reich: 1.3, wucht: true, schild: true, text: "Blockt von vorn: Nahkampfangriffe treffen 60 % seltener, Fernkampf 40 %, Magie 20 %. Torvald läuft 15 % langsamer. Der Schildhieb unterbricht den Gegner." }],
+      { name: "Schild", art: "nah", schaden: [0, 0], takt: 1, reich: 0, schild: true, text: "Kein Angriff. Torvald hält den Schild dem Gegner entgegen: Von vorn treffen ihn Nahkampfangriffe 60 % seltener, Fernkampf 40 %, Magie 20 %. Er läuft 15 % langsamer. Fähigkeiten gehen weiter." }],
     q: { name: "Schildstoß", zeit: 8, text: "Stürmt bis zu 2,5 Felder vor, 30 Schaden, stößt den Gegner zurück." },
     e: { name: "Bollwerk", zeit: 14, text: "3 Sekunden deutlich stärkerer Block. Verbündete direkt hinter Torvald sind mitgeschützt." },
     r: { name: "Schild von Grauwacht", zeit: 80, text: "Gegner im Umkreis von 6 Feldern greifen Torvald an. Verbündete in der Nähe bekommen 80 Schutzpunkte." },

@@ -170,7 +170,7 @@ function wahlZeigen(los: (held: string, mit: string[]) => void) {
       <div class="ez-helden">${HELDENREIHE.map((k) => `<button type="button" class="ez-held${k === WAHL.held ? " an" : ""}" data-held="${k}"><img src="../${HELDEN[k].bild}" alt=""><b>${esc(HELDEN[k].name)}</b><small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
       <div class="ez-karte"><h2>${esc(D.name)} – ${esc(D.titel)}</h2><p class="ez-rolle">${esc(D.rolle)} · ${D.lp} Leben · Tempo ${String(D.tempo).replace(".", ",")}</p>
         <p><b>Angriff:</b> ${w(D.angriff)}<br><b>Verteidigung:</b> ${w(D.abwehr)}</p>
-        <ul>${D.modi.map((m, i) => `<li><b>${i ? "Zweite" : "Erste"} Waffe – ${esc(m.name)}</b> (${m.art === "heil" ? "Heilung" : "Schaden"} ${m.schaden[0]}–${m.schaden[1]}, alle ${String(m.takt).replace(".", ",")} s, Reichweite ${String(m.reich).replace(".", ",")}): ${esc(m.text)}</li>`).join("")}
+        <ul>${D.modi.map((m, i) => `<li><b>${i ? "Zweite" : "Erste"} Waffe – ${esc(m.name)}</b> ${m.schild ? "" : ` (${m.art === "heil" ? "Heilung" : "Schaden"} ${m.schaden[0]}–${m.schaden[1]}, alle ${String(m.takt).replace(".", ",")} s, Reichweite ${String(m.reich).replace(".", ",")})`}: ${esc(m.text)}</li>`).join("")}
           ${(["q", "e", "r"] as const).map((t) => `<li><b>${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
       <h3>Begleiter (spielt der Rechner, höchstens zwei)</h3>
       <div class="ez-mit">${HELDENREIHE.filter((k) => k !== WAHL.held).map((k) => `<button type="button" class="${WAHL.mit.includes(k) ? "an" : ""}" data-mit="${k}">${esc(HELDEN[k].name)} <small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>

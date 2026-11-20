@@ -12,7 +12,7 @@ const S = MONSTER.knochenwaechter;
 console.log("Teil 1 – aus der Tabelle gerechnet, gegen einen Knochenwächter (150 Leben)\n");
 console.log("Held      Waffe               trifft   Schaden   je Sekunde   Zeit bis zum Sieg   | wird getroffen   erleidet je Sekunde");
 for (const k of HELDENREIHE) { const D = HELDEN[k];
-  for (const m of D.modi) { if (m.art === "heil") { console.log(`${D.name.padEnd(9)} ${m.name.padEnd(19)} heilt ${m.schaden[0]}–${m.schaden[1]}, also ${f1((m.schaden[0] + m.schaden[1]) / 2 / m.takt)} je Sekunde`); continue; }
+  for (const m of D.modi) { if (m.schild) continue; if (m.art === "heil") { console.log(`${D.name.padEnd(9)} ${m.name.padEnd(19)} heilt ${m.schaden[0]}–${m.schaden[1]}, also ${f1((m.schaden[0] + m.schaden[1]) / 2 / m.takt)} je Sekunde`); continue; }
     const p = trefferchance(D.angriff[m.art], S.abwehr[m.art]), mittel = (m.schaden[0] + m.schaden[1]) / 2 * (m.untot ? 1 + m.untot : 1) * (m.wucht ? 1 + K.WUCHT : 1), dps = p * mittel / m.takt;
     const ps = trefferchance(S.angriffswert.nah, D.abwehr.nah), ein = ps * (S.angriff.schaden[0] + S.angriff.schaden[1]) / 2 / S.angriff.takt;
     console.log(`${D.name.padEnd(9)} ${m.name.padEnd(19)} ${pz(p).padStart(5)}   ${(m.schaden[0] + "–" + m.schaden[1]).padEnd(7)}   ${f1(dps).padStart(6)}       ${f1(S.lp / dps).padStart(5)} s            | ${pz(ps).padStart(5)}            ${f1(ein)}`); } }

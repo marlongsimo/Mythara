@@ -174,7 +174,7 @@ export class Sim {
   /* ---------- Grundangriff ---------- */
   /** Angriff beginnen: Nahkämpfer treffen sofort, Fernkämpfer und Monster holen erst aus */
   private angriff(w: Wesen, z: Wesen): void {
-    const A = this.waffe(w); w.cdA = A.takt; w.blick = Math.atan2(z.y - w.y, z.x - w.x);
+    const A = this.waffe(w); if (w.held && (A as Modus).schild) return; /* mit erhobenem Schild wird nicht angegriffen */ w.cdA = A.takt; w.blick = Math.atan2(z.y - w.y, z.x - w.x);
     const aus = w.held ? (A.art === "nah" ? 0 : K.AUSHOLEN_FERN) : (A as { aushol: number }).aushol;
     if (aus > 0) { w.aushol = aus; w.ausholZiel = z.id; w.pfad = []; if (!w.held) this.ev.push({ a: "aushol", id: w.id, t: aus }); } else this.ausloesen(w, z);
   }
@@ -221,7 +221,7 @@ export class Sim {
     if (!ziel) ziel = (fz && !fz.tot && fz.team !== w.team ? fz : this.naechsterGegner(w, K.SICHT)) || undefined; w.zielId = ziel ? ziel.id : 0;
     if (!ziel) { folgen(); return; }
     const d = abstand(w, ziel);
-    if (w.typ === "schildwaechter") { const soll = w.lp / w.max < 0.45 ? 1 : 0; if (w.modus !== soll) this.wechsel(w); if (w.cdQ <= 0 && d < K.STOSS.weite && d > 1.2) this.faehigkeit(w, "q", ziel); if (w.cdE <= 0 && w.modus === 1) this.faehigkeit(w, "e", ziel); if (w.cdR <= 0 && this.feinde(w).filter((o) => abstand(w, o) < 5 && o.zielId && o.zielId !== w.id).length >= 2) this.faehigkeit(w, "r", w); }
+    if (w.typ === "schildwaechter") { const soll = w.lp / w.max < 0.35 ? 1 : w.lp / w.max > 0.6 ? 0 : w.modus; if (w.modus !== soll) this.wechsel(w); if (w.modus === 1) w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); /* angeschlagen: Schild hoch, bis er sich erholt hat */ if (w.cdQ <= 0 && d < K.STOSS.weite && d > 1.2) this.faehigkeit(w, "q", ziel); if (w.cdE <= 0 && w.modus === 1) this.faehigkeit(w, "e", ziel); if (w.cdR <= 0 && this.feinde(w).filter((o) => abstand(w, o) < 5 && o.zielId && o.zielId !== w.id).length >= 2) this.faehigkeit(w, "r", w); }
     else if (w.typ === "elementarist") { if (d < 8 && frei(w, ziel)) { const viele = this.feinde(w).filter((o) => abstand(o, ziel as Wesen) < 2.5).length; if (w.cdR <= 0 && viele >= 2) this.faehigkeit(w, "r", ziel); if (w.cdQ <= 0) this.faehigkeit(w, "q", ziel); if (w.cdE <= 0 && d < 7) this.faehigkeit(w, "e", ziel); } }
     else if (w.typ === "assassine") { if (w.cdE <= 0 && d < 3) this.faehigkeit(w, "e", ziel); if (w.cdQ <= 0 && d < K.STICH.weite && d > 1.4) this.faehigkeit(w, "q", ziel); if (w.cdR <= 0 && d < K.HINRICHTUNG.reich && ziel.lp / ziel.max < 0.6) this.faehigkeit(w, "r", ziel); }
     else if (w.typ === "kopfgeldjaeger") { if (d < 9 && frei(w, ziel)) { if (w.cdQ <= 0) this.faehigkeit(w, "q", ziel); if (w.cdE <= 0) this.faehigkeit(w, "e", ziel); if (w.cdR <= 0 && ziel.lp > 60) this.faehigkeit(w, "r", ziel); } }
@@ -255,7 +255,9 @@ export class Sim {
       else { // der Held des Spielers: Er läuft nur, wohin gesteuert wird
         const A = this.waffe(w), faehrt = w.rx !== 0 || w.ry !== 0, v = this.tempo(w);
         if (faehrt) { w.x += w.rx * v * DT; w.y += w.ry * v * DT; w.blick = Math.atan2(w.ry, w.rx); }
-        if (A.art === "heil") { // Heilstab: gewählter Verbündeter, sonst wer am schwersten verletzt ist
+        if (w.held && (A as Modus).schild) { // Schild erhoben: kein Angriff. Torvald wendet den Schild dem gewählten Gegner zu, sonst dem nächsten in der Nähe.
+          const g = ziel && ziel.team !== w.team && abstand(w, ziel) < 10 ? ziel : this.naechsterGegner(w, 5); if (g) w.blick = Math.atan2(g.y - w.y, g.x - w.x);
+        } else if (A.art === "heil") { // Heilstab: gewählter Verbündeter, sonst wer am schwersten verletzt ist
           const z = ziel && ziel.team === w.team && ziel.lp < ziel.max ? ziel : this.schwaechster(w, A.reich); if (z && !faehrt && w.cdA <= 0 && abstand(w, z) <= A.reich && (z === w || frei(w, z))) this.angriff(w, z);
         } else { if (ziel && ziel.team === w.team) { ziel = undefined; w.zielId = 0; }
           const nah = A.art === "nah", darf = nah || !faehrt; // Fernkämpfer schießen nur im Stehen
