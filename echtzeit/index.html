@@ -15,7 +15,7 @@
     .ez-kasten { position: fixed; z-index: 3; background: rgba(12,10,18,.72); border-radius: 12px; padding: 7px 11px; pointer-events: none; font-size: 13px; }
     #ez-ich { top: 8px; left: max(8px, env(safe-area-inset-left)); min-width: 170px; display: grid; gap: 3px; }
     #ez-ich small { color: #b9ad94; font-size: 11px; }
-    .ez-balken { display: block; height: 8px; background: #2a2636; border-radius: 4px; overflow: hidden; } .ez-balken u { display: block; height: 100%; background: #5fd08a; } .ez-balken.xp { height: 4px; } .ez-balken.xp u { background: #6aa5ff; }
+    .ez-balken { display: block; height: 8px; background: #2a2636; border-radius: 4px; overflow: hidden; } .ez-balken u { display: block; height: 100%; background: #5fd08a; } .ez-balken.xp { height: 6px; margin-top: 2px; } .ez-balken.xp u { background: linear-gradient(90deg, #6aa5ff, #b9d4ff); transition: width .4s ease-out; } #ez-xpleiste { display: grid; gap: 2px; } #ez-xpleiste[hidden] { display: none; } #ez-xpleiste.plus .ez-balken.xp { animation: ezxp .7s ease-out; } @keyframes ezxp { 0% { box-shadow: 0 0 0 0 #b9d4ff; } 30% { box-shadow: 0 0 10px 2px #b9d4ff; } 100% { box-shadow: 0 0 0 0 transparent; } } #ez-xpzahl { color: #a9c4ff !important; }
     #ez-oben { top: 8px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
     #ez-art { top: 8px; right: max(8px, env(safe-area-inset-right)); font-size: 11px; color: #ffd98a; } #ez-art.server { color: #8dffb0; }
     #ez-hilfe { bottom: 8px; left: max(8px, env(safe-area-inset-left)); font-size: 11px; color: #b9ad94; max-width: 46vw; }
@@ -133,7 +133,7 @@
 <body>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
-  <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small></div>
+  <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small><span id="ez-xpleiste" hidden><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u></i><small id="ez-xpzahl"></small></span></div>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
   <div class="ez-kasten" id="ez-hilfe"></div>
@@ -150,6 +150,6 @@
   <div id="ez-laden" hidden><div class="tafel"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><h2>Die Splitter regen sich</h2><div class="zier"></div><div class="rune"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwp0b0y1"></script>
+  <script src="spiel.js?v=mwp14deg"></script>
 </body>
 </html>
