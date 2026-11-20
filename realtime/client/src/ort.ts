@@ -137,7 +137,7 @@ export class Ort extends Phaser.Scene {
     for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.merker["kampf_" + (TUEREN[w.stelle] || { kampf: "" }).kampf] ? null : this.d.stellen[w.stelle]; return null; }
   /** Beim Ankommen erzählen, was gerade geschehen ist (einmal je Auftritt). */
   auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;
-    this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { kampagneGeschafft(a.ende); location.href = "./?von=tor"; return; } this.gesperrt = false; })); }
+    this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { kampagneGeschafft(a.ende); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } /* geschafft: der Ort ist beim nächsten Besuch wieder frisch */ location.href = "./?von=tor"; return; } this.gesperrt = false; })); }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
     if (this.nah === "#heim") { this.gesperrt = true; this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=tor"; }); return; }
