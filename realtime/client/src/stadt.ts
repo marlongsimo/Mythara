@@ -6,7 +6,7 @@
  */
 import { weltkarte } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
-import { kontoKnopf, kontoFragen } from "./konto";
+import { kontoKnopf } from "./konto";
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 
@@ -128,7 +128,7 @@ export class Stadt extends Phaser.Scene {
       this.add.particles(x * F, y * F, "fx-weiss", { x: { min: -150 * F, max: 150 * F }, y: { min: -110 * F, max: 110 * F }, speedY: { min: -30, max: -10 }, speedX: { min: -8, max: 8 }, lifespan: { min: 900, max: 1800 }, scale: { start: 0.2, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: [0x8fb4ff, 0xc9a8ff, 0xffffff], frequency: 55, blendMode: ADD }).setDepth(1); } // Funken steigen aus dem Riss
   }
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
-  profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`; kontoKnopf(); kontoFragen();
+  profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`; kontoKnopf();
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
   /** Kurz getippt oder geklickt: Liegt ein Ort in der Nähe der Stelle, geht der Held dorthin und betritt ihn; sonst läuft er zur getippten Stelle. */

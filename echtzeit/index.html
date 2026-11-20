@@ -77,6 +77,11 @@
     #ez-dorf-knopf { position: fixed; z-index: 5; left: 50%; bottom: 64px; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.6); } #ez-dorf-knopf[hidden] { display: none; } #ez-dorf-knopf.bald { border-color: #4b4460; background: #1a1626; color: #b9ad94; }
     #ez-profil, #ez-karte { display: none; }
     #ez-konto { position: fixed; inset: 0; z-index: 20; background: rgba(5,4,9,.75); display: grid; place-items: center; padding: 14px; user-select: text; -webkit-user-select: text; } #ez-konto[hidden] { display: none; }
+    #ez-konto.seite { background: linear-gradient(rgba(8,6,14,.55), rgba(8,6,14,.9)), url(../img/echtzeit/weidenhain.webp) center / cover no-repeat #07060b; overflow-y: auto; }
+    #ez-konto.seite .blatt { width: min(420px, 100%); background: rgba(20,16,30,.94); box-shadow: 0 18px 50px rgba(0,0,0,.7); padding: 22px 24px; }
+    #ez-konto .marke { display: block; font: 600 12px Cinzel, Georgia, serif; letter-spacing: .28em; text-transform: uppercase; color: #c7b27c; } #ez-konto h1 { margin: 2px 0 14px; font: 600 30px Cinzel, Georgia, serif; color: #f3e3b4; } #ez-konto h1 i { font: 600 11px Inter, sans-serif; font-style: normal; vertical-align: middle; padding: 2px 8px; border-radius: 999px; background: #3a2f66; color: #d9cdf5; letter-spacing: .08em; text-transform: uppercase; }
+    #ez-konto .reiter { display: flex; gap: 0; margin-bottom: 12px; border: 1px solid #4b4460; border-radius: 10px; overflow: hidden; } #ez-konto .reiter button { flex: 1; border: 0; border-radius: 0; background: #14101f; color: #b9ad94; padding: 9px 6px; } #ez-konto .reiter button.an { background: #3a2a10; color: #ffe9a8; font-weight: 600; }
+    #ez-konto .hinweis { font-size: 13px; color: #cfc3a8; } #ez-konto [hidden] { display: none; }
     #ez-konto .blatt { width: min(380px, 100%); background: #171322; border: 1px solid rgba(232,200,120,.55); border-radius: 14px; padding: 18px 20px; color: #efe8d8; font-size: 14px; line-height: 1.45; } #ez-konto h2 { margin: 0 0 6px; font: 600 19px Cinzel, Georgia, serif; color: #f3e3b4; } #ez-konto p { margin: 0 0 10px; }
     #ez-konto label { display: block; margin: 0 0 9px; font-size: 12px; color: #cfc3a8; } #ez-konto input { display: block; width: 100%; box-sizing: border-box; margin-top: 3px; padding: 10px 11px; border-radius: 9px; border: 1px solid #4b4460; background: #0f0c18; color: #fff; font: 15px Inter, sans-serif; }
     #ez-konto .reihe { display: flex; flex-wrap: wrap; gap: 8px; } #ez-konto button { padding: 10px 15px; border-radius: 10px; border: 1px solid #4b4460; background: #1d1830; color: #efe8d8; font: 500 14px Inter, sans-serif; cursor: pointer; } #ez-konto button.haupt { border-color: #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font-weight: 600; }
@@ -117,6 +122,6 @@
   <div id="ez-konto" hidden></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwovdwvc"></script>
+  <script src="spiel.js?v=mwovmezu"></script>
 </body>
 </html>
