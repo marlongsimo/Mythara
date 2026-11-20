@@ -29,7 +29,9 @@ await p.click("#my-zur-anmeldung"); await Promise.all([p.waitForNavigation(), p.
 await dorf(); check(Boolean(await p.evaluate(() => Boolean(window.EZD))), "Beim nächsten Laden im selben Besuch wird nicht noch einmal gefragt");
 await p.evaluate(() => { localStorage.setItem("ez_kampagnen", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: "lichtbringer", mit: [] })); }); await p.waitForTimeout(700);
 check(!(await konto("Anna")) || !(await konto("Anna")).stand, "Als Gast wird nichts ins Konto geschrieben");
-await Promise.all([p.waitForNavigation(), p.click("#ez-profil")]); await p.waitForSelector("#my-name"); check(true, "Ein Tipp auf das Gast-Profil führt zur Anmeldeseite");
+await p.click("#ez-profil"); check(await p.isVisible("#ez-konto .tafel") && /Gast/.test(await p.textContent("#ez-konto .kopf b")), "Ein Tipp auf das Profil öffnet die Profiltafel");
+await p.click('#ez-konto [data-held="assassine"]'); await Promise.all([p.waitForNavigation(), p.click('#ez-konto .reihe [data-t="zu"]')]); await imSpiel(); check(await p.evaluate(() => window.EZD.szene.held) === "assassine" && /Vex/.test(await p.textContent("#ez-profil-held")), "Bildnis gewählt: In der Waldmark läuft jetzt dieser Held");
+await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="hin"]')]); await p.waitForSelector("#my-name"); check(true, "„Anmelden“ in der Profiltafel führt zur Anmeldeseite");
 await p.fill("#my-name", "Anna"); await p.fill("#my-pw", "falsch"); await p.click("#my-anmelden .my-knopf"); await p.waitForTimeout(500); check(/falsch/.test(await p.textContent("#my-konto-fb")), "Falsches Passwort: Meldung, keine Anmeldung");
 await p.fill("#my-pw", "geheim1"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
 check(await p.textContent("#ez-profil-name") === "Anna", "Nach der Anmeldung ist man im Spiel, der Name steht im Profil");

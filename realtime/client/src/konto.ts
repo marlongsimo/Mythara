@@ -10,6 +10,7 @@
  *   - Hat das Konto noch gar keinen Stand, wird der vom Gerät übernommen.
  * Gäste spielen wie bisher nur auf dem Gerät. Es wird nur der veröffentlichbare Schlüssel verwendet.
  */
+import { HELDEN, HELDENREIHE } from "../../shared/config";
 interface Db { auth: { getSession(): Promise<{ data: { session: { user: { is_anonymous?: boolean } } | null } }>; signInAnonymously(): Promise<{ error: { message: string } | null }>; signInWithPassword(a: { email: string; password: string }): Promise<{ error: { message: string } | null }>; signOut(): Promise<unknown>; updateUser(a: { email: string; password: string }): Promise<{ error: { message: string } | null }> };
   rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: { message: string } | null }> }
 const W = window as unknown as { supabase?: { createClient(url: string, key: string, o: unknown): Db }; MR_MULTIPLAYER_CONFIG?: { supabaseUrl: string; supabasePublishableKey: string } };
@@ -60,44 +61,29 @@ export async function kontoStart(): Promise<boolean> {
 /** Das Profil oben links: zeigt den Namen; ein Klick öffnet Anmelden oder Abmelden. */
 export function kontoKnopf() {
   const el = $("#ez-profil"); if (!el) return; { let n = 0; try { n = Number(localStorage.getItem("ez_seelen")) || 0; } catch { /* privat */ } const se = $("#ez-seelen"); if (se) se.textContent = "◈ " + n; } $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
-  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); if (name) fenster(); else zurAnmeldung(); };
+  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); fenster(); };
 }
 /** Vor dem Spiel: Wer nicht angemeldet ist, kommt einmal je Besuch auf die Anmeldeseite (anmelden.html, gestaltet wie die des Würfelspiels). Dort meldet man sich an, legt ein Konto an oder spielt als Gast weiter. */
 export function kontoSeite(): Promise<void> { if (name || !verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__gefragt") === "1") return Promise.resolve(); } catch { return Promise.resolve(); } zurAnmeldung(); return new Promise(() => { /* die Seite wechselt */ }); }
 function zurAnmeldung() { location.replace("anmelden.html" + (location.search ? "?weiter=" + encodeURIComponent(location.search) : "")); }
-function fenster(weiter?: () => void) {
-  const f = $("#ez-konto"); f.hidden = false; f.classList.toggle("seite", !name); const zu = () => { f.hidden = true; f.innerHTML = ""; if (weiter) weiter(); };
-  if (name) { f.innerHTML = `<div class="blatt"><h2>Konto</h2><p>Angemeldet als <b></b>.<br>Dein Fortschritt in den Splitterlanden wird in deinem Konto gespeichert.</p><div class="reihe"><button type="button" class="haupt" data-t="zu">Weiterspielen</button><button type="button" data-t="ab">Abmelden</button></div></div>`; (f.querySelector("b") as HTMLElement).textContent = name; }
-  else f.innerHTML = `<div class="blatt"><small class="marke">Mythara</small><h1>Splitterlande <i>Beta</i></h1>
-    <div class="reiter"><button type="button" data-t="r-an" class="an">Anmelden</button><button type="button" data-t="r-neu">Konto anlegen</button></div>
-    <p class="hinweis" data-fuer="an">Dein Konto aus dem Würfelspiel gilt auch hier. Der Fortschritt in den Splitterlanden ist eigenständig.</p>
-    <p class="hinweis" data-fuer="neu" hidden>Ein Konto für Mythara: Es gilt für die Splitterlande und das Würfelspiel. Benutzername 3 bis 20 Zeichen (Buchstaben, Ziffern, Unterstrich), Passwort mindestens 8 Zeichen.</p>
-    <label>Benutzername<input id="ez-k-name" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"></label><label>Passwort<input id="ez-k-pw" type="password" autocomplete="current-password"></label>
-    <label data-fuer="neu" hidden>Passwort wiederholen<input id="ez-k-pw2" type="password" autocomplete="new-password"></label><p class="meldung"></p>
-    <div class="reihe"><button type="button" class="haupt" data-t="an">Anmelden</button><button type="button" data-t="zu">Als Gast spielen</button></div>
-    <p class="klein">Als Gast bleibt dein Fortschritt nur auf diesem Gerät. <a href="../">← zur Startseite von Mythara</a></p></div>`;
-  let neu = false; const reiter = (n: boolean) => { neu = n; for (const el of Array.from(f.querySelectorAll<HTMLElement>("[data-fuer]"))) el.hidden = (el.dataset.fuer === "neu") !== n; for (const k of Array.from(f.querySelectorAll<HTMLElement>(".reiter button"))) k.classList.toggle("an", (k.dataset.t === "r-neu") === n); (f.querySelector('[data-t="an"]') as HTMLElement).textContent = n ? "Konto anlegen" : "Anmelden"; (f.querySelector(".meldung") as HTMLElement).textContent = ""; };
-  f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter" && !name) void (neu ? anlegen(f) : anmelden(f)); if (e.key === "Escape") zu(); }; f.onkeyup = (e) => e.stopPropagation();
-  f.onclick = (e) => { const t = (e.target as HTMLElement).dataset.t; if (t === "zu" || (name && e.target === f)) zu(); else if (t === "an") void (neu ? anlegen(f) : anmelden(f)); else if (t === "ab") void abmelden(); else if (t === "r-an") reiter(false); else if (t === "r-neu") reiter(true); };
-}
-/** Neues Konto, wie im Würfelspiel: erst eine Gastsitzung, dann den Namen sichern, dann wird aus dem Gast ein Konto mit Passwort. */
-async function anlegen(f: HTMLElement) {
-  const n = (f.querySelector("#ez-k-name") as HTMLInputElement).value.trim(), pw = (f.querySelector("#ez-k-pw") as HTMLInputElement).value, pw2 = (f.querySelector("#ez-k-pw2") as HTMLInputElement).value, m = f.querySelector(".meldung") as HTMLElement, kn = f.querySelector('[data-t="an"]') as HTMLButtonElement;
-  if (!/^[A-Za-z0-9_]{3,20}$/.test(n)) { m.textContent = "Der Benutzername braucht 3 bis 20 Zeichen: Buchstaben, Ziffern oder Unterstrich."; return; } if (pw.length < 8) { m.textContent = "Das Passwort braucht mindestens 8 Zeichen."; return; } if (pw !== pw2) { m.textContent = "Die beiden Passwörter stimmen nicht überein."; return; }
-  const d = verbindung(); if (!d) { m.textContent = "Keine Verbindung zum Konto."; return; } kn.disabled = true; m.textContent = "Konto wird angelegt …";
-  try { const { data } = await d.auth.getSession(); if (!data.session) { const r = await d.auth.signInAnonymously(); if (r.error) throw new Error(r.error.message); }
-    const p = await rpc<{ anmeldung: string }>("rpg_set_profile", { p_handle: n }); const { error } = await d.auth.updateUser({ email: p.anmeldung, password: pw }); if (error) throw new Error(/password/i.test(error.message) ? "Dieses Passwort ist zu schwach. Bitte ein längeres wählen." : error.message);
-    try { sessionStorage.removeItem("ez__neu"); } catch { /* privat */ } location.reload();
-  } catch (e) { m.textContent = (e as Error).message; kn.disabled = false; }
-}
-async function anmelden(f: HTMLElement) {
-  const n = (f.querySelector("#ez-k-name") as HTMLInputElement).value.trim(), pw = (f.querySelector("#ez-k-pw") as HTMLInputElement).value, m = f.querySelector(".meldung") as HTMLElement, kn = f.querySelector('[data-t="an"]') as HTMLButtonElement;
-  if (!n || !pw) { m.textContent = "Bitte Benutzername und Passwort eingeben."; return; } const d = verbindung(); if (!d) { m.textContent = "Keine Verbindung zum Konto."; return; } kn.disabled = true; m.textContent = "Anmeldung …";
-  try { const { data } = await d.auth.getSession(); if (!data.session) { const r = await d.auth.signInAnonymously(); if (r.error) throw new Error(r.error.message); } /* die Namensabfrage braucht eine (Gast-)Sitzung, wie im Würfelspiel */
-    const adresse = /^[A-Za-z0-9_ÄÖÜäöüß]{3,20}$/.test(n) ? await rpc<string | null>("rpg_login_email", { p_handle: n }) : null; if (!adresse) throw new Error("Benutzername oder Passwort ist falsch.");
-    const { error } = await d.auth.signInWithPassword({ email: adresse, password: pw }); if (error) throw new Error(/invalid/i.test(error.message) ? "Benutzername oder Passwort ist falsch." : error.message);
-    try { sessionStorage.removeItem("ez__neu"); } catch { /* privat */ } location.reload();
-  } catch (e) { m.textContent = (e as Error).message; kn.disabled = false; }
+/** Das Profil als Tafel: Name, Seelensplitter, Kampagnen – und die Wahl des Bildnisses. Das gewählte Bildnis ist auch die Figur, mit der man durch die Waldmark läuft (in Kampagnen läuft immer der Anführer des Teams). */
+function fenster() {
+  const f = $("#ez-konto"); f.hidden = false; const zu = () => { f.hidden = true; f.innerHTML = ""; };
+  const lies1 = (k: string) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }; let held = lies1("ez_held"); if (!HELDEN[held]) held = "schildwaechter"; const start = held;
+  const kopf = () => `<img src="../${HELDEN[held].bild}" alt=""><div><b></b><small>${HELDEN[held].name} · ${HELDEN[held].klasse}</small></div>`;
+  f.innerHTML = `<div class="tafel"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
+    <h2>Heldenprofil</h2><div class="zier"></div>
+    <div class="kopf">${kopf()}</div>
+    <div class="werte"><span><em>◈</em><b>${Number(lies1("ez_seelen")) || 0}</b><small>Seelensplitter</small></span><span><em>⚑</em><b>${Number(lies1("ez_kampagnen")) || 0} / 6</b><small>Kampagnen</small></span></div>
+    <h3>Bildnis wählen</h3><div class="bildnisse">${HELDENREIHE.map((k) => `<button type="button" data-held="${k}" title="${HELDEN[k].name}"><img src="../${HELDEN[k].bild}" alt="${HELDEN[k].name}"><small>${HELDEN[k].name}</small></button>`).join("")}</div>
+    <p class="klein">Mit diesem Helden läufst du durch die Waldmark. In einer Kampagne läuft immer der Anführer deines Teams.</p>
+    <div class="reihe"><button type="button" class="haupt" data-t="zu">Fertig</button>${name ? `<button type="button" data-t="ab">Abmelden</button>` : `<button type="button" data-t="hin">Anmelden</button>`}</div>
+    <p class="klein">${name ? "Dein Fortschritt wird in deinem Konto gespeichert." : "Als Gast bleibt dein Fortschritt nur auf diesem Gerät."}</p></div>`;
+  const zeige = () => { const k = f.querySelector(".kopf") as HTMLElement; k.innerHTML = kopf(); (k.querySelector("b") as HTMLElement).textContent = name || "Gast"; for (const b of Array.from(f.querySelectorAll<HTMLElement>("[data-held]"))) b.classList.toggle("an", b.dataset.held === held); }; zeige();
+  const fertig = () => { if (held !== start && (window as unknown as { EZD?: unknown }).EZD) { location.reload(); return; } /* in der Waldmark wechselt die Figur */ ($("#ez-profil-bild") as HTMLImageElement).src = "../" + HELDEN[held].bild; zu(); };
+  f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Escape") fertig(); }; f.onkeyup = (e) => e.stopPropagation();
+  f.onclick = (e) => { const el = (e.target as HTMLElement).closest("[data-t],[data-held]") as HTMLElement | null; if (e.target === f) { fertig(); return; } if (!el) return;
+    if (el.dataset.held) { held = el.dataset.held; try { localStorage.setItem("ez_held", held); } catch { /* privat */ } zeige(); } else if (el.dataset.t === "zu") fertig(); else if (el.dataset.t === "ab") void abmelden(); else if (el.dataset.t === "hin") zurAnmeldung(); };
 }
 async function abmelden() {
   clearTimeout(takt); await speichern(); const d = verbindung(); if (d) await d.auth.signOut();
