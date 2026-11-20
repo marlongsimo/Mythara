@@ -78,7 +78,7 @@
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.3
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -95,7 +95,7 @@
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.3
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -108,7 +108,7 @@
    "kategorie": "kleinteil",
    "bild": "img/echtzeit/brunnen.webp",
    "groesse": [640, 505],
-   "anker": [0.5, 0.8],
+   "anker": [0.5, 0.9],
    "massstab": 0.3,
    "kollision": {
     "art": "kreis",
