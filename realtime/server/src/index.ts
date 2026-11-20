@@ -26,12 +26,13 @@ interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: numb
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string } }
 const plaetze = new Set<Platz>();
 /* ---------- Koop-Gruppen: nur im Arbeitsspeicher, über einen Code aus sechs Buchstaben. Der Anführer spielt die Kampagne, bis zu zwei Mitspieler kommen in seine Kämpfe. ---------- */
-interface Warter { ws: WebSocket; nutzer: string; name: string; held: string }
+interface Warter { ws: WebSocket; nutzer: string; name: string; held: string; bereit?: boolean }
 interface Raum { code: string; fuehrer: string; fuehrerName: string; warten: Set<Warter>; kampf: Platz | null; zuletzt: number;
-  /* gemeinsames Dorf: wo die Gruppe ist und der Questfortschritt (Merker) des Anführers – Mitspieler sehen und ändern denselben */ ort: string | null; merker: Record<string, true> }
+  /* gemeinsames Dorf: wo die Gruppe ist und der Questfortschritt (Merker) des Anführers – Mitspieler sehen und ändern denselben */ ort: string | null; merker: Record<string, true>;
+  /* Aufbruchslager: Vor dem gemeinsamen Aufbruch wählt jeder seinen Helden (keiner doppelt) und meldet sich bereit */ lager: string | null }
 const raeume = new Map<string, Raum>();
 const CODE = /^[A-Z]{6}$/;
-function gruppeMelden(R: Raum) { const m = JSON.stringify({ t: "gruppe", code: R.code, fuehrer: R.fuehrerName, mitglieder: [...R.warten].map((w) => ({ name: w.name, held: w.held, fuehrer: w.nutzer === R.fuehrer })), kampf: R.kampf && R.kampf.kampf ? { ort: R.kampf.kampf.ort, karte: R.kampf.kampf.karte } : null });
+function gruppeMelden(R: Raum) { const m = JSON.stringify({ t: "gruppe", code: R.code, fuehrer: R.fuehrerName, mitglieder: [...R.warten].map((w) => ({ name: w.name, held: w.held, fuehrer: w.nutzer === R.fuehrer, bereit: Boolean(w.bereit) })), lager: R.lager, kampf: R.kampf && R.kampf.kampf ? { ort: R.kampf.kampf.ort, karte: R.kampf.kampf.karte } : null });
   for (const w of R.warten) if (w.ws.readyState === WebSocket.OPEN) w.ws.send(m); }
 /** Der Sim des Anführers sagt: hier geht es los – die wartenden Mitspieler kommen nach */
 function losMelden(R: Raum, ort: string, karte: string) { for (const w of R.warten) if (w.nutzer !== R.fuehrer && w.ws.readyState === WebSocket.OPEN) w.ws.send(JSON.stringify({ t: "los", ort, kampf: karte })); gruppeMelden(R); }
@@ -119,15 +120,16 @@ function warten(ws: WebSocket, code: string, fuehrer: boolean) {
   const frist = setTimeout(() => { if (!w) ws.close(4401, "keine anmeldung"); }, 10000);
   let fenster = Date.now(), zahl = 0;
   ws.on("message", async (roh) => { const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; zahl = 0; } if (++zahl > 40) return;
-    let e: { t?: string; token?: string; name?: string; held?: string; ort?: string | null; merker?: unknown; x?: number; y?: number; f?: number; l?: number; id?: string; setzt?: string; kampf?: string }; try { e = JSON.parse(String(roh)); } catch { return; }
+    let e: { t?: string; token?: string; name?: string; held?: string; ja?: boolean; ort?: string | null; merker?: unknown; x?: number; y?: number; f?: number; l?: number; id?: string; setzt?: string; kampf?: string }; try { e = JSON.parse(String(roh)); } catch { return; }
     if (w && R) { dorf(R, w, e); return; } if (w) return; if (e.t !== "anmeldung") return;
     const nutzer = await nutzerAus(String(e.token || "")).catch(() => null); if (!nutzer) { ws.close(4401, "anmeldung ungueltig"); return; } clearTimeout(frist);
     const name = String(e.name || "Held").replace(/[<>&"]/g, "").slice(0, 24) || "Held", held = HELDEN[String(e.held)] ? String(e.held) : "schildwaechter";
-    R = raeume.get(code); if (fuehrer) { if (R && R.fuehrer !== nutzer) { ws.close(4409, "code vergeben"); return; } if (!R) { R = { code, fuehrer: nutzer, fuehrerName: name, warten: new Set(), kampf: null, zuletzt: Date.now(), ort: null, merker: {} }; raeume.set(code, R); } }
+    R = raeume.get(code); if (fuehrer) { if (R && R.fuehrer !== nutzer) { ws.close(4409, "code vergeben"); return; } if (!R) { R = { code, fuehrer: nutzer, fuehrerName: name, warten: new Set(), kampf: null, zuletzt: Date.now(), ort: null, merker: {}, lager: null }; raeume.set(code, R); } }
     else if (!R) { ws.close(4404, "gruppe unbekannt"); return; }
     for (const o of [...R.warten]) if (o.nutzer === nutzer) { R.warten.delete(o); try { o.ws.close(1000, "neu verbunden"); } catch { /* schon zu */ } } /* dieselbe Person nur einmal */
     if (new Set([...R.warten].map((o) => o.nutzer).concat(nutzer)).size > 3) { ws.close(4409, "gruppe voll"); return; }
-    w = { ws, nutzer, name, held }; R.warten.add(w); R.zuletzt = Date.now(); console.log("Koop: Gruppe", code, fuehrer ? "gegründet" : "beigetreten", "·", R.warten.size, "da"); gruppeMelden(R);
+    const vergeben = new Set([...R.warten].map((o) => o.held)); let held2 = held; if (vergeben.has(held2)) held2 = Object.keys(HELDEN).find((k) => !vergeben.has(k)) || held2; /* jeder Held nur einmal */
+    w = { ws, nutzer, name, held: held2 }; R.warten.add(w); R.zuletzt = Date.now(); console.log("Koop: Gruppe", code, fuehrer ? "gegründet" : "beigetreten", "·", R.warten.size, "da"); gruppeMelden(R);
     if (!fuehrer && R.kampf && R.kampf.kampf && !R.kampf.kampf.fertig) ws.send(JSON.stringify({ t: "los", ort: R.kampf.kampf.ort, kampf: R.kampf.kampf.karte })); /* Kampf läuft schon: gleich dazu */
     else if (!fuehrer && R.ort) ws.send(JSON.stringify({ t: "ort", ort: R.ort, merker: R.merker })); /* die Gruppe ist in einem Dorf: mitreisen */ });
   const weg = () => { clearTimeout(frist); if (R && w) { R.warten.delete(w); R.zuletzt = Date.now(); gruppeMelden(R); const m = JSON.stringify({ t: "weg", n: w.name }); for (const o of R.warten) if (o.ws.readyState === WebSocket.OPEN) o.ws.send(m); } }; ws.on("close", weg); ws.on("error", weg);
@@ -147,7 +149,10 @@ const MERK = /^[a-z][a-z0-9_]{0,39}$/, ORTNAME = /^[a-z]{2,20}$/;
 function dorf(R: Raum, w: Warter, e: { t?: string; ort?: string | null; merker?: unknown; x?: number; y?: number; f?: number; l?: number; id?: string; setzt?: string; kampf?: string }) {
   const an = (m: object, auch = false) => { const s = JSON.stringify(m); for (const o of R.warten) if ((auch || o !== w) && o.ws.readyState === WebSocket.OPEN) o.ws.send(s); };
   const fuehrer = w.nutzer === R.fuehrer; R.zuletzt = Date.now();
-  if (e.t === "ort" && fuehrer) { const ort = typeof e.ort === "string" && ORTNAME.test(e.ort) ? e.ort : null; const neu = ort !== R.ort; R.ort = ort;
+  if (e.t === "lager" && fuehrer) { R.lager = typeof e.ort === "string" && ORTNAME.test(e.ort) ? e.ort : null; for (const o of R.warten) o.bereit = false; gruppeMelden(R); return; }
+  if (e.t === "held" && typeof (e as { held?: string }).held === "string" && HELDEN[(e as { held: string }).held]) { const h = (e as { held: string }).held; if ([...R.warten].some((o) => o !== w && o.held === h)) return; /* jeder Held nur einmal */ w.held = h; w.bereit = false; gruppeMelden(R); return; }
+  if (e.t === "bereit") { w.bereit = Boolean((e as { ja?: boolean }).ja); gruppeMelden(R); return; }
+  if (e.t === "ort" && fuehrer) { R.lager = null; const ort = typeof e.ort === "string" && ORTNAME.test(e.ort) ? e.ort : null; const neu = ort !== R.ort; R.ort = ort;
     if (ort && e.merker && typeof e.merker === "object") { const m: Record<string, true> = neu ? {} : R.merker; for (const k of Object.keys(e.merker as object).slice(0, 200)) if (MERK.test(k) && (e.merker as Record<string, unknown>)[k] === true) m[k] = true; R.merker = m; }
     if (!ort) R.merker = {}; an({ t: "ort", ort: R.ort, merker: R.merker }); }
   else if (e.t === "merker" && R.ort && typeof e.setzt === "string" && MERK.test(e.setzt)) { R.merker[e.setzt] = true; an({ t: "merker", merker: R.merker }, true); }

@@ -10,7 +10,7 @@ import { kontoName, kontoToken, kontoRpc } from "./konto";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 export interface Gruppe { code: string; fuehrer: boolean }
-interface Mitglied { name: string; held: string; fuehrer: boolean }
+interface Mitglied { name: string; held: string; fuehrer: boolean; bereit?: boolean }
 /** Die Adresse des Spielservers (für Prüfungen über ?server= änderbar) */
 export const serverAdresse = () => (P.has("server") ? P.get("server") || "" : SPIELSERVER);
 /** In welcher Gruppe bin ich? */
@@ -20,6 +20,10 @@ const neuerCode = () => Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXY
 
 let ws: WebSocket | null = null, liste: Mitglied[] = [], fehler = "", lauscher: (() => void) | null = null, laeuftKampf: { ort: string; karte: string } | null = null;
 const held = () => { try { const t = JSON.parse(localStorage.getItem("ez_team") || "null"); if (t && HELDEN[t.held]) return t.held as string; const h = localStorage.getItem("ez_held") || ""; return HELDEN[h] ? h : "schildwaechter"; } catch { return "schildwaechter"; } };
+/** Der Held, mit dem ich in der Gruppe spiele (im Aufbruchslager gewählt) */
+export const koopHeld = () => { try { const h = sessionStorage.getItem("ez__koopheld") || ""; if (HELDEN[h]) return h; } catch { /* privat */ } return held(); };
+const koopHeldSetzen = (h: string) => { try { sessionStorage.setItem("ez__koopheld", h); } catch { /* privat */ } };
+let lagerOrt: string | null = null, lagerOffen = false;
 
 /* ---------- Gemeinsames Dorf: Die Gruppe reist mit dem Anführer, sieht sich gegenseitig und teilt den Questfortschritt ---------- */
 /** Zusatz an Adressen, damit Prüfungen mit ?server= weiterlaufen */
@@ -46,7 +50,7 @@ export async function gruppeVerbinden() {
   const g = gruppe(), basis = serverAdresse(); if (!g || !basis || ws) { anzeigen(); return; }
   const token = await kontoToken(); if (!token) { fehler = "Koop geht nur mit Konto."; anzeigen(); return; }
   const s = new WebSocket(basis + "?raum=" + g.code + "&warte=1" + (g.fuehrer ? "&fuehrer=1" : "")); ws = s;
-  s.onopen = () => { s.send(JSON.stringify({ t: "anmeldung", token, name: kontoName() || "Held", held: held() })); setTimeout(() => { if (ws !== s || s.readyState !== 1) return; angemeldet = true; for (const m of warteschlange.splice(0)) s.send(JSON.stringify(m)); }, 1500); /* nach der Prüfung der Anmeldung */ };
+  s.onopen = () => { s.send(JSON.stringify({ t: "anmeldung", token, name: kontoName() || "Held", held: koopHeld() })); setTimeout(() => { if (ws !== s || s.readyState !== 1) return; angemeldet = true; for (const m of warteschlange.splice(0)) s.send(JSON.stringify(m)); }, 1500); /* nach der Prüfung der Anmeldung */ };
   s.onmessage = (ev) => { let m: { t: string; mitglieder?: Mitglied[]; ort?: string | null; kampf?: string | { ort: string; karte: string } | null; merker?: Record<string, boolean>; n?: string; held?: string; x?: number; y?: number; f?: number; l?: number; von?: string; id?: string; setzt?: string }; try { m = JSON.parse(String(ev.data)); } catch { return; }
     if (m.t === "gruppe" && !angemeldet) { angemeldet = true; for (const q of warteschlange.splice(0)) s.send(JSON.stringify(q)); }
     if (m.t === "ort" && !g.fuehrer) { /* der Anführer ist in ein Dorf gereist (oder heim) */
@@ -59,7 +63,10 @@ export async function gruppeVerbinden() {
     if (m.t === "weg" && dorfHand && m.n) { dorfHand.weg(m.n); return; }
     if (m.t === "sage" && dorfHand && m.von && m.id && m.setzt) { dorfHand.sage(m.von, m.id, m.setzt); return; }
     if (m.t === "tuer" && dorfHand && g.fuehrer && typeof m.kampf === "string") { dorfHand.tuer(m.kampf, m.von || ""); return; }
-    if (m.t === "gruppe") { liste = m.mitglieder || []; fehler = ""; laeuftKampf = m.kampf && typeof m.kampf === "object" ? m.kampf : null; anzeigen(); if (lauscher) lauscher(); }
+    if (m.t === "gruppe") { liste = m.mitglieder || []; fehler = ""; laeuftKampf = m.kampf && typeof m.kampf === "object" ? m.kampf : null;
+      const ich = liste.find((q) => q.name === kontoName()); if (ich && HELDEN[ich.held]) koopHeldSetzen(ich.held); /* der Server vergibt jeden Helden nur einmal */
+      const lg = (m as { lager?: string | null }).lager || null; if (!g.fuehrer && !P.get("ort")) { if (lg && !lagerOffen) lagerTafel({ ort: lg }, () => { /* nichts */ }); else if (!lg && lagerOffen) lagerSchliessen(); } lagerOrt = lg;
+      anzeigen(); if (lauscher) lauscher(); }
     else if (m.t === "los" && !g.fuehrer && (() => { try { sessionStorage.removeItem("ez__mitpause"); } catch { /* privat */ } return true; })() && m.ort && typeof m.kampf === "string") { fehler = ""; hinein(m.ort, m.kampf); } };
   s.onclose = (ev) => { ws = null; angemeldet = false; if (ev.code === 4404) { fehler = "Diese Gruppe gibt es nicht (mehr)."; merke(null); } else if (ev.code === 4409) { fehler = ev.reason === "gruppe voll" ? "Die Gruppe ist voll (höchstens drei)." : "Dieser Code ist schon vergeben."; merke(null); } else if (ev.code === 4401) fehler = "Anmeldung nicht bestätigt – Koop geht nur mit Konto.";
     anzeigen(); if (lauscher) lauscher(); if (ev.code < 4400 && gruppe()) setTimeout(() => void gruppeVerbinden(), 4000); /* kurz weg: wieder verbinden */ };
@@ -130,6 +137,32 @@ export function gruppenTafel(zu: () => void, auf?: { ort: string; los: () => voi
     else if (d.fja || d.fnein) void tun("rpg_answer_friend", { p_handle: d.fja || d.fnein, p_accept: Boolean(d.fja) }, d.fja ? "Ihr seid jetzt Freunde." : "Anfrage abgelehnt.");
     else if (d.t === "anfrage") { const h = ((f.querySelector("input") as HTMLInputElement).value || "").trim(); if (h) void tun("rpg_request_friend", { p_handle: h }, "Anfrage an " + h + " geschickt."); }
     else if (d.t === "raus") { merke(null); liste = []; fehler = ""; if (ws) { const s = ws; ws = null; s.onclose = null; s.close(); } anzeigen(); zeichne(); } };
+}
+/* ---------- Aufbruchslager: alle wählen ihren Helden, melden sich bereit, dann bricht der Anführer auf ---------- */
+let lagerSchliessen = () => { /* noch keins offen */ };
+export function lagerTafel(auf: { ort: string; los?: () => void }, zu: () => void) {
+  const f = $("#ez-konto"); f.hidden = false; lagerOffen = true; let meldung = ""; const name = auf.ort.charAt(0).toUpperCase() + auf.ort.slice(1);
+  const schliessen = () => { removeEventListener("keydown", esc, true); lauscher = null; lagerOffen = false; f.hidden = true; f.innerHTML = ""; zu(); }; lagerSchliessen = schliessen;
+  const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); abbrechen(); } }; addEventListener("keydown", esc, true);
+  const abbrechen = () => { const g = gruppe(); if (g && g.fuehrer) dorfSende({ t: "lager", ort: null }); else gruppeAufloesen(); schliessen(); };
+  const zeichne = () => { const g = gruppe(), ich = kontoName(), meinHeld = koopHeld(), vergeben = new Map(liste.filter((q) => q.name !== ich).map((q) => [q.held, q.name])), mich = liste.find((q) => q.name === ich);
+    const andere = liste.filter((q) => !q.fuehrer), alleBereit = andere.length > 0 && andere.every((q) => q.bereit), F = freunde, imKreis = new Set(liste.map((q) => q.name.toLowerCase()));
+    f.innerHTML = `<div class="tafel breit lager gruppe"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="ab" aria-label="Abbrechen">✕</button>
+      <h2>Aufbruch nach ${name}</h2><div class="zier"></div>
+      <h3>Wähle deinen Helden</h3><div class="bildnisse">${Object.keys(HELDEN).map((k) => { const wer = vergeben.get(k); return `<button type="button" data-held="${k}" class="${k === meinHeld ? "an" : ""}${wer ? " vergeben" : ""}"${wer ? " disabled" : ""}><img src="../${HELDEN[k].bild}" alt="${HELDEN[k].name}"><small>${wer ? wer : HELDEN[k].name}</small></button>`; }).join("")}</div>
+      <h3>Die Gruppe</h3><ul class="mitglieder">${liste.map((q) => `<li class="${q.bereit || q.fuehrer ? "bereit" : ""}">${q.fuehrer ? "♛ " : ""}<b>${q.name}</b> <small>${HELDEN[q.held] ? HELDEN[q.held].name + " · " + HELDEN[q.held].klasse : ""}</small><em>${q.fuehrer ? "führt" : q.bereit ? "✓ bereit" : "wählt …"}</em></li>`).join("") || "<li><small>verbinde …</small></li>"}</ul>
+      ${g && g.fuehrer ? `${F && F.freunde.length ? `<h3>Freunde einladen</h3><ul class="freunde">${F.freunde.map((x) => `<li><b>${x.handle}</b>${imKreis.has(x.handle.toLowerCase()) ? `<small class="da">dabei</small>` : `<button type="button" data-ein="${x.handle}">${eingeladen.has(x.handle) ? "erneut einladen" : "Einladen"}</button>`}</li>`).join("")}</ul>` : `<p class="klein">${F ? "Noch keine Freunde – füge sie im Menü unter „Zusammen spielen“ hinzu." : "Freunde werden geladen …"}</p>`}` : ""}
+      ${meldung ? `<p class="klein meldung">${meldung}</p>` : ""}${fehler ? `<p class="fehler">${fehler}</p>` : ""}
+      <div class="reihe">${g && g.fuehrer ? `<button type="button" class="haupt" data-t="los"${alleBereit ? "" : " disabled"}>Gemeinsam aufbrechen ▸</button>` : `<button type="button" class="haupt" data-t="bereit">${mich && mich.bereit ? "Doch noch nicht bereit" : "Ich bin bereit"}</button>`}<button type="button" data-t="ab">${g && g.fuehrer ? "Abbrechen" : "Gruppe verlassen"}</button></div>
+      <p class="klein">${g && g.fuehrer ? (andere.length ? (alleBereit ? "Alle sind bereit." : "Warte, bis alle bereit sind.") : "Lade mindestens einen Freund ein – oder brich allein auf der Weltkarte auf.") : "Wenn alle bereit sind, bricht der Anführer auf und du reist mit."}</p></div>`; };
+  lauscher = zeichne; zeichne(); if (kontoName()) void freundeLaden().then(() => { if (lauscher === zeichne) zeichne(); });
+  f.onpointerdown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation();
+  f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t],[data-held],[data-ein]") as HTMLElement | null; if (!t || (t as HTMLButtonElement).disabled) return; const d = t.dataset;
+    if (d.held) { koopHeldSetzen(d.held); dorfSende({ t: "held", held: d.held }); zeichne(); }
+    else if (d.ein) { const g = gruppe(); if (!g) return; const h = d.ein; void kontoRpc("rpg_echtzeit_einladen", { p_handle: h, p_code: g.code }).then(() => { eingeladen.add(h); meldung = h + " ist eingeladen."; zeichne(); }, (er: Error) => { meldung = /function|does not exist|schema cache/i.test(er.message) ? "Einladungen sind noch nicht eingerichtet (Migration 037)." : er.message.replace(/^.*?: /, ""); zeichne(); }); }
+    else if (d.t === "bereit") { const mich = liste.find((q) => q.name === kontoName()); dorfSende({ t: "bereit", ja: !(mich && mich.bereit) }); }
+    else if (d.t === "los" && auf.los) { removeEventListener("keydown", esc, true); lauscher = null; lagerOffen = false; auf.los(); }
+    else if (d.t === "ab") abbrechen(); };
 }
 /** Für den Kampf: die Zusätze an die Serveradresse (Gruppe, Rolle) */
 export function kampfZusatz(): string { const g = gruppe(); if (!g) return ""; return "&raum=" + g.code + (P.get("mitglied") === "1" ? "&mitglied=1" : ""); }

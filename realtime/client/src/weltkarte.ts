@@ -1,7 +1,7 @@
 /* Weltkarte am Stadttor: zeigt die Kampagnen als Orte auf der Karte. Die Texte stammen aus den Kampagnen des Würfelspiels. */
 import { HELDEN } from "../../shared/config";
 import { sternText } from "./hud";
-import { gruppe, gruppeAufloesen, gruppenTafel, gruppenListe, gruppeVerbinden } from "./gruppe";
+import { gruppe, gruppeAufloesen, lagerTafel, gruppenListe, gruppeVerbinden, dorfSende } from "./gruppe";
 import { kontoName } from "./konto";
 type Ziel = { id: string; nr: number; name: string; ort: string; x: number; y: number; text: string; dauer: string };
 /* x, y in Prozent des Kartenbilds */
@@ -49,6 +49,6 @@ export function weltkarte(zu: () => void) {
     for (const b of Array.from(info.querySelectorAll<HTMLElement>("[data-w]"))) b.onclick = () => {
       if (b.dataset.w === "allein") { const g = gruppe(); gruppeAufloesen(); if (g && !g.fuehrer) { k.click(); return; } reise(); return; } /* allein: eine bestehende Gruppe wird verlassen */
       if (!gruppe()) { try { sessionStorage.setItem("ez__gruppe", JSON.stringify({ code: Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)]).join(""), fuehrer: true })); } catch { /* privat */ } void gruppeVerbinden(); }
-      w.style.visibility = "hidden"; gruppenTafel(() => { w.style.visibility = ""; }, { ort: z.ort, los: reise }); };
+      w.style.visibility = "hidden"; dorfSende({ t: "lager", ort: z.id }); lagerTafel({ ort: z.id, los: reise }, () => { w.style.visibility = ""; }); };
   };
 }

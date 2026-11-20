@@ -6,6 +6,7 @@
  * Der Stand (Schritt, Held, erledigte Nebenaufgaben) wird vorläufig auf dem Gerät gemerkt; mit der Anmeldung zieht er aufs Konto um.
  * Jeder Kampf lädt die Seite neu – so bleibt der Stand auch nach einem Neuladen erhalten.
  */
+import { gruppe, koopHeld } from "./gruppe";
 import { kampagneGeschafft, team } from "./weltkarte";
 
 export interface Zeile { wer?: string; text: string }
@@ -99,7 +100,7 @@ const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus 
 const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
 /** Stufe der Aufgabe je Ort (bestimmt mit der Gruppengröße die Stärke der Gegner) */
 export { ORTSTUFE } from "../../shared/karten";
-export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t && P.get("mitglied") !== "1" ? t.mit : [] }; }
+export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } if (gruppe()) h = koopHeld(); /* in der Gruppe: der im Lager gewählte Held, ohne Begleiter */ return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t && P.get("mitglied") !== "1" && !gruppe() ? t.mit : [] }; }
   if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
 
 /* ---------- Gesprächsfenster ---------- */
