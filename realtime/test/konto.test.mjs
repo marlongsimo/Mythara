@@ -20,7 +20,8 @@ const dorf = async (pfad = "?server=") => { await p.goto(URL0 + pfad); await p.w
 const konto = (n) => p.evaluate((n) => { const d = JSON.parse(sessionStorage.getItem("fake_db") || "null"); return d ? d.konten[n] : null; }, n);
 const anmelden = async (n, pw) => { await p.click("#ez-profil"); await p.fill("#ez-k-name", n); await p.fill("#ez-k-pw", pw); await p.click('#ez-konto [data-t="an"]'); };
 
-await dorf(); check(await p.textContent("#ez-profil-name") === "Gast", "Ohne Anmeldung steht oben „Gast“");
+await dorf(); check(await p.isVisible("#ez-k-name"), "Beim Betreten ohne Anmeldung erscheint das Anmeldefenster"); await p.click('#ez-konto [data-t="zu"]'); check(await p.textContent("#ez-profil-name") === "Gast", "Als Gast weiterspielen: oben steht „Gast“");
+await dorf(); check(!(await p.isVisible("#ez-konto")), "Beim nächsten Laden im selben Besuch wird nicht noch einmal gefragt");
 await p.evaluate(() => { localStorage.setItem("ez_kampagnen", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: "lichtbringer", mit: [] })); }); await p.waitForTimeout(700);
 check(!(await konto("Anna")) || !(await konto("Anna")).stand, "Als Gast wird nichts ins Konto geschrieben");
 await anmelden("Anna", "falsch"); await p.waitForTimeout(400); check(/falsch/.test(await p.textContent("#ez-konto .meldung")), "Falsches Passwort: Meldung, keine Anmeldung");

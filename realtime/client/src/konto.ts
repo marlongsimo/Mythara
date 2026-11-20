@@ -58,6 +58,8 @@ export function kontoKnopf() {
   const el = $("#ez-profil"); if (!el) return; $("#ez-profil-name").textContent = name || "Gast"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
   el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); fenster(); };
 }
+/** Beim Betreten der Splitterlande: Wer nicht angemeldet ist, bekommt einmal je Besuch das Anmeldefenster gezeigt (als Gast weiterspielen bleibt möglich). */
+export function kontoFragen() { if (name || !verbindung()) return; try { if (sessionStorage.getItem("ez__gefragt") === "1") return; sessionStorage.setItem("ez__gefragt", "1"); } catch { return; } fenster(); }
 function fenster() {
   const f = $("#ez-konto"); f.hidden = false; const zu = () => { f.hidden = true; f.innerHTML = ""; };
   if (name) { f.innerHTML = `<div class="blatt"><h2>Konto</h2><p>Angemeldet als <b></b>.<br>Dein Fortschritt in den Splitterlanden wird in deinem Konto gespeichert.</p><div class="reihe"><button type="button" class="haupt" data-t="zu">Weiterspielen</button><button type="button" data-t="ab">Abmelden</button></div></div>`; (f.querySelector("b") as HTMLElement).textContent = name; }
