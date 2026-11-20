@@ -12,11 +12,15 @@ import { FELD_PX, CHUNK_FELDER, CHUNK_PX, HELD_PX, chunkName, inZone } from "../
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Platzierung, Interaktion, Figur, ObjektDef } from "../../../shared/welt/typen";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { zoomFaktor, zoomKnopf } from "../zoom";
-import { hudProfil, hudTitel, hudKarte } from "../hud";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 /** Region, in der man die Welt betritt (leer = die Welt ist nicht gewählt) */
 export const weltName = P.get("welt") || "";
+/** Einstellungen, die eine Seite vor dem Start ändern kann: im Spiel gelten die Grundwerte, eine eigenständige Seite (welt/seite.ts) setzt eigene.
+ *  bild: Pfad vor den Bildern des Repositorys (img/…) · daten: Ordner der gebauten Welt · hud: die Oberfläche · ausgang: ein Ausgang selbst behandeln (true = erledigt) */
+export const WELT = { start: weltName, bild: "../", daten: "welt/",
+  hud: { profil: (_held: string): void => {}, titel: (_name: string, _unter: string): void => {}, karte: (): void => {} },
+  ausgang: null as ((a: Ausgang) => boolean) | null };
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1", TEST = P.get("test") === "1";
 const F = FELD_PX, C = CHUNK_FELDER;
 /* Wie weit über den Bildrand hinaus (in Chunks) gezeigt, vorgeholt und behalten wird */
@@ -44,17 +48,17 @@ export class Welt extends Phaser.Scene {
   init() { let h = ""; try { h = localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; }
 
   preload() {
-    const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild);
+    const D = HELDEN[this.held]; const B = WELT.bild; if (D.figur) this.load.image("figur-" + this.held, B + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, B + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, B + D.bild);
     /* Erst das Verzeichnis der Welt, dann gleich die Chunks rund um den Start: So steht der Held beim ersten Bild schon auf festem Boden */
-    this.load.json("welt", "welt/welt.json");
+    this.load.json("welt", WELT.daten + "welt.json");
     this.load.once("filecomplete-json-welt", () => { const w = this.cache.json.get("welt") as WeltIndex; if (!w || !w.regionen) return; this.index = w; this.gueltigSetzen(); const s = this.startPunkt();
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const cx = Math.floor(s.x / C) + dx, cy = Math.floor(s.y / C) + dy, n = chunkName(cx, cy); if (!this.gueltig.has(n)) continue;
-        this.load.json("chunk-" + n, `welt/${n}.json`); this.load.image("boden-" + n, `welt/${n}.webp`); }
-      for (const [id, o] of Object.entries(w.objekte)) if ((w.regionen[this.startRegion()]?.benutzt || []).includes(id)) this.load.image("obj-" + id, "../" + o.bild); });
+        this.load.json("chunk-" + n, WELT.daten + n + ".json"); this.load.image("boden-" + n, WELT.daten + n + ".webp"); }
+      for (const [id, o] of Object.entries(w.objekte)) if ((w.regionen[this.startRegion()]?.benutzt || []).includes(id)) this.load.image("obj-" + id, WELT.bild + o.bild); });
   }
 
   gueltigSetzen() { for (const r of Object.values(this.index.regionen)) for (let j = 0; j < r.region.chunks[1]; j++) for (let i = 0; i < r.region.chunks[0]; i++) this.gueltig.add(chunkName(r.region.ursprung[0] + i, r.region.ursprung[1] + j)); }
-  startRegion(): string { return this.index.regionen[weltName] ? weltName : Object.keys(this.index.regionen)[0]; }
+  startRegion(): string { return this.index.regionen[WELT.start] ? WELT.start : Object.keys(this.index.regionen)[0]; }
   /** Wo der Held steht, wenn die Szene beginnt: die gemerkte Stelle, sonst der Start der Region */
   startPunkt(): { x: number; y: number } {
     const r = this.index.regionen[this.startRegion()], s = r.start[0];
@@ -94,7 +98,7 @@ export class Welt extends Phaser.Scene {
     $("#ez-dorf-knopf").onclick = () => { if (this.nah) this.nah.tat(); };
 
     this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse());
-    hudProfil(this.held); hudKarte(); this.regionZeigen(); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
+    WELT.hud.profil(this.held); WELT.hud.karte(); this.regionZeigen(); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
     if (TEST) this.testAnzeige();
     (window as unknown as Record<string, unknown>).EZW = { szene: this, ort: () => this.ort, raster: this.raster, stuecke: this.stuecke, mess: this.mess, gehe: (x: number, y: number) => this.gehe(x, y) };
   }
@@ -109,7 +113,7 @@ export class Welt extends Phaser.Scene {
       while (neu) { neu = false; for (const a of alle) if (!dabei.has(a) && [...dabei].some((b) => grenzt(a, b))) { dabei.add(a); neu = true; } }
       x0 = Math.min(...[...dabei].map((a) => a.ursprung[0])); y0 = Math.min(...[...dabei].map((a) => a.ursprung[1])); x1 = Math.max(...[...dabei].map((a) => a.ursprung[0] + a.chunks[0])); y1 = Math.max(...[...dabei].map((a) => a.ursprung[1] + a.chunks[1]));
       this.cameras.main.setBounds(x0 * CHUNK_PX, y0 * CHUNK_PX, (x1 - x0) * CHUNK_PX, (y1 - y0) * CHUNK_PX); }
-    hudTitel(r.region.name, "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(welt/karte-${id}.webp)`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
+    WELT.hud.titel(r.region.name, "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${WELT.daten}karte-${id}.webp)`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
 
   /** Zu einer Stelle laufen (Rechenfelder): Wegsuche über das Gehraster */
   gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; if (w.length) { const z = w[w.length - 1]; this.marke.setPosition(z.x * F, z.y * F).setDepth(z.y * F - 1).setVisible(true); } else this.marke.setVisible(false); }
@@ -119,8 +123,8 @@ export class Welt extends Phaser.Scene {
   /** Einen Chunk holen: Gehraster und Objekte als Daten, das Bodenbild fertig entpackt – aber noch nicht als Textur */
   holen(st: Stueck) {
     st.stand = "holt"; const t0 = performance.now();
-    const daten = fetch(`welt/${st.name}.json`).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<ChunkDaten>; });
-    const bild = new Image(); bild.decoding = "async"; bild.src = `welt/${st.name}.webp`;
+    const daten = fetch(WELT.daten + st.name + ".json").then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<ChunkDaten>; });
+    const bild = new Image(); bild.decoding = "async"; bild.src = WELT.daten + st.name + ".webp";
     Promise.all([daten, bild.decode()]).then(([d]) => { if (this.stuecke.get(st.name) !== st) return; /* inzwischen wieder verworfen */
       st.daten = d; st.bild = bild; st.stand = "bereit"; this.raster.dazu(d); this.mess.geholt++; this.mess.laengsteMs = Math.max(this.mess.laengsteMs, performance.now() - t0); })
       .catch(() => { st.stand = "fehler"; st.seit = this.time.now; });
@@ -143,8 +147,8 @@ export class Welt extends Phaser.Scene {
     st.boden = this.add.image(st.cx * CHUNK_PX, st.cy * CHUNK_PX, key).setOrigin(0, 0).setDisplaySize(CHUNK_PX + 1, CHUNK_PX + 1).setDepth(-1e6);
     st.stand = "aktiv"; this.mess.gezeigt++;
     for (const p of d.objekte) { const o = this.index.objekte[p.objekt]; if (!o) continue; const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
-      this.mitBild("obj-" + p.objekt + (zustand ? "-" + p.zustand : ""), "../" + bild, () => { if (st.stand === "aktiv") this.objekt(st, p, o, "obj-" + p.objekt + (zustand ? "-" + p.zustand : "")); }); }
-    for (const f of d.figuren) this.mitBild("leute-" + f.figur, `../img/echtzeit/${f.figur}.webp`, () => { if (st.stand === "aktiv") this.person(st, f); });
+      this.mitBild("obj-" + p.objekt + (zustand ? "-" + p.zustand : ""), WELT.bild + bild, () => { if (st.stand === "aktiv") this.objekt(st, p, o, "obj-" + p.objekt + (zustand ? "-" + p.zustand : "")); }); }
+    for (const f of d.figuren) this.mitBild("leute-" + f.figur, `${WELT.bild}img/echtzeit/${f.figur}.webp`, () => { if (st.stand === "aktiv") this.person(st, f); });
     if (TEST) this.testChunk(st);
   }
   objekt(st: Stueck, p: Platzierung, o: Anzeige, key: string) {
@@ -160,7 +164,9 @@ export class Welt extends Phaser.Scene {
     const sp = this.add.sprite(f.x * F, f.y * F, blatt).setOrigin(0.5, 0.95).setScale(HELD_PX * 1.12 / feld).setFlipX(Boolean(f.links)).setDepth(f.y * F); sp.play(blatt); st.dinge.push(sp);
   }
   /** Einen Chunk aus dem Bild nehmen; Daten und Bodenbild bleiben im Speicher, die Textur wird freigegeben */
-  verbergen(st: Stueck) { for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name; if (this.textures.exists(key)) this.textures.remove(key); st.stand = "bereit"; }
+  verbergen(st: Stueck) { for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name;
+    /* Das Bodenbild behalten, bevor die Textur geht: Chunks, die schon beim Start geladen wurden, hätten es sonst nicht mehr */
+    if (this.textures.exists(key)) { if (!st.bild) st.bild = this.textures.get(key).getSourceImage() as HTMLImageElement; this.textures.remove(key); } st.stand = "bereit"; }
   entladen(st: Stueck) { if (st.stand === "aktiv") this.verbergen(st); this.raster.weg_damit(st.cx, st.cy); this.stuecke.delete(st.name); this.mess.entladen++;
     /* Was preload geholt hat, liegt zusätzlich im Zwischenspeicher von Phaser */ this.cache.json.remove("chunk-" + st.name); }
 
@@ -199,6 +205,7 @@ export class Welt extends Phaser.Scene {
   }
   sagen(text: string) { const el = $("#ez-dorf-hilfe"); el.textContent = text; el.style.display = ""; }
   reisen(a: Ausgang) {
+    if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
     const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;

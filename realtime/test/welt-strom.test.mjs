@@ -19,7 +19,7 @@ const einrichten = (tempo) => {
   const D = window.EZW_HELDEN = null; void D;
   s.events.on("postupdate", () => { const jetzt = performance.now(); m.zeiten.push(jetzt - zuletzt); zuletzt = jetzt; m.bilder++;
     const x0 = Math.floor(k.scrollX / PX), x1 = Math.floor((k.scrollX + k.width / k.zoom) / PX), y0 = Math.floor(k.scrollY / PX), y1 = Math.floor((k.scrollY + k.height / k.zoom) / PX); let fehlt = 0;
-    for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) { const n = cx + "_" + cy; if (!s.gueltig.has(n)) continue; const st = s.stuecke.get(n); if (!st || st.stand !== "aktiv") fehlt++; }
+    for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) { const n = cx + "_" + cy; if (!s.gueltig.has(n)) continue; const st = s.stuecke.get(n); if (!st || st.stand !== "aktiv" || !st.boden || st.boden.texture.key === "__MISSING") fehlt++; }
     if (fehlt) { m.luecken += fehlt; m.lueckenBilder++; }
     let aktiv = 0, bereit = 0; for (const st of s.stuecke.values()) { if (st.stand === "aktiv") aktiv++; else if (st.stand === "bereit") bereit++; }
     m.aktivMax = Math.max(m.aktivMax, aktiv); m.bereitMax = Math.max(m.bereitMax, bereit); m.texturMax = Math.max(m.texturMax, s.textures.getTextureKeys().length); m.listeMax = Math.max(m.listeMax, s.children.length);
