@@ -22,6 +22,7 @@ import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
 import { Ort, ortName } from "./ort";
 import { lokalerHeld, weltBetreten } from "./welt";
 import { hudKarte } from "./hud";
+import { adresseErlaubt } from "./freigabe";
 import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
@@ -387,7 +388,9 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
 (window as unknown as Record<string, unknown>).EZ_WAHL = wahlZeigen;
 const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
 /* Erst das Konto: Liegt dort ein anderer Stand als auf dem Gerät, wird er übernommen und die Seite lädt einmal neu. Höchstens vier Sekunden warten. */
-void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
+/* Abgeschaltete Teile (Kampagnen, Waldweg – siehe freigabe.ts) führen zurück in die Waldmark */
+if (!adresseErlaubt(P0)) location.replace("./" + (P0.has("server") ? "?server=" + encodeURIComponent(P0.get("server") || "") : ""));
+else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
 else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */

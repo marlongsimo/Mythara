@@ -1,7 +1,7 @@
 /* Mythara – der MMO-Rahmen im Browser: Aktionen 1–4 unten rechts, runde Minikarte, Rucksack/Ausrüstung/Quests (Testseite auf Port 8765, ohne Server). */
 const { chromium } = require('playwright'); let f = 0; const ok = (b, t) => { console.log((b ? '✓ ' : '✗ ') + t); if (!b) f++; };
 (async () => { const b = await chromium.launch(), c = await b.newContext({ viewport: { width: 1280, height: 720 } }), p = await c.newPage(), err = []; p.on('pageerror', (e) => err.push(String(e)));
-  await c.addInitScript(() => { sessionStorage.setItem('ez__gefragt', '1'); sessionStorage.setItem('ez__hilfe', '1'); localStorage.setItem('ez_ort_weidenhain', JSON.stringify({ ankunft: true, hanne: true })); });
+  await c.addInitScript(() => { sessionStorage.setItem('ez__gefragt', '1'); localStorage.setItem('ez__alles', '1'); sessionStorage.setItem('ez__hilfe', '1'); localStorage.setItem('ez_ort_weidenhain', JSON.stringify({ ankunft: true, hanne: true })); });
   await p.goto('http://localhost:8765/echtzeit/?server=&ort=weidenhain&kampf=waldweg'); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 30000 }); await p.waitForTimeout(800);
   ok(await p.$$eval('#ez-tasten [data-taste]', (l) => l.map((x) => x.querySelector('b').textContent).join('')) === '1234', 'Aktionen 1–4 unten rechts');
   const box = await p.$eval('#ez-tasten', (e) => e.getBoundingClientRect().toJSON()); ok(box.right > 1200 && box.bottom > 650, 'Aktionsfeld sitzt unten rechts');
