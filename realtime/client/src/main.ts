@@ -35,7 +35,10 @@ const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") =
 
 /** Ladebildschirm, solange der Spielserver aufwacht (kostenloser Dienst: bis zu einer Minute). grund leer = ausblenden. */
 let ladeBeginn = 0;
-function ladeschirm(grund: string) { const el = $("#ez-laden"); if (!el) return; if (!grund) { el.classList.add("weg"); setTimeout(() => { el.hidden = true; el.classList.remove("weg"); }, 400); ladeBeginn = 0; return; }
+/** Den Startbildschirm ausblenden (sobald das erste Bild des Spiels steht) */
+export function startWeg(sofort = false) { const el = document.getElementById("ez-start"); if (!el || el.hidden) return; if (sofort) { el.hidden = true; return; } el.classList.add("weg"); setTimeout(() => { el.hidden = true; }, 500); }
+setTimeout(() => startWeg(), 25000); /* zur Sicherheit: nie länger als 25 Sekunden */
+function ladeschirm(grund: string) { const el = $("#ez-laden"); if (!el) return; if (grund) startWeg(true); /* der Ladebildschirm sieht gleich aus und übernimmt nahtlos */ if (!grund) { el.classList.add("weg"); setTimeout(() => { el.hidden = true; el.classList.remove("weg"); }, 400); ladeBeginn = 0; return; }
   if (!ladeBeginn) ladeBeginn = Date.now(); el.hidden = false; const s = Math.round((Date.now() - ladeBeginn) / 1000), anteil = Math.min(0.97, 1 - Math.exp(-s / 22)); /* gefühlter Fortschritt: am Anfang schnell, dann langsamer */
   (el.querySelector(".balken i") as HTMLElement).style.width = Math.round(anteil * 100) + "%"; (el.querySelector(".zeit") as HTMLElement).textContent = s < 2 ? "Verbinde mit dem Spielserver …" : `Der Spielserver erwacht … ${s} s`;
   (el.querySelector(".tipp") as HTMLElement).textContent = TIPPS[Math.floor(s / 8) % TIPPS.length]; }
@@ -265,6 +268,8 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
 const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
 /* Erst das Konto: Liegt dort ein anderer Stand als auf dem Gerät, wird er übernommen und die Seite lädt einmal neu. Höchstens vier Sekunden warten. */
 void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
-if (inKampagne && !FLACH) kampagneBeginnen(wahlZeigen); /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
-else new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
+else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+  /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */
+  let bilder = 0; const pruefen = () => { if (spiel.scene.getScenes(true).length && ++bilder >= 2) { spiel.events.off("postrender", pruefen); startWeg(); } }; spiel.events.on("postrender", pruefen); }
 });
