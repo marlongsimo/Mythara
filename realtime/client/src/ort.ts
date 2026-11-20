@@ -13,12 +13,13 @@ import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel,
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
+import RABENMOOR from "./rabenmoor.json";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 /* bild: ein gemaltes Ortsbild (werkzeug/ortbild.py), mass: so stark wird es vergrößert, vorn: was den Helden verdeckt. Ohne bild: gerechneter Boden aus dem Baukasten (werkzeug/gelaende.py). */
 interface OrtDaten { name: string; bild?: string; mass?: number; gross?: number; breit: number; hoch: number; zelle: number; zeilen: string[]; zaeune: unknown[]; leute?: (string | number)[][]; gruppen?: number[][]; vorn?: unknown[]; stellen: Record<string, number[]> }
-const ORTE: Record<string, OrtDaten> = { weidenhain: { ...WEIDENHAIN, name: "Weidenhain" }, baukasten: { ...BAUKASTEN, name: "Baukasten-Probe" } };
+const ORTE: Record<string, OrtDaten> = { weidenhain: { ...WEIDENHAIN, name: "Weidenhain" }, rabenmoor: { ...RABENMOOR, name: "Rabenmoor" }, baukasten: { ...BAUKASTEN, name: "Baukasten-Probe" } };
 export const ortName = ORTE[P.get("ort") || ""] ? (P.get("ort") as string) : "";
 /* Das Zaunstück: im Bild 918 × 688, linker Pfosten unten bei (130, 655), rechter Pfosten 664 weiter rechts und 203 höher. Gespiegelt läuft es nach rechts hinunter. */
 const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy: 203 * 170 / 918 };
@@ -28,7 +29,46 @@ const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy
  * Wer ein offenes Gespräch hat, trägt ein Ausrufezeichen über dem Kopf. Ist alles gesagt, kommt nur noch der Satz unter „sonst“.
  */
 interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string }
-const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; reden: Rede[]; sonst: Zeile }> = {
+/* blatt: anderes Bildblatt als <id>.webp (vorläufige Figuren); still: nur das erste Bild zeigen (Laufblätter aus der Waldmark) */
+const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; blatt?: string; still?: boolean; reden: Rede[]; sonst: Zeile }> = {
+  /* ---------- Rabenmoor (vorläufige Figuren aus der Waldmark, bis eigene Bildblätter da sind) ---------- */
+  bertold: { name: "Bertold Krähe", feld: 176, koerper: 0.949, fuss: 0.983, blatt: "ausrufer", still: true, sonst: { wer: "Bertold Krähe", text: "Geh. Jede Stunde, die du hier stehst, ist eine Stunde, die die Kinder im Moor sind." },
+    reden: [{ setzt: "bertold", schluss: "Ich gehe ins Moor",
+      zeilen: [{ wer: "Bertold Krähe, der Schulze", text: "Der Junge hat dich also gefunden. Gut. Dann hör zu, ich sage es nur einmal." },
+        { wer: "Bertold Krähe", text: "Drei Kinder. Jannik, Fenna und Ilses Kleine, Mira. Sie sind den Lichtern ins Moor gefolgt, eins nach dem anderen, drei Nächte lang." },
+        { wer: "Bertold Krähe", text: "Die Leute sagen, die alte Hedda draußen in der Hütte hat sie gerufen. Heute Nacht wollen sie mit Fackeln hin. Ich halte sie nicht mehr lange auf." },
+        { wer: "Bertold Krähe", text: "Der Bohlenweg führt vom Steg hinaus ins Schwarzmoor. Dort haben wir Fennas Haarband gefunden." }],
+      fragen: [{ knopf: "Glaubst du, dass Hedda es war?", zeilen: [{ wer: "Bertold Krähe", text: "Ich glaube gar nichts. Ich glaube, dass die Leute Angst haben, und dass Angst ein Feuer braucht." }] },
+        { knopf: "Was sind das für Lichter?", zeilen: [{ wer: "Bertold Krähe", text: "Sie flackern nicht. Sie summen nicht. Sie stehen einfach über dem Wasser und warten." }, { wer: "Bertold Krähe", text: "Mein Vater hat gesagt, das Moor vergisst nichts. Ich habe ihn nie gefragt, was er damit meinte." }] }] },
+      { wenn: ["hedda"], setzt: "bertold_schuld", schluss: "Das wird sich zeigen", fragen: [],
+        zeilen: [{ wer: "Bertold Krähe", text: "Du warst bei Hedda. Ich sehe es dir an. Was hat sie dir erzählt?" }, { text: "Du nennst ihm den Namen Alwine. Bertold wird grau im Gesicht." },
+          { wer: "Bertold Krähe", text: "Mein Vater war Schulze, als das geschah. Mehr sage ich nicht. Nicht heute Nacht." }] },
+      { wenn: ["kampf_schrein", "bertold_schuld"], setzt: "bertold_gestanden", schluss: "Danke, Bertold", fragen: [],
+        zeilen: [{ wer: "Bertold Krähe", text: "Die Kinder sind zurück. Dann bin ich dir die Wahrheit schuldig." }, { wer: "Bertold Krähe", text: "Mein Vater hat Alwine den Weg verbieten lassen, damals, als das Wasser stieg. Sie ist allein hinaus. Er hat es gewusst und geschwiegen. Ich sage es morgen vor dem ganzen Dorf." }] }] },
+  ilse: { name: "Ilse", feld: 240, koerper: 0.879, fuss: 0.983, blatt: "agnes", sonst: { wer: "Ilse", text: "Bring sie mir wieder. Bitte." },
+    reden: [{ wenn: ["bertold"], setzt: "ilse", schluss: "Ich nehme sie mit",
+      zeilen: [{ wer: "Ilse, Miras Mutter", text: "Du gehst ins Moor? Dann nimm das hier mit. Miras Pfeife. Sie hat sie nie aus der Hand gelegt, nur in der Nacht, als sie ging." },
+        { wer: "Ilse", text: "Wenn du sie findest und sie nicht aufwacht, dann pfeif. Sie kennt den Ton. Sie wird ihn kennen." }],
+      fragen: [{ knopf: "Hat Mira etwas gesagt, bevor sie ging?", zeilen: [{ wer: "Ilse", text: "Sie hat gesagt, die Frau im Wasser ist traurig. Ich habe gedacht, sie träumt." }] }] },
+      { wenn: ["kampf_schrein"], setzt: "ilse_dank", schluss: "Gern geschehen", fragen: [],
+        zeilen: [{ wer: "Ilse", text: "Sie schläft. Richtig schläft sie, nicht wie die Nächte davor. Die Pfeife hält sie in der Faust." }, { wer: "Ilse", text: "Ich habe nichts, was ich dir geben kann. Aber in Rabenmoor wird man deinen Namen kennen, solange es Rabenmoor gibt." }] }] },
+  jorin: { name: "Jorin", feld: 176, koerper: 0.858, fuss: 0.932, gross: 0.62, blatt: "junge", still: true, sonst: { wer: "Jorin", text: "Ich bin bis Weidenhain gerannt. Ohne Pause. Fast ohne Pause." },
+    reden: [{ wenn: ["bertold"], setzt: "jorin", schluss: "Gut gemacht, Jorin", fragen: [],
+      zeilen: [{ wer: "Jorin", text: "Du bist wirklich gekommen! Ich hab's ihnen gesagt. Keiner hat mir geglaubt." }, { wer: "Jorin", text: "Fenna ist meine Schwester. Wenn du sie siehst, sag ihr, ich hab ihr Haarband. Sie soll es sich wiederholen." }] }] },
+  joost: { name: "Joost", feld: 176, koerper: 0.909, fuss: 0.955, blatt: "wanderer", still: true, sonst: { wer: "Joost", text: "Der Kahn liegt bereit. Steig ein, wenn du so weit bist." },
+    reden: [{ wenn: ["kampf_bohlenweg"], setzt: "joost", schluss: "Bring mich hin",
+      zeilen: [{ wer: "Joost, der Torfstecher", text: "Du kommst vom Bohlenweg? Dann weißt du jetzt, dass man zu Fuß nicht weit kommt." },
+        { wer: "Joost", text: "Ich bring dich mit dem Kahn durch den alten Kanal ins Ried. Weiter als bis zum Ende des Kanals fahre ich nicht. Da drinnen sitzen die Kröten dicht wie Torf." }],
+      fragen: [{ knopf: "Was liegt hinter dem Ried?", zeilen: [{ wer: "Joost", text: "Heddas Hütte, auf der letzten trockenen Insel. Und dahinter das tiefe Moor, wo keiner von uns hingeht." }] }] }] },
+  hedda: { name: "Mutter Hedda", feld: 176, koerper: 0.915, fuss: 0.955, blatt: "kraeuterfrau", still: true, zeigen: "kampf_ried", sonst: { wer: "Mutter Hedda", text: "Geh den Totenpfad. Und sprich mit ihr. Sie hat lange niemanden mehr gehört." },
+    reden: [{ setzt: "hedda", schluss: "Ich gehe den Totenpfad",
+      zeilen: [{ wer: "Mutter Hedda, die Kräuterfrau", text: "Du kommst durchs Ried, mit Schlamm bis zum Hals. Du bist nicht hier, um mich anzuzünden. Setz dich." },
+        { wer: "Mutter Hedda", text: "Die Lichter rufen die Kinder nicht. Sie suchen. Seit fünfzig Jahren suchen sie jemanden, der zurückkommt." },
+        { wer: "Mutter Hedda", text: "Meine Schwester hieß Alwine. Sie ist ins Moor gegangen, als das Wasser stieg, und keiner ist ihr nach. Am versunkenen Schrein ist sie geblieben. Jetzt holt sie sich Kinder, weil keiner sie holen kam." },
+        { wer: "Mutter Hedda", text: "Hinter meiner Hütte beginnt der Totenpfad. Die dort liegen, sind ihr gefolgt. Sie stehen auf, wenn man über sie geht." }],
+      fragen: [{ knopf: "Warum hast du es niemandem gesagt?", zeilen: [{ wer: "Mutter Hedda", text: "Ich habe es gesagt. Fünfzig Jahre lang. Sie haben aufgehört zuzuhören, und dann haben sie angefangen, mich die Hexe zu nennen." }] },
+        { knopf: "Kann man Alwine retten?", zeilen: [{ wer: "Mutter Hedda", text: "Retten nicht. Aber man kann sie ruhen lassen. Sag ihr ihren Namen, wenn du vor ihr stehst. Den hat sie lange nicht gehört." }] }] }] },
+  /* ---------- Weidenhain ---------- */
   /* gross: Anteil an der Größe eines Erwachsenen (Tebbe sitzt); zeigen: erst da, wenn dieser Merker gesetzt ist */
   tebbe: { name: "Tebbe", feld: 240, koerper: 0.805, fuss: 0.957, gross: 0.52, zeigen: "tebbe_gefunden", sonst: { wer: "Tebbe", text: "Die Katze heißt Mehl. Sie hat mich gefunden, nicht ich sie." },
     reden: [{ setzt: "tebbe_rede", schluss: "Ruh dich aus", zeilen: [{ wer: "Tebbe", text: "Die Große am Wehr hat mich gar nicht angesehen. Sie hat nur nach oben geschaut, zu den Lichtern. Ich glaube, sie hat Angst." }],
@@ -67,7 +107,8 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
         zeilen: [{ wer: "Agnes", text: "Du warst am Tümpel? Dann schlafe ich heute ruhiger. Mein Mann hätte dir dafür ein Brot gebacken. Ich kann nur danke sagen." }] }] },
 };
 /* Wohin der Pfeil am Boden zeigt: die erste Zeile, deren Bedingung passt. Stehen Leute mit offenem Gespräch da, zeigt er zuerst zu ihnen (zum nächsten). */
-const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["tebbe_gefunden"], stelle: "wehr" }, { wenn: ["tebbe"], stelle: "muehle" }, { wenn: ["hanne"], stelle: "scheune" }] };
+const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["tebbe_gefunden"], stelle: "wehr" }, { wenn: ["tebbe"], stelle: "muehle" }, { wenn: ["hanne"], stelle: "scheune" }],
+  rabenmoor: [{ wenn: ["kampf_totenpfad"], stelle: "schrein" }, { wenn: ["hedda"], stelle: "pfad" }, { wenn: ["joost"], stelle: "kahn" }, { wenn: ["bertold"], stelle: "steg" }] };
 /* Türen: Stelle im Ort, Bedingung, und der Kampf, der dahinter wartet. Ist er gewonnen (Merker kampf_<karte>), ist die Tür erledigt. */
 const TUEREN: Record<string, { wenn: string[]; knopf: string; kampf: string }> = {
   scheune: { wenn: ["hanne"], knopf: "Den Kornspeicher betreten", kampf: "speicher" },
@@ -75,6 +116,10 @@ const TUEREN: Record<string, { wenn: string[]; knopf: string; kampf: string }> =
   wehr: { wenn: ["tebbe_gefunden"], knopf: "Zum Wehr hinunter", kampf: "wehr" },
   nest: { wenn: ["nest_auftrag"], knopf: "Hinter die Scheune (Krötennest)", kampf: "nest" },
   ufer: { wenn: ["ufer_auftrag"], knopf: "Zum Mühlteich (Irrlichter)", kampf: "ufer" },
+  steg: { wenn: ["bertold"], knopf: "Über den Bohlenweg ins Moor", kampf: "bohlenweg" },
+  kahn: { wenn: ["joost"], knopf: "Mit Joosts Kahn ins Ried", kampf: "ried" },
+  pfad: { wenn: ["hedda"], knopf: "Den Totenpfad gehen", kampf: "totenpfad" },
+  schrein: { wenn: ["kampf_totenpfad"], knopf: "Zum versunkenen Schrein", kampf: "schrein" },
 };
 /* Was beim Ankommen im Ort erzählt wird: der erste Auftritt, dessen Bedingung passt und der noch nicht erzählt ist. ende: Damit ist die Kampagne geschafft. */
 const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; zeilen: Zeile[]; schluss: string; ende?: number }[]> = { weidenhain: [
@@ -84,13 +129,24 @@ const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; 
   { wenn: ["kampf_wehr"], setzt: "ende", titel: "Das Erntefest von Weidenhain", schluss: "Zurück in die Waldmark", ende: 1, zeilen: [{ text: "Das letzte Irrlicht zerstiebt über dem Wasser. Die alte Unke liegt halb auf den Steinen, zu erschöpft, um die Zunge noch einmal zu heben." },
     { text: "Ohne die Lichter über ihr ist nichts mehr an ihr, das angreift. Du trittst zurück. Sie gleitet ins Wasser und führt ihr Volk den Graben hinab, weg vom Dorf." }, { wer: "Hanne Kalk", text: "Setz dich. Iss. Heute Nacht zahlt in Weidenhain niemand, der Kröten aus meinem Speicher gejagt hat." },
     { text: "Gegen Morgen sitzt ein fremder Junge am Feuer, schlammverschmiert bis zu den Knien." }, { wer: "Der Junge", text: "Ich komme aus Rabenmoor. Drei Kinder sind weg. Sie sind den Lichtern ins Moor gefolgt. Sie sagen, hier ist jemand, der hilft." }] },
+],
+  rabenmoor: [
+    { wenn: [], setzt: "ankunft", titel: "Rabenmoor", schluss: "Weiter", zeilen: [{ text: "Rabenmoor liegt auf einer Sandinsel mitten im Schwarzmoor. Die Sonne geht unter, und über dem Wasser stehen schon die ersten Lichter, still wie Sterne, die zu tief hängen." },
+      { text: "Auf dem Platz am Brunnen stehen Leute mit Fackeln, die noch nicht brennen. Jorin, der Junge, der dich geholt hat, zieht dich am Ärmel zum Schulzen." }] },
+    { wenn: ["kampf_bohlenweg"], setzt: "bohlen_nach", titel: "Am Ende des Bohlenwegs", schluss: "Weiter", zeilen: [{ text: "Hinter der letzten Insel bricht der Bohlenweg ab. Weiter geht es nur übers Wasser." }, { text: "Auf dem Rückweg winkt dir am Anleger ein Mann mit Torfspaten. Neben ihm liegt ein Kahn." }] },
+    { wenn: ["kampf_ried"], setzt: "ried_nach", titel: "Am Ende des Kanals", schluss: "Weiter", zeilen: [{ text: "Joost rudert dich zurück, so schnell er kann. Am Rand des Rieds hast du Licht gesehen, warmes Licht: Heddas Hütte auf der letzten trockenen Insel." }, { text: "Vom Dorf aus führt ein Pfad hinauf zu ihr." }] },
+    { wenn: ["kampf_schrein"], setzt: "ende", titel: "Der Name im Wasser", schluss: "Zurück in die Waldmark", ende: 2, zeilen: [{ text: "Du sagst ihren Namen. Alwine. Die Stumme hält inne, und zum ersten Mal seit fünfzig Jahren hat sie ein Gesicht." },
+      { text: "Die Lichter über dem Moor gehen aus, eins nach dem anderen. Zwischen den Spiralsteinen liegen drei Kinder im Moos und schlafen." },
+      { text: "Du trägst sie zurück nach Rabenmoor. Die Fackeln auf dem Platz brennen jetzt doch, aber niemand geht damit ins Moor. Sie leuchten euch den Weg." },
+      { wer: "Mutter Hedda", text: "Sie hat ihren Namen gehört. Mehr wollte sie nie." },
+      { text: "In der Nacht, als alle schlafen, hörst du zum ersten Mal die Glocke. Tief und langsam, von Norden her, wo hinter dem Fluss Graufurt liegt." }] },
 ] };
 /* Die Runde Dorfleute (werkzeug/blatt.py, Feld 300): wo die fünf Köpfe im Feld sitzen, und was sie so reden – belangloses Festgeplauder. */
 const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.41]];
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
   "Pst, nicht so laut.", "Na, wenn du meinst.", "Der Winter kommt früh, wetten?", "Mein Vetter aus Graufurt sagt …", "Ha! Das glaubst du doch selbst nicht.", "Hm.", "Die Rüben waren nie so groß.", "Wer tanzt nachher?", "So ein Unsinn.", "Wem gehört eigentlich der Karren?", "Drei Kupfer für ein Brot!", "Erzähl das bloß nicht weiter."];
 /* Unterzeile im Ortsbanner */
-const UNTER: Record<string, string> = { weidenhain: "Das Dorf am Mühlgraben", baukasten: "Probefläche" };
+const UNTER: Record<string, string> = { weidenhain: "Das Dorf am Mühlgraben", rabenmoor: "Das Dorf im Schwarzmoor", baukasten: "Probefläche" };
 const TEMPO = 190, GROSS = (ORTE[ortName] && ORTE[ortName].gross) || 112, Q = 0.62; // Bildpunkte je Sekunde, Größe des Helden, nach oben und unten läuft man langsamer (der Boden liegt schräg)
 
 export class Ort extends Phaser.Scene {
@@ -109,7 +165,7 @@ export class Ort extends Phaser.Scene {
         x = x1; y = y1; } } }
   init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("eingang") === "1") { localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("eingang"); history.replaceState(null, "", "?" + P.toString()); } /* von der Weltkarte kommend steht man am Ortseingang; der Fortschritt bleibt */
       if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
-  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
+  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
     if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
@@ -154,7 +210,7 @@ export class Ort extends Phaser.Scene {
   leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
     for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
       if (!this.anims.exists("leute-" + id)) this.anims.create({ key: "leute-" + id, frames: this.anims.generateFrameNumbers("leute-" + id, {}), frameRate: 2.5, repeat: -1, yoyo: true });
-      const hh = GROSS * 0.92 * (L.gross || 1), m = hh / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ const sp = this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y).play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
+      const hh = GROSS * 0.92 * (L.gross || 1), m = hh / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ const sp = this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y); if (L.still) sp.setFrame(0); else sp.play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
       const nm = this.add.text(x, y - hh - 18, L.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
       const ruf = this.add.text(x, y - hh - 38, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "44px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setResolution(2).setDepth(99981);
       this.tweens.add({ targets: ruf, y: ruf.y - 9, duration: 650, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); this.personen.push({ id, x, y, ruf, teile: [sp, nm] }); }
@@ -209,7 +265,7 @@ export class Ort extends Phaser.Scene {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
     if (!this.gesperrt) { let nah = ""; { const st = this.d.stellen.start; if (Math.hypot(o.x - st[0], (o.y - st[1]) / Q) < 110) nah = "#heim"; } /* am Ortseingang geht es zurück */ for (const k in TUEREN) { const t = this.d.stellen[k]; if (t && !this.merker["kampf_" + TUEREN[k].kampf] && TUEREN[k].wenn.every((m) => this.merker[m]) && Math.hypot(o.x - t[0], (o.y - t[1]) / Q) < 110) nah = "@" + k; }
       for (const q of this.personen) if (this.da(q.id) && Math.hypot(o.x - q.x, (o.y - q.y) / Q) < (LEUTE[q.id].gross ? 85 : 120)) nah = q.id;
-      if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = (nah === "#heim" ? "Zurück nach Waldmark" : nah[0] === "@" ? TUEREN[nah.slice(1)].knopf : "Mit " + LEUTE[nah].name.split(" ")[0] + " sprechen") + (HANDY ? "" : "  [E]"); } }
+      if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = (nah === "#heim" ? "Zurück nach Waldmark" : nah[0] === "@" ? TUEREN[nah.slice(1)].knopf : "Mit " + (LEUTE[nah].name.startsWith("Mutter ") ? LEUTE[nah].name : LEUTE[nah].name.split(" ")[0]) + " sprechen") + (HANDY ? "" : "  [E]"); } }
     { const z = this.gesperrt ? null : this.ziel(), weit = z ? Math.hypot(z[0] - o.x, (z[1] - o.y) / Q) : 0; if (z && weit > 130) { const w = Math.atan2((z[1] - o.y) / Q, z[0] - o.x), ax = Math.cos(w), ay = Math.sin(w); this.pfeil.setVisible(true).setPosition(o.x + ax * 62, o.y + ay * 62 * Q).setRotation(Math.atan2(ay * Q, ax)).setScale(1.5, 1.5); } else this.pfeil.setVisible(false); }
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }
     else if (this.pfad.length) { const z = this.pfad[0], dx = z[0] - o.x, dy = z[1] - o.y; if (Math.hypot(dx, dy) < 5) { this.pfad.shift(); if (!this.pfad.length) this.marke.setVisible(false); } else { const qy = dy / Q, q = Math.hypot(dx, qy); rx = dx / q; ry = qy / q; } }

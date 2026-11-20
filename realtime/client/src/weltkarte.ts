@@ -2,7 +2,7 @@
 import { HELDEN } from "../../shared/config";
 type Ziel = { id: string; nr: number; name: string; ort: string; x: number; y: number; text: string; dauer: string };
 /* x, y in Prozent des Kartenbilds */
-const SPIELBAR = new Set(["weidenhain"]);
+const SPIELBAR = new Set(["weidenhain", "rabenmoor"]);
 const ZIELE: Ziel[] = [
   { id: "weidenhain", nr: 1, name: "Das Erntefest von Weidenhain", ort: "Weidenhain", x: 17.7, y: 22.6, text: "Kröten plündern den Kornspeicher, mitten im Erntefest.", dauer: "Einstieg" },
   { id: "rabenmoor", nr: 2, name: "Das Moor der stummen Lichter", ort: "Rabenmoor", x: 16, y: 39, text: "Drei Kinder sind stummen Lichtern ins Moor gefolgt. Das Dorf will die Kräuterfrau verbrennen.", dauer: "kurz" },

@@ -117,12 +117,14 @@ function fenster(ort: string, bild: string): HTMLElement {
   (d.querySelector(".ort") as HTMLElement).textContent = ort; bildnis(d, ""); return d;
 }
 /* Bildnisse im Gespräch: aus dem Bildblatt der Person (Feld 240) der Kopf – Mitte x und Scheitel y im ersten Bild */
-const KOPF: Record<string, [number, number]> = { hanne: [112, 27], lene: [117, 31], agnes: [113, 25], mette: [117, 29], tebbe: [115, 38] };
+/* [Mitte x, Scheitel y, Bildblatt, Feldgröße, Bilder] – ohne Angabe: <id>.webp, Feld 240, 9 Bilder */
+const KOPF: Record<string, [number, number, string?, number?, number?]> = { hanne: [112, 27], lene: [117, 31], agnes: [113, 25], mette: [117, 29], tebbe: [115, 38],
+  bertold: [84, 6, "ausrufer", 176, 8], ilse: [113, 25, "agnes"], jorin: [86, 13, "junge", 176, 8], joost: [88, 8, "wanderer", 176, 8], mutter: [78, 7, "kraeuterfrau", 176, 8] };
 /** Wer spricht: Name und Rolle ins Schild, das Bildnis links. Ohne Sprecher erzählt das Spiel – dann steht dort das Siegel. */
 function bildnis(d: HTMLElement, wer: string) {
   const [name, rolle] = wer.split(",").map((t) => t.trim()), id = (name || "").split(" ")[0].toLowerCase(), k = KOPF[id], el = d.querySelector(".bildnis") as HTMLElement, sp = el.querySelector("span") as HTMLElement;
   const w = d.querySelector(".wer") as HTMLElement, ro = d.querySelector(".rolle") as HTMLElement; w.textContent = name || ""; ro.textContent = rolle || ""; ro.hidden = !rolle; (d.querySelector(".schild") as HTMLElement).classList.toggle("leer", !name);
-  el.classList.toggle("erzaehler", !k); if (k) { const f = 150 / 86; sp.style.backgroundImage = `url("../img/echtzeit/${id}.webp")`; sp.style.backgroundSize = `${2160 * f}px ${240 * f}px`; sp.style.backgroundPosition = `${-(k[0] - 43) * f}px ${-(k[1] - 6) * f}px`; } else sp.style.backgroundImage = "none";
+  el.classList.toggle("erzaehler", !k); if (k) { const fe = k[3] || 240, n = k[4] || 9, w = fe * 0.36, f = 150 / w; sp.style.backgroundImage = `url("../img/echtzeit/${k[2] || id}.webp")`; sp.style.backgroundSize = `${fe * n * f}px ${fe * f}px`; sp.style.backgroundPosition = `${-(k[0] - w / 2) * f}px ${-(k[1] - fe * 0.025) * f}px`; } else sp.style.backgroundImage = "none";
 }
 /** Zeilen nacheinander zeigen; weiter mit Klick, Tipp, Leertaste oder Enter. */
 function sprich(d: HTMLElement, zeilen: Zeile[]): Promise<void> {

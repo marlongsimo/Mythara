@@ -34,6 +34,24 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
         { text: "Lene nach den Kröten fragen", fertig: "lene" }, { text: "Agnes am Baum zuhören", fertig: "agnes" },
         { text: "Hanne vom Kornspeicher berichten", wenn: ["kampf_speicher"], fertig: "hanne2" }, { text: "Nach Tebbe sehen", wenn: ["tebbe_gefunden"], fertig: "tebbe_rede" }] },
     ] },
+  rabenmoor: { titel: "Das Moor der stummen Lichter", ort: "Rabenmoor", stufe: 2,
+    haupt: [
+      { text: "Nach Rabenmoor aufbrechen", fertig: "ankunft" },
+      { text: "Mit Bertold Krähe, dem Schulzen, sprechen", fertig: "bertold" },
+      { text: "Über den Bohlenweg ins Schwarzmoor", fertig: "kampf_bohlenweg" },
+      { text: "Joost am Anleger ansprechen", fertig: "joost" },
+      { text: "Mit dem Kahn durchs Ried", fertig: "kampf_ried" },
+      { text: "Mutter Hedda in ihrer Hütte anhören", fertig: "hedda" },
+      { text: "Den Totenpfad gehen", fertig: "kampf_totenpfad" },
+      { text: "Alwine am versunkenen Schrein stellen", fertig: "kampf_schrein" },
+    ],
+    neben: [
+      { titel: "Miras Pfeife", wenn: ["bertold"], schritte: [
+        { text: "Ilse am Brunnen anhören", fertig: "ilse" }, { text: "Die Kinder aus dem Moor holen", fertig: "kampf_schrein" }, { text: "Ilse Bescheid geben", fertig: "ilse_dank" }] },
+      { titel: "Was Bertold verschweigt", wenn: ["hedda"], schritte: [
+        { text: "Bertold nach Alwine fragen", fertig: "bertold_schuld" }, { text: "Alwine zur Ruhe bringen", fertig: "kampf_schrein" }, { text: "Bertolds Geständnis hören", fertig: "bertold_gestanden" }] },
+      { titel: "Jorins Schwester", wenn: ["bertold"], schritte: [{ text: "Mit Jorin reden", fertig: "jorin" }] },
+    ] },
 };
 /** Gehört dieser Merker zur Hauptquest des Ortes? (sonst ist es eine Nebenquest – hellblau statt gelb) */
 export const istHaupt = (ort: string, merker: string) => Boolean(QUESTS[ort] && QUESTS[ort].haupt.some((s) => s.fertig === merker));
