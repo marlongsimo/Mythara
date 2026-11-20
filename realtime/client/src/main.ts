@@ -47,7 +47,7 @@ const TIPPS = ["Nach einer Pause schläft der Server. Beim ersten Kampf dauert e
 /** Bilder für die Aktionstasten (img/fx): je Held die Fähigkeiten Q, E, R und die beiden Waffen */
 const SYMBOL: Record<string, { q?: string; e?: string; r?: string; modi?: string[] }> = {
   schildwaechter: { q: "welle", e: "schild", r: "aura", modi: ["symbole/schwert", "symbole/schild"] }, elementarist: { q: "eis", e: "blitz", r: "feuer", modi: ["kugel", "hieb"] },
-  lichtbringer: { q: "heil", e: "sterne", r: "licht", modi: ["heil", "hieb"] }, assassine: { q: "schatten", e: "gift", r: "blut", modi: ["dolch", "symbole/armbrust"] },
+  lichtbringer: { q: "heil", e: "sterne", r: "licht", modi: ["symbole/heilstab", "symbole/streitkolben"] }, assassine: { q: "schatten", e: "gift", r: "blut", modi: ["dolch", "symbole/armbrust"] },
   kopfgeldjaeger: { q: "mal", e: "netz", r: "blut", modi: ["symbole/armbrust", "dolch"] } };
 const symbolBild = (n: string) => n.includes("/") ? `../img/${n}.webp` : `../img/fx/${n}.webp`; /* „symbole/…“: eigene Bilder, sonst die Effektbilder */
 /* Der Knopf „?“ oben rechts zeigt die Steuerung; beim ersten Kampf einer Sitzung ist sie ein paar Sekunden offen */
