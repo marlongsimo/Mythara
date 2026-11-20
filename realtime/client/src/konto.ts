@@ -11,17 +11,21 @@
  * Gäste spielen wie bisher nur auf dem Gerät. Es wird nur der veröffentlichbare Schlüssel verwendet.
  */
 import { HELDEN, HELDENREIHE } from "../../shared/config";
-interface Db { auth: { getSession(): Promise<{ data: { session: { user: { is_anonymous?: boolean } } | null } }>; signInAnonymously(): Promise<{ error: { message: string } | null }>; signInWithPassword(a: { email: string; password: string }): Promise<{ error: { message: string } | null }>; signOut(): Promise<unknown>; updateUser(a: { email: string; password: string }): Promise<{ error: { message: string } | null }> };
+interface Db { auth: { getSession(): Promise<{ data: { session: { access_token?: string; user: { is_anonymous?: boolean } } | null } }>; signInAnonymously(): Promise<{ error: { message: string } | null }>; signInWithPassword(a: { email: string; password: string }): Promise<{ error: { message: string } | null }>; signOut(): Promise<unknown>; updateUser(a: { email: string; password: string }): Promise<{ error: { message: string } | null }> };
   rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: { message: string } | null }> }
 const W = window as unknown as { supabase?: { createClient(url: string, key: string, o: unknown): Db }; MR_MULTIPLAYER_CONFIG?: { supabaseUrl: string; supabasePublishableKey: string } };
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const OHNE = new Set(["ez_zoom", "ez__offen", "ez__version"]); // gehört zum Gerät, nicht zum Konto
-const meins = (k: string) => k.startsWith("ez_") && !OHNE.has(k);
+const meins = (k: string) => k.startsWith("ez_") && !OHNE.has(k) && !(name && (k === "ez_ep" || k === "ez_seelen")); /* mit Konto führt der Spielserver EP und Seelensplitter (Migration 035) */
 
 let db: Db | null = null, name = "", version = 0, takt = 0, schreibt = false;
 function verbindung(): Db | null { if (db) return db; const c = W.MR_MULTIPLAYER_CONFIG; if (!W.supabase || !c) return null; try { db = W.supabase.createClient(c.supabaseUrl, c.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "mr-rpg-auth" } }); } catch { db = null; } return db; }
 async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> { const d = verbindung(); if (!d) throw new Error("Keine Verbindung zum Konto."); const { data, error } = await d.rpc(fn, args); if (error) throw new Error(error.message); return data as T; }
 
+/** Das Anmelde-Token für den Spielserver (nur mit Konto) */
+export async function kontoToken(): Promise<string> { const d = verbindung(); if (!d || !name) return ""; try { const { data } = await d.auth.getSession(); return (data.session && data.session.access_token) || ""; } catch { return ""; } }
+/** EP und Seelensplitter aus dem Konto holen (vom Server geführt) und für die Anzeige ablegen */
+export async function kontoWerte(): Promise<void> { if (!name) return; try { const w = await rpc<{ ep: Record<string, number>; seelen: number }>("rpg_echtzeit_werte"); roh.setzen("ez_ep", JSON.stringify(w.ep || {})); roh.setzen("ez_seelen", String(w.seelen || 0)); } catch { /* Migration 035 fehlt: Anzeige bleibt */ } }
 /** Der Anmeldename, leer für Gäste */
 export const kontoName = () => name;
 
@@ -49,6 +53,7 @@ export async function kontoStart(): Promise<boolean> {
   const d = verbindung(); if (!d) return false;
   try { const { data } = await d.auth.getSession(); if (!data.session || data.session.user.is_anonymous) return false;
     const p = await rpc<{ handle?: string; konto?: boolean } | null>("rpg_my_profile"); if (!p || !p.konto || !p.handle) return false; name = p.handle;
+    await kontoWerte();
     const s = await rpc<{ stand: { daten?: Record<string, string> }; version: number }>("rpg_echtzeit_laden"); version = s.version; const lokal = lies(), fern = (s.stand && s.stand.daten) || {};
     let offen = false; try { offen = localStorage.getItem("ez__offen") === "1"; } catch { /* privat */ }
     if (s.version === 0 || offen) { if (Object.keys(lokal).length || offen) await speichern(); return false; } /* Konto ohne Stand, oder das letzte Speichern kam nicht durch: der Stand vom Gerät gilt */

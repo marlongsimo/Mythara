@@ -36,6 +36,14 @@ export let LAGER: Lager[] = [
 ];
 export const SIEGEL: Punkt = { x: 30.5, y: 3.5 };
 
+/* Jede Simulation hat ihre eigene Karte. Die Wegsuche und die Prüfungen unten lesen die Variablen oben; eine Simulation setzt deshalb vor jedem Schritt ihre Karte ein (karteNehmen).
+   Das ist sicher, weil Node alles nacheinander rechnet: So kann der Server Riss und Kampagnenkämpfe gleichzeitig führen. */
+export interface KartenStand { KB: number; KH: number; FELS: typeof FELS; WASSER: typeof WASSER; START: Punkt[]; LAGER: Lager[] }
+export const karteJetzt = (): KartenStand => ({ KB, KH, FELS, WASSER, START, LAGER });
+export function karteNehmen(k: KartenStand): void { KB = k.KB; KH = k.KH; FELS = k.FELS; WASSER = k.WASSER; START = k.START; LAGER = k.LAGER; }
+/** Die Karte des Risses, wie sie beim Start gilt */
+export const GRUNDKARTE: KartenStand = karteJetzt();
+
 export const fels = (i: number, j: number): boolean => i < 0 || j < 0 || i >= KB || j >= KH || FELS[j * KB + i] === 1 || WASSER[j * KB + i] === 1;
 /** Versperrt die Sicht? Nur Fels, Wasser nicht. */
 const dicht = (x: number, y: number): boolean => { const i = Math.floor(x), j = Math.floor(y); return i < 0 || j < 0 || i >= KB || j >= KH || FELS[j * KB + i] === 1; };

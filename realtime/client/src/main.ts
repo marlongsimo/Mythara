@@ -15,7 +15,7 @@ import { verbinde, Netz } from "./netz";
 import { Dorf } from "./dorf";
 import { Stadt } from "./stadt";
 import { zoomFaktor, zoomKnopf } from "./zoom";
-import { kontoStart, kontoSeite } from "./konto";
+import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
 import { Ort, ortName } from "./ort";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
@@ -75,8 +75,14 @@ class Spiel extends Phaser.Scene {
     const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
   }
   /** Nach der Heldenwahl: verbinden und loslegen */
-  starte(held: string, mit: string[]) {
-    verbinde(SERVER, held, mit, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
+  /** Kampagnenkampf über den Server? Nur mit Konto (der Server schreibt EP und Seelensplitter gut). ?server= erzwingt eine Adresse oder das Rechnen im Browser. */
+  serverKampf = false;
+  async starte(held: string, mit: string[]) {
+    let url = SERVER, erste: unknown = undefined;
+    if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : "wss://mythara-echtzeit.onrender.com", token = basis ? await kontoToken() : "";
+      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || ""); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
+    const SERVER0 = url;
+    verbinde(url, held, mit, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER0 && grund ? " – " + grund : ""); if (FLACH && art === "lokal" && kontoName()) { const a = $("#ez-art"); a.style.display = "block"; a.textContent = "Ohne Server – EP und Seelensplitter aus diesem Kampf werden nicht gutgeschrieben" + (grund ? " (" + grund + ")" : ""); return; } if (FLACH && art === "warte") $("#ez-art").style.display = "block"; else if (FLACH) $("#ez-art").style.display = ""; $("#ez-art").className = "ez-kasten " + art; }, erste).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
       $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel – angegriffen wird in Reichweite · ⇄ Waffe wechseln · Q, E, R: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel – angegriffen wird in Reichweite · Leertaste: Waffe wechseln · Q, E, R: Fähigkeiten in Mausrichtung"; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2) * zoomFaktor())); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2) * zoomFaktor()); }
@@ -176,7 +182,7 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
-    else if (ev.a === "ep" && kampfJetzt) { const team = [kampfJetzt.held, ...kampfJetzt.mit]; let auf = 0; for (const h of team) { const n = epDazu(h, ev.n); if (h === kampfJetzt.held && n) auf = n; } zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
+    else if (ev.a === "ep" && kampfJetzt) { if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; let auf = 0; for (const h of team) { const n = epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ if (h === kampfJetzt.held && n) auf = n; } zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
       if (auf) { const ich = this.bilder.get(this.ichId); if (ich) { const o = this.add.text(ich.c.x, ich.c.y - 110, "Stufe " + auf + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "26px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 900, duration: 1300, onComplete: () => o.destroy() }); } } }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, FLACH ? "#8fd8ff" : "#ff9aa8");
     else if (ev.a === "laden") { /* Spezialangriff: Die Fläche am Boden füllt sich, während der Gegner lädt */ const p = iso(ev.x, ev.y), rx = ev.r * (FLACH ? ZELLE : KW * 0.705), ry = ev.r * (FLACH ? ZELLE : KHOCH * 0.705);
@@ -195,7 +201,12 @@ class Spiel extends Phaser.Scene {
     const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
     const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true;
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
-      const kn = $("#ez-dorf-knopf"), raus = () => { kn.textContent = "Kampf verlassen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; const n = this.z ? this.z.splitter : 0; try { localStorage.setItem("ez_seelen", String((Number(localStorage.getItem("ez_seelen")) || 0) + n)); } catch { /* privat */ } kampfGewonnen(z.zeit, wahlZeigen); }; };
+      const kn = $("#ez-dorf-knopf"), raus = () => { kn.textContent = "Kampf verlassen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; const n = this.z ? this.z.splitter : 0;
+        if (this.netz.art === "server" && this.serverKampf) { /* der Server schreibt gut und schickt die neuen Werte */ kn.textContent = "Wird gutgeschrieben …"; kn.hidden = false; kn.onclick = null; let fertig = false;
+          const weiter = (w?: { ep?: Record<string, number>; seelen?: number }) => { if (fertig) return; fertig = true; window.removeEventListener("ez-server", hoer as EventListener); if (w && w.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(w.ep)); localStorage.setItem("ez_seelen", String(w.seelen || 0)); } catch { /* privat */ } } kn.hidden = true; kampfGewonnen(z.zeit, wahlZeigen); };
+          const hoer = (ev: CustomEvent<{ t: string; ep?: Record<string, number>; seelen?: number }>) => { if (ev.detail.t === "gutschrift") weiter(ev.detail); }; window.addEventListener("ez-server", hoer as EventListener);
+          this.netz.sende({ t: "verlassen" } as unknown as Parameters<Netz["sende"]>[0]); setTimeout(() => weiter(), 6000); return; }
+        if (!kontoName()) { try { localStorage.setItem("ez_seelen", String((Number(localStorage.getItem("ez_seelen")) || 0) + n)); } catch { /* privat */ } } /* als Gast zählt der Browser */ kampfGewonnen(z.zeit, wahlZeigen); }; };
       if (this.tebbeRuf) { this.tebbeRuf.setVisible(true); this.tebbeOffen = true; kn.hidden = true; $("#ez-ziel").textContent = "Geh zu Tebbe an der Mühle"; $("#ez-ziel").hidden = false;
         this.tebbeReden = () => { if (!this.tebbeOffen || !this.tebbeNah) return; this.tebbeOffen = false; kn.hidden = true; this.tebbeRuf!.setVisible(false); $("#ez-ziel").hidden = true; this.richtung(0, 0); this.netz.sende({ t: "halt" });
           void plaudern("Tebbe", [{ text: "Der Junge kauert an der Mühlenwand, die Katze an sich gedrückt. Eine Zunge hat ihn am Bein erwischt." }, { wer: "Tebbe", text: "Am Wehr sitzt eine. So groß wie ein Kalb. Und über ihr sind Lichter. Sie schaut die ganze Zeit nach oben." }], [], "Komm, ich bringe dich zu Lene").then(raus); };

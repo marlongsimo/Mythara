@@ -1,46 +1,93 @@
 /*
- * Mythara Echtzeit – der Spielserver. Er rechnet die Partie (20 Schritte je Sekunde) und schickt Zustände (etwa 10 je Sekunde).
- * Der Client schickt nur Eingaben. Jede Verbindung bekommt in dieser Fassung ihren eigenen Riss (PvE, ein Spieler).
- * Keine Datenbank im Spielschritt: Alles liegt im Arbeitsspeicher. Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers.
+ * Mythara Echtzeit – der Spielserver. Er rechnet die Partie (20 Schritte je Sekunde) und schickt Zustände.
+ * Der Client schickt nur Eingaben. Jede Verbindung bekommt ihre eigene Partie: den Riss (PvE) oder einen Kampagnenkampf.
+ *
+ * Kampagnenkämpfe (?kampf=<karte>&ort=<ort>): Der Spieler muss angemeldet sein. Die erste Nachricht ist {t:"anmeldung", token}; der Server prüft das Token
+ * bei Supabase, liest die Stufen der Helden und rechnet den Kampf. Erfahrung und Seelensplitter zählt allein der Server; beim Verlassen des Kampfes
+ * (Nachricht {t:"verlassen"} oder Trennung) schreibt er sie über rpg_echtzeit_gutschrift (Migration 035) gut und schickt {t:"gutschrift", ep, seelen} zurück.
+ *
+ * Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers (SUPABASE_SERVICE_KEY), nie in den Browser.
  */
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K } from "../../shared/config";
+import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
+import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
+import { KARTEN, FEIN } from "../../shared/karten";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
 const HERKUNFT = (process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(",").map((s) => s.trim()).filter(Boolean);
+const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = process.env.SUPABASE_SERVICE_KEY || "";
+/* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
+const ORTSTUFE: Record<string, number> = { weidenhain: 1 };
 
-interface Platz { ws: WebSocket; sim: Sim; zuletzt: number; fenster: number; zahl: number }
+interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean } }
 const plaetze = new Set<Platz>();
+
+/* ---------- Supabase (nur mit dem geheimen Schlüssel aus der Umgebung) ---------- */
+async function sb(pfad: string, init: RequestInit = {}): Promise<unknown> {
+  const r = await fetch(SB_URL + pfad, { ...init, headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "content-type": "application/json", ...(init.headers || {}) }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error("Supabase " + r.status + " " + (await r.text()).slice(0, 200)); return r.status === 204 ? null : r.json();
+}
+/** Wer ist angemeldet? Prüft das Token des Spielers bei Supabase. Gäste (anonyme Anmeldung) zählen nicht. */
+async function nutzerAus(token: string): Promise<string | null> {
+  if (!/^[A-Za-z0-9._-]{20,4000}$/.test(token)) return null;
+  const r = await fetch(SB_URL + "/auth/v1/user", { headers: { apikey: SB_KEY, Authorization: "Bearer " + token }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) return null; const u = (await r.json()) as { id?: string; is_anonymous?: boolean }; return u.id && !u.is_anonymous ? u.id : null;
+}
+async function epLesen(nutzer: string): Promise<Record<string, number>> {
+  const z = (await sb(`/rest/v1/rpg_echtzeit_werte?user_id=eq.${nutzer}&select=ep`)) as { ep: Record<string, number> }[]; return (z[0] && z[0].ep) || {};
+}
+async function gutschreiben(p: Platz): Promise<void> {
+  const k = p.kampf; if (!k || k.fertig || !p.sim) return; k.fertig = true; const seelen = p.sim.splitter;
+  if (!k.ep && !seelen) { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", leer: true })); return; }
+  const ep: Record<string, number> = {}; for (const h of k.team) ep[h] = k.ep;
+  try { const r = await sb("/rest/v1/rpc/rpg_echtzeit_gutschrift", { method: "POST", body: JSON.stringify({ p_user: k.nutzer, p_ep: ep, p_seelen: seelen, p_kampf: k.ort + "/" + k.karte }) });
+    if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", ...(r as object) }));
+  } catch (e) { console.error("Gutschrift fehlgeschlagen:", (e as Error).message); if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", fehler: true })); }
+}
 
 const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
-  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", protokoll: PROTOKOLL, spieler: plaetze.size }));
+  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", protokoll: PROTOKOLL, spieler: plaetze.size, kampagnen: Boolean(SB_URL && SB_KEY) }));
 });
-const wss = new WebSocketServer({ server: http, maxPayload: 512, verifyClient: (info: { origin: string }) => !HERKUNFT.length || HERKUNFT.includes(info.origin) });
+const wss = new WebSocketServer({ server: http, maxPayload: 8192, verifyClient: (info: { origin: string }) => !HERKUNFT.length || HERKUNFT.includes(info.origin) });
 
 wss.on("connection", (ws, req) => {
   if (plaetze.size >= MAX) { ws.close(1013, "voll"); return; }
-  const url = new URL(req.url || "/", "http://x"), held = url.searchParams.get("held") || "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2);
-  const p: Platz = { ws, sim: new Sim(HELDEN[held] ? held : "schildwaechter", (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit), zuletzt: Date.now(), fenster: Date.now(), zahl: 0 };
-  plaetze.add(p); ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
-  ws.on("message", (roh) => {
+  const url = new URL(req.url || "/", "http://x"), held0 = url.searchParams.get("held") || "schildwaechter", held = HELDEN[held0] ? held0 : "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x] && x !== held).slice(0, 2);
+  const karte = url.searchParams.get("kampf") || "", ort = url.searchParams.get("ort") || "";
+  const p: Platz = { ws, sim: null, zuletzt: Date.now(), fenster: Date.now(), zahl: 0 }; plaetze.add(p);
+  const los = () => ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
+  if (!karte) { karteNehmen(GRUNDKARTE); Object.assign(STAERKE, { lp: 1, schaden: 1, beute: null, ep: 0 }); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); los(); }
+  else if (!KARTEN[karte] || !ORTSTUFE[ort] || !SB_URL || !SB_KEY) { ws.close(4400, "kampf unbekannt"); plaetze.delete(p); return; }
+  const frist = karte ? setTimeout(() => { if (!p.sim) ws.close(4401, "keine anmeldung"); }, 10000) : null;
+  ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen
-    let e: Eingabe; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt; p.sim.eingabe(e);
+    let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
+    if (karte && !p.sim) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false };
+      try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { ws.close(4401, "anmeldung ungültig"); return; } p.kampf.nutzer = nutzer; const ep = await epLesen(nutzer);
+        setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const [h, v] of Object.entries(ep)) HELDENSTUFE[h] = stufeAusEp(Number(v) || 0);
+        p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); if (ws.readyState === WebSocket.OPEN) los();
+      } catch (err) { console.error("Anmeldung fehlgeschlagen:", (err as Error).message); ws.close(4503, "anmeldung nicht möglich"); }
+      return; }
+    if ((e as { t: string }).t === "verlassen") { void gutschreiben(p); return; }
+    if (p.sim) p.sim.eingabe(e);
   });
-  const weg = () => { plaetze.delete(p); }; ws.on("close", weg); ws.on("error", weg);
+  const weg = () => { plaetze.delete(p); if (frist) clearTimeout(frist); void gutschreiben(p); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */ }; ws.on("close", weg); ws.on("error", weg);
 });
 
 let n = 0;
 setInterval(() => {
   n++; const jetzt = Date.now();
   for (const p of plaetze) {
-    if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); plaetze.delete(p); continue; } // wer lange nichts tut, gibt den Platz frei
-    p.sim.schritt();
-    if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN && p.ws.bufferedAmount < 65536) p.ws.send(JSON.stringify({ t: "z", z: p.sim.zustand() }));
+    if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
+    if (!p.sim) continue; p.sim.schritt();
+    if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN && p.ws.bufferedAmount < 65536) { const z = p.sim.zustand();
+      if (p.kampf && !p.kampf.fertig) for (const ev of z.ev) if (ev.a === "ep") p.kampf.ep += ev.n; /* Erfahrung zählt der Server selbst mit */
+      p.ws.send(JSON.stringify({ t: "z", z })); }
   }
 }, 1000 / TICK);
 
-http.listen(PORT, () => console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde)`));
+http.listen(PORT, () => console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde, Kampagnen ${SB_URL && SB_KEY ? "an" : "aus – SUPABASE_URL/SUPABASE_SERVICE_KEY fehlen"})`));

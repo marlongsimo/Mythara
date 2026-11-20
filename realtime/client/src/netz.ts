@@ -18,7 +18,8 @@ function lokal(held: string, mit: string[], beiZustand: (z: Zustand) => void): N
 
 /** Verbinden. url leer: sofort lokal. Sonst Server versuchen. Ein kostenloser Server schläft bei Leerlauf ein und braucht bis zu einer Minute zum Aufwachen:
  *  Deshalb wird bis zu 75 Sekunden gewartet (mit Anzeige), erst dann geht es lokal weiter. */
-export function verbinde(url: string, held: string, mit: string[], beiZustand: (z: Zustand) => void, beiArt: (art: Netz["art"] | "warte", grund: string) => void): Promise<Netz> {
+/* erste: eine Nachricht, die gleich nach dem Öffnen geht (Anmeldung für Kampagnenkämpfe). Andere Nachrichten des Servers (z. B. „gutschrift“) kommen als Ereignis „ez-server“ an window. */
+export function verbinde(url: string, held: string, mit: string[], beiZustand: (z: Zustand) => void, beiArt: (art: Netz["art"] | "warte", grund: string) => void, erste?: unknown): Promise<Netz> {
   return new Promise((fertig) => {
     if (!url) { beiArt("lokal", "kein Server eingerichtet"); fertig(lokal(held, mit, beiZustand)); return; }
     let erledigt = false, ws: WebSocket;
@@ -29,11 +30,11 @@ export function verbinde(url: string, held: string, mit: string[], beiZustand: (
     const versuche = () => {
       if (erledigt) return; if (Date.now() - beginn > FRIST) { ersatz("Server antwortet nicht"); return; } versuch++;
       try { ws = new WebSocket(url + (url.includes("?") ? "&" : "?") + "held=" + encodeURIComponent(held) + "&mit=" + encodeURIComponent(mit.join(","))); } catch { ersatz("Serveradresse ungültig"); return; }
-      const dieser = ws; let offenGewesen = false;
+      const dieser = ws; let offenGewesen = false; if (erste) dieser.onopen = () => dieser.send(JSON.stringify(erste));
       dieser.onmessage = (ev) => { let m: { t: string; z?: Zustand }; try { m = JSON.parse(String(ev.data)); } catch { return; }
         if (m.t === "hallo" && !erledigt) { erledigt = true; offenGewesen = true; clearInterval(anzeige); beiArt("server", ""); fertig({ art: "server", sende: (e) => { if (dieser.readyState === 1) dieser.send(JSON.stringify(e)); }, ende: () => dieser.close() }); }
-        else if (m.t === "z" && m.z) beiZustand(m.z); };
-      dieser.onclose = () => { if (offenGewesen) beiArt("server", "Verbindung getrennt – bitte neu laden"); else if (!erledigt) setTimeout(versuche, Math.min(4000, 800 * versuch)); }; // noch nicht wach: gleich noch einmal
+        else if (m.t === "z" && m.z) beiZustand(m.z); else window.dispatchEvent(new CustomEvent("ez-server", { detail: m })); };
+      dieser.onclose = (ev) => { if (!offenGewesen && ev.code >= 4400 && ev.code < 4600) { ersatz(ev.code === 4401 ? "Anmeldung vom Server nicht angenommen" : ev.code === 4503 ? "Konto gerade nicht erreichbar" : "Server kennt diesen Kampf nicht"); return; } /* abgelehnt: nicht weiter versuchen */ if (offenGewesen) beiArt("server", "Verbindung getrennt – bitte neu laden"); else if (!erledigt) setTimeout(versuche, Math.min(4000, 800 * versuch)); }; // noch nicht wach: gleich noch einmal
       dieser.onerror = () => { /* onclose folgt */ };
     };
     beiArt("warte", "verbinde mit dem Server …"); versuche();
