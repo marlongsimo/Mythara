@@ -70,7 +70,7 @@ export const HELDEN: Record<string, HeldDef> = {
     e: { name: "Bollwerk", zeit: 14, text: "3 Sekunden deutlich stärkerer Block. Verbündete direkt hinter Torvald sind mitgeschützt." },
     r: { name: "Schild von Grauwacht", zeit: 80, text: "Gegner im Umkreis von 6 Feldern greifen Torvald an. Verbündete in der Nähe bekommen 80 Schutzpunkte." },
     passiv: "Festnageln: Schwerttreffer verlangsamen um 15 % für 1,5 Sekunden (je Gegner höchstens alle 3 Sekunden)." },
-  elementarist: { name: "Vaelin", titel: "Der Elementarist", klasse: "Magier", rolle: "Flächenschaden aus der Ferne", bild: "img/figuren/elementarist.jpg",
+  elementarist: { name: "Vaelin", titel: "Der Elementarist", klasse: "Magier", rolle: "Flächenschaden aus der Ferne", bild: "img/figuren/elementarist.jpg", figur: "img/echtzeit/vaelin.webp", fuss: [0.55, 0.96], gross: 1.075, lauf: "img/echtzeit/vaelin-lauf.webp", laufMass: [0.516, 0.91, 0.81], hieb: "img/echtzeit/vaelin-zauber.webp", hiebMass: [0.47, 0.982, 0.80], hieb2: "img/echtzeit/vaelin-schlag.webp", hieb2Mass: [0.45, 0.926, 0.824],
     lp: 210, tempo: 3.4, angriff: { nah: 25, fern: 25, magie: 115 }, abwehr: { nah: 25, fern: 35, magie: 70 },
     modi: [{ name: "Elementarstab", art: "magie", schaden: [16, 30], takt: 1.2, reich: 8, flug: 13, text: "Magisches Geschoss aus der Ferne." },
       { name: "Stabschlag", art: "nah", schaden: [5, 13], takt: 0.9, reich: 1.5, text: "Schwacher Nahkampfschlag zur Selbstverteidigung, stößt leicht zurück." }],
