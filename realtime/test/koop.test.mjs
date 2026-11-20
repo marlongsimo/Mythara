@@ -49,6 +49,8 @@ try {
   /* Anna betritt den Kornspeicher – Ben wird geholt */
   await anna.goto(B + "?ort=weidenhain&kampf=speicher" + S); await anna.waitForFunction(() => window.EZ && window.EZ.netz && window.EZ.netz.art === "server" && window.EZ.zustand(), null, { timeout: 30000 });
   await ben.waitForURL(/mitglied=1/, { timeout: 15000 }); await ben.waitForFunction(() => window.EZ && window.EZ.netz && window.EZ.netz.art === "server" && window.EZ.zustand(), null, { timeout: 30000 }); await ben.waitForTimeout(800);
+  const t0 = await anna.evaluate(() => window.EZ.zustand().zeit); await anna.waitForFunction(() => document.getElementById("ez-koopstart").hidden, null, { timeout: 15000 }); const t1 = await anna.evaluate(() => window.EZ.zustand().zeit);
+  check(t0 === 0, `Der Kampf wartet, bis Ben da ist, und zählt dann gemeinsam herunter (Kampfzeit beim Warten: ${t0} s, danach läuft sie: ${t1} s)`);
   const zb = await ben.evaluate(() => { const z = window.EZ.zustand(); return { ich: z.w.find((e) => e[0] === z.ich.id)[2], helden: z.w.filter((e) => e[1]).map((e) => e[2]).sort().join(","), lp: z.w.find((e) => e[0] === z.ich.id)[8] }; });
   check(zb.ich === "kopfgeldjaeger" && zb.helden === "kopfgeldjaeger,schildwaechter", `Ben ist im selben Kampf und spielt seinen Helden (Helden: ${zb.helden})`);
   check(zb.lp === 257, `Ben bringt seine eigene Stufe mit (Orin mit 120 EP = Stufe 2: ${zb.lp} LP)`);

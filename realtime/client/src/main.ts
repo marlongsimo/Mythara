@@ -105,6 +105,8 @@ class Spiel extends Phaser.Scene {
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
       if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
+    window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; text?: string }; if (m.t !== "koopstart") return; /* gemeinsamer Start in der Gruppe */
+      const el = document.getElementById("ez-koopstart"); if (el) { el.hidden = !m.text; el.textContent = m.text || ""; } });
     if (MITGLIED) { /* Koop-Mitspieler: Gutschrift kommt vom Server, auch wenn der Anführer den Kampf beendet */
       window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; ep?: Record<string, number>; seelen?: number };
         if (m.t === "gutschrift" && m.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } }

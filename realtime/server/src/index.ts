@@ -22,7 +22,8 @@ const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = pro
 /* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
 
 interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean; gesiegt: boolean };
-  /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string }
+  /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
+  /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string } }
 const plaetze = new Set<Platz>();
 /* ---------- Koop-Gruppen: nur im Arbeitsspeicher, über einen Code aus sechs Buchstaben. Der Anführer spielt die Kampagne, bis zu zwei Mitspieler kommen in seine Kämpfe. ---------- */
 interface Warter { ws: WebSocket; nutzer: string; name: string; held: string }
@@ -99,7 +100,7 @@ wss.on("connection", (ws, req) => {
         const R = raum && CODE.test(raum) ? raeume.get(raum) : undefined, gruppe = R && R.fuehrer === nutzer ? R : undefined, menschen = gruppe ? Math.min(3, [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length + 1) : 1;
         setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], Math.max(1 + mit.length, menschen)); /* die Gegner richten sich nach der ganzen Gruppe */ for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k]; for (const [h, v] of Object.entries(ep)) { HELDENEP[h] = Number(v) || 0; HELDENSTUFE[h] = stufeAusEp(HELDENEP[h]); }
         p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte, gruppe ? "(Koop " + gruppe.code + ")" : ""); if (ws.readyState === WebSocket.OPEN) los();
-        if (gruppe) { gruppe.kampf = p; p.raum = gruppe.code; gruppe.zuletzt = Date.now(); losMelden(gruppe, ort, karte); }
+        if (gruppe) { gruppe.kampf = p; p.raum = gruppe.code; gruppe.zuletzt = Date.now(); const erwartet = [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length; if (erwartet) p.start = { bis: Date.now() + 20000, erwartet, los: 0, zuletzt: "" }; losMelden(gruppe, ort, karte); }
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void gutschreiben(p); return; }
@@ -128,12 +129,22 @@ function warten(ws: WebSocket, code: string, fuehrer: boolean) {
   const lebt = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(lebt); return; } try { ws.ping(); } catch { /* zu */ } }, 25000);
 }
 
+/** Gemeinsamer Start: Solange Mitspieler fehlen (höchstens 20 s), steht der Kampf; dann 3 Sekunden Countdown. Meldet allen den Stand. */
+function startHalt(p: Platz, jetzt: number): boolean { const s = p.start!; const da = p.mit ? p.mit.size : 0;
+  if (!s.los) { if (da < s.erwartet && jetzt < s.bis) { const t = `Warte auf deine Mitspieler … ${da} / ${s.erwartet} da (noch ${Math.ceil((s.bis - jetzt) / 1000)} s)`; startMelden(p, t); return true; } s.los = jetzt + 3000; }
+  if (jetzt < s.los) { startMelden(p, `Alle bereit – los in ${Math.ceil((s.los - jetzt) / 1000)} …`); return true; }
+  startMelden(p, ""); p.start = undefined; return false; }
+function startMelden(p: Platz, text: string) { const s = p.start; if (!s || s.zuletzt === text) return; s.zuletzt = text; const m = JSON.stringify({ t: "koopstart", text });
+  for (const q of [p, ...(p.mit || [])]) if (q.ws.readyState === WebSocket.OPEN) q.ws.send(m); }
+
 let n = 0;
 setInterval(() => {
   n++; const jetzt = Date.now();
   for (const p of plaetze) {
     if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
-    if (!p.sim) continue; try { p.sim.schritt(); } catch (err) { console.error("Schritt:", (err as Error).stack); p.ws.close(1011, "fehler"); plaetze.delete(p); continue; }
+    if (!p.sim) continue;
+    if (p.start && startHalt(p, jetzt)) { if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN) { const z = p.sim.zustand(); p.ws.send(JSON.stringify({ t: "z", z })); if (p.mit) for (const m of p.mit) if (m.ws.readyState === WebSocket.OPEN) m.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: p.sim.ichVon(m.heldId || 0) } })); } continue; } /* gemeinsamer Start: noch steht alles */
+    try { p.sim.schritt(); } catch (err) { console.error("Schritt:", (err as Error).stack); p.ws.close(1011, "fehler"); plaetze.delete(p); continue; }
     if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN && p.ws.bufferedAmount < 65536) { const z = p.sim.zustand();
       if (p.kampf && !p.kampf.fertig) for (const ev of z.ev) if (ev.a === "ep") p.kampf.ep += ev.n; /* Erfahrung zählt der Server selbst mit */
       if (p.kampf && !p.kampf.gesiegt && z.phase === "sieg") void siegEintragen(p);
