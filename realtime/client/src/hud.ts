@@ -76,7 +76,7 @@ export function sterne(ort: string): { an: boolean; name: string; warum: string 
     { an: Boolean(neben), name: "Gründlich", warum: "Alle Nebenquests erledigen, bevor die Kampagne endet" },
     { an: alle && geschafft === kaempfe.length, name: "Meisterhaft", warum: alle ? `Jede Herausforderung der Hauptkämpfe schaffen (${geschafft} / ${kaempfe.length}): ` + kaempfe.map((k) => `${proben[ort + "/" + k] ? "✓" : "☐"} ${KARTEN[k].probe!.text}`).join(" · ") : "Herausforderungen kommen noch" }];
 }
-export const sternText = (ort: string) => sterne(ort).map((s) => (s.an ? "★" : `<span class="aus">★</span>`)).join(""); /* fehlende Sterne blass (das Zeichen ☆ sieht in manchen Schriften wie ★ aus) */
+export const sternText = (ort: string) => sterne(ort).map((s) => (s.an ? "★" : `<em class="aus">★</em>`)).join(""); /* fehlende Sterne blass (das Zeichen ☆ sieht in manchen Schriften wie ★ aus) */
 /** Beim Abschluss: festhalten, ob alle Nebenquests erledigt waren, und die Wertung zeigen */
 export function wertung(ort: string, merker: Record<string, boolean>, weiter: () => void) {
   if (nebenFertig(ort, merker)) { const o = liesJ("ez_neben"); o[ort] = true; schreibJ("ez_neben", o); }

@@ -1,6 +1,8 @@
 /* Weltkarte am Stadttor: zeigt die Kampagnen als Orte auf der Karte. Die Texte stammen aus den Kampagnen des Würfelspiels. */
 import { HELDEN } from "../../shared/config";
 import { sternText } from "./hud";
+import { gruppe, gruppeAufloesen, gruppenTafel, gruppenListe, gruppeVerbinden } from "./gruppe";
+import { kontoName } from "./konto";
 type Ziel = { id: string; nr: number; name: string; ort: string; x: number; y: number; text: string; dauer: string };
 /* x, y in Prozent des Kartenbilds */
 const SPIELBAR = new Set(["weidenhain", "rabenmoor"]);
@@ -39,8 +41,14 @@ export function weltkarte(zu: () => void) {
   addEventListener("keydown", taste, true); (w.querySelector(".schliessen") as HTMLElement).onclick = ende;
   for (const k of Array.from(w.querySelectorAll<HTMLElement>(".ziel"))) k.onclick = () => {
     const z = ZIELE.find((q) => q.id === k.dataset.id) as Ziel; for (const a of Array.from(w.querySelectorAll(".ziel"))) a.classList.toggle("an", a === k);
-    info.hidden = false; info.innerHTML = `<small>Kampagne ${z.nr} · ${z.ort} · ${z.dauer}</small><h3>${z.name}</h3><p>${z.text}</p><em>${z.nr <= fertig ? "Geschafft." : z.nr > fertig + 1 ? `Verschlossen – erst „${ZIELE[z.nr - 2].name}“ abschließen.` : SPIELBAR.has(z.id) ? "" : "Noch nicht spielbar – diese Kampagne kommt als Echtzeit-Dungeon."}</em>` + (SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<button type="button" class="los">${weiter(z.id) ? "Weiterspielen" : z.nr <= fertig ? "Noch einmal spielen" : "Aufbrechen"} ▸</button>` : "");
+    info.hidden = false; info.innerHTML = `<small>Kampagne ${z.nr} · ${z.ort} · ${z.dauer}</small><h3>${z.name}</h3><p>${z.text}</p><em>${z.nr <= fertig ? "Geschafft." : z.nr > fertig + 1 ? `Verschlossen – erst „${ZIELE[z.nr - 2].name}“ abschließen.` : SPIELBAR.has(z.id) ? "" : "Noch nicht spielbar – diese Kampagne kommt als Echtzeit-Dungeon."}</em>` + (SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? (() => { const g = gruppe(), wort = weiter(z.id) ? "weiterspielen" : z.nr <= fertig ? "noch einmal" : "aufbrechen";
+      if (g && !g.fuehrer) { const f = gruppenListe().find((m) => m.fuehrer); return `<p class="gruppe-hinweis">Du bist in der Gruppe von <b>${f ? f.name : "deinem Freund"}</b> und reist mit, sobald die Gruppe aufbricht.</p><button type="button" class="umsehen" data-w="allein">Gruppe verlassen und allein spielen</button>`; }
+      return `<div class="wahl"><button type="button" class="los" data-w="allein"><span>⚔</span> Allein ${wort} ▸</button><button type="button" class="los zusammen" data-w="koop"${kontoName() ? "" : " disabled title=\"Nur mit Konto\""}><span>⚔⚔</span> Gemeinsam ${wort} ▸</button></div>${kontoName() ? "" : `<small class="nurkonto">Gemeinsam spielen geht nur mit Konto.</small>`}`; })() : "");
     const um = info.querySelector(".umsehen") as HTMLElement | null; if (um) um.onclick = () => { location.href = "?ort=" + z.id; };
-    const los = info.querySelector(".los") as HTMLElement | null; if (los) los.onclick = () => { location.href = "?ort=" + z.id + (weiter(z.id) ? "&eingang=1" : "&neu=1") /* ein angefangener Stand wird immer fortgesetzt, auch wenn die Kampagne früher schon einmal geschafft wurde */; }; /* man landet im Ort und spielt dort */
+    const reise = () => { location.href = "?ort=" + z.id + (weiter(z.id) ? "&eingang=1" : "&neu=1") + (new URLSearchParams(location.search).has("server") ? "&server=" + encodeURIComponent(new URLSearchParams(location.search).get("server") || "") : "") /* ein angefangener Stand wird immer fortgesetzt, auch wenn die Kampagne früher schon einmal geschafft wurde */; }; /* man landet im Ort und spielt dort */
+    for (const b of Array.from(info.querySelectorAll<HTMLElement>("[data-w]"))) b.onclick = () => {
+      if (b.dataset.w === "allein") { const g = gruppe(); gruppeAufloesen(); if (g && !g.fuehrer) { k.click(); return; } reise(); return; } /* allein: eine bestehende Gruppe wird verlassen */
+      if (!gruppe()) { try { sessionStorage.setItem("ez__gruppe", JSON.stringify({ code: Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)]).join(""), fuehrer: true })); } catch { /* privat */ } void gruppeVerbinden(); }
+      w.style.visibility = "hidden"; gruppenTafel(() => { w.style.visibility = ""; }, { ort: z.ort, los: reise }); };
   };
 }

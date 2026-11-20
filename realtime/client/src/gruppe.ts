@@ -91,14 +91,19 @@ async function annehmen(e: Einladung, ja: boolean) { try { await kontoRpc("rpg_e
   if (ja) { if (ws) { const s = ws; ws = null; s.onclose = null; s.close(); } merke({ code: e.code, fuehrer: false }); liste = []; fehler = ""; void gruppeVerbinden(); } hinweis(); if (lauscher) lauscher(); }
 
 /** Die Tafel „Zusammen spielen“: Gruppe gründen, Freunde einladen, Einladungen annehmen, Freunde verwalten */
-export function gruppenTafel(zu: () => void) {
+/** Die Gruppe verlassen oder auflösen (allein weiterspielen) */
+export function gruppeAufloesen() { merke(null); liste = []; fehler = ""; if (ws) { const s = ws; ws = null; s.onclose = null; s.close(); } anzeigen(); }
+/** Wer ist in meiner Gruppe? */
+export const gruppenListe = () => liste.slice();
+export function gruppenTafel(zu: () => void, auf?: { ort: string; los: () => void }) {
   const f = $("#ez-konto"); f.hidden = false; let meldung = "";
   const schliessen = () => { removeEventListener("keydown", esc, true); lauscher = null; f.hidden = true; f.innerHTML = ""; zu(); };
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   const zeichne = () => { const g = gruppe(), konto = Boolean(kontoName()), F = freunde, imKreis = new Set(liste.map((m) => m.name.toLowerCase()));
     const freundListe = F && F.freunde.length ? `<ul class="freunde">${F.freunde.map((x) => `<li><b>${x.handle}</b>${g && g.fuehrer ? imKreis.has(x.handle.toLowerCase()) ? `<small class="da">in der Gruppe</small>` : `<button type="button" data-ein="${x.handle}">${eingeladen.has(x.handle) ? "erneut einladen" : "Einladen"}</button>` : ""}</li>`).join("")}</ul>` : `<p class="klein">${F ? "Noch keine Freunde. Füge unten jemanden über seinen Spielernamen hinzu." : "Freunde werden geladen …"}</p>`;
     f.innerHTML = `<div class="tafel menue gruppe"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
-      <h2>Zusammen spielen</h2><div class="zier"></div>
+      <h2>${auf ? "Gemeinsam nach " + auf.ort : "Zusammen spielen"}</h2><div class="zier"></div>
+      ${auf && g && g.fuehrer ? `<div class="liste"><button type="button" class="haupt" data-t="aufbrechen">Gemeinsam aufbrechen ▸ <small>(${Math.max(1, liste.length)} von 3 dabei)</small></button></div><p class="klein">Wer noch nicht da ist, kommt nach, sobald er die Einladung annimmt.</p>` : ""}
       ${!konto ? `<p>Zusammen spielen geht nur mit Konto, damit jeder seinen Fortschritt behält.</p>` : `
         ${einladungen.length ? `<h3>Einladungen</h3><ul class="freunde">${einladungen.map((e) => `<li><b>${e.von}</b> <small>lädt dich ein</small><button type="button" data-ja="${e.id}">Mitspielen</button><button type="button" data-nein="${e.id}">✕</button></li>`).join("")}</ul>` : ""}
         ${g ? `<h3>Deine Gruppe</h3><ul class="mitglieder">${liste.map((m) => `<li>${m.fuehrer ? "♛ " : ""}<b>${m.name}</b> <small>${HELDEN[m.held] ? HELDEN[m.held].name : ""}</small></li>`).join("") || "<li><small>verbinde …</small></li>"}</ul>
@@ -118,6 +123,7 @@ export function gruppenTafel(zu: () => void) {
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t],[data-ein],[data-ja],[data-nein],[data-fja],[data-fnein]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const d = t.dataset;
     if (d.t === "zu") schliessen();
+    else if (d.t === "aufbrechen" && auf) { removeEventListener("keydown", esc, true); lauscher = null; auf.los(); }
     else if (d.t === "neu") { fehler = ""; merke({ code: neuerCode(), fuehrer: true }); liste = []; eingeladen = new Set(); void gruppeVerbinden(); zeichne(); }
     else if (d.ein) { const g = gruppe(); if (!g) return; const h = d.ein; void kontoRpc("rpg_echtzeit_einladen", { p_handle: h, p_code: g.code }).then(() => { eingeladen.add(h); meldung = h + " ist eingeladen."; zeichne(); }, (er: Error) => { meldung = /function|does not exist|schema cache/i.test(er.message) ? "Einladungen sind noch nicht eingerichtet (Migration 037)." : er.message.replace(/^.*?: /, ""); zeichne(); }); }
     else if (d.ja || d.nein) { const x = einladungen.find((q) => q.id === (d.ja || d.nein)); if (x) void annehmen(x, Boolean(d.ja)).then(zeichne); }

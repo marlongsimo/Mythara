@@ -37,8 +37,10 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");
   /* Anna gründet die Gruppe in der Waldmark */
   await anna.goto(B + "?x=1" + S); await anna.waitForFunction(() => window.EZD || document.querySelector("#ez-profil"), null, { timeout: 30000 }); await anna.waitForTimeout(1500);
-  await anna.evaluate(() => { const d = document.querySelector('#ez-menue [aria-label="Menü"]'); if (d) d.click(); }); await anna.waitForTimeout(300); await anna.click('#ez-konto [data-t="koop"]'); await anna.click('#ez-konto [data-t="neu"]');
-  await anna.waitForFunction(() => /Anna/.test(document.querySelector("#ez-konto .mitglieder")?.textContent || ""), null, { timeout: 15000 }); check(true, "Anna gründet eine Gruppe");
+  await anna.click('#ez-menue [aria-label="Weltkarte"]'); await anna.click('#ez-welt .ziel[data-id="weidenhain"]'); if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-wahl.png") });
+  check(Boolean(await anna.$('#ez-welt [data-w="allein"]')) && Boolean(await anna.$('#ez-welt [data-w="koop"]')), "Die Weltkarte fragt: allein oder gemeinsam aufbrechen");
+  await anna.click('#ez-welt [data-w="koop"]');
+  await anna.waitForFunction(() => /Anna/.test(document.querySelector("#ez-konto .mitglieder")?.textContent || ""), null, { timeout: 15000 }); check(/Gemeinsam nach Weidenhain/.test(await anna.textContent("#ez-konto h2")), "„Gemeinsam aufbrechen“ gründet eine Gruppe für Weidenhain");
   await anna.click('#ez-konto [data-ein="Ben"]'); await anna.waitForFunction(() => /eingeladen/.test(document.querySelector("#ez-konto .meldung")?.textContent || ""), null, { timeout: 10000 }); check(true, "Anna lädt ihren Freund Ben aus der Freundesliste ein"); if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD });
   /* Ben bekommt die Einladung als Hinweis und nimmt an */
   await ben.goto(B + "?x=1" + S); await ben.waitForFunction(() => document.querySelector("#ez-profil"), null, { timeout: 30000 });
@@ -46,8 +48,8 @@ try {
   await ben.click('#ez-einladung [data-a="ja"]');
   await anna.waitForFunction(() => /Ben/.test(document.querySelector("#ez-konto .mitglieder")?.textContent || ""), null, { timeout: 15000 }); check(true, "Anna sieht Ben in der Gruppe");
   check(/sobald Anna/.test(await ben.textContent("#ez-gruppe")), "Ben wartet in der Waldmark auf Anna");
-  /* Anna reist nach Weidenhain – Ben reist mit */
-  await anna.goto(B + "?ort=weidenhain" + S); await anna.waitForFunction(() => window.EZO, null, { timeout: 30000 });
+  /* Anna bricht gemeinsam auf – Ben reist mit */
+  await anna.click('#ez-konto [data-t="aufbrechen"]'); await anna.waitForURL(/ort=weidenhain/, { timeout: 15000 }); await anna.waitForFunction(() => window.EZO, null, { timeout: 30000 });
   await ben.waitForURL(/ort=weidenhain.*mitreise=1/, { timeout: 20000 }); await ben.waitForFunction(() => window.EZO, null, { timeout: 30000 }); check(true, "Ben reist mit Anna nach Weidenhain");
   await anna.waitForFunction(() => window.EZO.szene.andere.size === 1, null, { timeout: 15000 }); await ben.waitForFunction(() => window.EZO.szene.andere.size === 1, null, { timeout: 15000 }); check(true, "Beide sehen sich im Dorf");
   await ben.evaluate(() => { const o = window.EZO.szene; o.ort.x = 970; o.ort.y = 800; });
