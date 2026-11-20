@@ -3,11 +3,11 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
-import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE } from "../../shared/config";
+import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke } from "../../shared/config";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
 import { KARTEN, FEIN } from "../../shared/karten";
-import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern } from "./kampagne";
+import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern, ORTSTUFE } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
@@ -19,8 +19,9 @@ import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkze
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
+const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
-const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) setzeKarte(KARTEN[kampfJetzt.karte], FEIN);
+const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); }
 const SERVER = FLACH ? "" : P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -42,7 +43,7 @@ class Spiel extends Phaser.Scene {
   gewonnen = false; tebbeRuf: Phaser.GameObjects.Text | null = null;
   constructor() { super("spiel"); }
   preload() { if (kampfJetzt && kampfJetzt.karte === "muehle") this.load.spritesheet("tebbe", "../img/echtzeit/tebbe.webp", { frameWidth: 240, frameHeight: 240 }); if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
-    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in MONSTER) { const sz = MONSTER[k].spezial; if (sz && sz.bild) this.load.spritesheet("spezial-" + k, "../" + sz.bild, { frameWidth: 176, frameHeight: 176 }); } for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE);
       if (kampfJetzt && kampfJetzt.karte === "muehle") { /* Tebbe kauert am anderen Ufer vor der Mühle; ist der Kampf vorbei, will er reden */ const x = 9.5 * 96, y = 2.75 * 96; this.anims.create({ key: "tebbe", frames: this.anims.generateFrameNumbers("tebbe", {}), frameRate: 2.5, repeat: -1, yoyo: true });
@@ -51,6 +52,7 @@ class Spiel extends Phaser.Scene {
     for (const k in ALLE) { if (ALLE[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
       if (ALLE[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
       if (ALLE[k].ruhe) this.anims.create({ key: "ruhe-" + k, frames: this.anims.generateFrameNumbers("ruhe-" + k, {}), frameRate: 6, repeat: -1 });
+      { const sz = MONSTER[k] && MONSTER[k].spezial; if (sz && sz.bild) { this.anims.create({ key: "laden-" + k, frames: this.anims.generateFrameNumbers("spezial-" + k, { start: 0, end: 2 }), frameRate: 3, repeat: 0 }); this.anims.create({ key: "speien-" + k, frames: this.anims.generateFrameNumbers("spezial-" + k, { start: 3, end: 5 }), frameRate: 6, repeat: 0 }); } }
       for (const art of ["hieb", "hieb2"] as const) if (ALLE[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
     this.licht(); if (!FLACH) this.fackeln();
     if (!FLACH) { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
@@ -169,6 +171,12 @@ class Spiel extends Phaser.Scene {
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, "#ff9aa8");
+    else if (ev.a === "laden") { /* Spezialangriff: Die Fläche am Boden füllt sich, während der Gegner lädt */ const p = iso(ev.x, ev.y), rx = ev.r * (FLACH ? ZELLE : KW * 0.705), ry = ev.r * (FLACH ? ZELLE : KHOCH * 0.705);
+      const rand = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0xb8ff3a, 0.12).setStrokeStyle(3, 0xd8ff5a, 0.95).setDepth(3), kern = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0x9be020, 0.45).setDepth(3).setScale(0.05);
+      this.tweens.add({ targets: kern, scale: 1, duration: ev.t * 1000, onComplete: () => { kern.destroy(); rand.destroy(); } }); this.tweens.add({ targets: rand, alpha: 0.5, duration: 350, yoyo: true, repeat: Math.floor(ev.t * 1000 / 700) });
+      const b2 = this.bilder.get(ev.id), sz = b2 && MONSTER[b2.typ].spezial; if (b2 && sz && sz.bild) { const sp = b2.kopf as Phaser.GameObjects.Sprite, M = sz.mass || [0.5, 0.9, 0.8]; b2.schlag = true; sp.off("animationcomplete"); sp.setOrigin(M[0], M[1]).setScale(b2.hoch / (M[2] * 176)); sp.play("laden-" + b2.typ); } }
+    else if (ev.a === "speien") { const p = iso(ev.x, ev.y), o = this.add.ellipse(p.x, p.y, ev.r * 2 * (FLACH ? ZELLE : KW * 0.705), ev.r * 2 * (FLACH ? ZELLE : KHOCH * 0.705), 0xd8ff5a, 0.8).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.15, duration: 600, onComplete: () => o.destroy() }); this.cameras.main.shake(180, 0.006);
+      const b2 = this.bilder.get(ev.id), sz = b2 && MONSTER[b2.typ].spezial; if (b2 && sz && sz.bild) { const sp = b2.kopf as Phaser.GameObjects.Sprite; sp.play("speien-" + b2.typ); sp.once("animationcomplete", () => { b2.schlag = false; this.haltung(b2); }); } }
     else if (ev.a === "knall") { const p = iso(ev.x, ev.y), f = ev.farbe === "eis" ? 0x8fd8ff : ev.farbe === "blitz" ? 0xd9c8ff : ev.farbe === "licht" ? 0xfff2a8 : 0xff8a2a, o = this.add.ellipse(p.x, p.y, ev.r * (FLACH ? 2 * ZELLE : KW * 1.41), ev.r * (FLACH ? 2 * ZELLE : KHOCH * 1.41), f, 0.5).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.12, duration: 420, onComplete: () => o.destroy() }); if (ev.farbe === "feuer" || ev.farbe === "blitz") this.cameras.main.shake(110, 0.004); }
   }
   anzeige(z: Zustand) {

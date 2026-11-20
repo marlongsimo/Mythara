@@ -96,6 +96,8 @@ export const inKampagne = Boolean(K);
 /* Kampf aus einem begehbaren Ort heraus (?ort=weidenhain&kampf=speicher): Nach dem Sieg wird im Stand des Ortes der Merker „kampf_<karte>“ gesetzt, dann geht es zurück in den Ort. */
 const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus dem Kornspeicher", muehle: "Kämpfe dich über den Steg zur Mühle durch", wehr: "Bezwinge die alte Unke und die Irrlichter" };
 const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
+/** Stufe der Aufgabe je Ort (bestimmt mit der Gruppengröße die Stärke der Gegner) */
+export const ORTSTUFE: Record<string, number> = { weidenhain: 1 };
 export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t ? t.mit : [] }; }
   if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
 
