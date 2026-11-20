@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Mythara Fabrik · Testszene</title>
+<style>
+  :root { --grund: #1b1722; --tafel: #262030; --rand: #5a4a35; --gold: #d8b468; --text: #ece4d4; --blass: #a99f8d; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--grund); color: var(--text); font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  #spiel { position: fixed; inset: 0; }
+  .tafel { position: fixed; background: color-mix(in srgb, var(--tafel) 92%, transparent); border: 1px solid var(--rand); border-radius: 8px; padding: 10px 12px; }
+  #ausruestung { top: 12px; right: 12px; width: 250px; max-height: calc(100% - 24px); overflow: auto; }
+  #ausruestung h1 { margin: 0 0 8px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+  #ausruestung label { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 8px; margin: 6px 0; color: var(--blass); }
+  select, button { font: inherit; color: var(--text); background: #332b40; border: 1px solid var(--rand); border-radius: 6px; padding: 7px 8px; min-height: 36px; }
+  select { width: 100%; }
+  button { cursor: pointer; } button:active, button.an { background: #5b4a2c; border-color: var(--gold); }
+  #taten { left: 12px; bottom: 12px; display: grid; grid-template-columns: repeat(3, auto); gap: 8px; }
+  #stand { left: 12px; top: 12px; color: var(--blass); max-width: min(360px, calc(100% - 290px)); }
+  #stand b { color: var(--text); font-weight: 600; }
+  .zeile { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; color: var(--blass); }
+  .zeile label { display: flex; gap: 6px; align-items: center; grid-template-columns: none; margin: 0; }
+  @media (max-width: 700px) { #ausruestung { width: 190px; font-size: 13px; } #ausruestung label { grid-template-columns: 1fr; gap: 2px; } #stand { display: none; } #taten { grid-template-columns: repeat(2, auto); } }
+</style>
+</head>
+<body>
+<div id="spiel"></div>
+<div id="stand" class="tafel"><b>Testszene</b> – lädt …</div>
+<div id="ausruestung" class="tafel"><h1>Ausrüstung</h1><div id="plaetze"></div>
+  <div class="zeile"><label><input type="checkbox" id="hilfen"> Hilfslinien</label><label><input type="checkbox" id="drehen"> im Kreis drehen</label></div></div>
+<div id="taten" class="tafel">
+  <button data-tat="angriff">Angriff <small>[J]</small></button><button data-tat="block">Block <small>[K]</small></button><button data-tat="angriff2h">Zweihand <small>[L]</small></button>
+  <button data-tat="treffer">Treffer <small>[H]</small></button><button data-tat="ausweichen">Ausweichen <small>[Leer]</small></button>
+</div>
+<script src="vorschau.js"></script>
+</body>
+</html>
