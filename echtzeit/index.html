@@ -28,6 +28,17 @@
     #ez-stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%, -50%); }
     #ez-heim { position: fixed; z-index: 3; left: max(8px, env(safe-area-inset-left)); top: 96px; font-size: 11px; color: #d9cdf5; text-decoration: none; padding: 4px 9px; border-radius: 999px; border: 1px solid rgba(183,155,255,.45); background: rgba(12,10,18,.6); } #ez-heim span { opacity: .7; margin-left: 4px; }
     @media (max-width: 700px) { #ez-heim { top: auto; bottom: 8px; } #ez-heim span { display: none; } }
+    #ez-tasten button.ult { border-color: #ffd75e; } #ez-modus { border-color: #8fb8ff !important; background: rgba(26,38,66,.9) !important; } #ez-modus.zwei { border-color: #ffb347 !important; background: rgba(66,44,20,.9) !important; }
+    @media (max-width: 700px) { #ez-tasten { gap: 7px; } #ez-tasten button { width: 62px; height: 62px; } }
+    #ez-wahl { position: fixed; inset: 0; z-index: 8; background: radial-gradient(ellipse at 50% 0%, #1c1740 0%, #0a0c1a 60%, #05060d 100%); overflow-y: auto; padding: 14px; touch-action: pan-y; user-select: text; -webkit-user-select: text; } #ez-wahl[hidden] { display: none; }
+    .ez-blatt { max-width: 780px; margin: 0 auto; } .ez-blatt h1 { font-family: Cinzel, Georgia, serif; color: #ffd98a; margin: 2px 0 10px; font-size: 26px; } .ez-blatt h2 { margin: 0 0 2px; font-size: 17px; color: #ffe9a8; } .ez-blatt h3 { font-size: 13px; margin: 14px 0 6px; color: #d9cdf5; }
+    .ez-klein { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #a99fbf; margin: 0; } .ez-klein.unten { text-transform: none; letter-spacing: 0; margin-top: 10px; }
+    .ez-helden { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; } .ez-held { display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; border: 2px solid #4b4460; background: #1a1626; color: inherit; font: inherit; cursor: pointer; }
+    .ez-held img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; object-position: top; } .ez-held small { font-size: 10px; color: #b9ad94; } .ez-held.an { border-color: #ffd75e; box-shadow: 0 0 14px rgba(246,200,66,.4); }
+    .ez-karte { margin-top: 10px; padding: 12px 14px; border-radius: 12px; background: #1a1626; border: 1px solid #4b4460; font-size: 13px; line-height: 1.45; } .ez-karte p { margin: 4px 0; } .ez-rolle { color: #b9ad94; } .ez-karte ul { margin: 6px 0 0; padding-left: 18px; } .ez-karte li { margin: 3px 0; }
+    .ez-mit { display: flex; flex-wrap: wrap; gap: 8px; } .ez-mit button { padding: 8px 12px; border-radius: 999px; border: 1px solid #4b4460; background: #1a1626; color: inherit; font: inherit; cursor: pointer; } .ez-mit button small { color: #b9ad94; } .ez-mit button.an { border-color: #6aa5ff; background: #1c2a4a; }
+    .ez-knoepfe { display: flex; align-items: center; gap: 16px; margin-top: 16px; } #ez-los { padding: 12px 26px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 16px Inter, sans-serif; cursor: pointer; } .ez-knoepfe a { color: #d9cdf5; font-size: 13px; }
+    @media (max-width: 560px) { .ez-helden { gap: 5px; } .ez-held img { width: 44px; height: 44px; } .ez-held b { font-size: 12px; } }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
   </style>
@@ -35,14 +46,15 @@
 <body>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
-  <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small><i class="ez-balken xp"><u id="ez-xp" style="width:0"></u></i></div>
+  <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small></div>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
   <div class="ez-kasten" id="ez-hilfe"></div>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div id="ez-stick" hidden><i></i></div>
-  <div id="ez-tasten"><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button></div>
-  <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button></div></div>
-  <script src="spiel.js?v=mwo8ey35"></script>
+  <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
+  <div id="ez-wahl" hidden></div>
+  <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">anderen Helden wählen</a></div></div>
+  <script src="spiel.js?v=mwo92w0k"></script>
 </body>
 </html>
