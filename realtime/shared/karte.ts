@@ -5,7 +5,7 @@
 export interface Punkt { x: number; y: number }
 export interface Lager { art: string; x: number; y: number; gruppe: number }
 
-export const KB = 33, KH = 20;
+export let KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */
 const OFFEN: number[][] = [
   [1, 1, 7, 6],     // Eingang
@@ -19,13 +19,15 @@ const OFFEN: number[][] = [
   [21, 1, 11, 6],   // Siegelkammer
 ];
 const SAEULEN: number[][] = [[14, 4], [15, 4], [14, 14], [27, 14], [27, 15], [24, 3]];
-export const FELS = new Uint8Array(KB * KH).fill(1);
+export let FELS = new Uint8Array(KB * KH).fill(1);
+/** Wasser: versperrt den Weg, aber nicht die Sicht und keine Geschosse */
+export let WASSER = new Uint8Array(KB * KH);
 for (const [x, y, w, h] of OFFEN) for (let i = x; i < x + w; i++) for (let j = y; j < y + h; j++) FELS[j * KB + i] = 0;
 for (const [x, y] of SAEULEN) FELS[y * KB + x] = 1;
 
-export const START: Punkt[] = [{ x: 3.5, y: 4.5 }, { x: 4.5, y: 5.5 }, { x: 2.5, y: 5.5 }];
+export let START: Punkt[] = [{ x: 3.5, y: 4.5 }, { x: 4.5, y: 5.5 }, { x: 2.5, y: 5.5 }];
 /* Zwölf Knochenwächter in fünf Gruppen zu zwei bis drei. Wer einen aus einer Gruppe weckt, weckt die ganze Gruppe. */
-export const LAGER: Lager[] = [
+export let LAGER: Lager[] = [
   { art: "knochenwaechter", x: 15.5, y: 2.5, gruppe: 1 }, { art: "knochenwaechter", x: 17.5, y: 4.5, gruppe: 1 },
   { art: "knochenwaechter", x: 12.5, y: 14.5, gruppe: 2 }, { art: "knochenwaechter", x: 13.5, y: 16.5, gruppe: 2 }, { art: "knochenwaechter", x: 17.5, y: 15.5, gruppe: 2 },
   { art: "knochenwaechter", x: 29.5, y: 12.5, gruppe: 3 }, { art: "knochenwaechter", x: 29.5, y: 15.5, gruppe: 3 }, { art: "knochenwaechter", x: 26.5, y: 16.5, gruppe: 3 },
@@ -34,7 +36,17 @@ export const LAGER: Lager[] = [
 ];
 export const SIEGEL: Punkt = { x: 30.5, y: 3.5 };
 
-export const fels = (i: number, j: number): boolean => i < 0 || j < 0 || i >= KB || j >= KH || FELS[j * KB + i] === 1;
+export const fels = (i: number, j: number): boolean => i < 0 || j < 0 || i >= KB || j >= KH || FELS[j * KB + i] === 1 || WASSER[j * KB + i] === 1;
+/** Versperrt die Sicht? Nur Fels, Wasser nicht. */
+const dicht = (x: number, y: number): boolean => { const i = Math.floor(x), j = Math.floor(y); return i < 0 || j < 0 || i >= KB || j >= KH || FELS[j * KB + i] === 1; };
+
+/** Eine andere Karte einsetzen (Kampagnen). Zeilen als Text: „.“ frei, „~“ Wasser, alles andere Hindernis.
+ *  Die Karte gilt für alle Simulationen dieses Programms – auf dem Server läuft deshalb bisher nur der Riss mit der Grundkarte. */
+export function setzeKarte(k: { zeilen: string[]; start: number[][]; lager: Lager[] }): void {
+  KH = k.zeilen.length; KB = k.zeilen[0].length; FELS = new Uint8Array(KB * KH); WASSER = new Uint8Array(KB * KH);
+  k.zeilen.forEach((z, j) => [...z].forEach((c, i) => { if (c === "~") WASSER[j * KB + i] = 1; else if (c !== ".") FELS[j * KB + i] = 1; }));
+  START = k.start.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 })); LAGER = k.lager;
+}
 export const begehbar = (x: number, y: number): boolean => !fels(Math.floor(x), Math.floor(y));
 export const abstand = (a: Punkt, b: Punkt): number => Math.hypot(a.x - b.x, a.y - b.y);
 
@@ -42,7 +54,7 @@ export const abstand = (a: Punkt, b: Punkt): number => Math.hypot(a.x - b.x, a.y
 export function frei(a: Punkt, b: Punkt, rand = 0): boolean {
   const d = abstand(a, b), n = Math.max(1, Math.ceil(d / 0.2)), nx = d > 0 ? -(b.y - a.y) / d : 0, ny = d > 0 ? (b.x - a.x) / d : 0;
   for (let k = 0; k <= n; k++) { const x = a.x + (b.x - a.x) * k / n, y = a.y + (b.y - a.y) * k / n;
-    if (!begehbar(x, y)) return false;
+    if (rand > 0 ? !begehbar(x, y) : dicht(x, y)) return false; // Sichtlinie (rand 0) geht über Wasser hinweg
     if (rand > 0 && (!begehbar(x + nx * rand, y + ny * rand) || !begehbar(x - nx * rand, y - ny * rand))) return false; }
   return true;
 }

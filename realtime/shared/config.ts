@@ -111,6 +111,13 @@ export interface MonsterDef { name: string; bild: string; figur?: string; fuss?:
 export const MONSTER: Record<string, MonsterDef> = {
   knochenwaechter: { name: "Knochenwächter", bild: "img/gegner/knochenwaechter.jpg", figur: "img/echtzeit/kw.webp", fuss: [0.62, 0.95], gross: 1.065, lauf: "img/echtzeit/kw-lauf.webp", laufMass: [0.52, 0.93, 0.65], hieb: "img/echtzeit/kw-hieb.webp", hiebMass: [0.55, 0.935, 0.75], links: true, lp: 150, tempo: 3.3, angriffswert: { nah: 70, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 35 }, r: 0.38, untot: true, anfaellig: "wucht",
     angriff: { name: "Kurzschwert", art: "nah", schaden: [10, 20], takt: 1.2, reich: 1.5, aushol: 0.45 } }, // aushol: so lange holt er sichtbar aus – wer dann außer Reichweite ist, wird nicht getroffen
+  /* Weidenhain. Bisher ohne eigene Figuren: Sie erscheinen als runde Bildmarken. Werte frei gesetzt, nicht abgestimmt. */
+  schlammkroete: { name: "Schlammkröte", bild: "img/gegner/schlammkroete.jpg", lp: 120, tempo: 2.4, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 35, magie: 30 }, r: 0.36,
+    angriff: { name: "Zunge", art: "nah", schaden: [6, 13], takt: 1.6, reich: 2.2, aushol: 0.55 } }, // langsam, aber die Zunge reicht weit
+  irrlicht: { name: "Irrlicht", bild: "img/gegner/irrlicht.jpg", lp: 70, tempo: 3.6, angriffswert: { nah: 0, fern: 0, magie: 65 }, abwehr: { nah: 60, fern: 30, magie: 45 }, r: 0.28,
+    angriff: { name: "Kalter Funke", art: "magie", schaden: [7, 14], takt: 2.0, reich: 4.2, aushol: 0.6 } }, // bleibt auf Abstand und wirft Funken
+  alte_unke: { name: "Die alte Unke", bild: "img/gegner/schlammkroete.jpg", lp: 420, tempo: 2.1, angriffswert: { nah: 85, fern: 0, magie: 0 }, abwehr: { nah: 65, fern: 55, magie: 45 }, r: 0.62, boss: true,
+    angriff: { name: "Zungenschlag", art: "nah", schaden: [16, 30], takt: 2.1, reich: 3.0, aushol: 0.9 } }, // holt lange Luft: wer dann aus der Reichweite geht, wird nicht getroffen
   /* Der Boss in der Siegelkammer. Werte frei gesetzt, nicht abgestimmt. */
   knochenfuerst: { name: "Knochenfürst", bild: "img/gegner/grabritter.jpg", figur: "img/echtzeit/boss.webp", fuss: [0.55, 0.96], hoehe: 118, lauf: "img/echtzeit/boss-lauf.webp", laufMass: [0.5, 0.94, 0.66], hieb: "img/echtzeit/boss-hieb.webp", hiebMass: [0.5, 0.905, 0.6], ruhe: "img/echtzeit/boss-ruhe.webp", ruheMass: [0.48, 0.945, 0.91],
     lp: 520, tempo: 3.0, angriffswert: { nah: 100, fern: 0, magie: 0 }, abwehr: { nah: 85, fern: 70, magie: 50 }, r: 0.55, untot: true, boss: true,

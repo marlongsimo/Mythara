@@ -5,7 +5,9 @@
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE } from "../../shared/config";
 import type { HeldDef } from "../../shared/config";
-import { KB, KH, fels, SIEGEL } from "../../shared/karte";
+import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
+import { KARTEN } from "../../shared/karten";
+import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
@@ -15,11 +17,15 @@ import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkze
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
-const SERVER = P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; // ?server= (leer) erzwingt das Rechnen im Browser
+/* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
+const FLACH = Boolean(kampfJetzt), ZELLE = 96; if (kampfJetzt) setzeKarte(KARTEN[kampfJetzt.karte]);
+const SERVER = FLACH ? "" : P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
-const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
-const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
+const iso = FLACH ? (x: number, y: number) => ({ x: x * ZELLE, y: y * ZELLE }) : (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
+const welt = FLACH ? (sx: number, sy: number) => ({ x: sx / ZELLE, y: sy / ZELLE }) : (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
+/** Zeichentiefe einer Stelle: was weiter vorn steht, verdeckt, was dahinter steht */
+const tief = (x: number, y: number) => 10 + (FLACH ? y * 20 : (x + y) * 10);
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
 /** Die Bildangaben einer Figur, ob Held oder Monster */
@@ -31,17 +37,18 @@ interface Bild { angelegt: number; oben: number; modus: number; hoch: number; ga
 class Spiel extends Phaser.Scene {
   netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
+  gewonnen = false;
   constructor() { super("spiel"); }
-  preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
+  preload() { if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
     const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
-    this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
+    this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE); } else { this.boden(); this.waende(); }
     for (const k in ALLE) { if (ALLE[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
       if (ALLE[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
       if (ALLE[k].ruhe) this.anims.create({ key: "ruhe-" + k, frames: this.anims.generateFrameNumbers("ruhe-" + k, {}), frameRate: 6, repeat: -1 });
       for (const art of ["hieb", "hieb2"] as const) if (ALLE[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
-    this.licht(); this.fackeln();
-    { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
+    this.licht(); if (!FLACH) this.fackeln();
+    if (!FLACH) { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
       const r = this.add.sprite(q.x, q.y, "rune").setDepth(2).setScale(0.62, 0.31).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9); r.play("rune"); this.tweens.add({ targets: r, alpha: 0.55, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
     this.zielMarke = this.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setDepth(2).setVisible(false);
     this.groesse(); this.scale.on("resize", () => this.groesse());
@@ -55,14 +62,14 @@ class Spiel extends Phaser.Scene {
     for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as Taste); });
     $("#ez-modus").addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (this.netz) this.netz.sende({ t: "modus" }); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
+    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
   }
   /** Nach der Heldenwahl: verbinden und loslegen */
   starte(held: string, mit: string[]) {
     verbinde(SERVER, held, mit, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
       $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel – angegriffen wird in Reichweite · ⇄ Waffe wechseln · Q, E, R: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel – angegriffen wird in Reichweite · Leertaste: Waffe wechseln · Q, E, R: Fähigkeiten in Mausrichtung"; });
   }
-  groesse() { const k = this.cameras.main, h = this.scale.height; k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
+  groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2))); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
   /** Der Boden: ein gemaltes Bild aus den Raumkarten des Würfelspiels, mit Schatten und Fackellicht (werkzeug/dekor.py) */
   boden() { this.add.image(-DEKOR.OX, 0, "boden").setOrigin(0, 0).setDepth(0); }
   /** Mauern: je Feld ein gemauerter Block, nach Tiefe sortiert. Hinter einem Raum hoch, davor niedrig – so verdecken sie die Figuren nicht. */
@@ -83,7 +90,7 @@ class Spiel extends Phaser.Scene {
   zuWelt(p: Phaser.Input.Pointer) { const w = this.cameras.main.getWorldPoint(p.x, p.y); return welt(w.x, w.y); }
   /** Laufrichtung senden. sx, sy: Richtung am Bildschirm (rechts, unten positiv); die Welt liegt um 45 Grad gedreht darunter. */
   richtung(sx: number, sy: number) {
-    if (!this.netz) return; let x = sx + sy, y = sy - sx; const l = Math.hypot(x, y), staerke = Math.min(1, Math.hypot(sx, sy)); if (l > 0.01) { x = x / l * staerke; y = y / l * staerke; } else { x = 0; y = 0; }
+    if (!this.netz) return; let x = FLACH ? sx : sx + sy, y = FLACH ? sy : sy - sx; const l = Math.hypot(x, y), staerke = Math.min(1, Math.hypot(sx, sy)); if (l > 0.01) { x = x / l * staerke; y = y / l * staerke; } else { x = 0; y = 0; }
     const jetzt = this.time.now, g = this.gesendet, steht = x === 0 && y === 0; if (!steht && jetzt - g.t < 60 && Math.hypot(x - g.x, y - g.y) < 0.6) return; // nicht öfter als nötig
     if (steht && g.x === 0 && g.y === 0) return; this.gesendet = { x, y, t: jetzt }; this.netz.sende({ t: "richtung", x, y });
   }
@@ -124,7 +131,7 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && FIG(b.typ, b.held).lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
         const bewegt = Math.hypot(b.nach.x - b.von.x, b.nach.y - b.von.y) > 0.03 && !e[10]; if (bewegt) b.still = 0; else b.still++; const soll = bewegt || (b.laeuft && b.still < 3), sp = b.kopf as Phaser.GameObjects.Sprite;
         if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
-      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
+      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = FLACH ? Math.cos(e[6]) : Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
@@ -157,7 +164,7 @@ class Spiel extends Phaser.Scene {
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, "#ff9aa8");
-    else if (ev.a === "knall") { const p = iso(ev.x, ev.y), f = ev.farbe === "eis" ? 0x8fd8ff : ev.farbe === "blitz" ? 0xd9c8ff : ev.farbe === "licht" ? 0xfff2a8 : 0xff8a2a, o = this.add.ellipse(p.x, p.y, ev.r * KW * 1.41, ev.r * KHOCH * 1.41, f, 0.5).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.12, duration: 420, onComplete: () => o.destroy() }); if (ev.farbe === "feuer" || ev.farbe === "blitz") this.cameras.main.shake(110, 0.004); }
+    else if (ev.a === "knall") { const p = iso(ev.x, ev.y), f = ev.farbe === "eis" ? 0x8fd8ff : ev.farbe === "blitz" ? 0xd9c8ff : ev.farbe === "licht" ? 0xfff2a8 : 0xff8a2a, o = this.add.ellipse(p.x, p.y, ev.r * (FLACH ? 2 * ZELLE : KW * 1.41), ev.r * (FLACH ? 2 * ZELLE : KHOCH * 1.41), f, 0.5).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.12, duration: 420, onComplete: () => o.destroy() }); if (ev.farbe === "feuer" || ev.farbe === "blitz") this.cameras.main.shake(110, 0.004); }
   }
   anzeige(z: Zustand) {
     const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus];
@@ -165,11 +172,11 @@ class Spiel extends Phaser.Scene {
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); (el.querySelector("i") as HTMLElement).style.height = (cd > 0 ? Math.round(100 * cd / def.zeit) : 0) + "%"; (el.querySelector("b") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : taste.toUpperCase(); const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = def.text; } }
     const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
-    const ende = $("#ez-ende"); if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Der Knochenfürst und seine Wächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
+    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true; kampfGewonnen(z.zeit, wahlZeigen); } } else if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Der Knochenfürst und seine Wächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
   }
   update() {
     const jetzt = this.time.now;
-    for (const [id, b] of this.bilder) { const o = this.ort(b, jetzt), p = iso(o.x, o.y); b.c.setPosition(p.x, p.y).setDepth(10 + (o.x + o.y) * 10 + 5); const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.setPosition(p.x, p.y + b.kopf.y);
+    for (const [id, b] of this.bilder) { const o = this.ort(b, jetzt), p = iso(o.x, o.y); b.c.setPosition(p.x, p.y).setDepth(tief(o.x, o.y) + 5); const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.setPosition(p.x, p.y + b.kopf.y);
       if (id === this.ichId) { const k = this.cameras.main; k.scrollX += (p.x - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (p.y - 30 - k.height / 2 - k.scrollY) * 0.15; } }
     const zb = this.z && this.z.ich.zielId ? this.bilder.get(this.z.ich.zielId) : undefined; if (zb && !zb.tot) { this.zielMarke.setVisible(true).setPosition(zb.c.x, zb.c.y); } else this.zielMarke.setVisible(false);
   }
@@ -177,7 +184,7 @@ class Spiel extends Phaser.Scene {
 
 /* ---------- Heldenwahl vor dem Start ---------- */
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
-function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => void) {
+function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => void, wort?: { los: string; zurueck: string }) {
   const el = $("#ez-wahl"); if (P.get("los") === "1" && !zurueck) { el.hidden = true; los(WAHL.held, WAHL.mit); return; }
   const zeichne = () => { const D = HELDEN[WAHL.held], w = (x: { nah: number; fern: number; magie: number }) => `Nahkampf ${x.nah} · Fernkampf ${x.fern} · Magie ${x.magie}`;
     el.innerHTML = `<div class="ez-blatt"><p class="ez-klein">Mythara · Splitterlande · Beta</p><h1>Wähle deinen Helden</h1>
@@ -188,7 +195,7 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
           ${(["q", "e", "r"] as const).map((t) => `<li><b>${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
       <h3>Begleiter (spielt der Rechner, höchstens zwei)</h3>
       <div class="ez-mit">${HELDENREIHE.filter((k) => k !== WAHL.held).map((k) => `<button type="button" class="${WAHL.mit.includes(k) ? "an" : ""}" data-mit="${k}">${esc(HELDEN[k].name)} <small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
-      <div class="ez-knoepfe"><button type="button" id="ez-los">In den Riss</button>${zurueck ? `<button type="button" id="ez-zurueck">Zurück ins Dorf</button>` : ""}<a href="../">← zur Startseite</a></div>
+      <div class="ez-knoepfe"><button type="button" id="ez-los">${wort ? wort.los : "In den Riss"}</button>${zurueck ? `<button type="button" id="ez-zurueck">${wort ? wort.zurueck : "Zurück ins Dorf"}</button>` : ""}<a href="../">← zur Startseite</a></div>
       <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen, in der Siegelkammer der Knochenfürst. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
   zeichne(); el.hidden = false;
   el.onclick = (ev) => { const t = ev.target as HTMLElement, h = t.closest<HTMLElement>("[data-held]"), m = t.closest<HTMLElement>("[data-mit]");
@@ -199,5 +206,6 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
 }
 
 (window as unknown as Record<string, unknown>).EZ_WAHL = wahlZeigen;
-const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1"; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
-new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
+if (inKampagne && !FLACH) kampagneBeginnen(wahlZeigen); /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
+else new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });

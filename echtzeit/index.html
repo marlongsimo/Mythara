@@ -30,6 +30,23 @@
     @media (max-width: 700px) { #ez-heim { top: auto; bottom: 8px; } #ez-heim span { display: none; } }
     #ez-tasten button.ult { border-color: #ffd75e; } #ez-modus { border-color: #8fb8ff !important; background: rgba(26,38,66,.9) !important; } #ez-modus.zwei { border-color: #ffb347 !important; background: rgba(66,44,20,.9) !important; }
     @media (max-width: 700px) { #ez-tasten { gap: 7px; } #ez-tasten button { width: 62px; height: 62px; } }
+    #ez-dialog { position: fixed; inset: 0; z-index: 9; background: #07060b center / cover no-repeat; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 12px; cursor: pointer; user-select: none; -webkit-user-select: none; } #ez-dialog[hidden] { display: none; }
+    #ez-dialog .ort { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); font: 600 15px Cinzel, Georgia, serif; color: #f3e3b4; background: rgba(12,10,18,.78); border: 1px solid rgba(232,200,120,.5); border-radius: 999px; padding: 5px 16px; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
+    #ez-dialog .kasten { position: relative; width: min(720px, 100%); min-height: 118px; background: rgba(14,11,22,.94); border: 1px solid rgba(232,200,120,.55); border-radius: 14px; padding: 14px 18px 22px; color: #efe8d8; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+    #ez-dialog .wer { display: block; font: 600 14px Cinzel, Georgia, serif; color: #ffd98a; margin-bottom: 4px; } #ez-dialog .wer[hidden] { display: none; }
+    #ez-dialog .text { margin: 0; font-size: 15px; line-height: 1.5; } #ez-dialog .text.erzaehlt { color: #cfc6b3; font-style: italic; } #ez-dialog .text b { font-style: normal; color: #f3e3b4; font-family: Cinzel, Georgia, serif; } #ez-dialog .text .ja { color: #9be3a5; font-style: normal; } #ez-dialog .text .nein { color: #8d84a6; font-style: normal; }
+    #ez-dialog .tipp { position: absolute; right: 14px; bottom: 6px; font-size: 11px; color: #b79bff; }
+    #ez-dialog .knoepfe { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; } #ez-dialog .knoepfe:empty { display: none; }
+    #ez-dialog .knoepfe button { text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #4b4460; background: #1d1830; color: #efe8d8; font: 500 14px Inter, sans-serif; cursor: pointer; } #ez-dialog .knoepfe button:hover { border-color: #b79bff; }
+    #ez-dialog .knoepfe button.haupt { border-color: #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font-weight: 600; }
+    @media (max-height: 460px) { #ez-dialog { padding: 6px; } #ez-dialog .kasten { min-height: 0; padding: 9px 14px 18px; } #ez-dialog .text { font-size: 13.5px; line-height: 1.4; } #ez-dialog .knoepfe { flex-direction: row; flex-wrap: wrap; } #ez-dialog .knoepfe button { padding: 8px 11px; font-size: 13px; } }
+    #ez-ziel { top: 8px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ffe9a8; border-color: rgba(232,200,120,.5); white-space: nowrap; } #ez-ziel[hidden] { display: none; }
+    #ez-neben { position: fixed; z-index: 10; top: 46px; left: 50%; transform: translateX(-50%); background: rgba(20,40,24,.95); border: 1px solid #7ee08a; color: #d9ffd2; border-radius: 10px; padding: 8px 14px; font-size: 13px; max-width: calc(100vw - 24px); pointer-events: none; } #ez-neben[hidden] { display: none; } #ez-neben.zeig { animation: ezNeben 4.2s ease both; }
+    @keyframes ezNeben { 0% { opacity: 0; transform: translate(-50%, -8px); } 8%, 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+    body.kampagne #ez-heim, body.kampagne #ez-art { display: none; }
+    #ez-welt .team { position: absolute; left: max(8px, env(safe-area-inset-left)); top: max(8px, env(safe-area-inset-top)); padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(232,200,120,.6); background: rgba(12,10,18,.88); color: #f3e3b4; font: 500 13px Inter, sans-serif; cursor: pointer; max-width: 46vw; text-align: left; } #ez-welt .team b { color: #fff; font-weight: 600; }
+    @media (max-width: 760px) { #ez-welt h2 { display: none; } }
+    #ez-welt .info .los { display: block; margin-top: 4px; padding: 9px 16px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 14px Inter, sans-serif; cursor: pointer; } #ez-welt .info em:empty { display: none; }
     #ez-welt { position: fixed; inset: 0; z-index: 8; background: #050409; display: flex; align-items: center; justify-content: center; } #ez-welt[hidden] { display: none; }
     #ez-welt .blatt { position: relative; width: min(100vw, calc(100vh * 1524 / 1012)); aspect-ratio: 1524 / 1012; } #ez-welt .blatt img { width: 100%; height: 100%; display: block; user-select: none; }
     #ez-welt h2 { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); margin: 0; font: 600 15px Cinzel, Georgia, serif; color: #f3e3b4; background: rgba(12,10,18,.78); border: 1px solid rgba(232,200,120,.5); border-radius: 999px; padding: 5px 14px; white-space: nowrap; }
@@ -84,8 +101,8 @@
   <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
-  <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div>
+  <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div id="ez-neben" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
-  <script src="spiel.js?v=mwodjrij"></script>
+  <script src="spiel.js?v=mwoq83le"></script>
 </body>
 </html>
