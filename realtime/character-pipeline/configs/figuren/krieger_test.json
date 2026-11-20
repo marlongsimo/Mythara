@@ -1,0 +1,63 @@
+{
+  "schema": "mythara-figur/1",
+  "id": "krieger_test",
+  "name": "Krieger (TEST ASSET)",
+  "testAsset": true,
+  "_hinweis": "TEST ASSET: KayKit-Mannequin (CC0) als Körper und selbstgebaute Platzhalter-Ausrüstung. Für das echte Modell nur koerper.datei und die Regionen tauschen.",
+  "klasse": "krieger",
+  "skelett": "warrior_base",
+  "koerper": {
+    "datei": "blender/models/kaykit/Mannequin_Medium.glb",
+    "lizenz": "CC0 1.0 – Kay Lousberg (KayKit)",
+    "hoeheMeter": 1.85,
+    "ignorieren": [
+      "Icosphere"
+    ],
+    "regionen": {
+      "kopf": [
+        "Mannequin_Medium_Head"
+      ],
+      "rumpf": [
+        "Mannequin_Medium_Body"
+      ],
+      "arm_l": [
+        "Mannequin_Medium_ArmLeft"
+      ],
+      "arm_r": [
+        "Mannequin_Medium_ArmRight"
+      ],
+      "bein_l": [
+        "Mannequin_Medium_LegLeft"
+      ],
+      "bein_r": [
+        "Mannequin_Medium_LegRight"
+      ]
+    },
+    "material": "haut_test"
+  },
+  "animationen": {
+    "bibliothek": "kaykit_medium",
+    "liste": [
+      "idle",
+      "walk",
+      "run",
+      "attack",
+      "block",
+      "dodge",
+      "cast",
+      "hit",
+      "death"
+    ]
+  },
+  "standardAusruestung": {
+    "head": "test_helm_stahl",
+    "chest": "test_brust_stahl",
+    "shoulders": "test_schulter_stahl",
+    "hands": "test_handschuhe_stahl",
+    "legs": "test_beinschutz_stahl",
+    "feet": "test_stiefel_schwer",
+    "back": "test_umhang_rot",
+    "main_hand": "test_zweihaender"
+  },
+  "export": "krieger_test"
+}

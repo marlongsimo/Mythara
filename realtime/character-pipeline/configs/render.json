@@ -1,0 +1,98 @@
+{
+  "schema": "mythara-render/1",
+  "_hinweis": "Renderstandard für alle Figuren. Änderungen hier gelten für jede Figur und jedes Ausrüstungsteil – danach alles neu rendern.",
+  "bild": {
+    "breite": 288,
+    "hoehe": 288
+  },
+  "fusspunkt": {
+    "x": 0.5,
+    "y": 0.68
+  },
+  "pixelProMeter": 58,
+  "kamera": {
+    "art": "orthografisch",
+    "hoehenwinkelGrad": 35,
+    "_hinweis": "Kamera steht im Süden und blickt nach Norden, schräg von oben (wie die gemalten Karten)."
+  },
+  "licht": {
+    "sonne": {
+      "hoeheGrad": 50,
+      "richtungGrad": -140,
+      "staerke": 3.6,
+      "farbe": [
+        1.0,
+        0.88,
+        0.68
+      ]
+    },
+    "himmel": {
+      "farbe": [
+        0.75,
+        0.78,
+        0.85
+      ],
+      "staerke": 0.9
+    }
+  },
+  "renderer": {
+    "engine": "CYCLES",
+    "samples": 10,
+    "sichtTransform": "Standard",
+    "kantenglaettung": 1.5
+  },
+  "fps": 10,
+  "richtungen": [
+    {
+      "id": "O",
+      "grad": 0,
+      "name": "Ost"
+    },
+    {
+      "id": "SO",
+      "grad": 45,
+      "name": "Südost"
+    },
+    {
+      "id": "S",
+      "grad": 90,
+      "name": "Süd"
+    },
+    {
+      "id": "SW",
+      "grad": 135,
+      "name": "Südwest"
+    },
+    {
+      "id": "W",
+      "grad": 180,
+      "name": "West"
+    },
+    {
+      "id": "NW",
+      "grad": 225,
+      "name": "Nordwest"
+    },
+    {
+      "id": "N",
+      "grad": 270,
+      "name": "Nord"
+    },
+    {
+      "id": "NO",
+      "grad": 315,
+      "name": "Nordost"
+    }
+  ],
+  "_richtungen": "Winkel wie im Spiel: 0 = Osten, 90 = Süden, die y-Achse zeigt nach unten (Bildschirm). Keine Spiegelung – jede Richtung wird eigens gerendert.",
+  "export": {
+    "atlasMaxSeite": 2048,
+    "format": "webp",
+    "qualitaet": 90,
+    "ziel": "../../img/figuren3d"
+  },
+  "spiel": {
+    "figurHoehePx": 84,
+    "_hinweis": "So hoch steht ein Held im Spiel (wie die bisherigen gemalten Figuren)."
+  }
+}

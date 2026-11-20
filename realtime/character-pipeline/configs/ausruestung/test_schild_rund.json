@@ -1,0 +1,31 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_schild_rund",
+  "name": "Rundschild (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "off_hand",
+  "type": "shield",
+  "rarity": "common",
+  "model": {
+    "file": "blender/equipment/test/test_schild_rund.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Hand_Left"
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 15,
+    "block": 0.25
+  },
+  "special": {},
+  "visual": {
+    "material": null
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

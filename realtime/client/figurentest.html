@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Figuren-Testszene</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0a10; color: #efe8d8; font: 13px/1.4 Inter, system-ui, sans-serif; overflow: hidden; }
+  #feld { position: fixed; inset: 0; }
+  .tafel { position: fixed; left: 12px; top: 12px; max-width: min(360px, calc(100vw - 24px)); background: rgba(20,17,28,.88); border: 1px solid #3d3452; border-radius: 10px; padding: 10px 12px; }
+  .tafel b { color: #d9b45a; } .test { display: inline-block; margin: 4px 0; background: #5a1f1a; color: #ffd9d4; padding: 1px 6px; border-radius: 5px; font-size: 11px; }
+  #slots { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; } select { background: #2a2338; color: #efe8d8; border: 1px solid #3d3452; border-radius: 6px; padding: 3px; font: inherit; min-width: 0; }
+  #stand, #meldung { margin-top: 6px; color: #a99f8c; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="feld"></div>
+<div class="tafel"><b>Figuren-Testszene</b> – isoliert, ohne Server und Spielstand<br><span class="test">TEST ASSET – keine finale Mythara-Grafik</span><br>
+WASD laufen · Klick auf Gegner: Ziel · Leertaste: Schild · Q/E/R: Fähigkeit · X: Ausweichen
+<div id="slots"></div><div id="meldung"></div><div id="stand"></div></div>
+<script src="figurentest.js?v=__V__"></script>
+</body>
+</html>

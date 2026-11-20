@@ -1,0 +1,39 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_zweihaender",
+  "name": "Zweihänder (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "main_hand",
+  "type": "sword_2h",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_zweihaender.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Hand_Right"
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "damage": [
+      18,
+      26
+    ]
+  },
+  "special": {
+    "zweihaendig": true
+  },
+  "visual": {
+    "material": null
+  },
+  "license": "Eigenbau (Pipeline-Test), frei",
+  "occupies": [
+    "main_hand",
+    "off_hand"
+  ]
+}

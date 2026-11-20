@@ -1,0 +1,33 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_schwert_kurz",
+  "name": "Kurzschwert (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "main_hand",
+  "type": "sword_1h",
+  "rarity": "common",
+  "model": {
+    "file": "blender/equipment/test/test_schwert_kurz.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Hand_Right"
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "damage": [
+      10,
+      15
+    ]
+  },
+  "special": {},
+  "visual": {
+    "material": null
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_handschuhe_stahl",
+  "name": "Stahlhandschuhe mit Armschienen (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "hands",
+  "type": "gloves",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_handschuhe_stahl.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "arm_l",
+      "arm_r"
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 6
+  },
+  "special": {},
+  "visual": {
+    "material": "stahl"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

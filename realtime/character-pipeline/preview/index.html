@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Figuren-Vorschau</title>
+<style>
+  :root { --grund: #14111c; --tafel: #1f1a2b; --rand: #3d3452; --text: #efe8d8; --leise: #a99f8c; --gold: #d9b45a; --rot: #e0645a; --gruen: #7cc47a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--grund); color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; }
+  header { padding: 12px 16px; border-bottom: 1px solid var(--rand); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
+  header h1 { margin: 0; font-size: 18px; color: var(--gold); }
+  header .test { background: #5a1f1a; color: #ffd9d4; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 16px; padding: 16px; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  .buehne { background: var(--tafel); border: 1px solid var(--rand); border-radius: 12px; padding: 12px; min-width: 0; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 8px; image-rendering: auto; }
+  .leiste { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; align-items: center; }
+  button, select { background: #2a2338; color: var(--text); border: 1px solid var(--rand); border-radius: 8px; padding: 6px 10px; font: inherit; cursor: pointer; }
+  button.an { background: var(--gold); color: #1a1408; border-color: var(--gold); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  label { color: var(--leise); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+  input[type=range] { width: 120px; }
+  aside { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  aside section { background: var(--tafel); border: 1px solid var(--rand); border-radius: 12px; padding: 12px; }
+  aside h2 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--leise); }
+  .slot { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 6px; align-items: center; margin: 4px 0; }
+  .slot select { width: 100%; min-width: 0; }
+  .r-common { color: #d8d8d8; } .r-uncommon { color: #7cc47a; } .r-rare { color: #6aa8ff; } .r-epic { color: #c88cff; } .r-legendary { color: #ffb347; }
+  #meldungen p { margin: 4px 0; font-size: 13px; } #meldungen .fehler { color: var(--rot); } #meldungen .ok { color: var(--gruen); } #meldungen .info { color: var(--leise); }
+  .regionen label { margin-right: 8px; }
+  .stand { color: var(--leise); font-size: 12px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<header><h1>Figuren-Vorschau</h1><span id="name"></span><span class="test" id="testmarke" hidden>TEST ASSET – keine finale Mythara-Grafik</span></header>
+<main>
+  <div class="buehne">
+    <canvas id="bild" width="720" height="560"></canvas>
+    <div class="leiste" id="richtungen"></div>
+    <div class="leiste">
+      <select id="anim" aria-label="Animation"></select>
+      <button id="spiel">⏸ Pause</button><button id="zurueck" title="Frame zurück">◀</button><button id="vor" title="Frame vor">▶</button>
+      <label>Tempo <input type="range" id="tempo" min="0.1" max="3" step="0.1" value="1"><span id="tempowert">1,0×</span></label>
+    </div>
+    <div class="leiste">
+      <label>Hintergrund <select id="hg"><option value="schach">Schachbrett (Transparenz)</option><option value="gras">Wiese</option><option value="dunkel">Dunkel</option><option value="hell">Hell</option><option value="magenta">Magenta (Kanten prüfen)</option></select></label>
+      <label><input type="checkbox" id="fuss" checked> Fußpunkt</label><label><input type="checkbox" id="rahmen"> Rahmen je Ebene</label>
+      <label>Zoom <input type="range" id="zoom" min="1" max="4" step="0.25" value="2.5"></label>
+    </div>
+    <div class="stand" id="stand"></div>
+  </div>
+  <aside>
+    <section><h2>Ausrüstung</h2><div id="slots"></div><div class="leiste" id="sets"></div></section>
+    <section><h2>Körperregionen</h2><div class="regionen" id="regionen"></div></section>
+    <section><h2>Prüfung</h2><div id="meldungen"></div></section>
+  </aside>
+</main>
+<script>
+/* Vorschau der Figuren-Pipeline: lädt figur.json, ausruestung.json und die Atlanten der Ebenen, setzt die Figur genau wie im Spiel zusammen
+   (Körper zuerst, Gegenstände je Frame nach Tiefe) und zeigt Fehler sofort an. Läuft ohne das Spiel. ?figur=krieger_test&basis=../img/figuren3d/ */
+const Q = new URLSearchParams(location.search), FIGUR = Q.get('figur') || 'krieger_test';
+const BASIS = Q.get('basis') || (location.pathname.includes('/character-pipeline/') ? '../../../img/figuren3d/' : '../img/figuren3d/');
+const $ = (s) => document.querySelector(s), cv = $('#bild'), g = cv.getContext('2d');
+const S = { fig: null, kat: null, atlas: {}, bilder: {}, wahl: {}, regionAus: new Set(), anim: 'idle', richtung: 'S', alle: false, frame: 0, t: 0, laeuft: true, tempo: 1, meldungen: [] };
+const SLOTNAMEN = { head: 'Helm', hair: 'Haare', beard: 'Bart', chest: 'Brust', shoulders: 'Schultern', hands: 'Hände', legs: 'Beine', feet: 'Stiefel', back: 'Rücken', main_hand: 'Haupthand', off_hand: 'Nebenhand' };
+const holen = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' (' + r.status + ')'); return r.json(); };
+const fname = (a, r, i) => `${a}/${r}/${String(i).padStart(3, '0')}`;
+function melde(art, text) { S.meldungen.push({ art, text }); const el = $('#meldungen'); el.innerHTML = S.meldungen.slice(-14).map((m) => `<p class="${m.art}">${m.art === 'fehler' ? '✗' : m.art === 'ok' ? '✓' : '·'} ${m.text.replace(/</g, '&lt;')}</p>`).join(''); }
+async function ebeneLaden(e) {
+  if (S.atlas[e]) return S.atlas[e]; const d = S.fig.ebenen[e]; if (!d) { melde('fehler', 'Ebene fehlt in figur.json: ' + e); return null; }
+  const url = BASIS + FIGUR + '/' + d.atlas, ordner = url.slice(0, url.lastIndexOf('/') + 1);
+  try { const j = await holen(url), frames = {}; for (const t of j.textures) { const img = new Image(); img.src = ordner + t.image; await img.decode().catch(() => melde('fehler', 'Atlasbild fehlt: ' + t.image)); for (const f of t.frames) frames[f.filename] = { ...f, img }; }
+    S.atlas[e] = { frames, meta: j.meta.mythara }; const soll = Object.entries(S.fig.animationen).flatMap(([a, A]) => S.fig.richtungen.flatMap((r) => Array.from({ length: A.frames }, (_, i) => fname(a, r.id, i))));
+    const fehlt = soll.filter((n) => !frames[n]); if (fehlt.length) melde('fehler', `${e}: ${fehlt.length} Frames fehlen (z. B. ${fehlt[0]})`); return S.atlas[e]; }
+  catch (x) { melde('fehler', 'Ebene nicht ladbar: ' + e + ' – ' + x.message); return null; }
+}
+function pruefen(w) { const f = [], belegt = {}, by = Object.fromEntries(S.kat.gegenstaende.map((x) => [x.id, x]));
+  for (const [slot, id] of Object.entries(w)) { if (!id) continue; const it = by[id]; if (!it) { f.push('unbekannt: ' + id); continue; } if (it.slot !== slot) f.push(id + ' gehört nicht in ' + slot);
+    for (const s of it.occupies || [it.slot]) { if (belegt[s] && belegt[s] !== id) f.push(`Slot ${SLOTNAMEN[s] || s} doppelt belegt: ${by[belegt[s]].name} und ${it.name}`); belegt[s] = id; } } return f; }
+function sichtbar() { const by = Object.fromEntries(S.kat.gegenstaende.map((x) => [x.id, x])), gs = Object.values(S.wahl).filter(Boolean).map((id) => by[id]).filter(Boolean);
+  const wegR = new Set(gs.flatMap((x) => x.hides.regions || [])), wegS = new Set(gs.flatMap((x) => x.hides.slots || []));
+  return { koerper: S.fig.koerperRegionen.filter((r) => !wegR.has(r) && !S.regionAus.has(r)).map((r) => 'koerper:' + r), items: gs.filter((x) => !wegS.has(x.slot)).map((x) => x.ebene), verdeckt: [...wegR] }; }
+async function anwenden(neu) {
+  const p = pruefen(neu); if (p.length) { p.forEach((x) => melde('fehler', x)); return false; } S.wahl = neu; const v = sichtbar();
+  await Promise.all([...v.koerper, ...v.items].map(ebeneLaden)); slotsZeichnen(); regionenZeichnen(); return true; }
+function slotsZeichnen() {
+  const el = $('#slots'); el.innerHTML = ''; const by = Object.fromEntries(S.kat.gegenstaende.map((x) => [x.id, x]));
+  for (const slot of Object.keys(S.fig.slots)) { const ws = S.kat.gegenstaende.filter((x) => x.slot === slot); if (!ws.length) continue;
+    const d = document.createElement('div'); d.className = 'slot'; const sel = document.createElement('select'); sel.innerHTML = `<option value="">— leer —</option>` + ws.map((x) => `<option value="${x.id}" class="r-${x.rarity}">${x.name.replace(' (TEST ASSET)', '')} · ${S.kat.seltenheit[x.rarity]}</option>`).join('');
+    sel.value = S.wahl[slot] || ''; const it = by[S.wahl[slot]]; sel.className = it ? 'r-' + it.rarity : '';
+    sel.onchange = async () => { const neu = { ...S.wahl, [slot]: sel.value || null }; const it2 = by[sel.value];
+      if (it2) { for (const s of it2.occupies) if (s !== slot) neu[s] = null; for (const [s, id] of Object.entries(neu)) if (id && s !== slot && (by[id].occupies || []).includes(slot)) neu[s] = null; } /* Zweihänder ↔ Schild */
+      if (await anwenden(neu)) melde('ok', `${SLOTNAMEN[slot]}: ${it2 ? it2.name : 'leer'}`); };
+    d.innerHTML = `<span>${SLOTNAMEN[slot] || slot}</span>`; d.appendChild(sel); el.appendChild(d); } }
+function regionenZeichnen() { const v = sichtbar(), el = $('#regionen'); el.innerHTML = S.fig.koerperRegionen.map((r) => `<label><input type="checkbox" data-r="${r}" ${S.regionAus.has(r) ? '' : 'checked'} ${v.verdeckt.includes(r) ? 'disabled title="von der Ausrüstung verdeckt"' : ''}> ${r}</label>`).join('');
+  el.querySelectorAll('input').forEach((i) => i.onchange = () => { i.checked ? S.regionAus.delete(i.dataset.r) : S.regionAus.add(i.dataset.r); }); }
+function hintergrund(x, y, w, h) {
+  const art = $('#hg').value; if (art === 'schach') { for (let j = 0; j < h; j += 12) for (let i = 0; i < w; i += 12) { g.fillStyle = ((i + j) / 12) % 2 ? '#3a3a44' : '#2c2c34'; g.fillRect(x + i, y + j, 12, 12); } return; }
+  g.fillStyle = { gras: '#5d7a3a', dunkel: '#0b0a10', hell: '#e8e2d4', magenta: '#ff00ff' }[art]; g.fillRect(x, y, w, h); }
+function zeichneFigur(cx, cy, z, richtung) {
+  const v = sichtbar(), A = S.anim, i = S.frame, n = fname(A, richtung, i), B = S.fig.bild, F = S.fig.fuss;
+  const tiefe = (e) => { const a = S.atlas[e]; const t = a && a.meta.tiefe[A] && a.meta.tiefe[A][richtung] ? a.meta.tiefe[A][richtung][i] : 0; return t == null ? 0 : t; };
+  const reihe = [...v.koerper, ...v.items.slice().sort((a, b) => tiefe(b) - tiefe(a))];
+  for (const e of reihe) { const a = S.atlas[e]; if (!a) continue; const f = a.frames[n]; if (!f) continue; const ss = f.spriteSourceSize;
+    const x = cx + (ss.x - F.x) * z, y = cy + (ss.y - F.y) * z; g.drawImage(f.img, f.frame.x, f.frame.y, f.frame.w, f.frame.h, x, y, f.frame.w * z, f.frame.h * z);
+    if ($('#rahmen').checked && !(a.meta.leer || []).includes(n)) { g.strokeStyle = e.startsWith('item:') ? 'rgba(255,200,80,.8)' : 'rgba(120,200,255,.6)'; g.strokeRect(x, y, f.frame.w * z, f.frame.h * z); } }
+  if ($('#fuss').checked) { g.strokeStyle = '#ff4040'; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 8, cy); g.lineTo(cx + 8, cy); g.moveTo(cx, cy - 8); g.lineTo(cx, cy + 8); g.stroke(); g.lineWidth = 1; }
+  return reihe;
+}
+function zeichnen() {
+  const z = Number($('#zoom').value), B = S.fig.bild, F = S.fig.fuss; g.clearRect(0, 0, cv.width, cv.height); let reihe = [];
+  if (S.alle) { const zz = Math.min(z, cv.width / 4 / B.breite, cv.height / 2 / B.hoehe), w = B.breite * zz, h = B.hoehe * zz;
+    S.fig.richtungen.forEach((r, k) => { const x = (k % 4) * w, y = Math.floor(k / 4) * h; hintergrund(x, y, w, h); reihe = zeichneFigur(x + F.x * zz, y + F.y * zz, zz, r.id); g.fillStyle = '#efe8d8'; g.font = '12px Inter, sans-serif'; g.fillText(r.id, x + 6, y + 16); }); }
+  else { hintergrund(0, 0, cv.width, cv.height); reihe = zeichneFigur(cv.width / 2, cv.height * 0.82, z, S.richtung); }
+  const A = S.fig.animationen[S.anim]; $('#stand').textContent = `${S.anim} · ${S.alle ? 'alle 8 Richtungen' : 'Richtung ' + S.richtung} · Frame ${S.frame + 1}/${A.frames} · ${A.fps} fps${A.schleife ? ' · Schleife' : A.halten ? ' · hält am Ende' : ''} · Ebenen (hinten → vorn): ${reihe.map((e) => e.split(':')[1]).join(', ')}`;
+}
+let zuletzt = performance.now();
+function takt(t) { const dt = (t - zuletzt) / 1000; zuletzt = t; if (S.fig) { const A = S.fig.animationen[S.anim]; if (S.laeuft) { S.t += dt * S.tempo; const n = Math.floor(S.t * A.fps); S.frame = A.schleife ? n % A.frames : Math.min(n, A.frames - 1); if (!A.schleife && n > A.frames + A.fps * 0.8) S.t = 0; } zeichnen(); } requestAnimationFrame(takt); }
+async function start() {
+  try { S.fig = await holen(BASIS + FIGUR + '/figur.json'); S.kat = await holen(BASIS + FIGUR + '/' + S.fig.katalog); }
+  catch (x) { melde('fehler', 'Figur nicht gefunden: ' + x.message + ' – erst „python3 tools/produzieren.py ' + FIGUR + '“ ausführen.'); return; }
+  $('#name').textContent = `${S.fig.name} · Skelett ${S.fig.skelett} · ${S.fig.richtungen.length} Richtungen · ${Object.keys(S.fig.animationen).length} Animationen`; $('#testmarke').hidden = !S.fig.testAsset;
+  const ri = $('#richtungen'); for (const r of S.fig.richtungen) { const b = document.createElement('button'); b.textContent = r.id; b.title = r.grad + '°'; b.onclick = () => { S.alle = false; S.richtung = r.id; markieren(); }; b.dataset.r = r.id; ri.appendChild(b); }
+  const ab = document.createElement('button'); ab.textContent = 'Alle 8'; ab.dataset.r = '*'; ab.onclick = () => { S.alle = true; markieren(); }; ri.appendChild(ab);
+  function markieren() { ri.querySelectorAll('button').forEach((b) => b.classList.toggle('an', S.alle ? b.dataset.r === '*' : b.dataset.r === S.richtung)); } markieren();
+  $('#anim').innerHTML = Object.keys(S.fig.animationen).map((a) => `<option>${a}</option>`).join(''); $('#anim').onchange = () => { S.anim = $('#anim').value; S.t = 0; S.frame = 0; };
+  $('#spiel').onclick = () => { S.laeuft = !S.laeuft; $('#spiel').textContent = S.laeuft ? '⏸ Pause' : '▶ Abspielen'; };
+  const schritt = (d) => { S.laeuft = false; $('#spiel').textContent = '▶ Abspielen'; const A = S.fig.animationen[S.anim]; S.frame = (S.frame + d + A.frames) % A.frames; S.t = S.frame / A.fps; };
+  $('#vor').onclick = () => schritt(1); $('#zurueck').onclick = () => schritt(-1);
+  $('#tempo').oninput = () => { S.tempo = Number($('#tempo').value); $('#tempowert').textContent = S.tempo.toFixed(1).replace('.', ',') + '×'; };
+  const sets = { 'Standard': S.fig.standardAusruestung, 'Ohne Ausrüstung': {}, 'Schwert & Schild': { ...S.fig.standardAusruestung, main_hand: 'test_schwert_kurz', off_hand: 'test_schild_rund' },
+    'Schatten (episch)': { ...S.fig.standardAusruestung, head: 'test_helm_schatten', chest: 'test_brust_schatten' }, 'Splitter (legendär)': { ...S.fig.standardAusruestung, chest: 'test_brust_splitter', back: null }, 'Nur Haare': { hair: 'test_haare_kurz' } };
+  for (const [n, w] of Object.entries(sets)) { const b = document.createElement('button'); b.textContent = n; b.onclick = async () => { if (await anwenden({ ...w })) melde('ok', 'Set: ' + n); }; $('#sets').appendChild(b); }
+  await anwenden({ ...S.fig.standardAusruestung }); melde('ok', `${Object.keys(S.atlas).length} Ebenen geladen, Standardausrüstung angelegt`);
+  window.VORSCHAU = S; requestAnimationFrame(takt);
+}
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+{
+  "schema": "mythara-animationen/1",
+  "id": "kaykit_medium",
+  "skelett": "warrior_base",
+  "quellFps": 24,
+  "lizenz": "CC0 1.0 – Kay Lousberg (KayKit Character Animations 1.1), siehe blender/animations/kaykit/LICENSE-KayKit-CC0.txt",
+  "dateien": {
+    "general": "blender/animations/kaykit/Rig_Medium_General.glb",
+    "bewegung": "blender/animations/kaykit/Rig_Medium_MovementBasic.glb",
+    "bewegung2": "blender/animations/kaykit/Rig_Medium_MovementAdvanced.glb",
+    "nahkampf": "blender/animations/kaykit/Rig_Medium_CombatMelee.glb",
+    "fernkampf": "blender/animations/kaykit/Rig_Medium_CombatRanged.glb"
+  },
+  "_clips": "Spielname -> Clip. schleife: läuft im Kreis; halten: bleibt auf dem letzten Bild stehen; amOrt: waagerechte Wurzelbewegung entfernen; tempoMeterProSek: Laufgeschwindigkeit, zu der die Schritte passen.",
+  "clips": {
+    "idle": {
+      "datei": "nahkampf",
+      "clip": "Melee_2H_Idle",
+      "schleife": true
+    },
+    "idle_frei": {
+      "datei": "general",
+      "clip": "Idle_A",
+      "schleife": true
+    },
+    "walk": {
+      "datei": "bewegung",
+      "clip": "Walking_A",
+      "schleife": true,
+      "tempoMeterProSek": 1.6
+    },
+    "run": {
+      "datei": "bewegung",
+      "clip": "Running_A",
+      "schleife": true,
+      "tempoMeterProSek": 3.6
+    },
+    "attack": {
+      "datei": "nahkampf",
+      "clip": "Melee_2H_Attack_Chop",
+      "schleife": false
+    },
+    "attack_1h": {
+      "datei": "nahkampf",
+      "clip": "Melee_1H_Attack_Chop",
+      "schleife": false
+    },
+    "block": {
+      "datei": "nahkampf",
+      "clip": "Melee_Blocking",
+      "schleife": true
+    },
+    "dodge": {
+      "datei": "bewegung2",
+      "clip": "Dodge_Backward",
+      "schleife": false,
+      "amOrt": true
+    },
+    "cast": {
+      "datei": "fernkampf",
+      "clip": "Ranged_Magic_Spellcasting",
+      "schleife": false
+    },
+    "hit": {
+      "datei": "general",
+      "clip": "Hit_A",
+      "schleife": false
+    },
+    "death": {
+      "datei": "general",
+      "clip": "Death_A",
+      "schleife": false,
+      "halten": true
+    }
+  }
+}

@@ -1,0 +1,316 @@
+{
+ "schema": "mythara-figur3d/1",
+ "id": "krieger_test",
+ "name": "Krieger (TEST ASSET)",
+ "testAsset": true,
+ "klasse": "krieger",
+ "skelett": "warrior_base",
+ "erzeugt": "2026-11-20 21:49",
+ "bild": {
+  "breite": 288,
+  "hoehe": 288
+ },
+ "fuss": {
+  "x": 144.0,
+  "y": 195.84
+ },
+ "fussNorm": {
+  "x": 0.5,
+  "y": 0.68
+ },
+ "pixelProMeter": 58,
+ "spiel": {
+  "figurHoehePx": 84,
+  "renderHoehePx": 128,
+  "massstab": 0.6562
+ },
+ "richtungen": [
+  {
+   "id": "O",
+   "grad": 0
+  },
+  {
+   "id": "SO",
+   "grad": 45
+  },
+  {
+   "id": "S",
+   "grad": 90
+  },
+  {
+   "id": "SW",
+   "grad": 135
+  },
+  {
+   "id": "W",
+   "grad": 180
+  },
+  {
+   "id": "NW",
+   "grad": 225
+  },
+  {
+   "id": "N",
+   "grad": 270
+  },
+  {
+   "id": "NO",
+   "grad": 315
+  }
+ ],
+ "animationen": {
+  "idle": {
+   "frames": 10,
+   "fps": 10,
+   "schleife": true,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "walk": {
+   "frames": 10,
+   "fps": 10,
+   "schleife": true,
+   "halten": false,
+   "tempoMeterProSek": 1.6
+  },
+  "run": {
+   "frames": 8,
+   "fps": 10,
+   "schleife": true,
+   "halten": false,
+   "tempoMeterProSek": 3.6
+  },
+  "attack": {
+   "frames": 17,
+   "fps": 10,
+   "schleife": false,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "block": {
+   "frames": 10,
+   "fps": 10,
+   "schleife": true,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "dodge": {
+   "frames": 5,
+   "fps": 10,
+   "schleife": false,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "cast": {
+   "frames": 8,
+   "fps": 10,
+   "schleife": false,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "hit": {
+   "frames": 8,
+   "fps": 10,
+   "schleife": false,
+   "halten": false,
+   "tempoMeterProSek": null
+  },
+  "death": {
+   "frames": 9,
+   "fps": 10,
+   "schleife": false,
+   "halten": true,
+   "tempoMeterProSek": null
+  }
+ },
+ "ebenen": {
+  "item:test_beinschutz_stahl": {
+   "atlas": "ebenen/item_test_beinschutz_stahl.json",
+   "art": "item",
+   "item": "test_beinschutz_stahl",
+   "slot": "legs"
+  },
+  "item:test_brust_schatten": {
+   "atlas": "ebenen/item_test_brust_schatten.json",
+   "art": "item",
+   "item": "test_brust_schatten",
+   "slot": "chest"
+  },
+  "item:test_brust_splitter": {
+   "atlas": "ebenen/item_test_brust_splitter.json",
+   "art": "item",
+   "item": "test_brust_splitter",
+   "slot": "chest"
+  },
+  "item:test_brust_stahl": {
+   "atlas": "ebenen/item_test_brust_stahl.json",
+   "art": "item",
+   "item": "test_brust_stahl",
+   "slot": "chest"
+  },
+  "item:test_haare_kurz": {
+   "atlas": "ebenen/item_test_haare_kurz.json",
+   "art": "item",
+   "item": "test_haare_kurz",
+   "slot": "hair"
+  },
+  "item:test_handschuhe_stahl": {
+   "atlas": "ebenen/item_test_handschuhe_stahl.json",
+   "art": "item",
+   "item": "test_handschuhe_stahl",
+   "slot": "hands"
+  },
+  "item:test_helm_schatten": {
+   "atlas": "ebenen/item_test_helm_schatten.json",
+   "art": "item",
+   "item": "test_helm_schatten",
+   "slot": "head"
+  },
+  "item:test_helm_stahl": {
+   "atlas": "ebenen/item_test_helm_stahl.json",
+   "art": "item",
+   "item": "test_helm_stahl",
+   "slot": "head"
+  },
+  "item:test_schild_rund": {
+   "atlas": "ebenen/item_test_schild_rund.json",
+   "art": "item",
+   "item": "test_schild_rund",
+   "slot": "off_hand"
+  },
+  "item:test_schulter_stahl": {
+   "atlas": "ebenen/item_test_schulter_stahl.json",
+   "art": "item",
+   "item": "test_schulter_stahl",
+   "slot": "shoulders"
+  },
+  "item:test_schwert_kurz": {
+   "atlas": "ebenen/item_test_schwert_kurz.json",
+   "art": "item",
+   "item": "test_schwert_kurz",
+   "slot": "main_hand"
+  },
+  "item:test_stiefel_schwer": {
+   "atlas": "ebenen/item_test_stiefel_schwer.json",
+   "art": "item",
+   "item": "test_stiefel_schwer",
+   "slot": "feet"
+  },
+  "item:test_umhang_rot": {
+   "atlas": "ebenen/item_test_umhang_rot.json",
+   "art": "item",
+   "item": "test_umhang_rot",
+   "slot": "back"
+  },
+  "item:test_zweihaender": {
+   "atlas": "ebenen/item_test_zweihaender.json",
+   "art": "item",
+   "item": "test_zweihaender",
+   "slot": "main_hand"
+  },
+  "koerper:arm_l": {
+   "atlas": "ebenen/koerper_arm_l.json",
+   "art": "koerper",
+   "region": "arm_l"
+  },
+  "koerper:arm_r": {
+   "atlas": "ebenen/koerper_arm_r.json",
+   "art": "koerper",
+   "region": "arm_r"
+  },
+  "koerper:bein_l": {
+   "atlas": "ebenen/koerper_bein_l.json",
+   "art": "koerper",
+   "region": "bein_l"
+  },
+  "koerper:bein_r": {
+   "atlas": "ebenen/koerper_bein_r.json",
+   "art": "koerper",
+   "region": "bein_r"
+  },
+  "koerper:kopf": {
+   "atlas": "ebenen/koerper_kopf.json",
+   "art": "koerper",
+   "region": "kopf"
+  },
+  "koerper:rumpf": {
+   "atlas": "ebenen/koerper_rumpf.json",
+   "art": "koerper",
+   "region": "rumpf"
+  }
+ },
+ "koerperRegionen": [
+  "kopf",
+  "rumpf",
+  "arm_l",
+  "arm_r",
+  "bein_l",
+  "bein_r"
+ ],
+ "standardAusruestung": {
+  "head": "test_helm_stahl",
+  "chest": "test_brust_stahl",
+  "shoulders": "test_schulter_stahl",
+  "hands": "test_handschuhe_stahl",
+  "legs": "test_beinschutz_stahl",
+  "feet": "test_stiefel_schwer",
+  "back": "test_umhang_rot",
+  "main_hand": "test_zweihaender"
+ },
+ "slots": {
+  "head": {
+   "name": "Helm",
+   "sockel": "Head"
+  },
+  "hair": {
+   "name": "Haare",
+   "sockel": "Hair"
+  },
+  "beard": {
+   "name": "Bart",
+   "sockel": "Head"
+  },
+  "chest": {
+   "name": "Brustpanzer",
+   "sockel": "Chest"
+  },
+  "shoulders": {
+   "name": "Schulterplatten",
+   "sockel": [
+    "Shoulder_Left",
+    "Shoulder_Right"
+   ]
+  },
+  "hands": {
+   "name": "Handschuhe und Armschienen",
+   "sockel": [
+    "Hand_Left",
+    "Hand_Right"
+   ]
+  },
+  "legs": {
+   "name": "Beinschutz",
+   "sockel": "Waist"
+  },
+  "feet": {
+   "name": "Stiefel",
+   "sockel": [
+    "Foot_Left",
+    "Foot_Right"
+   ]
+  },
+  "back": {
+   "name": "Umhang / Rücken",
+   "sockel": "Back"
+  },
+  "main_hand": {
+   "name": "Haupthand",
+   "sockel": "Hand_Right"
+  },
+  "off_hand": {
+   "name": "Nebenhand / Schild",
+   "sockel": "Hand_Left"
+  }
+ },
+ "katalog": "ausruestung.json"
+}
