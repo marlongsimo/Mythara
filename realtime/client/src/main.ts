@@ -26,7 +26,7 @@ class Spiel extends Phaser.Scene {
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
   preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
-    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb", "schild"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); if (HELDEN[k].schildStand) this.load.image("schildstand-" + k, "../" + HELDEN[k].schildStand); for (const art of ["lauf", "hieb", "schild"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
     for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, { start: 0, end: 7 }), frameRate: 11, repeat: -1 });
@@ -127,9 +127,11 @@ class Spiel extends Phaser.Scene {
     this.anzeige(z);
   }
   /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
-  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = HELDEN[b.typ]; sp.setAngle(0).setX(0);
-    if (b.modus === 1 && D.schild) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); if (b.laeuft) sp.play("schild-" + b.typ); else { sp.stop(); sp.setTexture("schild-" + b.typ, 0); } } // zweite Waffe: Schild erhoben, im Stehen das erste Bild
-    else if (b.laeuft) { sp.play("lauf-" + b.typ); sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); const F = D.fuss || [0.5, 0.94]; sp.setOrigin(F[0], F[1]).setScale(b.hoch * (D.gross || 1) / sp.height); } }
+  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = HELDEN[b.typ], L = D.laufMass || [0.5, 0.946, 0.91]; sp.setAngle(0).setX(0);
+    if (b.modus === 1 && D.schild) { // zweite Waffe: Schild erhoben
+      if (b.laeuft) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.play("schild-" + b.typ); }
+      else { sp.stop(); if (D.schildStand) { const F = D.schildFuss || [0.5, 0.95, 1]; sp.setTexture("schildstand-" + b.typ); sp.setOrigin(F[0], F[1]).setScale(b.hoch * F[2] / sp.height); } else { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.setTexture("schild-" + b.typ, 0); } } }
+    else if (b.laeuft && D.lauf) { sp.play("lauf-" + b.typ); sp.setOrigin(L[0], L[1]).setScale(b.hoch / (L[2] * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); const F = D.fuss || [0.5, 0.94]; sp.setOrigin(F[0], F[1]).setScale(b.hoch * (D.gross || 1) / sp.height); } }
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
