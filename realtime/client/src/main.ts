@@ -11,7 +11,7 @@ import { KARTEN, FEIN } from "../../shared/karten";
 import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern, ORTSTUFE } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
-import { verbinde, Netz } from "./netz";
+import { verbinde, Netz, SPIELSERVER } from "./netz";
 import { Dorf } from "./dorf";
 import { Stadt } from "./stadt";
 import { zoomFaktor, zoomKnopf } from "./zoom";
@@ -24,7 +24,7 @@ const P = new URLSearchParams(location.search), $ = (s: string) => document.quer
 const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
 const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) HELDENSTUFE[k] = stufeAusEp(Number(v) || 0); }
-const SERVER = FLACH ? "" : P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
+const SERVER = FLACH ? "" : P.get("server") ?? SPIELSERVER; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
 const iso = FLACH ? (x: number, y: number) => ({ x: x * ZELLE, y: y * ZELLE }) : (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
@@ -33,6 +33,14 @@ const welt = FLACH ? (sx: number, sy: number) => ({ x: sx / ZELLE, y: sy / ZELLE
 const tief = (x: number, y: number) => 10 + (FLACH ? y * 20 : (x + y) * 10);
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
+/** Ladebildschirm, solange der Spielserver aufwacht (kostenloser Dienst: bis zu einer Minute). grund leer = ausblenden. */
+let ladeBeginn = 0;
+function ladeschirm(grund: string) { const el = $("#ez-laden"); if (!el) return; if (!grund) { el.classList.add("weg"); setTimeout(() => { el.hidden = true; el.classList.remove("weg"); }, 400); ladeBeginn = 0; return; }
+  if (!ladeBeginn) ladeBeginn = Date.now(); el.hidden = false; const s = Math.round((Date.now() - ladeBeginn) / 1000), anteil = Math.min(0.97, 1 - Math.exp(-s / 22)); /* gefühlter Fortschritt: am Anfang schnell, dann langsamer */
+  (el.querySelector(".balken i") as HTMLElement).style.width = Math.round(anteil * 100) + "%"; (el.querySelector(".zeit") as HTMLElement).textContent = s < 2 ? "Verbinde mit dem Spielserver …" : `Der Spielserver erwacht … ${s} s`;
+  (el.querySelector(".tipp") as HTMLElement).textContent = TIPPS[Math.floor(s / 8) % TIPPS.length]; }
+const TIPPS = ["Nach einer Pause schläft der Server. Beim ersten Kampf dauert es deshalb bis zu einer Minute – danach geht es sofort.", "Gegner holen sichtbar aus. Wer dann aus der Reichweite geht, wird nicht getroffen.",
+  "Leuchtet der Boden grün, lädt die alte Unke ihren Giftschwall. Raus aus dem Kreis!", "Seelensplitter hebst du auf, indem du darüberläufst. Erst „Kampf verlassen“ beendet den Kampf.", "Erfahrung bekommt jeder Held deines Teams – in der Heldenhalle siehst du die Stufen.", "Mit der Leertaste oder ⇄ wechselst du die Waffe."];
 /** Die Bildangaben einer Figur, ob Held oder Monster */
 const FIG = (typ: string, held: boolean | number) => (held ? HELDEN[typ] : MONSTER[typ]) as Partial<HeldDef> & { links?: boolean };
 const ALLE: Record<string, Partial<HeldDef>> = { ...HELDEN, ...(MONSTER as unknown as Record<string, Partial<HeldDef>>) };
@@ -79,10 +87,10 @@ class Spiel extends Phaser.Scene {
   serverKampf = false;
   async starte(held: string, mit: string[]) {
     let url = SERVER, erste: unknown = undefined;
-    if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : "wss://mythara-echtzeit.onrender.com", token = basis ? await kontoToken() : "";
+    if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
       if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || ""); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
-    verbinde(url, held, mit, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER0 && grund ? " – " + grund : ""); if (FLACH && art === "lokal" && kontoName()) { const a = $("#ez-art"); a.style.display = "block"; a.textContent = "Ohne Server – EP und Seelensplitter aus diesem Kampf werden nicht gutgeschrieben" + (grund ? " (" + grund + ")" : ""); return; } if (FLACH && art === "warte") $("#ez-art").style.display = "block"; else if (FLACH) $("#ez-art").style.display = ""; $("#ez-art").className = "ez-kasten " + art; }, erste).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
+    verbinde(url, held, mit, (z) => this.zustand(z), (art, grund) => { ladeschirm(art === "warte" ? grund : ""); $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER0 && grund ? " – " + grund : ""); if (FLACH && art === "lokal" && kontoName()) { const a = $("#ez-art"); a.style.display = "block"; a.textContent = "Ohne Server – EP und Seelensplitter aus diesem Kampf werden nicht gutgeschrieben" + (grund ? " (" + grund + ")" : ""); return; } if (FLACH && art === "warte") $("#ez-art").style.display = "block"; else if (FLACH) $("#ez-art").style.display = ""; $("#ez-art").className = "ez-kasten " + art; }, erste).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
       $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel – angegriffen wird in Reichweite · ⇄ Waffe wechseln · Q, E, R: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel – angegriffen wird in Reichweite · Leertaste: Waffe wechseln · Q, E, R: Fähigkeiten in Mausrichtung"; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2) * zoomFaktor())); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2) * zoomFaktor()); }

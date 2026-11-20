@@ -7,6 +7,7 @@ import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
+import { wecken } from "./netz";
 import { kontoKnopf } from "./konto";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
@@ -95,7 +96,7 @@ export class Ort extends Phaser.Scene {
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
     const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
-    this.zaeune(); this.gruppen(); this.leute(); this.auftritt();
+    this.zaeune(); this.gruppen(); this.leute(); this.auftritt(); if (!new URLSearchParams(location.search).has("server")) wecken(); /* der nächste Kampf braucht den Server – schon jetzt aufwecken */
     $("#ez-dorf-knopf").onclick = () => this.sprechen(); window.addEventListener("keydown", (ev) => { if ((ev.key === "e" || ev.key === "E") && !ev.repeat) this.sprechen(); });
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setDepth(-1).setVisible(false);
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);

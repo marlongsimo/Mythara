@@ -7,6 +7,11 @@
 import { TICK, ZUSTAND_JE } from "../../shared/config";
 import { Sim, Eingabe, Zustand } from "../../shared/sim";
 
+/** Adresse des Spielservers */
+export const SPIELSERVER = "wss://mythara-echtzeit.onrender.com";
+/** Den Server vorsorglich wecken (der kostenlose Dienst schläft nach einer Pause): ein einfacher Abruf seiner Startseite. Einmal je Seitenaufruf. */
+let geweckt = false;
+export function wecken(): void { if (geweckt) return; geweckt = true; try { void fetch(SPIELSERVER.replace(/^wss:/, "https:").replace(/^ws:/, "http:") + "/", { mode: "no-cors", cache: "no-store" }).catch(() => { /* egal */ }); } catch { /* egal */ } }
 export interface Netz { art: "server" | "lokal"; sende(e: Eingabe): void; ende(): void }
 
 function lokal(held: string, mit: string[], beiZustand: (z: Zustand) => void): Netz {
