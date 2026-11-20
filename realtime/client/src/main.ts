@@ -3,7 +3,8 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
-import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke } from "../../shared/config";
+import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, stufeAusEp } from "../../shared/config";
+import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
 import { KARTEN, FEIN } from "../../shared/karten";
@@ -22,7 +23,7 @@ const P = new URLSearchParams(location.search), $ = (s: string) => document.quer
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
 const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
-const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); }
+const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) HELDENSTUFE[k] = stufeAusEp(Number(v) || 0); }
 const SERVER = FLACH ? "" : P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -175,6 +176,8 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
+    else if (ev.a === "ep" && kampfJetzt) { const team = [kampfJetzt.held, ...kampfJetzt.mit]; let auf = 0; for (const h of team) { const n = epDazu(h, ev.n); if (h === kampfJetzt.held && n) auf = n; } zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
+      if (auf) { const ich = this.bilder.get(this.ichId); if (ich) { const o = this.add.text(ich.c.x, ich.c.y - 110, "Stufe " + auf + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "26px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 900, duration: 1300, onComplete: () => o.destroy() }); } } }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, FLACH ? "#8fd8ff" : "#ff9aa8");
     else if (ev.a === "laden") { /* Spezialangriff: Die Fläche am Boden füllt sich, während der Gegner lädt */ const p = iso(ev.x, ev.y), rx = ev.r * (FLACH ? ZELLE : KW * 0.705), ry = ev.r * (FLACH ? ZELLE : KHOCH * 0.705);
       const rand = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0xb8ff3a, 0.12).setStrokeStyle(3, 0xd8ff5a, 0.95).setDepth(3), kern = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0x9be020, 0.45).setDepth(3).setScale(0.05);

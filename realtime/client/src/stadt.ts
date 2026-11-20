@@ -5,6 +5,7 @@
  * Die alte, aus Einzelteilen gebaute Stadt gibt es noch unter ?stadt=alt (dorf.ts).
  */
 import { weltkarte } from "./weltkarte";
+import { heldenhalle } from "./halle";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { kontoKnopf } from "./konto";
 import Phaser from "phaser";
@@ -31,10 +32,10 @@ const VORN: { umriss: Pkt[]; fuss: number; gruen?: boolean }[] = [ // gruen: nur
   { gruen: true, fuss: 732, umriss: [[1012, 722], [1010, 670], [1030, 640], [1052, 616], [1074, 640], [1092, 675], [1090, 722]] },
 ];
 /* Orte: Punkt, an dem man steht, und was dort passiert */
-const ORTE: { name: string; x: number; y: number; r: number; tat: "riss" | "bald" | "welt"; text: string }[] = [
+const ORTE: { name: string; x: number; y: number; r: number; tat: "riss" | "bald" | "welt" | "halle"; text: string }[] = [
   { name: "Der Riss", x: 1140, y: 678, r: 75, tat: "riss", text: "In den Riss" },
   { name: "Taverne", x: 600, y: 440, r: 60, tat: "bald", text: "Taverne – kommt noch" },
-  { name: "Heldenhalle", x: 1085, y: 362, r: 60, tat: "bald", text: "Heldenhalle – die Heldensammlung kommt noch" },
+  { name: "Heldenhalle", x: 1085, y: 362, r: 60, tat: "halle", text: "Die Heldenhalle betreten" },
   { name: "Stadttor", x: 1430, y: 308, r: 55, tat: "welt", text: "Zur Weltkarte" },
   { name: "Markt", x: 545, y: 585, r: 80, tat: "bald", text: "Markt – kommt noch" },
 ];
@@ -140,6 +141,7 @@ export class Stadt extends Phaser.Scene {
     this.zielOrt = ort; this.pfad = wegZu(this.ort.x, this.ort.y, ort ? ort.x : x, ort ? ort.y : y); }
   betreten() { const o = this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
+    else if (o.tat === "halle") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; heldenhalle(() => { this.gesperrt = false; }); }
     else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; weltkarte(() => { this.gesperrt = false; }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
