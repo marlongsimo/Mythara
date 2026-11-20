@@ -16,7 +16,7 @@ export type Schadensart = "nah" | "fern" | "magie";            // physischer Nah
 export type Werte = Record<Schadensart, number>;                  // je Angriffsart ein Wert
 export interface Modus { name: string; art: Schadensart | "heil"; schaden: [number, number]; /* Mindest- und Höchstschaden (oder Heilung) */ takt: number; reich: number; flug?: number; wucht?: boolean; untot?: number; schild?: boolean; text: string }
 export interface Faehigkeit { name: string; zeit: number; text: string }
-export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string;
+export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string; schild?: string; /* schild: Laufbilder für die zweite Waffe */
   lp: number; tempo: number; angriff: Werte; abwehr: Werte; modi: [Modus, Modus]; q: Faehigkeit; e: Faehigkeit; r: Faehigkeit; passiv: string }
 
 export const K = {
@@ -62,7 +62,7 @@ export const K = {
 };
 
 export const HELDEN: Record<string, HeldDef> = {
-  schildwaechter: { name: "Torvald", titel: "Der Schildwächter", klasse: "Krieger", rolle: "Verteidiger an der Front", bild: "img/figuren/schildwaechter.jpg", figur: "img/echtzeit/torvald.webp", lauf: "img/echtzeit/torvald-lauf.webp", hieb: "img/echtzeit/torvald-hieb.webp",
+  schildwaechter: { name: "Torvald", titel: "Der Schildwächter", klasse: "Krieger", rolle: "Verteidiger an der Front", bild: "img/figuren/schildwaechter.jpg", figur: "img/echtzeit/torvald.webp", lauf: "img/echtzeit/torvald-lauf.webp", hieb: "img/echtzeit/torvald-hieb.webp", schild: "img/echtzeit/torvald-schild.webp",
     lp: 320, tempo: 3.3, angriff: { nah: 100, fern: 55, magie: 25 }, abwehr: { nah: 90, fern: 80, magie: 45 },
     modi: [{ name: "Langschwert", art: "nah", schaden: [18, 30], takt: 0.9, reich: 1.6, text: "Nahkampf. Treffer verlangsamen den Gegner kurz (Festnageln)." },
       { name: "Schild", art: "nah", schaden: [5, 14], takt: 1.2, reich: 1.3, wucht: true, schild: true, text: "Blockt von vorn: Nahkampfangriffe treffen 60 % seltener, Fernkampf 40 %, Magie 20 %. Torvald läuft 15 % langsamer. Der Schildhieb unterbricht den Gegner." }],

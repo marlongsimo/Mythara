@@ -19,17 +19,18 @@ const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH
 const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
-interface Bild { hoch: number; ganz: boolean; laeuft: boolean; still: number; schlag: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
+interface Bild { modus: number; hoch: number; ganz: boolean; laeuft: boolean; still: number; schlag: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
 
 class Spiel extends Phaser.Scene {
   netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
   preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
-    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb", "schild"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
     for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, { start: 0, end: 7 }), frameRate: 11, repeat: -1 });
+      if (HELDEN[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
       if (HELDEN[k].hieb) this.anims.create({ key: "hieb-" + k, frames: this.anims.generateFrameNumbers("hieb-" + k, { start: 0, end: 7 }), frameRate: 20, repeat: 0 }); }
     this.licht(); this.fackeln();
     { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
@@ -105,7 +106,7 @@ class Spiel extends Phaser.Scene {
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
       rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
     const balken = this.add.graphics(), name = this.add.text(0, -hoch - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
-    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
+    c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); return b;
   }
   zustand(z: Zustand) {
@@ -114,7 +115,7 @@ class Spiel extends Phaser.Scene {
       const hier = this.ort(b, jetzt); b.von = Math.hypot(hier.x - e[4], hier.y - e[5]) > 3 ? { x: e[4], y: e[5] } : hier; b.nach = { x: e[4], y: e[5] }; b.t0 = jetzt; // große Sprünge (Blinzeln, Wiederkehr) nicht nachziehen
       if (b.ganz && HELDEN[b.typ].lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
         const bewegt = Math.hypot(b.nach.x - b.von.x, b.nach.y - b.von.y) > 0.03 && !e[10]; if (bewegt) b.still = 0; else b.still++; const soll = bewegt || (b.laeuft && b.still < 3), sp = b.kopf as Phaser.GameObjects.Sprite;
-        if (soll !== b.laeuft) { b.laeuft = soll; if (!b.schlag) this.haltung(b); } void sp; }
+        if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
       b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX(sx < 0); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.hoch - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
@@ -126,8 +127,9 @@ class Spiel extends Phaser.Scene {
     this.anzeige(z);
   }
   /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
-  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite; sp.setAngle(0).setX(0);
-    if (b.laeuft) { sp.play("lauf-" + b.typ); sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); sp.setOrigin(0.5, 0.94).setScale(b.hoch / sp.height); } }
+  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = HELDEN[b.typ]; sp.setAngle(0).setX(0);
+    if (b.modus === 1 && D.schild) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); if (b.laeuft) sp.play("schild-" + b.typ); else { sp.stop(); sp.setTexture("schild-" + b.typ, 0); } } // zweite Waffe: Schild erhoben, im Stehen das erste Bild
+    else if (b.laeuft) { sp.play("lauf-" + b.typ); sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); sp.setOrigin(0.5, 0.94).setScale(b.hoch / sp.height); } }
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
