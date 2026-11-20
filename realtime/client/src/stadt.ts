@@ -46,6 +46,8 @@ const LEUTE: { bild: string; weg: Pkt[]; tempo: number; mass: number }[] = [{ bi
   { bild: "kraemer", mass: 0.94, tempo: 30, weg: [[580, 560], [650, 530], [610, 610], [585, 655], [640, 690], [585, 655], [610, 610]] }, // der Krämer bleibt in der Nähe des Markts
   { bild: "schmied", mass: 0.925, tempo: 28, weg: [[1040, 525], [1062, 600], [1100, 662], [1010, 645], [1005, 550]] }, // der Schmied geht vor seiner Schmiede auf und ab
   { bild: "kraeuterfrau", mass: 0.975, tempo: 36, weg: [[610, 520], [650, 620], [850, 660], [1000, 600], [1010, 405], [1160, 350], [1300, 322], [1410, 312], [1300, 322], [1160, 350], [1010, 405], [1000, 600], [850, 660], [650, 620]] }]; // die Kräuterfrau geht bis zum Stadttor und denselben Weg zurück
+/* Wachen: Ort und ob sie nach links schauen. Im Bild ragt der Speer über den Helm; gemessen wird der Körper bis zum Helm. */
+const WACHEN: number[][] = [[1352, 338, 0], [1178, 640, 1]], WACHE_KOERPER = 0.81, WACHE_FUSS = 0.975;
 const drin = (p: Pkt[], x: number, y: number) => { let d = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) d = !d; return d; };
 const frei = (x: number, y: number) => drin(FLAECHE, x, y) && !HINDERNIS.some((h) => drin(h, x, y));
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
@@ -55,7 +57,7 @@ export class Stadt extends Phaser.Scene {
   leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number } | null = null;
   constructor() { super("dorf"); }
   init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter"; }
-  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     document.body.classList.add("dorf", "stadt"); this.profil(); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
     this.cameras.main.setBackgroundColor("#0d140b"); const bild = this.add.image(0, 0, "waldmark").setOrigin(0, 0).setDepth(0), Q = bild.width / BW; bild.setScale(F / Q); // Q: so viel größer als die Vermessung ist die Bilddatei
@@ -66,6 +68,14 @@ export class Stadt extends Phaser.Scene {
         if (v.gruen) { const d = c.getImageData(0, 0, t.width, t.height), a = d.data; for (let i = 0; i < a.length; i += 4) { const r = a[i], g = a[i + 1], b = a[i + 2]; if (!(g > r * 0.97 && g > b) && Math.max(r, g, b) > 70) a[i + 3] = 0; } c.putImageData(d, 0, 0); } t.refresh(); }
       this.add.image(x0 * F, y0 * F, key).setOrigin(0, 0).setScale(F / Q).setDepth(v.fuss); });
     this.leben(); this.leute = [];
+    { /* Junge mit Ball vor der Heldenhalle: kleiner als die Erwachsenen, kickt alle paar Sekunden */
+      const X = 1040, Y = 392; if (!this.anims.exists("npc-junge")) this.anims.create({ key: "npc-junge", frames: this.anims.generateFrameNumbers("npc-junge", {}), frameRate: 7, repeat: 1 });
+      const j = this.add.sprite(X * F, Y * F + 3, "npc-junge", 0).setOrigin(0.5, 0.93).setScale(GROSS * 0.62 / (0.851 * 176)).setDepth(Y);
+      const kicken = () => { if (this.scene.isActive()) j.play("npc-junge"); }; j.on("animationcomplete", () => { j.setFrame(0); this.time.delayedCall(2500 + Math.random() * 4000, kicken); }); this.time.delayedCall(1500, kicken); }
+    if (!this.anims.exists("npc-wache")) this.anims.create({ key: "npc-wache", frames: this.anims.generateFrameNumbers("npc-wache", {}), frameRate: 3, repeat: 0 });
+    for (const [x, y, links] of WACHEN) { // Wachen stehen still und sehen sich ab und zu um
+      const w = this.add.sprite(x * F, y * F + 3, "npc-wache", 0).setOrigin(0.5, WACHE_FUSS).setScale(GROSS * 1.06 / (WACHE_KOERPER * 176)).setFlipX(Boolean(links)).setDepth(y);
+      const schauen = () => { if (this.scene.isActive()) w.play("npc-wache"); }; w.on("animationcomplete", () => { w.setFrame(0); this.time.delayedCall(4000 + Math.random() * 7000, schauen); }); this.time.delayedCall(1000 + Math.random() * 5000, schauen); }
     { // der Ausrufer steht vor dem Brunnen: Eine Weile still, dann hebt er die Hand und ruft
       const X = 940, Y = 628; if (!this.anims.exists("npc-ausrufer")) this.anims.create({ key: "npc-ausrufer", frames: this.anims.generateFrameNumbers("npc-ausrufer", {}), frameRate: 5, repeat: 0 });
       const s = this.add.sprite(X * F, Y * F + 3, "npc-ausrufer", 0).setOrigin(0.5, 0.975).setScale(GROSS / (0.985 * 176)).setFlipX(true).setDepth(Y); // 0.985: mit Hut und Feder ist er im Bild höher als ein Held
