@@ -60,10 +60,11 @@ export async function kontoStart(): Promise<boolean> {
 /** Das Profil oben links: zeigt den Namen; ein Klick öffnet Anmelden oder Abmelden. */
 export function kontoKnopf() {
   const el = $("#ez-profil"); if (!el) return; $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
-  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); fenster(); };
+  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); if (name) fenster(); else zurAnmeldung(); };
 }
-/** Die Anmeldeseite vor dem Spiel: Wer nicht angemeldet ist, sieht sie einmal je Besuch. Sie verschwindet erst, wenn man sich anmeldet, ein Konto anlegt oder als Gast weiterspielt. */
-export function kontoSeite(): Promise<void> { if (name || !verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__gefragt") === "1") return Promise.resolve(); sessionStorage.setItem("ez__gefragt", "1"); } catch { return Promise.resolve(); } return new Promise((weiter) => fenster(weiter)); }
+/** Vor dem Spiel: Wer nicht angemeldet ist, kommt einmal je Besuch auf die Anmeldeseite (anmelden.html, gestaltet wie die des Würfelspiels). Dort meldet man sich an, legt ein Konto an oder spielt als Gast weiter. */
+export function kontoSeite(): Promise<void> { if (name || !verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__gefragt") === "1") return Promise.resolve(); } catch { return Promise.resolve(); } zurAnmeldung(); return new Promise(() => { /* die Seite wechselt */ }); }
+function zurAnmeldung() { location.replace("anmelden.html" + (location.search ? "?weiter=" + encodeURIComponent(location.search) : "")); }
 function fenster(weiter?: () => void) {
   const f = $("#ez-konto"); f.hidden = false; f.classList.toggle("seite", !name); const zu = () => { f.hidden = true; f.innerHTML = ""; if (weiter) weiter(); };
   if (name) { f.innerHTML = `<div class="blatt"><h2>Konto</h2><p>Angemeldet als <b></b>.<br>Dein Fortschritt in den Splitterlanden wird in deinem Konto gespeichert.</p><div class="reihe"><button type="button" class="haupt" data-t="zu">Weiterspielen</button><button type="button" data-t="ab">Abmelden</button></div></div>`; (f.querySelector("b") as HTMLElement).textContent = name; }
@@ -93,7 +94,7 @@ async function anmelden(f: HTMLElement) {
   const n = (f.querySelector("#ez-k-name") as HTMLInputElement).value.trim(), pw = (f.querySelector("#ez-k-pw") as HTMLInputElement).value, m = f.querySelector(".meldung") as HTMLElement, kn = f.querySelector('[data-t="an"]') as HTMLButtonElement;
   if (!n || !pw) { m.textContent = "Bitte Benutzername und Passwort eingeben."; return; } const d = verbindung(); if (!d) { m.textContent = "Keine Verbindung zum Konto."; return; } kn.disabled = true; m.textContent = "Anmeldung …";
   try { const { data } = await d.auth.getSession(); if (!data.session) { const r = await d.auth.signInAnonymously(); if (r.error) throw new Error(r.error.message); } /* die Namensabfrage braucht eine (Gast-)Sitzung, wie im Würfelspiel */
-    const adresse = /^[A-Za-z0-9_]{3,20}$/.test(n) ? await rpc<string | null>("rpg_login_email", { p_handle: n }) : null; if (!adresse) throw new Error("Benutzername oder Passwort ist falsch.");
+    const adresse = /^[A-Za-z0-9_ÄÖÜäöüß]{3,20}$/.test(n) ? await rpc<string | null>("rpg_login_email", { p_handle: n }) : null; if (!adresse) throw new Error("Benutzername oder Passwort ist falsch.");
     const { error } = await d.auth.signInWithPassword({ email: adresse, password: pw }); if (error) throw new Error(/invalid/i.test(error.message) ? "Benutzername oder Passwort ist falsch." : error.message);
     try { sessionStorage.removeItem("ez__neu"); } catch { /* privat */ } location.reload();
   } catch (e) { m.textContent = (e as Error).message; kn.disabled = false; }

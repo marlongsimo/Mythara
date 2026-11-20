@@ -9,6 +9,7 @@ const FAKE = `window.supabase = { createClient() { const L = (k) => JSON.parse(s
       async signInWithPassword({ email, password }) { const n = email.split("@")[0], k = db().konten[n]; if (!k || k.pw !== password) return { error: { message: "Invalid login credentials" } }; S("fake_sitzung", n); return { error: null }; }, async signOut() { sessionStorage.removeItem("fake_sitzung"); }, async updateUser({ email, password }) { const d = db(), n = email.split("@")[0]; d.konten[n] = { pw: password, stand: null, version: 0 }; S("fake_db", d); S("fake_sitzung", n); return { error: null }; } },
     async rpc(fn, a) { const d = db(), wer = L("fake_sitzung"), k = d.konten[wer]; window.__rpc = (window.__rpc || []).concat(fn);
       if (fn === "rpg_set_profile") return d.konten[a.p_handle] ? { data: null, error: { message: "Dieser Benutzername ist schon vergeben." } } : { data: { anmeldung: a.p_handle + "@x" }, error: null };
+      if (fn === "rpg_handle_frei") return { data: d.konten[a.p_handle] ? "vergeben" : "frei", error: null };
       if (fn === "rpg_login_email") return { data: d.konten[a.p_handle] ? a.p_handle + "@x" : null, error: null };
       if (fn === "rpg_my_profile") return { data: k ? { handle: wer, konto: true } : { konto: false }, error: null };
       if (!k) return { data: null, error: { message: "Bitte melde dich an." } };
@@ -17,20 +18,21 @@ const FAKE = `window.supabase = { createClient() { const L = (k) => JSON.parse(s
       return { data: null, error: { message: "unbekannt " + fn } }; } }; } };`;
 const br = await chromium.launch(), ctx = await br.newContext({ viewport: { width: 1100, height: 650 } }), p = await ctx.newPage(), f = []; p.on("pageerror", (e) => f.push(String(e)));
 await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: FAKE }));
-const dorf = async (pfad = "?stadt=neu") => { await p.goto(URL0 + pfad); await p.waitForFunction(() => window.EZD || window.EZO || !document.querySelector("#ez-konto").hidden, null, { timeout: 20000 }); await p.waitForTimeout(700); };
+const dorf = async (pfad = "") => { await p.goto(URL0 + pfad); await p.waitForFunction(() => window.EZD || window.EZO || document.querySelector("#my-gast-start"), null, { timeout: 20000 }); await p.waitForTimeout(700); };
+const imSpiel = async () => { await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(700); };
 const konto = (n) => p.evaluate((n) => { const d = JSON.parse(sessionStorage.getItem("fake_db") || "null"); return d ? d.konten[n] : null; }, n);
-const anmelden = async (n, pw) => { await p.click("#ez-profil"); await p.fill("#ez-k-name", n); await p.fill("#ez-k-pw", pw); await p.click('#ez-konto [data-t="an"]'); };
 
-await dorf(); check(await p.isVisible("#ez-k-name") && !(await p.evaluate(() => Boolean(window.EZD))), "Ohne Anmeldung erscheint die Anmeldeseite, das Spiel startet noch nicht");
-await p.click('[data-t="r-neu"]'); await p.fill("#ez-k-name", "Anna"); await p.fill("#ez-k-pw", "langgenug1"); await p.fill("#ez-k-pw2", "langgenug1"); await p.click('#ez-konto [data-t="an"]'); await p.waitForTimeout(400); check(/vergeben/.test(await p.textContent("#ez-konto .meldung")), "Konto anlegen: vergebener Name wird abgelehnt");
-await p.fill("#ez-k-pw2", "anders"); await p.click('#ez-konto [data-t="an"]'); check(/stimmen nicht/.test(await p.textContent("#ez-konto .meldung")), "… ebenso zwei verschiedene Passwörter");
-await p.click('[data-t="r-an"]'); await p.click('#ez-konto [data-t="zu"]'); await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(500); check(await p.textContent("#ez-profil-name") === "Gast · anmelden", "Als Gast weiterspielen: oben steht „Gast“");
-await dorf(); check(!(await p.isVisible("#ez-konto")), "Beim nächsten Laden im selben Besuch wird nicht noch einmal gefragt");
+await dorf(); check(/anmelden\.html/.test(p.url()) && await p.isVisible("#my-name"), "Ohne Anmeldung landet man auf der Anmeldeseite, nicht im Spiel");
+await p.click("#my-reg"); await p.fill("#my-reg-name", "Anna"); await p.waitForTimeout(700); check(/vergeben/.test(await p.textContent("#my-name-info")), "Konto erstellen: vergebener Name wird gleich gemeldet");
+await p.fill("#my-reg-name", "Neu_1"); await p.fill("#my-reg-pw", "langgenug1"); await p.fill("#my-reg-pw2", "anders"); await p.click("#my-reg-form .my-knopf"); check(/stimmen nicht/.test(await p.textContent("#my-konto-fb")), "… und zwei verschiedene Passwörter werden abgelehnt");
+await p.click("#my-zur-anmeldung"); await Promise.all([p.waitForNavigation(), p.click("#my-gast-start")]); await imSpiel(); check(await p.textContent("#ez-profil-name") === "Gast · anmelden", "Als Gast spielen: man ist im Spiel, oben steht „Gast“");
+await dorf(); check(Boolean(await p.evaluate(() => Boolean(window.EZD))), "Beim nächsten Laden im selben Besuch wird nicht noch einmal gefragt");
 await p.evaluate(() => { localStorage.setItem("ez_kampagnen", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: "lichtbringer", mit: [] })); }); await p.waitForTimeout(700);
 check(!(await konto("Anna")) || !(await konto("Anna")).stand, "Als Gast wird nichts ins Konto geschrieben");
-await anmelden("Anna", "falsch"); await p.waitForTimeout(400); check(/falsch/.test(await p.textContent("#ez-konto .meldung")), "Falsches Passwort: Meldung, keine Anmeldung");
-await p.fill("#ez-k-pw", "geheim1"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="an"]')]); await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(900);
-check(await p.textContent("#ez-profil-name") === "Anna", "Nach der Anmeldung steht der Name im Profil");
+await Promise.all([p.waitForNavigation(), p.click("#ez-profil")]); await p.waitForSelector("#my-name"); check(true, "Ein Tipp auf das Gast-Profil führt zur Anmeldeseite");
+await p.fill("#my-name", "Anna"); await p.fill("#my-pw", "falsch"); await p.click("#my-anmelden .my-knopf"); await p.waitForTimeout(500); check(/falsch/.test(await p.textContent("#my-konto-fb")), "Falsches Passwort: Meldung, keine Anmeldung");
+await p.fill("#my-pw", "geheim1"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
+check(await p.textContent("#ez-profil-name") === "Anna", "Nach der Anmeldung ist man im Spiel, der Name steht im Profil");
 let a = await konto("Anna"); check(a.stand && a.stand.daten.ez_kampagnen === "1" && a.version === 1, "Konto ohne Stand: der Stand vom Gerät wird übernommen (Version 1)");
 await p.evaluate(() => localStorage.setItem("ez_kampagnen", "2")); await p.waitForTimeout(900); a = await konto("Anna"); check(a.stand.daten.ez_kampagnen === "2" && a.version === 2, "Eine Änderung im Spiel landet kurz darauf im Konto (Version 2)");
 check(await p.evaluate(() => localStorage.getItem("ez__offen")) === null, "… und die Merkmarke „offen“ ist wieder weg");
@@ -43,15 +45,15 @@ a = await konto("Anna"); check(a.stand.daten.ez_kampagnen === "4", "Nicht gespei
 /* zoom gehört zum Gerät */
 await p.evaluate(() => localStorage.setItem("ez_zoom", "1.2")); await p.waitForTimeout(700); a = await konto("Anna"); check(!("ez_zoom" in a.stand.daten), "Die Zoom-Einstellung bleibt auf dem Gerät");
 /* abmelden */
-await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(500);
-check(await p.textContent("#ez-profil-name") === "Gast · anmelden" && await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === null, "Abmelden: wieder Gast, der Fortschritt bleibt nicht auf dem Gerät");
+await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(900);
+check(await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === null, "Abmelden: der Fortschritt bleibt nicht auf dem Gerät");
 /* ein zweites Konto sieht den Stand des ersten nicht */
-await p.click("#ez-profil"); await p.fill("#ez-k-name", "Bert"); await p.fill("#ez-k-pw", "geheim2"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="an"]')]); await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(800);
+await p.evaluate(() => sessionStorage.removeItem("ez__gefragt")); await dorf(); await p.fill("#my-name", "Bert"); await p.fill("#my-pw", "geheim2"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
 check(await p.textContent("#ez-profil-name") === "Bert" && await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === null, "Ein anderes Konto beginnt ohne den Stand des ersten");
 check((await konto("Anna")).stand.daten.ez_kampagnen === "4", "… und der Stand des ersten ist unberührt");
 /* ein ganz neues Konto anlegen */
-await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(600); await p.evaluate(() => sessionStorage.removeItem("ez__gefragt")); await dorf();
-await p.click('[data-t="r-neu"]'); await p.fill("#ez-k-name", "Cleo_7"); await p.fill("#ez-k-pw", "langgenug1"); await p.fill("#ez-k-pw2", "langgenug1"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="an"]')]); await p.waitForFunction(() => window.EZD, null, { timeout: 20000 }); await p.waitForTimeout(600);
-check(await p.textContent("#ez-profil-name") === "Cleo_7", "Neues Konto angelegt: Man ist gleich angemeldet und im Spiel");
+await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(800); await p.evaluate(() => sessionStorage.removeItem("ez__gefragt")); await dorf();
+await p.click("#my-reg"); await p.fill("#my-reg-name", "Cleo_7"); await p.fill("#my-reg-pw", "langgenug1"); await p.fill("#my-reg-pw2", "langgenug1"); await Promise.all([p.waitForNavigation(), p.click("#my-reg-form .my-knopf")]); await imSpiel();
+check(await p.textContent("#ez-profil-name") === "Cleo_7", "Neues Konto erstellt: Man ist gleich angemeldet und im Spiel");
 check(f.length === 0, "Keine Fehler im Browser" + (f.length ? ": " + f.join(" | ") : ""));
 await br.close(); console.log(fehler ? `\n${fehler} Prüfungen fehlgeschlagen` : "\nKonto und Spielstand: alles in Ordnung"); process.exit(fehler ? 1 : 0);
