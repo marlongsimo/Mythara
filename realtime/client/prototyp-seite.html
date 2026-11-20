@@ -1,0 +1,37 @@
+<title>Gebäude-Prototyp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500&display=swap">
+<style>
+  /* Spielfläche über den ganzen Bildschirm; oben links eine Tafel mit den drei Bauweisen und zwei Schaltern. Bewusst nur dunkel (Spielbildschirm). */
+  :root {
+    --nacht: #0b0e09; --rinde: #24180e; --rinde-hell: #3a2817; --gold: #d6b066; --gold-hell: #f3d895; --pergament: #efe5cf; --moos: #9bb879;
+    --schrift-titel: "Cinzel", Georgia, serif; --schrift-text: "Cormorant Garamond", Georgia, serif; --schrift-klein: "Inter", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body { background: var(--nacht); color: var(--pergament); font-family: var(--schrift-klein); overflow: hidden; -webkit-user-select: none; user-select: none; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #pp-feld { position: fixed; inset: 0; touch-action: none; }
+  #pp-tafel { position: fixed; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 12px); left: max(12px, env(safe-area-inset-left, 0px)); max-width: min(380px, calc(100vw - 24px)); padding: 10px 14px 12px;
+    background: linear-gradient(180deg, var(--rinde-hell), var(--rinde)); border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.55); }
+  #pp-tafel b { display: block; font: 600 19px/1.2 var(--schrift-titel); color: var(--gold-hell); letter-spacing: .04em; }
+  #pp-tafel p { margin: 4px 0 8px; font: 500 16px/1.3 var(--schrift-text); color: color-mix(in srgb, var(--pergament) 85%, transparent); }
+  #pp-knoepfe { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #pp-knoepfe button { font: 600 12px/1 var(--schrift-titel); letter-spacing: .05em; color: var(--pergament); background: color-mix(in srgb, var(--rinde) 88%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); border-radius: 999px; padding: 7px 11px 6px; cursor: pointer; }
+  #pp-knoepfe button[aria-pressed="true"] { color: var(--nacht); background: var(--moos); border-color: var(--moos); }
+  #pp-knoepfe button:focus-visible { outline: 2px solid var(--gold-hell); outline-offset: 2px; }
+  #pp-ort { font: 500 12px/1 var(--schrift-klein); color: color-mix(in srgb, var(--pergament) 70%, transparent); font-variant-numeric: tabular-nums; }
+  @media (max-width: 520px) { #pp-tafel p { display: none; } }
+</style>
+<div id="pp-feld"></div>
+<div id="pp-tafel">
+  <b>Gebäude-Prototyp</b>
+  <p>Links das bisherige Haus, in der Mitte das neue räumliche Haus, rechts klassische Isometrie. Laufen mit WASD, Klick oder Finger; geh ins mittlere Haus hinein.</p>
+  <div id="pp-knoepfe">
+    <button type="button" id="pp-pruef" aria-pressed="false" title="Kollision, Grundrisse und Tiefenlinien zeigen (Taste K)">Prüfansicht</button>
+    <button type="button" id="pp-dach" aria-pressed="false" title="Dach des neuen Hauses ausblenden">Dach aus</button>
+    <span id="pp-ort"></span>
+  </div>
+</div>
+<script src="prototyp.js"></script>
