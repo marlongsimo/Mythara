@@ -43,6 +43,8 @@ const GLITZER: number[][] = [[120, 540, 90, 60], [600, 890, 240, 40], [852, 512,
 const RISS: number[] = [1385, 725];
 /* Dorfbewohner, die über den Platz schlendern: Bildblatt, Wegpunkte (im Kreis), Tempo */
 const LEUTE: { bild: string; weg: Pkt[]; tempo: number; mass: number }[] = [{ bild: "wanderer", mass: 0.935, tempo: 42, /* mass: Anteil des Bildfelds, der der Körperhöhe eines Helden entspricht – so sind alle gleich groß */ weg: [[640, 470], [690, 640], [900, 690], [1030, 620], [1020, 420], [900, 400], [720, 400]] },
+  { bild: "kraemer", mass: 0.94, tempo: 30, weg: [[580, 560], [650, 530], [610, 610], [585, 655], [640, 690], [585, 655], [610, 610]] }, // der Krämer bleibt in der Nähe des Markts
+  { bild: "schmied", mass: 0.925, tempo: 28, weg: [[1040, 525], [1062, 600], [1100, 662], [1010, 645], [1005, 550]] }, // der Schmied geht vor seiner Schmiede auf und ab
   { bild: "kraeuterfrau", mass: 0.975, tempo: 36, weg: [[610, 520], [650, 620], [850, 660], [1000, 600], [1010, 405], [1160, 350], [1300, 322], [1410, 312], [1300, 322], [1160, 350], [1010, 405], [1000, 600], [850, 660], [650, 620]] }]; // die Kräuterfrau geht bis zum Stadttor und denselben Weg zurück
 const drin = (p: Pkt[], x: number, y: number) => { let d = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) d = !d; return d; };
 const frei = (x: number, y: number) => drin(FLAECHE, x, y) && !HINDERNIS.some((h) => drin(h, x, y));
