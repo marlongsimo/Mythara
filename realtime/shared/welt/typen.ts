@@ -22,11 +22,12 @@ export const HELD_PX = 84;
 export type GelaendeKategorie = "gelaende" | "wasser" | "weg";
 /** Wie der Rand einer Geländeart in tiefer liegende Arten übergeht (gerechnet beim Backen des Bodens) */
 export interface GelaendeRand {
-  /** fransen: weich und unregelmäßig · steine: endet in ganzen Steinen · ufer: gemalter Uferstreifen · hart: klare Kante */
+  /** fransen: weich und unregelmäßig · steine: endet in ganzen Steinen · hart: klare Kante ·
+   *  ufer: nur für Wasser – rundherum ein feuchter Saum und, wenn ein Bild angegeben ist, der gemalte Uferstreifen */
   art: "fransen" | "steine" | "ufer" | "hart";
   /** Breite des Übergangs in Rechenfeldern */
   breite: number;
-  /** Bild für den Übergang (nur „ufer“), Pfad ab Repository-Wurzel */
+  /** Gemalter Uferverlauf (nur „ufer“), Pfad ab Repository-Wurzel */
   bild?: string;
 }
 export interface Gelaendeart {
@@ -41,6 +42,8 @@ export interface Gelaendeart {
   wasser?: boolean;
   /** Kachelbare Bodentextur (Pfad ab Repository-Wurzel) – oder null, solange es nur die Platzhalterfarbe gibt */
   kachel: string | null;
+  /** Kantenlänge, mit der die Textur in der Welt liegt (Bildpunkte) – bestimmt, wie groß Halme und Steine neben dem Helden wirken */
+  kachelPx?: number;
   /** Weitere Texturen, die beim Backen eingestreut werden (gegen Wiederholungsmuster) */
   varianten?: string[];
   /** Wer höher steht, legt sich über die Nachbarn (Weg über Gras, Gras über Wasser …) */

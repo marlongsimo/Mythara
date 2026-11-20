@@ -62,7 +62,9 @@ export function gelaendeFehler(roh: unknown): string[] {
     L.wenn(!istText(a.farbe) || !FARBE.test(a.farbe as string), wo + ".farbe", "Farbe als #rrggbb erwartet");
     if (!L.wenn(!istObj(a.rand), wo + ".rand", "fehlt")) { const r = a.rand as Roh;
       L.eins(r.art, ["fransen", "steine", "ufer", "hart"] as const, wo + ".rand.art"); L.zahl(r.breite, wo + ".rand.breite", 0, 8);
-      L.wenn(r.art === "ufer" && !istText(r.bild), wo + ".rand.bild", "ein Uferrand braucht ein Bild"); }
+      L.wenn(r.art === "ufer" && a.wasser !== true, wo + ".rand.art", "einen Uferrand kann nur Wasser haben");
+      L.wenn(r.bild !== undefined && !istText(r.bild), wo + ".rand.bild", "Pfad erwartet"); }
+    L.wenn(istText(a.kachel) && !(istZahl(a.kachelPx) && (a.kachelPx as number) >= 64 && (a.kachelPx as number) <= 2048), wo + ".kachelPx", "zu einer Textur gehört ihre Kantenlänge in der Welt (64 bis 2048 Bildpunkte)");
   });
   return L.fehler;
 }
