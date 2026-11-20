@@ -10,6 +10,7 @@ import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
 import { Dorf } from "./dorf";
+import { Stadt } from "./stadt";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -199,4 +200,4 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
 
 (window as unknown as Record<string, unknown>).EZ_WAHL = wahlZeigen;
 const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1"; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
-new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: OHNE_DORF ? [Spiel] : [Dorf, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
