@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Mythara Echtzeit – Vorschau</title>
+  <title>Mythara: Splitterlande (Beta)</title>
   <link rel="icon" href="../img/favicon.svg">
   <style>
     * { box-sizing: border-box; }
@@ -26,6 +26,8 @@
     @media (max-width: 700px) { #ez-oben { top: 84px; left: max(8px, env(safe-area-inset-left)); transform: none; font-size: 12px; } #ez-hilfe { display: none; } }
     #ez-stick { position: fixed; z-index: 4; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.06); pointer-events: none; } #ez-stick[hidden] { display: none; }
     #ez-stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%, -50%); }
+    #ez-heim { position: fixed; z-index: 3; left: max(8px, env(safe-area-inset-left)); top: 96px; font-size: 11px; color: #d9cdf5; text-decoration: none; padding: 4px 9px; border-radius: 999px; border: 1px solid rgba(183,155,255,.45); background: rgba(12,10,18,.6); } #ez-heim span { opacity: .7; margin-left: 4px; }
+    @media (max-width: 700px) { #ez-heim { top: auto; bottom: 8px; } #ez-heim span { display: none; } }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
   </style>
@@ -37,6 +39,7 @@
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
   <div class="ez-kasten" id="ez-hilfe"></div>
+  <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button></div></div>
