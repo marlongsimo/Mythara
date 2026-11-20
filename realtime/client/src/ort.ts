@@ -7,14 +7,17 @@ import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 import { team } from "./weltkarte";
 import WEIDENHAIN from "./weidenhain.json";
+import BAUKASTEN from "./baukasten.json";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
-const ORTE: Record<string, typeof WEIDENHAIN & { name: string }> = { weidenhain: { ...WEIDENHAIN, name: "Weidenhain" } };
+/* bild: ein gemaltes Ortsbild (werkzeug/ortbild.py), mass: so stark wird es vergrößert, vorn: was den Helden verdeckt. Ohne bild: gerechneter Boden aus dem Baukasten (werkzeug/gelaende.py). */
+interface OrtDaten { name: string; bild?: string; mass?: number; gross?: number; breit: number; hoch: number; zelle: number; zeilen: string[]; zaeune: unknown[]; vorn?: unknown[]; stellen: Record<string, number[]> }
+const ORTE: Record<string, OrtDaten> = { weidenhain: { ...WEIDENHAIN, name: "Weidenhain" }, baukasten: { ...BAUKASTEN, name: "Baukasten-Probe" } };
 export const ortName = ORTE[P.get("ort") || ""] ? (P.get("ort") as string) : "";
 /* Das Zaunstück: im Bild 918 × 688, linker Pfosten unten bei (130, 655), rechter Pfosten 664 weiter rechts und 203 höher. Gespiegelt läuft es nach rechts hinunter. */
 const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy: 203 * 170 / 918 };
-const TEMPO = 190, GROSS = 112, Q = 0.62; // Bildpunkte je Sekunde, Größe des Helden, nach oben und unten läuft man langsamer (der Boden liegt schräg)
+const TEMPO = 190, GROSS = (ORTE[ortName] && ORTE[ortName].gross) || 112, Q = 0.62; // Bildpunkte je Sekunde, Größe des Helden, nach oben und unten läuft man langsamer (der Boden liegt schräg)
 
 export class Ort extends Phaser.Scene {
   d = ORTE[ortName]; held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
@@ -31,10 +34,10 @@ export class Ort extends Phaser.Scene {
         for (let t = 0; t <= 1.001; t += 0.04) { const px = x + (x1 - x) * t, py = y + (y1 - y) * t; this.zu.add(this.feld(px, py)); this.zu.add(this.feld(px, py - 12)); }
         x = x1; y = y1; } } }
   init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; const s = this.d.stellen.start; this.ort = { x: s[0], y: s[1] }; }
-  preload() { this.load.image("ortboden", `../img/echtzeit/${ortName}-boden.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
-    this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDepth(-10); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
+    const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
     this.zaeune();
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setDepth(-1).setVisible(false);
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
@@ -50,6 +53,15 @@ export class Ort extends Phaser.Scene {
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
   groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); }
+  /** Was vor dem Helden steht: Jedes Vieleck wird aus dem Bild ausgeschnitten und liegt auf der Höhe seiner Fußlinie – wer dahinter läuft, wird verdeckt. */
+  vorn(F: number) { const quelle = this.textures.get("ortboden").getSourceImage() as HTMLImageElement, k = quelle.width / (this.d.breit / F); /* k: Bildpunkte des Bildes je Maßeinheit der Angaben */
+    (this.d.vorn as [number[][], number][] || []).forEach(([p, fuss], n) => { const xs = p.map((q) => q[0]), ys = p.map((q) => q[1]), x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0, t = this.textures.createCanvas("vorn" + n, Math.ceil(w * k), Math.ceil(h * k)); if (!t) return;
+      const c = t.getContext(); c.beginPath(); p.forEach((q, i) => (i ? c.lineTo((q[0] - x0) * k, (q[1] - y0) * k) : c.moveTo((q[0] - x0) * k, (q[1] - y0) * k))); c.closePath(); c.clip(); c.drawImage(quelle, -x0 * k, -y0 * k); t.refresh();
+      this.add.image(x0 * F, y0 * F, "vorn" + n).setOrigin(0, 0).setScale(F / k).setDepth(fuss * F); }); }
+  /** Das Festfeuer lebt: ein flackernder Schein und aufsteigende Funken */
+  feuer() { const s = this.d.stellen.feuer; if (!s) return; const t = this.textures.createCanvas("glut", 128, 128); if (!t) return; const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,200,120,1)"); g.addColorStop(0.4, "rgba(255,140,60,.4)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh();
+    const schein = this.add.image(s[0], s[1] - 40, "glut").setBlendMode(Phaser.BlendModes.ADD).setScale(5.5, 3.6).setAlpha(0.3).setDepth(99999); /* über allem: der Schein fällt auch auf Figuren und Bänke */ this.time.addEvent({ delay: 90, loop: true, callback: () => { schein.setAlpha(0.22 + Math.random() * 0.16).setScale(5.3 + Math.random() * 0.5, 3.5 + Math.random() * 0.3); } });
+    this.time.addEvent({ delay: 130, loop: true, callback: () => { const f = this.add.image(s[0] + (Math.random() - 0.5) * 50, s[1] - 60 - Math.random() * 40, "glut").setBlendMode(Phaser.BlendModes.ADD).setScale(0.05 + Math.random() * 0.05).setDepth(s[1] + 1); this.tweens.add({ targets: f, y: f.y - 110 - Math.random() * 90, x: f.x + (Math.random() - 0.5) * 60, alpha: 0, duration: 1300 + Math.random() * 900, onComplete: () => f.destroy() }); } }); }
   /** Weg zu einer Stelle suchen (Breitensuche über das Raster); ist sie nicht begehbar, endet der Weg am nächsten begehbaren Feld. */
   gehe(x: number, y: number) {
     const D = this.d, Z = D.zelle, B = D.zeilen[0].length, H = D.zeilen.length, zelle = (px: number, py: number) => Math.max(0, Math.min(B - 1, Math.floor(px / Z))) + B * Math.max(0, Math.min(H - 1, Math.floor(py / Z)));

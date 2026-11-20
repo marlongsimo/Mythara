@@ -18,7 +18,7 @@ Q = 0.62  # Stauchung der Höhe: so schräg schaut man auf den Boden
 
 # ---------- Orte: alle Angaben in Bildpunkten des fertigen Bildes ----------
 ORTE = {
-    "weidenhain": {
+    "baukasten": {
         "breit": 2700, "hoch": 1500,
         # Pflaster: Plätze (x, y, Halbmesser) und Wege (Punkte, halbe Breite)
         "plaetze": [(720, 520, 250)],
@@ -57,7 +57,7 @@ def strecke(X, Y, punkte):
 
 
 def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "weidenhain"; O = ORTE[name]; W = O["breit"]; HB = O["hoch"]; H = round(HB / Q); rng = np.random.default_rng(11)
+    name = sys.argv[1] if len(sys.argv) > 1 else "baukasten"; O = ORTE[name]; W = O["breit"]; HB = O["hoch"]; H = round(HB / Q); rng = np.random.default_rng(11)
     Y, X = np.mgrid[0:H, 0:W].astype(np.float32); c = math.sqrt(0.5); TU = X * c - Y * c + 4000; TV = X * c + Y * c  # Lage in den gedrehten Flächen
     rauschen = lambda s: (lambda r: r / np.abs(r).max())(ndimage.gaussian_filter(rng.standard_normal((H, W)).astype(np.float32), s))
     grob, mittel, fein, buschel = rauschen(70), rauschen(16), rauschen(8), rauschen(3.5)
