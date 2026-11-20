@@ -133,17 +133,84 @@
     #ez-konto .meldung { min-height: 1.3em; color: #ffb38a; font-size: 13px; } #ez-konto .klein { margin: 12px 0 0; font-size: 12px; color: #b9ad94; } #ez-konto a { color: #d9cdf5; }
     #ez-zoom { position: fixed; z-index: 4; right: max(8px, env(safe-area-inset-right)); top: 8px; display: flex; align-items: center; gap: 2px; padding: 2px; border-radius: 999px; background: rgba(12,10,18,.8); border: 1px solid rgba(255,215,94,.45); } #ez-zoom[hidden] { display: none; }
     #ez-zoom button { width: 30px; height: 30px; border-radius: 50%; border: 0; background: #2a2340; color: #ffe9a8; font: 600 18px Inter, sans-serif; cursor: pointer; line-height: 1; } #ez-zoom b { min-width: 46px; text-align: center; font: 600 12px Inter, sans-serif; color: #efe8d8; }
-    body.stadt #ez-zoom { top: 146px; } @media (max-width: 700px) { body.stadt #ez-zoom { top: 110px; } #ez-zoom button { width: 28px; height: 28px; } }
-    body.stadt #ez-dorf-titel { display: none; }
-    body.stadt #ez-profil { display: flex; align-items: center; gap: 10px; top: 8px; left: max(8px, env(safe-area-inset-left)); padding: 6px 14px 6px 6px; border-radius: 40px; border: 1px solid rgba(255,215,94,.45); }
-    #ez-seelen { margin-left: 6px; padding: 5px 11px; border-radius: 999px; background: rgba(40,90,150,.35); border: 1px solid rgba(143,216,255,.6); color: #cfeeff; font: 600 14px Inter, sans-serif; white-space: nowrap; }
-    #ez-profil img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid #ffd75e; } #ez-profil b { display: block; font-size: 15px; color: #fff; } #ez-profil small { font-size: 11px; color: #cfc3a8; }
-    body.stadt #ez-karte { display: block; position: fixed; z-index: 3; top: 8px; right: max(8px, env(safe-area-inset-right)); width: 190px; aspect-ratio: 1671 / 941; border-radius: 12px; border: 2px solid rgba(255,215,94,.6); background: url(../img/echtzeit/waldmark.webp) center / 100% 100%; box-shadow: 0 4px 14px rgba(0,0,0,.6); pointer-events: none; }
-    #ez-karte span { position: absolute; left: 50%; bottom: -24px; transform: translateX(-50%); padding: 2px 12px; border-radius: 10px; background: rgba(12,10,18,.75); font-family: Cinzel, Georgia, serif; font-size: 13px; color: #ffd98a; white-space: nowrap; }
-    #ez-karte u { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #ffd75e; box-shadow: 0 0 0 1.5px #000; } #ez-karte u.riss { background: #7fa8ff; }
+    /* ---------- Oberfläche in Waldmark und Orten (hud.ts): dunkle Tafeln mit Goldrahmen ---------- */
+    body.stadt #ez-dorf-titel, body.stadt #ez-heim { display: none; }
+    #ez-titel, #ez-quest, #ez-team, #ez-menue, #ez-kartenrahmen { display: none; } #ez-titel[hidden], #ez-quest[hidden], #ez-team[hidden], #ez-menue[hidden] { display: none !important; }
+    .gold { --g1: #f0d48a; --g2: #b08a3c; --g3: #5d4517; }
+    body.stadt #ez-profil { display: flex; align-items: center; gap: 12px; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); padding: 6px 22px 6px 6px; border-radius: 48px 10px 10px 48px;
+      background: linear-gradient(#2a2016, #130e09); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #5d4517, 0 8px 22px rgba(0,0,0,.6); }
+    body.stadt #ez-profil::after { content: ""; position: absolute; right: -8px; top: 50%; width: 12px; height: 12px; margin-top: -6px; transform: rotate(45deg); background: #2a1f10; border: 2px solid #e2bf6a; }
+    #ez-profil .bild { position: relative; display: block; }
+    #ez-profil img { display: block; width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid #e2bf6a; box-shadow: 0 0 0 2px #2a1f10, 0 0 0 3px #8a6a2a, 0 0 16px rgba(226,191,106,.45); }
+    #ez-profil em { position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 1px 8px; border-radius: 4px; font: 600 11px Cinzel, Georgia, serif; font-style: normal; color: #f0d48a; background: linear-gradient(#3a2a12, #1a120a); border: 1px solid #e2bf6a; white-space: nowrap; }
+    #ez-profil .name b { display: block; font: 600 17px Cinzel, Georgia, serif; color: #fff3d2; text-shadow: 0 1px 0 #000; } #ez-profil .name small { font-size: 12px; color: #cdb98a; }
+    #ez-seelen { display: flex; align-items: center; gap: 6px; margin-left: 4px; padding: 5px 12px 5px 9px; border-radius: 999px; background: linear-gradient(#1c2c46, #0d1626); border: 1px solid #b08a3c; box-shadow: inset 0 0 8px rgba(143,216,255,.25); white-space: nowrap; }
+    #ez-seelen b { font: 600 15px Inter, sans-serif; color: #e6f6ff; }
+    .kristall { display: inline-block; width: 12px; height: 18px; clip-path: polygon(50% 0, 100% 40%, 50% 100%, 0 40%); background: linear-gradient(160deg, #f4fdff, #8fd8ff 45%, #2f6db0); filter: drop-shadow(0 0 4px #8fd8ff); }
+    /* Banner oben in der Mitte: Eisenschild mit zwei Löwenfahnen */
+    body.stadt #ez-titel { display: flex; position: fixed; z-index: 3; top: 0; left: 50%; transform: translateX(-50%); align-items: flex-start; pointer-events: none; }
+    #ez-titel .fahne { width: 40px; height: 120px; object-fit: cover; object-position: top; margin-top: -4px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.6)); }
+    #ez-titel .schild { margin: 6px -8px 0; min-width: 360px; padding: 30px 64px 34px; text-align: center; background: url(../img/mythara/plakette-eisen.webp) center / 100% 100% no-repeat; filter: drop-shadow(0 8px 14px rgba(0,0,0,.65)); }
+    #ez-titel b { display: block; font: 600 27px/1.05 Cinzel, Georgia, serif; letter-spacing: .06em; color: #f0d48a; text-shadow: 0 2px 0 #000, 0 0 14px rgba(240,212,138,.35); } #ez-titel small { display: block; margin-top: 4px; text-shadow: 0 1px 2px #000; font: italic 400 15px "Cormorant Garamond", Georgia, serif; color: #e7d6ae; }
+    /* Minikarte oben rechts im Goldrahmen, mit Nordzeichen und Zoom */
+    body.stadt #ez-kartenrahmen { display: block; position: fixed; z-index: 3; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); width: 230px; padding: 6px 6px 22px; border-radius: 10px;
+      background: linear-gradient(#2a2016, #130e09); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #5d4517, 0 8px 22px rgba(0,0,0,.6); }
+    body.stadt #ez-karte { display: block; position: relative; width: 100%; aspect-ratio: 1671 / 941; border-radius: 5px; border: 1px solid #5d4517; background: url(../img/echtzeit/waldmark.webp) center / 100% 100%; box-shadow: inset 0 0 18px rgba(0,0,0,.7); pointer-events: none; overflow: hidden; }
+    body.stadt #ez-karte span { display: none; }
+    #ez-karte u { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #ffd75e; box-shadow: 0 0 0 1.5px #000, 0 0 6px #ffd75e; } #ez-karte u.riss { background: #7fa8ff; box-shadow: 0 0 0 1.5px #000, 0 0 6px #7fa8ff; }
     #ez-karte-punkt { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #1a6cff, 0 0 8px #fff; z-index: 1; }
-    body.stadt #ez-heim { top: auto; bottom: 8px; } body.stadt #ez-heim span { display: none; } body.stadt #ez-dorf-hilfe { bottom: 40px; }
-    @media (max-width: 700px) { body.stadt #ez-karte { width: 128px; } #ez-profil img { width: 42px; height: 42px; } }
+    #ez-karte span { position: absolute; transform: translateX(-50%); border-radius: 8px; background: rgba(12,10,18,.75); font-family: Cinzel, Georgia, serif; color: #ffd98a; white-space: nowrap; }
+    #ez-kartenrahmen .nord { position: absolute; top: -12px; left: 50%; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; display: grid; place-items: center; font: 600 12px Cinzel, Georgia, serif; font-style: normal; color: #f0d48a; background: radial-gradient(#3a2a12, #1a120a); border: 2px solid #e2bf6a; }
+    #ez-kartenrahmen #ez-zoom { position: absolute; top: auto; right: auto; left: 50%; bottom: -15px; transform: translateX(-50%); background: linear-gradient(#2a2016, #130e09); border: 2px solid #b08a3c; }
+    #ez-kartenrahmen #ez-zoom button { background: radial-gradient(#4a3a1c, #23190c); border: 1px solid #b08a3c; color: #f0d48a; } #ez-kartenrahmen #ez-zoom b { color: #fff3d2; font-family: Cinzel, Georgia, serif; }
+    /* Aktive Quest */
+    body.stadt #ez-quest { display: block; position: fixed; z-index: 3; top: calc(max(10px, env(safe-area-inset-top)) + 96px); left: max(10px, env(safe-area-inset-left)); width: 286px; color: #efe2c4;
+      background: linear-gradient(rgba(36,27,18,.96), rgba(18,13,9,.96)); border: 2px solid #b08a3c; border-radius: 6px; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #5d4517, 0 8px 22px rgba(0,0,0,.6); }
+    #ez-quest .kopf { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; background: linear-gradient(#3a2b16, #22180d); border: 0; border-bottom: 1px solid #5d4517; color: inherit; cursor: pointer; text-align: left; }
+    #ez-quest .kopf em { width: 22px; height: 22px; flex: none; border-radius: 50%; display: grid; place-items: center; font: 700 14px Cinzel, Georgia, serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    #ez-quest .kopf b { flex: 1; font: 600 15px Cinzel, Georgia, serif; color: #f0d48a; letter-spacing: .03em; }
+    #ez-quest .pfeil { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #b08a3c; background: #1a120a; position: relative; flex: none; } #ez-quest .pfeil::after { content: ""; position: absolute; left: 7px; top: 5px; width: 6px; height: 6px; border-right: 2px solid #f0d48a; border-bottom: 2px solid #f0d48a; transform: rotate(45deg); transition: transform .2s; }
+    #ez-quest.zu .pfeil::after { transform: rotate(-45deg); left: 6px; top: 7px; }
+    #ez-quest .titel { display: flex; align-items: center; gap: 9px; padding: 9px 12px 4px; } #ez-quest .titel img { width: 30px; height: 31px; flex: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+    #ez-quest .titel b { display: block; font: 600 15px/1.2 Cinzel, Georgia, serif; color: #fff3d2; } #ez-quest .titel small { font-size: 11px; color: #a8966a; letter-spacing: .04em; }
+    #ez-quest .kurz { display: none; margin: 0; padding: 0 12px 9px 51px; font-size: 13px; color: #e7d6ae; } #ez-quest.zu .kurz { display: block; } #ez-quest.zu .inhalt { display: none; }
+    #ez-quest ul { list-style: none; margin: 0; padding: 4px 12px 8px; display: grid; gap: 6px; } #ez-quest li { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; line-height: 1.3; color: #cdbd98; }
+    #ez-quest li i { width: 17px; height: 17px; flex: none; margin-top: 1px; border: 1px solid #b08a3c; border-radius: 3px; background: rgba(0,0,0,.45); box-shadow: inset 0 0 4px #000; position: relative; }
+    #ez-quest li.fertig { color: #8f8468; } #ez-quest li.fertig span { text-decoration: line-through; text-decoration-color: rgba(143,132,104,.6); }
+    #ez-quest li.fertig i::after { content: ""; position: absolute; left: 4px; top: -3px; width: 6px; height: 12px; border-right: 3px solid #6fdc6a; border-bottom: 3px solid #6fdc6a; transform: rotate(40deg); filter: drop-shadow(0 0 2px #000); }
+    #ez-quest li.jetzt { color: #fff3d2; font-weight: 600; } #ez-quest li.jetzt i { border-color: #f0d48a; animation: ezQuestPuls 1.8s ease-in-out infinite; }
+    @keyframes ezQuestPuls { 50% { box-shadow: inset 0 0 4px #000, 0 0 8px rgba(240,212,138,.9); } }
+    #ez-quest h4 { margin: 2px 12px 0; padding-top: 7px; border-top: 1px solid rgba(176,138,60,.4); font: 600 11px Cinzel, Georgia, serif; letter-spacing: .14em; text-transform: uppercase; color: #c9a85a; }
+    #ez-quest .neben li { font-size: 12.5px; }
+    /* Team unten links */
+    body.stadt #ez-team { display: flex; gap: 8px; position: fixed; z-index: 3; left: max(10px, env(safe-area-inset-left)); bottom: max(10px, env(safe-area-inset-bottom)); padding: 7px; border-radius: 8px;
+      background: linear-gradient(rgba(36,27,18,.94), rgba(18,13,9,.94)); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #5d4517, 0 8px 22px rgba(0,0,0,.6); }
+    #ez-team button { position: relative; padding: 0 0 8px; border: 0; background: none; cursor: pointer; }
+    #ez-team img { display: block; width: 64px; height: 64px; object-fit: cover; object-position: top; border-radius: 6px; border: 2px solid #8a6a2a; box-shadow: 0 0 0 1px #000; }
+    #ez-team .fuehrt img { border-color: #f0d48a; box-shadow: 0 0 0 1px #000, 0 0 12px rgba(240,212,138,.6); }
+    #ez-team em { position: absolute; left: -4px; top: -4px; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 10px; display: grid; place-items: center; font: 600 11px Cinzel, Georgia, serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    #ez-team i { position: absolute; left: 3px; right: 3px; bottom: 0; height: 6px; border-radius: 3px; background: #0b0d16; border: 1px solid #5d4517; overflow: hidden; } #ez-team u { display: block; height: 100%; background: linear-gradient(90deg, #3d7fc0, #8fd8ff); }
+    /* Menüknöpfe unten rechts: goldgerahmte Medaillons */
+    body.stadt #ez-menue { display: flex; gap: 10px; position: fixed; z-index: 3; right: max(10px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); }
+    #ez-menue button { display: grid; justify-items: center; gap: 3px; padding: 0; border: 0; background: none; color: #f0d48a; cursor: pointer; font: inherit; }
+    #ez-menue span { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 3px solid #b08a3c; box-shadow: 0 0 0 1px #000, inset 0 0 0 2px #2a1f10, inset 0 0 0 3px #5d4517, 0 6px 14px rgba(0,0,0,.6); transition: transform .12s, box-shadow .12s; }
+    #ez-menue svg { width: 30px; height: 30px; filter: drop-shadow(0 1px 0 #000); } #ez-menue button.riss { color: #c9a8ff; } #ez-menue button.riss span { box-shadow: 0 0 0 1px #000, inset 0 0 0 2px #2a1f10, inset 0 0 14px rgba(150,110,255,.55), 0 6px 14px rgba(0,0,0,.6); }
+    #ez-menue button:hover span { transform: translateY(-2px); box-shadow: 0 0 0 1px #000, inset 0 0 0 2px #2a1f10, inset 0 0 0 3px #5d4517, 0 0 14px rgba(240,212,138,.5); }
+    #ez-menue small { font: 600 12px Cinzel, Georgia, serif; color: #f3e3b4; text-shadow: 0 1px 2px #000, 0 0 6px #000; }
+    body.stadt #ez-dorf-hilfe { left: 50%; right: auto; transform: translateX(-50%); bottom: max(10px, env(safe-area-inset-bottom)); max-width: 34vw; text-align: center; border: 1px solid rgba(176,138,60,.4); }
+    body.stadt #ez-dorf-knopf { bottom: 96px; font-family: Cinzel, Georgia, serif; letter-spacing: .03em; border: 2px solid #e2bf6a; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #8a6a2a, 0 8px 20px rgba(0,0,0,.6); }
+    #ez-konto .tafel.menue .liste { display: grid; gap: 9px; margin: 6px 0 4px; } #ez-konto .tafel.menue .liste button { padding: 12px 16px; font: 600 15px Cinzel, Georgia, serif; letter-spacing: .04em; color: #e6d3a3; background: linear-gradient(#2c2216, #1a140d); border: 1px solid #5d4517; border-radius: 3px; cursor: pointer; }
+    #ez-konto .tafel.menue .liste button:hover { border-color: #f0d48a; color: #fff3d2; } #ez-konto .tafel.menue .liste small { color: #a8966a; font: 400 12px Inter, sans-serif; }
+    @media (max-width: 1100px) { body.stadt #ez-dorf-hilfe { display: none !important; } }
+    @media (max-width: 900px) { #ez-titel .fahne { display: none; } #ez-titel .schild { min-width: 220px; padding: 16px 30px 18px; } #ez-titel b { font-size: 20px; } #ez-titel small { font-size: 13px; } }
+    @media (max-width: 700px) { body.stadt #ez-titel { display: none; } body.stadt #ez-profil { padding-right: 14px; gap: 9px; } #ez-profil img { width: 46px; height: 46px; } #ez-profil .name b { font-size: 14px; } #ez-profil .name small { font-size: 10.5px; } #ez-seelen { padding: 3px 9px 3px 7px; } #ez-seelen b { font-size: 13px; }
+      body.stadt #ez-kartenrahmen { width: 134px; padding: 4px 4px 18px; } body.stadt #ez-karte span { display: block; left: 50%; bottom: auto; top: 2px; font-size: 10px; padding: 0 6px; } #ez-kartenrahmen .nord { display: none; } #ez-kartenrahmen #ez-zoom { bottom: -14px; } #ez-kartenrahmen #ez-zoom button { width: 26px; height: 26px; font-size: 16px; } #ez-kartenrahmen #ez-zoom b { min-width: 38px; font-size: 11px; }
+      body.stadt #ez-quest { top: calc(max(10px, env(safe-area-inset-top)) + 70px); width: min(260px, calc(100vw - 168px)); } #ez-quest .titel img { display: none; } #ez-quest .kurz { padding-left: 12px; } #ez-quest .kopf b { font-size: 13px; } #ez-quest .titel b { font-size: 13px; }
+      body.stadt #ez-profil { max-width: calc(100vw - 172px); } #ez-profil .name { min-width: 0; } #ez-profil .name b, #ez-profil .name small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; } #ez-seelen { margin-left: 0; flex: none; } #ez-team img { width: 46px; height: 46px; } #ez-team { gap: 6px; padding: 5px; }
+      #ez-menue { gap: 6px !important; } #ez-menue span { width: 46px; height: 46px; border-width: 2px; } #ez-menue svg { width: 23px; height: 23px; } #ez-menue small { font-size: 10px; } body.stadt #ez-dorf-knopf { bottom: 92px; } }
+    @media (max-height: 500px) and (max-width: 1100px) { body.stadt #ez-titel { display: none; } body.stadt #ez-karte span { display: block; left: 50%; top: 2px; font-size: 10px; padding: 0 6px; } body.stadt #ez-quest { width: 250px; } #ez-quest .titel img { display: none; } #ez-quest .kurz { padding-left: 12px; } }
+    @media (max-height: 500px) { body.stadt #ez-titel .fahne, body.stadt #ez-titel small { display: none; } #ez-titel .schild { padding: 12px 28px 14px; min-width: 200px; } #ez-titel b { font-size: 18px; } body.stadt #ez-quest { top: calc(max(8px, env(safe-area-inset-top)) + 70px); } #ez-profil img { width: 44px; height: 44px; }
+      #ez-team img { width: 42px; height: 42px; } #ez-menue span { width: 44px; height: 44px; } #ez-menue svg { width: 22px; height: 22px; } #ez-menue small { display: none; } body.stadt #ez-dorf-knopf { bottom: 66px; } body.stadt #ez-kartenrahmen { width: 150px; } }
     #ez-zurueck { padding: 12px 18px; border-radius: 10px; border: 1px solid #4b4460; background: #1a1626; color: #d9cdf5; font: 600 14px Inter, sans-serif; cursor: pointer; }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
@@ -163,9 +230,11 @@
   <div class="ez-kasten" id="ez-hilfe"></div>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
-  <div class="ez-kasten" id="ez-profil"><img id="ez-profil-bild" alt=""><div><b id="ez-profil-name">Gast</b><small id="ez-profil-held"></small></div><span id="ez-seelen" title="Seelensplitter">◈ 0</span></div>
+  <div class="ez-kasten" id="ez-profil"><span class="bild"><img id="ez-profil-bild" alt=""><em id="ez-profil-stufe">St. 1</em></span><div class="name"><b id="ez-profil-name">Gast</b><small id="ez-profil-held"></small></div><span id="ez-seelen" title="Seelensplitter"><i class="kristall"></i><b>0</b></span></div>
+  <div id="ez-titel" hidden><img class="fahne" src="../img/mythara/banner-loewe.webp" alt=""><div class="schild"><b></b><small></small></div><img class="fahne" src="../img/mythara/banner-loewe.webp" alt=""></div>
+  <div id="ez-quest" hidden></div><div id="ez-team" hidden></div><div id="ez-menue" hidden></div>
   <div id="ez-zoom" hidden><button type="button" data-z="-1" aria-label="kleiner">−</button><b>100 %</b><button type="button" data-z="1" aria-label="größer">+</button></div>
-  <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
+  <div id="ez-kartenrahmen"><div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div><i class="nord">N</i></div>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
   <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div id="ez-neben" hidden></div>
@@ -174,6 +243,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwp18d4e"></script>
+  <script src="spiel.js?v=mwp1tdg3"></script>
 </body>
 </html>
