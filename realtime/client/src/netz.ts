@@ -12,13 +12,13 @@ export const SPIELSERVER = "wss://mythara-echtzeit.onrender.com";
 /** Den Server vorsorglich wecken (der kostenlose Dienst schläft nach einer Pause): ein einfacher Abruf seiner Startseite. Einmal je Seitenaufruf. */
 let geweckt = false;
 export function wecken(): void { if (geweckt) return; geweckt = true; try { void fetch(SPIELSERVER.replace(/^wss:/, "https:").replace(/^ws:/, "http:") + "/", { mode: "no-cors", cache: "no-store" }).catch(() => { /* egal */ }); } catch { /* egal */ } }
-export interface Netz { art: "server" | "lokal"; sende(e: Eingabe): void; ende(): void }
+export interface Netz { art: "server" | "lokal"; sende(e: Eingabe): void; ende(): void; sim?: Sim /* nur ohne Server: für Prüfungen */ }
 
 function lokal(held: string, mit: string[], beiZustand: (z: Zustand) => void): Netz {
   const sim = new Sim(held, (Date.now() & 0x7fffffff) || 1, mit); let n = 0;
   let zuletzt = performance.now(), rest = 0; // nach der echten Zeit rechnen: Hängt der Browser kurz, werden die Schritte nachgeholt (höchstens fünf auf einmal)
   const takt = setInterval(() => { const jetzt = performance.now(); rest = Math.min(rest + jetzt - zuletzt, 5000 / TICK); zuletzt = jetzt; let neu = false; while (rest >= 1000 / TICK) { rest -= 1000 / TICK; sim.schritt(); if (++n % ZUSTAND_JE === 0) neu = true; } if (neu) beiZustand(sim.zustand()); }, 1000 / TICK / 2);
-  return { art: "lokal", sende: (e) => sim.eingabe(e), ende: () => clearInterval(takt) };
+  return { art: "lokal", sende: (e) => sim.eingabe(e), ende: () => clearInterval(takt), sim };
 }
 
 /** Verbinden. url leer: sofort lokal. Sonst Server versuchen. Ein kostenloser Server schläft bei Leerlauf ein und braucht bis zu einer Minute zum Aufwachen:

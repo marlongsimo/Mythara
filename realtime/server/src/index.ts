@@ -10,7 +10,7 @@
  */
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, stufeAusEp } from "../../shared/config";
+import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen } from "../../shared/karten";
@@ -71,7 +71,7 @@ wss.on("connection", (ws, req) => {
   const p: Platz = { ws, sim: null, zuletzt: Date.now(), fenster: Date.now(), zahl: 0 }; plaetze.add(p);
   console.log("Verbindung:", karte ? `Kampf ${ort}/${karte}` : "Riss", "· Held", held, "· Begleiter", mit.length);
   const los = () => ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
-  if (!karte) { karteNehmen(GRUNDKARTE); Object.assign(STAERKE, { lp: 1, schaden: 1, beute: null, ep: 0 }); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); los(); }
+  if (!karte) { karteNehmen(GRUNDKARTE); Object.assign(STAERKE, { lp: 1, schaden: 1, beute: null, ep: 0 }); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k]; p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); los(); }
   else if (!KARTEN[karte] || !ORTSTUFE[ort] || !SB_URL || !SB_KEY) { console.log("Kampf abgelehnt: unbekannt oder Supabase nicht eingerichtet"); ws.close(4400, "kampf unbekannt"); plaetze.delete(p); return; }
   const frist = karte ? setTimeout(() => { if (!p.sim) { console.log("Kampf abgelehnt: keine Anmeldung binnen 10 s"); ws.close(4401, "keine anmeldung"); } }, 10000) : null;
   ws.on("message", async (roh) => {
@@ -80,7 +80,7 @@ wss.on("connection", (ws, req) => {
     if (karte && !p.sim) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false, gesiegt: false };
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
         if (!darfKaempfen(siege, ort, karte)) { console.log("Kampf abgelehnt: noch nicht freigeschaltet", ort, karte, [...siege].join(",")); ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
-        setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const [h, v] of Object.entries(ep)) HELDENSTUFE[h] = stufeAusEp(Number(v) || 0);
+        setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k]; for (const [h, v] of Object.entries(ep)) { HELDENEP[h] = Number(v) || 0; HELDENSTUFE[h] = stufeAusEp(HELDENEP[h]); }
         p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte); if (ws.readyState === WebSocket.OPEN) los();
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }

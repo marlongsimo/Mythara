@@ -122,6 +122,8 @@ export const stufeAusEp = (ep: number): number => { let s = 1; while (s < STUFE_
 export const STUFENBONUS = (s: number) => ({ lp: 0.05 * (s - 1), angriff: 3 * (s - 1), abwehr: 3 * (s - 1), schaden: 0.03 * (s - 1), abklingen: s >= 10 ? 0.2 : s >= 5 ? 0.1 : 0 });
 /** Stufen der Helden in der laufenden Simulation (vom Spielstand gesetzt; fehlt ein Held, gilt Stufe 1) */
 export const HELDENSTUFE: Record<string, number> = {};
+/** Erfahrung der Helden beim Anlegen einer Simulation (vom Spielstand gesetzt). Daraus steigen sie mitten im Kampf auf. */
+export const HELDENEP: Record<string, number> = {};
 /* beute: Seelensplitter je besiegtem Gegner (von–bis), nach Stufe der Aufgabe: Stufe 1 gibt 2–5, jede weitere Stufe 1–2 mehr. Ein Boss gibt das Sechsfache.
    Ist beute gesetzt (Kampagne), bleiben die Splitter am Boden liegen und werden im Darüberlaufen aufgehoben; der Kampf läuft nach dem Sieg weiter, bis man ihn verlässt. */
 export function setzeStaerke(stufe: number, helden: number): void { const g = 0.45 + 0.15 * stufe, n = Math.max(1, Math.min(3, helden)); STAERKE.lp = g * (0.5 + 0.5 * n); STAERKE.schaden = g * (1 + 0.1 * (n - 1)); STAERKE.beute = [1 + stufe, 3 + 2 * stufe]; STAERKE.ep = g; }

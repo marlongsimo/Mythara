@@ -3,7 +3,7 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
-import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, stufeAusEp } from "../../shared/config";
+import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
@@ -23,7 +23,7 @@ const P = new URLSearchParams(location.search), $ = (s: string) => document.quer
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
 const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
-const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) HELDENSTUFE[k] = stufeAusEp(Number(v) || 0); }
+const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) { HELDENEP[k] = Number(v) || 0; HELDENSTUFE[k] = stufeAusEp(HELDENEP[k]); } }
 const SERVER = FLACH ? "" : P.get("server") ?? SPIELSERVER; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -190,8 +190,13 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
-    else if (ev.a === "ep" && kampfJetzt) { if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; let auf = 0; for (const h of team) { const n = epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ if (h === kampfJetzt.held && n) auf = n; } zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
-      if (auf) { const ich = this.bilder.get(this.ichId); if (ich) { const o = this.add.text(ich.c.x, ich.c.y - 110, "Stufe " + auf + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "26px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 900, duration: 1300, onComplete: () => o.destroy() }); } } }
+    else if (ev.a === "ep" && kampfJetzt) { if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; for (const h of team) epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
+      const xp = document.getElementById("ez-xpleiste"); if (xp) { xp.classList.remove("plus"); void xp.offsetWidth; xp.classList.add("plus"); } }
+    else if (ev.a === "stufe") { /* Stufenaufstieg mitten im Kampf: Lichtsäule, Ring und Schrift über dem Helden */ const b = this.bilder.get(ev.id); if (!b) return; const x = b.c.x, y = b.c.y, ich = ev.id === this.ichId;
+      const saeule = this.add.rectangle(x, y - 60, 70, 170, 0xffe9a8, 0.35).setDepth(99990).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: saeule, scaleX: 0.2, alpha: 0, duration: 1100, onComplete: () => saeule.destroy() });
+      const ring = this.add.ellipse(x, y, 60, 26).setStrokeStyle(4, 0xffd75e, 1).setDepth(99990); this.tweens.add({ targets: ring, scaleX: 3, scaleY: 3, alpha: 0, duration: 900, onComplete: () => ring.destroy() });
+      const o = this.add.text(x, y - 120, (ich ? "" : HELDEN[b.typ].name + " · ") + "Stufe " + ev.s + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: ich ? "28px" : "20px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999);
+      this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 1100, duration: 1300, onComplete: () => o.destroy() }); if (ich) { this.cameras.main.flash(260, 255, 230, 160); } }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, FLACH ? "#8fd8ff" : "#ff9aa8");
     else if (ev.a === "laden") { /* Spezialangriff: Die Fläche am Boden füllt sich, während der Gegner lädt */ const p = iso(ev.x, ev.y), rx = ev.r * (FLACH ? ZELLE : KW * 0.705), ry = ev.r * (FLACH ? ZELLE : KHOCH * 0.705);
       const rand = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0xb8ff3a, 0.12).setStrokeStyle(3, 0xd8ff5a, 0.95).setDepth(3), kern = this.add.ellipse(p.x, p.y, rx * 2, ry * 2, 0x9be020, 0.45).setDepth(3).setScale(0.05);
@@ -204,6 +209,8 @@ class Spiel extends Phaser.Scene {
   anzeige(z: Zustand) {
     const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus];
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = ich[10] ? `gefallen – zurück in ${Math.ceil(z.ich.wieder)} s` : `${ich[7]} / ${ich[8]}` + (ich[11] > 0 ? ` · Schutz ${ich[11]}` : "");
+    if (FLACH && z.ich.stufe) { const s = z.ich.stufe, e = z.ich.ep || 0, von = EP_BIS[s], bis = s < STUFE_MAX ? EP_BIS[s + 1] : von; const xp = $("#ez-xpleiste"); xp.hidden = false; ($("#ez-xp") as HTMLElement).style.width = (s < STUFE_MAX ? Math.min(100, Math.round(100 * (e - von) / (bis - von))) : 100) + "%";
+      $("#ez-xpzahl").textContent = s < STUFE_MAX ? `Stufe ${s} · ${e - von} / ${bis - von} EP` : `Stufe ${s} · höchste Stufe`; }
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); (el.querySelector("i") as HTMLElement).style.height = (cd > 0 ? Math.round(100 * cd / def.zeit) : 0) + "%"; (el.querySelector("b") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : taste.toUpperCase(); const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = def.text; } }
     const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
