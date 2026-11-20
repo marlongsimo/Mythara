@@ -10,29 +10,30 @@ grund:  alpha    die Vorlage ist schon durchsichtig; fast unsichtbare Farbreste 
         karo     ein Karomuster (weiß/hellgrau) ist ins Bild gemalt
         karo2    wie karo, aber mit dunklerem Grau (kräftiges Karo)
         karo3    wie karo2, entfernt auch kleine eingeschlossene Reste – nur für dunkle Figuren ohne helle, graue Flächen
+        karoG    wie karo, behält aber mehrere getrennte Figuren (Gruppenbild)
         karoS    wie karo, entfernt auch einen grauen Schlagschatten am Boden – nur für Figuren ohne neutralgraue Flächen
         schwarz  schwarzer Hintergrund; violettes oder helles Leuchten läuft weich aus
 Die Ausgabe nennt je Bild den Rahmen der festen Teile (links, oben, rechts, unten im Feld der Vorlage) – daraus ergeben sich die Maße in shared/config.ts.
 """
-import sys
+import os, sys
 import numpy as np
 from PIL import Image, ImageFilter
 from scipy import ndimage
 
-Z = 176
+Z = int(os.environ.get("FELD", 176))  # Feldgröße der Ausgabe; für Gruppenbilder größer wählen (FELD=300)
 
 
 def alpha_sauber(im):
     a = np.asarray(im.convert("RGBA")).copy(); a[..., 3] = np.where(a[..., 3] < 14, 0, a[..., 3]); return Image.fromarray(a, "RGBA")
 
 
-def karo_weg(z, ab=218, insel=50):
+def karo_weg(z, ab=218, insel=50, alle=0):
     a = np.asarray(z.convert("RGB")).astype(np.int16); mx = a.max(-1); mn = a.min(-1); karo = (mx - mn <= 8) & (mn >= ab); lab, n = ndimage.label(karo)
     rand = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}; bg = np.isin(lab, list(rand)); gr = ndimage.sum(karo, lab, range(1, n + 1))
     for k in range(1, n + 1):
         if k not in rand and gr[k - 1] >= insel: bg |= lab == k  # eingeschlossene Flächen zwischen Arm und Körper
     bg = ndimage.binary_dilation(bg, iterations=1); alpha = np.where(bg, 0, 255).astype(np.uint8); deck = alpha > 0; l2, m = ndimage.label(deck); g2 = ndimage.sum(deck, l2, range(1, m + 1))
-    alpha = np.where(l2 == 1 + int(np.argmax(g2)), alpha, 0).astype(np.uint8)  # nur die zusammenhängende Figur behalten
+    alpha = np.where(np.isin(l2, [i + 1 for i in range(m) if g2[i] >= alle]) if alle else l2 == 1 + int(np.argmax(g2)), alpha, 0).astype(np.uint8)  # nur die zusammenhängende Figur behalten (alle: jede Figur ab dieser Größe, für Gruppen)
     o = Image.fromarray(np.dstack([a.astype(np.uint8), alpha]), "RGBA"); o.putalpha(o.split()[3].filter(ImageFilter.GaussianBlur(0.7)).point(lambda v: 0 if v < 110 else min(255, int((v - 110) * 255 / 120)))); return o
 
 
@@ -46,7 +47,7 @@ def schwarz_weg(z):
 
 
 def frei(z, grund):
-    return alpha_sauber(z) if grund == "alpha" else karo_weg(z) if grund == "karo" else karo_weg(z, 185, 300) if grund == "karo2" else karo_weg(z, 185, 20) if grund == "karo3" else karo_weg(z, 150, 50) if grund == "karoS" else schwarz_weg(z)
+    return alpha_sauber(z) if grund == "alpha" else karo_weg(z) if grund == "karo" else karo_weg(z, 185, 300) if grund == "karo2" else karo_weg(z, 185, 20) if grund == "karo3" else karo_weg(z, 150, 50) if grund == "karoS" else karo_weg(z, 218, 50, 1500) if grund == "karoG" else schwarz_weg(z)
 
 
 def rahmen(z): return z.split()[3].point(lambda v: 255 if v > 200 else 0).getbbox()
