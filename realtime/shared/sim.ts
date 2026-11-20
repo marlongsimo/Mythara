@@ -207,6 +207,10 @@ export class Sim {
   private begleiterZug(w: Wesen): void {
     const f = this.nach(w.fuehrer), D = HELDEN[w.typ]; let ziel: Wesen | undefined;
     const folgen = () => { if (f && !f.tot && abstand(w, f) > 2.4) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = weg(w, { x: f.x - Math.cos(f.blick) * 1.2, y: f.y - Math.sin(f.blick) * 1.2 }); w.neuWeg = 0.4; } } };
+    /* Gefahr am Boden: Lädt ein Gegner einen Flächenangriff und der Begleiter steht darin, läuft er auf dem kürzesten Weg hinaus – in Richtung des Anführers, wenn der schon draußen ist. */
+    for (const g of this.wesen) { if (g.held || g.tot || g.ladeT <= 0) continue; const S = MONSTER[g.typ].spezial!, d = Math.hypot(w.x - g.ladeX, w.y - g.ladeY), rand = S.radius + w.r + 0.5; if (d >= rand) continue;
+      let wx = w.x - g.ladeX, wy = w.y - g.ladeY; if (f && !f.tot && Math.hypot(f.x - g.ladeX, f.y - g.ladeY) > rand) { wx = f.x - g.ladeX; wy = f.y - g.ladeY; } const l = Math.hypot(wx, wy) || 1;
+      w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, naechstFrei({ x: g.ladeX + wx / l * (rand + 0.8), y: g.ladeY + wy / l * (rand + 0.8) })); w.neuWeg = 0.5; } w.zielId = 0; return; }
     if (f && !f.tot && abstand(w, f) > 8) { w.zielId = 0; folgen(); return; }
     if (w.typ === "lichtbringer") { // heilen, wer es braucht; sonst mit dem Streitkolben helfen
       const v = this.schwaechster(w, 12, 0.92), feind = this.naechsterGegner(w, 2.6);
