@@ -13,6 +13,7 @@ import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
 import { Dorf } from "./dorf";
 import { Stadt } from "./stadt";
+import { zoomFaktor, zoomKnopf } from "./zoom";
 import { Ort, ortName } from "./ort";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
@@ -52,7 +53,7 @@ class Spiel extends Phaser.Scene {
     if (!FLACH) { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
       const r = this.add.sprite(q.x, q.y, "rune").setDepth(2).setScale(0.62, 0.31).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9); r.play("rune"); this.tweens.add({ targets: r, alpha: 0.55, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
     this.zielMarke = this.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setDepth(2).setVisible(false);
-    this.groesse(); this.scale.on("resize", () => this.groesse());
+    this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse());
     this.input.mouse?.disableContextMenu();
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => this.druck(p));
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) this.knueppel(p); else if (!p.wasTouch) this.zeiger = this.zuWelt(p); });
@@ -70,7 +71,7 @@ class Spiel extends Phaser.Scene {
     verbinde(SERVER, held, mit, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
       $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel – angegriffen wird in Reichweite · ⇄ Waffe wechseln · Q, E, R: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel – angegriffen wird in Reichweite · Leertaste: Waffe wechseln · Q, E, R: Fähigkeiten in Mausrichtung"; });
   }
-  groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2))); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
+  groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2) * zoomFaktor())); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2) * zoomFaktor()); }
   /** Der Boden: ein gemaltes Bild aus den Raumkarten des Würfelspiels, mit Schatten und Fackellicht (werkzeug/dekor.py) */
   boden() { this.add.image(-DEKOR.OX, 0, "boden").setOrigin(0, 0).setDepth(0); }
   /** Mauern: je Feld ein gemauerter Block, nach Tiefe sortiert. Hinter einem Raum hoch, davor niedrig – so verdecken sie die Figuren nicht. */

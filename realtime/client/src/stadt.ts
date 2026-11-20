@@ -5,6 +5,7 @@
  * Die alte, aus Einzelteilen gebaute Stadt gibt es noch unter ?stadt=alt (dorf.ts).
  */
 import { weltkarte } from "./weltkarte";
+import { zoomFaktor, zoomKnopf } from "./zoom";
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 
@@ -105,7 +106,7 @@ export class Stadt extends Phaser.Scene {
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { const st = this.stick; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.tippen(w.x / F, w.y / F); } this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } });
     $("#ez-dorf-knopf").onclick = () => this.betreten(); $("#ez-dorf-titel").textContent = "Waldmark";
     $("#ez-dorf-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · an einem Ort den Knopf antippen" : "WASD: laufen · an einem Ort: E oder Enter";
-    this.cameras.main.setBounds(0, 0, BW * F, BH * F); this.groesse(); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
+    this.cameras.main.setBounds(0, 0, BW * F, BH * F); this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
     (window as unknown as Record<string, unknown>).EZD = { szene: this, ort: () => this.ort, nah: () => (this.nah ? this.nah.name : ""), frei };
   }
   /** Bewegung im Standbild: Feuer flackert, Rauch steigt, Wasser fällt und glitzert, der Riss pulsiert. Alles aus kleinen erzeugten Lichtpunkten, ohne weitere Bilder. */
@@ -128,7 +129,7 @@ export class Stadt extends Phaser.Scene {
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
   profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-name").textContent = "Test"; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
-  groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
+  groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
   /** Kurz getippt oder geklickt: Liegt ein Ort in der Nähe der Stelle, geht der Held dorthin und betritt ihn; sonst läuft er zur getippten Stelle. */
   tippen(x: number, y: number) { if (this.gesperrt) return; let ort: (typeof ORTE)[number] | null = null, best = 1e9;
     for (const q of ORTE) { const a = Math.hypot(x - q.x, y - (q.y - 45)); /* die Gebäude stehen über ihrem Eingang */ if (a < q.r + 120 && a < best) { best = a; ort = q; } }

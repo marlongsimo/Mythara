@@ -6,6 +6,7 @@
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 import { team, kampagneGeschafft } from "./weltkarte";
+import { zoomFaktor, zoomKnopf } from "./zoom";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -24,7 +25,11 @@ const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy
  * Wer ein offenes Gespräch hat, trägt ein Ausrufezeichen über dem Kopf. Ist alles gesagt, kommt nur noch der Satz unter „sonst“.
  */
 interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string }
-const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; reden: Rede[]; sonst: Zeile }> = {
+const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; reden: Rede[]; sonst: Zeile }> = {
+  /* gross: Anteil an der Größe eines Erwachsenen (Tebbe sitzt); zeigen: erst da, wenn dieser Merker gesetzt ist */
+  tebbe: { name: "Tebbe", feld: 240, koerper: 0.805, fuss: 0.957, gross: 0.52, zeigen: "tebbe_gefunden", sonst: { wer: "Tebbe", text: "Die Katze heißt Mehl. Sie hat mich gefunden, nicht ich sie." },
+    reden: [{ setzt: "tebbe_rede", schluss: "Ruh dich aus", zeilen: [{ wer: "Tebbe", text: "Die Große am Wehr hat mich gar nicht angesehen. Sie hat nur nach oben geschaut, zu den Lichtern. Ich glaube, sie hat Angst." }],
+      fragen: [{ knopf: "Was macht dein Bein?", zeilen: [{ wer: "Tebbe", text: "Tut weh. Aber Lene sagt, ich darf beim Fest aufbleiben. Also ist es nicht so schlimm." }] }] }] },
   hanne: { name: "Hanne Kalk", feld: 240, koerper: 0.871, fuss: 0.984, sonst: { wer: "Hanne Kalk", text: "Der Speicher ist gleich da oben, das große Tor. Beeil dich." },
     reden: [{ setzt: "hanne", schluss: "Ich sehe mir den Speicher an",
       zeilen: [{ wer: "Hanne Kalk, Bürgermeisterin", text: "Du da. Du siehst aus, als könntest du kämpfen. Kannst du?" }, { wer: "Hanne Kalk", text: "Im Kornspeicher sitzen Kröten. So groß wie Hunde. Sie fressen uns das Korn weg, mitten im Erntefest." },
@@ -101,23 +106,30 @@ export class Ort extends Phaser.Scene {
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id || !p.isDown) return; const dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; st.weit = Math.max(st.weit, l); if (!p.wasTouch) return; /* mit der Maus wird nur geklickt */
       ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.gehe(w.x, w.y); } this.stick = null; $("#ez-stick").hidden = true; if (p.wasTouch) { this.rx = 0; this.ry = 0; } });
-    this.groesse(); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x, this.ort.y);
+    this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x, this.ort.y);
+    { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); const H = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + H.bild; $("#ez-profil-name").textContent = "Test"; $("#ez-profil-held").textContent = `${H.name} · ${H.klasse}`;
+      const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
-  groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); }
-  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number; ruf: Phaser.GameObjects.Text }[] = []; merker: Record<string, boolean> = {}; pfeil!: Phaser.GameObjects.Graphics;
+  groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); }
+  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number; ruf: Phaser.GameObjects.Text; teile: (Phaser.GameObjects.Sprite | Phaser.GameObjects.Text)[] }[] = []; merker: Record<string, boolean> = {}; pfeil!: Phaser.GameObjects.Graphics;
   /** Das nächste offene Gespräch einer Person (oder keins) */
-  offen(id: string): Rede | null { for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
-  merke(m: string) { this.merker[m] = true; try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } for (const q of this.personen) q.ruf.setVisible(Boolean(this.offen(q.id))); }
+  da(id: string) { const z = LEUTE[id].zeigen; return !z || Boolean(this.merker[z]); }
+  offen(id: string): Rede | null { if (!this.da(id)) return null; for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
+  merke(m: string) { this.merker[m] = true; try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } this.sicht(); }
+  sicht() { const k = $("#ez-karte"), D = this.d; for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); /* Minikarte: gelb, wer etwas zu sagen hat; blau die Tür, zu der es geht */
+    const punkt = (x: number, y: number, tuer: boolean) => { const u = document.createElement("u"); u.style.left = (100 * x / D.breit) + "%"; u.style.top = (100 * y / D.hoch) + "%"; if (tuer) u.className = "riss"; k.appendChild(u); };
+    for (const q of this.personen) if (this.offen(q.id)) punkt(q.x, q.y, false); if (!this.personen.some((q) => this.offen(q.id))) { const z = this.ziel(); if (z) punkt(z[0], z[1], true); }
+    for (const q of this.personen) { q.ruf.setVisible(Boolean(this.offen(q.id))); for (const t of q.teile) t.setVisible(this.da(q.id)); } }
   /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
   leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
     for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
       if (!this.anims.exists("leute-" + id)) this.anims.create({ key: "leute-" + id, frames: this.anims.generateFrameNumbers("leute-" + id, {}), frameRate: 2.5, repeat: -1, yoyo: true });
-      const m = GROSS * 0.92 / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y).play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
-      this.add.text(x, y - GROSS - 10, L.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
-      const ruf = this.add.text(x, y - GROSS - 30, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "44px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setResolution(2).setDepth(99981);
-      this.tweens.add({ targets: ruf, y: ruf.y - 9, duration: 650, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); this.personen.push({ id, x, y, ruf }); }
-    for (const q of this.personen) q.ruf.setVisible(Boolean(this.offen(q.id)));
+      const hh = GROSS * 0.92 * (L.gross || 1), m = hh / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ const sp = this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y).play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
+      const nm = this.add.text(x, y - hh - 18, L.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
+      const ruf = this.add.text(x, y - hh - 38, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "44px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setResolution(2).setDepth(99981);
+      this.tweens.add({ targets: ruf, y: ruf.y - 9, duration: 650, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); this.personen.push({ id, x, y, ruf, teile: [sp, nm] }); }
+    this.sicht();
     this.pfeil = this.add.graphics().setDepth(-2); this.pfeil.fillStyle(0xffd23a, 0.95).lineStyle(3, 0x3a2400, 0.9); this.pfeil.beginPath(); this.pfeil.moveTo(26, 0); this.pfeil.lineTo(-6, -17); this.pfeil.lineTo(2, 0); this.pfeil.lineTo(-6, 17); this.pfeil.closePath(); this.pfeil.fillPath().strokePath(); this.tweens.add({ targets: this.pfeil, alpha: 0.7, duration: 600, yoyo: true, repeat: -1 }); }
   /** Wohin es als Nächstes geht: zur nächsten Person mit Ausrufezeichen, sonst zur Stelle aus dem Wegweiser. */
   ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { if (!this.offen(q.id)) continue; const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
@@ -166,7 +178,7 @@ export class Ort extends Phaser.Scene {
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
     if (!this.gesperrt) { let nah = ""; for (const k in TUEREN) { const t = this.d.stellen[k]; if (t && !this.merker["kampf_" + TUEREN[k].kampf] && TUEREN[k].wenn.every((m) => this.merker[m]) && Math.hypot(o.x - t[0], (o.y - t[1]) / Q) < 110) nah = "@" + k; }
-      for (const q of this.personen) if (Math.hypot(o.x - q.x, (o.y - q.y) / Q) < 120) nah = q.id;
+      for (const q of this.personen) if (this.da(q.id) && Math.hypot(o.x - q.x, (o.y - q.y) / Q) < (LEUTE[q.id].gross ? 85 : 120)) nah = q.id;
       if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = (nah[0] === "@" ? TUEREN[nah.slice(1)].knopf : "Mit " + LEUTE[nah].name.split(" ")[0] + " sprechen") + (HANDY ? "" : "  [E]"); } }
     { const z = this.gesperrt ? null : this.ziel(), weit = z ? Math.hypot(z[0] - o.x, (z[1] - o.y) / Q) : 0; if (z && weit > 130) { const w = Math.atan2((z[1] - o.y) / Q, z[0] - o.x), ax = Math.cos(w), ay = Math.sin(w); this.pfeil.setVisible(true).setPosition(o.x + ax * 62, o.y + ay * 62 * Q).setRotation(Math.atan2(ay * Q, ax)).setScale(1.5, 1.5); } else this.pfeil.setVisible(false); }
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }
@@ -177,6 +189,7 @@ export class Ort extends Phaser.Scene {
       if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     this.figur.setPosition(o.x, o.y + 3).setDepth(o.y); this.ring.setPosition(o.x, o.y).setDepth(o.y - 0.01);
+    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; }
     const k = this.cameras.main; k.scrollX += (o.x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (o.y - 40 - k.height / 2 - k.scrollY) * 0.12;
   }
 }
