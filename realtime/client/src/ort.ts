@@ -7,6 +7,7 @@ import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
+import { kontoKnopf } from "./konto";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -106,7 +107,7 @@ export class Ort extends Phaser.Scene {
       ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.gehe(w.x, w.y); } this.stick = null; $("#ez-stick").hidden = true; if (p.wasTouch) { this.rx = 0; this.ry = 0; } });
     this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x, this.ort.y);
-    { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); const H = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + H.bild; $("#ez-profil-name").textContent = "Test"; $("#ez-profil-held").textContent = `${H.name} · ${H.klasse}`;
+    { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); const H = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + H.bild; $("#ez-profil-held").textContent = `${H.name} · ${H.klasse}`; kontoKnopf();
       const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
