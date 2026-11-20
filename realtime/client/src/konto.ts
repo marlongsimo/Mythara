@@ -67,15 +67,19 @@ export async function kontoStart(): Promise<boolean> {
 
 /** Das Profil oben links: zeigt den Namen; ein Klick öffnet Anmelden oder Abmelden. */
 export function kontoKnopf() {
-  const el = $("#ez-profil"); if (!el) return; { let n = 0; try { n = Number(localStorage.getItem("ez_seelen")) || 0; } catch { /* privat */ } const se = $("#ez-seelen"); if (se) se.textContent = "◈ " + n; } $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
+  const el = $("#ez-profil"); if (!el) return; { let n = 0; try { n = Number(localStorage.getItem("ez_seelen")) || 0; } catch { /* privat */ } const se = $("#ez-seelen"); if (se) se.innerHTML = `<i class="kristall"></i><b>${n}</b>`; } $("#ez-profil-name").textContent = name || "Gast · anmelden"; el.style.cursor = "pointer"; el.style.pointerEvents = "auto"; el.title = name ? "Konto" : "Anmelden";
   el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); fenster(); };
 }
+/** Für das Menü: Profilfenster, Abmelden, zur Anmeldung */
+export function kontoFenster(zu?: () => void) { fenster(zu); }
+export function kontoAbmelden() { return abmelden(); }
+export function kontoAnmelden() { zurAnmeldung(); }
 /** Vor dem Spiel: Wer nicht angemeldet ist, kommt einmal je Besuch auf die Anmeldeseite (anmelden.html, gestaltet wie die des Würfelspiels). Dort meldet man sich an, legt ein Konto an oder spielt als Gast weiter. */
 export function kontoSeite(): Promise<void> { if (name || !verbindung()) return Promise.resolve(); try { if (sessionStorage.getItem("ez__gefragt") === "1") return Promise.resolve(); } catch { return Promise.resolve(); } zurAnmeldung(); return new Promise(() => { /* die Seite wechselt */ }); }
 function zurAnmeldung() { location.replace("anmelden.html" + (location.search ? "?weiter=" + encodeURIComponent(location.search) : "")); }
 /** Das Profil als Tafel: Name, Seelensplitter, Kampagnen – und die Wahl des Bildnisses. Das gewählte Bildnis ist auch die Figur, mit der man durch die Waldmark läuft (in Kampagnen läuft immer der Anführer des Teams). */
-function fenster() {
-  const f = $("#ez-konto"); f.hidden = false; const zu = () => { f.hidden = true; f.innerHTML = ""; };
+function fenster(danach?: () => void) {
+  const f = $("#ez-konto"); f.hidden = false; const zu = () => { f.hidden = true; f.innerHTML = ""; if (danach) danach(); };
   const lies1 = (k: string) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }; let held = lies1("ez_held"); if (!HELDEN[held]) held = "schildwaechter"; const start = held;
   const kopf = () => `<img src="../${HELDEN[held].bild}" alt=""><div><b></b><small>${HELDEN[held].name} · ${HELDEN[held].klasse}</small></div>`;
   f.innerHTML = `<div class="tafel"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>

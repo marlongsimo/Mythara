@@ -8,7 +8,8 @@ import { HELDEN } from "../../shared/config";
 import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
-import { kontoKnopf } from "./konto";
+import { heldenhalle } from "./halle";
+import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel } from "./hud";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -73,6 +74,8 @@ const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; 
 const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.41]];
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
   "Pst, nicht so laut.", "Na, wenn du meinst.", "Der Winter kommt früh, wetten?", "Mein Vetter aus Graufurt sagt …", "Ha! Das glaubst du doch selbst nicht.", "Hm.", "Die Rüben waren nie so groß.", "Wer tanzt nachher?", "So ein Unsinn.", "Wem gehört eigentlich der Karren?", "Drei Kupfer für ein Brot!", "Erzähl das bloß nicht weiter."];
+/* Unterzeile im Ortsbanner */
+const UNTER: Record<string, string> = { weidenhain: "Das Dorf am Mühlgraben", baukasten: "Probefläche" };
 const TEMPO = 190, GROSS = (ORTE[ortName] && ORTE[ortName].gross) || 112, Q = 0.62; // Bildpunkte je Sekunde, Größe des Helden, nach oben und unten läuft man langsamer (der Boden liegt schräg)
 
 export class Ort extends Phaser.Scene {
@@ -109,7 +112,9 @@ export class Ort extends Phaser.Scene {
       ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.gehe(w.x, w.y); } this.stick = null; $("#ez-stick").hidden = true; if (p.wasTouch) { this.rx = 0; this.ry = 0; } });
     this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x, this.ort.y);
-    { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); const H = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + H.bild; $("#ez-profil-held").textContent = `${H.name} · ${H.klasse}`; kontoKnopf();
+    { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); hudProfil(this.held); hudTitel(D0.name, UNTER[ortName] || ""); hudKarte();
+      { const t = team(); hudTeam(t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }
+      hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.halle() }, { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; hudProfil(this.held); }); } }]);
       const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
@@ -119,10 +124,14 @@ export class Ort extends Phaser.Scene {
   da(id: string) { const z = LEUTE[id].zeigen; return !z || Boolean(this.merker[z]); }
   offen(id: string): Rede | null { if (!this.da(id)) return null; for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
   merke(m: string) { this.merker[m] = true; try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } this.sicht(); }
+  halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.setVisible(false); }
+  /** Die Heldenhalle über den Knopf unten rechts */
+  halle() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); heldenhalle(() => { this.gesperrt = false; hudProfil(this.held); const t = team(); hudTeam(t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }); }
   sicht() { const k = $("#ez-karte"), D = this.d; for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); /* Minikarte: gelb, wer etwas zu sagen hat; blau die Tür, zu der es geht */
     const punkt = (x: number, y: number, tuer: boolean) => { const u = document.createElement("u"); u.style.left = (100 * x / D.breit) + "%"; u.style.top = (100 * y / D.hoch) + "%"; if (tuer) u.className = "riss"; k.appendChild(u); };
     for (const q of this.personen) if (this.offen(q.id)) punkt(q.x, q.y, false); if (!this.personen.some((q) => this.offen(q.id))) { const z = this.ziel(); if (z) punkt(z[0], z[1], true); }
-    for (const q of this.personen) { q.ruf.setVisible(Boolean(this.offen(q.id))); for (const t of q.teile) t.setVisible(this.da(q.id)); } }
+    for (const q of this.personen) { q.ruf.setVisible(Boolean(this.offen(q.id))); for (const t of q.teile) t.setVisible(this.da(q.id)); }
+    hudQuest(ortName, this.merker); /* die Schritte der Quest oben links */ }
   /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
   leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
     for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;

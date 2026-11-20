@@ -6,9 +6,9 @@
  */
 import { weltkarte } from "./weltkarte";
 import { heldenhalle } from "./halle";
+import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "./hud";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
-import { kontoKnopf } from "./konto";
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 
@@ -131,7 +131,10 @@ export class Stadt extends Phaser.Scene {
       this.add.particles(x * F, y * F, "fx-weiss", { x: { min: -150 * F, max: 150 * F }, y: { min: -110 * F, max: 110 * F }, speedY: { min: -30, max: -10 }, speedX: { min: -8, max: 8 }, lifespan: { min: 900, max: 1800 }, scale: { start: 0.2, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: [0x8fb4ff, 0xc9a8ff, 0xffffff], frequency: 55, blendMode: ADD }).setDepth(1); } // Funken steigen aus dem Riss
   }
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
-  profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`; kontoKnopf(); if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
+  profil() { hudProfil(this.held); hudTitel("Waldmark", "Die Zuflucht der Wanderer"); hudKarte();
+    /* In der Waldmark keine Questanzeige und keine Teamleiste – die gibt es in den Orten der Kampagnen */
+    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.oeffne("halle") }, { name: "Weltkarte", zeichen: "karte", tat: () => this.oeffne("welt") }, { name: "Riss", zeichen: "riss", art: "riss", tat: () => this.oeffne("riss") },
+      { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; this.profil(); }); } }]); if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
   /** Kurz getippt oder geklickt: Liegt ein Ort in der Nähe der Stelle, geht der Held dorthin und betritt ihn; sonst läuft er zur getippten Stelle. */
@@ -140,10 +143,13 @@ export class Stadt extends Phaser.Scene {
     if (ort && ort === this.nah && frei(x, y)) ort = null; /* man steht schon dort und tippt auf den Boden: einfach hinlaufen – betreten wird über den Knopf oder einen Tipp auf das Gebäude selbst */
     if (ort && ort === this.nah) { this.pfad = []; this.betreten(); return; }
     this.zielOrt = ort; this.pfad = wegZu(this.ort.x, this.ort.y, ort ? ort.x : x, ort ? ort.y : y); }
-  betreten() { const o = this.nah; if (!o || this.gesperrt) return;
+  halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.zielOrt = null; }
+  /** Riss, Heldenhalle oder Weltkarte öffnen – vor Ort oder über die Knöpfe unten rechts */
+  oeffne(tat: "riss" | "halle" | "welt") { if (this.gesperrt) return; this.betreten({ tat } as (typeof ORTE)[number]); }
+  betreten(ziel?: (typeof ORTE)[number]) { const o = ziel || this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
-    else if (o.tat === "halle") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; heldenhalle(() => { this.gesperrt = false; }); }
-    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; weltkarte(() => { this.gesperrt = false; }); }
+    else if (o.tat === "halle") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; heldenhalle(() => { this.gesperrt = false; this.profil(); }); }
+    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; weltkarte(() => { this.gesperrt = false; this.profil(); }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.rx, ry = this.ry;
