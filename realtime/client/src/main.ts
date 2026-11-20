@@ -29,9 +29,9 @@ class Spiel extends Phaser.Scene {
     const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); if (HELDEN[k].schildStand) this.load.image("schildstand-" + k, "../" + HELDEN[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
-    for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, { start: 0, end: 7 }), frameRate: 11, repeat: -1 });
-      if (HELDEN[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
-      for (const art of ["hieb", "hieb2"] as const) if (HELDEN[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, { start: 0, end: 7 }), frameRate: 20, repeat: 0 }); }
+    for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
+      if (HELDEN[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
+      for (const art of ["hieb", "hieb2"] as const) if (HELDEN[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
     this.licht(); this.fackeln();
     { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
       const r = this.add.sprite(q.x, q.y, "rune").setDepth(2).setScale(0.62, 0.31).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9); r.play("rune"); this.tweens.add({ targets: r, alpha: 0.55, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }

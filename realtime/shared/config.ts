@@ -94,7 +94,7 @@ export const HELDEN: Record<string, HeldDef> = {
     e: { name: "Giftklinge", zeit: 14, text: "Die nächsten 3 Dolchtreffer vergiften: 6 Schaden je Sekunde für 3 Sekunden." },
     r: { name: "Hinrichtung", zeit: 75, text: "110 Schaden an einem Ziel in Nahkampfreichweite; unter 25 % Leben 75 % mehr (nicht bei Bossen)." },
     passiv: "Nachbluten: Dolchtreffer verursachen 3 Schaden je Sekunde für 3 Sekunden (wird erneuert, nicht gestapelt)." },
-  kopfgeldjaeger: { name: "Orin", titel: "Der Kopfgeldjäger", klasse: "Waldläufer", rolle: "Gezielter Fernkampf", bild: "img/figuren/kopfgeldjaeger.jpg",
+  kopfgeldjaeger: { name: "Orin", titel: "Der Kopfgeldjäger", klasse: "Waldläufer", rolle: "Gezielter Fernkampf", bild: "img/figuren/kopfgeldjaeger.jpg", figur: "img/echtzeit/orin.webp", fuss: [0.46, 0.95], gross: 1.1, lauf: "img/echtzeit/orin-lauf.webp", laufMass: [0.46, 0.941, 0.854], hieb: "img/echtzeit/orin-schuss.webp", hiebMass: [0.48, 0.98, 0.898], hieb2: "img/echtzeit/orin-messer.webp", hieb2Mass: [0.47, 0.959, 0.872],
     lp: 245, tempo: 3.9, angriff: { nah: 45, fern: 115, magie: 20 }, abwehr: { nah: 55, fern: 75, magie: 40 },
     modi: [{ name: "Schwere Armbrust", art: "fern", schaden: [25, 45], takt: 1.45, reich: 9, flug: 18, text: "Hoher Einzelschaden. Treffer senken die Verteidigung des Ziels (Durchbrechen)." },
       { name: "Jagdmesser", art: "nah", schaden: [8, 16], takt: 0.85, reich: 1.5, text: "Schneller Nahkampf zur Selbstverteidigung." }],
