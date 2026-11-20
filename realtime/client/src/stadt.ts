@@ -37,6 +37,12 @@ const ORTE: { name: string; x: number; y: number; r: number; tat: "riss" | "bald
   { name: "Schmiede", x: 1080, y: 560, r: 55, tat: "bald", text: "Schmiede – kommt noch" },
   { name: "Brücke", x: 505, y: 845, r: 45, tat: "bald", text: "Über die Brücke geht es bald in den Wald" },
 ];
+/* Was sich im Bild bewegt (Bildpunkte der Vorlage): Feuer [x, y, Größe], Rauch [x, y], Wasserfälle [x, y oben, Breite, Fallhöhe], Glitzern [x, y, Breite, Höhe], Mitte des Risses */
+const FEUER: number[][] = [[708, 437, 1], [940, 378, 1], [982, 436, 1], [760, 290, 0.8], [1258, 126, 1], [1508, 176, 1], [1322, 268, 0.9], [1490, 298, 0.9], [1215, 548, 1.3]];
+const RAUCH: number[][] = [[553, 68]];
+const WASSER: number[][] = [[135, 432, 34, 60], [447, 752, 44, 40], [305, 668, 40, 26], [795, 478, 14, 30], [862, 466, 14, 32], [880, 548, 16, 34], [940, 536, 14, 30], [826, 546, 12, 26]];
+const GLITZER: number[][] = [[120, 540, 90, 60], [600, 890, 240, 40], [852, 512, 190, 50], [470, 810, 60, 40]];
+const RISS: number[] = [1385, 725];
 const drin = (p: Pkt[], x: number, y: number) => { let d = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) d = !d; return d; };
 const frei = (x: number, y: number) => drin(FLAECHE, x, y) && !HINDERNIS.some((h) => drin(h, x, y));
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
@@ -55,6 +61,7 @@ export class Stadt extends Phaser.Scene {
       const xs = v.umriss.map((p) => p[0]), ys = v.umriss.map((p) => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0, key = "vorn" + n;
       if (!this.textures.exists(key)) { const t = this.textures.createCanvas(key, Math.ceil(w * Q), Math.ceil(h * Q)); if (!t) return; const c = t.getContext(); c.beginPath(); v.umriss.forEach((p, i) => (i ? c.lineTo((p[0] - x0) * Q, (p[1] - y0) * Q) : c.moveTo((p[0] - x0) * Q, (p[1] - y0) * Q))); c.closePath(); c.clip(); c.drawImage(quelle, x0 * Q, y0 * Q, w * Q, h * Q, 0, 0, w * Q, h * Q); t.refresh(); }
       this.add.image(x0 * F, y0 * F, key).setOrigin(0, 0).setScale(F / Q).setDepth(v.fuss); });
+    this.leben();
     if (P.get("zeig") === "1") { const g = this.add.graphics().setDepth(9999); const mal = (p: Pkt[], f: number) => { g.lineStyle(2, f, 1); g.strokePoints(p.map((q) => ({ x: q[0] * F, y: q[1] * F })), true); }; mal(FLAECHE, 0x00ff00); HINDERNIS.forEach((h) => mal(h, 0xff0000)); VORN.forEach((v) => mal(v.umriss, 0x00aaff)); for (const o of ORTE) g.strokeCircle(o.x * F, o.y * F, o.r * F); }
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 46, 23).setStrokeStyle(3, 0xffffff, 0.95);
     if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(84 * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
@@ -68,6 +75,23 @@ export class Stadt extends Phaser.Scene {
     $("#ez-dorf-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · an einem Ort den Knopf antippen" : "WASD: laufen · an einem Ort: E oder Enter";
     this.cameras.main.setBounds(0, 0, BW * F, BH * F); this.groesse(); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
     (window as unknown as Record<string, unknown>).EZD = { szene: this, ort: () => this.ort, nah: () => (this.nah ? this.nah.name : ""), frei };
+  }
+  /** Bewegung im Standbild: Feuer flackert, Rauch steigt, Wasser fällt und glitzert, der Riss pulsiert. Alles aus kleinen erzeugten Lichtpunkten, ohne weitere Bilder. */
+  leben() {
+    const punkt = (key: string, r: number, innen: string, aussen: string) => { if (this.textures.exists(key)) return; const t = this.textures.createCanvas(key, r * 2, r * 2); if (!t) return; const c = t.getContext(), g = c.createRadialGradient(r, r, 0, r, r, r); g.addColorStop(0, innen); g.addColorStop(1, aussen); c.fillStyle = g; c.fillRect(0, 0, r * 2, r * 2); t.refresh(); };
+    punkt("fx-warm", 32, "rgba(255,200,120,1)", "rgba(255,120,40,0)"); punkt("fx-weiss", 16, "rgba(255,255,255,1)", "rgba(255,255,255,0)"); punkt("fx-rauch", 32, "rgba(190,190,190,.5)", "rgba(150,150,150,0)");
+    const ADD = Phaser.BlendModes.ADD;
+    for (const [x, y, g] of FEUER) { // Flammen: flackernder Schein und aufsteigende Funken
+      const s = this.add.image(x * F, y * F, "fx-warm").setBlendMode(ADD).setScale(1.5 * g).setAlpha(0.5).setDepth(y + 40); this.tweens.add({ targets: s, alpha: 0.28, scale: 1.25 * g, duration: 90 + Math.random() * 140, yoyo: true, repeat: -1, repeatDelay: Math.random() * 160 });
+      this.add.particles(x * F, y * F, "fx-warm", { x: { min: -5 * g, max: 5 * g }, speedY: { min: -46, max: -22 }, speedX: { min: -6, max: 6 }, lifespan: { min: 350, max: 700 }, scale: { start: 0.22 * g, end: 0 }, alpha: { start: 0.9, end: 0 }, frequency: 70, blendMode: ADD }).setDepth(y + 41); }
+    for (const [x, y] of RAUCH) this.add.particles(x * F, y * F, "fx-rauch", { x: { min: -5, max: 5 }, speedY: { min: -30, max: -18 }, speedX: { min: 4, max: 16 }, lifespan: { min: 2600, max: 3800 }, scale: { start: 0.35, end: 1.5 }, alpha: { start: 0.55, end: 0 }, frequency: 260 }).setDepth(2);
+    for (const [x, y, b, h] of WASSER) { // fallendes Wasser: helle Streifen, unten Gischt
+      this.add.particles(x * F, y * F, "fx-weiss", { x: { min: -b * F / 2, max: b * F / 2 }, speedY: { min: h * F * 1.6, max: h * F * 2.3 }, lifespan: 520, scaleX: 0.14, scaleY: { start: 0.7, end: 0.4 }, alpha: { start: 0.55, end: 0 }, tint: 0xbfe6ff, frequency: 45, blendMode: ADD }).setDepth(1);
+      this.add.particles(x * F, (y + h) * F, "fx-weiss", { x: { min: -b * F / 2 - 4, max: b * F / 2 + 4 }, speedY: { min: -26, max: -8 }, speedX: { min: -18, max: 18 }, lifespan: { min: 300, max: 600 }, scale: { start: 0.3, end: 0.05 }, alpha: { start: 0.5, end: 0 }, tint: 0xdff3ff, frequency: 60, blendMode: ADD }).setDepth(1); }
+    for (const [x, y, b, h] of GLITZER) this.add.particles(x * F, y * F, "fx-weiss", { x: { min: -b * F / 2, max: b * F / 2 }, y: { min: -h * F / 2, max: h * F / 2 }, speed: 0, lifespan: { min: 500, max: 1100 }, scale: { start: 0, end: 0.22, ease: "Sine.easeInOut" }, alpha: { start: 0.8, end: 0 }, tint: 0xcfeaff, frequency: 110, blendMode: ADD }).setDepth(1); // Glitzern auf Bach und Brunnen
+    { const [x, y] = RISS, glut = this.add.image(x * F, y * F, "fx-weiss").setBlendMode(ADD).setTint(0x6a8cff).setScale(15, 9).setAngle(-32).setAlpha(0.22).setDepth(1); this.tweens.add({ targets: glut, alpha: 0.08, duration: 1700, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      const blitz = this.add.image(x * F, y * F, "fx-weiss").setBlendMode(ADD).setTint(0xbcd0ff).setScale(17, 10).setAngle(-32).setAlpha(0).setDepth(1); const zucken = () => { this.tweens.add({ targets: blitz, alpha: { from: 0.32, to: 0 }, duration: 160, repeat: Math.random() < 0.4 ? 1 : 0, onComplete: () => this.time.delayedCall(900 + Math.random() * 3200, zucken) }); }; this.time.delayedCall(1200, zucken);
+      this.add.particles(x * F, y * F, "fx-weiss", { x: { min: -150 * F, max: 150 * F }, y: { min: -110 * F, max: 110 * F }, speedY: { min: -30, max: -10 }, speedX: { min: -8, max: 8 }, lifespan: { min: 900, max: 1800 }, scale: { start: 0.2, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: [0x8fb4ff, 0xc9a8ff, 0xffffff], frequency: 55, blendMode: ADD }).setDepth(1); } // Funken steigen aus dem Riss
   }
   groesse() { const k = this.cameras.main; k.setZoom(Math.max(this.scale.width / (BW * F), this.scale.height / (BH * F), Phaser.Math.Clamp(this.scale.height / (HANDY ? 520 : 760), 0.6, 2.2))); }
   betreten() { const o = this.nah; if (!o || this.gesperrt) return;
