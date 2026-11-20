@@ -11,7 +11,7 @@ const KW = 64, KHOCH = 32, R = 0.36, TEMPO = 4.2;
 const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = window.matchMedia("(pointer: coarse)").matches || new URLSearchParams(location.search).get("handy") === "1";
-interface Bau { id: string; name: string; r: number[]; h: number; wand: string; dach: string; tuer: number[]; tat: string; text: string; bild?: string }
+interface Bau { id: string; name: string; r: number[]; h: number; wand: string; dach: string; tuer: number[]; tat: string; text: string; bild?: string; flach?: boolean; breite?: number; anker?: number[] }
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
 
 export class Dorf extends Phaser.Scene {
@@ -19,7 +19,7 @@ export class Dorf extends Phaser.Scene {
   bauten: { b: Bau; g: Phaser.GameObjects.Container }[] = []; nah: Bau | null = null; gesperrt = false; stick: { id: number; x: number; y: number } | null = null;
   constructor() { super("dorf"); }
   init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter"; }
-  preload() { this.load.image("dorf-boden", "../img/echtzeit/dorf-boden.webp"); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 });
+  preload() { this.load.image("dorf-boden", "../img/echtzeit/dorf-boden.webp"); for (const b of DORF.bauten as Bau[]) if (b.bild) this.load.image("bau-" + b.id, "../" + b.bild); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 });
     const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     document.body.classList.add("dorf"); this.events.once("shutdown", () => { document.body.classList.remove("dorf"); $("#ez-dorf-knopf").hidden = true; });
@@ -27,7 +27,7 @@ export class Dorf extends Phaser.Scene {
     if (!this.textures.exists("schein")) { const t = this.textures.createCanvas("schein", 128, 128); if (t) { const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,190,110,1)"); g.addColorStop(0.35, "rgba(255,140,60,.45)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); } }
     if (!this.anims.exists("fackel")) this.anims.create({ key: "fackel", frames: this.anims.generateFrameNumbers("fackel", {}), frameRate: 11, repeat: -1 });
     if (!this.anims.exists("rune")) this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", {}), frameRate: 9, repeat: -1 });
-    for (const l of DORF.lichter.slice(DORF.bauten.length)) { const p = iso(l[0], l[1]); this.add.rectangle(p.x, p.y - 22, 4, 44, 0x2a2430).setDepth(10 + (l[0] + l[1]) * 10); const f = this.add.sprite(p.x, p.y - 44, "fackel").setOrigin(0.5, 0.8).setScale(0.6).setDepth(10 + (l[0] + l[1]) * 10 + 0.1); f.play({ key: "fackel", startFrame: Math.floor(Math.random() * 9) });
+    for (const l of DORF.lichter.slice((DORF.bauten as Bau[]).filter((b) => !b.flach).length)) { const p = iso(l[0], l[1]); this.add.rectangle(p.x, p.y - 22, 4, 44, 0x2a2430).setDepth(10 + (l[0] + l[1]) * 10); const f = this.add.sprite(p.x, p.y - 44, "fackel").setOrigin(0.5, 0.8).setScale(0.6).setDepth(10 + (l[0] + l[1]) * 10 + 0.1); f.play({ key: "fackel", startFrame: Math.floor(Math.random() * 9) });
       const s = this.add.image(p.x, p.y, "schein").setBlendMode(Phaser.BlendModes.ADD).setScale(1.8, 0.9).setAlpha(0.22).setDepth(1); this.tweens.add({ targets: s, alpha: 0.14, duration: 120 + Math.random() * 160, yoyo: true, repeat: -1 }); }
     { const B = DORF.brunnen, p = iso(B.x, B.y), g = this.add.graphics().setDepth(10 + (B.x + B.y) * 10); g.fillStyle(0x4a4658).fillEllipse(p.x, p.y, B.r * KW * 1.3, B.r * KHOCH * 1.3); g.fillStyle(0x2b3f5c).fillEllipse(p.x, p.y - 6, B.r * KW * 1.05, B.r * KHOCH * 1.05); g.lineStyle(3, 0x7b768c).strokeEllipse(p.x, p.y - 6, B.r * KW * 1.3, B.r * KHOCH * 1.3);
       const r = this.add.sprite(p.x, p.y - 34, "rune").setScale(0.42).setBlendMode(Phaser.BlendModes.ADD).setDepth(10 + (B.x + B.y) * 10 + 0.2); r.play("rune"); this.tweens.add({ targets: r, y: p.y - 40, alpha: 0.7, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
@@ -48,6 +48,13 @@ export class Dorf extends Phaser.Scene {
   groesse() { this.cameras.main.setZoom(Phaser.Math.Clamp(this.scale.height / (HANDY ? 430 : 640), 0.7, 2.2)); }
   /** Ein Gebäude als Kasten mit Dach und Schild (Platzhalter, bis es ein Bild gibt) */
   bau(b: Bau): Phaser.GameObjects.Container {
+    if (b.bild && !b.flach) { // ein gemaltes Gebäude: steht mit der vorderen Ecke seines Sockels auf der vorderen Ecke des Grundrisses
+      const v = iso(b.r[0] + b.r[2], b.r[1] + b.r[3]), a = b.anker || [0.5, 0.98], bild = this.add.image(v.x, v.y, "bau-" + b.id).setOrigin(a[0], a[1]); bild.setScale((b.breite || 300) / bild.width); return this.add.container(0, 0, [bild]); }
+    if (b.bild && b.flach) { // ein Bild, das flach am Boden liegt (der Riss): Schimmer und Schild darüber
+      const m = iso(b.r[0] + b.r[2] / 2, b.r[1] + b.r[3] / 2), bild = this.add.image(m.x, m.y, "bau-" + b.id); bild.setScale((b.breite || 300) / bild.width);
+      const s = this.add.image(m.x, m.y, "schein").setBlendMode(Phaser.BlendModes.ADD).setTint(0x6aa0ff).setScale(3.2, 1.6).setAlpha(0.35); this.tweens.add({ targets: s, alpha: 0.15, duration: 1300, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+      const schild = this.add.text(m.x, m.y - bild.displayHeight / 2 - 4, b.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#cfe0ff", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5);
+      return this.add.container(0, 0, [bild, s, schild]).setDepth(3); }
     const [x, y, w, t] = b.r, g = this.add.graphics(), c = this.add.container(0, 0), A = iso(x, y), B = iso(x + w, y), C = iso(x + w, y + t), Dp = iso(x, y + t), h = b.h, farbe = (s: string) => Phaser.Display.Color.HexStringToColor(s), mal = (s: string, f: number) => { const k = farbe(s); return Phaser.Display.Color.GetColor(Math.min(255, k.red * f), Math.min(255, k.green * f), Math.min(255, k.blue * f)); };
     const flaeche = (pts: { x: number; y: number }[], col: number) => { g.fillStyle(col, 1); g.beginPath(); g.moveTo(pts[0].x, pts[0].y); for (const p of pts.slice(1)) g.lineTo(p.x, p.y); g.closePath(); g.fillPath(); };
     const hoch = (p: { x: number; y: number }, n = h) => ({ x: p.x, y: p.y - n });
@@ -75,9 +82,9 @@ export class Dorf extends Phaser.Scene {
       const sx = this.rx - this.ry; if (Math.abs(sx) > 0.2) this.figur.setFlipX(sx < 0); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(84 / (L[2] * 176)); } else { const F = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(F[0], F[1]).setScale(84 * (D.gross || 1) / this.figur.height); } }
     const p = iso(o.x, o.y), tief = 10 + (o.x + o.y) * 10; this.figur.setPosition(p.x, p.y + 3).setDepth(tief + 5); this.ring.setPosition(p.x, p.y).setDepth(tief + 4);
-    for (const { b, g } of this.bauten) { const [x, y, w, t] = b.r; g.setDepth(o.x >= x + w || o.y >= y + t ? tief - 20 : tief + 20); } // wer vor einem Gebäude steht, verdeckt es; wer dahinter steht, wird verdeckt
+    for (const { b, g } of this.bauten) { if (b.flach) continue; const [x, y, w, t] = b.r; g.setDepth(o.x >= x + w || o.y >= y + t ? tief - 20 : tief + 20); } // wer vor einem Gebäude steht, verdeckt es; wer dahinter steht, wird verdeckt
     const k = this.cameras.main; k.scrollX += (p.x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (p.y - 40 - k.height / 2 - k.scrollY) * 0.12;
-    let nah: Bau | null = null; for (const { b } of this.bauten) if (Math.hypot(o.x - b.tuer[0], o.y - b.tuer[1]) < 1.5) nah = b;
+    let nah: Bau | null = null; for (const { b } of this.bauten) { const [x, y, w, t] = b.r; if (b.flach ? Math.hypot(o.x - Phaser.Math.Clamp(o.x, x, x + w), o.y - Phaser.Math.Clamp(o.y, y, y + t)) < 1.0 : Math.hypot(o.x - b.tuer[0], o.y - b.tuer[1]) < 1.3) nah = b; } // an den Riss kann man von jeder Seite herantreten
     if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.tat === "bald" ? nah.name : nah.text + (HANDY ? "" : "  [E]"); }
   }
 }
