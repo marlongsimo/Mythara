@@ -51,6 +51,8 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
         { text: "Ilse am Brunnen anhören", fertig: "ilse" }, { text: "Die Kinder aus dem Moor holen", fertig: "kampf_schrein" }, { text: "Ilse Bescheid geben", fertig: "ilse_dank" }] },
       { titel: "Was Bertold verschweigt", wenn: ["hedda"], schritte: [
         { text: "Bertold nach Alwine fragen", fertig: "bertold_schuld" }, { text: "Alwine zur Ruhe bringen", fertig: "kampf_schrein" }, { text: "Bertolds Geständnis hören", fertig: "bertold_gestanden" }] },
+      { titel: "Fackeln am Brunnen", wenn: ["bertold"], schritte: [
+        { text: "Harm, den Schmied, anhören", fertig: "harm" }, { text: "Heddas Geschichte erfahren", fertig: "hedda" }, { text: "Die Meute nach Hause schicken", fertig: "harm_ruhig" }] },
       { titel: "Jorins Schwester", wenn: ["bertold"], schritte: [{ text: "Mit Jorin reden", fertig: "jorin" }] },
     ] },
 };
@@ -85,23 +87,27 @@ export function hudKarte() { const z = $("#ez-zoom"), r = $("#ez-kartenrahmen");
 /* ---------- Aktive Quest ---------- */
 let questZu = (() => { const v = lies("ezhud_quest"); return v ? v === "zu" : window.innerWidth < 700 || window.innerHeight < 500; })(); /* auf kleinen Bildschirmen anfangs eingeklappt */
 /** Die Quest eines Ortes zeigen (oder ausblenden, wenn ort leer ist) */
+/* Was einzeln eingeklappt ist: "haupt", "neben" und je Nebenquest "nq:<Titel>" – auf dem Gerät gemerkt */
+let klappe: Record<string, boolean> = (() => { try { return JSON.parse(lies("ezhud_klappe") || "{}") || {}; } catch { return {}; } })();
 export function hudQuest(ort: string, merker: Record<string, boolean>) {
   const el = $("#ez-quest"), Q = QUESTS[ort]; if (!el) return; if (!Q) { el.hidden = true; return; } el.hidden = false;
   const zeile = (s: Schritt, an: boolean) => `<li class="${merker[s.fertig] ? "fertig" : an ? "jetzt" : ""}"><i></i><span>${s.text}</span></li>`;
+  const pfeil = (k: string) => `<i class="pfeil klein" data-k="${k}"></i>`;
   const offen = Q.haupt.findIndex((s) => !merker[s.fertig]), jetzt = offen < 0 ? Q.haupt.length : offen;
   const haupt = Q.haupt.slice(0, jetzt + 1).map((s, i) => zeile(s, i === jetzt)).join("");
   const neben = Q.neben.filter((n) => n.wenn.every((m) => merker[m])).map((n) => {
     const sicht = n.frei ? n.schritte.filter((s) => (s.wenn || []).every((m) => merker[m])) : (() => { const o = n.schritte.findIndex((s) => !merker[s.fertig]); return n.schritte.slice(0, o < 0 ? n.schritte.length : o + 1); })();
-    const fertig = n.schritte.every((s) => merker[s.fertig]), erste = sicht.findIndex((s) => !merker[s.fertig]);
-    return `<div class="nq${fertig ? " fertig" : ""}"><div class="nqkopf"><em>${fertig ? "✓" : "!"}</em><b>${n.titel}</b></div>${fertig ? "" : `<ul>${sicht.map((s, i) => zeile(s, !n.frei && i === erste)).join("")}</ul>`}</div>`; });
+    const fertig = n.schritte.every((s) => merker[s.fertig]), erste = sicht.findIndex((s) => !merker[s.fertig]), k = "nq:" + n.titel, zu = fertig || klappe[k];
+    return `<div class="nq${fertig ? " fertig" : ""}${zu ? " zu" : ""}"><div class="nqkopf" ${fertig ? "" : `data-k="${k}"`}><em>${fertig ? "✓" : "!"}</em><b>${n.titel}</b>${fertig ? "" : pfeil(k)}</div>${fertig ? "" : `<ul>${sicht.map((s, i) => zeile(s, !n.frei && i === erste)).join("")}</ul>`}</div>`; });
   const offenNeben = Q.neben.filter((n) => n.wenn.every((m) => merker[m]) && !n.schritte.every((s) => merker[s.fertig])).length;
   el.classList.toggle("zu", questZu);
   el.innerHTML = `<button type="button" class="kopf" aria-expanded="${!questZu}"><em>!</em><b>Quests</b>${offenNeben ? `<span class="zahl" title="offene Nebenquests">${offenNeben}</span>` : ""}<i class="pfeil"></i></button>
-    <div class="abschnitt haupt"><h4><em>!</em>Hauptquest</h4><div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe}</small></div></div>
+    <div class="abschnitt haupt${klappe.haupt ? " zu" : ""}"><h4 data-k="haupt"><em>!</em>Hauptquest${pfeil("haupt")}</h4><div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe}</small></div></div>
     <p class="kurz">${offen < 0 ? "Alles erledigt" : Q.haupt[offen].text}</p><div class="inhalt"><ul>${haupt}</ul></div></div>
-    ${neben.length ? `<div class="abschnitt neben inhalt"><h4><em>!</em>Nebenquests</h4>${neben.join("")}</div>` : ""}`;
+    ${neben.length ? `<div class="abschnitt neben inhalt${klappe.neben ? " zu" : ""}"><h4 data-k="neben"><em>!</em>Nebenquests${offenNeben ? ` <span class="anz">${offenNeben} offen</span>` : ""}${pfeil("neben")}</h4><div class="liste">${neben.join("")}</div></div>` : ""}`;
   const k = el.querySelector(".kopf") as HTMLElement; k.onpointerdown = (e) => e.stopPropagation();
   k.onclick = (e) => { e.stopPropagation(); questZu = !questZu; try { localStorage.setItem("ezhud_quest", questZu ? "zu" : "auf"); } catch { /* privat */ } hudQuest(ort, merker); };
+  for (const t of Array.from(el.querySelectorAll<HTMLElement>("h4[data-k], .nqkopf[data-k]"))) t.onclick = (e) => { e.stopPropagation(); const key = t.dataset.k as string; klappe[key] = !klappe[key]; try { localStorage.setItem("ezhud_klappe", JSON.stringify(klappe)); } catch { /* privat */ } hudQuest(ort, merker); };
   el.onpointerdown = (e) => e.stopPropagation();
 }
 

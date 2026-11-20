@@ -65,9 +65,9 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
   jorin: { name: "Jorin", feld: 240, koerper: 0.967, fuss: 0.979, gross: 0.7, sonst: { wer: "Jorin", text: "Ich bin bis Weidenhain gerannt. Ohne Pause. Fast ohne Pause." },
     reden: [{ wenn: ["bertold"], setzt: "jorin", schluss: "Gut gemacht, Jorin", fragen: [],
       zeilen: [{ wer: "Jorin", text: "Du bist wirklich gekommen! Ich hab's ihnen gesagt. Keiner hat mir geglaubt." }, { wer: "Jorin", text: "Fenna ist meine Schwester. Wenn du sie siehst, sag ihr, ich hab ihr Haarband. Sie soll es sich wiederholen." }] }] },
-  joost: { name: "Joost", feld: 176, koerper: 0.909, fuss: 0.955, blatt: "wanderer", still: true, sonst: { wer: "Joost", text: "Der Kahn liegt bereit. Steig ein, wenn du so weit bist." },
+  joost: { name: "Joost", feld: 240, koerper: 0.958, fuss: 0.975, sonst: { wer: "Joost", text: "Der Kahn liegt bereit. Steig ein, wenn du so weit bist." },
     reden: [{ wenn: ["kampf_bohlenweg"], setzt: "joost", schluss: "Bring mich hin",
-      zeilen: [{ wer: "Joost, der Torfstecher", text: "Du kommst vom Bohlenweg? Dann weißt du jetzt, dass man zu Fuß nicht weit kommt." },
+      zeilen: [{ wer: "Joost, der Fischer", text: "Du kommst vom Bohlenweg? Dann weißt du jetzt, dass man zu Fuß nicht weit kommt." },
         { wer: "Joost", text: "Ich bring dich mit dem Kahn durch den alten Kanal ins Ried. Weiter als bis zum Ende des Kanals fahre ich nicht. Da drinnen sitzen die Kröten dicht wie Torf." }],
       fragen: [{ knopf: "Was liegt hinter dem Ried?", zeilen: [{ wer: "Joost", text: "Heddas Hütte, auf der letzten trockenen Insel. Und dahinter das tiefe Moor, wo keiner von uns hingeht." }] }] }] },
   hedda: { name: "Mutter Hedda", feld: 240, koerper: 0.967, fuss: 0.975, gross: 0.95, zeigen: "kampf_ried", sonst: { wer: "Mutter Hedda", text: "Geh den Totenpfad. Und sprich mit ihr. Sie hat lange niemanden mehr gehört." },
@@ -78,6 +78,18 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
         { wer: "Mutter Hedda", text: "Hinter meiner Hütte beginnt der Totenpfad. Die dort liegen, sind ihr gefolgt. Sie stehen auf, wenn man über sie geht." }],
       fragen: [{ knopf: "Warum hast du es niemandem gesagt?", zeilen: [{ wer: "Mutter Hedda", text: "Ich habe es gesagt. Fünfzig Jahre lang. Sie haben aufgehört zuzuhören, und dann haben sie angefangen, mich die Hexe zu nennen." }] },
         { knopf: "Kann man Alwine retten?", zeilen: [{ wer: "Mutter Hedda", text: "Retten nicht. Aber man kann sie ruhen lassen. Sag ihr ihren Namen, wenn du vor ihr stehst. Den hat sie lange nicht gehört." }] }] }] },
+  harm: { name: "Harm", feld: 240, koerper: 0.967, fuss: 0.979, sonst: { wer: "Harm", text: "Ich weiß nicht, was ich glauben soll. Aber ich weiß, dass ich heute Nacht niemanden anzünde." },
+    reden: [{ wenn: ["bertold"], setzt: "harm", schluss: "Wartet, bis ich zurück bin",
+      zeilen: [{ wer: "Harm, der Schmied", text: "Du bist der Fremde aus Weidenhain? Dann geh uns aus dem Weg." },
+        { wer: "Harm", text: "Drei Nächte. Drei Kinder. Und jede Nacht brennt bei der Alten im Moor Licht. Wir gehen hin, sobald es dunkel ist, und dann brennt etwas anderes." }],
+      fragen: [{ knopf: "Habt ihr Beweise?", zeilen: [{ wer: "Harm", text: "Beweise? Meine Frau hat sie Kräuter ins Wasser streuen sehen. Mehr braucht keiner." }] },
+        { knopf: "Und wenn ihr euch irrt?", zeilen: [{ wer: "Harm", text: "Dann irren wir uns. Und die Kinder sind trotzdem weg." }, { text: "Hinter ihm brummt jemand zustimmend. Die Fackeln sind noch nicht angezündet. Noch nicht." }] }] },
+      { wenn: ["harm", "hedda"], setzt: "harm_ruhig", schluss: "Geht nach Hause",
+        zeilen: [{ wer: "Harm", text: "Du warst bei ihr. Und du lebst noch. Also?" },
+          { text: "Du erzählst ihm von Alwine, der Schwester, die ins Moor ging, als das Wasser stieg. Und dass keiner aus dem Dorf ihr nachgegangen ist." },
+          { wer: "Harm", text: "Alwine … Meine Großmutter hat den Namen manchmal gesagt. Leise. So, als dürfte man ihn nicht sagen." },
+          { text: "Harm sieht auf die Fackel in seiner Hand. Dann dreht er sich zu den anderen um." },
+          { wer: "Harm", text: "Geht heim. Alle. Heute brennt hier nichts." }], fragen: [] }] },
   /* ---------- Weidenhain ---------- */
   /* gross: Anteil an der Größe eines Erwachsenen (Tebbe sitzt); zeigen: erst da, wenn dieser Merker gesetzt ist */
   tebbe: { name: "Tebbe", feld: 240, koerper: 0.805, fuss: 0.957, gross: 0.52, zeigen: "tebbe_gefunden", sonst: { wer: "Tebbe", text: "Die Katze heißt Mehl. Sie hat mich gefunden, nicht ich sie." },
@@ -143,7 +155,7 @@ const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; 
   rabenmoor: [
     { wenn: [], setzt: "ankunft", titel: "Rabenmoor", schluss: "Weiter", zeilen: [{ text: "Rabenmoor liegt auf einer Sandinsel mitten im Schwarzmoor. Die Sonne geht unter, und über dem Wasser stehen schon die ersten Lichter, still wie Sterne, die zu tief hängen." },
       { text: "Auf dem Platz am Brunnen stehen Leute mit Fackeln, die noch nicht brennen. Jorin, der Junge, der dich geholt hat, zieht dich am Ärmel zum Schulzen." }] },
-    { wenn: ["kampf_bohlenweg"], setzt: "bohlen_nach", titel: "Am Ende des Bohlenwegs", schluss: "Weiter", zeilen: [{ text: "Hinter der letzten Insel bricht der Bohlenweg ab. Weiter geht es nur übers Wasser." }, { text: "Auf dem Rückweg winkt dir am Anleger ein Mann mit Torfspaten. Neben ihm liegt ein Kahn." }] },
+    { wenn: ["kampf_bohlenweg"], setzt: "bohlen_nach", titel: "Am Ende des Bohlenwegs", schluss: "Weiter", zeilen: [{ text: "Hinter der letzten Insel bricht der Bohlenweg ab. Weiter geht es nur übers Wasser." }, { text: "Auf dem Rückweg winkt dir am Anleger ein Fischer mit Netz über der Schulter. Neben ihm liegt ein Kahn." }] },
     { wenn: ["kampf_ried"], setzt: "ried_nach", titel: "Am Ende des Kanals", schluss: "Weiter", zeilen: [{ text: "Joost rudert dich zurück, so schnell er kann. Am Rand des Rieds hast du Licht gesehen, warmes Licht: Heddas Hütte auf der letzten trockenen Insel." }, { text: "Vom Dorf aus führt ein Pfad hinauf zu ihr." }] },
     { wenn: ["kampf_schrein"], setzt: "ende", titel: "Der Name im Wasser", schluss: "Zurück in die Waldmark", ende: 2, zeilen: [{ text: "Du sagst ihren Namen. Alwine. Die Stumme hält inne, und zum ersten Mal seit fünfzig Jahren hat sie ein Gesicht." },
       { text: "Die Lichter über dem Moor gehen aus, eins nach dem anderen. Zwischen den Spiralsteinen liegen drei Kinder im Moos und schlafen." },
@@ -155,6 +167,9 @@ const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; 
 const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.41]];
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
   "Pst, nicht so laut.", "Na, wenn du meinst.", "Der Winter kommt früh, wetten?", "Mein Vetter aus Graufurt sagt …", "Ha! Das glaubst du doch selbst nicht.", "Hm.", "Die Rüben waren nie so groß.", "Wer tanzt nachher?", "So ein Unsinn.", "Wem gehört eigentlich der Karren?", "Drei Kupfer für ein Brot!", "Erzähl das bloß nicht weiter."];
+/* Eine aufgebrachte Meute: steht im Ort, bis der Merker „weg“ gesetzt ist (x, y in Bildpunkten der Vorlage, wie in ortbild.py) */
+const MEUTE: Record<string, { x: number; y: number; weg: string }> = { rabenmoor: { x: 625, y: 660, weg: "harm_ruhig" } };
+const SCHREIE = ["Verbrennt die Hexe!", "Drei Kinder!", "Heute Nacht noch!", "Sie hat sie gerufen!", "Holt mehr Pech!", "Wer hält zu der Alten?", "Ins Moor mit ihr!", "Wie lange noch warten?"];
 /* Unterzeile im Ortsbanner */
 const UNTER: Record<string, string> = { weidenhain: "Das Dorf am Mühlgraben", rabenmoor: "Das Dorf im Schwarzmoor", baukasten: "Probefläche" };
 const TEMPO = 190, GROSS = (ORTE[ortName] && ORTE[ortName].gross) || 112, Q = 0.62; // Bildpunkte je Sekunde, Größe des Helden, nach oben und unten läuft man langsamer (der Boden liegt schräg)
@@ -176,11 +191,12 @@ export class Ort extends Phaser.Scene {
   init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("eingang") === "1") { localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("eingang"); history.replaceState(null, "", "?" + P.toString()); } /* von der Weltkarte kommend steht man am Ortseingang; der Fortschritt bleibt */
       if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
   preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L && L.lauf) this.load.spritesheet("lauf-" + l[0], `../img/echtzeit/${L.lauf.blatt}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
+    if (MEUTE[ortName]) this.load.spritesheet("meute", "../img/echtzeit/meute.webp", { frameWidth: 300, frameHeight: 300 });
     if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
     const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
-    this.zaeune(); this.gruppen(); this.leute(); this.auftritt(); if (!new URLSearchParams(location.search).has("server")) wecken(); /* der nächste Kampf braucht den Server – schon jetzt aufwecken */
+    this.zaeune(); this.gruppen(); this.meute(); this.leute(); this.auftritt(); if (!new URLSearchParams(location.search).has("server")) wecken(); /* der nächste Kampf braucht den Server – schon jetzt aufwecken */
     $("#ez-dorf-knopf").onclick = () => this.sprechen(); window.addEventListener("keydown", (ev) => { if ((ev.key === "e" || ev.key === "E") && !ev.repeat) this.sprechen(); });
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setDepth(-1).setVisible(false);
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
@@ -214,6 +230,7 @@ export class Ort extends Phaser.Scene {
     for (const q of this.personen) { const g = this.offen(q.id); if (g) punkt(q.x, q.y, !istHaupt(ortName, g.setzt)); }
     for (const t in TUEREN) { const T = TUEREN[t], s = this.d.stellen[t]; if (s && !istHaupt(ortName, "kampf_" + T.kampf) && !this.merker["kampf_" + T.kampf] && T.wenn.every((m) => this.merker[m])) punkt(s[0], s[1], true); }
     if (!this.personen.some((q) => { const g = this.offen(q.id); return g && istHaupt(ortName, g.setzt); })) { const z = this.ziel(); if (z) punkt(z[0], z[1], false); }
+    if (this.meuteBild && MEUTE[ortName] && this.merker[MEUTE[ortName].weg]) { const m = this.meuteBild; this.meuteBild = null; this.tweens.add({ targets: m, alpha: 0, y: m.y + 40, duration: 1800, onComplete: () => m.destroy() }); }
     for (const q of this.personen) if (LEUTE[q.id].lauf && this.da(q.id) && !this.merker[q.id + "_da"] && !q.rennt) this.anrennen(q);
     for (const q of this.personen) { const g = this.offen(q.id); q.ruf.setVisible(Boolean(g) && !q.rennt); if (g) q.ruf.setColor(istHaupt(ortName, g.setzt) ? "#ffd23a" : "#7fd4ff").setStroke(istHaupt(ortName, g.setzt) ? "#3a2400" : "#0b2a44", 7); for (const t of q.teile) t.setVisible(this.da(q.id)); }
     hudQuest(ortName, this.merker); /* die Schritte der Quest oben links */ }
@@ -251,6 +268,19 @@ export class Ort extends Phaser.Scene {
     if (this.nah[0] === "@") { const T = TUEREN[this.nah.slice(1)]; this.gesperrt = true; try { localStorage.setItem("ez_ort_" + ortName + "_pos", JSON.stringify([Math.round(this.ort.x), Math.round(this.ort.y)])); } catch { /* privat */ } this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "?ort=" + ortName + "&kampf=" + T.kampf; }); return; }
     const L = LEUTE[this.nah], g = this.offen(this.nah); this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
     void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => { this.merke(g.setzt); if (g.ende) this.geschafft(g.ende); }) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
+  meuteBild: Phaser.GameObjects.Sprite | null = null;
+  /** Die Meute mit Fackeln: drängt und ruft, bis sie jemand nach Hause schickt */
+  meute() { const M = MEUTE[ortName], F = this.d.mass || 1; if (!M || this.merker[M.weg]) return; const x = M.x * F, y = M.y * F;
+    if (!this.anims.exists("meute")) this.anims.create({ key: "meute", frames: this.anims.generateFrameNumbers("meute", {}), frameRate: 5, repeat: -1, yoyo: true });
+    const sp = this.add.sprite(x, y, "meute").setOrigin(0.5, 0.96).setScale(GROSS * 0.95 / 218).setDepth(y).play("meute"); this.meuteBild = sp;
+    if (!this.textures.exists("glut")) { const t = this.textures.createCanvas("glut", 128, 128); if (t) { const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,200,120,1)"); g.addColorStop(0.4, "rgba(255,140,60,.4)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); } }
+    const schein = this.add.image(x + 10, y - GROSS * 1.15, "glut").setBlendMode(Phaser.BlendModes.ADD).setScale(2.6, 2).setAlpha(0.25).setDepth(99998); this.time.addEvent({ delay: 110, loop: true, callback: () => { if (!this.meuteBild) { schein.destroy(); return; } schein.setAlpha(0.18 + Math.random() * 0.14); } });
+    let n = -1; const rufen = () => { if (!this.scene.isActive() || !this.meuteBild) return; n = (n + 1 + Math.floor(Math.random() * 3)) % SCHREIE.length;
+      const t = this.add.text(0, 0, SCHREIE[n], { fontFamily: "Inter, sans-serif", fontSize: "15px", fontStyle: "bold", color: "#3a0c06", align: "center" }).setOrigin(0.5, 1).setResolution(2), b = t.getBounds(), bw = b.width + 20, bh = b.height + 12;
+      const blase = this.add.graphics(); blase.fillStyle(0xffe2c8, 0.96).lineStyle(2, 0x7a1a0c, 0.9); blase.fillRoundedRect(-bw / 2, -bh - 10, bw, bh, 9).strokeRoundedRect(-bw / 2, -bh - 10, bw, bh, 9); blase.fillTriangle(-7, -11, 7, -11, 0, 0); t.setPosition(0, -16);
+      const c = this.add.container(x + (Math.random() - 0.5) * 70, y - GROSS * 1.2, [blase, t]).setDepth(99990).setAlpha(0); this.tweens.add({ targets: c, alpha: 1, y: c.y - 6, duration: 200 }); this.tweens.add({ targets: c, alpha: 0, duration: 300, delay: 2000, onComplete: () => c.destroy() });
+      this.time.delayedCall(2600 + Math.random() * 2600, rufen); };
+    this.time.delayedCall(1500, rufen); }
   /** Dorfleute, die beisammenstehen: Sie gestikulieren, und alle paar Sekunden sagt einer von ihnen etwas Belangloses in einer Sprechblase. */
   gruppen() { const M = GROSS / 123 * 0.82; /* 0.82: am Helden nachgemessen – seine Größe zählt mit Waffe und Schild, der Körper ist kleiner */ /* im Feld ist eine Person etwa 123 Bildpunkte hoch */
     for (const [x, y] of this.d.gruppen || []) { if (!this.anims.exists("dorfgruppe")) this.anims.create({ key: "dorfgruppe", frames: this.anims.generateFrameNumbers("dorfgruppe", {}), frameRate: 2.2, repeat: -1, yoyo: true });

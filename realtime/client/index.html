@@ -226,6 +226,11 @@
     #ez-quest .nqkopf b { font: 600 13px Cinzel, Georgia, serif; color: #cdeeff; } #ez-quest .nq.fertig .nqkopf b { color: #7d8f98; text-decoration: line-through; } #ez-quest .nq.fertig .nqkopf em { background: #2a3a20; color: #6fdc6a; border-color: #3a5a2a; }
     #ez-quest .nq ul { padding: 4px 0 0 9px; margin-left: 8px; border-left: 2px solid rgba(127,212,255,.35); gap: 5px; } #ez-quest .nq li { font-size: 12.5px; padding-left: 9px; } #ez-quest .nq li i { border-color: #5bb8ec; } #ez-quest .nq li.jetzt i { border-color: #9fdcff; animation: none; box-shadow: inset 0 0 4px #000, 0 0 8px rgba(127,212,255,.8); }
     #ez-quest .kopf .zahl { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; display: grid; place-items: center; font: 600 11px Inter, sans-serif; color: #06263a; background: radial-gradient(circle at 35% 30%, #e2f6ff, #5bb8ec); border: 1px solid #0b3a5a; }
+    #ez-quest h4[data-k], #ez-quest .nqkopf[data-k] { cursor: pointer; user-select: none; } #ez-quest h4 .anz { font: 600 10px Inter, sans-serif; letter-spacing: 0; text-transform: none; color: #9fdcff; }
+    #ez-quest .pfeil.klein { margin-left: auto; width: 18px; height: 18px; } #ez-quest .pfeil.klein::after { left: 5px; top: 3px; width: 5px; height: 5px; }
+    #ez-quest .zu > h4 .pfeil.klein::after, #ez-quest .nq.zu .pfeil.klein::after { transform: rotate(-45deg); left: 4px; top: 5px; }
+    #ez-quest .abschnitt.haupt.zu .titel, #ez-quest .abschnitt.haupt.zu .inhalt { display: none; } #ez-quest .abschnitt.haupt.zu .kurz { display: block; }
+    #ez-quest .abschnitt.neben.zu .liste { display: none; } #ez-quest .nq.zu ul { display: none; }
     #ez-quest.zu .abschnitt.neben { display: none; } #ez-quest.zu .abschnitt.haupt h4 { display: none; }
     #ez-quest { max-height: calc(100vh - 190px); overflow-y: auto; }
     #ez-karte u.neben { width: 12px; height: 12px; margin: -6px 0 0 -6px; background: rgba(127,212,255,.25); border: 2px solid #7fd4ff; box-shadow: 0 0 0 1px #000, 0 0 7px #7fd4ff; }
