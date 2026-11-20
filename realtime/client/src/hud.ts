@@ -5,6 +5,7 @@
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
+import { KARTEN, KAMPFFOLGE, ORTREIHE } from "../../shared/karten";
 import { epAlle } from "./halle";
 import { kontoKnopf, kontoFenster, kontoName, kontoAbmelden, kontoAnmelden } from "./konto";
 
@@ -58,6 +59,34 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
 };
 /** Gehört dieser Merker zur Hauptquest des Ortes? (sonst ist es eine Nebenquest – hellblau statt gelb) */
 export const istHaupt = (ort: string, merker: string) => Boolean(QUESTS[ort] && QUESTS[ort].haupt.some((s) => s.fertig === merker));
+/* ---------- Sterne je Kampagne: ★ abgeschlossen · ★★ alle Nebenquests · ★★★ jede Herausforderung der Hauptkämpfe (beste Leistung zählt) ---------- */
+const liesJ = (k: string): Record<string, boolean> => { try { return JSON.parse(lies(k) || "{}") || {}; } catch { return {}; } };
+const schreibJ = (k: string, o: Record<string, boolean>) => { try { localStorage.setItem(k, JSON.stringify(o)); } catch { /* privat */ } };
+/** Eine geschaffte Herausforderung festhalten („ort/kampf“) */
+export function probeGeschafft(ort: string, kampf: string) { const o = liesJ("ez_proben"); o[ort + "/" + kampf] = true; schreibJ("ez_proben", o); }
+/** Alle Nebenquests eines Ortes erledigt? */
+export const nebenFertig = (ort: string, m: Record<string, boolean>) => Boolean(QUESTS[ort]) && QUESTS[ort].neben.every((n) => n.schritte.every((s) => m[s.fertig]));
+/** Die drei Sterne einer Kampagne, mit Begründung */
+export function sterne(ort: string): { an: boolean; name: string; warum: string }[] {
+  const nr = ORTREIHE.indexOf(ort) + 1; let fertig = 0; try { fertig = Number(lies("ez_kampagnen")) || 0; } catch { /* privat */ }
+  const neben = liesJ("ez_neben")[ort], proben = liesJ("ez_proben"), kaempfe = (KAMPFFOLGE[ort] || []).filter((k) => KARTEN[k] && KARTEN[k].probe);
+  const alle = kaempfe.length > 0 && kaempfe.length === (KAMPFFOLGE[ort] || []).length, geschafft = kaempfe.filter((k) => proben[ort + "/" + k]).length;
+  return [{ an: nr > 0 && fertig >= nr, name: "Abgeschlossen", warum: "Das Ende der Kampagne erreichen" },
+    { an: Boolean(neben), name: "Gründlich", warum: "Alle Nebenquests erledigen, bevor die Kampagne endet" },
+    { an: alle && geschafft === kaempfe.length, name: "Meisterhaft", warum: alle ? `Jede Herausforderung der Hauptkämpfe schaffen (${geschafft} / ${kaempfe.length}): ` + kaempfe.map((k) => `${proben[ort + "/" + k] ? "✓" : "☐"} ${KARTEN[k].probe!.text}`).join(" · ") : "Herausforderungen kommen noch" }];
+}
+export const sternText = (ort: string) => sterne(ort).map((s) => (s.an ? "★" : "☆")).join("");
+/** Beim Abschluss: festhalten, ob alle Nebenquests erledigt waren, und die Wertung zeigen */
+export function wertung(ort: string, merker: Record<string, boolean>, weiter: () => void) {
+  if (nebenFertig(ort, merker)) { const o = liesJ("ez_neben"); o[ort] = true; schreibJ("ez_neben", o); }
+  const f = $("#ez-konto"), Q = QUESTS[ort], S = sterne(ort); f.hidden = false;
+  f.innerHTML = `<div class="tafel wertung"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i>
+    <h2>${Q ? Q.titel : "Geschafft"}</h2><div class="zier"></div><div class="grosse-sterne">${S.map((s) => `<span class="${s.an ? "an" : ""}">★</span>`).join("")}</div>
+    <ul class="gruende">${S.map((s) => `<li class="${s.an ? "an" : ""}"><b>${s.an ? "★" : "☆"} ${s.name}</b><small>${s.warum}</small></li>`).join("")}</ul>
+    <p class="klein">Die beste Leistung zählt. Spielst du die Kampagne erneut, kannst du fehlende Sterne nachholen.</p>
+    <div class="reihe"><button type="button" class="haupt" data-t="weiter">Zurück in die Waldmark</button></div></div>`;
+  f.onpointerdown = (e) => e.stopPropagation(); f.onclick = (e) => { if ((e.target as HTMLElement).closest('[data-t="weiter"]')) { f.hidden = true; weiter(); } };
+}
 /** Merker eines Ortes aus dem Spielstand */
 export const merkerVon = (ort: string): Record<string, boolean> => { try { return JSON.parse(lies("ez_ort_" + ort) || "{}") || {}; } catch { return {}; } };
 
@@ -102,7 +131,7 @@ export function hudQuest(ort: string, merker: Record<string, boolean>) {
   const offenNeben = Q.neben.filter((n) => n.wenn.every((m) => merker[m]) && !n.schritte.every((s) => merker[s.fertig])).length;
   el.classList.toggle("zu", questZu);
   el.innerHTML = `<button type="button" class="kopf" aria-expanded="${!questZu}"><em>!</em><b>Quests</b>${offenNeben ? `<span class="zahl" title="offene Nebenquests">${offenNeben}</span>` : ""}<i class="pfeil"></i></button>
-    <div class="abschnitt haupt${klappe.haupt ? " zu" : ""}"><h4 data-k="haupt"><em>!</em>Hauptquest${pfeil("haupt")}</h4><div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe}</small></div></div>
+    <div class="abschnitt haupt${klappe.haupt ? " zu" : ""}"><h4 data-k="haupt"><em>!</em>Hauptquest${pfeil("haupt")}</h4><div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe} · <span class="sterne" title="Sterne dieser Kampagne">${sternText(ort)}</span></small></div></div>
     <p class="kurz">${offen < 0 ? "Alles erledigt" : Q.haupt[offen].text}</p><div class="inhalt"><ul>${haupt}</ul></div></div>
     ${neben.length ? `<div class="abschnitt neben inhalt${klappe.neben ? " zu" : ""}"><h4 data-k="neben"><em>!</em>Nebenquests${offenNeben ? ` <span class="anz">${offenNeben} offen</span>` : ""}${pfeil("neben")}</h4><div class="liste">${neben.join("")}</div></div>` : ""}`;
   const k = el.querySelector(".kopf") as HTMLElement; k.onpointerdown = (e) => e.stopPropagation();

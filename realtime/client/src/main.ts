@@ -8,6 +8,7 @@ import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
 import { KARTEN, FEIN } from "../../shared/karten";
+import { probeGeschafft } from "./hud";
 import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern, ORTSTUFE } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
@@ -260,6 +261,7 @@ class Spiel extends Phaser.Scene {
   anzeige(z: Zustand) {
     const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus];
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = ich[10] ? `gefallen – zurück in ${Math.ceil(z.ich.wieder)} s` : `${ich[7]} / ${ich[8]}` + (ich[11] > 0 ? ` · Schutz ${ich[11]}` : "");
+    { const pb = document.getElementById("ez-probe"), K = kampfJetzt && KARTEN[kampfJetzt.karte]; if (pb && FLACH && K && K.probe) { pb.hidden = false; const st = z.pr || 0; pb.className = "ez-kasten" + (st === 1 ? " ja" : st === 2 ? " nein" : ""); const t = (st === 1 ? "★ Geschafft: " : st === 2 ? "✗ Verfehlt: " : "Herausforderung: ") + K.probe.text; if (pb.textContent !== t) pb.textContent = t; } }
     if (FLACH && z.ich.stufe) { const s = z.ich.stufe, e = z.ich.ep || 0, von = EP_BIS[s], bis = s < STUFE_MAX ? EP_BIS[s + 1] : von; const xp = $("#ez-xpleiste"); xp.hidden = false; ($("#ez-xp") as HTMLElement).style.width = (s < STUFE_MAX ? Math.min(100, Math.round(100 * (e - von) / (bis - von))) : 100) + "%";
       $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? (window.innerWidth < 701 ? `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}`) : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
@@ -269,7 +271,7 @@ class Spiel extends Phaser.Scene {
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${taste.toUpperCase()} · ${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; mo.classList.toggle("zwei", z.ich.modus === 1); }
-    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true;
+    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true; if (z.pr === 1 && kampfJetzt && P0.get("ort")) probeGeschafft(P0.get("ort") as string, kampfJetzt.karte);
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
       const kn = $("#ez-dorf-knopf"), raus = () => { kn.textContent = "Kampf verlassen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; const n = this.z ? this.z.splitter : 0;
         if (this.netz.art === "server" && this.serverKampf) { /* der Server schreibt gut und schickt die neuen Werte */ kn.textContent = "Wird gutgeschrieben …"; kn.hidden = false; kn.onclick = null; let fertig = false;

@@ -233,6 +233,13 @@
     #ez-quest .abschnitt.neben.zu .liste { display: none; } #ez-quest .nq.zu ul { display: none; }
     #ez-quest.zu .abschnitt.neben { display: none; } #ez-quest.zu .abschnitt.haupt h4 { display: none; }
     #ez-quest { max-height: calc(100vh - 190px); overflow-y: auto; }
+    #ez-probe { top: calc(max(10px, env(safe-area-inset-top)) + 84px); left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 12px Cinzel, Georgia, serif; color: #d9c48f; padding: 4px 14px; border: 1px solid rgba(176,138,60,.5); border-radius: 6px; background: rgba(19,14,9,.85); } #ez-probe[hidden] { display: none; } #ez-probe.ja { color: #ffe08a; border-color: #f0d48a; box-shadow: 0 0 10px rgba(240,212,138,.5); } #ez-probe.nein { color: #a08a7a; text-decoration: line-through; }
+    body.kampagne #ez-oben { top: calc(max(10px, env(safe-area-inset-top)) + 54px); }
+    @media (max-width: 700px) { #ez-probe { top: auto; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 84px); left: max(10px, env(safe-area-inset-left)); transform: none; font-size: 10.5px; white-space: normal; max-width: calc(100vw - 240px); } }
+    #ez-quest .sterne, #ez-welt .sterne { color: #ffd75e; letter-spacing: 1px; font-style: normal; text-shadow: 0 0 6px rgba(255,215,94,.5); } #ez-welt .sterne { font-size: 12px; background: rgba(12,10,18,.75); border-radius: 6px; padding: 0 5px; }
+    #ez-konto .tafel.wertung .grosse-sterne { display: flex; justify-content: center; gap: 14px; margin: 4px 0 12px; } #ez-konto .grosse-sterne span { font-size: 54px; line-height: 1; color: #3a3226; text-shadow: 0 2px 0 #000; } #ez-konto .grosse-sterne span.an { color: #ffd75e; text-shadow: 0 0 18px rgba(255,215,94,.8), 0 2px 0 #7a5a10; animation: ezStern .7s ease-out both; } #ez-konto .grosse-sterne span.an:nth-child(2) { animation-delay: .35s; } #ez-konto .grosse-sterne span.an:nth-child(3) { animation-delay: .7s; }
+    @keyframes ezStern { 0% { transform: scale(.2) rotate(-40deg); opacity: 0; } 70% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
+    #ez-konto .tafel.wertung .gruende { list-style: none; margin: 0; padding: 0; text-align: left; display: grid; gap: 7px; } #ez-konto .gruende li { padding: 8px 12px; background: rgba(0,0,0,.35); border: 1px solid #5d4517; border-radius: 4px; color: #a8966a; } #ez-konto .gruende li.an { border-color: #b08a3c; color: #e7d6ae; } #ez-konto .gruende b { display: block; font: 600 14px Cinzel, Georgia, serif; color: inherit; } #ez-konto .gruende li.an b { color: #ffd75e; } #ez-konto .gruende small { font-size: 12px; }
     #ez-karte u.neben { width: 12px; height: 12px; margin: -6px 0 0 -6px; background: rgba(127,212,255,.25); border: 2px solid #7fd4ff; box-shadow: 0 0 0 1px #000, 0 0 7px #7fd4ff; }
     /* Team unten links */
     body.stadt #ez-team { display: flex; gap: 8px; position: fixed; z-index: 3; left: max(10px, env(safe-area-inset-left)); bottom: max(10px, env(safe-area-inset-bottom)); padding: 7px; border-radius: 8px;
@@ -290,12 +297,12 @@
   <div id="ez-kartenrahmen"><div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div><i class="nord">N</i></div>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><img alt=""><i></i><u></u><b>Q</b><small></small></button><button type="button" data-taste="e"><img alt=""><i></i><u></u><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><img alt=""><i></i><u></u><b>R</b><small></small></button></div>
-  <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div id="ez-neben" hidden></div>
+  <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div class="ez-kasten" id="ez-probe" hidden></div><div id="ez-neben" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
   <div id="ez-konto" hidden></div>
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwp7tmnk"></script>
+  <script src="spiel.js?v=mwp9lnvz"></script>
 </body>
 </html>

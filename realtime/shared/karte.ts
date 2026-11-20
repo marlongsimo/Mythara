@@ -41,9 +41,14 @@ export const SIEGEL: Punkt = { x: 30.5, y: 3.5 };
 /** Schleuse der Karte in Rechenfeldern (siehe karten.ts), oder keine */
 export interface SchleuseStand { x: number; y: number; quellen: Punkt[]; art: string; takt: number; erst: number; max: number; gesamt: number }
 export let SCHLEUSE: SchleuseStand | null = null;
-export interface KartenStand { KB: number; KH: number; FELS: typeof FELS; WASSER: typeof WASSER; START: Punkt[]; LAGER: Lager[]; SCHLEUSE: SchleuseStand | null }
-export const karteJetzt = (): KartenStand => ({ KB, KH, FELS, WASSER, START, LAGER, SCHLEUSE });
-export function karteNehmen(k: KartenStand): void { KB = k.KB; KH = k.KH; FELS = k.FELS; WASSER = k.WASSER; START = k.START; LAGER = k.LAGER; SCHLEUSE = k.SCHLEUSE; }
+/** Herausforderung eines Kampfes (für den dritten Stern): Schleuse bis Sekunde wert zu · kein Held vom Spezialangriff getroffen · mindestens wert Schützlinge heil */
+export interface Probe { text: string; art: "schleuse" | "ausweichen" | "schuetzlinge"; wert?: number }
+export let PROBE: Probe | null = null;
+/** Schützlinge: Dinge, die die Gegner angreifen und die man beschützt (Kornsäcke, später Kahn und Kinder) */
+export let SCHUETZ: Lager[] = [];
+export interface KartenStand { KB: number; KH: number; FELS: typeof FELS; WASSER: typeof WASSER; START: Punkt[]; LAGER: Lager[]; SCHLEUSE: SchleuseStand | null; PROBE: Probe | null; SCHUETZ: Lager[] }
+export const karteJetzt = (): KartenStand => ({ KB, KH, FELS, WASSER, START, LAGER, SCHLEUSE, PROBE, SCHUETZ });
+export function karteNehmen(k: KartenStand): void { KB = k.KB; KH = k.KH; FELS = k.FELS; WASSER = k.WASSER; START = k.START; LAGER = k.LAGER; SCHLEUSE = k.SCHLEUSE; PROBE = k.PROBE; SCHUETZ = k.SCHUETZ; }
 /** Die Karte des Risses, wie sie beim Start gilt */
 export const GRUNDKARTE: KartenStand = karteJetzt();
 
@@ -53,12 +58,13 @@ const dicht = (x: number, y: number): boolean => { const i = Math.floor(x), j = 
 
 /** Eine andere Karte einsetzen (Kampagnen). Zeilen als Text: „.“ frei, „~“ Wasser, alles andere Hindernis.
  *  Die Karte gilt für alle Simulationen dieses Programms – auf dem Server läuft deshalb bisher nur der Riss mit der Grundkarte. */
-export function setzeKarte(k0: { zeilen: string[]; start: number[][]; lager: Lager[]; schleuse?: { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number } }, mal = 1): void {
+export function setzeKarte(k0: { zeilen: string[]; start: number[][]; lager: Lager[]; schleuse?: { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number }; probe?: Probe; schuetz?: Lager[] }, mal = 1): void {
   /* mal: so viele Rechenfelder je gemaltem Feld. Die gemalten Karten sind klein (12 × 9); mit mal 2 passen Reichweiten und Lauftempo zum Bild. */
   const k = { zeilen: k0.zeilen.flatMap((z) => { const breit = [...z].map((c) => c.repeat(mal)).join(""); return Array.from({ length: mal }, () => breit); }), start: k0.start, lager: k0.lager.map((l) => ({ ...l, x: l.x * mal, y: l.y * mal })) };
   KH = k.zeilen.length; KB = k.zeilen[0].length; FELS = new Uint8Array(KB * KH); WASSER = new Uint8Array(KB * KH);
   k.zeilen.forEach((z, j) => [...z].forEach((c, i) => { if (c === "~") WASSER[j * KB + i] = 1; else if (c !== ".") FELS[j * KB + i] = 1; }));
   START = k.start.map(([x, y]) => ({ x: (x + 0.5) * mal, y: (y + 0.5) * mal })); LAGER = k.lager;
+  PROBE = k0.probe || null; SCHUETZ = (k0.schuetz || []).map((l) => ({ ...l, x: l.x * mal, y: l.y * mal }));
   const s = k0.schleuse; SCHLEUSE = s ? { ...s, x: s.x * mal, y: s.y * mal, quellen: s.quellen.map(([x, y]) => ({ x: x * mal, y: y * mal })) } : null;
 }
 export const begehbar = (x: number, y: number): boolean => !fels(Math.floor(x), Math.floor(y));

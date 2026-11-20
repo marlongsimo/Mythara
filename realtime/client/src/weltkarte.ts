@@ -1,5 +1,6 @@
 /* Weltkarte am Stadttor: zeigt die Kampagnen als Orte auf der Karte. Die Texte stammen aus den Kampagnen des Würfelspiels. */
 import { HELDEN } from "../../shared/config";
+import { sternText } from "./hud";
 type Ziel = { id: string; nr: number; name: string; ort: string; x: number; y: number; text: string; dauer: string };
 /* x, y in Prozent des Kartenbilds */
 const SPIELBAR = new Set(["weidenhain", "rabenmoor"]);
@@ -28,7 +29,7 @@ export function weltkarte(zu: () => void) {
   const w = document.querySelector("#ez-welt") as HTMLElement; w.hidden = false; const fertig = kampagnenGeschafft();
   w.innerHTML = `<div class="blatt"><img src="../img/echtzeit/weltkarte.webp" alt="Karte der Splitterlande" draggable="false">`
     + `<i class="hier" style="left:${HIER.x}%;top:${HIER.y}%"><b>Waldmark</b></i>`
-    + ZIELE.map((z) => `<button type="button" class="ziel${z.nr <= fertig ? " fertig" : z.nr > fertig + 1 ? " zu" : ""}" data-id="${z.id}" style="left:${z.x}%;top:${z.y}%"><span>${z.nr <= fertig ? "✓" : z.nr > fertig + 1 ? "🔒" : z.nr}</span><b>${z.ort}</b></button>`).join("")
+    + ZIELE.map((z) => `<button type="button" class="ziel${z.nr <= fertig ? " fertig" : z.nr > fertig + 1 ? " zu" : ""}" data-id="${z.id}" style="left:${z.x}%;top:${z.y}%"><span>${z.nr <= fertig ? "✓" : z.nr > fertig + 1 ? "🔒" : z.nr}</span><b>${z.ort}</b>${SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<i class="sterne">${sternText(z.id)}</i>` : ""}</button>`).join("")
     + `</div><button type="button" class="schliessen" aria-label="Karte schließen">✕</button><h2>Wohin soll die Reise gehen?</h2><button type="button" class="team">⚔ Mein Team: <b></b></button><div class="info" hidden></div>`;
   const info = w.querySelector(".info") as HTMLElement, tk = w.querySelector(".team") as HTMLElement, tb = tk.querySelector("b") as HTMLElement; tb.textContent = teamText();
   tk.onclick = () => { w.style.visibility = "hidden"; const zurueck = () => { w.style.visibility = ""; tb.textContent = teamText(); };

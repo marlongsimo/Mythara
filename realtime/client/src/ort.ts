@@ -9,7 +9,7 @@ import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import { heldenhalle } from "./halle";
-import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel, istHaupt } from "./hud";
+import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel, istHaupt, wertung } from "./hud";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -261,7 +261,8 @@ export class Ort extends Phaser.Scene {
   auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;
     this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { this.geschafft(a.ende); return; } this.gesperrt = false; })); }
   /** Die Kampagne ist geschafft: festhalten, den Ort für den nächsten Besuch frisch machen, zurück in die Waldmark */
-  geschafft(nr: number) { kampagneGeschafft(nr); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
+  geschafft(nr: number) { kampagneGeschafft(nr); this.gesperrt = true; wertung(ortName, this.merker, () => this.verlassen()); }
+  verlassen() { try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
     if (this.nah === "#heim") { this.gesperrt = true; this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=tor"; }); return; }

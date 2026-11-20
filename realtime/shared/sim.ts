@@ -7,7 +7,7 @@
  */
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string }) => STUFENBONUS(w.held ? HELDENSTUFE[w.typ] || 1 : 1);
-import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar } from "./karte";
+import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar } from "./karte";
 
 export type Taste = "q" | "e" | "r";
 export type Eingabe =
@@ -32,7 +32,7 @@ export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | {
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
   w: Array<[number, number, string, number, number, number, number, number, number, number, number, number, number]>; // id, held, typ, team, x, y, blick, lp, max, bits, tot, schutz, modus
-  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; sl?: [number, number, number, number]; /* Schleuse: x, y, offen (1/0), Fortschritt beim Schließen 0–1 */ /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number } }
+  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; sl?: [number, number, number, number]; pr?: number; /* Herausforderung: 0 läuft, 1 geschafft, 2 verfehlt */ /* Schleuse: x, y, offen (1/0), Fortschritt beim Schließen 0–1 */ /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number } }
 
 export class Sim {
   tick = 0; zeit = 0; phase: "lauf" | "sieg" = "lauf"; splitter = 0; besiegt = 0; monsterZahl = 0;
@@ -43,6 +43,8 @@ export class Sim {
   /* Schleuse dieses Kampfes (oder keine): offen, Fortschritt beim Schließen, Zeit bis zur nächsten Welle */
   sl: (SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }) | null = null;
   /* Brut (Laich): je Mutter die Zeit bis zum nächsten Jungen, wie viele schon geschlüpft sind, und die Kennungen der Jungen */
+  /** Herausforderung dieses Kampfes: 0 läuft, 1 geschafft, 2 verfehlt */
+  probe = 0;
   private brut = new Map<number, { t: number; n: number; junge: number[] }>();
   /* wer noch einmal davonhuschen kann (Irrlichter am Teich) */
   private blinzler = new Set<number>();
@@ -64,7 +66,8 @@ export class Sim {
     const ich = this.neu(true, this.heldTyp, 0, START[0], false);
     this.begleiter.forEach((b, i) => { this.neu(true, b, 0, START[i + 1], true).fuehrer = ich.id; });
     this.blinzler.clear(); this.erhoben.clear(); for (const l of LAGER) { const m = this.neu(false, l.art, 1, l, true, l.gruppe); if (l.blinzeln) this.blinzler.add(m.id); } this.monsterZahl = LAGER.length;
-    this.brut.clear(); const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
+    this.brut.clear(); this.probe = 0; for (const l of SCHUETZ) this.neu(false, l.art, 0, l, true, 0); /* Schützlinge stehen auf der Seite der Helden */
+    const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
   }
   get ich(): Wesen { return this.wesen[0]; }
   /** Erfahrung für jeden Helden im Team; wer dabei eine Stufe erreicht, wird sofort stärker und bekommt sein Leben ganz zurück */
@@ -108,13 +111,14 @@ export class Sim {
     if (z.lp > 0 && z.lp < z.max * 0.4 && this.blinzler.delete(z.id)) { /* fast besiegt: huscht ein Stück vom Angreifer weg */ const v = von || this.ich, dx = z.x - v.x, dy = z.y - v.y, l = Math.hypot(dx, dy) || 1, a = Math.atan2(dy / l, dx / l) + (this.zf() - 0.5) * 1.2;
       const p = naechstFrei({ x: z.x + Math.cos(a) * 5, y: z.y + Math.sin(a) * 5 }); z.x = p.x; z.y = p.y; z.pfad = []; z.aushol = 0; this.ev.push({ a: "blinzeln", id: z.id, x: p.x, y: p.y }); }
     if (z.lp > 0) return;
+    if (!z.held && z.team === 0) { z.lp = 0; z.tot = true; this.ev.push({ a: "tot", id: z.id }); const P = this.karte.PROBE; if (P && P.art === "schuetzlinge" && this.probe === 0 && this.wesen.filter((w) => !w.held && w.team === 0 && !w.tot).length < (P.wert || 0)) this.probe = 2; return; } /* Schützling verloren */
     { const A = !z.held && MONSTER[z.typ].aufstehen; if (A && !this.erhoben.has(z.id)) { this.erhoben.add(z.id); z.lp = Math.round(z.max * A); z.betaeubt = 2.5; z.aushol = 0; z.dauer = []; this.ev.push({ a: "aufstehen", id: z.id, x: z.x, y: z.y }); return; } } /* liegt kurz, dann steht er wieder */
     z.lp = 0; z.tot = true; z.pfad = []; z.zielId = 0; z.dauer = []; z.aushol = 0; this.ev.push({ a: "tot", id: z.id });
     if (z.held) { z.wieder = K.WIEDER_HELD; return; }
     this.besiegt++; const B = STAERKE.beute, [a, b] = B || K.SPLITTER; let n = a + Math.floor(this.zf() * (b - a + 1)); if (B && MONSTER[z.typ].boss) n *= STAERKE.bossMal;
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); }
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
-    if (this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.phase = "sieg"; /* bei offener Schleuse kommen noch welche */
+    if (this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.sieg(); /* bei offener Schleuse kommen noch welche */
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
@@ -261,6 +265,7 @@ export class Sim {
   /* ---------- ein Rechenschritt (DT Sekunden) ---------- */
   schritt(): void { this.bereit();
     this.tick++; if (this.phase !== "lauf" && !STAERKE.beute) return; if (this.phase === "lauf") this.zeit += DT;
+    { const P = this.karte.PROBE; if (P && P.art === "schleuse" && this.probe === 0 && this.sl && this.sl.offen && this.zeit > (P.wert || 0)) this.probe = 2; } /* zu spät */
     if (this.beute.length) this.beute = this.beute.filter((b) => { const h = this.wesen.find((w) => w.held && !w.tot && Math.hypot(w.x - b.x, w.y - b.y) < 0.9); if (!h) return true; this.splitter += b.n; this.ev.push({ a: "splitter", x: b.x, y: b.y, n: b.n }); return false; });
     for (const w of this.wesen) {
       if (w.tot) { if (w.held) { w.wieder -= DT; if (w.wieder <= 0) { w.tot = false; w.lp = w.max; const p = START[Math.max(0, this.wesen.filter((o) => o.held).indexOf(w))] || START[0]; w.x = p.x; w.y = p.y; w.pfad = []; w.zielId = 0; w.ruhe = 99; } } continue; }
@@ -271,7 +276,7 @@ export class Sim {
       // Erholung
       w.ruhe += DT; if (w.held && w.ruhe >= K.ERHOLUNG.nach && w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * K.ERHOLUNG.jeSek * DT);
       if (w.betaeubt > 0) { w.betaeubt = Math.max(0, w.betaeubt - DT); continue; }
-      if (w.ladeT > 0) { w.ladeT -= DT; if (w.ladeT <= 0) { const S = MONSTER[w.typ].spezial!; this.ev.push({ a: "speien", id: w.id, x: w.ladeX, y: w.ladeY, r: S.radius }); this.flaeche(w, { x: w.ladeX, y: w.ladeY }, S.radius, { grund: S.schaden[1] * STAERKE.schaden, min: S.schaden[0] * STAERKE.schaden, art: S.art }); w.cdS = S.alle; } continue; } // wer lädt, steht
+      if (w.ladeT > 0) { w.ladeT -= DT; if (w.ladeT <= 0) { { const P = this.karte.PROBE, Sz = MONSTER[w.typ].spezial!; if (P && P.art === "ausweichen" && this.probe === 0 && this.wesen.some((o) => o.held && !o.tot && Math.hypot(o.x - w.ladeX, o.y - w.ladeY) <= Sz.radius + o.r)) this.probe = 2; } const S = MONSTER[w.typ].spezial!; this.ev.push({ a: "speien", id: w.id, x: w.ladeX, y: w.ladeY, r: S.radius }); this.flaeche(w, { x: w.ladeX, y: w.ladeY }, S.radius, { grund: S.schaden[1] * STAERKE.schaden, min: S.schaden[0] * STAERKE.schaden, art: S.art }); w.cdS = S.alle; } continue; } // wer lädt, steht
       if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) this.ausloesen(w, z); } continue; } // wer ausholt, steht
       let ziel = w.zielId ? this.nach(w.zielId) : undefined; if (ziel && ziel.tot) { ziel = undefined; w.zielId = 0; }
       if (!w.held && MONSTER[w.typ].fest) { const B = MONSTER[w.typ].brut; if (B) this.brueten(w, B); continue; } /* Laich: bewegt sich nicht, greift nicht an, brütet */
@@ -316,7 +321,7 @@ export class Sim {
   /** Offene Schleuse: Gegner kriechen in Wellen aus dem Wasser und sammeln sich am Hebel. Wer drei Sekunden ungestört am Hebel steht, schließt sie; ein Treffer fängt von vorn an. */
   private schleuse(sl: SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }): void {
     const h = this.ich, nah = !h.tot && Math.hypot(h.x - sl.x, h.y - sl.y) < 1.4;
-    if (nah && h.ruhe > 0.05) { sl.fort = Math.min(1, sl.fort + DT / 3); if (sl.fort >= 1) { sl.offen = false; this.ev.push({ a: "schleuse", x: sl.x, y: sl.y }); if (this.besiegt >= this.monsterZahl) this.phase = "sieg"; return; } } else sl.fort = 0;
+    if (nah && h.ruhe > 0.05) { sl.fort = Math.min(1, sl.fort + DT / 3); if (sl.fort >= 1) { sl.offen = false; { const P = this.karte.PROBE; if (P && P.art === "schleuse" && this.probe === 0) this.probe = this.zeit <= (P.wert || 0) ? 1 : 2; } this.ev.push({ a: "schleuse", x: sl.x, y: sl.y }); if (this.besiegt >= this.monsterZahl) this.sieg(); return; } } else sl.fort = 0;
     sl.warte -= DT; if (sl.warte > 0 || sl.raus >= sl.gesamt) return; sl.warte = sl.takt;
     if (this.wesen.filter((w) => !w.held && !w.tot && w.gruppe >= 100).length >= sl.max) return;
     const p = sl.quellen[Math.floor(this.zf() * sl.quellen.length)], m = this.neu(false, sl.art, 1, { x: p.x, y: p.y }, true, 100 + this.lauf);
@@ -330,6 +335,8 @@ export class Sim {
     const a = this.zf() * Math.PI * 2, p = naechstFrei({ x: w.x + Math.cos(a) * 1.1, y: w.y + Math.sin(a) * 1.1 }), j = this.neu(false, B.art, 1, p, true, 200 + this.lauf);
     j.wach = true; j.heim = { x: w.x, y: w.y }; b.n++; b.junge.push(j.id); this.monsterZahl++; this.ev.push({ a: "auftauchen", id: j.id, x: p.x, y: p.y });
   }
+  /** Sieg: die Herausforderung ist geschafft, wenn sie bis hierher nicht verfehlt wurde */
+  private sieg(): void { this.phase = "sieg"; if (this.karte.PROBE && this.probe === 0) this.probe = 1; }
   /** Der Zustand für den Client (kompakt). Die Ereignisse seit dem letzten Abruf sind enthalten und werden danach geleert. */
   zustand(): Zustand { this.bereit();
     const r = (v: number) => Math.round(v * 100) / 100, h = this.ich, ev = this.ev; this.ev = [];
@@ -337,6 +344,7 @@ export class Sim {
     return { tick: this.tick, phase: this.phase, zeit: Math.round(this.zeit * 10) / 10, splitter: this.splitter, besiegt: this.besiegt, monster: this.monsterZahl, b: this.beute.map((q) => [q.id, q.x, q.y, q.n]),
       w: this.wesen.filter((w) => w.held || !w.tot).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
       g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: this.stufen[h.typ] || 1, ep: this.epStand[h.typ] || 0 },
+      pr: this.karte.PROBE ? this.probe : undefined,
       sl: this.sl ? [r(this.sl.x), r(this.sl.y), this.sl.offen ? 1 : 0, r(this.sl.fort)] : undefined,
       st: Object.fromEntries(this.wesen.filter((w) => w.held && w.team === 0).map((w) => [w.typ, [this.stufen[w.typ] || 1, this.epStand[w.typ] || 0]])) };
   }
