@@ -250,7 +250,7 @@ export class Sim {
         if (!ziel) { const o = this.naechsterGegner(w, K.AGGRO); if (o && abstand(o, w.heim) <= K.LEINE) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel) this.jagen(w, ziel, D.angriff.reich);
         else if (abstand(w, w.heim) > 0.3) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, w.heim); w.neuWeg = 1; } }
-        else if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * 0.15 * DT);
+        else if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * (D.boss ? K.HEIM_HEILUNG_BOSS : K.HEIM_HEILUNG) * DT);
       } else if (w.bot) this.begleiterZug(w);
       else { // der Held des Spielers: Er läuft nur, wohin gesteuert wird
         const A = this.waffe(w), faehrt = w.rx !== 0 || w.ry !== 0, v = this.tempo(w);

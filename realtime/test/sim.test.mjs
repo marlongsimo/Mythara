@@ -14,7 +14,7 @@ const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
 
 // ---------- 1. Bewegung und Eingaben ----------
 { const s = new Sim("schildwaechter", 7), h = s.ich;
-  check(s.wesen.filter((w) => w.held).length === 1 && s.wesen.filter((w) => !w.held).length === 12 && s.wesen.filter((w) => !w.held).every((w) => w.typ === "knochenwaechter"), "Aufbau: dein Held und zwölf Knochenwächter");
+  check(s.wesen.filter((w) => w.held).length === 1 && s.wesen.filter((w) => w.typ === "knochenwaechter").length === 12 && s.wesen.filter((w) => w.typ === "knochenfuerst").length === 1, "Aufbau: dein Held, zwölf Knochenwächter und der Knochenfürst");
   check(new Sim("assassine", 1, ["lichtbringer", "assassine", "quatsch", "elementarist", "kopfgeldjaeger"]).wesen.filter((w) => w.held).map((w) => w.typ).join() === "assassine,lichtbringer,elementarist", "Begleiter: höchstens zwei, keine Doppelten, nur bekannte Helden");
   const a = { x: h.x, y: h.y }; s.eingabe({ t: "richtung", x: 1, y: 0 }); lauf(s, 1); const weit = h.x - a.x; s.eingabe({ t: "richtung", x: 50, y: 0 }); const b = h.x; lauf(s, 1); const schnell = h.x - b; s.eingabe({ t: "richtung", x: 0, y: 0 }); const c = h.x; lauf(s, 0.5);
   check(Math.abs(weit - HELDEN.schildwaechter.tempo) < 0.1 && h.x === c && schnell <= HELDEN.schildwaechter.tempo + 0.1, `direkt steuern: eine Sekunde = ${weit.toFixed(1)} Felder (Torvalds Tempo), eine überlange Richtung macht nicht schneller, loslassen = stehen`);
@@ -78,7 +78,7 @@ const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
     while (s.phase === "lauf" && n++ < 20 * 900) { if (n % 5 === 0 && !h.tot) { const A = HELDEN[typ].modi[h.modus], m = s.wesen.filter((w) => !w.held && !w.tot).sort((a, b) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y))[0]; if (m) { const d = Math.hypot(m.x - h.x, m.y - h.y); if (d > (A.art === "nah" ? 1.3 : 5)) { if (!h.pfad.length || n % 20 === 0) s.eingabe({ t: "lauf", x: m.x, y: m.y }); } else { if (h.pfad.length) s.eingabe({ t: "halt" }); if (h.zielId !== m.id) s.eingabe({ t: "ziel", id: m.id }); for (const t of ["q", "e", "r"]) s.eingabe({ t: "faehig", taste: t, x: m.x, y: m.y }); } } }
       s.schritt(); if (s.wesen.some((w) => !Number.isFinite(w.x) || !Number.isFinite(w.lp))) { n = 1e9; break; } }
     erg.push({ name: HELDEN[typ].name, sieg: s.phase === "sieg", sek: Math.round(s.zeit) }); }
-  check(erg.every((e) => e.sieg), `ganzer Riss mit jedem der fünf Helden vom Rechner gespielt: alle zwölf Knochenwächter besiegt (${erg.map((e) => e.name + " " + e.sek + " s").join(", ")})`);
+  check(erg.every((e) => e.sieg), `ganzer Riss mit jedem der fünf Helden vom Rechner gespielt: alle dreizehn Gegner besiegt (${erg.map((e) => e.name + " " + e.sek + " s").join(", ")})`);
   const s = new Sim("schildwaechter", 3, ["lichtbringer"]); for (const w of s.wesen) if (!w.held) w.lp = 1; const z = s.zustand(); check(JSON.stringify(z).length < 2200 && z.w.every((e) => e.length === 13), `ein Zustand ist klein (${JSON.stringify(z).length} Zeichen)`); }
 
 // ---------- 6. Server ----------
@@ -116,7 +116,7 @@ try {
     const ort = () => p.evaluate(() => { const z = window.EZ.zustand(); const e = z.w.find((e) => e[0] === z.ich.id); return [e[4], e[5]]; }), o1 = await ort();
     await p.keyboard.down("d"); await p.waitForTimeout(600); await p.keyboard.up("d"); await p.waitForTimeout(200); const o2 = await ort(); check(o2[0] - o1[0] > 0.8 && o2[1] - o1[1] < -0.8, `Client ${name}: Taste D – der Held läuft am Bildschirm nach rechts (${(o2[0] - o1[0]).toFixed(1)} / ${(o2[1] - o1[1]).toFixed(1)} Felder)`);
     for (const t of ["q", "e", "r"]) await p.keyboard.press(t); await p.waitForTimeout(350); check(await p.evaluate(() => { const i = window.EZ.zustand().ich; return i.cdQ > 3 && i.cdE > 3 && i.cdR > 3; }), `Client ${name}: Q, E und R lösen die Fähigkeiten aus`);
-    check(await p.evaluate(() => /Torvald · Langschwert/.test(document.querySelector("#ez-name").textContent) && /Knochenwächter 0 \/ 12/.test(document.querySelector("#ez-stand").textContent)), `Client ${name}: Anzeige zeigt Held, Waffe und Stand`);
+    check(await p.evaluate(() => /Torvald · Langschwert/.test(document.querySelector("#ez-name").textContent) && /Gegner 0 \/ 13/.test(document.querySelector("#ez-stand").textContent)), `Client ${name}: Anzeige zeigt Held, Waffe und Stand`);
     if (process.env.EZ_BILD) await p.screenshot({ path: process.env.EZ_BILD.replace(".png", "-" + erwartet + ".png") });
     check(fehler.length === 0, `Client ${name}: keine Fehler` + (fehler.length ? " – " + fehler[0] : "")); await p.close(); }
   await br.close();

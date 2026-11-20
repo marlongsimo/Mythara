@@ -31,11 +31,12 @@ class Spiel extends Phaser.Scene {
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
   preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
-    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
     for (const k in ALLE) { if (ALLE[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
       if (ALLE[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
+      if (ALLE[k].ruhe) this.anims.create({ key: "ruhe-" + k, frames: this.anims.generateFrameNumbers("ruhe-" + k, {}), frameRate: 6, repeat: -1 });
       for (const art of ["hieb", "hieb2"] as const) if (ALLE[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
     this.licht(); this.fackeln();
     { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
@@ -105,14 +106,14 @@ class Spiel extends Phaser.Scene {
   figur(e: Zustand["w"][number]): Bild {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
-    const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
+    const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? FIG(typ, held).hoehe || 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
     if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(F[0], F[1]); kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
       rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
     const balken = this.add.graphics(), oben = hoch * (ganz ? FIG(typ, held).gross || 1 : 1), name = this.add.text(0, -oben - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
     c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { angelegt: 0, oben, modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
-    this.bilder.set(id, b); return b;
+    this.bilder.set(id, b); if (ganz && FIG(typ, held).ruhe) this.haltung(b); return b;
   }
   zustand(z: Zustand) {
     this.z = z; this.ichId = z.ich.id; const da = new Set<number>(), jetzt = this.time.now;
@@ -136,7 +137,7 @@ class Spiel extends Phaser.Scene {
     if (b.modus === 1 && D.schild) { // zweite Waffe: Schild erhoben
       if (b.laeuft) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.play("schild-" + b.typ); }
       else { sp.stop(); if (D.schildStand) { const F = D.schildFuss || [0.5, 0.95, 1]; sp.setTexture("schildstand-" + b.typ); sp.setOrigin(F[0], F[1]).setScale(b.hoch * F[2] / sp.height); } else { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.setTexture("schild-" + b.typ, 0); } } }
-    else if (b.laeuft && D.lauf) { sp.play("lauf-" + b.typ); sp.setOrigin(L[0], L[1]).setScale(b.hoch / (L[2] * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); const F = D.fuss || [0.5, 0.94]; sp.setOrigin(F[0], F[1]).setScale(b.hoch * (D.gross || 1) / sp.height); } }
+    else if (b.laeuft && D.lauf) { sp.play("lauf-" + b.typ); sp.setOrigin(L[0], L[1]).setScale(b.hoch / (L[2] * 176)); } else if (D.ruhe) { const M = D.ruheMass || [0.5, 0.945, 0.91]; sp.play("ruhe-" + b.typ); sp.setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176)); } else { sp.stop(); sp.setTexture("figur-" + b.typ); const F = D.fuss || [0.5, 0.94]; sp.setOrigin(F[0], F[1]).setScale(b.hoch * (D.gross || 1) / sp.height); } }
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
@@ -159,10 +160,10 @@ class Spiel extends Phaser.Scene {
   anzeige(z: Zustand) {
     const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus];
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = ich[10] ? `gefallen – zurück in ${Math.ceil(z.ich.wieder)} s` : `${ich[7]} / ${ich[8]}` + (ich[11] > 0 ? ` · Schutz ${ich[11]}` : "");
-    const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = `◈ ${z.splitter} · Knochenwächter ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
+    const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); (el.querySelector("i") as HTMLElement).style.height = (cd > 0 ? Math.round(100 * cd / def.zeit) : 0) + "%"; (el.querySelector("b") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : taste.toUpperCase(); const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = def.text; } }
     const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
-    const ende = $("#ez-ende"); if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Alle ${z.monster} Knochenwächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
+    const ende = $("#ez-ende"); if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Der Knochenfürst und seine Wächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
   }
   update() {
     const jetzt = this.time.now;
@@ -186,7 +187,7 @@ function wahlZeigen(los: (held: string, mit: string[]) => void) {
       <h3>Begleiter (spielt der Rechner, höchstens zwei)</h3>
       <div class="ez-mit">${HELDENREIHE.filter((k) => k !== WAHL.held).map((k) => `<button type="button" class="${WAHL.mit.includes(k) ? "an" : ""}" data-mit="${k}">${esc(HELDEN[k].name)} <small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
       <div class="ez-knoepfe"><button type="button" id="ez-los">In den Riss</button><a href="../">← zur Startseite</a></div>
-      <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
+      <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen, in der Siegelkammer der Knochenfürst. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
   zeichne(); el.hidden = false;
   el.onclick = (ev) => { const t = ev.target as HTMLElement, h = t.closest<HTMLElement>("[data-held]"), m = t.closest<HTMLElement>("[data-mit]");
     if (h) { WAHL.held = h.dataset.held as string; WAHL.mit = WAHL.mit.filter((x) => x !== WAHL.held); zeichne(); }

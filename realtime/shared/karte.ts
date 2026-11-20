@@ -30,7 +30,7 @@ export const LAGER: Lager[] = [
   { art: "knochenwaechter", x: 12.5, y: 14.5, gruppe: 2 }, { art: "knochenwaechter", x: 13.5, y: 16.5, gruppe: 2 }, { art: "knochenwaechter", x: 17.5, y: 15.5, gruppe: 2 },
   { art: "knochenwaechter", x: 29.5, y: 12.5, gruppe: 3 }, { art: "knochenwaechter", x: 29.5, y: 15.5, gruppe: 3 }, { art: "knochenwaechter", x: 26.5, y: 16.5, gruppe: 3 },
   { art: "knochenwaechter", x: 22.5, y: 1.5, gruppe: 4 }, { art: "knochenwaechter", x: 22.5, y: 3.5, gruppe: 4 },
-  { art: "knochenwaechter", x: 30.5, y: 1.5, gruppe: 5 }, { art: "knochenwaechter", x: 31.5, y: 2.5, gruppe: 5 },
+  { art: "knochenwaechter", x: 30.5, y: 1.5, gruppe: 5 }, { art: "knochenwaechter", x: 31.5, y: 5.5, gruppe: 5 }, { art: "knochenfuerst", x: 27.5, y: 4.5, gruppe: 6 },
 ];
 export const SIEGEL: Punkt = { x: 30.5, y: 3.5 };
 

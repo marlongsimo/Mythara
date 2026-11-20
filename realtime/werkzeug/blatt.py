@@ -40,7 +40,7 @@ def schwarz_weg(z):
     a = np.asarray(z.convert("RGB")).astype(np.float32); mx = a.max(-1); dunkel = mx < 16; lab, n = ndimage.label(dunkel); rand = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}; bg = np.isin(lab, list(rand)); gr = ndimage.sum(dunkel, lab, range(1, n + 1))
     for k in range(1, n + 1):
         if k not in rand and gr[k - 1] >= 400: bg |= lab == k
-    nah = ndimage.distance_transform_edt(~bg); alpha = np.where(bg, 0, 255).astype(np.float32); blau = (a[..., 2] > a[..., 0] * 1.25) & (a[..., 2] > a[..., 1] * 1.4)
+    nah = ndimage.distance_transform_edt(~bg); alpha = np.where(bg, 0, 255).astype(np.float32); blau = ((a[..., 2] > a[..., 0] * 1.25) & (a[..., 2] > a[..., 1] * 1.4)) | ((a[..., 2] > a[..., 0] * 1.35) & (a[..., 1] > a[..., 0] * 1.15))  # violett oder eisblau
     saum = (~bg) & (nah <= 6) & (mx < 120) & blau; alpha[saum] = np.clip(mx[saum] / 120 * 255, 0, 255); kante = (~bg) & (nah <= 1.5) & ~blau; alpha[kante] = np.minimum(alpha[kante], 150)
     return Image.fromarray(np.dstack([a.astype(np.uint8), alpha.astype(np.uint8)]), "RGBA")
 

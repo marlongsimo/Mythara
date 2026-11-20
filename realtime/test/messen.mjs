@@ -44,7 +44,7 @@ for (const k of HELDENREIHE) { const zeile = [];
     zeile.push(`${f1(mittel(l, (x) => x.sek)).padStart(5)} s · ${String(Math.round(mittel(l, (x) => x.schadenErlitten))).padStart(3)} Leben` + (zahl === 2 ? ` · ${pz(mittel(l, (x) => (x.tode ? 1 : 0)))}` : "")); }
   console.log(`${HELDEN[k].name.padEnd(9)} ${zeile[0].padEnd(38)} ${zeile[1]}  (von ${HELDEN[k].lp} Leben)`); }
 
-console.log(`\nTeil 3 – der ganze Riss mit zwölf Knochenwächtern (${Math.ceil(N / 2)} Durchläufe je Zeile)\n`);
+console.log(`\nTeil 3 – der ganze Riss mit zwölf Knochenwächtern und dem Knochenfürsten (${Math.ceil(N / 2)} Durchläufe je Zeile)\n`);
 const trupps = HELDENREIHE.map((k) => [k, []]).concat([["schildwaechter", ["lichtbringer"]], ["schildwaechter", ["elementarist"]], ["assassine", ["lichtbringer"]], ["kopfgeldjaeger", ["schildwaechter"]], ["schildwaechter", ["lichtbringer", "elementarist"]], ["lichtbringer", ["schildwaechter", "assassine"]]]);
 for (const [k, mit] of trupps) { const l = []; for (let i = 0; i < Math.ceil(N / 2); i++) l.push(spiele(new Sim(k, 900 + i * 13, mit), 900, { heilen: mit.length > 0 && k === "lichtbringer" }));
   console.log(`${(HELDEN[k].name + (mit.length ? " + " + mit.map((m) => HELDEN[m].name).join(" + ") : " allein")).padEnd(34)} geschafft ${pz(mittel(l, (x) => (x.sieg ? 1 : 0))).padStart(5)} · Zeit ${f1(mittel(l, (x) => x.sek) / 60)} min · selbst gefallen Ø ${f1(mittel(l, (x) => x.tode))}×`); }

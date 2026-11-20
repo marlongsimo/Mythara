@@ -16,7 +16,7 @@ export type Schadensart = "nah" | "fern" | "magie";            // physischer Nah
 export type Werte = Record<Schadensart, number>;                  // je Angriffsart ein Wert
 export interface Modus { name: string; art: Schadensart | "heil"; schaden: [number, number]; /* Mindest- und Höchstschaden (oder Heilung) */ takt: number; reich: number; flug?: number; wucht?: boolean; untot?: number; schild?: boolean; text: string }
 export interface Faehigkeit { name: string; zeit: number; text: string }
-export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string; schild?: string; /* schild: Laufbilder für die zweite Waffe */ hieb2?: string; hiebMass?: [number, number, number]; hieb2Mass?: [number, number, number]; /* hieb: Angriffsbilder der ersten Waffe, hieb2: der zweiten; Maße wie laufMass */ schildStand?: string; schildFuss?: [number, number, number]; laufMass?: [number, number, number]; /* schildStand: Standbild der zweiten Waffe, schildFuss: Füße von links, von oben, Maßstab; laufMass: bei den Laufbildern Füße von links, von oben und Anteil des Felds, der der Körperhöhe entspricht */ fuss?: [number, number]; gross?: number; /* fuss: wo im Standbild die Füße stehen (Anteil von links, von oben); gross: Maßstab, wenn das Bild über den Kopf hinausragt */
+export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string; schild?: string; /* schild: Laufbilder für die zweite Waffe */ hieb2?: string; hiebMass?: [number, number, number]; hieb2Mass?: [number, number, number]; /* hieb: Angriffsbilder der ersten Waffe, hieb2: der zweiten; Maße wie laufMass */ ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; /* ruhe: Bildblatt fürs Stehen (bewegt); hoehe: Körperhöhe am Bildschirm, sonst 84 */ schildStand?: string; schildFuss?: [number, number, number]; laufMass?: [number, number, number]; /* schildStand: Standbild der zweiten Waffe, schildFuss: Füße von links, von oben, Maßstab; laufMass: bei den Laufbildern Füße von links, von oben und Anteil des Felds, der der Körperhöhe entspricht */ fuss?: [number, number]; gross?: number; /* fuss: wo im Standbild die Füße stehen (Anteil von links, von oben); gross: Maßstab, wenn das Bild über den Kopf hinausragt */
   lp: number; tempo: number; angriff: Werte; abwehr: Werte; modi: [Modus, Modus]; q: Faehigkeit; e: Faehigkeit; r: Faehigkeit; passiv: string }
 
 export const K = {
@@ -38,6 +38,7 @@ export const K = {
   R_HELD: 0.36, SICHT: 7,
   AGGRO: 5.5, LEINE: 10,                   // Monster: ab wann sie angreifen, wie weit sie ihrem Lager folgen
   WIEDER_HELD: 5,
+  HEIM_HEILUNG: 0.15, HEIM_HEILUNG_BOSS: 0.02, // Monster, die niemanden mehr verfolgen, heilen an ihrem Platz so viel ihres Lebens je Sekunde
   SPLITTER: [1, 20] as [number, number],
   EINGABEN_JE_SEK: 30,
   /* Einzelne Fähigkeiten */
@@ -105,11 +106,15 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
+export interface MonsterDef { name: string; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } }
 export const MONSTER: Record<string, MonsterDef> = {
   knochenwaechter: { name: "Knochenwächter", bild: "img/gegner/knochenwaechter.jpg", figur: "img/echtzeit/kw.webp", fuss: [0.62, 0.95], gross: 1.0, lauf: "img/echtzeit/kw-lauf.webp", laufMass: [0.52, 0.93, 0.72], hieb: "img/echtzeit/kw-hieb.webp", hiebMass: [0.55, 0.935, 0.8], links: true, lp: 150, tempo: 3.3, angriffswert: { nah: 70, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 35 }, r: 0.38, untot: true, anfaellig: "wucht",
     angriff: { name: "Kurzschwert", art: "nah", schaden: [10, 20], takt: 1.2, reich: 1.5, aushol: 0.45 } }, // aushol: so lange holt er sichtbar aus – wer dann außer Reichweite ist, wird nicht getroffen
+  /* Der Boss in der Siegelkammer. Werte frei gesetzt, nicht abgestimmt. */
+  knochenfuerst: { name: "Knochenfürst", bild: "img/gegner/grabritter.jpg", figur: "img/echtzeit/boss.webp", fuss: [0.55, 0.96], hoehe: 118, lauf: "img/echtzeit/boss-lauf.webp", laufMass: [0.5, 0.94, 0.66], hieb: "img/echtzeit/boss-hieb.webp", hiebMass: [0.5, 0.905, 0.6], ruhe: "img/echtzeit/boss-ruhe.webp", ruheMass: [0.48, 0.945, 0.91],
+    lp: 520, tempo: 3.0, angriffswert: { nah: 100, fern: 0, magie: 0 }, abwehr: { nah: 85, fern: 70, magie: 50 }, r: 0.55, untot: true, boss: true,
+    angriff: { name: "Knochenklinge", art: "nah", schaden: [20, 36], takt: 1.7, reich: 1.9, aushol: 0.6 } },
 };
 
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */
