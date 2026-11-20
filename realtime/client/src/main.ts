@@ -153,6 +153,7 @@ class Spiel extends Phaser.Scene {
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
     const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? FIG(typ, held).hoehe || 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
     if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(F[0], F[1]); kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
+    else if (!held && MONSTER[typ]?.unsichtbar) { /* schon auf die Karte gemalt (Laich): nur Ring, Name und Lebensbalken */ kopf = this.add.image(0, 0, typ).setVisible(false); rand = this.add.circle(0, 0, 1).setVisible(false); }
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
       rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
@@ -171,6 +172,7 @@ class Spiel extends Phaser.Scene {
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
+    for (const [id, b] of this.bilder) if (!da.has(id) && b.typ === "laich") this.laichWeg(b.c.x, b.c.y);
     for (const [id, b] of this.bilder) if (!da.has(id)) { const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.destroy(); b.c.destroy(); this.bilder.delete(id); }
     { /* Seelensplitter am Boden: leuchten und drehen sich, bis ein Held sie aufhebt */ if (!this.anims.exists("seelensplitter")) this.anims.create({ key: "seelensplitter", frames: this.anims.generateFrameNumbers("seelensplitter", {}), frameRate: 9, repeat: -1 });
       const da = new Set<number>(); for (const q of z.b || []) { da.add(q[0]); if (!this.beute.has(q[0])) { const o = iso(q[1], q[2]), sp = this.add.sprite(o.x, o.y - 14, "seelensplitter").setBlendMode(Phaser.BlendModes.ADD).setScale(q[3] > 9 ? 0.62 : 0.42).setDepth(tief(q[1], q[2]) + 4); sp.play({ key: "seelensplitter", startFrame: Math.floor(Math.random() * 9) }); sp.setAlpha(0); this.tweens.add({ targets: sp, alpha: 1, y: o.y - 22, duration: 350 }); this.beute.set(q[0], sp); } }
@@ -180,6 +182,12 @@ class Spiel extends Phaser.Scene {
     for (const ev of z.ev) this.ereignis(ev);
     this.schleuse(z);
     this.anzeige(z);
+  }
+  /** Zerschlagener Laich: Schlamm deckt die gemalten Eier zu, ein paar Spritzer fliegen */
+  laichWeg(x: number, y: number) {
+    const fleck = this.add.ellipse(x, y, 150, 78, 0x2b2a17, 0.92).setDepth(1).setScale(0.2); this.tweens.add({ targets: fleck, scale: 1, duration: 260, ease: "Quad.easeOut" });
+    const rand = this.add.ellipse(x, y, 150, 78).setStrokeStyle(3, 0x4a4626, 0.8).setDepth(1).setAlpha(0); this.tweens.add({ targets: rand, alpha: 1, delay: 200, duration: 200 });
+    for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, s = this.add.circle(x, y - 10, 3 + Math.random() * 4, i % 2 ? 0x8fbf5a : 0x5a5a32).setDepth(99990); this.tweens.add({ targets: s, x: x + Math.cos(a) * (50 + Math.random() * 40), y: y - 10 + Math.sin(a) * 30 - 20, alpha: 0, duration: 500 + Math.random() * 300, onComplete: () => s.destroy() }); }
   }
   /* ---------- Die Schleuse im Mühlgraben: Hebel am Ufer, Ring zeigt das Schließen, oben steht das Ziel ---------- */
   hebel: { c: Phaser.GameObjects.Container; griff: Phaser.GameObjects.Rectangle; ring: Phaser.GameObjects.Graphics; schein: Phaser.GameObjects.Ellipse; offen: boolean } | null = null;
@@ -225,7 +233,7 @@ class Spiel extends Phaser.Scene {
       const o = this.add.text(x, y - 120, (ich ? "" : HELDEN[b.typ].name + " · ") + "Stufe " + ev.s + "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: ich ? "28px" : "20px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999);
       this.tweens.add({ targets: o, y: o.y - 50, alpha: 0, delay: 1100, duration: 1300, onComplete: () => o.destroy() }); if (ich) { this.cameras.main.flash(260, 255, 230, 160); } }
     else if (ev.a === "auftauchen") { /* eine Kröte kriecht aus dem Graben: Wasser spritzt */ const p = iso(ev.x, ev.y); for (let i = 0; i < 2; i++) { const o = this.add.ellipse(p.x, p.y, 40, 18).setStrokeStyle(3, 0x9fd8ff, 0.9).setDepth(3); this.tweens.add({ targets: o, scale: 2.6, alpha: 0, delay: i * 180, duration: 700, onComplete: () => o.destroy() }); }
-      zahl(ev.x, ev.y - 0.4, "aus dem Graben!", "#9fd8ff"); }
+      const jb = this.bilder.get(ev.id); zahl(ev.x, ev.y - 0.4, jb && jb.typ === "kroetchen" ? "geschlüpft!" : "aus dem Graben!", "#9fd8ff"); }
     else if (ev.a === "schleuse") { const p = iso(ev.x, ev.y), o = this.add.text(p.x, p.y - 110, "Die Schleuse ist zu!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "26px", fontStyle: "bold", color: "#ffe9a8", stroke: "#3a2400", strokeThickness: 6 }).setOrigin(0.5).setDepth(99999);
       this.tweens.add({ targets: o, y: o.y - 40, alpha: 0, delay: 1400, duration: 1200, onComplete: () => o.destroy() }); this.cameras.main.flash(220, 160, 210, 255); }
     else if (ev.a === "splitter") zahl(ev.x, ev.y, "◈ +" + ev.n, FLACH ? "#8fd8ff" : "#ff9aa8");

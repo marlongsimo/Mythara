@@ -52,7 +52,11 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
     reden: [{ wenn: ["hanne"], setzt: "agnes", schluss: "Ich halte die Augen offen",
       zeilen: [{ wer: "Agnes, Witwe des Müllers", text: "Mein Mann hat die Mühle dreißig Jahre geführt. Seit er tot ist, steht sie leer, und am Graben kümmert sich niemand mehr." }, { wer: "Agnes", text: "Die Kröten kommen von dort. Vom Wehr herauf, immer nachts." }],
       fragen: [{ knopf: "Was ist am Wehr?", zeilen: [{ wer: "Agnes", text: "Eine sitzt dort, größer als alle anderen. Die Leute nennen sie die alte Unke. Sie war immer da. Aber früher blieb sie, wo sie war." }] },
-        { knopf: "Wie hält man sie auf?", zeilen: [{ wer: "Agnes", text: "Am Mühlhaus ist eine Schleuse. Steht sie offen, kriechen sie aus dem Graben nach, eine nach der anderen." }, { wer: "Agnes", text: "Mein Mann hat sie jeden Abend zugemacht. Seit er tot ist, macht das keiner mehr. Den Hebel musst du ein paar Atemzüge halten, er klemmt." }] }] }] },
+        { knopf: "Wie hält man sie auf?", zeilen: [{ wer: "Agnes", text: "Am Mühlhaus ist eine Schleuse. Steht sie offen, kriechen sie aus dem Graben nach, eine nach der anderen." }, { wer: "Agnes", text: "Mein Mann hat sie jeden Abend zugemacht. Seit er tot ist, macht das keiner mehr. Den Hebel musst du ein paar Atemzüge halten, er klemmt." }] }] },
+      { wenn: ["agnes"], setzt: "nest_auftrag", schluss: "Ich sehe nach", fragen: [],
+        zeilen: [{ wer: "Agnes", text: "Noch etwas. Hinter der Scheune, unter dem alten Baum, steht ein Tümpel. Dort liegt Laich, so viel, wie ich es nie gesehen habe." }, { wer: "Agnes", text: "Wenn das alles schlüpft, haben wir nächstes Jahr keinen Speicher mehr, sondern einen Krötenteich. Der Weg geht links an der Scheune vorbei." }] },
+      { wenn: ["kampf_nest"], setzt: "nest_dank", schluss: "Gern geschehen", fragen: [],
+        zeilen: [{ wer: "Agnes", text: "Du warst am Tümpel? Dann schlafe ich heute ruhiger. Mein Mann hätte dir dafür ein Brot gebacken. Ich kann nur danke sagen." }] }] },
 };
 /* Wohin der Pfeil am Boden zeigt: die erste Zeile, deren Bedingung passt. Stehen Leute mit offenem Gespräch da, zeigt er zuerst zu ihnen (zum nächsten). */
 const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["tebbe_gefunden"], stelle: "wehr" }, { wenn: ["tebbe"], stelle: "muehle" }, { wenn: ["hanne"], stelle: "scheune" }] };
@@ -61,6 +65,7 @@ const TUEREN: Record<string, { wenn: string[]; knopf: string; kampf: string }> =
   scheune: { wenn: ["hanne"], knopf: "Den Kornspeicher betreten", kampf: "speicher" },
   muehle: { wenn: ["tebbe"], knopf: "Zur Mühle am Graben", kampf: "muehle" },
   wehr: { wenn: ["tebbe_gefunden"], knopf: "Zum Wehr hinunter", kampf: "wehr" },
+  nest: { wenn: ["nest_auftrag"], knopf: "Hinter die Scheune (Krötennest)", kampf: "nest" },
 };
 /* Was beim Ankommen im Ort erzählt wird: der erste Auftritt, dessen Bedingung passt und der noch nicht erzählt ist. ende: Damit ist die Kampagne geschafft. */
 const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; zeilen: Zeile[]; schluss: string; ende?: number }[]> = { weidenhain: [

@@ -94,7 +94,7 @@ if (K && P.get("schritt") != null) S.schritt = Math.max(0, Math.min(K.schritte.l
 export const inKampagne = Boolean(K);
 /** Steht jetzt ein Kampf an (Held ist gewählt, der aktuelle Schritt ist ein Kampf)? Dann die Angaben dazu. */
 /* Kampf aus einem begehbaren Ort heraus (?ort=weidenhain&kampf=speicher): Nach dem Sieg wird im Stand des Ortes der Merker „kampf_<karte>“ gesetzt, dann geht es zurück in den Ort. */
-const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus dem Kornspeicher", muehle: "Kämpfe dich über den Steg zur Mühle durch", wehr: "Bezwinge die alte Unke und die Irrlichter" };
+const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus dem Kornspeicher", muehle: "Kämpfe dich über den Steg zur Mühle durch", wehr: "Bezwinge die alte Unke und die Irrlichter", nest: "Zerschlage den Krötenlaich im Tümpel" };
 const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
 /** Stufe der Aufgabe je Ort (bestimmt mit der Gruppengröße die Stärke der Gegner) */
 export const ORTSTUFE: Record<string, number> = { weidenhain: 1 };

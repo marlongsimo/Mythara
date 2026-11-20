@@ -42,6 +42,8 @@ export class Sim {
   /* eigene Karte, Gegnerstärke und Heldenstufen dieser Partie (beim Anlegen übernommen, vor jedem Schritt wieder eingesetzt) */
   /* Schleuse dieses Kampfes (oder keine): offen, Fortschritt beim Schließen, Zeit bis zur nächsten Welle */
   sl: (SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }) | null = null;
+  /* Brut (Laich): je Mutter die Zeit bis zum nächsten Jungen, wie viele schon geschlüpft sind, und die Kennungen der Jungen */
+  private brut = new Map<number, { t: number; n: number; junge: number[] }>();
   private karte: KartenStand = karteJetzt(); private staerke = { ...STAERKE }; private stufen: Record<string, number> = { ...HELDENSTUFE }; private epStand: Record<string, number> = { ...HELDENEP };
   private bereit(): void { karteNehmen(this.karte); Object.assign(STAERKE, this.staerke); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; Object.assign(HELDENSTUFE, this.stufen); }
   constructor(public heldTyp = "schildwaechter", seed = 1, begleiter: string[] = []) { this.zs = (seed >>> 0) || 1; if (!HELDEN[this.heldTyp]) this.heldTyp = "schildwaechter";
@@ -58,7 +60,7 @@ export class Sim {
     const ich = this.neu(true, this.heldTyp, 0, START[0], false);
     this.begleiter.forEach((b, i) => { this.neu(true, b, 0, START[i + 1], true).fuehrer = ich.id; });
     for (const l of LAGER) this.neu(false, l.art, 1, l, true, l.gruppe); this.monsterZahl = LAGER.length;
-    const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
+    this.brut.clear(); const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
   }
   get ich(): Wesen { return this.wesen[0]; }
   /** Erfahrung für jeden Helden im Team; wer dabei eine Stufe erreicht, wird sofort stärker und bekommt sein Leben ganz zurück */
@@ -264,6 +266,7 @@ export class Sim {
       if (w.ladeT > 0) { w.ladeT -= DT; if (w.ladeT <= 0) { const S = MONSTER[w.typ].spezial!; this.ev.push({ a: "speien", id: w.id, x: w.ladeX, y: w.ladeY, r: S.radius }); this.flaeche(w, { x: w.ladeX, y: w.ladeY }, S.radius, { grund: S.schaden[1] * STAERKE.schaden, min: S.schaden[0] * STAERKE.schaden, art: S.art }); w.cdS = S.alle; } continue; } // wer lädt, steht
       if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) this.ausloesen(w, z); } continue; } // wer ausholt, steht
       let ziel = w.zielId ? this.nach(w.zielId) : undefined; if (ziel && ziel.tot) { ziel = undefined; w.zielId = 0; }
+      if (!w.held && MONSTER[w.typ].fest) { const B = MONSTER[w.typ].brut; if (B) this.brueten(w, B); continue; } /* Laich: bewegt sich nicht, greift nicht an, brütet */
       if (!w.held) {
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
         if (ziel && abstand(ziel, w.heim) > K.LEINE && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; }
@@ -291,6 +294,7 @@ export class Sim {
     if (this.sl && this.sl.offen && this.phase === "lauf") this.schleuse(this.sl);
     for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) { const a = this.wesen[i], b = this.wesen[j]; if (a.tot || b.tot) continue; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } }
     for (const w of this.wesen) if (!w.tot) schieben(w);
+    for (const w of this.wesen) if (!w.held && !w.tot && MONSTER[w.typ].fest) { w.x = w.heim.x; w.y = w.heim.y; } /* Festes bleibt, wo es ist, auch wenn jemand dagegenläuft */
     for (const g of this.geschosse) { const z = g.zielId ? this.nach(g.zielId) : undefined; if (z && !z.tot) { g.zx = z.x; g.zy = z.y; }
       const d = Math.hypot(g.zx - g.x, g.zy - g.y), s = g.tempo * DT;
       if (d > s) { g.x += (g.zx - g.x) / d * s; g.y += (g.zy - g.y) / d * s; if (g.knall && !begehbar(g.x, g.y)) { g.zx = g.x; g.zy = g.y; } else continue; }
@@ -308,6 +312,14 @@ export class Sim {
     if (this.wesen.filter((w) => !w.held && !w.tot && w.gruppe >= 100).length >= sl.max) return;
     const p = sl.quellen[Math.floor(this.zf() * sl.quellen.length)], m = this.neu(false, sl.art, 1, { x: p.x, y: p.y }, true, 100 + this.lauf);
     m.wach = true; m.heim = { x: sl.x, y: sl.y }; /* sie ziehen zum Hebel und verteidigen ihn */ this.monsterZahl++; sl.raus++; this.ev.push({ a: "auftauchen", id: m.id, x: p.x, y: p.y });
+  }
+  /** Laich: Sobald ein Held in der Nähe ist, schlüpft alle takt Sekunden ein Junges – höchstens max zugleich, gesamt insgesamt. */
+  private brueten(w: Wesen, B: { art: string; takt: number; max: number; gesamt: number }): void {
+    let b = this.brut.get(w.id); if (!b) { b = { t: B.takt * 0.4, n: 0, junge: [] }; this.brut.set(w.id, b); }
+    if (b.n >= B.gesamt || !this.wesen.some((h) => h.held && !h.tot && abstand(h, w) < 9)) return;
+    b.t -= DT; if (b.t > 0) return; b.t = B.takt; b.junge = b.junge.filter((id) => { const j = this.nach(id); return j && !j.tot; }); if (b.junge.length >= B.max) return;
+    const a = this.zf() * Math.PI * 2, p = naechstFrei({ x: w.x + Math.cos(a) * 1.1, y: w.y + Math.sin(a) * 1.1 }), j = this.neu(false, B.art, 1, p, true, 200 + this.lauf);
+    j.wach = true; j.heim = { x: w.x, y: w.y }; b.n++; b.junge.push(j.id); this.monsterZahl++; this.ev.push({ a: "auftauchen", id: j.id, x: p.x, y: p.y });
   }
   /** Der Zustand für den Client (kompakt). Die Ereignisse seit dem letzten Abruf sind enthalten und werden danach geleert. */
   zustand(): Zustand { this.bereit();

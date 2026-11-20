@@ -12,12 +12,15 @@ const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, 
 /* Reihenfolge der Kampagnen (wie auf der Weltkarte) und ihrer Kämpfe. Danach richtet sich, was freigeschaltet ist – auf dem Server und im Spiel gleich. */
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
 export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"] };
+/* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
+export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest"] };
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
 /** Darf dieser Kampf begonnen werden? Erster Kampf eines Ortes: die vorige Kampagne ist geschafft. Sonst: der Kampf davor ist gewonnen. Gewonnene Kämpfe darf man wiederholen. */
 export function darfKaempfen(siege: Set<string>, ort: string, kampf: string): boolean {
-  const f = KAMPFFOLGE[ort], i = f ? f.indexOf(kampf) : -1, o = ORTREIHE.indexOf(ort); if (i < 0 || o < 0) return false;
+  const f = KAMPFFOLGE[ort], o = ORTREIHE.indexOf(ort); if (o >= 0 && (NEBENKAEMPFE[ort] || []).includes(kampf)) return o === 0 || geschafft(siege, ORTREIHE[o - 1]);
+  const i = f ? f.indexOf(kampf) : -1; if (i < 0 || o < 0) return false;
   if (i > 0) return siege.has(ort + "/" + f[i - 1]); return o === 0 || geschafft(siege, ORTREIHE[o - 1]);
 }
 /** Rechenfelder je gemaltem Feld (siehe setzeKarte) */
@@ -35,6 +38,12 @@ export const KARTEN: Record<string, KampfKarte> = {
     lager: [L("schlammkroete", 4, 2, 1), L("schlammkroete", 5, 4, 1), L("irrlicht", 8, 4, 2), L("schlammkroete", 9, 5, 2), L("irrlicht", 9, 7, 3), L("schlammkroete", 11, 5, 3)],
     /* der Hebel am Ufer vor dem Mühlhaus; die Kröten kriechen an beiden Ufern aus dem Graben */
     schleuse: { x: 8.5, y: 3.2, quellen: [[5.5, 7.5], [8.5, 7.5], [5.5, 1.5], [8.5, 6.5]], art: "schlammkroete", takt: 10, erst: 7, max: 3, gesamt: 8 } },
+  /* Hinter der Scheune (Nebenkampf): ein Tümpel unter dem alten Baum voller Krötenlaich. 16 × 9 Felder, der Tümpel ist flach und begehbar. */
+  nest: { name: "Hinter der Scheune", bild: "img/weidenhain/nest.webp",
+    zeilen: ["MMMMMMMMMMTTTTTT", "MMMMMMMMMMTTTTTT", "MMMMMMMMMMTTTTTT", "MMMMMMT.....TTTT", ".KKKKKK......KTT", ".KK...K......K.T", "....KK.....KKKTT", "T.....K...TTTTTT", "TTTT......TTTTTT"],
+    start: [[1, 6], [2, 7], [0, 5]],
+    lager: [{ art: "laich", x: 9.6, y: 4.55, gruppe: 9 }, { art: "laich", x: 10.4, y: 3.4, gruppe: 9 }, { art: "laich", x: 11.6, y: 3.9, gruppe: 9 },
+      L("schlammkroete", 8, 5, 1), L("kroetchen", 7, 4, 1), L("kroetchen", 11, 5, 2), L("kroetchen", 12, 4, 2)] },
   /* Das alte Wehr: ein Streifen Ufer zwischen Mühlteich oben und dem Abfluss unten */
   wehr: { name: "Das alte Wehr", bild: "img/weidenhain/wehr.webp",
     zeilen: ["TT~~~~~~~~~T", "TTT~~~~~~MMT", ".TT......MM.", "............", ".T..........", "TTT.......K.", "............", "MMMMMMMMMMMM", "T~~~~~~~~~~~"],

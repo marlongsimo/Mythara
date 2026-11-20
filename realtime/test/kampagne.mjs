@@ -1,7 +1,7 @@
 /* Weidenhain im Rechner durchgespielt: Jede Karte muss mit jedem Helden allein zu gewinnen sein. Gibt Dauer und Tode aus. */
 import { Sim, HELDEN, HELDENREIHE, KARTEN, FEIN, setzeKarte, setzeStaerke, frei } from "./sim.gebaut.mjs";
 let fehler = 0;
-for (const k of ["speicher", "muehle", "wehr"]) { const zeile = [];
+for (const k of ["speicher", "muehle", "wehr", "nest"]) { const zeile = [];
   for (const typ of HELDENREIHE) { setzeKarte(KARTEN[k], FEIN); setzeStaerke(1, 1); const sim = new Sim(typ, 7, []); const h = sim.wesen.find((w) => w.held); let tode = 0, warTot = false;
     if (typ === "lichtbringer") sim.eingabe({ t: "modus" });
     for (let n = 0; n < 20 * 600 && sim.phase !== "sieg"; n++) { if (h.tot && !warTot) tode++; warTot = h.tot;
