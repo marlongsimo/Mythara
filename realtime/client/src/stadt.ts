@@ -51,11 +51,20 @@ const LEUTE: { bild: string; weg: Pkt[]; tempo: number; mass: number }[] = [{ bi
 const WACHEN: number[][] = [[1352, 338, 0], [1178, 640, 1]], WACHE_KOERPER = 0.81, WACHE_FUSS = 0.975;
 const drin = (p: Pkt[], x: number, y: number) => { let d = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) d = !d; return d; };
 const frei = (x: number, y: number) => drin(FLAECHE, x, y) && !HINDERNIS.some((h) => drin(h, x, y));
+/** Weg über die begehbare Fläche (Breitensuche auf einem Raster von 14 Pixeln). Ist das Ziel selbst nicht begehbar, endet der Weg am nächsten begehbaren Punkt. */
+const RASTER = 14;
+function wegZu(x0: number, y0: number, x1: number, y1: number): number[][] {
+  const B = Math.ceil(BW / RASTER), H = Math.ceil(BH / RASTER), mitte = (i: number) => [(i % B + 0.5) * RASTER, (Math.floor(i / B) + 0.5) * RASTER];
+  const zelle = (x: number, y: number) => Math.max(0, Math.min(B - 1, Math.floor(x / RASTER))) + B * Math.max(0, Math.min(H - 1, Math.floor(y / RASTER)));
+  const start = zelle(x0, y0), von = new Int32Array(B * H).fill(-1), reihe = [start]; von[start] = start; let best = start, bestA = Math.hypot(x0 - x1, y0 - y1);
+  for (let n = 0; n < reihe.length; n++) { const i = reihe[n], [mx, my] = mitte(i), a = Math.hypot(mx - x1, my - y1); if (a < bestA) { bestA = a; best = i; } if (a < RASTER * 0.75) break;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) { const cx = i % B + dx, cy = Math.floor(i / B) + dy; if (cx < 0 || cy < 0 || cx >= B || cy >= H) continue; const j = cx + B * cy; if (von[j] >= 0 || !frei((cx + 0.5) * RASTER, (cy + 0.5) * RASTER)) continue; if (dx && dy && (!frei((cx + 0.5) * RASTER, my) || !frei(mx, (cy + 0.5) * RASTER))) continue; /* nicht quer über Ecken */ von[j] = i; reihe.push(j); } }
+  const weg: number[][] = []; for (let i = best; i !== start; i = von[i]) weg.unshift(mitte(i)); if (weg.length && frei(x1, y1) && bestA < RASTER) weg.push([x1, y1]); return weg; }
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
 
 export class Stadt extends Phaser.Scene {
   held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
-  leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number } | null = null;
+  leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; pfad: number[][] = []; zielOrt: (typeof ORTE)[number] | null = null;
   constructor() { super("dorf"); }
   init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter"; }
   preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
@@ -91,9 +100,9 @@ export class Stadt extends Phaser.Scene {
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!this.scene.isActive() || this.gesperrt) return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); } else if (an && (k === "e" || k === "enter")) this.betreten(); };
     const runter = (ev: KeyboardEvent) => { if (!ev.repeat) taste(ev, true); }, hoch = (ev: KeyboardEvent) => taste(ev, false); window.addEventListener("keydown", runter); window.addEventListener("keyup", hoch); this.events.once("shutdown", () => { window.removeEventListener("keydown", runter); window.removeEventListener("keyup", hoch); });
-    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { if (this.gesperrt || this.stick) return; this.stick = { id: p.id, x: p.x, y: p.y }; if (p.wasTouch) { const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; } });
-    this.input.on("pointermove", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; const dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
-    this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } });
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { if (this.gesperrt || this.stick) return; this.stick = { id: p.id, x: p.x, y: p.y, t: performance.now(), weit: 0 }; if (p.wasTouch) { const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; } });
+    this.input.on("pointermove", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; const dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; st.weit = Math.max(st.weit, l); ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
+    this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { const st = this.stick; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.tippen(w.x / F, w.y / F); } this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } });
     $("#ez-dorf-knopf").onclick = () => this.betreten(); $("#ez-dorf-titel").textContent = "Waldmark";
     $("#ez-dorf-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · an einem Ort den Knopf antippen" : "WASD: laufen · an einem Ort: E oder Enter";
     this.cameras.main.setBounds(0, 0, BW * F, BH * F); this.groesse(); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
@@ -120,15 +129,23 @@ export class Stadt extends Phaser.Scene {
   profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-name").textContent = "Test"; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
+  /** Kurz getippt oder geklickt: Liegt ein Ort in der Nähe der Stelle, geht der Held dorthin und betritt ihn; sonst läuft er zur getippten Stelle. */
+  tippen(x: number, y: number) { if (this.gesperrt) return; let ort: (typeof ORTE)[number] | null = null, best = 1e9;
+    for (const q of ORTE) { const a = Math.hypot(x - q.x, y - (q.y - 45)); /* die Gebäude stehen über ihrem Eingang */ if (a < q.r + 120 && a < best) { best = a; ort = q; } }
+    if (ort && ort === this.nah) { this.pfad = []; this.betreten(); return; }
+    this.zielOrt = ort; this.pfad = wegZu(this.ort.x, this.ort.y, ort ? ort.x : x, ort ? ort.y : y); }
   betreten() { const o = this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
     else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; weltkarte(() => { this.gesperrt = false; }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
-    const d = Math.min(0.05, dt / 1000), o = this.ort, l = Math.hypot(this.rx, this.ry), faehrt = !this.gesperrt && l > 0.05;
-    if (faehrt) { const k = Math.min(1, l) / l, sx = this.rx * k * TEMPO * d, sy = this.ry * k * TEMPO * 0.62 * d; // nach oben und unten langsamer: der Boden liegt schräg
+    const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.rx, ry = this.ry;
+    if (Math.hypot(rx, ry) > 0.05 || this.gesperrt) { this.pfad = []; this.zielOrt = null; } /* selbst steuern bricht den Weg ab */
+    else if (this.pfad.length) { const z = this.pfad[0], dx = z[0] - o.x, dy = z[1] - o.y; if (Math.hypot(dx, dy) < 5) { this.pfad.shift(); if (!this.pfad.length && this.zielOrt && Math.hypot(o.x - this.zielOrt.x, o.y - this.zielOrt.y) < this.zielOrt.r) { this.nah = null; /* Knopf neu beschriften */ const zo = this.zielOrt; this.zielOrt = null; this.time.delayedCall(60, () => { if (this.nah === zo) this.betreten(); }); } } else { const qy = dy / 0.62, q = Math.hypot(dx, qy); rx = dx / q; ry = qy / q; } }
+    const l = Math.hypot(rx, ry), faehrt = !this.gesperrt && l > 0.05;
+    if (faehrt) { const k = Math.min(1, l) / l, sx = rx * k * TEMPO * d, sy = ry * k * TEMPO * 0.62 * d; // nach oben und unten langsamer: der Boden liegt schräg
       if (frei(o.x + sx, o.y + sy)) { o.x += sx; o.y += sy; } else if (frei(o.x + sx, o.y)) o.x += sx; else if (frei(o.x, o.y + sy)) o.y += sy; // an Kanten entlanggleiten
-      if (Math.abs(this.rx) > 0.2) this.figur.setFlipX(this.rx < 0); }
+      if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     for (const m of this.leute) { // schlendern: zum nächsten Wegpunkt, dort kurz stehen bleiben
       if (m.pause > 0) { m.pause -= d; if (m.pause <= 0) m.s.anims.resume(); } else { const z = m.d.weg[m.n], dx = z[0] - m.x, dy = z[1] - m.y, w = Math.hypot(dx, dy), schritt = m.d.tempo * d; if (w <= schritt) { m.x = z[0]; m.y = z[1]; m.n = (m.n + 1) % m.d.weg.length; if (Math.random() < 0.6) { m.pause = 1.5 + Math.random() * 3; m.s.anims.pause(); m.s.setFrame(0); } } else { m.x += dx / w * schritt; m.y += dy / w * schritt * (Math.abs(dy) > Math.abs(dx) ? 0.8 : 1); if (Math.abs(dx) > 2) m.s.setFlipX(dx < 0); } }
       m.s.setPosition(m.x * F, m.y * F + 3).setDepth(m.y); }
