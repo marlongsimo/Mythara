@@ -30,6 +30,17 @@
     @media (max-width: 700px) { #ez-heim { top: auto; bottom: 8px; } #ez-heim span { display: none; } }
     #ez-tasten button.ult { border-color: #ffd75e; } #ez-modus { border-color: #8fb8ff !important; background: rgba(26,38,66,.9) !important; } #ez-modus.zwei { border-color: #ffb347 !important; background: rgba(66,44,20,.9) !important; }
     @media (max-width: 700px) { #ez-tasten { gap: 7px; } #ez-tasten button { width: 62px; height: 62px; } }
+    #ez-welt { position: fixed; inset: 0; z-index: 8; background: #050409; display: flex; align-items: center; justify-content: center; } #ez-welt[hidden] { display: none; }
+    #ez-welt .blatt { position: relative; width: min(100vw, calc(100vh * 1524 / 1012)); aspect-ratio: 1524 / 1012; } #ez-welt .blatt img { width: 100%; height: 100%; display: block; user-select: none; }
+    #ez-welt h2 { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); margin: 0; font: 600 15px Cinzel, Georgia, serif; color: #f3e3b4; background: rgba(12,10,18,.78); border: 1px solid rgba(232,200,120,.5); border-radius: 999px; padding: 5px 14px; white-space: nowrap; }
+    #ez-welt .schliessen { position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right)); width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(232,200,120,.6); background: rgba(12,10,18,.85); color: #f3e3b4; font-size: 16px; cursor: pointer; }
+    #ez-welt .ziel, #ez-welt .hier { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 0; padding: 0; font-style: normal; }
+    #ez-welt .ziel { cursor: pointer; } #ez-welt .ziel span { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 700 14px Cinzel, Georgia, serif; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 2px solid #5b3d0c; box-shadow: 0 0 10px rgba(255,210,110,.8), 0 2px 4px rgba(0,0,0,.6); animation: ezWeltPuls 2.2s ease-in-out infinite; }
+    #ez-welt .ziel.an span { background: radial-gradient(circle at 35% 30%, #fff, #9fd0ff); border-color: #123a66; } #ez-welt .ziel b, #ez-welt .hier b { font: 600 11px Cinzel, Georgia, serif; color: #fff3d2; background: rgba(12,10,18,.75); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+    #ez-welt .hier::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: #7ee08a; border: 2px solid #0d3314; box-shadow: 0 0 8px #7ee08a; }
+    #ez-welt .info { position: absolute; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(440px, calc(100vw - 20px)); background: rgba(14,11,22,.93); border: 1px solid rgba(232,200,120,.55); border-radius: 12px; padding: 10px 14px; color: #e9e0cc; font-size: 13px; line-height: 1.4; } #ez-welt .info[hidden] { display: none; }
+    #ez-welt .info small { color: #c7b27c; letter-spacing: .04em; } #ez-welt .info h3 { margin: 2px 0 4px; font: 600 16px Cinzel, Georgia, serif; color: #f3e3b4; } #ez-welt .info p { margin: 0 0 6px; } #ez-welt .info em { color: #b79bff; font-size: 12px; }
+    @keyframes ezWeltPuls { 50% { box-shadow: 0 0 18px rgba(255,220,130,1), 0 2px 4px rgba(0,0,0,.6); } }
     #ez-wahl { position: fixed; inset: 0; z-index: 8; background: radial-gradient(ellipse at 50% 0%, #1c1740 0%, #0a0c1a 60%, #05060d 100%); overflow-y: auto; padding: 14px; touch-action: pan-y; user-select: text; -webkit-user-select: text; } #ez-wahl[hidden] { display: none; }
     .ez-blatt { max-width: 780px; margin: 0 auto; } .ez-blatt h1 { font-family: Cinzel, Georgia, serif; color: #ffd98a; margin: 2px 0 10px; font-size: 26px; } .ez-blatt h2 { margin: 0 0 2px; font-size: 17px; color: #ffe9a8; } .ez-blatt h3 { font-size: 13px; margin: 14px 0 6px; color: #d9cdf5; }
     .ez-klein { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #a99fbf; margin: 0; } .ez-klein.unten { text-transform: none; letter-spacing: 0; margin-top: 10px; }
@@ -71,8 +82,8 @@
   <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
-  <div id="ez-wahl" hidden></div>
+  <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
-  <script src="spiel.js?v=mwocvejv"></script>
+  <script src="spiel.js?v=mwodc5wm"></script>
 </body>
 </html>
