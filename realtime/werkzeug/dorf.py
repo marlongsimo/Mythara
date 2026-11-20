@@ -13,7 +13,7 @@ HIER = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HIER, "..
 DB, DH = 24, 18
 # Grundriss [x, y, breite, tiefe], Höhe in Bildpunkten, Farben (Wand, Dach), Tür (Punkt vor dem Eingang), was dort passiert
 BAUTEN = [
-    {"id": "tor", "name": "Der Riss", "r": [10.7, 1.0, 2.8, 5.6], "h": 0, "wand": "", "dach": "", "tuer": [12.1, 7.6], "tat": "riss", "text": "In den Riss", "flach": True, "bild": "img/echtzeit/riss-tor.webp", "breite": 310},  # der Spalt im Boden: flach, man läuft außen herum
+    {"id": "tor", "name": "Der Riss", "r": [11.1, 1.7, 2.0, 4.2], "h": 0, "wand": "", "dach": "", "tuer": [12.1, 6.6], "tat": "riss", "text": "In den Riss", "flach": True, "bild": "img/echtzeit/riss-tor.webp", "breite": 230},  # der Spalt im Boden: flach, man läuft außen herum
     {"id": "taverne", "name": "Taverne", "r": [3.6, 0, 5, 5], "h": 0, "wand": "", "dach": "", "tuer": [9.3, 3.0], "tat": "bald", "text": "Taverne – kommt noch", "bild": "img/echtzeit/taverne.webp", "breite": 335, "anker": [0.465, 0.985]},  # Bild steht mit der vorderen Ecke seines Sockels auf der vorderen Ecke des Grundrisses
     {"id": "haendler", "name": "Händler", "r": [16, 0, 5, 3], "h": 76, "wand": "#6a5632", "dach": "#8a6a2a", "tuer": [18.5, 3.9], "tat": "bald", "text": "Händler – kommt noch"},
     {"id": "kathedrale", "name": "Kathedrale", "r": [0, 4, 3.4, 6], "h": 140, "wand": "#6d6a78", "dach": "#44485e", "tuer": [4.3, 7], "tat": "bald", "text": "Kathedrale – kommt noch"},
