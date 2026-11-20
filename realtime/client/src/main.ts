@@ -44,6 +44,15 @@ function ladeschirm(grund: string) { const el = $("#ez-laden"); if (!el) return;
   (el.querySelector(".tipp") as HTMLElement).textContent = TIPPS[Math.floor(s / 8) % TIPPS.length]; }
 const TIPPS = ["Nach einer Pause schläft der Server. Beim ersten Kampf dauert es deshalb bis zu einer Minute – danach geht es sofort.", "Gegner holen sichtbar aus. Wer dann aus der Reichweite geht, wird nicht getroffen.",
   "Leuchtet der Boden grün, lädt die alte Unke ihren Giftschwall. Raus aus dem Kreis!", "Seelensplitter hebst du auf, indem du darüberläufst. Erst „Kampf verlassen“ beendet den Kampf.", "Erfahrung bekommt jeder Held deines Teams – in der Heldenhalle siehst du die Stufen.", "Mit der Leertaste oder ⇄ wechselst du die Waffe."];
+/** Bilder für die Aktionstasten (img/fx): je Held die Fähigkeiten Q, E, R und die beiden Waffen */
+const SYMBOL: Record<string, { q?: string; e?: string; r?: string; modi?: string[] }> = {
+  schildwaechter: { q: "welle", e: "schild", r: "aura", modi: ["symbole/schwert", "symbole/schild"] }, elementarist: { q: "eis", e: "blitz", r: "feuer", modi: ["kugel", "hieb"] },
+  lichtbringer: { q: "heil", e: "sterne", r: "licht", modi: ["heil", "hieb"] }, assassine: { q: "schatten", e: "gift", r: "blut", modi: ["dolch", "pfeil"] },
+  kopfgeldjaeger: { q: "mal", e: "netz", r: "blut", modi: ["pfeil", "dolch"] } };
+const symbolBild = (n: string) => n.includes("/") ? `../img/${n}.webp` : `../img/fx/${n}.webp`; /* „symbole/…“: eigene Bilder, sonst die Effektbilder */
+/* Der Knopf „?“ oben rechts zeigt die Steuerung; beim ersten Kampf einer Sitzung ist sie ein paar Sekunden offen */
+{ const f = document.getElementById("ez-frage"); if (f) { f.addEventListener("pointerdown", (e) => e.stopPropagation()); f.addEventListener("click", (e) => { e.stopPropagation(); document.body.classList.toggle("hilfe-an"); });
+  let neu = true; try { neu = !sessionStorage.getItem("ez__hilfe"); sessionStorage.setItem("ez__hilfe", "1"); } catch { /* privat */ } if (neu) { document.body.classList.add("hilfe-an"); setTimeout(() => document.body.classList.remove("hilfe-an"), 9000); } } }
 /** Die Bildangaben einer Figur, ob Held oder Monster */
 const FIG = (typ: string, held: boolean | number) => (held ? HELDEN[typ] : MONSTER[typ]) as Partial<HeldDef> & { links?: boolean };
 const ALLE: Record<string, Partial<HeldDef>> = { ...HELDEN, ...(MONSTER as unknown as Record<string, Partial<HeldDef>>) };
@@ -209,14 +218,28 @@ class Spiel extends Phaser.Scene {
       const b2 = this.bilder.get(ev.id), sz = b2 && MONSTER[b2.typ].spezial; if (b2 && sz && sz.bild) { const sp = b2.kopf as Phaser.GameObjects.Sprite; sp.play("speien-" + b2.typ); sp.once("animationcomplete", () => { b2.schlag = false; this.haltung(b2); }); } }
     else if (ev.a === "knall") { const p = iso(ev.x, ev.y), f = ev.farbe === "eis" ? 0x8fd8ff : ev.farbe === "blitz" ? 0xd9c8ff : ev.farbe === "licht" ? 0xfff2a8 : 0xff8a2a, o = this.add.ellipse(p.x, p.y, ev.r * (FLACH ? 2 * ZELLE : KW * 1.41), ev.r * (FLACH ? 2 * ZELLE : KHOCH * 1.41), f, 0.5).setDepth(3); this.tweens.add({ targets: o, alpha: 0, scale: 1.12, duration: 420, onComplete: () => o.destroy() }); if (ev.farbe === "feuer" || ev.farbe === "blitz") this.cameras.main.shake(110, 0.004); }
   }
+  /** Die Begleiter unter dem eigenen Helden: Bild, Stufe, Leben und Erfahrung */
+  gefolgeIds = "";
+  gefolge(z: Zustand, ichId: number) {
+    const el = $("#ez-gefolge"), mit = z.w.filter((e) => e[1] && e[0] !== ichId && e[3] === 0), ids = mit.map((e) => e[0] + ":" + e[2]).join(",");
+    if (ids !== this.gefolgeIds) { this.gefolgeIds = ids; el.innerHTML = mit.map((e) => `<div class="mit" data-id="${e[0]}"><span class="bild"><img src="../${HELDEN[e[2]].bild}" alt=""><em hidden></em></span><div class="werte"><b>${HELDEN[e[2]].name}</b><span class="leiste"><b class="herz">♥</b><i class="ez-balken"><u></u><small></small></i></span><span class="leiste ep" hidden><b class="stern">✦</b><i class="ez-balken xp"><u></u><small></small></i></span></div></div>`).join(""); }
+    for (const e of mit) { const d = el.querySelector(`[data-id="${e[0]}"]`) as HTMLElement | null; if (!d) continue; const tot = Boolean(e[10]); d.classList.toggle("tot", tot);
+      const [lp, ep] = Array.from(d.querySelectorAll(".leiste")) as HTMLElement[]; (lp.querySelector("u") as HTMLElement).style.width = Math.round(100 * e[7] / e[8]) + "%"; (lp.querySelector("small") as HTMLElement).textContent = tot ? "gefallen" : `${e[7]} / ${e[8]}`;
+      const s = z.st && z.st[e[2]], em = d.querySelector("em") as HTMLElement; ep.hidden = !(FLACH && s); em.hidden = !s; if (s) { const [st, x] = s, von = EP_BIS[st], bis = st < STUFE_MAX ? EP_BIS[st + 1] : von; em.textContent = "St. " + st;
+        (ep.querySelector("u") as HTMLElement).style.width = (st < STUFE_MAX ? Math.min(100, Math.round(100 * (x - von) / (bis - von))) : 100) + "%"; (ep.querySelector("small") as HTMLElement).textContent = st < STUFE_MAX ? `${x - von} / ${bis - von} EP` : "höchste Stufe"; } }
+  }
   anzeige(z: Zustand) {
     const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus];
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = ich[10] ? `gefallen – zurück in ${Math.ceil(z.ich.wieder)} s` : `${ich[7]} / ${ich[8]}` + (ich[11] > 0 ? ` · Schutz ${ich[11]}` : "");
     if (FLACH && z.ich.stufe) { const s = z.ich.stufe, e = z.ich.ep || 0, von = EP_BIS[s], bis = s < STUFE_MAX ? EP_BIS[s + 1] : von; const xp = $("#ez-xpleiste"); xp.hidden = false; ($("#ez-xp") as HTMLElement).style.width = (s < STUFE_MAX ? Math.min(100, Math.round(100 * (e - von) / (bis - von))) : 100) + "%";
-      $("#ez-xpzahl").textContent = s < STUFE_MAX ? `Stufe ${s} · ${e - von} / ${bis - von} EP` : `Stufe ${s} · höchste Stufe`; }
-    const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
-    for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); (el.querySelector("i") as HTMLElement).style.height = (cd > 0 ? Math.round(100 * cd / def.zeit) : 0) + "%"; (el.querySelector("b") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : taste.toUpperCase(); const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = def.text; } }
-    const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
+      $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
+    const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? (window.innerWidth < 701 ? `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}`) : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
+    { const bild = $("#ez-ich-bild") as HTMLImageElement, src = "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"); st.hidden = !z.ich.stufe; if (z.ich.stufe) st.textContent = "St. " + z.ich.stufe; }
+    this.gefolge(z, ich[0]);
+    const sym = SYMBOL[ich[2]] || {};
+    for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
+      const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${taste.toUpperCase()} · ${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
+    const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; mo.classList.toggle("zwei", z.ich.modus === 1); }
     const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true;
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
       const kn = $("#ez-dorf-knopf"), raus = () => { kn.textContent = "Kampf verlassen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; const n = this.z ? this.z.splitter : 0;
