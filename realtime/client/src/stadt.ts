@@ -134,7 +134,8 @@ export class Stadt extends Phaser.Scene {
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
   /** Kurz getippt oder geklickt: Liegt ein Ort in der Nähe der Stelle, geht der Held dorthin und betritt ihn; sonst läuft er zur getippten Stelle. */
   tippen(x: number, y: number) { if (this.gesperrt) return; let ort: (typeof ORTE)[number] | null = null, best = 1e9;
-    for (const q of ORTE) { const a = Math.hypot(x - q.x, y - (q.y - 45)); /* die Gebäude stehen über ihrem Eingang */ if (a < q.r + 120 && a < best) { best = a; ort = q; } }
+    for (const q of ORTE) { const a = Math.hypot(x - q.x, y - (q.y - 45)); /* die Gebäude stehen über ihrem Eingang */ if (a < q.r + 60 && a < best) { best = a; ort = q; } }
+    if (ort && ort === this.nah && frei(x, y)) ort = null; /* man steht schon dort und tippt auf den Boden: einfach hinlaufen – betreten wird über den Knopf oder einen Tipp auf das Gebäude selbst */
     if (ort && ort === this.nah) { this.pfad = []; this.betreten(); return; }
     this.zielOrt = ort; this.pfad = wegZu(this.ort.x, this.ort.y, ort ? ort.x : x, ort ? ort.y : y); }
   betreten() { const o = this.nah; if (!o || this.gesperrt) return;
