@@ -41,16 +41,19 @@ const RAUCH: number[][] = [[553, 68]];
 const WASSER: number[][] = [[135, 432, 34, 60], [447, 752, 44, 40], [305, 668, 40, 26], [795, 478, 14, 30], [862, 466, 14, 32], [880, 548, 16, 34], [940, 536, 14, 30], [826, 546, 12, 26]];
 const GLITZER: number[][] = [[120, 540, 90, 60], [600, 890, 240, 40], [852, 512, 190, 50], [470, 810, 60, 40]];
 const RISS: number[] = [1385, 725];
+/* Dorfbewohner, die über den Platz schlendern: Bildblatt, Wegpunkte (im Kreis), Tempo */
+const LEUTE: { bild: string; weg: Pkt[]; tempo: number }[] = [{ bild: "wanderer", tempo: 42, weg: [[640, 470], [690, 640], [900, 690], [1030, 620], [1020, 420], [900, 400], [720, 400]] },
+  { bild: "kraeuterfrau", tempo: 36, weg: [[610, 520], [650, 620], [850, 660], [1000, 600], [1010, 405], [1160, 350], [1300, 322], [1410, 312], [1300, 322], [1160, 350], [1010, 405], [1000, 600], [850, 660], [650, 620]] }]; // die Kräuterfrau geht bis zum Stadttor und denselben Weg zurück
 const drin = (p: Pkt[], x: number, y: number) => { let d = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) d = !d; return d; };
 const frei = (x: number, y: number) => drin(FLAECHE, x, y) && !HINDERNIS.some((h) => drin(h, x, y));
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
 
 export class Stadt extends Phaser.Scene {
   held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
-  nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number } | null = null;
+  leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number } | null = null;
   constructor() { super("dorf"); }
   init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter"; }
-  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     document.body.classList.add("dorf", "stadt"); this.profil(); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
     this.cameras.main.setBackgroundColor("#0d140b"); const bild = this.add.image(0, 0, "waldmark").setOrigin(0, 0).setDepth(0), Q = bild.width / BW; bild.setScale(F / Q); // Q: so viel größer als die Vermessung ist die Bilddatei
@@ -60,7 +63,8 @@ export class Stadt extends Phaser.Scene {
       if (!this.textures.exists(key)) { const t = this.textures.createCanvas(key, Math.ceil(w * Q), Math.ceil(h * Q)); if (!t) return; const c = t.getContext(); c.beginPath(); v.umriss.forEach((p, i) => (i ? c.lineTo((p[0] - x0) * Q, (p[1] - y0) * Q) : c.moveTo((p[0] - x0) * Q, (p[1] - y0) * Q))); c.closePath(); c.clip(); c.drawImage(quelle, x0 * Q, y0 * Q, w * Q, h * Q, 0, 0, w * Q, h * Q);
         if (v.gruen) { const d = c.getImageData(0, 0, t.width, t.height), a = d.data; for (let i = 0; i < a.length; i += 4) { const r = a[i], g = a[i + 1], b = a[i + 2]; if (!(g > r * 0.97 && g > b) && Math.max(r, g, b) > 70) a[i + 3] = 0; } c.putImageData(d, 0, 0); } t.refresh(); }
       this.add.image(x0 * F, y0 * F, key).setOrigin(0, 0).setScale(F / Q).setDepth(v.fuss); });
-    this.leben();
+    this.leben(); this.leute = [];
+    for (const l of LEUTE) { const k = "npc-" + l.bild; if (!this.anims.exists(k)) this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, {}), frameRate: 8, repeat: -1 }); const s = this.add.sprite(0, 0, k).setOrigin(0.5, 0.95).setScale(GROSS / (0.88 * 176)); s.play(k); const start = Math.floor(Math.random() * l.weg.length); this.leute.push({ s, d: l, x: l.weg[start][0], y: l.weg[start][1], n: (start + 1) % l.weg.length, pause: 0 }); }
     if (P.get("zeig") === "1") { const g = this.add.graphics().setDepth(9999); const mal = (p: Pkt[], f: number) => { g.lineStyle(2, f, 1); g.strokePoints(p.map((q) => ({ x: q[0] * F, y: q[1] * F })), true); }; mal(FLAECHE, 0x00ff00); HINDERNIS.forEach((h) => mal(h, 0xff0000)); VORN.forEach((v) => mal(v.umriss, 0x00aaff)); for (const o of ORTE) g.strokeCircle(o.x * F, o.y * F, o.r * F); }
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
     if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
@@ -104,6 +108,9 @@ export class Stadt extends Phaser.Scene {
     if (faehrt) { const k = Math.min(1, l) / l, sx = this.rx * k * TEMPO * d, sy = this.ry * k * TEMPO * 0.62 * d; // nach oben und unten langsamer: der Boden liegt schräg
       if (frei(o.x + sx, o.y + sy)) { o.x += sx; o.y += sy; } else if (frei(o.x + sx, o.y)) o.x += sx; else if (frei(o.x, o.y + sy)) o.y += sy; // an Kanten entlanggleiten
       if (Math.abs(this.rx) > 0.2) this.figur.setFlipX(this.rx < 0); }
+    for (const m of this.leute) { // schlendern: zum nächsten Wegpunkt, dort kurz stehen bleiben
+      if (m.pause > 0) { m.pause -= d; if (m.pause <= 0) m.s.anims.resume(); } else { const z = m.d.weg[m.n], dx = z[0] - m.x, dy = z[1] - m.y, w = Math.hypot(dx, dy), schritt = m.d.tempo * d; if (w <= schritt) { m.x = z[0]; m.y = z[1]; m.n = (m.n + 1) % m.d.weg.length; if (Math.random() < 0.6) { m.pause = 1.5 + Math.random() * 3; m.s.anims.pause(); m.s.setFrame(0); } } else { m.x += dx / w * schritt; m.y += dy / w * schritt * (Math.abs(dy) > Math.abs(dx) ? 0.8 : 1); if (Math.abs(dx) > 2) m.s.setFlipX(dx < 0); } }
+      m.s.setPosition(m.x * F, m.y * F + 3).setDepth(m.y); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
