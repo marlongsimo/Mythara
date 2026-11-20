@@ -13,14 +13,13 @@ import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
-import { KARTEN, FEIN, darfKaempfen } from "../../shared/karten";
+import { KARTEN, FEIN, darfKaempfen, ORTSTUFE } from "../../shared/karten";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
 const HERKUNFT = (process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(",").map((s) => s.trim()).filter(Boolean);
 const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = process.env.SUPABASE_SERVICE_KEY || "";
 /* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
-const ORTSTUFE: Record<string, number> = { weidenhain: 1 };
 
 interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean; gesiegt: boolean } }
 const plaetze = new Set<Platz>();

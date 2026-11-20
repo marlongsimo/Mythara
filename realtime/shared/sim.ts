@@ -26,7 +26,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; wach: boolean }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
-export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
+export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
   | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
@@ -46,6 +46,8 @@ export class Sim {
   private brut = new Map<number, { t: number; n: number; junge: number[] }>();
   /* wer noch einmal davonhuschen kann (Irrlichter am Teich) */
   private blinzler = new Set<number>();
+  /* wer schon einmal wieder aufgestanden ist (Moorleichen) */
+  private erhoben = new Set<number>();
   private karte: KartenStand = karteJetzt(); private staerke = { ...STAERKE }; private stufen: Record<string, number> = { ...HELDENSTUFE }; private epStand: Record<string, number> = { ...HELDENEP };
   private bereit(): void { karteNehmen(this.karte); Object.assign(STAERKE, this.staerke); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; Object.assign(HELDENSTUFE, this.stufen); }
   constructor(public heldTyp = "schildwaechter", seed = 1, begleiter: string[] = []) { this.zs = (seed >>> 0) || 1; if (!HELDEN[this.heldTyp]) this.heldTyp = "schildwaechter";
@@ -61,7 +63,7 @@ export class Sim {
     this.wesen = []; this.geschosse = []; this.beute = []; this.tick = 0; this.zeit = 0; this.phase = "lauf"; this.splitter = 0; this.besiegt = 0; this.lauf = 1;
     const ich = this.neu(true, this.heldTyp, 0, START[0], false);
     this.begleiter.forEach((b, i) => { this.neu(true, b, 0, START[i + 1], true).fuehrer = ich.id; });
-    this.blinzler.clear(); for (const l of LAGER) { const m = this.neu(false, l.art, 1, l, true, l.gruppe); if (l.blinzeln) this.blinzler.add(m.id); } this.monsterZahl = LAGER.length;
+    this.blinzler.clear(); this.erhoben.clear(); for (const l of LAGER) { const m = this.neu(false, l.art, 1, l, true, l.gruppe); if (l.blinzeln) this.blinzler.add(m.id); } this.monsterZahl = LAGER.length;
     this.brut.clear(); const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
   }
   get ich(): Wesen { return this.wesen[0]; }
@@ -105,7 +107,9 @@ export class Sim {
     if (!z.held) { z.wach = true; if (von && von.held && !z.zielId) z.zielId = von.id; this.wecken(z); }
     if (z.lp > 0 && z.lp < z.max * 0.4 && this.blinzler.delete(z.id)) { /* fast besiegt: huscht ein Stück vom Angreifer weg */ const v = von || this.ich, dx = z.x - v.x, dy = z.y - v.y, l = Math.hypot(dx, dy) || 1, a = Math.atan2(dy / l, dx / l) + (this.zf() - 0.5) * 1.2;
       const p = naechstFrei({ x: z.x + Math.cos(a) * 5, y: z.y + Math.sin(a) * 5 }); z.x = p.x; z.y = p.y; z.pfad = []; z.aushol = 0; this.ev.push({ a: "blinzeln", id: z.id, x: p.x, y: p.y }); }
-    if (z.lp > 0) return; z.lp = 0; z.tot = true; z.pfad = []; z.zielId = 0; z.dauer = []; z.aushol = 0; this.ev.push({ a: "tot", id: z.id });
+    if (z.lp > 0) return;
+    { const A = !z.held && MONSTER[z.typ].aufstehen; if (A && !this.erhoben.has(z.id)) { this.erhoben.add(z.id); z.lp = Math.round(z.max * A); z.betaeubt = 2.5; z.aushol = 0; z.dauer = []; this.ev.push({ a: "aufstehen", id: z.id, x: z.x, y: z.y }); return; } } /* liegt kurz, dann steht er wieder */
+    z.lp = 0; z.tot = true; z.pfad = []; z.zielId = 0; z.dauer = []; z.aushol = 0; this.ev.push({ a: "tot", id: z.id });
     if (z.held) { z.wieder = K.WIEDER_HELD; return; }
     this.besiegt++; const B = STAERKE.beute, [a, b] = B || K.SPLITTER; let n = a + Math.floor(this.zf() * (b - a + 1)); if (B && MONSTER[z.typ].boss) n *= STAERKE.bossMal;
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); }
@@ -271,6 +275,7 @@ export class Sim {
       if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) this.ausloesen(w, z); } continue; } // wer ausholt, steht
       let ziel = w.zielId ? this.nach(w.zielId) : undefined; if (ziel && ziel.tot) { ziel = undefined; w.zielId = 0; }
       if (!w.held && MONSTER[w.typ].fest) { const B = MONSTER[w.typ].brut; if (B) this.brueten(w, B); continue; } /* Laich: bewegt sich nicht, greift nicht an, brütet */
+      if (!w.held && MONSTER[w.typ].brut && w.wach) this.brueten(w, MONSTER[w.typ].brut!); /* Bosse, die Hilfe rufen */
       if (!w.held) {
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
         if (ziel && abstand(ziel, w.heim) > K.LEINE && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; }

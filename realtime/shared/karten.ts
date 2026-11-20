@@ -11,7 +11,9 @@ const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, 
 
 /* Reihenfolge der Kampagnen (wie auf der Weltkarte) und ihrer Kämpfe. Danach richtet sich, was freigeschaltet ist – auf dem Server und im Spiel gleich. */
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
-export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"] };
+export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"], rabenmoor: ["bohlenweg", "ried", "totenpfad", "schrein"] };
+/** Stufe der Aufgabe je Ort: bestimmt mit der Gruppengröße die Stärke der Gegner (Server und Spiel gleich). Rabenmoor ist für Helden auf Stufe 1 anspruchsvoll. */
+export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2 };
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
 export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
@@ -50,6 +52,28 @@ export const KARTEN: Record<string, KampfKarte> = {
     start: [[1, 4], [1, 5], [2, 3]],
     lager: [{ ...L("irrlicht", 9, 2, 1), blinzeln: true }, { ...L("irrlicht", 11, 3, 1), blinzeln: true }, { ...L("irrlicht", 8, 6, 2), blinzeln: true }, { ...L("irrlicht", 11, 6, 2), blinzeln: true }, L("schlammkroete", 10, 6, 2),
       { ...L("irrlicht", 12, 7, 3), blinzeln: true }, { ...L("irrlicht", 13, 0, 3), blinzeln: true }, L("schlammkroete", 11, 7, 3)] },
+  /* ---------- Rabenmoor (gemalte Karten aus dem Würfelspiel, 12 × 9) ---------- */
+  /* Der Bohlenweg: ein Steg, nur eine Feldreihe breit; links und rechts eine Insel. Hinter dir im Schilf warten Kröten – wer losläuft, ist eingekesselt. */
+  bohlenweg: { name: "Der Bohlenweg", bild: "img/rabenmoor/bohlenweg.webp",
+    zeilen: ["~~~~~~~~~~~~", "~..~~~~~~~~~", "T..~~~~~~~.T", "...~~~~~~~..", "............", "K..~~~~~~~.K", "K..~~~~~~~K.", ".~~~~~~~~~~~", "~~~~~~~~~~~~"],
+    start: [[1, 3], [2, 3], [1, 5]],
+    lager: [L("schlammkroete", 6, 4, 1), L("irrlicht", 5, 4, 1), L("schlammkroete", 10, 4, 2), L("irrlicht", 10, 3, 2), L("irrlicht", 10, 5, 2), L("schlammkroete", 10, 2, 2), L("schlammkroete", 11, 3, 2)] },
+  /* Das Ried: Schlamminseln zwischen gewundenen Wasserläufen; Kröten in drei Gruppen, Irrlichter, die davonhuschen */
+  ried: { name: "Das Ried", bild: "img/rabenmoor/ried.webp",
+    zeilen: ["TTTTT~~..TTT", "TT..~~~...TT", "........K~~.", "...~T....~~.", "~~~...~~~...", "...~........", "...~~....K~T", "TT..~.~~~.TT", "TTT...~~.TTT"],
+    start: [[1, 3], [1, 2], [2, 3]],
+    lager: [L("schlammkroete", 6, 2, 1), L("schlammkroete", 7, 3, 1), { ...L("irrlicht", 8, 1, 1), blinzeln: true }, L("schlammkroete", 10, 4, 2), L("schlammkroete", 11, 5, 2), { ...L("irrlicht", 10, 5, 2), blinzeln: true },
+      L("schlammkroete", 6, 6, 3), L("kroetchen", 7, 5, 3), L("kroetchen", 8, 6, 3)] },
+  /* Der Totenpfad: ein Damm aus Wurzeln zwischen schwarzen Tümpeln. Die Ertrunkenen stehen einmal wieder auf. */
+  totenpfad: { name: "Der Totenpfad", bild: "img/rabenmoor/totenpfad.webp",
+    zeilen: ["~~~~~~~~~~~~", "~T~~~~TT~~T~", ".T..~T....M.", "...T~..K.~..", "............", "...~T..~~..T", "TK.....~~.KT", "T~~~~~~T.~~T", "~~~~~~~~~~~~"],
+    start: [[1, 4], [0, 4], [1, 3]],
+    lager: [L("moorleiche", 5, 4, 1), L("moorleiche", 6, 3, 1), L("irrlicht", 8, 2, 2), L("moorleiche", 9, 4, 2), L("moorleiche", 10, 3, 2), L("irrlicht", 11, 4, 2)] },
+  /* Der versunkene Schrein: Alwine, die Stumme, zwischen sechs Spiralsteinen. Ihre Wehklage trifft alles in der Nähe; sie ruft Irrlichter. */
+  schrein: { name: "Der versunkene Schrein", bild: "img/rabenmoor/schrein.webp",
+    zeilen: ["~~~~~~~~~~~~", "~~~~.....T~~", "~~T.M...M.~~", "~~...MM....~", "~~M..KK..M.~", "~T........K~", "~~..M..M.T~~", "~~~T....T~~~", "~~~~~~~~~~~~"],
+    start: [[5, 7], [6, 7], [4, 7]],
+    lager: [L("alwine", 6, 2, 1), L("moorleiche", 3, 3, 1), L("moorleiche", 8, 3, 1), L("irrlicht", 5, 1, 1)] },
   /* Das alte Wehr: ein Streifen Ufer zwischen Mühlteich oben und dem Abfluss unten */
   wehr: { name: "Das alte Wehr", bild: "img/weidenhain/wehr.webp",
     zeilen: ["TT~~~~~~~~~T", "TTT~~~~~~MMT", ".TT......MM.", "............", ".T..........", "TTT.......K.", "............", "MMMMMMMMMMMM", "T~~~~~~~~~~~"],

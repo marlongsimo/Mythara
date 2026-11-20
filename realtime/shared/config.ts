@@ -110,6 +110,8 @@ export interface MonsterDef { name: string; bild: string; figur?: string; fuss?:
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number };
   /* Spezialangriff auf eine Fläche: Der Gegner hält inne und lädt (laden Sekunden), die Fläche ist am Boden zu sehen; dann trifft er jeden, der noch darin steht. alle: Pause bis zum nächsten Mal. */
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
+  /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
+  aufstehen?: number;
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
@@ -141,6 +143,12 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Zunge", art: "nah", schaden: [6, 12], takt: 1.3, reich: 1.8, aushol: 0.45 } }, // frisch geschlüpft: klein, flink, harmloser
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge
+  moorleiche: { name: "Moorleiche", bild: "img/gegner/moorleiche.jpg", lp: 190, tempo: 1.9, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 60, magie: 35 }, r: 0.38, untot: true, aufstehen: 0.5,
+    angriff: { name: "Nasser Griff", art: "nah", schaden: [16, 28], takt: 1.9, reich: 1.6, aushol: 0.6 } }, // langsam und zäh; steht einmal wieder auf
+  alwine: { name: "Alwine, die Stumme", bild: "img/gegner/alwine.jpg", lp: 1000, tempo: 2.4, angriffswert: { nah: 0, fern: 0, magie: 78 }, abwehr: { nah: 60, fern: 60, magie: 70 }, r: 0.5, boss: true, untot: true,
+    angriff: { name: "Kalte Hand", art: "magie", schaden: [14, 24], takt: 1.8, reich: 5, aushol: 0.6 },
+    brut: { art: "irrlicht", takt: 13, max: 2, gesamt: 5 }, /* ruft Irrlichter herbei */
+    spezial: { name: "Wehklage", laden: 3, alle: 12, radius: 3, reich: 9, schaden: [70, 100], art: "magie" } },
   irrlicht: { name: "Irrlicht", bild: "img/gegner/irrlicht.jpg", figur: "img/echtzeit/irrlicht.webp", fuss: [0.5, 1.09], ruhe: "img/echtzeit/irrlicht-ruhe.webp", ruheMass: [0.482, 0.99, 0.816], hieb: "img/echtzeit/irrlicht-hieb.webp", hiebMass: [0.436, 0.983, 0.809], hoehe: 82, /* schwebt: die Bodenlinie liegt unter der Figur */ lp: 70, tempo: 4.2, angriffswert: { nah: 0, fern: 0, magie: 70 }, abwehr: { nah: 85, fern: 55, magie: 50 }, r: 0.28,
     angriff: { name: "Kalter Funke", art: "magie", schaden: [8, 16], takt: 2.0, reich: 5.5, aushol: 0.6 } }, // bleibt auf Abstand und wirft Funken
   alte_unke: { name: "Die alte Unke", bild: "img/gegner/schlammkroete.jpg", figur: "img/echtzeit/unke.webp", fuss: [0.5, 0.9], lauf: "img/echtzeit/unke-lauf.webp", laufMass: [0.504, 0.851, 0.712], hieb: "img/echtzeit/unke-hieb.webp", hiebMass: [0.489, 0.889, 0.758], hoehe: 160, lp: 900, tempo: 2.1, angriffswert: { nah: 85, fern: 0, magie: 0 }, abwehr: { nah: 65, fern: 55, magie: 45 }, r: 0.62, boss: true,
