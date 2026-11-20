@@ -9,6 +9,7 @@ import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import { heldenhalle } from "./halle";
+import { gruppe, mitreise, gruppenMerker, dorfAnmelden, dorfSende, dorfVerlassen, serverZusatz, mitPause } from "./gruppe";
 import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel, istHaupt, wertung } from "./hud";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
@@ -192,7 +193,7 @@ export class Ort extends Phaser.Scene {
       if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
   preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L && L.lauf) this.load.spritesheet("lauf-" + l[0], `../img/echtzeit/${L.lauf.blatt}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
     if (MEUTE[ortName]) this.load.spritesheet("meute", "../img/echtzeit/meute.webp", { frameWidth: 300, frameHeight: 300 });
-    if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+    if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); for (const k of gruppe() ? Object.keys(HELDEN) : [this.held]) { const D = HELDEN[k]; if (D.figur) this.load.image("figur-" + k, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + k, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); } this.load.image(this.held, "../" + HELDEN[this.held].bild); /* in einer Gruppe: alle Helden, für die Mitspieler */ }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
     const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
@@ -213,6 +214,8 @@ export class Ort extends Phaser.Scene {
       { const t = team(); hudTeam(t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }
       hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.halle() }, { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; hudProfil(this.held); }); } }]);
       const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
+    if (gruppe()) dorfAnmelden(ortName, this.merker, { merker: (m) => this.merkerDazu(m), pos: (n, h, x, y, f, l) => this.anderer(n, h, x, y, f, l), weg: (n) => { const a = this.andere.get(n); if (a) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); } },
+      sage: (von, id, setzt) => this.mithoeren(von, id, setzt), tuer: (kampf, von) => { if (this.gesperrt) return; const kn = $("#ez-dorf-knopf"); kn.textContent = von + " öffnet die Tür …"; kn.hidden = false; this.time.delayedCall(700, () => this.tuerAuf(kampf)); } });
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
   groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); }
@@ -220,11 +223,30 @@ export class Ort extends Phaser.Scene {
   /** Das nächste offene Gespräch einer Person (oder keins) */
   da(id: string) { const z = LEUTE[id].zeigen; return !z || Boolean(this.merker[z]); }
   offen(id: string): Rede | null { if (!this.da(id)) return null; for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
-  merke(m: string) { this.merker[m] = true; try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } this.sicht(); }
+  merke(m: string) { this.merker[m] = true; if (!mitreise()) { try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } } if (gruppe()) dorfSende({ t: "merker", setzt: m }); this.sicht(); }
+  /* ---------- Gemeinsames Dorf ---------- */
+  andere = new Map<string, { sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; held: string; x: number; y: number; zx: number; zy: number; laeuft: boolean; zuletzt: number }>();
+  gesendet = { x: 0, y: 0, t: 0 };
+  /** Fortschritt der Gruppe übernehmen (vom Server); der Anführer speichert ihn in seinem Spielstand */
+  merkerDazu(m: Record<string, boolean>) { let neu = false; for (const k of Object.keys(m)) if (m[k] && !this.merker[k]) { this.merker[k] = true; neu = true; } if (!neu) return;
+    if (!mitreise()) { try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } } this.sicht(); }
+  /** Ein Mitspieler: Figur mit Namen, läuft weich zur gemeldeten Stelle */
+  anderer(n: string, held: string, x: number, y: number, f: boolean, l: boolean) { let a = this.andere.get(n); const D = HELDEN[held] || HELDEN.schildwaechter;
+    if (!a || a.held !== held) { if (a) { a.sp.destroy(); a.nm.destroy(); } const fu = D.fuss || [0.5, 0.94], sp = this.add.sprite(x, y + 3, "figur-" + held).setOrigin(fu[0], fu[1]); sp.setScale(GROSS * (D.gross || 1) / sp.height);
+      const nm = this.add.text(x, y - GROSS - 14, n, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#9fdcff", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
+      if (D.lauf && !this.anims.exists("lauf-" + held)) this.anims.create({ key: "lauf-" + held, frames: this.anims.generateFrameNumbers("lauf-" + held, {}), frameRate: 11, repeat: -1 });
+      a = { sp, nm, held, x, y, zx: x, zy: y, laeuft: false, zuletzt: 0 }; this.andere.set(n, a); }
+    a.zx = x; a.zy = y; a.sp.setFlipX(f); a.zuletzt = this.time.now;
+    if (l !== a.laeuft && D.lauf) { a.laeuft = l; if (l) { const L = D.laufMass || [0.5, 0.946, 0.91]; a.sp.play("lauf-" + held); a.sp.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; a.sp.stop(); a.sp.setTexture("figur-" + held); a.sp.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / a.sp.height); } } }
+  /** Ein Mitspieler hat ein Gespräch begonnen, das die Geschichte voranbringt: alle lesen mit */
+  mithoeren(von: string, id: string, setzt: string) { const L = LEUTE[id]; const g = L && L.reden.find((x) => x.setzt === setzt); if (!g || this.gesperrt) return; this.gesperrt = true; this.halt();
+    void plaudern(L.name, [{ text: `${von} spricht mit ${L.name}.` }, ...g.zeilen], [], "Weiter").then(() => { this.gesperrt = false; this.nah = ""; }); }
+  /** Eine Kampftür öffnen: Pos merken, abblenden, in den Kampf (die Gruppe wird vom Server nachgeholt) */
+  tuerAuf(kampf: string) { this.gesperrt = true; try { if (!mitreise()) localStorage.setItem("ez_ort_" + ortName + "_pos", JSON.stringify([Math.round(this.ort.x), Math.round(this.ort.y)])); } catch { /* privat */ } this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "?ort=" + ortName + "&kampf=" + kampf + serverZusatz(); }); }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.setVisible(false); }
   /** Die Heldenhalle über den Knopf unten rechts */
   halle() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); heldenhalle(() => { this.gesperrt = false; hudProfil(this.held); const t = team(); hudTeam(t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }); }
-  sicht() { const k = $("#ez-karte"), D = this.d; for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); /* Minikarte: gelb, wer etwas zu sagen hat; blau die Tür, zu der es geht */
+  sicht() { const k = $("#ez-karte"), D = this.d; for (const el of Array.from(k.querySelectorAll("u:not(.freund)"))) el.remove(); /* Minikarte: gelb, wer etwas zu sagen hat; blau die Tür, zu der es geht */
     const punkt = (x: number, y: number, neben: boolean) => { const u = document.createElement("u"); u.style.left = (100 * x / D.breit) + "%"; u.style.top = (100 * y / D.hoch) + "%"; if (neben) u.className = "neben"; k.appendChild(u); };
     /* gelb: Hauptquest, hellblauer Kreis: Nebenquest */
     for (const q of this.personen) { const g = this.offen(q.id); if (g) punkt(q.x, q.y, !istHaupt(ortName, g.setzt)); }
@@ -245,7 +267,7 @@ export class Ort extends Phaser.Scene {
       sp.stop(); sp.setTexture("leute-" + q.id).setOrigin(0.5, L.fuss).setScale(hh / (L.koerper * L.feld)).setFlipX(false).play("leute-" + q.id); nm.setPosition(q.x, q.y + dy); q.rennt = false; this.merke(q.id + "_da"); } });
   }
   /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
-  leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
+  leute() { try { if (mitreise()) this.merker = { ...gruppenMerker(ortName) }; /* Mitspieler: der Fortschritt des Anführers */ else { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } } catch { this.merker = {}; }
     for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
       if (!this.anims.exists("leute-" + id)) this.anims.create({ key: "leute-" + id, frames: this.anims.generateFrameNumbers("leute-" + id, {}), frameRate: 2.5, repeat: -1, yoyo: true });
       const hh = GROSS * 0.92 * (L.gross || 1), m = hh / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ const sp = this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y); if (L.still) sp.setFrame(0); else sp.play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
@@ -258,16 +280,16 @@ export class Ort extends Phaser.Scene {
   ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { const g = this.offen(q.id); if (!g || !istHaupt(ortName, g.setzt)) continue; /* der Pfeil führt nur zur Hauptquest */ const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
     for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.merker["kampf_" + (TUEREN[w.stelle] || { kampf: "" }).kampf] ? null : this.d.stellen[w.stelle]; return null; }
   /** Beim Ankommen erzählen, was gerade geschehen ist (einmal je Auftritt). */
-  auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;
+  auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m]) && !(q.ende && mitreise())).pop(); if (!a) return; this.gesperrt = true;
     this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { this.geschafft(a.ende); return; } this.gesperrt = false; })); }
   /** Die Kampagne ist geschafft: festhalten, den Ort für den nächsten Besuch frisch machen, zurück in die Waldmark */
   geschafft(nr: number) { kampagneGeschafft(nr); this.gesperrt = true; wertung(ortName, this.merker, () => this.verlassen()); }
-  verlassen() { try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
+  verlassen() { dorfVerlassen(); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
-    if (this.nah === "#heim") { this.gesperrt = true; this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=tor"; }); return; }
-    if (this.nah[0] === "@") { const T = TUEREN[this.nah.slice(1)]; this.gesperrt = true; try { localStorage.setItem("ez_ort_" + ortName + "_pos", JSON.stringify([Math.round(this.ort.x), Math.round(this.ort.y)])); } catch { /* privat */ } this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "?ort=" + ortName + "&kampf=" + T.kampf; }); return; }
-    const L = LEUTE[this.nah], g = this.offen(this.nah); this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
+    if (this.nah === "#heim") { this.gesperrt = true; if (mitreise()) mitPause(ortName); else dorfVerlassen(); this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=tor" + serverZusatz(); }); return; }
+    if (this.nah[0] === "@") { const T = TUEREN[this.nah.slice(1)]; if (mitreise()) { dorfSende({ t: "tuer", kampf: T.kampf }); kn.textContent = "Die Gruppe wird gerufen …"; kn.classList.add("bald"); return; } /* Mitspieler: Der Kampf startet beim Anführer, alle kommen mit */ this.tuerAuf(T.kampf); return; }
+    const L = LEUTE[this.nah], g0 = this.offen(this.nah), g = g0 && g0.ende && mitreise() ? null : g0; /* das letzte Gespräch einer Kampagne führt der Anführer */ this.gesperrt = true; if (g && gruppe()) dorfSende({ t: "sage", id: this.nah, setzt: g.setzt }); this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
     void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => { this.merke(g.setzt); if (g.ende) this.geschafft(g.ende); }) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
   meuteBild: Phaser.GameObjects.Sprite | null = null;
   /** Die Meute mit Fackeln: drängt und ruft, bis sie jemand nach Hause schickt */
@@ -330,6 +352,10 @@ export class Ort extends Phaser.Scene {
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     this.figur.setPosition(o.x, o.y + 3).setDepth(o.y); this.ring.setPosition(o.x, o.y).setDepth(o.y - 0.01);
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; }
+    if (gruppe()) { const jetzt = this.time.now, g = this.gesendet, bewegt = Math.hypot(o.x - g.x, o.y - g.y) > 2; if ((bewegt && jetzt - g.t > 100) || jetzt - g.t > 1000) { this.gesendet = { x: o.x, y: o.y, t: jetzt }; dorfSende({ t: "pos", x: o.x, y: o.y, f: this.figur.flipX ? 1 : 0, l: this.laeuft ? 1 : 0 }); }
+      const k = $("#ez-karte"); for (const [n, a] of this.andere) { if (jetzt - a.zuletzt > 6000) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); const u = k.querySelector(`u[data-n="${CSS.escape(n)}"]`); if (u) u.remove(); continue; }
+        a.x += (a.zx - a.x) * Math.min(1, d * 10); a.y += (a.zy - a.y) * Math.min(1, d * 10); a.sp.setPosition(a.x, a.y + 3).setDepth(a.y); a.nm.setPosition(a.x, a.y - GROSS - 14);
+        let u = k.querySelector(`u[data-n="${CSS.escape(n)}"]`) as HTMLElement | null; if (!u) { u = document.createElement("u"); u.className = "freund"; u.dataset.n = n; k.appendChild(u); } u.style.left = (100 * a.x / this.d.breit) + "%"; u.style.top = (100 * a.y / this.d.hoch) + "%"; } }
     const k = this.cameras.main; k.scrollX += (o.x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (o.y - 40 - k.height / 2 - k.scrollY) * 0.12;
   }
 }

@@ -76,14 +76,14 @@ export function sterne(ort: string): { an: boolean; name: string; warum: string 
     { an: Boolean(neben), name: "Gründlich", warum: "Alle Nebenquests erledigen, bevor die Kampagne endet" },
     { an: alle && geschafft === kaempfe.length, name: "Meisterhaft", warum: alle ? `Jede Herausforderung der Hauptkämpfe schaffen (${geschafft} / ${kaempfe.length}): ` + kaempfe.map((k) => `${proben[ort + "/" + k] ? "✓" : "☐"} ${KARTEN[k].probe!.text}`).join(" · ") : "Herausforderungen kommen noch" }];
 }
-export const sternText = (ort: string) => sterne(ort).map((s) => (s.an ? "★" : "☆")).join("");
+export const sternText = (ort: string) => sterne(ort).map((s) => (s.an ? "★" : `<span class="aus">★</span>`)).join(""); /* fehlende Sterne blass (das Zeichen ☆ sieht in manchen Schriften wie ★ aus) */
 /** Beim Abschluss: festhalten, ob alle Nebenquests erledigt waren, und die Wertung zeigen */
 export function wertung(ort: string, merker: Record<string, boolean>, weiter: () => void) {
   if (nebenFertig(ort, merker)) { const o = liesJ("ez_neben"); o[ort] = true; schreibJ("ez_neben", o); }
   const f = $("#ez-konto"), Q = QUESTS[ort], S = sterne(ort); f.hidden = false;
   f.innerHTML = `<div class="tafel wertung"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i>
     <h2>${Q ? Q.titel : "Geschafft"}</h2><div class="zier"></div><div class="grosse-sterne">${S.map((s) => `<span class="${s.an ? "an" : ""}">★</span>`).join("")}</div>
-    <ul class="gruende">${S.map((s) => `<li class="${s.an ? "an" : ""}"><b>${s.an ? "★" : "☆"} ${s.name}</b><small>${s.warum}</small></li>`).join("")}</ul>
+    <ul class="gruende">${S.map((s) => `<li class="${s.an ? "an" : ""}"><b>${s.an ? "★" : `<span class=\"aus\">★</span>`} ${s.name}</b><small>${s.warum}</small></li>`).join("")}</ul>
     <p class="klein">Die beste Leistung zählt. Spielst du die Kampagne erneut, kannst du fehlende Sterne nachholen.</p>
     <div class="reihe"><button type="button" class="haupt" data-t="weiter">Zurück in die Waldmark</button></div></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onclick = (e) => { if ((e.target as HTMLElement).closest('[data-t="weiter"]')) { f.hidden = true; weiter(); } };

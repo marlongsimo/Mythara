@@ -31,7 +31,7 @@ const FAKE = (name) => `window.supabase = { createClient() { return { auth: { as
 const br = await chromium.launch(), S = "&server=ws://localhost:8787", B = "http://localhost:8765/echtzeit/", fehlerSeite = [];
 async function spieler(name, token, held) { const ctx = await br.newContext({ viewport: { width: 1100, height: 650 } }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
   await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: FAKE(name) }));
-  await ctx.addInitScript(([t, h]) => { sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.setItem("ez__hilfe", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: h, mit: [] })); localStorage.setItem("ez_ort_weidenhain", JSON.stringify({ ankunft: true, hanne: true })); }, [token, held]);
+  await ctx.addInitScript(([t, h]) => { sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.setItem("ez__hilfe", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: h, mit: [] })); localStorage.setItem("ez_ort_weidenhain", JSON.stringify({ ankunft: true })); }, [token, held]);
   return p; }
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");
@@ -45,9 +45,24 @@ try {
   await ben.waitForSelector("#ez-einladung:not([hidden])", { timeout: 15000 }); check(/Anna/.test(await ben.textContent("#ez-einladung")), "Ben sieht: „Anna lädt dich zum gemeinsamen Spielen ein“");
   await ben.click('#ez-einladung [data-a="ja"]');
   await anna.waitForFunction(() => /Ben/.test(document.querySelector("#ez-konto .mitglieder")?.textContent || ""), null, { timeout: 15000 }); check(true, "Anna sieht Ben in der Gruppe");
-  check(/Wartet, bis Anna/.test(await ben.textContent("#ez-gruppe")), "Ben wartet in der Waldmark auf Anna");
-  /* Anna betritt den Kornspeicher – Ben wird geholt */
-  await anna.goto(B + "?ort=weidenhain&kampf=speicher" + S); await anna.waitForFunction(() => window.EZ && window.EZ.netz && window.EZ.netz.art === "server" && window.EZ.zustand(), null, { timeout: 30000 });
+  check(/sobald Anna/.test(await ben.textContent("#ez-gruppe")), "Ben wartet in der Waldmark auf Anna");
+  /* Anna reist nach Weidenhain – Ben reist mit */
+  await anna.goto(B + "?ort=weidenhain" + S); await anna.waitForFunction(() => window.EZO, null, { timeout: 30000 });
+  await ben.waitForURL(/ort=weidenhain.*mitreise=1/, { timeout: 20000 }); await ben.waitForFunction(() => window.EZO, null, { timeout: 30000 }); check(true, "Ben reist mit Anna nach Weidenhain");
+  await anna.waitForFunction(() => window.EZO.szene.andere.size === 1, null, { timeout: 15000 }); await ben.waitForFunction(() => window.EZO.szene.andere.size === 1, null, { timeout: 15000 }); check(true, "Beide sehen sich im Dorf");
+  await ben.evaluate(() => { const o = window.EZO.szene; o.ort.x = 970; o.ort.y = 800; });
+  await anna.waitForFunction(() => { const a = [...window.EZO.szene.andere.values()][0]; return Math.hypot(a.zx - 970, a.zy - 800) < 5; }, null, { timeout: 10000 }); check(true, "Anna sieht, wo Ben im Dorf steht");
+  if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-dorf.png") });
+  /* Ben spricht mit Hanne – Anna liest mit, der Fortschritt landet in Annas Spielstand */
+  await ben.waitForFunction(() => window.EZO.szene.nah === "hanne", null, { timeout: 10000 }); await ben.evaluate(() => window.EZO.szene.sprechen());
+  await anna.waitForSelector("#ez-dialog:not([hidden])", { timeout: 10000 }); check(/Ben spricht mit Hanne/.test(await anna.textContent("#ez-dialog .text")), "Anna liest Bens Gespräch mit Hanne mit");
+  if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-mit.png") });
+  for (let i = 0; i < 12 && !(await ben.$("#ez-dialog .knoepfe button.haupt")); i++) { await ben.click("#ez-dialog .kasten"); await ben.waitForTimeout(150); } await ben.click("#ez-dialog .knoepfe button.haupt");
+  await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_ort_weidenhain") || "{}").hanne === true, null, { timeout: 10000 }); check(true, "Bens Gespräch zählt für den Spielstand der Gruppe (bei Anna gespeichert)");
+  for (let i = 0; i < 12 && await anna.$("#ez-dialog:not([hidden])"); i++) { const k = await anna.$("#ez-dialog .knoepfe button"); if (k) await k.click(); else await anna.click("#ez-dialog .kasten"); await anna.waitForTimeout(150); }
+  /* Ben öffnet die Scheunentür – die ganze Gruppe geht in den Kornspeicher */
+  await ben.evaluate(() => { const o = window.EZO.szene; o.ort.x = 824; o.ort.y = 490; }); await ben.waitForFunction(() => window.EZO.szene.nah === "@scheune", null, { timeout: 10000 }); await ben.evaluate(() => window.EZO.szene.sprechen());
+  await anna.waitForURL(/kampf=speicher/, { timeout: 15000 }); check(true, "Bens Tür holt Anna in den Kampf"); await anna.waitForFunction(() => window.EZ && window.EZ.netz && window.EZ.netz.art === "server" && window.EZ.zustand(), null, { timeout: 30000 });
   await ben.waitForURL(/mitglied=1/, { timeout: 15000 }); await ben.waitForFunction(() => window.EZ && window.EZ.netz && window.EZ.netz.art === "server" && window.EZ.zustand(), null, { timeout: 30000 }); await ben.waitForTimeout(800);
   const t0 = await anna.evaluate(() => window.EZ.zustand().zeit); await anna.waitForFunction(() => document.getElementById("ez-koopstart").hidden, null, { timeout: 15000 }); const t1 = await anna.evaluate(() => window.EZ.zustand().zeit);
   check(t0 === 0, `Der Kampf wartet, bis Ben da ist, und zählt dann gemeinsam herunter (Kampfzeit beim Warten: ${t0} s, danach läuft sie: ${t1} s)`);
@@ -70,7 +85,7 @@ try {
   const bb = buchungen.find((x) => x.p_user.endsWith("b002")), ba = buchungen.find((x) => x.p_user.endsWith("a001"));
   check(ba && ba.p_ep.schildwaechter > 0, `Anna bekommt ihre Gutschrift (Torvald +${ba && ba.p_ep.schildwaechter} EP)`);
   check(bb && bb.p_ep.kopfgeldjaeger > 0 && !bb.p_ep.schildwaechter, `Ben bekommt seine eigene Gutschrift, nur für seinen Helden (Orin +${bb && bb.p_ep.kopfgeldjaeger} EP)`);
-  await ben.waitForURL((u) => !/mitglied=1/.test(String(u)), { timeout: 15000 }).catch(() => {}); check(!/mitglied=1/.test(ben.url()), "Ben ist danach zurück in der Waldmark");
+  await ben.waitForURL((u) => !/mitglied=1/.test(String(u)), { timeout: 15000 }).catch(() => {}); check(/mitreise=1/.test(ben.url()) && !/mitglied=1/.test(ben.url()), "Ben ist danach zurück im gemeinsamen Dorf");
   check(fehlerSeite.length === 0, "keine Fehler im Browser" + (fehlerSeite.length ? ": " + fehlerSeite[0] : ""));
 } catch (e) { fehler++; console.log("Unerwarteter Fehler:", e); console.log(log.slice(-1500)); }
 await br.close(); srv.kill(); sb.close();

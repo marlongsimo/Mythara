@@ -171,8 +171,8 @@ async function laufe(wahl: (los: (held: string, mit: string[]) => void, zurueck?
 export function kampagneBeginnen(wahl: Parameters<typeof laufe>[0]) { document.body.classList.add("kampagne"); void laufe(wahl); }
 /** Ein Kampf ist gewonnen: Nebenaufgabe prüfen, dann geht die Geschichte weiter. */
 export function kampfGewonnen(sek: number, wahl: Parameters<typeof laufe>[0]) {
-  if (IM_ORT && P.get("mitglied") === "1") { setTimeout(() => location.replace("./"), 1800); return; } /* Koop-Mitspieler: zurück in die Waldmark – die Geschichte erlebt der Anführer */
-  if (IM_ORT) { try { const k = "ez_ort_" + OK.ort, m = JSON.parse(localStorage.getItem(k) || "{}") || {}; m["kampf_" + OK.karte] = true; localStorage.setItem(k, JSON.stringify(m)); } catch { /* privat */ } setTimeout(() => location.replace("?ort=" + encodeURIComponent(OK.ort)), 1800); return; }
+  if (IM_ORT && P.get("mitglied") === "1") { const s = P.has("server") ? "&server=" + encodeURIComponent(P.get("server") || "") : ""; setTimeout(() => location.replace("./?ort=" + encodeURIComponent(OK.ort) + "&mitreise=1" + s), 1800); return; } /* Koop-Mitspieler: zurück in die Waldmark – die Geschichte erlebt der Anführer */
+  if (IM_ORT) { try { const k = "ez_ort_" + OK.ort, m = JSON.parse(localStorage.getItem(k) || "{}") || {}; m["kampf_" + OK.karte] = true; localStorage.setItem(k, JSON.stringify(m)); } catch { /* privat */ } setTimeout(() => location.replace("?ort=" + encodeURIComponent(OK.ort) + (P.has("server") ? "&server=" + encodeURIComponent(P.get("server") || "") : "")), 1800); return; }
   if (!K) return; const s = K.schritte[S.schritt]; if (s.art !== "kampf") return; S.schritt++; merke(S);
   if (s.neben && sek <= s.neben.unterSek) nebenMeldung(s.neben.id);
   setTimeout(() => void laufe(wahl), 1400); // kurz den Sieg sehen lassen

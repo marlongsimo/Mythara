@@ -21,26 +21,57 @@ const neuerCode = () => Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXY
 let ws: WebSocket | null = null, liste: Mitglied[] = [], fehler = "", lauscher: (() => void) | null = null, laeuftKampf: { ort: string; karte: string } | null = null;
 const held = () => { try { const t = JSON.parse(localStorage.getItem("ez_team") || "null"); if (t && HELDEN[t.held]) return t.held as string; const h = localStorage.getItem("ez_held") || ""; return HELDEN[h] ? h : "schildwaechter"; } catch { return "schildwaechter"; } };
 
+/* ---------- Gemeinsames Dorf: Die Gruppe reist mit dem Anführer, sieht sich gegenseitig und teilt den Questfortschritt ---------- */
+/** Zusatz an Adressen, damit Prüfungen mit ?server= weiterlaufen */
+export const serverZusatz = () => (P.has("server") ? "&server=" + encodeURIComponent(P.get("server") || "") : "");
+/** Bin ich als Mitspieler im Dorf des Anführers? (dann gilt sein Fortschritt, nicht meiner) */
+export const mitreise = () => P.get("mitreise") === "1" && Boolean(gruppe()) && !gruppe()!.fuehrer;
+/** Der zuletzt bekannte Fortschritt der Gruppe in einem Ort (für Mitspieler; kommt vom Server) */
+export function gruppenMerker(ort: string): Record<string, boolean> { try { const s = JSON.parse(sessionStorage.getItem("ez__mitmerker") || "null"); return s && s.ort === ort && s.merker ? s.merker : {}; } catch { return {}; } }
+const mitMerken = (ort: string, merker: Record<string, boolean>) => { try { sessionStorage.setItem("ez__mitmerker", JSON.stringify({ ort, merker })); } catch { /* privat */ } };
+export interface DorfHand { merker(m: Record<string, boolean>): void; pos(n: string, held: string, x: number, y: number, f: boolean, l: boolean): void; weg(n: string): void; sage(von: string, id: string, setzt: string): void; tuer(kampf: string, von: string): void }
+let dorfHand: DorfHand | null = null, dorfOrt = "", warteschlange: object[] = [];
+/** Nachricht an die Gruppe (wartet, bis die Verbindung steht) */
+export function dorfSende(m: object) { if (!gruppe()) return; if (ws && ws.readyState === 1 && angemeldet) ws.send(JSON.stringify(m)); else { warteschlange.push(m); if (warteschlange.length > 20) warteschlange.shift(); } }
+/** Das Dorf meldet sich an: Der Anführer sagt der Gruppe, wo sie ist; alle bekommen Fortschritt, Positionen, Gespräche */
+export function dorfAnmelden(ort: string, merker: Record<string, boolean>, hand: DorfHand) { dorfHand = hand; dorfOrt = ort; const g = gruppe(); if (g && g.fuehrer) dorfSende({ t: "ort", ort, merker }); }
+/** Ein Mitspieler geht selbst heim: bis der Anführer woanders hinreist, nicht zurückholen */
+export function mitPause(ort: string) { try { sessionStorage.setItem("ez__mitpause", ort); } catch { /* privat */ } }
+/** Der Anführer bringt die Gruppe zurück in die Waldmark */
+export function dorfVerlassen() { const g = gruppe(); if (g && g.fuehrer && ws && ws.readyState === 1) ws.send(JSON.stringify({ t: "ort", ort: null })); }
+let angemeldet = false;
+
 /** Mit dem Wartebereich der Gruppe verbinden (in Waldmark und Dorf). Der Anführer sieht, wer da ist; Mitspieler werden geholt, sobald ein Kampf beginnt. */
 export async function gruppeVerbinden() {
   const g = gruppe(), basis = serverAdresse(); if (!g || !basis || ws) { anzeigen(); return; }
   const token = await kontoToken(); if (!token) { fehler = "Koop geht nur mit Konto."; anzeigen(); return; }
   const s = new WebSocket(basis + "?raum=" + g.code + "&warte=1" + (g.fuehrer ? "&fuehrer=1" : "")); ws = s;
-  s.onopen = () => s.send(JSON.stringify({ t: "anmeldung", token, name: kontoName() || "Held", held: held() }));
-  s.onmessage = (ev) => { let m: { t: string; mitglieder?: Mitglied[]; ort?: string; kampf?: string | { ort: string; karte: string } | null }; try { m = JSON.parse(String(ev.data)); } catch { return; }
+  s.onopen = () => { s.send(JSON.stringify({ t: "anmeldung", token, name: kontoName() || "Held", held: held() })); setTimeout(() => { if (ws !== s || s.readyState !== 1) return; angemeldet = true; for (const m of warteschlange.splice(0)) s.send(JSON.stringify(m)); }, 1500); /* nach der Prüfung der Anmeldung */ };
+  s.onmessage = (ev) => { let m: { t: string; mitglieder?: Mitglied[]; ort?: string | null; kampf?: string | { ort: string; karte: string } | null; merker?: Record<string, boolean>; n?: string; held?: string; x?: number; y?: number; f?: number; l?: number; von?: string; id?: string; setzt?: string }; try { m = JSON.parse(String(ev.data)); } catch { return; }
+    if (m.t === "gruppe" && !angemeldet) { angemeldet = true; for (const q of warteschlange.splice(0)) s.send(JSON.stringify(q)); }
+    if (m.t === "ort" && !g.fuehrer) { /* der Anführer ist in ein Dorf gereist (oder heim) */
+      if (!m.ort) { if (P.get("mitreise") === "1") location.href = "./?von=tor" + serverZusatz(); return; }
+      mitMerken(m.ort, m.merker || {}); let pause = ""; try { pause = sessionStorage.getItem("ez__mitpause") || ""; } catch { /* privat */ } if (pause === m.ort && !P.get("ort")) return; /* selbst heimgegangen: erst beim nächsten Ort oder Kampf wieder mit */
+      if (P.get("ort") === m.ort && P.get("mitreise") === "1" && !P.get("kampf")) { if (dorfHand) dorfHand.merker(m.merker || {}); }
+      else if (!P.get("kampf")) location.href = "./?ort=" + encodeURIComponent(m.ort) + "&mitreise=1" + serverZusatz(); return; }
+    if (m.t === "merker" && m.merker) { if (!g.fuehrer && dorfOrt) mitMerken(dorfOrt, m.merker); if (dorfHand) dorfHand.merker(m.merker); return; }
+    if (m.t === "pos" && dorfHand && m.n) { dorfHand.pos(m.n, m.held || "schildwaechter", Number(m.x), Number(m.y), Boolean(m.f), Boolean(m.l)); return; }
+    if (m.t === "weg" && dorfHand && m.n) { dorfHand.weg(m.n); return; }
+    if (m.t === "sage" && dorfHand && m.von && m.id && m.setzt) { dorfHand.sage(m.von, m.id, m.setzt); return; }
+    if (m.t === "tuer" && dorfHand && g.fuehrer && typeof m.kampf === "string") { dorfHand.tuer(m.kampf, m.von || ""); return; }
     if (m.t === "gruppe") { liste = m.mitglieder || []; fehler = ""; laeuftKampf = m.kampf && typeof m.kampf === "object" ? m.kampf : null; anzeigen(); if (lauscher) lauscher(); }
-    else if (m.t === "los" && !g.fuehrer && m.ort && typeof m.kampf === "string") { fehler = ""; hinein(m.ort, m.kampf); } };
-  s.onclose = (ev) => { ws = null; if (ev.code === 4404) { fehler = "Diese Gruppe gibt es nicht (mehr)."; merke(null); } else if (ev.code === 4409) { fehler = ev.reason === "gruppe voll" ? "Die Gruppe ist voll (höchstens drei)." : "Dieser Code ist schon vergeben."; merke(null); } else if (ev.code === 4401) fehler = "Anmeldung nicht bestätigt – Koop geht nur mit Konto.";
+    else if (m.t === "los" && !g.fuehrer && (() => { try { sessionStorage.removeItem("ez__mitpause"); } catch { /* privat */ } return true; })() && m.ort && typeof m.kampf === "string") { fehler = ""; hinein(m.ort, m.kampf); } };
+  s.onclose = (ev) => { ws = null; angemeldet = false; if (ev.code === 4404) { fehler = "Diese Gruppe gibt es nicht (mehr)."; merke(null); } else if (ev.code === 4409) { fehler = ev.reason === "gruppe voll" ? "Die Gruppe ist voll (höchstens drei)." : "Dieser Code ist schon vergeben."; merke(null); } else if (ev.code === 4401) fehler = "Anmeldung nicht bestätigt – Koop geht nur mit Konto.";
     anzeigen(); if (lauscher) lauscher(); if (ev.code < 4400 && gruppe()) setTimeout(() => void gruppeVerbinden(), 4000); /* kurz weg: wieder verbinden */ };
 }
 /** Als Mitspieler in den Kampf des Anführers */
-function hinein(ort: string, karte: string) { const g = gruppe(); if (!g) return; const s = P.has("server") ? "&server=" + encodeURIComponent(P.get("server") || "") : ""; location.href = "./?ort=" + encodeURIComponent(ort) + "&kampf=" + encodeURIComponent(karte) + "&raum=" + g.code + "&mitglied=1" + s; }
+function hinein(ort: string, karte: string) { const g = gruppe(); if (!g) return; const s = serverZusatz(); location.href = "./?ort=" + encodeURIComponent(ort) + "&kampf=" + encodeURIComponent(karte) + "&raum=" + g.code + "&mitglied=1" + s; }
 
 /** Kleines Schild unter dem Profil: Gruppe, wer da ist, und für Mitspieler „wartet auf …“ */
 function anzeigen() { const el = document.getElementById("ez-gruppe"); if (!el) return; const g = gruppe(); el.hidden = !g && !fehler; if (el.hidden) return;
   const fuehrer = liste.find((m) => m.fuehrer);
   el.innerHTML = fehler && !g ? `<b>Koop</b><small>${fehler}</small>` : `<b>Gemeinsam unterwegs</b><small>${liste.length ? liste.map((m) => (m.fuehrer ? "♛ " : "") + m.name).join(" · ") : "verbinde …"}</small>`
-    + (g && !g.fuehrer ? `<small class="warte">${laeuftKampf ? "Der Kampf läuft – du wirst geholt …" : "Wartet, bis " + (fuehrer ? fuehrer.name : "der Anführer") + " einen Kampf betritt"}</small>` : g && liste.length < 2 ? `<small class="warte">Lade Freunde über „Zusammen spielen“ ein.</small>` : "") + (fehler && g ? `<small class="fehler">${fehler}</small>` : "");
+    + (g && !g.fuehrer ? `<small class="warte">${laeuftKampf ? "Der Kampf läuft – du wirst geholt …" : mitreise() ? "Du reist mit " + (fuehrer ? fuehrer.name : "dem Anführer") + "." : "Du reist mit, sobald " + (fuehrer ? fuehrer.name : "der Anführer") + " aufbricht"}</small>` : g && liste.length < 2 ? `<small class="warte">Lade Freunde über „Zusammen spielen“ ein.</small>` : "") + (fehler && g ? `<small class="fehler">${fehler}</small>` : "");
   el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); gruppenTafel(() => { /* nichts */ }); };
 }
 
