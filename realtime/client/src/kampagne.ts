@@ -105,26 +105,40 @@ export const kampfJetzt: { karte: string; ziel: string; held: string; mit: strin
 /** Ein Gespräch mitten im Ort: Das Dorf bleibt dahinter sichtbar. Erst die Zeilen, dann darf man fragen, bis man mit dem Schlussknopf geht. */
 export async function plaudern(titel: string, zeilen: Zeile[], fragen: Frage[], schluss: string): Promise<void> {
   const d = fenster(titel, ""); await sprich(d, zeilen); const offen = fragen.slice();
-  for (;;) { const text = d.querySelector(".text") as HTMLElement, wer = d.querySelector(".wer") as HTMLElement; wer.hidden = true; text.classList.add("erzaehlt"); text.textContent = "";
+  for (;;) { /* der letzte Satz bleibt stehen, während man antwortet */
     const i = await waehle(d, [...offen.map((f) => ({ text: f.knopf })), { text: schluss + " ▸", klasse: "haupt" }]); if (i >= offen.length) break; await sprich(d, offen.splice(i, 1)[0].zeilen); }
   d.hidden = true; d.innerHTML = "";
 }
 function fenster(ort: string, bild: string): HTMLElement {
   const d = $("#ez-dialog"); d.hidden = false; d.style.backgroundImage = bild ? `linear-gradient(rgba(6,5,10,.35), rgba(6,5,10,.8)), url("../${bild}")` : "none"; d.classList.toggle("im-ort", !bild);
-  d.innerHTML = `<div class="ort"></div><div class="kasten"><b class="wer"></b><p class="text"></p><div class="knoepfe"></div><small class="tipp"></small></div>`; (d.querySelector(".ort") as HTMLElement).textContent = ort; return d;
+  d.innerHTML = `<div class="ort"></div><div class="kasten"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><div class="bildnis"><span></span><img class="wappen" src="../img/mythara/siegel.webp" alt=""></div>
+    <div class="rechts"><div class="schild"><b class="wer"></b><small class="rolle"></small></div><button type="button" class="ende" hidden>✕ Gespräch beenden</button><div class="blatt"><p class="text"></p></div><div class="knoepfe"></div><small class="tipp"></small></div></div>`;
+  (d.querySelector(".ort") as HTMLElement).textContent = ort; bildnis(d, ""); return d;
+}
+/* Bildnisse im Gespräch: aus dem Bildblatt der Person (Feld 240) der Kopf – Mitte x und Scheitel y im ersten Bild */
+const KOPF: Record<string, [number, number]> = { hanne: [112, 27], lene: [117, 31], agnes: [113, 25], mette: [117, 29], tebbe: [115, 38] };
+/** Wer spricht: Name und Rolle ins Schild, das Bildnis links. Ohne Sprecher erzählt das Spiel – dann steht dort das Siegel. */
+function bildnis(d: HTMLElement, wer: string) {
+  const [name, rolle] = wer.split(",").map((t) => t.trim()), id = (name || "").split(" ")[0].toLowerCase(), k = KOPF[id], el = d.querySelector(".bildnis") as HTMLElement, sp = el.querySelector("span") as HTMLElement;
+  const w = d.querySelector(".wer") as HTMLElement, ro = d.querySelector(".rolle") as HTMLElement; w.textContent = name || ""; ro.textContent = rolle || ""; ro.hidden = !rolle; (d.querySelector(".schild") as HTMLElement).classList.toggle("leer", !name);
+  el.classList.toggle("erzaehler", !k); if (k) { const f = 150 / 86; sp.style.backgroundImage = `url("../img/echtzeit/${id}.webp")`; sp.style.backgroundSize = `${2160 * f}px ${240 * f}px`; sp.style.backgroundPosition = `${-(k[0] - 43) * f}px ${-(k[1] - 6) * f}px`; } else sp.style.backgroundImage = "none";
 }
 /** Zeilen nacheinander zeigen; weiter mit Klick, Tipp, Leertaste oder Enter. */
 function sprich(d: HTMLElement, zeilen: Zeile[]): Promise<void> {
   return new Promise((fertig) => { let n = 0; const wer = d.querySelector(".wer") as HTMLElement, text = d.querySelector(".text") as HTMLElement, tipp = d.querySelector(".tipp") as HTMLElement, kn = d.querySelector(".knoepfe") as HTMLElement; kn.innerHTML = "";
-    const zeige = () => { const z = zeilen[n]; wer.textContent = z.wer || ""; wer.hidden = !z.wer; text.textContent = z.wer ? `„${z.text}“` : z.text; text.classList.toggle("erzaehlt", !z.wer); tipp.textContent = "weiter ▸"; };
+    const zeige = () => { const z = zeilen[n]; bildnis(d, z.wer || ""); wer.hidden = !z.wer; text.textContent = z.wer ? `„${z.text}“` : z.text; text.classList.toggle("erzaehlt", !z.wer); tipp.textContent = "weiter ▸"; (d.querySelector(".ende") as HTMLElement).hidden = true; };
     const vor = () => { n++; if (n >= zeilen.length) { d.removeEventListener("click", vor); removeEventListener("keydown", taste); tipp.textContent = ""; fertig(); } else zeige(); };
     const taste = (e: KeyboardEvent) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); vor(); } };
     d.addEventListener("click", vor); addEventListener("keydown", taste); zeige(); });
 }
 /** Knöpfe zeigen und auf die Wahl warten. */
 function waehle(d: HTMLElement, knoepfe: { text: string; klasse?: string }[]): Promise<number> {
-  return new Promise((fertig) => { const kn = d.querySelector(".knoepfe") as HTMLElement; kn.innerHTML = ""; (d.querySelector(".tipp") as HTMLElement).textContent = "";
-    knoepfe.forEach((k, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = k.text; if (k.klasse) b.className = k.klasse; b.onclick = (e) => { e.stopPropagation(); kn.innerHTML = ""; fertig(i); }; kn.appendChild(b); }); });
+  return new Promise((fertig) => { const kn = d.querySelector(".knoepfe") as HTMLElement, ende = d.querySelector(".ende") as HTMLElement; kn.innerHTML = ""; (d.querySelector(".tipp") as HTMLElement).textContent = "";
+    const fertigMit = (i: number) => { kn.innerHTML = ""; ende.hidden = true; ende.onclick = null; removeEventListener("keydown", taste); fertig(i); }, schluss = knoepfe.findIndex((k) => k.klasse === "haupt");
+    const taste = (e: KeyboardEvent) => { const n = Number(e.key); if (n >= 1 && n <= knoepfe.length) { e.preventDefault(); fertigMit(n - 1); } else if (e.key === "Escape" && schluss >= 0) fertigMit(schluss); };
+    let nr = 0; knoepfe.forEach((k, i) => { const b = document.createElement("button"); b.type = "button"; const haupt = k.klasse === "haupt"; b.innerHTML = `<em>${haupt ? "➜" : ++nr + "."}</em><span></span>`; (b.querySelector("span") as HTMLElement).textContent = k.text.replace(/ ▸$/, ""); if (k.klasse) b.className = k.klasse;
+      b.onclick = (e) => { e.stopPropagation(); fertigMit(i); }; kn.appendChild(b); });
+    if (schluss >= 0) { ende.hidden = false; ende.onclick = (e) => { e.stopPropagation(); fertigMit(schluss); }; } addEventListener("keydown", taste); });
 }
 function nebenMeldung(id: string) { if (!K || S.neben[id]) return; S.neben[id] = true; merke(S); const m = $("#ez-neben"); m.textContent = "Nebenaufgabe erfüllt: " + K.neben[id]; m.hidden = false; m.classList.remove("zeig"); void m.offsetWidth; m.classList.add("zeig"); setTimeout(() => { m.hidden = true; }, 4200); }
 

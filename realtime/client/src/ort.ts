@@ -9,7 +9,7 @@ import { team, kampagneGeschafft } from "./weltkarte";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import { heldenhalle } from "./halle";
-import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel } from "./hud";
+import { hudProfil, hudTitel, hudKarte, hudQuest, hudTeam, hudMenue, menueTafel, istHaupt } from "./hud";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -143,9 +143,12 @@ export class Ort extends Phaser.Scene {
   /** Die Heldenhalle über den Knopf unten rechts */
   halle() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); heldenhalle(() => { this.gesperrt = false; hudProfil(this.held); const t = team(); hudTeam(t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }); }
   sicht() { const k = $("#ez-karte"), D = this.d; for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); /* Minikarte: gelb, wer etwas zu sagen hat; blau die Tür, zu der es geht */
-    const punkt = (x: number, y: number, tuer: boolean) => { const u = document.createElement("u"); u.style.left = (100 * x / D.breit) + "%"; u.style.top = (100 * y / D.hoch) + "%"; if (tuer) u.className = "riss"; k.appendChild(u); };
-    for (const q of this.personen) if (this.offen(q.id)) punkt(q.x, q.y, false); if (!this.personen.some((q) => this.offen(q.id))) { const z = this.ziel(); if (z) punkt(z[0], z[1], true); }
-    for (const q of this.personen) { q.ruf.setVisible(Boolean(this.offen(q.id))); for (const t of q.teile) t.setVisible(this.da(q.id)); }
+    const punkt = (x: number, y: number, neben: boolean) => { const u = document.createElement("u"); u.style.left = (100 * x / D.breit) + "%"; u.style.top = (100 * y / D.hoch) + "%"; if (neben) u.className = "neben"; k.appendChild(u); };
+    /* gelb: Hauptquest, hellblauer Kreis: Nebenquest */
+    for (const q of this.personen) { const g = this.offen(q.id); if (g) punkt(q.x, q.y, !istHaupt(ortName, g.setzt)); }
+    for (const t in TUEREN) { const T = TUEREN[t], s = this.d.stellen[t]; if (s && !istHaupt(ortName, "kampf_" + T.kampf) && !this.merker["kampf_" + T.kampf] && T.wenn.every((m) => this.merker[m])) punkt(s[0], s[1], true); }
+    if (!this.personen.some((q) => { const g = this.offen(q.id); return g && istHaupt(ortName, g.setzt); })) { const z = this.ziel(); if (z) punkt(z[0], z[1], false); }
+    for (const q of this.personen) { const g = this.offen(q.id); q.ruf.setVisible(Boolean(g)); if (g) q.ruf.setColor(istHaupt(ortName, g.setzt) ? "#ffd23a" : "#7fd4ff").setStroke(istHaupt(ortName, g.setzt) ? "#3a2400" : "#0b2a44", 7); for (const t of q.teile) t.setVisible(this.da(q.id)); }
     hudQuest(ortName, this.merker); /* die Schritte der Quest oben links */ }
   /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
   leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
@@ -158,7 +161,7 @@ export class Ort extends Phaser.Scene {
     this.sicht();
     this.pfeil = this.add.graphics().setDepth(-2); this.pfeil.fillStyle(0xffd23a, 0.95).lineStyle(3, 0x3a2400, 0.9); this.pfeil.beginPath(); this.pfeil.moveTo(26, 0); this.pfeil.lineTo(-6, -17); this.pfeil.lineTo(2, 0); this.pfeil.lineTo(-6, 17); this.pfeil.closePath(); this.pfeil.fillPath().strokePath(); this.tweens.add({ targets: this.pfeil, alpha: 0.7, duration: 600, yoyo: true, repeat: -1 }); }
   /** Wohin es als Nächstes geht: zur nächsten Person mit Ausrufezeichen, sonst zur Stelle aus dem Wegweiser. */
-  ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { if (!this.offen(q.id)) continue; const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
+  ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { const g = this.offen(q.id); if (!g || !istHaupt(ortName, g.setzt)) continue; /* der Pfeil führt nur zur Hauptquest */ const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
     for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.merker["kampf_" + (TUEREN[w.stelle] || { kampf: "" }).kampf] ? null : this.d.stellen[w.stelle]; return null; }
   /** Beim Ankommen erzählen, was gerade geschehen ist (einmal je Auftritt). */
   auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;

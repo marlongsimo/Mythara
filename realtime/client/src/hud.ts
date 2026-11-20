@@ -13,7 +13,9 @@ const lies = (k: string) => { try { return localStorage.getItem(k); } catch { re
 
 /* ---------- Quests: Schritte der Hauptquest und freiwillige Nebenaufgaben, je Ort. Ein Schritt ist erledigt, wenn sein Merker gesetzt ist. ---------- */
 export interface Schritt { text: string; fertig: string; wenn?: string[] }
-export const QUESTS: Record<string, { titel: string; ort: string; stufe: number; haupt: Schritt[]; neben: Schritt[] }> = {
+/* Eine Nebenquest: erscheint, sobald „wenn“ erfüllt ist. Ihre Schritte kommen der Reihe nach – außer bei „frei“: dann jeder, sobald sein eigenes „wenn“ erfüllt ist. */
+export interface Nebenquest { titel: string; wenn: string[]; frei?: boolean; schritte: Schritt[] }
+export const QUESTS: Record<string, { titel: string; ort: string; stufe: number; haupt: Schritt[]; neben: Nebenquest[] }> = {
   weidenhain: { titel: "Das Erntefest von Weidenhain", ort: "Weidenhain", stufe: 1,
     haupt: [
       { text: "Durchs Stadttor nach Weidenhain aufbrechen", fertig: "ankunft" },
@@ -24,14 +26,17 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
       { text: "Die alte Unke am Wehr stellen", fertig: "kampf_wehr" },
     ],
     neben: [
-      { text: "Lene nach den Kröten fragen", wenn: ["hanne"], fertig: "lene" },
-      { text: "Agnes am Baum zuhören", wenn: ["hanne"], fertig: "agnes" },
-      { text: "Hanne vom Kornspeicher berichten", wenn: ["kampf_speicher"], fertig: "hanne2" },
-      { text: "Nach Tebbe sehen", wenn: ["tebbe_gefunden"], fertig: "tebbe_rede" },
-      { text: "Den Krötenlaich hinter der Scheune zerschlagen", wenn: ["nest_auftrag"], fertig: "kampf_nest" },
-      { text: "Die Irrlichter am Mühlteich vertreiben", wenn: ["ufer_auftrag"], fertig: "kampf_ufer" },
+      { titel: "Lichter am Mühlteich", wenn: ["hanne"], schritte: [
+        { text: "Mette am Wehr anhören", fertig: "ufer_auftrag" }, { text: "Die Irrlichter am Mühlteich vertreiben", fertig: "kampf_ufer" }, { text: "Mette Bescheid geben", fertig: "mette_dank" }] },
+      { titel: "Der Laich hinter der Scheune", wenn: ["agnes"], schritte: [
+        { text: "Agnes noch einmal anhören", fertig: "nest_auftrag" }, { text: "Den Krötenlaich im Tümpel zerschlagen", fertig: "kampf_nest" }, { text: "Agnes Bescheid geben", fertig: "nest_dank" }] },
+      { titel: "Stimmen im Dorf", wenn: ["hanne"], frei: true, schritte: [
+        { text: "Lene nach den Kröten fragen", fertig: "lene" }, { text: "Agnes am Baum zuhören", fertig: "agnes" },
+        { text: "Hanne vom Kornspeicher berichten", wenn: ["kampf_speicher"], fertig: "hanne2" }, { text: "Nach Tebbe sehen", wenn: ["tebbe_gefunden"], fertig: "tebbe_rede" }] },
     ] },
 };
+/** Gehört dieser Merker zur Hauptquest des Ortes? (sonst ist es eine Nebenquest – hellblau statt gelb) */
+export const istHaupt = (ort: string, merker: string) => Boolean(QUESTS[ort] && QUESTS[ort].haupt.some((s) => s.fertig === merker));
 /** Merker eines Ortes aus dem Spielstand */
 export const merkerVon = (ort: string): Record<string, boolean> => { try { return JSON.parse(lies("ez_ort_" + ort) || "{}") || {}; } catch { return {}; } };
 
@@ -63,16 +68,19 @@ let questZu = (() => { const v = lies("ezhud_quest"); return v ? v === "zu" : wi
 /** Die Quest eines Ortes zeigen (oder ausblenden, wenn ort leer ist) */
 export function hudQuest(ort: string, merker: Record<string, boolean>) {
   const el = $("#ez-quest"), Q = QUESTS[ort]; if (!el) return; if (!Q) { el.hidden = true; return; } el.hidden = false;
-  const offen = Q.haupt.findIndex((s) => !merker[s.fertig]), jetzt = offen < 0 ? Q.haupt.length : offen;
   const zeile = (s: Schritt, an: boolean) => `<li class="${merker[s.fertig] ? "fertig" : an ? "jetzt" : ""}"><i></i><span>${s.text}</span></li>`;
+  const offen = Q.haupt.findIndex((s) => !merker[s.fertig]), jetzt = offen < 0 ? Q.haupt.length : offen;
   const haupt = Q.haupt.slice(0, jetzt + 1).map((s, i) => zeile(s, i === jetzt)).join("");
-  const neben = Q.neben.filter((s) => (s.wenn || []).every((m) => merker[m])).map((s) => zeile(s, false)).join("");
-  const naechster = offen < 0 ? "Alles erledigt" : Q.haupt[offen].text;
+  const neben = Q.neben.filter((n) => n.wenn.every((m) => merker[m])).map((n) => {
+    const sicht = n.frei ? n.schritte.filter((s) => (s.wenn || []).every((m) => merker[m])) : (() => { const o = n.schritte.findIndex((s) => !merker[s.fertig]); return n.schritte.slice(0, o < 0 ? n.schritte.length : o + 1); })();
+    const fertig = n.schritte.every((s) => merker[s.fertig]), erste = sicht.findIndex((s) => !merker[s.fertig]);
+    return `<div class="nq${fertig ? " fertig" : ""}"><div class="nqkopf"><em>${fertig ? "✓" : "!"}</em><b>${n.titel}</b></div>${fertig ? "" : `<ul>${sicht.map((s, i) => zeile(s, !n.frei && i === erste)).join("")}</ul>`}</div>`; });
+  const offenNeben = Q.neben.filter((n) => n.wenn.every((m) => merker[m]) && !n.schritte.every((s) => merker[s.fertig])).length;
   el.classList.toggle("zu", questZu);
-  el.innerHTML = `<button type="button" class="kopf" aria-expanded="${!questZu}"><em>!</em><b>Aktive Quest</b><i class="pfeil"></i></button>
-    <div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe}</small></div></div>
-    <p class="kurz">${naechster}</p>
-    <div class="inhalt"><ul>${haupt}</ul>${neben ? `<h4>Nebenaufgaben</h4><ul class="neben">${neben}</ul>` : ""}</div>`;
+  el.innerHTML = `<button type="button" class="kopf" aria-expanded="${!questZu}"><em>!</em><b>Quests</b>${offenNeben ? `<span class="zahl" title="offene Nebenquests">${offenNeben}</span>` : ""}<i class="pfeil"></i></button>
+    <div class="abschnitt haupt"><h4><em>!</em>Hauptquest</h4><div class="titel"><img src="../img/mythara/siegel.webp" alt=""><div><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe}</small></div></div>
+    <p class="kurz">${offen < 0 ? "Alles erledigt" : Q.haupt[offen].text}</p><div class="inhalt"><ul>${haupt}</ul></div></div>
+    ${neben.length ? `<div class="abschnitt neben inhalt"><h4><em>!</em>Nebenquests</h4>${neben.join("")}</div>` : ""}`;
   const k = el.querySelector(".kopf") as HTMLElement; k.onpointerdown = (e) => e.stopPropagation();
   k.onclick = (e) => { e.stopPropagation(); questZu = !questZu; try { localStorage.setItem("ezhud_quest", questZu ? "zu" : "auf"); } catch { /* privat */ } hudQuest(ort, merker); };
   el.onpointerdown = (e) => e.stopPropagation();
