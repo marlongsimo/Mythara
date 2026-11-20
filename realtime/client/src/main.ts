@@ -27,6 +27,8 @@ const P = new URLSearchParams(location.search), $ = (s: string) => document.quer
 const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
 const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) { HELDENEP[k] = Number(v) || 0; HELDENSTUFE[k] = stufeAusEp(HELDENEP[k]); } }
+/** Strecke zwischen zwei Orten (Waldweg): Bäume mit Verdeckung, Ausgänge statt Sieg */
+const KK = kampfJetzt ? KARTEN[kampfJetzt.karte] : null, WEG = Boolean(KK && KK.weg);
 const SERVER = FLACH ? "" : P.get("server") ?? SPIELSERVER; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -67,11 +69,31 @@ class Spiel extends Phaser.Scene {
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   beute = new Map<number, Phaser.GameObjects.Sprite>();
   gewonnen = false; tebbeRuf: Phaser.GameObjects.Text | null = null; tebbeOffen = false; tebbeNah = false; tebbeReden: (() => void) | null = null; /* nach dem Sieg: hinlaufen, dann ansprechen */
+  deko: Phaser.GameObjects.Image[] = []; ausgang: string | null = null; verlaesst = false;
   constructor() { super("spiel"); }
-  preload() { this.load.spritesheet("seelensplitter", "../img/echtzeit/seelensplitter.webp", { frameWidth: 192, frameHeight: 128 }); if (kampfJetzt && kampfJetzt.karte === "muehle") this.load.spritesheet("tebbe", "../img/echtzeit/tebbe.webp", { frameWidth: 240, frameHeight: 240 }); if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
+  /** Bäume der Strecke: Fuß auf dem Boden, nach Tiefe sortiert wie die Figuren; leicht unterschiedlich getönt */
+  dekoSetzen() { if (!KK || !KK.deko || !KK.dekoBilder) return; const Z = ZELLE * FEIN;
+    for (const d of KK.deko) { const B = KK.dekoBilder[d.b]; if (!B) continue; const t = 0.86 + ((d.x * 7.3 + d.y * 3.1) % 1) * 0.14, f = (v: number) => Math.round(255 * Math.min(1, v));
+      const im = this.add.image(d.x * Z, d.y * Z, "deko-" + d.b).setOrigin(B.fuss[0], B.fuss[1]).setScale(d.s).setDepth(tief(d.x * FEIN, d.y * FEIN) + 5).setTint(Phaser.Display.Color.GetColor(f(t), f(t * 1.02), f(t * 0.95)));
+      this.deko.push(im); } }
+  /** Ausgänge der Strecke: Steht der Held darin, bietet ein Knopf die Weiterreise an */
+  ausgaengePruefen(x: number, y: number) { if (!KK || !KK.ausgaenge || this.verlaesst) return; const gx = x / FEIN, gy = y / FEIN, a = KK.ausgaenge.find((q) => gx >= q.x0 && gx <= q.x1 && gy >= q.y0 && gy <= q.y1) || null, nach = a ? a.nach : null;
+    if (nach === this.ausgang) return; this.ausgang = nach; const kn = $("#ez-dorf-knopf"); if (!a) { kn.hidden = true; kn.onclick = null; return; }
+    kn.textContent = a.text + " ▸"; kn.hidden = false; kn.onclick = () => this.streckeVerlassen(a.nach); }
+  /** Die Strecke verlassen: erst gutschreiben lassen (EP, Seelensplitter von der Lichtung), dann weiter */
+  streckeVerlassen(nach: string) { if (this.verlaesst) return; this.verlaesst = true; const kn = $("#ez-dorf-knopf"), s = P0.has("server") ? "&server=" + encodeURIComponent(P0.get("server") || "") : "";
+    let neu = false; try { neu = Object.keys(JSON.parse(localStorage.getItem("ez_ort_" + nach) || "{}") || {}).length === 0; } catch { /* privat */ }
+    const ziel = nach === "waldmark" ? "./" + (s ? "?" + s.slice(1) : "") : "?ort=" + nach + (neu ? "&neu=1" : "&eingang=1") + s;
+    let fertig = false; const weiter = (w?: { ep?: Record<string, number>; seelen?: number }) => { if (fertig) return; fertig = true; window.removeEventListener("ez-server", hoer as EventListener);
+      if (w && w.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(w.ep)); localStorage.setItem("ez_seelen", String(w.seelen || 0)); } catch { /* privat */ } } location.href = ziel; };
+    const hoer = (ev: CustomEvent<{ t: string; ep?: Record<string, number>; seelen?: number }>) => { if (ev.detail.t === "gutschrift") weiter(ev.detail); };
+    this.richtung(0, 0); if (this.netz) this.netz.sende({ t: "halt" });
+    if (this.netz && this.netz.art === "server" && this.serverKampf) { kn.textContent = "Wird gutgeschrieben …"; kn.onclick = null; window.addEventListener("ez-server", hoer as EventListener); this.netz.sende({ t: "verlassen" } as unknown as Parameters<Netz["sende"]>[0]); setTimeout(() => weiter(), 6000); return; }
+    if (!kontoName() && this.z && this.z.splitter) { try { localStorage.setItem("ez_seelen", String((Number(localStorage.getItem("ez_seelen")) || 0) + this.z.splitter)); } catch { /* privat */ } } weiter(); }
+  preload() { this.load.spritesheet("seelensplitter", "../img/echtzeit/seelensplitter.webp", { frameWidth: 192, frameHeight: 128 }); if (kampfJetzt && kampfJetzt.karte === "muehle") this.load.spritesheet("tebbe", "../img/echtzeit/tebbe.webp", { frameWidth: 240, frameHeight: 240 }); if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); if (KK && KK.dekoBilder) for (const n in KK.dekoBilder) this.load.image("deko-" + n, `../img/welt/${n}.webp`); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
     const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in MONSTER) { const sz = MONSTER[k].spezial; if (sz && sz.bild) this.load.spritesheet("spezial-" + k, "../" + sz.bild, { frameWidth: 176, frameHeight: 176 }); } for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
-    this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE);
+    this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE); this.dekoSetzen();
       if (kampfJetzt && kampfJetzt.karte === "muehle") { /* Tebbe kauert am anderen Ufer vor der Mühle; ist der Kampf vorbei, will er reden */ const x = 9.5 * 96, y = 2.75 * 96; this.anims.create({ key: "tebbe", frames: this.anims.generateFrameNumbers("tebbe", {}), frameRate: 2.5, repeat: -1, yoyo: true });
         this.add.sprite(x, y, "tebbe").setOrigin(0.5, 0.957).setScale(42 / (0.805 * 240)).setDepth(tief(x / ZELLE, y / ZELLE) + 5).play("tebbe");
         this.tebbeRuf = this.add.text(x, y - 50, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "40px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setDepth(99999).setVisible(false); this.tweens.add({ targets: this.tebbeRuf, y: y - 58, duration: 650, yoyo: true, repeat: -1 }); } } else { this.boden(); this.waende(); }
@@ -280,7 +302,7 @@ class Spiel extends Phaser.Scene {
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${taste.toUpperCase()} · ${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; mo.classList.toggle("zwei", z.ich.modus === 1); }
-    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true; if (z.pr === 1 && kampfJetzt && P0.get("ort")) probeGeschafft(P0.get("ort") as string, kampfJetzt.karte);
+    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen && !WEG) { this.gewonnen = true; $("#ez-ziel").hidden = true; if (z.pr === 1 && kampfJetzt && P0.get("ort")) probeGeschafft(P0.get("ort") as string, kampfJetzt.karte);
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
       const kn = $("#ez-dorf-knopf"), raus = () => { kn.textContent = "Kampf verlassen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; const n = this.z ? this.z.splitter : 0;
         if (this.netz.art === "server" && this.serverKampf) { /* der Server schreibt gut und schickt die neuen Werte */ kn.textContent = "Wird gutgeschrieben …"; kn.hidden = false; kn.onclick = null; let fertig = false;
@@ -299,7 +321,9 @@ class Spiel extends Phaser.Scene {
     if (this.tebbeOffen && this.z) { /* steht der Held bei Tebbe, erscheint der Knopf zum Ansprechen */ const ich = this.z.w.find((e) => e[0] === this.ichId), nah = Boolean(ich && Math.hypot(ich[4] - 9.5 * 96 / ZELLE, ich[5] - 2.75 * 96 / ZELLE) < 2.6);
       if (nah !== this.tebbeNah) { this.tebbeNah = nah; const kn = $("#ez-dorf-knopf"); kn.textContent = "Mit Tebbe sprechen" + (HANDY ? "" : "  [E]"); kn.hidden = !nah; } }
     for (const [id, b] of this.bilder) { const o = this.ort(b, jetzt), p = iso(o.x, o.y); b.c.setPosition(p.x, p.y).setDepth(tief(o.x, o.y) + 5); const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.setPosition(p.x, p.y + b.kopf.y);
-      if (id === this.ichId) { const k = this.cameras.main; k.scrollX += (p.x - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (p.y - 30 - k.height / 2 - k.scrollY) * 0.15; } }
+      if (id === this.ichId) { const k = this.cameras.main; k.scrollX += (p.x - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (p.y - 30 - k.height / 2 - k.scrollY) * 0.15;
+        if (WEG) { this.ausgaengePruefen(o.x, o.y); const t = tief(o.x, o.y) + 5; for (const d of this.deko) { const hinter = d.depth > t && Math.abs(d.x - p.x) < d.displayWidth * 0.42 && p.y < d.y && p.y > d.y - d.displayHeight * 0.95; /* Held hinter der Krone: Baum durchsichtig */
+          const soll = hinter ? 0.42 : 1; if (Math.abs(d.alpha - soll) > 0.01) d.setAlpha(d.alpha + (soll - d.alpha) * 0.2); } } } }
     const zb = this.z && this.z.ich.zielId ? this.bilder.get(this.z.ich.zielId) : undefined; if (zb && !zb.tot) { this.zielMarke.setVisible(true).setPosition(zb.c.x, zb.c.y); } else this.zielMarke.setVisible(false);
   }
 }

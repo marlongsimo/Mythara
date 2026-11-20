@@ -40,6 +40,12 @@ await p.goto(KAMPF.replace("speicher", "muehle")); await p.waitForFunction(() =>
 /* Betrugsversuch: Der Browser schickt selbst erfundene Werte – der Server kennt keine solche Nachricht */
 await p.goto(KAMPF); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 20000 }); await p.evaluate(() => { window.EZ.netz.sende({ t: "gutschrift", ep: { schildwaechter: 5000 }, seelen: 5000 }); window.EZ.netz.sende({ t: "verlassen" }); }); await p.waitForTimeout(1200);
 check(buchungen.length === 1, "Erfundene Werte aus dem Browser werden nicht gutgeschrieben (ein Kampf ohne Sieg gibt nichts)");
+/* Der Waldweg (Strecke): immer frei, läuft auf dem Server; der Ausgang links führt zurück in die Waldmark */
+await p.goto(KAMPF.replace("speicher", "waldweg")); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 30000 });
+check(await p.evaluate(() => window.EZ.netz.art) === "server" && await p.evaluate(() => window.EZ.zustand().monster) === 6, "Der Waldweg läuft auf dem Server (sechs Gegner auf der Lichtung)");
+await p.evaluate(() => window.EZ.netz.sende({ t: "lauf", x: 0.3, y: 19.2 })); await p.waitForFunction(() => !document.querySelector("#ez-dorf-knopf").hidden, null, { timeout: 10000 });
+await Promise.all([p.waitForURL((u) => !/kampf=/.test(u), { timeout: 20000 }), p.click("#ez-dorf-knopf")]);
+check(buchungen.length === 1 && !/ort=/.test(p.url()), "Über den Ausgang links zurück in die Waldmark (ohne Beute nichts gebucht)");
 /* falsches Token */
 await p.evaluate(() => sessionStorage.setItem("fake_token", "falsch_" + "y".repeat(30))); await p.goto(KAMPF); await p.waitForFunction(() => window.EZ && window.EZ.netz, null, { timeout: 30000 });
 check(await p.evaluate(() => window.EZ.netz.art) === "lokal" && /nicht gutgeschrieben/.test(await p.textContent("#ez-art")), "Ungültige Anmeldung: der Server lehnt ab, es wird nichts gutgeschrieben (Hinweis im Kampf)");
