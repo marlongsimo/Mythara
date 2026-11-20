@@ -15,3 +15,9 @@ services:
         value: https://mythara-dungeon.de
       - key: NODE_VERSION
         value: "22"
+      # Für Kampagnenkämpfe mit Konto (Erfahrung und Seelensplitter schreibt der Server gut, Migration 035):
+      - key: SUPABASE_URL
+        value: https://jxtxatmydlfemzjeupri.supabase.co
+      # Geheim – nur im Render-Dashboard eintragen (Environment), nie in den Code: der „service_role“-Schlüssel aus Supabase
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
