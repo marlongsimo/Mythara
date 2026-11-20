@@ -51,7 +51,7 @@ const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
   s.eingabe({ t: "faehig", taste: "q", x: m.x, y: m.y }); check(still && zu && m.lp < lp, "Schildmodus: Torvald greift nicht an und wendet den Schild dem gewählten Gegner zu; der Schildstoß (Q) geht trotzdem"); }
 { const { s, h, m } = duell("schildwaechter", 61); m.betaeubt = 1e7; m.max = m.lp = 1e7; s.eingabe({ t: "ziel", id: m.id }); s.eingabe({ t: "richtung", x: 0, y: 0.3 }); lauf(s, 1.2); check(s.zustand().ev.some((e) => e.a === "hieb" && e.id === h.id), "Nahkampf: Torvald schlägt auch im Laufen zu"); }
 { const { s, h } = duell("lichtbringer", 71, 12, ["schildwaechter"]), t = s.wesen[1]; t.x = h.x + 2; t.y = h.y; t.lp = 100; t.ruhe = 0; t.betaeubt = 1e7; const lp = t.lp; lauf(s, 4);
-  const W = HELDEN.lichtbringer.modi[0]; check(t.lp > lp + 2 * W.schaden[0] && t.lp < lp + 5 * W.schaden[1], `Elaras Heilstab heilt von selbst, wer am schwersten verletzt ist (${t.lp - lp} Leben in 4 Sekunden, ohne Trefferwurf)`);
+  const W = HELDEN.lichtbringer.modi[0]; check(t.lp >= lp + 2 * W.schaden[0] && t.lp <= lp + 2 * W.schaden[1], `Elaras Heilstab heilt von selbst, wer am schwersten verletzt ist (${t.lp - lp} Leben in 4 Sekunden, ohne Trefferwurf)`);
   h.lp = 50; t.lp = t.max; s.eingabe({ t: "faehig", taste: "q", x: h.x, y: h.y }); check(h.lp === 50 + K.WORT.heilung, "Heilendes Wort heilt um 55 – hier Elara selbst"); }
 { const { s, h, m } = duell("schildwaechter", 81, 20); h.lp = 100; h.ruhe = 0; lauf(s, K.ERHOLUNG.nach - 0.5); const frueh = h.lp; lauf(s, 3); check(frueh === 100 && h.lp > 100 + 2 * h.max * K.ERHOLUNG.jeSek, `Erholung: ${K.ERHOLUNG.nach} Sekunden ohne Schaden, dann heilt der Held von selbst (${Math.round(h.lp - 100)} Leben in 2,5 Sekunden)`); }
 

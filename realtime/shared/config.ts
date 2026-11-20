@@ -27,7 +27,7 @@ export const K = {
   /* Fernkampf: Wer schießt oder zaubert, steht dafür kurz still. Nahkämpfer schlagen auch im Laufen zu. */
   AUSHOLEN_FERN: 0.3,
   /* Erholung: Wer eine Weile keinen Schaden nimmt, heilt von selbst */
-  ERHOLUNG: { nach: 5, jeSek: 0.04 },      // nach 5 s ohne Schaden: 4 % des Höchstlebens je Sekunde
+  ERHOLUNG: { nach: 5, jeSek: 0.015 },     // nach 5 s ohne Schaden: 1,5 % des Höchstlebens je Sekunde
   /* Torvalds Schild (zweiter Waffenmodus): von vorn wird er um diesen Anteil seltener getroffen (sein Verteidigungswurf steigt entsprechend).
      Gegen Flächen ohne Trefferwurf mindert der Schild stattdessen den Schaden um „flaeche“. */
   BLOCK: { nah: 0.6, fern: 0.4, magie: 0.2, flaeche: 0.05, winkel: 70, tempo: 0.85 }, // winkel: so viele Grad links und rechts der Blickrichtung
@@ -80,7 +80,7 @@ export const HELDEN: Record<string, HeldDef> = {
     passiv: "Zauberformung: Vaelins Flächenzauber treffen keine Verbündeten." },
   lichtbringer: { name: "Elara", titel: "Die Lichtbringerin", klasse: "Kleriker", rolle: "Heilerin, stark gegen Untote", bild: "img/figuren/lichtbringer.jpg", figur: "img/echtzeit/elara.webp", fuss: [0.42, 0.965], gross: 1.27, lauf: "img/echtzeit/elara-lauf.webp", laufMass: [0.44, 0.957, 0.735], hieb: "img/echtzeit/elara-heil.webp", hiebMass: [0.42, 0.955, 0.754], hieb2: "img/echtzeit/elara-hieb.webp", hieb2Mass: [0.42, 0.94, 0.66],
     lp: 270, tempo: 3.5, angriff: { nah: 65, fern: 25, magie: 100 }, abwehr: { nah: 65, fern: 55, magie: 65 },
-    modi: [{ name: "Heilstab", art: "heil", schaden: [10, 18], takt: 1.2, reich: 6, text: "Heilt einen Verbündeten (oder Elara selbst) um 10 bis 18. Ohne gewähltes Ziel: wer am schwersten verletzt ist. Heilung braucht keinen Trefferwurf." },
+    modi: [{ name: "Heilstab", art: "heil", schaden: [10, 18], takt: 2.2, reich: 6, text: "Heilt einen Verbündeten (oder Elara selbst) um 10 bis 18. Ohne gewähltes Ziel: wer am schwersten verletzt ist. Heilung braucht keinen Trefferwurf." },
       { name: "Streitkolben", art: "nah", schaden: [15, 27], takt: 1.0, reich: 1.5, untot: 0.15, text: "Nahkampf, 15 % mehr Schaden gegen Untote." }],
     q: { name: "Heilendes Wort", zeit: 8, text: "Heilt einen Verbündeten in bis zu 7 Feldern um 55." },
     e: { name: "Schutzkreis", zeit: 16, text: "Kreis (Radius 3) um Elara: Verbündete bekommen 35 Schutzpunkte und 15 Magieverteidigung für 4 Sekunden." },

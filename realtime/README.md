@@ -41,7 +41,7 @@ Alle Werte stehen in `shared/config.ts`. Wer am Balancing dreht, ändert nur die
 - **Fernkämpfer** schießen nur im Stehen und holen kurz aus; Nahkämpfer schlagen auch im Laufen.
 - **Fähigkeiten Q, E, R** haben nur Abklingzeiten. Flächen und Sprünge treffen räumlich, ohne Trefferwurf.
 - **Torvalds Schild** (zweite Waffe) erhöht von vorn seinen Verteidigungswurf.
-- **Erholung:** nach 5 Sekunden ohne Schaden 4 % des Höchstlebens je Sekunde.
+- **Erholung:** nach 5 Sekunden ohne Schaden 1,5 % des Höchstlebens je Sekunde.
 - **Knochenwächter** holen sichtbar aus; wer dann außer Reichweite ist, wird nicht getroffen. Eine Gruppe wacht gemeinsam auf.
 
 ## Stand
