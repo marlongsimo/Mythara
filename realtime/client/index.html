@@ -11,6 +11,7 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; background: #07060b; color: #efe8d8; font-family: Inter, system-ui, sans-serif; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: none; }
     #ez-feld { position: fixed; inset: 0; }
+    #ez-dunkel { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 38%, rgba(4,3,8,.5) 78%, rgba(2,2,5,.82) 100%); }
     .ez-kasten { position: fixed; z-index: 3; background: rgba(12,10,18,.72); border-radius: 12px; padding: 7px 11px; pointer-events: none; font-size: 13px; }
     #ez-ich { top: 8px; left: max(8px, env(safe-area-inset-left)); min-width: 170px; display: grid; gap: 3px; }
     #ez-ich small { color: #b9ad94; font-size: 11px; }
@@ -31,6 +32,7 @@
 </head>
 <body>
   <div id="ez-feld"></div>
+  <div id="ez-dunkel"></div>
   <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small><i class="ez-balken xp"><u id="ez-xp" style="width:0"></u></i></div>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>

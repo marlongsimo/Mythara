@@ -7,12 +7,13 @@ import { HELDEN, MONSTER, K, TICK, ZUSTAND_JE } from "../../shared/config";
 import { KB, KH, fels, SIEGEL } from "../../shared/karte";
 import type { Zustand, Ereignis } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
+import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
 const SERVER = P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; // ?server= (leer) erzwingt das Rechnen im Browser
 const HELD = HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter";
-const KW = 64, KHOCH = 32, WAND = 30; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
+const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
 const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
 const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
@@ -23,12 +24,15 @@ class Spiel extends Phaser.Scene {
   netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
-  preload() { const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+  preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); for (const art of ["lauf", "hieb"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
     for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, { start: 0, end: 7 }), frameRate: 11, repeat: -1 });
       if (HELDEN[k].hieb) this.anims.create({ key: "hieb-" + k, frames: this.anims.generateFrameNumbers("hieb-" + k, { start: 0, end: 7 }), frameRate: 20, repeat: 0 }); }
-    const s = iso(SIEGEL.x, SIEGEL.y); this.add.ellipse(s.x, s.y, 80, 40, 0xb79bff, 0.25).setStrokeStyle(2, 0xd9cdf5, 0.8).setDepth(1); this.add.text(s.x, s.y - 6, "SIEGEL", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#e6dcff" }).setOrigin(0.5).setDepth(1);
+    this.licht(); this.fackeln();
+    { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
+      const r = this.add.sprite(q.x, q.y, "rune").setDepth(2).setScale(0.62, 0.31).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9); r.play("rune"); this.tweens.add({ targets: r, alpha: 0.55, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
     this.zielMarke = this.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setDepth(2).setVisible(false);
     this.groesse(); this.scale.on("resize", () => this.groesse());
     this.input.mouse?.disableContextMenu();
@@ -43,16 +47,23 @@ class Spiel extends Phaser.Scene {
     verbinde(SERVER, HELD, (z) => this.zustand(z), (art, grund) => { $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER && grund ? " – " + grund : ""); $("#ez-art").className = "ez-kasten " + art; }).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z }; $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel wählen – zugeschlagen wird in Reichweite · Q und E: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel wählen – zugeschlagen wird in Reichweite · Q und E: Fähigkeiten in Mausrichtung"; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2)); }
-  /** Boden als ein Bild: Rauten in zwei Tönen */
-  boden() { const g = this.add.graphics().setDepth(0);
-    for (let j = 0; j < KH; j++) for (let i = 0; i < KB; i++) { if (fels(i, j)) continue; const p = iso(i + 0.5, j + 0.5); g.fillStyle((i + j) % 2 ? 0x2b2636 : 0x302a3d, 1); g.beginPath(); g.moveTo(p.x, p.y - KHOCH / 2); g.lineTo(p.x + KW / 2, p.y); g.lineTo(p.x, p.y + KHOCH / 2); g.lineTo(p.x - KW / 2, p.y); g.closePath(); g.fillPath(); } }
-  /** Felswände: nur wo Fels an Boden grenzt, je Feld ein Block, nach Tiefe sortiert */
-  waende() { for (let j = -1; j <= KH; j++) for (let i = -1; i <= KB; i++) { if (!fels(i, j)) continue; let rand = false; for (let a = -1; a <= 1 && !rand; a++) for (let b = -1; b <= 1; b++) if (!fels(i + a, j + b)) { rand = true; break; } if (!rand) continue;
-      const p = iso(i + 0.5, j + 0.5), g = this.add.graphics().setDepth(10 + (i + j + 1) * 10 + 4), o = p.y - WAND;
-      g.fillStyle(0x4a4260, 1); g.beginPath(); g.moveTo(p.x, o - KHOCH / 2); g.lineTo(p.x + KW / 2, o); g.lineTo(p.x, o + KHOCH / 2); g.lineTo(p.x - KW / 2, o); g.closePath(); g.fillPath();
-      g.fillStyle(0x2a2438, 1); g.beginPath(); g.moveTo(p.x - KW / 2, o); g.lineTo(p.x, o + KHOCH / 2); g.lineTo(p.x, p.y + KHOCH / 2); g.lineTo(p.x - KW / 2, p.y); g.closePath(); g.fillPath();
-      g.fillStyle(0x1d1928, 1); g.beginPath(); g.moveTo(p.x + KW / 2, o); g.lineTo(p.x, o + KHOCH / 2); g.lineTo(p.x, p.y + KHOCH / 2); g.lineTo(p.x + KW / 2, p.y); g.closePath(); g.fillPath();
-      if (!fels(i - 1, j) || !fels(i, j - 1) || !fels(i + 1, j) || !fels(i, j + 1)) g.setAlpha(fels(i, j + 1) && fels(i + 1, j) ? 1 : 0.82); } }
+  /** Der Boden: ein gemaltes Bild aus den Raumkarten des Würfelspiels, mit Schatten und Fackellicht (werkzeug/dekor.py) */
+  boden() { this.add.image(-DEKOR.OX, 0, "boden").setOrigin(0, 0).setDepth(0); }
+  /** Mauern: je Feld ein gemauerter Block, nach Tiefe sortiert. Hinter einem Raum hoch, davor niedrig – so verdecken sie die Figuren nicht. */
+  waende() { const WL = DEKOR.wandlicht as Record<string, number[]>;
+    for (let j = -1; j <= KH; j++) for (let i = -1; i <= KB; i++) { if (!fels(i, j)) continue; let rand = false; for (let a = -1; a <= 1 && !rand; a++) for (let b = -1; b <= 1; b++) if (!fels(i + a, j + b)) { rand = true; break; } if (!rand) continue;
+      const hoch = !fels(i, j + 1) || !fels(i + 1, j) || !fels(i + 1, j + 1), p = iso(i + 0.5, j + 0.5), art = Math.abs(i * 3 + j * 5) % DEKOR.SPIELARTEN + (hoch ? 0 : DEKOR.SPIELARTEN);
+      const w = this.add.image(p.x, p.y, "wand", art).setOrigin(0.5, (KHOCH / 2 + WAND) / (KHOCH + WAND)).setDepth(10 + (i + j + 1) * 10 + 4), l = WL[i + "," + j] || [0.4, 0];
+      const h = Math.min(1, 0.25 + l[0] * 0.75), f = (v: number) => Math.max(0, Math.min(255, Math.round(255 * v))); w.setTint(Phaser.Display.Color.GetColor(f(h * (1 + 0.12 * l[1])), f(h), f(h * (1 - 0.28 * l[1])))); } }
+  /** Ein weicher Lichtfleck als Textur (für Fackelschein und Glut) */
+  licht() { const t = this.textures.createCanvas("schein", 128, 128); if (!t) return; const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,190,110,1)"); g.addColorStop(0.35, "rgba(255,140,60,.45)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); }
+  /** Fackeln an den Wänden, mit flackerndem Schein auf Wand und Boden */
+  fackeln() { this.anims.create({ key: "fackel", frames: this.anims.generateFrameNumbers("fackel", { start: 0, end: 8 }), frameRate: 11, repeat: -1 });
+    for (const f of DEKOR.fackeln) { const p = iso(f.x, f.y), tief = 10 + (f.x + f.y) * 10 - 0.5, y = p.y - WAND * 0.42;
+      const s = this.add.sprite(p.x, y, "fackel").setOrigin(0.5, 0.8).setScale(0.72).setDepth(tief + 0.2); s.play({ key: "fackel", startFrame: Math.floor(Math.random() * 9) });
+      const an = this.add.image(p.x, y - 30, "schein").setBlendMode(Phaser.BlendModes.ADD).setScale(0.75).setAlpha(0.55).setDepth(tief + 0.1); // Schein an der Wand
+      const unten = iso(f.x + (f.seite === "r" ? 0.7 : 0), f.y + (f.seite === "l" ? 0.7 : 0)), fleck = this.add.image(unten.x, unten.y, "schein").setBlendMode(Phaser.BlendModes.ADD).setScale(1.9, 0.95).setAlpha(0.22).setDepth(1); // Schein am Boden
+      this.tweens.add({ targets: [an, fleck], alpha: "-=0.1", scaleX: "*=0.93", duration: 90 + Math.random() * 160, yoyo: true, repeat: -1, repeatDelay: Math.random() * 220, ease: "Sine.easeInOut" }); } }
   zuWelt(p: Phaser.Input.Pointer) { const w = this.cameras.main.getWorldPoint(p.x, p.y); return welt(w.x, w.y); }
   /** Laufrichtung senden. sx, sy: Richtung am Bildschirm (rechts, unten positiv); die Welt liegt um 45 Grad gedreht darunter. */
   richtung(sx: number, sy: number) {
