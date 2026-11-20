@@ -63,7 +63,7 @@ export function chatAnzeigen(): void {
   document.body.appendChild(c); for (const ev of ["keydown", "keyup", "pointerdown"]) c.addEventListener(ev, (e) => e.stopPropagation()); /* Tippen steuert nicht den Helden */
   c.querySelectorAll<HTMLButtonElement>(".reiter button[data-k]").forEach((b) => b.onclick = () => { reiter = b.dataset.k as string; c.querySelectorAll(".reiter button").forEach((x) => x.classList.toggle("an", x === b)); zeichnen(); });
   (c.querySelector(".klapp") as HTMLElement).onclick = () => c.classList.toggle("zu");
-  if (window.matchMedia("(max-width: 700px)").matches) c.classList.add("zu");
+  if (window.matchMedia("(max-width: 700px), (max-height: 500px)").matches) c.classList.add("zu");
   const f = c.querySelector("form") as HTMLFormElement, inp = c.querySelector("input") as HTMLInputElement, sel = c.querySelector("select") as HTMLSelectElement;
   f.onsubmit = (e) => { e.preventDefault(); const t = inp.value.trim(); if (!t) return; if (!ws || ws.readyState !== 1) { chatSystem("Nicht verbunden – Nachricht nicht gesendet."); return; } senden({ t: "chat", kanal: sel.value, text: t }); inp.value = ""; };
   window.addEventListener("keydown", (e) => { if (e.key === "Enter" && document.activeElement !== inp && !(e.target instanceof HTMLInputElement)) { c.classList.remove("zu"); inp.focus(); } });

@@ -5,7 +5,8 @@
  */
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
-import { team, kampagneGeschafft } from "./weltkarte";
+import { team, kampagneGeschafft, weltkarte } from "./weltkarte";
+import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import { heldenhalle } from "./halle";
@@ -213,7 +214,11 @@ export class Ort extends Phaser.Scene {
     this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse()); this.cameras.main.centerOn(this.ort.x, this.ort.y);
     { /* Oben links das Profil, oben rechts die Minikarte – wie in der Waldmark */ document.body.classList.add("stadt"); hudProfil(this.held); hudTitel(D0.name, UNTER[ortName] || ""); hudKarte();
       { const t = team(); hudTeam(gruppe() ? [this.held] : t ? [t.held, ...t.mit] : [this.held], () => this.halle()); }
-      hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.halle() }, { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; hudProfil(this.held); }); } }]);
+      const tafel = (f: (zu: () => void) => void) => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); f(() => { this.gesperrt = false; }); };
+      const rucksack = () => tafel((zu) => taschenTafel("rucksack", this.held, zu)), ausruestung = () => tafel((zu) => taschenTafel("ausruestung", this.held, zu));
+      rundeKarte(2.4, [{ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => tafel((zu) => weltkarte(zu)) }, { name: "Teleport", zeichen: "teleport", taste: "T", tat: () => this.heimwaerts() },
+        { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(questTafel) }]); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung });
+      hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.halle() }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }, { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; hudProfil(this.held); }); } }]);
       const k = $("#ez-karte"); k.style.backgroundImage = `url(../img/echtzeit/${D0.bild || ortName + "-boden"}.webp)`; k.style.aspectRatio = `${D0.breit} / ${D0.hoch}`; (k.querySelector("span") as HTMLElement).textContent = D0.name; $("#ez-dorf-titel").style.display = "none"; this.sicht(); }
     /* gemeinsame Welt: andere Spieler im Dorf (Gruppenmitglieder zeigt schon die Gruppe) */ this.mit = new Mitspieler(this, { f: 1, gross: GROSS, tiefe: (y) => y, auslassen: (n) => this.andere.has(n) });
     weltBetreten(ortName, { spieler: (l) => this.mit.liste(l), fort: (id) => this.mit.weg(id) });
@@ -288,6 +293,8 @@ export class Ort extends Phaser.Scene {
     this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { this.geschafft(a.ende); return; } this.gesperrt = false; })); }
   /** Die Kampagne ist geschafft: festhalten, den Ort für den nächsten Besuch frisch machen, zurück in die Waldmark */
   geschafft(nr: number) { kampagneGeschafft(nr); this.gesperrt = true; wertung(ortName, this.merker, () => this.verlassen()); }
+  /** Teleport: von überall zurück in die Waldmark (wie durchs Tor – der Fortschritt im Dorf bleibt) */
+  heimwaerts() { if (this.gesperrt) return; this.gesperrt = true; if (mitreise()) mitPause(ortName); else dorfVerlassen(); this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
   verlassen() { dorfVerlassen(); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
@@ -355,7 +362,7 @@ export class Ort extends Phaser.Scene {
       if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     this.figur.setPosition(o.x, o.y + 3).setDepth(o.y); this.ring.setPosition(o.x, o.y).setDepth(o.y - 0.01);
-    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; }
+    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; karteFolgen(o.x / this.d.breit, o.y / this.d.hoch); }
     weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
     if (gruppe()) { const jetzt = this.time.now, g = this.gesendet, bewegt = Math.hypot(o.x - g.x, o.y - g.y) > 2; if ((bewegt && jetzt - g.t > 100) || jetzt - g.t > 1000) { this.gesendet = { x: o.x, y: o.y, t: jetzt }; dorfSende({ t: "pos", x: o.x, y: o.y, f: this.figur.flipX ? 1 : 0, l: this.laeuft ? 1 : 0 }); }
       const k = $("#ez-karte"); for (const [n, a] of this.andere) { if (jetzt - a.zuletzt > 6000) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); const u = k.querySelector(`u[data-n="${CSS.escape(n)}"]`); if (u) u.remove(); continue; }

@@ -37,7 +37,7 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");
   /* Anna gründet die Gruppe in der Waldmark */
   await anna.goto(B + "?x=1" + S); await anna.waitForFunction(() => window.EZD || document.querySelector("#ez-profil"), null, { timeout: 30000 }); await anna.waitForTimeout(1500);
-  await anna.click('#ez-menue [aria-label="Weltkarte"]'); await anna.click('#ez-welt .ziel[data-id="weidenhain"]'); if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-wahl.png") });
+  await anna.click('#ez-kartenrahmen [aria-label="Weltkarte"]'); await anna.click('#ez-welt .ziel[data-id="weidenhain"]'); if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-wahl.png") });
   check(Boolean(await anna.$('#ez-welt [data-w="allein"]')) && Boolean(await anna.$('#ez-welt [data-w="koop"]')), "Die Weltkarte fragt: allein oder gemeinsam aufbrechen");
   await anna.click('#ez-welt [data-w="koop"]');
   await anna.waitForFunction(() => /Anna/.test(document.querySelector("#ez-konto .mitglieder")?.textContent || ""), null, { timeout: 15000 }); check(/Aufbruch nach Weidenhain/.test(await anna.textContent("#ez-konto h2")), "„Gemeinsam aufbrechen“ öffnet das Aufbruchslager für Weidenhain");

@@ -7,6 +7,7 @@
 import { weltkarte } from "./weltkarte";
 import { heldenhalle } from "./halle";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "./hud";
+import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import Phaser from "phaser";
@@ -137,8 +138,12 @@ export class Stadt extends Phaser.Scene {
   }
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
   profil() { hudProfil(this.held); hudTitel("Waldmark", "Die Zuflucht der Wanderer"); hudKarte();
+    const tafel = (f: (zu: () => void) => void) => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); f(() => { this.gesperrt = false; }); };
+    const rucksack = () => tafel((zu) => taschenTafel("rucksack", this.held, zu)), ausruestung = () => tafel((zu) => taschenTafel("ausruestung", this.held, zu));
+    rundeKarte(2.2, [{ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => this.oeffne("welt") }, { name: "Teleport", zeichen: "teleport", taste: "T", tat: () => chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück.") },
+      { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(questTafel) }]); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung });
     /* In der Waldmark keine Questanzeige und keine Teamleiste – die gibt es in den Orten der Kampagnen */
-    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.oeffne("halle") }, { name: "Weltkarte", zeichen: "karte", tat: () => this.oeffne("welt") }, { name: "Riss", zeichen: "riss", art: "riss", tat: () => this.oeffne("riss") },
+    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.oeffne("halle") }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }, { name: "Riss", zeichen: "riss", art: "riss", tat: () => this.oeffne("riss") },
       { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; this.profil(); }); } }]); if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
@@ -170,7 +175,7 @@ export class Stadt extends Phaser.Scene {
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
-    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; }
+    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; karteFolgen(o.x / BW, o.y / BH); }
     weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
     let nah: typeof this.nah = null; for (const q of ORTE) if (Math.hypot(o.x - q.x, o.y - q.y) < q.r) nah = q;
     if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.tat === "bald" ? nah.name : nah.text + (HANDY ? "" : "  [E]"); }

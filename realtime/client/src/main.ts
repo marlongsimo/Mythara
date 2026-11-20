@@ -20,7 +20,9 @@ import { Stadt } from "./stadt";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
 import { Ort, ortName } from "./ort";
-import { lokalerHeld } from "./welt";
+import { lokalerHeld, weltBetreten } from "./welt";
+import { hudKarte } from "./hud";
+import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -112,13 +114,13 @@ class Spiel extends Phaser.Scene {
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => this.druck(p));
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) this.knueppel(p); else if (!p.wasTouch) this.zeiger = this.zuWelt(p); });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { this.stick = null; $("#ez-stick").hidden = true; this.richtung(0, 0); } });
-    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "q" || k === "e" || k === "r")) this.faehig(k); else if (an && (k === " " || k === "f" || k === "tab")) { ev.preventDefault(); if (this.netz) this.netz.sende({ t: "modus" }); } };
+    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "q" || k === "e" || k === "r")) this.faehig(k); else if (an && k === "1") this.angriff(); else if (an && (k === "2" || k === "3" || k === "4")) this.faehig(({ 2: "q", 3: "e", 4: "r" } as Record<string, Taste>)[k]); else if (an && (k === " " || k === "f" || k === "tab")) { ev.preventDefault(); if (this.netz) this.netz.sende({ t: "modus" }); } };
     window.addEventListener("keydown", (ev) => { if (!ev.repeat) taste(ev, true); }); window.addEventListener("keyup", (ev) => taste(ev, false));
     window.addEventListener("blur", () => { this.tasten = {}; this.richtung(0, 0); });
-    for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as Taste); });
+    for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (b.dataset.taste === "a") this.angriff(); else this.faehig(b.dataset.taste as Taste); });
     $("#ez-modus").addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (this.netz) this.netz.sende({ t: "modus" }); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
+    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); this.rahmenKampf(); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
   }
   /** Nach der Heldenwahl: verbinden und loslegen */
   /** Kampagnenkampf über den Server? Nur mit Konto (der Server schreibt EP und Seelensplitter gut). ?server= erzwingt eine Adresse oder das Rechnen im Browser. */
@@ -178,6 +180,30 @@ class Spiel extends Phaser.Scene {
   knueppel(p: Phaser.Input.Pointer) { const st = this.stick!, dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
     if (l < 8) this.richtung(0, 0); else { const k = Math.min(1, l / m); this.richtung(dx / l * k, dy / l * k); } }
   hinweis(x: number, y: number, t: string) { const q = iso(x, y), o = this.add.text(q.x, q.y - 70, t, { fontFamily: "Inter, sans-serif", fontSize: "13px", color: "#ffd98a", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: q.y - 95, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
+  /** Aktion 1 „Angriff“: den nächsten Gegner (als Heiler: den verletztesten Verbündeten) als Ziel nehmen und hinlaufen, falls er außer Reichweite ist */
+  angriff() { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return; const W = HELDEN[ich[2]].modi[ich[12]], heilt = W.art === "heil";
+    const d = (e: (typeof ich)) => Math.hypot(e[4] - ich[4], e[5] - ich[5]);
+    const ziel = heilt ? this.z.w.filter((e) => e[3] === 0 && !e[10] && e[0] !== ich[0] && e[7] < e[8] && d(e) < 12).sort((a, b) => a[7] / a[8] - b[7] / b[8])[0]
+      : (this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10]) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && d(e) < 12).sort((a, b) => d(a) - d(b))[0]);
+    if (!ziel) { this.hinweis(ich[4], ich[5], heilt ? "niemand verletzt" : "kein Gegner in der Nähe"); return; }
+    if (d(ziel) > W.reich + 0.3) this.netz.sende({ t: "lauf", x: ziel[4], y: ziel[5] }); this.netz.sende({ t: "ziel", id: ziel[0] }); }
+  /** Die runde Minikarte im Kampf: das gemalte Kampfbild, Helden blau, Gegner rot, der eigene Held in der Mitte */
+  kartePunkte(z: Zustand) { const j = performance.now(); if (j - this.karteZuletzt < 200) return; this.karteZuletzt = j; const k = document.getElementById("ez-karte"); if (!k || !kampfJetzt) return;
+    const da = new Set<string>(); for (const e of z.w) { if (e[0] === this.ichId) { karteFolgen(e[4] / KB, e[5] / KH); continue; } const id = "m" + e[0]; da.add(id); let u = k.querySelector(`u[data-m="${id}"]`) as HTMLElement | null;
+      if (!u) { u = document.createElement("u"); u.dataset.m = id; k.appendChild(u); } u.className = (e[3] === 0 ? "freund" : "feind") + (e[10] ? " tot" : ""); u.style.left = (100 * e[4] / KB) + "%"; u.style.top = (100 * e[5] / KH) + "%"; }
+    for (const u of Array.from(k.querySelectorAll<HTMLElement>("u[data-m]"))) if (!da.has(u.dataset.m as string)) u.remove();
+    const ich = z.w.find((e) => e[0] === this.ichId), pk = document.getElementById("ez-karte-punkt"); if (ich && pk) { pk.style.left = (100 * ich[4] / KB) + "%"; pk.style.top = (100 * ich[5] / KH) + "%"; } }
+  karteZuletzt = 0;
+  /** Oben rechts die runde Minikarte mit Teleport (zurück in die Waldmark) und Quests; Rucksack/Ausrüstung über B und C; auf Strecken der Chat */
+  rahmenKampf() { if (!FLACH || !kampfJetzt) return; const K = KARTEN[kampfJetzt.karte], k = $("#ez-karte"); hudKarte();
+    k.style.backgroundImage = `url(../${K.bild})`; k.style.aspectRatio = `${KB} / ${KH}`; for (const u of Array.from(k.querySelectorAll("u"))) u.remove();
+    const held = () => { const ich = this.z && this.z.w.find((e) => e[0] === this.ichId); return ich ? ich[2] : lokalerHeld(); };
+    const tafel = (f: (zu: () => void) => void) => { this.richtung(0, 0); this.tasten = {}; f(() => { /* zu */ }); };
+    const rucksack = () => tafel((zu) => taschenTafel("rucksack", held(), zu)), ausruestung = () => tafel((zu) => taschenTafel("ausruestung", held(), zu));
+    const teleport = () => { if (WEG || window.confirm("Zurück in die Waldmark? Der Kampf wird verlassen – was du bis jetzt verdient hast, bleibt dir.")) this.streckeVerlassen("waldmark", "von=teleport"); };
+    rundeKarte(Math.max(1, KB / 26), [{ name: "Teleport", zeichen: "teleport", taste: "T", tat: teleport }, { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(questTafel) },
+      { name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung }]); rahmenTasten({ i: rucksack });
+    if (WEG) weltBetreten(kampfJetzt.karte, {}); }
   /** Fähigkeit in Richtung des Mauszeigers; am Handy auf das aktuelle Ziel, sonst in Blickrichtung */
   faehig(taste: Taste) { if (!this.netz || !this.z) return; let ziel = this.zeiger; const ich = this.z.w.find((e) => e[0] === this.ichId);
     if (HANDY && ich) { const zi = this.z.w.find((e) => e[0] === this.z!.ich.zielId) || this.z.w.filter((e) => e[3] !== 0 && !e[10]).sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
@@ -304,10 +330,11 @@ class Spiel extends Phaser.Scene {
       $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? (window.innerWidth < 701 ? `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}`) : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     { const bild = $("#ez-ich-bild") as HTMLImageElement, src = "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"); st.hidden = !z.ich.stufe; if (z.ich.stufe) st.textContent = "St. " + z.ich.stufe; }
-    this.gefolge(z, ich[0]);
+    this.gefolge(z, ich[0]); if (FLACH) this.kartePunkte(z);
     const sym = SYMBOL[ich[2]] || {};
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${taste.toUpperCase()} · ${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
+    { const an = $('[data-taste="a"]'), src = symbolBild((sym.modi || [])[z.ich.modus] || "hieb"), img = an.querySelector("img") as HTMLImageElement; if (img.dataset.src !== src) { img.dataset.src = src; img.src = src; an.title = `1 · Angriff (${W.name}): nächsten Gegner angreifen`; } }
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; mo.classList.toggle("zwei", z.ich.modus === 1); }
     const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen && !WEG) { this.gewonnen = true; $("#ez-ziel").hidden = true; if (z.pr === 1 && kampfJetzt && P0.get("ort")) probeGeschafft(P0.get("ort") as string, kampfJetzt.karte);
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
@@ -345,7 +372,7 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
       <div class="ez-karte"><h2>${esc(D.name)} – ${esc(D.titel)}</h2><p class="ez-rolle">${esc(D.rolle)} · ${D.lp} Leben · Tempo ${String(D.tempo).replace(".", ",")}</p>
         <p><b>Angriff:</b> ${w(D.angriff)}<br><b>Verteidigung:</b> ${w(D.abwehr)}</p>
         <ul>${D.modi.map((m, i) => `<li><b>${i ? "Zweite" : "Erste"} Waffe – ${esc(m.name)}</b> ${m.schild ? "" : ` (${m.art === "heil" ? "Heilung" : "Schaden"} ${m.schaden[0]}–${m.schaden[1]}, alle ${String(m.takt).replace(".", ",")} s, Reichweite ${String(m.reich).replace(".", ",")})`}: ${esc(m.text)}</li>`).join("")}
-          ${(["q", "e", "r"] as const).map((t) => `<li><b>${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
+          <li><b>1 – Angriff</b>: den nächsten Gegner angreifen (läuft hin, wenn er zu weit weg ist)</li>${(["q", "e", "r"] as const).map((t, i) => `<li><b>${i + 2} oder ${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
       <p class="ez-klein">Du ziehst mit genau einem Helden los und levelst nur ihn. Wechseln kannst du ihn nur in der Waldmark.</p>
       <div class="ez-knoepfe"><button type="button" id="ez-los">${wort ? wort.los : "In den Riss"}</button>${zurueck ? `<button type="button" id="ez-zurueck">${wort ? wort.zurueck : "Zurück ins Dorf"}</button>` : ""}<a href="../">← zur Startseite</a></div>
       <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen, in der Siegelkammer der Knochenfürst. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
