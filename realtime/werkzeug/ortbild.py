@@ -42,7 +42,7 @@ ORTE = {
         # eine Runde Dorfleute, die beisammenstehen und reden: Mitte der Füße
         "gruppen": [(690, 668)],
         # Leute, die man ansprechen kann: Kennung, x, y (Füße)
-        "leute": [("hanne", 562, 494), ("lene", 575, 354), ("agnes", 985, 480), ("tebbe", 618, 374), ("mette", 880, 600)],
+        "leute": [("hanne", 562, 494), ("lene", 575, 354), ("agnes", 985, 480), ("tebbe", 618, 374), ("mette", 880, 600), ("bote", 610, 775)],
         "stellen": {"start": (420, 850), "scheune": (515, 300), "muehle": (1150, 528), "wehr": (1225, 657), "feuer": (735, 490), "nest": (345, 338), "ufer": (1560, 800)},
     },
     "rabenmoor": {

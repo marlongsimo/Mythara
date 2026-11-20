@@ -119,7 +119,7 @@ function fenster(ort: string, bild: string): HTMLElement {
 /* Bildnisse im Gespräch: aus dem Bildblatt der Person (Feld 240) der Kopf – Mitte x und Scheitel y im ersten Bild */
 /* [Mitte x, Scheitel y, Bildblatt, Feldgröße, Bilder] – ohne Angabe: <id>.webp, Feld 240, 9 Bilder */
 const KOPF: Record<string, [number, number, string?, number?, number?]> = { hanne: [112, 27], lene: [117, 31], agnes: [113, 25], mette: [117, 29], tebbe: [115, 38],
-  bertold: [117, 29], ilse: [113, 25, "agnes"], jorin: [86, 13, "junge", 176, 8], joost: [88, 8, "wanderer", 176, 8], mutter: [112, 8, "hedda"] };
+  bertold: [117, 29], ilse: [116, 5], jorin: [117, 5], joost: [88, 8, "wanderer", 176, 8], mutter: [112, 8, "hedda"] };
 /** Wer spricht: Name und Rolle ins Schild, das Bildnis links. Ohne Sprecher erzählt das Spiel – dann steht dort das Siegel. */
 function bildnis(d: HTMLElement, wer: string) {
   const [name, rolle] = wer.split(",").map((t) => t.trim()), id = (name || "").split(" ")[0].toLowerCase(), k = KOPF[id], el = d.querySelector(".bildnis") as HTMLElement, sp = el.querySelector("span") as HTMLElement;

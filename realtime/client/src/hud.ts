@@ -24,6 +24,7 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
       { text: "Mit Lene reden – sie sucht dich", fertig: "tebbe" },
       { text: "Tebbe an der alten Mühle finden", fertig: "kampf_muehle" },
       { text: "Die alte Unke am Wehr stellen", fertig: "kampf_wehr" },
+      { text: "Den Jungen anhören, der ins Dorf gerannt kommt", fertig: "bote" },
     ],
     neben: [
       { titel: "Lichter am Mühlteich", wenn: ["hanne"], schritte: [

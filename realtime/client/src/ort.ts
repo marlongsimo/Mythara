@@ -28,9 +28,19 @@ const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy
  * Jedes Gespräch hat eine Bedingung (wenn: diese Merker müssen gesetzt sein) und setzt am Ende selbst einen Merker (setzt).
  * Wer ein offenes Gespräch hat, trägt ein Ausrufezeichen über dem Kopf. Ist alles gesagt, kommt nur noch der Satz unter „sonst“.
  */
-interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string }
-/* blatt: anderes Bildblatt als <id>.webp (vorläufige Figuren); still: nur das erste Bild zeigen (Laufblätter aus der Waldmark) */
-const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; blatt?: string; still?: boolean; reden: Rede[]; sonst: Zeile }> = {
+interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string; ende?: number /* damit ist die Kampagne geschafft */ }
+/* blatt: anderes Bildblatt als <id>.webp; still: nur das erste Bild zeigen (Laufblätter aus der Waldmark);
+   lauf: Wer so ein Laufblatt hat, kommt beim ersten Auftauchen von der Stelle „von“ angerannt (koerper und fuss wie oben, für das Laufblatt). */
+const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; blatt?: string; still?: boolean; lauf?: { blatt: string; koerper: number; fuss: number; von: string }; reden: Rede[]; sonst: Zeile }> = {
+  /* Jorin rennt nach dem Kampf am Wehr nach Weidenhain – der letzte Schritt dort und der Weg nach Rabenmoor */
+  bote: { name: "Jorin", feld: 240, koerper: 0.967, fuss: 0.979, gross: 0.7, blatt: "jorin", zeigen: "unke_nach", lauf: { blatt: "jorin-lauf", koerper: 0.9, fuss: 0.933, von: "start" },
+    sonst: { wer: "Jorin", text: "Rabenmoor ist im Süden, hinter dem Schwarzmoor. Bitte beeil dich." },
+    reden: [{ setzt: "bote", schluss: "Ich komme nach Rabenmoor", ende: 1,
+      zeilen: [{ text: "Ein Junge stolpert auf den Platz, schlammverschmiert bis zu den Knien. Er ist die ganze Nacht gelaufen." },
+        { wer: "Jorin", text: "Bist du das? Die, die die Unke vertrieben haben? Sie sagen, hier ist jemand, der hilft." },
+        { wer: "Jorin, aus Rabenmoor", text: "Drei Kinder sind weg. Meine Schwester Fenna auch. Sie sind den Lichtern ins Moor gefolgt, eins nach dem anderen." },
+        { wer: "Jorin", text: "Und das Dorf will die alte Hedda verbrennen. Ich glaube nicht, dass sie es war. Bitte komm nach Rabenmoor." }],
+      fragen: [{ knopf: "Was für Lichter?", zeilen: [{ wer: "Jorin", text: "Sie flackern nicht. Sie stehen einfach über dem Wasser. Wer zu lange hinschaut, will ihnen nach." }] }] }] },
   /* ---------- Rabenmoor (vorläufige Figuren aus der Waldmark, bis eigene Bildblätter da sind) ---------- */
   bertold: { name: "Bertold Krähe", feld: 240, koerper: 0.867, fuss: 0.988, sonst: { wer: "Bertold Krähe", text: "Geh. Jede Stunde, die du hier stehst, ist eine Stunde, die die Kinder im Moor sind." },
     reden: [{ setzt: "bertold", schluss: "Ich gehe ins Moor",
@@ -45,14 +55,14 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
           { wer: "Bertold Krähe", text: "Mein Vater war Schulze, als das geschah. Mehr sage ich nicht. Nicht heute Nacht." }] },
       { wenn: ["kampf_schrein", "bertold_schuld"], setzt: "bertold_gestanden", schluss: "Danke, Bertold", fragen: [],
         zeilen: [{ wer: "Bertold Krähe", text: "Die Kinder sind zurück. Dann bin ich dir die Wahrheit schuldig." }, { wer: "Bertold Krähe", text: "Mein Vater hat Alwine den Weg verbieten lassen, damals, als das Wasser stieg. Sie ist allein hinaus. Er hat es gewusst und geschwiegen. Ich sage es morgen vor dem ganzen Dorf." }] }] },
-  ilse: { name: "Ilse", feld: 240, koerper: 0.879, fuss: 0.983, blatt: "agnes", sonst: { wer: "Ilse", text: "Bring sie mir wieder. Bitte." },
+  ilse: { name: "Ilse", feld: 240, koerper: 0.967, fuss: 0.979, sonst: { wer: "Ilse", text: "Bring sie mir wieder. Bitte." },
     reden: [{ wenn: ["bertold"], setzt: "ilse", schluss: "Ich nehme sie mit",
       zeilen: [{ wer: "Ilse, Miras Mutter", text: "Du gehst ins Moor? Dann nimm das hier mit. Miras Pfeife. Sie hat sie nie aus der Hand gelegt, nur in der Nacht, als sie ging." },
         { wer: "Ilse", text: "Wenn du sie findest und sie nicht aufwacht, dann pfeif. Sie kennt den Ton. Sie wird ihn kennen." }],
       fragen: [{ knopf: "Hat Mira etwas gesagt, bevor sie ging?", zeilen: [{ wer: "Ilse", text: "Sie hat gesagt, die Frau im Wasser ist traurig. Ich habe gedacht, sie träumt." }] }] },
       { wenn: ["kampf_schrein"], setzt: "ilse_dank", schluss: "Gern geschehen", fragen: [],
         zeilen: [{ wer: "Ilse", text: "Sie schläft. Richtig schläft sie, nicht wie die Nächte davor. Die Pfeife hält sie in der Faust." }, { wer: "Ilse", text: "Ich habe nichts, was ich dir geben kann. Aber in Rabenmoor wird man deinen Namen kennen, solange es Rabenmoor gibt." }] }] },
-  jorin: { name: "Jorin", feld: 176, koerper: 0.858, fuss: 0.932, gross: 0.62, blatt: "junge", still: true, sonst: { wer: "Jorin", text: "Ich bin bis Weidenhain gerannt. Ohne Pause. Fast ohne Pause." },
+  jorin: { name: "Jorin", feld: 240, koerper: 0.967, fuss: 0.979, gross: 0.7, sonst: { wer: "Jorin", text: "Ich bin bis Weidenhain gerannt. Ohne Pause. Fast ohne Pause." },
     reden: [{ wenn: ["bertold"], setzt: "jorin", schluss: "Gut gemacht, Jorin", fragen: [],
       zeilen: [{ wer: "Jorin", text: "Du bist wirklich gekommen! Ich hab's ihnen gesagt. Keiner hat mir geglaubt." }, { wer: "Jorin", text: "Fenna ist meine Schwester. Wenn du sie siehst, sag ihr, ich hab ihr Haarband. Sie soll es sich wiederholen." }] }] },
   joost: { name: "Joost", feld: 176, koerper: 0.909, fuss: 0.955, blatt: "wanderer", still: true, sonst: { wer: "Joost", text: "Der Kahn liegt bereit. Steig ein, wenn du so weit bist." },
@@ -126,9 +136,9 @@ const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; 
   { wenn: [], setzt: "ankunft", titel: "Weidenhain", schluss: "Weiter", zeilen: [{ text: "Es ist Erntefest in Weidenhain. Auf dem Dorfplatz brennt ein Feuer, es riecht nach Brot und Bier, und jemand spielt schief auf einer Fiedel." }, { text: "Dann ein Schrei vom Kornspeicher. Die Musik bricht ab." }] },
   { wenn: ["kampf_speicher"], setzt: "speicher_nach", titel: "Vor dem Kornspeicher", schluss: "Weiter", zeilen: [{ text: "Die letzte Kröte hüpft durch ein Loch in der Rückwand davon. Dahinter rauscht der Mühlgraben." }, { text: "Auf dem Platz ist es still geworden. Hanne zählt die Säcke, und Lene sucht dich mit den Augen." }] },
   { wenn: ["kampf_muehle"], setzt: "tebbe_gefunden", titel: "An der alten Mühle", schluss: "Zum Wehr", zeilen: [{ text: "Du verbindest Tebbes Bein und bringst ihn zu seiner Schwester. Lene sagt nichts; sie hält ihn nur fest." }, { text: "Das Wehr liegt gleich hinter der Mühle. Dort sitzt, was die Kröten ins Dorf treibt." }] },
-  { wenn: ["kampf_wehr"], setzt: "ende", titel: "Das Erntefest von Weidenhain", schluss: "Zurück in die Waldmark", ende: 1, zeilen: [{ text: "Das letzte Irrlicht zerstiebt über dem Wasser. Die alte Unke liegt halb auf den Steinen, zu erschöpft, um die Zunge noch einmal zu heben." },
+  { wenn: ["kampf_wehr"], setzt: "unke_nach", titel: "Das Erntefest von Weidenhain", schluss: "Weiter", zeilen: [{ text: "Das letzte Irrlicht zerstiebt über dem Wasser. Die alte Unke liegt halb auf den Steinen, zu erschöpft, um die Zunge noch einmal zu heben." },
     { text: "Ohne die Lichter über ihr ist nichts mehr an ihr, das angreift. Du trittst zurück. Sie gleitet ins Wasser und führt ihr Volk den Graben hinab, weg vom Dorf." }, { wer: "Hanne Kalk", text: "Setz dich. Iss. Heute Nacht zahlt in Weidenhain niemand, der Kröten aus meinem Speicher gejagt hat." },
-    { text: "Gegen Morgen sitzt ein fremder Junge am Feuer, schlammverschmiert bis zu den Knien." }, { wer: "Der Junge", text: "Ich komme aus Rabenmoor. Drei Kinder sind weg. Sie sind den Lichtern ins Moor gefolgt. Sie sagen, hier ist jemand, der hilft." }] },
+    { text: "Die Fiedel spielt wieder. Da hörst du vom Ortseingang her jemanden rennen." }] },
 ],
   rabenmoor: [
     { wenn: [], setzt: "ankunft", titel: "Rabenmoor", schluss: "Weiter", zeilen: [{ text: "Rabenmoor liegt auf einer Sandinsel mitten im Schwarzmoor. Die Sonne geht unter, und über dem Wasser stehen schon die ersten Lichter, still wie Sterne, die zu tief hängen." },
@@ -165,7 +175,7 @@ export class Ort extends Phaser.Scene {
         x = x1; y = y1; } } }
   init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("eingang") === "1") { localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("eingang"); history.replaceState(null, "", "?" + P.toString()); } /* von der Weltkarte kommend steht man am Ortseingang; der Fortschritt bleibt */
       if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
-  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
+  preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L && L.lauf) this.load.spritesheet("lauf-" + l[0], `../img/echtzeit/${L.lauf.blatt}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${L.blatt || l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
     if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
@@ -190,7 +200,7 @@ export class Ort extends Phaser.Scene {
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
   groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); }
-  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number; ruf: Phaser.GameObjects.Text; teile: (Phaser.GameObjects.Sprite | Phaser.GameObjects.Text)[] }[] = []; merker: Record<string, boolean> = {}; pfeil!: Phaser.GameObjects.Graphics;
+  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number; ruf: Phaser.GameObjects.Text; teile: (Phaser.GameObjects.Sprite | Phaser.GameObjects.Text)[]; rennt?: boolean }[] = []; merker: Record<string, boolean> = {}; pfeil!: Phaser.GameObjects.Graphics;
   /** Das nächste offene Gespräch einer Person (oder keins) */
   da(id: string) { const z = LEUTE[id].zeigen; return !z || Boolean(this.merker[z]); }
   offen(id: string): Rede | null { if (!this.da(id)) return null; for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
@@ -204,8 +214,19 @@ export class Ort extends Phaser.Scene {
     for (const q of this.personen) { const g = this.offen(q.id); if (g) punkt(q.x, q.y, !istHaupt(ortName, g.setzt)); }
     for (const t in TUEREN) { const T = TUEREN[t], s = this.d.stellen[t]; if (s && !istHaupt(ortName, "kampf_" + T.kampf) && !this.merker["kampf_" + T.kampf] && T.wenn.every((m) => this.merker[m])) punkt(s[0], s[1], true); }
     if (!this.personen.some((q) => { const g = this.offen(q.id); return g && istHaupt(ortName, g.setzt); })) { const z = this.ziel(); if (z) punkt(z[0], z[1], false); }
-    for (const q of this.personen) { const g = this.offen(q.id); q.ruf.setVisible(Boolean(g)); if (g) q.ruf.setColor(istHaupt(ortName, g.setzt) ? "#ffd23a" : "#7fd4ff").setStroke(istHaupt(ortName, g.setzt) ? "#3a2400" : "#0b2a44", 7); for (const t of q.teile) t.setVisible(this.da(q.id)); }
+    for (const q of this.personen) if (LEUTE[q.id].lauf && this.da(q.id) && !this.merker[q.id + "_da"] && !q.rennt) this.anrennen(q);
+    for (const q of this.personen) { const g = this.offen(q.id); q.ruf.setVisible(Boolean(g) && !q.rennt); if (g) q.ruf.setColor(istHaupt(ortName, g.setzt) ? "#ffd23a" : "#7fd4ff").setStroke(istHaupt(ortName, g.setzt) ? "#3a2400" : "#0b2a44", 7); for (const t of q.teile) t.setVisible(this.da(q.id)); }
     hudQuest(ortName, this.merker); /* die Schritte der Quest oben links */ }
+  /** Jemand kommt angerannt: vom Ortseingang (außerhalb des Bildes) bis an seinen Platz, dann bleibt er stehen und hat etwas zu sagen. */
+  anrennen(q: Ort["personen"][number]) {
+    const L = LEUTE[q.id], R = L.lauf!, v = this.d.stellen[R.von]; if (!v) return; q.rennt = true; const sp = q.teile[0] as Phaser.GameObjects.Sprite, nm = q.teile[1], hh = GROSS * 0.92 * (L.gross || 1);
+    const x0 = v[0] - 220, y0 = v[1] + 160, weit = Math.hypot(q.x - x0, q.y - y0);
+    if (!this.anims.exists("lauf-" + q.id)) this.anims.create({ key: "lauf-" + q.id, frames: this.anims.generateFrameNumbers("lauf-" + q.id, {}), frameRate: 14, repeat: -1 });
+    sp.setTexture("lauf-" + q.id).setOrigin(0.5, R.fuss).setScale(hh / (R.koerper * L.feld)).setFlipX(q.x < x0).play("lauf-" + q.id); const dy = nm.y - q.y;
+    sp.setPosition(x0, y0 + 3); nm.setPosition(x0, y0 + dy); q.ruf.setVisible(false);
+    this.tweens.add({ targets: sp, x: q.x, y: q.y + 3, duration: weit / 0.3, onUpdate: () => { sp.setDepth(sp.y); nm.setPosition(sp.x, sp.y - 3 + dy); }, onComplete: () => {
+      sp.stop(); sp.setTexture("leute-" + q.id).setOrigin(0.5, L.fuss).setScale(hh / (L.koerper * L.feld)).setFlipX(false).play("leute-" + q.id); nm.setPosition(q.x, q.y + dy); q.rennt = false; this.merke(q.id + "_da"); } });
+  }
   /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
   leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
     for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
@@ -221,13 +242,15 @@ export class Ort extends Phaser.Scene {
     for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.merker["kampf_" + (TUEREN[w.stelle] || { kampf: "" }).kampf] ? null : this.d.stellen[w.stelle]; return null; }
   /** Beim Ankommen erzählen, was gerade geschehen ist (einmal je Auftritt). */
   auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;
-    this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { kampagneGeschafft(a.ende); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } /* geschafft: der Ort ist beim nächsten Besuch wieder frisch */ location.href = "./?von=tor"; return; } this.gesperrt = false; })); }
+    this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { this.geschafft(a.ende); return; } this.gesperrt = false; })); }
+  /** Die Kampagne ist geschafft: festhalten, den Ort für den nächsten Besuch frisch machen, zurück in die Waldmark */
+  geschafft(nr: number) { kampagneGeschafft(nr); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
     if (this.nah === "#heim") { this.gesperrt = true; this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=tor"; }); return; }
     if (this.nah[0] === "@") { const T = TUEREN[this.nah.slice(1)]; this.gesperrt = true; try { localStorage.setItem("ez_ort_" + ortName + "_pos", JSON.stringify([Math.round(this.ort.x), Math.round(this.ort.y)])); } catch { /* privat */ } this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "?ort=" + ortName + "&kampf=" + T.kampf; }); return; }
     const L = LEUTE[this.nah], g = this.offen(this.nah); this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
-    void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => this.merke(g.setzt)) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
+    void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => { this.merke(g.setzt); if (g.ende) this.geschafft(g.ende); }) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
   /** Dorfleute, die beisammenstehen: Sie gestikulieren, und alle paar Sekunden sagt einer von ihnen etwas Belangloses in einer Sprechblase. */
   gruppen() { const M = GROSS / 123 * 0.82; /* 0.82: am Helden nachgemessen – seine Größe zählt mit Waffe und Schild, der Körper ist kleiner */ /* im Feld ist eine Person etwa 123 Bildpunkte hoch */
     for (const [x, y] of this.d.gruppen || []) { if (!this.anims.exists("dorfgruppe")) this.anims.create({ key: "dorfgruppe", frames: this.anims.generateFrameNumbers("dorfgruppe", {}), frameRate: 2.2, repeat: -1, yoyo: true });
