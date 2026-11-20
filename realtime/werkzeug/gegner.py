@@ -20,7 +20,8 @@ if getattr(im, "n_frames", 1) > 1:
     im = b
 a = np.asarray(im.convert("RGBA")).copy(); H, W = a.shape[:2]
 if a[..., 3].min() < 10:
-    al = a[..., 3] > 60; lab, n = ndimage.label(al); gr = ndimage.sum(al, lab, range(1, n + 1)); al = np.isin(lab, [i + 1 for i in range(n) if gr[i] > 2500]); al = ndimage.binary_erosion(al, iterations=2)
+    al = a[..., 3] > 60; r_, g_, b_ = [a[..., i].astype(int) for i in range(3)]; al &= ~((r_ > 200) & (g_ < 60) & (b_ < 60)) & ~((r_ > 235) & (g_ > 235) & (b_ < 60))  # grellrote und grellgelbe Säume der Vorlage
+    lab, n = ndimage.label(al); gr = ndimage.sum(al, lab, range(1, n + 1)); al = np.isin(lab, [i + 1 for i in range(n) if gr[i] > 2500]); al = ndimage.binary_erosion(al, iterations=2)
     a[..., 3] = np.where(al, a[..., 3], 0); Image.fromarray(a, "RGBA").save(roh); grund = "alpha"
 else:
     rgb = im.convert("RGB"); d = ImageDraw.Draw(rgb)
