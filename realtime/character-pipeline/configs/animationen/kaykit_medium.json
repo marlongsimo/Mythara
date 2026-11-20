@@ -11,7 +11,7 @@
     "nahkampf": "blender/animations/kaykit/Rig_Medium_CombatMelee.glb",
     "fernkampf": "blender/animations/kaykit/Rig_Medium_CombatRanged.glb"
   },
-  "_clips": "Spielname -> Clip. schleife: läuft im Kreis; halten: bleibt auf dem letzten Bild stehen; amOrt: waagerechte Wurzelbewegung entfernen; tempoMeterProSek: Laufgeschwindigkeit, zu der die Schritte passen.",
+  "_clips": "Spielname -> Clip. schleife: läuft im Kreis; halten: bleibt auf dem letzten Bild stehen; amOrt: waagerechte Wurzelbewegung entfernen; tempoMeterProSek: Laufgeschwindigkeit, zu der die Schritte passen. fps: eigene Bildrate (sonst render.json). sockelFest: diese Knochen bleiben in der Ruhelage relativ zum Elternknochen (z. B. die Waffe bleibt beim Sterben in der Hand).",
   "clips": {
     "idle": {
       "datei": "nahkampf",
@@ -38,12 +38,14 @@
     "attack": {
       "datei": "nahkampf",
       "clip": "Melee_2H_Attack_Chop",
-      "schleife": false
+      "schleife": false,
+      "fps": 15
     },
     "attack_1h": {
       "datei": "nahkampf",
       "clip": "Melee_1H_Attack_Chop",
-      "schleife": false
+      "schleife": false,
+      "fps": 15
     },
     "block": {
       "datei": "nahkampf",
@@ -70,7 +72,23 @@
       "datei": "general",
       "clip": "Death_A",
       "schleife": false,
-      "halten": true
+      "halten": true,
+      "sockelFest": [
+        "handslot.l",
+        "handslot.r"
+      ]
+    },
+    "idle_1h": {
+      "datei": "general",
+      "clip": "Idle_A",
+      "schleife": true
+    },
+    "block_1h": {
+      "datei": "nahkampf",
+      "clip": "Melee_Block",
+      "schleife": true
     }
-  }
+  },
+  "knochenZuordnung": {},
+  "_knochenZuordnung": "Fremde Skelette: Knochenname der Quelle -> Knochenname des Grundskeletts (z. B. \"mixamorig:Hips\": \"hips\"). Leer = Namen sind gleich."
 }

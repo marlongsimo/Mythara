@@ -1,0 +1,33 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_stiefel_stahl",
+  "name": "Stahlschuhe (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "feet",
+  "type": "boots",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_stiefel_stahl.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "bein_l",
+      "bein_r"
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 8
+  },
+  "special": {},
+  "visual": {
+    "material": "stahl"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

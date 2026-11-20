@@ -21,6 +21,8 @@ def aufbauen(R):
     bg.inputs[0].default_value = (*L['himmel']['farbe'], 1); bg.inputs[1].default_value = L['himmel']['staerke']
     # Renderer
     E = R['renderer']; s.render.engine = E['engine']; s.render.film_transparent = True; s.view_settings.view_transform = E['sichtTransform']; s.view_settings.look = 'None'
+    if E.get('threads'): s.render.threads_mode = 'FIXED'; s.render.threads = E['threads']
+    s.render.use_persistent_data = True
     if E['engine'] == 'CYCLES': s.cycles.samples = E['samples']; s.cycles.use_denoising = False; s.cycles.device = 'CPU'; s.cycles.max_bounces = 3; s.cycles.filter_width = E.get('kantenglaettung', 1.5)
     s.render.image_settings.file_format = 'PNG'; s.render.image_settings.color_mode = 'RGBA'; s.render.image_settings.compression = 30
     return cam
@@ -29,6 +31,10 @@ def fusspunkt_pixel(cam, R):
     """Wo der Weltursprung (Fußpunkt) im Bild landet – zur Kontrolle, in Pixeln von oben links."""
     s = bpy.context.scene; v = world_to_camera_view(s, cam, mathutils.Vector((0, 0, 0)))
     return [round(v.x * R['bild']['breite'], 2), round((1 - v.y) * R['bild']['hoehe'], 2)]
+
+def pixel(cam, R, p):
+    """Bildposition (Pixel, von oben links) eines Weltpunkts"""
+    v = world_to_camera_view(bpy.context.scene, cam, p); return [round(v.x * R['bild']['breite'], 1), round((1 - v.y) * R['bild']['hoehe'], 1)]
 
 def richtung(arm, grad):
     """Figur in Spielrichtung drehen. Spiel: 0 = Osten, 90 = Süden (y nach unten). Die Figur blickt in Ruhe nach Süden (−Y in Blender)."""

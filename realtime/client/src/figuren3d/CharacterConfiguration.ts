@@ -15,11 +15,13 @@ export interface FigurDaten {
   spiel: { figurHoehePx: number; renderHoehePx: number; massstab: number };
   richtungen: { id: string; grad: number }[]; animationen: Record<string, AnimationDef>;
   ebenen: Record<string, EbeneDef>; koerperRegionen: string[]; standardAusruestung: Ausruestung; katalog: string; slots: Record<Slot, { name: string; sockel: string | string[] }>;
+  /** Haltungen: je Waffenart eine Zuordnung Spielzustand → Animation (z. B. einhand: attack → attack_1h); standard = Haltung ohne Waffe */
+  haltungen?: Record<string, Record<string, string> | string>;
 }
 export interface Gegenstand {
   id: string; name: string; slot: Slot; type: string; rarity: Seltenheit; skeleton: string; occupies: Slot[];
   hides: { regions: string[]; slots: Slot[] }; stats: Record<string, unknown>; special: Record<string, unknown>; visual: Record<string, unknown>;
-  testAsset?: boolean; ebene: string; atlas: string | null;
+  testAsset?: boolean; ebene: string; atlas: string | null; /** Haltung, die der Gegenstand verlangt (Waffen, Schilde) */ stance?: string;
 }
 export interface Katalog { schema: string; skelett: string; seltenheit: Record<Seltenheit, string>; gegenstaende: Gegenstand[] }
 /** Metadaten im Atlas einer Ebene (meta.mythara): Tiefe je Animation/Richtung/Frame (größer = weiter hinten), leere Frames */
@@ -48,3 +50,10 @@ export function sichtbareEbenen(fig: FigurDaten, kat: Katalog, a: Ausruestung): 
 }
 /** Gegenstände eines Slots aus dem Katalog (für Auswahlmenüs) */
 export const fuerSlot = (kat: Katalog, slot: Slot): Gegenstand[] => kat.gegenstaende.filter((g) => g.slot === slot);
+
+/** Haltung aus der Ausrüstung: stance der Haupthand, sonst der Nebenhand, sonst die Standardhaltung der Figur. Zurück: Zuordnung Spielzustand → Animation. */
+export function haltung(fig: FigurDaten, kat: Katalog, a: Ausruestung): Record<string, string> {
+  const H = fig.haltungen || {}, byId = new Map(kat.gegenstaende.map((g) => [g.id, g])); let st: string | undefined;
+  for (const s of ["main_hand", "off_hand"] as Slot[]) { const g = a[s] ? byId.get(a[s] as string) : undefined; if (g && g.stance) { st = g.stance; break; } }
+  st = st || (typeof H.standard === "string" ? H.standard : undefined); const z = st ? H[st] : undefined; return z && typeof z === "object" ? { ...z } : {};
+}

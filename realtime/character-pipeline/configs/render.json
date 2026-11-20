@@ -39,7 +39,9 @@
     "engine": "CYCLES",
     "samples": 10,
     "sichtTransform": "Standard",
-    "kantenglaettung": 1.5
+    "kantenglaettung": 1.5,
+    "threads": 1,
+    "_threads": "Threads je Blender-Prozess. 1 + so viele parallele Prozesse wie Kerne ist am schnellsten (gemessen: 4 × 1 Thread ≈ 14 Bilder/s, 3 × alle Kerne ≈ 3,5 Bilder/s)."
   },
   "fps": 10,
   "richtungen": [
@@ -89,7 +91,9 @@
     "atlasMaxSeite": 2048,
     "format": "webp",
     "qualitaet": 90,
-    "ziel": "../../img/figuren3d"
+    "ziel": "../../img/figuren3d",
+    "massstab": 0.75,
+    "_massstab": "Exportgröße relativ zum Rendering (Speicher ~ massstab²). 0,75: die Figur ist im Atlas ~1,35× so groß wie im Spiel (84 px) – scharf bis Zoom 1,35."
   },
   "spiel": {
     "figurHoehePx": 84,

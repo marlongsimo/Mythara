@@ -1,0 +1,34 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_helm_wacht",
+  "name": "Topfhelm der Wacht (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "head",
+  "type": "helmet",
+  "rarity": "rare",
+  "model": {
+    "file": "blender/equipment/test/test_helm_wacht.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Head"
+  },
+  "hides": {
+    "regions": [],
+    "slots": [
+      "hair"
+    ]
+  },
+  "stats": {
+    "armor": 16
+  },
+  "special": {},
+  "visual": {
+    "material": null,
+    "trim": "Goldkreuz",
+    "form": "Topfhelm"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

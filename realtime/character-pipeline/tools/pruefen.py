@@ -35,9 +35,9 @@ def pruefen(fid):
         fa = [a for a in soll_a if a not in m['animationen']]; fr = [r for r in soll_r if r not in m['richtungen']]
         p('Vollständigkeit', not fa and not fr and not m['fehler'], f'{e}: ' + ('alle Animationen und 8 Richtungen' if not fa and not fr else f'fehlt: {fa} {fr}') + (f' · {m["fehler"]}' if m['fehler'] else ''))
         p('Fußpunkt', abs(m['fuss'][0] - R['fusspunkt']['x'] * B['breite']) < 0.6 and abs(m['fuss'][1] - R['fusspunkt']['y'] * B['hoehe']) < 0.6, f'{e}: Fußpunkt {m["fuss"]} (Soll {[R["fusspunkt"]["x"] * B["breite"], R["fusspunkt"]["y"] * B["hoehe"]]})')
-        groesse = rand = magenta = fehlt = folge = takt = 0; leer = 0; n = 0
+        groesse = rand = magenta = fehlt = folge = takt = 0; leer = 0; n = 0; LIB = E.lade(f'configs/animationen/{fig["animationen"]["bibliothek"]}.json')
         for an, A in m['animationen'].items():
-            if A['fps'] != R['fps']: takt += 1
+            if A['fps'] != LIB['clips'][an].get('fps', R['fps']): takt += 1
             for ri in m['richtungen']:
                 d = os.path.dirname(E.bild(fid, e, an, ri, 0)); dateien = sorted(f for f in os.listdir(d) if f.endswith('.png'))
                 if dateien != [f'{i:03d}.png' for i in range(A['frames'])]: folge += 1
@@ -54,7 +54,7 @@ def pruefen(fid):
         p('Framegrößen', groesse == 0, f'{e}: {n} Frames, {groesse} mit falscher Größe/ohne Alpha')
         p('Transparenz', rand == 0, f'{e}: {rand} Frames am Bildrand abgeschnitten', warn=e.startswith('item:'))
         p('Frame-Reihenfolge', folge == 0 and fehlt == 0, f'{e}: Nummerierung lückenlos, {fehlt} fehlende Dateien')
-        p('Taktrate', takt == 0, f'{e}: alle Animationen mit {R["fps"]} fps')
+        p('Taktrate', takt == 0, f'{e}: alle Animationen mit ihrer Bildrate (Standard {R["fps"]} fps, Angriffe 15 fps)')
         p('Texturfehler', magenta == 0, f'{e}: {magenta} Pixel in Fehlerfarbe (fehlende Textur)')
         if e.startswith('koerper:'): p('Transparenz', leer < n * 0.5, f'{e}: {leer} von {n} Frames ganz verdeckt', warn=True)
     # 3. Zusammengesetzte Standardfigur: Bodenkontakt und ruhiger Stand
@@ -63,6 +63,12 @@ def pruefen(fid):
         im = None
         for e in E.sichtbare_ebenen(fig, {})[0]:
             q = Image.open(E.bild(fid, e, an, ri, i)).convert('RGBA'); im = q if im is None else Image.alpha_composite(im, q)
+        return im.getchannel('A').point(lambda v: 255 if v > 128 else 0).getbbox()
+    beine = [r for r in fig['koerper']['regionen'] if r.startswith('bein')] or list(fig['koerper']['regionen'])
+    def standbild(an, ri, i):
+        im = None
+        for r in beine:
+            q = Image.open(E.bild(fid, 'koerper:' + r, an, ri, i)).convert('RGBA'); im = q if im is None else Image.alpha_composite(im, q)
         return im.getchannel('A').point(lambda v: 255 if v > 128 else 0).getbbox()
     m0 = E.manifest(fid, 'koerper:' + list(fig['koerper']['regionen'])[0])
     ruhe = {ri: (koerperbild('idle', ri, 0) or (0, 0, 0, fy))[3] for ri in m0['richtungen']} if 'idle' in m0['animationen'] else {}
@@ -76,13 +82,81 @@ def pruefen(fid):
                 bb = koerperbild(an, ri, i); ref = ruhe.get(ri, fy)
                 if not bb or abs(bb[3] - ref) > 12: boden += 1  # Sohle im Vergleich zur Ruhehaltung derselben Richtung (Zehen ragen schräg nach vorn)
                 unten.append(bb[3] if bb else 0)
-                mx = (bb[0] + bb[2]) / 2 if bb else 0
-                if vorher is not None and abs(mx - vorher) > B['breite'] * 0.06: sprung += 1
+                bs = standbild(an, ri, i); mx = (bs[0] + bs[2]) / 2 if bs else 0   # Stand = Beine/Füße: schwingende Arme oder Waffen zählen nicht als Sprung
+                if vorher is not None and abs(mx - vorher) > B['breite'] * 0.035: sprung += 1
                 vorher = mx
             if an in ('idle', 'block') and unten: stand = max(stand, max(unten) - min(unten))
         p('Fußpunktstabilität', boden == 0, f'{an}: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; {boden} Abweichungen)', warn=an in ('attack', 'hit'))
-        p('Fußpunktstabilität', sprung == 0, f'{an}: keine Sprünge zwischen Frames ({sprung})', warn=True)
+        p('Fußpunktstabilität', sprung == 0, f'{an}: kein Springen oder Rutschen des Stands zwischen Frames (Beine höchstens {B["breite"] * 0.035:.0f} px je Frame; {sprung})', warn=True)
         if an in ('idle', 'block'): p('Fußpunktstabilität', stand <= 2, f'{an}: Figur steht ruhig, die Sohle schwankt um {stand} px (höchstens 2)')
+    # 3b. Überlagerung: Hände, Schultern, Helm, Umhang, Löcher und Durchragen
+    import numpy as np
+    from scipy import ndimage
+    def maske(e, an, ri, i): return np.asarray(Image.open(E.bild(fid, e, an, ri, i)).getchannel('A')) > 100
+    def abstand(mk, pt):
+        ys, xs = np.nonzero(mk)
+        return float(np.min(np.hypot(xs - pt[0], ys - pt[1]))) if len(xs) else 1e9
+    hand = {'main_hand': ('Hand_Right', 'Hand_Left'), 'off_hand': ('Hand_Left', 'Hand_Right')}
+    for g in kat.values():
+        if g.get('skeleton') != fig['skelett']: continue
+        e = 'item:' + g['id']
+        try: m = E.manifest(fid, e)
+        except FileNotFoundError: continue
+        if 'sockel' not in m: p('Überlagerung', False, f'{e}: Sockelpositionen fehlen im Manifest (neu rendern)'); continue
+        if g['slot'] in hand:
+            gut = falsch = n = 0; soll, anders = hand[g['slot']]; an_liste = [a for a in m['animationen'] if a in ('idle', 'walk', 'attack', 'block', 'idle_1h', 'attack_1h', 'block_1h', 'hit', 'death')]
+            for an in an_liste:
+                for ri in m['richtungen']:
+                    for i in range(0, m['animationen'][an]['frames'], 2):
+                        mk = maske(e, an, ri, i)
+                        if not mk.any(): continue
+                        S_ = m['sockel'][an][ri][i]; d1 = abstand(mk, S_[soll]); d2 = abstand(mk, S_[anders]); n += 1
+                        gut += d1 <= 24; falsch += d2 + 12 < d1
+            p('Überlagerung', n and gut / n >= 0.9 and falsch <= n * 0.02, f'{e}: liegt an der {"rechten" if soll == "Hand_Right" else "linken"} Hand ({gut}/{n} Frames, {falsch} näher an der anderen Hand)')
+        if g['slot'] == 'shoulders':
+            gut = n = 0
+            for ri in m['richtungen']:
+                for i in range(0, m['animationen']['idle']['frames'], 3):
+                    mk = maske(e, 'idle', ri, i); S_ = m['sockel']['idle'][ri][i]; n += 1
+                    gut += min(abstand(mk, S_['Shoulder_Left']), abstand(mk, S_['Shoulder_Right'])) <= 30
+            p('Überlagerung', gut / n >= 0.95, f'{e}: sitzt an den Schultern ({gut}/{n} Frames)')
+        if g['slot'] == 'head':
+            gut = n = 0
+            for ri in m['richtungen']:
+                mk = maske(e, 'idle', ri, 0); kk = maske('koerper:kopf', 'idle', ri, 0) | mk  # Kopf samt der vom Helm verdeckten Teile
+                yb, xb = np.nonzero(mk); yk, xk = np.nonzero(maske('koerper:kopf', 'idle', ri, 0) if maske('koerper:kopf', 'idle', ri, 0).any() else kk); n += 1
+                if len(xb) and len(xk): gut += (xb.max() - xb.min()) >= 0.9 * (xk.max() - xk.min()) and yb.min() <= yk.min() + 3
+            p('Überlagerung', gut == n, f'{e}: passt zur Kopfgröße (deckt Breite und Scheitel in {gut}/{n} Richtungen)')
+        if g['slot'] == 'back':
+            ok_ = n = 0; mr = E.manifest(fid, 'koerper:rumpf')
+            for an in ('idle', 'walk'):
+                for ri, hinten in (('S', True), ('SO', True), ('SW', True), ('N', False), ('NO', False), ('NW', False)):
+                    for i in range(m['animationen'][an]['frames']):
+                        tc, tr = m['tiefe'][an][ri][i], mr['tiefe'][an][ri][i]; n += 1; ok_ += (tc > tr) == hinten
+            p('Überlagerung', ok_ == n, f'{e}: von Süden hinter, von Norden vor dem Körper ({ok_}/{n} Frames)')
+        if g['attach']['mode'] == 'skinned' and g['slot'] in ('hands', 'legs', 'feet', 'chest'):
+            durch = flaeche = 0; regs = g['attach'].get('bindTo', [])
+            for an in ('idle', 'walk', 'attack'):
+                for ri in m['richtungen']:
+                    for i in range(0, m['animationen'][an]['frames'], 3):
+                        mk = maske(e, an, ri, i)
+                        if not mk.any(): continue
+                        innen = ndimage.binary_fill_holes(mk) & ~mk; koerper = np.zeros_like(mk)
+                        for r in regs:
+                            if r not in g['hides']['regions']: koerper |= maske('koerper:' + r, an, ri, i)
+                        durch += int((innen & koerper).sum()); flaeche += int(mk.sum())
+            anteil = durch / max(1, flaeche); p('Überlagerung', anteil < 0.01, f'{e}: Körper ragt kaum durch ({anteil * 100:.2f} % der Fläche)', warn=anteil < 0.03)
+    # Löcher in der Gesamtsilhouette (Standard und ein schweres Set)
+    for name, wahl in (('Standard', fig['standardAusruestung']), ('Schwer', {**fig['standardAusruestung'], 'head': 'test_helm_wacht', 'shoulders': 'test_schulter_schatten', 'legs': 'test_beinschutz_dunkel', 'feet': 'test_stiefel_stahl'})):
+        if E.ausruestung_pruefen(fig, wahl, kat) or any(not os.path.exists(os.path.join(E.W, 'render', fid, 'item_' + g)) for g in wahl.values() if g): continue
+        loch = n = 0; tief = {}
+        for an in ('idle', 'walk', 'attack', 'block'):
+            for ri in soll_r:
+                for i in range(0, E.manifest(fid, 'koerper:rumpf')['animationen'][an]['frames'], 2):
+                    im = E.zusammensetzen(fid, fig, wahl, an, ri, i, tief); mk = np.asarray(im.getchannel('A')) > 100; L, k = ndimage.label(ndimage.binary_fill_holes(mk) & ~mk)
+                    gr = ndimage.sum(np.ones_like(L), L, range(1, k + 1)) if k else []; loch += sum(1 for x in gr if x > 6); n += 1
+        p('Überlagerung', loch <= n * 0.05, f'Set „{name}“: Löcher in der Silhouette in {loch} von {n} Frames', warn=loch <= n * 0.15)
+
     # 4. Phaser-Export
     try:
         F = json.load(open(os.path.join(ziel, 'figur.json'))); fehl = []

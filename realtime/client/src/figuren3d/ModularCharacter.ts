@@ -6,7 +6,7 @@
  */
 import Phaser from "phaser";
 import type { Ausruestung, Slot } from "./CharacterConfiguration";
-import { ausruestungPruefen, frameName, sichtbareEbenen, texturSchluessel } from "./CharacterConfiguration";
+import { ausruestungPruefen, frameName, haltung, sichtbareEbenen, texturSchluessel } from "./CharacterConfiguration";
 import type { CharacterAssetLoader, GeladeneFigur } from "./CharacterAssetLoader";
 import { AnimationRegistry } from "./AnimationRegistry";
 import { CharacterAnimator } from "./CharacterAnimator";
@@ -29,7 +29,7 @@ export class ModularCharacter {
   /** Ganze Ausrüstung setzen (z. B. so, wie der Server sie meldet). Ungültige Kombinationen werden abgelehnt. Zurück: Probleme (leer = übernommen). */
   async ausruesten(a: Ausruestung): Promise<string[]> {
     const p = ausruestungPruefen(this.g.figur, this.g.katalog, a); if (p.length) return p;
-    const fehler = await this.loader.ebenenLaden(this.g, a); this.ausruestung = { ...a }; const { koerper, items } = sichtbareEbenen(this.g.figur, this.g.katalog, a);
+    const fehler = await this.loader.ebenenLaden(this.g, a); this.ausruestung = { ...a }; this.animator.zuordnung = haltung(this.g.figur, this.g.katalog, a); /* Waffenart bestimmt die Animationen */ const { koerper, items } = sichtbareEbenen(this.g.figur, this.g.katalog, a);
     this.koerper = koerper.filter((e) => this.scene.textures.exists(texturSchluessel(this.g.figur.id, e))); this.items = items.filter((e) => this.scene.textures.exists(texturSchluessel(this.g.figur.id, e)));
     for (const [e, s] of this.sprites) if (!this.koerper.includes(e) && !this.items.includes(e)) { s.destroy(); this.sprites.delete(e); }
     const F = this.g.figur.fussNorm;

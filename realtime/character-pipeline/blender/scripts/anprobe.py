@@ -16,6 +16,8 @@ for i in ids:
 for r in versteckt:
     for o in REG[r]: o.hide_render = True
 cam = kamera.aufbauen(R); A = animation.bibliothek_laden(konfig.bibliothek('kaykit_medium'), ARM, ['idle', 'walk', 'attack', 'block', 'hit', 'death'])
+for _n, (_a, _c, _b) in A.items():
+    if _a and _c.get('sockelFest'): animation.sockel_fest(_a, _c['sockelFest'])  # wie beim Rendern
 posen = [('idle', 90, 0), ('idle', 135, 0), ('walk', 45, 6), ('attack', 90, 12), ('attack', 0, 24), ('block', 135, 4), ('idle', 270, 0), ('death', 90, 19)]
 from PIL import Image
 bilder = []

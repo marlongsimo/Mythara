@@ -47,14 +47,16 @@ def rendern(fid, fig, liste, neu, extra, jobs):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('figur'); ap.add_argument('--nur', nargs='*'); ap.add_argument('--neu', action='store_true')
-    ap.add_argument('--schnell', action='store_true'); ap.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 2) // 2)); ap.add_argument('--ohne-render', action='store_true')
+    ap.add_argument('--schnell', action='store_true'); ap.add_argument('--jobs', type=int, default=os.cpu_count() or 2); ap.add_argument('--ohne-render', action='store_true'); ap.add_argument('--nur-rendern', action='store_true')
     a = ap.parse_args(); fig = lade(f'configs/figuren/{a.figur}.json'); liste = ebenen(fig, a.nur)
     extra = ['anims=idle,walk', 'richtungen=S,NO'] if a.schnell else []
     print(f'Figur {a.figur}: {len(liste)} Ebenen' + (' (schnell)' if a.schnell else '')); t0 = time.time(); fehler = 0
     if not a.ohne_render:
         for e, stand, sek in rendern(a.figur, fig, liste, a.neu, extra, a.jobs):
             print(f'  {e:34s} {stand}' + (f'  ({sek:.0f} s)' if sek else '')); fehler += stand.startswith('FEHLER')
-    import packen, pruefen
+    if a.nur_rendern: print(f'Gerendert in {time.time() - t0:.0f} s'); sys.exit(1 if fehler else 0)
+    import packen, pruefen, kombinationen
     exp = packen.packen(a.figur); print(f'Gepackt: {exp["ebenen"]} Ebenen, {exp["seiten"]} Atlasseiten, {exp["kb"]} KB → {exp["ziel"]}')
+    ko = kombinationen.erzeugen(a.figur); print('Kombinationsbilder:', ', '.join(f'{k} {v}' for k, v in ko.items()))
     ber = pruefen.pruefen(a.figur); print(f'Prüfung: {ber["ok"]} bestanden, {ber["fehler"]} Fehler, {ber["warnungen"]} Warnungen → {ber["datei"]}')
     print(f'Fertig in {time.time() - t0:.0f} s'); sys.exit(1 if fehler or ber['fehler'] else 0)

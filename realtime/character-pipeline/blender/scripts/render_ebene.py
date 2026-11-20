@@ -31,19 +31,21 @@ elif art == 'item':
 else: raise SystemExit('ebene muss koerper:<region> oder item:<id> sein')
 cam = kamera.aufbauen(R); fuss = kamera.fusspunkt_pixel(cam, R); s = bpy.context.scene
 A = animation.bibliothek_laden(LIB, ARM, anims); man = {'schema': 'mythara-ebene/1', 'figur': FID, 'ebene': EBENE, **info, 'bild': R['bild'], 'fuss': fuss, 'fps': R['fps'],
-    'pixelProMeter': R['pixelProMeter'], 'richtungen': [r['id'] for r in richt], 'animationen': {}, 'tiefe': {}, 'fehler': []}
+    'pixelProMeter': R['pixelProMeter'], 'richtungen': [r['id'] for r in richt], 'animationen': {}, 'tiefe': {}, 'sockel': {}, 'fehler': []}
 n = 0
 for an in anims:
     act, c, ber = A[an]
     if act is None: man['fehler'].append(f'{an}: {ber.get("fehler")}'); continue
     if c.get('amOrt'): animation.am_ort(act)
-    animation.setzen(ARM, act); zeiten = animation.zeitpunkte(act, c, LIB['quellFps'], R['fps'])
-    man['animationen'][an] = {'clip': c['clip'], 'frames': len(zeiten), 'fps': R['fps'], 'schleife': bool(c.get('schleife')), 'halten': bool(c.get('halten')), 'tempoMeterProSek': c.get('tempoMeterProSek'), 'pruefung': ber}
-    man['tiefe'][an] = {}
+    if c.get('sockelFest'): animation.sockel_fest(act, c['sockelFest'])
+    fps = c.get('fps', R['fps']); animation.setzen(ARM, act); zeiten = animation.zeitpunkte(act, c, LIB['quellFps'], fps)
+    man['animationen'][an] = {'clip': c['clip'], 'frames': len(zeiten), 'fps': fps, 'schleife': bool(c.get('schleife')), 'halten': bool(c.get('halten')), 'tempoMeterProSek': c.get('tempoMeterProSek'), 'pruefung': ber}
+    man['tiefe'][an] = {}; man['sockel'][an] = {}
     for r in richt:
-        kamera.richtung(ARM, r['grad']); d = os.path.join(ZIEL, an, r['id']); os.makedirs(d, exist_ok=True); tl = []
+        kamera.richtung(ARM, r['grad']); d = os.path.join(ZIEL, an, r['id']); os.makedirs(d, exist_ok=True); tl = []; sl = []
         for i, t in enumerate(zeiten):
             animation.bild(t); s.render.filepath = os.path.join(d, f'{i:03d}.png'); bpy.ops.render.render(write_still=True); tl.append(kamera.tiefe(cam, eigen)); n += 1
-        man['tiefe'][an][r['id']] = tl
+            sl.append({k: kamera.pixel(cam, R, so.matrix_world.translation) for k, so in SO.items()})  # Sockel im Bild (für die Prüfung von Hand, Schulter, Kopf)
+        man['tiefe'][an][r['id']] = tl; man['sockel'][an][r['id']] = sl
 man['hash'] = opt.get('hash'); man['bilder'] = n; man['sekunden'] = round(time.time() - t0, 1)
 json.dump(man, open(os.path.join(ZIEL, 'ebene.json'), 'w'), indent=1); print('EBENE FERTIG', EBENE, n, 'Bilder', man['sekunden'], 's')

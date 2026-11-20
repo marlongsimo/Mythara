@@ -95,6 +95,25 @@ Seltenheit ist **mehr als Farbe**: Jede Stufe kann ein eigenes Modell (Form, Ver
 (Material mit `leuchten`) haben. Beispiele im Test: Stahlhelm (ungewöhnlich), Schattenhelm mit Hörnern und Runenband (episch),
 Panzer der Splitterlande mit leuchtendem Kern (legendär).
 
+## Haltungen (Animationssätze je Waffenart)
+Eine Figur kann mehrere Haltungen haben (`haltungen` in der Figur): Zuordnung Spielzustand → Animation, z. B. `einhand: { idle: idle_1h, attack: attack_1h, block: block_1h }`.
+Waffen und Schilde nennen ihre Haltung (`stance`). Die Haltung kommt von der Haupthand, sonst von der Nebenhand, sonst `standard`.
+Alle Ebenen werden für alle Animationen gerendert; im Spiel wählt `CharacterAnimator` die passende (`ModularCharacter` setzt die Haltung beim Ausrüsten).
+Weitere Bildraten je Clip (`fps`, z. B. 15 für schnelle Angriffe) und festgehaltene Sockel (`sockelFest`, z. B. Waffe bleibt beim Sterben in der Hand) stehen in der Animationsbibliothek.
+
+## Prüfungen und Berichte
+* `export/<figur>/bericht.md` – Produktionsprüfung (Vollständigkeit, Größen, Transparenz, Fußpunkt, Stand, Takt, Texturen, Atlas, **Überlagerung**:
+  Waffen- und Schildhand über die Sockelpositionen je Bild, Schultern, Helm zur Kopfgröße, Umhang hinter/vor dem Körper, Löcher, durchragender Körper)
+* `export/<figur>/kombinationen/*.webp` – 8 Sets × 8 Richtungen × Ruhe/Gehen/Angriff/Block, darunter ungewöhnliche Kombinationen
+* `export/<figur>/abschlussbericht.md` – Gesamtbericht mit Nachweisbild aller Animationen in 8 Richtungen und Leistungsdaten
+* `blender/scripts/modell_pruefen.py` – Eingangsprüfung neuer Körpermodelle (siehe [documentation/FINALES_MODELL.md](documentation/FINALES_MODELL.md))
+
+## Leistung
+* Rendern: Blender je Prozess mit 1 Thread, so viele Prozesse wie Kerne (gemessen 4 × 1 Thread ≈ 14 Bilder/s gegenüber 3 × alle Kerne ≈ 3,5 Bilder/s).
+  Ein neues Ausrüstungsteil (12 Animationen × 8 Richtungen ≈ 1 000 Bilder) braucht etwa 6 Minuten; nur geänderte Ebenen werden neu gerendert.
+* Export: Maßstab 0,75 (Figur im Atlas ~1,35× Spielgröße), gleiche Frames nur einmal gespeichert, dichtes Skyline-Packen (~95 % Füllgrad),
+  Seiten ≤ 2048 px. Im Spiel werden nur die getragenen Ebenen geladen und zwischen Figuren geteilt.
+
 ## Neue Heldenklasse / neue Figur
 * Gleicher Körperbau: neue `configs/figuren/<id>.json` mit anderem Körpermodell, Regionen, Animationsliste und Standardausrüstung.
   Die Ausrüstung von `warrior_base` passt, wenn das Skelett dasselbe ist.
@@ -117,14 +136,11 @@ läuft weiter über das bisherige System. In diesem Entwicklungsschritt gibt es 
 wird nur lokal in Vorschau und Testszene gewechselt.
 
 ## Offene Punkte
-1. **Haltungen (Animationssätze je Waffenart):** Die Bibliothek kennt pro Figur einen Satz. Mit Schwert und Schild läuft deshalb noch die
-   Zweihand-Animation (Schild steht beim Angriff vom Körper ab). Lösung: `haltungen` in der Figur (z. B. `zweihand`, `einhand_schild`)
-   mit eigenen Clips (`Melee_1H_Attack_Chop`, `Melee_Block` …); Körper und Teile werden je Haltung gerendert, der Client wählt die Haltung aus der Waffe.
+1. ~~Haltungen~~ – umgesetzt (siehe oben).
 2. **Speicher:** Der voll ausgerüstete Testkrieger belegt rund 62 MB Grafikspeicher (12 MB Download für alle 20 Ebenen).
    Gegenmittel, in dieser Reihenfolge: Atlanten je Animation statt je Ebene (nur laden, was gerade läuft), kleinerer Renderstandard
    (Figur ~100 px statt ~150 px), 8 statt 10 fps für Idle/Block, komprimierte GPU-Texturen. Alles über `configs/render.json` bzw. den Packer.
-3. **Todesanimation:** KayKit lässt die Waffe fallen (Handsockel löst sich); dabei ragt sie in 9 Frames über den Bildrand (Warnung im Bericht).
-   Option: Sockelknochen für einzelne Clips festhalten.
+3. ~~Todesanimation lässt die Waffe fallen~~ – Sockel werden für `death` festgehalten.
 4. **Echte Mythara-Grafik:** Körper und Ausrüstung sind TEST ASSETS. Das finale Painted-3D-Modell muss modular gebaut sein (siehe Konventionen).
 5. **Spiel und Server:** Ausrüstungszustand auf dem Server, Weitergabe im Koop und Einbau in die Kampfszene erst nach Freigabe.
 

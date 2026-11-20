@@ -39,3 +39,13 @@ def zusammensetzen(fid, fig, wahl, an, ri, i, tiefen=None):
         if not os.path.exists(p): continue
         im = Image.open(p).convert('RGBA'); aus = im if aus is None else Image.alpha_composite(aus, im)
     return aus
+
+def haltung(fig, wahl, kat=None):
+    """Haltung (Animationssatz) aus der Waffe: stance der Haupthand, sonst der Nebenhand, sonst Standard. Zurück: {spielzustand: animation}"""
+    kat = kat or items(); H = fig.get('haltungen', {}); st = None
+    for slot in ('main_hand', 'off_hand'):
+        g = kat.get(wahl.get(slot) or '')
+        if g and g.get('stance'): st = g['stance']; break
+    st = st or H.get('standard'); return {k: v for k, v in H.get(st or '', {}).items()} if isinstance(H.get(st or ''), dict) else {}
+
+def anim_fuer(fig, wahl, zustand, kat=None): return haltung(fig, wahl, kat).get(zustand, zustand)

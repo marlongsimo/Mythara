@@ -17,6 +17,18 @@ const { chromium } = require('playwright'); const S = process.env.EZ_BILD || req
   const idx = await p.evaluate(() => [...document.querySelectorAll('#slots select')].findIndex((s) => [...s.options].some((o) => o.value === 'test_zweihaender')));
   await p.locator('#slots select').nth(idx).selectOption('test_zweihaender'); await p.waitForTimeout(500);
   const w2 = await p.evaluate(() => VORSCHAU.wahl); check(w2.main_hand === 'test_zweihaender' && !w2.off_hand, 'Zweihänder legt den Schild ab (Nebenhand belegt)');
+  /* neue Vorschau-Funktionen: aktive Liste, Haltung, Schnellwechsel, Vergleich */
+  await p.click('text=Schwert & Schild'); await p.waitForTimeout(500);
+  const akt = await p.$$eval('#aktiv li', (l) => l.length); const halt = await p.textContent('#haltung'); check(akt === 9 && /einhand/.test(halt), `Aktive Ausrüstung (${akt} Teile) und Haltung angezeigt (${halt.trim()})`);
+  await p.selectOption('#anim', 'attack'); await p.waitForTimeout(300); check(/attack_1h/.test(await p.textContent('#stand')), 'Mit Einhandwaffe spielt „attack“ als attack_1h (Haltung folgt der Waffe)');
+  const vorher = await p.evaluate(() => VORSCHAU.wahl.head); await p.locator('#slots .slot').first().locator('.pfeile button').nth(1).click(); await p.waitForTimeout(500);
+  const nachher = await p.evaluate(() => VORSCHAU.wahl.head); check(vorher !== nachher, `Schnellwechsel ▶ beim Helm: ${vorher} → ${nachher}`);
+  await p.click('#merken'); await p.click('text=Schatten (episch)'); await p.waitForTimeout(500); await p.click('#merken'); await p.click('text=Splitter (legendär)'); await p.waitForTimeout(500); await p.click('#merken'); await p.click('text=Leicht'); await p.waitForTimeout(400); await p.click('#merken');
+  await p.click('#vergleichzeigen'); await p.waitForTimeout(1200); await p.click('#richtungen button[data-r="SW"]'); await p.selectOption('#anim', 'idle'); await p.waitForTimeout(500); await p.screenshot({ path: S + '/v7-vergleich.png' });
+  check(await p.evaluate(() => VORSCHAU.ansicht === 'vergleich' && VORSCHAU.vergleich.length === 4), 'Vergleichsansicht mit 4 gemerkten Sets');
+  await p.click('#ansicht'); await p.click('#ansicht'); /* zurück zu „einzeln“ */
+  await p.evaluate(() => document.querySelector('#regionen input[data-r="arm_r"]').click()); await p.waitForTimeout(300); check(await p.evaluate(() => VORSCHAU.regionAus.has('arm_r')), 'Körperregion lässt sich ausblenden');
+  await p.evaluate(() => document.querySelector('#regionen input[data-r="arm_r"]').click());
   await p.click('text=Splitter (legendär)'); await p.waitForTimeout(500); await p.click('#richtungen button[data-r="N"]'); await p.selectOption('#anim', 'walk'); await p.waitForTimeout(400); await p.screenshot({ path: S + '/v6-splitter-n.png' });
   /* Testszene mit echter Simulation */
   const t = await b.newPage({ viewport: { width: 1100, height: 700 } }); t.on('pageerror', (e) => fehler.push('test: ' + e.message)); t.on('console', (m) => { if (m.type() === 'error') fehler.push('test: ' + m.text()); });
@@ -30,8 +42,8 @@ const { chromium } = require('playwright'); const S = process.env.EZ_BILD || req
   const gesehen = new Set(); for (let i = 0; i < 80; i++) { await t.evaluate(() => { const s = FT.sim, h = s.ich; let m = null, bd = 1e9; for (const w of s.wesen) { if (w.held || w.tot || w.team === 0) continue; const d = Math.hypot(w.x - h.x, w.y - h.y); if (d < bd) { bd = d; m = w; } } if (m) { if (bd > 1.6) s.eingabe({ t: 'lauf', x: m.x, y: m.y }); else s.eingabe({ t: 'halt' }); s.eingabe({ t: 'ziel', id: m.id }); } });
     await t.waitForTimeout(150); gesehen.add(await t.evaluate(() => FT.mc.animator.anim)); if (gesehen.has('attack') && gesehen.has('hit')) break; }
   await t.screenshot({ path: S + '/t3-kampf.png' }); check(gesehen.has('attack'), 'Hieb der Simulation löst die Angriffsanimation aus (' + [...gesehen].join(', ') + ')');
-  const e1 = await t.evaluate(async () => { const p1 = await FT.mc.anlegen('head', 'test_helm_schatten'); const p2 = await FT.mc.anlegen('off_hand', 'test_schild_rund'); return [p1, p2, FT.mc.ausruestung.main_hand, FT.mc.ausruestung.head]; });
-  check(e1[0].length === 0 && e1[1].length === 0 && !e1[2] && e1[3] === 'test_helm_schatten', 'Ausrüstungswechsel im Spiel: Schattenhelm an, Schild an (Zweihänder abgelegt)');
+  const e1 = await t.evaluate(async () => { const p1 = await FT.mc.anlegen('head', 'test_helm_schatten'); const p2 = await FT.mc.anlegen('off_hand', 'test_schild_rund'); return [p1, p2, FT.mc.ausruestung.main_hand, FT.mc.ausruestung.head, FT.mc.animator.zuordnung.block]; });
+  check(e1[0].length === 0 && e1[1].length === 0 && !e1[2] && e1[3] === 'test_helm_schatten' && e1[4] === 'block_1h', 'Ausrüstungswechsel im Spiel: Schattenhelm an, Schild an (Zweihänder abgelegt), Haltung wechselt auf Einhand (block → block_1h)');
   await t.waitForTimeout(400); await t.screenshot({ path: S + '/t4-wechsel.png' });
   const tiefe = await t.evaluate(() => [FT.mc.container.depth, FT.sim.ich.y * 20 + 15]); check(Math.abs(tiefe[0] - tiefe[1]) < 1, 'Zeichentiefe nach dem Fußpunkt wie im Spiel');
   check(fehler.length === 0, 'Keine Fehler in der Browser-Konsole' + (fehler.length ? ': ' + fehler.slice(0, 3).join(' | ') : ''));

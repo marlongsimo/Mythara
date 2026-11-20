@@ -17,7 +17,7 @@ def bibliothek_laden(lib, arm, wahl):
             c = lib['clips'][name]; muster = re.compile('^' + re.escape(c['clip']) + r'(_Rig_[A-Za-z]+(\.\d+)?)?$')
             a = next((x for x in geladen if muster.match(x.name)), None)
             if not a: aus[name] = (None, c, {'fehler': 'Clip ' + c['clip'] + ' nicht gefunden'}); continue
-            a = a.copy(); a.name = 'Anim_' + name; a.use_fake_user = True
+            a = a.copy(); a.name = 'Anim_' + name; a.use_fake_user = True; zuordnen(a, lib)
             aus[name] = (a, c, pruefen(a, c, arm, lib))
         for a in geladen: bpy.data.actions.remove(a)
     return aus
@@ -31,6 +31,20 @@ def pruefen(a, c, arm, lib):
         if fc.data_path == 'pose.bones["root"].location':
             vs = [k.co[1] for k in fc.keyframe_points]; wurzel['xyz'[fc.array_index]] = round(max(vs) - min(vs), 3)
     return {'knochen': len(knochen), 'fehlendeKnochen': fehlt, 'vertraeglich': len(fehlt) == 0, 'quellBilder': [int(s), int(e)], 'sekunden': round((e - s) / lib['quellFps'], 3), 'wurzelBewegung': wurzel}
+
+def zuordnen(a, lib):
+    """Fremde Knochennamen auf das Grundskelett umschreiben (lib.knochenZuordnung). Gleiche Ruhepose vorausgesetzt."""
+    Z = lib.get('knochenZuordnung') or {}
+    if not Z: return
+    for fc in a.fcurves:
+        m = re.match(r'pose\.bones\["([^"]+)"\](.*)', fc.data_path)
+        if m and m.group(1) in Z: fc.data_path = f'pose.bones["{Z[m.group(1)]}"]{m.group(2)}'
+
+def sockel_fest(a, knochen):
+    """Diese Knochen nicht animieren (Ruhelage relativ zum Elternknochen) – z. B. Waffe bleibt in der Hand."""
+    for fc in list(a.fcurves):
+        m = re.match(r'pose\.bones\["([^"]+)"\]', fc.data_path)
+        if m and m.group(1) in knochen: a.fcurves.remove(fc)
 
 def am_ort(a):
     """Waagerechte Bewegung des Wurzelknochens entfernen (die Position bestimmt im Spiel der Server)."""

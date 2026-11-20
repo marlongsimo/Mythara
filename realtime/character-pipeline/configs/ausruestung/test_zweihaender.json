@@ -35,5 +35,6 @@
   "occupies": [
     "main_hand",
     "off_hand"
-  ]
+  ],
+  "stance": "zweihand"
 }
