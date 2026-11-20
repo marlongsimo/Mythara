@@ -77,13 +77,32 @@
     #ez-dorf-hilfe, #ez-dorf-titel { display: none; } body.dorf #ez-dorf-hilfe { display: block; bottom: 8px; left: max(8px, env(safe-area-inset-left)); font-size: 11px; color: #b9ad94; } body.dorf #ez-dorf-titel { display: block; top: 8px; left: 50%; transform: translateX(-50%); font-family: Cinzel, Georgia, serif; color: #ffd98a; font-size: 15px; }
     #ez-dorf-knopf { position: fixed; z-index: 5; left: 50%; bottom: 64px; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.6); } #ez-dorf-knopf[hidden] { display: none; } #ez-dorf-knopf.bald { border-color: #4b4460; background: #1a1626; color: #b9ad94; }
     #ez-profil, #ez-karte { display: none; }
-    #ez-laden { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 14px; background: radial-gradient(ellipse at 50% 40%, rgba(40,30,70,.6), rgba(5,4,9,.96)), #05040a; transition: opacity .4s; } #ez-laden[hidden] { display: none; } #ez-laden.weg { opacity: 0; }
-    #ez-laden .tafel { position: relative; width: min(440px, 100%); padding: 24px 26px 20px; text-align: center; color: #efe2c4; background: linear-gradient(#211a12, #120e0a); border: 2px solid #b08a3c; border-radius: 6px; outline: 1px solid #5d4517; outline-offset: -7px; box-shadow: 0 20px 60px rgba(0,0,0,.8); }
-    #ez-laden h2 { margin: 0; font: 600 21px Cinzel, Georgia, serif; letter-spacing: .08em; text-transform: uppercase; color: #f0d48a; } #ez-laden .zier { height: 1px; margin: 12px auto 16px; width: 70%; background: linear-gradient(90deg, transparent, #b08a3c, #f0d48a, #b08a3c, transparent); }
-    #ez-laden .rune { width: 74px; height: 74px; margin: 0 auto 16px; border-radius: 50%; border: 2px solid rgba(143,216,255,.25); border-top-color: #8fd8ff; box-shadow: 0 0 24px rgba(143,216,255,.35), inset 0 0 18px rgba(143,216,255,.2); animation: ezLaden 1.4s linear infinite; }
-    #ez-laden .balken { height: 10px; border: 1px solid #5d4517; border-radius: 3px; background: rgba(0,0,0,.5); overflow: hidden; } #ez-laden .balken i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #4a7fb0, #8fd8ff); transition: width .9s ease; }
-    #ez-laden .zeit { margin: 10px 0 6px; font: 600 14px Inter, sans-serif; color: #fff3d2; } #ez-laden .tipp { margin: 0; min-height: 3em; font-size: 13px; line-height: 1.45; color: #a8966a; font-style: italic; }
-    #ez-laden .ecke { position: absolute; width: 14px; height: 14px; border: 2px solid #e2bf6a; background: #2a1f10; transform: rotate(45deg); } #ez-laden .ecke.a { left: -8px; top: -8px; } #ez-laden .ecke.b { right: -8px; top: -8px; } #ez-laden .ecke.c { left: -8px; bottom: -8px; } #ez-laden .ecke.d { right: -8px; bottom: -8px; }
+    @font-face { font-family: "Cinzel"; src: url("../fonts/cinzel-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "Cormorant Garamond"; src: url("../fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    /* Vorhang: Start- und Ladebildschirm im Stil des Spiels (verschwommene Waldmark, schwebender Seelensplitter, goldene Schrift) */
+    .vorhang { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; color: #efe2c4; text-align: center; transition: opacity .5s;
+      background: radial-gradient(ellipse at 50% 45%, rgba(10,14,28,.15), rgba(4,3,8,.92) 75%), url("../img/echtzeit/laden-hg.webp") center / cover no-repeat, #07060b; }
+    .vorhang[hidden] { display: none; } .vorhang.weg { opacity: 0; pointer-events: none; }
+    .vorhang .mitte { width: min(460px, 100%); display: grid; justify-items: center; }
+    .vorhang .kristall { position: relative; width: 120px; height: 150px; margin-bottom: 18px; animation: ezSchweben 3.2s ease-in-out infinite; }
+    .vorhang .kristall::before { content: ""; position: absolute; inset: 18px 30px; clip-path: polygon(50% 0, 100% 38%, 72% 100%, 28% 100%, 0 38%); background: linear-gradient(160deg, #f4fdff 0%, #8fd8ff 35%, #3d7fc0 70%, #1d3a6a 100%); filter: drop-shadow(0 0 14px rgba(143,216,255,.9)); animation: ezGluehen 2.4s ease-in-out infinite; }
+    .vorhang .kristall::after { content: ""; position: absolute; inset: 18px 30px; clip-path: polygon(50% 0, 64% 38%, 50% 100%, 36% 38%); background: linear-gradient(rgba(255,255,255,.85), rgba(255,255,255,0)); }
+    .vorhang .kristall i { position: absolute; left: 50%; top: 50%; width: 150px; height: 150px; margin: -75px; border-radius: 50%; border: 1px dashed rgba(240,212,138,.55); animation: ezDrehen 14s linear infinite; }
+    .vorhang .kristall i::before, .vorhang .kristall i::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #f0d48a; box-shadow: 0 0 10px #f0d48a; top: -4px; left: calc(50% - 4px); }
+    .vorhang .kristall i::after { top: auto; bottom: -4px; background: #8fd8ff; box-shadow: 0 0 10px #8fd8ff; }
+    .vorhang h1 { margin: 0; font: 600 clamp(26px, 6vw, 40px) Cinzel, Georgia, serif; letter-spacing: .14em; text-transform: uppercase; color: #f0d48a; text-shadow: 0 2px 0 #3a2400, 0 0 24px rgba(240,212,138,.35); }
+    .vorhang .zier { height: 1px; margin: 12px auto 14px; width: 70%; background: linear-gradient(90deg, transparent, #b08a3c, #f0d48a, #b08a3c, transparent); position: relative; }
+    .vorhang .zier::after { content: "◆"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -54%); font-size: 10px; color: #f0d48a; }
+    .vorhang .was, .vorhang .zeit { margin: 0 0 8px; font: 600 15px Inter, sans-serif; color: #fff3d2; letter-spacing: .03em; }
+    .vorhang .was::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: ezPunkte 1.6s steps(4) infinite; }
+    .vorhang .tipp { margin: 4px 0 0; min-height: 3em; max-width: 400px; font: italic 400 17px/1.4 "Cormorant Garamond", Georgia, serif; color: #cdb98a; }
+    .vorhang .balken { width: 100%; height: 8px; margin: 4px 0 10px; border: 1px solid #5d4517; border-radius: 4px; background: rgba(0,0,0,.55); overflow: hidden; }
+    .vorhang .balken i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #4a7fb0, #8fd8ff, #e8fbff); box-shadow: 0 0 10px #8fd8ff; transition: width .9s ease; }
+    @keyframes ezSchweben { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes ezGluehen { 0%, 100% { filter: drop-shadow(0 0 10px rgba(143,216,255,.7)); } 50% { filter: drop-shadow(0 0 26px rgba(143,216,255,1)); } }
+    @keyframes ezDrehen { to { transform: rotate(360deg); } }
+    @keyframes ezPunkte { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+    @media (prefers-reduced-motion: reduce) { .vorhang .kristall, .vorhang .kristall::before, .vorhang .kristall i, .vorhang .was::after { animation: none; } }
     @keyframes ezLaden { to { transform: rotate(360deg); } }
     #ez-konto { position: fixed; inset: 0; z-index: 20; background: rgba(5,4,9,.75); display: grid; place-items: center; padding: 14px; user-select: text; -webkit-user-select: text; } #ez-konto[hidden] { display: none; }
     #ez-konto.seite { background: linear-gradient(rgba(8,6,14,.55), rgba(8,6,14,.9)), url(../img/echtzeit/weidenhain.webp) center / cover no-repeat #07060b; overflow-y: auto; }
@@ -131,6 +150,11 @@
   </style>
 </head>
 <body>
+  <div id="ez-start" class="vorhang" role="status" aria-live="polite"><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><p class="was">Die Waldmark erwacht</p><p class="tipp"></p></div></div>
+  <script>/* sofort, noch vor dem Spiel: was gerade geladen wird, und ein Satz aus der Welt */ (function () { var q = new URLSearchParams(location.search), w = document.querySelector("#ez-start .was"), t = document.querySelector("#ez-start .tipp");
+    w.textContent = q.get("kampf") ? "Der Kampf beginnt" : q.get("ort") === "weidenhain" ? "Auf dem Weg nach Weidenhain" : q.get("los") ? "Der Riss öffnet sich" : "Die Waldmark erwacht";
+    var s = ["Wo ein Seelensplitter liegt, war einmal ein Leben. Heb ihn auf, und er erinnert sich an dich.", "Die Wachen am Stadttor sagen, hinter den Hügeln flackern wieder Irrlichter.", "In der Heldenhalle hängen fünf Schilde. Jeder erzählt von einem anderen Kampf.", "Gegner holen sichtbar aus – wer dann aus der Reichweite geht, bleibt heil.", "Der Riss im Osten wird jede Nacht ein wenig breiter."];
+    t.textContent = s[Math.floor(Math.random() * s.length)]; })();</script>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
   <div class="ez-kasten" id="ez-ich"><b id="ez-name">…</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u></i><small id="ez-lpzahl"></small><span id="ez-xpleiste" hidden><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u></i><small id="ez-xpzahl"></small></span></div>
@@ -147,9 +171,9 @@
   <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div id="ez-neben" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
   <div id="ez-konto" hidden></div>
-  <div id="ez-laden" hidden><div class="tafel"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><h2>Die Splitter regen sich</h2><div class="zier"></div><div class="rune"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
+  <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwp14deg"></script>
+  <script src="spiel.js?v=mwp18d4e"></script>
 </body>
 </html>
