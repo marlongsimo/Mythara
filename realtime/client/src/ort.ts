@@ -18,15 +18,33 @@ const ORTE: Record<string, OrtDaten> = { weidenhain: { ...WEIDENHAIN, name: "Wei
 export const ortName = ORTE[P.get("ort") || ""] ? (P.get("ort") as string) : "";
 /* Das Zaunstück: im Bild 918 × 688, linker Pfosten unten bei (130, 655), rechter Pfosten 664 weiter rechts und 203 höher. Gespiegelt läuft es nach rechts hinunter. */
 const ZAUN = { breit: 170, fx: 130 / 918, fy: 655 / 688, dx: 664 * 170 / 918, dy: 203 * 170 / 918 };
-/* Leute zum Ansprechen. feld: Feldgröße im Bildblatt, koerper: Anteil des Feldes, den die Figur hoch ist, fuss: wo die Füße im Feld stehen. */
-const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; knopf: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string }> = {
-  hanne: { name: "Hanne Kalk", feld: 240, koerper: 0.845, fuss: 0.967, knopf: "Mit Hanne sprechen", schluss: "Ich sehe mir den Speicher an",
-    zeilen: [{ wer: "Hanne Kalk, Bürgermeisterin", text: "Du da. Du siehst aus, als könntest du kämpfen. Kannst du?" }, { wer: "Hanne Kalk", text: "Im Kornspeicher sitzen Kröten. So groß wie Hunde. Sie fressen uns das Korn weg, mitten im Erntefest." }],
-    fragen: [
-      { knopf: "Woher kommen die Kröten?", zeilen: [{ wer: "Hanne Kalk", text: "Aus dem Mühlgraben. Seit drei Tagen. Wenn das Korn weg ist, wird der Winter lang." }, { wer: "Hanne Kalk", text: "Früher haben sie das nie getan. Früher hatten sie Angst vor uns." }] },
-      { knopf: "Was springt für mich dabei heraus?", zeilen: [{ wer: "Hanne Kalk", text: "Ein Krug Bier, ein Bett und der Dank von Weidenhain. Mehr haben wir nicht. Aber das bekommst du ganz." }] },
-    ] },
+/*
+ * Leute zum Ansprechen. feld: Feldgröße im Bildblatt, koerper: Anteil des Feldes, den die Figur hoch ist, fuss: wo die Füße im Feld stehen.
+ * Jedes Gespräch hat eine Bedingung (wenn: diese Merker müssen gesetzt sein) und setzt am Ende selbst einen Merker (setzt).
+ * Wer ein offenes Gespräch hat, trägt ein Ausrufezeichen über dem Kopf. Ist alles gesagt, kommt nur noch der Satz unter „sonst“.
+ */
+interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[]; schluss: string }
+const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; reden: Rede[]; sonst: Zeile }> = {
+  hanne: { name: "Hanne Kalk", feld: 240, koerper: 0.871, fuss: 0.984, sonst: { wer: "Hanne Kalk", text: "Der Speicher ist gleich da oben, das große Tor. Beeil dich." },
+    reden: [{ setzt: "hanne", schluss: "Ich sehe mir den Speicher an",
+      zeilen: [{ wer: "Hanne Kalk, Bürgermeisterin", text: "Du da. Du siehst aus, als könntest du kämpfen. Kannst du?" }, { wer: "Hanne Kalk", text: "Im Kornspeicher sitzen Kröten. So groß wie Hunde. Sie fressen uns das Korn weg, mitten im Erntefest." },
+        { wer: "Hanne Kalk", text: "Frag Lene am Tor, die hat sie gesehen. Und Agnes drüben am Baum kennt den Mühlgraben besser als wir alle." }],
+      fragen: [
+        { knopf: "Woher kommen die Kröten?", zeilen: [{ wer: "Hanne Kalk", text: "Aus dem Mühlgraben. Seit drei Tagen. Wenn das Korn weg ist, wird der Winter lang." }, { wer: "Hanne Kalk", text: "Früher haben sie das nie getan. Früher hatten sie Angst vor uns." }] },
+        { knopf: "Was springt für mich dabei heraus?", zeilen: [{ wer: "Hanne Kalk", text: "Ein Krug Bier, ein Bett und der Dank von Weidenhain. Mehr haben wir nicht. Aber das bekommst du ganz." }] },
+      ] }] },
+  lene: { name: "Lene", feld: 240, koerper: 0.845, fuss: 0.967, sonst: { wer: "Lene", text: "Bleib nicht stehen, wenn eine Luft holt." },
+    reden: [{ wenn: ["hanne"], setzt: "lene", schluss: "Danke, Lene",
+      zeilen: [{ wer: "Lene, die Magd", text: "Ich wollte nur Mehl holen. Sie saßen zwischen den Säcken, und die Augen haben geglänzt." }, { wer: "Lene", text: "Die Zunge reicht weiter, als man denkt. Bleib nicht stehen, wenn eine Luft holt." }],
+      fragen: [{ knopf: "Wie viele sind es?", zeilen: [{ wer: "Lene", text: "Ich habe sechs gezählt. Dann bin ich gerannt." }] }] }] },
+  agnes: { name: "Agnes", feld: 240, koerper: 0.877, fuss: 0.984, sonst: { wer: "Agnes", text: "Gib auf dich acht da drinnen." },
+    reden: [{ wenn: ["hanne"], setzt: "agnes", schluss: "Ich halte die Augen offen",
+      zeilen: [{ wer: "Agnes, Witwe des Müllers", text: "Mein Mann hat die Mühle dreißig Jahre geführt. Seit er tot ist, steht sie leer, und am Graben kümmert sich niemand mehr." }, { wer: "Agnes", text: "Die Kröten kommen von dort. Vom Wehr herauf, immer nachts." }],
+      fragen: [{ knopf: "Was ist am Wehr?", zeilen: [{ wer: "Agnes", text: "Eine sitzt dort, größer als alle anderen. Die Leute nennen sie die alte Unke. Sie war immer da. Aber früher blieb sie, wo sie war." }] }] }] },
 };
+/* Wohin der Pfeil am Boden zeigt: die erste Zeile, deren Bedingung passt. Stehen Leute mit offenem Gespräch da, zeigt er zuerst zu ihnen (zum nächsten). */
+const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["hanne"], stelle: "scheune" }] };
+const TUEREN: Record<string, { name: string; wenn: string[]; knopf: string; text: string }> = { scheune: { name: "Kornspeicher", wenn: ["hanne"], knopf: "Den Kornspeicher betreten", text: "Der Kampf im Speicher wird als Nächstes angeschlossen" } };
 /* Die Runde Dorfleute (werkzeug/blatt.py, Feld 300): wo die fünf Köpfe im Feld sitzen, und was sie so reden – belangloses Festgeplauder. */
 const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.41]];
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
@@ -69,18 +87,30 @@ export class Ort extends Phaser.Scene {
     (window as unknown as Record<string, unknown>).EZO = { szene: this, ort: () => this.ort, frei: (x: number, y: number) => this.frei(x, y) };
   }
   groesse() { const k = this.cameras.main, w = this.scale.width, h = this.scale.height, D = this.d; k.setZoom(Math.max(w / D.breit, h / D.hoch, Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); }
-  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number }[] = [];
-  /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name. */
-  leute() { for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
+  nah = ""; gesperrt = false; personen: { id: string; x: number; y: number; ruf: Phaser.GameObjects.Text }[] = []; merker: Record<string, boolean> = {}; pfeil!: Phaser.GameObjects.Graphics;
+  /** Das nächste offene Gespräch einer Person (oder keins) */
+  offen(id: string): Rede | null { for (const g of LEUTE[id].reden) if (!this.merker[g.setzt] && (g.wenn || []).every((m) => this.merker[m])) return g; return null; }
+  merke(m: string) { this.merker[m] = true; try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } for (const q of this.personen) q.ruf.setVisible(Boolean(this.offen(q.id))); }
+  /** Leute zum Ansprechen aufstellen: Sie stehen und regen sich leicht; über ihnen steht ihr Name – und ein Ausrufezeichen, wenn sie etwas zu sagen haben. */
+  leute() { try { if (P.get("neu") === "1") localStorage.removeItem("ez_ort_" + ortName); this.merker = JSON.parse(localStorage.getItem("ez_ort_" + ortName) || "{}") || {}; } catch { this.merker = {}; }
+    for (const l of this.d.leute || []) { const id = String(l[0]), x = Number(l[1]), y = Number(l[2]), L = LEUTE[id]; if (!L) continue;
       if (!this.anims.exists("leute-" + id)) this.anims.create({ key: "leute-" + id, frames: this.anims.generateFrameNumbers("leute-" + id, {}), frameRate: 2.5, repeat: -1, yoyo: true });
-      const m = GROSS / (L.koerper * L.feld); this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y).play("leute-" + id);
-      this.add.text(x, y - GROSS - 12, L.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
-      this.personen.push({ id, x, y }); } }
-  /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E). Solange geredet wird, steht der Held. */
-  sprechen() { const L = LEUTE[this.nah]; if (!L || this.gesperrt) return; this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); $("#ez-dorf-knopf").hidden = true;
-    void plaudern(L.name, L.zeilen, L.fragen, L.schluss).then(() => { this.gesperrt = false; this.nah = ""; }); }
+      const m = GROSS * 0.92 / (L.koerper * L.feld); /* 0.92: am Körper des Helden nachgemessen */ this.add.sprite(x, y + 3, "leute-" + id).setOrigin(0.5, L.fuss).setScale(m).setDepth(y).play({ key: "leute-" + id, startFrame: Math.floor(Math.random() * 9) });
+      this.add.text(x, y - GROSS - 10, L.name, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe9a8", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
+      const ruf = this.add.text(x, y - GROSS - 30, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "44px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setResolution(2).setDepth(99981);
+      this.tweens.add({ targets: ruf, y: ruf.y - 9, duration: 650, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); this.personen.push({ id, x, y, ruf }); }
+    for (const q of this.personen) q.ruf.setVisible(Boolean(this.offen(q.id)));
+    this.pfeil = this.add.graphics().setDepth(-2); this.pfeil.fillStyle(0xffd23a, 0.95).lineStyle(3, 0x3a2400, 0.9); this.pfeil.beginPath(); this.pfeil.moveTo(26, 0); this.pfeil.lineTo(-6, -17); this.pfeil.lineTo(2, 0); this.pfeil.lineTo(-6, 17); this.pfeil.closePath(); this.pfeil.fillPath().strokePath(); this.tweens.add({ targets: this.pfeil, alpha: 0.7, duration: 600, yoyo: true, repeat: -1 }); }
+  /** Wohin es als Nächstes geht: zur nächsten Person mit Ausrufezeichen, sonst zur Stelle aus dem Wegweiser. */
+  ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { if (!this.offen(q.id)) continue; const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
+    for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.d.stellen[w.stelle]; return null; }
+  /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
+  sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
+    if (this.nah[0] === "@") { kn.textContent = TUEREN[this.nah.slice(1)].text; kn.classList.add("bald"); return; }
+    const L = LEUTE[this.nah], g = this.offen(this.nah); this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
+    void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => this.merke(g.setzt)) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
   /** Dorfleute, die beisammenstehen: Sie gestikulieren, und alle paar Sekunden sagt einer von ihnen etwas Belangloses in einer Sprechblase. */
-  gruppen() { const M = GROSS / 123 * 1.0; /* im Feld ist eine Person etwa 123 Bildpunkte hoch */
+  gruppen() { const M = GROSS / 123 * 0.82; /* 0.82: am Helden nachgemessen – seine Größe zählt mit Waffe und Schild, der Körper ist kleiner */ /* im Feld ist eine Person etwa 123 Bildpunkte hoch */
     for (const [x, y] of this.d.gruppen || []) { if (!this.anims.exists("dorfgruppe")) this.anims.create({ key: "dorfgruppe", frames: this.anims.generateFrameNumbers("dorfgruppe", {}), frameRate: 2.2, repeat: -1, yoyo: true });
       const g = this.add.sprite(x, y, "dorfgruppe").setOrigin(0.5, 0.965).setScale(M).setDepth(y - 30); g.play("dorfgruppe"); let zuletzt = -1, satz = -1;
       const reden = () => { if (!this.scene.isActive()) return; let wer = Math.floor(Math.random() * KOEPFE.length); if (wer === zuletzt) wer = (wer + 1) % KOEPFE.length; zuletzt = wer; let n = Math.floor(Math.random() * GEREDE.length); if (n === satz) n = (n + 1) % GEREDE.length; satz = n;
@@ -114,7 +144,10 @@ export class Ort extends Phaser.Scene {
   }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
-    if (!this.gesperrt) { let nah = ""; for (const q of this.personen) if (Math.hypot(o.x - q.x, (o.y - q.y) / Q) < 120) nah = q.id; if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = LEUTE[nah].knopf + (HANDY ? "" : "  [E]"); } }
+    if (!this.gesperrt) { let nah = ""; for (const k in TUEREN) { const t = this.d.stellen[k]; if (t && TUEREN[k].wenn.every((m) => this.merker[m]) && Math.hypot(o.x - t[0], (o.y - t[1]) / Q) < 110) nah = "@" + k; }
+      for (const q of this.personen) if (Math.hypot(o.x - q.x, (o.y - q.y) / Q) < 120) nah = q.id;
+      if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = (nah[0] === "@" ? TUEREN[nah.slice(1)].knopf : "Mit " + LEUTE[nah].name.split(" ")[0] + " sprechen") + (HANDY ? "" : "  [E]"); } }
+    { const z = this.gesperrt ? null : this.ziel(), weit = z ? Math.hypot(z[0] - o.x, (z[1] - o.y) / Q) : 0; if (z && weit > 130) { const w = Math.atan2((z[1] - o.y) / Q, z[0] - o.x), ax = Math.cos(w), ay = Math.sin(w); this.pfeil.setVisible(true).setPosition(o.x + ax * 62, o.y + ay * 62 * Q).setRotation(Math.atan2(ay * Q, ax)).setScale(1.5, 1.5); } else this.pfeil.setVisible(false); }
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }
     else if (this.pfad.length) { const z = this.pfad[0], dx = z[0] - o.x, dy = z[1] - o.y; if (Math.hypot(dx, dy) < 5) { this.pfad.shift(); if (!this.pfad.length) this.marke.setVisible(false); } else { const qy = dy / Q, q = Math.hypot(dx, qy); rx = dx / q; ry = qy / q; } }
     const l = Math.hypot(rx, ry), faehrt = l > 0.05;
