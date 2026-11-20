@@ -10,6 +10,7 @@ grund:  alpha    die Vorlage ist schon durchsichtig; fast unsichtbare Farbreste 
         karo     ein Karomuster (weiß/hellgrau) ist ins Bild gemalt
         karo2    wie karo, aber mit dunklerem Grau (kräftiges Karo)
         karo3    wie karo2, entfernt auch kleine eingeschlossene Reste – nur für dunkle Figuren ohne helle, graue Flächen
+        karoS    wie karo, entfernt auch einen grauen Schlagschatten am Boden – nur für Figuren ohne neutralgraue Flächen
         schwarz  schwarzer Hintergrund; violettes oder helles Leuchten läuft weich aus
 Die Ausgabe nennt je Bild den Rahmen der festen Teile (links, oben, rechts, unten im Feld der Vorlage) – daraus ergeben sich die Maße in shared/config.ts.
 """
@@ -45,7 +46,7 @@ def schwarz_weg(z):
 
 
 def frei(z, grund):
-    return alpha_sauber(z) if grund == "alpha" else karo_weg(z) if grund == "karo" else karo_weg(z, 185, 300) if grund == "karo2" else karo_weg(z, 185, 20) if grund == "karo3" else schwarz_weg(z)
+    return alpha_sauber(z) if grund == "alpha" else karo_weg(z) if grund == "karo" else karo_weg(z, 185, 300) if grund == "karo2" else karo_weg(z, 185, 20) if grund == "karo3" else karo_weg(z, 150, 50) if grund == "karoS" else schwarz_weg(z)
 
 
 def rahmen(z): return z.split()[3].point(lambda v: 255 if v > 200 else 0).getbbox()

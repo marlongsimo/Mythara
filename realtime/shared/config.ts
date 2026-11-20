@@ -105,10 +105,10 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; bild: string; lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
+export interface MonsterDef { name: string; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } }
 export const MONSTER: Record<string, MonsterDef> = {
-  knochenwaechter: { name: "Knochenwächter", bild: "img/gegner/knochenwaechter.jpg", lp: 150, tempo: 3.3, angriffswert: { nah: 70, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 35 }, r: 0.38, untot: true, anfaellig: "wucht",
+  knochenwaechter: { name: "Knochenwächter", bild: "img/gegner/knochenwaechter.jpg", figur: "img/echtzeit/kw.webp", fuss: [0.62, 0.95], gross: 1.0, lauf: "img/echtzeit/kw-lauf.webp", laufMass: [0.52, 0.93, 0.72], hieb: "img/echtzeit/kw-hieb.webp", hiebMass: [0.55, 0.935, 0.8], links: true, lp: 150, tempo: 3.3, angriffswert: { nah: 70, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 35 }, r: 0.38, untot: true, anfaellig: "wucht",
     angriff: { name: "Kurzschwert", art: "nah", schaden: [10, 20], takt: 1.2, reich: 1.5, aushol: 0.45 } }, // aushol: so lange holt er sichtbar aus – wer dann außer Reichweite ist, wird nicht getroffen
 };
 

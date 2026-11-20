@@ -4,6 +4,7 @@
  */
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE } from "../../shared/config";
+import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL } from "../../shared/karte";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
@@ -19,6 +20,10 @@ const iso = (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH
 const welt = (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1";
 
+/** Die Bildangaben einer Figur, ob Held oder Monster */
+const FIG = (typ: string, held: boolean | number) => (held ? HELDEN[typ] : MONSTER[typ]) as Partial<HeldDef> & { links?: boolean };
+const ALLE: Record<string, Partial<HeldDef>> = { ...HELDEN, ...(MONSTER as unknown as Record<string, Partial<HeldDef>>) };
+
 interface Bild { angelegt: number; oben: number; modus: number; hoch: number; ganz: boolean; laeuft: boolean; still: number; schlag: boolean; c: Phaser.GameObjects.Container; balken: Phaser.GameObjects.Graphics; name: Phaser.GameObjects.Text; ring: Phaser.GameObjects.Ellipse; kopf: Phaser.GameObjects.Image; von: { x: number; y: number }; nach: { x: number; y: number }; t0: number; lp: number; max: number; held: boolean; team: number; typ: string; tot: boolean }
 
 class Spiel extends Phaser.Scene {
@@ -26,12 +31,12 @@ class Spiel extends Phaser.Scene {
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
   constructor() { super("spiel"); }
   preload() { this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
-    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in HELDEN) { if (HELDEN[k].figur) this.load.image("figur-" + k, "../" + HELDEN[k].figur); if (HELDEN[k].schildStand) this.load.image("schildstand-" + k, "../" + HELDEN[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild"] as const) { const pfad = HELDEN[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
+    const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
     this.cameras.main.setBackgroundColor("#07060b"); this.boden(); this.waende();
-    for (const k in HELDEN) { if (HELDEN[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
-      if (HELDEN[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
-      for (const art of ["hieb", "hieb2"] as const) if (HELDEN[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
+    for (const k in ALLE) { if (ALLE[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
+      if (ALLE[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
+      for (const art of ["hieb", "hieb2"] as const) if (ALLE[k][art]) this.anims.create({ key: art + "-" + k, frames: this.anims.generateFrameNumbers(art + "-" + k, {}), frameRate: 20, repeat: 0 }); }
     this.licht(); this.fackeln();
     { const q = iso(SIEGEL.x, SIEGEL.y); this.anims.create({ key: "rune", frames: this.anims.generateFrameNumbers("rune", { start: 0, end: 8 }), frameRate: 9, repeat: -1 }); // die Siegelrune aus dem Würfelspiel, flach auf dem Boden
       const r = this.add.sprite(q.x, q.y, "rune").setDepth(2).setScale(0.62, 0.31).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9); r.play("rune"); this.tweens.add({ targets: r, alpha: 0.55, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
@@ -100,12 +105,12 @@ class Spiel extends Phaser.Scene {
   figur(e: Zustand["w"][number]): Bild {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
-    const ganz = Boolean(held && HELDEN[typ].figur), hoch = ganz ? 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
-    if (ganz) { const F = HELDEN[typ].fuss || [0.5, 0.94]; kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(F[0], F[1]); kopf.setScale(hoch * (HELDEN[typ].gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
+    const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
+    if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(F[0], F[1]); kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
       rand = this.add.circle(0, -r - 8, r).setStrokeStyle(3, team === 0 ? (id === this.ichId ? 0xffffff : 0x6aa5ff) : MONSTER[typ]?.boss ? 0xffcf6a : 0xff6a6a, 1); }
-    const balken = this.add.graphics(), oben = hoch * (ganz ? HELDEN[typ].gross || 1 : 1), name = this.add.text(0, -oben - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
+    const balken = this.add.graphics(), oben = hoch * (ganz ? FIG(typ, held).gross || 1 : 1), name = this.add.text(0, -oben - 18, "", { fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#ffffff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5);
     c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { angelegt: 0, oben, modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); return b;
   }
@@ -113,10 +118,10 @@ class Spiel extends Phaser.Scene {
     this.z = z; this.ichId = z.ich.id; const da = new Set<number>(), jetzt = this.time.now;
     for (const e of z.w) { da.add(e[0]); let b = this.bilder.get(e[0]); if (!b) b = this.figur(e);
       const hier = this.ort(b, jetzt); b.von = Math.hypot(hier.x - e[4], hier.y - e[5]) > 3 ? { x: e[4], y: e[5] } : hier; b.nach = { x: e[4], y: e[5] }; b.t0 = jetzt; // große Sprünge (Blinzeln, Wiederkehr) nicht nachziehen
-      if (b.ganz && HELDEN[b.typ].lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
+      if (b.ganz && FIG(b.typ, b.held).lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
         const bewegt = Math.hypot(b.nach.x - b.von.x, b.nach.y - b.von.y) > 0.03 && !e[10]; if (bewegt) b.still = 0; else b.still++; const soll = bewegt || (b.laeuft && b.still < 3), sp = b.kopf as Phaser.GameObjects.Sprite;
         if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
-      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX(sx < 0); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
+      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
       const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
@@ -127,7 +132,7 @@ class Spiel extends Phaser.Scene {
     this.anzeige(z);
   }
   /** Das passende Bild für eine ganze Figur: Laufbilder oder Standbild (der Schwerthieb läuft für sich und kehrt danach hierher zurück) */
-  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = HELDEN[b.typ], L = D.laufMass || [0.5, 0.946, 0.91]; sp.setAngle(0).setX(0);
+  haltung(b: Bild) { const sp = b.kopf as Phaser.GameObjects.Sprite, D = FIG(b.typ, b.held), L = D.laufMass || [0.5, 0.946, 0.91]; sp.setAngle(0).setX(0);
     if (b.modus === 1 && D.schild) { // zweite Waffe: Schild erhoben
       if (b.laeuft) { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.play("schild-" + b.typ); }
       else { sp.stop(); if (D.schildStand) { const F = D.schildFuss || [0.5, 0.95, 1]; sp.setTexture("schildstand-" + b.typ); sp.setOrigin(F[0], F[1]).setScale(b.hoch * F[2] / sp.height); } else { sp.setOrigin(0.5, 0.946).setScale(b.hoch / (0.91 * 176)); sp.setTexture("schild-" + b.typ, 0); } } }
@@ -141,8 +146,8 @@ class Spiel extends Phaser.Scene {
     else if (ev.a === "block" && b) zahl(b.nach.x, b.nach.y, "Block", "#bfd6ff");
     else if (ev.a === "heil" && b) zahl(b.nach.x, b.nach.y, "+" + ev.n, "#8dffb0");
     else if (ev.a === "text" && b) zahl(b.nach.x, b.nach.y, ev.t, "#ffd98a", true);
-    else if (ev.a === "aushol" && b) { const o = this.add.ellipse(b.c.x, b.c.y, 70, 35, 0xff3030, 0.18).setStrokeStyle(2, 0xff5050, 0.9).setDepth(3); this.tweens.add({ targets: o, fillAlpha: 0.55, scale: 1.25, duration: ev.t * 1000, onComplete: () => o.destroy() }); if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, y: b.kopf.y - 7, duration: ev.t * 500, yoyo: true }); } // der Gegner holt aus: jetzt weglaufen
-    else if ((ev.a === "hieb" || ev.a === "anlegen") && b) { const D = b.held ? HELDEN[b.typ] : null, art = D && b.modus === 1 && D.hieb2 ? "hieb2" : "hieb";
+    else if (ev.a === "aushol" && b) { const o = this.add.ellipse(b.c.x, b.c.y, 70, 35, 0xff3030, 0.18).setStrokeStyle(2, 0xff5050, 0.9).setDepth(3); this.tweens.add({ targets: o, fillAlpha: 0.55, scale: 1.25, duration: ev.t * 1000, onComplete: () => o.destroy() }); if (b.ganz) this.ereignis({ a: "anlegen", id: ev.id, t: ev.t }); else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, y: b.kopf.y - 7, duration: ev.t * 500, yoyo: true }); } // der Gegner holt aus: jetzt weglaufen
+    else if ((ev.a === "hieb" || ev.a === "anlegen") && b) { const D = FIG(b.typ, b.held), art = D && b.modus === 1 && D.hieb2 ? "hieb2" : "hieb";
       if (ev.a === "hieb" && this.time.now - b.angelegt < 900) return; // Fernkampf: die Bewegung läuft schon seit dem Anlegen
       if (ev.a === "anlegen") b.angelegt = this.time.now;
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
