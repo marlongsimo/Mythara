@@ -7,7 +7,7 @@ const TOKEN = "tok_anna_" + "x".repeat(30), WERTE = { ep: { schildwaechter: 300 
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url === "/siege") { res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" }); res.end(JSON.stringify(SIEGE)); return; }
   if (req.url === "/werte") { res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" }); res.end(JSON.stringify(WERTE)); return; } /* für den nachgebildeten Browser-Zugang: so liest das Spiel nach dem Kampf, was in der Datenbank steht */
-  if (req.headers.apikey !== "sb_secret_test" || (req.url !== "/auth/v1/user" && req.headers.authorization)) return send(401, { msg: "kein schlüssel" }); /* wie Supabase mit neuem Geheimschlüssel: nur im apikey-Kopf */
+  if (req.headers.apikey !== "sb_secret_test" || (req.url !== "/auth/v1/user" && req.headers.authorization !== "Bearer sb_secret_test")) return send(401, { message: "permission denied (anon)" }); /* wie Supabase: ohne den Schlüssel auch im Authorization-Kopf gilt die Anfrage als „anon“ */
   if (req.url === "/auth/v1/user") return req.headers.authorization === "Bearer " + TOKEN ? send(200, { id: "00000000-0000-0000-0000-00000000a001", is_anonymous: false }) : send(401, { msg: "ungültig" });
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_werte")) return send(200, [{ ep: WERTE.ep }]);
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_siege")) return send(200, SIEGE);

@@ -27,7 +27,7 @@ const plaetze = new Set<Platz>();
 
 /* ---------- Supabase (nur mit dem geheimen Schlüssel aus der Umgebung) ---------- */
 async function sb(pfad: string, init: RequestInit = {}): Promise<unknown> {
-  const r = await fetch(SB_URL + pfad, { ...init, headers: { apikey: SB_KEY, ...(SB_KEY.startsWith("eyJ") ? { Authorization: "Bearer " + SB_KEY } : {}), "content-type": "application/json", ...(init.headers || {}) } /* neuer Geheimschlüssel (sb_secret_…) nur im apikey-Kopf; der alte service_role-Schlüssel (JWT) auch als Bearer */, signal: AbortSignal.timeout(8000) });
+  const r = await fetch(SB_URL + pfad, { ...init, headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "content-type": "application/json", ...(init.headers || {}) } /* der Geheimschlüssel in beiden Köpfen: nur so arbeitet die Datenbank mit Server-Rechten (sonst als „anon“) */, signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error("Supabase " + r.status + " " + (await r.text()).slice(0, 200)); return r.status === 204 ? null : r.json();
 }
 /** Wer ist angemeldet? Prüft das Token des Spielers bei Supabase. Gäste (anonyme Anmeldung) zählen nicht. */
@@ -59,29 +59,33 @@ const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
   res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", protokoll: PROTOKOLL, spieler: plaetze.size, kampagnen: Boolean(SB_URL && SB_KEY) }));
 });
-const wss = new WebSocketServer({ server: http, maxPayload: 8192, verifyClient: (info: { origin: string }) => !HERKUNFT.length || HERKUNFT.includes(info.origin) });
+const wss = new WebSocketServer({ server: http, maxPayload: 65536, verifyClient: (info: { origin: string }) => { const ok = !HERKUNFT.length || HERKUNFT.includes(info.origin); if (!ok) console.log("Verbindung abgelehnt: Herkunft", info.origin); return ok; } });
+/* Ein Fehler in einer einzelnen Partie darf nicht den ganzen Server beenden: melden und weiterlaufen */
+process.on("uncaughtException", (e) => console.error("Unerwarteter Fehler:", e && (e as Error).stack || e));
+process.on("unhandledRejection", (e) => console.error("Unerwarteter Fehler (Zusage):", e && (e as Error).stack || e));
 
 wss.on("connection", (ws, req) => {
   if (plaetze.size >= MAX) { ws.close(1013, "voll"); return; }
   const url = new URL(req.url || "/", "http://x"), held0 = url.searchParams.get("held") || "schildwaechter", held = HELDEN[held0] ? held0 : "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x] && x !== held).slice(0, 2);
   const karte = url.searchParams.get("kampf") || "", ort = url.searchParams.get("ort") || "";
   const p: Platz = { ws, sim: null, zuletzt: Date.now(), fenster: Date.now(), zahl: 0 }; plaetze.add(p);
+  console.log("Verbindung:", karte ? `Kampf ${ort}/${karte}` : "Riss", "· Held", held, "· Begleiter", mit.length);
   const los = () => ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
   if (!karte) { karteNehmen(GRUNDKARTE); Object.assign(STAERKE, { lp: 1, schaden: 1, beute: null, ep: 0 }); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); los(); }
-  else if (!KARTEN[karte] || !ORTSTUFE[ort] || !SB_URL || !SB_KEY) { ws.close(4400, "kampf unbekannt"); plaetze.delete(p); return; }
-  const frist = karte ? setTimeout(() => { if (!p.sim) ws.close(4401, "keine anmeldung"); }, 10000) : null;
+  else if (!KARTEN[karte] || !ORTSTUFE[ort] || !SB_URL || !SB_KEY) { console.log("Kampf abgelehnt: unbekannt oder Supabase nicht eingerichtet"); ws.close(4400, "kampf unbekannt"); plaetze.delete(p); return; }
+  const frist = karte ? setTimeout(() => { if (!p.sim) { console.log("Kampf abgelehnt: keine Anmeldung binnen 10 s"); ws.close(4401, "keine anmeldung"); } }, 10000) : null;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen
     let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
     if (karte && !p.sim) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false, gesiegt: false };
-      try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { ws.close(4401, "anmeldung ungültig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
-        if (!darfKaempfen(siege, ort, karte)) { ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
+      try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
+        if (!darfKaempfen(siege, ort, karte)) { console.log("Kampf abgelehnt: noch nicht freigeschaltet", ort, karte, [...siege].join(",")); ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
         setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const [h, v] of Object.entries(ep)) HELDENSTUFE[h] = stufeAusEp(Number(v) || 0);
-        p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); if (ws.readyState === WebSocket.OPEN) los();
-      } catch (err) { console.error("Anmeldung fehlgeschlagen:", (err as Error).message); ws.close(4503, "anmeldung nicht möglich"); }
+        p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte); if (ws.readyState === WebSocket.OPEN) los();
+      } catch (err) { console.error("Anmeldung fehlgeschlagen:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void gutschreiben(p); return; }
-    if (p.sim) p.sim.eingabe(e);
+    try { if (p.sim) p.sim.eingabe(e); } catch (err) { console.error("Eingabe:", (err as Error).message); }
   });
   const weg = () => { plaetze.delete(p); if (frist) clearTimeout(frist); void gutschreiben(p); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */ }; ws.on("close", weg); ws.on("error", weg);
 });
@@ -91,7 +95,7 @@ setInterval(() => {
   n++; const jetzt = Date.now();
   for (const p of plaetze) {
     if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
-    if (!p.sim) continue; p.sim.schritt();
+    if (!p.sim) continue; try { p.sim.schritt(); } catch (err) { console.error("Schritt:", (err as Error).stack); p.ws.close(1011, "fehler"); plaetze.delete(p); continue; }
     if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN && p.ws.bufferedAmount < 65536) { const z = p.sim.zustand();
       if (p.kampf && !p.kampf.fertig) for (const ev of z.ev) if (ev.a === "ep") p.kampf.ep += ev.n; /* Erfahrung zählt der Server selbst mit */
       if (p.kampf && !p.kampf.gesiegt && z.phase === "sieg") void siegEintragen(p);
@@ -99,4 +103,5 @@ setInterval(() => {
   }
 }, 1000 / TICK);
 
-http.listen(PORT, () => console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde, Kampagnen ${SB_URL && SB_KEY ? "an" : "aus – SUPABASE_URL/SUPABASE_SERVICE_KEY fehlen"})`));
+const SCHLUESSELART = SB_KEY.startsWith("sb_secret_") ? "Geheimschlüssel (sb_secret_…)" : SB_KEY.startsWith("eyJ") ? "service_role-Schlüssel (JWT)" : SB_KEY.startsWith("sb_publishable_") ? "FALSCH: das ist der öffentliche Schlüssel (sb_publishable_…) – gebraucht wird der geheime (sb_secret_…)" : SB_KEY ? "unbekannte Form" : "fehlt";
+http.listen(PORT, () => console.log("SUPABASE_SERVICE_KEY:", SCHLUESSELART) || console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde, Kampagnen ${SB_URL && SB_KEY ? "an" : "aus – SUPABASE_URL/SUPABASE_SERVICE_KEY fehlen"})`));
