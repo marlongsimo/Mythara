@@ -8,8 +8,8 @@
  */
 import { kampagneGeschafft, team } from "./weltkarte";
 
-interface Zeile { wer?: string; text: string }
-interface Frage { knopf: string; zeilen: Zeile[]; neben?: string }
+export interface Zeile { wer?: string; text: string }
+export interface Frage { knopf: string; zeilen: Zeile[]; neben?: string }
 type Schritt =
   | { art: "dialog"; ort: string; bild: string; zeilen: Zeile[]; fragen?: Frage[]; weiter?: string }
   | { art: "kampf"; karte: string; ziel: string; neben?: { id: string; unterSek: number } }
@@ -96,8 +96,15 @@ export const inKampagne = Boolean(K);
 export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
 
 /* ---------- Gesprächsfenster ---------- */
+/** Ein Gespräch mitten im Ort: Das Dorf bleibt dahinter sichtbar. Erst die Zeilen, dann darf man fragen, bis man mit dem Schlussknopf geht. */
+export async function plaudern(titel: string, zeilen: Zeile[], fragen: Frage[], schluss: string): Promise<void> {
+  const d = fenster(titel, ""); await sprich(d, zeilen); const offen = fragen.slice();
+  for (;;) { const text = d.querySelector(".text") as HTMLElement, wer = d.querySelector(".wer") as HTMLElement; wer.hidden = true; text.classList.add("erzaehlt"); text.textContent = "";
+    const i = await waehle(d, [...offen.map((f) => ({ text: f.knopf })), { text: schluss + " ▸", klasse: "haupt" }]); if (i >= offen.length) break; await sprich(d, offen.splice(i, 1)[0].zeilen); }
+  d.hidden = true; d.innerHTML = "";
+}
 function fenster(ort: string, bild: string): HTMLElement {
-  const d = $("#ez-dialog"); d.hidden = false; d.style.backgroundImage = `linear-gradient(rgba(6,5,10,.35), rgba(6,5,10,.8)), url("../${bild}")`;
+  const d = $("#ez-dialog"); d.hidden = false; d.style.backgroundImage = bild ? `linear-gradient(rgba(6,5,10,.35), rgba(6,5,10,.8)), url("../${bild}")` : "none"; d.classList.toggle("im-ort", !bild);
   d.innerHTML = `<div class="ort"></div><div class="kasten"><b class="wer"></b><p class="text"></p><div class="knoepfe"></div><small class="tipp"></small></div>`; (d.querySelector(".ort") as HTMLElement).textContent = ort; return d;
 }
 /** Zeilen nacheinander zeigen; weiter mit Klick, Tipp, Leertaste oder Enter. */

@@ -27,7 +27,7 @@ ORTE = {
         ],
         # Hindernisse (Vielecke oder ("kreis", x, y, rx, ry))
         "hindernisse": [("kreis", 735, 490, 86, 44), ("kreis", 630, 428, 46, 20), ("kreis", 843, 428, 48, 20), ("kreis", 638, 538, 54, 24), ("kreis", 845, 532, 54, 24),
-                        ("kreis", 1095, 492, 34, 22), ("kreis", 690, 648, 62, 26), ("kreis", 575, 742, 12, 8), ("kreis", 983, 622, 12, 8), ("kreis", 1050, 508, 12, 8)],
+                        ("kreis", 1095, 492, 34, 22), ("kreis", 690, 648, 62, 26), ("kreis", 562, 492, 15, 9), ("kreis", 575, 742, 12, 8), ("kreis", 983, 622, 12, 8), ("kreis", 1050, 508, 12, 8)],
         # was vor dem Helden steht, wenn er dahinter läuft: (Vieleck, Fußlinie y)
         "vorn": [
             ([(658, 470), (690, 456), (706, 452), (718, 400), (735, 356), (752, 400), (764, 452), (780, 456), (812, 470), (814, 502), (782, 524), (735, 530), (690, 524), (656, 502)], 500),
@@ -39,6 +39,8 @@ ORTE = {
         ],
         # eine Runde Dorfleute, die beisammenstehen und reden: Mitte der Füße
         "gruppen": [(690, 668)],
+        # Leute, die man ansprechen kann: Kennung, x, y (Füße)
+        "leute": [("hanne", 562, 494)],
         "stellen": {"start": (420, 850), "scheune": (515, 300), "muehle": (1150, 528), "wehr": (1225, 640), "feuer": (735, 490)},
     },
 }
@@ -54,7 +56,7 @@ def main():
         else: d.polygon(h, fill=0)
     Z = 16; BW, BH = round(W * F), round(H * F); px = m.load(); zeilen = []
     for j in range(BH // Z): zeilen.append("".join("." if px[min(W - 1, int((i * Z + Z / 2) / F)), min(H - 1, int((j * Z + Z / 2) / F))] else "#" for i in range(BW // Z)))
-    json.dump({"bild": name, "mass": F, "gross": O["gross"], "breit": BW, "hoch": BH, "zelle": Z, "zeilen": zeilen, "zaeune": [], "gruppen": [[round(x * F), round(y * F)] for x, y in O.get("gruppen", [])], "vorn": [[[list(q) for q in p], y] for p, y in O["vorn"]],
+    json.dump({"bild": name, "mass": F, "gross": O["gross"], "breit": BW, "hoch": BH, "zelle": Z, "zeilen": zeilen, "zaeune": [], "leute": [[k, round(x * F), round(y * F)] for k, x, y in O.get("leute", [])], "gruppen": [[round(x * F), round(y * F)] for x, y in O.get("gruppen", [])], "vorn": [[[list(q) for q in p], y] for p, y in O["vorn"]],
                "stellen": {k: [round(v[0] * F), round(v[1] * F)] for k, v in O["stellen"].items()}}, open(os.path.join(HIER, "..", "client", "src", name + ".json"), "w"), ensure_ascii=False)
     if len(sys.argv) > 2:
         v = im.convert("RGBA"); o = Image.new("RGBA", (W, H), (0, 0, 0, 0)); do = ImageDraw.Draw(o); o.paste((60, 255, 90, 90), mask=m)
