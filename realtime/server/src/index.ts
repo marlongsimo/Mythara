@@ -13,7 +13,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
-import { KARTEN, FEIN } from "../../shared/karten";
+import { KARTEN, FEIN, darfKaempfen } from "../../shared/karten";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -22,7 +22,7 @@ const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = pro
 /* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
 const ORTSTUFE: Record<string, number> = { weidenhain: 1 };
 
-interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean } }
+interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean; gesiegt: boolean } }
 const plaetze = new Set<Platz>();
 
 /* ---------- Supabase (nur mit dem geheimen Schlüssel aus der Umgebung) ---------- */
@@ -39,6 +39,13 @@ async function nutzerAus(token: string): Promise<string | null> {
 async function epLesen(nutzer: string): Promise<Record<string, number>> {
   const z = (await sb(`/rest/v1/rpg_echtzeit_werte?user_id=eq.${nutzer}&select=ep`)) as { ep: Record<string, number> }[]; return (z[0] && z[0].ep) || {};
 }
+async function siegeLesen(nutzer: string): Promise<Set<string>> {
+  const z = (await sb(`/rest/v1/rpg_echtzeit_siege?user_id=eq.${nutzer}&select=ort,kampf`)) as { ort: string; kampf: string }[]; return new Set(z.map((q) => q.ort + "/" + q.kampf));
+}
+/** Sieg eintragen, sobald alle Gegner besiegt sind (einmal je Kampf) */
+async function siegEintragen(p: Platz): Promise<void> { const k = p.kampf; if (!k || k.gesiegt) return; k.gesiegt = true;
+  try { await sb("/rest/v1/rpc/rpg_echtzeit_sieg", { method: "POST", body: JSON.stringify({ p_user: k.nutzer, p_ort: k.ort, p_kampf: k.karte }) }); if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "sieg", ort: k.ort, kampf: k.karte })); }
+  catch (e) { console.error("Sieg nicht eingetragen:", (e as Error).message); k.gesiegt = false; /* beim nächsten Schritt noch einmal */ } }
 async function gutschreiben(p: Platz): Promise<void> {
   const k = p.kampf; if (!k || k.fertig || !p.sim) return; k.fertig = true; const seelen = p.sim.splitter;
   if (!k.ep && !seelen) { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", leer: true })); return; }
@@ -66,8 +73,9 @@ wss.on("connection", (ws, req) => {
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen
     let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
-    if (karte && !p.sim) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false };
-      try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { ws.close(4401, "anmeldung ungültig"); return; } p.kampf.nutzer = nutzer; const ep = await epLesen(nutzer);
+    if (karte && !p.sim) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false, gesiegt: false };
+      try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { ws.close(4401, "anmeldung ungültig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
+        if (!darfKaempfen(siege, ort, karte)) { ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
         setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const [h, v] of Object.entries(ep)) HELDENSTUFE[h] = stufeAusEp(Number(v) || 0);
         p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); if (ws.readyState === WebSocket.OPEN) los();
       } catch (err) { console.error("Anmeldung fehlgeschlagen:", (err as Error).message); ws.close(4503, "anmeldung nicht möglich"); }
@@ -86,6 +94,7 @@ setInterval(() => {
     if (!p.sim) continue; p.sim.schritt();
     if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN && p.ws.bufferedAmount < 65536) { const z = p.sim.zustand();
       if (p.kampf && !p.kampf.fertig) for (const ev of z.ev) if (ev.a === "ep") p.kampf.ep += ev.n; /* Erfahrung zählt der Server selbst mit */
+      if (p.kampf && !p.kampf.gesiegt && z.phase === "sieg") void siegEintragen(p);
       p.ws.send(JSON.stringify({ t: "z", z })); }
   }
 }, 1000 / TICK);

@@ -6,6 +6,17 @@ import type { Lager } from "./karte";
 export interface KampfKarte { name: string; bild: string; zeilen: string[]; start: number[][]; lager: Lager[] }
 const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, x: x + 0.5, y: y + 0.5, gruppe });
 
+/* Reihenfolge der Kampagnen (wie auf der Weltkarte) und ihrer Kämpfe. Danach richtet sich, was freigeschaltet ist – auf dem Server und im Spiel gleich. */
+export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
+export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"] };
+const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
+/** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
+export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
+/** Darf dieser Kampf begonnen werden? Erster Kampf eines Ortes: die vorige Kampagne ist geschafft. Sonst: der Kampf davor ist gewonnen. Gewonnene Kämpfe darf man wiederholen. */
+export function darfKaempfen(siege: Set<string>, ort: string, kampf: string): boolean {
+  const f = KAMPFFOLGE[ort], i = f ? f.indexOf(kampf) : -1, o = ORTREIHE.indexOf(ort); if (i < 0 || o < 0) return false;
+  if (i > 0) return siege.has(ort + "/" + f[i - 1]); return o === 0 || geschafft(siege, ORTREIHE[o - 1]);
+}
 /** Rechenfelder je gemaltem Feld (siehe setzeKarte) */
 export const FEIN = 2;
 export const KARTEN: Record<string, KampfKarte> = {
