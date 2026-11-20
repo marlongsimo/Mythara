@@ -6,12 +6,12 @@ let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + 
 const TOKEN = "tok_anna_" + "x".repeat(30), WERTE = { ep: { schildwaechter: 300 }, seelen: 7 }, buchungen = [];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url === "/werte") { res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" }); res.end(JSON.stringify(WERTE)); return; } /* für den nachgebildeten Browser-Zugang: so liest das Spiel nach dem Kampf, was in der Datenbank steht */
-  if (req.headers.apikey !== "geheim") return send(401, { msg: "kein schlüssel" });
+  if (req.headers.apikey !== "sb_secret_test" || (req.url !== "/auth/v1/user" && req.headers.authorization)) return send(401, { msg: "kein schlüssel" }); /* wie Supabase mit neuem Geheimschlüssel: nur im apikey-Kopf */
   if (req.url === "/auth/v1/user") return req.headers.authorization === "Bearer " + TOKEN ? send(200, { id: "00000000-0000-0000-0000-00000000a001", is_anonymous: false }) : send(401, { msg: "ungültig" });
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_werte")) return send(200, [{ ep: WERTE.ep }]);
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_gutschrift") { const a = JSON.parse(b); buchungen.push(a); for (const [h, n] of Object.entries(a.p_ep)) WERTE.ep[h] = (WERTE.ep[h] || 0) + n; WERTE.seelen += a.p_seelen; return send(200, { ep: WERTE.ep, seelen: WERTE.seelen }); }
   send(404, {}); }); }).listen(8799);
-const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8787", SUPABASE_URL: "http://localhost:8799", SUPABASE_SERVICE_KEY: "geheim", ERLAUBTE_HERKUNFT: "http://localhost:8765" }, stdio: ["ignore", "pipe", "pipe"] }); let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
+const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8787", SUPABASE_URL: "http://localhost:8799", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765" }, stdio: ["ignore", "pipe", "pipe"] }); let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 const FAKE = `window.supabase = { createClient() { return { auth: { async getSession() { return { data: { session: { access_token: sessionStorage.getItem("fake_token") || "", user: { is_anonymous: false } } } }; } },
   async rpc(fn) { if (fn === "rpg_my_profile") return { data: { handle: "Anna", konto: true }, error: null }; if (fn === "rpg_echtzeit_werte") return { data: await (await fetch("http://localhost:8799/werte")).json(), error: null };

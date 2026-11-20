@@ -27,7 +27,7 @@ const plaetze = new Set<Platz>();
 
 /* ---------- Supabase (nur mit dem geheimen Schlüssel aus der Umgebung) ---------- */
 async function sb(pfad: string, init: RequestInit = {}): Promise<unknown> {
-  const r = await fetch(SB_URL + pfad, { ...init, headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "content-type": "application/json", ...(init.headers || {}) }, signal: AbortSignal.timeout(8000) });
+  const r = await fetch(SB_URL + pfad, { ...init, headers: { apikey: SB_KEY, ...(SB_KEY.startsWith("eyJ") ? { Authorization: "Bearer " + SB_KEY } : {}), "content-type": "application/json", ...(init.headers || {}) } /* neuer Geheimschlüssel (sb_secret_…) nur im apikey-Kopf; der alte service_role-Schlüssel (JWT) auch als Bearer */, signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error("Supabase " + r.status + " " + (await r.text()).slice(0, 200)); return r.status === 204 ? null : r.json();
 }
 /** Wer ist angemeldet? Prüft das Token des Spielers bei Supabase. Gäste (anonyme Anmeldung) zählen nicht. */
