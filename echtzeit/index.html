@@ -31,6 +31,7 @@
     #ez-tasten button.ult { border-color: #ffd75e; } #ez-modus { border-color: #8fb8ff !important; background: rgba(26,38,66,.9) !important; } #ez-modus.zwei { border-color: #ffb347 !important; background: rgba(66,44,20,.9) !important; }
     @media (max-width: 700px) { #ez-tasten { gap: 7px; } #ez-tasten button { width: 62px; height: 62px; } }
     #ez-dialog { position: fixed; inset: 0; z-index: 9; background: #07060b center / cover no-repeat; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 12px; cursor: pointer; user-select: none; -webkit-user-select: none; } #ez-dialog[hidden] { display: none; }
+    #ez-dialog.im-ort { background: linear-gradient(rgba(6,5,10,0) 45%, rgba(6,5,10,.6)); }
     #ez-dialog .ort { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); font: 600 15px Cinzel, Georgia, serif; color: #f3e3b4; background: rgba(12,10,18,.78); border: 1px solid rgba(232,200,120,.5); border-radius: 999px; padding: 5px 16px; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
     #ez-dialog .kasten { position: relative; width: min(720px, 100%); min-height: 118px; background: rgba(14,11,22,.94); border: 1px solid rgba(232,200,120,.55); border-radius: 14px; padding: 14px 18px 22px; color: #efe8d8; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
     #ez-dialog .wer { display: block; font: 600 14px Cinzel, Georgia, serif; color: #ffd98a; margin-bottom: 4px; } #ez-dialog .wer[hidden] { display: none; }
@@ -104,6 +105,6 @@
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
   <div id="ez-wahl" hidden></div><div id="ez-welt" hidden></div><div id="ez-dialog" hidden></div><div class="ez-kasten" id="ez-ziel" hidden></div><div id="ez-neben" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
-  <script src="spiel.js?v=mwosa5bo"></script>
+  <script src="spiel.js?v=mwosehlq"></script>
 </body>
 </html>
