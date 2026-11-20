@@ -21,7 +21,7 @@ const HINDERNIS: Pkt[][] = [
 ];
 /* Was den Helden verdeckt, wenn er dahinter steht: Umriss im Bild und die Höhe (y), ab der er davor steht */
 const VORN: { umriss: Pkt[]; fuss: number; gruen?: boolean }[] = [ // gruen: nur die grünen Zweige verdecken, nicht das Pflaster daneben
-  { fuss: 545, umriss: [[690, 475], [700, 440], [730, 452], [770, 432], [790, 380], [850, 368], [900, 388], [920, 400], [925, 378], [960, 380], [965, 420], [1000, 440], [1008, 482], [980, 522], [962, 562], [900, 602], [850, 612], [780, 592], [730, 552], [690, 532]] }, // Brunnen
+  { fuss: 545, umriss: [[690, 475], [700, 440], [730, 452], [766, 432], [768, 375], [786, 338], [822, 326], [834, 300], [858, 286], [882, 298], [886, 338], [908, 372], [922, 400], [925, 378], [960, 380], [965, 420], [1000, 440], [1008, 482], [980, 522], [962, 562], [900, 602], [850, 612], [780, 592], [730, 552], [690, 532]] }, // Brunnen
   { gruen: true, fuss: 698, umriss: [[508, 692], [498, 640], [520, 590], [545, 553], [575, 590], [592, 640], [582, 692]] },         // kleine Tanne am Markt
   { gruen: true, fuss: 802, umriss: [[772, 792], [768, 740], [790, 708], [810, 692], [832, 712], [852, 745], [848, 792]] },         // Tannen am unteren Rand
   { gruen: true, fuss: 782, umriss: [[922, 772], [922, 720], [944, 690], [962, 670], [982, 690], [1002, 720], [1002, 772]] },
@@ -33,7 +33,7 @@ const ORTE: { name: string; x: number; y: number; r: number; tat: "riss" | "bald
   { name: "Taverne", x: 600, y: 440, r: 60, tat: "bald", text: "Taverne – kommt noch" },
   { name: "Heldenhalle", x: 1085, y: 362, r: 60, tat: "bald", text: "Heldenhalle – die Heldensammlung kommt noch" },
   { name: "Stadttor", x: 1430, y: 308, r: 55, tat: "bald", text: "Stadttor – von hier geht es bald in die Kampagne" },
-  { name: "Markt", x: 400, y: 640, r: 70, tat: "bald", text: "Markt – kommt noch" },
+  { name: "Markt", x: 545, y: 585, r: 80, tat: "bald", text: "Markt – kommt noch" },
 ];
 /* Was sich im Bild bewegt (Bildpunkte der Vorlage): Feuer [x, y, Größe], Rauch [x, y], Wasserfälle [x, y oben, Breite, Fallhöhe], Glitzern [x, y, Breite, Höhe], Mitte des Risses */
 const FEUER: number[][] = [[708, 437, 1], [940, 378, 1], [982, 436, 1], [760, 290, 0.8], [1258, 126, 1], [1508, 176, 1], [1322, 268, 0.9], [1490, 298, 0.9], [1215, 548, 1.3]];
@@ -95,7 +95,7 @@ export class Stadt extends Phaser.Scene {
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
   profil() { const D = HELDEN[this.held]; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-name").textContent = "Test"; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
-  groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 600) : Math.min(h / 760, w / 1000), 0.45, 2.2))); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
+  groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2))); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
   betreten() { const o = this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
