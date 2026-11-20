@@ -190,7 +190,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_haus_holz_02",
@@ -221,7 +221,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_huette_holz_01",
@@ -252,7 +252,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_scheune_holz_01",
@@ -283,7 +283,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_taverne_01",
@@ -314,7 +314,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_schmiede_01",
@@ -345,7 +345,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_heldenhalle_01",
@@ -376,7 +376,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_marktstand_01",
@@ -407,7 +407,7 @@
     "radius": 1.4
    },
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_marktstand_02",
@@ -438,7 +438,7 @@
     "radius": 1.4
    },
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_marktstand_03",
@@ -469,7 +469,7 @@
     "radius": 1.4
    },
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_brunnen_01",
@@ -498,7 +498,27 @@
     "radius": 1.6
    },
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_tor_01",
+   "name": "Dorftor",
+   "kategorie": "bauteil",
+   "bild": "img/welt/gebaeude/dorf_tor_01.webp",
+   "groesse": [
+    216,
+    236
+   ],
+   "anker": [
+    0.5,
+    0.9492
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_palisade_01",
@@ -524,7 +544,7 @@
    "tiefe": "fuss",
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_palisade_02",
@@ -550,7 +570,154 @@
    "tiefe": "fuss",
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_fass_01",
+   "name": "Fass",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_fass_01.webp",
+   "groesse": [
+    48,
+    60
+   ],
+   "anker": [
+    0.5,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_kiste_01",
+   "name": "Kiste",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_kiste_01.webp",
+   "groesse": [
+    64,
+    54
+   ],
+   "anker": [
+    0.5,
+    0.8519
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.45,
+    "y": -0.55,
+    "b": 0.9,
+    "h": 0.55
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_holzstapel_01",
+   "name": "Holzstapel",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_holzstapel_01.webp",
+   "groesse": [
+    96,
+    82
+   ],
+   "anker": [
+    0.5,
+    0.9024
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.8,
+    "y": -0.6,
+    "b": 1.6,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_bank_01",
+   "name": "Bank",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_bank_01.webp",
+   "groesse": [
+    86,
+    44
+   ],
+   "anker": [
+    0.5,
+    0.8636
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.72,
+    "y": -0.35,
+    "b": 1.44,
+    "h": 0.35
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_heuballen_01",
+   "name": "Heuballen",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_heuballen_01.webp",
+   "groesse": [
+    70,
+    60
+   ],
+   "anker": [
+    0.5,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.5
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_laterne_01",
+   "name": "Laterne",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_laterne_01.webp",
+   "groesse": [
+    40,
+    128
+   ],
+   "anker": [
+    0.5,
+    0.9531
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.18
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
    "id": "dorf_schuppen_holz_01",
@@ -581,27 +748,7 @@
     "dy": 0.7,
     "radius": 1.4
    },
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
-  },
-  {
-   "id": "dorf_tor_01",
-   "name": "Dorftor",
-   "kategorie": "bauteil",
-   "bild": "img/welt/gebaeude/dorf_tor_01.webp",
-   "groesse": [
-    216,
-    236
-   ],
-   "anker": [
-    0.5,
-    0.9492
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "fuss",
-   "interaktion": null,
-   "spiegelbar": false,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   }
  ]
 }

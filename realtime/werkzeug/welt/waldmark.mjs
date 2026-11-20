@@ -8,6 +8,23 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
+import { readFileSync } from "node:fs";
+const BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
+/** Bildrechteck eines Objekts in Rechenfeldern [x0, y0, x1, y1] (Fußpunkt x, y) */
+const bildRahmen = (id, x, y, sp, s = 1) => { const o = BIB.get(id), b = o.groesse[0] * o.massstab * s / 48, h = o.groesse[1] * o.massstab * s / 48, ax = sp ? 1 - o.anker[0] : o.anker[0]; return [x - ax * b, y - o.anker[1] * h, x + (1 - ax) * b, y + (1 - o.anker[1]) * h]; };
+const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+/** Was frei zu sehen sein soll: Bildflächen von Gebäuden, Bauteilen, Kleinteilen und Figuren (Waldmark-Koordinaten) */
+const SICHT = [];
+/** Darf ein Baum hier stehen, ohne etwas Wichtiges zu verdecken? dy: Versatz der Region gegenüber der Waldmark */
+const sichtFrei = (p, dy = 0) => { const t = bildRahmen(p.objekt, p.x, p.y + dy, p.spiegeln, p.s);
+  return !SICHT.some((v) => p.y + dy > v.y - 0.1 && schnitt(t, v.r) > 0.1 * (v.r[2] - v.r[0]) * (v.r[3] - v.r[1])); };
+/** Türpunkt eines Objekts aus der Bibliothek */
+const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a ? [+(x + a.dx * (sp ? -1 : 1)).toFixed(2), +(y + a.dy).toFixed(2)] : [x, y]; };
+/* Vor der Palisade bleibt ein Streifen ohne Bäume, damit Tor und Zaun zu sehen sind. Sein Rand ist unregelmäßig und läuft über die Regionsgrenze
+   hinweg: Lage in Rechenfeldern der Waldmark (y ab dort gezählt, der Waldweg beginnt bei y = 64). */
+const ZAUN_Y = 57, vorfeldTiefe = (x) => 10.2 + 1.7 * Math.sin(x / 4.3 + 0.7) + 1.1 * Math.sin(x / 1.9 + 2.1) + 0.8 * Math.sin(x / 9.7);
+const vorfeldX = (y) => [12.5 + 2.4 * Math.sin(y / 2.3) + 1.2 * Math.sin(y / 0.9), 83.5 + 2.4 * Math.cos(y / 2.1) - 1.1 * Math.sin(y / 1.1)];
+const imVorfeld = (x, y, rand = 0) => { const [a, b] = vorfeldX(y); return y >= ZAUN_Y - 0.5 && y < ZAUN_Y + vorfeldTiefe(x) - rand && x > a + rand && x < b - rand; };
 let saat = 21; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const schreibe = (name, region, g, objekte, spiel) => { const o = join(WELT, "regionen", name); mkdirSync(o, { recursive: true });
   writeFileSync(join(o, "region.json"), JSON.stringify(region, null, 1) + "\n"); writeFileSync(join(o, "gelaende.txt"), g.map((z) => z.join("")).join("\n") + "\n");
@@ -15,23 +32,30 @@ const schreibe = (name, region, g, objekte, spiel) => { const o = join(WELT, "re
   console.log(`${name}: ${g[0].length} × ${g.length} Felder, ${objekte.length} Objekte, ${spiel.figuren.length} Figuren`); };
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 /** Bäume streuen: dicht, wo `wald` wahr ist, mit Mindestabstand; nie, wo `tabu` wahr ist */
-function baeume(B, H, wald, tabu, dichte, licht = 0) { const aus = [], gitter = new Map(), zelle = (x, y) => Math.floor(x / 3) + 4096 * Math.floor(y / 3);
+function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wald: wahr/falsch oder eine Dichte zwischen 0 und 1; passt: letzte Prüfung des fertigen Baums */ const aus = [], gitter = new Map(), zelle = (x, y) => Math.floor(x / 3) + 4096 * Math.floor(y / 3);
   const frei = (x, y, ab) => { for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) for (const p of gitter.get(zelle(x + di * 3, y + dj * 3)) || []) if (Math.hypot(p.x - x, p.y - y) < ab) return false; return true; };
-  for (let n = 0; n < B * H * dichte; n++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2), w = wald(x, y); if (tabu(x, y) || (!w && wurf() > licht) || !frei(x, y, w ? 2.3 : 6)) continue;
+  for (let n = 0; n < B * H * dichte; n++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2), wv = wald(x, y), w = wv === true || wv >= 0.6;
+    if (tabu(x, y) || (typeof wv === "number" ? wurf() > Math.max(wv, licht) : (!w && wurf() > licht)) || !frei(x, y, w ? 2.3 : 4.2)) continue;
     const z = wurf(), art = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6, p = { id: "b" + String(aus.length + 1).padStart(4, "0"), objekt: "wald_baum" + art, x, y, s: +(0.85 + wurf() * 0.27).toFixed(2) };
-    if (wurf() < 0.5) p.spiegeln = true; aus.push(p); const k = zelle(x, y); gitter.set(k, [...(gitter.get(k) || []), p]); }
+    if (wurf() < 0.5) p.spiegeln = true; if (!passt(p)) continue; aus.push(p); const k = zelle(x, y); gitter.set(k, [...(gitter.get(k) || []), p]); }
   return aus; }
 
 /* ───────────── Waldmark: 3 × 2 Chunks ───────────── */
 { const B = 96, H = 64, MX = 48, MY = 31, ZAUN = 56, TOR = 48;
-  const lichtung = (x, y) => Math.pow(Math.abs(x - MX) / (33 + 2 * Math.sin(y / 5)), 4) + Math.pow(Math.abs(y - MY) / (24.5 + 1.5 * Math.sin(x / 7)), 4) < 1 && y < ZAUN;
+  /* Die Lichtung: ein runder Rand mit Buchten und Vorsprüngen. q < 1 heißt drinnen; q zwischen 1 und 1,12 ist der lichte Waldrand. */
+  const lq = (x, y) => { const dx = (x - MX) / 33, dy = (y - MY) / 24.5, w = Math.atan2(dy, dx), p = 2.9;
+    return Math.pow(Math.pow(Math.abs(dx), p) + Math.pow(Math.abs(dy), p), 1 / p) / (1 + 0.06 * Math.sin(3 * w + 1.3) + 0.045 * Math.sin(5 * w + 0.4) + 0.025 * Math.sin(11 * w + 2.2)); };
+  const lichtung = (x, y) => lq(x, y) < 1 && y < ZAUN;
   const wege = [[[TOR, 38], [TOR, 64]], [[42, 32], [33, 31], [26, 32]], [[54, 32], [63, 31], [70, 32]], [[48, 26], [48, 21]], [[40, 36], [37, 44]], [[55, 36], [60, 46]]];
   const teich = (x, y) => Math.hypot((x - 71) / 4.6, (y - 46) / 3.2) < 1;
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5;
     const platz = Math.hypot(cx - MX, cy - 32) < 6.6, weg = wege.some((p) => strecke(cx, cy, p) < 1.5), blume = Math.sin(x / 4.1) * Math.cos(y / 3.3) + Math.sin((x + y) / 6) > 1.25;
-    /* vor der Palisade ein Streifen Wiese: Dort stehen keine Bäume, damit Tor und Zaun zu sehen sind */
-    const vorfeld = cy >= ZAUN && cx > 13 + 2 * Math.sin(cy) && cx < 83 + 2 * Math.cos(cy);
+    /* vor der Palisade Wiese; der Waldboden beginnt etwas vor den ersten Bäumen */
+    const vorfeld = cy >= ZAUN && imVorfeld(cx, cy, 1.6);
     z.push(platz ? "p" : weg ? "e" : vorfeld ? "." : !lichtung(cx, cy) ? "f" : teich(cx, cy) ? "w" : blume ? "," : "."); } g.push(z); }
+  const FIGUREN = [{ id: "wache_west", rolle: "wache", figur: "wache", x: 45.2, y: 58.6 }, { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 },
+      { id: "kraemer", rolle: "haendler", figur: "kraemer", x: 39.2, y: 39.9 }, { id: "kraeuterfrau", rolle: "haendler", figur: "kraeuterfrau", x: 43.6, y: 42.9 }, { id: "ausrufer", rolle: "npc", figur: "ausrufer", x: 52.6, y: 35.2, links: true },
+      { id: "junge", rolle: "npc", figur: "junge", x: 44.2, y: 29.4 }, { id: "wanderer", rolle: "npc", figur: "wanderer", x: 33.2, y: 31.4 }];
   /* Gebäude: Fußpunkt (Mitte der Vorderwand unten) */
   const bauten = [["heldenhalle", "dorf_heldenhalle_01", 48, 20.4], ["taverne", "dorf_taverne_01", 28, 30.2], ["schmiede", "dorf_schmiede_01", 68.5, 30.2],
     ["haus_nw", "dorf_haus_holz_01", 33, 17.5], ["haus_no", "dorf_haus_holz_02", 64, 17.5], ["huette_sw", "dorf_huette_holz_01", 25, 44], ["haus_s", "dorf_haus_holz_01", 36.5, 50, true],
@@ -40,22 +64,34 @@ function baeume(B, H, wald, tabu, dichte, licht = 0) { const aus = [], gitter = 
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
   objekte.push({ id: "tor", objekt: "dorf_tor_01", x: TOR, y: ZAUN + 1.05 });
+  /* Kleinigkeiten an den Häusern: neben den Türen, nie davor */
+  const details = [["taverne_fass_1", "dorf_fass_01", 24.6, 30.8], ["taverne_fass_2", "dorf_fass_01", 25.4, 31.3], ["taverne_bank", "dorf_bank_01", 31.6, 30.9], ["taverne_laterne", "dorf_laterne_01", 29.6, 30.9],
+    ["schmiede_holz", "dorf_holzstapel_01", 74.4, 30.7], ["schmiede_kiste", "dorf_kiste_01", 72.6, 31.3],
+    ["halle_laterne_w", "dorf_laterne_01", 45.4, 21.1], ["halle_laterne_o", "dorf_laterne_01", 50.6, 21.1],
+    ["haus_nw_holz", "dorf_holzstapel_01", 36.7, 17.9], ["haus_nw_fass", "dorf_fass_01", 30.0, 18.0],
+    ["haus_no_fass", "dorf_fass_01", 68.1, 17.9], ["haus_no_bank", "dorf_bank_01", 61.6, 18.1],
+    ["huette_sw_holz", "dorf_holzstapel_01", 28.0, 44.4], ["haus_s_fass", "dorf_fass_01", 33.6, 50.4],
+    ["scheune_heu_1", "dorf_heuballen_01", 74.4, 39.5], ["scheune_heu_2", "dorf_heuballen_01", 74.0, 40.8], ["scheune_kiste", "dorf_kiste_01", 81.4, 39.4],
+    ["schuppen_holz", "dorf_holzstapel_01", 64.6, 50.8], ["huette_o_fass", "dorf_fass_01", 73.9, 23.4],
+    ["markt_kiste_1", "dorf_kiste_01", 41.4, 38.7], ["markt_kiste_2", "dorf_kiste_01", 58.6, 40.7], ["markt_fass", "dorf_fass_01", 36.8, 38.9]];
+  objekte.push(...details.map(([id, objekt, x, y]) => ({ id, objekt, x, y })));
   const nahBau = (x, y) => bauten.some(([, , bx, by]) => Math.abs(x - bx) < 6.5 && y > by - 7 && y < by + 3.5);
   const amWeg = (x, y) => wege.some((p) => strecke(x, y, p) < 3.2) || Math.hypot(x - MX, y - 32) < 9.5;
-  const wald = (x, y) => !lichtung(x, y) && !(y >= ZAUN - 1 && y < ZAUN + 2.2 && x > 15 && x < 81);
-  /* im Dorf nur am Rand der Lichtung einzelne Bäume; vor der Palisade keine */
-  const mitte = (x, y) => Math.pow(Math.abs(x - MX) / 33, 4) + Math.pow(Math.abs(y - MY) / 24.5, 4) < 0.62;
-  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || (lichtung(x, y) && (mitte(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1)) || (y > ZAUN - 6 && x > 11 && x < 85), 0.95, 0.05));
+  /* Dichte: tief im Wald dicht, am Waldrand lückig, in der Lichtung nur am Rand vereinzelt */
+  const wald = (x, y) => { if (y >= ZAUN - 0.5) return 1; const q = lq(x, y); return q >= 1.12 ? 1 : q >= 1 ? 0.5 : q >= 0.9 ? 0.07 : 0; };
+  /* Sicht: Vor einem Gebäude, dem Tor oder einem Stand steht kein Baum, dessen Krone es verdecken würde (Krone gut 4 Felder breit, bis 10 hoch) */
+  for (const o of objekte) SICHT.push({ y: o.y, r: bildRahmen(o.objekt, o.x, o.y, o.spiegeln) });
+  for (const f of FIGUREN) SICHT.push({ y: f.y, r: [f.x - 0.5, f.y - 1.9, f.x + 0.5, f.y] });
+  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p)));
   objekte.sort((a, b) => a.y - b.y);
   const lies = (id, x, y, text, objekt) => ({ id, art: "lesen", x, y, radius: 1.5, ...(objekt ? { objekt } : {}), abgleich: "keiner", daten: { text } });
   const spiel = { start: [[48, 37.5], [46.8, 38.5], [49.2, 38.5]],
-    figuren: [{ id: "wache_west", rolle: "wache", figur: "wache", x: 45.2, y: 58.6 }, { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 },
-      { id: "kraemer", rolle: "haendler", figur: "kraemer", x: 39.2, y: 39.9 }, { id: "kraeuterfrau", rolle: "haendler", figur: "kraeuterfrau", x: 43.6, y: 42.9 }, { id: "ausrufer", rolle: "npc", figur: "ausrufer", x: 52.6, y: 35.2, links: true },
-      { id: "junge", rolle: "npc", figur: "junge", x: 44.2, y: 29.4 }, { id: "wanderer", rolle: "npc", figur: "wanderer", x: 33.2, y: 31.4 }],
+    figuren: FIGUREN,
     spawnzonen: [],
     interaktionen: [lies("brunnen_ansehen", 48, 34.6, "Der Brunnen der Waldmark. Das Wasser kommt kalt und klar aus dem Waldboden.", "brunnen"),
-      lies("halle_tuer", 48, 21.2, "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle"), lies("taverne_tuer", 28, 31, "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne"),
-      lies("schmiede_tuer", 71.6, 31, "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."),
+      lies("halle_tuer", ...tuerVon("dorf_heldenhalle_01", 48, 20.4), "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle"),
+      lies("taverne_tuer", ...tuerVon("dorf_taverne_01", 28, 30.2), "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne"),
+      lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."),
       lies("tor_ansehen", 48, 55, "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.", "tor")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei */
@@ -67,9 +103,9 @@ function baeume(B, H, wald, tabu, dichte, licht = 0) { const aus = [], gitter = 
   const lichtungen = [[30, 30, 9, 6.5], [66, 47, 8, 6]], inL = (x, y, k = 1) => lichtungen.some(([lx, ly, rx, ry]) => Math.hypot((x - lx) / (rx * k), (y - ly) / (ry * k)) < 1);
   const teich = (x, y) => Math.hypot((x - 70) / 3.6, (y - 45) / 2.6) < 1, abzweig = [[wegX(30), 30], [37, 30.5]], abzweig2 = [[wegX(46), 46], [59, 47]];
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, d = Math.abs(cx - wegX(cy));
-    if (cy < 3.5 + Math.sin(cx / 3) && cx > 13 && cx < 83 && d >= 1.6) { z.push("."); continue; } /* das Vorfeld des Dorfs läuft hier aus */
+    if (imVorfeld(cx, cy + 64, 1.6) && d >= 1.6) { z.push("."); continue; } /* das Vorfeld des Dorfs läuft hier aus */
     z.push(d < 1.6 || strecke(cx, cy, abzweig) < 1.2 || strecke(cx, cy, abzweig2) < 1.2 ? "e" : teich(cx, cy) ? "w" : inL(cx, cy) ? (inL(cx, cy, 0.55) ? "," : ".") : d < 4.2 + Math.sin(cy / 3) ? "." : "f"); } g.push(z); }
-  const objekte = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", (x, y) => Math.abs(x - wegX(y)) < 3 || strecke(x, y, abzweig) < 2.6 || strecke(x, y, abzweig2) < 2.6 || Math.hypot((x - 70) / 5.2, (y - 45) / 4) < 1 || (y < 4.5 && Math.abs(x - 48) < 38), 0.95, 0.03);
+  const objekte = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", (x, y) => Math.abs(x - wegX(y)) < 3 || strecke(x, y, abzweig) < 2.6 || strecke(x, y, abzweig2) < 2.6 || Math.hypot((x - 70) / 5.2, (y - 45) / 4) < 1 || imVorfeld(x, y + 64), 0.95, 0.03, (p) => sichtFrei(p, 64));
   objekte.sort((a, b) => a.y - b.y);
   const ex = +wegX(63.5).toFixed(1), spiel = { start: [[48, 2.5], [47, 1.5], [49, 1.5]], figuren: [{ id: "wanderer_am_weg", rolle: "npc", figur: "wanderer", x: 33, y: 29.4 }],
     spawnzonen: [{ id: "kroeten_lichtung", zone: { art: "kreis", x: 66, y: 49.5, r: 3 }, gegner: [{ art: "schlammkroete", anzahl: 2 }, { art: "kroetchen", anzahl: 1 }], aggro: 7, leine: 16, respawn: 180, abgleich: "server" }],

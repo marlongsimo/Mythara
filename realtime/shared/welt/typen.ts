@@ -29,6 +29,8 @@ export interface GelaendeRand {
   breite: number;
   /** Gemalter Uferverlauf (nur „ufer“), Pfad ab Repository-Wurzel */
   bild?: string;
+  /** Nur „fransen“: ein ausgetretener Saum daneben (Gras wird lichter und gelblich, Erde schaut durch); Breite in Rechenfeldern, Stärke 0 bis 1 */
+  saum?: { breite: number; staerke: number };
 }
 export interface Gelaendeart {
   id: string;
@@ -46,6 +48,8 @@ export interface Gelaendeart {
   kachelPx?: number;
   /** Weitere Texturen, die beim Backen eingestreut werden (gegen Wiederholungsmuster) */
   varianten?: string[];
+  /** Kleinigkeiten, die der Bodenbäcker auf diese Art streut; dichte = Anteil der Rechenfelder (über 1: mehrere je Feld) */
+  streu?: { art: "bueschel" | "steinchen" | "kiesel" | "zweige" | "blumen"; dichte: number }[];
   /** Wer höher steht, legt sich über die Nachbarn (Weg über Gras, Gras über Wasser …) */
   rang: number;
   rand: GelaendeRand;

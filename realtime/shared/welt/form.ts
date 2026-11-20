@@ -59,11 +59,14 @@ export function gelaendeFehler(roh: unknown): string[] {
     L.wenn(a.kachel !== null && !istText(a.kachel), wo + ".kachel", "Pfad oder null erwartet");
     L.wenn(a.varianten !== undefined && !(Array.isArray(a.varianten) && a.varianten.every(istText)), wo + ".varianten", "Liste von Pfaden erwartet");
     L.zahl(a.rang, wo + ".rang", 0, 100);
+    if (a.streu !== undefined && !L.wenn(!Array.isArray(a.streu), wo + ".streu", "Liste erwartet")) (a.streu as unknown[]).forEach((e, k) => {
+      if (L.wenn(!istObj(e), `${wo}.streu[${k}]`, "Objekt erwartet")) return; L.eins((e as Roh).art, ["bueschel", "steinchen", "kiesel", "zweige", "blumen"] as const, `${wo}.streu[${k}].art`); L.zahl((e as Roh).dichte, `${wo}.streu[${k}].dichte`, 0, 3); });
     L.wenn(!istText(a.farbe) || !FARBE.test(a.farbe as string), wo + ".farbe", "Farbe als #rrggbb erwartet");
     if (!L.wenn(!istObj(a.rand), wo + ".rand", "fehlt")) { const r = a.rand as Roh;
       L.eins(r.art, ["fransen", "steine", "ufer", "hart"] as const, wo + ".rand.art"); L.zahl(r.breite, wo + ".rand.breite", 0, 8);
       L.wenn(r.art === "ufer" && a.wasser !== true, wo + ".rand.art", "einen Uferrand kann nur Wasser haben");
-      L.wenn(r.bild !== undefined && !istText(r.bild), wo + ".rand.bild", "Pfad erwartet"); }
+      L.wenn(r.bild !== undefined && !istText(r.bild), wo + ".rand.bild", "Pfad erwartet");
+      if (r.saum !== undefined) { const sm = r.saum as Roh; L.wenn(r.art !== "fransen", wo + ".rand.saum", "einen Saum gibt es nur bei „fransen“"); L.zahl(istObj(sm) ? sm.breite : undefined, wo + ".rand.saum.breite", 0.2, 6); L.zahl(istObj(sm) ? sm.staerke : undefined, wo + ".rand.saum.staerke", 0, 1); } }
     L.wenn(istText(a.kachel) && !(istZahl(a.kachelPx) && (a.kachelPx as number) >= 64 && (a.kachelPx as number) <= 2048), wo + ".kachelPx", "zu einer Textur gehört ihre Kantenlänge in der Welt (64 bis 2048 Bildpunkte)");
   });
   return L.fehler;

@@ -226,7 +226,11 @@ export class Welt extends Phaser.Scene {
 
     /* Bäume und anderes Hohe wird durchscheinend, wenn der Held dahinter steht – nur in den Chunks um ihn herum */
     { const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C); for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const st = this.stuecke.get(chunkName(cx + dx, cy + dy)); if (!st) continue;
-        for (const b of st.scheinend) { const hinter = b.depth > py && Math.abs(b.x - px) < b.displayWidth * 0.42 && py > b.y - b.displayHeight * 0.95, soll = hinter ? 0.42 : 1; if (Math.abs(b.alpha - soll) > 0.01) b.setAlpha(b.alpha + (soll - b.alpha) * 0.2); } } }
+        for (const b of st.scheinend) {
+          /* hinter einem Baum oder Haus: Fußpunkt davor, der Körper (Mitte gut 40 Bildpunkte über dem Fuß) innerhalb der Bildfläche – gemessen an der echten Fläche, nicht am Fußpunkt */
+          const l = b.x - b.originX * b.displayWidth, o = b.y - b.originY * b.displayHeight, w = b.displayWidth, h = b.displayHeight;
+          const hinter = b.depth > py && px > l + w * 0.14 && px < l + w * 0.86 && py - 40 > o + h * 0.04 && py < b.y, soll = hinter ? 0.4 : 1;
+          if (Math.abs(b.alpha - soll) > 0.01) b.setAlpha(b.alpha + (soll - b.alpha) * 0.2); } } }
 
     const k = this.cameras.main; k.scrollX += (px - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (py - 30 - k.height / 2 - k.scrollY) * 0.15;
     this.strom(); this.umsehen(); this.regionZeigen();

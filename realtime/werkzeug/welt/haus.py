@@ -29,8 +29,8 @@ FELD = 48
 
 # kennung: Bauform und Maße. b = Breite der Wand, wand = Wandhöhe, dach = sichtbare Dachhöhe (trauf) / giebel = Giebelhöhe, tiefe = Dachlänge nach hinten (giebel)
 HAEUSER = {
-    'dorf_haus_holz_01':    dict(name='Holzhaus', form='trauf', b=236, wand=104, dach=112, tuer=0.30, fenster=[0.68], kamin=0.74, dachfarbe=None, saat=1),
-    'dorf_haus_holz_02':    dict(name='Langhaus', form='trauf', b=318, wand=106, dach=120, tuer=0.50, fenster=[0.17, 0.83], kamin=0.22, dachfarbe=(150, 92, 58), saat=2),
+    'dorf_haus_holz_01':    dict(name='Holzhaus', form='trauf', b=236, wand=104, dach=112, tuer=0.30, fenster=[0.68], kamin=0.74, dachfarbe=None, blumen=True, saat=1),
+    'dorf_haus_holz_02':    dict(name='Langhaus', form='trauf', b=318, wand=106, dach=120, tuer=0.50, fenster=[0.17, 0.83], kamin=0.22, dachfarbe=(150, 92, 58), blumen=True, saat=2),
     'dorf_huette_holz_01':  dict(name='Holzhütte', form='giebel', b=168, wand=88, giebel=58, tiefe=124, tuer=0.5, rundfenster=True, dachfarbe=None, saat=3),
     'dorf_scheune_holz_01': dict(name='Scheune', form='giebel', b=262, wand=112, giebel=92, tiefe=206, tor=True, rundfenster=True, dachfarbe=(128, 96, 66), holz=0.86, saat=4),
     'dorf_taverne_01':      dict(name='Taverne', form='trauf', b=336, wand=118, dach=132, tuer=0.5, fenster=[0.14, 0.31, 0.69, 0.86], kamin=0.86, kamin2=0.12, schild=(196, 150, 60), dachfarbe=(156, 86, 54), saat=11, art='tuer'),
@@ -43,6 +43,12 @@ HAEUSER = {
     'dorf_tor_01':          dict(name='Dorftor', form='tor', b=176, saat=18),
     'dorf_palisade_01':     dict(name='Palisade', form='palisade', b=96, saat=19),
     'dorf_palisade_02':     dict(name='Palisade', form='palisade', b=96, saat=20),
+    'dorf_fass_01':         dict(name='Fass', form='fass', saat=21),
+    'dorf_kiste_01':        dict(name='Kiste', form='kiste', saat=22),
+    'dorf_holzstapel_01':   dict(name='Holzstapel', form='holzstapel', saat=23),
+    'dorf_bank_01':         dict(name='Bank', form='bank', saat=24),
+    'dorf_heuballen_01':    dict(name='Heuballen', form='heu', saat=25),
+    'dorf_laterne_01':      dict(name='Laterne', form='laterne', saat=26),
     'dorf_schuppen_holz_01': dict(name='Schuppen', form='trauf', b=128, wand=84, dach=70, tuer=0.5, fenster=[], dachfarbe=(120, 104, 78), holz=0.92, saat=5),
 }
 
@@ -398,7 +404,112 @@ def tor(P, rng):
     return B.fertig(), [0.5, round(yb / hoch, 4)], None, None, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor}
+def blumenkasten(B, cx, y, b, rng):
+    """Kasten unter dem Fenster mit Grün und ein paar Blüten"""
+    for i in range(9):
+        x = cx - b / 2 + 2 + i * (b - 4) / 8
+        B.lege((52 + int(rng.integers(0, 30)), 96 + int(rng.integers(0, 30)), 38), ellipse(B, x, y - 1, 3.4, 3.2))
+    for i in range(5):
+        x = cx - b / 2 + 4 + float(rng.uniform(0, b - 8)); f = [(214, 70, 64), (236, 196, 72), (222, 222, 230), (190, 110, 200)][int(rng.integers(0, 4))]
+        B.lege(f, ellipse(B, x, y - 3 - float(rng.uniform(0, 2)), 1.9, 1.9))
+    B.balken(cx - b / 2, y + 1, b, 6, 91, 0.75)
+
+
+def klein_blatt(breit, hoch):
+    return Blatt(breit, hoch)
+
+
+def fass(P, rng):
+    """Stehendes Fass: Dauben aus Brettern, zwei Eisenreifen, Deckel oben"""
+    B = Blatt(48, 60); cx, yb, r = 24, 52, 14
+    schatten(B, cx - r, cx + r, yb, 10)
+    m = B.rechteck(cx - r, yb - 34, 2 * r, 34) + ellipse(B, cx, yb, r, 5)
+    m = np.clip(m, 0, 1)
+    xx = np.arange(B.b, dtype=np.float32)[None, :] / K
+    rund = (0.62 + 0.5 * np.sin(np.clip((xx - (cx - r)) / (2 * r), 0, 1) * math.pi) - 0.12 * np.clip((xx - (cx - r)) / (2 * r), 0, 1))[..., None]
+    B.lege(B.voll('bretter', 0.05, saat=P['saat']) * rund * 0.95, m)
+    for y in (yb - 28, yb - 8):
+        B.lege((48, 46, 48), B.rechteck(cx - r, y, 2 * r, 3) + ellipse(B, cx, y + 3, r, 2) * 0)
+    B.lege((96, 70, 44), ellipse(B, cx, yb - 34, r, 5)); B.lege((70, 50, 32), ellipse(B, cx, yb - 34, r - 3, 3.4))
+    return B.fertig(), [0.5, round(yb / 60, 4)], {'art': 'kreis', 'r': 0.35}, None, False
+
+
+def kiste(P, rng):
+    """Holzkiste mit Deckel und Querlatten"""
+    B = Blatt(64, 54); x0, yb, b, h, t = 10, 46, 40, 24, 10
+    schatten(B, x0, x0 + b, yb, 10)
+    B.lege(B.voll('bretter', 0.06, drehen=True, saat=P['saat']) * 0.95, B.rechteck(x0, yb - h, b, h))
+    B.lege(B.voll('bretter', 0.06, drehen=True, saat=P['saat'] + 1) * 1.12, B.maske([(x0, yb - h), (x0 + b, yb - h), (x0 + b - 4, yb - h - t), (x0 + 4, yb - h - t)]))
+    for x in (x0, x0 + b - 5):
+        B.balken(x, yb - h, 5, h, 92, 0.7)
+    B.balken(x0, yb - h, b, 4, 93, 0.7); B.strich([(x0 + 4, yb - 4), (x0 + b - 5, yb - h + 4)], 3.5, 94, 0.62)
+    return B.fertig(), [0.5, round(yb / 54, 4)], {'art': 'rechteck', 'x': -0.45, 'y': -0.55, 'b': 0.9, 'h': 0.55}, None, False
+
+
+def holzstapel(P, rng):
+    """Scheitholz: Stirnseiten der Scheite übereinander, unter einem kleinen Brettdach"""
+    B = Blatt(96, 82); x0, yb, b = 10, 74, 76
+    schatten(B, x0, x0 + b, yb, 14)
+    for x in (x0, x0 + b - 5):
+        B.balken(x, yb - 58, 5, 58, 95, 0.62)
+    reihen = 4
+    for j in range(reihen):
+        for i in range(7):
+            cx = x0 + 8 + i * 10.2 + (j % 2) * 4.5; cy = yb - 6 - j * 10
+            if cx > x0 + b - 6:
+                continue
+            g = float(rng.uniform(0.85, 1.1))
+            B.lege((int(150 * g), int(112 * g), int(66 * g)), ellipse(B, cx, cy, 5.2, 4.6))
+            B.lege((int(186 * g), int(146 * g), int(92 * g)), ellipse(B, cx - 0.6, cy - 0.5, 3.4, 2.9))
+            B.lege((int(120 * g), int(84 * g), int(46 * g)), ellipse(B, cx - 0.4, cy - 0.3, 0.9, 0.8))
+    z = faerben(B.voll('bretter', 0.06, saat=P['saat']), (110, 84, 56))
+    B.lege(z * 0.9, B.maske([(x0 - 4, yb - 58), (x0 + b + 4, yb - 58), (x0 + b + 8, yb - 50), (x0 - 8, yb - 50)]))
+    return B.fertig(), [0.5, round(yb / 82, 4)], {'art': 'rechteck', 'x': -0.8, 'y': -0.6, 'b': 1.6, 'h': 0.6}, None, False
+
+
+def bank(P, rng):
+    """Sitzbank aus Brettern"""
+    B = Blatt(86, 44); x0, yb, b = 8, 38, 70
+    schatten(B, x0, x0 + b, yb, 8)
+    for x in (x0 + 6, x0 + b - 12):
+        B.balken(x, yb - 15, 6, 15, 96, 0.6)
+    B.lege(B.voll('bretter', 0.055, drehen=True, saat=P['saat']) * 1.05, B.rechteck(x0, yb - 20, b, 6))
+    B.lege(B.voll('bretter', 0.055, drehen=True, saat=P['saat'] + 3) * 0.8, B.rechteck(x0 + 2, yb - 31, b - 4, 7))
+    B.dunkel(B.rechteck(x0, yb - 15, b, 2), 0.4)
+    return B.fertig(), [0.5, round(yb / 44, 4)], {'art': 'rechteck', 'x': -0.72, 'y': -0.35, 'b': 1.44, 'h': 0.35}, None, False
+
+
+def heu(P, rng):
+    """Runder Heuballen mit Halmen"""
+    B = Blatt(70, 60); cx, yb, r = 35, 52, 25
+    schatten(B, cx - r, cx + r, yb, 12)
+    m = ellipse(B, cx, yb - 18, r, 19) + B.rechteck(cx - r, yb - 18, 2 * r, 14) + ellipse(B, cx, yb - 4, r, 6)
+    m = np.clip(m, 0, 1)
+    yy, xx = np.mgrid[0:B.h, 0:B.b].astype(np.float32) / K
+    licht = (1.1 - 0.4 * np.clip((xx - (cx - r)) / (2 * r), 0, 1) - 0.2 * np.clip((yy - (yb - 37)) / 37, 0, 1))[..., None]
+    gras = np.array([196, 168, 92], dtype=np.float32)[None, None, :] * (0.9 + 0.12 * np.sin(xx * 2.1 + np.sin(yy * 1.7) * 2)[..., None])
+    B.lege(gras * licht, m)
+    for k in range(40):
+        x, y = cx + float(rng.uniform(-r, r)), yb - float(rng.uniform(4, 34)); a = float(rng.uniform(-1, 1))
+        B.lege((222, 196, 120), ellipse(B, x, y, 1.2, 0.5))
+    B.lege((150, 120, 60), ellipse(B, cx + r * 0.35, yb - 18, r * 0.35, 13) * 0.0 + B.rechteck(cx - r, yb - 13, 2 * r, 1.4))
+    return B.fertig(), [0.5, round(yb / 60, 4)], {'art': 'kreis', 'r': 0.5}, None, False
+
+
+def laterne(P, rng):
+    """Laternenpfahl mit warm leuchtender Laterne"""
+    B = Blatt(40, 128); cx, yb = 20, 122
+    schatten(B, cx - 6, cx + 6, yb, 6)
+    B.balken(cx - 3, yb - 92, 6, 92, 98, 0.7); B.balken(cx - 3, yb - 92, 16, 4, 99, 0.7)
+    lx, ly = cx + 10, yb - 84
+    B.lege((40, 38, 40), B.rechteck(lx - 6, ly, 12, 18)); B.lege((40, 38, 40), B.maske([(lx - 7, ly), (lx + 7, ly), (lx, ly - 6)]))
+    yy, xx = np.mgrid[0:B.h, 0:B.b].astype(np.float32) / K
+    glut = np.clip(1 - np.hypot((xx - lx) / 5, (yy - ly - 9) / 7), 0, 1)[..., None]
+    B.lege(np.array([255, 170, 70], dtype=np.float32) * (1 - glut) + np.array([255, 240, 180], dtype=np.float32) * glut, B.rechteck(lx - 4, ly + 2, 8, 14))
+    return B.fertig(), [0.5, round(yb / 128, 4)], {'art': 'kreis', 'r': 0.18}, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne}
 
 
 def baue(kennung):
@@ -406,9 +517,9 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'kleinteil' if P['form'] in ('stand', 'brunnen') else 'bauteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss', **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] != 'tor',
-                    'herkunft': 'erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)'}
+                    'herkunft': 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20
     if P['form'] == 'trauf':
         dh = P['dach']; breit = b + 2 * ue + 2 * rand + 14; hoch = rand + 14 + dh + wh + unten
@@ -419,6 +530,8 @@ def baue(kennung):
         B.balken(x0, yt, 7, wh - 9, 1); B.balken(x0 + b - 7, yt, 7, wh - 9, 2); B.balken(x0, yb - 15, b, 6, 3, 0.7)
         for f in P.get('fenster', []):
             fenster(B, x0 + b * f, yt + wh * 0.47, 24, 28, P['saat'] * 10 + int(f * 100))
+            if P.get('blumen'):
+                blumenkasten(B, x0 + b * f, yt + wh * 0.47 + 20, 36, rng)
         if P.get('esse'):
             esse(B, x0 + b * P['esse'][0], x0 + b * P['esse'][1], yt + 16, yb - 9, rng)
         tuer(B, x0 + b * P['tuer'], yb - 9, 32, 70, P['saat'])
@@ -481,7 +594,7 @@ def baue(kennung):
         'anker': [round((x0 + b / 2) / breit, 4), round(yb / hoch, 4)], 'massstab': 1,
         'kollision': {'art': 'rechteck', 'x': -bf / 2, 'y': -tiefe, 'b': bf, 'h': tiefe}, 'tiefe': 'fuss', 'durchscheinend': True,
         'interaktion': {'art': P.get('art', 'tuer'), 'dx': round((tx - (x0 + b / 2)) / FELD, 2), 'dy': 0.7, 'radius': 1.4},
-        'herkunft': 'erzeugt von werkzeug/welt/haus.py aus den Texturen in werkzeug/welt/texturen (Lizenz der Vorlagen zu bestätigen)',
+        'herkunft': 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)',
     }
 
 

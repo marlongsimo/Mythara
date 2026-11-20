@@ -16,7 +16,7 @@ So entsteht das Bild (die Verfahren stammen aus werkzeug/gelaende.py):
 """
 import json, math, os, sys
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 HIER = os.path.dirname(os.path.abspath(__file__))
@@ -99,7 +99,8 @@ def decke(F, art):
     bild = F.flaeche(textur(art['kachel'], n, glatt=bool(art.get('wasser'))))
     for k, pfad in enumerate(art.get('varianten', [])):
         # Varianten wachsen in großen, unregelmäßigen Flecken ein
-        m = np.clip((np.roll(F.streu, 37 * (k + 1), axis=1) - 0.28) / 0.22, 0, 1)[..., None]
+        fleck = rauschen(F.X, F.Y, 380, 20 + k) * 0.6 + rauschen(F.X, F.Y, 150, 40 + k) * 0.3 + rauschen(F.X, F.Y, 40, 60 + k) * 0.1
+        m = np.clip((fleck - 0.2) / 0.2, 0, 1)[..., None]
         bild = bild * (1 - m) + F.flaeche(textur(pfad, n)) * m
     if not art.get('wasser'):
         bild = bild * (1 + 0.10 * F.grob[..., None])
@@ -176,7 +177,127 @@ def ufer(F, art, d, bild, wasserbild):
     return bild * (1 - 0.45 * nass)
 
 
-def backe(arten, karte, fx0, fy0, weltx, welty, felder_b, felder_h):
+# ---------- Einzelheiten: Grasbüschel, Steinchen, Zweige, Blumen; Schatten und Wurzeln unter Bäumen; ausgetretene Erde vor Türen ----------
+def zufall(i, j, saat):
+    """Ein Wurf zwischen 0 und 1, der nur von der Lage in der Welt abhängt"""
+    return (float(_wurf(np.array([i]), np.array([j]), saat)[0]) + 1) / 2
+
+
+GRAS = [(46, 70, 22), (64, 92, 28), (86, 118, 36), (112, 142, 46), (148, 168, 64)]
+TROCKEN = [(108, 106, 44), (138, 128, 56), (164, 150, 74)]
+
+
+def bueschel(d, x, y, g, w):
+    """Ein Grasbüschel: ein paar gebogene Halme, dunkle zuerst. g: Größe in Bildpunkten (Rechengröße), w: Würfelfunktion"""
+    d.ellipse([x - g * 0.32, y - g * 0.1, x + g * 0.32, y + g * 0.12], fill=(20, 30, 10, 60))
+    n = 6 + int(w(1) * 5); farben = TROCKEN if w(2) < 0.18 else GRAS
+    halme = sorted(range(n), key=lambda k: w(10 + k))
+    for k in halme:
+        a = (w(30 + k) - 0.5) * 1.3; L = g * (0.55 + 0.5 * w(50 + k)); bx = x + (w(70 + k) - 0.5) * g * 0.4
+        biege = (w(90 + k) - 0.5) * g * 0.35
+        p = [(bx, y), (bx + math.sin(a) * L * 0.5, y - math.cos(a) * L * 0.55), (bx + math.sin(a) * L + biege, y - math.cos(a) * L)]
+        c = farben[min(len(farben) - 1, int(k / n * len(farben)))]
+        d.line(p, fill=c + (235,), width=2, joint='curve')
+
+
+def stein(d, x, y, g, w):
+    """Ein Steinchen mit Schatten unten rechts und Licht oben links"""
+    rx, ry = g * (0.7 + 0.5 * w(1)), g * (0.5 + 0.3 * w(2)); t = 108 + w(3) * 50; c = (t, t * 0.97, t * 0.9)
+    d.ellipse([x - rx + g * 0.25, y - ry + g * 0.3, x + rx + g * 0.25, y + ry + g * 0.3], fill=(18, 16, 12, 110))
+    d.ellipse([x - rx, y - ry, x + rx, y + ry], fill=tuple(int(v) for v in c) + (255,))
+    d.ellipse([x - rx * 0.7, y - ry * 0.8, x + rx * 0.1, y - ry * 0.05], fill=tuple(int(min(255, v * 1.25)) for v in c) + (150,))
+
+
+def zweig(d, x, y, g, w):
+    a = w(1) * math.pi; L = g * (0.8 + 0.6 * w(2)); dx, dy = math.cos(a) * L / 2, math.sin(a) * L / 2 * 0.6; c = (72 + int(w(3) * 30), 50, 30, 235)
+    d.line([(x - dx, y - dy), (x + dx, y + dy)], fill=c, width=3)
+    t = 0.2 + w(4) * 0.5; ax, ay = x - dx + 2 * dx * t, y - dy + 2 * dy * t; b = a + (0.6 if w(5) < 0.5 else -0.6)
+    d.line([(ax, ay), (ax + math.cos(b) * L * 0.3, ay + math.sin(b) * L * 0.18)], fill=c, width=2)
+
+
+def blumen(d, x, y, g, w):
+    f = [(236, 232, 214), (240, 206, 84), (176, 140, 214), (150, 186, 236)][int(w(1) * 4)]
+    for k in range(3 + int(w(2) * 4)):
+        bx, by = x + (w(10 + k) - 0.5) * g * 1.4, y + (w(20 + k) - 0.5) * g * 0.8; r = g * 0.13
+        d.ellipse([bx - r, by - r, bx + r, by + r], fill=f + (255,))
+        d.ellipse([bx - r * 0.35, by - r * 0.35, bx + r * 0.35, by + r * 0.35], fill=(240, 196, 70, 255))
+
+
+ZEICHNER = {'bueschel': (bueschel, 26), 'steinchen': (stein, 9), 'kiesel': (stein, 4), 'zweige': (zweig, 22), 'blumen': (blumen, 18)}
+
+
+def wurzeln(d, x, y, s, w):
+    """Ein paar Wurzeln, die vom Stammfuß ausgehen (Rechengröße: 2 Bildpunkte je Bildpunkt)"""
+    for k in range(3 + int(w(1) * 3)):
+        a = math.pi * (0.05 + 0.9 * (k + w(10 + k) * 0.6) / 4.2); L = FELD * 2 * s * (0.45 + 0.45 * w(20 + k))
+        pts = [(x + math.cos(a) * L * t * (1 if a < math.pi / 2 else 1) * (1 if k % 2 else 1), y + math.sin(a) * L * t * 0.45 - 6) for t in (0, 0.35, 0.7, 1.0)]
+        pts = [(px + (w(40 + k) - 0.5) * 8 * t, py) for t, (px, py) in zip((0, .35, .7, 1), pts)]
+        for i in range(3):
+            breit = int(round(14 * s * (1 - i / 3) + 2))
+            d.line(pts[i:i + 2], fill=(66, 46, 28, 255), width=breit)
+            d.line([(px, py - breit * 0.3) for px, py in pts[i:i + 2]], fill=(118, 88, 56, 200), width=max(1, breit // 3))
+
+
+def einzelheiten(F, arten, aus, bild, dinge, ox, oy, fi0, fj0):
+    """Alles Kleine auf dem Boden. ox/oy: Lage des Fensters in Bildpunkten der Welt, fi0/fj0 in Rechenfeldern."""
+    ph, pb = bild.shape[:2]
+    # Schatten unter den Bäumen und ausgetretene Erde vor den Türen (weich, als Maske)
+    schatten = Image.new('L', (pb, ph), 0); ds = ImageDraw.Draw(schatten)
+    erde = Image.new('L', (pb, ph), 0); de = ImageDraw.Draw(erde)
+    nah = [g for g in dinge if -3 * FELD < g['x'] * FELD - ox < pb + 3 * FELD and -3 * FELD < g['y'] * FELD - oy < ph + 3 * FELD]
+    for g in nah:
+        x, y, s = g['x'] * FELD - ox, g['y'] * FELD - oy, g['s']
+        if g['kat'] == 'bewuchs':
+            rx, ry = FELD * 1.5 * s, FELD * 0.85 * s
+            ds.ellipse([x - rx + 18 * s, y - ry + 4, x + rx + 18 * s, y + ry + 4], fill=150)
+        if g.get('tuer'):
+            tx, ty = x + g['tuer'][0] * FELD, y + g['tuer'][1] * FELD
+            de.ellipse([tx - FELD * 1.0, ty - FELD * 0.75, tx + FELD * 1.0, ty + FELD * 0.65], fill=255)
+    sm = np.asarray(schatten.filter(__import__('PIL.ImageFilter', fromlist=['x']).GaussianBlur(18))).astype(np.float32)[..., None] / 255
+    bild = bild * (1 - 0.32 * sm)
+    em = np.asarray(erde).astype(np.float32) / 255
+    if em.any():
+        em = ndimage.gaussian_filter(em, 6)
+        a = np.clip((em + F.fein * 0.35 + F.buschel * 0.25 - 0.45) * 3, 0, 1)[..., None]
+        erdart = next((x for x in arten if x['id'] == 'erde'), None)
+        if erdart:
+            bild = bild * (1 - a * 0.85) + decke(F, erdart) * (a * 0.85)
+    # Streu und Wurzeln: in doppelter Größe zeichnen, dann verkleinern (weiche Kanten)
+    lage = Image.new('RGBA', (pb * 2, ph * 2), (0, 0, 0, 0)); d = ImageDraw.Draw(lage)
+    gesperrt = set()
+    for g in nah:
+        if g['kat'] in ('gebaeude', 'bauteil', 'kleinteil') and g.get('rahmen'):
+            x0, y0, x1, y1 = g['rahmen']
+            for j in range(int(math.floor(g['y'] + y0)) - 1, int(math.ceil(g['y'] + y1)) + 1):
+                for i in range(int(math.floor(g['x'] + x0)) - 1, int(math.ceil(g['x'] + x1)) + 1):
+                    gesperrt.add((i, j))
+    hh, bb = aus.shape
+    for j in range(hh):
+        for i in range(bb):
+            wi, wj = fi0 + i, fj0 + j
+            art = arten[aus[j, i]]
+            if art.get('wasser') or (wi, wj) in gesperrt:
+                continue
+            for n, st in enumerate(art.get('streu', [])):
+                saat = 300 + 17 * n + sum(map(ord, st['art']))
+                for wdh in range(3):
+                    if zufall(wi, wj, saat + 1000 * wdh) >= st['dichte'] - wdh:
+                        continue
+                    w = lambda k, wi=wi, wj=wj, saat=saat, wdh=wdh: zufall(wi * 7 + k, wj * 13 - k, saat + 50 + wdh * 997)
+                    x, y = ((wi + w(901)) * FELD - ox) * 2, ((wj + w(902)) * FELD - oy) * 2
+                    zeichne, g = ZEICHNER[st['art']]
+                    zeichne(d, x, y, g * 2 * (0.75 + 0.5 * w(903)), w)
+    for g in nah:
+        if g['kat'] == 'bewuchs':
+            w = lambda k, g=g: zufall(int(g['x'] * 31) + k, int(g['y'] * 17) - k, 777)
+            wurzeln(d, (g['x'] * FELD - ox) * 2, (g['y'] * FELD - oy) * 2, g['s'] * (1.3 if g.get('gross') else 1.0), w)
+    lage = lage.resize((pb, ph), Image.LANCZOS)
+    a = np.asarray(lage).astype(np.float32)
+    al = a[..., 3:] / 255
+    return bild * (1 - al) + a[..., :3] * al
+
+
+def backe(arten, karte, fx0, fy0, weltx, welty, felder_b, felder_h, dinge=None):
     """Ein Stück Boden backen. karte: Rang-Nummern je Rechenfeld (mit RAND rundherum), fx0/fy0: linkes oberes Feld im Ausschnitt.
     weltx/welty: Lage dieses Feldes in der Welt (Rechenfelder). Zurück: Bild felder_b × felder_h Felder (uint8)."""
     b, h = felder_b + 2 * RAND, felder_h + 2 * RAND
@@ -211,7 +332,15 @@ def backe(arten, karte, fx0, fy0, weltx, welty, felder_b, felder_h):
             deckt = d < 0
         else:
             if rand == 'fransen':
-                a = np.clip(0.5 - (d + F.fein * 0.30 * reich + F.buschel * 0.42 * reich) / (0.14 * reich), 0, 1)
+                a = np.clip(0.5 - (d + F.mittel * 0.45 * reich + F.fein * 0.30 * reich + F.buschel * 0.42 * reich) / (0.14 * reich), 0, 1)
+                saum = art['rand'].get('saum')
+                if saum:
+                    # ausgetretener Saum neben dem Weg: das Gras wird gelblich und lichter, dazwischen schaut Erde durch
+                    sb = saum['breite'] * FELD
+                    t = (np.clip(1 - (d + F.mittel * 0.4 * sb) / sb, 0, 1) * (d > -reich * 0.2))[..., None] * saum['staerke']
+                    bild = bild * (1 - t * 0.55) + bild * np.array([1.12, 1.02, 0.72], dtype=np.float32) * (t * 0.55)
+                    erdig = (t * np.clip(0.5 + F.buschel[..., None] * 1.6, 0, 1)) ** 1.5
+                    bild = bild * (1 - erdig * 0.7) + decken[k] * (erdig * 0.7)
             else:
                 a = np.clip(0.5 - d / max(2.0, 0.25 * reich), 0, 1)
             bild = bild * (1 - a[..., None]) + decken[k] * a[..., None]
@@ -226,6 +355,7 @@ def backe(arten, karte, fx0, fy0, weltx, welty, felder_b, felder_h):
             d = abstand(mein)
             nah = np.abs(d) < art['rand']['breite'] * FELD * 1.6
             bild = np.where(nah[..., None], ufer(F, art, d, bild, decken[k]), bild)
+    bild = einzelheiten(F, arten, aus, bild, dinge or [], (weltx - RAND) * FELD, (welty - RAND) * FELD, weltx - RAND, welty - RAND)
     r = RAND * FELD
     return np.clip(bild[r:ph - r, r:pb - r], 0, 255).astype(np.uint8)
 
@@ -259,7 +389,37 @@ def lade_region(name):
         for j in range(ay, by):
             for i in range(ax, bx):
                 voll[j, i] = nr[z2[j - ny][i - nx]]
-    return ordner, region, arten, voll
+    return ordner, region, arten, voll, dinge_lesen(arten)
+
+
+def dinge_lesen(arten):
+    """Alle Objekte aller Regionen in Weltkoordinaten (Rechenfelder), mit dem, was der Boden über sie wissen muss"""
+    with open(os.path.join(WELT, 'bibliothek', 'objekte.json'), encoding='utf8') as f:
+        bib = {o['id']: o for o in json.load(f)['objekte']}
+    aus = []
+    for n in sorted(os.listdir(os.path.join(WELT, 'regionen'))):
+        o2 = os.path.join(WELT, 'regionen', n)
+        if not os.path.exists(os.path.join(o2, 'objekte.json')):
+            continue
+        with open(os.path.join(o2, 'region.json'), encoding='utf8') as f:
+            r2 = json.load(f)
+        with open(os.path.join(o2, 'objekte.json'), encoding='utf8') as f:
+            liste = json.load(f)
+        ux, uy = r2['ursprung'][0] * CHUNK, r2['ursprung'][1] * CHUNK
+        for p in liste:
+            o = bib.get(p['objekt'])
+            if not o:
+                continue
+            s = p.get('s', 1); sp = -1 if p.get('spiegeln') else 1; k = p.get('kollision', o.get('kollision'))
+            g = {'x': p['x'] + ux, 'y': p['y'] + uy, 's': s, 'kat': o['kategorie'], 'gross': o['groesse'][0] > 500}
+            if o.get('interaktion') and o['kategorie'] == 'gebaeude':
+                g['tuer'] = (o['interaktion']['dx'] * s * sp, o['interaktion']['dy'] * s)
+            if k and k['art'] == 'rechteck':
+                xs = sorted([k['x'] * s * sp, (k['x'] + k['b']) * s * sp]); g['rahmen'] = (xs[0], k['y'] * s, xs[1], (k['y'] + k['h']) * s)
+            elif k and k['art'] == 'kreis':
+                g['rahmen'] = (-k['r'] * s, (k.get('dy', 0) - k['r']) * s, k['r'] * s, (k.get('dy', 0) + k['r']) * s)
+            aus.append(g)
+    return aus
 
 
 def main():
@@ -267,7 +427,7 @@ def main():
         sys.exit(__doc__)
     name = sys.argv[1]
     nur = sys.argv[sys.argv.index('--nur') + 1] if '--nur' in sys.argv else None
-    ordner, region, arten, karte = lade_region(name)
+    ordner, region, arten, karte, dinge = lade_region(name)
     (ux, uy), (cb, ch) = region['ursprung'], region['chunks']
     os.makedirs(ZIEL, exist_ok=True)
     teile = {}
@@ -276,7 +436,7 @@ def main():
             marke = f'{ux + cx}_{uy + cy}'
             if nur and marke != nur:
                 continue
-            bild = backe(arten, karte, cx * CHUNK, cy * CHUNK, (ux + cx) * CHUNK, (uy + cy) * CHUNK, CHUNK, CHUNK)
+            bild = backe(arten, karte, cx * CHUNK, cy * CHUNK, (ux + cx) * CHUNK, (uy + cy) * CHUNK, CHUNK, CHUNK, dinge)
             Image.fromarray(bild).save(os.path.join(ZIEL, marke + '.webp'), quality=86, method=6)
             teile[(cx, cy)] = bild
             print(f'  Chunk {marke}: {os.path.getsize(os.path.join(ZIEL, marke + ".webp")) // 1024} KB')
