@@ -11,20 +11,23 @@ from PIL import Image
 from scipy import ndimage
 
 HIER = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HIER, "..", ".."); KW, KHOCH = 64, 32
-DB, DH = 28, 20
+DB, DH = 32, 26
 # r: Grundriss [x, y, breite, tiefe] · tuer: Punkt vor dem Eingang · tat: was dort passiert · bild/breite/anker: gemaltes Bild, Breite am Bildschirm, wo im Bild die vordere Sockelecke liegt
 BAUTEN = [
-    {"id": "riss", "name": "Der Riss", "r": [16.1, 1.7, 2.0, 4.2], "h": 0, "wand": "", "dach": "", "tuer": [17.1, 6.6], "tat": "riss", "text": "In den Riss", "flach": True, "bild": "img/echtzeit/riss-tor.webp", "breite": 230},
-    {"id": "taverne", "name": "Taverne", "r": [8.6, 0, 5, 5], "h": 0, "wand": "", "dach": "", "tuer": [14.3, 3.0], "tat": "bald", "text": "Taverne – kommt noch", "bild": "img/echtzeit/taverne.webp", "breite": 335, "anker": [0.465, 0.985]},
-    {"id": "haendler", "name": "Händler", "r": [20.5, 0.5, 4.4, 4.4], "h": 0, "wand": "", "dach": "", "tuer": [25.6, 3.0], "tat": "bald", "text": "Händler – kommt noch", "bild": "img/echtzeit/haendler.webp", "breite": 300, "anker": [0.45, 0.985]},
-    {"id": "tor", "name": "Stadttor", "r": [0, 7.5, 3.6, 6.6], "h": 0, "wand": "", "dach": "", "tuer": [4.6, 10.8], "tat": "bald", "text": "Stadttor – der Weg in die Welt kommt noch", "bild": "img/echtzeit/stadttor.webp", "breite": 345, "anker": [0.585, 0.985]},
-    {"id": "kathedrale", "name": "Kathedrale", "r": [2, 0, 5, 4], "h": 140, "wand": "#6d6a78", "dach": "#44485e", "tuer": [4.5, 4.9], "tat": "bald", "text": "Kathedrale – kommt noch"},
-    {"id": "arena", "name": "Arena", "r": [0, 15.5, 3.6, 4], "h": 96, "wand": "#6b5b4a", "dach": "#8a2f2a", "tuer": [4.5, 17.5], "tat": "arena", "text": "Zur Arena (Würfelspiel)"},
+    {"id": "riss", "name": "Der Riss", "r": [21.1, 1.7, 2.0, 4.2], "h": 0, "wand": "", "dach": "", "tuer": [22.1, 6.6], "tat": "riss", "text": "In den Riss", "flach": True, "bild": "img/echtzeit/riss-tor.webp", "breite": 230},
+    {"id": "halle", "name": "Heldenhalle", "r": [5.5, 0, 5.6, 5.6], "h": 0, "wand": "", "dach": "", "tuer": [12.0, 3.4], "tat": "bald", "text": "Heldenhalle – kommt noch", "bild": "img/echtzeit/heldenhalle.webp", "breite": 380, "anker": [0.6, 0.985]},
+    {"id": "taverne", "name": "Taverne", "r": [13.6, 0, 5, 5], "h": 0, "wand": "", "dach": "", "tuer": [19.3, 3.0], "tat": "bald", "text": "Taverne – kommt noch", "bild": "img/echtzeit/taverne.webp", "breite": 335, "anker": [0.465, 0.985]},
+    {"id": "haendler", "name": "Händler", "r": [25.5, 0.5, 4.4, 4.4], "h": 0, "wand": "", "dach": "", "tuer": [30.6, 3.0], "tat": "bald", "text": "Händler – kommt noch", "bild": "img/echtzeit/haendler.webp", "breite": 300, "anker": [0.45, 0.985]},
+    {"id": "reihe", "name": "Häuserreihe", "r": [0, 4.5, 3.4, 10.5], "h": 0, "wand": "", "dach": "", "tuer": [-9, -9], "tat": "kulisse", "text": "", "bild": "img/echtzeit/hausreihe.webp", "breite": 520, "anker": [0.43, 0.985]},  # nur Kulisse
+    {"id": "tor", "name": "Stadttor", "r": [0, 15.5, 3.6, 6.6], "h": 0, "wand": "", "dach": "", "tuer": [4.6, 18.8], "tat": "bald", "text": "Stadttor – hier geht es bald zur Kampagne", "bild": "img/echtzeit/stadttor.webp", "breite": 400, "anker": [0.585, 0.985]},
+    {"id": "brunnen", "name": "Splitterbrunnen", "r": [15.3, 12.3, 3.4, 3.4], "h": 0, "wand": "", "dach": "", "tuer": [-9, -9], "tat": "kulisse", "text": "", "bild": "img/echtzeit/brunnen.webp", "breite": 250, "anker": [0.5, 0.985]},
+    {"id": "arena", "name": "Arena", "r": [0, 22.3, 3.6, 3.4], "h": 96, "wand": "#6b5b4a", "dach": "#8a2f2a", "tuer": [4.5, 24.0], "tat": "arena", "text": "Zur Arena (Würfelspiel)"},
 ]
-BRUNNEN = {"x": 15.0, "y": 12.0, "r": 1.3}
-START = {"x": 15.0, "y": 15.5}
-LATERNEN = [[9.5, 8], [20.5, 8], [10.5, 15], [19.5, 15], [24.5, 11.5], [6, 13]]
-LICHTER = [[b["tuer"][0], b["tuer"][1]] for b in BAUTEN if not b.get("flach")] + LATERNEN
+BRUNNEN = {"x": -50, "y": -50, "r": 0}  # der gezeichnete Brunnen ist dem gemalten gewichen
+BLAU = [17.0, 14.0]
+START = {"x": 17.0, "y": 19.0}
+LATERNEN = [[11.5, 9], [23.5, 9], [12, 18], [22, 18], [27.5, 13], [7, 21], [16, 23]]
+LICHTER = [[b["tuer"][0], b["tuer"][1]] for b in BAUTEN if not b.get("flach") and b["tat"] != "kulisse"] + LATERNEN + [[4.5, 7], [4.5, 12]]
 WIESE = 2.4  # so breit ist der Wiesenrand
 
 
@@ -47,12 +50,13 @@ innen = (wx >= 0) & (wy >= 0) & (wx < DB) & (wy < DH); rand = np.minimum(np.mini
 rng = np.random.default_rng(4); welle = ndimage.zoom(rng.random((12, 12)).astype(np.float32), (wx.shape[0] / 12, wx.shape[1] / 12), order=3)[:wx.shape[0], :wx.shape[1]]  # unregelmäßige Kante zwischen Pflaster und Wiese
 gras = np.clip((WIESE + (welle - 0.5) * 1.6 - rand) / 0.5, 0, 1)
 for b in BAUTEN:  # vor Tor und Türen liegt Pflaster, auch am Rand
+    if b["tat"] == "kulisse": continue
     tx, ty = b["tuer"]; gras *= np.clip((np.hypot(wx - tx, wy - ty) - 2.2) / 1.0, 0, 1)
 bild = kacheln(pflaster, wx, wy, 3.0) * (1 - gras[..., None]) + kacheln(wiese, wx, wy, 5.0) * gras[..., None]
 hell = np.full(wx.shape, 0.5, dtype=np.float32); warm = np.zeros(wx.shape, dtype=np.float32)
 for lx, ly in LICHTER: b = 1.0 / (1.0 + ((wx - lx) ** 2 + (wy - ly) ** 2) / 2.2) ** 1.2; hell += b; warm += b
 R = next(b for b in BAUTEN if b["id"] == "riss")["r"]; rx, ry = R[0] + R[2] / 2, R[1] + R[3] / 2
-blau = 0.7 / (1.0 + ((wx - BRUNNEN["x"]) ** 2 + (wy - BRUNNEN["y"]) ** 2) / 4.0) + 0.9 / (1.0 + ((wx - rx) ** 2 / 3.0 + (wy - ry) ** 2 / 9.0))  # Brunnen und Riss leuchten kühl
+blau = 0.7 / (1.0 + ((wx - BLAU[0]) ** 2 + (wy - BLAU[1]) ** 2) / 4.0) + 0.9 / (1.0 + ((wx - rx) ** 2 / 3.0 + (wy - ry) ** 2 / 9.0))  # Brunnen und Riss leuchten kühl
 schatten = np.ones(wx.shape, dtype=np.float32)
 for b in BAUTEN:  # dunkler vor den Gebäuden
     if b.get("flach"): continue
