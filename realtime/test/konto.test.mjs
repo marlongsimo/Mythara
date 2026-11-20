@@ -27,7 +27,7 @@ await p.click("#my-reg"); await p.fill("#my-reg-name", "Anna"); await p.waitForT
 await p.fill("#my-reg-name", "Neu_1"); await p.fill("#my-reg-pw", "langgenug1"); await p.fill("#my-reg-pw2", "anders"); await p.click("#my-reg-form .my-knopf"); check(/stimmen nicht/.test(await p.textContent("#my-konto-fb")), "… und zwei verschiedene Passwörter werden abgelehnt");
 await p.click("#my-zur-anmeldung"); await Promise.all([p.waitForNavigation(), p.click("#my-gast-start")]); await imSpiel(); check(await p.textContent("#ez-profil-name") === "Gast · anmelden", "Als Gast spielen: man ist im Spiel, oben steht „Gast“");
 await dorf(); check(Boolean(await p.evaluate(() => Boolean(window.EZD))), "Beim nächsten Laden im selben Besuch wird nicht noch einmal gefragt");
-await p.evaluate(() => { localStorage.setItem("ez_kampagnen", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: "lichtbringer", mit: [] })); }); await p.waitForTimeout(700);
+await p.evaluate(() => { localStorage.setItem("ez_probe", "1"); localStorage.setItem("ez_team", JSON.stringify({ held: "lichtbringer", mit: [] })); }); await p.waitForTimeout(700);
 check(!(await konto("Anna")) || !(await konto("Anna")).stand, "Als Gast wird nichts ins Konto geschrieben");
 await p.click("#ez-profil"); check(await p.isVisible("#ez-konto .tafel") && /Gast/.test(await p.textContent("#ez-konto .kopf b")), "Ein Tipp auf das Profil öffnet die Profiltafel");
 await p.click('#ez-konto [data-held="assassine"]'); await Promise.all([p.waitForNavigation(), p.click('#ez-konto .reihe [data-t="zu"]')]); await imSpiel(); check(await p.evaluate(() => window.EZD.szene.held) === "assassine" && /Vex/.test(await p.textContent("#ez-profil-held")), "Bildnis gewählt: In der Waldmark läuft jetzt dieser Held");
@@ -35,24 +35,24 @@ await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('
 await p.fill("#my-name", "Anna"); await p.fill("#my-pw", "falsch"); await p.click("#my-anmelden .my-knopf"); await p.waitForTimeout(500); check(/falsch/.test(await p.textContent("#my-konto-fb")), "Falsches Passwort: Meldung, keine Anmeldung");
 await p.fill("#my-pw", "geheim1"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
 check(await p.textContent("#ez-profil-name") === "Anna", "Nach der Anmeldung ist man im Spiel, der Name steht im Profil");
-let a = await konto("Anna"); check(a.stand && a.stand.daten.ez_kampagnen === "1" && a.version === 1, "Konto ohne Stand: der Stand vom Gerät wird übernommen (Version 1)");
-await p.evaluate(() => localStorage.setItem("ez_kampagnen", "2")); await p.waitForTimeout(900); a = await konto("Anna"); check(a.stand.daten.ez_kampagnen === "2" && a.version === 2, "Eine Änderung im Spiel landet kurz darauf im Konto (Version 2)");
+let a = await konto("Anna"); check(a.stand && a.stand.daten.ez_probe === "1" && a.version === 1, "Konto ohne Stand: der Stand vom Gerät wird übernommen (Version 1)");
+await p.evaluate(() => localStorage.setItem("ez_probe", "2")); await p.waitForTimeout(900); a = await konto("Anna"); check(a.stand.daten.ez_probe === "2" && a.version === 2, "Eine Änderung im Spiel landet kurz darauf im Konto (Version 2)");
 check(await p.evaluate(() => localStorage.getItem("ez__offen")) === null, "… und die Merkmarke „offen“ ist wieder weg");
 /* ein anderes Gerät hat weitergespielt: Das Konto hat einen neueren Stand als dieses Gerät */
-await p.evaluate(() => { const d = JSON.parse(sessionStorage.getItem("fake_db")); d.konten.Anna.stand.daten.ez_kampagnen = "3"; d.konten.Anna.version = 7; sessionStorage.setItem("fake_db", JSON.stringify(d)); });
-await dorf(); await p.waitForTimeout(600); check(await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === "3", "Neuerer Stand im Konto wird beim Laden aufs Gerät übernommen");
+await p.evaluate(() => { const d = JSON.parse(sessionStorage.getItem("fake_db")); d.konten.Anna.stand.daten.ez_probe = "3"; d.konten.Anna.version = 7; sessionStorage.setItem("fake_db", JSON.stringify(d)); });
+await dorf(); await p.waitForTimeout(600); check(await p.evaluate(() => localStorage.getItem("ez_probe")) === "3", "Neuerer Stand im Konto wird beim Laden aufs Gerät übernommen");
 /* das Speichern kam nicht durch (Seite wurde vorher verlassen): die Merkmarke steht noch */
-await p.evaluate(() => { const f = document.createElement("iframe"); document.body.appendChild(f); const roh = f.contentWindow.Storage.prototype.setItem; roh.call(localStorage, "ez_kampagnen", "4"); roh.call(localStorage, "ez__offen", "1"); /* am Mithören vorbei, wie wenn die Seite vor dem Speichern verlassen wurde */ }); await dorf(); await p.waitForTimeout(600);
-a = await konto("Anna"); check(a.stand.daten.ez_kampagnen === "4", "Nicht gespeicherte Änderung wird beim nächsten Laden nachgeholt");
+await p.evaluate(() => { const f = document.createElement("iframe"); document.body.appendChild(f); const roh = f.contentWindow.Storage.prototype.setItem; roh.call(localStorage, "ez_probe", "4"); roh.call(localStorage, "ez__offen", "1"); /* am Mithören vorbei, wie wenn die Seite vor dem Speichern verlassen wurde */ }); await dorf(); await p.waitForTimeout(600);
+a = await konto("Anna"); check(a.stand.daten.ez_probe === "4", "Nicht gespeicherte Änderung wird beim nächsten Laden nachgeholt");
 /* zoom gehört zum Gerät */
 await p.evaluate(() => localStorage.setItem("ez_zoom", "1.2")); await p.waitForTimeout(700); a = await konto("Anna"); check(!("ez_zoom" in a.stand.daten), "Die Zoom-Einstellung bleibt auf dem Gerät");
 /* abmelden */
 await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(900);
-check(/anmelden\.html/.test(p.url()) && await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === null, "Abmelden: man landet auf der Anmeldeseite, der Fortschritt bleibt nicht auf dem Gerät");
+check(/anmelden\.html/.test(p.url()) && await p.evaluate(() => localStorage.getItem("ez_probe")) === null, "Abmelden: man landet auf der Anmeldeseite, der Fortschritt bleibt nicht auf dem Gerät");
 /* ein zweites Konto sieht den Stand des ersten nicht */
 await p.fill("#my-name", "Bert"); await p.fill("#my-pw", "geheim2"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
-check(await p.textContent("#ez-profil-name") === "Bert" && await p.evaluate(() => localStorage.getItem("ez_kampagnen")) === null, "Ein anderes Konto beginnt ohne den Stand des ersten");
-check((await konto("Anna")).stand.daten.ez_kampagnen === "4", "… und der Stand des ersten ist unberührt");
+check(await p.textContent("#ez-profil-name") === "Bert" && await p.evaluate(() => localStorage.getItem("ez_probe")) === null, "Ein anderes Konto beginnt ohne den Stand des ersten");
+check((await konto("Anna")).stand.daten.ez_probe === "4", "… und der Stand des ersten ist unberührt");
 /* ein ganz neues Konto anlegen */
 await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(800);
 await p.click("#my-reg"); await p.fill("#my-reg-name", "Cleo_7"); await p.fill("#my-reg-pw", "langgenug1"); await p.fill("#my-reg-pw2", "langgenug1"); await Promise.all([p.waitForNavigation(), p.click("#my-reg-form .my-knopf")]); await imSpiel();
