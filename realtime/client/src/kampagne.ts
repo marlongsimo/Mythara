@@ -99,7 +99,7 @@ const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus 
 const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
 /** Stufe der Aufgabe je Ort (bestimmt mit der Gruppengröße die Stärke der Gegner) */
 export { ORTSTUFE } from "../../shared/karten";
-export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t ? t.mit : [] }; }
+export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t && P.get("mitglied") !== "1" ? t.mit : [] }; }
   if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
 
 /* ---------- Gesprächsfenster ---------- */
@@ -171,6 +171,7 @@ async function laufe(wahl: (los: (held: string, mit: string[]) => void, zurueck?
 export function kampagneBeginnen(wahl: Parameters<typeof laufe>[0]) { document.body.classList.add("kampagne"); void laufe(wahl); }
 /** Ein Kampf ist gewonnen: Nebenaufgabe prüfen, dann geht die Geschichte weiter. */
 export function kampfGewonnen(sek: number, wahl: Parameters<typeof laufe>[0]) {
+  if (IM_ORT && P.get("mitglied") === "1") { setTimeout(() => location.replace("./"), 1800); return; } /* Koop-Mitspieler: zurück in die Waldmark – die Geschichte erlebt der Anführer */
   if (IM_ORT) { try { const k = "ez_ort_" + OK.ort, m = JSON.parse(localStorage.getItem(k) || "{}") || {}; m["kampf_" + OK.karte] = true; localStorage.setItem(k, JSON.stringify(m)); } catch { /* privat */ } setTimeout(() => location.replace("?ort=" + encodeURIComponent(OK.ort)), 1800); return; }
   if (!K) return; const s = K.schritte[S.schritt]; if (s.art !== "kampf") return; S.schritt++; merke(S);
   if (s.neben && sek <= s.neben.unterSek) nebenMeldung(s.neben.id);

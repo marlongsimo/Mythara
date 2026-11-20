@@ -9,6 +9,8 @@ import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
 import { KARTEN, FEIN } from "../../shared/karten";
 import { probeGeschafft } from "./hud";
+import { kampfZusatz } from "./gruppe";
+const MITGLIED = new URLSearchParams(location.search).get("mitglied") === "1"; /* Koop: Ich bin im Kampf eines anderen Spielers */
 import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern, ORTSTUFE } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
@@ -101,9 +103,14 @@ class Spiel extends Phaser.Scene {
   async starte(held: string, mit: string[]) {
     let url = SERVER, erste: unknown = undefined;
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
-      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || ""); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
+      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
-    verbinde(url, held, mit, (z) => this.zustand(z), (art, grund) => { ladeschirm(art === "warte" ? grund : ""); $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER0 && grund ? " – " + grund : ""); if (FLACH && art === "lokal" && kontoName()) { const a = $("#ez-art"); a.className = "ez-kasten lokal warnung"; a.textContent = "Ohne Server: EP und Seelensplitter aus diesem Kampf werden nicht gutgeschrieben." + (grund ? " Grund: " + grund + "." : ""); console.warn("Splitterlande:", a.textContent); return; } if (FLACH && art === "warte") $("#ez-art").style.display = "block"; else if (FLACH) $("#ez-art").style.display = ""; $("#ez-art").className = "ez-kasten " + art; }, erste).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
+    if (MITGLIED) { /* Koop-Mitspieler: Gutschrift kommt vom Server, auch wenn der Anführer den Kampf beendet */
+      window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; ep?: Record<string, number>; seelen?: number };
+        if (m.t === "gutschrift" && m.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } }
+        if (m.t === "koopende") { const a = $("#ez-art"); a.className = "ez-kasten lokal warnung"; a.textContent = "Der Anführer hat den Kampf verlassen – zurück in die Waldmark."; setTimeout(() => location.replace("./"), 2500); } }); }
+    verbinde(url, held, mit, (z) => this.zustand(z), (art, grund) => { ladeschirm(art === "warte" ? grund : ""); $("#ez-art").textContent = art === "warte" ? grund : art === "server" ? "Server" + (grund ? " – " + grund : "") : "ohne Server (dein Browser rechnet)" + (SERVER0 && grund ? " – " + grund : ""); if (MITGLIED && art === "lokal") { const a = $("#ez-art"); a.className = "ez-kasten lokal warnung"; a.textContent = "Der gemeinsame Kampf ist nicht mehr da" + (grund ? " (" + grund + ")" : "") + " – zurück in die Waldmark."; setTimeout(() => location.replace("./"), 3000); return; }
+      if (FLACH && art === "lokal" && kontoName()) { const a = $("#ez-art"); a.className = "ez-kasten lokal warnung"; a.textContent = "Ohne Server: EP und Seelensplitter aus diesem Kampf werden nicht gutgeschrieben." + (grund ? " Grund: " + grund + "." : ""); console.warn("Splitterlande:", a.textContent); return; } if (FLACH && art === "warte") $("#ez-art").style.display = "block"; else if (FLACH) $("#ez-art").style.display = ""; $("#ez-art").className = "ez-kasten " + art; }, erste).then((n) => { this.netz = n; (window as unknown as Record<string, unknown>).EZ = { szene: this, netz: n, zustand: () => this.z };
       $("#ez-hilfe").textContent = HANDY ? "Finger aufs Feld: laufen · Gegner antippen: Ziel – angegriffen wird in Reichweite · ⇄ Waffe wechseln · Q, E, R: Fähigkeiten" : "WASD: laufen · Klick auf einen Gegner: Ziel – angegriffen wird in Reichweite · Leertaste: Waffe wechseln · Q, E, R: Fähigkeiten in Mausrichtung"; });
   }
   groesse() { const k = this.cameras.main, h = this.scale.height; if (FLACH) { const w = this.scale.width; k.setZoom(Math.max(Math.min(w / (KB * ZELLE), h / (KH * ZELLE)), Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2) * zoomFaktor())); return; } k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 420 : 620), 0.7, 2.2) * zoomFaktor()); }

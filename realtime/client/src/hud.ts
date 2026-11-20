@@ -8,6 +8,7 @@ import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { KARTEN, KAMPFFOLGE, ORTREIHE } from "../../shared/karten";
 import { epAlle } from "./halle";
 import { kontoKnopf, kontoFenster, kontoName, kontoAbmelden, kontoAnmelden } from "./konto";
+import { gruppenTafel, gruppeVerbinden, einladungenBeobachten } from "./gruppe";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const lies = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -104,7 +105,7 @@ export const ZEICHEN = {
 /** Bild, Name, Held und Stufe des Helden, der gerade läuft */
 export function hudProfil(held: string) {
   const D = HELDEN[held] || HELDEN.schildwaechter; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
-  $("#ez-profil-stufe").textContent = "St. " + stufeAusEp(epAlle()[held] || 0); kontoKnopf();
+  $("#ez-profil-stufe").textContent = "St. " + stufeAusEp(epAlle()[held] || 0); kontoKnopf(); void gruppeVerbinden(); einladungenBeobachten();
 }
 
 /* ---------- Banner oben in der Mitte ---------- */
@@ -163,10 +164,10 @@ export function menueTafel(zu: () => void) {
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   f.innerHTML = `<div class="tafel menue"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
     <h2>Menü</h2><div class="zier"></div>
-    <div class="liste"><button type="button" data-t="profil">Heldenprofil &amp; Bildnis</button><button type="button" data-t="start">Zur Startseite von Mythara</button>
+    <div class="liste"><button type="button" data-t="koop">Zusammen spielen <small>(Freunde &amp; Koop)</small></button><button type="button" data-t="profil">Heldenprofil &amp; Bildnis</button><button type="button" data-t="start">Zur Startseite von Mythara</button>
     ${n ? `<button type="button" data-t="ab">Abmelden <small>(${n})</small></button>` : `<button type="button" data-t="hin">Anmelden</button>`}</div>
     <p class="klein">Splitterlande · Beta</p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
-    if (w === "zu") schliessen(); else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
+    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
 }

@@ -85,8 +85,8 @@ export class Sim {
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
 
   /** Eine Eingabe des Spielers. Alles wird geprüft und begrenzt – der Client bestimmt nie ein Ergebnis. */
-  eingabe(e: Eingabe): void { this.bereit();
-    const h = this.ich; if (!e || typeof e !== "object") return;
+  eingabe(e: Eingabe, wer = 0): void { this.bereit();
+    const h0 = wer ? this.nach(wer) : this.ich; if (!h0 || !h0.held || h0.bot) return; const h = h0; if (!e || typeof e !== "object") return; /* wer: Kennung des Helden eines Mitspielers (Koop) */
     if (e.t === "neu") { if (this.phase === "sieg") this.aufbau(); return; }
     if (h.tot || (this.phase !== "lauf" && !STAERKE.beute)) return;
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
@@ -320,8 +320,8 @@ export class Sim {
 
   /** Offene Schleuse: Gegner kriechen in Wellen aus dem Wasser und sammeln sich am Hebel. Wer drei Sekunden ungestört am Hebel steht, schließt sie; ein Treffer fängt von vorn an. */
   private schleuse(sl: SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }): void {
-    const h = this.ich, nah = !h.tot && Math.hypot(h.x - sl.x, h.y - sl.y) < 1.4;
-    if (nah && h.ruhe > 0.05) { sl.fort = Math.min(1, sl.fort + DT / 3); if (sl.fort >= 1) { sl.offen = false; { const P = this.karte.PROBE; if (P && P.art === "schleuse" && this.probe === 0) this.probe = this.zeit <= (P.wert || 0) ? 1 : 2; } this.ev.push({ a: "schleuse", x: sl.x, y: sl.y }); if (this.besiegt >= this.monsterZahl) this.sieg(); return; } } else sl.fort = 0;
+    const nah = this.wesen.some((h) => h.held && !h.bot && !h.tot && h.ruhe > 0.05 && Math.hypot(h.x - sl.x, h.y - sl.y) < 1.4); /* jeder Spieler kann den Hebel halten */
+    if (nah) { sl.fort = Math.min(1, sl.fort + DT / 3); if (sl.fort >= 1) { sl.offen = false; { const P = this.karte.PROBE; if (P && P.art === "schleuse" && this.probe === 0) this.probe = this.zeit <= (P.wert || 0) ? 1 : 2; } this.ev.push({ a: "schleuse", x: sl.x, y: sl.y }); if (this.besiegt >= this.monsterZahl) this.sieg(); return; } } else sl.fort = 0;
     sl.warte -= DT; if (sl.warte > 0 || sl.raus >= sl.gesamt) return; sl.warte = sl.takt;
     if (this.wesen.filter((w) => !w.held && !w.tot && w.gruppe >= 100).length >= sl.max) return;
     const p = sl.quellen[Math.floor(this.zf() * sl.quellen.length)], m = this.neu(false, sl.art, 1, { x: p.x, y: p.y }, true, 100 + this.lauf);
@@ -337,13 +337,26 @@ export class Sim {
   }
   /** Sieg: die Herausforderung ist geschafft, wenn sie bis hierher nicht verfehlt wurde */
   private sieg(): void { this.phase = "sieg"; if (this.karte.PROBE && this.probe === 0) this.probe = 1; }
+  /** Die Angaben zum eigenen Helden (für jeden Spieler einer Koop-Gruppe seine eigenen) */
+  ichVon(id: number): Zustand["ich"] { const r = (v: number) => Math.round(v * 100) / 100, h = this.nach(id) || this.ich;
+    return { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: this.stufen[h.typ] || 1, ep: this.epStand[h.typ] || 0 }; }
+  /** Stufe eines Helden aus seiner Erfahrung setzen (Koop: jeder bringt seine eigene mit) – Leben passt sich an */
+  setzeErfahrung(typ: string, ep: number): void { this.bereit(); this.epStand[typ] = ep; this.stufen[typ] = stufeAusEp(ep); HELDENSTUFE[typ] = this.stufen[typ];
+    for (const w of this.wesen) if (w.held && w.typ === typ) { const q = w.lp / w.max; w.max = Math.round(HELDEN[typ].lp * (1 + STUFENBONUS(this.stufen[typ]).lp)); w.lp = Math.max(1, Math.round(w.max * q)); } }
+  /** Koop: Ein Mitspieler übernimmt einen Helden. Erst einen Begleiter desselben Helden, sonst einen neuen (bis drei), sonst irgendeinen Begleiter. Zurück: Kennung oder 0. */
+  uebernehmen(typ: string): number { this.bereit(); const helden = this.wesen.filter((w) => w.held && w.team === 0);
+    let w = helden.find((o) => o.bot && o.typ === typ);
+    if (!w && HELDEN[typ] && helden.length < 3 && !helden.some((o) => o.typ === typ)) { const p = START[helden.length] || START[0]; w = this.neu(true, typ, 0, p, false); this.begleiter.push(typ); }
+    if (!w) w = helden.find((o) => o.bot); if (!w) return 0; w.bot = false; w.pfad = []; w.zielId = 0; w.rx = 0; w.ry = 0; return w.id; }
+  /** Koop: Ein Mitspieler geht – sein Held läuft als Begleiter weiter */
+  freigeben(id: number): void { const w = this.nach(id); if (!w || !w.held || w === this.ich) return; w.bot = true; w.fuehrer = this.ich.id; w.rx = 0; w.ry = 0; }
   /** Der Zustand für den Client (kompakt). Die Ereignisse seit dem letzten Abruf sind enthalten und werden danach geleert. */
   zustand(): Zustand { this.bereit();
     const r = (v: number) => Math.round(v * 100) / 100, h = this.ich, ev = this.ev; this.ev = [];
     const bits = (w: Wesen) => (w.bollwerk > 0 ? BIT.bollwerk : 0) | (w.betaeubt > 0 ? BIT.betaeubt : 0) | (w.langsamT > 0 ? BIT.langsam : 0) | (w.dauer.length ? BIT.dauer : 0) | (w.malT > 0 ? BIT.mal : 0) | (w.held && HELDEN[w.typ].modi[w.modus].schild ? BIT.schild : 0) | (w.aushol > 0 ? BIT.aushol : 0) | (w.schutz > 0 ? BIT.schutz : 0);
     return { tick: this.tick, phase: this.phase, zeit: Math.round(this.zeit * 10) / 10, splitter: this.splitter, besiegt: this.besiegt, monster: this.monsterZahl, b: this.beute.map((q) => [q.id, q.x, q.y, q.n]),
       w: this.wesen.filter((w) => w.held || !w.tot).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
-      g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: this.stufen[h.typ] || 1, ep: this.epStand[h.typ] || 0 },
+      g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: this.ichVon(h.id),
       pr: this.karte.PROBE ? this.probe : undefined,
       sl: this.sl ? [r(this.sl.x), r(this.sl.y), this.sl.offen ? 1 : 0, r(this.sl.fort)] : undefined,
       st: Object.fromEntries(this.wesen.filter((w) => w.held && w.team === 0).map((w) => [w.typ, [this.stufen[w.typ] || 1, this.epStand[w.typ] || 0]])) };

@@ -21,6 +21,8 @@ const meins = (k: string) => k.startsWith("ez_") && !OHNE.has(k) && !(name && (k
 
 let db: Db | null = null, name = "", version = 0, takt = 0, schreibt = false;
 function verbindung(): Db | null { if (db) return db; const c = W.MR_MULTIPLAYER_CONFIG; if (!W.supabase || !c) return null; try { db = W.supabase.createClient(c.supabaseUrl, c.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "mr-rpg-auth" } }); } catch { db = null; } return db; }
+/** Eine Datenbankfunktion als angemeldeter Spieler aufrufen (für Freunde und Einladungen) */
+export function kontoRpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> { return rpc<T>(fn, args); }
 async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> { const d = verbindung(); if (!d) throw new Error("Keine Verbindung zum Konto."); const { data, error } = await d.rpc(fn, args); if (error) throw new Error(error.message); return data as T; }
 
 /** Das Anmelde-Token für den Spielserver (nur mit Konto) */
