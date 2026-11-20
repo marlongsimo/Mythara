@@ -40,6 +40,6 @@ export function weltkarte(zu: () => void) {
     const z = ZIELE.find((q) => q.id === k.dataset.id) as Ziel; for (const a of Array.from(w.querySelectorAll(".ziel"))) a.classList.toggle("an", a === k);
     info.hidden = false; info.innerHTML = `<small>Kampagne ${z.nr} · ${z.ort} · ${z.dauer}</small><h3>${z.name}</h3><p>${z.text}</p><em>${z.nr <= fertig ? "Geschafft." : z.nr > fertig + 1 ? `Verschlossen – erst „${ZIELE[z.nr - 2].name}“ abschließen.` : SPIELBAR.has(z.id) ? "" : "Noch nicht spielbar – diese Kampagne kommt als Echtzeit-Dungeon."}</em>` + (SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<button type="button" class="los">${weiter(z.id) ? "Weiterspielen" : z.nr <= fertig ? "Noch einmal spielen" : "Aufbrechen"} ▸</button>` : "");
     const um = info.querySelector(".umsehen") as HTMLElement | null; if (um) um.onclick = () => { location.href = "?ort=" + z.id; };
-    const los = info.querySelector(".los") as HTMLElement | null; if (los) los.onclick = () => { location.href = "?ort=" + z.id + (weiter(z.id) && z.nr > fertig ? "" : "&neu=1"); }; /* man landet im Ort und spielt dort */
+    const los = info.querySelector(".los") as HTMLElement | null; if (los) los.onclick = () => { location.href = "?ort=" + z.id + (weiter(z.id) && z.nr > fertig ? "&eingang=1" : "&neu=1"); }; /* man landet im Ort und spielt dort */
   };
 }
