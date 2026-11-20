@@ -3,8 +3,9 @@
  * Der Client schickt nur Eingaben. Jede Verbindung bekommt ihre eigene Partie: den Riss (PvE) oder einen Kampagnenkampf.
  *
  * Kampagnenkämpfe (?kampf=<karte>&ort=<ort>): Der Spieler muss angemeldet sein. Die erste Nachricht ist {t:"anmeldung", token}; der Server prüft das Token
- * bei Supabase, liest die Stufen der Helden und rechnet den Kampf. Erfahrung und Seelensplitter zählt allein der Server; beim Verlassen des Kampfes
- * (Nachricht {t:"verlassen"} oder Trennung) schreibt er sie über rpg_echtzeit_gutschrift (Migration 035) gut und schickt {t:"gutschrift", ep, seelen} zurück.
+ * bei Supabase, liest die Stufen der Helden und rechnet den Kampf. Erfahrung und Seelensplitter zählt allein der Server und bucht sie über rpg_echtzeit_gutschrift
+ * (Migration 035) schon während des Kampfes zwischendurch (nur die Differenz, {t:"gebucht", ep, seelen}); beim Verlassen ({t:"verlassen"} oder Trennung)
+ * bucht er den Rest und schickt {t:"gutschrift", ep, seelen} zurück.
  *
  * Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers (SUPABASE_SERVICE_KEY), nie in den Browser.
  */
@@ -21,7 +22,13 @@ const HERKUNFT = (process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,h
 const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = process.env.SUPABASE_SERVICE_KEY || "";
 /* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
 
-interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean; gesiegt: boolean };
+/** Ein Kampagnenkampf eines Spielers. Gebucht wird zwischendurch, immer nur die Differenz zum schon Gebuchten (siehe buchen). */
+interface Kampf { karte: string; ort: string; team: string[]; nutzer: string; ep: number; fertig: boolean; gesiegt: boolean;
+  gebuchtEp: number; gebuchtS: number; /* schon in der Datenbank */ bucht: boolean; nochmal: boolean; ende: boolean; seit: number; geaendert: number; letzterEp: number; letzterS: number; stand: object | null; wartende: (() => void)[] }
+const neuerKampf = (karte: string, ort: string, team: string[]): Kampf => ({ karte, ort, team, nutzer: "", ep: 0, fertig: false, gesiegt: false, gebuchtEp: 0, gebuchtS: 0, bucht: false, nochmal: false, ende: false, seit: Date.now(), geaendert: 0, letzterEp: 0, letzterS: 0, stand: null, wartende: [] });
+/** Zwischenbuchung: so lange nach der letzten neuen Beute Ruhe, spätestens so lange nach der letzten Buchung (Millisekunden) */
+const BUCHUNG_RUHE = Number(process.env.BUCHUNG_RUHE_MS) || 5000, BUCHUNG_SPAETESTENS = Number(process.env.BUCHUNG_SPAETESTENS_MS) || 30000;
+interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: Kampf;
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string } }
 const plaetze = new Set<Platz>();
@@ -59,14 +66,32 @@ async function siegeLesen(nutzer: string): Promise<Set<string>> {
 async function siegEintragen(p: Platz): Promise<void> { const k = p.kampf; if (!k || k.gesiegt) return; k.gesiegt = true;
   try { await sb("/rest/v1/rpc/rpg_echtzeit_sieg", { method: "POST", body: JSON.stringify({ p_user: k.nutzer, p_ort: k.ort, p_kampf: k.karte }) }); if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "sieg", ort: k.ort, kampf: k.karte })); }
   catch (e) { console.error("Sieg nicht eingetragen:", (e as Error).message); k.gesiegt = false; /* beim nächsten Schritt noch einmal */ } }
-async function gutschreiben(p: Platz): Promise<void> {
-  const sim = p.sim || (p.haupt && p.haupt.sim), k = p.kampf; if (!k || k.fertig || !sim) return; k.fertig = true; const seelen = sim.splitter;
-  if (!k.ep && !seelen) { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", leer: true })); return; }
-  const ep: Record<string, number> = {}; for (const h of k.team) ep[h] = k.ep;
-  try { const r = await sb("/rest/v1/rpc/rpg_echtzeit_gutschrift", { method: "POST", body: JSON.stringify({ p_user: k.nutzer, p_ep: ep, p_seelen: seelen, p_kampf: k.ort + "/" + k.karte }) });
-    if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", ...(r as object) }));
-  } catch (e) { console.error("Gutschrift fehlgeschlagen:", (e as Error).message); if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify({ t: "gutschrift", fehler: true })); }
+/** EP und Seelensplitter in die Datenbank buchen: nur, was seit der letzten Buchung dazugekommen ist – so wird nichts doppelt gebucht.
+ *  Mitten im Kampf ruft der Takt das von selbst auf (nach BUCHUNG_RUHE ohne neue Beute, spätestens nach BUCHUNG_SPAETESTENS); stirbt der Server, fehlt höchstens der letzte Rest.
+ *  Schlägt eine Buchung fehl, bleibt der Betrag offen und geht mit der nächsten mit. schluss: Der Kampf ist vorbei – dann noch einmal alles Offene (mit bis zu drei Versuchen)
+ *  und der Spieler bekommt {t:"gutschrift", ep, seelen} mit den Werten aus der Datenbank. Zwischenbuchungen meldet der Server als {t:"gebucht", ep, seelen}. */
+async function buchen(p: Platz, schluss = false): Promise<void> {
+  const sim = p.sim || (p.haupt && p.haupt.sim), k = p.kampf; if (!k || !sim || !k.nutzer) return;
+  if (schluss) { if (k.ende) return; k.ende = true; k.fertig = true; /* ab jetzt zählt nichts mehr dazu */ }
+  if (k.bucht) { if (!schluss) return; k.nochmal = true; return new Promise<void>((ok) => k.wartende.push(ok)); } /* läuft gerade eine: danach den Rest */
+  const ep = k.ep - k.gebuchtEp, seelen = sim.splitter - k.gebuchtS, sende = (o: object) => { if (p.ws.readyState === WebSocket.OPEN) p.ws.send(JSON.stringify(o)); };
+  const fertig = (o: object) => { if (k.ende) { sende({ t: "gutschrift", ...o }); for (const w of k.wartende.splice(0)) w(); } };
+  if (ep <= 0 && seelen <= 0) { fertig(k.stand || { leer: true }); return; }
+  k.bucht = true; k.seit = Date.now(); const epHeld: Record<string, number> = {}; for (const h of k.team) epHeld[h] = ep; let ok = false;
+  for (let versuch = 0; versuch < (k.ende ? 3 : 1) && !ok; versuch++) {
+    if (versuch) await new Promise((r) => setTimeout(r, 1500 * versuch));
+    try { const r = await sb("/rest/v1/rpc/rpg_echtzeit_gutschrift", { method: "POST", body: JSON.stringify({ p_user: k.nutzer, p_ep: epHeld, p_seelen: seelen, p_kampf: k.ort + "/" + k.karte }) });
+      k.gebuchtEp += ep; k.gebuchtS += seelen; k.stand = r as object; ok = true; if (!k.ende) sende({ t: "gebucht", ...(r as object) }); }
+    catch (e) { console.error("Gutschrift fehlgeschlagen (bleibt offen):", (e as Error).message, ep, "EP", seelen, "Splitter"); }
+  }
+  k.bucht = false;
+  if (k.nochmal || (k.ende && ok && (k.ep > k.gebuchtEp || sim.splitter > k.gebuchtS))) { k.nochmal = false; return buchen(p); } /* inzwischen kam der Schluss oder neue Beute */
+  if (k.ende) { if (ok) fertig(k.stand as object); else { console.error("Gutschrift endgültig fehlgeschlagen:", k.nutzer, k.ort + "/" + k.karte, k.ep - k.gebuchtEp, "EP", sim.splitter - k.gebuchtS, "Splitter"); fertig({ fehler: true }); } }
 }
+/** Im Takt: Ist seit einer Weile Ruhe nach neuer Beute (oder lange nicht gebucht), zwischendurch buchen */
+function zwischenbuchen(q: Platz, sim: Sim, jetzt: number): void { const k = q.kampf; if (!k || k.ende || k.bucht || !k.nutzer) return;
+  if (k.ep !== k.letzterEp || sim.splitter !== k.letzterS) { k.letzterEp = k.ep; k.letzterS = sim.splitter; k.geaendert = jetzt; }
+  if ((k.ep > k.gebuchtEp || sim.splitter > k.gebuchtS) && (jetzt - k.geaendert >= BUCHUNG_RUHE || jetzt - k.seit >= BUCHUNG_SPAETESTENS)) void buchen(q); }
 
 const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -91,7 +116,7 @@ wss.on("connection", (ws, req) => {
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen
     let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
-    if (karte && !p.sim && !p.haupt) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = { karte, ort, team: [held, ...mit], nutzer: "", ep: 0, fertig: false, gesiegt: false };
+    if (karte && !p.sim && !p.haupt) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
         if (mitglied) { /* Koop-Mitspieler: in den laufenden Kampf des Anführers; der Fortschritt zählt auch für ihn */
           const R = raeume.get(raum), H = R && R.kampf; if (!R || !H || !H.sim || !H.kampf || H.kampf.karte !== karte || H.kampf.ort !== ort || H.kampf.fertig) { console.log("Koop abgelehnt: kein laufender Kampf in", raum); ws.close(4404, "kein gemeinsamer kampf"); return; }
@@ -105,12 +130,12 @@ wss.on("connection", (ws, req) => {
         if (gruppe) { gruppe.kampf = p; p.raum = gruppe.code; gruppe.zuletzt = Date.now(); const erwartet = [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length; if (erwartet) p.start = { bis: Date.now() + 20000, erwartet, los: 0, zuletzt: "" }; losMelden(gruppe, ort, karte); }
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
-    if ((e as { t: string }).t === "verlassen") { void gutschreiben(p); return; }
+    if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
     try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }
   });
-  const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist); void gutschreiben(p); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
+  const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist); void buchen(p, true); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
     if (p.haupt) { p.haupt.mit?.delete(p); if (p.haupt.sim && p.heldId) p.haupt.sim.freigeben(p.heldId); } /* sein Held kämpft als Begleiter weiter */
-    if (p.mit) for (const m of p.mit) { void gutschreiben(m).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
+    if (p.mit) for (const m of p.mit) { void buchen(m, true).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
     if (p.raum) { const R = raeume.get(p.raum); if (R && R.kampf === p) { R.kampf = null; R.zuletzt = Date.now(); gruppeMelden(R); } } }; ws.on("close", weg); ws.on("error", weg);
 });
 
@@ -175,6 +200,7 @@ setInterval(() => {
       p.ws.send(JSON.stringify({ t: "z", z }));
       if (p.mit) for (const m of p.mit) { if (m.kampf && !m.kampf.fertig) for (const ev of z.ev) if (ev.a === "ep") m.kampf.ep += ev.n; if (m.kampf && !m.kampf.gesiegt && z.phase === "sieg") void siegEintragen(m);
         if (m.ws.readyState === WebSocket.OPEN && m.ws.bufferedAmount < 65536) m.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: p.sim.ichVon(m.heldId || 0) } })); m.zuletzt = jetzt; } }
+    zwischenbuchen(p, p.sim, jetzt); if (p.mit) for (const m of p.mit) zwischenbuchen(m, p.sim, jetzt); /* Zwischenbuchungen, auch ohne Zustandsmeldung */
   }
 }, 1000 / TICK);
 
