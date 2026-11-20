@@ -1,0 +1,123 @@
+{
+ "objekte": [
+  {
+   "id": "wald_baum1",
+   "name": "Waldbaum 1",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum1.webp",
+   "groesse": [356, 345],
+   "anker": [0.5549, 0.9335],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "vermutlich CC-BY 3.0 (zu bestätigen, img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baum2",
+   "name": "Waldbaum 2",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum2.webp",
+   "groesse": [371, 297],
+   "anker": [0.4475, 0.9428],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "vermutlich CC-BY 3.0 (zu bestätigen, img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baum3",
+   "name": "Waldbaum 3",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum3.webp",
+   "groesse": [368, 321],
+   "anker": [0.438, 0.9596],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "vermutlich CC-BY 3.0 (zu bestätigen, img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baum4",
+   "name": "Waldbaum 4",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum4.webp",
+   "groesse": [604, 564],
+   "anker": [0.6439, 0.949],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "vermutlich CC-BY 3.0 (zu bestätigen, img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baum5",
+   "name": "Waldbaum 5",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum5.webp",
+   "groesse": [231, 317],
+   "anker": [0.5949, 0.9907],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "offen – zu klären (img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baum6",
+   "name": "Waldbaum 6",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/baum6.webp",
+   "groesse": [237, 367],
+   "anker": [0.5536, 0.9875],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "spiegelbar": true,
+   "herkunft": "offen – zu klären (img/welt/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_brunnen",
+   "name": "Brunnen",
+   "kategorie": "kleinteil",
+   "bild": "img/echtzeit/brunnen.webp",
+   "groesse": [640, 505],
+   "anker": [0.5, 0.8],
+   "massstab": 0.3,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.1
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "herkunft": "eigen (img/echtzeit) – Iso-Ansicht, vorläufig",
+   "platzhalter": true
+  }
+ ]
+}
