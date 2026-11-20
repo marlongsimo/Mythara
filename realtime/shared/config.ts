@@ -16,7 +16,7 @@ export type Schadensart = "nah" | "fern" | "magie";            // physischer Nah
 export type Werte = Record<Schadensart, number>;                  // je Angriffsart ein Wert
 export interface Modus { name: string; art: Schadensart | "heil"; schaden: [number, number]; /* Mindest- und Höchstschaden (oder Heilung) */ takt: number; reich: number; flug?: number; wucht?: boolean; untot?: number; schild?: boolean; text: string }
 export interface Faehigkeit { name: string; zeit: number; text: string }
-export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string; schild?: string; /* schild: Laufbilder für die zweite Waffe */
+export interface HeldDef { name: string; titel: string; klasse: string; rolle: string; bild: string; figur?: string; lauf?: string; hieb?: string; schild?: string; /* schild: Laufbilder für die zweite Waffe */ fuss?: [number, number]; gross?: number; /* fuss: wo im Standbild die Füße stehen (Anteil von links, von oben); gross: Maßstab, wenn das Bild über den Kopf hinausragt */
   lp: number; tempo: number; angriff: Werte; abwehr: Werte; modi: [Modus, Modus]; q: Faehigkeit; e: Faehigkeit; r: Faehigkeit; passiv: string }
 
 export const K = {
@@ -78,7 +78,7 @@ export const HELDEN: Record<string, HeldDef> = {
     e: { name: "Donnerwelle", zeit: 14, text: "Blitz (Radius 2): 42 Magieschaden, stößt Gegner zurück." },
     r: { name: "Glutsphäre", zeit: 75, text: "Feuerexplosion (Radius 3): 85 Magieschaden, danach 8 Schaden je Sekunde für 3 Sekunden." },
     passiv: "Zauberformung: Vaelins Flächenzauber treffen keine Verbündeten." },
-  lichtbringer: { name: "Elara", titel: "Die Lichtbringerin", klasse: "Kleriker", rolle: "Heilerin, stark gegen Untote", bild: "img/figuren/lichtbringer.jpg",
+  lichtbringer: { name: "Elara", titel: "Die Lichtbringerin", klasse: "Kleriker", rolle: "Heilerin, stark gegen Untote", bild: "img/figuren/lichtbringer.jpg", figur: "img/echtzeit/elara.webp", fuss: [0.42, 0.965], gross: 1.27,
     lp: 270, tempo: 3.5, angriff: { nah: 65, fern: 25, magie: 100 }, abwehr: { nah: 65, fern: 55, magie: 65 },
     modi: [{ name: "Heilstab", art: "heil", schaden: [10, 18], takt: 1.2, reich: 6, text: "Heilt einen Verbündeten (oder Elara selbst) um 10 bis 18. Ohne gewähltes Ziel: wer am schwersten verletzt ist. Heilung braucht keinen Trefferwurf." },
       { name: "Streitkolben", art: "nah", schaden: [15, 27], takt: 1.0, reich: 1.5, untot: 0.15, text: "Nahkampf, 15 % mehr Schaden gegen Untote." }],
