@@ -15,7 +15,7 @@ interface Meta { id: string; feld: number; fuss: [number, number]; mass: [number
 
 const P = new URLSearchParams(location.search), FIGUR = P.get("figur") || "held.krieger", VERSION = P.get("version") || "v004";
 const BASIS = `../assets/${FIGUR}/${VERSION}/export/`, $ = (s: string) => document.querySelector(s) as HTMLElement;
-const PLATZNAME: Record<string, string> = { hand_r: "Waffe", arm_l: "Schild", brust: "Brust", bein: "Beine", hand: "Hände", fuss: "Füße", kopf: "Kopf" };
+const PLATZNAME: Record<string, string> = { hand_r: "Waffe", arm_l: "Schild", brust: "Brust", bein: "Beine", hand: "Hände", fuss: "Füße", kopf: "Kopf", hals: "Hals", guertel: "Gürtel" };
 const TEMPO = 150; // Bildpunkte je Sekunde
 
 class Szene extends Phaser.Scene {

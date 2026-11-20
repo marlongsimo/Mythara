@@ -10,6 +10,12 @@ Ablauf:
   4. Bewegungen anlegen: ruhe, laufen, angriff (einhändig), block, angriff2h (beidhändig), treffer, ausweichen
 Alle Bewegungen bleiben an Ort und Stelle; der Fußpunkt ist der Ursprung. Sie sind gerechnet, nicht aufgenommen (frei von Lizenzfragen).
 Koordinaten der Figur: +x = ihre linke Seite, -y = vorn, +z = oben.
+
+Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fabrik wie beim Krieger v004):
+  "bewegungen": [...]        nur diese Bewegungen anlegen (Standard: alle sieben)
+  "exklusiv": true           jeder Punkt des Körpers gehört höchstens zu einer Hülle (die erste in der Liste gewinnt) – keine doppelten Schichten
+  Hülle "gesicht_frei": true das Gesicht bleibt frei (für Kapuzen und Helme mit offenem Gesicht)
+  "vorbereitet": [...]       Teile, die gebaut und eingetragen, aber noch nicht an die Figur gehängt werden (z. B. Bogen: braucht eigene Bewegungen)
 """
 import json, math, os, sys
 import numpy as np
@@ -114,7 +120,7 @@ for t in AUS["starr"]:
     else:                                                                                        # Schild: Vorderseite (-y) zeigt vom Arm weg, oben zeigt zum Ellbogen
         ey = -SCHILD0; ez = -UARM_L; ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); dicke = max(v.y for v in e) - min(v.y for v in e)
         mitte = KN["unterarm.L"].head_local.lerp(KN["unterarm.L"].tail_local, 0.55) + SCHILD0 * (0.055 + dicke / 2) - UARM_L * 0.04; an_knochen(o, "unterarm.L", Matrix.Translation(mitte) @ R.to_4x4())
-    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; print("starr:", t["id"], "an", o.parent_bone)
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; o["reihe"] = AUS["starr"].index(t); print("starr:", t["id"], "an", o.parent_bone)
 for name, bone in (("punkt.kopf", "kopf"), ("punkt.ruecken", "brust"), ("punkt.huefte", "becken")):   # weitere Befestigungspunkte für später (Helm, Umhang, Scheide)
     p = bpy.data.objects.new(name, None); bpy.context.collection.objects.link(p); p.parent = arm; p.parent_type = "BONE"; p.parent_bone = bone; p.empty_display_size = 0.05
 
@@ -135,11 +141,14 @@ def farben_setzen(m, farbe):
     ca.data.foreach_set("color", voll.astype(np.float32).ravel())
 def teilbild(name):
     im = Image.open(os.path.join(os.path.dirname(os.path.abspath(liste)), "referenz", "teile", name + ".png")).convert("RGBA"); im = im.crop(im.split()[3].point(lambda v: 255 if v > 128 else 0).getbbox()); a = np.asarray(im).astype(np.float32) / 255; return a[..., :3], a[..., 3] > 0.5
-KOERPERFARBE = farben_lesen(me) if FARBE else None; volumen = {}
+KOERPERFARBE = farben_lesen(me) if FARBE else None; volumen = {}; vergeben = np.zeros(nv, bool)
+def lage_an(bone): b = KN[bone]; ab = np.array(b.tail_local - b.head_local, np.float32); return ((P - np.array(b.head_local, np.float32)) @ ab) / float(ab @ ab)
 for t in AUS["huelle"]:
     wahl = np.zeros(nv, bool)
     for bone, t0, t1 in t["bereich"]:
-        b = KN[bone]; ab = np.array(b.tail_local - b.head_local, np.float32); lage = ((P - np.array(b.head_local, np.float32)) @ ab) / float(ab @ ab); wahl |= (GW[bone] >= 0.35) & (lage >= t0 - 0.02) & (lage <= t1 + 0.02)
+        lage = lage_an(bone); wahl |= (GW[bone] >= 0.35) & (lage >= t0 - 0.02) & (lage <= t1 + 0.02)
+    if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
+    if AUS.get("exklusiv"): wahl &= ~vergeben; vergeben |= wahl
     o = ob.copy(); o.data = ob.data.copy(); o.name = t["id"]; bpy.context.collection.objects.link(o); bm = bmesh.new(); bm.from_mesh(o.data); bm.verts.ensure_lookup_table()
     for v in bm.verts: v.co += Vector(NORM[v.index].tolist()) * t["dicke"]                         # ein Stück nach außen: die Hülle liegt über dem Körper, nie darunter
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not wahl[v.index]], context="VERTS"); bm.to_mesh(o.data); bm.free(); m2 = o.data
@@ -151,7 +160,7 @@ for t in AUS["huelle"]:
         else:                                                                                    # Farbton der Zeichnung, Helligkeitsmuster vom Körper darunter
             ton = linear(rgb[maske]).mean(0); alt = KOERPERFARBE[wahl]; hell = alt.mean(1, keepdims=True); farbe = ton[None] * np.clip(hell / max(1e-4, float(hell.mean())), 0.45, 1.8)
         farben_setzen(m2, np.clip(farbe, 0, 1).astype(np.float32))
-    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"
+    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t)
     if t["platz"] not in volumen: volumen[t["platz"]] = o; o["volumen"] = True                    # das erste Teil je Platz steht beim Rendern für den Raum, den dieser Platz einnimmt
     print("Hülle:", t["id"], "Platz", t["platz"], "·", len(m2.vertices), "Punkte")
 
@@ -235,6 +244,7 @@ def ausweichen(i, n):
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {})}
+if AUS.get("bewegungen"): BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in AUS["bewegungen"]}
 arm.animation_data_create()
 def schluessel(namen, nr):
     for b in PB:
@@ -247,15 +257,17 @@ for name, (fn, n, rate, schleife, mehr) in BEWEGUNGEN.items():
     a["bilder"] = n; a["rate"] = rate; a["schleife"] = schleife; a["mehr"] = json.dumps(mehr); print("Bewegung:", name, n, "Bilder")
 
 # beidhändiger Angriff: die linke Hand greift den Griff unter der rechten. Das rechnet Blender (umgekehrte Kinematik); das Ergebnis wird Bild für Bild festgeschrieben.
-sc = bpy.context.scene; a = bpy.data.actions["angriff2h"]; arm.animation_data.action = a; ik = PB["unterarm.L"].constraints.new("IK"); ik.target = bpy.data.objects["griff2"]; ik.chain_count = 2; gemerkt = []
-for i in range(int(a["bilder"])): sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt.append((PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy()))
-PB["unterarm.L"].constraints.remove(ik)
-for i, (mo, mu) in enumerate(gemerkt):
-    if i == 0 or i == len(gemerkt) - 1: continue                                                 # erstes und letztes Bild bleiben die Grundhaltung, damit die Bewegung an die anderen anschließt
-    sc.frame_set(i + 1); PB["oberarm.L"].matrix = mo; bpy.context.view_layer.update(); PB["unterarm.L"].matrix = mu; bpy.context.view_layer.update(); schluessel({"oberarm.L", "unterarm.L"}, i + 1)
-luecke = []
-for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
-print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
+sc = bpy.context.scene
+if "angriff2h" in bpy.data.actions and "griff2" in bpy.data.objects:
+    a = bpy.data.actions["angriff2h"]; arm.animation_data.action = a; ik = PB["unterarm.L"].constraints.new("IK"); ik.target = bpy.data.objects["griff2"]; ik.chain_count = 2; gemerkt = []
+    for i in range(int(a["bilder"])): sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt.append((PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy()))
+    PB["unterarm.L"].constraints.remove(ik)
+    for i, (mo, mu) in enumerate(gemerkt):
+        if i == 0 or i == len(gemerkt) - 1: continue                                                 # erstes und letztes Bild bleiben die Grundhaltung, damit die Bewegung an die anderen anschließt
+        sc.frame_set(i + 1); PB["oberarm.L"].matrix = mo; bpy.context.view_layer.update(); PB["unterarm.L"].matrix = mu; bpy.context.view_layer.update(); schluessel({"oberarm.L", "unterarm.L"}, i + 1)
+    luecke = []
+    for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
+    print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
 bpy.ops.object.mode_set(mode="OBJECT"); arm.animation_data.action = bpy.data.actions["ruhe"]; sc.frame_set(1)
-arm["gewichte"] = weg; arm["gewichtet"] = anteil
+arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
 bpy.ops.wm.save_as_mainfile(filepath=zieldatei); print("geschrieben:", zieldatei)

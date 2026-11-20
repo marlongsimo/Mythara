@@ -74,3 +74,16 @@ Jeder Stand einer Figur liegt in einem eigenen Ordner (`v001`, `v002`, …). Ein
 | `held.krieger/v002` | Körper aus TripoSR, angemalt; Ruhe und Laufen als ein Blatt je Bewegung |
 | `held.krieger/v003` | modulare Figur: Waffen, Rüstungsebenen, sieben Bewegungen, Atlasse, Prüfbericht |
 | `held.krieger/v004` | wie v003; Renderbereich passt sich der größten Ausdehnung an (Feld 288 px, nichts abgeschnitten), Fußpunkt beim Laufen auf dem Boden (`boden.py`) – **aktuelle Version** |
+| `gegner.bandit/v001` | zweite Figur aus derselben Pipeline: eigenes Referenzblatt, gleiches Skelett; Kapuze, Halstuch, Lederrüstung, Gürtel, Hose, Stiefel als Ebenen; Kurzschwert (Standard) und Axt; Ruhe und Laufen. Bogen und Dolch gebaut, aber noch nicht angehängt |
+
+## Eine neue Figur
+
+Am Beispiel des Banditen (`assets/gegner.bandit/`):
+
+1. Referenzblatt nach `referenz/original.png`, Kästen in `referenz/schnitt.json`, dann `referenz.py`.
+2. Körper: `triposr.py` mit der Vorderansicht, `anmalen.py` mit vorn, Seite (blickt nach rechts) und hinten.
+3. Waffen: `flachteil.py`; schräg gezeichnete Waffen mit `drehen=<grad>` aufrichten (Griff oben).
+4. `ausruestung.json`: welche Teile an welchen Platz, welche Bewegungen (`bewegungen`), ob Hüllen sich ausschließen (`exklusiv`), welche Teile nur vorbereitet sind (`vorbereitet`). Das erste Teil je Platz ist die Standardausrüstung.
+5. `rig.py`, `boden.py … ruhe,laufen`, `rendern.py`, `packen.py`, `pruefung.py`, `vorschau-gif.py`.
+6. Testszene: `?figur=<id>&version=<v>`, Prüfung im Browser mit `node vorschau/test-figur.mjs <id> <version>`.
+

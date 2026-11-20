@@ -1,0 +1,28 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Kästen [links, oben, rechts, unten] in Bildpunkten der Vorlage. Grund: dunkel (nicht Papier). Die Vorlage zeigt den Banditen in acht Richtungen; für das Modell zählen vorn (S), Seite (O, blickt nach rechts) und hinten (N), die übrigen dienen dem Vergleich.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",   "kasten": [335, 98, 462, 364],   "asset": "gegner.bandit", "ansicht": "vorn" },
+    { "name": "koerper-seite",  "kasten": [28, 98, 130, 364],    "asset": "gegner.bandit", "ansicht": "seite" },
+    { "name": "koerper-hinten", "kasten": [950, 98, 1078, 364],  "asset": "gegner.bandit", "ansicht": "hinten" },
+    { "name": "koerper-so",     "kasten": [178, 98, 287, 364],   "asset": "gegner.bandit", "ansicht": "so" },
+    { "name": "koerper-sw",     "kasten": [496, 98, 608, 364],   "asset": "gegner.bandit", "ansicht": "sw" },
+    { "name": "koerper-w",      "kasten": [650, 98, 762, 364],   "asset": "gegner.bandit", "ansicht": "w" },
+    { "name": "koerper-nw",     "kasten": [803, 98, 912, 364],   "asset": "gegner.bandit", "ansicht": "nw" },
+    { "name": "koerper-no",     "kasten": [1116, 98, 1227, 364], "asset": "gegner.bandit", "ansicht": "no" },
+    { "name": "kopf",           "kasten": [1272, 92, 1518, 378], "asset": "gegner.bandit.kopf", "ansicht": "vorn", "rechteck": true },
+    { "name": "kapuze",         "kasten": [12, 484, 122, 633],   "asset": "kleidung.kopf.kapuze",   "ansicht": "vorn" },
+    { "name": "halstuch",       "kasten": [144, 512, 240, 628],  "asset": "kleidung.hals.tuch",     "ansicht": "vorn" },
+    { "name": "lederruestung",  "kasten": [257, 480, 398, 632],  "asset": "ruestung.brust.leder",   "ansicht": "vorn" },
+    { "name": "guertel",        "kasten": [414, 511, 523, 601],  "asset": "kleidung.guertel.taschen", "ansicht": "vorn" },
+    { "name": "armschienen",    "kasten": [547, 524, 627, 602],  "asset": "ruestung.arm.leder",     "ansicht": "vorn" },
+    { "name": "hose",           "kasten": [651, 483, 759, 628],  "asset": "kleidung.bein.hose",     "ansicht": "vorn" },
+    { "name": "stiefel",        "kasten": [774, 521, 872, 611],  "asset": "ruestung.fuss.lederstiefel", "ansicht": "vorn" },
+    { "name": "umhang",         "kasten": [895, 466, 1005, 633], "asset": "kleidung.umhang.braun",  "ansicht": "vorn" },
+    { "name": "kurzschwert",    "kasten": [1056, 483, 1167, 623], "asset": "waffe.kurzschwert",     "ansicht": "vorn" },
+    { "name": "axt",            "kasten": [1170, 503, 1259, 627], "asset": "waffe.axt",             "ansicht": "vorn" },
+    { "name": "dolch",          "kasten": [1266, 510, 1332, 624], "asset": "waffe.dolch",           "ansicht": "vorn" },
+    { "name": "bogen",          "kasten": [1358, 456, 1428, 630], "asset": "waffe.bogen",           "ansicht": "vorn" },
+    { "name": "armbrust",       "kasten": [1440, 503, 1532, 623], "asset": "waffe.armbrust",        "ansicht": "vorn" }
+  ]
+}

@@ -24,16 +24,26 @@ def bogen(a, i, teile, text):
     h = UNTEN - OBEN; k = Image.new("RGBA", (F * 4, h * 2 + 34), (40, 34, 48, 255)); d = ImageDraw.Draw(k); d.text((10, 10), text, fill=(236, 228, 212))
     for r in range(8): k.alpha_composite(figur(a, r, i, teile), (r % 4 * F, 34 + r // 4 * h))
     return k.convert("RGB").resize((F * 4 * Z // F * 1, round((h * 2 + 34) * Z / F)), Image.LANCZOS).quantize(128)
-voll = {"hand_r": "waffe.langschwert", "arm_l": "schild.baum", "brust": "ruestung.brust.platte", "bein": "ruestung.bein.schiene", "hand": "ruestung.hand.leder", "fuss": "ruestung.fuss.stiefel"}
+KRIEGER = {"hand_r": "waffe.langschwert", "arm_l": "schild.baum", "brust": "ruestung.brust.platte", "bein": "ruestung.bein.schiene", "hand": "ruestung.hand.leder", "fuss": "ruestung.fuss.stiefel"}
+krieger = all(t in EB for t in KRIEGER.values())
+voll = KRIEGER if krieger else {p: t[0] for p, t in M["plaetze"].items()}                           # sonst: je Platz das erste Teil
 alle = list(voll.values()); folge = []
 NAME = {"ruhe": "Ruhe", "laufen": "Laufen", "angriff": "Einhandangriff", "block": "Block (Schild)", "angriff2h": "Zweihandangriff", "treffer": "Treffer", "ausweichen": "Ausweichen"}
 for a, wdh in (("ruhe", 1), ("laufen", 2), ("angriff", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2)):
+    if a not in A: continue
     n = A[a]["bilder"]; dauer = 1000 // A[a]["rate"]
     for _ in range(wdh):
         for i in range(n): folge.append((bogen(a, i, alle, f"{NAME[a]} · volle Ausrüstung · acht echte Richtungen"), dauer))
     if a == "block": folge += [(folge[-1][0], 500)]
-for teile, text in ((["waffe.langschwert", "schild.baum.stahl", "ruestung.brust.gambeson", "ruestung.fuss.stiefel"], "Ausrüstung gewechselt: Stahlschild, Gambeson, ohne Beinschienen und Handschuhe"),
-                    (["waffe.langschwert"], "nur das Schwert"), ([], "ohne Ausrüstung")):
+if krieger: wechsel = [(["waffe.langschwert", "schild.baum.stahl", "ruestung.brust.gambeson", "ruestung.fuss.stiefel"], "Ausrüstung gewechselt: Stahlschild, Gambeson, ohne Beinschienen und Handschuhe"),
+                       (["waffe.langschwert"], "nur das Schwert"), ([], "ohne Ausrüstung")]
+else:                                                                                                # andere Figur: zweite Waffe, dann Teil für Teil ablegen
+    wechsel = []; jetzt = dict(voll)
+    for p_, t in M["plaetze"].items():
+        if len(t) > 1: jetzt[p_] = t[1]; wechsel.append((list(jetzt.values()), f"Waffe gewechselt: {t[1].split('.')[-1]}"))
+    for p_ in [p for p in ("kopf", "hals", "brust") if p in jetzt]: jetzt.pop(p_); wechsel.append((list(jetzt.values()), "abgelegt: " + p_))
+    wechsel.append(([], "ohne Ausrüstung"))
+for teile, text in wechsel:
     for _ in range(2):
         for i in range(A["laufen"]["bilder"]): folge.append((bogen("laufen", i, teile, text), 1000 // A["laufen"]["rate"]))
 folge[0][0].save(ziel, save_all=True, append_images=[f for f, _ in folge[1:]], duration=[d for _, d in folge], loop=0, optimize=True)

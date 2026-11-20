@@ -1,10 +1,12 @@
 """Mythara Fabrik – ein flaches Ausrüstungsteil (Schwert, Schild) aus seiner Zeichnung als 3D-Teil bauen.
 
-  python3 fabrik/flachteil.py <vorn.png> <ziel.glb> <laenge_m> <dicke_m> [hinten.png]
+  python3 fabrik/flachteil.py <vorn.png> <ziel.glb> <laenge_m> <dicke_m> [hinten.png] [drehen=<grad>]
 
 vorn.png   freigestelltes Bild der Vorderseite (aus referenz/teile/); hinten.png die Rückseite (sonst wird die Vorderseite gespiegelt)
 laenge_m   die längere Seite des Teils in Metern (Schwert 0.95, Schild 0.85)
 dicke_m    größte Dicke in Metern (Schwert 0.03, Schild 0.06)
+drehen     dreht die Zeichnung vorher gegen den Uhrzeigersinn (Grad), damit die Waffe senkrecht steht: Griff oben, Klinge oder Kopf unten
+           (so wie das Langschwert im Blatt des Kriegers; schräg gezeichnete Waffen wie das Kurzschwert des Banditen brauchen das)
 
 Das Teil liegt in der x-z-Ebene: Bild oben = +z, Vorderseite zeigt nach -y, der Ursprung ist die Mitte des Bildes.
 Die Form ist ein Kissen: am Umriss dünn, zur Mitte hin bis zur angegebenen Dicke. Für flache Dinge reicht das; es ist kein Bild-zu-3D-Dienst nötig.
@@ -14,12 +16,15 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
-vorn, ziel, laenge, dicke = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]); hinten = sys.argv[5] if len(sys.argv) > 5 else None
+vorn, ziel, laenge, dicke = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]); mehr = sys.argv[5:]
+hinten = next((m for m in mehr if "=" not in m), None); DREHEN = float(next((m.split("=", 1)[1] for m in mehr if m.startswith("drehen=")), 0))
 SEITE = 384   # Rechengröße der längeren Seite in Bildpunkten
 
 
 def lesen(pfad, groesse=None, spiegeln=False):
-    im = Image.open(pfad).convert("RGBA"); im = im.crop(im.split()[3].point(lambda v: 255 if v > 128 else 0).getbbox())
+    im = Image.open(pfad).convert("RGBA")
+    if DREHEN: im = im.rotate(DREHEN, resample=Image.BICUBIC, expand=True)
+    im = im.crop(im.split()[3].point(lambda v: 255 if v > 128 else 0).getbbox())
     if spiegeln: im = im.transpose(Image.FLIP_LEFT_RIGHT)
     if groesse is None: k = SEITE / max(im.size); groesse = (max(2, round(im.width * k)), max(2, round(im.height * k)))
     a = np.asarray(im.resize(groesse, Image.LANCZOS)); maske = a[..., 3] > 128

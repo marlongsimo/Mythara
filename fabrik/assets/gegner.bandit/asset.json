@@ -1,0 +1,12 @@
+{
+  "id": "gegner.bandit",
+  "name": "Bandit (Testfigur, Standardgegner)",
+  "kategorie": "gegner",
+  "test_asset": true,
+  "status": "v001: Ruhe und Laufen in acht Richtungen, modulare Kleidung, Kurzschwert und Axt – Prüfung: erfolgreich mit Einschränkungen",
+  "referenz": "referenz/original.png",
+  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen", "modell": "lokal erzeugt mit TripoSR (MIT), ohne kostenpflichtigen Dienst" },
+  "skelett": "gleiches Humanoid-Skelett wie held.krieger (17 Knochen, gleiche Namen und Plätze)",
+  "verfahren": ["referenz.py", "triposr.py (Vorderansicht S)", "anmalen.py (S, O, N)", "flachteil.py (Waffen, schräg gezeichnet: drehen=…)", "rig.py", "boden.py ruhe,laufen", "rendern.py", "packen.py", "pruefung.py", "vorschau-gif.py"],
+  "offen": ["Bogen: gebaut, braucht eigene Bewegungen (Ziehen, Schießen) und einen Griff in der linken Hand", "Dolch: gebaut, einsatzbereit wie das Kurzschwert", "Armschienen und Umhang: in der Vorlage, noch nicht als Ebene angelegt", "Kampfbewegungen: wie beim Krieger vorhanden, für den Banditen noch nicht freigeschaltet (Liste „bewegungen“ in ausruestung.json)"]
+}

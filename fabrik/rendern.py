@@ -50,7 +50,8 @@ for name, rot, staerke in [("haupt", (50, 0, -40), 5.0), ("fuell", (65, 0, 60), 
     l = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN")); l.data.energy = staerke; l.data.angle = math.radians(12); l.rotation_euler = tuple(math.radians(v) for v in rot); sc.collection.objects.link(l)
 welt = bpy.data.worlds.new("welt"); sc.world = welt; welt.use_nodes = True; welt.node_tree.nodes["Background"].inputs[1].default_value = 1.3
 
-teile = [o for o in bpy.data.objects if o.get("ebene")]; koerper = next(o for o in teile if o["art"] == "koerper"); huellen = [o for o in teile if o["art"] == "huelle"]; starr = [o for o in teile if o["art"] == "starr"]
+teile = sorted([o for o in bpy.data.objects if o.get("ebene")], key=lambda o: (o.get("reihe", 0), o.name));   # Reihenfolge der Ausrüstungsliste: das erste Teil je Platz ist die Standardausrüstung
+koerper = next(o for o in teile if o["art"] == "koerper"); huellen = [o for o in teile if o["art"] == "huelle"]; starr = [o for o in teile if o["art"] == "starr"]
 volumen = [o for o in huellen if o.get("volumen")]
 # Durchgänge: (Dateiname der Ebene, sichtbares Teil, Teile, die nur ausschneiden)
 laeufe = [("koerper", koerper, [])] + [(o["ebene"], o, [koerper] + [v for v in volumen if v["platz"] != o["platz"]]) for o in huellen]
