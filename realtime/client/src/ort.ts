@@ -5,7 +5,7 @@
  */
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
-import { team } from "./weltkarte";
+import { team, kampagneGeschafft } from "./weltkarte";
 import { plaudern, Zeile, Frage } from "./kampagne";
 import WEIDENHAIN from "./weidenhain.json";
 import BAUKASTEN from "./baukasten.json";
@@ -32,19 +32,37 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
       fragen: [
         { knopf: "Woher kommen die Kröten?", zeilen: [{ wer: "Hanne Kalk", text: "Aus dem Mühlgraben. Seit drei Tagen. Wenn das Korn weg ist, wird der Winter lang." }, { wer: "Hanne Kalk", text: "Früher haben sie das nie getan. Früher hatten sie Angst vor uns." }] },
         { knopf: "Was springt für mich dabei heraus?", zeilen: [{ wer: "Hanne Kalk", text: "Ein Krug Bier, ein Bett und der Dank von Weidenhain. Mehr haben wir nicht. Aber das bekommst du ganz." }] },
-      ] }] },
+      ] },
+      { wenn: ["kampf_speicher"], setzt: "hanne2", schluss: "Ich finde heraus, woher", fragen: [], zeilen: [{ wer: "Hanne Kalk", text: "Das war gut. Aber sie kommen wieder, solange wir nicht wissen, woher." }] }] },
   lene: { name: "Lene", feld: 240, koerper: 0.845, fuss: 0.967, sonst: { wer: "Lene", text: "Bleib nicht stehen, wenn eine Luft holt." },
     reden: [{ wenn: ["hanne"], setzt: "lene", schluss: "Danke, Lene",
       zeilen: [{ wer: "Lene, die Magd", text: "Ich wollte nur Mehl holen. Sie saßen zwischen den Säcken, und die Augen haben geglänzt." }, { wer: "Lene", text: "Die Zunge reicht weiter, als man denkt. Bleib nicht stehen, wenn eine Luft holt." }],
-      fragen: [{ knopf: "Wie viele sind es?", zeilen: [{ wer: "Lene", text: "Ich habe sechs gezählt. Dann bin ich gerannt." }] }] }] },
+      fragen: [{ knopf: "Wie viele sind es?", zeilen: [{ wer: "Lene", text: "Ich habe sechs gezählt. Dann bin ich gerannt." }] }] },
+      { wenn: ["kampf_speicher"], setzt: "tebbe", schluss: "Ich hole ihn", fragen: [],
+        zeilen: [{ wer: "Lene", text: "Mein Bruder. Tebbe. Er ist zwölf. Er ist zur Mühle gelaufen, wegen der Katze, und ich habe vor lauter Angst nicht daran gedacht!" }, { wer: "Lene", text: "Die Mühle steht drüben am Graben, das Haus mit dem Rad. Bitte." }] }] },
   agnes: { name: "Agnes", feld: 240, koerper: 0.877, fuss: 0.984, sonst: { wer: "Agnes", text: "Gib auf dich acht da drinnen." },
     reden: [{ wenn: ["hanne"], setzt: "agnes", schluss: "Ich halte die Augen offen",
       zeilen: [{ wer: "Agnes, Witwe des Müllers", text: "Mein Mann hat die Mühle dreißig Jahre geführt. Seit er tot ist, steht sie leer, und am Graben kümmert sich niemand mehr." }, { wer: "Agnes", text: "Die Kröten kommen von dort. Vom Wehr herauf, immer nachts." }],
       fragen: [{ knopf: "Was ist am Wehr?", zeilen: [{ wer: "Agnes", text: "Eine sitzt dort, größer als alle anderen. Die Leute nennen sie die alte Unke. Sie war immer da. Aber früher blieb sie, wo sie war." }] }] }] },
 };
 /* Wohin der Pfeil am Boden zeigt: die erste Zeile, deren Bedingung passt. Stehen Leute mit offenem Gespräch da, zeigt er zuerst zu ihnen (zum nächsten). */
-const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["hanne"], stelle: "scheune" }] };
-const TUEREN: Record<string, { name: string; wenn: string[]; knopf: string; text: string }> = { scheune: { name: "Kornspeicher", wenn: ["hanne"], knopf: "Den Kornspeicher betreten", text: "Der Kampf im Speicher wird als Nächstes angeschlossen" } };
+const WEGWEISER: Record<string, { wenn: string[]; stelle: string }[]> = { weidenhain: [{ wenn: ["tebbe_gefunden"], stelle: "wehr" }, { wenn: ["tebbe"], stelle: "muehle" }, { wenn: ["hanne"], stelle: "scheune" }] };
+/* Türen: Stelle im Ort, Bedingung, und der Kampf, der dahinter wartet. Ist er gewonnen (Merker kampf_<karte>), ist die Tür erledigt. */
+const TUEREN: Record<string, { wenn: string[]; knopf: string; kampf: string }> = {
+  scheune: { wenn: ["hanne"], knopf: "Den Kornspeicher betreten", kampf: "speicher" },
+  muehle: { wenn: ["tebbe"], knopf: "Zur Mühle am Graben", kampf: "muehle" },
+  wehr: { wenn: ["tebbe_gefunden"], knopf: "Zum Wehr hinunter", kampf: "wehr" },
+};
+/* Was beim Ankommen im Ort erzählt wird: der erste Auftritt, dessen Bedingung passt und der noch nicht erzählt ist. ende: Damit ist die Kampagne geschafft. */
+const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; zeilen: Zeile[]; schluss: string; ende?: number }[]> = { weidenhain: [
+  { wenn: [], setzt: "ankunft", titel: "Weidenhain", schluss: "Weiter", zeilen: [{ text: "Es ist Erntefest in Weidenhain. Auf dem Dorfplatz brennt ein Feuer, es riecht nach Brot und Bier, und jemand spielt schief auf einer Fiedel." }, { text: "Dann ein Schrei vom Kornspeicher. Die Musik bricht ab." }] },
+  { wenn: ["kampf_speicher"], setzt: "speicher_nach", titel: "Vor dem Kornspeicher", schluss: "Weiter", zeilen: [{ text: "Die letzte Kröte hüpft durch ein Loch in der Rückwand davon. Dahinter rauscht der Mühlgraben." }, { text: "Auf dem Platz ist es still geworden. Hanne zählt die Säcke, und Lene sucht dich mit den Augen." }] },
+  { wenn: ["kampf_muehle"], setzt: "tebbe_gefunden", titel: "An der alten Mühle", schluss: "Zum Wehr", zeilen: [{ text: "In der Mühle riecht es nach Staub und altem Mehl. Tebbe liegt auf dem Mühlboden, die Katze an sich gedrückt. Eine Zunge hat ihn am Bein erwischt." },
+    { wer: "Tebbe", text: "Am Wehr sitzt eine. So groß wie ein Kalb. Und über ihr sind Lichter. Sie schaut die ganze Zeit nach oben." }, { text: "Du verbindest sein Bein und bringst ihn zu seiner Schwester. Das Wehr liegt gleich hinter der Mühle." }] },
+  { wenn: ["kampf_wehr"], setzt: "ende", titel: "Das Erntefest von Weidenhain", schluss: "Zurück in die Waldmark", ende: 1, zeilen: [{ text: "Das letzte Irrlicht zerstiebt über dem Wasser. Die alte Unke liegt halb auf den Steinen, zu erschöpft, um die Zunge noch einmal zu heben." },
+    { text: "Ohne die Lichter über ihr ist nichts mehr an ihr, das angreift. Du trittst zurück. Sie gleitet ins Wasser und führt ihr Volk den Graben hinab, weg vom Dorf." }, { wer: "Hanne Kalk", text: "Setz dich. Iss. Heute Nacht zahlt in Weidenhain niemand, der Kröten aus meinem Speicher gejagt hat." },
+    { text: "Gegen Morgen sitzt ein fremder Junge am Feuer, schlammverschmiert bis zu den Knien." }, { wer: "Der Junge", text: "Ich komme aus Rabenmoor. Drei Kinder sind weg. Sie sind den Lichtern ins Moor gefolgt. Sie sagen, hier ist jemand, der hilft." }] },
+] };
 /* Die Runde Dorfleute (werkzeug/blatt.py, Feld 300): wo die fünf Köpfe im Feld sitzen, und was sie so reden – belangloses Festgeplauder. */
 const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.41]];
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
@@ -65,13 +83,13 @@ export class Ort extends Phaser.Scene {
         if (hoch) this.add.image(x, y, "zaun").setOrigin(ZAUN.fx, ZAUN.fy).setScale(k).setDepth((y + y1) / 2); else this.add.image(x1, y1, "zaun").setOrigin(1 - ZAUN.fx, ZAUN.fy).setScale(k).setFlipX(true).setDepth((y + y1) / 2);
         for (let t = 0; t <= 1.001; t += 0.04) { const px = x + (x1 - x) * t, py = y + (y1 - y) * t; this.zu.add(this.feld(px, py)); this.zu.add(this.feld(px, py - 12)); }
         x = x1; y = y1; } } }
-  init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; const s = this.d.stellen.start; this.ort = { x: s[0], y: s[1] }; }
+  init() { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h] ? h : "schildwaechter"; let s = this.d.stellen.start; try { if (P.get("neu") === "1") { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); P.delete("neu"); history.replaceState(null, "", "?" + P.toString()); /* sonst begänne nach jedem Neuladen alles von vorn */ } const p = JSON.parse(localStorage.getItem("ez_ort_" + ortName + "_pos") || "null"); if (Array.isArray(p) && this.frei(p[0], p[1])) s = p; } catch { /* privat */ } this.ort = { x: s[0], y: s[1] }; }
   preload() { this.load.image("ortboden", `../img/echtzeit/${this.d.bild || ortName + "-boden"}.webp`); this.load.image("zaun", "../img/echtzeit/zaun.webp"); for (const l of this.d.leute || []) { const L = LEUTE[String(l[0])]; if (L) this.load.spritesheet("leute-" + l[0], `../img/echtzeit/${l[0]}.webp`, { frameWidth: L.feld, frameHeight: L.feld }); }
     if (this.d.gruppen && this.d.gruppen.length) this.load.spritesheet("dorfgruppe", "../img/echtzeit/dorfgruppe.webp", { frameWidth: 300, frameHeight: 300 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
   create() {
     const D0 = this.d; document.body.classList.add("dorf"); $("#ez-dorf-titel").textContent = D0.name; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen" : "WASD oder Pfeiltasten: laufen · Klick: dorthin gehen";
     const F = D0.mass || 1; this.add.image(0, 0, "ortboden").setOrigin(0, 0).setDisplaySize(D0.breit, D0.hoch).setDepth(-10); this.vorn(F); this.feuer(); this.cameras.main.setBounds(0, 0, D0.breit, D0.hoch).setBackgroundColor("#0a0d08");
-    this.zaeune(); this.gruppen(); this.leute();
+    this.zaeune(); this.gruppen(); this.leute(); this.auftritt();
     $("#ez-dorf-knopf").onclick = () => this.sprechen(); window.addEventListener("keydown", (ev) => { if ((ev.key === "e" || ev.key === "E") && !ev.repeat) this.sprechen(); });
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setDepth(-1).setVisible(false);
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
@@ -103,10 +121,13 @@ export class Ort extends Phaser.Scene {
     this.pfeil = this.add.graphics().setDepth(-2); this.pfeil.fillStyle(0xffd23a, 0.95).lineStyle(3, 0x3a2400, 0.9); this.pfeil.beginPath(); this.pfeil.moveTo(26, 0); this.pfeil.lineTo(-6, -17); this.pfeil.lineTo(2, 0); this.pfeil.lineTo(-6, 17); this.pfeil.closePath(); this.pfeil.fillPath().strokePath(); this.tweens.add({ targets: this.pfeil, alpha: 0.7, duration: 600, yoyo: true, repeat: -1 }); }
   /** Wohin es als Nächstes geht: zur nächsten Person mit Ausrufezeichen, sonst zur Stelle aus dem Wegweiser. */
   ziel(): number[] | null { let best: number[] | null = null, bd = 1e9; for (const q of this.personen) { if (!this.offen(q.id)) continue; const a = Math.hypot(q.x - this.ort.x, (q.y - this.ort.y) / Q); if (a < bd) { bd = a; best = [q.x, q.y]; } } if (best) return best;
-    for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.d.stellen[w.stelle]; return null; }
+    for (const w of WEGWEISER[ortName] || []) if (w.wenn.every((m) => this.merker[m]) && this.d.stellen[w.stelle]) return this.merker["kampf_" + (TUEREN[w.stelle] || { kampf: "" }).kampf] ? null : this.d.stellen[w.stelle]; return null; }
+  /** Beim Ankommen erzählen, was gerade geschehen ist (einmal je Auftritt). */
+  auftritt() { const a = (AUFTRITTE[ortName] || []).filter((q) => !this.merker[q.setzt] && q.wenn.every((m) => this.merker[m])).pop(); if (!a) return; this.gesperrt = true;
+    this.time.delayedCall(500, () => void plaudern(a.titel, a.zeilen, [], a.schluss).then(() => { this.merke(a.setzt); if (a.ende) { kampagneGeschafft(a.ende); location.href = "./"; return; } this.gesperrt = false; })); }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
-    if (this.nah[0] === "@") { kn.textContent = TUEREN[this.nah.slice(1)].text; kn.classList.add("bald"); return; }
+    if (this.nah[0] === "@") { const T = TUEREN[this.nah.slice(1)]; this.gesperrt = true; try { localStorage.setItem("ez_ort_" + ortName + "_pos", JSON.stringify([Math.round(this.ort.x), Math.round(this.ort.y)])); } catch { /* privat */ } this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "?ort=" + ortName + "&kampf=" + T.kampf; }); return; }
     const L = LEUTE[this.nah], g = this.offen(this.nah); this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); kn.hidden = true;
     void (g ? plaudern(L.name, g.zeilen, g.fragen, g.schluss).then(() => this.merke(g.setzt)) : plaudern(L.name, [L.sonst], [], "Weiter")).then(() => { this.gesperrt = false; this.nah = ""; }); }
   /** Dorfleute, die beisammenstehen: Sie gestikulieren, und alle paar Sekunden sagt einer von ihnen etwas Belangloses in einer Sprechblase. */
@@ -144,7 +165,7 @@ export class Ort extends Phaser.Scene {
   }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
-    if (!this.gesperrt) { let nah = ""; for (const k in TUEREN) { const t = this.d.stellen[k]; if (t && TUEREN[k].wenn.every((m) => this.merker[m]) && Math.hypot(o.x - t[0], (o.y - t[1]) / Q) < 110) nah = "@" + k; }
+    if (!this.gesperrt) { let nah = ""; for (const k in TUEREN) { const t = this.d.stellen[k]; if (t && !this.merker["kampf_" + TUEREN[k].kampf] && TUEREN[k].wenn.every((m) => this.merker[m]) && Math.hypot(o.x - t[0], (o.y - t[1]) / Q) < 110) nah = "@" + k; }
       for (const q of this.personen) if (Math.hypot(o.x - q.x, (o.y - q.y) / Q) < 120) nah = q.id;
       if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = (nah[0] === "@" ? TUEREN[nah.slice(1)].knopf : "Mit " + LEUTE[nah].name.split(" ")[0] + " sprechen") + (HANDY ? "" : "  [E]"); } }
     { const z = this.gesperrt ? null : this.ziel(), weit = z ? Math.hypot(z[0] - o.x, (z[1] - o.y) / Q) : 0; if (z && weit > 130) { const w = Math.atan2((z[1] - o.y) / Q, z[0] - o.x), ax = Math.cos(w), ay = Math.sin(w); this.pfeil.setVisible(true).setPosition(o.x + ax * 62, o.y + ay * 62 * Q).setRotation(Math.atan2(ay * Q, ax)).setScale(1.5, 1.5); } else this.pfeil.setVisible(false); }

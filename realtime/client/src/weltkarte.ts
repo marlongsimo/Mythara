@@ -18,7 +18,7 @@ export const team = (): { held: string; mit: string[] } | null => { try { const 
 const teamText = () => { const t = team(); return t ? [t.held, ...t.mit].map((h) => HELDEN[h].name).join(", ") : "noch nicht gewählt"; };
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck?: () => void, wort?: { los: string; zurueck: string }) => void;
 /** Gibt es einen angefangenen Stand dieser Kampagne? */
-const weiter = (id: string) => { try { return Boolean(localStorage.getItem("ez_k_" + id)); } catch { return false; } };
+const weiter = (id: string) => { try { return Object.keys(JSON.parse(localStorage.getItem("ez_ort_" + id) || "{}") || {}).length > 0; } catch { return false; } };
 /** Wie viele Kampagnen der Reihe nach geschafft sind. Vorläufig auf dem Gerät gemerkt; mit der Anmeldung zieht das aufs Konto um. */
 export const kampagnenGeschafft = () => { try { return Math.max(0, Math.min(ZIELE.length, Number(localStorage.getItem("ez_kampagnen")) || 0)); } catch { return 0; } };
 export const kampagneGeschafft = (nr: number) => { try { if (nr === kampagnenGeschafft() + 1) localStorage.setItem("ez_kampagnen", String(nr)); } catch { /* privat */ } };
@@ -32,14 +32,14 @@ export function weltkarte(zu: () => void) {
     + `</div><button type="button" class="schliessen" aria-label="Karte schließen">✕</button><h2>Wohin soll die Reise gehen?</h2><button type="button" class="team">⚔ Mein Team: <b></b></button><div class="info" hidden></div>`;
   const info = w.querySelector(".info") as HTMLElement, tk = w.querySelector(".team") as HTMLElement, tb = tk.querySelector("b") as HTMLElement; tb.textContent = teamText();
   tk.onclick = () => { w.style.visibility = "hidden"; const zurueck = () => { w.style.visibility = ""; tb.textContent = teamText(); };
-    (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL((held, mit) => { try { localStorage.setItem("ez_team", JSON.stringify({ held, mit })); for (const z of ZIELE) localStorage.removeItem("ez_k_" + z.id); /* ein neues Team beginnt Kampagnen von vorn */ } catch { /* privat */ } zurueck(); }, zurueck, { los: "Dieses Team nehmen", zurueck: "Zurück zur Karte" }); };
+    (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL((held, mit) => { try { localStorage.setItem("ez_team", JSON.stringify({ held, mit })); for (const z of ZIELE) { localStorage.removeItem("ez_k_" + z.id); localStorage.removeItem("ez_ort_" + z.id); localStorage.removeItem("ez_ort_" + z.id + "_pos"); } /* ein neues Team beginnt Kampagnen von vorn */ } catch { /* privat */ } zurueck(); }, zurueck, { los: "Dieses Team nehmen", zurueck: "Zurück zur Karte" }); };
   const ende = () => { w.hidden = true; w.style.visibility = ""; w.innerHTML = ""; removeEventListener("keydown", taste, true); zu(); };
   const taste = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); ende(); } };
   addEventListener("keydown", taste, true); (w.querySelector(".schliessen") as HTMLElement).onclick = ende;
   for (const k of Array.from(w.querySelectorAll<HTMLElement>(".ziel"))) k.onclick = () => {
     const z = ZIELE.find((q) => q.id === k.dataset.id) as Ziel; for (const a of Array.from(w.querySelectorAll(".ziel"))) a.classList.toggle("an", a === k);
-    info.hidden = false; info.innerHTML = `<small>Kampagne ${z.nr} · ${z.ort} · ${z.dauer}</small><h3>${z.name}</h3><p>${z.text}</p><em>${z.nr <= fertig ? "Geschafft." : z.nr > fertig + 1 ? `Verschlossen – erst „${ZIELE[z.nr - 2].name}“ abschließen.` : SPIELBAR.has(z.id) ? "" : "Noch nicht spielbar – diese Kampagne kommt als Echtzeit-Dungeon."}</em>` + (SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<button type="button" class="umsehen">Im Dorf umsehen (Vorschau) ▸</button><button type="button" class="los">${weiter(z.id) ? "Weiterspielen" : z.nr <= fertig ? "Noch einmal spielen" : "Aufbrechen"} ▸</button>` : "");
+    info.hidden = false; info.innerHTML = `<small>Kampagne ${z.nr} · ${z.ort} · ${z.dauer}</small><h3>${z.name}</h3><p>${z.text}</p><em>${z.nr <= fertig ? "Geschafft." : z.nr > fertig + 1 ? `Verschlossen – erst „${ZIELE[z.nr - 2].name}“ abschließen.` : SPIELBAR.has(z.id) ? "" : "Noch nicht spielbar – diese Kampagne kommt als Echtzeit-Dungeon."}</em>` + (SPIELBAR.has(z.id) && z.nr <= fertig + 1 ? `<button type="button" class="los">${weiter(z.id) ? "Weiterspielen" : z.nr <= fertig ? "Noch einmal spielen" : "Aufbrechen"} ▸</button>` : "");
     const um = info.querySelector(".umsehen") as HTMLElement | null; if (um) um.onclick = () => { location.href = "?ort=" + z.id; };
-    const los = info.querySelector(".los") as HTMLElement | null; if (los) los.onclick = () => { location.href = "?kampagne=" + z.id + (weiter(z.id) ? "" : "&neu=1"); };
+    const los = info.querySelector(".los") as HTMLElement | null; if (los) los.onclick = () => { location.href = "?ort=" + z.id + (weiter(z.id) && z.nr > fertig ? "" : "&neu=1"); }; /* man landet im Ort und spielt dort */
   };
 }

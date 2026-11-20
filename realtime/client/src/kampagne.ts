@@ -93,7 +93,11 @@ if (K && P.get("schritt") != null) S.schritt = Math.max(0, Math.min(K.schritte.l
 /** Läuft gerade eine Kampagne? */
 export const inKampagne = Boolean(K);
 /** Steht jetzt ein Kampf an (Held ist gewählt, der aktuelle Schritt ist ein Kampf)? Dann die Angaben dazu. */
-export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
+/* Kampf aus einem begehbaren Ort heraus (?ort=weidenhain&kampf=speicher): Nach dem Sieg wird im Stand des Ortes der Merker „kampf_<karte>“ gesetzt, dann geht es zurück in den Ort. */
+const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus dem Kornspeicher", muehle: "Kämpfe dich über den Steg zur Mühle durch", wehr: "Bezwinge die alte Unke und die Irrlichter" };
+const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
+export const kampfJetzt: { karte: string; ziel: string; held: string; mit: string[] } | null = (() => { if (IM_ORT) { const t = team(); let h = t ? t.held : ""; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } return { karte: OK.karte, ziel: ORTKAMPF[OK.karte], held: h || "schildwaechter", mit: t ? t.mit : [] }; }
+  if (!K || !S.held) return null; const s = K.schritte[S.schritt]; return s.art === "kampf" ? { karte: s.karte, ziel: s.ziel, held: S.held, mit: S.mit } : null; })();
 
 /* ---------- Gesprächsfenster ---------- */
 /** Ein Gespräch mitten im Ort: Das Dorf bleibt dahinter sichtbar. Erst die Zeilen, dann darf man fragen, bis man mit dem Schlussknopf geht. */
@@ -148,6 +152,7 @@ async function laufe(wahl: (los: (held: string, mit: string[]) => void, zurueck?
 export function kampagneBeginnen(wahl: Parameters<typeof laufe>[0]) { document.body.classList.add("kampagne"); void laufe(wahl); }
 /** Ein Kampf ist gewonnen: Nebenaufgabe prüfen, dann geht die Geschichte weiter. */
 export function kampfGewonnen(sek: number, wahl: Parameters<typeof laufe>[0]) {
+  if (IM_ORT) { try { const k = "ez_ort_" + OK.ort, m = JSON.parse(localStorage.getItem(k) || "{}") || {}; m["kampf_" + OK.karte] = true; localStorage.setItem(k, JSON.stringify(m)); } catch { /* privat */ } setTimeout(() => location.replace("?ort=" + encodeURIComponent(OK.ort)), 1800); return; }
   if (!K) return; const s = K.schritte[S.schritt]; if (s.art !== "kampf") return; S.schritt++; merke(S);
   if (s.neben && sek <= s.neben.unterSek) nebenMeldung(s.neben.id);
   setTimeout(() => void laufe(wahl), 1400); // kurz den Sieg sehen lassen
