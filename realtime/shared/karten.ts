@@ -13,7 +13,7 @@ const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, 
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
 export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"] };
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
-export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest"] };
+export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
@@ -44,6 +44,12 @@ export const KARTEN: Record<string, KampfKarte> = {
     start: [[1, 6], [2, 7], [0, 5]],
     lager: [{ art: "laich", x: 9.6, y: 4.55, gruppe: 9 }, { art: "laich", x: 10.4, y: 3.4, gruppe: 9 }, { art: "laich", x: 11.6, y: 3.9, gruppe: 9 },
       L("schlammkroete", 8, 5, 1), L("kroetchen", 7, 4, 1), L("kroetchen", 11, 5, 2), L("kroetchen", 12, 4, 2)] },
+  /* Am Mühlteich (Nebenkampf): Mettes Kräuterufer, rechts das Wasser. Die Irrlichter huschen einmal davon, wenn sie fast besiegt sind. */
+  ufer: { name: "Am Mühlteich", bild: "img/weidenhain/ufer.webp",
+    zeilen: ["TTTTTTTTTT....TT", "TTTT.TT....TTTTT", "TTT.........TT~~", "T........T...~~~", ".......KTTK~~~~~", "...........T~~~~", ".KT..........~~T", "TT...........TTT", "TTTT...........T"],
+    start: [[1, 4], [1, 5], [2, 3]],
+    lager: [{ ...L("irrlicht", 9, 2, 1), blinzeln: true }, { ...L("irrlicht", 11, 3, 1), blinzeln: true }, { ...L("irrlicht", 8, 6, 2), blinzeln: true }, { ...L("irrlicht", 11, 6, 2), blinzeln: true }, L("schlammkroete", 10, 6, 2),
+      { ...L("irrlicht", 12, 7, 3), blinzeln: true }, { ...L("irrlicht", 13, 0, 3), blinzeln: true }, L("schlammkroete", 11, 7, 3)] },
   /* Das alte Wehr: ein Streifen Ufer zwischen Mühlteich oben und dem Abfluss unten */
   wehr: { name: "Das alte Wehr", bild: "img/weidenhain/wehr.webp",
     zeilen: ["TT~~~~~~~~~T", "TTT~~~~~~MMT", ".TT......MM.", "............", ".T..........", "TTT.......K.", "............", "MMMMMMMMMMMM", "T~~~~~~~~~~~"],

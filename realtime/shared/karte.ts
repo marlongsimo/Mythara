@@ -3,7 +3,7 @@
  * Dazu Wegsuche (A*) und Sichtlinien. Reine Rechnung, läuft auf dem Server und im Browser gleich.
  */
 export interface Punkt { x: number; y: number }
-export interface Lager { art: string; x: number; y: number; gruppe: number }
+export interface Lager { art: string; x: number; y: number; gruppe: number; blinzeln?: boolean /* huscht einmal davon, wenn es fast besiegt ist */ }
 
 export let KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */

@@ -29,6 +29,7 @@ export const QUESTS: Record<string, { titel: string; ort: string; stufe: number;
       { text: "Hanne vom Kornspeicher berichten", wenn: ["kampf_speicher"], fertig: "hanne2" },
       { text: "Nach Tebbe sehen", wenn: ["tebbe_gefunden"], fertig: "tebbe_rede" },
       { text: "Den Krötenlaich hinter der Scheune zerschlagen", wenn: ["nest_auftrag"], fertig: "kampf_nest" },
+      { text: "Die Irrlichter am Mühlteich vertreiben", wenn: ["ufer_auftrag"], fertig: "kampf_ufer" },
     ] },
 };
 /** Merker eines Ortes aus dem Spielstand */

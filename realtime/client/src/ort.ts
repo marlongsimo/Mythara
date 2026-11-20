@@ -48,6 +48,14 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
       fragen: [{ knopf: "Wie viele sind es?", zeilen: [{ wer: "Lene", text: "Ich habe sechs gezählt. Dann bin ich gerannt." }] }] },
       { wenn: ["kampf_speicher"], setzt: "tebbe", schluss: "Ich hole ihn", fragen: [],
         zeilen: [{ wer: "Lene", text: "Mein Bruder. Tebbe. Er ist zwölf. Er ist zur Mühle gelaufen, wegen der Katze, und ich habe vor lauter Angst nicht daran gedacht!" }, { wer: "Lene", text: "Die Mühle steht drüben am Graben, das Haus mit dem Rad. Bitte." }] }] },
+  mette: { name: "Mette", feld: 240, koerper: 0.858, fuss: 0.979, sonst: { wer: "Mette", text: "Riechst du das? Thymian. Der wächst nur dort, wo das Wasser sauber ist." },
+    reden: [{ wenn: ["hanne"], setzt: "ufer_auftrag", schluss: "Ich sehe mir das an",
+      zeilen: [{ wer: "Mette, die Kräuterfrau", text: "Du bist die Hilfe, die Hanne geholt hat? Dann hör mir kurz zu, bevor du in den Speicher gehst." },
+        { wer: "Mette", text: "Ich sammle meine Kräuter am Mühlteich, drüben hinter dem Wehr. Seit drei Nächten tanzen dort Lichter über dem Wasser. Gestern sind mir zwei gefolgt, bis an den Zaun." },
+        { wer: "Mette", text: "Folg dem Weg am anderen Ufer nach unten. Und schlag schnell zu: Die Dinger huschen davon, wenn man sie fast hat." }],
+      fragen: [{ knopf: "Was sind Irrlichter?", zeilen: [{ wer: "Mette", text: "Die Alten sagen, sie locken Leute ins Moor, bis sie nicht mehr zurückfinden. In Rabenmoor erzählt man sich, sie seien die Seelen von Ertrunkenen." }, { wer: "Mette", text: "Ich glaube, sie sind einfach hungrig. Und unsere Felder sind voller Leben." }] }] },
+      { wenn: ["kampf_ufer"], setzt: "mette_dank", schluss: "Gern geschehen", fragen: [],
+        zeilen: [{ wer: "Mette", text: "Das Ufer ist wieder dunkel. Endlich. Morgen früh gehe ich Thymian holen, und für dich lege ich ein Bündel beiseite." }] }] },
   agnes: { name: "Agnes", feld: 240, koerper: 0.877, fuss: 0.984, sonst: { wer: "Agnes", text: "Gib auf dich acht da drinnen." },
     reden: [{ wenn: ["hanne"], setzt: "agnes", schluss: "Ich halte die Augen offen",
       zeilen: [{ wer: "Agnes, Witwe des Müllers", text: "Mein Mann hat die Mühle dreißig Jahre geführt. Seit er tot ist, steht sie leer, und am Graben kümmert sich niemand mehr." }, { wer: "Agnes", text: "Die Kröten kommen von dort. Vom Wehr herauf, immer nachts." }],
@@ -66,6 +74,7 @@ const TUEREN: Record<string, { wenn: string[]; knopf: string; kampf: string }> =
   muehle: { wenn: ["tebbe"], knopf: "Zur Mühle am Graben", kampf: "muehle" },
   wehr: { wenn: ["tebbe_gefunden"], knopf: "Zum Wehr hinunter", kampf: "wehr" },
   nest: { wenn: ["nest_auftrag"], knopf: "Hinter die Scheune (Krötennest)", kampf: "nest" },
+  ufer: { wenn: ["ufer_auftrag"], knopf: "Zum Mühlteich (Irrlichter)", kampf: "ufer" },
 };
 /* Was beim Ankommen im Ort erzählt wird: der erste Auftritt, dessen Bedingung passt und der noch nicht erzählt ist. ende: Damit ist die Kampagne geschafft. */
 const AUFTRITTE: Record<string, { wenn: string[]; setzt: string; titel: string; zeilen: Zeile[]; schluss: string; ende?: number }[]> = { weidenhain: [
