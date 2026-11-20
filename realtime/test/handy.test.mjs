@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url), { chromium } = require("playwrig
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const br = await chromium.launch(), k = await br.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 }), p = await k.newPage(), fehler = [];
 p.on("pageerror", (e) => fehler.push(String(e)));
-await p.goto("http://localhost:8765/echtzeit/?server="); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 15000 });
+await p.goto("http://localhost:8765/echtzeit/?los=1&server="); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 15000 });
 const ort = () => p.evaluate(() => { const z = window.EZ.zustand(), e = z.w.find((e) => e[0] === z.ich.id); return [e[4], e[5]]; });
 const cdp = await k.newCDPSession(p), finger = (typ, x, y) => cdp.send("Input.dispatchTouchEvent", { type: typ, touchPoints: typ === "touchEnd" ? [] : [{ x, y, id: 1 }] });
 const a = await ort(); await finger("touchStart", 160, 260); await finger("touchMove", 215, 260); await p.waitForTimeout(700);

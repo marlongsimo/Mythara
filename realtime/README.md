@@ -32,7 +32,19 @@ Die Datei ist nicht gegen Render erprobt – beim ersten Einrichten bitte das Pr
 
 Geheime Schlüssel (etwa ein Supabase-Service-Schlüssel, sobald Ergebnisse gespeichert werden) gehören ausschließlich in die Umgebungsvariablen des Servers, nie in `client/` oder `shared/`.
 
+## Kampfsystem 0.1
+
+Alle Werte stehen in `shared/config.ts`. Wer am Balancing dreht, ändert nur diese Datei, baut neu (`npm run build`) und misst mit `node test/messen.mjs`.
+
+- **Zwei Würfe wie bei Old School RuneScape:** Angriffswurf (0 bis Angriffswert) gegen Verteidigungswurf (0 bis Verteidigungswert für genau diese Angriffsart: Nahkampf, Fernkampf oder Magie). Trifft der Angriff, wird der Schaden zwischen Mindest- und Höchstschaden der Waffe gewürfelt.
+- **Zwei Waffen je Held** als Kippschalter; es gilt immer nur die gewählte.
+- **Fernkämpfer** schießen nur im Stehen und holen kurz aus; Nahkämpfer schlagen auch im Laufen.
+- **Fähigkeiten Q, E, R** haben nur Abklingzeiten. Flächen und Sprünge treffen räumlich, ohne Trefferwurf.
+- **Torvalds Schild** (zweite Waffe) erhöht von vorn seinen Verteidigungswurf.
+- **Erholung:** nach 5 Sekunden ohne Schaden 4 % des Höchstlebens je Sekunde.
+- **Knochenwächter** holen sichtbar aus; wer dann außer Reichweite ist, wird nicht getroffen. Eine Gruppe wacht gemeinsam auf.
+
 ## Stand
 
-Erster Schnitt durch Phase 1 bis 4 des Gesamtkonzepts: Verbindung, isometrische Karte, Klick-Bewegung mit Wegsuche, Kamera, Angriffe, zwei Fähigkeiten, Monster mit einfachem Verhalten, ein Begleiter, Erfahrung und Stufen, Erbsplitter, ein Boss mit angekündigtem Flächenschlag, „Riss geschafft“.
-Noch nicht: Anmeldung über Supabase, Speichern, Animationen, eigene Kartenkacheln (Tiled), weitere Helden, Gegenstände, mehrere Spieler in einem Riss.
+Fünf Helden (Torvald, Vaelin, Elara, Vex, Orin) mit Heldenwahl und bis zu zwei Begleitern, zwölf Knochenwächter in fünf Gruppen, Dungeon-Arena, direkte Steuerung (WASD, Steuerknüppel), Torvald mit Lauf- und Hieb-Animation.
+Noch nicht: Stufen und Erfahrung (für den ersten Balancing-Test abgeschaltet), Anmeldung über Supabase, Speichern, Figurenbilder für die übrigen Helden und Monster, Gegenstände, mehrere Spieler in einem Riss.

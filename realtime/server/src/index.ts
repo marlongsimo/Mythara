@@ -23,8 +23,8 @@ const wss = new WebSocketServer({ server: http, maxPayload: 512, verifyClient: (
 
 wss.on("connection", (ws, req) => {
   if (plaetze.size >= MAX) { ws.close(1013, "voll"); return; }
-  const url = new URL(req.url || "/", "http://x"), held = url.searchParams.get("held") || "schildwaechter";
-  const p: Platz = { ws, sim: new Sim(HELDEN[held] ? held : "schildwaechter", (Date.now() ^ (Math.random() * 1e9)) >>> 0), zuletzt: Date.now(), fenster: Date.now(), zahl: 0 };
+  const url = new URL(req.url || "/", "http://x"), held = url.searchParams.get("held") || "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2);
+  const p: Platz = { ws, sim: new Sim(HELDEN[held] ? held : "schildwaechter", (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit), zuletzt: Date.now(), fenster: Date.now(), zahl: 0 };
   plaetze.add(p); ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
   ws.on("message", (roh) => {
     const jetzt = Date.now(); if (jetzt - p.fenster > 1000) { p.fenster = jetzt; p.zahl = 0; } if (++p.zahl > K.EINGABEN_JE_SEK) return; // zu viele Eingaben: verwerfen

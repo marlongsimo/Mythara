@@ -3,7 +3,7 @@
  * Dazu Wegsuche (A*) und Sichtlinien. Reine Rechnung, läuft auf dem Server und im Browser gleich.
  */
 export interface Punkt { x: number; y: number }
-export interface Lager { art: string; x: number; y: number }
+export interface Lager { art: string; x: number; y: number; gruppe: number }
 
 export const KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */
@@ -24,11 +24,13 @@ for (const [x, y, w, h] of OFFEN) for (let i = x; i < x + w; i++) for (let j = y
 for (const [x, y] of SAEULEN) FELS[y * KB + x] = 1;
 
 export const START: Punkt[] = [{ x: 3.5, y: 4.5 }, { x: 4.5, y: 5.5 }, { x: 2.5, y: 5.5 }];
+/* Zwölf Knochenwächter in fünf Gruppen zu zwei bis drei. Wer einen aus einer Gruppe weckt, weckt die ganze Gruppe. */
 export const LAGER: Lager[] = [
-  { art: "schattenkobold", x: 13.5, y: 2.5 }, { art: "schattenkobold", x: 16.5, y: 2.5 }, { art: "schattenkobold", x: 16.5, y: 5.5 },
-  { art: "rostkaefer", x: 12.5, y: 14.5 }, { art: "rostkaefer", x: 16.5, y: 13.5 }, { art: "rostkaefer", x: 17.5, y: 16.5 },
-  { art: "knochenwaechter", x: 25.5, y: 13.5 }, { art: "knochenwaechter", x: 29.5, y: 12.5 }, { art: "knochenwaechter", x: 29.5, y: 16.5 },
-  { art: "grabritter", x: 28.5, y: 3.5 }, { art: "knochenwaechter", x: 25.5, y: 2.5 }, { art: "knochenwaechter", x: 25.5, y: 5.5 },
+  { art: "knochenwaechter", x: 15.5, y: 2.5, gruppe: 1 }, { art: "knochenwaechter", x: 17.5, y: 4.5, gruppe: 1 },
+  { art: "knochenwaechter", x: 12.5, y: 14.5, gruppe: 2 }, { art: "knochenwaechter", x: 13.5, y: 16.5, gruppe: 2 }, { art: "knochenwaechter", x: 17.5, y: 15.5, gruppe: 2 },
+  { art: "knochenwaechter", x: 29.5, y: 12.5, gruppe: 3 }, { art: "knochenwaechter", x: 29.5, y: 15.5, gruppe: 3 }, { art: "knochenwaechter", x: 26.5, y: 16.5, gruppe: 3 },
+  { art: "knochenwaechter", x: 22.5, y: 1.5, gruppe: 4 }, { art: "knochenwaechter", x: 22.5, y: 3.5, gruppe: 4 },
+  { art: "knochenwaechter", x: 30.5, y: 1.5, gruppe: 5 }, { art: "knochenwaechter", x: 31.5, y: 2.5, gruppe: 5 },
 ];
 export const SIEGEL: Punkt = { x: 30.5, y: 3.5 };
 
