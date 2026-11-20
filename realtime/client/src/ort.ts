@@ -168,7 +168,7 @@ const KOEPFE = [[0.16, 0.23], [0.47, 0.15], [0.8, 0.17], [0.35, 0.43], [0.67, 0.
 const GEREDE = ["Das Bier ist dieses Jahr dünner.", "Hast du Almas Kuchen probiert?", "Morgen soll es regnen.", "Mein Rücken, sag ich dir …", "Die Fiedel ist verstimmt.", "Früher war mehr Erntefest.", "Noch ein Krug?", "Das sagst du jedes Jahr.", "Ich hab's doch gleich gesagt.", "Und dann ist das Rad gebrochen!",
   "Pst, nicht so laut.", "Na, wenn du meinst.", "Der Winter kommt früh, wetten?", "Mein Vetter aus Graufurt sagt …", "Ha! Das glaubst du doch selbst nicht.", "Hm.", "Die Rüben waren nie so groß.", "Wer tanzt nachher?", "So ein Unsinn.", "Wem gehört eigentlich der Karren?", "Drei Kupfer für ein Brot!", "Erzähl das bloß nicht weiter."];
 /* Eine aufgebrachte Meute: steht im Ort, bis der Merker „weg“ gesetzt ist (x, y in Bildpunkten der Vorlage, wie in ortbild.py) */
-const MEUTE: Record<string, { x: number; y: number; weg: string }> = { rabenmoor: { x: 625, y: 660, weg: "harm_ruhig" } };
+const MEUTE: Record<string, { x: number; y: number; weg: string }> = { rabenmoor: { x: 765, y: 530, weg: "harm_ruhig" } };
 const SCHREIE = ["Verbrennt die Hexe!", "Drei Kinder!", "Heute Nacht noch!", "Sie hat sie gerufen!", "Holt mehr Pech!", "Wer hält zu der Alten?", "Ins Moor mit ihr!", "Wie lange noch warten?"];
 /* Unterzeile im Ortsbanner */
 const UNTER: Record<string, string> = { weidenhain: "Das Dorf am Mühlgraben", rabenmoor: "Das Dorf im Schwarzmoor", baukasten: "Probefläche" };
@@ -272,13 +272,13 @@ export class Ort extends Phaser.Scene {
   /** Die Meute mit Fackeln: drängt und ruft, bis sie jemand nach Hause schickt */
   meute() { const M = MEUTE[ortName], F = this.d.mass || 1; if (!M || this.merker[M.weg]) return; const x = M.x * F, y = M.y * F;
     if (!this.anims.exists("meute")) this.anims.create({ key: "meute", frames: this.anims.generateFrameNumbers("meute", {}), frameRate: 5, repeat: -1, yoyo: true });
-    const sp = this.add.sprite(x, y, "meute").setOrigin(0.5, 0.96).setScale(GROSS * 0.95 / 218).setDepth(y).play("meute"); this.meuteBild = sp;
+    const sp = this.add.sprite(x, y, "meute").setOrigin(0.5, 0.96).setScale(GROSS * 1.4 / 218).setDepth(y).play("meute"); this.meuteBild = sp;
     if (!this.textures.exists("glut")) { const t = this.textures.createCanvas("glut", 128, 128); if (t) { const c = t.getContext(), g = c.createRadialGradient(64, 64, 2, 64, 64, 64); g.addColorStop(0, "rgba(255,200,120,1)"); g.addColorStop(0.4, "rgba(255,140,60,.4)"); g.addColorStop(1, "rgba(255,110,40,0)"); c.fillStyle = g; c.fillRect(0, 0, 128, 128); t.refresh(); } }
-    const schein = this.add.image(x + 10, y - GROSS * 1.15, "glut").setBlendMode(Phaser.BlendModes.ADD).setScale(2.6, 2).setAlpha(0.25).setDepth(99998); this.time.addEvent({ delay: 110, loop: true, callback: () => { if (!this.meuteBild) { schein.destroy(); return; } schein.setAlpha(0.18 + Math.random() * 0.14); } });
+    const schein = this.add.image(x + 15, y - GROSS * 1.65, "glut").setBlendMode(Phaser.BlendModes.ADD).setScale(2.6, 2).setAlpha(0.25).setDepth(99998); this.time.addEvent({ delay: 110, loop: true, callback: () => { if (!this.meuteBild) { schein.destroy(); return; } schein.setAlpha(0.18 + Math.random() * 0.14); } });
     let n = -1; const rufen = () => { if (!this.scene.isActive() || !this.meuteBild) return; n = (n + 1 + Math.floor(Math.random() * 3)) % SCHREIE.length;
       const t = this.add.text(0, 0, SCHREIE[n], { fontFamily: "Inter, sans-serif", fontSize: "15px", fontStyle: "bold", color: "#3a0c06", align: "center" }).setOrigin(0.5, 1).setResolution(2), b = t.getBounds(), bw = b.width + 20, bh = b.height + 12;
       const blase = this.add.graphics(); blase.fillStyle(0xffe2c8, 0.96).lineStyle(2, 0x7a1a0c, 0.9); blase.fillRoundedRect(-bw / 2, -bh - 10, bw, bh, 9).strokeRoundedRect(-bw / 2, -bh - 10, bw, bh, 9); blase.fillTriangle(-7, -11, 7, -11, 0, 0); t.setPosition(0, -16);
-      const c = this.add.container(x + (Math.random() - 0.5) * 70, y - GROSS * 1.2, [blase, t]).setDepth(99990).setAlpha(0); this.tweens.add({ targets: c, alpha: 1, y: c.y - 6, duration: 200 }); this.tweens.add({ targets: c, alpha: 0, duration: 300, delay: 2000, onComplete: () => c.destroy() });
+      const c = this.add.container(x + (Math.random() - 0.5) * 100, y - GROSS * 1.75, [blase, t]).setDepth(99990).setAlpha(0); this.tweens.add({ targets: c, alpha: 1, y: c.y - 6, duration: 200 }); this.tweens.add({ targets: c, alpha: 0, duration: 300, delay: 2000, onComplete: () => c.destroy() });
       this.time.delayedCall(2600 + Math.random() * 2600, rufen); };
     this.time.delayedCall(1500, rufen); }
   /** Dorfleute, die beisammenstehen: Sie gestikulieren, und alle paar Sekunden sagt einer von ihnen etwas Belangloses in einer Sprechblase. */
