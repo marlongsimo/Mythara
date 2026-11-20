@@ -31,6 +31,8 @@ ORTE = {
         "becken": [(1760, 1400, 300)],
         # Stege: von–bis, halbe Breite
         "stege": [((1380, 1050), (1900, 900), 40)],
+        # Zäune: Anfang (x, y) und die Folge der Stücke: h = nach rechts hinauf, r = nach rechts hinunter (andere Richtungen kann das Zaunbild nicht)
+        "zaeune": [(1210, 255, "hhrr"), (1400, 748, "hhh"), (2330, 700, "rr"), (1300, 1235, "hh")],
         "stellen": {"start": (1210, 1400), "platz": (720, 560), "scheune": (1400, 330), "muehle": (2180, 810), "steg": (1640, 975)},
     },
 }
@@ -122,7 +124,7 @@ def main():
         for i in range(W // Z):
             px, py = i * Z + Z // 2, min(H - 1, round((j * Z + Z // 2) / Q)); z += "." if gehbar[py, px] and 50 < px < W - 50 and 50 < j * Z + Z // 2 < HB - 40 else "#"
         zeilen.append(z)
-    json.dump({"breit": W, "hoch": HB, "zelle": Z, "zeilen": zeilen, "stellen": {k: list(v) for k, v in O["stellen"].items()}}, open(os.path.join(HIER, "..", "client", "src", name + ".json"), "w"), ensure_ascii=False)
+    json.dump({"breit": W, "hoch": HB, "zelle": Z, "zeilen": zeilen, "zaeune": [list(z) for z in O.get("zaeune", [])], "stellen": {k: list(v) for k, v in O["stellen"].items()}}, open(os.path.join(HIER, "..", "client", "src", name + ".json"), "w"), ensure_ascii=False)
     print("fertig:", ziel, aus.size, "·", n_id, "Steine geprüft,", int(bleibt.sum()), "liegen")
 
 
