@@ -43,6 +43,16 @@
     body.dorf #ez-ich, body.dorf #ez-oben, body.dorf #ez-art, body.dorf #ez-tasten, body.dorf #ez-hilfe { display: none; }
     #ez-dorf-hilfe, #ez-dorf-titel { display: none; } body.dorf #ez-dorf-hilfe { display: block; bottom: 8px; left: max(8px, env(safe-area-inset-left)); font-size: 11px; color: #b9ad94; } body.dorf #ez-dorf-titel { display: block; top: 8px; left: 50%; transform: translateX(-50%); font-family: Cinzel, Georgia, serif; color: #ffd98a; font-size: 15px; }
     #ez-dorf-knopf { position: fixed; z-index: 5; left: 50%; bottom: 64px; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.6); } #ez-dorf-knopf[hidden] { display: none; } #ez-dorf-knopf.bald { border-color: #4b4460; background: #1a1626; color: #b9ad94; }
+    #ez-profil, #ez-karte { display: none; }
+    body.stadt #ez-dorf-titel { display: none; }
+    body.stadt #ez-profil { display: flex; align-items: center; gap: 10px; top: 8px; left: max(8px, env(safe-area-inset-left)); padding: 6px 14px 6px 6px; border-radius: 40px; border: 1px solid rgba(255,215,94,.45); }
+    #ez-profil img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid #ffd75e; } #ez-profil b { display: block; font-size: 15px; color: #fff; } #ez-profil small { font-size: 11px; color: #cfc3a8; }
+    body.stadt #ez-karte { display: block; position: fixed; z-index: 3; top: 8px; right: max(8px, env(safe-area-inset-right)); width: 190px; aspect-ratio: 1671 / 941; border-radius: 12px; border: 2px solid rgba(255,215,94,.6); background: url(../img/echtzeit/waldmark.webp) center / 100% 100%; box-shadow: 0 4px 14px rgba(0,0,0,.6); pointer-events: none; }
+    #ez-karte span { position: absolute; left: 50%; bottom: -24px; transform: translateX(-50%); padding: 2px 12px; border-radius: 10px; background: rgba(12,10,18,.75); font-family: Cinzel, Georgia, serif; font-size: 13px; color: #ffd98a; white-space: nowrap; }
+    #ez-karte u { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #ffd75e; box-shadow: 0 0 0 1.5px #000; } #ez-karte u.riss { background: #7fa8ff; }
+    #ez-karte-punkt { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #1a6cff, 0 0 8px #fff; z-index: 1; }
+    body.stadt #ez-heim { top: auto; bottom: 8px; } body.stadt #ez-heim span { display: none; } body.stadt #ez-dorf-hilfe { bottom: 40px; }
+    @media (max-width: 700px) { body.stadt #ez-karte { width: 128px; } #ez-profil img { width: 42px; height: 42px; } }
     #ez-zurueck { padding: 12px 18px; border-radius: 10px; border: 1px solid #4b4460; background: #1a1626; color: #d9cdf5; font: 600 14px Inter, sans-serif; cursor: pointer; }
     #ez-ende { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(6,5,10,.8); text-align: center; padding: 20px; } #ez-ende[hidden] { display: none; }
     #ez-ende h1 { font-family: Cinzel, Georgia, serif; color: #8dffb0; margin: 0 0 8px; } #ez-neu { margin-top: 14px; padding: 11px 22px; border-radius: 10px; border: 1px solid #ffd75e; background: linear-gradient(#5a431a, #3a2a10); color: #ffe9a8; font: 600 15px Inter, sans-serif; cursor: pointer; }
@@ -57,10 +67,12 @@
   <div class="ez-kasten" id="ez-hilfe"></div>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
+  <div class="ez-kasten" id="ez-profil"><img id="ez-profil-bild" alt=""><div><b id="ez-profil-name">Test</b><small id="ez-profil-held"></small></div></div>
+  <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
   <div id="ez-stick" hidden><i></i></div>
   <div id="ez-tasten"><button type="button" id="ez-modus" aria-label="Waffe wechseln"></button><button type="button" data-taste="q"><i></i><b>Q</b><small></small></button><button type="button" data-taste="e"><i></i><b>E</b><small></small></button><button type="button" data-taste="r" class="ult"><i></i><b>R</b><small></small></button></div>
   <div id="ez-wahl" hidden></div>
   <div id="ez-ende" hidden><div><h1>Riss geschafft</h1><p id="ez-ende-text"></p><button type="button" id="ez-neu">Neuer Riss</button> <a href="./" style="color:#d9cdf5;margin-left:14px">Zurück ins Dorf</a></div></div>
-  <script src="spiel.js?v=mwoc77bq"></script>
+  <script src="spiel.js?v=mwocddoc"></script>
 </body>
 </html>
