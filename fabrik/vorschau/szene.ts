@@ -3,7 +3,7 @@
  * Die Figur besteht aus übereinandergelegten Ebenen: Körper, Rüstungsteile, Waffen (je eine Ebene hinter und vor dem Körper).
  * Alle Ebenen zeigen immer dasselbe Bild derselben Bewegung in derselben Richtung – die Szene zählt die Bilder selbst, damit nichts auseinanderläuft.
  *
- * Aufruf: …/fabrik/vorschau/?figur=held.krieger&version=v003
+ * Aufruf: …/fabrik/vorschau/?figur=held.krieger&version=v004
  * Steuerung: WASD oder Pfeile laufen (acht Richtungen), Tippen/Klicken läuft dorthin · J Angriff · K Block (halten) · L Zweihandangriff · H Treffer · Leertaste Ausweichen
  * Für Prüfungen: window.FABRIK (Zustand lesen, Taten auslösen, Ausrüstung setzen).
  */
@@ -13,7 +13,7 @@ interface Anim { bilder: number; rate: number; schleife: boolean; halten?: numbe
 interface Ebene { art: "koerper" | "huelle" | "starr"; platz?: string; atlas?: Record<string, { datei: string }> }
 interface Meta { id: string; feld: number; fuss: [number, number]; mass: [number, number, number]; animationen: Record<string, Anim>; ebenen: Record<string, Ebene>; plaetze: Record<string, string[]>; tiefe: Record<string, Record<string, number[][]>> }
 
-const P = new URLSearchParams(location.search), FIGUR = P.get("figur") || "held.krieger", VERSION = P.get("version") || "v003";
+const P = new URLSearchParams(location.search), FIGUR = P.get("figur") || "held.krieger", VERSION = P.get("version") || "v004";
 const BASIS = `../assets/${FIGUR}/${VERSION}/export/`, $ = (s: string) => document.querySelector(s) as HTMLElement;
 const PLATZNAME: Record<string, string> = { hand_r: "Waffe", arm_l: "Schild", brust: "Brust", bein: "Beine", hand: "Hände", fuss: "Füße", kopf: "Kopf" };
 const TEMPO = 150; // Bildpunkte je Sekunde

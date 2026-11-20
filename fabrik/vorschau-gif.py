@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ordner, kennung, ziel = sys.argv[1], sys.argv[2], sys.argv[3]; M = json.load(open(os.path.join(ordner, kennung + ".json"))); F = M["feld"]; EB = M["ebenen"]; A = M["animationen"]
-Z = 200; OBEN, UNTEN = 30, 236                                                                   # Ausschnitt des Feldes (die Figur steht im unteren Teil)
+Z = 200; OBEN, UNTEN = 0, F                                                                       # das ganze Feld: so sieht man auch, dass nichts abgeschnitten ist
 _b = {}
 def blatt(e, a):
     if (e, a) not in _b: _b[(e, a)] = Image.open(os.path.join(ordner, f"{e}.{a}.webp")).convert("RGBA")

@@ -21,12 +21,29 @@ from mathutils import Vector
 from PIL import Image
 
 quelle, ziel, kennung = sys.argv[1], sys.argv[2], sys.argv[3]; NUR = set(sys.argv[4].split(",")) if len(sys.argv) > 4 else None
-RICHTUNGEN = ["o", "so", "s", "sw", "w", "nw", "n", "no"]; FELD = 256; PX_JE_M = 86.0; NEIGUNG = 35.0; FUSS = (0.5, 0.70); BREITE_M = FELD / PX_JE_M     # großes Feld: eine erhobene Waffe darf nicht abgeschnitten werden
+RICHTUNGEN = ["o", "so", "s", "sw", "w", "nw", "n", "no"]; PX_JE_M = 86.0; NEIGUNG = 35.0; RAND = 8     # Feldgröße und Fußpunkt werden unten aus der Bewegung berechnet: nichts darf abgeschnitten werden
 
 bpy.ops.wm.open_mainfile(filepath=quelle); sc = bpy.context.scene; arm = bpy.data.objects["skelett"]; os.makedirs(ziel, exist_ok=True)
+n = math.radians(NEIGUNG); oben_v = Vector((0, math.sin(n), math.cos(n)))                                                     # am Bildschirm „oben“, gesehen von der Kamera
+def ausdehnung():
+    """größte Ausdehnung aller Teile über alle Bewegungen, Richtungen und Bilder: (seitlich, über dem Fußpunkt, unter dem Fußpunkt) in Metern"""
+    s_, o_, u_ = 0.0, 0.0, 0.0; dg = bpy.context.evaluated_depsgraph_get(); ob_ = [o for o in bpy.data.objects if o.get("ebene")]
+    for a in [x for x in bpy.data.actions if x.get("bilder")]:
+        arm.animation_data.action = a
+        for r in range(8):
+            arm.rotation_euler = (0, 0, math.radians(90 - 45 * r))
+            for b in range(int(a["bilder"])):
+                sc.frame_set(b + 1); bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get()
+                for o in ob_:
+                    e = o.evaluated_get(dg); M = e.matrix_world
+                    for c in e.bound_box: v = M @ Vector(c); s_ = max(s_, abs(v.x)); o_ = max(o_, v.dot(oben_v)); u_ = max(u_, -v.dot(oben_v))
+    return s_, o_, u_
+seite_m, ueber_m, unter_m = ausdehnung(); ueber, unter, seite = ueber_m * PX_JE_M + RAND, unter_m * PX_JE_M + RAND, seite_m * PX_JE_M + RAND
+FELD = int(math.ceil(max(2 * seite, ueber + unter) / 32) * 32); FUSS = (0.5, round(1 - (unter + (FELD - ueber - unter) / 2) / FELD, 4)); BREITE_M = FELD / PX_JE_M
+print(f"Renderbereich: Feld {FELD} px · Fußpunkt {FUSS} · Platz über dem Fußpunkt {round(ueber)} px, darunter {round(unter)} px, seitlich {round(seite)} px", flush=True)
 sc.render.engine = "CYCLES"; sc.cycles.samples = 12; sc.cycles.device = "CPU"; sc.cycles.use_denoising = False; sc.render.film_transparent = True; sc.render.resolution_x = sc.render.resolution_y = FELD; sc.render.use_persistent_data = False
 sc.render.image_settings.file_format = "PNG"; sc.render.image_settings.color_mode = "RGBA"; sc.view_settings.view_transform = "Standard"
-n = math.radians(NEIGUNG); h = (FUSS[1] - 0.5) * BREITE_M / math.cos(n)
+h = (FUSS[1] - 0.5) * BREITE_M / math.cos(n)
 cam = bpy.data.objects.new("kamera", bpy.data.cameras.new("kamera")); sc.collection.objects.link(cam); cam.data.type = "ORTHO"; cam.data.ortho_scale = BREITE_M
 cam.location = (0, -10 * math.cos(n), h + 10 * math.sin(n)); cam.rotation_euler = (math.radians(90) - n, 0, 0); sc.camera = cam; blick = Vector((0, math.cos(n), -math.sin(n)))
 for name, rot, staerke in [("haupt", (50, 0, -40), 5.0), ("fuell", (65, 0, 60), 1.6), ("rand", (-40, 0, 170), 1.2)]:
