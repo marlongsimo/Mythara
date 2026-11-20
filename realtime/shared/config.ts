@@ -86,7 +86,7 @@ export const HELDEN: Record<string, HeldDef> = {
     e: { name: "Schutzkreis", zeit: 16, text: "Kreis (Radius 3) um Elara: Verbündete bekommen 35 Schutzpunkte und 15 Magieverteidigung für 4 Sekunden." },
     r: { name: "Göttliches Licht", zeit: 90, text: "Heilt Verbündete im Umkreis von 6 Feldern um 30 % ihres Höchstlebens. Untote dort erleiden 50 heiligen Schaden." },
     passiv: "Beistand: Verbündete im Umkreis von 3 Feldern haben 5 Magieverteidigung mehr." },
-  assassine: { name: "Vex", titel: "Der Assassine", klasse: "Schurke", rolle: "Schneller Einzelschaden", bild: "img/figuren/assassine.jpg",
+  assassine: { name: "Vex", titel: "Der Assassine", klasse: "Schurke", rolle: "Schneller Einzelschaden", bild: "img/figuren/assassine.jpg", figur: "img/echtzeit/vex.webp", fuss: [0.5, 0.95], gross: 1.1, lauf: "img/echtzeit/vex-lauf.webp", laufMass: [0.47, 0.93, 0.86], hieb: "img/echtzeit/vex-dolch.webp", hiebMass: [0.45, 0.975, 0.87], hieb2: "img/echtzeit/vex-schuss.webp", hieb2Mass: [0.46, 0.985, 0.9],
     lp: 220, tempo: 4.4, angriff: { nah: 110, fern: 90, magie: 15 }, abwehr: { nah: 45, fern: 70, magie: 30 },
     modi: [{ name: "Dolch", art: "nah", schaden: [7, 18], takt: 0.55, reich: 1.5, text: "Sehr schneller Nahkampf. Jeder Treffer lässt den Gegner nachbluten." },
       { name: "Armbrust", art: "fern", schaden: [19, 32], takt: 1.2, reich: 7.5, flug: 16, text: "Fernkampf aus sicherem Abstand." }],
