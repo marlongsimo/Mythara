@@ -32,7 +32,7 @@ interface Rede { wenn?: string[]; setzt: string; zeilen: Zeile[]; fragen: Frage[
 /* blatt: anderes Bildblatt als <id>.webp (vorläufige Figuren); still: nur das erste Bild zeigen (Laufblätter aus der Waldmark) */
 const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss: number; gross?: number; zeigen?: string; blatt?: string; still?: boolean; reden: Rede[]; sonst: Zeile }> = {
   /* ---------- Rabenmoor (vorläufige Figuren aus der Waldmark, bis eigene Bildblätter da sind) ---------- */
-  bertold: { name: "Bertold Krähe", feld: 176, koerper: 0.949, fuss: 0.983, blatt: "ausrufer", still: true, sonst: { wer: "Bertold Krähe", text: "Geh. Jede Stunde, die du hier stehst, ist eine Stunde, die die Kinder im Moor sind." },
+  bertold: { name: "Bertold Krähe", feld: 240, koerper: 0.867, fuss: 0.988, sonst: { wer: "Bertold Krähe", text: "Geh. Jede Stunde, die du hier stehst, ist eine Stunde, die die Kinder im Moor sind." },
     reden: [{ setzt: "bertold", schluss: "Ich gehe ins Moor",
       zeilen: [{ wer: "Bertold Krähe, der Schulze", text: "Der Junge hat dich also gefunden. Gut. Dann hör zu, ich sage es nur einmal." },
         { wer: "Bertold Krähe", text: "Drei Kinder. Jannik, Fenna und Ilses Kleine, Mira. Sie sind den Lichtern ins Moor gefolgt, eins nach dem anderen, drei Nächte lang." },
@@ -60,7 +60,7 @@ const LEUTE: Record<string, { name: string; feld: number; koerper: number; fuss:
       zeilen: [{ wer: "Joost, der Torfstecher", text: "Du kommst vom Bohlenweg? Dann weißt du jetzt, dass man zu Fuß nicht weit kommt." },
         { wer: "Joost", text: "Ich bring dich mit dem Kahn durch den alten Kanal ins Ried. Weiter als bis zum Ende des Kanals fahre ich nicht. Da drinnen sitzen die Kröten dicht wie Torf." }],
       fragen: [{ knopf: "Was liegt hinter dem Ried?", zeilen: [{ wer: "Joost", text: "Heddas Hütte, auf der letzten trockenen Insel. Und dahinter das tiefe Moor, wo keiner von uns hingeht." }] }] }] },
-  hedda: { name: "Mutter Hedda", feld: 176, koerper: 0.915, fuss: 0.955, blatt: "kraeuterfrau", still: true, zeigen: "kampf_ried", sonst: { wer: "Mutter Hedda", text: "Geh den Totenpfad. Und sprich mit ihr. Sie hat lange niemanden mehr gehört." },
+  hedda: { name: "Mutter Hedda", feld: 240, koerper: 0.967, fuss: 0.975, gross: 0.95, zeigen: "kampf_ried", sonst: { wer: "Mutter Hedda", text: "Geh den Totenpfad. Und sprich mit ihr. Sie hat lange niemanden mehr gehört." },
     reden: [{ setzt: "hedda", schluss: "Ich gehe den Totenpfad",
       zeilen: [{ wer: "Mutter Hedda, die Kräuterfrau", text: "Du kommst durchs Ried, mit Schlamm bis zum Hals. Du bist nicht hier, um mich anzuzünden. Setz dich." },
         { wer: "Mutter Hedda", text: "Die Lichter rufen die Kinder nicht. Sie suchen. Seit fünfzig Jahren suchen sie jemanden, der zurückkommt." },
