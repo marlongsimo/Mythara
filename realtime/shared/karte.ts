@@ -42,10 +42,12 @@ const dicht = (x: number, y: number): boolean => { const i = Math.floor(x), j = 
 
 /** Eine andere Karte einsetzen (Kampagnen). Zeilen als Text: „.“ frei, „~“ Wasser, alles andere Hindernis.
  *  Die Karte gilt für alle Simulationen dieses Programms – auf dem Server läuft deshalb bisher nur der Riss mit der Grundkarte. */
-export function setzeKarte(k: { zeilen: string[]; start: number[][]; lager: Lager[] }): void {
+export function setzeKarte(k0: { zeilen: string[]; start: number[][]; lager: Lager[] }, mal = 1): void {
+  /* mal: so viele Rechenfelder je gemaltem Feld. Die gemalten Karten sind klein (12 × 9); mit mal 2 passen Reichweiten und Lauftempo zum Bild. */
+  const k = { zeilen: k0.zeilen.flatMap((z) => { const breit = [...z].map((c) => c.repeat(mal)).join(""); return Array.from({ length: mal }, () => breit); }), start: k0.start, lager: k0.lager.map((l) => ({ ...l, x: l.x * mal, y: l.y * mal })) };
   KH = k.zeilen.length; KB = k.zeilen[0].length; FELS = new Uint8Array(KB * KH); WASSER = new Uint8Array(KB * KH);
   k.zeilen.forEach((z, j) => [...z].forEach((c, i) => { if (c === "~") WASSER[j * KB + i] = 1; else if (c !== ".") FELS[j * KB + i] = 1; }));
-  START = k.start.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 })); LAGER = k.lager;
+  START = k.start.map(([x, y]) => ({ x: (x + 0.5) * mal, y: (y + 0.5) * mal })); LAGER = k.lager;
 }
 export const begehbar = (x: number, y: number): boolean => !fels(Math.floor(x), Math.floor(y));
 export const abstand = (a: Punkt, b: Punkt): number => Math.hypot(a.x - b.x, a.y - b.y);

@@ -6,8 +6,8 @@ import Phaser from "phaser";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE } from "../../shared/config";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
-import { KARTEN } from "../../shared/karten";
-import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen } from "./kampagne";
+import { KARTEN, FEIN } from "../../shared/karten";
+import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern } from "./kampagne";
 import type { Zustand, Ereignis, Taste } from "../../shared/sim";
 import { BIT } from "../../shared/sim";
 import { verbinde, Netz } from "./netz";
@@ -20,7 +20,7 @@ import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkze
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
-const FLACH = Boolean(kampfJetzt), ZELLE = 96; if (kampfJetzt) setzeKarte(KARTEN[kampfJetzt.karte]);
+const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) setzeKarte(KARTEN[kampfJetzt.karte], FEIN);
 const SERVER = FLACH ? "" : P.get("server") ?? "wss://mythara-echtzeit.onrender.com"; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -39,12 +39,15 @@ interface Bild { angelegt: number; oben: number; modus: number; hoch: number; ga
 class Spiel extends Phaser.Scene {
   netz!: Netz; z: Zustand | null = null; bilder = new Map<number, Bild>(); schuesse = new Map<number, Phaser.GameObjects.Arc>(); ichId = 0; zielMarke!: Phaser.GameObjects.Ellipse;
   zeiger = { x: 0, y: 0 }; tasten: Record<string, boolean> = {}; stick: { id: number; x: number; y: number } | null = null; gesendet = { x: 0, y: 0, t: 0 };
-  gewonnen = false;
+  gewonnen = false; tebbeRuf: Phaser.GameObjects.Text | null = null;
   constructor() { super("spiel"); }
-  preload() { if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
+  preload() { if (kampfJetzt && kampfJetzt.karte === "muehle") this.load.spritesheet("tebbe", "../img/echtzeit/tebbe.webp", { frameWidth: 240, frameHeight: 240 }); if (kampfJetzt) this.load.image("kampfkarte", "../" + KARTEN[kampfJetzt.karte].bild); this.load.image("boden", "../img/echtzeit/boden.webp"); this.load.spritesheet("wand", "../img/echtzeit/wand.webp", { frameWidth: KW, frameHeight: KHOCH + WAND }); this.load.spritesheet("fackel", "../img/echtzeit/fackel.webp", { frameWidth: 26, frameHeight: 78 }); this.load.spritesheet("rune", "../img/echtzeit/rune.webp", { frameWidth: 160, frameHeight: 160 });
     const alle: Record<string, string> = {}; for (const k in HELDEN) alle[k] = HELDEN[k].bild; for (const k in MONSTER) alle[k] = MONSTER[k].bild; for (const k in alle) this.load.image(k, "../" + alle[k]); for (const k in ALLE) { if (ALLE[k].figur) this.load.image("figur-" + k, "../" + ALLE[k].figur); if (ALLE[k].schildStand) this.load.image("schildstand-" + k, "../" + ALLE[k].schildStand); for (const art of ["lauf", "hieb", "hieb2", "schild", "ruhe"] as const) { const pfad = ALLE[k][art]; if (pfad) this.load.spritesheet(art + "-" + k, "../" + pfad, { frameWidth: 176, frameHeight: 176 }); } } }
   create() {
-    this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE); } else { this.boden(); this.waende(); }
+    this.cameras.main.setBackgroundColor("#07060b"); if (FLACH) { this.add.image(0, 0, "kampfkarte").setOrigin(0, 0).setDisplaySize(KB * ZELLE, KH * ZELLE).setDepth(0); this.cameras.main.setBounds(0, 0, KB * ZELLE, KH * ZELLE);
+      if (kampfJetzt && kampfJetzt.karte === "muehle") { /* Tebbe kauert am anderen Ufer vor der Mühle; ist der Kampf vorbei, will er reden */ const x = 9.5 * 96, y = 2.75 * 96; this.anims.create({ key: "tebbe", frames: this.anims.generateFrameNumbers("tebbe", {}), frameRate: 2.5, repeat: -1, yoyo: true });
+        this.add.sprite(x, y, "tebbe").setOrigin(0.5, 0.957).setScale(42 / (0.805 * 240)).setDepth(tief(x / ZELLE, y / ZELLE) + 5).play("tebbe");
+        this.tebbeRuf = this.add.text(x, y - 50, "!", { fontFamily: "Cinzel, Georgia, serif", fontSize: "40px", fontStyle: "bold", color: "#ffd23a", stroke: "#3a2400", strokeThickness: 7 }).setOrigin(0.5, 1).setDepth(99999).setVisible(false); this.tweens.add({ targets: this.tebbeRuf, y: y - 58, duration: 650, yoyo: true, repeat: -1 }); } } else { this.boden(); this.waende(); }
     for (const k in ALLE) { if (ALLE[k].lauf) this.anims.create({ key: "lauf-" + k, frames: this.anims.generateFrameNumbers("lauf-" + k, {}), frameRate: 11, repeat: -1 });
       if (ALLE[k].schild) this.anims.create({ key: "schild-" + k, frames: this.anims.generateFrameNumbers("schild-" + k, {}), frameRate: 10, repeat: -1 });
       if (ALLE[k].ruhe) this.anims.create({ key: "ruhe-" + k, frames: this.anims.generateFrameNumbers("ruhe-" + k, {}), frameRate: 6, repeat: -1 });
@@ -174,7 +177,10 @@ class Spiel extends Phaser.Scene {
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); (el.querySelector("i") as HTMLElement).style.height = (cd > 0 ? Math.round(100 * cd / def.zeit) : 0) + "%"; (el.querySelector("b") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : taste.toUpperCase(); const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = def.text; } }
     const mo = $("#ez-modus"), mt = `<b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name}`; mo.classList.toggle("zwei", z.ich.modus === 1); }
-    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true; kampfGewonnen(z.zeit, wahlZeigen); } } else if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Der Knochenfürst und seine Wächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
+    const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen) { this.gewonnen = true; $("#ez-ziel").hidden = true;
+      if (this.tebbeRuf) { this.tebbeRuf.setVisible(true); const kn = $("#ez-dorf-knopf"); kn.textContent = "Mit Tebbe sprechen"; kn.hidden = false; kn.onclick = () => { kn.hidden = true; this.tebbeRuf!.setVisible(false);
+          void plaudern("Tebbe", [{ text: "Der Junge kauert an der Mühlenwand, die Katze an sich gedrückt. Eine Zunge hat ihn am Bein erwischt." }, { wer: "Tebbe", text: "Am Wehr sitzt eine. So groß wie ein Kalb. Und über ihr sind Lichter. Sie schaut die ganze Zeit nach oben." }], [], "Komm, ich bringe dich zu Lene").then(() => kampfGewonnen(z.zeit, wahlZeigen)); }; }
+      else kampfGewonnen(z.zeit, wahlZeigen); } } else if (z.phase === "sieg") { if (ende.hidden) { ende.hidden = false; $("#ez-ende-text").textContent = `Der Knochenfürst und seine Wächter sind besiegt. Zeit ${m}:${String(sek).padStart(2, "0")} · ${z.splitter} Erbsplitter`; } } else ende.hidden = true;
   }
   update() {
     const jetzt = this.time.now;
