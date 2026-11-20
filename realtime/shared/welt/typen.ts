@@ -120,6 +120,8 @@ export interface Region {
   stufe: number;
   /** Stimmung für die Darstellung */
   licht?: { farbe: string; staerke: number };
+  /** Entwurf oder Prüfstück: wird nur gebaut, wenn die Region ausdrücklich genannt ist, und nicht ausgeliefert */
+  entwurf?: boolean;
   /** Bereiche, die von Hand gestaltet sind: Der Generator lässt sie in Ruhe. [x0, y0, x1, y1] in Rechenfeldern */
   gesperrt?: number[][];
 }

@@ -13,7 +13,7 @@ export const REALTIME = join(HIER, "..", ".."), WURZEL = join(REALTIME, ".."), W
 /** shared/welt (und die Gegnerarten aus shared/config) für Node bündeln und laden */
 export async function gemeinsam() {
   const aus = join(HIER, ".welt.gebaut.mjs");
-  await build({ stdin: { contents: 'export * from "./shared/welt"; export { MONSTER } from "./shared/config";', resolveDir: REALTIME, loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: aus, logLevel: "silent" });
+  await build({ stdin: { contents: 'export * from "./shared/welt"; export { MONSTER } from "./shared/config"; export * as karte from "./shared/karte";', resolveDir: REALTIME, loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: aus, logLevel: "silent" });
   return import(pathToFileURL(aus).href + "?t=" + Date.now());
 }
 

@@ -118,6 +118,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
     && !L.wenn(!istPaar(r.chunks) || !r.chunks.every((v) => Number.isInteger(v) && v >= 1 && v <= 64), "region.chunks", "[breit, hoch] in ganzen Chunks (1 bis 64) erwartet");
   if (!formOk) return L.fehler;
   const [B, H] = regionFelder(d.region as unknown as RegionDaten["region"]);
+  L.wenn(r.entwurf !== undefined && typeof r.entwurf !== "boolean", "region.entwurf", "wahr oder falsch erwartet");
   if (r.gesperrt !== undefined && !L.wenn(!Array.isArray(r.gesperrt), "region.gesperrt", "Liste erwartet"))
     (r.gesperrt as unknown[]).forEach((g, i) => L.wenn(!Array.isArray(g) || g.length !== 4 || !g.every(istZahl), `region.gesperrt[${i}]`, "[x0, y0, x1, y1] erwartet"));
 

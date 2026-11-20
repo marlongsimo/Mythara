@@ -269,6 +269,7 @@ def main():
         for (cx, cy), bild in teile.items():
             gesamt.paste(Image.fromarray(bild).resize((n, n), Image.LANCZOS), (cx * n, cy * n))
         gesamt.save(os.path.join(ordner, 'vorschau.webp'), quality=84)
+        gesamt.save(os.path.join(ZIEL, 'karte-' + name + '.webp'), quality=80)   # Minikarte im Spiel
         print('  Vorschau: welt/regionen/' + name + '/vorschau.webp', gesamt.size)
     print(f'Boden gebacken: {len(teile)} Chunks nach echtzeit/welt/')
 
