@@ -102,5 +102,5 @@ async function anmelden(f: HTMLElement) {
 async function abmelden() {
   clearTimeout(takt); await speichern(); const d = verbindung(); if (d) await d.auth.signOut();
   /* der Fortschritt gehört zum Konto: Auf dem Gerät bleibt nichts zurück, sonst landete er beim nächsten Anmelden in einem fremden Konto */
-  name = ""; setze({}); try { roh.entfernen("ez__offen"); roh.entfernen("ez__version"); sessionStorage.removeItem("ez__neu"); } catch { /* privat */ } location.href = "./";
+  name = ""; setze({}); try { roh.entfernen("ez__offen"); roh.entfernen("ez__version"); sessionStorage.removeItem("ez__neu"); sessionStorage.removeItem("ez__gefragt"); } catch { /* privat */ } location.replace("anmelden.html"); /* nach dem Abmelden zurück zur Anmeldeseite */
 }
