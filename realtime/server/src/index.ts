@@ -104,4 +104,4 @@ setInterval(() => {
 }, 1000 / TICK);
 
 const SCHLUESSELART = SB_KEY.startsWith("sb_secret_") ? "Geheimschlüssel (sb_secret_…)" : SB_KEY.startsWith("eyJ") ? "service_role-Schlüssel (JWT)" : SB_KEY.startsWith("sb_publishable_") ? "FALSCH: das ist der öffentliche Schlüssel (sb_publishable_…) – gebraucht wird der geheime (sb_secret_…)" : SB_KEY ? "unbekannte Form" : "fehlt";
-http.listen(PORT, () => console.log("SUPABASE_SERVICE_KEY:", SCHLUESSELART) || console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde, Kampagnen ${SB_URL && SB_KEY ? "an" : "aus – SUPABASE_URL/SUPABASE_SERVICE_KEY fehlen"})`));
+http.listen(PORT, () => { console.log("SUPABASE_SERVICE_KEY:", SCHLUESSELART); console.log(`Mythara Echtzeit läuft auf Port ${PORT} (${TICK} Schritte je Sekunde, Kampagnen ${SB_URL && SB_KEY ? "an" : "aus – SUPABASE_URL/SUPABASE_SERVICE_KEY fehlen"})`); });
