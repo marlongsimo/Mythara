@@ -82,7 +82,7 @@ wss.on("connection", (ws, req) => {
         if (!darfKaempfen(siege, ort, karte)) { console.log("Kampf abgelehnt: noch nicht freigeschaltet", ort, karte, [...siege].join(",")); ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
         setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], 1 + mit.length); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const [h, v] of Object.entries(ep)) HELDENSTUFE[h] = stufeAusEp(Number(v) || 0);
         p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte); if (ws.readyState === WebSocket.OPEN) los();
-      } catch (err) { console.error("Anmeldung fehlgeschlagen:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
+      } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void gutschreiben(p); return; }
     try { if (p.sim) p.sim.eingabe(e); } catch (err) { console.error("Eingabe:", (err as Error).message); }
