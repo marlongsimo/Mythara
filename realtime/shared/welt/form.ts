@@ -35,7 +35,11 @@ function kollisionPruefen(L: Liste, k: unknown, wo: string): void {
   if (k === null) return;
   if (L.wenn(!istObj(k), wo, "Kollision muss null oder ein Objekt sein")) return;
   const c = k as Roh;
-  if (!L.eins(c.art, ["kreis", "rechteck", "vieleck"] as const, wo + ".art")) return;
+  if (!L.eins(c.art, ["kreis", "rechteck", "vieleck", "gebaeude"] as const, wo + ".art")) return;
+  if (c.art === "gebaeude") {
+    L.wenn(!Array.isArray(c.koerper) || !c.koerper.length || !(c.koerper as unknown[]).every((k) => istObj(k) && [k.x0, k.x1, k.y0, k.y1].every(istZahl) && (k.x1 as number) > (k.x0 as number) && (k.y1 as number) > (k.y0 as number)), wo + ".koerper", "Baukörper {x0, x1, y0, y1, voll} erwartet");
+    L.wenn(!Array.isArray(c.tueren) || !(c.tueren as unknown[]).every((t) => istObj(t) && [t.x0, t.x1, t.y].every(istZahl) && (t.x1 as number) - (t.x0 as number) >= 0.9), wo + ".tueren", "Türen {x0, x1, y} mit mindestens 0,9 Feldern Breite erwartet");
+    return; }
   if (c.art === "kreis") L.zahl(c.r, wo + ".r", 0.05, 20);
   else if (c.art === "rechteck") { L.zahl(c.x, wo + ".x"); L.zahl(c.y, wo + ".y"); L.zahl(c.b, wo + ".b", 0.05, 40); L.zahl(c.h, wo + ".h", 0.05, 40); }
   else L.wenn(!Array.isArray(c.punkte) || c.punkte.length < 3 || !c.punkte.every(istPaar), wo + ".punkte", "mindestens drei Punkte [x, y] erwartet");
@@ -94,6 +98,11 @@ export function objekteFehler(roh: unknown): string[] {
     if (o.effekte !== undefined && !L.wenn(!Array.isArray(o.effekte), ort + ".effekte", "Liste erwartet")) (o.effekte as unknown[]).forEach((e, k) => {
       if (L.wenn(!istObj(e), `${ort}.effekte[${k}]`, "Objekt erwartet")) return;
       L.eins((e as Roh).art, ["licht", "feuer", "rauch", "glitzer"] as const, `${ort}.effekte[${k}].art`); L.zahl((e as Roh).dx, `${ort}.effekte[${k}].dx`); L.zahl((e as Roh).dy, `${ort}.effekte[${k}].dy`); });
+    if (o.ebenen !== undefined && !L.wenn(!Array.isArray(o.ebenen) || !(o.ebenen as unknown[]).length, ort + ".ebenen", "Liste erwartet")) {
+      (o.ebenen as unknown[]).forEach((e, k) => { const w = `${ort}.ebenen[${k}]`; if (L.wenn(!istObj(e), w, "Objekt erwartet")) return; const r = e as Roh;
+        L.text(r.bild, w + ".bild"); L.zahl(r.tiefe, w + ".tiefe"); L.eins(r.rolle, ["schatten", "innen", "seite", "vorn", "dach", "vordach", "tuer_zu", "tuer_offen"] as const, w + ".rolle"); });
+      L.wenn(o.spiegelbar === true, ort + ".spiegelbar", "räumliche Gebäude dürfen nicht gespiegelt werden");
+      L.wenn(!Array.isArray(o.tueren), ort + ".tueren", "Türpunkte fehlen"); L.wenn(!Array.isArray(o.raum), ort + ".raum", "Innenräume fehlen (leere Liste, wenn keiner)"); }
     if (o.zustaende !== undefined && !L.wenn(!istObj(o.zustaende), ort + ".zustaende", "Objekt erwartet"))
       for (const [n, z] of Object.entries(o.zustaende as Roh)) L.wenn(!istObj(z) || !istText(z.bild), `${ort}.zustaende.${n}`, "braucht ein Bild");
   });
@@ -151,6 +160,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
       L.zahl(p.x, wo + ".x", -4, B + 4); L.zahl(p.y, wo + ".y", -4, H + 8);
       if (p.s !== undefined) L.zahl(p.s, wo + ".s", 0.3, 3);
       if (p.spiegeln !== undefined) L.wenn(typeof p.spiegeln !== "boolean", wo + ".spiegeln", "wahr oder falsch erwartet");
+      if (p.spiegeln === true && def && def.ebenen) L.wenn(true, wo + ".spiegeln", "räumliche Gebäude dürfen nicht gespiegelt werden");
       if (p.zustand !== undefined) L.wenn(!def || !def.zustaende || !(String(p.zustand) in def.zustaende), wo + ".zustand", `Zustand „${String(p.zustand)}“ kennt das Objekt nicht`);
       if (p.kollision !== undefined) kollisionPruefen(L, p.kollision, wo + ".kollision");
     });

@@ -80,6 +80,8 @@ class Bild:
         quelle = Image.fromarray(kach)
         # Abbildung: Bildpunkt (X, Y) → (u, v) in der Kachel
         A = np.array([[(a - o)[0] / Lu, (bb - o)[0] / Lv], [(a - o)[1] / Lu, (bb - o)[1] / Lv]])
+        if abs(np.linalg.det(A)) < 1e-6:     # die Fläche liegt genau in Blickrichtung: unsichtbar
+            return pts
         Ai = np.linalg.inv(A)
         c = -Ai @ o
         bild = quelle.transform(self.im.size, Image.AFFINE, (Ai[0, 0], Ai[0, 1], c[0], Ai[1, 0], Ai[1, 1], c[1]), resample=Image.BICUBIC)

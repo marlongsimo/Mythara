@@ -32,6 +32,7 @@ for (const n of namen) {
 /* Nur die Objekte ausliefern, die irgendeine Region benutzt – und nur, was die Darstellung braucht */
 const benutzt = new Set(Object.values(index.regionen).flatMap((r) => r.benutzt)); index.objekte = {};
 for (const o of bib.objekte.objekte) if (benutzt.has(o.id)) index.objekte[o.id] = { bild: o.bild, groesse: o.groesse, anker: o.anker, massstab: o.massstab, tiefe: o.tiefe,
-  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}) };
+  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}),
+  ...(o.ebenen ? { ebenen: o.ebenen, raum: o.raum || [], tueren: o.tueren || [] } : {}) };
 writeFileSync(indexPfad, JSON.stringify(index));
 console.log(`geschrieben: echtzeit/welt/welt.json (${Object.keys(index.regionen).length} Regionen, ${Object.keys(index.objekte).length} Objekte)`);

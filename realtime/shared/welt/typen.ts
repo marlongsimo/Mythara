@@ -67,7 +67,11 @@ export type ObjektKategorie = "bewuchs" | "fels" | "gebaeude" | "bauteil" | "kle
 export type Kollision =
   | { art: "kreis"; r: number; dx?: number; dy?: number }
   | { art: "rechteck"; x: number; y: number; b: number; h: number }
-  | { art: "vieleck"; punkte: number[][] };
+  | { art: "vieleck"; punkte: number[][] }
+  /** Räumliches Gebäude: Baukörper als Rechtecke (y nach Süden, 0 = Fußlinie); begehbare nur mit Wänden, Türlücken in der Südwand */
+  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[] };
+/** Eine Ebene eines räumlichen Gebäudes: eigenes Bild, eigene Tiefe (Felder relativ zum Fuß, + = weiter vorn) */
+export interface GebaeudeEbene { name: string; bild: string; /** Lage des zugeschnittenen Bildes im Gesamtrahmen (Bildpunkte) */ versatz?: number[]; tiefe: number; rolle: "schatten" | "innen" | "seite" | "vorn" | "dach" | "vordach" | "tuer_zu" | "tuer_offen"; koerper?: number; tuer?: number }
 /** Was ein Objekt kann, wenn man davorsteht. Die Logik dazu liegt in den bestehenden Systemen; hier steht nur, was wo auslöst. */
 export interface ObjektInteraktion {
   art: "tuer" | "truhe" | "haendler" | "sammeln" | "schalter" | "lesen" | "eingang";
@@ -104,6 +108,14 @@ export interface ObjektDef {
   spiegelbar?: boolean;
   /** Herkunft und Lizenz */
   herkunft: string;
+  /** Räumliches Gebäude (Standard, werkzeug/welt/gebaeude.py): die Ebenen; `bild` ist dann nur das Gesamtbild für Katalog und Vorschau */
+  ebenen?: GebaeudeEbene[];
+  /** Innenräume (relativ zum Fuß): Steht der Held darin, verschwindet das Dach */
+  raum?: { x0: number; x1: number; y0: number; y1: number; koerper: number }[];
+  /** Wo das Gesamtbild wirklich etwas zeigt: [x0, y0, x1, y1] in Bildpunkten des Bildes (für Sichtprüfungen; ohne Schatten) */
+  sichtbar?: number[];
+  /** Türpunkte (relativ zum Fuß, vor der Tür): Nähert sich der Held, steht die Tür offen */
+  tueren?: { x: number; y: number }[];
   /** Vorläufiges Bild, das noch ersetzt werden muss */
   platzhalter?: boolean;
 }

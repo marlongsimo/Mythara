@@ -79,9 +79,21 @@ Bilder so groß anlegen, dass `massstab` zwischen 0,5 und 1 liegt (scharf, aber 
 - Datei: `img/welt/<kategorie>/<kennung>.webp`. Die sechs Waldbäume bleiben an ihrem Platz in `img/welt/`, weil der Waldweg sie von dort lädt.
 - Zustände eines Objekts als eigene Dateien mit Endung: `…_offen.webp`, `…_zu.webp`.
 
-### Gebäude
+### Gebäude – räumliche Bauweise (Standard seit 21.11.2026)
 
-Ein Gebäude ist ein Objekt der Kategorie `gebaeude` mit:
+**Alle Gebäude der offenen Welt werden räumlich gebaut**, mit dem Gebäude-Baukasten `realtime/werkzeug/welt/gebaeude.py` aus Bauplänen in `realtime/welt/bibliothek/bauplaene.json`. Begründung und Vergleich: `08-gebaeude-prototyp.md`; Umsetzung: `09-raeumliche-gebaeude.md`.
+
+- **Ansicht:** schräge Parallelprojektion, `Bildpunkt = ((x + 0,32·d)·48, −(d + z)·48)` relativ zum Fuß. Sichtbar sind Süd- und Ostseiten und die Dächer. Licht von links, aus Süden, von oben.
+- **Fuß:** Mitte der Südwand des ersten Baukörpers.
+- **Nie spiegeln:** Ein gespiegeltes Gebäude zeigte die Westwand; die Formprüfung weist das zurück.
+- **Maße:** Wandhöhe 2,0–3,1 Felder, Türen mindestens 1,85 Felder hoch (Held 1,75).
+- **Ebenen:** Schatten, je Baukörper Innenraum, Ostwand, Südwand, Dach, ggf. Vordach, je Tür „zu“ und „offen“. Jede Ebene ist auf ihren Inhalt zugeschnitten.
+- **Kollision:** Art `gebaeude`; begehbare Baukörper sperren nur ihre Wände, Türen bleiben offen.
+- **Kleinteile** (Fass, Kiste, Holzstapel, Bank, Heuballen, Laterne, Marktstand, Brunnen, Tor, Palisade) bleiben frontal (`werkzeug/welt/haus.py`).
+
+Die Beschreibung unten gilt weiter für frontale Kleinteile und ältere Gebäudebilder.
+
+Ein (frontales) Gebäude ist ein Objekt der Kategorie `gebaeude` mit:
 
 - einem Außenbild als Grundzustand, weiteren Bildern unter `zustaende` (`offen`, `zu`, `nacht`),
 - einer Kollision als Rechteck oder Vieleck der Grundfläche,

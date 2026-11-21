@@ -22,7 +22,7 @@ await build({ entryPoints: [join(REALTIME, "client/src/welt/seite.ts")], bundle:
 const quelle = join(WURZEL, "echtzeit", "welt"), W = JSON.parse(readFileSync(join(quelle, "welt.json"), "utf8")), aus = { ...W, regionen: {}, objekte: {} };
 const bilder = new Set();
 for (const n of regionen) { const r = W.regionen[n]; if (!r) { console.log(`Region „${n}“ ist nicht gebaut (node werkzeug/welt/bauen.mjs ${n}).`); process.exit(1); } aus.regionen[n] = r;
-  for (const id of r.benutzt) { const o = W.objekte[id]; aus.objekte[id] = o; bilder.add(o.bild); for (const z of Object.values(o.zustaende || {})) bilder.add(z.bild); }
+  for (const id of r.benutzt) { const o = W.objekte[id]; aus.objekte[id] = o; if (o.ebenen) for (const e of o.ebenen) bilder.add(e.bild); else bilder.add(o.bild); for (const z of Object.values(o.zustaende || {})) bilder.add(z.bild); }
   kopie(join(quelle, `karte-${n}.webp`), join(ziel, "welt", `karte-${n}.webp`));
   const [ux, uy] = r.region.ursprung, [b, h] = r.region.chunks;
   for (let cy = uy; cy < uy + h; cy++) for (let cx = ux; cx < ux + b; cx++) { for (const e of ["json", "webp"]) kopie(join(quelle, `${cx}_${cy}.${e}`), join(ziel, "welt", `${cx}_${cy}.${e}`));

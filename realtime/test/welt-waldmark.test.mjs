@@ -58,6 +58,14 @@ const tuer = (p) => { const a = p.def.interaktion, s = p.s ?? 1, sp = p.spiegeln
   for (const g of gebaeude) { const t = tuer(g); if (!t) continue; for (const o of alle) { if (o === g || !o.def || !o.def.kollision) continue; if (Math.hypot(o.w.x - t.x, o.w.y - t.y) < 1.2 && o.w.y > g.w.y - 0.2) versperrt.push(`${g.id}: ${o.id} (${o.objekt}) steht vor der Tür`); } }
   check(versperrt.length === 0, "keine Türen zugestellt", versperrt); }
 
+{ /* räumliche Gebäude: Jeder Innenraum ist durch seine Tür erreichbar, und Gebäude überschneiden sich nicht */
+  const raeume = [], ueber = [];
+  for (const g of gebaeude) { if (!g.def.raum) continue; for (const r of g.def.raum) { const m = { x: g.w.x + (r.x0 + r.x1) / 2, y: g.w.y + (r.y0 + r.y1) / 2 }; if (!nahErreichbar(m, 1.2)) raeume.push(`${g.id}: Innenraum nicht erreichbar`); } }
+  const kasten = (g) => { const k = g.def.kollision; return k && k.art === "gebaeude" ? k.koerper.map((q) => [g.w.x + q.x0, g.w.y + q.y0, g.w.x + q.x1, g.w.y + q.y1]) : []; };
+  for (let a = 0; a < gebaeude.length; a++) for (let b = a + 1; b < gebaeude.length; b++) for (const p of kasten(gebaeude[a])) for (const q of kasten(gebaeude[b])) if (Math.min(p[2], q[2]) - Math.max(p[0], q[0]) > 0.3 && Math.min(p[3], q[3]) - Math.max(p[1], q[1]) > 0.3) ueber.push(`${gebaeude[a].id} und ${gebaeude[b].id} überschneiden sich`);
+  check(raeume.length === 0, `jeder begehbare Innenraum ist durch seine Tür erreichbar (${gebaeude.filter((g) => g.def.raum && g.def.raum.length).length} Gebäude)`, raeume);
+  check(ueber.length === 0 && gebaeude.every((g) => !g.spiegeln || !g.def.ebenen), "räumliche Gebäude überschneiden sich nicht und sind nicht gespiegelt", ueber); }
+
 console.log("\nFiguren");
 { const fehler = []; for (const f of WM.spiel.figuren) { const p = welt("waldmark", f.x, f.y);
     if (!R.begehbar(p.x, p.y)) fehler.push(`${f.id} steht auf gesperrtem Feld ${f.x}|${f.y}`); else if (!erreichbar(p)) fehler.push(`${f.id} ist nicht erreichbar`); }
@@ -66,6 +74,7 @@ console.log("\nFiguren");
 /* ---------- Sichtbarkeit: Wer steht im Bild vor wem? ---------- */
 /** Bildrechteck in Bildpunkten der Welt [x0, y0, x1, y1] */
 const bildRahmen = (p) => { const d = p.def, s = (p.s ?? 1) * d.massstab, b = d.groesse[0] * s, h = d.groesse[1] * s, ax = p.spiegeln ? 1 - d.anker[0] : d.anker[0];
+  if (d.sichtbar) { const fx = d.anker[0] * d.groesse[0], fy = d.anker[1] * d.groesse[1]; return [p.w.x * F + (d.sichtbar[0] - fx) * s, p.w.y * F + (d.sichtbar[1] - fy) * s, p.w.x * F + (d.sichtbar[2] - fx) * s, p.w.y * F + (d.sichtbar[3] - fy) * s]; }
   return [p.w.x * F - ax * b, p.w.y * F - d.anker[1] * h, p.w.x * F + (1 - ax) * b, p.w.y * F + (1 - d.anker[1]) * h]; };
 const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
 const flaeche = (a) => (a[2] - a[0]) * (a[3] - a[1]);
@@ -78,8 +87,9 @@ console.log("\nSichtbarkeit");
 { const fehler = []; for (const f of WM.spiel.figuren) { const p = welt("waldmark", f.x, f.y), koerper = [p.x * F - 22, p.y * F - 90, p.x * F + 22, p.y * F];
     for (const o of alle) { if (!o.def || o.w.y <= p.y || o.def.tiefe !== "fuss") continue; const s = schnitt(koerper, bildRahmen(o)); if (s > flaeche(koerper) * 0.5 && !["bauteil"].includes(o.def.kategorie)) fehler.push(`${f.id} steht hinter ${o.id} (${o.objekt})`); } }
   check(fehler.length === 0, "keine Dorffigur steht hinter einem Gebäude oder Baum", fehler); }
-{ const fehler = []; for (const b of alle.filter((p) => p.def && p.def.kategorie === "bewuchs")) for (const g of gebaeude) { const k = g.def.kollision; if (!k || k.art !== "rechteck") continue; const s = (g.s ?? 1);
-    if (b.w.x > g.w.x + k.x * s - 0.6 && b.w.x < g.w.x + (k.x + k.b) * s + 0.6 && b.w.y > g.w.y + k.y * s - 0.6 && b.w.y < g.w.y + 0.6) fehler.push(`${b.id} wächst in ${g.id}`); }
+{ const fehler = []; for (const b of alle.filter((p) => p.def && p.def.kategorie === "bewuchs")) for (const g of gebaeude) { const k = g.def.kollision; if (!k) continue; const s = (g.s ?? 1);
+    const r = k.art === "rechteck" ? [k.x, k.y, k.x + k.b, k.y + k.h] : k.art === "gebaeude" ? [Math.min(...k.koerper.map((q) => q.x0)), Math.min(...k.koerper.map((q) => q.y0)), Math.max(...k.koerper.map((q) => q.x1)), Math.max(...k.koerper.map((q) => q.y1))] : null; if (!r) continue;
+    if (b.w.x > g.w.x + r[0] * s - 0.6 && b.w.x < g.w.x + r[2] * s + 0.6 && b.w.y > g.w.y + r[1] * s - 0.6 && b.w.y < g.w.y + r[3] * s + 0.6) fehler.push(`${b.id} wächst in ${g.id}`); }
   check(fehler.length === 0, "kein Baum steht in oder an einer Hauswand", fehler); }
 { const fehler = []; for (const o of alle) { if (!o.def || !o.def.kollision) continue; const c = daten[o.region].gelaende[Math.floor(o.y)]?.[Math.floor(o.x)]; if (c === "w" || c === "~" || c === "o") fehler.push(`${o.id} (${o.objekt}) steht im Wasser`); }
   check(fehler.length === 0, "nichts steht im Wasser", fehler); }

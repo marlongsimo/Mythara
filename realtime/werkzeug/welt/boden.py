@@ -250,8 +250,8 @@ def einzelheiten(F, arten, aus, bild, dinge, ox, oy, fi0, fj0):
         if g['kat'] == 'bewuchs':
             rx, ry = FELD * 1.5 * s, FELD * 0.85 * s
             ds.ellipse([x - rx + 18 * s, y - ry + 4, x + rx + 18 * s, y + ry + 4], fill=150)
-        if g.get('tuer'):
-            tx, ty = x + g['tuer'][0] * FELD, y + g['tuer'][1] * FELD
+        for tdx, tdy in g.get('tueren', []):
+            tx, ty = x + tdx * FELD, y + tdy * FELD
             de.ellipse([tx - FELD * 1.0, ty - FELD * 0.75, tx + FELD * 1.0, ty + FELD * 0.65], fill=255)
     sm = np.asarray(schatten.filter(__import__('PIL.ImageFilter', fromlist=['x']).GaussianBlur(18))).astype(np.float32)[..., None] / 255
     bild = bild * (1 - 0.32 * sm)
@@ -412,10 +412,14 @@ def dinge_lesen(arten):
                 continue
             s = p.get('s', 1); sp = -1 if p.get('spiegeln') else 1; k = p.get('kollision', o.get('kollision'))
             g = {'x': p['x'] + ux, 'y': p['y'] + uy, 's': s, 'kat': o['kategorie'], 'gross': o['groesse'][0] > 500}
-            if o.get('interaktion') and o['kategorie'] == 'gebaeude':
-                g['tuer'] = (o['interaktion']['dx'] * s * sp, o['interaktion']['dy'] * s)
+            if o.get('tueren'):
+                g['tueren'] = [(t['x'] * s, t['y'] * s) for t in o['tueren']]
+            elif o.get('interaktion') and o['kategorie'] == 'gebaeude':
+                g['tueren'] = [(o['interaktion']['dx'] * s * sp, o['interaktion']['dy'] * s)]
             if k and k['art'] == 'rechteck':
                 xs = sorted([k['x'] * s * sp, (k['x'] + k['b']) * s * sp]); g['rahmen'] = (xs[0], k['y'] * s, xs[1], (k['y'] + k['h']) * s)
+            elif k and k['art'] == 'gebaeude':
+                g['rahmen'] = (min(b['x0'] for b in k['koerper']) * s, min(b['y0'] for b in k['koerper']) * s, max(b['x1'] for b in k['koerper']) * s, max(b['y1'] for b in k['koerper']) * s)
             elif k and k['art'] == 'kreis':
                 g['rahmen'] = (-k['r'] * s, (k.get('dy', 0) - k['r']) * s, k['r'] * s, (k.get('dy', 0) + k['r']) * s)
             aus.append(g)

@@ -28,17 +28,19 @@ const ZEIGEN = 0.3, VORHOLEN = 1.0, BEHALTEN = 1.5;
 /** Halbe Breite des Helden für die Kollision (Rechenfelder), wie in der Simulation */
 const RADIUS = 0.3;
 
-type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende">;
+type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende" | "ebenen" | "raum" | "tueren">;
+/** Ein räumliches Gebäude im Bild: seine Ebenen nach Rolle, Innenräume und Türpunkte in Weltkoordinaten (Rechenfelder) */
+interface Bau { teile: { bild: Phaser.GameObjects.Image; rolle: string; tuer?: number; koerper?: number }[]; raum: { x0: number; x1: number; y0: number; y1: number; koerper: number }[]; tueren: { x: number; y: number }[] }
 interface RegionKopf { region: Region; start: number[][]; spawnzonen: Spawnzone[]; ausgaenge: Ausgang[]; benutzt: string[] }
 interface WeltIndex { feldPx: number; chunkFelder: number; regionen: Record<string, RegionKopf>; objekte: Record<string, Anzeige> }
 /** Ein Chunk auf dem Weg ins Bild: holt (Daten unterwegs) → bereit (Daten und Bild im Speicher) → aktiv (im Bild) */
 interface Stueck { name: string; cx: number; cy: number; stand: "holt" | "bereit" | "aktiv" | "fehler"; daten?: ChunkDaten; bild?: HTMLImageElement; boden?: Phaser.GameObjects.Image;
-  dinge: Phaser.GameObjects.GameObject[]; scheinend: Phaser.GameObjects.Image[]; seit: number }
+  dinge: Phaser.GameObjects.GameObject[]; scheinend: Phaser.GameObjects.Image[]; bauten: Bau[]; seit: number }
 
 export class Welt extends Phaser.Scene {
   index!: WeltIndex; raster = new WeltRaster(); stuecke = new Map<string, Stueck>(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
-  figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; marke!: Phaser.GameObjects.Ellipse;
+  figur!: Phaser.GameObjects.Sprite; silhouette!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; marke!: Phaser.GameObjects.Ellipse;
   stick: { id: number; x: number; y: number; t: number; weit: number } | null = null;
   nah: { text: string; tat: () => void } | null = null; hier = ""; gesperrt = false;
   /** Zähler für die Testanzeige */
@@ -75,7 +77,7 @@ export class Welt extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#0a0d08");
     /* Was preload schon geholt hat, gleich einsetzen */
     for (const n of this.gueltig) { const d = this.cache.json.get("chunk-" + n) as ChunkDaten | undefined; if (!d || !this.textures.exists("boden-" + n)) continue;
-      const st: Stueck = { name: n, cx: d.cx, cy: d.cy, stand: "bereit", daten: d, dinge: [], scheinend: [], seit: 0 }; this.stuecke.set(n, st); this.raster.dazu(d); this.zeigen(st); }
+      const st: Stueck = { name: n, cx: d.cx, cy: d.cy, stand: "bereit", daten: d, dinge: [], scheinend: [], bauten: [], seit: 0 }; this.stuecke.set(n, st); this.raster.dazu(d); this.zeigen(st); }
     const s = this.startPunkt(), frei = this.raster.naechstFrei(s) || s; this.ort = { x: frei.x, y: frei.y };
 
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setVisible(false);
@@ -83,6 +85,8 @@ export class Welt extends Phaser.Scene {
     if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(HELD_PX * (D.gross || 1) / this.figur.height);
       if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(48 / this.figur.height); }
+    /* Silhouette: Verdeckt ein Gebäude den Helden, zeigt sie in Gold, wo er steht (Gebäude werden nicht durchsichtig) */
+    this.silhouette = this.add.sprite(0, 0, this.figur.texture.key).setTintFill(0xf3d895).setAlpha(0.5).setDepth(1e7 - 1).setVisible(false);
 
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return; ev.preventDefault(); this.tasten[k] = an; const t = this.tasten;
       this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); };
@@ -116,7 +120,7 @@ export class Welt extends Phaser.Scene {
     WELT.hud.titel(r.region.name, "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${WELT.daten}karte-${id}.webp)`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
 
   /** Zu einer Stelle laufen (Rechenfelder): Wegsuche über das Gehraster */
-  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; if (w.length) { const z = w[w.length - 1]; this.marke.setPosition(z.x * F, z.y * F).setDepth(z.y * F - 1).setVisible(true); } else this.marke.setVisible(false); }
+  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0; if (w.length) { const z = w[w.length - 1]; this.marke.setPosition(z.x * F, z.y * F).setDepth(z.y * F - 1).setVisible(true); } else this.marke.setVisible(false); }
 
   /* ───────────── Nachladen ───────────── */
 
@@ -146,7 +150,7 @@ export class Welt extends Phaser.Scene {
     /* einen Bildpunkt größer als der Chunk: So bleibt beim Zoomen kein Haarriss zwischen Nachbarn */
     st.boden = this.add.image(st.cx * CHUNK_PX, st.cy * CHUNK_PX, key).setOrigin(0, 0).setDisplaySize(CHUNK_PX + 1, CHUNK_PX + 1).setDepth(-1e6);
     st.stand = "aktiv"; this.mess.gezeigt++;
-    for (const p of d.objekte) { const o = this.index.objekte[p.objekt]; if (!o) continue; const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
+    for (const p of d.objekte) { const o = this.index.objekte[p.objekt]; if (!o) continue; if (o.ebenen) { this.bau(st, p, o); continue; } const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
       this.mitBild("obj-" + p.objekt + (zustand ? "-" + p.zustand : ""), WELT.bild + bild, () => { if (st.stand === "aktiv") this.objekt(st, p, o, "obj-" + p.objekt + (zustand ? "-" + p.zustand : "")); }); }
     for (const f of d.figuren) this.mitBild("leute-" + f.figur, `${WELT.bild}img/echtzeit/${f.figur}.webp`, () => { if (st.stand === "aktiv") this.person(st, f); });
     if (TEST) this.testChunk(st);
@@ -156,6 +160,33 @@ export class Welt extends Phaser.Scene {
     bild.setDepth(o.tiefe === "boden" ? -5e5 + p.y : o.tiefe === "oben" ? 1e7 + p.y : p.y * F);
     st.dinge.push(bild); if (o.durchscheinend) st.scheinend.push(bild);
   }
+  /** Ein räumliches Gebäude: jede Ebene ein eigenes Bild im gemeinsamen Rahmen, mit eigener Tiefe (Schatten liegt am Boden) */
+  bau(st: Stueck, p: Platzierung, o: Anzeige) {
+    const b: Bau = { teile: [], raum: (o.raum || []).map((r) => ({ x0: p.x + r.x0, x1: p.x + r.x1, y0: p.y + r.y0, y1: p.y + r.y1, koerper: r.koerper })), tueren: (o.tueren || []).map((t) => ({ x: p.x + t.x, y: p.y + t.y })) };
+    st.bauten.push(b);
+    for (const e of o.ebenen || []) this.mitBild("eb-" + e.bild, WELT.bild + e.bild, () => { if (st.stand !== "aktiv" || !st.bauten.includes(b)) return;
+      const v = e.versatz || [0, 0], bild = this.add.image(p.x * F - o.anker[0] * o.groesse[0] + v[0], p.y * F - o.anker[1] * o.groesse[1] + v[1], "eb-" + e.bild).setOrigin(0, 0)
+        .setDepth(e.rolle === "schatten" ? -5e5 + p.y : (p.y + e.tiefe) * F);
+      if (e.rolle === "tuer_offen" || e.rolle === "innen") bild.setVisible(false);
+      b.teile.push({ bild, rolle: e.rolle, tuer: e.tuer, koerper: e.koerper }); st.dinge.push(bild); });
+  }
+  /** Verdeckt dieses Bild den Helden? Es muss vor ihm einsortiert sein und an Brust oder Kopf wirklich etwas zeigen (Deckkraft des Bildpunkts, nicht das Bildrechteck) */
+  deckt(o: Phaser.GameObjects.Image, px: number, py: number): boolean {
+    if (!o.visible || o.alpha < 0.5 || o.depth <= py) return false;
+    const l = o.x - o.originX * o.displayWidth, t = o.y - o.originY * o.displayHeight;
+    const m = this.maske(o.texture.key); if (!m) return false;
+    return [22, 46, 70].some((h) => { const x = (px - l) / o.scaleX, y = (py - h - t) / o.scaleY; if (x < 0 || y < 0 || x >= o.width || y >= o.height) return false;
+      return m.d[Math.floor(y / m.s) * m.b + Math.floor(x / m.s)] === 1; });
+  }
+  /** Deckungsmaske eines Bildes (je 4 × 4 Bildpunkte ein Wert), einmal berechnet und gemerkt – Bildpunkte einzeln zurückzulesen wäre in jedem Bild zu teuer */
+  masken = new Map<string, { b: number; s: number; d: Uint8Array } | null>();
+  maske(key: string) {
+    if (this.masken.has(key)) return this.masken.get(key) || null;
+    let m: { b: number; s: number; d: Uint8Array } | null = null;
+    try { const q = this.textures.get(key).getSourceImage() as HTMLImageElement, S = 4, b = Math.ceil(q.width / S), h = Math.ceil(q.height / S), c = document.createElement("canvas"); c.width = b; c.height = h;
+      const g = c.getContext("2d", { willReadFrequently: true }); if (g) { g.drawImage(q, 0, 0, b, h); const px = g.getImageData(0, 0, b, h).data, d = new Uint8Array(b * h); for (let i = 0; i < b * h; i++) d[i] = px[i * 4 + 3] > 60 ? 1 : 0; m = { b, s: S, d }; } } catch { m = null; }
+    this.masken.set(key, m); return m;
+  }
   /** Eine Dorffigur: Blatt aus quadratischen Einzelbildern (Kantenlänge = Bildhöhe), ruhige Bewegung wie in den Orten */
   person(st: Stueck, f: Figur) {
     const roh = "leute-" + f.figur, blatt = "blatt-" + f.figur, quelle = this.textures.get(roh).getSourceImage() as HTMLImageElement, feld = quelle.height;
@@ -164,7 +195,7 @@ export class Welt extends Phaser.Scene {
     const sp = this.add.sprite(f.x * F, f.y * F, blatt).setOrigin(0.5, 0.95).setScale(HELD_PX * 1.12 / feld).setFlipX(Boolean(f.links)).setDepth(f.y * F); sp.play(blatt); st.dinge.push(sp);
   }
   /** Einen Chunk aus dem Bild nehmen; Daten und Bodenbild bleiben im Speicher, die Textur wird freigegeben */
-  verbergen(st: Stueck) { for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name;
+  verbergen(st: Stueck) { for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; st.bauten = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name;
     /* Das Bodenbild behalten, bevor die Textur geht: Chunks, die schon beim Start geladen wurden, hätten es sonst nicht mehr */
     if (this.textures.exists(key)) { if (!st.bild) st.bild = this.textures.get(key).getSourceImage() as HTMLImageElement; this.textures.remove(key); } st.stand = "bereit"; }
   entladen(st: Stueck) { if (st.stand === "aktiv") this.verbergen(st); this.raster.weg_damit(st.cx, st.cy); this.stuecke.delete(st.name); this.mess.entladen++;
@@ -178,7 +209,7 @@ export class Welt extends Phaser.Scene {
     const x0 = Math.floor(mx - bw / 2 - VORHOLEN), x1 = Math.floor(mx + bw / 2 + VORHOLEN), y0 = Math.floor(my - bh / 2 - VORHOLEN), y1 = Math.floor(my + bh / 2 + VORHOLEN);
     let naechster: Stueck | null = null, nd = Infinity;
     for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) { const n = chunkName(cx, cy); if (!this.gueltig.has(n)) continue; const d = fern(cx, cy); if (d > VORHOLEN) continue;
-      let st = this.stuecke.get(n); if (!st) { st = { name: n, cx, cy, stand: "holt", dinge: [], scheinend: [], seit: 0 }; this.stuecke.set(n, st); this.holen(st); }
+      let st = this.stuecke.get(n); if (!st) { st = { name: n, cx, cy, stand: "holt", dinge: [], scheinend: [], bauten: [], seit: 0 }; this.stuecke.set(n, st); this.holen(st); }
       else if (st.stand === "fehler" && this.time.now - st.seit > 4000) this.holen(st);
       if (st.stand === "bereit" && d <= ZEIGEN) { const a = Math.hypot(cx + 0.5 - mx, cy + 0.5 - my); if (a < nd) { nd = a; naechster = st; } } }
     if (naechster) this.zeigen(naechster);
@@ -211,12 +242,15 @@ export class Welt extends Phaser.Scene {
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 
-  gemerkt = 0;
+  gemerkt = 0; naechst = Infinity; stillstand = 0;
   update(_t: number, dt: number) {
     if (!this.index) return;
     const d = Math.min(0.05, dt / 1000), o = this.ort, D = HELDEN[this.held]; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }
-    else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy); if (l < 0.12) { this.pfad.shift(); if (!this.pfad.length) this.marke.setVisible(false); } else { rx = dx / l; ry = dy / l; } }
+    else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
+      /* Kommt der Held dem Wegpunkt eine Weile nicht näher (eine Kante schiebt ihn zurück), gilt der Punkt als erreicht */
+      if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += d;
+      if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.setVisible(false); } else { rx = dx / l; ry = dy / l; } }
     const l = Math.hypot(rx, ry), faehrt = l > 0.05;
     if (faehrt) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt;
@@ -231,6 +265,23 @@ export class Welt extends Phaser.Scene {
           const l = b.x - b.originX * b.displayWidth, o = b.y - b.originY * b.displayHeight, w = b.displayWidth, h = b.displayHeight;
           const hinter = b.depth > py && px > l + w * 0.14 && px < l + w * 0.86 && py - 40 > o + h * 0.04 && py < b.y, soll = hinter ? 0.4 : 1;
           if (Math.abs(b.alpha - soll) > 0.01) b.setAlpha(b.alpha + (soll - b.alpha) * 0.2); } } }
+    /* Räumliche Gebäude: drinnen verschwinden Dach und Vordach, die Südwand wird fast durchsichtig; nahe einer Tür steht sie offen.
+       Verdeckt ein Gebäude den Helden, erscheint die Silhouette. */
+    { let verdeckt = false; const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C), blend = (g: Phaser.GameObjects.Image, soll: number) => { if (Math.abs(g.alpha - soll) > 0.01) g.setAlpha(g.alpha + (soll - g.alpha) * 0.22); else g.setAlpha(soll); };
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const st = this.stuecke.get(chunkName(cx + dx, cy + dy)); if (!st) continue;
+        for (const b of st.bauten) {
+          /* Nur der Baukörper, in dem der Held steht, öffnet sich (ein nicht begehbarer Anbau behält sein Dach) */
+          const hier = new Set(b.raum.filter((r) => o.x > r.x0 && o.x < r.x1 && o.y > r.y0 && o.y < r.y1).map((r) => r.koerper)), drinnen = hier.size > 0;
+          for (const t of b.teile) { const auf = t.koerper !== undefined && hier.has(t.koerper);
+            if (t.rolle === "dach" || t.rolle === "vordach") blend(t.bild, auf ? 0 : 1);
+            else if (t.rolle === "vorn" || t.rolle === "tuer_zu" || t.rolle === "tuer_offen") blend(t.bild, auf ? 0.28 : 1); }
+          /* Innenräume nur zeichnen, solange ihr Dach nicht ganz deckt (spart viel Zeichenarbeit) */
+          for (const t of b.teile) if (t.rolle === "innen") t.bild.setVisible(hier.has(t.koerper as number) || b.teile.some((d) => d.rolle === "dach" && d.koerper === t.koerper && d.bild.alpha < 0.98));
+          for (const t of b.teile) {
+            if (t.tuer !== undefined) { const tp = b.tueren[t.tuer], offen = Boolean(tp) && Math.hypot(o.x - tp.x, o.y - tp.y) < 1.7; t.bild.setVisible(t.rolle === "tuer_offen" ? offen : !offen); }
+            if (!verdeckt && !drinnen && t.rolle !== "schatten" && t.rolle !== "innen" && this.deckt(t.bild, px, py)) verdeckt = true; } } }
+      this.silhouette.setVisible(verdeckt);
+      if (verdeckt) this.silhouette.setTexture(this.figur.texture.key, this.figur.frame.name).setOrigin(this.figur.originX, this.figur.originY).setScale(this.figur.scaleX, this.figur.scaleY).setFlipX(this.figur.flipX).setPosition(this.figur.x, this.figur.y); }
 
     const k = this.cameras.main; k.scrollX += (px - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (py - 30 - k.height / 2 - k.scrollY) * 0.15;
     this.strom(); this.umsehen(); this.regionZeigen();

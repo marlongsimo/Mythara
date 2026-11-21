@@ -11,7 +11,9 @@ import { WELT } from "./laden.mjs";
 import { readFileSync } from "node:fs";
 const BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
 /** Bildrechteck eines Objekts in Rechenfeldern [x0, y0, x1, y1] (Fußpunkt x, y) */
-const bildRahmen = (id, x, y, sp, s = 1) => { const o = BIB.get(id), b = o.groesse[0] * o.massstab * s / 48, h = o.groesse[1] * o.massstab * s / 48, ax = sp ? 1 - o.anker[0] : o.anker[0]; return [x - ax * b, y - o.anker[1] * h, x + (1 - ax) * b, y + (1 - o.anker[1]) * h]; };
+const bildRahmen = (id, x, y, sp, s = 1) => { const o = BIB.get(id);
+  if (o.sichtbar) { const fx = o.anker[0] * o.groesse[0], fy = o.anker[1] * o.groesse[1]; return [x + (o.sichtbar[0] - fx) * s / 48, y + (o.sichtbar[1] - fy) * s / 48, x + (o.sichtbar[2] - fx) * s / 48, y + (o.sichtbar[3] - fy) * s / 48]; }
+  const b = o.groesse[0] * o.massstab * s / 48, h = o.groesse[1] * o.massstab * s / 48, ax = sp ? 1 - o.anker[0] : o.anker[0]; return [x - ax * b, y - o.anker[1] * h, x + (1 - ax) * b, y + (1 - o.anker[1]) * h]; };
 const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
 /** Was frei zu sehen sein soll: Bildflächen von Gebäuden, Bauteilen, Kleinteilen und Figuren (Waldmark-Koordinaten) */
 const SICHT = [];
@@ -58,14 +60,18 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       { id: "junge", rolle: "npc", figur: "junge", x: 44.2, y: 29.4 }, { id: "wanderer", rolle: "npc", figur: "wanderer", x: 33.2, y: 31.4 }];
   /* Gebäude: Fußpunkt (Mitte der Vorderwand unten) */
   const bauten = [["heldenhalle", "dorf_heldenhalle_01", 48, 20.4], ["taverne", "dorf_taverne_01", 28, 30.2], ["schmiede", "dorf_schmiede_01", 68.5, 30.2],
-    ["haus_nw", "dorf_haus_holz_01", 33, 17.5], ["haus_no", "dorf_haus_holz_02", 64, 17.5], ["huette_sw", "dorf_huette_holz_01", 25, 44], ["haus_s", "dorf_haus_holz_01", 36.5, 50, true],
-    ["scheune", "dorf_scheune_holz_01", 78, 39], ["schuppen", "dorf_schuppen_holz_01", 62, 50.5], ["huette_o", "dorf_huette_holz_01", 76.5, 23, true],
+    ["haus_nw", "dorf_haus_holz_01", 33, 17.5], ["haus_no", "dorf_haus_holz_02", 64, 17.5], ["huette_sw", "dorf_huette_holz_01", 25, 44], ["haus_s", "dorf_haus_holz_03", 36.5, 50],
+    ["scheune", "dorf_scheune_holz_01", 78, 39], ["schuppen", "dorf_schuppen_holz_01", 62, 50.5], ["huette_o", "dorf_huette_holz_02", 76.5, 23],
+    /* neu: Wachtürme am Tor, Kapelle mit Glockenturm, Kräuterhaus mit Erker, Bäckerei mit Ofenanbau */
+    ["wachturm_w", "dorf_wachturm_01", 40.0, 54.6], ["wachturm_o", "dorf_wachturm_01", 54.5, 54.6], ["kapelle", "dorf_kapelle_01", 57, 22],
+    ["kraeuterhaus", "dorf_kraeuterhaus_01", 19.5, 39], ["baeckerei", "dorf_baeckerei_01", 55, 49.5],
     ["stand_1", "dorf_marktstand_01", 39.2, 38.6], ["stand_2", "dorf_marktstand_02", 43.6, 41.6], ["stand_3", "dorf_marktstand_03", 56, 40.4], ["brunnen", "dorf_brunnen_01", 48, 32.8]];
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
   objekte.push({ id: "tor", objekt: "dorf_tor_01", x: TOR, y: ZAUN + 1.05 });
   /* Kleinigkeiten an den Häusern: neben den Türen, nie davor */
-  const details = [["taverne_fass_1", "dorf_fass_01", 24.6, 30.8], ["taverne_fass_2", "dorf_fass_01", 25.4, 31.3], ["taverne_bank", "dorf_bank_01", 31.6, 30.9], ["taverne_laterne", "dorf_laterne_01", 29.6, 30.9],
+  const details = [["taverne_fass_1", "dorf_fass_01", 24.6, 30.8], ["taverne_fass_2", "dorf_fass_01", 25.4, 31.3], ["taverne_bank", "dorf_bank_01", 31.6, 30.9],
+    ["kraeuter_fass", "dorf_fass_01", 17.0, 39.5], ["kraeuter_kiste", "dorf_kiste_01", 21.6, 39.6], ["baecker_holz", "dorf_holzstapel_01", 51.3, 49.9], ["baecker_kiste", "dorf_kiste_01", 58.3, 49.6],
     ["schmiede_holz", "dorf_holzstapel_01", 74.4, 30.7], ["schmiede_kiste", "dorf_kiste_01", 72.6, 31.3],
     ["halle_laterne_w", "dorf_laterne_01", 45.4, 21.1], ["halle_laterne_o", "dorf_laterne_01", 50.6, 21.1],
     ["haus_nw_holz", "dorf_holzstapel_01", 36.7, 17.9], ["haus_nw_fass", "dorf_fass_01", 30.0, 18.0],
@@ -91,7 +97,10 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     interaktionen: [lies("brunnen_ansehen", 48, 34.6, "Der Brunnen der Waldmark. Das Wasser kommt kalt und klar aus dem Waldboden.", "brunnen"),
       lies("halle_tuer", ...tuerVon("dorf_heldenhalle_01", 48, 20.4), "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle"),
       lies("taverne_tuer", ...tuerVon("dorf_taverne_01", 28, 30.2), "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne"),
-      lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."),
+      lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
+      lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
+      lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
+      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."),
       lies("tor_ansehen", 48, 55, "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.", "tor")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei */

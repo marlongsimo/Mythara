@@ -19,7 +19,7 @@ await p.evaluate(() => { const s = window.EZW.szene, k = s.cameras.main, m = win
     for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) { const n = cx + "_" + cy; if (!s.gueltig.has(n)) continue; const st = s.stuecke.get(n); if (!st || st.stand !== "aktiv" || !st.boden || st.boden.texture.key === "__MISSING") m.luecke++; } });
   window.addEventListener("beforeunload", () => { m.laden++; }); });
 const geh = async (x, y, text) => { await p.evaluate(([x, y]) => window.EZW.gehe(x, y), [O + x, O + y]);
-  await p.waitForFunction(([x, y]) => window.EZW.szene.pfad.length === 0, [x, y], { timeout: 90000, polling: 200 });
+  await p.waitForFunction(([x, y]) => window.EZW.szene.pfad.length === 0, [x, y], { timeout: 300000, polling: 300 });
   const o = await p.evaluate(() => ({ ...window.EZW.ort() })); const d = Math.hypot(o.x - O - x, o.y - O - y); check(d < 1.6, `${text}: angekommen (${d.toFixed(1)} Felder vom Ziel)`); return o; };
 /* Rundgang: Brunnen → Taverne → Schmiede → Heldenhalle → Tor → Waldweg → zurück */
 const tueren = await p.evaluate(() => { const s = window.EZW.szene, a = []; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) a.push(i); return a; });
@@ -31,17 +31,20 @@ const titel = await p.evaluate(() => document.querySelector("#ez-titel b").textC
 await geh(48, 37.5, "zurück zum Brunnen");
 const m = await p.evaluate(() => ({ ...window.M, regionen: [...window.M.regionen] }));
 check(m.sprung === 0, `ruhiger Lauf über ${m.bilder} Bilder: keine Sprünge der Position (${m.sprung})`);
+console.log(`      Bildrate: ${(await p.evaluate(() => window.EZW.szene.game.loop.actualFps)).toFixed(0)} Bilder je Sekunde (Software-Renderer der Prüfumgebung, ohne Grafikkarte)`);
 check(m.luecke === 0, `kein Bild mit fehlendem Boden (${m.luecke})`);
 check(m.laden === 0 && m.regionen.includes("waldweg") && m.regionen.includes("waldmark"), "beide Regionen besucht, kein Neuladen");
 
-/* Transparenz: hinter die Heldenhalle stellen */
-const halle = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key === "obj-dorf_heldenhalle_01") { s.ort.x = g.x / 48; s.ort.y = g.y / 48 - 2.2; s.pfad = []; return true; } return false; });
-await p.waitForTimeout(1500);
-const alpha = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key === "obj-dorf_heldenhalle_01") return g.alpha; return 1; });
-check(halle && alpha < 0.6, `hinter der Heldenhalle wird sie durchscheinend (Deckkraft ${alpha.toFixed(2)})`);
-await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6437.5; }); await p.waitForTimeout(1500);
-const zurueck = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key === "obj-dorf_heldenhalle_01") return g.alpha; return 0; });
-check(zurueck > 0.95, `davor wieder voll sichtbar (${zurueck.toFixed(2)})`);
+/* Räumliche Gebäude: in die Taverne hinein (Dach weg), an der Tür (offen), hinter die Heldenhalle (Silhouette) */
+const zustand = () => p.evaluate(() => { const s = window.EZW.szene, a = {}; for (const st of s.stuecke.values()) for (const b of st.bauten) for (const t of b.teile) if (t.bild.texture.key.includes("dorf_taverne_01")) {
+  a[t.rolle] = Math.min(a[t.rolle] ?? 1, t.bild.alpha); if (t.rolle === "tuer_offen") a.offen = t.bild.visible; } return { ...a, silhouette: s.silhouette.visible }; });
+const taverne = tueren.find((a) => a.id === "taverne_tuer"); await geh(taverne.x - O, taverne.y - O - 2.2, "durch die Tür in die Taverne");
+let z = await zustand(); check(z.dach !== undefined && z.dach < 0.05 && z.vorn < 0.4, `in der Taverne: Dach ausgeblendet (${z.dach?.toFixed(2)}), Südwand durchsichtig (${z.vorn?.toFixed(2)})`);
+await geh(taverne.x - O, taverne.y - O, "zurück vor die Tür"); await p.waitForTimeout(1500); z = await zustand(); check(z.offen === true && z.dach > 0.95, `vor der Tür: Tür offen (${z.offen}), Dach wieder da (${z.dach?.toFixed(2)})`);
+await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6400 + 14.2; s.pfad = []; }); await p.waitForTimeout(1200);
+z = await zustand(); check(z.silhouette === true, "hinter der Heldenhalle erscheint die Silhouette des Helden");
+await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6437.5; }); await p.waitForTimeout(800);
+z = await zustand(); check(z.silhouette === false, "davor keine Silhouette");
 /* Bäume: einen Baum suchen, hinter den man treten kann */
 const baum = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key.startsWith("obj-wald_baum") && s.raster.begehbar(g.x / 48, g.y / 48 - 1.5)) { s.ort.x = g.x / 48; s.ort.y = g.y / 48 - 1.5; return g.texture.key; } return ""; });
 await p.waitForTimeout(1500);

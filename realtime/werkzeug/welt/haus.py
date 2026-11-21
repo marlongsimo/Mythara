@@ -1,5 +1,6 @@
 """
-World Pipeline – Hausgenerator: setzt Holzhäuser aus Texturen zusammen (Bretterwand, Balken, Ziegeldach, Tür, Fenster).
+World Pipeline – Kleinteile und Bauteile in Frontalansicht (Fass, Kiste, Holzstapel, Bank, Heuballen, Laterne, Marktstand, Brunnen, Dorftor, Palisade).
+Gebäude baut seit der Umstellung auf räumliche Gebäude werkzeug/welt/gebaeude.py aus Bauplänen; die Hausfunktionen hier bleiben nur als Vorlage.
 
   python3 werkzeug/welt/haus.py [kennung …] [--vorschau bild.png]
 
@@ -29,13 +30,6 @@ FELD = 48
 
 # kennung: Bauform und Maße. b = Breite der Wand, wand = Wandhöhe, dach = sichtbare Dachhöhe (trauf) / giebel = Giebelhöhe, tiefe = Dachlänge nach hinten (giebel)
 HAEUSER = {
-    'dorf_haus_holz_01':    dict(name='Holzhaus', form='trauf', b=236, wand=104, dach=112, tuer=0.30, fenster=[0.68], kamin=0.74, dachfarbe=None, blumen=True, saat=1),
-    'dorf_haus_holz_02':    dict(name='Langhaus', form='trauf', b=318, wand=106, dach=120, tuer=0.50, fenster=[0.17, 0.83], kamin=0.22, dachfarbe=(150, 92, 58), blumen=True, saat=2),
-    'dorf_huette_holz_01':  dict(name='Holzhütte', form='giebel', b=168, wand=88, giebel=58, tiefe=124, tuer=0.5, rundfenster=True, dachfarbe=None, saat=3),
-    'dorf_scheune_holz_01': dict(name='Scheune', form='giebel', b=262, wand=112, giebel=92, tiefe=206, tor=True, rundfenster=True, dachfarbe=(128, 96, 66), holz=0.86, saat=4),
-    'dorf_taverne_01':      dict(name='Taverne', form='trauf', b=336, wand=118, dach=132, tuer=0.5, fenster=[0.14, 0.31, 0.69, 0.86], kamin=0.86, kamin2=0.12, schild=(196, 150, 60), dachfarbe=(156, 86, 54), saat=11, art='tuer'),
-    'dorf_schmiede_01':     dict(name='Schmiede', form='trauf', b=262, wand=108, dach=112, tuer=0.80, fenster=[], kamin=0.24, esse=(0.07, 0.56), schild=(120, 124, 132), dachfarbe=(96, 92, 88), holz=0.84, saat=12, art='haendler'),
-    'dorf_heldenhalle_01':  dict(name='Heldenhalle', form='giebel', b=306, wand=132, giebel=104, tiefe=236, tor=True, rundfenster=True, banner=[(0.14, (150, 40, 38)), (0.86, (150, 40, 38))], dachfarbe=(84, 96, 118), saat=13, art='eingang'),
     'dorf_marktstand_01':   dict(name='Marktstand (rot)', form='stand', b=132, tuch=(168, 58, 48), saat=14),
     'dorf_marktstand_02':   dict(name='Marktstand (grün)', form='stand', b=132, tuch=(70, 122, 84), saat=15),
     'dorf_marktstand_03':   dict(name='Marktstand (blau)', form='stand', b=112, tuch=(64, 104, 150), saat=16),
@@ -49,7 +43,6 @@ HAEUSER = {
     'dorf_bank_01':         dict(name='Bank', form='bank', saat=24),
     'dorf_heuballen_01':    dict(name='Heuballen', form='heu', saat=25),
     'dorf_laterne_01':      dict(name='Laterne', form='laterne', saat=26),
-    'dorf_schuppen_holz_01': dict(name='Schuppen', form='trauf', b=128, wand=84, dach=70, tuer=0.5, fenster=[], dachfarbe=(120, 104, 78), holz=0.92, saat=5),
 }
 
 

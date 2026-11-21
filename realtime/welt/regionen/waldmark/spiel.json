@@ -91,7 +91,7 @@
    "id": "halle_tuer",
    "art": "lesen",
    "x": 48,
-   "y": 21.1,
+   "y": 21,
    "radius": 1.5,
    "objekt": "heldenhalle",
    "abgleich": "keiner",
@@ -103,7 +103,7 @@
    "id": "taverne_tuer",
    "art": "lesen",
    "x": 28,
-   "y": 30.9,
+   "y": 30.8,
    "radius": 1.5,
    "objekt": "taverne",
    "abgleich": "keiner",
@@ -115,12 +115,48 @@
    "id": "schmiede_tuer",
    "art": "lesen",
    "x": 70.14,
-   "y": 30.9,
+   "y": 30.8,
    "radius": 1.5,
    "objekt": "schmiede",
    "abgleich": "keiner",
    "daten": {
     "text": "Die Schmiede. In der Esse glüht es Tag und Nacht."
+   }
+  },
+  {
+   "id": "kapelle_tuer",
+   "art": "lesen",
+   "x": 57,
+   "y": 22.6,
+   "radius": 1.5,
+   "objekt": "kapelle",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren."
+   }
+  },
+  {
+   "id": "kraeuter_tuer",
+   "art": "lesen",
+   "x": 18.7,
+   "y": 39.6,
+   "radius": 1.5,
+   "objekt": "kraeuterhaus",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut."
+   }
+  },
+  {
+   "id": "baecker_tuer",
+   "art": "lesen",
+   "x": 54.4,
+   "y": 50.1,
+   "radius": 1.5,
+   "objekt": "baeckerei",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot."
    }
   },
   {
