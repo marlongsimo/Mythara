@@ -1,0 +1,15 @@
+{
+  "hinweis": "Was an den Krieger passt. starr: hängt an einem Knochen (Waffe, Schild). huelle: liegt auf dem Körper an und verformt sich mit dem Skelett; bereich nennt Knochen und den Abschnitt entlang des Knochens (0 = Anfang, 1 = Ende). Pfade relativ zu fabrik/assets/.",
+  "starr": [
+    { "id": "waffe.langschwert", "platz": "hand_r", "art": "schwert", "glb": "waffe.langschwert/v001/quelle/schwert.glb", "griff": 0.10, "griff2": 0.03 },
+    { "id": "schild.baum", "platz": "arm_l", "art": "schild", "glb": "schild.baum/v001/quelle/schild.glb" },
+    { "id": "schild.baum.stahl", "platz": "arm_l", "art": "schild", "glb": "schild.baum.stahl/v001/quelle/schild.glb" }
+  ],
+  "huelle": [
+    { "id": "ruestung.brust.platte", "platz": "brust", "bild": "plattenbrust", "farbe": "bild", "dicke": 0.022, "bereich": [["bauch", 0, 1], ["brust", 0, 1]] },
+    { "id": "ruestung.brust.gambeson", "platz": "brust", "bild": "gambeson", "farbe": "bild", "dicke": 0.022, "bereich": [["bauch", 0, 1], ["brust", 0, 1]] },
+    { "id": "ruestung.bein.schiene", "platz": "bein", "bild": "armschienen", "farbe": "ton", "dicke": 0.02, "bereich": [["unterschenkel.L", 0.0, 0.72], ["unterschenkel.R", 0.0, 0.72]] },
+    { "id": "ruestung.hand.leder", "platz": "hand", "bild": "handschuhe", "farbe": "ton", "dicke": 0.014, "bereich": [["hand.L", 0, 1], ["hand.R", 0, 1], ["unterarm.L", 0.7, 1], ["unterarm.R", 0.7, 1]] },
+    { "id": "ruestung.fuss.stiefel", "platz": "fuss", "bild": "stiefel", "farbe": "ton", "dicke": 0.018, "bereich": [["fuss.L", 0, 1], ["fuss.R", 0, 1], ["unterschenkel.L", 0.72, 1], ["unterschenkel.R", 0.72, 1]] }
+  ]
+}

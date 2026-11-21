@@ -1,0 +1,1101 @@
+{
+ "quelle": "original.png",
+ "sha256": "987a3f9937108701876e669278ef743beda8a3852381f66a7eb4a741e04fa52a",
+ "groesse": [
+  1536,
+  1024
+ ],
+ "papier": "#dfd3c6",
+ "assets": {
+  "held.krieger": [
+   "koerper-vorn",
+   "koerper-seite",
+   "koerper-hinten"
+  ],
+  "held.krieger.kopf": [
+   "kopf-vorn",
+   "kopf-seite",
+   "kopf-hinten"
+  ],
+  "ruestung.helm.nasal": [
+   "helm-nasal"
+  ],
+  "ruestung.helm.wangen": [
+   "helm-wangen"
+  ],
+  "ruestung.helm.topf": [
+   "helm-topf"
+  ],
+  "ruestung.brust.wappenrock": [
+   "wappenrock"
+  ],
+  "ruestung.brust.gambeson": [
+   "gambeson"
+  ],
+  "ruestung.brust.kettenhemd": [
+   "kettenhemd"
+  ],
+  "ruestung.brust.platte": [
+   "plattenbrust"
+  ],
+  "ruestung.hand.leder": [
+   "handschuhe"
+  ],
+  "ruestung.arm.schiene": [
+   "armschienen"
+  ],
+  "ruestung.bein.hose": [
+   "hose"
+  ],
+  "ruestung.fuss.stiefel": [
+   "stiefel"
+  ],
+  "ruestung.umhang.blau": [
+   "umhang"
+  ],
+  "waffe.langschwert": [
+   "schwert"
+  ],
+  "waffe.langschwert.scheide": [
+   "schwertscheide"
+  ],
+  "schild.baum": [
+   "schild-wappen",
+   "schild-rueckseite"
+  ],
+  "schild.baum.stahl": [
+   "schild-stahl"
+  ]
+ },
+ "ausschnitte": [
+  {
+   "name": "koerper-vorn",
+   "asset": "held.krieger",
+   "ansicht": "vorn",
+   "datei": "teile/koerper-vorn.png",
+   "kasten": [
+    32,
+    20,
+    398,
+    659
+   ],
+   "breite": 366,
+   "hoehe": 639,
+   "verhaeltnis": 0.573,
+   "deckung": 0.55,
+   "farben": [
+    {
+     "farbe": "#191410",
+     "anteil": 0.223
+    },
+    {
+     "farbe": "#433a35",
+     "anteil": 0.211
+    },
+    {
+     "farbe": "#574c45",
+     "anteil": 0.178
+    },
+    {
+     "farbe": "#36281e",
+     "anteil": 0.144
+    },
+    {
+     "farbe": "#262321",
+     "anteil": 0.144
+    },
+    {
+     "farbe": "#917b64",
+     "anteil": 0.1
+    }
+   ],
+   "warnungen": []
+  },
+  {
+   "name": "koerper-seite",
+   "asset": "held.krieger",
+   "ansicht": "seite",
+   "datei": "teile/koerper-seite.png",
+   "kasten": [
+    397,
+    22,
+    586,
+    659
+   ],
+   "breite": 189,
+   "hoehe": 637,
+   "verhaeltnis": 0.297,
+   "deckung": 0.656,
+   "farben": [
+    {
+     "farbe": "#453d38",
+     "anteil": 0.203
+    },
+    {
+     "farbe": "#141314",
+     "anteil": 0.2
+    },
+    {
+     "farbe": "#332c29",
+     "anteil": 0.181
+    },
+    {
+     "farbe": "#5f5147",
+     "anteil": 0.171
+    },
+    {
+     "farbe": "#292019",
+     "anteil": 0.149
+    },
+    {
+     "farbe": "#927d67",
+     "anteil": 0.096
+    }
+   ],
+   "warnungen": []
+  },
+  {
+   "name": "koerper-hinten",
+   "asset": "held.krieger",
+   "ansicht": "hinten",
+   "datei": "teile/koerper-hinten.png",
+   "kasten": [
+    616,
+    20,
+    945,
+    658
+   ],
+   "breite": 329,
+   "hoehe": 638,
+   "verhaeltnis": 0.516,
+   "deckung": 0.563,
+   "farben": [
+    {
+     "farbe": "#161210",
+     "anteil": 0.217
+    },
+    {
+     "farbe": "#40352e",
+     "anteil": 0.202
+    },
+    {
+     "farbe": "#54483f",
+     "anteil": 0.184
+    },
+    {
+     "farbe": "#31251c",
+     "anteil": 0.16
+    },
+    {
+     "farbe": "#212021",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#7e6f5d",
+     "anteil": 0.096
+    }
+   ],
+   "warnungen": []
+  },
+  {
+   "name": "kopf-vorn",
+   "asset": "held.krieger.kopf",
+   "ansicht": "vorn",
+   "datei": "teile/kopf-vorn.png",
+   "kasten": [
+    963,
+    24,
+    1154,
+    233
+   ],
+   "breite": 191,
+   "hoehe": 209,
+   "verhaeltnis": 0.914,
+   "deckung": 0.728,
+   "farben": [
+    {
+     "farbe": "#201710",
+     "anteil": 0.217
+    },
+    {
+     "farbe": "#594133",
+     "anteil": 0.216
+    },
+    {
+     "farbe": "#452d1c",
+     "anteil": 0.167
+    },
+    {
+     "farbe": "#2f2723",
+     "anteil": 0.155
+    },
+    {
+     "farbe": "#9c6c4a",
+     "anteil": 0.13
+    },
+    {
+     "farbe": "#d2a583",
+     "anteil": 0.116
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 209 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "kopf-seite",
+   "asset": "held.krieger.kopf",
+   "ansicht": "seite",
+   "datei": "teile/kopf-seite.png",
+   "kasten": [
+    1157,
+    29,
+    1332,
+    228
+   ],
+   "breite": 175,
+   "hoehe": 199,
+   "verhaeltnis": 0.879,
+   "deckung": 0.786,
+   "farben": [
+    {
+     "farbe": "#48382e",
+     "anteil": 0.23
+    },
+    {
+     "farbe": "#1f1915",
+     "anteil": 0.2
+    },
+    {
+     "farbe": "#3c291c",
+     "anteil": 0.183
+    },
+    {
+     "farbe": "#312014",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#bf8f6c",
+     "anteil": 0.127
+    },
+    {
+     "farbe": "#79563c",
+     "anteil": 0.119
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 199 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "kopf-hinten",
+   "asset": "held.krieger.kopf",
+   "ansicht": "hinten",
+   "datei": "teile/kopf-hinten.png",
+   "kasten": [
+    1343,
+    26,
+    1526,
+    228
+   ],
+   "breite": 183,
+   "hoehe": 202,
+   "verhaeltnis": 0.906,
+   "deckung": 0.755,
+   "farben": [
+    {
+     "farbe": "#4a403d",
+     "anteil": 0.209
+    },
+    {
+     "farbe": "#1f140d",
+     "anteil": 0.205
+    },
+    {
+     "farbe": "#3e3028",
+     "anteil": 0.199
+    },
+    {
+     "farbe": "#362417",
+     "anteil": 0.193
+    },
+    {
+     "farbe": "#28201c",
+     "anteil": 0.129
+    },
+    {
+     "farbe": "#746a64",
+     "anteil": 0.064
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 202 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "helm-nasal",
+   "asset": "ruestung.helm.nasal",
+   "ansicht": "vorn",
+   "datei": "teile/helm-nasal.png",
+   "kasten": [
+    994,
+    255,
+    1152,
+    431
+   ],
+   "breite": 158,
+   "hoehe": 176,
+   "verhaeltnis": 0.898,
+   "deckung": 0.62,
+   "farben": [
+    {
+     "farbe": "#514e50",
+     "anteil": 0.242
+    },
+    {
+     "farbe": "#1e1b1b",
+     "anteil": 0.219
+    },
+    {
+     "farbe": "#776a5f",
+     "anteil": 0.147
+    },
+    {
+     "farbe": "#443832",
+     "anteil": 0.146
+    },
+    {
+     "farbe": "#2e323b",
+     "anteil": 0.14
+    },
+    {
+     "farbe": "#b3a290",
+     "anteil": 0.105
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 176 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "helm-wangen",
+   "asset": "ruestung.helm.wangen",
+   "ansicht": "vorn",
+   "datei": "teile/helm-wangen.png",
+   "kasten": [
+    1174,
+    255,
+    1330,
+    431
+   ],
+   "breite": 156,
+   "hoehe": 176,
+   "verhaeltnis": 0.886,
+   "deckung": 0.633,
+   "farben": [
+    {
+     "farbe": "#37363a",
+     "anteil": 0.234
+    },
+    {
+     "farbe": "#1c191a",
+     "anteil": 0.23
+    },
+    {
+     "farbe": "#434a5a",
+     "anteil": 0.158
+    },
+    {
+     "farbe": "#70655d",
+     "anteil": 0.139
+    },
+    {
+     "farbe": "#5b4f45",
+     "anteil": 0.132
+    },
+    {
+     "farbe": "#a79787",
+     "anteil": 0.106
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 176 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "helm-topf",
+   "asset": "ruestung.helm.topf",
+   "ansicht": "vorn",
+   "datei": "teile/helm-topf.png",
+   "kasten": [
+    1352,
+    255,
+    1507,
+    431
+   ],
+   "breite": 155,
+   "hoehe": 176,
+   "verhaeltnis": 0.881,
+   "deckung": 0.636,
+   "farben": [
+    {
+     "farbe": "#4e4b4b",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#1c1a1c",
+     "anteil": 0.206
+    },
+    {
+     "farbe": "#433931",
+     "anteil": 0.179
+    },
+    {
+     "farbe": "#676360",
+     "anteil": 0.154
+    },
+    {
+     "farbe": "#31343e",
+     "anteil": 0.136
+    },
+    {
+     "farbe": "#908e8c",
+     "anteil": 0.11
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 176 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "wappenrock",
+   "asset": "ruestung.brust.wappenrock",
+   "ansicht": "vorn",
+   "datei": "teile/wappenrock.png",
+   "kasten": [
+    969,
+    470,
+    1103,
+    692
+   ],
+   "breite": 134,
+   "hoehe": 222,
+   "verhaeltnis": 0.604,
+   "deckung": 0.721,
+   "farben": [
+    {
+     "farbe": "#201a17",
+     "anteil": 0.211
+    },
+    {
+     "farbe": "#464142",
+     "anteil": 0.208
+    },
+    {
+     "farbe": "#403126",
+     "anteil": 0.179
+    },
+    {
+     "farbe": "#5e5651",
+     "anteil": 0.17
+    },
+    {
+     "farbe": "#2d2f35",
+     "anteil": 0.134
+    },
+    {
+     "farbe": "#968877",
+     "anteil": 0.099
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 222 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "gambeson",
+   "asset": "ruestung.brust.gambeson",
+   "ansicht": "vorn",
+   "datei": "teile/gambeson.png",
+   "kasten": [
+    1105,
+    472,
+    1233,
+    635
+   ],
+   "breite": 128,
+   "hoehe": 163,
+   "verhaeltnis": 0.785,
+   "deckung": 0.718,
+   "farben": [
+    {
+     "farbe": "#41352b",
+     "anteil": 0.243
+    },
+    {
+     "farbe": "#2a211b",
+     "anteil": 0.218
+    },
+    {
+     "farbe": "#4e4137",
+     "anteil": 0.157
+    },
+    {
+     "farbe": "#645344",
+     "anteil": 0.157
+    },
+    {
+     "farbe": "#5a483a",
+     "anteil": 0.128
+    },
+    {
+     "farbe": "#7d6a59",
+     "anteil": 0.097
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 163 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "kettenhemd",
+   "asset": "ruestung.brust.kettenhemd",
+   "ansicht": "vorn",
+   "datei": "teile/kettenhemd.png",
+   "kasten": [
+    1238,
+    475,
+    1369,
+    659
+   ],
+   "breite": 131,
+   "hoehe": 184,
+   "verhaeltnis": 0.712,
+   "deckung": 0.736,
+   "farben": [
+    {
+     "farbe": "#2f2827",
+     "anteil": 0.2
+    },
+    {
+     "farbe": "#665c53",
+     "anteil": 0.199
+    },
+    {
+     "farbe": "#534741",
+     "anteil": 0.169
+    },
+    {
+     "farbe": "#80776a",
+     "anteil": 0.167
+    },
+    {
+     "farbe": "#443e3b",
+     "anteil": 0.161
+    },
+    {
+     "farbe": "#a49d8c",
+     "anteil": 0.104
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 184 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "plattenbrust",
+   "asset": "ruestung.brust.platte",
+   "ansicht": "vorn",
+   "datei": "teile/plattenbrust.png",
+   "kasten": [
+    1378,
+    469,
+    1523,
+    617
+   ],
+   "breite": 145,
+   "hoehe": 148,
+   "verhaeltnis": 0.98,
+   "deckung": 0.698,
+   "farben": [
+    {
+     "farbe": "#504338",
+     "anteil": 0.265
+    },
+    {
+     "farbe": "#31271e",
+     "anteil": 0.208
+    },
+    {
+     "farbe": "#867a6d",
+     "anteil": 0.151
+    },
+    {
+     "farbe": "#5f564d",
+     "anteil": 0.148
+    },
+    {
+     "farbe": "#736252",
+     "anteil": 0.125
+    },
+    {
+     "farbe": "#b3a697",
+     "anteil": 0.102
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 148 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "handschuhe",
+   "asset": "ruestung.hand.leder",
+   "ansicht": "vorn",
+   "datei": "teile/handschuhe.png",
+   "kasten": [
+    973,
+    733,
+    1070,
+    832
+   ],
+   "breite": 97,
+   "hoehe": 99,
+   "verhaeltnis": 0.98,
+   "deckung": 0.639,
+   "farben": [
+    {
+     "farbe": "#49382b",
+     "anteil": 0.263
+    },
+    {
+     "farbe": "#2c2017",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#75624e",
+     "anteil": 0.17
+    },
+    {
+     "farbe": "#57493c",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#68503a",
+     "anteil": 0.123
+    },
+    {
+     "farbe": "#a09382",
+     "anteil": 0.087
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 99 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "armschienen",
+   "asset": "ruestung.arm.schiene",
+   "ansicht": "vorn",
+   "datei": "teile/armschienen.png",
+   "kasten": [
+    1090,
+    718,
+    1162,
+    815
+   ],
+   "breite": 72,
+   "hoehe": 97,
+   "verhaeltnis": 0.742,
+   "deckung": 0.745,
+   "farben": [
+    {
+     "farbe": "#4e453d",
+     "anteil": 0.259
+    },
+    {
+     "farbe": "#372e27",
+     "anteil": 0.212
+    },
+    {
+     "farbe": "#817466",
+     "anteil": 0.157
+    },
+    {
+     "farbe": "#5d574f",
+     "anteil": 0.148
+    },
+    {
+     "farbe": "#706153",
+     "anteil": 0.125
+    },
+    {
+     "farbe": "#aea08f",
+     "anteil": 0.099
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 97 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "hose",
+   "asset": "ruestung.bein.hose",
+   "ansicht": "vorn",
+   "datei": "teile/hose.png",
+   "kasten": [
+    1183,
+    697,
+    1259,
+    864
+   ],
+   "breite": 76,
+   "hoehe": 167,
+   "verhaeltnis": 0.455,
+   "deckung": 0.76,
+   "farben": [
+    {
+     "farbe": "#3e332a",
+     "anteil": 0.246
+    },
+    {
+     "farbe": "#29221c",
+     "anteil": 0.208
+    },
+    {
+     "farbe": "#57493c",
+     "anteil": 0.164
+    },
+    {
+     "farbe": "#473d34",
+     "anteil": 0.155
+    },
+    {
+     "farbe": "#504234",
+     "anteil": 0.128
+    },
+    {
+     "farbe": "#675747",
+     "anteil": 0.1
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 167 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "stiefel",
+   "asset": "ruestung.fuss.stiefel",
+   "ansicht": "seite",
+   "datei": "teile/stiefel.png",
+   "kasten": [
+    1269,
+    706,
+    1370,
+    821
+   ],
+   "breite": 101,
+   "hoehe": 115,
+   "verhaeltnis": 0.878,
+   "deckung": 0.692,
+   "farben": [
+    {
+     "farbe": "#3e2f22",
+     "anteil": 0.237
+    },
+    {
+     "farbe": "#251c14",
+     "anteil": 0.224
+    },
+    {
+     "farbe": "#6b533e",
+     "anteil": 0.193
+    },
+    {
+     "farbe": "#4d3d2f",
+     "anteil": 0.154
+    },
+    {
+     "farbe": "#5c4532",
+     "anteil": 0.124
+    },
+    {
+     "farbe": "#9e8771",
+     "anteil": 0.068
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 115 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "umhang",
+   "asset": "ruestung.umhang.blau",
+   "ansicht": "vorn",
+   "datei": "teile/umhang.png",
+   "kasten": [
+    1382,
+    647,
+    1522,
+    879
+   ],
+   "breite": 140,
+   "hoehe": 232,
+   "verhaeltnis": 0.603,
+   "deckung": 0.737,
+   "farben": [
+    {
+     "farbe": "#3a3d48",
+     "anteil": 0.202
+    },
+    {
+     "farbe": "#2e313b",
+     "anteil": 0.199
+    },
+    {
+     "farbe": "#131519",
+     "anteil": 0.194
+    },
+    {
+     "farbe": "#25262e",
+     "anteil": 0.158
+    },
+    {
+     "farbe": "#1d212a",
+     "anteil": 0.155
+    },
+    {
+     "farbe": "#4d4f58",
+     "anteil": 0.091
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 232 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schwert",
+   "asset": "waffe.langschwert",
+   "ansicht": "vorn",
+   "datei": "teile/schwert.png",
+   "kasten": [
+    97,
+    680,
+    187,
+    1008
+   ],
+   "breite": 90,
+   "hoehe": 328,
+   "verhaeltnis": 0.274,
+   "deckung": 0.215,
+   "farben": [
+    {
+     "farbe": "#605c59",
+     "anteil": 0.271
+    },
+    {
+     "farbe": "#43372f",
+     "anteil": 0.21
+    },
+    {
+     "farbe": "#94989e",
+     "anteil": 0.146
+    },
+    {
+     "farbe": "#6e747d",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#83807f",
+     "anteil": 0.118
+    },
+    {
+     "farbe": "#bdbec0",
+     "anteil": 0.113
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 328 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schwertscheide",
+   "asset": "waffe.langschwert.scheide",
+   "ansicht": "vorn",
+   "datei": "teile/schwertscheide.png",
+   "kasten": [
+    235,
+    701,
+    317,
+    1009
+   ],
+   "breite": 82,
+   "hoehe": 308,
+   "verhaeltnis": 0.266,
+   "deckung": 0.387,
+   "farben": [
+    {
+     "farbe": "#574335",
+     "anteil": 0.218
+    },
+    {
+     "farbe": "#31241b",
+     "anteil": 0.184
+    },
+    {
+     "farbe": "#44362d",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#66513f",
+     "anteil": 0.17
+    },
+    {
+     "farbe": "#50392a",
+     "anteil": 0.155
+    },
+    {
+     "farbe": "#84715e",
+     "anteil": 0.1
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 308 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schild-wappen",
+   "asset": "schild.baum",
+   "ansicht": "vorn",
+   "datei": "teile/schild-wappen.png",
+   "kasten": [
+    364,
+    697,
+    516,
+    987
+   ],
+   "breite": 152,
+   "hoehe": 290,
+   "verhaeltnis": 0.524,
+   "deckung": 0.708,
+   "farben": [
+    {
+     "farbe": "#272a31",
+     "anteil": 0.222
+    },
+    {
+     "farbe": "#535152",
+     "anteil": 0.2
+    },
+    {
+     "farbe": "#2e3642",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#7c6d5d",
+     "anteil": 0.16
+    },
+    {
+     "farbe": "#3b3d42",
+     "anteil": 0.15
+    },
+    {
+     "farbe": "#bda68a",
+     "anteil": 0.106
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 290 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schild-rueckseite",
+   "asset": "schild.baum",
+   "ansicht": "hinten",
+   "datei": "teile/schild-rueckseite.png",
+   "kasten": [
+    548,
+    697,
+    701,
+    987
+   ],
+   "breite": 153,
+   "hoehe": 290,
+   "verhaeltnis": 0.528,
+   "deckung": 0.71,
+   "farben": [
+    {
+     "farbe": "#583f2a",
+     "anteil": 0.246
+    },
+    {
+     "farbe": "#3c2a1b",
+     "anteil": 0.197
+    },
+    {
+     "farbe": "#724d2d",
+     "anteil": 0.18
+    },
+    {
+     "farbe": "#77593e",
+     "anteil": 0.154
+    },
+    {
+     "farbe": "#5b4b3d",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#947a5f",
+     "anteil": 0.082
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 290 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schild-stahl",
+   "asset": "schild.baum.stahl",
+   "ansicht": "vorn",
+   "datei": "teile/schild-stahl.png",
+   "kasten": [
+    732,
+    697,
+    886,
+    987
+   ],
+   "breite": 154,
+   "hoehe": 290,
+   "verhaeltnis": 0.531,
+   "deckung": 0.715,
+   "farben": [
+    {
+     "farbe": "#6f5e4d",
+     "anteil": 0.204
+    },
+    {
+     "farbe": "#40352c",
+     "anteil": 0.194
+    },
+    {
+     "farbe": "#604d3b",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#504942",
+     "anteil": 0.165
+    },
+    {
+     "farbe": "#8c7860",
+     "anteil": 0.156
+    },
+    {
+     "farbe": "#b29e83",
+     "anteil": 0.109
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 290 px (empfohlen ab 512)"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Orin, der Kopfgeldjäger (Testfigur, Held Waldläufer). Kästen [links, oben, rechts, unten], dunkler Grund. Für das Modell zählen vorn, Seite rechts und hinten.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",    "kasten": [262, 112, 382, 440],  "asset": "held.waldlaeufer", "ansicht": "vorn" },
+    { "name": "koerper-34r",     "kasten": [432, 112, 565, 440],  "asset": "held.waldlaeufer", "ansicht": "3/4 rechts" },
+    { "name": "koerper-seite",   "kasten": [590, 112, 712, 440],  "asset": "held.waldlaeufer", "ansicht": "seite" },
+    { "name": "koerper-hinten",  "kasten": [722, 112, 878, 440],  "asset": "held.waldlaeufer", "ansicht": "hinten" },
+    { "name": "umhang",          "kasten": [18, 508, 155, 640],   "asset": "kleidung.schulter.fell.orin", "ansicht": "vorn" },
+    { "name": "kapuze",          "kasten": [162, 508, 292, 640],  "asset": "kleidung.kopf.kapuze.orin", "ansicht": "vorn" },
+    { "name": "halstuch",        "kasten": [296, 515, 390, 632],  "asset": "kleidung.hals.tuch.orin", "ansicht": "vorn" },
+    { "name": "wams",            "kasten": [398, 508, 520, 640],  "asset": "ruestung.brust.wams.orin", "ansicht": "vorn" },
+    { "name": "armschienen",     "kasten": [526, 520, 626, 618],  "asset": "ruestung.arm.orin", "ansicht": "vorn", "stuecke": 2 },
+    { "name": "guertel",         "kasten": [636, 515, 758, 625],  "asset": "kleidung.guertel.orin", "ansicht": "vorn" },
+    { "name": "hose",            "kasten": [762, 505, 864, 642],  "asset": "kleidung.bein.hose.orin", "ansicht": "vorn" },
+    { "name": "stiefel",         "kasten": [868, 508, 972, 640],  "asset": "kleidung.fuss.stiefel.orin", "ansicht": "vorn" },
+    { "name": "armbrust",        "kasten": [998, 510, 1165, 640], "asset": "waffe.armbrust", "ansicht": "vorn" },
+    { "name": "jagdmesser",      "kasten": [1180, 515, 1265, 625],"asset": "waffe.jagdmesser", "ansicht": "vorn" },
+    { "name": "wurfaxt",         "kasten": [1275, 508, 1370, 628],"asset": "waffe.wurfaxt", "ansicht": "vorn" },
+    { "name": "bogen",           "kasten": [1395, 482, 1460, 640],"asset": "waffe.bogen.orin", "ansicht": "vorn" }
+  ]
+}

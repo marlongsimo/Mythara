@@ -1,0 +1,17 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Torvald, der Schildwahrer – Kenney-Stil (Testfigur). Der Körper kommt aus dem Kenney-Paket (CC0), aus dem Blatt nur Farbtöne der Ausrüstung, Schild und Schwert.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",  "kasten": [236, 100, 395, 322],   "asset": "held.schildwahrer", "ansicht": "vorn" },
+    { "name": "koerper-hinten","kasten": [705, 100, 840, 322],   "asset": "held.schildwahrer", "ansicht": "hinten" },
+    { "name": "kopf",          "kasten": [830, 405, 893, 485],   "asset": "held.schildwahrer", "ansicht": "vorn" },
+    { "name": "ruestung",      "kasten": [900, 405, 978, 490],   "asset": "ruestung.brust.platte.schildwahrer", "ansicht": "vorn" },
+    { "name": "untergewand",   "kasten": [983, 405, 1053, 490],  "asset": "kleidung.untergewand.schildwahrer", "ansicht": "vorn" },
+    { "name": "umhang",        "kasten": [1062, 405, 1142, 490], "asset": "kleidung.umhang.schildwahrer", "ansicht": "vorn" },
+    { "name": "guertel",       "kasten": [1150, 420, 1222, 485], "asset": "kleidung.guertel.schildwahrer", "ansicht": "vorn" },
+    { "name": "hose",          "kasten": [1232, 405, 1290, 490], "asset": "kleidung.bein.hose.schildwahrer", "ansicht": "vorn" },
+    { "name": "stiefel",       "kasten": [1296, 410, 1362, 485], "asset": "kleidung.fuss.stiefel.schildwahrer", "ansicht": "vorn" },
+    { "name": "schild",        "kasten": [1372, 395, 1444, 495], "asset": "schild.kreuz", "ansicht": "vorn" },
+    { "name": "schwert",       "kasten": [1448, 388, 1512, 500], "asset": "waffe.schwert.schildwahrer", "ansicht": "vorn" }
+  ]
+}

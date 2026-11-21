@@ -1,0 +1,78 @@
+{
+ "id": "gegner.riesenkroete",
+ "feld": 320,
+ "richtungen": [
+  "o",
+  "so",
+  "s",
+  "sw",
+  "w",
+  "nw",
+  "n",
+  "no"
+ ],
+ "winkel0": "osten",
+ "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)",
+ "zeile": "round(winkel / (pi/4)) mod 8",
+ "fuss": [
+  0.5,
+  0.6311
+ ],
+ "mass": [
+  0.5,
+  0.6311,
+  0.22
+ ],
+ "kamera": {
+  "neigung": 35.0,
+  "px_je_m": 86.0
+ },
+ "animationen": {
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "springen": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": true,
+   "sprung": [
+    3,
+    4
+   ]
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false,
+   "halten": 7
+  },
+  "zunge": {
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false,
+   "treffer": 4
+  }
+ },
+ "ebenen": {
+  "koerper": {
+   "art": "koerper",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/koerper",
+     "groesse": [
+      2043,
+      2003
+     ],
+     "bilder": 240,
+     "speicher_mb": 16.4
+    }
+   }
+  }
+ },
+ "plaetze": {},
+ "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)",
+ "tiefe": {},
+ "atlas_speicher_mb": 16.4
+}

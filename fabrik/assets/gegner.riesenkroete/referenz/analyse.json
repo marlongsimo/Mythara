@@ -1,0 +1,200 @@
+{
+ "quelle": "original.png",
+ "sha256": "2ec93ea781cf42c5be3520282a2bd64c510e7ff3a6442b368bdfef26d943acc6",
+ "groesse": [
+  1312,
+  1199
+ ],
+ "papier": "#282523",
+ "assets": {
+  "gegner.riesenkroete": [
+   "koerper-vorn",
+   "koerper-seite",
+   "koerper-hinten",
+   "koerper-34"
+  ]
+ },
+ "ausschnitte": [
+  {
+   "name": "koerper-vorn",
+   "asset": "gegner.riesenkroete",
+   "ansicht": "vorn",
+   "datei": "teile/koerper-vorn.png",
+   "kasten": [
+    944,
+    27,
+    1290,
+    238
+   ],
+   "breite": 346,
+   "hoehe": 211,
+   "verhaeltnis": 1.64,
+   "deckung": 0.559,
+   "farben": [
+    {
+     "farbe": "#18130d",
+     "anteil": 0.206
+    },
+    {
+     "farbe": "#594c31",
+     "anteil": 0.196
+    },
+    {
+     "farbe": "#726341",
+     "anteil": 0.175
+    },
+    {
+     "farbe": "#483823",
+     "anteil": 0.164
+    },
+    {
+     "farbe": "#352e1e",
+     "anteil": 0.159
+    },
+    {
+     "farbe": "#99895b",
+     "anteil": 0.1
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 346 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-seite",
+   "asset": "gegner.riesenkroete",
+   "ansicht": "seite",
+   "datei": "teile/koerper-seite.png",
+   "kasten": [
+    941,
+    275,
+    1290,
+    487
+   ],
+   "breite": 349,
+   "hoehe": 212,
+   "verhaeltnis": 1.646,
+   "deckung": 0.597,
+   "farben": [
+    {
+     "farbe": "#1b160d",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#5b4b2e",
+     "anteil": 0.191
+    },
+    {
+     "farbe": "#75623a",
+     "anteil": 0.171
+    },
+    {
+     "farbe": "#463823",
+     "anteil": 0.165
+    },
+    {
+     "farbe": "#372a1a",
+     "anteil": 0.152
+    },
+    {
+     "farbe": "#9b8451",
+     "anteil": 0.106
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 349 px (empfohlen ab 512)",
+    "Motiv berührt den Rand des Kastens"
+   ]
+  },
+  {
+   "name": "koerper-hinten",
+   "asset": "gegner.riesenkroete",
+   "ansicht": "hinten",
+   "datei": "teile/koerper-hinten.png",
+   "kasten": [
+    944,
+    522,
+    1305,
+    774
+   ],
+   "breite": 361,
+   "hoehe": 252,
+   "verhaeltnis": 1.433,
+   "deckung": 0.613,
+   "farben": [
+    {
+     "farbe": "#14110b",
+     "anteil": 0.199
+    },
+    {
+     "farbe": "#4e432a",
+     "anteil": 0.197
+    },
+    {
+     "farbe": "#635633",
+     "anteil": 0.177
+    },
+    {
+     "farbe": "#3d3221",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#2f2819",
+     "anteil": 0.162
+    },
+    {
+     "farbe": "#847648",
+     "anteil": 0.101
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 361 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-34",
+   "asset": "gegner.riesenkroete",
+   "ansicht": "3/4 rechts",
+   "datei": "teile/koerper-34.png",
+   "kasten": [
+    1,
+    41,
+    937,
+    805
+   ],
+   "breite": 936,
+   "hoehe": 764,
+   "verhaeltnis": 1.225,
+   "deckung": 0.614,
+   "farben": [
+    {
+     "farbe": "#604f31",
+     "anteil": 0.203
+    },
+    {
+     "farbe": "#19140e",
+     "anteil": 0.194
+    },
+    {
+     "farbe": "#483522",
+     "anteil": 0.174
+    },
+    {
+     "farbe": "#7f6b43",
+     "anteil": 0.169
+    },
+    {
+     "farbe": "#342a1a",
+     "anteil": 0.154
+    },
+    {
+     "farbe": "#a89567",
+     "anteil": 0.106
+    }
+   ],
+   "warnungen": [
+    "Motiv berührt den Rand des Kastens"
+   ]
+  }
+ ]
+}

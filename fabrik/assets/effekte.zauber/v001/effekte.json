@@ -1,0 +1,75 @@
+{
+ "hinweis": "Zaubereffekte der Fabrik – eigene Ebenen, nicht Teil einer Figur; Maßstab wie die Figuren (86 px je Meter in der Mitte des Feldes)",
+ "effekte": {
+  "geschoss": {
+   "datei": "effekt.geschoss.webp",
+   "feld": 128,
+   "bilder": 6,
+   "rate": 14,
+   "schleife": true,
+   "ursprung": [
+    0.72,
+    0.5
+   ],
+   "radius_px": 14,
+   "farben": [
+    "#8c40ff",
+    "#ffffff"
+   ],
+   "hinweis": "fliegt nach Osten; im Spiel in Flugrichtung drehen und bewegen"
+  },
+  "frosthauch": {
+   "datei": "effekt.frosthauch.webp",
+   "feld": 256,
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false,
+   "ursprung": [
+    0.05,
+    0.5
+   ],
+   "radius_px": 225,
+   "farben": [
+    "#73bfff",
+    "#ffffff"
+   ],
+   "hinweis": "Kegel nach Osten, Ursprung an der Hand; im Spiel in Blickrichtung drehen; radius_px = Reichweite"
+  },
+  "donnerwelle": {
+   "datei": "effekt.donnerwelle.webp",
+   "feld": 320,
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false,
+   "ursprung": [
+    0.5,
+    0.5
+   ],
+   "radius_px": 140,
+   "farben": [
+    "#8c40ff",
+    "#ccaaff",
+    "#ffffff"
+   ],
+   "hinweis": "am Boden um den Einschlag; radius_px = Radius des Zaubers"
+  },
+  "glutsphaere": {
+   "datei": "effekt.glutsphaere.webp",
+   "feld": 320,
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false,
+   "ursprung": [
+    0.5,
+    0.5
+   ],
+   "radius_px": 150,
+   "farben": [
+    "#ff7319",
+    "#d92610",
+    "#ffd959"
+   ],
+   "hinweis": "Explosion am Einschlag; die letzten Bilder (glühender Boden) eignen sich zum Halten für den Schaden über Zeit"
+  }
+ }
+}

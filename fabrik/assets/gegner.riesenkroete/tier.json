@@ -1,0 +1,6 @@
+{
+  "hinweis": "Riesenkröte (Testfigur, Gegner). Vierbeiner-Skelett aus rig_tier.py. Springen ist die Fortbewegung (an Ort und Stelle, die Bewegung über den Boden macht das Spiel); Zungenangriff wie in referenz/zungenangriff.png.",
+  "bewegungen": ["ruhe", "springen", "zunge", "tod"],
+  "maul": 0.42,
+  "zunge": { "farbe": "#bb7460", "dicke": 0.05, "laenge": 1.1 }
+}

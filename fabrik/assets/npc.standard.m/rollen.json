@@ -1,0 +1,17 @@
+{
+  "hinweis": "Varianten des Standard-NPC nach dem Referenzblatt: Westenfarbe aus der Farbpalette, dazu wahlfreie Teile je Rolle.",
+  "faerben": "kleidung.brust.weste",
+  "grund": ["koerper", "kleidung.guertel.npc", "kleidung.brust.weste", "kleidung.fuss.stiefel.npc", "kleidung.bein.hose.npc"],
+  "rollen": [
+    { "name": "standard",   "titel": "Braun (Standard)",  "farbe": null },
+    { "name": "natur",      "titel": "Natur (Basis)",     "farbe": "#bca791" },
+    { "name": "haendler",   "titel": "Blau (Händler)",    "farbe": "#203957", "dazu": ["kleidung.hals.tuch.rot"] },
+    { "name": "jaeger",     "titel": "Grün (Jäger)",      "farbe": "#2b3c20" },
+    { "name": "schmied",    "titel": "Rot (Schmied)",     "farbe": "#77201e", "dazu": ["kleidung.schuerze.leder"] },
+    { "name": "bauer",      "titel": "Ocker (Bauer)",     "farbe": "#b27734", "dazu": ["kleidung.kopf.strohhut"] },
+    { "name": "handwerker", "titel": "Grau (Handwerker)", "farbe": "#616061", "dazu": ["kleidung.schuerze.leder"] },
+    { "name": "wirt",       "titel": "Bordeaux (Wirt)",   "farbe": "#47171c", "dazu": ["kleidung.schuerze.leder"] },
+    { "name": "wald",       "titel": "Dunkelgrün (Wald)", "farbe": "#313914", "dazu": ["kleidung.hals.tuch.rot"] },
+    { "name": "stadt",      "titel": "Schwarz (Stadt)",   "farbe": "#2a2a2a" }
+  ]
+}

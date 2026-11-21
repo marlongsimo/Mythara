@@ -1,0 +1,21 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Kästen [links, oben, rechts, unten] in Bildpunkten der Vorlage, dunkler Grund. Für das Modell zählen vorn, Seite (rechts) und hinten.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",   "kasten": [270, 88, 380, 314], "asset": "npc.standard.m", "ansicht": "vorn" },
+    { "name": "koerper-seite",  "kasten": [543, 88, 630, 314], "asset": "npc.standard.m", "ansicht": "seite" },
+    { "name": "koerper-hinten", "kasten": [670, 88, 780, 314], "asset": "npc.standard.m", "ansicht": "hinten" },
+    { "name": "koerper-34r",    "kasten": [412, 88, 510, 314], "asset": "npc.standard.m", "ansicht": "3/4 rechts" },
+    { "name": "koerper-seite-l","kasten": [818, 88, 902, 314], "asset": "npc.standard.m", "ansicht": "seite links" },
+    { "name": "kopf",       "kasten": [30, 614, 96, 700],   "asset": "npc.standard.m.kopf",       "ansicht": "vorn" },
+    { "name": "hemd",       "kasten": [114, 612, 218, 700], "asset": "kleidung.hemd.leinen",      "ansicht": "vorn" },
+    { "name": "weste",      "kasten": [232, 612, 304, 700], "asset": "kleidung.brust.weste",      "ansicht": "vorn" },
+    { "name": "umhang",     "kasten": [321, 604, 415, 702], "asset": "kleidung.umhang.grau",      "ansicht": "vorn" },
+    { "name": "guertel",    "kasten": [435, 617, 523, 700], "asset": "kleidung.guertel.npc",      "ansicht": "vorn" },
+    { "name": "hose",       "kasten": [547, 596, 623, 701], "asset": "kleidung.bein.hose.npc",    "ansicht": "vorn" },
+    { "name": "stiefel",    "kasten": [652, 604, 732, 702], "asset": "kleidung.fuss.stiefel.npc", "ansicht": "vorn" },
+    { "name": "hut",        "kasten": [749, 612, 841, 690], "asset": "kleidung.kopf.strohhut",    "ansicht": "vorn" },
+    { "name": "schuerze",   "kasten": [862, 589, 940, 702], "asset": "kleidung.schuerze.leder",   "ansicht": "vorn" },
+    { "name": "halstuch",   "kasten": [975, 612, 1049, 684],"asset": "kleidung.hals.tuch.rot",    "ansicht": "vorn" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "hinweis": "nur Körper und Skelett – Ziel für übertragene Teile",
+  "bewegungen": [
+    "ruhe"
+  ],
+  "starr": [],
+  "huelle": [],
+  "koerper_textur": true,
+  "stuecke_behalten": true,
+  "arm_radius": 0.1
+}

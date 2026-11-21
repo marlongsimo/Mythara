@@ -1,0 +1,17 @@
+{
+  "id": "held.krieger",
+  "name": "Krieger (Referenzblatt vom 20.11.2026)",
+  "kategorie": "held",
+  "status": "referenz zerlegt – noch kein Modell",
+  "referenz": "referenz/original.png",
+  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen" },
+  "beschreibung": {
+    "koerper": "Mann, kräftig, etwa 7 Kopfhöhen, neutrale Haltung mit leicht abgespreizten Armen (A-Haltung), drei Ansichten: vorn, Seite (blickt nach rechts), hinten",
+    "kopf": "braunes, schulterlanges, gewelltes Haar, Vollbart; drei Ansichten",
+    "schichten": ["Hose und Stiefel mit Stulpen", "Gambeson (gesteppt, braun)", "Kettenhemd (kurzärmlig, bis über die Hüfte)", "blauer Wappenrock mit hellem Baum", "Plattenschultern und Brustriemen", "Armschienen, Lederhandschuhe", "Gürtel mit zwei Taschen", "blauer Kapuzenumhang, unten ausgefranst"],
+    "materialien": ["gealterter Stahl, matt, mit Kratzern", "braunes Leder", "dunkelblauer Wollstoff", "Kettengeflecht", "dunkles Steppgewebe"],
+    "farben": "Stahlgrau, Lederbraun, Dunkelblau, heller Baum als Wappen; passt zur Palette des Stilstandards",
+    "ausruestung": ["drei Helme (Nasalhelm, Helm mit Wangenklappen, Topfhelm) – jeweils nur von vorn, auf einem Kopf mit Kettenhaube und Umhang", "Langschwert und Scheide", "Dreieckschild: Vorderseite mit Wappen, Rückseite, dazu eine stählerne Variante"],
+    "besonderheiten": ["Der Umhang verdeckt in der Rückansicht den Rücken und reicht bis zu den Waden – schwierig fürs Rig", "Die Figur trägt in den drei Ansichten keinen Helm, kein Schwert und keinen Schild: gut, so bleibt die Ausrüstung getrennt", "Der Wappenrock im Teilebild enthält bereits Kettenhemd, Schultern und Gürtel – er ist kein einzelnes Teil"]
+  }
+}

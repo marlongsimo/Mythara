@@ -1,0 +1,239 @@
+{
+  "hinweis": "Elara, die Lichtweberin (Testfigur, Heldin Priesterin). Gleiches Skelett wie Krieger, Bandit und NPC. Stab aufrecht in der rechten Hand (Lichtstab, Varianten Heil- und Zeremonienstab), Streitkolben gleichzeitig in der linken Hand. Lichteffekte (Heilung, Schutz, Aura) gehören nicht ins Bild – sie kommen im Spiel als eigene Effekte dazu.",
+  "bewegungen": [
+    "ruhe",
+    "laufen",
+    "zauber",
+    "segen",
+    "nova",
+    "angriff_links",
+    "treffer",
+    "tod"
+  ],
+  "haltung": "stab",
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.lichtstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.lichtstab/v001/quelle/lichtstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "zauber"
+    },
+    {
+      "id": "waffe.streitkolben",
+      "platz": "hand_l",
+      "art": "schwert",
+      "glb": "waffe.streitkolben/v001/quelle/streitkolben.glb",
+      "griff": 0.14,
+      "griff2": 0.05,
+      "angriff": "angriff_links",
+      "hand": "L"
+    },
+    {
+      "id": "waffe.heilstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.heilstab/v001/quelle/heilstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "zauber"
+    },
+    {
+      "id": "waffe.zeremonienstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.zeremonienstab/v001/quelle/zeremonienstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "zauber"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.guertel.licht",
+      "platz": "guertel",
+      "bild": "guertel",
+      "farbe": "ton",
+      "dicke": 0.024,
+      "bereich": [
+        [
+          "bauch",
+          0,
+          0.4
+        ],
+        [
+          "becken",
+          0.3,
+          0.6
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.arm.licht",
+      "platz": "hand",
+      "bild": "armschienen",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "unterarm.L",
+          0.65,
+          1
+        ],
+        [
+          "unterarm.R",
+          0.65,
+          1
+        ],
+        [
+          "hand.L",
+          0,
+          1
+        ],
+        [
+          "hand.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.fuss.stiefel.licht",
+      "platz": "fuss",
+      "bild": "stiefel",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "unterschenkel.L",
+          0.7,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.7,
+          1
+        ],
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.robe.licht",
+      "platz": "brust",
+      "bild": "robe",
+      "farbe": "ton",
+      "dicke": 0.022,
+      "bereich": [
+        [
+          "brust",
+          0,
+          0.7
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.7
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.7
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schulter.umhang.licht",
+      "platz": "schulter",
+      "bild": "schulterumhang",
+      "farbe": "ton",
+      "dicke": 0.028,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "brust",
+          0.6,
+          1
+        ],
+        [
+          "hals",
+          0,
+          0.7
+        ],
+        [
+          "oberarm.L",
+          0,
+          0.45
+        ],
+        [
+          "oberarm.R",
+          0,
+          0.45
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.kopf.kapuze.licht",
+      "platz": "kopf",
+      "bild": "kapuze",
+      "farbe": "ton",
+      "dicke": 0.024,
+      "ueberlage": true,
+      "gesicht_frei": true,
+      "bereich": [
+        [
+          "kopf",
+          0,
+          1
+        ],
+        [
+          "hals",
+          0.5,
+          1
+        ]
+      ],
+      "wahlfrei": true
+    }
+  ],
+  "vorbereitet": [
+    {
+      "id": "gegenstand.heilbuch",
+      "plan": "Heilbuch am Gürtel (starr an becken, links) – noch nicht gebaut"
+    },
+    {
+      "id": "gegenstand.flaeschchen",
+      "plan": "Fläschchen und Amulett am Gürtel – noch nicht gebaut"
+    }
+  ]
+}
