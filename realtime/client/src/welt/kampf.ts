@@ -85,7 +85,10 @@ export class WeltKampf {
     for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
       if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9];
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); f.sp.setVisible(!f.tot); f.nm.setVisible(!f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
-    for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); this.figuren.delete(id); }
+    for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; this.figuren.delete(id); f.nm.destroy(); f.lb.destroy();
+      /* ein besiegter Gegner der Figuren-Fabrik fällt erst (Todesbewegung), bleibt kurz liegen und verblasst dann */
+      const sp = f.sp as unknown as { sterben?: () => number }, dauer = !f.held && typeof sp.sterben === "function" ? sp.sterben() : 0;
+      if (dauer) this.s.tweens.add({ targets: f.sp, alpha: 0, delay: dauer + 1400, duration: 700, onComplete: () => f.sp.destroy() }); else f.sp.destroy(); }
     for (const ev of z.ev) this.ereignis(ev);
     const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; this.s.ort.x = this.zone.x0 + ich[4]; this.s.ort.y = this.zone.y0 + ich[5]; }
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }

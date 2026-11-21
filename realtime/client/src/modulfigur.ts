@@ -56,15 +56,19 @@ export class ModulFigur extends Phaser.GameObjects.Container {
   setFlipX(links: boolean): this { if (!this.achtRichtungen) { const r = links ? 4 : 0; if (r !== this.richtung) { this.richtung = r; this.zeigen(); } } return this; }
   setOrigin(): this { return this; }
   setScale(): this { return this; }
-  play(a: string | { key: string }): this { const key = typeof a === "string" ? a : a.key;
+  play(a: string | { key: string }): this { if (this.gestorben) return this; const key = typeof a === "string" ? a : a.key;
     if (key.startsWith("hieb")) { this.einmal = (this.meta && this.meta.angriff) || "angriff"; /* Gegner der Fabrik nennen ihren Angriff nach der Waffe (angriff_dolch) */ this.bild = 0; this.uhr = 0; this.zeigen(); }
     else this.setze(key.startsWith("schild") ? "schild_laufen" : key.startsWith("lauf") ? "laufen" : "ruhe"); return this; }
   stop(): this { return this; }
-  setTexture(key: string): this { this.einmal = null; this.setze(key.startsWith("schildstand") || key.startsWith("schild-") ? "block" : "ruhe"); return this; }
+  setTexture(key: string): this { if (this.gestorben) return this; this.einmal = null; this.setze(key.startsWith("schildstand") || key.startsWith("schild-") ? "block" : "ruhe"); return this; }
   setFrame(): this { return this; }
   setInteractive(...a: unknown[]): this { if (a.length) return super.setInteractive(...(a as [])); return super.setInteractive(new Phaser.Geom.Rectangle(-this.width / 2, -this.height, this.width, this.height), Phaser.Geom.Rectangle.Contains); }
   /* ---------- Ablauf ---------- */
-  private setze(z: string) { if (z === this.zustand) return; this.zustand = z; if (!this.einmal) { this.bild = 0; this.uhr = 0; this.zeigen(); } }
+  /** Besiegt: die Todesbewegung einmal abspielen und auf dem letzten Bild liegen bleiben. false, wenn die Figur keine hat */
+  private gestorben = false;
+  sterben(): number { const M = this.meta; if (!M || !M.animationen.tod) return 0; this.gestorben = true; this.einmal = null; this.zustand = "tod"; this.bild = 0; this.uhr = 0; this.zeigen();
+    return 1000 * M.animationen.tod.bilder / M.animationen.tod.rate; }
+  private setze(z: string) { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) { this.bild = 0; this.uhr = 0; this.zeigen(); } }
   private get anim(): string { const M = this.meta, a = this.einmal || this.zustand; return M && M.animationen[a] ? a : "ruhe"; }
   private weiter(dt: number) { const M = this.meta; if (!M || !this.visible) return; const A = M.animationen[this.anim]; this.uhr += dt; const d = 1000 / A.rate; let neu = false;
     while (this.uhr >= d) { this.uhr -= d; neu = true;
