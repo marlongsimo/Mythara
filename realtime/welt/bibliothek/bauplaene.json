@@ -2500,6 +2500,444 @@
      }
     ]
    }
+  },
+  {
+   "id": "graufurt_bergfried_01",
+   "name": "Bergfried von Graufurt",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 4.0,
+     "h": 6.4,
+     "wand": "quader",
+     "betretbar": true,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "x": -0.9
+    },
+    {
+     "wand": "sued",
+     "z": 4.8,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "x": 0.9
+    },
+    {
+     "wand": "ost",
+     "z": 4.0,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "banner",
+     "x": -1.25,
+     "z": 2.6
+    },
+    {
+     "art": "banner",
+     "x": 1.25,
+     "z": 2.6
+    },
+    {
+     "art": "laterne",
+     "x": -0.85,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0,
+      "d": 2.4
+     },
+     {
+      "art": "regal",
+      "x": -0.8,
+      "d": 3.6
+     },
+     {
+      "art": "fass",
+      "x": 1.4,
+      "d": 3.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_steinhaus_01",
+   "name": "Steinhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5.0,
+     "t": 4.0,
+     "h": 2.7,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.2,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.4,
+     "d": 2.6,
+     "b": 0.55
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.6,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": -1.4,
+      "d": 2.8
+     },
+     {
+      "art": "ofen",
+      "x": 1.4,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_steinhaus_02",
+   "name": "Steinhaus mit Turmstube",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.4,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.8,
+     "h": 2.6,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.9,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": 1.6,
+     "d": 0.6,
+     "b": 2.2,
+     "t": 2.2,
+     "h": 4.2,
+     "wand": "quader",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 1.6,
+      "first": "x",
+      "ueber": 0.25,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -1.7
+    },
+    {
+     "wand": "sued",
+     "z": 2.8,
+     "b": 0.45,
+     "h": 0.7,
+     "art": "schmal",
+     "x": 2.7,
+     "koerper": "turm"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "laterne",
+     "x": 0.3,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.6,
+      "d": 2.6
+     },
+     {
+      "art": "tisch",
+      "x": 0.4,
+      "d": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_faehrhaus_01",
+   "name": "Fährhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.6,
+     "d": 0,
+     "b": 5.2,
+     "t": 3.8,
+     "h": 2.5,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       112,
+       86,
+       62
+      ]
+     }
+    },
+    {
+     "id": "lager",
+     "x": 2.6,
+     "d": 0.4,
+     "b": 2.2,
+     "t": 3.0,
+     "h": 2.0,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       112,
+       86,
+       62
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "glut",
+     "x": 1.2
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "schild",
+     "x": 0.3,
+     "z": 2.1,
+     "farbe": [
+      150,
+      170,
+      190
+     ]
+    },
+    {
+     "art": "kamin",
+     "x": -1.6,
+     "d": 2.6,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "theke",
+      "x": 0.2,
+      "d": 2.8
+     },
+     {
+      "art": "fass",
+      "x": -1.9,
+      "d": 1.0
+     },
+     {
+      "art": "fass",
+      "x": -1.9,
+      "d": 1.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_turm_ost_01",
+   "name": "Turm am Ostufer",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.6,
+     "d": 0,
+     "b": 3.2,
+     "t": 3.2,
+     "h": 6.8,
+     "wand": "quader",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.2,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       80,
+       90,
+       104
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.0,
+     "h": 1.9,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 5.0,
+     "b": 0.6,
+     "h": 0.9,
+     "art": "gruen",
+     "x": 0
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "stein",
+    "moebel": []
+   }
   }
  ]
 }

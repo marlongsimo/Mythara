@@ -1,0 +1,28 @@
+{
+ "start": [
+  [
+   4,
+   108.69299898236852
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "rastplatz",
+   "art": "lesen",
+   "x": 34,
+   "y": 117.79,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Steinweg. Die Asche im Feuerring ist noch warm."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ }
+}

@@ -115,7 +115,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
 { const B = 256, H = 192, DX = 64, TOR = 112, KY = 44;                       /* DX: so weit liegt die Waldmark (x = 0) östlich des Gebiets; KY: Höhe der Kreuzung */
   const torWegX = (y) => TOR + 1.6 * Math.sin(y / 9) * Math.min(1, y / 12);   /* vom Tor zur Kreuzung, sacht geschwungen */
   const steinY = (x) => KY + 2.6 * Math.sin((x - TOR) / 21) + 1.3 * Math.sin((x - TOR) / 8.3) * Math.min(1, Math.abs(x - TOR) / 14);
-  const WEST = -4, OST = 238,   /* der Westweg läuft seit 21.11.2026 weiter nach Westen (Westmark) */ feldX = (y) => TOR + 6 * Math.sin((y - KY) / 23) + 2 * Math.sin((y - KY) / 7.9) * Math.min(1, (y - KY) / 14), SUED = 176;   /* bis hier ging der Feldweg zuerst (dort lag ein umgestürzter Baum); jetzt führt er weiter nach Weidenhain */
+  const WEST = -4, OST = 260,   /* seit 21.11.2026 auch nach Osten durchgehend (Osthang, Graufurt) */   /* der Westweg läuft seit 21.11.2026 weiter nach Westen (Westmark) */ feldX = (y) => TOR + 6 * Math.sin((y - KY) / 23) + 2 * Math.sin((y - KY) / 7.9) * Math.min(1, (y - KY) / 14), SUED = 176;   /* bis hier ging der Feldweg zuerst (dort lag ein umgestürzter Baum); jetzt führt er weiter nach Weidenhain */
   const L = { x: 214, y: 120, rx: 25, ry: 19 }, lichtR = (x, y) => { const t = Math.atan2((y - L.y) / L.ry, (x - L.x) / L.rx); return Math.hypot((x - L.x) / L.rx, (y - L.y) / L.ry) / (1 + 0.1 * Math.sin(3 * t + 0.6) + 0.06 * Math.sin(7 * t + 2) + 0.04 * Math.sin(11 * t)); };
   const pfadOben = [[202, steinY(202)], [200.5, 62], [205, 80], [209, L.y - L.ry + 3]], pfadUnten = [[feldX(128), 128], [140, 130], [162, 126], [178, 124.5], [L.x - L.rx + 3, 122]];
   /* Abstand zu den Wegen (Mittellinie), in Feldern */
@@ -136,7 +136,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     z.push(c); } g.push(z); }
   /* Umgestürzte Bäume an den Wegenden (vorerst geht es dort nicht weiter): auf den Steinwegen ein Stamm, der in die Tiefe liegt (quer zum Weg), auf dem Feldweg einer quer */
   const stamm = (id, objekt, x, y, spiegeln) => ({ id, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...(spiegeln ? { spiegeln: true } : {}) });
-  const ende = [stamm("stamm_ost", "wald_baumstamm_02", OST - 4, steinY(OST - 4) + 4.5)];
+  const ende = [];
   const amStamm = (x, y) => ende.some((e) => (e.objekt === "wald_baumstamm_02" ? Math.abs(x - e.x) < 3.2 && y > e.y - 10.5 && y < e.y + 2.5 : Math.abs(x - e.x) < 6.5 && y > e.y - 4.5 && y < e.y + 1.5));
   const frei = (x, y) => Math.min(dTor(x, y), dStein(x, y)) < 5 || dFeld(x, y) < 4 || dPfad(x, y) < 2.6 || lichtR(x, y) < 1.12 || imVorfeld(x - DX, y + 64) || amStamm(x, y);
   const wald = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", frei, 0.95, 0.02, (p) => sichtFrei(p, 64, -DX));
@@ -147,10 +147,9 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const versperrt = "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter.";
   /* Der Stamm allein hält niemanden auf: Durch den Wald käme man drumherum. Darum läuft von jedem Stamm eine unsichtbare Sperre durch den Wald bis an den Rand
      des Gebiets (im Osten oberhalb der Lichtung, damit sie frei bleibt). Was dahinter liegt, ist für später. */
-  const [so] = ende, riegel = [
-    { art: "rechteck", x0: so.x - 0.8, y0: 0, x1: so.x + 0.8, y1: L.y - L.ry - 6 }, { art: "rechteck", x0: so.x - 0.8, y0: L.y - L.ry - 7.6, x1: B, y1: L.y - L.ry - 6 }];
+  const riegel = [];
   const spiel = { start: [[TOR, 2.5], [TOR - 1, 1.5], [TOR + 1, 1.5]], figuren: [], spawnzonen: [],
-    interaktionen: [lies("stamm_ost_ansehen", ende[0].x - 1.6, ende[0].y - 4.5, versperrt),
+    interaktionen: [
       lies("lichtung_ansehen", L.x - 4, L.y + 2, "Eine weite, stille Lichtung mitten im Wald. Das Gras steht hoch, dazwischen blühen Wildblumen.")],
     ausgaenge: [], kollision: { sperren: riegel, freigeben: [] } };
   schreibe("waldweg", { id: "waldweg", name: "Der Kreuzwald", untertitel: "Steinwege nach Westen und Osten, der Feldweg nach Weidenhain", ursprung: [198, 202], chunks: [8, 6], biom: "wald", stufe: 1 }, g, objekte, spiel); }
