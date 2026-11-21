@@ -75,6 +75,9 @@ export class WeltKampf {
     for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.figuren.clear(); this.ringZiel.destroy(); this.ichLb.destroy();
     for (const h of this.hoerer) window.removeEventListener("ez-server", h); document.body.classList.remove("weltkampf"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
+  /** Wie viele lebende Gegner in der Nähe des eigenen Helden sind (für das Kampf-Banner) */
+  gegnerNah(felder = 8): number { const z = this.z; if (!z || !this.eingetreten) return 0; const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return 0;
+    return z.w.filter((e) => e[1] === 0 && !e[10] && e[3] !== ich[3] && Math.hypot(e[4] - ich[4], e[5] - ich[5]) <= felder).length; }
   mehrkampf(wx: number, wy: number): boolean { const K = KARTEN[this.zone.karte], x = wx - this.zone.x0, y = wy - this.zone.y0; return (K.mehrkampf || []).some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1); }
 
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */

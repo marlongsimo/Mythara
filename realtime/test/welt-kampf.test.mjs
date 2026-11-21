@@ -51,7 +51,7 @@ try {
   check(sicht.banditen === 4 && sicht.schilder.filter((t) => t === "Bandit · St. 3").length === 4, "Anna sieht vier Banditen mit „Bandit · St. 3“");
   check(sicht.schilder.includes("Ben · St. 2"), "…und Ben mit Name und Stufe aus derselben Simulation: " + sicht.schilder.filter((t) => !/Bandit/.test(t)).join(", "));
   check(await anna.evaluate(() => { const K = window.EZK, i = K.z.w.find((e) => e[0] === K.ichId); return Math.hypot(K.zone.x0 + i[4] - 6536, K.zone.y0 + i[5] - 6583) < 1.6; }), "Anna steht im Kampf dort, wo sie in der Welt stand");
-  check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔⚔ Mehrkampf", "Unter der Minimap: „Mehrkampf“ auf der Lichtung");
+  check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Mehrkampf", "Unter der Minimap: „Mehrkampf“ auf der Lichtung");
   check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.feind:not(.tot)").length) === 4, "Die Minimap zeigt die vier Banditen live als rote Punkte");
   const tf0 = await anna.evaluate(() => document.querySelector("#ez-karte").style.transform);
   /* laufen: Taste D – der Server bewegt, die Welt folgt */
@@ -71,14 +71,14 @@ try {
   await anna.waitForTimeout(2500); /* der Server schickt inzwischen die im Kreuzwald gemerkte Stelle – sie darf nach dem Teleport nicht gelten */
   check(await anna.evaluate(() => window.EZW.szene.hier === "waldmark"), "Teleport bleibt: auch nachdem der Server die alte Stelle im Kreuzwald gemeldet hat (" + JSON.stringify(STELLE["00000000-0000-0000-0000-00000000a001"]) + ")");
   check(await anna.evaluate(() => !window.EZK && !document.body.classList.contains("weltkampf")), "Teleport: zurück in der Waldmark, dort wird nicht gekämpft");
-  check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "🛡 Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
+  check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
   /* Heldenwechsel in der Waldmark: gilt erst nach der Bestätigung des Servers – und bleibt */
   await anna.keyboard.press("h"); await anna.waitForSelector("#ez-wahl:not([hidden])", { timeout: 5000 }); await Promise.all([anna.waitForNavigation({ timeout: 15000 }), (async () => { await anna.click('#ez-wahl [data-held="lichtbringer"]'); await anna.click("#ez-los"); })()]);
   await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich && window.EZW.ich(), null, { timeout: 30000 }); await anna.waitForTimeout(4000);
   check(await anna.evaluate(() => window.EZW.szene.held === "lichtbringer" && window.EZW.ich().held === "lichtbringer") && AKTIV["00000000-0000-0000-0000-00000000a001"] === "lichtbringer", "Heldenwechsel in der Waldmark: Anna ist Elara – und bleibt es (auch auf dem Server)");
   /* Ben läuft durchs Südtor zurück in die Waldmark */
   await ben.goto(B + S + "&wx=6448&wy=6467.5"); await bereit(ben); /* Startstelle über die Adresse – ein Wert im Speicher könnte von der laufenden Seite überschrieben werden */
-  check(await ben.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔ Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");
+  check(await ben.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");
   await ben.keyboard.press("h"); await ben.waitForTimeout(600);
   check(await ben.evaluate(() => document.querySelector("#ez-wahl").hidden && /nur in der Waldmark/.test(document.querySelector("#ez-dorf-hilfe").textContent)), "Im Kreuzwald lässt sich der Held nicht wechseln („nur in der Waldmark“)");
   await ben.keyboard.down("w"); await ben.waitForFunction(() => window.EZW.szene.hier === "waldmark", null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(400); await ben.keyboard.up("w");

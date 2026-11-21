@@ -64,11 +64,18 @@ let kampf: WeltKampf | null = null;
 const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
 /** Unter der Minimap: Sicherer Ort, Einzelkampf oder Mehrkampf – je nachdem, wo man steht */
 let zoomJetzt = 2.2;
+const KAMPFZEICHEN: Record<string, string> = {
+  mehr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11 11M4 4h3.5L17 13.5M4 4v3.5L13.5 17"/><path d="M14 17l3 3M17 14l3 3M15.5 18.5l3-3"/><path d="M20 4L9 15M20 4h-3.5M20 4v3.5"/><path d="M10 17l-3 3M7 14l-3 3M8.5 18.5l-3-3"/></svg>',
+  einzel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3h2v2L9 17l-2-2z"/><path d="M6 14l4 4M5 19l2-2M4 20l1-1"/></svg>',
+  sicher: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5.5c0 4.4 3 7.8 7 9.5 4-1.7 7-5.1 7-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg>' };
 function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart"); const r = document.getElementById("ez-kartenrahmen"); if (!r) return;
   if (!el) { el = document.createElement("div"); el.id = "ez-kampfart"; r.appendChild(el); }
   const z = WELTZONEN[s.hier], art = !z || !freigabe("suedtor") ? "sicher" : kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel";
-  if (el.dataset.art === art) return; el.dataset.art = art; el.className = art; r.dataset.art = art; /* auch die Farbe des Kartenrings zeigt es */
-  el.textContent = art === "sicher" ? "🛡 Sicherer Ort" : art === "mehr" ? "⚔⚔ Mehrkampf" : "⚔ Einzelkampf";
+  const n = art === "sicher" || !kampf ? 0 : kampf.gegnerNah(8);
+  if (el.dataset.art === art && el.dataset.n === String(n)) return; el.dataset.n = String(n);
+  const zahl = el.querySelector("em") as HTMLElement | null; if (el.dataset.art === art && zahl) { zahl.textContent = n === 1 ? "1 Gegner" : n + " Gegner"; zahl.hidden = !n; return; }
+  el.dataset.art = art; el.className = art; r.dataset.art = art; /* auch die Farbe des Kartenrings zeigt es */
+  el.innerHTML = `<span class="sym">${KAMPFZEICHEN[art]}</span><b>${art === "sicher" ? "Sicherer Ort" : art === "mehr" ? "Mehrkampf" : "Einzelkampf"}</b><em${n ? "" : " hidden"}>${n === 1 ? "1 Gegner" : n + " Gegner"}</em>`;
   el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
 /* für Prüfungen im Browser */
@@ -104,9 +111,21 @@ function serverStelle(s: Welt, p: { region: string; x: number | null; y: number 
 function obenKnoepfe(s: Welt) { let el = document.getElementById("ez-oben-knoepfe"); if (!el) { el = document.createElement("div"); el.id = "ez-oben-knoepfe"; document.body.appendChild(el); }
   el.hidden = false; el.innerHTML = `<button type="button" data-o="spieler" aria-label="Spieler" title="Spieler hier (P)"><span>${ZEICHEN.helden}</span><em class="zahl" hidden></em></button><button type="button" data-o="menue" aria-label="Einstellungen" title="Einstellungen"><span>${ZEICHEN.menue}</span></button>`;
   el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-o]") as HTMLElement | null; if (!b) return; if (b.dataset.o === "spieler") tafel(s, spielerListe); else oeffne("menue", s); }; obenPlatz(); }
+const GROSS = matchMedia("(min-width: 701px) and (min-height: 501px)");
+/** Rechte Seite einpassen (Tablet und PC): die Menüleiste steht als Säule
+    zwischen Karte (samt Kampf-Banner) und Aktionen, wenn sie dort Platz hat – sonst kompakt neben den Aktionen */
+let menueSchluessel = "";
+function menuePlatz() { const m = document.getElementById("ez-menue"), r = document.getElementById("ez-kartenrahmen"); if (!m || !r || m.hidden) return;
+  if (!GROSS.matches) { if (menueSchluessel) { menueSchluessel = ""; document.body.classList.remove("menue-spalte"); m.style.top = ""; } return; } /* Handy: vorerst die bisherige Anordnung */
+  let unten = r.getBoundingClientRect().bottom; for (const id of ["ez-kampfart", "ez-zoom"]) { const e = document.getElementById(id); if (e && e.offsetParent && r.contains(e)) unten = Math.max(unten, e.getBoundingClientRect().bottom); }
+  const t = document.getElementById("ez-tasten"), tr = t ? t.getBoundingClientRect() : null, oben = tr && tr.height ? tr.top : innerHeight; /* fest positioniert: offsetParent ist immer null */
+  const schluessel = `${innerWidth}x${innerHeight}:${Math.round(unten)}:${Math.round(oben)}:${m.childElementCount}`; if (schluessel === menueSchluessel) return; menueSchluessel = schluessel;
+  document.body.classList.add("menue-spalte"); m.style.top = "0px"; const h = m.offsetHeight, frei = oben - unten, spalte = h + 36 <= frei; /* oben und unten je eine Zierspitze (14 px) und etwas Luft */
+  document.body.classList.toggle("menue-spalte", spalte); m.style.top = spalte ? Math.round(unten + (frei - h) / 2) + "px" : ""; }
 /** rechts neben die sichtbare Profilanzeige (im Kampfgebiet: Leben und Erfahrung) setzen */
 function obenPlatz() { const el = document.getElementById("ez-oben-knoepfe"); if (!el) return; const p = document.querySelector(document.body.classList.contains("weltkampf") ? "#ez-ich" : "#ez-profil") as HTMLElement | null, r = p && p.getBoundingClientRect();
-  if (!r || !r.width) return; const ban = document.querySelector("#ez-titel:not([hidden])") as HTMLElement | null, br = ban && ban.getBoundingClientRect(), passt = !br || !br.width || r.right + 10 + el.offsetWidth + 6 <= br.left;
+  if (!r || !r.width) return; const ban = document.querySelector("#ez-titel:not([hidden])") as HTMLElement | null, br = ban && ban.getBoundingClientRect(), kr = (document.querySelector("#ez-kartenrahmen .rknoepfe") as HTMLElement | null)?.getBoundingClientRect(), kl = kr && kr.width && kr.top < r.bottom ? kr.left : innerWidth,
+    passt = (!br || !br.width || r.right + 10 + el.offsetWidth + 6 <= br.left) && r.right + 10 + el.offsetWidth + 6 <= kl;
   /* neben das Profil – reicht der Platz bis zum Ortsbanner nicht, direkt darunter an seine rechte Kante */
   const l = Math.round(passt ? r.right + 10 : r.right - el.offsetWidth) + "px", t = Math.round(passt ? r.top + (r.height - el.offsetHeight) / 2 : r.bottom + 8) + "px"; if (el.style.left !== l) el.style.left = l; if (el.style.top !== t) el.style.top = t; }
 function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .zahl") as HTMLElement | null; if (z) { const n = weltOnline(); z.hidden = n < 2; z.textContent = String(n); } }
@@ -179,7 +198,7 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);
-    kampfartZeigen(s); obenPlatz();
+    kampfartZeigen(s); menuePlatz(); obenPlatz();
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
     weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
