@@ -18,7 +18,9 @@ def blatt(e, a):
 def figur(a, r, i, teile):
     ohne = set(A[a].get("ohne", [])); w = sorted([t for t in teile if EB[t]["art"] == "starr" and EB[t]["platz"] not in ohne], key=lambda t: -M["tiefe"][t][a][r][i])
     bild = Image.new("RGBA", (F, F), (0, 0, 0, 0))
-    for e in [t + ".hinten" for t in w] + ["koerper"] + [t for t in teile if EB[t]["art"] == "huelle"] + [t + ".vorn" for t in w]: bild.alpha_composite(blatt(e, a).crop((i * F, r * F, (i + 1) * F, (r + 1) * F)))
+    hl = sorted([t for t in teile if EB[t]["art"] == "huelle"], key=lambda t: list(EB).index(t)); um = [t for t in hl if M.get("zeichenfolge") and EB[t].get("umhang")]; rest = [t for t in hl if t not in um]
+    hl = rest + um if r >= 5 else um + rest                                                       # Umhang: von vorn hinter, von hinten vor der übrigen Rüstung
+    for e in [t + ".hinten" for t in w] + ["koerper"] + hl + [t + ".vorn" for t in w]: bild.alpha_composite(blatt(e, a).crop((i * F, r * F, (i + 1) * F, (r + 1) * F)))
     return bild.crop((0, OBEN, F, UNTEN))
 def bogen(a, i, teile, text):
     h = UNTEN - OBEN; k = Image.new("RGBA", (F * 4, h * 2 + 34), (40, 34, 48, 255)); d = ImageDraw.Draw(k); d.text((10, 10), text, fill=(236, 228, 212))

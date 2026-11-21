@@ -32,7 +32,8 @@ huellen = [e for e, d in EB.items() if d["art"] == "huelle"]; starr = [e for e, 
 def gesamt(anim, r, i, teile):
     """So setzt das Spiel die Figur zusammen: Waffen hinten (fernste zuerst), Körper, Rüstung, Waffen vorn"""
     w = sorted([t for t in teile if EB[t]["art"] == "starr"], key=lambda t: -meta["tiefe"][t][anim][r][i]); bild = np.zeros((F, F, 4), np.float32)
-    for e in [t + ".hinten" for t in w] + ["koerper"] + [t for t in teile if EB[t]["art"] == "huelle"] + [t + ".vorn" for t in w]: bild = ueber(bild, feld(blatt(e, anim), r, i))
+    hl = sorted([t for t in teile if EB[t]["art"] == "huelle"], key=lambda t: list(EB).index(t)); um = [t for t in hl if meta.get("zeichenfolge") and EB[t].get("umhang")]; rest = [t for t in hl if t not in um]
+    for e in [t + ".hinten" for t in w] + ["koerper"] + (rest + um if r >= 5 else um + rest) + [t + ".vorn" for t in w]: bild = ueber(bild, feld(blatt(e, anim), r, i))
     return bild
 
 print("Bildblätter")
@@ -72,7 +73,18 @@ for a in ANIM:
         for y in range(x + 1, len(huellen)):
             if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage") or EB[huellen[x]].get("unten") or EB[huellen[y]].get("unten"): continue   # Unterkleidung liegt absichtlich unter der Rüstung   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
             p = blatt(huellen[x], a)[..., 3] > 0.6 * 255; q = blatt(huellen[y], a)[..., 3] > 0.6 * 255; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
-melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
+if meta.get("zeichenfolge"):                                                                        # Baukasten: Teile überlappen absichtlich – stattdessen hart: jedes Teil ist im Gesamtbild auch zu sehen
+    sicht = {}
+    for e in huellen:
+        bestes = 0.0
+        for r in range(8):
+            mit_ = gesamt("ruhe", r, 0, [t if EB[t]["platz"] != EB[e]["platz"] else e for t in alle] + ([e] if EB[e]["platz"] not in [EB[t]["platz"] for t in alle] else []))
+            ohne_ = gesamt("ruhe", r, 0, [t for t in alle if EB[t]["platz"] != EB[e]["platz"]]); eig = feld(blatt(e, "ruhe"), r, 0)[..., 3] > 0.5
+            if eig.sum() > 50: bestes = max(bestes, float((np.abs(mit_ - ohne_).sum(-1) > 0.05)[eig].mean()))
+        sicht[e] = round(bestes, 2)
+    verdeckt = {e: v for e, v in sicht.items() if v < 0.3}
+    melde("bild", "jedes Rüstungsteil ist im Gesamtbild sichtbar (Anteil seiner Bildpunkte, die das Bild verändern – beste Richtung)", min(sicht.values()) if sicht else 1.0, "≥ 0.3", not verdeckt, mehr=verdeckt)
+else: melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat
 def loecher(al): voll = al > 0.5; return ndimage.binary_fill_holes(voll) & ~voll
 neu = 0; echt = 0

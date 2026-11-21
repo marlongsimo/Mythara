@@ -10,8 +10,8 @@
 import Phaser from "phaser";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number; treffer?: number; ohne?: string[] }
-interface Ebene { art: "koerper" | "huelle" | "starr"; platz?: string; angriff?: string; atlas?: Record<string, { datei: string }> }
-interface Meta { id: string; feld: number; fuss: [number, number]; mass: [number, number, number]; animationen: Record<string, Anim>; ebenen: Record<string, Ebene>; plaetze: Record<string, string[]>; tiefe: Record<string, Record<string, number[][]>> }
+interface Ebene { art: "koerper" | "huelle" | "starr"; platz?: string; angriff?: string; umhang?: boolean; atlas?: Record<string, { datei: string }> }
+interface Meta { id: string; feld: number; fuss: [number, number]; mass: [number, number, number]; animationen: Record<string, Anim>; ebenen: Record<string, Ebene>; plaetze: Record<string, string[]>; tiefe: Record<string, Record<string, number[][]>>; zeichenfolge?: boolean }
 
 const P = new URLSearchParams(location.search), FIGUR = P.get("figur") || "held.krieger", VERSION = P.get("version") || "v004";
 const BASIS = `../assets/${FIGUR}/${VERSION}/export/`, $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -78,7 +78,10 @@ class Szene extends Phaser.Scene {
   zeige() {
     const A = this.meta.animationen[this.anim], name = `${this.anim}/${this.richtung}/${this.bild}`, ohne = new Set(A.ohne || []); let i = 0;
     const waffen = Object.entries(this.tragen).filter(([, t]) => t && this.meta.ebenen[t].art === "starr").map(([platz, t]) => ({ platz, t, tiefe: this.meta.tiefe[t]?.[this.anim]?.[this.richtung]?.[this.bild] ?? 0 })).sort((a, b) => b.tiefe - a.tiefe); /* fernste zuerst */
-    const folge = [...waffen.map((w) => w.t + ".hinten"), "koerper", ...Object.values(this.tragen).filter((t) => t && this.meta.ebenen[t].art === "huelle"), ...waffen.map((w) => w.t + ".vorn")];
+    /* Rüstung von innen nach außen in der Reihenfolge der Angaben; ein Umhang liegt von vorn gesehen hinter allem, von hinten (NW, N, NO) vor allem */
+    const reihe = Object.keys(this.meta.ebenen), huellen = Object.values(this.tragen).filter((t) => t && this.meta.ebenen[t].art === "huelle").sort((a, b) => reihe.indexOf(a) - reihe.indexOf(b));
+    const vonHinten = this.richtung >= 5, umh = huellen.filter((t) => this.meta.zeichenfolge && this.meta.ebenen[t].umhang), rest = huellen.filter((t) => !umh.includes(t));
+    const folge = [...waffen.map((w) => w.t + ".hinten"), "koerper", ...(vonHinten ? [...rest, ...umh] : [...umh, ...rest]), ...waffen.map((w) => w.t + ".vorn")];
     const versteckt = new Set(waffen.filter((w) => ohne.has(w.platz)).flatMap((w) => [w.t + ".hinten", w.t + ".vorn"]));
     for (const e of folge) { const s = this.bilder.get(e); if (!s) continue; const da = !versteckt.has(e) && s.texture.has(name); s.setVisible(da); if (da) s.setFrame(name); this.figur.moveTo(s, Math.min(i++, this.figur.length - 1)); }
   }

@@ -153,7 +153,9 @@
       "id": "kleidung.umhang.v003",
       "platz": "ruecken",
       "glb": "held.schildwahrer/v004/quelle/teile/kleidung.umhang.v003.glb",
-      "beine_mitteln": true
+      "beine_mitteln": true,
+      "umhang": true,
+      "glaetten": 2
     },
     {
       "id": "kleidung.waffenrock.v003",
@@ -183,5 +185,5 @@
       "glb": "held.schildwahrer/v004/quelle/teile/ruestung.brust.stahlplatte.glb"
     }
   ],
-  "teilnetze_glaetten": 2
+  "zeichenfolge": true
 }

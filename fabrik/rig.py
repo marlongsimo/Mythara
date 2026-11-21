@@ -34,6 +34,8 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Hülle "unten": true        Unterkleidung (Hemd, Hose): wird beim Rendern nicht von abnehmbarer Rüstung ausgestanzt, liegt in der Zeichenreihenfolge zuunterst
   Hülle "seiten_frei": true  seitlich gerichtete Flächen auslassen (Flanken unter anliegenden Armen)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
+  "zeichenfolge": true       Baukasten: Rüstungsteile werden nur vom Körper ausgestanzt, die Zeichenreihenfolge (innen nach außen) bestimmt, was vorn liegt –
+                             so ist jedes Teil unabhängig austauschbar; Teil "umhang": true liegt von vorn hinter, von hinten vor allen anderen
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
   "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
@@ -274,7 +276,7 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
     o = laden(t["glb"], t["id"]); bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.context.view_layer.objects.active = o
     bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0002)   # GLB trennt Ecken an Kanten: zusammenführen (sonst schrumpft beim Glätten jedes Dreieck für sich)
     bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")   # Flächen einheitlich nach außen (Meshy-Netze sind teils verdreht)
-    if t.get("glaetten", AUS.get("teilnetze_glaetten", 0)): gl = o.modifiers.new("glatt", "SMOOTH"); gl.factor = 0.5; gl.iterations = int(t.get("glaetten", AUS.get("teilnetze_glaetten", 0))); bpy.ops.object.modifier_apply(modifier="glatt")
+    if t.get("glaetten", 0): gl = o.modifiers.new("glatt", "SMOOTH"); gl.factor = 0.5; gl.iterations = int(t.get("glaetten", 0)); bpy.ops.object.modifier_apply(modifier="glatt")
     bpy.ops.object.shade_smooth()
     dt = o.modifiers.new("gewichte", "DATA_TRANSFER"); dt.object = ob; dt.use_vert_data = True; dt.data_types_verts = {"VGROUP_WEIGHTS"}; dt.vert_mapping = "POLYINTERP_NEAREST"
     dt.layers_vgroup_select_src = "ALL"; dt.layers_vgroup_select_dst = "NAME"; bpy.ops.object.datalayout_transfer(modifier="gewichte"); bpy.ops.object.modifier_apply(modifier="gewichte")
@@ -292,7 +294,7 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
             b_ = next((n for n in m_.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None) if m_ and m_.use_nodes else None
             if b_: b_.inputs["Base Color"].default_value = tuple(c_) + (1,)
     m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
-    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
     print("Teilnetz:", t["id"], "Platz", t["platz"], "·", len(o.data.vertices), "Punkte, Gewichte vom Grundkörper")
 
 # ====================================================== 4. Bewegungen ======================================================
@@ -554,5 +556,5 @@ for name, welche in (AUS.get("linke_hand_am_griff") or {}).items():
     for i in gemerkt: sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - zw.matrix_world.translation).length * 100)
     print(f"linke Hand am Griff ({name}): größter Abstand Handgelenk – Griff {max(luecke):.1f} cm"); a["griffluecke_cm"] = max(luecke)
 bpy.ops.object.mode_set(mode="OBJECT"); arm.animation_data.action = bpy.data.actions["ruhe"]; sc.frame_set(1)
-arm["stil"] = AUS.get("stil", ""); arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
+arm["stil"] = AUS.get("stil", ""); arm["zeichenfolge"] = bool(AUS.get("zeichenfolge")); arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
 bpy.ops.wm.save_as_mainfile(filepath=zieldatei); print("geschrieben:", zieldatei)
