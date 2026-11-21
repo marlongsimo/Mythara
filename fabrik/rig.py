@@ -26,6 +26,10 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
 Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
+  "haltung": "armbrust"      Armbrust mit Pistolengriff in der rechten Hand (armbrust.py), Bewegungen zielen (halten), schiessen, nachladen
+  Waffe "griff2_ort": [x,y,z] Ort der zweiten Hand im Raum der Waffe (Armbrust: unter dem Vorderschaft); sonst auf der Achse ("griff2")
+  "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
+  Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
 """
 import json, math, os, sys
 import numpy as np
@@ -131,7 +135,8 @@ for t in AUS["starr"]:
         S_ = t.get("hand", "R"); HD, K0 = (HAND_L, KLINGE0_L) if S_ == "L" else (HAND_R, KLINGE0)
         ez = -K0; ey = K0.cross(HD).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
         handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
-        g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = (0, 0, oben - t["griff2"] * (oben - unten)); g2.empty_display_size = 0.03      # Platz der zweiten Hand, zum Knauf hin
+        g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = tuple(t["griff2_ort"]) if "griff2_ort" in t else (0, 0, oben - t.get("griff2", 0.4) * (oben - unten)); g2.empty_display_size = 0.03
+        if t.get("zweihand"): g2.name = "griff2." + t["id"]      # Platz der zweiten Hand, zum Knauf hin
     elif t["art"] == "kopf":                                                                     # Hut: Achse entlang des Kopfknochens, vorn bleibt vorn; die Krempe sitzt etwas unter dem Scheitel
         kb = KN["kopf"]; ach = richtung("kopf"); ey_ = senkrecht((0, 1, 0), ach); R = Matrix((ey_.cross(ach), ey_, ach)).transposed()
         ort = kb.head_local.lerp(kb.tail_local, 1 - t.get("sitz", 0.32)) + ey_ * t.get("versatz", 0.0); an_knochen(o, "kopf", Matrix.Translation(ort) @ R.to_4x4())
@@ -167,6 +172,7 @@ for t in AUS["huelle"]:
         lage = lage_an(bone); wahl |= (GW[bone] >= 0.35) & (lage >= t0 - 0.02) & (lage <= t1 + 0.02)
     if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
     if t.get("vorn"): wahl &= NORM[:, 1] < -0.15                                                    # nur die Vorderseite (Schürze)
+    if t.get("hinten"): wahl &= NORM[:, 1] > 0.15                                                   # nur die Rückseite (Umhang)
     ARM = [b.name for b in KN if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]
     if not any(bone in ARM for bone, _, _ in t["bereich"]): wahl &= sum(GW[b] for b in ARM) < 0.3          # nennt die Hülle keinen Armknochen, gehören Arm und Hand nicht dazu (herabhängende Hände an der Hüfte)
     if AUS.get("exklusiv") and not t.get("ueberlage"): wahl &= ~vergeben; vergeben |= wahl
@@ -218,8 +224,9 @@ def hocke_(grad, vor=0.0):
 
 # Grundhaltung mit Waffen: Schwertarm leicht angewinkelt, Klinge nach vorn oben; Schild seitlich vor dem Körper
 BEREIT = dict(o_r=(-0.28, -0.08, -1.0), u_r=(-0.15, -0.6, -0.8), kl=(0.0, -0.7, 0.72), o_l=(0.32, -0.1, -1.0), u_l=(0.2, -0.62, -0.78), sch=(0.75, -0.66, 0.0))
-def arme(o_r, u_r, kl, o_l, u_l, sch, kl_l=(0.0, -0.7, 0.72)):
-    ziel("oberarm.R", o_r); ziel("unterarm.R", u_r); ziel("hand.R", u_r, kl, KLINGE0)                # das Handgelenk führt die Klinge
+def arme(o_r, u_r, kl, o_l, u_l, sch, kl_l=(0.0, -0.7, 0.72), h_r=(0.0, 0.0, 0.0)):
+    """h_r: Richtung der rechten Hand, wenn das Handgelenk abknickt (Armbrust: der Lauf zeigt nach vorn, der Unterarm schräg nach innen); (0, 0, 0) = wie der Unterarm"""
+    ziel("oberarm.R", o_r); ziel("unterarm.R", u_r); ziel("hand.R", h_r if any(h_r) else u_r, kl, KLINGE0)   # das Handgelenk führt die Klinge
     ziel("oberarm.L", o_l); ziel("unterarm.L", u_l, sch, SCHILD0)                                   # der Unterarm führt den Schild
     if LINKS: ziel("hand.L", u_l, kl_l, KLINGE0_L)                                                  # Waffe in der linken Hand: das linke Handgelenk führt sie
     else: ziel("hand.L", u_l)
@@ -229,23 +236,29 @@ def rumpf(vor=0.0, dreh_z=0.0, kipp=0.0, kopf=0.0, ganz=0.0):
     for f in spaeter: f()
     spaeter.clear()
 def mit(basis, **neu): d = dict(basis); d.update(neu); return d
-BEREIT["kl_l"] = (0.0, -0.7, 0.72)
+BEREIT["kl_l"] = (0.0, -0.7, 0.72); BEREIT["h_r"] = (0.0, 0.0, 0.0)
 def spiegel(v): return (-v[0], v[1], v[2])
 def arme_spur(keys, t): arme(**{k: spur([(tt, w[k]) for tt, w in keys], t) for k in BEREIT})
 
-ZIVIL = AUS.get("haltung") == "zivil"; STAB = AUS.get("haltung") == "stab"
+ZIVIL = AUS.get("haltung") == "zivil"; STAB = AUS.get("haltung") == "stab"; ARMBRUST = AUS.get("haltung") == "armbrust"
+# Armbrust: der Lauf zeigt in Richtung der Hand (Pistolengriff, die Klinge der Schwert-Logik ist hier das Griffende und zeigt nach unten).
+# Bereit: Armbrust tief an der rechten Hüfte, nach vorn unten; Anschlag: Ellbogen seitlich angehoben, Unterarm und Lauf waagerecht nach vorn. Die linke Hand liegt am Vorderschaft (umgekehrte Kinematik, unten).
+if ARMBRUST: BEREIT.update(o_r=(-0.05, -0.1, -0.99), u_r=(0.5, -0.85, 0.1), h_r=(0.15, -0.8, -0.58), kl=(0.0, 0.0, -1.0), o_l=(-0.2, -0.45, -0.87), u_l=(-0.5, -0.8, 0.3))   # Unterarm quer vor dem Bauch, Lauf nach vorn unten
+ANSCHLAG = mit(BEREIT, o_r=(-0.08, -0.64, -0.77), u_r=(0.6, -0.64, 0.49), h_r=(0.1, -0.99, 0.0), kl=(0.0, 0.0, -1.0), o_l=(-0.3, -0.8, -0.5), u_l=(-0.4, -0.9, 0.15))   # Hand vor dem Kinn, Lauf waagerecht
 if STAB: BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.22, -0.02, -0.98), u_l=(0.15, -0.3, -0.94)) if not LINKS else BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.24, -0.05, -0.97), u_l=(0.12, -0.75, -0.65))   # Unterarm waagerecht nach vorn, der Stab steht senkrecht (er liegt quer in der Faust)
 if ZIVIL: BEREIT.update(o_r=(-0.2, 0.0, -1.0), u_r=(-0.12, -0.22, -0.97), kl=(0.0, -0.7, 0.72), o_l=(0.2, 0.0, -1.0), u_l=(0.12, -0.22, -0.97))   # Arme hängen locker
 def ruhe(i, n):
-    s = math.sin(2 * math.pi * i / n); PB["becken"].location = (0, -0.004 * (1 - math.cos(2 * math.pi * i / n)), 0); rumpf(vor=2 + 1.2 * s, kopf=-1.5 * s)
+    s = math.sin(2 * math.pi * i / n); PB["becken"].location = (0, -0.004 * (1 - math.cos(2 * math.pi * i / n)), 0); rumpf(vor=2 + 1.2 * s, kopf=-1.5 * s, dreh_z=-15 if ARMBRUST else 0.0)
     for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 2)); dreh("fuss." + S)
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.2, 0.01 * s, -1.0), o_l=(0.2, -0.01 * s, -1.0))); return
     if STAB: arme(**mit(BEREIT, o_l=(0.22, -0.02 + 0.01 * s, -0.98))); return
+    if ARMBRUST: arme(**mit(BEREIT, u_r=(0.5, -0.85, 0.1 + 0.02 * s))); return
     arme(**mit(BEREIT, u_r=(-0.15, -0.6, -0.8 + 0.02 * s), u_l=(0.2, -0.62, -0.78 + 0.02 * s)))
 def laufen(i, n):
-    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4, dreh_z=9 * s)
+    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4, dreh_z=9 * s - (15 if ARMBRUST else 0))
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
     if STAB: arme(**mit(BEREIT, o_r=(-0.25, -0.15 + 0.05 * s, -0.96), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # der Stab bleibt ruhig, der linke Arm schwingt
+    if ARMBRUST: arme(**mit(BEREIT, o_r=(-0.22, -0.05 + 0.04 * s, -0.97))); return                              # die Armbrust bleibt ruhig in beiden Händen
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.18, 0.32 * s, -0.95), u_r=(-0.1, -0.25 + 0.3 * s, -0.95), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # Arme schwingen gegen die Beine
     arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.18 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.18 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))
 def schritt_(vor_l, t):
@@ -313,6 +326,20 @@ def nova(i, n):
     t = i / (n - 1); hocke(spur([(0, 0.0), (0.3, 28.0), (0.6, 0.0), (1, 0.0)], t)); rumpf(vor=spur([(0, 2.0), (0.3, 18.0), (0.6, -4.0), (0.85, -4.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.3, 10.0), (0.6, -14.0), (1, 0.0)], t))
     oben = mit(BEREIT, o_r=(-0.12, -0.1, 0.99), u_r=(-0.05, -0.08, 1.0), kl=(0.0, -0.05, 1.0), o_l=(0.88, -0.2, 0.3), u_l=(0.85, -0.3, 0.4))
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.35, -0.4, -0.85), u_r=(-0.2, -0.75, -0.6), kl=(0.0, -0.4, -0.92), o_l=(0.3, -0.5, -0.8), u_l=(0.15, -0.8, -0.55))), (0.6, oben), (0.85, oben), (1, BEREIT)], t)
+def zielen(i, n):
+    """Armbrust in Anschlag bringen und halten (letztes Bild wird gehalten, solange gezielt wird)"""
+    t = min(1.0, i / max(1, n - 2)); hocke(6 * t); rumpf(vor=2 - 2 * t, dreh_z=-15 - 12 * t, kopf=8 * t); arme_spur([(0, BEREIT), (1, ANSCHLAG)], t)
+def schiessen(i, n):
+    """anlegen, abdrücken (Trefferbild), Rückstoß, kurz im Anschlag bleiben, absetzen"""
+    t = i / (n - 1); a = spur([(0, 0.0), (0.3, 1.0), (0.85, 1.0), (1, 0.0)], t); rueck = spur([(0, 0.0), (0.43, 0.0), (0.55, 1.0), (0.75, 0.0), (1, 0.0)], t)
+    hocke(6 * a); rumpf(vor=2 - 2 * a - 6 * rueck, dreh_z=-15 - 12 * a, kopf=8 * a - 4 * rueck)
+    arme_spur([(0, BEREIT), (0.3, ANSCHLAG), (0.43, ANSCHLAG), (0.55, mit(ANSCHLAG, h_r=(0.1, -0.94, 0.33))), (0.75, ANSCHLAG), (0.85, ANSCHLAG), (1, BEREIT)], t)
+def nachladen(i, n):
+    """Armbrust mit der Spitze zum Boden, die linke Hand holt einen Bolzen aus dem Köcher an der linken Hüfte, legt ihn auf, Armbrust wieder hoch"""
+    t = i / (n - 1); k = spur([(0, 0.0), (0.25, 1.0), (0.75, 1.0), (1, 0.0)], t); hocke(18 * k); rumpf(vor=2 + 14 * k, dreh_z=-15 + 9 * k, kopf=10 * k)
+    unten = mit(BEREIT, o_r=(-0.2, -0.3, -0.93), u_r=(0.3, -0.5, -0.8), h_r=(0.0, -0.3, -0.95))
+    arme_spur([(0, BEREIT), (0.25, mit(unten, o_l=(0.35, 0.15, -0.92), u_l=(0.1, 0.35, -0.93))), (0.4, mit(unten, o_l=(0.35, 0.1, -0.93), u_l=(0.05, 0.2, -0.98))),
+               (0.6, mit(unten, o_l=(0.2, -0.55, -0.8), u_l=(-0.3, -0.7, -0.6))), (0.75, mit(unten, o_l=(0.2, -0.55, -0.8), u_l=(-0.3, -0.7, -0.6))), (1, BEREIT)], t)
 def tod(i, n):
     """getroffen zurücktaumeln, in die Knie sacken, nach hinten fallen, liegen bleiben (letztes Bild)"""
     t = i / (n - 1); fall = spur([(0, 0.0), (0.3, 0.08), (0.65, 0.6), (0.9, 1.0), (1, 1.0)], t); knick = spur([(0, 0.0), (0.3, 1.0), (0.65, 0.7), (1, 0.15)], t)
@@ -325,7 +352,8 @@ def tod(i, n):
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
               "angriff_axt": (angriff_axt, 8, 12, False, {"treffer": 5}), "angriff_dolch": (angriff_dolch, 7, 18, False, {"treffer": 3}),
-              "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7})}
+              "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7}),
+              "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()
@@ -351,6 +379,17 @@ if "angriff2h" in bpy.data.actions and "griff2" in bpy.data.objects:
     luecke = []
     for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
     print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
+zw = next((bpy.data.objects["griff2." + t["id"]] for t in AUS["starr"] if t.get("zweihand")), None)   # genau der Griff der beidhändigen Waffe (andere Griffpunkte heißen griff2, griff2.001 …)
+for name, welche in (AUS.get("linke_hand_am_griff") or {}).items():
+    if zw is None or name not in bpy.data.actions: continue
+    a = bpy.data.actions[name]; arm.animation_data.action = a; n = int(a["bilder"]); bilder = range(n) if welche == "alle" else [b for b in welche if b < n]
+    ik = PB["unterarm.L"].constraints.new("IK"); ik.target = zw; ik.chain_count = 2; gemerkt = {}
+    for i in bilder: sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt[i] = (PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy())
+    PB["unterarm.L"].constraints.remove(ik)
+    for i, (mo, mu) in gemerkt.items(): sc.frame_set(i + 1); PB["oberarm.L"].matrix = mo; bpy.context.view_layer.update(); PB["unterarm.L"].matrix = mu; bpy.context.view_layer.update(); schluessel({"oberarm.L", "unterarm.L"}, i + 1)
+    luecke = []
+    for i in gemerkt: sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - zw.matrix_world.translation).length * 100)
+    print(f"linke Hand am Griff ({name}): größter Abstand Handgelenk – Griff {max(luecke):.1f} cm"); a["griffluecke_cm"] = max(luecke)
 bpy.ops.object.mode_set(mode="OBJECT"); arm.animation_data.action = bpy.data.actions["ruhe"]; sc.frame_set(1)
 arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
 bpy.ops.wm.save_as_mainfile(filepath=zieldatei); print("geschrieben:", zieldatei)

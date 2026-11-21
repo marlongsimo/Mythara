@@ -1,0 +1,322 @@
+{
+  "hinweis": "Orin, der Kopfgeldjäger (Testfigur, Held Waldläufer). Gleiches Skelett wie Krieger, Bandit, NPC und Elara. Schwere Armbrust in der rechten Hand (Pistolengriff), die linke Hand am Vorderschaft; Jagdmesser und Wurfaxt als Wechselwaffen der rechten Hand; der Bogen ist gebaut, braucht aber eigene Bewegungen (vorbereitet).",
+  "bewegungen": [
+    "ruhe",
+    "laufen",
+    "zielen",
+    "schiessen",
+    "nachladen",
+    "angriff_dolch",
+    "angriff_axt",
+    "treffer",
+    "ausweichen",
+    "tod"
+  ],
+  "haltung": "armbrust",
+  "exklusiv": true,
+  "linke_hand_am_griff": {
+    "ruhe": "alle",
+    "laufen": "alle",
+    "zielen": "alle",
+    "schiessen": "alle",
+    "nachladen": [
+      0,
+      7
+    ]
+  },
+  "starr": [
+    {
+      "id": "waffe.armbrust",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.armbrust/v001/quelle/armbrust.glb",
+      "griff": 0.55,
+      "griff2_ort": [
+        -0.08,
+        0,
+        0.02
+      ],
+      "zweihand": true,
+      "angriff": "schiessen"
+    },
+    {
+      "id": "waffe.jagdmesser",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.jagdmesser/v001/quelle/jagdmesser.glb",
+      "griff": 0.17,
+      "griff2": 0.05,
+      "angriff": "angriff_dolch"
+    },
+    {
+      "id": "waffe.wurfaxt",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.wurfaxt/v001/quelle/wurfaxt.glb",
+      "griff": 0.2,
+      "griff2": 0.05,
+      "angriff": "angriff_axt"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.guertel.orin",
+      "platz": "guertel",
+      "bild": "guertel",
+      "farbe": "ton",
+      "dicke": 0.03,
+      "bereich": [
+        [
+          "bauch",
+          0,
+          0.4
+        ],
+        [
+          "becken",
+          0.3,
+          0.6
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.arm.orin",
+      "platz": "hand",
+      "bild": "armschienen",
+      "farbe": "ton",
+      "dicke": 0.02,
+      "bereich": [
+        [
+          "unterarm.L",
+          0.55,
+          1
+        ],
+        [
+          "unterarm.R",
+          0.55,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.fuss.stiefel.orin",
+      "platz": "fuss",
+      "bild": "stiefel",
+      "farbe": "ton",
+      "dicke": 0.018,
+      "bereich": [
+        [
+          "unterschenkel.L",
+          0.55,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.55,
+          1
+        ],
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.ruecken.umhang.orin",
+      "platz": "ruecken",
+      "bild": "kapuze",
+      "farbe": "ton",
+      "dicke": 0.026,
+      "hinten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.35
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.35
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.brust.wams.orin",
+      "platz": "brust",
+      "bild": "wams",
+      "farbe": "ton",
+      "dicke": 0.022,
+      "bereich": [
+        [
+          "brust",
+          0,
+          0.85
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          0.35
+        ],
+        [
+          "oberarm.L",
+          0,
+          0.5
+        ],
+        [
+          "oberarm.R",
+          0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.bein.hose.orin",
+      "platz": "bein",
+      "bild": "hose",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.6
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.6
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schulter.fell.orin",
+      "platz": "schulter",
+      "bild": "umhang",
+      "farbe": "ton",
+      "dicke": 0.032,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "brust",
+          0.6,
+          1
+        ],
+        [
+          "hals",
+          0,
+          0.7
+        ],
+        [
+          "oberarm.L",
+          0,
+          0.45
+        ],
+        [
+          "oberarm.R",
+          0,
+          0.45
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.hals.tuch.orin",
+      "platz": "hals",
+      "bild": "halstuch",
+      "farbe": "ton",
+      "dicke": 0.026,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "hals",
+          0,
+          1
+        ],
+        [
+          "brust",
+          0.85,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.kopf.kapuze.orin",
+      "platz": "kopf",
+      "bild": "kapuze",
+      "farbe": "ton",
+      "dicke": 0.024,
+      "ueberlage": true,
+      "gesicht_frei": true,
+      "wahlfrei": true,
+      "bereich": [
+        [
+          "kopf",
+          0,
+          1
+        ],
+        [
+          "hals",
+          0.5,
+          1
+        ]
+      ]
+    }
+  ],
+  "vorbereitet": [
+    {
+      "id": "waffe.bogen.orin",
+      "glb": "waffe.bogen.orin/v001/quelle/bogen.glb",
+      "plan": "Bogen in der linken Hand – braucht eigene Bewegungen (Pfeil ziehen, spannen, lösen); gebaut, noch nicht angehängt"
+    }
+  ]
+}
