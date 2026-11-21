@@ -60,8 +60,8 @@ try {
   await anna.fill("#ez-chat input", "Hallo Waldmark"); await anna.press("#ez-chat input", "Enter");
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark"), null, { timeout: 5000 }).catch(() => {});
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark" && m.von === "Anna")), "Ben liest Annas Nachricht im Chat");
-  check(await ben.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "…und sieht sie als Sprechblase über Anna");
-  check(await anna.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "Anna sieht ihre eigene Sprechblase");
+  check(await ben.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "…und sieht sie als Sprechblase über Anna");
+  check(await anna.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "Anna sieht ihre eigene Sprechblase");
   check(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark")), "Der Gast liest mit");
   /* der Gast schreibt nicht */
   await gast.fill("#ez-chat input", "Ich bin ein Gast"); await gast.press("#ez-chat input", "Enter"); await gast.waitForTimeout(800);
@@ -72,7 +72,7 @@ try {
   await anna.click('.tafel.spieler [data-t="fl"]'); await anna.fill("#ez-chat input", "Nur für dich"); await anna.press("#ez-chat input", "Enter");
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Nur für dich"), null, { timeout: 5000 }).catch(() => {}); await gast.waitForTimeout(500);
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich" && m.kanal === "fluestern" && m.an === "Ben")), "Ben erhält Annas Flüstern");
-  check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
+  check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
   /* Gast geht */
   await gast.close(); await anna.waitForFunction(() => window.EZW.spieler().length === 1, null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => window.EZW.spieler().length) === 1, "Geht der Gast, verschwindet er bei Anna");

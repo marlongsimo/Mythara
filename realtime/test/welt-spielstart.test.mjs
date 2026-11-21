@@ -13,7 +13,7 @@ const seite = async (adr) => { const p = await b.newPage({ viewport: { width: 12
 
 { const { p, f } = await seite("?server=");
   await p.evaluate(() => { try { localStorage.removeItem("ez_welt_pos"); } catch { /* */ } }); await p.reload({ waitUntil: "load" });
-  await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1200);
+  await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1200);
   const z = await p.evaluate(() => ({ szene: window.EZW.szene.scene.key, titel: document.querySelector("#ez-titel b").textContent, unter: document.querySelector("#ez-titel small").textContent, ort: { ...window.EZW.ort() }, menue: document.querySelectorAll("#ez-menue button, #ez-menue [data-zeichen], #ez-menue > *").length, stadt: Boolean(window.EZD) }));
   check(z.szene === "welt" && !z.stadt, `Spielstart ohne Zusatz: die Welt-Szene (${z.szene}), nicht das gemalte Bild`);
   check(z.titel === "Waldmark" && z.unter === "Die Zuflucht der Wanderer", `Banner „${z.titel} – ${z.unter}“`);
@@ -38,7 +38,7 @@ const seite = async (adr) => { const p = await b.newPage({ viewport: { width: 12
   check(f.length === 0, f.length ? "Fehler: " + f.slice(0, 3).join(" | ") : "keine Fehler im Browser"); await p.close(); }
 
 { /* Riss über das Menü: Heldenwahl erscheint; nach der Wahl startet der Kampf */
-  const { p, f } = await seite("?server="); await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
+  const { p, f } = await seite("?server="); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
   await p.evaluate(() => { window.EZW.szene.gesperrt = false; }); const riss = await p.$("#ez-menue [data-art=riss], #ez-menue .riss"); 
   if (riss) await riss.click(); else await p.evaluate(() => { const k = [...document.querySelectorAll("#ez-menue button")].find((b) => /Riss/.test(b.textContent || b.title || "")); if (k) k.click(); });
   await p.waitForTimeout(800); const wahl = await p.evaluate(() => { const w = document.querySelector("#ez-wahl"); return Boolean(w && !w.hidden && getComputedStyle(w).display !== "none"); });
@@ -46,7 +46,7 @@ const seite = async (adr) => { const p = await b.newPage({ viewport: { width: 12
   check(f.length === 0, f.length ? "Fehler: " + f.slice(0, 3).join(" | ") : "keine Fehler beim Riss"); await p.close(); }
 
 { /* Rückkehr aus einer Kampagne */
-  const { p, f } = await seite("?von=tor&server="); await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1200);
+  const { p, f } = await seite("?von=tor&server="); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1200);
   const z = await p.evaluate(() => ({ ort: { ...window.EZW.ort() }, region: window.EZW.szene.hier, adresse: location.search }));
   check(z.region === "waldweg" && Math.hypot(z.ort.x - O - 48, z.ort.y - O - 66.5) < 1, `?von=tor: vor dem Südtor auf dem Waldweg (${(z.ort.x - O).toFixed(1)} | ${(z.ort.y - O).toFixed(1)}), Zusatz aus der Adresse entfernt (${z.adresse || "leer"})`);
   check(f.length === 0, "keine Fehler"); await p.close(); }

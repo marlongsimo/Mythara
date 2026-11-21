@@ -33,7 +33,7 @@ async function lauf(name, kontext, tempo, bremse) {
   const b = await chromium.launch(), c = await b.newContext(kontext), p = await c.newPage(), fehler = [];
   p.on("pageerror", (e) => fehler.push(e.message)); p.on("console", (m) => { if (m.type() === "error") fehler.push(m.text()); });
   if (bremse) await p.route("**/welt/*", async (r) => { await new Promise((ok) => setTimeout(ok, bremse)); await r.continue(); });
-  await p.goto(ADR, { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
+  await p.goto(ADR, { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
   const start = await p.evaluate(() => ({ ...window.EZW.ort() })); await p.evaluate(einrichten, tempo);
   if (bilder) { await p.waitForTimeout(6000 / tempo); await p.screenshot({ path: `${bilder}/strom-${name}.png` }); }
   await p.waitForFunction(() => window.MESS.fertig, null, { timeout: 240000, polling: 500 });

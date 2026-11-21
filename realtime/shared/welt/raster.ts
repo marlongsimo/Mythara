@@ -35,6 +35,11 @@ export class WeltRaster {
     for (let j = 0; j < C; j++) { const z = c.geh[j] || ""; for (let i = 0; i < C; i++) { const ch = z[i]; a[j * C + i] = ch === "." ? FREI : ch === "~" ? WASSER : FELS; } }
     this.chunks.set(schluessel(c.cx, c.cy), a); this.zuletzt = -1;
   }
+  /** Felder sperren (etwa ein geschlossenes Tor), Lage in Rechenfeldern der Welt; gilt für schon geladene Chunks */
+  sperren(x0: number, y0: number, x1: number, y1: number): void {
+    for (let j = Math.floor(y0); j < Math.ceil(y1); j++) for (let i = Math.floor(x0); i < Math.ceil(x1); i++) { const cx = Math.floor(i / C), cy = Math.floor(j / C), a = this.chunks.get(schluessel(cx, cy)); if (a) a[(j - cy * C) * C + (i - cx * C)] = FELS; }
+    this.zuletzt = -1;
+  }
   weg_damit(cx: number, cy: number): void { this.chunks.delete(schluessel(cx, cy)); this.zuletzt = -1; }
   hat(cx: number, cy: number): boolean { return this.chunks.has(schluessel(cx, cy)); }
   get anzahl(): number { return this.chunks.size; }

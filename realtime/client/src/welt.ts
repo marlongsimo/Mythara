@@ -116,7 +116,7 @@ interface Figur { sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb
 /** Mitspieler darstellen: f = Bildmaßstab der Szenenkoordinaten, gross = Körperhöhe am Bildschirm, tiefe = Zeichentiefe zu einer y-Koordinate */
 export class Mitspieler {
   figuren = new Map<number, Figur>();
-  constructor(private scene: Phaser.Scene, private o: { f: number; gross: number; tiefe: (y: number) => number; auslassen?: (name: string) => boolean; karte?: { breit: number; hoch: number } }) {}
+  constructor(private scene: Phaser.Scene, private o: { f: number; gross: number; tiefe: (y: number) => number; auslassen?: (name: string) => boolean; karte?: { breit: number; hoch: number }; /** Verschiebung in Bildpunkten (offene Welt: Ursprung der Region) */ versatz?: { x: number; y: number } }) {}
   /** Welcher Mitspieler liegt unter dem Zeiger? (Liste der getroffenen Objekte, z. B. aus input.hitTestPointer) */
   unter(treffer: Phaser.GameObjects.GameObject[]): Fremder | null { for (const f of this.figuren.values()) if (treffer.includes(f.sp)) return f.d; return null; }
   /** Sprechblase über einem Mitspieler */
@@ -127,13 +127,13 @@ export class Mitspieler {
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) this.weg(id); }
   weg(id: number): void { const f = this.figuren.get(id); if (!f) return; f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); this.figuren.delete(id); const u = document.querySelector(`#ez-karte u[data-sp="${id}"]`); if (u) u.remove(); }
   private neu(d: Fremder): Figur { const D = HELDEN[d.h] || HELDEN.schildwaechter, fu = D.fuss || [0.5, 0.94], s = this.scene;
-    const sp = heldenFigur(s, d.x * this.o.f, d.y * this.o.f, d.h, this.o.gross).setOrigin(fu[0], fu[1]); sp.setScale(this.o.gross * (D.gross || 1) / sp.height); sp.setInteractive({ useHandCursor: true });
+    const v = this.o.versatz || { x: 0, y: 0 }, sp = heldenFigur(s, d.x * this.o.f + v.x, d.y * this.o.f + v.y, d.h, this.o.gross).setOrigin(fu[0], fu[1]); sp.setScale(this.o.gross * (D.gross || 1) / sp.height); sp.setInteractive({ useHandCursor: true });
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#f3e3b5", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
     if (D.lauf && !s.anims.exists("lauf-" + d.h)) s.anims.create({ key: "lauf-" + d.h, frames: s.anims.generateFrameNumbers("lauf-" + d.h, {}), frameRate: 11, repeat: -1 });
     const f: Figur = { sp, nm, lb: s.add.graphics().setDepth(99979), d, x: d.x, y: d.y, laeuft: false, held: d.h }; this.figuren.set(d.i, f); return f; }
   /** Jeden Frame: weich zur gemeldeten Stelle, Namensschild mit Stufe, Lebensbalken wenn verletzt oder im Kampf */
   schritt(dt: number): void { for (const f of this.figuren.values()) { const d = f.d, D = HELDEN[f.held] || HELDEN.schildwaechter, k = Math.min(1, dt * 10);
-    f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k; const x = f.x * this.o.f, y = f.y * this.o.f, g = this.o.gross;
+    f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k; const v = this.o.versatz || { x: 0, y: 0 }, x = f.x * this.o.f + v.x, y = f.y * this.o.f + v.y, g = this.o.gross;
     f.sp.setPosition(x, y + 3).setDepth(this.o.tiefe(f.y)); richten(f.sp, Math.cos(d.b), Math.sin(d.b)); if (Math.abs(Math.cos(d.b)) > 0.25) f.sp.setFlipX(Math.cos(d.b) < 0);
     const l = Boolean(d.l); if (l !== f.laeuft && D.lauf) { f.laeuft = l; if (l) { const L = D.laufMass || [0.5, 0.946, 0.91]; f.sp.play("lauf-" + f.held); f.sp.setOrigin(L[0], L[1]).setScale(g / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; f.sp.stop(); f.sp.setTexture("figur-" + f.held); f.sp.setOrigin(fu[0], fu[1]).setScale(g * (D.gross || 1) / f.sp.height); } }
     const text = d.s ? `${d.n} · St. ${d.s}` : d.n; if (f.nm.text !== text) f.nm.setText(text); f.nm.setPosition(x, y - g - 12);

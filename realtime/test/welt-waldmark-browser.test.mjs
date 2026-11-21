@@ -10,7 +10,7 @@ let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t
 const ADR = "http://localhost:8765/echtzeit/?welt=waldmark&server=", O = 6400; /* Ursprung der Waldmark in Rechenfeldern */
 const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1280, height: 800 } }), fehler = [];
 p.on("pageerror", (e) => fehler.push(e.message));
-await p.goto(ADR + "&neu=1", { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
+await p.goto(ADR + "&neu=1", { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
 
 /* Bei jedem Bild: Sprünge der Position, fehlender Boden im Bild, Region */
 await p.evaluate(() => { const s = window.EZW.szene, k = s.cameras.main, m = window.M = { bilder: 0, sprung: 0, luecke: 0, regionen: new Set(), laden: 0 }; let alt = null;
@@ -53,7 +53,7 @@ check(Boolean(baum) && baumAlpha < 0.6, `hinter einem Baum wird seine Krone durc
 
 /* Gemerkte Stelle */
 await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6430.5; s.ort.y = 6440.5; }); await p.waitForTimeout(2600);
-await p.goto(ADR, { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(500);
+await p.goto(ADR, { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(500);
 const da = await p.evaluate(() => ({ ...window.EZW.ort() })); check(Math.hypot(da.x - 6430.5, da.y - 6440.5) < 0.05, `nach dem Neuladen an derselben Stelle (${(da.x - O).toFixed(2)} | ${(da.y - O).toFixed(2)})`);
 check(fehler.length === 0, fehler.length ? "Fehler im Browser: " + fehler.slice(0, 3).join(" | ") : "keine Fehler im Browser");
 await b.close(); console.log(ok ? "\nWaldmark im Browser: alles in Ordnung" : "\nWaldmark im Browser: FEHLER"); process.exit(ok ? 0 : 1);
