@@ -31,6 +31,7 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Waffe "griff2_ort": [x,y,z] Ort der zweiten Hand im Raum der Waffe (Armbrust: unter dem Vorderschaft); sonst auf der Achse ("griff2")
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
+  Hülle "seiten_frei": true  seitlich gerichtete Flächen auslassen (Flanken unter anliegenden Armen)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
   "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
@@ -217,6 +218,7 @@ for t in AUS["huelle"]:
     if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
     if t.get("vorn"): wahl &= NORM[:, 1] < -0.15                                                    # nur die Vorderseite (Schürze)
     if t.get("hinten"): wahl &= NORM[:, 1] > 0.15                                                   # nur die Rückseite (Umhang)
+    if t.get("seiten_frei"): wahl &= np.abs(NORM[:, 0]) < 0.6                                        # Flanken unter den Armen frei lassen (dicke Arme liegen dort an)
     if AUS.get("eigenanteil"): wahl &= sum(GW[b] for b in {bone for bone, _, _ in t["bereich"]}) >= AUS["eigenanteil"]
     ARM = [b.name for b in KN if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]
     if not any(bone in ARM for bone, _, _ in t["bereich"]): wahl &= sum(GW[b] for b in ARM) < 0.3          # nennt die Hülle keinen Armknochen, gehören Arm und Hand nicht dazu (herabhängende Hände an der Hüfte)

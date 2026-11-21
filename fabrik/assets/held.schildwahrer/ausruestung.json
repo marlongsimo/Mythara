@@ -128,23 +128,9 @@
           "bauch",
           0,
           1
-        ],
-        [
-          "becken",
-          0,
-          1
-        ],
-        [
-          "oberarm.L",
-          0,
-          0.7
-        ],
-        [
-          "oberarm.R",
-          0,
-          0.7
         ]
-      ]
+      ],
+      "seiten_frei": true
     }
   ],
   "gelenke": "v002/quelle/gelenke.json",
@@ -163,9 +149,9 @@
           "knochen": "oberarm.L",
           "lage": 0.05,
           "versatz": [
-            0.02,
+            0.05,
             0,
-            0.035
+            0.03
           ]
         },
         {
@@ -173,9 +159,9 @@
           "knochen": "oberarm.R",
           "lage": 0.05,
           "versatz": [
-            -0.02,
+            -0.05,
             0,
-            0.035
+            0.03
           ],
           "spiegeln": true
         }
