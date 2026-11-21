@@ -67,7 +67,7 @@ try {
   await gast.fill("#ez-chat input", "Ich bin ein Gast"); await gast.press("#ez-chat input", "Enter"); await gast.waitForTimeout(800);
   check(!(await anna.evaluate(() => window.EZW.chat().some((m) => m.text === "Ich bin ein Gast"))) && await gast.evaluate(() => window.EZW.chat().some((m) => m.kanal === "system" && /Konto/.test(m.text))), "Gäste können nicht schreiben (Hinweis auf das Konto)");
   /* Flüstern über die Spielerliste */
-  await anna.keyboard.press("p"); await anna.waitForSelector(".tafel.spielerliste", { timeout: 5000 }); await anna.click('.tafel.spielerliste button:has-text("Ben")');
+  await anna.evaluate(() => document.activeElement.blur()); await anna.keyboard.press("p"); await anna.waitForSelector(".tafel.spielerliste", { timeout: 5000 }); await anna.click('.tafel.spielerliste button:has-text("Ben")');
   await anna.waitForSelector(".tafel.spieler", { timeout: 5000 }); check(/Stufe 2/.test(await anna.textContent(".tafel.spieler")), "Spielerkarte zeigt Bens Stufe und Helden");
   await anna.click('.tafel.spieler [data-t="fl"]'); await anna.fill("#ez-chat input", "Nur für dich"); await anna.press("#ez-chat input", "Enter");
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Nur für dich"), null, { timeout: 5000 }).catch(() => {}); await gast.waitForTimeout(500);

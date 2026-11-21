@@ -15,7 +15,7 @@ const { chromium } = require('playwright'); let f = 0; const ok = (b, t) => { co
   await p.keyboard.press('2'); await p.waitForTimeout(300); ok(await p.evaluate(() => window.EZ.zustand().ich.cdQ) > 0, 'Taste 2 löst Fähigkeit 1 (Q) aus');
   /* Stadt */
   await p.goto('http://localhost:8765/echtzeit/?server='); await p.waitForTimeout(4000);
-  ok(await p.$$eval('#ez-kartenrahmen .rknoepfe small', (l) => l.map((x) => x.textContent).join(',')) === 'Weltkarte,Teleport,Quests', 'Waldmark: Weltkarte · Teleport · Quests unter der runden Karte');
+  ok(await p.$$eval('#ez-kartenrahmen .rknoepfe small', (l) => l.map((x) => x.textContent).join(',')) === 'Weltkarte,Teleport,Quests,Spieler,Held', 'Waldmark (alles freigeschaltet): Weltkarte · Teleport · Quests · Spieler · Held unter der runden Karte');
   await p.click('#ez-menue [aria-label=Ausrüstung]'); ok(await p.isVisible('.tafel.taschen .puppe'), 'Waldmark: Ausrüstung über das Menü'); await p.keyboard.press('Escape');
   await p.click('#ez-kartenrahmen [aria-label=Weltkarte]'); await p.waitForTimeout(500); ok(await p.isVisible('#ez-welt'), 'Weltkarte über den Knopf an der Minikarte');
   ok(err.length === 0, 'keine Fehler ' + err.join(' | ')); await b.close(); process.exit(f ? 1 : 0); })();
