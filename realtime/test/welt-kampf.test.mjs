@@ -88,9 +88,10 @@ try {
   check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.z.w.filter((e) => e[3] !== 0).length === 4), "Ein Gast ohne Konto kämpft auch – der Browser rechnet (ohne Gutschrift)");
   /* Torvald mit erhobenem Schild: Block im Stehen, Gang mit Schild (Figur aus der Fabrik) */
   await gast.goto(B + S + "&wx=6448&wy=6470"); await bereit(gast); await gast.waitForTimeout(800); /* abseits der Banditen: im Kampf kann ein Angriff den Waffenwechsel kurz sperren */
-  const haltung = () => gast.evaluate(() => window.EZW.szene.figur.zustand); await gast.keyboard.press(" "); await gast.waitForTimeout(700);
-  const h1 = await haltung(); await gast.keyboard.down("s"); await gast.waitForTimeout(600); const h2 = await haltung(); await gast.keyboard.up("s"); await gast.waitForTimeout(500);
-  await gast.keyboard.press(" "); await gast.waitForTimeout(700); const h3 = await haltung();
+  const haltung = () => gast.evaluate(() => window.EZW.szene.figur.zustand), warteAuf = (z) => gast.waitForFunction((zz) => window.EZW.szene.figur.zustand === zz, z, { timeout: 3000 }).catch(() => {});
+  await gast.keyboard.press(" "); await warteAuf("block"); const h1 = await haltung();
+  await gast.keyboard.down("s"); await warteAuf("schild_laufen"); const h2 = await haltung(); await gast.keyboard.up("s"); await warteAuf("block"); await gast.waitForTimeout(500);
+  await gast.keyboard.press(" "); await warteAuf("ruhe"); const h3 = await haltung();
   check(h1 === "block" && h2 === "schild_laufen" && h3 === "ruhe", `Schild (Leertaste): Torvald blockt (${h1}), geht mit Schild (${h2}), danach wieder normal (${h3})`);
   check(fehlerSeite.length === 0, "Keine Fehler im Browser" + (fehlerSeite.length ? ": " + fehlerSeite.join(" | ") : ""));
 } catch (e) { console.error(e); fehler++; }
