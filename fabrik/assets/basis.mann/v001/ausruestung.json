@@ -38,7 +38,7 @@
       "platz": "hemd",
       "bild": "hemd",
       "farbe": "#8c6f4c",
-      "dicke": 0.018,
+      "dicke": 0.022,
       "unten": true,
       "bereich": [
         [
@@ -83,7 +83,7 @@
       "platz": "hose",
       "bild": "hose",
       "farbe": "#4b3526",
-      "dicke": 0.024,
+      "dicke": 0.035,
       "unten": true,
       "bereich": [
         [
