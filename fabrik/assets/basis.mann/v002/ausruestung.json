@@ -162,7 +162,38 @@
   "stuecke_behalten": true,
   "luecken_schliessen": true,
   "huelle": [],
-  "teilnetze": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.militaer",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.militaer.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.undercut_bun",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.undercut_bun.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.zerzaust.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zopf_eng",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.zopf_eng.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.scheitel",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.scheitel.glb",
+      "wahlfrei": true
+    }
+  ],
   "waffenklassen": {
     "hinweis": "Jede Waffe gehört zu einer Klasse; alle Waffen einer Klasse nutzen dieselben Bewegungen und Griffpunkte. Neue Waffe = nur ihre Ebene rendern (baukasten.py), keine neue Bewegung.",
     "einhand": "rechte Hand, Griff am Handballen: stich (dazu ruhe, gehen, laufen, tod)",
@@ -173,5 +204,40 @@
     "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
     "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
+  },
+  "frisuren": {
+    "hinweis": "Wählbare Frisuren (Platz „haar“). Glatze = keine Haar-Ebene (Standard). Gebaut mit fabrik/frisuren.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618]; andere Haarfarbe: neu bauen oder farbvariante.py.",
+    "auswahl": [
+      {
+        "id": "glatze",
+        "name": "Glatze",
+        "ebene": null
+      },
+      {
+        "id": "militaer",
+        "name": "Kurzhaar Militär",
+        "ebene": "kopf.haar.militaer"
+      },
+      {
+        "id": "undercut_bun",
+        "name": "Undercut mit Bun am Hinterkopf",
+        "ebene": "kopf.haar.undercut_bun"
+      },
+      {
+        "id": "zerzaust",
+        "name": "Mittellang zerzaust",
+        "ebene": "kopf.haar.zerzaust"
+      },
+      {
+        "id": "zopf_eng",
+        "name": "Lange Haare, Zopf eng am Hinterkopf gebunden",
+        "ebene": "kopf.haar.zopf_eng"
+      },
+      {
+        "id": "scheitel",
+        "name": "Mittellanger Scheitel",
+        "ebene": "kopf.haar.scheitel"
+      }
+    ]
   }
 }

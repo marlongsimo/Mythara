@@ -1,0 +1,41 @@
+{
+  "id": "kopf.haar.herren",
+  "name": "Frisuren Mann",
+  "kategorie": "teil",
+  "platz": "haar",
+  "fuer": "basis.mann/v002",
+  "frisuren": {
+    "glatze": {
+      "name": "Glatze",
+      "stil": null,
+      "datei": null
+    },
+    "militaer": {
+      "name": "Kurzhaar Militär",
+      "stil": "militaer",
+      "datei": "teile/kopf.haar.militaer.glb"
+    },
+    "undercut_bun": {
+      "name": "Undercut mit Bun am Hinterkopf",
+      "stil": "undercut_bun",
+      "datei": "teile/kopf.haar.undercut_bun.glb"
+    },
+    "zerzaust": {
+      "name": "Mittellang zerzaust",
+      "stil": "zerzaust",
+      "datei": "teile/kopf.haar.zerzaust.glb"
+    },
+    "zopf_eng": {
+      "name": "Lange Haare, Zopf eng am Hinterkopf gebunden",
+      "stil": "zopf_eng",
+      "datei": "teile/kopf.haar.zopf_eng.glb"
+    },
+    "scheitel": {
+      "name": "Mittellanger Scheitel",
+      "stil": "scheitel",
+      "datei": "teile/kopf.haar.scheitel.glb"
+    }
+  },
+  "verfahren": "fabrik/frisuren.py (stilisierte Strähnen-Cluster auf dem kahlen Kopf, Farbe #3b2618) · Vorschau: fabrik/frisuren_blatt.py",
+  "quelle_alt": "quelle/ und referenz/: frühere Versuche (Meshy-Modelle, Frisurenbögen) – nicht mehr verwendet"
+}

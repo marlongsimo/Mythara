@@ -24,7 +24,9 @@ cam = bpy.data.objects.new("c", bpy.data.cameras.new("c")); cam.data.type = "ORT
 ziel_p = Vector((0, 0.02, 0.95 if GANZ else 1.6)); NEIGUNG = math.radians(30)
 zeilen = []
 for name, datei in frisuren:
-    vorher = set(bpy.data.objects); bpy.ops.import_scene.gltf(filepath=os.path.abspath(datei)); neu = [o for o in bpy.data.objects if o not in vorher]
+    vorher = set(bpy.data.objects)
+    if datei != "-": bpy.ops.import_scene.gltf(filepath=os.path.abspath(datei))                     # "-": ohne Frisur (Glatze)
+    neu = [o for o in bpy.data.objects if o not in vorher]
     bilder = []
     for r in range(8):
         a = math.radians(45 * r); d = Vector((math.sin(a) * math.cos(NEIGUNG), -math.cos(a) * math.cos(NEIGUNG), math.sin(NEIGUNG)))
