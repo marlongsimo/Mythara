@@ -32,6 +32,9 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
+  "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
+                             ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
+  "stil": "gemalt"           rendern.py: weiches warmes Licht mit kühlen Randlichtern, Schatten in Falten, helle Kanten (gemalter Look)
   "gelenke": "gelenke.json"  Gelenkorte aus einer Datei (neben der Liste) statt aus der Form geschätzt – Kenney-Körper (kenney_figur.py)
   "arm_radius": 0.1          Rückfallweg der Gewichtung: Armknochen bewegen nur Punkte bis zu diesem Abstand (m) – gegen Flügel aus Robe und Umhang
   "eigenanteil": 0.6         eine Hülle nimmt nur Punkte, die zu mindestens diesem Anteil von ihren eigenen Knochen bewegt werden (sonst falten sich
@@ -225,6 +228,33 @@ for t in AUS["huelle"]:
     m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei"))
     if t["platz"] not in volumen and not t.get("ueberlage"): volumen[t["platz"]] = o; o["volumen"] = True                    # das erste Teil je Platz steht beim Rendern für den Raum, den dieser Platz einnimmt
     print("Hülle:", t["id"], "Platz", t["platz"], "·", len(m2.vertices), "Punkte")
+
+# ---- Anbauteile (anbau.py): Rüstungsteile mit Volumen, fest an ihren Knochen (Waffenrock: vom Becken zu den Oberschenkeln überblendet); beide Seiten bilden eine Ebene
+for nr, t in enumerate(AUS.get("anbau", [])):
+    stuecke = []
+    for tl in t["teile"]:
+        o = laden(tl["glb"], t["id"] + "." + tl["knochen"]); kb = KN[tl["knochen"]]; ort = kb.head_local.lerp(kb.tail_local, tl.get("lage", 0.0)) + Vector(tl.get("versatz", (0, 0, 0)))
+        if tl.get("spiegeln"): o.data.transform(Matrix.Scale(-1, 4, (1, 0, 0))); o.data.flip_normals()
+        R = (Vector((0, 0, 1)).rotation_difference((kb.tail_local - kb.head_local).normalized()).to_matrix().to_4x4()) if tl.get("ausrichten") else Matrix.Identity(4)
+        if tl.get("flaeche"):                                                                     # auf die Körperoberfläche setzen: vorn (kleinstes y) oder außen (größtes |x|) im Band um den Ansatzpunkt
+            band = P[(np.abs(P[:, 2] - ort.z) < 0.04) & (np.abs(P[:, 0] - ort.x) < 0.09)]
+            if len(band) and tl["flaeche"] == "vorn": ort.y = float(band[:, 1].min()) - tl.get("abstand", 0.012)
+            if len(band) and tl["flaeche"] == "aussen": ort.x = float(band[:, 0].max() if ort.x > 0 else band[:, 0].min()) + math.copysign(tl.get("abstand", 0.012), ort.x)
+        o.data.transform(Matrix.Translation(ort) @ R); o.matrix_world = Matrix.Identity(4)
+        g = o.vertex_groups.new(name=tl["knochen"]); Q = [v.co.copy() for v in o.data.vertices]
+        if tl.get("verlauf"):                                                                     # oben am Knochen, unten zu gleichen Teilen an den genannten Knochen (Stoff schwingt mit den Beinen)
+            z1 = max(q.z for q in Q); z0 = min(q.z for q in Q); gs = [o.vertex_groups.new(name=b) for b in tl["verlauf"]]
+            for v in o.data.vertices:
+                f = min(1.0, max(0.0, (z1 - v.co.z) / max(1e-4, z1 - z0))) ** 1.2; g.add([v.index], 1 - f, "REPLACE")
+                for gg in gs: gg.add([v.index], f / len(gs), "REPLACE")
+        else: g.add([v.index for v in o.data.vertices], 1.0, "REPLACE")
+        stuecke.append(o)
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in stuecke: o.select_set(True)
+    bpy.context.view_layer.objects.active = stuecke[0]; bpy.ops.object.join(); o = bpy.context.object; o.name = t["id"]
+    m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 100 + nr; o["ueberlage"] = True; o["wahlfrei"] = bool(t.get("wahlfrei")); o["anbau"] = True
+    print("Anbau:", t["id"], "Platz", t["platz"], "·", len(stuecke), "Stücke,", len(o.data.vertices), "Punkte")
 
 # ====================================================== 4. Bewegungen ======================================================
 bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode="POSE"); PB = arm.pose.bones
@@ -485,5 +515,5 @@ for name, welche in (AUS.get("linke_hand_am_griff") or {}).items():
     for i in gemerkt: sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - zw.matrix_world.translation).length * 100)
     print(f"linke Hand am Griff ({name}): größter Abstand Handgelenk – Griff {max(luecke):.1f} cm"); a["griffluecke_cm"] = max(luecke)
 bpy.ops.object.mode_set(mode="OBJECT"); arm.animation_data.action = bpy.data.actions["ruhe"]; sc.frame_set(1)
-arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
+arm["stil"] = AUS.get("stil", ""); arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
 bpy.ops.wm.save_as_mainfile(filepath=zieldatei); print("geschrieben:", zieldatei)
