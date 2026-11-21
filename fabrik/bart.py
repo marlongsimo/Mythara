@@ -2,13 +2,13 @@
 
   python3 fabrik/bart.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618] [nase=0.077] [mund=0.059] [kinn=0.024] [saat=1]
 
-stil   stoppeln | vollbart | kinnbart | schnurrbart | wikinger
+stil   stoppeln | vollbart | hufeisen | schnurrbart | wikinger   (kinnbart = hufeisen)
 Gesichtsmaße als Höhe über dem Kopfgelenk (m): nase = Nasenunterkante, mund = Mundspalte, kinn = Kinnunterkante (am Grundmann v002 gemessen).
 Aufbau: das Untergesicht wird fein unterteilt, eine weich begrenzte Maske je Stil ausgeschnitten und als Bartschale um die Bartdicke abgehoben
 (am Rand dünn auslaufend, keine gezackte Kante). Längere Bärte bekommen zusätzlich Strähnen-Cluster (abgeflachte, spitz zulaufende Bänder).
-  stoppeln     Dreitagebart: Wangen, Kinn, Oberlippe, unter dem Kiefer – nur ein dunkler Schimmer, 1 mm
+  stoppeln     Dreitagebart: Wangen, Kinn, Oberlippe, unter dem Kiefer – nur ein leichter Schatten auf der Haut
   vollbart     kurzer gepflegter Vollbart mit Schnurrbart, 6–10 mm, Wangenlinie klar
-  kinnbart     Kinnbart mit Schnurrbart, Wangen frei (Goatee)
+  hufeisen     Hufeisen-Schnurrbart: über der Oberlippe und an den Mundwinkeln senkrecht bis unter das Kinn, Kinnmitte frei
   schnurrbart  kräftiger Schnurrbart, an den Mundwinkeln etwas herabgezogen
   wikinger     langer Vollbart, am Kinn in Strähnen bis auf die Brust
 Ergebnis: ein Teilnetz für rig.py (Platz „bart“, Gewichte vom Grundkörper).
@@ -54,21 +54,24 @@ voll = weich(0.003, -0.003, z - wangenlinie) * vorn * unter_kiefer * (~mund) * (
 oberlippe = weich(0.0045, 0.006, z - ZM) * weich(0.002, -0.002, z - (ZN - 0.002)) * weich(0.034, 0.028, ax) * (y < KY - 0.02)
 mundwinkel = weich(0.022, 0.026, ax) * weich(0.036, 0.031, ax) * weich(ZM - 0.01, ZM - 0.006, z) * weich(ZM + 0.009, ZM + 0.004, z)   # an den Mundwinkeln etwas herabgezogen
 kinn = weich(0.03, 0.022, ax) * weich(ZK - 0.012, ZK - 0.004, z) * weich(ZM - 0.006, ZM - 0.009, z) * (y < KY - 0.01)
+vorne_y = np.array([(lambda h: h[0].y if h[0] is not None else KY)(bvh.ray_cast(Vector((CX, -0.5, zz)), Vector((0, 1, 0)), 1.0)) for zz in z])   # Gesichtsvorderseite je Höhe
+mitte_streifen = 0.03 + 0.12 * np.clip(ZM - z, 0, None)                                             # Hufeisen: Streifen von den Mundwinkeln leicht nach außen abwärts
+hufeisen = weich(0.0095, 0.0065, np.abs(ax - mitte_streifen)) * weich(ZK - 0.03, ZK - 0.02, z) * weich(ZM + 0.009, ZM + 0.004, z) * weich(0.045, 0.035, y - vorne_y)   # nur vorn am Kinn (bis 2,5 cm hinter der Kinnvorderseite), nicht den Kiefer entlang
 S = STIL
-if S == "stoppeln": maske, dick = voll, 0.0011
+if S == "stoppeln": maske, dick = voll, 0.0004
 elif S == "vollbart": maske, dick = voll, 0.007
-elif S == "kinnbart": maske, dick = np.maximum(kinn, oberlippe), 0.006
+elif S in ("kinnbart", "hufeisen"): maske, dick = np.maximum(hufeisen, oberlippe), 0.006
 elif S == "schnurrbart": maske, dick = np.maximum(oberlippe, mundwinkel), 0.006
 elif S == "wikinger": maske, dick = voll, 0.01
 else: sys.exit(f"unbekannter Bart: {S}")
 maske = glatt(maske.astype(float), 3); behalten = maske > 0.5
 rand = glatt(behalten.astype(float), 6); innen = np.clip((rand - 0.5) * 2, 0, 1)                    # 0 am Rand, 1 innen
 dicke = 0.0006 + dick * innen ** 0.7
-if S in ("vollbart", "wikinger", "kinnbart"): dicke *= 1 + 0.6 * weich(ZM - 0.01, ZK, z)            # zum Kinn hin voller
+if S in ("vollbart", "wikinger"): dicke *= 1 + 0.6 * weich(ZM - 0.01, ZK, z)            # zum Kinn hin voller
 korn = glatt(rng.random(n), 1)
 if S == "stoppeln":
-    farbe = FARBE * 0.12 + np.array([0.66, 0.48, 0.38]) ** 2.2 * 0.88                                 # Haut mit Bartschatten
-    C = np.tile(farbe, (n, 1)) * (0.92 + 0.16 * korn[:, None]); C = C * (1 - 0.15 * innen[:, None]) + (FARBE * 0.6) * 0.15 * innen[:, None]
+    farbe = FARBE * 0.7 + np.array([0.3, 0.2, 0.15]) ** 2.2 * 0.3                                 # Haut mit Bartschatten
+    C = np.tile(farbe, (n, 1)) * (0.92 + 0.16 * korn[:, None]); C = C * (1 - 0.1 * innen[:, None]) + (FARBE * 0.6) * 0.1 * innen[:, None]
 else:
     ritz = 0.5 + 0.5 * np.sin(x * 900 + np.sin(z * 400) * 1.5)                                         # senkrechte Bartstruktur
     C = FARBE[None, :] * (0.7 + 0.35 * ritz[:, None] + 0.15 * korn[:, None]) * (0.75 + 0.25 * innen[:, None])
@@ -133,5 +136,9 @@ o = bpy.data.objects.new("bart", netz); bpy.context.collection.objects.link(o); 
 netz.color_attributes.active_color = netz.color_attributes["Col"]; netz.color_attributes.render_color_index = netz.color_attributes.active_color_index
 m = bpy.data.materials.new("bart"); m.use_nodes = True; nt = m.node_tree; vc = nt.nodes.new("ShaderNodeVertexColor"); vc.layer_name = "Col"; b_ = nt.nodes["Principled BSDF"]
 nt.links.new(vc.outputs[0], b_.inputs["Base Color"]); b_.inputs["Roughness"].default_value = 0.65; netz.materials.append(m); bpy.ops.object.shade_smooth()
+if S == "stoppeln":                                                                                  # Dreitagebart: halbdurchsichtiger Schatten über der Haut (Hautfarbe und Licht bleiben sichtbar)
+    b_.inputs["Alpha"].default_value = float(opt.get("deckung", 0.32))
+    try: m.blend_method = "BLEND"
+    except Exception: pass
 bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_vertex_color="MATERIAL", export_all_vertex_colors=False)
 print(f"Bart {S}: {int(behalten.sum())} Punkte Schale · {len(strang)} Strähnen · geschrieben {ziel}")

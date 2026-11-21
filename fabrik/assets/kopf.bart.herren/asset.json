@@ -20,10 +20,10 @@
       "stil": "vollbart",
       "datei": "teile/kopf.bart.vollbart.glb"
     },
-    "kinnbart": {
-      "name": "Kinnbart mit Schnurrbart",
-      "stil": "kinnbart",
-      "datei": "teile/kopf.bart.kinnbart.glb"
+    "hufeisen": {
+      "name": "Hufeisen-Schnurrbart",
+      "stil": "hufeisen",
+      "datei": "teile/kopf.bart.hufeisen.glb"
     },
     "schnurrbart": {
       "name": "Schnurrbart",

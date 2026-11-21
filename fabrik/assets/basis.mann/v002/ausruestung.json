@@ -206,9 +206,9 @@
       "wahlfrei": true
     },
     {
-      "id": "kopf.bart.kinnbart",
+      "id": "kopf.bart.hufeisen",
       "platz": "bart",
-      "glb": "kopf.bart.herren/teile/kopf.bart.kinnbart.glb",
+      "glb": "kopf.bart.herren/teile/kopf.bart.hufeisen.glb",
       "wahlfrei": true
     },
     {
@@ -289,9 +289,9 @@
         "ebene": "kopf.bart.vollbart"
       },
       {
-        "id": "kinnbart",
-        "name": "Kinnbart mit Schnurrbart",
-        "ebene": "kopf.bart.kinnbart"
+        "id": "hufeisen",
+        "name": "Hufeisen-Schnurrbart",
+        "ebene": "kopf.bart.hufeisen"
       },
       {
         "id": "schnurrbart",
