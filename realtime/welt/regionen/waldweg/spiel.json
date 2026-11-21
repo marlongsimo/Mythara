@@ -1,72 +1,98 @@
 {
  "start": [
   [
-   48,
+   112,
    2.5
   ],
   [
-   47,
+   111,
    1.5
   ],
   [
-   49,
+   113,
    1.5
   ]
  ],
- "figuren": [
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
   {
-   "id": "wanderer_am_weg",
-   "rolle": "npc",
-   "figur": "wanderer",
-   "x": 33,
-   "y": 29.4
+   "id": "stamm_west_ansehen",
+   "art": "lesen",
+   "x": 23.6,
+   "y": 47.65,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter."
+   }
+  },
+  {
+   "id": "stamm_ost_ansehen",
+   "art": "lesen",
+   "x": 232.4,
+   "y": 43.91,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter."
+   }
+  },
+  {
+   "id": "stamm_sued_ansehen",
+   "art": "lesen",
+   "x": 107.09,
+   "y": 171,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter."
+   }
+  },
+  {
+   "id": "lichtung_ansehen",
+   "art": "lesen",
+   "x": 210,
+   "y": 122,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine weite, stille Lichtung mitten im Wald. Das Gras steht hoch, dazwischen blühen Wildblumen."
+   }
   }
  ],
- "spawnzonen": [
-  {
-   "id": "kroeten_lichtung",
-   "zone": {
-    "art": "kreis",
-    "x": 66,
-    "y": 49.5,
-    "r": 3
-   },
-   "gegner": [
-    {
-     "art": "schlammkroete",
-     "anzahl": 2
-    },
-    {
-     "art": "kroetchen",
-     "anzahl": 1
-    }
-   ],
-   "aggro": 7,
-   "leine": 16,
-   "respawn": 180,
-   "abgleich": "server"
-  }
- ],
- "interaktionen": [],
- "ausgaenge": [
-  {
-   "id": "nach_weidenhain",
-   "zone": {
-    "art": "rechteck",
-    "x0": 42,
-    "y0": 62.6,
-    "x1": 50,
-    "y1": 64
-   },
-   "nach": {
-    "art": "ort",
-    "ort": "weidenhain"
-   },
-   "text": "Weiter nach Weidenhain"
-  }
- ],
+ "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 21.2,
+    "y0": 0,
+    "x1": 22.8,
+    "y1": 192
+   },
+   {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 172,
+    "x1": 256,
+    "y1": 173.2
+   },
+   {
+    "art": "rechteck",
+    "x0": 233.2,
+    "y0": 0,
+    "x1": 234.8,
+    "y1": 95
+   },
+   {
+    "art": "rechteck",
+    "x0": 233.2,
+    "y0": 93.4,
+    "x1": 256,
+    "y1": 95
+   }
+  ],
   "freigeben": []
  }
 }

@@ -1,14 +1,14 @@
 {
  "id": "waldweg",
- "name": "Der Waldweg",
- "untertitel": "Von der Waldmark nach Weidenhain",
+ "name": "Der Kreuzwald",
+ "untertitel": "Steinwege nach Westen und Osten, ein Feldweg nach Süden",
  "ursprung": [
-  200,
+  198,
   202
  ],
  "chunks": [
-  3,
-  2
+  8,
+  6
  ],
  "biom": "wald",
  "stufe": 1

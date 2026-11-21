@@ -2658,6 +2658,739 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baumstamm_01",
+   "name": "Umgestürzter Baum (quer)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_01.webp",
+   "groesse": [
+    520,
+    196
+   ],
+   "anker": [
+    0.5596,
+    0.8776
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -4.9,
+    "y": -0.9,
+    "b": 9.8,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
+  },
+  {
+   "id": "wald_baumstamm_02",
+   "name": "Umgestürzter Baum (in die Tiefe)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_02.webp",
+   "groesse": [
+    300,
+    600
+   ],
+   "anker": [
+    0.32,
+    0.9133
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.7,
+    "y": -9,
+    "b": 1.4,
+    "h": 9
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": false,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_kornspeicher_01",
+   "name": "Kornspeicher von Weidenhain",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/gesamt.webp",
+   "groesse": [
+    762,
+    703
+   ],
+   "anker": [
+    0.4896,
+    0.8586
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -4,
+      "x1": 4,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -6.6,
+      "x1": -3.9999999999999996,
+      "y0": -4.0,
+      "y1": -0.4,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.7999999999999999,
+      "x1": 2.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      276
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      178,
+      216
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      560,
+      209
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      177,
+      446
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      324,
+      470
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      324,
+      422
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      153,
+      215
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schuppen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      183,
+      278
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vorn.webp",
+     "tiefe": -0.4,
+     "rolle": "vorn",
+     "versatz": [
+      59,
+      474
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_dach.webp",
+     "tiefe": -0.1,
+     "rolle": "dach",
+     "versatz": [
+      43,
+      261
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vordach.webp",
+     "tiefe": 0.8,
+     "rolle": "vordach",
+     "versatz": [
+      38,
+      472
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.8,
+     "x1": 3.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    213,
+    666,
+    633
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "weidenhain_bauernhaus_01",
+   "name": "Bauernhaus (Fachwerk)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/gesamt.webp",
+   "groesse": [
+    545,
+    631
+   ],
+   "anker": [
+    0.3962,
+    0.8425
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3,
+      "x1": 3,
+      "y0": -4.2,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.375,
+      "x1": 1.425,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      250
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_innen.webp",
+     "tiefe": -4.18,
+     "rolle": "innen",
+     "versatz": [
+      68,
+      197
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_seite.webp",
+     "tiefe": -4.17,
+     "rolle": "seite",
+     "versatz": [
+      355,
+      190
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      68,
+      388
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      223,
+      430
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      223,
+      396
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      44,
+      130
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vordach.webp",
+     "tiefe": 1.0,
+     "rolle": "vordach",
+     "versatz": [
+      195,
+      400
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.0,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    47,
+    133,
+    449,
+    570
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "weidenhain_muehle_01",
+   "name": "Wassermühle",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/gesamt.webp",
+   "groesse": [
+    614,
+    669
+   ],
+   "anker": [
+    0.4932,
+    0.852
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4.6,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -5.2,
+      "x1": -2.5,
+      "y0": -3.8000000000000003,
+      "y1": -0.6,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.1500000000000004,
+      "x1": -1.05,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      264
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_innen.webp",
+     "tiefe": -4.58,
+     "rolle": "innen",
+     "versatz": [
+      179,
+      202
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_seite.webp",
+     "tiefe": -4.57,
+     "rolle": "seite",
+     "versatz": [
+      418,
+      195
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      161,
+      317
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      189,
+      466
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      189,
+      432
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      155,
+      74
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "anbau_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_seite.webp",
+     "tiefe": -3.77,
+     "rolle": "seite",
+     "versatz": [
+      187,
+      235
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_vorn.webp",
+     "tiefe": -0.6,
+     "rolle": "vorn",
+     "versatz": [
+      59,
+      417
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_dach.webp",
+     "tiefe": -0.3,
+     "rolle": "dach",
+     "versatz": [
+      43,
+      218
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -4.3999999999999995,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    46,
+    77,
+    518,
+    644
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_festfeuer_01",
+   "name": "Erntefeuer",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_festfeuer_01.webp",
+   "groesse": [
+    200,
+    190
+   ],
+   "anker": [
+    0.5,
+    0.9684
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -1.4,
+    "b": 3.0,
+    "h": 1.3
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 2.2
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_steinring_01",
+   "name": "Steinring (Baumbeet)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_steinring_01.webp",
+   "groesse": [
+    260,
+    150
+   ],
+   "anker": [
+    0.5,
+    0.88
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.2,
+    "y": -2.3,
+    "b": 4.4,
+    "h": 2.2
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "dorf_wehr_01",
+   "name": "Wehr",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_wehr_01.webp",
+   "groesse": [
+    380,
+    170
+   ],
+   "anker": [
+    0.5,
+    0.7294
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -3.6,
+    "y": -1.0,
+    "b": 7.2,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 2.0
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_zaun_01",
+   "name": "Holzzaun",
+   "kategorie": "bauteil",
+   "bild": "img/welt/gebaeude/dorf_zaun_01.webp",
+   "groesse": [
+    110,
+    70
+   ],
+   "anker": [
+    0.5,
+    0.8857
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.3,
+    "b": 2.0,
+    "h": 0.3
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_kuerbisse_01",
+   "name": "Kürbisse",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_kuerbisse_01.webp",
+   "groesse": [
+    120,
+    80
+   ],
+   "anker": [
+    0.5,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.5,
+    "b": 2.0,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }

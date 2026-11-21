@@ -1,6 +1,6 @@
 /*
  * Mythara Echtzeit – Prüfung der Waldmark im Browser (Szene „Welt“): ruhiger Lauf ohne Sprünge, Nachladen an Chunk- und Regionsgrenzen,
- * Übergang durch das Südtor auf den Waldweg, Transparenz von Bäumen und Häusern, gemerkte Stelle nach dem Neuladen.
+ * Übergang durch das Südtor in den Kreuzwald, Transparenz von Bäumen und Häusern, gemerkte Stelle nach dem Neuladen.
  * Vorher (im Ordner realtime): node werkzeug/welt/bauen.mjs waldmark waldweg && node build.mjs; im Hauptordner: node tools/testserver.js
  * Aufruf: node test/welt-waldmark-browser.test.mjs
  */
@@ -25,11 +25,11 @@ const geh = async (x, y, text) => { await p.evaluate(([x, y]) => window.EZW.gehe
   const o = await p.evaluate(() => ({ ...window.EZW.ort() })); const d = Math.hypot(o.x - O - x, o.y - O - y); check(d < 1.6, `${text}: angekommen (${d.toFixed(1)} Felder vom Ziel)`); return o; };
 /* Rundgang: Brunnen → Taverne → Schmiede → Heldenhalle → Tor → Waldweg → zurück */
 const tueren = await p.evaluate(() => { const s = window.EZW.szene, a = []; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) a.push(i); return a; });
-for (const id of ["taverne_tuer", "schmiede_tuer", "halle_tuer", "brunnen_ansehen", "tor_ansehen"]) { const t = tueren.find((a) => a.id === id); if (!t) { check(false, id + " fehlt"); continue; }
+for (const id of ["taverne_tuer", "schmiede_tuer", "halle_tuer", "brunnen_ansehen"]) { const t = tueren.find((a) => a.id === id); if (!t) { check(false, id + " fehlt"); continue; }
   await geh(t.x - O, t.y - O, `zur Interaktion ${id}`); await p.waitForTimeout(250);
   const knopf = await p.evaluate(() => { const k = document.querySelector("#ez-dorf-knopf"); return k.hidden ? "" : k.textContent; }); check(/Ansehen|betreten|Weltkarte|kommt noch/.test(knopf), `${id}: der Knopf erscheint („${knopf.replace(/\s+\[E\]$/, "").trim()}“)`); }
-await geh(54, 64 + 22, "durchs Südtor auf den Waldweg");
-const titel = await p.evaluate(() => document.querySelector("#ez-titel b").textContent); check(titel === "Der Waldweg", `Region gewechselt, ohne die Seite neu zu laden (Titel „${titel}“)`);
+await geh(48, 64 + 22, "durchs Südtor in den Kreuzwald");
+const titel = await p.evaluate(() => document.querySelector("#ez-titel b").textContent); check(titel === "Der Kreuzwald", `Region gewechselt, ohne die Seite neu zu laden (Titel „${titel}“)`);
 await geh(48, 37.5, "zurück zum Brunnen");
 const m = await p.evaluate(() => ({ ...window.M, regionen: [...window.M.regionen] }));
 check(m.sprung === 0, `ruhiger Lauf über ${m.bilder} Bilder: keine Sprünge der Position (${m.sprung})`);

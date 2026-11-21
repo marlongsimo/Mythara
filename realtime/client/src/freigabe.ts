@@ -4,9 +4,9 @@
  */
 export const FREIGABE = {
   /** Kampagnen (Weidenhain, Rabenmoor …) über Stadttor und Weltkarte */ kampagnen: false,
-  /** der Waldweg nach Weidenhain mit der Lichtung (gemeinsame Kampfwelt) */ waldweg: false,
+  /** der Waldweg nach Weidenhain mit der Lichtung (Kampagnen-Strecke, gemeinsame Kampfwelt) */ waldweg: false,
+  /** das Südtor der Waldmark: dahinter der offene Kreuzwald (Steinwege, Feldweg, Lichtung) – seit 21.11.2026 offen */ suedtor: true,
   /** der Riss in der Waldmark (Dungeon) */ riss: true,
-  /** das Südtor der Waldmark: dahinter der Kreuzwald mit der Lichtung */ suedtor: true,
 };
 const alles = (() => { try { return localStorage.getItem("ez__alles") === "1"; } catch { return false; } })();
 export const frei = (k: keyof typeof FREIGABE): boolean => alles || FREIGABE[k];
