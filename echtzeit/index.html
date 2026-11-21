@@ -20,6 +20,13 @@
     .leiste { display: flex; align-items: center; gap: 6px; } .leiste > b { width: 14px; flex: none; text-align: center; font-size: 13px; line-height: 1; } .leiste .herz { color: #e8473f; text-shadow: 0 0 6px rgba(232,71,63,.6); } .leiste .stern { color: #8fd8ff; text-shadow: 0 0 6px rgba(143,216,255,.6); }
     .leiste .ez-balken { position: relative; flex: 1; height: 16px; border-radius: 3px; background: #120c08; border: 1px solid #5d4517; box-shadow: inset 0 1px 3px #000; } .leiste .ez-balken u { border-radius: 2px; background: linear-gradient(#7fe08a, #3f9a4a); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); transition: width .25s; }
     .leiste .ez-balken small { position: absolute; inset: 0; display: grid; place-items: center; font: 600 11px Inter, sans-serif; color: #fff; text-shadow: 0 1px 2px #000, 0 0 3px #000; white-space: nowrap; } .leiste .ez-balken.xp { height: 13px; margin: 0; } .leiste .ez-balken.xp u { background: linear-gradient(#6aa5ff, #2f5fb0); }
+    /* Kampfregeln v1 (eigener Held): drei Skill-Balken unter den Lebenspunkten, nur die Taste „Angreifen“ */
+    #ez-skills { display: grid; gap: 3px; } #ez-skills[hidden] { display: none; }
+    #ez-skills .skill { display: grid; grid-template-columns: 62px 1fr 22px; align-items: center; gap: 6px; }
+    #ez-skills .skill b { font: 600 10.5px Cinzel, Georgia, serif; color: #f1dfb4; text-shadow: 0 1px 0 #000; }
+    #ez-skills .skill .ez-balken { height: 7px; } #ez-skills .skill .lv { font: 700 11px Cinzel, Georgia, serif; color: #fff3d2; text-align: right; }
+    #ez-skills .staerke u { background: linear-gradient(#ff9a7a, #c2412a) !important; } #ez-skills .geschick u { background: linear-gradient(#b6f08a, #4f9a2c) !important; } #ez-skills .magie u { background: linear-gradient(#b9b0ff, #5a4ad6) !important; }
+    body.kampf-v1 #ez-tasten button[data-taste=q], body.kampf-v1 #ez-tasten button[data-taste=e], body.kampf-v1 #ez-tasten button[data-taste=r], body.kampf-v1 #ez-modus { display: none !important; }
     #ez-xpleiste.plus .ez-balken.xp { animation: ezxp .7s ease-out; } @keyframes ezxp { 0% { box-shadow: 0 0 0 0 #b9d4ff; } 30% { box-shadow: 0 0 10px 2px #b9d4ff; } 100% { box-shadow: 0 0 0 0 transparent; } } #ez-xpleiste[hidden] { display: none; }
     .ez-balken { display: block; height: 8px; background: #2a2636; border-radius: 4px; overflow: hidden; } .ez-balken u { display: block; height: 100%; background: #5fd08a; }
     /* Begleiter: eingerückt unter dem eigenen Helden */
@@ -444,9 +451,9 @@
     #ez-titel.ein { animation: ez-titel-ein .6s ease-out both; } #ez-titel.weg { opacity: 0 !important; transition: opacity .9s ease-in; }
     @keyframes ez-titel-ein { from { opacity: 0; } to { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) { #ez-titel.ein { animation: none; } #ez-titel.weg { transition: none; } }
-    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Amulett oben, Waffe links, Brust Mitte, Nebenhand rechts */
-    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: ". amulett ." "waffe brust nebenhand"; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
-    .tafel.eigen .p-amulett { grid-area: amulett; } .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
+    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Waffe links, Brust Mitte, Nebenhand rechts */
+    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: "waffe brust nebenhand"; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
+    .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
     .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 150px; }
     .tafel.eigen .ifeld { position: relative; display: grid; place-items: center; width: 100%; height: 108px; padding: 0; cursor: default; border-radius: 8px; color: #8a7448;
       background: radial-gradient(rgba(70,54,32,.75), rgba(16,12,8,.95)); border: 1px solid #6a5232; box-shadow: inset 0 0 12px #000; }
@@ -468,7 +475,7 @@
     t.textContent = s[Math.floor(Math.random() * s.length)]; })();</script>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
-  <div class="ez-kasten" id="ez-ich"><span class="bild"><img id="ez-ich-bild" alt=""><em id="ez-ich-stufe" hidden></em></span><div class="werte"><b id="ez-name">…</b><span class="leiste"><b class="herz">♥</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u><small id="ez-lpzahl"></small></i></span><span class="leiste" id="ez-xpleiste" hidden><b class="stern">✦</b><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u><small id="ez-xpzahl"></small></i></span></div></div>
+  <div class="ez-kasten" id="ez-ich"><span class="bild"><img id="ez-ich-bild" alt=""><em id="ez-ich-stufe" hidden></em></span><div class="werte"><b id="ez-name">…</b><span class="leiste"><b class="herz">♥</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u><small id="ez-lpzahl"></small></i></span><span class="leiste" id="ez-xpleiste" hidden><b class="stern">✦</b><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u><small id="ez-xpzahl"></small></i></span><span id="ez-skills" hidden></span></div></div>
   <div id="ez-gefolge"></div><button type="button" id="ez-frage" aria-label="Hilfe" title="Steuerung">?</button>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
@@ -489,6 +496,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwr0xr2i"></script>
+  <script src="spiel.js?v=mwr24v23"></script>
 </body>
 </html>
