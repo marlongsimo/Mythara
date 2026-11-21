@@ -158,8 +158,8 @@ def stellung(becken_x=0.0, kopf_x=0.0, kiefer=0.0, zunge=1.0, vorn=0.0, hinten=0
        vorn/hinten: Beine vor- (−) oder zurück (+) schwingen (Grad); rolle: um die Längsachse rollen (Tod); schlaff: Beine strecken sich zur Seite"""
     dreh("becken", (Y, rolle), (X, becken_x)); dreh("rumpf"); dreh("kopf", (X, kopf_x)); dreh("kiefer", (X, kiefer)); dreh("zunge"); PB["zunge"].scale = (1, zunge, 1)
     for S, sx in (("L", 1), ("R", -1)):
-        dreh("oberarm." + S, (X, vorn), (Y, -sx * schlaff * 0.6)); dreh("unterarm." + S, (X, -vorn * 0.5)); dreh("hand." + S, (X, -vorn * 0.3))
-        dreh("oberschenkel." + S, (X, hinten), (Y, -sx * schlaff)); dreh("unterschenkel." + S, (X, -hinten * 0.6)); dreh("fuss." + S, (X, hinten * 0.2))
+        dreh("oberarm." + S, (X, vorn), (Y, sx * schlaff * 0.6)); dreh("unterarm." + S, (X, -vorn * 0.5)); dreh("hand." + S, (X, -vorn * 0.3))
+        dreh("oberschenkel." + S, (X, hinten), (Y, sx * schlaff)); dreh("unterschenkel." + S, (X, -hinten * 0.6)); dreh("fuss." + S, (X, hinten * 0.2))
 
 def ruhe(i, n):
     s = math.sin(2 * math.pi * i / n); stellung(becken_x=-1.0 * s, kopf_x=0.8 * s, kiefer=0.0); hoch(0.008 * H * (1 + s))   # atmen: der Rumpf hebt und senkt sich, der Kopf nickt mit
@@ -180,8 +180,10 @@ def zunge(i, n):
 def tod(i, n):
     """getroffen zusammenzucken (Kopf hoch, Maul auf), dann flach zusammensacken: Beine spreizen sich zur Seite, Kopf sinkt auf den Boden, die Zunge hängt heraus"""
     t = i / (n - 1); fall = spur([(0, 0.0), (0.25, 0.0), (0.75, 1.0), (1, 1.0)], t)
-    stellung(becken_x=spur([(0, 0.0), (0.25, -10.0), (0.75, 6.0), (1, 6.0)], t), kopf_x=spur([(0, 0.0), (0.25, -14.0), (0.75, 18.0), (1, 20.0)], t), kiefer=spur([(0, 0.0), (0.25, 28.0), (0.75, 16.0), (1, 16.0)], t),
-             zunge=spur([(0, 1.0), (0.5, 1.0), (1, 2.8)], t), schlaff=55 * fall, vorn=-20 * fall, hinten=25 * fall)
+    # Endpose durch Messung gefunden (fabrik: Figurhöhe über viele Stellungen minimiert): die Hinterbeine liegen in Ruhe nach vorn gefaltet und strecken sich beim Zusammensacken
+    # nach vorn-außen, die Vorderbeine nach vorn – so sinkt der Bauch auf den Boden (Höhe ≈ 0.8 der Ruhe)
+    stellung(becken_x=spur([(0, 0.0), (0.25, -12.0), (0.75, -10.0), (1, -10.0)], t), kopf_x=spur([(0, 0.0), (0.25, -14.0), (0.75, 8.0), (1, 8.0)], t), kiefer=spur([(0, 0.0), (0.25, 28.0), (0.75, 16.0), (1, 16.0)], t),
+             zunge=spur([(0, 1.0), (0.5, 1.0), (1, 2.8)], t), schlaff=35 * fall, vorn=-80 * fall, hinten=-70 * fall)
 
 ALLE = {"ruhe": (ruhe, 6, 6, True, {}), "springen": (springen, 8, 10, True, {"sprung": [3, 4]}), "zunge": (zunge, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7})}
 BEWEGUNGEN = {k: v for k, v in ALLE.items() if k in T.get("bewegungen", list(ALLE))}

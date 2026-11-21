@@ -105,3 +105,11 @@ Torvald (`schildwaechter`) ist seit dem 21.11.2026 die modulare Figur `held.krie
 - Im Spiel: `realtime/client/src/modulfigur.ts` (auf `feature/realtime-engine`). Welche Helden modular sind, steht dort in `MODUL`. Das Modul übersetzt die bisherigen Aufrufe (Laufbilder, Standbild, Hieb, Schild) in die Bewegungen der Fabrik und wählt aus der Blickrichtung eine von acht Zeilen.
 - Ein weiterer Held: Figur bauen und rendern, mit `spiel_export.py` ausgeben, in `MODUL` eintragen, Client bauen.
 
+
+## Tiere (Vierbeiner): Riesenkröte
+
+`rig_tier.py <koerper.glb> <figur-roh.blend> <tier.json>` baut ein Vierbeiner-Skelett (Füße = tiefste äußere Punkte je Viertel), gewichtet (Wärmeverteilung, sonst nach Abstand),
+setzt einen Mundraum in den Kopf und eine Zunge an und legt die Bewegungen aus `tier.json` an (`ruhe`, `springen`, `zunge`, `tod`).
+Danach wie bei Menschen: `boden.py` (Flugbilder eines Sprungs – `sprung` in den Metadaten – bleiben in der Luft), `rendern.py`, `packen.py`, `pruefung.py`, `vorschau-gif.py`.
+Die Prüfung verlangt bei Tieren: Flugbilder ≥ 10 cm über dem Boden, alle anderen Bilder ±1 cm am Boden, am Ende des Todes höchstens 85 % der Anfangshöhe.
+In der Testszene ist `springen` die Fortbewegung, wenn die Figur kein `laufen` hat, und J spielt den eigenen Angriff (die Bewegung mit Trefferbild, hier `zunge`).

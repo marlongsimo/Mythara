@@ -90,7 +90,7 @@ for name, sichtbar, schneider in laeufe:
     for o in teile: o.hide_render = not (o is sichtbar or o in schneider); o.is_holdout = o in schneider
     for a in aktionen:
         datei = os.path.join(ziel, f"{name}.{a.name}.webp")
-        if os.path.exists(datei) and not NUR: continue
+        if os.path.exists(datei) and not NUR and os.path.getmtime(datei) > os.path.getmtime(quelle): continue   # nur Blätter wiederverwenden, die neuer sind als die Figur (sonst zeigen sie eine alte Fassung)
         bilder = int(a["bilder"]); arm.animation_data.action = a; blatt = Image.new("RGBA", (FELD * bilder, FELD * 8), (0, 0, 0, 0))
         for r in range(8):
             arm.rotation_euler = (0, 0, math.radians(90 - 45 * r))
