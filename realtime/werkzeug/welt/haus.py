@@ -70,6 +70,10 @@ _T = {}
 def tex(name):
     if name in _T:
         return _T[name]
+    if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt' and name in ('bretter', 'maserung', 'dachziegel'):
+        import gebaeude                     # Spielstil: die gemalten, selbst gerechneten Texturen des Gebäude-Baukastens
+        _T[name] = gebaeude.tex(name).astype(np.float32)
+        return _T[name]
     pfad = os.path.join(TEX, name + '.jpg')
     if not os.path.exists(pfad):
         sys.exit(f'Textur fehlt: {pfad} (siehe werkzeug/welt/texturen/LIESMICH.md)')
@@ -818,7 +822,7 @@ def baue(kennung):
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
         return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': P.get('tiefe', 'fuss'), **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
-                    'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
+                    'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt' or P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20
     if P['form'] == 'trauf':
         dh = P['dach']; breit = b + 2 * ue + 2 * rand + 14; hoch = rand + 14 + dh + wh + unten

@@ -35,7 +35,7 @@ WURZEL = os.path.normpath(os.path.join(REALTIME, '..'))
 BIB = os.path.join(REALTIME, 'welt', 'bibliothek')
 ZIEL = os.path.join(WURZEL, 'img', 'welt', 'gebaeude', 'raeumlich')
 F, K = 48, 2
-STIL = os.environ.get('MYTHARA_STIL', '')   # 'gemalt': handgemalter Stil (Probe, passend zu den Heldenbildern), sonst wie bisher
+STIL = os.environ.get('MYTHARA_STIL', 'gemalt')   # Standard seit 21.11.2026: 'gemalt' (Spielstil der Heldenbilder); 'alt' = bisherige Fotostruktur, sonst wie bisher
 KX = 0.32                          # Scherung: so viele Felder nach Osten je Feld Tiefe – macht die Ostwände sichtbar
 TIEFE_SCHATTEN = -1000.0           # Kennwert für die Schattenebene: liegt immer am Boden
 
@@ -662,7 +662,7 @@ def main():
     for n in namen:
         plan = plaene[n]
         ebenen, (ox, oy, b, h) = baue(plan)
-        ordner = os.path.join(ZIEL + ('_' + STIL if STIL else ''), n); os.makedirs(ordner, exist_ok=True)
+        ordner = os.path.join(ZIEL + ('' if STIL == 'gemalt' else '_' + STIL), n); os.makedirs(ordner, exist_ok=True)
         gesamt = Image.new('RGBA', (b, h), (0, 0, 0, 0)); liste = []
         for name, B, tiefe, rolle, ki, ti in ebenen:
             im = B.fertig(malen=rolle not in ('schatten', 'innen'))
@@ -686,11 +686,11 @@ def main():
                    'anker': [round(ox / b, 4), round(oy / h, 4)], 'massstab': 1, 'kollision': kollision(plan), 'tiefe': 'fuss',
                    'ebenen': liste, 'raum': raum, 'tueren': tueren, 'sichtbar': sichtbar,
                    'interaktion': ({'art': plan.get('interaktion', 'tuer'), 'dx': tueren[0]['x'], 'dy': tueren[0]['y'], 'radius': 1.4} if tueren else None),
-                   'herkunft': 'erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
+                   'herkunft': 'erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar' if STIL == 'gemalt' else 'erzeugt von werkzeug/welt/gebaeude.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
         bib['objekte'] = [o for o in bib['objekte'] if o['id'] != n] + [eintrag]
         bilder.append(gesamt)
         print(f'  {n}: {b} × {h} px, {len(liste)} Ebenen, {len(tueren)} Türen, {len(raum)} begehbare Räume')
-    if not STIL:                     # Stilproben schreiben nur Bilder, die Bibliothek bleibt unberührt
+    if STIL == 'gemalt':             # nur der Standardstil schreibt die Bibliothek; andere Stile sind Proben
         with open(os.path.join(BIB, 'objekte.json'), 'w', encoding='utf8') as f:
             json.dump(bib, f, ensure_ascii=False, indent=1); f.write('\n')
     if vorschau:
