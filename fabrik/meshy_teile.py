@@ -77,19 +77,15 @@ def herauslösen(name):
 stuecke = {n: herauslösen(n) for n in FARBE if (teil == n).any()}
 for n, o in stuecke.items(): export(o, os.path.join(ziel, n + ".glb")); print(f"Teil {n}: {len(o.data.vertices)} Punkte")
 
-# ---- 3. Grundkörper: ohne Umhang und Waffenrock, geschlossen, neu vernetzt, leicht nach innen
+# ---- 3. Grundkörper: das Originalnetz ohne Umhang und Waffenrock (Meshy hat unter dem Umhang einen Rücken), kleine Löcher geschlossen,
+#      leicht nach innen gezogen, damit es unter allen Teilen liegt. Kein Neuvernetzen: das macht aus offenen Netzen eine doppelte Schale.
 g = ob.copy(); g.data = ob.data.copy(); g.name = "koerper"; bpy.context.collection.objects.link(g); bm = bmesh.new(); bm.from_mesh(g.data); bm.faces.ensure_lookup_table()
-KOPF_Z = 1.48                                                                                    # der Kopf bleibt das Originalnetz (Gesicht!), nur der Rest wird neu vernetzt
-bmesh.ops.delete(bm, geom=[f for f in bm.faces if teil[f.index] in ("umhang", "waffenrock") or C[f.index][2] >= KOPF_Z], context="FACES")
-bmesh.ops.holes_fill(bm, edges=bm.edges, sides=0); bm.to_mesh(g.data); bm.free()
-bpy.ops.object.select_all(action="DESELECT"); g.select_set(True); bpy.context.view_layer.objects.active = g
-r = g.modifiers.new("neu", "REMESH"); r.mode = "VOXEL"; r.voxel_size = float(opt.get("voxel", 0.012)); bpy.ops.object.modifier_apply(modifier="neu")
-s = g.modifiers.new("glatt", "SMOOTH"); s.factor = 0.6; s.iterations = 4; bpy.ops.object.modifier_apply(modifier="glatt")
-for v in g.data.vertices: v.co -= v.normal * float(opt.get("einzug", 0.012))
-h = ob.copy(); h.data = ob.data.copy(); bpy.context.collection.objects.link(h); bm = bmesh.new(); bm.from_mesh(h.data); bm.faces.ensure_lookup_table()
-bmesh.ops.delete(bm, geom=[f for f in bm.faces if C[f.index][2] < KOPF_Z - 0.03], context="FACES"); bm.normal_update()
-for v in bm.verts: v.co -= v.normal * 0.005                                                        # knapp unter dem Haar-Teil (sonst flimmern beide an derselben Stelle)
-bm.to_mesh(h.data); bm.free(); bpy.ops.object.select_all(action="DESELECT"); g.select_set(True); h.select_set(True); bpy.context.view_layer.objects.active = g; bpy.ops.object.join()
+bmesh.ops.delete(bm, geom=[f for f in bm.faces if teil[f.index] in ("umhang", "waffenrock")], context="FACES")
+bmesh.ops.holes_fill(bm, edges=bm.edges, sides=int(opt.get("loch", 40))); bm.normal_update()
+einzug = float(opt.get("einzug", 0.008))
+for v in bm.verts:
+    if v.normal.length > 0.5: v.co -= v.normal * einzug
+bm.to_mesh(g.data); bm.free(); print("Grundkörper:", len(g.data.polygons), "Flächen")
 # Farben des Grundkörpers: Haut an Gesicht und Händen, Haar oben am Kopf, Leinenhemd am Oberkörper und den Armen, Hose an den Beinen
 kd = KDTree(F)
 for i, c in enumerate(C): kd.insert(c, i)
