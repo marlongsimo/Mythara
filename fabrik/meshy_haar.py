@@ -1,6 +1,6 @@
 """Mythara Fabrik – eine Meshy-Frisur (Kopf mit Haaren, ohne Textur) auf den kahlen Grundkörper setzen und als Haar-Ebene ausgeben.
 
-  python3 fabrik/meshy_haar.py <basis.blend> <meshy.glb> <ziel.glb> [farbbilder=<frisur-ordner>] [haaransatz=0.8] [mindest=0.004] [flaechen=24000]
+  python3 fabrik/meshy_haar.py <basis.blend> <meshy.glb> <ziel.glb> [farbbilder=<frisur-ordner>] [haaransatz=0.8] [mindest=0.004] [flaechen=24000] [stoppel=#rrggbb]
 
 basis.blend   Grundkörper mit Skelett (rig.py), kahl (glatze.py)
 meshy.glb     Meshy-Modell: ganzer Kopf mit Frisur in einem Stück (Gesicht nach −y, oben = +z nach dem Import)
@@ -83,7 +83,7 @@ sd = np.where(np.einsum("ij,ij->i", V - loc, nrm) > 0, dist, -dist)
 hz = (loc[:, 2] - KZ0) / KL; f, bk, sx, up = np.maximum(-nrm[:, 1], 0), np.maximum(nrm[:, 1], 0), np.abs(nrm[:, 0]), np.maximum(nrm[:, 2], 0) * 1.5
 schwelle = (ANSATZ * f + (ANSATZ - 0.25) * sx + 0.1 * bk) / (f + bk + sx + up + 1e-9)
 gesicht = (hz < schwelle) & ((nrm[:, 1] < -0.3) | (loc[:, 1] < OHR))
-kopfhaut = (hz >= schwelle) & (sd > -0.02)
+kopfhaut = (hz >= schwelle) & (sd > -0.05)                                                  # auch Kopfhaut, die im Grundkopf liegt (größerer Schädel) – sie wird unten herausgeschoben
 if NUR_HAAR: kopfhaut = np.ones(n, bool)                                                            # Modell ist schon nur die Frisur
 ragt = (sd > 0.012) & ~gesicht & (hz > -0.3)
 if NUR_HAAR: gesicht[:] = False
@@ -93,7 +93,16 @@ A = coo_matrix((np.ones(len(E) * 2), (np.r_[E[:, 0], E[:, 1]], np.r_[E[:, 1], E[
 w = nimm.astype(float)
 for _ in range(3): w = (A @ w + w) / (deg + 1)                                                      # Rand glätten, Krümel weg
 nimm = w > 0.5
-haar = (sd > 0.007) | NUR_HAAR
+if NUR_HAAR: haar = np.ones(n, bool)
+else:                                                                                               # Haar = was über der glatten Schädelform des Meshy-Kopfs selbst liegt (unabhängig vom Grundkopf)
+    sk = V[nimm & (hz > 0.3)]; c0 = np.median(sk, 0); ax = (np.percentile(sk, 95, 0) - np.percentile(sk, 5, 0)) / 2; ax[2] = sk[:, 2].max() - c0[2]
+    for _ in range(6):                                                                              # Ellipsoid an die untere Hälfte anpassen (Haut), das Haar liegt darüber
+        e_ = np.linalg.norm((sk - c0) / ax, axis=1); unten_ = sk[e_ <= np.percentile(e_, 45)]
+        A_ = np.c_[unten_ ** 2, unten_, np.ones(len(unten_))]; k_, *_ = np.linalg.lstsq(A_, np.ones(len(unten_)), rcond=None)
+        if np.all(k_[:3] > 0):
+            c0 = -k_[3:6] / (2 * k_[:3]); r2 = (1 - k_[6] + (k_[3:6] ** 2 / (4 * k_[:3])).sum()) / k_[:3]; ax = np.sqrt(np.maximum(r2, 1e-6))
+    hoehe = (np.linalg.norm((V - c0) / ax, axis=1) - 1) * ax.mean()
+    haar = hoehe > float(opt.get("haarhoehe", 0.006)); print(f"Schädel des Meshy-Kopfs: Halbachsen {np.round(ax, 3)} m · Haar ab {float(opt.get('haarhoehe', 0.006)) * 1000:.0f} mm darüber")
 hw = haar.astype(float)
 for _ in range(4): hw = (A @ hw + hw) / (deg + 1)
 print(f"Frisur: {int(nimm.sum())} von {n} Punkten · davon Haar {int((nimm & (hw > 0.5)).sum())} · größter Abstand {sd[nimm].max() * 100:.1f} cm")
@@ -108,7 +117,8 @@ if "farbbilder" in opt:
         if oben: band[z0:z0 + int(h_ * 0.35)] = True
         else: band[z1 - int(h_ * 0.25):z1 + 1] = True
         return lin(np.median(a[..., :3][m & band], 0))
-    haarfarbe, stoppel = mittel("haar_vorn.png", True), mittel("haar_hinten.png", False)
+    haarfarbe = mittel("haar_vorn.png", True)
+stoppel = stoppel * 0.6 + haarfarbe * 0.4 if "stoppel" not in opt else lin(np.array([int(opt["stoppel"][i:i + 2], 16) / 255 for i in (1, 3, 5)]))   # rasierte Kopfhaut: Haut mit etwas Haarton (heller als das Haar)
 N = np.zeros(n * 3); me.vertices.foreach_get("normal", N); N = N.reshape(-1, 3)
 nachbar = np.zeros((n, 3)); np.add.at(nachbar, E[:, 0], V[E[:, 1]]); np.add.at(nachbar, E[:, 1], V[E[:, 0]]); nachbar /= np.maximum(deg, 1)[:, None]
 mulde = np.einsum("ij,ij->i", nachbar - V, N); mulde = np.clip(mulde / (np.percentile(np.abs(mulde), 90) + 1e-9), -1, 1)   # Rillen (Mulden) dunkler, Kämme heller
@@ -134,11 +144,11 @@ for x in rest: x.select_set(True)
 bpy.context.view_layer.objects.active = rest[0]; bpy.ops.object.join() if len(rest) > 1 else None; o = bpy.context.view_layer.objects.active
 dm = o.modifiers.new("v", "DECIMATE"); dm.ratio = min(1, float(opt.get("flaechen", 24000)) / max(len(o.data.polygons), 1)); bpy.ops.object.modifier_apply(modifier="v")
 for ca_ in [c for c in o.data.color_attributes if c.name != "Col"]: o.data.color_attributes.remove(ca_)   # nur die eigene Farbebene exportieren
-o.data.color_attributes.active_color = o.data.color_attributes["Col"]
+o.data.color_attributes.active_color = o.data.color_attributes["Col"]; o.data.color_attributes.render_color_index = o.data.color_attributes.active_color_index
 m = bpy.data.materials.new("haar"); m.use_nodes = True; nt = m.node_tree; vc = nt.nodes.new("ShaderNodeVertexColor"); vc.layer_name = "Col"; b_ = nt.nodes["Principled BSDF"]
 nt.links.new(vc.outputs[0], b_.inputs["Base Color"]); b_.inputs["Roughness"].default_value = 0.6
 o.data.materials.clear(); o.data.materials.append(m); bpy.ops.object.shade_smooth()
 bpy.ops.object.select_all(action="DESELECT"); o.select_set(True)
-try: bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_vertex_color="ACTIVE", export_all_vertex_colors=True)
+try: bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_vertex_color="MATERIAL", export_all_vertex_colors=False)
 except TypeError: bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True)
 print(f"Meshy-Frisur: {len(o.data.vertices)} Punkte · geschrieben {ziel}")
