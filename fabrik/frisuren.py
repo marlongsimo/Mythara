@@ -139,13 +139,16 @@ elif STIL == "undercut_bun":                                                    
         w = np.linspace(0, 2 * np.pi * 0.92, 16); rad = 0.019 + 0.004 * rng.random()
         pts = BUN + np.array([0, 0.022, 0.0]) + np.outer(np.cos(w), u) * rad + np.outer(np.sin(w), v) * rad
         strang.append((pts, np.full(len(w), 0.013), 0.55, np.tile(ach, (len(w), 1)), 0.85 + 0.25 * rng.random()))
-elif STIL == "zerzaust":                                                                             # mittellang zerzaust: 8–12 cm, Strähnen in wechselnde Richtungen, abstehend
-    r, n = wurzeln(int(250 * DICHTE), kopfhaut, 0.0085)
+elif STIL == "zerzaust":                                                                             # mittellang zerzaust: 7–11 cm, Büschel in Gruppen mit gemeinsamer Richtung, Spitzen gezackt
+    r, n = wurzeln(int(210 * DICHTE), kopfhaut, 0.0095)
+    gruppen = {}
     for p, nn in zip(r, n):
-        zufall = rng.normal(0, 1, 3); zufall[2] = -abs(zufall[2]) * 0.5
-        kamm = (lambda zf: lambda q: kamm_vorn(q) * 0.5 + zf)(zufall)
+        g = tuple(np.round((p - MITTE) / 0.035).astype(int))                                          # benachbarte Strähnen gehören zu einem Büschel (gleiche Richtung)
+        if g not in gruppen: zf = rng.normal(0, 0.55, 3); zf[2] = -abs(zf[2]) * 0.6; gruppen[g] = zf
+        kamm = (lambda zf: lambda q: kamm_vorn(q) * 0.8 + zf)(gruppen[g])
         hinten = p[1] > MITTE[1] + 0.02
-        wachsen(p, nn, kamm, (0.11 if hinten else 0.085) * LAENGE * (0.75 + 0.5 * rng.random()), 0.45, anlage=0.03, seg=9, breite=0.024, wirr=0.35, stirn_z=KZ0 + 0.7 * KL)
+        wachsen(p, nn, kamm, (0.10 if hinten else 0.075) * LAENGE * (0.8 + 0.4 * rng.random()), 0.35, anlage=0.02, seg=8, breite=0.03, wirr=0.12, stirn_z=KZ0 + 0.7 * KL)
+        pts, br, fl, nr, h = strang[-1]; tt = np.linspace(0, 1, len(pts)); strang[-1] = (pts, 0.03 * (1 - tt ** 0.9) + 0.0008, 0.22, nr, h)   # flach und spitz (kein Wulst)
 elif STIL == "zopf_eng":                                                                             # lange Haare straff nach hinten, eng am Hinterkopf gebunden, Zopf hängt glatt herab
     BAND_P = np.array([CX, Y_HINTEN + 0.008, KZ0 + 0.42 * KL])
     r, n = wurzeln(int(240 * DICHTE), kopfhaut, 0.0085)
@@ -186,7 +189,9 @@ for pts, br, flach, nrms, h in strang:
     F.append(tuple(basis_i + j for j in range(SEITEN))[::-1]); F.append(tuple(basis_i + (nP - 1) * SEITEN + j for j in range(SEITEN)))
 # Grundschale: Kopfhaut 3 mm abgehoben, dunkel (bei undercut: Stoppeln an den Seiten, heller)
 RASIERT = {"undercut": (0.74, 0.052), "undercut_bun": (0.7, 0.055), "militaer": (0.66, 0.06)}         # Stil: (oben ab Höhe, halbe Breite) – außerhalb Stoppeln
-schale = kopfhaut if STIL not in RASIERT else (kopfhaut | ((hz_f > 0.18) & ~ohr_f & ~((normalen[:, 1] < -0.55) & (hz_f < 0.8))))
+wange = (mitten[:, 1] < MITTE[1] - 0.005) & (hz_f < 0.66)                                            # vor dem Ohr unterhalb der Schläfe: Gesicht (keine Stoppeln auf der Wange)
+stoppel_ok = (hz_f > 0.47) | ((mitten[:, 1] > MITTE[1] + 0.045) & (hz_f > 0.2))                    # Seiten nur oberhalb der Ohrmitte, tiefer nur im Nacken (nicht Kiefer und Hals)
+schale = kopfhaut if STIL not in RASIERT else (kopfhaut | ((hz_f > 0.18) & stoppel_ok & ~ohr_f & ~wange & ~((normalen[:, 1] < -0.55) & (hz_f < 0.8))))
 for i in np.where(schale)[0]:
     f = kopf_f[i]; b0 = len(V); hell = 0.55 if (STIL not in RASIERT or (hz_f[i] > RASIERT[STIL][0] and abs(mitten[i, 0] - CX) < RASIERT[STIL][1])) else 0.9
     farbe_s = FARBE * hell if hell < 0.8 else FARBE * 0.45 + np.array([0.45, 0.32, 0.25]) ** 2.2 * 0.55
