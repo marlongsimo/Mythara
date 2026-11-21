@@ -163,7 +163,38 @@
   "hinweis": "Maßgebliche Grundstruktur (Frau, Meshy „The Resolute Wanderer“): kahl, Startausrüstung fest im Modell (Leinenhemd mit Schnürung, Gürtel mit Tasche, Lederhose, Stiefel). Frisuren als Ebene im Platz „haar“, Rüstung als Teilnetze darüber. Schwert und Schild für die Kampfanimationen.",
   "arm_radius": 0.1,
   "huelle": [],
-  "teilnetze": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.dutt_hoch",
+      "platz": "haar",
+      "glb": "kopf.haar.damen/teile/kopf.haar.dutt_hoch.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.wuschel_hoch",
+      "platz": "haar",
+      "glb": "kopf.haar.damen/teile/kopf.haar.wuschel_hoch.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.pixie",
+      "platz": "haar",
+      "glb": "kopf.haar.damen/teile/kopf.haar.pixie.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zopf_wild",
+      "platz": "haar",
+      "glb": "kopf.haar.damen/teile/kopf.haar.zopf_wild.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.seitenbob",
+      "platz": "haar",
+      "glb": "kopf.haar.damen/teile/kopf.haar.seitenbob.glb",
+      "wahlfrei": true
+    }
+  ],
   "waffenklassen": {
     "hinweis": "Jede Waffe gehört zu einer Klasse; alle Waffen einer Klasse nutzen dieselben Bewegungen und Griffpunkte. Neue Waffe = nur ihre Ebene rendern (baukasten.py), keine neue Bewegung.",
     "einhand": "rechte Hand, Griff am Handballen: stich (dazu ruhe, gehen, laufen, tod)",
@@ -174,5 +205,40 @@
     "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
     "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
+  },
+  "frisuren": {
+    "hinweis": "Wählbare Frisuren (Platz „haar“). Glatze = keine Haar-Ebene (Standard). Gebaut mit fabrik/frisuren.py <basis.blend> <ziel.glb> <stil> farbe=#6e4529.",
+    "auswahl": [
+      {
+        "id": "glatze",
+        "name": "Glatze",
+        "ebene": null
+      },
+      {
+        "id": "dutt_hoch",
+        "name": "Dutt oben mit Pony",
+        "ebene": "kopf.haar.dutt_hoch"
+      },
+      {
+        "id": "wuschel_hoch",
+        "name": "Hochgesteckt, wuschelig",
+        "ebene": "kopf.haar.wuschel_hoch"
+      },
+      {
+        "id": "pixie",
+        "name": "Pixie",
+        "ebene": "kopf.haar.pixie"
+      },
+      {
+        "id": "zopf_wild",
+        "name": "Voller Zopf",
+        "ebene": "kopf.haar.zopf_wild"
+      },
+      {
+        "id": "seitenbob",
+        "name": "Seitenbob",
+        "ebene": "kopf.haar.seitenbob"
+      }
+    ]
   }
 }
