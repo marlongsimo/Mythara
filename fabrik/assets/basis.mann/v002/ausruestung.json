@@ -83,7 +83,6 @@
       "griff2": 0.45,
       "klasse": "bogen",
       "angriff": "bogen",
-      "drehen": 180,
       "bewegungen": [
         "ruhe",
         "gehen",
