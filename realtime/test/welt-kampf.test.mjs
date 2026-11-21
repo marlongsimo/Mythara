@@ -76,6 +76,11 @@ try {
   /* Gast: der Browser rechnet selbst */
   const gast = await spieler("Gast", "", [6530, 6587, "waldweg"]); await gast.goto(B + S); await bereit(gast);
   check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.z.w.filter((e) => e[3] !== 0).length === 4), "Ein Gast ohne Konto kämpft auch – der Browser rechnet (ohne Gutschrift)");
+  /* Torvald mit erhobenem Schild: Block im Stehen, Gang mit Schild (Figur aus der Fabrik) */
+  const haltung = () => gast.evaluate(() => window.EZW.szene.figur.zustand); await gast.keyboard.press(" "); await gast.waitForTimeout(700);
+  const h1 = await haltung(); await gast.keyboard.down("s"); await gast.waitForTimeout(600); const h2 = await haltung(); await gast.keyboard.up("s"); await gast.waitForTimeout(500);
+  await gast.keyboard.press(" "); await gast.waitForTimeout(700); const h3 = await haltung();
+  check(h1 === "block" && h2 === "schild_laufen" && h3 === "ruhe", `Schild (Leertaste): Torvald blockt (${h1}), geht mit Schild (${h2}), danach wieder normal (${h3})`);
   check(fehlerSeite.length === 0, "Keine Fehler im Browser" + (fehlerSeite.length ? ": " + fehlerSeite.join(" | ") : ""));
 } catch (e) { console.error(e); fehler++; }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

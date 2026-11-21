@@ -15,6 +15,7 @@ import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { setzeKarte } from "../../../shared/karte";
 import { verbinde, Netz, SPIELSERVER } from "../netz";
 import type { Zustand, Taste, Ereignis } from "../../../shared/sim";
+import { BIT } from "../../../shared/sim";
 import { heldenFigur, richten } from "../modulfigur";
 import { kontoToken } from "../konto";
 import { epAlle } from "../halle";
@@ -27,7 +28,7 @@ const P = new URLSearchParams(location.search);
 const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
-interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number }
+interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean }
 
 /** Die Kampfsteuerung mit den Bildern und Namen des Helden füllen – auch außerhalb eines Kampfgebiets (dort gedimmt) */
 export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[held]; if (!D) return; const sym = SYMBOL[held] || {};
@@ -35,7 +36,7 @@ export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[
   const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
 export class WeltKampf {
-  netz: Netz | null = null; karteZeit = 0; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
+  netz: Netz | null = null; karteZeit = 0; schildWar = false; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
   figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number }>();
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
   readonly zone: { karte: string; x0: number; y0: number; b: number; h: number }; readonly stufe: number;
@@ -70,7 +71,7 @@ export class WeltKampf {
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
   private zustand(z: Zustand) { if (this.vorbei) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
     for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
-      if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max;
+      if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9];
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); f.sp.setVisible(!f.tot); f.nm.setVisible(!f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); this.figuren.delete(id); }
     for (const ev of z.ev) this.ereignis(ev);
@@ -80,7 +81,7 @@ export class WeltKampf {
   private neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur { const s = this.s, D = held ? HELDEN[typ] : MONSTER[typ], hoch = held ? HELD_PX : HELD_PX * ((D && (D as { hoehe?: number }).hoehe) || 88) / 96;
     const fu = (D && (D as { fuss?: number[] }).fuss) || [0.5, 0.94], sp = heldenFigur(s, x * FELD_PX, y * FELD_PX, typ, hoch).setOrigin(fu[0], fu[1]); sp.setScale(hoch * ((D as { gross?: number }).gross || 1) / sp.height);
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: team === 0 ? "#f3e3b5" : "#ffc9b0", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
-    const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1 }; this.figuren.set(id, f); return f; }
+    const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false }; this.figuren.set(id, f); return f; }
   private ereignis(ev: Ereignis) { const s = this.s, wo = (id: number) => { if (id === this.ichId) return { x: s.figur.x, y: s.figur.y - HELD_PX }; const f = this.figuren.get(id); return f ? { x: f.sp.x, y: f.sp.y - HELD_PX } : null; };
     const zahl = (id: number, t: string, farbe: string) => { const p = wo(id); if (!p) return; const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
       s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); };
@@ -98,11 +99,14 @@ export class WeltKampf {
   steuern(rx: number, ry: number) { if (!this.netz) return; const l = Math.hypot(rx, ry), k = l > 1 ? 1 / l : 1, x = l < 0.05 ? 0 : rx * k, y = l < 0.05 ? 0 : ry * k, j = performance.now(), g = this.gesendet;
     if ((x === g.x && y === g.y) || (j - g.t < 60 && Math.hypot(x - g.x, y - g.y) < 0.4 && (x !== 0 || y !== 0))) return; this.gesendet = { x, y, t: j }; this.netz.sende({ t: "richtung", x, y }); }
   schritt(dt: number) { if (!this.z) return; const s = this.s, k = Math.min(1, dt * 12), ich = this.z.w.find((e) => e[0] === this.ichId);
+    /* der eigene Held mit erhobenem Schild (Torvald, Waffe „Schild“): Block im Stehen, Gang mit Schild – sonst wie die Welt es will */
+    { const sp = s.figur as unknown as { play(k: string): void; setTexture(k: string): void }, laeuft = (s as unknown as { laeuft: boolean }).laeuft, schild = Boolean(ich && !ich[10] && (ich[9] & BIT.schild));
+      if ("richte" in sp) { if (schild) { if (laeuft) sp.play("schild-x"); else sp.setTexture("schildstand-x"); } else if (this.schildWar) { if (laeuft) sp.play("lauf-x"); else sp.setTexture("figur-x"); } } this.schildWar = schild; }
     if (ich && this.bereit && !ich[10]) { const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; s.ort.x += (zx - s.ort.x) * k; s.ort.y += (zy - s.ort.y) * k; if (Math.hypot(zx - s.ort.x, zy - s.ort.y) > 3) { s.ort.x = zx; s.ort.y = zy; } }
     for (const f of this.figuren.values()) { if (f.tot) { f.lb.clear(); continue; } const vx = f.zx - f.x, vy = f.zy - f.y, lauf = Math.hypot(vx, vy) > 0.03; f.x += vx * k; f.y += vy * k;
       const px = (this.zone.x0 + f.x) * FELD_PX, py = (this.zone.y0 + f.y) * FELD_PX; f.sp.setPosition(px, py + 2).setDepth(py);
       if (lauf) { richten(f.sp, vx, vy); if (Math.abs(vx) > 0.02) f.sp.setFlipX(vx < 0); }
-      if (lauf !== f.laeuft) { f.laeuft = lauf; this.haltung(f, lauf); }
+      const schild = Boolean(f.bits & BIT.schild); if (lauf !== f.laeuft || schild !== f.schild) { f.laeuft = lauf; f.schild = schild; this.haltung(f, lauf); }
       const id = [...this.figuren.entries()].find(([, g]) => g === f)?.[0] || 0, n = f.held ? this.namen.get(id) : undefined;
       const t = f.held ? (n ? `${n.name} · St. ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · St. ${this.stufe}`; if (f.nm.text !== t) f.nm.setText(t);
       const h = f.held ? HELD_PX : HELD_PX * ((MONSTER[f.typ] as { hoehe?: number })?.hoehe || 88) / 96; f.nm.setPosition(px, py - h - 12); this.balken(f.lb, px, py - h - 10, f.lp / f.max, f.team !== 0); }
@@ -116,7 +120,7 @@ export class WeltKampf {
     if (zf && !zf.tot) this.ringZiel.setVisible(true).setPosition(zf.sp.x, zf.sp.y - 2).setDepth(zf.sp.depth - 0.01); else this.ringZiel.setVisible(false); }
   /** Laufen oder Stehen: modulare Figuren wissen selbst wie; Standbilder bekommen ihr Laufblatt (wie bei den Mitspielern) */
   private haltung(f: Figur, lauf: boolean) { const s = this.s, sp = f.sp;
-    if ("richte" in sp) { if (lauf) sp.play("lauf-x"); else sp.setTexture("figur-x"); return; }
+    if ("richte" in sp) { if (f.schild) { if (lauf) sp.play("schild-x"); else sp.setTexture("schildstand-x"); } else if (lauf) sp.play("lauf-x"); else sp.setTexture("figur-x"); return; } /* Schild erhoben: Block im Stehen, Gang mit Schild */
     const D = (f.held ? HELDEN[f.typ] : MONSTER[f.typ]) as { lauf?: string; laufMass?: number[]; fuss?: number[]; gross?: number } | undefined, h = f.held ? HELD_PX : HELD_PX * ((MONSTER[f.typ] as { hoehe?: number })?.hoehe || 88) / 96;
     if (!D) return; const lk = "lauf-" + f.typ;
     if (lauf && D.lauf && s.textures.exists(lk)) { if (!s.anims.exists(lk)) s.anims.create({ key: lk, frames: s.anims.generateFrameNumbers(lk, {}), frameRate: 11, repeat: -1 }); const L = D.laufMass || [0.5, 0.946, 0.91]; sp.play(lk); sp.setOrigin(L[0], L[1]).setScale(h / (L[2] * 176)); }
