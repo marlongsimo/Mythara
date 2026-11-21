@@ -1,6 +1,6 @@
 """Mythara Fabrik – ein Körpermodell mit den Referenzansichten anmalen.
 
-  python3 fabrik/anmalen.py <modell.glb> <asset-ordner> <ziel.glb> [drehung=x,y,z in Grad]
+  python3 fabrik/anmalen.py <modell.glb> <asset-ordner> <ziel.glb> [drehung=x,y,z in Grad] [hoehe=1.8]
 
 Das Modell (z. B. von TripoSR, mit groben Punktfarben) wird ausgerichtet (Blick nach -y, oben = z), auf 1,80 m gebracht und auf den Boden gestellt.
 Dann bekommt jeder Punkt seine Farbe aus den freigestellten Ansichten in referenz/teile/: von vorn, von hinten und von der Seite (für die andere Seite gespiegelt).
@@ -18,7 +18,7 @@ from PIL import Image
 from scipy import ndimage
 
 quelle, ordner, ziel = sys.argv[1], sys.argv[2], sys.argv[3]; dreh = [float(v) for v in sys.argv[4].split(",")] if len(sys.argv) > 4 else [0, 0, 0]
-H = 1.8
+H = float(next((a.split("=")[1] for a in sys.argv[5:] if a.startswith("hoehe=")), 1.8))   # Höhe der Figur in Metern (Menschen 1,8; Tiere nach Art, z. B. hoehe=1.0)
 
 
 def linear(c):  # sRGB (0..1) -> lineare Werte, wie Blender und glTF Punktfarben erwarten

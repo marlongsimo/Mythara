@@ -62,9 +62,13 @@ class Szene extends Phaser.Scene {
   /** Eine einmalige Bewegung beginnen (nur aus Ruhe, Laufen oder Block heraus) */
   tat(t: string) {
     if (t === "tod" && this.anim === "tod") { this.spiele("ruhe"); return; } /* noch einmal: wieder aufstehen */
-    if (t === "waffe") t = this.waffenAngriff(); else if (t === "waffe_l") t = this.waffenAngriff("hand_l"); if (!this.meta.animationen[t] || !["ruhe", "laufen", "block"].includes(this.anim)) return; this.spiele(t); }
+    if (t === "waffe") t = this.waffenAngriff(); else if (t === "waffe_l") t = this.waffenAngriff("hand_l"); if (!this.meta.animationen[t] || !["ruhe", this.gang, "block"].includes(this.anim)) return; this.spiele(t); }
   /** Die Angriffsbewegung der Waffe in der rechten Hand (Kurzschwert: angriff, Axt: angriff_axt, Dolch: angriff_dolch) */
-  waffenAngriff(platz = "hand_r"): string { const w = this.tragen[platz]; return (w && this.meta.ebenen[w]?.angriff) || (platz === "hand_r" ? "angriff" : ""); }
+  /** Fortbewegung: Menschen laufen, Tiere wie die Riesenkröte springen */
+  get gang(): string { return this.meta.animationen.laufen ? "laufen" : "springen"; }
+  /** Angriff ohne Waffe (Tiere): die Bewegung mit einem Trefferbild, z. B. der Zungenangriff */
+  get eigenerAngriff(): string { return this.meta.animationen.angriff ? "angriff" : Object.keys(this.meta.animationen).find((a) => this.meta.animationen[a].treffer !== undefined && a !== "tod") || "angriff"; }
+  waffenAngriff(platz = "hand_r"): string { const w = this.tragen[platz]; return (w && this.meta.ebenen[w]?.angriff) || (platz === "hand_r" ? this.eigenerAngriff : ""); }
   spiele(a: string) { if (this.anim === a) return; this.anim = a; this.bild = 0; this.uhr = 0; this.zeige(); }
   /** Alle Ebenen auf dasselbe Bild stellen und in die richtige Reihenfolge bringen */
   zeige() {
@@ -75,15 +79,15 @@ class Szene extends Phaser.Scene {
     for (const e of folge) { const s = this.bilder.get(e); if (!s) continue; const da = !versteckt.has(e) && s.texture.has(name); s.setVisible(da); if (da) s.setFrame(name); this.figur.moveTo(s, Math.min(i++, this.figur.length - 1)); }
   }
   update(_: number, dt: number) {
-    if (!this.fertig) return; const T = this.tasten, A = this.meta.animationen[this.anim], frei = ["ruhe", "laufen"].includes(this.anim);
+    if (!this.fertig) return; const T = this.tasten, A = this.meta.animationen[this.anim], frei = ["ruhe", this.gang].includes(this.anim);
     if (Phaser.Input.Keyboard.JustDown(T.J)) this.tat("waffe"); if (Phaser.Input.Keyboard.JustDown(T.U)) this.tat("waffe_l"); if (Phaser.Input.Keyboard.JustDown(T.T)) this.tat("tod"); if (Phaser.Input.Keyboard.JustDown(T.Q)) this.tat("segen"); if (Phaser.Input.Keyboard.JustDown(T.R)) this.tat("nova"); if (Phaser.Input.Keyboard.JustDown(T.L)) this.tat("angriff2h"); if (Phaser.Input.Keyboard.JustDown(T.H)) this.tat("treffer"); if (Phaser.Input.Keyboard.JustDown(T.SPACE)) this.tat("ausweichen");
     const will = T.K.isDown || this.blockt; if (will && frei) this.spiele("block"); if (!will && this.anim === "block") this.spiele("ruhe");
     /* laufen: Tasten haben Vorrang vor dem angetippten Ziel */
     let dx = (T.D.isDown || T.RIGHT.isDown ? 1 : 0) - (T.A.isDown || T.LEFT.isDown ? 1 : 0), dy = (T.S.isDown || T.DOWN.isDown ? 1 : 0) - (T.W.isDown || T.UP.isDown ? 1 : 0);
     if (dx || dy) this.ziel = null; else if (this.ziel) { const vx = this.ziel.x - this.figur.x, vy = this.ziel.y - this.figur.y; if (Math.hypot(vx, vy) < 4) this.ziel = null; else { dx = vx; dy = vy; } }
     if (this.drehen && frei && !dx && !dy) { this.drehUhr += dt; if (this.drehUhr > 700) { this.drehUhr = 0; this.richtung = (this.richtung + 1) % 8; this.zeige(); } }
-    if (["ruhe", "laufen"].includes(this.anim)) {
-      if (dx || dy) { const w = Math.atan2(dy, dx); /* 0 = Osten, π/2 = Süden, y nach unten */ this.richtung = ((Math.round(w / (Math.PI / 4)) % 8) + 8) % 8; const l = Math.hypot(dx, dy), s = Math.min(TEMPO * dt / 1000, this.ziel ? l : Infinity); this.figur.x += dx / l * s; this.figur.y += dy / l * s; this.spiele("laufen"); }
+    if (["ruhe", this.gang].includes(this.anim)) {
+      if (dx || dy) { const w = Math.atan2(dy, dx); /* 0 = Osten, π/2 = Süden, y nach unten */ this.richtung = ((Math.round(w / (Math.PI / 4)) % 8) + 8) % 8; const l = Math.hypot(dx, dy), s = Math.min(TEMPO * dt / 1000, this.ziel ? l : Infinity); this.figur.x += dx / l * s; this.figur.y += dy / l * s; this.spiele(this.gang); }
       else this.spiele("ruhe");
     }
     /* Bilder zählen */

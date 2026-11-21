@@ -102,8 +102,8 @@ for a in ANIM:
         for i in range(n): al = feld(b, r, i)[..., 3]; ys, xs = np.where(al > 0.5); c.append((xs.mean(), ys.mean()))
         paare = list(zip(c, c[1:])) + ([(c[-1], c[0])] if ANIM[a]["schleife"] else []); m = max(m, max(float(np.hypot(p[0] - q[0], p[1] - q[1])) for p, q in paare))
     sprung[a] = round(m, 1)
-grenze = {a: (40 if a == "tod" else 18) for a in sprung}                                            # der Tod fällt um: dort darf der Schwerpunkt weit wandern
-melde("bild", "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)", sprung, "≤ 18, Tod ≤ 40", all(sprung[a] <= grenze[a] for a in sprung))
+grenze = {a: (40 if a == "tod" or ANIM[a].get("sprung") else 18) for a in sprung}                   # der Tod fällt um, ein Sprung hebt ab: dort darf der Schwerpunkt weit wandern
+melde("bild", "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)", sprung, "≤ 18, Tod und Sprünge ≤ 40", all(sprung[a] <= grenze[a] for a in sprung))
 
 # ---------------------------------------------------------- Modell ----------------------------------------------------------
 print("Modell")
@@ -116,7 +116,7 @@ melde("rig", "Art der Gewichtung", arm.get("gewichte", "?"), "automatisch", "aut
 seiten = {e: (o.parent_bone, round(arm.data.bones[o.parent_bone].head_local.x, 2)) for e, o in teile.items() if o["art"] == "starr"}
 gut = all((b.endswith(".R") and x < 0) or (b.endswith(".L") and x > 0) or (b in ("kopf", "hals", "brust", "becken") and abs(x) < 0.02) for b, x in seiten.values())
 melde("rig", "starre Teile hängen am richtigen Knochen (rechte Körperseite = -x; Kopf, Brust, Becken mittig)", seiten, "hand.R bei x < 0, unterarm.L bei x > 0, mittige Knochen bei |x| < 0.02", gut)
-fest = 0.0; boden = {}; innen = 0.0; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
+fest = 0.0; boden = {}; luft = {}; innen = 0.0; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
 for a in [x for x in bpy.data.actions if x.name in ANIM]:
     arm.animation_data.action = a; ab = {e: [] for e, o in teile.items() if o["art"] == "starr"}; tief = []
     for i in range(ANIM[a.name]["bilder"]):
@@ -135,10 +135,14 @@ for a in [x for x in bpy.data.actions if x.name in ANIM]:
                 innen = max(innen, drin / len(Q)); o.evaluated_get(dg).to_mesh_clear()
         ko.to_mesh_clear()
     for e, l in ab.items(): fest = max(fest, max((p - l[0]).length for p in l) * 1000)
+    flug = set(ANIM[a.name].get("sprung", []))                                                   # Flugbilder eines Sprungs: müssen in der Luft sein, die übrigen am Boden
+    if flug: luft[a.name] = round(min(tief[i] for i in flug) * 100, 1)
+    tief = [t for i, t in enumerate(tief) if i not in flug]
     boden[a.name] = [round(min(tief) * 100, 1), round(max(tief) * 100, 1)]
 melde("animation", "Waffen bleiben fest an ihrem Knochen (größte Verschiebung über alle Bilder, mm)", round(fest, 3), "≤ 1", fest <= 1)
 schlimm = max(max(abs(v[0]), abs(v[1])) for v in boden.values())
 melde("animation", "Fußpunkt am Boden in allen Bewegungen (tiefster Punkt des Körpers, cm) – sonst springt, sinkt oder schwebt die Figur im Spiel", boden, "±1 cm", schlimm <= 1)
+if luft: melde("animation", "Sprünge heben ab (tiefster Punkt des Körpers in den Flugbildern, cm)", luft, "≥ 10", min(luft.values()) >= 10)
 # Waffenführung: jede Waffe hat ihre Angriffsbewegung, und im Trefferbild ist die Waffe vor dem Körper
 for e, o in teile.items():
     if o["art"] != "starr" or EB[e]["platz"] not in ("hand_r", "hand_l"): continue
@@ -148,7 +152,9 @@ for e, o in teile.items():
     melde("animation", f"{e}: im Trefferbild ({an}, Bild {i + 1}) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)", [round(-v.y, 2), round(v.z, 2)], "vor ≥ 0.3 m, Höhe 0.3–1.9 m", -v.y >= 0.3 and 0.3 <= v.z <= 1.9)
 if "tod" in ANIM:
     Pk = np.array([v.co for v in koerper.data.vertices]); dicke = float(np.ptp(Pk[:, 1])); liegt = max(0.6, dicke + 0.05)   # flacher als die eigene Tiefe (z. B. eine weite Robe) kann eine Figur nicht liegen
-    h = hoch["tod"]; melde("animation", "Tod: steht am Anfang, liegt am Ende (höchster Punkt des Körpers im ersten und letzten Bild, m)", [round(h[0], 2), round(h[-1], 2)], f"Anfang ≥ 1.6, Ende ≤ {liegt:.2f} (Körpertiefe {dicke:.2f} + 0.05, mindestens 0.6)", h[0] >= 1.6 and h[-1] <= liegt)
+    h = hoch["tod"]
+    if arm.get("tier"): melde("animation", "Tod (Tier): sackt zusammen (höchster Punkt im ersten und letzten Bild, m)", [round(h[0], 2), round(h[-1], 2)], f"Ende ≤ 0.85 × Anfang ({0.85 * h[0]:.2f})", h[-1] <= 0.85 * h[0])
+    else: melde("animation", "Tod: steht am Anfang, liegt am Ende (höchster Punkt des Körpers im ersten und letzten Bild, m)", [round(h[0], 2), round(h[-1], 2)], f"Anfang ≥ 1.6, Ende ≤ {liegt:.2f} (Körpertiefe {dicke:.2f} + 0.05, mindestens 0.6)", h[0] >= 1.6 and h[-1] <= liegt)
     for e, o in teile.items():                                                                       # die Waffe liegt am Ende flach auf dem Boden, nicht senkrecht in die Luft
         if o["art"] != "starr": continue
         arm.animation_data.action = bpy.data.actions["tod"]; sc.frame_set(ANIM["tod"]["bilder"]); bpy.context.view_layer.update(); oben = max((zur_figur @ (o.matrix_world @ Vector(c))).z for c in o.bound_box)
@@ -162,6 +168,7 @@ if luecke >= 0: melde("animation", "beidhändiger Angriff: linkes Handgelenk am 
 liste = os.path.join(os.path.dirname(os.path.abspath(ordner)), "ausruestung.json")
 if not os.path.exists(liste): liste = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(ordner))), "ausruestung.json")   # eigene Liste der Version, sonst die der Figur
 SOLL = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]
+if not os.path.exists(liste): liste = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(ordner))), "tier.json")   # Tiere: ihre Bewegungen stehen in tier.json
 if os.path.exists(liste): SOLL = json.load(open(liste)).get("bewegungen", SOLL)                     # was die Figur laut ihrer Liste haben soll
 melde("animation", "alle Bewegungen vorhanden", sorted(ANIM), ", ".join(SOLL), set(SOLL) <= set(ANIM))
 

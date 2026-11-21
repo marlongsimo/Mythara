@@ -1,0 +1,50 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Riesenkröte (Testfigur, Gegner, Vierbeiner). Kästen [links, oben, rechts, unten], dunkler Grund. vorn, Seite (blickt nach rechts), hinten aus der rechten Spalte; dazu die große Dreiviertelansicht. zungenangriff.png zeigt den Ablauf des Angriffs (Vorlage für die Bewegung).",
+  "ausschnitte": [
+    {
+      "name": "koerper-vorn",
+      "kasten": [
+        946,
+        8,
+        1302,
+        242
+      ],
+      "asset": "gegner.riesenkroete",
+      "ansicht": "vorn"
+    },
+    {
+      "name": "koerper-seite",
+      "kasten": [
+        946,
+        257,
+        1302,
+        492
+      ],
+      "asset": "gegner.riesenkroete",
+      "ansicht": "seite"
+    },
+    {
+      "name": "koerper-hinten",
+      "kasten": [
+        946,
+        509,
+        1302,
+        792
+      ],
+      "asset": "gegner.riesenkroete",
+      "ansicht": "hinten"
+    },
+    {
+      "name": "koerper-34",
+      "kasten": [
+        4,
+        30,
+        932,
+        800
+      ],
+      "asset": "gegner.riesenkroete",
+      "ansicht": "3/4 rechts"
+    }
+  ]
+}
