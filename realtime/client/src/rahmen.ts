@@ -41,8 +41,8 @@ export function rundeKarte(zoom: number, knoepfe: RKnopf[]): void {
     Maße in Einheiten des Kartenradius (100): Kartenmitte (0, 0), die Fläche reicht von x −200 bis 0 und y −120 bis 120.
     Innen folgt der Bogen dem Kartenring, außen ein weiterer Kreis durch die beiden Spitzen und den äußersten Punkt links. */
 function dock(n: number): { svg: string; lage: number[][] } {
-  const ri = 106, links = 168, spitze = 100 * Math.PI / 180;
-  const px = ri * Math.cos(spitze), py = ri * Math.sin(spitze), sag = -px + links, rho = (py * py + sag * sag) / (2 * sag), cx = -links + rho;
+  const ri = 106, links = 196, spitze = 100 * Math.PI / 180;
+  const px = ri * Math.cos(spitze), py = ri * Math.sin(spitze), sag = links + px, /* px ist negativ */ rho = (py * py + sag * sag) / (2 * sag), cx = -links + rho;
   const weg = `M${px.toFixed(1)} ${(-py).toFixed(1)}A${rho.toFixed(1)} ${rho.toFixed(1)} 0 1 0 ${px.toFixed(1)} ${py.toFixed(1)}A${ri} ${ri} 0 0 1 ${px.toFixed(1)} ${(-py).toFixed(1)}Z`;
   const schritt = n <= 3 ? 40 : n === 4 ? 32 : 26, lage: number[][] = [];
   for (let i = 0; i < n; i++) { const g = (180 + (i - (n - 1) / 2) * schritt) * Math.PI / 180, ux = Math.cos(g), uy = Math.sin(g);
