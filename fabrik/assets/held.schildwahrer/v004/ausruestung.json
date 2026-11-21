@@ -35,7 +35,7 @@
       "id": "kleidung.hemd.v004",
       "platz": "hemd",
       "bild": "untergewand",
-      "farbe": "#b9a586",
+      "farbe": "#8c6f4c",
       "dicke": 0.008,
       "bereich": [
         [
@@ -146,7 +146,8 @@
     {
       "id": "ruestung.brust.platte.v003",
       "platz": "brust",
-      "glb": "held.schildwahrer/v004/quelle/teile/ruestung.brust.platte.v003.glb"
+      "glb": "held.schildwahrer/v004/quelle/teile/ruestung.brust.platte.v003.glb",
+      "farbe": "#7e8692"
     },
     {
       "id": "kleidung.umhang.v003",
