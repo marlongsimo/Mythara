@@ -25,6 +25,7 @@ import { weltAnschliessen } from "./welt/anschluss";
 import { lokalerHeld, weltBetreten } from "./welt";
 import { heldenFigur, richten } from "./modulfigur";
 import { hudKarte } from "./hud";
+import { SYMBOL, symbolBild } from "./symbole";
 import { adresseErlaubt } from "./freigabe";
 import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
@@ -63,11 +64,6 @@ function ladeschirm(grund: string) { const el = $("#ez-laden"); if (!el) return;
 const TIPPS = ["Nach einer Pause schläft der Server. Beim ersten Kampf dauert es deshalb bis zu einer Minute – danach geht es sofort.", "Gegner holen sichtbar aus. Wer dann aus der Reichweite geht, wird nicht getroffen.",
   "Leuchtet der Boden grün, lädt die alte Unke ihren Giftschwall. Raus aus dem Kreis!", "Seelensplitter hebst du auf, indem du darüberläufst. Erst „Kampf verlassen“ beendet den Kampf.", "Erfahrung bekommt jeder Held deines Teams – in der Heldenhalle siehst du die Stufen.", "Mit der Leertaste oder ⇄ wechselst du die Waffe."];
 /** Bilder für die Aktionstasten (img/fx): je Held die Fähigkeiten Q, E, R und die beiden Waffen */
-const SYMBOL: Record<string, { q?: string; e?: string; r?: string; modi?: string[] }> = {
-  schildwaechter: { q: "welle", e: "schild", r: "aura", modi: ["symbole/schwert", "symbole/schild"] }, elementarist: { q: "eis", e: "blitz", r: "feuer", modi: ["symbole/elementarstab", "symbole/stab"] },
-  lichtbringer: { q: "heil", e: "sterne", r: "licht", modi: ["symbole/heilstab", "symbole/streitkolben"] }, assassine: { q: "schatten", e: "gift", r: "blut", modi: ["dolch", "symbole/armbrust"] },
-  kopfgeldjaeger: { q: "mal", e: "netz", r: "blut", modi: ["symbole/armbrust", "dolch"] } };
-const symbolBild = (n: string) => n.includes("/") ? `../img/${n}.webp` : `../img/fx/${n}.webp`; /* „symbole/…“: eigene Bilder, sonst die Effektbilder */
 /* Der Knopf „?“ oben rechts zeigt die Steuerung; beim ersten Kampf einer Sitzung ist sie ein paar Sekunden offen */
 { const f = document.getElementById("ez-frage"); if (f) { f.addEventListener("pointerdown", (e) => e.stopPropagation()); f.addEventListener("click", (e) => { e.stopPropagation(); document.body.classList.toggle("hilfe-an"); });
   let neu = true; try { neu = !sessionStorage.getItem("ez__hilfe"); sessionStorage.setItem("ez__hilfe", "1"); } catch { /* privat */ } if (neu) { document.body.classList.add("hilfe-an"); setTimeout(() => document.body.classList.remove("hilfe-an"), 9000); } } }

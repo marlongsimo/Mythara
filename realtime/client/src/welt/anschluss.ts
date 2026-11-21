@@ -23,7 +23,8 @@ import { kontoName } from "../konto";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
-import { LICHTUNG_FELD } from "../../../shared/lichtung";
+import { WeltKampf, WeltSzene } from "./kampf";
+import { WELTZONEN } from "../../../shared/karten";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
@@ -54,12 +55,21 @@ function heldWaehlen(s: Welt) { if (s.gesperrt) return; s.halt(); s.gesperrt = t
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
 function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
   s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.cameras.main.fadeOut(300, 0, 0, 0); s.time.delayedCall(320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
-/** Die Lichtung im Kreuzwald: wer ein paar Schritte in ihren Ausschnitt hineingeht, kommt in die gemeinsame Kampfzone (Banditen) – an genau dieser Stelle */
-let inLichtung = false;
-function lichtungPruefen(s: Welt) { if (inLichtung || s.gesperrt || !freigabe("suedtor")) return; const L = LICHTUNG_FELD, x = s.ort.x - L.x0, y = s.ort.y - L.y0;
-  if (x < L.rand || y < L.rand || x > L.b - L.rand || y > L.h - L.rand) return; inLichtung = true; s.halt(); s.gesperrt = true;
-  try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(s.ort.x * 100) / 100, Math.round(s.ort.y * 100) / 100, s.hier])); } catch { /* privat */ }
-  s.cameras.main.fadeOut(250, 0, 0, 0); s.time.delayedCall(260, () => { location.href = `./?ort=kreuzwald&kampf=lichtung&lx=${x.toFixed(2)}&ly=${y.toFixed(2)}` + serverZusatz(); }); }
+/** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
+let kampf: WeltKampf | null = null;
+const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
+function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
+/* für Prüfungen im Browser */
+Object.defineProperty(window, "EZK", { get: () => kampf, configurable: true });
+/** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
+function fremd(s: Welt, rx: number, ry: number): boolean {
+  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { kampfEnde(); return false; } const rand = randAbstand(s, z);
+  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } location.href = "./?von=tod" + serverZusatz(); }); }
+  if (!kampf.bereit) { if (kampf.art === "warte") { const t = $("#ez-dorf-hilfe"); t.textContent = "Verbinde mit dem Spielserver …"; t.style.display = ""; } return true; } /* bis der Server antwortet, bleibt der Held stehen */
+  /* am Rand des Gebiets und weiter hinaus: die Welt übernimmt wieder (etwa durchs Tor zurück in die Waldmark) */
+  const lx = s.ort.x - z.x0, ly = s.ort.y - z.y0; if (rand < 1.2 && ((lx < 1.2 && rx < 0) || (ly < 1.2 && ry < 0) || (lx > z.b - 1.2 && rx > 0) || (ly > z.h - 1.2 && ry > 0))) { kampfEnde(); return false; }
+  { const t = $("#ez-dorf-hilfe"); if (t.textContent === "Verbinde mit dem Spielserver …") { t.textContent = ""; t.style.display = "none"; } }
+  kampf.steuern(rx, ry); return true; }
 /** Der Server kennt die zuletzt gemerkte Stelle (anderes Gerät): dorthin, wenn auf diesem Gerät keine gemerkt war und man noch nicht losgelaufen ist */
 let serverStelleGenutzt = false;
 function serverStelle(s: Welt, p: { region: string; x: number | null; y: number | null } | undefined) {
@@ -75,7 +85,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
   region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
-  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(l); onlineZeigen(); }, fort: (i) => { if (mit) mit.weg(i); },
+  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) sprechblase(s, () => (s.figur && s.figur.active ? { x: s.figur.x, y: s.figur.y - HELD_PX - 30 } : null), text); else if (mit) mit.blase(i, text); } });
 }
@@ -111,12 +121,13 @@ export function weltAnschliessen(start: string, tor: string) {
     window.addEventListener("ez-held-wahl", heldWahl);
     schild = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     (s as unknown as { schild: Phaser.GameObjects.Text }).schild = schild; /* für Prüfungen, wie in der gemalten Waldmark */
-    s.events.once("shutdown", () => { schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
+    s.events.once("shutdown", () => { kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
-  WELT.antippen = (s, p) => { if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
+  WELT.fremd = fremd;
+  WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
-    lichtungPruefen(s);
+    if (kampf) kampf.schritt(d);
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
     weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);

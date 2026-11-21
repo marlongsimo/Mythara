@@ -1,6 +1,6 @@
 /*
- * Mythara – Lichtung und gemerkte Stelle über den echten Spielserver (gegen eine nachgebildete Supabase, ohne Browser):
- * Man betritt die Lichtung an der eigenen Stelle, sieht vier Banditen, der Server merkt sich beim Gehen die Stelle in der Welt
+ * Mythara – Kreuzwald (Kampfgebiet) und gemerkte Stelle über den echten Spielserver (gegen eine nachgebildete Supabase, ohne Browser):
+ * Man betritt den Kreuzwald an der eigenen Stelle, sieht vier Banditen, der Server merkt sich beim Gehen die Stelle in der Welt
  * und schickt sie beim nächsten Anmelden zurück. Aufruf (nach „node build.mjs“): node test/lichtung-server.test.mjs
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module";
@@ -25,15 +25,15 @@ const verbinde = (pfad) => new Promise((ok, nein) => { const ws = new WebSocket(
 const warte = async (f, ms = 5000) => { const t = Date.now(); while (Date.now() - t < ms) { const v = f(); if (v) return v; await new Promise((r) => setTimeout(r, 50)); } return null; };
 try {
   /* 1) Lichtung betreten, 22/37 Rechenfelder im Ausschnitt (= Weltfeld 6528/6587) */
-  const k = await verbinde("?kampf=lichtung&ort=kreuzwald&held=schildwaechter&lx=22&ly=37"); k.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const k = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=192&ly=123"); k.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
   const z = await warte(() => { const m = [...k.post].reverse().find((m) => m.t === "z"); return m && m.z; });
-  check(Boolean(z), "Der Server lässt in die Lichtung (gemeinsame Kampfzone)");
+  check(Boolean(z), "Der Server lässt in den Kreuzwald (gemeinsames Kampfgebiet)");
   const ich = z && z.w.find((e) => e[0] === z.ich.id), banditen = z ? z.w.filter((e) => e[3] !== 0) : [];
   check(banditen.length === 4 && banditen.every((e) => e[2] === "bandit_dolch"), `Vier Dolch-Banditen (${banditen.map((e) => e[2]).join(", ")})`);
-  check(ich && Math.hypot(ich[4] - 22, ich[5] - 37) < 1.5, `Der Held steht dort, wo er hereinkam (${ich && ich[4].toFixed(1)}, ${ich && ich[5].toFixed(1)})`);
+  check(ich && Math.hypot(ich[4] - 192, ich[5] - 123) < 1.5, `Der Held steht dort, wo er hereinkam (${ich && ich[4].toFixed(1)}, ${ich && ich[5].toFixed(1)})`);
   check(ich && ich[8] === 352, "Stufe aus dem Konto (Torvald mit 300 EP: 352 Leben)");
   const n1 = GESETZT.length; k.ws.close(); await warte(() => GESETZT.length > n1);
-  const s1 = STELLE[ANNA]; check(s1 && s1.region === "waldweg" && Math.abs(s1.x - 6528) < 1.5 && Math.abs(s1.y - 6587) < 1.5, "Wer in der Lichtung aufhört, dessen Stelle merkt der Server: " + JSON.stringify(s1));
+  const s1 = STELLE[ANNA]; check(s1 && s1.region === "waldweg" && Math.abs(s1.x - 6528) < 1.5 && Math.abs(s1.y - 6587) < 1.5, "Wer im Kreuzwald aufhört, dessen Stelle merkt der Server: " + JSON.stringify(s1));
   /* 2) In der Welt: pos mit Weltfeldern, beim Gehen gemerkt, beim nächsten Anmelden zurück */
   const w = await verbinde("?welt=1&ort=waldweg"); w.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
   const ich1 = await warte(() => w.post.find((m) => m.t === "ich")); check(ich1 && ich1.pos && ich1.pos.region === "waldweg" && Math.abs(ich1.pos.x - 6528) < 1.5, "Beim Anmelden schickt der Server die gemerkte Stelle mit");
@@ -49,4 +49,4 @@ try {
   check(GESETZT.length === n4, "Bei Gästen merkt sich der Server nichts");
 } catch (e) { console.error(e); fehler++; }
 srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2000));
-console.log(fehler ? `${fehler} Fehler` : "Lichtung und gemerkte Stelle (Server): alles in Ordnung"); process.exit(fehler ? 1 : 0);
+console.log(fehler ? `${fehler} Fehler` : "Kreuzwald und gemerkte Stelle (Server): alles in Ordnung"); process.exit(fehler ? 1 : 0);

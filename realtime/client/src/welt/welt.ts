@@ -42,6 +42,8 @@ export const WELT = { start: weltName, bild: "../", daten: "welt/",
   betreten: null as ((s: Welt) => void) | null,
   regionWechsel: null as ((s: Welt, r: { region: Region; start: number[][] }) => void) | null,
   schritt: null as ((s: Welt, d: number) => void) | null,
+  /** Bewegt jemand anderes den Helden (Kampfgebiet: der Spielserver)? Bekommt die gewünschte Richtung; true = nicht selbst bewegen */
+  fremd: null as ((s: Welt, rx: number, ry: number) => boolean) | null,
   antippen: null as ((s: Welt, p: Phaser.Input.Pointer) => boolean) | null };
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1", TEST = P.get("test") === "1";
 const F = FELD_PX, C = CHUNK_FELDER;
@@ -295,7 +297,8 @@ export class Welt extends Phaser.Scene {
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += d;
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.setVisible(false); } else { rx = dx / l; ry = dy / l; } }
     const l = Math.hypot(rx, ry), faehrt = l > 0.05;
-    if (faehrt) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; if (WELT.richten) WELT.richten(this.figur, rx, ry); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
+    const fremd = WELT.fremd ? WELT.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0) : false; /* im Kampfgebiet bewegt der Server den Helden */
+    if (faehrt) { if (!fremd) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; } if (WELT.richten) WELT.richten(this.figur, rx, ry); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt;
       if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(HELD_PX / (L[2] * 176)); }
       else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(HELD_PX * (D.gross || 1) / this.figur.height); } }

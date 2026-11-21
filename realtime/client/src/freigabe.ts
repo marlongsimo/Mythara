@@ -12,5 +12,4 @@ const alles = (() => { try { return localStorage.getItem("ez__alles") === "1"; }
 export const frei = (k: keyof typeof FREIGABE): boolean => alles || FREIGABE[k];
 /** Darf diese Seite (Adresse) überhaupt geöffnet werden? Kampagnenorte und -kämpfe nur, wenn freigeschaltet. */
 export function adresseErlaubt(q: URLSearchParams): boolean {
-  if (!q.get("ort")) return true; if (q.get("kampf") === "waldweg") return frei("waldweg");
-  if (q.get("kampf") === "lichtung") return frei("suedtor"); /* Kampfzone der offenen Welt hinter dem Südtor */ return frei("kampagnen"); }
+  if (!q.get("ort")) return true; if (q.get("kampf") === "waldweg") return frei("waldweg"); return frei("kampagnen"); }

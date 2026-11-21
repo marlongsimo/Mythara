@@ -4,8 +4,9 @@
  */
 import type { Lager, Probe } from "./karte";
 import { WALDWEG_ZEILEN, WALDWEG_START, WALDWEG_LAGER, WALDWEG_DEKO, WALDWEG_BAEUME } from "./waldweg";
-import { LICHTUNG_ZEILEN, LICHTUNG_START, LICHTUNG_LAGER, LICHTUNG_DEKO, LICHTUNG_BILDER, LICHTUNG_FELD } from "./lichtung";
-export { LICHTUNG_FELD };
+import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER } from "./weltzonen";
+/** Kampfgebiete der offenen Welt: Region der Welt → Karte der gemeinsamen Simulation (werkzeug/weltzonen.py) */
+export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = { [KREUZWALD.region]: { karte: "kreuzwald", x0: KREUZWALD.x0, y0: KREUZWALD.y0, b: KREUZWALD.b, h: KREUZWALD.h } };
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
  *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */
 export interface Schleuse { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number /* danach ist der Graben leer */ }
@@ -30,7 +31,7 @@ export const WELTGEBIETE = new Set(["kreuzwald"]);
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
 export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 /** Strecken zwischen den Orten: immer begehbar */
-export const STRECKEN = new Set(["waldweg", "lichtung"]);
+export const STRECKEN = new Set(["waldweg", "kreuzwald"]);
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
@@ -49,12 +50,11 @@ export const KARTEN: Record<string, KampfKarte> = {
   waldweg: { name: "Der Waldweg", bild: "img/welt/waldweg.webp", zeilen: WALDWEG_ZEILEN, feinZeilen: true, start: WALDWEG_START, aggro: 7, leine: 16, weg: true,
     lager: WALDWEG_LAGER.map((l) => ({ ...l })), deko: WALDWEG_DEKO, dekoBilder: WALDWEG_BAEUME,
     ausgaenge: [{ x0: 0, x1: 0.8, y0: 0, y1: 18, nach: "waldmark", text: "Zurück in die Waldmark" }, { x0: 39.2, x1: 40, y0: 0, y1: 18, nach: "weidenhain", text: "Weiter nach Weidenhain" }] },
-  /* Die Lichtung im Kreuzwald (werkzeug/lichtung.py, aus den Weltdaten geschnitten): vier Dolch-Banditen der Stufe 3 streifen umher und greifen an,
-     sobald ein Held auf 5 Rechenfelder herankommt. Gemeinsame Kampfzone wie der Waldweg; am Rand geht es nahtlos zurück in die offene Welt. */
-  lichtung: { name: "Die Lichtung im Kreuzwald", bild: "img/welt/lichtung.webp", zeilen: LICHTUNG_ZEILEN, feinZeilen: true, start: LICHTUNG_START, aggro: 5, leine: 14, wandern: 4, weg: true, ursprung: [LICHTUNG_FELD.x0, LICHTUNG_FELD.y0], weltRegion: "waldweg",
-    lager: LICHTUNG_LAGER.map((l) => ({ ...l })), deko: LICHTUNG_DEKO, dekoBilder: LICHTUNG_BILDER,
-    ausgaenge: [{ x0: 0, x1: 0.5, y0: 0, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" }, { x0: LICHTUNG_FELD.b / 2 - 0.5, x1: LICHTUNG_FELD.b / 2, y0: 0, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" },
-      { x0: 0, x1: LICHTUNG_FELD.b / 2, y0: 0, y1: 0.5, nach: "welt", text: "" }, { x0: 0, x1: LICHTUNG_FELD.b / 2, y0: LICHTUNG_FELD.h / 2 - 0.5, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" }] },
+  /* Der Kreuzwald als Kampfgebiet der offenen Welt (werkzeug/weltzonen.py): die ganze Region als gemeinsame Simulation. Auf der Lichtung
+     streifen vier Dolch-Banditen der Stufe 3 umher und greifen an, sobald ein Held auf 5 Rechenfelder herankommt. Kein eigenes Bild:
+     die offene Welt zeigt Gegner und Treffer an derselben Stelle. */
+  kreuzwald: { name: "Der Kreuzwald", bild: "", zeilen: KREUZWALD_ZEILEN, feinZeilen: true, start: KREUZWALD_START, aggro: 5, leine: 14, wandern: 4, weg: true,
+    ursprung: [KREUZWALD.x0, KREUZWALD.y0], weltRegion: KREUZWALD.region, lager: KREUZWALD_LAGER.map((l) => ({ ...l })) },
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",
     zeilen: ["MMMMMMMMMMMM", "MMKK.....KMM", "M..KK..KK.MM", "M..KK..KK.MM", "............", "M..KK..KK.MM", "M.........MM", "MMKK.....KMM", "MMMMMMMMMMMM"],

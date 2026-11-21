@@ -96,7 +96,7 @@ export const inKampagne = Boolean(K);
 /** Steht jetzt ein Kampf an (Held ist gewählt, der aktuelle Schritt ist ein Kampf)? Dann die Angaben dazu. */
 /* Kampf aus einem begehbaren Ort heraus (?ort=weidenhain&kampf=speicher): Nach dem Sieg wird im Stand des Ortes der Merker „kampf_<karte>“ gesetzt, dann geht es zurück in den Ort. */
 const ORTKAMPF: Record<string, string> = { speicher: "Vertreibe die Kröten aus dem Kornspeicher", muehle: "Kämpfe dich über den Steg zur Mühle durch", wehr: "Bezwinge die alte Unke und die Irrlichter", nest: "Zerschlage den Krötenlaich im Tümpel", ufer: "Vertreibe die Irrlichter vom Mühlteich",
-  bohlenweg: "Überquere den Bohlenweg", waldweg: "Folge dem Waldweg nach Weidenhain", ried: "Kämpf dich durchs Ried", totenpfad: "Bring die Ertrunkenen zur Ruhe", schrein: "Stelle Alwine, die Stumme", lichtung: "Banditen auf der Lichtung im Kreuzwald" };
+  bohlenweg: "Überquere den Bohlenweg", waldweg: "Folge dem Waldweg nach Weidenhain", ried: "Kämpf dich durchs Ried", totenpfad: "Bring die Ertrunkenen zur Ruhe", schrein: "Stelle Alwine, die Stumme", kreuzwald: "Der Kreuzwald" };
 const OK = { ort: P.get("ort") || "", karte: P.get("kampf") || "" }, IM_ORT = Boolean(OK.ort && ORTKAMPF[OK.karte]);
 /** Stufe der Aufgabe je Ort (bestimmt mit der Gruppengröße die Stärke der Gegner) */
 export { ORTSTUFE } from "../../shared/karten";
