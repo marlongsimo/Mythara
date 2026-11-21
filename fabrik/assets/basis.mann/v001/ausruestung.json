@@ -171,6 +171,11 @@
       "id": "kleidung.fuss.stiefel.v003",
       "platz": "fuss",
       "glb": "basis.mann/v001/quelle/teile/kleidung.fuss.stiefel.v003.glb"
+    },
+    {
+      "id": "ruestung.set.leder",
+      "platz": "set",
+      "glb": "basis.mann/v001/quelle/teile/ruestung.set.leder.glb"
     }
   ],
   "stuecke_behalten": true,

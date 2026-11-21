@@ -1,0 +1,9 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Leder-Stahl-Rüstungsset (Kragentuch, Schulterplatten, Brustpanzer über Lederwams, Armschienen, Handschuhe, Gürtel mit Taschen, gesteppter geschlitzter Waffenrock, Hose, Stiefel mit Beinschienen) – vorn, Seite (linke Körperseite, Zehen links), hinten.",
+  "ausschnitte": [
+    { "name": "vorn",   "kasten": [40, 50, 525, 1010],   "asset": "ruestung.set.leder", "ansicht": "vorn" },
+    { "name": "seite",  "kasten": [585, 40, 890, 1010],  "asset": "ruestung.set.leder", "ansicht": "seite" },
+    { "name": "hinten", "kasten": [930, 50, 1470, 1010], "asset": "ruestung.set.leder", "ansicht": "hinten" }
+  ]
+}
