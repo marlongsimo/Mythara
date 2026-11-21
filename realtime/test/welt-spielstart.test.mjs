@@ -9,7 +9,8 @@ const { chromium } = createRequire(import.meta.url)("playwright");
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const A = "http://localhost:8765/echtzeit/", O = 6400;
 const b = await chromium.launch();
-const seite = async (adr) => { const p = await b.newPage({ viewport: { width: 1280, height: 800 } }), f = []; p.on("pageerror", (e) => f.push(e.message)); await p.goto(A + adr, { waitUntil: "load" }); return { p, f }; };
+/* Standard: alles freigeschaltet (wie Entwickler mit ez__alles); der gesperrte Normalfall wird am Ende eigens geprüft */
+const seite = async (adr, alles = true) => { const p = await b.newPage({ viewport: { width: 1280, height: 800 } }), f = []; if (alles) await p.addInitScript(() => { try { localStorage.setItem("ez__alles", "1"); } catch { /* */ } }); p.on("pageerror", (e) => f.push(e.message)); await p.goto(A + adr, { waitUntil: "load" }); return { p, f }; };
 
 { const { p, f } = await seite("?server=");
   await p.evaluate(() => { try { localStorage.removeItem("ez_welt_pos"); } catch { /* */ } }); await p.reload({ waitUntil: "load" });
@@ -54,5 +55,16 @@ const seite = async (adr) => { const p = await b.newPage({ viewport: { width: 12
 for (const [adr, name, frage] of [["?stadt=bild&server=", "das gemalte Bild (?stadt=bild)", () => Boolean(window.EZD)], ["?ort=weidenhain&server=&neu=1", "Weidenhain", () => Boolean(window.EZO)], ["?ort=weidenhain&kampf=waldweg&server=&neu=1", "die Waldweg-Strecke der Kampagne", () => document.querySelectorAll("canvas").length === 1]]) {
   const { p, f } = await seite(adr); await p.waitForTimeout(5000); const da = await p.evaluate(frage);
   check(da && f.length === 0, `weiterhin erreichbar: ${name}${f.length ? " – Fehler: " + f[0] : ""}`); await p.close(); }
+
+{ /* Normalfall für Spieler: Waldweg und Kampagnen sind noch nicht freigegeben – das Südtor bleibt zu, Kampagnen-Adressen führen in die Waldmark */
+  const { p, f } = await seite("?server=", false); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1000);
+  const tor = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) if (i.id === "tor_ansehen") return i; return null; });
+  await p.evaluate(([x, y]) => { const s = window.EZW.szene; s.ort.x = x; s.ort.y = y; }, [tor.x, tor.y]); await p.waitForTimeout(600);
+  const kt = await p.evaluate(() => document.querySelector("#ez-dorf-knopf").textContent); check(/Südtor ist noch geschlossen/.test(kt), `gesperrt: am Südtor „${kt.trim()}“`);
+  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 53; }); await p.keyboard.down("s"); await p.waitForTimeout(2500); await p.keyboard.up("s");
+  const y = await p.evaluate(() => window.EZW.ort().y - 6400); check(y < 58, `gesperrt: durch das Südtor kommt man nicht (y ${y.toFixed(1)})`);
+  check(f.length === 0, "keine Fehler (gesperrt)"); await p.close();
+  const { p: q } = await seite("?ort=weidenhain&server=", false); await q.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }).catch(() => {});
+  check(await q.evaluate(() => Boolean(window.EZW && window.EZW.szene) && !window.EZO), "gesperrt: eine Kampagnen-Adresse führt in die Waldmark"); await q.close(); }
 
 await b.close(); console.log(ok ? "\nSpielstart: alles in Ordnung" : "\nSpielstart: FEHLER"); process.exit(ok ? 0 : 1);

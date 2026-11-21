@@ -9,6 +9,8 @@ const { chromium } = createRequire(import.meta.url)("playwright");
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const ADR = "http://localhost:8765/echtzeit/?welt=waldmark&server=", O = 6400; /* Ursprung der Waldmark in Rechenfeldern */
 const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1280, height: 800 } }), fehler = [];
+/* Prüfwelt und Waldweg sind Entwickler-Ansichten: alles freischalten (ez__alles), sonst führt die Adresse in die Waldmark */
+await p.addInitScript(() => { try { localStorage.setItem("ez__alles", "1"); } catch { /* */ } });
 p.on("pageerror", (e) => fehler.push(e.message));
 await p.goto(ADR + "&neu=1", { waitUntil: "load" }); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(800);
 
@@ -37,12 +39,12 @@ check(m.laden === 0 && m.regionen.includes("waldweg") && m.regionen.includes("wa
 
 /* Räumliche Gebäude: in die Taverne hinein (Dach weg), an der Tür (offen), hinter die Heldenhalle (Silhouette) */
 const zustand = () => p.evaluate(() => { const s = window.EZW.szene, a = {}; for (const st of s.stuecke.values()) for (const b of st.bauten) for (const t of b.teile) if (t.bild.texture.key.includes("dorf_taverne_01")) {
-  a[t.rolle] = Math.min(a[t.rolle] ?? 1, t.bild.alpha); if (t.rolle === "tuer_offen") a.offen = t.bild.visible; } return { ...a, silhouette: s.silhouette.visible }; });
+  a[t.rolle] = Math.min(a[t.rolle] ?? 1, t.bild.alpha); if (t.rolle === "tuer_offen") a.offen = t.bild.visible; } return { ...a, silhouette: s.silhouette.visible || (!s.bildFigur && s.figur.alpha < 1) }; });
 const taverne = tueren.find((a) => a.id === "taverne_tuer"); await geh(taverne.x - O, taverne.y - O - 2.2, "durch die Tür in die Taverne");
 let z = await zustand(); check(z.dach !== undefined && z.dach < 0.05 && z.vorn < 0.4, `in der Taverne: Dach ausgeblendet (${z.dach?.toFixed(2)}), Südwand durchsichtig (${z.vorn?.toFixed(2)})`);
 await geh(taverne.x - O, taverne.y - O, "zurück vor die Tür"); await p.waitForTimeout(1500); z = await zustand(); check(z.offen === true && z.dach > 0.95, `vor der Tür: Tür offen (${z.offen}), Dach wieder da (${z.dach?.toFixed(2)})`);
 await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6400 + 14.2; s.pfad = []; }); await p.waitForTimeout(1200);
-z = await zustand(); check(z.silhouette === true, "hinter der Heldenhalle erscheint die Silhouette des Helden");
+z = await zustand(); check(z.silhouette === true, "hinter der Heldenhalle bleibt der Held sichtbar (Silhouette bzw. halb durchsichtig nach vorn)");
 await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6437.5; }); await p.waitForTimeout(800);
 z = await zustand(); check(z.silhouette === false, "davor keine Silhouette");
 /* Bäume: einen Baum suchen, hinter den man treten kann */
