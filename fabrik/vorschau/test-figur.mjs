@@ -5,7 +5,9 @@
  *   node test-figur.mjs <figur> <version> [bildordner]          z. B. node test-figur.mjs gegner.bandit v001
  */
 import { createRequire } from "node:module";
-const require = createRequire(import.meta.url); const { chromium } = require("playwright");
+const require = createRequire(import.meta.url);
+const zeigt = (sichtbar, t) => sichtbar.some((e) => e === t || e === t + ".hinten" || e === t + ".vorn");   // genau dieses Teil (nicht eine Farbvariante, deren Name mit ihm beginnt)
+const { chromium } = require("playwright");
 const [figur = "gegner.bandit", version = "v001", bilder = ""] = process.argv.slice(2); let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const br = await chromium.launch(), p = await (await br.newContext({ viewport: { width: 1100, height: 700 } })).newPage(), fehler = [];
 p.on("pageerror", (e) => fehler.push(String(e))); p.on("console", (m) => { if (m.type() === "error") fehler.push(m.text()); });
@@ -15,7 +17,7 @@ const meta = await p.evaluate(() => window.FABRIK.szene.meta); console.log(`${me
 let s = await z(); const gang = meta.animationen.laufen ? "laufen" : "springen"; const plaetze = Object.keys(meta.plaetze);
 check(s.anim === "ruhe" && s.sichtbar.includes("koerper"), "Start: die Figur steht in Ruhe, der Körper ist zu sehen");
 const pflicht = plaetze.filter((q) => !meta.ebenen[meta.plaetze[q][0]].wahlfrei);
-check(pflicht.every((q) => s.tragen[q] && s.sichtbar.some((e) => e === s.tragen[q] || e.startsWith(s.tragen[q] + "."))) && plaetze.filter((q) => !pflicht.includes(q)).every((q) => !s.tragen[q]), `Anfangsausrüstung: ${pflicht.length} Plätze belegt, jedes Teil als eigene Ebene sichtbar; wahlfreie Teile zunächst abgelegt (${plaetze.filter((q) => !pflicht.includes(q)).join(", ") || "keine"})`);
+check(pflicht.every((q) => s.tragen[q] && zeigt(s.sichtbar, s.tragen[q])) && plaetze.filter((q) => !pflicht.includes(q)).every((q) => !s.tragen[q]), `Anfangsausrüstung: ${pflicht.length} Plätze belegt, jedes Teil als eigene Ebene sichtbar; wahlfreie Teile zunächst abgelegt (${plaetze.filter((q) => !pflicht.includes(q)).join(", ") || "keine"})`);
 await bild("1-start");
 const wege = [["d", 0], ["d+s", 1], ["s", 2], ["a+s", 3], ["a", 4], ["a+w", 5], ["w", 6], ["d+w", 7]]; let richtig = 0, bewegt = 0;
 for (const [t, r] of wege) { const a = await z(), ks = t.split("+"); for (const k of ks) await p.keyboard.down(k); await warte(350); const b = await z(); for (const k of ks) await p.keyboard.up(k);
@@ -56,9 +58,9 @@ else {
 // jedes Teil einzeln ab- und wieder anlegen, Varianten durchschalten
 let einzeln = 0, varianten = 0, n = 0;
 for (const q of plaetze) { const vorher = (await z()).tragen[q] || meta.plaetze[q][0]; await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, vorher]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(80);
-  await p.evaluate((q) => window.FABRIK.trage(q, ""), q); await warte(120); s = await z(); if (!s.sichtbar.some((e) => e === vorher || e.startsWith(vorher + "."))) einzeln++;
+  await p.evaluate((q) => window.FABRIK.trage(q, ""), q); await warte(120); s = await z(); if (!zeigt(s.sichtbar, vorher)) einzeln++;
   for (const t of meta.plaetze[q]) { n++; await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, t]); await warte(50); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(250); s = await z();
-    if (s.sichtbar.some((e) => e === t || e.startsWith(t + ".")) && meta.plaetze[q].filter((u) => u !== t).every((u) => !s.sichtbar.some((e) => e === u || e.startsWith(u + ".")))) varianten++; }
+    if (zeigt(s.sichtbar, t) && meta.plaetze[q].filter((u) => u !== t).every((u) => !zeigt(s.sichtbar, u))) varianten++; }
   await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, vorher]); await warte(80); }
 check(einzeln === plaetze.length, `jedes Teil lässt sich einzeln ablegen, die übrigen bleiben (${einzeln}/${plaetze.length})`);
 check(varianten === n, `jede Variante eines Platzes ersetzt die andere (${varianten}/${n})`);
