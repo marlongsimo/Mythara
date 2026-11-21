@@ -16,7 +16,7 @@ await p.goto(ADR + "&neu=1", { waitUntil: "load" }); await p.waitForFunction(() 
 
 /* Bei jedem Bild: Sprünge der Position, fehlender Boden im Bild, Region */
 await p.evaluate(() => { const s = window.EZW.szene, k = s.cameras.main, m = window.M = { bilder: 0, sprung: 0, luecke: 0, regionen: new Set(), laden: 0 }; let alt = null;
-  s.events.on("postupdate", () => { m.bilder++; const o = s.ort; if (alt && Math.hypot(o.x - alt.x, o.y - alt.y) > 0.4) m.sprung++; alt = { x: o.x, y: o.y }; m.regionen.add(s.hier);
+  s.events.on("postupdate", () => { m.bilder++; const o = s.ort; if (alt && Math.hypot(o.x - alt.x, o.y - alt.y) > 1.0) m.sprung++;   /* mehr als ein Feld in einem Bild: ein echter Sprung (bei wenigen Bildern je Sekunde sind 0,5 Felder normal) */ alt = { x: o.x, y: o.y }; m.regionen.add(s.hier);
     const x0 = Math.floor(k.scrollX / 1536), x1 = Math.floor((k.scrollX + k.width / k.zoom) / 1536), y0 = Math.floor(k.scrollY / 1536), y1 = Math.floor((k.scrollY + k.height / k.zoom) / 1536);
     for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) { const n = cx + "_" + cy; if (!s.gueltig.has(n)) continue; const st = s.stuecke.get(n); if (!st || st.stand !== "aktiv" || !st.boden || st.boden.texture.key === "__MISSING") m.luecke++; } });
   window.addEventListener("beforeunload", () => { m.laden++; }); });
@@ -48,9 +48,9 @@ z = await zustand(); check(z.silhouette === true, "hinter der Heldenhalle bleibt
 await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6448; s.ort.y = 6437.5; }); await p.waitForTimeout(800);
 z = await zustand(); check(z.silhouette === false, "davor keine Silhouette");
 /* Bäume: einen Baum suchen, hinter den man treten kann */
-const baum = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key.startsWith("obj-wald_baum") && s.raster.begehbar(g.x / 48, g.y / 48 - 1.5)) { s.ort.x = g.x / 48; s.ort.y = g.y / 48 - 1.5; return g.texture.key; } return ""; });
+const baum = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (/^obj-(wald_baum|stil_)/.test(g.texture.key) && s.raster.begehbar(g.x / 48, g.y / 48 - 1.5)) { s.ort.x = g.x / 48; s.ort.y = g.y / 48 - 1.5; return g.texture.key; } return ""; });
 await p.waitForTimeout(1500);
-const baumAlpha = await p.evaluate(() => { const s = window.EZW.szene, o = s.ort; let a = 1; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (g.texture.key.startsWith("obj-wald_baum") && Math.abs(g.x / 48 - o.x) < 0.01) a = Math.min(a, g.alpha); return a; });
+const baumAlpha = await p.evaluate(() => { const s = window.EZW.szene, o = s.ort; let a = 1; for (const st of s.stuecke.values()) for (const g of st.scheinend) if (/^obj-(wald_baum|stil_)/.test(g.texture.key) && Math.abs(g.x / 48 - o.x) < 0.01) a = Math.min(a, g.alpha); return a; });
 check(Boolean(baum) && baumAlpha < 0.6, `hinter einem Baum wird seine Krone durchscheinend (${baum}, Deckkraft ${baumAlpha.toFixed(2)})`);
 
 /* Gemerkte Stelle */

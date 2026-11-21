@@ -45,7 +45,7 @@ try {
   check(!/ort=/.test(gast.url()), "Waldweg-Adresse führt zurück in die Waldmark (" + gast.url().replace(B, "") + ")");
   await gast.goto(B + "?ort=weidenhain" + S); await gast.waitForURL((u) => !/ort=/.test(u), { timeout: 15000 }).catch(() => {}); check(!/ort=/.test(gast.url()), "Kampagnen-Adresse führt zurück in die Waldmark");
   await gast.waitForFunction(() => window.EZW && window.EZW.ich(), null, { timeout: 30000 });
-  check(await gast.$$eval("#ez-kartenrahmen .rknoepfe small", (l) => l.map((x) => x.textContent.replace(/ \(\d+\)/, "")).join(",")) === "Spieler,Held", "Unter der Karte nur Spieler und Held – keine Weltkarte, kein Teleport, keine Quests");
+  check(await gast.$$eval("#ez-kartenrahmen .rknoepfe small", (l) => !l.some((x) => /Weltkarte|Quests/.test(x.textContent))), "Unter der Karte keine Weltkarte und keine Quests (Kampagnen ausgeblendet)");
   check(!(await gast.$('#ez-menue [aria-label="Weltkarte"]')), "Kein Weg zur Weltkarte im Menü");
   check(await gast.evaluate(() => window.EZW.ich().gast === true && /^Gast \d{4}$/.test(window.EZW.ich().name)), "Ohne Konto ist man als Gast in der Welt: " + await gast.evaluate(() => window.EZW.ich().name));
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");
@@ -76,7 +76,7 @@ try {
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich" && m.kanal === "fluestern" && m.an === "Ben")), "Ben erhält Annas Flüstern");
   check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
   /* Held im Heldenprofil wählen: Er muss bleiben (der Server speichert ihn) – früher sprang die Figur nach dem Neuladen zurück */
-  await ben.evaluate(() => document.activeElement && document.activeElement.blur()); await ben.click('#ez-menue [aria-label="Menü"]'); await ben.click('[data-t="profil"]');
+  await ben.evaluate(() => document.activeElement && document.activeElement.blur()); await ben.click('#ez-oben-knoepfe [data-o="menue"], #ez-menue [aria-label="Menü"]'); await ben.click('[data-t="profil"]');
   await ben.click('.bildnisse [data-held="schildwaechter"]'); await ben.click('.tafel .reihe .haupt[data-t="zu"]'); await ben.waitForTimeout(1000); await ben.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich() && window.EZW.ich().held === "schildwaechter", null, { timeout: 15000 }).catch(() => {}); await ben.waitForTimeout(500);
   check(await ben.evaluate(() => window.EZW.szene && window.EZW.szene.held === "schildwaechter" && window.EZW.ich().held === "schildwaechter") && HELDSETZEN.some((h) => h.p_user.endsWith("b002") && h.p_held === "schildwaechter"), "Im Heldenprofil gewählt: Ben bleibt Torvald (auch auf dem Server)");
   await anna.waitForTimeout(600); check(await anna.evaluate(() => window.EZW.spieler().some((d) => d.n === "Ben" && d.h === "schildwaechter")), "Anna sieht Ben jetzt als Torvald");

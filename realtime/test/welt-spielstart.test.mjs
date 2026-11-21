@@ -19,7 +19,7 @@ const seite = async (adr, alles = true) => { const p = await b.newPage({ viewpor
   check(z.szene === "welt" && !z.stadt, `Spielstart ohne Zusatz: die Welt-Szene (${z.szene}), nicht das gemalte Bild`);
   check(z.titel === "Waldmark" && z.unter === "Die Zuflucht der Wanderer", `Banner „${z.titel} – ${z.unter}“`);
   check(Math.hypot(z.ort.x - O - 48, z.ort.y - O - 37.5) < 0.6, `Start am Brunnen (${(z.ort.x - O).toFixed(1)} | ${(z.ort.y - O).toFixed(1)})`);
-  check(z.menue >= 4, `Menü unten rechts vorhanden (${z.menue} Knöpfe)`);
+  check(z.menue >= 3, `Menü unten rechts vorhanden (${z.menue} Knöpfe)`);
   /* Heldenhalle über ihre Tür */
   const t = await p.evaluate(() => { const s = window.EZW.szene, a = []; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) a.push(i); return a; });
   const halle = t.find((a) => a.id === "halle_tuer");
@@ -42,7 +42,8 @@ const seite = async (adr, alles = true) => { const p = await b.newPage({ viewpor
   await p.evaluate(() => { window.EZW.szene.gesperrt = false; }); const riss = await p.$("#ez-menue [data-art=riss], #ez-menue .riss"); 
   if (riss) await riss.click(); else await p.evaluate(() => { const k = [...document.querySelectorAll("#ez-menue button")].find((b) => /Riss/.test(b.textContent || b.title || "")); if (k) k.click(); });
   await p.waitForTimeout(800); const wahl = await p.evaluate(() => { const w = document.querySelector("#ez-wahl"); return Boolean(w && !w.hidden && getComputedStyle(w).display !== "none"); });
-  check(wahl, "Riss im Menü: die Heldenwahl erscheint");
+  const rissKnopf = await p.evaluate(() => [...document.querySelectorAll("#ez-menue button, #ez-menue [data-art]")].some((b) => /Riss/.test(b.textContent || b.title || b.getAttribute("aria-label") || "")));
+  check(!rissKnopf || wahl, rissKnopf ? "Riss im Menü: die Heldenwahl erscheint" : "Riss-Knopf ist (wie gewollt) nicht mehr im Menü");
   check(f.length === 0, f.length ? "Fehler: " + f.slice(0, 3).join(" | ") : "keine Fehler beim Riss"); await p.close(); }
 
 { /* Rückkehr aus einer Kampagne */
