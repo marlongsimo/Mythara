@@ -36,7 +36,7 @@
       "platz": "hemd",
       "bild": "untergewand",
       "farbe": "#8c6f4c",
-      "dicke": 0.008,
+      "dicke": 0.013,
       "bereich": [
         [
           "brust",
@@ -81,7 +81,7 @@
       "platz": "hose",
       "bild": "hose",
       "farbe": "#4b3526",
-      "dicke": 0.008,
+      "dicke": 0.012,
       "bereich": [
         [
           "becken",
@@ -116,7 +116,7 @@
       "platz": "schuh",
       "bild": "stiefel",
       "farbe": "#5c3720",
-      "dicke": 0.012,
+      "dicke": 0.016,
       "bereich": [
         [
           "fuss.L",
@@ -177,5 +177,6 @@
       "glb": "held.schildwahrer/v004/quelle/teile/kopf.haar.v003.glb",
       "wahlfrei": true
     }
-  ]
+  ],
+  "teilnetze_glaetten": 2
 }
