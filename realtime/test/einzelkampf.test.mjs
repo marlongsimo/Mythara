@@ -9,7 +9,7 @@ let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t
 const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
 const K = KARTEN.kreuzwald, M = K.mehrkampf[0]; setzeKarte(K, FEIN); setzeStaerke(ORTSTUFE.kreuzwald, 1);
 const s = Sim.welt(3), gegner = () => s.wesen.filter((w) => !w.held), [b1, b2, b3, b4] = gegner();
-for (const g of gegner()) { g.streifT = 1e9; g.pfad = []; }
+for (const g of gegner()) { g.streifT = 1e9; g.pfad = []; g.lp = g.max = 400; } /* zähe Testbanditen: geprüft wird die Bindung, nicht das Balancing (Banditen haben seit v1 nur 40 LP) */
 /* Einzelkampf-Stelle: der Weg nahe dem Südtor, weit weg von der Lichtung */
 const E = { x: 112, y: 6 }; check(!s.mehrkampfBei(E) && s.mehrkampfBei({ x: (M[0] + M[2]) / 2, y: (M[1] + M[3]) / 2 }), `Weg am Tor: Einzelkampf · Lichtung (${M.join(", ")}): Mehrkampf`);
 const setze = (w, x, y) => { w.x = w.heim.x = x; w.y = w.heim.y = y; w.pfad = []; w.zielId = 0; w.wach = false; };

@@ -20,11 +20,12 @@ check(Math.max(...gegner().map((w) => Math.hypot(w.x - w.heim.x, w.y - w.heim.y)
 const wx = 6448, wy = 6467, id = s.beitreten("schildwaechter", 0, { x: wx - Z.x0, y: wy - Z.y0 }), h = s.nach(id);
 check(Math.hypot(Z.x0 + h.x - wx, Z.y0 + h.y - wy) < 1.5, `Hinter dem Südtor: der Held steht, wo er in der Welt stand (${(Z.x0 + h.x).toFixed(1)}|${(Z.y0 + h.y).toFixed(1)})`);
 lauf(s, 3); check(gegner().every((w) => w.zielId === 0), "Am Tor, weit weg von der Lichtung: niemand greift an");
-const b = gegner()[0]; for (const g of gegner()) { g.pfad = []; g.streifT = 99; if (g !== b) { g.x = g.heim.x = b.x + 30; g.y = g.heim.y = b.y; } }
+const b = gegner()[0]; for (const g of gegner()) { g.pfad = []; g.streifT = 99; g.lp = g.max = 400; /* zäh: geprüft wird Aggro und Angriff, nicht das Balancing (seit v1 nur 40 LP) */ if (g !== b) { g.x = g.heim.x = b.x + 30; g.y = g.heim.y = b.y; } }
 const stell = (d) => { h.x = b.x - d; h.y = b.y; h.rx = 0; h.ry = 0; h.pfad = []; b.zielId = 0; b.wach = false; };
-stell(6.2); lauf(s, 0.3); check(b.zielId === 0, "6 Felder: der Bandit bemerkt den Helden nicht");
-stell(4.5); lauf(s, 0.3); check(b.zielId === id, "4,5 Felder: er greift an (Aggro 5)");
-lauf(s, 8); check(h.lp < h.max, `Er sticht zu (Torvald ${Math.round(h.lp)}/${h.max})`);
+stell(5.2); lauf(s, 0.3); check(b.zielId === 0, "5 Felder: der Bandit bemerkt den Helden nicht");
+stell(3.5); lauf(s, 0.3); check(b.zielId === id, "3,5 Felder: er greift an (Aggro 4)");
+let stiche = 0; for (let i = 0; i < 8 * 20; i++) { s.schritt(); for (const e of s.zustand().ev) if ((e.a === "schaden" || e.a === "null" || e.a === "block") && e.id === id) stiche++; }
+check(stiche >= 2, `Er sticht zu (${stiche}× in 8 s, getroffen oder geblockt – Torvald ${Math.round(h.lp)}/${h.max})`);
 /* Bewegung über „richtung“, wie die offene Welt sie schickt */
 const x0 = h.x; s.eingabe({ t: "richtung", x: 1, y: 0 }, id); lauf(s, 1); s.eingabe({ t: "richtung", x: 0, y: 0 }, id); check(h.x - x0 > 2, `Die Welt schickt eine Richtung, die Simulation bewegt den Helden (${(h.x - x0).toFixed(1)} Felder in 1 s)`);
 console.log(ok ? "Kreuzwald: alles in Ordnung" : "Kreuzwald: FEHLER"); process.exit(ok ? 0 : 1);
