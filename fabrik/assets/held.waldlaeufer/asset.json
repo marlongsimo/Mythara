@@ -1,0 +1,19 @@
+{
+  "id": "held.waldlaeufer",
+  "name": "Orin, der Kopfgeldjäger (Testfigur, Held Waldläufer)",
+  "kategorie": "held",
+  "test_asset": true,
+  "status": "v001: zehn Bewegungen in acht echten Richtungen (Ruhe, Laufen, Zielen, Schießen, Nachladen, Messerangriff, Axtangriff, Treffer, Ausweichen, Tod). Armbrust (Standard), Jagdmesser und Wurfaxt in der rechten Hand wechselbar; die linke Hand liegt in Ruhe, Laufen, Zielen und Schießen am Vorderschaft. Prüfung: fehlerhaft (26 ok, 1 Fehler: Gürtel, Wams und Armschienen liegen in einzelnen Bewegungen zu bis zu 20 % unter der Körperoberfläche – Grenze 3 %).",
+  "referenz": "referenz/original.png",
+  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen", "modell": "lokal erzeugt mit TripoSR (MIT) aus der Rückansicht, ohne kostenpflichtigen Dienst" },
+  "skelett": "gleiches Humanoid-Skelett wie held.krieger, gegner.bandit, npc.standard.m und held.priesterin",
+  "waffen": { "rechts": ["waffe.armbrust (Standard, aus Grundkörpern: armbrust.py)", "waffe.jagdmesser", "waffe.wurfaxt"], "vorbereitet": ["waffe.bogen.orin (braucht eigene Bewegungen)"] },
+  "bewegungen": { "zielen": "Anschlag, letztes Bild halten (F)", "schiessen": "Angriff der Armbrust (J), Trefferbild = Abschuss", "nachladen": "Spitze zum Boden, Bolzen aus dem Köcher (N)", "angriff_dolch": "Messerangriff", "angriff_axt": "Axtangriff" },
+  "hinweise": [
+    "Aus der Rückansicht gebaut (die Vorderansicht ergab ein abgespreiztes Bein); ein 40 cm nach vorn ragender Stab im Modell wurde abgeschnitten, das Gesicht ist grob",
+    "Trägt Orin Messer oder Axt, liegt die linke Hand in Ruhe und Laufen trotzdem dort, wo sonst der Vorderschaft wäre (alle Waffen teilen die Bewegungen)",
+    "Der Bolzen ist immer eingelegt zu sehen",
+    "Im letzten Todesbild steckt der Axtkopf etwa 5 cm im Boden (die Armbrust muss flach liegen, alle Waffen teilen die Todesbewegung)"
+  ],
+  "offen": ["Rüstung über dem Körper: Gürtel, Wams und Armschienen falten an der Taille unter den Waffenrock des Modells", "Bogen mit eigenen Bewegungen", "Kapuzenüberwurf als echte Kapuze (derzeit wahlfreie Kapuze)"]
+}
