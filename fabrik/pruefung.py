@@ -157,7 +157,7 @@ if "tod" in ANIM:
     else: melde("animation", "Tod: steht am Anfang, liegt am Ende (höchster Punkt des Körpers im ersten und letzten Bild, m)", [round(h[0], 2), round(h[-1], 2)], f"Anfang ≥ 1.6, Ende ≤ {liegt:.2f} (Körpertiefe {dicke:.2f} + 0.05, mindestens 0.6)", h[0] >= 1.6 and h[-1] <= liegt)
     for e, o in teile.items():                                                                       # die Waffe liegt am Ende flach auf dem Boden, nicht senkrecht in die Luft
         if o["art"] != "starr": continue
-        arm.animation_data.action = bpy.data.actions["tod"]; sc.frame_set(ANIM["tod"]["bilder"]); bpy.context.view_layer.update(); oben = max((zur_figur @ (o.matrix_world @ Vector(c))).z for c in o.bound_box)
+        arm.animation_data.action = bpy.data.actions["tod"]; sc.frame_set(ANIM["tod"]["bilder"]); bpy.context.view_layer.update(); oben = max((zur_figur @ (o.matrix_world @ v.co)).z for v in o.data.vertices)   # die Punkte des Teils selbst (die Hüllbox eines schräg liegenden Teils ragt höher als das Teil)
         melde("animation", f"Tod: {e} liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)", round(oben, 2), "≤ 0.5", oben <= 0.5)
 if "block" in ANIM and not any(EB[t]["platz"] == "arm_l" for t in starr):
     for e, o in teile.items():

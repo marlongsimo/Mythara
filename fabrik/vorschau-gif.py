@@ -48,10 +48,16 @@ if krieger: wechsel = [(["waffe.langschwert", "schild.baum.stahl", "ruestung.bru
 else:                                                                                                # andere Figur: zweite Waffe, dann Teil für Teil ablegen
     wechsel = []; jetzt = dict(voll)
     for p_, t in M["plaetze"].items():
+        t = [e for e in t if not EB[e].get("variante_von")]                                              # Farbvarianten zeigt der Fraktionsteil unten
         if len(t) > 1: jetzt[p_] = t[1]; wechsel.append((list(jetzt.values()), f"Waffe gewechselt: {t[1].split('.')[-1]}"))
     for p_ in [p for p in ("kopf", "hals", "brust") if p in jetzt]: jetzt.pop(p_); wechsel.append((list(jetzt.values()), "abgelegt: " + p_))
     wechsel.append(([], "ohne Ausrüstung"))
 if not M["plaetze"]: wechsel = []                                                                    # Tier ohne Ausrüstung: nichts zu wechseln
+fraktion = sorted({e.split(".")[-1] for e, d in EB.items() if d.get("variante_von")}, key=lambda n: [e for e in EB if e.endswith("." + n)][0] and list(EB).index([e for e in EB if e.endswith("." + n)][0]))
+if fraktion:                                                                                         # Farbvarianten für Fraktionen: jede Farbe einmal mit voller Ausrüstung
+    for n in ["Standard"] + fraktion:
+        teile = [next((e for e, d in EB.items() if d.get("variante_von") == t and e.endswith("." + n)), t) for t in alle]
+        for i in range(A["ruhe"]["bilder"]): folge.append((bogen("ruhe", i, teile, f"Farbvariante: {n}"), 160))
 for teile, text in wechsel:
     for _ in range(2):
         for i in range(A["laufen"]["bilder"]): folge.append((bogen("laufen", i, teile, text), 1000 // A["laufen"]["rate"]))

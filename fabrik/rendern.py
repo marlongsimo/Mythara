@@ -82,7 +82,14 @@ for a in aktionen:
             sc.frame_set(b + 1); bpy.context.view_layer.update()
             for o in starr: e = [o.matrix_world @ Vector(c) for c in o.bound_box]; zeile[o["ebene"]].append(round(sum((v.dot(blick) for v in e)) / 8 * 100))
         for o in starr: meta["tiefe"][o["ebene"]][a.name].append(zeile[o["ebene"]])
-json.dump(meta, open(os.path.join(ziel, kennung + ".json"), "w"), ensure_ascii=False, indent=1)
+alt_pfad = os.path.join(ziel, kennung + ".json")
+if BEW is not None and os.path.exists(alt_pfad):                                                   # nur einzelne Bewegungen neu gerendert: die übrigen Bewegungen (und ihre Tiefen) aus den bisherigen Angaben behalten
+    alt = json.load(open(alt_pfad))
+    for name, d in alt.get("animationen", {}).items(): meta["animationen"].setdefault(name, d)
+    for e, je in alt.get("tiefe", {}).items():
+        if e in meta["tiefe"]:
+            for name, w in je.items(): meta["tiefe"][e].setdefault(name, w)
+json.dump(meta, open(alt_pfad, "w"), ensure_ascii=False, indent=1)
 
 tmp = os.path.join(ziel, ".bild.png"); start = time.time(); gerendert = 0
 for name, sichtbar, schneider in laeufe:
