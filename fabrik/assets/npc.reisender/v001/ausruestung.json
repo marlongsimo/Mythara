@@ -1,0 +1,33 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "NPC Reisender v001 aus der Grundstruktur Mann v002: lockerer Reisemantel mit Kapuzenkragen und Mantelschoß bis zum Knie (set_aus_bild.py mantel=0.38), Scheitel, kurzer Vollbart, ohne Waffe.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kleidung.set.reisender",
+      "platz": "set",
+      "glb": "npc.reisender/v001/quelle/teile/kleidung.set.reisender.glb",
+      "beine_mitteln": true
+    },
+    {
+      "id": "kopf.haar.scheitel",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.scheitel.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.vollbart.glb"
+    }
+  ]
+}
