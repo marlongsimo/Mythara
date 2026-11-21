@@ -1,0 +1,255 @@
+{
+  "hinweis": "Vaelin, der Elementarist (Testfigur, Held Magier). Gleiches Skelett wie Krieger, Bandit, NPC, Elara und Orin. Stab aufrecht in der rechten Hand (Elementarstab, Varianten Feuer-, Eis-, Blitz-, Kristallstab). Die Zaubereffekte sind eigene, wiederverwendbare Bilder (assets/effekte.zauber), nicht Teil der Figur.",
+  "bewegungen": [
+    "ruhe",
+    "laufen",
+    "stabhaltung",
+    "geschoss",
+    "frosthauch",
+    "donnerwelle",
+    "glutsphaere",
+    "stabschlag",
+    "treffer",
+    "tod"
+  ],
+  "haltung": "stab",
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.elementarstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.elementarstab/v001/quelle/elementarstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "geschoss"
+    },
+    {
+      "id": "waffe.feuerstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.feuerstab/v001/quelle/feuerstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "geschoss"
+    },
+    {
+      "id": "waffe.eisstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.eisstab/v001/quelle/eisstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "geschoss"
+    },
+    {
+      "id": "waffe.blitzstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.blitzstab/v001/quelle/blitzstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "geschoss"
+    },
+    {
+      "id": "waffe.kristallstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.kristallstab/v001/quelle/kristallstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "angriff": "geschoss"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.guertel.vaelin",
+      "platz": "guertel",
+      "bild": "guertel",
+      "farbe": "ton",
+      "dicke": 0.03,
+      "bereich": [
+        [
+          "bauch",
+          0,
+          0.4
+        ],
+        [
+          "becken",
+          0.3,
+          0.6
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.arm.vaelin",
+      "platz": "hand",
+      "bild": "armschienen",
+      "farbe": "ton",
+      "dicke": 0.02,
+      "bereich": [
+        [
+          "unterarm.L",
+          0.55,
+          1
+        ],
+        [
+          "unterarm.R",
+          0.55,
+          1
+        ],
+        [
+          "hand.L",
+          0,
+          1
+        ],
+        [
+          "hand.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.fuss.stiefel.vaelin",
+      "platz": "fuss",
+      "bild": "stiefel",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "unterschenkel.L",
+          0.7,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.7,
+          1
+        ],
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.robe.vaelin",
+      "platz": "brust",
+      "bild": "robe",
+      "farbe": "ton",
+      "dicke": 0.022,
+      "bereich": [
+        [
+          "brust",
+          0,
+          0.7
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.7
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.7
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schulter.umhang.vaelin",
+      "platz": "schulter",
+      "bild": "schulterumhang",
+      "farbe": "ton",
+      "dicke": 0.028,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "brust",
+          0.6,
+          1
+        ],
+        [
+          "hals",
+          0,
+          0.7
+        ],
+        [
+          "oberarm.L",
+          0,
+          0.45
+        ],
+        [
+          "oberarm.R",
+          0,
+          0.45
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.kopf.kapuze.vaelin",
+      "platz": "kopf",
+      "bild": "kapuze",
+      "farbe": "ton",
+      "dicke": 0.024,
+      "ueberlage": true,
+      "gesicht_frei": true,
+      "wahlfrei": true,
+      "bereich": [
+        [
+          "kopf",
+          0,
+          1
+        ],
+        [
+          "hals",
+          0.5,
+          1
+        ]
+      ]
+    }
+  ],
+  "vorbereitet": [
+    {
+      "id": "gegenstand.zauberbuch",
+      "plan": "Zauberbuch am Gürtel (starr an becken, links) – noch nicht gebaut"
+    },
+    {
+      "id": "gegenstand.schriftrollen",
+      "plan": "Schriftrollen und Fläschchen am Gürtel – noch nicht gebaut"
+    },
+    {
+      "id": "kleidung.untergewand.vaelin",
+      "plan": "Untergewand als leichte Alternative zur Robe (Platz brust) – ausgeschnitten, noch nicht als Hülle angelegt"
+    }
+  ],
+  "arm_radius": 0.1,
+  "arme_tief": true
+}

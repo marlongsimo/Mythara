@@ -1,0 +1,177 @@
+{
+  "hinweis": "Standard-NPC männlich (Testfigur). Gleiches Skelett wie Krieger und Bandit. Grundkleidung schließt sich gegenseitig aus (exklusiv); Schürze und Halstuch sind wahlfreie Lagen darüber, der Strohhut sitzt auf dem Kopf. Die Weste wird für die Farbvarianten nachträglich umgefärbt (npc_varianten.py).",
+  "bewegungen": [
+    "ruhe",
+    "laufen"
+  ],
+  "haltung": "zivil",
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "kleidung.kopf.strohhut",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.strohhut/v001/quelle/strohhut.glb",
+      "sitz": 0.3
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.guertel.npc",
+      "platz": "guertel",
+      "bild": "guertel",
+      "farbe": "ton",
+      "dicke": 0.024,
+      "bereich": [
+        [
+          "bauch",
+          0,
+          0.28
+        ],
+        [
+          "becken",
+          0,
+          0.5
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.brust.weste",
+      "platz": "brust",
+      "bild": "weste",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "brust",
+          0,
+          0.85
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.fuss.stiefel.npc",
+      "platz": "fuss",
+      "bild": "stiefel",
+      "farbe": "ton",
+      "dicke": 0.016,
+      "bereich": [
+        [
+          "unterschenkel.L",
+          0.55,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.55,
+          1
+        ],
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.bein.hose.npc",
+      "platz": "bein",
+      "bild": "hose",
+      "farbe": "ton",
+      "dicke": 0.012,
+      "bereich": [
+        [
+          "becken",
+          0.5,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.55
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.55
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schuerze.leder",
+      "platz": "schuerze",
+      "bild": "schuerze",
+      "farbe": "ton",
+      "dicke": 0.03,
+      "vorn": true,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          0.45
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          0.75
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          0.75
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.hals.tuch.rot",
+      "platz": "hals",
+      "bild": "halstuch",
+      "farbe": "ton",
+      "dicke": 0.026,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "hals",
+          0,
+          0.6
+        ],
+        [
+          "brust",
+          0.82,
+          1
+        ]
+      ]
+    }
+  ]
+}

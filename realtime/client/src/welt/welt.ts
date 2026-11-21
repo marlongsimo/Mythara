@@ -93,12 +93,12 @@ export class Welt extends Phaser.Scene {
   startPunktFinden(): { x: number; y: number } {
     if (P.get("von") === "tor" && this.index.regionen[WELT.tor]) { /* aus einer Kampagne zurück: vor dem Tor */ const t = this.index.regionen[WELT.tor];
       try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } P.delete("von"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); this.vonTor = { x: t.start[0][0], y: t.start[0][1] }; }
-    if (this.vonTor) return this.vonTor;
+    if (this.vonTor) { this.gemerkteStelle = true; return this.vonTor; } /* bewusst gewählte Startstellen: die gemerkte Stelle des Servers gilt dann nicht */
     const r = this.index.regionen[this.startRegion()], s = r.start[0], gilt = (x: number, y: number, region?: string) => this.gueltig.has(chunkName(Math.floor(x / C), Math.floor(y / C))) && !(region && WELT.gesperrteRegionen.includes(region));
     /* zurück aus einer Kampfzone der Welt (Lichtung): genau an der Stelle, an der man sie verlassen hat */
-    { const wx = Number(P.get("wx")), wy = Number(P.get("wy")); if (P.has("wx")) { P.delete("wx"); P.delete("wy"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); if (Number.isFinite(wx) && Number.isFinite(wy) && gilt(wx, wy)) return { x: wx, y: wy }; } }
+    { const wx = Number(P.get("wx")), wy = Number(P.get("wy")); if (P.has("wx")) { P.delete("wx"); P.delete("wy"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); if (Number.isFinite(wx) && Number.isFinite(wy) && gilt(wx, wy)) { this.gemerkteStelle = true; return { x: wx, y: wy }; } } }
     /* gefallen oder Teleport: am Start der Waldmark */
-    if (P.get("von") === "teleport" || P.get("von") === "tod") { try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } return { x: s[0], y: s[1] }; }
+    if (P.get("von") === "teleport" || P.get("von") === "tod") { try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } this.gemerkteStelle = true; return { x: s[0], y: s[1] }; }
     try { if (P.get("neu") === "1") localStorage.removeItem("ez_welt_pos"); const p = JSON.parse(localStorage.getItem("ez_welt_pos") || "null");
       if (Array.isArray(p) && gilt(p[0], p[1], p[2])) { this.gemerkteStelle = true; return { x: p[0], y: p[1] }; } } catch { /* privat */ } /* die gemerkte Stelle – in jeder Region der Welt, nicht nur in der Waldmark */
     return { x: s[0], y: s[1] };

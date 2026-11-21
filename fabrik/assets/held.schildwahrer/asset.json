@@ -1,0 +1,29 @@
+{
+  "id": "held.schildwahrer",
+  "name": "Torvald, der Schildwahrer – Kenney-Stil (Testfigur, Held Ritter)",
+  "kategorie": "held",
+  "test_asset": true,
+  "status": "v001: neun Bewegungen in acht echten Richtungen (Ruhe, Gehen, Laufen, Angriff, Schildblock, Schildstoß, Kampfschrei, Treffer, Tod); Schwert, Kreuzschild, Umhang; acht Farben für Fraktionen (Blau Standard, Rot, Grün, Ocker, Schwarz, Weiß, Bordeaux, Grau) auf Umhang und Schild. Prüfung: erfolgreich mit Einschränkungen (24 ok, 1 Warnung: 6 % der Rüstungspunkte unter der Körperoberfläche). Testszene im Browser: alles in Ordnung.",
+  "referenz": "referenz/original.png",
+  "lizenz": {
+    "koerper": "Kenney „Animated Characters Protagonists“ 1.1, characterMedium.fbx – CC0 (kenney.nl), siehe v001/quelle/kenney-lizenz.txt; Haut neu gemalt (kenney_haut.py) auf Grundlage der CC0-Haut criminalMaleA",
+    "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen",
+    "ausruestung": "Schwert und Schild aus dem Referenzblatt (flachteil.py), Umhang gerechnet (umhang.py), Rüstungslagen aus dem Körper abgeleitet"
+  },
+  "skelett": "gleiches Humanoid-Skelett wie held.krieger – Gelenkorte aus Kenneys eigenem Skelett (v001/quelle/gelenke.json), weil die Schätzung aus der Form menschliche Proportionen annimmt",
+  "verfahren": [
+    "referenz.py",
+    "kenney_haut.py criminalMaleA.png → haut.png (Haar, Vollbart, Untergewand, Hose, Schuhe in den Tönen des Blatts)",
+    "kenney_figur.py → koerper.glb + gelenke.json (Arme aus der T-Haltung gesenkt, 1,80 m, ohne Glättung unterteilt, Haut in Punktfarben)",
+    "flachteil.py (Schwert, Schild) · umhang.py",
+    "rig.py (Gelenke aus Datei, feste Farbtöne, Umhang am Brustknochen)",
+    "boden.py", "rendern.py", "farbvariante.py (sieben Fraktionsfarben)", "packen.py", "pruefung.py", "vorschau-gif.py"
+  ],
+  "bewegungen": { "gehen": "ruhiges Gehen (Testszene: Umschalt + Richtung)", "block": "Schildblock (K halten)", "schildstoss": "Schildstoß (E)", "kampfschrei": "Kampfschrei (R)" },
+  "hinweise": [
+    "Der bisherige Torvald im Spiel (held.krieger v004) bleibt unverändert; diese Figur ist eine eigenständige Testfigur",
+    "Kenneys eigene Animationen (idle, run, jump) werden nicht verwendet – die Bewegungen sind die der Fabrik",
+    "Im Tod liegt der große Kenney-Kopf flach nach hinten (sonst stützt er Hüfte und Beine ab)"
+  ],
+  "offen": ["Kopf/Haare als eigene Ebene (laut Blatt) – derzeit Teil der Haut", "Hose als eigene Ebene – derzeit Teil der Haut"]
+}

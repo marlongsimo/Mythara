@@ -1,0 +1,242 @@
+{
+  "hinweis": "Torvald, der Schildwahrer – Kenney-Stil (Testfigur). Körper: Kenney „characterMedium“ (CC0) mit eigener Haut (kenney_haut.py), vorbereitet mit kenney_figur.py; Skelett, Ausrüstung und Bewegungen wie beim Krieger v004. Farbvarianten für Fraktionen: farbvariante.py auf Umhang und Schild.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "schildstoss",
+    "kampfschrei",
+    "treffer",
+    "tod"
+  ],
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb"
+    },
+    {
+      "id": "kleidung.umhang.schildwahrer",
+      "platz": "ruecken",
+      "art": "umhang",
+      "glb": "kleidung.umhang.schildwahrer/v001/quelle/umhang.glb"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.guertel.schildwahrer",
+      "platz": "guertel",
+      "bild": "guertel",
+      "farbe": "#7a4a26",
+      "dicke": 0.025,
+      "bereich": [
+        [
+          "bauch",
+          0,
+          0.35
+        ],
+        [
+          "becken",
+          0.4,
+          0.7
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.fuss.stiefel.schildwahrer",
+      "platz": "fuss",
+      "bild": "stiefel",
+      "farbe": "#7b4625",
+      "dicke": 0.018,
+      "bereich": [
+        [
+          "unterschenkel.L",
+          0.4,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.4,
+          1
+        ],
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.hand.schildwahrer",
+      "platz": "hand",
+      "bild": "guertel",
+      "farbe": "#6a3f22",
+      "dicke": 0.014,
+      "bereich": [
+        [
+          "hand.L",
+          0,
+          1
+        ],
+        [
+          "hand.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0.6,
+          1
+        ],
+        [
+          "unterarm.R",
+          0.6,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "ruestung.brust.platte.schildwahrer",
+      "platz": "brust",
+      "bild": "ruestung",
+      "farbe": "#b4b9c2",
+      "dicke": 0.025,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          0.7
+        ],
+        [
+          "oberarm.R",
+          0,
+          0.7
+        ]
+      ]
+    }
+  ],
+  "gelenke": "v001/quelle/gelenke.json",
+  "tod_fuesse_strecken": true,
+  "tod_schild_flach": true,
+  "tod_ganz": -86,
+  "tod_kopf": 0,
+  "stil": "gemalt",
+  "anbau": [
+    {
+      "id": "ruestung.schulter.platte.schildwahrer",
+      "platz": "schulter",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/schulter.glb",
+          "knochen": "oberarm.L",
+          "lage": 0.05,
+          "versatz": [
+            0.02,
+            0,
+            0.035
+          ]
+        },
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/schulter.glb",
+          "knochen": "oberarm.R",
+          "lage": 0.05,
+          "versatz": [
+            -0.02,
+            0,
+            0.035
+          ],
+          "spiegeln": true
+        }
+      ]
+    },
+    {
+      "id": "ruestung.arm.schiene.schildwahrer",
+      "platz": "unterarm",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/armschiene.glb",
+          "knochen": "unterarm.L",
+          "lage": 0.05,
+          "ausrichten": true
+        },
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/armschiene.glb",
+          "knochen": "unterarm.R",
+          "lage": 0.05,
+          "ausrichten": true,
+          "spiegeln": true
+        }
+      ]
+    },
+    {
+      "id": "ruestung.knie.kachel.schildwahrer",
+      "platz": "knie",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/knie.glb",
+          "knochen": "unterschenkel.L",
+          "lage": 0.0,
+          "flaeche": "vorn",
+          "abstand": 0.0
+        },
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/knie.glb",
+          "knochen": "unterschenkel.R",
+          "lage": 0.0,
+          "flaeche": "vorn",
+          "abstand": 0.0,
+          "spiegeln": true
+        }
+      ]
+    },
+    {
+      "id": "kleidung.waffenrock.schildwahrer",
+      "platz": "rock",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/waffenrock.glb",
+          "knochen": "becken",
+          "lage": 1.0,
+          "flaeche": "vorn",
+          "abstand": 0.01,
+          "verlauf": [
+            "oberschenkel.L",
+            "oberschenkel.R"
+          ]
+        }
+      ]
+    }
+  ]
+}

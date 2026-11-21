@@ -1,0 +1,48 @@
+{
+ "id": "held.krieger",
+ "feld": 176,
+ "richtungen": [
+  "o",
+  "so",
+  "s",
+  "sw",
+  "w",
+  "nw",
+  "n",
+  "no"
+ ],
+ "winkel0": "osten",
+ "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)",
+ "zeile": "round(winkel / (pi/4)) mod 8",
+ "fuss": [
+  0.5,
+  0.92
+ ],
+ "kamera": {
+  "neigung": 35.0,
+  "breite_m": 2.05
+ },
+ "animationen": {
+  "laufen": {
+   "blatt": "held.krieger.laufen.webp",
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "blatt": "held.krieger.ruhe.webp",
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ },
+ "mass": [
+  0.5,
+  0.92,
+  0.719
+ ],
+ "rahmen": {
+  "oben": 29,
+  "unten": 175
+ }
+}

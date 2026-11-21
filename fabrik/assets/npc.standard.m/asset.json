@@ -1,0 +1,13 @@
+{
+  "id": "npc.standard.m",
+  "name": "Standard-NPC männlich (Testfigur, Dorfbewohner)",
+  "kategorie": "npc",
+  "test_asset": true,
+  "status": "v001: Ruhe und Laufen in acht Richtungen; Weste, Hose, Stiefel, Gürtel als Ebenen; Schürze, Halstuch, Strohhut wahlfrei; 10 Farbvarianten – Prüfung: erfolgreich mit Einschränkungen (18 ok, 1 Warnung, 0 Fehler)",
+  "referenz": "referenz/original.png",
+  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen", "modell": "lokal erzeugt mit TripoSR (MIT) aus der Rückansicht, ohne kostenpflichtigen Dienst" },
+  "skelett": "gleiches Humanoid-Skelett wie held.krieger und gegner.bandit",
+  "verfahren": ["referenz.py", "triposr.py (Rückansicht – die Vorderansicht ergab ein ausgestelltes Bein)", "anmalen.py (vorn, Seite, hinten; Modell um 180° gedreht)", "drehteil.py (Strohhut als Drehkörper)", "rig.py (haltung zivil)", "boden.py ruhe,laufen", "rendern.py", "packen.py", "pruefung.py", "npc_varianten.py (rollen.json)"],
+  "varianten": "varianten/varianten.json – standard, natur, haendler, jaeger, schmied, bauer, handwerker, wirt, wald, stadt",
+  "offen": ["Bewegungen Gehen, Interagieren, Arbeiten, Sprechen, Sitzen, Tod (laut Vorlage) – noch nicht angelegt", "Umhang aus der Vorlage noch nicht als Ebene", "Wache (Helm) aus den Beispielrollen noch nicht", "im Spiel noch nicht eingebaut: das Spielmodul kennt noch keine Varianten (varianten.json)"]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "held.priesterin",
+  "name": "Elara, die Lichtweberin (Testfigur, Heldin Priesterin)",
+  "kategorie": "held",
+  "test_asset": true,
+  "status": "v001: acht Bewegungen in acht Richtungen (Ruhe, Laufen, Heilung, Schutzsegen, Lichtnova, Streitkolbenangriff links, Treffer, Tod); Stab in der rechten, Streitkolben in der linken Hand",
+  "referenz": "referenz/original.png",
+  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen", "modell": "lokal erzeugt mit TripoSR (MIT) aus der Rückansicht, ohne kostenpflichtigen Dienst" },
+  "skelett": "gleiches Humanoid-Skelett wie held.krieger, gegner.bandit und npc.standard.m",
+  "waffen": { "rechts": ["waffe.lichtstab (Standard)", "waffe.heilstab", "waffe.zeremonienstab"], "links": ["waffe.streitkolben"] },
+  "bewegungen": { "zauber": "Heilung (Angriff der Stäbe)", "segen": "Schutzsegen", "nova": "Lichtnova", "angriff_links": "Streitkolbenangriff mit der linken Hand" },
+  "hinweise": ["Lichteffekte (Heilung, Schutz, Aura) sind nicht ins Bild gerendert – sie gehören als eigene Effekte ins Spiel", "Kapuze ist wahlfrei und zunächst abgelegt", "Gesicht grob: das Modell stammt aus der Rückansicht, weil die Vorderansicht eine riesige Robenglocke ergab", "Die weiten Ärmel sind Teil des Körpermodells; bei weit erhobenen Armen verformen sie sich stark"],
+  "offen": ["Heilbuch und Fläschchen am Gürtel", "Stabhaltung als eigene Ruhebewegung (laut Vorlage), Untergewand und Hose als eigene Ebenen"]
+}
