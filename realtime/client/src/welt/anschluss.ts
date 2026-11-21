@@ -81,7 +81,10 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.betreten = (s) => {
     const q = new URLSearchParams(location.search);
     if (q.get("von") === "tod") { setTimeout(() => chatSystem("Du bist gefallen und in der Waldmark wieder zu dir gekommen."), 300); q.delete("von"); history.replaceState(null, "", "?" + q.toString()); }
-    s.events.once("shutdown", () => { if (mit) mit.liste([]); mit = null; region.id = ""; });
+    /* Heldenprofil: Bildnis = Held. Der Server speichert den Wechsel (sonst setzt er den alten zurück); seine Bestätigung lädt neu, notfalls nach kurzer Zeit */
+    const heldWahl = (ev: Event) => { const h = String((ev as CustomEvent).detail || ""); if (!h || h === s.held) return; ev.preventDefault(); weltHeld(h); setTimeout(() => location.reload(), 1500); };
+    window.addEventListener("ez-held-wahl", heldWahl);
+    s.events.once("shutdown", () => { window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.antippen = (s, p) => { if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };

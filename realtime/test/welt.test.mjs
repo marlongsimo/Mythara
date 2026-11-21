@@ -40,11 +40,11 @@ try {
   await anna.goto(B + "?x=1" + S); await ben.goto(B + "?x=1" + S);
   for (const p of [anna, ben]) await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich(), null, { timeout: 30000 });
   /* Der Server bestimmt den Helden: Ben hatte lokal „assassine“, in der Datenbank steht „kopfgeldjaeger“ */
-  await ben.waitForFunction(() => window.EZW.szene.held === "kopfgeldjaeger", null, { timeout: 10000 }).catch(() => {});
-  check(await ben.evaluate(() => window.EZW.szene.held === "kopfgeldjaeger" && localStorage.getItem("ez_held") === "kopfgeldjaeger"), "Ben läuft mit dem Helden aus der Datenbank (Orin), nicht mit dem lokalen");
+  await ben.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich() && window.EZW.szene.held === "kopfgeldjaeger", null, { timeout: 10000 }).catch(() => {});
+  check(await ben.evaluate(() => Boolean(window.EZW && window.EZW.szene) && window.EZW.szene.held === "kopfgeldjaeger" && localStorage.getItem("ez_held") === "kopfgeldjaeger"), "Ben läuft mit dem Helden aus der Datenbank (Orin), nicht mit dem lokalen");
   check(HELDSETZEN.some((h) => h.p_user.endsWith("a001") && h.p_held === "schildwaechter"), "Anna hatte noch keinen: ihr Held (Torvald) wird beim ersten Betreten gespeichert");
   /* Sich gegenseitig sehen */
-  await anna.waitForFunction(() => [...window.EZW.szene.mit.figuren.values()].some((f) => /^Ben · St\. \d+$/.test(f.nm.text)), null, { timeout: 10000 }).catch(() => {});
+  await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.mit && [...window.EZW.szene.mit.figuren.values()].some((f) => /^Ben · St\. \d+$/.test(f.nm.text)), null, { timeout: 10000 }).catch(() => {});
   const schild = await anna.evaluate(() => [...window.EZW.szene.mit.figuren.values()].map((f) => f.nm.text + "|" + f.held));
   check(schild.length === 1 && /^Ben · St\. \d+\|kopfgeldjaeger$/.test(schild[0]), "Anna sieht Ben in der Waldmark mit Name, Stufe und Held (" + schild.join() + ")");
   const vorher = await anna.evaluate(() => [...window.EZW.szene.mit.figuren.values()][0].d.x);
