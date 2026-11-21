@@ -92,3 +92,12 @@ Am Beispiel des Banditen (`assets/gegner.bandit/`):
 5. `rig.py`, `boden.py … ruhe,laufen`, `rendern.py`, `packen.py`, `pruefung.py`, `vorschau-gif.py`.
 6. Testszene: `?figur=<id>&version=<v>`, Prüfung im Browser mit `node vorschau/test-figur.mjs <id> <version>`.
 
+## Im Spiel
+
+Torvald (`schildwaechter`) ist seit dem 21.11.2026 die modulare Figur `held.krieger` – live auf mythara-dungeon.de.
+
+- Spielfassung: `assets/held.krieger/spiel/` = Krieger v004 plus der Gang mit erhobenem Schild (`schildlauf.py`), gerendert mit den getragenen Teilen und den fünf Bewegungen, die das Spiel nutzt (ruhe, laufen, angriff, block, schild_laufen).
+- Ausgabe fürs Spiel: `spiel_export.py <export> held.krieger <spiel>/img/figuren-fabrik/held.krieger <ebenen> <waffen>`.
+- Im Spiel: `realtime/client/src/modulfigur.ts` (auf `feature/realtime-engine`). Welche Helden modular sind, steht dort in `MODUL`. Das Modul übersetzt die bisherigen Aufrufe (Laufbilder, Standbild, Hieb, Schild) in die Bewegungen der Fabrik und wählt aus der Blickrichtung eine von acht Zeilen.
+- Ein weiterer Held: Figur bauen und rendern, mit `spiel_export.py` ausgeben, in `MODUL` eintragen, Client bauen.
+
