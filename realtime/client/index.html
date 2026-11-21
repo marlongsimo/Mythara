@@ -440,6 +440,10 @@
     body.offenewelt.menue-spalte #ez-tasten { right: max(14px, env(safe-area-inset-right)); } body.offenewelt:not(.menue-spalte) #ez-tasten { right: calc(max(14px, env(safe-area-inset-right)) + 92px); }
     @media (max-width: 700px), (max-height: 500px) { body.offenewelt #ez-menue { padding: 10px 6px; gap: 7px; } body.offenewelt:not(.menue-spalte) #ez-menue { bottom: max(18px, env(safe-area-inset-bottom)); } body.offenewelt.menue-spalte #ez-menue span { width: 42px; height: 42px; } body.offenewelt.menue-spalte #ez-menue svg { width: 21px; height: 21px; } body.offenewelt.menue-spalte #ez-menue small { font-size: 8.5px; } body.offenewelt.menue-spalte #ez-tasten { right: max(8px, env(safe-area-inset-right)); } body.offenewelt:not(.menue-spalte) #ez-tasten { right: calc(max(8px, env(safe-area-inset-right)) + 58px); } }
     }
+    /* Ortsbanner: kurz beim Betreten (hud.ts hudTitel), dann verblassen */
+    #ez-titel.ein { animation: ez-titel-ein .6s ease-out both; } #ez-titel.weg { opacity: 0 !important; transition: opacity .9s ease-in; }
+    @keyframes ez-titel-ein { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #ez-titel.ein { animation: none; } #ez-titel.weg { transition: none; } }
 </style>
 </head>
 <body>

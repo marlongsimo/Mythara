@@ -111,7 +111,11 @@ export function hudProfil(held: string) {
 }
 
 /* ---------- Banner oben in der Mitte ---------- */
-export function hudTitel(name: string, unter: string) { const t = $("#ez-titel"); (t.querySelector("b") as HTMLElement).textContent = name; (t.querySelector("small") as HTMLElement).textContent = unter; t.hidden = false; }
+/** Das Ortsbanner beim Betreten: blendet ein, steht TITEL_MS und verblasst dann (danach ausgeblendet, damit es nichts verdeckt) */
+const TITEL_MS = 3500, VERBLASSEN_MS = 900; let titelUhr = 0;
+export function hudTitel(name: string, unter: string) { const t = $("#ez-titel"); (t.querySelector("b") as HTMLElement).textContent = name; (t.querySelector("small") as HTMLElement).textContent = unter;
+  clearTimeout(titelUhr); t.classList.remove("weg"); t.hidden = false; t.classList.remove("ein"); void t.offsetWidth; t.classList.add("ein");
+  titelUhr = window.setTimeout(() => { t.classList.add("weg"); titelUhr = window.setTimeout(() => { t.hidden = true; t.classList.remove("weg"); }, VERBLASSEN_MS); }, TITEL_MS); }
 
 /* ---------- Minikarte: Der Zoom sitzt unten im Rahmen ---------- */
 export function hudKarte() { const z = $("#ez-zoom"), r = $("#ez-kartenrahmen"); if (z && r && z.parentElement !== r) r.appendChild(z); }
