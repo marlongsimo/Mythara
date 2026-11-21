@@ -1408,37 +1408,6 @@
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   },
   {
-   "id": "dorf_wehr_01",
-   "name": "Wehr",
-   "kategorie": "wasserbau",
-   "bild": "img/welt/gebaeude/dorf_wehr_01.webp",
-   "groesse": [
-    380,
-    170
-   ],
-   "anker": [
-    0.5,
-    0.7294
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -3.6,
-    "y": -1.0,
-    "b": 7.2,
-    "h": 1.0
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.6,
-    "radius": 2.0
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
    "id": "dorf_zaun_01",
    "name": "Holzzaun",
    "kategorie": "bauteil",
@@ -6055,6 +6024,31 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_wehr_01",
+   "name": "Wehr",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_wehr_01.webp",
+   "groesse": [
+    380,
+    170
+   ],
+   "anker": [
+    0.5,
+    0.7294
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 2.0
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }
