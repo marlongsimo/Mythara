@@ -1,0 +1,24 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Elara, die Lichtweberin (Testfigur). Kästen [links, oben, rechts, unten], dunkler Grund. Für das Modell zählen vorn, Seite rechts (blickt nach rechts) und hinten.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",    "kasten": [250, 98, 380, 360],  "asset": "held.priesterin", "ansicht": "vorn" },
+    { "name": "koerper-seite",   "kasten": [568, 98, 666, 360],  "asset": "held.priesterin", "ansicht": "seite" },
+    { "name": "koerper-hinten",  "kasten": [722, 98, 835, 360],  "asset": "held.priesterin", "ansicht": "hinten" },
+    { "name": "koerper-34r",     "kasten": [415, 98, 537, 360],  "asset": "held.priesterin", "ansicht": "3/4 rechts" },
+    { "name": "kapuze",          "kasten": [24, 433, 118, 540],  "asset": "kleidung.kopf.kapuze.licht", "ansicht": "vorn" },
+    { "name": "schulterumhang",  "kasten": [126, 435, 251, 534], "asset": "kleidung.schulter.umhang.licht", "ansicht": "vorn" },
+    { "name": "robe",            "kasten": [254, 434, 343, 535], "asset": "kleidung.robe.licht", "ansicht": "vorn" },
+    { "name": "untergewand",     "kasten": [360, 441, 439, 520], "asset": "kleidung.untergewand.licht", "ansicht": "vorn" },
+    { "name": "guertel",         "kasten": [449, 446, 554, 526], "asset": "kleidung.guertel.licht", "ansicht": "vorn" },
+    { "name": "armschienen",     "kasten": [565, 443, 644, 526], "asset": "ruestung.arm.licht", "ansicht": "vorn", "stuecke": 2 },
+    { "name": "hose",            "kasten": [659, 439, 733, 532], "asset": "kleidung.bein.hose.licht", "ansicht": "vorn" },
+    { "name": "stiefel",         "kasten": [738, 438, 822, 524], "asset": "kleidung.fuss.stiefel.licht", "ansicht": "vorn" },
+    { "name": "heilbuch",        "kasten": [836, 431, 929, 534], "asset": "gegenstand.heilbuch", "ansicht": "vorn" },
+    { "name": "flaeschchen",     "kasten": [931, 443, 1006, 518],"asset": "gegenstand.flaeschchen", "ansicht": "vorn" },
+    { "name": "lichtstab",       "kasten": [1037, 434, 1168, 546], "asset": "waffe.lichtstab", "ansicht": "vorn" },
+    { "name": "heilstab",        "kasten": [1175, 432, 1276, 533], "asset": "waffe.heilstab", "ansicht": "vorn" },
+    { "name": "streitkolben",    "kasten": [1289, 432, 1386, 533], "asset": "waffe.streitkolben", "ansicht": "vorn" },
+    { "name": "zeremonienstab",  "kasten": [1410, 426, 1514, 550], "asset": "waffe.zeremonienstab", "ansicht": "vorn" }
+  ]
+}

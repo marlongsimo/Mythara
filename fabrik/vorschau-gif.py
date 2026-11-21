@@ -26,17 +26,17 @@ def bogen(a, i, teile, text):
     return k.convert("RGB").resize((F * 4 * Z // F * 1, round((h * 2 + 34) * Z / F)), Image.LANCZOS).quantize(128)
 KRIEGER = {"hand_r": "waffe.langschwert", "arm_l": "schild.baum", "brust": "ruestung.brust.platte", "bein": "ruestung.bein.schiene", "hand": "ruestung.hand.leder", "fuss": "ruestung.fuss.stiefel"}
 krieger = all(t in EB for t in KRIEGER.values())
-voll = KRIEGER if krieger else {p: t[0] for p, t in M["plaetze"].items()}                           # sonst: je Platz das erste Teil
+voll = KRIEGER if krieger else {p: t[0] for p, t in M["plaetze"].items() if not EB[t[0]].get("wahlfrei")}                           # sonst: je Platz das erste Teil
 alle = list(voll.values()); folge = []
 NAME = {"ruhe": "Ruhe", "laufen": "Laufen", "angriff": "Einhandangriff", "block": "Block (Schild)", "angriff2h": "Zweihandangriff", "treffer": "Treffer", "ausweichen": "Ausweichen",
-        "angriff_axt": "Axtangriff", "angriff_dolch": "Dolchstich", "tod": "Tod"}
+        "angriff_axt": "Axtangriff", "angriff_dolch": "Dolchstich", "tod": "Tod", "zauber": "Heilung", "segen": "Schutzsegen", "nova": "Lichtnova", "angriff_links": "Angriff mit der linken Hand"}
 if not any(d["platz"] == "arm_l" for d in EB.values() if d["art"] == "starr"): NAME["block"] = "Block (Parade mit der Waffe)"
 def mit_waffe(a):
     """für die Angriffsbewegung einer Waffe: diese Waffe statt der Standardwaffe in die Hand"""
     w = next((e for e, d in EB.items() if d["art"] == "starr" and d.get("angriff") == a), None)
     if not w or w in alle: return alle, ""
     return [t for t in alle if EB[t]["platz"] != EB[w]["platz"]] + [w], " · " + w.split(".")[-1]
-for a, wdh in (("ruhe", 1), ("laufen", 2), ("angriff", 2), ("angriff_axt", 2), ("angriff_dolch", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2), ("tod", 1)):
+for a, wdh in (("ruhe", 1), ("laufen", 2), ("angriff", 2), ("angriff_axt", 2), ("angriff_dolch", 2), ("zauber", 2), ("segen", 1), ("nova", 1), ("angriff_links", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2), ("tod", 1)):
     if a not in A: continue
     n = A[a]["bilder"]; dauer = 1000 // A[a]["rate"]; teile, zusatz = mit_waffe(a)
     for _ in range(wdh):

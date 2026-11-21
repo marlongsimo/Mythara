@@ -71,7 +71,7 @@ meta = {"id": kennung, "feld": FELD, "richtungen": RICHTUNGEN, "winkel0": "osten
         "fuss": list(FUSS), "mass": [FUSS[0], FUSS[1], round(1.8 * math.cos(n) * PX_JE_M / FELD, 3)], "kamera": {"neigung": NEIGUNG, "px_je_m": PX_JE_M},
         "animationen": {a.name: dict({"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])}, **json.loads(a["mehr"])) for a in aktionen},
         "ebenen": {"koerper": {"art": "koerper"}}, "plaetze": {}, "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)", "tiefe": {}}
-for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
+for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"wahlfrei": True} if o.get("wahlfrei") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
 # Tiefe der Waffen je Bewegung, Richtung und Bild (in cm entlang der Blickrichtung)
 for a in aktionen:
     arm.animation_data.action = a

@@ -29,12 +29,12 @@ class Szene extends Phaser.Scene {
     this.add.ellipse(0, 0, 60, 22, 0x000000, 0.35).setName("schatten").setDepth(1);
     this.figur = this.add.container(0, 0).setDepth(2); this.hilfen = this.add.graphics().setDepth(3);
     this.cameras.main.startFollow(this.figur, true, 0.12, 0.12).setZoom(Math.min(2, Math.max(1, Math.round(Math.min(this.scale.width, this.scale.height) / 420))));
-    this.tasten = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,J,K,L,H,T,SPACE") as Record<string, Phaser.Input.Keyboard.Key>;
+    this.tasten = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,J,K,L,H,T,Q,R,U,SPACE") as Record<string, Phaser.Input.Keyboard.Key>;
     this.input.on("pointerdown", (z: Phaser.Input.Pointer) => { this.ziel = new Phaser.Math.Vector2(z.worldX, z.worldY); });
     /* Anfangsausrüstung: je Platz das erste Teil */
-    for (const [platz, teile] of Object.entries(this.meta.plaetze)) this.tragen[platz] = teile[0];
+    for (const [platz, teile] of Object.entries(this.meta.plaetze)) this.tragen[platz] = (this.meta.ebenen[teile[0]] as { wahlfrei?: boolean }).wahlfrei ? "" : teile[0]; /* wahlfreie Teile (Kapuze) zunächst abgelegt */
     this.tafel(); this.laden(() => { this.aufbauen(); this.zeige(); });
-    document.querySelectorAll("#taten button").forEach((b) => { const t = (b as HTMLElement).dataset.tat!; (b as HTMLElement).hidden = t !== "waffe" && !this.meta.animationen[t]; /* nur Knöpfe für Bewegungen, die die Figur hat */ if (t === "block") { b.addEventListener("pointerdown", () => { this.blockt = true; }); for (const e of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(e, () => { this.blockt = false; }); } else b.addEventListener("click", () => this.tat(t)); });
+    document.querySelectorAll("#taten button").forEach((b) => { const t = (b as HTMLElement).dataset.tat!; (b as HTMLElement).hidden = t === "waffe_l" ? !this.meta.plaetze.hand_l : t !== "waffe" && !this.meta.animationen[t]; /* nur Knöpfe für Bewegungen, die die Figur hat */ if (t === "block") { b.addEventListener("pointerdown", () => { this.blockt = true; }); for (const e of ["pointerup", "pointerleave", "pointercancel"]) b.addEventListener(e, () => { this.blockt = false; }); } else b.addEventListener("click", () => this.tat(t)); });
     ($("#hilfen") as HTMLInputElement).addEventListener("change", (e) => { this.zeigeHilfen = (e.target as HTMLInputElement).checked; }); ($("#drehen") as HTMLInputElement).addEventListener("change", (e) => { this.drehen = (e.target as HTMLInputElement).checked; });
     (window as unknown as { FABRIK: object }).FABRIK = { szene: this, zustand: () => ({ anim: this.anim, bild: this.bild, richtung: this.richtung, x: this.figur.x, y: this.figur.y, tragen: { ...this.tragen }, sichtbar: [...this.bilder].filter(([, s]) => s.visible).map(([k]) => k), geladen: this.fertig }),
       tat: (t: string) => this.tat(t), waffenAngriff: () => this.waffenAngriff(), trage: (platz: string, teil: string) => this.trage(platz, teil), richte: (r: number) => { this.richtung = ((r % 8) + 8) % 8; this.zeige(); }, block: (an: boolean) => { this.blockt = an; } };
@@ -62,9 +62,9 @@ class Szene extends Phaser.Scene {
   /** Eine einmalige Bewegung beginnen (nur aus Ruhe, Laufen oder Block heraus) */
   tat(t: string) {
     if (t === "tod" && this.anim === "tod") { this.spiele("ruhe"); return; } /* noch einmal: wieder aufstehen */
-    if (t === "waffe") t = this.waffenAngriff(); if (!this.meta.animationen[t] || !["ruhe", "laufen", "block"].includes(this.anim)) return; this.spiele(t); }
+    if (t === "waffe") t = this.waffenAngriff(); else if (t === "waffe_l") t = this.waffenAngriff("hand_l"); if (!this.meta.animationen[t] || !["ruhe", "laufen", "block"].includes(this.anim)) return; this.spiele(t); }
   /** Die Angriffsbewegung der Waffe in der rechten Hand (Kurzschwert: angriff, Axt: angriff_axt, Dolch: angriff_dolch) */
-  waffenAngriff(): string { const w = this.tragen.hand_r; return (w && this.meta.ebenen[w]?.angriff) || "angriff"; }
+  waffenAngriff(platz = "hand_r"): string { const w = this.tragen[platz]; return (w && this.meta.ebenen[w]?.angriff) || (platz === "hand_r" ? "angriff" : ""); }
   spiele(a: string) { if (this.anim === a) return; this.anim = a; this.bild = 0; this.uhr = 0; this.zeige(); }
   /** Alle Ebenen auf dasselbe Bild stellen und in die richtige Reihenfolge bringen */
   zeige() {
@@ -76,7 +76,7 @@ class Szene extends Phaser.Scene {
   }
   update(_: number, dt: number) {
     if (!this.fertig) return; const T = this.tasten, A = this.meta.animationen[this.anim], frei = ["ruhe", "laufen"].includes(this.anim);
-    if (Phaser.Input.Keyboard.JustDown(T.J)) this.tat("waffe"); if (Phaser.Input.Keyboard.JustDown(T.T)) this.tat("tod"); if (Phaser.Input.Keyboard.JustDown(T.L)) this.tat("angriff2h"); if (Phaser.Input.Keyboard.JustDown(T.H)) this.tat("treffer"); if (Phaser.Input.Keyboard.JustDown(T.SPACE)) this.tat("ausweichen");
+    if (Phaser.Input.Keyboard.JustDown(T.J)) this.tat("waffe"); if (Phaser.Input.Keyboard.JustDown(T.U)) this.tat("waffe_l"); if (Phaser.Input.Keyboard.JustDown(T.T)) this.tat("tod"); if (Phaser.Input.Keyboard.JustDown(T.Q)) this.tat("segen"); if (Phaser.Input.Keyboard.JustDown(T.R)) this.tat("nova"); if (Phaser.Input.Keyboard.JustDown(T.L)) this.tat("angriff2h"); if (Phaser.Input.Keyboard.JustDown(T.H)) this.tat("treffer"); if (Phaser.Input.Keyboard.JustDown(T.SPACE)) this.tat("ausweichen");
     const will = T.K.isDown || this.blockt; if (will && frei) this.spiele("block"); if (!will && this.anim === "block") this.spiele("ruhe");
     /* laufen: Tasten haben Vorrang vor dem angetippten Ziel */
     let dx = (T.D.isDown || T.RIGHT.isDown ? 1 : 0) - (T.A.isDown || T.LEFT.isDown ? 1 : 0), dy = (T.S.isDown || T.DOWN.isDown ? 1 : 0) - (T.W.isDown || T.UP.isDown ? 1 : 0);
@@ -94,7 +94,7 @@ class Szene extends Phaser.Scene {
     (this.children.getByName("schatten") as Phaser.GameObjects.Ellipse).setPosition(this.figur.x, this.figur.y);
     this.hilfen.clear(); if (this.zeigeHilfen) { const F = this.meta.feld, [fx, fy] = this.meta.fuss, x = this.figur.x, y = this.figur.y; this.hilfen.lineStyle(1, 0xffe08a, 0.9).strokeRect(x - F * fx, y - F * fy, F, F); this.hilfen.lineStyle(1, 0xff5a5a, 1).lineBetween(x - 14, y, x + 14, y).lineBetween(x, y - 14, x, y + 14); }
     const R = ["Osten", "Südosten", "Süden", "Südwesten", "Westen", "Nordwesten", "Norden", "Nordosten"][this.richtung];
-    $("#stand").innerHTML = `<b>${this.meta.id}</b> · ${VERSION}<br>Bewegung <b>${this.anim}</b> · Bild ${this.bild + 1}/${B.bilder} · Blick <b>${R}</b><br>WASD/Pfeile oder antippen: laufen · J Angriff (je nach Waffe) · K Block · L Zweihand · H Treffer · Leertaste Ausweichen · T Tod / Aufstehen`;
+    $("#stand").innerHTML = `<b>${this.meta.id}</b> · ${VERSION}<br>Bewegung <b>${this.anim}</b> · Bild ${this.bild + 1}/${B.bilder} · Blick <b>${R}</b><br>WASD/Pfeile oder antippen: laufen · J Angriff (je nach Waffe) · U linke Hand · K Block · L Zweihand · H Treffer · Leertaste Ausweichen · Q Segen · R Nova · T Tod / Aufstehen`;
   }
 }
 

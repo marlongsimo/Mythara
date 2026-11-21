@@ -18,11 +18,14 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   "vorbereitet": [...]       Teile, die gebaut und eingetragen, aber noch nicht an die Figur gehängt werden (z. B. Bogen: braucht eigene Bewegungen)
   "block": "waffe"           Block ohne Schild: Parade mit der Waffe
   "haltung": "zivil"         ohne Kampfstellung: Arme hängen locker, schwingen beim Gehen (Dorfbewohner)
+  "haltung": "stab"          Stab aufrecht in der rechten Hand, linker Arm locker (Priesterin, Magier); Bewegungen zauber, segen, nova
   Hülle "vorn": true         nur nach vorn gerichtete Flächen (Schürze)
+  Hülle "wahlfrei": true     wird nicht standardmäßig getragen (Kapuze); in Vorschau und Testszene zunächst abgelegt
   Hülle "ueberlage": true    wahlfreie Lage über der übrigen Kleidung (Schürze, Halstuch): zählt nicht bei "exklusiv" und schneidet beim Rendern nichts aus
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+  Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
 """
 import json, math, os, sys
 import numpy as np
@@ -58,7 +61,7 @@ def tiefe(maske, sonst=0.0): return float(np.median(y[maske])) if maske.sum() > 
 yr = tiefe((np.abs(x) < 0.12) & (z > 0.5 * H) & (z < 0.8 * H)); yk = tiefe((np.abs(x) < 0.08) & (z > 0.9 * H), yr); G = {}
 for seite, s in (("L", 1), ("R", -1)):
     bein = (x * s > 0.02) & (z > 0.06 * H) & (z < 0.2 * H); bx = float(np.median(x[bein])); by = tiefe(bein, yr)
-    hand = np.argsort(-x * s)[:300]; hx, hy, hz = [float(np.mean(P[hand, i])) for i in range(3)]
+    band = np.where((z > 0.42 * H) & (z < 0.62 * H))[0]; hand = band[np.argsort(-x[band] * s)[:300]]; hx, hy, hz = [float(np.mean(P[hand, i])) for i in range(3)]   # die Hand nur in Handhöhe suchen (sonst greift ein ausgestellter Robensaum)
     schulter = Vector((s * 0.2, yr, 0.795 * H)); spitze = Vector((hx, hy, hz)); gelenk = schulter.lerp(spitze, 0.82); ellbogen = schulter.lerp(gelenk, 0.5) + Vector((0, 0.02, 0))
     G[seite] = dict(huefte=Vector((bx, yr, 0.47 * H)), knie=Vector((bx, by - 0.02, 0.26 * H)), knoechel=Vector((bx, by + 0.02, 0.055 * H)), zehe=Vector((bx, by - 0.16, 0.01)), schulter=schulter, ellbogen=ellbogen, hand=gelenk, spitze=spitze)
 
@@ -119,13 +122,15 @@ def laden(pfad, name):
 def an_knochen(o, bone, welt):
     o.parent = arm; o.parent_type = "BONE"; o.parent_bone = bone; bpy.context.view_layer.update(); o.matrix_world = welt; bpy.context.view_layer.update()
 
-HAND_R = richtung("hand.R"); KLINGE0 = senkrecht((0, -1, 0.15), HAND_R)                             # in der Grundhaltung zeigt die Klinge nach vorn, quer zur Hand (Hammergriff)
+HAND_R = richtung("hand.R"); KLINGE0 = senkrecht((0, -1, 0.15), HAND_R)
+HAND_L = richtung("hand.L"); KLINGE0_L = senkrecht((0, -1, 0.15), HAND_L); LINKS = any(t["art"] == "schwert" and t.get("hand") == "L" for t in AUS["starr"])   # eine Waffe in der linken Hand (Streitkolben neben dem Stab)                             # in der Grundhaltung zeigt die Klinge nach vorn, quer zur Hand (Hammergriff)
 UARM_L = richtung("unterarm.L"); SCHILD0 = senkrecht((1, -0.15, 0), UARM_L)                        # der Schild liegt außen am linken Unterarm
 for t in AUS["starr"]:
     o = laden(t["glb"], t["id"]); e = [Vector(c) for c in o.bound_box]; oben = max(v.z for v in e); unten = min(v.z for v in e)
-    if t["art"] == "schwert":                                                                    # im Bild: Knauf oben, Spitze unten -> die Spitze (-z) zeigt in Klingenrichtung
-        ez = -KLINGE0; ey = KLINGE0.cross(HAND_R).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
-        handflaeche = KN["hand.R"].head_local.lerp(KN["hand.R"].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand.R", M)
+    if t["art"] == "schwert":                                                                    # im Bild: Knauf oben, Spitze unten -> die Spitze (-z) zeigt in Klingenrichtung; "hand": "L" = linke Hand
+        S_ = t.get("hand", "R"); HD, K0 = (HAND_L, KLINGE0_L) if S_ == "L" else (HAND_R, KLINGE0)
+        ez = -K0; ey = K0.cross(HD).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
+        handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
         g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = (0, 0, oben - t["griff2"] * (oben - unten)); g2.empty_display_size = 0.03      # Platz der zweiten Hand, zum Knauf hin
     elif t["art"] == "kopf":                                                                     # Hut: Achse entlang des Kopfknochens, vorn bleibt vorn; die Krempe sitzt etwas unter dem Scheitel
         kb = KN["kopf"]; ach = richtung("kopf"); ey_ = senkrecht((0, 1, 0), ach); R = Matrix((ey_.cross(ach), ey_, ach)).transposed()
@@ -176,7 +181,7 @@ for t in AUS["huelle"]:
         else:                                                                                    # Farbton der Zeichnung, Helligkeitsmuster vom Körper darunter
             ton = linear(rgb[maske]).mean(0); alt = KOERPERFARBE[wahl]; hell = alt.mean(1, keepdims=True); farbe = ton[None] * np.clip(hell / max(1e-4, float(hell.mean())), 0.45, 1.8)
         farben_setzen(m2, np.clip(farbe, 0, 1).astype(np.float32))
-    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage"))
+    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei"))
     if t["platz"] not in volumen and not t.get("ueberlage"): volumen[t["platz"]] = o; o["volumen"] = True                    # das erste Teil je Platz steht beim Rendern für den Raum, den dieser Platz einnimmt
     print("Hülle:", t["id"], "Platz", t["platz"], "·", len(m2.vertices), "Punkte")
 
@@ -213,27 +218,34 @@ def hocke_(grad, vor=0.0):
 
 # Grundhaltung mit Waffen: Schwertarm leicht angewinkelt, Klinge nach vorn oben; Schild seitlich vor dem Körper
 BEREIT = dict(o_r=(-0.28, -0.08, -1.0), u_r=(-0.15, -0.6, -0.8), kl=(0.0, -0.7, 0.72), o_l=(0.32, -0.1, -1.0), u_l=(0.2, -0.62, -0.78), sch=(0.75, -0.66, 0.0))
-def arme(o_r, u_r, kl, o_l, u_l, sch):
+def arme(o_r, u_r, kl, o_l, u_l, sch, kl_l=(0.0, -0.7, 0.72)):
     ziel("oberarm.R", o_r); ziel("unterarm.R", u_r); ziel("hand.R", u_r, kl, KLINGE0)                # das Handgelenk führt die Klinge
-    ziel("oberarm.L", o_l); ziel("unterarm.L", u_l, sch, SCHILD0); ziel("hand.L", u_l)              # der Unterarm führt den Schild
+    ziel("oberarm.L", o_l); ziel("unterarm.L", u_l, sch, SCHILD0)                                   # der Unterarm führt den Schild
+    if LINKS: ziel("hand.L", u_l, kl_l, KLINGE0_L)                                                  # Waffe in der linken Hand: das linke Handgelenk führt sie
+    else: ziel("hand.L", u_l)
 def rumpf(vor=0.0, dreh_z=0.0, kipp=0.0, kopf=0.0, ganz=0.0):
     """ganz: den ganzen Körper ums Becken kippen (Grad; negativ = nach hinten) – nur für den Tod"""
     dreh("becken", *(((X, ganz),) if ganz else ()), (Z, dreh_z * 0.3)); dreh("bauch", (X, vor * 0.5), (Y, kipp * 0.5), (Z, dreh_z * 0.35)); dreh("brust", (X, vor * 0.5), (Y, kipp * 0.5), (Z, dreh_z * 0.35)); dreh("hals", (X, kopf * 0.5), (Z, -dreh_z * 0.3)); dreh("kopf", (X, kopf * 0.5), (Z, -dreh_z * 0.3))
     for f in spaeter: f()
     spaeter.clear()
 def mit(basis, **neu): d = dict(basis); d.update(neu); return d
+BEREIT["kl_l"] = (0.0, -0.7, 0.72)
+def spiegel(v): return (-v[0], v[1], v[2])
 def arme_spur(keys, t): arme(**{k: spur([(tt, w[k]) for tt, w in keys], t) for k in BEREIT})
 
-ZIVIL = AUS.get("haltung") == "zivil"
+ZIVIL = AUS.get("haltung") == "zivil"; STAB = AUS.get("haltung") == "stab"
+if STAB: BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.22, -0.02, -0.98), u_l=(0.15, -0.3, -0.94)) if not LINKS else BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.24, -0.05, -0.97), u_l=(0.12, -0.75, -0.65))   # Unterarm waagerecht nach vorn, der Stab steht senkrecht (er liegt quer in der Faust)
 if ZIVIL: BEREIT.update(o_r=(-0.2, 0.0, -1.0), u_r=(-0.12, -0.22, -0.97), kl=(0.0, -0.7, 0.72), o_l=(0.2, 0.0, -1.0), u_l=(0.12, -0.22, -0.97))   # Arme hängen locker
 def ruhe(i, n):
     s = math.sin(2 * math.pi * i / n); PB["becken"].location = (0, -0.004 * (1 - math.cos(2 * math.pi * i / n)), 0); rumpf(vor=2 + 1.2 * s, kopf=-1.5 * s)
     for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 2)); dreh("fuss." + S)
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.2, 0.01 * s, -1.0), o_l=(0.2, -0.01 * s, -1.0))); return
+    if STAB: arme(**mit(BEREIT, o_l=(0.22, -0.02 + 0.01 * s, -0.98))); return
     arme(**mit(BEREIT, u_r=(-0.15, -0.6, -0.8 + 0.02 * s), u_l=(0.2, -0.62, -0.78 + 0.02 * s)))
 def laufen(i, n):
     p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4, dreh_z=9 * s)
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
+    if STAB: arme(**mit(BEREIT, o_r=(-0.25, -0.15 + 0.05 * s, -0.96), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # der Stab bleibt ruhig, der linke Arm schwingt
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.18, 0.32 * s, -0.95), u_r=(-0.1, -0.25 + 0.3 * s, -0.95), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # Arme schwingen gegen die Beine
     arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.18 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.18 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))
 def schritt_(vor_l, t):
@@ -245,6 +257,12 @@ def angriff(i, n):
                (0.5, mit(BEREIT, o_r=(-0.35, -0.75, 0.3), u_r=(-0.15, -0.9, 0.35), kl=(0.05, -0.45, 0.9))),                              # Hieb von oben
                (0.65, mit(BEREIT, o_r=(-0.15, -0.85, -0.45), u_r=(0.1, -0.9, -0.4), kl=(0.25, -0.92, -0.3))),                            # Treffer: Arm gestreckt nach vorn unten
                (0.82, mit(BEREIT, o_r=(0.0, -0.6, -0.8), u_r=(0.35, -0.6, -0.7), kl=(0.7, -0.55, -0.45))), (1, BEREIT)], t)              # durchziehen zur linken Seite
+def angriff_links(i, n):
+    """Hieb mit der Waffe in der linken Hand (Streitkolben), gespiegelt zum Einhandangriff; die rechte Hand hält den Stab ruhig"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.3, 1.0), (0.65, 1.0), (1, 0.0)], t); schritt(14, w); rumpf(vor=spur([(0, 2.0), (0.3, -4.0), (0.65, 14.0), (1, 2.0)], t), dreh_z=-spur([(0, 0.0), (0.3, -28.0), (0.5, 5.0), (0.65, 26.0), (0.82, 30.0), (1, 0.0)], t))
+    L = lambda o, u, k: mit(BEREIT, o_l=spiegel(o), u_l=spiegel(u), kl_l=spiegel(k))
+    arme_spur([(0, BEREIT), (0.3, L((-0.65, 0.35, 0.3), (-0.2, 0.45, 0.9), (0.1, 0.75, 0.65))), (0.5, L((-0.35, -0.75, 0.3), (-0.15, -0.9, 0.35), (0.05, -0.45, 0.9))),
+               (0.65, L((-0.15, -0.85, -0.45), (0.1, -0.9, -0.4), (0.25, -0.92, -0.3))), (0.82, L((0.0, -0.6, -0.8), (0.35, -0.6, -0.7), (0.7, -0.55, -0.45))), (1, BEREIT)], t)
 BLOCK = mit(BEREIT, o_l=(0.12, -0.72, -0.6), u_l=(-0.82, -0.32, 0.42), sch=(0.05, -1.0, 0.08), o_r=(-0.4, 0.22, -0.9), u_r=(-0.3, -0.25, -0.9), kl=(-0.25, -0.25, 0.94))   # Unterarm quer vor der Brust, Schildfläche nach vorn
 PARADE = mit(BEREIT, o_r=(-0.35, -0.6, 0.15), u_r=(0.5, -0.55, 0.65), kl=(0.95, -0.15, 0.25), o_l=(0.35, -0.2, -0.9), u_l=(0.2, -0.75, -0.6))   # ohne Schild: Waffe quer vor Kopf und Brust
 def block(i, n):
@@ -278,18 +296,36 @@ def angriff_dolch(i, n):
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.45, 0.45, -0.77), u_r=(-0.1, -0.15, -0.98), kl=(0.0, -0.8, 0.6))),               # zurückgezogen, Klinge nach vorn
                (0.5, mit(BEREIT, o_r=(-0.12, -0.96, -0.25), u_r=(0.05, -0.99, -0.1), kl=(0.05, -0.99, 0.05))),                         # Stich: Arm und Klinge gestreckt nach vorn
                (0.75, mit(BEREIT, o_r=(-0.25, -0.75, -0.6), u_r=(-0.05, -0.8, -0.6), kl=(0.0, -0.9, 0.4))), (1, BEREIT)], t)
+def zauber(i, n):
+    """Heilung: Stab zurück, dann mit Stab und offener linker Hand nach vorn zum Ziel, kurz halten, zurück"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.3), (0.6, 1.0), (0.8, 1.0), (1, 0.0)], t); schritt(10, w)
+    rumpf(vor=spur([(0, 2.0), (0.35, -6.0), (0.6, 5.0), (0.8, 5.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, -12.0), (0.6, 6.0), (1, 0.0)], t))
+    arme_spur([(0, BEREIT), (0.35, mit(BEREIT, o_r=(-0.4, 0.15, -0.9), u_r=(-0.2, -0.3, 0.93), kl=(0.0, 0.3, 0.95))),
+               (0.6, mit(BEREIT, o_r=(-0.18, -0.85, -0.25), u_r=(-0.05, -0.97, 0.15), kl=(0.0, -0.45, 0.89), o_l=(0.22, -0.8, -0.35), u_l=(0.08, -0.97, -0.05))),   # Stab und Hand zum Ziel (Arme etwas unter der Waagerechten: die weiten Ärmel ziehen sonst durch die Taille)
+               (0.8, mit(BEREIT, o_r=(-0.18, -0.85, -0.25), u_r=(-0.05, -0.97, 0.15), kl=(0.0, -0.45, 0.89), o_l=(0.22, -0.8, -0.35), u_l=(0.08, -0.97, -0.05))), (1, BEREIT)], t)
+def segen(i, n):
+    """Schutzsegen: leicht in die Knie, dann beide Arme weit nach oben, der Stab senkrecht über die Schulter gehoben"""
+    t = i / (n - 1); hocke(spur([(0, 0.0), (0.25, 14.0), (0.55, 0.0), (1, 0.0)], t)); rumpf(vor=spur([(0, 2.0), (0.25, 10.0), (0.55, -6.0), (0.8, -6.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.55, -10.0), (1, 0.0)], t))
+    hoch = mit(BEREIT, o_r=(-0.45, -0.2, 0.85), u_r=(-0.12, -0.25, 0.96), kl=(0.0, 0.0, 1.0), o_l=(0.6, -0.3, 0.7), u_l=(0.5, -0.45, 0.75))
+    arme_spur([(0, BEREIT), (0.25, mit(BEREIT, o_l=(0.3, -0.6, -0.7), u_l=(0.2, -0.8, -0.5))), (0.55, hoch), (0.8, hoch), (1, BEREIT)], t)
+def nova(i, n):
+    """Lichtnova: tief in die Knie, Stab nach unten, dann aufrichten und den Stab mit gestrecktem Arm senkrecht über den Kopf stoßen"""
+    t = i / (n - 1); hocke(spur([(0, 0.0), (0.3, 28.0), (0.6, 0.0), (1, 0.0)], t)); rumpf(vor=spur([(0, 2.0), (0.3, 18.0), (0.6, -4.0), (0.85, -4.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.3, 10.0), (0.6, -14.0), (1, 0.0)], t))
+    oben = mit(BEREIT, o_r=(-0.12, -0.1, 0.99), u_r=(-0.05, -0.08, 1.0), kl=(0.0, -0.05, 1.0), o_l=(0.88, -0.2, 0.3), u_l=(0.85, -0.3, 0.4))
+    arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.35, -0.4, -0.85), u_r=(-0.2, -0.75, -0.6), kl=(0.0, -0.4, -0.92), o_l=(0.3, -0.5, -0.8), u_l=(0.15, -0.8, -0.55))), (0.6, oben), (0.85, oben), (1, BEREIT)], t)
 def tod(i, n):
     """getroffen zurücktaumeln, in die Knie sacken, nach hinten fallen, liegen bleiben (letztes Bild)"""
     t = i / (n - 1); fall = spur([(0, 0.0), (0.3, 0.08), (0.65, 0.6), (0.9, 1.0), (1, 1.0)], t); knick = spur([(0, 0.0), (0.3, 1.0), (0.65, 0.7), (1, 0.15)], t)
-    hocke(38 * knick); rumpf(vor=14 * knick - 8 * fall, dreh_z=-12 * knick + 8 * fall, kipp=6 * fall, kopf=18 * knick - 22 * fall, ganz=-86 * fall)
+    hocke(38 * knick); rumpf(vor=14 * knick - 8 * fall, dreh_z=-12 * knick + 8 * fall, kipp=6 * fall, kopf=18 * knick - 22 * fall, ganz=-90 * fall)
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.6, -0.35, 0.3), u_r=(-0.55, -0.55, 0.6), kl=(-0.3, -0.5, 0.8), o_l=(0.6, -0.35, 0.3), u_l=(0.55, -0.55, 0.6))),   # Arme hochgerissen
                (0.65, mit(BEREIT, o_r=(-0.85, 0.2, 0.45), u_r=(-0.8, 0.45, 0.4), kl=(-0.2, 0.3, 0.93), o_l=(0.85, 0.2, 0.45), u_l=(0.8, 0.45, 0.4))),
-               (1, mit(BEREIT, o_r=(-0.9, 0.42, -0.08), u_r=(-0.75, 0.65, -0.1), kl=(0.6, 0.75, -0.06), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1)))], t)        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
+               (1, mit(BEREIT, o_r=(-0.9, 0.42, -0.08), u_r=(-0.75, 0.65, -0.1), kl=(0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3)))], t)        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
 
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
-              "angriff_axt": (angriff_axt, 8, 12, False, {"treffer": 5}), "angriff_dolch": (angriff_dolch, 7, 18, False, {"treffer": 3}), "tod": (tod, 8, 10, False, {"halten": 7})}
+              "angriff_axt": (angriff_axt, 8, 12, False, {"treffer": 5}), "angriff_dolch": (angriff_dolch, 7, 18, False, {"treffer": 3}),
+              "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()

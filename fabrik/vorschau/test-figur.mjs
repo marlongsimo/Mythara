@@ -14,7 +14,8 @@ const z = () => p.evaluate(() => window.FABRIK.zustand()), warte = (ms) => p.wai
 const meta = await p.evaluate(() => window.FABRIK.szene.meta); console.log(`${meta.id} · ${version} · Bewegungen: ${Object.keys(meta.animationen).join(", ")}`);
 let s = await z(); const plaetze = Object.keys(meta.plaetze);
 check(s.anim === "ruhe" && s.sichtbar.includes("koerper"), "Start: die Figur steht in Ruhe, der Körper ist zu sehen");
-check(plaetze.every((q) => s.tragen[q] && s.sichtbar.some((e) => e === s.tragen[q] || e.startsWith(s.tragen[q] + "."))), `Anfangsausrüstung: alle ${plaetze.length} Plätze belegt, jedes Teil als eigene Ebene sichtbar (${plaetze.join(", ")})`);
+const pflicht = plaetze.filter((q) => !meta.ebenen[meta.plaetze[q][0]].wahlfrei);
+check(pflicht.every((q) => s.tragen[q] && s.sichtbar.some((e) => e === s.tragen[q] || e.startsWith(s.tragen[q] + "."))) && plaetze.filter((q) => !pflicht.includes(q)).every((q) => !s.tragen[q]), `Anfangsausrüstung: ${pflicht.length} Plätze belegt, jedes Teil als eigene Ebene sichtbar; wahlfreie Teile zunächst abgelegt (${plaetze.filter((q) => !pflicht.includes(q)).join(", ") || "keine"})`);
 await bild("1-start");
 const wege = [["d", 0], ["d+s", 1], ["s", 2], ["a+s", 3], ["a", 4], ["a+w", 5], ["w", 6], ["d+w", 7]]; let richtig = 0, bewegt = 0;
 for (const [t, r] of wege) { const a = await z(), ks = t.split("+"); for (const k of ks) await p.keyboard.down(k); await warte(350); const b = await z(); for (const k of ks) await p.keyboard.up(k);
@@ -23,26 +24,27 @@ check(richtig === 8, `laufen: alle acht Richtungen wählen die richtige Zeile ($
 await warte(250); s = await z(); check(s.anim === "ruhe", "Tasten los: zurück in die Ruhe"); await bild("2-gelaufen");
 const hat = (a) => Boolean(meta.animationen[a]), dauer = (a) => Math.ceil(1000 * meta.animationen[a].bilder / meta.animationen[a].rate);
 const endet = async (a) => { await p.waitForFunction((a) => window.FABRIK.zustand().anim !== a, a, { timeout: 4000 }).catch(() => {}); return (await z()).anim; };
-if (!hat("angriff") && !hat("angriff_axt")) { await p.keyboard.press("j"); await warte(150); s = await z(); check(s.anim === "ruhe", "Taten, die die Figur noch nicht hat (hier: Angriff), werden übergangen – kein Fehler"); }
+const waffen = Object.entries(meta.ebenen).filter(([, d]) => d.art === "starr" && ["hand_r", "hand_l"].includes(d.platz));
+if (!waffen.some(([, d]) => hat(d.angriff || "angriff"))) { await p.keyboard.press("j"); await warte(150); s = await z(); check(s.anim === "ruhe", "Taten, die die Figur noch nicht hat (hier: Angriff), werden übergangen – kein Fehler"); }
 else {
   // jede Waffe der rechten Hand: anlegen, J drücken – es läuft genau ihre Angriffsbewegung, in allen acht Richtungen, und endet in der Ruhe
-  for (const w of meta.plaetze.hand_r || []) { const soll = meta.ebenen[w].angriff || "angriff";
-    await p.evaluate((w) => window.FABRIK.trage("hand_r", w), w); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(100); let gut = 0, sichtbar = 0;
-    for (let r = 0; r < 8; r++) { await p.evaluate((r) => window.FABRIK.richte(r), r); await p.keyboard.press("j"); await warte(80); s = await z();
+  for (const [w, d] of waffen) { const soll = d.angriff || "angriff", taste = d.platz === "hand_l" ? "u" : "j";
+    await p.evaluate(([q, w]) => window.FABRIK.trage(q, w), [d.platz, w]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(100); let gut = 0, sichtbar = 0;
+    for (let r = 0; r < 8; r++) { await p.evaluate((r) => window.FABRIK.richte(r), r); await p.keyboard.press(taste); await warte(80); s = await z();
       if (s.anim === soll) gut++; if (s.sichtbar.includes(w + ".vorn") || s.sichtbar.includes(w + ".hinten")) sichtbar++; if (r === 1) await bild(`angriff-${w}`); if ((await endet(soll)) !== "ruhe") gut -= 10; }
-    check(gut === 8 && sichtbar === 8, `${w}: J spielt „${soll}“ in allen acht Richtungen, die Waffe ist zu sehen, danach Ruhe (${Math.max(0, gut)}/8)`); }
-  await p.evaluate((w) => window.FABRIK.trage("hand_r", w), meta.plaetze.hand_r[0]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await p.evaluate(() => window.FABRIK.richte(1));
+    check(gut === 8 && sichtbar === 8, `${w}: ${taste.toUpperCase()} spielt „${soll}“ in allen acht Richtungen, die Waffe ist zu sehen, danach Ruhe (${Math.max(0, gut)}/8)`); }
+  if (meta.plaetze.hand_r) await p.evaluate((w) => window.FABRIK.trage("hand_r", w), meta.plaetze.hand_r[0]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await p.evaluate(() => window.FABRIK.richte(1));
   if (hat("block")) { await p.keyboard.down("k"); await warte(900); s = await z(); check(s.anim === "block" && s.bild === (meta.animationen.block.halten ?? meta.animationen.block.bilder - 1), `K halten: Block bleibt im Haltebild (Bild ${s.bild + 1})`); await bild("block"); await p.keyboard.up("k"); await warte(200); check((await z()).anim === "ruhe", "K los: Block endet"); }
-  for (const [taste, a] of [["h", "treffer"], ["Space", "ausweichen"]]) if (hat(a)) { await p.keyboard.press(taste); await warte(100); s = await z(); const lief = s.anim === a; if (a === "ausweichen") await bild(a); check(lief && (await endet(a)) === "ruhe", `${taste.toUpperCase()}: ${a} läuft und endet in der Ruhe`); }
+  for (const [taste, a] of [["h", "treffer"], ["Space", "ausweichen"], ["q", "segen"], ["r", "nova"]]) if (hat(a)) { await p.keyboard.press(taste); await warte(100); s = await z(); const lief = s.anim === a; if (a === "ausweichen") await bild(a); check(lief && (await endet(a)) === "ruhe", `${taste.toUpperCase()}: ${a} läuft und endet in der Ruhe`); }
   if (hat("tod")) { await p.keyboard.press("t"); await warte(dauer("tod") + 600); s = await z(); check(s.anim === "tod" && s.bild === meta.animationen.tod.bilder - 1, `T: Tod – die Figur bleibt liegen (Bild ${s.bild + 1}/${meta.animationen.tod.bilder})`); await bild("tod");
     const x0 = s.x; await p.keyboard.down("d"); await warte(300); await p.keyboard.up("d"); await p.keyboard.press("j"); await warte(100); s = await z(); check(s.anim === "tod" && s.x === x0, "tot: weder laufen noch angreifen");
     await p.keyboard.press("t"); await warte(150); check((await z()).anim === "ruhe", "T noch einmal: wieder aufstehen"); }
 }
 // jedes Teil einzeln ab- und wieder anlegen, Varianten durchschalten
 let einzeln = 0, varianten = 0, n = 0;
-for (const q of plaetze) { const vorher = (await z()).tragen[q];
+for (const q of plaetze) { const vorher = (await z()).tragen[q] || meta.plaetze[q][0]; await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, vorher]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(80);
   await p.evaluate((q) => window.FABRIK.trage(q, ""), q); await warte(120); s = await z(); if (!s.sichtbar.some((e) => e === vorher || e.startsWith(vorher + "."))) einzeln++;
-  for (const t of meta.plaetze[q]) { n++; await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, t]); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(120); s = await z();
+  for (const t of meta.plaetze[q]) { n++; await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, t]); await warte(50); await p.waitForFunction(() => window.FABRIK.zustand().geladen); await warte(250); s = await z();
     if (s.sichtbar.some((e) => e === t || e.startsWith(t + ".")) && meta.plaetze[q].filter((u) => u !== t).every((u) => !s.sichtbar.some((e) => e === u || e.startsWith(u + ".")))) varianten++; }
   await p.evaluate(([q, t]) => window.FABRIK.trage(q, t), [q, vorher]); await warte(80); }
 check(einzeln === plaetze.length, `jedes Teil lässt sich einzeln ablegen, die übrigen bleiben (${einzeln}/${plaetze.length})`);

@@ -83,6 +83,7 @@ Jeder Stand einer Figur liegt in einem eigenen Ordner (`v001`, `v002`, …). Ein
 | `gegner.bandit/varianten/dolch`, `…/schwert` | feste Varianten aus v002 (Kleidung + eine Waffe, Angriff der Waffe), ohne neu zu rendern: `variante.py <export> <id> <name> <waffe> <ziel>` |
 | `npc.standard.m/v001` | Dorfbewohner: Ruhe und Laufen (Haltung zivil), Weste, Hose, Stiefel, Gürtel; Schürze, Halstuch (wahlfreie Lagen), Strohhut (Drehkörper) |
 | `npc.standard.m/varianten` | 10 Rollen aus `rollen.json` (Westenfarbe + Zusatzteile), Ebenen nur einmal gespeichert: `npc_varianten.py` |
+| `held.priesterin/v001` | Elara: Stab rechts (Licht-, Heil-, Zeremonienstab), Streitkolben links; Ruhe, Laufen, Heilung, Schutzsegen, Lichtnova, Streitkolbenangriff links, Treffer, Tod; Robe, Schulterumhang, Gürtel, Armschienen, Stiefel, Kapuze (wahlfrei) |
 
 ## Eine neue Figur
 
