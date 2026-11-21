@@ -1,0 +1,74 @@
+{
+ "start": [
+  [
+   21,
+   60
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "baeuerin",
+   "rolle": "npc",
+   "figur": "kraeuterfrau",
+   "x": 30,
+   "y": 32.6
+  },
+  {
+   "id": "muellerjunge",
+   "rolle": "npc",
+   "figur": "junge",
+   "x": 68,
+   "y": 25,
+   "links": true
+  }
+ ],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "hof_tuer",
+   "art": "lesen",
+   "x": 24.4,
+   "y": 27.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Bauernhaus des Osthofs. Im Stall nebenan schnaubt ein Pferd."
+   }
+  },
+  {
+   "id": "muehle_tuer",
+   "art": "lesen",
+   "x": 72,
+   "y": 21.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Windmühle. Wenn Wind geht, mahlt sie das Korn für die ganze Waldmark."
+   }
+  },
+  {
+   "id": "scheune_tor",
+   "art": "lesen",
+   "x": 43,
+   "y": 28.1,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Scheune ist bis unters Dach mit Heu gefüllt."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 66,
+    "y0": 59,
+    "x1": 96,
+    "y1": 64
+   }
+  ],
+  "freigeben": []
+ }
+}

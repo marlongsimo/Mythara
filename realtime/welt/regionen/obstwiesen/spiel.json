@@ -1,0 +1,56 @@
+{
+ "start": [
+  [
+   2,
+   30
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "obstbauer",
+   "rolle": "npc",
+   "figur": "wanderer",
+   "x": 27,
+   "y": 37,
+   "links": true
+  }
+ ],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "huette_tuer",
+   "art": "lesen",
+   "x": 29.4,
+   "y": 34.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hütte des Obstbauern. Vor der Tür stehen Kisten voller Äpfel."
+   }
+  },
+  {
+   "id": "quelle",
+   "art": "lesen",
+   "x": 39.8,
+   "y": 40.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine klare Quelle. Hier entspringt der Bach, der durch die Obstwiesen nach Süden fließt."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 42.6,
+    "y0": 58.6,
+    "x1": 48.6,
+    "y1": 61.2
+   }
+  ]
+ }
+}

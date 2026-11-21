@@ -1,13 +1,36 @@
 {
  "start": [
   [
-   64,
-   32
+   88,
+   60
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
- "interaktionen": [],
+ "interaktionen": [
+  {
+   "id": "meiler",
+   "art": "lesen",
+   "x": 91.5,
+   "y": 30.9,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Kohlenmeiler. Unter der Erde schwelt das Holz seit Tagen und wird zu Kohle für die Schmiede."
+   }
+  },
+  {
+   "id": "ruine",
+   "art": "lesen",
+   "x": 82,
+   "y": 34.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt."
+   }
+  }
+ ],
  "ausgaenge": [],
  "kollision": {
   "sperren": [],

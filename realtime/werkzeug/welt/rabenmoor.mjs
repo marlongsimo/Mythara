@@ -42,7 +42,7 @@ GASSEN.push([[76, 42.3], [58, 45.5]], [[51.9, 65.1], [55.6, 68.6]], [[38, 37], [
 
 /* ───── Gelände ───── */
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5; let c = "o";
-  const wald = cx > WALDRAND(cy);
+  const wald = cx > WALDRAND(cy) || (cx > 55 + 2 * Math.sin(cy / 2) && cy < 4 + 1.5 * Math.sin(cx / 4.3) + Math.sin(cx / 1.9));   /* oben ab x ≈ 64 grenzt der Kreuzwald */
   if (strecke(cx, cy, WEG) < 1.3) c = "e";
   else if (!wald && cx > WALDRAND(cy) - 6 && Math.sin(cy / 3 + cx / 5) > 0.2) c = "m";   /* schlammiger Moorrand */
   else if (wald) c = cx < WALDRAND(cy) + 3 ? "t" : "f";
@@ -80,7 +80,7 @@ for (let i = 0; i < 2000 && dinge.filter((d) => d.objekt === "moor_nebel_01").le
 /* Wald im Osten */
 const wald = [], frei = (x, y) => wald.every((p) => Math.hypot(p.x - x, p.y - y) >= 2.3);
 for (let i = 0; i < B * H * 0.6; i++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2);
-  if (x < WALDRAND(y) + 2.5 || strecke(x, y, WEG) < 4 || !frei(x, y)) continue;
+  if ((x < WALDRAND(y) + 2.5 && !(x > 58 && y < 2.6)) || strecke(x, y, WEG) < 4 || strecke(x, y, NORDPFAD) < 4 || !frei(x, y)) continue;
   const z = wurf(), a = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6;
   wald.push({ id: "b" + String(wald.length + 1).padStart(4, "0"), objekt: BAUM[a], x, y, s: +(0.85 + wurf() * 0.27).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
 const objekte = [...dinge, ...wald].sort((a, b) => a.y - b.y);

@@ -1,0 +1,15 @@
+{
+ "id": "obstwiesen",
+ "name": "Die Obstwiesen",
+ "untertitel": "Apfelgärten östlich von Weidenhain",
+ "ursprung": [
+  204,
+  208
+ ],
+ "chunks": [
+  2,
+  3
+ ],
+ "biom": "wiese",
+ "stufe": 1
+}

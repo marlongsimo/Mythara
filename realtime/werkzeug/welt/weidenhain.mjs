@@ -28,11 +28,12 @@ const imDorf = (x, y) => { const s = SAUM(x, y); return x > s && y > s && x < B 
 const PLATZ = { x: 42, y: 30, rx: 14.5, ry: 9.5 };                   /* gepflastert */
 const aufPlatz = (x, y) => Math.hypot((x - PLATZ.x) / PLATZ.rx, (y - PLATZ.y) / PLATZ.ry) < rand(x * 1.7, y * 1.3);
 /* Mühlgraben: von Norden östlich der Mühle herab, unter dem Mühlrad nach Westen, am Wehr vorbei nach Süden, dann am Platz entlang nach Westen und hinaus nach Süden */
-const GRABEN = [[67.5, -1], [67.5, 31], [66, 33.4], [62.8, 33.6], [62.8, 45.5], [60, 48.5], [27, 48.5], [24.5, 51], [24.5, H + 1]];
-const imGraben = (x, y) => strecke(x, y, GRABEN) < 1.55 + 0.12 * Math.sin(x / 2.3 + y / 3.1);
+const GRABEN = [[67.5, 3.5], [67.5, 31],   /* entspringt seit 21.11.2026 einem Quellteich im Dorf (vorher aus der Nordkante) */ [66, 33.4], [62.8, 33.6], [62.8, 45.5], [60, 48.5], [27, 48.5], [24.5, 51], [24.5, H + 1]];
+const imGraben = (x, y) => strecke(x, y, GRABEN) < 1.55 + 0.12 * Math.sin(x / 2.3 + y / 3.1) || Math.hypot((x - 67.5) / 2.6, (y - 2.9) / 1.9) < 1;
 const nahGraben = (x, y, r) => strecke(x, y, GRABEN) < r;
 const WEG_NORD = [[48.8, -1], [47.6, 5], [46.5, 10], [44.5, 21.5]];   /* oben trifft der Feldweg des Kreuzwalds (x ≈ 48,8) */               /* die Dorfstraße: der Feldweg aus dem Kreuzwald */
 const PFADE = [[[55, 31], [58.5, 33.4], [60.4, 33.2]], [[31.5, 37.5], [31.6, 46], [27.9, 46.1]], [[31, 22.4], [30.6, 21]]];
+PFADE.push([[120.5, 29.8], [129, 29.8]]);   /* die östliche Gasse läuft weiter in die Obstwiesen */
 /* Gassen (je eine Häuserreihe steht nördlich davon, die Türen zur Gasse) */
 const GASSEN = {
   nordwest: [[46.5, 12.5], [30, 12.8], [9, 12.4]],
