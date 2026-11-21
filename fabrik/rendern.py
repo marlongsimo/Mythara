@@ -103,7 +103,7 @@ meta = {"id": kennung, "feld": FELD, "richtungen": RICHTUNGEN, "winkel0": "osten
         "fuss": list(FUSS), "mass": [FUSS[0], FUSS[1], round(float(arm.get("hoehe", 1.8)) * math.cos(n) * PX_JE_M / FELD, 3)], "kamera": {"neigung": NEIGUNG, "px_je_m": PX_JE_M},
         "animationen": {a.name: dict({"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])}, **json.loads(a["mehr"])) for a in aktionen},
         "ebenen": {"koerper": {"art": "koerper"}}, "plaetze": {}, "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)", "zeichenfolge": ZEICHENFOLGE, "tiefe": {}}
-for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"wahlfrei": True} if o.get("wahlfrei") else {}), **({"unten": True} if o.get("unten") else {}), **({"umhang": True} if o.get("umhang") else {}), **({"ersetzt": o["ersetzt"].split(",")} if o.get("ersetzt") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
+for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"wahlfrei": True} if o.get("wahlfrei") else {}), **({"unten": True} if o.get("unten") else {}), **({"umhang": True} if o.get("umhang") else {}), **({"ersetzt": o["ersetzt"].split(",")} if o.get("ersetzt") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {}), **({"bewegungen": json.loads(o["bewegungen"])} if o.get("bewegungen") and json.loads(o["bewegungen"]) else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
 # Tiefe der Waffen je Bewegung, Richtung und Bild (in cm entlang der Blickrichtung)
 for a in aktionen:
     arm.animation_data.action = a
@@ -128,12 +128,17 @@ for name, sichtbar, schneider in laeufe:
     if NUR and name not in NUR and name.rsplit(".", 1)[0] not in NUR: continue
     for o in teile: o.hide_render = not (o is sichtbar or o in schneider); o.is_holdout = o in schneider
     for a in aktionen:
+        nur_in = json.loads(sichtbar.get("bewegungen", "[]") or "[]") if sichtbar is not None else []
+        if nur_in and a.name not in nur_in: continue                                                # Waffe nur in ihren Bewegungen (wechselbare Waffen)
+        los = json.loads(a["mehr"]).get("loslassen") if sichtbar is not None and sichtbar.get("art") == "starr" and sichtbar.get("platz") == "hand_r" else None   # Wurfwaffe: ab hier leer
         datei = os.path.join(ziel, f"{name}.{a.name}.webp")
         if os.path.exists(datei) and not NUR and os.path.getmtime(datei) > os.path.getmtime(quelle): continue   # nur Blätter wiederverwenden, die neuer sind als die Figur (sonst zeigen sie eine alte Fassung)
         bilder = int(a["bilder"]); arm.animation_data.action = a; blatt = Image.new("RGBA", (FELD * bilder, FELD * 8), (0, 0, 0, 0))
         for r in range(8):
             arm.rotation_euler = (0, 0, math.radians(90 - 45 * r))
-            for b in range(bilder): sc.frame_set(b + 1); sc.render.filepath = tmp; bpy.ops.render.render(write_still=True); blatt.paste(Image.open(tmp).convert("RGBA"), (b * FELD, r * FELD)); gerendert += 1
+            for b in range(bilder):
+                if los is not None and b >= los: continue                                           # geworfen: die Hand ist leer
+                sc.frame_set(b + 1); sc.render.filepath = tmp; bpy.ops.render.render(write_still=True); blatt.paste(Image.open(tmp).convert("RGBA"), (b * FELD, r * FELD)); gerendert += 1
         px = np.asarray(blatt).copy(); px[px[..., 3] < 8] = 0; Image.fromarray(px, "RGBA").save(datei, lossless=True, method=4)
         print(f"Blatt: {name}.{a.name} · {gerendert} Bilder in {round(time.time() - start)} s", flush=True)
 if os.path.exists(tmp): os.remove(tmp)
