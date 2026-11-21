@@ -1,6 +1,6 @@
 """Mythara Fabrik – eine neue Grundstruktur (Mann, Frau, …) nach der Vorlage anlegen.
 
-  python3 fabrik/grundstruktur.py <meshy.glb> <asset-id> [vorlage=fabrik/vorlagen/grundstruktur.json]
+  python3 fabrik/grundstruktur.py <meshy.glb> <asset-id> [vorlage=fabrik/vorlagen/grundstruktur.json] [version=v001]
 
 meshy.glb   schlichter Körper (Unterkleidung, barfuß, Arme leicht abgespreizt) mit Textur – z. B. Meshy texturiert
 Legt fabrik/assets/<asset-id>/v001/ an: quelle/meshy-basis.glb, quelle/koerper.glb (Textur bleibt, Punktfarben aus der Textur),
@@ -11,7 +11,7 @@ gemalter Stil), arbeit/basis.blend (gerigt). Danach kommen Teile dazu, z. B.
 """
 import json, os, shutil, subprocess, sys
 glb, aid = sys.argv[1], sys.argv[2]; opt = dict(a.split("=", 1) for a in sys.argv[3:] if "=" in a)
-FAB = os.path.dirname(os.path.abspath(__file__)); D = os.path.join(FAB, "assets", aid, "v001"); PY = sys.executable
+FAB = os.path.dirname(os.path.abspath(__file__)); D = os.path.join(FAB, "assets", aid, opt.get("version", "v001")); PY = sys.executable
 for u in ("quelle/teile", "arbeit"): os.makedirs(os.path.join(D, u), exist_ok=True)
 os.makedirs(os.path.join(FAB, "assets", aid, "referenz"), exist_ok=True)
 shutil.copy(glb, os.path.join(D, "quelle", "meshy-basis.glb"))

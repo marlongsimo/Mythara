@@ -1,0 +1,40 @@
+{
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "schildstoss",
+    "kampfschrei",
+    "treffer",
+    "tod"
+  ],
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "tod_schild_flach": true,
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb"
+    }
+  ],
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "Maßgebliche Grundstruktur (Frau, Meshy „The Resolute Wanderer“): kahl, Startausrüstung fest im Modell (Leinenhemd mit Schnürung, Gürtel mit Tasche, Lederhose, Stiefel). Frisuren als Ebene im Platz „haar“, Rüstung als Teilnetze darüber. Schwert und Schild für die Kampfanimationen.",
+  "arm_radius": 0.1,
+  "huelle": [],
+  "teilnetze": []
+}
