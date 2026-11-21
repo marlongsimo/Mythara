@@ -1,0 +1,15 @@
+{
+ "id": "osthang",
+ "name": "Der Osthang",
+ "untertitel": "Hügelland am Steinweg nach Graufurt",
+ "ursprung": [
+  206,
+  200
+ ],
+ "chunks": [
+  2,
+  11
+ ],
+ "biom": "wiese",
+ "stufe": 1
+}

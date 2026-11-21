@@ -58,6 +58,7 @@ HAEUSER = {
     'moor_schrein_01':      dict(name='Versunkener Schrein', form='schrein', saat=40),
     'moor_nebel_01':        dict(name='Nebelschwade', form='nebel', tiefe='oben', saat=41),
     'wald_meiler_01':       dict(name='Kohlenmeiler', form='meiler', saat=42),
+    'graufurt_faehre_01':   dict(name='Fähre (Kette gerissen)', form='faehre', tiefe='boden', saat=45),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -931,7 +932,26 @@ def ruine(P, rng):
     return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.9, 'y': -0.6, 'b': 3.8, 'h': 0.6}, {'art': 'lesen', 'dx': 0, 'dy': 0.7, 'radius': 2.0}, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb, 'menhir': menhir, 'schrein': schrein, 'nebel': nebel, 'meiler': meiler, 'ruine': ruine}
+def faehre(P, rng):
+    """Breites Fährfloß, schief an der Anlegestelle; Geländer, Pfosten für die Kette, die gerissene Eisenkette hängt ins Wasser"""
+    W, H = 330, 210; B = Blatt(W, H); cx, cy = 165, 120
+    w = math.radians(-8); rot = lambda pts: [(cx + (x - cx) * math.cos(w) - (y - cy) * math.sin(w), cy + (x - cx) * math.sin(w) + (y - cy) * math.cos(w)) for x, y in pts]
+    B.lege((40, 30, 22), B.maske(rot([(cx - 130, cy - 42), (cx + 130, cy - 42), (cx + 132, cy + 50), (cx - 132, cy + 50)])))
+    for i in range(13):
+        x = cx - 126 + i * 20; B.lege(faerben(B.voll('maserung', 0.07, drehen=True, saat=i), (140, 104, 68)) * float(rng.uniform(0.85, 1.05)), B.maske(rot([(x, cy - 40), (x + 18, cy - 40), (x + 18, cy + 40), (x, cy + 40)])))
+    for x0, x1, y in ((cx - 128, cx + 128, cy - 38), (cx - 128, cx + 128, cy + 38)):
+        for x in np.linspace(x0, x1, 6):
+            (px, py), = rot([(x, y)]); B.balken(px - 3, py - 26, 6, 26, int(x), 0.6)
+        a, b2 = rot([(x0, y - 22), (x1, y - 22)]); B.strich([a, b2], 5, 77, 0.7)
+    for x in (cx - 120, cx + 120):
+        (px, py), = rot([(x, cy)]); B.balken(px - 6, py - 46, 12, 46, int(x) + 3, 0.55)
+    kette = rot([(cx + 120, cy - 40)]) + [(cx + 150 + i * 6, cy - 30 + 18 * math.sin(i / 2) + i * 2) for i in range(1, 12)]
+    for (x0, y0), (x1, y1) in zip(kette[:-1], kette[1:]):
+        B.lege((70, 72, 76), ellipse(B, (x0 + x1) / 2, (y0 + y1) / 2, 4, 2.6)); B.dunkel(ellipse(B, (x0 + x1) / 2, (y0 + y1) / 2, 2, 1.2), 0.6)
+    return B.fertig(), [0.5, 0.82], None, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.4}, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb, 'menhir': menhir, 'schrein': schrein, 'nebel': nebel, 'meiler': meiler, 'ruine': ruine, 'faehre': faehre}
 
 
 def baue(kennung):
@@ -939,7 +959,7 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'sonderort' if P['form'] in ('menhir', 'schrein', 'nebel', 'ruine') else 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke', 'kahn') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'sonderort' if P['form'] in ('menhir', 'schrein', 'nebel', 'ruine') else 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke', 'kahn', 'faehre') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': P.get('tiefe', 'fuss'), **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
                     'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt' or P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20

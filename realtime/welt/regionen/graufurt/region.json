@@ -1,0 +1,15 @@
+{
+ "id": "graufurt",
+ "name": "Graufurt",
+ "untertitel": "Die Vorfeste am grauen Fluss",
+ "ursprung": [
+  208,
+  200
+ ],
+ "chunks": [
+  4,
+  11
+ ],
+ "biom": "dorf",
+ "stufe": 1
+}

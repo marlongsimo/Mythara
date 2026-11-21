@@ -15,7 +15,7 @@ Ein Bauplan (Felder; x relativ zum Fuß, d ab der Fußlinie nach Norden):
   koerper: [{id, x, d, b, t, h, wand: bretter|blockbohlen|stein|putz|fachwerk, betretbar, sockel,
              dach: {form: sattel|walm|pult|zelt|flach, first: x|d, hoehe, ueber, deckung: ziegel|schindel|stroh, farbe: [r,g,b]}}]
   tueren:  [{koerper, x (Mitte, relativ zum Fuß), b, h, art: einfach|doppel|tor}]          – immer in der Südwand
-  fenster: [{koerper, wand: sued|ost, x oder d (Mitte), z, b, h, art: kreuz|rund|schmal|glut, laeden, blumen}]
+  fenster: [{koerper, wand: sued|ost, x oder d (Mitte), z, b, h, art: kreuz|rund|schmal|glut|gruen, laeden, blumen}]
   zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter|muehlrad|fluegel, …}]   (muehlrad: vor der Südwand, {koerper, x, r, b, z})
   innen:   {boden: bretter|stein, moebel: [{art: tisch|bett|theke|fass|amboss|regal|ofen|altar|bank|kessel|heu|saecke|muehlstein, x, d}]}
 Der Fuß ist die Mitte der Südwand des ersten Baukörpers (dort, wo die Figur „vor“ dem Haus steht).
@@ -239,7 +239,7 @@ def _tex(name):
 
 haus3d.tex = tex                    # die Zeichenfläche aus haus3d holt ihre Texturen von hier
 
-DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3)}
+DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3), 'schiefer': ('schiefer', 0.11)}
 DECKUNG_MALSTIL = 3.0; WAND_MALSTIL = 2.4    # im Malstil: Schindeln, Bretter und Steine deutlich größer, damit sie im Spielmaßstab lesbar sind
 WAND = {'ziegel': ('ziegel', 0.12, False), 'quader': ('quader', 0.14, False), 'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
 
@@ -377,6 +377,10 @@ def fenster_zeichnen(B, f, k):
         for a, b in ((a0 - f['b'] * 0.42, a0 - 0.02), (a1 + 0.02, a1 + f['b'] * 0.42)):
             B.flaeche(PROJ, rechteck(a, b, z0 - 0.05, z1 + 0.05, 0.01), 'bretter', 0.5, 0.07)
     B.flaeche(PROJ, rechteck(a0 - 0.1, a1 + 0.1, z0 - 0.1, z1 + 0.1, 0.015), 'maserung', 0.6, 0.2)
+    if art == 'gruen':     # unheimliches grünes Licht (der Turm am Ostufer von Graufurt)
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 60, 44))
+        B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (150, 255, 170))
+        return
     if art == 'glut':
         B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 26, 22))
         B.vieleck(PROJ, rechteck(a0 + 0.06, a1 - 0.06, z0, z0 + (z1 - z0) * 0.45, 0.025), (255, 128, 40))

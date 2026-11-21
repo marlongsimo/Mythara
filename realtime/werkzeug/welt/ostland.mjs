@@ -58,7 +58,7 @@ const tuer = (id, x, y) => { const i = BIB.get(id).interaktion; return [+(x + i.
     interaktionen: [lies("hof_tuer", ...tuer("weidenhain_fachwerk_03", ...HAUS), "Das Bauernhaus des Osthofs. Im Stall nebenan schnaubt ein Pferd."),
       lies("muehle_tuer", ...tuer("dorf_windmuehle_01", ...MUEHLE), "Die Windmühle. Wenn Wind geht, mahlt sie das Korn für die ganze Waldmark."),
       lies("scheune_tor", ...tuer("dorf_scheune_holz_01", ...SCHEUNE), "Die Scheune ist bis unters Dach mit Heu gefüllt.")],
-    ausgaenge: [], kollision: { sperren: [{ art: "rechteck", x0: 66, y0: 59, x1: B, y1: H }], freigeben: [] } };   /* Südostrand: dahinter liegt der Kreuzwald hinter dem umgestürzten Baum am Ostweg */
+    ausgaenge: [], kollision: { sperren: [], freigeben: [] } };   /* Südostrand: dahinter liegt der Kreuzwald hinter dem umgestürzten Baum am Ostweg */
   schreibe("osthof", { id: "osthof", name: "Der Osthof", untertitel: "Felder und Windmühle östlich der Waldmark", ursprung: [203, 200], chunks: [3, 2], biom: "wiese", stufe: 1 }, g, [...dinge, ...baeume], spiel); }
 
 /* ───── Obstwiesen ───── */

@@ -37,6 +37,7 @@ MODELLE = {
     'burg_eckturm': dict(name='Eckturm', paket='castle', teile=['tower-square-mid', 'tower-square-top-roof-high'], mass=2.6, dreh=-90, kategorie='bauteil'),
     'burg_torhaus': dict(name='Torhaus', paket='castle', teile=['wall-doorway'], mass=3.0, dreh=90, kategorie='bauteil', durchgang=True),
     # Dorfdinge (Town Kit, Retro Fantasy Kit)
+    'burg_torhaus_tief': dict(name='Torhaus (Nord–Süd)', paket='castle', teile=['wall-doorway'], mass=3.0, dreh=0, kategorie='bauteil', durchgang=True),
     'k_stand_rot': dict(name='Marktstand rot', paket='town', teile=['stall-red'], mass=2.6, kategorie='kleinteil'),
     'k_stand_gruen': dict(name='Marktstand grün', paket='town', teile=['stall-green'], mass=2.6, kategorie='kleinteil'),
     'k_karren': dict(name='Karren', paket='town', teile=['cart'], mass=2.4, dreh=90, kategorie='kleinteil'),
