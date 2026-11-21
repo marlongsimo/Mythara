@@ -42,6 +42,8 @@ export const WELT = { start: weltName, bild: "../", daten: "welt/",
   betreten: null as ((s: Welt) => void) | null,
   regionWechsel: null as ((s: Welt, r: { region: Region; start: number[][] }) => void) | null,
   schritt: null as ((s: Welt, d: number) => void) | null,
+  /** Bewegt jemand anderes den Helden (Kampfgebiet: der Spielserver)? Bekommt die gewünschte Richtung; true = nicht selbst bewegen */
+  fremd: null as ((s: Welt, rx: number, ry: number) => boolean) | null,
   antippen: null as ((s: Welt, p: Phaser.Input.Pointer) => boolean) | null };
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1", TEST = P.get("test") === "1";
 const F = FELD_PX, C = CHUNK_FELDER;
@@ -64,7 +66,7 @@ export class Welt extends Phaser.Scene {
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
   figur!: Phaser.GameObjects.Sprite; silhouette!: Phaser.GameObjects.Sprite; bildFigur = true; ring!: Phaser.GameObjects.Ellipse; marke!: Phaser.GameObjects.Ellipse;
   stick: { id: number; x: number; y: number; t: number; weit: number } | null = null;
-  nah: { text: string; tat: () => void } | null = null; hier = ""; gesperrt = false;
+  nah: { text: string; tat: () => void } | null = null; hier = ""; gesperrt = false; /** stand eine gemerkte Stelle auf dem Gerät? (dann gilt die des Servers nicht) */ gemerkteStelle = false;
   /** Zähler für die Testanzeige */
   mess = { geholt: 0, gezeigt: 0, entladen: 0, laengsteMs: 0 };
   constructor() { super("welt"); }
@@ -85,13 +87,20 @@ export class Welt extends Phaser.Scene {
   gueltigSetzen() { for (const r of Object.values(this.index.regionen)) for (let j = 0; j < r.region.chunks[1]; j++) for (let i = 0; i < r.region.chunks[0]; i++) this.gueltig.add(chunkName(r.region.ursprung[0] + i, r.region.ursprung[1] + j)); }
   startRegion(): string { return this.index.regionen[WELT.start] ? WELT.start : Object.keys(this.index.regionen)[0]; }
   /** Wo der Held steht, wenn die Szene beginnt: die gemerkte Stelle, sonst der Start der Region */
-  startPunkt(): { x: number; y: number } {
+  private ersterStart: { x: number; y: number } | null = null;
+  /** einmal ermittelt, gilt er für die ganze Szene (die Adresse mit wx/wy wird beim ersten Mal geleert) */
+  startPunkt(): { x: number; y: number } { if (!this.ersterStart) this.ersterStart = this.startPunktFinden(); return this.ersterStart; }
+  startPunktFinden(): { x: number; y: number } {
     if (P.get("von") === "tor" && this.index.regionen[WELT.tor]) { /* aus einer Kampagne zurück: vor dem Tor */ const t = this.index.regionen[WELT.tor];
       try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } P.delete("von"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); this.vonTor = { x: t.start[0][0], y: t.start[0][1] }; }
     if (this.vonTor) return this.vonTor;
-    const r = this.index.regionen[this.startRegion()], s = r.start[0];
+    const r = this.index.regionen[this.startRegion()], s = r.start[0], gilt = (x: number, y: number, region?: string) => this.gueltig.has(chunkName(Math.floor(x / C), Math.floor(y / C))) && !(region && WELT.gesperrteRegionen.includes(region));
+    /* zurück aus einer Kampfzone der Welt (Lichtung): genau an der Stelle, an der man sie verlassen hat */
+    { const wx = Number(P.get("wx")), wy = Number(P.get("wy")); if (P.has("wx")) { P.delete("wx"); P.delete("wy"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); if (Number.isFinite(wx) && Number.isFinite(wy) && gilt(wx, wy)) return { x: wx, y: wy }; } }
+    /* gefallen oder Teleport: am Start der Waldmark */
+    if (P.get("von") === "teleport" || P.get("von") === "tod") { try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } return { x: s[0], y: s[1] }; }
     try { if (P.get("neu") === "1") localStorage.removeItem("ez_welt_pos"); const p = JSON.parse(localStorage.getItem("ez_welt_pos") || "null");
-      if (Array.isArray(p) && p[2] === this.startRegion() && this.gueltig.has(chunkName(Math.floor(p[0] / C), Math.floor(p[1] / C)))) return { x: p[0], y: p[1] }; } catch { /* privat */ }
+      if (Array.isArray(p) && gilt(p[0], p[1], p[2])) { this.gemerkteStelle = true; return { x: p[0], y: p[1] }; } } catch { /* privat */ } /* die gemerkte Stelle – in jeder Region der Welt, nicht nur in der Waldmark */
     return { x: s[0], y: s[1] };
   }
   regionBei(x: number, y: number): RegionKopf | null { const cx = Math.floor(x / C), cy = Math.floor(y / C);
@@ -288,7 +297,8 @@ export class Welt extends Phaser.Scene {
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += d;
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.setVisible(false); } else { rx = dx / l; ry = dy / l; } }
     const l = Math.hypot(rx, ry), faehrt = l > 0.05;
-    if (faehrt) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; if (WELT.richten) WELT.richten(this.figur, rx, ry); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
+    const fremd = WELT.fremd ? WELT.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0) : false; /* im Kampfgebiet bewegt der Server den Helden */
+    if (faehrt) { if (!fremd) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; } if (WELT.richten) WELT.richten(this.figur, rx, ry); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt;
       if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(HELD_PX / (L[2] * 176)); }
       else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(HELD_PX * (D.gross || 1) / this.figur.height); } }

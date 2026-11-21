@@ -11,9 +11,9 @@
 import { WELT, Welt } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
-import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "../hud";
+import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
-import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
 import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon } from "../modulfigur";
@@ -22,6 +22,9 @@ import { stufeAusEp } from "../../../shared/config";
 import { kontoName } from "../konto";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
+import { serverZusatz } from "../gruppe";
+import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
+import { WELTZONEN } from "../../../shared/karten";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
@@ -49,17 +52,65 @@ function oeffne(art: string, s: Welt) {
 /** Den Helden wechseln – nur in der Waldmark (der Server speichert ihn mit dem Konto) */
 function heldWaehlen(s: Welt) { if (s.gesperrt) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
   wahl((held) => { weltHeld(held); s.gesperrt = false; if (held !== s.held) location.reload(); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
-function onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
+/** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
+function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
+  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.cameras.main.fadeOut(300, 0, 0, 0); s.time.delayedCall(320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
+/** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
+let kampf: WeltKampf | null = null;
+const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
+/** Unter der Minimap: Sicherer Ort, Einzelkampf oder Mehrkampf – je nachdem, wo man steht */
+let zoomJetzt = 2.2;
+function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart"); const r = document.getElementById("ez-kartenrahmen"); if (!r) return;
+  if (!el) { el = document.createElement("div"); el.id = "ez-kampfart"; r.appendChild(el); }
+  const z = WELTZONEN[s.hier], art = !z || !freigabe("suedtor") ? "sicher" : kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel";
+  if (el.dataset.art === art) return; el.dataset.art = art; el.className = art; r.dataset.art = art; /* auch die Farbe des Kartenrings zeigt es */
+  el.textContent = art === "sicher" ? "🛡 Sicherer Ort" : art === "mehr" ? "⚔⚔ Mehrkampf" : "⚔ Einzelkampf";
+  el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
+function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
+/* für Prüfungen im Browser */
+Object.defineProperty(window, "EZK", { get: () => kampf, configurable: true });
+/** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
+function fremd(s: Welt, rx: number, ry: number): boolean {
+  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { kampfEnde(); return false; } const rand = randAbstand(s, z);
+  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } location.href = "./?von=tod" + serverZusatz(); }); }
+  if (!kampf.bereit) { if (kampf.art === "warte") { const t = $("#ez-dorf-hilfe"); t.textContent = "Verbinde mit dem Spielserver …"; t.style.display = ""; } return true; } /* bis der Server antwortet, bleibt der Held stehen */
+  /* am Rand des Gebiets und weiter hinaus: die Welt übernimmt wieder (etwa durchs Tor zurück in die Waldmark) */
+  const lx = s.ort.x - z.x0, ly = s.ort.y - z.y0; if (rand < 1.2 && ((lx < 1.2 && rx < 0) || (ly < 1.2 && ry < 0) || (lx > z.b - 1.2 && rx > 0) || (ly > z.h - 1.2 && ry > 0))) { kampfEnde(); return false; }
+  { const t = $("#ez-dorf-hilfe"); if (t.textContent === "Verbinde mit dem Spielserver …") { t.textContent = ""; t.style.display = "none"; } }
+  kampf.steuern(rx, ry); return true; }
+/** Der Server kennt die zuletzt gemerkte Stelle (anderes Gerät): dorthin, wenn auf diesem Gerät keine gemerkt war und man noch nicht losgelaufen ist */
+let serverStelleGenutzt = false;
+function serverStelle(s: Welt, p: { region: string; x: number | null; y: number | null } | undefined) {
+  if (serverStelleGenutzt || !p || s.gemerkteStelle || s.time.now > 15000 || p.x === null || p.y === null) return; serverStelleGenutzt = true;
+  const x = p.x, y = p.y; if (Math.hypot(x - s.ort.x, y - s.ort.y) < 1) return;
+  s.ort = { x, y }; s.pfad = []; s.cameras.main.centerOn(x * FELD_PX, y * FELD_PX); }
+/** Oben neben der Profilanzeige: Spieler (wer ist hier, mit Zahl) und Einstellungen (Menü) */
+function obenKnoepfe(s: Welt) { let el = document.getElementById("ez-oben-knoepfe"); if (!el) { el = document.createElement("div"); el.id = "ez-oben-knoepfe"; document.body.appendChild(el); }
+  el.hidden = false; el.innerHTML = `<button type="button" data-o="spieler" aria-label="Spieler" title="Spieler hier (P)"><span>${ZEICHEN.helden}</span><em class="zahl" hidden></em></button><button type="button" data-o="menue" aria-label="Einstellungen" title="Einstellungen"><span>${ZEICHEN.menue}</span></button>`;
+  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-o]") as HTMLElement | null; if (!b) return; if (b.dataset.o === "spieler") tafel(s, spielerListe); else oeffne("menue", s); }; obenPlatz(); }
+/** rechts neben die sichtbare Profilanzeige (im Kampfgebiet: Leben und Erfahrung) setzen */
+function obenPlatz() { const el = document.getElementById("ez-oben-knoepfe"); if (!el) return; const p = document.querySelector(document.body.classList.contains("weltkampf") ? "#ez-ich" : "#ez-profil") as HTMLElement | null, r = p && p.getBoundingClientRect();
+  if (!r || !r.width) return; const ban = document.querySelector("#ez-titel:not([hidden])") as HTMLElement | null, br = ban && ban.getBoundingClientRect(), passt = !br || !br.width || r.right + 10 + el.offsetWidth + 6 <= br.left;
+  /* neben das Profil – reicht der Platz bis zum Ortsbanner nicht, direkt darunter an seine rechte Kante */
+  const l = Math.round(passt ? r.right + 10 : r.right - el.offsetWidth) + "px", t = Math.round(passt ? r.top + (r.height - el.offsetHeight) / 2 : r.bottom + 8) + "px"; if (el.style.left !== l) el.style.left = l; if (el.style.top !== t) el.style.top = t; }
+function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .zahl") as HTMLElement | null; if (z) { const n = weltOnline(); z.hidden = n < 2; z.textContent = String(n); } }
 
 /** Die gemeinsame Welt für die Region, in der man steht: Mitspieler neu aufstellen und beim Server den Ort melden */
 function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, h: number) {
   if (region.id === id && mit) return;
   if (mit) mit.liste([]);
   region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
+  zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt);
+  /* Nachbarregionen auf der Minimap: ihre Karten an der richtigen Stelle um die aktuelle – der Kreis zeigt die Welt ohne Lücke */
+  { const k = document.getElementById("ez-karte"), idx = (s as unknown as { index?: { regionen: Record<string, { region: { id: string; ursprung: number[]; chunks: number[] } }> } }).index;
+    if (k && idx) { k.querySelectorAll("img.nachbar").forEach((e) => e.remove());
+      for (const r of Object.values(idx.regionen)) { const R = r.region; if (R.id === id || WELT.gesperrteRegionen.includes(R.id)) continue;
+        const im = document.createElement("img"); im.className = "nachbar"; im.alt = ""; im.src = `${WELT.daten}karte-${R.id}.webp`;
+        Object.assign(im.style, { left: (100 * (R.ursprung[0] - ux) / b) + "%", top: (100 * (R.ursprung[1] - uy) / h) + "%", width: (100 * R.chunks[0] / b) + "%", height: (100 * R.chunks[1] / h) + "%" }); k.prepend(im); } } } /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
-  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(l); onlineZeigen(); }, fort: (i) => { if (mit) mit.weg(i); },
-    ich: (i) => { if (i.held !== s.held) location.reload(); },
+  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
+    ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) sprechblase(s, () => (s.figur && s.figur.active ? { x: s.figur.x, y: s.figur.y - HELD_PX - 30 } : null), text); else if (mit) mit.blase(i, text); } });
 }
 
@@ -79,11 +130,10 @@ export function weltAnschliessen(start: string, tor: string) {
     /* Unter der Karte: was gerade freigeschaltet ist – Weltkarte und Quests gehören zu den Kampagnen */
     const knoepfe: RKnopf[] = [];
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
-    if (freigabe("kampagnen")) knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück.") }, { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
-    knoepfe.push({ name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
-    rundeKarte(2.2, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
-    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung },
-      ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => oeffne("riss", s) }] : []), { name: "Menü", zeichen: "menue", tat: () => oeffne("menue", s) }]);
+    if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
+    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
+    rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe) }); obenKnoepfe(s); onlineZeigen();
+    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }]); /* Spieler und Einstellungen sitzen oben neben dem Profil */
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
   };
   WELT.betreten = (s) => {
@@ -94,14 +144,20 @@ export function weltAnschliessen(start: string, tor: string) {
     window.addEventListener("ez-held-wahl", heldWahl);
     schild = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     (s as unknown as { schild: Phaser.GameObjects.Text }).schild = schild; /* für Prüfungen, wie in der gemalten Waldmark */
-    s.events.once("shutdown", () => { schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
+    document.body.classList.add("offenewelt"); /* Menü rechts als Spalte, Kampfsteuerung immer sichtbar */
+    const ruhig = (ev: Event) => { if (kampf || !(ev.target as HTMLElement).closest("#ez-tasten")) return; const t = $("#ez-dorf-hilfe"); t.textContent = "Hier ist ein sicherer Ort – gekämpft wird draußen, etwa im Kreuzwald hinter dem Südtor."; t.style.display = ""; };
+    document.addEventListener("pointerdown", ruhig, true);
+    s.events.once("shutdown", () => { const ok = document.getElementById("ez-oben-knoepfe"); if (ok) ok.hidden = true; document.body.classList.remove("offenewelt"); document.removeEventListener("pointerdown", ruhig, true); kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
-  WELT.antippen = (s, p) => { if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
+  WELT.fremd = fremd;
+  WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
+    if (kampf) kampf.schritt(d);
+    kampfartZeigen(s); obenPlatz();
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
-    weltPos(px, py, blickVon(s.figur), s.laeuft); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
+    weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
   };
 }
 
