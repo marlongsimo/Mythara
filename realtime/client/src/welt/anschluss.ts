@@ -22,6 +22,8 @@ import { stufeAusEp } from "../../../shared/config";
 import { kontoName } from "../konto";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
+import { serverZusatz } from "../gruppe";
+import { LICHTUNG_FELD } from "../../../shared/lichtung";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
@@ -49,6 +51,21 @@ function oeffne(art: string, s: Welt) {
 /** Den Helden wechseln – nur in der Waldmark (der Server speichert ihn mit dem Konto) */
 function heldWaehlen(s: Welt) { if (s.gesperrt) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
   wahl((held) => { weltHeld(held); s.gesperrt = false; if (held !== s.held) location.reload(); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
+/** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
+function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
+  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.cameras.main.fadeOut(300, 0, 0, 0); s.time.delayedCall(320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
+/** Die Lichtung im Kreuzwald: wer ein paar Schritte in ihren Ausschnitt hineingeht, kommt in die gemeinsame Kampfzone (Banditen) – an genau dieser Stelle */
+let inLichtung = false;
+function lichtungPruefen(s: Welt) { if (inLichtung || s.gesperrt || !freigabe("suedtor")) return; const L = LICHTUNG_FELD, x = s.ort.x - L.x0, y = s.ort.y - L.y0;
+  if (x < L.rand || y < L.rand || x > L.b - L.rand || y > L.h - L.rand) return; inLichtung = true; s.halt(); s.gesperrt = true;
+  try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(s.ort.x * 100) / 100, Math.round(s.ort.y * 100) / 100, s.hier])); } catch { /* privat */ }
+  s.cameras.main.fadeOut(250, 0, 0, 0); s.time.delayedCall(260, () => { location.href = `./?ort=kreuzwald&kampf=lichtung&lx=${x.toFixed(2)}&ly=${y.toFixed(2)}` + serverZusatz(); }); }
+/** Der Server kennt die zuletzt gemerkte Stelle (anderes Gerät): dorthin, wenn auf diesem Gerät keine gemerkt war und man noch nicht losgelaufen ist */
+let serverStelleGenutzt = false;
+function serverStelle(s: Welt, p: { region: string; x: number | null; y: number | null } | undefined) {
+  if (serverStelleGenutzt || !p || s.gemerkteStelle || s.time.now > 15000 || p.x === null || p.y === null) return; serverStelleGenutzt = true;
+  const x = p.x, y = p.y; if (Math.hypot(x - s.ort.x, y - s.ort.y) < 1) return;
+  s.ort = { x, y }; s.pfad = []; s.cameras.main.centerOn(x * FELD_PX, y * FELD_PX); }
 function onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
 
 /** Die gemeinsame Welt für die Region, in der man steht: Mitspieler neu aufstellen und beim Server den Ort melden */
@@ -59,7 +76,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
   weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(l); onlineZeigen(); }, fort: (i) => { if (mit) mit.weg(i); },
-    ich: (i) => { if (i.held !== s.held) location.reload(); },
+    ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) sprechblase(s, () => (s.figur && s.figur.active ? { x: s.figur.x, y: s.figur.y - HELD_PX - 30 } : null), text); else if (mit) mit.blase(i, text); } });
 }
 
@@ -70,7 +87,7 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.tat = oeffne;
   WELT.knopf = (art, knopf) => (art === "welt" && !torOffen() ? "Das Südtor ist noch geschlossen" : art === "riss" && !freigabe("riss") ? "Der Riss ist gerade versiegelt" : knopf);
   /* Solange der Waldweg nicht freigegeben ist, bleibt das Südtor zu: Der Waldweg wird nicht geladen, die Durchfahrt ist gesperrt */
-  if (!freigabe("waldweg")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
+  if (!freigabe("suedtor")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
   WELT.figur = (s, x, y, held, hoehe) => heldenFigur(s, x, y, held, hoehe);
   WELT.richten = richten;
   WELT.laden = (s) => heldenLaden(s);   /* Bilder der Mitspieler */
@@ -79,8 +96,8 @@ export function weltAnschliessen(start: string, tor: string) {
     /* Unter der Karte: was gerade freigeschaltet ist – Weltkarte und Quests gehören zu den Kampagnen */
     const knoepfe: RKnopf[] = [];
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
-    if (freigabe("kampagnen")) knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück.") }, { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
-    knoepfe.push({ name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
+    if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
+    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
     rundeKarte(2.2, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
     hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung },
       ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => oeffne("riss", s) }] : []), { name: "Menü", zeichen: "menue", tat: () => oeffne("menue", s) }]);
@@ -99,9 +116,10 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.antippen = (s, p) => { if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
+    lichtungPruefen(s);
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
-    weltPos(px, py, blickVon(s.figur), s.laeuft); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
+    weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
   };
 }
 

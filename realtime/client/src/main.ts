@@ -7,7 +7,7 @@ import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTU
 import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
-import { KARTEN, FEIN } from "../../shared/karten";
+import { KARTEN, FEIN, WELTGEBIETE } from "../../shared/karten";
 import { probeGeschafft } from "./hud";
 import { kampfZusatz } from "./gruppe";
 const MITGLIED = new URLSearchParams(location.search).get("mitglied") === "1"; /* Koop: Ich bin im Kampf eines anderen Spielers */
@@ -33,9 +33,15 @@ const P = new URLSearchParams(location.search), $ = (s: string) => document.quer
 /* Adresse des Spielservers. Leer = der Browser rechnet selbst. Wird nach dem Einrichten des Servers hier eingetragen; ?server=… überschreibt zum Testen. */
 const P0 = new URLSearchParams(location.search);
 /* Kampf einer Kampagne: gemalte Karte in Draufsicht statt des schrägen Dungeons. Die Karte wird eingesetzt, bevor irgendetwas rechnet. */
-const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) { HELDENEP[k] = Number(v) || 0; HELDENSTUFE[k] = stufeAusEp(HELDENEP[k]); } }
+const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; /* Kampfzone der offenen Welt: hinein an der Stelle, an der man sie betreten hat (lx, ly: Rechenfelder im Ausschnitt) – gilt fürs Rechnen im Browser, der Server liest dieselben Angaben */
+if (kampfJetzt && KARTEN[kampfJetzt.karte].ursprung && P0.has("lx")) { const lx = Number(P0.get("lx")), ly = Number(P0.get("ly")); if (Number.isFinite(lx) && Number.isFinite(ly)) KARTEN[kampfJetzt.karte].start = [[lx / FEIN - 0.5, ly / FEIN - 0.5]]; }
+if (kampfJetzt) { setzeKarte(KARTEN[kampfJetzt.karte], FEIN); setzeStaerke(ORTSTUFE[P0.get("ort") || ""] || 1, 1 + kampfJetzt.mit.length); for (const [k, v] of Object.entries(epAlle())) { HELDENEP[k] = Number(v) || 0; HELDENSTUFE[k] = stufeAusEp(HELDENEP[k]); } }
 /** Strecke zwischen zwei Orten (Waldweg): Bäume mit Verdeckung, Ausgänge statt Sieg */
 const KK = kampfJetzt ? KARTEN[kampfJetzt.karte] : null, WEG = Boolean(KK && KK.weg);
+/** In Gebieten der offenen Welt steht die Stufe der Gegner am Namen (Banditen · St. 3) */
+const GEBIETSTUFE = kampfJetzt && WELTGEBIETE.has(P0.get("ort") || "") ? ORTSTUFE[P0.get("ort") || ""] || 0 : 0;
+/** Die gemerkte Stelle in der offenen Welt vergessen (Tod, Teleport): man beginnt am Start der Waldmark */
+const weltPosVergessen = () => { try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } };
 const SERVER = FLACH ? "" : P.get("server") ?? SPIELSERVER; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
 const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : lokalerHeld(), mit: [] as string[] }; /* ein Held je Spieler */
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
@@ -81,16 +87,20 @@ class Spiel extends Phaser.Scene {
   /** Bäume der Strecke: Fuß auf dem Boden, nach Tiefe sortiert wie die Figuren; leicht unterschiedlich getönt */
   dekoSetzen() { if (!KK || !KK.deko || !KK.dekoBilder) return; const Z = ZELLE * FEIN;
     for (const d of KK.deko) { const B = KK.dekoBilder[d.b]; if (!B) continue; const t = 0.86 + ((d.x * 7.3 + d.y * 3.1) % 1) * 0.14, f = (v: number) => Math.round(255 * Math.min(1, v));
-      const im = this.add.image(d.x * Z, d.y * Z, "deko-" + d.b).setOrigin(B.fuss[0], B.fuss[1]).setScale(d.s).setDepth(tief(d.x * FEIN, d.y * FEIN) + 5).setTint(Phaser.Display.Color.GetColor(f(t), f(t * 1.02), f(t * 0.95)));
+      const im = this.add.image(d.x * Z, d.y * Z, "deko-" + d.b).setOrigin(B.fuss[0], B.fuss[1]).setScale(d.s).setFlipX(Boolean(d.f)).setDepth(tief(d.x * FEIN, d.y * FEIN) + 5).setTint(Phaser.Display.Color.GetColor(f(t), f(t * 1.02), f(t * 0.95)));
       this.deko.push(im); } }
   /** Ausgänge der Strecke: Steht der Held darin, bietet ein Knopf die Weiterreise an */
   ausgaengePruefen(x: number, y: number) { if (!KK || !KK.ausgaenge || this.verlaesst) return; const gx = x / FEIN, gy = y / FEIN, a = KK.ausgaenge.find((q) => gx >= q.x0 && gx <= q.x1 && gy >= q.y0 && gy <= q.y1) || null, nach = a ? a.nach : null;
+    if (nach === "welt") { this.streckeVerlassen("welt"); return; } /* am Rand der Kampfzone: nahtlos zurück in die offene Welt */
     if (nach === this.ausgang) return; this.ausgang = nach; const kn = $("#ez-dorf-knopf"); if (!a) { kn.hidden = true; kn.onclick = null; return; }
     kn.textContent = a.text + " ▸"; kn.hidden = false; kn.onclick = () => this.streckeVerlassen(a.nach); }
   /** Die Strecke verlassen: erst gutschreiben lassen (EP, Seelensplitter von der Lichtung), dann weiter */
   streckeVerlassen(nach: string, extra = "") { if (this.verlaesst) return; this.verlaesst = true; const kn = $("#ez-dorf-knopf"), s = P0.has("server") ? "&server=" + encodeURIComponent(P0.get("server") || "") : "";
     let neu = false; try { neu = Object.keys(JSON.parse(localStorage.getItem("ez_ort_" + nach) || "{}") || {}).length === 0; } catch { /* privat */ }
-    const ziel = nach === "waldmark" ? "./" + ((s || extra) ? "?" + [extra, s.slice(1)].filter(Boolean).join("&") : "") : "?ort=" + nach + (neu ? "&neu=1" : "&eingang=1") + s;
+    const ichE = this.z && this.z.w.find((e) => e[0] === this.ichId), U = KK && KK.ursprung;
+    if (nach === "waldmark") weltPosVergessen(); /* gefallen oder Teleport: in der Waldmark neu beginnen, nicht an der alten Stelle */
+    const ziel = nach === "welt" ? "./?" + [U && ichE ? `wx=${(U[0] + ichE[4]).toFixed(2)}&wy=${(U[1] + ichE[5]).toFixed(2)}` : "", s.slice(1)].filter(Boolean).join("&")
+      : nach === "waldmark" ? "./" + ((s || extra) ? "?" + [extra, s.slice(1)].filter(Boolean).join("&") : "") : "?ort=" + nach + (neu ? "&neu=1" : "&eingang=1") + s;
     let fertig = false; const weiter = (w?: { ep?: Record<string, number>; seelen?: number }) => { if (fertig) return; fertig = true; window.removeEventListener("ez-server", hoer as EventListener);
       if (w && w.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(w.ep)); localStorage.setItem("ez_seelen", String(w.seelen || 0)); } catch { /* privat */ } } location.href = ziel; };
     const hoer = (ev: CustomEvent<{ t: string; ep?: Record<string, number>; seelen?: number }>) => { if (ev.detail.t === "gutschrift") weiter(ev.detail); };
@@ -218,7 +228,7 @@ class Spiel extends Phaser.Scene {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
     const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? FIG(typ, held).hoehe || 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
-    if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = (held ? heldenFigur(this, 0, 3, typ, hoch) : this.add.sprite(0, 3, "figur-" + typ)).setOrigin(F[0], F[1]); /* modulare Helden (acht Richtungen) oder das bisherige Standbild */ kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
+    if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = heldenFigur(this, 0, 3, typ, hoch).setOrigin(F[0], F[1]); /* Helden und Gegner aus der Fabrik modular, sonst das Standbild */ /* modulare Helden (acht Richtungen) oder das bisherige Standbild */ kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
     else if (!held && MONSTER[typ]?.unsichtbar) { /* schon auf die Karte gemalt (Laich): nur Ring, Name und Lebensbalken */ kopf = this.add.image(0, 0, typ).setVisible(false); rand = this.add.circle(0, 0, 1).setVisible(false); }
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
@@ -227,7 +237,7 @@ class Spiel extends Phaser.Scene {
     c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { angelegt: 0, oben, modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); if (ganz && FIG(typ, held).ruhe) this.haltung(b); return b;
   }
-  gefallen = false; /** gemeinsame Welt: Name und Stufe der Spieler je Heldenkennung (vom Server) */ spielerNamen = new Map<number, { name: string; stufe: number }>();
+  gefallen = false; weltGemerkt = 0; /** gemeinsame Welt: Name und Stufe der Spieler je Heldenkennung (vom Server) */ spielerNamen = new Map<number, { name: string; stufe: number }>();
   zustand(z: Zustand) {
     this.z = z; this.ichId = z.ich.id;
     if (FLACH && kampfJetzt && !this.gefallen && !this.verlaesst) { const ich = z.w.find((e) => e[0] === z.ich.id); if (ich && ich[10]) { /* gefallen: zurück in die Waldmark (Erbeutetes wird vorher gutgeschrieben) */
@@ -239,7 +249,7 @@ class Spiel extends Phaser.Scene {
         if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
       b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = FLACH ? Math.cos(e[6]) : Math.cos(e[6]) - Math.sin(e[6]); richten(b.kopf, sx, FLACH ? Math.sin(e[6]) : (Math.cos(e[6]) + Math.sin(e[6])) / 2); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
-      const bits = e[9], sn = b.held ? this.spielerNamen.get(e[0]) : undefined, text = (sn ? `${sn.name} · St. ${sn.stufe}` : b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
+      const bits = e[9], sn = b.held ? this.spielerNamen.get(e[0]) : undefined, text = (sn ? `${sn.name} · St. ${sn.stufe}` : b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name + (GEBIETSTUFE ? ` · St. ${GEBIETSTUFE}` : "")) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
     for (const [id, b] of this.bilder) if (!da.has(id) && b.typ === "laich") this.laichWeg(b.c.x, b.c.y);
     for (const [id, b] of this.bilder) if (!da.has(id)) { const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.destroy(); b.c.destroy(); this.bilder.delete(id); }
@@ -360,6 +370,7 @@ class Spiel extends Phaser.Scene {
       if (nah !== this.tebbeNah) { this.tebbeNah = nah; const kn = $("#ez-dorf-knopf"); kn.textContent = "Mit Tebbe sprechen" + (HANDY ? "" : "  [E]"); kn.hidden = !nah; } }
     for (const [id, b] of this.bilder) { const o = this.ort(b, jetzt), p = iso(o.x, o.y); b.c.setPosition(p.x, p.y).setDepth(tief(o.x, o.y) + 5); const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.setPosition(p.x, p.y + b.kopf.y);
       if (id === this.ichId) { const k = this.cameras.main; k.scrollX += (p.x - k.width / 2 - k.scrollX) * 0.15; k.scrollY += (p.y - 30 - k.height / 2 - k.scrollY) * 0.15;
+        if (WEG && KK && KK.ursprung && this.time.now - this.weltGemerkt > 2000) { this.weltGemerkt = this.time.now; if (!this.gefallen) try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round((KK.ursprung[0] + o.x) * 100) / 100, Math.round((KK.ursprung[1] + o.y) * 100) / 100, KK.weltRegion])); } catch { /* privat */ } } /* wer hier aufhört, beginnt wieder hier */
         if (WEG) { this.ausgaengePruefen(o.x, o.y); const t = tief(o.x, o.y) + 5; for (const d of this.deko) { const hinter = d.depth > t && Math.abs(d.x - p.x) < d.displayWidth * 0.42 && p.y < d.y && p.y > d.y - d.displayHeight * 0.95; /* Held hinter der Krone: Baum durchsichtig */
           const soll = hinter ? 0.42 : 1; if (Math.abs(d.alpha - soll) > 0.01) d.setAlpha(d.alpha + (soll - d.alpha) * 0.2); } } } }
     const zb = this.z && this.z.ich.zielId ? this.bilder.get(this.z.ich.zielId) : undefined; if (zb && !zb.tot) { this.zielMarke.setVisible(true).setPosition(zb.c.x, zb.c.y); } else this.zielMarke.setVisible(false);

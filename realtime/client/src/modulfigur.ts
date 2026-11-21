@@ -13,9 +13,9 @@
 import Phaser from "phaser";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
-interface Meta { id: string; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
+interface Meta { id: string; angriff?: string; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
 /** Held → Figur der Fabrik (Ordner unter img/figuren-fabrik/) */
-export const MODUL: Record<string, string> = { schildwaechter: "held.krieger" };
+export const MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.dolch" };
 const BASIS = "../img/figuren-fabrik/";
 const laden = new WeakMap<Phaser.Scene, Map<string, Promise<Meta>>>();
 
@@ -57,7 +57,7 @@ export class ModulFigur extends Phaser.GameObjects.Container {
   setOrigin(): this { return this; }
   setScale(): this { return this; }
   play(a: string | { key: string }): this { const key = typeof a === "string" ? a : a.key;
-    if (key.startsWith("hieb")) { this.einmal = "angriff"; this.bild = 0; this.uhr = 0; this.zeigen(); }
+    if (key.startsWith("hieb")) { this.einmal = (this.meta && this.meta.angriff) || "angriff"; /* Gegner der Fabrik nennen ihren Angriff nach der Waffe (angriff_dolch) */ this.bild = 0; this.uhr = 0; this.zeigen(); }
     else this.setze(key.startsWith("schild") ? "schild_laufen" : key.startsWith("lauf") ? "laufen" : "ruhe"); return this; }
   stop(): this { return this; }
   setTexture(key: string): this { this.einmal = null; this.setze(key.startsWith("schildstand") || key.startsWith("schild-") ? "block" : "ruhe"); return this; }

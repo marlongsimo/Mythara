@@ -15,7 +15,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
-import { weltVerbindung } from "./welt";
+import { weltVerbindung, stelleMerken } from "./welt";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -135,7 +135,8 @@ wss.on("connection", (ws, req) => {
           if (!Z) { setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort] || 1, 1); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
             Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
           for (const q of [...Z.spieler]) if (q.kampf && q.kampf.nutzer === nutzer) { try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal */
-          p.zone = Z; p.heldId = Z.sim.beitreten(typ, Number(ep[typ]) || 0); p.name = (profil[0] && profil[0].handle) || "Wanderer"; p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
+          const lx = Number(url.searchParams.get("lx")), ly = Number(url.searchParams.get("ly")), wo = KARTEN[karte].ursprung && Number.isFinite(lx) && Number.isFinite(ly) && url.searchParams.has("lx") ? { x: lx, y: ly } : undefined; /* Kampfzone der offenen Welt: dort hinein, wo man steht */
+          p.zone = Z; p.heldId = Z.sim.beitreten(typ, Number(ep[typ]) || 0, wo); p.name = (profil[0] && profil[0].handle) || "Wanderer"; p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
           if (frist) clearTimeout(frist); console.log("Welt:", p.name, "betritt", karte, "·", Z.spieler.size, "dort"); if (ws.readyState === WebSocket.OPEN) los(); namenMelden(Z); return; }
         if (mitglied) { /* Koop-Mitspieler: in den laufenden Kampf des Anführers; der Fortschritt zählt auch für ihn */
           const R = raeume.get(raum), H = R && R.kampf; if (!R || !H || !H.sim || !H.kampf || H.kampf.karte !== karte || H.kampf.ort !== ort || H.kampf.fertig) { console.log("Koop abgelehnt: kein laufender Kampf in", raum); ws.close(4404, "kein gemeinsamer kampf"); return; }
@@ -154,6 +155,8 @@ wss.on("connection", (ws, req) => {
   });
   const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist); void buchen(p, true); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
     if (p.haupt) { p.haupt.mit?.delete(p); if (p.haupt.sim && p.heldId) p.haupt.sim.freigeben(p.heldId); } /* sein Held kämpft als Begleiter weiter */
+    if (p.zone && p.heldId && p.kampf && p.kampf.nutzer) { const K0 = KARTEN[p.zone.karte], h = p.zone.sim.nach(p.heldId); if (K0 && K0.ursprung && K0.weltRegion && h) { /* wer hier aufhört, beginnt wieder hier – wer gefallen ist, in der Waldmark */
+      void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100)); } }
     if (p.zone && p.heldId) { const Z = p.zone; void buchen(p, true).finally(() => { Z.sim.verlassen(p.heldId!); Z.spieler.delete(p); if (!Z.spieler.size) Z.leerSeit = Date.now(); namenMelden(Z); }); } /* erst gutschreiben, dann verschwindet sein Held */
     if (p.mit) for (const m of p.mit) { void buchen(m, true).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
     if (p.raum) { const R = raeume.get(p.raum); if (R && R.kampf === p) { R.kampf = null; R.zuletzt = Date.now(); gruppeMelden(R); } } }; ws.on("close", weg); ws.on("error", weg);

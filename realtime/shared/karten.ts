@@ -4,32 +4,39 @@
  */
 import type { Lager, Probe } from "./karte";
 import { WALDWEG_ZEILEN, WALDWEG_START, WALDWEG_LAGER, WALDWEG_DEKO, WALDWEG_BAEUME } from "./waldweg";
+import { LICHTUNG_ZEILEN, LICHTUNG_START, LICHTUNG_LAGER, LICHTUNG_DEKO, LICHTUNG_BILDER, LICHTUNG_FELD } from "./lichtung";
+export { LICHTUNG_FELD };
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
  *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */
 export interface Schleuse { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number /* danach ist der Graben leer */ }
 /** Ein Ausgang einer begehbaren Strecke: Wer mit dem Helden im Bereich steht (gemalte Felder), kann weiterreisen */
-export interface Ausgang { x0: number; x1: number; y0: number; y1: number; nach: "waldmark" | "weidenhain"; text: string }
+/* nach "welt": zurück in die offene Welt an genau die Stelle, an der man den Ausschnitt verlässt (sofort, ohne Knopf) */
+export interface Ausgang { x0: number; x1: number; y0: number; y1: number; nach: "waldmark" | "weidenhain" | "welt"; text: string }
 export interface KampfKarte { name: string; bild: string; zeilen: string[]; start: number[][]; lager: Lager[]; schleuse?: Schleuse; probe?: Probe; schuetz?: Lager[];
   /** Strecke statt Kampf: kein Sieg nötig, man verlässt sie über die Ausgänge */ weg?: boolean; ausgaenge?: Ausgang[];
   /** Raster schon in Rechenfeldern; Aggro- und Leinenweite der Monster (Rechenfelder) */ feinZeilen?: boolean; aggro?: number; leine?: number;
-  /** Bäume als einzelne Bilder mit Verdeckung (gemalte Felder, s = Maßstab) */ deko?: { b: string; x: number; y: number; s: number }[]; dekoBilder?: Record<string, { fuss: number[]; w: number; h: number }> }
+  /** Gegner streifen ohne Ziel um ihr Lager (Rechenfelder) */ wandern?: number;
+  /** Teil der offenen Welt: Weltfeld der linken oberen Ecke und Region (für den Rückweg und die gemerkte Stelle) */ ursprung?: [number, number]; weltRegion?: string;
+  /** Bäume als einzelne Bilder mit Verdeckung (gemalte Felder, s = Maßstab, f = gespiegelt) */ deko?: { b: string; x: number; y: number; s: number; f?: boolean }[]; dekoBilder?: Record<string, { fuss: number[]; w: number; h: number }> }
 const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, x: x + 0.5, y: y + 0.5, gruppe });
 
 /* Reihenfolge der Kampagnen (wie auf der Weltkarte) und ihrer Kämpfe. Danach richtet sich, was freigeschaltet ist – auf dem Server und im Spiel gleich. */
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
 export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"], rabenmoor: ["bohlenweg", "ried", "totenpfad", "schrein"] };
 /** Stufe der Aufgabe je Ort: bestimmt mit der Gruppengröße die Stärke der Gegner (Server und Spiel gleich). Rabenmoor ist für Helden auf Stufe 1 anspruchsvoll. */
-export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2 };
+export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2, kreuzwald: 3 };
+/** Gebiete der offenen Welt mit gemeinsamen Kampfzonen (keine Kampagne): immer frei */
+export const WELTGEBIETE = new Set(["kreuzwald"]);
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
 export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 /** Strecken zwischen den Orten: immer begehbar */
-export const STRECKEN = new Set(["waldweg"]);
+export const STRECKEN = new Set(["waldweg", "lichtung"]);
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
 /** Darf dieser Kampf begonnen werden? Erster Kampf eines Ortes: die vorige Kampagne ist geschafft. Sonst: der Kampf davor ist gewonnen. Gewonnene Kämpfe darf man wiederholen. */
 export function darfKaempfen(siege: Set<string>, ort: string, kampf: string): boolean {
-  if (STRECKEN.has(kampf)) return ORTREIHE.includes(ort);
+  if (STRECKEN.has(kampf)) return ORTREIHE.includes(ort) || WELTGEBIETE.has(ort);
   const f = KAMPFFOLGE[ort], o = ORTREIHE.indexOf(ort); if (o >= 0 && (NEBENKAEMPFE[ort] || []).includes(kampf)) return o === 0 || geschafft(siege, ORTREIHE[o - 1]);
   const i = f ? f.indexOf(kampf) : -1; if (i < 0 || o < 0) return false;
   if (i > 0) return siege.has(ort + "/" + f[i - 1]); return o === 0 || geschafft(siege, ORTREIHE[o - 1]);
@@ -42,6 +49,12 @@ export const KARTEN: Record<string, KampfKarte> = {
   waldweg: { name: "Der Waldweg", bild: "img/welt/waldweg.webp", zeilen: WALDWEG_ZEILEN, feinZeilen: true, start: WALDWEG_START, aggro: 7, leine: 16, weg: true,
     lager: WALDWEG_LAGER.map((l) => ({ ...l })), deko: WALDWEG_DEKO, dekoBilder: WALDWEG_BAEUME,
     ausgaenge: [{ x0: 0, x1: 0.8, y0: 0, y1: 18, nach: "waldmark", text: "Zurück in die Waldmark" }, { x0: 39.2, x1: 40, y0: 0, y1: 18, nach: "weidenhain", text: "Weiter nach Weidenhain" }] },
+  /* Die Lichtung im Kreuzwald (werkzeug/lichtung.py, aus den Weltdaten geschnitten): vier Dolch-Banditen der Stufe 3 streifen umher und greifen an,
+     sobald ein Held auf 5 Rechenfelder herankommt. Gemeinsame Kampfzone wie der Waldweg; am Rand geht es nahtlos zurück in die offene Welt. */
+  lichtung: { name: "Die Lichtung im Kreuzwald", bild: "img/welt/lichtung.webp", zeilen: LICHTUNG_ZEILEN, feinZeilen: true, start: LICHTUNG_START, aggro: 5, leine: 14, wandern: 4, weg: true, ursprung: [LICHTUNG_FELD.x0, LICHTUNG_FELD.y0], weltRegion: "waldweg",
+    lager: LICHTUNG_LAGER.map((l) => ({ ...l })), deko: LICHTUNG_DEKO, dekoBilder: LICHTUNG_BILDER,
+    ausgaenge: [{ x0: 0, x1: 0.5, y0: 0, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" }, { x0: LICHTUNG_FELD.b / 2 - 0.5, x1: LICHTUNG_FELD.b / 2, y0: 0, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" },
+      { x0: 0, x1: LICHTUNG_FELD.b / 2, y0: 0, y1: 0.5, nach: "welt", text: "" }, { x0: 0, x1: LICHTUNG_FELD.b / 2, y0: LICHTUNG_FELD.h / 2 - 0.5, y1: LICHTUNG_FELD.h / 2, nach: "welt", text: "" }] },
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",
     zeilen: ["MMMMMMMMMMMM", "MMKK.....KMM", "M..KK..KK.MM", "M..KK..KK.MM", "............", "M..KK..KK.MM", "M.........MM", "MMKK.....KMM", "MMMMMMMMMMMM"],
