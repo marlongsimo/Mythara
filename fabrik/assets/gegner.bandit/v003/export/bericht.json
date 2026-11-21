@@ -29,7 +29,7 @@
   {
    "bereich": "bild",
    "pruefung": "keine gespiegelten Richtungen (kleinster Unterschied zum Spiegelbild der Gegenrichtung)",
-   "wert": 0.156,
+   "wert": 0.149,
    "grenze": "> 0.03",
    "urteil": "ok"
   },
@@ -52,9 +52,10 @@
    "pruefung": "unterste Körperzeile je Bewegung (px) – nur Hinweis: in der Schrägsicht liegt ein Fuß, der näher an der Kamera steht, tiefer im Bild; maßgeblich ist die Prüfung „Fußpunkt am Boden“ unten",
    "wert": {
     "block": 1,
-    "gehen": 14,
+    "gehen": 15,
     "ruhe": 0,
-    "stich": 10
+    "stich": 9,
+    "tod": 63
    },
    "grenze": "Hinweis",
    "urteil": "ok"
@@ -83,7 +84,7 @@
   {
    "bereich": "bild",
    "pruefung": "umschlossene Spalten (px je Bild) – nur Hinweis: Rüstungsebenen legen nur Deckung über den Körper und können ihn nicht durchlöchern; gemessen werden natürliche Spalten zwischen Beinen oder zwischen Arm und Rumpf, die die Kleidung umschließt",
-   "wert": 290,
+   "wert": 308,
    "grenze": "Hinweis",
    "urteil": "ok"
   },
@@ -101,10 +102,11 @@
    "bereich": "bild",
    "pruefung": "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)",
    "wert": {
-    "block": 2.9,
-    "gehen": 4.4,
-    "ruhe": 0.3,
-    "stich": 12.6
+    "block": 3.0,
+    "gehen": 4.3,
+    "ruhe": 0.4,
+    "stich": 12.8,
+    "tod": 32.7
    },
    "grenze": "≤ 18, Tod und Sprünge ≤ 40",
    "urteil": "ok"
@@ -176,6 +178,10 @@
     "stich": [
      -0.0,
      0.0
+    ],
+    "tod": [
+     -0.0,
+     0.0
     ]
    },
    "grenze": "±1 cm",
@@ -192,13 +198,37 @@
    "urteil": "ok"
   },
   {
+   "bereich": "animation",
+   "pruefung": "Tod: steht am Anfang, liegt am Ende (höchster Punkt des Körpers im ersten und letzten Bild, m)",
+   "wert": [
+    1.8,
+    0.37
+   ],
+   "grenze": "Anfang ≥ 1.6, Ende ≤ 0.60 (Körpertiefe 0.32 + 0.05, mindestens 0.6)",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Tod: schild.beute liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.36,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Tod: waffe.dolch liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.25,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
    "bereich": "rig",
    "pruefung": "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)",
-   "wert": 0.0551,
+   "wert": 0.0567,
    "grenze": "≤ 0.03",
    "urteil": "warnung",
    "mehr": {
-    "ruestung.set.bandit": 0.055
+    "ruestung.set.bandit": 0.057
    }
   },
   {
@@ -208,9 +238,10 @@
     "block",
     "gehen",
     "ruhe",
-    "stich"
+    "stich",
+    "tod"
    ],
-   "grenze": "ruhe, gehen, stich, block",
+   "grenze": "ruhe, gehen, stich, block, tod",
    "urteil": "ok"
   }
  ]
