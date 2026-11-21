@@ -10,7 +10,7 @@
 import Phaser from "phaser";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number; treffer?: number; ohne?: string[] }
-interface Ebene { art: "koerper" | "huelle" | "starr"; platz?: string; angriff?: string; umhang?: boolean; atlas?: Record<string, { datei: string }> }
+interface Ebene { art: "koerper" | "huelle" | "starr"; platz?: string; angriff?: string; umhang?: boolean; ersetzt?: string[]; wahlfrei?: boolean; atlas?: Record<string, { datei: string }> }
 interface Meta { id: string; feld: number; fuss: [number, number]; mass: [number, number, number]; animationen: Record<string, Anim>; ebenen: Record<string, Ebene>; plaetze: Record<string, string[]>; tiefe: Record<string, Record<string, number[][]>>; zeichenfolge?: boolean }
 
 const P = new URLSearchParams(location.search), FIGUR = P.get("figur") || "held.krieger", VERSION = P.get("version") || "v004";
@@ -54,7 +54,9 @@ class Szene extends Phaser.Scene {
     for (const e of this.ebenenJetzt()) if (this.textures.exists(e)) { const s = this.add.sprite(0, 0, e).setOrigin(fx, fy); this.figur.add(s); this.bilder.set(e, s); }
     this.fertig = true;
   }
-  trage(platz: string, teil: string) { this.tragen[platz] = teil; const w = document.querySelector(`select[data-platz="${platz}"]`) as HTMLSelectElement | null; if (w) w.value = teil; this.laden(() => { this.aufbauen(); this.zeige(); }); }
+  trage(platz: string, teil: string) { this.tragen[platz] = teil;
+    for (const p of (teil && this.meta.ebenen[teil]?.ersetzt) || []) { this.tragen[p] = ""; const a = document.querySelector(`select[data-platz="${p}"]`) as HTMLSelectElement | null; if (a) a.value = ""; }   /* Gesamtset: die abgedeckten Plätze ablegen */
+    if (teil) for (const [p, t] of Object.entries(this.tragen)) if (t && p !== platz && (this.meta.ebenen[t]?.ersetzt || []).includes(platz)) { this.tragen[p] = ""; const a = document.querySelector(`select[data-platz="${p}"]`) as HTMLSelectElement | null; if (a) a.value = ""; }   /* ein Einzelteil legt ein Set ab, das seinen Platz abdeckt */ const w = document.querySelector(`select[data-platz="${platz}"]`) as HTMLSelectElement | null; if (w) w.value = teil; this.laden(() => { this.aufbauen(); this.zeige(); }); }
   tafel() {
     const el = $("#plaetze"); el.innerHTML = "";
     for (const [platz, teile] of Object.entries(this.meta.plaetze)) { const l = document.createElement("label"); l.textContent = PLATZNAME[platz] || platz; const w = document.createElement("select"); w.dataset.platz = platz;

@@ -38,6 +38,7 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   "zeichenfolge": true       Baukasten: Rüstungsteile werden nur vom Körper ausgestanzt, die Zeichenreihenfolge (innen nach außen) bestimmt, was vorn liegt –
                              so ist jedes Teil unabhängig austauschbar; Teil "umhang": true liegt von vorn hinter, von hinten vor allen anderen
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
+  Teilnetz "ersetzt": [...]  ein Gesamtset: beim Anlegen werden diese Plätze abgelegt (Testszene/Spiel)
   "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
                              ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
@@ -298,7 +299,7 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
             b_ = next((n for n in m_.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None) if m_ and m_.use_nodes else None
             if b_: b_.inputs["Base Color"].default_value = tuple(c_) + (1,)
     m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
-    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ersetzt"] = ",".join(t.get("ersetzt", [])); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
     print("Teilnetz:", t["id"], "Platz", t["platz"], "·", len(o.data.vertices), "Punkte, Gewichte vom Grundkörper")
 
 # ====================================================== 4. Bewegungen ======================================================

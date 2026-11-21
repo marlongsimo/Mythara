@@ -78,8 +78,9 @@ if meta.get("zeichenfolge"):                                                    
     for e in huellen:
         bestes = 0.0
         for r in range(8):
-            mit_ = gesamt("ruhe", r, 0, [t if EB[t]["platz"] != EB[e]["platz"] else e for t in alle] + ([e] if EB[e]["platz"] not in [EB[t]["platz"] for t in alle] else []))
-            ohne_ = gesamt("ruhe", r, 0, [t for t in alle if EB[t]["platz"] != EB[e]["platz"]]); eig = feld(blatt(e, "ruhe"), r, 0)[..., 3] > 0.5
+            grund = [t for t in alle if not EB[t].get("wahlfrei") and EB[t]["platz"] != EB[e]["platz"] and EB[t]["platz"] not in EB[e].get("ersetzt", [])]
+            if EB[e].get("unten"): grund = [t for t in grund if EB[t].get("unten") or EB[t]["art"] == "starr"]   # Unterkleidung liegt absichtlich unter der Rüstung: nur gegen Unterkleidung prüfen
+            mit_ = gesamt("ruhe", r, 0, grund + [e]); ohne_ = gesamt("ruhe", r, 0, grund); eig = feld(blatt(e, "ruhe"), r, 0)[..., 3] > 0.5
             if eig.sum() > 50: bestes = max(bestes, float((np.abs(mit_ - ohne_).sum(-1) > 0.05)[eig].mean()))
         sicht[e] = round(bestes, 2)
     verdeckt = {e: v for e, v in sicht.items() if v < 0.3}

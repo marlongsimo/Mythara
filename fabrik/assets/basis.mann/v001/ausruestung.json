@@ -157,12 +157,6 @@
       "glb": "basis.mann/v001/quelle/teile/ruestung.brust.stahlplatte.glb"
     },
     {
-      "id": "kleidung.waffenrock.v003",
-      "platz": "rock",
-      "glb": "basis.mann/v001/quelle/teile/kleidung.waffenrock.v003.glb",
-      "beine_mitteln": true
-    },
-    {
       "id": "kleidung.guertel.v003",
       "platz": "guertel",
       "glb": "basis.mann/v001/quelle/teile/kleidung.guertel.v003.glb"
@@ -175,7 +169,16 @@
     {
       "id": "ruestung.set.leder",
       "platz": "set",
-      "glb": "basis.mann/v001/quelle/teile/ruestung.set.leder.glb"
+      "glb": "basis.mann/v001/quelle/teile/ruestung.set.leder.glb",
+      "wahlfrei": true,
+      "ersetzt": [
+        "brust",
+        "guertel",
+        "fuss",
+        "hemd",
+        "hose",
+        "schuh"
+      ]
     }
   ],
   "stuecke_behalten": true,
