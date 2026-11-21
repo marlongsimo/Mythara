@@ -1,0 +1,725 @@
+{
+ "quelle": "original.png",
+ "sha256": "7f5a95e2fbf30c103f17a2e3e34ab9318f6d109f835b3cb7ca5046d87f39c5bf",
+ "groesse": [
+  1536,
+  1024
+ ],
+ "papier": "#0c0f10",
+ "assets": {
+  "npc.standard.m": [
+   "koerper-vorn",
+   "koerper-seite",
+   "koerper-hinten",
+   "koerper-34r",
+   "koerper-seite-l"
+  ],
+  "npc.standard.m.kopf": [
+   "kopf"
+  ],
+  "kleidung.hemd.leinen": [
+   "hemd"
+  ],
+  "kleidung.brust.weste": [
+   "weste"
+  ],
+  "kleidung.umhang.grau": [
+   "umhang"
+  ],
+  "kleidung.guertel.npc": [
+   "guertel"
+  ],
+  "kleidung.bein.hose.npc": [
+   "hose"
+  ],
+  "kleidung.fuss.stiefel.npc": [
+   "stiefel"
+  ],
+  "kleidung.kopf.strohhut": [
+   "hut"
+  ],
+  "kleidung.schuerze.leder": [
+   "schuerze"
+  ],
+  "kleidung.hals.tuch.rot": [
+   "halstuch"
+  ]
+ },
+ "ausschnitte": [
+  {
+   "name": "koerper-vorn",
+   "asset": "npc.standard.m",
+   "ansicht": "vorn",
+   "datei": "teile/koerper-vorn.png",
+   "kasten": [
+    283,
+    95,
+    366,
+    304
+   ],
+   "breite": 83,
+   "hoehe": 209,
+   "verhaeltnis": 0.397,
+   "deckung": 0.48,
+   "farben": [
+    {
+     "farbe": "#55351f",
+     "anteil": 0.22
+    },
+    {
+     "farbe": "#180e0a",
+     "anteil": 0.205
+    },
+    {
+     "farbe": "#301b10",
+     "anteil": 0.169
+    },
+    {
+     "farbe": "#3f2414",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#8b5f44",
+     "anteil": 0.122
+    },
+    {
+     "farbe": "#c9a284",
+     "anteil": 0.121
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 209 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-seite",
+   "asset": "npc.standard.m",
+   "ansicht": "seite",
+   "datei": "teile/koerper-seite.png",
+   "kasten": [
+    564,
+    95,
+    605,
+    275
+   ],
+   "breite": 41,
+   "hoehe": 180,
+   "verhaeltnis": 0.228,
+   "deckung": 0.648,
+   "farben": [
+    {
+     "farbe": "#1d100a",
+     "anteil": 0.206
+    },
+    {
+     "farbe": "#412515",
+     "anteil": 0.186
+    },
+    {
+     "farbe": "#623e26",
+     "anteil": 0.186
+    },
+    {
+     "farbe": "#321d11",
+     "anteil": 0.168
+    },
+    {
+     "farbe": "#a7795a",
+     "anteil": 0.128
+    },
+    {
+     "farbe": "#d9b696",
+     "anteil": 0.126
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 180 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-hinten",
+   "asset": "npc.standard.m",
+   "ansicht": "hinten",
+   "datei": "teile/koerper-hinten.png",
+   "kasten": [
+    683,
+    96,
+    766,
+    304
+   ],
+   "breite": 83,
+   "hoehe": 208,
+   "verhaeltnis": 0.399,
+   "deckung": 0.458,
+   "farben": [
+    {
+     "farbe": "#3a2418",
+     "anteil": 0.243
+    },
+    {
+     "farbe": "#1e1410",
+     "anteil": 0.228
+    },
+    {
+     "farbe": "#45342a",
+     "anteil": 0.143
+    },
+    {
+     "farbe": "#5b3621",
+     "anteil": 0.138
+    },
+    {
+     "farbe": "#6c4d3a",
+     "anteil": 0.137
+    },
+    {
+     "farbe": "#b39074",
+     "anteil": 0.111
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 208 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-34r",
+   "asset": "npc.standard.m",
+   "ansicht": "3/4 rechts",
+   "datei": "teile/koerper-34r.png",
+   "kasten": [
+    427,
+    95,
+    495,
+    302
+   ],
+   "breite": 68,
+   "hoehe": 207,
+   "verhaeltnis": 0.329,
+   "deckung": 0.49,
+   "farben": [
+    {
+     "farbe": "#1a110e",
+     "anteil": 0.239
+    },
+    {
+     "farbe": "#382219",
+     "anteil": 0.222
+    },
+    {
+     "farbe": "#46352a",
+     "anteil": 0.167
+    },
+    {
+     "farbe": "#603e2b",
+     "anteil": 0.132
+    },
+    {
+     "farbe": "#cda98b",
+     "anteil": 0.122
+    },
+    {
+     "farbe": "#90654a",
+     "anteil": 0.119
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 207 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "koerper-seite-l",
+   "asset": "npc.standard.m",
+   "ansicht": "seite links",
+   "datei": "teile/koerper-seite-l.png",
+   "kasten": [
+    840,
+    95,
+    880,
+    274
+   ],
+   "breite": 40,
+   "hoehe": 179,
+   "verhaeltnis": 0.223,
+   "deckung": 0.594,
+   "farben": [
+    {
+     "farbe": "#3f2619",
+     "anteil": 0.235
+    },
+    {
+     "farbe": "#21140e",
+     "anteil": 0.235
+    },
+    {
+     "farbe": "#533928",
+     "anteil": 0.168
+    },
+    {
+     "farbe": "#b38363",
+     "anteil": 0.131
+    },
+    {
+     "farbe": "#dabc9d",
+     "anteil": 0.126
+    },
+    {
+     "farbe": "#7c5036",
+     "anteil": 0.106
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 179 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "kopf",
+   "asset": "npc.standard.m.kopf",
+   "ansicht": "vorn",
+   "datei": "teile/kopf.png",
+   "kasten": [
+    34,
+    621,
+    92,
+    696
+   ],
+   "breite": 58,
+   "hoehe": 75,
+   "verhaeltnis": 0.773,
+   "deckung": 0.58,
+   "farben": [
+    {
+     "farbe": "#1d1310",
+     "anteil": 0.216
+    },
+    {
+     "farbe": "#7c5543",
+     "anteil": 0.175
+    },
+    {
+     "farbe": "#ad785f",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#503429",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#36261f",
+     "anteil": 0.159
+    },
+    {
+     "farbe": "#c89176",
+     "anteil": 0.115
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 75 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "hemd",
+   "asset": "kleidung.hemd.leinen",
+   "ansicht": "vorn",
+   "datei": "teile/hemd.png",
+   "kasten": [
+    120,
+    619,
+    212,
+    695
+   ],
+   "breite": 92,
+   "hoehe": 76,
+   "verhaeltnis": 1.211,
+   "deckung": 0.703,
+   "farben": [
+    {
+     "farbe": "#a08570",
+     "anteil": 0.195
+    },
+    {
+     "farbe": "#443025",
+     "anteil": 0.193
+    },
+    {
+     "farbe": "#6d5646",
+     "anteil": 0.175
+    },
+    {
+     "farbe": "#b89e88",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#846856",
+     "anteil": 0.152
+    },
+    {
+     "farbe": "#ceb59e",
+     "anteil": 0.121
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 92 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "weste",
+   "asset": "kleidung.brust.weste",
+   "ansicht": "vorn",
+   "datei": "teile/weste.png",
+   "kasten": [
+    238,
+    618,
+    300,
+    695
+   ],
+   "breite": 62,
+   "hoehe": 77,
+   "verhaeltnis": 0.805,
+   "deckung": 0.837,
+   "farben": [
+    {
+     "farbe": "#43240c",
+     "anteil": 0.23
+    },
+    {
+     "farbe": "#271509",
+     "anteil": 0.227
+    },
+    {
+     "farbe": "#502f13",
+     "anteil": 0.162
+    },
+    {
+     "farbe": "#72461e",
+     "anteil": 0.137
+    },
+    {
+     "farbe": "#5f3613",
+     "anteil": 0.137
+    },
+    {
+     "farbe": "#956636",
+     "anteil": 0.108
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 77 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "umhang",
+   "asset": "kleidung.umhang.grau",
+   "ansicht": "vorn",
+   "datei": "teile/umhang.png",
+   "kasten": [
+    328,
+    611,
+    409,
+    696
+   ],
+   "breite": 81,
+   "hoehe": 85,
+   "verhaeltnis": 0.953,
+   "deckung": 0.674,
+   "farben": [
+    {
+     "farbe": "#1a1817",
+     "anteil": 0.202
+    },
+    {
+     "farbe": "#3d3a39",
+     "anteil": 0.199
+    },
+    {
+     "farbe": "#4f4b48",
+     "anteil": 0.184
+    },
+    {
+     "farbe": "#272728",
+     "anteil": 0.174
+    },
+    {
+     "farbe": "#312d2b",
+     "anteil": 0.15
+    },
+    {
+     "farbe": "#65625f",
+     "anteil": 0.09
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 85 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "guertel",
+   "asset": "kleidung.guertel.npc",
+   "ansicht": "vorn",
+   "datei": "teile/guertel.png",
+   "kasten": [
+    441,
+    624,
+    517,
+    694
+   ],
+   "breite": 76,
+   "hoehe": 70,
+   "verhaeltnis": 1.086,
+   "deckung": 0.508,
+   "farben": [
+    {
+     "farbe": "#381e11",
+     "anteil": 0.223
+    },
+    {
+     "farbe": "#1a0e09",
+     "anteil": 0.222
+    },
+    {
+     "farbe": "#452a18",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#633e24",
+     "anteil": 0.145
+    },
+    {
+     "farbe": "#52301b",
+     "anteil": 0.136
+    },
+    {
+     "farbe": "#95653f",
+     "anteil": 0.101
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 76 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "hose",
+   "asset": "kleidung.bein.hose.npc",
+   "ansicht": "vorn",
+   "datei": "teile/hose.png",
+   "kasten": [
+    557,
+    602,
+    617,
+    669
+   ],
+   "breite": 60,
+   "hoehe": 67,
+   "verhaeltnis": 0.896,
+   "deckung": 0.69,
+   "farben": [
+    {
+     "farbe": "#6f4c31",
+     "anteil": 0.218
+    },
+    {
+     "farbe": "#2b1c14",
+     "anteil": 0.193
+    },
+    {
+     "farbe": "#5e3f2a",
+     "anteil": 0.177
+    },
+    {
+     "farbe": "#4a3121",
+     "anteil": 0.164
+    },
+    {
+     "farbe": "#3d2a1f",
+     "anteil": 0.16
+    },
+    {
+     "farbe": "#836044",
+     "anteil": 0.088
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 67 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "stiefel",
+   "asset": "kleidung.fuss.stiefel.npc",
+   "ansicht": "vorn",
+   "datei": "teile/stiefel.png",
+   "kasten": [
+    652,
+    614,
+    722,
+    690
+   ],
+   "breite": 70,
+   "hoehe": 76,
+   "verhaeltnis": 0.921,
+   "deckung": 0.639,
+   "farben": [
+    {
+     "farbe": "#140e0b",
+     "anteil": 0.235
+    },
+    {
+     "farbe": "#2c1b13",
+     "anteil": 0.223
+    },
+    {
+     "farbe": "#5e3e2b",
+     "anteil": 0.165
+    },
+    {
+     "farbe": "#3b281d",
+     "anteil": 0.162
+    },
+    {
+     "farbe": "#4c3020",
+     "anteil": 0.121
+    },
+    {
+     "farbe": "#815e47",
+     "anteil": 0.094
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 76 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "hut",
+   "asset": "kleidung.kopf.strohhut",
+   "ansicht": "vorn",
+   "datei": "teile/hut.png",
+   "kasten": [
+    755,
+    619,
+    835,
+    683
+   ],
+   "breite": 80,
+   "hoehe": 64,
+   "verhaeltnis": 1.25,
+   "deckung": 0.47,
+   "farben": [
+    {
+     "farbe": "#3c2414",
+     "anteil": 0.204
+    },
+    {
+     "farbe": "#9a6739",
+     "anteil": 0.196
+    },
+    {
+     "farbe": "#b37e49",
+     "anteil": 0.179
+    },
+    {
+     "farbe": "#6c4626",
+     "anteil": 0.158
+    },
+    {
+     "farbe": "#81522b",
+     "anteil": 0.158
+    },
+    {
+     "farbe": "#ca9961",
+     "anteil": 0.104
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 80 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "schuerze",
+   "asset": "kleidung.schuerze.leder",
+   "ansicht": "vorn",
+   "datei": "teile/schuerze.png",
+   "kasten": [
+    868,
+    595,
+    936,
+    696
+   ],
+   "breite": 68,
+   "hoehe": 101,
+   "verhaeltnis": 0.673,
+   "deckung": 0.643,
+   "farben": [
+    {
+     "farbe": "#46362c",
+     "anteil": 0.237
+    },
+    {
+     "farbe": "#2d221c",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#524034",
+     "anteil": 0.164
+    },
+    {
+     "farbe": "#6d5544",
+     "anteil": 0.139
+    },
+    {
+     "farbe": "#5d4738",
+     "anteil": 0.124
+    },
+    {
+     "farbe": "#846853",
+     "anteil": 0.122
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 101 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "halstuch",
+   "asset": "kleidung.hals.tuch.rot",
+   "ansicht": "vorn",
+   "datei": "teile/halstuch.png",
+   "kasten": [
+    980,
+    618,
+    1045,
+    680
+   ],
+   "breite": 65,
+   "hoehe": 62,
+   "verhaeltnis": 1.048,
+   "deckung": 0.371,
+   "farben": [
+    {
+     "farbe": "#2b1010",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#4c1e1b",
+     "anteil": 0.177
+    },
+    {
+     "farbe": "#1a0b0b",
+     "anteil": 0.176
+    },
+    {
+     "farbe": "#70302a",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#3b1212",
+     "anteil": 0.145
+    },
+    {
+     "farbe": "#934d43",
+     "anteil": 0.116
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 65 px (empfohlen ab 512)"
+   ]
+  }
+ ]
+}

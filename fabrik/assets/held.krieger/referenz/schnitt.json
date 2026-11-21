@@ -1,0 +1,29 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Kästen [links, oben, rechts, unten] in Bildpunkten der Vorlage. asset: wohin der Ausschnitt gehört; stuecke: aus wie vielen getrennten Stücken das Motiv besteht (sonst 1); innen: auch vom Motiv eingeschlossenes Papier entfernen; ansicht: vorn/seite/hinten oder variante.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",    "kasten": [30, 18, 399, 660],    "asset": "held.krieger",              "ansicht": "vorn" },
+    { "name": "koerper-seite",   "kasten": [378, 21, 588, 660],   "asset": "held.krieger",              "ansicht": "seite" },
+    { "name": "koerper-hinten",  "kasten": [614, 19, 947, 659],   "asset": "held.krieger",              "ansicht": "hinten" },
+    { "name": "kopf-vorn",       "kasten": [962, 21, 1152, 234],  "asset": "held.krieger.kopf",         "ansicht": "vorn" },
+    { "name": "kopf-seite",      "kasten": [1156, 21, 1337, 234], "asset": "held.krieger.kopf",         "ansicht": "seite" },
+    { "name": "kopf-hinten",     "kasten": [1341, 25, 1528, 230], "asset": "held.krieger.kopf",         "ansicht": "hinten" },
+    { "name": "helm-nasal",      "kasten": [993, 253, 1154, 433], "asset": "ruestung.helm.nasal",       "ansicht": "vorn" },
+    { "name": "helm-wangen",     "kasten": [1173, 253, 1332, 433],"asset": "ruestung.helm.wangen",      "ansicht": "vorn" },
+    { "name": "helm-topf",       "kasten": [1351, 254, 1509, 433],"asset": "ruestung.helm.topf",        "ansicht": "vorn" },
+    { "name": "wappenrock",      "kasten": [968, 468, 1105, 693], "asset": "ruestung.brust.wappenrock", "ansicht": "vorn" },
+    { "name": "gambeson",        "kasten": [1103, 470, 1236, 661],"asset": "ruestung.brust.gambeson",   "ansicht": "vorn" },
+    { "name": "kettenhemd",      "kasten": [1236, 470, 1372, 661],"asset": "ruestung.brust.kettenhemd", "ansicht": "vorn" },
+    { "name": "plattenbrust",    "kasten": [1376, 466, 1525, 619],"asset": "ruestung.brust.platte",     "ansicht": "vorn" },
+    { "name": "handschuhe",      "kasten": [971, 731, 1072, 833], "asset": "ruestung.hand.leder",       "ansicht": "vorn", "stuecke": 2 },
+    { "name": "armschienen",     "kasten": [1088, 717, 1164, 817],"asset": "ruestung.arm.schiene",      "ansicht": "vorn" },
+    { "name": "hose",            "kasten": [1181, 695, 1262, 866],"asset": "ruestung.bein.hose",        "ansicht": "vorn" },
+    { "name": "stiefel",         "kasten": [1266, 704, 1372, 823],"asset": "ruestung.fuss.stiefel",     "ansicht": "seite" },
+    { "name": "umhang",          "kasten": [1381, 645, 1523, 881],"asset": "ruestung.umhang.blau",      "ansicht": "vorn" },
+    { "name": "schwert",         "kasten": [94, 678, 189, 1010],  "asset": "waffe.langschwert",         "ansicht": "vorn" },
+    { "name": "schwertscheide",  "kasten": [233, 698, 320, 1010], "asset": "waffe.langschwert.scheide", "ansicht": "vorn", "innen": true },
+    { "name": "schild-wappen",   "kasten": [362, 695, 518, 988],  "asset": "schild.baum",               "ansicht": "vorn" },
+    { "name": "schild-rueckseite","kasten": [547, 695, 703, 988], "asset": "schild.baum",               "ansicht": "hinten" },
+    { "name": "schild-stahl",    "kasten": [731, 695, 888, 988],  "asset": "schild.baum.stahl",         "ansicht": "vorn" }
+  ]
+}

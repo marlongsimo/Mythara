@@ -1,0 +1,236 @@
+{
+ "id": "held.krieger",
+ "status": "fehlerhaft",
+ "manuell": [
+  "Ob die Bewegungen glaubhaft aussehen, kann die Prüfung nicht beurteilen – bitte in der Testszene ansehen."
+ ],
+ "pruefungen": [
+  {
+   "bereich": "bild",
+   "pruefung": "alle Blätter vorhanden",
+   "wert": "0 fehlen",
+   "grenze": "0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "Blattgröße = 8 Richtungen × Bilder × Feld",
+   "wert": "0 abweichend",
+   "grenze": "0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "acht Richtungen, jedes Bild des Körpers gefüllt",
+   "wert": "0 leere Bilder",
+   "grenze": "0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "keine gespiegelten Richtungen (kleinster Unterschied zum Spiegelbild der Gegenrichtung)",
+   "wert": 0.166,
+   "grenze": "> 0.03",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "nichts abgeschnitten (kein Teil berührt den Feldrand)",
+   "wert": "20 Bilder",
+   "grenze": "0",
+   "urteil": "fehler",
+   "mehr": [
+    "waffe.langschwert.hinten.angriff/4/1",
+    "waffe.langschwert.hinten.angriff/6/4",
+    "waffe.langschwert.hinten.angriff/7/4",
+    "waffe.langschwert.hinten.angriff2h/2/2",
+    "waffe.langschwert.hinten.angriff2h/2/3",
+    "waffe.langschwert.hinten.angriff2h/3/2",
+    "waffe.langschwert.hinten.angriff2h/3/3",
+    "waffe.langschwert.hinten.angriff2h/4/3"
+   ]
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "Hintergrund durchsichtig (Ecken der Blätter)",
+   "wert": 0.0,
+   "grenze": "0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "Fußpunkt stabil (Schwankung der untersten Körperzeile je Bewegung, px)",
+   "wert": {
+    "angriff": 10,
+    "angriff2h": 8,
+    "ausweichen": 7,
+    "block": 2,
+    "laufen": 20,
+    "ruhe": 1,
+    "treffer": 1
+   },
+   "grenze": "≤ 4",
+   "urteil": "fehler"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)",
+   "wert": 0.0,
+   "grenze": "≤ 0.02",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "keine Löcher zwischen Körper und Rüstung (neue durchsichtige Stellen im Umriss, px je Bild)",
+   "wert": 12,
+   "grenze": "≤ 3",
+   "urteil": "fehler"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "Handzuordnung: Schwert in der rechten Hand, Schild am linken Arm (Abstand Schwert–Schild im Bild: Süden, Norden)",
+   "wert": [
+    -58,
+    57
+   ],
+   "grenze": "Süden < 0, Norden > 0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "bild",
+   "pruefung": "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)",
+   "wert": {
+    "angriff": 10.6,
+    "angriff2h": 7.7,
+    "ausweichen": 7.8,
+    "block": 2.8,
+    "laufen": 5.0,
+    "ruhe": 0.4,
+    "treffer": 4.9
+   },
+   "grenze": "≤ 14",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "rig",
+   "pruefung": "Körper und alle Rüstungsteile hängen am selben Skelett",
+   "wert": "0 ohne",
+   "grenze": "0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "rig",
+   "pruefung": "jeder Punkt ist gewichtet (Anteil ohne Gewicht je Teil)",
+   "wert": 0.0,
+   "grenze": "≤ 0.01",
+   "urteil": "ok",
+   "mehr": {
+    "koerper": 0.0,
+    "ruestung.bein.schiene": 0.0,
+    "ruestung.brust.gambeson": 0.0,
+    "ruestung.brust.platte": 0.0,
+    "ruestung.fuss.stiefel": 0.0,
+    "ruestung.hand.leder": 0.0
+   }
+  },
+  {
+   "bereich": "rig",
+   "pruefung": "Art der Gewichtung",
+   "wert": "automatisch (Wärmeverteilung über eine Ersatzhülle)",
+   "grenze": "automatisch",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "rig",
+   "pruefung": "Waffen hängen am richtigen Knochen (rechte Körperseite = -x)",
+   "wert": {
+    "schild.baum": [
+     "unterarm.L",
+     0.32
+    ],
+    "schild.baum.stahl": [
+     "unterarm.L",
+     0.32
+    ],
+    "waffe.langschwert": [
+     "hand.R",
+     -0.45
+    ]
+   },
+   "grenze": "hand.R bei x < 0, unterarm.L bei x > 0",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Waffen bleiben fest an ihrem Knochen (größte Verschiebung über alle Bilder, mm)",
+   "wert": 0.0,
+   "grenze": "≤ 1",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Füße am Boden (tiefster Punkt des Körpers je Bewegung, cm: kleinster und größter Wert)",
+   "wert": {
+    "angriff": [
+     -1.4,
+     0.0
+    ],
+    "angriff2h": [
+     -1.1,
+     0.0
+    ],
+    "ausweichen": [
+     0.0,
+     6.0
+    ],
+    "block": [
+     0.0,
+     1.6
+    ],
+    "laufen": [
+     -6.0,
+     0.1
+    ],
+    "ruhe": [
+     -0.7,
+     0.1
+    ],
+    "treffer": [
+     0.0,
+     0.7
+    ]
+   },
+   "grenze": "±4 cm",
+   "urteil": "warnung"
+  },
+  {
+   "bereich": "rig",
+   "pruefung": "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)",
+   "wert": 0.0526,
+   "grenze": "≤ 0.03",
+   "urteil": "warnung"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "beidhändiger Angriff: linkes Handgelenk am Griff (größter Abstand in den Bildern 2–7, cm)",
+   "wert": 17.4,
+   "grenze": "≤ 6 im Hieb, Übergangsbilder dürfen abweichen",
+   "urteil": "warnung"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "alle Bewegungen vorhanden",
+   "wert": [
+    "angriff",
+    "angriff2h",
+    "ausweichen",
+    "block",
+    "laufen",
+    "ruhe",
+    "treffer"
+   ],
+   "grenze": "ruhe, laufen, angriff, block, angriff2h, treffer, ausweichen",
+   "urteil": "ok"
+  }
+ ]
+}

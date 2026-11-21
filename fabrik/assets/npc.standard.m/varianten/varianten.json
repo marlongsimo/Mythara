@@ -1,0 +1,173 @@
+{
+ "figur": "npc.standard.m",
+ "umgefaerbt": "kleidung.brust.weste",
+ "varianten": [
+  {
+   "name": "standard",
+   "titel": "Braun (Standard)",
+   "farbe": null,
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste"
+   }
+  },
+  {
+   "name": "natur",
+   "titel": "Natur (Basis)",
+   "farbe": "#bca791",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.natur"
+   }
+  },
+  {
+   "name": "haendler",
+   "titel": "Blau (Händler)",
+   "farbe": "#203957",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc",
+    "kleidung.hals.tuch.rot"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.haendler"
+   }
+  },
+  {
+   "name": "jaeger",
+   "titel": "Grün (Jäger)",
+   "farbe": "#2b3c20",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.jaeger"
+   }
+  },
+  {
+   "name": "schmied",
+   "titel": "Rot (Schmied)",
+   "farbe": "#77201e",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc",
+    "kleidung.schuerze.leder"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.schmied"
+   }
+  },
+  {
+   "name": "bauer",
+   "titel": "Ocker (Bauer)",
+   "farbe": "#b27734",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc"
+   ],
+   "waffen": [
+    "kleidung.kopf.strohhut"
+   ],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.bauer"
+   }
+  },
+  {
+   "name": "handwerker",
+   "titel": "Grau (Handwerker)",
+   "farbe": "#616061",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc",
+    "kleidung.schuerze.leder"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.handwerker"
+   }
+  },
+  {
+   "name": "wirt",
+   "titel": "Bordeaux (Wirt)",
+   "farbe": "#47171c",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc",
+    "kleidung.schuerze.leder"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.wirt"
+   }
+  },
+  {
+   "name": "wald",
+   "titel": "Dunkelgrün (Wald)",
+   "farbe": "#313914",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc",
+    "kleidung.hals.tuch.rot"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.wald"
+   }
+  },
+  {
+   "name": "stadt",
+   "titel": "Schwarz (Stadt)",
+   "farbe": "#2a2a2a",
+   "ebenen": [
+    "koerper",
+    "kleidung.guertel.npc",
+    "kleidung.brust.weste",
+    "kleidung.fuss.stiefel.npc",
+    "kleidung.bein.hose.npc"
+   ],
+   "waffen": [],
+   "atlas": {
+    "kleidung.brust.weste": "kleidung.brust.weste.stadt"
+   }
+  }
+ ]
+}

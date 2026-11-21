@@ -1,0 +1,526 @@
+{
+ "id": "gegner.bandit",
+ "feld": 224,
+ "richtungen": [
+  "o",
+  "so",
+  "s",
+  "sw",
+  "w",
+  "nw",
+  "n",
+  "no"
+ ],
+ "winkel0": "osten",
+ "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)",
+ "zeile": "round(winkel / (pi/4)) mod 8",
+ "fuss": [
+  0.5,
+  0.7881
+ ],
+ "mass": [
+  0.5,
+  0.7881,
+  0.566
+ ],
+ "kamera": {
+  "neigung": 35.0,
+  "px_je_m": 86.0
+ },
+ "animationen": {
+  "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ },
+ "ebenen": {
+  "koerper": {
+   "art": "koerper",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/koerper",
+     "groesse": [
+      2038,
+      584
+     ],
+     "bilder": 112,
+     "speicher_mb": 4.8
+    }
+   }
+  },
+  "kleidung.bein.hose": {
+   "art": "huelle",
+   "platz": "bein",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.bein.hose",
+     "groesse": [
+      2047,
+      267
+     ],
+     "bilder": 112,
+     "speicher_mb": 2.2
+    }
+   }
+  },
+  "kleidung.guertel.taschen": {
+   "art": "huelle",
+   "platz": "guertel",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.guertel.taschen",
+     "groesse": [
+      2009,
+      100
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.8
+    }
+   }
+  },
+  "kleidung.hals.tuch": {
+   "art": "huelle",
+   "platz": "hals",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.hals.tuch",
+     "groesse": [
+      1959,
+      29
+     ],
+     "bilder": 111,
+     "speicher_mb": 0.2
+    }
+   }
+  },
+  "kleidung.kopf.kapuze": {
+   "art": "huelle",
+   "platz": "kopf",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.kopf.kapuze",
+     "groesse": [
+      2035,
+      70
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.6
+    }
+   }
+  },
+  "ruestung.brust.leder": {
+   "art": "huelle",
+   "platz": "brust",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/ruestung.brust.leder",
+     "groesse": [
+      2047,
+      151
+     ],
+     "bilder": 112,
+     "speicher_mb": 1.2
+    }
+   }
+  },
+  "ruestung.fuss.lederstiefel": {
+   "art": "huelle",
+   "platz": "fuss",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/ruestung.fuss.lederstiefel",
+     "groesse": [
+      2042,
+      187
+     ],
+     "bilder": 112,
+     "speicher_mb": 1.5
+    }
+   }
+  },
+  "waffe.axt": {
+   "art": "starr",
+   "platz": "hand_r",
+   "knochen": "hand.R",
+   "atlas": {
+    "hinten": {
+     "datei": "atlas/waffe.axt.hinten",
+     "groesse": [
+      2001,
+      91
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.7
+    },
+    "vorn": {
+     "datei": "atlas/waffe.axt.vorn",
+     "groesse": [
+      2040,
+      82
+     ],
+     "bilder": 109,
+     "speicher_mb": 0.7
+    }
+   }
+  },
+  "waffe.kurzschwert": {
+   "art": "starr",
+   "platz": "hand_r",
+   "knochen": "hand.R",
+   "atlas": {
+    "hinten": {
+     "datei": "atlas/waffe.kurzschwert.hinten",
+     "groesse": [
+      2009,
+      95
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.8
+    },
+    "vorn": {
+     "datei": "atlas/waffe.kurzschwert.vorn",
+     "groesse": [
+      2035,
+      82
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.7
+    }
+   }
+  }
+ },
+ "plaetze": {
+  "bein": [
+   "kleidung.bein.hose"
+  ],
+  "guertel": [
+   "kleidung.guertel.taschen"
+  ],
+  "hals": [
+   "kleidung.hals.tuch"
+  ],
+  "kopf": [
+   "kleidung.kopf.kapuze"
+  ],
+  "brust": [
+   "ruestung.brust.leder"
+  ],
+  "fuss": [
+   "ruestung.fuss.lederstiefel"
+  ],
+  "hand_r": [
+   "waffe.kurzschwert",
+   "waffe.axt"
+  ]
+ },
+ "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)",
+ "tiefe": {
+  "waffe.axt": {
+   "laufen": [
+    [
+     -94,
+     -94,
+     -93,
+     -91,
+     -93,
+     -97,
+     -96,
+     -93
+    ],
+    [
+     -106,
+     -107,
+     -105,
+     -103,
+     -106,
+     -109,
+     -109,
+     -106
+    ],
+    [
+     -97,
+     -97,
+     -96,
+     -94,
+     -97,
+     -101,
+     -101,
+     -97
+    ],
+    [
+     -72,
+     -72,
+     -70,
+     -68,
+     -72,
+     -76,
+     -76,
+     -72
+    ],
+    [
+     -45,
+     -46,
+     -44,
+     -42,
+     -45,
+     -49,
+     -49,
+     -45
+    ],
+    [
+     -33,
+     -34,
+     -32,
+     -30,
+     -33,
+     -36,
+     -36,
+     -32
+    ],
+    [
+     -42,
+     -43,
+     -42,
+     -39,
+     -42,
+     -45,
+     -44,
+     -41
+    ],
+    [
+     -67,
+     -68,
+     -67,
+     -64,
+     -67,
+     -70,
+     -69,
+     -66
+    ]
+   ],
+   "ruhe": [
+    [
+     -93,
+     -93,
+     -93,
+     -93,
+     -92,
+     -92
+    ],
+    [
+     -104,
+     -105,
+     -105,
+     -104,
+     -104,
+     -104
+    ],
+    [
+     -95,
+     -96,
+     -96,
+     -95,
+     -95,
+     -95
+    ],
+    [
+     -70,
+     -71,
+     -71,
+     -70,
+     -70,
+     -70
+    ],
+    [
+     -44,
+     -44,
+     -44,
+     -44,
+     -44,
+     -44
+    ],
+    [
+     -32,
+     -32,
+     -32,
+     -32,
+     -32,
+     -32
+    ],
+    [
+     -42,
+     -41,
+     -41,
+     -42,
+     -42,
+     -42
+    ],
+    [
+     -67,
+     -66,
+     -66,
+     -67,
+     -67,
+     -67
+    ]
+   ]
+  },
+  "waffe.kurzschwert": {
+   "laufen": [
+    [
+     -94,
+     -95,
+     -94,
+     -92,
+     -94,
+     -98,
+     -97,
+     -94
+    ],
+    [
+     -108,
+     -109,
+     -107,
+     -105,
+     -108,
+     -112,
+     -111,
+     -108
+    ],
+    [
+     -100,
+     -100,
+     -98,
+     -96,
+     -100,
+     -103,
+     -103,
+     -100
+    ],
+    [
+     -74,
+     -74,
+     -72,
+     -70,
+     -74,
+     -78,
+     -78,
+     -74
+    ],
+    [
+     -46,
+     -46,
+     -45,
+     -43,
+     -46,
+     -50,
+     -50,
+     -46
+    ],
+    [
+     -32,
+     -33,
+     -32,
+     -29,
+     -32,
+     -36,
+     -36,
+     -32
+    ],
+    [
+     -41,
+     -42,
+     -41,
+     -38,
+     -41,
+     -44,
+     -44,
+     -40
+    ],
+    [
+     -67,
+     -68,
+     -67,
+     -64,
+     -67,
+     -70,
+     -69,
+     -66
+    ]
+   ],
+   "ruhe": [
+    [
+     -94,
+     -94,
+     -94,
+     -94,
+     -93,
+     -93
+    ],
+    [
+     -107,
+     -107,
+     -107,
+     -107,
+     -106,
+     -106
+    ],
+    [
+     -98,
+     -98,
+     -98,
+     -98,
+     -97,
+     -97
+    ],
+    [
+     -72,
+     -73,
+     -73,
+     -72,
+     -72,
+     -72
+    ],
+    [
+     -45,
+     -45,
+     -45,
+     -45,
+     -45,
+     -45
+    ],
+    [
+     -32,
+     -32,
+     -32,
+     -32,
+     -32,
+     -32
+    ],
+    [
+     -41,
+     -41,
+     -41,
+     -41,
+     -41,
+     -41
+    ],
+    [
+     -66,
+     -66,
+     -66,
+     -66,
+     -66,
+     -66
+    ]
+   ]
+  }
+ },
+ "atlas_speicher_mb": 14.1
+}

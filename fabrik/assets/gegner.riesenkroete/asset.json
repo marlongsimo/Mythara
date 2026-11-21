@@ -1,0 +1,26 @@
+{
+  "id": "gegner.riesenkroete",
+  "name": "Riesenkröte (Testfigur, Tiergegner)",
+  "kategorie": "gegner",
+  "test_asset": true,
+  "status": "v001: vier Bewegungen in acht echten Richtungen – Ruhe (atmen), Springen (Fortbewegung, hebt in den Flugbildern ab), Zungenangriff (Treffer in Bild 5), Tod (sackt flach zusammen, Zunge hängt heraus). Keine Ausrüstung. Prüfung: erfolgreich mit Einschränkungen (20 ok, 1 Warnung: Gewichte nach Abstand statt Wärmeverteilung, 0 Fehler).",
+  "referenz": "referenz/original.png, referenz/zungenangriff.png",
+  "lizenz": {
+    "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen",
+    "modell": "lokal erzeugt mit TripoSR (MIT), ohne kostenpflichtigen Dienst"
+  },
+  "skelett": "Vierbeiner-Skelett aus rig_tier.py: becken, rumpf, kopf, kiefer, zunge, je Seite oberarm/unterarm/hand und oberschenkel/unterschenkel/fuss",
+  "verfahren": [
+    "referenz.py",
+    "triposr.py (Vorderansicht)",
+    "anmalen.py -90,0,-90 hoehe=1.0",
+    "rig_tier.py (tier.json: Bewegungen, Maulhöhe, Zunge)",
+    "boden.py ruhe,springen,zunge,tod (Flugbilder des Sprungs bleiben in der Luft)",
+    "rendern.py", "packen.py", "pruefung.py", "vorschau-gif.py"
+  ],
+  "spiel": {
+    "fortbewegung": "springen (die Bewegung über den Boden macht das Spiel, die Animation springt an Ort und Stelle)",
+    "angriff": "zunge (Trefferbild: animationen.zunge.treffer)",
+    "tod": "tod (letztes Bild halten)"
+  }
+}

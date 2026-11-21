@@ -1,0 +1,8 @@
+{
+  "name": "mythara-fabrik-vorschau",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Mythara Fabrik: isolierte Testszene für modulare Figuren (Phaser 3, wie der Echtzeit-Client)",
+  "scripts": { "build": "esbuild szene.ts --bundle --minify --format=iife --target=es2020 --outfile=vorschau.js --legal-comments=none", "check": "tsc --noEmit --strict --target es2020 --moduleResolution bundler --module esnext --skipLibCheck szene.ts" },
+  "devDependencies": { "esbuild": "^0.25.0", "phaser": "^3.90.0", "typescript": "^5.6.0" }
+}
