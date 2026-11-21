@@ -5,6 +5,7 @@
  */
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
+import { heldenFigur, richten, blickVon } from "./modulfigur";
 import { team, kampagneGeschafft, weltkarte } from "./weltkarte";
 import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import { zoomFaktor, zoomKnopf } from "./zoom";
@@ -203,7 +204,7 @@ export class Ort extends Phaser.Scene {
     $("#ez-dorf-knopf").onclick = () => this.sprechen(); window.addEventListener("keydown", (ev) => { if ((ev.key === "e" || ev.key === "E") && !ev.repeat) this.sprechen(); });
     this.marke = this.add.ellipse(0, 0, 34, 17).setStrokeStyle(2, 0xffe9a8, 0.9).setDepth(-1).setVisible(false);
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
-    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
+    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = heldenFigur(this, 0, 0, this.held, GROSS).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (this.gesperrt && an) return; if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return; ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); };
     window.addEventListener("keydown", (ev) => { if (!ev.repeat) taste(ev, true); }); window.addEventListener("keyup", (ev) => taste(ev, false)); window.addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
@@ -241,7 +242,7 @@ export class Ort extends Phaser.Scene {
     if (!mitreise()) { try { localStorage.setItem("ez_ort_" + ortName, JSON.stringify(this.merker)); } catch { /* privat */ } } this.sicht(); }
   /** Ein Mitspieler: Figur mit Namen, läuft weich zur gemeldeten Stelle */
   anderer(n: string, held: string, x: number, y: number, f: boolean, l: boolean) { let a = this.andere.get(n); const D = HELDEN[held] || HELDEN.schildwaechter;
-    if (!a || a.held !== held) { if (a) { a.sp.destroy(); a.nm.destroy(); } const fu = D.fuss || [0.5, 0.94], sp = this.add.sprite(x, y + 3, "figur-" + held).setOrigin(fu[0], fu[1]); sp.setScale(GROSS * (D.gross || 1) / sp.height);
+    if (!a || a.held !== held) { if (a) { a.sp.destroy(); a.nm.destroy(); } const fu = D.fuss || [0.5, 0.94], sp = heldenFigur(this, x, y + 3, held, GROSS).setOrigin(fu[0], fu[1]); sp.setScale(GROSS * (D.gross || 1) / sp.height);
       const nm = this.add.text(x, y - GROSS - 14, n, { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#9fdcff", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
       if (D.lauf && !this.anims.exists("lauf-" + held)) this.anims.create({ key: "lauf-" + held, frames: this.anims.generateFrameNumbers("lauf-" + held, {}), frameRate: 11, repeat: -1 });
       a = { sp, nm, held, x, y, zx: x, zy: y, laeuft: false, zuletzt: 0 }; this.andere.set(n, a); }
@@ -359,11 +360,11 @@ export class Ort extends Phaser.Scene {
     const l = Math.hypot(rx, ry), faehrt = l > 0.05;
     if (faehrt) { const k = Math.min(1, l) / l, sx = rx * k * TEMPO * d, sy = ry * k * TEMPO * Q * d;
       if (this.frei(o.x + sx, o.y + sy)) { o.x += sx; o.y += sy; } else if (this.frei(o.x + sx, o.y)) o.x += sx; else if (this.frei(o.x, o.y + sy)) o.y += sy; /* an Kanten entlanggleiten */
-      if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
+      richten(this.figur, rx, ry * Q); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     this.figur.setPosition(o.x, o.y + 3).setDepth(o.y); this.ring.setPosition(o.x, o.y).setDepth(o.y - 0.01);
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / this.d.breit) + "%"; pk.style.top = (100 * o.y / this.d.hoch) + "%"; karteFolgen(o.x / this.d.breit, o.y / this.d.hoch); }
-    weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
+    weltPos(o.x, o.y, blickVon(this.figur), this.laeuft); this.mit.schritt(d);
     if (gruppe()) { const jetzt = this.time.now, g = this.gesendet, bewegt = Math.hypot(o.x - g.x, o.y - g.y) > 2; if ((bewegt && jetzt - g.t > 100) || jetzt - g.t > 1000) { this.gesendet = { x: o.x, y: o.y, t: jetzt }; dorfSende({ t: "pos", x: o.x, y: o.y, f: this.figur.flipX ? 1 : 0, l: this.laeuft ? 1 : 0 }); }
       const k = $("#ez-karte"); for (const [n, a] of this.andere) { if (jetzt - a.zuletzt > 6000) { a.sp.destroy(); a.nm.destroy(); this.andere.delete(n); const u = k.querySelector(`u[data-n="${CSS.escape(n)}"]`); if (u) u.remove(); continue; }
         a.x += (a.zx - a.x) * Math.min(1, d * 10); a.y += (a.zy - a.y) * Math.min(1, d * 10); a.sp.setPosition(a.x, a.y + 3).setDepth(a.y); a.nm.setPosition(a.x, a.y - GROSS - 14);

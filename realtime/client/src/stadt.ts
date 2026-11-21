@@ -14,6 +14,7 @@ import { wecken } from "./netz";
 import Phaser from "phaser";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "./welt";
 import { HELDEN } from "../../shared/config";
+import { heldenFigur, richten, blickVon } from "./modulfigur";
 
 const F = 1.5, BW = 1671, BH = 941, TEMPO = 125, GROSS = 112; // GROSS: Körperhöhe des Helden am Bildschirm, passend zu Türen und Tischen im Bild // Vergrößerung, Bildgröße, Lauftempo in Bildpunkten der Vorlage je Sekunde
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
@@ -109,7 +110,7 @@ export class Stadt extends Phaser.Scene {
     for (const l of LEUTE) { const k = "npc-" + l.bild; if (!this.anims.exists(k)) this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, {}), frameRate: 8, repeat: -1 }); const s = this.add.sprite(0, 0, k).setOrigin(0.5, 0.945).setScale(GROSS / (l.mass * 176)); s.play(k); const start = Math.floor(Math.random() * l.weg.length); this.leute.push({ s, d: l, x: l.weg[start][0], y: l.weg[start][1], n: (start + 1) % l.weg.length, pause: 0 }); }
     if (P.get("zeig") === "1") { const g = this.add.graphics().setDepth(9999); const mal = (p: Pkt[], f: number) => { g.lineStyle(2, f, 1); g.strokePoints(p.map((q) => ({ x: q[0] * F, y: q[1] * F })), true); }; mal(FLAECHE, 0x00ff00); HINDERNIS.forEach((h) => mal(h, 0xff0000)); VORN.forEach((v) => mal(v.umriss, 0x00aaff)); for (const o of ORTE) g.strokeCircle(o.x * F, o.y * F, o.r * F); }
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
-    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
+    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = heldenFigur(this, 0, 0, this.held, GROSS).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!this.scene.isActive() || this.gesperrt) return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); } else if (an && (k === "e" || k === "enter")) this.betreten(); };
     const runter = (ev: KeyboardEvent) => { if (!ev.repeat) taste(ev, true); }, hoch = (ev: KeyboardEvent) => taste(ev, false); window.addEventListener("keydown", runter); window.addEventListener("keyup", hoch); this.events.once("shutdown", () => { window.removeEventListener("keydown", runter); window.removeEventListener("keyup", hoch); });
@@ -179,7 +180,7 @@ export class Stadt extends Phaser.Scene {
     const l = Math.hypot(rx, ry), faehrt = !this.gesperrt && l > 0.05;
     if (faehrt) { const k = Math.min(1, l) / l, sx = rx * k * TEMPO * d, sy = ry * k * TEMPO * 0.62 * d; // nach oben und unten langsamer: der Boden liegt schräg
       if (frei(o.x + sx, o.y + sy)) { o.x += sx; o.y += sy; } else if (frei(o.x + sx, o.y)) o.x += sx; else if (frei(o.x, o.y + sy)) o.y += sy; // an Kanten entlanggleiten
-      if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
+      richten(this.figur, rx, ry * 0.62); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     for (const m of this.leute) { // schlendern: zum nächsten Wegpunkt, dort kurz stehen bleiben
       if (m.pause > 0) { m.pause -= d; if (m.pause <= 0) m.s.anims.resume(); } else { const z = m.d.weg[m.n], dx = z[0] - m.x, dy = z[1] - m.y, w = Math.hypot(dx, dy), schritt = m.d.tempo * d; if (w <= schritt) { m.x = z[0]; m.y = z[1]; m.n = (m.n + 1) % m.d.weg.length; if (Math.random() < 0.6) { m.pause = 1.5 + Math.random() * 3; m.s.anims.pause(); m.s.setFrame(0); } } else { m.x += dx / w * schritt; m.y += dy / w * schritt * (Math.abs(dy) > Math.abs(dx) ? 0.8 : 1); if (Math.abs(dx) > 2) m.s.setFlipX(dx < 0); } }
       m.s.setPosition(m.x * F, m.y * F + 3).setDepth(m.y); }
@@ -187,7 +188,7 @@ export class Stadt extends Phaser.Scene {
     const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; karteFolgen(o.x / BW, o.y / BH); }
-    weltPos(o.x, o.y, this.figur.flipX ? Math.PI : 0, this.laeuft); this.mit.schritt(d);
+    weltPos(o.x, o.y, blickVon(this.figur), this.laeuft); this.mit.schritt(d);
     let nah: typeof this.nah = null; for (const q of ORTE) if (Math.hypot(o.x - q.x, o.y - q.y) < q.r) nah = q;
     if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.tat === "bald" ? nah.name : nah.text + (HANDY ? "" : "  [E]"); }
   }
