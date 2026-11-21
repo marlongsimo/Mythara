@@ -30,5 +30,18 @@
   "versionen": {
     "v001": "Ruhe und Laufen, Kurzschwert und Axt; Liste: ausruestung.json",
     "v002": "vollständiger Gegner; Liste: v002/ausruestung.json"
+  },
+  "varianten": {
+    "dolch": {
+      "ordner": "varianten/dolch",
+      "waffe": "waffe.dolch",
+      "angriff": "angriff_dolch"
+    },
+    "schwert": {
+      "ordner": "varianten/schwert",
+      "waffe": "waffe.kurzschwert",
+      "angriff": "angriff"
+    },
+    "hinweis": "feste Ausrüstungsvarianten aus v002, ohne neu zu rendern (fabrik/variante.py); Format des Spielmoduls, mit vorschau.gif"
   }
 }

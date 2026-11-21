@@ -80,6 +80,7 @@ Jeder Stand einer Figur liegt in einem eigenen Ordner (`v001`, `v002`, …). Ein
 | `held.krieger/v004` | wie v003; Renderbereich passt sich der größten Ausdehnung an (Feld 288 px, nichts abgeschnitten), Fußpunkt beim Laufen auf dem Boden (`boden.py`) – **aktuelle Version** |
 | `gegner.bandit/v001` | zweite Figur aus derselben Pipeline: eigenes Referenzblatt, gleiches Skelett; Kapuze, Halstuch, Lederrüstung, Gürtel, Hose, Stiefel als Ebenen; Kurzschwert (Standard) und Axt; Ruhe und Laufen. Bogen und Dolch gebaut, aber noch nicht angehängt |
 | `gegner.bandit/v002` | kampffähiger Gegner: Kurzschwert-, Axt- und Dolchangriff (je Waffe eigene Bewegung), Parade mit der Waffe, Treffer, Ausweichen, Tod (bleibt liegen); eigene Liste `v002/ausruestung.json` |
+| `gegner.bandit/varianten/dolch`, `…/schwert` | feste Varianten aus v002 (Kleidung + eine Waffe, Angriff der Waffe), ohne neu zu rendern: `variante.py <export> <id> <name> <waffe> <ziel>` |
 
 ## Eine neue Figur
 
