@@ -68,8 +68,9 @@ if fraktion:                                                                    
     for n in ["Standard"] + fraktion:
         teile = [next((e for e, d in EB.items() if d.get("variante_von") == t and e.endswith("." + n)), t) for t in alle]
         for i in range(A["ruhe"]["bilder"]): folge.append((bogen("ruhe", i, teile, f"Farbvariante: {n}"), 160))
+LAUF = "laufen" if "laufen" in A else ("gehen" if "gehen" in A else "ruhe")                         # Figuren ohne Rennen (z. B. Bandit): Wechsel im Gehen zeigen
 for teile, text in wechsel:
     for _ in range(2):
-        for i in range(A["laufen"]["bilder"]): folge.append((bogen("laufen", i, teile, text), 1000 // A["laufen"]["rate"]))
+        for i in range(A[LAUF]["bilder"]): folge.append((bogen(LAUF, i, teile, text), 1000 // A[LAUF]["rate"]))
 folge[0][0].save(ziel, save_all=True, append_images=[f for f, _ in folge[1:]], duration=[d for _, d in folge], loop=0, optimize=True)
 print(len(folge), "Bilder ·", round(os.path.getsize(ziel) / 1e6, 1), "MB ·", ziel)

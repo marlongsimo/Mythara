@@ -35,7 +35,8 @@
         "tod",
         "stich",
         "block"
-      ]
+      ],
+      "angriff": "stich"
     },
     {
       "id": "schild.kreuz",
@@ -69,7 +70,8 @@
         "laufen",
         "tod",
         "hieb2h"
-      ]
+      ],
+      "angriff": "hieb2h"
     },
     {
       "id": "waffe.speer",
@@ -85,7 +87,8 @@
         "laufen",
         "tod",
         "stich2h"
-      ]
+      ],
+      "angriff": "stich2h"
     },
     {
       "id": "waffe.zeremonienstab",
@@ -101,7 +104,8 @@
         "laufen",
         "tod",
         "zauber_stab"
-      ]
+      ],
+      "angriff": "zauber_stab"
     },
     {
       "id": "waffe.armbrust",
@@ -121,7 +125,8 @@
         "laufen",
         "tod",
         "armbrust1h"
-      ]
+      ],
+      "angriff": "armbrust1h"
     },
     {
       "id": "waffe.dolch",
@@ -138,7 +143,8 @@
         "tod",
         "dolchwurf",
         "stich"
-      ]
+      ],
+      "angriff": "dolchwurf"
     },
     {
       "id": "waffe.bogen",
@@ -156,7 +162,8 @@
         "tod",
         "bogen"
       ],
-      "drehen": 180
+      "drehen": 180,
+      "angriff": "bogen"
     }
   ],
   "stuecke_behalten": true,

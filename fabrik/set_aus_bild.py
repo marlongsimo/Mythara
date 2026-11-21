@@ -4,6 +4,7 @@
 
 basis.blend   Grundkörper mit Skelett (rig.py)
 set-ordner    referenz/teile/vorn.png, seite.png (linke Körperseite, Zehen links im Bild), hinten.png – das Set ohne Körper, Kopf weggelassen
+kapuze        der Kopf gehört zum Set (Kapuze, Gesichtstuch), nur ein Augenschlitz bleibt frei [kapuze_dicke=0.03, augen_unten/augen_oben, spitze]
 oben          bis wohin das Set reicht (Knochen:Anteil), darüber bleibt der Kopf frei
 dicke         Abstand des Sets vom Körper (m); haende: an den Händen (Handschuhe liegen enger an)
 frei_wo_leer  wo das Bild leer ist (Hände, Hals, Unterarme unter kurzen Ärmeln), bleibt der Körper frei – sonst wird dort die nächste Farbe gemalt
@@ -31,14 +32,21 @@ for v in me.vertices:
     for g in v.groups: W[gname[g.group]][v.index] = g.weight
 P = np.array([v.co[:] for v in me.vertices]); N = np.array([v.normal[:] for v in me.vertices])
 o_, t_ = opt.get("oben", "hals:0.7").split(":"); ZTOP = KN[o_].head_local.lerp(KN[o_].tail_local, float(t_)).z
-wahl = (P[:, 2] <= ZTOP) & (W.get("kopf", np.zeros(nv)) < 0.5)
+KAPUZE = "kapuze" in sys.argv[4:]                                                                   # Kapuze mit Gesichtstuch: der Kopf gehört zum Set, nur ein Augenschlitz bleibt frei
+kopfw = W.get("kopf", np.zeros(nv))
+if KAPUZE:
+    KB = KN["kopf"]; kz0, kz1 = KB.head_local.z, KB.tail_local.z; kl_ = kz1 - kz0; ky = KB.head_local.y
+    augen = (P[:, 2] > kz0 + float(opt.get("augen_unten", 0.33)) * kl_) & (P[:, 2] < kz0 + float(opt.get("augen_oben", 0.5)) * kl_) & (P[:, 1] < ky - 0.03) & (np.abs(P[:, 0] - KB.head_local.x) < 0.065)
+    wahl = ~augen; ZTOP = 9.0
+else: wahl = (P[:, 2] <= ZTOP) & (kopfw < 0.5)
 hand = sum(W.get(b, 0) for b in ("hand.L", "hand.R"))
 # Form: versetzte Kopie des Körpers
 bm = bmesh.new(); bm.from_mesh(me); bm.verts.ensure_lookup_table()
 RUMPF, FUESSE = float(opt.get("rumpf", 0.045)), float(opt.get("fuesse", 0.035))
 rumpf = sum(W.get(b, 0) for b in ("brust", "bauch", "becken")); fuss = sum(W.get(b, 0) for b in ("fuss.L", "fuss.R"))
-rest_ = np.clip(1 - hand - rumpf - fuss, 0, 1)
-for v in bm.verts: i = v.index; v.co = v.co + v.normal * (HAENDE * hand[i] + RUMPF * rumpf[i] + FUESSE * fuss[i] + DICKE * rest_[i])   # Rumpf klobiger, Stiefel weiter, Hände eng
+kopf_ = kopfw if KAPUZE else np.zeros(nv); KOPF_D = float(opt.get("kapuze_dicke", 0.03))
+rest_ = np.clip(1 - hand - rumpf - fuss - kopf_, 0, 1)
+for v in bm.verts: i = v.index; v.co = v.co + v.normal * (HAENDE * hand[i] + RUMPF * rumpf[i] + FUESSE * fuss[i] + DICKE * rest_[i] + KOPF_D * kopf_[i])   # Rumpf klobiger, Stiefel weiter, Hände eng
 bmesh.ops.delete(bm, geom=[v for v in bm.verts if not wahl[v.index]], context="VERTS"); bm.verts.ensure_lookup_table()
 herkunft = [v.index for v in bm.verts]                                                              # bmesh löscht ohne Umnummern der Ursprünge: Index-Liste vor dem Schreiben merken
 alt = np.where(wahl)[0]
@@ -68,6 +76,7 @@ def bild(n, spiegeln=False):
 ALPHA = {}
 VORN, HINTEN, SL, SR = bild("vorn"), bild("hinten"), bild("seite"), bild("seite", True)
 x0, x1 = Qp[:, 0].min(), Qp[:, 0].max(); y0, y1 = Qp[:, 1].min(), Qp[:, 1].max(); z0, z1 = Qp[:, 2].min(), ZTOP
+if KAPUZE: z1 = Qp[:, 2].max() + float(opt.get("spitze", 0.03))                                         # Bildoberkante = Kapuzenspitze
 def nimm(img, u, vv): h, w = img.shape[:2]; return img[np.clip((vv * (h - 1)).astype(int), 0, h - 1), np.clip((u * (w - 1)).astype(int), 0, w - 1)]
 vv = np.clip((z1 - Qp[:, 2]) / (z1 - z0), 0, 1); farbe = np.zeros((len(Q), 3), np.float32); ny = np.abs(QN[:, 1]) >= np.abs(QN[:, 0])
 leer = np.zeros(len(Q), bool)
