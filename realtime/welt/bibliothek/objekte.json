@@ -745,38 +745,6 @@
    "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
-   "id": "burg_turm_01",
-   "name": "Burgturm (Kenney-Form)",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/kenney/burg_turm_01.webp",
-   "groesse": [
-    270,
-    632
-   ],
-   "anker": [
-    0.4148,
-    0.9462
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -3.0,
-    "b": 3.0,
-    "h": 3.0
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "sichtbar": [
-    40,
-    40,
-    230,
-    593
-   ],
-   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
-  },
-  {
    "id": "dorf_haus_holz_01",
    "name": "Holzhaus",
    "kategorie": "gebaeude",
@@ -3932,6 +3900,38 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "burg_turm_01",
+   "name": "Burgturm (Kenney-Form)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/kenney/burg_turm_01.webp",
+   "groesse": [
+    270,
+    632
+   ],
+   "anker": [
+    0.4148,
+    0.9462
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -3.0,
+    "b": 3.0,
+    "h": 3.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    230,
+    593
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
   }
  ]
 }
