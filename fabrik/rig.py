@@ -32,6 +32,8 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
+  "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
+  "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
                              ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
   "koerper_textur": true     der Körper behält Material und Textur seines Modells (statt Punktfarben) – Kenney-Haut mit scharfem Gesicht
@@ -59,7 +61,9 @@ for o in list(bpy.data.objects):
     if o is not ob: bpy.data.objects.remove(o)
 
 # ====================================================== 1. Körper, Skelett, Gewichte ======================================================
-bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0005); bpy.ops.mesh.separate(type="LOOSE"); bpy.ops.object.mode_set(mode="OBJECT")
+bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0005)
+if not AUS.get("stuecke_behalten"): bpy.ops.mesh.separate(type="LOOSE")                           # Grundkörper aus mehreren Stücken (meshy_teile.py: Rumpf + Originalkopf) bleibt ganz
+bpy.ops.object.mode_set(mode="OBJECT")
 stuecke = sorted([o for o in bpy.data.objects if o.type == "MESH"], key=lambda o: -len(o.data.vertices)); ob = stuecke[0]; entfernt = [len(o.data.vertices) for o in stuecke[1:]]
 for o in stuecke[1:]: bpy.data.objects.remove(o)
 ob.name = "koerper"; bpy.context.view_layer.objects.active = ob; ob.select_set(True); bpy.ops.object.shade_smooth(); me = ob.data
@@ -261,6 +265,23 @@ for nr, t in enumerate(AUS.get("anbau", [])):
     m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
     o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 100 + nr; o["ueberlage"] = True; o["wahlfrei"] = bool(t.get("wahlfrei")); o["anbau"] = True
     print("Anbau:", t["id"], "Platz", t["platz"], "·", len(stuecke), "Stücke,", len(o.data.vertices), "Punkte")
+
+# ---- Teilnetze (meshy_teile.py): fertige Teile aus einem Figurenmodell; sie übernehmen die Gewichte vom Grundkörper darunter
+for nr, t in enumerate(AUS.get("teilnetze", [])):
+    o = laden(t["glb"], t["id"]); bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.context.view_layer.objects.active = o
+    dt = o.modifiers.new("gewichte", "DATA_TRANSFER"); dt.object = ob; dt.use_vert_data = True; dt.data_types_verts = {"VGROUP_WEIGHTS"}; dt.vert_mapping = "POLYINTERP_NEAREST"
+    dt.layers_vgroup_select_src = "ALL"; dt.layers_vgroup_select_dst = "NAME"; bpy.ops.object.datalayout_transfer(modifier="gewichte"); bpy.ops.object.modifier_apply(modifier="gewichte")
+    if t.get("beine_mitteln"):                                                                     # Umhang, Waffenrock: folgen dem Mittel beider Beine (sonst reißt das Tuch zwischen den Beinen auseinander)
+        G_ = {g.name: g for g in o.vertex_groups}
+        for v in o.data.vertices:
+            w = {o.vertex_groups[g.group].name: g.weight for g in v.groups}
+            for b in ("oberschenkel", "unterschenkel", "fuss"):
+                l_, r_ = w.get(b + ".L", 0.0), w.get(b + ".R", 0.0); m_ = (l_ + r_) / 2
+                if l_ + r_ > 0:
+                    for S in "LR": (G_.get(b + "." + S) or o.vertex_groups.new(name=b + "." + S)).add([v.index], m_, "REPLACE"); G_[b + "." + S] = o.vertex_groups[b + "." + S]
+    m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
+    print("Teilnetz:", t["id"], "Platz", t["platz"], "·", len(o.data.vertices), "Punkte, Gewichte vom Grundkörper")
 
 # ====================================================== 4. Bewegungen ======================================================
 bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode="POSE"); PB = arm.pose.bones
