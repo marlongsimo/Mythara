@@ -34,6 +34,7 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Hülle "unten": true        Unterkleidung (Hemd, Hose): wird beim Rendern nicht von abnehmbarer Rüstung ausgestanzt, liegt in der Zeichenreihenfolge zuunterst
   Hülle "seiten_frei": true  seitlich gerichtete Flächen auslassen (Flanken unter anliegenden Armen)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
+  "luecken_schliessen": true Lagen nehmen auch Punkte in Übergängen (Hüftfalte), die zusammen überwiegend an ihren Knochen hängen – keine Streifen zwischen Hemd und Hose
   "zeichenfolge": true       Baukasten: Rüstungsteile werden nur vom Körper ausgestanzt, die Zeichenreihenfolge (innen nach außen) bestimmt, was vorn liegt –
                              so ist jedes Teil unabhängig austauschbar; Teil "umhang": true liegt von vorn hinter, von hinten vor allen anderen
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
@@ -218,6 +219,9 @@ for t in AUS["huelle"]:
     wahl = np.zeros(nv, bool)
     for bone, t0, t1 in t["bereich"]:
         lage = lage_an(bone); wahl |= (GW[bone] >= 0.35) & (lage >= t0 - 0.02) & (lage <= t1 + 0.02)
+    if AUS.get("luecken_schliessen"):                                                                # Übergänge (Hüftfalte, Achsel): Punkte, die zusammengenommen überwiegend an den Knochen dieser Lage hängen, gehören auch dazu
+        summe = sum(GW[b] for b in {bone for bone, _, _ in t["bereich"]}); zw = P[wahl, 2] if wahl.any() else P[:, 2]
+        wahl |= (summe >= 0.6) & (P[:, 2] >= zw.min() - 0.03) & (P[:, 2] <= zw.max() + 0.03)
     if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
     if t.get("vorn"): wahl &= NORM[:, 1] < -0.15                                                    # nur die Vorderseite (Schürze)
     if t.get("hinten"): wahl &= NORM[:, 1] > 0.15                                                   # nur die Rückseite (Umhang)

@@ -173,5 +173,6 @@
       "glb": "basis.mann/v001/quelle/teile/kleidung.fuss.stiefel.v003.glb"
     }
   ],
-  "stuecke_behalten": true
+  "stuecke_behalten": true,
+  "luecken_schliessen": true
 }
