@@ -1313,6 +1313,409 @@
      }
     ]
    }
+  },
+  {
+   "id": "weidenhain_kornspeicher_01",
+   "name": "Kornspeicher von Weidenhain",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -4,
+     "d": 0,
+     "b": 8,
+     "t": 5,
+     "h": 3.0,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.5,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       118,
+       92,
+       66
+      ]
+     }
+    },
+    {
+     "id": "schuppen",
+     "x": -6.6,
+     "d": 0.4,
+     "b": 2.6,
+     "t": 3.6,
+     "h": 2.0,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.7,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       118,
+       92,
+       66
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "b": 2.8,
+     "h": 2.6,
+     "art": "tor"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "ost",
+     "z": 1.4,
+     "b": 0.8,
+     "h": 0.6,
+     "art": "schmal",
+     "d": 2.5
+    },
+    {
+     "wand": "sued",
+     "z": 1.3,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -2.6,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "laterne",
+     "x": -1.2,
+     "z": 2.2
+    },
+    {
+     "art": "laterne",
+     "x": 2.4,
+     "z": 2.2
+    },
+    {
+     "art": "vordach",
+     "koerper": "schuppen",
+     "x0": -6.5,
+     "x1": -4.1,
+     "tiefe": 1.0,
+     "z": 1.8,
+     "deckung": "schindel",
+     "farbe": [
+      118,
+      92,
+      66
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "heu",
+      "x": -2.6,
+      "d": 3.7
+     },
+     {
+      "art": "heu",
+      "x": 2.7,
+      "d": 3.8
+     },
+     {
+      "art": "saecke",
+      "x": -2.9,
+      "d": 1.3
+     },
+     {
+      "art": "saecke",
+      "x": 2.9,
+      "d": 1.5
+     },
+     {
+      "art": "saecke",
+      "x": 2.9,
+      "d": 2.5
+     },
+     {
+      "art": "fass",
+      "x": -1.5,
+      "d": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_bauernhaus_01",
+   "name": "Bauernhaus (Fachwerk)",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3,
+     "d": 0,
+     "b": 6,
+     "t": 4.2,
+     "h": 2.7,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.1,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       104,
+       84,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": -1.9,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": -0.4,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 2.3,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.1,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.6,
+     "d": 2.6,
+     "b": 0.6
+    },
+    {
+     "art": "laterne",
+     "x": 1.8,
+     "z": 2.1
+    },
+    {
+     "art": "vordach",
+     "x0": 0.1,
+     "x1": 1.7,
+     "tiefe": 0.8,
+     "z": 2.2,
+     "deckung": "schindel",
+     "farbe": [
+      104,
+      84,
+      64
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "ofen",
+      "x": -1.8,
+      "d": 3.4
+     },
+     {
+      "art": "tisch",
+      "x": 0.2,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": 2.2,
+      "d": 3.1
+     },
+     {
+      "art": "regal",
+      "x": -0.3,
+      "d": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_muehle_01",
+   "name": "Wassermühle",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 4.6,
+     "h": 3.0,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.2,
+      "first": "d",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       110,
+       86,
+       62
+      ]
+     }
+    },
+    {
+     "id": "anbau",
+     "x": -5.2,
+     "d": 0.6,
+     "b": 2.7,
+     "t": 3.2,
+     "h": 2.3,
+     "wand": "fachwerk",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.8,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       110,
+       86,
+       62
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "b": 1.1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.7,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.3,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.6,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -3.9,
+     "koerper": "anbau",
+     "laeden": true,
+     "blumen": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "muehlrad",
+     "x": 1.0,
+     "r": 1.5,
+     "b": 0.8
+    },
+    {
+     "art": "kamin",
+     "x": -3.6,
+     "d": 2.6,
+     "koerper": "anbau",
+     "b": 0.55
+    },
+    {
+     "art": "laterne",
+     "x": -0.7,
+     "z": 2.3
+    },
+    {
+     "art": "schild",
+     "x": -2.4,
+     "z": 2.5,
+     "farbe": [
+      226,
+      196,
+      120
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "muehlstein",
+      "x": 0.6,
+      "d": 2.8
+     },
+     {
+      "art": "saecke",
+      "x": -1.5,
+      "d": 1.2
+     },
+     {
+      "art": "saecke",
+      "x": -1.4,
+      "d": 3.6
+     }
+    ]
+   }
   }
  ]
 }

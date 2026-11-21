@@ -44,6 +44,11 @@ HAEUSER = {
     'dorf_heuballen_01':    dict(name='Heuballen', form='heu', saat=25),
     'dorf_laterne_01':      dict(name='Laterne', form='laterne', saat=26),
     'wald_baumstamm_01':    dict(name='Umgestürzter Baum (quer)', form='baumstamm', saat=27),
+    'dorf_festfeuer_01':    dict(name='Erntefeuer', form='feuer', saat=29),
+    'dorf_steinring_01':    dict(name='Steinring (Baumbeet)', form='steinring', saat=30),
+    'dorf_wehr_01':         dict(name='Wehr', form='wehr', saat=31),
+    'dorf_zaun_01':         dict(name='Holzzaun', form='zaun', saat=32),
+    'dorf_kuerbisse_01':    dict(name='Kürbisse', form='kuerbisse', saat=33),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -642,7 +647,118 @@ def baumstamm_tief(P, rng):
     return B.fertig(), [round(fx / W, 4), round(fy / H, 4)], {'art': 'rechteck', 'x': -0.7, 'y': -LF, 'b': 1.4, 'h': LF}, {'art': 'lesen', 'dx': 0, 'dy': 0.9, 'radius': 1.6}, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief}
+def stein(B, cx, cy, rx, ry, rng, grau=None):
+    """Ein runder Feldstein: dunkler Fuß, heller Kopf mit Lichtkante oben links"""
+    g = grau if grau is not None else float(rng.uniform(0.82, 1.1))
+    B.lege((int(70 * g), int(68 * g), int(64 * g)), ellipse(B, cx + rx * 0.08, cy + ry * 0.12, rx, ry))
+    B.lege((int(132 * g), int(128 * g), int(118 * g)), ellipse(B, cx, cy, rx * 0.92, ry * 0.86))
+    B.lege((int(168 * g), int(162 * g), int(150 * g)), ellipse(B, cx - rx * 0.25, cy - ry * 0.3, rx * 0.45, ry * 0.35))
+
+
+def feuer(P, rng):
+    """Erntefeuer: Ring aus Feldsteinen, Scheite als Zelt, Flammen und Glut (Draufsicht schräg von vorn)"""
+    W, H = 200, 190; B = Blatt(W, H); cx, cy, rx, ry = 100, 148, 70, 30
+    schatten(B, cx - rx, cx + rx, cy + 10, 22)
+    B.lege((44, 34, 28), ellipse(B, cx, cy, rx - 6, ry - 4))                          # Asche und Erde im Ring
+    B.lege((90, 40, 20), ellipse(B, cx, cy + 2, rx * 0.55, ry * 0.5))                 # Glut
+    B.lege((210, 96, 30), ellipse(B, cx, cy + 2, rx * 0.35, ry * 0.32))
+    steine = sorted([(cx + math.cos(t) * rx, cy + math.sin(t) * ry, t) for t in np.linspace(0, 2 * math.pi, 18, endpoint=False)], key=lambda p: p[1])
+    hinten = [p for p in steine if p[1] <= cy]; vorn = [p for p in steine if p[1] > cy]
+    for x, y, t in hinten:
+        stein(B, x, y, 11, 8, rng)
+    for i in range(7):                                                                # Scheite, zu einem Zelt gestellt
+        t = i / 7 * 2 * math.pi; fx, fy = cx + math.cos(t) * 30, cy + math.sin(t) * 13
+        B.strich([(fx, fy), (cx + math.cos(t) * 4, cy - 52)], 7, 40 + i, 0.6)
+    for farbe, hoch, breit in (((228, 96, 28), 100, 36), ((246, 158, 44), 80, 25), ((255, 228, 130), 56, 13)):
+        pk = [(cx - breit, cy - 6), (cx - breit * 0.6, cy - hoch * 0.55), (cx - breit * 0.2, cy - hoch * 0.72), (cx, cy - hoch), (cx + breit * 0.35, cy - hoch * 0.68), (cx + breit * 0.7, cy - hoch * 0.45), (cx + breit, cy - 6)]
+        m = B.maske(pk); m = np.asarray(Image.fromarray((m * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2 * K))).astype(np.float32) / 255
+        B.lege(farbe, m)
+    for x, y, t in vorn:
+        stein(B, x, y, 12, 9, rng)
+    return B.fertig(), [0.5, round((cy + ry + 6) / H, 4)], {'art': 'rechteck', 'x': -1.5, 'y': -1.4, 'b': 3.0, 'h': 1.3}, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.2}, False
+
+
+def steinring(P, rng):
+    """Beet aus Feldsteinen für einen großen Baum: Gras und Blumen innen. Der Baum wird als eigenes Objekt in die Mitte gestellt."""
+    W, H = 260, 150; B = Blatt(W, H); cx, cy, rx, ry = 130, 74, 112, 50
+    B.lege((84, 112, 50), ellipse(B, cx, cy, rx - 8, ry - 6))
+    for _ in range(140):
+        t = rng.uniform(0, 2 * math.pi); r = math.sqrt(rng.uniform(0.05, 0.85)); x, y = cx + math.cos(t) * r * (rx - 14), cy + math.sin(t) * r * (ry - 10)
+        g = float(rng.uniform(0.8, 1.2)); B.lege((int(70 * g), int(108 * g), int(44 * g)), B.maske([(x - 2, y), (x + rng.uniform(-3, 3), y - rng.uniform(6, 12)), (x + 2, y)]))
+    for _ in range(40):
+        t = rng.uniform(0, 2 * math.pi); r = math.sqrt(rng.uniform(0.1, 0.8)); x, y = cx + math.cos(t) * r * (rx - 16), cy + math.sin(t) * r * (ry - 12)
+        f = [(236, 228, 210), (226, 190, 70), (190, 120, 190), (214, 90, 80)][int(rng.integers(0, 4))]
+        B.lege(f, ellipse(B, x, y - 3, 2.6, 2.2))
+    for x, y, t in sorted([(cx + math.cos(t) * rx, cy + math.sin(t) * ry, t) for t in np.linspace(0, 2 * math.pi, 26, endpoint=False)], key=lambda p: p[1]):
+        stein(B, x, y, 12, 9, rng)
+    return B.fertig(), [0.5, round((cy + ry + 8) / H, 4)], {'art': 'rechteck', 'x': -2.2, 'y': -2.3, 'b': 4.4, 'h': 2.2}, None, False
+
+
+def mauer(B, x0, y0, x1, y1, rng, reihen=4):
+    """Bruchsteinmauer als Vorderfläche: Reihen aus ungleich breiten Steinen mit dunklen Fugen"""
+    B.lege((58, 56, 52), B.rechteck(x0, y0, x1 - x0, y1 - y0))
+    hr = (y1 - y0) / reihen
+    for j in range(reihen):
+        x = x0 - rng.uniform(0, 14)
+        while x < x1:
+            b = rng.uniform(16, 30); g = float(rng.uniform(0.78, 1.1))
+            xa, xb = max(x0, x + 1), min(x1, x + b - 1)
+            if xb > xa:
+                yy = y0 + j * hr
+                B.lege((int(128 * g), int(124 * g), int(114 * g)), B.rechteck(xa, yy + 1, xb - xa, hr - 2))
+                B.lege((int(156 * g), int(150 * g), int(138 * g)), B.rechteck(xa, yy + 1, xb - xa, 2.2))
+            x += b
+
+
+def wehr(P, rng):
+    """Steinwehr über dem Mühlgraben (der Graben läuft nach Süden, auf den Betrachter zu): Mauer mit drei Überläufen,
+    Wasser stürzt herab und schäumt unten; oben ein Laufsteg mit Geländer"""
+    W, H = 380, 170; B = Blatt(W, H); x0, x1, yt, yb = 20, 360, 66, 124       # Vorderkante oben yt, Wasser unten yb
+    B.lege((118, 112, 100), B.maske([(x0 + 10, yt - 24), (x1 + 10, yt - 24), (x1, yt), (x0, yt)]))                    # Krone (Oberseite, schräg gesehen)
+    B.lege((96, 90, 80), B.maske([(x0 + 10, yt - 26), (x1 + 10, yt - 26), (x1 + 10, yt - 22), (x0 + 10, yt - 22)]))
+    mauer(B, x0, yt, x1, yb, rng, 4)
+    oeff = [(x0 + 62 + i * 98, 44) for i in range(3)]
+    for ox, ob in oeff:
+        B.lege((40, 52, 58), B.rechteck(ox, yt - 2, ob, yb - yt + 2))
+        yy = np.arange(B.h, dtype=np.float32)[:, None] / K
+        xx = np.arange(B.b, dtype=np.float32)[None, :] / K
+        streif = 0.5 + 0.5 * np.sin(xx * 1.7 + rng.uniform(0, 6)) * np.sin(xx * 0.53)
+        wasser = np.stack([170 + 60 * streif, 200 + 45 * streif, 214 + 30 * streif], -1) * (0.85 + 0.15 * np.clip((yy - yt) / (yb - yt), 0, 1))[..., None]
+        B.lege(wasser, B.rechteck(ox + 2, yt - 4, ob - 4, yb - yt + 6))
+        for _ in range(18):                                                           # Schaum unten
+            fx = ox + rng.uniform(-8, ob + 8); fy = yb + rng.uniform(-2, 14); r = rng.uniform(4, 10)
+            B.lege((236, 244, 248), ellipse(B, fx, fy, r, r * 0.55))
+    # Geländer auf der Krone
+    for x in np.linspace(x0 + 14, x1 + 4, 9):
+        B.balken(x, yt - 58, 5, 36, int(x), 0.62)
+    B.strich([(x0 + 12, yt - 52), (x1 + 8, yt - 52)], 5, 77, 0.7); B.strich([(x0 + 12, yt - 38), (x1 + 8, yt - 38)], 4, 78, 0.65)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -3.6, 'y': -1.0, 'b': 7.2, 'h': 1.0}, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.0}, False
+
+
+def zaun(P, rng):
+    """Niedriger Holzzaun: Pfosten und zwei Latten, 2 Felder lang"""
+    W, H = 110, 70; B = Blatt(W, H); yb = 62
+    for x in (8, 52, 96):
+        B.balken(x, yb - 44, 6, 44, x, 0.66)
+    B.strich([(6, yb - 34), (104, yb - 36)], 5, 81, 0.78); B.strich([(6, yb - 16), (104, yb - 18)], 5, 82, 0.72)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.0, 'y': -0.3, 'b': 2.0, 'h': 0.3}, None, False
+
+
+def kuerbisse(P, rng):
+    """Ein kleiner Haufen Kürbisse"""
+    W, H = 120, 80; B = Blatt(W, H); yb = 70
+    for x, y, r in sorted([(30, 60, 15), (58, 63, 18), (88, 60, 14), (44, 45, 13), (74, 46, 13), (60, 32, 11)], key=lambda p: p[1]):
+        g = float(rng.uniform(0.88, 1.08))
+        B.lege((int(150 * g), int(70 * g), int(20 * g)), ellipse(B, x, y, r, r * 0.8))
+        B.lege((int(226 * g), int(128 * g), int(40 * g)), ellipse(B, x - 1, y - 1, r * 0.92, r * 0.72))
+        for dx in (-0.45, 0, 0.45):
+            B.dunkel(ellipse(B, x + dx * r, y, r * 0.08, r * 0.7), 0.25)
+        B.lege((250, 176, 90), ellipse(B, x - r * 0.35, y - r * 0.35, r * 0.25, r * 0.15))
+        B.lege((86, 104, 40), B.rechteck(x - 1.5, y - r * 0.8 - 5, 3, 6))
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.0, 'y': -0.5, 'b': 2.0, 'h': 0.5}, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse}
 
 
 def baue(kennung):
@@ -650,9 +766,9 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] == 'wehr' else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss', **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
-                    'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar' if P['form'].startswith('baumstamm') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
+                    'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20
     if P['form'] == 'trauf':
         dh = P['dach']; breit = b + 2 * ue + 2 * rand + 14; hoch = rand + 14 + dh + wh + unten

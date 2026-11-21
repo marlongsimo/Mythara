@@ -12,12 +12,12 @@ Ansicht (siehe doku/world-pipeline/08-gebaeude-prototyp.md): schräge Parallelpr
   Sichtbar sind Süd- und Ostseiten und alle Dächer. Gebäude werden nie gespiegelt.
 
 Ein Bauplan (Felder; x relativ zum Fuß, d ab der Fußlinie nach Norden):
-  koerper: [{id, x, d, b, t, h, wand: bretter|blockbohlen|stein, betretbar, sockel,
+  koerper: [{id, x, d, b, t, h, wand: bretter|blockbohlen|stein|putz|fachwerk, betretbar, sockel,
              dach: {form: sattel|walm|pult|zelt|flach, first: x|d, hoehe, ueber, deckung: ziegel|schindel|stroh, farbe: [r,g,b]}}]
   tueren:  [{koerper, x (Mitte, relativ zum Fuß), b, h, art: einfach|doppel|tor}]          – immer in der Südwand
   fenster: [{koerper, wand: sued|ost, x oder d (Mitte), z, b, h, art: kreuz|rund|schmal|glut, laeden, blumen}]
-  zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter, …}]
-  innen:   {boden: bretter|stein, moebel: [{art: tisch|bett|theke|fass|amboss|regal|ofen|altar|bank|kessel, x, d}]}
+  zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter|muehlrad, …}]   (muehlrad: vor der Südwand, {koerper, x, r, b, z})
+  innen:   {boden: bretter|stein, moebel: [{art: tisch|bett|theke|fass|amboss|regal|ofen|altar|bank|kessel|heu|saecke|muehlstein, x, d}]}
 Der Fuß ist die Mitte der Südwand des ersten Baukörpers (dort, wo die Figur „vor“ dem Haus steht).
 """
 import json, math, os, sys
@@ -99,7 +99,7 @@ def tex(name):
 haus3d.tex = tex                    # die Zeichenfläche aus haus3d holt ihre Texturen von hier
 
 DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3)}
-WAND = {'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False)}
+WAND = {'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
 
 
 class P:
@@ -200,6 +200,9 @@ MOEBEL = {
     'ofen':   lambda B, x, d: (quader(B, x - 0.6, d - 0.5, 0, 1.2, 1.0, 1.1, 'stein', 0.14), B.vieleck(PROJ, [(x - 0.3, d - 0.51, 0.2), (x + 0.3, d - 0.51, 0.2), (x + 0.3, d - 0.51, 0.7), (x - 0.3, d - 0.51, 0.7)], (255, 150, 60))),
     'altar':  lambda B, x, d: (quader(B, x - 0.7, d - 0.35, 0, 1.4, 0.7, 0.9, 'stein', 0.14), B.vieleck(PROJ, [(x - 0.08, d, 0.9), (x + 0.08, d, 0.9), (x + 0.08, d, 1.4), (x - 0.08, d, 1.4)], (230, 200, 120))),
     'bank':   lambda B, x, d: (quader(B, x - 0.9, d - 0.2, 0, 1.8, 0.4, 0.45, 'bretter', 0.06), None),
+    'heu':    lambda B, x, d: (quader(B, x - 0.9, d - 0.5, 0, 1.8, 1.0, 0.7, 'stroh', 0.3), quader(B, x - 0.6, d - 0.35, 0.7, 1.2, 0.8, 0.6, 'stroh', 0.3, hell_faktor=1.08)),
+    'saecke': lambda B, x, d: (quader(B, x - 0.6, d - 0.3, 0, 0.55, 0.55, 0.6, 'putz', 0.2, farbe=(196, 172, 128)), quader(B, x + 0.05, d - 0.25, 0, 0.55, 0.55, 0.55, 'putz', 0.2, farbe=(184, 160, 118))),
+    'muehlstein': lambda B, x, d: (quader(B, x - 0.7, d - 0.7, 0, 1.4, 1.4, 0.5, 'maserung', 0.18), quader(B, x - 0.6, d - 0.6, 0.5, 1.2, 1.2, 0.3, 'stein', 0.14)),
     'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
 }
 
@@ -313,6 +316,46 @@ def zubehoer_vorn(B, z, k):
         B.vieleck(PROJ, [(x - 0.08, dw + 0.04, h + 0.15), (x + 0.08, dw + 0.04, h + 0.15), (x + 0.08, dw + 0.04, h + 0.3), (x - 0.08, dw + 0.04, h + 0.3)], (120, 90, 50))
 
 
+def fachwerk(B, a, b, hk, hell_faktor):
+    """Dunkle Balken auf eine Putzwand legen: Schwelle, Riegel, Pfosten, Streben in den Endfeldern. a, b: Wandenden (x, d) knapp vor der Wand"""
+    L = math.hypot(b[0] - a[0], b[1] - a[1]); w = 0.15 / L
+    P = lambda t, z: (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, z)
+    zm = hk * 0.52; n = max(2, round(L / 1.25)); hl = 0.5 * hell_faktor
+    for z in (0.32, zm):
+        B.flaeche(PROJ, [P(0, z - 0.07), P(1, z - 0.07), P(1, z + 0.07), P(0, z + 0.07)], 'maserung', hl, 0.2)
+    for i in range(n + 1):
+        t = min(1 - w, max(0, i / n - w / 2))
+        B.flaeche(PROJ, [P(t, 0.3), P(t + w, 0.3), P(t + w, hk), P(t, hk)], 'maserung', hl, 0.2)
+    for ta, tb in ((0, 1 / n), (1 - w, 1 - 1 / n)):                       # Streben im ersten und letzten Feld, oben
+        B.flaeche(PROJ, [P(ta, zm), P(ta + w, zm), P(tb + w, hk - 0.1), P(tb, hk - 0.1)], 'maserung', hl * 0.95, 0.2)
+
+
+def muehlrad(B, z, k):
+    """Ein Wasserrad vor der Südwand (zum Betrachter hin, damit es rund zu sehen ist): Kranz, Schaufeln, Speichen, Nabe.
+    Das untere Stück taucht in den Mühlgraben, der davor durchlaufen muss. z: {x (Mitte), r, b (Breite), z (Höhe der Nabe)}"""
+    d0 = k['d']; xc, r, bb = z['x'], z.get('r', 1.5), z.get('b', 0.7); zc = z.get('z', r - 0.55)
+    di, do = d0 - 0.14, d0 - 0.14 - bb                                     # hintere und vordere Ebene des Rads
+    Q = lambda dd, a, rr: (xc + math.cos(a) * rr, dd, zc + math.sin(a) * rr)
+    W = np.linspace(0, 2 * math.pi, 37)
+    def kranz(dd, hell_faktor):
+        for a0, a1 in zip(W[:-1], W[1:]):
+            B.flaeche(PROJ, [Q(dd, a0, r - 0.18), Q(dd, a1, r - 0.18), Q(dd, a1, r), Q(dd, a0, r)], 'maserung', hell_faktor, 0.2)
+    kranz(di, 0.4)
+    B.flaeche(PROJ, [(xc - 0.12, d0 - 0.01, zc - 0.12), (xc + 0.12, d0 - 0.01, zc - 0.12), (xc + 0.12, do, zc - 0.12), (xc - 0.12, do, zc - 0.12)], 'maserung', 0.35, 0.2)   # Welle
+    for a in sorted(np.linspace(0, 2 * math.pi, 19)[:-1], key=lambda a: math.sin(a)):                # Schaufeln, untere zuerst
+        B.flaeche(PROJ, [Q(di, a, r - 0.44), Q(do, a, r - 0.44), Q(do, a, r + 0.07), Q(di, a, r + 0.07)], 'bretter', 0.5 + 0.4 * max(0, math.sin(a)), 0.085)
+    for a in np.linspace(0, 2 * math.pi, 9)[:-1]:                                                     # Speichen vorn
+        c, si = math.cos(a), math.sin(a); qx, qz = -si * 0.07, c * 0.07; rr = r - 0.16
+        B.flaeche(PROJ, [(xc + qx, do, zc + qz), (xc - qx, do, zc - qz), (xc + c * rr - qx, do, zc + si * rr - qz), (xc + c * rr + qx, do, zc + si * rr + qz)], 'maserung', 0.75, 0.2)
+    kranz(do, 0.85)
+    B.vieleck(PROJ, [Q(do - 0.01, a, 0.22) for a in W], (70, 52, 36))
+    B.vieleck(PROJ, [Q(do - 0.02, a, 0.09) for a in W], (40, 32, 26))
+    rng = np.random.default_rng(5)                                                                   # Gischt, wo es eintaucht
+    for _ in range(34):
+        x = xc + rng.uniform(-r * 0.75, r * 0.75); dd = rng.uniform(do - 0.35, di); rr = rng.uniform(0.07, 0.18)
+        B.vieleck(PROJ, [(x + math.cos(t) * rr, dd, 0.03 + math.sin(t) * rr * 0.6 + rr * 0.5) for t in np.linspace(0, 2 * math.pi, 9)], (236, 244, 248))
+
+
 # ---------- Ein Gebäude ----------
 def rahmen(plan):
     xs, ys = [], []
@@ -366,9 +409,12 @@ def baue(plan):
             Sd.flaeche(PROJ, [(x1 + 0.02, ecke - 0.14, 0), (x1 + 0.02, ecke + 0.14, 0), (x1 + 0.02, ecke + 0.14, hk), (x1 + 0.02, ecke - 0.14, hk)], 'maserung', 0.55, 0.2)
         if k.get('sockel', True) and k.get('wand') != 'stein':
             Sd.flaeche(PROJ, [(x1 + 0.02, d0, 0), (x1 + 0.02, d1, 0), (x1 + 0.02, d1, 0.3), (x1 + 0.02, d0, 0.3)], 'stein', 0.6, 0.12)
+        if k.get('wand') == 'fachwerk':
+            fachwerk(Sd, (x1 + 0.015, d0), (x1 + 0.015, d1), hk, 0.8)
         for f in fenster:
             if f.get('koerper', koerper[0]['id']) == k['id'] and f.get('wand') == 'ost':
                 fenster_zeichnen(Sd, f, k)
+
         ebenen.append((f'{k["id"]}_seite', Sd, -d1 + 0.03, 'seite', i, None))
         # vorn: Südwand, Südgiebel, Fenster, Zubehör an der Wand
         V = neu()
@@ -384,12 +430,16 @@ def baue(plan):
         if k.get('wand') != 'stein':
             V.flaeche(PROJ, [(x0, d0 - 0.02, hk - 0.24), (x1, d0 - 0.02, hk - 0.24), (x1, d0 - 0.02, hk), (x0, d0 - 0.02, hk)], 'maserung', 0.55, 0.2)
         V.flaeche(PROJ, [(x0, d0, hk), (x1, d0, hk), (x1, d0 + 0.22, hk), (x0, d0 + 0.22, hk)], 'maserung', 1.0, 0.2)
+        if k.get('wand') == 'fachwerk':
+            fachwerk(V, (x0, d0 - 0.015), (x1, d0 - 0.015), hk, 1.0)
         for f in fenster:
             if f.get('koerper', koerper[0]['id']) == k['id'] and f.get('wand', 'sued') == 'sued':
                 fenster_zeichnen(V, f, k)
         for z in zub:
             if z.get('koerper', koerper[0]['id']) == k['id'] and z['art'] in ('schild', 'laterne', 'banner', 'esse', 'kraeuter', 'glocke'):
                 zubehoer_vorn(V, z, k)
+            if z['art'] == 'muehlrad' and z.get('koerper', koerper[0]['id']) == k['id']:
+                muehlrad(V, z, k)
         ebenen.append((f'{k["id"]}_vorn', V, -d0, 'vorn', i, None))
         # Türen dieses Körpers (eigene Ebenen, zwei Zustände)
         for j, tu in enumerate(tueren):

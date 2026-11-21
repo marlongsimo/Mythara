@@ -1,0 +1,15 @@
+{
+ "id": "weidenhain",
+ "name": "Weidenhain",
+ "untertitel": "Das Dorf am Mühlgraben",
+ "ursprung": [
+  200,
+  208
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "dorf",
+ "stufe": 1
+}
