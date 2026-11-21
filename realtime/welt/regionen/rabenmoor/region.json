@@ -1,0 +1,15 @@
+{
+ "id": "rabenmoor",
+ "name": "Rabenmoor",
+ "untertitel": "Das Dorf im Schwarzmoor",
+ "ursprung": [
+  196,
+  208
+ ],
+ "chunks": [
+  4,
+  3
+ ],
+ "biom": "sumpf",
+ "stufe": 1
+}

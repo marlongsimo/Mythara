@@ -4717,6 +4717,812 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "stil_birke_01",
+   "name": "Stilbaum (laub)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_birke_01.webp",
+   "groesse": [
+    220,
+    391
+   ],
+   "anker": [
+    0.5,
+    0.9591
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_schilf_01",
+   "name": "Stilbaum (schilf)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_schilf_01.webp",
+   "groesse": [
+    110,
+    110
+   ],
+   "anker": [
+    0.5,
+    0.9455
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_schilf_02",
+   "name": "Stilbaum (schilf)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_schilf_02.webp",
+   "groesse": [
+    150,
+    96
+   ],
+   "anker": [
+    0.5,
+    0.9375
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_erle_tot_01",
+   "name": "Stilbaum (tot)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_erle_tot_01.webp",
+   "groesse": [
+    330,
+    320
+   ],
+   "anker": [
+    0.5,
+    0.9563
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_erle_tot_02",
+   "name": "Stilbaum (tot)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_erle_tot_02.webp",
+   "groesse": [
+    280,
+    270
+   ],
+   "anker": [
+    0.5,
+    0.9481
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_moorlicht_01",
+   "name": "Stilbaum (licht)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/stil_moorlicht_01.webp",
+   "groesse": [
+    110,
+    150
+   ],
+   "anker": [
+    0.5,
+    0.98
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_kahn_01",
+   "name": "Kahn",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_kahn_01.webp",
+   "groesse": [
+    220,
+    110
+   ],
+   "anker": [
+    0.5,
+    0.7455
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.8,
+    "radius": 1.8
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_feuerkorb_01",
+   "name": "Feuerkorb",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/moor_feuerkorb_01.webp",
+   "groesse": [
+    60,
+    130
+   ],
+   "anker": [
+    0.5,
+    0.9538
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_kate_01",
+   "name": "Moorhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/gesamt.webp",
+   "groesse": [
+    471,
+    583
+   ],
+   "anker": [
+    0.3904,
+    0.8213
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.2,
+      "x1": 2.2,
+      "y0": -3.6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.19999999999999996,
+      "x1": 1.2,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      67,
+      235
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/haupt_innen.webp",
+     "tiefe": -3.58,
+     "rolle": "innen",
+     "versatz": [
+      74,
+      196
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/haupt_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      284,
+      186
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      73,
+      358
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      182,
+      381
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      182,
+      347
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_01/haupt_dach.webp",
+     "tiefe": 0.55,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      126
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.0,
+     "x1": 2.0,
+     "y0": -3.4,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.7,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    129,
+    380,
+    487
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.7,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "moor_kate_02",
+   "name": "Torfstecherhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/gesamt.webp",
+   "groesse": [
+    523,
+    564
+   ],
+   "anker": [
+    0.3332,
+    0.8149
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -3.4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.0,
+      "x1": 4.0,
+      "y0": -3.0,
+      "y1": -0.4,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.1,
+      "x1": -0.09999999999999998,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      67,
+      227
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/haupt_innen.webp",
+     "tiefe": -3.38,
+     "rolle": "innen",
+     "versatz": [
+      74,
+      191
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/haupt_seite.webp",
+     "tiefe": -3.37,
+     "rolle": "seite",
+     "versatz": [
+      265,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      73,
+      344
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      110,
+      361
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      110,
+      328
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/haupt_dach.webp",
+     "tiefe": 0.55,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      126
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schuppen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/schuppen_seite.webp",
+     "tiefe": -2.97,
+     "rolle": "seite",
+     "versatz": [
+      367,
+      201
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/schuppen_vorn.webp",
+     "tiefe": -0.4,
+     "rolle": "vorn",
+     "versatz": [
+      272,
+      344
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_kate_02/schuppen_dach.webp",
+     "tiefe": -0.1,
+     "rolle": "dach",
+     "versatz": [
+      252,
+      178
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.1999999999999997,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    129,
+    434,
+    468
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "moor_langhaus_01",
+   "name": "Langhaus des Schulzen",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/gesamt.webp",
+   "groesse": [
+    627,
+    684
+   ],
+   "anker": [
+    0.4055,
+    0.8439
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.6,
+      "x1": 3.6,
+      "y0": -4.6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.8,
+      "x1": 0.8,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      70,
+      274
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/haupt_innen.webp",
+     "tiefe": -4.58,
+     "rolle": "innen",
+     "versatz": [
+      77,
+      227
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/haupt_seite.webp",
+     "tiefe": -4.57,
+     "rolle": "seite",
+     "versatz": [
+      421,
+      213
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      77,
+      437
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      204,
+      467
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      204,
+      441
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_langhaus_01/haupt_dach.webp",
+     "tiefe": 0.6,
+     "rolle": "dach",
+     "versatz": [
+      41,
+      136
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.4,
+     "x1": 3.4,
+     "y0": -4.3999999999999995,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    44,
+    139,
+    535,
+    585
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "moor_fischer_01",
+   "name": "Fischerhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/gesamt.webp",
+   "groesse": [
+    440,
+    520
+   ],
+   "anker": [
+    0.3889,
+    0.8054
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.0,
+      "x1": 2.0,
+      "y0": -3.2,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.4,
+      "x1": 1.4,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      201
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/haupt_innen.webp",
+     "tiefe": -3.18,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      160
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/haupt_seite.webp",
+     "tiefe": -3.17,
+     "rolle": "seite",
+     "versatz": [
+      261,
+      97
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      303
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      178,
+      321
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      178,
+      287
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      59
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/moor_fischer_01/haupt_vordach.webp",
+     "tiefe": 1.1,
+     "rolle": "vordach",
+     "versatz": [
+      149,
+      295
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.0,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    62,
+    349,
+    463
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }

@@ -39,7 +39,7 @@ const GASSEN = {
   nordost: [[46.5, 12.5], [58, 12.6], [64.6, 12.5]],
   ost1: [[70.4, 12.5], [86, 12.8], [104, 12.4], [120, 12.6]],
   west1: [[28, 27], [18, 26.4], [6.5, 26.8]],
-  west2: [[30.5, 37.4], [20, 40], [6.5, 40]],
+  west2: [[30.5, 37.4], [20, 40], [6.5, 40], [-1, 40]],   /* führt seit 21.11.2026 durch den Wald nach Westen, nach Rabenmoor */
   ostquer: [[96, 12.5], [96.5, 30], [96, 46], [96.4, 66]],
   ost2: [[71, 29.5], [96.5, 29.5], [121, 29.8]],
   ost3: [[66.5, 45.6], [96, 46], [121, 45.6]],
@@ -112,7 +112,7 @@ for (let i = 0; i < 400 && dinge.filter((d) => d.id.startsWith("dorfbaum")).leng
 /* Wald ringsum: dicht, mit Mindestabstand; nie im Dorf, am Graben oder auf dem Weg */
 const frei = (x, y, ab, liste) => liste.every((p) => Math.hypot(p.x - x, p.y - y) >= ab);
 const wald = []; for (let i = 0; i < B * H * 0.95; i++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2), s = SAUM(x, y);
-  if ((x > s - 1 && y > s - 1 && x < B - s + 1 && y < H - s + 1) || nahGraben(x, y, 3.6) || strecke(x, y, WEG_NORD) < 4.5 || !frei(x, y, 2.3, wald)) continue;
+  if ((x > s - 1 && y > s - 1 && x < B - s + 1 && y < H - s + 1) || nahGraben(x, y, 3.6) || strecke(x, y, WEG_NORD) < 4.5 || inGasse(x, y, 4) || !frei(x, y, 2.3, wald)) continue;
   const z = wurf(), a = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6;
   wald.push({ id: "b" + String(wald.length + 1).padStart(4, "0"), objekt: BAUM[a], x, y, s: +(0.85 + wurf() * 0.27).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
 const objekte = [...dinge, ...wald].sort((a, b) => a.y - b.y);

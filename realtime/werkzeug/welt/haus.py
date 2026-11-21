@@ -51,6 +51,8 @@ HAEUSER = {
     'dorf_kuerbisse_01':    dict(name='Kürbisse', form='kuerbisse', saat=33),
     'dorf_bruecke_01':      dict(name='Holzbrücke (Ost–West)', form='bruecke', richtung='quer', tiefe='boden', saat=34),
     'dorf_bruecke_02':      dict(name='Holzbrücke (Nord–Süd)', form='bruecke', richtung='laengs', tiefe='boden', saat=35),
+    'moor_kahn_01':         dict(name='Kahn', form='kahn', tiefe='boden', saat=36),
+    'moor_feuerkorb_01':    dict(name='Feuerkorb', form='feuerkorb', saat=37),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -812,7 +814,34 @@ def bruecke(P, rng):
     return B.fertig(), [round(ox / W, 4), round(oy / Hh, 4)], None, None, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke}
+def kahn(P, rng):
+    """Flacher Moorkahn (Ost–West), von oben schräg gesehen: Bordwand, Bodenbretter, eine Ruderbank, ein Staken"""
+    W, H = 220, 110; B = Blatt(W, H); cx, cy = 110, 60
+    rumpf = [(cx - 95, cy), (cx - 70, cy - 26), (cx + 70, cy - 26), (cx + 98, cy - 4), (cx + 70, cy + 22), (cx - 70, cy + 22)]
+    B.lege((52, 36, 24), B.maske(rumpf))
+    innen = [(cx - 80, cy - 1), (cx - 62, cy - 18), (cx + 62, cy - 18), (cx + 84, cy - 3), (cx + 62, cy + 14), (cx - 62, cy + 14)]
+    B.lege(faerben(B.voll('bretter', 0.07, drehen=True, saat=3), (128, 92, 58)) * 0.95, B.maske(innen))
+    for i in range(1, 6):
+        x = cx - 62 + i * 21; B.dunkel(B.rechteck(x, cy - 18, 1.4, 32), 0.45)
+    B.balken(cx - 6, cy - 22, 14, 40, 7, 0.75)                                    # Ruderbank
+    B.strich([(cx - 20, cy + 6), (cx + 120, cy - 40)], 4, 9, 0.7)                 # Staken
+    return B.fertig(), [0.5, round((cy + 22) / H, 4)], None, {'art': 'lesen', 'dx': 0, 'dy': 0.8, 'radius': 1.8}, False
+
+
+def feuerkorb(P, rng):
+    """Eiserner Feuerkorb auf einem Pfahl, mit Flammen"""
+    W, H = 60, 130; B = Blatt(W, H); cx, yb = 30, 124
+    B.balken(cx - 3, yb - 78, 6, 78, 5, 0.6)
+    korb = [(cx - 16, yb - 104), (cx + 16, yb - 104), (cx + 11, yb - 80), (cx - 11, yb - 80)]
+    B.lege((44, 40, 40), B.maske(korb))
+    for farbe, h, b in (((228, 96, 28), 30, 15), ((248, 162, 48), 22, 10), ((255, 230, 140), 14, 5)):
+        m = B.maske([(cx - b, yb - 102), (cx, yb - 102 - h), (cx + b, yb - 102)]); B.lege(farbe, np.asarray(Image.fromarray((m * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5 * K))).astype(np.float32) / 255)
+    for x in (cx - 10, cx, cx + 10):
+        B.dunkel(B.rechteck(x - 1, yb - 104, 2, 24), 0.5)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.2}, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb}
 
 
 def baue(kennung):
@@ -820,7 +849,7 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke', 'kahn') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': P.get('tiefe', 'fuss'), **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
                     'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt' or P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20

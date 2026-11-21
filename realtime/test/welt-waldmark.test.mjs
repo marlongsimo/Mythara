@@ -13,7 +13,7 @@ let ok = true; const check = (b, t, einzel = []) => { console.log(`  ${b ? "✓"
 const G = await gemeinsam(), bib = bibliothek(), def = new Map(bib.objekte.objekte.map((o) => [o.id, o]));
 const F = 48, C = 32, rund = (v) => Math.round(v * 10) / 10;
 
-const namen = ["waldmark", "waldweg", "weidenhain"], daten = Object.fromEntries(namen.map((n) => [n, region(n)])), bau = Object.fromEntries(namen.map((n) => [n, G.chunksBauen(daten[n], bib.gelaende, bib.objekte)]));
+const namen = ["waldmark", "waldweg", "weidenhain", "rabenmoor"], daten = Object.fromEntries(namen.map((n) => [n, region(n)])), bau = Object.fromEntries(namen.map((n) => [n, G.chunksBauen(daten[n], bib.gelaende, bib.objekte)]));
 const R = new G.WeltRaster(); for (const n of namen) for (const c of bau[n].chunks) R.dazu(c);
 const ursprung = (n) => daten[n].region.ursprung.map((v) => v * C), welt = (n, x, y) => { const [ox, oy] = ursprung(n); return { x: x + ox, y: y + oy }; };
 const WM = daten.waldmark, start = welt("waldmark", ...WM.spiel.start[0]);
@@ -49,6 +49,9 @@ check(R.begehbar(start.x, start.y) && erreichbar(start), `Startpunkt am Brunnen 
   const durch = Object.entries(hinter).filter(([, [x, y]]) => erreichbar(an(x, y)));
   check(durch.length === 0, "an den umgestürzten Bäumen kommt man nicht vorbei", durch.map(([n]) => n));
   const wh = daten.weidenhain, ws = wh.spiel.start[0], wo = ursprung("weidenhain"), w = R.weg(start, { x: wo[0] + ws[0], y: wo[1] + ws[1] + 6 }, 0.3, 400);
+  { const ro = ursprung("rabenmoor"), RM = daten.rabenmoor.spiel, ziele = Object.fromEntries(["brunnen_ansehen", "langhaus_tuer", "steg_ansehen", "hedda_tuer"].map((id) => { const i = RM.interaktionen.find((q) => q.id === id); return [id, { x: ro[0] + i.x, y: ro[1] + i.y }]; }));
+    const nicht = Object.entries(ziele).filter(([, p]) => !nahErreichbar(p, 1.6));
+    check(nicht.length === 0, `zu Fuß von der Waldmark über Weidenhain und den Bohlenweg nach Rabenmoor: ${Object.keys(ziele).join(", ")}`, nicht.map(([n]) => n)); }
   check(erreichbar({ x: wo[0] + ws[0], y: wo[1] + ws[1] }) && w.length > 0, `vom Brunnen der Waldmark zu Fuß über den Feldweg nach Weidenhain (${w.length ? rund(w.reduce((s, p, i) => s + Math.hypot(p.x - (i ? w[i - 1].x : start.x), p.y - (i ? w[i - 1].y : start.y)), 0)) + " Felder" : "kein Weg"})`); }
 { const gruende = []; for (let x = 45.6; x <= 50.4; x += 0.4) { const p = welt("waldmark", x, 57); if (!R.begehbar(p.x, p.y)) gruende.push(`Feld ${rund(x)}|57 im Tor ist gesperrt`); }
   const breite = [44, 45, 46, 47, 48, 49, 50, 51, 52].filter((x) => R.begehbar(...Object.values(welt("waldmark", x + 0.5, 56.5)))).length; /* Zeile der Palisade */

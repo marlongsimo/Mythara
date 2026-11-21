@@ -1990,6 +1990,372 @@
      }
     ]
    }
+  },
+  {
+   "id": "moor_kate_01",
+   "name": "Moorhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.2,
+     "d": 0,
+     "b": 4.4,
+     "t": 3.6,
+     "h": 2.2,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.55,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.7,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -1.1,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.0,
+     "d": 2.2,
+     "b": 0.5
+    },
+    {
+     "art": "laterne",
+     "x": 1.6,
+     "z": 1.8
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.1,
+      "d": 2.5
+     },
+     {
+      "art": "tisch",
+      "x": 1.0,
+      "d": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_kate_02",
+   "name": "Torfstecherhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.4,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.55,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    },
+    {
+     "id": "schuppen",
+     "x": 2.0,
+     "d": 0.4,
+     "b": 2.0,
+     "t": 2.6,
+     "h": 1.7,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": 1.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 0.6,
+     "d": 2.0,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": 1.0,
+      "d": 2.3
+     },
+     {
+      "art": "fass",
+      "x": -1.3,
+      "d": 2.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_langhaus_01",
+   "name": "Langhaus des Schulzen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.6,
+     "d": 0,
+     "b": 7.2,
+     "t": 4.6,
+     "h": 2.6,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.6,
+      "first": "x",
+      "ueber": 0.6,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.6,
+     "h": 2.1,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -2.3,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 2.3,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.3
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -2.4,
+     "d": 3.0,
+     "b": 0.6
+    },
+    {
+     "art": "banner",
+     "x": -1.25,
+     "z": 2.3
+    },
+    {
+     "art": "banner",
+     "x": 1.25,
+     "z": 2.3
+    },
+    {
+     "art": "laterne",
+     "x": -0.95,
+     "z": 1.9
+    },
+    {
+     "art": "laterne",
+     "x": 0.95,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -1.5,
+      "d": 2.4
+     },
+     {
+      "art": "tisch",
+      "x": 1.5,
+      "d": 2.4
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 3.8
+     },
+     {
+      "art": "fass",
+      "x": 3.0,
+      "d": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_fischer_01",
+   "name": "Fischerhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.2,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "pult",
+      "hoehe": 1.3,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -0.9,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": 0.2,
+     "x1": 1.8,
+     "tiefe": 0.9,
+     "z": 1.95,
+     "deckung": "stroh",
+     "farbe": [
+      108,
+      112,
+      64
+     ]
+    },
+    {
+     "art": "kraeuter",
+     "x0": -1.7,
+     "x1": -0.2,
+     "anzahl": 4
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.2
+     },
+     {
+      "art": "fass",
+      "x": 1.2,
+      "d": 2.4
+     }
+    ]
+   }
   }
  ]
 }

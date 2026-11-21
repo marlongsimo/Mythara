@@ -131,10 +131,55 @@ def wasser(rng, ruhig=False):
     return ndimage.gaussian_filter(M.bild(), (0.8, 0.8, 0))
 
 
+def moorwasser(rng):
+    a = grund((40, 62, 60), rng, gross=0.14, mittel=0.05)
+    M = Maler(a)
+    for _ in range(22):                            # Entengrütze in Flecken
+        x, y = rng.uniform(0, N), rng.uniform(0, N)
+        for _ in range(int(rng.integers(6, 16))):
+            dx, dy, r = rng.normal(0, 9), rng.normal(0, 6), rng.uniform(1.6, 3.2); M.form('ellipse', [x + dx - r, y + dy - r, x + dx + r, y + dy + r], fill=(96, 128, 62))
+    for _ in range(18):                            # stille Lichtreflexe
+        x, y, l = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(8, 18)
+        M.form('arc', [x - l, y - l * 0.22, x + l, y + l * 0.22], 200, 340, fill=(92, 130, 126), width=2)
+    return ndimage.gaussian_filter(M.bild(), (0.8, 0.8, 0))
+
+
+def torf(rng):
+    a = grund((84, 64, 44), rng, gross=0.12, mittel=0.06)
+    moos = np.clip(flecken(rng, 18, 1.8), 0, 1)[..., None]
+    a = a * (1 - moos * 0.6) + np.array((96, 112, 58), np.float32) * moos * 0.6
+    M = Maler(a)
+    for _ in range(40):
+        bueschel(M, rng.uniform(0, N), rng.uniform(0, N), (110, 118, 60), rng, 1.0)
+    for _ in range(30):
+        x, y = rng.uniform(0, N), rng.uniform(0, N); M.form('ellipse', [x - 5, y - 2.5, x + 5, y + 2.5], fill=(62, 46, 32))
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def schlamm(rng):
+    a = grund((92, 78, 58), rng, gross=0.12, mittel=0.05)
+    M = Maler(a)
+    for _ in range(40):                            # Pfützen
+        x, y, r = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(4, 10); M.form('ellipse', [x - r, y - r * 0.6, x + r, y + r * 0.6], fill=(64, 72, 64))
+        M.form('arc', [x - r * 0.7, y - r * 0.4, x + r * 0.5, y + r * 0.3], 200, 300, fill=(120, 130, 120), width=1)
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def sand(rng):
+    a = grund((196, 176, 132), rng, gross=0.08, mittel=0.04)
+    M = Maler(a)
+    for _ in range(60):
+        g = rng.uniform(0.85, 1.05); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(1.6, 3.2), tuple(int(c * g) for c in (170, 156, 128)))
+    for _ in range(20):
+        bueschel(M, rng.uniform(0, N), rng.uniform(0, N), (134, 140, 70), rng, 0.8)
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
 KACHELN = {
     'wiese': lambda r: wiese(r), 'wiese-satt': lambda r: wiese(r, (88, 138, 58), 80), 'wiese-trocken': lambda r: wiese(r, (136, 148, 70), 60, gelb=14),
     'wiese-blumen': lambda r: wiese(r, (104, 148, 64), 60, blumen=70), 'waldboden': waldboden, 'erde': erde, 'pflaster': pflaster,
-    'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True)}
+    'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True),
+    'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand}
 
 
 def main():
