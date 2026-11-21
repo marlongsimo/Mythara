@@ -503,6 +503,280 @@
    "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
+   "id": "wald_baumstamm_01",
+   "name": "Umgestürzter Baum (quer)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_01.webp",
+   "groesse": [
+    520,
+    196
+   ],
+   "anker": [
+    0.5596,
+    0.8776
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -4.9,
+    "y": -0.9,
+    "b": 9.8,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
+  },
+  {
+   "id": "wald_baumstamm_02",
+   "name": "Umgestürzter Baum (in die Tiefe)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_02.webp",
+   "groesse": [
+    300,
+    600
+   ],
+   "anker": [
+    0.32,
+    0.9133
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.7,
+    "y": -9,
+    "b": 1.4,
+    "h": 9
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": false,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
+  },
+  {
+   "id": "dorf_festfeuer_01",
+   "name": "Erntefeuer",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_festfeuer_01.webp",
+   "groesse": [
+    200,
+    190
+   ],
+   "anker": [
+    0.5,
+    0.9684
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -1.4,
+    "b": 3.0,
+    "h": 1.3
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 2.2
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_steinring_01",
+   "name": "Steinring (Baumbeet)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_steinring_01.webp",
+   "groesse": [
+    260,
+    150
+   ],
+   "anker": [
+    0.5,
+    0.88
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.2,
+    "y": -2.3,
+    "b": 4.4,
+    "h": 2.2
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "dorf_wehr_01",
+   "name": "Wehr",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_wehr_01.webp",
+   "groesse": [
+    380,
+    170
+   ],
+   "anker": [
+    0.5,
+    0.7294
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -3.6,
+    "y": -1.0,
+    "b": 7.2,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 2.0
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_zaun_01",
+   "name": "Holzzaun",
+   "kategorie": "bauteil",
+   "bild": "img/welt/gebaeude/dorf_zaun_01.webp",
+   "groesse": [
+    110,
+    70
+   ],
+   "anker": [
+    0.5,
+    0.8857
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.3,
+    "b": 2.0,
+    "h": 0.3
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_kuerbisse_01",
+   "name": "Kürbisse",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/dorf_kuerbisse_01.webp",
+   "groesse": [
+    120,
+    80
+   ],
+   "anker": [
+    0.5,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.5,
+    "b": 2.0,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "dorf_bruecke_01",
+   "name": "Holzbrücke (Ost–West)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_bruecke_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_bruecke_02",
+   "name": "Holzbrücke (Nord–Süd)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_bruecke_02.webp",
+   "groesse": [
+    241,
+    332
+   ],
+   "anker": [
+    0.332,
+    0.9518
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "burg_turm_01",
+   "name": "Burgturm (Kenney-Form)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/kenney/burg_turm_01.webp",
+   "groesse": [
+    270,
+    632
+   ],
+   "anker": [
+    0.4148,
+    0.9462
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -3.0,
+    "b": 3.0,
+    "h": 3.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    230,
+    593
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
    "id": "dorf_haus_holz_01",
    "name": "Holzhaus",
    "kategorie": "gebaeude",
@@ -2660,68 +2934,6 @@
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
-   "id": "wald_baumstamm_01",
-   "name": "Umgestürzter Baum (quer)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/gebaeude/wald_baumstamm_01.webp",
-   "groesse": [
-    520,
-    196
-   ],
-   "anker": [
-    0.5596,
-    0.8776
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -4.9,
-    "y": -0.9,
-    "b": 9.8,
-    "h": 1.0
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.9,
-    "radius": 1.6
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
-  },
-  {
-   "id": "wald_baumstamm_02",
-   "name": "Umgestürzter Baum (in die Tiefe)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/gebaeude/wald_baumstamm_02.webp",
-   "groesse": [
-    300,
-    600
-   ],
-   "anker": [
-    0.32,
-    0.9133
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -0.7,
-    "y": -9,
-    "b": 1.4,
-    "h": 9
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.9,
-    "radius": 1.6
-   },
-   "spiegelbar": false,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
-  },
-  {
    "id": "weidenhain_kornspeicher_01",
    "name": "Kornspeicher von Weidenhain",
    "kategorie": "gebaeude",
@@ -3253,146 +3465,6 @@
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   },
   {
-   "id": "dorf_festfeuer_01",
-   "name": "Erntefeuer",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/gebaeude/dorf_festfeuer_01.webp",
-   "groesse": [
-    200,
-    190
-   ],
-   "anker": [
-    0.5,
-    0.9684
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.5,
-    "y": -1.4,
-    "b": 3.0,
-    "h": 1.3
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.6,
-    "radius": 2.2
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_steinring_01",
-   "name": "Steinring (Baumbeet)",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/gebaeude/dorf_steinring_01.webp",
-   "groesse": [
-    260,
-    150
-   ],
-   "anker": [
-    0.5,
-    0.88
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -2.2,
-    "y": -2.3,
-    "b": 4.4,
-    "h": 2.2
-   },
-   "tiefe": "fuss",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
-   "id": "dorf_wehr_01",
-   "name": "Wehr",
-   "kategorie": "wasserbau",
-   "bild": "img/welt/gebaeude/dorf_wehr_01.webp",
-   "groesse": [
-    380,
-    170
-   ],
-   "anker": [
-    0.5,
-    0.7294
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -3.6,
-    "y": -1.0,
-    "b": 7.2,
-    "h": 1.0
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.6,
-    "radius": 2.0
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_zaun_01",
-   "name": "Holzzaun",
-   "kategorie": "bauteil",
-   "bild": "img/welt/gebaeude/dorf_zaun_01.webp",
-   "groesse": [
-    110,
-    70
-   ],
-   "anker": [
-    0.5,
-    0.8857
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.0,
-    "y": -0.3,
-    "b": 2.0,
-    "h": 0.3
-   },
-   "tiefe": "fuss",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_kuerbisse_01",
-   "name": "Kürbisse",
-   "kategorie": "kleinteil",
-   "bild": "img/welt/gebaeude/dorf_kuerbisse_01.webp",
-   "groesse": [
-    120,
-    80
-   ],
-   "anker": [
-    0.5,
-    0.875
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.0,
-    "y": -0.5,
-    "b": 2.0,
-    "h": 0.5
-   },
-   "tiefe": "fuss",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
    "id": "weidenhain_fachwerk_02",
    "name": "Schmales Fachwerkhaus",
    "kategorie": "gebaeude",
@@ -3860,46 +3932,6 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_bruecke_01",
-   "name": "Holzbrücke (Ost–West)",
-   "kategorie": "wasserbau",
-   "bild": "img/welt/gebaeude/dorf_bruecke_01.webp",
-   "groesse": [
-    367,
-    217
-   ],
-   "anker": [
-    0.4414,
-    0.9263
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "boden",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_bruecke_02",
-   "name": "Holzbrücke (Nord–Süd)",
-   "kategorie": "wasserbau",
-   "bild": "img/welt/gebaeude/dorf_bruecke_02.webp",
-   "groesse": [
-    241,
-    332
-   ],
-   "anker": [
-    0.332,
-    0.9518
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "boden",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   }
  ]
 }
