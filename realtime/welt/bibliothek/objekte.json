@@ -4525,6 +4525,198 @@
     158
    ],
    "herkunft": "Form: Kenney retro kit (CC0, werkzeug/welt/kenney/retro/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "stil_eiche_01",
+   "name": "Stilbaum (laub)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_eiche_01.webp",
+   "groesse": [
+    332,
+    363
+   ],
+   "anker": [
+    0.5,
+    0.9559
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_eiche_02",
+   "name": "Stilbaum (laub)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_eiche_02.webp",
+   "groesse": [
+    298,
+    322
+   ],
+   "anker": [
+    0.5,
+    0.9503
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_linde_01",
+   "name": "Stilbaum (laub)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_linde_01.webp",
+   "groesse": [
+    377,
+    428
+   ],
+   "anker": [
+    0.5,
+    0.9626
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_herbst_01",
+   "name": "Stilbaum (laub)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_herbst_01.webp",
+   "groesse": [
+    298,
+    335
+   ],
+   "anker": [
+    0.5,
+    0.9522
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_tanne_01",
+   "name": "Stilbaum (tanne)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_tanne_01.webp",
+   "groesse": [
+    190,
+    360
+   ],
+   "anker": [
+    0.5,
+    0.9667
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_tanne_02",
+   "name": "Stilbaum (tanne)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_tanne_02.webp",
+   "groesse": [
+    170,
+    300
+   ],
+   "anker": [
+    0.5,
+    0.96
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_busch_01",
+   "name": "Stilbaum (busch)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_busch_01.webp",
+   "groesse": [
+    150,
+    96
+   ],
+   "anker": [
+    0.5,
+    0.9167
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "stil_busch_02",
+   "name": "Stilbaum (busch)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_busch_02.webp",
+   "groesse": [
+    120,
+    84
+   ],
+   "anker": [
+    0.5,
+    0.9048
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }

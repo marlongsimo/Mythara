@@ -430,7 +430,7 @@ def zubehoer_vorn(B, z, k):
         B.vieleck(PROJ, [(x - 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h + 0.12), (x - 0.12, dw - 0.15, h + 0.12)], (40, 38, 40))
         B.vieleck(PROJ, [(x - 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h + 0.08), (x - 0.08, dw - 0.16, h + 0.08)], (255, 214, 120))
     elif a == 'banner':
-        x, h = z['x'], z.get('z', 2.0); farbe = tuple(z.get('farbe', (150, 40, 38)))
+        x, h = z['x'], z.get('z', 2.0); farbe = (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild
         B.vieleck(PROJ, [(x - 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h - 1.1), (x, dw - 0.02, h - 0.85), (x - 0.22, dw - 0.02, h - 1.1)], farbe)
         B.vieleck(PROJ, [(x - 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.16), (x - 0.22, dw - 0.03, h - 0.16)], (214, 176, 86))
         ring = [(x + math.cos(t) * 0.09, dw - 0.03, h - 0.45 + math.sin(t) * 0.09) for t in np.linspace(0, 2 * math.pi, 12)]
@@ -600,7 +600,11 @@ def baue(plan):
             for fl, rolle in dach_flaechen(k):
                 if rolle != 'flaeche':
                     continue
-                Dd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(D['farbe']) if D.get('farbe') else None)
+                if STIL == 'gemalt':     # Malstil: hellere, wärmere Dächer (die Dächer sollen das Bild nicht verdunkeln)
+                    df = tuple(min(255, c * 1.35 + w) for c, w in zip(D.get('farbe', (150, 112, 80)), (14, 6, -6)))
+                    Dd.flaeche(PROJ, fl, deck, hell(fl) * 1.12, dmass, farbe=df)
+                else:
+                    Dd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(D['farbe']) if D.get('farbe') else None)
                 # dunkle Kante an der Traufe und Ortgängen; im Malstil kräftige, hell abgesetzte Randbretter
                 if STIL == 'gemalt':
                     Dd.linie(PROJ, fl + [fl[0]], (40, 26, 18), 9, 255); Dd.linie(PROJ, fl + [fl[0]], (150, 106, 64), 5.5, 255); Dd.linie(PROJ, fl + [fl[0]], (196, 150, 96), 1.8, 230)
