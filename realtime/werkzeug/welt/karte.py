@@ -28,7 +28,7 @@ def karte(rid, index):
             for o in d.get('objekte', []):
                 D = OBJ.get(o['objekt'])
                 if not D: continue
-                if o['objekt'].startswith('wald_baum') and not o['objekt'].startswith('wald_baumstamm'): baeume.append((o, D))
+                if (o['objekt'].startswith('wald_baum') and not o['objekt'].startswith('wald_baumstamm')) or o['objekt'].startswith(('stil_eiche', 'stil_linde', 'stil_tanne', 'stil_herbst')): baeume.append((o, D))
                 else: sonst.append((o, D))
     # Kronen: Mitte etwas über dem Fuß (das Bild steht auf dem Fuß), Größe aus der Bildbreite
     schatten = Image.new('L', bild.size, 0); kronen = Image.new('RGBA', bild.size, (0, 0, 0, 0))
