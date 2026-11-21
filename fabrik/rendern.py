@@ -1,6 +1,6 @@
 """Mythara Fabrik – eine modulare Figur in acht Richtungen rendern: je Ebene (Körper, jedes Ausrüstungsteil) und je Bewegung ein Bildblatt.
 
-  python3 fabrik/rendern.py <figur.blend> <export-ordner> <asset-id> [nur=ebene1,ebene2]
+  python3 fabrik/rendern.py <figur.blend> <export-ordner> <asset-id> [ebene1,ebene2] [bewegungen=a,b]
 
 Blatt: Zeilen = Richtungen (O, SO, S, SW, W, NW, N, NO – 0 = Osten, im Uhrzeigersinn am Bildschirm, y nach unten), Spalten = Bilder der Bewegung.
 Nichts ist gespiegelt: jede Richtung wird eigens gerendert. Die Figur dreht sich, Kamera und Licht bleiben stehen; der Fußpunkt liegt in jedem Bild auf demselben Bildpunkt.
@@ -20,7 +20,8 @@ import bpy
 from mathutils import Vector
 from PIL import Image
 
-quelle, ziel, kennung = sys.argv[1], sys.argv[2], sys.argv[3]; NUR = set(sys.argv[4].split(",")) if len(sys.argv) > 4 else None
+quelle, ziel, kennung = sys.argv[1], sys.argv[2], sys.argv[3]; mehr = sys.argv[4:]
+NUR = next((set(m.split(",")) for m in mehr if "=" not in m), None); BEW = next((set(m.split("=", 1)[1].split(",")) for m in mehr if m.startswith("bewegungen=")), None)   # bewegungen=a,b: nur diese rendern
 RICHTUNGEN = ["o", "so", "s", "sw", "w", "nw", "n", "no"]; PX_JE_M = 86.0; NEIGUNG = 35.0; RAND = 8     # Feldgröße und Fußpunkt werden unten aus der Bewegung berechnet: nichts darf abgeschnitten werden
 
 bpy.ops.wm.open_mainfile(filepath=quelle); sc = bpy.context.scene; arm = bpy.data.objects["skelett"]; os.makedirs(ziel, exist_ok=True)
@@ -64,7 +65,7 @@ volumen = [o for o in huellen if o.get("volumen")]
 # Durchgänge: (Dateiname der Ebene, sichtbares Teil, Teile, die nur ausschneiden)
 laeufe = [("koerper", koerper, [])] + [(o["ebene"], o, [koerper] + [v for v in volumen if v["platz"] != o["platz"]]) for o in huellen]
 for o in starr: laeufe += [(o["ebene"] + ".hinten", o, []), (o["ebene"] + ".vorn", o, [koerper] + volumen)]
-aktionen = [a for a in bpy.data.actions if a.get("bilder")]
+aktionen = [a for a in bpy.data.actions if a.get("bilder") and (BEW is None or a.name in BEW)]
 
 meta = {"id": kennung, "feld": FELD, "richtungen": RICHTUNGEN, "winkel0": "osten", "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)", "zeile": "round(winkel / (pi/4)) mod 8",
         "fuss": list(FUSS), "mass": [FUSS[0], FUSS[1], round(1.8 * math.cos(n) * PX_JE_M / FELD, 3)], "kamera": {"neigung": NEIGUNG, "px_je_m": PX_JE_M},
