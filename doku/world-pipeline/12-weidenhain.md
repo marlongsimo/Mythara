@@ -4,7 +4,7 @@ Stand: 21.11.2026 · Vorlage: das gemalte Dorf der Kampagne (`img/echtzeit/weide
 
 ## Ergebnis
 
-Region `weidenhain` (3 × 2 Chunks ab Chunk 200|208), direkt südlich des Kreuzwalds. Der Spielserver kennt den Ort schon; Server und Datenbank bleiben unverändert.
+Region `weidenhain` (4 × 3 Chunks ab Chunk 200|208, zuerst 3 × 2), direkt südlich des Kreuzwalds. Der Spielserver kennt den Ort schon; Server und Datenbank bleiben unverändert.
 Bei Tag gebaut wie die übrige Welt; Feuer und Laternen bleiben.
 
 | Gemälde | Nachbau |
@@ -17,6 +17,15 @@ Bei Tag gebaut wie die übrige Welt; Feuer und Laternen bleiben.
 | zwei Stände, Fässer, Heu, Kürbisse | vorhandene Stände, Fässer, Heuballen, neue `dorf_kuerbisse_01` |
 | Mühlgraben, Wehr, Zaun am Ufer | Graben unter dem Mühlrad hindurch, `dorf_wehr_01` mit drei Überläufen, `dorf_zaun_01` |
 | Leute | Hanne, Lene, Tebbe, Agnes, Mette (vorhandene Figuren) |
+
+## Dichter besiedelt (zweiter Schritt)
+
+Um den Kern aus dem Gemälde liegt jetzt ein Dorf mit **34 Häusern** (Waldmark: 14 Gebäude), verbunden durch Erdgassen:
+Nordwesten, Westen (zwei Reihen), an der Dorfstraße, ein **Ostviertel** jenseits des Mühlgrabens (über `dorf_bruecke_01`) mit drei Gassen
+und ein **Südviertel** (über `dorf_bruecke_02`). Jede Häuserreihe steht nördlich ihrer Gasse, die Türen liegen genau an der Gasse.
+Hausarten wechseln sich ab: drei neue Fachwerkhäuser (`weidenhain_fachwerk_02`, `weidenhain_fachwerk_03` mit Stall, `weidenhain_kate_01`) und Holzhäuser aus der Waldmark.
+Vor vielen Häusern steht etwas (Fass, Holzstapel, Kürbisse, Heu), dazwischen einzelne Bäume. Die Brücken werden unter den Figuren gezeichnet (`tiefe: boden`),
+ihr Wasser ist über `kollision.freigeben` begehbar. Der Test prüft, dass alle Haustüren vom Dorfeingang erreichbar sind.
 
 ## Neu im Baukasten
 

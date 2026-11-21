@@ -19,5 +19,8 @@ const fig = d.spiel.figuren.filter((f) => !R.begehbar(...Object.values(w(f.x, f.
 check(fig.length === 0, `Dorfbewohner stehen frei und erreichbar (${d.spiel.figuren.map((f) => f.id).join(", ")})`, fig.map((f) => f.id));
 const dinge = ["weidenhain_kornspeicher_01", "weidenhain_bauernhaus_01", "weidenhain_muehle_01", "dorf_festfeuer_01", "dorf_wehr_01", "dorf_steinring_01"].filter((id) => !d.objekte.some((o) => o.objekt === id));
 check(dinge.length === 0, "Kornspeicher, Bauernhaus, Mühle, Erntefeuer, Wehr und Linde im Steinring stehen im Dorf", dinge);
+const def = new Map(bib.objekte.objekte.map((x) => [x.id, x])), haeuser = d.objekte.filter((x) => (def.get(x.objekt) || {}).kategorie === "gebaeude");
+const tueren = haeuser.map((h) => { const i = def.get(h.objekt).interaktion || { dx: 0, dy: 0.7 }; return { id: h.id, x: h.x + i.dx, y: h.y + i.dy }; }), zu = tueren.filter((t) => !nah(t.x, t.y, 1.2));
+check(haeuser.length >= 25 && zu.length === 0, `alle ${haeuser.length} Haustüren sind vom Dorfeingang erreichbar (auch über die Brücken)`, zu.map((t) => t.id));
 const wasser = d.gelaende.reduce((n, z) => n + [...z].filter((c) => c === "~").length, 0); check(wasser > 150, `der Mühlgraben fließt durchs Dorf (${wasser} Felder Wasser)`);
 console.log(ok ? "\nWeidenhain: alles in Ordnung" : "\nWeidenhain: FEHLER"); process.exit(ok ? 0 : 1);
