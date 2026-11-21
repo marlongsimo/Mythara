@@ -80,6 +80,7 @@ function fremd(s: Welt, rx: number, ry: number): boolean {
   /* am Rand des Gebiets und weiter hinaus: die Welt übernimmt wieder (etwa durchs Tor zurück in die Waldmark) */
   const lx = s.ort.x - z.x0, ly = s.ort.y - z.y0; if (rand < 1.2 && ((lx < 1.2 && rx < 0) || (ly < 1.2 && ry < 0) || (lx > z.b - 1.2 && rx > 0) || (ly > z.h - 1.2 && ry > 0))) { kampfEnde(); return false; }
   { const t = $("#ez-dorf-hilfe"); if (t.textContent === "Verbinde mit dem Spielserver …") { t.textContent = ""; t.style.display = "none"; } }
+  const pf = (s as unknown as { pfad: { x: number; y: number }[] }).pfad; if (pf.length) { /* Tasten und Stick leeren den Weg der Welt vorher – dann wird selbst gesteuert */ const z = pf[pf.length - 1]; kampf.gehe(z.x, z.y); return true; } /* angetippt: der Server sucht den Weg */
   kampf.steuern(rx, ry); return true; }
 /** Der Server kennt die zuletzt gemerkte Stelle (anderes Gerät): dorthin, wenn auf diesem Gerät keine gemerkt war und man noch nicht losgelaufen ist */
 let serverStelleGenutzt = false;

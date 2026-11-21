@@ -97,7 +97,12 @@ export class WeltKampf {
   /* ---------- jedes Bild ---------- */
   /** Bewegung: die Welt hat aus Tasten, Stick oder Wegfindung eine Richtung (rx, ry); sie geht an den Server, die Stelle kommt von dort */
   steuern(rx: number, ry: number) { if (!this.netz) return; const l = Math.hypot(rx, ry), k = l > 1 ? 1 / l : 1, x = l < 0.05 ? 0 : rx * k, y = l < 0.05 ? 0 : ry * k, j = performance.now(), g = this.gesendet;
+ if (x !== 0 || y !== 0) this.lauf = { x: NaN, y: NaN }; /* selbst steuern beendet das Anlaufen */
     if ((x === g.x && y === g.y) || (j - g.t < 60 && Math.hypot(x - g.x, y - g.y) < 0.4 && (x !== 0 || y !== 0))) return; this.gesendet = { x, y, t: j }; this.netz.sende({ t: "richtung", x, y }); }
+  /** Ein Ziel anlaufen (Antippen in der Welt): den Weg sucht der Server auf seinem eigenen Raster – derselbe, auf dem er bewegt */
+  private lauf = { x: NaN, y: NaN };
+  gehe(wx: number, wy: number) { if (!this.netz) return; if (Math.hypot(wx - this.lauf.x, wy - this.lauf.y) < 0.3) return; this.lauf = { x: wx, y: wy }; this.gesendet = { x: 0, y: 0, t: performance.now() };
+    this.netz.sende({ t: "lauf", x: wx - this.zone.x0, y: wy - this.zone.y0 }); }
   schritt(dt: number) { if (!this.z) return; const s = this.s, k = Math.min(1, dt * 12), ich = this.z.w.find((e) => e[0] === this.ichId);
     /* der eigene Held mit erhobenem Schild (Torvald, Waffe „Schild“): Block im Stehen, Gang mit Schild – sonst wie die Welt es will */
     { const sp = s.figur as unknown as { play(k: string): void; setTexture(k: string): void }, laeuft = (s as unknown as { laeuft: boolean }).laeuft, schild = Boolean(ich && !ich[10] && (ich[9] & BIT.schild));
