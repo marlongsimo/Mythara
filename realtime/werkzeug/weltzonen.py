@@ -12,7 +12,9 @@ C = 32
 welt = json.load(open(os.path.join(WELT, "welt.json")))
 # Region → Gegner und Mehrkampf-Gebiete (Weltfelder [x0, y0, x1, y1]). Sonst gilt Einzelkampf.
 # Die Lichtung im Kreuzwald: vier Dolch-Banditen, Mehrkampf (viele gegen viele).
-ZONEN = { "waldweg": { "karte": "kreuzwald", "mehrkampf": [[6522, 6558, 6586, 6606]], "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)] } }
+import subprocess
+US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"], cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True).stdout.strip().split("\n")[-1])
+ZONEN = { "unterschlupf": { "karte": "unterschlupf", "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]] }, "waldweg": { "karte": "kreuzwald", "mehrkampf": [[6522, 6558, 6586, 6606]], "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)] } }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt: Gehraster der Region und Lager der Gegner. */"]
 for rid, z in ZONEN.items():
     R = welt["regionen"][rid]["region"]; ux, uy = R["ursprung"]; bw, bh = R["chunks"]; x0, y0, B, H = ux * C, uy * C, bw * C, bh * C

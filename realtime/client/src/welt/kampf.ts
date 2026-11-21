@@ -25,7 +25,7 @@ import { FELD_PX, HELD_PX } from "../../../shared/welt/typen";
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const P = new URLSearchParams(location.search);
 /** Gebiet der offenen Welt (Gebietsname für Server und Stufe): der Kreuzwald */
-const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald" };
+const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
 interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean }

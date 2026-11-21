@@ -20,14 +20,20 @@
    }
   },
   {
-   "id": "loch_ansehen",
-   "art": "lesen",
+   "id": "loch_abstieg",
+   "art": "eingang",
    "x": 30.4,
    "y": 118.8,
-   "radius": 1.6,
+   "radius": 1.4,
    "abgleich": "keiner",
    "daten": {
-    "text": "Mitten im Boden klafft ein Loch. Eine Leiter führt hinab – aber unten ist nichts als Dunkelheit."
+    "text": "Mitten im Boden klafft ein Loch. Eine Leiter führt hinab in die Dunkelheit – von unten hört man Stimmen.",
+    "tat": "abstieg",
+    "knopf": "In das Loch hinabsteigen",
+    "ziel": [
+     7372,
+     7391
+    ]
    }
   },
   {

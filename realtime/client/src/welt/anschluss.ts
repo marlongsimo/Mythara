@@ -152,7 +152,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
 function karteZeigen(s: Welt) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
-  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id)),
+  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && (R as { ebene?: string }).ebene !== "untergrund"),
     ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier });
 }
 
@@ -195,6 +195,7 @@ export function weltAnschliessen(start: string, tor: string) {
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.fremd = fremd;
+  WELT.springen = () => kampfEnde();   /* Abstieg in den Untergrund und zurück: der Kampf der alten Stelle endet, am Ziel beginnt (wenn dort Gegner sind) ein neuer */
   WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);

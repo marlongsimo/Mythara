@@ -1,0 +1,16 @@
+{
+ "id": "unterschlupf",
+ "name": "Der Unterschlupf",
+ "untertitel": "Hauptquartier der Banditen",
+ "ursprung": [
+  230,
+  230
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 4,
+ "ebene": "untergrund"
+}

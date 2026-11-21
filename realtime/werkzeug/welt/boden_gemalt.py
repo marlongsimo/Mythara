@@ -188,12 +188,52 @@ def acker(rng):
     return ndimage.gaussian_filter(M.bild(), (0.6, 0.6, 0))
 
 
+def hoehlenboden(rng):
+    """Fester Lehm- und Steinboden einer Höhle: dunkel, mit flachen Steinplatten und Geröll"""
+    a = grund((92, 84, 74), rng, gross=0.12, mittel=0.06)
+    M = Maler(a)
+    for _ in range(40):
+        x, y, r = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(10, 22); g = float(rng.uniform(0.85, 1.1))
+        pk = [(x + math.cos(t) * r * rng.uniform(0.75, 1.0), y + math.sin(t) * r * 0.7 * rng.uniform(0.75, 1.0)) for t in np.linspace(0, 2 * math.pi, 7, endpoint=False)]
+        M.form('polygon', pk, fill=tuple(int(c * g) for c in (110, 102, 92)))
+    for _ in range(120):
+        g = rng.uniform(0.8, 1.05); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(1.6, 3.6), tuple(int(c * g) for c in (120, 112, 100)))
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def felswand(rng):
+    """Gewachsener Fels von oben: dunkle, kantige Brocken mit hellen Kanten und tiefen Spalten"""
+    M = Maler(np.broadcast_to(np.array((34, 32, 30), np.float32), (N, N, 3)).copy())
+    for _ in range(420):
+        x, y, r = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(16, 36); g = float(rng.uniform(0.7, 1.15))
+        pk = [(x + math.cos(t) * r * rng.uniform(0.6, 1.0), y + math.sin(t) * r * rng.uniform(0.6, 1.0)) for t in np.linspace(0, 2 * math.pi, 6, endpoint=False)]
+        M.form('polygon', pk, fill=tuple(int(c * g) for c in (78, 74, 70)))
+        M.form('polygon', [(px - 2, py - 2) for px, py in pk[3:5]] + [(x, y)], fill=tuple(int(c * g) for c in (104, 98, 92)))
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def holzboden(rng):
+    """Dielenboden aus breiten Brettern mit dunklen Fugen und Nagelköpfen"""
+    M = Maler(np.broadcast_to(np.array((52, 36, 24), np.float32), (N, N, 3)).copy()); y = 0
+    while y < N:
+        h = 30; x = -int(rng.integers(0, 120))
+        while x < N:
+            l = int(rng.integers(90, 170)); g = float(rng.uniform(0.85, 1.1))
+            M.form('rectangle', [(x + 1, y + 1), (x + l - 2, y + h - 2)], fill=tuple(int(c * g) for c in (132, 96, 60)))
+            M.form('line', [(x + 4, y + h * 0.35), (x + l - 6, y + h * 0.4)], fill=tuple(int(c * g * 0.88) for c in (132, 96, 60)), width=2)
+            for nx in (x + 6, x + l - 8):
+                M.form('ellipse', [nx - 1.5, y + h / 2 - 1.5, nx + 1.5, y + h / 2 + 1.5], fill=(60, 50, 44))
+            x += l
+        y += h
+    return ndimage.gaussian_filter(M.bild(), (0.6, 0.6, 0))
+
+
 KACHELN = {
     'wiese': lambda r: wiese(r), 'wiese-satt': lambda r: wiese(r, (88, 138, 58), 80), 'wiese-trocken': lambda r: wiese(r, (136, 148, 70), 60, gelb=14),
     'wiese-blumen': lambda r: wiese(r, (104, 148, 64), 60, blumen=70), 'waldboden': waldboden, 'erde': erde, 'pflaster': pflaster,
     'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True),
     'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand,
-    'acker': acker,
+    'acker': acker, 'hoehlenboden': hoehlenboden, 'felswand': felswand, 'holzboden': holzboden,
     'moorwiese': lambda r: wiese(r, (112, 116, 66), 90, blumen=6, gelb=8)}
 
 

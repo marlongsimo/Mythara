@@ -4,9 +4,10 @@
  */
 import type { Lager, Probe } from "./karte";
 import { WALDWEG_ZEILEN, WALDWEG_START, WALDWEG_LAGER, WALDWEG_DEKO, WALDWEG_BAEUME } from "./waldweg";
-import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER, KREUZWALD_MEHRKAMPF } from "./weltzonen";
+import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER, KREUZWALD_MEHRKAMPF, UNTERSCHLUPF, UNTERSCHLUPF_ZEILEN, UNTERSCHLUPF_START, UNTERSCHLUPF_LAGER, UNTERSCHLUPF_MEHRKAMPF } from "./weltzonen";
 /** Kampfgebiete der offenen Welt: Region der Welt → Karte der gemeinsamen Simulation (werkzeug/weltzonen.py) */
-export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = { [KREUZWALD.region]: { karte: "kreuzwald", x0: KREUZWALD.x0, y0: KREUZWALD.y0, b: KREUZWALD.b, h: KREUZWALD.h } };
+export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = { [KREUZWALD.region]: { karte: "kreuzwald", x0: KREUZWALD.x0, y0: KREUZWALD.y0, b: KREUZWALD.b, h: KREUZWALD.h },
+  [UNTERSCHLUPF.region]: { karte: "unterschlupf", x0: UNTERSCHLUPF.x0, y0: UNTERSCHLUPF.y0, b: UNTERSCHLUPF.b, h: UNTERSCHLUPF.h } };
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
  *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */
 export interface Schleuse { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number /* danach ist der Graben leer */ }
@@ -26,13 +27,13 @@ const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, 
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
 export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"], rabenmoor: ["bohlenweg", "ried", "totenpfad", "schrein"] };
 /** Stufe der Aufgabe je Ort: bestimmt mit der Gruppengröße die Stärke der Gegner (Server und Spiel gleich). Rabenmoor ist für Helden auf Stufe 1 anspruchsvoll. */
-export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2, kreuzwald: 3 };
+export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2, kreuzwald: 3, unterschlupf: 4 };
 /** Gebiete der offenen Welt mit gemeinsamen Kampfzonen (keine Kampagne): immer frei */
-export const WELTGEBIETE = new Set(["kreuzwald"]);
+export const WELTGEBIETE = new Set(["kreuzwald", "unterschlupf"]);
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
 export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 /** Strecken zwischen den Orten: immer begehbar */
-export const STRECKEN = new Set(["waldweg", "kreuzwald"]);
+export const STRECKEN = new Set(["waldweg", "kreuzwald", "unterschlupf"]);
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
@@ -56,6 +57,9 @@ export const KARTEN: Record<string, KampfKarte> = {
      die offene Welt zeigt Gegner und Treffer an derselben Stelle. */
   kreuzwald: { name: "Der Kreuzwald", bild: "", zeilen: KREUZWALD_ZEILEN, feinZeilen: true, start: KREUZWALD_START, aggro: 5, leine: 14, wandern: 4, weg: true,
     ursprung: [KREUZWALD.x0, KREUZWALD.y0], weltRegion: KREUZWALD.region, lager: KREUZWALD_LAGER.map((l) => ({ ...l })), mehrkampf: KREUZWALD_MEHRKAMPF },
+  /* Der Unterschlupf unter der Hütte in der Westmark: Hauptquartier der Banditen, neun Dolch-Banditen in sechs Räumen; die Halle ist Mehrkampf */
+  unterschlupf: { name: "Der Unterschlupf", bild: "", zeilen: UNTERSCHLUPF_ZEILEN, feinZeilen: true, start: UNTERSCHLUPF_START, aggro: 5, leine: 10, wandern: 2, weg: true,
+    ursprung: [UNTERSCHLUPF.x0, UNTERSCHLUPF.y0], weltRegion: UNTERSCHLUPF.region, lager: UNTERSCHLUPF_LAGER.map((l) => ({ ...l })), mehrkampf: UNTERSCHLUPF_MEHRKAMPF },
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",
     zeilen: ["MMMMMMMMMMMM", "MMKK.....KMM", "M..KK..KK.MM", "M..KK..KK.MM", "............", "M..KK..KK.MM", "M.........MM", "MMKK.....KMM", "MMMMMMMMMMMM"],

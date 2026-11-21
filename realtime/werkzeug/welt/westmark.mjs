@@ -82,7 +82,7 @@ const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgae
   const lies = (id, x, y, text) => ({ id, art: "lesen", x: +x.toFixed(2), y: +y.toFixed(2), radius: 1.6, abgleich: "keiner", daten: { text } });
   const spiel = { ...leer, start: [[60, steinY(60)]],
     interaktionen: [lies("huette_tuer", HUETTE[0] - 0.8, HUETTE[1] + 0.7, "Eine verlassene Hütte. Die Tür hängt schief in den Angeln, drinnen riecht es nach feuchter Erde."),
-      lies("loch_ansehen", HUETTE[0] + 0.4, HUETTE[1] - 1.2, "Mitten im Boden klafft ein Loch. Eine Leiter führt hinab – aber unten ist nichts als Dunkelheit."),
+      { id: "loch_abstieg", art: "eingang", x: HUETTE[0] + 0.4, y: HUETTE[1] - 1.2, radius: 1.4, abgleich: "keiner", daten: { text: "Mitten im Boden klafft ein Loch. Eine Leiter führt hinab in die Dunkelheit – von unten hört man Stimmen.", tat: "abstieg", knopf: "In das Loch hinabsteigen", ziel: [230 * 32 + 12, 230 * 32 + 31] } },
       lies("stamm_west_ansehen", ENDE + 1.6, steinY(ENDE), "Ein umgestürzter Baum versperrt den Steinweg. Hier geht es noch nicht weiter.")],
     kollision: { sperren: [{ art: "rechteck", x0: 0, y0: steinY(ENDE) - 6, x1: ENDE + 0.8, y1: steinY(ENDE) + 6 }], freigeben: [] } };
   schreibe("westmark", { id: "westmark", name: "Die Westmark", untertitel: "Wiesen und karges Moor am Westweg", ursprung: [196, 202], chunks: [2, 6], biom: "wiese", stufe: 1 }, g, [...dinge, ...baeume], spiel); }

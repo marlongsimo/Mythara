@@ -1,0 +1,67 @@
+{
+ "start": [
+  [
+   12,
+   31
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "leiter",
+   "art": "eingang",
+   "x": 12,
+   "y": 30.2,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Leiter führt hinauf in die verlassene Hütte.",
+    "tat": "aufstieg",
+    "knopf": "Die Leiter hinaufsteigen",
+    "ziel": [
+     6302.4,
+     6582.9
+    ]
+   }
+  },
+  {
+   "id": "karte_tisch",
+   "art": "lesen",
+   "x": 33,
+   "y": 31,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Auf dem Tisch liegt eine Karte der Westmark. Der Steinweg ist rot markiert – und Weidenhain mit einem Kreuz."
+   }
+  },
+  {
+   "id": "beute",
+   "art": "lesen",
+   "x": 33,
+   "y": 58.6,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Truhe voller Beute: Münzen, ein silberner Kerzenleuchter, Stoffballen aus Graufurt."
+   }
+  },
+  {
+   "id": "anfuehrer",
+   "art": "lesen",
+   "x": 86.5,
+   "y": 28,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Stuhl des Anführers. Dahinter hängt das rote Banner der Bande."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ }
+}

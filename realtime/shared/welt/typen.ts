@@ -123,7 +123,7 @@ export interface ObjektBibliothek { objekte: ObjektDef[] }
 
 /* ───────────── Region ───────────── */
 
-export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer";
+export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer" | "hoehle";
 export interface Region {
   id: string;
   name: string;

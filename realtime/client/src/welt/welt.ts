@@ -30,6 +30,7 @@ export const WELT = { start: weltName, bild: "../", daten: "welt/", /** Kennung 
   menue: null as ((s: Welt) => void) | null,
   /** Was eine Interaktion mit daten.tat auslöst (im Spiel: halle, welt, riss, bald) */
   tat: null as ((art: string, s: Welt) => void) | null,
+  /** wird gerufen, bevor der Held versetzt wird (etwa den Kampf der offenen Welt beenden, damit der Server ihn nicht zurückholt) */ springen: null as ((s: Welt) => void) | null,
   /** Beschriftung des Knopfs zu einer tat (etwa „Das Südtor ist noch geschlossen“) */
   knopf: null as ((art: string, knopf: string) => string) | null,
   /** Regionen, die noch nicht freigegeben sind: werden nicht geladen */
@@ -161,6 +162,9 @@ export class Welt extends Phaser.Scene {
       this.cameras.main.setBounds(x0 * CHUNK_PX, y0 * CHUNK_PX, (x1 - x0) * CHUNK_PX, (y1 - y0) * CHUNK_PX); }
     WELT.hud.titel(r.region.name, r.region.untertitel || "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${weltDatei("karte-" + id + ".webp")})`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
 
+  /** Den Helden an eine andere Stelle der Welt versetzen (Weltfelder), mit kurzem Abblenden – etwa durch ein Loch in den Untergrund */
+  springen(x: number, y: number) { if (this.gesperrt) return; if (WELT.springen) WELT.springen(this); this.halt(); this.gesperrt = true; this.pfad = [];
+    this.cameras.main.fadeOut(260, 0, 0, 0); this.time.delayedCall(280, () => { this.ort.x = x; this.ort.y = y; this.cameras.main.fadeIn(320, 0, 0, 0); this.gesperrt = false; }); }
   /** Zu einer Stelle laufen (Rechenfelder): Wegsuche über das Gehraster */
   gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0; if (w.length) { const z = w[w.length - 1]; this.marke.setPosition(z.x * F, z.y * F).setDepth(z.y * F - 1).setVisible(true); } else this.marke.setVisible(false); }
 
@@ -274,6 +278,8 @@ export class Welt extends Phaser.Scene {
   interaktion(a: Interaktion): { text: string; tat: () => void } | null {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "";
     const tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
+    const ziel = a.daten && Array.isArray(a.daten.ziel) && a.daten.ziel.length === 2 ? (a.daten.ziel as number[]) : null;   /* Abstieg in den Untergrund und zurück */
+    if (ziel) return { text: knopf || "Hinabsteigen", tat: () => this.springen(ziel[0], ziel[1]) };
     if (tat && WELT.tat) { const f = WELT.tat; return { text: WELT.knopf ? WELT.knopf(tat, knopf || "Betreten") : knopf || "Betreten", tat: () => f(tat, this) }; }
     if (text) return { text: "Ansehen", tat: () => this.sagen(text) };
     return null;
