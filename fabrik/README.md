@@ -113,3 +113,25 @@ setzt einen Mundraum in den Kopf und eine Zunge an und legt die Bewegungen aus `
 Danach wie bei Menschen: `boden.py` (Flugbilder eines Sprungs – `sprung` in den Metadaten – bleiben in der Luft), `rendern.py`, `packen.py`, `pruefung.py`, `vorschau-gif.py`.
 Die Prüfung verlangt bei Tieren: Flugbilder ≥ 10 cm über dem Boden, alle anderen Bilder ±1 cm am Boden, am Ende des Todes höchstens 85 % der Anfangshöhe.
 In der Testszene ist `springen` die Fortbewegung, wenn die Figur kein `laufen` hat, und J spielt den eigenen Angriff (die Bewegung mit Trefferbild, hier `zunge`).
+
+## Grundstrukturen und Baukasten (Vorlage: basis.mann, basis.frau)
+
+Eine **Grundstruktur** ist ein schlichter Körper (Unterkleidung, barfuß, Arme leicht abgespreizt), auf den alles andere als einzeln
+ablegbares Teil kommt. Vorlage: `vorlagen/grundstruktur.json` (nach `basis.mann`): Unterkleidung als Lagen (`unten`), Schwert und
+Schild, gemalter Stil, Baukasten mit Zeichenreihenfolge (`zeichenfolge`: jedes Teil wird nur vom Körper ausgestanzt, die Reihenfolge
+innen → außen entscheidet – so ist jedes Teil unabhängig austauschbar).
+
+1. **Grundstruktur anlegen** (Meshy-Körper mit Textur):
+   `python3 fabrik/grundstruktur.py <meshy.glb> basis.<name>` → `assets/basis.<name>/v001/` mit gerigtem `arbeit/basis.blend`
+2. **Teile dazu** – je nach Vorlage:
+   - komplettes Set aus drei Bildern (vorn, Seite, hinten, ohne Körper): `set_aus_bild.py <basis.blend> <set-ordner> <ziel.glb>` –
+     eine Ebene über den ganzen Körper; als `ersetzt` eingetragen legt es beim Anlegen die abgedeckten Plätze ab
+   - einzelnes Teil aus Bildern (z. B. Brustpanzer): `kleidung_aus_bild.py <basis.blend> <teil-ordner> <ziel.glb> [abstand= dicke= oben= unten=]`
+   - Teil einer anderen gerigten Figur übertragen (über das Skelett): `teile_uebertragen.py <quelle.blend> <basis.blend> <ordner> <ebenen>`
+   - Meshy-Teil im selben Raum wie der Grundkörper: direkt mit `baukasten.py … wie=<meshy-basis.glb>`
+3. **Einbauen**: `baukasten.py <versions-ordner> <teil.glb> <id> <platz> [art=teil|waffe|schild] [unten] [wahlfrei] [farbe=#…]`
+   – trägt ein, riggt, rendert nur die neue Ebene, packt, prüft.
+
+Prüfungen, die für den Baukasten wichtig sind: **Ebenen sind flächig** (zerfallene Netze), **jedes Teil im Gesamtbild sichtbar**
+(gegen die Standardausrüstung; Unterkleidung nur gegen Unterkleidung), **Rüstung liegt über dem Körper** (sonst scheint die
+Unterstruktur durch – dann den Abstand des Teils erhöhen). Klobigere Teile mit mehr Abstand sind ausdrücklich in Ordnung.
