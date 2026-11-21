@@ -3,6 +3,7 @@
   python3 fabrik/frisuren.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618] [dichte=1.0] [laenge=1.0] [saat=1] [pony=0.74]
 
 stil   kurz | lang | zopf | undercut | militaer | undercut_bun | zerzaust | zopf_eng | scheitel
+       Frauen (breite Bandsträhnen): dutt_hoch | wuschel_hoch | pixie | zopf_wild | seitenbob
 Keine einzelnen Haare, sondern größere Strähnen: abgeflachte, spitz zulaufende Bänder entlang von Leitkurven. Sie wachsen von Wurzeln auf der
 Kopfhaut (innerhalb des Haaransatzes) in Kämmrichtung, mit Schwerkraft und etwas Zufall, und werden außerhalb von Kopf und Schultern gehalten.
 Darunter liegt eine dunkle Grundschale, damit keine Kopfhaut durchscheint. Farbe als Punktfarben: Ansatz dunkler, Spitzen heller, jede Strähne
@@ -58,7 +59,7 @@ def wurzeln(anzahl, maske, abstand):
 # ---- Strähnen ---------------------------------------------------------------------------------------------------------------
 strang = []                                                                                          # (punkte, breiten, dicke, normalen, helligkeit)
 def tangential(v, n): return v - np.dot(v, n) * n
-def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wirr=0.15, ziel_p=None, abstand0=0.004, stirn_z=None, boden_z=None):
+def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wirr=0.15, ziel_p=None, abstand0=0.004, stirn_z=None, boden_z=None, flach=0.3, schwung=0.0, frei=False):
     pts = [p0 + n0 * abstand0]; d = tangential(kamm(p0), n0); d = d / (np.linalg.norm(d) + 1e-9) * 0.93 + n0 * 0.15; d /= np.linalg.norm(d)
     off = abstand0 + rng.random() * 0.006; schritt = laenge / seg; nrms = [n0]
     for i in range(seg):
@@ -68,12 +69,18 @@ def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wi
         d = d + tangential(want, n) * 0.5 + np.array([0, 0, -1.0]) * schwer * t + rng.normal(0, wirr, 3) * 0.3; d /= np.linalg.norm(d)
         p = p + d * schritt; q, n, sd = naechst(p)
         if sd < off: p = q + n * off                                                                    # nicht eindringen (Kopf, Hals, Schultern)
-        elif sd > off + anlage and (ziel_p is None or np.linalg.norm(ziel_p - p) > 0.035): p = q + n * (off + anlage)   # am Kopf anliegen (nicht abstehen), mit Ziel erst kurz davor frei
+        elif not frei and sd > off + anlage and (ziel_p is None or np.linalg.norm(ziel_p - p) > 0.035): p = q + n * (off + anlage)   # am Kopf anliegen (nicht abstehen), mit Ziel erst kurz davor frei
         if boden_z is not None and p[2] < boden_z: p[2] = boden_z; q, n, sd = naechst(p); p = q + n * max(off, sd)   # Strähnen enden über dieser Höhe (rasierte Seiten, kurzer Nacken)
         if stirn_z is not None and p[1] < MITTE[1] and p[2] < stirn_z: p[2] = stirn_z; q, n, sd = naechst(p); p = q + n * max(off, sd)   # Pony endet über den Augenbrauen
+        if schwung and t > 0.6: p = p + n * schwung * ((t - 0.6) / 0.4) ** 2                          # Spitze schwingt nach außen
         pts.append(p); nrms.append(n)
     t = np.linspace(0, 1, len(pts)); br = breite * (1 - 0.7 * t ** 2.2) + 0.002                         # breite Büschel, erst zur Spitze schmal
-    strang.append((np.array(pts), br, 0.3, np.array(nrms), 0.85 + 0.25 * rng.random()))
+    if flach < 0.3:                                                                                     # Bandsträhne: breit am Ansatz, gleichmäßig zur Spitze verjüngt, Weg geglättet
+        br = breite * (1 - t ** 1.5) ** 0.8 + 0.0012
+        P_ = np.array(pts)
+        for _ in range(3): P_[1:-1] = (P_[:-2] + 2 * P_[1:-1] + P_[2:]) / 4
+        pts = list(P_)
+    strang.append((np.array(pts), br, flach, np.array(nrms), 0.85 + 0.25 * rng.random()))
 def kamm_vorn(p):                                                                                    # kurz: vom Wirbel weg, vorn nach vorn, seitlich nach unten
     d = p - SCHEITEL; d[2] = 0; d = d / (np.linalg.norm(d) + 1e-9); return d + np.array([0, -0.2, -0.35])
 def kamm_scheitel(p):                                                                                # lang: vom Mittelscheitel zur Seite und nach unten
@@ -173,6 +180,61 @@ elif STIL == "scheitel":                                                        
     for p, nn in zip(r, n):
         L = (0.09 if p[0] < SX else 0.07) * LAENGE * (0.85 + 0.3 * rng.random())
         wachsen(p, nn, kamm_seite, L, 0.55, anlage=0.014, seg=9, breite=0.024, wirr=0.07, stirn_z=KZ0 + 0.72 * KL)
+# ---- Frauenfrisuren im Stil breiter, flacher Bandsträhnen (wenige große Cluster, Schwung an den Spitzen) ----
+elif STIL in ("dutt_hoch", "wuschel_hoch", "pixie", "zopf_wild", "seitenbob"):
+    VORN_Z = KZ0 + 0.74 * KL; SEITE = 1.0                                                            # Scheitel links, Pony nach rechts
+    band = dict(flach=0.16, wirr=0.015)
+    def pony(anzahl, laenge, ziel_x=-0.07, tief=0.0):                                                 # breite Strähnen über die Stirn zur Seite
+        vorn_m = kopfhaut & (mitten[:, 1] < MITTE[1] - 0.02) & (hz_f > 0.78)
+        r, n = wurzeln(anzahl, vorn_m, 0.02)
+        for p, nn in zip(r, n):
+            wachsen(p, nn, lambda q: np.array([ziel_x * 14, -0.55, -0.55]), laenge * (0.85 + 0.3 * rng.random()), 0.2, anlage=0.012, seg=10, breite=0.065, stirn_z=VORN_Z - tief, schwung=0.012, **band)
+    def rahmen(laenge, anzahl=2):                                                                     # lange Strähnen vor den Ohren, rahmen das Gesicht
+        for sx in (-1, 1):
+            m_ = kopfhaut & (np.sign(mitten[:, 0] - CX) == sx) & (mitten[:, 1] < MITTE[1] + 0.005) & (hz_f > 0.62) & (hz_f < 0.82)
+            r, n = wurzeln(anzahl, m_, 0.012)
+            for p, nn in zip(r, n): wachsen(p, nn, lambda q, sx=sx: np.array([sx * 0.15, -0.25, -1.0]), laenge * (0.85 + 0.3 * rng.random()), 0.8, anlage=0.01, seg=11, breite=0.04, schwung=0.008, **band)
+    if STIL == "dutt_hoch":
+        BUN = np.array([CX + 0.01, Y_HINTEN - 0.045, ZT + 0.03])
+        r, n = wurzeln(int(48 * DICHTE), kopfhaut & ~((mitten[:, 1] < MITTE[1] - 0.02) & (hz_f > 0.78)), 0.022)
+        for p, nn in zip(r, n): wachsen(p, nn, kamm_zu(BUN), np.linalg.norm(BUN - p) * 1.15, 0.0, anlage=0.006, seg=12, breite=0.06, ziel_p=BUN, **band)
+        for i in range(8):
+            ach = np.array([0, 0.3, 1.0]) + rng.normal(0, 0.35, 3); ach /= np.linalg.norm(ach); u = np.cross(ach, [1.0, 0, 0]); u /= np.linalg.norm(u) + 1e-9; v = np.cross(ach, u)
+            w = np.linspace(0, 2 * np.pi * 0.85, 14); rad = 0.022 + 0.006 * rng.random()
+            strang.append((BUN + np.array([0, 0, 0.022]) + np.outer(np.cos(w), u) * rad + np.outer(np.sin(w), v) * rad, np.full(14, 0.026), 0.4, np.tile(ach, (14, 1)), 0.85 + 0.25 * rng.random()))
+        pony(4, 0.11); rahmen(0.15)
+    elif STIL == "wuschel_hoch":
+        HOCH = np.array([CX, MITTE[1] + 0.03, ZT + 0.08])
+        r, n = wurzeln(int(44 * DICHTE), kopfhaut & (hz_f > 0.45), 0.022)
+        for p, nn in zip(r, n): wachsen(p, nn, kamm_zu(HOCH), 0.1 * LAENGE * (0.8 + 0.4 * rng.random()), -0.3, anlage=0.03, seg=10, breite=0.06, frei=True, schwung=0.02, flach=0.16, wirr=0.08)
+        pony(3, 0.1); rahmen(0.16, 1)
+    elif STIL == "pixie":
+        r, n = wurzeln(int(46 * DICHTE), kopfhaut & ~((mitten[:, 1] < MITTE[1] - 0.02) & (hz_f > 0.78)), 0.022)
+        for p, nn in zip(r, n):
+            oben = (p[2] - KZ0) / KL > 0.85
+            wachsen(p, nn, lambda q: kamm_vorn(q) + np.array([-0.4, 0, 0]), (0.06 if oben else 0.045) * LAENGE * (0.8 + 0.4 * rng.random()), 0.0 if oben else 0.3,
+                    anlage=0.012 if oben else 0.006, seg=8, breite=0.058, schwung=0.01 if oben else 0.004, boden_z=KZ0 + 0.3 * KL, **band)
+        pony(4, 0.08, tief=-0.01)
+    elif STIL == "zopf_wild":
+        BAND_P = np.array([CX, Y_HINTEN - 0.005, KZ0 + 0.78 * KL])
+        r, n = wurzeln(int(48 * DICHTE), kopfhaut & ~((mitten[:, 1] < MITTE[1] - 0.02) & (hz_f > 0.78)), 0.022)
+        for p, nn in zip(r, n): wachsen(p, nn, kamm_zu(BAND_P), np.linalg.norm(BAND_P - p) * 1.1, 0.0, anlage=0.006, seg=11, breite=0.06, ziel_p=BAND_P, **band)
+        for i in range(16):                                                                          # voller Zopf: breite Strähnen, die aufsteigen und nach hinten unten ausfächern
+            ang = rng.normal(0, 0.55); pts = [BAND_P + np.array([0, 0.015, 0.0])]; d = np.array([math.sin(ang) * 0.5, 0.8, 0.25]); d /= np.linalg.norm(d)
+            L = 0.2 * LAENGE * (0.75 + 0.5 * rng.random())
+            for j in range(11):
+                d = d + np.array([math.sin(ang) * 0.04, -0.02, -0.28]); d /= np.linalg.norm(d); q_ = pts[-1] + d * L / 11; qq, nq_, sd = naechst(q_)
+                if sd < 0.015: q_ = qq + nq_ * 0.015
+                pts.append(q_)
+            pts = np.array(pts); tt = np.linspace(0, 1, len(pts)); strang.append((pts, 0.06 * (1 - tt ** 1.5) ** 0.8 + 0.0015, 0.18, np.tile([0, 0.6, 0.8], (len(pts), 1)), 0.85 + 0.25 * rng.random()))
+        pony(3, 0.11); rahmen(0.13, 1)
+    elif STIL == "seitenbob":                                                                       # asymmetrischer Bob: Seitenscheitel, großer Pony über ein Auge, Spitzen schwingen nach außen
+        SX = CX + 0.03
+        def kamm_bob(q): s_ = 1.0 if q[0] > SX else -1.0; return np.array([s_ * 0.9, -0.2 if s_ < 0 else 0.15, -0.6])
+        r, n = wurzeln(int(52 * DICHTE), kopfhaut, 0.021)
+        for p, nn in zip(r, n):
+            vorn_ = p[1] < MITTE[1] - 0.02
+            wachsen(p, nn, kamm_bob, (0.16 if vorn_ else 0.15) * LAENGE * (0.85 + 0.3 * rng.random()), 0.7, anlage=0.02, seg=12, breite=0.065, schwung=0.012, stirn_z=VORN_Z - 0.035, boden_z=KZ0 + 0.12 * KL, **band)
 else: sys.exit(f"unbekannter Stil: {STIL}")
 # ---- Netz bauen: Strähnen als abgeflachte Röhren + Grundschale ---------------------------------------------------------------
 V, F, C = [], [], []
