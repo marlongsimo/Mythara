@@ -1,0 +1,178 @@
+{
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich",
+    "block",
+    "hieb2h",
+    "stich2h",
+    "zauber_stab",
+    "bogen",
+    "armbrust1h",
+    "dolchwurf",
+    "tod"
+  ],
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "tod_schild_flach": true,
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03,
+      "klasse": "einhand",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block",
+        "zauber_stab",
+        "armbrust1h",
+        "dolchwurf"
+      ],
+      "klasse": "schild"
+    },
+    {
+      "id": "waffe.langschwert",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.langschwert/v001/quelle/schwert.glb",
+      "griff": 0.24,
+      "griff2": 0.1,
+      "klasse": "zweihand",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "hieb2h"
+      ]
+    },
+    {
+      "id": "waffe.speer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.speer/v001/quelle/speer.glb",
+      "griff": 0.17,
+      "griff2": 0.4,
+      "klasse": "speer",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich2h"
+      ]
+    },
+    {
+      "id": "waffe.zeremonienstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.zeremonienstab/v001/quelle/zeremonienstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "klasse": "stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "zauber_stab"
+      ]
+    },
+    {
+      "id": "waffe.armbrust",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.armbrust/v001/quelle/armbrust.glb",
+      "griff": 0.55,
+      "griff2_ort": [
+        -0.08,
+        0,
+        0.02
+      ],
+      "klasse": "armbrust",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "armbrust1h"
+      ]
+    },
+    {
+      "id": "waffe.dolch",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.dolch/v001/quelle/dolch.glb",
+      "griff": 0.15,
+      "griff2": 0.05,
+      "klasse": "wurfdolch",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "dolchwurf",
+        "stich"
+      ]
+    },
+    {
+      "id": "waffe.bogen",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffe.bogen/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "bogen"
+      ],
+      "drehen": 180
+    }
+  ],
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "Maßgebliche Grundstruktur (Frau, Meshy „The Resolute Wanderer“): kahl, Startausrüstung fest im Modell (Leinenhemd mit Schnürung, Gürtel mit Tasche, Lederhose, Stiefel). Frisuren als Ebene im Platz „haar“, Rüstung als Teilnetze darüber. Schwert und Schild für die Kampfanimationen.",
+  "arm_radius": 0.1,
+  "huelle": [],
+  "teilnetze": [],
+  "waffenklassen": {
+    "hinweis": "Jede Waffe gehört zu einer Klasse; alle Waffen einer Klasse nutzen dieselben Bewegungen und Griffpunkte. Neue Waffe = nur ihre Ebene rendern (baukasten.py), keine neue Bewegung.",
+    "einhand": "rechte Hand, Griff am Handballen: stich (dazu ruhe, gehen, laufen, tod)",
+    "schild": "linker Unterarm: block",
+    "zweihand": "rechte Hand + linke Hand 11 cm zum Knauf hin (griff2.hieb): hieb2h",
+    "speer": "rechte Hand hinten + linke Hand 40 cm zur Spitze hin (griff2.stich): stich2h",
+    "stab": "rechte Hand: zauber_stab",
+    "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
+    "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
+    "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "hinweis": "Torvald v003: Meshy-Modell (vom Projekt erzeugt) in ablegbare Teile zerlegt (meshy_teile.py), Grundkörper darunter erzeugt; Bewegungen wie v002, gemalter Stil.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "schildstoss",
+    "kampfschrei",
+    "treffer",
+    "tod"
+  ],
+  "stil": "gemalt",
+  "tod_fuesse_strecken": false,
+  "tod_schild_flach": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb"
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "ruestung.brust.platte.v003",
+      "platz": "brust",
+      "glb": "held.schildwahrer/v003/quelle/stahl.glb"
+    },
+    {
+      "id": "kleidung.umhang.v003",
+      "platz": "ruecken",
+      "glb": "held.schildwahrer/v003/quelle/umhang.glb",
+      "beine_mitteln": true
+    },
+    {
+      "id": "kleidung.waffenrock.v003",
+      "platz": "rock",
+      "glb": "held.schildwahrer/v003/quelle/waffenrock.glb",
+      "beine_mitteln": true
+    },
+    {
+      "id": "kleidung.guertel.v003",
+      "platz": "guertel",
+      "glb": "held.schildwahrer/v003/quelle/guertel.glb"
+    },
+    {
+      "id": "kleidung.fuss.stiefel.v003",
+      "platz": "fuss",
+      "glb": "held.schildwahrer/v003/quelle/stiefel.glb"
+    },
+    {
+      "id": "kopf.haar.v003",
+      "platz": "haar",
+      "glb": "held.schildwahrer/v003/quelle/haar.glb"
+    }
+  ],
+  "stuecke_behalten": true
+}

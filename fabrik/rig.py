@@ -24,16 +24,28 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Hülle "ueberlage": true    wahlfreie Lage über der übrigen Kleidung (Schürze, Halstuch): zählt nicht bei "exklusiv" und schneidet beim Rendern nichts aus
   starr "art": "umhang"      Umhang aus umhang.py, hängt am Brustknochen hinter dem Rücken ("sitz": Höhe der Oberkante entlang der Brust, Standard 0.85)
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
+  Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
 Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
+  Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
   "haltung": "armbrust"      Armbrust mit Pistolengriff in der rechten Hand (armbrust.py), Bewegungen zielen (halten), schiessen, nachladen
   Waffe "griff2_ort": [x,y,z] Ort der zweiten Hand im Raum der Waffe (Armbrust: unter dem Vorderschaft); sonst auf der Achse ("griff2")
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
+  Hülle "unten": true        Unterkleidung (Hemd, Hose): wird beim Rendern nicht von abnehmbarer Rüstung ausgestanzt, liegt in der Zeichenreihenfolge zuunterst
+  Hülle "seiten_frei": true  seitlich gerichtete Flächen auslassen (Flanken unter anliegenden Armen)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
+  "luecken_schliessen": true Lagen nehmen auch Punkte in Übergängen (Hüftfalte), die zusammen überwiegend an ihren Knochen hängen – keine Streifen zwischen Hemd und Hose
+  "zeichenfolge": true       Baukasten: Rüstungsteile werden nur vom Körper ausgestanzt, die Zeichenreihenfolge (innen nach außen) bestimmt, was vorn liegt –
+                             so ist jedes Teil unabhängig austauschbar; Teil "umhang": true liegt von vorn hinter, von hinten vor allen anderen
+  "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
+  Teilnetz "ersetzt": [...]  ein Gesamtset: beim Anlegen werden diese Plätze abgelegt (Testszene/Spiel)
+  "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
                              ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
+  "koerper_textur": true     der Körper behält Material und Textur seines Modells (statt Punktfarben) – Kenney-Haut mit scharfem Gesicht
   "stil": "gemalt"           rendern.py: weiches warmes Licht mit kühlen Randlichtern, Schatten in Falten, helle Kanten (gemalter Look)
   "gelenke": "gelenke.json"  Gelenkorte aus einer Datei (neben der Liste) statt aus der Form geschätzt – Kenney-Körper (kenney_figur.py)
   "arm_radius": 0.1          Rückfallweg der Gewichtung: Armknochen bewegen nur Punkte bis zu diesem Abstand (m) – gegen Flügel aus Robe und Umhang
@@ -58,7 +70,9 @@ for o in list(bpy.data.objects):
     if o is not ob: bpy.data.objects.remove(o)
 
 # ====================================================== 1. Körper, Skelett, Gewichte ======================================================
-bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0005); bpy.ops.mesh.separate(type="LOOSE"); bpy.ops.object.mode_set(mode="OBJECT")
+bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0005)
+if not AUS.get("stuecke_behalten"): bpy.ops.mesh.separate(type="LOOSE")                           # Grundkörper aus mehreren Stücken (meshy_teile.py: Rumpf + Originalkopf) bleibt ganz
+bpy.ops.object.mode_set(mode="OBJECT")
 stuecke = sorted([o for o in bpy.data.objects if o.type == "MESH"], key=lambda o: -len(o.data.vertices)); ob = stuecke[0]; entfernt = [len(o.data.vertices) for o in stuecke[1:]]
 for o in stuecke[1:]: bpy.data.objects.remove(o)
 ob.name = "koerper"; bpy.context.view_layer.objects.active = ob; ob.select_set(True); bpy.ops.object.shade_smooth(); me = ob.data
@@ -68,7 +82,12 @@ def material(name):
     mat = bpy.data.materials.new(name); mat.use_nodes = True; nt = mat.node_tree; nt.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.9
     if FARBE: f = nt.nodes.new("ShaderNodeVertexColor"); f.layer_name = FARBE; nt.links.new(f.outputs["Color"], nt.nodes["Principled BSDF"].inputs["Base Color"])
     return mat
-me.materials.clear(); me.materials.append(material("koerper"))
+if not AUS.get("koerper_textur"): me.materials.clear(); me.materials.append(material("koerper"))   # sonst behält der Körper seine Textur (Kenney-Haut: scharfes Gesicht)
+else:                                                                                            # der glTF-Import multipliziert die Textur mit den Punktfarben (dieselbe Farbe ein zweites Mal): Textur direkt anschließen
+    for m_ in me.materials:
+        if m_ and m_.use_nodes:
+            nt_ = m_.node_tree; tx = next((n for n in nt_.nodes if n.type == "TEX_IMAGE"), None); bs = next((n for n in nt_.nodes if n.type == "BSDF_PRINCIPLED"), None)
+            if tx and bs: nt_.links.new(tx.outputs["Color"], bs.inputs["Base Color"])
 
 P = np.zeros(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", P); P = P.reshape(-1, 3); x, y, z = P[:, 0], P[:, 1], P[:, 2]
 def tiefe(maske, sonst=0.0): return float(np.median(y[maske])) if maske.sum() > 20 else sonst
@@ -165,6 +184,7 @@ for t in AUS["starr"]:
     if t["art"] == "schwert":                                                                    # im Bild: Knauf oben, Spitze unten -> die Spitze (-z) zeigt in Klingenrichtung; "hand": "L" = linke Hand
         S_ = t.get("hand", "R"); HD, K0 = (HAND_L, KLINGE0_L) if S_ == "L" else (HAND_R, KLINGE0)
         ez = -K0; ey = K0.cross(HD).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
+        if t.get("drehen"): R = R @ Matrix.Rotation(math.radians(t["drehen"]), 3, "Z")              # um die eigene Achse gedreht in der Hand (Bogen: Sehne zum Körper)
         handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
         g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = tuple(t["griff2_ort"]) if "griff2_ort" in t else (0, 0, oben - t.get("griff2", 0.4) * (oben - unten)); g2.empty_display_size = 0.03
         if t.get("zweihand"): g2.name = "griff2." + t["id"]      # Platz der zweiten Hand, zum Knauf hin
@@ -177,7 +197,12 @@ for t in AUS["starr"]:
     else:                                                                                        # Schild: Vorderseite (-y) zeigt vom Arm weg, oben zeigt zum Ellbogen
         ey = -SCHILD0; ez = -UARM_L; ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); dicke = max(v.y for v in e) - min(v.y for v in e)
         mitte = KN["unterarm.L"].head_local.lerp(KN["unterarm.L"].tail_local, 0.55) + SCHILD0 * (0.055 + dicke / 2) - UARM_L * 0.04; an_knochen(o, "unterarm.L", Matrix.Translation(mitte) @ R.to_4x4())
-    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; o["reihe"] = AUS["starr"].index(t); o["angriff"] = t.get("angriff", "angriff"); print("starr:", t["id"], "an", o.parent_bone)
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; o["reihe"] = AUS["starr"].index(t); o["angriff"] = t.get("angriff", "angriff"); o["bewegungen"] = json.dumps(t.get("bewegungen", [])); print("starr:", t["id"], "an", o.parent_bone)
+# feste Griffpunkte für die linke Hand bei Zweihandwaffen – gemessen von der rechten Hand entlang der Waffenachse, für JEDE Waffe gleich.
+# So sind die Bewegungen hieb2h/stich2h unabhängig von der Waffe: jede Waffe, deren Griff bis dorthin reicht, passt ohne neue Bewegung.
+HF_R = KN["hand.R"].head_local.lerp(KN["hand.R"].tail_local, 0.45)
+for nm, abst in (("griff2.hieb", -float(AUS.get("griff_hieb", 0.11))), ("griff2.stich", float(AUS.get("griff_stich", 0.32)))):   # hieb: zum Knauf hin; stich (Speer): zur Spitze hin
+    g = bpy.data.objects.new(nm, None); bpy.context.collection.objects.link(g); g.empty_display_size = 0.03; an_knochen(g, "hand.R", Matrix.Translation(HF_R + KLINGE0 * abst))
 for name, bone in (("punkt.kopf", "kopf"), ("punkt.ruecken", "brust"), ("punkt.huefte", "becken")):   # weitere Befestigungspunkte für später (Helm, Umhang, Scheide)
     p = bpy.data.objects.new(name, None); bpy.context.collection.objects.link(p); p.parent = arm; p.parent_type = "BONE"; p.parent_bone = bone; p.empty_display_size = 0.05
 
@@ -204,9 +229,13 @@ for t in AUS["huelle"]:
     wahl = np.zeros(nv, bool)
     for bone, t0, t1 in t["bereich"]:
         lage = lage_an(bone); wahl |= (GW[bone] >= 0.35) & (lage >= t0 - 0.02) & (lage <= t1 + 0.02)
+    if AUS.get("luecken_schliessen"):                                                                # Übergänge (Hüftfalte, Achsel): Punkte, die zusammengenommen überwiegend an den Knochen dieser Lage hängen, gehören auch dazu
+        summe = sum(GW[b] for b in {bone for bone, _, _ in t["bereich"]}); zw = P[wahl, 2] if wahl.any() else P[:, 2]
+        wahl |= (summe >= 0.6) & (P[:, 2] >= zw.min() - 0.03) & (P[:, 2] <= zw.max() + 0.03)
     if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
     if t.get("vorn"): wahl &= NORM[:, 1] < -0.15                                                    # nur die Vorderseite (Schürze)
     if t.get("hinten"): wahl &= NORM[:, 1] > 0.15                                                   # nur die Rückseite (Umhang)
+    if t.get("seiten_frei"): wahl &= np.abs(NORM[:, 0]) < 0.6                                        # Flanken unter den Armen frei lassen (dicke Arme liegen dort an)
     if AUS.get("eigenanteil"): wahl &= sum(GW[b] for b in {bone for bone, _, _ in t["bereich"]}) >= AUS["eigenanteil"]
     ARM = [b.name for b in KN if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]
     if not any(bone in ARM for bone, _, _ in t["bereich"]): wahl &= sum(GW[b] for b in ARM) < 0.3          # nennt die Hülle keinen Armknochen, gehören Arm und Hand nicht dazu (herabhängende Hände an der Hüfte)
@@ -215,7 +244,7 @@ for t in AUS["huelle"]:
     for v in bm.verts: v.co += Vector(NORM[v.index].tolist()) * t["dicke"]                         # ein Stück nach außen: die Hülle liegt über dem Körper, nie darunter
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not wahl[v.index]], context="VERTS"); bm.to_mesh(o.data); bm.free(); m2 = o.data
     if FARBE:
-        rgb, maske = teilbild(t["bild"]); Q = np.zeros(len(m2.vertices) * 3, np.float32); m2.vertices.foreach_get("co", Q); Q = Q.reshape(-1, 3)
+        rgb, maske = teilbild(t["bild"]) if not t["farbe"].startswith("#") else (None, None); Q = np.zeros(len(m2.vertices) * 3, np.float32); m2.vertices.foreach_get("co", Q); Q = Q.reshape(-1, 3)
         if t["farbe"] == "bild":                                                                 # die Zeichnung von vorn auflegen (hinten dieselbe)
             hh, ww = maske.shape; u = np.clip(np.round((Q[:, 0] - Q[:, 0].min()) / np.ptp(Q[:, 0]) * (ww - 1)).astype(int), 0, ww - 1); v_ = np.clip(np.round((1 - (Q[:, 2] - Q[:, 2].min()) / np.ptp(Q[:, 2])) * (hh - 1)).astype(int), 0, hh - 1)
             idx = ndimage.distance_transform_edt(~maske, return_distances=False, return_indices=True); farbe = linear(rgb[idx[0], idx[1]][v_, u])
@@ -225,7 +254,7 @@ for t in AUS["huelle"]:
         else:                                                                                    # Farbton der Zeichnung, Helligkeitsmuster vom Körper darunter
             ton = linear(rgb[maske]).mean(0); alt = KOERPERFARBE[wahl]; hell = alt.mean(1, keepdims=True); farbe = ton[None] * np.clip(hell / max(1e-4, float(hell.mean())), 0.45, 1.8)
         farben_setzen(m2, np.clip(farbe, 0, 1).astype(np.float32))
-    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei"))
+    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei")); o["unten"] = bool(t.get("unten"))
     if t["platz"] not in volumen and not t.get("ueberlage"): volumen[t["platz"]] = o; o["volumen"] = True                    # das erste Teil je Platz steht beim Rendern für den Raum, den dieser Platz einnimmt
     print("Hülle:", t["id"], "Platz", t["platz"], "·", len(m2.vertices), "Punkte")
 
@@ -255,6 +284,32 @@ for nr, t in enumerate(AUS.get("anbau", [])):
     m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
     o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 100 + nr; o["ueberlage"] = True; o["wahlfrei"] = bool(t.get("wahlfrei")); o["anbau"] = True
     print("Anbau:", t["id"], "Platz", t["platz"], "·", len(stuecke), "Stücke,", len(o.data.vertices), "Punkte")
+
+# ---- Teilnetze (meshy_teile.py): fertige Teile aus einem Figurenmodell; sie übernehmen die Gewichte vom Grundkörper darunter
+for nr, t in enumerate(AUS.get("teilnetze", [])):
+    o = laden(t["glb"], t["id"]); bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.context.view_layer.objects.active = o
+    bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0002)   # GLB trennt Ecken an Kanten: zusammenführen (sonst schrumpft beim Glätten jedes Dreieck für sich)
+    bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")   # Flächen einheitlich nach außen (Meshy-Netze sind teils verdreht)
+    if t.get("glaetten", 0): gl = o.modifiers.new("glatt", "SMOOTH"); gl.factor = 0.5; gl.iterations = int(t.get("glaetten", 0)); bpy.ops.object.modifier_apply(modifier="glatt")
+    bpy.ops.object.shade_smooth()
+    dt = o.modifiers.new("gewichte", "DATA_TRANSFER"); dt.object = ob; dt.use_vert_data = True; dt.data_types_verts = {"VGROUP_WEIGHTS"}; dt.vert_mapping = "POLYINTERP_NEAREST"
+    dt.layers_vgroup_select_src = "ALL"; dt.layers_vgroup_select_dst = "NAME"; bpy.ops.object.datalayout_transfer(modifier="gewichte"); bpy.ops.object.modifier_apply(modifier="gewichte")
+    if t.get("beine_mitteln"):                                                                     # Umhang, Waffenrock: folgen dem Mittel beider Beine (sonst reißt das Tuch zwischen den Beinen auseinander)
+        G_ = {g.name: g for g in o.vertex_groups}
+        for v in o.data.vertices:
+            w = {o.vertex_groups[g.group].name: g.weight for g in v.groups}
+            for b in ("oberschenkel", "unterschenkel", "fuss"):
+                l_, r_ = w.get(b + ".L", 0.0), w.get(b + ".R", 0.0); m_ = (l_ + r_) / 2
+                if l_ + r_ > 0:
+                    for S in "LR": (G_.get(b + "." + S) or o.vertex_groups.new(name=b + "." + S)).add([v.index], m_, "REPLACE"); G_[b + "." + S] = o.vertex_groups[b + "." + S]
+    if t.get("farbe"):                                                                             # eigener Farbton statt des mitgebrachten
+        h_ = t["farbe"].lstrip("#"); c_ = [int(h_[i:i + 2], 16) / 255 for i in (0, 2, 4)]; c_ = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in c_]
+        for m_ in o.data.materials:
+            b_ = next((n for n in m_.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None) if m_ and m_.use_nodes else None
+            if b_: b_.inputs["Base Color"].default_value = tuple(c_) + (1,)
+    m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ersetzt"] = ",".join(t.get("ersetzt", [])); o["unten"] = bool(t.get("unten")); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
+    print("Teilnetz:", t["id"], "Platz", t["platz"], "·", len(o.data.vertices), "Punkte, Gewichte vom Grundkörper")
 
 # ====================================================== 4. Bewegungen ======================================================
 bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode="POSE"); PB = arm.pose.bones
@@ -469,6 +524,66 @@ def tod(i, n):
                (0.65, mit(BEREIT, o_r=(-0.85, 0.2, 0.45), u_r=(-0.8, 0.45, 0.4), kl=(-0.2, 0.3, 0.93), o_l=(0.85, 0.2, 0.45), u_l=(0.8, 0.45, 0.4), h_r=(-0.8, 0.45, 0.4) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0))),
                (1, mit(BEREIT, sch=(0.0, 0.1, 1.0) if AUS.get("tod_schild_flach") else BEREIT["sch"], o_r=(-0.9, 0.42, -0.08) if not ARMBRUST else (-0.9, 0.42, -0.12), u_r=(-0.75, 0.65, -0.1) if not ARMBRUST else (-0.75, 0.64, -0.17), kl=(0.0, 0.0, -1.0) if ARMBRUST else (0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3), h_r=(-0.75, 0.66, 0.0) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0)))], t)   # Armbrust flach am Boden        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
 
+# ---- Bewegungen für wechselbare Waffen: sie hängen nur von der Waffenklasse ab (Einhand rechts, Schild links, Zweihand, Speer, Stab,
+#      Bogen links, Armbrust rechts, Wurfdolch) – die Waffe selbst ist eine eigene Ebene und wird nur in ihren Bewegungen gerendert.
+def stich_rechts(i, n):
+    """Stich rechts (Schwert, Dolch, jede Einhandwaffe): zurückziehen, mit Ausfallschritt gerade nach vorn stoßen. Die Waffe liegt quer in der Faust (Hammergriff):
+    damit sie trotz gestrecktem Arm nach vorn zeigt, knickt das Handgelenk nach unten ab (h_r)"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.3, 0.3), (0.5, 1.0), (0.75, 0.7), (1, 0.0)], t); schritt(24, w)
+    rumpf(vor=spur([(0, 2.0), (0.3, 0.0), (0.5, 14.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.3, -24.0), (0.5, 14.0), (1, 0.0)], t))
+    b = mit(BEREIT, h_r=BEREIT["u_r"])
+    zurueck = mit(BEREIT, o_r=(-0.45, 0.45, -0.77), u_r=(-0.1, -0.15, -0.98), h_r=(-0.1, -0.15, -0.98), kl=(0.0, -0.95, 0.3))
+    stoss = mit(BEREIT, o_r=(-0.12, -0.96, -0.25), u_r=(0.05, -0.99, -0.1), h_r=(0.1, -0.3, -0.95), kl=(0.05, -0.99, 0.05))
+    nach = mit(BEREIT, o_r=(-0.25, -0.75, -0.6), u_r=(-0.05, -0.8, -0.6), h_r=(0.0, -0.2, -0.98), kl=(0.0, -0.95, 0.3))
+    arme_spur([(0, b), (0.3, zurueck), (0.5, stoss), (0.75, nach), (1, b)], t)
+def hieb2h(i, n):
+    """Zweihandhieb für jede Zweihandwaffe: Hände vor dem Körper zusammen, über den Kopf ausholen, mit Ausfallschritt gerade nach unten schlagen"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.6), (0.65, 1.0), (1, 0.0)], t); schritt(18, w); rumpf(vor=spur([(0, 2.0), (0.35, -12.0), (0.65, 24.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, -8.0), (0.65, 8.0), (1, 0.0)], t))
+    vorn = mit(BEREIT, o_r=(-0.12, -0.45, -0.88), u_r=(0.45, -0.75, 0.48), kl=(0.0, -0.4, 0.92))          # beide Hände vor dem Bauch am Griff, Klinge schräg nach oben
+    arme_spur([(0, BEREIT), (0.14, vorn), (0.35, mit(BEREIT, o_r=(0.15, -0.2, 0.95), u_r=(0.5, 0.35, 0.8), kl=(0.0, 0.8, 0.6), o_l=(0.2, -0.3, 0.9), u_l=(-0.3, 0.3, 0.9))),
+               (0.5, mit(BEREIT, o_r=(0.2, -0.8, 0.5), u_r=(0.5, -0.85, 0.2), kl=(0.0, -0.35, 0.94), o_l=(0.2, -0.8, 0.4), u_l=(-0.3, -0.9, 0.2))),
+               (0.65, mit(BEREIT, o_r=(0.25, -0.8, -0.5), u_r=(0.55, -0.75, -0.4), kl=(0.0, -0.96, -0.28), o_l=(0.15, -0.8, -0.5), u_l=(-0.25, -0.85, -0.45))), (0.86, vorn), (1, BEREIT)], t)
+def stich2h(i, n):
+    """Speerstoß: linke Schulter vor, Schaft waagerecht an der rechten Hüfte (rechter Unterarm hängt, der Schaft liegt quer in der Faust),
+    zurückziehen, mit Ausfallschritt nach vorn stoßen; die linke Hand greift 40 cm weiter vorn (fester Griffpunkt)"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.3, 0.3), (0.55, 1.0), (0.75, 0.8), (1, 0.0)], t); schritt(24, w)
+    rumpf(vor=spur([(0, 2.0), (0.3, -2.0), (0.55, 12.0), (0.75, 9.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.15, -34.0), (0.3, -40.0), (0.55, -30.0), (0.75, -30.0), (1, 0.0)], t))
+    lage = mit(BEREIT, o_r=(-0.18, 0.1, -0.98), u_r=(0.42, -0.3, -0.86), kl=(0.15, -0.99, 0.02))       # Hand vor dem Bauch, Schaft nach vorn (die linke Hand erreicht ihn)
+    zurueck = mit(BEREIT, o_r=(-0.18, 0.4, -0.9), u_r=(0.4, 0.02, -0.92), kl=(0.15, -0.99, 0.02))
+    stoss = mit(BEREIT, o_r=(0.0, -0.5, -0.87), u_r=(0.55, -0.55, -0.63), kl=(0.12, -0.99, 0.06))
+    arme_spur([(0, BEREIT), (0.15, lage), (0.3, zurueck), (0.55, stoss), (0.75, stoss), (0.9, lage), (1, BEREIT)], t)
+def zauber_stab(i, n):
+    """Zauberspruch: Stab (oder jede Waffe) in der rechten Hand senkrecht hoch erheben – Unterarm nach vorn, der Stab steht quer in der Faust –,
+    linke Hand offen nach vorn, halten, zurück"""
+    t = i / (n - 1); hocke(spur([(0, 0.0), (0.3, 8.0), (0.55, 0.0), (1, 0.0)], t))
+    rumpf(vor=spur([(0, 2.0), (0.3, 8.0), (0.55, -6.0), (0.8, -6.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.55, -10.0), (0.8, -10.0), (1, 0.0)], t))
+    sammeln = mit(BEREIT, o_r=(-0.3, -0.25, -0.92), u_r=(-0.05, -0.95, -0.3), kl=(0.0, 0.0, 1.0))      # die linke Hand bleibt in Bereitschaft (mit Schild am Arm)
+    hoch = mit(BEREIT, o_r=(-0.3, -0.72, 0.62), u_r=(-0.05, -0.97, 0.2), kl=(0.0, 0.05, 1.0))
+    arme_spur([(0, BEREIT), (0.3, sammeln), (0.55, hoch), (0.8, hoch), (1, BEREIT)], t)
+def bogenschuss(i, n):
+    """Bogen in der linken Hand: seitlich zum Ziel drehen, Bogenarm gestreckt, Sehne mit der rechten Hand an die Wange ziehen, lösen (Trefferbild), nachhalten"""
+    t = i / (n - 1); dz = spur([(0, 0.0), (0.25, -35.0), (0.75, -35.0), (1, 0.0)], t); rumpf(vor=2.0, dreh_z=dz, kopf=spur([(0, 0.0), (0.3, 4.0), (0.75, 4.0), (1, 0.0)], t))
+    for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 3)); dreh("fuss." + S)
+    vor = mit(BEREIT, o_l=(0.1, -0.99, 0.05), u_l=(0.04, -1.0, 0.04), kl_l=(0.0, 0.08, 1.0), sch=(0.0, 0.0, 1.0))   # Bogenarm gestreckt, Bogen senkrecht
+    angelegt = mit(vor, o_r=(-0.1, -0.97, 0.0), u_r=(0.3, -0.95, 0.05), kl=(0.0, -0.3, 0.95))          # rechte Hand an der Sehne
+    gezogen = mit(vor, o_r=(-0.62, 0.78, 0.02), u_r=(0.66, -0.75, -0.05), kl=(0.0, 0.0, 1.0))         # Ellbogen hinten auf Schulterhöhe, Hand an der Wange
+    geloest = mit(vor, o_r=(-0.66, 0.75, 0.0), u_r=(-0.3, 0.95, 0.05), kl=(0.0, 0.0, 1.0))           # die Hand springt nach hinten weg (nicht nach oben)
+    arme_spur([(0, BEREIT), (0.25, angelegt), (0.5, gezogen), (0.62, gezogen), (0.7, geloest), (0.85, geloest), (1, BEREIT)], t)
+def armbrust1h(i, n):
+    """Armbrust einhändig rechts: Arm gestreckt nach vorn, Lauf waagerecht, abdrücken (Trefferbild), Rückstoß, absetzen; die linke Hand bleibt frei"""
+    t = i / (n - 1); a = spur([(0, 0.0), (0.3, 1.0), (0.85, 1.0), (1, 0.0)], t); rueck = spur([(0, 0.0), (0.4, 0.0), (0.5, 1.0), (0.7, 0.0), (1, 0.0)], t)
+    rumpf(vor=2 - 2 * a - 4 * rueck, dreh_z=-18 * a, kopf=6 * a)
+    anschlag = mit(BEREIT, o_r=(-0.12, -0.96, -0.24), u_r=(0.1, -0.99, 0.02), h_r=(0.05, -1.0, 0.0), kl=(0.0, 0.0, -1.0))
+    arme_spur([(0, BEREIT), (0.3, anschlag), (0.4, anschlag), (0.5, mit(anschlag, h_r=(0.05, -0.92, 0.38), o_r=(-0.14, -0.92, -0.18))), (0.7, anschlag), (0.85, anschlag), (1, BEREIT)], t)
+def dolchwurf(i, n):
+    """Wurfdolch rechts: weit hinter dem Kopf ausholen, mit Schritt nach vorn werfen (Trefferbild = Loslassen), durchschwingen; ab dem Loslassen ist die Hand leer"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.3), (0.57, 1.0), (0.8, 0.8), (1, 0.0)], t); schritt(18, w)
+    rumpf(vor=spur([(0, 2.0), (0.35, -6.0), (0.57, 14.0), (0.8, 16.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, -34.0), (0.57, 10.0), (0.8, 24.0), (1, 0.0)], t))
+    aus = mit(BEREIT, o_r=(-0.5, 0.42, 0.75), u_r=(-0.15, 0.55, 0.82), kl=(0.0, -0.85, 0.5))           # Dolch quer in der Faust: Spitze nach vorn oben
+    wurf = mit(BEREIT, o_r=(-0.2, -0.88, 0.42), u_r=(0.0, -0.97, 0.25), kl=(0.0, 0.2, 0.98))
+    durch = mit(BEREIT, o_r=(0.05, -0.7, -0.7), u_r=(0.35, -0.72, -0.6), kl=(0.5, -0.6, -0.6))
+    arme_spur([(0, BEREIT), (0.35, aus), (0.57, wurf), (0.8, durch), (1, BEREIT)], t)
+
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
@@ -477,7 +592,10 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "stabhaltung": (stabhaltung, 6, 8, True, {}), "geschoss": (geschoss, 8, 14, False, {"treffer": 4}), "frosthauch": (frosthauch, 8, 12, False, {"treffer": 4}),
               "donnerwelle": (donnerwelle, 8, 12, False, {"treffer": 4}), "glutsphaere": (glutsphaere, 8, 12, False, {"treffer": 4}), "stabschlag": (angriff, 8, 16, False, {"treffer": 5}),
               "gehen": (gehen, 8, 8, True, {}), "schildstoss": (schildstoss, 8, 14, False, {"treffer": 4}), "kampfschrei": (kampfschrei, 8, 10, False, {"treffer": 3}),
-              "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {})}
+              "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {}),
+              "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
+              "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
+              "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()
@@ -503,6 +621,17 @@ if "angriff2h" in bpy.data.actions and "griff2" in bpy.data.objects:
     luecke = []
     for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
     print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
+for name, zielname in (("hieb2h", "griff2.hieb"), ("stich2h", "griff2.stich")):                    # Zweihand mit festem Griffpunkt (für jede Waffe gleich)
+    if name not in bpy.data.actions: continue
+    a = bpy.data.actions[name]; arm.animation_data.action = a; zg = bpy.data.objects[zielname]; ik = PB["unterarm.L"].constraints.new("IK"); ik.target = zg; ik.chain_count = 2; gemerkt = []
+    for i in range(int(a["bilder"])): sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt.append((PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy()))
+    PB["unterarm.L"].constraints.remove(ik)
+    for i, (mo, mu) in enumerate(gemerkt):
+        if i == 0 or i == len(gemerkt) - 1: continue
+        sc.frame_set(i + 1); PB["oberarm.L"].matrix = mo; bpy.context.view_layer.update(); PB["unterarm.L"].matrix = mu; bpy.context.view_layer.update(); schluessel({"oberarm.L", "unterarm.L"}, i + 1)
+    luecke = []
+    for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - zg.matrix_world.translation).length * 100)
+    print(f"{name}: linke Hand am festen Griffpunkt, Abstand je Bild (cm) {[round(v, 1) for v in luecke]}"); a["griffluecke_cm"] = max(luecke)
 zw = next((bpy.data.objects["griff2." + t["id"]] for t in AUS["starr"] if t.get("zweihand")), None)   # genau der Griff der beidhändigen Waffe (andere Griffpunkte heißen griff2, griff2.001 …)
 for name, welche in (AUS.get("linke_hand_am_griff") or {}).items():
     if zw is None or name not in bpy.data.actions: continue
@@ -515,5 +644,5 @@ for name, welche in (AUS.get("linke_hand_am_griff") or {}).items():
     for i in gemerkt: sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - zw.matrix_world.translation).length * 100)
     print(f"linke Hand am Griff ({name}): größter Abstand Handgelenk – Griff {max(luecke):.1f} cm"); a["griffluecke_cm"] = max(luecke)
 bpy.ops.object.mode_set(mode="OBJECT"); arm.animation_data.action = bpy.data.actions["ruhe"]; sc.frame_set(1)
-arm["stil"] = AUS.get("stil", ""); arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
+arm["stil"] = AUS.get("stil", ""); arm["zeichenfolge"] = bool(AUS.get("zeichenfolge")); arm["gewichte"] = weg; arm["gewichtet"] = anteil; arm["vorbereitet"] = json.dumps(AUS.get("vorbereitet", []), ensure_ascii=False)
 bpy.ops.wm.save_as_mainfile(filepath=zieldatei); print("geschrieben:", zieldatei)

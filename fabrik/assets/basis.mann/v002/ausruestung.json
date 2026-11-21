@@ -1,0 +1,308 @@
+{
+  "hinweis": "Maßgebliche Grundstruktur (Mann, Meshy „Bald Wanderer“): kahl, Startausrüstung fest im Modell (Leinenhemd mit Schnürung, Gürtel mit Tasche, Lederhose, Stiefel). Frisuren als Ebene im Platz „haar“, Rüstung als Teilnetze darüber. Schwert und Schild für die Kampfanimationen.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich",
+    "block",
+    "hieb2h",
+    "stich2h",
+    "zauber_stab",
+    "bogen",
+    "armbrust1h",
+    "dolchwurf",
+    "tod"
+  ],
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "tod_schild_flach": true,
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03,
+      "klasse": "einhand",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block",
+        "zauber_stab",
+        "armbrust1h",
+        "dolchwurf"
+      ],
+      "klasse": "schild"
+    },
+    {
+      "id": "waffe.langschwert",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.langschwert/v001/quelle/schwert.glb",
+      "griff": 0.24,
+      "griff2": 0.1,
+      "klasse": "zweihand",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "hieb2h"
+      ]
+    },
+    {
+      "id": "waffe.speer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.speer/v001/quelle/speer.glb",
+      "griff": 0.17,
+      "griff2": 0.4,
+      "klasse": "speer",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich2h"
+      ]
+    },
+    {
+      "id": "waffe.zeremonienstab",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.zeremonienstab/v001/quelle/zeremonienstab.glb",
+      "griff": 0.55,
+      "griff2": 0.4,
+      "klasse": "stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "zauber_stab"
+      ]
+    },
+    {
+      "id": "waffe.armbrust",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.armbrust/v001/quelle/armbrust.glb",
+      "griff": 0.55,
+      "griff2_ort": [
+        -0.08,
+        0,
+        0.02
+      ],
+      "klasse": "armbrust",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "armbrust1h"
+      ]
+    },
+    {
+      "id": "waffe.dolch",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.dolch/v001/quelle/dolch.glb",
+      "griff": 0.15,
+      "griff2": 0.05,
+      "klasse": "wurfdolch",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "dolchwurf",
+        "stich"
+      ]
+    },
+    {
+      "id": "waffe.bogen",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffe.bogen/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "bogen"
+      ],
+      "drehen": 180
+    }
+  ],
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.militaer",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.militaer.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.undercut_bun",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.undercut_bun.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.zerzaust.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zopf_eng",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.zopf_eng.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.scheitel",
+      "platz": "haar",
+      "glb": "kopf.haar.herren/teile/kopf.haar.scheitel.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.stoppeln",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.stoppeln.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.vollbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.hufeisen",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.hufeisen.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.schnurrbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.schnurrbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.wikinger",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.wikinger.glb",
+      "wahlfrei": true
+    }
+  ],
+  "waffenklassen": {
+    "hinweis": "Jede Waffe gehört zu einer Klasse; alle Waffen einer Klasse nutzen dieselben Bewegungen und Griffpunkte. Neue Waffe = nur ihre Ebene rendern (baukasten.py), keine neue Bewegung.",
+    "einhand": "rechte Hand, Griff am Handballen: stich (dazu ruhe, gehen, laufen, tod)",
+    "schild": "linker Unterarm: block",
+    "zweihand": "rechte Hand + linke Hand 11 cm zum Knauf hin (griff2.hieb): hieb2h",
+    "speer": "rechte Hand hinten + linke Hand 40 cm zur Spitze hin (griff2.stich): stich2h",
+    "stab": "rechte Hand: zauber_stab",
+    "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
+    "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
+    "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
+  },
+  "frisuren": {
+    "hinweis": "Wählbare Frisuren (Platz „haar“). Glatze = keine Haar-Ebene (Standard). Gebaut mit fabrik/frisuren.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618]; andere Haarfarbe: neu bauen oder farbvariante.py.",
+    "auswahl": [
+      {
+        "id": "glatze",
+        "name": "Glatze",
+        "ebene": null
+      },
+      {
+        "id": "militaer",
+        "name": "Kurzhaar Militär",
+        "ebene": "kopf.haar.militaer"
+      },
+      {
+        "id": "undercut_bun",
+        "name": "Undercut mit Bun am Hinterkopf",
+        "ebene": "kopf.haar.undercut_bun"
+      },
+      {
+        "id": "zerzaust",
+        "name": "Mittellang zerzaust",
+        "ebene": "kopf.haar.zerzaust"
+      },
+      {
+        "id": "zopf_eng",
+        "name": "Lange Haare, Zopf eng am Hinterkopf gebunden",
+        "ebene": "kopf.haar.zopf_eng"
+      },
+      {
+        "id": "scheitel",
+        "name": "Mittellanger Scheitel",
+        "ebene": "kopf.haar.scheitel"
+      }
+    ]
+  },
+  "baerte": {
+    "hinweis": "Wählbare Bärte (Platz „bart“). Ohne Bart = Standard. Gebaut mit fabrik/bart.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618].",
+    "auswahl": [
+      {
+        "id": "ohne",
+        "name": "Ohne Bart",
+        "ebene": null
+      },
+      {
+        "id": "stoppeln",
+        "name": "Dreitagebart",
+        "ebene": "kopf.bart.stoppeln"
+      },
+      {
+        "id": "vollbart",
+        "name": "Kurzer Vollbart",
+        "ebene": "kopf.bart.vollbart"
+      },
+      {
+        "id": "hufeisen",
+        "name": "Hufeisen-Schnurrbart",
+        "ebene": "kopf.bart.hufeisen"
+      },
+      {
+        "id": "schnurrbart",
+        "name": "Schnurrbart",
+        "ebene": "kopf.bart.schnurrbart"
+      },
+      {
+        "id": "wikinger",
+        "name": "Langer Vollbart",
+        "ebene": "kopf.bart.wikinger"
+      }
+    ]
+  }
+}

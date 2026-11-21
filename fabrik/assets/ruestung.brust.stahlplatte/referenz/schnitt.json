@@ -1,0 +1,9 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Brustpanzer (Stahlplatten mit Goldrand und Lederriemen) – vorn, Seite, hinten (hinten rechts abgeschnitten: wird aus der linken Hälfte gespiegelt). Kästen [links, oben, rechts, unten].",
+  "ausschnitte": [
+    { "name": "vorn",   "kasten": [18, 30, 168, 238],  "asset": "ruestung.brust.stahlplatte", "ansicht": "vorn" },
+    { "name": "seite",  "kasten": [176, 30, 300, 238], "asset": "ruestung.brust.stahlplatte", "ansicht": "seite" },
+    { "name": "hinten", "kasten": [318, 30, 449, 238], "asset": "ruestung.brust.stahlplatte", "ansicht": "hinten" }
+  ]
+}

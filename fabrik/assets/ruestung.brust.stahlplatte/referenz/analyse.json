@@ -1,0 +1,155 @@
+{
+ "quelle": "original.png",
+ "sha256": "96317b6601526e8b1ae649d385262d72b9f00ac0c07917713c62af27d0e5f772",
+ "groesse": [
+  449,
+  317
+ ],
+ "papier": "#131721",
+ "assets": {
+  "ruestung.brust.stahlplatte": [
+   "vorn",
+   "seite",
+   "hinten"
+  ]
+ },
+ "ausschnitte": [
+  {
+   "name": "vorn",
+   "asset": "ruestung.brust.stahlplatte",
+   "ansicht": "vorn",
+   "datei": "teile/vorn.png",
+   "kasten": [
+    25,
+    38,
+    165,
+    233
+   ],
+   "breite": 140,
+   "hoehe": 195,
+   "verhaeltnis": 0.718,
+   "deckung": 0.78,
+   "farben": [
+    {
+     "farbe": "#5e4a3f",
+     "anteil": 0.264
+    },
+    {
+     "farbe": "#362720",
+     "anteil": 0.218
+    },
+    {
+     "farbe": "#766762",
+     "anteil": 0.142
+    },
+    {
+     "farbe": "#a99488",
+     "anteil": 0.134
+    },
+    {
+     "farbe": "#8f7565",
+     "anteil": 0.129
+    },
+    {
+     "farbe": "#dbc9be",
+     "anteil": 0.113
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 195 px (empfohlen ab 512)"
+   ]
+  },
+  {
+   "name": "seite",
+   "asset": "ruestung.brust.stahlplatte",
+   "ansicht": "seite",
+   "datei": "teile/seite.png",
+   "kasten": [
+    182,
+    38,
+    305,
+    230
+   ],
+   "breite": 123,
+   "hoehe": 192,
+   "verhaeltnis": 0.641,
+   "deckung": 0.734,
+   "farben": [
+    {
+     "farbe": "#151315",
+     "anteil": 0.252
+    },
+    {
+     "farbe": "#5f493e",
+     "anteil": 0.214
+    },
+    {
+     "farbe": "#503425",
+     "anteil": 0.172
+    },
+    {
+     "farbe": "#7c6357",
+     "anteil": 0.166
+    },
+    {
+     "farbe": "#b59f93",
+     "anteil": 0.102
+    },
+    {
+     "farbe": "#39281f",
+     "anteil": 0.094
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 192 px (empfohlen ab 512)",
+    "Motiv berührt den Rand des Kastens"
+   ]
+  },
+  {
+   "name": "hinten",
+   "asset": "ruestung.brust.stahlplatte",
+   "ansicht": "hinten",
+   "datei": "teile/hinten.png",
+   "kasten": [
+    329,
+    35,
+    448,
+    232
+   ],
+   "breite": 119,
+   "hoehe": 197,
+   "verhaeltnis": 0.604,
+   "deckung": 0.825,
+   "farben": [
+    {
+     "farbe": "#826f68",
+     "anteil": 0.208
+    },
+    {
+     "farbe": "#48372f",
+     "anteil": 0.194
+    },
+    {
+     "farbe": "#5b4c47",
+     "anteil": 0.176
+    },
+    {
+     "farbe": "#9d8b84",
+     "anteil": 0.167
+    },
+    {
+     "farbe": "#6b554a",
+     "anteil": 0.15
+    },
+    {
+     "farbe": "#d2c0b4",
+     "anteil": 0.105
+    }
+   ],
+   "warnungen": [
+    "geringe Auflösung: 197 px (empfohlen ab 512)",
+    "Motiv berührt den Rand des Kastens"
+   ]
+  }
+ ]
+}

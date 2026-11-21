@@ -52,7 +52,8 @@ farbe_ecke = tex[py, px]; lin = np.where(farbe_ecke <= 0.04045, farbe_ecke / 12.
 summe = np.zeros((len(me.vertices), 3)); n = np.zeros(len(me.vertices)); np.add.at(summe, ecke, lin); np.add.at(n, ecke, 1); farbe = (summe / np.maximum(n, 1)[:, None]).astype(np.float32)
 while me.color_attributes: me.color_attributes.remove(me.color_attributes[0])
 ca = me.color_attributes.new("Col", "FLOAT_COLOR", "POINT"); ca.data.foreach_set("color", np.concatenate([farbe, np.ones((len(farbe), 1), np.float32)], 1).ravel())
-mat = bpy.data.materials.new("koerper"); mat.use_nodes = True; nt = mat.node_tree; f = nt.nodes.new("ShaderNodeVertexColor"); f.layer_name = "Col"; nt.links.new(f.outputs["Color"], nt.nodes["Principled BSDF"].inputs["Base Color"])
+mat = bpy.data.materials.new("koerper"); mat.use_nodes = True; nt = mat.node_tree; f = nt.nodes.new("ShaderNodeTexImage"); f.image = bpy.data.images.load(os.path.abspath(haut)); f.interpolation = "Closest"
+nt.links.new(f.outputs["Color"], nt.nodes["Principled BSDF"].inputs["Base Color"]); nt.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.8   # die Haut selbst (scharfes Gesicht); die Punktfarben bleiben für rig.py
 me.materials.clear(); me.materials.append(mat); ob.name = "koerper"
 try: bpy.ops.export_scene.gltf(filepath=ziel, export_format="GLB", export_vertex_color="ACTIVE", export_all_vertex_colors=True)
 except TypeError: bpy.ops.export_scene.gltf(filepath=ziel, export_format="GLB")
