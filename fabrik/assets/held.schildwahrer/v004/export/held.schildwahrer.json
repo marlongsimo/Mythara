@@ -149,26 +149,11 @@
     "bild": {
      "datei": "atlas/ruestung.brust.platte.v003",
      "groesse": [
-      2040,
-      1136
+      2043,
+      1437
      ],
      "bilder": 520,
-     "speicher_mb": 9.3
-    }
-   }
-  },
-  "kleidung.umhang.v003": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 11.7
     }
    }
   },
@@ -179,11 +164,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -194,11 +179,11 @@
     "bild": {
      "datei": "atlas/kleidung.guertel.v003",
      "groesse": [
-      2047,
-      147
+      2039,
+      281
      ],
-     "bilder": 490,
-     "speicher_mb": 1.2
+     "bilder": 520,
+     "speicher_mb": 2.3
     }
    }
   },
@@ -209,11 +194,11 @@
     "bild": {
      "datei": "atlas/kleidung.fuss.stiefel.v003",
      "groesse": [
-      2044,
-      529
+      2045,
+      765
      ],
-     "bilder": 519,
-     "speicher_mb": 4.3
+     "bilder": 520,
+     "speicher_mb": 6.3
     }
    }
   },
@@ -225,11 +210,26 @@
     "bild": {
      "datei": "atlas/kopf.haar.v003",
      "groesse": [
-      2043,
-      247
+      2044,
+      260
      ],
      "bilder": 520,
-     "speicher_mb": 2.0
+     "speicher_mb": 2.1
+    }
+   }
+  },
+  "ruestung.brust.stahlplatte": {
+   "art": "huelle",
+   "platz": "brust",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/ruestung.brust.stahlplatte",
+     "groesse": [
+      2046,
+      718
+     ],
+     "bilder": 520,
+     "speicher_mb": 5.9
     }
    }
   },
@@ -251,11 +251,11 @@
     "vorn": {
      "datei": "atlas/waffe.schwert.schildwahrer.vorn",
      "groesse": [
-      2046,
-      467
+      2043,
+      486
      ],
      "bilder": 520,
-     "speicher_mb": 3.8
+     "speicher_mb": 4.0
     }
    }
   },
@@ -278,27 +278,10 @@
      "datei": "atlas/schild.kreuz.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.rot": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#a8302a",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.rot",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -311,11 +294,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.rot",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -340,27 +323,10 @@
      "datei": "atlas/schild.kreuz.rot.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.gruen": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#2f6b34",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.gruen",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -373,11 +339,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.gruen",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -402,27 +368,10 @@
      "datei": "atlas/schild.kreuz.gruen.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.ocker": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#c08a2a",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.ocker",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -435,11 +384,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.ocker",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -464,27 +413,10 @@
      "datei": "atlas/schild.kreuz.ocker.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.schwarz": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#2b2b30",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.schwarz",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -497,11 +429,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.schwarz",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -526,27 +458,10 @@
      "datei": "atlas/schild.kreuz.schwarz.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.weiss": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#d9d4c6",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.weiss",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -559,11 +474,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.weiss",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -588,27 +503,10 @@
      "datei": "atlas/schild.kreuz.weiss.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.bordeaux": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#6b2238",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.bordeaux",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -621,11 +519,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.bordeaux",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -650,27 +548,10 @@
      "datei": "atlas/schild.kreuz.bordeaux.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
-    }
-   }
-  },
-  "kleidung.umhang.v003.grau": {
-   "art": "huelle",
-   "platz": "ruecken",
-   "variante_von": "kleidung.umhang.v003",
-   "farbe": "#6f7278",
-   "atlas": {
-    "bild": {
-     "datei": "atlas/kleidung.umhang.v003.grau",
-     "groesse": [
-      2045,
-      2878
-     ],
-     "bilder": 520,
-     "speicher_mb": 23.5
+     "speicher_mb": 5.3
     }
    }
   },
@@ -683,11 +564,11 @@
     "bild": {
      "datei": "atlas/kleidung.waffenrock.v003.grau",
      "groesse": [
-      2043,
-      130
+      2042,
+      191
      ],
-     "bilder": 467,
-     "speicher_mb": 1.1
+     "bilder": 519,
+     "speicher_mb": 1.6
     }
    }
   },
@@ -712,10 +593,10 @@
      "datei": "atlas/schild.kreuz.grau.vorn",
      "groesse": [
       2046,
-      606
+      642
      ],
      "bilder": 520,
-     "speicher_mb": 5.0
+     "speicher_mb": 5.3
     }
    }
   }
@@ -731,17 +612,8 @@
    "kleidung.schuh.v004"
   ],
   "brust": [
-   "ruestung.brust.platte.v003"
-  ],
-  "ruecken": [
-   "kleidung.umhang.v003",
-   "kleidung.umhang.v003.rot",
-   "kleidung.umhang.v003.gruen",
-   "kleidung.umhang.v003.ocker",
-   "kleidung.umhang.v003.schwarz",
-   "kleidung.umhang.v003.weiss",
-   "kleidung.umhang.v003.bordeaux",
-   "kleidung.umhang.v003.grau"
+   "ruestung.brust.platte.v003",
+   "ruestung.brust.stahlplatte"
   ],
   "rock": [
    "kleidung.waffenrock.v003",
@@ -777,6 +649,7 @@
   ]
  },
  "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)",
+ "zeichenfolge": true,
  "tiefe": {
   "waffe.schwert.schildwahrer": {
    "angriff": [
@@ -6935,5 +6808,5 @@
    ]
   }
  },
- "atlas_speicher_mb": 351.5
+ "atlas_speicher_mb": 181.1
 }

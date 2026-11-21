@@ -1,6 +1,6 @@
 {
  "id": "held.schildwahrer",
- "status": "erfolgreich mit Einschränkungen",
+ "status": "fehlerhaft",
  "manuell": [
   "Ob die Bewegungen glaubhaft aussehen, kann die Prüfung nicht beurteilen – bitte in der Testszene ansehen."
  ],
@@ -29,7 +29,7 @@
   {
    "bereich": "bild",
    "pruefung": "keine gespiegelten Richtungen (kleinster Unterschied zum Spiegelbild der Gegenrichtung)",
-   "wert": 0.188,
+   "wert": 0.22,
    "grenze": "> 0.03",
    "urteil": "ok"
   },
@@ -66,9 +66,9 @@
   },
   {
    "bereich": "bild",
-   "pruefung": "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)",
-   "wert": 0.0,
-   "grenze": "≤ 0.02",
+   "pruefung": "jedes Rüstungsteil ist im Gesamtbild sichtbar (Anteil seiner Bildpunkte, die das Bild verändern – beste Richtung)",
+   "wert": 0.52,
+   "grenze": "≥ 0.3",
    "urteil": "ok"
   },
   {
@@ -81,14 +81,14 @@
   {
    "bereich": "bild",
    "pruefung": "Ebenen sind flächig (Anteil der Fläche, der nach Wegnehmen feiner Linien bleibt – je Ebene, schlechteste Bewegung)",
-   "wert": 0.76,
+   "wert": 0.81,
    "grenze": "≥ 0.5",
    "urteil": "ok"
   },
   {
    "bereich": "bild",
    "pruefung": "umschlossene Spalten (px je Bild) – nur Hinweis: Rüstungsebenen legen nur Deckung über den Körper und können ihn nicht durchlöchern; gemessen werden natürliche Spalten zwischen Beinen oder zwischen Arm und Rumpf, die die Kleidung umschließt",
-   "wert": 373,
+   "wert": 168,
    "grenze": "Hinweis",
    "urteil": "ok"
   },
@@ -138,11 +138,11 @@
     "kleidung.hemd.v004": 0.0,
     "kleidung.hose.v004": 0.0,
     "kleidung.schuh.v004": 0.0,
-    "kleidung.umhang.v003": 0.0,
     "kleidung.waffenrock.v003": 0.0,
     "koerper": 0.0,
     "kopf.haar.v003": 0.0,
-    "ruestung.brust.platte.v003": 0.0
+    "ruestung.brust.platte.v003": 0.0,
+    "ruestung.brust.stahlplatte": 0.0
    }
   },
   {
@@ -256,9 +256,9 @@
   {
    "bereich": "rig",
    "pruefung": "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)",
-   "wert": 0.0741,
+   "wert": 0.1324,
    "grenze": "≤ 0.03",
-   "urteil": "warnung"
+   "urteil": "fehler"
   },
   {
    "bereich": "animation",
