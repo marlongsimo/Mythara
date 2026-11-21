@@ -11,7 +11,7 @@
 import { WELT, Welt } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
-import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "../hud";
+import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
 import { frei as freigabe } from "../freigabe";
@@ -84,7 +84,16 @@ function serverStelle(s: Welt, p: { region: string; x: number | null; y: number 
   if (serverStelleGenutzt || !p || s.gemerkteStelle || s.time.now > 15000 || p.x === null || p.y === null) return; serverStelleGenutzt = true;
   const x = p.x, y = p.y; if (Math.hypot(x - s.ort.x, y - s.ort.y) < 1) return;
   s.ort = { x, y }; s.pfad = []; s.cameras.main.centerOn(x * FELD_PX, y * FELD_PX); }
-function onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
+/** Oben neben der Profilanzeige: Spieler (wer ist hier, mit Zahl) und Einstellungen (Menü) */
+function obenKnoepfe(s: Welt) { let el = document.getElementById("ez-oben-knoepfe"); if (!el) { el = document.createElement("div"); el.id = "ez-oben-knoepfe"; document.body.appendChild(el); }
+  el.hidden = false; el.innerHTML = `<button type="button" data-o="spieler" aria-label="Spieler" title="Spieler hier (P)"><span>${ZEICHEN.helden}</span><em class="zahl" hidden></em></button><button type="button" data-o="menue" aria-label="Einstellungen" title="Einstellungen"><span>${ZEICHEN.menue}</span></button>`;
+  el.onpointerdown = (e) => e.stopPropagation(); el.onclick = (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-o]") as HTMLElement | null; if (!b) return; if (b.dataset.o === "spieler") tafel(s, spielerListe); else oeffne("menue", s); }; obenPlatz(); }
+/** rechts neben die sichtbare Profilanzeige (im Kampfgebiet: Leben und Erfahrung) setzen */
+function obenPlatz() { const el = document.getElementById("ez-oben-knoepfe"); if (!el) return; const p = document.querySelector(document.body.classList.contains("weltkampf") ? "#ez-ich" : "#ez-profil") as HTMLElement | null, r = p && p.getBoundingClientRect();
+  if (!r || !r.width) return; const ban = document.querySelector("#ez-titel:not([hidden])") as HTMLElement | null, br = ban && ban.getBoundingClientRect(), passt = !br || !br.width || r.right + 10 + el.offsetWidth + 6 <= br.left;
+  /* neben das Profil – reicht der Platz bis zum Ortsbanner nicht, direkt darunter an seine rechte Kante */
+  const l = Math.round(passt ? r.right + 10 : r.right - el.offsetWidth) + "px", t = Math.round(passt ? r.top + (r.height - el.offsetHeight) / 2 : r.bottom + 8) + "px"; if (el.style.left !== l) el.style.left = l; if (el.style.top !== t) el.style.top = t; }
+function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .zahl") as HTMLElement | null; if (z) { const n = weltOnline(); z.hidden = n < 2; z.textContent = String(n); } }
 
 /** Die gemeinsame Welt für die Region, in der man steht: Mitspieler neu aufstellen und beim Server den Ort melden */
 function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, h: number) {
@@ -122,10 +131,9 @@ export function weltAnschliessen(start: string, tor: string) {
     const knoepfe: RKnopf[] = [];
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
     if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
-    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
-    rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
-    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung },
-      ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => oeffne("riss", s) }] : []), { name: "Menü", zeichen: "menue", tat: () => oeffne("menue", s) }]);
+    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
+    rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe) }); obenKnoepfe(s); onlineZeigen();
+    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }]); /* Spieler und Einstellungen sitzen oben neben dem Profil */
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
   };
   WELT.betreten = (s) => {
@@ -139,14 +147,14 @@ export function weltAnschliessen(start: string, tor: string) {
     document.body.classList.add("offenewelt"); /* Menü rechts als Spalte, Kampfsteuerung immer sichtbar */
     const ruhig = (ev: Event) => { if (kampf || !(ev.target as HTMLElement).closest("#ez-tasten")) return; const t = $("#ez-dorf-hilfe"); t.textContent = "Hier ist ein sicherer Ort – gekämpft wird draußen, etwa im Kreuzwald hinter dem Südtor."; t.style.display = ""; };
     document.addEventListener("pointerdown", ruhig, true);
-    s.events.once("shutdown", () => { document.body.classList.remove("offenewelt"); document.removeEventListener("pointerdown", ruhig, true); kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
+    s.events.once("shutdown", () => { const ok = document.getElementById("ez-oben-knoepfe"); if (ok) ok.hidden = true; document.body.classList.remove("offenewelt"); document.removeEventListener("pointerdown", ruhig, true); kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.fremd = fremd;
   WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);
-    kampfartZeigen(s);
+    kampfartZeigen(s); obenPlatz();
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
     weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
