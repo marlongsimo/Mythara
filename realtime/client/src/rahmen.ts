@@ -6,6 +6,9 @@
  */
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
+import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE } from "../../shared/gegenstaende";
+import { aktiverHeld, gegenstandBild } from "./held";
+import { inventar, ablegen, anlegen } from "./inventar";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const SVG = (inhalt: string) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inhalt}</svg>`;
@@ -80,8 +83,44 @@ function tafel(klasse: string, inhalt: string, zu: () => void): HTMLElement {
   f.onclick = (e) => { if (e.target === f || (e.target as HTMLElement).closest('[data-t="zu"]')) schliessen(); };
   return f;
 }
-/** Rucksack und Ausrüstung: das Grundgerüst – die Plätze stehen, Gegenstände kommen mit dem Inventar */
+/* ---------- Ausrüstung und Rucksack des eigenen Helden ---------- */
+const PLATZBILD: Record<Platz, string> = {
+  amulett: SVG('<path d="M6 3c0 4 2.7 7 6 8 3.3-1 6-4 6-8"/><path d="M12 13.5 15 17l-3 4-3-4z"/><circle cx="12" cy="11.5" r="1.2"/>'), waffe: SVG('<path d="M5 19 15.5 8.5M14 5l5 5M12.5 6.5l5 5M6.5 15.5l2 2M4 20l2-2"/>'),
+  brust: SVG('<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 1.5-2.4 2-4 2s-3-.5-4-2z"/>'), nebenhand: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>'),
+};
+function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
+  const inv = inventar(), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
+      ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}</button>`;
+  const reiter = `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
+  const inhalt = art === "ausruestung"
+    ? `<h2>Ausrüstung</h2><div class="zier"></div>${reiter}<div class="iplaetze"><div class="p-amulett">${feld(inv.angelegt.amulett, "amulett", "amulett")}</div><div class="p-waffe">${feld(inv.angelegt.waffe, "waffe", "waffe")}</div>
+       <div class="p-brust">${feld(inv.angelegt.brust, "brust", "brust")}</div><div class="p-nebenhand">${feld(inv.angelegt.nebenhand, "nebenhand", "nebenhand")}</div></div><p class="klein">Tippe auf einen Gegenstand: untersuchen oder ablegen.</p>`
+    : `<h2>Rucksack</h2><div class="zier"></div>${reiter}<div class="faecher">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div><p class="klein">${inv.rucksack.length ? "Tippe auf einen Gegenstand: untersuchen oder anlegen." : "Leer – abgelegte Ausrüstung und Beute landen hier."}</p>`;
+  const f = tafel("taschen eigen", inhalt + `<div class="iwahl" hidden></div>`, zu);
+  f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; void gegenstandBild(c, G.ebenen, G.platz === "brust"); });
+  const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu); };
+  f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) neu(a); }));
+  const wahl = f.querySelector(".iwahl") as HTMLElement;
+  f.querySelectorAll<HTMLElement>(".ifeld.voll").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const g = b.dataset.g!, G = GEGENSTAENDE[g], angelegt = !b.dataset.wo!.startsWith("r");
+    f.querySelectorAll(".ifeld").forEach((x) => x.classList.toggle("gewaehlt", x === b));
+    wahl.hidden = false; wahl.innerHTML = `<b>${G.name}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button><button type="button" class="haupt" data-t="${angelegt ? "ablegen" : "anlegen"}">${angelegt ? "Ablegen" : "Anlegen"}</button></div>`;
+    wahl.onclick = (ev) => { ev.stopPropagation(); const t = (ev.target as HTMLElement).closest<HTMLElement>("[data-t]")?.dataset.t; if (!t) return;
+      if (t === "untersuchen") untersuchen(g, () => neu(art));
+      else if (t === "ablegen") { if (!ablegen(G.platz)) { wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } neu(art); }
+      else if (t === "anlegen") { anlegen(g); neu(art); } }; }));
+}
+/** Untersuchen: die Werte eines Gegenstands */
+function untersuchen(g: string, zurueck: () => void): void {
+  const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
+  const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art} · ${PLAETZE.find((p) => p.id === G.platz)!.name}</p>
+    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${G.werte.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, () => { /* schließen */ });
+  void gegenstandBild(t.querySelector("canvas") as HTMLCanvasElement, G.ebenen, G.platz === "brust");
+  (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
+}
+/** Rucksack und Ausrüstung: mit eigenem Helden das echte Inventar, sonst (Kampagnen ohne eigenen Helden) das bisherige Grundgerüst */
 export function taschenTafel(art: "rucksack" | "ausruestung", held: string, zu: () => void): void {
+  if (aktiverHeld()) { eigeneTasche(art, zu); return; }
   const D = HELDEN[held] || HELDEN.schildwaechter, PLAETZE = ["Kopf", "Hals", "Schultern", "Brust", "Hände", "Gürtel", "Beine", "Füße", "Waffe", "Nebenhand", "Ring", "Ring"];
   const reiter = `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "rucksack"

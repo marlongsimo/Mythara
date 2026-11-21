@@ -17,6 +17,11 @@ interface Meta { id: string; angriff?: string; bezug?: { haut: number; haar: num
 /** Held → Figur der Fabrik (Ordner unter img/figuren-fabrik/) */
 export const MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.v003" }; /* Bandit v003 (werkzeug/fabrik_spielformat.py) */
 const BASIS = "../img/figuren-fabrik/";
+/** Eigener Held: welche Waffen gerade angelegt sind (setzt das Inventar); geladen werden alle Startwaffen, damit Anlegen und Ablegen sofort sichtbar sind */
+let eigeneWaffen: (() => string[]) | null = null;
+export function eigeneWaffenQuelle(f: () => string[]): void { eigeneWaffen = f; }
+const ALLE_WAFFEN = [...new Set(Object.values(STARTWAFFEN).flatMap((w) => w.waffen))];
+const waffenVon = (h: Held & { ich?: boolean }) => (h.ich ? ALLE_WAFFEN : STARTWAFFEN[h.waffe].waffen);
 import { Held, ebenenVon, farbeVon, farbMatrix, figurVon, STARTWAFFEN } from "../../shared/aussehen";
 const laden = new WeakMap<Phaser.Scene, Map<string, Promise<Meta>>>();
 
@@ -37,17 +42,19 @@ export class ModulFigur extends Phaser.GameObjects.Container {
   private meta: Meta | null = null; private teile = new Map<string, Phaser.GameObjects.Sprite>(); private ziel: number;
   private zustand = "ruhe"; private einmal: string | null = null; private bild = 0; private uhr = 0; private richtung = 2; private achtRichtungen = false;
   private schritt = (_t: number, dt: number) => this.weiter(dt);
+  /** Ausrüstung geändert: sofort neu zeichnen */
+  neuZeichnen(): void { this.zeigen(); }
   /** hoehe: Körperhöhe am Bildschirm in Bildpunkten (wie bisher die Figurenhöhe der Szene) */
   /** held: der eigene Held (Grundmann/Grundfrau) – nur die gewählten Ebenen, Haut/Haar/Bart gefärbt, die Waffe der Startwaffe */
-  constructor(scene: Phaser.Scene, x: number, y: number, readonly figur: string, hoehe: number, private eigen?: Held) {
+  constructor(scene: Phaser.Scene, x: number, y: number, readonly figur: string, hoehe: number, private eigen?: Held & { ich?: boolean }) {
     super(scene, x, y); scene.add.existing(this); this.ziel = hoehe; this.setSize(hoehe * 0.6, hoehe);
     scene.events.on("update", this.schritt); this.once("destroy", () => scene.events.off("update", this.schritt));
-    const nur = eigen ? [...ebenenVon(eigen.aussehen).map((e) => e.ebene), ...STARTWAFFEN[eigen.waffe].waffen.flatMap((w) => [w + ".hinten", w + ".vorn"])] : undefined;
+    const nur = eigen ? [...ebenenVon(eigen.aussehen).map((e) => e.ebene), ...waffenVon(eigen).flatMap((w) => [w + ".hinten", w + ".vorn"])] : undefined;
     figurLaden(scene, figur, nur).then((M) => this.aufbauen(M)).catch((e) => console.warn("Modulfigur:", e));
   }
   private aufbauen(M0: Meta) {
     if (!this.scene) return; const H = this.eigen, key = "modul:" + this.figur + ":", [fx, fy] = M0.fuss;
-    const farbe = new Map<string, number[]>(), M: Meta = H ? { ...M0, ebenen: ebenenVon(H.aussehen).map((e) => e.ebene), waffen: STARTWAFFEN[H.waffe].waffen, angriff: STARTWAFFEN[H.waffe].angriff } : M0;
+    const farbe = new Map<string, number[]>(), M: Meta = H ? { ...M0, ebenen: ebenenVon(H.aussehen).map((e) => e.ebene), waffen: waffenVon(H), angriff: STARTWAFFEN[H.waffe].angriff } : M0;
     if (H && M0.bezug) for (const e of ebenenVon(H.aussehen)) if (e.faerben) farbe.set(e.ebene, farbMatrix(farbeVon(H.aussehen, e.faerben), M0.bezug[e.faerben]));
     this.meta = M;
     for (const e of [...M.waffen.map((w) => w + ".hinten"), ...M.ebenen, ...M.waffen.map((w) => w + ".vorn")]) { const s = this.scene.add.sprite(0, 0, key + e).setOrigin(fx, fy); this.add(s); this.teile.set(e, s);
@@ -87,7 +94,8 @@ export class ModulFigur extends Phaser.GameObjects.Container {
   private zeigen() { const M = this.meta; if (!M) return; const a = this.anim, name = `${a}/${this.richtung}/${Math.min(this.bild, M.animationen[a].bilder - 1)}`;
     const w = [...M.waffen].sort((p, q) => (M.tiefe[q]?.[a]?.[this.richtung]?.[this.bild] ?? 0) - (M.tiefe[p]?.[a]?.[this.richtung]?.[this.bild] ?? 0));   // fernste zuerst
     const folge = [...w.map((x) => x + ".hinten"), ...M.ebenen, ...w.map((x) => x + ".vorn")]; let i = 0;
-    for (const e of folge) { const s = this.teile.get(e); if (!s) continue; const da = s.texture.has(name); s.setVisible(da); if (da) s.setFrame(name); this.moveTo(s, i++); } }
+    const an = this.eigen && this.eigen.ich && eigeneWaffen ? new Set(eigeneWaffen()) : null; /* eigener Held: nur die angelegten Waffen zeigen (Ausrüstung) */
+    for (const e of folge) { const s = this.teile.get(e); if (!s) continue; const da = s.texture.has(name) && (!an || !M.waffen.includes(e.replace(/\.(hinten|vorn)$/, "")) || an.has(e.replace(/\.(hinten|vorn)$/, ""))); s.setVisible(da); if (da) s.setFrame(name); this.moveTo(s, i++); } }
 }
 
 /** Die Bilder einer modularen Figur schon vorher laden (etwa die Gegner eines Gebiets, bevor man es betritt) – sonst ruckelt es beim ersten Anblick */
@@ -98,7 +106,7 @@ export const istModul = (held: string): boolean => Boolean(MODUL[held]);
  * Das Figurenbild eines Helden anlegen: modular, wenn es ihn in der Fabrik gibt, sonst wie bisher das Standbild.
  * hoehe: Körperhöhe am Bildschirm. Der Rückgabewert lässt sich wie ein Sprite verwenden.
  */
-export function heldenFigur(scene: Phaser.Scene, x: number, y: number, held: string, hoehe: number, bild = "figur-" + held, eigen?: Held | null): Phaser.GameObjects.Sprite {
+export function heldenFigur(scene: Phaser.Scene, x: number, y: number, held: string, hoehe: number, bild = "figur-" + held, eigen?: (Held & { ich?: boolean }) | null): Phaser.GameObjects.Sprite {
   if (eigen) return new ModulFigur(scene, x, y, figurVon(eigen.aussehen), hoehe, eigen) as unknown as Phaser.GameObjects.Sprite; /* der eigene Held aus dem Heldeneditor */
   if (MODUL[held]) return new ModulFigur(scene, x, y, MODUL[held], hoehe) as unknown as Phaser.GameObjects.Sprite;
   return scene.add.sprite(x, y, bild);

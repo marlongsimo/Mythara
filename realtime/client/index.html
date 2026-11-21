@@ -444,6 +444,20 @@
     #ez-titel.ein { animation: ez-titel-ein .6s ease-out both; } #ez-titel.weg { opacity: 0 !important; transition: opacity .9s ease-in; }
     @keyframes ez-titel-ein { from { opacity: 0; } to { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) { #ez-titel.ein { animation: none; } #ez-titel.weg { transition: none; } }
+    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Amulett oben, Waffe links, Brust Mitte, Nebenhand rechts */
+    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: ". amulett ." "waffe brust nebenhand"; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
+    .tafel.eigen .p-amulett { grid-area: amulett; } .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
+    .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 150px; }
+    .tafel.eigen .ifeld { position: relative; display: grid; place-items: center; width: 100%; height: 108px; padding: 0; cursor: default; border-radius: 8px; color: #8a7448;
+      background: radial-gradient(rgba(70,54,32,.75), rgba(16,12,8,.95)); border: 1px solid #6a5232; box-shadow: inset 0 0 12px #000; }
+    .tafel.eigen .ifeld.voll { cursor: pointer; border-color: #b08a3c; } .tafel.eigen .ifeld.voll:hover, .tafel.eigen .ifeld.gewaehlt { border-color: #ffd36a; box-shadow: inset 0 0 12px #000, 0 0 12px rgba(255,190,80,.5); }
+    .tafel.eigen .ifeld canvas { width: 86%; height: 86%; } .tafel.eigen .ifeld .leer svg { width: 40px; height: 40px; opacity: .45; }
+    .tafel.eigen .ifeld small { position: absolute; left: 0; right: 0; bottom: 3px; font: 600 10px Cinzel, Georgia, serif; color: #b9a57c; letter-spacing: .05em; text-transform: uppercase; }
+    .tafel.eigen .faecher .ifeld { height: auto; aspect-ratio: 1; }
+    .tafel.eigen .iwahl { margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(20,15,10,.7); border: 1px solid #5a4528; } .tafel.eigen .iwahl b { font-family: Cinzel, Georgia, serif; color: #f0d48a; } .tafel.eigen .iwahl .reihe { margin-top: 8px; }
+    .tafel.untersuchen .iart { margin: 2px 0 8px; color: #b9a57c; font-size: 13px; } .tafel.untersuchen .igross { width: 160px; height: 160px; display: block; margin: 0 auto 8px; border-radius: 10px; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #6a5232; }
+    .tafel.untersuchen .iwerte { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 6px auto 10px; max-width: 320px; text-align: left; } .tafel.untersuchen dt { color: #b9a57c; } .tafel.untersuchen dd { margin: 0; font-weight: 600; color: #fff1cc; text-align: right; }
+    @media (max-width: 420px) { .tafel.eigen .iplaetze { grid-template-columns: repeat(3, 86px); gap: 10px; } .tafel.eigen .ifeld { height: 86px; } .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 120px; } }
 </style>
 </head>
 <body>

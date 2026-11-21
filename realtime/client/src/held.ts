@@ -89,3 +89,23 @@ export function profilZeigen(): void { if (!aktiv) return; const W = STARTWAFFEN
   for (const id of ["ez-profil-bild", "ez-ich-bild"]) { const b = document.getElementById(id) as HTMLImageElement | null; if (b && bildnis && b.getAttribute("src") !== bildnis) { b.dataset.src = bildnis; b.src = bildnis; } }
   const t = document.getElementById("ez-profil-held"); if (t) t.textContent = `${W.weg} · ${W.name}`; }
 export const eigenesBildnis = (): string => bildnis;
+
+/** Bild eines Gegenstands (Ausrüstungsfenster): Waffen aus den Figurenbildern des eigenen Helden, das Hemd als Ausschnitt des Oberkörpers */
+export async function gegenstandBild(ziel: HTMLCanvasElement, ebenen: string[] | undefined, brust = false): Promise<void> {
+  const h = aktiv || { aussehen: { g: "mann", frisur: "glatze", bart: "ohne", haar: "dunkelbraun", haut: "mittel" }, waffe: "schwert" } as Held;
+  const E = await editorAngaben(h.aussehen.g), W = E.breite, H = E.hoehe, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d", { willReadFrequently: true })!;
+  const teile = brust ? ["koerper"] : (ebenen || []).flatMap((e) => [e + ".hinten", e + ".vorn"]);
+  const bilder = (await Promise.all(teile.map((t) => bildLaden(`${BASIS}held.${h.aussehen.g}/editor/${t}.webp`).catch(() => null)))).filter((b): b is HTMLImageElement => Boolean(b));
+  /* die Richtung, in der der Gegenstand am größten erscheint (ein Schild von vorn, nicht von der Kante); das Hemd von vorn */
+  let best = { r: 2, x0: W, y0: H, x1: 0, y1: 0, f: -1 };
+  for (const r of brust ? [2] : [0, 1, 2, 3, 4, 5, 6, 7]) { x.clearRect(0, 0, W, H); for (const b of bilder) x.drawImage(b, r * W, 0, W, H, 0, 0, W, H);
+    let x0 = W, y0 = H, x1 = 0, y1 = 0, n = 0; const d = x.getImageData(0, 0, W, H).data;
+    for (let y = 0; y < H; y++) for (let i = 0; i < W; i++) if (d[(y * W + i) * 4 + 3] > 20) { n++; if (i < x0) x0 = i; if (i > x1) x1 = i; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (n > best.f) best = { r, x0, y0, x1, y1, f: n }; }
+  x.clearRect(0, 0, W, H); for (const b of bilder) x.drawImage(b, best.r * W, 0, W, H, 0, 0, W, H);
+  let { x0, y0, x1, y1 } = best;
+  if (brust && y1 > y0) { const hh = y1 - y0; y0 = y0 + hh * 0.2; y1 = y0 + hh * 0.33; }
+  const z = ziel.getContext("2d")!; z.clearRect(0, 0, ziel.width, ziel.height); if (x1 <= x0) return;
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, s = Math.min(ziel.width * 0.86 / bw, ziel.height * 0.86 / bh); z.imageSmoothingQuality = "high";
+  z.drawImage(c, x0, y0, bw, bh, (ziel.width - bw * s) / 2, (ziel.height - bh * s) / 2, bw * s, bh * s);
+}

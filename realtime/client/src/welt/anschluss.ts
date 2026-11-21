@@ -17,7 +17,7 @@ import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
 import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
-import { heldenFigur, richten, blickVon } from "../modulfigur";
+import { heldenFigur, richten, blickVon, eigeneWaffenQuelle } from "../modulfigur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
 import { stufeAusEp } from "../../../shared/config";
 import { kontoName } from "../konto";
@@ -27,6 +27,7 @@ import { serverZusatz } from "../gruppe";
 import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
 import { aktiverHeld } from "../held";
+import { angelegteEbenen } from "../inventar";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
@@ -180,7 +181,8 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.knopf = (art, knopf) => (art === "welt" && !torOffen() ? "Das Südtor ist noch geschlossen" : art === "riss" && !freigabe("riss") ? "Der Riss ist gerade versiegelt" : knopf);
   /* Solange das Südtor nicht freigegeben ist (freigabe.ts), bleibt es zu: Der Wald dahinter wird nicht geladen, die Durchfahrt ist gesperrt */
   if (!freigabe("suedtor")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
-  WELT.figur = (s, x, y, held, hoehe) => heldenFigur(s, x, y, held, hoehe, undefined, aktiverHeld()); /* der eigene Held aus dem Heldeneditor */
+  WELT.figur = (s, x, y, held, hoehe) => { const h = aktiverHeld(); const f = heldenFigur(s, x, y, held, hoehe, undefined, h ? { ...h, ich: true } : null); /* der eigene Held aus dem Heldeneditor, mit den angelegten Waffen */
+    if (h) { eigeneWaffenQuelle(angelegteEbenen); window.addEventListener("ez-inventar", () => { const m = f as unknown as { neuZeichnen?: () => void }; if (m.neuZeichnen) m.neuZeichnen(); }); } return f; };
   WELT.richten = richten;
   WELT.laden = (s) => heldenLaden(s);   /* Bilder der Mitspieler */
   WELT.menue = (s) => {
