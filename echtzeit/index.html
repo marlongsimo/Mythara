@@ -375,6 +375,13 @@
       body.offenewelt #ez-tasten { right: calc(max(8px, env(safe-area-inset-right)) + 48px); } body.offenewelt .ez-chat { width: min(420px, calc(100vw - 470px)); } }
     #ez-kartenrahmen[data-art=sicher] .rund { border-color: #6f9a52; } #ez-kartenrahmen[data-art=mehr] .rund { border-color: #d0603a; } /* Ring: grün sicher, gold Einzelkampf, rot Mehrkampf */
     @media (max-width: 700px), (max-height: 500px) { #ez-kampfart { display: none; } body.offenewelt #ez-menue { gap: 3px; } body.offenewelt #ez-menue span { width: 32px; height: 32px; } body.offenewelt #ez-menue svg { width: 17px; height: 17px; } }
+    #ez-oben-knoepfe { position: fixed; z-index: 4; display: flex; gap: 8px; } #ez-oben-knoepfe[hidden] { display: none; }
+    #ez-oben-knoepfe button { position: relative; padding: 0; border: 0; background: none; color: #f0d48a; cursor: pointer; }
+    #ez-oben-knoepfe span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, inset 0 0 0 2px #2a1f10, 0 4px 10px rgba(0,0,0,.6); }
+    #ez-oben-knoepfe svg { width: 22px; height: 22px; } #ez-oben-knoepfe button:hover span { border-color: #f0d48a; }
+    #ez-oben-knoepfe .zahl { position: absolute; right: -4px; top: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 11px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    #ez-oben-knoepfe .zahl[hidden] { display: none; }
+    @media (max-width: 700px), (max-height: 500px) { #ez-oben-knoepfe { gap: 5px; } #ez-oben-knoepfe span { width: 34px; height: 34px; } #ez-oben-knoepfe svg { width: 18px; height: 18px; } }
 </style>
 </head>
 <body>
@@ -406,6 +413,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwq4auuz"></script>
+  <script src="spiel.js?v=mwq4qfek"></script>
 </body>
 </html>
