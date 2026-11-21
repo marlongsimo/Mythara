@@ -66,3 +66,11 @@ Eine Messung auf einem echten Handy steht aus.
 ## Als Nächstes: Phase 6
 
 World-Builder, Stufe 1: Region öffnen, Gelände malen, Objekte setzen, speichern, im Spiel ansehen.
+
+## Feste Regel: gleich große Chunks im gemeinsamen Raster (21.11.2026)
+
+- Jeder Chunk ist **32 × 32 Rechenfelder = 1536 × 1536 Bildpunkte** – in jeder Region, ohne Ausnahme.
+- Jede Region besteht nur aus **ganzen Chunks** und liegt mit **ganzzahligen Chunk-Koordinaten** im gemeinsamen Weltraster (`region.ursprung`, `region.chunks`).
+- Bodenbilder und Chunkdaten heißen nach ihrer Lage (`echtzeit/welt/<cx>_<cy>.webp|json`).
+- Damit ist die Weltkarte einfach das Raster der Bodenbilder: `python3 werkzeug/welt/weltkarte.py [--px 128]` setzt sie zusammen
+  (mit Gebäuden, Bäumen und Dingen an ihren Fußpunkten) und schreibt `echtzeit/welt/weltkarte.webp`.
