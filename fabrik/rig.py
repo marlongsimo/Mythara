@@ -429,13 +429,15 @@ def nachladen(i, n):
 def tod(i, n):
     """getroffen zurücktaumeln, in die Knie sacken, nach hinten fallen, liegen bleiben (letztes Bild)"""
     t = i / (n - 1); fall = spur([(0, 0.0), (0.3, 0.08), (0.65, 0.6), (0.9, 1.0), (1, 1.0)], t); knick = spur([(0, 0.0), (0.3, 1.0), (0.65, 0.7), (1, 0.15)], t)
-    hocke(38 * knick); rumpf(vor=14 * knick - 8 * fall, dreh_z=-12 * knick + 8 * fall, kipp=6 * fall, kopf=18 * knick - 22 * fall, ganz=-90 * fall)
+    hocke(38 * knick); rumpf(vor=14 * knick - 8 * fall, dreh_z=-12 * knick + 8 * fall, kipp=6 * fall, kopf=18 * knick + AUS.get("tod_kopf", -22) * fall, ganz=AUS.get("tod_ganz", -90) * fall)   # großer Kopf (Kenney): flacher kippen, Kopf anheben
+    if AUS.get("tod_fuesse_strecken"):                                                               # große Füße (Kenney): im Liegen zeigen die Zehen sonst steil nach oben
+        for S in "LR": dreh("fuss." + S, (X, -38 * knick + 50 * fall))
     if TIEF:                                                                                         # weite Ärmel: die Arme bleiben am Körper und liegen am Ende neben ihm (zu den Füßen hin)
         arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.4, -0.3, -0.86), u_r=(-0.3, -0.7, -0.6), kl=(-0.2, -0.3, 0.93), o_l=(0.4, -0.3, -0.86), u_l=(0.3, -0.7, -0.6))),
                    (1, mit(BEREIT, o_r=(-0.3, -0.93, -0.18), u_r=(-0.35, -0.9, -0.25), kl=(0.6, 0.0, -0.1), o_l=(0.3, -0.93, -0.18), u_l=(0.35, -0.9, -0.25)))], t); return
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.6, -0.35, 0.3), u_r=(-0.55, -0.55, 0.6), kl=(-0.3, -0.5, 0.8), o_l=(0.6, -0.35, 0.3), u_l=(0.55, -0.55, 0.6))),   # Arme hochgerissen
                (0.65, mit(BEREIT, o_r=(-0.85, 0.2, 0.45), u_r=(-0.8, 0.45, 0.4), kl=(-0.2, 0.3, 0.93), o_l=(0.85, 0.2, 0.45), u_l=(0.8, 0.45, 0.4), h_r=(-0.8, 0.45, 0.4) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0))),
-               (1, mit(BEREIT, o_r=(-0.9, 0.42, -0.08) if not ARMBRUST else (-0.9, 0.42, -0.12), u_r=(-0.75, 0.65, -0.1) if not ARMBRUST else (-0.75, 0.64, -0.17), kl=(0.0, 0.0, -1.0) if ARMBRUST else (0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3), h_r=(-0.75, 0.66, 0.0) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0)))], t)   # Armbrust flach am Boden        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
+               (1, mit(BEREIT, sch=(0.0, 0.1, 1.0) if AUS.get("tod_schild_flach") else BEREIT["sch"], o_r=(-0.9, 0.42, -0.08) if not ARMBRUST else (-0.9, 0.42, -0.12), u_r=(-0.75, 0.65, -0.1) if not ARMBRUST else (-0.75, 0.64, -0.17), kl=(0.0, 0.0, -1.0) if ARMBRUST else (0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3), h_r=(-0.75, 0.66, 0.0) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0)))], t)   # Armbrust flach am Boden        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
 
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
