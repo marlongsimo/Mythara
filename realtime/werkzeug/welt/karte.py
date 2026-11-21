@@ -3,7 +3,8 @@
 
 Liest die fertigen Chunks aus echtzeit/welt (Bodenbild und Objekte) und schreibt echtzeit/welt/karte-<region>.webp
 (dieselbe Größe wie bisher aus boden.py --vorschau: 8 bzw. 4 Bildpunkte je Feld geteilt durch … – siehe MASSSTAB).
-Bäume werden von oben als Kronen gezeichnet (dunkles Grün mit Licht von links oben und Schatten), alles andere bleibt wie der Boden.
+Bäume werden von oben als Kronen gezeichnet (dunkles Grün mit Licht von links oben und Schatten); Gebäude und alles andere Gesetzte
+(Häuser, Brücken, Palisaden, Stände …) kommt als verkleinertes Bild an seine Stelle darüber – so zeigen Minikarte und Weltkarte das Dorf.
 Aufruf (im Ordner realtime): python3 werkzeug/welt/karte.py <region> [<region> …]   ·   ohne Region: alle Regionen der Welt
 """
 import json, math, os, random, sys
@@ -18,7 +19,7 @@ def karte(rid, index):
     R = index['regionen'][rid]['region']; (ux, uy), (cb, ch) = R['ursprung'], R['chunks']; OBJ = index['objekte']
     k = 4 if max(cb, ch) <= 4 else 8                      # wie boden.py: kleine Regionen feiner
     n = CHUNK * FELD // k; pf = n / CHUNK                 # Bildpunkte je Chunk und je Feld
-    bild = Image.new('RGB', (cb * n, ch * n), (40, 34, 24)); baeume = []
+    bild = Image.new('RGB', (cb * n, ch * n), (40, 34, 24)); baeume, sonst = [], []
     for cy in range(ch):
         for cx in range(cb):
             p = os.path.join(WELT, f'{ux + cx}_{uy + cy}.json')
@@ -26,7 +27,9 @@ def karte(rid, index):
             d = json.load(open(p)); bild.paste(Image.open(os.path.join(WELT, d['boden'])).convert('RGB').resize((n, n), Image.LANCZOS), (cx * n, cy * n))
             for o in d.get('objekte', []):
                 D = OBJ.get(o['objekt'])
-                if D and o['objekt'].startswith('wald_baum'): baeume.append((o, D))
+                if not D: continue
+                if o['objekt'].startswith('wald_baum') and not o['objekt'].startswith('wald_baumstamm'): baeume.append((o, D))
+                else: sonst.append((o, D))
     # Kronen: Mitte etwas über dem Fuß (das Bild steht auf dem Fuß), Größe aus der Bildbreite
     schatten = Image.new('L', bild.size, 0); kronen = Image.new('RGBA', bild.size, (0, 0, 0, 0))
     ds, dk = ImageDraw.Draw(schatten), ImageDraw.Draw(kronen); rnd = random.Random(7)
@@ -50,8 +53,21 @@ def karte(rid, index):
     weg = weg.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(1))
     alpha = kronen.split()[3]; alpha = Image.composite(Image.new('L', bild.size, 0), alpha, weg); kronen.putalpha(alpha)
     bild.paste(kronen, (0, 0), kronen)
+    # Gebäude und Gesetztes: das Bild verkleinert an seinen Fuß (Anker), von hinten nach vorn
+    gezeichnet = 0; cache = {}
+    for o, D in sorted(sonst, key=lambda t: t[0]['y']):
+        z = o.get('zustand'); q = (D.get('zustaende') or {}).get(z, {}).get('bild') if z else None; q = q or D['bild']
+        pfad = os.path.join(WURZEL, q)
+        if not os.path.exists(pfad): continue
+        if pfad not in cache: cache[pfad] = Image.open(pfad).convert('RGBA')
+        s_ = o.get('s', 1) * D.get('massstab', 1); w, h = D['groesse']; W, H = max(1, round(w * s_ / FELD * pf)), max(1, round(h * s_ / FELD * pf))
+        if W < 2 and H < 2: continue
+        im = cache[pfad].resize((W, H), Image.LANCZOS)
+        if o.get('spiegeln'): im = im.transpose(Image.FLIP_LEFT_RIGHT)
+        ax, ay = D.get('anker', [0.5, 1]); x = (o['x'] - ux * CHUNK) * pf; y = (o['y'] - uy * CHUNK) * pf
+        bild.paste(im, (round(x - ax * W), round(y - ay * H)), im); gezeichnet += 1
     ziel = os.path.join(WELT, f'karte-{rid}.webp'); bild.save(ziel, quality=82)
-    print(f'  karte-{rid}.webp: {bild.size[0]}×{bild.size[1]}, {len(baeume)} Bäume')
+    print(f'  karte-{rid}.webp: {bild.size[0]}×{bild.size[1]}, {len(baeume)} Bäume, {gezeichnet} Gebäude und Gesetztes')
 
 
 def main():

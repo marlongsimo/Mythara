@@ -11,6 +11,7 @@
 import { WELT, Welt } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
+import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
@@ -129,6 +130,13 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) sprechblase(s, () => (s.figur && s.figur.active ? { x: s.figur.x, y: s.figur.y - HELD_PX - 30 } : null), text); else if (mit) mit.blase(i, text); } });
 }
 
+/** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
+function karteZeigen(s: Welt) {
+  const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
+  uebersicht({ daten: WELT.daten, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id)),
+    ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier });
+}
+
 export function weltAnschliessen(start: string, tor: string) {
   if (start) WELT.start = start;
   WELT.tor = tor;
@@ -144,6 +152,8 @@ export function weltAnschliessen(start: string, tor: string) {
     const rucksack = () => tafel(s, (zu) => taschenTafel("rucksack", s.held, zu)), ausruestung = () => tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu));
     /* Unter der Karte: was gerade freigeschaltet ist – Weltkarte und Quests gehören zu den Kampagnen */
     const knoepfe: RKnopf[] = [];
+    /* Karte: die ganze bekannte Welt von oben (alle Regionen aus welt.json – neue Gebiete erscheinen von selbst) */
+    knoepfe.push({ name: "Karte", zeichen: "karte", taste: torOffen() ? "K" : "M", tat: () => karteZeigen(s) });
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
     if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
     knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
