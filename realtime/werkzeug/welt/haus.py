@@ -58,8 +58,6 @@ HAEUSER = {
     'moor_schrein_01':      dict(name='Versunkener Schrein', form='schrein', saat=40),
     'moor_nebel_01':        dict(name='Nebelschwade', form='nebel', tiefe='oben', saat=41),
     'wald_meiler_01':       dict(name='Kohlenmeiler', form='meiler', saat=42),
-    'wald_ruine_01':        dict(name='Überwucherte Ruine', form='ruine', saat=43),
-    'wald_ruine_02':        dict(name='Ruinenbogen', form='ruine', bogen=True, saat=44),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
