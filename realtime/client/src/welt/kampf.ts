@@ -29,6 +29,11 @@ const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald" };
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
 interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number }
 
+/** Die Kampfsteuerung mit den Bildern und Namen des Helden füllen – auch außerhalb eines Kampfgebiets (dort gedimmt) */
+export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[held]; if (!D) return; const sym = SYMBOL[held] || {};
+  for (const t of ["q", "e", "r"] as const) { const el = document.querySelector(`[data-taste="${t}"]`) as HTMLElement | null; if (!el) continue; const def = D[t]; (el.querySelector("small") as HTMLElement).textContent = def.name; el.title = `${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[t] || "sterne"); }
+  const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
+  const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
 export class WeltKampf {
   netz: Netz | null = null; karteZeit = 0; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
   figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number }>();

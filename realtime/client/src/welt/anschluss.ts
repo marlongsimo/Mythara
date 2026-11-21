@@ -23,7 +23,7 @@ import { kontoName } from "../konto";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
-import { WeltKampf, WeltSzene } from "./kampf";
+import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
@@ -63,7 +63,7 @@ let zoomJetzt = 2.2;
 function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart"); const r = document.getElementById("ez-kartenrahmen"); if (!r) return;
   if (!el) { el = document.createElement("div"); el.id = "ez-kampfart"; r.appendChild(el); }
   const z = WELTZONEN[s.hier], art = !z || !freigabe("suedtor") ? "sicher" : kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel";
-  if (el.dataset.art === art) return; el.dataset.art = art; el.className = art;
+  if (el.dataset.art === art) return; el.dataset.art = art; el.className = art; r.dataset.art = art; /* auch die Farbe des Kartenrings zeigt es */
   el.textContent = art === "sicher" ? "🛡 Sicherer Ort" : art === "mehr" ? "⚔⚔ Mehrkampf" : "⚔ Einzelkampf";
   el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
@@ -123,7 +123,7 @@ export function weltAnschliessen(start: string, tor: string) {
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
     if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
     knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
-    rundeKarte(zoomJetzt, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
+    rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
     hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung },
       ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => oeffne("riss", s) }] : []), { name: "Menü", zeichen: "menue", tat: () => oeffne("menue", s) }]);
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
@@ -136,7 +136,10 @@ export function weltAnschliessen(start: string, tor: string) {
     window.addEventListener("ez-held-wahl", heldWahl);
     schild = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     (s as unknown as { schild: Phaser.GameObjects.Text }).schild = schild; /* für Prüfungen, wie in der gemalten Waldmark */
-    s.events.once("shutdown", () => { kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
+    document.body.classList.add("offenewelt"); /* Menü rechts als Spalte, Kampfsteuerung immer sichtbar */
+    const ruhig = (ev: Event) => { if (kampf || !(ev.target as HTMLElement).closest("#ez-tasten")) return; const t = $("#ez-dorf-hilfe"); t.textContent = "Hier ist ein sicherer Ort – gekämpft wird draußen, etwa im Kreuzwald hinter dem Südtor."; t.style.display = ""; };
+    document.addEventListener("pointerdown", ruhig, true);
+    s.events.once("shutdown", () => { document.body.classList.remove("offenewelt"); document.removeEventListener("pointerdown", ruhig, true); kampfEnde(); schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.fremd = fremd;

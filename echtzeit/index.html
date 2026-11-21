@@ -360,12 +360,21 @@
     .tafel.spielerliste .sliste li.ich { cursor: default; border-color: #b08a3c; } .tafel.spielerliste .sliste img { grid-row: span 2; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: top; } .tafel.spielerliste .sliste b { font-family: Cinzel, Georgia, serif; color: #f0d48a; } .tafel.spielerliste .sliste small { color: #b9a57c; } .tafel.spielerliste .sliste .leer { color: #b9a57c; padding: 8px; }
     /* Kampf in der offenen Welt (welt/kampf.ts): Leben und Erfahrung oben links, Aktionen 1–4 unten rechts */
     body.dorf.weltkampf #ez-ich { display: flex; } body.dorf.weltkampf #ez-tasten { display: grid; } body.dorf.weltkampf #ez-profil { display: none !important; }
-    body.dorf.weltkampf #ez-menue { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 214px); transform: scale(.72); transform-origin: 100% 100%; } /* Menü über die Aktionen, damit beide bedienbar bleiben */
-    @media (max-width: 700px), (max-height: 500px) { body.dorf.weltkampf #ez-menue { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 172px); transform: scale(.6); } }
     #ez-kampfart { margin: 8px auto 0; width: max-content; padding: 3px 10px; border-radius: 999px; font: 600 11px Cinzel, Georgia, serif; color: #f0d48a; background: rgba(19,14,9,.85); border: 1px solid #b08a3c; text-shadow: 0 1px 2px #000; }
     #ez-kampfart.mehr { color: #ffb08a; border-color: #d0603a; } #ez-kampfart.sicher { color: #bfe6b0; border-color: #5d8a4a; }
     #ez-kartenrahmen .rund #ez-karte { overflow: visible; } /* die Nachbarregionen ragen über den Rand der Karte; den Kreis schneidet .rund zu */
     #ez-karte img.nachbar { position: absolute; z-index: 0; pointer-events: none; display: block; } /* Nachbarregionen auf der Minimap */
+    /* Offene Welt: Menü als Spalte am rechten Rand, die Kampfsteuerung immer sichtbar (im sicheren Ort gedimmt) */
+    body.offenewelt #ez-menue { flex-direction: column; gap: 6px; right: max(8px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); top: auto; transform: none; }
+    body.offenewelt #ez-menue span { width: 48px; height: 48px; border-width: 2px; } body.offenewelt #ez-menue svg { width: 24px; height: 24px; } body.offenewelt #ez-menue small { font-size: 10px; }
+    body.offenewelt #ez-tasten { display: grid; right: calc(max(14px, env(safe-area-inset-right)) + 78px); }
+    body.offenewelt:not(.weltkampf) #ez-tasten { opacity: .5; filter: grayscale(.6); }
+    body.offenewelt .ez-chat { width: min(560px, calc(100vw - 640px)); }
+    @media (max-width: 700px), (max-height: 500px) {
+      body.offenewelt #ez-menue { gap: 4px; } body.offenewelt #ez-menue span { width: 36px; height: 36px; } body.offenewelt #ez-menue svg { width: 19px; height: 19px; } body.offenewelt #ez-menue small { display: none; }
+      body.offenewelt #ez-tasten { right: calc(max(8px, env(safe-area-inset-right)) + 48px); } body.offenewelt .ez-chat { width: min(420px, calc(100vw - 470px)); } }
+    #ez-kartenrahmen[data-art=sicher] .rund { border-color: #6f9a52; } #ez-kartenrahmen[data-art=mehr] .rund { border-color: #d0603a; } /* Ring: grün sicher, gold Einzelkampf, rot Mehrkampf */
+    @media (max-width: 700px), (max-height: 500px) { #ez-kampfart { display: none; } body.offenewelt #ez-menue { gap: 3px; } body.offenewelt #ez-menue span { width: 32px; height: 32px; } body.offenewelt #ez-menue svg { width: 17px; height: 17px; } }
 </style>
 </head>
 <body>
@@ -397,6 +406,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwq44gnm"></script>
+  <script src="spiel.js?v=mwq4auuz"></script>
 </body>
 </html>
