@@ -73,6 +73,11 @@ try {
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Nur für dich"), null, { timeout: 5000 }).catch(() => {}); await gast.waitForTimeout(500);
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich" && m.kanal === "fluestern" && m.an === "Ben")), "Ben erhält Annas Flüstern");
   check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
+  /* Held im Heldenprofil wählen: Er muss bleiben (der Server speichert ihn) – früher sprang die Figur nach dem Neuladen zurück */
+  await ben.evaluate(() => document.activeElement && document.activeElement.blur()); await ben.click('#ez-menue [aria-label="Menü"]'); await ben.click('[data-t="profil"]');
+  await ben.click('.bildnisse [data-held="schildwaechter"]'); await ben.click('.tafel .reihe .haupt[data-t="zu"]'); await ben.waitForTimeout(3000);
+  check(await ben.evaluate(() => window.EZD.szene.held === "schildwaechter" && window.EZW.ich().held === "schildwaechter") && HELDSETZEN.some((h) => h.p_user.endsWith("b002") && h.p_held === "schildwaechter"), "Im Heldenprofil gewählt: Ben bleibt Torvald (auch auf dem Server)");
+  await anna.waitForTimeout(600); check(await anna.evaluate(() => window.EZW.spieler().some((d) => d.n === "Ben" && d.h === "schildwaechter")), "Anna sieht Ben jetzt als Torvald");
   /* Gast geht */
   await gast.close(); await anna.waitForFunction(() => window.EZW.spieler().length === 1, null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => window.EZW.spieler().length) === 1, "Geht der Gast, verschwindet er bei Anna");
