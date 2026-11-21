@@ -1,0 +1,25 @@
+{
+  "quelle": "original.png",
+  "hinweis": "Vaelin, der Elementarist (Testfigur, Held Magier). Kästen [links, oben, rechts, unten], dunkler Grund. Für das Modell zählen vorn, Seite rechts und hinten.",
+  "ausschnitte": [
+    { "name": "koerper-vorn",    "kasten": [250, 98, 392, 362],   "asset": "held.magier", "ansicht": "vorn" },
+    { "name": "koerper-34r",     "kasten": [415, 98, 550, 362],   "asset": "held.magier", "ansicht": "3/4 rechts" },
+    { "name": "koerper-seite",   "kasten": [578, 98, 672, 362],   "asset": "held.magier", "ansicht": "seite" },
+    { "name": "koerper-hinten",  "kasten": [705, 98, 856, 362],   "asset": "held.magier", "ansicht": "hinten" },
+    { "name": "kapuze",          "kasten": [22, 436, 120, 545],   "asset": "kleidung.kopf.kapuze.vaelin", "ansicht": "vorn" },
+    { "name": "schulterumhang",  "kasten": [126, 436, 254, 540],  "asset": "kleidung.schulter.umhang.vaelin", "ansicht": "vorn" },
+    { "name": "robe",            "kasten": [260, 436, 348, 545],  "asset": "kleidung.robe.vaelin", "ansicht": "vorn" },
+    { "name": "untergewand",     "kasten": [352, 440, 438, 540],  "asset": "kleidung.untergewand.vaelin", "ansicht": "vorn" },
+    { "name": "guertel",         "kasten": [440, 448, 544, 535],  "asset": "kleidung.guertel.vaelin", "ansicht": "vorn" },
+    { "name": "armschienen",     "kasten": [552, 440, 642, 538],  "asset": "ruestung.arm.vaelin", "ansicht": "vorn", "stuecke": 2 },
+    { "name": "hose",            "kasten": [652, 440, 728, 540],  "asset": "kleidung.bein.hose.vaelin", "ansicht": "vorn" },
+    { "name": "stiefel",         "kasten": [733, 440, 828, 535],  "asset": "kleidung.fuss.stiefel.vaelin", "ansicht": "vorn" },
+    { "name": "zauberbuch",      "kasten": [838, 440, 922, 535],  "asset": "gegenstand.zauberbuch", "ansicht": "vorn" },
+    { "name": "schriftrollen",   "kasten": [934, 448, 1025, 528], "asset": "gegenstand.schriftrollen", "ansicht": "vorn" },
+    { "name": "elementarstab",   "kasten": [1068, 430, 1155, 548],"asset": "waffe.elementarstab", "ansicht": "vorn" },
+    { "name": "feuerstab",       "kasten": [1172, 430, 1242, 548],"asset": "waffe.feuerstab", "ansicht": "vorn" },
+    { "name": "eisstab",         "kasten": [1258, 430, 1325, 548],"asset": "waffe.eisstab", "ansicht": "vorn" },
+    { "name": "blitzstab",       "kasten": [1343, 430, 1415, 548],"asset": "waffe.blitzstab", "ansicht": "vorn" },
+    { "name": "kristallstab",    "kasten": [1432, 430, 1505, 548],"asset": "waffe.kristallstab", "ansicht": "vorn" }
+  ]
+}

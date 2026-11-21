@@ -326,6 +326,37 @@ def nova(i, n):
     t = i / (n - 1); hocke(spur([(0, 0.0), (0.3, 28.0), (0.6, 0.0), (1, 0.0)], t)); rumpf(vor=spur([(0, 2.0), (0.3, 18.0), (0.6, -4.0), (0.85, -4.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.3, 10.0), (0.6, -14.0), (1, 0.0)], t))
     oben = mit(BEREIT, o_r=(-0.12, -0.1, 0.99), u_r=(-0.05, -0.08, 1.0), kl=(0.0, -0.05, 1.0), o_l=(0.88, -0.2, 0.3), u_l=(0.85, -0.3, 0.4))
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.35, -0.4, -0.85), u_r=(-0.2, -0.75, -0.6), kl=(0.0, -0.4, -0.92), o_l=(0.3, -0.5, -0.8), u_l=(0.15, -0.8, -0.55))), (0.6, oben), (0.85, oben), (1, BEREIT)], t)
+# ---- Magier (Stabhaltung): Kampfstellung und Elementarzauber. Die Zaubereffekte selbst sind eigene, wiederverwendbare Bilder (effekte.py), nicht Teil der Figur.
+def stabhaltung(i, n):
+    """Kampfstellung: Stab schräg nach vorn, Kopf voraus, linke Hand offen vor dem Körper, leichtes Wiegen"""
+    s = math.sin(2 * math.pi * i / n); hocke(9 + 1.5 * s); rumpf(vor=6 + 1.5 * s, dreh_z=-8, kopf=-2 * s)
+    arme(**mit(BEREIT, o_r=(-0.25, -0.35, -0.9), u_r=(-0.05, -0.97, 0.2), kl=(0.0, -0.45, 0.89), o_l=(0.3, -0.45, -0.84), u_l=(0.1, -0.95, 0.12 + 0.04 * s)))
+def geschoss(i, n):
+    """magisches Geschoss: Stab kurz zurück, dann mit dem Kopf voran zum Ziel stoßen (Trefferbild = Abschuss), zurück"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.3), (0.57, 1.0), (0.75, 0.8), (1, 0.0)], t); schritt(12, w)
+    rumpf(vor=spur([(0, 2.0), (0.35, -5.0), (0.57, 9.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, -14.0), (0.57, 8.0), (1, 0.0)], t))
+    stoss = mit(BEREIT, o_r=(-0.15, -0.9, -0.1), u_r=(-0.05, -0.98, 0.12), kl=(0.0, -0.85, 0.5), o_l=(0.3, -0.3, -0.9), u_l=(0.15, -0.7, -0.7))
+    arme_spur([(0, BEREIT), (0.35, mit(BEREIT, o_r=(-0.4, 0.2, -0.9), u_r=(-0.2, -0.3, 0.93), kl=(0.0, 0.35, 0.94))), (0.57, stoss), (0.75, stoss), (1, BEREIT)], t)
+def frosthauch(i, n):
+    """Frosthauch: die linke Hand zieht an die Brust und stößt dann flach nach vorn (der Kegel kommt aus der Hand), der Stab bleibt hinten"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.3, 0.2), (0.57, 1.0), (0.8, 1.0), (1, 0.0)], t); schritt(14, w)
+    rumpf(vor=spur([(0, 2.0), (0.3, 0.0), (0.57, 10.0), (0.8, 10.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.3, 12.0), (0.57, -16.0), (0.8, -16.0), (1, 0.0)], t))
+    vor = mit(BEREIT, o_l=(0.12, -0.95, -0.2), u_l=(0.0, -1.0, 0.05), o_r=(-0.3, 0.15, -0.94), u_r=(-0.15, -0.6, -0.78))
+    arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_l=(0.35, -0.1, -0.93), u_l=(-0.45, -0.55, 0.7))), (0.57, vor), (0.8, vor), (1, BEREIT)], t)
+def donnerwelle(i, n):
+    """Donnerwelle: Stab und linke Hand hoch über den Kopf, dann den Stab nach vorn unten schlagen (Trefferbild = Einschlag), in die Knie"""
+    t = i / (n - 1); hocke(spur([(0, 0.0), (0.35, 0.0), (0.57, 22.0), (0.8, 18.0), (1, 0.0)], t))
+    rumpf(vor=spur([(0, 2.0), (0.35, -10.0), (0.57, 22.0), (0.8, 18.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.35, -12.0), (0.57, 6.0), (1, 0.0)], t))
+    hoch = mit(BEREIT, o_r=(-0.3, -0.25, 0.92), u_r=(-0.1, -0.2, 0.97), kl=(0.0, 0.1, 1.0), o_l=(0.45, -0.3, 0.84), u_l=(0.3, -0.3, 0.9))
+    schlag = mit(BEREIT, o_r=(-0.15, -0.85, -0.5), u_r=(-0.05, -0.92, -0.38), kl=(0.0, -0.78, -0.4), o_l=(0.3, -0.6, -0.74), u_l=(0.2, -0.85, -0.5))
+    arme_spur([(0, BEREIT), (0.35, hoch), (0.57, schlag), (0.8, schlag), (1, BEREIT)], t)
+def glutsphaere(i, n):
+    """Glutsphäre: beide Hände sammeln die Glut vor der rechten Brust, dann wirft die linke Hand sie weit nach vorn oben, der Stab folgt"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.3), (0.57, 1.0), (0.8, 0.8), (1, 0.0)], t); schritt(16, w)
+    rumpf(vor=spur([(0, 2.0), (0.35, -4.0), (0.57, 12.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, 22.0), (0.57, -18.0), (0.8, -18.0), (1, 0.0)], t))
+    sammeln = mit(BEREIT, o_r=(-0.35, -0.3, -0.89), u_r=(0.2, -0.9, 0.38), kl=(0.0, -0.3, 0.95), o_l=(0.1, -0.4, -0.91), u_l=(-0.75, -0.6, 0.27))
+    wurf = mit(BEREIT, o_r=(-0.2, -0.75, -0.6), u_r=(-0.05, -0.95, 0.3), kl=(0.0, -0.6, 0.8), o_l=(0.1, -0.9, 0.42), u_l=(0.0, -0.9, 0.44))
+    arme_spur([(0, BEREIT), (0.35, sammeln), (0.57, wurf), (0.8, wurf), (1, BEREIT)], t)
 def zielen(i, n):
     """Armbrust in Anschlag bringen und halten (letztes Bild wird gehalten, solange gezielt wird)"""
     t = min(1.0, i / max(1, n - 2)); hocke(6 * t); rumpf(vor=2 - 2 * t, dreh_z=-15 - 12 * t, kopf=8 * t); arme_spur([(0, BEREIT), (1, ANSCHLAG)], t)
@@ -353,6 +384,8 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
               "angriff_axt": (angriff_axt, 8, 12, False, {"treffer": 5}), "angriff_dolch": (angriff_dolch, 7, 18, False, {"treffer": 3}),
               "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7}),
+              "stabhaltung": (stabhaltung, 6, 8, True, {}), "geschoss": (geschoss, 8, 14, False, {"treffer": 4}), "frosthauch": (frosthauch, 8, 12, False, {"treffer": 4}),
+              "donnerwelle": (donnerwelle, 8, 12, False, {"treffer": 4}), "glutsphaere": (glutsphaere, 8, 12, False, {"treffer": 4}), "stabschlag": (angriff, 8, 16, False, {"treffer": 5}),
               "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
