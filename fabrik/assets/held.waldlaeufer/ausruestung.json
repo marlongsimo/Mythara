@@ -69,12 +69,7 @@
         [
           "bauch",
           0,
-          0.4
-        ],
-        [
-          "becken",
-          0.3,
-          0.6
+          0.5
         ]
       ]
     },
@@ -318,5 +313,6 @@
       "glb": "waffe.bogen.orin/v001/quelle/bogen.glb",
       "plan": "Bogen in der linken Hand – braucht eigene Bewegungen (Pfeil ziehen, spannen, lösen); gebaut, noch nicht angehängt"
     }
-  ]
+  ],
+  "eigenanteil": 0.6
 }

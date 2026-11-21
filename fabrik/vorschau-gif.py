@@ -29,14 +29,15 @@ krieger = all(t in EB for t in KRIEGER.values())
 voll = KRIEGER if krieger else {p: t[0] for p, t in M["plaetze"].items() if not EB[t[0]].get("wahlfrei")}                           # sonst: je Platz das erste Teil
 alle = list(voll.values()); folge = []
 NAME = {"ruhe": "Ruhe", "laufen": "Laufen", "angriff": "Einhandangriff", "block": "Block (Schild)", "angriff2h": "Zweihandangriff", "treffer": "Treffer", "ausweichen": "Ausweichen",
-        "angriff_axt": "Axtangriff", "angriff_dolch": "Dolchstich", "tod": "Tod", "zauber": "Heilung", "segen": "Schutzsegen", "nova": "Lichtnova", "angriff_links": "Angriff mit der linken Hand", "springen": "Springen", "zunge": "Zungenangriff", "zielen": "Zielen", "schiessen": "Schießen", "nachladen": "Nachladen"}
+        "angriff_axt": "Axtangriff", "angriff_dolch": "Dolchstich", "tod": "Tod", "zauber": "Heilung", "segen": "Schutzsegen", "nova": "Lichtnova", "angriff_links": "Angriff mit der linken Hand", "springen": "Springen", "zunge": "Zungenangriff", "zielen": "Zielen", "schiessen": "Schießen", "nachladen": "Nachladen",
+        "stabhaltung": "Stabhaltung", "geschoss": "Magisches Geschoss", "frosthauch": "Frosthauch", "donnerwelle": "Donnerwelle", "glutsphaere": "Glutsphäre", "stabschlag": "Stabschlag"}
 if not any(d["platz"] == "arm_l" for d in EB.values() if d["art"] == "starr"): NAME["block"] = "Block (Parade mit der Waffe)"
 def mit_waffe(a):
     """für die Angriffsbewegung einer Waffe: diese Waffe statt der Standardwaffe in die Hand"""
     w = next((e for e, d in EB.items() if d["art"] == "starr" and d.get("angriff") == a), None)
     if not w or w in alle: return alle, ""
     return [t for t in alle if EB[t]["platz"] != EB[w]["platz"]] + [w], " · " + w.split(".")[-1]
-for a, wdh in (("ruhe", 1), ("laufen", 2), ("springen", 2), ("zunge", 2), ("zielen", 1), ("schiessen", 2), ("nachladen", 1), ("angriff", 2), ("angriff_axt", 2), ("angriff_dolch", 2), ("zauber", 2), ("segen", 1), ("nova", 1), ("angriff_links", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2), ("tod", 1)):
+for a, wdh in (("ruhe", 1), ("laufen", 2), ("springen", 2), ("zunge", 2), ("zielen", 1), ("schiessen", 2), ("nachladen", 1), ("stabhaltung", 1), ("geschoss", 2), ("frosthauch", 1), ("donnerwelle", 1), ("glutsphaere", 1), ("stabschlag", 1), ("angriff", 2), ("angriff_axt", 2), ("angriff_dolch", 2), ("zauber", 2), ("segen", 1), ("nova", 1), ("angriff_links", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2), ("tod", 1)):
     if a not in A: continue
     n = A[a]["bilder"]; dauer = 1000 // A[a]["rate"]; teile, zusatz = mit_waffe(a)
     for _ in range(wdh):

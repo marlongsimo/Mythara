@@ -30,6 +30,9 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Waffe "griff2_ort": [x,y,z] Ort der zweiten Hand im Raum der Waffe (Armbrust: unter dem Vorderschaft); sonst auf der Achse ("griff2")
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
+  "arm_radius": 0.1          Rückfallweg der Gewichtung: Armknochen bewegen nur Punkte bis zu diesem Abstand (m) – gegen Flügel aus Robe und Umhang
+  "eigenanteil": 0.6         eine Hülle nimmt nur Punkte, die zu mindestens diesem Anteil von ihren eigenen Knochen bewegt werden (sonst falten sich
+                             Punkte im Übergang Arm/Rumpf bei Bewegung unter die Körperoberfläche, z. B. Gürtel neben herabhängenden Händen)
 """
 import json, math, os, sys
 import numpy as np
@@ -39,6 +42,7 @@ from PIL import Image
 from scipy import ndimage
 
 quelle, zieldatei, liste = sys.argv[1], sys.argv[2], sys.argv[3]; H = 1.8; AUS = json.load(open(liste))
+ARM_RADIUS = float(AUS.get("arm_radius", 99.0))                                                    # nur im Rückfallweg der Gewichtung: wie weit (m) ein Armknochen Punkte mitnimmt; Standard unbegrenzt wie bisher
 FIGUR = os.path.dirname(os.path.abspath(liste))                                                    # die Liste liegt im Ordner der Figur oder in einem ihrer Versionsordner
 while not os.path.isdir(os.path.join(FIGUR, "referenz")) and os.path.dirname(FIGUR) != FIGUR: FIGUR = os.path.dirname(FIGUR)
 ASSETS = os.path.dirname(FIGUR)
@@ -101,6 +105,8 @@ if weg is None or gewichtet(ob) < 0.98:                                         
     W = 1.0 / (D + 0.01) ** 4; W /= W.sum(1, keepdims=True); K = np.zeros((len(me.edges), 2), int); me.edges.foreach_get("vertices", K.ravel())
     for _ in range(12):
         S_ = np.zeros_like(W); N_ = np.zeros(len(W), np.float32); np.add.at(S_, K[:, 0], W[K[:, 1]]); np.add.at(S_, K[:, 1], W[K[:, 0]]); np.add.at(N_, K[:, 0], 1); np.add.at(N_, K[:, 1], 1); W = 0.5 * W + 0.5 * S_ / np.maximum(N_, 1)[:, None]
+    ARMK = [k for k, b in enumerate(KN) if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]   # Armknochen bewegen nur Punkte am Arm selbst – sonst ziehen sie Robe und Umhang zu Flügeln aus
+    nah = D[:, ARMK] <= ARM_RADIUS; W[:, ARMK] *= nah; leer = W.sum(1) < 1e-6; W[leer] = (1.0 / (D[leer] + 0.01) ** 4) * np.isin(np.arange(len(KN)), ARMK, invert=True)[None]
     W[W < 0.03] = 0; W /= W.sum(1, keepdims=True)
     for k, b in enumerate(KN):
         g = ob.vertex_groups.new(name=b.name)
@@ -108,6 +114,20 @@ if weg is None or gewichtet(ob) < 0.98:                                         
             if w > 0: g.add(np.where(np.round(W[:, k], 2) == w)[0].tolist(), float(w), "REPLACE")
     if not any(m.type == "ARMATURE" for m in ob.modifiers): a = ob.modifiers.new("skelett", "ARMATURE"); a.object = arm
     ob.parent = arm; weg = "nach Abstand zu den Knochen (Rückfall – die Wärmeverteilung ist gescheitert)"
+def luecken_fuellen(o):
+    """Punkte ohne Gewicht (z. B. an einer Schnittkante) übernehmen die Gewichte ihres nächsten gewichteten Nachbarn – sonst bleiben sie bei jeder Bewegung in der Grundhaltung stehen"""
+    from mathutils.kdtree import KDTree
+    leer = [v.index for v in o.data.vertices if not any(g.weight > 0.001 for g in v.groups)]
+    voll = [v for v in o.data.vertices if any(g.weight > 0.001 for g in v.groups)]
+    if not leer or not voll: return 0
+    kd = KDTree(len(voll))
+    for j, v in enumerate(voll): kd.insert(v.co, j)
+    kd.balance()
+    for i in leer:
+        _, j, _ = kd.find(o.data.vertices[i].co)
+        for g in voll[j].groups: o.vertex_groups[g.group].add([i], g.weight, "REPLACE")
+    return len(leer)
+print("ohne Gewicht, vom Nachbarn übernommen:", luecken_fuellen(ob), "Punkte")
 anteil = gewichtet(ob); print("Gewichte:", weg, "·", round(anteil * 100, 1), "% der Punkte gewichtet")
 ob["ebene"] = "koerper"; ob["art"] = "koerper"
 
@@ -173,6 +193,7 @@ for t in AUS["huelle"]:
     if t.get("gesicht_frei"): wahl &= ~((lage_an("kopf") < 0.85) & (NORM[:, 1] < -0.35) & (np.abs(P[:, 0]) < 0.085))       # nach vorn gerichtete Punkte vorn am Kopf: das Gesicht
     if t.get("vorn"): wahl &= NORM[:, 1] < -0.15                                                    # nur die Vorderseite (Schürze)
     if t.get("hinten"): wahl &= NORM[:, 1] > 0.15                                                   # nur die Rückseite (Umhang)
+    if AUS.get("eigenanteil"): wahl &= sum(GW[b] for b in {bone for bone, _, _ in t["bereich"]}) >= AUS["eigenanteil"]
     ARM = [b.name for b in KN if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]
     if not any(bone in ARM for bone, _, _ in t["bereich"]): wahl &= sum(GW[b] for b in ARM) < 0.3          # nennt die Hülle keinen Armknochen, gehören Arm und Hand nicht dazu (herabhängende Hände an der Hüfte)
     if AUS.get("exklusiv") and not t.get("ueberlage"): wahl &= ~vergeben; vergeben |= wahl
@@ -240,10 +261,11 @@ BEREIT["kl_l"] = (0.0, -0.7, 0.72); BEREIT["h_r"] = (0.0, 0.0, 0.0)
 def spiegel(v): return (-v[0], v[1], v[2])
 def arme_spur(keys, t): arme(**{k: spur([(tt, w[k]) for tt, w in keys], t) for k in BEREIT})
 
+TIEF = bool(AUS.get("arme_tief"))   # weite Ärmel, die mit dem Arm verwachsen sind: Arme nie über die Schulter heben (sonst ziehen die Ärmel zu Bändern aus)
 ZIVIL = AUS.get("haltung") == "zivil"; STAB = AUS.get("haltung") == "stab"; ARMBRUST = AUS.get("haltung") == "armbrust"
 # Armbrust: der Lauf zeigt in Richtung der Hand (Pistolengriff, die Klinge der Schwert-Logik ist hier das Griffende und zeigt nach unten).
 # Bereit: Armbrust tief an der rechten Hüfte, nach vorn unten; Anschlag: Ellbogen seitlich angehoben, Unterarm und Lauf waagerecht nach vorn. Die linke Hand liegt am Vorderschaft (umgekehrte Kinematik, unten).
-if ARMBRUST: BEREIT.update(o_r=(-0.05, -0.1, -0.99), u_r=(0.5, -0.85, 0.1), h_r=(0.15, -0.8, -0.58), kl=(0.0, 0.0, -1.0), o_l=(-0.2, -0.45, -0.87), u_l=(-0.5, -0.8, 0.3))   # Unterarm quer vor dem Bauch, Lauf nach vorn unten
+if ARMBRUST: BEREIT.update(o_r=(-0.1, -0.62, -0.78), u_r=(0.42, -0.85, 0.32), h_r=(0.15, -0.8, -0.58), kl=(0.0, 0.0, -1.0), o_l=(-0.2, -0.45, -0.87), u_l=(-0.5, -0.8, 0.3))   # Unterarm quer vor dem Bauch, Lauf nach vorn unten
 ANSCHLAG = mit(BEREIT, o_r=(-0.08, -0.64, -0.77), u_r=(0.6, -0.64, 0.49), h_r=(0.1, -0.99, 0.0), kl=(0.0, 0.0, -1.0), o_l=(-0.3, -0.8, -0.5), u_l=(-0.4, -0.9, 0.15))   # Hand vor dem Kinn, Lauf waagerecht
 if STAB: BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.22, -0.02, -0.98), u_l=(0.15, -0.3, -0.94)) if not LINKS else BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.24, -0.05, -0.97), u_l=(0.12, -0.75, -0.65))   # Unterarm waagerecht nach vorn, der Stab steht senkrecht (er liegt quer in der Faust)
 if ZIVIL: BEREIT.update(o_r=(-0.2, 0.0, -1.0), u_r=(-0.12, -0.22, -0.97), kl=(0.0, -0.7, 0.72), o_l=(0.2, 0.0, -1.0), u_l=(0.12, -0.22, -0.97))   # Arme hängen locker
@@ -252,13 +274,13 @@ def ruhe(i, n):
     for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 2)); dreh("fuss." + S)
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.2, 0.01 * s, -1.0), o_l=(0.2, -0.01 * s, -1.0))); return
     if STAB: arme(**mit(BEREIT, o_l=(0.22, -0.02 + 0.01 * s, -0.98))); return
-    if ARMBRUST: arme(**mit(BEREIT, u_r=(0.5, -0.85, 0.1 + 0.02 * s))); return
+    if ARMBRUST: arme(**mit(BEREIT, u_r=(0.42, -0.85, 0.32 + 0.02 * s))); return
     arme(**mit(BEREIT, u_r=(-0.15, -0.6, -0.8 + 0.02 * s), u_l=(0.2, -0.62, -0.78 + 0.02 * s)))
 def laufen(i, n):
     p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4, dreh_z=9 * s - (15 if ARMBRUST else 0))
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
     if STAB: arme(**mit(BEREIT, o_r=(-0.25, -0.15 + 0.05 * s, -0.96), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # der Stab bleibt ruhig, der linke Arm schwingt
-    if ARMBRUST: arme(**mit(BEREIT, o_r=(-0.22, -0.05 + 0.04 * s, -0.97))); return                              # die Armbrust bleibt ruhig in beiden Händen
+    if ARMBRUST: arme(**mit(BEREIT, o_r=(-0.1, -0.62 + 0.04 * s, -0.78))); return                              # die Armbrust bleibt ruhig in beiden Händen
     if ZIVIL: arme(**mit(BEREIT, o_r=(-0.18, 0.32 * s, -0.95), u_r=(-0.1, -0.25 + 0.3 * s, -0.95), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # Arme schwingen gegen die Beine
     arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.18 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.18 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))
 def schritt_(vor_l, t):
@@ -342,12 +364,14 @@ def frosthauch(i, n):
     t = i / (n - 1); w = spur([(0, 0.0), (0.3, 0.2), (0.57, 1.0), (0.8, 1.0), (1, 0.0)], t); schritt(14, w)
     rumpf(vor=spur([(0, 2.0), (0.3, 0.0), (0.57, 10.0), (0.8, 10.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.3, 12.0), (0.57, -16.0), (0.8, -16.0), (1, 0.0)], t))
     vor = mit(BEREIT, o_l=(0.12, -0.95, -0.2), u_l=(0.0, -1.0, 0.05), o_r=(-0.3, 0.15, -0.94), u_r=(-0.15, -0.6, -0.78))
+    if TIEF: vor = mit(vor, o_l=(0.15, -0.78, -0.6), u_l=(0.02, -0.98, 0.18))
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_l=(0.35, -0.1, -0.93), u_l=(-0.45, -0.55, 0.7))), (0.57, vor), (0.8, vor), (1, BEREIT)], t)
 def donnerwelle(i, n):
     """Donnerwelle: Stab und linke Hand hoch über den Kopf, dann den Stab nach vorn unten schlagen (Trefferbild = Einschlag), in die Knie"""
     t = i / (n - 1); hocke(spur([(0, 0.0), (0.35, 0.0), (0.57, 22.0), (0.8, 18.0), (1, 0.0)], t))
     rumpf(vor=spur([(0, 2.0), (0.35, -10.0), (0.57, 22.0), (0.8, 18.0), (1, 2.0)], t), kopf=spur([(0, 0.0), (0.35, -12.0), (0.57, 6.0), (1, 0.0)], t))
     hoch = mit(BEREIT, o_r=(-0.3, -0.25, 0.92), u_r=(-0.1, -0.2, 0.97), kl=(0.0, 0.1, 1.0), o_l=(0.45, -0.3, 0.84), u_l=(0.3, -0.3, 0.9))
+    if TIEF: hoch = mit(BEREIT, o_r=(-0.35, -0.55, -0.25), u_r=(-0.1, -0.6, 0.8), kl=(0.0, 0.2, 1.0), o_l=(0.3, -0.4, -0.86), u_l=(0.2, -0.85, -0.45))   # weite Ärmel: Arme unter der Schulter, nur der Stab geht hoch
     schlag = mit(BEREIT, o_r=(-0.15, -0.85, -0.5), u_r=(-0.05, -0.92, -0.38), kl=(0.0, -0.78, -0.4), o_l=(0.3, -0.6, -0.74), u_l=(0.2, -0.85, -0.5))
     arme_spur([(0, BEREIT), (0.35, hoch), (0.57, schlag), (0.8, schlag), (1, BEREIT)], t)
 def glutsphaere(i, n):
@@ -355,7 +379,7 @@ def glutsphaere(i, n):
     t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.3), (0.57, 1.0), (0.8, 0.8), (1, 0.0)], t); schritt(16, w)
     rumpf(vor=spur([(0, 2.0), (0.35, -4.0), (0.57, 12.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, 22.0), (0.57, -18.0), (0.8, -18.0), (1, 0.0)], t))
     sammeln = mit(BEREIT, o_r=(-0.35, -0.3, -0.89), u_r=(0.2, -0.9, 0.38), kl=(0.0, -0.3, 0.95), o_l=(0.1, -0.4, -0.91), u_l=(-0.75, -0.6, 0.27))
-    wurf = mit(BEREIT, o_r=(-0.2, -0.75, -0.6), u_r=(-0.05, -0.95, 0.3), kl=(0.0, -0.6, 0.8), o_l=(0.1, -0.9, 0.42), u_l=(0.0, -0.9, 0.44))
+    wurf = mit(BEREIT, o_r=(-0.2, -0.75, -0.6), u_r=(-0.05, -0.95, 0.3), kl=(0.0, -0.6, 0.8), o_l=(0.1, -0.9, 0.42) if not TIEF else (0.12, -0.85, -0.5), u_l=(0.0, -0.9, 0.44) if not TIEF else (0.0, -0.98, 0.15))
     arme_spur([(0, BEREIT), (0.35, sammeln), (0.57, wurf), (0.8, wurf), (1, BEREIT)], t)
 def zielen(i, n):
     """Armbrust in Anschlag bringen und halten (letztes Bild wird gehalten, solange gezielt wird)"""
@@ -375,9 +399,12 @@ def tod(i, n):
     """getroffen zurücktaumeln, in die Knie sacken, nach hinten fallen, liegen bleiben (letztes Bild)"""
     t = i / (n - 1); fall = spur([(0, 0.0), (0.3, 0.08), (0.65, 0.6), (0.9, 1.0), (1, 1.0)], t); knick = spur([(0, 0.0), (0.3, 1.0), (0.65, 0.7), (1, 0.15)], t)
     hocke(38 * knick); rumpf(vor=14 * knick - 8 * fall, dreh_z=-12 * knick + 8 * fall, kipp=6 * fall, kopf=18 * knick - 22 * fall, ganz=-90 * fall)
+    if TIEF:                                                                                         # weite Ärmel: die Arme bleiben am Körper und liegen am Ende neben ihm (zu den Füßen hin)
+        arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.4, -0.3, -0.86), u_r=(-0.3, -0.7, -0.6), kl=(-0.2, -0.3, 0.93), o_l=(0.4, -0.3, -0.86), u_l=(0.3, -0.7, -0.6))),
+                   (1, mit(BEREIT, o_r=(-0.3, -0.93, -0.18), u_r=(-0.35, -0.9, -0.25), kl=(0.6, 0.0, -0.1), o_l=(0.3, -0.93, -0.18), u_l=(0.35, -0.9, -0.25)))], t); return
     arme_spur([(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.6, -0.35, 0.3), u_r=(-0.55, -0.55, 0.6), kl=(-0.3, -0.5, 0.8), o_l=(0.6, -0.35, 0.3), u_l=(0.55, -0.55, 0.6))),   # Arme hochgerissen
-               (0.65, mit(BEREIT, o_r=(-0.85, 0.2, 0.45), u_r=(-0.8, 0.45, 0.4), kl=(-0.2, 0.3, 0.93), o_l=(0.85, 0.2, 0.45), u_l=(0.8, 0.45, 0.4))),
-               (1, mit(BEREIT, o_r=(-0.9, 0.42, -0.08), u_r=(-0.75, 0.65, -0.1), kl=(0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3)))], t)        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
+               (0.65, mit(BEREIT, o_r=(-0.85, 0.2, 0.45), u_r=(-0.8, 0.45, 0.4), kl=(-0.2, 0.3, 0.93), o_l=(0.85, 0.2, 0.45), u_l=(0.8, 0.45, 0.4), h_r=(-0.8, 0.45, 0.4) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0))),
+               (1, mit(BEREIT, o_r=(-0.9, 0.42, -0.08) if not ARMBRUST else (-0.9, 0.42, -0.12), u_r=(-0.75, 0.65, -0.1) if not ARMBRUST else (-0.75, 0.64, -0.17), kl=(0.0, 0.0, -1.0) if ARMBRUST else (0.6, 0.72, 0.0), o_l=(0.9, 0.42, -0.08), u_l=(0.75, 0.65, -0.1), kl_l=(-0.6, 0.72, -0.3), h_r=(-0.75, 0.66, 0.0) if any(BEREIT["h_r"]) else (0.0, 0.0, 0.0)))], t)   # Armbrust flach am Boden        # Waffe liegt flach am Boden                 # liegt auf dem Rücken, Arme ausgebreitet
 
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
