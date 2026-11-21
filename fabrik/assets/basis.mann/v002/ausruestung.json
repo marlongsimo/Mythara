@@ -21,6 +21,78 @@
   "exklusiv": true,
   "starr": [
     {
+      "id": "waffe.schwert.ritter",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.ritter/v001/quelle/schwert.glb",
+      "griff": 0.2,
+      "griff2": 0.08,
+      "klasse": "einhand",
+      "angriff": "stich",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "schild.rund",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.rund/v001/quelle/schild.glb",
+      "klasse": "schild",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block",
+        "zauber_stab",
+        "armbrust1h",
+        "dolchwurf"
+      ]
+    },
+    {
+      "id": "waffe.stab.hirte",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.stab.hirte/v001/quelle/stab.glb",
+      "griff": 0.55,
+      "griff2": 0.35,
+      "klasse": "stab",
+      "angriff": "zauber_stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "zauber_stab"
+      ]
+    },
+    {
+      "id": "waffe.bogen.jagd",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffe.bogen.jagd/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "angriff": "bogen",
+      "drehen": 180,
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "bogen"
+      ]
+    },
+    {
       "id": "waffe.schwert.schildwahrer",
       "platz": "hand_r",
       "art": "schwert",
