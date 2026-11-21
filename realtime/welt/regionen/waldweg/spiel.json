@@ -39,17 +39,6 @@
    }
   },
   {
-   "id": "stamm_sued_ansehen",
-   "art": "lesen",
-   "x": 107.09,
-   "y": 171,
-   "radius": 1.8,
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter."
-   }
-  },
-  {
    "id": "lichtung_ansehen",
    "art": "lesen",
    "x": 210,
@@ -70,13 +59,6 @@
     "y0": 0,
     "x1": 22.8,
     "y1": 192
-   },
-   {
-    "art": "rechteck",
-    "x0": 0,
-    "y0": 172,
-    "x1": 256,
-    "y1": 173.2
    },
    {
     "art": "rechteck",

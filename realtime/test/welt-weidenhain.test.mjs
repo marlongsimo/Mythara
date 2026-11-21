@@ -19,5 +19,14 @@ const fig = d.spiel.figuren.filter((f) => !R.begehbar(...Object.values(w(f.x, f.
 check(fig.length === 0, `Dorfbewohner stehen frei und erreichbar (${d.spiel.figuren.map((f) => f.id).join(", ")})`, fig.map((f) => f.id));
 const dinge = ["weidenhain_kornspeicher_01", "weidenhain_bauernhaus_01", "weidenhain_muehle_01", "dorf_festfeuer_01", "dorf_wehr_01", "dorf_steinring_01"].filter((id) => !d.objekte.some((o) => o.objekt === id));
 check(dinge.length === 0, "Kornspeicher, Bauernhaus, Mühle, Erntefeuer, Wehr und Linde im Steinring stehen im Dorf", dinge);
+const def = new Map(bib.objekte.objekte.map((x) => [x.id, x])), haeuser = d.objekte.filter((x) => (def.get(x.objekt) || {}).kategorie === "gebaeude");
+const tueren = haeuser.map((h) => { const i = def.get(h.objekt).interaktion || { dx: 0, dy: 0.7 }; return { id: h.id, x: h.x + i.dx, y: h.y + i.dy }; }), zu = tueren.filter((t) => !nah(t.x, t.y, 1.2));
+check(haeuser.length >= 25 && zu.length === 0, `alle ${haeuser.length} Haustüren sind vom Dorfeingang erreichbar (auch über die Brücken)`, zu.map((t) => t.id));
+const plaene = new Map(JSON.parse((await import("node:fs")).readFileSync(new URL("../welt/bibliothek/bauplaene.json", import.meta.url), "utf8")).bauplaene.map((p) => [p.id, p]));
+const koerper = haeuser.flatMap((h) => (plaene.get(h.objekt) || { koerper: [] }).koerper.map((k) => ({ id: h.id, r: [h.x + k.x, h.y - k.d - k.t, h.x + k.x + k.b, h.y - k.d] })));
+const ueber = []; for (let i = 0; i < koerper.length; i++) for (let j = i + 1; j < koerper.length; j++) { const a = koerper[i].r, b = koerper[j].r; if (koerper[i].id !== koerper[j].id && a[0] < b[2] + 0.6 && b[0] < a[2] + 0.6 && a[1] < b[3] + 0.6 && b[1] < a[3] + 0.6) ueber.push(koerper[i].id + " / " + koerper[j].id); }
+check(ueber.length === 0, "keine zwei Gebäude berühren sich (mindestens 0,6 Felder Abstand)", ueber);
+const schlecht = koerper.filter(({ id, r }) => { if (id.startsWith("muehle")) return false; /* die Mühle steht mit dem Rad am Graben */ for (let y = Math.floor(r[1]); y < r[3]; y++) for (let x = Math.floor(r[0]); x < r[2]; x++) { const c = (d.gelaende[y] || "")[x]; if (c === "~" || c === "e" && y < r[3] - 1) return true; } return false; });
+check(schlecht.length === 0, "kein Gebäude steht im Wasser oder auf einer Gasse", [...new Set(schlecht.map((k) => k.id))]);
 const wasser = d.gelaende.reduce((n, z) => n + [...z].filter((c) => c === "~").length, 0); check(wasser > 150, `der Mühlgraben fließt durchs Dorf (${wasser} Felder Wasser)`);
 console.log(ok ? "\nWeidenhain: alles in Ordnung" : "\nWeidenhain: FEHLER"); process.exit(ok ? 0 : 1);

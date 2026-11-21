@@ -50,6 +50,28 @@
    "figur": "mette",
    "x": 32.4,
    "y": 43.2
+  },
+  {
+   "id": "junge_sued",
+   "rolle": "npc",
+   "figur": "junge",
+   "x": 46.6,
+   "y": 70.4
+  },
+  {
+   "id": "wanderer_ost",
+   "rolle": "npc",
+   "figur": "wanderer",
+   "x": 98.6,
+   "y": 37.6,
+   "links": true
+  },
+  {
+   "id": "kraeuterfrau_ost",
+   "rolle": "npc",
+   "figur": "kraeuterfrau",
+   "x": 80.6,
+   "y": 31.6
   }
  ],
  "spawnzonen": [],
@@ -124,6 +146,21 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 64.5,
+    "y0": 11.2,
+    "x1": 70.5,
+    "y1": 13.8
+   },
+   {
+    "art": "rechteck",
+    "x0": 42.7,
+    "y0": 46.2,
+    "x1": 45.3,
+    "y1": 51.2
+   }
+  ]
  }
 }

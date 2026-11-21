@@ -1716,6 +1716,280 @@
      }
     ]
    }
+  },
+  {
+   "id": "weidenhain_fachwerk_02",
+   "name": "Schmales Fachwerkhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.2,
+     "d": 0,
+     "b": 4.4,
+     "t": 3.6,
+     "h": 3.3,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.4,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       166,
+       82,
+       56
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.0,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.4,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -0.9
+    },
+    {
+     "wand": "sued",
+     "z": 2.4,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": 1.0
+    },
+    {
+     "wand": "ost",
+     "z": 1.2,
+     "b": 0.75,
+     "h": 0.65,
+     "art": "kreuz",
+     "d": 1.8,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.2,
+     "d": 2.4,
+     "b": 0.5
+    },
+    {
+     "art": "laterne",
+     "x": -1.75,
+     "z": 2.0
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.6,
+      "d": 1.5
+     },
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.6
+     },
+     {
+      "art": "regal",
+      "x": 1.0,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_fachwerk_03",
+   "name": "Bauernhaus mit Stall",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.2,
+     "d": 0,
+     "b": 4.6,
+     "t": 4.0,
+     "h": 2.6,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       96,
+       80,
+       62
+      ]
+     }
+    },
+    {
+     "id": "stall",
+     "x": 1.4,
+     "d": 0.3,
+     "b": 2.8,
+     "t": 3.4,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.7,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 0.1,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.5,
+     "art": "schmal",
+     "x": 2.8,
+     "koerper": "stall"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -2.2,
+     "d": 2.6,
+     "b": 0.55
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "ofen",
+      "x": -2.2,
+      "d": 3.2
+     },
+     {
+      "art": "tisch",
+      "x": -0.6,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": 0.3,
+      "d": 3.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_kate_01",
+   "name": "Kleine Kate",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2,
+     "d": 0,
+     "b": 4,
+     "t": 3.4,
+     "h": 2.3,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -1.0,
+     "laeden": true,
+     "blumen": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -0.8,
+     "d": 2.0,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.4
+     },
+     {
+      "art": "tisch",
+      "x": 0.9,
+      "d": 2.3
+     }
+    ]
+   }
   }
  ]
 }

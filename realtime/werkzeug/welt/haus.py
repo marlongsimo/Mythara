@@ -49,6 +49,8 @@ HAEUSER = {
     'dorf_wehr_01':         dict(name='Wehr', form='wehr', saat=31),
     'dorf_zaun_01':         dict(name='Holzzaun', form='zaun', saat=32),
     'dorf_kuerbisse_01':    dict(name='Kürbisse', form='kuerbisse', saat=33),
+    'dorf_bruecke_01':      dict(name='Holzbrücke (Ost–West)', form='bruecke', richtung='quer', tiefe='boden', saat=34),
+    'dorf_bruecke_02':      dict(name='Holzbrücke (Nord–Süd)', form='bruecke', richtung='laengs', tiefe='boden', saat=35),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -758,7 +760,55 @@ def kuerbisse(P, rng):
     return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.0, 'y': -0.5, 'b': 2.0, 'h': 0.5}, None, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse}
+def bruecke(P, rng):
+    """Holzbrücke in der Schrägansicht der Gebäude (je Feld Tiefe 0,32 Felder nach rechts): Bohlen, Randbalken, niedriges Geländer.
+    quer: Ost–West, 6 × 2,6 Felder (über einen Graben, der nach Süden fließt); laengs: Nord–Süd, 2,6 × 5 Felder. Wird unter den Figuren gezeichnet."""
+    quer = P['richtung'] == 'quer'; LX, LD = (6.0, 2.6) if quer else (2.6, 5.0); T = 0.32
+    x0, x1 = -LX / 2, LX / 2
+    W = int((LX + T * LD) * FELD + 40); Hh = int((LD + 1.1) * FELD + 40); ox = int(-x0 * FELD + 18); oy = Hh - 16
+    B = Blatt(W, Hh)
+    S = lambda x, d, z=0.0: (ox + (x + T * d) * FELD, oy - (d + z) * FELD)
+    zd = 0.14
+    def gelaender(seite):
+        """Pfosten und zwei Holme entlang einer Längsseite"""
+        if quer:
+            d = 0.12 if seite == 'vorn' else LD - 0.12; punkte = [(x, d) for x in np.linspace(x0 + 0.15, x1 - 0.15, 4)]
+        else:
+            x = x0 + 0.12 if seite == 'links' else x1 - 0.12; punkte = [(x, d) for d in np.linspace(0.15, LD - 0.15, 4)]
+        for x, d in punkte:
+            a, b = S(x, d, zd), S(x, d, zd + 0.85)
+            B.balken(a[0] - 3, b[1], 6, a[1] - b[1], int(a[0]), 0.6)
+        for zz, dick in ((0.85, 5), (0.48, 4)):
+            B.strich([S(*punkte[0], zd + zz), S(*punkte[-1], zd + zz)], dick, 90 + int(zz * 10), 0.7)
+    # Unterbau: vordere Stirnseite dunkel, damit die Brücke über dem Wasser steht
+    if quer:
+        B.lege((60, 44, 30), B.maske([S(x0, 0, zd), S(x1, 0, zd), S(x1, 0, -0.35), S(x0, 0, -0.35)]))
+        B.lege((70, 52, 36), B.maske([S(x1, 0, zd), S(x1, LD, zd), S(x1, LD, -0.35), S(x1, 0, -0.35)]))
+    else:
+        B.lege((60, 44, 30), B.maske([S(x0, 0, zd), S(x1, 0, zd), S(x1, 0, -0.35), S(x0, 0, -0.35)]))
+        B.lege((70, 52, 36), B.maske([S(x1, 0, zd), S(x1, LD, zd), S(x1, LD, -0.35), S(x1, 0, -0.35)]))
+    # Bohlen quer zur Laufrichtung, mit dunklen Fugen (der dunkle Grund scheint durch)
+    B.lege((44, 32, 22), B.maske([S(x0, 0, zd), S(x1, 0, zd), S(x1, LD, zd), S(x0, LD, zd)]))
+    n = int((LX if quer else LD) / 0.42)
+    for i in range(n):
+        a, b = i / n, (i + 1) / n - 0.012; g = float(rng.uniform(0.82, 1.08))
+        if quer:
+            pk = [S(x0 + a * LX, 0, zd), S(x0 + b * LX, 0, zd), S(x0 + b * LX, LD, zd), S(x0 + a * LX, LD, zd)]
+        else:
+            pk = [S(x0, a * LD, zd), S(x1, a * LD, zd), S(x1, b * LD, zd), S(x0, b * LD, zd)]
+        B.lege(faerben(B.voll('maserung', 0.07, drehen=quer, saat=i), (150, 112, 72)) * g, B.maske(pk))
+    # Randbalken an beiden Längsseiten
+    for seite in ((0, 0.18) if quer else (x0, x0 + 0.18)), ((LD - 0.18, LD) if quer else (x1 - 0.18, x1)):
+        if quer:
+            pk = [S(x0, seite[0], zd + 0.01), S(x1, seite[0], zd + 0.01), S(x1, seite[1], zd + 0.01), S(x0, seite[1], zd + 0.01)]
+        else:
+            pk = [S(seite[0], 0, zd + 0.01), S(seite[1], 0, zd + 0.01), S(seite[1], LD, zd + 0.01), S(seite[0], LD, zd + 0.01)]
+        B.lege((92, 66, 42), B.maske(pk))
+    gelaender('hinten' if quer else 'rechts'); gelaender('vorn' if quer else 'links')   # Geländer stehen über den Bohlen
+    return B.fertig(), [round(ox / W, 4), round(oy / Hh, 4)], None, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke}
 
 
 def baue(kennung):
@@ -766,8 +816,8 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] == 'wehr' else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
-                    'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss', **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+                    'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': P.get('tiefe', 'fuss'), **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
                     'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20
     if P['form'] == 'trauf':

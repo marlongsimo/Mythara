@@ -3391,6 +3391,515 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_fachwerk_02",
+   "name": "Schmales Fachwerkhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/gesamt.webp",
+   "groesse": [
+    452,
+    640
+   ],
+   "anker": [
+    0.3858,
+    0.8494
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.2,
+      "x1": 2.2,
+      "y0": -3.6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.425,
+      "x1": -0.375,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      280
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_innen.webp",
+     "tiefe": -3.58,
+     "rolle": "innen",
+     "versatz": [
+      65,
+      209
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      275,
+      202
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      65,
+      266
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      95,
+      442
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      95,
+      408
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      44,
+      74
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.0,
+     "x1": 2.0,
+     "y0": -3.4,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    47,
+    77,
+    357,
+    550
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "weidenhain_fachwerk_03",
+   "name": "Bauernhaus mit Stall",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/gesamt.webp",
+   "groesse": [
+    595,
+    612
+   ],
+   "anker": [
+    0.3791,
+    0.8373
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.2,
+      "x1": 1.3999999999999995,
+      "y0": -4.0,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 1.4,
+      "x1": 4.199999999999999,
+      "y0": -3.6999999999999997,
+      "y1": -0.3,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.125,
+      "x1": -1.0750000000000002,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      243
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      68,
+      192
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      288,
+      185
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      68,
+      374
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      113,
+      411
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      113,
+      377
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      44,
+      121
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "stall_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_seite.webp",
+     "tiefe": -3.67,
+     "rolle": "seite",
+     "versatz": [
+      427,
+      197
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "stall_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_vorn.webp",
+     "tiefe": -0.3,
+     "rolle": "vorn",
+     "versatz": [
+      293,
+      383
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "stall_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_dach.webp",
+     "tiefe": 0.0,
+     "rolle": "dach",
+     "versatz": [
+      278,
+      179
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.0,
+     "x1": 1.1999999999999995,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    47,
+    125,
+    501,
+    519
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "weidenhain_kate_01",
+   "name": "Kleine Kate",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/gesamt.webp",
+   "groesse": [
+    443,
+    568
+   ],
+   "anker": [
+    0.3863,
+    0.8218
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2,
+      "x1": 2,
+      "y0": -3.4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.09999999999999998,
+      "x1": 1.1,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      232
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_innen.webp",
+     "tiefe": -3.38,
+     "rolle": "innen",
+     "versatz": [
+      72,
+      190
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_seite.webp",
+     "tiefe": -3.37,
+     "rolle": "seite",
+     "versatz": [
+      262,
+      183
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      71,
+      342
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      165,
+      370
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      165,
+      336
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      44,
+      125
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.1999999999999997,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    47,
+    128,
+    347,
+    474
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_bruecke_01",
+   "name": "Holzbrücke (Ost–West)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_bruecke_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "dorf_bruecke_02",
+   "name": "Holzbrücke (Nord–Süd)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_bruecke_02.webp",
+   "groesse": [
+    241,
+    332
+   ],
+   "anker": [
+    0.332,
+    0.9518
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
   }
  ]
 }
