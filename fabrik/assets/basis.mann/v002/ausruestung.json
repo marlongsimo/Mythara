@@ -192,6 +192,36 @@
       "platz": "haar",
       "glb": "kopf.haar.herren/teile/kopf.haar.scheitel.glb",
       "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.stoppeln",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.stoppeln.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.vollbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.kinnbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.kinnbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.schnurrbart",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.schnurrbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.wikinger",
+      "platz": "bart",
+      "glb": "kopf.bart.herren/teile/kopf.bart.wikinger.glb",
+      "wahlfrei": true
     }
   ],
   "waffenklassen": {
@@ -237,6 +267,41 @@
         "id": "scheitel",
         "name": "Mittellanger Scheitel",
         "ebene": "kopf.haar.scheitel"
+      }
+    ]
+  },
+  "baerte": {
+    "hinweis": "Wählbare Bärte (Platz „bart“). Ohne Bart = Standard. Gebaut mit fabrik/bart.py <basis.blend> <ziel.glb> <stil> [farbe=#3b2618].",
+    "auswahl": [
+      {
+        "id": "ohne",
+        "name": "Ohne Bart",
+        "ebene": null
+      },
+      {
+        "id": "stoppeln",
+        "name": "Dreitagebart",
+        "ebene": "kopf.bart.stoppeln"
+      },
+      {
+        "id": "vollbart",
+        "name": "Kurzer Vollbart",
+        "ebene": "kopf.bart.vollbart"
+      },
+      {
+        "id": "kinnbart",
+        "name": "Kinnbart mit Schnurrbart",
+        "ebene": "kopf.bart.kinnbart"
+      },
+      {
+        "id": "schnurrbart",
+        "name": "Schnurrbart",
+        "ebene": "kopf.bart.schnurrbart"
+      },
+      {
+        "id": "wikinger",
+        "name": "Langer Vollbart",
+        "ebene": "kopf.bart.wikinger"
       }
     ]
   }

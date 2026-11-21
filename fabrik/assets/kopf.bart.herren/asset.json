@@ -1,0 +1,40 @@
+{
+  "id": "kopf.bart.herren",
+  "name": "Bärte Mann",
+  "kategorie": "teil",
+  "platz": "bart",
+  "fuer": "basis.mann/v002",
+  "baerte": {
+    "ohne": {
+      "name": "Ohne Bart",
+      "stil": null,
+      "datei": null
+    },
+    "stoppeln": {
+      "name": "Dreitagebart",
+      "stil": "stoppeln",
+      "datei": "teile/kopf.bart.stoppeln.glb"
+    },
+    "vollbart": {
+      "name": "Kurzer Vollbart",
+      "stil": "vollbart",
+      "datei": "teile/kopf.bart.vollbart.glb"
+    },
+    "kinnbart": {
+      "name": "Kinnbart mit Schnurrbart",
+      "stil": "kinnbart",
+      "datei": "teile/kopf.bart.kinnbart.glb"
+    },
+    "schnurrbart": {
+      "name": "Schnurrbart",
+      "stil": "schnurrbart",
+      "datei": "teile/kopf.bart.schnurrbart.glb"
+    },
+    "wikinger": {
+      "name": "Langer Vollbart",
+      "stil": "wikinger",
+      "datei": "teile/kopf.bart.wikinger.glb"
+    }
+  },
+  "verfahren": "fabrik/bart.py (weich begrenzte Bartschale auf dem fein unterteilten Untergesicht, langer Bart als Volumen vom Kinn abwärts; Farbe #3b2618 wie die Frisuren)"
+}
