@@ -4,6 +4,7 @@
 
 1,80 m, Füße auf dem Boden, Mitte auf der Achse, Blick nach -y; auf etwa <punkte> Punkte vereinfacht (ohne die Form zu verlieren);
 Punktfarben: Haut, Haar und Bart am Kopf (nach Lage: Scheitel und Hinterkopf, unteres Gesicht vorn), eine schlichte Unterhose am Becken.
+Mit „textur“ (Modell mit Textur, z. B. Meshy texturiert): das Material mit Textur bleibt, die Punktfarben werden aus der Textur gelesen.
 Kleidung (Hemd, Hose) kommt als Lagen der Fabrik darüber, Rüstung als übertragene Teile (teile_uebertragen.py).
 """
 import sys
@@ -47,6 +48,19 @@ if opt.get("regionen"):                                                         
 farbe[bart | haar] = HAAR
 huefte = (P[:, 2] > 0.78) & (P[:, 2] < 0.98) & (np.abs(P[:, 0]) < 0.24)                           # schlichte Unterhose
 farbe[huefte] = HOSE
+if "textur" in sys.argv[3:]:                                                                    # Modell mit Textur (Meshy texturiert): die Textur bleibt das Material, die Punktfarben werden aus ihr gelesen (für die Lagen der Fabrik)
+    tex_node = next((n for m_ in me.materials if m_ and m_.use_nodes for n in m_.node_tree.nodes if n.type == "TEX_IMAGE" and n.image), None)
+    if tex_node is None: sys.exit("textur: kein Bild im Material gefunden")
+    img = tex_node.image; w_, h_ = img.size; px = np.array(img.pixels[:], np.float32).reshape(h_, w_, -1)[..., :3]
+    uv = np.zeros(len(me.loops) * 2, np.float32); me.uv_layers[0].data.foreach_get("uv", uv); uv = uv.reshape(-1, 2); ecke = np.zeros(len(me.loops), int); me.loops.foreach_get("vertex_index", ecke)
+    ci = px[np.clip((uv[:, 1] % 1.0 * (h_ - 1)).astype(int), 0, h_ - 1), np.clip((uv[:, 0] % 1.0 * (w_ - 1)).astype(int), 0, w_ - 1)]
+    sm = np.zeros((len(me.vertices), 3)); nn = np.zeros(len(me.vertices)); np.add.at(sm, ecke, ci); np.add.at(nn, ecke, 1); farbe = (sm / np.maximum(nn, 1)[:, None]).astype(np.float32)
+    if img.colorspace_settings.name == "sRGB": farbe = np.where(farbe <= 0.04045, farbe / 12.92, ((farbe + 0.055) / 1.055) ** 2.4).astype(np.float32)
+    ca = me.color_attributes.new("Col", "FLOAT_COLOR", "POINT"); ca.data.foreach_set("color", np.concatenate([farbe, np.ones((len(farbe), 1), np.float32)], 1).ravel())
+    ob.name = "koerper"
+    try: bpy.ops.export_scene.gltf(filepath=ziel, export_format="GLB", export_vertex_color="ACTIVE", export_all_vertex_colors=True)
+    except TypeError: bpy.ops.export_scene.gltf(filepath=ziel, export_format="GLB")
+    print(f"Grundkörper mit Textur: {len(me.vertices)} Punkte · Textur {w_}×{h_} bleibt · geschrieben: {ziel}"); sys.exit(0)
 ca = me.color_attributes.new("Col", "FLOAT_COLOR", "POINT"); ca.data.foreach_set("color", np.concatenate([farbe, np.ones((len(farbe), 1), np.float32)], 1).ravel())
 m = bpy.data.materials.new("koerper"); m.use_nodes = True; vc = m.node_tree.nodes.new("ShaderNodeVertexColor"); vc.layer_name = "Col"; m.node_tree.links.new(vc.outputs[0], m.node_tree.nodes["Principled BSDF"].inputs["Base Color"])
 me.materials.clear(); me.materials.append(m); ob.name = "koerper"
