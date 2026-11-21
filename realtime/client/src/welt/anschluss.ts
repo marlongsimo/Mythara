@@ -78,6 +78,8 @@ function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart
   el.innerHTML = `<span class="sym">${KAMPFZEICHEN[art]}</span><b>${art === "sicher" ? "Sicherer Ort" : art === "mehr" ? "Mehrkampf" : "Einzelkampf"}</b><em${n ? "" : " hidden"}>${n === 1 ? "1 Gegner" : n + " Gegner"}</em>`;
   el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
+/* für Prüfungen im Browser: das vorab verbundene Nachbargebiet */
+Object.defineProperty(window, "EZN", { get: () => naechster, configurable: true });
 /* für Prüfungen im Browser */
 Object.defineProperty(window, "EZK", { get: () => kampf, configurable: true });
 /** Abstand (Felder) von der Stelle zum Rechteck eines Kampfgebiets – 0, wenn man drin steht */
@@ -87,11 +89,22 @@ const gefallen = () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos
     über die Grenze geht es dann ohne Halt. Entfernt er sich wieder (über 16 Felder), wird die Verbindung geschlossen. */
 function vorverbinden(s: Welt) { if (!freigabe("suedtor") || s.gesperrt) return;
   if (kampf) { if (!kampf.eingetreten && abstandZu(s.ort.x, s.ort.y, kampf.zone) > 16) kampfEnde(); return; }
-  for (const [rid, z] of Object.entries(WELTZONEN)) if (abstandZu(s.ort.x, s.ort.y, z) < 10) { kampf = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); return; } }
+  const rid = naechstesGebiet(s, ""); if (rid) kampf = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); }
+/** Das nächstgelegene Kampfgebiet in weniger als 10 Feldern (außer dem, in dem man steht) */
+function naechstesGebiet(s: Welt, ausser: string): string { let best = "", d = 10; for (const [rid, z] of Object.entries(WELTZONEN)) { const a = abstandZu(s.ort.x, s.ort.y, z); if (rid !== ausser && a < d) { d = a; best = rid; } } return best; }
+/* Zwischen zwei Kampfgebieten: Nähert sich der Held im Kampfgebiet der Grenze eines anderen (unter 10 Feldern), wird das Nachbargebiet
+   schon vorab verbunden – beim Überschreiten der Grenze geht es ohne Halt weiter. Entfernt er sich wieder (über 16 Felder), wird es geschlossen. */
+let naechster: WeltKampf | null = null;
+function naechsterEnde() { if (naechster) { naechster.ende(); naechster = null; } }
+function nachbarVorbereiten(s: Welt) { if (s.gesperrt) return;
+  if (naechster) { if (naechster.region !== s.hier && abstandZu(s.ort.x, s.ort.y, naechster.zone) > 16) naechsterEnde(); return; }
+  const rid = naechstesGebiet(s, s.hier); if (rid) naechster = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); }
 /** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
 function fremd(s: Welt, rx: number, ry: number): boolean {
-  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { if (kampf && kampf.eingetreten) kampfEnde(); vorverbinden(s); return false; } const rand = randAbstand(s, z);
+  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { if (kampf && kampf.eingetreten) kampfEnde(); if (!kampf && naechster) { kampf = naechster; naechster = null; } vorverbinden(s); return false; } const rand = randAbstand(s, z);
   if (kampf && kampf.region !== s.hier) kampfEnde();
+  if (!kampf && naechster && naechster.region === s.hier) { kampf = naechster; naechster = null; } /* das Nachbargebiet war schon verbunden */
+  nachbarVorbereiten(s);
   if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, gefallen); }
   if (!kampf.eingetreten) kampf.betreten(s.ort.x, s.ort.y); /* vorverbunden: jetzt hinein, ohne Wartezeit */
   if (!kampf.bereit && kampf.vorverbunden) return false; /* bis der Server den Helden meldet (Bruchteile einer Sekunde): selbst weiterlaufen */
