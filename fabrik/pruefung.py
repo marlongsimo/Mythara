@@ -70,7 +70,7 @@ doppelt = 0.0
 for a in ANIM:
     for x in range(len(huellen)):
         for y in range(x + 1, len(huellen)):
-            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage"): continue   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
+            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage") or EB[huellen[x]].get("unten") or EB[huellen[y]].get("unten"): continue   # Unterkleidung liegt absichtlich unter der Rüstung   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
             p = blatt(huellen[x], a)[..., 3] > 0.6 * 255; q = blatt(huellen[y], a)[..., 3] > 0.6 * 255; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
 melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat

@@ -31,6 +31,7 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Waffe "griff2_ort": [x,y,z] Ort der zweiten Hand im Raum der Waffe (Armbrust: unter dem Vorderschaft); sonst auf der Achse ("griff2")
   "linke_hand_am_griff": {"<bewegung>": "alle" | [bilder]}   in diesen Bewegungen (Bildern) greift die linke Hand den Griff der ersten Waffe mit "zweihand": true
   Hülle "hinten": true       nur nach hinten gerichtete Flächen (Umhang)
+  Hülle "unten": true        Unterkleidung (Hemd, Hose): wird beim Rendern nicht von abnehmbarer Rüstung ausgestanzt, liegt in der Zeichenreihenfolge zuunterst
   Hülle "seiten_frei": true  seitlich gerichtete Flächen auslassen (Flanken unter anliegenden Armen)
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
@@ -237,7 +238,7 @@ for t in AUS["huelle"]:
         else:                                                                                    # Farbton der Zeichnung, Helligkeitsmuster vom Körper darunter
             ton = linear(rgb[maske]).mean(0); alt = KOERPERFARBE[wahl]; hell = alt.mean(1, keepdims=True); farbe = ton[None] * np.clip(hell / max(1e-4, float(hell.mean())), 0.45, 1.8)
         farben_setzen(m2, np.clip(farbe, 0, 1).astype(np.float32))
-    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei"))
+    m2.materials.clear(); m2.materials.append(material(t["id"])); o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = AUS["huelle"].index(t); o["ueberlage"] = bool(t.get("ueberlage")); o["wahlfrei"] = bool(t.get("wahlfrei")); o["unten"] = bool(t.get("unten"))
     if t["platz"] not in volumen and not t.get("ueberlage"): volumen[t["platz"]] = o; o["volumen"] = True                    # das erste Teil je Platz steht beim Rendern für den Raum, den dieser Platz einnimmt
     print("Hülle:", t["id"], "Platz", t["platz"], "·", len(m2.vertices), "Punkte")
 

@@ -73,7 +73,8 @@
           0,
           0.7
         ]
-      ]
+      ],
+      "unten": true
     },
     {
       "id": "kleidung.hose.v004",
@@ -107,7 +108,8 @@
           0,
           1
         ]
-      ]
+      ],
+      "unten": true
     },
     {
       "id": "kleidung.schuh.v004",
@@ -136,7 +138,8 @@
           0.8,
           1
         ]
-      ]
+      ],
+      "unten": true
     }
   ],
   "teilnetze": [
