@@ -38,8 +38,8 @@ export function karteZoom(zoom: number): void { zoomK = zoom; const k = document
 export function karteFolgen(fx: number, fy: number): void {
   const k = document.getElementById("ez-karte"), rund = k && k.parentElement; if (!k || !rund || !rund.classList.contains("rund")) return;
   const R = rund.clientWidth, w = k.offsetWidth, h = k.offsetHeight; if (!R || !w) return;
-  const x = Math.max(R - w, Math.min(0, R / 2 - fx * w)), y = h > R ? Math.max(R - h, Math.min(0, R / 2 - fy * h)) : (R - h) / 2; /* am Rand nicht ins Leere schieben */
-  k.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+  const x = R / 2 - fx * w, y = R / 2 - fy * h; /* der eigene Held steht immer genau in der Mitte – am Rand der Karte zeigt der Kreis dahinter Dunkel */
+  k.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
 }
 /** Tastenkürzel der Knöpfe unter der Karte und für Rucksack/Ausrüstung (nicht beim Tippen) */
 let tastenDa = false;

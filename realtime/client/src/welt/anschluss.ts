@@ -91,7 +91,13 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
   if (region.id === id && mit) return;
   if (mit) mit.liste([]);
   region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
-  zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt); /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
+  zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt);
+  /* Nachbarregionen auf der Minimap: ihre Karten an der richtigen Stelle um die aktuelle – der Kreis zeigt die Welt ohne Lücke */
+  { const k = document.getElementById("ez-karte"), idx = (s as unknown as { index?: { regionen: Record<string, { region: { id: string; ursprung: number[]; chunks: number[] } }> } }).index;
+    if (k && idx) { k.querySelectorAll("img.nachbar").forEach((e) => e.remove());
+      for (const r of Object.values(idx.regionen)) { const R = r.region; if (R.id === id || WELT.gesperrteRegionen.includes(R.id)) continue;
+        const im = document.createElement("img"); im.className = "nachbar"; im.alt = ""; im.src = `${WELT.daten}karte-${R.id}.webp`;
+        Object.assign(im.style, { left: (100 * (R.ursprung[0] - ux) / b) + "%", top: (100 * (R.ursprung[1] - uy) / h) + "%", width: (100 * R.chunks[0] / b) + "%", height: (100 * R.chunks[1] / h) + "%" }); k.prepend(im); } } } /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
   weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
