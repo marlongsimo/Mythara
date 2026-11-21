@@ -162,3163 +162,6 @@
    "platzhalter": true
   },
   {
-   "id": "dorf_haus_holz_01",
-   "name": "Holzhaus",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/gesamt.webp",
-   "groesse": [
-    487,
-    583
-   ],
-   "anker": [
-    0.3876,
-    0.8336
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -4,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.525,
-      "x1": -0.475,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      222
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      175
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      304,
-      169
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      357
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      105,
-      384
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      105,
-      351
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      119
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -1.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    122,
-    392,
-    493
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -1.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_haus_holz_02",
-   "name": "Langhaus",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/gesamt.webp",
-   "groesse": [
-    559,
-    597
-   ],
-   "anker": [
-    0.4021,
-    0.8382
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -3.25,
-      "x1": 3.25,
-      "y0": -4,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.525,
-      "x1": 0.525,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      233
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      185
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      376,
-      178
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      366
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      189,
-      399
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      189,
-      365
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      129
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_vordach.webp",
-     "tiefe": 1.2,
-     "rolle": "vordach",
-     "versatz": [
-      148,
-      373
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -3.05,
-     "x1": 3.05,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    132,
-    464,
-    549
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_haus_holz_03",
-   "name": "Blockhaus",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/gesamt.webp",
-   "groesse": [
-    487,
-    578
-   ],
-   "anker": [
-    0.3942,
-    0.8284
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -3.6,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": 0.375,
-      "x1": 1.425,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      233
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_innen.webp",
-     "tiefe": -3.58,
-     "rolle": "innen",
-     "versatz": [
-      68,
-      192
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_seite.webp",
-     "tiefe": -3.57,
-     "rolle": "seite",
-     "versatz": [
-      307,
-      185
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      68,
-      269
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      199,
-      377
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      199,
-      343
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      74
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -3.4,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.9,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    77,
-    392,
-    486
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.9,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_huette_holz_01",
-   "name": "Holzhütte",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/gesamt.webp",
-   "groesse": [
-    408,
-    544
-   ],
-   "anker": [
-    0.3745,
-    0.8228
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -1.75,
-      "x1": 1.75,
-      "y0": -3.5,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.5,
-      "x1": 0.5,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      212
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_innen.webp",
-     "tiefe": -3.48,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      170
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_seite.webp",
-     "tiefe": -3.47,
-     "rolle": "seite",
-     "versatz": [
-      232,
-      164
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      262
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      118,
-      348
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      118,
-      314
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      74
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -1.55,
-     "x1": 1.55,
-     "y0": -3.3,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    77,
-    313,
-    454
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_huette_holz_02",
-   "name": "Strohhütte",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/gesamt.webp",
-   "groesse": [
-    405,
-    547
-   ],
-   "anker": [
-    0.3753,
-    0.8271
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -1.8,
-      "x1": 1.8,
-      "y0": -3.4,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.1,
-      "x1": -0.09999999999999998,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      54,
-      218
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_innen.webp",
-     "tiefe": -3.38,
-     "rolle": "innen",
-     "versatz": [
-      62,
-      173
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_seite.webp",
-     "tiefe": -3.37,
-     "rolle": "seite",
-     "versatz": [
-      234,
-      166
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      62,
-      326
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      88,
-      355
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      88,
-      322
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_dach.webp",
-     "tiefe": 0.35,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      172
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -1.6,
-     "x1": 1.6,
-     "y0": -3.1999999999999997,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -0.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    46,
-    170,
-    309,
-    459
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -0.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_scheune_holz_01",
-   "name": "Scheune",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/gesamt.webp",
-   "groesse": [
-    533,
-    684
-   ],
-   "anker": [
-    0.3826,
-    0.8544
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.75,
-      "x1": 2.75,
-      "y0": -5,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.0,
-      "x1": 1.0,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      261
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_innen.webp",
-     "tiefe": -4.98,
-     "rolle": "innen",
-     "versatz": [
-      68,
-      202
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_seite.webp",
-     "tiefe": -4.97,
-     "rolle": "seite",
-     "versatz": [
-      331,
-      195
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      68,
-      336
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      145,
-      461
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      145,
-      427
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      74
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.55,
-     "x1": 2.55,
-     "y0": -4.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    77,
-    437,
-    591
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_schuppen_holz_01",
-   "name": "Schuppen",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/gesamt.webp",
-   "groesse": [
-    335,
-    429
-   ],
-   "anker": [
-    0.3727,
-    0.786
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -1.3,
-      "x1": 1.3,
-      "y0": -2.4,
-      "y1": 0,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.45,
-      "x1": 0.45,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      51,
-      165
-     ]
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_seite.webp",
-     "tiefe": -2.37,
-     "rolle": "seite",
-     "versatz": [
-      183,
-      89
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      59,
-      227
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      92,
-      247
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      92,
-      214
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_dach.webp",
-     "tiefe": 0.3,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      71
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    46,
-    73,
-    241,
-    344
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_taverne_01",
-   "name": "Taverne",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/gesamt.webp",
-   "groesse": [
-    692,
-    636
-   ],
-   "anker": [
-    0.3422,
-    0.8472
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -3.5,
-      "x1": 3.5,
-      "y0": -4.5,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 3.5,
-      "x1": 5.9,
-      "y0": -4.0,
-      "y1": -1.0,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.75,
-      "x1": 0.75,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      244
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_innen.webp",
-     "tiefe": -4.48,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      190
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_seite.webp",
-     "tiefe": -4.47,
-     "rolle": "seite",
-     "versatz": [
-      400,
-      183
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      395
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      190,
-      435
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      190,
-      411
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      133
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_vordach.webp",
-     "tiefe": 1.3,
-     "rolle": "vordach",
-     "versatz": [
-      149,
-      405
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "kueche_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      531,
-      199
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "kueche_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_vorn.webp",
-     "tiefe": -1.0,
-     "rolle": "vorn",
-     "versatz": [
-      416,
-      371
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "kueche_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_dach.webp",
-     "tiefe": -0.7,
-     "rolle": "dach",
-     "versatz": [
-      401,
-      182
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -3.3,
-     "x1": 3.3,
-     "y0": -4.3,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    136,
-    598,
-    592
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_schmiede_01",
-   "name": "Schmiede",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/gesamt.webp",
-   "groesse": [
-    511,
-    588
-   ],
-   "anker": [
-    0.3929,
-    0.8347
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.75,
-      "x1": 2.75,
-      "y0": -4,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": 1.1149999999999998,
-      "x1": 2.165,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      226
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      175
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      328,
-      169
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      357
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      243,
-      389
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      243,
-      355
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      131
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.55,
-     "x1": 2.55,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 1.64,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    134,
-    416,
-    498
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 1.64,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_heldenhalle_01",
-   "name": "Heldenhalle",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/gesamt.webp",
-   "groesse": [
-    581,
-    712
-   ],
-   "anker": [
-    0.3923,
-    0.8612
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -3.25,
-      "x1": 3.25,
-      "y0": -5,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.0,
-      "x1": 1.0,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      284
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_innen.webp",
-     "tiefe": -4.98,
-     "rolle": "innen",
-     "versatz": [
-      68,
-      221
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_seite.webp",
-     "tiefe": -4.97,
-     "rolle": "seite",
-     "versatz": [
-      379,
-      214
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      68,
-      336
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      169,
-      485
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      169,
-      451
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      74
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -3.05,
-     "x1": 3.05,
-     "y0": -4.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    77,
-    485,
-    620
-   ],
-   "interaktion": {
-    "art": "eingang",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_wachturm_01",
-   "name": "Wachturm",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/gesamt.webp",
-   "groesse": [
-    370,
-    717
-   ],
-   "anker": [
-    0.3719,
-    0.8686
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -1.5,
-      "x1": 1.5,
-      "y0": -3,
-      "y1": 0,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.45,
-      "x1": 0.45,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      54,
-      354
-     ]
-    },
-    {
-     "name": "turm_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_seite.webp",
-     "tiefe": -2.97,
-     "rolle": "seite",
-     "versatz": [
-      205,
-      190
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "turm_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      62,
-      330
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      105,
-      528
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      105,
-      494
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "turm_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_dach.webp",
-     "tiefe": 0.35,
-     "rolle": "dach",
-     "versatz": [
-      42,
-      163
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    46,
-    166,
-    275,
-    630
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_kapelle_01",
-   "name": "Kapelle",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/gesamt.webp",
-   "groesse": [
-    498,
-    741
-   ],
-   "anker": [
-    0.3309,
-    0.8696
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2,
-      "x1": 2,
-      "y0": -6,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 2.0,
-      "x1": 4.0,
-      "y0": -2.0,
-      "y1": 0,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.6,
-      "x1": 0.6,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      271
-     ]
-    },
-    {
-     "name": "schiff_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_innen.webp",
-     "tiefe": -5.98,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      219
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "schiff_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_seite.webp",
-     "tiefe": -5.97,
-     "rolle": "seite",
-     "versatz": [
-      256,
-      212
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "schiff_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      382
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      125,
-      531
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      125,
-      512
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "schiff_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      74
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "turm_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_seite.webp",
-     "tiefe": -1.97,
-     "rolle": "seite",
-     "versatz": [
-      352,
-      241
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "turm_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      257,
-      333
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "turm_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_dach.webp",
-     "tiefe": 0.3,
-     "rolle": "dach",
-     "versatz": [
-      240,
-      180
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -1.8,
-     "x1": 1.8,
-     "y0": -5.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    78,
-    404,
-    651
-   ],
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_kraeuterhaus_01",
-   "name": "Kräuterhaus",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/gesamt.webp",
-   "groesse": [
-    485,
-    547
-   ],
-   "anker": [
-    0.3332,
-    0.8271
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2,
-      "x1": 2,
-      "y0": -3.2,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 2.0,
-      "x1": 3.6,
-      "y0": -2.4,
-      "y1": -0.6,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.3,
-      "x1": -0.30000000000000004,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      54,
-      225
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_innen.webp",
-     "tiefe": -3.18,
-     "rolle": "innen",
-     "versatz": [
-      62,
-      178
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_seite.webp",
-     "tiefe": -3.17,
-     "rolle": "seite",
-     "versatz": [
-      253,
-      168
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      62,
-      321
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      88,
-      355
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      88,
-      322
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_dach.webp",
-     "tiefe": 0.35,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      97
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "erker_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_seite.webp",
-     "tiefe": -2.37,
-     "rolle": "seite",
-     "versatz": [
-      339,
-      231
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "erker_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_vorn.webp",
-     "tiefe": -0.6,
-     "rolle": "vorn",
-     "versatz": [
-      263,
-      314
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "erker_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_dach.webp",
-     "tiefe": -0.25,
-     "rolle": "dach",
-     "versatz": [
-      244,
-      228
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -1.8,
-     "x1": 1.8,
-     "y0": -3.0,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -0.8,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    46,
-    101,
-    391,
-    459
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -0.8,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "dorf_baeckerei_01",
-   "name": "Bäckerei",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/gesamt.webp",
-   "groesse": [
-    557,
-    564
-   ],
-   "anker": [
-    0.3389,
-    0.8277
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -3.6,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 2.5,
-      "x1": 4.5,
-      "y0": -2.9,
-      "y1": -0.5,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.125,
-      "x1": -0.07499999999999996,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      222
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_innen.webp",
-     "tiefe": -3.58,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      175
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_seite.webp",
-     "tiefe": -3.57,
-     "rolle": "seite",
-     "versatz": [
-      304,
-      169
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      338
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      124,
-      365
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      124,
-      331
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      174
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vordach.webp",
-     "tiefe": 1.2,
-     "rolle": "vordach",
-     "versatz": [
-      83,
-      339
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "ofen_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_seite.webp",
-     "tiefe": -2.87,
-     "rolle": "seite",
-     "versatz": [
-      408,
-      204
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "ofen_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_vorn.webp",
-     "tiefe": -0.5,
-     "rolle": "vorn",
-     "versatz": [
-      313,
-      338
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "ofen_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_dach.webp",
-     "tiefe": -0.25,
-     "rolle": "dach",
-     "versatz": [
-      300,
-      190
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -3.4,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -0.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    172,
-    463,
-    515
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -0.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_kornspeicher_01",
-   "name": "Kornspeicher von Weidenhain",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/gesamt.webp",
-   "groesse": [
-    762,
-    703
-   ],
-   "anker": [
-    0.4896,
-    0.8586
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -4,
-      "x1": 4,
-      "y0": -5,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": -6.6,
-      "x1": -3.9999999999999996,
-      "y0": -4.0,
-      "y1": -0.4,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -0.7999999999999999,
-      "x1": 2.0,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      51,
-      276
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_innen.webp",
-     "tiefe": -4.98,
-     "rolle": "innen",
-     "versatz": [
-      178,
-      216
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_seite.webp",
-     "tiefe": -4.97,
-     "rolle": "seite",
-     "versatz": [
-      560,
-      209
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      177,
-      446
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      324,
-      470
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      324,
-      422
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      153,
-      215
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "schuppen_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      183,
-      278
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "schuppen_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vorn.webp",
-     "tiefe": -0.4,
-     "rolle": "vorn",
-     "versatz": [
-      59,
-      474
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "schuppen_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_dach.webp",
-     "tiefe": -0.1,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      261
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "schuppen_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vordach.webp",
-     "tiefe": 0.8,
-     "rolle": "vordach",
-     "versatz": [
-      38,
-      472
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -3.8,
-     "x1": 3.8,
-     "y0": -4.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    41,
-    213,
-    666,
-    633
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_bauernhaus_01",
-   "name": "Bauernhaus (Fachwerk)",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/gesamt.webp",
-   "groesse": [
-    545,
-    631
-   ],
-   "anker": [
-    0.3962,
-    0.8425
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -3,
-      "x1": 3,
-      "y0": -4.2,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": 0.375,
-      "x1": 1.425,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      250
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_innen.webp",
-     "tiefe": -4.18,
-     "rolle": "innen",
-     "versatz": [
-      68,
-      197
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_seite.webp",
-     "tiefe": -4.17,
-     "rolle": "seite",
-     "versatz": [
-      355,
-      190
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      68,
-      388
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      223,
-      430
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      223,
-      396
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      130
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vordach.webp",
-     "tiefe": 1.0,
-     "rolle": "vordach",
-     "versatz": [
-      195,
-      400
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.8,
-     "x1": 2.8,
-     "y0": -4.0,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.9,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    133,
-    449,
-    570
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.9,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_muehle_01",
-   "name": "Wassermühle",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/gesamt.webp",
-   "groesse": [
-    614,
-    669
-   ],
-   "anker": [
-    0.4932,
-    0.852
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -4.6,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": -5.2,
-      "x1": -2.5,
-      "y0": -3.8000000000000003,
-      "y1": -0.6,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -2.1500000000000004,
-      "x1": -1.05,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      51,
-      264
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_innen.webp",
-     "tiefe": -4.58,
-     "rolle": "innen",
-     "versatz": [
-      179,
-      202
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_seite.webp",
-     "tiefe": -4.57,
-     "rolle": "seite",
-     "versatz": [
-      418,
-      195
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      161,
-      317
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      189,
-      466
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      189,
-      432
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      155,
-      74
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "anbau_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_seite.webp",
-     "tiefe": -3.77,
-     "rolle": "seite",
-     "versatz": [
-      187,
-      235
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "anbau_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_vorn.webp",
-     "tiefe": -0.6,
-     "rolle": "vorn",
-     "versatz": [
-      59,
-      417
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "anbau_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_dach.webp",
-     "tiefe": -0.3,
-     "rolle": "dach",
-     "versatz": [
-      43,
-      218
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -4.3999999999999995,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -1.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    46,
-    77,
-    518,
-    644
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -1.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_fachwerk_02",
-   "name": "Schmales Fachwerkhaus",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/gesamt.webp",
-   "groesse": [
-    452,
-    640
-   ],
-   "anker": [
-    0.3858,
-    0.8494
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.2,
-      "x1": 2.2,
-      "y0": -3.6,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.425,
-      "x1": -0.375,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      280
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_innen.webp",
-     "tiefe": -3.58,
-     "rolle": "innen",
-     "versatz": [
-      65,
-      209
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_seite.webp",
-     "tiefe": -3.57,
-     "rolle": "seite",
-     "versatz": [
-      275,
-      202
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      65,
-      266
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      95,
-      442
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      95,
-      408
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      74
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.0,
-     "x1": 2.0,
-     "y0": -3.4,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -0.9,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    77,
-    357,
-    550
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -0.9,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_fachwerk_03",
-   "name": "Bauernhaus mit Stall",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/gesamt.webp",
-   "groesse": [
-    595,
-    612
-   ],
-   "anker": [
-    0.3791,
-    0.8373
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -3.2,
-      "x1": 1.3999999999999995,
-      "y0": -4.0,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 1.4,
-      "x1": 4.199999999999999,
-      "y0": -3.6999999999999997,
-      "y1": -0.3,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -2.125,
-      "x1": -1.0750000000000002,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      243
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      68,
-      192
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      288,
-      185
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      68,
-      374
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      113,
-      411
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      113,
-      377
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      121
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "stall_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_seite.webp",
-     "tiefe": -3.67,
-     "rolle": "seite",
-     "versatz": [
-      427,
-      197
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "stall_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_vorn.webp",
-     "tiefe": -0.3,
-     "rolle": "vorn",
-     "versatz": [
-      293,
-      383
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "stall_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_dach.webp",
-     "tiefe": 0.0,
-     "rolle": "dach",
-     "versatz": [
-      278,
-      179
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -3.0,
-     "x1": 1.1999999999999995,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -1.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    125,
-    501,
-    519
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -1.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
-   "id": "weidenhain_kate_01",
-   "name": "Kleine Kate",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/gesamt.webp",
-   "groesse": [
-    443,
-    568
-   ],
-   "anker": [
-    0.3863,
-    0.8218
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2,
-      "x1": 2,
-      "y0": -3.4,
-      "y1": 0,
-      "voll": false
-     }
-    ],
-    "tueren": [
-     {
-      "x0": 0.09999999999999998,
-      "x1": 1.1,
-      "y": 0
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      64,
-      232
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_innen.webp",
-     "tiefe": -3.38,
-     "rolle": "innen",
-     "versatz": [
-      72,
-      190
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_seite.webp",
-     "tiefe": -3.37,
-     "rolle": "seite",
-     "versatz": [
-      262,
-      183
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      71,
-      342
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      165,
-      370
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      165,
-      336
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_dach.webp",
-     "tiefe": 0.5,
-     "rolle": "dach",
-     "versatz": [
-      44,
-      125
-     ],
-     "koerper": 0
-    }
-   ],
-   "raum": [
-    {
-     "x0": -1.8,
-     "x1": 1.8,
-     "y0": -3.1999999999999997,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": 0.6,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    47,
-    128,
-    347,
-    474
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": 0.6,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
-  },
-  {
    "id": "burg_turm_01",
    "name": "Burgturm (Kenney-Form)",
    "kategorie": "gebaeude",
@@ -4717,6 +1560,3163 @@
    },
    "spiegelbar": false,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "dorf_haus_holz_01",
+   "name": "Holzhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/gesamt.webp",
+   "groesse": [
+    487,
+    583
+   ],
+   "anker": [
+    0.3876,
+    0.8336
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.525,
+      "x1": -0.475,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      222
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      174
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      168
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      356
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      104,
+      383
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      104,
+      350
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      118
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    121,
+    397,
+    494
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_haus_holz_02",
+   "name": "Langhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/gesamt.webp",
+   "groesse": [
+    559,
+    597
+   ],
+   "anker": [
+    0.4021,
+    0.8382
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.25,
+      "x1": 3.25,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.525,
+      "x1": 0.525,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      233
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      375,
+      177
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      365
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      188,
+      398
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      188,
+      364
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      128
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_02/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      143,
+      367
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.05,
+     "x1": 3.05,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    131,
+    469,
+    550
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_haus_holz_03",
+   "name": "Blockhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/gesamt.webp",
+   "groesse": [
+    487,
+    578
+   ],
+   "anker": [
+    0.3942,
+    0.8284
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -3.6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.375,
+      "x1": 1.425,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      233
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_innen.webp",
+     "tiefe": -3.58,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      191
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      306,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      268
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      198,
+      376
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      198,
+      342
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_haus_holz_03/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.4,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    397,
+    487
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_huette_holz_01",
+   "name": "Holzhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/gesamt.webp",
+   "groesse": [
+    408,
+    544
+   ],
+   "anker": [
+    0.3745,
+    0.8228
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -1.75,
+      "x1": 1.75,
+      "y0": -3.5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.5,
+      "x1": 0.5,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      212
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_innen.webp",
+     "tiefe": -3.48,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      169
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_seite.webp",
+     "tiefe": -3.47,
+     "rolle": "seite",
+     "versatz": [
+      231,
+      163
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      261
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      117,
+      347
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      117,
+      313
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      69
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.55,
+     "x1": 1.55,
+     "y0": -3.3,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    72,
+    318,
+    456
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_huette_holz_02",
+   "name": "Strohhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/gesamt.webp",
+   "groesse": [
+    405,
+    547
+   ],
+   "anker": [
+    0.3753,
+    0.8271
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -1.8,
+      "x1": 1.8,
+      "y0": -3.4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.1,
+      "x1": -0.09999999999999998,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      54,
+      218
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_innen.webp",
+     "tiefe": -3.38,
+     "rolle": "innen",
+     "versatz": [
+      61,
+      172
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_seite.webp",
+     "tiefe": -3.37,
+     "rolle": "seite",
+     "versatz": [
+      233,
+      165
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      61,
+      325
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      87,
+      354
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      87,
+      321
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_huette_holz_02/haupt_dach.webp",
+     "tiefe": 0.35,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      167
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.6,
+     "x1": 1.6,
+     "y0": -3.1999999999999997,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    168,
+    315,
+    461
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_scheune_holz_01",
+   "name": "Scheune",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/gesamt.webp",
+   "groesse": [
+    533,
+    684
+   ],
+   "anker": [
+    0.3826,
+    0.8544
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.75,
+      "x1": 2.75,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.0,
+      "x1": 1.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      261
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      201
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      330,
+      194
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      335
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      144,
+      460
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      144,
+      426
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_scheune_holz_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.55,
+     "x1": 2.55,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    442,
+    593
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_schuppen_holz_01",
+   "name": "Schuppen",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/gesamt.webp",
+   "groesse": [
+    335,
+    429
+   ],
+   "anker": [
+    0.3727,
+    0.786
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -1.3,
+      "x1": 1.3,
+      "y0": -2.4,
+      "y1": 0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.45,
+      "x1": 0.45,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      165
+     ]
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_seite.webp",
+     "tiefe": -2.37,
+     "rolle": "seite",
+     "versatz": [
+      182,
+      88
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      226
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      91,
+      246
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      91,
+      213
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schuppen_holz_01/haupt_dach.webp",
+     "tiefe": 0.3,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      65
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    68,
+    246,
+    345
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_taverne_01",
+   "name": "Taverne",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/gesamt.webp",
+   "groesse": [
+    692,
+    636
+   ],
+   "anker": [
+    0.3422,
+    0.8472
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.5,
+      "x1": 3.5,
+      "y0": -4.5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 3.5,
+      "x1": 5.9,
+      "y0": -4.0,
+      "y1": -1.0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      244
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_innen.webp",
+     "tiefe": -4.48,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_seite.webp",
+     "tiefe": -4.47,
+     "rolle": "seite",
+     "versatz": [
+      399,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      394
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      189,
+      434
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      189,
+      410
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      132
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/haupt_vordach.webp",
+     "tiefe": 1.3,
+     "rolle": "vordach",
+     "versatz": [
+      144,
+      401
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "kueche_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      530,
+      198
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "kueche_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_vorn.webp",
+     "tiefe": -1.0,
+     "rolle": "vorn",
+     "versatz": [
+      415,
+      370
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "kueche_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_taverne_01/kueche_dach.webp",
+     "tiefe": -0.7,
+     "rolle": "dach",
+     "versatz": [
+      396,
+      176
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.3,
+     "x1": 3.3,
+     "y0": -4.3,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    135,
+    603,
+    593
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_schmiede_01",
+   "name": "Schmiede",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/gesamt.webp",
+   "groesse": [
+    511,
+    588
+   ],
+   "anker": [
+    0.3929,
+    0.8347
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.75,
+      "x1": 2.75,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 1.1149999999999998,
+      "x1": 2.165,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      226
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      174
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      327,
+      168
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      356
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      242,
+      388
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      242,
+      354
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_schmiede_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      130
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.55,
+     "x1": 2.55,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 1.64,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    133,
+    421,
+    499
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 1.64,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_heldenhalle_01",
+   "name": "Heldenhalle",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/gesamt.webp",
+   "groesse": [
+    581,
+    712
+   ],
+   "anker": [
+    0.3923,
+    0.8612
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.25,
+      "x1": 3.25,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.0,
+      "x1": 1.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      284
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      220
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      378,
+      213
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      335
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      168,
+      484
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      168,
+      450
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_heldenhalle_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.05,
+     "x1": 3.05,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    490,
+    621
+   ],
+   "interaktion": {
+    "art": "eingang",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_wachturm_01",
+   "name": "Wachturm",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/gesamt.webp",
+   "groesse": [
+    370,
+    717
+   ],
+   "anker": [
+    0.3719,
+    0.8686
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -1.5,
+      "x1": 1.5,
+      "y0": -3,
+      "y1": 0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.45,
+      "x1": 0.45,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      54,
+      354
+     ]
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_seite.webp",
+     "tiefe": -2.97,
+     "rolle": "seite",
+     "versatz": [
+      204,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      61,
+      329
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      104,
+      527
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      104,
+      493
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_wachturm_01/turm_dach.webp",
+     "tiefe": 0.35,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      158
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    161,
+    281,
+    631
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_kapelle_01",
+   "name": "Kapelle",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/gesamt.webp",
+   "groesse": [
+    498,
+    741
+   ],
+   "anker": [
+    0.3309,
+    0.8696
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2,
+      "x1": 2,
+      "y0": -6,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.0,
+      "x1": 4.0,
+      "y0": -2.0,
+      "y1": 0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      271
+     ]
+    },
+    {
+     "name": "schiff_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_innen.webp",
+     "tiefe": -5.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      218
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schiff_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_seite.webp",
+     "tiefe": -5.97,
+     "rolle": "seite",
+     "versatz": [
+      255,
+      211
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schiff_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      381
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      124,
+      530
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      124,
+      511
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "schiff_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/schiff_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      70
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_seite.webp",
+     "tiefe": -1.97,
+     "rolle": "seite",
+     "versatz": [
+      351,
+      240
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      256,
+      332
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kapelle_01/turm_dach.webp",
+     "tiefe": 0.3,
+     "rolle": "dach",
+     "versatz": [
+      236,
+      175
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -5.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    73,
+    410,
+    653
+   ],
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_kraeuterhaus_01",
+   "name": "Kräuterhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/gesamt.webp",
+   "groesse": [
+    485,
+    547
+   ],
+   "anker": [
+    0.3332,
+    0.8271
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2,
+      "x1": 2,
+      "y0": -3.2,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.0,
+      "x1": 3.6,
+      "y0": -2.4,
+      "y1": -0.6,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.3,
+      "x1": -0.30000000000000004,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      54,
+      225
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_innen.webp",
+     "tiefe": -3.18,
+     "rolle": "innen",
+     "versatz": [
+      61,
+      177
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_seite.webp",
+     "tiefe": -3.17,
+     "rolle": "seite",
+     "versatz": [
+      252,
+      167
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      61,
+      320
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      87,
+      354
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      87,
+      321
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/haupt_dach.webp",
+     "tiefe": 0.35,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      96
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "erker_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_seite.webp",
+     "tiefe": -2.37,
+     "rolle": "seite",
+     "versatz": [
+      338,
+      230
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "erker_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_vorn.webp",
+     "tiefe": -0.6,
+     "rolle": "vorn",
+     "versatz": [
+      262,
+      313
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "erker_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_kraeuterhaus_01/erker_dach.webp",
+     "tiefe": -0.25,
+     "rolle": "dach",
+     "versatz": [
+      239,
+      223
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.0,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    99,
+    396,
+    461
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.8,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_baeckerei_01",
+   "name": "Bäckerei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/gesamt.webp",
+   "groesse": [
+    557,
+    564
+   ],
+   "anker": [
+    0.3389,
+    0.8277
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -3.6,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.5,
+      "x1": 4.5,
+      "y0": -2.9,
+      "y1": -0.5,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.125,
+      "x1": -0.07499999999999996,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      222
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_innen.webp",
+     "tiefe": -3.58,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      174
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      168
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      337
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      123,
+      364
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      123,
+      330
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      169
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      78,
+      333
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "ofen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_seite.webp",
+     "tiefe": -2.87,
+     "rolle": "seite",
+     "versatz": [
+      407,
+      203
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "ofen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_vorn.webp",
+     "tiefe": -0.5,
+     "rolle": "vorn",
+     "versatz": [
+      312,
+      337
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "ofen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_dach.webp",
+     "tiefe": -0.25,
+     "rolle": "dach",
+     "versatz": [
+      295,
+      184
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.4,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    171,
+    468,
+    516
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_kornspeicher_01",
+   "name": "Kornspeicher von Weidenhain",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/gesamt.webp",
+   "groesse": [
+    762,
+    703
+   ],
+   "anker": [
+    0.4896,
+    0.8586
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -4,
+      "x1": 4,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -6.6,
+      "x1": -3.9999999999999996,
+      "y0": -4.0,
+      "y1": -0.4,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -0.7999999999999999,
+      "x1": 2.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      276
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      177,
+      215
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      559,
+      208
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      176,
+      445
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      323,
+      469
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      323,
+      421
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      148,
+      211
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "schuppen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      182,
+      277
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vorn.webp",
+     "tiefe": -0.4,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      473
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_dach.webp",
+     "tiefe": -0.1,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      256
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "schuppen_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kornspeicher_01/schuppen_vordach.webp",
+     "tiefe": 0.8,
+     "rolle": "vordach",
+     "versatz": [
+      34,
+      468
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.8,
+     "x1": 3.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    37,
+    211,
+    672,
+    634
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_bauernhaus_01",
+   "name": "Bauernhaus (Fachwerk)",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/gesamt.webp",
+   "groesse": [
+    545,
+    631
+   ],
+   "anker": [
+    0.3962,
+    0.8425
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3,
+      "x1": 3,
+      "y0": -4.2,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.375,
+      "x1": 1.425,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      250
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_innen.webp",
+     "tiefe": -4.18,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      196
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_seite.webp",
+     "tiefe": -4.17,
+     "rolle": "seite",
+     "versatz": [
+      354,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      387
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      222,
+      429
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      222,
+      395
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      129
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bauernhaus_01/haupt_vordach.webp",
+     "tiefe": 1.0,
+     "rolle": "vordach",
+     "versatz": [
+      190,
+      396
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.0,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    132,
+    454,
+    571
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_muehle_01",
+   "name": "Wassermühle",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/gesamt.webp",
+   "groesse": [
+    614,
+    669
+   ],
+   "anker": [
+    0.4932,
+    0.852
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4.6,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -5.2,
+      "x1": -2.5,
+      "y0": -3.8000000000000003,
+      "y1": -0.6,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.1500000000000004,
+      "x1": -1.05,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      264
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_innen.webp",
+     "tiefe": -4.58,
+     "rolle": "innen",
+     "versatz": [
+      178,
+      201
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_seite.webp",
+     "tiefe": -4.57,
+     "rolle": "seite",
+     "versatz": [
+      417,
+      194
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      160,
+      316
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      188,
+      465
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      188,
+      431
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      150,
+      70
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "anbau_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_seite.webp",
+     "tiefe": -3.77,
+     "rolle": "seite",
+     "versatz": [
+      186,
+      234
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_vorn.webp",
+     "tiefe": -0.6,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      416
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "anbau_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_muehle_01/anbau_dach.webp",
+     "tiefe": -0.3,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      212
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -4.3999999999999995,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    73,
+    523,
+    645
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_fachwerk_02",
+   "name": "Schmales Fachwerkhaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/gesamt.webp",
+   "groesse": [
+    452,
+    640
+   ],
+   "anker": [
+    0.3858,
+    0.8494
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.2,
+      "x1": 2.2,
+      "y0": -3.6,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.425,
+      "x1": -0.375,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      280
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_innen.webp",
+     "tiefe": -3.58,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      208
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_seite.webp",
+     "tiefe": -3.57,
+     "rolle": "seite",
+     "versatz": [
+      274,
+      201
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      265
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      94,
+      441
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      94,
+      407
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_02/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      69
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.0,
+     "x1": 2.0,
+     "y0": -3.4,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    72,
+    362,
+    552
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -0.9,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_fachwerk_03",
+   "name": "Bauernhaus mit Stall",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/gesamt.webp",
+   "groesse": [
+    595,
+    612
+   ],
+   "anker": [
+    0.3791,
+    0.8373
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3.2,
+      "x1": 1.3999999999999995,
+      "y0": -4.0,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 1.4,
+      "x1": 4.199999999999999,
+      "y0": -3.6999999999999997,
+      "y1": -0.3,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -2.125,
+      "x1": -1.0750000000000002,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      243
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      191
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      287,
+      184
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      67,
+      373
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      112,
+      410
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      112,
+      376
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      120
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "stall_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_seite.webp",
+     "tiefe": -3.67,
+     "rolle": "seite",
+     "versatz": [
+      426,
+      196
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "stall_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_vorn.webp",
+     "tiefe": -0.3,
+     "rolle": "vorn",
+     "versatz": [
+      292,
+      382
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "stall_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_fachwerk_03/stall_dach.webp",
+     "tiefe": 0.0,
+     "rolle": "dach",
+     "versatz": [
+      273,
+      174
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -3.0,
+     "x1": 1.1999999999999995,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    123,
+    506,
+    521
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_kate_01",
+   "name": "Kleine Kate",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/gesamt.webp",
+   "groesse": [
+    443,
+    568
+   ],
+   "anker": [
+    0.3863,
+    0.8218
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2,
+      "x1": 2,
+      "y0": -3.4,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": 0.09999999999999998,
+      "x1": 1.1,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      64,
+      232
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_innen.webp",
+     "tiefe": -3.38,
+     "rolle": "innen",
+     "versatz": [
+      71,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_seite.webp",
+     "tiefe": -3.37,
+     "rolle": "seite",
+     "versatz": [
+      261,
+      182
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      70,
+      341
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      164,
+      369
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      164,
+      335
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_kate_01/haupt_dach.webp",
+     "tiefe": 0.5,
+     "rolle": "dach",
+     "versatz": [
+      40,
+      124
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -1.8,
+     "x1": 1.8,
+     "y0": -3.1999999999999997,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    43,
+    127,
+    352,
+    475
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": 0.6,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }
