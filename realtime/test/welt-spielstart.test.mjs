@@ -59,7 +59,8 @@ for (const [adr, name, frage] of [["?stadt=bild&server=", "das gemalte Bild (?st
   const { p, f } = await seite("?server=", false); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1000);
   await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 55.5; }); await p.waitForTimeout(600);
   const kt = await p.evaluate(() => { const k = document.querySelector("#ez-dorf-knopf"); return k.hidden ? "" : k.textContent; }); check(kt === "", `im Südtor erscheint kein Knopf${kt ? " (" + kt.trim() + ")" : ""}`);
-  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 53; }); await p.keyboard.down("s"); await p.waitForTimeout(3500); await p.keyboard.up("s"); await p.waitForTimeout(800);
+  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 53; window.EZW.gehe(6400 + 48, 6400 + 66); });   /* zu Fuß, mit dem Wegfinder: Das Tor muss frei sein */
+  await p.waitForFunction(() => window.EZW.szene.hier === "waldweg" && window.EZW.ort().y > 6400 + 64.5, null, { timeout: 40000 }).catch(() => {}); await p.waitForTimeout(800);
   const z = await p.evaluate(() => ({ y: window.EZW.ort().y - 6400, hier: window.EZW.szene.hier, titel: document.querySelector("#ez-titel b").textContent }));
   check(z.y > 60 && z.hier === "waldweg", `durch das offene Südtor in den Kreuzwald (y ${z.y.toFixed(1)}, ${z.titel})`);
   const kw = await p.evaluate(() => [...document.querySelectorAll('#ez-kartenrahmen [aria-label]')].map((k) => k.getAttribute("aria-label"))); check(!kw.includes("Weltkarte"), "ohne Kampagnen keine Weltkarte unter der Karte (" + kw.join(", ") + ")");
