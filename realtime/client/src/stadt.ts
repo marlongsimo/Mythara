@@ -13,7 +13,9 @@ import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import Phaser from "phaser";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "./welt";
-import { HELDEN } from "../../shared/config";
+import { HELDEN, stufeAusEp } from "../../shared/config";
+import { kontoName } from "./konto";
+import { epAlle } from "./halle";
 import { heldenFigur, richten, blickVon } from "./modulfigur";
 
 const F = 1.5, BW = 1671, BH = 941, TEMPO = 125, GROSS = 112; // GROSS: Körperhöhe des Helden am Bildschirm, passend zu Türen und Tischen im Bild // Vergrößerung, Bildgröße, Lauftempo in Bildpunkten der Vorlage je Sekunde
@@ -71,7 +73,7 @@ function wegZu(x0: number, y0: number, x1: number, y1: number): number[][] {
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void, wort?: { los: string; zurueck: string }) => void;
 
 export class Stadt extends Phaser.Scene {
-  held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
+  held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; schild!: Phaser.GameObjects.Text; laeuft = false; tasten: Record<string, boolean> = {};
   leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; pfad: number[][] = []; zielOrt: (typeof ORTE)[number] | null = null;
   constructor() { super("dorf"); }
   mit!: Mitspieler;
@@ -111,6 +113,7 @@ export class Stadt extends Phaser.Scene {
     for (const l of LEUTE) { const k = "npc-" + l.bild; if (!this.anims.exists(k)) this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, {}), frameRate: 8, repeat: -1 }); const s = this.add.sprite(0, 0, k).setOrigin(0.5, 0.945).setScale(GROSS / (l.mass * 176)); s.play(k); const start = Math.floor(Math.random() * l.weg.length); this.leute.push({ s, d: l, x: l.weg[start][0], y: l.weg[start][1], n: (start + 1) % l.weg.length, pause: 0 }); }
     if (P.get("zeig") === "1") { const g = this.add.graphics().setDepth(9999); const mal = (p: Pkt[], f: number) => { g.lineStyle(2, f, 1); g.strokePoints(p.map((q) => ({ x: q[0] * F, y: q[1] * F })), true); }; mal(FLAECHE, 0x00ff00); HINDERNIS.forEach((h) => mal(h, 0xff0000)); VORN.forEach((v) => mal(v.umriss, 0x00aaff)); for (const o of ORTE) g.strokeCircle(o.x * F, o.y * F, o.r * F); }
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
+    this.schild = this.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99981); /* eigener Name und Stufe über dem Helden */
     if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = heldenFigur(this, 0, 0, this.held, GROSS).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!this.scene.isActive() || this.gesperrt) return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); } else if (an && (k === "e" || k === "enter")) this.betreten(); };
@@ -165,6 +168,8 @@ export class Stadt extends Phaser.Scene {
   /** Den Helden wechseln – das geht nur hier in der Waldmark (der Server speichert ihn mit dem Konto) */
   heldWaehlen() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
     wahl((held) => { weltHeld(held); this.gesperrt = false; if (held !== this.held) this.scene.restart({ held }); }, () => { this.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
+  /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
+  schildText(): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · St. ${i.stufe}`; return `${kontoName() || "Gast"} · St. ${stufeAusEp(epAlle()[this.held] || 0)}`; }
   /** Zahl der Spieler am Knopf „Spieler“ */
   onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
   /** Riss, Heldenhalle oder Weltkarte öffnen – vor Ort oder über die Knöpfe unten rechts */
@@ -186,7 +191,7 @@ export class Stadt extends Phaser.Scene {
       if (m.pause > 0) { m.pause -= d; if (m.pause <= 0) m.s.anims.resume(); } else { const z = m.d.weg[m.n], dx = z[0] - m.x, dy = z[1] - m.y, w = Math.hypot(dx, dy), schritt = m.d.tempo * d; if (w <= schritt) { m.x = z[0]; m.y = z[1]; m.n = (m.n + 1) % m.d.weg.length; if (Math.random() < 0.6) { m.pause = 1.5 + Math.random() * 3; m.s.anims.pause(); m.s.setFrame(0); } } else { m.x += dx / w * schritt; m.y += dy / w * schritt * (Math.abs(dy) > Math.abs(dx) ? 0.8 : 1); if (Math.abs(dx) > 2) m.s.setFlipX(dx < 0); } }
       m.s.setPosition(m.x * F, m.y * F + 3).setDepth(m.y); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
-    const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
+    const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01); { const t = this.schildText(); if (this.schild.text !== t) this.schild.setText(t); this.schild.setPosition(x, y - GROSS - 12); }
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
     { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; karteFolgen(o.x / BW, o.y / BH); }
     weltPos(o.x, o.y, blickVon(this.figur), this.laeuft); this.mit.schritt(d);
