@@ -50,6 +50,57 @@ def _kachelbar(a, rand=24):
     return a * w + v * (1 - w)
 
 
+def _gerechnet(name, rng):
+    """Selbst gerechnete Texturen ohne Bildvorlage (frei von Lizenzfragen), kachelbar:
+    stein = Bruchstein, quader = behauene Quader (Burg), schiefer = Schieferdach, holz = Bretter mit Maserung"""
+    n = 420; G = Image.new('RGB', (3 * n, 3 * n), (64, 60, 54) if name != 'schiefer' else (34, 38, 46)); dr = ImageDraw.Draw(G)
+    def stueck(x, y, b, h, farbe, r):
+        if name == 'stein':   # Bruchstein: unregelmäßiger Umriss aus gestörten Punkten um ein Rechteck
+            pk = []
+            for t in np.linspace(0, 2 * math.pi, 11, endpoint=False):
+                c, si = math.cos(t), math.sin(t); k = 1 / max(abs(c), abs(si)) ** 0.8
+                pk.append((x + b / 2 + c * k * b / 2 * rng.uniform(0.98, 1.1), y + h / 2 + si * k * h / 2 * rng.uniform(0.96, 1.1)))
+            for dx in (-n, 0, n):
+                for dy in (-n, 0, n):
+                    dr.polygon([(n + px + dx, n + py + dy) for px, py in pk], fill=farbe)
+            return
+        for dx in (-n, 0, n):
+            for dy in (-n, 0, n):
+                dr.rounded_rectangle([n + x + dx, n + y + dy, n + x + dx + b, n + y + dy + h], radius=r, fill=farbe)
+    if name in ('stein', 'quader'):
+        y = 0
+        while y < n:
+            h = int(rng.integers(30, 44)) if name == 'quader' else int(rng.integers(20, 36)); x = -int(rng.integers(0, 50))
+            while x < n:
+                b = int(rng.integers(52, 84)) if name == 'quader' else int(rng.integers(26, 66)); g = float(rng.uniform(0.82, 1.12))
+                grund = (182, 174, 158) if name == 'quader' else tuple(int(c) for c in rng.choice([(160, 152, 138), (150, 146, 140), (170, 156, 132), (140, 136, 128)]))
+                stueck(x + 2, y + 2, b - 4, h - 4, tuple(int(c * g) for c in grund), 3 if name == 'quader' else 8)
+                x += b
+            y += h
+    elif name == 'schiefer':
+        y = 0; reihe = 0
+        while y < n:
+            h = 20; x = -(reihe % 2) * 14 - int(rng.integers(0, 8))
+            while x < n:
+                b = int(rng.integers(22, 34)); g = float(rng.uniform(0.82, 1.15))
+                stueck(x + 1, y + 1, b - 2, h - 2, tuple(int(c * g) for c in (86, 96, 116)), 2)
+                x += b
+            y += h; reihe += 1
+    else:   # holz: senkrechte Bretter
+        x = 0
+        while x < n:
+            b = int(rng.integers(34, 48)); g = float(rng.uniform(0.85, 1.1))
+            stueck(x + 1, -10, b - 2, n + 20, tuple(int(c * g) for c in (138, 100, 64)), 1)
+            x += b
+    a = np.asarray(G.crop((n, n, 2 * n, 2 * n))).astype(np.float32)
+    rausch = ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), (6, 0.8) if name == 'holz' else 1.2, mode='wrap')
+    a = a * (1 + 0.09 * rausch / max(1e-6, np.abs(rausch).max()))[..., None]
+    if name in ('stein', 'quader', 'schiefer'):          # Lichtkante oben an jedem Stein: Kanten im Hellwert finden
+        hellw = a.mean(-1); kante = np.clip(hellw - np.roll(hellw, 2, axis=0), 0, 60) / 60
+        a = a * (1 + 0.25 * kante)[..., None]
+    return a
+
+
 def tex(name):
     """Texturen für die Flächen; zusätzlich zu den Vorlagen gerechnete: stroh, schindel, blockbohlen, stein, putz"""
     if name in _T:
@@ -81,9 +132,10 @@ def tex(name):
         prof = np.cos((np.arange(n0) % hoehe / hoehe - 0.5) * math.pi) ** 0.6
         a = a * (0.55 + 0.6 * prof)[:, None, None]
         a[np.arange(n0) % hoehe < 2] *= 0.4
-    elif name == 'stein':
-        p = np.asarray(Image.open(os.path.join(REALTIME, 'werkzeug', 'boden', 'pflaster.webp')).convert('RGB').resize((420, 420), Image.LANCZOS)).astype(np.float32)
-        a = p * np.array([0.98, 0.96, 0.92], np.float32)
+    elif name in ('stein', 'quader', 'schiefer', 'holz'):
+        a = _gerechnet(name, rng)
+    elif name == 'ziegel':
+        a = np.asarray(Image.open(os.path.join(HIER, 'texturen_frei', 'ziegel.jpg')).convert('RGB').resize((420, 420), Image.LANCZOS)).astype(np.float32)
     elif name == 'putz':
         n = 256
         r = ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), 4, mode='wrap'); r /= np.abs(r).max()
@@ -99,7 +151,7 @@ def tex(name):
 haus3d.tex = tex                    # die Zeichenfläche aus haus3d holt ihre Texturen von hier
 
 DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3)}
-WAND = {'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
+WAND = {'ziegel': ('ziegel', 0.12, False), 'quader': ('quader', 0.14, False), 'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
 
 
 class P:

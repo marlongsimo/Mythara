@@ -24,6 +24,16 @@ Ermittelt aus: Git-Historie (alle drei Zweige), eingebetteten Metadaten (EXIF, X
 
 Die Originalvorlagen der Häuser liegen nicht im Repository (`realtime/werkzeug/welt/texturen/`, per `.gitignore` ausgeschlossen).
 
+## Frei verwendbar (Stand 21.11.2026)
+
+| Datei(en) | Verwendung | Herkunft | Lizenz | kommerziell | Namensnennung |
+|---|---|---|---|---|---|
+| Steintexturen `stein` (Bruchstein), `quader`, `schiefer`, `holz` in `werkzeug/welt/gebaeude.py` | Mauerwerk aller räumlichen Gebäude (Mühle, Sockel, Kamine, Öfen), Burgturm | **selbst gerechnet**, ohne Bildvorlage; ersetzt die frühere Steintextur, die aus dem ungeklärten `pflaster.webp` abgeleitet war | eigene Arbeit | **ja** | nein |
+| `werkzeug/welt/texturen_frei/ziegel.jpg` (Wandart `ziegel`) | noch an keinem Gebäude | `brick_wall_07_1k.blend.zip` – Name und Aufbau entsprechen **Poly Haven** (alle Inhalte CC0); im Archiv lag keine Lizenzdatei, **Quelle vom Auftraggeber zu bestätigen** | vermutlich CC0 | vermutlich ja | nein |
+| `werkzeug/welt/kenney/castle/` (OBJ, Farbtafel, `License.txt`) | Form des Burgturms `burg_turm_01` | Kenney Castle Kit (kenney.nl), Lizenzdatei im Archiv | **CC0** | **ja** | nein (erwünscht: „Kenney“) |
+| weitere Kenney-Baukästen (Fantasy Town Kit 2.0, Modular Cave Kit, Mini Forest, Retro Fantasy Kit) | noch nicht verwendet | Kenney, Lizenzdateien in den Archiven | **CC0** | **ja** | nein |
+| umgestürzte Bäume, Steinring, Kürbisse (`haus.py`) | Kreuzwald, Weidenhain | selbst gezeichnet, ohne Bildvorlage | eigene Arbeit | **ja** | nein |
+
 ## Was die Plattformen verlangen (soweit ermittelt)
 
 - **Freepik** (heute unter dem Namen Magnific): Gratisnutzung nur mit Namensnennung; Premium-Abonnenten ohne. Verboten ist unter anderem der Weiterverkauf von Produkten, in denen der Inhalt das Hauptelement ist – ausdrücklich auch Spiele. Laut Freepik-FAQ dürfen Ressourcen in Spielen nur Nebenelemente sein. Holz und Ziegel als Teil zusammengesetzter Gebäude sind damit wahrscheinlich zulässig, **sobald die Lizenzstufe geklärt ist**. Die Bedingungen bitte im Original prüfen; sie konnten nur über Zusammenfassungen gelesen werden (die Seite verweigerte den automatischen Abruf).
