@@ -36,3 +36,5 @@ for (const o of bib.objekte.objekte) if (benutzt.has(o.id)) index.objekte[o.id] 
   ...(o.ebenen ? { ebenen: o.ebenen, raum: o.raum || [], tueren: o.tueren || [] } : {}) };
 writeFileSync(indexPfad, JSON.stringify(index));
 console.log(`geschrieben: echtzeit/welt/welt.json (${Object.keys(index.regionen).length} Regionen, ${Object.keys(index.objekte).length} Objekte)`);
+/* Übersichtskarten (Minimap) mit Baumkronen neu zeichnen, damit der Wald als Wald erkennbar ist (werkzeug/welt/karte.py) */
+if (!ohneBoden) { const r = spawnSync("python3", ["werkzeug/welt/karte.py", ...namen], { cwd: REALTIME, stdio: "inherit" }); if (r.status !== 0) process.exit(r.status || 1); }
