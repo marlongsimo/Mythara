@@ -48,8 +48,8 @@ try {
   check(await anna.evaluate(() => getComputedStyle(document.querySelector("#ez-tasten")).display !== "none" && getComputedStyle(document.querySelector("#ez-ich")).display !== "none"), "Aktionen 1–4 und Leben/Erfahrung sind eingeblendet");
   await anna.waitForTimeout(1500);
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { banditen: K.z.w.filter((e) => e[3] !== 0 && !e[10]).length, schilder: [...K.figuren.values()].map((f) => f.nm.text).sort() }; });
-  check(sicht.banditen === 4 && sicht.schilder.filter((t) => t === "Bandit · St. 3").length === 4, "Anna sieht vier Banditen mit „Bandit · St. 3“");
-  check(sicht.schilder.includes("Ben · St. 2"), "…und Ben mit Name und Stufe aus derselben Simulation: " + sicht.schilder.filter((t) => !/Bandit/.test(t)).join(", "));
+  check(sicht.banditen === 4 && sicht.schilder.filter((t) => t === "Bandit · Lv 1").length === 4, "Anna sieht vier Banditen mit „Bandit · Lv 1“");
+  check(sicht.schilder.includes("Ben · Lv 2"), "…und Ben mit Name und Stufe aus derselben Simulation: " + sicht.schilder.filter((t) => !/Bandit/.test(t)).join(", "));
   check(await anna.evaluate(() => { const K = window.EZK, i = K.z.w.find((e) => e[0] === K.ichId); return Math.hypot(K.zone.x0 + i[4] - 6536, K.zone.y0 + i[5] - 6583) < 1.6; }), "Anna steht im Kampf dort, wo sie in der Welt stand");
   check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Mehrkampf", "Unter der Minimap: „Mehrkampf“ auf der Lichtung");
   check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.feind:not(.tot)").length) === 4, "Die Minimap zeigt die vier Banditen live als rote Punkte");

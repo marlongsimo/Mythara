@@ -8,6 +8,7 @@
  * Positionen gehen relativ zur Region an den Server (Bildpunkte, wie seine Prüfung sie erwartet); der Server bleibt unverändert.
  */
 
+import { eigenesLevel } from "../skills";
 import { WELT, Welt, weltDatei } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
@@ -31,7 +32,7 @@ import { angelegteEbenen } from "../inventar";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
-function schildText(held: string): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · St. ${i.stufe}`; return `${kontoName() || "Gast"} · St. ${stufeAusEp(epAlle()[held] || 0)}`; }
+function schildText(held: string): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · Lv ${i.stufe}`; return `${kontoName() || "Gast"} · Lv ${eigenesLevel(stufeAusEp(epAlle()[held] || 0))}`; }
 
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void, wort?: { los: string; zurueck: string }) => void;
 const $ = (s: string) => document.querySelector(s) as HTMLElement;

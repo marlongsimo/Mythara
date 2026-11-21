@@ -14,5 +14,5 @@ await build({ entryPoints: ["client/src/figurentest.ts"], bundle: true, minify: 
 writeFileSync(aus + "figurentest.html", readFileSync("client/figurentest.html", "utf8").replace("__V__", v));
 writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/preview/index.html", "utf8"));
 await build({ entryPoints: ["server/src/index.ts"], bundle: true, platform: "node", format: "cjs", target: "node20", outfile: "server/dist/server.js", external: ["bufferutil", "utf-8-validate"] });
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten";', resolveDir: ".", loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: "test/sim.gebaut.mjs" });
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { GEGENSTAENDE, startAusruestung } from "./shared/gegenstaende";', resolveDir: ".", loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: "test/sim.gebaut.mjs" });
 console.log("gebaut: echtzeit/ (Client), server/dist/server.js (Server)");

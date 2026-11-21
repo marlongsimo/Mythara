@@ -99,7 +99,7 @@ export function spielerKarte(d: Fremder, zu: () => void): void { const D = HELDE
     ${d.max ? `<p class="klein">Leben ${d.lp} / ${d.max}</p>` : ""}<div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="${d.i}" data-n="${esc(d.n)}">Flüstern</button>` : `<p class="klein">${gast ? "Gäste können keine Nachrichten empfangen." : "Zum Flüstern brauchst du ein Konto."}</p>`}</div>`, zu); }
 /** Wer ist hier? Alle Spieler am Ort, mit Held und Stufe */
 export function spielerListe(zu: () => void): void {
-  const ichZeile = ich ? `<li class="ich"><img src="../${(HELDEN[ich.held] || HELDEN.schildwaechter).bild}" alt=""><b>${esc(ich.name)}</b><small>${ich.gast ? "Gast" : "St. " + ich.stufe} · ${(HELDEN[ich.held] || HELDEN.schildwaechter).name} (du)</small></li>` : "";
+  const ichZeile = ich ? `<li class="ich"><img src="../${(HELDEN[ich.held] || HELDEN.schildwaechter).bild}" alt=""><b>${esc(ich.name)}</b><small>${ich.gast ? "Gast" : "Lv " + ich.stufe} · ${(HELDEN[ich.held] || HELDEN.schildwaechter).name} (du)</small></li>` : "";
   const zeilen = fremde.map((d) => `<li><button type="button" data-t="karte" data-id="${d.i}"><img src="../${(HELDEN[d.h] || HELDEN.schildwaechter).bild}" alt=""><b>${esc(d.n)}</b><small>${d.s ? "St. " + d.s : "Gast"} · ${(HELDEN[d.h] || HELDEN.schildwaechter).name}</small></button></li>`).join("");
   tafelZeigen("spielerliste", `<h2>Spieler hier</h2><div class="zier"></div><p class="klein">${ws ? `${fremde.length + (ich ? 1 : 0)} hier · ${Math.max(online, fremde.length + 1)} in den Splitterlanden unterwegs` : "Nicht mit dem Spielserver verbunden."}</p><ul class="sliste">${ichZeile}${zeilen || (ws ? `<li class="leer">Gerade niemand außer dir.</li>` : "")}</ul>`, zu); }
 
@@ -138,7 +138,7 @@ export class Mitspieler {
     f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k; const v = this.o.versatz || { x: 0, y: 0 }, x = f.x * this.o.f + v.x, y = f.y * this.o.f + v.y, g = this.o.gross;
     f.sp.setPosition(x, y + 3).setDepth(this.o.tiefe(f.y)); richten(f.sp, Math.cos(d.b), Math.sin(d.b)); if (Math.abs(Math.cos(d.b)) > 0.25) f.sp.setFlipX(Math.cos(d.b) < 0);
     const l = Boolean(d.l); if (l !== f.laeuft && D.lauf) { f.laeuft = l; if (l) { const L = D.laufMass || [0.5, 0.946, 0.91]; f.sp.play("lauf-" + f.held); f.sp.setOrigin(L[0], L[1]).setScale(g / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; f.sp.stop(); f.sp.setTexture("figur-" + f.held); f.sp.setOrigin(fu[0], fu[1]).setScale(g * (D.gross || 1) / f.sp.height); } }
-    const text = d.s ? `${d.n} · St. ${d.s}` : d.n; if (f.nm.text !== text) f.nm.setText(text); f.nm.setPosition(x, y - g - 12);
+    const text = d.s ? `${d.n} · Lv ${d.s}` : d.n; if (f.nm.text !== text) f.nm.setText(text); f.nm.setPosition(x, y - g - 12);
     if (this.o.karte) { let u = document.querySelector(`#ez-karte u[data-sp="${d.i}"]`) as HTMLElement | null; const k = document.getElementById("ez-karte"); if (!u && k) { u = document.createElement("u"); u.className = "freund"; u.dataset.sp = String(d.i); k.appendChild(u); }
       if (u) { u.title = d.n; u.style.left = (100 * f.x / this.o.karte.breit) + "%"; u.style.top = (100 * f.y / this.o.karte.hoch) + "%"; } }
     f.lb.clear(); if (d.max && d.lp !== undefined) { const w = 54, a = Math.max(0, Math.min(1, d.lp / d.max)); f.lb.fillStyle(0x000000, 0.7).fillRect(x - w / 2 - 1, y - g - 10, w + 2, 7).fillStyle(a > 0.5 ? 0x5fc35a : a > 0.25 ? 0xe0b040 : 0xd04a3a, 1).fillRect(x - w / 2, y - g - 9, w * a, 5); } } }

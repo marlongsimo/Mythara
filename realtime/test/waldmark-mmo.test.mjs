@@ -56,7 +56,7 @@ try {
   await gast.waitForFunction(() => window.EZW.spieler().length === 2, null, { timeout: 8000 }).catch(() => {});
   check(await gast.evaluate(() => window.EZW.spieler().map((d) => d.n).sort().join(",")) === "Anna,Ben", "Der Gast sieht Anna und Ben");
   check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.freund").length) === 2, "Die anderen erscheinen auf Annas Minikarte");
-  check(await anna.evaluate(() => window.EZW.szene.schild.text) === "Anna · St. 3", "Über Annas eigenem Helden: „" + await anna.evaluate(() => window.EZW.szene.schild.text) + "“");
+  check(await anna.evaluate(() => window.EZW.szene.schild.text) === "Anna · Lv 3", "Über Annas eigenem Helden: „" + await anna.evaluate(() => window.EZW.szene.schild.text) + "“");
   check(/^Gast \d{4}$/.test(await gast.evaluate(() => window.EZW.szene.schild.text)), "Über dem Gast steht sein Gastname");
   /* öffentlicher Chat mit Sprechblase */
   await anna.fill("#ez-chat input", "Hallo Waldmark"); await anna.press("#ez-chat input", "Enter");

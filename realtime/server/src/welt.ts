@@ -10,6 +10,7 @@
  */
 import { WebSocket } from "ws";
 import { HELDEN, stufeAusEp } from "../../shared/config";
+import { heldenlevel, skillXpPruefen } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
@@ -51,7 +52,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         H.sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>,
         H.sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => null) as Promise<{ held: string }[] | null>, H.epLesen(nutzer).catch(() => ({})), H.sb(`/rest/v1/rpg_echtzeit_position?user_id=eq.${nutzer}&select=region,x,y`).catch(() => []) as Promise<{ region: string; x: number | null; y: number | null }[]>]);
       /* der eigene Held (Migration 040): Aussehen und Startwaffe; die Startwaffe bestimmt den Ausrüstungssatz. Fehlt er im Konto (Migration noch nicht da), gilt das Aussehen vom Gerät */
-      const eigen = heldPruefen(await H.sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=geschlecht,frisur,bart,haarfarbe,hautfarbe,waffe`).then((r) => { const z = (r as { geschlecht: string; frisur: string; bart: string; haarfarbe: string; hautfarbe: string; waffe: string }[])[0];
+      let hl = 0; /* Kampfregeln v1 (Migration 041): Heldenlevel aus den Skill-XP */
+      const eigen = heldPruefen(await H.sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`).then((r) => { const z = (r as { geschlecht: string; frisur: string; bart: string; haarfarbe: string; hautfarbe: string; waffe: string; xp_staerke?: number; xp_geschick?: number; xp_magie?: number }[])[0];
+        if (z) hl = heldenlevel(skillXpPruefen({ staerke: z.xp_staerke, geschick: z.xp_geschick, magie: z.xp_magie }));
         return z ? { aussehen: { g: z.geschlecht, frisur: z.frisur, bart: z.bart, haar: z.haarfarbe, haut: z.hautfarbe }, waffe: z.waffe } : null; }).catch(() => null)) || heldPruefen(e.aussehen);
       let held = eigen ? satzVon(eigen) : aktiv && aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : "";
       if (eigen && aktiv && (!aktiv[0] || aktiv[0].held !== held)) await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_held: held }) }).catch((x) => console.error("Held setzen:", (x as Error).message));
@@ -60,7 +63,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         if (aktiv) await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_held: held }) }).catch((x) => console.error("Held setzen:", (x as Error).message)); }
       for (const o of [...spieler]) if (o.nutzer === nutzer) { spieler.delete(o); try { o.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal in der Welt */
       const raum = typeof e.raum === "string" && /^[A-Z]{6}$/.test(e.raum) && H.gruppeHat(e.raum, nutzer) ? e.raum : "";
-      s = { id: naechste++, ws, nutzer, gast: false, a: eigen || undefined, name: (profil[0] && profil[0].handle) || "Wanderer", held, stufe: stufeAusEp(Number((ep as Record<string, number>)[held]) || 0), ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum, chat: [], geaendert: true, zuletzt: jetzt };
+      s = { id: naechste++, ws, nutzer, gast: false, a: eigen || undefined, name: (profil[0] && profil[0].handle) || "Wanderer", held, stufe: eigen && hl ? hl : stufeAusEp(Number((ep as Record<string, number>)[held]) || 0), ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum, chat: [], geaendert: true, zuletzt: jetzt };
       clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
       system(ort, `${s.name} ist da.`, s); console.log("Welt:", s.name, "in", ort, "·", spieler.size, "unterwegs"); return; }
     s.zuletzt = jetzt;

@@ -108,7 +108,7 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
+export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (Anzeige; die Werte stehen fest am Gegner) */ stufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number };
   /* Spezialangriff auf eine Fläche: Der Gegner hält inne und lädt (laden Sekunden), die Fläche ist am Boden zu sehen; dann trifft er jeden, der noch darin steht. alle: Pause bis zum nächsten Mal. */
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
@@ -146,7 +146,7 @@ export const MONSTER: Record<string, MonsterDef> = {
   /* Bandit Level 1 (Kampfregeln v1): 40 LP, Nahkampf-Angriff 5 (Stärke 2 + 3), Verteidigung 5/3/2, Dolch 3–6 alle 2 s – Schild und Dolch der Figur sind nur Optik.
      Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
-  bandit_dolch: { name: "Bandit", bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 40, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
+  bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 40, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
     angriff: { name: "Dolch", art: "nah", schaden: [3, 6], takt: 2.0, reich: 1.3, aushol: 0.35 } },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge

@@ -12,7 +12,10 @@
 import Phaser from "phaser";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
-import { eigenesBildnis } from "../held";
+import { eigenesBildnis, aktiverHeld } from "../held";
+import { inventar } from "../inventar";
+import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon } from "../skills";
+import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { setzeKarte } from "../../../shared/karte";
 import { verbinde, Netz, SPIELSERVER } from "../netz";
@@ -67,9 +70,20 @@ export class WeltKampf {
           if (f.held && (f.a || "") !== k) { const neu = this.neu(id, true, f.typ, f.team, f.x, f.y); f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); Object.assign(neu, { tot: f.tot, lp: f.lp, max: f.max, zx: f.zx, zy: f.zy }); neu.sp.setVisible(!f.tot); } } }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
-    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art) => { this.art = art; }, url ? { t: "anmeldung", token } : undefined);
-    if (this.vorbei) { n.ende(); return; } this.netz = n; if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
+    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art) => { this.art = art; }, url ? { t: "anmeldung", token, ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
+    if (this.vorbei) { n.ende(); return; } this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
   }
+  /** Kampfregeln v1 (eigener Held): beim Rechnen im Browser Held und Gegner umstellen; Ausrüstungswechsel an Server oder Simulation weitergeben */
+  v1 = false; private v1Stufen = "";
+  private v1Start(n: Netz) { if (n.art === "lokal" && n.sim) n.sim.eigeneWerteSetzen(); /* wie auf dem Server: Gegner der Weltzonen mit ihren eigenen Werten */ const kw = meineKampfwerte(); if (!kw) return; this.v1 = true; this.v1Stufen = stufenVon(kw.skills); document.body.classList.add("kampf-v1");
+    const held = () => n.sim && n.sim.wesen.find((w) => w.held);
+    if (n.art === "lokal" && n.sim) { const h = held(); if (h) n.sim.heldV1(h.id, kw); }
+    const hoer = () => { if (this.vorbei) return; if (n.art === "server") n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]);
+      else { const h = held(), k = h && h.kw ? meineKampfwerte(h.kw.skills) : null; if (h && k && n.sim) n.sim.kampfwerteSetzen(h.id, k); } };
+    window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer); }
+  /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
+  private v1Xp(z: Zustand) { const x = z.ich.xp; if (!x) return; skillsSchreiben(x); const st = stufenVon(x);
+    if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
   /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
   betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");
     const lx = wx - this.zone.x0, ly = wy - this.zone.y0; if (!this.netz) { this.betretenOffen = { x: wx, y: wy }; return; }
@@ -78,7 +92,7 @@ export class WeltKampf {
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.figuren.clear(); this.ringZiel.destroy(); this.ichLb.destroy();
-    for (const h of this.hoerer) window.removeEventListener("ez-server", h); document.body.classList.remove("weltkampf"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
+    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } document.body.classList.remove("weltkampf", "kampf-v1"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
   /** Wie viele lebende Gegner in der Nähe des eigenen Helden sind (für das Kampf-Banner) */
   gegnerNah(felder = 8): number { const z = this.z; if (!z || !this.eingetreten) return 0; const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return 0;
@@ -133,7 +147,7 @@ export class WeltKampf {
       if (lauf) { richten(f.sp, vx, vy); if (Math.abs(vx) > 0.02) f.sp.setFlipX(vx < 0); }
       const schild = Boolean(f.bits & BIT.schild); if (lauf !== f.laeuft || schild !== f.schild) { f.laeuft = lauf; f.schild = schild; this.haltung(f, lauf); }
       const id = [...this.figuren.entries()].find(([, g]) => g === f)?.[0] || 0, n = f.held ? this.namen.get(id) : undefined;
-      const t = f.held ? (n ? `${n.name} · St. ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · St. ${this.stufe}`; if (f.nm.text !== t) f.nm.setText(t);
+      const t = f.held ? (n ? `${n.name} · Lv ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · Lv ${MONSTER[f.typ]?.stufe || this.stufe}`; /* Weltzonen: Gegner mit eigenem Level und eigenen Werten */ if (f.nm.text !== t) f.nm.setText(t);
       const h = f.held ? HELD_PX : HELD_PX * ((MONSTER[f.typ] as { hoehe?: number })?.hoehe || 88) / 96; f.nm.setPosition(px, py - h - 12); this.balken(f.lb, px, py - h - 10, f.lp / f.max, f.team !== 0); }
     /* Minimap: Gegner rot, andere Helden blau – live, alle 200 ms */
     if (performance.now() - this.karteZeit > 200) { this.karteZeit = performance.now(); const k = document.getElementById("ez-karte");
@@ -176,11 +190,20 @@ export class WeltKampf {
 
   /* ---------- Anzeige: Leben, Erfahrung, Abklingzeiten ---------- */
   private hud(z: Zustand) { const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus], sym = SYMBOL[ich[2]] || {};
+    if (z.ich.xp) { this.v1Xp(z); this.hudV1(z, ich[7], ich[8]); return; }
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = `${ich[7]} / ${ich[8]}`;
     { const bild = $("#ez-ich-bild") as HTMLImageElement, src = eigenesBildnis() || "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"), s = z.ich.stufe || stufeAusEp(epAlle()[ich[2]] || 0); st.hidden = false; st.textContent = "St. " + s; }
     if (z.ich.stufe) { const s = z.ich.stufe, e = z.ich.ep || 0, von = EP_BIS[s], bis = s < STUFE_MAX ? EP_BIS[s + 1] : von; $("#ez-xpleiste").hidden = false; ($("#ez-xp") as HTMLElement).style.width = (s < STUFE_MAX ? Math.min(100, Math.round(100 * (e - von) / (bis - von))) : 100) + "%"; $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); if (!el) continue; el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
     { const an = $('[data-taste="a"]'), img = an && (an.querySelector("img") as HTMLImageElement), src = symbolBild((sym.modi || [])[z.ich.modus] || "hieb"); if (img && img.dataset.src !== src) { img.dataset.src = src; img.src = src; } }
+    document.body.classList.remove("kampf-v1"); const sk = document.getElementById("ez-skills"); if (sk) sk.hidden = true;
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b>`; if (mo && mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `Waffe wechseln: ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; } }
+  /** Kampfregeln v1: Heldenlevel am Bild, Lebenspunkte, drei Skill-Balken; nur „Angreifen“ (das Symbol der angelegten Waffe) */
+  private hudV1(z: Zustand, lp: number, max: number) { document.body.classList.add("kampf-v1"); const angelegt = inventar().angelegt, W = angelegt.waffe ? GEGENSTAENDE[angelegt.waffe] : null;
+    $("#ez-name").textContent = W ? W.name : "Fäuste"; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * lp / max) + "%"; $("#ez-lpzahl").textContent = `${Math.round(lp)} / ${max}`;
+    const bild = $("#ez-ich-bild") as HTMLImageElement, src = eigenesBildnis() || "../img/favicon.svg"; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; }
+    const st = $("#ez-ich-stufe"); st.hidden = false; st.textContent = "Lv " + (z.ich.stufe || 1); st.title = "Heldenlevel"; $("#ez-xpleiste").hidden = true; skillAnzeige(z.ich.xp!);
+    const an = $('[data-taste="a"]'), img = an && (an.querySelector("img") as HTMLImageElement), art = W && W.waffe ? W.waffe.art : "nah", src2 = symbolBild(art === "fern" ? "symbole/armbrust" : art === "magie" ? "symbole/stab" : "symbole/schwert");
+    if (img && img.dataset.src !== src2) { img.dataset.src = src2; img.src = src2; } const k = an && (an.querySelector("small") as HTMLElement); if (k && k.textContent !== "Angreifen") { k.textContent = "Angreifen"; an.title = "Angreifen (1)"; } }
 }

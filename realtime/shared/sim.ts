@@ -76,7 +76,14 @@ export class Sim {
   /* ---------- Gemeinsame Welt (MMO): beliebig viele Spieler, Gegner kehren zurück, EP nach Schadensanteil ---------- */
   weltZeit = 0; private anteile = new Map<number, Map<number, number>>(); private wiederkehr: { w: Wesen; t: number; blinz: boolean }[] = []; private splitterJe = new Map<number, number>(); private blinzStart = new Set<number>();
   /** Eine gemeinsame Welt: die Karte mit ihren Lagern, ohne Helden. Spieler kommen mit beitreten() dazu. */
-  static welt(seed: number, wiederkehrSek = K.WELT_WIEDERKEHR): Sim { const s = new Sim("schildwaechter", seed, []); s.wesen.shift(); s.weltZeit = wiederkehrSek; s.blinzStart = new Set(s.blinzler); return s; }
+  /** eigeneWerte (Kampfregeln v1, Weltzonen): Gegner mit ihren eigenen Werten aus MONSTER – ohne die Stufen-Skalierung (STAERKE) */
+  static welt(seed: number, wiederkehrSek = K.WELT_WIEDERKEHR, eigeneWerte = false): Sim { const s = new Sim("schildwaechter", seed, []); s.wesen.shift(); s.weltZeit = wiederkehrSek; s.blinzStart = new Set(s.blinzler);
+    if (eigeneWerte) s.eigeneWerteSetzen(); return s; }
+  /** Gegner mit ihren eigenen Werten (ohne Stufen-Skalierung) – Weltzonen mit Kampfregeln v1, auch beim Rechnen im Browser */
+  eigeneWerteSetzen(): void { this.eigeneWerte = true; for (const w of this.wesen) if (!w.held) w.lp = w.max = MONSTER[w.typ].lp; }
+  /** Einen schon vorhandenen Helden auf die Kampfregeln v1 stellen (Rechnen im Browser: der Held entsteht dort mit der Simulation) */
+  heldV1(id: number, kw: Kampfwerte): void { const w = this.nach(id); if (!w || !w.held) return; w.kw = kw; w.xpNeu = { staerke: 0, geschick: 0, magie: 0 }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = kw.max; }
+  eigeneWerte = false;
   /** Ein Spieler betritt die Welt mit seinem Helden und dessen Erfahrung. Zurück: Kennung des Helden. */
   beitreten(typ: string, ep: number, wo?: Punkt, kw?: Kampfwerte): number { this.bereit(); if (!HELDEN[typ]) typ = "schildwaechter"; const n = this.wesen.filter((w) => w.held).length;
     const p = wo && Number.isFinite(wo.x) && Number.isFinite(wo.y) ? naechstFrei({ x: Math.max(0.5, Math.min(KB - 0.5, wo.x)), y: Math.max(0.5, Math.min(KH - 0.5, wo.y)) }) : null; /* wo: dort hinein, wo man in der Welt steht */
@@ -177,7 +184,8 @@ export class Sim {
       const a = von.kw ? von.kw.angriff[s.art as Art] : (von.held ? HELDEN[von.typ].angriff : MONSTER[von.typ].angriffswert)[s.art] + (z.kw ? 0 : SB(von).angriff); /* v1: Monster mit ihren reinen Werten */
       let d = z.kw ? z.kw.abwehr[s.art as Art] : this.wert(z).abwehr[s.art] + (von.kw ? 0 : SB(z).abwehr); if (s.art === "magie") d += (z.mrPlusT > 0 ? K.SCHUTZKREIS.magie : 0) + (z.held && this.freunde(z).some((o) => o.typ === "lichtbringer" && abstand(o, z) <= K.BEISTAND.radius) ? K.BEISTAND.magie : 0); else if (z.bruchT > 0) d -= K.DURCHBRECHEN.abwehr;
       d = Math.max(0, d) / (1 - minder); // ein Block von 60 % heißt: der Verteidigungswurf reicht 2,5-mal so hoch
-      if (!(this.zf() * (a + 1) > this.zf() * (d + 1))) { this.ev.push(minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
+      const v1 = Boolean(von.kw || z.kw); /* v1: Angriffswurf Zufall(0, Angriff) gegen Blockwurf Zufall(0, Verteidigung); Blockwurf ≥ Angriffswurf → geblockt */
+      if (!(v1 ? this.zf() * a > this.zf() * d : this.zf() * (a + 1) > this.zf() * (d + 1))) { this.ev.push(v1 || minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
     }
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
     const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; let m = von.kw || z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) /* v1: ganzzahlig Min…Max */ : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
@@ -253,7 +261,7 @@ export class Sim {
     const A = this.waffe(w); this.ev.push({ a: "hieb", id: w.id });
     if (A.art === "heil") { if (z.team === w.team && abstand(w, z) <= A.reich + 1) this.heilen(z, A.schaden[0] + this.zf() * (A.schaden[1] - A.schaden[0]), w); return; }
     if (z.tot || abstand(w, z) - z.r > A.reich + (w.held ? 0.6 : 0.35) || !frei(w, z)) return; // wer inzwischen weg ist, wird nicht getroffen
-    const M = w.held && !w.kw ? (A as Modus) : null, spec: Spec = { grund: A.schaden[1] * (w.held ? 1 : STAERKE.schaden), min: A.schaden[0] * (w.held ? 1 : STAERKE.schaden), art: A.art as Schadensart, wucht: Boolean(M && M.wucht), untot: M ? M.untot : 0, mal: w.typ === "kopfgeldjaeger" && !w.kw ? K.MAL.plus : 0 }; /* v1: keine Zusatzwirkungen der alten Helden */
+    const M = w.held && !w.kw ? (A as Modus) : null, spec: Spec = { grund: A.schaden[1] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), min: A.schaden[0] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), art: A.art as Schadensart, wucht: Boolean(M && M.wucht), untot: M ? M.untot : 0, mal: w.typ === "kopfgeldjaeger" && !w.kw ? K.MAL.plus : 0 }; /* v1: keine Zusatzwirkungen der alten Helden */
     if (w.held && A.art !== "nah") { spec.nach = w.typ === "kopfgeldjaeger" && w.modus === 0 && !w.kw ? "durchbrechen" : ""; this.schuss(w, z, z, (A as Modus).flug || 14, spec, A.art === "magie" ? "blitz" : "bolzen"); return; }
     const n = this.treffen(w, z, spec); if (n > 0 && !z.tot && !w.kw) this.nachTreffer(w, z, w.typ === "schildwaechter" ? (w.modus === 0 ? "festnageln" : "schildhieb") : w.typ === "assassine" && w.modus === 0 ? "dolch" : w.typ === "elementarist" ? "rueckstoss" : "");
   }
