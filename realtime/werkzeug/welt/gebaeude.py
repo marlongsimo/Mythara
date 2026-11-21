@@ -348,6 +348,9 @@ MOEBEL = {
     'heu':    lambda B, x, d: (quader(B, x - 0.9, d - 0.5, 0, 1.8, 1.0, 0.7, 'stroh', 0.3), quader(B, x - 0.6, d - 0.35, 0.7, 1.2, 0.8, 0.6, 'stroh', 0.3, hell_faktor=1.08)),
     'saecke': lambda B, x, d: (quader(B, x - 0.6, d - 0.3, 0, 0.55, 0.55, 0.6, 'putz', 0.2, farbe=(196, 172, 128)), quader(B, x + 0.05, d - 0.25, 0, 0.55, 0.55, 0.55, 'putz', 0.2, farbe=(184, 160, 118))),
     'muehlstein': lambda B, x, d: (quader(B, x - 0.7, d - 0.7, 0, 1.4, 1.4, 0.5, 'maserung', 0.18), quader(B, x - 0.6, d - 0.6, 0.5, 1.2, 1.2, 0.3, 'stein', 0.14)),
+    'loch':   lambda B, x, d: (B.vieleck(PROJ, [(x + math.cos(t) * 0.95, d + math.sin(t) * 0.7, 0.01) for t in np.linspace(0, 2 * math.pi, 24)], (64, 50, 38)),
+                           B.vieleck(PROJ, [(x + math.cos(t) * 0.8, d + math.sin(t) * 0.58, 0.02) for t in np.linspace(0, 2 * math.pi, 24)], (14, 12, 12)),
+                           B.flaeche(PROJ, [(x - 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.1, 0.03), (x - 0.25, d + 0.1, 0.03)], 'maserung', 0.5, 0.2)),
     'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
 }
 

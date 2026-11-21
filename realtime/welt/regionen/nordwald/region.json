@@ -1,0 +1,15 @@
+{
+ "id": "nordwald",
+ "name": "Der Nordwald",
+ "untertitel": "Dichter Wald westlich der Waldmark",
+ "ursprung": [
+  196,
+  200
+ ],
+ "chunks": [
+  4,
+  2
+ ],
+ "biom": "wald",
+ "stufe": 1
+}

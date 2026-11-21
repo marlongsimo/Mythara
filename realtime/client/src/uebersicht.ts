@@ -9,6 +9,7 @@
 export interface KartenRegion { id: string; name: string; ursprung: number[]; chunks: number[] }
 export interface WeltkarteOpts {
   daten: string;                                 // Ordner mit karte-<id>.webp
+  stand?: string;                                // Kennung des Weltbaus (gegen veraltete Bilder im Browser)
   regionen: KartenRegion[];                      // alle sichtbaren Regionen (gesperrte schon herausgenommen)
   chunkFelder: number;                           // Felder je Chunk
   ich: () => { x: number; y: number } | null;    // eigene Stelle in Feldern (Welt)
@@ -39,7 +40,7 @@ export function uebersicht(o: WeltkarteOpts): void {
     <p class="wk-hilfe">Ziehen zum Verschieben · Mausrad oder zwei Finger zum Zoomen · M oder Esc schließt</p>`;
   const flaeche = hülle.querySelector(".wk-flaeche") as HTMLElement, lw = hülle.querySelector(".wk-leinwand") as HTMLElement;
   for (const r of o.regionen) {
-    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.src = `${o.daten}karte-${r.id}.webp`; im.dataset.region = r.id;
+    const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
     Object.assign(im.style, { left: (r.ursprung[0] * C - x0) * PX + "px", top: (r.ursprung[1] * C - y0) * PX + "px", width: r.chunks[0] * C * PX + "px", height: r.chunks[1] * C * PX + "px" });
     lw.appendChild(im);
   }

@@ -27,6 +27,12 @@ BAEUME = {
     'stil_herbst_01': dict(art='laub', b=270, h=300, krone=(240, 64, 210), ballen=14, gruen=(196, 132, 56), stamm=(108, 74, 50), dicke=20, saat=4),
     'stil_tanne_01': dict(art='tanne', b=190, h=360, stufen=5, gruen=(58, 104, 70), stamm=(96, 66, 46), saat=5),
     'stil_tanne_02': dict(art='tanne', b=170, h=300, stufen=4, gruen=(66, 112, 74), stamm=(96, 66, 46), saat=6),
+    'stil_erle_tot_01': dict(art='tot', b=330, h=320, stamm=(86, 70, 58), saat=11),
+    'stil_erle_tot_02': dict(art='tot', b=280, h=270, stamm=(78, 66, 56), saat=12),
+    'stil_birke_01': dict(art='laub', b=0, h=0, krone=(170, 120, 210), ballen=9, gruen=(206, 168, 64), stamm=(226, 222, 210), dicke=13, birke=True, saat=13),
+    'stil_schilf_01': dict(art='schilf', b=110, h=110, saat=14),
+    'stil_schilf_02': dict(art='schilf', b=150, h=96, saat=15),
+    'stil_moorlicht_01': dict(art='licht', b=110, h=150, saat=16),
     'stil_busch_01': dict(art='busch', b=150, h=96, ballen=6, gruen=(98, 142, 60), saat=7),
     'stil_busch_02': dict(art='busch', b=120, h=84, ballen=5, gruen=(110, 150, 64), saat=8, beeren=True),
 }
@@ -114,6 +120,10 @@ def laub(P, rng):
     kb, kh, ky = P['krone']; W, H = int(kb * 1.12 + 30), int(kh + ky * 1.1 + 40); B = Blatt(W, H); cx = W / 2; yb = H - 16
     schatten(B, cx, yb, kb * 0.4, 15)
     stamm(B, cx, yb, yb - kh - ky * 0.25, P.get('dicke', 18), P['stamm'], rng)
+    if P.get('birke'):
+        for _ in range(9):
+            y = yb - rng.uniform(8, kh + ky * 0.2); x = cx + rng.uniform(-5, 3)
+            B.lege((40, 36, 34), B.maske([(x - 5, y), (x + 4, y - 1), (x + 4, y + 2), (x - 5, y + 2)]))
     kcy = yb - kh - ky * 0.48                                                            # Kronenmitte
     # Ballen füllen eine Ellipse; hintere (oben) zuerst, vordere (unten) zuletzt. Unter jedem Ballen ein weicher Schatten (Tiefe zwischen den Ballen).
     lagen = [(kcy - ky * 0.32, cx, 0.3 * min(kb, ky))]
@@ -167,7 +177,51 @@ def busch(P, rng):
     return B, [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.6}
 
 
-ARTEN = {'laub': laub, 'tanne': tanne, 'busch': busch}
+def tot(P, rng):
+    """Tote Erle: kahler, knorriger Stamm mit verzweigten Ästen, Moos am Fuß"""
+    W, H = P['b'], P['h']; B = Blatt(W, H); cx = W / 2; yb = H - 14
+    schatten(B, cx, yb, W * 0.3, 12)
+    f = np.array(P['stamm'], np.float32)
+    def ast(x, y, w, l, dick, tiefe):
+        x2, y2 = x + math.cos(w) * l, y - math.sin(w) * l
+        pk = [(x - dick * math.sin(w), y - dick * math.cos(w) * 0.3), (x2 - dick * 0.35 * math.sin(w), y2), (x2 + dick * 0.35 * math.sin(w), y2), (x + dick * math.sin(w), y + dick * math.cos(w) * 0.3)]
+        B.lege(f * (1.0 + 0.12 * math.cos(w)), B.maske(pk))
+        if tiefe > 0:
+            for d in (-0.5, 0.45):
+                ast(x2, y2, w + d + rng.uniform(-0.2, 0.2), l * rng.uniform(0.55, 0.75), dick * 0.55, tiefe - 1)
+    stamm(B, cx, yb, yb - H * 0.42, 14, P['stamm'], rng)
+    for w in (1.0, 1.55, 2.15):
+        ast(cx + rng.uniform(-3, 3), yb - H * 0.4, w + rng.uniform(-0.15, 0.15), H * rng.uniform(0.22, 0.3), 6, 2)
+    for _ in range(18):                                                                  # Moos am Fuß
+        x = cx + rng.uniform(-16, 16); y = yb - rng.uniform(0, 14); r = rng.uniform(3, 6)
+        B.lege((96, 120, 56), B.maske([(x + math.cos(t) * r, y + math.sin(t) * r * 0.7) for t in np.linspace(0, 6.28, 10)]))
+    return B, [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.35}
+
+
+def schilf(P, rng):
+    """Schilfbüschel mit Rohrkolben: viele schmale Halme, unten dunkel, oben hell"""
+    W, H = P['b'], P['h']; B = Blatt(W, H); yb = H - 6
+    for _ in range(int(W / 4)):
+        x = W / 2 + rng.normal(0, W * 0.18); h = rng.uniform(H * 0.45, H * 0.92); w = rng.uniform(-0.25, 0.25); g = float(rng.uniform(0.8, 1.15))
+        tip = (x + math.sin(w) * h, yb - math.cos(w) * h)
+        B.lege((int(82 * g), int(104 * g), int(48 * g)), B.maske([(x - 2.2, yb), tip, (x + 2.2, yb)]))
+        B.lege((int(140 * g), int(158 * g), int(78 * g)), B.maske([(x - 0.6, yb - h * 0.3), tip, (x + 1, yb - h * 0.35)]))
+        if rng.random() < 0.18:                                                          # Rohrkolben
+            cx_, cy_ = x + math.sin(w) * h * 0.8, yb - math.cos(w) * h * 0.8
+            B.lege((104, 66, 40), B.maske([(cx_ - 3, cy_ - 9), (cx_ + 3, cy_ - 9), (cx_ + 3, cy_ + 5), (cx_ - 3, cy_ + 5)]))
+    return B, [0.5, round(yb / H, 4)], None
+
+
+def licht(P, rng):
+    """Ein stilles Irrlicht: blasser, grünlich-weißer Lichtpunkt mit weichem Schein, schwebt über dem Wasser (ohne Kontur)"""
+    W, H = P['b'], P['h']; B = Blatt(W, H); cx, cy = W / 2, H * 0.38
+    d = np.hypot(B.xx / K - cx, B.yy / K - cy)
+    schein = np.clip(1 - d / 48, 0, 1) ** 1.6 * 0.7; kern = np.clip(1 - d / 11, 0, 1) ** 0.6
+    B.rgb[:] = np.array((214, 240, 220), np.float32); B.a = np.clip(schein + kern, 0, 1)
+    return B, [0.5, 0.98], None
+
+
+ARTEN = {'laub': laub, 'tanne': tanne, 'busch': busch, 'tot': tot, 'schilf': schilf, 'licht': licht}
 
 
 def main():
@@ -179,9 +233,9 @@ def main():
     os.makedirs(ZIEL, exist_ok=True)
     for kennung in args or list(BAEUME):
         P = BAEUME[kennung]; B, anker, koll = ARTEN[P['art']](P, np.random.default_rng(P['saat']))
-        im = B.fertig(); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6); bilder.append(im)
-        eintrag = {'id': kennung, 'name': f"Stilbaum ({P['art']})", 'kategorie': 'bewuchs', 'bild': f'img/welt/stil/{kennung}.webp', 'groesse': [im.width, im.height],
-                   'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss', 'durchscheinend': P['art'] != 'busch', 'interaktion': None, 'spiegelbar': True,
+        im = B.fertig(kontur=P['art'] != 'licht'); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6); bilder.append(im)
+        eintrag = {'id': kennung, 'name': f"Stilbaum ({P['art']})", 'kategorie': 'sonderort' if P['art'] == 'licht' else 'bewuchs', 'bild': f'img/welt/stil/{kennung}.webp', 'groesse': [im.width, im.height],
+                   'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss', 'durchscheinend': P['art'] not in ('busch', 'schilf', 'licht'), 'interaktion': None, 'spiegelbar': True,
                    'herkunft': 'erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar'}
         bib['objekte'] = [o for o in bib['objekte'] if o['id'] != kennung] + [eintrag]
         print(f'  {kennung}: {im.width} × {im.height}')

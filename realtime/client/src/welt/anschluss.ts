@@ -8,7 +8,7 @@
  * Positionen gehen relativ zur Region an den Server (Bildpunkte, wie seine Prüfung sie erwartet); der Server bleibt unverändert.
  */
 
-import { WELT, Welt } from "./welt";
+import { WELT, Welt, weltDatei } from "./welt";
 import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
 import { uebersicht } from "../uebersicht";
@@ -140,7 +140,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
   { const k = document.getElementById("ez-karte"), idx = (s as unknown as { index?: { regionen: Record<string, { region: { id: string; ursprung: number[]; chunks: number[] } }> } }).index;
     if (k && idx) { k.querySelectorAll("img.nachbar").forEach((e) => e.remove());
       for (const r of Object.values(idx.regionen)) { const R = r.region; if (R.id === id || WELT.gesperrteRegionen.includes(R.id)) continue;
-        const im = document.createElement("img"); im.className = "nachbar"; im.alt = ""; im.src = `${WELT.daten}karte-${R.id}.webp`;
+        const im = document.createElement("img"); im.className = "nachbar"; im.alt = ""; im.src = weltDatei("karte-" + R.id + ".webp");
         Object.assign(im.style, { left: (100 * (R.ursprung[0] - ux) / b) + "%", top: (100 * (R.ursprung[1] - uy) / h) + "%", width: (100 * R.chunks[0] / b) + "%", height: (100 * R.chunks[1] / h) + "%" }); k.prepend(im); } } } /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
@@ -152,7 +152,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
 function karteZeigen(s: Welt) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
-  uebersicht({ daten: WELT.daten, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id)),
+  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id)),
     ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier });
 }
 

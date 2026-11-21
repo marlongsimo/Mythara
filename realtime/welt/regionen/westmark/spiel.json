@@ -1,0 +1,58 @@
+{
+ "start": [
+  [
+   60,
+   44.506886234113054
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "huette_tuer",
+   "art": "lesen",
+   "x": 29.2,
+   "y": 120.7,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine verlassene Hütte. Die Tür hängt schief in den Angeln, drinnen riecht es nach feuchter Erde."
+   }
+  },
+  {
+   "id": "loch_ansehen",
+   "art": "lesen",
+   "x": 30.4,
+   "y": 118.8,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Mitten im Boden klafft ein Loch. Eine Leiter führt hinab – aber unten ist nichts als Dunkelheit."
+   }
+  },
+  {
+   "id": "stamm_west_ansehen",
+   "art": "lesen",
+   "x": 6.6,
+   "y": 40.23,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein umgestürzter Baum versperrt den Steinweg. Hier geht es noch nicht weiter."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 34.22921620685314,
+    "x1": 5.8,
+    "y1": 46.22921620685314
+   }
+  ],
+  "freigeben": []
+ }
+}

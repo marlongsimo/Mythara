@@ -1,0 +1,172 @@
+{
+ "start": [
+  [
+   124,
+   40.5
+  ],
+  [
+   124,
+   39.5
+  ],
+  [
+   124,
+   41.5
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "bertold",
+   "rolle": "npc",
+   "figur": "bertold",
+   "x": 48,
+   "y": 41
+  },
+  {
+   "id": "ilse",
+   "rolle": "npc",
+   "figur": "ilse",
+   "x": 55.6,
+   "y": 52.4,
+   "links": true
+  },
+  {
+   "id": "jorin",
+   "rolle": "npc",
+   "figur": "jorin",
+   "x": 44.6,
+   "y": 48.6
+  },
+  {
+   "id": "harm",
+   "rolle": "npc",
+   "figur": "harm",
+   "x": 40.5,
+   "y": 45.6
+  },
+  {
+   "id": "joost",
+   "rolle": "npc",
+   "figur": "joost",
+   "x": 56,
+   "y": 70.4
+  },
+  {
+   "id": "hedda",
+   "rolle": "npc",
+   "figur": "hedda",
+   "x": 17.4,
+   "y": 21.4,
+   "links": true
+  }
+ ],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "brunnen_ansehen",
+   "art": "lesen",
+   "x": 50,
+   "y": 49,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Brunnen von Rabenmoor. Das Wasser schmeckt nach Torf, aber es ist sauber."
+   }
+  },
+  {
+   "id": "langhaus_tuer",
+   "art": "lesen",
+   "x": 50,
+   "y": 37,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Langhaus des Schulzen. Über der Tür hängt ein Hirschschädel, im Herd glimmt Torf."
+   }
+  },
+  {
+   "id": "bohlenweg",
+   "art": "lesen",
+   "x": 97,
+   "y": 42.2,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Bohlenweg nach Rabenmoor. Die Bretter sind nass, und unter ihnen ist das Wasser schwarz."
+   }
+  },
+  {
+   "id": "steg_ansehen",
+   "art": "lesen",
+   "x": 56,
+   "y": 69.2,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Joosts Steg. Der Kahn liegt bereit; weiter draußen beginnt das Ried."
+   }
+  },
+  {
+   "id": "schrein_ansehen",
+   "art": "lesen",
+   "x": 86,
+   "y": 19.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Spiralsteine im Kreis, mitten im Moor. Auf dem Altar steht eine Schale mit stillem, hellem Wasser."
+   }
+  },
+  {
+   "id": "hedda_tuer",
+   "art": "lesen",
+   "x": 14.4,
+   "y": 20.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Heddas Hütte auf der letzten trockenen Insel. Getrocknete Kräuter hängen unter dem Vordach."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 92,
+    "y0": 41,
+    "x1": 98,
+    "y1": 43.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 41,
+    "x1": 92,
+    "y1": 43.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 80,
+    "y0": 41,
+    "x1": 86,
+    "y1": 43.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 74,
+    "y0": 41,
+    "x1": 80,
+    "y1": 43.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 54.7,
+    "y0": 68.4,
+    "x1": 57.3,
+    "y1": 73.6
+   }
+  ]
+ }
+}
