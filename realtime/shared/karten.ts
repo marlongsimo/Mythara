@@ -55,7 +55,7 @@ export const KARTEN: Record<string, KampfKarte> = {
   /* Die Kampfgebiete der offenen Welt (werkzeug/weltzonen.py): je Region eine gemeinsame Simulation über die ganze Region. Kein eigenes Bild –
      die offene Welt zeigt Gegner und Treffer an derselben Stelle. Im Kreuzwald streifen auf der Lichtung vier Dolch-Banditen der Stufe 3 umher
      und greifen an, sobald ein Held auf 5 Rechenfelder herankommt. */
-  ...Object.fromEntries(WELTKAMPF.map((z): [string, KampfKarte] => [z.karte, { name: z.name, bild: "", zeilen: z.zeilen, feinZeilen: true, start: z.start, aggro: 5, leine: 14, wandern: 4, weg: true,
+  ...Object.fromEntries(WELTKAMPF.map((z): [string, KampfKarte] => [z.karte, { name: z.name, bild: "", zeilen: z.zeilen, feinZeilen: true, start: z.start, aggro: z.aggro, leine: z.leine, wandern: z.wandern, weg: true,
     ursprung: [z.x0, z.y0], weltRegion: z.region, lager: z.lager.map((l) => ({ ...l })), mehrkampf: z.mehrkampf }])),
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",

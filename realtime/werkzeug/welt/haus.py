@@ -59,6 +59,11 @@ HAEUSER = {
     'moor_nebel_01':        dict(name='Nebelschwade', form='nebel', tiefe='oben', saat=41),
     'wald_meiler_01':       dict(name='Kohlenmeiler', form='meiler', saat=42),
     'graufurt_faehre_01':   dict(name='Fähre (Kette gerissen)', form='faehre', tiefe='boden', saat=45),
+    'hoehle_leiter_01':     dict(name='Leiter nach oben', form='leiter', saat=46),
+    'hoehle_tisch_01':      dict(name='Tisch mit Kerze', form='tisch', saat=47),
+    'hoehle_truhe_01':      dict(name='Beutetruhe', form='truhe', saat=48),
+    'hoehle_lager_01':      dict(name='Strohlager', form='strohlager', tiefe='boden', saat=49),
+    'hoehle_thron_01':      dict(name='Stuhl des Anführers', form='thron', saat=50),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -951,7 +956,74 @@ def faehre(P, rng):
     return B.fertig(), [0.5, 0.82], None, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.4}, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb, 'menhir': menhir, 'schrein': schrein, 'nebel': nebel, 'meiler': meiler, 'ruine': ruine, 'faehre': faehre}
+def leiter(P, rng):
+    """Leiter an der Felswand, nach oben ins Licht (durch das Loch in der Hütte)"""
+    W, H = 80, 200; B = Blatt(W, H); yb = 192
+    xx = np.arange(B.b, dtype=np.float32)[None, :] / K; yy = np.arange(B.h, dtype=np.float32)[:, None] / K
+    licht = np.exp(-(((xx - 40) / 30) ** 2 + ((yy - 20) / 60) ** 2))
+    B.lege((250, 236, 190), np.clip(licht * 0.5, 0, 1).astype(np.float32))
+    for x in (22, 52):
+        B.balken(x, 10, 6, yb - 10, x, 0.65)
+    for y in range(24, yb - 6, 18):
+        B.balken(22, y, 36, 5, y, 0.75)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.3}, None, False
+
+
+def tisch(P, rng):
+    """Grober Holztisch mit Kerze, Krügen und einer Karte"""
+    W, H = 150, 110; B = Blatt(W, H); yb = 100
+    schatten(B, 20, 130, yb, 14)
+    for x in (26, 118):
+        B.balken(x, yb - 34, 7, 34, x, 0.6)
+    B.lege(faerben(B.voll('maserung', 0.12, saat=2), (130, 92, 58)), B.maske([(18, yb - 34), (132, yb - 34), (140, yb - 58), (26, yb - 58)]))
+    B.lege((214, 196, 150), B.maske([(54, yb - 40), (86, yb - 42), (90, yb - 54), (58, yb - 52)]))
+    B.lege((236, 228, 210), B.rechteck(102, yb - 66, 5, 14)); B.lege((255, 200, 90), ellipse(B, 104.5, yb - 70, 3, 5))
+    for x in (36, 44):
+        B.lege((120, 84, 54), B.rechteck(x, yb - 56, 7, 10)); B.lege((90, 62, 40), ellipse(B, x + 3.5, yb - 56, 3.5, 1.5))
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.1, 'y': -0.6, 'b': 2.2, 'h': 0.6}, None, False
+
+
+def truhe(P, rng):
+    """Beschlagene Holztruhe, Deckel einen Spalt offen, Goldglanz"""
+    W, H = 90, 80; B = Blatt(W, H); yb = 72
+    schatten(B, 12, 78, yb, 10)
+    B.lege(faerben(B.voll('maserung', 0.12, saat=3), (120, 80, 48)), B.rechteck(14, yb - 34, 62, 34))
+    B.lege((250, 210, 90), B.maske([(18, yb - 36), (72, yb - 36), (70, yb - 40), (20, yb - 40)]))
+    B.lege(faerben(B.voll('maserung', 0.12, saat=4), (132, 90, 54)), B.maske([(12, yb - 38), (78, yb - 38), (74, yb - 54), (16, yb - 54)]))
+    for x in (20, 66):
+        B.lege((70, 70, 76), B.rechteck(x, yb - 54, 5, 54))
+    B.lege((210, 176, 80), B.rechteck(42, yb - 30, 7, 8))
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -0.7, 'y': -0.5, 'b': 1.4, 'h': 0.5}, {'art': 'lesen', 'dx': 0, 'dy': 0.7, 'radius': 1.6}, False
+
+
+def strohlager(P, rng):
+    """Schlafstelle: Strohschütte mit grober Decke, flach am Boden"""
+    W, H = 120, 70; B = Blatt(W, H)
+    B.lege((176, 150, 84), B.maske([(10, 40), (30, 16), (100, 14), (112, 38), (96, 60), (24, 62)]))
+    for _ in range(60):
+        x, y = rng.uniform(16, 104), rng.uniform(18, 58); w = rng.uniform(0, math.pi)
+        B.strich([(x, y), (x + math.cos(w) * 8, y + math.sin(w) * 3)], 1.6, int(x), 0.95)
+    B.lege((110, 70, 60), B.maske([(40, 26), (92, 24), (98, 46), (46, 50)]))
+    B.dunkel(B.maske([(40, 26), (92, 24), (93, 28), (41, 30)]), 0.3)
+    return B.fertig(), [0.5, 0.8], None, None, False
+
+
+def thron(P, rng):
+    """Schwerer Holzstuhl des Anführers mit Fell und einem Banditenbanner dahinter"""
+    W, H = 110, 170; B = Blatt(W, H); yb = 160
+    B.lege((120, 36, 34), B.maske([(30, 10), (80, 10), (80, 90), (55, 76), (30, 90)]))
+    B.dunkel(B.rechteck(30, 40, 50, 6), 0.4)
+    schatten(B, 22, 88, yb, 12)
+    for x in (26, 78):
+        B.balken(x, yb - 100, 8, 100, x, 0.6)
+    B.lege(faerben(B.voll('maserung', 0.12, saat=5), (110, 74, 44)), B.rechteck(26, yb - 52, 60, 12))
+    B.lege((150, 120, 90), B.maske([(28, yb - 92), (84, yb - 92), (86, yb - 50), (26, yb - 50)]))
+    for _ in range(30):
+        x, y = rng.uniform(30, 82), rng.uniform(yb - 90, yb - 52); B.strich([(x, y), (x + rng.uniform(-3, 3), y + 6)], 1.4, int(y), 0.9)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -0.7, 'y': -0.5, 'b': 1.4, 'h': 0.5}, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb, 'menhir': menhir, 'schrein': schrein, 'nebel': nebel, 'meiler': meiler, 'ruine': ruine, 'faehre': faehre, 'leiter': leiter, 'tisch': tisch, 'truhe': truhe, 'strohlager': strohlager, 'thron': thron}
 
 
 def baue(kennung):

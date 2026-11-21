@@ -5,7 +5,7 @@
  */
 import { region, regionNamen } from "../werkzeug/welt/laden.mjs";
 let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) { ok = false; for (const z of e.slice(0, 12)) console.log("      " + z); } };
-const C = 32, namen = regionNamen().filter((n) => !region(n).region.entwurf), R = Object.fromEntries(namen.map((n) => [n, region(n)]));
+const C = 32, namen = regionNamen().filter((n) => !region(n).region.entwurf && region(n).region.ebene !== "untergrund"), R = Object.fromEntries(namen.map((n) => [n, region(n)]));
 const besitz = new Map(); const doppelt = [];
 for (const n of namen) { const r = R[n].region; for (let j = 0; j < r.chunks[1]; j++) for (let i = 0; i < r.chunks[0]; i++) { const k = (r.ursprung[0] + i) + "_" + (r.ursprung[1] + j); if (besitz.has(k)) doppelt.push(k + ": " + besitz.get(k) + " / " + n); besitz.set(k, n); } }
 const xs = [...besitz.keys()].map((k) => +k.split("_")[0]), ys = [...besitz.keys()].map((k) => +k.split("_")[1]);

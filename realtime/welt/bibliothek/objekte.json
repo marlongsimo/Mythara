@@ -6936,6 +6936,132 @@
    },
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_leiter_01",
+   "name": "Leiter nach oben",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/hoehle_leiter_01.webp",
+   "groesse": [
+    80,
+    200
+   ],
+   "anker": [
+    0.5,
+    0.96
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_tisch_01",
+   "name": "Tisch mit Kerze",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/hoehle_tisch_01.webp",
+   "groesse": [
+    150,
+    110
+   ],
+   "anker": [
+    0.5,
+    0.9091
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.1,
+    "y": -0.6,
+    "b": 2.2,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_truhe_01",
+   "name": "Beutetruhe",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/hoehle_truhe_01.webp",
+   "groesse": [
+    90,
+    80
+   ],
+   "anker": [
+    0.5,
+    0.9
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.7,
+    "y": -0.5,
+    "b": 1.4,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.7,
+    "radius": 1.6
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_lager_01",
+   "name": "Strohlager",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/hoehle_lager_01.webp",
+   "groesse": [
+    120,
+    70
+   ],
+   "anker": [
+    0.5,
+    0.8
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_thron_01",
+   "name": "Stuhl des Anführers",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/hoehle_thron_01.webp",
+   "groesse": [
+    110,
+    170
+   ],
+   "anker": [
+    0.5,
+    0.9412
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.7,
+    "y": -0.5,
+    "b": 1.4,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }

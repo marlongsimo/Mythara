@@ -125,7 +125,7 @@ export function regionFehler(roh: unknown, gelaende: GelaendeBibliothek, objekte
   if (L.wenn(!istObj(d.region), "region.json", "fehlt")) return L.fehler;
   const r = d.region as Roh;
   L.id(r.id, "region.id"); L.text(r.name, "region.name"); L.zahl(r.stufe, "region.stufe", 1, 20);
-  L.eins(r.biom, ["wald", "wiese", "dorf", "sumpf", "gebirge", "ufer"] as const, "region.biom");
+  L.eins(r.biom, ["wald", "wiese", "dorf", "sumpf", "gebirge", "ufer", "hoehle"] as const, "region.biom");
   const formOk = !L.wenn(!istPaar(r.ursprung) || !r.ursprung.every(Number.isInteger), "region.ursprung", "[cx, cy] in ganzen Chunks erwartet")
     && !L.wenn(!istPaar(r.chunks) || !r.chunks.every((v) => Number.isInteger(v) && v >= 1 && v <= 64), "region.chunks", "[breit, hoch] in ganzen Chunks (1 bis 64) erwartet");
   if (!formOk) return L.fehler;

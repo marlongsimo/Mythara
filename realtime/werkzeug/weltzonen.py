@@ -11,17 +11,23 @@ HIER = os.path.dirname(os.path.abspath(__file__)); WURZEL = os.path.normpath(os.
 C = 32
 welt = json.load(open(os.path.join(WELT, "welt.json")))
 # Grundregel: JEDE Region der Welt ist ein Kampfgebiet mit Einzelkampf (einer gegen einen) – neue Regionen also automatisch.
-# Ausnahmen nur hier:
+# Ausnahmen nur hier (aggro/leine/wandern: Angriffsreichweite, Verfolgungsweite, Umherstreifen der Gegner – sonst 5/14/4):
 #   SICHER     – Regionen, in denen nicht gekämpft wird (sicherer Ort)
 #   BESONDERS  – Regionen mit eigenem Kartennamen, eigener Stufe, Gegnerlagern und Mehrkampf-Bereichen (Weltfelder [x0, y0, x1, y1])
 SICHER = {"waldmark"}
+# Der Unterschlupf (Welt-Pipeline, werkzeug/welt/unterschlupf.mjs): Lager und Mehrkampf-Halle kommen aus der Quelle der Region
+import subprocess
+US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
+                               cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
+    "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
     # Die Lichtung im Kreuzwald: vier Dolch-Banditen, Mehrkampf (viele gegen viele). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
     "waldweg": {"karte": "kreuzwald", "stufe": 3, "mehrkampf": [[6522, 6558, 6586, 6606]],
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
 }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
-       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][] }",
+       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "export const WELTKAMPF: WeltKampfGebiet[] = ["]
 for rid, eintrag in welt["regionen"].items():
     if rid in SICHER: print(f"{rid}: sicherer Ort"); continue
@@ -38,7 +44,8 @@ for rid, eintrag in welt["regionen"].items():
     start = eintrag["start"][0]; karte = z.get("karte", "welt_" + rid)
     aus.append("  " + json.dumps({"region": rid, "karte": karte, "name": R.get("name", rid), "x0": x0, "y0": y0, "b": B, "h": H, "stufe": z.get("stufe", R.get("stufe", 1)),
         "zeilen": ["".join(r) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,
-        "mehrkampf": [[a - x0, b - y0, c - x0, d - y0] for (a, b, c, d) in z.get("mehrkampf", [])]}, ensure_ascii=False) + ",")
+        "mehrkampf": [[a - x0, b - y0, c - x0, d - y0] for (a, b, c, d) in z.get("mehrkampf", [])],
+        "aggro": z.get("aggro", 5), "leine": z.get("leine", 14), "wandern": z.get("wandern", 4)}, ensure_ascii=False) + ",")
     print(f"{rid} → {karte}: {B}×{H}, {sum(r.count('.') for r in raster)} frei, {len(lager)} Gegner, {'Mehrkampf-Bereiche: ' + str(len(z['mehrkampf'])) if z.get('mehrkampf') else 'Einzelkampf'}")
 aus.append("];")
 aus.append("/** Alle Regionen der Welt (auch die sicheren) – der Server lässt dort die gemeinsame Welt zu (Anwesenheit, Chat) */")
