@@ -10,8 +10,9 @@ import json, os
 HIER = os.path.dirname(os.path.abspath(__file__)); WURZEL = os.path.normpath(os.path.join(HIER, "..", "..")); WELT = os.path.join(WURZEL, "echtzeit", "welt")
 C = 32
 welt = json.load(open(os.path.join(WELT, "welt.json")))
-# Region → Gegner (Weltfelder). Die Lichtung im Kreuzwald: vier Dolch-Banditen.
-ZONEN = { "waldweg": { "karte": "kreuzwald", "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)] } }
+# Region → Gegner und Mehrkampf-Gebiete (Weltfelder [x0, y0, x1, y1]). Sonst gilt Einzelkampf.
+# Die Lichtung im Kreuzwald: vier Dolch-Banditen, Mehrkampf (viele gegen viele).
+ZONEN = { "waldweg": { "karte": "kreuzwald", "mehrkampf": [[6522, 6558, 6586, 6606]], "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)] } }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt: Gehraster der Region und Lager der Gegner. */"]
 for rid, z in ZONEN.items():
     R = welt["regionen"][rid]["region"]; ux, uy = R["ursprung"]; bw, bh = R["chunks"]; x0, y0, B, H = ux * C, uy * C, bw * C, bh * C
@@ -29,6 +30,8 @@ for rid, z in ZONEN.items():
             f"export const {N} = {{ region: {json.dumps(rid)}, x0: {x0}, y0: {y0}, b: {B}, h: {H}, stufe: {R.get('stufe', 1)} }};",
             f"export const {N}_ZEILEN: string[] = {json.dumps(['' .join(r) for r in raster])};",
             f"export const {N}_START: number[][] = {json.dumps([[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]])};",
-            f"export const {N}_LAGER = {json.dumps(lager)};"]
+            f"export const {N}_LAGER = {json.dumps(lager)};",
+            f"/** Mehrkampf-Gebiete in Rechenfeldern des Gebiets [x0, y0, x1, y1] (sonst Einzelkampf) */",
+            f"export const {N}_MEHRKAMPF: number[][] = {json.dumps([[a - x0, b - y0, c - x0, d - y0] for (a, b, c, d) in z.get('mehrkampf', [])])};"]
     print(f"{rid} → {z['karte']}: {B}×{H}, {sum(r.count('.') for r in raster)} frei, {len(lager)} Gegner")
 open(os.path.join(WURZEL, "realtime", "shared", "weltzonen.ts"), "w").write("\n".join(aus) + "\n")

@@ -4,7 +4,7 @@
  */
 import type { Lager, Probe } from "./karte";
 import { WALDWEG_ZEILEN, WALDWEG_START, WALDWEG_LAGER, WALDWEG_DEKO, WALDWEG_BAEUME } from "./waldweg";
-import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER } from "./weltzonen";
+import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER, KREUZWALD_MEHRKAMPF } from "./weltzonen";
 /** Kampfgebiete der offenen Welt: Region der Welt → Karte der gemeinsamen Simulation (werkzeug/weltzonen.py) */
 export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = { [KREUZWALD.region]: { karte: "kreuzwald", x0: KREUZWALD.x0, y0: KREUZWALD.y0, b: KREUZWALD.b, h: KREUZWALD.h } };
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
@@ -17,6 +17,7 @@ export interface KampfKarte { name: string; bild: string; zeilen: string[]; star
   /** Strecke statt Kampf: kein Sieg nötig, man verlässt sie über die Ausgänge */ weg?: boolean; ausgaenge?: Ausgang[];
   /** Raster schon in Rechenfeldern; Aggro- und Leinenweite der Monster (Rechenfelder) */ feinZeilen?: boolean; aggro?: number; leine?: number;
   /** Gegner streifen ohne Ziel um ihr Lager (Rechenfelder) */ wandern?: number;
+  /** Mehrkampf-Gebiete [x0, y0, x1, y1] in Rechenfeldern; sonst gilt in der offenen Welt Einzelkampf */ mehrkampf?: number[][];
   /** Teil der offenen Welt: Weltfeld der linken oberen Ecke und Region (für den Rückweg und die gemerkte Stelle) */ ursprung?: [number, number]; weltRegion?: string;
   /** Bäume als einzelne Bilder mit Verdeckung (gemalte Felder, s = Maßstab, f = gespiegelt) */ deko?: { b: string; x: number; y: number; s: number; f?: boolean }[]; dekoBilder?: Record<string, { fuss: number[]; w: number; h: number }> }
 const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, x: x + 0.5, y: y + 0.5, gruppe });
@@ -54,7 +55,7 @@ export const KARTEN: Record<string, KampfKarte> = {
      streifen vier Dolch-Banditen der Stufe 3 umher und greifen an, sobald ein Held auf 5 Rechenfelder herankommt. Kein eigenes Bild:
      die offene Welt zeigt Gegner und Treffer an derselben Stelle. */
   kreuzwald: { name: "Der Kreuzwald", bild: "", zeilen: KREUZWALD_ZEILEN, feinZeilen: true, start: KREUZWALD_START, aggro: 5, leine: 14, wandern: 4, weg: true,
-    ursprung: [KREUZWALD.x0, KREUZWALD.y0], weltRegion: KREUZWALD.region, lager: KREUZWALD_LAGER.map((l) => ({ ...l })) },
+    ursprung: [KREUZWALD.x0, KREUZWALD.y0], weltRegion: KREUZWALD.region, lager: KREUZWALD_LAGER.map((l) => ({ ...l })), mehrkampf: KREUZWALD_MEHRKAMPF },
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",
     zeilen: ["MMMMMMMMMMMM", "MMKK.....KMM", "M..KK..KK.MM", "M..KK..KK.MM", "............", "M..KK..KK.MM", "M.........MM", "MMKK.....KMM", "MMMMMMMMMMMM"],

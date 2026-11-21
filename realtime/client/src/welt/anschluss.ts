@@ -13,7 +13,7 @@ import { heldenhalle } from "../halle";
 import { weltkarte } from "../weltkarte";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "../hud";
 import { wecken } from "../netz";
-import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
 import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon } from "../modulfigur";
@@ -58,6 +58,14 @@ function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") 
 /** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
 let kampf: WeltKampf | null = null;
 const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
+/** Unter der Minimap: Sicherer Ort, Einzelkampf oder Mehrkampf – je nachdem, wo man steht */
+let zoomJetzt = 2.2;
+function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart"); const r = document.getElementById("ez-kartenrahmen"); if (!r) return;
+  if (!el) { el = document.createElement("div"); el.id = "ez-kampfart"; r.appendChild(el); }
+  const z = WELTZONEN[s.hier], art = !z || !freigabe("suedtor") ? "sicher" : kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel";
+  if (el.dataset.art === art) return; el.dataset.art = art; el.className = art;
+  el.textContent = art === "sicher" ? "🛡 Sicherer Ort" : art === "mehr" ? "⚔⚔ Mehrkampf" : "⚔ Einzelkampf";
+  el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
 /* für Prüfungen im Browser */
 Object.defineProperty(window, "EZK", { get: () => kampf, configurable: true });
@@ -83,6 +91,7 @@ function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, 
   if (region.id === id && mit) return;
   if (mit) mit.liste([]);
   region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
+  zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt); /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
   mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
   weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
@@ -108,7 +117,7 @@ export function weltAnschliessen(start: string, tor: string) {
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
     if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
     knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
-    rundeKarte(2.2, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
+    rundeKarte(zoomJetzt, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); onlineZeigen();
     hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung },
       ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => oeffne("riss", s) }] : []), { name: "Menü", zeichen: "menue", tat: () => oeffne("menue", s) }]);
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
@@ -128,6 +137,7 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);
+    kampfartZeigen(s);
     if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
     weltPos(px, py, blickVon(s.figur), s.laeuft, s.ort.x, s.ort.y); mit.schritt(d); karteFolgen(px / region.b, py / region.h);

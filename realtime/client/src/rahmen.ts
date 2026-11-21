@@ -32,6 +32,8 @@ export function rundeKarte(zoom: number, knoepfe: RKnopf[]): void {
   leiste.innerHTML = knoepfe.map((b, i) => `<button type="button" data-i="${i}" aria-label="${b.name}" title="${b.name}${b.taste ? ` (${b.taste})` : ""}"><span>${RZEICHEN[b.zeichen]}</span><small>${b.name}</small></button>`).join("");
   rund.onpointerdown = (e) => e.stopPropagation();
 }
+/** Wie groß die Karte im Kreis erscheint (Kartenbreiten je Kreisbreite) – je Region, damit der Kreis immer etwa gleich viel Umgebung zeigt */
+export function karteZoom(zoom: number): void { zoomK = zoom; const k = document.getElementById("ez-karte"); if (k) k.style.setProperty("--zk", String(zoom)); }
 /** Die Karte so schieben, dass der Held (fx, fy: Anteil 0…1 der Kartenbreite und -höhe) in der Mitte des Kreises steht */
 export function karteFolgen(fx: number, fy: number): void {
   const k = document.getElementById("ez-karte"), rund = k && k.parentElement; if (!k || !rund || !rund.classList.contains("rund")) return;

@@ -30,7 +30,7 @@ export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number };
 interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number }
 
 export class WeltKampf {
-  netz: Netz | null = null; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
+  netz: Netz | null = null; karteZeit = 0; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
   figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number }>();
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
   readonly zone: { karte: string; x0: number; y0: number; b: number; h: number }; readonly stufe: number;
@@ -58,7 +58,9 @@ export class WeltKampf {
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.figuren.clear(); this.ringZiel.destroy(); this.ichLb.destroy();
-    for (const h of this.hoerer) window.removeEventListener("ez-server", h); document.body.classList.remove("weltkampf"); }
+    for (const h of this.hoerer) window.removeEventListener("ez-server", h); document.body.classList.remove("weltkampf"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
+  /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
+  mehrkampf(wx: number, wy: number): boolean { const K = KARTEN[this.zone.karte], x = wx - this.zone.x0, y = wy - this.zone.y0; return (K.mehrkampf || []).some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1); }
 
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
   private zustand(z: Zustand) { if (this.vorbei) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
@@ -83,6 +85,7 @@ export class WeltKampf {
     else if (ev.a === "block") zahl(ev.id, "geblockt", "#9cc8ff");
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
+    else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
     else if (ev.a === "hieb") { const sp = ev.id === this.ichId ? s.figur : this.figuren.get(ev.id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); } }
 
   /* ---------- jedes Bild ---------- */
@@ -98,6 +101,11 @@ export class WeltKampf {
       const id = [...this.figuren.entries()].find(([, g]) => g === f)?.[0] || 0, n = f.held ? this.namen.get(id) : undefined;
       const t = f.held ? (n ? `${n.name} · St. ${n.stufe}` : HELDEN[f.typ]?.name || "") : `${MONSTER[f.typ]?.name || f.typ} · St. ${this.stufe}`; if (f.nm.text !== t) f.nm.setText(t);
       const h = f.held ? HELD_PX : HELD_PX * ((MONSTER[f.typ] as { hoehe?: number })?.hoehe || 88) / 96; f.nm.setPosition(px, py - h - 12); this.balken(f.lb, px, py - h - 10, f.lp / f.max, f.team !== 0); }
+    /* Minimap: Gegner rot, andere Helden blau – live, alle 200 ms */
+    if (performance.now() - this.karteZeit > 200) { this.karteZeit = performance.now(); const k = document.getElementById("ez-karte");
+      if (k) for (const [id, f] of this.figuren) { let u = k.querySelector(`u[data-k="${id}"]`) as HTMLElement | null; if (!u) { u = document.createElement("u"); u.dataset.k = String(id); k.appendChild(u); }
+        u.className = (f.team === 0 ? "freund" : "feind") + (f.tot ? " tot" : ""); u.style.left = (100 * f.x / this.zone.b) + "%"; u.style.top = (100 * f.y / this.zone.h) + "%"; }
+      if (k) for (const u of Array.from(k.querySelectorAll<HTMLElement>("u[data-k]"))) if (!this.figuren.has(Number(u.dataset.k))) u.remove(); }
     /* eigenes Leben über dem Kopf und das gewählte Ziel */
     if (ich) this.balken(this.ichLb, s.figur.x, s.figur.y - HELD_PX - 8, ich[7] / ich[8], false); const zf = this.figuren.get(this.z.ich.zielId);
     if (zf && !zf.tot) this.ringZiel.setVisible(true).setPosition(zf.sp.x, zf.sp.y - 2).setDepth(zf.sp.depth - 0.01); else this.ringZiel.setVisible(false); }

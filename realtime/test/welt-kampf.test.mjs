@@ -49,9 +49,14 @@ try {
   check(sicht.banditen === 4 && sicht.schilder.filter((t) => t === "Bandit · St. 3").length === 4, "Anna sieht vier Banditen mit „Bandit · St. 3“");
   check(sicht.schilder.includes("Ben · St. 2"), "…und Ben mit Name und Stufe aus derselben Simulation: " + sicht.schilder.filter((t) => !/Bandit/.test(t)).join(", "));
   check(await anna.evaluate(() => { const K = window.EZK, i = K.z.w.find((e) => e[0] === K.ichId); return Math.hypot(K.zone.x0 + i[4] - 6536, K.zone.y0 + i[5] - 6583) < 1.6; }), "Anna steht im Kampf dort, wo sie in der Welt stand");
+  check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔⚔ Mehrkampf", "Unter der Minimap: „Mehrkampf“ auf der Lichtung");
+  check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.feind:not(.tot)").length) === 4, "Die Minimap zeigt die vier Banditen live als rote Punkte");
+  const tf0 = await anna.evaluate(() => document.querySelector("#ez-karte").style.transform);
   /* laufen: Taste D – der Server bewegt, die Welt folgt */
   const x0 = await anna.evaluate(() => window.EZW.szene.ort.x); await anna.keyboard.down("d"); await anna.waitForTimeout(700); await anna.keyboard.up("d"); await anna.waitForTimeout(400);
   const x1 = await anna.evaluate(() => window.EZW.szene.ort.x); check(x1 - x0 > 1, `Laufen mit der Tastatur: der Server bewegt Anna (${(x1 - x0).toFixed(1)} Felder)`);
+  const tf1 = await anna.evaluate(() => document.querySelector("#ez-karte").style.transform), dx = (t) => Number((t.match(/translate\((-?[\d.]+)px/) || [])[1]);
+  check(dx(tf0) - dx(tf1) >= 6, `Die Minimap scrollt beim Laufen sichtbar mit (${tf0} → ${tf1})`);
   /* kämpfen: immer wieder 1 (Angriff auf den nächsten Banditen) */
   const gebucht = () => buchungen.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + (x.p_ep.schildwaechter || 0), 0); let zahlen = 0;
   anna.on("console", () => {}); for (let i = 0; i < 160 && gebucht() === 0; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(400); if (!zahlen) { zahlen = await anna.evaluate(() => window.EZW.szene.children.list.filter((o) => o.type === "Text" && /^\d+$/.test(o.text)).length); if (zahlen && process.env.BILD) await anna.screenshot({ path: process.env.BILD }); } }
@@ -62,8 +67,10 @@ try {
   await Promise.all([anna.waitForURL(/von=teleport/, { timeout: 15000 }), anna.click('#ez-kartenrahmen [aria-label="Teleport"]')]);
   await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.hier === "waldmark", null, { timeout: 30000 }); await anna.waitForTimeout(800);
   check(await anna.evaluate(() => !window.EZK && !document.body.classList.contains("weltkampf")), "Teleport: zurück in der Waldmark, dort wird nicht gekämpft");
+  check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "🛡 Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
   /* Ben läuft durchs Südtor zurück in die Waldmark */
   await ben.evaluate(() => localStorage.setItem("ez_welt_pos", JSON.stringify([6448, 6467.5, "waldweg"]))); await ben.reload(); await bereit(ben);
+  check(await ben.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔ Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");
   await ben.keyboard.down("w"); await ben.waitForFunction(() => window.EZW.szene.hier === "waldmark", null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(400); await ben.keyboard.up("w");
   check(await ben.evaluate(() => window.EZW.szene.hier === "waldmark" && !window.EZK), "Durchs Südtor nach Norden: Ben verlässt das Kampfgebiet nahtlos und ist in der Waldmark (" + await ben.evaluate(() => window.EZW.szene.ort.y.toFixed(1)) + ")");
   /* Gast: der Browser rechnet selbst */

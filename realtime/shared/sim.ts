@@ -22,7 +22,7 @@ export type Eingabe =
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
 interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
-  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; rx: number; ry: number; fuehrer: number;
+  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; rx: number; ry: number; fuehrer: number;
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; wach: boolean;
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number }
@@ -101,6 +101,16 @@ export class Sim {
   /** Der Angriff, der gerade gilt: beim Helden der gewählte Waffenmodus */
   waffe(w: Wesen): Modus | { art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } { return w.held ? HELDEN[w.typ].modi[w.modus] : MONSTER[w.typ].angriff; }
   private tempo(w: Wesen): number { return this.wert(w).tempo * (w.langsamT > 0 ? 1 - w.langsamF : 1) * (w.held && HELDEN[w.typ].modi[w.modus].schild ? K.BLOCK.tempo : 1); }
+  /* ---------- Einzel- und Mehrkampf (nur in der offenen Welt) ----------
+     Einzelkampf (Standard): Ein Gegner kämpft nur mit einem Helden und ein Held nur mit einem Gegner. Wer gebunden ist, kann von anderen
+     weder angegriffen werden noch andere angreifen, bis der Kampf endet (Tod, Gehen) oder EINZEL_BINDUNG Sekunden lang kein Treffer fällt.
+     Mehrkampf: in den Gebieten der Karte (MEHRKAMPF) – dort viele gegen viele. Kampagnen und Riss bleiben, wie sie sind. */
+  static EINZEL_BINDUNG = 6;
+  mehrkampfBei(p: Punkt): boolean { return !this.weltZeit || this.karte.MEHRKAMPF.some(([x0, y0, x1, y1]) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1); }
+  private gebunden(w: Wesen): Wesen | null { if (!w.kampfMit || (w.kampfBis || 0) <= this.zeit) return null; const p = this.nach(w.kampfMit); return p && !p.tot ? p : null; }
+  /** Darf a gegen z kämpfen? (Verbündete: immer – Heilen und Schützen bleiben erlaubt) */
+  darf(a: Wesen, z: Wesen): boolean { if (a.team === z.team || this.mehrkampfBei(z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
+  private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
   private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team !== w.team); }
   private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team); }
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
@@ -113,7 +123,7 @@ export class Sim {
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
     if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = []; } }
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = weg(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") this.wechsel(h);
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
     else if (e.t === "faehig") { if ((e.taste !== "q" && e.taste !== "e" && e.taste !== "r") || !zahl(e.x) || !zahl(e.y)) return; this.faehigkeit(h, e.taste, { x: e.x, y: e.y }); }
@@ -146,7 +156,7 @@ export class Sim {
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
-    if (z.tot) return 0;
+    if (z.tot) return 0; if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
     // Schild und Bollwerk: von vorn wird Torvald seltener getroffen; Verbündete direkt hinter einem Bollwerk ebenso
     let minder = 0; const winkel = (a: number, b: number) => { let d = Math.abs(a - b) % (2 * Math.PI); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
     if (z.held && HELDEN[z.typ].modi[z.modus].schild) { if (winkel(Math.atan2(von.y - z.y, von.x - z.x), z.blick) <= K.BLOCK.winkel * Math.PI / 180) minder = K.BLOCK[s.art] + (z.bollwerk > 0 ? K.BOLLWERK.plus : 0); }
@@ -253,7 +263,7 @@ export class Sim {
     if (d <= reich && frei(w, z)) { w.pfad = []; w.blick = Math.atan2(z.y - w.y, z.x - w.x); if (w.cdA <= 0) this.angriff(w, z); return; }
     w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, z); w.neuWeg = 0.3; }
   }
-  private naechsterGegner(w: Wesen, weit: number): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { const d = abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+  private naechsterGegner(w: Wesen, weit: number): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; const d = abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
@@ -309,6 +319,7 @@ export class Sim {
       if (!w.held && MONSTER[w.typ].fest) { const B = MONSTER[w.typ].brut; if (B) this.brueten(w, B); continue; } /* Laich: bewegt sich nicht, greift nicht an, brütet */
       if (!w.held && MONSTER[w.typ].brut && w.wach) this.brueten(w, MONSTER[w.typ].brut!); /* Bosse, die Hilfe rufen */
       if (!w.held) {
+        if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; w.pfad = []; } /* Einzelkampf: der Held kämpft schon mit einem anderen */
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
         if (ziel && abstand(ziel, w.heim) > (this.karte.LEINE ?? K.LEINE) && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
         if (!ziel) { const o = this.naechsterGegner(w, this.karte.AGGRO ?? K.AGGRO); if (o && abstand(o, w.heim) <= (this.karte.LEINE ?? K.LEINE)) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
@@ -329,6 +340,7 @@ export class Sim {
         } else if (A.art === "heil") { // Heilstab: gewählter Verbündeter, sonst wer am schwersten verletzt ist
           const z = ziel && ziel.team === w.team && ziel.lp < ziel.max ? ziel : this.schwaechster(w, A.reich); if (z && !faehrt && w.cdA <= 0 && abstand(w, z) <= A.reich && (z === w || frei(w, z))) this.angriff(w, z);
         } else { if (ziel && ziel.team === w.team) { ziel = undefined; w.zielId = 0; }
+          if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; this.ev.push({ a: "text", id: w.id, t: "Kämpft schon mit jemand anderem" }); }
           const nah = A.art === "nah", darf = nah || !faehrt; // Fernkämpfer schießen nur im Stehen
           if (!ziel && !faehrt && !w.pfad.length) ziel = this.naechsterGegner(w, nah ? 2.2 : A.reich) || undefined; // wer steht und kein Ziel hat, wehrt sich von selbst
           if (ziel && darf && abstand(w, ziel) - ziel.r <= A.reich && frei(w, ziel)) { if (!faehrt || nah) w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); if (w.cdA <= 0) this.angriff(w, ziel); } }
