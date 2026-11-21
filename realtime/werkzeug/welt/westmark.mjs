@@ -39,12 +39,14 @@ const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgae
   const steinY = (x) => { const xk = x - XK; return KY + 2.6 * Math.sin((xk - TOR) / 21) + 1.3 * Math.sin((xk - TOR) / 8.3) * Math.min(1, Math.abs(xk - TOR) / 14); };
   const ENDE = 5, HUETTE = [30, 120];
   const PFAD = [[50.5, H + 1], [50, 178], [45, 160], [38, 140], [29.2, 121.2], [27, 104], [31, 84], [36, 66], [38, steinY(38) + 2]];   /* Trampelpfad von Rabenmoor zum Steinweg */
+  const QUER = [[B + 1, 104], [52, 103], [40, 104.5], [28.2, 105]];   /* Waldweg aus dem Kreuzwald, trifft hier auf den Trampelpfad */
   const moor = (y) => Math.min(1, Math.max(0, (y - 104) / 70));       /* 0 = Wiese (Norden) … 1 = kahles Moor (Süden) */
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, s = steinY(cx), m = moor(cy), w = welle(cx, cy); let c;
     if (cx >= ENDE - 2 && Math.abs(cy - s) < 3.1) c = "k";
     else if (cy < s - 5 - 1.2 * w) c = "f";                                    /* dichter Wald nördlich des Weges */
     else if (cy < s + 5 + 1.2 * w) c = ".";                                    /* Wegsaum */
-    else if (strecke(cx, cy, PFAD) < (m > 0.5 ? 1.1 : 0.95)) c = m > 0.45 ? "m" : "e";
+    else if (strecke(cx, cy, PFAD) < (m > 0.5 ? 1.1 : 0.95) || strecke(cx, cy, QUER) < 1.1) c = m > 0.45 ? "m" : "e";
+    else if (strecke(cx, cy, QUER) < 2.6 + 0.6 * w) c = ".";
     else if (cx > B - 4 - 1.5 * w && m < 0.85) c = "f";                         /* Waldrand zum Kreuzwald */
     else if (m < 0.15) c = w > 1.1 ? "," : ".";
     else if (m < 0.55) c = w > 0.6 + m ? "t" : "v";
@@ -53,7 +55,7 @@ const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgae
     z.push(c); } g.push(z); }
   const zeichen = (x, y) => g[Math.max(0, Math.min(H - 1, Math.floor(y)))][Math.max(0, Math.min(B - 1, Math.floor(x)))];
   let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|moor|wald|stil|k)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });
-  const nah = (x, y, r) => strecke(x, y, PFAD) < r || Math.abs(y - steinY(x)) < r + 3 || Math.hypot(x - HUETTE[0], y - HUETTE[1] + 2) < 7;
+  const nah = (x, y, r) => strecke(x, y, PFAD) < r || strecke(x, y, QUER) < r + 0.5 || Math.abs(y - steinY(x)) < r + 3 || Math.hypot(x - HUETTE[0], y - HUETTE[1] + 2) < 7;
   const dinge = [o("moor_huette_loch_01", ...HUETTE), o("wald_baumstamm_02", ENDE, steinY(ENDE) + 4.5), o("dorf_zaun_01", HUETTE[0] + 4.6, HUETTE[1] + 0.4), o("dorf_holzstapel_01", HUETTE[0] - 4.2, HUETTE[1] - 0.2)];
   /* einzelne Bäume auf der Wiese, nach Süden immer weniger und zuletzt nur noch tote Erlen; Schilf an den Moorlöchern */
   for (let i = 0; i < 3000 && dinge.length < 70; i++) { const x = +(3 + wurf() * (B - 8)).toFixed(2), y = +(steinY(30) + 8 + wurf() * (H - steinY(30) - 12)).toFixed(2), m = moor(y), c = zeichen(x, y);
