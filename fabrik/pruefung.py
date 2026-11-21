@@ -24,9 +24,9 @@ def melde(bereich, name, wert, grenze, ok, warn=False, mehr=None):
 _blatt = {}
 def blatt(ebene, anim):
     k = (ebene, anim)
-    if k not in _blatt: p = os.path.join(ordner, f"{ebene}.{anim}.webp"); _blatt[k] = np.asarray(Image.open(p).convert("RGBA")).astype(np.float32) / 255 if os.path.exists(p) else None
+    if k not in _blatt: p = os.path.join(ordner, f"{ebene}.{anim}.webp"); _blatt[k] = np.asarray(Image.open(p).convert("RGBA")) if os.path.exists(p) else None   # 8 Bit im Speicher (viele Ebenen, z. B. Farbvarianten); Felder werden einzeln umgerechnet
     return _blatt[k]
-def feld(b, r, i): return b[r * F:(r + 1) * F, i * F:(i + 1) * F]
+def feld(b, r, i): return b[r * F:(r + 1) * F, i * F:(i + 1) * F].astype(np.float32) / 255
 def ueber(unten, oben): a = oben[..., 3:]; aus = unten.copy(); aus[..., :3] = oben[..., :3] * a + unten[..., :3] * (1 - a); aus[..., 3:] = a + unten[..., 3:] * (1 - a); return aus
 huellen = [e for e, d in EB.items() if d["art"] == "huelle"]; starr = [e for e, d in EB.items() if d["art"] == "starr"]; erst = {p: t[0] for p, t in meta["plaetze"].items()}
 def gesamt(anim, r, i, teile):
@@ -53,10 +53,10 @@ melde("bild", "keine gespiegelten Richtungen (kleinster Unterschied zum Spiegelb
 rand = []
 for (e, a), b in _blatt.items():
     if b is None: continue
-    al = b[..., 3].reshape(8, F, ANIM[a]["bilder"], F); kante = np.maximum.reduce([al[:, 0].max(-1), al[:, -1].max(-1), al[:, :, :, 0].max(1), al[:, :, :, -1].max(1)])
+    al = b[..., 3].reshape(8, F, ANIM[a]["bilder"], F) / 255; kante = np.maximum.reduce([al[:, 0].max(-1), al[:, -1].max(-1), al[:, :, :, 0].max(1), al[:, :, :, -1].max(1)])
     rand += [f"{e}.{a}/{r}/{i}" for r, i in zip(*np.where(kante > 0.05))]
 melde("bild", "nichts abgeschnitten (kein Teil berührt den Feldrand)", f"{len(rand)} Bilder", "0", not rand, mehr=rand[:8])
-ecken = max(float(max(b[0, 0, 3], b[-1, -1, 3], b[0, -1, 3], b[-1, 0, 3])) for b in _blatt.values() if b is not None)
+ecken = max(float(max(b[0, 0, 3], b[-1, -1, 3], b[0, -1, 3], b[-1, 0, 3])) / 255 for b in _blatt.values() if b is not None)
 melde("bild", "Hintergrund durchsichtig (Ecken der Blätter)", round(ecken, 3), "0", ecken == 0)
 # Fußpunkt: die unterste Zeile des Körpers schwankt innerhalb einer Bewegung und Richtung kaum
 schwank = {}
@@ -71,7 +71,7 @@ for a in ANIM:
     for x in range(len(huellen)):
         for y in range(x + 1, len(huellen)):
             if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage"): continue   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
-            p = blatt(huellen[x], a)[..., 3] > 0.6; q = blatt(huellen[y], a)[..., 3] > 0.6; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
+            p = blatt(huellen[x], a)[..., 3] > 0.6 * 255; q = blatt(huellen[y], a)[..., 3] > 0.6 * 255; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
 melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat
 def loecher(al): voll = al > 0.5; return ndimage.binary_fill_holes(voll) & ~voll

@@ -58,6 +58,35 @@ cam.location = (0, -10 * math.cos(n), h + 10 * math.sin(n)); cam.rotation_euler 
 for name, rot, staerke in [("haupt", (50, 0, -40), 5.0), ("fuell", (65, 0, 60), 1.6), ("rand", (-40, 0, 170), 1.2)]:
     l = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN")); l.data.energy = staerke; l.data.angle = math.radians(12); l.rotation_euler = tuple(math.radians(v) for v in rot); sc.collection.objects.link(l)
 welt = bpy.data.worlds.new("welt"); sc.world = welt; welt.use_nodes = True; welt.node_tree.nodes["Background"].inputs[1].default_value = 1.3
+STIL = arm.get("stil", "")                                                                         # "gemalt": weiches warmes Hauptlicht, kühle Randlichter, Schatten in Falten, helle Kanten (aus der Ausrüstungsliste)
+if STIL == "gemalt":
+    for name, farbe_, staerke, winkel, rot in (("haupt", (1.0, 0.92, 0.8), 3.6, 35, None), ("fuell", (0.72, 0.8, 1.0), 1.2, 40, None), ("rand", (0.85, 0.9, 1.0), 3.2, 8, None), ("rand2", (1.0, 0.95, 0.85), 2.2, 8, (-35, 0, -150))):
+        l = bpy.data.objects.get(name)
+        if l is None: l = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN")); sc.collection.objects.link(l); l.rotation_euler = tuple(math.radians(v) for v in rot)
+        l.data.color = farbe_; l.data.energy = staerke; l.data.angle = math.radians(winkel)
+    bg = welt.node_tree.nodes["Background"]; bg.inputs[0].default_value = (0.55, 0.62, 0.8, 1); bg.inputs[1].default_value = 1.0
+    def veredeln(mat):
+        """Grundfarbe × Umgebungsverdeckung (dunkle Falten) + helle Kanten (Bevel-Normale weicht von der Flächennormale ab)"""
+        if not mat or not mat.use_nodes or mat.get("veredelt"): return
+        nt = mat.node_tree; bsdf = next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None)
+        if bsdf is None: return
+        ein = bsdf.inputs["Base Color"]
+        if ein.is_linked: quelle = ein.links[0].from_socket
+        else: c = nt.nodes.new("ShaderNodeRGB"); c.outputs[0].default_value = ein.default_value; quelle = c.outputs[0]
+        ao = nt.nodes.new("ShaderNodeAmbientOcclusion"); ao.inputs["Distance"].default_value = 0.12; ao.samples = 8
+        stufe = nt.nodes.new("ShaderNodeMapRange"); stufe.inputs["To Min"].default_value = 0.5; nt.links.new(ao.outputs["AO"], stufe.inputs["Value"])
+        dunkel = nt.nodes.new("ShaderNodeMixRGB"); dunkel.blend_type = "MULTIPLY"; dunkel.inputs["Fac"].default_value = 1.0
+        nt.links.new(quelle, dunkel.inputs["Color1"]); nt.links.new(stufe.outputs["Result"], dunkel.inputs["Color2"])
+        bev = nt.nodes.new("ShaderNodeBevel"); bev.inputs["Radius"].default_value = 0.014; bev.samples = 6; geo = nt.nodes.new("ShaderNodeNewGeometry")
+        dot = nt.nodes.new("ShaderNodeVectorMath"); dot.operation = "DOT_PRODUCT"; nt.links.new(bev.outputs[0], dot.inputs[0]); nt.links.new(geo.outputs["Normal"], dot.inputs[1])
+        kante = nt.nodes.new("ShaderNodeMapRange"); kante.inputs["From Min"].default_value = 0.985; kante.inputs["From Max"].default_value = 0.8; kante.inputs["To Max"].default_value = 0.28
+        nt.links.new(dot.outputs["Value"], kante.inputs["Value"])
+        hell = nt.nodes.new("ShaderNodeMixRGB"); hell.blend_type = "SCREEN"; nt.links.new(kante.outputs["Result"], hell.inputs["Fac"]); nt.links.new(dunkel.outputs[0], hell.inputs["Color1"]); hell.inputs["Color2"].default_value = (1.0, 0.95, 0.85, 1)
+        nt.links.new(hell.outputs[0], ein); mat["veredelt"] = True
+    for o in bpy.data.objects:
+        if o.type == "MESH":
+            for m_ in o.data.materials: veredeln(m_)
+    print("Stil: gemalt (Licht und Material veredelt)")
 
 teile = sorted([o for o in bpy.data.objects if o.get("ebene")], key=lambda o: (o.get("reihe", 0), o.name));   # Reihenfolge der Ausrüstungsliste: das erste Teil je Platz ist die Standardausrüstung
 koerper = next(o for o in teile if o["art"] == "koerper"); huellen = [o for o in teile if o["art"] == "huelle"]; starr = [o for o in teile if o["art"] == "starr"]
