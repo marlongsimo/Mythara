@@ -155,7 +155,8 @@
         "laufen",
         "tod",
         "bogen"
-      ]
+      ],
+      "drehen": 180
     }
   ],
   "stuecke_behalten": true,

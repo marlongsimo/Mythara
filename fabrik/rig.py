@@ -24,6 +24,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Hülle "ueberlage": true    wahlfreie Lage über der übrigen Kleidung (Schürze, Halstuch): zählt nicht bei "exklusiv" und schneidet beim Rendern nichts aus
   starr "art": "umhang"      Umhang aus umhang.py, hängt am Brustknochen hinter dem Rücken ("sitz": Höhe der Oberkante entlang der Brust, Standard 0.85)
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
+  Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
 Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
@@ -183,6 +184,7 @@ for t in AUS["starr"]:
     if t["art"] == "schwert":                                                                    # im Bild: Knauf oben, Spitze unten -> die Spitze (-z) zeigt in Klingenrichtung; "hand": "L" = linke Hand
         S_ = t.get("hand", "R"); HD, K0 = (HAND_L, KLINGE0_L) if S_ == "L" else (HAND_R, KLINGE0)
         ez = -K0; ey = K0.cross(HD).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
+        if t.get("drehen"): R = R @ Matrix.Rotation(math.radians(t["drehen"]), 3, "Z")              # um die eigene Achse gedreht in der Hand (Bogen: Sehne zum Körper)
         handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
         g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = tuple(t["griff2_ort"]) if "griff2_ort" in t else (0, 0, oben - t.get("griff2", 0.4) * (oben - unten)); g2.empty_display_size = 0.03
         if t.get("zweihand"): g2.name = "griff2." + t["id"]      # Platz der zweiten Hand, zum Knauf hin
