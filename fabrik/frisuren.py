@@ -45,6 +45,7 @@ hz_f = (mitten[:, 2] - KZ0) / KL
 halbe = np.percentile(np.abs(mitten[(hz_f > 0.2) & (hz_f < 0.7), 0] - CX), 80)
 ohr_f = (np.abs(mitten[:, 0] - CX) > halbe * 0.97) & (hz_f > 0.2) & (hz_f < 0.64) & (np.abs(mitten[:, 1] - MITTE[1]) < 0.06)
 kopfhaut = (hz_f >= ansatz(mitten, normalen)) & ~ohr_f & ~((normalen[:, 1] < -0.55) & (hz_f < 0.8))
+kopfhaut &= ~((mitten[:, 1] < MITTE[1] + 0.01) & (hz_f < 0.7))                                             # vor dem Ohr unter der Schläfe kein Haar (keine Koteletten bis auf die Wange)
 def wurzeln(anzahl, maske, abstand):
     w = flaechen * maske; w = w / w.sum(); idx = rng.choice(len(kopf_f), size=anzahl * 6, p=w); pts = []; nrm = []
     for i in idx:
@@ -57,7 +58,7 @@ def wurzeln(anzahl, maske, abstand):
 # ---- Strähnen ---------------------------------------------------------------------------------------------------------------
 strang = []                                                                                          # (punkte, breiten, dicke, normalen, helligkeit)
 def tangential(v, n): return v - np.dot(v, n) * n
-def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wirr=0.15, ziel_p=None, abstand0=0.004, stirn_z=None):
+def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wirr=0.15, ziel_p=None, abstand0=0.004, stirn_z=None, boden_z=None):
     pts = [p0 + n0 * abstand0]; d = tangential(kamm(p0), n0); d = d / (np.linalg.norm(d) + 1e-9) * 0.93 + n0 * 0.15; d /= np.linalg.norm(d)
     off = abstand0 + rng.random() * 0.006; schritt = laenge / seg; nrms = [n0]
     for i in range(seg):
@@ -68,7 +69,8 @@ def wachsen(p0, n0, kamm, laenge, schwer, anlage=0.012, seg=10, breite=0.014, wi
         p = p + d * schritt; q, n, sd = naechst(p)
         if sd < off: p = q + n * off                                                                    # nicht eindringen (Kopf, Hals, Schultern)
         elif sd > off + anlage and (ziel_p is None or np.linalg.norm(ziel_p - p) > 0.035): p = q + n * (off + anlage)   # am Kopf anliegen (nicht abstehen), mit Ziel erst kurz davor frei
-        if stirn_z is not None and p[1] < Y_VORN + 0.05 and p[2] < stirn_z: p[2] = stirn_z; q, n, sd = naechst(p); p = q + n * max(off, sd)   # Pony endet über den Augenbrauen
+        if boden_z is not None and p[2] < boden_z: p[2] = boden_z; q, n, sd = naechst(p); p = q + n * max(off, sd)   # Strähnen enden über dieser Höhe (rasierte Seiten, kurzer Nacken)
+        if stirn_z is not None and p[1] < MITTE[1] and p[2] < stirn_z: p[2] = stirn_z; q, n, sd = naechst(p); p = q + n * max(off, sd)   # Pony endet über den Augenbrauen
         pts.append(p); nrms.append(n)
     t = np.linspace(0, 1, len(pts)); br = breite * (1 - 0.7 * t ** 2.2) + 0.002                         # breite Büschel, erst zur Spitze schmal
     strang.append((np.array(pts), br, 0.3, np.array(nrms), 0.85 + 0.25 * rng.random()))
@@ -126,14 +128,14 @@ elif STIL == "undercut":
         pts = KNOTEN + np.array([0, 0.008, 0.01]) + np.outer(np.cos(w), u) * rad + np.outer(np.sin(w), v) * rad
         strang.append((pts, np.full(len(w), 0.012), 0.55, np.tile(ach, (len(w), 1)), 0.85 + 0.25 * rng.random()))
 elif STIL == "militaer":                                                                             # Kurzhaar Militär: oben 1,5–2 cm nach vorn/oben, Seiten und Nacken fast rasiert
-    oben = kopfhaut & (hz_f > 0.66) & (np.abs(mitten[:, 0] - CX) < 0.06)
+    oben = kopfhaut & (hz_f > 0.7) & (np.abs(mitten[:, 0] - CX) < 0.05)
     r, n = wurzeln(int(320 * DICHTE), oben, 0.0065)
-    for p, nn in zip(r, n): wachsen(p, nn, kamm_vorn, 0.016 * LAENGE * (0.8 + 0.4 * rng.random()), 0.0, anlage=0.002, seg=3, breite=0.016, wirr=0.02, abstand0=0.002, stirn_z=KZ0 + 0.84 * KL)
+    for p, nn in zip(r, n): wachsen(p, nn, lambda q: np.array([0, -1.0, 0.3]), 0.016 * LAENGE * (0.8 + 0.4 * rng.random()), 0.0, anlage=0.002, seg=3, breite=0.016, wirr=0.02, abstand0=0.002, stirn_z=KZ0 + 0.84 * KL, boden_z=KZ0 + 0.68 * KL)
 elif STIL == "undercut_bun":                                                                         # Undercut, oben lang nach hinten zu einem Knoten am Hinterkopf
     BUN = np.array([CX, Y_HINTEN + 0.006, KZ0 + 0.62 * KL])
     oben = kopfhaut & (hz_f > 0.7) & (np.abs(mitten[:, 0] - CX) < 0.055)
     r, n = wurzeln(int(190 * DICHTE), oben, 0.008)
-    for p, nn in zip(r, n): wachsen(p, nn, kamm_zu(BUN), np.linalg.norm(BUN - p) * 1.2, 0.0, anlage=0.006, seg=10, breite=0.022, wirr=0.03, ziel_p=BUN, stirn_z=KZ0 + 0.8 * KL)
+    for p, nn in zip(r, n): wachsen(p, nn, kamm_zu(BUN), np.linalg.norm(BUN - p) * 1.2, 0.0, anlage=0.006, seg=10, breite=0.022, wirr=0.03, ziel_p=BUN, stirn_z=KZ0 + 0.8 * KL, boden_z=KZ0 + 0.56 * KL)
     for i in range(11):
         ach = np.array([0, 1.0, 0.25]) + rng.normal(0, 0.45, 3); ach /= np.linalg.norm(ach); u = np.cross(ach, [0, 0, 1.0]); u /= np.linalg.norm(u) + 1e-9; v = np.cross(ach, u)
         w = np.linspace(0, 2 * np.pi * 0.92, 16); rad = 0.019 + 0.004 * rng.random()
@@ -147,7 +149,8 @@ elif STIL == "zerzaust":                                                        
         if g not in gruppen: zf = rng.normal(0, 0.55, 3); zf[2] = -abs(zf[2]) * 0.6; gruppen[g] = zf
         kamm = (lambda zf: lambda q: kamm_vorn(q) * 0.8 + zf)(gruppen[g])
         hinten = p[1] > MITTE[1] + 0.02
-        wachsen(p, nn, kamm, (0.10 if hinten else 0.075) * LAENGE * (0.8 + 0.4 * rng.random()), 0.35, anlage=0.02, seg=8, breite=0.03, wirr=0.12, stirn_z=KZ0 + 0.7 * KL)
+        seitlich = abs(p[0] - CX) > 0.045
+        wachsen(p, nn, kamm, (0.055 if hinten else 0.05) * LAENGE * (0.8 + 0.4 * rng.random()), 0.35, anlage=0.02, seg=8, breite=0.03, wirr=0.12, stirn_z=KZ0 + 0.78 * KL, boden_z=KZ0 + (0.5 if seitlich and not hinten else 0.32) * KL)   # Seiten enden über dem Ohr, Nacken über dem Kragen
         pts, br, fl, nr, h = strang[-1]; tt = np.linspace(0, 1, len(pts)); strang[-1] = (pts, 0.03 * (1 - tt ** 0.9) + 0.0008, 0.22, nr, h)   # flach und spitz (kein Wulst)
 elif STIL == "zopf_eng":                                                                             # lange Haare straff nach hinten, eng am Hinterkopf gebunden, Zopf hängt glatt herab
     BAND_P = np.array([CX, Y_HINTEN + 0.008, KZ0 + 0.42 * KL])
@@ -188,13 +191,13 @@ for pts, br, flach, nrms, h in strang:
             a0, a1 = basis_i + i * SEITEN + j, basis_i + i * SEITEN + (j + 1) % SEITEN; F.append((a0, a1, a1 + SEITEN, a0 + SEITEN))
     F.append(tuple(basis_i + j for j in range(SEITEN))[::-1]); F.append(tuple(basis_i + (nP - 1) * SEITEN + j for j in range(SEITEN)))
 # Grundschale: Kopfhaut 3 mm abgehoben, dunkel (bei undercut: Stoppeln an den Seiten, heller)
-RASIERT = {"undercut": (0.74, 0.052), "undercut_bun": (0.7, 0.055), "militaer": (0.66, 0.06)}         # Stil: (oben ab Höhe, halbe Breite) – außerhalb Stoppeln
-wange = (mitten[:, 1] < MITTE[1] - 0.005) & (hz_f < 0.66)                                            # vor dem Ohr unterhalb der Schläfe: Gesicht (keine Stoppeln auf der Wange)
+RASIERT = {"undercut": (0.74, 0.052), "undercut_bun": (0.7, 0.055), "militaer": (0.7, 0.05)}         # Stil: (oben ab Höhe, halbe Breite) – außerhalb Stoppeln
+wange = (mitten[:, 1] < MITTE[1] + 0.015) & (hz_f < 0.86)                                            # vor dem Ohr unterhalb der Schläfe: Gesicht (keine Stoppeln auf der Wange)
 stoppel_ok = (hz_f > 0.47) | ((mitten[:, 1] > MITTE[1] + 0.045) & (hz_f > 0.2))                    # Seiten nur oberhalb der Ohrmitte, tiefer nur im Nacken (nicht Kiefer und Hals)
-schale = kopfhaut if STIL not in RASIERT else (kopfhaut | ((hz_f > 0.18) & stoppel_ok & ~ohr_f & ~wange & ~((normalen[:, 1] < -0.55) & (hz_f < 0.8))))
+schale = kopfhaut if STIL not in RASIERT else (kopfhaut & (hz_f > RASIERT[STIL][0] + 0.03) & (np.abs(mitten[:, 0] - CX) < RASIERT[STIL][1] - 0.008))   # Seiten sauber rasiert (hautfarben), keine gezackte Stoppelfläche
 for i in np.where(schale)[0]:
     f = kopf_f[i]; b0 = len(V); hell = 0.55 if (STIL not in RASIERT or (hz_f[i] > RASIERT[STIL][0] and abs(mitten[i, 0] - CX) < RASIERT[STIL][1])) else 0.9
-    farbe_s = FARBE * hell if hell < 0.8 else FARBE * 0.45 + np.array([0.45, 0.32, 0.25]) ** 2.2 * 0.55
+    farbe_s = FARBE * hell if hell < 0.8 else FARBE * 0.3 + np.array([0.5, 0.36, 0.28]) ** 2.2 * 0.7      # Stoppeln: Haut mit wenig Haarton
     for v in f.verts: V.append(np.array(v.co) + normalen[i] * 0.003); C.append(farbe_s)
     F.append(tuple(range(b0, b0 + len(f.verts))))
 V = np.array(V); C = np.clip(np.array(C), 0, 1)
