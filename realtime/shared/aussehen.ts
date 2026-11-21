@@ -28,9 +28,9 @@ export const HAUTFARBEN: Record<string, { name: string; rgb: [number, number, nu
   braun: { name: "Braun", rgb: [146, 98, 66] }, dunkel: { name: "Dunkel", rgb: [100, 66, 46] },
 };
 export const STARTWAFFEN: Record<Startwaffe, { name: string; weg: string; text: string; waffen: string[]; angriff: string; satz: string }> = {
-  schwert: { name: "Schwert und Schild", weg: "Nahkampf", text: "Druck auf kurze Distanz: binden, unterbrechen, Treffer mit dem Schild abwehren.", waffen: ["waffe.schwert.schildwahrer", "schild.kreuz"], angriff: "stich", satz: "schildwaechter" },
-  bogen: { name: "Bogen", weg: "Fernkampf", text: "Reichweite und Präzision: früher Schaden aus sicherer Entfernung.", waffen: ["waffe.bogen"], angriff: "bogen", satz: "kopfgeldjaeger" },
-  stab: { name: "Stab", weg: "Magie", text: "Kontrolle und Fläche: verlangsamen, zurückstoßen, mehrere Gegner treffen.", waffen: ["waffe.zeremonienstab"], angriff: "zauber_stab", satz: "elementarist" },
+  schwert: { name: "Schwert und Schild", weg: "Nahkampf", text: "Druck auf kurze Distanz: binden, unterbrechen, Treffer mit dem Schild abwehren.", waffen: ["waffe.schwert.ritter", "schild.rund"], angriff: "stich", satz: "schildwaechter" },
+  bogen: { name: "Bogen", weg: "Fernkampf", text: "Reichweite und Präzision: früher Schaden aus sicherer Entfernung.", waffen: ["waffe.bogen.jagd"], angriff: "bogen", satz: "kopfgeldjaeger" },
+  stab: { name: "Stab", weg: "Magie", text: "Kontrolle und Fläche: verlangsamen, zurückstoßen, mehrere Gegner treffen.", waffen: ["waffe.stab.hirte"], angriff: "zauber_stab", satz: "elementarist" },
 };
 export const STANDARD: Held = { aussehen: { g: "mann", frisur: "militaer", bart: "ohne", haar: "dunkelbraun", haut: "mittel" }, waffe: "schwert" };
 

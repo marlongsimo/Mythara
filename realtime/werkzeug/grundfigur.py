@@ -17,7 +17,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 HIER = os.path.dirname(os.path.abspath(__file__)); WURZEL = os.path.normpath(os.path.join(HIER, "..", ".."))
-WAFFEN = ["waffe.schwert.schildwahrer", "schild.kreuz", "waffe.bogen", "waffe.zeremonienstab"]
+WAFFEN = ["waffe.schwert.ritter", "schild.rund", "waffe.bogen.jagd", "waffe.stab.hirte"]  # die Startwaffen (Fabrik: neue Standardwaffen der Klassen)
 
 def hautmaske(px, liegend=False):
     """px: RGBA-Bild (H×W×4, uint8) einer einzelnen Figur. Liefert die Maske der Hautpixel."""
