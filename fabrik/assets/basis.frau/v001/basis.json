@@ -6,5 +6,6 @@
   "starr": [],
   "huelle": [],
   "koerper_textur": true,
-  "stuecke_behalten": true
+  "stuecke_behalten": true,
+  "arm_radius": 0.1
 }

@@ -87,7 +87,7 @@
       "bereich": [
         [
           "becken",
-          0.4,
+          0,
           1
         ],
         [
@@ -146,5 +146,6 @@
   "stuecke_behalten": true,
   "luecken_schliessen": true,
   "hinweis": "Vorlage für eine Grundstruktur (nach basis.mann): schlichter Körper aus Meshy mit Textur; Unterkleidung als Lagen (unten), Waffen, Baukasten mit Zeichenreihenfolge, gemalter Stil. Teile (Rüstung, Sets) kommen über baukasten.py, set_aus_bild.py, kleidung_aus_bild.py oder teile_uebertragen.py dazu.",
-  "teilnetze": []
+  "teilnetze": [],
+  "arm_radius": 0.1
 }
