@@ -15,7 +15,7 @@ import Phaser from "phaser";
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
 interface Meta { id: string; angriff?: string; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
 /** Held → Figur der Fabrik (Ordner unter img/figuren-fabrik/) */
-export const MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.dolch" };
+export const MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.v003" }; /* Bandit v003 (werkzeug/fabrik_spielformat.py) */
 const BASIS = "../img/figuren-fabrik/";
 const laden = new WeakMap<Phaser.Scene, Map<string, Promise<Meta>>>();
 

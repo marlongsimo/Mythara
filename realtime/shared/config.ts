@@ -143,7 +143,7 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Zunge", art: "nah", schaden: [12, 24], takt: 1.6, reich: 2.5, aushol: 0.55 } }, // langsam, aber die Zunge reicht weit
   kroetchen: { name: "Junge Kröte", bild: "img/gegner/schlammkroete.jpg", figur: "img/echtzeit/kroete.webp", fuss: [0.5, 0.9], lauf: "img/echtzeit/kroete-lauf.webp", laufMass: [0.507, 0.88, 0.604], hieb: "img/echtzeit/kroete-hieb.webp", hiebMass: [0.5, 0.87, 0.581], hoehe: 58, lp: 80, tempo: 2.9, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 40, magie: 35 }, r: 0.28,
     angriff: { name: "Zunge", art: "nah", schaden: [6, 12], takt: 1.3, reich: 1.8, aushol: 0.45 } }, // frisch geschlüpft: klein, flink, harmloser
-  /* Kreuzwald: Banditen mit Dolch (Figur aus der Fabrik, gegner.bandit / Variante dolch). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
+  /* Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
   bandit_dolch: { name: "Bandit", bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 130, tempo: 2.9, angriffswert: { nah: 62, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 50, magie: 45 }, r: 0.3,
     angriff: { name: "Dolch", art: "nah", schaden: [7, 13], takt: 1.0, reich: 1.3, aushol: 0.35 } },
