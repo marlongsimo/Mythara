@@ -1,0 +1,39 @@
+# Arbeitsstände automatisch live stellen: neue Commits der Welt-Pipeline und der Figuren-Fabrik nach feature/realtime-engine
+# (Spielserver, Render) und das gebaute Spiel nach main (Webseite). Einzelheiten: .github/scripts/welt-live.sh
+name: Welt live
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      quellen:
+        description: "Arbeitszweige (durch Leerzeichen getrennt; leer = Standard)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: welt-live
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Zusammenführen, bauen, prüfen, live stellen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QUELLEN_EINGABE: ${{ github.event.inputs.quellen }}
+        run: |
+          if [ -n "$QUELLEN_EINGABE" ]; then export QUELLEN="$QUELLEN_EINGABE"; fi
+          bash .github/scripts/welt-live.sh
