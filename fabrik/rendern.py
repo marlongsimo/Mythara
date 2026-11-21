@@ -49,6 +49,7 @@ if os.path.exists(alt):
         for d in os.listdir(ziel):
             if d.endswith(".webp"): os.remove(os.path.join(ziel, d))
         print("das bisherige Feld reicht nicht mehr – alle Blätter werden neu gerendert", flush=True)
+        if BEW is not None: print("  (bewegungen=… wird ignoriert: mit dem neuen Feld müssen alle Bewegungen neu gerendert werden)", flush=True); BEW = None
 print(f"Renderbereich: Feld {FELD} px · Fußpunkt {FUSS} · Platz über dem Fußpunkt {round(ueber)} px, darunter {round(unter)} px, seitlich {round(seite)} px", flush=True)
 sc.render.engine = "CYCLES"; sc.cycles.samples = 12; sc.cycles.device = "CPU"; sc.cycles.use_denoising = False; sc.render.film_transparent = True; sc.render.resolution_x = sc.render.resolution_y = FELD; sc.render.use_persistent_data = False
 sc.render.image_settings.file_format = "PNG"; sc.render.image_settings.color_mode = "RGBA"; sc.view_settings.view_transform = "Standard"
