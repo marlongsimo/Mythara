@@ -134,7 +134,7 @@ const spiel = {
     lies("feuer", FEUER[0], FEUER[1] + 0.7, "Das Erntefeuer auf dem Dorfplatz. Hier wird gefeiert, wenn das Korn eingebracht ist."),
     lies("wehr", WEHR[0] - 2.8, WEHR[1] - 1.4, "Das Wehr staut den Mühlgraben. Durch drei Überläufe stürzt das Wasser schäumend hinab."),
     lies("linde", RING[0], RING[1] + 0.8, "Die alte Linde von Weidenhain. Zwischen ihren Wurzeln blühen Wildblumen.")],
-  ausgaenge: [], kollision: { sperren: [], freigeben: BRUECKEN.map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })) } };
+  ausgaenge: [], kollision: { sperren: [], freigeben: [...BRUECKEN.map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })), { art: "rechteck", x0: WEHR[0] - 3.4, y0: WEHR[1] - 1.5, x1: WEHR[0] + 3.4, y1: WEHR[1] - 0.2 }] } };   /* über die Wehrkrone kann man gehen */
 
 const dir = join(WELT, "regionen", "weidenhain"); mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "weidenhain", name: "Weidenhain", untertitel: "Das Dorf am Mühlgraben", ursprung: [200, 208], chunks: [B / 32, H / 32], biom: "dorf", stufe: 1 }, null, 1) + "\n");

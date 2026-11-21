@@ -747,7 +747,7 @@ def wehr(P, rng):
     for x in np.linspace(x0 + 14, x1 + 4, 9):
         B.balken(x, yt - 58, 5, 36, int(x), 0.62)
     B.strich([(x0 + 12, yt - 52), (x1 + 8, yt - 52)], 5, 77, 0.7); B.strich([(x0 + 12, yt - 38), (x1 + 8, yt - 38)], 4, 78, 0.65)
-    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -3.6, 'y': -1.0, 'b': 7.2, 'h': 1.0}, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.0}, False
+    return B.fertig(), [0.5, round(yb / H, 4)], None, {'art': 'lesen', 'dx': 0, 'dy': 0.6, 'radius': 2.0}, False   # begehbar: die Region gibt die Krone frei
 
 
 def zaun(P, rng):
