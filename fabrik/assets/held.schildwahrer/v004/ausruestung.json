@@ -1,0 +1,177 @@
+{
+  "hinweis": "Torvald v004: Meshy-Grundkörper (vom Projekt erzeugt) mit Untergewand als Lagen; Rüstung vom Meshy-Kreuzritter (v003) über das Skelett übertragen (teile_uebertragen.py) und an den Körper angelegt.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "schildstoss",
+    "kampfschrei",
+    "treffer",
+    "tod"
+  ],
+  "stil": "gemalt",
+  "tod_schild_flach": true,
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.hemd.v004",
+      "platz": "hemd",
+      "bild": "untergewand",
+      "farbe": "#b9a586",
+      "dicke": 0.008,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          0.5
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.7
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.7
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.hose.v004",
+      "platz": "hose",
+      "bild": "hose",
+      "farbe": "#4b3526",
+      "dicke": 0.008,
+      "bereich": [
+        [
+          "becken",
+          0.4,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schuh.v004",
+      "platz": "schuh",
+      "bild": "stiefel",
+      "farbe": "#5c3720",
+      "dicke": 0.012,
+      "bereich": [
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0.8,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.8,
+          1
+        ]
+      ]
+    }
+  ],
+  "teilnetze": [
+    {
+      "id": "ruestung.brust.platte.v003",
+      "platz": "brust",
+      "glb": "held.schildwahrer/v004/quelle/teile/ruestung.brust.platte.v003.glb"
+    },
+    {
+      "id": "kleidung.umhang.v003",
+      "platz": "ruecken",
+      "glb": "held.schildwahrer/v004/quelle/teile/kleidung.umhang.v003.glb",
+      "beine_mitteln": true
+    },
+    {
+      "id": "kleidung.waffenrock.v003",
+      "platz": "rock",
+      "glb": "held.schildwahrer/v004/quelle/teile/kleidung.waffenrock.v003.glb",
+      "beine_mitteln": true
+    },
+    {
+      "id": "kleidung.guertel.v003",
+      "platz": "guertel",
+      "glb": "held.schildwahrer/v004/quelle/teile/kleidung.guertel.v003.glb"
+    },
+    {
+      "id": "kleidung.fuss.stiefel.v003",
+      "platz": "fuss",
+      "glb": "held.schildwahrer/v004/quelle/teile/kleidung.fuss.stiefel.v003.glb"
+    },
+    {
+      "id": "kopf.haar.v003",
+      "platz": "haar",
+      "glb": "held.schildwahrer/v004/quelle/teile/kopf.haar.v003.glb",
+      "wahlfrei": true
+    }
+  ]
+}
