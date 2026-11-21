@@ -1,30 +1,34 @@
 /*
- * Gegenstände des eigenen Helden (Ausrüstung und Rucksack).
- * Plätze wie im Ausrüstungsfenster: Amulett oben, Waffe links, Brust in der Mitte (beide zu Beginn leer – der Grundkörper trägt Hemd und Hose fest), Nebenhand (Schild) rechts.
- * Die Werte der Waffen kommen aus den Ausrüstungssätzen (shared/config.ts HELDEN, Hauptwaffe des Satzes) und dem Schild (K.BLOCK) –
- * es sind dieselben Zahlen, mit denen der Kampf heute rechnet.
+ * Gegenstände des eigenen Helden (Ausrüstung und Rucksack) – mit ihren Kampfwerten nach den Regeln v1 (shared/kampfwerte.ts).
+ * Plätze im Ausrüstungsfenster: Waffe links, Brust (Rüstung) in der Mitte – zu Beginn leer, der Grundkörper trägt Hemd und Hose fest –, Nebenhand (Schild) rechts.
+ * Waffe: Angriffsskill, Angriffswert-Bonus, Min-/Max-Schaden, Angriffstakt, Reichweite. Schild und Rüstung: Verteidigungsboni je Angriffsart.
  */
-import { HELDEN, K } from "./config";
 import { Startwaffe } from "./aussehen";
 
-export type Platz = "amulett" | "waffe" | "brust" | "nebenhand";
-export const PLAETZE: { id: Platz; name: string }[] = [{ id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "nebenhand", name: "Nebenhand" }];
-export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: "gewoehnlich" | "selten"; ebenen?: string[]; werte: [string, string][]; text: string }
+export type Platz = "waffe" | "brust" | "nebenhand";
+export type Art = "nah" | "fern" | "magie";
+export const PLAETZE: { id: Platz; name: string }[] = [{ id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "nebenhand", name: "Nebenhand" }];
+export interface WaffenWerte { art: Art; bonus: number; schaden: [number, number]; takt: number; reich: number; flug?: number }
+export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: "gewoehnlich" | "selten"; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; text: string }
 
-const waffe = (satz: string) => { const m = HELDEN[satz].modi[0], art = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie", heil: "Heilung" }[m.art] || m.art;
-  return [["Schaden", `${m.schaden[0]}–${m.schaden[1]}`], ["Schadensart", art], ["Angriffe je Sekunde", (1 / m.takt).toFixed(2).replace(".", ",")], ["Reichweite", `${String(m.reich).replace(".", ",")} Felder`]] as [string, string][]; };
-const prozent = (v: number) => `${Math.round(v * 100)} %`;
+const SKILL: Record<Art, string> = { nah: "Stärke", fern: "Geschicklichkeit", magie: "Magie" };
+const zahl = (v: number) => String(v).replace(".", ",");
+/** Die Werte eines Gegenstands als Zeilen fürs Untersuchen-Fenster */
+export function werteVon(G: Gegenstand): [string, string][] {
+  if (G.waffe) { const W = G.waffe; return [["Angriffsskill", SKILL[W.art]], ["Angriffswert", `+${W.bonus} ${SKILL[W.art]}`], ["Schaden", `${W.schaden[0]}–${W.schaden[1]}`], ["Angriff alle", `${zahl(W.takt)} s`], ["Reichweite", `${zahl(W.reich)} Felder`]]; }
+  if (G.abwehr) return [["Verteidigung Nahkampf", `+${G.abwehr.nah}`], ["Verteidigung Fernkampf", `+${G.abwehr.fern}`], ["Verteidigung Magie", `+${G.abwehr.magie}`]];
+  return [];
+}
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
-  ritterschwert: { id: "ritterschwert", name: "Ritterschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"], werte: waffe("schildwaechter"),
-    text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Treffer verlangsamen den Gegner kurz." },
-  rundschild: { id: "rundschild", name: "Rundschild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
-    werte: [["Abwehr Nahkampf (von vorn)", prozent(K.BLOCK.nah)], ["Abwehr Fernkampf (von vorn)", prozent(K.BLOCK.fern)], ["Abwehr Magie (von vorn)", prozent(K.BLOCK.magie)], ["Schutzwinkel", `±${K.BLOCK.winkel}°`]],
-    text: "Holz mit Eisenbeschlag. Fängt Angriffe von vorn ab – im Schildmodus (Taste Q wechselt die Haltung)." },
-  jagdbogen: { id: "jagdbogen", name: "Jagdbogen", platz: "waffe", art: "Bogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"], werte: waffe("kopfgeldjaeger"),
-    text: "Ein Eibenbogen, wie ihn die Jäger des Kreuzwalds führen. Hoher Einzelschaden aus sicherer Entfernung." },
-  hirtenstab: { id: "hirtenstab", name: "Hirtenstab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"], werte: waffe("elementarist"),
-    text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
+  ritterschwert: { id: "ritterschwert", name: "Einfaches Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"],
+    waffe: { art: "nah", bonus: 4, schaden: [4, 8], takt: 1.0, reich: 1.6 }, text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede." },
+  jagdbogen: { id: "jagdbogen", name: "Einfacher Bogen", platz: "waffe", art: "Bogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"],
+    waffe: { art: "fern", bonus: 4, schaden: [3, 7], takt: 1.5, reich: 9, flug: 18 }, text: "Ein Eibenbogen, wie ihn die Jäger des Kreuzwalds führen." },
+  hirtenstab: { id: "hirtenstab", name: "Einfacher Stab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"],
+    waffe: { art: "magie", bonus: 4, schaden: [4, 8], takt: 1.2, reich: 8, flug: 13 }, text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
+  rundschild: { id: "rundschild", name: "Einfacher Schild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
+    abwehr: { nah: 5, fern: 3, magie: 2 }, text: "Holz mit Eisenbeschlag. Erhöht die Verteidigung – aus allen Richtungen." },
 };
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {

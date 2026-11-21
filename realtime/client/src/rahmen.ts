@@ -6,7 +6,7 @@
  */
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
-import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen } from "./inventar";
 
@@ -85,7 +85,7 @@ function tafel(klasse: string, inhalt: string, zu: () => void): HTMLElement {
 }
 /* ---------- Ausrüstung und Rucksack des eigenen Helden ---------- */
 const PLATZBILD: Record<Platz, string> = {
-  amulett: SVG('<path d="M6 3c0 4 2.7 7 6 8 3.3-1 6-4 6-8"/><path d="M12 13.5 15 17l-3 4-3-4z"/><circle cx="12" cy="11.5" r="1.2"/>'), waffe: SVG('<path d="M5 19 15.5 8.5M14 5l5 5M12.5 6.5l5 5M6.5 15.5l2 2M4 20l2-2"/>'),
+  waffe: SVG('<path d="M5 19 15.5 8.5M14 5l5 5M12.5 6.5l5 5M6.5 15.5l2 2M4 20l2-2"/>'),
   brust: SVG('<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 1.5-2.4 2-4 2s-3-.5-4-2z"/>'), nebenhand: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>'),
 };
 function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
@@ -93,7 +93,7 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
       ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}</button>`;
   const reiter = `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "ausruestung"
-    ? `<h2>Ausrüstung</h2><div class="zier"></div>${reiter}<div class="iplaetze"><div class="p-amulett">${feld(inv.angelegt.amulett, "amulett", "amulett")}</div><div class="p-waffe">${feld(inv.angelegt.waffe, "waffe", "waffe")}</div>
+    ? `<h2>Ausrüstung</h2><div class="zier"></div>${reiter}<div class="iplaetze"><div class="p-waffe">${feld(inv.angelegt.waffe, "waffe", "waffe")}</div>
        <div class="p-brust">${feld(inv.angelegt.brust, "brust", "brust")}</div><div class="p-nebenhand">${feld(inv.angelegt.nebenhand, "nebenhand", "nebenhand")}</div></div><p class="klein">Tippe auf einen Gegenstand: untersuchen oder ablegen.</p>`
     : `<h2>Rucksack</h2><div class="zier"></div>${reiter}<div class="faecher">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div><p class="klein">${inv.rucksack.length ? "Tippe auf einen Gegenstand: untersuchen oder anlegen." : "Leer – abgelegte Ausrüstung und Beute landen hier."}</p>`;
   const f = tafel("taschen eigen", inhalt + `<div class="iwahl" hidden></div>`, zu);
@@ -113,7 +113,7 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
 function untersuchen(g: string, zurueck: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art} · ${PLAETZE.find((p) => p.id === G.platz)!.name}</p>
-    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${G.werte.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, () => { /* schließen */ });
   void gegenstandBild(t.querySelector("canvas") as HTMLCanvasElement, G.ebenen, G.platz === "brust");
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
