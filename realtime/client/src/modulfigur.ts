@@ -79,6 +79,8 @@ export class ModulFigur extends Phaser.GameObjects.Container {
     for (const e of folge) { const s = this.teile.get(e); if (!s) continue; const da = s.texture.has(name); s.setVisible(da); if (da) s.setFrame(name); this.moveTo(s, i++); } }
 }
 
+/** Die Bilder einer modularen Figur schon vorher laden (etwa die Gegner eines Gebiets, bevor man es betritt) – sonst ruckelt es beim ersten Anblick */
+export function figurVorladen(scene: Phaser.Scene, typ: string): void { if (MODUL[typ]) void figurLaden(scene, MODUL[typ]).catch(() => { /* später erneut */ }); }
 /** Ist dieser Held eine modulare Figur? */
 export const istModul = (held: string): boolean => Boolean(MODUL[held]);
 /**

@@ -72,10 +72,21 @@ function kampfartZeigen(s: Welt) { let el = document.getElementById("ez-kampfart
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
 /* für Prüfungen im Browser */
 Object.defineProperty(window, "EZK", { get: () => kampf, configurable: true });
+/** Abstand (Felder) von der Stelle zum Rechteck eines Kampfgebiets – 0, wenn man drin steht */
+const abstandZu = (x: number, y: number, z: { x0: number; y0: number; b: number; h: number }) => Math.hypot(Math.max(z.x0 - x, 0, x - (z.x0 + z.b)), Math.max(z.y0 - y, 0, y - (z.y0 + z.h)));
+const gefallen = () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } location.href = "./?von=tod" + serverZusatz(); };
+/** Vorverbinden: nähert sich der Held einem Kampfgebiet (unter 10 Feldern), meldet sich die Welt dort schon an und lädt die Gegnerfiguren –
+    über die Grenze geht es dann ohne Halt. Entfernt er sich wieder (über 16 Felder), wird die Verbindung geschlossen. */
+function vorverbinden(s: Welt) { if (!freigabe("suedtor") || s.gesperrt) return;
+  if (kampf) { if (!kampf.eingetreten && abstandZu(s.ort.x, s.ort.y, kampf.zone) > 16) kampfEnde(); return; }
+  for (const [rid, z] of Object.entries(WELTZONEN)) if (abstandZu(s.ort.x, s.ort.y, z) < 10) { kampf = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); return; } }
 /** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
 function fremd(s: Welt, rx: number, ry: number): boolean {
-  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { kampfEnde(); return false; } const rand = randAbstand(s, z);
-  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } location.href = "./?von=tod" + serverZusatz(); }); }
+  const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { if (kampf && kampf.eingetreten) kampfEnde(); vorverbinden(s); return false; } const rand = randAbstand(s, z);
+  if (kampf && kampf.region !== s.hier) kampfEnde();
+  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, gefallen); }
+  if (!kampf.eingetreten) kampf.betreten(s.ort.x, s.ort.y); /* vorverbunden: jetzt hinein, ohne Wartezeit */
+  if (!kampf.bereit && kampf.vorverbunden) return false; /* bis der Server den Helden meldet (Bruchteile einer Sekunde): selbst weiterlaufen */
   if (!kampf.bereit) { if (kampf.art === "warte") { const t = $("#ez-dorf-hilfe"); t.textContent = "Verbinde mit dem Spielserver …"; t.style.display = ""; } return true; } /* bis der Server antwortet, bleibt der Held stehen */
   /* am Rand des Gebiets und weiter hinaus: die Welt übernimmt wieder (etwa durchs Tor zurück in die Waldmark) */
   const lx = s.ort.x - z.x0, ly = s.ort.y - z.y0; if (rand < 1.2 && ((lx < 1.2 && rx < 0) || (ly < 1.2 && ry < 0) || (lx > z.b - 1.2 && rx > 0) || (ly > z.h - 1.2 && ry > 0))) { kampfEnde(); return false; }

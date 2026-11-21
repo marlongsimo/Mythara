@@ -82,7 +82,7 @@ try {
   await ben.keyboard.press("h"); await ben.waitForTimeout(600);
   check(await ben.evaluate(() => document.querySelector("#ez-wahl").hidden && /nur in der Waldmark/.test(document.querySelector("#ez-dorf-hilfe").textContent)), "Im Kreuzwald lässt sich der Held nicht wechseln („nur in der Waldmark“)");
   await ben.keyboard.down("w"); await ben.waitForFunction(() => window.EZW.szene.hier === "waldmark", null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(400); await ben.keyboard.up("w");
-  check(await ben.evaluate(() => window.EZW.szene.hier === "waldmark" && !window.EZK), "Durchs Südtor nach Norden: Ben verlässt das Kampfgebiet nahtlos und ist in der Waldmark (" + await ben.evaluate(() => window.EZW.szene.ort.y.toFixed(1)) + ")");
+  check(await ben.evaluate(() => window.EZW.szene.hier === "waldmark" && !(window.EZK && window.EZK.eingetreten) && !document.body.classList.contains("weltkampf")), "Durchs Südtor nach Norden: Ben verlässt das Kampfgebiet nahtlos und ist in der Waldmark (" + await ben.evaluate(() => window.EZW.szene.ort.y.toFixed(1)) + ")");
   /* Gast: der Browser rechnet selbst */
   const gast = await spieler("Gast", "", [6530, 6587, "waldweg"]); await gast.goto(B + S); await bereit(gast);
   check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.z.w.filter((e) => e[3] !== 0).length === 4), "Ein Gast ohne Konto kämpft auch – der Browser rechnet (ohne Gutschrift)");

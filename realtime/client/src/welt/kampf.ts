@@ -16,7 +16,7 @@ import { setzeKarte } from "../../../shared/karte";
 import { verbinde, Netz, SPIELSERVER } from "../netz";
 import type { Zustand, Taste, Ereignis } from "../../../shared/sim";
 import { BIT } from "../../../shared/sim";
-import { heldenFigur, richten } from "../modulfigur";
+import { heldenFigur, richten, figurVorladen } from "../modulfigur";
 import { kontoToken } from "../konto";
 import { epAlle } from "../halle";
 import { SYMBOL, symbolBild } from "../symbole";
@@ -41,7 +41,10 @@ export class WeltKampf {
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
   readonly zone: { karte: string; x0: number; y0: number; b: number; h: number }; readonly stufe: number;
 
-  constructor(readonly s: WeltSzene, readonly region: string, wx: number, wy: number, private gefallen: () => void) {
+  /** vorverbunden (an der Grenze): angemeldet, aber noch nicht im Gebiet – „betreten“ setzt den Helden ohne Wartezeit hinein */
+  eingetreten = true; readonly vorverbunden: boolean; private betretenOffen: { x: number; y: number } | null = null;
+  constructor(readonly s: WeltSzene, readonly region: string, wx: number, wy: number, private gefallen: () => void, wartend = false) {
+    this.vorverbunden = wartend; this.eingetreten = !wartend;
     this.zone = WELTZONEN[region]; const gebiet = GEBIET[this.zone.karte] || this.zone.karte; this.stufe = ORTSTUFE[gebiet] || 1;
     const K = KARTEN[this.zone.karte], lx = wx - this.zone.x0, ly = wy - this.zone.y0;
     /* für das Rechnen im Browser (ohne Server): die Karte des Gebiets, hinein an der eigenen Stelle, Stärke des Gebiets */
@@ -49,18 +52,24 @@ export class WeltKampf {
     for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
     for (const [h, v] of Object.entries(epAlle())) { HELDENEP[h] = Number(v) || 0; HELDENSTUFE[h] = stufeAusEp(HELDENEP[h]); }
     this.ringZiel = s.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setVisible(false); this.ichLb = s.add.graphics().setDepth(1e7);
-    document.body.classList.add("weltkampf"); this.tastenAn(); void this.verbinden(lx, ly, gebiet);
+    for (const l of K.lager || []) figurVorladen(s, l.art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick */
+    if (this.eingetreten) document.body.classList.add("weltkampf"); this.tastenAn(); void this.verbinden(lx, ly, gebiet);
   }
   private async verbinden(lx: number, ly: number, gebiet: string) {
     const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : ""; if (this.vorbei) return;
-    const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}` : "";
+    const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}` + (this.vorverbunden ? "&warten=1" : `&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}`) : "";
     const hoer = (ev: Event) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[]; ep?: Record<string, number>; seelen?: number };
       if (m.t === "namen" && m.liste) { this.namen.clear(); for (const n of m.liste) this.namen.set(n.id, n); }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
     const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art) => { this.art = art; }, url ? { t: "anmeldung", token } : undefined);
-    if (this.vorbei) { n.ende(); return; } this.netz = n;
+    if (this.vorbei) { n.ende(); return; } this.netz = n; if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
   }
+  /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
+  betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");
+    const lx = wx - this.zone.x0, ly = wy - this.zone.y0; if (!this.netz) { this.betretenOffen = { x: wx, y: wy }; return; }
+    if (this.netz.art === "lokal" && this.netz.sim) { const h = this.netz.sim.wesen.find((w) => w.held); if (h) { h.x = Math.max(0.5, Math.min(this.zone.b - 0.5, lx)); h.y = Math.max(0.5, Math.min(this.zone.h - 0.5, ly)); h.pfad = []; } }
+    else this.netz.sende({ t: "betreten", x: lx, y: ly } as unknown as Parameters<Netz["sende"]>[0]); }
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.figuren.clear(); this.ringZiel.destroy(); this.ichLb.destroy();
@@ -69,7 +78,7 @@ export class WeltKampf {
   mehrkampf(wx: number, wy: number): boolean { const K = KARTEN[this.zone.karte], x = wx - this.zone.x0, y = wy - this.zone.y0; return (K.mehrkampf || []).some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1); }
 
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
-  private zustand(z: Zustand) { if (this.vorbei) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
+  private zustand(z: Zustand) { if (this.vorbei || !this.eingetreten || this.betretenOffen) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
     for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
       if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9];
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); f.sp.setVisible(!f.tot); f.nm.setVisible(!f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
@@ -146,7 +155,7 @@ export class WeltKampf {
   faehig(taste: Taste) { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return;
     const zi = this.z.w.find((e) => e[0] === this.z!.ich.zielId && !e[10]) || this.z.w.filter((e) => e[3] !== 0 && !e[10]).sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
     const p = zi && Math.hypot(zi[4] - ich[4], zi[5] - ich[5]) < 8 ? { x: zi[4], y: zi[5] } : { x: ich[4] + Math.cos(ich[6]) * 3, y: ich[5] + Math.sin(ich[6]) * 3 }; this.netz.sende({ t: "faehig", taste, x: p.x, y: p.y }); }
-  private tastenAn() { const taste = (ev: KeyboardEvent) => { if (this.vorbei || ev.repeat || ev.target instanceof HTMLInputElement) return; const k = ev.key.toLowerCase();
+  private tastenAn() { const taste = (ev: KeyboardEvent) => { if (this.vorbei || !this.eingetreten || ev.repeat || ev.target instanceof HTMLInputElement) return; const k = ev.key.toLowerCase();
       if (k === "1") this.angriff(); else if (k === "2" || k === "q") this.faehig("q"); else if (k === "3") this.faehig("e"); else if (k === "4" || k === "r") this.faehig("r"); else if (k === " " || k === "f" || k === "tab") { ev.preventDefault(); if (this.netz) this.netz.sende({ t: "modus" }); } };
     window.addEventListener("keydown", taste); const druck = (ev: Event) => { const b = (ev.target as HTMLElement).closest("[data-taste], #ez-modus") as HTMLElement | null; if (!b || this.vorbei) return; ev.preventDefault(); ev.stopPropagation();
       if (b.id === "ez-modus") { if (this.netz) this.netz.sende({ t: "modus" }); } else if (b.dataset.taste === "a") this.angriff(); else this.faehig(b.dataset.taste as Taste); };
