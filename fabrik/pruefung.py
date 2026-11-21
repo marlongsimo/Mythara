@@ -82,6 +82,16 @@ for a in ANIM:
             voll = gesamt(a, r, i, [t for t in alle if EB[t]["art"] == "huelle"])[..., 3]; kal = feld(blatt("koerper", a), r, i)[..., 3]; g = loecher(voll); k = loecher(kal)
             neu = max(neu, int((g & ~ndimage.binary_dilation(k, iterations=2)).sum())); echt = max(echt, int(((kal > 0.5) & (voll < 0.5)).sum()))
 melde("bild", "keine Löcher durch die Ausrüstung (Bildpunkte, an denen der Körper allein deckt, die angezogene Figur aber durchsichtig ist – je Bild)", echt, "0", echt == 0)
+# Ebenen sind flächig: nimmt man feine Linien weg (Öffnen mit 3×3), bleibt bei einem flächigen Teil fast alles stehen – bei zerfallenen Netzen (Gitterlinien, Splitter) kaum etwas
+flaechig = {}
+for e in huellen:
+    werte = []
+    for a in ANIM:
+        al = blatt(e, a)[..., 3] > 128; n_ = int(al.sum())
+        if n_ > 200: werte.append(float(ndimage.binary_opening(al, np.ones((3, 3), bool)).sum()) / n_)
+    if werte: flaechig[e] = round(min(werte), 2)
+schlecht = {e: v for e, v in flaechig.items() if v < 0.5}
+melde("bild", "Ebenen sind flächig (Anteil der Fläche, der nach Wegnehmen feiner Linien bleibt – je Ebene, schlechteste Bewegung)", min(flaechig.values()) if flaechig else 1.0, "≥ 0.5", not schlecht, mehr=schlecht)
 melde("bild", "umschlossene Spalten (px je Bild) – nur Hinweis: Rüstungsebenen legen nur Deckung über den Körper und können ihn nicht durchlöchern; gemessen werden natürliche Spalten zwischen Beinen oder zwischen Arm und Rumpf, die die Kleidung umschließt", neu, "Hinweis", True)
 # Handzuordnung im Bild: von vorn (Süden) ist das Schwert links im Bild, der Schild rechts; von hinten (Norden) umgekehrt
 def schwerpunkt(e, a, r, i): al = feld(blatt(e + ".hinten", a), r, i)[..., 3]; return float((al.sum(0) * np.arange(F)).sum() / max(1e-6, al.sum()))
