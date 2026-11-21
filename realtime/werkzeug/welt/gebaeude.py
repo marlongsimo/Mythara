@@ -35,6 +35,7 @@ WURZEL = os.path.normpath(os.path.join(REALTIME, '..'))
 BIB = os.path.join(REALTIME, 'welt', 'bibliothek')
 ZIEL = os.path.join(WURZEL, 'img', 'welt', 'gebaeude', 'raeumlich')
 F, K = 48, 2
+STIL = os.environ.get('MYTHARA_STIL', '')   # 'gemalt': handgemalter Stil (Probe, passend zu den Heldenbildern), sonst wie bisher
 KX = 0.32                          # Scherung: so viele Felder nach Osten je Feld Tiefe – macht die Ostwände sichtbar
 TIEFE_SCHATTEN = -1000.0           # Kennwert für die Schattenebene: liegt immer am Boden
 
@@ -117,7 +118,79 @@ def _gerechnet(name, rng):
     return a
 
 
+GEMALT = {'bretter': 'g_bretter', 'maserung': 'g_balken', 'stein': 'g_stein', 'putz': 'g_putz', 'schindel': 'g_schindel', 'dachziegel': 'g_ziegel', 'blockbohlen': 'g_bohlen'}
+
+
+def _gemalt(name, rng):
+    """Handgemalt wirkende Texturen (Stilprobe): flache Farbflächen mit Verläufen, hellen Kanten, dunklen Fugen, wenig Körnung"""
+    n = 420; a = np.zeros((n, n, 3), np.float32); yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
+    weich = lambda s_: ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), s_, mode='wrap')
+    if name in ('g_bretter', 'g_balken'):
+        grund = np.array((150, 104, 64) if name == 'g_bretter' else (104, 70, 46), np.float32); x = 0
+        while x < n:
+            b = int(rng.integers(38, 52)) if name == 'g_bretter' else n; f = float(rng.uniform(0.86, 1.12))
+            m = (xx >= x) & (xx < min(n, x + b)); t = np.clip((xx - x) / max(1, b), 0, 1)
+            quer = 1.16 - 0.38 * t                                      # links Licht, rechts Schatten
+            faser = 1 + 0.06 * np.sin(yy / 23 + xx * 0.9 + x) * np.sin(yy / 7 + x)
+            a[m] = (grund * f)[None, :] * (quer * faser)[m][:, None]
+            if name == 'g_bretter':
+                a[(xx >= x + b - 4) & (xx < x + b)] = (58, 36, 22)        # Fuge
+                for _ in range(int(rng.integers(0, 2))):                 # Ast
+                    cx, cy = x + rng.uniform(10, b - 12), rng.uniform(0, n); r = rng.uniform(4, 7)
+                    d = (xx - cx) ** 2 + ((yy - cy) / 1.6) ** 2; a[d < r * r] *= 0.62; a[(d >= r * r) & (d < (r + 2.5) ** 2)] *= 0.85
+            x += b
+        if name == 'g_balken':
+            a *= (1 + 0.07 * weich(14) / 0.05 * 0.1)[..., None]
+    elif name in ('g_schindel', 'g_ziegel'):
+        G = Image.new('RGB', (n, n + 40), (52, 40, 32)); d = ImageDraw.Draw(G); hz = 34 if name == 'g_schindel' else 30
+        for reihe, y in enumerate(range(-hz, n + hz, hz)):
+            x = -(reihe % 2) * 20 - int(rng.integers(0, 10))
+            while x < n + 40:
+                b = int(rng.integers(30, 46)) if name == 'g_schindel' else 34; f = float(rng.uniform(0.86, 1.12))
+                for dx in (-n, 0, n):
+                    for k in range(hz + 6):                               # Verlauf: oben im Schatten der Reihe darüber, unten hell
+                        t = k / (hz + 6); c = tuple(int(v * f * (0.66 + 0.5 * t)) for v in (132, 102, 76))
+                        d.rounded_rectangle([x + dx + 1, y + k, x + dx + b - 2, y + k + 2], radius=1, fill=c)
+                    d.rounded_rectangle([x + dx + 1, y, x + dx + b - 2, y + hz + 6], radius=12 if name == 'g_ziegel' else 7, outline=(52, 40, 32), width=2)
+                    d.line([x + dx + 4, y + hz + 4, x + dx + b - 5, y + hz + 4], fill=tuple(int(v * f * 1.25) for v in (132, 102, 76)), width=2)
+                x += b
+        a = np.asarray(G.crop((0, 20, n, n + 20))).astype(np.float32)
+    elif name == 'g_stein':
+        G = Image.new('RGB', (3 * n, 3 * n), (66, 60, 54)); d = ImageDraw.Draw(G); y = 0
+        while y < n:
+            h = int(rng.integers(28, 42)); x = -int(rng.integers(0, 50))
+            while x < n:
+                b = int(rng.integers(42, 80)); f = float(rng.uniform(0.84, 1.12)); grund = np.array(rng.choice([(158, 150, 138), (150, 146, 140), (168, 154, 130), (142, 138, 130)]), np.float32) * f
+                for dx in (-n, 0, n):
+                    for dy in (-n, 0, n):
+                        for k in range(5):                                # weicher Verlauf: von hell oben links zur dunklen Kante
+                            sh = 1.18 - k * 0.1; e = k * 2.2
+                            d.rounded_rectangle([n + x + dx + 2 + e * 0.6, n + y + dy + 2 + e * 0.6, n + x + dx + b - 2 - e * 0.2, n + y + dy + h - 2 - e * 0.2], radius=9, fill=tuple(int(v * (0.72 + k * 0.07) if k < 1 else v * min(sh + 0.1 * k, 1.12)) for v in grund))
+                x += b
+            y += h
+        a = np.asarray(G.crop((n, n, 2 * n, 2 * n))).astype(np.float32)
+    elif name == 'g_putz':
+        a = np.array((224, 208, 172), np.float32)[None, None, :] * (1 + 0.05 * weich(30) / 0.02 * 0.02 + 0.025 * np.sin(xx / 9 + weich(8) * 30)[..., None] * 0 + 0)[..., None] if False else \
+            np.array((224, 208, 172), np.float32)[None, None, :] * (1 + 0.6 * weich(30) + 0.25 * weich(6))[..., None]
+    elif name == 'g_bohlen':
+        hz = 28
+        t = (yy % hz) / hz; rund = 0.62 + 0.55 * np.sin(t * math.pi) ** 0.7
+        a = np.array((146, 100, 62), np.float32)[None, None, :] * rund[..., None] * (1 + 0.05 * np.sin(xx / 17 + (yy // hz) * 3))[..., None]
+        a[(yy % hz) < 2] = (54, 36, 24)
+    return ndimage.gaussian_filter(np.clip(a, 0, 255), (0.7, 0.7, 0))
+
+
 def tex(name):
+    if STIL == 'gemalt' and name in GEMALT:
+        name = GEMALT[name]
+    if name.startswith('g_'):
+        if name not in _T:
+            _T[name] = np.clip(_gemalt(name, np.random.default_rng(sum(map(ord, name)))), 0, 255).astype(np.uint8)
+        return _T[name]
+    return _tex(name)
+
+
+def _tex(name):
     """Texturen für die Flächen; zusätzlich zu den Vorlagen gerechnete: stroh, schindel, blockbohlen, stein, putz"""
     if name in _T:
         return _T[name]
@@ -167,6 +240,7 @@ def tex(name):
 haus3d.tex = tex                    # die Zeichenfläche aus haus3d holt ihre Texturen von hier
 
 DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3)}
+DECKUNG_MALSTIL = 3.0; WAND_MALSTIL = 2.4    # im Malstil: Schindeln, Bretter und Steine deutlich größer, damit sie im Spielmaßstab lesbar sind
 WAND = {'ziegel': ('ziegel', 0.12, False), 'quader': ('quader', 0.14, False), 'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
 
 
@@ -177,6 +251,9 @@ class P:
 
 
 PROJ = P()
+if STIL == 'gemalt':
+    DECKUNG = {k: (t, m * DECKUNG_MALSTIL) for k, (t, m) in DECKUNG.items()}
+    WAND = {k: (t, m * WAND_MALSTIL, x) for k, (t, m, x) in WAND.items()}
 
 
 def normale(pts):
@@ -386,7 +463,7 @@ def zubehoer_vorn(B, z, k):
 
 def fachwerk(B, a, b, hk, hell_faktor):
     """Dunkle Balken auf eine Putzwand legen: Schwelle, Riegel, Pfosten, Streben in den Endfeldern. a, b: Wandenden (x, d) knapp vor der Wand"""
-    L = math.hypot(b[0] - a[0], b[1] - a[1]); w = 0.15 / L
+    L = math.hypot(b[0] - a[0], b[1] - a[1]); w = (0.22 if STIL == 'gemalt' else 0.15) / L
     P = lambda t, z: (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, z)
     zm = hk * 0.52; n = max(2, round(L / 1.25)); hl = 0.5 * hell_faktor
     for z in (0.32, zm):
@@ -491,8 +568,9 @@ def baue(plan):
             if rolle == 'giebel_sued':
                 V.flaeche(PROJ, fl, wt, 0.96, wm)
                 V.flaeche(PROJ, [(x0, d0 - 0.02, hk - 0.2), (x1, d0 - 0.02, hk - 0.2), (x1, d0 - 0.02, hk + 0.05), (x0, d0 - 0.02, hk + 0.05)], 'maserung', 0.6, 0.2)
-        for xe in (x0, x1 - 0.28):
-            V.flaeche(PROJ, [(xe, d0 - 0.02, 0), (xe + 0.28, d0 - 0.02, 0), (xe + 0.28, d0 - 0.02, hk), (xe, d0 - 0.02, hk)], 'maserung', 0.62, 0.2)
+        ep = 0.36 if STIL == 'gemalt' else 0.28                             # Eckpfosten (im Malstil kräftiger)
+        for xe in (x0, x1 - ep):
+            V.flaeche(PROJ, [(xe, d0 - 0.02, 0), (xe + ep, d0 - 0.02, 0), (xe + ep, d0 - 0.02, hk), (xe, d0 - 0.02, hk)], 'maserung', 0.62, 0.2)
         if k.get('sockel', True) and k.get('wand') != 'stein':
             V.flaeche(PROJ, [(x0, d0 - 0.025, 0), (x1, d0 - 0.025, 0), (x1, d0 - 0.025, 0.3), (x0, d0 - 0.025, 0.3)], 'stein', 0.75, 0.12)
         if k.get('wand') != 'stein':
@@ -523,8 +601,11 @@ def baue(plan):
                 if rolle != 'flaeche':
                     continue
                 Dd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(D['farbe']) if D.get('farbe') else None)
-                # dunkle Kante an der Traufe und Ortgängen
-                Dd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
+                # dunkle Kante an der Traufe und Ortgängen; im Malstil kräftige, hell abgesetzte Randbretter
+                if STIL == 'gemalt':
+                    Dd.linie(PROJ, fl + [fl[0]], (40, 26, 18), 9, 255); Dd.linie(PROJ, fl + [fl[0]], (150, 106, 64), 5.5, 255); Dd.linie(PROJ, fl + [fl[0]], (196, 150, 96), 1.8, 230)
+                else:
+                    Dd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
             for z in zub:
                 if z['art'] == 'kamin' and z.get('koerper', koerper[0]['id']) == k['id']:
                     kx, kd, kb = z['x'], z['d'], z.get('b', 0.55); fuss = dach_oben(k, kx, kd) - 0.2
@@ -540,7 +621,10 @@ def baue(plan):
                 fl = [(a0 - 0.15, d0 - tf - 0.2, hz - 0.15), (a1 + 0.15, d0 - tf - 0.2, hz - 0.15), (a1 + 0.15, d0, hz + 0.45), (a0 - 0.15, d0, hz + 0.45)]
                 deck, dmass = DECKUNG[z.get('deckung', 'schindel')]
                 Vd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(z['farbe']) if z.get('farbe') else None)
-                Vd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
+                if STIL == 'gemalt':
+                    Vd.linie(PROJ, fl + [fl[0]], (40, 26, 18), 8, 255); Vd.linie(PROJ, fl + [fl[0]], (150, 106, 64), 4.5, 255)
+                else:
+                    Vd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
                 ebenen.append((f'{k["id"]}_vordach', Vd, -d0 + tf + 0.2, 'vordach', i, None))
     return ebenen, (ox, oy, b, h)
 
@@ -574,7 +658,7 @@ def main():
     for n in namen:
         plan = plaene[n]
         ebenen, (ox, oy, b, h) = baue(plan)
-        ordner = os.path.join(ZIEL, n); os.makedirs(ordner, exist_ok=True)
+        ordner = os.path.join(ZIEL + ('_' + STIL if STIL else ''), n); os.makedirs(ordner, exist_ok=True)
         gesamt = Image.new('RGBA', (b, h), (0, 0, 0, 0)); liste = []
         for name, B, tiefe, rolle, ki, ti in ebenen:
             im = B.fertig(malen=rolle not in ('schatten', 'innen'))
@@ -602,8 +686,9 @@ def main():
         bib['objekte'] = [o for o in bib['objekte'] if o['id'] != n] + [eintrag]
         bilder.append(gesamt)
         print(f'  {n}: {b} × {h} px, {len(liste)} Ebenen, {len(tueren)} Türen, {len(raum)} begehbare Räume')
-    with open(os.path.join(BIB, 'objekte.json'), 'w', encoding='utf8') as f:
-        json.dump(bib, f, ensure_ascii=False, indent=1); f.write('\n')
+    if not STIL:                     # Stilproben schreiben nur Bilder, die Bibliothek bleibt unberührt
+        with open(os.path.join(BIB, 'objekte.json'), 'w', encoding='utf8') as f:
+            json.dump(bib, f, ensure_ascii=False, indent=1); f.write('\n')
     if vorschau:
         sp = 4; zeilen = [bilder[i:i + sp] for i in range(0, len(bilder), sp)]
         B = max(sum(i.width for i in z) + 20 * (len(z) + 1) for z in zeilen); Hh = sum(max(i.height for i in z) + 20 for z in zeilen) + 20
