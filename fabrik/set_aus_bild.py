@@ -4,6 +4,8 @@
 
 basis.blend   Grundkörper mit Skelett (rig.py)
 set-ordner    referenz/teile/vorn.png, seite.png (linke Körperseite, Zehen links im Bild), hinten.png – das Set ohne Körper, Kopf weggelassen
+mantel=<z>    Mantelschoß vom Gürtel bis zur Höhe z (locker um beide Beine, unten ausgestellt) [weite=0.04]
+unten=<z>     die Bildunterkante liegt bei Modellhöhe z (Bild endet über den Füßen)
 kapuze        der Kopf gehört zum Set (Kapuze, Gesichtstuch), nur ein Augenschlitz bleibt frei [kapuze_dicke=0.03, augen_unten/augen_oben, spitze]
 oben          bis wohin das Set reicht (Knochen:Anteil), darüber bleibt der Kopf frei
 dicke         Abstand des Sets vom Körper (m); haende: an den Händen (Handschuhe liegen enger an)
@@ -48,12 +50,23 @@ kopf_ = kopfw if KAPUZE else np.zeros(nv); KOPF_D = float(opt.get("kapuze_dicke"
 rest_ = np.clip(1 - hand - rumpf - fuss - kopf_, 0, 1)
 for v in bm.verts: i = v.index; v.co = v.co + v.normal * (HAENDE * hand[i] + RUMPF * rumpf[i] + FUESSE * fuss[i] + DICKE * rest_[i] + KOPF_D * kopf_[i])   # Rumpf klobiger, Stiefel weiter, Hände eng
 bmesh.ops.delete(bm, geom=[v for v in bm.verts if not wahl[v.index]], context="VERTS"); bm.verts.ensure_lookup_table()
+if "mantel" in opt:                                                                                 # Mantelschoß: ein Rock vom Gürtel bis zum Saum um beide Beine (locker, unten ausgestellt)
+    z_saum = float(opt["mantel"]); z_guert = KN["becken"].head_local.z + 0.05; RINGE_M, UM_M = 14, 40; weit = float(opt.get("weite", 0.04)); ringe_m = []
+    for r_ in range(RINGE_M):
+        t = r_ / (RINGE_M - 1); zz = z_guert + (z_saum - z_guert) * t; band_ = P[np.abs(P[:, 2] - zz) < 0.02]
+        band_ = band_[(np.abs(band_[:, 0]) < 0.3)] if len(band_) else band_
+        hx = (np.abs(band_[:, 0]).max() if len(band_) else 0.18) + weit + 0.05 * t; cy_ = band_[:, 1].mean() if len(band_) else 0.0
+        hy = ((band_[:, 1].max() - band_[:, 1].min()) / 2 if len(band_) else 0.12) + weit + 0.03 * t
+        ringe_m.append([bm.verts.new((hx * math.sin(2 * math.pi * u / UM_M), cy_ - hy * math.cos(2 * math.pi * u / UM_M), zz)) for u in range(UM_M)])
+    for r_ in range(RINGE_M - 1):
+        for u in range(UM_M): bm.faces.new((ringe_m[r_][u], ringe_m[r_][(u + 1) % UM_M], ringe_m[r_ + 1][(u + 1) % UM_M], ringe_m[r_ + 1][u]))
+    bm.verts.ensure_lookup_table(); print(f"Mantelschoß: Gürtel z {z_guert:.2f} bis Saum z {z_saum:.2f}")
 herkunft = [v.index for v in bm.verts]                                                              # bmesh löscht ohne Umnummern der Ursprünge: Index-Liste vor dem Schreiben merken
 alt = np.where(wahl)[0]
 netz = bpy.data.meshes.new("set"); bm.to_mesh(netz); bm.free(); o = bpy.data.objects.new("set", netz); bpy.context.collection.objects.link(o)
 # fein unterteilen (Punktfarben brauchen Auflösung für Riemen, Schnallen, Muster); Gewichte je Punkt vom nächsten Ursprungspunkt
 from mathutils.kdtree import KDTree
-Q0 = np.array([v.co[:] for v in netz.vertices]); kd = KDTree(len(Q0))
+Q0 = P[alt]; kd = KDTree(len(Q0))                                                                 # Gewichte je Punkt vom nächsten Körperpunkt (auch für den Mantelschoß)
 for i, q in enumerate(Q0): kd.insert(q, i)
 kd.balance()
 bpy.context.view_layer.objects.active = o; o.select_set(True); sm = o.modifiers.new("fein", "SUBSURF"); sm.levels = int(opt.get("unterteilen", 2)); bpy.ops.object.modifier_apply(modifier="fein")
@@ -76,7 +89,8 @@ def bild(n, spiegeln=False):
 ALPHA = {}
 VORN, HINTEN, SL, SR = bild("vorn"), bild("hinten"), bild("seite"), bild("seite", True)
 x0, x1 = Qp[:, 0].min(), Qp[:, 0].max(); y0, y1 = Qp[:, 1].min(), Qp[:, 1].max(); z0, z1 = Qp[:, 2].min(), ZTOP
-if KAPUZE: z1 = Qp[:, 2].max() + float(opt.get("spitze", 0.03))                                         # Bildoberkante = Kapuzenspitze
+if KAPUZE: z1 = Qp[:, 2].max() + float(opt.get("spitze", 0.03))
+if "unten" in opt: z0 = float(opt["unten"])                                                              # Bild endet über den Füßen: darunter die unterste Bildzeile                                         # Bildoberkante = Kapuzenspitze
 def nimm(img, u, vv): h, w = img.shape[:2]; return img[np.clip((vv * (h - 1)).astype(int), 0, h - 1), np.clip((u * (w - 1)).astype(int), 0, w - 1)]
 vv = np.clip((z1 - Qp[:, 2]) / (z1 - z0), 0, 1); farbe = np.zeros((len(Q), 3), np.float32); ny = np.abs(QN[:, 1]) >= np.abs(QN[:, 0])
 leer = np.zeros(len(Q), bool)

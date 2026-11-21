@@ -1,0 +1,118 @@
+{
+ "id": "npc.reisender",
+ "feld": 224,
+ "richtungen": [
+  "o",
+  "so",
+  "s",
+  "sw",
+  "w",
+  "nw",
+  "n",
+  "no"
+ ],
+ "winkel0": "osten",
+ "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)",
+ "zeile": "round(winkel / (pi/4)) mod 8",
+ "fuss": [
+  0.5,
+  0.7875
+ ],
+ "mass": [
+  0.5,
+  0.7875,
+  0.566
+ ],
+ "kamera": {
+  "neigung": 35.0,
+  "px_je_m": 86.0
+ },
+ "animationen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ },
+ "ebenen": {
+  "koerper": {
+   "art": "koerper",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/koerper",
+     "groesse": [
+      2007,
+      568
+     ],
+     "bilder": 112,
+     "speicher_mb": 4.6
+    }
+   }
+  },
+  "kleidung.set.reisender": {
+   "art": "huelle",
+   "platz": "set",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.set.reisender",
+     "groesse": [
+      2033,
+      513
+     ],
+     "bilder": 112,
+     "speicher_mb": 4.2
+    }
+   }
+  },
+  "kopf.haar.scheitel": {
+   "art": "huelle",
+   "platz": "haar",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kopf.haar.scheitel",
+     "groesse": [
+      2042,
+      52
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.4
+    }
+   }
+  },
+  "kopf.bart.vollbart": {
+   "art": "huelle",
+   "platz": "bart",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kopf.bart.vollbart",
+     "groesse": [
+      1217,
+      11
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.1
+    }
+   }
+  }
+ },
+ "plaetze": {
+  "set": [
+   "kleidung.set.reisender"
+  ],
+  "haar": [
+   "kopf.haar.scheitel"
+  ],
+  "bart": [
+   "kopf.bart.vollbart"
+  ]
+ },
+ "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)",
+ "zeichenfolge": true,
+ "tiefe": {},
+ "atlas_speicher_mb": 9.2
+}
