@@ -176,6 +176,11 @@
       "platz": "haar",
       "glb": "held.schildwahrer/v004/quelle/teile/kopf.haar.v003.glb",
       "wahlfrei": true
+    },
+    {
+      "id": "ruestung.brust.stahlplatte",
+      "platz": "brust",
+      "glb": "held.schildwahrer/v004/quelle/teile/ruestung.brust.stahlplatte.glb"
     }
   ],
   "teilnetze_glaetten": 2
