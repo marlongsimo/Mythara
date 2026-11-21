@@ -175,11 +175,25 @@ def sand(rng):
     return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
 
 
+def acker(rng):
+    """Gepflügter Acker: Furchen in einer Richtung (der Bäcker dreht die Kacheln), dazwischen junges Grün"""
+    a = grund((132, 96, 60), rng, gross=0.08, mittel=0.04); yy = np.arange(N, dtype=np.float32)[:, None]
+    furche = (0.5 + 0.5 * np.sin(yy / N * 2 * math.pi * 24))[..., None]
+    a = a * (0.8 + 0.32 * furche)
+    M = Maler(a)
+    for j in range(24):
+        y = (j + 0.75) / 24 * N
+        for i in range(36):
+            x = (i + rng.uniform(0, 0.6)) / 36 * N; bueschel(M, x, y, (98, 136, 56), rng, 0.6)
+    return ndimage.gaussian_filter(M.bild(), (0.6, 0.6, 0))
+
+
 KACHELN = {
     'wiese': lambda r: wiese(r), 'wiese-satt': lambda r: wiese(r, (88, 138, 58), 80), 'wiese-trocken': lambda r: wiese(r, (136, 148, 70), 60, gelb=14),
     'wiese-blumen': lambda r: wiese(r, (104, 148, 64), 60, blumen=70), 'waldboden': waldboden, 'erde': erde, 'pflaster': pflaster,
     'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True),
     'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand,
+    'acker': acker,
     'moorwiese': lambda r: wiese(r, (112, 116, 66), 90, blumen=6, gelb=8)}
 
 

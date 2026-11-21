@@ -2423,6 +2423,83 @@
      }
     ]
    }
+  },
+  {
+   "id": "dorf_windmuehle_01",
+   "name": "Windmühle",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.8,
+     "d": 0,
+     "b": 3.6,
+     "t": 3.6,
+     "h": 4.6,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "schindel",
+      "farbe": [
+       120,
+       90,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.6,
+     "h": 0.6,
+     "art": "rund",
+     "x": -0.9
+    },
+    {
+     "wand": "ost",
+     "z": 2.4,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "schmal",
+     "d": 1.8
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "fluegel",
+     "x": 0.5,
+     "z": 5.2,
+     "laenge": 3.4
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "muehlstein",
+      "x": 0.2,
+      "d": 2.2
+     },
+     {
+      "art": "saecke",
+      "x": -1.0,
+      "d": 1.0
+     }
+    ]
+   }
   }
  ]
 }

@@ -28,5 +28,8 @@ const ueber = []; for (let i = 0; i < koerper.length; i++) for (let j = i + 1; j
 check(ueber.length === 0, "keine zwei Gebäude berühren sich (mindestens 0,6 Felder Abstand)", ueber);
 const schlecht = koerper.filter(({ id, r }) => { if (id.startsWith("muehle")) return false; /* die Mühle steht mit dem Rad am Graben */ for (let y = Math.floor(r[1]); y < r[3]; y++) for (let x = Math.floor(r[0]); x < r[2]; x++) { const c = (d.gelaende[y] || "")[x]; if (c === "~" || c === "e" && y < r[3] - 1) return true; } return false; });
 check(schlecht.length === 0, "kein Gebäude steht im Wasser oder auf einer Gasse", [...new Set(schlecht.map((k) => k.id))]);
+{ const wh = d.objekte.find((x) => x.objekt === "dorf_wehr_01"), links = { x: wh.x - 3, y: wh.y - 0.8 }, rechts = { x: wh.x + 3, y: wh.y - 0.8 };
+  const pfad = R.weg(w(links.x, links.y), w(rechts.x, rechts.y), 0.3, 12), lang = pfad.reduce((s, p, i) => s + Math.hypot(p.x - (i ? pfad[i - 1].x : w(links.x, 0).x), p.y - (i ? pfad[i - 1].y : w(0, links.y).y)), 0);
+  check(R.begehbar(...Object.values(w(wh.x, wh.y - 0.8))) && pfad.length > 0 && lang < 9, `über die Wehrkrone kommt man über den Mühlgraben (${lang.toFixed(1)} Felder)`); }
 const wasser = d.gelaende.reduce((n, z) => n + [...z].filter((c) => c === "~").length, 0); check(wasser > 150, `der Mühlgraben fließt durchs Dorf (${wasser} Felder Wasser)`);
 console.log(ok ? "\nWeidenhain: alles in Ordnung" : "\nWeidenhain: FEHLER"); process.exit(ok ? 0 : 1);

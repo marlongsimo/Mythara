@@ -33,6 +33,8 @@ BAEUME = {
     'stil_schilf_01': dict(art='schilf', b=110, h=110, saat=14),
     'stil_schilf_02': dict(art='schilf', b=150, h=96, saat=15),
     'stil_moorlicht_01': dict(art='licht', b=110, h=150, saat=16),
+    'stil_apfel_01': dict(art='laub', b=0, h=0, krone=(200, 50, 150), ballen=10, gruen=(100, 144, 60), stamm=(110, 78, 52), dicke=16, aepfel=True, saat=17),
+    'stil_apfel_02': dict(art='laub', b=0, h=0, krone=(180, 46, 136), ballen=9, gruen=(110, 150, 62), stamm=(110, 78, 52), dicke=15, aepfel=True, saat=18),
     'stil_busch_01': dict(art='busch', b=150, h=96, ballen=6, gruen=(98, 142, 60), saat=7),
     'stil_busch_02': dict(art='busch', b=120, h=84, ballen=5, gruen=(110, 150, 64), saat=8, beeren=True),
 }
@@ -136,6 +138,11 @@ def laub(P, rng):
         B.rgb = B.rgb * (1 - 0.35 * sch[..., None]) + SCHATTEN_BLAU * 0.35 * sch[..., None]
         hell = 0.86 + 0.24 * (1 - (y - (kcy - ky * 0.5)) / ky)
         ballen(B, x, y, r, P['gruen'], rng, max(0.8, min(1.1, hell)))
+    if P.get('aepfel'):
+        for _ in range(26):
+            x, y = cx + rng.uniform(-kb * 0.4, kb * 0.4), kcy + rng.uniform(-ky * 0.35, ky * 0.4)
+            if B.a[int(y * K), int(x * K)] < 0.9: continue
+            m = np.exp(-(((B.xx / K - x) ** 2 + (B.yy / K - y) ** 2) / 9)); B.lege((206, 52, 46), np.clip(m * 1.8, 0, 1)); B.lege((250, 150, 130), np.clip(np.exp(-(((B.xx / K - x + 1) ** 2 + (B.yy / K - y + 1) ** 2) / 1.5)) * 1.5, 0, 1))
     return B, [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.45}
 
 

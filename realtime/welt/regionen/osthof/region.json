@@ -1,0 +1,15 @@
+{
+ "id": "osthof",
+ "name": "Der Osthof",
+ "untertitel": "Felder und Windmühle östlich der Waldmark",
+ "ursprung": [
+  203,
+  200
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "wiese",
+ "stufe": 1
+}

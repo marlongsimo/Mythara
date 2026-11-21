@@ -31,29 +31,40 @@ const wald = (B, H, wo, dichte = 0.95) => { const aus = [], gitter = new Map(), 
 const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] } };
 
 /* ───── Nordwald ───── */
-{ const B = 128, H = 64, g = Array.from({ length: H }, () => Array(B).fill("f"));
-  schreibe("nordwald", { id: "nordwald", name: "Der Nordwald", untertitel: "Dichter Wald westlich der Waldmark", ursprung: [196, 200], chunks: [4, 2], biom: "wald", stufe: 1 }, g, wald(B, H, () => true, 1.1), { ...leer, start: [[64, 32]] }); }
+{ const B = 128, H = 64, K = { x: 88, y: 28, r: 10 }, PFAD = [[88, H + 1], [86.6, 50], [88, 38]];   /* Köhlerlichtung; der Pfad kommt aus dem Kreuzwald (dort x = 24) */
+  const lichtung = (x, y) => Math.hypot((x - K.x) / K.r, (y - K.y) / (K.r * 0.8)) < 1 + 0.1 * welle(x, y);
+  const g = Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => { const cx = x + 0.5, cy = y + 0.5; return strecke(cx, cy, PFAD) < 1.0 ? "e" : lichtung(cx, cy) ? (welle(cx, cy) > 0.9 ? "t" : ".") : strecke(cx, cy, PFAD) < 2.4 ? "." : "f"; }));
+  let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|wald|stil)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x, y, ...mehr });
+  const dinge = [o("dorf_huette_holz_02", K.x - 4.5, K.y - 2), o("wald_meiler_01", K.x + 3.5, K.y + 1.5), o("wald_meiler_01", K.x + 6, K.y - 4.5, { s: 0.8 }), o("dorf_holzstapel_01", K.x - 0.5, K.y - 3.8), o("dorf_holzstapel_01", K.x + 1.5, K.y - 3.6),
+    o("wald_ruine_01", K.x - 6, K.y + 5.5), o("wald_ruine_02", K.x - 1, K.y + 6.5, { spiegeln: true })];
+  const baeume = wald(B, H, (x, y) => !lichtung(x, y) && Math.hypot(x - K.x, y - K.y) > K.r + 1 && strecke(x, y, PFAD) > 2.6, 1.1);
+  const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.6, abgleich: "keiner", daten: { text } });
+  const spiel = { ...leer, start: [[88, 60]], interaktionen: [lies("meiler", K.x + 3.5, K.y + 2.9, "Ein Kohlenmeiler. Unter der Erde schwelt das Holz seit Tagen und wird zu Kohle für die Schmiede."),
+    lies("ruine", K.x - 6, K.y + 6.4, "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt.")] };
+  schreibe("nordwald", { id: "nordwald", name: "Der Nordwald", untertitel: "Dichter Wald mit einer Köhlerlichtung", ursprung: [196, 200], chunks: [4, 2], biom: "wald", stufe: 1 }, g, [...dinge, ...baeume], spiel); }
 
 /* ───── Westmark ───── */
 { const B = 64, H = 192, TOR = 112, KY = 44, XK = 64;                 /* XK: so weit liegt der Kreuzwald (x = 0) östlich – derselbe Steinweg wie dort */
   const steinY = (x) => { const xk = x - XK; return KY + 2.6 * Math.sin((xk - TOR) / 21) + 1.3 * Math.sin((xk - TOR) / 8.3) * Math.min(1, Math.abs(xk - TOR) / 14); };
   const ENDE = 5, HUETTE = [30, 120];
   const PFAD = [[50.5, H + 1], [50, 178], [45, 160], [38, 140], [29.2, 121.2], [27, 104], [31, 84], [36, 66], [38, steinY(38) + 2]];   /* Trampelpfad von Rabenmoor zum Steinweg */
+  const QUER = [[B + 1, 104], [52, 103], [40, 104.5], [28.2, 105]];   /* Waldweg aus dem Kreuzwald, trifft hier auf den Trampelpfad */
   const moor = (y) => Math.min(1, Math.max(0, (y - 104) / 70));       /* 0 = Wiese (Norden) … 1 = kahles Moor (Süden) */
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, s = steinY(cx), m = moor(cy), w = welle(cx, cy); let c;
     if (cx >= ENDE - 2 && Math.abs(cy - s) < 3.1) c = "k";
     else if (cy < s - 5 - 1.2 * w) c = "f";                                    /* dichter Wald nördlich des Weges */
     else if (cy < s + 5 + 1.2 * w) c = ".";                                    /* Wegsaum */
-    else if (strecke(cx, cy, PFAD) < (m > 0.5 ? 1.1 : 0.95)) c = m > 0.45 ? "m" : "e";
-    else if (cx > B - 4 - 1.5 * w && m < 0.85) c = "f";                         /* Waldrand zum Kreuzwald */
+    else if (strecke(cx, cy, PFAD) < (m > 0.5 ? 1.1 : 0.95) || strecke(cx, cy, QUER) < 1.1) c = m > 0.45 ? "m" : "e";
+    else if (strecke(cx, cy, QUER) < 2.6 + 0.6 * w) c = ".";
+    else if (cx > B - 4 - 1.5 * w) c = "f";   /* Waldrand zum Kreuzwald – auf ganzer Länge, damit die Grenze bündig ist */                         /* Waldrand zum Kreuzwald */
     else if (m < 0.15) c = w > 1.1 ? "," : ".";
     else if (m < 0.55) c = w > 0.6 + m ? "t" : "v";
-    else if (cy > H - 10 - 2 * w) c = strecke(cx, cy, PFAD) < 2.4 ? "t" : "o";  /* an Rabenmoor: offenes Moorwasser */
+    else if (cy > H - 10 - 2 * w) c = strecke(cx, cy, PFAD) < 2.4 || cx > 53 + 2 * Math.sin(cy / 2) ? "t" : "o";   /* rechts unten Torf: dort stoßen Rabenmoors Waldsaum und der Kreuzwald an */  /* an Rabenmoor: offenes Moorwasser */
     else c = w > 1.05 ? "o" : w > 0.2 ? "t" : (w < -0.9 ? "m" : "v");
     z.push(c); } g.push(z); }
   const zeichen = (x, y) => g[Math.max(0, Math.min(H - 1, Math.floor(y)))][Math.max(0, Math.min(B - 1, Math.floor(x)))];
   let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|moor|wald|stil|k)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });
-  const nah = (x, y, r) => strecke(x, y, PFAD) < r || Math.abs(y - steinY(x)) < r + 3 || Math.hypot(x - HUETTE[0], y - HUETTE[1] + 2) < 7;
+  const nah = (x, y, r) => strecke(x, y, PFAD) < r || strecke(x, y, QUER) < r + 0.5 || Math.abs(y - steinY(x)) < r + 3 || Math.hypot(x - HUETTE[0], y - HUETTE[1] + 2) < 7;
   const dinge = [o("moor_huette_loch_01", ...HUETTE), o("wald_baumstamm_02", ENDE, steinY(ENDE) + 4.5), o("dorf_zaun_01", HUETTE[0] + 4.6, HUETTE[1] + 0.4), o("dorf_holzstapel_01", HUETTE[0] - 4.2, HUETTE[1] - 0.2)];
   /* einzelne Bäume auf der Wiese, nach Süden immer weniger und zuletzt nur noch tote Erlen; Schilf an den Moorlöchern */
   for (let i = 0; i < 3000 && dinge.length < 70; i++) { const x = +(3 + wurf() * (B - 8)).toFixed(2), y = +(steinY(30) + 8 + wurf() * (H - steinY(30) - 12)).toFixed(2), m = moor(y), c = zeichen(x, y);

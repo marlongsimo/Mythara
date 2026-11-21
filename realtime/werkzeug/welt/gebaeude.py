@@ -16,7 +16,7 @@ Ein Bauplan (Felder; x relativ zum Fuß, d ab der Fußlinie nach Norden):
              dach: {form: sattel|walm|pult|zelt|flach, first: x|d, hoehe, ueber, deckung: ziegel|schindel|stroh, farbe: [r,g,b]}}]
   tueren:  [{koerper, x (Mitte, relativ zum Fuß), b, h, art: einfach|doppel|tor}]          – immer in der Südwand
   fenster: [{koerper, wand: sued|ost, x oder d (Mitte), z, b, h, art: kreuz|rund|schmal|glut, laeden, blumen}]
-  zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter|muehlrad, …}]   (muehlrad: vor der Südwand, {koerper, x, r, b, z})
+  zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter|muehlrad|fluegel, …}]   (muehlrad: vor der Südwand, {koerper, x, r, b, z})
   innen:   {boden: bretter|stein, moebel: [{art: tisch|bett|theke|fass|amboss|regal|ofen|altar|bank|kessel|heu|saecke|muehlstein, x, d}]}
 Der Fuß ist die Mitte der Südwand des ersten Baukörpers (dort, wo die Figur „vor“ dem Haus steht).
 """
@@ -478,6 +478,20 @@ def fachwerk(B, a, b, hk, hell_faktor):
         B.flaeche(PROJ, [P(ta, zm), P(ta + w, zm), P(tb + w, hk - 0.1), P(tb, hk - 0.1)], 'maserung', hl * 0.95, 0.2)
 
 
+def fluegel(B, z, k):
+    """Windmühlenflügel vor der Südwand: Nabe hoch oben, vier Flügel mit Lattengitter und Segeltuch, als X gestellt"""
+    d0 = k['d'] - 0.35; xc, zc, L = z['x'], z.get('z', k['h'] + 0.6), z.get('laenge', 3.2)
+    for w in (math.pi / 4, 3 * math.pi / 4, 5 * math.pi / 4, 7 * math.pi / 4):
+        c, si = math.cos(w), math.sin(w); qx, qz = -si, c
+        B.flaeche(PROJ, [(xc + qx * 0.07, d0, zc + qz * 0.07), (xc - qx * 0.07, d0, zc - qz * 0.07), (xc + c * L - qx * 0.07, d0, zc + si * L - qz * 0.07), (xc + c * L + qx * 0.07, d0, zc + si * L + qz * 0.07)], 'maserung', 0.7, 0.2)
+        a0, a1, br = 0.55, L * 0.97, 0.55                                    # Segel auf einer Seite der Rute
+        ecken = [(xc + c * a0, d0 - 0.01, zc + si * a0), (xc + c * a1, d0 - 0.01, zc + si * a1), (xc + c * a1 + qx * br, d0 - 0.01, zc + si * a1 + qz * br), (xc + c * a0 + qx * br, d0 - 0.01, zc + si * a0 + qz * br)]
+        B.flaeche(PROJ, ecken, 'putz', 0.98, 0.2, farbe=(222, 206, 170))
+        for t in np.linspace(0.08, 0.95, 6):
+            p0 = (xc + c * (a0 + (a1 - a0) * t), d0 - 0.02, zc + si * (a0 + (a1 - a0) * t)); B.linie(PROJ, [p0, (p0[0] + qx * br, d0 - 0.02, p0[2] + qz * br)], (110, 82, 54), 1.6)
+    B.vieleck(PROJ, [(xc + math.cos(t) * 0.22, d0 - 0.03, zc + math.sin(t) * 0.22) for t in np.linspace(0, 2 * math.pi, 16)], (70, 52, 36))
+
+
 def muehlrad(B, z, k):
     """Ein Wasserrad vor der Südwand (zum Betrachter hin, damit es rund zu sehen ist): Kranz, Schaufeln, Speichen, Nabe.
     Das untere Stück taucht in den Mühlgraben, der davor durchlaufen muss. z: {x (Mitte), r, b (Breite), z (Höhe der Nabe)}"""
@@ -589,6 +603,7 @@ def baue(plan):
                 zubehoer_vorn(V, z, k)
             if z['art'] == 'muehlrad' and z.get('koerper', koerper[0]['id']) == k['id']:
                 muehlrad(V, z, k)
+
         ebenen.append((f'{k["id"]}_vorn', V, -d0, 'vorn', i, None))
         # Türen dieses Körpers (eigene Ebenen, zwei Zustände)
         for j, tu in enumerate(tueren):
@@ -619,6 +634,11 @@ def baue(plan):
                     quader(Dd, kx - kb / 2, kd - kb / 2, fuss, kb, kb, max(0.6, k['h'] + D.get('hoehe', 1.6) + 0.6 - fuss), 'stein', 0.12)
                     Dd.vieleck(PROJ, [(kx - kb / 2, kd - kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx + kb / 2, kd - kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx + kb / 2, kd + kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx - kb / 2, kd + kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6)], (36, 32, 30))
             ebenen.append((f'{k["id"]}_dach', Dd, -d0 + (k.get('dach') or {}).get('ueber', 0.35), 'dach', i, None))
+        # Windmühlenflügel: eigene Ebene vor Wand und Dach
+        for z in zub:
+            if z['art'] == 'fluegel' and z.get('koerper', koerper[0]['id']) == k['id']:
+                Fl = neu(); fluegel(Fl, z, k)
+                ebenen.append((f'{k["id"]}_fluegel', Fl, -d0 + 0.45, 'vordach', i, None))
         # Vordach vor diesem Körper (eigene Ebene, liegt vor der Wand)
         for z in zub:
             if z['art'] == 'vordach' and z.get('koerper', koerper[0]['id']) == k['id']:

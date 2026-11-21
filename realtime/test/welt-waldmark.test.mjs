@@ -13,7 +13,7 @@ let ok = true; const check = (b, t, einzel = []) => { console.log(`  ${b ? "✓"
 const G = await gemeinsam(), bib = bibliothek(), def = new Map(bib.objekte.objekte.map((o) => [o.id, o]));
 const F = 48, C = 32, rund = (v) => Math.round(v * 10) / 10;
 
-const namen = ["waldmark", "waldweg", "weidenhain", "rabenmoor", "nordwald", "westmark"], daten = Object.fromEntries(namen.map((n) => [n, region(n)])), bau = Object.fromEntries(namen.map((n) => [n, G.chunksBauen(daten[n], bib.gelaende, bib.objekte)]));
+const namen = ["waldmark", "waldweg", "weidenhain", "rabenmoor", "nordwald", "westmark", "osthof", "obstwiesen"], daten = Object.fromEntries(namen.map((n) => [n, region(n)])), bau = Object.fromEntries(namen.map((n) => [n, G.chunksBauen(daten[n], bib.gelaende, bib.objekte)]));
 const R = new G.WeltRaster(); for (const n of namen) for (const c of bau[n].chunks) R.dazu(c);
 const ursprung = (n) => daten[n].region.ursprung.map((v) => v * C), welt = (n, x, y) => { const [ox, oy] = ursprung(n); return { x: x + ox, y: y + oy }; };
 const WM = daten.waldmark, start = welt("waldmark", ...WM.spiel.start[0]);
@@ -41,7 +41,7 @@ check(R.begehbar(start.x, start.y) && erreichbar(start), `Startpunkt am Brunnen 
   const zeichen = (x, y) => g[Math.floor(y)][Math.floor(x)];
   const steinZeilen = (x) => [...Array(g.length).keys()].filter((y) => zeichen(x, y) === "k"), feldSpalten = (y) => [...Array(g[0].length).keys()].filter((x) => zeichen(x, y) === "e");
   check(steinZeilen(40).length >= 5 && steinZeilen(200).length >= 5, `breite Steinwege nach Westen und Osten (${steinZeilen(40).length} bzw. ${steinZeilen(200).length} Felder breit)`);
-  check(feldSpalten(110).length >= 4 && feldSpalten(110).length <= 6, `breiter Feldweg nach Süden (${feldSpalten(110).length} Felder breit)`);
+  check(feldSpalten(150).length >= 4 && feldSpalten(150).length <= 6, `breiter Feldweg nach Süden (${feldSpalten(150).length} Felder breit)`);
   const orte = { "Kreuzung": [112, 46], "Lichtung": [214, 120], "Pfad vom Steinweg": [201, 70], "Pfad vom Feldweg": [150, 129], "Ende Ostweg": [st[0].x - 3, st[0].y - 4.5], "Feldweg am Südrand": [feldSpalten(190)[2] + 0.5, 190.5] };
   const nicht = Object.entries(orte).filter(([, [x, y]]) => !nahErreichbar(an(x, y), 2));
   check(st.length === 1 && nicht.length === 0, `erreichbar: ${Object.keys(orte).join(", ")}`, nicht.map(([n]) => n));
@@ -54,11 +54,16 @@ check(R.begehbar(start.x, start.y) && erreichbar(start), `Startpunkt am Brunnen 
     const tueren = daten.rabenmoor.objekte.filter((q) => (def.get(q.objekt) || {}).kategorie === "gebaeude").map((q) => { const i = def.get(q.objekt).interaktion; return { id: q.id, x: ro[0] + q.x + i.dx, y: ro[1] + q.y + i.dy }; }), zu = tueren.filter((t) => !nahErreichbar(t, 1.4));
     check(zu.length === 0, `alle ${tueren.length} Hüttentüren in Rabenmoor sind erreichbar`, zu.map((t) => t.id));
     const wm2 = ursprung("westmark"), WS = daten.westmark.spiel, an = (id) => { const i = WS.interaktionen.find((q) => q.id === id); return { x: wm2[0] + i.x, y: wm2[1] + i.y }; };
+    { const ko = ursprung("waldweg"), wg = daten.waldweg.gelaende, mitte = wg[113].slice(60, 80).includes("e") || wg[115].slice(60, 80).includes("e") || wg[118].slice(60, 80).includes("e");
+      check(mitte && nahErreichbar({ x: ko[0] + 70, y: ko[1] + 119 }, 2) && nahErreichbar({ x: wm2[0] + 40, y: wm2[1] + 104.5 }, 2), "Waldweg vom Feldweg durch den Kreuzwald in die Westmark"); }
     check(nahErreichbar(an("huette_tuer"), 1.6) && nahErreichbar(an("stamm_west_ansehen"), 2), "über den westlichen Steinweg in die Westmark: Hütte mit dem Loch und Wegende erreichbar");
     { /* der Trampelpfad allein: von der Insel in Rabenmoor nach Norden zur Hütte (ohne den Umweg über den Steinweg) – Flutfüllung nur südlich des Steinwegs */
       const y0 = wm2[1] + 60, frei = (x, y) => y > y0 && !R.fels(x, y), seen = new Set(), q = [[Math.floor(ziele.brunnen_ansehen.x), Math.floor(ziele.brunnen_ansehen.y)]]; seen.add(q[0].join()); let ok = false; const zh = an("huette_tuer");
       while (q.length && !ok) { const [x, y] = q.pop(); if (Math.hypot(x + 0.5 - zh.x, y + 0.5 - zh.y) < 1.6) ok = true; for (const [a, b] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) { const k = a + "," + b; if (seen.has(k) || !frei(a, b)) continue; seen.add(k); q.push([a, b]); } }
       check(ok, "der Trampelpfad führt von Rabenmoor durchs Moor bis zur Hütte"); }
+    { const lese = (n, id) => { const u = ursprung(n), i = daten[n].spiel.interaktionen.find((q) => q.id === id); return { x: u[0] + i.x, y: u[1] + i.y }; };
+      const orte = { "Windmühle (Osthof)": lese("osthof", "muehle_tuer"), "Bauernhaus (Osthof)": lese("osthof", "hof_tuer"), "Hütte des Obstbauern": lese("obstwiesen", "huette_tuer"), "Quelle (Obstwiesen)": lese("obstwiesen", "quelle"), "Kohlenmeiler (Nordwald)": lese("nordwald", "meiler"), "Ruine (Nordwald)": lese("nordwald", "ruine") };
+      const zu = Object.entries(orte).filter(([, p]) => !nahErreichbar(p, 1.6)); check(zu.length === 0, `zu Fuß erreichbar: ${Object.keys(orte).join(", ")}`, zu.map(([n]) => n)); }
     check(nicht.length === 0, `zu Fuß von der Waldmark über Weidenhain und den Bohlenweg nach Rabenmoor: ${Object.keys(ziele).join(", ")}`, nicht.map(([n]) => n)); }
   check(erreichbar({ x: wo[0] + ws[0], y: wo[1] + ws[1] }) && w.length > 0, `vom Brunnen der Waldmark zu Fuß über den Feldweg nach Weidenhain (${w.length ? rund(w.reduce((s, p, i) => s + Math.hypot(p.x - (i ? w[i - 1].x : start.x), p.y - (i ? w[i - 1].y : start.y)), 0)) + " Felder" : "kein Weg"})`); }
 { const gruende = []; for (let x = 45.6; x <= 50.4; x += 0.4) { const p = welt("waldmark", x, 57); if (!R.begehbar(p.x, p.y)) gruende.push(`Feld ${rund(x)}|57 im Tor ist gesperrt`); }

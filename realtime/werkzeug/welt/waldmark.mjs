@@ -122,7 +122,10 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const dTor = (x, y) => (y <= KY + 1 ? Math.abs(x - torWegX(y)) : Infinity);
   const dStein = (x, y) => (x >= WEST - 2 && x <= OST + 2 ? Math.abs(y - steinY(x)) : Infinity);
   const dFeld = (x, y) => (y >= KY ? Math.abs(x - feldX(y)) : Infinity);   /* seit dem 21.11.2026 bis an den Südrand: weiter nach Weidenhain */
-  const dPfad = (x, y) => Math.min(strecke(x, y, pfadOben), strecke(x, y, pfadUnten));
+  /* Waldweg nach Westen (Skizze 21.11.2026): vom Feldweg durch den Wald hinüber in die Westmark, mit einer Senke in der Mitte */
+  const pfadWest = [[feldX(108), 108], [100, 110], [86, 114], [70, 119], [52, 113], [30, 104], [12, 103], [-1, 104]];
+  const pfadOsthof = [[180, steinY(180) - 2], [178.5, 24], [180.5, 10], [180, -1]], pfadKoehler = [[24, steinY(24) - 2], [22.5, 24], [24, -1]];   /* nach Norden: zum Osthof und zur Köhlerlichtung im Nordwald */
+  const dPfad = (x, y) => Math.min(strecke(x, y, pfadOben), strecke(x, y, pfadUnten), strecke(x, y, pfadWest) * 0.9, strecke(x, y, pfadOsthof) * 0.85, strecke(x, y, pfadKoehler));
   const saum = (x, y) => 1.2 * Math.sin(x / 3.1 + y / 5.3) + 0.8 * Math.sin(y / 2.2 - x / 4.7);   /* unruhiger Rand der Wegsäume */
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, st = Math.min(dTor(cx, cy), dStein(cx, cy)), fe = dFeld(cx, cy), pf = dPfad(cx, cy), li = lichtR(cx, cy);
     let c = "f";
