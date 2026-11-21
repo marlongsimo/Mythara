@@ -4,6 +4,7 @@
  * darunter links die aktive Quest mit ihren Schritten (zum Ein- und Ausklappen), unten links das Team, unten rechts die Menüknöpfe.
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
+import { profilZeigen } from "./held";
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { KARTEN, KAMPFFOLGE, ORTREIHE } from "../../shared/karten";
 import { epAlle } from "./halle";
@@ -107,7 +108,7 @@ export const ZEICHEN = {
 /** Bild, Name, Held und Stufe des Helden, der gerade läuft */
 export function hudProfil(held: string) {
   const D = HELDEN[held] || HELDEN.schildwaechter; ($("#ez-profil-bild") as HTMLImageElement).src = "../" + D.bild; $("#ez-profil-held").textContent = `${D.name} · ${D.klasse}`;
-  $("#ez-profil-stufe").textContent = "St. " + stufeAusEp(epAlle()[held] || 0); kontoKnopf(); void gruppeVerbinden(); einladungenBeobachten();
+  $("#ez-profil-stufe").textContent = "St. " + stufeAusEp(epAlle()[held] || 0); kontoKnopf(); void gruppeVerbinden(); einladungenBeobachten(); profilZeigen(); /* der eigene Held: Gesicht statt der fünf Helden */
 }
 
 /* ---------- Banner oben in der Mitte ---------- */

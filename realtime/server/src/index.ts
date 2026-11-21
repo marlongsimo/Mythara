@@ -15,7 +15,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
-import { weltVerbindung, stelleMerken } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe } from "./welt";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -50,7 +50,7 @@ function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId |
     void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100));
   void buchen(p, true); /* liest EP und Splitter sofort, bucht dann im Hintergrund */
   Z.sim.verlassen(p.heldId); Z.spieler.delete(p); if (!Z.spieler.size) Z.leerSeit = Date.now(); namenMelden(Z); }
-function namenMelden(Z: Zone) { const m = JSON.stringify({ t: "namen", liste: [...Z.spieler].map((q) => { const w = Z.sim.nach(q.heldId || 0) as { stufe?: number } | undefined; return { id: q.heldId, name: q.name || "Wanderer", stufe: (w && w.stufe) || 1 }; }) });
+function namenMelden(Z: Zone) { const m = JSON.stringify({ t: "namen", liste: [...Z.spieler].map((q) => { const w = Z.sim.nach(q.heldId || 0) as { stufe?: number } | undefined; const a = q.kampf && q.kampf.nutzer ? aussehenJe.get(q.kampf.nutzer) : undefined; return { id: q.heldId, name: q.name || "Wanderer", stufe: (w && w.stufe) || 1, ...(a ? { a } : {}) }; }) });
   for (const q of Z.spieler) if (q.ws.readyState === WebSocket.OPEN) q.ws.send(m); }
 const plaetze = new Set<Platz>();
 /* ---------- Koop-Gruppen: nur im Arbeitsspeicher, über einen Code aus sechs Buchstaben. Der Anführer spielt die Kampagne, bis zu zwei Mitspieler kommen in seine Kämpfe. ---------- */

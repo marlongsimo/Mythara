@@ -12,6 +12,8 @@
 import Phaser from "phaser";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
+import { eigenesBildnis } from "../held";
+import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { setzeKarte } from "../../../shared/karte";
 import { verbinde, Netz, SPIELSERVER } from "../netz";
 import type { Zustand, Taste, Ereignis } from "../../../shared/sim";
@@ -28,7 +30,7 @@ const P = new URLSearchParams(location.search);
 const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
-interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean }
+interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
 
 /** Die Kampfsteuerung mit den Bildern und Namen des Helden füllen – auch außerhalb eines Kampfgebiets (dort gedimmt) */
 export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[held]; if (!D) return; const sym = SYMBOL[held] || {};
@@ -37,7 +39,7 @@ export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
 export class WeltKampf {
   netz: Netz | null = null; karteZeit = 0; schildWar = false; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
-  figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number }>();
+  figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number; a?: Held }>();
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
   readonly zone: { karte: string; x0: number; y0: number; b: number; h: number }; readonly stufe: number;
 
@@ -59,7 +61,10 @@ export class WeltKampf {
     const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : ""; if (this.vorbei) return;
     const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}` + (this.vorverbunden ? "&warten=1" : `&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}`) : "";
     const hoer = (ev: Event) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[]; ep?: Record<string, number>; seelen?: number };
-      if (m.t === "namen" && m.liste) { this.namen.clear(); for (const n of m.liste) this.namen.set(n.id, n); }
+      if (m.t === "namen" && m.liste) { this.namen.clear(); for (const n of m.liste) this.namen.set(n.id, n);
+        /* fremde Helden mit eigenem Aussehen: Figur neu anlegen, sobald das Aussehen bekannt ist */
+        for (const [id, f] of this.figuren) { const n = this.namen.get(id), a = n && n.a ? heldPruefen(n.a) : null, k = a ? aussehenSchluessel(a) : "";
+          if (f.held && (f.a || "") !== k) { const neu = this.neu(id, true, f.typ, f.team, f.x, f.y); f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); Object.assign(neu, { tot: f.tot, lp: f.lp, max: f.max, zx: f.zx, zy: f.zy }); neu.sp.setVisible(!f.tot); } } }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
     const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art) => { this.art = art; }, url ? { t: "anmeldung", token } : undefined);
@@ -93,10 +98,10 @@ export class WeltKampf {
     const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; this.s.ort.x = this.zone.x0 + ich[4]; this.s.ort.y = this.zone.y0 + ich[5]; }
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }
     this.hud(z); }
-  private neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur { const s = this.s, D = held ? HELDEN[typ] : MONSTER[typ], hoch = held ? HELD_PX : HELD_PX * ((D && (D as { hoehe?: number }).hoehe) || 88) / 96;
-    const fu = (D && (D as { fuss?: number[] }).fuss) || [0.5, 0.94], sp = heldenFigur(s, x * FELD_PX, y * FELD_PX, typ, hoch).setOrigin(fu[0], fu[1]); sp.setScale(hoch * ((D as { gross?: number }).gross || 1) / sp.height);
+  private neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur { const s = this.s, D = held ? HELDEN[typ] : MONSTER[typ], nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, hoch = held ? HELD_PX : HELD_PX * ((D && (D as { hoehe?: number }).hoehe) || 88) / 96;
+    const fu = (D && (D as { fuss?: number[] }).fuss) || [0.5, 0.94], sp = heldenFigur(s, x * FELD_PX, y * FELD_PX, typ, hoch, undefined, eigen).setOrigin(fu[0], fu[1]); sp.setScale(hoch * ((D as { gross?: number }).gross || 1) / sp.height);
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: team === 0 ? "#f3e3b5" : "#ffc9b0", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
-    const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false }; this.figuren.set(id, f); return f; }
+    const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" }; this.figuren.set(id, f); return f; }
   private ereignis(ev: Ereignis) { const s = this.s, wo = (id: number) => { if (id === this.ichId) return { x: s.figur.x, y: s.figur.y - HELD_PX }; const f = this.figuren.get(id); return f ? { x: f.sp.x, y: f.sp.y - HELD_PX } : null; };
     const zahl = (id: number, t: string, farbe: string) => { const p = wo(id); if (!p) return; const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
       s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); };
@@ -172,7 +177,7 @@ export class WeltKampf {
   /* ---------- Anzeige: Leben, Erfahrung, Abklingzeiten ---------- */
   private hud(z: Zustand) { const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus], sym = SYMBOL[ich[2]] || {};
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = `${ich[7]} / ${ich[8]}`;
-    { const bild = $("#ez-ich-bild") as HTMLImageElement, src = "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"), s = z.ich.stufe || stufeAusEp(epAlle()[ich[2]] || 0); st.hidden = false; st.textContent = "St. " + s; }
+    { const bild = $("#ez-ich-bild") as HTMLImageElement, src = eigenesBildnis() || "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"), s = z.ich.stufe || stufeAusEp(epAlle()[ich[2]] || 0); st.hidden = false; st.textContent = "St. " + s; }
     if (z.ich.stufe) { const s = z.ich.stufe, e = z.ich.ep || 0, von = EP_BIS[s], bis = s < STUFE_MAX ? EP_BIS[s + 1] : von; $("#ez-xpleiste").hidden = false; ($("#ez-xp") as HTMLElement).style.width = (s < STUFE_MAX ? Math.min(100, Math.round(100 * (e - von) / (bis - von))) : 100) + "%"; $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); if (!el) continue; el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }

@@ -32,6 +32,8 @@ export async function kontoWerte(): Promise<void> { if (!name) return; try { con
   try { const s = await rpc<{ ort: string; kampf: string }[]>("rpg_echtzeit_siege"); roh.setzen("ez_kampagnen", String(geschaffteKampagnen(new Set((s || []).map((q) => q.ort + "/" + q.kampf))))); } catch { /* Migration 036 fehlt */ } }
 /** Der Anmeldename, leer für Gäste */
 export const kontoName = () => name;
+/** Mit echtem Spielerkonto angemeldet (nicht Gast, nicht anonym)? Ohne kontoStart nutzbar (Heldeneditor) */
+export async function kontoAngemeldet(): Promise<boolean> { const d = verbindung(); if (!d) return false; try { const { data } = await d.auth.getSession(); return Boolean(data.session && !data.session.user.is_anonymous); } catch { return false; } }
 
 function lies(): Record<string, string> { const o: Record<string, string> = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i) as string; if (meins(k)) o[k] = localStorage.getItem(k) as string; } } catch { /* privat */ } return o; }
 function setze(daten: Record<string, string>) { try { for (const k of Object.keys(lies())) roh.entfernen(k); for (const k in daten) if (meins(k)) roh.setzen(k, String(daten[k])); } catch { /* privat */ } }
@@ -83,13 +85,16 @@ function zurAnmeldung() { location.replace("anmelden.html" + (location.search ? 
 function fenster(danach?: () => void) {
   const f = $("#ez-konto"); f.hidden = false; const zu = () => { f.hidden = true; f.innerHTML = ""; if (danach) danach(); };
   const lies1 = (k: string) => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }; let held = lies1("ez_held"); if (!HELDEN[held]) held = "schildwaechter"; const start = held;
-  const kopf = () => `<img src="../${HELDEN[held].bild}" alt=""><div><b></b><small>${HELDEN[held].name} · ${HELDEN[held].klasse}</small></div>`;
+  /* der eigene Held (Heldeneditor): sein Gesicht statt der fünf Helden */
+  const eigen = (() => { try { const b = JSON.parse(localStorage.getItem("ez_mein_held_bild") || "null"); return localStorage.getItem("ez_mein_held") ? (b && b.url) || "../img/favicon.svg" : ""; } catch { return ""; } })();
+  const kopf = () => eigen ? `<img src="${eigen}" alt=""><div><b></b><small>Dein Held</small></div>` : `<img src="../${HELDEN[held].bild}" alt=""><div><b></b><small>${HELDEN[held].name} · ${HELDEN[held].klasse}</small></div>`;
   f.innerHTML = `<div class="tafel"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
     <h2>Heldenprofil</h2><div class="zier"></div>
     <div class="kopf">${kopf()}</div>
     <div class="werte"><span><em>◈</em><b>${Number(lies1("ez_seelen")) || 0}</b><small>Seelensplitter</small></span><span><em>⚑</em><b>${Number(lies1("ez_kampagnen")) || 0} / 6</b><small>Kampagnen</small></span></div>
-    <h3>Bildnis wählen</h3><div class="bildnisse">${HELDENREIHE.map((k) => `<button type="button" data-held="${k}" title="${HELDEN[k].name}"><img src="../${HELDEN[k].bild}" alt="${HELDEN[k].name}"><small>${HELDEN[k].name}</small></button>`).join("")}</div>
-    <p class="klein">Mit diesem Helden läufst du durch die Waldmark. In einer Kampagne läuft immer der Anführer deines Teams.</p>
+    ${eigen ? `<div class="reihe"><button type="button" data-t="aussehen">Aussehen ändern</button></div><p class="klein">Aussehen und Startwaffe änderst du im Heldeneditor (in der Waldmark).</p>`
+      : `<h3>Bildnis wählen</h3><div class="bildnisse">${HELDENREIHE.map((k) => `<button type="button" data-held="${k}" title="${HELDEN[k].name}"><img src="../${HELDEN[k].bild}" alt="${HELDEN[k].name}"><small>${HELDEN[k].name}</small></button>`).join("")}</div>
+    <p class="klein">Mit diesem Helden läufst du durch die Waldmark. In einer Kampagne läuft immer der Anführer deines Teams.</p>`}
     <div class="reihe"><button type="button" class="haupt" data-t="zu">Fertig</button>${name ? `<button type="button" data-t="ab">Abmelden</button>` : `<button type="button" data-t="hin">Anmelden</button>`}</div>
     <p class="klein">${name ? "Dein Fortschritt wird in deinem Konto gespeichert." : "Als Gast bleibt dein Fortschritt nur auf diesem Gerät."}</p></div>`;
   const zeige = () => { const k = f.querySelector(".kopf") as HTMLElement; k.innerHTML = kopf(); (k.querySelector("b") as HTMLElement).textContent = name || "Gast"; for (const b of Array.from(f.querySelectorAll<HTMLElement>("[data-held]"))) b.classList.toggle("an", b.dataset.held === held); }; zeige();
@@ -98,7 +103,7 @@ function fenster(danach?: () => void) {
     if (held !== start && ((window as unknown as { EZD?: unknown }).EZD || ((window as unknown as { EZW?: { szene?: unknown } }).EZW || {}).szene)) { location.reload(); return; } /* in der Waldmark (gemalt oder Welt) wechselt die Figur */ ($("#ez-profil-bild") as HTMLImageElement).src = "../" + HELDEN[held].bild; zu(); };
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Escape") fertig(); }; f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const el = (e.target as HTMLElement).closest("[data-t],[data-held]") as HTMLElement | null; if (e.target === f) { fertig(); return; } if (!el) return;
-    if (el.dataset.held) { held = el.dataset.held; zeige(); } /* gemerkt wird erst beim Schließen – und nur, wenn der Wechsel gilt */ else if (el.dataset.t === "zu") fertig(); else if (el.dataset.t === "ab") void abmelden(); else if (el.dataset.t === "hin") zurAnmeldung(); };
+    if (el.dataset.held) { held = el.dataset.held; zeige(); } /* gemerkt wird erst beim Schließen – und nur, wenn der Wechsel gilt */ else if (el.dataset.t === "zu") fertig(); else if (el.dataset.t === "aussehen") location.href = "held.html?weiter=" + encodeURIComponent(location.search); else if (el.dataset.t === "ab") void abmelden(); else if (el.dataset.t === "hin") zurAnmeldung(); };
 }
 async function abmelden() {
   clearTimeout(takt); await speichern(); const d = verbindung(); if (d) await d.auth.signOut();

@@ -6,10 +6,12 @@
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { heldenFigur, richten } from "./modulfigur";
+import { aktiverHeld } from "./held";
+import { Held, heldPruefen, aussehenSchluessel } from "../../shared/aussehen";
 import { kontoName, kontoToken } from "./konto";
 import { gruppe, serverAdresse } from "./gruppe";
 
-export interface Fremder { i: number; n: string; h: string; s: number; x: number; y: number; b: number; l: number; lp?: number; max?: number }
+export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; b: number; l: number; lp?: number; max?: number }
 export interface Ich { id: number; name: string; held: string; stufe: number; ort: string; festerHeld?: boolean; gast?: boolean; /** zuletzt gemerkte Stelle in der Welt (Weltfelder; null = Start der Region) */ pos?: { region: string; x: number | null; y: number | null } }
 type Kanal = "oeffentlich" | "gruppe" | "system" | "fluestern";
 export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string): void }
@@ -28,7 +30,7 @@ export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort
 async function verbinden() {
   const token = kontoName() ? await kontoToken() : ""; if (kontoName() && !token) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
-  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), raum: g ? g.code : "" })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
+  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "" })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
   s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
@@ -112,7 +114,7 @@ export function sprechblase(scene: Phaser.Scene, wo: () => { x: number; y: numbe
 /* ---------- Andere Spieler in einer Szene ---------- */
 /** Alle Heldenbilder laden (für Mitspieler) – im preload einer Szene aufrufen */
 export function heldenLaden(scene: Phaser.Scene): void { for (const k of HELDENREIHE) { const D = HELDEN[k]; if (D.figur && !scene.textures.exists("figur-" + k)) scene.load.image("figur-" + k, "../" + D.figur); if (D.lauf && !scene.textures.exists("lauf-" + k)) scene.load.spritesheet("lauf-" + k, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); } }
-interface Figur { sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; d: Fremder; x: number; y: number; laeuft: boolean; held: string }
+interface Figur { sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; d: Fremder; x: number; y: number; laeuft: boolean; held: string; a: string }
 /** Mitspieler darstellen: f = Bildmaßstab der Szenenkoordinaten, gross = Körperhöhe am Bildschirm, tiefe = Zeichentiefe zu einer y-Koordinate */
 export class Mitspieler {
   figuren = new Map<number, Figur>();
@@ -123,14 +125,14 @@ export class Mitspieler {
   blase(id: number, text: string): void { const f = this.figuren.get(id); if (!f) return; sprechblase(this.scene, () => (this.figuren.get(id) === f ? { x: f.sp.x, y: f.sp.y - this.o.gross - 30 } : null), text); }
   liste(l: Fremder[]): void { const da = new Set<number>();
     for (const d of l) { if (this.o.auslassen && this.o.auslassen(d.n)) continue; da.add(d.i); let f = this.figuren.get(d.i);
-      if (!f || f.held !== d.h) { if (f) this.weg(d.i); f = this.neu(d); } f.d = d; }
+      if (!f || f.held !== d.h || f.a !== (d.a ? aussehenSchluessel(d.a) : "")) { if (f) this.weg(d.i); f = this.neu(d); } f.d = d; }
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) this.weg(id); }
   weg(id: number): void { const f = this.figuren.get(id); if (!f) return; f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); this.figuren.delete(id); const u = document.querySelector(`#ez-karte u[data-sp="${id}"]`); if (u) u.remove(); }
   private neu(d: Fremder): Figur { const D = HELDEN[d.h] || HELDEN.schildwaechter, fu = D.fuss || [0.5, 0.94], s = this.scene;
-    const v = this.o.versatz || { x: 0, y: 0 }, sp = heldenFigur(s, d.x * this.o.f + v.x, d.y * this.o.f + v.y, d.h, this.o.gross).setOrigin(fu[0], fu[1]); sp.setScale(this.o.gross * (D.gross || 1) / sp.height); sp.setInteractive({ useHandCursor: true });
+    const v = this.o.versatz || { x: 0, y: 0 }, eigen = d.a ? heldPruefen(d.a) : null, sp = heldenFigur(s, d.x * this.o.f + v.x, d.y * this.o.f + v.y, d.h, this.o.gross, undefined, eigen).setOrigin(fu[0], fu[1]); sp.setScale(this.o.gross * (D.gross || 1) / sp.height); sp.setInteractive({ useHandCursor: true });
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#f3e3b5", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(99980);
     if (D.lauf && !s.anims.exists("lauf-" + d.h)) s.anims.create({ key: "lauf-" + d.h, frames: s.anims.generateFrameNumbers("lauf-" + d.h, {}), frameRate: 11, repeat: -1 });
-    const f: Figur = { sp, nm, lb: s.add.graphics().setDepth(99979), d, x: d.x, y: d.y, laeuft: false, held: d.h }; this.figuren.set(d.i, f); return f; }
+    const f: Figur = { sp, nm, lb: s.add.graphics().setDepth(99979), d, x: d.x, y: d.y, laeuft: false, held: d.h, a: eigen ? aussehenSchluessel(eigen) : "" }; this.figuren.set(d.i, f); return f; }
   /** Jeden Frame: weich zur gemeldeten Stelle, Namensschild mit Stufe, Lebensbalken wenn verletzt oder im Kampf */
   schritt(dt: number): void { for (const f of this.figuren.values()) { const d = f.d, D = HELDEN[f.held] || HELDEN.schildwaechter, k = Math.min(1, dt * 10);
     f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k; const v = this.o.versatz || { x: 0, y: 0 }, x = f.x * this.o.f + v.x, y = f.y * this.o.f + v.y, g = this.o.gross;

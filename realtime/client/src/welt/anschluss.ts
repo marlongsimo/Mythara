@@ -26,6 +26,7 @@ import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
 import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
+import { aktiverHeld } from "../held";
 
 /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
 let schild: Phaser.GameObjects.Text | null = null;
@@ -54,6 +55,8 @@ function oeffne(art: string, s: Welt) {
 /** Helden wechseln geht nur in der Waldmark (der Server prüft es ebenso) */
 const nurWaldmark = (s: Welt) => { if (s.hier === "waldmark") return true; const t = $("#ez-dorf-hilfe"); t.textContent = "Den Helden wechselst du nur in der Waldmark."; t.style.display = ""; chatSystem("Den Helden wechselst du nur in der Waldmark."); return false; };
 /* Nach dem Wechsel lädt die Seite erst, wenn der Server den neuen Helden bestätigt („ich“) – sonst käme er beim Neuladen mit dem alten zurück; notfalls nach 3 s */
+/** Aussehen und Startwaffe ändern: im Heldeneditor (nur in der Waldmark, wie früher der Heldenwechsel) */
+function aussehenAendern(s: Welt) { if (s.gesperrt || !nurWaldmark(s)) return; s.halt(); s.gesperrt = true; location.href = "held.html?weiter=" + encodeURIComponent(location.search); }
 function heldWaehlen(s: Welt) { if (s.gesperrt || !nurWaldmark(s)) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
   wahl((held) => { s.gesperrt = false; if (held === s.held) return; s.gesperrt = true; weltHeld(held); setTimeout(() => location.reload(), 3000); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
@@ -177,7 +180,7 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.knopf = (art, knopf) => (art === "welt" && !torOffen() ? "Das Südtor ist noch geschlossen" : art === "riss" && !freigabe("riss") ? "Der Riss ist gerade versiegelt" : knopf);
   /* Solange das Südtor nicht freigegeben ist (freigabe.ts), bleibt es zu: Der Wald dahinter wird nicht geladen, die Durchfahrt ist gesperrt */
   if (!freigabe("suedtor")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
-  WELT.figur = (s, x, y, held, hoehe) => heldenFigur(s, x, y, held, hoehe);
+  WELT.figur = (s, x, y, held, hoehe) => heldenFigur(s, x, y, held, hoehe, undefined, aktiverHeld()); /* der eigene Held aus dem Heldeneditor */
   WELT.richten = richten;
   WELT.laden = (s) => heldenLaden(s);   /* Bilder der Mitspieler */
   WELT.menue = (s) => {
@@ -188,9 +191,9 @@ export function weltAnschliessen(start: string, tor: string) {
     knoepfe.push({ name: "Karte", zeichen: "karte", taste: torOffen() ? "K" : "M", tat: () => karteZeigen(s) });
     if (torOffen()) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => oeffne("welt", s) });
     if (freigabe("kampagnen")) knoepfe.push({ name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(s, questTafel) });
-    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Held", zeichen: "held", taste: "H", tat: () => heldWaehlen(s) });
+    knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => teleport(s) }, { name: "Aussehen", zeichen: "held", taste: "H", tat: () => aussehenAendern(s) });
     rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe) }); obenKnoepfe(s); onlineZeigen();
-    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => oeffne("halle", s) }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }]); /* Spieler und Einstellungen sitzen oben neben dem Profil */
+    hudMenue([{ name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }]); /* Spieler und Einstellungen sitzen oben neben dem Profil */
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
   };
   WELT.betreten = (s) => {

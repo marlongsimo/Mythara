@@ -19,6 +19,7 @@ import { Dorf } from "./dorf";
 import { Stadt } from "./stadt";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
+import { heldLaden, heldSetzen } from "./held";
 import { Ort, ortName } from "./ort";
 import { Welt, weltName } from "./welt/welt";
 import { weltAnschliessen } from "./welt/anschluss";
@@ -405,6 +406,10 @@ const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?do
 /* Abgeschaltete Teile (Kampagnen, Waldweg – siehe freigabe.ts) führen zurück in die Waldmark */
 if (!adresseErlaubt(P0)) location.replace("./" + (P0.has("server") ? "?server=" + encodeURIComponent(P0.get("server") || "") : ""));
 else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
+  /* dann der eigene Held: wer noch keinen hat (neu registriert oder zum ersten Mal nach dem Update), kommt erst in den Heldeneditor */
+  { const mein = await heldLaden().catch(() => null);
+    if (!mein && !P.has("server") && !inKampagne) { location.replace("held.html?weiter=" + encodeURIComponent(location.search)); return; }
+    if (mein) heldSetzen(mein); }
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
 else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [STADT === "alt" ? Dorf : STADT === "bild" ? Stadt : Welt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */
