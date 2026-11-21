@@ -5523,6 +5523,103 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "moor_menhir_01",
+   "name": "Spiralstein",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/moor_menhir_01.webp",
+   "groesse": [
+    90,
+    160
+   ],
+   "anker": [
+    0.5,
+    0.9375
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_menhir_02",
+   "name": "Spiralstein (schief)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/moor_menhir_02.webp",
+   "groesse": [
+    90,
+    160
+   ],
+   "anker": [
+    0.5,
+    0.9375
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_schrein_01",
+   "name": "Versunkener Schrein",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/moor_schrein_01.webp",
+   "groesse": [
+    150,
+    110
+   ],
+   "anker": [
+    0.5,
+    0.9091
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.9,
+    "b": 2.0,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.8,
+    "radius": 1.8
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_nebel_01",
+   "name": "Nebelschwade",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/moor_nebel_01.webp",
+   "groesse": [
+    520,
+    200
+   ],
+   "anker": [
+    0.5,
+    0.75
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "oben",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }

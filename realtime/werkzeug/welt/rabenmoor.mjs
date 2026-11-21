@@ -29,7 +29,8 @@ const WEG = [[B + 1, 40], [118, 40.6], [108, 41.6], [100, 42.4]];               
 const BOHLEN = [95, 89, 83, 77].map((x) => ({ objekt: "dorf_bruecke_01", x, y: 43.6, frei: [x - 3, 41.0, x + 3, 43.6] }));   /* Bohlenweg übers Moor */
 const STEG = { objekt: "dorf_bruecke_02", x: 56, y: 73.6, frei: [54.7, 68.4, 57.3, 73.6] };
 const TORFPFAD = [[31, 33], [26, 28.5], [21, 24.5], [18.5, 22]];
-const torfInseln = [[88, 20, 4.5], [70, 80, 5], [100, 72, 4], [28, 74, 5.5], [80, 12, 3.5], [10, 50, 4], [40, 88, 4], [112, 86, 4]];
+const SCHREIN = { x: 86, y: 18, r: 8 }, inSchrein = (x, y) => Math.hypot(x - SCHREIN.x, (y - SCHREIN.y) * 1.15) < SCHREIN.r * welle(x * 1.3, y);   /* abgelegen, ohne Weg: der versunkene Schrein */
+const torfInseln = [ [70, 80, 5], [100, 72, 4], [28, 74, 5.5], [80, 12, 3.5], [10, 50, 4], [40, 88, 4], [112, 86, 4]];
 const aufTorf = (x, y) => torfInseln.some(([a, b, r]) => Math.hypot(x - a, (y - b) * 1.2) < r * welle(x, y * 2));
 
 /* ───── Häuser (Fuß = Mitte der Südwand, Tür nach Süden) ───── */
@@ -42,9 +43,11 @@ GASSEN.push([[76, 42.3], [58, 45.5]], [[51.9, 65.1], [55.6, 68.6]], [[38, 37], [
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5; let c = "o";
   const wald = cx > WALDRAND(cy);
   if (strecke(cx, cy, WEG) < 1.3) c = "e";
+  else if (!wald && cx > WALDRAND(cy) - 6 && Math.sin(cy / 3 + cx / 5) > 0.2) c = "m";   /* schlammiger Moorrand */
   else if (wald) c = cx < WALDRAND(cy) + 3 ? "t" : "f";
   else if (aufPlatz(cx, cy)) c = "p";
-  else if (inInsel(cx, cy) || inHedda(cx, cy)) c = GASSEN.some((p) => strecke(cx, cy, p) < 1.0) ? "e" : (inInsel(cx, cy, 0.9) || inHedda(cx, cy)) ? (Math.sin(cx / 3.3) * Math.cos(cy / 2.7) > 0.5 ? "t" : ".") : "s";
+  else if (inInsel(cx, cy) || inHedda(cx, cy)) c = GASSEN.some((p) => strecke(cx, cy, p) < 1.0) ? "e" : (inInsel(cx, cy, 0.9) || inHedda(cx, cy)) ? (Math.sin(cx / 3.3) * Math.cos(cy / 2.7) > 0.32 ? "t" : Math.sin(cx / 2.1 + 1) * Math.cos(cy / 1.9) > 0.78 ? "m" : "v") : "s";
+  else if (inSchrein(cx, cy)) c = Math.hypot(cx - SCHREIN.x, cy - SCHREIN.y) < 3.2 ? "m" : "t";
   else if (strecke(cx, cy, TORFPFAD) < 1.2) c = "m";
   else if (strecke(cx, cy, TORFPFAD) < 2.6 || aufTorf(cx, cy)) c = "t";
   z.push(c); } g.push(z); }
@@ -56,6 +59,10 @@ const dinge = [
   o("dorf_brunnen_01", PLATZ.x, PLATZ.y + 0.6), o("dorf_marktstand_02", 57.6, 49.4), o("k_banner_rot", 45.4, 41.4),
   ...[[42.5, 43], [57.5, 43], [42.5, 52], [57.5, 52.6], [77, 41.2], [53.2, 67.8]].map(([x, y]) => o("moor_feuerkorb_01", x, y)),
   o("dorf_fass_01", 33.6, 43.3), o("dorf_fass_01", 34.2, 43.9), o("dorf_holzstapel_01", 67.6, 44.2), o("dorf_kiste_01", 48.4, 65.4), o("dorf_heuballen_01", 41.4, 58.3), o("dorf_bank_01", 46, 51.6),
+  ...Array.from({ length: 7 }, (_, i) => { const w = i / 7 * 2 * Math.PI; return o(i % 3 === 1 ? "moor_menhir_02" : "moor_menhir_01", SCHREIN.x + Math.cos(w) * 4.6, SCHREIN.y + Math.sin(w) * 3.6, i % 2 ? { spiegeln: true } : {}); }),
+  o("moor_schrein_01", SCHREIN.x, SCHREIN.y + 0.6), o("stil_erle_tot_01", SCHREIN.x + 6, SCHREIN.y - 3), o("stil_erle_tot_02", SCHREIN.x - 6.5, SCHREIN.y + 2, { spiegeln: true }),
+  ...[[33, 39.6], [36, 39.6], [62, 40.6], [65, 40.6], [35.5, 54.6], [41.5, 54.6], [59.5, 55.2], [65.5, 55.2], [46, 61.6], [12, 22.8], [18, 22.8]].map(([x, y]) => o("dorf_zaun_01", x, y)),
+  o("stil_erle_tot_01", 28, 38), o("stil_erle_tot_02", 72, 47), o("stil_erle_tot_01", 44, 26, { spiegeln: true }), o("stil_erle_tot_02", 58, 27),
   o("stil_birke_01", 30, 50), o("stil_birke_01", 70, 52, { s: 0.9 }), o("stil_birke_01", 23, 15, { s: 0.85 }), o("stil_erle_tot_01", 66, 32), o("stil_erle_tot_02", 34, 64) ];
 /* Moor: tote Erlen und Birken auf den Torfinseln, Schilf an den Ufern, Irrlichter über dem Wasser */
 for (const [a, b, r] of torfInseln) { dinge.push(o(wurf() < 0.6 ? "stil_erle_tot_01" : "stil_erle_tot_02", a + (wurf() - 0.5) * r, b + (wurf() - 0.3) * r * 0.6, { s: +(0.85 + wurf() * 0.3).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }));
@@ -66,6 +73,8 @@ for (let i = 0; i < 4000 && dinge.filter((d) => d.objekt.startsWith("stil_schilf
   if (amUfer(x, y) && !belegt(x, y, 2.2)) dinge.push(o(wurf() < 0.5 ? "stil_schilf_01" : "stil_schilf_02", x, y, wurf() < 0.5 ? { spiegeln: true } : {})); }
 for (let i = 0; i < 3000 && dinge.filter((d) => d.objekt === "stil_moorlicht_01").length < 26; i++) { const x = +(wurf() * 92).toFixed(2), y = +(wurf() * H).toFixed(2);
   if (g[Math.floor(y)][Math.floor(x)] === "o" && !amUfer(x, y) && !belegt(x, y, 6)) dinge.push(o("stil_moorlicht_01", x, y)); }
+for (let i = 0; i < 2000 && dinge.filter((d) => d.objekt === "moor_nebel_01").length < 18; i++) { const x = +(8 + wurf() * 84).toFixed(2), y = +(6 + wurf() * (H - 10)).toFixed(2);
+  if (g[Math.floor(y)][Math.floor(x)] === "o" && !dinge.some((d) => d.objekt === "moor_nebel_01" && Math.hypot(d.x - x, d.y - y) < 14)) dinge.push(o("moor_nebel_01", x, y, { s: +(0.9 + wurf() * 0.6).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) })); }
 /* Wald im Osten */
 const wald = [], frei = (x, y) => wald.every((p) => Math.hypot(p.x - x, p.y - y) >= 2.3);
 for (let i = 0; i < B * H * 0.6; i++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2);
@@ -86,6 +95,7 @@ const spiel = {
     lies("langhaus_tuer", tuer("moor_langhaus_01", 50, 36.4), "Das Langhaus des Schulzen. Über der Tür hängt ein Hirschschädel, im Herd glimmt Torf."),
     lies("bohlenweg", [97, 42.2], "Der Bohlenweg nach Rabenmoor. Die Bretter sind nass, und unter ihnen ist das Wasser schwarz."),
     lies("steg_ansehen", [56, 69.2], "Joosts Steg. Der Kahn liegt bereit; weiter draußen beginnt das Ried."),
+    lies("schrein_ansehen", [SCHREIN.x, SCHREIN.y + 1.6], "Spiralsteine im Kreis, mitten im Moor. Auf dem Altar steht eine Schale mit stillem, hellem Wasser."),
     lies("hedda_tuer", tuer("moor_kate_02", HEDDA.x, HEDDA.y + 2), "Heddas Hütte auf der letzten trockenen Insel. Getrocknete Kräuter hängen unter dem Vordach.")],
   ausgaenge: [], kollision: { sperren: [], freigeben: [...BOHLEN, STEG].map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })) } };
 

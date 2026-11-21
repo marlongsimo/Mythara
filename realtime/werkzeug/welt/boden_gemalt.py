@@ -179,7 +179,8 @@ KACHELN = {
     'wiese': lambda r: wiese(r), 'wiese-satt': lambda r: wiese(r, (88, 138, 58), 80), 'wiese-trocken': lambda r: wiese(r, (136, 148, 70), 60, gelb=14),
     'wiese-blumen': lambda r: wiese(r, (104, 148, 64), 60, blumen=70), 'waldboden': waldboden, 'erde': erde, 'pflaster': pflaster,
     'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True),
-    'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand}
+    'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand,
+    'moorwiese': lambda r: wiese(r, (112, 116, 66), 90, blumen=6, gelb=8)}
 
 
 def main():

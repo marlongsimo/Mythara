@@ -51,6 +51,8 @@ check(R.begehbar(start.x, start.y) && erreichbar(start), `Startpunkt am Brunnen 
   const wh = daten.weidenhain, ws = wh.spiel.start[0], wo = ursprung("weidenhain"), w = R.weg(start, { x: wo[0] + ws[0], y: wo[1] + ws[1] + 6 }, 0.3, 400);
   { const ro = ursprung("rabenmoor"), RM = daten.rabenmoor.spiel, ziele = Object.fromEntries(["brunnen_ansehen", "langhaus_tuer", "steg_ansehen", "hedda_tuer"].map((id) => { const i = RM.interaktionen.find((q) => q.id === id); return [id, { x: ro[0] + i.x, y: ro[1] + i.y }]; }));
     const nicht = Object.entries(ziele).filter(([, p]) => !nahErreichbar(p, 1.6));
+    const tueren = daten.rabenmoor.objekte.filter((q) => (def.get(q.objekt) || {}).kategorie === "gebaeude").map((q) => { const i = def.get(q.objekt).interaktion; return { id: q.id, x: ro[0] + q.x + i.dx, y: ro[1] + q.y + i.dy }; }), zu = tueren.filter((t) => !nahErreichbar(t, 1.4));
+    check(zu.length === 0, `alle ${tueren.length} Hüttentüren in Rabenmoor sind erreichbar`, zu.map((t) => t.id));
     check(nicht.length === 0, `zu Fuß von der Waldmark über Weidenhain und den Bohlenweg nach Rabenmoor: ${Object.keys(ziele).join(", ")}`, nicht.map(([n]) => n)); }
   check(erreichbar({ x: wo[0] + ws[0], y: wo[1] + ws[1] }) && w.length > 0, `vom Brunnen der Waldmark zu Fuß über den Feldweg nach Weidenhain (${w.length ? rund(w.reduce((s, p, i) => s + Math.hypot(p.x - (i ? w[i - 1].x : start.x), p.y - (i ? w[i - 1].y : start.y)), 0)) + " Felder" : "kein Weg"})`); }
 { const gruende = []; for (let x = 45.6; x <= 50.4; x += 0.4) { const p = welt("waldmark", x, 57); if (!R.begehbar(p.x, p.y)) gruende.push(`Feld ${rund(x)}|57 im Tor ist gesperrt`); }

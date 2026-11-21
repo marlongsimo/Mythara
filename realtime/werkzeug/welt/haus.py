@@ -53,6 +53,10 @@ HAEUSER = {
     'dorf_bruecke_02':      dict(name='Holzbrücke (Nord–Süd)', form='bruecke', richtung='laengs', tiefe='boden', saat=35),
     'moor_kahn_01':         dict(name='Kahn', form='kahn', tiefe='boden', saat=36),
     'moor_feuerkorb_01':    dict(name='Feuerkorb', form='feuerkorb', saat=37),
+    'moor_menhir_01':       dict(name='Spiralstein', form='menhir', saat=38),
+    'moor_menhir_02':       dict(name='Spiralstein (schief)', form='menhir', schief=True, saat=39),
+    'moor_schrein_01':      dict(name='Versunkener Schrein', form='schrein', saat=40),
+    'moor_nebel_01':        dict(name='Nebelschwade', form='nebel', tiefe='oben', saat=41),
     'wald_baumstamm_02':    dict(name='Umgestürzter Baum (in die Tiefe)', form='baumstamm_tief', saat=28),
 }
 
@@ -841,7 +845,51 @@ def feuerkorb(P, rng):
     return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.2}, None, False
 
 
-KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb}
+def menhir(P, rng):
+    """Bemooster Standstein mit eingeritzter Spirale"""
+    W, H = 90, 160; B = Blatt(W, H); cx, yb = 45, 150
+    schatten(B, cx - 22, cx + 22, yb, 14)
+    s = 6 if P.get('schief') else 0
+    pk = [(cx - 20, yb), (cx - 22 + s * 0.5, yb - 70), (cx - 14 + s, yb - 118), (cx + s, yb - 128), (cx + 14 + s, yb - 116), (cx + 21 + s * 0.5, yb - 66), (cx + 19, yb)]
+    m = B.maske(pk); xx = np.arange(B.b, dtype=np.float32)[None, :] / K
+    rund = (1.15 - 0.45 * np.clip((xx - (cx - 20)) / 40, 0, 1))[..., None]
+    B.lege(np.array((128, 126, 120), np.float32)[None, None, :] * rund, m)
+    for _ in range(14):                                                                # Moosflecken
+        x, y, r = cx + rng.uniform(-16, 16), yb - rng.uniform(0, 70) * rng.uniform(0.3, 1), rng.uniform(4, 9)
+        B.lege((92, 116, 56), ellipse(B, x, y, r, r * 0.7) * m)
+    sp = []; 
+    for t in np.linspace(0, 5 * math.pi, 60):                                           # Spirale
+        r = 2 + t * 1.15; sp.append((cx + s * 0.6 + math.cos(t) * r, yb - 74 + math.sin(t) * r))
+    mm = Image.new('L', (B.b, B.h), 0); ImageDraw.Draw(mm).line([(x * K, y * K) for x, y in sp], fill=255, width=int(2.4 * K))
+    B.dunkel(np.asarray(mm).astype(np.float32) / 255 * m, 0.45)
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'kreis', 'r': 0.45}, None, False
+
+
+def schrein(P, rng):
+    """Steinerner Altar mit Moos und einer flachen Schale"""
+    W, H = 150, 110; B = Blatt(W, H); cx, yb = 75, 100
+    schatten(B, cx - 50, cx + 50, yb, 16)
+    B.lege((96, 94, 90), B.maske([(cx - 48, yb), (cx - 48, yb - 40), (cx + 48, yb - 40), (cx + 48, yb)]))
+    B.lege((142, 140, 132), B.maske([(cx - 48, yb - 40), (cx - 36, yb - 64), (cx + 60, yb - 64), (cx + 48, yb - 40)]))
+    B.lege((54, 70, 74), ellipse(B, cx + 6, yb - 52, 20, 7)); B.lege((150, 200, 196), ellipse(B, cx + 2, yb - 54, 8, 2.4))
+    for _ in range(12):
+        x, y = cx + rng.uniform(-46, 46), yb - rng.uniform(0, 40); B.lege((92, 116, 56), ellipse(B, x, y, rng.uniform(4, 8), rng.uniform(3, 5)))
+    return B.fertig(), [0.5, round(yb / H, 4)], {'art': 'rechteck', 'x': -1.0, 'y': -0.9, 'b': 2.0, 'h': 0.9}, {'art': 'lesen', 'dx': 0, 'dy': 0.8, 'radius': 1.8}, False
+
+
+def nebel(P, rng):
+    """Nebelschwade: weiche, durchscheinende Bank aus Dunst (ohne Kontur)"""
+    W, H = 520, 200; yy, xx = np.mgrid[0:H, 0:W].astype(np.float32); a = np.zeros((H, W), np.float32)
+    for _ in range(9):
+        cx, cy, rx, ry = rng.uniform(90, W - 90), rng.uniform(70, H - 60), rng.uniform(60, 130), rng.uniform(26, 46)
+        a = np.maximum(a, np.clip(1 - ((xx - cx) / rx) ** 2 - ((yy - cy) / ry) ** 2, 0, 1) ** 1.4)
+    from scipy import ndimage as nd
+    a = nd.gaussian_filter(a, 10) * 0.42
+    im = np.dstack([np.full((H, W), 214), np.full((H, W), 224), np.full((H, W), 222), np.clip(a * 255, 0, 255)]).astype(np.uint8)
+    return Image.fromarray(im, 'RGBA'), [0.5, 0.75], None, None, False
+
+
+KLEIN = {'stand': stand, 'brunnen': brunnen, 'palisade': palisade, 'tor': tor, 'fass': fass, 'kiste': kiste, 'holzstapel': holzstapel, 'bank': bank, 'heu': heu, 'laterne': laterne, 'baumstamm': baumstamm, 'baumstamm_tief': baumstamm_tief, 'feuer': feuer, 'steinring': steinring, 'wehr': wehr, 'zaun': zaun, 'kuerbisse': kuerbisse, 'bruecke': bruecke, 'kahn': kahn, 'feuerkorb': feuerkorb, 'menhir': menhir, 'schrein': schrein, 'nebel': nebel}
 
 
 def baue(kennung):
@@ -849,7 +897,7 @@ def baue(kennung):
     if P['form'] in KLEIN:
         im, anker, koll, akt, durch = KLEIN[P['form']](P, rng)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
-        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke', 'kahn') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
+        return im, {'id': kennung, 'name': P['name'], 'kategorie': 'sonderort' if P['form'] in ('menhir', 'schrein', 'nebel') else 'bauteil' if P['form'] in ('palisade', 'tor', 'zaun') else 'wasserbau' if P['form'] in ('wehr', 'bruecke', 'kahn') else 'bewuchs' if P['form'].startswith('baumstamm') else 'kleinteil', 'bild': f'img/welt/gebaeude/{kennung}.webp', 'groesse': [im.width, im.height],
                     'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': P.get('tiefe', 'fuss'), **({'durchscheinend': True} if durch else {}), 'interaktion': akt, 'spiegelbar': P['form'] not in ('tor', 'baumstamm_tief'),
                     'herkunft': 'erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar' if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt' or P['form'].startswith('baumstamm') or P['form'] in ('steinring', 'kuerbisse') else 'erzeugt von werkzeug/welt/haus.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
     b, wh, ue, rand, unten = P['b'], P['wand'], 13, 10, 20

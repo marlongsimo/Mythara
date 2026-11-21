@@ -106,6 +106,17 @@
    }
   },
   {
+   "id": "schrein_ansehen",
+   "art": "lesen",
+   "x": 86,
+   "y": 19.6,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Spiralsteine im Kreis, mitten im Moor. Auf dem Altar steht eine Schale mit stillem, hellem Wasser."
+   }
+  },
+  {
    "id": "hedda_tuer",
    "art": "lesen",
    "x": 14.4,
