@@ -1,0 +1,353 @@
+{
+ "id": "npc.standard.m",
+ "feld": 224,
+ "richtungen": [
+  "o",
+  "so",
+  "s",
+  "sw",
+  "w",
+  "nw",
+  "n",
+  "no"
+ ],
+ "winkel0": "osten",
+ "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)",
+ "zeile": "round(winkel / (pi/4)) mod 8",
+ "fuss": [
+  0.5,
+  0.7827
+ ],
+ "mass": [
+  0.5,
+  0.7827,
+  0.566
+ ],
+ "kamera": {
+  "neigung": 35.0,
+  "px_je_m": 86.0
+ },
+ "animationen": {
+  "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ },
+ "ebenen": {
+  "koerper": {
+   "art": "koerper",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/koerper",
+     "groesse": [
+      2046,
+      558
+     ],
+     "bilder": 112,
+     "speicher_mb": 4.6
+    }
+   }
+  },
+  "kleidung.guertel.npc": {
+   "art": "huelle",
+   "platz": "guertel",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.guertel.npc",
+     "groesse": [
+      2035,
+      57
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.5
+    }
+   }
+  },
+  "kleidung.brust.weste": {
+   "art": "huelle",
+   "platz": "brust",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.brust.weste",
+     "groesse": [
+      2034,
+      81
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.7
+    }
+   }
+  },
+  "kleidung.fuss.stiefel.npc": {
+   "art": "huelle",
+   "platz": "fuss",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.fuss.stiefel.npc",
+     "groesse": [
+      2043,
+      147
+     ],
+     "bilder": 112,
+     "speicher_mb": 1.2
+    }
+   }
+  },
+  "kleidung.bein.hose.npc": {
+   "art": "huelle",
+   "platz": "bein",
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.bein.hose.npc",
+     "groesse": [
+      2046,
+      189
+     ],
+     "bilder": 112,
+     "speicher_mb": 1.5
+    }
+   }
+  },
+  "kleidung.schuerze.leder": {
+   "art": "huelle",
+   "platz": "schuerze",
+   "ueberlage": true,
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.schuerze.leder",
+     "groesse": [
+      2026,
+      190
+     ],
+     "bilder": 112,
+     "speicher_mb": 1.5
+    }
+   }
+  },
+  "kleidung.hals.tuch.rot": {
+   "art": "huelle",
+   "platz": "hals",
+   "ueberlage": true,
+   "atlas": {
+    "bild": {
+     "datei": "atlas/kleidung.hals.tuch.rot",
+     "groesse": [
+      2026,
+      34
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.3
+    }
+   }
+  },
+  "kleidung.kopf.strohhut": {
+   "art": "starr",
+   "platz": "kopf",
+   "knochen": "kopf",
+   "angriff": "angriff",
+   "atlas": {
+    "hinten": {
+     "datei": "atlas/kleidung.kopf.strohhut.hinten",
+     "groesse": [
+      2029,
+      81
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.7
+    },
+    "vorn": {
+     "datei": "atlas/kleidung.kopf.strohhut.vorn",
+     "groesse": [
+      2029,
+      81
+     ],
+     "bilder": 112,
+     "speicher_mb": 0.7
+    }
+   }
+  }
+ },
+ "plaetze": {
+  "guertel": [
+   "kleidung.guertel.npc"
+  ],
+  "brust": [
+   "kleidung.brust.weste"
+  ],
+  "fuss": [
+   "kleidung.fuss.stiefel.npc"
+  ],
+  "bein": [
+   "kleidung.bein.hose.npc"
+  ],
+  "schuerze": [
+   "kleidung.schuerze.leder"
+  ],
+  "hals": [
+   "kleidung.hals.tuch.rot"
+  ],
+  "kopf": [
+   "kleidung.kopf.strohhut"
+  ]
+ },
+ "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)",
+ "tiefe": {
+  "kleidung.kopf.strohhut": {
+   "laufen": [
+    [
+     -103,
+     -103,
+     -103,
+     -103,
+     -103,
+     -103,
+     -103,
+     -104
+    ],
+    [
+     -106,
+     -107,
+     -107,
+     -107,
+     -106,
+     -107,
+     -107,
+     -107
+    ],
+    [
+     -107,
+     -108,
+     -108,
+     -108,
+     -107,
+     -108,
+     -109,
+     -109
+    ],
+    [
+     -106,
+     -107,
+     -106,
+     -107,
+     -106,
+     -107,
+     -107,
+     -107
+    ],
+    [
+     -103,
+     -103,
+     -103,
+     -103,
+     -103,
+     -104,
+     -104,
+     -104
+    ],
+    [
+     -99,
+     -100,
+     -99,
+     -100,
+     -99,
+     -100,
+     -100,
+     -101
+    ],
+    [
+     -98,
+     -98,
+     -98,
+     -98,
+     -98,
+     -99,
+     -99,
+     -99
+    ],
+    [
+     -99,
+     -100,
+     -100,
+     -100,
+     -99,
+     -100,
+     -100,
+     -100
+    ]
+   ],
+   "ruhe": [
+    [
+     -103,
+     -103,
+     -103,
+     -103,
+     -102,
+     -102
+    ],
+    [
+     -105,
+     -105,
+     -105,
+     -105,
+     -104,
+     -104
+    ],
+    [
+     -106,
+     -106,
+     -106,
+     -106,
+     -105,
+     -105
+    ],
+    [
+     -105,
+     -105,
+     -105,
+     -105,
+     -104,
+     -104
+    ],
+    [
+     -103,
+     -103,
+     -103,
+     -103,
+     -102,
+     -102
+    ],
+    [
+     -100,
+     -100,
+     -100,
+     -100,
+     -101,
+     -101
+    ],
+    [
+     -100,
+     -99,
+     -99,
+     -100,
+     -100,
+     -100
+    ],
+    [
+     -100,
+     -100,
+     -100,
+     -100,
+     -101,
+     -101
+    ]
+   ]
+  }
+ },
+ "atlas_speicher_mb": 11.6
+}

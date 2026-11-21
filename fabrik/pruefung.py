@@ -70,7 +70,7 @@ doppelt = 0.0
 for a in ANIM:
     for x in range(len(huellen)):
         for y in range(x + 1, len(huellen)):
-            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"]: continue
+            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage"): continue   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
             p = blatt(huellen[x], a)[..., 3] > 0.6; q = blatt(huellen[y], a)[..., 3] > 0.6; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
 melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat
@@ -114,8 +114,8 @@ ohne = {e: round(sum(1 for v in o.data.vertices if not any(g.weight > 0.01 and o
 melde("rig", "jeder Punkt ist gewichtet (Anteil ohne Gewicht je Teil)", max(ohne.values()), "≤ 0.01", max(ohne.values()) <= 0.01, mehr=ohne)
 melde("rig", "Art der Gewichtung", arm.get("gewichte", "?"), "automatisch", "automatisch" in str(arm.get("gewichte", "")), warn=True)
 seiten = {e: (o.parent_bone, round(arm.data.bones[o.parent_bone].head_local.x, 2)) for e, o in teile.items() if o["art"] == "starr"}
-gut = all((b.endswith(".R") and x < 0) or (b.endswith(".L") and x > 0) for b, x in seiten.values())
-melde("rig", "Waffen hängen am richtigen Knochen (rechte Körperseite = -x)", seiten, "hand.R bei x < 0, unterarm.L bei x > 0", gut)
+gut = all((b.endswith(".R") and x < 0) or (b.endswith(".L") and x > 0) or (b in ("kopf", "hals", "brust", "becken") and abs(x) < 0.02) for b, x in seiten.values())
+melde("rig", "starre Teile hängen am richtigen Knochen (rechte Körperseite = -x; Kopf, Brust, Becken mittig)", seiten, "hand.R bei x < 0, unterarm.L bei x > 0, mittige Knochen bei |x| < 0.02", gut)
 fest = 0.0; boden = {}; innen = 0.0; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
 for a in [x for x in bpy.data.actions if x.name in ANIM]:
     arm.animation_data.action = a; ab = {e: [] for e, o in teile.items() if o["art"] == "starr"}; tief = []
