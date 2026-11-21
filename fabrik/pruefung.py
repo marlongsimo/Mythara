@@ -37,7 +37,8 @@ def gesamt(anim, r, i, teile):
     return bild
 
 print("Bildblätter")
-fehlend = [f"{e}.{a}" for e in ["koerper"] + huellen + [s + x for s in starr for x in (".hinten", ".vorn")] for a in ANIM if blatt(e, a) is None]
+def vorgesehen(e, a): t = e.rsplit(".", 1)[0] if e.endswith((".hinten", ".vorn")) else e; return not EB.get(t, {}).get("bewegungen") or a in EB[t]["bewegungen"]   # Waffe nur in ihren Bewegungen
+fehlend = [f"{e}.{a}" for e in ["koerper"] + huellen + [s + x for s in starr for x in (".hinten", ".vorn")] for a in ANIM if vorgesehen(e, a) and blatt(e, a) is None]
 melde("bild", "alle Blätter vorhanden", f"{len(fehlend)} fehlen", "0", not fehlend, mehr=fehlend[:6])
 falsch = [f"{e}.{a}" for (e, a), b in _blatt.items() if b is not None and b.shape[:2] != (8 * F, ANIM[a]["bilder"] * F)]
 melde("bild", "Blattgröße = 8 Richtungen × Bilder × Feld", f"{len(falsch)} abweichend", "0", not falsch, mehr=falsch[:6])
