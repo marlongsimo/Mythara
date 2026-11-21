@@ -18,6 +18,14 @@ import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon } from "../modulfigur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
+import { stufeAusEp } from "../../../shared/config";
+import { kontoName } from "../konto";
+import { epAlle } from "../halle";
+import type Phaser from "phaser";
+
+/** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
+let schild: Phaser.GameObjects.Text | null = null;
+function schildText(held: string): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · St. ${i.stufe}`; return `${kontoName() || "Gast"} · St. ${stufeAusEp(epAlle()[held] || 0)}`; }
 
 type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void, wort?: { los: string; zurueck: string }) => void;
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -84,11 +92,14 @@ export function weltAnschliessen(start: string, tor: string) {
     /* Heldenprofil: Bildnis = Held. Der Server speichert den Wechsel (sonst setzt er den alten zurück); seine Bestätigung lädt neu, notfalls nach kurzer Zeit */
     const heldWahl = (ev: Event) => { const h = String((ev as CustomEvent).detail || ""); if (!h || h === s.held) return; ev.preventDefault(); weltHeld(h); setTimeout(() => location.reload(), 1500); };
     window.addEventListener("ez-held-wahl", heldWahl);
-    s.events.once("shutdown", () => { window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
+    schild = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
+    (s as unknown as { schild: Phaser.GameObjects.Text }).schild = schild; /* für Prüfungen, wie in der gemalten Waldmark */
+    s.events.once("shutdown", () => { schild = null; window.removeEventListener("ez-held-wahl", heldWahl); if (mit) mit.liste([]); mit = null; region.id = ""; });
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.antippen = (s, p) => { if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
+    if (schild && s.figur) { const t = schildText(s.held); if (schild.text !== t) schild.setText(t); schild.setPosition(s.figur.x, s.figur.y - HELD_PX - 12); }
     if (!mit) return; const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y;
     weltPos(px, py, blickVon(s.figur), s.laeuft); mit.schritt(d); karteFolgen(px / region.b, py / region.h);
   };
