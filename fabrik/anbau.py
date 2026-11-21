@@ -7,6 +7,8 @@ art
               rig.py spiegelt sie für rechts
   armschiene  Röhre um den Unterarm (Achse +z = Richtung des Knochens), zum Handgelenk hin weiter, zwei Ränder
   knie        Kniekachel: Halbkugel nach vorn (-y) mit zwei seitlichen Flügeln
+  frisur      Haar mit Volumen um den Schädel (Ursprung Kopfmitte): Ansatz vorn hoch, hinten im Nacken, Tolle vorn nach oben gestrichen
+  bart        Vollbart von Ohr zu Ohr (Ursprung Kopfmitte), Kinn nach unten-vorn
   waffenrock  Stoffbahn vorn vom Gürtel bis über die Knie (oben z = 0, hängt nach -z), mit heller Borte; rig.py lässt sie mit den Beinen schwingen
 Alle Teile haben ihren Ursprung dort, wo rig.py sie ansetzt (Gelenk bzw. Gürtelmitte). Maße für eine Figur von 1,80 m (groesse skaliert).
 """
@@ -58,6 +60,30 @@ elif art == "waffenrock":
         c = p.center; br = B / 2 * (1 + 0.15 * (-c.z / L))
         p.material_index = 1 if (c.z < -L + 0.035 * G or abs(c.x) > br - 0.03 * G) else 0
     teile.append(o)
+elif art in ("frisur", "bart"):
+    # Ursprung = Kopfmitte. Kopfmaße (Halbachsen) für den Kenney-Kopf: 0.21 breit, 0.25 tief, 0.19 hoch; kopf=bx,by,bz ändert sie
+    bx, by, bz = (float(v) for v in opt.get("kopf", "0.21,0.25,0.19").split(",")); HAAR = stoff("haar", opt.get("farbe", "#5b3520"), 0.0, 0.62)
+    bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=40, v_segments=24, radius=1.0)
+    if art == "frisur":
+        for v in bm.verts: v.co = Vector((v.co.x * (bx + 0.012), v.co.y * (by + 0.014), v.co.z * (bz + 0.06) if v.co.z > 0 else v.co.z * (bz + 0.012)))   # eng an den Seiten, Volumen oben
+        # Haaransatz: vorn hoch über der Stirn (über den Brauen), seitlich über den Ohren, hinten tief im Nacken
+        ansatz = float(opt.get("ansatz", 0.14))
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < ansatz * G - (ansatz + 0.2) * G * max(0.0, (v.co.y + by) / (2 * by)) ** 1.3 - (0.04 if abs(v.co.x) > bx * 0.85 else 0)], context="VERTS")
+        for v in bm.verts:
+            vorn = max(0.0, min(1.0, (-v.co.y - 0.05) / (by - 0.05))) * max(0.0, min(1.0, (v.co.z - 0.08) / 0.1)) * max(0.0, 1 - abs(v.co.x) / (bx * 0.9))
+            v.co.z += 0.075 * G * vorn ** 1.3; v.co.y -= 0.03 * G * vorn                               # Tolle: vorn nach oben und etwas nach vorn gestrichen
+            n = v.co.normalized(); v.co += n * 0.006 * G * math.sin(v.co.x * 70)                     # nach hinten gekämmte Strähnen (Rillen quer zur Kopfbreite)
+    else:
+        for v in bm.verts:                                                                           # kastenförmiger Kenney-Kiefer: unten breiter als ein Ellipsoid (Überellipse)
+            k_ = lambda c: math.copysign(abs(c) ** 0.7, c); v.co = Vector((k_(v.co.x) * (bx + 0.025), k_(v.co.y) * (by + 0.03), v.co.z * (bz + 0.07) - 0.02))
+        mund_z = float(opt.get("mund", -0.1)) * G
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y > 0.04 * G or v.co.z > mund_z + 0.02 * (abs(v.co.x) / bx) * 4 or v.co.z < -(bz + 0.06) * 0.98], context="VERTS")
+        for v in bm.verts:
+            kinn = max(0.0, (-v.co.z - 0.12) / 0.12) * max(0.0, -v.co.y / by)
+            v.co.z -= 0.045 * G * kinn; v.co.y -= 0.03 * G * kinn                                     # Kinnbart: nach unten und vorn
+            v.co += v.co.normalized() * 0.005 * G * math.sin(v.co.z * 90)                            # Strähnen nach unten
+    me = bpy.data.meshes.new(art); bm.to_mesh(me); o = bpy.data.objects.new(art, me); bpy.context.collection.objects.link(o)
+    sd = o.modifiers.new("d", "SOLIDIFY"); sd.thickness = 0.014 * G; sd.offset = 1.0; bpy.context.view_layer.objects.active = o; bpy.ops.object.modifier_apply(modifier="d"); neu(o, HAAR)
 else: sys.exit("unbekannte Art: " + art)
 bpy.ops.object.select_all(action="DESELECT")
 for t in teile: t.select_set(True)

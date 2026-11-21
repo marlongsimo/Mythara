@@ -27,6 +27,8 @@ kopf = teil("kopf"); L = kopf.mean(1); sat = kopf.max(1) - kopf.min(1)
 HAAR = ton(kopf[(L < 110) & (sat > 25)], (0.3, 0.8)); HAUT = ton(kopf[(L > 150) & (sat > 40)], (0.3, 0.7))
 HEMD = ton(teil("untergewand"), (0.35, 0.65)); HOSE = ton(teil("hose"), (0.45, 0.75)); SCHUH = ton(teil("stiefel"), (0.3, 0.6))
 dunkel = lambda c, f: tuple(int(v * f) for v in c)
+_h = next((a.split("=")[1] for a in sys.argv[4:] if a.startswith("haar=")), None)
+if _h: HAAR = tuple(int(_h.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))                       # Haarfarbe wie die Frisur (eigenes Teil), damit Ränder nicht dunkler durchscheinen
 print("Farben – Haar", HAAR, "Haut", HAUT, "Hemd", HEMD, "Hose", HOSE, "Schuh", SCHUH)
 
 im = Image.open(grund).convert("RGB").resize((1024, 1024)); a = np.asarray(im).astype(np.int32)
@@ -36,6 +38,7 @@ lum = kopfteil.mean(2)
 augen = [(287, 221), (356, 221)]; yy, xx = np.mgrid[0:490, 0:640]; auge = np.zeros_like(lum, bool)
 for ax, ay in augen: auge |= (xx - ax) ** 2 + (yy - ay) ** 2 < 11 ** 2
 haar = (lum < 90) & ~auge; kopfteil[haar] = HAAR                                                 # Haar, Brauen, Schnurrbart: in der Haarfarbe
+if "stirn" in sys.argv[4:]: kopfteil[132:192, 205:440] = HAUT          # Stirn frei (die Frisur ist ein eigenes Teil mit höherem Ansatz)
 a[:490, :640] = kopfteil; im = Image.fromarray(a.astype(np.uint8)); d = ImageDraw.Draw(im)
 if BART:                                                                                         # Vollbart von Ohr zu Ohr, Mund frei
     d.polygon([(212, 228), (244, 232), (262, 266), (296, 280), (348, 280), (384, 266), (402, 232), (434, 228), (436, 300), (372, 368), (272, 368), (210, 300)], fill=HAAR)

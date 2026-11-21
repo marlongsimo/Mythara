@@ -116,7 +116,7 @@
       "id": "ruestung.brust.platte.schildwahrer",
       "platz": "brust",
       "bild": "ruestung",
-      "farbe": "#b4b9c2",
+      "farbe": "#8d95a2",
       "dicke": 0.025,
       "bereich": [
         [
@@ -147,7 +147,7 @@
       ]
     }
   ],
-  "gelenke": "v001/quelle/gelenke.json",
+  "gelenke": "v002/quelle/gelenke.json",
   "tod_fuesse_strecken": true,
   "tod_schild_flach": true,
   "tod_ganz": -86,
@@ -237,6 +237,39 @@
           ]
         }
       ]
+    },
+    {
+      "id": "kopf.frisur.schildwahrer",
+      "platz": "haar",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/frisur.glb",
+          "knochen": "kopf",
+          "lage": 0.55,
+          "versatz": [
+            0,
+            -0.02,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kopf.bart.schildwahrer",
+      "platz": "bart",
+      "teile": [
+        {
+          "glb": "ruestung.anbau.schildwahrer/v001/quelle/bart.glb",
+          "knochen": "kopf",
+          "lage": 0.55,
+          "versatz": [
+            0,
+            -0.02,
+            0
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "koerper_textur": true
 }

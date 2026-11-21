@@ -34,6 +34,7 @@ Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (
   Hülle "farbe": "#rrggbb"   fester Farbton statt des Tons aus der Zeichnung ("ton") oder der Zeichnung selbst ("bild")
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
                              ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
+  "koerper_textur": true     der Körper behält Material und Textur seines Modells (statt Punktfarben) – Kenney-Haut mit scharfem Gesicht
   "stil": "gemalt"           rendern.py: weiches warmes Licht mit kühlen Randlichtern, Schatten in Falten, helle Kanten (gemalter Look)
   "gelenke": "gelenke.json"  Gelenkorte aus einer Datei (neben der Liste) statt aus der Form geschätzt – Kenney-Körper (kenney_figur.py)
   "arm_radius": 0.1          Rückfallweg der Gewichtung: Armknochen bewegen nur Punkte bis zu diesem Abstand (m) – gegen Flügel aus Robe und Umhang
@@ -68,7 +69,12 @@ def material(name):
     mat = bpy.data.materials.new(name); mat.use_nodes = True; nt = mat.node_tree; nt.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.9
     if FARBE: f = nt.nodes.new("ShaderNodeVertexColor"); f.layer_name = FARBE; nt.links.new(f.outputs["Color"], nt.nodes["Principled BSDF"].inputs["Base Color"])
     return mat
-me.materials.clear(); me.materials.append(material("koerper"))
+if not AUS.get("koerper_textur"): me.materials.clear(); me.materials.append(material("koerper"))   # sonst behält der Körper seine Textur (Kenney-Haut: scharfes Gesicht)
+else:                                                                                            # der glTF-Import multipliziert die Textur mit den Punktfarben (dieselbe Farbe ein zweites Mal): Textur direkt anschließen
+    for m_ in me.materials:
+        if m_ and m_.use_nodes:
+            nt_ = m_.node_tree; tx = next((n for n in nt_.nodes if n.type == "TEX_IMAGE"), None); bs = next((n for n in nt_.nodes if n.type == "BSDF_PRINCIPLED"), None)
+            if tx and bs: nt_.links.new(tx.outputs["Color"], bs.inputs["Base Color"])
 
 P = np.zeros(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", P); P = P.reshape(-1, 3); x, y, z = P[:, 0], P[:, 1], P[:, 2]
 def tiefe(maske, sonst=0.0): return float(np.median(y[maske])) if maske.sum() > 20 else sonst
