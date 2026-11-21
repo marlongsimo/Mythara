@@ -1,5 +1,5 @@
 /*
- * Mythara Echtzeit – Prüfung der Waldmark und des Waldwegs (Regionen der offenen Welt), ohne Browser.
+ * Mythara Echtzeit – Prüfung der Waldmark und des Kreuzwalds südlich davon (Region „waldweg“), ohne Browser.
  * Prüft Laufwege, Kollision, Türen und Interaktionen, Figuren, Sichtbarkeit von Tor, Palisade und Gebäuden,
  * den Übergang zwischen den Regionen und die Verträglichkeit mit dem bestehenden Koop-Relay.
  *
@@ -18,21 +18,36 @@ const R = new G.WeltRaster(); for (const n of namen) for (const c of bau[n].chun
 const ursprung = (n) => daten[n].region.ursprung.map((v) => v * C), welt = (n, x, y) => { const [ox, oy] = ursprung(n); return { x: x + ox, y: y + oy }; };
 const WM = daten.waldmark, start = welt("waldmark", ...WM.spiel.start[0]);
 
-/* Erreichbarkeit: Flutfüllung über das Gehraster von beiden Regionen, ab dem Start in der Waldmark */
-const B = 96, H = 128, [OX, OY] = ursprung("waldmark"), erreicht = new Uint8Array(B * H);
-{ const q = [[Math.floor(start.x) - OX, Math.floor(start.y) - OY]]; erreicht[q[0][1] * B + q[0][0]] = 1;
-  while (q.length) { const [i, j] = q.pop(); for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= B || b >= H || erreicht[b * B + a] || R.fels(a + OX, b + OY)) continue; erreicht[b * B + a] = 1; q.push([a, b]); } } }
-const erreichbar = (p) => { const i = Math.floor(p.x) - OX, j = Math.floor(p.y) - OY; return i >= 0 && j >= 0 && i < B && j < H && erreicht[j * B + i] === 1; };
+/* Erreichbarkeit: Flutfüllung über das Gehraster beider Regionen (umschließendes Rechteck), ab dem Start in der Waldmark */
+const [OX, OY] = ursprung("waldmark"), [GX, GY] = [Math.min(...namen.map((n) => ursprung(n)[0])), OY];
+const GB = Math.max(...namen.map((n) => ursprung(n)[0] + daten[n].region.chunks[0] * C)) - GX, GH = Math.max(...namen.map((n) => ursprung(n)[1] + daten[n].region.chunks[1] * C)) - GY;
+const erreicht = new Uint8Array(GB * GH);
+{ const q = [[Math.floor(start.x) - GX, Math.floor(start.y) - GY]]; erreicht[q[0][1] * GB + q[0][0]] = 1;
+  while (q.length) { const [i, j] = q.pop(); for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= GB || b >= GH || erreicht[b * GB + a] || R.fels(a + GX, b + GY)) continue; erreicht[b * GB + a] = 1; q.push([a, b]); } } }
+const erreichbar = (p) => { const i = Math.floor(p.x) - GX, j = Math.floor(p.y) - GY; return i >= 0 && j >= 0 && i < GB && j < GH && erreicht[j * GB + i] === 1; };
 /** Nächstes erreichbares Feld in höchstens r Feldern Abstand */
 const nahErreichbar = (p, r = 1.2) => { for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) { const q = { x: p.x + di * 0.5, y: p.y + dj * 0.5 }; if (Math.hypot(di * 0.5, dj * 0.5) <= r && erreichbar(q)) return true; } return false; };
 
 console.log("\nLaufwege und Kollision");
 check(R.begehbar(start.x, start.y) && erreichbar(start), `Startpunkt am Brunnen ist frei (${rund(WM.spiel.start[0][0])} | ${rund(WM.spiel.start[0][1])})`);
 { /* freie Felder im Dorf, die man nicht erreicht: eingeschlossene Taschen */
-  const taschen = []; let frei = 0; for (let j = 6; j < 56; j++) for (let i = 14; i < 82; i++) { if (R.fels(i + OX, j + OY)) continue; frei++; if (!erreicht[j * B + i]) taschen.push(`${i}|${j}`); }
+  const taschen = []; let frei = 0; for (let j = 6; j < 56; j++) for (let i = 14; i < 82; i++) { if (R.fels(i + OX, j + OY)) continue; frei++; if (!erreichbar({ x: i + OX + 0.5, y: j + OY + 0.5 })) taschen.push(`${i}|${j}`); }
   check(taschen.length <= frei * 0.01, `im Dorf sind ${frei - taschen.length} von ${frei} freien Feldern erreichbar (${taschen.length} eingeschlossen)`, taschen.length ? ["eingeschlossene Felder: " + taschen.slice(0, 40).join(" ")] : []); }
-{ const w = R.weg(start, welt("waldweg", 48, 6), 0.3, 40); const l = w.reduce((s, p, i) => s + Math.hypot(p.x - (i ? w[i - 1].x : start.x), p.y - (i ? w[i - 1].y : start.y)), 0);
-  check(w.length > 0, `Weg vom Brunnen durch das Südtor auf den Waldweg (${rund(l)} Felder)`); }
+{ const tor = { x: start.x, y: welt("waldweg", 0, 6).y }, ziel = welt("waldweg", ursprung("waldmark")[0] + 48 - ursprung("waldweg")[0], 6);
+  const w = R.weg(start, ziel, 0.3, 40); const l = w.reduce((s, p, i) => s + Math.hypot(p.x - (i ? w[i - 1].x : start.x), p.y - (i ? w[i - 1].y : start.y)), 0); void tor;
+  check(w.length > 0, `Weg vom Brunnen durch das Südtor in den Kreuzwald (${rund(l)} Felder)`); }
+{ /* Kreuzwald nach der Skizze: Kreuzung, beide Steinwege, Feldweg, Lichtung; die beiden Pfade zur Lichtung; hinter den umgestürzten Bäumen geht es nicht weiter */
+  const WW = daten.waldweg, g = WW.gelaende, an = (x, y) => welt("waldweg", x, y), st = ["stamm_west", "stamm_ost", "stamm_sued"].map((id) => WW.objekte.find((o) => o.id === id)).filter(Boolean);
+  const zeichen = (x, y) => g[Math.floor(y)][Math.floor(x)];
+  const steinZeilen = (x) => [...Array(g.length).keys()].filter((y) => zeichen(x, y) === "k"), feldSpalten = (y) => [...Array(g[0].length).keys()].filter((x) => zeichen(x, y) === "e");
+  check(steinZeilen(40).length >= 5 && steinZeilen(200).length >= 5, `breite Steinwege nach Westen und Osten (${steinZeilen(40).length} bzw. ${steinZeilen(200).length} Felder breit)`);
+  check(feldSpalten(110).length >= 4 && feldSpalten(110).length <= 6, `breiter Feldweg nach Süden (${feldSpalten(110).length} Felder breit)`);
+  const orte = { "Kreuzung": [112, 46], "Lichtung": [214, 120], "Pfad vom Steinweg": [201, 70], "Pfad vom Feldweg": [150, 129], "Ende Westweg": [st[0].x + 3, st[0].y - 4.5], "Ende Ostweg": [st[1].x - 3, st[1].y - 4.5], "Ende Feldweg": [st[2].x, st[2].y - 2.5] };
+  const nicht = Object.entries(orte).filter(([, [x, y]]) => !nahErreichbar(an(x, y), 2));
+  check(st.length === 3 && nicht.length === 0, `erreichbar: ${Object.keys(orte).join(", ")}`, nicht.map(([n]) => n));
+  const hinter = { "hinter dem Stamm im Westen": [st[0].x - 4, st[0].y - 4.5], "hinter dem Stamm im Osten": [st[1].x + 4, st[1].y - 4.5], "hinter dem Stamm im Süden": [st[2].x, st[2].y + 3] };
+  const durch = Object.entries(hinter).filter(([, [x, y]]) => erreichbar(an(x, y)));
+  check(durch.length === 0, "an den umgestürzten Bäumen kommt man nicht vorbei", durch.map(([n]) => n)); }
 { const gruende = []; for (let x = 45.6; x <= 50.4; x += 0.4) { const p = welt("waldmark", x, 57); if (!R.begehbar(p.x, p.y)) gruende.push(`Feld ${rund(x)}|57 im Tor ist gesperrt`); }
   const breite = [44, 45, 46, 47, 48, 49, 50, 51, 52].filter((x) => R.begehbar(...Object.values(welt("waldmark", x + 0.5, 56.5)))).length; /* Zeile der Palisade */
   check(gruende.length === 0 && breite >= 4 && breite <= 6, `die Tordurchfahrt ist ${breite} Felder breit und frei`, gruende); }
@@ -94,10 +109,10 @@ console.log("\nSichtbarkeit");
 { const fehler = []; for (const o of alle) { if (!o.def || !o.def.kollision) continue; const c = daten[o.region].gelaende[Math.floor(o.y)]?.[Math.floor(o.x)]; if (c === "w" || c === "~" || c === "o") fehler.push(`${o.id} (${o.objekt}) steht im Wasser`); }
   check(fehler.length === 0, "nichts steht im Wasser", fehler); }
 
-console.log("\nÜbergang Waldmark – Waldweg");
-{ const wm = daten.waldmark.region, ww = daten.waldweg.region;
-  check(wm.ursprung[0] === ww.ursprung[0] && wm.ursprung[1] + wm.chunks[1] === ww.ursprung[1] && wm.chunks[0] === ww.chunks[0], `die Regionen grenzen ohne Lücke aneinander (Waldmark ${wm.ursprung.join("|")} + ${wm.chunks.join("×")}, Waldweg ${ww.ursprung.join("|")})`);
-  const unten = daten.waldmark.gelaende[63], oben = daten.waldweg.gelaende[0], wechsel = [...unten].filter((c, i) => (c === "e") !== (oben[i] === "e")).length;
+console.log("\nÜbergang Waldmark – Kreuzwald");
+{ const wm = daten.waldmark.region, ww = daten.waldweg.region, dx = (wm.ursprung[0] - ww.ursprung[0]) * C;
+  check(ww.ursprung[0] <= wm.ursprung[0] && ww.ursprung[0] + ww.chunks[0] >= wm.ursprung[0] + wm.chunks[0] && wm.ursprung[1] + wm.chunks[1] === ww.ursprung[1], `die Regionen grenzen ohne Lücke aneinander (Waldmark ${wm.ursprung.join("|")} + ${wm.chunks.join("×")}, Kreuzwald ${ww.ursprung.join("|")} + ${ww.chunks.join("×")})`);
+  const unten = daten.waldmark.gelaende[63], oben = daten.waldweg.gelaende[0].slice(dx, dx + unten.length), wechsel = [...unten].filter((c, i) => (c === "e") !== (oben[i] === "e")).length;
   check(wechsel <= 2, `der Weg läuft über die Grenze weiter (${wechsel} Spalten, in denen er nur auf einer Seite liegt)`);
   const gesperrt = [...Array(96).keys()].filter((i) => R.begehbar(OX + i + 0.5, OY + 63.5) !== R.begehbar(OX + i + 0.5, OY + 64.5) && R.begehbar(OX + i + 0.5, OY + 63.5)).length;
   check(gesperrt <= 40, `an der Grenze geht es meist ohne Kante weiter (${gesperrt} Spalten frei → gesperrt)`); }

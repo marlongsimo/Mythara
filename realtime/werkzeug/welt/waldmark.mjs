@@ -1,8 +1,8 @@
 /*
- * World Pipeline – legt die Waldmark als Dorf auf einer Waldlichtung an und südlich davon den Waldweg (Entwurf).
+ * World Pipeline – legt die Waldmark als Dorf auf einer Waldlichtung an und südlich davon den Kreuzwald (Region „waldweg“: Steinwege, Feldweg, Lichtung).
  * Aufruf (im Ordner realtime): node werkzeug/welt/waldmark.mjs      danach: node werkzeug/welt/bauen.mjs waldmark waldweg
  * Schreibt welt/regionen/waldmark/ und welt/regionen/waldweg/. Beide grenzen im Weltgitter aneinander:
- * Durch das offene Tor im Süden läuft man ohne Wechsel auf den Waldweg.
+ * Durch das offene Tor im Süden läuft man ohne Wechsel in den Kreuzwald.
  * Die Gebäude stammen aus werkzeug/welt/haus.py. Alles hier ist ein erster Entwurf zum Ansehen und Nachbessern (später im Editor).
  */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -18,7 +18,7 @@ const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0]
 /** Was frei zu sehen sein soll: Bildflächen von Gebäuden, Bauteilen, Kleinteilen und Figuren (Waldmark-Koordinaten) */
 const SICHT = [];
 /** Darf ein Baum hier stehen, ohne etwas Wichtiges zu verdecken? dy: Versatz der Region gegenüber der Waldmark */
-const sichtFrei = (p, dy = 0) => { const t = bildRahmen(p.objekt, p.x, p.y + dy, p.spiegeln, p.s);
+const sichtFrei = (p, dy = 0, dx = 0) => { const t = bildRahmen(p.objekt, p.x + dx, p.y + dy, p.spiegeln, p.s);
   return !SICHT.some((v) => p.y + dy > v.y - 0.1 && schnitt(t, v.r) > 0.1 * (v.r[2] - v.r[0]) * (v.r[3] - v.r[1])); };
 /** Türpunkt eines Objekts aus der Bibliothek */
 const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a ? [+(x + a.dx * (sp ? -1 : 1)).toFixed(2), +(y + a.dy).toFixed(2)] : [x, y]; };
@@ -101,23 +101,52 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
-      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch"),
-      lies("tor_ansehen", 48, 55, "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.", "tor", "welt", "Zur Weltkarte")],
+      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
-    /* Torpfosten versperren, die Durchfahrt bleibt frei */
+    /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */
     kollision: { sperren: [{ art: "rechteck", x0: 44, y0: 56, x1: 45.6, y1: 57 }, { art: "rechteck", x0: 50.4, y0: 56, x1: 52, y1: 57 }], freigeben: [{ art: "rechteck", x0: 45.6, y0: 55, x1: 50.4, y1: 58 }] } };
   schreibe("waldmark", { id: "waldmark", name: "Waldmark", untertitel: "Die Zuflucht der Wanderer", ursprung: [200, 200], chunks: [3, 2], biom: "dorf", stufe: 1, gesperrt: [[14, 6, 82, 58]] }, g, objekte, spiel); }
 
-/* ───────────── Waldweg: 3 × 2 Chunks, direkt südlich ───────────── */
-{ const B = 96, H = 64, wegX = (y) => 48 + 9 * Math.sin(y / 11) + 3 * Math.sin(y / 4.7) * Math.min(1, y / 8);
-  const lichtungen = [[30, 30, 9, 6.5], [66, 47, 8, 6]], inL = (x, y, k = 1) => lichtungen.some(([lx, ly, rx, ry]) => Math.hypot((x - lx) / (rx * k), (y - ly) / (ry * k)) < 1);
-  const teich = (x, y) => Math.hypot((x - 70) / 3.6, (y - 45) / 2.6) < 1, abzweig = [[wegX(30), 30], [37, 30.5]], abzweig2 = [[wegX(46), 46], [59, 47]];
-  const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, d = Math.abs(cx - wegX(cy));
-    if (imVorfeld(cx, cy + 64, 1.6) && d >= 1.6) { z.push("."); continue; } /* das Vorfeld des Dorfs läuft hier aus */
-    z.push(d < 1.6 || strecke(cx, cy, abzweig) < 1.2 || strecke(cx, cy, abzweig2) < 1.2 ? "e" : teich(cx, cy) ? "w" : inL(cx, cy) ? (inL(cx, cy, 0.55) ? "," : ".") : d < 4.2 + Math.sin(cy / 3) ? "." : "f"); } g.push(z); }
-  const objekte = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", (x, y) => Math.abs(x - wegX(y)) < 3 || strecke(x, y, abzweig) < 2.6 || strecke(x, y, abzweig2) < 2.6 || Math.hypot((x - 70) / 5.2, (y - 45) / 4) < 1 || imVorfeld(x, y + 64), 0.95, 0.03, (p) => sichtFrei(p, 64));
-  objekte.sort((a, b) => a.y - b.y);
-  const ex = +wegX(63.5).toFixed(1), spiel = { start: [[48, 2.5], [47, 1.5], [49, 1.5]], figuren: [{ id: "wanderer_am_weg", rolle: "npc", figur: "wanderer", x: 33, y: 29.4 }],
-    spawnzonen: [{ id: "kroeten_lichtung", zone: { art: "kreis", x: 66, y: 49.5, r: 3 }, gegner: [{ art: "schlammkroete", anzahl: 2 }, { art: "kroetchen", anzahl: 1 }], aggro: 7, leine: 16, respawn: 180, abgleich: "server" }],
-    interaktionen: [], ausgaenge: [{ id: "nach_weidenhain", zone: { art: "rechteck", x0: ex - 4, y0: 62.6, x1: ex + 4, y1: 64 }, nach: { art: "ort", ort: "weidenhain" }, text: "Weiter nach Weidenhain" }], kollision: { sperren: [], freigeben: [] } };
-  schreibe("waldweg", { id: "waldweg", name: "Der Waldweg", untertitel: "Von der Waldmark nach Weidenhain", ursprung: [200, 202], chunks: [3, 2], biom: "wald", stufe: 1 }, g, objekte, spiel); }
+/* ───────────── Der Wald südlich der Waldmark: 8 × 6 Chunks, ein Gebiet (für den Server ein Ort: „waldweg“) ─────────────
+   Nach der Skizze vom 21.11.2026: Vom Südtor ein Erdweg zur Kreuzung. Dort breite Steinwege nach Westen und Osten, ein breiter Feldweg nach Süden.
+   Vom östlichen Steinweg ein Pfad hinunter, vom Feldweg einer nach rechts: Beide treffen sich auf einer großen Lichtung. Ringsum Wald.
+   Wo die drei Wege (noch) enden, liegt ein umgestürzter Baum quer. Lage: x ab Chunk 198 (das Südtor liegt bei x = 112), y = 0 ist die Südkante der Waldmark. */
+{ const B = 256, H = 192, DX = 64, TOR = 112, KY = 44;                       /* DX: so weit liegt die Waldmark (x = 0) östlich des Gebiets; KY: Höhe der Kreuzung */
+  const torWegX = (y) => TOR + 1.6 * Math.sin(y / 9) * Math.min(1, y / 12);   /* vom Tor zur Kreuzung, sacht geschwungen */
+  const steinY = (x) => KY + 2.6 * Math.sin((x - TOR) / 21) + 1.3 * Math.sin((x - TOR) / 8.3) * Math.min(1, Math.abs(x - TOR) / 14);
+  const WEST = 18, OST = 238, feldX = (y) => TOR + 6 * Math.sin((y - KY) / 23) + 2 * Math.sin((y - KY) / 7.9) * Math.min(1, (y - KY) / 14), SUED = 176;
+  const L = { x: 214, y: 120, rx: 25, ry: 19 }, lichtR = (x, y) => { const t = Math.atan2((y - L.y) / L.ry, (x - L.x) / L.rx); return Math.hypot((x - L.x) / L.rx, (y - L.y) / L.ry) / (1 + 0.1 * Math.sin(3 * t + 0.6) + 0.06 * Math.sin(7 * t + 2) + 0.04 * Math.sin(11 * t)); };
+  const pfadOben = [[202, steinY(202)], [200.5, 62], [205, 80], [209, L.y - L.ry + 3]], pfadUnten = [[feldX(128), 128], [140, 130], [162, 126], [178, 124.5], [L.x - L.rx + 3, 122]];
+  /* Abstand zu den Wegen (Mittellinie), in Feldern */
+  const dTor = (x, y) => (y <= KY + 1 ? Math.abs(x - torWegX(y)) : Infinity);
+  const dStein = (x, y) => (x >= WEST - 2 && x <= OST + 2 ? Math.abs(y - steinY(x)) : Infinity);
+  const dFeld = (x, y) => (y >= KY && y <= SUED + 2 ? Math.abs(x - feldX(y)) : Infinity);
+  const dPfad = (x, y) => Math.min(strecke(x, y, pfadOben), strecke(x, y, pfadUnten));
+  const saum = (x, y) => 1.2 * Math.sin(x / 3.1 + y / 5.3) + 0.8 * Math.sin(y / 2.2 - x / 4.7);   /* unruhiger Rand der Wegsäume */
+  const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, st = Math.min(dTor(cx, cy), dStein(cx, cy)), fe = dFeld(cx, cy), pf = dPfad(cx, cy), li = lichtR(cx, cy);
+    let c = "f";
+    if (dStein(cx, cy) < 3.1) c = "k"; else if (dTor(cx, cy) < 1.6 || fe < 2.1) c = "e"; else if (pf < 1.25) c = "e";   /* vom Tor ein Erdweg wie im Dorf, ab der Kreuzung Steinwege */
+    else if (li < 1) c = li < 0.62 && Math.sin(cx / 2.7) * Math.cos(cy / 3.1) > 0.35 ? "," : ".";
+    else if (st < 5.6 + saum(cx, cy) || fe < 4.6 + saum(cx, cy) || pf < 2.4 + 0.5 * saum(cx, cy)) c = ".";
+    else if (imVorfeld(cx - DX, cy + 64, 1.6)) c = ".";                          /* das Vorfeld des Dorfs läuft hier aus */
+    z.push(c); } g.push(z); }
+  /* Umgestürzte Bäume an den Wegenden (vorerst geht es dort nicht weiter): auf den Steinwegen ein Stamm, der in die Tiefe liegt (quer zum Weg), auf dem Feldweg einer quer */
+  const stamm = (id, objekt, x, y, spiegeln) => ({ id, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...(spiegeln ? { spiegeln: true } : {}) });
+  const ende = [stamm("stamm_west", "wald_baumstamm_02", WEST + 4, steinY(WEST + 4) + 4.5), stamm("stamm_ost", "wald_baumstamm_02", OST - 4, steinY(OST - 4) + 4.5), stamm("stamm_sued", "wald_baumstamm_01", feldX(SUED - 3), SUED - 3, true)];
+  const amStamm = (x, y) => ende.some((e) => (e.objekt === "wald_baumstamm_02" ? Math.abs(x - e.x) < 3.2 && y > e.y - 10.5 && y < e.y + 2.5 : Math.abs(x - e.x) < 6.5 && y > e.y - 4.5 && y < e.y + 1.5));
+  const frei = (x, y) => Math.min(dTor(x, y), dStein(x, y)) < 5 || dFeld(x, y) < 4 || dPfad(x, y) < 2.6 || lichtR(x, y) < 1.12 || imVorfeld(x - DX, y + 64) || amStamm(x, y);
+  const wald = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", frei, 0.95, 0.02, (p) => sichtFrei(p, 64, -DX));
+  /* ein paar einzelne Bäume auf der Lichtung und am Saum, damit sie natürlich wirkt */
+  const einzeln = [[200, 112, 3], [229, 129, 1], [221, 106, 5], [196, 128, 2]].map(([x, y, a], i) => ({ id: "l" + (i + 1), objekt: "wald_baum" + a, x, y, s: 1.05 }));
+  const objekte = [...wald, ...einzeln, ...ende].sort((a, b) => a.y - b.y);
+  const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.8, abgleich: "keiner", daten: { text } });
+  const versperrt = "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter.";
+  /* Der Stamm allein hält niemanden auf: Durch den Wald käme man drumherum. Darum läuft von jedem Stamm eine unsichtbare Sperre durch den Wald bis an den Rand
+     des Gebiets (im Osten oberhalb der Lichtung, damit sie frei bleibt). Was dahinter liegt, ist für später. */
+  const [sw, so, ss] = ende, riegel = [{ art: "rechteck", x0: sw.x - 0.8, y0: 0, x1: sw.x + 0.8, y1: H }, { art: "rechteck", x0: 0, y0: ss.y - 1, x1: B, y1: ss.y + 0.2 },
+    { art: "rechteck", x0: so.x - 0.8, y0: 0, x1: so.x + 0.8, y1: L.y - L.ry - 6 }, { art: "rechteck", x0: so.x - 0.8, y0: L.y - L.ry - 7.6, x1: B, y1: L.y - L.ry - 6 }];
+  const spiel = { start: [[TOR, 2.5], [TOR - 1, 1.5], [TOR + 1, 1.5]], figuren: [], spawnzonen: [],
+    interaktionen: [lies("stamm_west_ansehen", ende[0].x + 1.6, ende[0].y - 4.5, versperrt), lies("stamm_ost_ansehen", ende[1].x - 1.6, ende[1].y - 4.5, versperrt), lies("stamm_sued_ansehen", ende[2].x, ende[2].y - 2, versperrt),
+      lies("lichtung_ansehen", L.x - 4, L.y + 2, "Eine weite, stille Lichtung mitten im Wald. Das Gras steht hoch, dazwischen blühen Wildblumen.")],
+    ausgaenge: [], kollision: { sperren: riegel, freigeben: [] } };
+  schreibe("waldweg", { id: "waldweg", name: "Der Kreuzwald", untertitel: "Steinwege nach Westen und Osten, ein Feldweg nach Süden", ursprung: [198, 202], chunks: [8, 6], biom: "wald", stufe: 1 }, g, objekte, spiel); }

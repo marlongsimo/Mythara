@@ -61,8 +61,8 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.hud = { profil: hudProfil, titel: hudTitel, karte: hudKarte };
   WELT.tat = oeffne;
   WELT.knopf = (art, knopf) => (art === "welt" && !torOffen() ? "Das Südtor ist noch geschlossen" : art === "riss" && !freigabe("riss") ? "Der Riss ist gerade versiegelt" : knopf);
-  /* Solange der Waldweg nicht freigegeben ist, bleibt das Südtor zu: Der Waldweg wird nicht geladen, die Durchfahrt ist gesperrt */
-  if (!freigabe("waldweg")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
+  /* Solange das Südtor nicht freigegeben ist (freigabe.ts), bleibt es zu: Der Wald dahinter wird nicht geladen, die Durchfahrt ist gesperrt */
+  if (!freigabe("suedtor")) { WELT.gesperrteRegionen = [tor]; WELT.sperren = [[200 * 32 + 45, 200 * 32 + 55.5, 200 * 32 + 51, 200 * 32 + 58]]; }
   WELT.figur = (s, x, y, held, hoehe) => heldenFigur(s, x, y, held, hoehe);
   WELT.richten = richten;
   WELT.laden = (s) => heldenLaden(s);   /* Bilder der Mitspieler */

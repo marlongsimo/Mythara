@@ -175,20 +175,6 @@
     "tat": "bald",
     "knopf": "Markt – kommt noch"
    }
-  },
-  {
-   "id": "tor_ansehen",
-   "art": "eingang",
-   "x": 48,
-   "y": 55,
-   "radius": 1.5,
-   "objekt": "tor",
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.",
-    "tat": "welt",
-    "knopf": "Zur Weltkarte"
-   }
   }
  ],
  "ausgaenge": [],

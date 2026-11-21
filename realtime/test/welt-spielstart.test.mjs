@@ -1,6 +1,6 @@
 /*
  * Mythara Echtzeit – Prüfung: Die Waldmark der offenen Welt ist der Ausgangspunkt des Spiels.
- * Spielstart ohne Zusatz, Heldenhalle, Weltkarte am Südtor, Riss über das Menü, Rückkehr aus einer Kampagne (?von=tor),
+ * Spielstart ohne Zusatz, Heldenhalle, Weltkarte (Knopf unter der Karte), Riss über das Menü, Rückkehr aus einer Kampagne (?von=tor),
  * und dass die bisherigen Wege weiter funktionieren (gemaltes Bild unter ?stadt=bild, Weidenhain, Waldweg-Strecke).
  * Vorher: node build.mjs; im Hauptordner node tools/testserver.js.  Aufruf: node test/welt-spielstart.test.mjs
  */
@@ -22,7 +22,7 @@ const seite = async (adr, alles = true) => { const p = await b.newPage({ viewpor
   check(z.menue >= 4, `Menü unten rechts vorhanden (${z.menue} Knöpfe)`);
   /* Heldenhalle über ihre Tür */
   const t = await p.evaluate(() => { const s = window.EZW.szene, a = []; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) a.push(i); return a; });
-  const halle = t.find((a) => a.id === "halle_tuer"), tor = t.find((a) => a.id === "tor_ansehen");
+  const halle = t.find((a) => a.id === "halle_tuer");
   await p.evaluate(([x, y]) => { const s = window.EZW.szene; s.ort.x = x; s.ort.y = y; }, [halle.x, halle.y]); await p.waitForTimeout(600);
   const kn = await p.evaluate(() => document.querySelector("#ez-dorf-knopf").textContent); check(/Heldenhalle betreten/.test(kn), `an der Tür der Heldenhalle: Knopf „${kn.trim()}“`);
   await p.click("#ez-dorf-knopf"); await p.waitForTimeout(800);
@@ -30,10 +30,9 @@ const seite = async (adr, alles = true) => { const p = await b.newPage({ viewpor
   check(halleOffen, "die Heldenhalle öffnet sich, die Welt steht still");
   await p.screenshot({ path: "/tmp/claude-0/-home-user-Mythara/de112ecd-2973-5a26-8c07-c748a7280ef5/scratchpad/s-halle.png" });
   await p.keyboard.press("Escape"); await p.evaluate(() => { const z = document.querySelector("#ez-konto [data-zu], #ez-konto .zu, #ez-konto button"); if (z) z.click(); }); await p.waitForTimeout(600);
-  /* Weltkarte am Südtor */
-  await p.evaluate(() => { window.EZW.szene.gesperrt = false; }); await p.evaluate(([x, y]) => { const s = window.EZW.szene; s.ort.x = x; s.ort.y = y; }, [tor.x, tor.y]); await p.waitForTimeout(600);
-  const kt = await p.evaluate(() => document.querySelector("#ez-dorf-knopf").textContent); check(/Weltkarte/.test(kt), `am Südtor: Knopf „${kt.trim()}“`);
-  await p.click("#ez-dorf-knopf"); await p.waitForTimeout(800);
+  /* Weltkarte (nur mit freigeschalteten Kampagnen): Knopf unter der runden Karte */
+  await p.evaluate(() => { window.EZW.szene.gesperrt = false; }); const kk = await p.$('#ez-kartenrahmen [aria-label="Weltkarte"]'); check(Boolean(kk), "unter der Karte: Knopf „Weltkarte“");
+  if (kk) await kk.click(); await p.waitForTimeout(800);
   const karte = await p.evaluate(() => { const k = document.querySelector("#ez-welt"); return Boolean(k && !k.hidden && getComputedStyle(k).display !== "none"); }); check(karte, "die Weltkarte öffnet sich");
   await p.screenshot({ path: "/tmp/claude-0/-home-user-Mythara/de112ecd-2973-5a26-8c07-c748a7280ef5/scratchpad/s-weltkarte.png" });
   check(f.length === 0, f.length ? "Fehler: " + f.slice(0, 3).join(" | ") : "keine Fehler im Browser"); await p.close(); }
@@ -49,22 +48,23 @@ const seite = async (adr, alles = true) => { const p = await b.newPage({ viewpor
 { /* Rückkehr aus einer Kampagne */
   const { p, f } = await seite("?von=tor&server="); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1200);
   const z = await p.evaluate(() => ({ ort: { ...window.EZW.ort() }, region: window.EZW.szene.hier, adresse: location.search }));
-  check(z.region === "waldweg" && Math.hypot(z.ort.x - O - 48, z.ort.y - O - 66.5) < 1, `?von=tor: vor dem Südtor auf dem Waldweg (${(z.ort.x - O).toFixed(1)} | ${(z.ort.y - O).toFixed(1)}), Zusatz aus der Adresse entfernt (${z.adresse || "leer"})`);
+  check(z.region === "waldweg" && Math.hypot(z.ort.x - O - 48, z.ort.y - O - 66.5) < 1, `?von=tor: vor dem Südtor im Kreuzwald (${(z.ort.x - O).toFixed(1)} | ${(z.ort.y - O).toFixed(1)}), Zusatz aus der Adresse entfernt (${z.adresse || "leer"})`);
   check(f.length === 0, "keine Fehler"); await p.close(); }
 
 for (const [adr, name, frage] of [["?stadt=bild&server=", "das gemalte Bild (?stadt=bild)", () => Boolean(window.EZD)], ["?ort=weidenhain&server=&neu=1", "Weidenhain", () => Boolean(window.EZO)], ["?ort=weidenhain&kampf=waldweg&server=&neu=1", "die Waldweg-Strecke der Kampagne", () => document.querySelectorAll("canvas").length === 1]]) {
   const { p, f } = await seite(adr); await p.waitForTimeout(5000); const da = await p.evaluate(frage);
   check(da && f.length === 0, `weiterhin erreichbar: ${name}${f.length ? " – Fehler: " + f[0] : ""}`); await p.close(); }
 
-{ /* Normalfall für Spieler: Waldweg und Kampagnen sind noch nicht freigegeben – das Südtor bleibt zu, Kampagnen-Adressen führen in die Waldmark */
+{ /* Normalfall für Spieler: Kampagnen sind noch nicht freigegeben, das Südtor aber offen – ohne Knopf läuft man hindurch in den Kreuzwald */
   const { p, f } = await seite("?server=", false); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(1000);
-  const tor = await p.evaluate(() => { const s = window.EZW.szene; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) if (i.id === "tor_ansehen") return i; return null; });
-  await p.evaluate(([x, y]) => { const s = window.EZW.szene; s.ort.x = x; s.ort.y = y; }, [tor.x, tor.y]); await p.waitForTimeout(600);
-  const kt = await p.evaluate(() => document.querySelector("#ez-dorf-knopf").textContent); check(/Südtor ist noch geschlossen/.test(kt), `gesperrt: am Südtor „${kt.trim()}“`);
-  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 53; }); await p.keyboard.down("s"); await p.waitForTimeout(2500); await p.keyboard.up("s");
-  const y = await p.evaluate(() => window.EZW.ort().y - 6400); check(y < 58, `gesperrt: durch das Südtor kommt man nicht (y ${y.toFixed(1)})`);
-  check(f.length === 0, "keine Fehler (gesperrt)"); await p.close();
+  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 55.5; }); await p.waitForTimeout(600);
+  const kt = await p.evaluate(() => { const k = document.querySelector("#ez-dorf-knopf"); return k.hidden ? "" : k.textContent; }); check(kt === "", `im Südtor erscheint kein Knopf${kt ? " (" + kt.trim() + ")" : ""}`);
+  await p.evaluate(() => { const s = window.EZW.szene; s.ort.x = 6400 + 48; s.ort.y = 6400 + 53; }); await p.keyboard.down("s"); await p.waitForTimeout(3500); await p.keyboard.up("s"); await p.waitForTimeout(800);
+  const z = await p.evaluate(() => ({ y: window.EZW.ort().y - 6400, hier: window.EZW.szene.hier, titel: document.querySelector("#ez-titel b").textContent }));
+  check(z.y > 60 && z.hier === "waldweg", `durch das offene Südtor in den Kreuzwald (y ${z.y.toFixed(1)}, ${z.titel})`);
+  const kw = await p.evaluate(() => [...document.querySelectorAll('#ez-kartenrahmen [aria-label]')].map((k) => k.getAttribute("aria-label"))); check(!kw.includes("Weltkarte"), "ohne Kampagnen keine Weltkarte unter der Karte (" + kw.join(", ") + ")");
+  check(f.length === 0, "keine Fehler (Normalfall)"); await p.close();
   const { p: q } = await seite("?ort=weidenhain&server=", false); await q.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }).catch(() => {});
-  check(await q.evaluate(() => Boolean(window.EZW && window.EZW.szene) && !window.EZO), "gesperrt: eine Kampagnen-Adresse führt in die Waldmark"); await q.close(); }
+  check(await q.evaluate(() => Boolean(window.EZW && window.EZW.szene) && !window.EZO), "eine Kampagnen-Adresse führt in die Waldmark"); await q.close(); }
 
 await b.close(); console.log(ok ? "\nSpielstart: alles in Ordnung" : "\nSpielstart: FEHLER"); process.exit(ok ? 0 : 1);

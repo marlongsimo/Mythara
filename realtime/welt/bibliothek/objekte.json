@@ -2658,6 +2658,68 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)"
+  },
+  {
+   "id": "wald_baumstamm_01",
+   "name": "Umgestürzter Baum (quer)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_01.webp",
+   "groesse": [
+    520,
+    196
+   ],
+   "anker": [
+    0.5596,
+    0.8776
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -4.9,
+    "y": -0.9,
+    "b": 9.8,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
+  },
+  {
+   "id": "wald_baumstamm_02",
+   "name": "Umgestürzter Baum (in die Tiefe)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/gebaeude/wald_baumstamm_02.webp",
+   "groesse": [
+    300,
+    600
+   ],
+   "anker": [
+    0.32,
+    0.9133
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.7,
+    "y": -9,
+    "b": 1.4,
+    "h": 9
+   },
+   "tiefe": "fuss",
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.9,
+    "radius": 1.6
+   },
+   "spiegelbar": false,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage (Rinde aus Rauschen) – frei verwendbar"
   }
  ]
 }
