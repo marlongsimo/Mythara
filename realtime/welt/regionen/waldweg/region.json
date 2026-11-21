@@ -1,0 +1,15 @@
+{
+ "id": "waldweg",
+ "name": "Der Waldweg",
+ "untertitel": "Von der Waldmark nach Weidenhain",
+ "ursprung": [
+  200,
+  202
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "wald",
+ "stufe": 1
+}

@@ -1,0 +1,15 @@
+{
+ "id": "prototyp",
+ "name": "Gebäude-Prototyp",
+ "ursprung": [
+  300,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "wiese",
+ "stufe": 1,
+ "entwurf": true
+}

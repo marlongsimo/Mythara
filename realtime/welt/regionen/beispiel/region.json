@@ -1,0 +1,27 @@
+{
+ "id": "beispiel",
+ "name": "Beispielregion (Prüfstück der World Pipeline)",
+ "ursprung": [
+  0,
+  0
+ ],
+ "chunks": [
+  2,
+  2
+ ],
+ "biom": "wiese",
+ "stufe": 1,
+ "licht": {
+  "farbe": "#fff2d0",
+  "staerke": 0.15
+ },
+ "gesperrt": [
+  [
+   26,
+   26,
+   34,
+   38
+  ]
+ ],
+ "entwurf": true
+}

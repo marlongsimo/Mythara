@@ -1,0 +1,104 @@
+<title>Waldmark-Rundgang</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@400;500&display=swap">
+<style>
+  /* Eine Spielfläche über den ganzen Bildschirm; darüber eine schmale Oberfläche in den Ecken: links Ort und Heldenwahl, rechts die Minikarte, unten Hinweis und Aktion.
+     Bewusst nur dunkel: Es ist ein Spielbildschirm im Wald. */
+  :root {
+    --nacht: #0b0e09;          /* Grund hinter der Welt */
+    --rinde: #24180e;          /* Tafeln */
+    --rinde-hell: #3a2817;
+    --gold: #d6b066;           /* Rahmen, Schrift der Tafeln */
+    --gold-hell: #f3d895;
+    --pergament: #efe5cf;      /* Lesetext */
+    --moos: #9bb879;           /* gewählter Held */
+    --schatten: rgba(0, 0, 0, .55);
+    --schrift-titel: "Cinzel", "Trajan Pro", Georgia, serif;
+    --schrift-text: "Cormorant Garamond", Georgia, serif;
+    --schrift-klein: "Inter", system-ui, sans-serif;
+    --rand: max(12px, env(safe-area-inset-left, 0px));
+    --rand-r: max(12px, env(safe-area-inset-right, 0px));
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body { background: var(--nacht); color: var(--pergament); font-family: var(--schrift-klein); overflow: hidden; -webkit-user-select: none; user-select: none; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #ez-feld { position: fixed; inset: 0; touch-action: none; }
+  #ez-feld canvas { display: block; }
+
+  .tafel { background: linear-gradient(180deg, var(--rinde-hell), var(--rinde)); border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent); border-radius: 8px; box-shadow: 0 6px 18px var(--schatten), inset 0 1px 0 rgba(255, 230, 170, .12); }
+
+  /* oben links: Ort und Heldenwahl */
+  #ez-links { position: fixed; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 12px); left: var(--rand); display: flex; flex-direction: column; gap: 8px; max-width: calc(100vw - var(--rand) - var(--rand-r) - clamp(116px, 27vw, 210px) - 12px); }
+  #ez-titel { padding: 8px 14px 9px; min-width: 0; }
+  #ez-titel b { display: block; font: 600 clamp(17px, 2.4vw, 23px)/1.15 var(--schrift-titel); color: var(--gold-hell); letter-spacing: .04em; text-wrap: balance; }
+  #ez-titel small { display: block; margin-top: 2px; font: italic 500 15px/1.2 var(--schrift-text); color: color-mix(in srgb, var(--pergament) 78%, transparent); }
+  #ez-wahl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #ez-helden { display: flex; flex-wrap: wrap; gap: 6px; }
+  #ez-wahl button { font: 600 12px/1 var(--schrift-titel); letter-spacing: .06em; color: var(--pergament); background: color-mix(in srgb, var(--rinde) 88%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); border-radius: 999px; padding: 7px 11px 6px; cursor: pointer; }
+  #ez-wahl button:hover { border-color: var(--gold); }
+  #ez-wahl button[aria-pressed="true"] { color: var(--nacht); background: var(--moos); border-color: var(--moos); }
+  #ez-wahl button:focus-visible, #ez-dorf-knopf:focus-visible, #ez-zoom button:focus-visible { outline: 2px solid var(--gold-hell); outline-offset: 2px; }
+  #ez-neustart { opacity: .85; }
+
+  /* oben rechts: Minikarte mit Zoom */
+  #ez-kartenrahmen { position: fixed; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 12px); right: var(--rand-r); width: clamp(116px, 27vw, 210px); padding: 6px; display: flex; flex-direction: column; gap: 6px; }
+  #ez-karte { position: relative; width: 100%; aspect-ratio: 3 / 2; border-radius: 5px; border: 1px solid #5d4517; background: var(--nacht) center / 100% 100% no-repeat; box-shadow: inset 0 0 14px rgba(0, 0, 0, .7); overflow: hidden; }
+  #ez-karte span { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); padding: 1px 7px; border-radius: 6px; background: rgba(12, 10, 8, .72); font: 600 10px/1.4 var(--schrift-titel); color: var(--gold-hell); white-space: nowrap; letter-spacing: .05em; }
+  #ez-karte-punkt { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #2a6cff, 0 0 8px #fff; }
+  #ez-zoom { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  #ez-zoom button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--gold); background: radial-gradient(#4a3a1c, #23190c); color: var(--gold-hell); font: 600 16px/1 var(--schrift-klein); cursor: pointer; }
+  #ez-zoom b { min-width: 3.4em; text-align: center; font: 600 12px/1 var(--schrift-titel); color: var(--pergament); font-variant-numeric: tabular-nums; }
+
+  /* unten: Hinweis links, Aktion in der Mitte */
+  #ez-dorf-hilfe { position: fixed; z-index: 5; left: var(--rand); bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); max-width: min(560px, calc(100vw - var(--rand) - var(--rand-r))); padding: 6px 11px; border-radius: 7px; background: rgba(12, 10, 8, .72); font: 500 17px/1.3 var(--schrift-text); color: var(--pergament); pointer-events: none; }
+  #ez-dorf-titel { display: none; }
+  #ez-dorf-knopf { position: fixed; z-index: 6; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 58px); transform: translateX(-50%); padding: 11px 22px 10px; font: 600 15px/1 var(--schrift-titel); letter-spacing: .07em; color: var(--gold-hell); background: linear-gradient(180deg, #4a321b, #2a1b0e); border: 2px solid var(--gold); border-radius: 9px; box-shadow: 0 6px 16px var(--schatten); cursor: pointer; white-space: nowrap; }
+  #ez-dorf-knopf:hover { filter: brightness(1.12); }
+
+  /* Steuerknüppel am Handy: erscheint unter dem Finger */
+  #ez-stick { position: fixed; z-index: 4; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .35); background: rgba(255, 255, 255, .06); pointer-events: none; }
+  #ez-stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255, 255, 255, .45); transform: translate(-50%, -50%); }
+
+  /* Laden */
+  #ez-laden { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; background: var(--nacht); }
+  #ez-laden div { text-align: center; }
+  #ez-laden b { display: block; font: 600 26px/1.2 var(--schrift-titel); color: var(--gold-hell); letter-spacing: .06em; }
+  #ez-laden span { display: block; margin-top: 6px; font: italic 500 18px/1.3 var(--schrift-text); color: color-mix(in srgb, var(--pergament) 75%, transparent); }
+  #ez-laden i { display: block; width: 120px; height: 2px; margin: 16px auto 0; background: linear-gradient(90deg, transparent, var(--gold), transparent); animation: glimmen 1.6s ease-in-out infinite; }
+  @keyframes glimmen { 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { #ez-laden i { animation: none; } }
+
+  @media (max-width: 520px) {
+    #ez-titel small { display: none; }
+    #ez-wahl button { padding: 6px 9px 5px; font-size: 11px; }
+    #ez-dorf-hilfe { font-size: 15px; }
+    #ez-dorf-knopf { font-size: 13px; padding: 10px 16px 9px; }
+  }
+</style>
+
+<div id="ez-welt-seite" data-bild="" data-daten="welt/" data-start="waldmark">
+  <div id="ez-feld"></div>
+
+  <div id="ez-links">
+    <div class="tafel" id="ez-titel" hidden><b>Waldmark</b><small>Splitterlande</small></div>
+    <div id="ez-wahl" aria-label="Held wählen">
+      <div id="ez-helden"></div>
+      <button type="button" id="ez-neustart" title="Zurück an den Anfang der Waldmark">Neu beginnen</button>
+    </div>
+  </div>
+
+  <div class="tafel" id="ez-kartenrahmen">
+    <div id="ez-karte"><i id="ez-karte-punkt"></i><span>Waldmark</span></div>
+    <div id="ez-zoom" hidden><button type="button" data-z="-1" aria-label="Weiter weg">−</button><b>100 %</b><button type="button" data-z="1" aria-label="Näher heran">+</button></div>
+  </div>
+
+  <div id="ez-dorf-titel"></div>
+  <div id="ez-dorf-hilfe">WASD oder Pfeiltasten: laufen · Klick: dorthin gehen</div>
+  <button type="button" id="ez-dorf-knopf" hidden></button>
+  <div id="ez-stick" hidden><i></i></div>
+
+  <div id="ez-laden"><div><b>Waldmark</b><span>Die Lichtung erwacht …</span><i></i></div></div>
+</div>
+<script src="welt-seite.js"></script>

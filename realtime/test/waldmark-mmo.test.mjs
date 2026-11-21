@@ -62,8 +62,8 @@ try {
   await anna.fill("#ez-chat input", "Hallo Waldmark"); await anna.press("#ez-chat input", "Enter");
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark"), null, { timeout: 5000 }).catch(() => {});
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark" && m.von === "Anna")), "Ben liest Annas Nachricht im Chat");
-  check(await ben.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "…und sieht sie als Sprechblase über Anna");
-  check(await anna.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "Anna sieht ihre eigene Sprechblase");
+  check(await ben.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "…und sieht sie als Sprechblase über Anna");
+  check(await anna.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Hallo Waldmark")), "Anna sieht ihre eigene Sprechblase");
   check(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Hallo Waldmark")), "Der Gast liest mit");
   /* der Gast schreibt nicht */
   await gast.fill("#ez-chat input", "Ich bin ein Gast"); await gast.press("#ez-chat input", "Enter"); await gast.waitForTimeout(800);
@@ -74,11 +74,11 @@ try {
   await anna.click('.tafel.spieler [data-t="fl"]'); await anna.fill("#ez-chat input", "Nur für dich"); await anna.press("#ez-chat input", "Enter");
   await ben.waitForFunction(() => window.EZW.chat().some((m) => m.text === "Nur für dich"), null, { timeout: 5000 }).catch(() => {}); await gast.waitForTimeout(500);
   check(await ben.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich" && m.kanal === "fluestern" && m.an === "Ben")), "Ben erhält Annas Flüstern");
-  check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZD.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
+  check(!(await gast.evaluate(() => window.EZW.chat().some((m) => m.text === "Nur für dich"))) && !(await ben.evaluate(() => (window.EZW.szene.__blasen || []).some((b) => b.text === "Nur für dich"))), "Geflüstertes sieht sonst niemand (auch keine Sprechblase)");
   /* Held im Heldenprofil wählen: Er muss bleiben (der Server speichert ihn) – früher sprang die Figur nach dem Neuladen zurück */
   await ben.evaluate(() => document.activeElement && document.activeElement.blur()); await ben.click('#ez-menue [aria-label="Menü"]'); await ben.click('[data-t="profil"]');
-  await ben.click('.bildnisse [data-held="schildwaechter"]'); await ben.click('.tafel .reihe .haupt[data-t="zu"]'); await ben.waitForTimeout(3000);
-  check(await ben.evaluate(() => window.EZD.szene.held === "schildwaechter" && window.EZW.ich().held === "schildwaechter") && HELDSETZEN.some((h) => h.p_user.endsWith("b002") && h.p_held === "schildwaechter"), "Im Heldenprofil gewählt: Ben bleibt Torvald (auch auf dem Server)");
+  await ben.click('.bildnisse [data-held="schildwaechter"]'); await ben.click('.tafel .reihe .haupt[data-t="zu"]'); await ben.waitForTimeout(1000); await ben.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich() && window.EZW.ich().held === "schildwaechter", null, { timeout: 15000 }).catch(() => {}); await ben.waitForTimeout(500);
+  check(await ben.evaluate(() => window.EZW.szene && window.EZW.szene.held === "schildwaechter" && window.EZW.ich().held === "schildwaechter") && HELDSETZEN.some((h) => h.p_user.endsWith("b002") && h.p_held === "schildwaechter"), "Im Heldenprofil gewählt: Ben bleibt Torvald (auch auf dem Server)");
   await anna.waitForTimeout(600); check(await anna.evaluate(() => window.EZW.spieler().some((d) => d.n === "Ben" && d.h === "schildwaechter")), "Anna sieht Ben jetzt als Torvald");
   /* Gast geht */
   await gast.close(); await anna.waitForFunction(() => window.EZW.spieler().length === 1, null, { timeout: 8000 }).catch(() => {});

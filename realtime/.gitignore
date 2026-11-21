@@ -1,3 +1,4 @@
 node_modules/
 server/dist/
 test/sim.gebaut.mjs
+welt/regionen/pruefwelt/

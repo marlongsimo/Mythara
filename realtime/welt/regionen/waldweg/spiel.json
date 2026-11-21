@@ -1,0 +1,72 @@
+{
+ "start": [
+  [
+   48,
+   2.5
+  ],
+  [
+   47,
+   1.5
+  ],
+  [
+   49,
+   1.5
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "wanderer_am_weg",
+   "rolle": "npc",
+   "figur": "wanderer",
+   "x": 33,
+   "y": 29.4
+  }
+ ],
+ "spawnzonen": [
+  {
+   "id": "kroeten_lichtung",
+   "zone": {
+    "art": "kreis",
+    "x": 66,
+    "y": 49.5,
+    "r": 3
+   },
+   "gegner": [
+    {
+     "art": "schlammkroete",
+     "anzahl": 2
+    },
+    {
+     "art": "kroetchen",
+     "anzahl": 1
+    }
+   ],
+   "aggro": 7,
+   "leine": 16,
+   "respawn": 180,
+   "abgleich": "server"
+  }
+ ],
+ "interaktionen": [],
+ "ausgaenge": [
+  {
+   "id": "nach_weidenhain",
+   "zone": {
+    "art": "rechteck",
+    "x0": 42,
+    "y0": 62.6,
+    "x1": 50,
+    "y1": 64
+   },
+   "nach": {
+    "art": "ort",
+    "ort": "weidenhain"
+   },
+   "text": "Weiter nach Weidenhain"
+  }
+ ],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ }
+}

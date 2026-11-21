@@ -38,18 +38,18 @@ async function spieler(name, token, held) { const ctx = await br.newContext({ vi
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "assassine");
   await anna.goto(B + "?x=1" + S); await ben.goto(B + "?x=1" + S);
-  for (const p of [anna, ben]) await p.waitForFunction(() => window.EZD && window.EZW && window.EZW.ich(), null, { timeout: 30000 });
+  for (const p of [anna, ben]) await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich(), null, { timeout: 30000 });
   /* Der Server bestimmt den Helden: Ben hatte lokal „assassine“, in der Datenbank steht „kopfgeldjaeger“ */
-  await ben.waitForFunction(() => window.EZD.szene.held === "kopfgeldjaeger", null, { timeout: 10000 }).catch(() => {});
-  check(await ben.evaluate(() => window.EZD.szene.held === "kopfgeldjaeger" && localStorage.getItem("ez_held") === "kopfgeldjaeger"), "Ben läuft mit dem Helden aus der Datenbank (Orin), nicht mit dem lokalen");
+  await ben.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich() && window.EZW.szene.held === "kopfgeldjaeger", null, { timeout: 10000 }).catch(() => {});
+  check(await ben.evaluate(() => Boolean(window.EZW && window.EZW.szene) && window.EZW.szene.held === "kopfgeldjaeger" && localStorage.getItem("ez_held") === "kopfgeldjaeger"), "Ben läuft mit dem Helden aus der Datenbank (Orin), nicht mit dem lokalen");
   check(HELDSETZEN.some((h) => h.p_user.endsWith("a001") && h.p_held === "schildwaechter"), "Anna hatte noch keinen: ihr Held (Torvald) wird beim ersten Betreten gespeichert");
   /* Sich gegenseitig sehen */
-  await anna.waitForFunction(() => [...window.EZD.szene.mit.figuren.values()].some((f) => /^Ben · St\. \d+$/.test(f.nm.text)), null, { timeout: 10000 }).catch(() => {});
-  const schild = await anna.evaluate(() => [...window.EZD.szene.mit.figuren.values()].map((f) => f.nm.text + "|" + f.held));
+  await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.mit && [...window.EZW.szene.mit.figuren.values()].some((f) => /^Ben · St\. \d+$/.test(f.nm.text)), null, { timeout: 10000 }).catch(() => {});
+  const schild = await anna.evaluate(() => [...window.EZW.szene.mit.figuren.values()].map((f) => f.nm.text + "|" + f.held));
   check(schild.length === 1 && /^Ben · St\. \d+\|kopfgeldjaeger$/.test(schild[0]), "Anna sieht Ben in der Waldmark mit Name, Stufe und Held (" + schild.join() + ")");
-  const vorher = await anna.evaluate(() => [...window.EZD.szene.mit.figuren.values()][0].d.x);
+  const vorher = await anna.evaluate(() => [...window.EZW.szene.mit.figuren.values()][0].d.x);
   await ben.bringToFront(); await ben.keyboard.down("d"); await ben.waitForTimeout(1200); await ben.keyboard.up("d"); await anna.waitForTimeout(800);
-  const nachher = await anna.evaluate(() => [...window.EZD.szene.mit.figuren.values()][0].d.x); check(nachher > vorher + 20, `Ben läuft – Anna sieht ihn wandern (x ${vorher} → ${nachher})`);
+  const nachher = await anna.evaluate(() => [...window.EZW.szene.mit.figuren.values()][0].d.x); check(nachher > vorher + 20, `Ben läuft – Anna sieht ihn wandern (x ${vorher} → ${nachher})`);
   if (process.env.EZ_BILD) await anna.screenshot({ path: process.env.EZ_BILD.replace(".png", "-waldmark.png") });
   /* Chat */
   await anna.fill("#ez-chat input", "Hallo Waldmark <b>fett</b>"); await anna.press("#ez-chat input", "Enter");
@@ -59,20 +59,20 @@ try {
   for (let i = 0; i < 6; i++) { await anna.fill("#ez-chat input", "Spam " + i); await anna.press("#ez-chat input", "Enter"); }
   await anna.waitForTimeout(500); check(await anna.evaluate(() => window.EZW.chat().some((m) => m.kanal === "system" && /Langsamer/.test(m.text))), "Zu viele Nachrichten: der Server bremst (höchstens 5 in 10 s)");
   /* Heldenwechsel nur in der Waldmark */
-  await anna.evaluate(() => window.EZW.held("elementarist")); await anna.waitForFunction(() => window.EZD && window.EZD.szene.held === "elementarist", null, { timeout: 10000 }).catch(() => {});
-  check(await anna.evaluate(() => window.EZD.szene.held === "elementarist") && HELDSETZEN.some((h) => h.p_user.endsWith("a001") && h.p_held === "elementarist"), "In der Waldmark wechselt Anna zu Vaelin – der Server speichert es");
-  await ben.waitForFunction(() => [...window.EZD.szene.mit.figuren.values()].some((f) => f.held === "elementarist"), null, { timeout: 8000 }).catch(() => {});
-  check(await ben.evaluate(() => [...window.EZD.szene.mit.figuren.values()].some((f) => f.held === "elementarist")), "Ben sieht Anna jetzt als Vaelin");
+  await anna.evaluate(() => window.EZW.held("elementarist")); await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.held === "elementarist", null, { timeout: 10000 }).catch(() => {});
+  check(await anna.evaluate(() => Boolean(window.EZW && window.EZW.szene) && window.EZW.szene.held === "elementarist") && HELDSETZEN.some((h) => h.p_user.endsWith("a001") && h.p_held === "elementarist"), "In der Waldmark wechselt Anna zu Vaelin – der Server speichert es");
+  await ben.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.mit && [...window.EZW.szene.mit.figuren.values()].some((f) => f.held === "elementarist"), null, { timeout: 8000 }).catch(() => {});
+  check(await ben.evaluate(() => [...window.EZW.szene.mit.figuren.values()].some((f) => f.held === "elementarist")), "Ben sieht Anna jetzt als Vaelin");
   await ben.goto(B + "?ort=weidenhain" + S); await ben.waitForFunction(() => window.EZW && window.EZW.ich() && window.EZW.ich().ort === "weidenhain", null, { timeout: 30000 });
   await ben.evaluate(() => window.EZW.held("assassine")); await ben.waitForTimeout(1200);
   check(await ben.evaluate(() => window.EZW.ich().held === "kopfgeldjaeger" && window.EZW.chat().some((m) => /nur in der Waldmark/.test(m.text))) && AKTIV["00000000-0000-0000-0000-00000000b002"] === "kopfgeldjaeger", "Im Dorf lehnt der Server einen Heldenwechsel ab");
-  await anna.waitForTimeout(1500); check(await anna.evaluate(() => window.EZD.szene.mit.figuren.size === 0 && window.EZW.chat().some((m) => /Ben ist weitergezogen/.test(m.text))), "Ben ist ins Dorf gereist: Anna sieht ihn nicht mehr und liest es im Systemkanal");
+  await anna.waitForTimeout(1500); check(await anna.evaluate(() => window.EZW.szene.mit.figuren.size === 0 && window.EZW.chat().some((m) => /Ben ist weitergezogen/.test(m.text))), "Ben ist ins Dorf gereist: Anna sieht ihn nicht mehr und liest es im Systemkanal");
   /* Tod: zurück in die Waldmark */
   await anna.goto(B + "?ort=weidenhain&kampf=speicher&server="); await anna.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 30000 }); await anna.waitForTimeout(500);
   await anna.evaluate(() => { const s = window.EZ.netz.sim, h = s.ich, m = s.wesen.find((w) => !w.held && !w.tot && w.team !== 0); s.abziehen(h, 99999, m, "nah"); });
   await anna.waitForURL((u) => /von=tod/.test(String(u)) || (!/kampf=/.test(String(u))), { timeout: 15000 }).catch(() => {});
   await anna.waitForFunction(() => window.EZW && window.EZW.chat().some((m) => /gefallen/.test(m.text)), null, { timeout: 20000 }).catch(() => {});
-  check(!/kampf=/.test(anna.url()) && await anna.evaluate(() => Boolean(window.EZD) && window.EZW.chat().some((m) => /gefallen/.test(m.text))), "Gefallen: Anna erwacht in der Waldmark (" + anna.url().replace(B, "") + ")");
+  check(!/kampf=/.test(anna.url()) && await anna.evaluate(() => Boolean(window.EZW.szene) && window.EZW.chat().some((m) => /gefallen/.test(m.text))), "Gefallen: Anna erwacht in der Waldmark (" + anna.url().replace(B, "") + ")");
   check(fehlerSeite.length === 0, "keine Fehler im Browser" + (fehlerSeite.length ? ": " + fehlerSeite[0] : ""));
 } catch (e) { fehler++; console.log("Unerwarteter Fehler:", e); console.log(log.slice(-1500)); }
 await br.close(); srv.kill(); sb.close();
