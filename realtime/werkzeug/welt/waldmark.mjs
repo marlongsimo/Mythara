@@ -27,7 +27,7 @@ const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a 
 const ZAUN_Y = 57, vorfeldTiefe = (x) => 10.2 + 1.7 * Math.sin(x / 4.3 + 0.7) + 1.1 * Math.sin(x / 1.9 + 2.1) + 0.8 * Math.sin(x / 9.7);
 const vorfeldX = (y) => [12.5 + 2.4 * Math.sin(y / 2.3) + 1.2 * Math.sin(y / 0.9), 83.5 + 2.4 * Math.cos(y / 2.1) - 1.1 * Math.sin(y / 1.1)];
 const imVorfeld = (x, y, rand = 0) => { const [a, b] = vorfeldX(y); return y >= ZAUN_Y - 0.5 && y < ZAUN_Y + vorfeldTiefe(x) - rand && x > a + rand && x < b - rand; };
-const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_linde_01", "stil_tanne_02", "stil_herbst_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
+const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_herbst_01", "stil_tanne_02", "stil_linde_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
 let saat = 21; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const schreibe = (name, region, g, objekte, spiel) => { const o = join(WELT, "regionen", name); mkdirSync(o, { recursive: true });
   writeFileSync(join(o, "region.json"), JSON.stringify(region, null, 1) + "\n"); writeFileSync(join(o, "gelaende.txt"), g.map((z) => z.join("")).join("\n") + "\n");

@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
 const B = 128, H = 96;
-const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_linde_01", "stil_tanne_02", "stil_herbst_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
+const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_herbst_01", "stil_tanne_02", "stil_linde_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
 let saat = 77; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 const rand = (x, y) => 1 + 0.07 * Math.sin(x / 3.3 + y / 4.1) + 0.05 * Math.sin(y / 2.1 - x / 5.7);   /* unruhige Ränder */

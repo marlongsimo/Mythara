@@ -14,7 +14,7 @@ import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
 const B = 64, H = 64;
-const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_linde_01", "stil_tanne_02", "stil_herbst_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
+const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_herbst_01", "stil_tanne_02", "stil_linde_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
 let saat = 5; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 const BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));
