@@ -30,26 +30,83 @@ F, K, KX = 48, 2, 0.32
 
 # Modelle: Teile übereinander (Datei, Höhe des Teils in Kenney-Einheiten wird aus dem Modell gelesen), Maßstab in Feldern je Einheit
 MODELLE = {
-    'burg_turm_01': dict(name='Burgturm (Kenney-Form)', paket='castle', teile=['tower-square-mid-door', 'tower-square-mid-windows', 'tower-square-top-roof-high'], mass=3.0, dreh=-90, saat=41),
+    'burg_turm_01': dict(name='Burgturm (Kenney-Form)', paket='castle', teile=['tower-square-mid-door', 'tower-square-mid-windows', 'tower-square-top-roof-high'], mass=3.0, dreh=-90, kategorie='gebaeude'),
+    # Ringmauer einer kompakten Burgsiedlung (Probe „Waldmark kompakt“)
+    'burg_mauer_quer': dict(name='Burgmauer (Ost–West)', paket='castle', teile=['wall'], mass=2.0, dreh=90, kategorie='bauteil'),
+    'burg_mauer_laengs': dict(name='Burgmauer (Nord–Süd)', paket='castle', teile=['wall'], mass=2.0, dreh=0, kategorie='bauteil'),
+    'burg_eckturm': dict(name='Eckturm', paket='castle', teile=['tower-square-mid', 'tower-square-top-roof-high'], mass=2.6, dreh=-90, kategorie='bauteil'),
+    'burg_torhaus': dict(name='Torhaus', paket='castle', teile=['wall-doorway'], mass=3.0, dreh=90, kategorie='bauteil', durchgang=True),
+    # Dorfdinge (Town Kit, Retro Fantasy Kit)
+    'k_stand_rot': dict(name='Marktstand rot', paket='town', teile=['stall-red'], mass=2.6, kategorie='kleinteil'),
+    'k_stand_gruen': dict(name='Marktstand grün', paket='town', teile=['stall-green'], mass=2.6, kategorie='kleinteil'),
+    'k_karren': dict(name='Karren', paket='town', teile=['cart'], mass=2.4, dreh=90, kategorie='kleinteil'),
+    'k_karren_hoch': dict(name='Heuwagen', paket='town', teile=['cart-high'], mass=2.4, kategorie='kleinteil'),
+    'k_laterne': dict(name='Laterne', paket='town', teile=['lantern'], mass=2.6, kategorie='kleinteil', klein=True),
+    'k_hecke': dict(name='Hecke', paket='town', teile=['hedge-large'], mass=2.4, dreh=90, kategorie='bewuchs'),
+    'k_zaun': dict(name='Zaun', paket='town', teile=['fence'], mass=2.4, dreh=90, kategorie='bauteil'),
+    'k_banner_rot': dict(name='Banner rot', paket='town', teile=['banner-red'], mass=2.6, dreh=90, kategorie='kleinteil', klein=True),
+    'k_banner_gruen': dict(name='Banner grün', paket='town', teile=['banner-green'], mass=2.6, dreh=90, kategorie='kleinteil', klein=True),
+    'k_fels_gross': dict(name='Felsen', paket='town', teile=['rock-large'], mass=2.6, kategorie='fels'),
+    'k_fels_klein': dict(name='Felsbrocken', paket='town', teile=['rock-small'], mass=2.6, kategorie='fels'),
+    'k_fels_breit': dict(name='Felsplatte', paket='town', teile=['rock-wide'], mass=2.6, kategorie='fels'),
+    'k_faesser': dict(name='Fässer', paket='retro', teile=['barrels'], mass=2.0, kategorie='kleinteil'),
+    'k_kiste': dict(name='Kiste', paket='retro', teile=['detail-crate'], mass=2.0, kategorie='kleinteil'),
+    'k_flaschenzug': dict(name='Flaschenzug', paket='retro', teile=['pulley-crate'], mass=2.0, kategorie='kleinteil'),
 }
-# Material aus der Farbe der Farbtafel: (Textur, Maßstab der Textur) oder eine feste Farbe
-def material(rgb):
-    r, g, b = [float(c) for c in rgb]; m = (r + g + b) / 3
-    if m < 95:
+# Material aus der Farbe der Farbtafel: (Textur, Maßstab der Textur, Tönung oder None) oder ('farbe', rgb)
+def gedaempft(r, g, b, k=0.38):
+    """Kenneys kräftige Farben zur gedeckten Palette der Welt hin ziehen"""
+    m = (r + g + b) / 3; return (r + (m - r) * k, g + (m - g) * k, b + (m - b) * k)
+
+
+WALDGRUEN = (92, 126, 64)
+
+
+def material(rgb, paket='castle', teil=''):
+    r, g, b = [float(c) for c in rgb]; m = (r + g + b) / 3; satt = max(r, g, b) - min(r, g, b)
+    if teil.startswith('rock') and satt < 70:
+        return ('fels', 0.3, (128 + (m - 165) * 0.6, 124 + (m - 165) * 0.6, 116 + (m - 165) * 0.6))
+    if 'lantern' in teil and b > r + 15 and m > 205:
+        return ('farbe', (255, 214, 130))                # Laternenglas leuchtet
+    if g > r + 30 and g > b - 10:
+        return ('laub', 0.35, tuple(0.4 * c + 0.6 * w for c, w in zip(gedaempft(r, g, b), WALDGRUEN)))
+    if paket == 'town':          # Town Kit: Ocker ist Holz, Blaugrau ist Stein, sehr helles Blau ist Wasser
+        if r > 180 and 70 < r - b < 125 and 115 < g < 150:
+            return ('holz', 0.1, None)
+        if 125 < r < 165 and r - b > 60:
+            return ('holz', 0.1, (118, 84, 58))
+        if b > r + 15 and m > 200 and ('fountain' in teil or 'well' in teil):
+            return ('farbe', (112, 158, 182))
+        if b > r + 15 and m > 180:
+            return ('farbe', (128, 130, 138))            # helles Metall: Beschläge, Achsen
+        if b > r + 15 and g < r + 25 and satt < 60:
+            return ('stein', 0.16, None)
+        if g > r + 30:
+            return ('laub', 0.35, gedaempft(r, g, b))
+        if satt > 60:
+            return ('stoff', 0.5, gedaempft(r, g, b))
+    if m < 95 and satt < 40:
         return ('farbe', (34, 28, 30))                 # Öffnung: Fenster, Tür, Schießscharte
-    if b > r + 40:
-        return ('schiefer', 0.12)                      # Dach
+    if g > r + 12 and g > b:
+        return ('laub', 0.35, gedaempft(r, g, b))      # Laub, Gras, Hecke (in der Farbe des Modells)
+    if b > r + 40 and m < 170:
+        return ('schiefer', 0.12, None)                # Dach
     if b >= r and r > 140:
         return ('farbe', (118, 122, 132))              # Metall
-    if r > 185 and r > g > b:
-        return ('quader', 0.24)                        # Stein
-    if r > g > b:
-        return ('holz', 0.1)                           # Holz
-    return ('farbe', tuple(int(c) for c in rgb))
+    if satt < 22:
+        return ('stein', 0.16, (r, g, b))              # grauer Stein, Fels
+    if r > 185 and r > g > b and satt < 120:
+        return ('quader', 0.24, None)                  # Mauerstein (Kenneys Ocker)
+    if r > g > b and m < 150:
+        return ('holz', 0.1, None)                     # Holz
+    return ('stoff', 0.5, gedaempft(r, g, b))         # kräftige Farben: Stoff, Fahnen, Planen
+# Materialnamen (Retro Fantasy Kit) statt Farbtafel
+NAMEN = {'bricks': ('quader', 0.24, None), 'stones': ('stein', 0.16, None), 'stonesPainted': ('stoff', 0.5, (214, 200, 172)), 'planks': ('holz', 0.1, None),
+         'roof': ('schiefer', 0.12, None), 'barrel': ('holz', 0.1, None), 'fence': ('holz', 0.1, None), 'tree': ('laub', 0.35, (96, 140, 70)), 'water': ('farbe', (70, 120, 150))}
 
 
 def lade(pfad):
-    v, vt, flaechen = [], [], []
+    v, vt, flaechen = [], [], []; mtl = None
     for z in open(pfad, encoding='utf8', errors='ignore'):
         t = z.split()
         if not t:
@@ -58,27 +115,33 @@ def lade(pfad):
             v.append([float(a) for a in t[1:4]])
         elif t[0] == 'vt':
             vt.append([float(a) for a in t[1:3]])
+        elif t[0] == 'usemtl':
+            mtl = t[1] if len(t) > 1 else None
         elif t[0] == 'f':
             ii = [p.split('/') for p in t[1:]]
-            flaechen.append(([int(p[0]) - 1 for p in ii], [int(p[1]) - 1 if len(p) > 1 and p[1] else -1 for p in ii]))
+            flaechen.append(([int(p[0]) - 1 for p in ii], [int(p[1]) - 1 if len(p) > 1 and p[1] else -1 for p in ii], mtl))
     return np.array(v, dtype=np.float64), np.array(vt if vt else [[0.5, 0.5]], dtype=np.float64), flaechen
 
 
 def dreiecke(M):
     """Alle Teile übereinander: Liste (Ecken in Weltfeldern 3×3, Farbe aus der Tafel)"""
-    ordner = os.path.join(HIER, 'kenney', M['paket'])
-    tafel = np.asarray(Image.open(os.path.join(ordner, 'colormap.png')).convert('RGB'))
+    ordner = M.get('ordner') or os.path.join(HIER, 'kenney', M['paket'])
+    tafel = np.asarray(Image.open(os.path.join(ordner, 'colormap.png') if os.path.exists(os.path.join(ordner, 'colormap.png')) else os.path.join(ordner, 'Textures', 'colormap.png')).convert('RGB')) \
+        if any(os.path.exists(os.path.join(ordner, *q)) for q in (('colormap.png',), ('Textures', 'colormap.png'))) else None
     aus, z0 = [], 0.0
     for teil in M['teile']:
         v, vt, fl = lade(os.path.join(ordner, teil + '.obj'))
         P = np.stack([v[:, 0], -v[:, 2], v[:, 1] - v[:, 1].min() + z0], 1) * M['mass']   # OBJ: y oben, −z nach Norden
         if M.get('dreh'):                                                                 # um die senkrechte Achse drehen (Grad, gegen den Uhrzeigersinn von oben)
             w = math.radians(M['dreh']); c, si = math.cos(w), math.sin(w); P = np.stack([P[:, 0] * c - P[:, 1] * si, P[:, 0] * si + P[:, 1] * c, P[:, 2]], 1)
-        for fi, ti in fl:
-            uv = vt[[t for t in ti if t >= 0]].mean(0) if any(t >= 0 for t in ti) else np.array([0.5, 0.5])
-            farbe = tafel[int(min(tafel.shape[0] - 1, max(0, (1 - uv[1]) * tafel.shape[0]))), int(min(tafel.shape[1] - 1, max(0, uv[0] * tafel.shape[1])))]
+        for fi, ti, mtl in fl:
+            if mtl in NAMEN:
+                art = NAMEN[mtl]
+            else:
+                uv = (vt[[t for t in ti if t >= 0]] % 1.0).mean(0) if any(t >= 0 for t in ti) else np.array([0.5, 0.5])
+                art = material(tafel[int(min(tafel.shape[0] - 1, max(0, (1 - uv[1]) * tafel.shape[0]))), int(min(tafel.shape[1] - 1, max(0, uv[0] * tafel.shape[1])))], M.get('paket', 'castle'), teil) if tafel is not None else ('farbe', (150, 140, 130))
             for k in range(1, len(fi) - 1):
-                aus.append((P[[fi[0], fi[k], fi[k + 1]]], farbe))
+                aus.append((P[[fi[0], fi[k], fi[k + 1]]], art))
         z0 += (v[:, 1].max() - v[:, 1].min()) * 0.985          # das nächste Teil sitzt (mit einer Spur Überlappung) darauf
     return aus
 
@@ -93,7 +156,7 @@ def render(M):
     bild = np.zeros((H * K, W * K, 3), np.float32); tiefe = np.full((H * K, W * K), np.inf, np.float32); deck = np.zeros((H * K, W * K), np.float32)
     licht = np.array(haus3d.LICHT, dtype=np.float64)
     blick = np.array([-KX, 1.0, -1.0])
-    for P, farbe in tris:
+    for P, art in tris:
         n = np.cross(P[1] - P[0], P[2] - P[0]); ln = np.linalg.norm(n)
         if ln < 1e-12 or np.dot(n, blick) > 0:            # Rückseiten weglassen
             continue
@@ -117,7 +180,6 @@ def render(M):
         neu = innen & (t < tiefe[ausschnitt] - 1e-6)
         if not neu.any():
             continue
-        art = material(farbe)
         if art[0] == 'farbe':
             c = np.broadcast_to(np.array(art[1], np.float32), Wp.shape)
         else:
@@ -131,8 +193,9 @@ def render(M):
             if art[0] == 'schiefer' and a[2] < 0.97:                                   # Dachflächen: Reihen laufen entlang der Traufe
                 u, v = (Wp[..., 0] if a[0] < a[1] else Wp[..., 1]), -(Wp[..., 2] + Wp[..., 1] * 0.0)
             px = ((u * F / m) % T.shape[1]).astype(int); py = ((v * F / m) % T.shape[0]).astype(int)
-            hellw = float(np.mean(farbe)) / 168.0                                       # Abstufungen der Tafel (Zierkanten) bleiben sichtbar
-            c = T[py, px] * min(1.18, max(0.82, hellw))
+            c = T[py, px]
+            if art[2] is not None:                                                      # eingefärbt: Helligkeit der Textur, Farbe des Modells
+                c = c.mean(-1, keepdims=True) / max(1.0, float(T.mean())) * np.array(art[2], np.float32)
         h = 0.5 + 0.62 * max(0.0, float(n @ licht))
         bild[ausschnitt][neu] = np.clip(c[neu] * h, 0, 255)
         tiefe[ausschnitt][neu] = t[neu]; deck[ausschnitt][neu] = 1
@@ -168,8 +231,14 @@ def main():
         M = MODELLE[kennung]; im, anker, (b, t) = render(M)
         os.makedirs(ZIEL, exist_ok=True); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6)
         a = np.asarray(im.getchannel('A')) > 200; ys, xs = np.where(a)
-        eintrag = {'id': kennung, 'name': M['name'], 'kategorie': 'gebaeude', 'bild': f'img/welt/gebaeude/kenney/{kennung}.webp', 'groesse': [im.width, im.height],
-                   'anker': anker, 'massstab': 1, 'kollision': {'art': 'rechteck', 'x': round(-b / 2, 2), 'y': round(-t, 2), 'b': round(b, 2), 'h': round(t, 2)}, 'tiefe': 'fuss',
+        if M.get('klein'):
+            koll = {'art': 'kreis', 'r': 0.25}
+        elif M.get('durchgang'):          # Torhaus: die Pfeiler sperrt das Gebiet (kollision.sperren), der Durchgang bleibt frei
+            koll = None
+        else:
+            koll = {'art': 'rechteck', 'x': round(-b / 2, 2), 'y': round(-t, 2), 'b': round(b, 2), 'h': round(t, 2)}
+        eintrag = {'id': kennung, 'name': M['name'], 'kategorie': M.get('kategorie', 'gebaeude'), 'bild': f'img/welt/gebaeude/kenney/{kennung}.webp', 'groesse': [im.width, im.height],
+                   'anker': anker, 'massstab': 1, 'kollision': koll, 'tiefe': 'fuss',
                    'durchscheinend': True, 'interaktion': None, 'sichtbar': [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1],
                    'herkunft': f'Form: Kenney {M["paket"]} kit (CC0, werkzeug/welt/kenney/{M["paket"]}/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar'}
         bib['objekte'] = [o for o in bib['objekte'] if o['id'] != kennung] + [eintrag]; bilder.append(im)
