@@ -272,7 +272,8 @@ for nr, t in enumerate(AUS.get("anbau", [])):
 # ---- Teilnetze (meshy_teile.py): fertige Teile aus einem Figurenmodell; sie übernehmen die Gewichte vom Grundkörper darunter
 for nr, t in enumerate(AUS.get("teilnetze", [])):
     o = laden(t["glb"], t["id"]); bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.context.view_layer.objects.active = o
-    bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")   # Flächen einheitlich nach außen (Meshy-Netze sind teils verdreht)
+    bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0002)   # GLB trennt Ecken an Kanten: zusammenführen (sonst schrumpft beim Glätten jedes Dreieck für sich)
+    bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")   # Flächen einheitlich nach außen (Meshy-Netze sind teils verdreht)
     if t.get("glaetten", AUS.get("teilnetze_glaetten", 0)): gl = o.modifiers.new("glatt", "SMOOTH"); gl.factor = 0.5; gl.iterations = int(t.get("glaetten", AUS.get("teilnetze_glaetten", 0))); bpy.ops.object.modifier_apply(modifier="glatt")
     bpy.ops.object.shade_smooth()
     dt = o.modifiers.new("gewichte", "DATA_TRANSFER"); dt.object = ob; dt.use_vert_data = True; dt.data_types_verts = {"VGROUP_WEIGHTS"}; dt.vert_mapping = "POLYINTERP_NEAREST"
