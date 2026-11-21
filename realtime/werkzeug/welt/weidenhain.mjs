@@ -6,8 +6,7 @@
  *   Drumherum Gassen mit Häuserreihen: Nordwesten, Westen, an der Dorfstraße im Norden, ein Viertel östlich des Grabens (über eine Holzbrücke)
  *   und eines südlich davon (über eine zweite Brücke). Ringsum Wald. Bei Tag statt bei Nacht.
  *
- * Lage: 4 × 3 Chunks ab Chunk 200|208, direkt südlich des Kreuzwalds. Der Feldweg des Kreuzwalds endet (noch) an einem umgestürzten Baum;
- * nimmt man ihn weg (werkzeug/welt/waldmark.mjs), führt er bei x ≈ 48 geradewegs ins Dorf. Der Spielserver kennt den Ort „weidenhain“ schon.
+ * Lage: 4 × 3 Chunks ab Chunk 200|208, direkt südlich des Kreuzwalds. Der Feldweg des Kreuzwalds führt bei x ≈ 48 geradewegs ins Dorf. Der Spielserver kennt den Ort „weidenhain“ schon.
  *
  * Aufruf (im Ordner realtime): node werkzeug/welt/weidenhain.mjs      danach: node werkzeug/welt/bauen.mjs weidenhain
  */
@@ -31,8 +30,8 @@ const aufPlatz = (x, y) => Math.hypot((x - PLATZ.x) / PLATZ.rx, (y - PLATZ.y) / 
 const GRABEN = [[67.5, -1], [67.5, 31], [66, 33.4], [62.8, 33.6], [62.8, 45.5], [60, 48.5], [27, 48.5], [24.5, 51], [24.5, H + 1]];
 const imGraben = (x, y) => strecke(x, y, GRABEN) < 1.55 + 0.12 * Math.sin(x / 2.3 + y / 3.1);
 const nahGraben = (x, y, r) => strecke(x, y, GRABEN) < r;
-const WEG_NORD = [[48, -1], [46.5, 10], [44.5, 21.5]];               /* die Dorfstraße: der Feldweg aus dem Kreuzwald */
-const PFADE = [[[55, 31], [58.5, 33.4], [60.4, 33.2]], [[31.5, 37.5], [28.6, 43], [27.9, 45.4]], [[31, 22.4], [30.6, 21]]];
+const WEG_NORD = [[48.8, -1], [47.6, 5], [46.5, 10], [44.5, 21.5]];   /* oben trifft der Feldweg des Kreuzwalds (x ≈ 48,8) */               /* die Dorfstraße: der Feldweg aus dem Kreuzwald */
+const PFADE = [[[55, 31], [58.5, 33.4], [60.4, 33.2]], [[31.5, 37.5], [31.6, 46], [27.9, 46.1]], [[31, 22.4], [30.6, 21]]];
 /* Gassen (je eine Häuserreihe steht nördlich davon, die Türen zur Gasse) */
 const GASSEN = {
   nordwest: [[46.5, 12.5], [30, 12.8], [9, 12.4]],
@@ -46,22 +45,31 @@ const GASSEN = {
   sued: [[44, 51.2], [44.5, 66], [44, 82.5]],
   sued1: [[28.5, 66.5], [44.5, 66], [64, 66.4], [84, 66], [110, 66.6]],
   sued2: [[29.5, 82.5], [44, 82], [62, 82.4]] };
+/** Eine Gasse sanft schwingen lassen: dicht abgetastet, quer zur Richtung versetzt; an beiden Enden ohne Versatz (Kreuzungen und Brücken bleiben, wo sie sind) */
+const kurve = (p, amp, welle, ph) => { const aus = []; let s = 0, L = 0; for (let i = 1; i < p.length; i++) L += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]);
+  for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], l = Math.hypot(x1 - x0, y1 - y0), nx = -(y1 - y0) / l, ny = (x1 - x0) / l;
+    for (let k = i === 1 ? 0 : 1; k <= Math.ceil(l); k++) { const t = k / Math.ceil(l), ss = s + t * l, f = Math.sin(Math.PI * Math.min(1, ss / L)) ** 0.6, v = amp * f * (Math.sin(ss / welle + ph) + 0.4 * Math.sin(ss / (welle * 0.43) + ph * 2));
+      aus.push([+(x0 + (x1 - x0) * t + nx * v).toFixed(2), +(y0 + (y1 - y0) * t + ny * v).toFixed(2)]); } s += l; }
+  return aus; };
+{ let ph = 0.7; for (const k of Object.keys(GASSEN)) { GASSEN[k] = kurve(GASSEN[k], k.startsWith("ost") && k !== "ostquer" ? 1.1 : 1.4, 7.5, ph); ph += 1.9; } }
 const inGasse = (x, y, r) => Object.values(GASSEN).some((p) => strecke(x, y, p) < r);
 /* Brücken: Fuß = Südkante, Mitte. quer: 6 × 2,6 Felder, laengs: 2,6 × 5 Felder */
 const BRUECKEN = [{ objekt: "dorf_bruecke_01", x: 67.5, y: 13.8, frei: [64.5, 11.2, 70.5, 13.8] }, { objekt: "dorf_bruecke_02", x: 44, y: 51.2, frei: [42.7, 46.2, 45.3, 51.2] }];
 const aufBruecke = (x, y) => BRUECKEN.some((b) => x >= b.frei[0] && x <= b.frei[2] && y >= b.frei[1] && y <= b.frei[3]);
 
 /* ───── Häuserreihen: [Gasse, Lage der Fußpunkte entlang der Gasse] – die Häuser stehen 1,5 Felder nördlich der Gasse ───── */
-const REIHEN = [["nordwest", [13, 22, 31, 40]], ["nordost", [55, 61.5]], ["ost1", [76, 84.5, 104.5, 113]], ["west1", [10, 18.5]], ["west2", [10, 18.5]],
+const REIHEN = [["nordwest", [11, 20, 29, 37.5]], ["nordost", [55, 61.5]], ["ost1", [76, 84.5, 104.5, 113]], ["west1", [10, 18.5]], ["west2", [10, 18.5]],
   ["ost2", [76, 85, 105, 114]], ["ost3", [76, 85, 105, 114]], ["sued1", [33, 52.5, 61, 71, 80, 89, 105]], ["sued2", [34, 52.5]]];
 const HAUSARTEN = ["weidenhain_fachwerk_02", "dorf_haus_holz_01", "weidenhain_kate_01", "weidenhain_fachwerk_03", "dorf_haus_holz_03", "dorf_huette_holz_02",
   "weidenhain_bauernhaus_01", "dorf_haus_holz_02", "dorf_kraeuterhaus_01", "dorf_huette_holz_01", "weidenhain_fachwerk_02", "weidenhain_kate_01"];
-const gasseY = (p, x) => { let best = null; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i]; if ((x - x0) * (x - x1) <= 0 && x0 !== x1) best = y0 + (y1 - y0) * (x - x0) / (x1 - x0); } return best; };
+const gasseY = (p, x) => { let best = null; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i]; if ((x - x0) * (x - x1) <= 0 && x0 !== x1) { best = y0 + (y1 - y0) * (x - x0) / (x1 - x0); break; } } return best; };
 const haeuser = []; let art = 0;
 for (const [gasse, xs] of REIHEN) for (const x of xs) {
   const yG = gasseY(GASSEN[gasse], x); if (yG === null) throw new Error(`Gasse ${gasse} reicht nicht bis x = ${x}`);
   const id = HAUSARTEN[art++ % HAUSARTEN.length], plan = PLAN.get(id), tx = plan.tueren[0].x;
-  haeuser.push({ objekt: id, x: +(x - tx).toFixed(2), y: +(yG - 1.5).toFixed(2), tuer: [x, yG - 1.5] }); }   /* die Tür liegt genau über der Gasse */
+  const dx = (wurf() - 0.5) * 1.2, zurueck = wurf() < 0.45 ? 0.8 + wurf() * 1.4 : 0, xt = x + dx, yt = (gasseY(GASSEN[gasse], xt) ?? yG) - 1.5 - zurueck;
+  haeuser.push({ objekt: id, x: +(xt - tx).toFixed(2), y: +yt.toFixed(2), tuer: [xt, yt] });                /* die Tür liegt über der Gasse, manche Häuser stehen etwas zurück */
+  if (zurueck) PFADE.push([[xt, yt + 1.0], [xt + (wurf() - 0.5) * 0.8, yt + 1.5 + zurueck]]); }
 const koerperVon = (h) => PLAN.get(h.objekt).koerper.map((k) => [h.x + k.x, h.y - k.d - k.t, h.x + k.x + k.b, h.y - k.d]);
 const imHaus = (x, y, rand_ = 0) => haeuser.some((h) => koerperVon(h).some(([x0, y0, x1, y1]) => x > x0 - rand_ && x < x1 + rand_ && y > y0 - rand_ && y < y1 + rand_));
 

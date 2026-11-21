@@ -13,7 +13,7 @@ Stand: 21.11.2026 · Grundlage: Skizze des Auftraggebers (Waldmark oben, Kreuzun
 | Pfad vom Steinweg Ost | schmaler Erdpfad (2–3 Felder) hinunter zur Lichtung |
 | Pfad vom Feldweg | schmaler Erdpfad nach Osten zur Lichtung |
 | Lichtung | rund und unregelmäßig, ca. 50 × 38 Felder, Wiese mit Blumenflecken, vier einzelne Bäume am Saum |
-| Wegenden | je ein **umgestürzter Baum** quer über dem Weg, Hinweis „Hier geht es noch nicht weiter“; dazu eine unsichtbare Sperre durch den Wald bis an den Gebietsrand (im Osten oberhalb der Lichtung) |
+| Wegenden | Steinwege West und Ost: je ein **umgestürzter Baum** quer über dem Weg, Hinweis „Hier geht es noch nicht weiter“; dazu eine unsichtbare Sperre durch den Wald bis an den Gebietsrand (im Osten oberhalb der Lichtung) |
 | Wald | dichte Bäume aus der vorhandenen Baumbibliothek, nie auf Wegen, Säumen oder der Lichtung |
 
 ## Technik
@@ -32,6 +32,10 @@ Stand: 21.11.2026 · Grundlage: Skizze des Auftraggebers (Waldmark oben, Kreuzun
 - hinter keinem der drei Stämme ist ein Feld erreichbar.
 
 `test/welt-spielstart.test.mjs` prüft: kein Knopf im Südtor, man läuft hindurch in den Kreuzwald, und ohne Kampagnen gibt es keine Weltkarte.
+
+## Nachtrag 21.11.2026
+
+Der Feldweg endet nicht mehr am Stamm: Er führt bis an den Südrand und weiter nach **Weidenhain** (siehe 12-weidenhain.md).
 
 ## Für später
 

@@ -33,8 +33,11 @@ ihr Wasser ist über `kollision.freigeben` begehbar. Der Test prüft, dass alle 
 - `haus.py`: `feuer`, `steinring`, `wehr`, `zaun`, `kuerbisse`. Steinring und Kürbisse sind ohne Bildvorlage gezeichnet. Feuer, Wehr und Zaun nutzen die Holzmaserung, deren Lizenz ungeklärt ist (QUELLEN.md).
 - Generator `werkzeug/welt/weidenhain.mjs`, Prüfung `test/welt-weidenhain.test.mjs` (Türen, Lesestellen und Leute erreichbar, alle Bauten da, Graben fließt).
 
-## Anschluss (noch offen)
+## Gewachsener Ortsbild und Anschluss (dritter Schritt)
 
-Weidenhain ist gebaut, aber noch **nicht erreichbar**: Der Feldweg des Kreuzwalds endet weiter an einem umgestürzten Baum.
-Zum Anschließen in `werkzeug/welt/waldmark.mjs` den Südstamm und seine Sperre entfernen, den Feldweg bis an den Südrand verlängern
-(er trifft bei x ≈ 48 auf den Dorfeingang) und beide Regionen neu backen. Vorschau ohne Anschluss: `echtzeit/?welt=weidenhain`.
+- **Gassen schwingen:** Jede Gasse wird dicht abgetastet und quer zur Richtung sanft versetzt (zwei überlagerte Wellen); an Kreuzungen und Brücken bleibt sie fest.
+- **Häuser versetzt:** leicht seitlich verschoben, knapp die Hälfte steht 0,8 bis 2,2 Felder zurück, mit einem kurzen Trampelpfad zur Gasse.
+- **Prüfung:** Kein Gebäude berührt ein anderes (mindestens 0,6 Felder Abstand), keines steht im Wasser oder auf einer Gasse (außer der Mühle mit ihrem Rad).
+- **Angeschlossen:** Der umgestürzte Baum am Ende des Feldwegs im Kreuzwald ist weg, der Feldweg läuft bis an den Südrand und trifft dort auf die Dorfstraße
+  von Weidenhain. Der Test `welt-waldmark` prüft den Fußweg vom Brunnen der Waldmark bis nach Weidenhain (etwa 230 Felder).
+  Steinwege West und Ost enden weiter an ihren Stämmen.
