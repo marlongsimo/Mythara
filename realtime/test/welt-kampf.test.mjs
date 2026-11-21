@@ -68,9 +68,15 @@ try {
   await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.hier === "waldmark", null, { timeout: 30000 }); await anna.waitForTimeout(800);
   check(await anna.evaluate(() => !window.EZK && !document.body.classList.contains("weltkampf")), "Teleport: zurück in der Waldmark, dort wird nicht gekämpft");
   check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "🛡 Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
+  /* Heldenwechsel in der Waldmark: gilt erst nach der Bestätigung des Servers – und bleibt */
+  await anna.keyboard.press("h"); await anna.waitForSelector("#ez-wahl:not([hidden])", { timeout: 5000 }); await Promise.all([anna.waitForNavigation({ timeout: 15000 }), (async () => { await anna.click('#ez-wahl [data-held="lichtbringer"]'); await anna.click("#ez-los"); })()]);
+  await anna.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.ich && window.EZW.ich(), null, { timeout: 30000 }); await anna.waitForTimeout(4000);
+  check(await anna.evaluate(() => window.EZW.szene.held === "lichtbringer" && window.EZW.ich().held === "lichtbringer") && AKTIV["00000000-0000-0000-0000-00000000a001"] === "lichtbringer", "Heldenwechsel in der Waldmark: Anna ist Elara – und bleibt es (auch auf dem Server)");
   /* Ben läuft durchs Südtor zurück in die Waldmark */
   await ben.goto(B + S + "&wx=6448&wy=6467.5"); await bereit(ben); /* Startstelle über die Adresse – ein Wert im Speicher könnte von der laufenden Seite überschrieben werden */
   check(await ben.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔ Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");
+  await ben.keyboard.press("h"); await ben.waitForTimeout(600);
+  check(await ben.evaluate(() => document.querySelector("#ez-wahl").hidden && /nur in der Waldmark/.test(document.querySelector("#ez-dorf-hilfe").textContent)), "Im Kreuzwald lässt sich der Held nicht wechseln („nur in der Waldmark“)");
   await ben.keyboard.down("w"); await ben.waitForFunction(() => window.EZW.szene.hier === "waldmark", null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(400); await ben.keyboard.up("w");
   check(await ben.evaluate(() => window.EZW.szene.hier === "waldmark" && !window.EZK), "Durchs Südtor nach Norden: Ben verlässt das Kampfgebiet nahtlos und ist in der Waldmark (" + await ben.evaluate(() => window.EZW.szene.ort.y.toFixed(1)) + ")");
   /* Gast: der Browser rechnet selbst */

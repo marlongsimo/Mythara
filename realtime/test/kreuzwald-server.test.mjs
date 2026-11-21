@@ -7,14 +7,15 @@ import { createServer } from "node:http"; import { spawn } from "node:child_proc
 const require = createRequire(import.meta.url), WebSocket = require("ws");
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
 const TOKEN = "tok_anna_" + "x".repeat(30), ANNA = "00000000-0000-0000-0000-00000000a001", STELLE = {}, GESETZT = [];
+const TOKEN_BEN = "tok_ben__" + "x".repeat(30); let LANGSAM = 0; /* so lange (ms) braucht die nachgebildete Datenbank für den aktiven Helden – wie Supabase im echten Netz */
 const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.headers.apikey !== "sb_secret_test") return send(401, {});
-  if (req.url === "/auth/v1/user") return req.headers.authorization === "Bearer " + TOKEN ? send(200, { id: ANNA, is_anonymous: false }) : send(401, {});
+  if (req.url === "/auth/v1/user") return req.headers.authorization === "Bearer " + TOKEN ? send(200, { id: ANNA, is_anonymous: false }) : req.headers.authorization === "Bearer " + TOKEN_BEN ? send(200, { id: "00000000-0000-0000-0000-00000000b002", is_anonymous: false }) : send(401, {});
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_werte")) return send(200, [{ ep: { schildwaechter: 300 } }]);
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_siege")) return send(200, []);
   if (req.url.startsWith("/rest/v1/rpg_profiles")) return send(200, [{ handle: "Anna" }]);
-  if (req.url.startsWith("/rest/v1/rpg_echtzeit_aktiver_held")) return send(200, [{ held: "schildwaechter" }]);
+  if (req.url.startsWith("/rest/v1/rpg_echtzeit_aktiver_held")) return void setTimeout(() => send(200, [{ held: "schildwaechter" }]), LANGSAM);
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_position")) return send(200, STELLE[wer(req.url)] ? [STELLE[wer(req.url)]] : []);
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_position_setzen") { const a = JSON.parse(b); GESETZT.push(a); STELLE[a.p_user] = { region: a.p_region, x: a.p_x, y: a.p_y }; return send(200, { ok: true }); }
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_gutschrift") return send(200, { ep: {}, seelen: 0 });
@@ -44,6 +45,18 @@ try {
   const ich2 = await warte(() => w2.post.find((m) => m.t === "ich")); check(ich2 && ich2.pos && ich2.pos.x === 6450.5, "…und kommt beim nächsten Anmelden (anderes Gerät) zurück");
   w2.ws.send(JSON.stringify({ t: "pos", x: 1, y: 2, wx: -5, wy: 99999999 })); await new Promise((r) => setTimeout(r, 200)); const n3 = GESETZT.length; w2.ws.close(); await new Promise((r) => setTimeout(r, 500));
   check(STELLE[ANNA].x === 6450.5 && GESETZT.length >= n3, "Unsinnige Stellen nimmt der Server nicht an");
+  /* 4) Geisterhelden: Die Seite lädt neu, während der Server noch auf die Datenbank wartet – es darf kein Held ohne Verbindung zurückbleiben */
+  const helden = (z) => z.w.filter((e) => e[1]).length;
+  LANGSAM = 700; const g1 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g1.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN })); await new Promise((r) => setTimeout(r, 150)); g1.ws.close();
+  await new Promise((r) => setTimeout(r, 1200)); LANGSAM = 0;
+  const bn = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=104&ly=20"); bn.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN_BEN }));
+  const zb = await warte(() => { const m = [...bn.post].reverse().find((m) => m.t === "z"); return m && m.z; }); check(zb && helden(zb) === 1, `Ben schaut in den Kreuzwald: kein Geist von Anna, nur er selbst (${zb && helden(zb)} Held)`); bn.ws.close(); await new Promise((r) => setTimeout(r, 300));
+  const g2 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g2.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const z2 = await warte(() => { const m = [...g2.post].reverse().find((m) => m.t === "z"); return m && m.z; }); check(z2 && helden(z2) === 1, `Neu geladen während der Anmeldung: nur ein Held im Kreuzwald (${z2 && helden(z2)})`);
+  /* zweites Fenster derselben Person: der alte Held verschwindet sofort */
+  const g3 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=102&ly=20"); g3.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  await warte(() => g3.post.some((m) => m.t === "z")); await new Promise((r) => setTimeout(r, 400)); const z3 = [...g3.post].reverse().find((m) => m.t === "z").z;
+  check(helden(z3) === 1 && g2.ws.readyState >= 2, `Zweites Fenster: der alte Held ist weg, das alte Fenster getrennt (${helden(z3)} Held)`); g3.ws.close();
   /* 3) Gast: nichts wird gemerkt */
   const g = await verbinde("?welt=1&ort=waldmark"); g.ws.send(JSON.stringify({ t: "anmeldung" })); await warte(() => g.post.find((m) => m.t === "ich")); g.ws.send(JSON.stringify({ t: "pos", x: 1, y: 2, wx: 6400, wy: 6400 })); const n4 = GESETZT.length; g.ws.close(); await new Promise((r) => setTimeout(r, 500));
   check(GESETZT.length === n4, "Bei Gästen merkt sich der Server nichts");

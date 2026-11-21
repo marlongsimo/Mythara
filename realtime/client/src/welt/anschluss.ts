@@ -50,8 +50,11 @@ function oeffne(art: string, s: Welt) {
   else $("#ez-dorf-knopf").classList.add("bald");   /* „kommt noch“ */
 }
 /** Den Helden wechseln – nur in der Waldmark (der Server speichert ihn mit dem Konto) */
-function heldWaehlen(s: Welt) { if (s.gesperrt) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
-  wahl((held) => { weltHeld(held); s.gesperrt = false; if (held !== s.held) location.reload(); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
+/** Helden wechseln geht nur in der Waldmark (der Server prüft es ebenso) */
+const nurWaldmark = (s: Welt) => { if (s.hier === "waldmark") return true; const t = $("#ez-dorf-hilfe"); t.textContent = "Den Helden wechselst du nur in der Waldmark."; t.style.display = ""; chatSystem("Den Helden wechselst du nur in der Waldmark."); return false; };
+/* Nach dem Wechsel lädt die Seite erst, wenn der Server den neuen Helden bestätigt („ich“) – sonst käme er beim Neuladen mit dem alten zurück; notfalls nach 3 s */
+function heldWaehlen(s: Welt) { if (s.gesperrt || !nurWaldmark(s)) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
+  wahl((held) => { s.gesperrt = false; if (held === s.held) return; s.gesperrt = true; weltHeld(held); setTimeout(() => location.reload(), 3000); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
 function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
   s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.cameras.main.fadeOut(300, 0, 0, 0); s.time.delayedCall(320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
@@ -140,7 +143,7 @@ export function weltAnschliessen(start: string, tor: string) {
     const q = new URLSearchParams(location.search);
     if (q.get("von") === "tod") { setTimeout(() => chatSystem("Du bist gefallen und in der Waldmark wieder zu dir gekommen."), 300); q.delete("von"); history.replaceState(null, "", "?" + q.toString()); }
     /* Heldenprofil: Bildnis = Held. Der Server speichert den Wechsel (sonst setzt er den alten zurück); seine Bestätigung lädt neu, notfalls nach kurzer Zeit */
-    const heldWahl = (ev: Event) => { const h = String((ev as CustomEvent).detail || ""); if (!h || h === s.held) return; ev.preventDefault(); weltHeld(h); setTimeout(() => location.reload(), 1500); };
+    const heldWahl = (ev: Event) => { const h = String((ev as CustomEvent).detail || ""); if (!h || h === s.held) return; ev.preventDefault(); if (!nurWaldmark(s)) return; s.gesperrt = true; weltHeld(h); setTimeout(() => location.reload(), 3000); };
     window.addEventListener("ez-held-wahl", heldWahl);
     schild = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: "#ffe08a", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     (s as unknown as { schild: Phaser.GameObjects.Text }).schild = schild; /* für Prüfungen, wie in der gemalten Waldmark */
