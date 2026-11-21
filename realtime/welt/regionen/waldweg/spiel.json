@@ -17,17 +17,6 @@
  "spawnzonen": [],
  "interaktionen": [
   {
-   "id": "stamm_west_ansehen",
-   "art": "lesen",
-   "x": 23.6,
-   "y": 47.65,
-   "radius": 1.8,
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter."
-   }
-  },
-  {
    "id": "stamm_ost_ansehen",
    "art": "lesen",
    "x": 232.4,
@@ -53,13 +42,6 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [
-   {
-    "art": "rechteck",
-    "x0": 21.2,
-    "y0": 0,
-    "x1": 22.8,
-    "y1": 192
-   },
    {
     "art": "rechteck",
     "x0": 233.2,

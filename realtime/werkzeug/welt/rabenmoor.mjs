@@ -29,6 +29,7 @@ const WEG = [[B + 1, 40], [118, 40.6], [108, 41.6], [100, 42.4]];               
 const BOHLEN = [95, 89, 83, 77].map((x) => ({ objekt: "dorf_bruecke_01", x, y: 43.6, frei: [x - 3, 41.0, x + 3, 43.6] }));   /* Bohlenweg übers Moor */
 const STEG = { objekt: "dorf_bruecke_02", x: 56, y: 73.6, frei: [54.7, 68.4, 57.3, 73.6] };
 const TORFPFAD = [[31, 33], [26, 28.5], [21, 24.5], [18.5, 22]];
+const NORDPFAD = [[50, 26], [50.4, 14], [50.5, -1]];   /* Trampelpfad nach Norden durchs Moor (weiter in der Westmark) */
 const SCHREIN = { x: 86, y: 18, r: 8 }, inSchrein = (x, y) => Math.hypot(x - SCHREIN.x, (y - SCHREIN.y) * 1.15) < SCHREIN.r * welle(x * 1.3, y);   /* abgelegen, ohne Weg: der versunkene Schrein */
 const torfInseln = [ [70, 80, 5], [100, 72, 4], [28, 74, 5.5], [80, 12, 3.5], [10, 50, 4], [40, 88, 4], [112, 86, 4]];
 const aufTorf = (x, y) => torfInseln.some(([a, b, r]) => Math.hypot(x - a, (y - b) * 1.2) < r * welle(x, y * 2));
@@ -48,7 +49,8 @@ const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B;
   else if (aufPlatz(cx, cy)) c = "p";
   else if (inInsel(cx, cy) || inHedda(cx, cy)) c = GASSEN.some((p) => strecke(cx, cy, p) < 1.0) ? "e" : (inInsel(cx, cy, 0.9) || inHedda(cx, cy)) ? (Math.sin(cx / 3.3) * Math.cos(cy / 2.7) > 0.32 ? "t" : Math.sin(cx / 2.1 + 1) * Math.cos(cy / 1.9) > 0.78 ? "m" : "v") : "s";
   else if (inSchrein(cx, cy)) c = Math.hypot(cx - SCHREIN.x, cy - SCHREIN.y) < 3.2 ? "m" : "t";
-  else if (strecke(cx, cy, TORFPFAD) < 1.2) c = "m";
+  else if (strecke(cx, cy, TORFPFAD) < 1.2 || strecke(cx, cy, NORDPFAD) < 1.1) c = "m";
+  else if (strecke(cx, cy, NORDPFAD) < 2.4) c = "t";
   else if (strecke(cx, cy, TORFPFAD) < 2.6 || aufTorf(cx, cy)) c = "t";
   z.push(c); } g.push(z); }
 
@@ -68,7 +70,7 @@ const dinge = [
 for (const [a, b, r] of torfInseln) { dinge.push(o(wurf() < 0.6 ? "stil_erle_tot_01" : "stil_erle_tot_02", a + (wurf() - 0.5) * r, b + (wurf() - 0.3) * r * 0.6, { s: +(0.85 + wurf() * 0.3).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }));
   if (r > 4.2) dinge.push(o("stil_birke_01", a + r * 0.4, b + 1, { s: 0.85 })); }
 const amUfer = (x, y) => { const c = g[Math.floor(y)]?.[Math.floor(x)]; if (c !== "o") return false; for (const [dx, dy] of [[1.5, 0], [-1.5, 0], [0, 1.5], [0, -1.5]]) { const d = g[Math.floor(y + dy)]?.[Math.floor(x + dx)]; if (d && d !== "o") return true; } return false; };
-const belegt = (x, y, ab) => dinge.some((d) => Math.hypot(d.x - x, d.y - y) < ab) || BOHLEN.some((b) => x > b.frei[0] - 1 && x < b.frei[2] + 1 && y > b.frei[1] - 2 && y < b.frei[3] + 1) || (x > STEG.frei[0] - 2 && x < STEG.frei[2] + 4 && y > STEG.frei[1] - 1 && y < STEG.frei[3] + 2);
+const belegt = (x, y, ab) => strecke(x, y, NORDPFAD) < 3 || dinge.some((d) => Math.hypot(d.x - x, d.y - y) < ab) || BOHLEN.some((b) => x > b.frei[0] - 1 && x < b.frei[2] + 1 && y > b.frei[1] - 2 && y < b.frei[3] + 1) || (x > STEG.frei[0] - 2 && x < STEG.frei[2] + 4 && y > STEG.frei[1] - 1 && y < STEG.frei[3] + 2);
 for (let i = 0; i < 4000 && dinge.filter((d) => d.objekt.startsWith("stil_schilf")).length < 120; i++) { const x = +(wurf() * (WALDRAND(40) - 4)).toFixed(2), y = +(wurf() * H).toFixed(2);
   if (amUfer(x, y) && !belegt(x, y, 2.2)) dinge.push(o(wurf() < 0.5 ? "stil_schilf_01" : "stil_schilf_02", x, y, wurf() < 0.5 ? { spiegeln: true } : {})); }
 for (let i = 0; i < 3000 && dinge.filter((d) => d.objekt === "stil_moorlicht_01").length < 26; i++) { const x = +(wurf() * 92).toFixed(2), y = +(wurf() * H).toFixed(2);

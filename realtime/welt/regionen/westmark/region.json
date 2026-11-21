@@ -1,0 +1,15 @@
+{
+ "id": "westmark",
+ "name": "Die Westmark",
+ "untertitel": "Wiesen und karges Moor am Westweg",
+ "ursprung": [
+  196,
+  202
+ ],
+ "chunks": [
+  2,
+  6
+ ],
+ "biom": "wiese",
+ "stufe": 1
+}
