@@ -27,6 +27,7 @@ const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a 
 const ZAUN_Y = 57, vorfeldTiefe = (x) => 10.2 + 1.7 * Math.sin(x / 4.3 + 0.7) + 1.1 * Math.sin(x / 1.9 + 2.1) + 0.8 * Math.sin(x / 9.7);
 const vorfeldX = (y) => [12.5 + 2.4 * Math.sin(y / 2.3) + 1.2 * Math.sin(y / 0.9), 83.5 + 2.4 * Math.cos(y / 2.1) - 1.1 * Math.sin(y / 1.1)];
 const imVorfeld = (x, y, rand = 0) => { const [a, b] = vorfeldX(y); return y >= ZAUN_Y - 0.5 && y < ZAUN_Y + vorfeldTiefe(x) - rand && x > a + rand && x < b - rand; };
+const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_linde_01", "stil_tanne_02", "stil_herbst_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
 let saat = 21; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const schreibe = (name, region, g, objekte, spiel) => { const o = join(WELT, "regionen", name); mkdirSync(o, { recursive: true });
   writeFileSync(join(o, "region.json"), JSON.stringify(region, null, 1) + "\n"); writeFileSync(join(o, "gelaende.txt"), g.map((z) => z.join("")).join("\n") + "\n");
@@ -38,7 +39,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const frei = (x, y, ab) => { for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) for (const p of gitter.get(zelle(x + di * 3, y + dj * 3)) || []) if (Math.hypot(p.x - x, p.y - y) < ab) return false; return true; };
   for (let n = 0; n < B * H * dichte; n++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2), wv = wald(x, y), w = wv === true || wv >= 0.6;
     if (tabu(x, y) || (typeof wv === "number" ? wurf() > Math.max(wv, licht) : (!w && wurf() > licht)) || !frei(x, y, w ? 2.3 : 4.2)) continue;
-    const z = wurf(), art = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6, p = { id: "b" + String(aus.length + 1).padStart(4, "0"), objekt: "wald_baum" + art, x, y, s: +(0.85 + wurf() * 0.27).toFixed(2) };
+    const z = wurf(), art = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6, p = { id: "b" + String(aus.length + 1).padStart(4, "0"), objekt: BAUM[art], x, y, s: +(0.85 + wurf() * 0.27).toFixed(2) };
     if (wurf() < 0.5) p.spiegeln = true; if (!passt(p)) continue; aus.push(p); const k = zelle(x, y); gitter.set(k, [...(gitter.get(k) || []), p]); }
   return aus; }
 
@@ -137,7 +138,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const frei = (x, y) => Math.min(dTor(x, y), dStein(x, y)) < 5 || dFeld(x, y) < 4 || dPfad(x, y) < 2.6 || lichtR(x, y) < 1.12 || imVorfeld(x - DX, y + 64) || amStamm(x, y);
   const wald = baeume(B, H, (x, y) => g[Math.min(H - 1, Math.floor(y))][Math.min(B - 1, Math.floor(x))] === "f", frei, 0.95, 0.02, (p) => sichtFrei(p, 64, -DX));
   /* ein paar einzelne Bäume auf der Lichtung und am Saum, damit sie natürlich wirkt */
-  const einzeln = [[200, 112, 3], [229, 129, 1], [221, 106, 5], [196, 128, 2]].map(([x, y, a], i) => ({ id: "l" + (i + 1), objekt: "wald_baum" + a, x, y, s: 1.05 }));
+  const einzeln = [[200, 112, 3], [229, 129, 1], [221, 106, 5], [196, 128, 2]].map(([x, y, a], i) => ({ id: "l" + (i + 1), objekt: BAUM[a], x, y, s: 1.05 }));
   const objekte = [...wald, ...einzeln, ...ende].sort((a, b) => a.y - b.y);
   const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.8, abgleich: "keiner", daten: { text } });
   const versperrt = "Ein umgestürzter Baum versperrt den Weg. Hier geht es noch nicht weiter.";

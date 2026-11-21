@@ -15,6 +15,7 @@ import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
 const B = 128, H = 96;
+const BAUM = [null, "stil_eiche_01", "stil_eiche_02", "stil_tanne_01", "stil_linde_01", "stil_tanne_02", "stil_herbst_01"];   /* Bäume im Spielstil (werkzeug/welt/baum.py) statt der alten Waldbäume */
 let saat = 77; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 const rand = (x, y) => 1 + 0.07 * Math.sin(x / 3.3 + y / 4.1) + 0.05 * Math.sin(y / 2.1 - x / 5.7);   /* unruhige Ränder */
@@ -90,7 +91,7 @@ const dinge = [
   o("weidenhain_kornspeicher_01", ...SPEICHER), o("weidenhain_bauernhaus_01", ...HAUS), o("weidenhain_muehle_01", ...MUEHLE),
   o("dorf_marktstand_02", 40, 19.6), o("dorf_marktstand_01", 28.6, 31.6),
   o("dorf_festfeuer_01", ...FEUER), o("dorf_bank_01", 37.5, 28.5), o("dorf_bank_01", 46.5, 28.5), o("dorf_bank_01", 37.5, 34.6), o("dorf_bank_01", 46.5, 34.6),
-  o("wald_baum4", RING[0] + 0.2, RING[1] - 1.3, { s: 1.0 }), o("dorf_steinring_01", ...RING),
+  o("stil_linde_01", RING[0] + 0.2, RING[1] - 1.3, { s: 1.05 }), o("dorf_steinring_01", ...RING),
   o("dorf_wehr_01", ...WEHR), ...BRUECKEN.map((b) => o(b.objekt, b.x, b.y)),
   o("dorf_kuerbisse_01", 37.6, 21.8), o("dorf_kuerbisse_01", 31.2, 34), o("dorf_heuballen_01", 22.4, 21.6), o("dorf_heuballen_01", 23.8, 22.3),
   o("dorf_fass_01", 35.4, 21.3), o("dorf_fass_01", 36.1, 21.9), o("dorf_kiste_01", 25.9, 33.4), o("dorf_fass_01", 56.6, 34.6), o("dorf_holzstapel_01", 22.2, 44.6),
@@ -106,14 +107,14 @@ const fuesse = () => dinge.map((d) => [d.x, d.y]);
 for (let i = 0; i < 400 && dinge.filter((d) => d.id.startsWith("dorfbaum")).length < 22; i++) {
   const x = +(8 + wurf() * (B - 16)).toFixed(2), y = +(8 + wurf() * (H - 16)).toFixed(2);
   if (!imDorf(x, y) || inGasse(x, y, 4) || strecke(x, y, WEG_NORD) < 4.5 || nahGraben(x, y, 4) || aufPlatz(x, y) || imHaus(x, y, 3.5) || imHaus(x, y + 5, 3) || fuesse().some(([a, b]) => Math.hypot(a - x, b - y) < 5)) continue;
-  dinge.push({ id: "dorfbaum_" + i, objekt: "wald_baum" + (1 + Math.floor(wurf() * 3)), x, y, s: +(0.85 + wurf() * 0.2).toFixed(2) }); }
+  dinge.push({ id: "dorfbaum_" + i, objekt: BAUM[[1, 2, 4][Math.floor(wurf() * 3)]], x, y, s: +(0.85 + wurf() * 0.2).toFixed(2) }); }
 
 /* Wald ringsum: dicht, mit Mindestabstand; nie im Dorf, am Graben oder auf dem Weg */
 const frei = (x, y, ab, liste) => liste.every((p) => Math.hypot(p.x - x, p.y - y) >= ab);
 const wald = []; for (let i = 0; i < B * H * 0.95; i++) { const x = +(wurf() * B).toFixed(2), y = +(wurf() * H).toFixed(2), s = SAUM(x, y);
   if ((x > s - 1 && y > s - 1 && x < B - s + 1 && y < H - s + 1) || nahGraben(x, y, 3.6) || strecke(x, y, WEG_NORD) < 4.5 || !frei(x, y, 2.3, wald)) continue;
   const z = wurf(), a = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6;
-  wald.push({ id: "b" + String(wald.length + 1).padStart(4, "0"), objekt: "wald_baum" + a, x, y, s: +(0.85 + wurf() * 0.27).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
+  wald.push({ id: "b" + String(wald.length + 1).padStart(4, "0"), objekt: BAUM[a], x, y, s: +(0.85 + wurf() * 0.27).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
 const objekte = [...dinge, ...wald].sort((a, b) => a.y - b.y);
 for (const p of objekte) if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt);
 

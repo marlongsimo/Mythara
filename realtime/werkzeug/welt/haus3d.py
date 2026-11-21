@@ -77,7 +77,7 @@ class Bild:
         if ton is not None:   # Verlauf entlang v (0 = Kante e0→e1, 1 = gegenüber): Faktor von ton[0] nach ton[1]
             kach = kach * np.linspace(ton[0], ton[1], Lv, dtype=np.float32)[:, None, None]
         kach = kach * hell
-        if os.environ.get('MYTHARA_STIL') == 'gemalt':   # Malstil: Schatten kühl und bläulich, Licht warm
+        if os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt':   # Malstil: Schatten kühl und bläulich, Licht warm
             sch = float(np.clip((0.95 - hell) * 1.4, 0, 0.55)); lic = float(np.clip((hell - 0.95) * 1.5, 0, 0.25))
             kach = kach * (1 - 0.45 * sch) + np.array((58, 70, 116), np.float32) * 0.45 * sch
             kach = kach * (1 - lic) + kach * np.array((1.12, 1.04, 0.9), np.float32) * lic
@@ -113,7 +113,7 @@ class Bild:
             rgb = im.convert('RGB').filter(ImageFilter.ModeFilter(5)).filter(ImageFilter.SMOOTH_MORE)
             im = Image.merge('RGBA', (*rgb.split(), im.getchannel('A')))
         a = im.getchannel('A')
-        dick = os.environ.get('MYTHARA_STIL') == 'gemalt'          # Malstil: kräftige Kontur wie bei den Heldenbildern
+        dick = os.environ.get('MYTHARA_STIL', 'gemalt') == 'gemalt'          # Malstil: kräftige Kontur wie bei den Heldenbildern
         rand = np.asarray(a.filter(ImageFilter.MaxFilter(7 if dick else 3))).astype(np.float32) - np.asarray(a).astype(np.float32)
         kontur = Image.fromarray(np.dstack([np.full((im.height, im.width, 3), 22 if dick else 26, np.uint8), np.clip(rand * (0.9 if dick else 0.6), 0, 255).astype(np.uint8)]), 'RGBA')
         return Image.alpha_composite(kontur, im).resize((self.b, self.h), Image.LANCZOS)

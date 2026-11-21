@@ -247,7 +247,7 @@ def einzelheiten(F, arten, aus, bild, dinge, ox, oy, fi0, fj0):
     nah = [g for g in dinge if -3 * FELD < g['x'] * FELD - ox < pb + 3 * FELD and -3 * FELD < g['y'] * FELD - oy < ph + 3 * FELD]
     for g in nah:
         x, y, s = g['x'] * FELD - ox, g['y'] * FELD - oy, g['s']
-        if g['kat'] == 'bewuchs':
+        if g['kat'] == 'bewuchs' and not g.get('stil'):
             rx, ry = FELD * 1.5 * s, FELD * 0.85 * s
             ds.ellipse([x - rx + 18 * s, y - ry + 4, x + rx + 18 * s, y + ry + 4], fill=150)
         for tdx, tdy in g.get('tueren', []):
@@ -288,7 +288,7 @@ def einzelheiten(F, arten, aus, bild, dinge, ox, oy, fi0, fj0):
                     zeichne, g = ZEICHNER[st['art']]
                     zeichne(d, x, y, g * 2 * (0.75 + 0.5 * w(903)), w)
     for g in nah:
-        if g['kat'] == 'bewuchs':
+        if g['kat'] == 'bewuchs' and not g.get('stil'):   # Bäume im Spielstil bringen Stammfuß und Schatten selbst mit
             w = lambda k, g=g: zufall(int(g['x'] * 31) + k, int(g['y'] * 17) - k, 777)
             wurzeln(d, (g['x'] * FELD - ox) * 2, (g['y'] * FELD - oy) * 2, g['s'] * (1.3 if g.get('gross') else 1.0), w)
     lage = lage.resize((pb, ph), Image.LANCZOS)
@@ -411,7 +411,7 @@ def dinge_lesen(arten):
             if not o:
                 continue
             s = p.get('s', 1); sp = -1 if p.get('spiegeln') else 1; k = p.get('kollision', o.get('kollision'))
-            g = {'x': p['x'] + ux, 'y': p['y'] + uy, 's': s, 'kat': o['kategorie'], 'gross': o['groesse'][0] > 500}
+            g = {'x': p['x'] + ux, 'y': p['y'] + uy, 's': s, 'kat': o['kategorie'], 'gross': o['groesse'][0] > 500, 'stil': p['objekt'].startswith('stil_')}
             if o.get('tueren'):
                 g['tueren'] = [(t['x'] * s, t['y'] * s) for t in o['tueren']]
             elif o.get('interaktion') and o['kategorie'] == 'gebaeude':
