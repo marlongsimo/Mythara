@@ -32,6 +32,18 @@ kopf = P[:, 2] > kopf_z; vorn = (N[:, 1] < -0.25) & (np.abs(P[:, 0]) < 0.1)
 gesicht_oben = kopf & vorn & (P[:, 2] > kopf_z + 0.11) & (P[:, 2] < kopf_z + 0.22)                 # Stirn, Augen, Nase
 bart = kopf & (P[:, 1] < 0.03) & (P[:, 2] < kopf_z + 0.11) & (P[:, 2] > kopf_z - 0.02) & ~((np.abs(P[:, 0]) < 0.025) & (P[:, 2] > kopf_z + 0.08))
 haar = kopf & ((P[:, 2] > kopf_z + 0.22) | ((P[:, 1] > 0.02) & (P[:, 2] > kopf_z + 0.08)) | ((np.abs(P[:, 0]) > 0.085) & (P[:, 2] > kopf_z + 0.12))) & ~gesicht_oben
+if opt.get("regionen"):                                                                          # Körperregionen aus einer zweiten Datei (z. B. Meshy-Segmentierung): exakte Grenzen statt der Lageregeln
+    from mathutils.kdtree import KDTree
+    sel = bpy.data.objects[:]; vor = set(bpy.data.objects); bpy.ops.import_scene.gltf(filepath=opt["regionen"]); R = [o for o in bpy.data.objects if o not in vor and o.type == "MESH"]
+    RP = [(np.array([tuple(o.matrix_world @ v.co) for v in o.data.vertices]), o.name) for o in R]; alle = np.concatenate([p_ for p_, _ in RP])
+    k2 = 1.8 / np.ptp(alle[:, 2]); off = np.array([-(alle[:, 0].max() + alle[:, 0].min()) / 2, -float(np.median(alle[alle[:, 2] - alle[:, 2].min() > 1.2, 1])), -alle[:, 2].min()])
+    kd = KDTree(len(alle)); namen = []; i = 0
+    for p_, n_ in RP:
+        for q in (p_ + off) * k2: kd.insert(q, i); namen.append(n_); i += 1
+    kd.balance(); haar_teile = set(opt.get("haar_teile", "").split(","))
+    region = np.array([namen[kd.find(Vector(p_))[1]] for p_ in P]); haar = np.isin(region, list(haar_teile)); bart = np.zeros_like(haar)
+    for o in R: bpy.data.objects.remove(o)
+    print("Regionen:", {n_: int((region == n_).sum()) for _, n_ in RP})
 farbe[bart | haar] = HAAR
 huefte = (P[:, 2] > 0.78) & (P[:, 2] < 0.98) & (np.abs(P[:, 0]) < 0.24)                           # schlichte Unterhose
 farbe[huefte] = HOSE
