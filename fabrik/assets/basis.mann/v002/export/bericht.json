@@ -105,10 +105,10 @@
   },
   {
    "bereich": "bild",
-   "pruefung": "Handzuordnung: waffe.schwert.schildwahrer in der rechten Hand, schild.kreuz links (Abstand rechts–links im Bild: Süden, Norden)",
+   "pruefung": "Handzuordnung: waffe.schwert.ritter in der rechten Hand, schild.rund links (Abstand rechts–links im Bild: Süden, Norden)",
    "wert": [
     -57,
-    55
+    57
    ],
    "grenze": "Süden < 0, Norden > 0",
    "urteil": "ok"
@@ -175,11 +175,19 @@
      "unterarm.L",
      0.24
     ],
+    "schild.rund": [
+     "unterarm.L",
+     0.24
+    ],
     "waffe.armbrust": [
      "hand.R",
      -0.28
     ],
     "waffe.bogen": [
+     "hand.L",
+     0.28
+    ],
+    "waffe.bogen.jagd": [
      "hand.L",
      0.28
     ],
@@ -191,11 +199,19 @@
      "hand.R",
      -0.28
     ],
+    "waffe.schwert.ritter": [
+     "hand.R",
+     -0.28
+    ],
     "waffe.schwert.schildwahrer": [
      "hand.R",
      -0.28
     ],
     "waffe.speer": [
+     "hand.R",
+     -0.28
+    ],
+    "waffe.stab.hirte": [
      "hand.R",
      -0.28
     ],
@@ -292,6 +308,16 @@
   },
   {
    "bereich": "animation",
+   "pruefung": "waffe.bogen.jagd: im Trefferbild (bogen, Bild 6) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)",
+   "wert": [
+    0.67,
+    1.46
+   ],
+   "grenze": "vor ≥ 0.3 m, Höhe 0.3–1.9 m",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
    "pruefung": "waffe.dolch: im Trefferbild (dolchwurf, Bild 5) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)",
    "wert": [
     0.59,
@@ -312,6 +338,16 @@
   },
   {
    "bereich": "animation",
+   "pruefung": "waffe.schwert.ritter: im Trefferbild (stich, Bild 4) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)",
+   "wert": [
+    0.9,
+    1.4
+   ],
+   "grenze": "vor ≥ 0.3 m, Höhe 0.3–1.9 m",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
    "pruefung": "waffe.schwert.schildwahrer: im Trefferbild (stich, Bild 4) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)",
    "wert": [
     0.99,
@@ -326,6 +362,16 @@
    "wert": [
     0.79,
     1.4
+   ],
+   "grenze": "vor ≥ 0.3 m, Höhe 0.3–1.9 m",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "waffe.stab.hirte: im Trefferbild (zauber_stab, Bild 5) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)",
+   "wert": [
+    0.47,
+    1.54
    ],
    "grenze": "vor ≥ 0.3 m, Höhe 0.3–1.9 m",
    "urteil": "ok"
@@ -359,6 +405,13 @@
   },
   {
    "bereich": "animation",
+   "pruefung": "Tod: schild.rund liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.39,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
    "pruefung": "Tod: waffe.armbrust liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
    "wert": 0.53,
    "grenze": "≤ 0.5",
@@ -368,6 +421,13 @@
    "bereich": "animation",
    "pruefung": "Tod: waffe.bogen liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
    "wert": 0.42,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Tod: waffe.bogen.jagd liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.39,
    "grenze": "≤ 0.5",
    "urteil": "ok"
   },
@@ -387,6 +447,13 @@
   },
   {
    "bereich": "animation",
+   "pruefung": "Tod: waffe.schwert.ritter liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.26,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
    "pruefung": "Tod: waffe.schwert.schildwahrer liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
    "wert": 0.26,
    "grenze": "≤ 0.5",
@@ -395,6 +462,13 @@
   {
    "bereich": "animation",
    "pruefung": "Tod: waffe.speer liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
+   "wert": 0.27,
+   "grenze": "≤ 0.5",
+   "urteil": "ok"
+  },
+  {
+   "bereich": "animation",
+   "pruefung": "Tod: waffe.stab.hirte liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)",
    "wert": 0.27,
    "grenze": "≤ 0.5",
    "urteil": "ok"
