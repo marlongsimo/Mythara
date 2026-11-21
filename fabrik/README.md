@@ -15,7 +15,7 @@ Der Plan dahinter steht in `doku/konzepte/ki-3d-asset-pipeline.md`. Der jetzige 
 | 4 flache Ausrüstung bauen | `flachteil.py <vorn.png> <ziel.glb> <länge> <dicke> [hinten.png]` | Schwert, Schild als eigene Teile |
 | 5 Figur bauen | `rig.py <koerper.glb> <figur.blend> <ausruestung.json>` | Skelett, Gewichte, Waffen an Knochen, Rüstung als Hüllen, sieben Bewegungen |
 | 5b Fußpunkt festhalten | `boden.py <figur.blend> <ziel.blend> laufen` | tiefster Punkt in jedem Bild genau auf dem Boden |
-| 6 rendern | `rendern.py <figur.blend> <export> <id>` | je Ebene und Bewegung ein Blatt, Metadaten; Feldgröße und Fußpunkt werden so gewählt, dass nichts abgeschnitten wird |
+| 6 rendern | `rendern.py <figur.blend> <export> <id>` | je Ebene und Bewegung ein Blatt, Metadaten; Feldgröße und Fußpunkt werden so gewählt, dass nichts abgeschnitten wird. Vorhandene Blätter werden weiterverwendet, solange sie ins Feld passen; sonst wird alles neu gerendert |
 | 7 packen | `packen.py <export> <id>` | je Ebene ein Atlas für Phaser |
 | 8 prüfen | `pruefung.py <figur.blend> <export> <id>` | `bericht.json` mit Status |
 | 9 ansehen | `vorschau/`, `vorschau-gif.py <export> <id> <ziel.gif>` | Testszene in Phaser 3.90, bewegte Vorschau |
@@ -35,6 +35,10 @@ Zur schnellen Kontrolle eines einzelnen Modells: `rundum.py <modell.glb> <bild.p
 `ruhe` (6 Bilder, Schleife), `laufen` (8, Schleife), `angriff` (8, einhändig), `block` (6, bleibt im letzten Bild stehen), `angriff2h` (8, beidhändig – der Schild wird dabei nicht gezeigt), `treffer` (5), `ausweichen` (6).
 Alle bleiben an Ort und Stelle; die Bewegung über den Boden macht das Spiel. Sie sind gerechnet (Gelenkwinkel und Zielrichtungen in `rig.py`), nicht aufgenommen, und damit frei von Lizenzfragen.
 Die Waffenführung ist als Richtung vorgegeben: das Handgelenk führt die Klinge, der Unterarm die Schildfläche. Beim beidhändigen Angriff rechnet Blender die linke Hand an den Griff.
+
+Weitere Bewegungen, die eine Figur über `bewegungen` in ihrer Liste bekommt: `angriff_axt` (8, schwer, weit ausgeholt), `angriff_dolch` (7, schneller Stich), `tod` (8, fällt nach hinten und bleibt im letzten Bild liegen).
+Jede Waffe nennt ihre Angriffsbewegung (`"angriff": "angriff_axt"`); die Testszene spielt auf J den Angriff der getragenen Waffe. Ohne Schild wird mit `"block": "waffe"` mit der Waffe pariert.
+`boden.py` hält in allen Bewegungen den tiefsten Punkt des Körpers auf dem Boden; die Prüfung verlangt das hart (±1 cm) für jede Bewegung.
 
 ## Ausgabe
 
@@ -62,7 +66,7 @@ Für eine neue Kombination wird nichts neu gerendert. Welche Waffe ferner ist, s
     node ../../tools/testserver.js          # im Hauptordner; dann http://localhost:8765/fabrik/vorschau/
     node test.mjs                           # Prüfung im Browser
 
-Laufen mit WASD, Pfeilen oder Antippen · J Angriff · K Block (halten) · L Zweihand · H Treffer · Leertaste Ausweichen · Ausrüstung über die Tafel rechts.
+Laufen mit WASD, Pfeilen oder Antippen · J Angriff der getragenen Waffe · K Block (halten) · L Zweihand · H Treffer · Leertaste Ausweichen · T Tod (noch einmal: aufstehen) · Ausrüstung über die Tafel rechts. Knöpfe für Bewegungen, die eine Figur nicht hat, werden ausgeblendet.
 
 ## Versionen
 
@@ -75,6 +79,7 @@ Jeder Stand einer Figur liegt in einem eigenen Ordner (`v001`, `v002`, …). Ein
 | `held.krieger/v003` | modulare Figur: Waffen, Rüstungsebenen, sieben Bewegungen, Atlasse, Prüfbericht |
 | `held.krieger/v004` | wie v003; Renderbereich passt sich der größten Ausdehnung an (Feld 288 px, nichts abgeschnitten), Fußpunkt beim Laufen auf dem Boden (`boden.py`) – **aktuelle Version** |
 | `gegner.bandit/v001` | zweite Figur aus derselben Pipeline: eigenes Referenzblatt, gleiches Skelett; Kapuze, Halstuch, Lederrüstung, Gürtel, Hose, Stiefel als Ebenen; Kurzschwert (Standard) und Axt; Ruhe und Laufen. Bogen und Dolch gebaut, aber noch nicht angehängt |
+| `gegner.bandit/v002` | kampffähiger Gegner: Kurzschwert-, Axt- und Dolchangriff (je Waffe eigene Bewegung), Parade mit der Waffe, Treffer, Ausweichen, Tod (bleibt liegen); eigene Liste `v002/ausruestung.json` |
 
 ## Eine neue Figur
 

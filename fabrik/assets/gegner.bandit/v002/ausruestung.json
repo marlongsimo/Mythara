@@ -1,0 +1,23 @@
+{
+  "hinweis": "Bandit v002: kampffähiger Gegner. Gleicher Körper, gleiche Kleidung wie v001; dazu Kampfbewegungen und der Dolch. Jede Waffe nennt ihre Angriffsbewegung. Pfade relativ zu fabrik/assets/.",
+  "bewegungen": ["ruhe", "laufen", "angriff", "angriff_axt", "angriff_dolch", "block", "treffer", "ausweichen", "tod"],
+  "exklusiv": true,
+  "block": "waffe",
+  "starr": [
+    { "id": "waffe.kurzschwert", "platz": "hand_r", "art": "schwert", "glb": "waffe.kurzschwert/v001/quelle/kurzschwert.glb", "griff": 0.12, "griff2": 0.04, "angriff": "angriff" },
+    { "id": "waffe.axt", "platz": "hand_r", "art": "schwert", "glb": "waffe.axt/v001/quelle/axt.glb", "griff": 0.10, "griff2": 0.03, "angriff": "angriff_axt" },
+    { "id": "waffe.dolch", "platz": "hand_r", "art": "schwert", "glb": "waffe.dolch/v001/quelle/dolch.glb", "griff": 0.15, "griff2": 0.05, "angriff": "angriff_dolch" }
+  ],
+  "huelle": [
+    { "id": "kleidung.kopf.kapuze", "platz": "kopf", "bild": "kapuze", "farbe": "ton", "dicke": 0.02, "gesicht_frei": true, "bereich": [["kopf", 0, 1], ["hals", 0.45, 1]] },
+    { "id": "kleidung.hals.tuch", "platz": "hals", "bild": "halstuch", "farbe": "ton", "dicke": 0.022, "bereich": [["hals", 0, 0.45], ["brust", 0.8, 1]] },
+    { "id": "kleidung.guertel.taschen", "platz": "guertel", "bild": "guertel", "farbe": "ton", "dicke": 0.026, "bereich": [["bauch", 0, 0.3], ["becken", 0, 0.55]] },
+    { "id": "ruestung.brust.leder", "platz": "brust", "bild": "lederruestung", "farbe": "bild", "dicke": 0.018, "bereich": [["brust", 0, 0.8], ["bauch", 0.3, 1], ["oberarm.L", 0, 0.45], ["oberarm.R", 0, 0.45]] },
+    { "id": "ruestung.fuss.lederstiefel", "platz": "fuss", "bild": "stiefel", "farbe": "ton", "dicke": 0.02, "bereich": [["unterschenkel.L", 0.5, 1], ["unterschenkel.R", 0.5, 1], ["fuss.L", 0, 1], ["fuss.R", 0, 1]] },
+    { "id": "kleidung.bein.hose", "platz": "bein", "bild": "hose", "farbe": "bild", "dicke": 0.014, "bereich": [["becken", 0.55, 1], ["oberschenkel.L", 0, 1], ["oberschenkel.R", 0, 1], ["unterschenkel.L", 0, 0.5], ["unterschenkel.R", 0, 0.5]] }
+  ],
+  "vorbereitet": [
+    { "id": "waffe.bogen", "platz": "hand_l", "art": "bogen", "glb": "waffe.bogen/v001/quelle/bogen.glb", "griff": 0.5,
+      "plan": "Bogen in der linken Hand, Griff in der Mitte (griff 0.5), Sehne zur Figur. Eigene Bewegungen: bogen_ruhe, bogen_laufen, bogen_ziehen (Pfeil an die Wange, linker Arm gestreckt zum Ziel), bogen_schuss (Sehne los, Rückstoß). Der rechte Arm hält dann keine Waffe; Platz hand_r bleibt leer. Pfeil als eigene Ebene am Platz hand_r während bogen_ziehen. Noch nicht gebaut." }
+  ]
+}

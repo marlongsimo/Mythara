@@ -28,13 +28,20 @@ KRIEGER = {"hand_r": "waffe.langschwert", "arm_l": "schild.baum", "brust": "rues
 krieger = all(t in EB for t in KRIEGER.values())
 voll = KRIEGER if krieger else {p: t[0] for p, t in M["plaetze"].items()}                           # sonst: je Platz das erste Teil
 alle = list(voll.values()); folge = []
-NAME = {"ruhe": "Ruhe", "laufen": "Laufen", "angriff": "Einhandangriff", "block": "Block (Schild)", "angriff2h": "Zweihandangriff", "treffer": "Treffer", "ausweichen": "Ausweichen"}
-for a, wdh in (("ruhe", 1), ("laufen", 2), ("angriff", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2)):
+NAME = {"ruhe": "Ruhe", "laufen": "Laufen", "angriff": "Einhandangriff", "block": "Block (Schild)", "angriff2h": "Zweihandangriff", "treffer": "Treffer", "ausweichen": "Ausweichen",
+        "angriff_axt": "Axtangriff", "angriff_dolch": "Dolchstich", "tod": "Tod"}
+if not any(d["platz"] == "arm_l" for d in EB.values() if d["art"] == "starr"): NAME["block"] = "Block (Parade mit der Waffe)"
+def mit_waffe(a):
+    """für die Angriffsbewegung einer Waffe: diese Waffe statt der Standardwaffe in die Hand"""
+    w = next((e for e, d in EB.items() if d["art"] == "starr" and d.get("angriff") == a), None)
+    if not w or w in alle: return alle, ""
+    return [t for t in alle if EB[t]["platz"] != EB[w]["platz"]] + [w], " · " + w.split(".")[-1]
+for a, wdh in (("ruhe", 1), ("laufen", 2), ("angriff", 2), ("angriff_axt", 2), ("angriff_dolch", 2), ("block", 1), ("angriff2h", 2), ("treffer", 2), ("ausweichen", 2), ("tod", 1)):
     if a not in A: continue
-    n = A[a]["bilder"]; dauer = 1000 // A[a]["rate"]
+    n = A[a]["bilder"]; dauer = 1000 // A[a]["rate"]; teile, zusatz = mit_waffe(a)
     for _ in range(wdh):
-        for i in range(n): folge.append((bogen(a, i, alle, f"{NAME[a]} · volle Ausrüstung · acht echte Richtungen"), dauer))
-    if a == "block": folge += [(folge[-1][0], 500)]
+        for i in range(n): folge.append((bogen(a, i, teile, f"{NAME[a]}{zusatz} · volle Ausrüstung · acht echte Richtungen"), dauer))
+    if a in ("block", "tod"): folge += [(folge[-1][0], 900)]
 if krieger: wechsel = [(["waffe.langschwert", "schild.baum.stahl", "ruestung.brust.gambeson", "ruestung.fuss.stiefel"], "Ausrüstung gewechselt: Stahlschild, Gambeson, ohne Beinschienen und Handschuhe"),
                        (["waffe.langschwert"], "nur das Schwert"), ([], "ohne Ausrüstung")]
 else:                                                                                                # andere Figur: zweite Waffe, dann Teil für Teil ablegen

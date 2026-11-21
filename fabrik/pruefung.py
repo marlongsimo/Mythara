@@ -75,10 +75,13 @@ for a in ANIM:
 melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat
 def loecher(al): voll = al > 0.5; return ndimage.binary_fill_holes(voll) & ~voll
-neu = 0
+neu = 0; echt = 0
 for a in ANIM:
     for r in range(8):
-        for i in range(ANIM[a]["bilder"]): g = loecher(gesamt(a, r, i, [t for t in alle if EB[t]["art"] == "huelle"])[..., 3]); k = loecher(feld(blatt("koerper", a), r, i)[..., 3]); neu = max(neu, int((g & ~ndimage.binary_dilation(k, iterations=2)).sum()))
+        for i in range(ANIM[a]["bilder"]):
+            voll = gesamt(a, r, i, [t for t in alle if EB[t]["art"] == "huelle"])[..., 3]; kal = feld(blatt("koerper", a), r, i)[..., 3]; g = loecher(voll); k = loecher(kal)
+            neu = max(neu, int((g & ~ndimage.binary_dilation(k, iterations=2)).sum())); echt = max(echt, int(((kal > 0.5) & (voll < 0.5)).sum()))
+melde("bild", "keine Löcher durch die Ausrüstung (Bildpunkte, an denen der Körper allein deckt, die angezogene Figur aber durchsichtig ist – je Bild)", echt, "0", echt == 0)
 melde("bild", "umschlossene Spalten (px je Bild) – nur Hinweis: Rüstungsebenen legen nur Deckung über den Körper und können ihn nicht durchlöchern; gemessen werden natürliche Spalten zwischen Beinen oder zwischen Arm und Rumpf, die die Kleidung umschließt", neu, "Hinweis", True)
 # Handzuordnung im Bild: von vorn (Süden) ist das Schwert links im Bild, der Schild rechts; von hinten (Norden) umgekehrt
 def schwerpunkt(e, a, r, i): al = feld(blatt(e + ".hinten", a), r, i)[..., 3]; return float((al.sum(0) * np.arange(F)).sum() / max(1e-6, al.sum()))
@@ -99,7 +102,8 @@ for a in ANIM:
         for i in range(n): al = feld(b, r, i)[..., 3]; ys, xs = np.where(al > 0.5); c.append((xs.mean(), ys.mean()))
         paare = list(zip(c, c[1:])) + ([(c[-1], c[0])] if ANIM[a]["schleife"] else []); m = max(m, max(float(np.hypot(p[0] - q[0], p[1] - q[1])) for p, q in paare))
     sprung[a] = round(m, 1)
-melde("bild", "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)", sprung, "≤ 14", max(sprung.values()) <= 14, warn=True)
+grenze = {a: (40 if a == "tod" else 18) for a in sprung}                                            # der Tod fällt um: dort darf der Schwerpunkt weit wandern
+melde("bild", "stabile Bewegungen (größter Sprung des Körperschwerpunkts zwischen zwei Bildern, px)", sprung, "≤ 18, Tod ≤ 40", all(sprung[a] <= grenze[a] for a in sprung))
 
 # ---------------------------------------------------------- Modell ----------------------------------------------------------
 print("Modell")
@@ -112,13 +116,14 @@ melde("rig", "Art der Gewichtung", arm.get("gewichte", "?"), "automatisch", "aut
 seiten = {e: (o.parent_bone, round(arm.data.bones[o.parent_bone].head_local.x, 2)) for e, o in teile.items() if o["art"] == "starr"}
 gut = all((b.endswith(".R") and x < 0) or (b.endswith(".L") and x > 0) for b, x in seiten.values())
 melde("rig", "Waffen hängen am richtigen Knochen (rechte Körperseite = -x)", seiten, "hand.R bei x < 0, unterarm.L bei x > 0", gut)
-fest = 0.0; boden = {}; innen = 0.0; dg = bpy.context.evaluated_depsgraph_get()
+fest = 0.0; boden = {}; innen = 0.0; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
 for a in [x for x in bpy.data.actions if x.name in ANIM]:
     arm.animation_data.action = a; ab = {e: [] for e, o in teile.items() if o["art"] == "starr"}; tief = []
     for i in range(ANIM[a.name]["bilder"]):
         sc.frame_set(i + 1); bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get(); pb = arm.pose.bones
         for e in ab: o = teile[e]; k = pb[o.parent_bone]; ab[e].append(((arm.matrix_world @ k.matrix).inverted() @ o.matrix_world.translation).copy())      # Lage des Teils, vom Knochen aus gesehen
-        ko = koerper.evaluated_get(dg); me = ko.to_mesh(); P = np.zeros(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", P); P = P.reshape(-1, 3); tief.append(float(P[:, 2].min()))
+        ko = koerper.evaluated_get(dg); me = ko.to_mesh(); P = np.zeros(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", P); P = P.reshape(-1, 3); tief.append(float(P[:, 2].min())); hoch.setdefault(a.name, []).append(float(P[:, 2].max()))
+        for e in ab: o = teile[e]; c = sum((Vector(v) for v in o.bound_box), Vector()) / 8; wpos.setdefault((e, a.name), []).append(zur_figur @ (o.matrix_world @ c))   # Mitte der Waffe im Raum der Figur (-y = vorn)
         if i in (0, ANIM[a.name]["bilder"] // 2):                                                # Rüstung liegt außen auf dem Körper, nicht darunter
             baum = BVHTree.FromPolygons([tuple(v) for v in P.tolist()], [tuple(p.vertices) for p in me.polygons])
             for e, o in teile.items():
@@ -132,14 +137,30 @@ for a in [x for x in bpy.data.actions if x.name in ANIM]:
     for e, l in ab.items(): fest = max(fest, max((p - l[0]).length for p in l) * 1000)
     boden[a.name] = [round(min(tief) * 100, 1), round(max(tief) * 100, 1)]
 melde("animation", "Waffen bleiben fest an ihrem Knochen (größte Verschiebung über alle Bilder, mm)", round(fest, 3), "≤ 1", fest <= 1)
-fest_ = {k: v for k, v in boden.items() if k in ("ruhe", "laufen")}; schlimm = max(max(abs(v[0]), abs(v[1])) for v in fest_.values())
-melde("animation", "Fußpunkt am Boden in Ruhe und beim Laufen (tiefster Punkt des Körpers, cm) – sonst springt oder sinkt die Figur im Spiel", fest_, "±1 cm", schlimm <= 1)
-rest = {k: v for k, v in boden.items() if k not in fest_}
-if rest: schlimm = max(max(abs(v[0]), abs(v[1])) for v in rest.values()); melde("animation", "Füße am Boden in den einmaligen Bewegungen (cm)", rest, "±4 cm – kurzes Abheben beim Ausweichen ist gewollt", schlimm <= 4, warn=schlimm <= 8)
+schlimm = max(max(abs(v[0]), abs(v[1])) for v in boden.values())
+melde("animation", "Fußpunkt am Boden in allen Bewegungen (tiefster Punkt des Körpers, cm) – sonst springt, sinkt oder schwebt die Figur im Spiel", boden, "±1 cm", schlimm <= 1)
+# Waffenführung: jede Waffe hat ihre Angriffsbewegung, und im Trefferbild ist die Waffe vor dem Körper
+for e, o in teile.items():
+    if o["art"] != "starr" or EB[e]["platz"] != "hand_r": continue
+    an = EB[e].get("angriff", "angriff")
+    if an not in ANIM: melde("animation", f"{e}: Angriffsbewegung vorhanden", an, "vorhanden", False); continue
+    i = ANIM[an].get("treffer", ANIM[an]["bilder"] // 2); v = wpos[(e, an)][i]; v0 = wpos[(e, "ruhe")][0] if (e, "ruhe") in wpos else v
+    melde("animation", f"{e}: im Trefferbild ({an}, Bild {i + 1}) ist die Waffe vor dem Körper (Mitte der Waffe, m: vor / Höhe)", [round(-v.y, 2), round(v.z, 2)], "vor ≥ 0.3 m, Höhe 0.3–1.9 m", -v.y >= 0.3 and 0.3 <= v.z <= 1.9)
+if "tod" in ANIM:
+    h = hoch["tod"]; melde("animation", "Tod: steht am Anfang, liegt am Ende (höchster Punkt des Körpers im ersten und letzten Bild, m)", [round(h[0], 2), round(h[-1], 2)], "Anfang ≥ 1.6, Ende ≤ 0.6", h[0] >= 1.6 and h[-1] <= 0.6)
+    for e, o in teile.items():                                                                       # die Waffe liegt am Ende flach auf dem Boden, nicht senkrecht in die Luft
+        if o["art"] != "starr": continue
+        arm.animation_data.action = bpy.data.actions["tod"]; sc.frame_set(ANIM["tod"]["bilder"]); bpy.context.view_layer.update(); oben = max((zur_figur @ (o.matrix_world @ Vector(c))).z for c in o.bound_box)
+        melde("animation", f"Tod: {e} liegt am Ende am Boden (höchster Punkt der Waffe im letzten Bild, m)", round(oben, 2), "≤ 0.5", oben <= 0.5)
+if "block" in ANIM and not any(EB[t]["platz"] == "arm_l" for t in starr):
+    for e, o in teile.items():
+        if o["art"] == "starr" and EB[e]["platz"] == "hand_r": v = wpos[(e, "block")][ANIM["block"].get("halten", -1)]; melde("animation", f"Block ohne Schild: {e} deckt vor dem Oberkörper (Mitte der Waffe, m: vor / Höhe)", [round(-v.y, 2), round(v.z, 2)], "vor ≥ 0.2 m, Höhe 1.1–1.9 m", -v.y >= 0.2 and 1.1 <= v.z <= 1.9)
 melde("rig", "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)", round(innen, 4), "≤ 0.03", innen <= 0.03, warn=innen <= 0.1)
 luecke = float(bpy.data.actions["angriff2h"].get("griffluecke_cm", -1)) if "angriff2h" in bpy.data.actions else -1
 if luecke >= 0: melde("animation", "beidhändiger Angriff: linkes Handgelenk am Griff (größter Abstand in den Bildern 2–7, cm)", round(luecke, 1), "≤ 6 im Hieb, Übergangsbilder dürfen abweichen", luecke <= 6, warn=True)
-liste = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(ordner))), "ausruestung.json"); SOLL = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]
+liste = os.path.join(os.path.dirname(os.path.abspath(ordner)), "ausruestung.json")
+if not os.path.exists(liste): liste = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(ordner))), "ausruestung.json")   # eigene Liste der Version, sonst die der Figur
+SOLL = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]
 if os.path.exists(liste): SOLL = json.load(open(liste)).get("bewegungen", SOLL)                     # was die Figur laut ihrer Liste haben soll
 melde("animation", "alle Bewegungen vorhanden", sorted(ANIM), ", ".join(SOLL), set(SOLL) <= set(ANIM))
 

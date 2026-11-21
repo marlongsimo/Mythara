@@ -40,6 +40,14 @@ def ausdehnung():
     return s_, o_, u_
 seite_m, ueber_m, unter_m = ausdehnung(); ueber, unter, seite = ueber_m * PX_JE_M + RAND, unter_m * PX_JE_M + RAND, seite_m * PX_JE_M + RAND
 FELD = int(math.ceil(max(2 * seite, ueber + unter) / 32) * 32); FUSS = (0.5, round(1 - (unter + (FELD - ueber - unter) / 2) / FELD, 4)); BREITE_M = FELD / PX_JE_M
+alt = os.path.join(ziel, kennung + ".json")                                                         # schon gerenderte Blätter weiterverwenden: nur, wenn alles ins bisherige Feld passt
+if os.path.exists(alt):
+    m0 = json.load(open(alt)); F0, f0 = m0["feld"], m0["fuss"][1]
+    if ueber <= f0 * F0 and unter <= (1 - f0) * F0 and seite <= F0 / 2 and (F0, f0) != (FELD, FUSS[1]): FELD, FUSS = F0, tuple(m0["fuss"]); BREITE_M = FELD / PX_JE_M; print("bisheriges Feld passt weiter – es bleibt", flush=True)
+    elif (F0, f0) != (FELD, FUSS[1]):
+        for d in os.listdir(ziel):
+            if d.endswith(".webp"): os.remove(os.path.join(ziel, d))
+        print("das bisherige Feld reicht nicht mehr – alle Blätter werden neu gerendert", flush=True)
 print(f"Renderbereich: Feld {FELD} px · Fußpunkt {FUSS} · Platz über dem Fußpunkt {round(ueber)} px, darunter {round(unter)} px, seitlich {round(seite)} px", flush=True)
 sc.render.engine = "CYCLES"; sc.cycles.samples = 12; sc.cycles.device = "CPU"; sc.cycles.use_denoising = False; sc.render.film_transparent = True; sc.render.resolution_x = sc.render.resolution_y = FELD; sc.render.use_persistent_data = False
 sc.render.image_settings.file_format = "PNG"; sc.render.image_settings.color_mode = "RGBA"; sc.view_settings.view_transform = "Standard"
@@ -62,7 +70,7 @@ meta = {"id": kennung, "feld": FELD, "richtungen": RICHTUNGEN, "winkel0": "osten
         "fuss": list(FUSS), "mass": [FUSS[0], FUSS[1], round(1.8 * math.cos(n) * PX_JE_M / FELD, 3)], "kamera": {"neigung": NEIGUNG, "px_je_m": PX_JE_M},
         "animationen": {a.name: dict({"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])}, **json.loads(a["mehr"])) for a in aktionen},
         "ebenen": {"koerper": {"art": "koerper"}}, "plaetze": {}, "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)", "tiefe": {}}
-for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"knochen": o.parent_bone} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
+for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
 # Tiefe der Waffen je Bewegung, Richtung und Bild (in cm entlang der Blickrichtung)
 for a in aktionen:
     arm.animation_data.action = a

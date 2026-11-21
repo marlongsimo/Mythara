@@ -3,10 +3,32 @@
   "name": "Bandit (Testfigur, Standardgegner)",
   "kategorie": "gegner",
   "test_asset": true,
-  "status": "v001: Ruhe und Laufen in acht Richtungen, modulare Kleidung, Kurzschwert und Axt – Prüfung: erfolgreich mit Einschränkungen",
+  "status": "v002: kampffähiger Gegner – neun Bewegungen in acht Richtungen (Ruhe, Laufen, Kurzschwert-, Axt-, Dolchangriff, Parade, Treffer, Ausweichen, Tod), drei Waffen wechselbar – Prüfung: erfolgreich mit Einschränkungen (29 ok, 1 Warnung, 0 Fehler). v001 (Ruhe, Laufen) bleibt erhalten.",
   "referenz": "referenz/original.png",
-  "lizenz": { "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen", "modell": "lokal erzeugt mit TripoSR (MIT), ohne kostenpflichtigen Dienst" },
+  "lizenz": {
+    "referenz": "vom Projekt bereitgestellt; Herkunft und Rechte am Bild noch einzutragen",
+    "modell": "lokal erzeugt mit TripoSR (MIT), ohne kostenpflichtigen Dienst"
+  },
   "skelett": "gleiches Humanoid-Skelett wie held.krieger (17 Knochen, gleiche Namen und Plätze)",
-  "verfahren": ["referenz.py", "triposr.py (Vorderansicht S)", "anmalen.py (S, O, N)", "flachteil.py (Waffen, schräg gezeichnet: drehen=…)", "rig.py", "boden.py ruhe,laufen", "rendern.py", "packen.py", "pruefung.py", "vorschau-gif.py"],
-  "offen": ["Bogen: gebaut, braucht eigene Bewegungen (Ziehen, Schießen) und einen Griff in der linken Hand", "Dolch: gebaut, einsatzbereit wie das Kurzschwert", "Armschienen und Umhang: in der Vorlage, noch nicht als Ebene angelegt", "Kampfbewegungen: wie beim Krieger vorhanden, für den Banditen noch nicht freigeschaltet (Liste „bewegungen“ in ausruestung.json)"]
+  "verfahren": [
+    "referenz.py",
+    "triposr.py (Vorderansicht S)",
+    "anmalen.py (S, O, N)",
+    "flachteil.py (Waffen, schräg gezeichnet: drehen=…)",
+    "rig.py",
+    "boden.py ruhe,laufen",
+    "rendern.py",
+    "packen.py",
+    "pruefung.py",
+    "vorschau-gif.py"
+  ],
+  "offen": [
+    "Bogen: gebaut, Plan in v002/ausruestung.json („vorbereitet“) – braucht eigene Bewegungen (bogen_ruhe, bogen_laufen, bogen_ziehen, bogen_schuss) und einen Griff in der linken Hand",
+    "Armschienen und Umhang: in der Vorlage, noch nicht als Ebene angelegt",
+    "Warnung der Prüfung: rund 6 % der geprüften Kleidungspunkte liegen knapp unter der Körperoberfläche – im Bild nicht sichtbar"
+  ],
+  "versionen": {
+    "v001": "Ruhe und Laufen, Kurzschwert und Axt; Liste: ausruestung.json",
+    "v002": "vollständiger Gegner; Liste: v002/ausruestung.json"
+  }
 }
