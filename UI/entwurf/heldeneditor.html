@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heldeneditor (Entwurf)</title>
+<meta name="description" content="Entwurf: ein persistenter Held für Mythara – Aussehen aus den Ebenen der Figuren-Fabrik, Startwerte nach dem Konzept „Ein Held. Drei Wege. Ein Dreieck.“">
+<link rel="stylesheet" href="../mythara-ui.css">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 35%, #2a2016, #0b0906 75%) fixed; color: var(--mu-text); font: 15px/1.45 Georgia, serif; }
+  .buehne { display: grid; grid-template-columns: minmax(280px, 340px) 1fr minmax(280px, 340px); gap: 28px; max-width: 1400px; margin: 0 auto; padding: 28px 24px 36px; align-items: start; }
+  @media (max-width: 1050px) { .buehne { grid-template-columns: 1fr; } .mitte { order: -1; } }
+  h1 { grid-column: 1 / -1; margin: 0; text-align: center; font: 700 30px/1.1 var(--mu-schrift); letter-spacing: .08em; background: linear-gradient(180deg, #fff1bf, #d6ac52 55%, #8a6224); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 small { display: block; margin-top: 6px; font: 13px Georgia, serif; letter-spacing: .02em; color: var(--mu-text-matt); -webkit-text-fill-color: var(--mu-text-matt); }
+  .mu-tafel { padding: 22px 20px; } .mu-tafel h2 { font-size: 16px; text-align: left; margin-bottom: 4px; }
+  .gruppe { margin: 18px 0 0; } .gruppe > b { display: block; margin-bottom: 8px; font: 600 12px var(--mu-schrift); letter-spacing: .06em; text-transform: uppercase; color: var(--mu-m1); }
+  .farben { display: flex; flex-wrap: wrap; gap: 10px; }
+  .farbe { --mu-g: 34px; } .farbe::after { inset: calc(var(--mu-g) * .2); background: var(--f); box-shadow: inset 0 0 0 1px #000, inset 0 -3px 6px rgba(0,0,0,.4); }
+  .farbe.aus::after { background: repeating-linear-gradient(45deg, #2a2016 0 4px, #15100a 4px 8px); }
+  .teile { display: grid; gap: 8px; } .teile label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .gesperrt { opacity: .5; } .gesperrt small { display: block; color: var(--mu-text-matt); font-size: 12px; }
+  .wege { display: grid; gap: 8px; }
+  .klein, .gesperrt small { font: 13px/1.4 Georgia, serif !important; text-transform: none; letter-spacing: 0; color: var(--mu-text-matt); margin: 8px 0 0; }
+  .mitte { display: grid; justify-items: center; gap: 14px; }
+  .sockel { position: relative; width: min(440px, 90vw); aspect-ratio: 1; display: grid; place-items: center; }
+  .sockel::before { content: ""; position: absolute; left: 12%; right: 12%; bottom: 14%; height: 18%; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,210,120,.18), transparent 70%); }
+  .sockel .mu-zielring { position: absolute; bottom: 21%; --mu-g: 46%; }
+  .figur { position: relative; width: 100%; height: 100%; transform: scale(1.5); transform-origin: 50% 66%; cursor: grab; }
+  .figur > i { position: absolute; inset: 0; background-repeat: no-repeat; image-rendering: auto; }
+  .steuer { display: flex; align-items: center; gap: 14px; }
+  .steuer .mu-slot { --mu-g: 46px; font: 700 20px/1 Georgia, serif; }
+  .anims { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .anims .mu-eintrag { width: auto; --mu-g: 30px; padding: 0 14px 0 26px; }
+  .name { width: 100%; height: 42px; padding: 0 14px; border: 0; border-radius: 8px; color: var(--mu-text-hell); font: 600 17px var(--mu-schrift); letter-spacing: .04em; background: linear-gradient(#120d08, #1f170e); box-shadow: 0 0 0 1px #000, 0 0 0 3px var(--mu-m3), inset 0 2px 6px #000; }
+  .name:focus { outline: none; box-shadow: 0 0 0 1px #000, 0 0 0 3px var(--mu-m2), 0 0 12px var(--mu-glanz), inset 0 2px 6px #000; }
+  .werte { display: grid; gap: 10px; margin-top: 6px; }
+  .zeile { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 10px; font-size: 14px; } .zeile b { font: 600 15px var(--mu-schrift); color: var(--mu-text-hell); }
+  .stil { display: grid; grid-template-columns: 92px 1fr 34px; align-items: center; gap: 10px; font: 600 12px var(--mu-schrift); text-transform: uppercase; letter-spacing: .04em; }
+  .stil .mu-balken { min-width: 0; --mu-g: 14px; } .stil em { font-style: normal; text-align: right; color: var(--mu-text-hell); }
+  .los { width: 100%; margin-top: 18px; height: 50px; border: 0; cursor: pointer; font: 700 15px var(--mu-schrift); letter-spacing: .1em; text-transform: uppercase; color: #2a1804;
+    border-radius: 999px; background: linear-gradient(#fff0b8, #e2b04a 55%, #a8741e); box-shadow: 0 0 0 1px #000, 0 0 0 3px #6e4c1a, 0 0 0 4px #000, 0 6px 16px rgba(0,0,0,.6); text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+  .los:hover { filter: brightness(1.08); box-shadow: 0 0 0 1px #000, 0 0 0 3px #8a6224, 0 0 0 4px #000, 0 0 18px rgba(255,190,80,.6); }
+  .hinweis { max-width: 1400px; margin: 0 auto; padding: 0 24px 30px; font-size: 13px; color: var(--mu-text-matt); }
+</style>
+</head>
+<body>
+<main class="buehne">
+  <h1>Erschaffe deinen Helden<small>Ein Held für die ganze Reise · Aussehen jederzeit beim Schneider änderbar, die Werte wachsen mit dir</small></h1>
+
+  <!-- links: Aussehen -->
+  <section class="mu-tafel" aria-labelledby="t-aussehen">
+    <h2 id="t-aussehen">Aussehen</h2>
+    <div class="gruppe"><b>Umhang · Farbe deines Banners</b><div class="farben" id="umhang"></div></div>
+    <div class="gruppe"><b>Schild · Wappenfarbe</b><div class="farben" id="schild"></div></div>
+    <div class="gruppe"><b>Rüstung</b>
+      <div class="teile" id="teile">
+        <label><input type="checkbox" class="mu-haken" data-teil="brust" checked> Brustplatte</label>
+        <label><input type="checkbox" class="mu-haken" data-teil="hand" checked> Handschuhe</label>
+        <label><input type="checkbox" class="mu-haken" data-teil="guertel" checked> Gürtel</label>
+        <label><input type="checkbox" class="mu-haken" data-teil="bein" checked> Beinschienen</label>
+        <label><input type="checkbox" class="mu-haken" data-teil="fuss" checked> Stiefel</label>
+      </div>
+    </div>
+    <div class="gruppe gesperrt"><b>Körper</b>
+      <div class="teile">
+        <label><input type="radio" class="mu-auswahl" disabled checked> Gesicht, Haare, Bart, Hautton</label>
+      </div>
+      <small>Folgt mit der Figuren-Fabrik: Der Körper ist dort noch ein einzelnes Teil. Für Gesichter und Frisuren braucht er eigene Ebenen.</small>
+    </div>
+  </section>
+
+  <!-- Mitte: Vorschau -->
+  <section class="mitte" aria-label="Vorschau">
+    <div class="sockel"><i class="mu-zielring mu-doppelt"></i><div class="figur" id="figur" role="img" aria-label="Vorschau des Helden"></div></div>
+    <div class="steuer">
+      <button class="mu-slot" id="links" aria-label="Nach links drehen">⟲</button>
+      <span class="mu-plakette mu-dunkel" id="richtung" style="--mu-g:34px;min-width:120px">Süden</span>
+      <button class="mu-slot" id="rechts" aria-label="Nach rechts drehen">⟳</button>
+    </div>
+    <div class="anims" id="anims"></div>
+  </section>
+
+  <!-- rechts: Name, erster Weg, Startwerte -->
+  <section class="mu-tafel" aria-labelledby="t-held">
+    <h2 id="t-held">Dein Held</h2>
+    <div class="gruppe"><b>Name</b><input class="name" id="name" value="Aldric" maxlength="20" aria-label="Name des Helden"></div>
+    <div class="gruppe"><b>Erster Weg · Startwaffe</b>
+      <div class="wege" id="wege">
+        <button class="mu-eintrag ist-gewaehlt" data-weg="nah">Nahkampf · Schwert und Schild</button>
+        <button class="mu-eintrag gesperrt" disabled>Fernkampf · Bogen (folgt)</button>
+        <button class="mu-eintrag gesperrt" disabled>Magie · Stab (folgt)</button>
+      </div>
+      <p class="klein">Kein Klassenschwur: Die anderen Wege lernst du später trotzdem. Der erste Weg bestimmt nur die Startwaffe und welche Fertigkeit zuerst wächst.</p>
+    </div>
+    <div class="gruppe"><b>Startwerte</b>
+      <div class="werte">
+        <div class="zeile"><span>Heldenlevel</span><b>1</b></div>
+        <div class="zeile"><span>Lebenspunkte</span><b id="lp">220</b></div>
+        <div class="zeile"><span>Grundverteidigung</span><b id="vt">20</b></div>
+        <div class="stil">Nahkampf<div class="mu-balken mu-lp" style="--mu-wert:.01"><i></i></div><em>1</em></div>
+        <div class="stil">Fernkampf<div class="mu-balken mu-ausdauer" style="--mu-wert:.01"><i></i></div><em>1</em></div>
+        <div class="stil">Magie<div class="mu-balken mu-mana" style="--mu-wert:.01"><i></i></div><em>1</em></div>
+        <div class="zeile"><span>Angriffswert je Stil</span><b id="aw">15,75 + Waffe</b></div>
+      </div>
+    </div>
+    <button class="los" id="los">Held erschaffen</button>
+  </section>
+</main>
+<p class="hinweis">Entwurf. Die Figur besteht aus den echten Ebenen der Figuren-Fabrik (Torvald im Kenney-Stil, <code>fabrik/assets/held.schildwahrer</code>): Körper, Rüstungsteile, Umhang und Schild in acht Farben, Schwert. Startwerte nach dem Konzept: LP 220 + 2 × (Level − 1), Verteidigung 20 + 0,6 × (Level − 1), Angriff 15 + 0,75 × Fertigkeitslevel + Waffe.</p>
+
+<script>
+  const QUELLE = "../../fabrik/assets/held.schildwahrer/v001/export/", FELD = 288;
+  const RICHTUNG = ["o", "so", "s", "sw", "w", "nw", "n", "no"], RNAME = { o: "Osten", so: "Südosten", s: "Süden", sw: "Südwesten", w: "Westen", nw: "Nordwesten", n: "Norden", no: "Nordosten" };
+  const ANIM = { ruhe: [6, 6, "Ruhe"], gehen: [8, 8, "Gehen"], angriff: [8, 16, "Angriff"], block: [6, 12, "Block"], schildstoss: [8, 12, "Schildstoß"], kampfschrei: [8, 10, "Kampfschrei"] };
+  const FARBEN = [["", "#466fc4", "Königsblau"], [".rot", "#aa312b", "Rot"], [".gruen", "#306d35", "Grün"], [".ocker", "#c18b2b", "Ocker"], [".schwarz", "#2c2c31", "Schwarz"], [".weiss", "#d9d3c2", "Weiß"], [".bordeaux", "#6d2339", "Bordeaux"], [".grau", "#717477", "Grau"]];
+  const TEILE = { bein: "kleidung.bein.schiene.schildwahrer", fuss: "kleidung.fuss.stiefel.schildwahrer", guertel: "kleidung.guertel.schildwahrer", brust: "ruestung.brust.platte.schildwahrer", hand: "ruestung.hand.schildwahrer" };
+  const wahl = { umhang: "", schild: "", teile: { bein: true, fuss: true, guertel: true, brust: true, hand: true }, richtung: 2, anim: "ruhe" };
+
+  /* Ebenen in der Reihenfolge der Fabrik: hintere Teile der Waffen und des Umhangs · Körper · Rüstung · vordere Teile */
+  function ebenen() {
+    const e = [];
+    if (wahl.umhang !== null) e.push(`kleidung.umhang.schildwahrer${wahl.umhang}.hinten`);
+    if (wahl.schild !== null) e.push(`schild.kreuz${wahl.schild}.hinten`);
+    e.push("waffe.schwert.schildwahrer.hinten", "koerper");
+    for (const k of ["bein", "fuss", "guertel", "brust", "hand"]) if (wahl.teile[k]) e.push(TEILE[k]);
+    e.push("waffe.schwert.schildwahrer.vorn");
+    if (wahl.schild !== null) e.push(`schild.kreuz${wahl.schild}.vorn`);
+    if (wahl.umhang !== null) e.push(`kleidung.umhang.schildwahrer${wahl.umhang}.vorn`);
+    return e;
+  }
+  const figur = document.getElementById("figur");
+  function zeichnen() { figur.innerHTML = ebenen().map((n) => `<i style="background-image:url('${QUELLE}${n}.${wahl.anim}.webp')"></i>`).join(""); bild = 0; schritt(); }
+  let bild = 0, uhr = 0;
+  function schritt() {
+    const [n] = ANIM[wahl.anim], S = figur.clientWidth;
+    for (const i of figur.children) { i.style.backgroundSize = `${n * S}px ${8 * S}px`; i.style.backgroundPosition = `${-bild * S}px ${-wahl.richtung * S}px`; }
+    bild = (bild + 1) % n;
+  }
+  function takt() { clearInterval(uhr); uhr = setInterval(schritt, 1000 / ANIM[wahl.anim][1]); }
+
+  /* Farbwahl */
+  function farben(id, feld) {
+    const el = document.getElementById(id);
+    el.innerHTML = FARBEN.map(([k, f, n]) => `<button class="mu-slot farbe" style="--f:${f}" data-k="${k}" aria-label="${n}" title="${n}"></button>`).join("") + `<button class="mu-slot farbe aus" data-k="-" aria-label="Ohne" title="Ohne"></button>`;
+    const markieren = () => el.querySelectorAll("button").forEach((b) => b.classList.toggle("ist-aktiv", (b.dataset.k === "-" ? null : b.dataset.k) === wahl[feld]));
+    el.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; wahl[feld] = b.dataset.k === "-" ? null : b.dataset.k; markieren(); zeichnen(); });
+    markieren();
+  }
+  farben("umhang", "umhang"); farben("schild", "schild");
+  document.getElementById("teile").addEventListener("change", (e) => { const t = e.target.dataset.teil; if (t) { wahl.teile[t] = e.target.checked; zeichnen(); } });
+
+  /* Drehen und Bewegungen */
+  const rname = () => { document.getElementById("richtung").textContent = RNAME[RICHTUNG[wahl.richtung]]; };
+  document.getElementById("links").onclick = () => { wahl.richtung = (wahl.richtung + 7) % 8; rname(); schritt(); };
+  document.getElementById("rechts").onclick = () => { wahl.richtung = (wahl.richtung + 1) % 8; rname(); schritt(); };
+  const anims = document.getElementById("anims");
+  anims.innerHTML = Object.entries(ANIM).map(([k, [, , n]]) => `<button class="mu-eintrag${k === wahl.anim ? " ist-gewaehlt" : ""}" data-a="${k}">${n}</button>`).join("");
+  anims.addEventListener("click", (e) => { const b = e.target.closest("[data-a]"); if (!b) return; wahl.anim = b.dataset.a; anims.querySelectorAll("button").forEach((x) => x.classList.toggle("ist-gewaehlt", x === b)); zeichnen(); takt(); });
+  /* Ziehen auf der Figur dreht sie */
+  let ziehX = null; figur.addEventListener("pointerdown", (e) => { ziehX = e.clientX; figur.setPointerCapture(e.pointerId); });
+  figur.addEventListener("pointermove", (e) => { if (ziehX === null || Math.abs(e.clientX - ziehX) < 40) return; wahl.richtung = (wahl.richtung + (e.clientX > ziehX ? 7 : 1)) % 8; ziehX = e.clientX; rname(); schritt(); });
+  figur.addEventListener("pointerup", () => { ziehX = null; });
+  addEventListener("resize", schritt);
+  document.getElementById("los").onclick = () => alert(`Entwurf: ${document.getElementById("name").value || "Namenlos"} würde jetzt auf dem Server angelegt (Migration 040, Phase 1).`);
+
+  rname(); zeichnen(); takt();
+</script>
+</body>
+</html>
