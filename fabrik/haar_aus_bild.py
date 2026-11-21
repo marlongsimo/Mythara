@@ -6,6 +6,7 @@ frisur-ordner  haar_vorn.png … haar_hinten.png (nur die Haare, gleiche Anordnu
                vorn.png (Gesicht), rechts.png (rechte Kopfseite, Nase rechts im Bild), seite.png (linke Kopfseite, Nase links), hinten.png
                – freigestellt (Alpha), alle vier im selben Maßstab und auf derselben Höhe (z. B. eine Zeile eines Frisurenbogens)
 zopf          auch unterhalb des Nackens Haar bauen (Zopf), wo die Rückansicht haarfarben ist
+modus=gemalt  einfache saubere Form (Haarschale, oben dicker, Knoten als Kugel) mit der Zeichnung der Nur-Haar-Bilder darauf
 haaransatz     Höhe des Haaransatzes an der Stirn als Anteil des Kopfknochens (0 = Halsansatz, 1 = Scheitel)
 mindest        kleinster Abstand der Haare von der Kopfhaut (m), damit nichts durchscheint
 
@@ -111,6 +112,86 @@ def drin(n, p, unten_drin=True):
     r[ok] = b["m"][vi[ok], ui[ok]]; r |= (vi >= b["h"]) & unten_drin & (ui >= 0) & (ui < b["w"]); return r
 def nimm(n, feld, p):
     b = B[n]; u, v = projiziere(n, p); return b[feld][np.clip(np.round(v).astype(int), 0, b["h"] - 1), np.clip(np.round(u).astype(int), 0, b["w"] - 1)]
+
+# ---- Modus „gemalt“: einfache saubere Form (Haarschale auf der Kopfhaut, oben dicker, Knoten als Kugel), darauf die Zeichnung aus den Nur-Haar-Bildern
+if opt.get("modus") == "gemalt":
+    assert NUR_HAAR, "modus=gemalt braucht haar_vorn.png … haar_hinten.png"
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+    bm = bmesh.new(); bm.from_mesh(me); bm.verts.ensure_lookup_table()
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < KZ0 - 0.03], context="VERTS")
+    netz = bpy.data.meshes.new("haar"); bm.to_mesh(netz); bm.free(); o = bpy.data.objects.new("haar", netz); bpy.context.collection.objects.link(o)
+    bpy.context.view_layer.objects.active = o; o.select_set(True); bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.remove_doubles(threshold=0.0005); bpy.ops.object.mode_set(mode="OBJECT")
+    sm = o.modifiers.new("fein", "SUBSURF"); sm.levels = 2; bpy.ops.object.modifier_apply(modifier="fein")
+    Q = np.array([v.co[:] for v in netz.vertices]); QN = np.array([v.normal[:] for v in netz.vertices]); nq = len(Q)
+    mitte = np.array([KN["kopf"].head_local.x, KN["kopf"].head_local.y, (KZ0 + KZ1) / 2])
+    if (np.einsum("ij,ij->i", QN, Q - mitte) < 0).mean() > 0.5: QN = -QN
+    E_ = np.array([e.vertices[:] for e in netz.edges]); nachb = [[] for _ in range(nq)]
+    for a_, b_ in E_: nachb[a_].append(b_); nachb[b_].append(a_)
+    def glatt(x, k=1):
+        for _ in range(k): x = np.array([(x[i] + x[nachb[i]].mean(0)) / 2 if nachb[i] else x[i] for i in range(nq)])
+        return x
+    for n in ACHSE: B[n]["hm3"] = ndimage.binary_dilation(B[n]["hm"], iterations=2)
+    RICHT = {"vorn": (0, -1, 0), "hinten": (0, 1, 0), "seite": (1, 0, 0), "rechts": (-1, 0, 0)}
+    w4 = {n: np.maximum(QN @ np.array(RICHT[n], float), 0) for n in ACHSE}
+    # Haar, wo die zugewandten Ansichten Haar zeigen (gewichtet); oben (Scheitel) zählen alle Ansichten
+    stimme = sum(w4[n] * nimm(n, "hm3", Q + QN * 0.004) for n in ACHSE) / np.maximum(sum(w4.values()), 1e-6)
+    oben = QN[:, 2] > 0.55; stimme = np.where(oben, np.max([nimm(n, "hm3", Q + QN * 0.004) for n in ACHSE], 0), stimme)   # Scheitel: eine Ansicht genügt
+    hz = (Q[:, 2] - KZ0) / KL; haar = glatt((stimme > 0.5).astype(float) * (hz > 0.15), 3) > 0.5
+    # Dicke: entlang der Flächenrichtung nach außen, solange alle Haarumrisse (oder der Kopf davor) zustimmen; stark geglättet, begrenzt
+    OHR_ = KN["kopf"].head_local.y + 0.03; CX_ = KN["kopf"].head_local.x; D = np.zeros(nq); frei = np.ones(nq, bool)
+    for t_ in np.arange(0.002, float(opt.get("max_dicke", 0.03)), 0.002):
+        p_ = Q + QN * t_; ok = np.ones(nq, bool)
+        vorn_ = Q[:, 1] < OHR_; links_ = Q[:, 0] > CX_                                              # nur die Ansichten, die die Stelle sehen (keine Freigabe für Verdecktes – sonst werden rasierte Seiten dick)
+        ok &= np.where(vorn_, nimm("vorn", "hm", p_), nimm("hinten", "hm", p_)) & np.where(links_, nimm("seite", "hm", p_), nimm("rechts", "hm", p_))
+        frei &= ok; D = np.where(frei, t_, D)
+    D = glatt(D, 12); dicke = MINDEST + 0.85 * D
+    print(f"gemalt: {int(haar.sum())} von {nq} Punkten Haar · Dicke {dicke[haar].min() * 1000:.0f}–{dicke[haar].max() * 1000:.0f} mm")
+    ab = Q + QN * dicke[:, None]
+    # Knoten: was in der Seitenansicht hinten/oben deutlich über den Kopf hinausragt
+    kugeln = []
+    for n_s in ("seite", "rechts"):
+        b = B[n_s]; h_, z_ = lage(n_s, KK, ZT, UC[n_s]); ix = np.clip(((h_ - H0) / RES).astype(int), 0, MOD[n_s].shape[1] - 1); iz = np.clip(((Z1 - z_) / RES).astype(int), 0, MOD[n_s].shape[0] - 1)
+        aussen = b["hm"] & ~ndimage.binary_dilation(MOD[n_s][iz, ix], iterations=int(0.025 / KK)) & (z_ > KZ0 + 0.55 * KL)
+        lab, nl = ndimage.label(aussen)
+        if nl:
+            gr = ndimage.sum(aussen, lab, range(1, nl + 1)) * np.array([float((h_[lab == j + 1].mean() * ACHSE[n_s][1]) > KN["kopf"].head_local.y + 0.04) for j in range(nl)])   # nur hinten (nicht der Schopf über der Stirn)
+            k_ = int(np.argmax(gr)) + 1
+            if gr[k_ - 1] * KK * KK > 4e-4:
+                sel = lab == k_; kugeln.append((float(h_[sel].mean()) * ACHSE[n_s][1], float(z_[sel].mean()), float(np.sqrt(gr[k_ - 1] / np.pi)) * KK))
+    knoten = None
+    if kugeln:
+        y_k, z_k, r_k = np.mean(kugeln, 0); r_k = max(r_k, 0.025)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=14, radius=r_k * 1.1, location=(KN["kopf"].head_local.x, y_k, z_k)); knoten = bpy.context.object
+        bpy.ops.object.transform_apply(location=True); print(f"Knoten: Mitte y {y_k:.3f} z {z_k:.3f} · Halbmesser {r_k * 100:.1f} cm")
+    # Netz: nur Haar, Rand bis zur Haut geschlossen
+    bm = bmesh.new(); bm.from_mesh(netz); bm.verts.ensure_lookup_table(); ur = bm.verts.layers.int.new("u")
+    for v in bm.verts: v[ur] = v.index; v.co = ab[v.index]
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not haar[v.index]], context="VERTS"); bm.edges.ensure_lookup_table(); innen = {}
+    for e in [e for e in bm.edges if e.is_boundary]:
+        for v in e.verts:
+            if v not in innen: i_ = v[ur]; innen[v] = bm.verts.new(Q[i_] + QN[i_] * 0.001)
+    for e in [e for e in bm.edges if e.is_boundary]:
+        a_, b_ = e.verts
+        if a_ in innen and b_ in innen:
+            try: bm.faces.new((a_, b_, innen[b_], innen[a_]))
+            except ValueError: pass
+    bm.verts.layers.int.remove(ur); bmesh.ops.recalc_face_normals(bm, faces=bm.faces); bm.to_mesh(netz); bm.free()
+    if knoten is not None:
+        bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); knoten.select_set(True); bpy.context.view_layer.objects.active = o; bpy.ops.object.join()
+    netz = o.data; ab = np.array([v.co[:] for v in netz.vertices]); QN = np.array([v.normal[:] for v in netz.vertices]); nq = len(ab)
+    farbe = np.zeros((nq, 3), np.float32); sw = np.zeros(nq)
+    for n in ACHSE:                                                                                 # Zeichnung aus allen zugewandten Ansichten, weich gemischt
+        w_ = np.maximum(QN @ np.array(RICHT[n], float), 0) ** 3 + 0.02 * (QN[:, 2] > 0.5); farbe += nimm(n, "hrgb", ab) * w_[:, None]; sw += w_
+    farbe /= np.maximum(sw, 1e-6)[:, None]
+    ca = netz.color_attributes.new("Col", "FLOAT_COLOR", "POINT"); ca.data.foreach_set("color", np.c_[farbe, np.ones(nq)].astype(np.float32).ravel())
+    netz.color_attributes.active_color = ca; netz.color_attributes.render_color_index = netz.color_attributes.active_color_index
+    m = bpy.data.materials.new("haar"); m.use_nodes = True; nt = m.node_tree; vc = nt.nodes.new("ShaderNodeVertexColor"); vc.layer_name = "Col"; b_ = nt.nodes["Principled BSDF"]
+    nt.links.new(vc.outputs[0], b_.inputs["Base Color"]); b_.inputs["Roughness"].default_value = 0.6; netz.materials.clear(); netz.materials.append(m)
+    bpy.context.view_layer.objects.active = o; bpy.ops.object.shade_smooth(); bpy.data.objects.remove(k)
+    bpy.ops.object.select_all(action="DESELECT"); o.select_set(True)
+    bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_vertex_color="MATERIAL", export_all_vertex_colors=False)
+    print(f"Frisur gemalt: geschrieben {ziel}"); sys.exit(0)
 
 # ---- 2. Form: Volumen aus den Umrissen ------------------------------------------------------------------------------------
 from mathutils import Vector
