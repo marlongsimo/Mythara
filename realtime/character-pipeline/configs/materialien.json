@@ -1,0 +1,14 @@
+{
+  "schema": "mythara-materialien/1",
+  "_hinweis": "Materialbibliothek. Farben linear (0–1). Gegenstände und Körper verweisen per Name. Echte Modelle bringen eigene Texturen mit; dann bleibt deren Material erhalten (material: null).",
+  "haut_test": {"farbe": [0.62, 0.45, 0.36], "rauheit": 0.7},
+  "stahl": {"farbe": [0.55, 0.57, 0.6], "rauheit": 0.32, "metall": 0.85},
+  "stahl_dunkel": {"farbe": [0.16, 0.15, 0.19], "rauheit": 0.4, "metall": 0.8},
+  "schatten_runen": {"farbe": [0.5, 0.25, 0.9], "rauheit": 0.4, "leuchten": [0.55, 0.3, 1.0], "leuchtStaerke": 3},
+  "gold": {"farbe": [0.83, 0.62, 0.25], "rauheit": 0.3, "metall": 1.0},
+  "splitter_licht": {"farbe": [0.6, 0.9, 1.0], "rauheit": 0.2, "leuchten": [0.45, 0.85, 1.0], "leuchtStaerke": 4},
+  "leder": {"farbe": [0.28, 0.17, 0.09], "rauheit": 0.75},
+  "stoff_rot": {"farbe": [0.45, 0.06, 0.05], "rauheit": 0.85},
+  "stoff_blau": {"farbe": [0.08, 0.14, 0.35], "rauheit": 0.85},
+  "holz": {"farbe": [0.33, 0.2, 0.1], "rauheit": 0.7}
+}

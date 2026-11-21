@@ -5,6 +5,7 @@
  */
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
+import { heldenFigur, richten } from "./modulfigur";
 import DORF from "./dorf.json";
 
 const KW = 64, KHOCH = 32, R = 0.36, TEMPO = 4.2;
@@ -34,7 +35,7 @@ export class Dorf extends Phaser.Scene {
       const r = this.add.sprite(p.x, p.y - 34, "rune").setScale(0.42).setBlendMode(Phaser.BlendModes.ADD).setDepth(10 + (B.x + B.y) * 10 + 0.2); r.play("rune"); this.tweens.add({ targets: r, y: p.y - 40, alpha: 0.7, duration: 1500, yoyo: true, repeat: -1, ease: "Sine.easeInOut" }); }
     for (const b of DORF.bauten as Bau[]) { const g = this.bau(b); if (!b.flach) g.setDepth(100 + b.r[0] + b.r[2] + b.r[1] + b.r[3]); this.bauten.push({ b, g }); } // weiter vorn = später gezeichnet
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 46, 23).setStrokeStyle(3, 0xffffff, 0.95);
-    if (D.figur) { const F = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(F[0], F[1]); this.figur.setScale(84 * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
+    if (D.figur) { const F = D.fuss || [0.5, 0.94]; this.figur = heldenFigur(this, 0, 0, this.held, 84).setOrigin(F[0], F[1]); this.figur.setScale(84 * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!this.scene.isActive() || this.gesperrt) return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "e" || k === "enter")) this.betreten(); };
     const runter = (ev: KeyboardEvent) => { if (!ev.repeat) taste(ev, true); }, hoch = (ev: KeyboardEvent) => taste(ev, false); window.addEventListener("keydown", runter); window.addEventListener("keyup", hoch); this.events.once("shutdown", () => { window.removeEventListener("keydown", runter); window.removeEventListener("keyup", hoch); });
@@ -80,7 +81,7 @@ export class Dorf extends Phaser.Scene {
       o.x = Phaser.Math.Clamp(o.x, 0.6, DORF.DB - 0.6); o.y = Phaser.Math.Clamp(o.y, 0.6, DORF.DH - 0.6);
       for (const { b } of this.bauten) { const [x, y, w, t] = b.r, nx = Phaser.Math.Clamp(o.x, x, x + w), ny = Phaser.Math.Clamp(o.y, y, y + t), dx = o.x - nx, dy = o.y - ny, l = Math.hypot(dx, dy); if (l < R && l > 1e-4) { o.x = nx + dx / l * R; o.y = ny + dy / l * R; } else if (l <= 1e-4) { o.y = y + t + R; } }
       const B = DORF.brunnen, bd = Math.hypot(o.x - B.x, o.y - B.y); if (bd < B.r + R && bd > 1e-4) { o.x = B.x + (o.x - B.x) / bd * (B.r + R); o.y = B.y + (o.y - B.y) / bd * (B.r + R); }
-      const sx = this.rx - this.ry; if (Math.abs(sx) > 0.2) this.figur.setFlipX(sx < 0); }
+      const sx = this.rx - this.ry; richten(this.figur, sx, (this.rx + this.ry) / 2); if (Math.abs(sx) > 0.2) this.figur.setFlipX(sx < 0); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(84 / (L[2] * 176)); } else { const F = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(F[0], F[1]).setScale(84 * (D.gross || 1) / this.figur.height); } }
     // Tiefe: Der Held steht vor allem, wovor er steht, und hinter allem, wohinter er steht – gemessen an den Gebäuden und Bäumen in seiner Nähe
     let vorn = 100, hinten = 1e9; for (const { b } of this.bauten) { if (b.flach) continue; const [x, y, w, t] = b.r; if (o.x < x - 9 || o.x > x + w + 9 || o.y < y - 9 || o.y > y + t + 9) continue; const basis = 100 + x + w + y + t; if (o.x >= x + w || o.y >= y + t) vorn = Math.max(vorn, basis); else hinten = Math.min(hinten, basis); }

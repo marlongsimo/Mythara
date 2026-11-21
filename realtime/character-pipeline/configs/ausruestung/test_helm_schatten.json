@@ -1,0 +1,36 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_helm_schatten",
+  "name": "Schattenhelm (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "head",
+  "type": "helmet",
+  "rarity": "epic",
+  "model": {
+    "file": "blender/equipment/test/test_helm_schatten.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Head"
+  },
+  "hides": {
+    "regions": [],
+    "slots": [
+      "hair"
+    ]
+  },
+  "stats": {
+    "armor": 20
+  },
+  "special": {
+    "glow": "schatten_runen"
+  },
+  "visual": {
+    "material": null,
+    "trim": "hörner",
+    "glow": "violett"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

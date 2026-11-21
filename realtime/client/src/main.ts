@@ -22,6 +22,11 @@ import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
 import { Ort, ortName } from "./ort";
 import { Welt, weltName } from "./welt/welt";
 import { weltAnschliessen } from "./welt/anschluss";
+import { lokalerHeld, weltBetreten } from "./welt";
+import { heldenFigur, richten } from "./modulfigur";
+import { hudKarte } from "./hud";
+import { adresseErlaubt } from "./freigabe";
+import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -32,7 +37,7 @@ const FLACH = Boolean(kampfJetzt), ZELLE = 96 / FEIN; if (kampfJetzt) { setzeKar
 /** Strecke zwischen zwei Orten (Waldweg): Bäume mit Verdeckung, Ausgänge statt Sieg */
 const KK = kampfJetzt ? KARTEN[kampfJetzt.karte] : null, WEG = Boolean(KK && KK.weg);
 const SERVER = FLACH ? "" : P.get("server") ?? SPIELSERVER; /* Kampagnen rechnet vorerst der Browser */ // // ?server= (leer) erzwingt das Rechnen im Browser
-const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : "schildwaechter", mit: (P.get("mit") || "").split(",").filter((x) => HELDEN[x]).slice(0, 2) };
+const WAHL = { held: HELDEN[P.get("held") || ""] ? (P.get("held") as string) : lokalerHeld(), mit: [] as string[] }; /* ein Held je Spieler */
 const KW = DEKOR.KW, KHOCH = DEKOR.KHOCH, WAND = DEKOR.WAND; // Kachelbreite und -höhe am Bildschirm, Höhe einer Felswand
 const iso = FLACH ? (x: number, y: number) => ({ x: x * ZELLE, y: y * ZELLE }) : (x: number, y: number) => ({ x: (x - y) * KW / 2, y: (x + y) * KHOCH / 2 });
 const welt = FLACH ? (sx: number, sy: number) => ({ x: sx / ZELLE, y: sy / ZELLE }) : (sx: number, sy: number) => ({ x: sy / KHOCH + sx / KW, y: sy / KHOCH - sx / KW });
@@ -83,9 +88,9 @@ class Spiel extends Phaser.Scene {
     if (nach === this.ausgang) return; this.ausgang = nach; const kn = $("#ez-dorf-knopf"); if (!a) { kn.hidden = true; kn.onclick = null; return; }
     kn.textContent = a.text + " ▸"; kn.hidden = false; kn.onclick = () => this.streckeVerlassen(a.nach); }
   /** Die Strecke verlassen: erst gutschreiben lassen (EP, Seelensplitter von der Lichtung), dann weiter */
-  streckeVerlassen(nach: string) { if (this.verlaesst) return; this.verlaesst = true; const kn = $("#ez-dorf-knopf"), s = P0.has("server") ? "&server=" + encodeURIComponent(P0.get("server") || "") : "";
+  streckeVerlassen(nach: string, extra = "") { if (this.verlaesst) return; this.verlaesst = true; const kn = $("#ez-dorf-knopf"), s = P0.has("server") ? "&server=" + encodeURIComponent(P0.get("server") || "") : "";
     let neu = false; try { neu = Object.keys(JSON.parse(localStorage.getItem("ez_ort_" + nach) || "{}") || {}).length === 0; } catch { /* privat */ }
-    const ziel = nach === "waldmark" ? "./" + (s ? "?" + s.slice(1) : "") : "?ort=" + nach + (neu ? "&neu=1" : "&eingang=1") + s;
+    const ziel = nach === "waldmark" ? "./" + ((s || extra) ? "?" + [extra, s.slice(1)].filter(Boolean).join("&") : "") : "?ort=" + nach + (neu ? "&neu=1" : "&eingang=1") + s;
     let fertig = false; const weiter = (w?: { ep?: Record<string, number>; seelen?: number }) => { if (fertig) return; fertig = true; window.removeEventListener("ez-server", hoer as EventListener);
       if (w && w.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(w.ep)); localStorage.setItem("ez_seelen", String(w.seelen || 0)); } catch { /* privat */ } } location.href = ziel; };
     const hoer = (ev: CustomEvent<{ t: string; ep?: Record<string, number>; seelen?: number }>) => { if (ev.detail.t === "gutschrift") weiter(ev.detail); };
@@ -113,13 +118,13 @@ class Spiel extends Phaser.Scene {
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => this.druck(p));
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) this.knueppel(p); else if (!p.wasTouch) this.zeiger = this.zuWelt(p); });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { this.stick = null; $("#ez-stick").hidden = true; this.richtung(0, 0); } });
-    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "q" || k === "e" || k === "r")) this.faehig(k); else if (an && (k === " " || k === "f" || k === "tab")) { ev.preventDefault(); if (this.netz) this.netz.sende({ t: "modus" }); } };
+    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.richtung((t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0), (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0)); } else if (an && (k === "q" || k === "e" || k === "r")) this.faehig(k); else if (an && k === "1") this.angriff(); else if (an && (k === "2" || k === "3" || k === "4")) this.faehig(({ 2: "q", 3: "e", 4: "r" } as Record<string, Taste>)[k]); else if (an && (k === " " || k === "f" || k === "tab")) { ev.preventDefault(); if (this.netz) this.netz.sende({ t: "modus" }); } };
     window.addEventListener("keydown", (ev) => { if (!ev.repeat) taste(ev, true); }); window.addEventListener("keyup", (ev) => taste(ev, false));
     window.addEventListener("blur", () => { this.tasten = {}; this.richtung(0, 0); });
-    for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); this.faehig(b.dataset.taste as Taste); });
+    for (const b of Array.from(document.querySelectorAll<HTMLElement>("[data-taste]"))) b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (b.dataset.taste === "a") this.angriff(); else this.faehig(b.dataset.taste as Taste); });
     $("#ez-modus").addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); if (this.netz) this.netz.sende({ t: "modus" }); });
     $("#ez-neu").addEventListener("click", () => this.netz.sende({ t: "neu" }));
-    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
+    const d = this.scene.settings.data as { held?: string; mit?: string[] }; if (kampfJetzt) { document.body.classList.add("kampagne"); this.rahmenKampf(); const zi = $("#ez-ziel"); zi.textContent = kampfJetzt.ziel; zi.hidden = false; this.starte(kampfJetzt.held, kampfJetzt.mit); } else if (d && d.held) this.starte(d.held, d.mit || []); else wahlZeigen((held, mit) => this.starte(held, mit));
   }
   /** Nach der Heldenwahl: verbinden und loslegen */
   /** Kampagnenkampf über den Server? Nur mit Konto (der Server schreibt EP und Seelensplitter gut). ?server= erzwingt eine Adresse oder das Rechnen im Browser. */
@@ -129,6 +134,7 @@ class Spiel extends Phaser.Scene {
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
       if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
+    window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[] }; if (m.t === "namen" && m.liste) { this.spielerNamen.clear(); for (const s of m.liste) this.spielerNamen.set(s.id, s); } });
     /* Zwischenbuchungen des Servers: Die Werte aus der Datenbank gleich merken (falls der Tab danach abstürzt) */
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; ep?: Record<string, number>; seelen?: number }; if (m.t === "gebucht" && m.ep) { try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } } });
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; text?: string }; if (m.t !== "koopstart") return; /* gemeinsamer Start in der Gruppe */
@@ -178,6 +184,30 @@ class Spiel extends Phaser.Scene {
   knueppel(p: Phaser.Input.Pointer) { const st = this.stick!, dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
     if (l < 8) this.richtung(0, 0); else { const k = Math.min(1, l / m); this.richtung(dx / l * k, dy / l * k); } }
   hinweis(x: number, y: number, t: string) { const q = iso(x, y), o = this.add.text(q.x, q.y - 70, t, { fontFamily: "Inter, sans-serif", fontSize: "13px", color: "#ffd98a", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: q.y - 95, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
+  /** Aktion 1 „Angriff“: den nächsten Gegner (als Heiler: den verletztesten Verbündeten) als Ziel nehmen und hinlaufen, falls er außer Reichweite ist */
+  angriff() { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return; const W = HELDEN[ich[2]].modi[ich[12]], heilt = W.art === "heil";
+    const d = (e: (typeof ich)) => Math.hypot(e[4] - ich[4], e[5] - ich[5]);
+    const ziel = heilt ? this.z.w.filter((e) => e[3] === 0 && !e[10] && e[0] !== ich[0] && e[7] < e[8] && d(e) < 12).sort((a, b) => a[7] / a[8] - b[7] / b[8])[0]
+      : (this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10]) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && d(e) < 12).sort((a, b) => d(a) - d(b))[0]);
+    if (!ziel) { this.hinweis(ich[4], ich[5], heilt ? "niemand verletzt" : "kein Gegner in der Nähe"); return; }
+    if (d(ziel) > W.reich + 0.3) this.netz.sende({ t: "lauf", x: ziel[4], y: ziel[5] }); this.netz.sende({ t: "ziel", id: ziel[0] }); }
+  /** Die runde Minikarte im Kampf: das gemalte Kampfbild, Helden blau, Gegner rot, der eigene Held in der Mitte */
+  kartePunkte(z: Zustand) { const j = performance.now(); if (j - this.karteZuletzt < 200) return; this.karteZuletzt = j; const k = document.getElementById("ez-karte"); if (!k || !kampfJetzt) return;
+    const da = new Set<string>(); for (const e of z.w) { if (e[0] === this.ichId) { karteFolgen(e[4] / KB, e[5] / KH); continue; } const id = "m" + e[0]; da.add(id); let u = k.querySelector(`u[data-m="${id}"]`) as HTMLElement | null;
+      if (!u) { u = document.createElement("u"); u.dataset.m = id; k.appendChild(u); } u.className = (e[3] === 0 ? "freund" : "feind") + (e[10] ? " tot" : ""); u.style.left = (100 * e[4] / KB) + "%"; u.style.top = (100 * e[5] / KH) + "%"; }
+    for (const u of Array.from(k.querySelectorAll<HTMLElement>("u[data-m]"))) if (!da.has(u.dataset.m as string)) u.remove();
+    const ich = z.w.find((e) => e[0] === this.ichId), pk = document.getElementById("ez-karte-punkt"); if (ich && pk) { pk.style.left = (100 * ich[4] / KB) + "%"; pk.style.top = (100 * ich[5] / KH) + "%"; } }
+  karteZuletzt = 0;
+  /** Oben rechts die runde Minikarte mit Teleport (zurück in die Waldmark) und Quests; Rucksack/Ausrüstung über B und C; auf Strecken der Chat */
+  rahmenKampf() { if (!FLACH || !kampfJetzt) return; const K = KARTEN[kampfJetzt.karte], k = $("#ez-karte"); hudKarte();
+    k.style.backgroundImage = `url(../${K.bild})`; k.style.aspectRatio = `${KB} / ${KH}`; for (const u of Array.from(k.querySelectorAll("u"))) u.remove();
+    const held = () => { const ich = this.z && this.z.w.find((e) => e[0] === this.ichId); return ich ? ich[2] : lokalerHeld(); };
+    const tafel = (f: (zu: () => void) => void) => { this.richtung(0, 0); this.tasten = {}; f(() => { /* zu */ }); };
+    const rucksack = () => tafel((zu) => taschenTafel("rucksack", held(), zu)), ausruestung = () => tafel((zu) => taschenTafel("ausruestung", held(), zu));
+    const teleport = () => { if (WEG || window.confirm("Zurück in die Waldmark? Der Kampf wird verlassen – was du bis jetzt verdient hast, bleibt dir.")) this.streckeVerlassen("waldmark", "von=teleport"); };
+    rundeKarte(Math.max(1, KB / 26), [{ name: "Teleport", zeichen: "teleport", taste: "T", tat: teleport }, { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(questTafel) },
+      { name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung }]); rahmenTasten({ i: rucksack });
+    if (WEG) weltBetreten(kampfJetzt.karte, {}); }
   /** Fähigkeit in Richtung des Mauszeigers; am Handy auf das aktuelle Ziel, sonst in Blickrichtung */
   faehig(taste: Taste) { if (!this.netz || !this.z) return; let ziel = this.zeiger; const ich = this.z.w.find((e) => e[0] === this.ichId);
     if (HANDY && ich) { const zi = this.z.w.find((e) => e[0] === this.z!.ich.zielId) || this.z.w.filter((e) => e[3] !== 0 && !e[10]).sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
@@ -188,7 +218,7 @@ class Spiel extends Phaser.Scene {
     const [id, held, typ, team] = e, r = held ? 20 : Math.round((MONSTER[typ]?.r || 0.35) * 56), c = this.add.container(0, 0);
     const schatten = this.add.ellipse(0, 0, r * 2.1, r * 1.05, 0x000000, 0.45), ring = this.add.ellipse(0, 0, r * 2.3, r * 1.15).setStrokeStyle(3, id === this.ichId ? 0xffffff : team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95);
     const ganz = Boolean(FIG(typ, held).figur), hoch = ganz ? FIG(typ, held).hoehe || 84 : 2 * r + 8; let kopf: Phaser.GameObjects.Image, rand: Phaser.GameObjects.Arc;
-    if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = this.add.sprite(0, 3, "figur-" + typ).setOrigin(F[0], F[1]); kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
+    if (ganz) { const F = FIG(typ, held).fuss || [0.5, 0.94]; kopf = (held ? heldenFigur(this, 0, 3, typ, hoch) : this.add.sprite(0, 3, "figur-" + typ)).setOrigin(F[0], F[1]); /* modulare Helden (acht Richtungen) oder das bisherige Standbild */ kopf.setScale(hoch * (FIG(typ, held).gross || 1) / kopf.height); rand = this.add.circle(0, 0, 1).setVisible(false); } // ganze Figur: die Füße stehen mitten im Ring am Boden
     else if (!held && MONSTER[typ]?.unsichtbar) { /* schon auf die Karte gemalt (Laich): nur Ring, Name und Lebensbalken */ kopf = this.add.image(0, 0, typ).setVisible(false); rand = this.add.circle(0, 0, 1).setVisible(false); }
     else { kopf = this.add.image(0, -r - 8, typ); const mass = Math.min(kopf.width, kopf.height) || 1; kopf.setCrop((kopf.width - mass) / 2, 0, mass, mass).setDisplaySize(r * 2 * kopf.width / mass, r * 2 * kopf.height / mass).setOrigin(0.5, mass / 2 / kopf.height);
       const maske = this.make.graphics({}); maske.fillStyle(0xffffff).fillCircle(0, 0, r); kopf.setMask(maske.createGeometryMask()); (kopf as unknown as { m: Phaser.GameObjects.Graphics }).m = maske;
@@ -197,16 +227,19 @@ class Spiel extends Phaser.Scene {
     c.add([schatten, ring, kopf, rand, balken, name]); const b: Bild = { angelegt: 0, oben, modus: 0, hoch, ganz, laeuft: false, still: 0, schlag: false, c, balken, name, ring, kopf, von: { x: e[4], y: e[5] }, nach: { x: e[4], y: e[5] }, t0: this.time.now, lp: -1, max: 0, held: Boolean(held), team, typ, tot: false };
     this.bilder.set(id, b); if (ganz && FIG(typ, held).ruhe) this.haltung(b); return b;
   }
+  gefallen = false; /** gemeinsame Welt: Name und Stufe der Spieler je Heldenkennung (vom Server) */ spielerNamen = new Map<number, { name: string; stufe: number }>();
   zustand(z: Zustand) {
-    this.z = z; this.ichId = z.ich.id; const da = new Set<number>(), jetzt = this.time.now;
+    this.z = z; this.ichId = z.ich.id;
+    if (FLACH && kampfJetzt && !this.gefallen && !this.verlaesst) { const ich = z.w.find((e) => e[0] === z.ich.id); if (ich && ich[10]) { /* gefallen: zurück in die Waldmark (Erbeutetes wird vorher gutgeschrieben) */
+      this.gefallen = true; const zi = $("#ez-ziel"); zi.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; zi.hidden = false; this.richtung(0, 0); setTimeout(() => this.streckeVerlassen("waldmark", "von=tod"), 1800); } } const da = new Set<number>(), jetzt = this.time.now;
     for (const e of z.w) { da.add(e[0]); let b = this.bilder.get(e[0]); if (!b) b = this.figur(e);
       const hier = this.ort(b, jetzt); b.von = Math.hypot(hier.x - e[4], hier.y - e[5]) > 3 ? { x: e[4], y: e[5] } : hier; b.nach = { x: e[4], y: e[5] }; b.t0 = jetzt; // große Sprünge (Blinzeln, Wiederkehr) nicht nachziehen
       if (b.ganz && FIG(b.typ, b.held).lauf) { // Laufbilder, solange sich die Figur bewegt; steht sie kurz, wieder das Standbild
         const bewegt = Math.hypot(b.nach.x - b.von.x, b.nach.y - b.von.y) > 0.03 && !e[10]; if (bewegt) b.still = 0; else b.still++; const soll = bewegt || (b.laeuft && b.still < 3), sp = b.kopf as Phaser.GameObjects.Sprite;
         if (soll !== b.laeuft || b.modus !== e[12]) { b.laeuft = soll; b.modus = e[12]; if (!b.schlag) this.haltung(b); } void sp; }
-      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = FLACH ? Math.cos(e[6]) : Math.cos(e[6]) - Math.sin(e[6]); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
+      b.tot = Boolean(e[10]); b.c.setVisible(!b.tot); if (b.ganz) { const sx = FLACH ? Math.cos(e[6]) : Math.cos(e[6]) - Math.sin(e[6]); richten(b.kopf, sx, FLACH ? Math.sin(e[6]) : (Math.cos(e[6]) + Math.sin(e[6])) / 2); if (Math.abs(sx) > 0.25) b.kopf.setFlipX((sx < 0) !== Boolean(FIG(b.typ, b.held).links)); } // die Figur schaut in Laufrichtung (links/rechts am Bildschirm)
       if (b.lp !== e[7] || b.max !== e[8]) { b.lp = e[7]; b.max = e[8]; const r = b.held ? 20 : Math.round((MONSTER[b.typ]?.r || 0.35) * 56), w = r * 2.4, y = -b.oben - 8; b.balken.clear(); b.balken.fillStyle(0x000000, 0.7).fillRect(-w / 2, y, w, 6); b.balken.fillStyle(b.team === 0 ? 0x5fd08a : 0xff6a6a, 1).fillRect(-w / 2, y, w * Math.max(0, e[7] / e[8]), 6); }
-      const bits = e[9], text = (b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
+      const bits = e[9], sn = b.held ? this.spielerNamen.get(e[0]) : undefined, text = (sn ? `${sn.name} · St. ${sn.stufe}` : b.held ? HELDEN[b.typ].name : MONSTER[b.typ].name) + (bits & BIT.betaeubt ? " ✦" : "") + (bits & BIT.langsam ? " ❄" : "") + (bits & BIT.dauer ? " ☠" : "") + (bits & BIT.mal ? " ◎" : "") + (e[11] > 0 ? " ⛨" + e[11] : ""); if (b.name.text !== text) b.name.setText(text);
       const stark = bits & (BIT.bollwerk | BIT.schild); b.ring.setStrokeStyle(stark ? 5 : 3, bits & BIT.bollwerk ? 0xffe08a : bits & BIT.schild ? 0xbfd6ff : bits & BIT.mal ? 0xffb347 : e[0] === this.ichId ? 0xffffff : b.team === 0 ? 0x6aa5ff : 0xff6a6a, 0.95); }
     for (const [id, b] of this.bilder) if (!da.has(id) && b.typ === "laich") this.laichWeg(b.c.x, b.c.y);
     for (const [id, b] of this.bilder) if (!da.has(id)) { const m = (b.kopf as unknown as { m?: Phaser.GameObjects.Graphics }).m; if (m) m.destroy(); b.c.destroy(); this.bilder.delete(id); }
@@ -248,7 +281,7 @@ class Spiel extends Phaser.Scene {
   ort(b: Bild, jetzt: number) { const k = Math.min(1, (jetzt - b.t0) / (1000 * ZUSTAND_JE / TICK)); return { x: b.von.x + (b.nach.x - b.von.x) * k, y: b.von.y + (b.nach.y - b.von.y) * k }; }
   ereignis(ev: Ereignis) {
     const zahl = (x: number, y: number, t: string, farbe: string, gross = false) => { const p = iso(x, y), o = this.add.text(p.x, p.y - 60, t, { fontFamily: "Inter, sans-serif", fontSize: gross ? "18px" : "15px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(99999); this.tweens.add({ targets: o, y: p.y - 100, alpha: 0, duration: gross ? 1400 : 800, onComplete: () => o.destroy() }); };
-    const b = "id" in ev ? this.bilder.get(ev.id) : undefined;
+    const b = "id" in ev && ev.id !== undefined ? this.bilder.get(ev.id) : undefined;
     if (ev.a === "schaden" && b) zahl(b.nach.x, b.nach.y, String(ev.n), ev.art === "gift" ? "#9be36a" : ev.art === "blut" ? "#e0605a" : ev.art === "brand" ? "#ffa64d" : ev.art === "licht" ? "#fff2a8" : b.team === 0 ? "#ff8a8a" : "#ffffff");
     else if (ev.a === "null" && b) zahl(b.nach.x, b.nach.y, "0", "#8fa3c8"); // Trefferwurf verloren: die blaue Null
     else if (ev.a === "block" && b) zahl(b.nach.x, b.nach.y, "Block", "#bfd6ff");
@@ -261,7 +294,7 @@ class Spiel extends Phaser.Scene {
       if (b.ganz && D && D[art]) { const sp = b.kopf as Phaser.GameObjects.Sprite, M = (art === "hieb2" ? D.hieb2Mass : D.hiebMass) || [0.5, 0.955, 0.91], n = this.anims.get(art + "-" + b.typ).frames.length; b.schlag = true; sp.setAngle(0).setX(0).setOrigin(M[0], M[1]).setScale(b.hoch / (M[2] * 176));
         sp.play({ key: art + "-" + b.typ, frameRate: ev.a === "anlegen" ? Math.round(n * 0.55) / ev.t : 20 }); sp.off("animationcomplete"); sp.once("animationcomplete", () => { b.schlag = false; this.haltung(b); }); } // beim Anlegen so schnell, dass nach gut der Hälfte der Bilder der Schuss fällt
       else if (b.ganz) { if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, x: b.kopf.flipX ? -9 : 9, angle: b.kopf.flipX ? -7 : 7, duration: 80, yoyo: true }); } else if (!this.tweens.isTweening(b.kopf)) this.tweens.add({ targets: b.kopf, scale: b.kopf.scale * 1.18, duration: 70, yoyo: true }); }
-    else if (ev.a === "ep" && kampfJetzt) { if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; for (const h of team) epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
+    else if (ev.a === "ep" && kampfJetzt) { if (ev.id !== undefined && ev.id !== this.ichId) return; /* gemeinsame Welt: nur die eigenen EP anzeigen */ if (kontoName() && !this.serverKampf) { zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP (nicht gutgeschrieben)", "#9a9a9a"); return; } const team = [kampfJetzt.held, ...kampfJetzt.mit]; for (const h of team) epDazu(h, ev.n); /* für die Anzeige; mit Konto ersetzt der Server die Werte beim Verlassen */ zahl(ev.x, ev.y - 0.5, "+" + ev.n + " EP", "#c8f59a");
       const xp = document.getElementById("ez-xpleiste"); if (xp) { xp.classList.remove("plus"); void xp.offsetWidth; xp.classList.add("plus"); } }
     else if (ev.a === "stufe") { /* Stufenaufstieg mitten im Kampf: Lichtsäule, Ring und Schrift über dem Helden */ const b = this.bilder.get(ev.id); if (!b) return; const x = b.c.x, y = b.c.y, ich = ev.id === this.ichId;
       const saeule = this.add.rectangle(x, y - 60, 70, 170, 0xffe9a8, 0.35).setDepth(99990).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: saeule, scaleX: 0.2, alpha: 0, duration: 1100, onComplete: () => saeule.destroy() });
@@ -301,10 +334,11 @@ class Spiel extends Phaser.Scene {
       $("#ez-xpzahl").textContent = s < STUFE_MAX ? `${e - von} / ${bis - von} EP` : "höchste Stufe"; }
     const m = Math.floor(z.zeit / 60), sek = Math.floor(z.zeit % 60); $("#ez-stand").textContent = FLACH ? (window.innerWidth < 701 ? `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster}` : `◈ ${z.splitter} Seelensplitter · Gegner ${z.besiegt} / ${z.monster}`) : `◈ ${z.splitter} · Gegner ${z.besiegt} / ${z.monster} · ${m}:${String(sek).padStart(2, "0")}`;
     { const bild = $("#ez-ich-bild") as HTMLImageElement, src = "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"); st.hidden = !z.ich.stufe; if (z.ich.stufe) st.textContent = "St. " + z.ich.stufe; }
-    this.gefolge(z, ich[0]);
+    this.gefolge(z, ich[0]); if (FLACH) this.kartePunkte(z);
     const sym = SYMBOL[ich[2]] || {};
     for (const [taste, cd, def] of [["q", z.ich.cdQ, D.q], ["e", z.ich.cdE, D.e], ["r", z.ich.cdR, D.r]] as const) { const el = $(`[data-taste="${taste}"]`); el.classList.toggle("zu", cd > 0); el.style.setProperty("--cd", cd > 0 ? String(Math.min(1, cd / def.zeit)) : "0"); (el.querySelector("u") as HTMLElement).textContent = cd > 0 ? String(Math.ceil(cd)) : "";
       const k = el.querySelector("small") as HTMLElement; if (k.textContent !== def.name) { k.textContent = def.name; el.title = `${taste.toUpperCase()} · ${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[taste] || "sterne"); } }
+    { const an = $('[data-taste="a"]'), src = symbolBild((sym.modi || [])[z.ich.modus] || "hieb"), img = an.querySelector("img") as HTMLImageElement; if (img.dataset.src !== src) { img.dataset.src = src; img.src = src; an.title = `1 · Angriff (${W.name}): nächsten Gegner angreifen`; } }
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b><small>${W.name}</small>`; if (mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `${W.name}: ${W.text} · Wechseln zu ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; mo.classList.toggle("zwei", z.ich.modus === 1); }
     const ende = $("#ez-ende"); if (FLACH) { if (z.phase === "sieg" && !this.gewonnen && !WEG) { this.gewonnen = true; $("#ez-ziel").hidden = true; if (z.pr === 1 && kampfJetzt && P0.get("ort")) probeGeschafft(P0.get("ort") as string, kampfJetzt.karte);
       /* Der Kampf endet nicht von selbst: Man kann weiter herumlaufen und Seelensplitter aufheben, bis man ihn über den Knopf verlässt. */
@@ -342,16 +376,15 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
       <div class="ez-karte"><h2>${esc(D.name)} – ${esc(D.titel)}</h2><p class="ez-rolle">${esc(D.rolle)} · ${D.lp} Leben · Tempo ${String(D.tempo).replace(".", ",")}</p>
         <p><b>Angriff:</b> ${w(D.angriff)}<br><b>Verteidigung:</b> ${w(D.abwehr)}</p>
         <ul>${D.modi.map((m, i) => `<li><b>${i ? "Zweite" : "Erste"} Waffe – ${esc(m.name)}</b> ${m.schild ? "" : ` (${m.art === "heil" ? "Heilung" : "Schaden"} ${m.schaden[0]}–${m.schaden[1]}, alle ${String(m.takt).replace(".", ",")} s, Reichweite ${String(m.reich).replace(".", ",")})`}: ${esc(m.text)}</li>`).join("")}
-          ${(["q", "e", "r"] as const).map((t) => `<li><b>${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
-      <h3>Begleiter (spielt der Rechner, höchstens zwei)</h3>
-      <div class="ez-mit">${HELDENREIHE.filter((k) => k !== WAHL.held).map((k) => `<button type="button" class="${WAHL.mit.includes(k) ? "an" : ""}" data-mit="${k}">${esc(HELDEN[k].name)} <small>${esc(HELDEN[k].klasse)}</small></button>`).join("")}</div>
+          <li><b>1 – Angriff</b>: den nächsten Gegner angreifen (läuft hin, wenn er zu weit weg ist)</li>${(["q", "e", "r"] as const).map((t, i) => `<li><b>${i + 2} oder ${t.toUpperCase()} – ${esc(D[t].name)}</b> (alle ${D[t].zeit} s): ${esc(D[t].text)}</li>`).join("")}<li>${esc(D.passiv)}</li></ul></div>
+      <p class="ez-klein">Du ziehst mit genau einem Helden los und levelst nur ihn. Wechseln kannst du ihn nur in der Waldmark.</p>
       <div class="ez-knoepfe"><button type="button" id="ez-los">${wort ? wort.los : "In den Riss"}</button>${zurueck ? `<button type="button" id="ez-zurueck">${wort ? wort.zurueck : "Zurück ins Dorf"}</button>` : ""}<a href="../">← zur Startseite</a></div>
       <p class="ez-klein unten">Zwölf Knochenwächter in fünf Gruppen, in der Siegelkammer der Knochenfürst. Treffer: Angriffswurf gegen Verteidigungswurf, dann Schadenswurf. Alle Werte sind Startwerte.</p></div>`; };
   zeichne(); el.hidden = false;
   el.onclick = (ev) => { const t = ev.target as HTMLElement, h = t.closest<HTMLElement>("[data-held]"), m = t.closest<HTMLElement>("[data-mit]");
     if (h) { WAHL.held = h.dataset.held as string; WAHL.mit = WAHL.mit.filter((x) => x !== WAHL.held); zeichne(); }
     else if (m) { const k = m.dataset.mit as string; if (WAHL.mit.includes(k)) WAHL.mit = WAHL.mit.filter((x) => x !== k); else if (WAHL.mit.length < 2) WAHL.mit.push(k); zeichne(); }
-    else if (t.id === "ez-los") { el.hidden = true; los(WAHL.held, WAHL.mit.slice()); }
+    else if (t.id === "ez-los") { el.hidden = true; los(WAHL.held, []); } /* ein Held je Spieler, keine Begleiter */
     else if (t.id === "ez-zurueck" && zurueck) { el.hidden = true; zurueck(); } };
 }
 
@@ -362,7 +395,9 @@ function OHNE_DORF_VORAB() { return P.get("dorf") === "0" || P.get("los") === "1
 weltAnschliessen(weltName || (WELTSTART ? "waldmark" : ""), "waldweg");
 const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
 /* Erst das Konto: Liegt dort ein anderer Stand als auf dem Gerät, wird er übernommen und die Seite lädt einmal neu. Höchstens vier Sekunden warten. */
-void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
+/* Abgeschaltete Teile (Kampagnen, Waldweg – siehe freigabe.ts) führen zurück in die Waldmark */
+if (!adresseErlaubt(P0)) location.replace("./" + (P0.has("server") ? "?server=" + encodeURIComponent(P0.get("server") || "") : ""));
+else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
 else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [STADT === "alt" ? Dorf : STADT === "bild" ? Stadt : Welt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */

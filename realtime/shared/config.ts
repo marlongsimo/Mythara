@@ -38,6 +38,8 @@ export const K = {
   R_HELD: 0.36, SICHT: 7,
   AGGRO: 5.5, LEINE: 10,                   // Monster: ab wann sie angreifen, wie weit sie ihrem Lager folgen
   WIEDER_HELD: 5,
+  HEIL_EP: 0.3,                            // gemeinsame Welt: Heiler bekommen so viele EP je geheiltem Lebenspunkt
+  WELT_WIEDERKEHR: 60,                     // gemeinsame Welt: Sekunden, bis ein besiegter Gegner wieder an seinem Lager steht
   HEIM_HEILUNG: 0.15, HEIM_HEILUNG_BOSS: 0.02, // Monster, die niemanden mehr verfolgen, heilen an ihrem Platz so viel ihres Lebens je Sekunde
   SPLITTER: [1, 20] as [number, number],
   EINGABEN_JE_SEK: 30,

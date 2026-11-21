@@ -102,11 +102,11 @@ try {
   { const p = await br.newPage({ viewport: { width: 1280, height: 760 } }), fehler = []; p.on("pageerror", (e) => fehler.push(String(e)));
     await p.goto("http://localhost:8765/echtzeit/?dorf=0&server="); await p.waitForSelector("#ez-los");
     check((await p.$$(".ez-held")).length === 5 && await p.evaluate(() => /Torvald/.test(document.querySelector(".ez-karte h2").textContent) && /Angriff:/.test(document.querySelector(".ez-karte").textContent)), "Heldenwahl: fünf Helden, der gewählte mit Werten, Waffen und Fähigkeiten");
-    await p.click('[data-held="assassine"]'); await p.click('[data-mit="lichtbringer"]'); await p.click('[data-mit="schildwaechter"]'); await p.click('[data-mit="elementarist"]');
-    check(await p.evaluate(() => /Vex/.test(document.querySelector(".ez-karte h2").textContent) && document.querySelectorAll(".ez-mit .an").length === 2 && /Dolch.*7–18/.test(document.querySelector(".ez-karte").textContent)), "Vex gewählt: Karte zeigt Dolch 7–18; höchstens zwei Begleiter lassen sich wählen");
+    await p.click('[data-held="assassine"]');
+    check(await p.evaluate(() => /Vex/.test(document.querySelector(".ez-karte h2").textContent) && !document.querySelector(".ez-mit") && /Dolch.*7–18/.test(document.querySelector(".ez-karte").textContent)), "Vex gewählt: Karte zeigt Dolch 7–18; keine Begleiter (ein Held je Spieler)");
     if (process.env.EZ_BILD) await p.screenshot({ path: process.env.EZ_BILD.replace(".png", "-wahl.png") });
     await p.click("#ez-los"); await p.waitForFunction(() => window.EZ && window.EZ.zustand(), null, { timeout: 15000 });
-    check(await p.evaluate(() => { const z = window.EZ.zustand(); return z.w.filter((e) => e[1]).map((e) => e[2]).join() === "assassine,lichtbringer,schildwaechter" && /Vex · Dolch/.test(document.querySelector("#ez-name").textContent); }), "nach dem Start: Vex mit zwei Begleitern im Riss, die Anzeige nennt die Waffe");
+    check(await p.evaluate(() => { const z = window.EZ.zustand(); return z.w.filter((e) => e[1]).map((e) => e[2]).join() === "assassine" && /Vex · Dolch/.test(document.querySelector("#ez-name").textContent); }), "nach dem Start: Vex allein im Riss, die Anzeige nennt die Waffe");
     await p.keyboard.press(" "); await p.waitForFunction(() => /Armbrust/.test(document.querySelector("#ez-name").textContent), null, { timeout: 3000 }).catch(() => {}); check(await p.evaluate(() => /Vex · Armbrust/.test(document.querySelector("#ez-name").textContent) && /Armbrust/.test(document.querySelector("#ez-modus").textContent)), "Leertaste: Waffe gewechselt, Anzeige und Knopf zeigen die Armbrust");
     check(fehler.length === 0, "Heldenwahl: keine Fehler" + (fehler.length ? " – " + fehler[0] : "")); await p.close(); }
   for (const [name, url, erwartet] of [["über den Server", `http://localhost:8765/echtzeit/?los=1&server=ws://localhost:${PORT}`, "server"], ["ohne Server", "http://localhost:8765/echtzeit/?los=1&server=", "lokal"]]) {

@@ -1,0 +1,36 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_brust_schatten",
+  "name": "Schattenpanzer (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "chest",
+  "type": "chest_armor",
+  "rarity": "epic",
+  "model": {
+    "file": "blender/equipment/test/test_brust_schatten.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "rumpf"
+    ]
+  },
+  "hides": {
+    "regions": [
+      "rumpf"
+    ],
+    "slots": []
+  },
+  "stats": {
+    "armor": 38
+  },
+  "special": {},
+  "visual": {
+    "material": null,
+    "glow": "violett",
+    "trim": "Runenband"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

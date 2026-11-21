@@ -1,0 +1,41 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_schulter_schatten",
+  "name": "Schattenstacheln (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "shoulders",
+  "type": "shoulder_armor",
+  "rarity": "epic",
+  "model": {
+    "file": "blender/equipment/test/test_schulter_schatten.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "parts": [
+      {
+        "object": "test_schulter_schatten_l",
+        "socket": "Shoulder_Left"
+      },
+      {
+        "object": "test_schulter_schatten_r",
+        "socket": "Shoulder_Right"
+      }
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 13
+  },
+  "special": {},
+  "visual": {
+    "material": null,
+    "trim": "Stacheln",
+    "glow": "violett"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

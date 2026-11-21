@@ -1,0 +1,183 @@
+{
+  "schema": "mythara-skelett/1",
+  "id": "warrior_base",
+  "name": "Krieger-Grundskelett",
+  "quelle": {
+    "datei": "blender/animations/kaykit/Rig_Medium_General.glb",
+    "objekt": "Rig_Medium",
+    "lizenz": "CC0 1.0 – Kay Lousberg (KayKit Character Animations 1.1)"
+  },
+  "knochen": [
+    "root",
+    "hips",
+    "spine",
+    "chest",
+    "head",
+    "upperarm.l",
+    "lowerarm.l",
+    "wrist.l",
+    "hand.l",
+    "handslot.l",
+    "upperarm.r",
+    "lowerarm.r",
+    "wrist.r",
+    "hand.r",
+    "handslot.r",
+    "upperleg.l",
+    "lowerleg.l",
+    "foot.l",
+    "toes.l",
+    "upperleg.r",
+    "lowerleg.r",
+    "foot.r",
+    "toes.r"
+  ],
+  "_sockel": "Befestigungspunkte: an einem Knochen, mit Versatz (Meter) und Drehung (Grad, XYZ) im Raum des Knochens. Starre Teile hängen an einem Sockel; ihr Ursprung ist der Haltepunkt.",
+  "sockel": {
+    "Head": {
+      "knochen": "head",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Hair": {
+      "knochen": "head",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Chest": {
+      "knochen": "chest",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Back": {
+      "knochen": "chest",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Waist": {
+      "knochen": "hips",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Shoulder_Left": {
+      "knochen": "upperarm.l",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Shoulder_Right": {
+      "knochen": "upperarm.r",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Hand_Left": {
+      "knochen": "handslot.l",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Hand_Right": {
+      "knochen": "handslot.r",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Foot_Left": {
+      "knochen": "foot.l",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Foot_Right": {
+      "knochen": "foot.r",
+      "versatz": [
+        0,
+        0,
+        0
+      ],
+      "drehung": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "wurzel": "root",
+  "_wurzel": "Wurzelknochen: seine waagerechte Bewegung wird bei Animationen mit amOrt entfernt (der Server bewegt die Figur)."
+}

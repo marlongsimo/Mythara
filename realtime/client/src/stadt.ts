@@ -7,10 +7,14 @@
 import { weltkarte } from "./weltkarte";
 import { heldenhalle } from "./halle";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "./hud";
+import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "./rahmen";
+import { frei as freigabe } from "./freigabe";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { wecken } from "./netz";
 import Phaser from "phaser";
+import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "./welt";
 import { HELDEN } from "../../shared/config";
+import { heldenFigur, richten, blickVon } from "./modulfigur";
 
 const F = 1.5, BW = 1671, BH = 941, TEMPO = 125, GROSS = 112; // GROSS: Körperhöhe des Helden am Bildschirm, passend zu Türen und Tischen im Bild // Vergrößerung, Bildgröße, Lauftempo in Bildpunkten der Vorlage je Sekunde
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
@@ -34,10 +38,10 @@ const VORN: { umriss: Pkt[]; fuss: number; gruen?: boolean }[] = [ // gruen: nur
 ];
 /* Orte: Punkt, an dem man steht, und was dort passiert */
 const ORTE: { name: string; x: number; y: number; r: number; tat: "riss" | "bald" | "welt" | "halle"; text: string }[] = [
-  { name: "Der Riss", x: 1140, y: 678, r: 75, tat: "riss", text: "In den Riss" },
+  { name: "Der Riss", x: 1140, y: 678, r: 75, tat: freigabe("riss") ? "riss" : "bald", text: freigabe("riss") ? "In den Riss" : "Der Riss ist gerade versiegelt" },
   { name: "Taverne", x: 600, y: 440, r: 60, tat: "bald", text: "Taverne – kommt noch" },
   { name: "Heldenhalle", x: 1085, y: 362, r: 60, tat: "halle", text: "Die Heldenhalle betreten" },
-  { name: "Stadttor", x: 1430, y: 308, r: 55, tat: "welt", text: "Zur Weltkarte" },
+  { name: "Stadttor", x: 1430, y: 308, r: 55, tat: freigabe("kampagnen") || freigabe("waldweg") ? "welt" : "bald", text: freigabe("kampagnen") || freigabe("waldweg") ? "Zur Weltkarte" : "Das Stadttor ist noch geschlossen" },
   { name: "Markt", x: 545, y: 585, r: 80, tat: "bald", text: "Markt – kommt noch" },
 ];
 /* Was sich im Bild bewegt (Bildpunkte der Vorlage): Feuer [x, y, Größe], Rauch [x, y], Wasserfälle [x, y oben, Breite, Fallhöhe], Glitzern [x, y, Breite, Höhe], Mitte des Risses */
@@ -64,17 +68,22 @@ function wegZu(x0: number, y0: number, x1: number, y1: number): number[][] {
   for (let n = 0; n < reihe.length; n++) { const i = reihe[n], [mx, my] = mitte(i), a = Math.hypot(mx - x1, my - y1); if (a < bestA) { bestA = a; best = i; } if (a < RASTER * 0.75) break;
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) { const cx = i % B + dx, cy = Math.floor(i / B) + dy; if (cx < 0 || cy < 0 || cx >= B || cy >= H) continue; const j = cx + B * cy; if (von[j] >= 0 || !frei((cx + 0.5) * RASTER, (cy + 0.5) * RASTER)) continue; if (dx && dy && (!frei((cx + 0.5) * RASTER, my) || !frei(mx, (cy + 0.5) * RASTER))) continue; /* nicht quer über Ecken */ von[j] = i; reihe.push(j); } }
   const weg: number[][] = []; for (let i = best; i !== start; i = von[i]) weg.unshift(mitte(i)); if (weg.length && frei(x1, y1) && bestA < RASTER) weg.push([x1, y1]); return weg; }
-type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void) => void;
+type Wahl = (los: (held: string, mit: string[]) => void, zurueck: () => void, wort?: { los: string; zurueck: string }) => void;
 
 export class Stadt extends Phaser.Scene {
   held = "schildwaechter"; ort = { x: 800, y: 700 }; rx = 0; ry = 0; figur!: Phaser.GameObjects.Sprite; ring!: Phaser.GameObjects.Ellipse; laeuft = false; tasten: Record<string, boolean> = {};
   leute: { s: Phaser.GameObjects.Sprite; d: (typeof LEUTE)[number]; x: number; y: number; n: number; pause: number }[] = []; nah: (typeof ORTE)[number] | null = null; gesperrt = false; stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; pfad: number[][] = []; zielOrt: (typeof ORTE)[number] | null = null;
   constructor() { super("dorf"); }
-  init(d: { held?: string }) { let h = d && d.held; try { h = h || localStorage.getItem("ez_held") || ""; } catch { /* privat */ } this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter";
+  mit!: Mitspieler;
+  init(d: { held?: string }) { let h = (d && d.held) || lokalerHeld(); /* ein Held je Spieler */ this.held = HELDEN[h || ""] ? (h as string) : "schildwaechter";
     { const q = new URLSearchParams(location.search); if (q.get("von") === "tor") { /* aus einer Kampagne zurück: man steht vor dem Stadttor */ for (const [x, y] of [[1395, 335], [1380, 345], [1360, 350]]) if (frei(x, y)) { this.ort = { x, y }; break; } q.delete("von"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q.toString() : "")); } } }
-  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); }
+  preload() { this.load.image("waldmark", "../img/echtzeit/waldmark.webp"); this.load.spritesheet("npc-junge", "../img/echtzeit/junge.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-wache", "../img/echtzeit/wache.webp", { frameWidth: 176, frameHeight: 176 }); this.load.spritesheet("npc-ausrufer", "../img/echtzeit/ausrufer.webp", { frameWidth: 176, frameHeight: 176 }); for (const l of LEUTE) this.load.spritesheet("npc-" + l.bild, "../img/echtzeit/" + l.bild + ".webp", { frameWidth: 176, frameHeight: 176 }); const D = HELDEN[this.held]; if (D.figur) this.load.image("figur-" + this.held, "../" + D.figur); if (D.lauf) this.load.spritesheet("lauf-" + this.held, "../" + D.lauf, { frameWidth: 176, frameHeight: 176 }); this.load.image(this.held, "../" + D.bild); heldenLaden(this); /* für Mitspieler */ }
   create() {
-    document.body.classList.add("dorf", "stadt"); this.profil(); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
+    document.body.classList.add("dorf", "stadt"); this.profil();
+    /* gemeinsame Welt: andere Spieler in der Waldmark; der Server nennt den aktiven Helden */ this.mit = new Mitspieler(this, { f: F, gross: GROSS, tiefe: (y) => y, karte: { breit: BW, hoch: BH } });
+    if (new URLSearchParams(location.search).get("von") === "tod") { setTimeout(() => chatSystem("Du bist gefallen und in der Waldmark wieder zu dir gekommen."), 300); const q = new URLSearchParams(location.search); q.delete("von"); history.replaceState(null, "", "?" + q.toString()); }
+    weltBetreten("waldmark", { spieler: (l) => { this.mit.liste(l); this.onlineZeigen(); }, fort: (id) => this.mit.weg(id), ich: (i) => { if (i.held !== this.held) this.scene.restart({ held: i.held }); },
+      blase: (id, text) => { const i = weltIch(); if (i && id === i.id) sprechblase(this, () => (this.figur && this.figur.active ? { x: this.figur.x, y: this.figur.y - GROSS - 30 } : null), text); else this.mit.blase(id, text); } }); this.events.once("shutdown", () => { document.body.classList.remove("dorf", "stadt"); $("#ez-dorf-knopf").hidden = true; });
     this.cameras.main.setBackgroundColor("#0d140b"); const bild = this.add.image(0, 0, "waldmark").setOrigin(0, 0).setDepth(0), Q = bild.width / BW; bild.setScale(F / Q); // Q: so viel größer als die Vermessung ist die Bilddatei
     const quelle = this.textures.get("waldmark").getSourceImage() as HTMLImageElement;
     VORN.forEach((v, n) => { // Ausschnitt des Bildes in der Form des Umrisses: liegt über dem Helden, solange der dahinter steht
@@ -101,11 +110,11 @@ export class Stadt extends Phaser.Scene {
     for (const l of LEUTE) { const k = "npc-" + l.bild; if (!this.anims.exists(k)) this.anims.create({ key: k, frames: this.anims.generateFrameNumbers(k, {}), frameRate: 8, repeat: -1 }); const s = this.add.sprite(0, 0, k).setOrigin(0.5, 0.945).setScale(GROSS / (l.mass * 176)); s.play(k); const start = Math.floor(Math.random() * l.weg.length); this.leute.push({ s, d: l, x: l.weg[start][0], y: l.weg[start][1], n: (start + 1) % l.weg.length, pause: 0 }); }
     if (P.get("zeig") === "1") { const g = this.add.graphics().setDepth(9999); const mal = (p: Pkt[], f: number) => { g.lineStyle(2, f, 1); g.strokePoints(p.map((q) => ({ x: q[0] * F, y: q[1] * F })), true); }; mal(FLAECHE, 0x00ff00); HINDERNIS.forEach((h) => mal(h, 0xff0000)); VORN.forEach((v) => mal(v.umriss, 0x00aaff)); for (const o of ORTE) g.strokeCircle(o.x * F, o.y * F, o.r * F); }
     const D = HELDEN[this.held]; this.ring = this.add.ellipse(0, 0, 58, 29).setStrokeStyle(3, 0xffffff, 0.95);
-    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = this.add.sprite(0, 0, "figur-" + this.held).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
+    if (D.figur) { const fu = D.fuss || [0.5, 0.94]; this.figur = heldenFigur(this, 0, 0, this.held, GROSS).setOrigin(fu[0], fu[1]); this.figur.setScale(GROSS * (D.gross || 1) / this.figur.height); if (D.lauf && !this.anims.exists("lauf-" + this.held)) this.anims.create({ key: "lauf-" + this.held, frames: this.anims.generateFrameNumbers("lauf-" + this.held, {}), frameRate: 11, repeat: -1 }); }
     else { this.figur = this.add.sprite(0, 0, this.held).setOrigin(0.5, 1); this.figur.setScale(60 / this.figur.height); }
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!this.scene.isActive() || this.gesperrt) return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) { ev.preventDefault(); this.tasten[k] = an; const t = this.tasten; this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); } else if (an && (k === "e" || k === "enter")) this.betreten(); };
     const runter = (ev: KeyboardEvent) => { if (!ev.repeat) taste(ev, true); }, hoch = (ev: KeyboardEvent) => taste(ev, false); window.addEventListener("keydown", runter); window.addEventListener("keyup", hoch); this.events.once("shutdown", () => { window.removeEventListener("keydown", runter); window.removeEventListener("keyup", hoch); });
-    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { if (this.gesperrt || this.stick) return; this.stick = { id: p.id, x: p.x, y: p.y, t: performance.now(), weit: 0 }; if (p.wasTouch) { const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; } });
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { if (this.gesperrt || this.stick) return; { const d = this.mit.unter(this.input.hitTestPointer(p)); if (d) { this.gesperrt = true; this.halt(); spielerKarte(d, () => { this.gesperrt = false; }); return; } } /* ein Mitspieler angetippt: seine Karte */ this.stick = { id: p.id, x: p.x, y: p.y, t: performance.now(), weit: 0 }; if (p.wasTouch) { const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; } });
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return; const dx = p.x - st.x, dy = p.y - st.y, l = Math.hypot(dx, dy), m = 46; st.weit = Math.max(st.weit, l); ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`; if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { if (this.stick && p.id === this.stick.id) { const st = this.stick; if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.tippen(w.x / F, w.y / F); } this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } });
     $("#ez-dorf-knopf").onclick = () => this.betreten(); $("#ez-dorf-titel").textContent = "Waldmark";
@@ -132,8 +141,16 @@ export class Stadt extends Phaser.Scene {
   }
   /** Oben links: Bild des Helden und Anmeldename. Oben rechts: Minikarte mit den Orten und dem eigenen Standpunkt. */
   profil() { hudProfil(this.held); hudTitel("Waldmark", "Die Zuflucht der Wanderer"); hudKarte();
+    const tafel = (f: (zu: () => void) => void) => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); f(() => { this.gesperrt = false; }); };
+    const rucksack = () => tafel((zu) => taschenTafel("rucksack", this.held, zu)), ausruestung = () => tafel((zu) => taschenTafel("ausruestung", this.held, zu));
+    /* Unter der Karte: was gerade freigeschaltet ist (freigabe.ts) – Weltkarte und Quests gehören zu den Kampagnen */
+    const knoepfe: RKnopf[] = [];
+    if (freigabe("kampagnen") || freigabe("waldweg")) knoepfe.push({ name: "Weltkarte", zeichen: "karte", taste: "M", tat: () => this.oeffne("welt") });
+    if (freigabe("kampagnen")) knoepfe.push({ name: "Teleport", zeichen: "teleport", taste: "T", tat: () => chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück.") }, { name: "Quests", zeichen: "quests", taste: "L", tat: () => tafel(questTafel) });
+    knoepfe.push({ name: "Spieler", zeichen: "spieler", taste: "P", tat: () => tafel(spielerListe) }, { name: "Held", zeichen: "held", taste: "H", tat: () => this.heldWaehlen() });
+    rundeKarte(2.2, knoepfe); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung }); this.onlineZeigen();
     /* In der Waldmark keine Questanzeige und keine Teamleiste – die gibt es in den Orten der Kampagnen */
-    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.oeffne("halle") }, { name: "Weltkarte", zeichen: "karte", tat: () => this.oeffne("welt") }, { name: "Riss", zeichen: "riss", art: "riss", tat: () => this.oeffne("riss") },
+    hudMenue([{ name: "Helden", zeichen: "helden", tat: () => this.oeffne("halle") }, { name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }, ...(freigabe("riss") ? [{ name: "Riss", zeichen: "riss" as const, art: "riss", tat: () => this.oeffne("riss") }] : []),
       { name: "Menü", zeichen: "menue", tat: () => { if (this.gesperrt) return; this.gesperrt = true; this.halt(); menueTafel(() => { this.gesperrt = false; this.profil(); }); } }]); if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
     const k = $("#ez-karte"); for (const el of Array.from(k.querySelectorAll("u"))) el.remove(); for (const o of ORTE) { const u = document.createElement("u"); u.style.left = (100 * o.x / BW) + "%"; u.style.top = (100 * o.y / BH) + "%"; u.title = o.name; if (o.tat === "riss") u.className = "riss"; k.appendChild(u); } }
   groesse() { const k = this.cameras.main; const w = this.scale.width, h = this.scale.height; k.setZoom(Math.max(w / (BW * F), h / (BH * F), Phaser.Math.Clamp(HANDY ? Math.min(h / 520, w / 720) : Math.min(h / 760, w / 1000), 0.45, 2.2) * zoomFaktor())); /* auch im Hochformat bleibt genug Umgebung im Bild */ }
@@ -144,12 +161,17 @@ export class Stadt extends Phaser.Scene {
     if (ort && ort === this.nah) { this.pfad = []; this.betreten(); return; }
     this.zielOrt = ort; this.pfad = wegZu(this.ort.x, this.ort.y, ort ? ort.x : x, ort ? ort.y : y); }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.zielOrt = null; }
+  /** Den Helden wechseln – das geht nur hier in der Waldmark (der Server speichert ihn mit dem Konto) */
+  heldWaehlen() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
+    wahl((held) => { weltHeld(held); this.gesperrt = false; if (held !== this.held) this.scene.restart({ held }); }, () => { this.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
+  /** Zahl der Spieler am Knopf „Spieler“ */
+  onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
   /** Riss, Heldenhalle oder Weltkarte öffnen – vor Ort oder über die Knöpfe unten rechts */
   oeffne(tat: "riss" | "halle" | "welt") { if (this.gesperrt) return; this.betreten({ tat } as (typeof ORTE)[number]); }
   betreten(ziel?: (typeof ORTE)[number]) { const o = ziel || this.nah; if (!o || this.gesperrt) return;
     if (o.tat === "riss") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
     else if (o.tat === "halle") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; heldenhalle(() => { this.gesperrt = false; this.profil(); }); }
-    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; weltkarte(() => { this.gesperrt = false; this.profil(); }); }
+    else if (o.tat === "welt") { this.gesperrt = true; this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; weltkarte(() => { this.gesperrt = false; if (lokalerHeld() !== this.held) { this.scene.restart({ held: lokalerHeld() }); return; } this.profil(); }); }
     else { const k = $("#ez-dorf-knopf"); k.textContent = o.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort; let rx = this.rx, ry = this.ry;
@@ -158,14 +180,15 @@ export class Stadt extends Phaser.Scene {
     const l = Math.hypot(rx, ry), faehrt = !this.gesperrt && l > 0.05;
     if (faehrt) { const k = Math.min(1, l) / l, sx = rx * k * TEMPO * d, sy = ry * k * TEMPO * 0.62 * d; // nach oben und unten langsamer: der Boden liegt schräg
       if (frei(o.x + sx, o.y + sy)) { o.x += sx; o.y += sy; } else if (frei(o.x + sx, o.y)) o.x += sx; else if (frei(o.x, o.y + sy)) o.y += sy; // an Kanten entlanggleiten
-      if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
+      richten(this.figur, rx, ry * 0.62); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     for (const m of this.leute) { // schlendern: zum nächsten Wegpunkt, dort kurz stehen bleiben
       if (m.pause > 0) { m.pause -= d; if (m.pause <= 0) m.s.anims.resume(); } else { const z = m.d.weg[m.n], dx = z[0] - m.x, dy = z[1] - m.y, w = Math.hypot(dx, dy), schritt = m.d.tempo * d; if (w <= schritt) { m.x = z[0]; m.y = z[1]; m.n = (m.n + 1) % m.d.weg.length; if (Math.random() < 0.6) { m.pause = 1.5 + Math.random() * 3; m.s.anims.pause(); m.s.setFrame(0); } } else { m.x += dx / w * schritt; m.y += dy / w * schritt * (Math.abs(dy) > Math.abs(dx) ? 0.8 : 1); if (Math.abs(dx) > 2) m.s.setFlipX(dx < 0); } }
       m.s.setPosition(m.x * F, m.y * F + 3).setDepth(m.y); }
     const D = HELDEN[this.held]; if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt; if (faehrt) { const L = D.laufMass || [0.5, 0.946, 0.91]; this.figur.play("lauf-" + this.held); this.figur.setOrigin(L[0], L[1]).setScale(GROSS / (L[2] * 176)); } else { const fu = D.fuss || [0.5, 0.94]; this.figur.stop(); this.figur.setTexture("figur-" + this.held); this.figur.setOrigin(fu[0], fu[1]).setScale(GROSS * (D.gross || 1) / this.figur.height); } }
     const x = o.x * F, y = o.y * F; this.figur.setPosition(x, y + 3).setDepth(o.y); this.ring.setPosition(x, y).setDepth(o.y - 0.01);
     const k = this.cameras.main; k.scrollX += (x - k.width / 2 - k.scrollX) * 0.12; k.scrollY += (y - 50 - k.height / 2 - k.scrollY) * 0.12;
-    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; }
+    { const pk = $("#ez-karte-punkt"); pk.style.left = (100 * o.x / BW) + "%"; pk.style.top = (100 * o.y / BH) + "%"; karteFolgen(o.x / BW, o.y / BH); }
+    weltPos(o.x, o.y, blickVon(this.figur), this.laeuft); this.mit.schritt(d);
     let nah: typeof this.nah = null; for (const q of ORTE) if (Math.hypot(o.x - q.x, o.y - q.y) < q.r) nah = q;
     if (nah !== this.nah) { this.nah = nah; const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.tat === "bald" ? nah.name : nah.text + (HANDY ? "" : "  [E]"); }
   }

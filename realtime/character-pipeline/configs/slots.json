@@ -1,0 +1,66 @@
+{
+  "schema": "mythara-slots/1",
+  "_hinweis": "Ausrüstungsslots. Ein Gegenstand belegt seinen Slot (und ggf. weitere über occupies, z. B. Zweihänder: main_hand + off_hand).",
+  "slots": {
+    "head": {
+      "name": "Helm",
+      "sockel": "Head"
+    },
+    "hair": {
+      "name": "Haare",
+      "sockel": "Hair"
+    },
+    "beard": {
+      "name": "Bart",
+      "sockel": "Head"
+    },
+    "chest": {
+      "name": "Brustpanzer",
+      "sockel": "Chest"
+    },
+    "shoulders": {
+      "name": "Schulterplatten",
+      "sockel": [
+        "Shoulder_Left",
+        "Shoulder_Right"
+      ]
+    },
+    "hands": {
+      "name": "Handschuhe und Armschienen",
+      "sockel": [
+        "Hand_Left",
+        "Hand_Right"
+      ]
+    },
+    "legs": {
+      "name": "Beinschutz",
+      "sockel": "Waist"
+    },
+    "feet": {
+      "name": "Stiefel",
+      "sockel": [
+        "Foot_Left",
+        "Foot_Right"
+      ]
+    },
+    "back": {
+      "name": "Umhang / Rücken",
+      "sockel": "Back"
+    },
+    "main_hand": {
+      "name": "Haupthand",
+      "sockel": "Hand_Right"
+    },
+    "off_hand": {
+      "name": "Nebenhand / Schild",
+      "sockel": "Hand_Left"
+    }
+  },
+  "seltenheit": {
+    "common": "Gewöhnlich",
+    "uncommon": "Ungewöhnlich",
+    "rare": "Selten",
+    "epic": "Episch",
+    "legendary": "Legendär"
+  }
+}
