@@ -36,11 +36,13 @@ const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgae
   const g = Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => { const cx = x + 0.5, cy = y + 0.5; return strecke(cx, cy, PFAD) < 1.0 ? "e" : lichtung(cx, cy) ? (welle(cx, cy) > 0.9 ? "t" : ".") : strecke(cx, cy, PFAD) < 2.4 ? "." : "f"; }));
   let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|wald|stil)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x, y, ...mehr });
   const dinge = [o("dorf_huette_holz_02", K.x - 4.5, K.y - 2), o("wald_meiler_01", K.x + 3.5, K.y + 1.5), o("wald_meiler_01", K.x + 6, K.y - 4.5, { s: 0.8 }), o("dorf_holzstapel_01", K.x - 0.5, K.y - 3.8), o("dorf_holzstapel_01", K.x + 1.5, K.y - 3.6),
-    o("wald_ruine_01", K.x - 6, K.y + 5.5), o("wald_ruine_02", K.x - 1, K.y + 6.5, { spiegeln: true })];
+    /* verfallene Halle aus Kenney-Teilen: Südmauer in zwei Stücken, Westmauer, eine Säulenreihe davor */
+    o("k_ruine_mauer", K.x - 6.5, K.y + 7.2), o("k_ruine_mauer", K.x - 3.2, K.y + 7.2, { spiegeln: true }), o("k_ruine_mauer_tief", K.x - 8.3, K.y + 6.8),
+    o("k_ruine_saeule", K.x - 0.6, K.y + 7.6), o("k_ruine_saeule_ganz", K.x + 1.6, K.y + 7.6), o("k_ruine_saeule", K.x - 0.6, K.y + 4.6, { spiegeln: true })];
   const baeume = wald(B, H, (x, y) => !lichtung(x, y) && Math.hypot(x - K.x, y - K.y) > K.r + 1 && strecke(x, y, PFAD) > 2.6, 1.1);
   const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.6, abgleich: "keiner", daten: { text } });
   const spiel = { ...leer, start: [[88, 60]], interaktionen: [lies("meiler", K.x + 3.5, K.y + 2.9, "Ein Kohlenmeiler. Unter der Erde schwelt das Holz seit Tagen und wird zu Kohle für die Schmiede."),
-    lies("ruine", K.x - 6, K.y + 6.4, "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt.")] };
+    lies("ruine", K.x - 4.8, K.y + 8.4, "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt.")] };
   schreibe("nordwald", { id: "nordwald", name: "Der Nordwald", untertitel: "Dichter Wald mit einer Köhlerlichtung", ursprung: [196, 200], chunks: [4, 2], biom: "wald", stufe: 1 }, g, [...dinge, ...baeume], spiel); }
 
 /* ───── Westmark ───── */

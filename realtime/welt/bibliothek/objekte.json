@@ -5810,68 +5810,6 @@
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   },
   {
-   "id": "wald_ruine_01",
-   "name": "Überwucherte Ruine",
-   "kategorie": "sonderort",
-   "bild": "img/welt/gebaeude/wald_ruine_01.webp",
-   "groesse": [
-    220,
-    190
-   ],
-   "anker": [
-    0.5,
-    0.9263
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.9,
-    "y": -0.6,
-    "b": 3.8,
-    "h": 0.6
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.7,
-    "radius": 2.0
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
-   "id": "wald_ruine_02",
-   "name": "Ruinenbogen",
-   "kategorie": "sonderort",
-   "bild": "img/welt/gebaeude/wald_ruine_02.webp",
-   "groesse": [
-    220,
-    190
-   ],
-   "anker": [
-    0.5,
-    0.9263
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "rechteck",
-    "x": -1.9,
-    "y": -0.6,
-    "b": 3.8,
-    "h": 0.6
-   },
-   "tiefe": "fuss",
-   "interaktion": {
-    "art": "lesen",
-    "dx": 0,
-    "dy": 0.7,
-    "radius": 2.0
-   },
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
    "id": "dorf_windmuehle_01",
    "name": "Windmühle",
    "kategorie": "gebaeude",
@@ -6049,6 +5987,128 @@
    },
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_mauer",
+   "name": "Zerbrochene Mauer",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_mauer.webp",
+   "groesse": [
+    227,
+    238
+   ],
+   "anker": [
+    0.4878,
+    0.8351
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.35,
+    "b": 3.0,
+    "h": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    188,
+    199
+   ],
+   "herkunft": "Form: Kenney town kit (CC0, werkzeug/welt/kenney/town/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_mauer_tief",
+   "name": "Zerbrochene Mauer (Nord–Süd)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_mauer_tief.webp",
+   "groesse": [
+    136,
+    255
+   ],
+   "anker": [
+    0.3534,
+    0.8439
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.18,
+    "y": -3.0,
+    "b": 0.35,
+    "h": 3.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    97,
+    215
+   ],
+   "herkunft": "Form: Kenney town kit (CC0, werkzeug/welt/kenney/town/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_saeule",
+   "name": "Beschädigte Säule",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_saeule.webp",
+   "groesse": [
+    120,
+    264
+   ],
+   "anker": [
+    0.4613,
+    0.8497
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    41,
+    81,
+    225
+   ],
+   "herkunft": "Form: Kenney retro kit (CC0, werkzeug/welt/kenney/retro/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_saeule_ganz",
+   "name": "Säule",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_saeule_ganz.webp",
+   "groesse": [
+    120,
+    264
+   ],
+   "anker": [
+    0.4613,
+    0.8497
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    81,
+    225
+   ],
+   "herkunft": "Form: Kenney retro kit (CC0, werkzeug/welt/kenney/retro/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
   }
  ]
 }

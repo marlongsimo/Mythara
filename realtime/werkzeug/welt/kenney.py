@@ -49,6 +49,10 @@ MODELLE = {
     'k_fels_gross': dict(name='Felsen', paket='town', teile=['rock-large'], mass=2.6, kategorie='fels'),
     'k_fels_klein': dict(name='Felsbrocken', paket='town', teile=['rock-small'], mass=2.6, kategorie='fels'),
     'k_fels_breit': dict(name='Felsplatte', paket='town', teile=['rock-wide'], mass=2.6, kategorie='fels'),
+    'k_ruine_mauer': dict(name='Zerbrochene Mauer', paket='town', teile=['wall-broken'], mass=3.0, dreh=90, kategorie='sonderort', moos=True),
+    'k_ruine_mauer_tief': dict(name='Zerbrochene Mauer (Nord–Süd)', paket='town', teile=['wall-broken'], mass=3.0, dreh=0, kategorie='sonderort', moos=True),
+    'k_ruine_saeule': dict(name='Beschädigte Säule', paket='retro', teile=['column-damaged'], mass=3.2, kategorie='sonderort', klein=True, moos=True),
+    'k_ruine_saeule_ganz': dict(name='Säule', paket='retro', teile=['column'], mass=3.2, kategorie='sonderort', klein=True, moos=True),
     'k_faesser': dict(name='Fässer', paket='retro', teile=['barrels'], mass=2.0, kategorie='kleinteil'),
     'k_kiste': dict(name='Kiste', paket='retro', teile=['detail-crate'], mass=2.0, kategorie='kleinteil'),
     'k_flaschenzug': dict(name='Flaschenzug', paket='retro', teile=['pulley-crate'], mass=2.0, kategorie='kleinteil'),
@@ -140,6 +144,8 @@ def dreiecke(M):
             else:
                 uv = (vt[[t for t in ti if t >= 0]] % 1.0).mean(0) if any(t >= 0 for t in ti) else np.array([0.5, 0.5])
                 art = material(tafel[int(min(tafel.shape[0] - 1, max(0, (1 - uv[1]) * tafel.shape[0]))), int(min(tafel.shape[1] - 1, max(0, uv[0] * tafel.shape[1])))], M.get('paket', 'castle'), teil) if tafel is not None else ('farbe', (150, 140, 130))
+            if M.get('moos') and art[0] == 'holz':
+                art = ('quader', 0.24, None)                                       # Ruinen: auch Pfosten und Balken sind Stein
             for k in range(1, len(fi) - 1):
                 aus.append((P[[fi[0], fi[k], fi[k + 1]]], art))
         z0 += (v[:, 1].max() - v[:, 1].min()) * 0.985          # das nächste Teil sitzt (mit einer Spur Überlappung) darauf
@@ -199,6 +205,15 @@ def render(M):
         h = 0.5 + 0.62 * max(0.0, float(n @ licht))
         bild[ausschnitt][neu] = np.clip(c[neu] * h, 0, 255)
         tiefe[ausschnitt][neu] = t[neu]; deck[ausschnitt][neu] = 1
+    if M.get('moos'):                                                                   # Ruinen: Moos und Efeu in Flecken, nach unten dichter
+        rng = np.random.default_rng(len(M['teile'][0]) * 7 + 3); hh, ww = deck.shape
+        fl = np.zeros((hh, ww), np.float32); yy, xx = np.mgrid[0:hh, 0:ww]
+        for _ in range(int(deck.sum() / 900) + 8):
+            ys, xs = np.where(deck > 0.5); i = rng.integers(0, len(ys)); r = rng.uniform(4, 11) * K
+            fl = np.maximum(fl, np.clip(1 - ((xx - xs[i]) ** 2 + (yy - ys[i]) ** 2 * 1.6) / (r * r), 0, 1) * (0.5 + 0.5 * ys[i] / hh))
+        fl = np.clip(fl * 1.6, 0, 1) * deck
+        gruen = np.array((84, 116, 52), np.float32) * (0.85 + 0.3 * rng.random((hh, ww, 1)).astype(np.float32))
+        bild[:] = bild * (1 - fl[..., None] * 0.85) + gruen * fl[..., None] * 0.85
     # Schatten: Grundriss nach Nordosten versetzt, weich
     a = Image.fromarray((deck * 255).astype(np.uint8))
     rgba = np.dstack([bild, deck * 255]).astype(np.uint8)
