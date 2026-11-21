@@ -69,7 +69,7 @@ try {
   check(await anna.evaluate(() => !window.EZK && !document.body.classList.contains("weltkampf")), "Teleport: zurück in der Waldmark, dort wird nicht gekämpft");
   check(await anna.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "🛡 Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
   /* Ben läuft durchs Südtor zurück in die Waldmark */
-  await ben.evaluate(() => localStorage.setItem("ez_welt_pos", JSON.stringify([6448, 6467.5, "waldweg"]))); await ben.reload(); await bereit(ben);
+  await ben.goto(B + S + "&wx=6448&wy=6467.5"); await bereit(ben); /* Startstelle über die Adresse – ein Wert im Speicher könnte von der laufenden Seite überschrieben werden */
   check(await ben.evaluate(() => document.querySelector("#ez-kampfart").textContent) === "⚔ Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");
   await ben.keyboard.down("w"); await ben.waitForFunction(() => window.EZW.szene.hier === "waldmark", null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(400); await ben.keyboard.up("w");
   check(await ben.evaluate(() => window.EZW.szene.hier === "waldmark" && !window.EZK), "Durchs Südtor nach Norden: Ben verlässt das Kampfgebiet nahtlos und ist in der Waldmark (" + await ben.evaluate(() => window.EZW.szene.ort.y.toFixed(1)) + ")");
