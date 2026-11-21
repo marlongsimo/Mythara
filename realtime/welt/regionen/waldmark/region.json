@@ -1,6 +1,7 @@
 {
  "id": "waldmark",
  "name": "Waldmark",
+ "untertitel": "Die Zuflucht der Wanderer",
  "ursprung": [
   200,
   200
@@ -11,7 +12,6 @@
  ],
  "biom": "dorf",
  "stufe": 1,
- "entwurf": true,
  "gesperrt": [
   [
    14,

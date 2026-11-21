@@ -20,7 +20,13 @@ export const weltName = P.get("welt") || "";
  *  bild: Pfad vor den Bildern des Repositorys (img/…) · daten: Ordner der gebauten Welt · hud: die Oberfläche · ausgang: ein Ausgang selbst behandeln (true = erledigt) */
 export const WELT = { start: weltName, bild: "../", daten: "welt/",
   hud: { profil: (_held: string): void => {}, titel: (_name: string, _unter: string): void => {}, karte: (): void => {} },
-  ausgang: null as ((a: Ausgang) => boolean) | null };
+  ausgang: null as ((a: Ausgang) => boolean) | null,
+  /** Region, in der man nach der Rückkehr aus einer Kampagne (?von=tor) steht – an ihrem ersten Startpunkt */
+  tor: "",
+  /** Menüknöpfe einrichten (im Spiel: Helden, Weltkarte, Riss, Menü) */
+  menue: null as ((s: Welt) => void) | null,
+  /** Was eine Interaktion mit daten.tat auslöst (im Spiel: halle, welt, riss, bald) */
+  tat: null as ((art: string, s: Welt) => void) | null };
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1", TEST = P.get("test") === "1";
 const F = FELD_PX, C = CHUNK_FELDER;
 /* Wie weit über den Bildrand hinaus (in Chunks) gezeigt, vorgeholt und behalten wird */
@@ -63,6 +69,9 @@ export class Welt extends Phaser.Scene {
   startRegion(): string { return this.index.regionen[WELT.start] ? WELT.start : Object.keys(this.index.regionen)[0]; }
   /** Wo der Held steht, wenn die Szene beginnt: die gemerkte Stelle, sonst der Start der Region */
   startPunkt(): { x: number; y: number } {
+    if (P.get("von") === "tor" && this.index.regionen[WELT.tor]) { /* aus einer Kampagne zurück: vor dem Tor */ const t = this.index.regionen[WELT.tor];
+      try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } P.delete("von"); history.replaceState(null, "", location.pathname + (P.toString() ? "?" + P.toString() : "")); this.vonTor = { x: t.start[0][0], y: t.start[0][1] }; }
+    if (this.vonTor) return this.vonTor;
     const r = this.index.regionen[this.startRegion()], s = r.start[0];
     try { if (P.get("neu") === "1") localStorage.removeItem("ez_welt_pos"); const p = JSON.parse(localStorage.getItem("ez_welt_pos") || "null");
       if (Array.isArray(p) && p[2] === this.startRegion() && this.gueltig.has(chunkName(Math.floor(p[0] / C), Math.floor(p[1] / C)))) return { x: p[0], y: p[1] }; } catch { /* privat */ }
@@ -90,7 +99,7 @@ export class Welt extends Phaser.Scene {
 
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return; ev.preventDefault(); this.tasten[k] = an; const t = this.tasten;
       this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); };
-    window.addEventListener("keydown", (ev) => { if (!ev.repeat) taste(ev, true); if ((ev.key === "e" || ev.key === "E") && !ev.repeat && this.nah) this.nah.tat(); });
+    window.addEventListener("keydown", (ev) => { if (!this.scene.isActive()) return; if (!ev.repeat && !this.gesperrt) taste(ev, true); if ((ev.key === "e" || ev.key === "E" || ev.key === "Enter") && !ev.repeat && this.nah && !this.gesperrt) this.nah.tat(); });
     window.addEventListener("keyup", (ev) => taste(ev, false)); window.addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => { if (this.stick) return; this.stick = { id: p.id, x: p.x, y: p.y, t: performance.now(), weit: 0 };
       if (p.wasTouch) { const el = $("#ez-stick"); el.hidden = false; el.style.left = p.x + "px"; el.style.top = p.y + "px"; ($("#ez-stick i") as HTMLElement).style.transform = "translate(-50%, -50%)"; } });
@@ -99,10 +108,10 @@ export class Welt extends Phaser.Scene {
       if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     this.input.on("pointerup", (p: Phaser.Input.Pointer) => { const st = this.stick; if (!st || p.id !== st.id) return;
       if (st.weit < 12 && performance.now() - st.t < 450) { const w = this.cameras.main.getWorldPoint(p.x, p.y); this.gehe(w.x / F, w.y / F); } this.stick = null; $("#ez-stick").hidden = true; if (p.wasTouch) { this.rx = 0; this.ry = 0; } });
-    $("#ez-dorf-knopf").onclick = () => { if (this.nah) this.nah.tat(); };
+    $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
 
     this.groesse(); zoomKnopf(() => this.groesse()); this.scale.on("resize", () => this.groesse());
-    WELT.hud.profil(this.held); WELT.hud.karte(); this.regionZeigen(); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
+    this.profil(); this.cameras.main.centerOn(this.ort.x * F, this.ort.y * F);
     if (TEST) this.testAnzeige();
     (window as unknown as Record<string, unknown>).EZW = { szene: this, ort: () => this.ort, raster: this.raster, stuecke: this.stuecke, mess: this.mess, gehe: (x: number, y: number) => this.gehe(x, y) };
   }
@@ -117,7 +126,7 @@ export class Welt extends Phaser.Scene {
       while (neu) { neu = false; for (const a of alle) if (!dabei.has(a) && [...dabei].some((b) => grenzt(a, b))) { dabei.add(a); neu = true; } }
       x0 = Math.min(...[...dabei].map((a) => a.ursprung[0])); y0 = Math.min(...[...dabei].map((a) => a.ursprung[1])); x1 = Math.max(...[...dabei].map((a) => a.ursprung[0] + a.chunks[0])); y1 = Math.max(...[...dabei].map((a) => a.ursprung[1] + a.chunks[1]));
       this.cameras.main.setBounds(x0 * CHUNK_PX, y0 * CHUNK_PX, (x1 - x0) * CHUNK_PX, (y1 - y0) * CHUNK_PX); }
-    WELT.hud.titel(r.region.name, "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${WELT.daten}karte-${id}.webp)`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
+    WELT.hud.titel(r.region.name, r.region.untertitel || "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${WELT.daten}karte-${id}.webp)`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
 
   /** Zu einer Stelle laufen (Rechenfelder): Wegsuche über das Gehraster */
   gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0; if (w.length) { const z = w[w.length - 1]; this.marke.setPosition(z.x * F, z.y * F).setDepth(z.y * F - 1).setVisible(true); } else this.marke.setVisible(false); }
@@ -231,7 +240,9 @@ export class Welt extends Phaser.Scene {
   /** Was eine Interaktion hier schon kann. Türen, Truhen, Schalter und Questziele entscheidet später der Server (Phase 10). */
   interaktion(a: Interaktion): { text: string; tat: () => void } | null {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "";
-    if (a.art === "lesen" && text) return { text: "Ansehen", tat: () => this.sagen(text) };
+    const tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
+    if (tat && WELT.tat) { const f = WELT.tat; return { text: knopf || "Betreten", tat: () => f(tat, this) }; }
+    if (text) return { text: "Ansehen", tat: () => this.sagen(text) };
     return null;
   }
   sagen(text: string) { const el = $("#ez-dorf-hilfe"); el.textContent = text; el.style.display = ""; }
@@ -242,7 +253,11 @@ export class Welt extends Phaser.Scene {
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 
-  gemerkt = 0; naechst = Infinity; stillstand = 0;
+  gemerkt = 0; naechst = Infinity; stillstand = 0; vonTor: { x: number; y: number } | null = null;
+  /** Stehen bleiben (vor einer Tafel) */
+  halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); }
+  /** Oben links Held, oben Mitte Region, oben rechts Minikarte, unten rechts Menü */
+  profil() { WELT.hud.profil(this.held); WELT.hud.karte(); const h = this.hier; this.hier = ""; this.regionZeigen(); if (!this.hier) this.hier = h; if (WELT.menue) WELT.menue(this); }
   update(_t: number, dt: number) {
     if (!this.index) return;
     const d = Math.min(0.05, dt / 1000), o = this.ort, D = HELDEN[this.held]; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;

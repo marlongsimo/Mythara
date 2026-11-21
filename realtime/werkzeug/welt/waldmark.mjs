@@ -90,22 +90,23 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   for (const f of FIGUREN) SICHT.push({ y: f.y, r: [f.x - 0.5, f.y - 1.9, f.x + 0.5, f.y] });
   objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p)));
   objekte.sort((a, b) => a.y - b.y);
-  const lies = (id, x, y, text, objekt) => ({ id, art: "lesen", x, y, radius: 1.5, ...(objekt ? { objekt } : {}), abgleich: "keiner", daten: { text } });
+  /* tat: was das Spiel dort öffnet (halle = Heldenhalle, welt = Weltkarte, bald = kommt noch); ohne tat zeigt der Knopf den Text */
+  const lies = (id, x, y, text, objekt, tat, knopf) => ({ id, art: tat && tat !== "bald" ? "eingang" : "lesen", x, y, radius: 1.5, ...(objekt ? { objekt } : {}), abgleich: "keiner", daten: { text, ...(tat ? { tat, knopf } : {}) } });
   const spiel = { start: [[48, 37.5], [46.8, 38.5], [49.2, 38.5]],
     figuren: FIGUREN,
     spawnzonen: [],
     interaktionen: [lies("brunnen_ansehen", 48, 34.6, "Der Brunnen der Waldmark. Das Wasser kommt kalt und klar aus dem Waldboden.", "brunnen"),
-      lies("halle_tuer", ...tuerVon("dorf_heldenhalle_01", 48, 20.4), "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle"),
-      lies("taverne_tuer", ...tuerVon("dorf_taverne_01", 28, 30.2), "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne"),
+      lies("halle_tuer", ...tuerVon("dorf_heldenhalle_01", 48, 20.4), "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle", "halle", "Die Heldenhalle betreten"),
+      lies("taverne_tuer", ...tuerVon("dorf_taverne_01", 28, 30.2), "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne", "bald", "Taverne – kommt noch"),
       lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
-      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."),
-      lies("tor_ansehen", 48, 55, "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.", "tor")],
+      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch"),
+      lies("tor_ansehen", 48, 55, "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.", "tor", "welt", "Zur Weltkarte")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei */
     kollision: { sperren: [{ art: "rechteck", x0: 44, y0: 56, x1: 45.6, y1: 57 }, { art: "rechteck", x0: 50.4, y0: 56, x1: 52, y1: 57 }], freigeben: [{ art: "rechteck", x0: 45.6, y0: 55, x1: 50.4, y1: 58 }] } };
-  schreibe("waldmark", { id: "waldmark", name: "Waldmark", ursprung: [200, 200], chunks: [3, 2], biom: "dorf", stufe: 1, entwurf: true, gesperrt: [[14, 6, 82, 58]] }, g, objekte, spiel); }
+  schreibe("waldmark", { id: "waldmark", name: "Waldmark", untertitel: "Die Zuflucht der Wanderer", ursprung: [200, 200], chunks: [3, 2], biom: "dorf", stufe: 1, gesperrt: [[14, 6, 82, 58]] }, g, objekte, spiel); }
 
 /* ───────────── Waldweg: 3 × 2 Chunks, direkt südlich ───────────── */
 { const B = 96, H = 64, wegX = (y) => 48 + 9 * Math.sin(y / 11) + 3 * Math.sin(y / 4.7) * Math.min(1, y / 8);
@@ -119,4 +120,4 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const ex = +wegX(63.5).toFixed(1), spiel = { start: [[48, 2.5], [47, 1.5], [49, 1.5]], figuren: [{ id: "wanderer_am_weg", rolle: "npc", figur: "wanderer", x: 33, y: 29.4 }],
     spawnzonen: [{ id: "kroeten_lichtung", zone: { art: "kreis", x: 66, y: 49.5, r: 3 }, gegner: [{ art: "schlammkroete", anzahl: 2 }, { art: "kroetchen", anzahl: 1 }], aggro: 7, leine: 16, respawn: 180, abgleich: "server" }],
     interaktionen: [], ausgaenge: [{ id: "nach_weidenhain", zone: { art: "rechteck", x0: ex - 4, y0: 62.6, x1: ex + 4, y1: 64 }, nach: { art: "ort", ort: "weidenhain" }, text: "Weiter nach Weidenhain" }], kollision: { sperren: [], freigeben: [] } };
-  schreibe("waldweg", { id: "waldweg", name: "Der Waldweg", ursprung: [200, 202], chunks: [3, 2], biom: "wald", stufe: 1, entwurf: true }, g, objekte, spiel); }
+  schreibe("waldweg", { id: "waldweg", name: "Der Waldweg", untertitel: "Von der Waldmark nach Weidenhain", ursprung: [200, 202], chunks: [3, 2], biom: "wald", stufe: 1 }, g, objekte, spiel); }

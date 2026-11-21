@@ -89,14 +89,16 @@
   },
   {
    "id": "halle_tuer",
-   "art": "lesen",
+   "art": "eingang",
    "x": 48,
    "y": 21,
    "radius": 1.5,
    "objekt": "heldenhalle",
    "abgleich": "keiner",
    "daten": {
-    "text": "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen."
+    "text": "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.",
+    "tat": "halle",
+    "knopf": "Die Heldenhalle betreten"
    }
   },
   {
@@ -108,7 +110,9 @@
    "objekt": "taverne",
    "abgleich": "keiner",
    "daten": {
-    "text": "Die Taverne. Drinnen riecht es nach Eintopf und Rauch."
+    "text": "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.",
+    "tat": "bald",
+    "knopf": "Taverne – kommt noch"
    }
   },
   {
@@ -167,19 +171,23 @@
    "radius": 1.5,
    "abgleich": "keiner",
    "daten": {
-    "text": "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches."
+    "text": "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.",
+    "tat": "bald",
+    "knopf": "Markt – kommt noch"
    }
   },
   {
    "id": "tor_ansehen",
-   "art": "lesen",
+   "art": "eingang",
    "x": 48,
    "y": 55,
    "radius": 1.5,
    "objekt": "tor",
    "abgleich": "keiner",
    "daten": {
-    "text": "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain."
+    "text": "Das Südtor steht offen. Dahinter beginnt der Waldweg nach Weidenhain.",
+    "tat": "welt",
+    "knopf": "Zur Weltkarte"
    }
   }
  ],

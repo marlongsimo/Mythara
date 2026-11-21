@@ -1,6 +1,7 @@
 {
  "id": "waldweg",
  "name": "Der Waldweg",
+ "untertitel": "Von der Waldmark nach Weidenhain",
  "ursprung": [
   200,
   202
@@ -10,6 +11,5 @@
   2
  ],
  "biom": "wald",
- "stufe": 1,
- "entwurf": true
+ "stufe": 1
 }

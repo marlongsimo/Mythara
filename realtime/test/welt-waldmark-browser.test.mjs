@@ -25,7 +25,7 @@ const geh = async (x, y, text) => { await p.evaluate(([x, y]) => window.EZW.gehe
 const tueren = await p.evaluate(() => { const s = window.EZW.szene, a = []; for (const st of s.stuecke.values()) if (st.daten) for (const i of st.daten.interaktionen) a.push(i); return a; });
 for (const id of ["taverne_tuer", "schmiede_tuer", "halle_tuer", "brunnen_ansehen", "tor_ansehen"]) { const t = tueren.find((a) => a.id === id); if (!t) { check(false, id + " fehlt"); continue; }
   await geh(t.x - O, t.y - O, `zur Interaktion ${id}`); await p.waitForTimeout(250);
-  const knopf = await p.evaluate(() => { const k = document.querySelector("#ez-dorf-knopf"); return k.hidden ? "" : k.textContent; }); check(/Ansehen/.test(knopf), `${id}: der Knopf „Ansehen“ erscheint`); }
+  const knopf = await p.evaluate(() => { const k = document.querySelector("#ez-dorf-knopf"); return k.hidden ? "" : k.textContent; }); check(/Ansehen|betreten|Weltkarte|kommt noch/.test(knopf), `${id}: der Knopf erscheint („${knopf.replace(/\s+\[E\]$/, "").trim()}“)`); }
 await geh(54, 64 + 22, "durchs Südtor auf den Waldweg");
 const titel = await p.evaluate(() => document.querySelector("#ez-titel b").textContent); check(titel === "Der Waldweg", `Region gewechselt, ohne die Seite neu zu laden (Titel „${titel}“)`);
 await geh(48, 37.5, "zurück zum Brunnen");

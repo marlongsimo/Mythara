@@ -8,7 +8,7 @@ import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
 import { KB, KH, fels, SIEGEL, setzeKarte } from "../../shared/karte";
 import { KARTEN, FEIN } from "../../shared/karten";
-import { probeGeschafft, hudProfil, hudTitel, hudKarte } from "./hud";
+import { probeGeschafft } from "./hud";
 import { kampfZusatz } from "./gruppe";
 const MITGLIED = new URLSearchParams(location.search).get("mitglied") === "1"; /* Koop: Ich bin im Kampf eines anderen Spielers */
 import { inKampagne, kampfJetzt, kampagneBeginnen, kampfGewonnen, plaudern, ORTSTUFE } from "./kampagne";
@@ -20,7 +20,8 @@ import { Stadt } from "./stadt";
 import { zoomFaktor, zoomKnopf } from "./zoom";
 import { kontoStart, kontoSeite, kontoName, kontoToken } from "./konto";
 import { Ort, ortName } from "./ort";
-import { Welt, weltName, WELT } from "./welt/welt";
+import { Welt, weltName } from "./welt/welt";
+import { weltAnschliessen } from "./welt/anschluss";
 import DEKOR from "./dekor.json"; // Maße und Fackelplätze, erzeugt von werkzeug/dekor.py
 
 const P = new URLSearchParams(location.search), $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -355,12 +356,15 @@ function wahlZeigen(los: (held: string, mit: string[]) => void, zurueck?: () => 
 }
 
 (window as unknown as Record<string, unknown>).EZ_WAHL = wahlZeigen;
-WELT.hud = { profil: hudProfil, titel: hudTitel, karte: hudKarte }; /* die offene Welt nutzt die Oberfläche der Orte */
+/* Ausgangspunkt des Spiels ist die Waldmark der offenen Welt; das gemalte Bild bleibt unter ?stadt=bild, die alte Iso-Stadt unter ?stadt=alt */
+const STADT = P.get("stadt"), WELTSTART = !ortName && !FLACH && !OHNE_DORF_VORAB() && STADT !== "bild" && STADT !== "alt";
+function OHNE_DORF_VORAB() { return P.get("dorf") === "0" || P.get("los") === "1"; }
+weltAnschliessen(weltName || (WELTSTART ? "waldmark" : ""), "waldweg");
 const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?dorf=0: gleich zur Heldenwahl, ?los=1: gleich in den Riss
 /* Erst das Konto: Liegt dort ein anderer Stand als auf dem Gerät, wird er übernommen und die Seite lädt einmal neu. Höchstens vier Sekunden warten. */
 void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
-else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [P.get("stadt") === "alt" ? Dorf : Stadt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
+else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [STADT === "alt" ? Dorf : STADT === "bild" ? Stadt : Welt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */
   let bilder = 0; const pruefen = () => { if (spiel.scene.getScenes(true).length && ++bilder >= 2) { spiel.events.off("postrender", pruefen); startWeg(); } }; spiel.events.on("postrender", pruefen); }
 });

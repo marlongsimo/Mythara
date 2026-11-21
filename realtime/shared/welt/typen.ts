@@ -132,6 +132,8 @@ export interface Region {
   /** Größe in Chunks [breit, hoch] */
   chunks: [number, number];
   biom: Biom;
+  /** Unterzeile im Ortsbanner (ohne Angabe: „Splitterlande“) */
+  untertitel?: string;
   /** Stufe der Aufgabe (bestimmt die Stärke der Gegner, wie ORTSTUFE) */
   stufe: number;
   /** Stimmung für die Darstellung */
