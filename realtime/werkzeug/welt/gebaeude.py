@@ -60,6 +60,11 @@ def _gerechnet(name, rng):
             yy, xx = np.ogrid[:n, :n]; d = np.minimum(np.abs(xx - x), n - np.abs(xx - x)) ** 2 + np.minimum(np.abs(yy - y), n - np.abs(yy - y)) ** 2
             a[d < r * r] = g * (0.85 + 0.15 * (1 - d[d < r * r] / (r * r)))
         return np.repeat(ndimage.gaussian_filter(a, 0.7, mode='wrap')[..., None] * 200, 3, -1)
+    if name == 'fels':      # gewachsener Fels: großflächige, weiche Flecken und feine Risse, ohne Fugen (neutral grau)
+        n = 384; g = lambda s_: ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), s_, mode='wrap')
+        a = 0.72 + 0.16 * g(18) / 0.06 * 0.1 + 0.09 * g(4) / 0.12 * 0.1 + 0.04 * g(1) / 0.3 * 0.1
+        riss = np.abs(g(6)); a = a - 0.18 * (riss < 0.004)
+        return np.repeat(np.clip(a, 0.3, 1.0)[..., None] * 200, 3, -1)
     if name == 'stoff':     # Gewebe: feines Fadenmuster mit leichtem Rauschen (neutral grau)
         n = 128; y, x = np.mgrid[0:n, 0:n]
         a = 0.78 + 0.08 * np.sin(x * math.pi / 2) * np.sign(np.sin(y * math.pi / 4)) + 0.05 * ndimage.gaussian_filter(rng.standard_normal((n, n)), 3, mode='wrap') / 0.05
@@ -143,7 +148,7 @@ def tex(name):
         prof = np.cos((np.arange(n0) % hoehe / hoehe - 0.5) * math.pi) ** 0.6
         a = a * (0.55 + 0.6 * prof)[:, None, None]
         a[np.arange(n0) % hoehe < 2] *= 0.4
-    elif name in ('stein', 'quader', 'schiefer', 'holz', 'laub', 'stoff'):
+    elif name in ('stein', 'quader', 'schiefer', 'holz', 'laub', 'stoff', 'fels'):
         a = _gerechnet(name, rng)
     elif name == 'ziegel':
         a = np.asarray(Image.open(os.path.join(HIER, 'texturen_frei', 'ziegel.jpg')).convert('RGB').resize((420, 420), Image.LANCZOS)).astype(np.float32)
