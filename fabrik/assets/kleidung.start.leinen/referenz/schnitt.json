@@ -1,0 +1,39 @@
+{
+ "quelle": "original.png",
+ "hinweis": "Startausrüstung: Leinenhemd mit Schnürung, Lederhose, Schnallenstiefel – vorn, Seite (rechte Körperseite, hier gespiegelt zur linken), hinten.",
+ "ausschnitte": [
+  {
+   "name": "vorn",
+   "kasten": [
+    60,
+    20,
+    450,
+    1010
+   ],
+   "asset": "kleidung.start.leinen",
+   "ansicht": "vorn"
+  },
+  {
+   "name": "seite_r",
+   "kasten": [
+    540,
+    20,
+    760,
+    1010
+   ],
+   "asset": "kleidung.start.leinen",
+   "ansicht": "seite_r"
+  },
+  {
+   "name": "hinten",
+   "kasten": [
+    800,
+    20,
+    1200,
+    1010
+   ],
+   "asset": "kleidung.start.leinen",
+   "ansicht": "hinten"
+  }
+ ]
+}

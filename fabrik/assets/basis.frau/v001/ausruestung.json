@@ -75,7 +75,8 @@
           0,
           0.7
         ]
-      ]
+      ],
+      "wahlfrei": true
     },
     {
       "id": "kleidung.hose.frau",
@@ -110,7 +111,8 @@
           0,
           1
         ]
-      ]
+      ],
+      "wahlfrei": true
     },
     {
       "id": "kleidung.schuh.frau",
@@ -140,7 +142,8 @@
           0.8,
           1
         ]
-      ]
+      ],
+      "wahlfrei": true
     }
   ],
   "stuecke_behalten": true,
@@ -148,9 +151,21 @@
   "hinweis": "Grundstruktur basis.frau (nach der Vorlage fabrik/vorlagen/grundstruktur.json)",
   "teilnetze": [
     {
+      "id": "kleidung.start.leinen",
+      "platz": "start",
+      "glb": "basis.frau/v001/quelle/teile/kleidung.start.leinen.glb",
+      "unten": true,
+      "ersetzt": [
+        "hemd",
+        "hose",
+        "schuh"
+      ]
+    },
+    {
       "id": "ruestung.brust.stahlplatte",
       "platz": "brust",
-      "glb": "basis.frau/v001/quelle/teile/ruestung.brust.stahlplatte.glb"
+      "glb": "basis.frau/v001/quelle/teile/ruestung.brust.stahlplatte.glb",
+      "wahlfrei": true
     },
     {
       "id": "ruestung.set.leder",
@@ -163,7 +178,8 @@
         "fuss",
         "hemd",
         "hose",
-        "schuh"
+        "schuh",
+        "start"
       ]
     }
   ],

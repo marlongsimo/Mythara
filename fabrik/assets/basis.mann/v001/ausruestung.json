@@ -76,7 +76,8 @@
           0,
           0.7
         ]
-      ]
+      ],
+      "wahlfrei": true
     },
     {
       "id": "kleidung.hose.basis",
@@ -111,7 +112,8 @@
           0,
           1
         ]
-      ]
+      ],
+      "wahlfrei": true
     },
     {
       "id": "kleidung.schuh.basis",
@@ -141,30 +143,46 @@
           0.8,
           1
         ]
-      ]
+      ],
+      "wahlfrei": true
     }
   ],
   "teilnetze": [
     {
+      "id": "kleidung.start.leinen",
+      "platz": "start",
+      "glb": "basis.mann/v001/quelle/teile/kleidung.start.leinen.glb",
+      "unten": true,
+      "ersetzt": [
+        "hemd",
+        "hose",
+        "schuh"
+      ]
+    },
+    {
       "id": "ruestung.brust.platte.v003",
       "platz": "brust",
       "glb": "basis.mann/v001/quelle/teile/ruestung.brust.platte.v003.glb",
-      "farbe": "#7e8692"
+      "farbe": "#7e8692",
+      "wahlfrei": true
     },
     {
       "id": "ruestung.brust.stahlplatte",
       "platz": "brust",
-      "glb": "basis.mann/v001/quelle/teile/ruestung.brust.stahlplatte.glb"
+      "glb": "basis.mann/v001/quelle/teile/ruestung.brust.stahlplatte.glb",
+      "wahlfrei": true
     },
     {
       "id": "kleidung.guertel.v003",
       "platz": "guertel",
-      "glb": "basis.mann/v001/quelle/teile/kleidung.guertel.v003.glb"
+      "glb": "basis.mann/v001/quelle/teile/kleidung.guertel.v003.glb",
+      "wahlfrei": true
     },
     {
       "id": "kleidung.fuss.stiefel.v003",
       "platz": "fuss",
-      "glb": "basis.mann/v001/quelle/teile/kleidung.fuss.stiefel.v003.glb"
+      "glb": "basis.mann/v001/quelle/teile/kleidung.fuss.stiefel.v003.glb",
+      "wahlfrei": true
     },
     {
       "id": "ruestung.set.leder",
@@ -177,7 +195,8 @@
         "fuss",
         "hemd",
         "hose",
-        "schuh"
+        "schuh",
+        "start"
       ]
     }
   ],

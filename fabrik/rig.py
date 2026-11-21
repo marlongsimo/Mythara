@@ -299,7 +299,7 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
             b_ = next((n for n in m_.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None) if m_ and m_.use_nodes else None
             if b_: b_.inputs["Base Color"].default_value = tuple(c_) + (1,)
     m = o.modifiers.new("skelett", "ARMATURE"); m.object = arm; o.parent = arm
-    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ersetzt"] = ",".join(t.get("ersetzt", [])); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
+    o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "huelle"; o["reihe"] = 50 + nr; o["umhang"] = bool(t.get("umhang")); o["ersetzt"] = ",".join(t.get("ersetzt", [])); o["unten"] = bool(t.get("unten")); o["ueberlage"] = False; o["wahlfrei"] = bool(t.get("wahlfrei")); o["volumen"] = True; volumen[t["platz"]] = o
     print("Teilnetz:", t["id"], "Platz", t["platz"], "·", len(o.data.vertices), "Punkte, Gewichte vom Grundkörper")
 
 # ====================================================== 4. Bewegungen ======================================================

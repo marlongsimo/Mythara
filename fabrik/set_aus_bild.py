@@ -6,6 +6,7 @@ basis.blend   Grundkörper mit Skelett (rig.py)
 set-ordner    referenz/teile/vorn.png, seite.png (linke Körperseite, Zehen links im Bild), hinten.png – das Set ohne Körper, Kopf weggelassen
 oben          bis wohin das Set reicht (Knochen:Anteil), darüber bleibt der Kopf frei
 dicke         Abstand des Sets vom Körper (m); haende: an den Händen (Handschuhe liegen enger an)
+frei_wo_leer  wo das Bild leer ist (Hände, Hals, Unterarme unter kurzen Ärmeln), bleibt der Körper frei – sonst wird dort die nächste Farbe gemalt
 arme          wie weit die Arme im Bild vom Körper abstehen (Grad); die Arme des Grundkörpers werden für die Farbübernahme rechnerisch so gestellt,
               damit Ärmel, Armschienen und Handschuhe an der richtigen Stelle landen (die Form selbst bleibt in der Grundhaltung)
 Form: der Körper unterhalb von „oben“, um „dicke“ nach außen versetzt. Farbe: die Ansichten je nach Flächenrichtung, eingepasst über die ganze Figur.
@@ -62,14 +63,23 @@ def bild(n, spiegeln=False):
     a = np.asarray(im).astype(np.float32) / 255
     if spiegeln: a = a[:, ::-1]
     m = a[..., 3] > 0.5; idx = ndimage.distance_transform_edt(~m, return_distances=False, return_indices=True); rgb = a[..., :3][idx[0], idx[1]]
+    ALPHA[n + ("_s" if spiegeln else "")] = ndimage.binary_dilation(m, iterations=3)               # wo das Bild leer ist (Hände, Hals, Unterarme ohne Ärmel), bleibt der Körper frei
     return np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+ALPHA = {}
 VORN, HINTEN, SL, SR = bild("vorn"), bild("hinten"), bild("seite"), bild("seite", True)
 x0, x1 = Qp[:, 0].min(), Qp[:, 0].max(); y0, y1 = Qp[:, 1].min(), Qp[:, 1].max(); z0, z1 = Qp[:, 2].min(), ZTOP
 def nimm(img, u, vv): h, w = img.shape[:2]; return img[np.clip((vv * (h - 1)).astype(int), 0, h - 1), np.clip((u * (w - 1)).astype(int), 0, w - 1)]
 vv = np.clip((z1 - Qp[:, 2]) / (z1 - z0), 0, 1); farbe = np.zeros((len(Q), 3), np.float32); ny = np.abs(QN[:, 1]) >= np.abs(QN[:, 0])
-for maske, img, u in ((ny & (QN[:, 1] < 0), VORN, (Qp[:, 0] - x0) / (x1 - x0)), (ny & (QN[:, 1] >= 0), HINTEN, (x1 - Qp[:, 0]) / (x1 - x0)),
-                      (~ny & (QN[:, 0] > 0), SL, (Qp[:, 1] - y0) / (y1 - y0)), (~ny & (QN[:, 0] <= 0), SR, (Qp[:, 1] - y0) / (y1 - y0))):
+leer = np.zeros(len(Q), bool)
+for maske, img, u, al in ((ny & (QN[:, 1] < 0), VORN, (Qp[:, 0] - x0) / (x1 - x0), "vorn"), (ny & (QN[:, 1] >= 0), HINTEN, (x1 - Qp[:, 0]) / (x1 - x0), "hinten"),
+                      (~ny & (QN[:, 0] > 0), SL, (Qp[:, 1] - y0) / (y1 - y0), "seite"), (~ny & (QN[:, 0] <= 0), SR, (Qp[:, 1] - y0) / (y1 - y0), "seite_s")):
     farbe[maske] = nimm(img, u[maske], vv[maske])
+    if "frei_wo_leer" in sys.argv[4:]: leer[maske] = ~nimm(ALPHA[al][..., None], u[maske], vv[maske])[:, 0]
+frei_teile = sum(Wq.get(b, 0) for b in ("oberarm.L", "oberarm.R", "unterarm.L", "unterarm.R", "hand.L", "hand.R", "hals", "kopf"))
+leer &= frei_teile >= 0.5                                                                          # nur an Armen, Händen und Hals freilassen – die Lücke zwischen den Beinen im Bild ist keine leere Stelle der Kleidung
+if leer.any():                                                                                     # leere Stellen ausschneiden (der Körper darunter bleibt sichtbar)
+    bm2 = bmesh.new(); bm2.from_mesh(netz); bm2.verts.ensure_lookup_table(); behalten = np.where(~leer)[0]
+    bmesh.ops.delete(bm2, geom=[bm2.verts[i] for i in np.where(leer)[0]], context="VERTS"); bm2.to_mesh(netz); bm2.free(); farbe = farbe[behalten]; print(f"frei gelassen: {int(leer.sum())} Punkte (Hände, Hals, Unterarme …)")
 ca = netz.color_attributes.new("Col", "FLOAT_COLOR", "POINT"); ca.data.foreach_set("color", np.concatenate([farbe, np.ones((len(farbe), 1), np.float32)], 1).ravel())
 m = bpy.data.materials.new("set"); m.use_nodes = True; nt = m.node_tree; vc = nt.nodes.new("ShaderNodeVertexColor"); vc.layer_name = "Col"; b_ = nt.nodes["Principled BSDF"]
 nt.links.new(vc.outputs[0], b_.inputs["Base Color"]); b_.inputs["Roughness"].default_value = 0.6; b_.inputs["Metallic"].default_value = float(opt.get("metall", 0.15))
