@@ -351,6 +351,9 @@ MOEBEL = {
     'loch':   lambda B, x, d: (B.vieleck(PROJ, [(x + math.cos(t) * 0.95, d + math.sin(t) * 0.7, 0.01) for t in np.linspace(0, 2 * math.pi, 24)], (64, 50, 38)),
                            B.vieleck(PROJ, [(x + math.cos(t) * 0.8, d + math.sin(t) * 0.58, 0.02) for t in np.linspace(0, 2 * math.pi, 24)], (14, 12, 12)),
                            B.flaeche(PROJ, [(x - 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.1, 0.03), (x - 0.25, d + 0.1, 0.03)], 'maserung', 0.5, 0.2)),
+    # Nias Salon: Zauberspiegel (Goldrahmen, violetter Schimmer) und Frisierstuhl (Leder, violettes Polster)
+    'spiegel': lambda B, x, d: (quader(B, x - 0.5, d - 0.1, 0, 1.0, 0.2, 1.9, 'putz', 0.2, farbe=(196, 156, 70)), B.vieleck(PROJ, [(x - 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 1.75), (x - 0.38, d - 0.11, 1.75)], (176, 142, 214))),
+    'frisierstuhl': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.45, 'maserung', 0.18), quader(B, x - 0.32, d - 0.32, 0.45, 0.64, 0.64, 0.12, 'putz', 0.2, farbe=(116, 66, 140)), quader(B, x - 0.35, d + 0.25, 0.45, 0.7, 0.1, 0.8, 'putz', 0.2, farbe=(116, 66, 140))),
     'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
 }
 
@@ -380,6 +383,12 @@ def fenster_zeichnen(B, f, k):
     if art == 'gruen':     # unheimliches grünes Licht (der Turm am Ostufer von Graufurt)
         B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 60, 44))
         B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (150, 255, 170))
+        return
+    if art == 'violett':   # violett schimmerndes Glas mit goldenen Sprossen (Nias Salon)
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (58, 34, 72))
+        B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (196, 146, 232), 170)
+        am = (a0 + a1) / 2; zm = (z0 + z1) / 2
+        B.linie(PROJ, [pt(am, z0, 0.03), pt(am, z1, 0.03)], (214, 176, 86), 3); B.linie(PROJ, [pt(a0, zm, 0.03), pt(a1, zm, 0.03)], (214, 176, 86), 3)
         return
     if art == 'glut':
         B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 26, 22))
@@ -437,7 +446,7 @@ def zubehoer_vorn(B, z, k):
         B.vieleck(PROJ, [(x - 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h + 0.12), (x - 0.12, dw - 0.15, h + 0.12)], (40, 38, 40))
         B.vieleck(PROJ, [(x - 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h + 0.08), (x - 0.08, dw - 0.16, h + 0.08)], (255, 214, 120))
     elif a == 'banner':
-        x, h = z['x'], z.get('z', 2.0); farbe = (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild
+        x, h = z['x'], z.get('z', 2.0); farbe = tuple(z['farbe']) if z.get('eigenfarbe') else (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild (eigenfarbe: die Farbe des Bauplans)
         B.vieleck(PROJ, [(x - 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h - 1.1), (x, dw - 0.02, h - 0.85), (x - 0.22, dw - 0.02, h - 1.1)], farbe)
         B.vieleck(PROJ, [(x - 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.16), (x - 0.22, dw - 0.03, h - 0.16)], (214, 176, 86))
         ring = [(x + math.cos(t) * 0.09, dw - 0.03, h - 0.45 + math.sin(t) * 0.09) for t in np.linspace(0, 2 * math.pi, 12)]

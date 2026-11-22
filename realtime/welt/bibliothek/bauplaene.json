@@ -2938,6 +2938,183 @@
     "boden": "stein",
     "moebel": []
    }
+  },
+  {
+   "id": "waldmark_salon_01",
+   "name": "Nias Salon",
+   "interaktion": "lesen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.6,
+     "d": 0,
+     "b": 5.2,
+     "t": 4.0,
+     "h": 2.7,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.1,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       98,
+       62,
+       130
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": 2.6,
+     "d": 0.4,
+     "b": 1.9,
+     "t": 2.2,
+     "h": 3.5,
+     "wand": "putz",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 1.8,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       98,
+       62,
+       130
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.5,
+     "b": 1.25,
+     "h": 2.0,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.85,
+     "h": 0.9,
+     "art": "violett",
+     "x": -2.0,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.9,
+     "art": "violett",
+     "x": 1.4
+    },
+    {
+     "wand": "sued",
+     "koerper": "turm",
+     "z": 0.9,
+     "b": 0.6,
+     "h": 0.95,
+     "art": "violett",
+     "x": 3.55
+    },
+    {
+     "wand": "ost",
+     "koerper": "turm",
+     "z": 1.1,
+     "b": 0.5,
+     "h": 1.1,
+     "art": "schmal",
+     "d": 1.5
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.8,
+     "art": "violett",
+     "d": 3.2
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": -1.45,
+     "x1": 0.45,
+     "tiefe": 1.0,
+     "z": 2.25,
+     "deckung": "schindel",
+     "farbe": [
+      98,
+      62,
+      130
+     ]
+    },
+    {
+     "art": "schild",
+     "x": 0.85,
+     "z": 2.15,
+     "farbe": [
+      226,
+      190,
+      96
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": -1.6,
+     "z": 1.85
+    },
+    {
+     "art": "banner",
+     "koerper": "turm",
+     "x": 3.55,
+     "z": 3.3,
+     "farbe": [
+      98,
+      62,
+      130
+     ],
+     "eigenfarbe": true
+    },
+    {
+     "art": "kamin",
+     "x": -1.7,
+     "d": 3.1
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "spiegel",
+      "x": 1.0,
+      "d": 3.6
+     },
+     {
+      "art": "frisierstuhl",
+      "x": 1.0,
+      "d": 2.5
+     },
+     {
+      "art": "regal",
+      "x": -1.3,
+      "d": 3.6
+     },
+     {
+      "art": "tisch",
+      "x": -1.4,
+      "d": 1.7
+     }
+    ]
+   }
   }
  ]
 }

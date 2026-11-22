@@ -66,6 +66,8 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     /* neu: Wachtürme am Tor, Kapelle mit Glockenturm, Kräuterhaus mit Erker, Bäckerei mit Ofenanbau */
     ["wachturm_w", "dorf_wachturm_01", 40.0, 54.6], ["wachturm_o", "dorf_wachturm_01", 54.5, 54.6], ["kapelle", "dorf_kapelle_01", 57, 22],
     ["kraeuterhaus", "dorf_kraeuterhaus_01", 19.5, 39], ["baeckerei", "dorf_baeckerei_01", 55, 49.5],
+    /* Nias Salon (22.11.2026): an der Nordostecke des Marktplatzes zwischen Kapelle und Schmiede, die Tür zur Dorfstraße */
+    ["salon", "waldmark_salon_01", 59, 28.2],
     ["stand_1", "dorf_marktstand_01", 39.2, 38.6], ["stand_2", "dorf_marktstand_02", 43.6, 41.6], ["stand_3", "dorf_marktstand_03", 56, 40.4], ["brunnen", "dorf_brunnen_01", 48, 32.8]];
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
@@ -80,6 +82,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     ["huette_sw_holz", "dorf_holzstapel_01", 28.0, 44.4], ["haus_s_fass", "dorf_fass_01", 33.6, 50.4],
     ["scheune_heu_1", "dorf_heuballen_01", 74.4, 39.5], ["scheune_heu_2", "dorf_heuballen_01", 74.0, 40.8], ["scheune_kiste", "dorf_kiste_01", 81.4, 39.4],
     ["schuppen_holz", "dorf_holzstapel_01", 64.6, 50.8], ["huette_o_fass", "dorf_fass_01", 73.9, 23.4],
+    ["salon_fass", "dorf_fass_01", 55.6, 28.6], ["salon_laterne", "dorf_laterne_01", 61.9, 28.9],
     ["markt_kiste_1", "dorf_kiste_01", 41.4, 38.7], ["markt_kiste_2", "dorf_kiste_01", 58.6, 40.7], ["markt_fass", "dorf_fass_01", 36.8, 38.9]];
   objekte.push(...details.map(([id, objekt, x, y]) => ({ id, objekt, x, y })));
   const nahBau = (x, y) => bauten.some(([, , bx, by]) => Math.abs(x - bx) < 6.5 && y > by - 7 && y < by + 3.5);
@@ -102,6 +105,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
+      lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59, 28.2), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
       lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */
@@ -112,6 +116,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
    Nach der Skizze vom 21.11.2026: Vom Südtor ein Erdweg zur Kreuzung. Dort breite Steinwege nach Westen und Osten, ein breiter Feldweg nach Süden.
    Vom östlichen Steinweg ein Pfad hinunter, vom Feldweg einer nach rechts: Beide treffen sich auf einer großen Lichtung. Ringsum Wald.
    Wo die drei Wege (noch) enden, liegt ein umgestürzter Baum quer. Lage: x ab Chunk 198 (das Südtor liegt bei x = 112), y = 0 ist die Südkante der Waldmark. */
+saat = 1170455552;   /* fester Zufall für den Kreuzwald: Änderungen in der Waldmark verschieben seine Bäume nicht */
 { const B = 256, H = 192, DX = 64, TOR = 112, KY = 44;                       /* DX: so weit liegt die Waldmark (x = 0) östlich des Gebiets; KY: Höhe der Kreuzung */
   const torWegX = (y) => TOR + 1.6 * Math.sin(y / 9) * Math.min(1, y / 12);   /* vom Tor zur Kreuzung, sacht geschwungen */
   const steinY = (x) => KY + 2.6 * Math.sin((x - TOR) / 21) + 1.3 * Math.sin((x - TOR) / 8.3) * Math.min(1, Math.abs(x - TOR) / 14);

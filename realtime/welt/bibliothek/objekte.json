@@ -7062,6 +7062,200 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "waldmark_salon_01",
+   "name": "Nias Salon",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/gesamt.webp",
+   "groesse": [
+    563,
+    621
+   ],
+   "anker": [
+    0.3495,
+    0.8406
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.6,
+      "x1": 2.6,
+      "y0": -4.0,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.6,
+      "x1": 4.5,
+      "y0": -2.6,
+      "y1": -0.4,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.125,
+      "x1": 0.125,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      250
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      196
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      316,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      377
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      131,
+      417
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      131,
+      398
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      96
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      94,
+      384
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_seite.webp",
+     "tiefe": -2.57,
+     "rolle": "seite",
+     "versatz": [
+      413,
+      218
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_vorn.webp",
+     "tiefe": -0.4,
+     "rolle": "vorn",
+     "versatz": [
+      323,
+      320
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_dach.webp",
+     "tiefe": -0.1,
+     "rolle": "dach",
+     "versatz": [
+      303,
+      187
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.4,
+     "x1": 2.4,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.5,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    99,
+    475,
+    572
+   ],
+   "interaktion": {
+    "art": "lesen",
+    "dx": -0.5,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }

@@ -152,6 +152,20 @@
    }
   },
   {
+   "id": "salon_tuer",
+   "art": "lesen",
+   "x": 58.5,
+   "y": 28.8,
+   "radius": 1.5,
+   "objekt": "salon",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.",
+    "tat": "bald",
+    "knopf": "Nias Salon – öffnet bald"
+   }
+  },
+  {
    "id": "baecker_tuer",
    "art": "lesen",
    "x": 54.4,
