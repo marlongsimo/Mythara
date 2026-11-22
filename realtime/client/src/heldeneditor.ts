@@ -6,6 +6,7 @@
  */
 import { FRISUREN, BAERTE, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD, Held, Startwaffe } from "../../shared/aussehen";
 import { heldLaden, heldSpeichern, heldZeichnen, editorAngaben } from "./held";
+import { querformat } from "./quer";
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 const RNAME = ["Rechts", "Vorn rechts", "Vorn", "Vorn links", "Links", "Hinten links", "Hinten", "Hinten rechts"];
@@ -59,6 +60,7 @@ async function start() {
     catch (e) { m.textContent = "Speichern hat nicht geklappt: " + ((e as Error).message || "unbekannt") + ". Bitte noch einmal versuchen."; k.disabled = false; } };
   anzeigen();
 }
+querformat(); /* ab dem Heldeneditor: Querformat auf Handy und Tablet */
 void start();
 /* für Prüfungen im Browser */
 (window as unknown as { EZH: unknown }).EZH = { get held() { return held; }, get richtung() { return richtung; } };
