@@ -28,7 +28,7 @@ export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localSt
 interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
 function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
-  if (!p) { p = new GLTFLoader().loadAsync(MODELLE + "held." + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
+  if (!p) { p = new GLTFLoader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
   return p; }
 
 /** Hautfarbe im Shader: Bildpunkte, die nach Haut aussehen (wie werkzeug/grundfigur.py), bekommen Helligkeit × Zielfarbe / Bezug */
@@ -46,11 +46,14 @@ export class Held3D {
   private clips = new Map<string, THREE.AnimationClip>(); private aktion: THREE.AnimationAction | null = null; private name = ""; private teile = new Map<string, THREE.Object3D>(); private mats: THREE.Material[] = [];
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
   fertig: (() => void) | null = null;
-  constructor(private szene: THREE.Scene, private hoehe: number, private held: Held & { ich?: boolean }, private waffenQuelle?: (() => string[]) | null) {
-    this.ersatz = new FigurLeinwand(szene, "", hoehe, held, waffenQuelle); szene.add(this.bild.gruppe);
-    vorlage(held.aussehen.g).then((v) => this.aufbauen(v)).catch((e) => console.warn("3D-Held:", e)); }
+  /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
+  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string }) {
+    this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); szene.add(this.bild.gruppe);
+    vorlage(gegner ? gegner.datei : "held." + held!.aussehen.g).then((v) => this.aufbauen(v)).catch((e) => console.warn("3D-Figur:", e)); }
   private aufbauen(v: Vorlage) {
-    if (this.weg) return; const w = SkeletonUtils.clone(v.szene), A = this.held.aussehen; this.clips = v.clips;
+    if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
+    w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; } });
+    if (!this.held) { this.fertigBauen(w); return; } const A = this.held.aussehen;
     const hf = HAUTFARBEN[A.haut].rgb, faktor = new THREE.Vector3(hf[0] / HAUT_BEZUG[A.g], hf[1] / HAUT_BEZUG[A.g], hf[2] / HAUT_BEZUG[A.g]);
     const hz = HAARFARBEN[A.haar].rgb, gb = GEBAUT[A.g], haar = new THREE.Color(...([0, 1, 2].map((i) => linear(hz[i]) / Math.max(1e-4, linear(gb[i]))) as [number, number, number]));
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; }
@@ -58,18 +61,20 @@ export class Held3D {
     w.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const zuTeil = (() => { let q: THREE.Object3D | null = o; while (q) { if (/^kopf(haar|bart)/.test(q.name)) return "haar"; if (/^(waffe|schild)/.test(q.name)) return "waffe"; q = q.parent; } return "koerper"; })();
       if (zuTeil === "waffe") return; const mat = (m.material as THREE.MeshStandardMaterial).clone(); this.mats.push(mat); m.material = mat;
       if (zuTeil === "haar") mat.color.copy(haar); else hautFaerben(mat, faktor); });
+    this.fertigBauen(w); }
+  private fertigBauen(w: THREE.Object3D) {
     const s = this.hoehe / 1.8; w.scale.setScalar(s); this.wurzel = w; this.bild.gruppe.add(w); this.mixer = new THREE.AnimationMixer(w);
     this.mixer.addEventListener("finished", () => { if (this.einmal) { this.einmal = false; this.anwenden(); const f = this.fertig; if (f) f(); } });
     this.zeigen(); this.anwenden(); this.ersatz.sichtbar(false); this.ersatz.entfernen(this.szene); }
   get geladen(): boolean { return Boolean(this.wurzel) || this.ersatz.geladen; }
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */
-  private zeigen() { const A = this.held.aussehen, soll = new Set([...(this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen), ...(A.frisur !== "glatze" ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil));
+  private zeigen() { if (!this.held) return; const A = this.held.aussehen, soll = new Set([...(this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen), ...(A.frisur !== "glatze" ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil));
     for (const [n, o] of this.teile) o.visible = soll.has(n); }
   stelle(x: number, y: number, z: number): void { this.bild.gruppe.position.set(x, y, z); if (!this.wurzel) this.ersatz.stelle(x, y, z); }
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }
   setze(z: "ruhe" | "laufen" | "block" | "schild_laufen"): void { this.ersatz.setze(z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
-  angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; this.spiele(STARTWAFFEN[this.held.waffe].angriff, true); }
+  angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; this.spiele(this.gegner ? this.gegner.angriff : STARTWAFFEN[this.held!.waffe].angriff, true); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true); else this.spiele(z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : "ruhe", false); }
@@ -79,7 +84,7 @@ export class Held3D {
   /** weiterrechnen; der Blick dreht weich zur Laufrichtung (Modell schaut nach +z, also Süden) */
   schritt(dtMs: number, gieren: number): void {
     if (!this.wurzel) { this.ersatz.schritt(dtMs, gieren); return; } if (!this.an) return; const dt = dtMs / 1000;
-    if (this.held.ich) this.zeigen(); /* angelegte Waffen können sich ändern (Ausrüstung) */
+    if (this.held && this.held.ich) this.zeigen(); /* angelegte Waffen können sich ändern (Ausrüstung) */
     const ziel = Math.atan2(Math.cos(this.blickW), Math.sin(this.blickW)); let d = ziel - this.dreh; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
     this.dreh += d * Math.min(1, dt * 12); this.wurzel.rotation.y = this.dreh; if (this.mixer) this.mixer.update(dt); }
   entfernen(szene: THREE.Scene): void { this.weg = true; szene.remove(this.bild.gruppe); this.ersatz.entfernen(szene); if (this.mixer) this.mixer.stopAllAction(); for (const m of this.mats) m.dispose(); }
@@ -88,3 +93,7 @@ export class Held3D {
 export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, eigen?: (Held & { ich?: boolean }) | null, quelle?: (() => string[]) | null): FigurLeinwand | Held3D {
   return eigen && held3dAn() ? new Held3D(szene, hoehe, eigen, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
+/** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
+const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" } };
+export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
+  const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

@@ -6,7 +6,7 @@
 import * as THREE from "three";
 import { WeltKampf, WeltSzene, Figur } from "../welt/kampf";
 import { FigurLeinwand } from "./figurleinwand";
-import { heldenFigur3D, FigurArt } from "./held3d";
+import { heldenFigur3D, gegnerFigur3D, FigurArt } from "./held3d";
 import { schildAn } from "./mitspieler";
 import type { Spielwelt3D } from "./spielwelt";
 import { MONSTER } from "../../../shared/config";
@@ -30,7 +30,7 @@ export class WeltKampf3D extends WeltKampf {
     if (this.ring) { this.w.motor.szene.remove(this.ring); this.ring = undefined; } if (this.ichBalken) { this.ichBalken.remove(); this.ichBalken = undefined; } }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur {
     const nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, h = held ? HOEHE : HOEHE * (((MONSTER[typ] as { hoehe?: number } | undefined)?.hoehe) || 88) / 96;
-    const fl: FigurArt = held ? heldenFigur3D(this.w.motor.szene, MODUL[typ] || "held.krieger", h, eigen) : new FigurLeinwand(this.w.motor.szene, MODUL[typ] || "gegner.bandit.v003", h, null);
+    const fl: FigurArt = held ? heldenFigur3D(this.w.motor.szene, MODUL[typ] || "held.krieger", h, eigen) : gegnerFigur3D(this.w.motor.szene, typ, MODUL[typ] || "gegner.bandit.v003", h);
     const nm = document.createElement("div"), lb = document.createElement("div"); nm.className = "ez-name3d " + (team === 0 ? "fremd" : "feind"); lb.className = "ez-balken3d" + (team === 0 ? "" : " feind"); lb.innerHTML = "<i></i>"; document.body.append(nm, lb);
     const leer = { destroy() {}, setVisible() { return leer; } } as unknown, f = { typ, held, team, sp: leer, nm: leer, lb: leer, x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" } as unknown as Figur;
     this.figuren.set(id, f); this.bilder.set(f, { fl, nm, lb, h }); return f; }
