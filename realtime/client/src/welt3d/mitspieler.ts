@@ -3,14 +3,14 @@
  * Blick, Laufen, Stufe, Leben, Aussehen), dieselben Bilder (FigurLeinwand), Namen, Lebensbalken und Sprechblasen als HTML über der Szene.
  * Schnittstelle wie welt.ts Mitspieler: liste, weg, blase, schritt – dazu unter(px, py) fürs Antippen.
  */
-import { FigurLeinwand } from "./figurleinwand";
+import { heldenFigur3D, FigurArt } from "./held3d";
 import type { Welt3D } from "./motor";
 import type { Fremder } from "../welt";
 import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { FELD_PX } from "../../../shared/welt/typen";
 
 const HOEHE = 2.0, MODUL: Record<string, string> = { schildwaechter: "held.krieger" };
-interface Figur { f: FigurLeinwand; nm: HTMLElement; lb: HTMLElement; d: Fremder; x: number; y: number; held: string; a: string }
+interface Figur { f: FigurArt; nm: HTMLElement; lb: HTMLElement; d: Fremder; x: number; y: number; held: string; a: string }
 
 /** Ein HTML-Schild, das einem Punkt der 3D-Welt folgt */
 export function schildAn(el: HTMLElement, m: Welt3D, x: number, y: number, z: number): boolean {
@@ -38,7 +38,7 @@ export class Mitspieler3D {
   weg(id: number): void { const f = this.figuren.get(id); if (!f) return; f.f.entfernen(this.m.szene); f.nm.remove(); f.lb.remove(); this.figuren.delete(id); const u = document.querySelector(`#ez-karte u[data-sp="${id}"]`); if (u) u.remove(); }
   private neu(d: Fremder): Figur { const a = d.a ? heldPruefen(d.a) : null;
     const nm = document.createElement("div"), lb = document.createElement("div"); nm.className = "ez-name3d fremd"; lb.className = "ez-balken3d"; lb.innerHTML = "<i></i>"; lb.hidden = true; document.body.append(nm, lb);
-    const f: Figur = { f: new FigurLeinwand(this.m.szene, MODUL[d.h] || "held.krieger", HOEHE, a), nm, lb, d, x: d.x, y: d.y, held: d.h, a: a ? aussehenSchluessel(a) : "" }; this.figuren.set(d.i, f); return f; }
+    const f: Figur = { f: heldenFigur3D(this.m.szene, MODUL[d.h] || "held.krieger", HOEHE, a), nm, lb, d, x: d.x, y: d.y, held: d.h, a: a ? aussehenSchluessel(a) : "" }; this.figuren.set(d.i, f); return f; }
   /** Jedes Bild: weich zur gemeldeten Stelle, Name mit Stufe, Lebensbalken wenn verletzt, Punkt auf der Minikarte */
   schritt(dt: number): void { for (const f of this.figuren.values()) { const d = f.d, k = Math.min(1, dt * 10); f.x += (d.x - f.x) * k; f.y += (d.y - f.y) * k;
     const w = this.feld(f), h = this.m.hoehe(w.x, w.z); f.f.stelle(w.x, h, w.z); f.f.blick(Math.cos(d.b), Math.sin(d.b)); f.f.setze(d.l ? "laufen" : "ruhe"); f.f.schritt(dt * 1000, this.m.gieren);

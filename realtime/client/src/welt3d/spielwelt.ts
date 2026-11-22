@@ -11,7 +11,7 @@
  */
 import * as THREE from "three";
 import { Welt3D } from "./motor";
-import { FigurLeinwand } from "./figurleinwand";
+import { heldenFigur3D, FigurArt } from "./held3d";
 import { WELT, weltDatei } from "../welt/welt";
 import { anschluss3D, schildText, WeltKern } from "../welt/anschluss";
 import { HELDEN } from "../../../shared/config";
@@ -42,7 +42,7 @@ export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
   hier = ""; gesperrt = false; gemerkteStelle = false; /** Schild erhoben (Kampf, Torvald) */ schildHoch = false; /** wie eine Phaser-Szene: Ende melden (der Kampf räumt sich dann auf) */ events = { once: (_n: string, _f: () => void): void => {} }; nah: { text: string; tat: () => void } | null = null;
-  figur!: FigurLeinwand; marke!: THREE.Mesh; schild = document.createElement("div"); private blende = document.createElement("div");
+  figur!: FigurArt; marke!: THREE.Mesh; schild = document.createElement("div"); private blende = document.createElement("div");
   private stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; private zugX = 0; private zugY = 0; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
 
   async start(behaelter: HTMLElement, fertig: () => void): Promise<void> {
@@ -53,7 +53,7 @@ export class Spielwelt3D implements WeltKern {
     const s = this.startPunkt(); this.ort = { ...s }; await this.strom(true); const frei = this.raster.naechstFrei(s); if (frei) this.ort = { x: frei.x, y: frei.y };
     document.body.classList.add("dorf", "stadt", "welt3d"); $("#ez-dorf-titel").style.display = "none"; $("#ez-dorf-hilfe").textContent = HANDY ? "Tippen: dorthin gehen · ziehen: Kamera drehen · zwei Finger: Zoom" : "Klick: dorthin gehen · ziehen: Kamera drehen · Mausrad: Zoom · WASD: laufen";
     await this.motor.start(behaelter, this.ort.x, this.ort.y);
-    const h = aktiverHeld(); this.figur = new FigurLeinwand(this.motor.szene, MODUL[this.held] || "held.krieger", HOEHE, h ? { ...h, ich: true } : null, angelegteEbenen);
+    const h = aktiverHeld(); this.figur = heldenFigur3D(this.motor.szene, MODUL[this.held] || "held.krieger", HOEHE, h ? { ...h, ich: true } : null, angelegteEbenen); /* eigener Held: 3D-Modell */
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffe9a8, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.motor.szene.add(this.marke);
     this.schild.className = "ez-name3d eigen"; this.motor.schilder.appendChild(this.schild);
     this.blende.id = "ez-blende3d"; document.body.appendChild(this.blende);
