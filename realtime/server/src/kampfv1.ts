@@ -17,7 +17,7 @@ export interface HeldV1 { waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Reco
 export async function heldV1Lesen(sb: Sb, nutzer: string): Promise<HeldV1 | null> {
   const z = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`).catch(() => [])) as Record<string, unknown>[];
   const r = z[0]; if (!r || !["schwert", "bogen", "stab"].includes(String(r.waffe))) return null;
-  const xp = skillXpPruefen({ geschick: Number(r.skill_geschick), staerke: Number(r.skill_staerke), fernkampf: Number(r.skill_fernkampf), magie: Number(r.skill_magie) }), waffe = r.waffe as Startwaffe;
+  const xp = skillXpPruefen({ geschick: Number(r.skill_geschick), staerke: Number(r.skill_staerke), fernkampf: Number(r.skill_fernkampf), magie: Number(r.skill_magie), lp: Number(r.skill_lp), defense: Number(r.skill_defense) }) /* ohne Migration 044: LP und Defense Level 1 */, waffe = r.waffe as Startwaffe;
   return { waffe, xp, angelegt: startAusruestung(waffe), stil: 1, offen: { ...NULL_XP }, bucht: false, zuletzt: Date.now(), stufen: stufenVon(xp) };
 }
 /** Gemeldete Ausrüstung prüfen: nur bekannte Plätze, nur Gegenstände für diesen Platz, nur eigene (Startausrüstung) */
@@ -26,7 +26,7 @@ export function angelegtPruefen(roh: unknown, waffe: Startwaffe): Partial<Record
   for (const { id } of PLAETZE) { const g = o[id]; if (typeof g === "string" && GEGENSTAENDE[g] && GEGENSTAENDE[g].platz === id && besitz.has(g)) aus[id] = g; }
   return aus;
 }
-const stufenVon = (x: SkillXp) => SKILLS.map((k) => levelAus(x[k])).join("/");
+const stufenVon = (x: SkillXp) => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
 export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil);
 /** Gemeldeten Angriffsstil prüfen (0, 1, 2; sonst Normal) */
 export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 ? v : 1);
@@ -42,7 +42,7 @@ export function v1Takt(sb: Sb, nutzer: string, h: HeldV1, sim: Sim, heldId: numb
 /** Offene XP buchen; beim Verlassen bis zu drei Versuche, und was während einer laufenden Buchung dazukam, gleich danach */
 async function xpBuchen(sb: Sb, nutzer: string, h: HeldV1, versuch: number): Promise<void> {
   const o = h.offen; h.offen = { ...NULL_XP }; h.bucht = true; h.zuletzt = Date.now();
-  try { await sb("/rest/v1/rpc/rpg_held_skill_gutschrift", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_geschick: o.geschick, p_staerke: o.staerke, p_fernkampf: o.fernkampf, p_magie: o.magie }) }); versuch = 0; }
+  try { await sb("/rest/v1/rpc/rpg_held_skill_gutschrift", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_geschick: o.geschick, p_staerke: o.staerke, p_fernkampf: o.fernkampf, p_magie: o.magie, ...(o.lp || o.defense ? { p_lp: o.lp, p_defense: o.defense } : {}) }) }); /* LP/Defense nur mitschicken, wenn es welche gibt (vor Migration 044 kennt die Funktion sie nicht) */ versuch = 0; }
   catch (e) { console.error("Skill-XP nicht gebucht (bleibt offen; Migration 042 eingespielt?):", (e as Error).message, JSON.stringify(o)); for (const k of SKILLS) h.offen[k] += o[k]; versuch++; }
   h.bucht = false;
   if (h.schluss && SKILLS.some((k) => h.offen[k]) && versuch < 3) { if (versuch) await new Promise((r) => setTimeout(r, 1500 * versuch)); return xpBuchen(sb, nutzer, h, versuch); }

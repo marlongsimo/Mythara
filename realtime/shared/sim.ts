@@ -5,7 +5,7 @@
  *
  * Reihenfolge bei jedem Angriff (siehe treffen): 1 prüfen (Reichweite, Sicht) · 2 Trefferwurf · 3 Schadenswurf · 4 Boni · 5 Block und Schutz · 6 Leben
  */
-import { Kampfwerte, SkillXp, Art, XP_JE_SCHADEN, ERHOLUNG, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
+import { Kampfwerte, SkillXp, Art, XP_JE_SCHADEN, LP_XP_JE_SCHADEN, DEFENSE_XP_JE_BLOCK, ERHOLUNG, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, KB, KH } from "./karte";
@@ -156,7 +156,8 @@ export class Sim {
     if (z.schutz > 0) { const a = Math.min(z.schutz, m); z.schutz -= a; m -= a; if (m <= 0) { this.ev.push({ a: "block", id: z.id }); return; } }
     if (this.weltZeit && !z.held && von && von.held) { const a = this.anteile.get(z.id) || new Map<number, number>(); a.set(von.id, (a.get(von.id) || 0) + Math.min(m, Math.max(0, z.lp))); this.anteile.set(z.id, a); } /* Schadensanteil für die EP */
     if (von && von.kw && von.xpNeu && art !== "dauer") { const echt = Math.min(m, Math.max(0, z.lp)), ziel = xpZiel(von.kw.waffe.art, von.kw.stil); /* v2: 2 XP je tatsächlich abgezogenem Lebenspunkt, verteilt nach Kampfart und Stil */
-      for (const k of SKILLS) { const n = Math.round(echt * XP_JE_SCHADEN * (ziel[k] || 0)); if (n) { von.xpNeu[k] += n; von.kw.skills[k] += n; } } }
+      for (const k of SKILLS) { const n = Math.round(echt * XP_JE_SCHADEN * (ziel[k] || 0)); if (n) { von.xpNeu[k] += n; von.kw.skills[k] += n; } }
+      const lp = Math.round(echt * LP_XP_JE_SCHADEN); if (lp) { von.xpNeu.lp += lp; von.kw.skills.lp += lp; } /* LP: 1 XP je tatsächlich verursachtem Schadenspunkt (kein Überkill) */ }
     z.lp -= m; z.ruhe = 0; this.ev.push(art ? { a: "schaden", id: z.id, n: m, art } : { a: "schaden", id: z.id, n: m });
     if (!z.held) { z.wach = true; if (von && von.held && !z.zielId) z.zielId = von.id; this.wecken(z); }
     if (z.lp > 0 && z.lp < z.max * 0.4 && this.blinzler.delete(z.id)) { /* fast besiegt: huscht ein Stück vom Angreifer weg */ const v = von || this.ich, dx = z.x - v.x, dy = z.y - v.y, l = Math.hypot(dx, dy) || 1, a = Math.atan2(dy / l, dx / l) + (this.zf() - 0.5) * 1.2;
@@ -194,7 +195,7 @@ export class Sim {
       let d = z.kw ? z.kw.abwehr[s.art as Art] : V2z ? V2z.abwehr[s.art as Art] ?? 0 : this.wert(z).abwehr[s.art] + (von.kw ? 0 : SB(z).abwehr); if (s.art === "magie") d += (z.mrPlusT > 0 ? K.SCHUTZKREIS.magie : 0) + (z.held && this.freunde(z).some((o) => o.typ === "lichtbringer" && abstand(o, z) <= K.BEISTAND.radius) ? K.BEISTAND.magie : 0); else if (z.bruchT > 0) d -= K.DURCHBRECHEN.abwehr;
       d = Math.max(0, d) / (1 - minder); // ein Block von 60 % heißt: der Verteidigungswurf reicht 2,5-mal so hoch
       const v1 = Boolean(von.kw || z.kw); /* v1: Angriffswurf Zufall(0, Angriff) gegen Blockwurf Zufall(0, Verteidigung); Blockwurf ≥ Angriffswurf → geblockt */
-      if (!(v1 ? this.zf() * a > this.zf() * d : this.zf() * (a + 1) > this.zf() * (d + 1))) { this.ev.push(v1 || minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
+      if (!(v1 ? this.zf() * a > this.zf() * d : this.zf() * (a + 1) > this.zf() * (d + 1))) { if (z.kw && z.xpNeu && !von.held) { z.xpNeu.defense += DEFENSE_XP_JE_BLOCK; z.kw.skills.defense += DEFENSE_XP_JE_BLOCK; } /* Defense: jeder verfehlte Gegnerangriff ist ein Block */ this.ev.push(v1 || minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
     }
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
     const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; let m = von.kw ? schadenWurf(von.kw.waffe, this.zf()) /* v2: Wurf der Waffe (Magie: + Magie ÷ 3, × Stil-Bonus) */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) /* ganzzahlig Min…Max (Gegner v2: 1…Stärke) */ : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);

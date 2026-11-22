@@ -9,7 +9,7 @@ import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
-import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, maxLp } from "../../shared/kampfwerte";
+import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen } from "./skills";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -200,11 +200,11 @@ function stilTabZeichnen(): void {
     <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
-  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert und Schaden" };
-  const zeilen = SKILLS.map((s) => { const S = skillStand(x[s]); return `<li><b>${SKILL_NAME[s]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${WAS[s]} · ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></li>`; }).join("");
+  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und Magieabwehr", lp: "Max-LP = 19 + Level · 1 XP je verursachtem Schadenspunkt", defense: "Abwehr Nah- und Fernkampf · 10 XP je Block" };
+  const zeilen = SKILLS.map((s) => { const S = skillStand(x[s], s); return `<li><b>${SKILL_NAME[s]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${WAS[s]} · ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></li>`; }).join("");
   const z = (v: number) => String(Math.round(v * 10) / 10).replace(".", ",");
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>
-    <p class="klein">Heldenlevel ${hl} · ${maxLp(hl)} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
+    <p class="klein">Heldenlevel ${hl} (Durchschnitt der sechs Skills) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
     <p class="klein">Jeder Lebenspunkt Schaden bringt 2 XP – im Nahkampf je nach Stil an Geschick (Genau), Stärke (Aggressiv) oder beide (Normal).</p>`, zu); }
 /** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
 function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament"): void {

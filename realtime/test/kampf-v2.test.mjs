@@ -4,16 +4,22 @@
  * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
  * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
  */
-import { Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, startAusruestung, trefferChance, NULL_XP, schadenWurf } from "./sim.gebaut.mjs";
+import { Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
 
 /* 1. Formeln und Startausrüstung */
-check(xpFuer(2) === 359 && levelAus(359) === 2 && heldenlevel({ geschick: xpFuer(8), staerke: xpFuer(8), fernkampf: 0, magie: 0 }) === 4, "XP-Kurve wie bisher; Heldenlevel = ⌊Summe der vier Skills ÷ 4⌋");
+check(xpFuer(2) === 359 && levelAus(359) === 2 && heldenlevel({ ...NULL, geschick: xpFuer(8), staerke: xpFuer(8), lp: xpFuer(8, "lp"), defense: xpFuer(8, "defense") }) === 5, "XP-Kurve der Kampfskills wie bisher; Heldenlevel = ⌊Summe der sechs Skill-Level ÷ 6⌋ (8+8+1+1+8+8 → 5)");
+/* LP und Defense (LP & Defense Fortschritt v1) */
+{ const M = [[2, 100], [3, 250], [5, 650], [10, 2500], [20, 10000], [30, 25000], [50, 80000], [75, 250000], [99, 650000], [100, 700000]];
+  check(M.every(([L, x]) => xpFuer(L, "lp") === x && xpFuer(L, "defense") === 2 * x), "LP-Kurve an allen Meilensteinen wie im Dokument, Defense jeweils das Doppelte");
+  let steigt = true; for (let L = 2; L <= 100; L++) if (!(xpFuer(L, "lp") > xpFuer(L - 1, "lp"))) steigt = false; check(steigt && xpFuer(4, "lp") > 250 && xpFuer(4, "lp") < 650, `Dazwischen steigt die Kurve gleichmäßig (z. B. Level 4: ${xpFuer(4, "lp")} XP)`);
+  check(maxLp(0) === 20 && maxLp(100) === 21 && maxLp(700000) === 119 && levelAus(1300, "defense") === 5, "Max-LP = 19 + LP-Level (Start 20, Level 100 → 119); Defense-Level aus eigener Kurve");
+  const k = kampfwerte({ ...NULL, defense: xpFuer(5, "defense"), magie: xpFuer(3) }, startAusruestung("schwert")); check(k.abwehr.nah === 5 + 3 && k.abwehr.fern === 5 + 3 && k.abwehr.magie === 3 + 2 && k.max === 20, `Abwehr: Nah/Fern = Defense-Level + Ausrüstung, Magie = Magie-Level + Ausrüstung (${k.abwehr.nah}/${k.abwehr.fern}/${k.abwehr.magie}), Max-LP 20`); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("schwert"), s));
   check(nah(k[0].angriff.nah, 6.3) && nah(k[1].angriff.nah, 6) && nah(k[2].angriff.nah, 5.7), `Schwert L1: Trefferwert Genau 6,3 · Normal 6 · Aggressiv 5,7 ((1 + 5) × Stil)`);
   check(k.every((x) => x.waffe.schaden.join() === "1,5" && x.waffe.ticks === 3), `Schwert L1: Max Hit ⌊(5 + 1/3) × Stil⌋ = 5 in allen Stilen, 3 Ticks`);
-  check(k[0].abwehr.nah === 4 && k[0].abwehr.fern === 4 && k[0].abwehr.magie === 3, `Mit Schild: Abwehr 1 + 3 / 1 + 3 / 1 + 2 (${k[0].abwehr.nah}/${k[0].abwehr.fern}/${k[0].abwehr.magie})`);
+  check(k[0].abwehr.nah === 4 && k[0].abwehr.fern === 4 && k[0].abwehr.magie === 3, `Mit Schild: Abwehr Defense 1 + 3 / 1 + 3 / Magie 1 + 2 (${k[0].abwehr.nah}/${k[0].abwehr.fern}/${k[0].abwehr.magie})`);
   const s20 = kampfwerte({ ...NULL, geschick: xpFuer(10), staerke: xpFuer(10) }, { waffe: "ritterschwert" }, 2); check(s20.waffe.schaden[1] === Math.floor((5 + 10 / 3) * 1.05) && nah(s20.angriff.nah, 15 * 0.95), `Geschick und Stärke 10, Aggressiv: Treffer 14,25, Max Hit ${s20.waffe.schaden[1]} (Dokument: (10 + 5) × 0,95 / ⌊(5 + 10/3) × 1,05⌋)`); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("bogen"), s));
   check(nah(k[1].angriff.fern, 1 + 10 / 3) && k[1].waffe.schaden.join() === "1,10", "Kurzbogen L1: Trefferwert 1 + 10/3 = 4,33, Schaden 1–10 (der Skill erhöht den Schaden nicht)");
@@ -66,8 +72,8 @@ function duell(seed, waffe, stil) {
 for (const [waffe, stil, soll] of [["schwert", 0, "geschick"], ["schwert", 2, "staerke"], ["schwert", 1, "beide"], ["bogen", 1, "fernkampf"], ["stab", 1, "magie"]]) {
   const { s, b, h } = duell(21, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let abgezogen = 0;
   for (let i = 0; i < 40 * 20 && !b.tot && !h.tot; i++) { h.lp = h.max; s.schritt(); for (const e of s.zustand().ev) if (e.a === "schaden" && e.id === b.id) abgezogen += e.n; }
-  const x = s.xpAbholen(h.id) || NULL, echt = Math.min(40, abgezogen), ok = soll === "beide" ? x.geschick === echt && x.staerke === echt && !x.fernkampf && !x.magie : x[soll] === 2 * echt && Object.entries(x).every(([k, v]) => k === soll || !v);
-  check(ok && echt > 0, `XP ${waffe} Stil ${stil}: ${JSON.stringify(x)} für ${echt} abgezogene LP`); }
+  const x = s.xpAbholen(h.id) || NULL, echt = Math.min(b.max, abgezogen), kampf = ["geschick", "staerke", "fernkampf", "magie"], ok = (soll === "beide" ? x.geschick === echt && x.staerke === echt && !x.fernkampf && !x.magie : x[soll] === 2 * echt && kampf.every((k) => k === soll || !x[k])) && x.lp === echt && x.defense % 10 === 0;
+  check(ok && echt > 0, `XP ${waffe} Stil ${stil}: ${JSON.stringify(x)} für ${echt} abgezogene LP (LP-XP = Schaden, Defense 10 je Block)`); }
 /* viele Duelle: Siegquote */
 const ergebnis = [];
 for (const [waffe, stil] of [["schwert", 0], ["schwert", 1], ["schwert", 2], ["bogen", 0], ["bogen", 1], ["bogen", 2], ["stab", 0], ["stab", 1], ["stab", 2]]) {
