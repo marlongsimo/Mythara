@@ -1,0 +1,46 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.bart.vollbart": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.haar.militaer": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "ruestung.brust.sternplatte": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
+  "schild.wache": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": []
+  },
+  "waffe.speer.wache": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}
