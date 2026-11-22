@@ -14,13 +14,15 @@ import { heldenlevel, skillXpPruefen } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde } from "./quests";
+import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN } from "./inventar";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
 export const aussehenJe = new Map<string, Held>();
 
 export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean }
 interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
-  chat: number[]; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string }
+  chat: number[]; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
 /* Alle Regionen der Welt kommen automatisch aus werkzeug/weltzonen.py (WELTREGIONEN) – neue Gebiete muss niemand von Hand eintragen */
 export const WELTORTE = new Set([...WELTREGIONEN, ...ORTREIHE]);
@@ -41,7 +43,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[] };
+    let e: { t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -68,6 +70,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
       system(ort, `${s.name} ist da.`, s); console.log("Welt:", s.name, "in", ort, "·", spieler.size, "unterwegs");
       { const ich = s; void inventarLaden(H.sb, nutzer).then((iv) => { if (!iv || !spieler.has(ich)) return; senden(ich, { t: "inventar", inv: iv.inv }); ich.invAus = inventarHoeren(nutzer, (inv) => senden(ich, { t: "inventar", inv })); }); } /* das Inventar gehört dem Server (Migration 043) */
+      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q }); ich.questAus = questHoeren(nutzer, (n) => senden(ich, { t: "quests", q1: n }));
+        if (HINTER_DER_SPERRE.has(ich.ort) && !sperreOffen(q)) senden(ich, { t: "zurueck", x: VOR_DER_SPERRE[0], y: VOR_DER_SPERRE[1], text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." }); }); } /* Quests (Migration 045); hinter der Sperre nur mit Freigabe */
       return; }
     s.zuletzt = jetzt;
     if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.geaendert = true; }
@@ -83,6 +87,12 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const ids = Array.isArray(e.ids) ? e.ids.filter((i) => Number.isInteger(i)).slice(0, 50) : Number.isInteger(e.id) ? [e.id as number] : []; if (!ids.length) return; /* „Alles aufheben“: mehrere auf einmal */
       let fehler: string | null = null; for (const id of ids) { const f = bodenAufheben(H.sb, s.nutzer, s.ort, id, s.wx, s.wy); if (f) fehler = f; if (f && /voll/.test(f)) break; }
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); s.boden = ""; }
+    else if (e.t === "rede" || e.t === "antwort") { /* Quests: Gespräche nur mit dem, der spricht */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
+      const npc = String(e.npc || "").slice(0, 16), aw = e.t === "rede" ? reden(s.nutzer, npc, s.wx, s.wy) : await antworten(H.sb, s.nutzer, npc, String(e.a || ""));
+      if (aw.fehler) { senden(s, { t: "chat", kanal: "system", text: aw.fehler, zeit: jetzt }); senden(s, { t: "dialog", npc, ende: true }); return; }
+      senden(s, { t: "dialog", npc, ...aw }); }
+    else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
     else if (e.t === "chat") { const text = saeubern(e.text); if (!text) return; if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Schreiben brauchst du ein Konto (Menü → Anmelden).", zeit: jetzt }); return; } s.chat = s.chat.filter((t) => jetzt - t < 10000); if (s.chat.length >= 5) { senden(s, { t: "chat", kanal: "system", text: "Langsamer – höchstens 5 Nachrichten in 10 Sekunden.", zeit: jetzt }); return; } s.chat.push(jetzt);
       if (e.kanal === "fluestern") { const z = [...spieler].find((o) => o.id === e.an); if (!z || z.gast) { senden(s, { t: "chat", kanal: "system", text: z ? "Gäste können keine Nachrichten empfangen." : "Dieser Spieler ist nicht mehr da.", zeit: jetzt }); return; }
@@ -95,7 +105,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       try { await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: s.nutzer, p_held: h }) }); } catch (x) { console.error("Held setzen:", (x as Error).message); }
       const ep = await H.epLesen(s.nutzer).catch(() => ({} as Record<string, number>)); s.held = h; s.stufe = stufeAusEp(Number(ep[h]) || 0); s.geaendert = true; senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort: s.ort }); }
   });
-  const weg = () => { clearTimeout(frist); if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
+  const weg = () => { clearTimeout(frist); if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
   ws.on("close", weg); ws.on("error", weg);
   const lebt = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(lebt); return; } try { ws.ping(); } catch { /* zu */ } }, 25000);
   const merken = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(merken); return; } if (!s || s.gast || s.wx === undefined || s.wy === undefined) return; const k = `${s.ort}:${s.wx}:${s.wy}`; if (k === s.gemerkt) return; s.gemerkt = k; void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); }, 120000); /* falls der Server abstürzt */

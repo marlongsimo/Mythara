@@ -66,9 +66,17 @@ export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number, melden =
   if (G.stapel) { for (const f of e.inv.rucksack) if (typeof f !== "string" && f.g === g && f.n < G.stapel) { const k = Math.min(rest, G.stapel - f.n); f.n += k; rest -= k; if (!rest) break; }
     while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { const k = Math.min(rest, G.stapel); e.inv.rucksack.push({ g, n: k }); rest -= k; } }
   else while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { e.inv.rucksack.push(g); rest--; }
-  const k = n - rest; if (k && melden) geaendert(sb, nutzer, e); return k; }
-/** Bedingungen für Drop-Rolls (config.ts MonsterDef.drops nur): „einsteigerquest“ – das Einsteiger-Quest ist begonnen. Das Quest kommt noch: bis dahin nie erfüllt. */
-export function bedingungErfuellt(nutzer: string, name: string): boolean { void nutzer; void name; return false; }
+  const k = n - rest; if (k && melden) geaendert(sb, nutzer, e); if (k) for (const f of AUFGENOMMEN) f(nutzer, g, k); return k; }
+/** Bedingungen für Drop-Rolls (config.ts MonsterDef.drops nur), eingetragen von den Quests: „einsteigerquest“ – Quest 01 läuft (quests.ts) */
+export const BEDINGUNGEN = new Map<string, (nutzer: string) => boolean>();
+export function bedingungErfuellt(nutzer: string, name: string): boolean { const f = BEDINGUNGEN.get(name); return Boolean(f && nutzer && f(nutzer)); }
+/** Wer erfahren will, was jemand in den Rucksack bekommt (Quests: das Schriftstück) */
+export const AUFGENOMMEN: ((nutzer: string, g: string, n: number) => void)[] = [];
+/** Trägt er diesen Gegenstand im Rucksack? */
+export function hat(nutzer: string, g: string): boolean { const e = je.get(nutzer); return Boolean(e && e.inv.rucksack.some((f) => fachG(f) === g)); }
+/** Einen Gegenstand aus dem Rucksack abgeben (Quest: Beweis übergeben). Zurück: ob es ihn gab */
+export function abgeben(sb: Sb, nutzer: string, g: string): boolean { const e = je.get(nutzer); if (!e) return false; const i = e.inv.rucksack.findIndex((f) => fachG(f) === g); if (i < 0) return false;
+  const f = e.inv.rucksack[i]; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return true; }
 
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }
