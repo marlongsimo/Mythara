@@ -1,6 +1,7 @@
 """Mythara Fabrik – ein eigenständiges 3D-Rüstungsteil (z. B. ein Meshy-Brustpanzer ohne Körper) auf einen Grundkörper setzen.
 
-  python3 fabrik/teil_anpassen.py <basis.blend> <teil.glb> <ziel.glb> [breite=1.12] [oben=0.03] [abstand=0.012] [vor=0.0] [nur=links|rechts] [kante=0.02]
+  python3 fabrik/teil_anpassen.py <basis.blend> <teil.glb> <ziel.glb> [breite=1.12] [oben=0.15] [abstand=0.035] [vor=-0.025] [max_weit=1.6]
+Grundsatz: lieber mehr Spiel als zu wenig – Kragen am Hals, vorn Luft vor der Brust (Standardwerte aus dem Sturmzahn-Panzer) [nur=links|rechts] [kante=0.02]
 
 Maßstab: die Breite des Teils = Schulterbreite des Körpers (äußerste Armpunkte auf Schulterhöhe) × breite.
 Lage: die Oberkante des Teils liegt „oben“ über dem Halsansatz, seitlich mittig, in der Tiefe so, dass der Rumpf mittig im Teil steckt (+vor).
@@ -35,8 +36,8 @@ for _ in range(6):                                                              
 bm2.to_mesh(o.data); bm2.free()
 me = o.data; V = np.array([v.co[:] for v in me.vertices])
 s = (float(opt["hoehe"]) / (V[:, 2].max() - V[:, 2].min())) if "hoehe" in opt else schulter * float(opt.get("breite", 1.12)) / (V[:, 0].max() - V[:, 0].min()); V = V * s   # hoehe=<m>: nach der Höhe einpassen
-V += np.array([-(V[:, 0].max() + V[:, 0].min()) / 2, ymitte - (V[:, 1].max() + V[:, 1].min()) / 2 + float(opt.get("vor", 0.0)), HZ + float(opt.get("oben", 0.03)) - V[:, 2].max()])
-AB = float(opt.get("abstand", 0.012)); gesch = 0
+V += np.array([-(V[:, 0].max() + V[:, 0].min()) / 2, ymitte - (V[:, 1].max() + V[:, 1].min()) / 2 + float(opt.get("vor", -0.025)), HZ + float(opt.get("oben", 0.15)) - V[:, 2].max()])
+AB = float(opt.get("abstand", 0.035)); gesch = 0
 # Form erhalten: je Höhe und Richtung um die Rumpfachse wird das Teil radial so weit aufgeweitet, dass seine Innenseite außerhalb des Körpers liegt
 # (statt einzelne Punkte auf die Haut zu drücken – das zerknüllt die Platten). Arme zählen unterhalb der Schultern nicht zum Rumpf.
 ax_x = 0.0; ax_y = ymitte; sx_ = abs(KN["oberarm.L"].head_local.x)
@@ -47,7 +48,7 @@ rk = np.zeros((NZ, NA)); kb = (koerper_r[:, 2] >= z0_) & (koerper_r[:, 2] <= z1_
 np.maximum.at(rk, (zi(K[:, 2]), wi(K[:, 0], K[:, 1])), np.hypot(K[:, 0] - ax_x, K[:, 1] - ax_y))
 ra = np.full((NZ, NA), np.inf); rv = np.hypot(V[:, 0] - ax_x, V[:, 1] - ax_y); np.minimum.at(ra, (zi(V[:, 2]), wi(V[:, 0], V[:, 1])), rv)
 gueltig = np.isfinite(ra) & (rk > 0) & (ra > rk * 0.55)                                           # Innenteile nahe der Achse (Kragenfutter) zählen nicht
-f = np.where(gueltig, (rk + AB) / np.maximum(ra, 1e-4), 1.0); f = np.clip(f, 1.0, float(opt.get("max_weit", 1.35)))
+f = np.where(gueltig, (rk + AB) / np.maximum(ra, 1e-4), 1.0); f = np.clip(f, 1.0, float(opt.get("max_weit", 1.6)))
 fz = f.max(1); fz = np.maximum.accumulate(np.maximum.accumulate(fz[::-1])[::-1]) * 0 + fz      # je Höhe der größte nötige Faktor
 for _ in range(3): fz = np.maximum(fz, (np.roll(fz, 1) + fz + np.roll(fz, -1)) / 3)               # weich über die Höhe
 fv = fz[zi(V[:, 2])]; V[:, 0] = ax_x + (V[:, 0] - ax_x) * fv; V[:, 1] = ax_y + (V[:, 1] - ax_y) * fv; gesch = int((fv > 1.001).sum())
