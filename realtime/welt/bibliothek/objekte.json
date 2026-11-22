@@ -7256,6 +7256,200 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "waldmark_rathaus_01",
+   "name": "Rathaus",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/gesamt.webp",
+   "groesse": [
+    751,
+    996
+   ],
+   "anker": [
+    0.4232,
+    0.9024
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -4.4,
+      "x1": 4.4,
+      "y0": -6.8,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": -6.6,
+      "x1": -4.3999999999999995,
+      "y0": -6.2,
+      "y1": -4.0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.0,
+      "x1": 1.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      442
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/haupt_innen.webp",
+     "tiefe": -6.78,
+     "rolle": "innen",
+     "versatz": [
+      102,
+      318
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/haupt_seite.webp",
+     "tiefe": -6.77,
+     "rolle": "seite",
+     "versatz": [
+      523,
+      312
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      102,
+      634
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      258,
+      774
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      258,
+      741
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      77,
+      200
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/haupt_vordach.webp",
+     "tiefe": 1.3,
+     "rolle": "vordach",
+     "versatz": [
+      211,
+      737
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/turm_seite.webp",
+     "tiefe": -6.17,
+     "rolle": "seite",
+     "versatz": [
+      162,
+      216
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/turm_vorn.webp",
+     "tiefe": -4.0,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      317
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_rathaus_01/turm_dach.webp",
+     "tiefe": -3.7,
+     "rolle": "dach",
+     "versatz": [
+      37,
+      137
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -4.2,
+     "x1": 4.2,
+     "y0": -6.6,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    40,
+    140,
+    660,
+    953
+   ],
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }

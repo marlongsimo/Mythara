@@ -166,6 +166,20 @@
    }
   },
   {
+   "id": "rathaus_tuer",
+   "art": "lesen",
+   "x": 39,
+   "y": 28,
+   "radius": 1.5,
+   "objekt": "rathaus",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.",
+    "tat": "bald",
+    "knopf": "Rathaus – kommt noch"
+   }
+  },
+  {
    "id": "baecker_tuer",
    "art": "lesen",
    "x": 54.4,
