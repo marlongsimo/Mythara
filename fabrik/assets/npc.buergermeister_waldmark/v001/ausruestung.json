@@ -1,0 +1,16 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.buergermeister_waldmark v001 – Bürgermeister von Waldmark, aus Meshy „Lord of the Golden Oak“ (grüner Amtsmantel mit goldenem Eichenlaub, Pelzkragen, Amtskette mit Eichenwappen, Halskrause); nur Ruhe und Gehen, zivile Haltung.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": []
+}
