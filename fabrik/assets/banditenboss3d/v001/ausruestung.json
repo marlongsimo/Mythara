@@ -4,7 +4,7 @@
   "zeichenfolge": true,
   "stuecke_behalten": true,
   "luecken_schliessen": true,
-  "hinweis": "banditenboss3d – Banditenanführer für Echtzeit-3D (Meshy „Crimson Warlord“), fest im Modell; Langschwert zweihändig (Zweihandhieb, linke Hand am festen Griffpunkt). Block als Parade mit der Waffe.",
+  "hinweis": "banditenboss3d – Banditenanführer für Echtzeit-3D (Meshy „Crimson Warlord“), fest im Modell; eigenes Zweihandschwert (aus dem Meshy-Modell ausgeschnitten) zweihändig (Zweihandhieb, linke Hand am festen Griffpunkt). Block als Parade mit der Waffe.",
   "bewegungen": [
     "ruhe",
     "gehen",
@@ -18,12 +18,12 @@
   "teilnetze": [],
   "starr": [
     {
-      "id": "waffe.langschwert",
+      "id": "waffe.zweihaender.warlord",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.langschwert/v001/quelle/schwert.glb",
-      "griff": 0.24,
-      "griff2": 0.1,
+      "glb": "waffe.zweihaender.warlord/v001/quelle/zweihaender.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
       "angriff": "hieb2h"
     }
   ]
