@@ -30,7 +30,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number; id?: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
-  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
+  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "beute"; x: number; y: number; besitzer: number; g: [string, number][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
@@ -165,8 +165,13 @@ export class Sim {
     z.lp = 0; z.tot = true; z.pfad = []; z.zielId = 0; z.dauer = []; z.aushol = 0; this.ev.push({ a: "tot", id: z.id });
     if (z.held) { z.wieder = K.WIEDER_HELD; return; }
     this.besiegt++; const B = STAERKE.beute, [a, b] = B || K.SPLITTER; let n = a + Math.floor(this.zf() * (b - a + 1)); if (B && MONSTER[z.typ].boss) n *= STAERKE.bossMal;
+    if (this.weltZeit) { /* Drop-Tabelle: die Beute gehört dem, der am meisten Schaden gemacht hat – bei Gleichstand dem, der den letzten Schlag gemacht hat (der Server legt sie auf den Boden) */
+      const D = MONSTER[z.typ].drops, a = this.anteile.get(z.id); if (D && D.length) { let besitzer = von && von.held ? von.id : 0, best = -1;
+        if (a) for (const [id, n] of a) if (n > best || (n === best && von && id === von.id)) { best = n; besitzer = id; }
+        const g: [string, number][] = []; for (const d of D) if (this.zf() * 100 < d.chance) { const [lo, hi] = d.anzahl || [1, 1]; g.push([d.g, lo + Math.floor(this.zf() * (hi - lo + 1))]); }
+        if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }
-    if (this.weltZeit) this.wiederkehr.push({ w: z, t: this.weltZeit, blinz: this.blinzStart.has(z.id) }); /* kommt nach einer Weile zurück */
+    if (this.weltZeit) { this.anteile.delete(z.id); this.wiederkehr.push({ w: z, t: this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
     if (!this.weltZeit && this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.sieg(); /* die Welt hat kein Ende */ /* bei offener Schleuse kommen noch welche */
   }

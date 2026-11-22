@@ -3,6 +3,7 @@
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
+import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { heldenFigur, richten } from "./modulfigur";
@@ -35,13 +36,22 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
   s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
+    else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as { angelegt?: Record<string, string>; rucksack?: string[] }); }
+    else if (m.t === "boden") { bodenJetzt = (m.liste as BodenDing[]) || []; window.dispatchEvent(new CustomEvent("ez-boden")); }
     else if (m.t === "fort") { fremde = fremde.filter((f) => f.i !== Number(m.id)); if (hand.fort) hand.fort(Number(m.id)); }
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
       chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
-  s.onclose = (ev) => { if (ws !== s) return; ws = null; if (ev.code === 4409) { chatSystem("Du bist an einem anderen Gerät unterwegs."); return; } if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
+  s.onclose = (ev) => { if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4409) { chatSystem("Du bist an einem anderen Gerät unterwegs."); return; } if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };
+/* ---------- Gegenstände am Boden (der Server schickt, was man sieht) ---------- */
+export interface BodenDing { i: number; g: string; n: number; x: number; y: number }
+let bodenJetzt: BodenDing[] = [];
+/** Was man in dieser Region am Boden sieht (Weltfelder) */
+export const bodenListe = (): BodenDing[] => bodenJetzt;
+/** Aufheben bitten (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
+export function aufheben(id: number): void { senden({ t: "aufheben", id }); }
 /** Eigene Position melden (gedrosselt: bei Bewegung höchstens 6-mal je Sekunde, sonst alle 2 Sekunden) */
 export function weltPos(x: number, y: number, blick: number, laeuft: boolean, wx?: number, wy?: number): void { const j = performance.now(), g = gesendet, l = laeuft ? 1 : 0; /* wx, wy: Weltfelder – der Server merkt sich die Stelle fürs nächste Anmelden */
   if ((Math.hypot(x - g.x, y - g.y) > 2 || l !== g.l) && j - g.t > 160 || j - g.t > 2000) { gesendet = { x, y, t: j, l }; senden({ t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) }); } }

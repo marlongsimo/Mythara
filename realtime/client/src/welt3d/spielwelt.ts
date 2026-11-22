@@ -28,6 +28,8 @@ import { karteDrehen } from "../rahmen";
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
+import { bodenListe, aufheben, BodenDing } from "../welt";
+import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = matchMedia("(pointer: coarse)").matches, C = CHUNK_FELDER, RADIUS = 0.3, HOEHE = 2.0;
@@ -181,6 +183,9 @@ export class Spielwelt3D implements WeltKern {
   private vorhaben: Stelle | null = null; private wahl: { el: HTMLElement; x: number; z: number } | null = null;
   /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
   anStelle(x: number, y: number): Stelle | null {
+    /* Gegenstände am Boden zuerst: antippen → „Aufheben“ (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
+    { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
+      if (b) { const d = b, G = GEGENSTAENDE[d.g]; return { x: d.x, y: d.y, text: `Aufheben: ${G ? G.name : d.g}${d.n > 1 ? " ×" + d.n : ""}`, tat: () => aufheben(d.i), da: () => Math.hypot(d.x - this.ort.x, d.y - this.ort.y) <= 1.5 }; } }
     const cx = Math.floor(x / C), cy = Math.floor(y / C); let best: Stelle | null = null, bd = Infinity;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
       for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > Math.max(1.2, a.radius) || w >= bd) continue; const i = this.interaktion(a); if (!i) continue;
@@ -194,6 +199,16 @@ export class Spielwelt3D implements WeltKern {
     b.addEventListener("click", (e) => { e.stopPropagation(); this.wahlWeg(); if (this.gesperrt) return; if (s.da()) { s.tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? s : null; });
     this.wahl = { el, x: s.x, z: s.y }; this.wahlFolgen(); }
   wahlWeg() { if (this.wahl) { this.wahl.el.remove(); this.wahl = null; } }
+  /* ───────────── Gegenstände am Boden: ein kleiner Beutel mit Namen ───────────── */
+  private bodenBild = new Map<number, { g: THREE.Group; nm: HTMLElement; d: BodenDing }>();
+  private bodenZeichnen() { const da = new Set<number>();
+    for (const d of bodenListe()) { da.add(d.i); let b = this.bodenBild.get(d.i);
+      if (!b) { const g = new THREE.Group(), stoff = new THREE.MeshStandardMaterial({ color: 0x8a6236, roughness: 0.9 }), schnur = new THREE.MeshStandardMaterial({ color: 0xd8b25a, roughness: 0.5, metalness: 0.4 });
+        const sack = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), stoff); sack.scale.set(1, 0.85, 1); sack.position.y = 0.2; const hals = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.12, 0.14, 10), stoff); hals.position.y = 0.43;
+        const band = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.022, 6, 14), schnur); band.rotation.x = Math.PI / 2; band.position.y = 0.42; g.add(sack, hals, band); g.traverse((o) => { o.castShadow = true; }); this.motor.szene.add(g);
+        const nm = document.createElement("div"), G = GEGENSTAENDE[d.g]; nm.className = "ez-name3d boden"; nm.textContent = (G ? G.name : d.g) + (d.n > 1 ? " ×" + d.n : ""); b = { g, nm, d }; this.bodenBild.set(d.i, b); }
+      b.d = d; const h = this.motor.hoehe(d.x, d.y); b.g.position.set(d.x, h, d.y); b.g.rotation.y = performance.now() / 1600 + d.i; schildAn(b.nm, this.motor, d.x, h + 0.75, d.y); }
+    for (const [i, b] of this.bodenBild) if (!da.has(i)) { this.motor.szene.remove(b.g); b.g.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.geometry.dispose(); (m.material as THREE.Material).dispose(); } }); b.nm.remove(); this.bodenBild.delete(i); } }
   private wahlFolgen() { const w = this.wahl; if (w) schildAn(w.el, this.motor, w.x, this.motor.hoehe(w.x, w.z) + 1.3, w.z); }
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
@@ -232,7 +247,7 @@ export class Spielwelt3D implements WeltKern {
     this.vorher = vorher;
     const y = this.motor.hoehe(o.x, o.y); this.motor.held.x = o.x; this.motor.held.z = o.y; this.figur.stelle(o.x, y, o.y); this.figur.schritt(dt * 1000, this.motor.gieren); this.marke.rotation.z += dt;
     if (performance.now() - this.letzterStrom > 400) { this.letzterStrom = performance.now(); void this.strom(); }
-    this.umsehen(); this.wahlFolgen(); this.regionZeigen();
+    this.umsehen(); this.wahlFolgen(); this.bodenZeichnen(); this.regionZeigen();
     { const r = this.regionBei(o.x, o.y), pk = $("#ez-karte-punkt"); if (r && pk) { pk.style.left = (100 * (o.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%"; pk.style.top = (100 * (o.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%"; } }
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, this.motor, o.x, y + HOEHE + 0.35, o.y); }

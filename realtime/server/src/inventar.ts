@@ -1,0 +1,80 @@
+/*
+ * Mythara Echtzeit – Inventar des eigenen Helden und Gegenstände am Boden (seit 22.11.2026). Der Server ist die einzige Wahrheit:
+ * Der Browser bittet (anlegen, ablegen, fallen lassen, aufheben), der Server prüft, ändert und schickt das neue Inventar zurück.
+ *
+ * Inventar: je Konto im Arbeitsspeicher, geladen aus rpg_held.inventar (Migration 043; fehlt es, aus der Startwaffe), gespeichert über
+ *   rpg_held_inventar_setzen (nur service_role) kurz nach jeder Änderung und beim Gehen. Form: { angelegt: {waffe, brust, nebenhand}, rucksack: [id, …] }.
+ * Boden: je Region (Weltfelder), nur im Arbeitsspeicher.
+ *   Beute eines Gegners: 30 s nur für den, der den meisten Schaden gemacht hat (bei Gleichstand den letzten Schlag), dann 5 min für alle.
+ *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
+ */
+import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung } from "../../shared/gegenstaende";
+import { Startwaffe } from "../../shared/aussehen";
+
+type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: string[] }
+interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
+const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: [...i.rucksack] });
+
+/** Inventar aus unbekannter Quelle prüfen: nur bekannte Gegenstände, jeder auf seinem Platz, höchstens RUCKSACK_PLAETZE im Rucksack */
+export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
+  const o = (roh && typeof roh === "object" ? roh : null) as { angelegt?: Record<string, unknown>; rucksack?: unknown[] } | null;
+  if (!o || !o.angelegt || !Array.isArray(o.rucksack)) return { angelegt: startAusruestung(waffe), rucksack: [] };
+  const angelegt: Partial<Record<Platz, string>> = {}; for (const { id } of PLAETZE) { const g = o.angelegt[id]; if (typeof g === "string" && GEGENSTAENDE[g] && GEGENSTAENDE[g].platz === id) angelegt[id] = g; }
+  return { angelegt, rucksack: o.rucksack.filter((g): g is string => typeof g === "string" && Boolean(GEGENSTAENDE[g])).slice(0, RUCKSACK_PLAETZE) };
+}
+/** Das Inventar eines Kontos laden (einmal; danach aus dem Arbeitsspeicher). null: das Konto hat noch keinen eigenen Helden */
+export function inventarLaden(sb: Sb, nutzer: string): Promise<Eintrag | null> {
+  const da = je.get(nutzer); if (da) return Promise.resolve(da); const l = laedt.get(nutzer); if (l) return l;
+  const p = (sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`) as Promise<{ waffe: string; inventar?: unknown }[]>).then((z) => {
+    const r = z && z[0]; if (!r || !["schwert", "bogen", "stab"].includes(String(r.waffe))) return null; const waffe = r.waffe as Startwaffe;
+    const e: Eintrag = { inv: invPruefen(r.inventar, waffe), waffe, hoerer: new Set() }; je.set(nutzer, e); if (!r.inventar) merken(sb, nutzer, e); return e; })
+    .catch((x) => { console.error("Inventar laden:", (x as Error).message); return null; }).finally(() => laedt.delete(nutzer));
+  laedt.set(nutzer, p); return p; }
+/** Das geladene Inventar (Kopie) oder null */
+export function inventarVon(nutzer: string): Inv | null { const e = je.get(nutzer); return e ? kopie(e.inv) : null; }
+/** Bei jeder Änderung Bescheid bekommen (Welt-Verbindung schickt es dem Browser, das Kampfgebiet setzt die Kampfwerte neu). Zurück: abmelden */
+export function inventarHoeren(nutzer: string, f: (inv: Inv) => void): () => void { const e = je.get(nutzer); if (!e) return () => {}; e.hoerer.add(f); return () => { e.hoerer.delete(f); }; }
+function geaendert(sb: Sb, nutzer: string, e: Eintrag) { for (const f of e.hoerer) try { f(kopie(e.inv)); } catch (x) { console.error("Inventar-Hörer:", (x as Error).message); } merken(sb, nutzer, e); }
+/** Speichern kurz nach der letzten Änderung (mehrere schnelle Änderungen = ein Speichern) */
+function merken(sb: Sb, nutzer: string, e: Eintrag) { if (e.uhr) clearTimeout(e.uhr); e.uhr = setTimeout(() => { e.uhr = undefined; void speichern(sb, nutzer, e); }, 1500); }
+async function speichern(sb: Sb, nutzer: string, e: Eintrag) {
+  try { await sb("/rest/v1/rpc/rpg_held_inventar_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_inventar: e.inv }) }); }
+  catch (x) { console.error("Inventar nicht gespeichert (Migration 043 eingespielt?):", (x as Error).message); } }
+/** Jetzt speichern (beim Gehen) */
+export function inventarSichern(sb: Sb, nutzer: string): void { const e = je.get(nutzer); if (!e || !e.uhr) return; clearTimeout(e.uhr); e.uhr = undefined; void speichern(sb, nutzer, e); }
+
+/* ───────── Aktionen (Rückgabe: Fehlertext für den Spieler oder null) ───────── */
+export function anlegen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.rucksack[i], G = g ? GEGENSTAENDE[g] : null; if (!g || !G) return "Diesen Gegenstand gibt es im Rucksack nicht.";
+  e.inv.rucksack.splice(i, 1); const alt = e.inv.angelegt[G.platz]; if (alt) e.inv.rucksack.splice(i, 0, alt); e.inv.angelegt[G.platz] = g; geaendert(sb, nutzer, e); return null; }
+export function ablegen(sb: Sb, nutzer: string, platz: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.angelegt[platz as Platz]; if (!g) return "Dort ist nichts angelegt.";
+  if (e.inv.rucksack.length >= RUCKSACK_PLAETZE) return "Der Rucksack ist voll."; delete e.inv.angelegt[platz as Platz]; e.inv.rucksack.push(g); geaendert(sb, nutzer, e); return null; }
+/** Aus dem Rucksack nehmen (zum Fallenlassen). Zurück: die Gegenstands-id oder null */
+export function herausnehmen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return null; const g = e.inv.rucksack[i]; if (!g) return null; e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return g; }
+/** In den Rucksack legen, so viele wie Platz ist. Zurück: wie viele genommen wurden */
+export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number): number { const e = je.get(nutzer); if (!e || !GEGENSTAENDE[g]) return 0; const k = Math.max(0, Math.min(n, RUCKSACK_PLAETZE - e.inv.rucksack.length));
+  for (let j = 0; j < k; j++) e.inv.rucksack.push(g); if (k) geaendert(sb, nutzer, e); return k; }
+
+/* ───────── Boden ───────── */
+export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }
+const boden = new Map<number, BodenDing>(); let nr = 1;
+export const LOOT = { privat: 30_000, offen: 5 * 60_000 }, FALLEN = { privat: 60_000, offen: 10 * 60_000 }, AUFHEBEN_WEIT = 2;
+/** Etwas auf den Boden legen. besitzer "": sofort für alle sichtbar */
+export function bodenDazu(ort: string, x: number, y: number, g: string, n: number, besitzer: string, zeiten: { privat: number; offen: number }, jetzt = Date.now()): BodenDing | null {
+  if (!GEGENSTAENDE[g] || n < 1 || !Number.isFinite(x) || !Number.isFinite(y)) return null; const offenAb = besitzer ? jetzt + zeiten.privat : jetzt;
+  const d: BodenDing = { id: nr++, g, n: Math.floor(n), ort, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, besitzer, offenAb, bis: offenAb + zeiten.offen }; boden.set(d.id, d); return d; }
+const sichtbar = (d: BodenDing, nutzer: string, jetzt: number) => jetzt < d.bis && (jetzt >= d.offenAb || (nutzer !== "" && d.besitzer === nutzer));
+/** Was dieser Spieler in seiner Region am Boden sieht */
+export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now()): { i: number; g: string; n: number; x: number; y: number }[] {
+  const aus: { i: number; g: string; n: number; x: number; y: number }[] = []; for (const d of boden.values()) if (d.ort === ort && sichtbar(d, nutzer, jetzt)) aus.push({ i: d.id, g: d.g, n: d.n, x: d.x, y: d.y }); return aus; }
+/** Aufheben: nur was man sieht und was nah genug liegt (höchstens AUFHEBEN_WEIT Felder). Zurück: Fehlertext oder null */
+export function bodenAufheben(sb: Sb, nutzer: string, ort: string, id: number, x: number | undefined, y: number | undefined, jetzt = Date.now()): string | null {
+  const d = boden.get(id); if (!d || d.ort !== ort || !sichtbar(d, nutzer, jetzt)) return "Das liegt hier nicht (mehr).";
+  if (x === undefined || y === undefined || Math.hypot(d.x - x, d.y - y) > AUFHEBEN_WEIT) return "Zu weit weg.";
+  if (!je.get(nutzer)) return "Kein Inventar."; const k = aufnehmen(sb, nutzer, d.g, d.n); if (!k) return "Der Rucksack ist voll.";
+  if (k >= d.n) boden.delete(id); else d.n -= k; return null; }
+/** Abgelaufenes wegräumen (einmal je Sekunde) */
+export function bodenAufraeumen(jetzt = Date.now()): void { for (const [id, d] of boden) if (jetzt >= d.bis) boden.delete(id); }
+/** Für Prüfungen */
+export const bodenAlle = (): BodenDing[] => [...boden.values()];

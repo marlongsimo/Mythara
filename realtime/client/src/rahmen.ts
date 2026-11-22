@@ -8,7 +8,7 @@ import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
-import { inventar, ablegen, anlegen } from "./inventar";
+import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, maxLp } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand } from "./skills";
 
@@ -121,13 +121,17 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
   const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu, ohneReiter); };
   f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) neu(a); }));
   const wahl = f.querySelector(".iwahl") as HTMLElement;
+  /** neu zeichnen, sobald das geänderte Inventar da ist (vom Server oder sofort vom Gerät); zurück: abbrechen */
+  const nachher = () => { let fertig = false; const g = () => { if (fertig) return; fertig = true; removeEventListener("ez-inventar", g); if (!f.hidden) neu(art); }; addEventListener("ez-inventar", g); const u = setTimeout(g, 2000); return () => { fertig = true; clearTimeout(u); removeEventListener("ez-inventar", g); }; };
   f.querySelectorAll<HTMLElement>(".ifeld.voll").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const g = b.dataset.g!, G = GEGENSTAENDE[g], angelegt = !b.dataset.wo!.startsWith("r");
     f.querySelectorAll(".ifeld").forEach((x) => x.classList.toggle("gewaehlt", x === b));
-    wahl.hidden = false; wahl.innerHTML = `<b>${G.name}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button><button type="button" class="haupt" data-t="${angelegt ? "ablegen" : "anlegen"}">${angelegt ? "Ablegen" : "Anlegen"}</button></div>`;
+    const fallen = !angelegt && inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : "";
+    wahl.hidden = false; wahl.innerHTML = `<b>${G.name}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${fallen}<button type="button" class="haupt" data-t="${angelegt ? "ablegen" : "anlegen"}">${angelegt ? "Ablegen" : "Anlegen"}</button></div>`;
     wahl.onclick = (ev) => { ev.stopPropagation(); const t = (ev.target as HTMLElement).closest<HTMLElement>("[data-t]")?.dataset.t; if (!t) return;
       if (t === "untersuchen") untersuchen(g, () => neu(art));
-      else if (t === "ablegen") { if (!ablegen(G.platz)) { wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } neu(art); }
-      else if (t === "anlegen") { anlegen(g); neu(art); } }; }));
+      else if (t === "ablegen") { const n = nachher(); if (!ablegen(G.platz)) { n(); wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } }
+      else if (t === "anlegen") { nachher(); anlegen(g); }
+      else if (t === "fallen") { nachher(); fallenLassen(Number(b.dataset.wo!.slice(1))); } }; })); /* mit Server-Inventar kommt das neue Inventar gleich zurück */
 }
 /** Untersuchen: die Werte eines Gegenstands */
 function untersuchen(g: string, zurueck: () => void): void {

@@ -17,6 +17,7 @@ import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
 import { weltVerbindung, stelleMerken , aussehenJe } from "./welt";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
+import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, LOOT } from "./inventar";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -33,7 +34,7 @@ const BUCHUNG_RUHE = Number(process.env.BUCHUNG_RUHE_MS) || 5000, BUCHUNG_SPAETE
 interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: number; zahl: number; kampf?: Kampf;
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
-  /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
+  /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** Inventar-Hörer abmelden */ invAus?: () => void; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
   /** Kampfregeln v1: der eigene Held (Skill-XP, Ausrüstung) – ohne eigenen Helden die alten Kampfwerte */ v1?: HeldV1; v1T?: number }
 /** Eine gemeinsame Kampfwelt: eine Simulation für alle Spieler dort; Gegner kehren zurück, EP nach Schadensanteil (shared/sim.ts, Sim.welt) */
 interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number }
@@ -47,7 +48,7 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
   console.log("Welt:", name, "betritt", karte, "·", Z.spieler.size, "dort"); namenMelden(Z); }
 /** Einen Spieler aus seiner gemeinsamen Welt nehmen (genau einmal): Stelle merken, Gutschrift anstoßen, Held sofort weg */
-function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
+function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; if (p.invAus) { p.invAus(); p.invAus = undefined; } const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
   if (p.kampf && p.kampf.nutzer && K0 && K0.ursprung && K0.weltRegion && h) /* wer hier aufhört, beginnt wieder hier – wer gefallen ist, in der Waldmark */
     void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100));
   void buchen(p, true); /* liest EP und Splitter sofort, bucht dann im Hintergrund */
@@ -150,7 +151,9 @@ wss.on("connection", (ws, req) => {
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
         if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
           const [aktiv, profil, v1] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>, heldV1Lesen(sb, nutzer)]);
-          if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); p.v1 = v1; } /* Kampfregeln v1: eigener Held mit Skill-XP und geprüfter Ausrüstung */
+          if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); p.v1 = v1; } /* Kampfregeln v2: eigener Held mit Skill-XP und geprüfter Ausrüstung */
+          if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
+            p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
           const typ = aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : held, name = (profil[0] && profil[0].handle) || "Wanderer";
           /* Während auf die Datenbank gewartet wurde, kann die Seite schon wieder weg sein (Neuladen): dann keinen Helden mehr hineinsetzen – er bliebe sonst als Geist stehen */
           if (ws.readyState !== WebSocket.OPEN || !plaetze.has(p)) { console.log("Welt: Anmeldung verworfen – Verbindung schon zu"); return; }
@@ -175,6 +178,7 @@ wss.on("connection", (ws, req) => {
     if ((e as { t: string }).t === "stil") { /* v2: Angriffsstil gewählt (0, 1 = Normal, 2) – Kampfwerte neu */
       if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     if ((e as { t: string }).t === "ausruestung") { /* v1: anderes angelegt – Kampfwerte neu (nur eigene Gegenstände, siehe kampfv1.ts) */
+      if (p.v1 && p.kampf && p.kampf.nutzer && inventarVon(p.kampf.nutzer)) return; /* mit Server-Inventar zählt dessen Ausrüstung, nicht die Meldung des Browsers */
       if (p.v1) { p.v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, p.v1.waffe); console.log(`Welt: Ausrüstung ${p.name || "?"}: waffe=${p.v1.angelegt.waffe || "-"} nebenhand=${p.v1.angelegt.nebenhand || "-"}`); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); else if (p.zone && p.heldId) p.zone.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }
   });
@@ -239,6 +243,9 @@ setInterval(() => {
     if (!Z.spieler.size) { if (Z.leerSeit && jetzt - Z.leerSeit > 120000) { zonen.delete(key); console.log("Welt: Zone", key, "geschlossen"); } continue; }
     try { Z.sim.schritt(); } catch (err) { console.error("Welt-Schritt:", (err as Error).stack); continue; }
     const z = Z.sim.zustand(); let stufe = false;
+    { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung && K0.weltRegion) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
+      const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
+      for (const [g, n] of ev.g) bodenDazu(K0.weltRegion, K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } }
     for (const q of [...Z.spieler]) { if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { zoneVerlassen(q); continue; } /* Sicherheitsnetz: keine Helden ohne Verbindung */ if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
       if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
       if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt);

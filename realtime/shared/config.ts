@@ -117,6 +117,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   aufstehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
   aggressiv?: boolean; aggroReich?: number;
+  /** Drop-Tabelle (offene Welt): jeder Eintrag würfelt einzeln – gegenstand (id aus gegenstaende.ts), chance in Prozent, anzahl [min, max] (Standard 1) */
+  drops?: { g: string; chance: number; anzahl?: [number, number] }[];
   /** Kampfregeln v2: feste Werte ohne Ausrüstung – Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Angriffstakt in Ticks (1 Tick = 0,5 s), Abwehr je Angriffsart. Nahkampfreichweite wie die Helden (kampfwerte.ts NAH_REICH). */
   v2?: { geschick: number; staerke: number; ticks: number; abwehr: { nah: number; fern: number; magie: number } };
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };

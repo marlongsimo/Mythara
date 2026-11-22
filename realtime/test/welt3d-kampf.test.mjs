@@ -23,6 +23,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_aktiver_held")) return send(200, AKTIV[wer(req.url)] ? [{ held: AKTIV[wer(req.url)] }] : []);
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_held_setzen") { const a = JSON.parse(b); AKTIV[a.p_user] = a.p_held; HELDSETZEN.push(a); return send(200, { ok: true, held: a.p_held }); }
   if (req.url.startsWith("/rest/v1/rpg_held?")) return send(200, HELD[wer(req.url)] ? [HELD[wer(req.url)]] : []);
+  if (req.url === "/rest/v1/rpc/rpg_held_inventar_setzen") { const a = JSON.parse(b); if (HELD[a.p_user]) HELD[a.p_user].inventar = a.p_inventar; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_skill_gutschrift") { const a = JSON.parse(b); XPBUCH.push(a); const H = HELD[a.p_user]; if (!H) return send(200, null); for (const k of ["geschick", "staerke", "fernkampf", "magie"]) H["skill_" + k] += a["p_" + k]; return send(200, { geschick: H.skill_geschick, staerke: H.skill_staerke, fernkampf: H.skill_fernkampf, magie: H.skill_magie }); }
   send(404, {}); }); }).listen(8799);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8787", SUPABASE_URL: "http://localhost:8799", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765", BUCHUNG_RUHE_MS: "800", BUCHUNG_SPAETESTENS_MS: "3000" }, stdio: ["ignore", "pipe", "pipe"] }); let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
@@ -73,12 +74,27 @@ try {
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "kampf3d-treffer.png" });
   console.log("    Zustand beim Foto:", await anna.evaluate(() => { const K = window.EZK, W = window.EZW.welt3d; return JSON.stringify({ art: K && K.art, region: K && K.region, hier: W.hier, xp: K && K.z && K.z.ich.xp, stufe: K && K.z && K.z.ich.stufe, lp: document.querySelector("#ez-lpzahl").textContent, v1: K && K.v1, naechster: window.EZN && window.EZN.region }); }));
   const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Stärke ${lokal})`);
-  /* Mogeln: eine fremde Waffe melden – der Server nimmt nur eigene Gegenstände */
-  await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(500);
-  check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log), "Eine nicht eigene Waffe (Stab beim Schwertkämpfer) lehnt der Server ab");
-  /* Ausrüstung ablegen → Fäuste */
-  await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar")); i.rucksack.push(i.angelegt.waffe); delete i.angelegt.waffe; localStorage.setItem("ez_inventar", JSON.stringify(i)); window.dispatchEvent(new CustomEvent("ez-inventar", { detail: i })); });
-  await anna.waitForTimeout(600); check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log) && await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Fäuste", "Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten");
+  /* Mogeln: eine fremde Waffe melden – mit Server-Inventar zählt allein das, was der Server als angelegt kennt */
+  await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(600);
+  check(await anna.evaluate(() => { const K = window.EZK, h = K.netz && K.z && K.z.w.find((e) => e[0] === K.z.ich.id); return !/Stab/.test(document.querySelector("#ez-name").textContent); }) && !/Ausrüstung Anna: waffe=hirtenstab/.test(log), "Eine gemeldete fremde Waffe (Stab) ändert nichts – der Server nimmt seine eigene Ausrüstung");
+  /* Inventar im Spiel: Schild ablegen (Ausrüstung), fallen lassen (Rucksack), als Beutel am Boden sehen, antippen → Aufheben */
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="nebenhand"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]');
+  await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
+  check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
+  await anna.click('#ez-konto [data-t="zu"]'); await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
+  await anna.click('#ez-konto .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('#ez-konto .iwahl [data-t="fallen"]'), "Rucksack: „Fallen lassen“ ist da");
+  await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 1, null, { timeout: 8000 }).catch(() => {});
+  check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Einfacher Schild"), "Der Schild liegt als Beutel mit Namen am Boden");
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
+  { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = W.bodenBild && [...W.bodenBild.values()][0]; if (!d) return null; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); });
+    if (q) await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
+  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Aufheben: Einfacher Schild", `Antippen des Beutels: „${knopf}“`);
+  if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
+  check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
+  /* Schwert ablegen → Fäuste (über den Server) */
+  await anna.evaluate(() => window.EZW && 0); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.waitForTimeout(800); check(await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Fäuste", "Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten");
   /* gehen: die letzten XP werden gebucht */
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
