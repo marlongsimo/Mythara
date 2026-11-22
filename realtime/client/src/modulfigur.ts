@@ -11,6 +11,7 @@
  * Welche Helden modular sind, steht in MODUL. Alle anderen Figuren bleiben, wie sie sind.
  */
 import Phaser from "phaser";
+import { Figur3D, figur3dAn } from "./echt3d/figur";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
 interface Meta { id: string; angriff?: string; bezug?: { haut: number; haar: number; bart: number }; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
@@ -107,11 +108,12 @@ export const istModul = (held: string): boolean => Boolean(MODUL[held]);
  * hoehe: Körperhöhe am Bildschirm. Der Rückgabewert lässt sich wie ein Sprite verwenden.
  */
 export function heldenFigur(scene: Phaser.Scene, x: number, y: number, held: string, hoehe: number, bild = "figur-" + held, eigen?: (Held & { ich?: boolean }) | null): Phaser.GameObjects.Sprite {
+  if (eigen && eigen.ich && figur3dAn()) return new Figur3D(scene, x, y, hoehe, eigen, () => (eigeneWaffen ? eigeneWaffen() : STARTWAFFEN[eigen.waffe].waffen)) as unknown as Phaser.GameObjects.Sprite; /* Versuch: der eigene Held in Echtzeit-3D (?figur3d=1) */
   if (eigen) return new ModulFigur(scene, x, y, figurVon(eigen.aussehen), hoehe, eigen) as unknown as Phaser.GameObjects.Sprite; /* der eigene Held aus dem Heldeneditor */
   if (MODUL[held]) return new ModulFigur(scene, x, y, MODUL[held], hoehe) as unknown as Phaser.GameObjects.Sprite;
   return scene.add.sprite(x, y, bild);
 }
 /** Blickrichtung am Bildschirm setzen, falls die Figur acht Richtungen kann (sonst bleibt es bei links/rechts) */
-export function richten(sp: unknown, sx: number, sy: number): void { if (sp instanceof ModulFigur) sp.richte(sx, sy); }
+export function richten(sp: unknown, sx: number, sy: number): void { if (sp instanceof ModulFigur || sp instanceof Figur3D) sp.richte(sx, sy); }
 /** Blickwinkel am Bildschirm für die Weitergabe an Mitspieler: acht Richtungen bei modularen Figuren, sonst links (π) oder rechts (0) */
-export function blickVon(sp: { flipX: boolean }): number { return sp instanceof ModulFigur ? sp.blick : sp.flipX ? Math.PI : 0; }
+export function blickVon(sp: { flipX: boolean }): number { return sp instanceof ModulFigur || sp instanceof Figur3D ? sp.blick : sp.flipX ? Math.PI : 0; }
