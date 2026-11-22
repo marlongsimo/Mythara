@@ -48,7 +48,15 @@ const BILD = process.env.BILD || '';
     if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-pc-rucksack.png' });
     await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
     await p.click('#ez-leiste [data-l="stil"]'); await p.waitForTimeout(400);
-    check(await p.evaluate(() => !document.getElementById('ez-konto').hidden && /Angriffsstil/.test(document.querySelector('#ez-konto h2').textContent) && /Kommt bald/.test(document.getElementById('ez-konto').textContent)), 'Angriffsstil: Tafel „kommt bald“');
+    { const st = await p.evaluate(() => ({ titel: document.querySelector('#ez-konto h2')?.textContent, stile: [...document.querySelectorAll('#ez-konto .stil b')].map((b) => b.textContent), an: document.querySelector('#ez-konto .stil.an b')?.textContent, werte: document.querySelector('#ez-konto .stil.an .werte')?.textContent }));
+      check(st.titel === 'Angriffsstil' && st.stile.join() === 'Genau,Normal,Aggressiv' && st.an === 'Normal', `Angriffsstil (Schwert): ${st.stile.join(' · ')}, gewählt ${st.an} – ${st.werte}`);
+      if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-stil.png' });
+      await p.click('#ez-konto .stil[data-s="2"]'); await p.waitForTimeout(300);
+      check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_stil') || '{}').nah === 2 && document.querySelector('#ez-konto .stil.an b').textContent === 'Aggressiv'), 'Aggressiv gewählt: gemerkt und markiert'); }
+    await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
+    await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(400);
+    { const sk = await p.evaluate(() => [...document.querySelectorAll('#ez-konto .skills li')].map((l) => l.querySelector('b').textContent + ' ' + l.querySelector('.lv').textContent));
+      check(sk.join(', ') === 'Geschick 1, Stärke 1, Fernkampf 1, Magie 1', `Skills: ${sk.join(', ')}`); if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-skills.png' }); }
     await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
     await p.click('#ez-kartenrahmen [aria-label="Einstellungen"]'); await p.waitForTimeout(500);
     check(await p.evaluate(() => !document.getElementById('ez-konto').hidden), 'Einstellungen öffnen das Menü');

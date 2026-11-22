@@ -16,7 +16,7 @@ import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
 import { weltVerbindung, stelleMerken , aussehenJe } from "./welt";
-import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt } from "./kampfv1";
+import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -172,6 +172,8 @@ wss.on("connection", (ws, req) => {
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
+    if ((e as { t: string }).t === "stil") { /* v2: Angriffsstil gewählt (0, 1 = Normal, 2) – Kampfwerte neu */
+      if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     if ((e as { t: string }).t === "ausruestung") { /* v1: anderes angelegt – Kampfwerte neu (nur eigene Gegenstände, siehe kampfv1.ts) */
       if (p.v1) { p.v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, p.v1.waffe); console.log(`Welt: Ausrüstung ${p.name || "?"}: waffe=${p.v1.angelegt.waffe || "-"} nebenhand=${p.v1.angelegt.nebenhand || "-"}`); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); else if (p.zone && p.heldId) p.zone.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }

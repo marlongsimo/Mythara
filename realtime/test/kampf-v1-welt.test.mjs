@@ -1,4 +1,4 @@
-/* Kampfregeln v1 in der offenen Welt, Ende zu Ende – eigener Held mit Skill-XP (Migration 041 nachgebildet). Grundgerüst wie welt-kampf.test.mjs: (echter Spielserver, nachgebildete Supabase, Browser; die Spieldateien liefert Playwright aus – kein Testserver nötig):
+/* Kampfregeln v2 in der offenen Welt (2D), Ende zu Ende – eigener Held mit vier Skills (Migration 042 nachgebildet). Grundgerüst wie welt-kampf.test.mjs: (echter Spielserver, nachgebildete Supabase, Browser; die Spieldateien liefert Playwright aus – kein Testserver nötig):
    Anna und Ben stehen im Kreuzwald, sehen sich und die Banditen ohne eigene Kampfszene, Anna besiegt Banditen (EP gebucht), durchs Tor zurück in die Waldmark, Teleport, Gast rechnet im Browser. */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
@@ -6,7 +6,7 @@ let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + 
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
-const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", xp_staerke: 0, xp_geschick: 0, xp_magie: 0 } }, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
+const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0 } }, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url.startsWith("/fake/")) { res.setHeader("access-control-allow-origin", "*"); if (req.url === "/fake/einladen") { const a = JSON.parse(b || "{}"); EINL.push({ id: "e" + EINL.length, von: a.von, an: a.an, code: a.code }); return send(200, { ok: true }); }
     if (req.url.startsWith("/fake/einladungen")) return send(200, EINL.filter((e) => e.an === new URL(req.url, "http://x").searchParams.get("an")));
@@ -23,7 +23,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpg_echtzeit_aktiver_held")) return send(200, AKTIV[wer(req.url)] ? [{ held: AKTIV[wer(req.url)] }] : []);
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_held_setzen") { const a = JSON.parse(b); AKTIV[a.p_user] = a.p_held; HELDSETZEN.push(a); return send(200, { ok: true, held: a.p_held }); }
   if (req.url.startsWith("/rest/v1/rpg_held?")) return send(200, HELD[wer(req.url)] ? [HELD[wer(req.url)]] : []);
-  if (req.url === "/rest/v1/rpc/rpg_held_xp_gutschrift") { const a = JSON.parse(b); XPBUCH.push(a); const H = HELD[a.p_user]; if (!H) return send(200, null); H.xp_staerke += a.p_staerke; H.xp_geschick += a.p_geschick; H.xp_magie += a.p_magie; return send(200, { staerke: H.xp_staerke, geschick: H.xp_geschick, magie: H.xp_magie }); }
+  if (req.url === "/rest/v1/rpc/rpg_held_skill_gutschrift") { const a = JSON.parse(b); XPBUCH.push(a); const H = HELD[a.p_user]; if (!H) return send(200, null); for (const k of ["geschick", "staerke", "fernkampf", "magie"]) H["skill_" + k] += a["p_" + k]; return send(200, { geschick: H.skill_geschick, staerke: H.skill_staerke, fernkampf: H.skill_fernkampf, magie: H.skill_magie }); }
   send(404, {}); }); }).listen(8799);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8787", SUPABASE_URL: "http://localhost:8799", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765", BUCHUNG_RUHE_MS: "800", BUCHUNG_SPAETESTENS_MS: "3000" }, stdio: ["ignore", "pipe", "pipe"] }); let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
@@ -46,26 +46,26 @@ const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit &&
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]);
   await anna.goto(B + S); await bereit(anna); await anna.waitForTimeout(1500);
-  check(await anna.evaluate(() => window.EZK.art === "server" && window.EZK.v1 && document.body.classList.contains("kampf-v1")), "Eigener Held im Kreuzwald: Kampfregeln v1, gerechnet vom Server");
+  check(await anna.evaluate(() => window.EZK.art === "server" && window.EZK.v1 && document.body.classList.contains("kampf-v1")), "Eigener Held im Kreuzwald: Kampfregeln v2, gerechnet vom Server");
   const hud = await anna.evaluate(() => ({ stufe: document.querySelector("#ez-ich-stufe").textContent, lp: document.querySelector("#ez-lpzahl").textContent, name: document.querySelector("#ez-name").textContent,
     skills: [...document.querySelectorAll("#ez-skills .skill")].map((s) => s.querySelector("b").textContent + " " + s.querySelector(".lv").textContent), xp: getComputedStyle(document.querySelector("#ez-xpleiste")).display,
     tasten: ["a", "q", "e", "r"].map((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display !== "none"), modus: getComputedStyle(document.querySelector("#ez-modus")).display !== "none", an: document.querySelector('[data-taste="a"] small').textContent }));
   check(hud.stufe === "Lv 1" && hud.lp === "60 / 60" && hud.name === "Einfaches Schwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
-  check(hud.skills.join(", ") === "Stärke 1, Geschick 1, Magie 1" && hud.xp === "none", `Drei Skill-Balken statt EP: ${hud.skills.join(", ")}`);
+  check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1" && hud.xp === "none", `Vier Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[true,false,false,false]" && !hud.modus && hud.an === "Angreifen", "Nur die Taste „Angreifen“ – keine Fähigkeiten, kein Waffenwechsel");
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...K.figuren.values()].filter((f) => !f.held).map((f) => f.nm.text) }; });
   check(sicht.max.every((m) => m === 40) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 40 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "v1-kampf.png" });
   /* kämpfen, bis Skill-XP gebucht sind (alle 10 s) */
-  const xpSumme = () => XPBUCH.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + x.p_staerke, 0); let blocks = 0, treffer = 0;
+  const xpSumme = () => XPBUCH.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + x.p_geschick + x.p_staerke, 0); let blocks = 0, treffer = 0;
   anna.on("console", () => {});
   for (let i = 0; i < 120 && xpSumme() === 0; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250);
     const t = await anna.evaluate(() => window.EZW.szene.children.list.filter((o) => o.type === "Text" && o.visible).map((o) => o.text)); if (t.includes("geblockt")) blocks++; if (t.some((x) => /^\d+$/.test(x))) treffer++; }
-  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === 0 && x.p_magie === 0), `Stärke-XP vom Server gebucht: ${xpSumme()} (Geschick/Magie 0)`);
+  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Normal: je zur Hälfte an Geschick und Stärke): ${xpSumme()}`);
   check(xpSumme() % 2 === 0, "2 XP je abgezogenem Lebenspunkt (gerade Summe)");
   check(blocks > 0 && treffer > 0, `Treffer und „geblockt“ erscheinen in der Welt (${treffer} / ${blocks} Bilder)`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "v1-treffer.png" });
-  const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills Stärke ${lokal})`);
+  const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Stärke ${lokal})`);
   /* Mogeln: eine fremde Waffe melden – der Server nimmt nur eigene Gegenstände */
   await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(500);
   check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log), "Eine nicht eigene Waffe (Stab beim Schwertkämpfer) lehnt der Server ab");
@@ -73,16 +73,16 @@ try {
   await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar")); i.rucksack.push(i.angelegt.waffe); delete i.angelegt.waffe; localStorage.setItem("ez_inventar", JSON.stringify(i)); window.dispatchEvent(new CustomEvent("ez-inventar", { detail: i })); });
   await anna.waitForTimeout(600); check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log) && await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Fäuste", "Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten");
   /* gehen: die letzten XP werden gebucht */
-  for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
-  const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke;
-  await anna.close(); await new Promise((r) => setTimeout(r, 2500)); const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke;
+  for (let i = 0; i < 160 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
+  const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
+  await anna.close(); await new Promise((r) => setTimeout(r, 2500)); const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
   check(zuletzt > vorDb && nachDb >= zuletzt, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
-  /* Gast mit eigenem Helden: der Browser rechnet nach v1 */
+  /* Gast mit eigenem Helden: der Browser rechnet nach v2 */
   const gast = await spieler("Gast", "", [6536, 6583, "waldweg"]); await gast.goto(B + S); await bereit(gast); await gast.waitForTimeout(1200);
-  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 40)), "Gast: der Browser rechnet nach v1, Banditen mit 40 LP");
-  for (let i = 0; i < 80 && !(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0) > 0)); i++) { await gast.keyboard.press("1"); await gast.waitForTimeout(250); }
-  check(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0) > 0), "Gast: Stärke-XP auf dem Gerät gemerkt");
+  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 40)), "Gast: der Browser rechnet nach v2, Banditen mit 40 LP");
+  for (let i = 0; i < 80 && !(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0)); i++) { await gast.keyboard.press("1"); await gast.waitForTimeout(250); }
+  check(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0), "Gast: Nahkampf-XP auf dem Gerät gemerkt");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.slice(0, 3).join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
-console.log(fehler ? fehler + " Fehler" : "Kampfregeln v1 in der Welt: alles in Ordnung"); process.exit(fehler ? 1 : 0);
+console.log(fehler ? fehler + " Fehler" : "Kampfregeln v2 in der Welt: alles in Ordnung"); process.exit(fehler ? 1 : 0);

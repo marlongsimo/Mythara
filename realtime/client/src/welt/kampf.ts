@@ -14,7 +14,7 @@ import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BI
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { inventar } from "../inventar";
-import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon } from "../skills";
+import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt } from "../skills";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { setzeKarte } from "../../../shared/karte";
@@ -86,7 +86,11 @@ export class WeltKampf {
     if (n.art === "lokal" && n.sim) { const h = held(); if (h) n.sim.heldV1(h.id, kw); }
     const hoer = () => { if (this.vorbei) return; if (n.art === "server") n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]);
       else { const h = held(), k = h && h.kw ? meineKampfwerte(h.kw.skills) : null; if (h && k && n.sim) n.sim.kampfwerteSetzen(h.id, k); } };
-    window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer); }
+    window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer);
+    /* Angriffsstil (v2): dem Server melden, beim Rechnen im Browser die Werte neu setzen */
+    const stil = () => { if (this.vorbei) return; if (n.art === "server") n.sende({ t: "stil", stil: stilJetzt() } as unknown as Parameters<Netz["sende"]>[0]); else hoer(); };
+    window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
+  private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
   private v1Xp(z: Zustand) { const x = z.ich.xp; if (!x) return; skillsSchreiben(x); const st = stufenVon(x);
     if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
@@ -98,7 +102,7 @@ export class WeltKampf {
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
-    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
+    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } if (this.stilHoerer) { window.removeEventListener("ez-stil", this.stilHoerer); this.stilHoerer = null; } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
   /** Wie viele lebende Gegner in der Nähe des eigenen Helden sind (für das Kampf-Banner) */
   gegnerNah(felder = 8): number { const z = this.z; if (!z || !this.eingetreten) return 0; const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return 0;

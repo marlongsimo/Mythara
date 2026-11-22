@@ -114,6 +114,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Kampfregeln v2: feste Werte ohne Ausrüstung – Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Angriffstakt in Ticks (1 Tick = 0,5 s), Abwehr je Angriffsart. Nahkampfreichweite wie die Helden (kampfwerte.ts NAH_REICH). */
+  v2?: { geschick: number; staerke: number; ticks: number; abwehr: { nah: number; fern: number; magie: number } };
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
@@ -147,7 +149,7 @@ export const MONSTER: Record<string, MonsterDef> = {
      Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
   bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 40, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
-    angriff: { name: "Dolch", art: "nah", schaden: [3, 6], takt: 2.0, reich: 1.3, aushol: 0.35 } },
+    angriff: { name: "Dolch", art: "nah", schaden: [1, 4], takt: 2.0, reich: 1.5, aushol: 0 }, v2: { geschick: 6, staerke: 4, ticks: 4, abwehr: { nah: 6, fern: 6, magie: 4 } } },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge
   moorleiche: { name: "Moorleiche", bild: "img/gegner/moorleiche.jpg", figur: "img/echtzeit/moorleiche.webp", fuss: [0.433, 0.957], lauf: "img/echtzeit/moorleiche-lauf.webp", laufMass: [0.433, 0.957, 0.936], hieb: "img/echtzeit/moorleiche-hieb.webp", hiebMass: [0.438, 0.945, 0.912], ruhe: "img/echtzeit/moorleiche-ruhe.webp", ruheMass: [0.482, 0.979, 0.958], hoehe: 88, lp: 190, tempo: 1.9, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 60, magie: 35 }, r: 0.38, untot: true, aufstehen: 0.5,

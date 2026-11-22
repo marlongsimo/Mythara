@@ -52,9 +52,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         H.sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>,
         H.sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => null) as Promise<{ held: string }[] | null>, H.epLesen(nutzer).catch(() => ({})), H.sb(`/rest/v1/rpg_echtzeit_position?user_id=eq.${nutzer}&select=region,x,y`).catch(() => []) as Promise<{ region: string; x: number | null; y: number | null }[]>]);
       /* der eigene Held (Migration 040): Aussehen und Startwaffe; die Startwaffe bestimmt den Ausrüstungssatz. Fehlt er im Konto (Migration noch nicht da), gilt das Aussehen vom Gerät */
-      let hl = 0; /* Kampfregeln v1 (Migration 041): Heldenlevel aus den Skill-XP */
-      const eigen = heldPruefen(await H.sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`).then((r) => { const z = (r as { geschlecht: string; frisur: string; bart: string; haarfarbe: string; hautfarbe: string; waffe: string; xp_staerke?: number; xp_geschick?: number; xp_magie?: number }[])[0];
-        if (z) hl = heldenlevel(skillXpPruefen({ staerke: z.xp_staerke, geschick: z.xp_geschick, magie: z.xp_magie }));
+      let hl = 0; /* Kampfregeln v2 (Migration 042): Heldenlevel aus den vier Skills */
+      const eigen = heldPruefen(await H.sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`).then((r) => { const z = (r as { geschlecht: string; frisur: string; bart: string; haarfarbe: string; hautfarbe: string; waffe: string; skill_geschick?: number; skill_staerke?: number; skill_fernkampf?: number; skill_magie?: number }[])[0];
+        if (z) hl = heldenlevel(skillXpPruefen({ geschick: z.skill_geschick, staerke: z.skill_staerke, fernkampf: z.skill_fernkampf, magie: z.skill_magie }));
         return z ? { aussehen: { g: z.geschlecht, frisur: z.frisur, bart: z.bart, haar: z.haarfarbe, haut: z.hautfarbe }, waffe: z.waffe } : null; }).catch(() => null)) || heldPruefen(e.aussehen);
       let held = eigen ? satzVon(eigen) : aktiv && aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : "";
       if (eigen && aktiv && (!aktiv[0] || aktiv[0].held !== held)) await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_held: held }) }).catch((x) => console.error("Held setzen:", (x as Error).message));

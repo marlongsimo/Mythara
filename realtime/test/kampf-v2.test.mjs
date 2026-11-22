@@ -1,0 +1,59 @@
+/*
+ * Mythara – Kampfregeln v2 (shared/kampfwerte.ts + shared/sim.ts) ohne Server:
+ * Formeln aus den Balancing-Dokumenten, Startausrüstung, Angriffsstile, Tick-Takt (0,5 s), XP nach Stil, Bandit mit festen Werten,
+ * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
+ * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
+ */
+import { Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, startAusruestung, trefferChance, NULL_XP, schadenWurf } from "./sim.gebaut.mjs";
+let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
+const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
+
+/* 1. Formeln und Startausrüstung */
+check(xpFuer(2) === 359 && levelAus(359) === 2 && heldenlevel({ geschick: xpFuer(8), staerke: xpFuer(8), fernkampf: 0, magie: 0 }) === 4, "XP-Kurve wie bisher; Heldenlevel = ⌊Summe der vier Skills ÷ 4⌋");
+{ const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("schwert"), s));
+  check(nah(k[0].angriff.nah, 6.3) && nah(k[1].angriff.nah, 6) && nah(k[2].angriff.nah, 5.7), `Schwert L1: Trefferwert Genau 6,3 · Normal 6 · Aggressiv 5,7 ((1 + 5) × Stil)`);
+  check(k.every((x) => x.waffe.schaden.join() === "1,5" && x.waffe.ticks === 3), `Schwert L1: Max Hit ⌊(5 + 1/3) × Stil⌋ = 5 in allen Stilen, 3 Ticks`);
+  check(k[0].abwehr.nah === 4 && k[0].abwehr.fern === 4 && k[0].abwehr.magie === 3, `Mit Schild: Abwehr 1 + 3 / 1 + 3 / 1 + 2 (${k[0].abwehr.nah}/${k[0].abwehr.fern}/${k[0].abwehr.magie})`);
+  const s20 = kampfwerte({ ...NULL, geschick: xpFuer(10), staerke: xpFuer(10) }, { waffe: "ritterschwert" }, 2); check(s20.waffe.schaden[1] === Math.floor((5 + 10 / 3) * 1.05) && nah(s20.angriff.nah, 15 * 0.95), `Geschick und Stärke 10, Aggressiv: Treffer 14,25, Max Hit ${s20.waffe.schaden[1]} (Dokument: (10 + 5) × 0,95 / ⌊(5 + 10/3) × 1,05⌋)`); }
+{ const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("bogen"), s));
+  check(nah(k[1].angriff.fern, 1 + 10 / 3) && k[1].waffe.schaden.join() === "1,10", "Kurzbogen L1: Trefferwert 1 + 10/3 = 4,33, Schaden 1–10 (der Skill erhöht den Schaden nicht)");
+  check(k.map((x) => x.waffe.ticks).join() === "3,4,5" && k.map((x) => Math.round(x.waffe.reich * 10) / 10).join() === "5.4,6,6.6", "Kurzbogen: Akkurat 3 Ticks / 5,4 · Normal 4 / 6 · Fern 5 / 6,6 Felder"); }
+{ const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("stab"), s));
+  check(k[1].angriff.magie === 6 && k.map((x) => x.waffe.ticks).join() === "4,5,6" && k.every((x) => x.waffe.reich === 6), "Stab L1: Trefferwert 1 + 5 = 6, Schnell 4 · Normal 5 · Fokus 6 Ticks, Reichweite 6");
+  const w = k[1].waffe; check(schadenWurf(w, 0) === Math.round((1 + 1 / 3) * 1.02) && schadenWurf(w, 0.999) === Math.round((5 + 1 / 3) * 1.02), `Stab Normal: Schaden (1…5 + Magie/3) × 1,02 → ${schadenWurf(w, 0)}–${schadenWurf(w, 0.999)}`); }
+{ const B = MONSTER.bandit_dolch; check(B.lp === 40 && B.v2 && B.v2.geschick === 6 && B.v2.staerke === 4 && B.v2.ticks === 4 && B.v2.abwehr.nah === 6 && B.v2.abwehr.fern === 6 && B.v2.abwehr.magie === 4 && B.angriff.reich === 1.5, "Bandit: Geschick 6, Stärke 4 (Schaden 1–4), 4 Ticks, Abwehr 6/6/4, 40 LP, Nahkampfreichweite 1,5 wie die Helden"); }
+
+/* 2. Simulation: Duelle in der Weltzone (eigene Gegnerwerte) */
+const K = KARTEN.kreuzwald; setzeKarte(K, FEIN);
+function duell(seed, waffe, stil) {
+  STAERKE.lp = 2.2; STAERKE.schaden = 1.7; /* absichtlich verstellt: Weltzonen mit eigenen Werten dürfen das nicht spüren */
+  const s = Sim.welt(seed, undefined, true); for (const g of s.wesen.filter((w) => !w.held)) { g.streifT = 1e9; g.pfad = []; g.x = g.heim.x = 5 + (g.id % 7) * 0.3; g.y = g.heim.y = 150; }
+  const b = s.wesen.find((w) => !w.held && /bandit/.test(w.typ)), E = { x: 112, y: 6 }; b.x = b.heim.x = E.x; b.y = b.heim.y = E.y; b.wach = false;
+  const fern = waffe !== "schwert", h = s.nach(s.beitreten("schildwaechter", 0, { x: E.x - (fern ? 5 : 1.2), y: E.y }, kampfwerte(NULL, startAusruestung(waffe), stil)));
+  return { s, b, h };
+}
+/* Tick-Takt: alle Angriffe fallen auf ganze 0,5 s, Abstand = Takt */
+{ const { s, b, h } = duell(3, "schwert", 1); s.eingabe({ t: "ziel", id: b.id }, h.id); const zeitH = [], zeitB = [];
+  for (let i = 0; i < 20 * 20 && !b.tot && !h.tot; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb") (e.id === h.id ? zeitH : zeitB).push(s.tick); }
+  const aufTick = (l) => l.every((t) => t % 10 === 0), abst = (l) => l.slice(1).map((t, i) => (t - l[i]) / 20);
+  check(zeitH.length > 3 && aufTick(zeitH) && aufTick(zeitB), `Alle Angriffe fallen auf einen Kampf-Tick (0,5 s): Held ${zeitH.length}, Bandit ${zeitB.length} Angriffe`);
+  check(abst(zeitH).every((d) => d === 1.5) && abst(zeitB).every((d) => d === 2), `Takt: Schwert alle 1,5 s (3 Ticks) · Dolch alle 2,0 s (4 Ticks) – ${[...new Set(abst(zeitH))].join("/")} s · ${[...new Set(abst(zeitB))].join("/")} s`); }
+/* XP nach Stil */
+for (const [waffe, stil, soll] of [["schwert", 0, "geschick"], ["schwert", 2, "staerke"], ["schwert", 1, "beide"], ["bogen", 1, "fernkampf"], ["stab", 1, "magie"]]) {
+  const { s, b, h } = duell(21, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let abgezogen = 0;
+  for (let i = 0; i < 40 * 20 && !b.tot && !h.tot; i++) { h.lp = h.max; s.schritt(); for (const e of s.zustand().ev) if (e.a === "schaden" && e.id === b.id) abgezogen += e.n; }
+  const x = s.xpAbholen(h.id) || NULL, echt = Math.min(40, abgezogen), ok = soll === "beide" ? x.geschick === echt && x.staerke === echt && !x.fernkampf && !x.magie : x[soll] === 2 * echt && Object.entries(x).every(([k, v]) => k === soll || !v);
+  check(ok && echt > 0, `XP ${waffe} Stil ${stil}: ${JSON.stringify(x)} für ${echt} abgezogene LP`); }
+/* viele Duelle: Siegquote */
+const ergebnis = [];
+for (const [waffe, stil] of [["schwert", 0], ["schwert", 1], ["schwert", 2], ["bogen", 0], ["bogen", 1], ["bogen", 2], ["stab", 0], ["stab", 1], ["stab", 2]]) {
+  let siege = 0, dauer = 0, rest = 0, tH = 0, aH = 0, tB = 0, aB = 0; const N = 120;
+  for (let seed = 1; seed <= N; seed++) { const { s, b, h } = duell(seed * 7 + stil, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let t = 0;
+    for (; t < 150 * 20 && !b.tot && !h.tot; t++) { s.schritt(); for (const e of s.zustand().ev) { if (e.id === b.id && (e.a === "schaden" || e.a === "block")) { aH++; if (e.a === "schaden") tH++; } if (e.id === h.id && (e.a === "schaden" || e.a === "block")) { aB++; if (e.a === "schaden") tB++; } } }
+    if (b.tot) { siege++; dauer += t / 20; rest += h.lp / h.max; } }
+  ergebnis.push({ waffe, stil, siege: siege / N, dauer: dauer / Math.max(1, siege), rest: rest / Math.max(1, siege), qH: tH / Math.max(1, aH), qB: tB / Math.max(1, aB) }); }
+console.log("    Waffe   Stil  Siege   Dauer  LP übrig  Held trifft  Bandit trifft");
+for (const e of ergebnis) console.log(`    ${e.waffe.padEnd(7)} ${e.stil}    ${(e.siege * 100).toFixed(0).padStart(3)} %  ${e.dauer.toFixed(1).padStart(5)} s  ${(e.rest * 100).toFixed(0).padStart(4)} %     ${(e.qH * 100).toFixed(0).padStart(3)} %        ${(e.qB * 100).toFixed(0).padStart(3)} %`);
+{ const sw = ergebnis.find((e) => e.waffe === "schwert" && e.stil === 1); check(Math.abs(sw.qH - trefferChance(6, 6)) < 0.08 && Math.abs(sw.qB - trefferChance(6, 4)) < 0.08, `Trefferquoten wie gerechnet: Held 6 gegen 6 → ${(trefferChance(6, 6) * 100).toFixed(0)} %, Bandit 6 gegen 4 → ${(trefferChance(6, 4) * 100).toFixed(0)} %`); }
+{ const g = (w) => ergebnis.filter((e) => e.waffe === w).reduce((m, e) => Math.max(m, e.siege), 0); check(g("schwert") >= 0.9 && g("bogen") >= 0.7 && g("stab") >= 0.5, `Ein Held auf Level 1 kann den Bandit schlagen (bester Stil: Schwert ${(g("schwert") * 100).toFixed(0)} %, Bogen ${(g("bogen") * 100).toFixed(0)} %, Stab ${(g("stab") * 100).toFixed(0)} %)`); }
+console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : "Kampfregeln v2: alles in Ordnung"); process.exit(f ? 1 : 0);
