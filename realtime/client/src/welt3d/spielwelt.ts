@@ -116,10 +116,19 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY); if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } };
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
+    /* Antippen auf der Minikarte: dorthin gehen (die Karte zeigt die Region, in der man steht; daneben die Nachbarregionen) */
+    { let ab: { x: number; y: number } | null = null; const auf = (e: Event) => { const t = e.target as HTMLElement; return t.closest && !t.closest("button, .rknoepfe") ? t.closest("#ez-karte") || (t.closest(".rund") && (t.closest(".rund") as HTMLElement).querySelector("#ez-karte") ? t.closest(".rund") : null) : null; };
+      document.addEventListener("pointerdown", (e) => { ab = auf(e) ? { x: e.clientX, y: e.clientY } : null; }, true);
+      document.addEventListener("pointerup", (e) => { if (!ab || !auf(e) || Math.hypot(e.clientX - ab.x, e.clientY - ab.y) > 10 || this.gesperrt) { ab = null; return; } ab = null; const r = this.regionBei(this.ort.x, this.ort.y), k = $("#ez-karte"); if (!r || !k) return;
+        const b = k.getBoundingClientRect(); if (!b.width) return; const fx = (e.clientX - b.left) / b.width, fy = (e.clientY - b.top) / b.height;
+        this.geheWeit(r.region.ursprung[0] * C + fx * r.region.chunks[0] * C, r.region.ursprung[1] * C + fy * r.region.chunks[1] * C); }, true); }
   }
   private stickWeg() { if (this.stick) { this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } }
 
   /* ───────────── Spielablauf ───────────── */
+  /** Ein fernes Ziel (Minikarte): ganz hin, wenn der Weg in der geladenen Umgebung liegt – sonst so weit wie möglich in seine Richtung */
+  geheWeit(x: number, y: number) { const o = this.ort, d = Math.hypot(x - o.x, y - o.y); if (d < 0.5) return;
+    for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS); if (w.length) { this.gehe(zx, zy); return; } } }
   gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
     if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.visible = false; this.stickWeg(); }

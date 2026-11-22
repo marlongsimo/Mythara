@@ -41,6 +41,12 @@ const BILD = process.env.BILD || '';
   check(await p.evaluate(() => { const m = document.querySelector('#ez-karte-punkt'); return m && m.style.left.endsWith('%'); }), 'Minikarte: der Punkt läuft mit');
   check(await p.evaluate(() => !!JSON.parse(localStorage.getItem('ez_welt_pos') || 'null')), 'Die Stelle wird gemerkt');
   check(await p.evaluate(() => document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kartenrahmen [data-k]').length) > 0, 'Knöpfe an der runden Karte da');
+  /* Antippen auf der Minikarte: der Held läuft dorthin */
+  { const o1 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })), r = await p.evaluate(() => { const b = document.querySelector('#ez-karte').parentElement.getBoundingClientRect(); return { x: b.left + b.width * 0.5, y: b.top + b.height * 0.5 }; });
+    await p.mouse.click(r.x + 25, r.y + 18); await p.waitForTimeout(400);
+    const z = await p.evaluate(() => { const W = window.EZW.welt3d; return W.pfad.length ? W.pfad[W.pfad.length - 1] : null; });
+    check(z && (z.x - o1.x) > 1 && (z.y - o1.y) > 1, `Antippen auf der Minikarte: Weg nach rechts unten (Ziel ${z ? (z.x - o1.x).toFixed(1) + ' | ' + (z.y - o1.y).toFixed(1) : '–'} Felder entfernt)`);
+    await p.waitForTimeout(3000); const o2 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); check(Math.hypot(o2.x - o1.x, o2.y - o1.y) > 0.5, 'und der Held läuft los'); }
   /* Gespräche und Türen: zum Brunnen, „Ansehen“ [E] zeigt den Text; zur Heldenhalle, der Knopf öffnet die Heldenhalle */
   await p.evaluate(() => window.EZW.gehe(6448, 6435.6)); await p.waitForFunction(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden && /Ansehen/.test(k.textContent); }, null, { timeout: 40000 }).catch(() => {});
   const knopf = await p.evaluate(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden ? k.textContent : ''; }); check(/Ansehen/.test(knopf), `Am Brunnen erscheint der Knopf „${knopf.trim()}“`);
