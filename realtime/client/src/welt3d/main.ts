@@ -10,6 +10,7 @@ import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, type Typ } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
+import { Figurbild } from "./figurbild";
 
 type Daten = { x0: number; y0: number; b: number; h: number; start: [number, number]; gebiete: { id: string; name: string; untertitel: string; x: number; y: number; b: number; h: number }[];
   arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>; boden: string[]; geh: string[]; hoehe: number[];
@@ -37,7 +38,7 @@ class Welt3D {
   stuecke: { cx: number; cy: number; obj: THREE.Object3D[] }[] = []; boden: THREE.Mesh[] = []; bauten: Gebaeude[] = [];
   held = { x: 0, z: 0, blick: 1, lauf: 0 }; pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
-  figur!: THREE.Sprite; stand!: THREE.Texture; lauf!: THREE.Texture; schattenFleck!: THREE.Mesh; marke!: THREE.Mesh; fps: number[] = []; gebiet = "";
+  figur!: Figurbild; stand!: THREE.Texture; lauf!: THREE.Texture; schattenFleck!: THREE.Mesh; marke!: THREE.Mesh; fps: number[] = []; gebiet = "";
 
   async start() {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
@@ -119,15 +120,14 @@ class Welt3D {
   zuStueck(cx: number, cy: number, o: THREE.Object3D) { const s = this.stuecke.find((q) => q.cx === cx && q.cy === cy); if (s) s.obj.push(o); }
   figuren() { const L = new THREE.TextureLoader();
     /* Dorfbewohner: Bildstreifen mit 8 Bildern zu 176 × 176 – das erste zeigen */
-    for (const f of this.d.figuren) { const tx = L.load(BILD + "img/echtzeit/" + f.figur + ".webp", (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); t.repeat.set(1 / n, 1); sp.scale.set(2.25, 2.25, 1); }); tx.colorSpace = THREE.SRGBColorSpace;
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, alphaTest: 0.2, toneMapped: false })); sp.center.set(0.5, 0.06); sp.position.set(f.x, this.hoehe(f.x, f.y), f.y); this.szene.add(sp); this.fleck(f.x, f.y); this.zuStueck(Math.floor(f.x / C), Math.floor(f.y / C), sp); } }
+    for (const f of this.d.figuren) { const tx = L.load(BILD + "img/echtzeit/" + f.figur + ".webp", (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); fb.setze(t, [1 / n, 1], [0, 0], [2.25, 2.25], [0.5, 0.06]); }); tx.colorSpace = THREE.SRGBColorSpace;
+      const fb = new Figurbild(tx); fb.silhouette(false); fb.gruppe.position.set(f.x, this.hoehe(f.x, f.y) + 0.08, f.y); this.szene.add(fb.gruppe); this.fleck(f.x, f.y); this.zuStueck(Math.floor(f.x / C), Math.floor(f.y / C), fb.gruppe); } }
   fleck(x: number, z: number) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.42, 16), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.32, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x, this.hoehe(x, z) + 0.05, z); this.szene.add(m); return m; }
 
   /* ───────── Held ───────── */
   heldBauen() { const L = new THREE.TextureLoader();
     this.stand = L.load(BILD + "img/echtzeit/torvald.webp"); this.lauf = L.load(BILD + "img/echtzeit/torvald-lauf.webp"); for (const t of [this.stand, this.lauf]) t.colorSpace = THREE.SRGBColorSpace;
-    this.lauf.repeat.set(1 / 4, 1 / 2);
-    this.figur = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.stand, alphaTest: 0.2, toneMapped: false })); this.szene.add(this.figur); this.schattenFleck = this.fleck(this.held.x, this.held.z);
+    this.figur = new Figurbild(this.stand); this.szene.add(this.figur.gruppe); this.schattenFleck = this.fleck(this.held.x, this.held.z);
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffd75e, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.szene.add(this.marke); }
   frei(x: number, z: number) { const r = 0.28; for (const [dx, dz] of [[-r, -r], [r, -r], [-r, r], [r, r]]) { const gx = Math.floor(x + dx), gz = Math.floor(z + dz); const zl = this.d.geh[gz]; if (!zl || zl[gx] !== ".") return false; } return true; }
   /** A* auf dem Feldraster (8 Richtungen, keine Ecken abschneiden) */
@@ -192,11 +192,10 @@ class Welt3D {
       if (this.frei(nx, nz)) { H.x = nx; H.z = nz; } else if (this.frei(nx, H.z)) H.x = nx; else if (this.frei(H.x, nz)) H.z = nz; else if (this.pfad.length) this.pfad.shift();
       /* Blickrichtung auf dem Bildschirm: rechts oder links der Kamera */ const rechts = rx * Math.cos(this.gieren) - rz * Math.sin(this.gieren); if (Math.abs(rechts) > 0.2) H.blick = rechts > 0 ? 1 : -1; H.lauf += dt; }
     /* Figur: Stand- oder Laufbild (8 Bilder), gespiegelt nach Blickrichtung */
-    const y = this.hoehe(H.x, H.z), fig = this.figur, m = fig.material as THREE.SpriteMaterial;
-    if (laeuft) { const n = Math.floor(H.lauf * 11) % 8, t = this.lauf; if (m.map !== t) { m.map = t; m.needsUpdate = true; } t.repeat.set(H.blick / 4, 1 / 2); t.offset.set((n % 4 + (H.blick < 0 ? 1 : 0)) / 4, n < 4 ? 0.5 : 0);
-      const h = 2.05 / 0.855; fig.scale.set(h, h, 1); fig.center.set(0.5, 1 - 0.946); }
-    else { const t = this.stand; if (m.map !== t) { m.map = t; m.needsUpdate = true; } t.repeat.set(H.blick, 1); t.offset.set(H.blick < 0 ? 1 : 0, 0); if (t.image) fig.scale.set(2.05 * 1.065 * t.image.width / t.image.height, 2.05 * 1.065, 1); fig.center.set(0.5, 0.06); H.lauf = 0; }
-    fig.position.set(H.x, y, H.z); this.schattenFleck.position.set(H.x, y + 0.05, H.z);
+    const y = this.hoehe(H.x, H.z), fig = this.figur;
+    if (laeuft) { const n = Math.floor(H.lauf * 11) % 8, h = 2.05 / 0.855; fig.setze(this.lauf, [H.blick / 4, 1 / 2], [(n % 4 + (H.blick < 0 ? 1 : 0)) / 4, n < 4 ? 0.5 : 0], [h, h], [0.5, 1 - 0.946]); }
+    else { const t = this.stand, w = t.image ? t.image.width / t.image.height : 0.7; fig.setze(t, [H.blick, 1], [H.blick < 0 ? 1 : 0, 0], [2.05 * 1.065 * w, 2.05 * 1.065], [0.5, 0.06]); H.lauf = 0; }
+    fig.gruppe.position.set(H.x, y + 0.08, H.z); this.schattenFleck.position.set(H.x, y + 0.05, H.z);
     /* Kamera folgt */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);
