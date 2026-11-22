@@ -1,5 +1,5 @@
 {
-  "hinweis": "Grundstruktur Mann v003 (Meshy „Iron Sentinel“, stilisiert): kahl, Lederwams mit Riemen, blauer Schal, Armschienen, dunkle Hose, Stiefel – fest im Modell. Frisuren und Bärte für diesen Kopf neu erzeugt (frisuren.py, bart.py).",
+  "hinweis": "Grundstruktur Mann v003 (Meshy „Ironclad Sentinel“, stilisiert): kahl, Lederwams mit Riemen, Armschienen, dunkle Hose, Stiefel – fest im Modell. Frisuren und Bärte für diesen Kopf erzeugt (frisuren.py, bart.py), Sternplatte als Brustteil. Der erste Versuch (Iron Sentinel mit Schal) liegt unter quelle/alt-iron-sentinel.",
   "bewegungen": [
     "ruhe",
     "gehen",
@@ -305,7 +305,12 @@
       "id": "ruestung.brust.sternplatte",
       "platz": "brust",
       "glb": "basis.mann/v003/quelle/teile/ruestung.brust.sternplatte.glb",
-      "wahlfrei": true
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken"
+      ]
     }
   ],
   "waffenklassen": {

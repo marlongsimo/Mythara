@@ -42,6 +42,7 @@ Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, bl
                              so ist jedes Teil unabhängig austauschbar; Teil "umhang": true liegt von vorn hinter, von hinten vor allen anderen
   "stuecke_behalten": true   lose Stücke des Körpers nicht als Splitter verwerfen (Grundkörper aus mehreren Teilen)
   Teilnetz "ersetzt": [...]  ein Gesamtset: beim Anlegen werden diese Plätze abgelegt (Testszene/Spiel)
+  Teilnetz "nur_knochen": [..]  nur diese Knochen bewegen das Teil (Brustpanzer: brust, bauch, becken – die Arme ziehen es nicht mit)
   "teilnetze": [...]          fertige Teile eines Figurenmodells (meshy_teile.py) als eigene Ebenen: {id, platz, glb, beine_mitteln}; Gewichte vom Grundkörper
   "anbau": [...]              Rüstungsteile mit Volumen (anbau.py) als eigene Ebenen: je Teil "teile": [{glb, knochen, lage, versatz, spiegeln,
                              ausrichten (entlang des Knochens), flaeche ("vorn"/"aussen": auf die Körperoberfläche), verlauf (Knochen, zu denen es unten überblendet)}]
@@ -294,6 +295,14 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
     bpy.ops.object.shade_smooth()
     dt = o.modifiers.new("gewichte", "DATA_TRANSFER"); dt.object = ob; dt.use_vert_data = True; dt.data_types_verts = {"VGROUP_WEIGHTS"}; dt.vert_mapping = "POLYINTERP_NEAREST"
     dt.layers_vgroup_select_src = "ALL"; dt.layers_vgroup_select_dst = "NAME"; bpy.ops.object.datalayout_transfer(modifier="gewichte"); bpy.ops.object.modifier_apply(modifier="gewichte")
+    if t.get("nur_knochen"):                                                                       # starre Teile (Brustpanzer): nur diese Knochen bewegen das Teil, andere Gewichte (Arme, die am Rumpf anliegen) werden umgelegt
+        erlaubt_ = set(t["nur_knochen"]); G_ = {g.name: g for g in o.vertex_groups}
+        for v in o.data.vertices:
+            w = {o.vertex_groups[g.group].name: g.weight for g in v.groups}; ok = {k: x for k, x in w.items() if k in erlaubt_}; s_ = sum(ok.values())
+            if s_ < 1e-6: nah = min(erlaubt_, key=lambda k: (KN[k].head_local.lerp(KN[k].tail_local, 0.5) - v.co).length); ok = {nah: 1.0}; s_ = 1.0
+            for k in w:
+                if k not in erlaubt_: G_[k].remove([v.index])
+            for k, x in ok.items(): (G_[k] if k in G_ else o.vertex_groups.new(name=k)).add([v.index], x / s_, "REPLACE")
     if t.get("beine_mitteln"):                                                                     # Umhang, Waffenrock: folgen dem Mittel beider Beine (sonst reißt das Tuch zwischen den Beinen auseinander)
         G_ = {g.name: g for g in o.vertex_groups}
         for v in o.data.vertices:
