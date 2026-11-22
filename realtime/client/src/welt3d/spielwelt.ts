@@ -17,6 +17,8 @@ import { anschluss3D, schildText, WeltKern } from "../welt/anschluss";
 import { HELDEN } from "../../../shared/config";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
+/** Eine Stelle, an der man etwas tun kann: wohin gehen, was der Knopf sagt, was passiert und ob man schon dort ist */
+interface Stelle { x: number; y: number; text: string; tat: () => void; da: () => boolean }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
@@ -119,7 +121,10 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 10) return; const m = this.motor, dx = e.clientX - this.zugX, dy = e.clientY - this.zugY; this.zugX = e.clientX; this.zugY = e.clientY;
       m.gieren -= dx * 0.006; m.neigen = Math.max(0.42, Math.min(1.35, m.neigen + dy * 0.004)); });
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null;
-      if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY); if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } };
+      if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
+        /* auf eine Stelle mit einer Handlung getippt (Treppe, Leiter, Tür, Ausgang …): dort ein kleiner Knopf statt loszulaufen */
+        const stelle = b ? this.anStelle(b.x, b.z) : null; if (stelle) { this.wahlZeigen(stelle); return; } this.wahlWeg();
+        if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } };
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
     /* Antippen auf der Minikarte: dorthin gehen (die Karte zeigt die Region, in der man steht; daneben die Nachbarregionen) */
@@ -159,17 +164,37 @@ export class Spielwelt3D implements WeltKern {
     const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C);
     for (let dy = -1; dy <= 1 && !nah; dy++) for (let dx = -1; dx <= 1 && !nah; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
       for (const a of d.interaktionen) if (Math.hypot(a.x - o.x, a.y - o.y) <= a.radius) { nah = this.interaktion(a); break; } }
-    if ((nah ? nah.text : "") !== (this.nah ? this.nah.text : "")) { const kn = $("#ez-dorf-knopf"); kn.classList.remove("bald"); kn.hidden = !nah; if (nah) kn.textContent = nah.text + (HANDY ? "" : "  [E]"); }
-    this.nah = nah;
+    /* kein Knopf mehr beim Hinlaufen (gehandelt wird über das Antippen der Stelle); [E] bleibt in der Nähe als Abkürzung */
+    $("#ez-dorf-knopf").hidden = true; this.nah = nah;
+    /* vorgemerkte Handlung: ausführen, sobald man dort ist; wer vorher stehen bleibt oder selbst steuert, lässt sie fallen */
+    const v = this.vorhaben; if (v) { if (v.da()) { this.vorhaben = null; if (!this.gesperrt) v.tat(); } else if (!this.pfad.length) this.vorhaben = null; }
   }
   interaktion(a: Interaktion): { text: string; tat: () => void } | null {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "", tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
     const ziel = a.daten && Array.isArray(a.daten.ziel) && a.daten.ziel.length === 2 ? (a.daten.ziel as number[]) : null;
-    if (ziel) return { text: knopf || "Hinabsteigen", tat: () => this.springen(ziel[0], ziel[1]) };
+    if (ziel) return { text: /hinauf|hoch/i.test(knopf) ? "Hoch" : /hinab|hinunter|runter/i.test(knopf) ? "Runter" : knopf || "Hinabsteigen", tat: () => this.springen(ziel[0], ziel[1]) };
     if (tat) return { text: anschluss3D.knopf(tat, knopf || "Betreten"), tat: () => anschluss3D.tat(tat, this) };
     if (text) return { text: "Ansehen", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = text; el.style.display = ""; } };
     return null;
   }
+  /* ───────────── Handeln durch Antippen der Stelle ───────────── */
+  private vorhaben: Stelle | null = null; private wahl: { el: HTMLElement; x: number; z: number } | null = null;
+  /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
+  anStelle(x: number, y: number): Stelle | null {
+    const cx = Math.floor(x / C), cy = Math.floor(y / C); let best: Stelle | null = null, bd = Infinity;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
+      for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > Math.max(1.2, a.radius) || w >= bd) continue; const i = this.interaktion(a); if (!i) continue;
+        bd = w; best = { x: a.x, y: a.y, text: i.text, tat: i.tat, da: () => Math.hypot(a.x - this.ort.x, a.y - this.ort.y) <= a.radius }; } }
+    if (best) return best;
+    const r = this.regionBei(x, y); if (r) for (const a of r.ausgaenge) if (inZone(a.zone, x, y)) return { x, y, text: a.text, tat: () => this.reisen(a), da: () => inZone(a.zone, this.ort.x, this.ort.y) };
+    return null; }
+  /** Der kleine Knopf an der Stelle: antippen = hingehen und dort handeln (ist man schon dort, sofort) */
+  wahlZeigen(s: Stelle) { this.wahlWeg(); const el = document.createElement("div"), b = document.createElement("button"); el.className = "ez-wahl3d"; b.type = "button"; b.textContent = s.text; el.appendChild(b);
+    for (const ev of ["pointerdown", "pointerup"]) el.addEventListener(ev, (e) => e.stopPropagation());
+    b.addEventListener("click", (e) => { e.stopPropagation(); this.wahlWeg(); if (this.gesperrt) return; if (s.da()) { s.tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? s : null; });
+    this.wahl = { el, x: s.x, z: s.y }; this.wahlFolgen(); }
+  wahlWeg() { if (this.wahl) { this.wahl.el.remove(); this.wahl = null; } }
+  private wahlFolgen() { const w = this.wahl; if (w) schildAn(w.el, this.motor, w.x, this.motor.hoehe(w.x, w.z) + 1.3, w.z); }
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
@@ -207,7 +232,7 @@ export class Spielwelt3D implements WeltKern {
     this.vorher = vorher;
     const y = this.motor.hoehe(o.x, o.y); this.motor.held.x = o.x; this.motor.held.z = o.y; this.figur.stelle(o.x, y, o.y); this.figur.schritt(dt * 1000, this.motor.gieren); this.marke.rotation.z += dt;
     if (performance.now() - this.letzterStrom > 400) { this.letzterStrom = performance.now(); void this.strom(); }
-    this.umsehen(); this.regionZeigen();
+    this.umsehen(); this.wahlFolgen(); this.regionZeigen();
     { const r = this.regionBei(o.x, o.y), pk = $("#ez-karte-punkt"); if (r && pk) { pk.style.left = (100 * (o.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%"; pk.style.top = (100 * (o.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%"; } }
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, this.motor, o.x, y + HOEHE + 0.35, o.y); }

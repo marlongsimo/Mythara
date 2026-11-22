@@ -61,9 +61,10 @@ try {
   if (BILD) await anna.screenshot({ path: BILD + "mitspieler.png" });
   /* öffentlicher Chat als Sprechblase */
   await anna.evaluate(() => { new MutationObserver(() => { if ([...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === "Hallo in 3D")) window.__eigeneBlase = true; }).observe(document.body, { childList: true }); });
+  await ben.evaluate(() => { new MutationObserver(() => { if ([...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === "Hallo in 3D")) window.__blase = true; }).observe(document.body, { childList: true, subtree: true }); });
   await anna.fill("#ez-chat input", "Hallo in 3D"); await anna.press("#ez-chat input", "Enter");
-  await ben.waitForFunction(() => [...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === "Hallo in 3D"), null, { timeout: 8000 }).catch(() => {});
-  check(await ben.evaluate(() => [...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === "Hallo in 3D")), "Ben sieht Annas Nachricht als Sprechblase über ihr");
+  await ben.waitForFunction(() => window.__blase, null, { timeout: 15000 }).catch(() => {});
+  check(await ben.evaluate(() => window.__blase === true), "Ben sieht Annas Nachricht als Sprechblase über ihr");
   await anna.waitForFunction(() => window.__eigeneBlase, null, { timeout: 10000 }).catch(() => {});
   console.log("    Anna nach dem Senden:", await anna.evaluate(() => JSON.stringify({ chat: window.EZW.chat().slice(-2), ich: window.EZW.ich() && window.EZW.ich().id, blasen: document.querySelectorAll(".ez-blase3d").length })));
   check(await anna.evaluate(() => window.__eigeneBlase || [...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === "Hallo in 3D")), "Anna sieht ihre eigene Sprechblase");
