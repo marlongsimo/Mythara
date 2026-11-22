@@ -50,6 +50,8 @@ export const WELT = { start: weltName, bild: "../", daten: "welt/", /** Kennung 
   fremd: null as ((s: Welt, rx: number, ry: number) => boolean) | null,
   antippen: null as ((s: Welt, p: Phaser.Input.Pointer) => boolean) | null };
 const HANDY = window.matchMedia("(pointer: coarse)").matches || P.get("handy") === "1", TEST = P.get("test") === "1";
+/** 3D-Ansicht (Probe, seit 22.11.2026): ?3d=1 – die 2D-Welt bleibt die Spiellogik, gezeichnet wird in 3D (client/src/welt3d/spiel.ts) */
+const DREI = P.get("3d") === "1";
 const F = FELD_PX, C = CHUNK_FELDER;
 /* Wie weit über den Bildrand hinaus (in Chunks) gezeigt, vorgeholt und behalten wird */
 const ZEIGEN = 0.3, VORHOLEN = 1.0, BEHALTEN = 1.5;
@@ -67,7 +69,7 @@ interface Stueck { name: string; cx: number; cy: number; stand: "holt" | "bereit
 
 export class Welt extends Phaser.Scene {
   index!: WeltIndex; raster = new WeltRaster(); stuecke = new Map<string, Stueck>(); gueltig = new Set<string>();
-  held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
+  held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; faehrt = false; drei: { drehen(rx: number, ry: number): [number, number] } | null = null; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
   figur!: Phaser.GameObjects.Sprite; silhouette!: Phaser.GameObjects.Sprite; bildFigur = true; ring!: Phaser.GameObjects.Ellipse; marke!: Phaser.GameObjects.Ellipse;
   stick: { id: number; x: number; y: number; t: number; weit: number } | null = null;
   nah: { text: string; tat: () => void } | null = null; hier = ""; gesperrt = false; /** stand eine gemerkte Stelle auf dem Gerät? (dann gilt die des Servers nicht) */ gemerkteStelle = false;
@@ -128,7 +130,7 @@ export class Welt extends Phaser.Scene {
     this.bildFigur = this.figur instanceof Phaser.GameObjects.Sprite; /* modulare Figuren sind Behälter aus Ebenen: statt einer Silhouette werden sie halb durchsichtig nach vorn geholt */
     this.silhouette = this.add.sprite(0, 0, this.bildFigur ? this.figur.texture.key : "__WHITE").setTintFill(0xf3d895).setAlpha(0.5).setDepth(1e7 - 1).setVisible(false);
 
-    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return; ev.preventDefault(); this.tasten[k] = an; const t = this.tasten;
+    const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!(DREI ? ["w", "a", "s", "d"] : ["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"]).includes(k)) return;   /* in 3D drehen die Pfeiltasten die Kamera */ ev.preventDefault(); this.tasten[k] = an; const t = this.tasten;
       this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); };
     window.addEventListener("keydown", (ev) => { if (!this.scene.isActive()) return; if (!ev.repeat && !this.gesperrt) taste(ev, true); if ((ev.key === "e" || ev.key === "E" || ev.key === "Enter") && !ev.repeat && this.nah && !this.gesperrt) this.nah.tat(); });
     window.addEventListener("keyup", (ev) => taste(ev, false)); window.addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
@@ -147,7 +149,16 @@ export class Welt extends Phaser.Scene {
     /* Für Prüfungen im Browser: ergänzt den Zugang der gemeinsamen Welt (welt.ts), statt ihn zu ersetzen */
     const w = window as unknown as Record<string, Record<string, unknown> | undefined>; w.EZW = Object.assign(w.EZW || {}, { szene: this, ort: () => this.ort, raster: this.raster, stuecke: this.stuecke, mess: this.mess, gehe: (x: number, y: number) => this.gehe(x, y) });
     if (WELT.betreten) WELT.betreten(this);
+    if (DREI) this.dreiStarten();
   }
+  /** 3D-Ansicht nachladen: die 2D-Welt zeichnet nicht mehr (Kamera aus, Bildfläche verborgen), Eingaben kommen von der 3D-Ansicht */
+  dreiStarten() { this.cameras.main.setVisible(false); this.game.canvas.style.visibility = "hidden"; this.game.canvas.style.pointerEvents = "none"; if (this.game.canvas.parentElement) this.game.canvas.parentElement.style.pointerEvents = "none";   /* Klicks gehen an die 3D-Fläche darunter */
+    const s = document.createElement("script"); s.src = "welt3d-spiel.js?v=" + (WELT.stand || Date.now());
+    s.onload = () => { const M = (window as unknown as { MytharaWelt3D?: { starten(a: unknown): { drehen(rx: number, ry: number): [number, number] } } }).MytharaWelt3D; if (!M) return;
+      this.drei = M.starten({ ort: () => this.ort, laeuft: () => this.faehrt, held: () => { const D = HELDEN[this.held] as unknown as Record<string, unknown>; return { figur: D.figur, lauf: D.lauf, laufMass: D.laufMass, gross: D.gross, fuss: D.fuss }; },
+        gehe: (x: number, y: number) => this.gehe(x, y), steuern: (rx: number, ry: number) => { this.rx = rx; this.ry = ry; this.stickDrei = rx !== 0 || ry !== 0; } }); };
+    document.head.appendChild(s); }
+  stickDrei = false;
 
   groesse() { const k = this.cameras.main, h = this.scale.height; k.setZoom(Phaser.Math.Clamp(h / (HANDY ? 470 : 760), 0.5, 2) * zoomFaktor()); }
 
@@ -174,9 +185,9 @@ export class Welt extends Phaser.Scene {
   holen(st: Stueck) {
     st.stand = "holt"; const t0 = performance.now();
     const daten = fetch(weltDatei(st.name + ".json")).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<ChunkDaten>; });
-    const bild = new Image(); bild.decoding = "async"; bild.src = weltDatei(st.name + ".webp");
-    Promise.all([daten, bild.decode()]).then(([d]) => { if (this.stuecke.get(st.name) !== st) return; /* inzwischen wieder verworfen */
-      st.daten = d; st.bild = bild; st.stand = "bereit"; this.rasterDazu(d); this.mess.geholt++; this.mess.laengsteMs = Math.max(this.mess.laengsteMs, performance.now() - t0); })
+    const bild = new Image(); bild.decoding = "async"; if (!DREI) bild.src = weltDatei(st.name + ".webp");   /* in 3D wird der gemalte Boden nicht gebraucht */
+    Promise.all([daten, DREI ? Promise.resolve() : bild.decode()]).then(([d]) => { if (this.stuecke.get(st.name) !== st) return; /* inzwischen wieder verworfen */
+      st.daten = d; st.bild = DREI ? undefined : bild; st.stand = "bereit"; this.rasterDazu(d); this.mess.geholt++; this.mess.laengsteMs = Math.max(this.mess.laengsteMs, performance.now() - t0); })
       .catch(() => { st.stand = "fehler"; st.seit = this.time.now; });
   }
 
@@ -192,6 +203,7 @@ export class Welt extends Phaser.Scene {
 
   /** Einen bereiten Chunk ins Bild setzen: Boden, Objekte, Figuren */
   zeigen(st: Stueck) {
+    if (DREI) { st.stand = "aktiv"; this.mess.gezeigt++; return; }   /* 3D: die 2D-Welt rechnet nur (Raster, Interaktionen), sie zeichnet nichts */
     const d = st.daten as ChunkDaten, key = "boden-" + st.name; if (!this.textures.exists(key) && st.bild) this.textures.addImage(key, st.bild);
     /* einen Bildpunkt größer als der Chunk: So bleibt beim Zoomen kein Haarriss zwischen Nachbarn */
     st.boden = this.add.image(st.cx * CHUNK_PX, st.cy * CHUNK_PX, key).setOrigin(0, 0).setDisplaySize(CHUNK_PX + 1, CHUNK_PX + 1).setDepth(-1e6);
@@ -300,12 +312,13 @@ export class Welt extends Phaser.Scene {
   update(_t: number, dt: number) {
     if (!this.index) return;
     const d = Math.min(0.05, dt / 1000), o = this.ort, D = HELDEN[this.held]; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
+    if (this.drei && !this.stickDrei && (rx || ry)) [rx, ry] = this.drei.drehen(rx, ry);   /* Tasten: „hoch“ ist in 3D vom Betrachter weg (der Stick rechnet selbst um) */
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }
     else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       /* Kommt der Held dem Wegpunkt eine Weile nicht näher (eine Kante schiebt ihn zurück), gilt der Punkt als erreicht */
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += d;
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.setVisible(false); } else { rx = dx / l; ry = dy / l; } }
-    const l = Math.hypot(rx, ry), faehrt = l > 0.05;
+    const l = Math.hypot(rx, ry), faehrt = l > 0.05; this.faehrt = faehrt || this.pfad.length > 0;
     const fremd = WELT.fremd ? WELT.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0) : false; /* im Kampfgebiet bewegt der Server den Helden */
     if (faehrt) { if (!fremd) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * d, y: o.y + ry * k * D.tempo * d, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; } if (WELT.richten) WELT.richten(this.figur, rx, ry); if (Math.abs(rx) > 0.35) this.figur.setFlipX(rx < 0); }
     if (faehrt !== this.laeuft && D.figur && D.lauf) { this.laeuft = faehrt;
@@ -314,7 +327,7 @@ export class Welt extends Phaser.Scene {
     const px = o.x * F, py = o.y * F; this.figur.setPosition(px, py + 2).setDepth(py); this.ring.setPosition(px, py).setDepth(py - 0.01);
 
     /* Bäume und anderes Hohe wird durchscheinend, wenn der Held dahinter steht – nur in den Chunks um ihn herum */
-    { const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C); for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const st = this.stuecke.get(chunkName(cx + dx, cy + dy)); if (!st) continue;
+    if (!DREI) { const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C); for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const st = this.stuecke.get(chunkName(cx + dx, cy + dy)); if (!st) continue;
         for (const b of st.scheinend) {
           /* hinter einem Baum oder Haus: Fußpunkt davor, der Körper (Mitte gut 40 Bildpunkte über dem Fuß) innerhalb der Bildfläche – gemessen an der echten Fläche, nicht am Fußpunkt */
           const l = b.x - b.originX * b.displayWidth, o = b.y - b.originY * b.displayHeight, w = b.displayWidth, h = b.displayHeight;

@@ -11,6 +11,7 @@ await build({ entryPoints: ["client/src/figurentest.ts"], bundle: true, minify: 
 writeFileSync(aus + "figurentest.html", readFileSync("client/figurentest.html", "utf8").replace("__V__", v));
 /* 3D-Prototyp der Welt (eigene Seite, nicht Teil des Spiels) */
 await build({ entryPoints: ["client/src/welt3d/main.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "welt3d.js", legalComments: "none" });
+await build({ entryPoints: ["client/src/welt3d/spiel.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "welt3d-spiel.js", legalComments: "none" });
 writeFileSync(aus + "welt3d.html", readFileSync("client/welt3d.html", "utf8").replace("__V__", v));
 writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/preview/index.html", "utf8"));
 await build({ entryPoints: ["server/src/index.ts"], bundle: true, platform: "node", format: "cjs", target: "node20", outfile: "server/dist/server.js", external: ["bufferutil", "utf-8-validate"] });
