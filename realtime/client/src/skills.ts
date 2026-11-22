@@ -22,6 +22,20 @@ export function stilJetzt(): number { return stilLesen(kampfartJetzt()); }
 /** Stil wählen: merken und dem Kampf Bescheid geben (er meldet ihn dem Server oder rechnet neu) */
 export function stilSetzen(art: Art, stil: number): void { try { const o = JSON.parse(localStorage.getItem(STIL) || "{}") as Record<string, number>; o[art] = stil; localStorage.setItem(STIL, JSON.stringify(o)); } catch { /* privat */ }
   window.dispatchEvent(new CustomEvent("ez-stil")); }
+/** Zeichen je Skill (Tabs, XP-Drops): Bilder unter img/echtzeit/skills/ */
+export const SKILL_ZEICHEN: Record<Skill, string> = Object.fromEntries(SKILLS.map((k) => [k, `<img class="skillbild" src="../img/echtzeit/skills/${k}.webp" alt="" width="32" height="32" draggable="false">`])) as Record<Skill, string>;
+/** XP-Drops: nach jedem Treffer steigen die neuen XP mit Zeichen am oberen Bildschirmrand auf und verblassen (in den Einstellungen abschaltbar) */
+const DROPS = "ez_xpdrops";
+export function dropsAn(): boolean { try { return localStorage.getItem(DROPS) !== "0"; } catch { return true; } }
+export function dropsSetzen(an: boolean): void { try { localStorage.setItem(DROPS, an ? "1" : "0"); } catch { /* privat */ } }
+let dropsVorher: SkillXp | null = null;
+/** Neuen Skill-Stand melden: was dazukam, erscheint als Drop. Der erste Stand (Laden) zeigt nichts */
+export function xpDrops(x: SkillXp): void {
+  const v = dropsVorher; dropsVorher = { ...x }; if (!v || !dropsAn()) return;
+  const neu = SKILLS.map((k) => [k, (x[k] || 0) - (v[k] || 0)] as [Skill, number]).filter(([, n]) => n > 0); if (!neu.length) return;
+  let box = document.getElementById("ez-xpdrops"); if (!box) { box = document.createElement("div"); box.id = "ez-xpdrops"; box.setAttribute("aria-hidden", "true"); document.body.appendChild(box); }
+  const d = document.createElement("div"); d.className = "xpdrop"; d.innerHTML = neu.map(([k, n]) => `<span class="${k}" title="${SKILL_NAME[k]}">${SKILL_ZEICHEN[k]}+${n}</span>`).join("");
+  box.appendChild(d); setTimeout(() => d.remove(), 1900); }
 /** Autoangriff (Standard an): wer mich angreift, bekommt sofort Antwort; aus = nur angeklickte Gegner angreifen */
 const AUTO = "ez_autoangriff";
 export function autoLesen(): boolean { try { return localStorage.getItem(AUTO) !== "0"; } catch { return true; } }

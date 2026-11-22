@@ -50,12 +50,12 @@ try {
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.angelegt && i.angelegt.waffe === "ritterschwert"; }, null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
   check(await anna.evaluate(() => window.EZW.welt3d.hier === "waldmark"), "Anna steht in der Waldmark (sicherer Ort)");
   /* Inventar im Spiel: Schild ablegen (Ausrüstung), fallen lassen (Rucksack), als Beutel am Boden sehen, antippen → Aufheben */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="nebenhand"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]');
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="nebenhand"]'); await anna.click('.seitentab .twahl [data-t="ablegen"]');
   await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
   check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand && i.anzahl && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
-  await anna.click('#ez-konto [data-t="zu"]'); await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
-  await anna.click('#ez-konto .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('#ez-konto .iwahl [data-t="fallen"]'), "Rucksack: „Fallen lassen“ ist da");
-  await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
+  await anna.click('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('.seitentab .twahl [data-t="fallen"]'), "Rucksack-Tab: „Fallen lassen“ ist da");
+  await anna.click('.seitentab .twahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 1, null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Einfacher Schild"), "Der Schild liegt als Beutel mit Namen am Boden");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
@@ -67,9 +67,9 @@ try {
   { const H = HELD["00000000-0000-0000-0000-00000000a001"]; await new Promise((r) => setTimeout(r, 2000)); check(H.inventar && H.inventar.rucksack.includes("rundschild") && !H.inventar.angelegt.nebenhand, `Der Server hat das Inventar gespeichert: ${JSON.stringify(H.inventar)}`); }
   /* Splitter: ein Fach mit Zähler; Splitter und Schild fallen lassen → an derselben Stelle → Auswahl je Gegenstand und „Alles aufheben“ */
   await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
-  check(await anna.evaluate(() => (document.querySelector('#ez-konto .ifeld.voll[data-g="splitter"] .menge') || {}).textContent === "12"), "Rucksack: 12 Splitter in einem Fach mit Zähler");
-  for (const g of ["splitter", "rundschild"]) { await anna.click(`#ez-konto .ifeld.voll[data-g="${g}"]`); await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(700); }
-  await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  check(await anna.evaluate(() => (document.querySelector('#ez-rucksacktab .ifeld.voll[data-g="splitter"] .menge') || {}).textContent === "12"), "Rucksack: 12 Splitter in einem Fach mit Zähler");
+  for (const g of ["splitter", "rundschild"]) { await anna.click(`#ez-rucksacktab .ifeld.voll[data-g="${g}"]`); await anna.click('.seitentab .twahl [data-t="fallen"]'); await anna.waitForTimeout(700); }
+  await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 2, null, { timeout: 8000 }).catch(() => {});
   await anna.waitForTimeout(1500); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "zwei.png" });
   check(await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()].find((b) => b.d.g === "splitter"); let glb = false; d && d.g.traverse((o) => { if (o.isMesh && o.parent && o.parent !== d.g) glb = true; }); return glb; }), "Die Splitter liegen als 3D-Modell der Figuren-Fabrik am Boden");
@@ -81,8 +81,12 @@ try {
   await anna.waitForFunction(() => !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return !document.querySelector(".ez-name3d.boden") && i.rucksack.includes("rundschild") && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "„Alles aufheben“: Schild und 12 Splitter wieder im Rucksack");
   /* Untersuchen im Ausrüstungsfenster, dann mit ✕ schließen: das Spiel nimmt wieder Eingaben an (vorher blieb es gesperrt) */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="untersuchen"]'); await anna.waitForTimeout(300);
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.click('.seitentab .twahl [data-t="untersuchen"]'); await anna.waitForTimeout(300);
   check(await anna.isVisible("#ez-konto .tafel.untersuchen"), "Ausrüstung → Schwert → Untersuchen"); await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(300);
+  /* i: Werte der Ausrüstung in der Mitte (nur Gegenstände) */
+  await anna.click('#ez-ausruestungtab [data-t="werte"]'); await anna.waitForTimeout(300); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "werte.png" });
+  check(await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.ausruestungswerte"); return !!t && /Angriff/.test(t.textContent) && /Verteidigung/.test(t.textContent) && /Geschick\+5/.test(t.textContent) && /Nahkampf\+3/.test(t.textContent); }), "Ausrüstung → i: Werte der Ausrüstung (Schwert +5 Geschick, Schild +3 Nahkampf-Verteidigung)");
+  await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(200); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(200);
   { const vor = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, g: window.EZW.welt3d.gesperrt })); await anna.keyboard.down("d"); await anna.waitForTimeout(900); await anna.keyboard.up("d");
     const nach = await anna.evaluate(() => window.EZW.welt3d.ort.x); check(!vor.g && nach > vor.x + 0.1, `Nach dem Schließen reagiert das Spiel wieder (gesperrt: ${vor.g}, ${vor.x.toFixed(2)} → ${nach.toFixed(2)})`); }
   /* Angriffsstil als Tab neben der Leiste: bündig oben/unten mit den Knöpfen, rechts mit dem Chat; Stil wählen, Autoangriff, nochmal antippen schließt */

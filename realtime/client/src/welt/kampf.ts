@@ -9,12 +9,13 @@
  * Ohne Konto oder ohne Server rechnet der Browser dieselbe Simulation selbst (allein, ohne Gutschrift).
  * Koordinaten: Simulation in Rechenfeldern ab der linken oberen Ecke des Gebiets; Welt in Weltfeldern (Rechenfeld + Ursprung), Bild = Feld × FELD_PX.
  */
+import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { inventar } from "../inventar";
-import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt, autoLesen } from "../skills";
+import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt, autoLesen, xpDrops } from "../skills";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { setzeKarte } from "../../../shared/karte";
@@ -93,7 +94,7 @@ export class WeltKampf {
     window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
   private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
-  private v1Xp(z: Zustand) { const x = z.ich.xp; if (!x) return; skillsSchreiben(x); const st = stufenVon(x);
+  private v1Xp(z: Zustand) { const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
     if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
   /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
   betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");

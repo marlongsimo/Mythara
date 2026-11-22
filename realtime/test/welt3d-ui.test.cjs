@@ -43,21 +43,20 @@ const BILD = process.env.BILD || '';
     /* Rucksack ohne Verweis auf Ausrüstung */
     const o0 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort }));
     await p.click('#ez-leiste [data-l="rucksack"]'); await p.waitForTimeout(500);
-    const ruck = await p.evaluate(() => ({ offen: !document.getElementById('ez-konto').hidden, titel: document.querySelector('#ez-konto h2')?.textContent, reiter: !!document.querySelector('#ez-konto .treiter') }));
-    check(ruck.offen && ruck.titel === 'Rucksack' && !ruck.reiter, 'Rucksack öffnet sich, ohne Reiter zur Ausrüstung');
+    const ruck = await p.evaluate(() => ({ offen: !!document.getElementById('ez-rucksacktab'), titel: document.querySelector('#ez-rucksacktab .kopf b')?.textContent, faecher: document.querySelectorAll('#ez-rucksacktab .traster .ifeld').length, reiter: !!document.querySelector('#ez-rucksacktab .treiter') }));
+    check(ruck.offen && ruck.titel === 'Rucksack' && ruck.faecher === 24 && !ruck.reiter, `Rucksack öffnet sich als Tab (6 × 4 = ${ruck.faecher} Fächer), ohne Reiter zur Ausrüstung`);
     if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-pc-rucksack.png' });
-    await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
-    await p.click('#ez-leiste [data-l="stil"]'); await p.waitForTimeout(400);
-    { const st = await p.evaluate(() => ({ titel: document.querySelector('#ez-konto h2')?.textContent, stile: [...document.querySelectorAll('#ez-konto .stil b')].map((b) => b.textContent), an: document.querySelector('#ez-konto .stil.an b')?.textContent, werte: document.querySelector('#ez-konto .stil.an .werte')?.textContent }));
+    await p.click('#ez-leiste [data-l="stil"]'); await p.waitForTimeout(400); /* ein anderer Tab ersetzt den offenen */
+    check(await p.evaluate(() => !document.getElementById('ez-rucksacktab') && !!document.getElementById('ez-stiltab')), 'Ein anderer Knopf ersetzt den offenen Tab');
+    { const st = await p.evaluate(() => ({ titel: document.getElementById('ez-stiltab') ? 'Angriffsstil' : '', stile: [...document.querySelectorAll('#ez-stiltab .stil b')].map((b) => b.firstChild.textContent), an: document.querySelector('#ez-stiltab .stil.an b')?.firstChild.textContent, werte: document.querySelector('#ez-stiltab .stil.an b em')?.textContent }));
       check(st.titel === 'Angriffsstil' && st.stile.join() === 'Genau,Normal,Aggressiv' && st.an === 'Normal', `Angriffsstil (Schwert): ${st.stile.join(' · ')}, gewählt ${st.an} – ${st.werte}`);
       if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-stil.png' });
-      await p.click('#ez-konto .stil[data-s="2"]'); await p.waitForTimeout(300);
-      check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_stil') || '{}').nah === 2 && document.querySelector('#ez-konto .stil.an b').textContent === 'Aggressiv'), 'Aggressiv gewählt: gemerkt und markiert'); }
-    await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
+      await p.click('#ez-stiltab .stil[data-s="2"]'); await p.waitForTimeout(300);
+      check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_stil') || '{}').nah === 2 && document.querySelector('#ez-stiltab .stil.an b').firstChild.textContent === 'Aggressiv'), 'Aggressiv gewählt: gemerkt und markiert'); }
     await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(400);
-    { const sk = await p.evaluate(() => [...document.querySelectorAll('#ez-konto .skills li')].map((l) => l.querySelector('b').textContent + ' ' + l.querySelector('.lv').textContent));
-      check(sk.join(', ') === 'Geschick 1, Stärke 1, Fernkampf 1, Magie 1', `Skills: ${sk.join(', ')}`); if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-skills.png' }); }
-    await p.click('#ez-konto [data-t="zu"]'); await p.waitForTimeout(300);
+    { const sk = await p.evaluate(() => [...document.querySelectorAll('#ez-skillstab .tskills li')].map((l) => (l.querySelector('img') ? '🖼' : '') + l.querySelector('b').textContent + ' ' + l.querySelector('.lv').textContent + '→' + l.querySelector('.lv.nach').textContent));
+      check(sk.join(', ') === '🖼Geschick 1→2, 🖼Stärke 1→2, 🖼Fernkampf 1→2, 🖼Magie 1→2, 🖼Leben 1→2, 🖼Defense 1→2', `Skills-Tab: Zeichen, Name, Level, nächstes Level: ${sk.join(', ')}`); if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-skills.png' }); }
+    await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(300); check(await p.evaluate(() => !document.querySelector('.seitentab')), 'Nochmal antippen schließt den Tab');
     await p.click('#ez-kartenrahmen [aria-label="Einstellungen"]'); await p.waitForTimeout(500);
     check(await p.evaluate(() => !document.getElementById('ez-konto').hidden), 'Einstellungen öffnen das Menü');
     await p.keyboard.press('Escape'); await p.waitForTimeout(300); if (!(await p.evaluate(() => document.getElementById('ez-konto').hidden))) { await p.click('#ez-konto [data-t="zu"]').catch(() => {}); await p.waitForTimeout(300); }

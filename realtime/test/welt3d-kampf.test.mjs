@@ -54,6 +54,7 @@ try {
   check(hud.stufe === "Lv 5" && hud.lp === "49 / 49" && hud.name === "Einfaches Schwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
   check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 30, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[true,false,false,false]" && !hud.modus && hud.an === "Angreifen", "Nur die Taste „Angreifen“ – keine Fähigkeiten, kein Waffenwechsel");
+  await anna.evaluate(() => { window.__drops = []; new MutationObserver((m) => { for (const r of m) for (const n of r.addedNodes) if (n.classList && n.classList.contains("xpdrop")) window.__drops.push({ text: n.textContent, bilder: n.querySelectorAll("img").length }); }).observe(document.body, { childList: true, subtree: true }); });
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.feind").length >= 1, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForFunction(() => [...window.EZK.bilder.values()].filter((b) => b.fl.geladen).length >= 1, null, { timeout: 60000 }).catch(() => {});
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...document.querySelectorAll(".ez-name3d.feind")].map((e) => e.textContent), figuren: [...K.bilder.values()].filter((b) => b.fl.geladen).length }; });
@@ -67,6 +68,7 @@ try {
   for (let i = 0; i < 200 && (xpSumme() === 0 || !(await anna.evaluate(() => window.__zahlen.includes("geblockt") && window.__zahlen.some((x) => /^\d+$/.test(x))))); i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); }
   { const z = await anna.evaluate(() => window.__zahlen); treffer = z.filter((x) => /^\d+$/.test(x)).length; blocks = z.filter((x) => x === "geblockt").length; }
   check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Normal: je zur Hälfte an Geschick und Stärke): ${xpSumme()} (Fernkampf/Magie 0)`);
+  { const d = await anna.evaluate(() => window.__drops); check(d.length > 0 && d.every((x) => x.bilder > 0 && /\+\d/.test(x.text)), `XP-Drops mit Zeichen am oberen Rand (${d.length}, z. B. „${d[0] && d[0].text}“)`); }
   check(xpSumme() % 2 === 0, "2 XP je abgezogenem Lebenspunkt (gerade Summe)");
   check(blocks > 0 && treffer > 0, `Schadenszahlen und „geblockt“ erscheinen über den Figuren (${treffer} Treffer, ${blocks} Blocks)`);
   { const lp = await anna.evaluate(() => { const K = window.EZK, ich = K.z.w.find((e) => e[0] === K.z.ich.id); return { text: (document.querySelector("#ez-kartenrahmen .lpzahl") || {}).textContent, soll: ich ? `${Math.round(ich[7])} / ${ich[8]}` : "" }; });
@@ -78,12 +80,12 @@ try {
   await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(600);
   check(await anna.evaluate(() => { const K = window.EZK, h = K.netz && K.z && K.z.w.find((e) => e[0] === K.z.ich.id); return !/Stab/.test(document.querySelector("#ez-name").textContent); }) && !/Ausrüstung Anna: waffe=hirtenstab/.test(log), "Eine gemeldete fremde Waffe (Stab) ändert nichts – der Server nimmt seine eigene Ausrüstung");
   /* Schwert ablegen → Fäuste (über den Server) */
-  await anna.evaluate(() => window.EZW && 0); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.evaluate(() => window.EZW && 0); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.click('.seitentab .twahl [data-t="ablegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="ausruestung"]');
   await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Fäuste", null, { timeout: 8000 }).catch(() => {});
   { const st = await anna.evaluate(() => ({ name: document.querySelector("#ez-name").textContent, inv: localStorage.getItem("ez_inventar"), konto: !document.getElementById("ez-konto").hidden, gesperrt: window.EZW.welt3d.gesperrt }));
     check(st.name === "Fäuste", `Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten (${JSON.stringify(st)})`); }
   /* Schwert wieder anlegen (mit Fäusten – Trefferwert 1 – überlebt man die Banditen nicht lange) */
-  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-g="ritterschwert"]'); await anna.click('#ez-konto .iwahl [data-t="anlegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400); await anna.click('#ez-rucksacktab .ifeld.voll[data-g="ritterschwert"]'); await anna.click('.seitentab .twahl [data-t="anlegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Einfaches Schwert", null, { timeout: 8000 }).catch(() => {}); check(await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Einfaches Schwert", "Schwert aus dem Rucksack wieder angelegt");
   /* gehen: die letzten XP werden gebucht */
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */

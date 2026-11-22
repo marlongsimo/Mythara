@@ -10,7 +10,7 @@ import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel } from "../../shared/kampfwerte";
-import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen } from "./skills";
+import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN } from "./skills";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const SVG = (inhalt: string) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inhalt}</svg>`;
@@ -176,28 +176,74 @@ export function stilTafel(zu: () => void): void {
   const f = tafel("stiltafel", zeichnen(), zu), neu = () => { const t = f.querySelector(".tafel") as HTMLElement; t.innerHTML = t.innerHTML.replace(/<h2>[\s\S]*$/, "") + zeichnen(); binden(); };
   const binden = () => f.querySelectorAll<HTMLElement>("[data-s]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); stilSetzen(kampfartJetzt(), Number(b.dataset.s)); neu(); }));
   binden(); }
-/** Angriffsstil als Tab neben der Leiste (3D-Welt): Heldenlevel, die drei Stile der Waffe (einer ist immer aktiv), Kippschalter Autoangriff.
- *  Oben bündig mit dem obersten Knopf, unten mit dem untersten, rechts mit dem Chat. Nochmal antippen schließt. */
-export function stilTab(): void {
-  const knopf = document.querySelector<HTMLElement>('#ez-leiste [data-l="stil"]'); let el = document.getElementById("ez-stiltab");
-  if (el) { el.remove(); knopf?.classList.remove("an"); removeEventListener("resize", stilTabLage); removeEventListener("ez-inventar", stilTabZeichnen); removeEventListener("ez-skills", stilTabZeichnen); return; }
-  el = document.createElement("aside"); el.id = "ez-stiltab"; el.className = "stiltab"; el.setAttribute("aria-label", "Angriffsstil"); document.body.appendChild(el); knopf?.classList.add("an");
+/* ---------- Tabs neben der Leiste (3D-Welt): Angriffsstil, Rucksack, Ausrüstung, Skills ----------
+ * Oben bündig mit dem obersten Knopf, unten mit dem untersten, rechts mit dem Chat. Immer nur einer offen; nochmal antippen schließt; der Knopf leuchtet. */
+export type TabArt = "stil" | "rucksack" | "ausruestung" | "skills";
+let tabJetzt: TabArt | null = null;
+const tabEl = () => document.getElementById("ez-" + tabJetzt + "tab");
+/** Tab öffnen/schließen. false: geht nicht (ohne eigenen Helden gibt es Rucksack und Ausrüstung nur als Tafel) */
+export function seitenTab(art: TabArt): boolean {
+  if ((art === "rucksack" || art === "ausruestung") && !aktiverHeld()) return false;
+  const war = tabJetzt; tabZu(); if (war === art) return true;
+  tabJetzt = art; const el = document.createElement("aside"); el.id = "ez-" + art + "tab"; el.className = "seitentab tab-" + art; el.setAttribute("aria-label", TAB_NAME[art]); document.body.appendChild(el);
+  document.querySelector(`#ez-leiste [data-l="${art}"]`)?.classList.add("an");
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
-  el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return;
-    if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); stilTabZeichnen(); });
-  stilTabZeichnen(); stilTabLage(); addEventListener("resize", stilTabLage); addEventListener("ez-inventar", stilTabZeichnen); addEventListener("ez-skills", stilTabZeichnen); }
-function stilTabLage(): void {
-  const el = document.getElementById("ez-stiltab"), k = [...document.querySelectorAll<HTMLElement>("#ez-leiste [data-l]")], chat = document.querySelector<HTMLElement>(".ez-chat"); if (!el || !k.length) return;
+  el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
+  for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) addEventListener(t, tabZeichnen); return true; }
+const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills" };
+function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
+  removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) removeEventListener(t, tabZeichnen); }
+/** Angriffsstil-Tab (alter Name) */
+export const stilTab = (): void => { seitenTab("stil"); };
+function tabLage(): void {
+  const el = tabEl(), k = [...document.querySelectorAll<HTMLElement>("#ez-leiste [data-l]")], chat = document.querySelector<HTMLElement>(".ez-chat"); if (!el || !k.length) return;
   const oben = k[0].getBoundingClientRect(), unten = k[k.length - 1].getBoundingClientRect(), links = Math.max(...k.map((b) => b.getBoundingClientRect().right)) + 12;
   const rechts = chat && chat.offsetWidth ? chat.getBoundingClientRect().right : links + 340;
   const h = Math.max(120, unten.bottom - oben.top); Object.assign(el.style, { left: links + "px", top: oben.top + "px", height: h + "px", width: Math.max(200, rechts - links) + "px" }); el.classList.toggle("eng", h < 300); /* niedrig (Handy): ohne Erklärzeilen */ }
-function stilTabZeichnen(): void {
-  const el = document.getElementById("ez-stiltab"); if (!el) return; const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-  const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-  const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
-  el.innerHTML = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
-    <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
-    <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; }
+let tabWahl: { wo: string; g: string } | null = null;
+function tabZeichnen(): void {
+  const el = tabEl(); if (!el || !tabJetzt) return; const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
+  if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
+    el.innerHTML = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
+      <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
+      <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; return; }
+  if (tabJetzt === "skills") { const x = skillsLesen();
+    el.innerHTML = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
+      return `<li title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; return; }
+  const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
+  const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
+  let wahl = ""; if (tabWahl) { const G = GEGENSTAENDE[tabWahl.g], angelegt = !tabWahl.wo.startsWith("r"), n = angelegt ? 1 : menge(Number(tabWahl.wo.slice(1)));
+    wahl = `<div class="twahl"><b>${G ? G.name : ""}${n > 1 ? " ×" + n : ""}</b><span class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : `${inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : ""}${G && G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : ""}`}<button type="button" data-t="weg" aria-label="Auswahl schließen">✕</button></span></div>`; }
+  if (tabJetzt === "rucksack") el.innerHTML = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
+  else el.innerHTML = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
+    <div class="tplaetze">${PLAETZE.map((p) => `<div class="tplatz">${feld(inv.angelegt[p.id], p.id, p.id)}<small>${p.name}</small></div>`).join("")}</div>${wahl || `<p class="klein">Antippen: untersuchen oder ablegen · i: Werte der Ausrüstung</p>`}`;
+  el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust"); }); }
+function tabKlick(e: Event): void {
+  e.stopPropagation(); const t = e.target as HTMLElement;
+  if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
+  const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { tabWahl = tabWahl && tabWahl.wo === f.dataset.wo ? null : { wo: f.dataset.wo!, g: f.dataset.g! }; tabZeichnen(); return; }
+  const a = t.closest<HTMLElement>("[data-t]")?.dataset.t; if (!a) return;
+  if (a === "werte") { ausruestungsWerte(); return; }
+  const w = tabWahl; if (!w) return; const G = GEGENSTAENDE[w.g];
+  if (a === "weg") tabWahl = null;
+  else if (a === "untersuchen") { untersuchen(w.g, () => { /* zurück: der Tab bleibt offen */ }, () => { /* schließen */ }); return; }
+  else if (a === "ablegen" && G && G.platz) { if (!ablegen(G.platz)) { chatHinweis("Der Rucksack ist voll."); return; } tabWahl = null; }
+  else if (a === "anlegen") { anlegen(w.g); tabWahl = null; }
+  else if (a === "fallen") { fallenLassen(Number(w.wo.slice(1))); tabWahl = null; }
+  tabZeichnen(); }
+const chatHinweis = (t: string) => { const el = tabEl(); const p = el && el.querySelector(".twahl b"); if (p) p.textContent = t; };
+/** Overlay in der Mitte: die Werte der angelegten Ausrüstung zusammengezählt (nur Gegenstände, ohne Heldenwerte) */
+export function ausruestungsWerte(): void {
+  const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
+  const ab = { nah: 0, fern: 0, magie: 0 }; for (const G of teile) if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; }
+  const angriff: [string, string][] = W ? [["Kampfart", W.art === "nah" ? "Nahkampf" : W.art === "fern" ? "Fernkampf" : "Magie"],
+    ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampfstärke", "+" + (W.fernStaerke || 0)], ["Schaden", "1–" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Schaden", `${(W.schaden || [1, 1])[0]}–${(W.schaden || [1, 1])[1]}`]] as [string, string][]),
+    ["Angriffstempo", `${W.ticks} Ticks (${z(W.ticks * TICK)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"]] : [["Waffe", "keine (Fäuste)"]];
+  const liste = (z: [string, string][]) => `<dl class="iwerte">${z.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
+  tafel("taschen eigen ausruestungswerte", `<h2>Werte der Ausrüstung</h2><div class="zier"></div><p class="klein">${teile.length ? teile.map((G) => G.name).join(" · ") : "Nichts angelegt"}</p>
+    <h3>Angriff</h3>${liste(angriff)}<h3>Verteidigung</h3>${liste([["Nahkampf", "+" + ab.nah], ["Fernkampf", "+" + ab.fern], ["Magie", "+" + ab.magie]])}
+    <p class="klein">Nur die Gegenstände – deine Skills (Geschick, Defense, Magie …) kommen im Kampf noch dazu.</p>`, () => { /* schließen */ }); }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
   const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und Magieabwehr", lp: "Max-LP = 19 + Level · 1 XP je verursachtem Schadenspunkt", defense: "Abwehr Nah- und Fernkampf · 10 XP je Block" };
