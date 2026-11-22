@@ -25,7 +25,7 @@ def main():
     chunks = sorted((int(m.group(1)), int(m.group(2))) for f in os.listdir(WELT) for m in [re.match(r'^(\d+)_(\d+)\.json$', f)] if m)
     x0, y0 = min(c[0] for c in chunks), min(c[1] for c in chunks); x1, y1 = max(c[0] for c in chunks), max(c[1] for c in chunks)
     K = Image.new('RGBA', ((x1 - x0 + 1) * px, (y1 - y0 + 1) * px), (16, 20, 14, 255))
-    unten = {(r['region']['ursprung'][0] + i, r['region']['ursprung'][1] + j) for r in index['regionen'].values() if r['region'].get('ebene') == 'untergrund' for i in range(r['region']['chunks'][0]) for j in range(r['region']['chunks'][1])}
+    unten = {(r['region']['ursprung'][0] + i, r['region']['ursprung'][1] + j) for r in index['regionen'].values() if r['region'].get('ebene') for i in range(r['region']['chunks'][0]) for j in range(r['region']['chunks'][1])}
     chunks = [c for c in chunks if c not in unten]; x0, y0 = min(c[0] for c in chunks), min(c[1] for c in chunks); x1, y1 = max(c[0] for c in chunks), max(c[1] for c in chunks)
     K = Image.new('RGBA', ((x1 - x0 + 1) * px, (y1 - y0 + 1) * px), (16, 20, 14, 255))
     dinge = []

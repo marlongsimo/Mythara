@@ -354,6 +354,11 @@ MOEBEL = {
     # Nias Salon: Zauberspiegel (Goldrahmen, violetter Schimmer) und Frisierstuhl (Leder, violettes Polster)
     'spiegel': lambda B, x, d: (quader(B, x - 0.5, d - 0.1, 0, 1.0, 0.2, 1.9, 'putz', 0.2, farbe=(196, 156, 70)), B.vieleck(PROJ, [(x - 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 0.2), (x + 0.38, d - 0.11, 1.75), (x - 0.38, d - 0.11, 1.75)], (176, 142, 214))),
     'frisierstuhl': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.45, 'maserung', 0.18), quader(B, x - 0.32, d - 0.32, 0.45, 0.64, 0.64, 0.12, 'putz', 0.2, farbe=(116, 66, 140)), quader(B, x - 0.35, d + 0.25, 0.45, 0.7, 0.1, 0.8, 'putz', 0.2, farbe=(116, 66, 140))),
+    # Treppe ins Obergeschoss (steigt nach Norden; Fuß bei d − 1,2) und die Öffnung oben mit Geländer
+    'treppe': lambda B, x, d: tuple(quader(B, x - 0.55, d - 1.2 + i * 0.4, 0, 1.1, 0.4, 0.35 * (i + 1), 'maserung', 0.18, hell_faktor=0.8 + i * 0.05) for i in range(6)),
+    'treppe_oben': lambda B, x, d: (B.vieleck(PROJ, [(x - 0.6, d - 1.2, 0.01), (x + 0.6, d - 1.2, 0.01), (x + 0.6, d + 1.2, 0.01), (x - 0.6, d + 1.2, 0.01)], (24, 18, 14)),
+                                   quader(B, x - 0.55, d - 1.2, 0, 1.1, 0.4, 0.12, 'maserung', 0.18, hell_faktor=0.7),
+                                   quader(B, x + 0.6, d - 1.2, 0, 0.1, 2.4, 0.9, 'maserung', 0.18), quader(B, x - 0.7, d - 1.2, 0, 0.1, 2.4, 0.9, 'maserung', 0.18)),
     'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
 }
 

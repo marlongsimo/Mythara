@@ -5,6 +5,7 @@
  * Durch das offene Tor im Süden läuft man ohne Wechsel in den Kreuzwald.
  * Die Gebäude stammen aus werkzeug/welt/haus.py. Alles hier ist ein erster Entwurf zum Ansehen und Nachbessern (später im Editor).
  */
+import { OBEN as RATSSAAL, UNTEN_TREPPE } from "./rathaus.mjs";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
@@ -109,6 +110,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
       lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59, 28.2), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
       lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39, 27.4), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
+      { id: "treppe_hoch", art: "eingang", x: UNTEN_TREPPE[0] - 200 * 32, y: UNTEN_TREPPE[1] - 200 * 32, radius: 1.3, abgleich: "keiner", daten: { text: "Eine Holztreppe führt hinauf in den Ratssaal.", tat: "aufstieg", knopf: "Die Treppe hinaufsteigen", ziel: RATSSAAL } },
       lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */

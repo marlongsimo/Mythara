@@ -3398,11 +3398,6 @@
      },
      {
       "art": "regal",
-      "x": -3.3,
-      "d": 6.4
-     },
-     {
-      "art": "regal",
       "x": 3.3,
       "d": 6.4
      },
@@ -3420,6 +3415,149 @@
       "art": "fass",
       "x": -3.8,
       "d": 1.8
+     },
+     {
+      "art": "treppe",
+      "x": -3.3,
+      "d": 5.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "waldmark_rathaus_oben_01",
+   "name": "Rathaus (Obergeschoss)",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -4.4,
+     "d": 0,
+     "b": 8.8,
+     "t": 6.8,
+     "h": 2.8,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 2.8,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       168,
+       74,
+       52
+      ]
+     }
+    }
+   ],
+   "tueren": [],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": -3.4
+    },
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": -2.1
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 1.0,
+     "h": 1.0,
+     "art": "rund",
+     "x": 0.0
+    },
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": 2.1
+    },
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": 3.4
+    },
+    {
+     "wand": "ost",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 2.2
+    },
+    {
+     "wand": "ost",
+     "z": 0.9,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 5.0
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "treppe_oben",
+      "x": -3.3,
+      "d": 5.4
+     },
+     {
+      "art": "tisch",
+      "x": -0.7,
+      "d": 3.4
+     },
+     {
+      "art": "tisch",
+      "x": 0.3,
+      "d": 3.4
+     },
+     {
+      "art": "tisch",
+      "x": 1.3,
+      "d": 3.4
+     },
+     {
+      "art": "bank",
+      "x": 0.3,
+      "d": 2.6
+     },
+     {
+      "art": "bank",
+      "x": 0.3,
+      "d": 4.2
+     },
+     {
+      "art": "theke",
+      "x": 0.8,
+      "d": 6.0
+     },
+     {
+      "art": "regal",
+      "x": 3.3,
+      "d": 6.4
+     },
+     {
+      "art": "fass",
+      "x": 3.8,
+      "d": 1.0
      }
     ]
    }
