@@ -311,6 +311,18 @@
         "bauch",
         "becken"
       ]
+    },
+    {
+      "id": "ruestung.brust.sturmzahn",
+      "platz": "brust",
+      "glb": "basis.mann/v003/quelle/teile/ruestung.brust.sturmzahn.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {

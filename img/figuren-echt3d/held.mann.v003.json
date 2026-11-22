@@ -60,6 +60,11 @@
    "platz": "brust",
    "bewegungen": []
   },
+  "ruestung.brust.sturmzahn": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
   "schild.kreuz": {
    "art": "starr",
    "platz": "arm_l",
