@@ -15,7 +15,7 @@ interface DarstellerT {
   hat(n: string): boolean; dauer(n: string): number; spiele(n: string, einmal?: boolean, fertig?: () => void): void; blick(w: number): void;
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void;
 }
-type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> } };
+type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void> };
 
 const P = new URLSearchParams(location.search);
 /** Sind 3D-Figuren eingeschaltet? (Adresse oder Gerät) */
@@ -82,4 +82,13 @@ export class Figur3D extends Phaser.GameObjects.Container {
     if (einmalig) { d.spiele(einmalig, true, () => { this.einmal = false; this.anwenden(); this.emit("animationcomplete"); }); return; }
     const z = this.zustand; if (z === "block") d.spiele("block", true); else d.spiele(z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : z === "tod" ? "tod" : "ruhe", z === "tod"); }
   private weiter(dtMs: number) { const d = this.d; if (!d || !this.tex || !this.visible) return; d.blick(this.winkel); d.zeichne(dtMs / 1000, this.tex.getContext()); this.tex.refresh(); }
+}
+
+/** Standbild des eigenen Helden in 3D (Heldeneditor, Profilbild) – wie heldZeichnen, aber aus der 3D-Figur */
+export async function heldStandbild3D(ziel: HTMLCanvasElement, held: Held, richtung: number, ausschnitt: "ganz" | "kopf", mitWaffe: boolean): Promise<void> {
+  const E = await echt3dLaden(), A = held.aussehen, zeige: string[] = mitWaffe ? [...STARTWAFFEN[held.waffe].waffen] : [];
+  if (A.frisur !== "glatze") zeige.push("kopf.haar." + A.frisur); if (A.g === "mann" && A.bart !== "ohne") zeige.push("kopf.bart." + A.bart);
+  const f = HAARFARBEN[A.haar].rgb;
+  await E.standbild(ziel, { url: MODELLE + MODELL[A.g] + ".glb", zeige, haut: MODELLE + "haut/" + MODELL[A.g] + "." + A.haut + ".webp",
+    haar: [{ praefix: "kopf.haar", ziel: f, gebaut: GEBAUT[A.g] }, { praefix: "kopf.bart", ziel: f, gebaut: GEBAUT[A.g] }], richtung, ausschnitt });
 }
