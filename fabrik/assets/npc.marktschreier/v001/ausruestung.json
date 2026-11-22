@@ -1,0 +1,15 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.marktschreier v001 – Marktschreier aus Meshy „The Gilded Town Crier“ (Federhut, blauer Rock mit Gold, Glocke in der erhobenen rechten Hand, linke Hand am Mund); Glocke fest im Modell; nur Ruhe und Gehen.",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}
