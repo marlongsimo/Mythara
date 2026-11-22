@@ -6,7 +6,7 @@ let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + 
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
-const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0 } }, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
+const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0, inventar: { angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [{ g: "splitter", n: 12 }], v: 2 } } }, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url.startsWith("/fake/")) { res.setHeader("access-control-allow-origin", "*"); if (req.url === "/fake/einladen") { const a = JSON.parse(b || "{}"); EINL.push({ id: "e" + EINL.length, von: a.von, an: a.an, code: a.code }); return send(200, { ok: true }); }
     if (req.url.startsWith("/fake/einladungen")) return send(200, EINL.filter((e) => e.an === new URL(req.url, "http://x").searchParams.get("an")));
@@ -52,7 +52,7 @@ try {
   /* Inventar im Spiel: Schild ablegen (Ausrüstung), fallen lassen (Rucksack), als Beutel am Boden sehen, antippen → Aufheben */
   await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="nebenhand"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]');
   await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
-  check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
+  check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand && i.anzahl && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
   await anna.click('#ez-konto [data-t="zu"]'); await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
   await anna.click('#ez-konto .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('#ez-konto .iwahl [data-t="fallen"]'), "Rucksack: „Fallen lassen“ ist da");
   await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
@@ -65,6 +65,31 @@ try {
   if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   { const H = HELD["00000000-0000-0000-0000-00000000a001"]; await new Promise((r) => setTimeout(r, 2000)); check(H.inventar && H.inventar.rucksack.includes("rundschild") && !H.inventar.angelegt.nebenhand, `Der Server hat das Inventar gespeichert: ${JSON.stringify(H.inventar)}`); }
+  /* Splitter: ein Fach mit Zähler; Splitter und Schild fallen lassen → an derselben Stelle → Auswahl je Gegenstand und „Alles aufheben“ */
+  await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
+  check(await anna.evaluate(() => (document.querySelector('#ez-konto .ifeld.voll[data-g="splitter"] .menge') || {}).textContent === "12"), "Rucksack: 12 Splitter in einem Fach mit Zähler");
+  for (const g of ["splitter", "rundschild"]) { await anna.click(`#ez-konto .ifeld.voll[data-g="${g}"]`); await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(700); }
+  await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 2, null, { timeout: 8000 }).catch(() => {});
+  await anna.waitForTimeout(1500); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "zwei.png" });
+  check(await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()].find((b) => b.d.g === "splitter"); let glb = false; d && d.g.traverse((o) => { if (o.isMesh && o.parent && o.parent !== d.g) glb = true; }); return glb; }), "Die Splitter liegen als 3D-Modell der Figuren-Fabrik am Boden");
+  { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()][0]; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); }); await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
+  const knoepfe = await anna.evaluate(() => [...document.querySelectorAll(".ez-wahl3d button")].map((b) => b.textContent));
+  check(knoepfe.length === 3 && knoepfe.includes("Einfacher Schild aufheben") && knoepfe.some((t) => /^Splitter.*12.*aufheben$/.test(t)) && knoepfe[2] === "Alles aufheben", `Antippen der Stelle: ${JSON.stringify(knoepfe)}`);
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "auswahl.png" });
+  await anna.click(".ez-wahl3d button:last-child", { force: true });
+  await anna.waitForFunction(() => !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
+  check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return !document.querySelector(".ez-name3d.boden") && i.rucksack.includes("rundschild") && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "„Alles aufheben“: Schild und 12 Splitter wieder im Rucksack");
+  /* Untersuchen im Ausrüstungsfenster, dann mit ✕ schließen: das Spiel nimmt wieder Eingaben an (vorher blieb es gesperrt) */
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="untersuchen"]'); await anna.waitForTimeout(300);
+  check(await anna.isVisible("#ez-konto .tafel.untersuchen"), "Ausrüstung → Schwert → Untersuchen"); await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(300);
+  { const vor = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, g: window.EZW.welt3d.gesperrt })); await anna.keyboard.down("d"); await anna.waitForTimeout(900); await anna.keyboard.up("d");
+    const nach = await anna.evaluate(() => window.EZW.welt3d.ort.x); check(!vor.g && nach > vor.x + 0.1, `Nach dem Schließen reagiert das Spiel wieder (gesperrt: ${vor.g}, ${vor.x.toFixed(2)} → ${nach.toFixed(2)})`); }
+  /* Teleport-Abreise der Figuren-Fabrik am 3D-Helden (in der Waldmark selbst gibt es keinen Teleport, darum direkt) */
+  const ms = await anna.evaluate(() => window.EZW.welt3d.teleportAbreise()); await anna.waitForTimeout(700); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "teleport.png" });
+  const mitte = await anna.evaluate(() => { const f = window.EZW.welt3d.figur; return { clip: f.name, saeule: !!f.effekt, sichtbar: f.wurzel.visible }; });
+  await anna.waitForFunction(() => !window.EZW.welt3d.figur.wurzel.visible, null, { timeout: 15000 }).catch(() => {}); const ende = await anna.evaluate(() => window.EZW.welt3d.figur.wurzel.visible);
+  check(ms === 1800 && mitte.clip === "teleport_weg" && mitte.saeule && mitte.sichtbar && !ende, `Teleport: Bewegung teleport_weg mit Lichtsäule, danach ist der Held weg (${JSON.stringify(mitte)}, am Ende sichtbar: ${ende})`);
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Inventar im Spiel: alles in Ordnung"); process.exit(fehler ? 1 : 0);

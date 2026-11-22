@@ -94,10 +94,11 @@ export function rahmenTasten(extra: Record<string, () => void>): void { tastenEx
 let tastenExtra: Record<string, () => void> = {};
 
 /* ---------- Tafeln ---------- */
+let altesEsc: ((e: KeyboardEvent) => void) | null = null;
 function tafel(klasse: string, inhalt: string, zu: () => void): HTMLElement {
-  const f = $("#ez-konto"); f.hidden = false;
-  const schliessen = () => { removeEventListener("keydown", esc, true); f.hidden = true; f.innerHTML = ""; f.onclick = null; zu(); };
-  const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
+  const f = $("#ez-konto"); f.hidden = false; if (altesEsc) removeEventListener("keydown", altesEsc, true); /* eine Tafel ersetzt die vorige: deren Esc-Taste nicht mehr */
+  const schliessen = () => { removeEventListener("keydown", esc, true); if (altesEsc === esc) altesEsc = null; f.hidden = true; f.innerHTML = ""; f.onclick = null; zu(); };
+  const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true); altesEsc = esc;
   f.innerHTML = `<div class="tafel ${klasse}"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>${inhalt}</div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { if (e.target === f || (e.target as HTMLElement).closest('[data-t="zu"]')) schliessen(); };
@@ -129,17 +130,17 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
     const haupt = angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : "";
     wahl.hidden = false; wahl.innerHTML = `<b>${G.name}${n > 1 ? " ×" + n : ""}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${fallen}${haupt}</div>`;
     wahl.onclick = (ev) => { ev.stopPropagation(); const t = (ev.target as HTMLElement).closest<HTMLElement>("[data-t]")?.dataset.t; if (!t) return;
-      if (t === "untersuchen") untersuchen(g, () => neu(art));
+      if (t === "untersuchen") untersuchen(g, () => neu(art), zu);
       else if (t === "ablegen" && G.platz) { const n = nachher(); if (!ablegen(G.platz)) { n(); wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } }
       else if (t === "anlegen") { nachher(); anlegen(g); }
       else if (t === "fallen") { nachher(); fallenLassen(Number(b.dataset.wo!.slice(1))); } }; })); /* mit Server-Inventar kommt das neue Inventar gleich zurück */
 }
 /** Untersuchen: die Werte eines Gegenstands */
-function untersuchen(g: string, zurueck: () => void): void {
+function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
     <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
-    <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, () => { /* schließen */ });
+    <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, zu); /* ✕ oder Esc: ganz schließen – das Spiel läuft weiter (früher blieb es gesperrt) */
   { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust"); }
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
 }
