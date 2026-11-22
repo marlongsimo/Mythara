@@ -70,6 +70,10 @@ export class Darsteller {
       const mat = (m.material as THREE.MeshStandardMaterial).clone(); mat.map = t; mat.needsUpdate = true; m.material = mat; });
   }
   hat(name: string): boolean { return this.v.clips.has(name); }
+  /** die Figur (für Standbilder) */
+  get wurzelObjekt(): THREE.Object3D { return this.wurzel; }
+  /** Animation auf ihr erstes Bild setzen */
+  stand(): void { this.mixer.setTime(0); }
   /** Dauer einer Bewegung in Millisekunden */
   dauer(name: string): number { const c = this.v.clips.get(name); return c ? c.duration * 1000 : 0; }
   /** Bewegung abspielen. einmal: nicht wiederholen; fertig wird am Ende gerufen. halten: auf dem letzten Bild stehen bleiben */
@@ -90,4 +94,22 @@ export class Darsteller {
   }
   entfernen(): void { gemeinsam().buehne.remove(this.wurzel); this.mixer.stopAllAction(); }
 }
-(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller };
+/** Standbild einer Figur in eine Leinwand (Heldeneditor, Profilbild): Ruhe, erstes Bild, aus einer der acht Richtungen.
+ *  ausschnitt "ganz": die ganze Figur von leicht oben; "kopf": Kopf und Schultern fast auf Augenhöhe */
+export interface StandbildOpt { url: string; zeige: string[]; haut?: string; haar?: { praefix: string; ziel: [number, number, number]; gebaut: [number, number, number] }[]; richtung: number; ausschnitt: "ganz" | "kopf" }
+const standbildVorlagen = new Map<string, Promise<Darsteller>>();
+let sbZeichner: THREE.WebGLRenderer | null = null; let sbBuehne: THREE.Scene | null = null;
+export async function standbild(ziel: HTMLCanvasElement, o: StandbildOpt): Promise<void> {
+  const schl = o.url; let p = standbildVorlagen.get(schl); if (!p) { p = Darsteller.erstellen(o.url, 100, 1); standbildVorlagen.set(schl, p); }
+  const d = await p; d.zeige(o.zeige); for (const h of o.haar || []) d.faerben(h.praefix, h.ziel, h.gebaut); if (o.haut) await d.haut(o.haut);
+  if (!sbZeichner) { sbZeichner = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true }); sbZeichner.setClearColor(0x000000, 0); sbZeichner.outputColorSpace = THREE.SRGBColorSpace;
+    sbBuehne = new THREE.Scene(); sbBuehne.add(new THREE.HemisphereLight(0xfff1dc, 0x3a2e22, 1.7)); const s1 = new THREE.DirectionalLight(0xffe2b8, 2.4); s1.position.set(-3, 6, 7); sbBuehne.add(s1); const s2 = new THREE.DirectionalLight(0xa8c4ff, 0.9); s2.position.set(5, 4, -6); sbBuehne.add(s2); }
+  const w = d.wurzelObjekt; const alt = w.parent; sbBuehne!.add(w); w.visible = true; d.spiele("ruhe"); d.stand();
+  w.rotation.y = -((o.richtung - 2) * Math.PI) / 4;                                                  // Richtung 2 = Süden (zur Kamera), im Uhrzeigersinn wie im Spiel
+  const kopf = o.ausschnitt === "kopf", W = ziel.width, H = ziel.height, hoch = kopf ? 0.62 : 2.05, mitte = kopf ? 1.55 : 0.93;
+  const cam = new THREE.OrthographicCamera(-hoch / 2 * W / H, hoch / 2 * W / H, hoch / 2, -hoch / 2, 0.1, 50); const neig = kopf ? 0.08 : 0.25;
+  cam.position.set(0, mitte + Math.sin(neig) * 10, Math.cos(neig) * 10); cam.lookAt(0, mitte, 0);
+  sbZeichner.setSize(W, H, false); sbZeichner.render(sbBuehne!, cam); const x = ziel.getContext("2d")!; x.clearRect(0, 0, W, H); x.drawImage(sbZeichner.domElement, 0, 0, W, H);
+  w.visible = false; if (alt) alt.add(w);
+}
+(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller, standbild };

@@ -8,8 +8,9 @@
  */
 import { Held, Aussehen, heldPruefen, ebenenVon, farbeVon, farbMatrix, figurVon, STARTWAFFEN, aussehenSchluessel, satzVon } from "../../shared/aussehen";
 import { kontoRpc, kontoAngemeldet } from "./konto";
+import { figur3dAn, heldStandbild3D } from "./echt3d/figur";
 
-const SPEICHER = "ez_mein_held", BILD = "ez_mein_held_bild";
+const SPEICHER = "ez_mein_held", BILD = figur3dAn() ? "ez_mein_held_bild3d" : "ez_mein_held_bild";   /* eigenes Profilbild für 3D */
 const lies = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const schreib = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* privat */ } };
 
@@ -58,6 +59,7 @@ export async function heldEbenen(h: Held, mitWaffe = true, quelle: "editor" | "p
 }
 /** Den Helden in Richtung r (0 = Osten, 2 = Süden/vorn, im Uhrzeigersinn) zeichnen; ausschnitt: „ganz“ oder „kopf“ */
 export async function heldZeichnen(ziel: HTMLCanvasElement, h: Held, r: number, ausschnitt: "ganz" | "kopf", mitWaffe = true): Promise<void> {
+  if (figur3dAn()) { try { await heldStandbild3D(ziel, h, r, ausschnitt, mitWaffe); return; } catch (e) { console.warn("3D-Standbild:", e); } }   /* 3D-Figuren: Editor und Profilbild aus dem 3D-Modell */
   const rr = ((r % 8) + 8) % 8, x = ziel.getContext("2d")!; x.imageSmoothingEnabled = true; x.imageSmoothingQuality = "high";
   if (ausschnitt === "kopf") { /* Nahansicht: eigene Porträts (werkzeug/portraet.py), Kopf und Schultern fast auf Augenhöhe */
     const [P, ebenen] = await Promise.all([portraetAngaben(h.aussehen.g), heldEbenen(h, false, "portraet")]), A = P.groesse; x.clearRect(0, 0, ziel.width, ziel.height);
