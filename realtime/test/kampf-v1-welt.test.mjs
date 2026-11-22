@@ -68,12 +68,10 @@ try {
   const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Stärke ${lokal})`);
   /* Mogeln: eine fremde Waffe melden – der Server nimmt nur eigene Gegenstände */
   await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(500);
-  check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log), "Eine nicht eigene Waffe (Stab beim Schwertkämpfer) lehnt der Server ab");
-  /* Ausrüstung ablegen → Fäuste */
-  await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar")); i.rucksack.push(i.angelegt.waffe); delete i.angelegt.waffe; localStorage.setItem("ez_inventar", JSON.stringify(i)); window.dispatchEvent(new CustomEvent("ez-inventar", { detail: i })); });
-  await anna.waitForTimeout(600); check(/Ausrüstung Anna: waffe=- nebenhand=rundschild/.test(log) && await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Fäuste", "Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten");
+  check(!/Ausrüstung Anna: waffe=hirtenstab/.test(log), "Eine gemeldete fremde Waffe (Stab) ändert nichts – mit Server-Inventar zählt nur dessen Ausrüstung");
+  /* Ablegen geht jetzt über das Server-Inventar (geprüft in welt3d-kampf.test.mjs und inventar-welt.test.mjs) */
   /* gehen: die letzten XP werden gebucht */
-  for (let i = 0; i < 160 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
+  for (let i = 0; i < 160 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
   await anna.close(); await new Promise((r) => setTimeout(r, 2500)); const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
   check(zuletzt > vorDb && nachDb >= zuletzt, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
