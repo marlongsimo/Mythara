@@ -26,6 +26,7 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); i
   const feld = (x, y) => { for (const [r, [ox, oy]] of Object.entries(R)) { const g = gel(r), lx = Math.floor(x) - ox, ly = Math.floor(y) - oy; if (ly >= 0 && ly < g.length && lx >= 0 && lx < g[ly].length) return g[ly][lx]; } return "?"; };
   const geh = (c) => c !== "f" && c !== "?" && c !== "o";
   check(Q.NPCS.every((n) => geh(feld(n.x, n.y))), `Alle Figuren stehen auf begehbarem Boden (${Q.NPCS.map((n) => n.id + ":" + feld(n.x, n.y)).join(" ")})`);
-  for (const sp of Q.SPERREN) { const [x0, y0, x1, y1] = sp.feld; let wegFelder = 0, offen = 0; for (let x = x0 - 6; x < x1 + 6; x++) { const c = feld(x, y0); if (c === "e" || c === "m") { wegFelder++; if (x < x0 || x >= x1) offen++; } }
-    check(wegFelder > 0 && offen === 0, `Sperre „${sp.id}“ liegt quer über dem Weg (${wegFelder} Wegfelder, keines daneben frei)`); } }
+  for (const sp of Q.SPERREN.filter((x) => x.staemme.length)) { const [x0, y0, x1] = sp.feld; let wegFelder = 0; for (let x = x0; x < x1; x++) { const c = feld(x, y0); if (c === "e" || c === "m") wegFelder++; }
+    check(wegFelder > 0 && sp.staemme.every(([x, y]) => x >= x0 && x <= x1 && Math.abs(y - y0) < 4), `Sperre „${sp.id}“ liegt quer über dem Weg, die Baumstämme darauf (${wegFelder} Wegfelder)`); }
+  check(Q.SPERREN.filter((x) => x.id !== "westmark").every((x) => x.feld[0] <= 6336 && x.feld[2] >= 6592 || x.id === "osthang"), "Die Sperren im Kreuzwald reichen über seine ganze Breite (der Wald ist begehbar)"); }
 console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : "Quest 01 (Regeln): alles in Ordnung"); process.exit(f ? 1 : 0);

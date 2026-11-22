@@ -49,12 +49,14 @@ export const REDE_WEIT = 3.5;
 /* ---------- Sperren: Baumstämme (gesperrte Felder x0, y0, x1, y1) – für jeden Spieler, bis die Wachen ihn durchlassen ---------- */
 export interface Sperre { id: string; feld: [number, number, number, number]; /** Baumstämme: Mitte x, y, Länge, Drehung (rad) */ staemme: [number, number, number, number][] }
 export const SPERREN: Sperre[] = [
-  /* Hauptstraße vor Weidenhain (Raban und Tilda stehen davor) */
-  { id: "strasse", feld: [6436, 6647, 6458, 6650], staemme: [[6443, 6648.3, 6.5, 0.12], [6450.5, 6648.6, 6.5, -0.1], [6446.5, 6649.3, 5, 0.05]] },
-  /* Kreuzung im Kreuzwald: der Weg nach Süden hinter der Abzweigung zur Lichtung */
-  { id: "kreuzung", feld: [6430, 6600, 6452, 6602], staemme: [[6439, 6600.6, 6, 0.08], [6446, 6601, 6, -0.12]] },
-  /* Pfad von der Westmark nach Rabenmoor */
-  { id: "westmark", feld: [6314, 6650, 6338, 6653], staemme: [[6321, 6651.2, 6.5, 0.1], [6328, 6651.5, 6.5, -0.08], [6334, 6651.2, 5, 0.15]] },
+  /* Hauptstraße vor Weidenhain (Raban und Tilda stehen davor) – gesperrt über die ganze Breite des Kreuzwalds (der Wald ist begehbar) */
+  { id: "strasse", feld: [6336, 6647, 6592, 6650], staemme: [[6443, 6648.3, 6.5, 0.12], [6450.5, 6648.6, 6.5, -0.1], [6446.5, 6649.3, 5, 0.05]] },
+  /* Kreuzung im Kreuzwald: der Weg nach Süden unterhalb der Lichtung, ebenfalls über die ganze Breite */
+  { id: "kreuzung", feld: [6336, 6614, 6592, 6616], staemme: [[6441, 6614.7, 6, 0.08], [6447.5, 6615.1, 6, -0.12]] },
+  /* Pfad von der Westmark nach Rabenmoor (ganze Breite der Westmark) */
+  { id: "westmark", feld: [6272, 6650, 6336, 6653], staemme: [[6321, 6651.2, 6.5, 0.1], [6328, 6651.5, 6.5, -0.08], [6334, 6651.2, 5, 0.15]] },
+  /* Osthang (unsichtbar): kein Umweg durch den Wald im Osten */
+  { id: "osthang", feld: [6592, 6650, 6656, 6653], staemme: [] },
 ];
 /** Wohin der Server zurückschickt, wer ohne Freigabe hinter die Sperre gelangt (vor der Straßensperre) */
 export const VOR_DER_SPERRE: [number, number] = [6446.5, 6641.5];

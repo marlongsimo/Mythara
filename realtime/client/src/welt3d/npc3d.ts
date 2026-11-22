@@ -55,6 +55,7 @@ export class Npc3D {
 
 /** Ein Bewohner, der in seinem Haus umhergeht, stehen bleibt und ab und zu vor die Tür tritt */
 export class Wanderer {
+  /** welches Modell (Quests finden den Bürgermeister daran) */ get datei(): string { return this.w.datei; }
   readonly npc: Npc3D; x: number; z: number; private pfad: Feld[] = []; private warten = 1 + Math.random() * 3; private draussen = false;
   constructor(private u: Umgebung, private w: (typeof WANDERER)[number]) {
     const s = zufallFeld(w.drinnen, (x, z) => u.gehbar(x, z)); this.x = s.x; this.z = s.z; this.npc = new Npc3D(w.datei); this.npc.blick(0, 1); this.setzen(); }

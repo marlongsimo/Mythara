@@ -3,6 +3,9 @@
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
+import type { Stand } from "../../shared/quest01";
+import { skillsLesen, skillsSchreiben, xpDrops } from "./skills";
+import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE } from "../../shared/config";
@@ -37,6 +40,9 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
+    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); }
+    else if (m.t === "zurueck") { window.dispatchEvent(new CustomEvent("ez-zurueck", { detail: m })); if (m.text) chatSystem(String(m.text)); }
     else if (m.t === "boden") { bodenJetzt = (m.liste as BodenDing[]) || []; window.dispatchEvent(new CustomEvent("ez-boden")); }
     else if (m.t === "fort") { fremde = fremde.filter((f) => f.i !== Number(m.id)); if (hand.fort) hand.fort(Number(m.id)); }
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
@@ -45,6 +51,18 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };
+/* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
+let questJetzt: Stand = "", questBekannt = false;
+/** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
+export const questStand = (): Stand => questJetzt;
+export const questGeladen = (): boolean => questBekannt;
+export function rede(npc: string): void { senden({ t: "rede", npc }); }
+export function antworte(npc: string, a: string): void { senden({ t: "antwort", npc, a }); }
+export function dialogZu(): void { senden({ t: "dialogzu" }); }
+/** Questbelohnung: die Skill-XP auf dem Gerät nachtragen (der Server hat sie schon gutgeschrieben) und als Drops zeigen */
+function belohnungBuchen(b: Record<string, number>) { const x = skillsLesen(); for (const k of Object.keys(x) as (keyof typeof x)[]) x[k] += Math.max(0, Number(b[k]) || 0);
+  xpDrops(skillsLesen()); skillsSchreiben(x); xpDrops(x); window.dispatchEvent(new CustomEvent("ez-skills"));
+  chatSystem(`Belohnung: ${Object.entries(b).filter(([, n]) => n > 0).map(([k, n]) => `+${n} ${SKILL_NAME[k as keyof typeof SKILL_NAME] || k}`).join(", ")}.`); }
 /* ---------- Gegenstände am Boden (der Server schickt, was man sieht) ---------- */
 export interface BodenDing { i: number; g: string; n: number; x: number; y: number }
 let bodenJetzt: BodenDing[] = [];

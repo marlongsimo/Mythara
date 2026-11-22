@@ -549,6 +549,29 @@
     .seitentab .tskills .lv { font: 700 14px Georgia, serif; color: #fff3c8; text-align: center; } .seitentab .tskills .lv.nach { color: #a8946a; font-weight: 400; }
     .seitentab .tskills .ez-balken { display: block; height: 8px; border-radius: 4px; background: #1a140d; border: 1px solid #5a4528; overflow: hidden; } .seitentab .tskills .ez-balken u { display: block; height: 100%; background: linear-gradient(90deg, #c89b52, #ffe08a); text-decoration: none; }
     .seitentab .tleer { flex: 1; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; color: #cdb98a; } .seitentab .tleer span svg { width: 38px; height: 38px; opacity: .5; } .seitentab .tleer p { margin: 0; font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tleer small { font-size: 12px; max-width: 260px; }
+    .seitentab .tquest { flex: 1; display: grid; align-content: start; gap: 4px; padding: 8px 10px; border-radius: 9px; border: 1.5px solid #8a6a3a; background: linear-gradient(#2e2519, #1a140d); overflow: auto; }
+    .seitentab .tquest b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tquest small { color: #a8946a; font-size: 11.5px; } .seitentab .tquest p { margin: 4px 0 0; font-size: 13px; line-height: 1.4; color: #f3e3b5; } .seitentab .tquest.fertig b::after { content: " ✓"; color: #8fd06a; }
+    /* Gespräch wie die klassische Chatbox (OSRS): Pergament, Kopfbild links (Figur) oder rechts (du), Name dunkelrot, Text schwarz, „fortfahren“ blau */
+    #ez-gespraech { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(540px, calc(100vw - 20px)); z-index: 12; cursor: pointer; user-select: none;
+      border: 3px solid #3d3121; border-radius: 4px; box-shadow: 0 0 0 2px #7a6644, 0 6px 22px rgba(0,0,0,.6); background: #d8c9a0 linear-gradient(180deg, #e3d6b0, #cdbd92); font: 15px "Trebuchet MS", Verdana, sans-serif; color: #000; }
+    #ez-gespraech .kasten { display: flex; align-items: center; gap: 10px; min-height: 128px; padding: 10px 14px; box-sizing: border-box; }
+    #ez-gespraech.ich .kasten { flex-direction: row-reverse; }
+    #ez-gespraech .rahmen { flex: 0 0 96px; height: 96px; display: grid; place-items: center; }
+    #ez-gespraech .bild { width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(1px 2px 1px rgba(0,0,0,.35)); }
+    #ez-gespraech .bild:not([src]) { visibility: hidden; }
+    #ez-gespraech .mitte { flex: 1; display: grid; justify-items: center; gap: 6px; text-align: center; }
+    #ez-gespraech .name { color: #800000; font-weight: 700; font-size: 15px; }
+    #ez-gespraech .text { margin: 0; line-height: 1.38; max-width: 380px; }
+    #ez-gespraech .weiter { color: #0000ff; font-size: 14px; } #ez-gespraech:hover .weiter { color: #fff; text-shadow: 1px 1px 0 #000; }
+    #ez-gespraech .zu { position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; padding: 0; border: 1px solid #5a4528; border-radius: 3px; background: #b9a678; color: #3d3121; font: 700 12px sans-serif; cursor: pointer; }
+    #ez-gespraech.wahl { cursor: default; } #ez-gespraech .titel { display: block; text-align: center; color: #800000; font-weight: 700; margin-bottom: 4px; }
+    #ez-gespraech.wahl .kasten { display: block; padding-top: 12px; }
+    #ez-gespraech .antworten { display: grid; gap: 1px; justify-items: center; }
+    #ez-gespraech .antworten button { border: 0; background: none; padding: 3px 10px; color: #000; font: 15px "Trebuchet MS", Verdana, sans-serif; cursor: pointer; }
+    #ez-gespraech .antworten button i { font-style: normal; color: #5a4528; } #ez-gespraech .antworten button:hover, #ez-gespraech .antworten button:focus-visible { color: #fff; text-shadow: 1px 1px 0 #000; outline: none; }
+    .ez-questmarke { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 800 26px Cinzel, Georgia, serif; color: #ffd84a; text-shadow: 0 0 4px #000, 0 2px 3px #000, 0 0 10px rgba(255,200,40,.8); animation: questhuepf 1.2s ease-in-out infinite; }
+    @keyframes questhuepf { 0%, 100% { margin-top: 0; } 50% { margin-top: -5px; } }
+    .ez-name3d.quest { color: #fff3c8; font-size: 13px; }
     .tafel.ausruestungswerte .iwerte { display: grid; grid-template-columns: 1fr auto; gap: 4px 18px; margin: 0 auto; max-width: 320px; text-align: left; } .tafel.ausruestungswerte .iwerte dt, .tafel.ausruestungswerte .iwerte dd { margin: 0; padding: 0; } .tafel.ausruestungswerte .iwerte dd { text-align: right; color: #ffe7a8; font-weight: 600; }
     .tafel.ausruestungswerte h3 { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; margin: 12px 0 4px; }
     #ez-xpdrops { position: fixed; left: 50%; top: 64px; transform: translateX(-50%); z-index: 9; pointer-events: none; display: grid; justify-items: center; }

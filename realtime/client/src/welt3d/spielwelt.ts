@@ -9,6 +9,7 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
+import { QuestWelt } from "./quest3d";
 import * as THREE from "three";
 import { Welt3D } from "./motor";
 import { heldenFigur3D, FigurArt } from "./held3d";
@@ -75,6 +76,8 @@ export class Spielwelt3D implements WeltKern {
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
+    this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
+    addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this);
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
     fertig();
@@ -99,12 +102,17 @@ export class Spielwelt3D implements WeltKern {
     const k = $("#ez-karte"); k.style.backgroundImage = `url(${weltDatei("karte-" + id + ".webp")})`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
   profil() { WELT.hud.profil(this.held); WELT.hud.karte(); const h = this.hier; this.hier = ""; this.regionZeigen(); if (!this.hier) this.hier = h; anschluss3D.menue(this); }
 
+  /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
+  quest: QuestWelt | null = null;
+  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
+  /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
+  sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
   /* ───────────── Gehraster: die Daten der Chunks um den Helden ───────────── */
   async strom(warten = false): Promise<void> {
     const cx = Math.floor(this.ort.x / C), cy = Math.floor(this.ort.y / C), auftraege: Promise<void>[] = [];
     for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const n = chunkName(cx + dx, cy + dy); if (!this.gueltig.has(n) || this.daten.has(n)) continue; this.daten.set(n, "holt");
       auftraege.push(fetch(weltDatei(n + ".json")).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<ChunkDaten>; })
-        .then((d) => { if (this.daten.get(n) !== "holt") return; this.daten.set(n, d); this.raster.dazu(d); for (const [x0, y0, x1, y1] of WELT.sperren) this.raster.sperren(x0, y0, x1, y1); })
+        .then((d) => { if (this.daten.get(n) !== "holt") return; this.daten.set(n, d); this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); })
         .catch(() => { this.daten.delete(n); })); }
     for (const [n, d] of this.daten) if (d !== "holt" && Math.max(Math.abs(d.cx - cx), Math.abs(d.cy - cy)) > 3) { this.daten.delete(n); this.raster.weg_damit(d.cx, d.cy); }
     if (warten) await Promise.all(auftraege);
@@ -188,6 +196,7 @@ export class Spielwelt3D implements WeltKern {
   private vorhaben: Stelle | null = null; private wahl: { el: HTMLElement; x: number; z: number } | null = null;
   /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
   anStelle(x: number, y: number): Stelle | null {
+    { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
     /* Gegenstände am Boden zuerst: antippen → „Aufheben“ (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
     { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
       if (b) { const d0 = b, hier = bodenListe().filter((d) => Math.hypot(d.x - d0.x, d.y - d0.y) <= 0.8), name = (d: BodenDing) => `${GEGENSTAENDE[d.g] ? GEGENSTAENDE[d.g].name : d.g}${d.n > 1 ? " ×" + d.n : ""} aufheben`;
@@ -246,7 +255,7 @@ export class Spielwelt3D implements WeltKern {
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
     c.style.transform = `rotate(${(g - S.g).toFixed(4)}rad) translate(${(-px).toFixed(1)}px, ${(-py).toFixed(1)}px)`; }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
-  private bild(dt: number) { this.simZeit += dt;
+  private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt);
     const o = this.ort, D = HELDEN[this.held]; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry);
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.visible = false; }
     else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);

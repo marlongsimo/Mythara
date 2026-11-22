@@ -4,6 +4,8 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
+import { questStand } from "./welt";
+import { QUESTLOG } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../shared/gegenstaende";
@@ -189,10 +191,10 @@ export function seitenTab(art: TabArt): boolean {
   document.querySelector(`#ez-leiste [data-l="${art}"]`)?.classList.add("an");
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
-  for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) addEventListener(t, tabZeichnen); return true; }
+  for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest"]) addEventListener(t, tabZeichnen); return true; }
 const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests" };
 function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
-  removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) removeEventListener(t, tabZeichnen); }
+  removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest"]) removeEventListener(t, tabZeichnen); }
 /** Angriffsstil-Tab (alter Name) */
 export const stilTab = (): void => { seitenTab("stil"); };
 function tabLage(): void {
@@ -210,7 +212,9 @@ function tabZeichnen(): void {
     neu = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
       <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
-  if (tabJetzt === "quests") { neu = `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Das Einsteiger-Quest kommt bald – sprich dann mit den Leuten in der Waldmark.</small></div>`; setzen(); return; }
+  if (tabJetzt === "quests") { const st = questStand();
+    neu = !st ? `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Sprich mit den Leuten in der Waldmark – vielleicht braucht jemand Hilfe.</small></div>`
+      : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p></div>`; setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }

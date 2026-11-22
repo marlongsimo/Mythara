@@ -256,6 +256,8 @@ export class Welt3D {
     this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20; }
 
   /* ───────── Bild für Bild ───────── */
+  /** Ein umhergehender Bewohner mit diesem Modell (Quests: der Bürgermeister im Rathaus), falls sein Chunk geladen ist */
+  wandererMit(datei: string): { x: number; z: number } | null { for (const s of this.st.values()) for (const w of s.wanderer || []) if (w.datei === datei) return w; return null; }
   bild() {
     const dt = Math.min(0.1, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
