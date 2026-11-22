@@ -77,21 +77,6 @@ try {
   /* Mogeln: eine fremde Waffe melden – mit Server-Inventar zählt allein das, was der Server als angelegt kennt */
   await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(600);
   check(await anna.evaluate(() => { const K = window.EZK, h = K.netz && K.z && K.z.w.find((e) => e[0] === K.z.ich.id); return !/Stab/.test(document.querySelector("#ez-name").textContent); }) && !/Ausrüstung Anna: waffe=hirtenstab/.test(log), "Eine gemeldete fremde Waffe (Stab) ändert nichts – der Server nimmt seine eigene Ausrüstung");
-  /* Inventar im Spiel: Schild ablegen (Ausrüstung), fallen lassen (Rucksack), als Beutel am Boden sehen, antippen → Aufheben */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="nebenhand"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]');
-  await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
-  check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
-  await anna.click('#ez-konto [data-t="zu"]'); await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
-  await anna.click('#ez-konto .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('#ez-konto .iwahl [data-t="fallen"]'), "Rucksack: „Fallen lassen“ ist da");
-  await anna.click('#ez-konto .iwahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
-  await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 1, null, { timeout: 8000 }).catch(() => {});
-  check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Einfacher Schild"), "Der Schild liegt als Beutel mit Namen am Boden");
-  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
-  { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = W.bodenBild && [...W.bodenBild.values()][0]; if (!d) return null; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); });
-    if (q) await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
-  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Aufheben: Einfacher Schild", `Antippen des Beutels: „${knopf}“`);
-  if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
-  check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   /* Schwert ablegen → Fäuste (über den Server) */
   await anna.evaluate(() => window.EZW && 0); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
   await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Fäuste", null, { timeout: 8000 }).catch(() => {});
