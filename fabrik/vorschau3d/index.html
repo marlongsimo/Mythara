@@ -1,0 +1,229 @@
+<title>Waldmark 3D-Test</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Ein Bildschirm: die Szene füllt alles, die Bedienung liegt als Leiste unten (Spielmenü-Anmutung: dunkles Holz, Messing) */
+:root {
+  --grund: #120e0a; --leiste: rgba(22, 17, 12, 0.88); --linie: #5a4630; --text: #efe6d4; --blass: #b8a88e;
+  --messing: #d6a75a; --messing-dunkel: #8a6630; --aktiv: #3a2c1c;
+  --schrift-titel: "Cinzel", "Times New Roman", serif; --schrift: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--grund); color: var(--text); font-family: var(--schrift); font-size: 15px; overflow: hidden; }
+#buehne { position: fixed; inset: 0; }
+#buehne canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.kopf {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px); padding-bottom: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(var(--leiste), transparent); pointer-events: none;
+}
+.kopf h1 { margin: 0; font-family: var(--schrift-titel); font-size: 17px; letter-spacing: 0.04em; color: var(--messing); text-shadow: 0 1px 2px #000; }
+.messwert { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--blass); text-shadow: 0 1px 2px #000; }
+.leiste {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; flex-direction: column; gap: 8px;
+  padding-top: 10px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--leiste); border-top: 1px solid var(--linie);
+}
+.zeile { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.zeile > b { flex: none; width: 58px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blass); }
+.wahl { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-width: 0; padding-bottom: 2px; }
+.wahl::-webkit-scrollbar { display: none; }
+button {
+  flex: none; font: inherit; font-size: 14px; color: var(--text); background: transparent; border: 1px solid var(--linie);
+  border-radius: 6px; padding: 6px 11px; cursor: pointer; white-space: nowrap;
+}
+button[aria-pressed="true"] { background: var(--aktiv); border-color: var(--messing); color: var(--messing); }
+button:focus-visible { outline: 2px solid var(--messing); outline-offset: 2px; }
+button.haupt { background: var(--messing); border-color: var(--messing); color: #1d140a; font-weight: 700; }
+.hinweis { font-size: 12.5px; color: var(--blass); }
+#laden { position: fixed; inset: 0; display: grid; place-items: center; z-index: 9; background: var(--grund); font-family: var(--schrift-titel); color: var(--messing); letter-spacing: 0.05em; }
+@media (min-width: 900px) { .leiste { left: auto; width: 520px; border-left: 1px solid var(--linie); border-top-left-radius: 10px; } }
+</style>
+
+<div id="buehne"></div>
+<div id="laden">Lade Waldmark und Grundmann …</div>
+<header class="kopf"><h1>Waldmark · 3D-Test</h1><span class="messwert" id="messwert">– Bilder/s</span></header>
+<section class="leiste" aria-label="Bedienung">
+  <div class="zeile"><b>Waffe</b><div class="wahl" id="waffen"></div></div>
+  <div class="zeile"><b>Frisur</b><div class="wahl" id="frisuren"></div></div>
+  <div class="zeile"><b>Bart</b><div class="wahl" id="baerte"></div></div>
+  <div class="zeile"><b>Tun</b><div class="wahl">
+    <button type="button" class="haupt" id="angriff">Angriff</button>
+    <button type="button" id="block">Block</button>
+    <button type="button" id="tod">Sterben</button>
+    <button type="button" id="last" aria-pressed="false">20 Figuren</button>
+  </div></div>
+  <div class="hinweis">Tippen: hingehen · doppelt tippen: rennen · Tasten: WASD/Pfeile, Umschalt rennt, Leertaste greift an</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/SkeletonUtils.js"></script>
+<script>
+"use strict";
+// ---------- Welt: die gemalte Schrägansicht liegt in der Bildebene, die Figur läuft auf einem unsichtbaren Boden davor ----------
+const NEIGUNG = 35 * Math.PI / 180;               // wie die Sprite-Kamera der Fabrik
+const PX_JE_M = 60;                               // Maßstab der Karte: eine Tür ist etwa 2 m hoch
+const KARTE_B = 2576 / PX_JE_M, KARTE_H = 1450 / PX_JE_M;   // Kartenmaße in Metern (Bildebene)
+const BODEN_T = KARTE_H / Math.sin(NEIGUNG);      // Tiefe des Bodens, der auf die Kartenhöhe abgebildet wird
+const SICHT_H = 11;                               // sichtbare Höhe in Metern (Bildebene)
+
+const buehne = document.getElementById("buehne");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding;
+buehne.appendChild(renderer.domElement);
+const szene = new THREE.Scene();
+const kamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
+const blick = new THREE.Vector3(0, -Math.sin(NEIGUNG), -Math.cos(NEIGUNG));   // Kamera schaut nach -z und nach unten
+function groesse() {
+  const w = innerWidth, h = innerHeight, s = SICHT_H / 2; renderer.setSize(w, h, false);
+  kamera.left = -s * w / h; kamera.right = s * w / h; kamera.top = s; kamera.bottom = -s; kamera.updateProjectionMatrix();
+}
+addEventListener("resize", groesse); groesse();
+szene.add(new THREE.HemisphereLight(0xfff1dc, 0x3a2e22, 0.9));
+const sonne = new THREE.DirectionalLight(0xffe2b8, 1.4); sonne.position.set(-4, 8, 6); szene.add(sonne);
+const rand = new THREE.DirectionalLight(0xa8c4ff, 0.6); rand.position.set(5, 4, -6); szene.add(rand);
+
+// Hintergrund: Ebene senkrecht zum Blick durch den Bodenmittelpunkt; wird immer zuerst und ohne Tiefe gezeichnet
+const karteTex = new THREE.TextureLoader().load("../../img/echtzeit/waldmark.webp"); karteTex.encoding = THREE.sRGBEncoding;
+const karte = new THREE.Mesh(new THREE.PlaneGeometry(KARTE_B, KARTE_H), new THREE.MeshBasicMaterial({ map: karteTex, depthTest: false, depthWrite: false }));
+karte.renderOrder = -10; karte.lookAt(blick.clone().negate()); szene.add(karte);
+const boden = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const GRENZE_X = KARTE_B / 2 - 0.6, GRENZE_Z = BODEN_T / 2 - 0.6;
+
+// weicher Schatten unter jeder Figur
+const schattenTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d"); const v = g.createRadialGradient(32, 32, 2, 32, 32, 30); v.addColorStop(0, "rgba(0,0,0,0.55)"); v.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = v; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const schattenGeo = new THREE.PlaneGeometry(1.1, 1.1).rotateX(-Math.PI / 2);
+const schattenMat = new THREE.MeshBasicMaterial({ map: schattenTex, transparent: true, depthWrite: false });
+
+// ---------- Ausrüstung ----------
+const WAFFEN = [
+  { name: "Ritterschwert + Rundschild", teile: ["waffe.schwert.ritter", "schild.rund"], angriff: "stich" },
+  { name: "Schwert + Kreuzschild", teile: ["waffe.schwert.schildwahrer", "schild.kreuz"], angriff: "stich" },
+  { name: "Langschwert", teile: ["waffe.langschwert"], angriff: "hieb2h" },
+  { name: "Speer", teile: ["waffe.speer"], angriff: "stich2h" },
+  { name: "Hirtenstab", teile: ["waffe.stab.hirte"], angriff: "zauber_stab" },
+  { name: "Jagdbogen", teile: ["waffe.bogen.jagd"], angriff: "bogen" },
+  { name: "Armbrust", teile: ["waffe.armbrust"], angriff: "armbrust1h" },
+  { name: "Wurfdolch", teile: ["waffe.dolch"], angriff: "dolchwurf" },
+  { name: "Ohne Waffe", teile: [], angriff: null },
+];
+const FRISUREN = [["Glatze", null], ["Militär", "kopf.haar.militaer"], ["Undercut", "kopf.haar.undercut_bun"], ["Zerzaust", "kopf.haar.zerzaust"], ["Zopf", "kopf.haar.zopf_eng"], ["Scheitel", "kopf.haar.scheitel"]];
+const BAERTE = [["Ohne", null], ["Dreitage", "kopf.bart.stoppeln"], ["Vollbart", "kopf.bart.vollbart"], ["Hufeisen", "kopf.bart.hufeisen"], ["Schnurrbart", "kopf.bart.schnurrbart"], ["Lang", "kopf.bart.wikinger"]];
+const ALLE_TEILE = [...new Set([...WAFFEN.flatMap(w => w.teile), ...FRISUREN.map(f => f[1]), ...BAERTE.map(b => b[1])].filter(Boolean))];
+
+let vorlage = null, clips = {};
+const figuren = [];
+
+class Figur {
+  constructor(spieler) {
+    this.wurzel = THREE.SkeletonUtils.clone(vorlage.scene); szene.add(this.wurzel);
+    this.wurzel.traverse(o => { if (o.isMesh) { o.frustumCulled = false; if (o.material && o.material.map) o.material.map.encoding = THREE.sRGBEncoding; } });
+    this.schatten = new THREE.Mesh(schattenGeo, schattenMat); this.schatten.renderOrder = -5; szene.add(this.schatten);
+    this.mixer = new THREE.AnimationMixer(this.wurzel); this.aktion = null; this.name = ""; this.einmal = false;
+    this.mixer.addEventListener("finished", () => { if (this.name !== "tod") { this.einmal = false; this.spiele(this.weg ? (this.rennt ? "laufen" : "gehen") : "ruhe"); } });
+    this.ziel = null; this.weg = false; this.rennt = false; this.winkel = 0; this.spieler = spieler; this.waffe = WAFFEN[0];
+    this.teile = {}; this.wurzel.traverse(o => { if (/^(waffe|schild|kopf)/.test(o.name) && !(o.parent && /^(waffe|schild|kopf)/.test(o.parent.name)) && !this.teile[o.name]) this.teile[o.name] = o; });   // alle wählbaren Teile (three.js entfernt die Punkte aus den Namen)
+    this.spiele("ruhe");
+  }
+  zeige(liste) { const soll = liste.map(n => n.replace(/[.\[\]:\/]/g, "")); for (const [t, o] of Object.entries(this.teile)) o.visible = soll.includes(t); }
+  ausruesten(waffe, frisur, bart) { this.waffe = waffe; this.frisur = frisur; this.bart = bart; this.zeige([...waffe.teile, frisur, bart].filter(Boolean)); }
+  spiele(name, einmal) {
+    const clip = clips[name]; if (!clip) return; if (this.name === name && !einmal) return;
+    const neu = this.mixer.clipAction(clip); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat); neu.clampWhenFinished = !!einmal;
+    if (this.aktion && this.aktion !== neu) neu.crossFadeFrom(this.aktion, 0.12, false); neu.play(); this.aktion = neu; this.name = name; this.einmal = !!einmal;
+  }
+  update(dt) {
+    const p = this.wurzel.position;
+    if (this.name !== "tod" && !this.einmal) {
+      let richtung = null;
+      if (this.spieler && tasten.richtung) richtung = tasten.richtung;
+      else if (this.ziel) { const d = this.ziel.clone().sub(p); d.y = 0; if (d.length() < 0.08) this.ziel = null; else richtung = d.normalize(); }
+      if (richtung) {
+        const tempo = this.rennt ? 4.2 : 1.6; p.addScaledVector(richtung, tempo * dt);
+        p.x = THREE.MathUtils.clamp(p.x, -GRENZE_X, GRENZE_X); p.z = THREE.MathUtils.clamp(p.z, -GRENZE_Z, GRENZE_Z);
+        const soll = Math.atan2(richtung.x, richtung.z); let d = soll - this.winkel; d = Math.atan2(Math.sin(d), Math.cos(d)); this.winkel += d * Math.min(1, dt * 12);
+        this.wurzel.rotation.y = this.winkel; this.weg = true; this.spiele(this.rennt ? "laufen" : "gehen");
+      } else if (this.weg) { this.weg = false; this.spiele("ruhe"); }
+    }
+    this.mixer.update(dt); this.schatten.position.set(p.x, 0.01, p.z);
+  }
+  entfernen() { szene.remove(this.wurzel); szene.remove(this.schatten); }
+}
+
+// ---------- Bedienung ----------
+let spieler = null;
+const tasten = { gedrueckt: new Set(), richtung: null };
+function tastenRichtung() {
+  const g = tasten.gedrueckt; let x = 0, z = 0;
+  if (g.has("arrowleft") || g.has("a")) x -= 1; if (g.has("arrowright") || g.has("d")) x += 1;
+  if (g.has("arrowup") || g.has("w")) z -= 1; if (g.has("arrowdown") || g.has("s")) z += 1;
+  tasten.richtung = x || z ? new THREE.Vector3(x, 0, z).normalize() : null; if (spieler) spieler.rennt = g.has("shift");
+}
+addEventListener("keydown", e => { const k = e.key.toLowerCase(); if (k === " ") { e.preventDefault(); angriff(); return; } tasten.gedrueckt.add(k); tastenRichtung(); if (spieler && tasten.richtung) spieler.ziel = null; });
+addEventListener("keyup", e => { tasten.gedrueckt.delete(e.key.toLowerCase()); tastenRichtung(); });
+const strahl = new THREE.Raycaster(), maus = new THREE.Vector2(); let letztesTippen = 0;
+renderer.domElement.addEventListener("pointerdown", e => {
+  if (!spieler) return; const r = renderer.domElement.getBoundingClientRect();
+  maus.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); strahl.setFromCamera(maus, kamera);
+  const treffer = new THREE.Vector3(); if (!strahl.ray.intersectPlane(boden, treffer)) return;
+  const jetzt = performance.now(); spieler.rennt = jetzt - letztesTippen < 320; letztesTippen = jetzt;
+  if (spieler.name === "tod") { spieler.spiele("ruhe"); }
+  spieler.ziel = treffer;
+});
+function knoepfe(id, eintraege, aktuell, wahl) {
+  const box = document.getElementById(id); box.innerHTML = "";
+  eintraege.forEach((e, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = e.name ?? e[0]; b.setAttribute("aria-pressed", String(i === aktuell));
+    b.onclick = () => { box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); wahl(e); }; box.appendChild(b); });
+}
+function angriff() { if (spieler && spieler.waffe.angriff && spieler.name !== "tod") { spieler.ziel = null; spieler.spiele(spieler.waffe.angriff, true); } }
+document.getElementById("angriff").onclick = angriff;
+document.getElementById("block").onclick = () => { if (spieler && spieler.name !== "tod") { spieler.ziel = null; spieler.spiele("block", true); } };
+document.getElementById("tod").onclick = () => { if (spieler) { spieler.ziel = null; spieler.spiele("tod", true); } };
+const lastKnopf = document.getElementById("last");
+lastKnopf.onclick = () => {
+  const an = lastKnopf.getAttribute("aria-pressed") !== "true"; lastKnopf.setAttribute("aria-pressed", String(an));
+  if (!an) { while (figuren.length > 1) figuren.pop().entfernen(); return; }
+  for (let i = 0; i < 20; i++) {
+    const f = new Figur(false); const w = WAFFEN[i % WAFFEN.length]; f.ausruesten(w, FRISUREN[(i * 7) % FRISUREN.length][1], BAERTE[(i * 5) % BAERTE.length][1]);
+    f.wurzel.position.set((Math.random() - 0.5) * 2 * GRENZE_X * 0.8, 0, (Math.random() - 0.5) * 2 * GRENZE_Z * 0.8); figuren.push(f);
+  }
+};
+
+// ---------- Start ----------
+new THREE.GLTFLoader().load("grundmann.glb", gltf => {
+  vorlage = gltf; for (const c of gltf.animations) clips[c.name] = c;
+  spieler = new Figur(true); figuren.push(spieler);
+  spieler.wurzel.position.set(-3, 0, 4);                                  // auf dem Platz vor dem Brunnen
+  let waffe = WAFFEN[0], frisur = FRISUREN[1][1], bart = BAERTE[1][1]; spieler.ausruesten(waffe, frisur, bart);
+  knoepfe("waffen", WAFFEN, 0, w => { waffe = w; spieler.ausruesten(waffe, frisur, bart); });
+  knoepfe("frisuren", FRISUREN, 1, f => { frisur = f[1]; spieler.ausruesten(waffe, frisur, bart); });
+  knoepfe("baerte", BAERTE, 1, b => { bart = b[1]; spieler.ausruesten(waffe, frisur, bart); });
+  document.getElementById("laden").hidden = true; schleife();
+}, undefined, fehler => { document.getElementById("laden").textContent = "Die Figur konnte nicht geladen werden: " + (fehler.message || fehler); });
+
+const uhr = new THREE.Clock(); let bilder = 0, messen = 0;
+const messwert = document.getElementById("messwert");
+function schleife() {
+  requestAnimationFrame(schleife); const dt = Math.min(uhr.getDelta(), 0.05);
+  for (const f of figuren) {
+    if (!f.spieler && !f.ziel && Math.random() < dt * 0.4) { f.rennt = Math.random() < 0.25; f.ziel = new THREE.Vector3((Math.random() - 0.5) * 2 * GRENZE_X * 0.85, 0, (Math.random() - 0.5) * 2 * GRENZE_Z * 0.85); }
+    if (!f.spieler && !f.einmal && !f.weg && f.waffe.angriff && Math.random() < dt * 0.15) f.spiele(f.waffe.angriff, true);
+    f.update(dt);
+  }
+  // Kamera folgt dem Spieler in der Bildebene, bleibt aber über der Karte
+  const p = spieler.wurzel.position; const halbB = (kamera.right - kamera.left) / 2, halbH = SICHT_H / 2;
+  const fokus = p.clone(); fokus.y = 0.9; kamera.position.copy(fokus).addScaledVector(blick, -60); kamera.lookAt(fokus);
+  const rechts = new THREE.Vector3(1, 0, 0), oben = new THREE.Vector3().crossVectors(rechts, blick).negate();
+  const imBild = fokus.clone().sub(karte.position); let bx = imBild.dot(rechts), by = imBild.dot(oben);
+  const kx = THREE.MathUtils.clamp(bx, -KARTE_B / 2 + halbB, KARTE_B / 2 - halbB), ky = THREE.MathUtils.clamp(by, -KARTE_H / 2 + halbH, KARTE_H / 2 - halbH);
+  if (halbB * 2 < KARTE_B) kamera.position.addScaledVector(rechts, kx - bx); if (halbH * 2 < KARTE_H) kamera.position.addScaledVector(oben, ky - by);
+  renderer.render(szene, kamera);
+  bilder++; messen += dt; if (messen > 0.5) { messwert.textContent = `${Math.round(bilder / messen)} Bilder/s · ${figuren.length} ${figuren.length === 1 ? "Figur" : "Figuren"}`; bilder = 0; messen = 0; }
+}
+</script>
