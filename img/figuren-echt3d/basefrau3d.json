@@ -245,6 +245,11 @@
    "rate": 14,
    "schleife": false
   },
+  "teleport_weg": {
+   "bilder": 14,
+   "rate": 12,
+   "schleife": false
+  },
   "tod": {
    "bilder": 8,
    "rate": 10,

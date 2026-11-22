@@ -26,7 +26,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -605,6 +605,14 @@ def dolchwurf(i, n):
     durch = mit(BEREIT, o_r=(0.05, -0.7, -0.7), u_r=(0.35, -0.72, -0.6), kl=(0.5, -0.6, -0.6))
     arme_spur([(0, BEREIT), (0.35, aus), (0.57, wurf), (0.8, durch), (1, BEREIT)], t)
 
+def teleport_weg(i, n):
+    """Teleport, Abreise: Hände vor der Brust sammeln (leicht in die Knie), dann die Arme weit über den Kopf reißen, Blick nach oben – und so halten,
+    während die Figur im Licht vergeht (Lichtsäule, Funken und Auflösen macht der Darsteller im Spiel, echt3d/darsteller.ts teleport)"""
+    t = i / (n - 1); hocke(spur([(0, 0.0), (0.35, 16.0), (0.6, 0.0), (1, 0.0)], t))
+    rumpf(vor=spur([(0, 2.0), (0.35, 8.0), (0.6, -5.0), (1, -6.0)], t), kopf=spur([(0, 0.0), (0.35, 6.0), (0.6, -14.0), (1, -16.0)], t))
+    sammeln = mit(BEREIT, o_r=(-0.12, -0.72, -0.68), u_r=(0.55, -0.75, 0.36), kl=(0.0, 0.3, 0.95), o_l=(0.12, -0.72, -0.68), u_l=(-0.55, -0.75, 0.36), sch=(0.05, -1.0, 0.1))
+    hoch = mit(BEREIT, o_r=(-0.3, -0.12, 0.95), u_r=(-0.12, -0.08, 0.99), kl=(0.0, -1.0, 0.05), o_l=(0.3, -0.12, 0.95), u_l=(0.12, -0.08, 0.99), sch=(1.0, 0.0, 0.0))
+    arme_spur([(0, BEREIT), (0.35, sammeln), (0.65, hoch), (1, hoch)], t)
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
@@ -616,7 +624,8 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {}),
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
-              "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4})}
+              "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
+              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()

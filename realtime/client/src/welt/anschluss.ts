@@ -18,6 +18,7 @@ import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTa
 import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon, eigeneWaffenQuelle } from "../modulfigur";
+import { teleportAbreise } from "../echt3d/figur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
 import { stufeAusEp } from "../../../shared/config";
 import { kontoName } from "../konto";
@@ -62,7 +63,9 @@ function heldWaehlen(s: Welt) { if (s.gesperrt || !nurWaldmark(s)) return; s.hal
   wahl((held) => { s.gesperrt = false; if (held === s.held) return; s.gesperrt = true; weltHeld(held); setTimeout(() => location.reload(), 3000); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
 function teleport(s: Welt) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
-  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.cameras.main.fadeOut(300, 0, 0, 0); s.time.delayedCall(320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
+  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
+  const ms = teleportAbreise(s.figur); /* 3D-Held: Lichtsäule, er vergeht im Licht – erst danach abblenden */
+  s.time.delayedCall(Math.max(0, ms - 250), () => s.cameras.main.fadeOut(300, 0, 0, 0)); s.time.delayedCall(Math.max(0, ms - 250) + 320, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
 /** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
 let kampf: WeltKampf | null = null;
 const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
