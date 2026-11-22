@@ -14,7 +14,7 @@ export type Bauplan = {
     dach?: { form: string; first?: string; hoehe?: number; ueber?: number; deckung?: string; farbe?: number[] } }[];
   tueren?: { koerper?: string | number; x: number; b: number; h: number; art?: string }[];
   fenster?: { koerper?: string | number; wand: string; x?: number; d?: number; z: number; b: number; h: number; art?: string; laeden?: boolean; blumen?: boolean }[];
-  zubehoer?: { art: string; koerper?: string | number; x?: number; d?: number; z?: number; farbe?: number[]; laenge?: number; r?: number }[];
+  zubehoer?: { art: string; koerper?: string | number; x?: number; d?: number; z?: number; farbe?: number[]; laenge?: number; r?: number; x0?: number; x1?: number; tiefe?: number; deckung?: string }[];
   innen?: { boden?: string; moebel?: { art: string; x: number; d: number }[] };
 };
 
@@ -79,7 +79,7 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
       aus.raeume.push({ x0: X + x0, x1: X + x1, z0: Z + zn, z1: Z + zs }); }
   });
   /* Fenster: Rahmen, Glas, Sprossen, Läden, Blumenkasten – auf der Süd- oder Ostwand */
-  for (const f of plan.fenster || []) { const k = K[nr(f.koerper)], ost = f.wand === "ost", glas = f.art === "glut" ? "#e7a640" : f.art === "gruen" ? "#4e6a52" : GLAS;
+  for (const f of plan.fenster || []) { const k = K[nr(f.koerper)], ost = f.wand === "ost", glas = f.art === "glut" ? "#e7a640" : f.art === "gruen" ? "#4e6a52" : f.art === "violett" ? "#b38ad6" : GLAS;
     const t = new Teile(), y = f.z; t.box(f.b + 0.16, f.h + 0.16, 0.06, 0, y - 0.08, 0, HOLZ, 0, { muster: "holz" }); t.box(f.b, f.h, 0.08, 0, y, 0.01, glas);
     if (f.art === "kreuz" || !f.art) { t.box(0.06, f.h, 0.1, 0, y, 0.02, HOLZ, 0, { muster: "holz" }); t.box(f.b, 0.06, 0.1, 0, y + f.h / 2 - 0.03, 0.02, HOLZ, 0, { muster: "holz" }); }
     if (f.laeden) for (const s of [-1, 1]) t.box(f.b / 2, f.h, 0.06, s * (f.b * 0.75 + 0.1), y, 0.03, "#4f6b4c", 0, 0.05);
@@ -90,14 +90,19 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     if (z.art === "kamin") mauer.box(0.6, top - k.h + 0.9, 0.6, z.x ?? 0, k.h - 0.2, -(z.d ?? k.t / 2), "#7a6f66", 0, { muster: "stein" });
     else if (z.art === "banner") { mauer.box(0.55, 1.1, 0.05, z.x ?? 0, (z.z ?? 2) - 1.1, -k.d + 0.05, rgb(z.farbe) || "#9b2f2a"); mauer.box(0.7, 0.06, 0.08, z.x ?? 0, z.z ?? 2, -k.d + 0.06, HOLZ, 0, { muster: "holz" }); }
     else if (z.art === "laterne" || z.art === "schild") mauer.box(0.24, 0.32, 0.24, z.x ?? 0, (z.z ?? 2) - 0.3, -k.d + 0.15, z.art === "laterne" ? "#f1b84d" : "#8a6440");
+    else if (z.art === "vordach") { /* kleines Pultdach über der Tür auf zwei Pfosten */ const x0 = z.x0 ?? -1, x1 = z.x1 ?? 1, t = z.tiefe ?? 1, h0 = z.z ?? 2.2, zs = -k.d, dm = { muster: DACHMUSTER[z.deckung || "schindel"] || "schindel" } as const, df = rgb(z.farbe) || new THREE.Color(DECKUNG[z.deckung || "schindel"]);
+      const v = new Teile(); v.viereck([x0 - 0.15, h0 + 0.45, zs], [x1 + 0.15, h0 + 0.45, zs], [x1 + 0.15, h0 - 0.05, zs + t + 0.15], [x0 - 0.15, h0 - 0.05, zs + t + 0.15], df, dm);
+      for (const px of [x0, x1]) v.box(0.12, h0 - 0.05, 0.12, px, 0, zs + t, HOLZ, 0, { muster: "holz" }); const n = v.netz(); g.add(n); }
     else if (z.art === "fluegel") { const f = new Teile(), L = z.laenge ?? 3; for (let i = 0; i < 4; i++) { const a = (i * Math.PI) / 2; f.add(new THREE.BoxGeometry(0.16, L, 0.06), HOLZ, new THREE.Matrix4().makeRotationZ(a).multiply(new THREE.Matrix4().makeTranslation(0, L / 2, 0)));
         f.add(new THREE.BoxGeometry(0.62, L * 0.8, 0.03), "#d8cfb9", new THREE.Matrix4().makeRotationZ(a).multiply(new THREE.Matrix4().makeTranslation(0.36, L * 0.55, 0.03))); }
       f.box(0.4, 0.4, 0.5, 0, -0.2, -0.2, DUNKEL); const n = f.netz(); n.position.set(z.x ?? 0, z.z ?? k.h, -k.d + 0.45); g.add(n); aus.drehen.push(n); }
   }
   /* Möbel */
   const MOEBEL: Record<string, [number, number, number, string]> = { tisch: [1.2, 0.75, 0.8, "#7a5232"], bett: [1.0, 0.55, 2.0, "#a8443a"], theke: [2.4, 1.0, 0.6, "#6a4527"], fass: [0.6, 0.8, 0.6, "#7a5232"], amboss: [0.7, 0.7, 0.4, "#3c3c40"],
-    regal: [1.2, 1.8, 0.4, "#6a4527"], ofen: [1.0, 1.3, 1.0, "#6c655e"], altar: [1.4, 1.0, 0.7, "#bdb5a5"], bank: [1.5, 0.45, 0.4, "#7a5232"], kessel: [0.7, 0.6, 0.7, "#34332f"], heu: [1.2, 0.8, 1.0, "#c9a85a"], saecke: [0.9, 0.6, 0.6, "#c2ae86"], muehlstein: [1.2, 0.5, 1.2, "#8e8a80"] };
-  for (const m of plan.innen?.moebel || []) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
+    regal: [1.2, 1.8, 0.4, "#6a4527"], ofen: [1.0, 1.3, 1.0, "#6c655e"], altar: [1.4, 1.0, 0.7, "#bdb5a5"], bank: [1.5, 0.45, 0.4, "#7a5232"], kessel: [0.7, 0.6, 0.7, "#34332f"], heu: [1.2, 0.8, 1.0, "#c9a85a"], saecke: [0.9, 0.6, 0.6, "#c2ae86"], muehlstein: [1.2, 0.5, 1.2, "#8e8a80"], frisierstuhl: [0.7, 0.55, 0.7, "#74428c"] };
+  for (const m of plan.innen?.moebel || []) if (m.art === "spiegel") {   /* Nias Zauberspiegel: Goldrahmen, violett schimmerndes Glas */
+    mauer.box(1.0, 1.95, 0.14, m.x, 0.06, -m.d, "#c49c46", 0, { muster: "metall" }); mauer.box(0.76, 1.55, 0.05, m.x, 0.26, -m.d + 0.09, "#c4a2ea", 0, { muster: "glatt" }); }
+  for (const m of (plan.innen?.moebel || []).filter((q) => q.art !== "spiegel")) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
   const n = mauer.netz(); g.add(n);
   return aus;
 }
