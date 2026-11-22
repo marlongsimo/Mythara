@@ -94,7 +94,9 @@ try {
   check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   /* Schwert ablegen → Fäuste (über den Server) */
   await anna.evaluate(() => window.EZW && 0); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-konto .ifeld.voll[data-wo="waffe"]'); await anna.click('#ez-konto .iwahl [data-t="ablegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
-  await anna.waitForTimeout(800); check(await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Fäuste", "Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten");
+  await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Fäuste", null, { timeout: 8000 }).catch(() => {});
+  { const st = await anna.evaluate(() => ({ name: document.querySelector("#ez-name").textContent, inv: localStorage.getItem("ez_inventar"), konto: !document.getElementById("ez-konto").hidden, gesperrt: window.EZW.welt3d.gesperrt }));
+    check(st.name === "Fäuste", `Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten (${JSON.stringify(st)})`); }
   /* gehen: die letzten XP werden gebucht */
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
