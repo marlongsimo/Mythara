@@ -1,0 +1,51 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "stadtwache3d – Stadtwache für Echtzeit-3D (Körper von basemann3d, Sternplatte, Militärschnitt, Vollbart) mit Speer und Turmschild; nur Ruhe und Gehen.",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "ruestung.brust.sternplatte",
+      "platz": "brust",
+      "glb": "stadtwache3d/v001/quelle/teile/ruestung.brust.sternplatte.glb",
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken"
+      ]
+    },
+    {
+      "id": "kopf.haar.militaer",
+      "platz": "haar",
+      "glb": "stadtwache3d/v001/quelle/teile/kopf.haar.militaer.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "stadtwache3d/v001/quelle/teile/kopf.bart.vollbart.glb"
+    }
+  ],
+  "starr": [
+    {
+      "id": "waffe.speer.wache",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.speer.wache/v001/quelle/speer.glb",
+      "griff": 0.62,
+      "griff2": 0.5
+    },
+    {
+      "id": "schild.wache",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.wache/v001/quelle/schild.glb"
+    }
+  ]
+}

@@ -9,6 +9,8 @@ writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8"
 /* Heldeneditor: nach der Registrierung und beim ersten Spielstart ohne Helden */
 await build({ entryPoints: ["client/src/heldeneditor.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "held.js", legalComments: "none" });
 writeFileSync(aus + "held.html", readFileSync("client/held.html", "utf8").replace("__V__", v));
+/* Echtzeit-3D-Figuren (Versuch, ?figur3d=1): three.js in eigener Datei, wird nur bei Bedarf geladen */
+await build({ entryPoints: ["client/src/echt3d/darsteller.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "figur3d.js", legalComments: "none" });
 /* Modulare 3D-Figuren (getrennt vom Spiel): isolierte Testszene und die Vorschau der Figuren-Pipeline */
 await build({ entryPoints: ["client/src/figurentest.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "figurentest.js", legalComments: "none", define: { "process.env.NODE_ENV": '"production"' } });
 writeFileSync(aus + "figurentest.html", readFileSync("client/figurentest.html", "utf8").replace("__V__", v));

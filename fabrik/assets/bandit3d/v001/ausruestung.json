@@ -1,0 +1,35 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "bandit3d – Bandit für Echtzeit-3D (Meshy „Crimson Warden“): rote Kapuze mit Gesichtstuch, Stachel-Schulterpanzer, Lederrüstung, langer Umhang – fest im Modell; Banditenmesser rechts, Beute-Schild links.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich",
+    "block",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.dolch",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.dolch/v001/quelle/dolch.glb",
+      "griff": 0.15,
+      "griff2": 0.05,
+      "angriff": "stich"
+    },
+    {
+      "id": "schild.beute",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.beute/v001/quelle/schild.glb"
+    }
+  ]
+}

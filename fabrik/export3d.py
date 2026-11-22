@@ -2,7 +2,7 @@
 Skelett, Körper, alle Teilnetze (Kleidung, Haare, Bärte) als skinned Meshes, Waffen und Schilde an ihren Knochen, alle Bewegungen als Animationen.
 Jedes Teil behält als Namen seine Ebenen-ID (z. B. kopf.haar.militaer) – die Szene blendet Teile ein und aus.
 
-  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000]
+  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000] [textur=1024] [webp]
 """
 import json, os, sys
 import bpy
@@ -19,6 +19,10 @@ for o in teile:
     if n > grenze:
         bpy.context.view_layer.objects.active = o; m = o.modifiers.new("weniger", "DECIMATE"); m.ratio = grenze / n
         bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.ops.object.modifier_move_to_index(modifier="weniger", index=0); bpy.ops.object.modifier_apply(modifier="weniger")
+T = int(opt.get("textur", 0))                                                                       # Texturen verkleinern (z. B. 1024 fürs Handy)
+if T:
+    for img in bpy.data.images:
+        if img.size[0] > T: img.scale(T, max(1, int(img.size[1] * T / img.size[0]))); img.pack()
 info = {o["ebene"]: {"art": o["art"], "platz": o.get("platz"), "bewegungen": json.loads(o.get("bewegungen", "[]") or "[]")} for o in teile}
 aktionen = {a.name: {"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])} for a in bpy.data.actions if a.get("bilder")}
 for a in bpy.data.actions:

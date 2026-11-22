@@ -1,0 +1,9 @@
+{
+  "id": "basefrau3d",
+  "name": "Basefrau 3D",
+  "kategorie": "basis",
+  "aktuell": "v001",
+  "status": "v001: Grundfigur für Echtzeit-3D – Spieldatei img/figuren-echt3d/basefrau3d.glb (fabrik/export3d.py)",
+  "herkunft": "Meshy „Bald Vanguard“, vom Projekt erzeugt",
+  "anpassen": "wie basemann3d: lieber mehr Spiel als zu wenig; starre Brustteile mit nur_knochen"
+}
