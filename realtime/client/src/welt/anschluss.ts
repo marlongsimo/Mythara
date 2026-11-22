@@ -227,7 +227,7 @@ function menue3D(s: WeltKern) {
     rahmenTasten(tasten);
     leisteAufbauen([
       { id: "stil", name: "Angriffsstil", zeichen: "schwerter", tat: () => stilTab() },
-      { id: "quests", name: "Quests", zeichen: "quest", tat: () => tafel(s, (zu) => baldTafel("Quests", "quest", zu)) },
+      { id: "quests", name: "Quests", zeichen: "quest", tat: () => { seitenTab("quests"); } },
       { id: "rucksack", name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack },
       { id: "ausruestung", name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung },
       { id: "skills", name: "Skills", zeichen: "skills", tat: () => { if (!seitenTab("skills")) tafel(s, skillTafel); } }]);

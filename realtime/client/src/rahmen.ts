@@ -178,7 +178,7 @@ export function stilTafel(zu: () => void): void {
   binden(); }
 /* ---------- Tabs neben der Leiste (3D-Welt): Angriffsstil, Rucksack, Ausrüstung, Skills ----------
  * Oben bündig mit dem obersten Knopf, unten mit dem untersten, rechts mit dem Chat. Immer nur einer offen; nochmal antippen schließt; der Knopf leuchtet. */
-export type TabArt = "stil" | "rucksack" | "ausruestung" | "skills";
+export type TabArt = "stil" | "rucksack" | "ausruestung" | "skills" | "quests";
 let tabJetzt: TabArt | null = null;
 const tabEl = () => document.getElementById("ez-" + tabJetzt + "tab");
 /** Tab öffnen/schließen. false: geht nicht (ohne eigenen Helden gibt es Rucksack und Ausrüstung nur als Tafel) */
@@ -190,7 +190,7 @@ export function seitenTab(art: TabArt): boolean {
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) addEventListener(t, tabZeichnen); return true; }
-const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills" };
+const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests" };
 function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
   removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil"]) removeEventListener(t, tabZeichnen); }
 /** Angriffsstil-Tab (alter Name) */
@@ -208,6 +208,7 @@ function tabZeichnen(): void {
     el.innerHTML = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
       <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; return; }
+  if (tabJetzt === "quests") { el.innerHTML = `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Das Einsteiger-Quest kommt bald – sprich dann mit den Leuten in der Waldmark.</small></div>`; return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     el.innerHTML = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; return; }

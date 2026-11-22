@@ -57,6 +57,10 @@ const BILD = process.env.BILD || '';
     { const sk = await p.evaluate(() => [...document.querySelectorAll('#ez-skillstab .tskills li')].map((l) => (l.querySelector('img') ? '🖼' : '') + l.querySelector('b').textContent + ' ' + l.querySelector('.lv').textContent + '→' + l.querySelector('.lv.nach').textContent));
       check(sk.join(', ') === '🖼Geschick 1→2, 🖼Stärke 1→2, 🖼Fernkampf 1→2, 🖼Magie 1→2, 🖼Leben 1→2, 🖼Defense 1→2', `Skills-Tab: Zeichen, Name, Level, nächstes Level: ${sk.join(', ')}`); if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-skills.png' }); }
     await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(300); check(await p.evaluate(() => !document.querySelector('.seitentab')), 'Nochmal antippen schließt den Tab');
+    await p.click('#ez-leiste [data-l="quests"]'); await p.waitForTimeout(300);
+    { const q = await p.evaluate(() => { const t = document.getElementById('ez-queststab'), r = document.getElementById('ez-leiste').querySelectorAll('[data-l]'); if (!t) return null; const a = t.getBoundingClientRect(); return { titel: t.querySelector('.kopf b').textContent, leer: /Noch keine Quests/.test(t.textContent), o: a.top - r[0].getBoundingClientRect().top, u: a.bottom - r[r.length - 1].getBoundingClientRect().bottom }; });
+      check(q && q.titel === 'Quests' && q.leer && Math.abs(q.o) < 1.5 && Math.abs(q.u) < 1.5, `Quests als Tab in gleicher Größe, noch leer (${JSON.stringify(q)})`); }
+    await p.click('#ez-leiste [data-l="quests"]'); await p.waitForTimeout(200);
     await p.click('#ez-kartenrahmen [aria-label="Einstellungen"]'); await p.waitForTimeout(500);
     check(await p.evaluate(() => !document.getElementById('ez-konto').hidden), 'Einstellungen öffnen das Menü');
     await p.keyboard.press('Escape'); await p.waitForTimeout(300); if (!(await p.evaluate(() => document.getElementById('ez-konto').hidden))) { await p.click('#ez-konto [data-t="zu"]').catch(() => {}); await p.waitForTimeout(300); }
