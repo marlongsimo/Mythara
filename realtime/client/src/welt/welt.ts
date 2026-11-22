@@ -6,6 +6,7 @@
  * Aufruf zum Ausprobieren: ?welt=<region>   (mit &test=1: Raster, Chunk-Grenzen und Messwerte einblenden)
  * Ausbaustufe 1: ein Held läuft allein durch die Welt, Bewegung rechnet der Browser. Gegner, Mitspieler und Server kommen mit der Integration (Phase 10).
  */
+import { teleportAbreise } from "../echt3d/figur";
 import Phaser from "phaser";
 import { HELDEN } from "../../../shared/config";
 import { FELD_PX, CHUNK_FELDER, CHUNK_PX, HELD_PX, chunkName, inZone } from "../../../shared/welt/typen";
@@ -308,6 +309,7 @@ export class Welt extends Phaser.Scene {
   /** Eine Szene des Spiels starten (Riss) und abblenden – gemeinsame Schnittstelle mit der 3D-Welt (anschluss.ts WeltKern) */
   szeneStarten(key: string, daten: object): void { this.scene.start(key, daten); }
   abblenden(ms: number, dann: () => void): void { this.cameras.main.fadeOut(ms, 0, 0, 0); this.time.delayedCall(ms + 20, dann); }
+  teleportAbreise(): number { return teleportAbreise(this.figur); }
   /** Stehen bleiben (vor einer Tafel) */
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); }
   /** Oben links Held, oben Mitte Region, oben rechts Minikarte, unten rechts Menü */

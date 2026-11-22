@@ -41,7 +41,7 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 
 export class Darsteller {
   private wurzel: THREE.Object3D; private mixer: THREE.AnimationMixer; private aktion: THREE.AnimationAction | null = null; private name = "";
-  private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null;
+  private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null;
   /** Leinwand in Bildpunkten und wie viele Bildpunkte eine Kameraeinheit hat */
   readonly breite: number; readonly hoehe: number; readonly fussY: number;
   private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number) {
@@ -50,7 +50,7 @@ export class Darsteller {
       if (/^(waffe|schild|kopf|ruestung|kleidung)/.test(n) && !(o.parent && /^(waffe|schild|kopf|ruestung|kleidung)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });   // three.js entfernt die Punkte aus den Namen
     this.mixer = new THREE.AnimationMixer(this.wurzel);
     this.mixer.addEventListener("finished", () => { const f = this.fertig; this.fertig = null; if (f) f(); });
-    const ppm = (figurHoehePx / STEHHOEHE) * aufloesung;
+    const ppm = (figurHoehePx / STEHHOEHE) * aufloesung; this.ppm = ppm;
     this.breite = Math.ceil(2 * AUSSCHNITT.seite * ppm); this.hoehe = Math.ceil((AUSSCHNITT.oben + AUSSCHNITT.unten) * ppm); this.fussY = AUSSCHNITT.oben / (AUSSCHNITT.oben + AUSSCHNITT.unten);
     gemeinsam().buehne.add(this.wurzel);
   }
@@ -86,13 +86,72 @@ export class Darsteller {
   blick(winkel: number): void { this.wurzel.rotation.y = winkel; }
   /** Weiterrechnen und in die Leinwand zeichnen */
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
-    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt);
+    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt);
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
-    for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.wurzel;
-    this.wurzel.visible = true; z.render(b, k); this.wurzel.visible = false;
+    for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.wurzel || (!!fx && c === fx.gruppe);
+    this.wurzel.visible = !fx || !fx.vergangen; z.render(b, k); this.wurzel.visible = false; if (fx) fx.gruppe.visible = false;
     ziel.clearRect(0, 0, this.breite, this.hoehe); ziel.drawImage(z.domElement, 0, 0);
   }
-  entfernen(): void { gemeinsam().buehne.remove(this.wurzel); this.mixer.stopAllAction(); }
+  /** Teleport (Abreise): Lichtsäule, Bodenring, aufsteigende Funken; die Figur glüht auf, wird schmal und lang und vergeht im Licht.
+   *  Die Bewegung dazu (teleport_weg) spielt der Aufrufer. Danach bleibt die Figur unsichtbar. dauer in Sekunden */
+  teleport(dauer = 1.8): void { if (this.effekt) return; this.effekt = new TeleportEffekt(this.wurzel, dauer, this.ppm); gemeinsam().buehne.add(this.effekt.gruppe); }
+  entfernen(): void { gemeinsam().buehne.remove(this.wurzel); if (this.effekt) { gemeinsam().buehne.remove(this.effekt.gruppe); this.effekt.weg(); } this.mixer.stopAllAction(); }
+}
+
+/* ---------- Teleport-Effekt ---------- */
+const FARBE_LICHT = new THREE.Color(0x7fd4ff), FARBE_KERN = new THREE.Color(0xe8f8ff);
+function leinwandTextur(b: number, h: number, mal: (x: CanvasRenderingContext2D) => void): THREE.CanvasTexture {
+  const c = document.createElement("canvas"); c.width = b; c.height = h; mal(c.getContext("2d")!); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+let saeulenBild: THREE.CanvasTexture | null = null, funkenBild: THREE.CanvasTexture | null = null, ringBild: THREE.CanvasTexture | null = null;
+const glatt = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+export class TeleportEffekt {
+  readonly gruppe = new THREE.Group(); vergangen = false; private t = 0;
+  private saeule: THREE.Mesh; private kern: THREE.Mesh; private ring: THREE.Mesh; private funken: THREE.Points; private fp: Float32Array; private fv: { w: number; r: number; s: number; d: number }[] = [];
+  private mats: { m: THREE.MeshStandardMaterial; alt: THREE.Material | THREE.Material[]; mesh: THREE.Mesh }[] = [];
+  constructor(private figur: THREE.Object3D, private dauer: number, ppm: number) {
+    /* Säule: nach oben ausblendendes Licht, additiv; dunkle Stellen sind durchsichtig (sonst zeichnen sie auf der durchsichtigen Leinwand dunkel) */
+    saeulenBild ||= leinwandTextur(4, 128, (x) => { const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, "rgba(74,168,224,0)"); g.addColorStop(0.55, "rgba(74,168,224,0.75)"); g.addColorStop(0.92, "rgba(223,244,255,1)"); g.addColorStop(1, "#ffffff"); x.fillStyle = g; x.fillRect(0, 0, 4, 128); });
+    funkenBild ||= leinwandTextur(32, 32, (x) => { const g = x.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, "#fff"); g.addColorStop(0.35, "#bfe9ff"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.fillRect(0, 0, 32, 32); });
+    ringBild ||= leinwandTextur(128, 128, (x) => { const g = x.createRadialGradient(64, 64, 20, 64, 64, 64); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(0.6, "#3c9be0"); g.addColorStop(0.8, "#e6f7ff"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.fillRect(0, 0, 128, 128); });
+    const licht = (map: THREE.Texture) => new THREE.MeshBasicMaterial({ map, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0 });
+    const zyl = (r: number, h: number) => { const g = new THREE.CylinderGeometry(r, r, h, 28, 1, true); g.translate(0, h / 2, 0); return g; };
+    this.saeule = new THREE.Mesh(zyl(0.46, 2.1), licht(saeulenBild)); this.kern = new THREE.Mesh(zyl(0.16, 2.1), licht(saeulenBild));
+    (this.kern.material as THREE.MeshBasicMaterial).color = FARBE_KERN.clone(); (this.saeule.material as THREE.MeshBasicMaterial).color = FARBE_LICHT.clone();
+    this.ring = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.4), licht(ringBild)); this.ring.rotation.x = -Math.PI / 2; this.ring.position.y = 0.02;
+    /* Funken: steigen spiralförmig auf */
+    const N = 80; this.fp = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) this.fv.push({ w: Math.random() * Math.PI * 2, r: 0.15 + Math.random() * 0.38, s: 0.7 + Math.random() * 1.3, d: Math.random() * 0.55 });
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(this.fp, 3));
+    this.funken = new THREE.Points(g, new THREE.PointsMaterial({ map: funkenBild, size: Math.max(3, 0.075 * ppm), sizeAttenuation: false, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: FARBE_LICHT.clone(), opacity: 0 }));
+    this.saeule.renderOrder = this.kern.renderOrder = this.funken.renderOrder = 10; this.ring.renderOrder = 9;
+    this.gruppe.add(this.ring, this.saeule, this.kern, this.funken); this.gruppe.visible = false;
+    /* Figur: eigene Materialkopien (die Vorlage teilen sich alle Darsteller), damit sie aufglühen und verblassen kann */
+    figur.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !o.visible) return; const alt = m.material, neu = (Array.isArray(alt) ? alt[0] : alt).clone() as THREE.MeshStandardMaterial;
+      neu.transparent = true; if (neu.emissive) neu.emissive = new THREE.Color(0, 0, 0); m.material = neu; this.mats.push({ m: neu, alt, mesh: m }); });
+  }
+  weiter(dt: number) {
+    this.t += dt; const p = Math.min(1, this.t / this.dauer), sm = this.saeule.material as THREE.MeshBasicMaterial, km = this.kern.material as THREE.MeshBasicMaterial;
+    /* Säule: blendet ein, flackert leicht, wird am Ende hell und fällt zu einem Strahl zusammen */
+    const an = glatt(0.0, 0.35, p), aus = 1 - glatt(0.88, 1.0, p), flacker = 0.88 + 0.12 * Math.sin(this.t * 31) * Math.sin(this.t * 13);
+    sm.opacity = 0.85 * an * aus * flacker; km.opacity = (0.5 + 0.6 * glatt(0.55, 0.85, p)) * an * aus;
+    const enger = 1 - 0.85 * glatt(0.82, 1.0, p); this.saeule.scale.set(enger * (0.9 + 0.1 * Math.sin(this.t * 9)), 0.4 + 0.6 * an, enger * (0.9 + 0.1 * Math.sin(this.t * 9))); this.kern.scale.set(enger, 0.3 + 0.7 * an, enger);
+    this.saeule.rotation.y += dt * 1.5;
+    /* Bodenring: breitet sich aus und verblasst */
+    const rm = this.ring.material as THREE.MeshBasicMaterial, rp = (this.t * 0.9) % 1; this.ring.scale.setScalar(0.5 + rp * 1.1); rm.opacity = (1 - rp) * an * aus;
+    /* Funken */
+    (this.funken.material as THREE.PointsMaterial).opacity = an * aus;
+    for (let i = 0; i < this.fv.length; i++) { const f = this.fv[i], h = ((this.t * f.s + f.d) % 1.0) * 2.1, w = f.w + this.t * (2.2 + f.s), r = f.r * (1 - 0.5 * h / 2.1) * enger;
+      this.fp[i * 3] = Math.cos(w) * r; this.fp[i * 3 + 1] = h; this.fp[i * 3 + 2] = Math.sin(w) * r; }
+    (this.funken.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
+    /* Figur: glüht auf, wird schmal und lang, verblasst */
+    const gluehen = glatt(0.35, 0.75, p), blass = glatt(0.62, 0.92, p);
+    for (const { m } of this.mats) { if (m.emissive) { m.emissive.copy(FARBE_LICHT).multiplyScalar(1.6 * gluehen); } m.opacity = 1 - blass; m.depthWrite = blass < 0.5; }
+    const zieh = glatt(0.6, 0.95, p); this.figur.scale.set(1 - 0.75 * zieh, 1 + 0.25 * zieh, 1 - 0.75 * zieh);
+    if (p >= 0.95) this.vergangen = true;
+  }
+  /** aufräumen (Darsteller entfernt) */
+  weg() { for (const { alt, mesh } of this.mats) mesh.material = alt; this.figur.scale.set(1, 1, 1); this.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (m.geometry) m.geometry.dispose(); }); }
 }
 /** Standbild einer Figur in eine Leinwand (Heldeneditor, Profilbild): Ruhe, erstes Bild, aus einer der acht Richtungen.
  *  ausschnitt "ganz": die ganze Figur von leicht oben; "kopf": Kopf und Schultern fast auf Augenhöhe */

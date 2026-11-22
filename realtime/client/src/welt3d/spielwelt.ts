@@ -150,6 +150,7 @@ export class Spielwelt3D implements WeltKern {
   gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
     if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.visible = false; this.stickWeg(); }
+  teleportAbreise(): number { const f = this.figur as { teleport?: () => number }; return f.teleport ? f.teleport() : 0; }
   abblenden(ms: number, dann: () => void) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.add("an"); setTimeout(dann, ms + 20); }
   private aufblenden(ms: number) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.remove("an"); }
   /** Riss und andere Szenen des Spiels: die Seite startet sie (die 3D-Welt hat keine Phaser-Szenen) */

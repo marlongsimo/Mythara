@@ -10,6 +10,9 @@
  * Abschaltbar je Gerät: ?held3d=0 (wieder an: ?held3d=1).
  * Schnittstelle wie FigurLeinwand: stelle, blick, blickWinkel, setze, angriff, sterben, sichtbar, schritt, entfernen, geladen, bild.gruppe.
  */
+import { TeleportEffekt } from "../echt3d/darsteller";
+/** Dauer des Teleport-Effekts (Sekunden, wie echt3d/figur.ts) */
+const TELEPORT_S = 1.8;
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -45,7 +48,7 @@ export class Held3D {
   readonly bild = { gruppe: new THREE.Group() }; private ersatz: FigurLeinwand; private wurzel: THREE.Object3D | null = null; private mixer: THREE.AnimationMixer | null = null;
   private clips = new Map<string, THREE.AnimationClip>(); private aktion: THREE.AnimationAction | null = null; private name = ""; private teile = new Map<string, THREE.Object3D>(); private mats: THREE.Material[] = [];
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
-  fertig: (() => void) | null = null;
+  fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
   constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
@@ -76,6 +79,10 @@ export class Held3D {
   setze(z: "ruhe" | "laufen" | "block" | "schild_laufen"): void { this.ersatz.setze(z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; this.spiele(this.gegner ? this.gegner.angriff : STARTWAFFEN[this.held!.waffe].angriff, true); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
+  /** Teleport (Abreise, Figuren-Fabrik): Bewegung teleport_weg, Lichtsäule, die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = kein Modell) */
+  teleport(): number { if (!this.wurzel || this.gestorben || this.effekt) return 0; this.gestorben = true; this.einmal = false; if (this.clips.has("teleport_weg")) this.spiele("teleport_weg", true);
+    const fx = new TeleportEffekt(this.wurzel, TELEPORT_S, 60); fx.gruppe.scale.setScalar(this.hoehe / 1.8); fx.gruppe.visible = true; this.bild.gruppe.add(fx.gruppe); this.effekt = fx;
+    this.skala = this.wurzel.scale.x; return TELEPORT_S * 1000; }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true); else this.spiele(z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : "ruhe", false); }
   private spiele(name: string, einmal: boolean, halten = einmal) { const c = this.clips.get(name), m = this.mixer; if (!c || !m) return; if (this.name === name && !einmal) return;
@@ -86,7 +93,8 @@ export class Held3D {
     if (!this.wurzel) { this.ersatz.schritt(dtMs, gieren); return; } if (!this.an) return; const dt = dtMs / 1000;
     if (this.held && this.held.ich) this.zeigen(); /* angelegte Waffen können sich ändern (Ausrüstung) */
     const ziel = Math.atan2(Math.cos(this.blickW), Math.sin(this.blickW)); let d = ziel - this.dreh; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-    this.dreh += d * Math.min(1, dt * 12); this.wurzel.rotation.y = this.dreh; if (this.mixer) this.mixer.update(dt); }
+    this.dreh += d * Math.min(1, dt * 12); this.wurzel.rotation.y = this.dreh; if (this.mixer) this.mixer.update(dt);
+    const fx = this.effekt; if (fx) { fx.weiter(dt); this.wurzel.scale.multiplyScalar(this.skala); /* der Effekt zieht die Figur schmal und lang (Maßstab 1) – hier auf die Weltgröße */ this.wurzel.visible = !fx.vergangen; } }
   entfernen(szene: THREE.Scene): void { this.weg = true; szene.remove(this.bild.gruppe); this.ersatz.entfernen(szene); if (this.mixer) this.mixer.stopAllAction(); for (const m of this.mats) m.dispose(); }
 }
 /** Figur eines Helden: mit eigenem Aussehen als 3D-Modell (wenn eingeschaltet), sonst das bisherige Bild */

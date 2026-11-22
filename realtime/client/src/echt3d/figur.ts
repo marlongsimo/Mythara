@@ -13,7 +13,7 @@ interface DarstellerT {
   breite: number; hoehe: number; fussY: number; aufloesung: number;
   zeige(ids: string[]): void; haut(url: string): Promise<void>; faerben(p: string, ziel: [number, number, number], gebaut: [number, number, number]): void;
   hat(n: string): boolean; dauer(n: string): number; spiele(n: string, einmal?: boolean, fertig?: () => void): void; blick(w: number): void;
-  zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void;
+  zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void; teleport(dauer?: number): void;
 }
 type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void> };
 
@@ -35,6 +35,10 @@ const MODELL: Record<string, string> = { mann: "basemann3d", frau: "basefrau3d" 
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] };
 let zaehler = 0;
+/** Dauer des Teleport-Effekts (Sekunden) */
+const TELEPORT_S = 1.8;
+/** Teleport-Abreise der eigenen Figur, falls sie eine 3D-Figur ist. Zurück: wie lange es dauert (ms); 0 = keine 3D-Figur, sofort weiter */
+export function teleportAbreise(f: unknown): number { return f instanceof Figur3D ? f.teleport() : 0; }
 
 export class Figur3D extends Phaser.GameObjects.Container {
   private d: DarstellerT | null = null; private bild: Phaser.GameObjects.Image | null = null; private tex: Phaser.Textures.CanvasTexture | null = null;
@@ -75,6 +79,9 @@ export class Figur3D extends Phaser.GameObjects.Container {
   setInteractive(...a: unknown[]): this { if (a.length) return super.setInteractive(...(a as [])); return super.setInteractive(new Phaser.Geom.Rectangle(-this.width / 2, -this.height, this.width, this.height), Phaser.Geom.Rectangle.Contains); }
   /** Besiegt: Todesbewegung einmal, dann liegen bleiben. Zurück: Dauer in ms */
   sterben(): number { if (!this.d || !this.d.hat("tod")) return 0; this.gestorben = true; this.einmal = false; this.zustand = "tod"; this.d.spiele("tod", true); return this.d.dauer("tod"); }
+  /** Teleport (Abreise): Bewegung teleport_weg mit Lichtsäule; die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = keine 3D-Figur bereit) */
+  teleport(): number { const d = this.d; if (!d || this.gestorben) return 0; this.gestorben = true; this.einmal = false; this.zustand = "teleport";
+    if (d.hat("teleport_weg")) d.spiele("teleport_weg", true); d.teleport(TELEPORT_S); return TELEPORT_S * 1000; }
   /* ---------- Ablauf ---------- */
   private setze(z: string) { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   /** Zustand des Spiels → Bewegung der Figur */

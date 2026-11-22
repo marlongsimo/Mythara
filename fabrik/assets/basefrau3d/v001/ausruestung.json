@@ -12,7 +12,8 @@
     "bogen",
     "armbrust1h",
     "dolchwurf",
-    "tod"
+    "tod",
+    "teleport_weg"
   ],
   "koerper_textur": true,
   "stil": "gemalt",

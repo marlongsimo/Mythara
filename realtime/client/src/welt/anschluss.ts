@@ -45,7 +45,7 @@ let mit: MitArt | null = null, region = { id: "", x: 0, y: 0, b: 1, h: 1 };
 
 /** Was die Anbindung von einer Welt braucht – die 2D-Welt (Phaser, welt.ts) und die 3D-Welt (welt3d/spielwelt.ts) erfüllen es beide */
 export interface WeltKern { gesperrt: boolean; hier: string; held: string; ort: { x: number; y: number }; pfad: { x: number; y: number }[]; laeuft: boolean; gemerkteStelle: boolean;
-  halt(): void; profil(): void; /** eine Szene des Spiels starten (Riss) */ szeneStarten(key: string, daten: object): void; /** abblenden, danach weiter */ abblenden(ms: number, dann: () => void): void;
+  halt(): void; profil(): void; /** eine Szene des Spiels starten (Riss) */ szeneStarten(key: string, daten: object): void; /** abblenden, danach weiter */ abblenden(ms: number, dann: () => void): void; /** Teleport-Abreise der eigenen Figur (Lichtsäule); zurück: Dauer in ms, 0 = sofort */ teleportAbreise(): number;
   /* nur die 3D-Welt: eigene Darstellung der Mitspieler, Sprechblase über dem eigenen Helden, Laufzeit, Versetzen, Blickwinkel */
   mitspielerNeu?(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }): MitArt; eigeneBlase?(text: string): void; seit?(): number; versetzen?(x: number, y: number): void; blick?(): number;
   /** eigener Kampf (3D-Darstellung) */ kampfNeu?(region: string, wx: number, wy: number, gefallen: () => void, wartend: boolean): WeltKampf }
@@ -73,7 +73,9 @@ function heldWaehlen(s: WeltKern) { if (s.gesperrt || !nurWaldmark(s)) return; s
   wahl((held) => { s.gesperrt = false; if (held === s.held) return; s.gesperrt = true; weltHeld(held); setTimeout(() => location.reload(), 3000); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
 function teleport(s: WeltKern) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
-  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.abblenden(300, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
+  s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
+  const ms = s.teleportAbreise(); /* 3D-Held: Lichtsäule, er vergeht im Licht – erst danach abblenden */
+  setTimeout(() => s.abblenden(300, () => { location.href = "./?von=teleport" + serverZusatz(); }), Math.max(0, ms - 250)); }
 /** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
 let kampf: WeltKampf | null = null;
 const randAbstand = (s: WeltKern, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);

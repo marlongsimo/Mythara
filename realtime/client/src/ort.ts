@@ -6,6 +6,7 @@
 import Phaser from "phaser";
 import { HELDEN } from "../../shared/config";
 import { heldenFigur, richten, blickVon } from "./modulfigur";
+import { teleportAbreise } from "./echt3d/figur";
 import { team, kampagneGeschafft, weltkarte } from "./weltkarte";
 import { rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel } from "./rahmen";
 import { zoomFaktor, zoomKnopf } from "./zoom";
@@ -295,7 +296,8 @@ export class Ort extends Phaser.Scene {
   /** Die Kampagne ist geschafft: festhalten, den Ort für den nächsten Besuch frisch machen, zurück in die Waldmark */
   geschafft(nr: number) { kampagneGeschafft(nr); this.gesperrt = true; wertung(ortName, this.merker, () => this.verlassen()); }
   /** Teleport: von überall zurück in die Waldmark (wie durchs Tor – der Fortschritt im Dorf bleibt) */
-  heimwaerts() { if (this.gesperrt) return; this.gesperrt = true; if (mitreise()) mitPause(ortName); else dorfVerlassen(); this.cameras.main.fadeOut(350, 0, 0, 0); this.time.delayedCall(380, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
+  heimwaerts() { if (this.gesperrt) return; this.gesperrt = true; if (mitreise()) mitPause(ortName); else dorfVerlassen(); const ms = teleportAbreise(this.figur); /* 3D-Held: Lichtsäule, er vergeht im Licht – erst danach abblenden */
+    this.time.delayedCall(Math.max(0, ms - 250), () => this.cameras.main.fadeOut(350, 0, 0, 0)); this.time.delayedCall(Math.max(0, ms - 250) + 380, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
   verlassen() { dorfVerlassen(); try { localStorage.removeItem("ez_ort_" + ortName); localStorage.removeItem("ez_ort_" + ortName + "_pos"); } catch { /* privat */ } location.href = "./?von=tor"; }
   /** Wer in der Nähe steht, lässt sich ansprechen (Knopf, Taste E); an einer Tür geht es hinein. Solange geredet wird, steht der Held. */
   sprechen() { if (this.gesperrt || !this.nah) return; const kn = $("#ez-dorf-knopf");
