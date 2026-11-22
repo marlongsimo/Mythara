@@ -3,7 +3,7 @@
   "name": "Einfacher Lederpanzer",
   "kategorie": "ruestung",
   "aktuell": "v001",
-  "status": "Meshy „Oakwarden Leather Cuirass“, mit fabrik/teil_anpassen.py auf basemann3d (hoehe=0.64 oben=0.1) und basefrau3d (hoehe=0.6 oben=0.06 vor=0 abstand=0.025 seite=0.82)",
+  "status": "Meshy „Oakwarden Leather Cuirass“, mit fabrik/teil_anpassen.py auf basemann3d (hoehe=0.74 oben=0.1 abstand=0.02 max_weit=1.35) und basefrau3d (hoehe=0.68 oben=0.06 vor=0 abstand=0.018 seite=0.76 max_weit=1.25)",
   "herkunft": "Meshy",
   "werte": {
     "abwehr_nah": 3,
