@@ -95,6 +95,18 @@
     "dolchwurf"
    ]
   },
+  "schild.wache": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ]
+  },
   "waffe.armbrust": {
    "art": "starr",
    "platz": "hand_r",
@@ -184,6 +196,18 @@
     "laufen",
     "tod",
     "stich2h"
+   ]
+  },
+  "waffe.speer.wache": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
    ]
   },
   "waffe.stab.hirte": {

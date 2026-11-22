@@ -235,6 +235,39 @@
       ],
       "drehen": 180,
       "angriff": "bogen"
+    },
+    {
+      "id": "waffe.speer.wache",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.speer.wache/v001/quelle/speer.glb",
+      "griff": 0.62,
+      "griff2": 0.5,
+      "klasse": "speer_einhand",
+      "angriff": "stich",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "schild.wache",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.wache/v001/quelle/schild.glb",
+      "klasse": "schild",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
     }
   ],
   "stuecke_behalten": true,
