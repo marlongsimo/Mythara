@@ -1,0 +1,15 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "stadtwache3d v002 – Stadtwache aus Meshy „Azure Lionguard“: Helm mit Federbusch, Plattenrüstung mit Löwe, blauer Wappenrock, Speer und Turmschild – alles fest im Modell; nur Ruhe und Gehen.",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}
