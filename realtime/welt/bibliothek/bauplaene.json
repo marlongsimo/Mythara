@@ -3115,6 +3115,314 @@
      }
     ]
    }
+  },
+  {
+   "id": "waldmark_rathaus_01",
+   "name": "Rathaus",
+   "interaktion": "lesen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -4.4,
+     "d": 0,
+     "b": 8.8,
+     "t": 6.8,
+     "h": 5.2,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 2.8,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       168,
+       74,
+       52
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": -6.6,
+     "d": 4.0,
+     "b": 2.2,
+     "t": 2.2,
+     "h": 7.8,
+     "wand": "stein",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.8,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       86,
+       92,
+       104
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 2.0,
+     "h": 2.4,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": -3.2,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": -1.9,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": 1.9,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": 3.2,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": -3.4
+    },
+    {
+     "wand": "sued",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": -2.1
+    },
+    {
+     "wand": "sued",
+     "z": 3.05,
+     "b": 1.0,
+     "h": 0.9,
+     "art": "rund",
+     "x": 0.0
+    },
+    {
+     "wand": "sued",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": 2.1
+    },
+    {
+     "wand": "sued",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "x": 3.4
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 2.2
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 5.0
+    },
+    {
+     "wand": "ost",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 2.2
+    },
+    {
+     "wand": "ost",
+     "z": 2.85,
+     "b": 0.8,
+     "h": 0.9,
+     "art": "kreuz",
+     "d": 5.0
+    },
+    {
+     "wand": "sued",
+     "koerper": "turm",
+     "z": 5.8,
+     "b": 1.0,
+     "h": 1.0,
+     "art": "rund",
+     "x": -5.5
+    },
+    {
+     "wand": "sued",
+     "koerper": "turm",
+     "z": 2.8,
+     "b": 0.45,
+     "h": 1.1,
+     "art": "schmal",
+     "x": -5.5
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": -1.5,
+     "x1": 1.5,
+     "tiefe": 1.1,
+     "z": 2.75,
+     "deckung": "ziegel",
+     "farbe": [
+      168,
+      74,
+      52
+     ]
+    },
+    {
+     "art": "banner",
+     "x": -1.35,
+     "z": 4.7,
+     "farbe": [
+      46,
+      70,
+      142
+     ],
+     "eigenfarbe": true
+    },
+    {
+     "art": "banner",
+     "x": 1.35,
+     "z": 4.7,
+     "farbe": [
+      46,
+      70,
+      142
+     ],
+     "eigenfarbe": true
+    },
+    {
+     "art": "laterne",
+     "x": -1.8,
+     "z": 2.1
+    },
+    {
+     "art": "laterne",
+     "x": 1.8,
+     "z": 2.1
+    },
+    {
+     "art": "schild",
+     "x": 4.0,
+     "z": 2.5,
+     "farbe": [
+      226,
+      190,
+      96
+     ]
+    },
+    {
+     "art": "glocke",
+     "koerper": "turm",
+     "x": -5.5,
+     "z": 7.3
+    },
+    {
+     "art": "kamin",
+     "x": 3.0,
+     "d": 5.6
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -1.2,
+      "d": 5.6
+     },
+     {
+      "art": "tisch",
+      "x": 0.0,
+      "d": 5.6
+     },
+     {
+      "art": "tisch",
+      "x": 1.2,
+      "d": 5.6
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 4.8
+     },
+     {
+      "art": "regal",
+      "x": -3.3,
+      "d": 6.4
+     },
+     {
+      "art": "regal",
+      "x": 3.3,
+      "d": 6.4
+     },
+     {
+      "art": "theke",
+      "x": 2.9,
+      "d": 1.3
+     },
+     {
+      "art": "fass",
+      "x": -3.8,
+      "d": 1.0
+     },
+     {
+      "art": "fass",
+      "x": -3.8,
+      "d": 1.8
+     }
+    ]
+   }
   }
  ]
 }

@@ -68,6 +68,8 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     ["kraeuterhaus", "dorf_kraeuterhaus_01", 19.5, 39], ["baeckerei", "dorf_baeckerei_01", 55, 49.5],
     /* Nias Salon (22.11.2026): an der Nordostecke des Marktplatzes zwischen Kapelle und Schmiede, die Tür zur Dorfstraße */
     ["salon", "waldmark_salon_01", 59, 28.2],
+    /* Rathaus (22.11.2026): zweistöckig, an der Westseite des Marktplatzes zwischen Taverne und Heldenhalle, Glockenturm hinten links */
+    ["rathaus", "waldmark_rathaus_01", 39, 27.4],
     ["stand_1", "dorf_marktstand_01", 39.2, 38.6], ["stand_2", "dorf_marktstand_02", 43.6, 41.6], ["stand_3", "dorf_marktstand_03", 56, 40.4], ["brunnen", "dorf_brunnen_01", 48, 32.8]];
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
@@ -106,6 +108,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
       lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59, 28.2), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
+      lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39, 27.4), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
       lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */
