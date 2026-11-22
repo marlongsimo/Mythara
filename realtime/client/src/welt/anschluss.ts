@@ -46,7 +46,8 @@ let mit: MitArt | null = null, region = { id: "", x: 0, y: 0, b: 1, h: 1 };
 export interface WeltKern { gesperrt: boolean; hier: string; held: string; ort: { x: number; y: number }; pfad: { x: number; y: number }[]; laeuft: boolean; gemerkteStelle: boolean;
   halt(): void; profil(): void; /** eine Szene des Spiels starten (Riss) */ szeneStarten(key: string, daten: object): void; /** abblenden, danach weiter */ abblenden(ms: number, dann: () => void): void;
   /* nur die 3D-Welt: eigene Darstellung der Mitspieler, Sprechblase über dem eigenen Helden, Laufzeit, Versetzen, Blickwinkel */
-  mitspielerNeu?(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }): MitArt; eigeneBlase?(text: string): void; seit?(): number; versetzen?(x: number, y: number): void; blick?(): number }
+  mitspielerNeu?(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }): MitArt; eigeneBlase?(text: string): void; seit?(): number; versetzen?(x: number, y: number): void; blick?(): number;
+  /** eigener Kampf (3D-Darstellung) */ kampfNeu?(region: string, wx: number, wy: number, gefallen: () => void, wartend: boolean): WeltKampf }
 /** Darstellung der Mitspieler (2D: welt.ts Mitspieler, 3D: welt3d/mitspieler.ts) */
 export interface MitArt { liste(l: Fremder[]): void; weg(id: number): void; blase(id: number, text: string): void; schritt(dt: number): void; unterPunkt?(px: number, py: number): Fremder | null }
 /** Tafeln öffnen; die Welt steht still, solange eine offen ist */
@@ -74,7 +75,7 @@ function teleport(s: WeltKern) { if (s.gesperrt) return; if (s.hier === "waldmar
   s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } s.abblenden(300, () => { location.href = "./?von=teleport" + serverZusatz(); }); }
 /** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
 let kampf: WeltKampf | null = null;
-const randAbstand = (s: Welt, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
+const randAbstand = (s: WeltKern, z: { x0: number; y0: number; b: number; h: number }) => Math.min(s.ort.x - z.x0, s.ort.y - z.y0, z.x0 + z.b - s.ort.x, z.y0 + z.h - s.ort.y);
 /** Unter der Minimap: Sicherer Ort, Einzelkampf oder Mehrkampf – je nachdem, wo man steht */
 let zoomJetzt = 2.2;
 const KAMPFZEICHEN: Record<string, string> = {
@@ -100,25 +101,27 @@ const abstandZu = (x: number, y: number, z: { x0: number; y0: number; b: number;
 const gefallen = () => { kampfEnde(); try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ } location.href = "./?von=tod" + serverZusatz(); };
 /** Vorverbinden: nähert sich der Held einem Kampfgebiet (unter 10 Feldern), meldet sich die Welt dort schon an und lädt die Gegnerfiguren –
     über die Grenze geht es dann ohne Halt. Entfernt er sich wieder (über 16 Felder), wird die Verbindung geschlossen. */
-function vorverbinden(s: Welt) { if (!freigabe("suedtor") || s.gesperrt) return;
+function vorverbinden(s: WeltKern) { if (!freigabe("suedtor") || s.gesperrt) return;
   if (kampf) { if (!kampf.eingetreten && abstandZu(s.ort.x, s.ort.y, kampf.zone) > 16) kampfEnde(); return; }
-  const rid = naechstesGebiet(s, ""); if (rid) kampf = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); }
+  const rid = naechstesGebiet(s, ""); if (rid) kampf = kampfNeu(s, rid, s.ort.x, s.ort.y, gefallen, true); }
 /** Das nächstgelegene Kampfgebiet in weniger als 10 Feldern (außer dem, in dem man steht) */
-function naechstesGebiet(s: Welt, ausser: string): string { let best = "", d = 10; for (const [rid, z] of Object.entries(WELTZONEN)) { const a = abstandZu(s.ort.x, s.ort.y, z); if (rid !== ausser && a < d) { d = a; best = rid; } } return best; }
+function naechstesGebiet(s: WeltKern, ausser: string): string { let best = "", d = 10; for (const [rid, z] of Object.entries(WELTZONEN)) { const a = abstandZu(s.ort.x, s.ort.y, z); if (rid !== ausser && a < d) { d = a; best = rid; } } return best; }
 /* Zwischen zwei Kampfgebieten: Nähert sich der Held im Kampfgebiet der Grenze eines anderen (unter 10 Feldern), wird das Nachbargebiet
    schon vorab verbunden – beim Überschreiten der Grenze geht es ohne Halt weiter. Entfernt er sich wieder (über 16 Felder), wird es geschlossen. */
 let naechster: WeltKampf | null = null;
 function naechsterEnde() { if (naechster) { naechster.ende(); naechster = null; } }
-function nachbarVorbereiten(s: Welt) { if (s.gesperrt) return;
+function nachbarVorbereiten(s: WeltKern) { if (s.gesperrt) return;
   if (naechster) { if (naechster.region !== s.hier && abstandZu(s.ort.x, s.ort.y, naechster.zone) > 16) naechsterEnde(); return; }
-  const rid = naechstesGebiet(s, s.hier); if (rid) naechster = new WeltKampf(s as unknown as WeltSzene, rid, s.ort.x, s.ort.y, gefallen, true); }
+  const rid = naechstesGebiet(s, s.hier); if (rid) naechster = kampfNeu(s, rid, s.ort.x, s.ort.y, gefallen, true); }
 /** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
-function fremd(s: Welt, rx: number, ry: number): boolean {
+/** Kampf anlegen: die 3D-Welt mit eigener Darstellung, die 2D-Welt wie bisher */
+const kampfNeu = (s: WeltKern, rid: string, x: number, y: number, gef: () => void, wartend = false): WeltKampf => (s.kampfNeu ? s.kampfNeu(rid, x, y, gef, wartend) : new WeltKampf(s as unknown as WeltSzene, rid, x, y, gef, wartend));
+function fremd(s: WeltKern, rx: number, ry: number): boolean {
   const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { if (kampf && kampf.eingetreten) kampfEnde(); if (!kampf && naechster) { kampf = naechster; naechster = null; } vorverbinden(s); return false; } const rand = randAbstand(s, z);
   if (kampf && kampf.region !== s.hier) kampfEnde();
   if (!kampf && naechster && naechster.region === s.hier) { kampf = naechster; naechster = null; } /* das Nachbargebiet war schon verbunden */
   nachbarVorbereiten(s);
-  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = new WeltKampf(s as unknown as WeltSzene, s.hier, s.ort.x, s.ort.y, gefallen); }
+  if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = kampfNeu(s, s.hier, s.ort.x, s.ort.y, gefallen); }
   if (!kampf.eingetreten) kampf.betreten(s.ort.x, s.ort.y); /* vorverbunden: jetzt hinein, ohne Wartezeit */
   if (!kampf.bereit && kampf.vorverbunden) return false; /* bis der Server den Helden meldet (Bruchteile einer Sekunde): selbst weiterlaufen */
   if (!kampf.bereit) { if (kampf.art === "warte") { const t = $("#ez-dorf-hilfe"); t.textContent = "Verbinde mit dem Spielserver …"; t.style.display = ""; } return true; } /* bis der Server antwortet, bleibt der Held stehen */
@@ -216,7 +219,13 @@ export const anschluss3D = {
   tat: oeffne, knopf: (art: string, knopf: string): string => (WELT.knopf ? WELT.knopf(art, knopf) : knopf), menue: menueEinrichten, betreten: betretenAllgemein,
   regionWechsel: (s: WeltKern, R: { id: string; ursprung: number[]; chunks: number[] }) => regionBetreten(s, R.id, R.ursprung[0], R.ursprung[1], R.chunks[0], R.chunks[1]),
   schritt: (s: WeltKern, dt: number) => { kampfartZeigen(s); menuePlatz(); obenPlatz(); const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y; karteFolgen(px / region.b, py / region.h);
-    if (mit) { weltPos(px, py, s.blick ? s.blick() : 0, s.laeuft, s.ort.x, s.ort.y); mit.schritt(dt); } },
+    if (kampf) kampf.schritt(dt); if (mit) { weltPos(px, py, s.blick ? s.blick() : 0, s.laeuft, s.ort.x, s.ort.y); mit.schritt(dt); } },
+  /** Kampfgebiet: true = der Server bewegt den Helden (wie WELT.fremd in der 2D-Welt) */
+  fremd: (s: WeltKern, rx: number, ry: number): boolean => fremd(s, rx, ry),
+  /** Antippen eines Bodenpunkts (Weltfelder) im Kampf: ein Gegner wird zum Ziel. true = erledigt */
+  kampfAntippen: (wx: number, wy: number): boolean => Boolean(kampf && kampf.bereit && kampf.antippen(wx, wy)),
+  /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
+  springen: () => kampfEnde(),
   /** Antippen: ein Mitspieler öffnet seine Karte. true = erledigt */
   antippen: (s: WeltKern, px: number, py: number): boolean => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; },
 };

@@ -22,6 +22,7 @@ import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 import { serverZusatz } from "../gruppe";
 import { Mitspieler3D, blase3d } from "./mitspieler";
+import { WeltKampf3D } from "./kampf3d";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = matchMedia("(pointer: coarse)").matches, C = CHUNK_FELDER, RADIUS = 0.3, HOEHE = 2.0;
@@ -38,7 +39,7 @@ export function welt3dAn(): boolean {
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
-  hier = ""; gesperrt = false; gemerkteStelle = false; nah: { text: string; tat: () => void } | null = null;
+  hier = ""; gesperrt = false; gemerkteStelle = false; /** Schild erhoben (Kampf, Torvald) */ schildHoch = false; /** wie eine Phaser-Szene: Ende melden (der Kampf räumt sich dann auf) */ events = { once: (_n: string, _f: () => void): void => {} }; nah: { text: string; tat: () => void } | null = null;
   figur!: FigurLeinwand; marke!: THREE.Mesh; schild = document.createElement("div"); private blende = document.createElement("div");
   private stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
 
@@ -110,7 +111,7 @@ export class Spielwelt3D implements WeltKern {
       ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
       if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return;
-      if (st.weit < 12 && performance.now() - st.t < 450) { if (!anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } const touch = e.pointerType === "touch"; this.stickWeg(); if (touch) { this.rx = 0; this.ry = 0; } };
+      if (st.weit < 12 && performance.now() - st.t < 450) { const b = this.motor.boden(e.clientX, e.clientY); if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } const touch = e.pointerType === "touch"; this.stickWeg(); if (touch) { this.rx = 0; this.ry = 0; } };
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
   }
@@ -125,13 +126,14 @@ export class Spielwelt3D implements WeltKern {
   /** Riss und andere Szenen des Spiels: die Seite startet sie (die 3D-Welt hat keine Phaser-Szenen) */
   /* ───────────── für die gemeinsame Anbindung (anschluss.ts WeltKern) ───────────── */
   private beginn = performance.now();
+  kampfNeu(region: string, wx: number, wy: number, gefallen: () => void, wartend: boolean) { return new WeltKampf3D(this, region, wx, wy, gefallen, wartend); }
   mitspielerNeu(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }) { return new Mitspieler3D(this.motor, o); }
   eigeneBlase(text: string) { blase3d(this.motor, () => ({ x: this.ort.x, y: this.motor.hoehe(this.ort.x, this.ort.y) + HOEHE + 0.9, z: this.ort.y }), text); }
   seit() { return performance.now() - this.beginn; }
   versetzen(x: number, y: number) { this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
   blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
-  springen(x: number, y: number) { if (this.gesperrt) return; this.halt(); this.gesperrt = true;
+  springen(x: number, y: number) { if (this.gesperrt) return; anschluss3D.springen(); this.halt(); this.gesperrt = true;
     this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
   umsehen() {
     const o = this.ort, r = this.regionBei(o.x, o.y); let nah: { text: string; tat: () => void } | null = null;
@@ -157,6 +159,7 @@ export class Spielwelt3D implements WeltKern {
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 
+  private vorher = { x: 0, y: 0 }; /** im Kampfgebiet: läuft der Held (vom Server bewegt)? */ private laeuftFremd = false;
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
   private bild(dt: number) { this.simZeit += dt;
     const o = this.ort, D = HELDEN[this.held]; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry);
@@ -164,9 +167,12 @@ export class Spielwelt3D implements WeltKern {
     else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += dt;
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.visible = false; } else { rx = dx / l; ry = dy / l; } }
-    const l = Math.hypot(rx, ry), faehrt = l > 0.05;
-    if (faehrt) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * dt, y: o.y + ry * k * D.tempo * dt, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; this.figur.blick(rx, ry); }
-    this.laeuft = faehrt; this.figur.setze(faehrt ? "laufen" : "ruhe");
+    const l = Math.hypot(rx, ry), faehrt = l > 0.05, vorher = { x: o.x, y: o.y };
+    const fremd = anschluss3D.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0); /* im Kampfgebiet bewegt der Server den Helden (der Kampf setzt this.ort) */
+    if (faehrt && !fremd) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * dt, y: o.y + ry * k * D.tempo * dt, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; }
+    if (faehrt) this.figur.blick(rx, ry);
+    this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? "laufen" : "ruhe");
+    this.vorher = vorher;
     const y = this.motor.hoehe(o.x, o.y); this.motor.held.x = o.x; this.motor.held.z = o.y; this.figur.stelle(o.x, y, o.y); this.figur.schritt(dt * 1000, this.motor.gieren); this.marke.rotation.z += dt;
     if (performance.now() - this.letzterStrom > 400) { this.letzterStrom = performance.now(); void this.strom(); }
     this.umsehen(); this.regionZeigen();
@@ -175,5 +181,6 @@ export class Spielwelt3D implements WeltKern {
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; const p = this.motor.bildschirm(o.x, y + HOEHE + 0.35, o.y);
       this.schild.hidden = !p; if (p) this.schild.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; }
     anschluss3D.schritt(this, dt);
+    { const dx = this.ort.x - this.vorher.x, dy = this.ort.y - this.vorher.y; this.laeuftFremd = Math.hypot(dx, dy) > 0.4 * dt; if (this.laeuftFremd && !this.pfad.length && Math.hypot(this.rx, this.ry) < 0.05) this.figur.blick(dx, dy); } /* vom Server bewegt: Blick in Laufrichtung */
   }
 }
