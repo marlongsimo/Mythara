@@ -85,7 +85,7 @@ try {
   check(await anna.isVisible("#ez-konto .tafel.untersuchen"), "Ausrüstung → Schwert → Untersuchen"); await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(300);
   /* i: Werte der Ausrüstung in der Mitte (nur Gegenstände) */
   await anna.click('#ez-ausruestungtab [data-t="werte"]'); await anna.waitForTimeout(300); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "werte.png" });
-  check(await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.ausruestungswerte"); return !!t && /Angriff/.test(t.textContent) && /Verteidigung/.test(t.textContent) && /Geschick\+5/.test(t.textContent) && /Nahkampf\+3/.test(t.textContent); }), "Ausrüstung → i: Werte der Ausrüstung (Schwert +5 Geschick, Schild +3 Nahkampf-Verteidigung)");
+  check(await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.ausruestungswerte"); return !!t && /Angriff/.test(t.textContent) && /Verteidigung/.test(t.textContent) && /Geschick\+5/.test(t.textContent) && /Nahkampf\+0/.test(t.textContent); }), "Ausrüstung → i: Werte der Ausrüstung (Schwert +5 Geschick, Schild liegt im Rucksack: Verteidigung +0)");
   await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(200); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(200);
   { const vor = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, g: window.EZW.welt3d.gesperrt })); await anna.keyboard.down("d"); await anna.waitForTimeout(900); await anna.keyboard.up("d");
     const nach = await anna.evaluate(() => window.EZW.welt3d.ort.x); check(!vor.g && nach > vor.x + 0.1, `Nach dem Schließen reagiert das Spiel wieder (gesperrt: ${vor.g}, ${vor.x.toFixed(2)} → ${nach.toFixed(2)})`); }
