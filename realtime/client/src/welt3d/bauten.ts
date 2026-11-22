@@ -102,7 +102,9 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     regal: [1.2, 1.8, 0.4, "#6a4527"], ofen: [1.0, 1.3, 1.0, "#6c655e"], altar: [1.4, 1.0, 0.7, "#bdb5a5"], bank: [1.5, 0.45, 0.4, "#7a5232"], kessel: [0.7, 0.6, 0.7, "#34332f"], heu: [1.2, 0.8, 1.0, "#c9a85a"], saecke: [0.9, 0.6, 0.6, "#c2ae86"], muehlstein: [1.2, 0.5, 1.2, "#8e8a80"], frisierstuhl: [0.7, 0.55, 0.7, "#74428c"] };
   for (const m of plan.innen?.moebel || []) if (m.art === "spiegel") {   /* Nias Zauberspiegel: Goldrahmen, violett schimmerndes Glas */
     mauer.box(1.0, 1.95, 0.14, m.x, 0.06, -m.d, "#c49c46", 0, { muster: "metall" }); mauer.box(0.76, 1.55, 0.05, m.x, 0.26, -m.d + 0.09, "#c4a2ea", 0, { muster: "glatt" }); }
-  for (const m of (plan.innen?.moebel || []).filter((q) => q.art !== "spiegel")) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
+  for (const m of plan.innen?.moebel || []) if (m.art === "treppe") { for (let i = 0; i < 6; i++) mauer.box(1.1, 0.35 * (i + 1), 0.4, m.x, 0.06, -(m.d - 1.2 + i * 0.4 + 0.2), "#7a5232", 0, { muster: "holz" }); }
+    else if (m.art === "treppe_oben") { mauer.box(1.2, 0.02, 2.4, m.x, 0.07, -m.d, "#181210", 0, { muster: "glatt" }); for (const s of [-0.65, 0.65]) mauer.box(0.1, 0.9, 2.4, m.x + s, 0.06, -m.d, "#5b3b22", 0, { muster: "holz" }); mauer.box(1.3, 0.1, 0.1, m.x, 0.9, -(m.d - 1.2), "#5b3b22", 0, { muster: "holz" }); }
+  for (const m of (plan.innen?.moebel || []).filter((q) => !["spiegel", "treppe", "treppe_oben"].includes(q.art))) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
   const n = mauer.netz(); g.add(n);
   return aus;
 }

@@ -18,7 +18,7 @@ const ZIEL = join(WURZEL, "echtzeit", "welt3d"), ECHTZEIT = join(WURZEL, "echtze
 for (const f of readdirSync(ZIEL)) if (/^\d+_\d+\.json$/.test(f) || f === "daten.json") unlinkSync(join(ZIEL, f));
 const alle = regionNamen().map((n) => region(n));
 /* Ebenen: die Oberwelt (alle Gebiete ohne „ebene“) und jedes Untergrund-Gebiet für sich */
-const ebenen = [{ name: "oberwelt", regs: alle.filter((r) => r.region.ebene !== "untergrund") }, ...alle.filter((r) => r.region.ebene === "untergrund").map((r) => ({ name: r.region.id, regs: [r] }))];
+const ebenen = [{ name: "oberwelt", art: "oberwelt", regs: alle.filter((r) => !r.region.ebene) }, ...alle.filter((r) => r.region.ebene).map((r) => ({ name: r.region.id, art: r.region.ebene, regs: [r] }))];   /* ebene: untergrund (Höhle) oder innen (Obergeschoss) */
 
 const typen = [], typNr = new Map(), typVon = (o) => { if (!typNr.has(o.id)) { typNr.set(o.id, typen.length); typen.push({ id: o.id, kategorie: o.kategorie, bild: o.bild, groesse: o.groesse, anker: o.anker, massstab: o.massstab || 1, kollision: o.kollision || null, plan: PLAN.has(o.id) }); } return typNr.get(o.id); };
 const RAUM = { f: 3.4, v: 0.9, ".": 1.7, ",": 1.7, a: 0.35, e: 0.25, k: 0.15, p: 0.05, s: 0.4, m: 0.3, t: 0.5, d: 0, h: 0.15, F: 1.5, "~": 0.2, w: 0.2, o: 0.2, " ": 3.4 };
@@ -36,8 +36,8 @@ const chunks = [], gebiete = []; let start = null;
 for (const E of ebenen) {
   let cx0 = Infinity, cy0 = Infinity, cx1 = -Infinity, cy1 = -Infinity;
   for (const r of E.regs) { const [ux, uy] = r.region.ursprung, [cw, ch] = r.region.chunks; cx0 = Math.min(cx0, ux); cy0 = Math.min(cy0, uy); cx1 = Math.max(cx1, ux + cw); cy1 = Math.max(cy1, uy + ch); }
-  const X0 = cx0 * C, Y0 = cy0 * C, B = (cx1 - cx0) * C, H = (cy1 - cy0) * C, unten = E.name !== "oberwelt";
-  const boden = Array.from({ length: H }, () => Array(B).fill(unten ? "F" : " ")), dinge = [];
+  const X0 = cx0 * C, Y0 = cy0 * C, B = (cx1 - cx0) * C, H = (cy1 - cy0) * C, unten = E.art === "untergrund", innen = E.art === "innen";
+  const boden = Array.from({ length: H }, () => Array(B).fill(unten ? "F" : innen ? "X" : " ")), dinge = [];
   for (const r of E.regs) { const [ux, uy] = r.region.ursprung, ox = ux * C - X0, oy = uy * C - Y0;
     r.gelaende.forEach((z, y) => { for (let x = 0; x < z.length; x++) boden[oy + y][ox + x] = z[x]; });
     for (const p of r.objekte) { const o = OBJ.get(p.objekt); if (o) dinge.push([typVon(o), +(p.x + ux * C).toFixed(2), +(p.y + uy * C).toFixed(2), p.s || 1, p.spiegeln ? 1 : 0]); }
@@ -54,7 +54,8 @@ for (const E of ebenen) {
     for (const [a0, b0, a1, b1] of rechtecke) for (let yy = Math.floor(b0 - 5); yy <= Math.ceil(b1 + 5); yy++) for (let xx = Math.floor(a0 - 5); xx <= Math.ceil(a1 + 5); xx++) {
       if (xx < 0 || yy < 0 || xx >= W || yy >= Hh) continue; const d = Math.hypot(Math.max(a0 - xx, 0, xx - a1), Math.max(b0 - yy, 0, yy - b1)); fuss[yy * W + xx] = Math.min(fuss[yy * W + xx], d); } }
   const hoehe = new Int16Array(W * Hh);
-  if (unten) { const f = Float32Array.from(fels); verwischen(f, W, Hh, 1);   /* Höhle: Felsfelder werden zu Wänden, der Boden bleibt fast eben */
+  if (innen) { /* Obergeschoss: eben */ }
+  else if (unten) { const f = Float32Array.from(fels); verwischen(f, W, Hh, 1);   /* Höhle: Felsfelder werden zu Wänden, der Boden bleibt fast eben */
     for (let i = 0; i < W * Hh; i++) { const x = i % W, y = (i - x) / W; hoehe[i] = Math.round(100 * (Math.pow(f[i], 0.8) * (3.6 + 0.8 * rauschen(x + X0, y + Y0)) + 0.12 * (rauschen(x * 3 + X0, y * 3 + Y0) - 0.8))); } }
   else for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) { const i = y * W + x, haus = glatt(Math.max(0, Math.min(1, (fuss[i] - 1) / 3)));
     hoehe[i] = Math.round(100 * (raum[i] * haus * (rauschen(x + X0, y + Y0) - 0.45) - 0.7 * nass[i] * haus)); }
@@ -65,7 +66,7 @@ for (const E of ebenen) {
     for (let y = -1; y <= C; y++) { let z = ""; for (let x = -1; x <= C; x++) z += zeichen(lx + x, ly + y); b.push(z); }
     for (let y = -1; y <= C + 1; y++) for (let x = -1; x <= C + 1; x++) { const gx = Math.max(0, Math.min(B, lx + x)), gy = Math.max(0, Math.min(H, ly + y)); h.push(hoehe[gy * W + gx]); }
     const meine = dinge.filter(([, x, y]) => Math.floor(x / C) === cx && Math.floor(y / C) === cy);
-    writeFileSync(join(ZIEL, `${cx}_${cy}.json`), JSON.stringify({ cx, cy, region: d2.region, ebene: E.name, boden: b, geh: d2.geh, hoehe: h, dinge: meine,
+    writeFileSync(join(ZIEL, `${cx}_${cy}.json`), JSON.stringify({ cx, cy, region: d2.region, ebene: E.name, art: E.art, boden: b, geh: d2.geh, hoehe: h, dinge: meine,
       figuren: (d2.figuren || []).map((p) => ({ figur: p.figur, x: p.x, y: p.y })), interaktionen: d2.interaktionen || [] }));
     chunks.push(`${cx}_${cy}`); }
 }

@@ -180,6 +180,23 @@
    }
   },
   {
+   "id": "treppe_hoch",
+   "art": "eingang",
+   "x": 35.69999999999982,
+   "y": 23.800000000000182,
+   "radius": 1.3,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Holztreppe führt hinauf in den Ratssaal.",
+    "tat": "aufstieg",
+    "knopf": "Die Treppe hinaufsteigen",
+    "ziel": [
+     7500.8,
+     7378.5
+    ]
+   }
+  },
+  {
    "id": "baecker_tuer",
    "art": "lesen",
    "x": 54.4,

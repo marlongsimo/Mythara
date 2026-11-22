@@ -22,7 +22,7 @@ import { Figurbild } from "./figurbild";
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; art?: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
 type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; stege: number[][] };
 
@@ -33,7 +33,7 @@ const P = new URLSearchParams(location.search);
 
 /* Farben des Geländes (etwas kräftiger als die Legende, weil Licht und Schatten sie abdunkeln) */
 const FARBE: Record<string, string> = { ".": "#4e7230", ",": "#567a33", v: "#566f34", f: "#3f4f28", m: "#5a4a32", t: "#4a3a2a", s: "#c2ad78", a: "#7f5e36", e: "#8f6b44", k: "#a1978a",
-  p: "#968c7e", d: "#7a5638", h: "#5c544a", "~": "#3c7d9a", w: "#3f8296", o: "#2a3a30", F: "#6a655c", " ": "#4a5e2d" };
+  p: "#968c7e", d: "#7a5638", h: "#5c544a", "~": "#3c7d9a", w: "#3f8296", o: "#2a3a30", F: "#6a655c", X: "#120e0b", " ": "#4a5e2d" };
 const AUFLAGE = new Set(["k", "p", "e", "a", "d"]);   /* Wege, Pflaster, Äcker: scharf je Feld abgesetzt */
 
 /** Pinselstruktur für den Boden: weiche, helle und dunkle Tupfer und Striche (grau, kachelbar) – wird mit den Bodenfarben multipliziert */
@@ -287,9 +287,11 @@ export class Welt3D {
     if (this.zurueck) { const anders = Math.abs(((this.gieren - STANDARD.gieren + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI) > 0.05 || Math.abs(this.neigen - STANDARD.neigen) > 0.05 || Math.abs(this.abstand - STANDARD.abstand) > 1;
       this.zurueck.style.opacity = anders ? "1" : "0"; this.zurueck.style.pointerEvents = anders ? "auto" : "none"; } }
   /** Licht und Himmel je Ebene: Oberwelt am Tag, Untergrund dunkel mit Fackelschein */
-  stimmung(ebene: string) { if (ebene === this.ebene) return; this.ebene = ebene; const unten = ebene !== "oberwelt", f = this.szene.fog as THREE.Fog;
-    const himmel = new THREE.Color(unten ? "#0e0c0a" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
-    this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20; }
+  art = "oberwelt";
+  stimmung(ebene: string, art: string) { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt", f = this.szene.fog as THREE.Fog;
+    const himmel = new THREE.Color(art === "innen" ? "#0c0907" : unten ? "#0e0c0a" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
+    this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20;
+    if (art === "innen") { this.himmelLicht.intensity = 1.0; this.himmelLicht.color.set(0xffe2c0); this.licht.intensity = 1.1; this.fackel.intensity = 10; }   /* Innenraum: warmes Licht wie durch Fenster und Kerzen */ }
 
   /* ───────── Bild für Bild ───────── */
   bild() {
@@ -319,8 +321,8 @@ export class Welt3D {
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);
-    const hier = this.chunkBei(H.x, H.z); this.stimmung(hier ? hier.d.ebene : this.ebene || "oberwelt"); const unten = this.ebene !== "oberwelt", fog = this.szene.fog as THREE.Fog;
-    const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : weit * 0.45;
+    const hier = this.chunkBei(H.x, H.z); if (hier) this.stimmung(hier.d.ebene, hier.d.art || (hier.d.ebene === "oberwelt" ? "oberwelt" : "untergrund")); const unten = this.art === "untergrund", drin = this.art === "innen", fog = this.szene.fog as THREE.Fog;
+    const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : drin ? 40 + this.abstand : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : drin ? 16 + this.abstand * 0.6 : weit * 0.45;
     this.licht.position.set(this.ziel.x - 30, this.ziel.y + 55, this.ziel.z + 22); this.licht.target.position.copy(this.ziel); this.fackel.position.set(H.x + 0.4, y + 2.6, H.z + 0.6);
     /* Gebäude: drinnen kein Dach, Türen öffnen sich in der Nähe, Mühlenflügel drehen sich */
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);

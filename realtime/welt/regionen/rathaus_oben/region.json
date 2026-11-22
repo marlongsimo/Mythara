@@ -1,0 +1,16 @@
+{
+ "id": "rathaus_oben",
+ "name": "Der Ratssaal",
+ "untertitel": "Obergeschoss des Rathauses der Waldmark",
+ "ursprung": [
+  234,
+  230
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "innen",
+ "stufe": 1,
+ "ebene": "innen"
+}
