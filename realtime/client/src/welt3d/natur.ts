@@ -56,6 +56,80 @@ function kenney(m: KenneyModell) { const t = new Teile();
     if (d.length) t.flaechen(d, g.farbe, { muster: g.muster as Muster, schwanken: 0.03 }); }
   return t.geometrie(); }
 
+/* ───────── Wasserbauten (begehbar: siehe STEGE), Moor, Höhle, Feuer, Schilf ───────── */
+const BRETT = "#7a5634", BRETT_HELL = "#8f6a42", STEIN = "#8a857a", EISEN = "#3a3836", FLAMME = "#ffb24a", FLAMME_KERN = "#fff0b0";
+function bruecke(laenge: number, breite: number, laengs: boolean) {
+  /* gebaut entlang x (Ost–West); laengs = Nord–Süd: am Ende um 90° gedreht. Fuß = Mitte der Südkante */
+  const t = new Teile("holz"), hoch = 0.85, z0 = laengs ? 0 : -breite / 2, n = Math.round(laenge / 0.42);
+  for (let i = 0; i < n; i++) { const x = -laenge / 2 + (i + 0.5) * laenge / n; t.box(laenge / n - 0.04, 0.12, breite, x, hoch - 0.12, z0, i % 3 ? BRETT : BRETT_HELL, 0, { muster: "holz", schwanken: 0.06 }); }
+  for (const zr of [z0 - breite / 2 + 0.1, z0 + breite / 2 - 0.1]) { t.box(laenge, 0.12, 0.12, 0, hoch + 0.75, zr, "#5b3b22");
+    for (let x = -laenge / 2 + 0.15; x <= laenge / 2; x += laenge / 4) { t.box(0.16, 0.9, 0.16, x, hoch - 0.1, zr, "#5b3b22"); t.box(0.22, 1.8, 0.22, x, hoch - 1.8, zr, "#4a3020"); } }
+  const g = t.geometrie(); if (laengs) { g.rotateY(Math.PI / 2); g.translate(0, 0, -laenge / 2); } return g; }
+function wehr() { const t = new Teile("stein");
+  t.box(7.6, 1.7, 1.5, 0, -0.8, -0.85, STEIN, 0, { muster: "stein", schwanken: 0.05 });
+  for (let i = 0; i < 17; i++) t.box(0.42, 0.1, 1.4, -3.4 + i * 0.425, 0.9, -0.85, i % 2 ? BRETT : BRETT_HELL, 0, { muster: "holz" });
+  for (const x of [-2.2, 0, 2.2]) { t.box(0.9, 0.5, 0.25, x, 0.1, -0.05, "#cfe4ec", 0, { muster: "glatt" }); t.box(1.1, 0.25, 0.9, x, -0.15, 0.45, "#e8f3f6", 0, { muster: "glatt" }); }
+  for (const x of [-3.6, 3.6]) t.box(0.5, 1.3, 1.7, x, -0.4, -0.85, "#77726a", 0, { muster: "stein" });
+  return t.geometrie(); }
+function faehre() { const t = new Teile("holz");
+  for (let i = 0; i < 12; i++) t.box(0.44, 0.16, 3.2, -2.6 + i * 0.47, 0.05, -1.4, i % 3 ? BRETT : BRETT_HELL, 0, { muster: "holz", schwanken: 0.06 });
+  for (const z of [-0.1, -2.7]) t.box(5.7, 0.18, 0.2, 0, 0.22, z, "#5b3b22");
+  for (const x of [-2.6, 2.6]) for (const z of [-0.1, -2.7]) t.box(0.18, 0.8, 0.18, x, 0.2, z, "#4a3020");
+  for (let i = 0; i < 6; i++) t.add(new THREE.TorusGeometry(0.12, 0.04, 5, 8), EISEN, matrix(-2.4 + i * 0.22, 0.32, -0.1 + (i % 2) * 0.05, Math.PI / 2 * (i % 2), 0, 0), { muster: "metall" });
+  const g = t.geometrie(); g.rotateZ(0.08); g.rotateX(-0.05); g.translate(0, 0.72, 0); return g; }   /* schwimmt auf dem Wasser (der Grund liegt tiefer) */
+function kahn() { const t = new Teile("holz");
+  t.box(3.2, 0.36, 1.1, 0, 0, -0.5, "#5e4029", 0, { muster: "holz" }); t.box(3.0, 0.08, 0.9, 0, 0.2, -0.5, "#3b2a1c");
+  for (const s of [-1, 1]) t.add(new THREE.ConeGeometry(0.55, 0.9, 4), "#5e4029", matrix(s * 2.0, 0.18, -0.5, 0, Math.PI / 4, s * Math.PI / 2, 1, 1, 0.7), { muster: "holz" });
+  t.box(0.08, 0.06, 2.4, 0.3, 0.42, -0.5, BRETT, 0.5);
+  const g = t.geometrie(); g.translate(0, 0.6, 0); return g; }
+function menhir(schief: number) { const t = new Teile("stein");
+  t.add(bausch(1, 0.08, 3 + schief), "#7d7a72", matrix(0, 1.1, -0.2, 0, 0.3, schief, 0.42, 1.25, 0.3), { muster: "stein", verlauf: [0.75, 1.1] });
+  for (let i = 0; i < 6; i++) t.add(new THREE.TorusGeometry(0.16 + i * 0.03, 0.025, 4, 10, Math.PI * 1.4), "#5d8f8a", matrix(0, 1.25 + i * 0.02, 0.1, 0, 0, i * 1.1), { muster: "glatt" });
+  return t.geometrie(); }
+function schrein() { const t = new Teile("stein");
+  t.box(2.0, 0.4, 0.9, 0, -0.15, -0.45, "#6f6b62"); for (const x of [-0.75, 0.75]) t.box(0.25, 1.1, 0.25, x, 0.25, -0.45, "#7d7a72");
+  t.box(2.1, 0.22, 1.0, 0, 1.35, -0.45, "#6a665d"); t.box(0.5, 0.6, 0.35, 0, 0.25, -0.45, "#8d887d"); t.add(bausch(1, 0.1, 9), "#3f5a30", matrix(-0.6, 1.6, -0.3, 0, 0, 0, 0.5, 0.18, 0.4), { muster: "laub" });
+  const g = t.geometrie(); g.rotateZ(-0.12); return g; }
+function steinring() { const t = new Teile("stein");
+  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, s = 0.32 + zufall(i, 4) * 0.12; t.add(bausch(1, 0.12, i), i % 3 ? "#8a857a" : "#77726a", matrix(Math.cos(a) * 2.0, s * 0.5, -1.2 + Math.sin(a) * 1.0, 0, a, 0, s * 1.2, s * 0.8, s), { muster: "stein", verlauf: [0.8, 1.1] }); }
+  t.box(3.6, 0.06, 1.6, 0, 0, -1.2, "#4a3a28", 0, { muster: "glatt" }); return t.geometrie(); }
+function flamme(t: Teile, x: number, y: number, z: number, s: number) {
+  t.add(new THREE.ConeGeometry(0.3 * s, 0.9 * s, 7), FLAMME, matrix(x, y + 0.45 * s, z), { muster: "glatt" });
+  t.add(new THREE.ConeGeometry(0.16 * s, 0.55 * s, 6), FLAMME_KERN, matrix(x + 0.04, y + 0.3 * s, z + 0.04), { muster: "glatt" }); }
+function feuerkorb() { const t = new Teile("metall"); t.box(0.08, 1.35, 0.08, 0, 0, 0, EISEN, 0, { muster: "metall" });
+  t.add(new THREE.CylinderGeometry(0.3, 0.18, 0.35, 8, 1, true), EISEN, matrix(0, 1.5, 0), { muster: "metall" }); t.add(new THREE.CylinderGeometry(0.24, 0.24, 0.12, 8), "#c2552a", matrix(0, 1.55, 0)); flamme(t, 0, 1.6, 0, 0.8); return t.geometrie(); }
+function festfeuer() { const t = new Teile("holz");
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; t.add(bausch(1, 0.1, i), "#77726a", matrix(Math.cos(a) * 1.2, 0.12, -0.7 + Math.sin(a) * 0.9, 0, 0, 0, 0.26, 0.2, 0.26), { muster: "stein" }); }
+  for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2; t.add(new THREE.CylinderGeometry(0.08, 0.1, 1.5, 6), "#5d4129", matrix(Math.cos(a) * 0.32, 0.6, -0.7 + Math.sin(a) * 0.32, Math.sin(a) * 0.45, 0, -Math.cos(a) * 0.45), { muster: "rinde" }); }
+  flamme(t, 0, 0.15, -0.7, 1.7); return t.geometrie(); }
+function moorlicht() { const t = new Teile("glatt");
+  t.add(new THREE.CylinderGeometry(0.025, 0.05, 1.6, 4), "#4a4a32", matrix(0, 0.8, 0, 0.1, 0, 0.08), { muster: "rinde" });
+  t.add(new THREE.IcosahedronGeometry(0.2, 1), "#c8ffd8", matrix(0.08, 1.75, 0)); t.add(new THREE.IcosahedronGeometry(0.11, 1), "#a8f0c0", matrix(-0.25, 1.3, 0.1)); return t.geometrie(); }
+function strohlager() { const t = new Teile("stroh"); t.box(1.1, 0.28, 2.0, 0, 0, -0.5, "#c8a55a", 0, { muster: "stroh" }); t.box(0.9, 0.06, 1.1, 0, 0.28, -0.25, "#6a4a3a", 0.1, { muster: "putz" }); t.box(0.5, 0.14, 0.32, 0, 0.28, -1.25, "#d8cdb0", 0, { muster: "putz" }); return t.geometrie(); }
+function truhe() { const t = new Teile("holz"); t.box(1.2, 0.55, 0.7, 0, 0, -0.35, "#6a4527", 0, { muster: "holz" });
+  t.add(new THREE.CylinderGeometry(0.35, 0.35, 1.2, 10, 1, false, 0, Math.PI), "#7a5232", matrix(0, 0.55, -0.35, 0, 0, Math.PI / 2), { muster: "holz" });
+  for (const x of [-0.45, 0.45]) t.box(0.08, 0.95, 0.74, x, 0, -0.35, "#b08a3a", 0, { muster: "metall" }); t.box(0.16, 0.2, 0.06, 0, 0.35, 0.02, "#d8b04a", 0, { muster: "metall" }); return t.geometrie(); }
+function hoehlentisch() { const t = new Teile("holz"); t.box(2.0, 0.1, 0.95, 0, 0.75, -0.5, "#7a5232", 0, { muster: "holz" });
+  for (const [x, z] of [[-0.85, -0.12], [0.85, -0.12], [-0.85, -0.88], [0.85, -0.88]]) t.box(0.12, 0.75, 0.12, x, 0, z, "#5b3b22");
+  t.add(new THREE.CylinderGeometry(0.05, 0.05, 0.28, 6), "#efe6cf", matrix(0.5, 0.99, -0.5)); flamme(t, 0.5, 1.13, -0.5, 0.18);
+  t.box(0.7, 0.02, 0.5, -0.3, 0.85, -0.5, "#d8c8a0", 0.2, { muster: "glatt" }); return t.geometrie(); }
+function thron() { const t = new Teile("holz"); t.box(1.2, 0.5, 1.0, 0, 0, -0.5, "#5b3b22", 0, { muster: "holz" }); t.box(1.2, 1.9, 0.18, 0, 0.5, -0.92, "#5b3b22", 0, { muster: "holz" });
+  t.box(1.0, 0.12, 0.85, 0, 0.5, -0.45, "#9b2f2a", 0, { muster: "putz" }); t.box(0.9, 1.0, 0.06, 0, 0.9, -0.82, "#9b2f2a", 0, { muster: "putz" });
+  for (const x of [-0.6, 0.6]) { t.box(0.14, 0.3, 0.9, x, 0.5, -0.5, "#4a3020"); t.add(new THREE.SphereGeometry(0.12, 8, 6), "#b08a3a", matrix(x, 2.5, -0.92), { muster: "metall" }); } return t.geometrie(); }
+function leiter() { const t = new Teile("holz"); for (const x of [-0.32, 0.32]) t.box(0.09, 4.4, 0.09, x, 0, 0, "#7a5634", 0, { muster: "holz" });
+  for (let i = 0; i < 11; i++) t.box(0.64, 0.06, 0.07, 0, 0.3 + i * 0.38, 0, "#8f6a42");
+  const g = t.geometrie(); g.rotateX(-0.22); return g; }
+function stammQuer() { const t = new Teile("rinde"); t.add(new THREE.CylinderGeometry(0.45, 0.6, 9.6, 9), "#5d4129", matrix(0, 0.5, -0.45, 0, 0, Math.PI / 2), { muster: "rinde" });
+  t.add(new THREE.CylinderGeometry(0.62, 0.62, 0.06, 9), "#b08a5a", matrix(-4.82, 0.5, -0.45, 0, 0, Math.PI / 2)); for (const x of [-2, 1.5, 3.2]) t.add(new THREE.CylinderGeometry(0.04, 0.12, 1.2, 4), "#5d4129", matrix(x, 1.0, -0.45, 0.5, 0, 0.4)); return t.geometrie(); }
+function schilf(breit: number) { const t = new Teile("glatt");
+  for (let i = 0; i < 16; i++) { const a = zufall(i, 7) * Math.PI * 2, r = zufall(i, 3) * breit, h = 0.9 + zufall(i, 5) * 0.9, x = Math.cos(a) * r, z = Math.sin(a) * r * 0.6 - 0.3;
+    t.add(new THREE.ConeGeometry(0.05, h, 3), i % 3 ? "#6f8a3c" : "#8a9a48", matrix(x, h / 2, z, (zufall(i, 1) - 0.5) * 0.4, 0, (zufall(i, 2) - 0.5) * 0.4), { muster: "glatt", verlauf: [0.6, 1.15] });
+    if (i % 4 === 0) t.add(new THREE.CylinderGeometry(0.06, 0.06, 0.26, 5), "#6a4228", matrix(x, h * 0.85, z)); }
+  return t.geometrie(); }
+/** Begehbare Flächen (Brücken, Wehr) relativ zum Fuß: x0, z0, x1, z1 (z nach Süden) und die Höhe der Lauffläche über dem Fuß */
+export const STEGE: Record<string, [number, number, number, number, number]> = {
+  dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1, 0.85], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1, 0.85], dorf_wehr_01: [-3.5, -1.6, 3.5, -0.1, 1.0] };
+
 const SPEICHER = new Map<string, THREE.BufferGeometry | null>();
 /** Geometrie für eine Objektart (Maßstab 1, Fuß im Ursprung) oder null = als Bild zeigen */
 export function modell(t: Typ): THREE.BufferGeometry | null {
@@ -86,6 +160,26 @@ export function modell(t: Typ): THREE.BufferGeometry | null {
   else if (id === "dorf_tor_01") g = tor();
   else if (/meiler/.test(id)) g = meiler();
   else if (/baumstamm_02/.test(id)) g = stamm();
+  else if (id === "dorf_bruecke_01") g = bruecke(6.4, 2.7, false);
+  else if (id === "dorf_bruecke_02") g = bruecke(5.3, 2.7, true);
+  else if (id === "dorf_wehr_01") g = wehr();
+  else if (/faehre/.test(id)) g = faehre();
+  else if (/kahn/.test(id)) g = kahn();
+  else if (id === "moor_menhir_01") g = menhir(0);
+  else if (id === "moor_menhir_02") g = menhir(0.28);
+  else if (/schrein/.test(id)) g = schrein();
+  else if (/steinring/.test(id)) g = steinring();
+  else if (/festfeuer/.test(id)) g = festfeuer();
+  else if (/feuerkorb/.test(id)) g = feuerkorb();
+  else if (/moorlicht/.test(id)) g = moorlicht();
+  else if (/hoehle_lager/.test(id)) g = strohlager();
+  else if (/hoehle_truhe/.test(id)) g = truhe();
+  else if (/hoehle_tisch/.test(id)) g = hoehlentisch();
+  else if (/hoehle_thron/.test(id)) g = thron();
+  else if (/hoehle_leiter/.test(id)) g = leiter();
+  else if (/baumstamm_01/.test(id)) g = stammQuer();
+  else if (id === "stil_schilf_01") g = schilf(0.45);
+  else if (id === "stil_schilf_02") g = schilf(0.7);
   if (g) g.userData.geteilt = true;   /* von allen Chunks benutzt: beim Freigeben nicht wegwerfen */
   SPEICHER.set(t.id, g); return g;
 }

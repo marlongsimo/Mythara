@@ -11,7 +11,7 @@
  */
 import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
-import { modell, istBaum, istReihe, setzeKenney, type Typ, type KenneyModell } from "./natur";
+import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
 import { Figurbild } from "./figurbild";
 
@@ -20,7 +20,7 @@ type Index = { stand: string; chunkFelder: number; start: [number, number]; gebi
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
 type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; stege: number[][] };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
@@ -41,6 +41,7 @@ function pinsel() { const n = 256, c = document.createElement("canvas"); c.width
 
 const BODEN = new THREE.MeshLambertMaterial({ vertexColors: true, color: new THREE.Color(1.1, 1.1, 1.1) });
 const WASSER = new THREE.MeshPhongMaterial({ color: 0x3f8fae, specular: 0x99bbcc, shininess: 60, transparent: true, opacity: 0.85 });
+const MOORWASSER = new THREE.MeshPhongMaterial({ color: 0x1f2c26, specular: 0x556655, shininess: 40, transparent: true, opacity: 0.92 });
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
@@ -85,7 +86,7 @@ class Welt3D {
   nachladen() { const hx = Math.floor(this.held.x / C), hz = Math.floor(this.held.z / C);
     for (let dz = -RADIUS; dz <= RADIUS; dz++) for (let dx = -RADIUS; dx <= RADIUS; dx++) { const k = hx + dx + "_" + (hz + dz); if (this.vorhanden.has(k) && !this.st.has(k) && !this.laedt.has(k)) { this.laedt.add(k); void this.holen(k); } }
     for (const [k, s] of this.st) if (Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)) > RADIUS + 1) this.freigeben(k); }
-  async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
+  async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [], stege: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
   freigeben(k: string) { const s = this.st.get(k); if (!s) return; this.st.delete(k); const i = this.warte.indexOf(k); if (i >= 0) this.warte.splice(i, 1);
     for (const o of s.obj) { this.szene.remove(o); o.traverse((q) => { const im = q as THREE.InstancedMesh, m = q as THREE.Mesh; if (im.isInstancedMesh) im.dispose(); else if (m.isMesh && m.geometry && !m.geometry.userData.geteilt) m.geometry.dispose(); }); } }
   bauen(k: string) { const s = this.st.get(k); if (!s || s.gebaut) return; s.gebaut = true; this.gelaende(s); this.dinge(s); this.figuren(s); }
@@ -99,6 +100,8 @@ class Welt3D {
     const a = this.eck(xi, zi), b = this.eck(xi + 1, zi), c = this.eck(xi, zi + 1), e = this.eck(xi + 1, zi + 1);
     return fx + fz < 1 ? a + (b - a) * fx + (c - a) * fz : e + (c - e) * (1 - fx) + (b - e) * (1 - fz); }
   gehbar(gx: number, gz: number) { const s = this.st.get(Math.floor(gx / C) + "_" + Math.floor(gz / C)); if (!s) return false; return s.d.geh[gz - s.d.cy * C]?.[gx - s.d.cx * C] === "."; }
+  /** Höhe, auf der eine Figur steht: Gelände oder Brücke/Wehr darüber */
+  stehHoehe(x: number, z: number) { let y = this.hoehe(x, z); const s = this.chunkBei(x, z); if (s) for (const [a, b, c, d, h] of s.stege) if (x > a && x < c && z > b && z < d) y = Math.max(y, h); return y; }
   chunkBei(x: number, z: number) { return this.st.get(Math.floor(x / C) + "_" + Math.floor(z / C)); }
 
   /* ───────── Gelände eines Chunks ───────── */
@@ -110,7 +113,7 @@ class Welt3D {
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = farbe(unter(z(lx + dx, ly + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall((lx + x0) * 0.7, (ly + y0) * 1.3) - 0.5) * 0.14 + (zufall(Math.floor((lx + x0) / 3), Math.floor((ly + y0) / 3)) - 0.5) * 0.1 + (zufall(Math.floor((lx + x0) / 9), Math.floor((ly + y0) / 9)) - 0.5) * 0.12;
       const hell = unten ? Math.max(0.45, 1 - h(lx, ly) * 0.12) : 1; U[ly * (C + 1) + lx] = [(r / 4) * j * hell, (g / 4) * j * hell, (b / 4) * j * hell]; }
-    const pos: number[] = [], col: number[] = [], uv: number[] = [], nor: number[] = [], wpos: number[] = [];
+    const pos: number[] = [], col: number[] = [], uv: number[] = [], nor: number[] = [], wpos: number[] = [], mpos: number[] = [];
     for (let ty = 0; ty < C; ty++) for (let tx = 0; tx < C; tx++) {
       const q = z(tx, ty), scharf = AUFLAGE.has(q), fz = farbe(q), jit = 1 + (zufall((tx + x0) * 1.7, (ty + y0) * 0.9) - 0.5) * 0.12;
       const ecken = [[tx, ty], [tx + 1, ty], [tx + 1, ty + 1], [tx, ty + 1]];
@@ -118,11 +121,11 @@ class Welt3D {
       const tri = (tx + ty) % 2 ? [[0, 3, 1], [1, 3, 2]] : [[0, 3, 2], [0, 2, 1]];
       for (const t of tri) for (const i of t) { const e = v[i]; pos.push(...e.p); col.push(...e.c); uv.push(e.p[0] / 7, e.p[2] / 7);
         const n = new THREE.Vector3(h(e.lx - 1, e.ly) - h(e.lx + 1, e.ly), 2, h(e.lx, e.ly - 1) - h(e.lx, e.ly + 1)).normalize(); nor.push(n.x, n.y, n.z); }
-      if (this.ix.arten[q]?.wasser) { const hw = Math.max(...v.map((e) => e.p[1])) + 0.12, X = tx + x0, Y = ty + y0; wpos.push(X, hw, Y, X, hw, Y + 1, X + 1, hw, Y + 1, X, hw, Y, X + 1, hw, Y + 1, X + 1, hw, Y); }
+      if (this.ix.arten[q]?.wasser) { const hw = Math.max(...v.map((e) => e.p[1])) + 0.12, X = tx + x0, Y = ty + y0; (q === "o" ? mpos : wpos).push(X, hw, Y, X, hw, Y + 1, X + 1, hw, Y + 1, X, hw, Y, X + 1, hw, Y + 1, X + 1, hw, Y); }
     }
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); g.computeBoundingSphere();
     const m = new THREE.Mesh(g, BODEN); m.receiveShadow = true; this.szene.add(m); s.obj.push(m); s.boden = m;
-    if (wpos.length) { const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpos, 3)); wg.computeVertexNormals(); const wm = new THREE.Mesh(wg, WASSER); wm.receiveShadow = true; this.szene.add(wm); s.obj.push(wm); }
+    for (const [p, mat] of [[wpos, WASSER], [mpos, MOORWASSER]] as const) if (p.length) { const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(p, 3)); wg.computeVertexNormals(); const wm = new THREE.Mesh(wg, mat); wm.receiveShadow = true; this.szene.add(wm); s.obj.push(wm); }
   }
 
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
@@ -139,6 +142,8 @@ class Welt3D {
         gruppen.get(t)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));
         const hl = 0.88 + zufall(x * 3, y * 5) * 0.24; gruppen.get(t)!.f.push(new THREE.Color(hl, hl, hl)); continue; }
       if (/nebel/.test(typ.id)) continue;
+      const st = STEGE[typ.id]; if (st) s.stege.push([x + st[0], y + st[1], x + st[2], y + st[3], gy + st[4]]);
+      if (/moorlicht/.test(typ.id)) { const gl = new THREE.Sprite(IRRLICHT); gl.position.set(x + 0.08, gy + 1.75, y); gl.scale.setScalar(1.6); this.szene.add(gl); s.obj.push(gl); }
       if (/feuerkorb|festfeuer|fackel|laterne/.test(typ.id)) { const hoch = /festfeuer/.test(typ.id) ? 0.9 : /laterne/.test(typ.id) ? 1.5 : 1.7, p = new THREE.Vector3(x, gy + hoch, y); s.feuer.push(p); const gl = new THREE.Sprite(GLUT); gl.position.copy(p); gl.scale.setScalar(/festfeuer/.test(typ.id) ? 4 : 2.4); this.szene.add(gl); s.obj.push(gl); }
       /* Kein Modell: das gemalte Bild als Billboard (Mischform) */
       if (!this.bildMat.has(typ.id)) this.bildMat.set(typ.id, new THREE.SpriteMaterial({ map: this.textur(typ.bild), alphaTest: 0.2, toneMapped: false }));
@@ -231,7 +236,7 @@ class Welt3D {
     if (laeuft) { const v = 4.6 * dt / l, nx = H.x + rx * v, nz = H.z + rz * v;
       if (this.frei(nx, nz)) { H.x = nx; H.z = nz; } else if (this.frei(nx, H.z)) H.x = nx; else if (this.frei(H.x, nz)) H.z = nz; else if (this.pfad.length) this.pfad.shift();
       const rechts = rx * Math.cos(this.gieren) - rz * Math.sin(this.gieren); if (Math.abs(rechts) > 0.2) H.blick = rechts > 0 ? 1 : -1; H.lauf += dt; }
-    const y = this.hoehe(H.x, H.z), fig = this.figur;
+    const y = this.stehHoehe(H.x, H.z), fig = this.figur;
     if (laeuft) { const n = Math.floor(H.lauf * 11) % 8, h = 2.05 / 0.855; fig.setze(this.lauf, [H.blick / 4, 1 / 2], [(n % 4 + (H.blick < 0 ? 1 : 0)) / 4, n < 4 ? 0.5 : 0], [h, h], [0.5, 1 - 0.946]); }
     else { const t = this.stand, w = t.image ? t.image.width / t.image.height : 0.7; fig.setze(t, [H.blick, 1], [H.blick < 0 ? 1 : 0, 0], [2.05 * 1.065 * w, 2.05 * 1.065], [0.5, 0.06]); H.lauf = 0; }
     fig.gruppe.position.set(H.x, y + 0.08, H.z); this.schattenFleck.position.set(H.x, y + 0.05, H.z);
@@ -257,6 +262,9 @@ class Welt3D {
 }
 const FLECK = new THREE.CircleGeometry(0.42, 16); FLECK.userData.geteilt = true;
 /** Leuchtschein über Feuern und Laternen (additiv, ohne Tiefe) */
+const IRRLICHT = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d")!, v = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  v.addColorStop(0, "rgba(200,255,220,0.95)"); v.addColorStop(0.4, "rgba(120,230,170,0.35)"); v.addColorStop(1, "rgba(80,200,140,0)"); g.fillStyle = v; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false }); })();
 const GLUT = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d")!, v = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   v.addColorStop(0, "rgba(255,210,140,0.9)"); v.addColorStop(0.35, "rgba(255,150,60,0.35)"); v.addColorStop(1, "rgba(255,120,40,0)"); g.fillStyle = v; g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.SpriteMaterial({ map: t, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false }); })();
