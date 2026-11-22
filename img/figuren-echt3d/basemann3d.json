@@ -60,6 +60,11 @@
    "platz": "brust",
    "bewegungen": []
   },
+  "ruestung.brust.magiepanzer": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
   "ruestung.brust.sternplatte": {
    "art": "huelle",
    "platz": "brust",

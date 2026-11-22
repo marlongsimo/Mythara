@@ -305,6 +305,18 @@
         "becken",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.brust.magiepanzer",
+      "platz": "brust",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.brust.magiepanzer.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {

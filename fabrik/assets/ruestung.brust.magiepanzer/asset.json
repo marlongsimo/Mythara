@@ -1,0 +1,13 @@
+{
+  "id": "ruestung.brust.magiepanzer",
+  "name": "Einfacher Magiepanzer",
+  "kategorie": "ruestung",
+  "aktuell": "v001",
+  "status": "Meshy „Arcane Regalia“, mit fabrik/teil_anpassen.py auf basemann3d (hoehe=0.74 oben=0.1 abstand=0.02 max_weit=1.5) und basefrau3d (hoehe=0.68 oben=0.06 vor=0 abstand=0.018 seite=0.8 max_weit=1.4)",
+  "herkunft": "Meshy",
+  "werte": {
+    "abwehr_nah": 2,
+    "abwehr_fern": 2,
+    "abwehr_magie": 4
+  }
+}
