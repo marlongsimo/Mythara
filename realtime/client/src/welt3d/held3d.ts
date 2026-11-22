@@ -1,7 +1,7 @@
 /*
  * Mythara – der eigene Held (und die Helden der Mitspieler) als echtes 3D-Modell in der 3D-Welt.
  *
- * Modelle der Figuren-Fabrik: img/figuren-echt3d/held.mann.glb und held.frau.glb – Skelett, Körper, alle Frisuren und Bärte,
+ * Modelle der Figuren-Fabrik: img/figuren-echt3d/basemann3d.glb und basefrau3d.glb (die Grundfiguren) – Skelett, Körper, alle Frisuren und Bärte, Brustrüstungen,
  * alle Waffen als Teile, Bewegungen ruhe, gehen, laufen, stich, bogen, zauber_stab, block, tod (fabrik/export3d.py).
  * Sichtbar ist, was der Held trägt: Frisur und Bart aus dem Heldeneditor, beim eigenen Helden die angelegten Waffen.
  * Gefärbt wie die 2D-Figuren: Haar und Bart relativ zur Farbe, in der sie gebaut sind; die Haut im Shader über dieselbe Farberkennung,
@@ -49,7 +49,7 @@ export class Held3D {
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
   constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); szene.add(this.bild.gruppe);
-    vorlage(gegner ? gegner.datei : "held." + held!.aussehen.g).then((v) => this.aufbauen(v)).catch((e) => console.warn("3D-Figur:", e)); }
+    vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => console.warn("3D-Figur:", e)); }
   private aufbauen(v: Vorlage) {
     if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; } });
@@ -57,8 +57,8 @@ export class Held3D {
     const hf = HAUTFARBEN[A.haut].rgb, faktor = new THREE.Vector3(hf[0] / HAUT_BEZUG[A.g], hf[1] / HAUT_BEZUG[A.g], hf[2] / HAUT_BEZUG[A.g]);
     const hz = HAARFARBEN[A.haar].rgb, gb = GEBAUT[A.g], haar = new THREE.Color(...([0, 1, 2].map((i) => linear(hz[i]) / Math.max(1e-4, linear(gb[i]))) as [number, number, number]));
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; }
-      const n = o.name; if (/^(waffe|schild|kopf)/.test(n) && !(o.parent && /^(waffe|schild|kopf)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });
-    w.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const zuTeil = (() => { let q: THREE.Object3D | null = o; while (q) { if (/^kopf(haar|bart)/.test(q.name)) return "haar"; if (/^(waffe|schild)/.test(q.name)) return "waffe"; q = q.parent; } return "koerper"; })();
+      const n = o.name; if (/^(waffe|schild|kopf|ruestung)/.test(n) && !(o.parent && /^(waffe|schild|kopf|ruestung)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });
+    w.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const zuTeil = (() => { let q: THREE.Object3D | null = o; while (q) { if (/^kopf(haar|bart)/.test(q.name)) return "haar"; if (/^(waffe|schild|ruestung)/.test(q.name)) return "waffe"; q = q.parent; } return "koerper"; })();
       if (zuTeil === "waffe") return; const mat = (m.material as THREE.MeshStandardMaterial).clone(); this.mats.push(mat); m.material = mat;
       if (zuTeil === "haar") mat.color.copy(haar); else hautFaerben(mat, faktor); });
     this.fertigBauen(w); }

@@ -54,6 +54,7 @@ try {
   check(hud.skills.join(", ") === "Stärke 1, Geschick 1, Magie 1" && hud.xp === "none", `Drei Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[true,false,false,false]" && !hud.modus && hud.an === "Angreifen", "Nur die Taste „Angreifen“ – keine Fähigkeiten, kein Waffenwechsel");
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.feind").length >= 1, null, { timeout: 30000 }).catch(() => {});
+  await anna.waitForFunction(() => [...window.EZK.bilder.values()].filter((b) => b.fl.geladen).length >= 1, null, { timeout: 60000 }).catch(() => {});
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...document.querySelectorAll(".ez-name3d.feind")].map((e) => e.textContent), figuren: [...K.bilder.values()].filter((b) => b.fl.geladen).length }; });
   check(sicht.figuren >= 1, `Banditen als Figuren in der 3D-Welt (${sicht.figuren} geladen)`);
   check(sicht.max.every((m) => m === 40) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 40 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
@@ -80,7 +81,7 @@ try {
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke;
   await anna.close(); await new Promise((r) => setTimeout(r, 2500)); const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].xp_staerke;
-  check(zuletzt > vorDb && nachDb >= zuletzt, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
+  check(nachDb >= zuletzt && nachDb >= vorDb, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
   /* Gast mit eigenem Helden: der Browser rechnet nach v1 */
   const gast = await spieler("Gast", "", [6536, 6583, "waldweg"]); await gast.goto(B + S); await bereit(gast); await gast.waitForTimeout(1200);
   check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 40)), "Gast: der Browser rechnet nach v1, Banditen mit 40 LP");

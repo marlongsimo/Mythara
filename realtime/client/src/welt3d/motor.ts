@@ -92,7 +92,7 @@ export class Welt3D {
     while (this.warte.length) this.bauen(this.warte.shift()!);
     this.eingaben(); this.r.setAnimationLoop(() => this.bild());
   }
-  groesse() { const w = innerWidth, h = innerHeight; this.r.setSize(w, h); this.kamera.aspect = w / h; this.kamera.updateProjectionMatrix(); }
+  groesse() { const el = this.r.domElement.parentElement, w = (el && el.clientWidth) || innerWidth, h = (el && el.clientHeight) || innerHeight; /* Größe des Behälters (fest über den ganzen Bildschirm), nicht innerHeight: iOS meldet das beim Drehen verspätet */ this.r.setSize(w, h); this.kamera.aspect = w / h; this.kamera.updateProjectionMatrix(); }
   async alleGeladen() { for (let i = 0; i < 300 && this.laedt.size; i++) await new Promise((r) => setTimeout(r, 30)); }
 
   /* ───────── Chunks laden, bauen, freigeben ───────── */
@@ -209,6 +209,21 @@ export class Welt3D {
     return glatt; }
   sicht(a: { x: number; z: number }, b: { x: number; z: number }) { const n = Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) * 3); for (let i = 1; i <= n; i++) { const t = i / n; if (!this.frei(a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t)) return false; } return true; }
 
+  /* ───────── Minikarte: von oben, ohne Dächer, mit der Kamera gedreht ───────── */
+  private karteZiel: THREE.WebGLRenderTarget | null = null; private karteKam = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 400); private kartePixel: Uint8Array | null = null;
+  /** Die Umgebung des Helden von oben in eine 2D-Leinwand zeichnen: felder = Breite des Ausschnitts in Weltfeldern; oben ist die Blickrichtung der Kamera */
+  karteZeichnen(ziel: HTMLCanvasElement, felder: number): void {
+    const n = ziel.width; if (!n) return; if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
+    const H = this.held, k = this.karteKam, h = felder / 2; k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix();
+    k.position.set(H.x, this.gelaendeHoehe(H.x, H.z) + 200, H.z); k.up.set(-Math.sin(this.gieren), 0, -Math.cos(this.gieren)); k.lookAt(H.x, 0, H.z);
+    const daecher: THREE.Object3D[] = []; for (const s of this.st.values()) for (const b of s.bauten) for (const d of b.daecher) if (d.visible) { d.visible = false; daecher.push(d); }
+    const figuren: THREE.Object3D[] = []; this.szene.traverse((o) => { if (o.visible && (o as THREE.Mesh).isMesh && (o as THREE.Mesh).material instanceof THREE.ShaderMaterial && o.parent && o.parent.type === "Group" && o.renderOrder >= 10) { figuren.push(o); o.visible = false; } });
+    const nebel = this.szene.fog, schatten = this.r.shadowMap.autoUpdate, belichtung = this.r.toneMappingExposure, himmel = this.himmelLicht.intensity; this.szene.fog = null; this.r.shadowMap.autoUpdate = false;
+    this.r.toneMappingExposure = belichtung * 1.35; this.himmelLicht.intensity = Math.max(himmel, 1.1) * 4.5; /* von oben ist es sonst zu dunkel (flaches Licht, Wände werfen Schatten) */
+    this.r.setRenderTarget(this.karteZiel); this.r.render(this.szene, k); this.r.readRenderTargetPixels(this.karteZiel, 0, 0, n, n, this.kartePixel!); this.r.setRenderTarget(null);
+    this.szene.fog = nebel; this.r.shadowMap.autoUpdate = schatten; this.r.toneMappingExposure = belichtung; this.himmelLicht.intensity = himmel; for (const d of daecher) d.visible = true; for (const f of figuren) f.visible = true;
+    const g = ziel.getContext("2d")!, bild = g.createImageData(n, n), q = this.kartePixel!; /* die Grafikkarte liefert die Zeilen von unten nach oben */
+    for (let y = 0; y < n; y++) bild.data.set(q.subarray((n - 1 - y) * n * 4, (n - y) * n * 4), y * n * 4); g.putImageData(bild, 0, 0); }
   /* ───────── Eingaben: nur die Kamera (Laufen und Antippen macht das Spiel) ───────── */
   /** Bildschirmpunkt → Bodenpunkt (Weltfelder) oder null */
   boden(px: number, py: number): { x: number; z: number } | null { const ray = new THREE.Raycaster(), b = this.r.domElement.getBoundingClientRect(); ray.setFromCamera(new THREE.Vector2(((px - b.left) / b.width) * 2 - 1, -((py - b.top) / b.height) * 2 + 1), this.kamera);

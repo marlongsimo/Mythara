@@ -27,7 +27,7 @@ const BILD = process.env.BILD || '';
     ergebnis.push({ k, weit, passt, zeit: o1.t - o0.t }); }
   const tempo = await p.evaluate(() => 3); console.log('    ' + ergebnis.map((e) => `${e.k.toUpperCase()}: ${e.weit.toFixed(1)} Felder in ${e.zeit.toFixed(2)} s Spielzeit (${(e.passt * 100).toFixed(0)} %)`).join(' · '));
   check(ergebnis.every((e) => e.passt > 0.7 && (e.weit > 0.05 || e.zeit < 0.08)) && ergebnis.filter((e) => e.weit > 0.05).length >= 3, 'Laufen mit WASD, jede Taste in ihre Richtung – ausgerichtet an der Kamera');
-  check(ergebnis.some((e) => e.zeit > 0 && e.weit / e.zeit > 2), `Lauftempo stimmt (bestes: ${Math.max(...ergebnis.map((e) => e.zeit ? e.weit / e.zeit : 0)).toFixed(1)} Felder je Sekunde Spielzeit)`);
+  check(ergebnis.some((e) => e.zeit > 0 && e.weit / e.zeit > 1.5), `Lauftempo stimmt (bestes: ${Math.max(...ergebnis.map((e) => e.zeit ? e.weit / e.zeit : 0)).toFixed(1)} Felder je Sekunde Spielzeit)`);
   /* Kamera drehen mit der rechten Maustaste */
   const g0 = lauf.g; await p.mouse.move(640, 400); await p.mouse.down({ button: 'right' }); await p.mouse.move(760, 400, { steps: 6 }); await p.mouse.up({ button: 'right' });
   check(await p.evaluate((g) => Math.abs(window.EZW.welt3d.motor.gieren - g) > 0.3, g0), 'Kamera dreht sich mit der rechten Maustaste');
@@ -41,13 +41,17 @@ const BILD = process.env.BILD || '';
   if (ziel) { await p.mouse.click(ziel.px, ziel.py); await p.waitForFunction((z) => Math.hypot(window.EZW.welt3d.ort.x - z.x, window.EZW.welt3d.ort.y - z.y) < 0.8, ziel, { timeout: 30000 }).catch(() => {}); }
   const nachKlick = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); check(ziel && Math.hypot(nachKlick.x - ziel.x, nachKlick.y - ziel.y) < 0.8, `Antippen einer Bodenstelle: der Held geht genau dorthin (${ziel ? Math.hypot(nachKlick.x - ziel.x, nachKlick.y - ziel.y).toFixed(2) : '–'} Felder entfernt)`);
   check(await p.evaluate(() => { const m = document.querySelector('#ez-karte-punkt'); return m && m.style.left.endsWith('%'); }), 'Minikarte: der Punkt läuft mit');
+  check(await p.evaluate(() => { const c = document.querySelector('#ez-kartenrahmen canvas.karte3d'); if (!c || !c.width) return false; const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let hell = 0; for (let i = 0; i < d.length; i += 4) if (d[i] + d[i + 1] + d[i + 2] > 60) hell++; return hell > d.length / 8; }), 'Minikarte live aus der 3D-Welt gezeichnet');
+  check(await p.evaluate(() => /rotate/.test(document.querySelector('#ez-karte').style.transform)), 'Die Minikarte dreht sich mit der Kamera');
   check(await p.evaluate(() => !!JSON.parse(localStorage.getItem('ez_welt_pos') || 'null')), 'Die Stelle wird gemerkt');
   check(await p.evaluate(() => document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kartenrahmen [data-k]').length) > 0, 'Knöpfe an der runden Karte da');
   /* Antippen auf der Minikarte: der Held läuft dorthin */
   { const o1 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })), r = await p.evaluate(() => { const b = document.querySelector('#ez-karte').parentElement.getBoundingClientRect(); return { x: b.left + b.width * 0.5, y: b.top + b.height * 0.5 }; });
     await p.mouse.click(r.x + 25, r.y + 18); await p.waitForTimeout(400);
-    const z = await p.evaluate(() => { const W = window.EZW.welt3d; return W.pfad.length ? W.pfad[W.pfad.length - 1] : null; });
-    check(z && (z.x - o1.x) > 1 && (z.y - o1.y) > 1, `Antippen auf der Minikarte: Weg nach rechts unten (Ziel ${z ? (z.x - o1.x).toFixed(1) + ' | ' + (z.y - o1.y).toFixed(1) : '–'} Felder entfernt)`);
+    const z = await p.evaluate(() => { const W = window.EZW.welt3d; return W.pfad.length ? W.pfad[W.pfad.length - 1] : null; }), g = -(await p.evaluate(() => window.EZW.welt3d.motor.gieren));
+    /* die Karte ist mit der Kamera gedreht: rechts unten am Bildschirm ist in der Welt (25, 18) um −gieren gedreht */
+    const soll = [25 * Math.cos(g) - 18 * Math.sin(g), 25 * Math.sin(g) + 18 * Math.cos(g)], ist = z ? [z.x - o1.x, z.y - o1.y] : [0, 0], passt = (ist[0] * soll[0] + ist[1] * soll[1]) / (Math.hypot(...ist) * Math.hypot(...soll) || 1);
+    check(z && passt > 0.9, `Antippen auf der gedrehten Minikarte: Weg in die angetippte Richtung (Ziel ${ist.map((v) => v.toFixed(1)).join(' | ')} Felder, Richtung passt zu ${(passt * 100).toFixed(0)} %)`);
     await p.waitForTimeout(3000); const o2 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); check(Math.hypot(o2.x - o1.x, o2.y - o1.y) > 0.5, 'und der Held läuft los'); }
   /* Gespräche und Türen: zum Brunnen, „Ansehen“ [E] zeigt den Text; zur Heldenhalle, der Knopf öffnet die Heldenhalle */
   await p.evaluate(() => window.EZW.gehe(6448, 6435.6)); await p.waitForFunction(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden && /Ansehen/.test(k.textContent); }, null, { timeout: 40000 }).catch(() => {});

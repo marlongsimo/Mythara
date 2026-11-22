@@ -21,6 +21,7 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 import { serverZusatz } from "../gruppe";
+import { karteDrehen } from "../rahmen";
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 
@@ -57,6 +58,9 @@ export class Spielwelt3D implements WeltKern {
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffe9a8, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.motor.szene.add(this.marke);
     this.schild.className = "ez-name3d eigen"; this.motor.schilder.appendChild(this.schild);
     this.blende.id = "ez-blende3d"; document.body.appendChild(this.blende);
+    { /* nach dem Drehen (hoch ↔ quer) die Seite auf null zurück und die 3D-Ansicht neu messen – iOS meldet die neue Größe verzögert */
+      const neu = () => { scrollTo(0, 0); this.motor.groesse(); }, spaeter = () => { neu(); for (const t of [120, 350, 800]) setTimeout(neu, t); };
+      addEventListener("orientationchange", spaeter); addEventListener("resize", spaeter); if (window.visualViewport) window.visualViewport.addEventListener("resize", spaeter); }
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
@@ -120,8 +124,9 @@ export class Spielwelt3D implements WeltKern {
     { let ab: { x: number; y: number } | null = null; const auf = (e: Event) => { const t = e.target as HTMLElement; return t.closest && !t.closest("button, .rknoepfe") ? t.closest("#ez-karte") || (t.closest(".rund") && (t.closest(".rund") as HTMLElement).querySelector("#ez-karte") ? t.closest(".rund") : null) : null; };
       document.addEventListener("pointerdown", (e) => { ab = auf(e) ? { x: e.clientX, y: e.clientY } : null; }, true);
       document.addEventListener("pointerup", (e) => { if (!ab || !auf(e) || Math.hypot(e.clientX - ab.x, e.clientY - ab.y) > 10 || this.gesperrt) { ab = null; return; } ab = null; const r = this.regionBei(this.ort.x, this.ort.y), k = $("#ez-karte"); if (!r || !k) return;
-        const b = k.getBoundingClientRect(); if (!b.width) return; const fx = (e.clientX - b.left) / b.width, fy = (e.clientY - b.top) / b.height;
-        this.geheWeit(r.region.ursprung[0] * C + fx * r.region.chunks[0] * C, r.region.ursprung[1] * C + fy * r.region.chunks[1] * C); }, true); }
+        const rund = k.parentElement as HTMLElement, b = rund.getBoundingClientRect(), f = k.offsetWidth / (r.region.chunks[0] * C); if (!b.width || !f) return; /* Bildpunkte je Feld */
+        const dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2), g = -this.motor.gieren; /* die Karte ist um den Helden gedreht: zurückdrehen */
+        this.geheWeit(this.ort.x + (dx * Math.cos(g) - dy * Math.sin(g)) / f, this.ort.y + (dx * Math.sin(g) + dy * Math.cos(g)) / f); }, true); }
   }
   private stickWeg() { if (this.stick) { this.stick = null; $("#ez-stick").hidden = true; this.rx = 0; this.ry = 0; } }
 
@@ -171,6 +176,13 @@ export class Spielwelt3D implements WeltKern {
   }
 
   private vorher = { x: 0, y: 0 }; /** im Kampfgebiet: läuft der Held (vom Server bewegt)? */ private laeuftFremd = false;
+  /** Minikarte live aus der 3D-Welt: von oben, ohne Dächer, mit der Kamera gedreht (alle 250 ms) */
+  private karteLeinwand: HTMLCanvasElement | null = null; private karteZeit = 0;
+  private minikarte() { if (performance.now() - this.karteZeit < 400) return; this.karteZeit = performance.now();
+    const k = document.getElementById("ez-karte"), rund = k && k.parentElement, r = this.regionBei(this.ort.x, this.ort.y); if (!k || !rund || !rund.classList.contains("rund") || !r) return;
+    if (!this.karteLeinwand || this.karteLeinwand.parentElement !== rund) { const c = document.createElement("canvas"); c.className = "karte3d"; rund.insertBefore(c, rund.firstChild); this.karteLeinwand = c; }
+    const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const n = Math.min(224, Math.round(R * Math.min(1.5, devicePixelRatio || 1)));
+    if (this.karteLeinwand.width !== n) { this.karteLeinwand.width = n; this.karteLeinwand.height = n; } this.motor.karteZeichnen(this.karteLeinwand, R / f); }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
   private bild(dt: number) { this.simZeit += dt;
     const o = this.ort, D = HELDEN[this.held]; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry);
@@ -190,7 +202,7 @@ export class Spielwelt3D implements WeltKern {
     { const r = this.regionBei(o.x, o.y), pk = $("#ez-karte-punkt"); if (r && pk) { pk.style.left = (100 * (o.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%"; pk.style.top = (100 * (o.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%"; } }
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, this.motor, o.x, y + HOEHE + 0.35, o.y); }
-    anschluss3D.schritt(this, dt);
+    karteDrehen(this.motor.gieren); anschluss3D.schritt(this, dt); this.minikarte();
     { const dx = this.ort.x - this.vorher.x, dy = this.ort.y - this.vorher.y; this.laeuftFremd = Math.hypot(dx, dy) > 0.4 * dt; if (this.laeuftFremd && !this.pfad.length && Math.hypot(this.rx, this.ry) < 0.05) this.figur.blick(dx, dy); } /* vom Server bewegt: Blick in Laufrichtung */
   }
 }

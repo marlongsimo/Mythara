@@ -41,7 +41,9 @@ export function querformat(): void {
     <b>Bitte dreh dein Gerät</b><span>Mythara spielt sich im Querformat.</span><button type="button"${sperrbar() ? "" : " hidden"}>Querformat einschalten</button>`;
   document.body.appendChild(el);
   (el.querySelector("button") as HTMLElement).addEventListener("click", () => void sperren());
-  HOCH.addEventListener("change", zeigen); addEventListener("resize", zeigen);
+  /* nach dem Drehen die Seite auf null zurück: sonst bleibt sie auf dem iPhone verschoben und Tippen trifft daneben */
+  const zurueck = () => { zeigen(); for (const t of [0, 150, 400, 900]) setTimeout(() => { if (scrollY || scrollX) scrollTo(0, 0); }, t); };
+  HOCH.addEventListener("change", zurueck); addEventListener("resize", zurueck); addEventListener("orientationchange", zurueck);
   document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) gesperrt = false; zeigen(); });
   /* beim ersten Antippen gleich sperren (Android): das Gerät dreht sich dann von selbst nicht mehr ins Hochformat */
   const erstes = () => { removeEventListener("pointerup", erstes, true); void sperren(); }; addEventListener("pointerup", erstes, true);

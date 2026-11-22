@@ -64,8 +64,17 @@ export function karteFolgen(fx: number, fy: number): void {
   const k = document.getElementById("ez-karte"), rund = k && k.parentElement; if (!k || !rund || !rund.classList.contains("rund")) return;
   const R = rund.clientWidth, w = k.offsetWidth, h = k.offsetHeight; if (!R || !w) return;
   const x = R / 2 - fx * w, y = R / 2 - fy * h; /* der eigene Held steht immer genau in der Mitte – am Rand der Karte zeigt der Kreis dahinter Dunkel */
-  k.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+  k.style.transformOrigin = `${(fx * w).toFixed(1)}px ${(fy * h).toFixed(1)}px`; /* gedreht wird um den Helden (3D-Welt: mit der Kamera) */
+  k.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)` + (drehung ? ` rotate(${drehung.toFixed(4)}rad)` : "");
+  const nord = rund.parentElement && rund.parentElement.querySelector(".nord") as HTMLElement | null; /* das N wandert am Ring mit und zeigt nach Norden */
+  if (nord) { if (!drehung) { if (nordVersatz.x || nordVersatz.y) { nord.style.transform = ""; nordVersatz = { x: 0, y: 0 }; } }
+    else { const n = nord.getBoundingClientRect(), r = rund.getBoundingClientRect(), bx = n.left + n.width / 2 - nordVersatz.x, by = n.top + n.height / 2 - nordVersatz.y; /* Lage ohne Verschiebung */
+      const zx = r.left + r.width / 2 + Math.sin(drehung) * (R / 2 + 4), zy = r.top + r.height / 2 - Math.cos(drehung) * (R / 2 + 4); nordVersatz = { x: zx - bx, y: zy - by };
+      nord.style.transform = `translate(${nordVersatz.x.toFixed(1)}px, ${nordVersatz.y.toFixed(1)}px)`; } }
 }
+/** 3D-Welt: Drehung der Minikarte (Bogenmaß, im Uhrzeigersinn) – oben ist die Blickrichtung der Kamera */
+let drehung = 0, nordVersatz = { x: 0, y: 0 };
+export function karteDrehen(rad: number): void { drehung = rad; }
 /** Tastenkürzel der Knöpfe unter der Karte und für Rucksack/Ausrüstung (nicht beim Tippen) */
 let tastenDa = false;
 export function rahmenTasten(extra: Record<string, () => void>): void { tastenExtra = extra; if (tastenDa) return; tastenDa = true;
