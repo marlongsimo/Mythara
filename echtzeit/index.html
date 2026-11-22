@@ -482,6 +482,37 @@
     .tafel.untersuchen .iart { margin: 2px 0 8px; color: #b9a57c; font-size: 13px; } .tafel.untersuchen .igross { width: 160px; height: 160px; display: block; margin: 0 auto 8px; border-radius: 10px; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #6a5232; }
     .tafel.untersuchen .iwerte { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 6px auto 10px; max-width: 320px; text-align: left; } .tafel.untersuchen dt { color: #b9a57c; } .tafel.untersuchen dd { margin: 0; font-weight: 600; color: #fff1cc; text-align: right; }
     @media (max-width: 420px) { .tafel.eigen .iplaetze { grid-template-columns: repeat(3, 86px); gap: 10px; } .tafel.eigen .ifeld { height: 86px; } .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 120px; } }
+    /* ===== 3D-Welt: neue Oberfläche – kein Profil oben links; Chat links oben (nach oben einklappbar, halb durchsichtig), darunter die Leiste; LP-Bogen an der Minikarte ===== */
+    body.welt3d #ez-profil, body.welt3d #ez-oben-knoepfe, body.welt3d #ez-menue, body.welt3d #ez-ich, body.welt3d #ez-kartenrahmen .raute.r { display: none !important; }
+    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(380px, 36vw); z-index: 7; }
+    body.welt3d #ez-chat .reiter { padding: 0; } body.welt3d #ez-chat .liste { margin: 0; height: 120px; background: rgba(239,226,195,.5); border-color: rgba(200,176,131,.5); color: #1d150b; text-shadow: 0 0 3px rgba(255,248,230,.8); }
+    body.welt3d #ez-chat .liste .k-system { color: #4a3008; } body.welt3d #ez-chat .liste time { color: #4e3f28; } body.welt3d #ez-chat .eingabe { padding: 6px 0 0; } body.welt3d #ez-chat .eingabe input { background: rgba(26,20,14,.5); border-color: rgba(106,82,50,.6); }
+    body.welt3d #ez-chat .klapp { transform: rotate(180deg); } body.welt3d #ez-chat.zu .klapp { transform: none; } /* offen: Pfeil nach oben (einklappen), zu: nach unten (aufklappen) */
+    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-chat { width: min(300px, 40vw); } body.welt3d #ez-chat .liste { height: 84px; } body.welt3d #ez-chat .reiter button { font-size: 10.5px; padding: 3px 2px; } }
+    #ez-leiste { display: none; }
+    body.welt3d #ez-leiste { position: fixed; z-index: 6; left: max(10px, env(safe-area-inset-left)); top: 200px; display: flex; flex-direction: column; gap: var(--a, 8px); }
+    body.welt3d #ez-leiste button { position: relative; width: var(--g, 46px); height: var(--g, 46px); padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a;
+      background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.6); }
+    body.welt3d #ez-leiste button:hover, body.welt3d #ez-leiste button:focus-visible { border-color: #f0d48a; box-shadow: 0 0 0 1px #000, 0 0 12px rgba(240,212,138,.45); }
+    body.welt3d #ez-leiste svg { width: 54%; height: 54%; filter: drop-shadow(0 1px 0 #000); }
+    body.welt3d #ez-leiste .zahl { position: absolute; right: -5px; top: -5px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 11px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    body.welt3d #ez-leiste .zahl[hidden] { display: none; }
+    body.welt3d #ez-kartenrahmen.rund-an { margin-right: calc(var(--m, 0px) * .09 + 24px); margin-top: calc(var(--m, 0px) * .1 + 8px); }
+    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-kartenrahmen.rund-an { margin-top: 26px; margin-right: 26px; } }
+    #ez-kartenrahmen .ez-boegen { position: absolute; z-index: 3; pointer-events: none; overflow: visible; }
+    .ez-boegen path { fill: none; stroke-linecap: round; } .ez-boegen .grund.lp { stroke: rgba(10,6,3,.7); stroke-width: 9; } .ez-boegen .grund.gelb { stroke: rgba(10,6,3,.7); stroke-width: 7; }
+    .ez-boegen .voll.lp { stroke: #d8392b; stroke-width: 6; transition: stroke-dasharray .25s; filter: drop-shadow(0 0 3px rgba(255,60,40,.55)); } .ez-boegen .voll.lp.mittel { stroke: #e07a24; } .ez-boegen .voll.lp.wenig { stroke: #9a1a14; }
+    .ez-boegen .voll.gelb { stroke: #f2c531; stroke-width: 4; filter: drop-shadow(0 0 3px rgba(255,210,60,.5)); }
+    .ez-boegen .lpzahl { font: 700 11px Cinzel, Georgia, serif; fill: #ffe9b0; text-anchor: middle; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+    /* kleiner Knopf an einer angetippten Stelle (Treppe, Leiter, Tür …) */
+    .ez-wahl3d { position: absolute; left: 0; top: 0; pointer-events: auto; will-change: transform; }
+    .ez-wahl3d button { padding: 5px 12px; border-radius: 999px; border: 1.5px solid #e2bf6a; background: linear-gradient(#4a3518, #20160a); color: #ffe7b0; font: 600 13px Cinzel, Georgia, serif; letter-spacing: .03em; white-space: nowrap; cursor: pointer;
+      box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.55); animation: ez-wahl-auf .16s ease-out; }
+    .ez-wahl3d button:hover { border-color: #fff0c4; background: linear-gradient(#5e4420, #2a1c0c); }
+    .ez-wahl3d::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: #e2bf6a; }
+    @keyframes ez-wahl-auf { from { transform: scale(.7); opacity: 0; } }
+    .tafel.bald .bald-zeichen { display: grid; place-items: center; margin: 18px auto 6px; width: 84px; height: 84px; border-radius: 50%; color: #f0d48a; background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; }
+    .tafel.bald .bald-zeichen svg { width: 46px; height: 46px; } .tafel.bald { text-align: center; }
 </style>
 </head>
 <body>
@@ -513,6 +544,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwrm1rev"></script>
+  <script src="spiel.js?v=mwrrkmm7"></script>
 </body>
 </html>
