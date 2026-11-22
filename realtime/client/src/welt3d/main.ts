@@ -9,7 +9,7 @@
 import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, type Typ } from "./natur";
-import { zufall } from "./teile";
+import { zufall, MATERIALIEN } from "./teile";
 
 type Daten = { x0: number; y0: number; b: number; h: number; start: [number, number]; gebiete: { id: string; name: string; untertitel: string; x: number; y: number; b: number; h: number }[];
   arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>; boden: string[]; geh: string[]; hoehe: number[];
@@ -20,8 +20,8 @@ const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../";
 const P = new URLSearchParams(location.search);
 
 /* Farben des Geländes (etwas kräftiger als die Legende, weil Licht und Schatten sie abdunkeln) */
-const FARBE: Record<string, string> = { ".": "#5d8536", ",": "#67903c", v: "#62803a", f: "#46582b", m: "#5a4a32", t: "#4a3a2a", s: "#c2ad78", a: "#7f5e36", e: "#957249", k: "#9d988e",
-  p: "#8f8a82", d: "#7a5638", h: "#5c544a", "~": "#3c7d9a", w: "#3f8296", o: "#2a3a30", F: "#77746c", " ": "#4a5e2d" };
+const FARBE: Record<string, string> = { ".": "#4e7230", ",": "#567a33", v: "#566f34", f: "#3f4f28", m: "#5a4a32", t: "#4a3a2a", s: "#c2ad78", a: "#7f5e36", e: "#8f6b44", k: "#a1978a",
+  p: "#968c7e", d: "#7a5638", h: "#5c544a", "~": "#3c7d9a", w: "#3f8296", o: "#2a3a30", F: "#77746c", " ": "#4a5e2d" };
 const AUFLAGE = new Set(["k", "p", "e", "a", "d"]);   /* Wege, Pflaster, Äcker: scharf je Feld abgesetzt */
 
 /** Pinselstruktur für den Boden: weiche, helle und dunkle Tupfer und Striche (grau, kachelbar) – wird mit den Bodenfarben multipliziert */
@@ -33,7 +33,7 @@ function pinsel() { const n = 256, c = document.createElement("canvas"); c.width
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; }
 
 class Welt3D {
-  d!: Daten; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 400); r!: THREE.WebGLRenderer; licht = new THREE.DirectionalLight(0xfff1d8, 2.1);
+  d!: Daten; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 400); r!: THREE.WebGLRenderer; licht = new THREE.DirectionalLight(0xffdcae, 2.9);
   stuecke: { cx: number; cy: number; obj: THREE.Object3D[] }[] = []; boden: THREE.Mesh[] = []; bauten: Gebaeude[] = [];
   held = { x: 0, z: 0, blick: 1, lauf: 0 }; pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
@@ -42,9 +42,10 @@ class Welt3D {
   async start() {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
     this.r.setPixelRatio(Math.min(devicePixelRatio, HANDY ? 1.5 : 2)); this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.r.toneMapping = THREE.ACESFilmicToneMapping; this.r.toneMappingExposure = 1.12;   /* filmisch und warm wie die Heldenbilder */
     $("#ez-feld").appendChild(this.r.domElement); this.groesse(); addEventListener("resize", () => this.groesse());
-    const himmel = new THREE.Color("#a9c8de"); this.szene.background = himmel; this.szene.fog = new THREE.Fog(himmel, 60, 150);
-    this.szene.add(new THREE.HemisphereLight(0xd8ecff, 0x4a5636, 1.05)); this.szene.add(this.licht); this.szene.add(this.licht.target);
+    const himmel = new THREE.Color("#b9cfe0"); this.szene.background = himmel; this.szene.fog = new THREE.Fog(himmel, 60, 150);
+    this.szene.add(new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1)); this.szene.add(this.licht); this.szene.add(this.licht.target);
     const s = this.licht.shadow; s.mapSize.set(2048, 2048); s.camera.left = s.camera.bottom = -38; s.camera.right = s.camera.top = 38; s.camera.near = 1; s.camera.far = 160; s.bias = -0.0006; s.normalBias = 0.04; this.licht.castShadow = true;
     $("#ez-lade").textContent = "Lade Weltdaten …";
     this.d = await (await fetch("welt3d/daten.json?t=" + Date.now())).json();
@@ -71,20 +72,20 @@ class Welt3D {
     for (let y = 0; y <= d.h; y++) for (let x = 0; x <= d.b; x++) { let r = 0, g = 0, b = 0;
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = F(unter(this.zeichen(x + dx, y + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall(x * 0.7, y * 1.3) - 0.5) * 0.14 + (zufall(Math.floor(x / 3), Math.floor(y / 3)) - 0.5) * 0.1 + (zufall(Math.floor(x / 9), Math.floor(y / 9)) - 0.5) * 0.12; U.set([(r / 4) * j, (g / 4) * j, (b / 4) * j], (y * W + x) * 3); }
-    const boden = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, map: pinsel(), color: new THREE.Color(1.12, 1.12, 1.12) });
-    const wasserMat = new THREE.MeshLambertMaterial({ color: 0x3d86a6, transparent: true, opacity: 0.82, flatShading: true });
+    const boden = new THREE.MeshLambertMaterial({ vertexColors: true, map: pinsel(), color: new THREE.Color(1.1, 1.1, 1.1) });
+    const wasserMat = new THREE.MeshPhongMaterial({ color: 0x3f8fae, specular: 0x99bbcc, shininess: 60, transparent: true, opacity: 0.85 });
     for (let cy = 0; cy < d.h / C; cy++) for (let cx = 0; cx < d.b / C; cx++) {
-      const pos: number[] = [], col: number[] = [], uv: number[] = [], wpos: number[] = [];
+      const pos: number[] = [], col: number[] = [], uv: number[] = [], nor: number[] = [], wpos: number[] = [];
       for (let y = cy * C; y < (cy + 1) * C; y++) for (let x = cx * C; x < (cx + 1) * C; x++) {
         const z = this.zeichen(x, y), ecken = [[x, y], [x + 1, y], [x + 1, y + 1], [x, y + 1]] as const, scharf = AUFLAGE.has(z);
         const fz = F(z), jit = 1 + (zufall(x * 1.7, y * 0.9) - 0.5) * 0.12;
         const v = ecken.map(([ex, ey]) => { const i = (ey * W + ex) * 3; return { p: [ex, this.hoeheEcke(ex, ey), ey], c: scharf ? [fz.r * jit, fz.g * jit, fz.b * jit] : [U[i], U[i + 1], U[i + 2]] }; });
         /* Diagonale wechselnd, damit Hügel nicht gestreift wirken */
         const tri = (x + y) % 2 ? [[0, 3, 1], [1, 3, 2]] : [[0, 3, 2], [0, 2, 1]];
-        for (const t of tri) for (const i of t) { pos.push(...v[i].p); col.push(...v[i].c); uv.push(v[i].p[0] / 7, v[i].p[2] / 7); }
+        for (const t of tri) for (const i of t) { pos.push(...v[i].p); col.push(...v[i].c); uv.push(v[i].p[0] / 7, v[i].p[2] / 7); const ex = v[i].p[0], ey = v[i].p[2], n = new THREE.Vector3(this.hoeheEcke(ex - 1, ey) - this.hoeheEcke(ex + 1, ey), 2, this.hoeheEcke(ex, ey - 1) - this.hoeheEcke(ex, ey + 1)).normalize(); nor.push(n.x, n.y, n.z); }
         if (d.arten[z]?.wasser) { const hw = Math.max(...v.map((q) => q.p[1])) + 0.12; wpos.push(x, hw, y, x, hw, y + 1, x + 1, hw, y + 1, x, hw, y, x + 1, hw, y + 1, x + 1, hw, y); }
       }
-      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals(); g.computeBoundingSphere();
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); g.computeBoundingSphere();
       const m = new THREE.Mesh(g, boden); m.receiveShadow = true; this.szene.add(m); this.boden.push(m); const obj: THREE.Object3D[] = [m];
       if (wpos.length) { const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpos, 3)); wg.computeVertexNormals(); const wm = new THREE.Mesh(wg, wasserMat); wm.receiveShadow = true; this.szene.add(wm); obj.push(wm); }
       this.stuecke.push({ cx, cy, obj });
@@ -109,25 +110,24 @@ class Welt3D {
         const h = 0.88 + zufall(x * 3, y * 5) * 0.24; gruppen.get(k)!.f.push(new THREE.Color(h, h, h)); continue; }
       if (/nebel/.test(typ.id)) continue;
       /* Kein Modell: das gemalte Bild als Billboard (Mischform) */
-      if (!mat.has(typ.id)) { const tx = bilder.load(BILD + typ.bild); tx.colorSpace = THREE.SRGBColorSpace; mat.set(typ.id, new THREE.SpriteMaterial({ map: tx, alphaTest: 0.2 })); }
+      if (!mat.has(typ.id)) { const tx = bilder.load(BILD + typ.bild); tx.colorSpace = THREE.SRGBColorSpace; mat.set(typ.id, new THREE.SpriteMaterial({ map: tx, alphaTest: 0.2, toneMapped: false })); }
       const sp = new THREE.Sprite(mat.get(typ.id)!), f = (typ.massstab * s) / 48; sp.center.set(typ.anker[0], 1 - typ.anker[1]); sp.scale.set(typ.groesse[0] * f, typ.groesse[1] * f, 1); sp.position.set(x, gy, y); this.szene.add(sp); this.zuStueck(cx, cy, sp); }
-    for (const [k, g] of gruppen) { const geo = modell(g.typ)!, im = new THREE.InstancedMesh(geo, this.material(), g.m.length);
+    for (const [k, g] of gruppen) { const geo = modell(g.typ)!, im = new THREE.InstancedMesh(geo, MATERIALIEN, g.m.length);
       g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im);
       const [cx, cy] = k.split("@")[1].split("_").map(Number); this.zuStueck(cx, cy, im); }
   }
-  private mat?: THREE.Material; material() { return (this.mat ||= new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true })); }
   zuStueck(cx: number, cy: number, o: THREE.Object3D) { const s = this.stuecke.find((q) => q.cx === cx && q.cy === cy); if (s) s.obj.push(o); }
   figuren() { const L = new THREE.TextureLoader();
     /* Dorfbewohner: Bildstreifen mit 8 Bildern zu 176 × 176 – das erste zeigen */
     for (const f of this.d.figuren) { const tx = L.load(BILD + "img/echtzeit/" + f.figur + ".webp", (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); t.repeat.set(1 / n, 1); sp.scale.set(2.25, 2.25, 1); }); tx.colorSpace = THREE.SRGBColorSpace;
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, alphaTest: 0.2 })); sp.center.set(0.5, 0.06); sp.position.set(f.x, this.hoehe(f.x, f.y), f.y); this.szene.add(sp); this.fleck(f.x, f.y); this.zuStueck(Math.floor(f.x / C), Math.floor(f.y / C), sp); } }
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, alphaTest: 0.2, toneMapped: false })); sp.center.set(0.5, 0.06); sp.position.set(f.x, this.hoehe(f.x, f.y), f.y); this.szene.add(sp); this.fleck(f.x, f.y); this.zuStueck(Math.floor(f.x / C), Math.floor(f.y / C), sp); } }
   fleck(x: number, z: number) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.42, 16), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.32, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x, this.hoehe(x, z) + 0.05, z); this.szene.add(m); return m; }
 
   /* ───────── Held ───────── */
   heldBauen() { const L = new THREE.TextureLoader();
     this.stand = L.load(BILD + "img/echtzeit/torvald.webp"); this.lauf = L.load(BILD + "img/echtzeit/torvald-lauf.webp"); for (const t of [this.stand, this.lauf]) t.colorSpace = THREE.SRGBColorSpace;
     this.lauf.repeat.set(1 / 4, 1 / 2);
-    this.figur = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.stand, alphaTest: 0.2 })); this.szene.add(this.figur); this.schattenFleck = this.fleck(this.held.x, this.held.z);
+    this.figur = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.stand, alphaTest: 0.2, toneMapped: false })); this.szene.add(this.figur); this.schattenFleck = this.fleck(this.held.x, this.held.z);
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffd75e, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.szene.add(this.marke); }
   frei(x: number, z: number) { const r = 0.28; for (const [dx, dz] of [[-r, -r], [r, -r], [-r, r], [r, r]]) { const gx = Math.floor(x + dx), gz = Math.floor(z + dz); const zl = this.d.geh[gz]; if (!zl || zl[gx] !== ".") return false; } return true; }
   /** A* auf dem Feldraster (8 Richtungen, keine Ecken abschneiden) */
