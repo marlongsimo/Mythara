@@ -17,6 +17,7 @@ import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "..
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
 import { frei as freigabe } from "../freigabe";
+import type { Fremder } from "../welt";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon, eigeneWaffenQuelle } from "../modulfigur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
@@ -39,11 +40,15 @@ const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const torOffen = () => freigabe("kampagnen") || freigabe("waldweg");
 
 /** Was zur gemeinsamen Welt gehört, je Szene */
-let mit: Mitspieler | null = null, region = { id: "", x: 0, y: 0, b: 1, h: 1 };
+let mit: MitArt | null = null, region = { id: "", x: 0, y: 0, b: 1, h: 1 };
 
 /** Was die Anbindung von einer Welt braucht – die 2D-Welt (Phaser, welt.ts) und die 3D-Welt (welt3d/spielwelt.ts) erfüllen es beide */
 export interface WeltKern { gesperrt: boolean; hier: string; held: string; ort: { x: number; y: number }; pfad: { x: number; y: number }[]; laeuft: boolean; gemerkteStelle: boolean;
-  halt(): void; profil(): void; /** eine Szene des Spiels starten (Riss) */ szeneStarten(key: string, daten: object): void; /** abblenden, danach weiter */ abblenden(ms: number, dann: () => void): void }
+  halt(): void; profil(): void; /** eine Szene des Spiels starten (Riss) */ szeneStarten(key: string, daten: object): void; /** abblenden, danach weiter */ abblenden(ms: number, dann: () => void): void;
+  /* nur die 3D-Welt: eigene Darstellung der Mitspieler, Sprechblase über dem eigenen Helden, Laufzeit, Versetzen, Blickwinkel */
+  mitspielerNeu?(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }): MitArt; eigeneBlase?(text: string): void; seit?(): number; versetzen?(x: number, y: number): void; blick?(): number }
+/** Darstellung der Mitspieler (2D: welt.ts Mitspieler, 3D: welt3d/mitspieler.ts) */
+export interface MitArt { liste(l: Fremder[]): void; weg(id: number): void; blase(id: number, text: string): void; schritt(dt: number): void; unterPunkt?(px: number, py: number): Fremder | null }
 /** Tafeln öffnen; die Welt steht still, solange eine offen ist */
 function tafel(s: WeltKern, f: (zu: () => void) => void) { if (s.gesperrt) return; s.halt(); s.gesperrt = true; f(() => { s.gesperrt = false; }); }
 export function oeffne(art: string, s: WeltKern) {
@@ -124,10 +129,10 @@ function fremd(s: Welt, rx: number, ry: number): boolean {
   kampf.steuern(rx, ry); return true; }
 /** Der Server kennt die zuletzt gemerkte Stelle (anderes Gerät): dorthin, wenn auf diesem Gerät keine gemerkt war und man noch nicht losgelaufen ist */
 let serverStelleGenutzt = false;
-function serverStelle(s: Welt, p: { region: string; x: number | null; y: number | null } | undefined) {
-  if (serverStelleGenutzt || !p || s.gemerkteStelle || s.time.now > 15000 || p.x === null || p.y === null) return; serverStelleGenutzt = true;
+function serverStelle(s: WeltKern, p: { region: string; x: number | null; y: number | null } | undefined) {
+  if (serverStelleGenutzt || !p || s.gemerkteStelle || (s.seit ? s.seit() : (s as unknown as Welt).time.now) > 15000 || p.x === null || p.y === null) return; serverStelleGenutzt = true;
   const x = p.x, y = p.y; if (Math.hypot(x - s.ort.x, y - s.ort.y) < 1) return;
-  s.ort = { x, y }; s.pfad = []; s.cameras.main.centerOn(x * FELD_PX, y * FELD_PX); }
+  if (s.versetzen) { s.versetzen(x, y); return; } s.ort = { x, y }; s.pfad = []; (s as unknown as Welt).cameras.main.centerOn(x * FELD_PX, y * FELD_PX); }
 /** Oben neben der Profilanzeige: Spieler (wer ist hier, mit Zahl) und Einstellungen (Menü) */
 function obenKnoepfe(s: WeltKern) { let el = document.getElementById("ez-oben-knoepfe"); if (!el) { el = document.createElement("div"); el.id = "ez-oben-knoepfe"; document.body.appendChild(el); }
   el.hidden = false; el.innerHTML = `<button type="button" data-o="spieler" aria-label="Spieler" title="Spieler hier (P)"><span>${ZEICHEN.helden}</span><em class="zahl" hidden></em></button><button type="button" data-o="menue" aria-label="Einstellungen" title="Einstellungen"><span>${ZEICHEN.menue}</span></button>`;
@@ -163,15 +168,15 @@ function karteRegion(s: WeltKern, id: string, ux: number, uy: number, b: number,
         Object.assign(im.style, { left: (100 * (R.ursprung[0] - ux) / b) + "%", top: (100 * (R.ursprung[1] - uy) / h) + "%", width: (100 * R.chunks[0] / b) + "%", height: (100 * R.chunks[1] / h) + "%" }); k.prepend(im); } } } /* der Kreis zeigt etwa 40 Felder: die Karte scrollt beim Laufen sichtbar mit */
 }
 /** Die gemeinsame Welt für die Region, in der man steht: Mitspieler neu aufstellen und beim Server den Ort melden */
-function regionBetreten(s: Welt, id: string, ux: number, uy: number, b: number, h: number) {
+function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: number, h: number) {
   if (region.id === id && mit) return;
   if (mit) mit.liste([]);
   karteRegion(s, id, ux, uy, b, h);
-  mit = new Mitspieler(s, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
-  (s as unknown as { mit: Mitspieler }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
+  mit = s.mitspielerNeu ? s.mitspielerNeu({ versatz: { x: region.x, y: region.y }, karte: { breit: region.b, hoch: region.h } }) : new Mitspieler(s as unknown as Welt, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
+  (s as unknown as { mit: MitArt | null }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
   weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
-    blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) sprechblase(s, () => (s.figur && s.figur.active ? { x: s.figur.x, y: s.figur.y - HELD_PX - 30 } : null), text); else if (mit) mit.blase(i, text); } });
+    blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else if (mit) mit.blase(i, text); } });
 }
 
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
@@ -209,8 +214,11 @@ function betretenAllgemein(s: WeltKern): () => void {
 /** Die 3D-Welt (welt3d/spielwelt.ts) an das Spiel anschließen: dieselben Menüs, Tafeln, Minikarte und Hinweise wie die 2D-Welt */
 export const anschluss3D = {
   tat: oeffne, knopf: (art: string, knopf: string): string => (WELT.knopf ? WELT.knopf(art, knopf) : knopf), menue: menueEinrichten, betreten: betretenAllgemein,
-  regionWechsel: (s: WeltKern, R: { id: string; ursprung: number[]; chunks: number[] }) => karteRegion(s, R.id, R.ursprung[0], R.ursprung[1], R.chunks[0], R.chunks[1]),
-  schritt: (s: WeltKern) => { kampfartZeigen(s); menuePlatz(); obenPlatz(); karteFolgen((s.ort.x * FELD_PX - region.x) / region.b, (s.ort.y * FELD_PX - region.y) / region.h); },
+  regionWechsel: (s: WeltKern, R: { id: string; ursprung: number[]; chunks: number[] }) => regionBetreten(s, R.id, R.ursprung[0], R.ursprung[1], R.chunks[0], R.chunks[1]),
+  schritt: (s: WeltKern, dt: number) => { kampfartZeigen(s); menuePlatz(); obenPlatz(); const px = s.ort.x * FELD_PX - region.x, py = s.ort.y * FELD_PX - region.y; karteFolgen(px / region.b, py / region.h);
+    if (mit) { weltPos(px, py, s.blick ? s.blick() : 0, s.laeuft, s.ort.x, s.ort.y); mit.schritt(dt); } },
+  /** Antippen: ein Mitspieler öffnet seine Karte. true = erledigt */
+  antippen: (s: WeltKern, px: number, py: number): boolean => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; },
 };
 export function weltAnschliessen(start: string, tor: string) {
   if (start) WELT.start = start;
@@ -234,7 +242,7 @@ export function weltAnschliessen(start: string, tor: string) {
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.fremd = fremd;
   WELT.springen = () => kampfEnde();   /* Abstieg in den Untergrund und zurück: der Kampf der alten Stelle endet, am Ziel beginnt (wenn dort Gegner sind) ein neuer */
-  WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = mit.unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
+  WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = (mit as unknown as Mitspieler).unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);
     kampfartZeigen(s); menuePlatz(); obenPlatz();

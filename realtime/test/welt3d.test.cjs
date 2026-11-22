@@ -37,5 +37,15 @@ const BILD = process.env.BILD || '';
   check(await p.evaluate(() => { const m = document.querySelector('#ez-karte-punkt'); return m && m.style.left.endsWith('%'); }), 'Minikarte: der Punkt läuft mit');
   check(await p.evaluate(() => !!JSON.parse(localStorage.getItem('ez_welt_pos') || 'null')), 'Die Stelle wird gemerkt');
   check(await p.evaluate(() => document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kartenrahmen [data-k]').length) > 0, 'Knöpfe an der runden Karte da');
+  /* Gespräche und Türen: zum Brunnen, „Ansehen“ [E] zeigt den Text; zur Heldenhalle, der Knopf öffnet die Heldenhalle */
+  await p.evaluate(() => window.EZW.gehe(6448, 6435.6)); await p.waitForFunction(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden && /Ansehen/.test(k.textContent); }, null, { timeout: 40000 }).catch(() => {});
+  const knopf = await p.evaluate(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden ? k.textContent : ''; }); check(/Ansehen/.test(knopf), `Am Brunnen erscheint der Knopf „${knopf.trim()}“`);
+  await p.keyboard.press('e'); await p.waitForTimeout(400); check(/Brunnen der Waldmark/.test(await p.evaluate(() => document.querySelector('#ez-dorf-hilfe').textContent)), '[E] zeigt den Text des Brunnens');
+  await p.evaluate(() => window.EZW.gehe(6448, 6422.2)); await p.waitForFunction(() => { const k = document.querySelector('#ez-dorf-knopf'); return k && !k.hidden && !/Ansehen/.test(k.textContent); }, null, { timeout: 60000 }).catch(() => {});
+  const halle = await p.evaluate(() => document.querySelector('#ez-dorf-knopf').textContent); check(!/Ansehen/.test(halle) && halle.trim().length > 0, `Vor der Heldenhalle: „${halle.trim()}“`);
+  if (BILD) await p.screenshot({ path: BILD + 'halle.png' });
+  await p.click('#ez-dorf-knopf'); await p.waitForTimeout(800);
+  check(await p.evaluate(() => window.EZW.welt3d.gesperrt && [...document.querySelectorAll('.tafel, #ez-halle, [id*=halle]')].some((e) => e.offsetParent)), 'Der Knopf öffnet die Heldenhalle (die Welt steht still)');
+  if (BILD) await p.screenshot({ path: BILD + 'halle-offen.png' });
   check(!fehler.length, 'Keine Fehler im Browser ' + fehler.slice(0, 4).join(' | '));
   await b.close(); console.log(f ? f + ' Fehler' : '3D-Welt Stufe 1: alles in Ordnung'); process.exit(f ? 1 : 0); })();

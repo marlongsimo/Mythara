@@ -30,6 +30,10 @@
     /* 3D-Welt (welt3d/spielwelt.ts): Namensschild über der Figur, Abblenden beim Versetzen */
     .ez-name3d { position: fixed; left: 0; top: 0; z-index: 2; pointer-events: none; white-space: nowrap; font: 600 14px Cinzel, Georgia, serif; color: #ffe08a; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 6px rgba(0,0,0,.8); will-change: transform; }
     .ez-name3d[hidden] { display: none; } .ez-name3d.fremd { color: #f3ead2; }
+    .ez-balken3d { position: fixed; left: 0; top: 0; z-index: 2; width: 54px; height: 6px; border-radius: 2px; background: rgba(0,0,0,.7); border: 1px solid rgba(0,0,0,.8); pointer-events: none; }
+    .ez-balken3d[hidden] { display: none; } .ez-balken3d i { display: block; height: 100%; width: 100%; background: #5fc35a; } .ez-balken3d i.mittel { background: #e0b040; } .ez-balken3d i.wenig { background: #d04a3a; }
+    .ez-blase3d { position: fixed; left: 0; top: 0; z-index: 2; max-width: 190px; padding: 5px 8px; border-radius: 6px; background: #f3e6c4; color: #2a2014; font: 13px Inter, sans-serif; text-align: center; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+    .ez-blase3d[hidden] { display: none; }
     #ez-blende3d { position: fixed; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s; } #ez-blende3d.an { opacity: 1; }
     body.welt3d #ez-feld canvas { display: block; touch-action: none; }
     #ez-xpleiste.plus .ez-balken.xp { animation: ezxp .7s ease-out; } @keyframes ezxp { 0% { box-shadow: 0 0 0 0 #b9d4ff; } 30% { box-shadow: 0 0 10px 2px #b9d4ff; } 100% { box-shadow: 0 0 0 0 transparent; } } #ez-xpleiste[hidden] { display: none; }
@@ -501,6 +505,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwr6zfhb"></script>
+  <script src="spiel.js?v=mwr8rbdz"></script>
 </body>
 </html>

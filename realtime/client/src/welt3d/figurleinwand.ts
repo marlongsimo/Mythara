@@ -13,25 +13,35 @@ import { Held, ebenenVon, farbeVon, farbMatrix, figurVon, STARTWAFFEN } from "..
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
 interface Meta { id: string; angriff?: string; bezug?: { haut: number; haar: number; bart: number }; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
 interface Rahmen { x: number; y: number; w: number; h: number; sx: number; sy: number }
-interface Atlas { bild: CanvasImageSource; rahmen: Record<string, Rahmen> }
+interface Atlas { bild: CanvasImageSource; rahmen: Record<string, Rahmen>; /** gefärbte Ebene: SVG-Filter (url(#…)) und die Matrix (Ersatz ohne Leinwand-Filter) */ filter?: string; matrix?: number[]; fertig?: Map<string, HTMLCanvasElement> }
 
 const BASIS = "../img/figuren-fabrik/";
 const ALLE_WAFFEN = [...new Set(Object.values(STARTWAFFEN).flatMap((w) => w.waffen))];
 const metas = new Map<string, Promise<Meta>>(), atlanten = new Map<string, Promise<Atlas | null>>();
 const meta = (figur: string): Promise<Meta> => { let p = metas.get(figur); if (!p) { p = fetch(BASIS + figur + "/" + figur + ".json").then((r) => { if (!r.ok) throw new Error("Figur " + figur + " fehlt"); return r.json(); }); metas.set(figur, p); } return p; };
 function bildLaden(url: string): Promise<HTMLImageElement> { return new Promise((ok, fehler) => { const i = new Image(); i.decoding = "async"; i.onload = () => ok(i); i.onerror = () => fehler(new Error(url)); i.src = url; }); }
+/** Färben (Haut, Haar, Bart): beim Zeichnen nur das eine sichtbare Bild – über einen SVG-Farbfilter (in sRGB wie Phaser ColorMatrix,
+ *  auf der Grafikkarte), ohne Leinwand-Filter einmal je Bild von Hand. Die Atlanten selbst (bis 8 Megapixel) werden nie ganz umgerechnet. */
+const FILTER_DA = typeof (document.createElement("canvas").getContext("2d") as unknown as { filter?: string }).filter === "string";
+const filterIds = new Map<string, string>();
+function farbFilter(m: number[]): string { const k = m.map((v) => v.toFixed(5)).join(" "); let id = filterIds.get(k); if (id) return `url(#${id})`;
+  id = "ez-farbe-" + filterIds.size; filterIds.set(k, id); const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), f = document.createElementNS(ns, "filter"), cm = document.createElementNS(ns, "feColorMatrix");
+  svg.setAttribute("width", "0"); svg.setAttribute("height", "0"); svg.setAttribute("aria-hidden", "true"); svg.style.position = "absolute"; f.setAttribute("id", id); f.setAttribute("color-interpolation-filters", "sRGB");
+  cm.setAttribute("type", "matrix"); cm.setAttribute("values", k); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); return `url(#${id})`; }
+/** Ersatz ohne Leinwand-Filter: ein Einzelbild von Hand umfärben (klein, wird gemerkt) */
+function bildFaerben(A: Atlas, name: string, f: Rahmen): HTMLCanvasElement { const fertig = A.fertig || (A.fertig = new Map()); let c = fertig.get(name); if (c) return c;
+  c = document.createElement("canvas"); c.width = f.w; c.height = f.h; const g = c.getContext("2d")!; g.drawImage(A.bild, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
+  const d = g.getImageData(0, 0, f.w, f.h), a = d.data, m = A.matrix!;
+  for (let i = 0; i < a.length; i += 4) { const r = a[i], gg = a[i + 1], b = a[i + 2], al = a[i + 3]; if (!al) continue;
+    a[i] = Math.min(255, m[0] * r + m[1] * gg + m[2] * b + m[3] * al + m[4] * 255); a[i + 1] = Math.min(255, m[5] * r + m[6] * gg + m[7] * b + m[8] * al + m[9] * 255); a[i + 2] = Math.min(255, m[10] * r + m[11] * gg + m[12] * b + m[13] * al + m[14] * 255); }
+  g.putImageData(d, 0, 0); fertig.set(name, c); return c; }
 /** Ein Atlas einer Ebene, auf Wunsch mit Farbmatrix (4 × 5, wie Phaser ColorMatrix) einmal umgefärbt */
 function atlas(figur: string, ebene: string, matrix?: number[]): Promise<Atlas | null> {
   const k = figur + "/" + ebene + (matrix ? "|" + matrix.map((v) => v.toFixed(4)).join(",") : ""); let p = atlanten.get(k);
-  if (!p) { p = Promise.all([fetch(BASIS + figur + "/" + ebene + ".json").then((r) => (r.ok ? r.json() : null)), bildLaden(BASIS + figur + "/" + ebene + ".webp")]).then(([j, img]) => {
+  if (!p) { p = Promise.all([fetch(BASIS + figur + "/" + ebene + ".json").then((r) => (r.ok ? r.json() : null)), bildLaden(BASIS + figur + "/" + ebene + ".webp")]).then(([j, img]): Atlas | null => {
       if (!j) return null; const rahmen: Record<string, Rahmen> = {};
       for (const [n, f] of Object.entries(j.frames as Record<string, { frame: { x: number; y: number; w: number; h: number }; spriteSourceSize: { x: number; y: number } }>)) rahmen[n] = { x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, sx: f.spriteSourceSize.x, sy: f.spriteSourceSize.y };
-      if (!matrix) return { bild: img, rahmen };
-      const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const g = c.getContext("2d")!; g.drawImage(img, 0, 0);
-      const d = g.getImageData(0, 0, c.width, c.height), a = d.data, m = matrix;
-      for (let i = 0; i < a.length; i += 4) { const r = a[i], gg = a[i + 1], b = a[i + 2], al = a[i + 3]; if (!al) continue;
-        a[i] = Math.min(255, m[0] * r + m[1] * gg + m[2] * b + m[3] * al + m[4] * 255); a[i + 1] = Math.min(255, m[5] * r + m[6] * gg + m[7] * b + m[8] * al + m[9] * 255); a[i + 2] = Math.min(255, m[10] * r + m[11] * gg + m[12] * b + m[13] * al + m[14] * 255); }
-      g.putImageData(d, 0, 0); return { bild: c, rahmen }; }).catch(() => null); atlanten.set(k, p); }
+      return matrix ? { bild: img, rahmen, matrix, filter: FILTER_DA ? farbFilter(matrix) : undefined } : { bild: img, rahmen }; }).catch(() => null); atlanten.set(k, p); }
   return p;
 }
 const FLECK = new THREE.CircleGeometry(0.42, 16), FLECK_MAT = new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.32, depthWrite: false });
@@ -86,7 +96,10 @@ export class FigurLeinwand {
     const schluessel = name + "|" + sichtbar.join(","); if (schluessel === this.alt) return; this.alt = schluessel;
     const w = [...sichtbar].sort((p, q) => (M.tiefe[q]?.[a]?.[r]?.[b] ?? 0) - (M.tiefe[p]?.[a]?.[r]?.[b] ?? 0));   /* fernste zuerst */
     const g = this.g; g.clearRect(0, 0, M.feld, M.feld);
-    for (const e of [...w.map((x) => x + ".hinten"), ...this.reihe, ...w.map((x) => x + ".vorn")]) { const A = this.ebenen.get(e), f = A && A.rahmen[name]; if (!A || !f) continue; g.drawImage(A.bild, f.x, f.y, f.w, f.h, f.sx, f.sy, f.w, f.h); }
+    for (const e of [...w.map((x) => x + ".hinten"), ...this.reihe, ...w.map((x) => x + ".vorn")]) { const A = this.ebenen.get(e), f = A && A.rahmen[name]; if (!A || !f) continue;
+      if (A.filter) { g.filter = A.filter; g.drawImage(A.bild, f.x, f.y, f.w, f.h, f.sx, f.sy, f.w, f.h); g.filter = "none"; }
+      else if (A.matrix) g.drawImage(bildFaerben(A, name, f), f.sx, f.sy);
+      else g.drawImage(A.bild, f.x, f.y, f.w, f.h, f.sx, f.sy, f.w, f.h); }
     this.tex.needsUpdate = true;
   }
   entfernen(szene: THREE.Scene): void { szene.remove(this.bild.gruppe, this.fleck); this.tex.dispose(); }

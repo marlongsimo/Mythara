@@ -21,6 +21,7 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 import { serverZusatz } from "../gruppe";
+import { Mitspieler3D, blase3d } from "./mitspieler";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = matchMedia("(pointer: coarse)").matches, C = CHUNK_FELDER, RADIUS = 0.3, HOEHE = 2.0;
@@ -54,6 +55,9 @@ export class Spielwelt3D implements WeltKern {
     this.schild.className = "ez-name3d eigen"; document.body.appendChild(this.schild);
     this.blende.id = "ez-blende3d"; document.body.appendChild(this.blende);
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
+    /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
+       sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
+    this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
     this.profil(); anschluss3D.betreten(this);
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
     fertig();
@@ -106,7 +110,7 @@ export class Spielwelt3D implements WeltKern {
       ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
       if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return;
-      if (st.weit < 12 && performance.now() - st.t < 450) this.motor.klick(e.clientX, e.clientY); const touch = e.pointerType === "touch"; this.stickWeg(); if (touch) { this.rx = 0; this.ry = 0; } };
+      if (st.weit < 12 && performance.now() - st.t < 450) { if (!anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } const touch = e.pointerType === "touch"; this.stickWeg(); if (touch) { this.rx = 0; this.ry = 0; } };
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
   }
@@ -119,6 +123,13 @@ export class Spielwelt3D implements WeltKern {
   abblenden(ms: number, dann: () => void) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.add("an"); setTimeout(dann, ms + 20); }
   private aufblenden(ms: number) { this.blende.style.transitionDuration = ms + "ms"; this.blende.classList.remove("an"); }
   /** Riss und andere Szenen des Spiels: die Seite startet sie (die 3D-Welt hat keine Phaser-Szenen) */
+  /* ───────────── für die gemeinsame Anbindung (anschluss.ts WeltKern) ───────────── */
+  private beginn = performance.now();
+  mitspielerNeu(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }) { return new Mitspieler3D(this.motor, o); }
+  eigeneBlase(text: string) { blase3d(this.motor, () => ({ x: this.ort.x, y: this.motor.hoehe(this.ort.x, this.ort.y) + HOEHE + 0.9, z: this.ort.y }), text); }
+  seit() { return performance.now() - this.beginn; }
+  versetzen(x: number, y: number) { this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
+  blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
   springen(x: number, y: number) { if (this.gesperrt) return; this.halt(); this.gesperrt = true;
     this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
@@ -163,6 +174,6 @@ export class Spielwelt3D implements WeltKern {
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; const p = this.motor.bildschirm(o.x, y + HOEHE + 0.35, o.y);
       this.schild.hidden = !p; if (p) this.schild.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; }
-    anschluss3D.schritt(this);
+    anschluss3D.schritt(this, dt);
   }
 }
