@@ -30,6 +30,16 @@
    "platz": "haar",
    "bewegungen": []
   },
+  "ruestung.brust.lederpanzer": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
+  "ruestung.brust.magiepanzer": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
   "ruestung.brust.sternplatte": {
    "art": "huelle",
    "platz": "brust",
@@ -235,9 +245,19 @@
    "rate": 14,
    "schleife": false
   },
+  "teleport_weg": {
+   "bilder": 14,
+   "rate": 12,
+   "schleife": false
+  },
   "tod": {
    "bilder": 8,
    "rate": 10,
+   "schleife": false
+  },
+  "trinken": {
+   "bilder": 16,
+   "rate": 12,
    "schleife": false
   },
   "zauber_stab": {
