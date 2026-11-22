@@ -12,13 +12,14 @@ import { Figurbild } from "./figurbild";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
+import { Npc3D, Wanderer, NPC3D, WANDERER, npc3dAn } from "./npc3d";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
 type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
@@ -179,7 +180,11 @@ export class Welt3D {
     /* Dorfbewohner: Bildstreifen mit 8 Bildern zu 176 × 176 – das erste zeigen */
     for (const f of s.d.figuren) { const pfad = "img/echtzeit/" + f.figur + ".webp", fb = new Figurbild(this.textur(pfad));
       this.textur(pfad, (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); fb.setze(t, [1 / n, 1], [0, 0], [2.25, 2.25], [0.5, 0.06]); });
-      fb.silhouette(false); fb.gruppe.position.set(f.x, this.hoehe(f.x, f.y) + 0.08, f.y); this.szene.add(fb.gruppe); s.obj.push(fb.gruppe, this.fleck(f.x, f.y)); } }
+      fb.silhouette(false); fb.gruppe.position.set(f.x, this.hoehe(f.x, f.y) + 0.08, f.y); this.szene.add(fb.gruppe); s.obj.push(fb.gruppe, this.fleck(f.x, f.y));
+      /* mit 3D-Modell (z. B. die Wachen): das Modell an derselben Stelle, das Bild verschwindet, sobald es geladen ist */
+      if (NPC3D[f.figur] && npc3dAn()) { const n = new Npc3D(NPC3D[f.figur], fb.gruppe); n.gruppe.position.set(f.x, this.hoehe(f.x, f.y), f.y); n.blick(0, 1); this.szene.add(n.gruppe); s.obj.push(n.gruppe); (s.npcs ||= []).push(n); } }
+    /* Bewohner, die in ihrem Haus umhergehen (Nia in ihrem Salon) */
+    if (npc3dAn()) for (const w of WANDERER) if (w.chunk === s.d.cx + "_" + s.d.cy) { const n = new Wanderer(this, w); this.szene.add(n.npc.gruppe); s.obj.push(n.npc.gruppe); (s.wanderer ||= []).push(n); } }
   fleck(x: number, z: number) { const m = new THREE.Mesh(FLECK, FLECK_MAT); m.rotation.x = -Math.PI / 2; m.position.set(x, this.hoehe(x, z) + 0.05, z); this.szene.add(m); return m; }
 
   /* ───────── Held ───────── */
@@ -262,6 +267,7 @@ export class Welt3D {
     if (this.warte.length) this.bauen(this.warte.shift()!);
     if (performance.now() > this.naechsterBlick) { this.naechsterBlick = performance.now() + 300; this.nachladen(); }
     if (this.beimBild) this.beimBild(dt);
+    for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) n.schritt(dt); if (s.wanderer) for (const w of s.wanderer) w.schritt(dt); }
     const y = this.hoehe(H.x, H.z);
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
@@ -272,7 +278,7 @@ export class Welt3D {
     /* Gebäude: drinnen kein Dach, Türen öffnen sich in der Nähe, Mühlenflügel drehen sich */
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
       for (const d of b.daecher) d.visible = !drin;
-      for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
+      for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 || (s.wanderer || []).some((w) => Math.hypot(w.x - t.x, w.z - t.z) < 1.8) ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
       for (const f of b.drehen) f.rotation.z -= dt * 0.6; }
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));

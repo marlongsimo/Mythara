@@ -25,9 +25,9 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 /** Sind 3D-Helden eingeschaltet? Standard ja; ?held3d=0 schaltet auf diesem Gerät die Bilder ein (gemerkt) */
 export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localStorage.setItem("ez_held3d", "0"); if (P.get("held3d") === "1") localStorage.removeItem("ez_held3d"); return localStorage.getItem("ez_held3d") !== "0"; } catch { return P.get("held3d") !== "0"; } }
 
-interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
+export interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
-function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
+export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
   if (!p) { p = new GLTFLoader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
   return p; }
 

@@ -22,6 +22,8 @@ import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 import { serverZusatz } from "../gruppe";
 import { karteDrehen } from "../rahmen";
+/** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */
+const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 
@@ -176,13 +178,20 @@ export class Spielwelt3D implements WeltKern {
   }
 
   private vorher = { x: 0, y: 0 }; /** im Kampfgebiet: läuft der Held (vom Server bewegt)? */ private laeuftFremd = false;
-  /** Minikarte live aus der 3D-Welt: von oben, ohne Dächer, mit der Kamera gedreht (alle 250 ms) */
-  private karteLeinwand: HTMLCanvasElement | null = null; private karteZeit = 0;
-  private minikarte() { if (performance.now() - this.karteZeit < 400) return; this.karteZeit = performance.now();
+  /** Minikarte live aus der 3D-Welt: von oben, ohne Dächer, mit der Kamera gedreht. Neu gezeichnet alle 300 ms (Handy 450 ms) in einem größeren Ausschnitt;
+   *  dazwischen wird das Bild in jedem Bild weich mit dem Helden verschoben und mit der Kamera gedreht – so läuft die Karte flüssig mit. */
+  private karteLeinwand: HTMLCanvasElement | null = null; private karteZeit = 0; private karteStand: { x: number; y: number; g: number; massstab: number } | null = null;
+  private minikarte() {
     const k = document.getElementById("ez-karte"), rund = k && k.parentElement, r = this.regionBei(this.ort.x, this.ort.y); if (!k || !rund || !rund.classList.contains("rund") || !r) return;
-    if (!this.karteLeinwand || this.karteLeinwand.parentElement !== rund) { const c = document.createElement("canvas"); c.className = "karte3d"; rund.insertBefore(c, rund.firstChild); this.karteLeinwand = c; }
-    const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const n = Math.min(224, Math.round(R * Math.min(1.5, devicePixelRatio || 1)));
-    if (this.karteLeinwand.width !== n) { this.karteLeinwand.width = n; this.karteLeinwand.height = n; } this.motor.karteZeichnen(this.karteLeinwand, R / f); }
+    if (!this.karteLeinwand || this.karteLeinwand.parentElement !== rund) { const c = document.createElement("canvas"); c.className = "karte3d"; rund.insertBefore(c, rund.firstChild); this.karteLeinwand = c; this.karteStand = null; }
+    const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
+    if (!this.karteStand || performance.now() - this.karteZeit > (HANDY_KARTE ? 450 : 300)) { this.karteZeit = performance.now();
+      const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
+      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
+    /* Verschiebung seit dem Zeichnen in Bildpunkten des gezeichneten Bilds (oben = Blickrichtung beim Zeichnen) und Drehung um den Unterschied der Kamera */
+    const S = this.karteStand, dx = this.ort.x - S.x, dy = this.ort.y - S.y, rx = Math.cos(S.g), rz = -Math.sin(S.g), ux = -Math.sin(S.g), uz = -Math.cos(S.g);
+    const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
+    c.style.transform = `rotate(${(g - S.g).toFixed(4)}rad) translate(${(-px).toFixed(1)}px, ${(-py).toFixed(1)}px)`; }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
   private bild(dt: number) { this.simZeit += dt;
     const o = this.ort, D = HELDEN[this.held]; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry);
