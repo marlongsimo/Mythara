@@ -58,7 +58,7 @@ for runde in range(2):                                                          
     gl = int(opt.get("glaetten", 25)) // (runde + 1)
     if gl: s_ = o.modifiers.new("glatt", "SMOOTH"); s_.factor = 0.7; s_.iterations = gl; bpy.ops.object.modifier_apply(modifier="glatt")
 bpy.data.objects.remove(ziel_k)
-t = o.modifiers.new("fein", "SUBSURF"); t.levels = 1; bpy.ops.object.modifier_apply(modifier="fein")
+t = o.modifiers.new("fein", "SUBSURF"); t.levels = int(opt.get("fein", 1)); bpy.ops.object.modifier_apply(modifier="fein")   # fein=3: genug Punkte für Zeichnungsdetails (Borten, Wappen)
 bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT"); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")
 sd = o.modifiers.new("stark", "SOLIDIFY"); sd.thickness = DICKE; sd.offset = -1.0; bpy.ops.object.modifier_apply(modifier="stark")
 o.data.update()

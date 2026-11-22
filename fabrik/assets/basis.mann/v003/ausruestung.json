@@ -300,6 +300,12 @@
       "platz": "bart",
       "glb": "basis.mann/v003/quelle/teile/kopf.bart.wikinger.glb",
       "wahlfrei": true
+    },
+    {
+      "id": "ruestung.brust.sternplatte",
+      "platz": "brust",
+      "glb": "basis.mann/v003/quelle/teile/ruestung.brust.sternplatte.glb",
+      "wahlfrei": true
     }
   ],
   "waffenklassen": {

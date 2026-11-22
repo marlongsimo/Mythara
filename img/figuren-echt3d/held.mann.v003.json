@@ -55,6 +55,11 @@
    "platz": "haar",
    "bewegungen": []
   },
+  "ruestung.brust.sternplatte": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
   "schild.kreuz": {
    "art": "starr",
    "platz": "arm_l",
