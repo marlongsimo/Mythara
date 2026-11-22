@@ -1,7 +1,7 @@
 """Mythara Fabrik – ein eigenständiges 3D-Rüstungsteil (z. B. ein Meshy-Brustpanzer ohne Körper) auf einen Grundkörper setzen.
 
   python3 fabrik/teil_anpassen.py <basis.blend> <teil.glb> <ziel.glb> [breite=1.12] [oben=0.15] [abstand=0.035] [vor=-0.025] [max_weit=1.6]
-Grundsatz: lieber mehr Spiel als zu wenig – Kragen am Hals, vorn Luft vor der Brust (Standardwerte aus dem Sturmzahn-Panzer) [nur=links|rechts] [kante=0.02]
+Grundsatz: lieber mehr Spiel als zu wenig – Kragen am Hals, vorn Luft vor der Brust (Standardwerte aus dem Sturmzahn-Panzer) [nur=links|rechts] [kante=0.02] [seite=0.85]
 
 Maßstab: die Breite des Teils = Schulterbreite des Körpers (äußerste Armpunkte auf Schulterhöhe) × breite.
 Lage: die Oberkante des Teils liegt „oben“ über dem Halsansatz, seitlich mittig, in der Tiefe so, dass der Rumpf mittig im Teil steckt (+vor).
@@ -53,6 +53,15 @@ fz = f.max(1); fz = np.maximum.accumulate(np.maximum.accumulate(fz[::-1])[::-1])
 for _ in range(3): fz = np.maximum(fz, (np.roll(fz, 1) + fz + np.roll(fz, -1)) / 3)               # weich über die Höhe
 fv = fz[zi(V[:, 2])]; V[:, 0] = ax_x + (V[:, 0] - ax_x) * fv; V[:, 1] = ax_y + (V[:, 1] - ax_y) * fv; gesch = int((fv > 1.001).sum())
 print(f"aufgeweitet: Faktor {fz.min():.2f}–{fz.max():.2f} über die Höhe")
+if "seite" in opt:                                                                                  # seitlich stauchen (schmale Figuren): x um die Mitte, aber nie in den Körper
+    k_ = float(opt["seite"]); xs_ = V[:, 0] * k_
+    for i in range(len(V)):
+        r = bvh.find_nearest(Vector((xs_[i], V[i, 1], V[i, 2])))
+        if r[0] is not None:
+            q, n = np.array(r[0]), np.array(r[1]); achse = np.array([0.0, ymitte, q[2]]); n = n if np.dot(n, q - achse) >= 0 else -n
+            if np.dot(np.array([xs_[i], V[i, 1], V[i, 2]]) - q, n) < AB * 0.6: continue                # würde den Körper berühren: diesen Punkt nicht stauchen
+        V[i, 0] = xs_[i]
+    print(f"seitlich gestaucht auf {k_:.0%}")
 me.vertices.foreach_set("co", V.ravel()); me.update()
 print(f"Teil angepasst: Maßstab {s:.3f}, Schulterbreite {schulter:.2f} m, Höhe {V[:, 2].min():.2f}–{V[:, 2].max():.2f} m, {gesch} von {len(V)} Punkten nach außen geschoben")
 bpy.ops.object.select_all(action="DESELECT"); o.select_set(True)
