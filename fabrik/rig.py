@@ -177,6 +177,17 @@ def laden(pfad, name):
 def an_knochen(o, bone, welt):
     o.parent = arm; o.parent_type = "BONE"; o.parent_bone = bone; bpy.context.view_layer.update(); o.matrix_world = welt; bpy.context.view_layer.update()
 
+def handflaeche_lage(S_):
+    """Wo die Handfläche entlang des Handknochens liegt (Anteil der Knochenlänge). Gemessen an der Form der Hand: 45 % vom Handgelenk bis zu den
+    Fingerspitzen. Bei Modellen, deren Hand weit über den kurzen Handknochen hinausreicht (Meshy), liegt der Griff sonst am Handgelenk statt in der Faust.
+    "griff_hand": <Anteil> in der Ausrüstungsliste setzt den Wert fest; nie weniger als 0.45 (so bleiben ältere Figuren unverändert)."""
+    if "griff_hand" in AUS: return float(AUS["griff_hand"])
+    b = KN["hand." + S_]; h, ax = b.head_local, b.tail_local - b.head_local; vg = ob.vertex_groups.get("hand." + S_)
+    if vg is None: return 0.45
+    lage = [(v.co - h).dot(ax) / ax.length_squared for v in ob.data.vertices for g in v.groups if g.group == vg.index and g.weight > 0.5]
+    if len(lage) < 20: return 0.45
+    lage = np.array(lage); a, e = np.percentile(lage, 2), np.percentile(lage, 98); return max(0.45, float(a + 0.45 * (e - a)))
+HFL = {S_: handflaeche_lage(S_) for S_ in "LR"}; print("Handfläche entlang des Handknochens:", {k: round(v, 2) for k, v in HFL.items()})
 HAND_R = richtung("hand.R"); KLINGE0 = senkrecht((0, -1, 0.15), HAND_R)
 HAND_L = richtung("hand.L"); KLINGE0_L = senkrecht((0, -1, 0.15), HAND_L); LINKS = any(t["art"] == "schwert" and t.get("hand") == "L" for t in AUS["starr"])   # eine Waffe in der linken Hand (Streitkolben neben dem Stab)                             # in der Grundhaltung zeigt die Klinge nach vorn, quer zur Hand (Hammergriff)
 UARM_L = richtung("unterarm.L"); SCHILD0 = senkrecht((1, -0.15, 0), UARM_L)                        # der Schild liegt außen am linken Unterarm
@@ -186,7 +197,7 @@ for t in AUS["starr"]:
         S_ = t.get("hand", "R"); HD, K0 = (HAND_L, KLINGE0_L) if S_ == "L" else (HAND_R, KLINGE0)
         ez = -K0; ey = K0.cross(HD).normalized(); ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); griff = Vector((0, 0, oben - t["griff"] * (oben - unten)))
         if t.get("drehen"): R = R @ Matrix.Rotation(math.radians(t["drehen"]), 3, "Z")              # um die eigene Achse gedreht in der Hand (Bogen: Sehne zum Körper)
-        handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, 0.45); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
+        handflaeche = KN["hand." + S_].head_local.lerp(KN["hand." + S_].tail_local, HFL[S_]); M = Matrix.Translation(handflaeche - R @ griff) @ R.to_4x4(); an_knochen(o, "hand." + S_, M)
         g2 = bpy.data.objects.new("griff2", None); bpy.context.collection.objects.link(g2); g2.parent = o; g2.location = tuple(t["griff2_ort"]) if "griff2_ort" in t else (0, 0, oben - t.get("griff2", 0.4) * (oben - unten)); g2.empty_display_size = 0.03
         if t.get("zweihand"): g2.name = "griff2." + t["id"]      # Platz der zweiten Hand, zum Knauf hin
     elif t["art"] == "umhang":                                                                   # Umhang (umhang.py): Oberkante zwischen den Schulterblättern, hängt am Brustknochen
@@ -201,7 +212,7 @@ for t in AUS["starr"]:
     o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; o["reihe"] = AUS["starr"].index(t); o["angriff"] = t.get("angriff", "angriff"); o["bewegungen"] = json.dumps(t.get("bewegungen", [])); print("starr:", t["id"], "an", o.parent_bone)
 # feste Griffpunkte für die linke Hand bei Zweihandwaffen – gemessen von der rechten Hand entlang der Waffenachse, für JEDE Waffe gleich.
 # So sind die Bewegungen hieb2h/stich2h unabhängig von der Waffe: jede Waffe, deren Griff bis dorthin reicht, passt ohne neue Bewegung.
-HF_R = KN["hand.R"].head_local.lerp(KN["hand.R"].tail_local, 0.45)
+HF_R = KN["hand.R"].head_local.lerp(KN["hand.R"].tail_local, HFL["R"])
 for nm, abst in (("griff2.hieb", -float(AUS.get("griff_hieb", 0.11))), ("griff2.stich", float(AUS.get("griff_stich", 0.32)))):   # hieb: zum Knauf hin; stich (Speer): zur Spitze hin
     g = bpy.data.objects.new(nm, None); bpy.context.collection.objects.link(g); g.empty_display_size = 0.03; an_knochen(g, "hand.R", Matrix.Translation(HF_R + KLINGE0 * abst))
 for name, bone in (("punkt.kopf", "kopf"), ("punkt.ruecken", "brust"), ("punkt.huefte", "becken")):   # weitere Befestigungspunkte für später (Helm, Umhang, Scheide)
@@ -411,7 +422,8 @@ def angriff_links(i, n):
     L = lambda o, u, k: mit(BEREIT, o_l=spiegel(o), u_l=spiegel(u), kl_l=spiegel(k))
     arme_spur([(0, BEREIT), (0.3, L((-0.65, 0.35, 0.3), (-0.2, 0.45, 0.9), (0.1, 0.75, 0.65))), (0.5, L((-0.35, -0.75, 0.3), (-0.15, -0.9, 0.35), (0.05, -0.45, 0.9))),
                (0.65, L((-0.15, -0.85, -0.45), (0.1, -0.9, -0.4), (0.25, -0.92, -0.3))), (0.82, L((0.0, -0.6, -0.8), (0.35, -0.6, -0.7), (0.7, -0.55, -0.45))), (1, BEREIT)], t)
-BLOCK = mit(BEREIT, o_l=(0.12, -0.72, -0.6), u_l=(-0.82, -0.32, 0.42), sch=(0.05, -1.0, 0.08), o_r=(-0.4, 0.22, -0.9), u_r=(-0.3, -0.25, -0.9), kl=(-0.25, -0.25, 0.94))   # Unterarm quer vor der Brust, Schildfläche nach vorn
+BLOCK = mit(BEREIT, o_l=(0.12, -0.72, -0.6), u_l=(-0.82, -0.32, 0.42), sch=(0.05, -1.0, 0.08), o_r=(-0.32, 0.1, -0.94), u_r=(-0.2, -0.6, -0.78), kl=(-0.05, -0.72, 0.69))   # Unterarm quer vor der Brust, Schildfläche nach vorn; Schwert neben dem Schild nach vorn oben, stichbereit
+# (die Klinge steht quer zur Hand: zeigt der Unterarm nach unten, kann sie nicht senkrecht nach oben zeigen – sonst kippt sie seitlich weg)
 PARADE = mit(BEREIT, o_r=(-0.35, -0.6, 0.15), u_r=(0.5, -0.55, 0.65), kl=(0.95, -0.15, 0.25), o_l=(0.35, -0.2, -0.9), u_l=(0.2, -0.75, -0.6))   # ohne Schild: Waffe quer vor Kopf und Brust
 def block(i, n):
     t = min(1.0, i / 2); feder = 0.0 if i < 3 else (3.0 if i == 3 else (1.0 if i == 4 else 0.0)); hocke(13 * t + feder); rumpf(vor=7 * t + feder, dreh_z=10 * t)
