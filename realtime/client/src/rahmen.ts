@@ -20,6 +20,15 @@ export const RZEICHEN = {
   spieler: SVG('<circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c0-3.6 2.7-6.2 6-6.2s6 2.6 6 6.2"/><circle cx="16.6" cy="7.4" r="2.6"/><path d="M15.4 12.7c3.1-.5 5.8 1.9 5.8 5.6"/>'),
   held: SVG('<path d="M5 19 15.5 8.5M14 5l5 5M12.5 6.5l5 5M6.5 15.5l2 2M4 20l2-2"/>'),
   ausruestung: SVG('<path d="M12 3 5 6v5.5c0 4.4 3 7.8 7 9.5 4-1.7 7-5.1 7-9.5V6z"/><path d="M12 8v8M9 11h6"/>'),
+  /* gekreuzte Schwerter (Angriffsstil) */
+  schwerter: SVG('<path d="M4 4l10.5 10.5M4 4h3.2l9 9M4 4v3.2l9 9"/><path d="M20 4 9.5 14.5M20 4h-3.2l-3.4 3.4M20 4v3.2l-3.4 3.4"/><path d="M12.6 16.4 16.4 12.6M15.4 18.4l3-3M17.6 17.6 20 20"/><path d="M11.4 16.4 7.6 12.6M8.6 18.4l-3-3M6.4 17.6 4 20"/>'),
+  /* Schriftrolle mit Ausrufezeichen (Quests) */
+  quest: SVG('<path d="M7 4h10.5a2 2 0 0 1 0 4H17v10.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1 0-4H7z"/><path d="M7 16.5V4M15.5 4a2 2 0 0 0-2 2"/><path d="M12 9v4.2"/><circle cx="12" cy="15.6" r=".6" fill="currentColor"/>'),
+  /* Stern mit Aufstieg (Skills) */
+  skills: SVG('<path d="m12 3.5 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.9l-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"/><path d="M12 20.5v0"/>'),
+  /* laufender Stiefel mit Fahrtlinien (Sprint) */
+  sprint: SVG('<path d="M9 5.5h4l.6 5.2 4.8 2.3a2 2 0 0 1 1.1 1.8V17H8.5z"/><path d="M8.5 17h11M13 7.6h-2.4M13.3 9.8h-2.6"/><path d="M2.5 10h4M3.5 13h3.5M2.5 16h4"/>'),
+  einstellungen: SVG('<circle cx="12" cy="12" r="3"/><path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M5.4 18.6l1.8-1.8M16.8 7.2l1.8-1.8"/><circle cx="12" cy="12" r="6.6"/>'),
 };
 export interface RKnopf { name: string; zeichen: keyof typeof RZEICHEN; tat: () => void; taste?: string }
 
@@ -97,17 +106,17 @@ const PLATZBILD: Record<Platz, string> = {
   waffe: SVG('<path d="M5 19 15.5 8.5M14 5l5 5M12.5 6.5l5 5M6.5 15.5l2 2M4 20l2-2"/>'),
   brust: SVG('<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 1.5-2.4 2-4 2s-3-.5-4-2z"/>'), nebenhand: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>'),
 };
-function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
+function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReiter = false): void {
   const inv = inventar(), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
       ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}</button>`;
-  const reiter = `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
+  const reiter = ohneReiter ? "" : `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "ausruestung"
     ? `<h2>Ausrüstung</h2><div class="zier"></div>${reiter}<div class="iplaetze"><div class="p-waffe">${feld(inv.angelegt.waffe, "waffe", "waffe")}</div>
        <div class="p-brust">${feld(inv.angelegt.brust, "brust", "brust")}</div><div class="p-nebenhand">${feld(inv.angelegt.nebenhand, "nebenhand", "nebenhand")}</div></div><p class="klein">Tippe auf einen Gegenstand: untersuchen oder ablegen.</p>`
     : `<h2>Rucksack</h2><div class="zier"></div>${reiter}<div class="faecher">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div><p class="klein">${inv.rucksack.length ? "Tippe auf einen Gegenstand: untersuchen oder anlegen." : "Leer – abgelegte Ausrüstung und Beute landen hier."}</p>`;
   const f = tafel("taschen eigen", inhalt + `<div class="iwahl" hidden></div>`, zu);
   f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; void gegenstandBild(c, G.ebenen, G.platz === "brust"); });
-  const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu); };
+  const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu, ohneReiter); };
   f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) neu(a); }));
   const wahl = f.querySelector(".iwahl") as HTMLElement;
   f.querySelectorAll<HTMLElement>(".ifeld.voll").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const g = b.dataset.g!, G = GEGENSTAENDE[g], angelegt = !b.dataset.wo!.startsWith("r");
@@ -128,8 +137,8 @@ function untersuchen(g: string, zurueck: () => void): void {
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
 }
 /** Rucksack und Ausrüstung: mit eigenem Helden das echte Inventar, sonst (Kampagnen ohne eigenen Helden) das bisherige Grundgerüst */
-export function taschenTafel(art: "rucksack" | "ausruestung", held: string, zu: () => void): void {
-  if (aktiverHeld()) { eigeneTasche(art, zu); return; }
+export function taschenTafel(art: "rucksack" | "ausruestung", held: string, zu: () => void, ohneReiter = false): void {
+  if (aktiverHeld()) { eigeneTasche(art, zu, ohneReiter); return; }
   const D = HELDEN[held] || HELDEN.schildwaechter, PLAETZE = ["Kopf", "Hals", "Schultern", "Brust", "Hände", "Gürtel", "Beine", "Füße", "Waffe", "Nebenhand", "Ring", "Ring"];
   const reiter = `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "rucksack"
@@ -145,3 +154,6 @@ export function questTafel(zu: () => void): void {
     return `<li class="${offen ? "" : "fertig"}"><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe} · <span class="sterne">${sternText(ort)}</span></small><span>${!begonnen ? "Noch nicht begonnen – über die Weltkarte aufbrechen" : offen ? "Als Nächstes: " + offen.text : "Abgeschlossen"}</span></li>`; }).join("");
   tafel("quests", `<h2>Quests</h2><div class="zier"></div><ul class="qliste">${zeilen}</ul><p class="klein">Die Schritte im Einzelnen siehst du im jeweiligen Dorf.</p>`, zu);
 }
+/** Eine Tafel für das, was noch kommt (Angriffsstil, Quests, Skills): Name, Zeichen und ein kurzer Hinweis */
+export function baldTafel(titel: string, zeichen: keyof typeof RZEICHEN, zu: () => void): void {
+  tafel("bald", `<h2>${titel}</h2><div class="zier"></div><div class="bald-zeichen">${RZEICHEN[zeichen]}</div><p class="klein">Kommt bald – hier entsteht gerade etwas.</p>`, zu); }

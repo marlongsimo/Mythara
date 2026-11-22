@@ -208,7 +208,7 @@ export class WeltKampf {
     const alt = this.ende.bind(this); this.ende = () => { window.removeEventListener("keydown", taste); t.removeEventListener("pointerdown", druck, true); alt(); }; }
 
   /* ---------- Anzeige: Leben, Erfahrung, Abklingzeiten ---------- */
-  private hud(z: Zustand) { const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; const D = HELDEN[ich[2]], W = D.modi[z.ich.modus], sym = SYMBOL[ich[2]] || {};
+  private hud(z: Zustand) { const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return; this.lebenHud(ich[7], ich[8]); const D = HELDEN[ich[2]], W = D.modi[z.ich.modus], sym = SYMBOL[ich[2]] || {};
     if (z.ich.xp) { this.v1Xp(z); this.hudV1(z, ich[7], ich[8]); return; }
     $("#ez-name").textContent = `${D.name} · ${W.name}`; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * ich[7] / ich[8]) + "%"; $("#ez-lpzahl").textContent = `${ich[7]} / ${ich[8]}`;
     { const bild = $("#ez-ich-bild") as HTMLImageElement, src = eigenesBildnis() || "../" + D.bild; if (bild.dataset.src !== src) { bild.dataset.src = src; bild.src = src; } const st = $("#ez-ich-stufe"), s = z.ich.stufe || stufeAusEp(epAlle()[ich[2]] || 0); st.hidden = false; st.textContent = "St. " + s; }
@@ -218,6 +218,8 @@ export class WeltKampf {
     { const an = $('[data-taste="a"]'), img = an && (an.querySelector("img") as HTMLImageElement), src = symbolBild((sym.modi || [])[z.ich.modus] || "hieb"); if (img && img.dataset.src !== src) { img.dataset.src = src; img.src = src; } }
     document.body.classList.remove("kampf-v1"); const sk = document.getElementById("ez-skills"); if (sk) sk.hidden = true;
     const mo = $("#ez-modus"), mt = `<img alt="" src="${symbolBild((sym.modi || [])[z.ich.modus] || "hieb")}"><b>⇄</b>`; if (mo && mo.dataset.h !== mt) { mo.dataset.h = mt; mo.innerHTML = mt; mo.title = `Waffe wechseln: ${D.modi[z.ich.modus ? 0 : 1].name} (Leertaste)`; } }
+  /** Eigene Lebenspunkte für eine Anzeige außerhalb der Kampf-Kopfzeile (3D-Welt: Bogen um die Minikarte) */
+  protected lebenHud(_lp: number, _max: number): void { /* 2D: steht in der Kopfzeile */ }
   /** Kampfregeln v1: Heldenlevel am Bild, Lebenspunkte, drei Skill-Balken; nur „Angreifen“ (das Symbol der angelegten Waffe) */
   private hudV1(z: Zustand, lp: number, max: number) { document.body.classList.add("kampf-v1"); const angelegt = inventar().angelegt, W = angelegt.waffe ? GEGENSTAENDE[angelegt.waffe] : null;
     $("#ez-name").textContent = W ? W.name : "Fäuste"; ($("#ez-lp") as HTMLElement).style.width = Math.round(100 * lp / max) + "%"; $("#ez-lpzahl").textContent = `${Math.round(lp)} / ${max}`;

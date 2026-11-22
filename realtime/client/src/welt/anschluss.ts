@@ -15,7 +15,8 @@ import { weltkarte } from "../weltkarte";
 import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
-import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, RKnopf } from "../rahmen";
+import { leisteAufbauen, leisteOnline, boegenAufbauen } from "../welt3d/oberflaeche";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
@@ -157,7 +158,7 @@ function obenPlatz() { const el = document.getElementById("ez-oben-knoepfe"); if
     passt = (!br || !br.width || r.right + 10 + el.offsetWidth + 6 <= br.left) && r.right + 10 + el.offsetWidth + 6 <= kl;
   /* neben das Profil – reicht der Platz bis zum Ortsbanner nicht, direkt darunter an seine rechte Kante */
   const l = Math.round(passt ? r.right + 10 : r.right - el.offsetWidth) + "px", t = Math.round(passt ? r.top + (r.height - el.offsetHeight) / 2 : r.bottom + 8) + "px"; if (el.style.left !== l) el.style.left = l; if (el.style.top !== t) el.style.top = t; }
-function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .zahl") as HTMLElement | null; if (z) { const n = weltOnline(); z.hidden = n < 2; z.textContent = String(n); } }
+function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .zahl") as HTMLElement | null, n = weltOnline(); if (z) { z.hidden = n < 2; z.textContent = String(n); } leisteOnline(n); }
 
 /** Minikarte für die Region, in der man steht: Maßstab und die Karten der Nachbarregionen rundherum */
 function karteRegion(s: WeltKern, id: string, ux: number, uy: number, b: number, h: number) {
@@ -191,6 +192,7 @@ function karteZeigen(s: WeltKern) {
 
 /** Menüs, runde Karte mit Knöpfen, Tasten und die Knöpfe oben – für die 2D- und die 3D-Welt */
 export function menueEinrichten(s: WeltKern) {
+    if (document.body.classList.contains("welt3d")) { menue3D(s); return; }
     const rucksack = () => tafel(s, (zu) => taschenTafel("rucksack", s.held, zu)), ausruestung = () => tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu));
     /* Unter der Karte: was gerade freigeschaltet ist – Weltkarte und Quests gehören zu den Kampagnen */
     const knoepfe: RKnopf[] = [];
@@ -202,6 +204,27 @@ export function menueEinrichten(s: WeltKern) {
     rundeKarte(zoomJetzt, knoepfe); tastenFuellen(s.held); rahmenTasten({ b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe) }); obenKnoepfe(s); onlineZeigen();
     hudMenue([{ name: "Rucksack", zeichen: "rucksack", tat: rucksack }, { name: "Ausrüstung", zeichen: "ausruestung", tat: ausruestung }]); /* Spieler und Einstellungen sitzen oben neben dem Profil */
     if (!new URLSearchParams(location.search).has("server")) wecken(); /* Riss und Kampagnen brauchen den Server – schon jetzt aufwecken */
+}
+/** 3D-Welt: Chat links oben, darunter die Leiste (Angriffsstil, Quests, Rucksack, Ausrüstung, Skills, Freunde, Einstellungen);
+    an der Minikarte nur Karte und Sprint, rechts um die Karte Lebenspunkte und die gelbe Leiste. Teleport, Aussehen, Weltkarte und Quests bleiben auf ihren Tasten. */
+function menue3D(s: WeltKern) {
+    const rucksack = () => tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)), ausruestung = () => tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true));
+    const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", tat: () => chatSystem("Sprinten kommt bald.") }];
+    rundeKarte(zoomJetzt, knoepfe); boegenAufbauen(); tastenFuellen(s.held);
+    const tasten: Record<string, () => void> = { b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe), t: () => teleport(s), h: () => aussehenAendern(s) };
+    if (torOffen()) tasten.m = () => oeffne("welt", s); else tasten.m = () => karteZeigen(s);
+    if (freigabe("kampagnen")) tasten.l = () => tafel(s, questTafel);
+    rahmenTasten(tasten);
+    leisteAufbauen([
+      { id: "stil", name: "Angriffsstil", zeichen: "schwerter", tat: () => tafel(s, (zu) => baldTafel("Angriffsstil", "schwerter", zu)) },
+      { id: "quests", name: "Quests", zeichen: "quest", tat: () => tafel(s, (zu) => baldTafel("Quests", "quest", zu)) },
+      { id: "rucksack", name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack },
+      { id: "ausruestung", name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung },
+      { id: "skills", name: "Skills", zeichen: "skills", tat: () => tafel(s, (zu) => baldTafel("Skills", "skills", zu)) },
+      { id: "freunde", name: "Freunde", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) },
+      { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen", tat: () => oeffne("menue", s) }]);
+    onlineZeigen();
+    if (!new URLSearchParams(location.search).has("server")) wecken();
 }
 /** Was beim Betreten jeder Welt gilt (2D und 3D): Hinweis nach einem Tod, Heldenwahl im Profil, Menü rechts als Spalte, Hinweis „sicherer Ort“. Zurück: Aufräumen */
 function betretenAllgemein(s: WeltKern): () => void {

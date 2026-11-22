@@ -68,6 +68,8 @@ try {
   check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === 0 && x.p_magie === 0), `Stärke-XP vom Server gebucht: ${xpSumme()} (Geschick/Magie 0)`);
   check(xpSumme() % 2 === 0, "2 XP je abgezogenem Lebenspunkt (gerade Summe)");
   check(blocks > 0 && treffer > 0, `Schadenszahlen und „geblockt“ erscheinen über den Figuren (${treffer} Treffer, ${blocks} Blocks)`);
+  { const lp = await anna.evaluate(() => { const K = window.EZK, ich = K.z.w.find((e) => e[0] === K.z.ich.id); return { text: (document.querySelector("#ez-kartenrahmen .lpzahl") || {}).textContent, soll: ich ? `${Math.round(ich[7])} / ${ich[8]}` : "" }; });
+    check(lp.text && /^\d+ \/ \d+$/.test(lp.text), `Lebenspunkte im Bogen an der Minikarte: ${lp.text} (Server: ${lp.soll})`); }
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "kampf3d-treffer.png" });
   console.log("    Zustand beim Foto:", await anna.evaluate(() => { const K = window.EZK, W = window.EZW.welt3d; return JSON.stringify({ art: K && K.art, region: K && K.region, hier: W.hier, xp: K && K.z && K.z.ich.xp, stufe: K && K.z && K.z.ich.stufe, lp: document.querySelector("#ez-lpzahl").textContent, v1: K && K.v1, naechster: window.EZN && window.EZN.region }); }));
   const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills Stärke ${lokal})`);

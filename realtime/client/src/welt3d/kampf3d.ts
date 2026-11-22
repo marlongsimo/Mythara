@@ -8,6 +8,7 @@ import { WeltKampf, WeltSzene, Figur } from "../welt/kampf";
 import { FigurLeinwand } from "./figurleinwand";
 import { heldenFigur3D, gegnerFigur3D, FigurArt } from "./held3d";
 import { schildAn } from "./mitspieler";
+import { lebenAnzeigen } from "./oberflaeche";
 import type { Spielwelt3D } from "./spielwelt";
 import { MONSTER } from "../../../shared/config";
 import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
@@ -26,7 +27,8 @@ export class WeltKampf3D extends WeltKampf {
     this.ring = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.56, 28), new THREE.MeshBasicMaterial({ color: 0xff6a6a, transparent: true, opacity: 0.9, depthWrite: false })); this.ring.rotation.x = -Math.PI / 2; this.ring.visible = false; this.w.motor.szene.add(this.ring);
     this.ichBalken = document.createElement("div"); this.ichBalken.className = "ez-balken3d eigen"; this.ichBalken.innerHTML = "<i></i>"; this.ichBalken.hidden = true; document.body.appendChild(this.ichBalken);
   }
-  protected bildEnde() { for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
+  protected lebenHud(lp: number, max: number) { lebenAnzeigen(lp, max); }
+  protected bildEnde() { lebenAnzeigen(null); for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
     if (this.ring) { this.w.motor.szene.remove(this.ring); this.ring = undefined; } if (this.ichBalken) { this.ichBalken.remove(); this.ichBalken = undefined; } }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur {
     const nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, h = held ? HOEHE : HOEHE * (((MONSTER[typ] as { hoehe?: number } | undefined)?.hoehe) || 88) / 96;
