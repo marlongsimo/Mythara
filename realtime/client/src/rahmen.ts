@@ -109,15 +109,15 @@ const PLATZBILD: Record<Platz, string> = {
   brust: SVG('<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 1.5-2.4 2-4 2s-3-.5-4-2z"/>'), nebenhand: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>'),
 };
 function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReiter = false): void {
-  const inv = inventar(), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
-      ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}</button>`;
+  const inv = inventar(), menge = (wo: string) => (wo.startsWith("r") ? (inv.anzahl || [])[Number(wo.slice(1))] || 1 : 1), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
+      ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}${g && menge(wo) > 1 ? `<em class="menge">${menge(wo)}</em>` : ""}</button>`;
   const reiter = ohneReiter ? "" : `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "ausruestung"
     ? `<h2>Ausrüstung</h2><div class="zier"></div>${reiter}<div class="iplaetze"><div class="p-waffe">${feld(inv.angelegt.waffe, "waffe", "waffe")}</div>
        <div class="p-brust">${feld(inv.angelegt.brust, "brust", "brust")}</div><div class="p-nebenhand">${feld(inv.angelegt.nebenhand, "nebenhand", "nebenhand")}</div></div><p class="klein">Tippe auf einen Gegenstand: untersuchen oder ablegen.</p>`
     : `<h2>Rucksack</h2><div class="zier"></div>${reiter}<div class="faecher">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div><p class="klein">${inv.rucksack.length ? "Tippe auf einen Gegenstand: untersuchen oder anlegen." : "Leer – abgelegte Ausrüstung und Beute landen hier."}</p>`;
   const f = tafel("taschen eigen", inhalt + `<div class="iwahl" hidden></div>`, zu);
-  f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; void gegenstandBild(c, G.ebenen, G.platz === "brust"); });
+  f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust"); });
   const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu, ohneReiter); };
   f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) neu(a); }));
   const wahl = f.querySelector(".iwahl") as HTMLElement;
@@ -125,21 +125,22 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
   const nachher = () => { let fertig = false; const g = () => { if (fertig) return; fertig = true; removeEventListener("ez-inventar", g); if (!f.hidden) neu(art); }; addEventListener("ez-inventar", g); const u = setTimeout(g, 2000); return () => { fertig = true; clearTimeout(u); removeEventListener("ez-inventar", g); }; };
   f.querySelectorAll<HTMLElement>(".ifeld.voll").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const g = b.dataset.g!, G = GEGENSTAENDE[g], angelegt = !b.dataset.wo!.startsWith("r");
     f.querySelectorAll(".ifeld").forEach((x) => x.classList.toggle("gewaehlt", x === b));
-    const fallen = !angelegt && inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : "";
-    wahl.hidden = false; wahl.innerHTML = `<b>${G.name}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${fallen}<button type="button" class="haupt" data-t="${angelegt ? "ablegen" : "anlegen"}">${angelegt ? "Ablegen" : "Anlegen"}</button></div>`;
+    const fallen = !angelegt && inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : "", n = menge(b.dataset.wo!);
+    const haupt = angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : "";
+    wahl.hidden = false; wahl.innerHTML = `<b>${G.name}${n > 1 ? " ×" + n : ""}</b><div class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${fallen}${haupt}</div>`;
     wahl.onclick = (ev) => { ev.stopPropagation(); const t = (ev.target as HTMLElement).closest<HTMLElement>("[data-t]")?.dataset.t; if (!t) return;
       if (t === "untersuchen") untersuchen(g, () => neu(art));
-      else if (t === "ablegen") { const n = nachher(); if (!ablegen(G.platz)) { n(); wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } }
+      else if (t === "ablegen" && G.platz) { const n = nachher(); if (!ablegen(G.platz)) { n(); wahl.innerHTML = `<b>Der Rucksack ist voll.</b>`; return; } }
       else if (t === "anlegen") { nachher(); anlegen(g); }
       else if (t === "fallen") { nachher(); fallenLassen(Number(b.dataset.wo!.slice(1))); } }; })); /* mit Server-Inventar kommt das neue Inventar gleich zurück */
 }
 /** Untersuchen: die Werte eines Gegenstands */
 function untersuchen(g: string, zurueck: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
-  const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art} · ${PLAETZE.find((p) => p.id === G.platz)!.name}</p>
+  const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
     <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, () => { /* schließen */ });
-  void gegenstandBild(t.querySelector("canvas") as HTMLCanvasElement, G.ebenen, G.platz === "brust");
+  { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust"); }
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
 }
 /** Rucksack und Ausrüstung: mit eigenem Helden das echte Inventar, sonst (Kampagnen ohne eigenen Helden) das bisherige Grundgerüst */
@@ -182,3 +183,14 @@ export function skillTafel(zu: () => void): void {
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>
     <p class="klein">Heldenlevel ${hl} · ${maxLp(hl)} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
     <p class="klein">Jeder Lebenspunkt Schaden bringt 2 XP – im Nahkampf je nach Stil an Geschick (Genau), Stärke (Aggressiv) oder beide (Normal).</p>`, zu); }
+/** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
+function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament"): void {
+  const x = c.getContext("2d"); if (!x) return; const W = c.width, H = c.height; x.clearRect(0, 0, W, H); x.save(); x.translate(W / 2, H / 2); x.scale(W / 120, H / 120); x.lineJoin = "round";
+  if (art === "kristall") { const g = x.createLinearGradient(-20, -40, 20, 40); g.addColorStop(0, "#e6d8ff"); g.addColorStop(0.45, "#9a6cf0"); g.addColorStop(1, "#4a2a9a");
+    x.shadowColor = "rgba(170,120,255,.8)"; x.shadowBlur = 14; x.fillStyle = g; x.strokeStyle = "#2a1650"; x.lineWidth = 2.5;
+    x.beginPath(); x.moveTo(0, -44); x.lineTo(20, -10); x.lineTo(12, 38); x.lineTo(-12, 38); x.lineTo(-20, -10); x.closePath(); x.fill(); x.shadowBlur = 0; x.stroke();
+    x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 2; x.beginPath(); x.moveTo(0, -44); x.lineTo(-4, 36); x.moveTo(-20, -10); x.lineTo(20, -10); x.stroke(); }
+  else { x.fillStyle = "#e9d7a8"; x.strokeStyle = "#7a5a2a"; x.lineWidth = 2.5; x.beginPath(); x.moveTo(-30, -36); x.lineTo(30, -36); x.lineTo(30, 30); x.quadraticCurveTo(0, 22, -30, 30); x.closePath(); x.fill(); x.stroke();
+    x.fillStyle = "#c9ad72"; for (const y of [-36, 30]) { x.beginPath(); x.ellipse(0, y, 34, 7, 0, 0, Math.PI * 2); x.fill(); x.stroke(); }
+    x.strokeStyle = "rgba(90,60,20,.7)"; x.lineWidth = 2; for (let i = 0; i < 4; i++) { x.beginPath(); x.moveTo(-20, -18 + i * 11); x.lineTo(14 - (i % 2) * 8, -18 + i * 11); x.stroke(); } }
+  x.restore(); }

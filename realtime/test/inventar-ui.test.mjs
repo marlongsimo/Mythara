@@ -61,7 +61,7 @@ try {
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
   { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = W.bodenBild && [...W.bodenBild.values()][0]; if (!d) return null; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); });
     if (q) await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
-  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Aufheben: Einfacher Schild", `Antippen des Beutels: „${knopf}“`);
+  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Einfacher Schild aufheben", `Antippen des Beutels: „${knopf}“`);
   if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   { const H = HELD["00000000-0000-0000-0000-00000000a001"]; await new Promise((r) => setTimeout(r, 2000)); check(H.inventar && H.inventar.rucksack.includes("rundschild") && !H.inventar.angelegt.nebenhand, `Der Server hat das Inventar gespeichert: ${JSON.stringify(H.inventar)}`); }

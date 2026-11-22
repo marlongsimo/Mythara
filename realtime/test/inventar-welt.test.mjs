@@ -46,6 +46,14 @@ try {
   await warte(anna, (m) => m.t === "boden" && m.liste.length === 0, 2500); check(anna.inv.rucksack[0] === "rundschild" && anna.boden.length === 0, "Anna hebt ihn auf: wieder im Rucksack, vom Boden verschwunden");
   sende(anna, { t: "inv", tat: "anlegen", i: 0 }); await warte(anna, (m) => m.t === "inventar"); check(anna.inv.angelegt.nebenhand === "rundschild" && anna.inv.rucksack.length === 0, "Wieder angelegt: zählt im Ausrüstungsfenster");
   sende(anna, { t: "inv", tat: "anlegen", i: 7 }); await warte(anna, (m) => m.t === "chat"); check(anna.chat.some((t) => /gibt es im Rucksack nicht/.test(t)), "Unsinnige Bitte abgelehnt");
+  /* zwei Dinge an derselben Stelle: mit einer Bitte („Alles aufheben“) beide zurück */
+  sende(anna, { t: "inv", tat: "ablegen", platz: "nebenhand" }); await warte(anna, (m) => m.t === "inventar"); sende(anna, { t: "inv", tat: "ablegen", platz: "waffe" }); await warte(anna, (m) => m.t === "inventar");
+  sende(anna, { t: "inv", tat: "fallen", i: 0 }); await warte(anna, (m) => m.t === "inventar"); sende(anna, { t: "inv", tat: "fallen", i: 0 }); await warte(anna, (m) => m.t === "inventar");
+  await warte(anna, (m) => m.t === "boden" && m.liste.length === 2, 2500); check(anna.boden.length === 2 && anna.inv.rucksack.length === 0, `Schild und Schwert liegen an derselben Stelle (${anna.boden.map((d) => d.g)})`);
+  sende(anna, { t: "aufheben", ids: anna.boden.map((d) => d.i) }); await warte(anna, (m) => m.t === "boden" && m.liste.length === 0, 2500);
+  check(anna.boden.length === 0 && anna.inv.rucksack.length === 2, `„Alles aufheben“: beide mit einer Bitte im Rucksack (${JSON.stringify(anna.inv.rucksack)})`);
+  for (const g of ["rundschild", "ritterschwert"]) { sende(anna, { t: "inv", tat: "anlegen", i: anna.inv.rucksack.indexOf(g) }); await warte(anna, (m) => m.t === "inventar"); }
+  check(anna.inv.angelegt.waffe === "ritterschwert" && anna.inv.angelegt.nebenhand === "rundschild", "Beides wieder angelegt");
   await new Promise((r) => setTimeout(r, 2000)); const zuletzt = GESPEICHERT.filter((g) => g.p_user === A).pop();
   check(zuletzt && zuletzt.p_inventar.angelegt.nebenhand === "rundschild" && zuletzt.p_inventar.rucksack.length === 0, `Der Server speichert das Inventar (rpg_held_inventar_setzen, ${GESPEICHERT.length}-mal)`);
   /* Gast: kein Inventar, keine Bitten */

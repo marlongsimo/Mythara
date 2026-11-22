@@ -18,7 +18,7 @@ import { HELDEN } from "../../../shared/config";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 /** Eine Stelle, an der man etwas tun kann: wohin gehen, was der Knopf sagt, was passiert und ob man schon dort ist */
-interface Stelle { x: number; y: number; text: string; tat: () => void; da: () => boolean }
+interface Stelle { x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
@@ -30,6 +30,10 @@ import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 import { bodenListe, aufheben, BodenDing } from "../welt";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+/** 3D-Modelle für Gegenstände am Boden (einmal laden, dann klonen) */
+const modelle = new Map<string, Promise<THREE.Object3D>>();
+const modellLaden = (pfad: string): Promise<THREE.Object3D> => { let p = modelle.get(pfad); if (!p) { p = new GLTFLoader().loadAsync("../" + pfad).then((g) => g.scene); modelle.set(pfad, p); p.catch(() => modelle.delete(pfad)); } return p; };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = matchMedia("(pointer: coarse)").matches, C = CHUNK_FELDER, RADIUS = 0.3, HOEHE = 2.0;
@@ -185,7 +189,11 @@ export class Spielwelt3D implements WeltKern {
   anStelle(x: number, y: number): Stelle | null {
     /* Gegenstände am Boden zuerst: antippen → „Aufheben“ (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
     { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
-      if (b) { const d = b, G = GEGENSTAENDE[d.g]; return { x: d.x, y: d.y, text: `Aufheben: ${G ? G.name : d.g}${d.n > 1 ? " ×" + d.n : ""}`, tat: () => aufheben(d.i), da: () => Math.hypot(d.x - this.ort.x, d.y - this.ort.y) <= 1.5 }; } }
+      if (b) { const d0 = b, hier = bodenListe().filter((d) => Math.hypot(d.x - d0.x, d.y - d0.y) <= 0.8), name = (d: BodenDing) => `${GEGENSTAENDE[d.g] ? GEGENSTAENDE[d.g].name : d.g}${d.n > 1 ? " ×" + d.n : ""} aufheben`;
+        const da = () => Math.hypot(d0.x - this.ort.x, d0.y - this.ort.y) <= 1.5;
+        if (hier.length === 1) return { x: d0.x, y: d0.y, text: name(d0), tat: () => aufheben(d0.i), da };
+        /* mehrere an derselben Stelle: je Gegenstand ein Knopf, ganz unten „Alles aufheben“ */
+        return { x: d0.x, y: d0.y, text: "", tat: () => {}, da, knoepfe: [...hier.map((d) => ({ text: name(d), tat: () => aufheben(d.i) })), { text: "Alles aufheben", tat: () => aufheben(hier.map((d) => d.i)) }] }; } }
     const cx = Math.floor(x / C), cy = Math.floor(y / C); let best: Stelle | null = null, bd = Infinity;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
       for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > Math.max(1.2, a.radius) || w >= bd) continue; const i = this.interaktion(a); if (!i) continue;
@@ -194,15 +202,19 @@ export class Spielwelt3D implements WeltKern {
     const r = this.regionBei(x, y); if (r) for (const a of r.ausgaenge) if (inZone(a.zone, x, y)) return { x, y, text: a.text, tat: () => this.reisen(a), da: () => inZone(a.zone, this.ort.x, this.ort.y) };
     return null; }
   /** Der kleine Knopf an der Stelle: antippen = hingehen und dort handeln (ist man schon dort, sofort) */
-  wahlZeigen(s: Stelle) { this.wahlWeg(); const el = document.createElement("div"), b = document.createElement("button"); el.className = "ez-wahl3d"; b.type = "button"; b.textContent = s.text; el.appendChild(b);
+  wahlZeigen(s: Stelle) { this.wahlWeg(); const el = document.createElement("div"); el.className = "ez-wahl3d" + (s.knoepfe ? " mehr" : "");
     for (const ev of ["pointerdown", "pointerup"]) el.addEventListener(ev, (e) => e.stopPropagation());
-    b.addEventListener("click", (e) => { e.stopPropagation(); this.wahlWeg(); if (this.gesperrt) return; if (s.da()) { s.tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? s : null; });
+    for (const k of s.knoepfe || [{ text: s.text, tat: s.tat }]) { const b = document.createElement("button"); b.type = "button"; b.textContent = k.text; el.appendChild(b);
+      b.addEventListener("click", (e) => { e.stopPropagation(); this.wahlWeg(); if (this.gesperrt) return; if (s.da()) { k.tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat: k.tat } : null; }); }
     this.wahl = { el, x: s.x, z: s.y }; this.wahlFolgen(); }
   wahlWeg() { if (this.wahl) { this.wahl.el.remove(); this.wahl = null; } }
   /* ───────────── Gegenstände am Boden: ein kleiner Beutel mit Namen ───────────── */
   private bodenBild = new Map<number, { g: THREE.Group; nm: HTMLElement; d: BodenDing }>();
   private bodenZeichnen() { const da = new Set<number>();
     for (const d of bodenListe()) { da.add(d.i); let b = this.bodenBild.get(d.i);
+      if (!b && GEGENSTAENDE[d.g] && GEGENSTAENDE[d.g].modell3d) { const g = new THREE.Group(); this.motor.szene.add(g); const nm = document.createElement("div"), G = GEGENSTAENDE[d.g]; nm.className = "ez-name3d boden"; nm.textContent = G.name + (d.n > 1 ? " ×" + d.n : "");
+        modellLaden(G.modell3d!).then((m) => { const c = m.clone(true); const box = new THREE.Box3().setFromObject(c), gr = Math.max(0.001, box.max.y - box.min.y); c.scale.setScalar(0.55 / gr); c.traverse((o) => { o.castShadow = true; }); g.add(c); }).catch(() => { /* ohne Modell: nur der Name */ });
+        b = { g, nm, d }; this.bodenBild.set(d.i, b); }
       if (!b) { const g = new THREE.Group(), stoff = new THREE.MeshStandardMaterial({ color: 0x8a6236, roughness: 0.9 }), schnur = new THREE.MeshStandardMaterial({ color: 0xd8b25a, roughness: 0.5, metalness: 0.4 });
         const sack = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), stoff); sack.scale.set(1, 0.85, 1); sack.position.y = 0.2; const hals = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.12, 0.14, 10), stoff); hals.position.y = 0.43;
         const band = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.022, 6, 14), schnur); band.rotation.x = Math.PI / 2; band.position.y = 0.42; g.add(sack, hals, band); g.traverse((o) => { o.castShadow = true; }); this.motor.szene.add(g);

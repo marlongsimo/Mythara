@@ -3,33 +3,41 @@
  * Der Browser bittet (anlegen, ablegen, fallen lassen, aufheben), der Server prüft, ändert und schickt das neue Inventar zurück.
  *
  * Inventar: je Konto im Arbeitsspeicher, geladen aus rpg_held.inventar (Migration 043; fehlt es, aus der Startwaffe), gespeichert über
- *   rpg_held_inventar_setzen (nur service_role) kurz nach jeder Änderung und beim Gehen. Form: { angelegt: {waffe, brust, nebenhand}, rucksack: [id, …] }.
+ *   rpg_held_inventar_setzen (nur service_role) kurz nach jeder Änderung und beim Gehen. Form: { angelegt: {waffe, brust, nebenhand}, rucksack: [id | {g, n}, …], v }.
+ *   Stapelbare Gegenstände (z. B. Splitter) liegen als {g, n} in einem Fach. v: Stand der Startausrüstung (2: mit Rüstung zu Bogen und Stab).
  * Boden: je Region (Weltfelder), nur im Arbeitsspeicher.
  *   Beute eines Gegners: 30 s nur für den, der den meisten Schaden gemacht hat (bei Gleichstand den letzten Schlag), dann 5 min für alle.
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
-import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
 import { Startwaffe } from "../../shared/aussehen";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: string[] }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number }
+const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: [...i.rucksack] });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v });
 
 /** Inventar aus unbekannter Quelle prüfen: nur bekannte Gegenstände, jeder auf seinem Platz, höchstens RUCKSACK_PLAETZE im Rucksack */
 export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   const o = (roh && typeof roh === "object" ? roh : null) as { angelegt?: Record<string, unknown>; rucksack?: unknown[] } | null;
-  if (!o || !o.angelegt || !Array.isArray(o.rucksack)) return { angelegt: startAusruestung(waffe), rucksack: [] };
+  if (!o || !o.angelegt || !Array.isArray(o.rucksack)) return { angelegt: startAusruestung(waffe), rucksack: [], v: INV_STAND };
   const angelegt: Partial<Record<Platz, string>> = {}; for (const { id } of PLAETZE) { const g = o.angelegt[id]; if (typeof g === "string" && GEGENSTAENDE[g] && GEGENSTAENDE[g].platz === id) angelegt[id] = g; }
-  return { angelegt, rucksack: o.rucksack.filter((g): g is string => typeof g === "string" && Boolean(GEGENSTAENDE[g])).slice(0, RUCKSACK_PLAETZE) };
+  const rucksack: Fach[] = []; for (const f of o.rucksack) { const g = typeof f === "string" ? f : f && typeof f === "object" ? String((f as { g?: unknown }).g) : "", G = GEGENSTAENDE[g]; if (!G) continue;
+    if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
+  const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
+  if ((inv.v ?? 1) < INV_STAND) { /* Startausrüstung erweitert (Rüstung zu Bogen und Stab): einmal nachreichen, wenn der Platz frei ist und sie nirgends liegt */
+    for (const [platz, g] of Object.entries(startAusruestung(waffe)) as [Platz, string][]) if (!inv.angelegt[platz] && !inv.rucksack.some((f) => fachG(f) === g)) inv.angelegt[platz] = g;
+    inv.v = INV_STAND; }
+  return inv;
 }
 /** Das Inventar eines Kontos laden (einmal; danach aus dem Arbeitsspeicher). null: das Konto hat noch keinen eigenen Helden */
 export function inventarLaden(sb: Sb, nutzer: string): Promise<Eintrag | null> {
   const da = je.get(nutzer); if (da) return Promise.resolve(da); const l = laedt.get(nutzer); if (l) return l;
   const p = (sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`) as Promise<{ waffe: string; inventar?: unknown }[]>).then((z) => {
     const r = z && z[0]; if (!r || !["schwert", "bogen", "stab"].includes(String(r.waffe))) return null; const waffe = r.waffe as Startwaffe;
-    const e: Eintrag = { inv: invPruefen(r.inventar, waffe), waffe, hoerer: new Set() }; je.set(nutzer, e); if (!r.inventar) merken(sb, nutzer, e); return e; })
+    const e: Eintrag = { inv: invPruefen(r.inventar, waffe), waffe, hoerer: new Set() }; je.set(nutzer, e); if (!r.inventar || (Number((r.inventar as { v?: unknown }).v) || 1) < INV_STAND) merken(sb, nutzer, e); return e; })
     .catch((x) => { console.error("Inventar laden:", (x as Error).message); return null; }).finally(() => laedt.delete(nutzer));
   laedt.set(nutzer, p); return p; }
 /** Das geladene Inventar (Kopie) oder null */
@@ -46,15 +54,21 @@ async function speichern(sb: Sb, nutzer: string, e: Eintrag) {
 export function inventarSichern(sb: Sb, nutzer: string): void { const e = je.get(nutzer); if (!e || !e.uhr) return; clearTimeout(e.uhr); e.uhr = undefined; void speichern(sb, nutzer, e); }
 
 /* ───────── Aktionen (Rückgabe: Fehlertext für den Spieler oder null) ───────── */
-export function anlegen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.rucksack[i], G = g ? GEGENSTAENDE[g] : null; if (!g || !G) return "Diesen Gegenstand gibt es im Rucksack nicht.";
-  e.inv.rucksack.splice(i, 1); const alt = e.inv.angelegt[G.platz]; if (alt) e.inv.rucksack.splice(i, 0, alt); e.inv.angelegt[G.platz] = g; geaendert(sb, nutzer, e); return null; }
+export function anlegen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const f = e.inv.rucksack[i], g = f !== undefined ? fachG(f) : "", G = g ? GEGENSTAENDE[g] : null; if (!g || !G) return "Diesen Gegenstand gibt es im Rucksack nicht.";
+  if (!G.platz) return "Das kann man nicht anlegen."; e.inv.rucksack.splice(i, 1); const alt = e.inv.angelegt[G.platz]; if (alt) e.inv.rucksack.splice(i, 0, alt); e.inv.angelegt[G.platz] = g; geaendert(sb, nutzer, e); return null; }
 export function ablegen(sb: Sb, nutzer: string, platz: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.angelegt[platz as Platz]; if (!g) return "Dort ist nichts angelegt.";
   if (e.inv.rucksack.length >= RUCKSACK_PLAETZE) return "Der Rucksack ist voll."; delete e.inv.angelegt[platz as Platz]; e.inv.rucksack.push(g); geaendert(sb, nutzer, e); return null; }
-/** Aus dem Rucksack nehmen (zum Fallenlassen). Zurück: die Gegenstands-id oder null */
-export function herausnehmen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return null; const g = e.inv.rucksack[i]; if (!g) return null; e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return g; }
-/** In den Rucksack legen, so viele wie Platz ist. Zurück: wie viele genommen wurden */
-export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number): number { const e = je.get(nutzer); if (!e || !GEGENSTAENDE[g]) return 0; const k = Math.max(0, Math.min(n, RUCKSACK_PLAETZE - e.inv.rucksack.length));
-  for (let j = 0; j < k; j++) e.inv.rucksack.push(g); if (k) geaendert(sb, nutzer, e); return k; }
+/** Ein ganzes Fach aus dem Rucksack nehmen (zum Fallenlassen; ein Stapel als Ganzes). Zurück: Gegenstand und Anzahl oder null */
+export function herausnehmen(sb: Sb, nutzer: string, i: number): { g: string; n: number } | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null;
+  e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return { g: fachG(f), n: fachN(f) }; }
+/** In den Rucksack legen, so viele wie Platz ist – Stapelbares auf vorhandene Stapel, sonst je Gegenstand ein Fach. Zurück: wie viele genommen wurden */
+export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number, melden = true): number { const e = je.get(nutzer), G = GEGENSTAENDE[g]; if (!e || !G || n < 1) return 0; let rest = n;
+  if (G.stapel) { for (const f of e.inv.rucksack) if (typeof f !== "string" && f.g === g && f.n < G.stapel) { const k = Math.min(rest, G.stapel - f.n); f.n += k; rest -= k; if (!rest) break; }
+    while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { const k = Math.min(rest, G.stapel); e.inv.rucksack.push({ g, n: k }); rest -= k; } }
+  else while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { e.inv.rucksack.push(g); rest--; }
+  const k = n - rest; if (k && melden) geaendert(sb, nutzer, e); return k; }
+/** Bedingungen für Drop-Rolls (config.ts MonsterDef.drops nur): „einsteigerquest“ – das Einsteiger-Quest ist begonnen. Das Quest kommt noch: bis dahin nie erfüllt. */
+export function bedingungErfuellt(nutzer: string, name: string): boolean { void nutzer; void name; return false; }
 
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }
@@ -73,6 +87,7 @@ export function bodenAufheben(sb: Sb, nutzer: string, ort: string, id: number, x
   const d = boden.get(id); if (!d || d.ort !== ort || !sichtbar(d, nutzer, jetzt)) return "Das liegt hier nicht (mehr).";
   if (x === undefined || y === undefined || Math.hypot(d.x - x, d.y - y) > AUFHEBEN_WEIT) return "Zu weit weg.";
   if (!je.get(nutzer)) return "Kein Inventar."; const k = aufnehmen(sb, nutzer, d.g, d.n); if (!k) return "Der Rucksack ist voll.";
+  if (k < d.n) { d.n -= k; return "Der Rucksack ist voll – ein Teil bleibt liegen."; }
   if (k >= d.n) boden.delete(id); else d.n -= k; return null; }
 /** Abgelaufenes wegräumen (einmal je Sekunde) */
 export function bodenAufraeumen(jetzt = Date.now()): void { for (const [id, d] of boden) if (jetzt >= d.bis) boden.delete(id); }
