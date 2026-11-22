@@ -194,7 +194,7 @@ function stilTabLage(): void {
 function stilTabZeichnen(): void {
   const el = document.getElementById("ez-stiltab"); if (!el) return; const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
   const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-  const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>Treffer ${z(k.angriff[art])} · ${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
+  const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
   el.innerHTML = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
     <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
     <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; }
