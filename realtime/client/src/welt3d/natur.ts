@@ -4,7 +4,7 @@
  * damit Wald und Lichtungen so dicht wirken wie in der 2D-Welt. Was hier kein Modell hat, zeigt die Welt als gemaltes Bild (Billboard).
  */
 import * as THREE from "three";
-import { Teile, matrix, zufall, bausch } from "./teile";
+import { Teile, matrix, zufall, bausch, type Muster } from "./teile";
 
 export type Typ = { id: string; kategorie: string; bild: string; groesse: [number, number]; anker: [number, number]; massstab: number; kollision: { art: string; r?: number; x?: number; y?: number; b?: number; h?: number } | null; plan: boolean };
 
@@ -47,12 +47,22 @@ function tor() { const t = new Teile("holz"); for (const x of [-2.1, 2.1]) { t.b
 function meiler() { const t = new Teile("stroh"); t.add(new THREE.ConeGeometry(1.1, 1.3, 9), "#3a332c", matrix(0, 0.65, 0), 0.1); return t.geometrie(); }
 function stamm() { const t = new Teile("rinde"); t.add(new THREE.CylinderGeometry(0.45, 0.55, 9, 8), "#5d4129", matrix(0, 0.5, -4.5, Math.PI / 2, 0, 0), 0.05); return t.geometrie(); }
 
+/** Kenney-Modelle (echtzeit/welt3d/modelle.json, aus werkzeug/welt/kenney3d.py): Dreiecke relativ zum Fuß, je Gruppe Muster und Farbe */
+export type KenneyModell = { muster: string; farbe: string; p: number[] }[];
+let KENNEY: Record<string, KenneyModell> = {};
+export function setzeKenney(m: Record<string, KenneyModell>) { KENNEY = m; }
+function kenney(m: KenneyModell) { const t = new Teile();
+  for (const g of m) { const d: number[][][] = []; for (let i = 0; i + 8 < g.p.length; i += 9) d.push([[g.p[i], g.p[i + 1], g.p[i + 2]], [g.p[i + 3], g.p[i + 4], g.p[i + 5]], [g.p[i + 6], g.p[i + 7], g.p[i + 8]]]);
+    if (d.length) t.flaechen(d, g.farbe, { muster: g.muster as Muster, schwanken: 0.03 }); }
+  return t.geometrie(); }
+
 const SPEICHER = new Map<string, THREE.BufferGeometry | null>();
 /** Geometrie für eine Objektart (Maßstab 1, Fuß im Ursprung) oder null = als Bild zeigen */
 export function modell(t: Typ): THREE.BufferGeometry | null {
   if (SPEICHER.has(t.id)) return SPEICHER.get(t.id)!;
   const H = (t.groesse[1] / 48) * t.massstab * 0.85, Bt = (t.groesse[0] / 48) * t.massstab * 0.68, id = t.id; let g: THREE.BufferGeometry | null = null;
-  if (/eiche_01/.test(id)) g = laubbaum(H, Bt, ["#4a6e2a", "#557a30", "#41622a"], 1);
+  if (KENNEY[id]) g = kenney(KENNEY[id]);
+  else if (/eiche_01/.test(id)) g = laubbaum(H, Bt, ["#4a6e2a", "#557a30", "#41622a"], 1);
   else if (/eiche_02/.test(id)) g = laubbaum(H, Bt, ["#527a30", "#46692c", "#5e8538"], 2, STAMM, 0.9, 4);
   else if (/linde/.test(id)) g = laubbaum(H, Bt * 0.9, ["#5a8034", "#4e702f", "#668c3c"], 3, STAMM, 1.25, 5);
   else if (/herbst/.test(id)) g = laubbaum(H, Bt, ["#c9772e", "#b85e28", "#d8963a"], 4);
@@ -76,8 +86,9 @@ export function modell(t: Typ): THREE.BufferGeometry | null {
   else if (id === "dorf_tor_01") g = tor();
   else if (/meiler/.test(id)) g = meiler();
   else if (/baumstamm_02/.test(id)) g = stamm();
+  if (g) g.userData.geteilt = true;   /* von allen Chunks benutzt: beim Freigeben nicht wegwerfen */
   SPEICHER.set(t.id, g); return g;
 }
 /** Bäume drehen sich zufällig, Bauteile (Palisaden, Zäune) richten sich nach ihren Nachbarn */
-export const istBaum = (t: Typ) => t.kategorie === "bewuchs" && !/baumstamm/.test(t.id);
-export const istReihe = (t: Typ) => /palisade|zaun/.test(t.id);
+export const istBaum = (t: Typ) => t.kategorie === "bewuchs" && !/baumstamm|^k_/.test(t.id);
+export const istReihe = (t: Typ) => /^dorf_(palisade|zaun)/.test(t.id);
