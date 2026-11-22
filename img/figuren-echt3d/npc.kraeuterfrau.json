@@ -1,0 +1,34 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.haar.zopf_wild": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "werkzeug.eimer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen"
+   ]
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}

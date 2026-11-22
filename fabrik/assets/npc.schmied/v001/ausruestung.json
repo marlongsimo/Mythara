@@ -1,0 +1,45 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.schmied – Schmied (NPC für Echtzeit-3D aus npcmann3d): Frisur militaer, Bart hufeisen, Haarfarbe #1c1a19, Haut braun. Werkzeug: hammer. Lederschürze.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.hammer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.hammer/v001/quelle/hammer.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.militaer",
+      "platz": "haar",
+      "glb": "npc.schmied/v001/quelle/teile/kopf.haar.militaer.glb"
+    },
+    {
+      "id": "kopf.bart.hufeisen",
+      "platz": "bart",
+      "glb": "npc.schmied/v001/quelle/teile/kopf.bart.hufeisen.glb"
+    },
+    {
+      "id": "kleidung.schuerze",
+      "platz": "schuerze",
+      "glb": "npc.schmied/v001/quelle/teile/kleidung.schuerze.glb",
+      "beine_mitteln": true
+    }
+  ]
+}

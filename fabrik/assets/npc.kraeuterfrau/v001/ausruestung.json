@@ -1,0 +1,34 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.kraeuterfrau – Kräuterfrau (NPC für Echtzeit-3D aus npcfrau3d): Frisur zopf_wild, Haarfarbe #9a968f, Haut eigen. Werkzeug: eimer.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.eimer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.eimer/v001/quelle/eimer.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zopf_wild",
+      "platz": "haar",
+      "glb": "npc.kraeuterfrau/v001/quelle/teile/kopf.haar.zopf_wild.glb"
+    }
+  ]
+}
