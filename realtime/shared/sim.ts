@@ -27,7 +27,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; wach: boolean;
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
-  /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp }
+  /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number; id?: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
   | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
@@ -285,7 +285,8 @@ export class Sim {
     if (d <= reich && frei(w, z)) { w.pfad = []; w.blick = Math.atan2(z.y - w.y, z.x - w.x); if (w.cdA <= 0) this.angriff(w, z); return; }
     w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, z); w.neuWeg = 0.3; }
   }
-  private naechsterGegner(w: Wesen, weit: number): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; const d = abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+  /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
+  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; const d = abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
@@ -326,6 +327,8 @@ export class Sim {
     if (this.wiederkehr.length) { for (const q of this.wiederkehr) q.t -= DT; for (const q of this.wiederkehr.filter((x) => x.t <= 0)) { const w = q.w; /* der Gegner steht wieder an seinem Lager */
         Object.assign(w, { tot: false, lp: w.max, x: w.heim.x, y: w.heim.y, pfad: [], zielId: 0, wach: false, dauer: [], dauerRest: 0, aushol: 0, ladeT: 0, betaeubt: 0, spottT: 0, schutz: 0 }); this.erhoben.delete(w.id); if (q.blinz) this.blinzler.add(w.id); this.ev.push({ a: "auftauchen", id: w.id, x: w.x, y: w.y }); }
       this.wiederkehr = this.wiederkehr.filter((x) => x.t > 0); }
+    if (this.weltZeit) for (const w of this.wesen) if (w.held && !w.tot) { /* Aggro-Zeitmesser: läuft, solange der Held in der Nähe seines Ankers bleibt */
+      if (!w.aggroAnker || Math.hypot(w.x - w.aggroAnker.x, w.y - w.aggroAnker.y) >= K.AGGRO_RUECKSETZEN) { w.aggroAnker = { x: w.x, y: w.y }; w.aggroZeit = 0; } else w.aggroZeit = (w.aggroZeit ?? 0) + DT; }
     for (const w of this.wesen) {
       if (w.tot) { if (w.held) { w.wieder -= DT; if (w.wieder <= 0) { w.tot = false; w.lp = w.max; const p = START[Math.max(0, this.wesen.filter((o) => o.held).indexOf(w))] || START[0]; w.x = p.x; w.y = p.y; w.pfad = []; w.zielId = 0; w.ruhe = 99; } } continue; }
       for (const k of ["cdA", "cdQ", "cdE", "cdR", "cdM", "cdS", "bollwerk", "langsamT", "malT", "bruchT", "bruchSperre", "festSperre", "mrPlusT", "spottT"] as const) if (w[k] > 0) w[k] = Math.max(0, w[k] - DT);
@@ -344,7 +347,7 @@ export class Sim {
         if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; w.pfad = []; } /* Einzelkampf: der Held kämpft schon mit einem anderen */
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
         if (ziel && abstand(ziel, w.heim) > (this.karte.LEINE ?? K.LEINE) && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
-        if (!ziel) { const o = this.naechsterGegner(w, this.karte.AGGRO ?? K.AGGRO); if (o && abstand(o, w.heim) <= (this.karte.LEINE ?? K.LEINE)) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
+        if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && abstand(o, w.heim) <= (this.karte.LEINE ?? K.LEINE)) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel && D.spezial && w.cdS <= 0 && abstand(w, ziel) <= D.spezial.reich) { w.ladeT = D.spezial.laden; w.ladeX = ziel.x; w.ladeY = ziel.y; w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "laden", id: w.id, x: ziel.x, y: ziel.y, r: D.spezial.radius, t: D.spezial.laden }); }
         else if (ziel) this.jagen(w, ziel, D.angriff.reich);
         else if (this.karte.WANDERN > 0 && abstand(w, w.heim) <= this.karte.WANDERN + 1.5) { /* streifen: ab und zu zu einer neuen Stelle um das Lager, dazwischen stehen bleiben */

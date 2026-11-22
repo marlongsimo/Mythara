@@ -22,8 +22,8 @@ US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschl
 BESONDERS = {
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
     "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
-    # Die Lichtung im Kreuzwald: vier Dolch-Banditen, Mehrkampf (viele gegen viele). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
-    "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4, "mehrkampf": [[6522, 6558, 6586, 6606]],
+    # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
+    "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4,
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
 }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",

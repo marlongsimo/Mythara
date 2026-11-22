@@ -38,6 +38,17 @@ function duell(seed, waffe, stil) {
   const aufTick = (l) => l.every((t) => t % 10 === 0), abst = (l) => l.slice(1).map((t, i) => (t - l[i]) / 20);
   check(zeitH.length > 3 && aufTick(zeitH) && aufTick(zeitB), `Alle Angriffe fallen auf einen Kampf-Tick (0,5 s): Held ${zeitH.length}, Bandit ${zeitB.length} Angriffe`);
   check(abst(zeitH).every((d) => d === 1.5) && abst(zeitB).every((d) => d === 2), `Takt: Schwert alle 1,5 s (3 Ticks) · Dolch alle 2,0 s (4 Ticks) – ${[...new Set(abst(zeitH))].join("/")} s · ${[...new Set(abst(zeitB))].join("/")} s`); }
+/* Aggro: höchstens 15 Minuten, dann erst wieder nach 20 Feldern Abstand (oder neuem Betreten der Region) */
+{ const { s, b, h } = duell(5, "schwert", 1); h.x = b.x - 3; h.y = b.y; b.wach = false; b.zielId = 0;
+  const greiftAn = (sek) => { for (let i = 0; i < sek * 20; i++) { s.schritt(); s.zustand(); if (b.zielId === h.id) return true; } return false; };
+  check(greiftAn(3), "Ein Held in Aggro-Reichweite wird angegriffen");
+  b.zielId = 0; b.wach = false; b.pfad = []; b.x = b.heim.x; b.y = b.heim.y; h.x = b.x - 3; h.lp = h.max; h.aggroZeit = 15 * 60;
+  check(!greiftAn(4), "Nach 15 Minuten am selben Ort greift der Bandit nicht mehr von selbst an");
+  h.x = b.x - 1.2; s.eingabe({ t: "ziel", id: b.id }, h.id); check(greiftAn(6), "Wird er selbst angegriffen, wehrt er sich trotzdem"); s.eingabe({ t: "ziel", id: 0 }, h.id);
+  b.zielId = 0; b.wach = false; b.pfad = []; b.lp = b.max; b.x = b.heim.x; b.y = b.heim.y; h.aggroZeit = 15 * 60; h.x = b.x - 24; s.schritt(); h.x = b.x - 3; h.lp = h.max;
+  check(greiftAn(4), `20 Felder weg und zurück: der Zähler beginnt neu, der Bandit greift wieder an (Zähler ${(h.aggroZeit ?? 0).toFixed(1)} s)`); }
+{ const s2 = Sim.welt(9, undefined, true), h2 = s2.nach(s2.beitreten("schildwaechter", 0, { x: 50, y: 50 }, kampfwerte(NULL, startAusruestung("schwert"))));
+  for (let i = 0; i < 40; i++) s2.schritt(); check(h2.aggroZeit > 1.5 && h2.aggroZeit < 2.5, `Neues Betreten der Region: der Zähler beginnt bei 0 (${h2.aggroZeit.toFixed(2)} s nach 2 s)`); }
 /* XP nach Stil */
 for (const [waffe, stil, soll] of [["schwert", 0, "geschick"], ["schwert", 2, "staerke"], ["schwert", 1, "beide"], ["bogen", 1, "fernkampf"], ["stab", 1, "magie"]]) {
   const { s, b, h } = duell(21, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let abgezogen = 0;

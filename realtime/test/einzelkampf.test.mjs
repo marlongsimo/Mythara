@@ -1,17 +1,19 @@
 /*
  * Mythara – Einzel- und Mehrkampf in der offenen Welt (Simulation, ohne Server).
  * Einzelkampf (Standard): ein Gegner gegen einen Helden – kein Dritter greift ein, weder Held noch Gegner.
- * Mehrkampf (Gebiete der Karte, z. B. die Lichtung im Kreuzwald): viele gegen viele.
+ * Mehrkampf (Gebiete der Karte, z. B. die Halle im Unterschlupf; hier auf einer Testkarte): viele gegen viele.
  * Aufruf (nach „node build.mjs“): node test/einzelkampf.test.mjs
  */
 import { Sim, KARTEN, FEIN, setzeKarte, setzeStaerke, ORTSTUFE } from "./sim.gebaut.mjs";
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
-const K = KARTEN.kreuzwald, M = K.mehrkampf[0]; setzeKarte(K, FEIN); setzeStaerke(ORTSTUFE.kreuzwald, 1);
+/* Die Banditen-Lichtung im Kreuzwald ist seit 22.11.2026 Einzelkampf. Mehrkampf wird auf einer Testkarte geprüft: Kreuzwald mit dem alten Lichtungs-Rechteck als Mehrkampf-Bereich. */
+check(!(KARTEN.kreuzwald.mehrkampf || []).length, "Kreuzwald (mit der Banditen-Lichtung): überall Einzelkampf");
+const M = [6522 - 6336, 6558 - 6464, 6586 - 6336, 6606 - 6464], K = { ...KARTEN.kreuzwald, mehrkampf: [M] }; setzeKarte(K, FEIN); setzeStaerke(ORTSTUFE.kreuzwald, 1);
 const s = Sim.welt(3), gegner = () => s.wesen.filter((w) => !w.held), [b1, b2, b3, b4] = gegner();
 for (const g of gegner()) { g.streifT = 1e9; g.pfad = []; g.lp = g.max = 400; } /* zähe Testbanditen: geprüft wird die Bindung, nicht das Balancing (Banditen haben seit v1 nur 40 LP) */
 /* Einzelkampf-Stelle: der Weg nahe dem Südtor, weit weg von der Lichtung */
-const E = { x: 112, y: 6 }; check(!s.mehrkampfBei(E) && s.mehrkampfBei({ x: (M[0] + M[2]) / 2, y: (M[1] + M[3]) / 2 }), `Weg am Tor: Einzelkampf · Lichtung (${M.join(", ")}): Mehrkampf`);
+const E = { x: 112, y: 6 }; check(!s.mehrkampfBei(E) && s.mehrkampfBei({ x: (M[0] + M[2]) / 2, y: (M[1] + M[3]) / 2 }), `Testkarte – Weg am Tor: Einzelkampf · Mehrkampf-Bereich (${M.join(", ")}): Mehrkampf`);
 const setze = (w, x, y) => { w.x = w.heim.x = x; w.y = w.heim.y = y; w.pfad = []; w.zielId = 0; w.wach = false; };
 setze(b1, E.x, E.y); setze(b2, E.x + 3, E.y); setze(b3, 20, 150); setze(b4, 24, 150);
 const a = s.nach(s.beitreten("schildwaechter", 300, { x: E.x - 1.2, y: E.y })), b = s.nach(s.beitreten("schildwaechter", 300, { x: E.x, y: E.y + 1.2 }));

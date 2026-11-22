@@ -39,6 +39,7 @@ export const K = {
   AGGRO: 5.5, LEINE: 10,                   // Monster: ab wann sie angreifen, wie weit sie ihrem Lager folgen
   WIEDER_HELD: 5,
   HEIL_EP: 0.3,                            // gemeinsame Welt: Heiler bekommen so viele EP je geheiltem Lebenspunkt
+  AGGRO_DAUER: 900, AGGRO_RUECKSETZEN: 20, // offene Welt: nach 15 min greifen Gegner einen Helden nicht mehr von selbst an – bis er 20 Felder weggeht oder die Region verlässt und wieder betritt (unsichtbar)
   WELT_WIEDERKEHR: 60,                     // gemeinsame Welt: Sekunden, bis ein besiegter Gegner wieder an seinem Lager steht
   HEIM_HEILUNG: 0.15, HEIM_HEILUNG_BOSS: 0.02, // Monster, die niemanden mehr verfolgen, heilen an ihrem Platz so viel ihres Lebens je Sekunde
   SPLITTER: [1, 20] as [number, number],
@@ -114,6 +115,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
+  aggressiv?: boolean; aggroReich?: number;
   /** Kampfregeln v2: feste Werte ohne Ausrüstung – Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Angriffstakt in Ticks (1 Tick = 0,5 s), Abwehr je Angriffsart. Nahkampfreichweite wie die Helden (kampfwerte.ts NAH_REICH). */
   v2?: { geschick: number; staerke: number; ticks: number; abwehr: { nah: number; fern: number; magie: number } };
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
