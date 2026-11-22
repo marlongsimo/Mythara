@@ -26,7 +26,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -186,7 +186,8 @@ def handflaeche_lage(S_):
     if vg is None: return 0.45
     lage = [(v.co - h).dot(ax) / ax.length_squared for v in ob.data.vertices for g in v.groups if g.group == vg.index and g.weight > 0.5]
     if len(lage) < 20: return 0.45
-    lage = np.array(lage); a, e = np.percentile(lage, 2), np.percentile(lage, 98); return max(0.45, float(a + 0.45 * (e - a)))
+    lage = np.array(lage); a, e = np.percentile(lage, 2), np.percentile(lage, 98); HSPITZE[S_] = max(1.0, float(e)); return max(0.45, float(a + 0.45 * (e - a)))
+HSPITZE = {"L": 1.0, "R": 1.0}   # wie weit die Fingerspitzen über den Handknochen hinausreichen (Anteil der Knochenlänge)
 HFL = {S_: handflaeche_lage(S_) for S_ in "LR"}; print("Handfläche entlang des Handknochens:", {k: round(v, 2) for k, v in HFL.items()})
 HAND_R = richtung("hand.R"); KLINGE0 = senkrecht((0, -1, 0.15), HAND_R)
 HAND_L = richtung("hand.L"); KLINGE0_L = senkrecht((0, -1, 0.15), HAND_L); LINKS = any(t["art"] == "schwert" and t.get("hand") == "L" for t in AUS["starr"])   # eine Waffe in der linken Hand (Streitkolben neben dem Stab)                             # in der Grundhaltung zeigt die Klinge nach vorn, quer zur Hand (Hammergriff)
@@ -613,6 +614,37 @@ def teleport_weg(i, n):
     sammeln = mit(BEREIT, o_r=(-0.12, -0.72, -0.68), u_r=(0.55, -0.75, 0.36), kl=(0.0, 0.3, 0.95), o_l=(0.12, -0.72, -0.68), u_l=(-0.55, -0.75, 0.36), sch=(0.05, -1.0, 0.1))
     hoch = mit(BEREIT, o_r=(-0.3, -0.12, 0.95), u_r=(-0.12, -0.08, 0.99), kl=(0.0, -1.0, 0.05), o_l=(0.3, -0.12, 0.95), u_l=(0.12, -0.08, 0.99), sch=(1.0, 0.0, 0.0))
     arme_spur([(0, BEREIT), (0.35, sammeln), (0.65, hoch), (1, hoch)], t)
+def mund_haltung():
+    """Rechter Arm so, dass die Fingerspitzen an den Lippen liegen und die Hand flach zum Mund zeigt (die Finger haben keine Knochen und stehen gerade –
+    zielt man mit der Handfläche, decken sie Nase und Augen ab). Aus den Knochenlängen dieser Figur gerechnet (Zwei-Gelenk-Kette Schulter–Ellbogen–Handgelenk):
+    Ellbogen vorn und seitlich unter der Schulter. Mundhöhe: „mund“ = Anteil der Kopflänge über dem Kopfansatz (Standard 0.15, in der Ausrüstungsliste einstellbar)."""
+    S_ = KN["oberarm.R"].head_local; L1 = (KN["oberarm.R"].tail_local - S_).length; L2 = (KN["unterarm.R"].tail_local - KN["unterarm.R"].head_local).length
+    HL = (KN["hand.R"].tail_local - KN["hand.R"].head_local).length * HSPITZE["R"]; kh, kt = KN["kopf"].head_local, KN["kopf"].tail_local
+    zm = kh.z + float(AUS.get("mund", 0.15)) * (kt.z - kh.z); band = P[(np.abs(P[:, 2] - zm) < 0.012) & (np.abs(P[:, 0] - kh.x) < 0.02)]
+    M = Vector((kh.x - 0.01, (float(band[:, 1].min()) if len(band) else kh.y - 0.1) - 0.01, zm)); best = None
+    for hx in np.linspace(-0.2, 0.9, 12):
+        for hy in np.linspace(-0.6, 0.9, 13):
+            for hz in np.linspace(-0.3, 1.0, 14):
+                h = Vector((hx, hy, hz))
+                if h.length < 1e-3: continue
+                h.normalize(); W = M - h * HL; d = (W - S_).length
+                if d > L1 + L2 - 0.01 or d < abs(L1 - L2) + 0.01: continue
+                ax = (W - S_).normalized(); a_ = (L1 * L1 - L2 * L2 + d * d) / (2 * d); r = math.sqrt(max(0.0, L1 * L1 - a_ * a_)); C = S_ + ax * a_; e1 = ax.orthogonal().normalized(); e2 = ax.cross(e1)
+                for phi in np.linspace(0, 2 * math.pi, 24, endpoint=False):
+                    E = C + (e1 * math.cos(phi) + e2 * math.sin(phi)) * r; o = (E - S_).normalized(); u = (W - E).normalized(); knick = math.degrees(u.angle(h))
+                    k_ = 0.5 * max(0.0, knick - 15) + 60 * max(0.0, h.z - 0.35) + 40 * max(0, o.z + 0.3) + 600 * max(0, E.x - (S_.x + 0.08)) + 600 * max(0, E.y - (S_.y - 0.08)) + 400 * max(0, E.z - (S_.z - 0.12)) + 300 * max(0.0, -h.y)
+                    if best is None or k_ < best[0]: best = (k_, tuple(o), tuple(u), tuple(h))
+    print("Trinken: Fingerspitzen an den Lippen, Oberarm", tuple(round(x, 2) for x in best[1]), "Unterarm", tuple(round(x, 2) for x in best[2]), "Hand", tuple(round(x, 2) for x in best[3]))
+    return best[1:]
+MUND = mund_haltung() if "trinken" in (AUS.get("bewegungen") or []) else None
+def trinken(i, n):
+    """Trinken oder Essen (dieselbe Bewegung, ohne Gegenstand): die rechte Hand zum Mund führen, den Kopf leicht zurück, zweimal nippen, die Hand wieder senken.
+    Die Waffe in der rechten Hand blendet das Spiel währenddessen aus (echt3d/figur.ts trinken)"""
+    t = i / (n - 1); a = spur([(0, 0.0), (0.28, 1.0), (0.78, 1.0), (1, 0.0)], t); nip = spur([(0, 0.0), (0.35, 0.0), (0.45, 1.0), (0.55, 0.0), (0.62, 1.0), (0.72, 0.0), (1, 0.0)], t)
+    rumpf(vor=2 - 2 * a, kopf=-3 * a - 4 * nip)
+    mund = mit(BEREIT, o_r=MUND[0], u_r=MUND[1], h_r=MUND[2], kl=(-1.0, 0.0, 0.3))
+    arme_spur([(0, BEREIT), (0.28, mund), (0.78, mund), (1, BEREIT)], t)
+
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
@@ -625,7 +657,7 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
               "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
-              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13})}
+              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()

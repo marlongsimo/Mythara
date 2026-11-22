@@ -255,6 +255,11 @@
    "rate": 10,
    "schleife": false
   },
+  "trinken": {
+   "bilder": 16,
+   "rate": 12,
+   "schleife": false
+  },
   "zauber_stab": {
    "bilder": 8,
    "rate": 12,

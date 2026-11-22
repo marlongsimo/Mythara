@@ -1,0 +1,8 @@
+{
+  "id": "objekt.heiltrank",
+  "name": "Heiltrank",
+  "kategorie": "objekt",
+  "aktuell": "v001",
+  "status": "Meshy „Crimson Healing Elixir“, mit fabrik/drehobjekt.py (hoehe=0.3 schwebe=0.1 dauer=3.5): Animation „drehen“ – Spieldatei img/objekte3d/heiltrank.glb; Werte in realtime/shared/gegenstaende.ts VERBRAUCH.heiltrank (10 + 5 % des maximalen Lebens)",
+  "herkunft": "Meshy"
+}

@@ -82,6 +82,11 @@ export class Figur3D extends Phaser.GameObjects.Container {
   /** Teleport (Abreise): Bewegung teleport_weg mit Lichtsäule; die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = keine 3D-Figur bereit) */
   teleport(): number { const d = this.d; if (!d || this.gestorben) return 0; this.gestorben = true; this.einmal = false; this.zustand = "teleport";
     if (d.hat("teleport_weg")) d.spiele("teleport_weg", true); d.teleport(TELEPORT_S); return TELEPORT_S * 1000; }
+  /** Trinken oder Essen: Hand zum Mund (Bewegung „trinken“, ohne Gegenstand). Die Waffe in der Hand ist währenddessen ausgeblendet, der Schild bleibt.
+   *  fertig: am Ende. Zurück: Dauer in ms (0 = keine 3D-Figur bereit oder Bewegung fehlt) */
+  trinken(fertig?: () => void): number { const d = this.d; if (!d || this.gestorben || !d.hat("trinken")) return 0;
+    const A = this.held.aussehen, t = this.waffen().filter((w) => !w.startsWith("waffe.")); if (A.frisur !== "glatze") t.push("kopf.haar." + A.frisur); if (A.g === "mann" && A.bart !== "ohne") t.push("kopf.bart." + A.bart);
+    d.zeige(t); this.einmal = true; d.spiele("trinken", true, () => { this.einmal = false; this.ausruestung(); this.anwenden(); if (fertig) fertig(); }); return d.dauer("trinken"); }
   /* ---------- Ablauf ---------- */
   private setze(z: string) { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   /** Zustand des Spiels → Bewegung der Figur */
