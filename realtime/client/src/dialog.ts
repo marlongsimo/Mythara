@@ -28,13 +28,19 @@ export const dialogOffen = (): boolean => { const d = document.getElementById("e
 /** Weiter: nächste Aussage, dann die Antworten, sonst schließen */
 function weiter(): void { if (wartet) return; if (schlange.length > 1 || (schlange.length === 1 && wahl)) { schlange.shift(); zeichnen(); return; } schliessen(); }
 function waehlen(id: string): void { const a = wahl && wahl.find((x) => x.id === id); if (!a) return; wahl = null; wartet = true; schlange = [{ wer: "Du", text: a.text.replace(/\s*\([^)]*\)\s*$/, "") }]; zeichnen(); antworte(npcJetzt, a.id); }
+/** Wie die klassische Chatbox: das Gespräch liegt genau über dem Chatfenster (eingeklappt: an seiner Stelle in voller Höhe); ohne Chat unten in der Mitte */
+function lage(): void { const d = document.getElementById("ez-gespraech"), c = document.querySelector<HTMLElement>(".ez-chat"); if (!d) return;
+  const r = c && c.offsetWidth ? c.getBoundingClientRect() : null;
+  if (!r || r.width < 200) { d.classList.remove("imchat"); Object.assign(d.style, { left: "", top: "", width: "", height: "" }); return; }
+  d.classList.add("imchat"); Object.assign(d.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: Math.max(r.height, 140) + "px" }); }
+addEventListener("resize", lage);
 function zeichnen(): void {
   const d = kasten(), x = `<button type="button" class="zu" data-a="__zu" aria-label="Gespräch beenden">✕</button>`;
-  if (zeigtWahl()) { d.className = "wahl"; d.innerHTML = `<div class="kasten"><b class="titel">Wähle eine Antwort</b><div class="antworten">${wahl!.map((a, i) => `<button type="button" data-a="${esc(a.id)}"><i>${i + 1}.</i> ${esc(a.text)}</button>`).join("")}</div></div>${x}`; d.hidden = false; return; }
+  if (zeigtWahl()) { d.className = "wahl"; d.innerHTML = `<div class="kasten"><b class="titel">Wähle eine Antwort</b><div class="antworten">${wahl!.map((a, i) => `<button type="button" data-a="${esc(a.id)}"><i>${i + 1}.</i> ${esc(a.text)}</button>`).join("")}</div></div>${x}`; d.hidden = false; lage(); return; }
   const z = schlange[0]; if (!z) { schliessen(); return; }
   const ich = z.wer === "Du"; d.className = ich ? "ich" : "npc";
   d.innerHTML = `<div class="kasten"><span class="rahmen"><img class="bild" alt=""></span><div class="mitte"><b class="name">${esc(ich ? "Du" : z.wer)}</b><p class="text">${esc(z.text)}</p><span class="weiter">${wartet ? "…" : "Klicke hier, um fortzufahren"}</span></div></div>${x}`;
-  d.hidden = false; const img = d.querySelector(".bild") as HTMLImageElement, wer = z.wer, zeile = z;
+  d.hidden = false; lage(); const img = d.querySelector(".bild") as HTMLImageElement, wer = z.wer, zeile = z;
   void bildnisFuer(wer, npcJetzt).then((u) => { if (u && schlange[0] === zeile && img.isConnected) img.src = u; }); }
 /** Eine Nachricht des Servers aufnehmen: Aussagen hinten an die Schlange, danach die Antworten (oder Ende) */
 function aufnehmen(m: Nachricht): void {

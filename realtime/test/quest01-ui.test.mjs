@@ -56,6 +56,8 @@ try {
   /* Jori läuft auf Anna zu und spricht sie an (nur sie) */
   await anna.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && !d.hidden; }, null, { timeout: 60000 }).catch(() => {});
   await anna.waitForTimeout(1500); const o0 = await offen(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-jori.png" });
+  { const L = await anna.evaluate(() => { const g = document.getElementById("ez-gespraech").getBoundingClientRect(), c = document.querySelector(".ez-chat").getBoundingClientRect(); return { dx: Math.abs(g.left - c.left), dy: Math.abs(g.top - c.top), dw: Math.abs(g.width - c.width) }; });
+    check(L.dx < 2 && L.dy < 2 && L.dw < 2, `Das Gespräch liegt genau über dem Chatfenster (${JSON.stringify(L)})`); }
   check(o0 && o0.art === "npc" && o0.name === "Jori" && /Bürgermeister braucht deine Hilfe/.test(o0.text) && o0.bild, `Jori läuft auf Anna zu und spricht sie an – mit Kopfbild links (${JSON.stringify(o0)})`);
   { const { gesehen, o } = await bisWahl(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-wahl.png" });
     check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen"), `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
@@ -67,6 +69,12 @@ try {
   await anna.click('#ez-leiste [data-l="quests"]'); await anna.waitForTimeout(300);
   check(await anna.evaluate(() => /Die gesperrte Straße/.test(document.getElementById("ez-queststab")?.textContent || "") && /Bürgermeister von Waldmark braucht Hilfe/.test(document.getElementById("ez-queststab").textContent)), "Quest-Tab: „Die gesperrte Straße“ mit dem Auftrag");
   if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.click('#ez-leiste [data-l="quests"]');
+  /* Ausrüstungs-Tab mit Auswahl (auf dem Handy war der Kopf abgeschnitten): Kopf mit „i“ ganz sichtbar, nichts überlappt */
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.waitForTimeout(300);
+  { const L = await anna.evaluate(() => { const t = document.getElementById("ez-ausruestungtab").getBoundingClientRect(), k = document.querySelector("#ez-ausruestungtab .kopf").getBoundingClientRect(), i = document.querySelector("#ez-ausruestungtab .info").getBoundingClientRect(), w = document.querySelector("#ez-ausruestungtab .twahl").getBoundingClientRect(), fs = [...document.querySelectorAll("#ez-ausruestungtab .tplatz")].map((e) => e.getBoundingClientRect());
+      return { kopfDrin: k.top >= t.top - 0.5 && i.bottom <= t.bottom && i.top >= t.top - 0.5, ueberlapp: fs.some((f) => f.bottom > w.top + 0.5 || f.top < k.bottom - 0.5), wahlDrin: w.bottom <= t.bottom + 0.5 }; });
+    check(L.kopfDrin && !L.ueberlapp && L.wahlDrin, `Ausrüstungs-Tab mit Auswahl: Kopf und „i“ sichtbar, Fächer überlappen nichts (${JSON.stringify(L)})`); }
+  if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.click('#ez-leiste [data-l="ausruestung"]');
   /* Ben steht vor der Sperre (Stand: bestätigt); für ihn ist sie noch zu, nach dem Gespräch mit Raban offen. Anna bleibt draußen. */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6446.5, 6642.5, "waldweg"]);
   await ben.goto(B + S); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
@@ -74,14 +82,14 @@ try {
   const durch = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6446.5, y: 6643 }, { x: 6446.5, y: 6655 }, 0.3).length > 0; });
   const kreuzung = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6443.5, y: 6608 }, { x: 6443.5, y: 6622 }, 0.3).length > 0; });
   check(await ben.evaluate(() => Math.abs(window.EZW.welt3d.ort.y - 6642.5) < 3) && !(await durch(ben)) && await ben.evaluate(() => window.EZW.welt3d.quest.sperreZu), "Ben steht vor der Straßensperre: kein Weg nach Süden");
-  check(!(await kreuzung(ben)), "Auch an der Kreuzung im Kreuzwald kein Weg nach Süden"); return JSON.stringify(w.map((p) => [Math.round(p.x), Math.round(p.y)])); }));
+  check(!(await kreuzung(ben)), "Auch an der Kreuzung im Kreuzwald kein Weg nach Süden");
   if (BILD) await ben.screenshot({ path: BILD + "quest-sperre.png", timeout: 90000 }).catch(() => {});
   { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); await ben.waitForTimeout(500); }
   const knopf = await ben.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(/Raban sprechen/.test(knopf), `Raban antippen: „${knopf}“`);
   if (knopf) await ben.click(".ez-wahl3d button", { force: true });
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && !d.hidden; }, null, { timeout: 15000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
-    if (o) await ben.click('#ez-gespraech [data-a="durch"]'); }
+    if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }
   await ben.waitForFunction(() => !window.EZW.welt3d.quest.sperreZu, null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(500);
   check(await durch(ben) && await kreuzung(ben) && await ben.evaluate(() => !window.EZW.welt3d.quest.sperreZu), "Danach sind beide Wege für Ben frei (Baumstämme weg, Gehraster offen)");
   if (BILD) await ben.screenshot({ path: BILD + "quest-offen.png", timeout: 90000 }).catch(() => {});

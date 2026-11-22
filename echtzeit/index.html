@@ -538,8 +538,10 @@
     .seitentab .traster .ifeld canvas, .seitentab .tplatz .ifeld canvas { width: 92%; height: 92%; } .seitentab .ifeld.voll { border-color: #8a6a3a; } .seitentab .ifeld.gewaehlt { border-color: #ffe08a; box-shadow: 0 0 8px rgba(255,224,138,.6); }
     .seitentab .ifeld .menge { position: absolute; right: 3px; bottom: 1px; font: 700 11px Georgia, serif; font-style: normal; color: #fff3c8; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
     .seitentab .ifeld .leer svg { width: 55%; height: 55%; opacity: .35; color: #cdb98a; }
-    .seitentab .tplaetze { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; min-height: 0; align-content: center; }
-    .seitentab .tplatz { display: grid; gap: 3px; justify-items: center; } .seitentab .tplatz .ifeld { width: min(100%, 86px); aspect-ratio: 1; } .seitentab .tplatz small { color: #cdb98a; font-size: 11.5px; }
+    .seitentab .kopf { flex: none; } .seitentab { overflow: hidden !important; }
+    .seitentab .tplaetze { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex: 1 1 0; min-height: 0; align-items: stretch; }
+    .seitentab .tplatz { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 3px; justify-items: center; min-height: 0; } .seitentab .tplatz .ifeld { height: 100%; max-height: 86px; max-width: 100%; aspect-ratio: 1; width: auto; min-width: 0; } .seitentab .tplatz small { color: #cdb98a; font-size: 11.5px; line-height: 1.1; }
+    .seitentab .twahl, .seitentab .klein { flex: none; } .seitentab.eng .tab-ausruestung .klein, .seitentab.eng.tab-ausruestung > .klein { display: none; }
     .seitentab .twahl { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; padding: 5px 7px; border-radius: 8px; background: rgba(0,0,0,.35); border: 1px solid #6a5232; }
     .seitentab .twahl b { font: 600 13px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .twahl .reihe { display: flex; gap: 4px; flex-wrap: wrap; }
     .seitentab .twahl button { padding: 4px 8px; border-radius: 7px; border: 1px solid #8a6a3a; background: #2e2519; color: #f3e3b5; font: 12px Georgia, serif; cursor: pointer; } .seitentab .twahl button.haupt { background: linear-gradient(#6a4f28, #3b2c19); border-color: #c89b52; color: #ffe7a8; }
@@ -554,6 +556,7 @@
     /* Gespräch wie die klassische Chatbox (OSRS): Pergament, Kopfbild links (Figur) oder rechts (du), Name dunkelrot, Text schwarz, „fortfahren“ blau */
     #ez-gespraech { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(540px, calc(100vw - 20px)); z-index: 12; cursor: pointer; user-select: none;
       border: 3px solid #3d3121; border-radius: 4px; box-shadow: 0 0 0 2px #7a6644, 0 6px 22px rgba(0,0,0,.6); background: #d8c9a0 linear-gradient(180deg, #e3d6b0, #cdbd92); font: 15px "Trebuchet MS", Verdana, sans-serif; color: #000; }
+    #ez-gespraech.imchat { transform: none; bottom: auto; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; overflow: hidden; } #ez-gespraech.imchat .kasten { min-height: 0; flex: 1; } #ez-gespraech.imchat .antworten { max-height: calc(100% - 30px); overflow: auto; }
     #ez-gespraech .kasten { display: flex; align-items: center; gap: 10px; min-height: 128px; padding: 10px 14px; box-sizing: border-box; }
     #ez-gespraech.ich .kasten { flex-direction: row-reverse; }
     #ez-gespraech .rahmen { flex: 0 0 96px; height: 96px; display: grid; place-items: center; }
@@ -622,6 +625,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwsfaglh"></script>
+  <script src="spiel.js?v=mwsfmzt3"></script>
 </body>
 </html>
