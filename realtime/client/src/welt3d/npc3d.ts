@@ -16,9 +16,11 @@ export const NPC3D: Record<string, string> = { wache: "stadtwache3d" };
 
 type Feld = { x: number; z: number };
 /** Wer wo umherläuft: drinnen = Felder im Haus (x0..x1, z0..x1 einschließlich), draussen = Felder vor der Tür */
-export const WANDERER: { chunk: string; datei: string; drinnen: [number, number, number, number]; draussen: [number, number, number, number] }[] = [
+export const WANDERER: { chunk: string; datei: string; drinnen: [number, number, number, number]; draussen: [number, number, number, number] | null }[] = [
   /* Nia in ihrem Salon an der Nordostecke des Marktplatzes der Waldmark (waldmark_salon_01, Tür nach Süden bei 6458/6428) */
   { chunk: "201_200", datei: "npc.nia", drinnen: [6457, 6425, 6460, 6427], draussen: [6456, 6429, 6461, 6430] },
+  /* der Bürgermeister im Erdgeschoss des Rathauses an der Westseite des Marktplatzes (waldmark_rathaus_01, Tür nach Süden bei 6438–6439/6427); bleibt drinnen */
+  { chunk: "201_200", datei: "npc.buergermeister_waldmark", drinnen: [6435, 6421, 6442, 6426], draussen: null },
 ];
 
 const HOEHE = 2.0, TEMPO = 1.25;
@@ -55,7 +57,7 @@ export class Wanderer {
   private setzen() { this.npc.gruppe.position.set(this.x, this.u.hoehe(this.x, this.z), this.z); }
   private neuesZiel() {
     /* wer draußen war, geht wieder hinein; drinnen meist eine andere Stelle im Haus, etwa jedes vierte Mal vor die Tür */
-    const raus = !this.draussen && Math.random() < 0.2, z = zufallFeld(raus ? this.w.draussen : this.w.drinnen);
+    const raus = Boolean(this.w.draussen) && !this.draussen && Math.random() < 0.2, z = zufallFeld(raus && this.w.draussen ? this.w.draussen : this.w.drinnen);
     const p = this.u.weg(this.x, this.z, z.x, z.z); if (!p.length) { this.warten = 1.5; return; } this.pfad = p; this.draussen = raus; }
   schritt(dt: number) {
     if (!this.pfad.length) { this.npc.spiele("ruhe"); this.warten -= dt; if (this.warten <= 0) this.neuesZiel(); this.npc.schritt(dt); return; }

@@ -42,6 +42,16 @@ const BILD = process.env.BILD || '';
   if (BILD) await p.screenshot({ path: BILD + 'nia.png' });
   await p.evaluate(() => window.EZW.welt3d.versetzen(6458.5, 6426.5)); await p.waitForTimeout(3000);
   if (BILD) await p.screenshot({ path: BILD + 'nia-drinnen.png' });
+  /* Bürgermeister im Rathaus: läuft drinnen umher, bleibt stehen, geht nie hinaus */
+  await p.evaluate(() => window.EZW.welt3d.versetzen(6439, 6424));
+  await p.waitForFunction(() => { const s = window.EZW.welt3d.motor.st.get('201_200'); return s && s.wanderer && s.wanderer[1] && s.wanderer[1].npc.geladen; }, null, { timeout: 90000 }).catch(() => {});
+  const bm = await p.evaluate(() => { const n = window.EZW.welt3d.motor.st.get('201_200').wanderer[1], M = window.EZW.welt3d.motor, s = []; for (let i = 0; i < 1500; i++) { n.schritt(0.1); s.push({ x: n.x, z: n.z, geht: n.pfad.length > 0, ok: M.gehbar(Math.floor(n.x), Math.floor(n.z)) }); } return { s, datei: n.w.datei, geladen: n.npc.geladen }; });
+  const halte = new Set(bm.s.filter((q, i) => i && !q.geht && bm.s[i - 1].geht).map((q) => q.x.toFixed(1) + '|' + q.z.toFixed(1)));
+  check(bm.geladen && bm.datei === 'npc.buergermeister_waldmark', 'Der Bürgermeister (3D) ist im Rathaus');
+  check(bm.s.some((q) => q.geht) && bm.s.some((q) => !q.geht) && halte.size >= 3, `Er läuft umher und bleibt immer wieder stehen (${halte.size} verschiedene Halte in 150 s Spielzeit)`);
+  check(bm.s.every((q) => q.x >= 6435 && q.x <= 6443 && q.z >= 6421 && q.z <= 6427) && bm.s.every((q) => q.ok), 'Er bleibt immer drinnen und geht nie durch Wände');
+  await p.evaluate(() => { const n = window.EZW.welt3d.motor.st.get('201_200').wanderer[1]; n.pfad = []; n.warten = 30; n.x = 6438.5; n.z = 6422.5; n.npc.blick(0, 1); window.EZW.welt3d.versetzen(6441.5, 6425.5); const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 1.25; M.abstand = 11; }); await p.waitForTimeout(3000);
+  if (BILD) await p.screenshot({ path: BILD + 'rathaus.png' });
   check(await zweiD() === 0, 'Keine 2D-Figur sichtbar (Marktplatz: Schmied, Junge, Krämer … sind weg)');
   check(!fehler.filter((e) => !/favicon|Failed to load resource|net::ERR/.test(e)).length, 'Keine Fehler im Browser ' + fehler.slice(0, 3).join(' | '));
   await b.close(); console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : '3D-Dorfbewohner: alles in Ordnung'); process.exit(f ? 1 : 0);
