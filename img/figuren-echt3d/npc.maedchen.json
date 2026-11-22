@@ -1,0 +1,26 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.haar.seitenbob": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}

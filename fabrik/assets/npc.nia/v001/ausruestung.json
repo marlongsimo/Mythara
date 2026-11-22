@@ -1,0 +1,16 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.nia v001 – Nia die Artistin, aus Meshy „The Arcane Tailor“ (dunkle Locken, violetter Umhang, Mieder, hohe Stiefel); nur Ruhe und Gehen, zivile Haltung.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": []
+}
