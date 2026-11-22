@@ -50,11 +50,11 @@ try {
   const hud = await anna.evaluate(() => ({ stufe: document.querySelector("#ez-ich-stufe").textContent, lp: document.querySelector("#ez-lpzahl").textContent, name: document.querySelector("#ez-name").textContent,
     skills: [...document.querySelectorAll("#ez-skills .skill")].map((s) => s.querySelector("b").textContent + " " + s.querySelector(".lv").textContent), xp: getComputedStyle(document.querySelector("#ez-xpleiste")).display,
     tasten: ["a", "q", "e", "r"].map((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display !== "none"), modus: getComputedStyle(document.querySelector("#ez-modus")).display !== "none", an: document.querySelector('[data-taste="a"] small').textContent }));
-  check(hud.stufe === "Lv 1" && hud.lp === "60 / 60" && hud.name === "Einfaches Schwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
-  check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1" && hud.xp === "none", `Vier Skill-Balken statt EP: ${hud.skills.join(", ")}`);
+  check(hud.stufe === "Lv 1" && hud.lp === "20 / 20" && hud.name === "Einfaches Schwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
+  check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 1, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[true,false,false,false]" && !hud.modus && hud.an === "Angreifen", "Nur die Taste „Angreifen“ – keine Fähigkeiten, kein Waffenwechsel");
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...K.figuren.values()].filter((f) => !f.held).map((f) => f.nm.text) }; });
-  check(sicht.max.every((m) => m === 40) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 40 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
+  check(sicht.max.every((m) => m === 15) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 15 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "v1-kampf.png" });
   /* kämpfen, bis Skill-XP gebucht sind (alle 10 s) */
   const xpSumme = () => XPBUCH.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + x.p_geschick + x.p_staerke, 0); let blocks = 0, treffer = 0;
@@ -77,7 +77,7 @@ try {
   check(zuletzt > vorDb && nachDb >= zuletzt, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
   /* Gast mit eigenem Helden: der Browser rechnet nach v2 */
   const gast = await spieler("Gast", "", [6536, 6583, "waldweg"]); await gast.goto(B + S); await bereit(gast); await gast.waitForTimeout(1200);
-  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 40)), "Gast: der Browser rechnet nach v2, Banditen mit 40 LP");
+  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 15)), "Gast: der Browser rechnet nach v2, Banditen mit 15 LP");
   for (let i = 0; i < 80 && !(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0)); i++) { await gast.keyboard.press("1"); await gast.waitForTimeout(250); }
   check(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0), "Gast: Nahkampf-XP auf dem Gerät gemerkt");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.slice(0, 3).join(" | "));
