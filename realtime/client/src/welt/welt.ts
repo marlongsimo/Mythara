@@ -293,6 +293,9 @@ export class Welt extends Phaser.Scene {
   }
 
   gemerkt = 0; naechst = Infinity; stillstand = 0; vonTor: { x: number; y: number } | null = null;
+  /** Eine Szene des Spiels starten (Riss) und abblenden – gemeinsame Schnittstelle mit der 3D-Welt (anschluss.ts WeltKern) */
+  szeneStarten(key: string, daten: object): void { this.scene.start(key, daten); }
+  abblenden(ms: number, dann: () => void): void { this.cameras.main.fadeOut(ms, 0, 0, 0); this.time.delayedCall(ms + 20, dann); }
   /** Stehen bleiben (vor einer Tafel) */
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); }
   /** Oben links Held, oben Mitte Region, oben rechts Minikarte, unten rechts Menü */

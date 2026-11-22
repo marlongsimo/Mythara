@@ -27,6 +27,11 @@
     #ez-skills .skill .ez-balken { height: 7px; } #ez-skills .skill .lv { font: 700 11px Cinzel, Georgia, serif; color: #fff3d2; text-align: right; }
     #ez-skills .staerke u { background: linear-gradient(#ff9a7a, #c2412a) !important; } #ez-skills .geschick u { background: linear-gradient(#b6f08a, #4f9a2c) !important; } #ez-skills .magie u { background: linear-gradient(#b9b0ff, #5a4ad6) !important; }
     body.kampf-v1 #ez-tasten button[data-taste=q], body.kampf-v1 #ez-tasten button[data-taste=e], body.kampf-v1 #ez-tasten button[data-taste=r], body.kampf-v1 #ez-modus { display: none !important; }
+    /* 3D-Welt (welt3d/spielwelt.ts): Namensschild über der Figur, Abblenden beim Versetzen */
+    .ez-name3d { position: fixed; left: 0; top: 0; z-index: 2; pointer-events: none; white-space: nowrap; font: 600 14px Cinzel, Georgia, serif; color: #ffe08a; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 6px rgba(0,0,0,.8); will-change: transform; }
+    .ez-name3d[hidden] { display: none; } .ez-name3d.fremd { color: #f3ead2; }
+    #ez-blende3d { position: fixed; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s; } #ez-blende3d.an { opacity: 1; }
+    body.welt3d #ez-feld canvas { display: block; touch-action: none; }
     #ez-xpleiste.plus .ez-balken.xp { animation: ezxp .7s ease-out; } @keyframes ezxp { 0% { box-shadow: 0 0 0 0 #b9d4ff; } 30% { box-shadow: 0 0 10px 2px #b9d4ff; } 100% { box-shadow: 0 0 0 0 transparent; } } #ez-xpleiste[hidden] { display: none; }
     .ez-balken { display: block; height: 8px; background: #2a2636; border-radius: 4px; overflow: hidden; } .ez-balken u { display: block; height: 100%; background: #5fd08a; }
     /* Begleiter: eingerückt unter dem eigenen Helden */
@@ -496,6 +501,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwr2ynl7"></script>
+  <script src="spiel.js?v=mwr6zfhb"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ import { heldLaden, heldSetzen } from "./held";
 import { Ort, ortName } from "./ort";
 import { Welt, weltName } from "./welt/welt";
 import { weltAnschliessen } from "./welt/anschluss";
+import { Spielwelt3D, welt3dAn } from "./welt3d/spielwelt";
 import { lokalerHeld, weltBetreten } from "./welt";
 import { heldenFigur, richten } from "./modulfigur";
 import { hudKarte } from "./hud";
@@ -411,6 +412,8 @@ else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(()
     if (!mein && !P.has("server") && !inKampagne) { location.replace("held.html?weiter=" + encodeURIComponent(location.search)); return; }
     if (mein) heldSetzen(mein); }
 if (inKampagne && !FLACH) { startWeg(); kampagneBeginnen(wahlZeigen); } /* Heldenwahl und Gespräche; ein Spielfeld gibt es erst im Kampf */
+else if (welt3dAn() && (weltName || (!(ortName && !FLACH) && !OHNE_DORF && STADT !== "alt" && STADT !== "bild"))) { /* die offene Welt in 3D (welt3d/spielwelt.ts) statt der 2D-Weltszene */
+  void new Spielwelt3D().start(document.getElementById("ez-feld") as HTMLElement, () => startWeg()).catch((e) => { console.error("3D-Welt:", e); const h = document.getElementById("ez-dorf-hilfe"); if (h) { h.textContent = "Die 3D-Welt konnte nicht starten – ?welt3d=0 führt zurück in die 2D-Welt."; h.style.display = ""; } startWeg(); }); }
 else { const spiel = new Phaser.Game({ type: Phaser.AUTO, parent: "ez-feld", backgroundColor: "#07060b", scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight }, scene: weltName ? [Welt] : ortName && !FLACH ? [Ort] : OHNE_DORF ? [Spiel] : [STADT === "alt" ? Dorf : STADT === "bild" ? Stadt : Welt, Spiel], input: { activePointers: 3 }, render: { antialias: true } });
   /* Der Startbildschirm geht, sobald eine Szene fertig geladen ist und ihr erstes Bild gezeichnet hat */
   let bilder = 0; const pruefen = () => { if (spiel.scene.getScenes(true).length && ++bilder >= 2) { spiel.events.off("postrender", pruefen); startWeg(); } }; spiel.events.on("postrender", pruefen); }
