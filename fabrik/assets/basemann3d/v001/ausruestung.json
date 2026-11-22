@@ -356,6 +356,18 @@
         "becken",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.brust.lederpanzer",
+      "platz": "brust",
+      "glb": "basemann3d/v001/quelle/teile/ruestung.brust.lederpanzer.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {
