@@ -7,7 +7,7 @@
  * Gespräche und Türen [E], Ausgänge, Abstieg in den Untergrund, gemerkte Stelle, Regionstitel und Minikarte.
  * Menüs, Tafeln und Minikarte schließt welt/anschluss.ts an (anschluss3D, dieselben Funktionen wie für die 2D-Welt).
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
- * Aufruf: ?welt3d=1 (merkt sich das Gerät), ?welt3d=0 schaltet zurück in die 2D-Welt.
+ * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
 import * as THREE from "three";
 import { Welt3D } from "./motor";
@@ -30,12 +30,14 @@ const MODUL: Record<string, string> = { schildwaechter: "held.krieger" };
 interface RegionKopf { region: Region & { untertitel?: string }; start: number[][]; spawnzonen: Spawnzone[]; ausgaenge: Ausgang[] }
 interface WeltIndex { chunkFelder: number; regionen: Record<string, RegionKopf>; stand?: string }
 
-/** Ist die 3D-Welt eingeschaltet? (Adresse oder Gerät) */
+/** Ist die 3D-Welt eingeschaltet? Standard ja – ?welt3d=0 schaltet auf diesem Gerät die 2D-Welt ein (bleibt gemerkt), ?welt3d=1 wieder 3D.
+ *  Ohne WebGL immer 2D. Automatisch gesteuerte Testbrowser (navigator.webdriver) bekommen ohne ?welt3d=1 die 2D-Welt – dafür sind die älteren Tests geschrieben. */
 export function welt3dAn(): boolean {
-  try { if (P.get("welt3d") === "1") localStorage.setItem("ez_welt3d", "1"); if (P.get("welt3d") === "0") localStorage.removeItem("ez_welt3d"); return localStorage.getItem("ez_welt3d") === "1"; }
-  catch { return P.get("welt3d") === "1"; }
+  let wahl: string | null = null;
+  try { if (P.get("welt3d") === "1") localStorage.setItem("ez_welt3d", "1"); if (P.get("welt3d") === "0") localStorage.setItem("ez_welt3d", "0"); wahl = localStorage.getItem("ez_welt3d"); } catch { wahl = P.get("welt3d"); }
+  if (wahl === "0") return false; if (wahl !== "1" && navigator.webdriver) return false;
+  try { const c = document.createElement("canvas"); return Boolean(c.getContext("webgl2") || c.getContext("webgl")); } catch { return false; }
 }
-
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};

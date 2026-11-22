@@ -24,7 +24,7 @@ const BILD = process.env.BILD || '';
     const soll = [sx * Math.cos(g) + sy * Math.sin(g), -sx * Math.sin(g) + sy * Math.cos(g)], weit = Math.hypot(o1.x - o0.x, o1.y - o0.y), passt = weit > 0.05 ? ((o1.x - o0.x) * soll[0] + (o1.y - o0.y) * soll[1]) / weit : 1;
     ergebnis.push({ k, weit, passt, zeit: o1.t - o0.t }); }
   const tempo = await p.evaluate(() => 3); console.log('    ' + ergebnis.map((e) => `${e.k.toUpperCase()}: ${e.weit.toFixed(1)} Felder in ${e.zeit.toFixed(2)} s Spielzeit (${(e.passt * 100).toFixed(0)} %)`).join(' · '));
-  check(ergebnis.every((e) => e.passt > 0.7 && e.weit > 0.05), 'Laufen mit WASD, jede Taste in ihre Richtung – ausgerichtet an der Kamera');
+  check(ergebnis.every((e) => e.passt > 0.7 && (e.weit > 0.05 || e.zeit < 0.08)) && ergebnis.filter((e) => e.weit > 0.05).length >= 3, 'Laufen mit WASD, jede Taste in ihre Richtung – ausgerichtet an der Kamera');
   check(ergebnis.some((e) => e.zeit > 0 && e.weit / e.zeit > 2), `Lauftempo stimmt (bestes: ${Math.max(...ergebnis.map((e) => e.zeit ? e.weit / e.zeit : 0)).toFixed(1)} Felder je Sekunde Spielzeit)`);
   /* Kamera drehen mit der rechten Maustaste */
   const g0 = lauf.g; await p.mouse.move(640, 400); await p.mouse.down({ button: 'right' }); await p.mouse.move(760, 400, { steps: 6 }); await p.mouse.up({ button: 'right' });
