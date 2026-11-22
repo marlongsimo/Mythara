@@ -48,7 +48,9 @@ ohr_f = (np.abs(mitten[:, 0] - CX) > halbe * 0.97) & (hz_f > 0.2) & (hz_f < 0.64
 kopfhaut = (hz_f >= ansatz(mitten, normalen)) & ~ohr_f & ~((normalen[:, 1] < -0.55) & (hz_f < 0.8))
 kopfhaut &= ~((mitten[:, 1] < MITTE[1] + 0.01) & (hz_f < 0.7))                                             # vor dem Ohr unter der Schläfe kein Haar (keine Koteletten bis auf die Wange)
 def wurzeln(anzahl, maske, abstand):
-    w = flaechen * maske; w = w / w.sum(); idx = rng.choice(len(kopf_f), size=anzahl * 6, p=w); pts = []; nrm = []
+    w = flaechen * maske
+    if w.sum() <= 0: return np.zeros((0, 3)), np.zeros((0, 3))                                      # kein passender Bereich auf diesem Kopf (z. B. sehr hoher Haaransatz): überspringen
+    w = w / w.sum(); idx = rng.choice(len(kopf_f), size=anzahl * 6, p=w); pts = []; nrm = []
     for i in idx:
         vs = [v.co for v in kopf_f[i].verts]; a, b = rng.random(2)
         if a + b > 1: a, b = 1 - a, 1 - b
@@ -186,6 +188,7 @@ elif STIL in ("dutt_hoch", "wuschel_hoch", "pixie", "zopf_wild", "seitenbob"):
     band = dict(flach=0.16, wirr=0.015)
     def pony(anzahl, laenge, ziel_x=-0.07, tief=0.0):                                                 # breite Strähnen über die Stirn zur Seite
         vorn_m = kopfhaut & (mitten[:, 1] < MITTE[1] - 0.02) & (hz_f > 0.78)
+        if not vorn_m.any(): vorn_m = kopfhaut & (mitten[:, 1] < MITTE[1]) & (hz_f > 0.7)          # Kopf mit anderer Lage des Haaransatzes
         r, n = wurzeln(anzahl, vorn_m, 0.02)
         for p, nn in zip(r, n):
             wachsen(p, nn, lambda q: np.array([ziel_x * 14, -0.55, -0.55]), laenge * (0.85 + 0.3 * rng.random()), 0.2, anlage=0.012, seg=10, breite=0.065, stirn_z=VORN_Z - tief, schwung=0.012, **band)
