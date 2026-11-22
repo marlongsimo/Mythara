@@ -1,0 +1,32 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_helm_stahl",
+  "name": "Stahlhelm (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "head",
+  "type": "helmet",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_helm_stahl.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Head"
+  },
+  "hides": {
+    "regions": [],
+    "slots": [
+      "hair"
+    ]
+  },
+  "stats": {
+    "armor": 12
+  },
+  "special": {},
+  "visual": {
+    "material": "stahl"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

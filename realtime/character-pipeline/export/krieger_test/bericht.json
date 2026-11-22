@@ -1,0 +1,909 @@
+{
+ "figur": "krieger_test",
+ "zeit": "2026-11-20 21:50",
+ "ok": 178,
+ "fehler": 0,
+ "warnungen": 2,
+ "ergebnisse": [
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_beinschutz_stahl: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_brust_schatten: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_brust_splitter: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_brust_stahl: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_haare_kurz: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_handschuhe_stahl: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_helm_schatten: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_helm_stahl: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_schild_rund: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_schulter_stahl: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_schwert_kurz: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_stiefel_schwer: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_umhang_rot: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "test_zweihaender: Slot, Sockel, Seltenheit, Modell und Kennzeichnung gültig"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "Standardausrüstung gültig (keine doppelt belegten Slots)"
+  },
+  {
+   "gruppe": "Ausrüstungsdaten",
+   "status": "ok",
+   "text": "Zweihänder + Schild wird als ungültig erkannt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:kopf: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:kopf: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:kopf: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:kopf: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:kopf: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:kopf: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:kopf: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:kopf: 0 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:rumpf: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:rumpf: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:rumpf: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:rumpf: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:rumpf: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:rumpf: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:rumpf: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:rumpf: 1 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:arm_l: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:arm_l: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:arm_l: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:arm_l: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:arm_l: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:arm_l: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:arm_l: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:arm_l: 38 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:arm_r: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:arm_r: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:arm_r: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:arm_r: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:arm_r: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:arm_r: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:arm_r: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:arm_r: 50 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:bein_l: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:bein_l: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:bein_l: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:bein_l: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:bein_l: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:bein_l: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:bein_l: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:bein_l: 8 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "koerper:bein_r: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "koerper:bein_r: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "koerper:bein_r: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:bein_r: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "koerper:bein_r: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "koerper:bein_r: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "koerper:bein_r: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "koerper:bein_r: 4 von 680 Frames ganz verdeckt"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_beinschutz_stahl: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_brust_schatten: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_brust_schatten: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_brust_schatten: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_brust_schatten: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_brust_schatten: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_brust_schatten: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_brust_schatten: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_brust_splitter: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_brust_splitter: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_brust_splitter: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_brust_splitter: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_brust_splitter: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_brust_splitter: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_brust_splitter: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_brust_stahl: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_brust_stahl: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_brust_stahl: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_brust_stahl: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_brust_stahl: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_brust_stahl: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_brust_stahl: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_haare_kurz: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_haare_kurz: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_haare_kurz: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_haare_kurz: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_haare_kurz: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_haare_kurz: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_haare_kurz: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_handschuhe_stahl: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_helm_schatten: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_helm_schatten: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_helm_schatten: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_helm_schatten: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_helm_schatten: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_helm_schatten: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_helm_schatten: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_helm_stahl: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_helm_stahl: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_helm_stahl: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_helm_stahl: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_helm_stahl: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_helm_stahl: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_helm_stahl: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_schild_rund: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_schild_rund: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_schild_rund: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_schild_rund: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_schild_rund: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_schild_rund: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_schild_rund: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_schulter_stahl: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_schwert_kurz: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_stiefel_schwer: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_umhang_rot: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_umhang_rot: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_umhang_rot: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "ok",
+   "text": "item:test_umhang_rot: 0 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_umhang_rot: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_umhang_rot: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_umhang_rot: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Vollständigkeit",
+   "status": "ok",
+   "text": "item:test_zweihaender: alle Animationen und 8 Richtungen"
+  },
+  {
+   "gruppe": "Fußpunkt",
+   "status": "ok",
+   "text": "item:test_zweihaender: Fußpunkt [144.0, 195.84] (Soll [144.0, 195.84])"
+  },
+  {
+   "gruppe": "Framegrößen",
+   "status": "ok",
+   "text": "item:test_zweihaender: 680 Frames, 0 mit falscher Größe/ohne Alpha"
+  },
+  {
+   "gruppe": "Transparenz",
+   "status": "warnung",
+   "text": "item:test_zweihaender: 9 Frames am Bildrand abgeschnitten"
+  },
+  {
+   "gruppe": "Frame-Reihenfolge",
+   "status": "ok",
+   "text": "item:test_zweihaender: Nummerierung lückenlos, 0 fehlende Dateien"
+  },
+  {
+   "gruppe": "Taktrate",
+   "status": "ok",
+   "text": "item:test_zweihaender: alle Animationen mit 10 fps"
+  },
+  {
+   "gruppe": "Texturfehler",
+   "status": "ok",
+   "text": "item:test_zweihaender: 0 Pixel in Fehlerfarbe (fehlende Textur)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "idle: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "idle: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "idle: Figur steht ruhig, die Sohle schwankt um 0 px (höchstens 2)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "walk: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "walk: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "run: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "run: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "attack: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "warnung",
+   "text": "attack: keine Sprünge zwischen Frames (4)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "block: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "block: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "block: Figur steht ruhig, die Sohle schwankt um 0 px (höchstens 2)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "cast: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "cast: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "hit: Füße auf dem Boden in allen Frames (höchstens 12 px Abstand zur Ruhehaltung; 0 Abweichungen)"
+  },
+  {
+   "gruppe": "Fußpunktstabilität",
+   "status": "ok",
+   "text": "hit: keine Sprünge zwischen Frames (0)"
+  },
+  {
+   "gruppe": "Phaser-Kompatibilität",
+   "status": "ok",
+   "text": "Multiatlas-Format, Seitengröße ≤ 2048, alle Frames vorhanden"
+  },
+  {
+   "gruppe": "Kennzeichnung",
+   "status": "ok",
+   "text": "Testfigur als TEST ASSET gekennzeichnet"
+  }
+ ]
+}

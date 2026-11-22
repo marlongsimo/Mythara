@@ -1,0 +1,38 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_brust_splitter",
+  "name": "Panzer der Splitterlande (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "chest",
+  "type": "chest_armor",
+  "rarity": "legendary",
+  "model": {
+    "file": "blender/equipment/test/test_brust_splitter.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "rumpf"
+    ]
+  },
+  "hides": {
+    "regions": [
+      "rumpf"
+    ],
+    "slots": []
+  },
+  "stats": {
+    "armor": 52
+  },
+  "special": {
+    "leuchten": true
+  },
+  "visual": {
+    "material": null,
+    "glow": "splitterlicht",
+    "trim": "Gold"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

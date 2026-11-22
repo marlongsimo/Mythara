@@ -1,0 +1,15 @@
+{
+ "id": "waldweg",
+ "name": "Der Kreuzwald",
+ "untertitel": "Steinwege nach Westen und Osten, der Feldweg nach Weidenhain",
+ "ursprung": [
+  198,
+  202
+ ],
+ "chunks": [
+  8,
+  6
+ ],
+ "biom": "wald",
+ "stufe": 1
+}

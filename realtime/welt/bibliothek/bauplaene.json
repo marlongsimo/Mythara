@@ -1,0 +1,2943 @@
+{
+ "hinweis": "Baupläne der räumlichen Gebäude. Aufbau siehe Kopf von werkzeug/welt/gebaeude.py; bauen mit: python3 werkzeug/welt/gebaeude.py [kennung …]",
+ "bauplaene": [
+  {
+   "id": "dorf_haus_holz_01",
+   "name": "Holzhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 4,
+     "h": 2.4,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.7,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": 1.2,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.8,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.3,
+     "d": 2.6
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.8,
+      "d": 1.4
+     },
+     {
+      "art": "bett",
+      "x": -1.6,
+      "d": 3.0
+     },
+     {
+      "art": "regal",
+      "x": 1.2,
+      "d": 3.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_haus_holz_02",
+   "name": "Langhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.25,
+     "d": 0,
+     "b": 6.5,
+     "t": 4,
+     "h": 2.5,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       150,
+       92,
+       58
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": -2.1,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": 2.1,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.8,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.8,
+     "d": 2.4
+    },
+    {
+     "art": "vordach",
+     "x0": -1.0,
+     "x1": 1.0,
+     "tiefe": 1.0,
+     "z": 2.15
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -1.5,
+      "d": 1.6
+     },
+     {
+      "art": "bank",
+      "x": -1.5,
+      "d": 2.4
+     },
+     {
+      "art": "bett",
+      "x": 2.2,
+      "d": 2.8
+     },
+     {
+      "art": "regal",
+      "x": 0.4,
+      "d": 3.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_haus_holz_03",
+   "name": "Blockhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 3.6,
+     "h": 2.3,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "d",
+      "ueber": 0.45,
+      "deckung": "schindel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": -1.2,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.75,
+     "b": 0.55,
+     "h": 0.55,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 1.8
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -1.2,
+      "d": 1.5
+     },
+     {
+      "art": "bett",
+      "x": -1.6,
+      "d": 2.6
+     },
+     {
+      "art": "fass",
+      "x": 1.6,
+      "d": 2.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_huette_holz_01",
+   "name": "Holzhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.75,
+     "d": 0,
+     "b": 3.5,
+     "t": 3.5,
+     "h": 2.2,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.6,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "ziegel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.0,
+     "h": 1.9,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 2.55,
+     "b": 0.5,
+     "h": 0.5,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 1.8,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -0.9,
+      "d": 2.4
+     },
+     {
+      "art": "fass",
+      "x": 1.0,
+      "d": 2.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_huette_holz_02",
+   "name": "Strohhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.8,
+     "d": 0,
+     "b": 3.6,
+     "t": 3.4,
+     "h": 2.35,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.7,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.6,
+     "h": 0.8,
+     "art": "schmal",
+     "x": 0.95,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 1.7
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kraeuter",
+     "x0": -1.6,
+     "x1": 1.6,
+     "anzahl": 6
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "kessel",
+      "x": 0.8,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_scheune_holz_01",
+   "name": "Scheune",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.75,
+     "d": 0,
+     "b": 5.5,
+     "t": 5,
+     "h": 2.9,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.2,
+      "first": "d",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       128,
+       96,
+       66
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 2.0,
+     "h": 2.4,
+     "art": "tor"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.5,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.6,
+     "art": "schmal",
+     "d": 2.5
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "fass",
+      "x": -1.8,
+      "d": 1.2
+     },
+     {
+      "art": "fass",
+      "x": -1.8,
+      "d": 2.1
+     },
+     {
+      "art": "regal",
+      "x": 1.0,
+      "d": 4.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_schuppen_holz_01",
+   "name": "Schuppen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.3,
+     "d": 0,
+     "b": 2.6,
+     "t": 2.4,
+     "h": 2.0,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.7,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       120,
+       104,
+       78
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 0.9,
+     "h": 1.7,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [],
+   "zubehoer": []
+  },
+  {
+   "id": "dorf_taverne_01",
+   "name": "Taverne",
+   "interaktion": "tuer",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.5,
+     "d": 0,
+     "b": 7,
+     "t": 4.5,
+     "h": 2.7,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       156,
+       86,
+       54
+      ]
+     }
+    },
+    {
+     "id": "kueche",
+     "x": 3.5,
+     "d": 1.0,
+     "b": 2.4,
+     "t": 3.0,
+     "h": 2.2,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.8,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.5,
+     "h": 2.0,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": -2.6,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": -1.4,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": 1.6,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": 2.7,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.4,
+     "koerper": "kueche"
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.8,
+     "art": "kreuz",
+     "d": 2.6,
+     "koerper": "haupt"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "schild",
+     "x": 1.15,
+     "z": 2.05,
+     "farbe": [
+      196,
+      150,
+      60
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": -1.15,
+     "z": 1.7
+    },
+    {
+     "art": "kamin",
+     "x": -2.6,
+     "d": 2.6
+    },
+    {
+     "art": "kamin",
+     "x": 2.4,
+     "d": 2.8
+    },
+    {
+     "art": "kamin",
+     "x": 4.7,
+     "d": 3.2,
+     "koerper": "kueche",
+     "b": 0.7
+    },
+    {
+     "art": "vordach",
+     "x0": -1.2,
+     "x1": 1.2,
+     "tiefe": 1.1,
+     "z": 2.25
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "theke",
+      "x": 1.8,
+      "d": 3.7
+     },
+     {
+      "art": "tisch",
+      "x": -2.0,
+      "d": 1.6
+     },
+     {
+      "art": "tisch",
+      "x": -0.4,
+      "d": 2.7
+     },
+     {
+      "art": "bank",
+      "x": -2.0,
+      "d": 2.5
+     },
+     {
+      "art": "fass",
+      "x": 2.9,
+      "d": 1.2
+     },
+     {
+      "art": "fass",
+      "x": 3.0,
+      "d": 2.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_schmiede_01",
+   "name": "Schmiede",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.75,
+     "d": 0,
+     "b": 5.5,
+     "t": 4,
+     "h": 2.5,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.7,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       96,
+       92,
+       88
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 1.64,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.7,
+     "art": "glut",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "esse",
+     "x0": -2.5,
+     "x1": 0.2,
+     "h": 1.7
+    },
+    {
+     "art": "kamin",
+     "x": -1.6,
+     "d": 2.2,
+     "b": 0.85
+    },
+    {
+     "art": "schild",
+     "x": 0.75,
+     "z": 2.0,
+     "farbe": [
+      120,
+      124,
+      132
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "amboss",
+      "x": 1.4,
+      "d": 2.4
+     },
+     {
+      "art": "regal",
+      "x": 1.5,
+      "d": 3.5
+     },
+     {
+      "art": "fass",
+      "x": 2.3,
+      "d": 1.3
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_heldenhalle_01",
+   "name": "Heldenhalle",
+   "interaktion": "eingang",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.25,
+     "d": 0,
+     "b": 6.5,
+     "t": 5,
+     "h": 3.1,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.6,
+      "first": "d",
+      "ueber": 0.45,
+      "deckung": "ziegel",
+      "farbe": [
+       84,
+       96,
+       118
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 2.0,
+     "h": 2.5,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.85,
+     "b": 0.8,
+     "h": 0.8,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.5,
+     "h": 1.3,
+     "art": "schmal",
+     "x": -2.2
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.5,
+     "h": 1.3,
+     "art": "schmal",
+     "x": 2.2
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.5,
+     "h": 1.2,
+     "art": "schmal",
+     "d": 2.5
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "banner",
+     "x": -1.55,
+     "z": 2.8
+    },
+    {
+     "art": "banner",
+     "x": 1.55,
+     "z": 2.8
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0,
+      "d": 2.6
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 1.8
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 3.4
+     },
+     {
+      "art": "regal",
+      "x": -2.0,
+      "d": 4.5
+     },
+     {
+      "art": "regal",
+      "x": 2.0,
+      "d": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_wachturm_01",
+   "name": "Wachturm",
+   "koerper": [
+    {
+     "id": "turm",
+     "x": -1.5,
+     "d": 0,
+     "b": 3,
+     "t": 3,
+     "h": 5.8,
+     "wand": "blockbohlen",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.2,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "schindel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 0.9,
+     "h": 1.8,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 4.2,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "schmal",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 4.2,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "schmal",
+     "d": 1.5
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "banner",
+     "x": -0.85,
+     "z": 5.3,
+     "farbe": [
+      58,
+      110,
+      78
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": 0.85,
+     "z": 2.1
+    }
+   ]
+  },
+  {
+   "id": "dorf_kapelle_01",
+   "name": "Kapelle",
+   "interaktion": "lesen",
+   "koerper": [
+    {
+     "id": "schiff",
+     "x": -2,
+     "d": 0,
+     "b": 4,
+     "t": 6,
+     "h": 2.8,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.6,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "schindel",
+      "farbe": [
+       90,
+       80,
+       74
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": 2.0,
+     "d": 0,
+     "b": 2.0,
+     "t": 2.0,
+     "h": 6.2,
+     "wand": "stein",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.4,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       90,
+       80,
+       74
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.2,
+     "h": 2.2,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.3,
+     "b": 0.8,
+     "h": 0.8,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.5,
+     "h": 1.2,
+     "art": "schmal",
+     "d": 3.0,
+     "koerper": "schiff"
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.5,
+     "h": 1.2,
+     "art": "schmal",
+     "d": 4.6,
+     "koerper": "schiff"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "glocke",
+     "koerper": "turm",
+     "x": 3.0,
+     "z": 5.0
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "altar",
+      "x": 0,
+      "d": 5.2
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 2.2
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 3.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_kraeuterhaus_01",
+   "name": "Kräuterhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2,
+     "d": 0,
+     "b": 4,
+     "t": 3.2,
+     "h": 2.45,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.8,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "stroh"
+     }
+    },
+    {
+     "id": "erker",
+     "x": 2.0,
+     "d": 0.6,
+     "b": 1.6,
+     "t": 1.8,
+     "h": 2.0,
+     "wand": "blockbohlen",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 1.0,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": 0.8,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.6,
+     "h": 0.6,
+     "art": "rund",
+     "d": 1.5,
+     "koerper": "erker"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kraeuter",
+     "x0": -1.9,
+     "x1": 1.9,
+     "anzahl": 8
+    },
+    {
+     "art": "kamin",
+     "x": -1.2,
+     "d": 2.2
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "kessel",
+      "x": 0.9,
+      "d": 1.5
+     },
+     {
+      "art": "regal",
+      "x": -0.6,
+      "d": 2.7
+     },
+     {
+      "art": "tisch",
+      "x": -1.2,
+      "d": 1.3
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_baeckerei_01",
+   "name": "Bäckerei",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 3.6,
+     "h": 2.4,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.7,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       176,
+       96,
+       60
+      ]
+     }
+    },
+    {
+     "id": "ofen",
+     "x": 2.5,
+     "d": 0.5,
+     "b": 2.0,
+     "t": 2.4,
+     "h": 1.9,
+     "wand": "stein",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.6,
+      "first": "x",
+      "ueber": 0.25,
+      "deckung": "schindel"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "glut",
+     "x": -1.8
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.95,
+     "h": 0.85,
+     "art": "kreuz",
+     "x": 1.4,
+     "laeden": true,
+     "blumen": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": -1.6,
+     "x1": 0.4,
+     "tiefe": 1.0,
+     "z": 2.15,
+     "deckung": "ziegel",
+     "farbe": [
+      176,
+      96,
+      60
+     ]
+    },
+    {
+     "art": "schild",
+     "x": 0.55,
+     "z": 2.0,
+     "farbe": [
+      226,
+      196,
+      120
+     ]
+    },
+    {
+     "art": "kamin",
+     "x": 3.5,
+     "d": 2.1,
+     "koerper": "ofen",
+     "b": 0.75
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "ofen",
+      "x": 1.3,
+      "d": 2.6
+     },
+     {
+      "art": "theke",
+      "x": -0.6,
+      "d": 2.9
+     },
+     {
+      "art": "tisch",
+      "x": -1.6,
+      "d": 1.3
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_kornspeicher_01",
+   "name": "Kornspeicher von Weidenhain",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -4,
+     "d": 0,
+     "b": 8,
+     "t": 5,
+     "h": 3.0,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.5,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       118,
+       92,
+       66
+      ]
+     }
+    },
+    {
+     "id": "schuppen",
+     "x": -6.6,
+     "d": 0.4,
+     "b": 2.6,
+     "t": 3.6,
+     "h": 2.0,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.7,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       118,
+       92,
+       66
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "b": 2.8,
+     "h": 2.6,
+     "art": "tor"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "ost",
+     "z": 1.4,
+     "b": 0.8,
+     "h": 0.6,
+     "art": "schmal",
+     "d": 2.5
+    },
+    {
+     "wand": "sued",
+     "z": 1.3,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -2.6,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "laterne",
+     "x": -1.2,
+     "z": 2.2
+    },
+    {
+     "art": "laterne",
+     "x": 2.4,
+     "z": 2.2
+    },
+    {
+     "art": "vordach",
+     "koerper": "schuppen",
+     "x0": -6.5,
+     "x1": -4.1,
+     "tiefe": 1.0,
+     "z": 1.8,
+     "deckung": "schindel",
+     "farbe": [
+      118,
+      92,
+      66
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "heu",
+      "x": -2.6,
+      "d": 3.7
+     },
+     {
+      "art": "heu",
+      "x": 2.7,
+      "d": 3.8
+     },
+     {
+      "art": "saecke",
+      "x": -2.9,
+      "d": 1.3
+     },
+     {
+      "art": "saecke",
+      "x": 2.9,
+      "d": 1.5
+     },
+     {
+      "art": "saecke",
+      "x": 2.9,
+      "d": 2.5
+     },
+     {
+      "art": "fass",
+      "x": -1.5,
+      "d": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_bauernhaus_01",
+   "name": "Bauernhaus (Fachwerk)",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3,
+     "d": 0,
+     "b": 6,
+     "t": 4.2,
+     "h": 2.7,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.1,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       104,
+       84,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": -1.9,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": -0.4,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 2.3,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.1,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.6,
+     "d": 2.6,
+     "b": 0.6
+    },
+    {
+     "art": "laterne",
+     "x": 1.8,
+     "z": 2.1
+    },
+    {
+     "art": "vordach",
+     "x0": 0.1,
+     "x1": 1.7,
+     "tiefe": 0.8,
+     "z": 2.2,
+     "deckung": "schindel",
+     "farbe": [
+      104,
+      84,
+      64
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "ofen",
+      "x": -1.8,
+      "d": 3.4
+     },
+     {
+      "art": "tisch",
+      "x": 0.2,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": 2.2,
+      "d": 3.1
+     },
+     {
+      "art": "regal",
+      "x": -0.3,
+      "d": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_muehle_01",
+   "name": "Wassermühle",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 4.6,
+     "h": 3.0,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.2,
+      "first": "d",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       110,
+       86,
+       62
+      ]
+     }
+    },
+    {
+     "id": "anbau",
+     "x": -5.2,
+     "d": 0.6,
+     "b": 2.7,
+     "t": 3.2,
+     "h": 2.3,
+     "wand": "fachwerk",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.8,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       110,
+       86,
+       62
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "b": 1.1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.7,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "rund",
+     "x": 0
+    },
+    {
+     "wand": "ost",
+     "z": 1.3,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.6,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -3.9,
+     "koerper": "anbau",
+     "laeden": true,
+     "blumen": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "muehlrad",
+     "x": 1.0,
+     "r": 1.5,
+     "b": 0.8
+    },
+    {
+     "art": "kamin",
+     "x": -3.6,
+     "d": 2.6,
+     "koerper": "anbau",
+     "b": 0.55
+    },
+    {
+     "art": "laterne",
+     "x": -0.7,
+     "z": 2.3
+    },
+    {
+     "art": "schild",
+     "x": -2.4,
+     "z": 2.5,
+     "farbe": [
+      226,
+      196,
+      120
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "muehlstein",
+      "x": 0.6,
+      "d": 2.8
+     },
+     {
+      "art": "saecke",
+      "x": -1.5,
+      "d": 1.2
+     },
+     {
+      "art": "saecke",
+      "x": -1.4,
+      "d": 3.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_fachwerk_02",
+   "name": "Schmales Fachwerkhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.2,
+     "d": 0,
+     "b": 4.4,
+     "t": 3.6,
+     "h": 3.3,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.4,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "ziegel",
+      "farbe": [
+       166,
+       82,
+       56
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.0,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.4,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -0.9
+    },
+    {
+     "wand": "sued",
+     "z": 2.4,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": 1.0
+    },
+    {
+     "wand": "ost",
+     "z": 1.2,
+     "b": 0.75,
+     "h": 0.65,
+     "art": "kreuz",
+     "d": 1.8,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.2,
+     "d": 2.4,
+     "b": 0.5
+    },
+    {
+     "art": "laterne",
+     "x": -1.75,
+     "z": 2.0
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.6,
+      "d": 1.5
+     },
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.6
+     },
+     {
+      "art": "regal",
+      "x": 1.0,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_fachwerk_03",
+   "name": "Bauernhaus mit Stall",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.2,
+     "d": 0,
+     "b": 4.6,
+     "t": 4.0,
+     "h": 2.6,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       96,
+       80,
+       62
+      ]
+     }
+    },
+    {
+     "id": "stall",
+     "x": 1.4,
+     "d": 0.3,
+     "b": 2.8,
+     "t": 3.4,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.7,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.6,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 0.1,
+     "laeden": true,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.9,
+     "h": 0.5,
+     "art": "schmal",
+     "x": 2.8,
+     "koerper": "stall"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -2.2,
+     "d": 2.6,
+     "b": 0.55
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "ofen",
+      "x": -2.2,
+      "d": 3.2
+     },
+     {
+      "art": "tisch",
+      "x": -0.6,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": 0.3,
+      "d": 3.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_kate_01",
+   "name": "Kleine Kate",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2,
+     "d": 0,
+     "b": 4,
+     "t": 3.4,
+     "h": 2.3,
+     "wand": "fachwerk",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "stroh"
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.6,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -1.0,
+     "laeden": true,
+     "blumen": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -0.8,
+     "d": 2.0,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.4
+     },
+     {
+      "art": "tisch",
+      "x": 0.9,
+      "d": 2.3
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_kate_01",
+   "name": "Moorhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.2,
+     "d": 0,
+     "b": 4.4,
+     "t": 3.6,
+     "h": 2.2,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.55,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.7,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -1.1,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.0,
+     "d": 2.2,
+     "b": 0.5
+    },
+    {
+     "art": "laterne",
+     "x": 1.6,
+     "z": 1.8
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.1,
+      "d": 2.5
+     },
+     {
+      "art": "tisch",
+      "x": 1.0,
+      "d": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_kate_02",
+   "name": "Torfstecherhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.4,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.55,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    },
+    {
+     "id": "schuppen",
+     "x": 2.0,
+     "d": 0.4,
+     "b": 2.0,
+     "t": 2.6,
+     "h": 1.7,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": 1.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 0.6,
+     "d": 2.0,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": 1.0,
+      "d": 2.3
+     },
+     {
+      "art": "fass",
+      "x": -1.3,
+      "d": 2.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_langhaus_01",
+   "name": "Langhaus des Schulzen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.6,
+     "d": 0,
+     "b": 7.2,
+     "t": 4.6,
+     "h": 2.6,
+     "wand": "blockbohlen",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.6,
+      "first": "x",
+      "ueber": 0.6,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1.6,
+     "h": 2.1,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -2.3,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 2.3,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.8,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.3
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -2.4,
+     "d": 3.0,
+     "b": 0.6
+    },
+    {
+     "art": "banner",
+     "x": -1.25,
+     "z": 2.3
+    },
+    {
+     "art": "banner",
+     "x": 1.25,
+     "z": 2.3
+    },
+    {
+     "art": "laterne",
+     "x": -0.95,
+     "z": 1.9
+    },
+    {
+     "art": "laterne",
+     "x": 0.95,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -1.5,
+      "d": 2.4
+     },
+     {
+      "art": "tisch",
+      "x": 1.5,
+      "d": 2.4
+     },
+     {
+      "art": "bank",
+      "x": 0,
+      "d": 3.8
+     },
+     {
+      "art": "fass",
+      "x": 3.0,
+      "d": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_fischer_01",
+   "name": "Fischerhütte",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.2,
+     "h": 2.1,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "pult",
+      "hoehe": 1.3,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "stroh",
+      "farbe": [
+       108,
+       112,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1.0,
+     "h": 1.85,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": -0.9,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": 0.2,
+     "x1": 1.8,
+     "tiefe": 0.9,
+     "z": 1.95,
+     "deckung": "stroh",
+     "farbe": [
+      108,
+      112,
+      64
+     ]
+    },
+    {
+     "art": "kraeuter",
+     "x0": -1.7,
+     "x1": -0.2,
+     "anzahl": 4
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.0,
+      "d": 2.2
+     },
+     {
+      "art": "fass",
+      "x": 1.2,
+      "d": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "moor_huette_loch_01",
+   "name": "Verlassene Hütte (mit Loch im Boden)",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.6,
+     "d": 0,
+     "b": 5.2,
+     "t": 4.2,
+     "h": 2.3,
+     "wand": "bretter",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "stroh",
+      "farbe": [
+       96,
+       98,
+       60
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "b": 1.05,
+     "h": 1.9,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.6,
+     "art": "kreuz",
+     "x": 1.3
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "loch",
+      "x": 0.4,
+      "d": 2.3
+     },
+     {
+      "art": "fass",
+      "x": -2.0,
+      "d": 3.6
+     },
+     {
+      "art": "regal",
+      "x": 1.4,
+      "d": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "id": "dorf_windmuehle_01",
+   "name": "Windmühle",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.8,
+     "d": 0,
+     "b": 3.6,
+     "t": 3.6,
+     "h": 4.6,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "schindel",
+      "farbe": [
+       120,
+       90,
+       64
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.6,
+     "h": 0.6,
+     "art": "rund",
+     "x": -0.9
+    },
+    {
+     "wand": "ost",
+     "z": 2.4,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "schmal",
+     "d": 1.8
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "fluegel",
+     "x": 0.5,
+     "z": 5.2,
+     "laenge": 3.4
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "muehlstein",
+      "x": 0.2,
+      "d": 2.2
+     },
+     {
+      "art": "saecke",
+      "x": -1.0,
+      "d": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_bergfried_01",
+   "name": "Bergfried von Graufurt",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4.0,
+     "t": 4.0,
+     "h": 6.4,
+     "wand": "quader",
+     "betretbar": true,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "x": -0.9
+    },
+    {
+     "wand": "sued",
+     "z": 4.8,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "x": 0.9
+    },
+    {
+     "wand": "ost",
+     "z": 4.0,
+     "b": 0.5,
+     "h": 0.9,
+     "art": "schmal",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "banner",
+     "x": -1.25,
+     "z": 2.6
+    },
+    {
+     "art": "banner",
+     "x": 1.25,
+     "z": 2.6
+    },
+    {
+     "art": "laterne",
+     "x": -0.85,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0,
+      "d": 2.4
+     },
+     {
+      "art": "regal",
+      "x": -0.8,
+      "d": 3.6
+     },
+     {
+      "art": "fass",
+      "x": 1.4,
+      "d": 3.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_steinhaus_01",
+   "name": "Steinhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5.0,
+     "t": 4.0,
+     "h": 2.7,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.9,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.1,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.2,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.1,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.4,
+     "d": 2.6,
+     "b": 0.55
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.6,
+      "d": 1.6
+     },
+     {
+      "art": "bett",
+      "x": -1.4,
+      "d": 2.8
+     },
+     {
+      "art": "ofen",
+      "x": 1.4,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_steinhaus_02",
+   "name": "Steinhaus mit Turmstube",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.4,
+     "d": 0,
+     "b": 4.0,
+     "t": 3.8,
+     "h": 2.6,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.9,
+      "first": "d",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": 1.6,
+     "d": 0.6,
+     "b": 2.2,
+     "t": 2.2,
+     "h": 4.2,
+     "wand": "quader",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 1.6,
+      "first": "x",
+      "ueber": 0.25,
+      "deckung": "schiefer",
+      "farbe": [
+       96,
+       104,
+       120
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.6,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.65,
+     "art": "kreuz",
+     "x": -1.7
+    },
+    {
+     "wand": "sued",
+     "z": 2.8,
+     "b": 0.45,
+     "h": 0.7,
+     "art": "schmal",
+     "x": 2.7,
+     "koerper": "turm"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "laterne",
+     "x": 0.3,
+     "z": 1.9
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.6,
+      "d": 2.6
+     },
+     {
+      "art": "tisch",
+      "x": 0.4,
+      "d": 2.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_faehrhaus_01",
+   "name": "Fährhaus",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.6,
+     "d": 0,
+     "b": 5.2,
+     "t": 3.8,
+     "h": 2.5,
+     "wand": "stein",
+     "betretbar": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 1.9,
+      "first": "x",
+      "ueber": 0.45,
+      "deckung": "schindel",
+      "farbe": [
+       112,
+       86,
+       62
+      ]
+     }
+    },
+    {
+     "id": "lager",
+     "x": 2.6,
+     "d": 0.4,
+     "b": 2.2,
+     "t": 3.0,
+     "h": 2.0,
+     "wand": "bretter",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 0.6,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schindel",
+      "farbe": [
+       112,
+       86,
+       62
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -0.8,
+     "b": 1.05,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "glut",
+     "x": 1.2
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "schild",
+     "x": 0.3,
+     "z": 2.1,
+     "farbe": [
+      150,
+      170,
+      190
+     ]
+    },
+    {
+     "art": "kamin",
+     "x": -1.6,
+     "d": 2.6,
+     "b": 0.5
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "theke",
+      "x": 0.2,
+      "d": 2.8
+     },
+     {
+      "art": "fass",
+      "x": -1.9,
+      "d": 1.0
+     },
+     {
+      "art": "fass",
+      "x": -1.9,
+      "d": 1.8
+     }
+    ]
+   }
+  },
+  {
+   "id": "graufurt_turm_ost_01",
+   "name": "Turm am Ostufer",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.6,
+     "d": 0,
+     "b": 3.2,
+     "t": 3.2,
+     "h": 6.8,
+     "wand": "quader",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.2,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       80,
+       90,
+       104
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 1.0,
+     "h": 1.9,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 5.0,
+     "b": 0.6,
+     "h": 0.9,
+     "art": "gruen",
+     "x": 0
+    }
+   ],
+   "zubehoer": [],
+   "innen": {
+    "boden": "stein",
+    "moebel": []
+   }
+  }
+ ]
+}

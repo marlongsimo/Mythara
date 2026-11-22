@@ -1,0 +1,43 @@
+# 12 – Weidenhain in der offenen Welt (Nachbau)
+
+Stand: 21.11.2026 · Vorlage: das gemalte Dorf der Kampagne (`img/echtzeit/weidenhain.webp`, Nachtbild)
+
+## Ergebnis
+
+Region `weidenhain` (4 × 3 Chunks ab Chunk 200|208, zuerst 3 × 2), direkt südlich des Kreuzwalds. Der Spielserver kennt den Ort schon; Server und Datenbank bleiben unverändert.
+Bei Tag gebaut wie die übrige Welt; Feuer und Laternen bleiben.
+
+| Gemälde | Nachbau |
+|---|---|
+| Kornspeicher mit offenem Tor, Heu | `weidenhain_kornspeicher_01`: Scheune mit Tor, Anbau mit Vordach, innen Heu, Säcke, Fass |
+| Fachwerk-Bauernhaus | `weidenhain_bauernhaus_01`: neue Wandart **Fachwerk**, Läden, Blumenkästen, Kamin, Vordach |
+| Wassermühle mit Rad | `weidenhain_muehle_01`: Stein mit Fachwerk-Anbau, **Mühlrad** vor der Südwand, innen Mühlstein und Säcke |
+| Dorfplatz mit Feuer und Bänken | gepflasterter Platz, `dorf_festfeuer_01`, vier Bänke |
+| Linde im Steinring | `dorf_steinring_01` mit Waldbaum 4 darin |
+| zwei Stände, Fässer, Heu, Kürbisse | vorhandene Stände, Fässer, Heuballen, neue `dorf_kuerbisse_01` |
+| Mühlgraben, Wehr, Zaun am Ufer | Graben unter dem Mühlrad hindurch, `dorf_wehr_01` mit drei Überläufen, `dorf_zaun_01` |
+| Leute | Hanne, Lene, Tebbe, Agnes, Mette (vorhandene Figuren) |
+
+## Dichter besiedelt (zweiter Schritt)
+
+Um den Kern aus dem Gemälde liegt jetzt ein Dorf mit **34 Häusern** (Waldmark: 14 Gebäude), verbunden durch Erdgassen:
+Nordwesten, Westen (zwei Reihen), an der Dorfstraße, ein **Ostviertel** jenseits des Mühlgrabens (über `dorf_bruecke_01`) mit drei Gassen
+und ein **Südviertel** (über `dorf_bruecke_02`). Jede Häuserreihe steht nördlich ihrer Gasse, die Türen liegen genau an der Gasse.
+Hausarten wechseln sich ab: drei neue Fachwerkhäuser (`weidenhain_fachwerk_02`, `weidenhain_fachwerk_03` mit Stall, `weidenhain_kate_01`) und Holzhäuser aus der Waldmark.
+Vor vielen Häusern steht etwas (Fass, Holzstapel, Kürbisse, Heu), dazwischen einzelne Bäume. Die Brücken werden unter den Figuren gezeichnet (`tiefe: boden`),
+ihr Wasser ist über `kollision.freigeben` begehbar. Der Test prüft, dass alle Haustüren vom Dorfeingang erreichbar sind.
+
+## Neu im Baukasten
+
+- `gebaeude.py`: Wandart `fachwerk` (Putz mit Schwelle, Riegel, Pfosten, Streben); Zubehör `muehlrad` (vor der Südwand, weil Ostwände in der Schrägansicht zu schmal erscheinen); Möbel `heu`, `saecke`, `muehlstein`.
+- `haus.py`: `feuer`, `steinring`, `wehr`, `zaun`, `kuerbisse`. Steinring und Kürbisse sind ohne Bildvorlage gezeichnet. Feuer, Wehr und Zaun nutzen die Holzmaserung, deren Lizenz ungeklärt ist (QUELLEN.md).
+- Generator `werkzeug/welt/weidenhain.mjs`, Prüfung `test/welt-weidenhain.test.mjs` (Türen, Lesestellen und Leute erreichbar, alle Bauten da, Graben fließt).
+
+## Gewachsener Ortsbild und Anschluss (dritter Schritt)
+
+- **Gassen schwingen:** Jede Gasse wird dicht abgetastet und quer zur Richtung sanft versetzt (zwei überlagerte Wellen); an Kreuzungen und Brücken bleibt sie fest.
+- **Häuser versetzt:** leicht seitlich verschoben, knapp die Hälfte steht 0,8 bis 2,2 Felder zurück, mit einem kurzen Trampelpfad zur Gasse.
+- **Prüfung:** Kein Gebäude berührt ein anderes (mindestens 0,6 Felder Abstand), keines steht im Wasser oder auf einer Gasse (außer der Mühle mit ihrem Rad).
+- **Angeschlossen:** Der umgestürzte Baum am Ende des Feldwegs im Kreuzwald ist weg, der Feldweg läuft bis an den Südrand und trifft dort auf die Dorfstraße
+  von Weidenhain. Der Test `welt-waldmark` prüft den Fußweg vom Brunnen der Waldmark bis nach Weidenhain (etwa 230 Felder).
+  Steinwege West und Ost enden weiter an ihren Stämmen.

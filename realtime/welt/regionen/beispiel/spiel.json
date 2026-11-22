@@ -1,0 +1,85 @@
+{
+ "start": [
+  [
+   2.5,
+   32.9
+  ],
+  [
+   1.5,
+   31.9
+  ],
+  [
+   1.5,
+   33.9
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "wanderer_am_brunnen",
+   "rolle": "npc",
+   "figur": "wanderer",
+   "x": 32.5,
+   "y": 32.7,
+   "links": true
+  }
+ ],
+ "spawnzonen": [
+  {
+   "id": "kroeten_am_teich",
+   "zone": {
+    "art": "kreis",
+    "x": 46,
+    "y": 25.5,
+    "r": 3
+   },
+   "gegner": [
+    {
+     "art": "schlammkroete",
+     "anzahl": 2
+    },
+    {
+     "art": "kroetchen",
+     "anzahl": 1
+    }
+   ],
+   "aggro": 7,
+   "leine": 16,
+   "abgleich": "server"
+  }
+ ],
+ "interaktionen": [
+  {
+   "id": "brunnen_lesen",
+   "art": "lesen",
+   "x": 30,
+   "y": 32.4,
+   "radius": 1.6,
+   "objekt": "brunnen",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein alter Brunnen. Das Wasser ist klar."
+   }
+  }
+ ],
+ "ausgaenge": [
+  {
+   "id": "nach_westen",
+   "zone": {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 29.9,
+    "x1": 0.8,
+    "y1": 35.9
+   },
+   "nach": {
+    "art": "ort",
+    "ort": "waldmark"
+   },
+   "text": "Zurück in die Waldmark"
+  }
+ ],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ }
+}

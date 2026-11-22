@@ -1,0 +1,34 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_brust_stahl",
+  "name": "Stahlbrustpanzer (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "chest",
+  "type": "chest_armor",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_brust_stahl.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "rumpf"
+    ]
+  },
+  "hides": {
+    "regions": [
+      "rumpf"
+    ],
+    "slots": []
+  },
+  "stats": {
+    "armor": 25
+  },
+  "special": {},
+  "visual": {
+    "material": "stahl"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

@@ -1,0 +1,257 @@
+/*
+ * Mythara · Splitterlande — UI-Baukasten (Rahmen, Buttons, Leisten, Container, Ornamente; ohne Inhalte/Icons)
+ *
+ * Alles ist reines CSS (dazu mythara-ui.js für das Halbmond-Dock) und skaliert verlustfrei:
+ *   --mu-g      Grundgröße des Bausteins (Slot-Durchmesser, Kartengröße …)
+ *   Metall      Gold ist Standard; .mu-eis (Silber/Eis) und .mu-bronze (Bronze mit roten Steinen) schalten um –
+ *               auf einem Baustein oder auf einem ganzen Bereich.
+ *   Steine      .mu-stein-blau (Standard bei Gold), .mu-stein-rot, .mu-stein-gold
+ * Zustände von Slots: :hover, .ist-aktiv, :active/.ist-gedrueckt, .ist-ausgewaehlt, .ist-abklingend (--mu-cd 0…1),
+ *   :disabled/.ist-deaktiviert, .ist-gesperrt, .ist-warnung, .ist-quest
+ * Siehe README.md und die Katalogseite index.html.
+ */
+@font-face { font-family: "Cinzel"; src: url(../fonts/cinzel-latin-600-normal.woff2) format("woff2"); font-weight: 400 900; font-display: swap; }
+
+/* ---------- Grundwerte ---------- */
+:root, .mu-gold {
+  --mu-m1: #f8e3a2; --mu-m2: #d6ac52; --mu-m3: #8a6224; --mu-m4: #4a3210;
+  --mu-glanz: rgba(255, 196, 90, .65); --mu-akzent: #ffb43a;
+  --mu-stein-a: #d8f1ff; --mu-stein-b: #3c8fe6; --mu-stein-c: #0c3d86; --mu-stein-glanz: #4aa3ff;
+  --mu-grund-a: #3b2c18; --mu-grund-b: #17110a; --mu-grund-c: #0b0805;
+  --mu-text: #f3e3b4; --mu-text-hell: #fff1cc; --mu-text-matt: #b9a57c;
+  --mu-schrift: "Cinzel", Georgia, serif;
+}
+.mu-eis { --mu-m1: #f4f7fa; --mu-m2: #aab4bf; --mu-m3: #626c78; --mu-m4: #2b3138; --mu-glanz: rgba(130, 195, 255, .6); --mu-akzent: #7cc4ff;
+  --mu-grund-a: #262c33; --mu-grund-b: #121519; --mu-grund-c: #08090b; --mu-text: #e6edf4; --mu-text-hell: #ffffff; }
+.mu-bronze { --mu-m1: #efc49a; --mu-m2: #b07040; --mu-m3: #6e3d1c; --mu-m4: #3a1e0c; --mu-glanz: rgba(255, 120, 70, .55); --mu-akzent: #ff7a45;
+  --mu-stein-a: #ffd0c4; --mu-stein-b: #d8382a; --mu-stein-c: #6a0d08; --mu-stein-glanz: #ff5a40; }
+.mu-stein-blau { --mu-stein-a: #d8f1ff; --mu-stein-b: #3c8fe6; --mu-stein-c: #0c3d86; --mu-stein-glanz: #4aa3ff; }
+.mu-stein-rot { --mu-stein-a: #ffd0c4; --mu-stein-b: #d8382a; --mu-stein-c: #6a0d08; --mu-stein-glanz: #ff5a40; }
+.mu-stein-gold { --mu-stein-a: #fff3c4; --mu-stein-b: #f0b43c; --mu-stein-c: #8a5410; --mu-stein-glanz: #ffc04a; }
+[class*="mu-"] { box-sizing: border-box; }
+[class*="mu-"] *, [class*="mu-"] ::before, [class*="mu-"] ::after { box-sizing: border-box; }
+
+/* Größen der Eltern unter eigenem Namen, damit Kinder sich danach richten (ein Baustein darf --mu-g nicht aus sich selbst berechnen) */
+.mu-slot { --mu-slot-g: var(--mu-g); } .mu-minimap { --mu-karte-g: var(--mu-g); } .mu-dock { --mu-dock-g: var(--mu-g); } .mu-banner { --mu-banner-g: var(--mu-g); } .mu-wechsel { --mu-wechsel-g: var(--mu-g); }
+.mu-menueleiste, .mu-skillleiste, .mu-zoomleiste { --mu-leiste-g: var(--mu-g); }
+/* Metall als Verlauf (Leisten, Rahmen) und als Ring (runde Teile) */
+.mu-slot, .mu-minimap, .mu-menueleiste, .mu-skillleiste, .mu-wechsel, .mu-banner, .mu-zoomleiste, .mu-balken, .mu-tafel, .mu-plakette, .mu-sprechblase, .mu-eintrag, .mu-haken, .mu-auswahl, .mu-zahl, .mu-raute, .mu-trenner, .mu-ornament, .mu-dock, .mu-wappen, .mu-pfeil, .mu-zielring {
+  --mu-metall: linear-gradient(180deg, var(--mu-m1) 0%, var(--mu-m2) 34%, var(--mu-m1) 58%, var(--mu-m3) 82%, var(--mu-m4) 100%);
+  --mu-metall-quer: linear-gradient(90deg, var(--mu-m3), var(--mu-m1) 18%, var(--mu-m2) 50%, var(--mu-m1) 82%, var(--mu-m3));
+  --mu-ring: conic-gradient(from 200deg, var(--mu-m1), var(--mu-m3) 12%, var(--mu-m2) 25%, var(--mu-m4) 38%, var(--mu-m1) 52%, var(--mu-m3) 66%, var(--mu-m2) 80%, var(--mu-m4) 92%, var(--mu-m1));
+  --mu-stein: linear-gradient(135deg, var(--mu-stein-a), var(--mu-stein-b) 45%, var(--mu-stein-c));
+  --mu-grund: radial-gradient(circle at 50% 30%, var(--mu-grund-a) 0%, var(--mu-grund-b) 62%, var(--mu-grund-c) 100%);
+  font-family: var(--mu-schrift);
+}
+
+/* ---------- Edelstein / Raute (Marker, Verzierung) ---------- */
+.mu-raute { --mu-g: 18px; display: inline-block; width: var(--mu-g); height: var(--mu-g); transform: rotate(45deg); background: var(--mu-stein);
+  border: calc(var(--mu-g) * .1) solid var(--mu-m2); box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .5) var(--mu-stein-glanz); flex: none; }
+.mu-raute.mu-hohl { background: radial-gradient(circle, var(--mu-grund-b) 30%, var(--mu-grund-c)); border-width: calc(var(--mu-g) * .16); box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .6) var(--mu-stein-glanz), inset 0 0 0 1px #000; border-color: var(--mu-stein-b); }
+
+/* ---------- Runde Buttons / Slots ---------- */
+.mu-slot { --mu-g: 64px; --mu-rb: calc(var(--mu-g) * .1); --mu-cd: 0; position: relative; display: inline-grid; place-items: center; flex: none; width: var(--mu-g); height: var(--mu-g); padding: 0; border: 0; border-radius: 50%;
+  background: var(--mu-grund); color: var(--mu-m1); cursor: pointer; font: inherit; isolation: isolate; transition: transform .12s, box-shadow .15s, filter .15s;
+  box-shadow: 0 0 0 1px #000, inset 0 0 0 var(--mu-rb) transparent, inset 0 calc(var(--mu-g) * .04) calc(var(--mu-g) * .14) rgba(0,0,0,.8), 0 calc(var(--mu-g) * .06) calc(var(--mu-g) * .16) rgba(0,0,0,.6); }
+.mu-slot::before { content: ""; position: absolute; inset: 0; border-radius: 50%; z-index: 1; pointer-events: none; background: var(--mu-ring);
+  -webkit-mask: radial-gradient(circle closest-side, transparent calc(100% - var(--mu-rb)), #000 calc(100% - var(--mu-rb) + .6px), #000 calc(100% - 1px), transparent 100%);
+  mask: radial-gradient(circle closest-side, transparent calc(100% - var(--mu-rb)), #000 calc(100% - var(--mu-rb) + .6px), #000 calc(100% - 1px), transparent 100%); }
+.mu-slot::after { content: ""; position: absolute; inset: var(--mu-rb); border-radius: 50%; z-index: 1; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,.85), inset 0 1px 0 1px rgba(255,220,150,.08); }
+.mu-slot > * { position: relative; z-index: 2; }
+.mu-slot > svg, .mu-slot > img { width: 52%; height: 52%; object-fit: contain; filter: drop-shadow(0 1px 0 #000); }
+.mu-slot:hover, .mu-slot.ist-hover { box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .22) var(--mu-glanz), inset 0 calc(var(--mu-g) * .04) calc(var(--mu-g) * .14) rgba(0,0,0,.7); filter: brightness(1.12); }
+.mu-slot.ist-aktiv { --mu-m1: #fff1bf; --mu-m2: #ffb43a; --mu-m3: #c8701a; --mu-m4: #7a3c08;
+  box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .32) calc(var(--mu-g) * .04) var(--mu-akzent), inset 0 0 calc(var(--mu-g) * .25) rgba(255,150,40,.35); }
+.mu-slot:active, .mu-slot.ist-gedrueckt { transform: scale(.95); filter: brightness(.9); box-shadow: 0 0 0 1px #000, inset 0 calc(var(--mu-g) * .06) calc(var(--mu-g) * .2) rgba(0,0,0,.95); }
+.mu-slot.ist-ausgewaehlt { --mu-m1: #d8f1ff; --mu-m2: #4aa3ff; --mu-m3: #1c5fae; --mu-m4: #0a2c5a;
+  box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .26) rgba(74,163,255,.75), inset 0 0 calc(var(--mu-g) * .2) rgba(74,163,255,.2); }
+.mu-slot:focus-visible { outline: none; box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .05) rgba(74,163,255,.9), 0 0 calc(var(--mu-g) * .26) rgba(74,163,255,.7); }
+.mu-slot.ist-abklingend::before { background: conic-gradient(#f4f4f4 0 calc((1 - var(--mu-cd)) * 360deg), transparent 0), var(--mu-ring); }
+.mu-slot.ist-abklingend::after { background: conic-gradient(from calc((1 - var(--mu-cd)) * 360deg), rgba(0,0,0,.62) 0 calc(var(--mu-cd) * 360deg), transparent 0); }
+.mu-slot:disabled, .mu-slot.ist-deaktiviert { --mu-m1: #d8dde2; --mu-m2: #8c949c; --mu-m3: #50575e; --mu-m4: #262a2e; filter: grayscale(.85) brightness(.75); cursor: default; }
+.mu-slot.ist-gesperrt { cursor: not-allowed; filter: brightness(.8); }
+.mu-slot.ist-gesperrt > * { opacity: .25; }
+.mu-slot.ist-gesperrt::after { background: var(--mu-m2) center / 34% no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1.5a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0zm3 4a1.6 1.6 0 0 0-.8 3v1.6h1.6V17a1.6 1.6 0 0 0-.8-3z'/%3E%3C/svg%3E") center / 38% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1.5a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0zm3 4a1.6 1.6 0 0 0-.8 3v1.6h1.6V17a1.6 1.6 0 0 0-.8-3z'/%3E%3C/svg%3E") center / 38% no-repeat; box-shadow: none; }
+.mu-slot.ist-warnung { --mu-m1: #ffc0a8; --mu-m2: #d8402a; --mu-m3: #8a1a0e; --mu-m4: #420804; box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .26) rgba(230,60,40,.7), inset 0 0 calc(var(--mu-g) * .22) rgba(200,40,20,.3); }
+.mu-slot.ist-quest { --mu-m1: #fff1bf; --mu-m2: #ffcc4a; --mu-m3: #b07a18; --mu-m4: #5a3a06; animation: mu-puls 1.8s ease-in-out infinite; }
+@keyframes mu-puls { 0%, 100% { box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .12) rgba(255,204,74,.45); } 50% { box-shadow: 0 0 0 1px #000, 0 0 calc(var(--mu-g) * .36) rgba(255,204,74,.9); } }
+@media (prefers-reduced-motion: reduce) { .mu-slot.ist-quest { animation: none; } }
+
+/* ---------- Nummern-Badges ---------- */
+.mu-zahl { --mu-g: 26px; display: inline-grid; place-items: center; flex: none; width: var(--mu-g); height: var(--mu-g); border-radius: 50%; color: #3a2405; font: 700 calc(var(--mu-g) * .56)/1 var(--mu-schrift);
+  background: radial-gradient(circle at 40% 30%, #fff4c8, #f0c45a 45%, #b07a22 85%); box-shadow: 0 0 0 1px #000, inset 0 0 0 calc(var(--mu-g) * .06) rgba(120,70,10,.6), 0 2px 4px rgba(0,0,0,.6); text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+.mu-zahl.mu-silber { color: #1c2024; background: radial-gradient(circle at 40% 30%, #f4f6f8, #9aa3ad 50%, #4c535b 90%); }
+.mu-zahl.mu-dunkel { color: #c9ced4; background: radial-gradient(circle at 40% 30%, #6a7078, #343a40 55%, #1a1d20); text-shadow: 0 1px 0 #000; box-shadow: 0 0 0 1px #000, inset 0 0 0 calc(var(--mu-g) * .07) #8a929a; }
+.mu-zahl.mu-raute { border-radius: 0; transform: rotate(45deg); width: calc(var(--mu-g) * .82); height: calc(var(--mu-g) * .82); background: var(--mu-grund); border: calc(var(--mu-g) * .07) solid var(--mu-m2); color: var(--mu-m1); text-shadow: 0 1px 0 #000; }
+.mu-zahl.mu-raute > * { transform: rotate(-45deg); }
+.mu-zahl.mu-sechseck { border-radius: 0; width: calc(var(--mu-g) * 1.5); background: var(--mu-metall); color: var(--mu-m1); text-shadow: 0 1px 0 #000; box-shadow: none; position: relative; isolation: isolate;
+  clip-path: polygon(18% 0, 82% 0, 100% 50%, 82% 100%, 18% 100%, 0 50%); }
+.mu-zahl.mu-sechseck::before { content: ""; position: absolute; inset: calc(var(--mu-g) * .07); z-index: -1; background: var(--mu-grund); clip-path: polygon(18% 0, 82% 0, 100% 50%, 82% 100%, 18% 100%, 0 50%); }
+.mu-slot > .mu-zahl { position: absolute; z-index: 3; left: -4%; top: -4%; --mu-g: calc(var(--mu-slot-g) * .36); }
+
+/* ---------- Minimap-Rahmen ---------- */
+.mu-minimap { --mu-g: 200px; --mu-rb: calc(var(--mu-g) * .045); position: relative; display: inline-block; flex: none; width: var(--mu-g); height: var(--mu-g); }
+.mu-minimap__karte { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #120d08 center / cover; box-shadow: inset 0 0 calc(var(--mu-g) * .12) rgba(0,0,0,.85); }
+.mu-minimap::before { content: ""; position: absolute; z-index: 2; inset: calc(var(--mu-rb) * -1); border-radius: 50%; pointer-events: none; background: var(--mu-ring);
+  -webkit-mask: radial-gradient(circle closest-side, transparent calc(100% - var(--mu-rb) * 2 - 1px), #000 calc(100% - var(--mu-rb) * 2), #000 calc(100% - 1.5px), transparent 100%);
+  mask: radial-gradient(circle closest-side, transparent calc(100% - var(--mu-rb) * 2 - 1px), #000 calc(100% - var(--mu-rb) * 2), #000 calc(100% - 1.5px), transparent 100%); filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000); }
+.mu-minimap::after { content: ""; position: absolute; z-index: 2; inset: calc(var(--mu-rb) * -.1); border-radius: 50%; border: 1.5px solid rgba(30,20,6,.9); pointer-events: none; }
+.mu-minimap > .mu-raute { position: absolute; z-index: 3; --mu-g: calc(var(--mu-karte-g) * .075); }
+.mu-minimap > .mu-raute.links { left: 0; top: 50%; translate: -50% -50%; } .mu-minimap > .mu-raute.rechts { right: 0; top: 50%; translate: 50% -50%; } .mu-minimap > .mu-raute.unten { left: 50%; bottom: 0; translate: -50% 50%; }
+.mu-minimap__nord { position: absolute; z-index: 4; left: 50%; top: 0; translate: -50% -50%; width: calc(var(--mu-g) * .16); height: calc(var(--mu-g) * .16); border-radius: 50%; display: grid; place-items: center; font: 700 calc(var(--mu-g) * .08)/1 var(--mu-schrift); font-style: normal;
+  color: var(--mu-m1); background: var(--mu-grund); box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .013) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .02) var(--mu-m4), 0 3px 6px rgba(0,0,0,.7); text-shadow: 0 1px 0 #000; }
+.mu-minimap__nord::before, .mu-minimap__nord::after { content: ""; position: absolute; z-index: -1; left: 50%; width: 44%; height: 55%; translate: -50% 0; background: var(--mu-metall); filter: drop-shadow(0 0 1px #000); }
+.mu-minimap__nord::before { top: -36%; clip-path: polygon(50% 0, 100% 100%, 0 100%); } .mu-minimap__nord::after { bottom: -36%; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.mu-minimap__punkt { position: absolute; z-index: 1; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #1a6cff, 0 0 8px #fff; }
+
+/* ---------- Halbmond-Dock (Form und Lage der Slots: mythara-ui.js muDock) ---------- */
+.mu-dock { --mu-g: 200px; position: relative; display: inline-block; flex: none; width: calc(var(--mu-g) * .6); height: calc(var(--mu-g) * 1.2); }
+.mu-dock > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
+.mu-dock > .mu-slot { position: absolute; translate: -50% -50%; --mu-g: calc(var(--mu-dock-g) * .23); }
+.mu-dock.mu-an-karte { width: var(--mu-g); } /* an einer Minimap: die Fläche reicht bis zur Kartenmitte */
+
+/* ---------- Vertikale Menüleiste ---------- */
+.mu-menueleiste { --mu-g: 64px; position: relative; display: inline-flex; flex-direction: column; align-items: center; gap: calc(var(--mu-g) * .2); padding: calc(var(--mu-g) * .32) calc(var(--mu-g) * .16);
+  border-radius: calc(var(--mu-g) * .7); background: linear-gradient(90deg, var(--mu-grund-c), var(--mu-grund-a) 50%, var(--mu-grund-c));
+  box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .045) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .06) var(--mu-m4), 0 0 0 calc(var(--mu-g) * .075) #000, inset 0 0 calc(var(--mu-g) * .22) #000, 0 8px 20px rgba(0,0,0,.6); }
+.mu-menueleiste::before, .mu-menueleiste::after { content: ""; position: absolute; left: 50%; width: calc(var(--mu-g) * .42); height: calc(var(--mu-g) * .5); translate: -50% 0; background: var(--mu-metall);
+  clip-path: polygon(50% 0, 66% 38%, 100% 50%, 66% 62%, 50% 100%, 34% 62%, 0 50%, 34% 38%); filter: drop-shadow(0 0 1px #000); }
+.mu-menueleiste::before { top: calc(var(--mu-g) * -.34); } .mu-menueleiste::after { bottom: calc(var(--mu-g) * -.34); }
+.mu-menueleiste.mit-steinen::before, .mu-menueleiste.mit-steinen::after { background: radial-gradient(circle at 50% 50%, var(--mu-stein-a) 0 6%, var(--mu-stein-b) 12%, var(--mu-stein-c) 17%, transparent 18%), var(--mu-metall); }
+.mu-menueleiste > .mu-slot, .mu-menueleiste figure > .mu-slot { --mu-g: var(--mu-leiste-g); }
+.mu-menueleiste figure { margin: 0; display: grid; justify-items: center; gap: 3px; }
+.mu-menueleiste figcaption { font: 600 calc(var(--mu-g) * .16)/1 var(--mu-schrift); color: var(--mu-text); letter-spacing: .04em; text-transform: uppercase; text-shadow: 0 1px 2px #000; }
+
+/* ---------- Skill-Leiste (4 Slots) ---------- */
+.mu-skillleiste { --mu-g: 72px; position: relative; display: inline-flex; align-items: center; gap: calc(var(--mu-g) * .1); padding: 0 calc(var(--mu-g) * .42); isolation: isolate; }
+.mu-skillleiste::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 22%; bottom: 22%; background: var(--mu-metall);
+  clip-path: polygon(0 50%, 5% 8%, 12% 22%, 88% 22%, 95% 8%, 100% 50%, 95% 92%, 88% 78%, 12% 78%, 5% 92%); filter: drop-shadow(0 0 1px #000) drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+.mu-skillleiste::after { content: ""; position: absolute; z-index: -1; left: 3%; right: 3%; top: 31%; bottom: 31%; background: linear-gradient(var(--mu-grund-a), var(--mu-grund-c)); clip-path: polygon(0 50%, 4% 0, 96% 0, 100% 50%, 96% 100%, 4% 100%); }
+.mu-skillleiste > .mu-slot { --mu-g: var(--mu-leiste-g); }
+.mu-skillleiste > .mu-raute { position: absolute; z-index: 3; left: 50%; bottom: 14%; translate: -50% 50%; --mu-g: calc(var(--mu-leiste-g) * .22); }
+
+/* ---------- Wechsel-Schalter Primär / Sekundär ---------- */
+.mu-wechsel { --mu-g: 44px; position: relative; display: inline-grid; grid-template-columns: 1fr var(--mu-g) 1fr; align-items: center; flex: none; height: var(--mu-g); min-width: calc(var(--mu-g) * 6);
+  padding: 0; border: 0; border-radius: 999px; cursor: pointer; font: 600 calc(var(--mu-g) * .32)/1 var(--mu-schrift); letter-spacing: .06em; text-transform: uppercase; color: var(--mu-text-matt);
+  background: linear-gradient(var(--mu-grund-a), var(--mu-grund-c)); box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .07) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .1) var(--mu-m4), 0 0 0 calc(var(--mu-g) * .12) #000, inset 0 0 calc(var(--mu-g) * .3) #000; isolation: isolate; }
+.mu-wechsel > span { position: relative; z-index: 1; padding: 0 calc(var(--mu-g) * .3); text-shadow: 0 1px 2px #000; transition: color .2s; }
+.mu-wechsel::before { content: ""; position: absolute; z-index: 0; top: 0; bottom: 0; left: 0; width: calc(50% - var(--mu-g) * .2); border-radius: 999px 0 0 999px; transition: left .25s, border-radius .25s;
+  background: linear-gradient(90deg, rgba(255,170,50,.65), rgba(255,140,30,.15)); box-shadow: inset 0 0 calc(var(--mu-g) * .25) rgba(255,190,80,.5); }
+.mu-wechsel > span:first-child { color: var(--mu-text-hell); }
+.mu-wechsel.ist-sekundaer::before { left: calc(50% + var(--mu-g) * .2); border-radius: 0 999px 999px 0; background: linear-gradient(270deg, rgba(255,170,50,.65), rgba(255,140,30,.15)); }
+.mu-wechsel.ist-sekundaer > span:first-child { color: var(--mu-text-matt); } .mu-wechsel.ist-sekundaer > span:last-child { color: var(--mu-text-hell); }
+.mu-wechsel.ist-aus::before { opacity: 0; } .mu-wechsel.ist-aus > span { color: var(--mu-text-matt) !important; }
+.mu-wechsel > .mu-slot { --mu-g: calc(var(--mu-wechsel-g) * 1.3); z-index: 2; justify-self: center; pointer-events: none; }
+
+/* ---------- Status-Banner (Kampfmodus) ---------- */
+.mu-banner { --mu-g: 40px; --mu-spitze: calc(var(--mu-g) * .5); --mu-farbe-a: #6a1e12; --mu-farbe-b: #2a0b07; --mu-farbe-c: #561810; --mu-licht: rgba(255,90,50,.35);
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: calc(var(--mu-g) * .25); flex: none; height: var(--mu-g); min-width: calc(var(--mu-g) * 7); padding: 0 calc(var(--mu-g) * .9);
+  color: var(--mu-text-hell); font: 700 calc(var(--mu-g) * .38)/1 var(--mu-schrift); letter-spacing: .07em; text-transform: uppercase; text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,.8); isolation: isolate; filter: drop-shadow(0 4px 8px rgba(0,0,0,.55)); }
+.mu-banner::before { content: ""; position: absolute; z-index: -2; inset: 0; background: var(--mu-metall); filter: drop-shadow(0 0 1px #000);
+  clip-path: polygon(0 50%, var(--mu-spitze) 0, calc(100% - var(--mu-spitze)) 0, 100% 50%, calc(100% - var(--mu-spitze)) 100%, var(--mu-spitze) 100%); }
+.mu-banner::after { content: ""; position: absolute; z-index: -1; inset: calc(var(--mu-g) * .08) calc(var(--mu-g) * .1); clip-path: polygon(0 50%, calc(var(--mu-spitze) * .85) 0, calc(100% - var(--mu-spitze) * .85) 0, 100% 50%, calc(100% - var(--mu-spitze) * .85) 100%, calc(var(--mu-spitze) * .85) 100%);
+  background: radial-gradient(ellipse at 50% 50%, var(--mu-licht), transparent 70%), linear-gradient(var(--mu-farbe-a), var(--mu-farbe-b) 55%, var(--mu-farbe-c)); box-shadow: inset 0 0 14px #000; }
+.mu-banner.mu-mehrkampf { --mu-farbe-a: #6a1e12; --mu-farbe-b: #2a0b07; --mu-farbe-c: #561810; --mu-licht: rgba(255,90,50,.4); color: #ffe2c8; }
+.mu-banner.mu-einzelkampf { --mu-farbe-a: #1a4278; --mu-farbe-b: #071630; --mu-farbe-c: #133260; --mu-licht: rgba(80,160,255,.4); color: #e2efff; }
+.mu-banner.mu-sicher { --mu-farbe-a: #2e4a22; --mu-farbe-b: #0f1a0b; --mu-farbe-c: #26401c; --mu-licht: rgba(140,220,110,.3); color: #e4f4d8; }
+.mu-banner > svg { width: calc(var(--mu-g) * .46); height: calc(var(--mu-g) * .46); color: var(--mu-m1); flex: none; }
+.mu-banner > .mu-raute { position: absolute; left: 50%; bottom: 0; translate: -50% 50%; --mu-g: calc(var(--mu-banner-g) * .26); }
+.mu-pille { display: inline-block; padding: .18em .65em; border-radius: 999px; font: 600 .78em/1.1 var(--mu-schrift); letter-spacing: 0; text-transform: none; color: var(--mu-text-hell); background: rgba(0,0,0,.45); border: 1px solid var(--mu-m2); }
+
+/* ---------- Zoom-Leiste ---------- */
+.mu-zoomleiste { --mu-g: 34px; display: inline-flex; align-items: center; gap: calc(var(--mu-g) * .2); flex: none; padding: calc(var(--mu-g) * .1); border-radius: 999px; background: linear-gradient(var(--mu-grund-a), var(--mu-grund-c));
+  box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .08) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .11) var(--mu-m4), 0 0 0 calc(var(--mu-g) * .13) #000, 0 4px 10px rgba(0,0,0,.6); position: relative; }
+.mu-zoomleiste > .mu-slot { --mu-g: var(--mu-leiste-g); font: 600 calc(var(--mu-g) * .55)/1 Georgia, serif; }
+.mu-zoomleiste > output, .mu-zoomleiste > b { min-width: calc(var(--mu-g) * 2.2); text-align: center; color: var(--mu-text-hell); font: 600 calc(var(--mu-g) * .36)/1 var(--mu-schrift); }
+.mu-zoomleiste.mit-steinen::before, .mu-zoomleiste.mit-steinen::after { content: ""; position: absolute; top: 50%; width: calc(var(--mu-g) * .32); height: calc(var(--mu-g) * .32); translate: 0 -50%; rotate: 45deg; background: var(--mu-stein); border: 1.5px solid var(--mu-m2); box-shadow: 0 0 0 1px #000, 0 0 8px var(--mu-stein-glanz); }
+.mu-zoomleiste.mit-steinen::before { left: calc(var(--mu-g) * -.28); } .mu-zoomleiste.mit-steinen::after { right: calc(var(--mu-g) * -.28); }
+
+/* ---------- Ressourcen- / Fortschrittsleisten ---------- */
+.mu-balken { --mu-g: 16px; --mu-wert: .6; --mu-a: #ff6a5a; --mu-b: #c8261c; --mu-c: #6a0d08; --mu-schein: rgba(255,80,60,.6);
+  position: relative; display: block; height: var(--mu-g); min-width: calc(var(--mu-g) * 8); isolation: isolate; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+.mu-balken::before { content: ""; position: absolute; z-index: -2; inset: 0; background: var(--mu-metall); clip-path: polygon(0 50%, calc(var(--mu-g) * .6) 0, calc(100% - var(--mu-g) * .6) 0, 100% 50%, calc(100% - var(--mu-g) * .6) 100%, calc(var(--mu-g) * .6) 100%); }
+.mu-balken::after { content: ""; position: absolute; z-index: -1; inset: calc(var(--mu-g) * .16) calc(var(--mu-g) * .5); background: #0a0705; box-shadow: inset 0 1px 3px #000; }
+.mu-balken > i { position: absolute; z-index: 0; left: calc(var(--mu-g) * .5); top: calc(var(--mu-g) * .16); bottom: calc(var(--mu-g) * .16); width: calc((100% - var(--mu-g)) * var(--mu-wert)); transition: width .25s;
+  background: linear-gradient(180deg, rgba(255,255,255,.45) 0, rgba(255,255,255,.1) 40%, transparent 41%), linear-gradient(var(--mu-a), var(--mu-b) 55%, var(--mu-c)); box-shadow: 0 0 6px var(--mu-schein); }
+.mu-balken > span { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; font: 600 calc(var(--mu-g) * .62)/1 var(--mu-schrift); color: #fff; text-shadow: 0 1px 2px #000; }
+.mu-balken.mu-lp { --mu-a: #ff6a5a; --mu-b: #c8261c; --mu-c: #6a0d08; --mu-schein: rgba(255,80,60,.6); }
+.mu-balken.mu-mana { --mu-a: #7cc4ff; --mu-b: #2a7ae0; --mu-c: #0c3a86; --mu-schein: rgba(70,150,255,.6); }
+.mu-balken.mu-ausdauer { --mu-a: #9cf07a; --mu-b: #3fae2c; --mu-c: #16520c; --mu-schein: rgba(100,220,80,.55); }
+.mu-balken.mu-ep { --mu-a: #fff08a; --mu-b: #e8b81c; --mu-c: #8a5a06; --mu-schein: rgba(255,210,60,.55); }
+.mu-beschriftung { display: block; margin: 0 0 4px 6px; font: 600 12px/1.2 var(--mu-schrift); color: var(--mu-text); text-shadow: 0 1px 2px #000; }
+
+/* ---------- Container & Panels (wie 9-Slice: Ecken bleiben, Fläche dehnt sich) ---------- */
+.mu-tafel { --mu-g: 28px; position: relative; padding: calc(var(--mu-g) * .9); color: var(--mu-text); border-radius: calc(var(--mu-g) * .25);
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,220,150,.06), transparent 60%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .06 0 0 0 0 .03 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23r)'/%3E%3C/svg%3E"), linear-gradient(var(--mu-grund-a), var(--mu-grund-c));
+  box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .07) var(--mu-m3), 0 0 0 calc(var(--mu-g) * .09) #000, inset 0 0 0 1px rgba(255,220,150,.08), inset 0 0 calc(var(--mu-g) * 1.2) rgba(0,0,0,.7), 0 10px 26px rgba(0,0,0,.6); }
+.mu-tafel::before { content: ""; position: absolute; inset: calc(var(--mu-g) * -.3); pointer-events: none; background: var(--mu-metall);
+  -webkit-mask: var(--mu-ecke-ol) top left / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-or) top right / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-ul) bottom left / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-ur) bottom right / var(--mu-g) var(--mu-g) no-repeat;
+  mask: var(--mu-ecke-ol) top left / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-or) top right / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-ul) bottom left / var(--mu-g) var(--mu-g) no-repeat, var(--mu-ecke-ur) bottom right / var(--mu-g) var(--mu-g) no-repeat;
+  filter: drop-shadow(0 0 1px #000); }
+.mu-tafel, .mu-ornament { /* Eckornament (oben links), gedreht für die übrigen Ecken */
+  --mu-ecke-ol: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 29V9.5Q3 3 9.5 3H29v3.2H10.5Q6.2 6.2 6.2 10.5V29z'/%3E%3Cpath d='M9 15.5V11q0-2 2-2h4.5L13 11.2h-1.8v1.8z'/%3E%3Cpath d='M12 4.6l2.4-2.4 2.4 2.4-2.4 2.4zM2.2 14.4l2.4-2.4L7 14.4l-2.4 2.4z'/%3E%3C/svg%3E");
+  --mu-ecke-or: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg transform='matrix(-1 0 0 1 32 0)'%3E%3Cpath d='M3 29V9.5Q3 3 9.5 3H29v3.2H10.5Q6.2 6.2 6.2 10.5V29z'/%3E%3Cpath d='M9 15.5V11q0-2 2-2h4.5L13 11.2h-1.8v1.8z'/%3E%3Cpath d='M12 4.6l2.4-2.4 2.4 2.4-2.4 2.4zM2.2 14.4l2.4-2.4L7 14.4l-2.4 2.4z'/%3E%3C/g%3E%3C/svg%3E");
+  --mu-ecke-ul: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg transform='matrix(1 0 0 -1 0 32)'%3E%3Cpath d='M3 29V9.5Q3 3 9.5 3H29v3.2H10.5Q6.2 6.2 6.2 10.5V29z'/%3E%3Cpath d='M9 15.5V11q0-2 2-2h4.5L13 11.2h-1.8v1.8z'/%3E%3Cpath d='M12 4.6l2.4-2.4 2.4 2.4-2.4 2.4zM2.2 14.4l2.4-2.4L7 14.4l-2.4 2.4z'/%3E%3C/g%3E%3C/svg%3E");
+  --mu-ecke-ur: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg transform='matrix(-1 0 0 -1 32 32)'%3E%3Cpath d='M3 29V9.5Q3 3 9.5 3H29v3.2H10.5Q6.2 6.2 6.2 10.5V29z'/%3E%3Cpath d='M9 15.5V11q0-2 2-2h4.5L13 11.2h-1.8v1.8z'/%3E%3Cpath d='M12 4.6l2.4-2.4 2.4 2.4-2.4 2.4zM2.2 14.4l2.4-2.4L7 14.4l-2.4 2.4z'/%3E%3C/g%3E%3C/svg%3E");
+  --mu-ecke: var(--mu-ecke-ol); }
+.mu-tafel.mu-schlicht::before { display: none; }
+.mu-tafel > h2, .mu-tafel > h3 { margin: 0 0 .6em; font-family: var(--mu-schrift); color: var(--mu-m1); text-align: center; letter-spacing: .05em; }
+.mu-plakette { --mu-g: 40px; display: flex; align-items: center; justify-content: center; min-height: var(--mu-g); padding: 0 calc(var(--mu-g) * .5); border-radius: calc(var(--mu-g) * .22); color: var(--mu-text); font: 600 calc(var(--mu-g) * .36)/1.2 var(--mu-schrift);
+  background: linear-gradient(#4a3720, #24190e); box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .06) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .08) #000, inset 0 calc(var(--mu-g) * .05) 0 rgba(255,220,150,.15), inset 0 0 calc(var(--mu-g) * .3) rgba(0,0,0,.6); }
+.mu-plakette.mu-stahl { background: linear-gradient(#2c3a4a, #131b24); } .mu-plakette.mu-dunkel { background: linear-gradient(#24272b, #0d0e10); }
+
+/* ---------- Dialog-Elemente ---------- */
+.mu-sprechblase { --mu-g: 28px; position: relative; padding: calc(var(--mu-g) * .55) calc(var(--mu-g) * .7); margin-bottom: calc(var(--mu-g) * .5); color: var(--mu-text); font: 15px/1.4 Georgia, serif; border-radius: calc(var(--mu-g) * .3);
+  background: linear-gradient(#3a2a18, #1c140c); box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .08) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .11) #000, inset 0 0 calc(var(--mu-g) * .6) rgba(0,0,0,.55), 0 6px 14px rgba(0,0,0,.55); }
+.mu-sprechblase::after { content: ""; position: absolute; left: calc(var(--mu-g) * 1.1); bottom: calc(var(--mu-g) * -.3); width: calc(var(--mu-g) * .6); height: calc(var(--mu-g) * .6); rotate: 45deg; background: #1c140c;
+  border-right: calc(var(--mu-g) * .08) solid var(--mu-m2); border-bottom: calc(var(--mu-g) * .08) solid var(--mu-m2); box-shadow: 1px 1px 0 0 #000; }
+.mu-sprechblase.mu-dunkel { background: linear-gradient(#2c2e30, #141516); }
+.mu-sprechblase.mu-dunkel::after { background: #141516; }
+
+/* ---------- Listen & Auswahl ---------- */
+.mu-eintrag { --mu-g: 34px; position: relative; display: flex; align-items: center; gap: calc(var(--mu-g) * .3); width: 100%; height: var(--mu-g); padding: 0 calc(var(--mu-g) * .6) 0 calc(var(--mu-g) * .85); border: 0; cursor: pointer; text-align: left;
+  font: 600 calc(var(--mu-g) * .4)/1 var(--mu-schrift); color: var(--mu-text); border-radius: 999px; background: linear-gradient(var(--mu-grund-a), var(--mu-grund-c));
+  box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .06) var(--mu-m3), 0 0 0 calc(var(--mu-g) * .08) #000, inset 0 0 calc(var(--mu-g) * .3) rgba(0,0,0,.6); }
+.mu-eintrag::before { content: ""; position: absolute; left: calc(var(--mu-g) * .3); top: 50%; width: calc(var(--mu-g) * .3); height: calc(var(--mu-g) * .3); translate: 0 -50%; rotate: 45deg; background: var(--mu-metall); box-shadow: 0 0 0 1px #000; }
+.mu-eintrag:hover { box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .06) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .08) #000, 0 0 10px var(--mu-glanz); }
+.mu-eintrag.ist-gewaehlt { color: var(--mu-text-hell); background: linear-gradient(90deg, rgba(255,170,50,.35), rgba(60,40,15,.9) 60%);
+  box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .07) #ffc04a, 0 0 0 calc(var(--mu-g) * .09) #000, 0 0 14px rgba(255,180,60,.65); }
+.mu-eintrag.ist-gewaehlt::before { background: var(--mu-stein); border: 1px solid #ffc04a; }
+.mu-haken, .mu-auswahl { --mu-g: 24px; appearance: none; -webkit-appearance: none; position: relative; display: inline-grid; place-items: center; flex: none; width: var(--mu-g); height: var(--mu-g); margin: 0; cursor: pointer;
+  background: linear-gradient(var(--mu-grund-b), var(--mu-grund-c)); box-shadow: 0 0 0 1px #000, 0 0 0 calc(var(--mu-g) * .09) var(--mu-m2), 0 0 0 calc(var(--mu-g) * .12) #000, inset 0 2px 4px #000; }
+.mu-haken { border-radius: calc(var(--mu-g) * .14); } .mu-auswahl { border-radius: 50%; }
+.mu-haken:checked::after { content: ""; width: 70%; height: 70%; background: var(--mu-metall); clip-path: polygon(8% 52%, 22% 38%, 40% 56%, 80% 12%, 94% 26%, 40% 84%); filter: drop-shadow(0 0 1px #000); }
+.mu-auswahl:checked::after { content: ""; width: 52%; height: 52%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff4c8, #f0b43c 50%, #8a5410); box-shadow: 0 0 8px rgba(255,190,70,.8); }
+.mu-haken:focus-visible, .mu-auswahl:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 4px; }
+
+/* ---------- Marker & Hinweise ---------- */
+.mu-zielring { --mu-g: 80px; --mu-farbe: #ffc04a; display: inline-block; flex: none; width: var(--mu-g); height: calc(var(--mu-g) * .38); border-radius: 50%; border: calc(var(--mu-g) * .045) solid var(--mu-farbe);
+  box-shadow: 0 0 calc(var(--mu-g) * .12) var(--mu-farbe), inset 0 0 calc(var(--mu-g) * .1) var(--mu-farbe); }
+.mu-zielring.mu-blau { --mu-farbe: #4aa3ff; } .mu-zielring.mu-rot { --mu-farbe: #ff5a40; }
+.mu-zielring.mu-doppelt { box-shadow: 0 0 0 calc(var(--mu-g) * .05) #2a1c08, 0 0 0 calc(var(--mu-g) * .08) var(--mu-farbe), 0 0 calc(var(--mu-g) * .2) var(--mu-farbe), inset 0 0 calc(var(--mu-g) * .1) var(--mu-farbe); }
+.mu-pfeil { --mu-g: 40px; display: inline-block; flex: none; width: var(--mu-g); height: var(--mu-g); background: radial-gradient(circle at 50% 30%, #fff2b0, #f0b43c 40%, #8a5410); clip-path: polygon(0 0, 50% 28%, 100% 0, 50% 100%); filter: drop-shadow(0 0 6px rgba(255,190,70,.8)); }
+.mu-wappen { --mu-g: 44px; position: relative; display: inline-grid; place-items: center; flex: none; width: calc(var(--mu-g) * .86); height: var(--mu-g); color: var(--mu-m1); font: 700 calc(var(--mu-g) * .5)/1 var(--mu-schrift); isolation: isolate; filter: drop-shadow(0 2px 4px rgba(0,0,0,.6)); }
+.mu-wappen::before { content: ""; position: absolute; inset: 0; z-index: -2; background: var(--mu-metall); clip-path: polygon(0 0, 100% 0, 100% 45%, 50% 100%, 0 45%); }
+.mu-wappen::after { content: ""; position: absolute; inset: calc(var(--mu-g) * .08); z-index: -1; background: var(--mu-grund); clip-path: polygon(0 0, 100% 0, 100% 45%, 50% 100%, 0 45%); }
+.mu-hinweispunkt { --mu-g: 14px; display: inline-block; flex: none; width: var(--mu-g); height: var(--mu-g); border-radius: 50%; background: radial-gradient(circle at 40% 35%, #ffd9a0, #ff8a1a 55%, #a04406); box-shadow: 0 0 0 1px #000, 0 0 8px #ff8a1a; }
+
+/* ---------- Trenner & Linien ---------- */
+.mu-trenner { --mu-g: 14px; position: relative; display: block; height: var(--mu-g); min-width: calc(var(--mu-g) * 6); border: 0; margin: 0;
+  background: linear-gradient(90deg, transparent, var(--mu-m2) 12%, var(--mu-m1) 50%, var(--mu-m2) 88%, transparent) center / 100% calc(var(--mu-g) * .12) no-repeat; }
+.mu-trenner::after { content: ""; position: absolute; left: 50%; top: 50%; width: calc(var(--mu-g) * .7); height: calc(var(--mu-g) * .7); translate: -50% -50%; rotate: 45deg; background: var(--mu-metall); box-shadow: 0 0 0 1px #000; }
+.mu-trenner.mu-doppelt { background: linear-gradient(90deg, transparent, var(--mu-m2) 12%, var(--mu-m1) 50%, var(--mu-m2) 88%, transparent) center calc(50% - var(--mu-g) * .2) / 100% calc(var(--mu-g) * .08) no-repeat,
+  linear-gradient(90deg, transparent, var(--mu-m3) 12%, var(--mu-m2) 50%, var(--mu-m3) 88%, transparent) center calc(50% + var(--mu-g) * .2) / 100% calc(var(--mu-g) * .08) no-repeat; }
+.mu-trenner.mu-stein::after { background: var(--mu-stein); border: 1.5px solid var(--mu-m2); }
+.mu-trenner.mu-spitzen::before { content: ""; position: absolute; inset: 0; background: var(--mu-metall);
+  clip-path: polygon(0 50%, 8% 30%, 9% 50%, 8% 70%, 0 50%, 100% 50%, 92% 30%, 91% 50%, 92% 70%, 100% 50%); }
+
+/* ---------- Ornamente ---------- */
+.mu-ornament { --mu-g: 56px; display: inline-block; flex: none; width: var(--mu-g); height: var(--mu-g); background: var(--mu-metall); filter: drop-shadow(0 0 1px #000) drop-shadow(0 2px 3px rgba(0,0,0,.6));
+  -webkit-mask: var(--mu-ecke) center / contain no-repeat; mask: var(--mu-ecke) center / contain no-repeat; }
+.mu-ornament.mu-ecke-or { --mu-ecke: var(--mu-ecke-or); } .mu-ornament.mu-ecke-ul { --mu-ecke: var(--mu-ecke-ul); } .mu-ornament.mu-ecke-ur { --mu-ecke: var(--mu-ecke-ur); }
+.mu-ornament.mu-stern { width: calc(var(--mu-g) * 2); background: radial-gradient(circle at 50% 50%, var(--mu-stein-a) 0 4%, var(--mu-stein-b) 8%, var(--mu-stein-c) 12%, transparent 12.5%), var(--mu-metall);
+  --mu-ecke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M50 2l7 18 41 5-41 5-7 18-7-18-41-5 41-5z'/%3E%3C/svg%3E"); }
+.mu-ornament.mu-spitze { width: calc(var(--mu-g) * 1.4);
+  --mu-ecke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 50'%3E%3Cpath d='M35 6l6 14 27 5-27 5-6 14-6-14-27-5 27-5z'/%3E%3Cpath d='M35 0l2 6h-4zM35 50l2-6h-4z'/%3E%3C/svg%3E"); }

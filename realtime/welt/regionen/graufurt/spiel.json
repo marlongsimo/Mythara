@@ -1,0 +1,176 @@
+{
+ "start": [
+  [
+   3,
+   106.85372680962601
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "wache_west_1",
+   "rolle": "wache",
+   "figur": "wache",
+   "x": 11.8,
+   "y": 104.4
+  },
+  {
+   "id": "wache_west_2",
+   "rolle": "wache",
+   "figur": "wache",
+   "x": 11.8,
+   "y": 110,
+   "links": true
+  },
+  {
+   "id": "kraemer",
+   "rolle": "haendler",
+   "figur": "kraemer",
+   "x": 29.5,
+   "y": 115.6
+  },
+  {
+   "id": "faehrmann",
+   "rolle": "npc",
+   "figur": "wanderer",
+   "x": 62,
+   "y": 113.2,
+   "links": true
+  },
+  {
+   "id": "ausrufer",
+   "rolle": "npc",
+   "figur": "ausrufer",
+   "x": 36,
+   "y": 104,
+   "links": true
+  }
+ ],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "bergfried_tuer",
+   "art": "lesen",
+   "x": 23.5,
+   "y": 100.1,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Bergfried von Graufurt. Von oben sieht man weit über den grauen Fluss."
+   }
+  },
+  {
+   "id": "faehrhaus_tuer",
+   "art": "lesen",
+   "x": 46.7,
+   "y": 110.1,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Fährhaus. Hinter dem Tresen hängen Seile, Haken und eine Karte des Flusses."
+   }
+  },
+  {
+   "id": "faehre",
+   "art": "lesen",
+   "x": 61.6,
+   "y": 113.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Fähre liegt schief an der Anlegestelle. Ihre schwere Eisenkette ist gerissen – so kommt niemand über den Fluss."
+   }
+  },
+  {
+   "id": "turm_ansehen",
+   "art": "lesen",
+   "x": 62,
+   "y": 104,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Drüben am Ostufer steht ein Turm. In seinem obersten Fenster brennt ein grünes Licht, das nicht flackert."
+   }
+  },
+  {
+   "id": "uferweg_sperre",
+   "art": "lesen",
+   "x": 51.5,
+   "y": 17.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein umgestürzter Baum versperrt den Uferweg nach Norden. Hier geht es noch nicht weiter."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 33.5,
+    "y0": 85.4,
+    "x1": 34.3,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 35.7,
+    "y0": 85.4,
+    "x1": 36.5,
+    "y1": 87
+   },
+   {
+    "art": "rechteck",
+    "x0": 13.2,
+    "y0": 105.5,
+    "x1": 14.8,
+    "y1": 106.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 13.2,
+    "y0": 107.7,
+    "x1": 14.8,
+    "y1": 108.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 55.2,
+    "y0": 110.5,
+    "x1": 56.8,
+    "y1": 111.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 55.2,
+    "y0": 112.7,
+    "x1": 56.8,
+    "y1": 113.5
+   },
+   {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 14.6,
+    "x1": 70.41847828071258,
+    "y1": 15.8
+   },
+   {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 0,
+    "x1": 1,
+    "y1": 15.8
+   }
+  ],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 59.5,
+    "y0": 112,
+    "x1": 67.4,
+    "y1": 114.6
+   }
+  ]
+ }
+}

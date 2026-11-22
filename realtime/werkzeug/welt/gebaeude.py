@@ -1,0 +1,737 @@
+"""
+World Pipeline – Gebäude-Baukasten: baut räumliche Gebäude aus Bauplänen (Standard für alle Gebäude der offenen Welt).
+
+  python3 werkzeug/welt/gebaeude.py [kennung …] [--vorschau bild.png]
+
+Liest  welt/bibliothek/bauplaene.json   (ein Bauplan je Gebäude)
+Schreibt  img/welt/gebaeude/raeumlich/<kennung>/<ebene>.webp  und  den Eintrag in welt/bibliothek/objekte.json
+          (Gesamtbild, Fußpunkt, Ebenen mit Tiefe, Kollision mit Türlücken, Innenräume, Türpunkte).
+
+Ansicht (siehe doku/world-pipeline/08-gebaeude-prototyp.md): schräge Parallelprojektion passend zur Kamera der Welt.
+  Bildpunkt = ((x + KX·d)·48, −(d + z)·48) relativ zum Fußpunkt; x nach Osten, d nach Norden, z nach oben, alles in Rechenfeldern.
+  Sichtbar sind Süd- und Ostseiten und alle Dächer. Gebäude werden nie gespiegelt.
+
+Ein Bauplan (Felder; x relativ zum Fuß, d ab der Fußlinie nach Norden):
+  koerper: [{id, x, d, b, t, h, wand: bretter|blockbohlen|stein|putz|fachwerk, betretbar, sockel,
+             dach: {form: sattel|walm|pult|zelt|flach, first: x|d, hoehe, ueber, deckung: ziegel|schindel|stroh, farbe: [r,g,b]}}]
+  tueren:  [{koerper, x (Mitte, relativ zum Fuß), b, h, art: einfach|doppel|tor}]          – immer in der Südwand
+  fenster: [{koerper, wand: sued|ost, x oder d (Mitte), z, b, h, art: kreuz|rund|schmal|glut|gruen, laeden, blumen}]
+  zubehoer:[{art: kamin|schild|laterne|banner|vordach|esse|glocke|kraeuter|muehlrad|fluegel, …}]   (muehlrad: vor der Südwand, {koerper, x, r, b, z})
+  innen:   {boden: bretter|stein, moebel: [{art: tisch|bett|theke|fass|amboss|regal|ofen|altar|bank|kessel|heu|saecke|muehlstein, x, d}]}
+Der Fuß ist die Mitte der Südwand des ersten Baukörpers (dort, wo die Figur „vor“ dem Haus steht).
+"""
+import json, math, os, sys
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter
+from scipy import ndimage
+
+HIER = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HIER)
+import haus3d                      # noqa: E402  Zeichenfläche (Bild), Licht, Malfilter
+from haus import tex as tex_vorlage, faerben  # noqa: E402
+
+REALTIME = os.path.normpath(os.path.join(HIER, '..', '..'))
+WURZEL = os.path.normpath(os.path.join(REALTIME, '..'))
+BIB = os.path.join(REALTIME, 'welt', 'bibliothek')
+ZIEL = os.path.join(WURZEL, 'img', 'welt', 'gebaeude', 'raeumlich')
+F, K = 48, 2
+STIL = os.environ.get('MYTHARA_STIL', 'gemalt')   # Standard seit 21.11.2026: 'gemalt' (Spielstil der Heldenbilder); 'alt' = bisherige Fotostruktur, sonst wie bisher
+KX = 0.32                          # Scherung: so viele Felder nach Osten je Feld Tiefe – macht die Ostwände sichtbar
+TIEFE_SCHATTEN = -1000.0           # Kennwert für die Schattenebene: liegt immer am Boden
+
+# ---------- Texturen: Vorlagen und daraus gerechnete Flächen ----------
+_T = {}
+
+
+def _kachelbar(a, rand=24):
+    n0, n1 = a.shape[:2]
+    v = np.roll(a, (n0 // 2, n1 // 2), axis=(0, 1)); y, x = np.mgrid[0:n0, 0:n1]
+    d = np.minimum(np.minimum(x, n1 - 1 - x), np.minimum(y, n0 - 1 - y)).astype(np.float32)
+    w = np.clip(d / rand, 0, 1)[..., None]
+    return a * w + v * (1 - w)
+
+
+def _gerechnet(name, rng):
+    """Selbst gerechnete Texturen ohne Bildvorlage (frei von Lizenzfragen), kachelbar:
+    stein = Bruchstein, quader = behauene Quader (Burg), schiefer = Schieferdach, holz = Bretter mit Maserung"""
+    if name == 'laub':      # Blattwerk: viele kleine, helle und dunkle Tupfen (neutral grau, wird beim Malen eingefärbt)
+        n = 256; a = np.full((n, n), 0.62, np.float32)
+        for _ in range(1400):
+            x, y, r, g = rng.uniform(0, n), rng.uniform(0, n), rng.uniform(2, 5.5), rng.uniform(0.35, 1.0)
+            yy, xx = np.ogrid[:n, :n]; d = np.minimum(np.abs(xx - x), n - np.abs(xx - x)) ** 2 + np.minimum(np.abs(yy - y), n - np.abs(yy - y)) ** 2
+            a[d < r * r] = g * (0.85 + 0.15 * (1 - d[d < r * r] / (r * r)))
+        return np.repeat(ndimage.gaussian_filter(a, 0.7, mode='wrap')[..., None] * 200, 3, -1)
+    if name == 'fels':      # gewachsener Fels: großflächige, weiche Flecken und feine Risse, ohne Fugen (neutral grau)
+        n = 384; g = lambda s_: ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), s_, mode='wrap')
+        a = 0.72 + 0.16 * g(18) / 0.06 * 0.1 + 0.09 * g(4) / 0.12 * 0.1 + 0.04 * g(1) / 0.3 * 0.1
+        riss = np.abs(g(6)); a = a - 0.18 * (riss < 0.004)
+        return np.repeat(np.clip(a, 0.3, 1.0)[..., None] * 200, 3, -1)
+    if name == 'stoff':     # Gewebe: feines Fadenmuster mit leichtem Rauschen (neutral grau)
+        n = 128; y, x = np.mgrid[0:n, 0:n]
+        a = 0.78 + 0.08 * np.sin(x * math.pi / 2) * np.sign(np.sin(y * math.pi / 4)) + 0.05 * ndimage.gaussian_filter(rng.standard_normal((n, n)), 3, mode='wrap') / 0.05
+        return np.repeat(np.clip(a, 0.5, 1.0)[..., None] * 200, 3, -1)
+    n = 420; G = Image.new('RGB', (3 * n, 3 * n), (64, 60, 54) if name != 'schiefer' else (34, 38, 46)); dr = ImageDraw.Draw(G)
+    def stueck(x, y, b, h, farbe, r):
+        if name == 'stein':   # Bruchstein: unregelmäßiger Umriss aus gestörten Punkten um ein Rechteck
+            pk = []
+            for t in np.linspace(0, 2 * math.pi, 11, endpoint=False):
+                c, si = math.cos(t), math.sin(t); k = 1 / max(abs(c), abs(si)) ** 0.8
+                pk.append((x + b / 2 + c * k * b / 2 * rng.uniform(0.98, 1.1), y + h / 2 + si * k * h / 2 * rng.uniform(0.96, 1.1)))
+            for dx in (-n, 0, n):
+                for dy in (-n, 0, n):
+                    dr.polygon([(n + px + dx, n + py + dy) for px, py in pk], fill=farbe)
+            return
+        for dx in (-n, 0, n):
+            for dy in (-n, 0, n):
+                dr.rounded_rectangle([n + x + dx, n + y + dy, n + x + dx + b, n + y + dy + h], radius=r, fill=farbe)
+    if name in ('stein', 'quader'):
+        y = 0
+        while y < n:
+            h = int(rng.integers(30, 44)) if name == 'quader' else int(rng.integers(20, 36)); x = -int(rng.integers(0, 50))
+            while x < n:
+                b = int(rng.integers(52, 84)) if name == 'quader' else int(rng.integers(26, 66)); g = float(rng.uniform(0.82, 1.12))
+                grund = (182, 174, 158) if name == 'quader' else tuple(int(c) for c in rng.choice([(160, 152, 138), (150, 146, 140), (170, 156, 132), (140, 136, 128)]))
+                stueck(x + 2, y + 2, b - 4, h - 4, tuple(int(c * g) for c in grund), 3 if name == 'quader' else 8)
+                x += b
+            y += h
+    elif name == 'schiefer':
+        y = 0; reihe = 0
+        while y < n:
+            h = 20; x = -(reihe % 2) * 14 - int(rng.integers(0, 8))
+            while x < n:
+                b = int(rng.integers(22, 34)); g = float(rng.uniform(0.82, 1.15))
+                stueck(x + 1, y + 1, b - 2, h - 2, tuple(int(c * g) for c in (86, 96, 116)), 2)
+                x += b
+            y += h; reihe += 1
+    else:   # holz: senkrechte Bretter
+        x = 0
+        while x < n:
+            b = int(rng.integers(34, 48)); g = float(rng.uniform(0.85, 1.1))
+            stueck(x + 1, -10, b - 2, n + 20, tuple(int(c * g) for c in (138, 100, 64)), 1)
+            x += b
+    a = np.asarray(G.crop((n, n, 2 * n, 2 * n))).astype(np.float32)
+    rausch = ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), (6, 0.8) if name == 'holz' else 1.2, mode='wrap')
+    a = a * (1 + 0.09 * rausch / max(1e-6, np.abs(rausch).max()))[..., None]
+    if name in ('stein', 'quader', 'schiefer'):          # Lichtkante oben an jedem Stein: Kanten im Hellwert finden
+        hellw = a.mean(-1); kante = np.clip(hellw - np.roll(hellw, 2, axis=0), 0, 60) / 60
+        a = a * (1 + 0.25 * kante)[..., None]
+    return a
+
+
+GEMALT = {'bretter': 'g_bretter', 'maserung': 'g_balken', 'stein': 'g_stein', 'putz': 'g_putz', 'schindel': 'g_schindel', 'dachziegel': 'g_ziegel', 'blockbohlen': 'g_bohlen'}
+
+
+def _gemalt(name, rng):
+    """Handgemalt wirkende Texturen (Stilprobe): flache Farbflächen mit Verläufen, hellen Kanten, dunklen Fugen, wenig Körnung"""
+    n = 420; a = np.zeros((n, n, 3), np.float32); yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
+    weich = lambda s_: ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), s_, mode='wrap')
+    if name in ('g_bretter', 'g_balken'):
+        grund = np.array((150, 104, 64) if name == 'g_bretter' else (104, 70, 46), np.float32); x = 0
+        while x < n:
+            b = int(rng.integers(38, 52)) if name == 'g_bretter' else n; f = float(rng.uniform(0.86, 1.12))
+            m = (xx >= x) & (xx < min(n, x + b)); t = np.clip((xx - x) / max(1, b), 0, 1)
+            quer = 1.16 - 0.38 * t                                      # links Licht, rechts Schatten
+            faser = 1 + 0.06 * np.sin(yy / 23 + xx * 0.9 + x) * np.sin(yy / 7 + x)
+            a[m] = (grund * f)[None, :] * (quer * faser)[m][:, None]
+            if name == 'g_bretter':
+                a[(xx >= x + b - 4) & (xx < x + b)] = (58, 36, 22)        # Fuge
+                for _ in range(int(rng.integers(0, 2))):                 # Ast
+                    cx, cy = x + rng.uniform(10, b - 12), rng.uniform(0, n); r = rng.uniform(4, 7)
+                    d = (xx - cx) ** 2 + ((yy - cy) / 1.6) ** 2; a[d < r * r] *= 0.62; a[(d >= r * r) & (d < (r + 2.5) ** 2)] *= 0.85
+            x += b
+        if name == 'g_balken':
+            a *= (1 + 0.07 * weich(14) / 0.05 * 0.1)[..., None]
+    elif name in ('g_schindel', 'g_ziegel'):
+        G = Image.new('RGB', (n, n + 40), (52, 40, 32)); d = ImageDraw.Draw(G); hz = 34 if name == 'g_schindel' else 30
+        for reihe, y in enumerate(range(-hz, n + hz, hz)):
+            x = -(reihe % 2) * 20 - int(rng.integers(0, 10))
+            while x < n + 40:
+                b = int(rng.integers(30, 46)) if name == 'g_schindel' else 34; f = float(rng.uniform(0.86, 1.12))
+                for dx in (-n, 0, n):
+                    for k in range(hz + 6):                               # Verlauf: oben im Schatten der Reihe darüber, unten hell
+                        t = k / (hz + 6); c = tuple(int(v * f * (0.66 + 0.5 * t)) for v in (132, 102, 76))
+                        d.rounded_rectangle([x + dx + 1, y + k, x + dx + b - 2, y + k + 2], radius=1, fill=c)
+                    d.rounded_rectangle([x + dx + 1, y, x + dx + b - 2, y + hz + 6], radius=12 if name == 'g_ziegel' else 7, outline=(52, 40, 32), width=2)
+                    d.line([x + dx + 4, y + hz + 4, x + dx + b - 5, y + hz + 4], fill=tuple(int(v * f * 1.25) for v in (132, 102, 76)), width=2)
+                x += b
+        a = np.asarray(G.crop((0, 20, n, n + 20))).astype(np.float32)
+    elif name == 'g_stein':
+        G = Image.new('RGB', (3 * n, 3 * n), (66, 60, 54)); d = ImageDraw.Draw(G); y = 0
+        while y < n:
+            h = int(rng.integers(28, 42)); x = -int(rng.integers(0, 50))
+            while x < n:
+                b = int(rng.integers(42, 80)); f = float(rng.uniform(0.84, 1.12)); grund = np.array(rng.choice([(158, 150, 138), (150, 146, 140), (168, 154, 130), (142, 138, 130)]), np.float32) * f
+                for dx in (-n, 0, n):
+                    for dy in (-n, 0, n):
+                        for k in range(5):                                # weicher Verlauf: von hell oben links zur dunklen Kante
+                            sh = 1.18 - k * 0.1; e = k * 2.2
+                            d.rounded_rectangle([n + x + dx + 2 + e * 0.6, n + y + dy + 2 + e * 0.6, n + x + dx + b - 2 - e * 0.2, n + y + dy + h - 2 - e * 0.2], radius=9, fill=tuple(int(v * (0.72 + k * 0.07) if k < 1 else v * min(sh + 0.1 * k, 1.12)) for v in grund))
+                x += b
+            y += h
+        a = np.asarray(G.crop((n, n, 2 * n, 2 * n))).astype(np.float32)
+    elif name == 'g_putz':
+        a = np.array((224, 208, 172), np.float32)[None, None, :] * (1 + 0.05 * weich(30) / 0.02 * 0.02 + 0.025 * np.sin(xx / 9 + weich(8) * 30)[..., None] * 0 + 0)[..., None] if False else \
+            np.array((224, 208, 172), np.float32)[None, None, :] * (1 + 0.6 * weich(30) + 0.25 * weich(6))[..., None]
+    elif name == 'g_bohlen':
+        hz = 28
+        t = (yy % hz) / hz; rund = 0.62 + 0.55 * np.sin(t * math.pi) ** 0.7
+        a = np.array((146, 100, 62), np.float32)[None, None, :] * rund[..., None] * (1 + 0.05 * np.sin(xx / 17 + (yy // hz) * 3))[..., None]
+        a[(yy % hz) < 2] = (54, 36, 24)
+    return ndimage.gaussian_filter(np.clip(a, 0, 255), (0.7, 0.7, 0))
+
+
+def tex(name):
+    if STIL == 'gemalt' and name in GEMALT:
+        name = GEMALT[name]
+    if name.startswith('g_'):
+        if name not in _T:
+            _T[name] = np.clip(_gemalt(name, np.random.default_rng(sum(map(ord, name)))), 0, 255).astype(np.uint8)
+        return _T[name]
+    return _tex(name)
+
+
+def _tex(name):
+    """Texturen für die Flächen; zusätzlich zu den Vorlagen gerechnete: stroh, schindel, blockbohlen, stein, putz"""
+    if name in _T:
+        return _T[name]
+    rng = np.random.default_rng(sum(map(ord, name)))
+    if name == 'stroh':
+        n = 512
+        r = ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), (7, 0.9), mode='wrap')
+        r = r / np.abs(r).max()
+        lagen = (np.sin(np.arange(n) / n * 2 * math.pi * 10) * 0.5 + 0.5) ** 3
+        hell = 0.82 + 0.28 * r - 0.22 * lagen[:, None]
+        a = np.array([186, 152, 88], np.float32)[None, None, :] * hell[..., None]
+        a = a * (1 + 0.1 * ndimage.gaussian_filter(rng.standard_normal((n, n)), 30, mode='wrap')[..., None] / 0.02 * 0.02)
+    elif name == 'schindel':
+        b = tex_vorlage('bretter').astype(np.float32)
+        b = np.asarray(Image.fromarray(b.astype(np.uint8)).resize((260, 260), Image.LANCZOS)).astype(np.float32)
+        n = 260; a = b.copy(); reihe = 26
+        for j in range(n):
+            k = j // reihe; im = j % reihe
+            a[j] = np.roll(b[j], (k % 2) * 17 + k * 7, axis=0) * (0.72 + 0.34 * im / reihe)
+        fuge = (np.arange(n) % 34 < 2)
+        for j in range(n):
+            k = j // reihe
+            a[j, np.roll(fuge, (k % 2) * 17)] *= 0.55
+    elif name == 'blockbohlen':
+        m = tex_vorlage('maserung').astype(np.float32)
+        m = np.asarray(Image.fromarray(m.astype(np.uint8)).resize((400, 274), Image.LANCZOS)).astype(np.float32)
+        n0 = 260; a = m[:n0, :400].copy(); hoehe = 26
+        prof = np.cos((np.arange(n0) % hoehe / hoehe - 0.5) * math.pi) ** 0.6
+        a = a * (0.55 + 0.6 * prof)[:, None, None]
+        a[np.arange(n0) % hoehe < 2] *= 0.4
+    elif name in ('stein', 'quader', 'schiefer', 'holz', 'laub', 'stoff', 'fels'):
+        a = _gerechnet(name, rng)
+    elif name == 'ziegel':
+        a = np.asarray(Image.open(os.path.join(HIER, 'texturen_frei', 'ziegel.jpg')).convert('RGB').resize((420, 420), Image.LANCZOS)).astype(np.float32)
+    elif name == 'putz':
+        n = 256
+        r = ndimage.gaussian_filter(rng.standard_normal((n, n)).astype(np.float32), 4, mode='wrap'); r /= np.abs(r).max()
+        a = np.array([214, 200, 172], np.float32)[None, None, :] * (0.92 + 0.08 * r)[..., None]
+    else:
+        a = tex_vorlage(name).astype(np.float32)
+    if name in ('stroh', 'putz'):
+        a = _kachelbar(a)
+    _T[name] = np.clip(a, 0, 255).astype(np.uint8)
+    return _T[name]
+
+
+haus3d.tex = tex                    # die Zeichenfläche aus haus3d holt ihre Texturen von hier
+
+DECKUNG = {'ziegel': ('dachziegel', 0.105), 'schindel': ('schindel', 0.2), 'stroh': ('stroh', 0.3), 'schiefer': ('schiefer', 0.11)}
+DECKUNG_MALSTIL = 3.0; WAND_MALSTIL = 2.4    # im Malstil: Schindeln, Bretter und Steine deutlich größer, damit sie im Spielmaßstab lesbar sind
+WAND = {'ziegel': ('ziegel', 0.12, False), 'quader': ('quader', 0.14, False), 'bretter': ('bretter', 0.085, False), 'blockbohlen': ('blockbohlen', 0.16, False), 'stein': ('stein', 0.14, False), 'putz': ('putz', 0.2, False), 'fachwerk': ('putz', 0.2, False)}
+
+
+class P:
+    """Projektion relativ zum Fußpunkt"""
+    def __call__(self, x, d, z):
+        return (x + KX * d) * F, -(d + z) * F
+
+
+PROJ = P()
+if STIL == 'gemalt':
+    DECKUNG = {k: (t, m * DECKUNG_MALSTIL) for k, (t, m) in DECKUNG.items()}
+    WAND = {k: (t, m * WAND_MALSTIL, x) for k, (t, m, x) in WAND.items()}
+
+
+def normale(pts):
+    a, b, c = (np.array(p, dtype=np.float64) for p in pts[:3])
+    # Achsen: x Ost, d Nord, z oben → für das Licht (x Ost, y Süd, z oben) wird d gespiegelt
+    n = np.cross(b - a, c - a)
+    return (n[0], -n[1], n[2])
+
+
+def hell(pts, minimum=0.45):
+    n = np.array(normale(pts), dtype=np.float64)
+    if np.linalg.norm(n) == 0:
+        return 1.0
+    n /= np.linalg.norm(n)
+    if n[2] < 0:
+        n = -n
+    return float(max(minimum, 0.48 + 0.62 * max(0.0, n @ haus3d.LICHT)))
+
+
+# ---------- Dächer ----------
+def dach_flaechen(k):
+    """Die Dachflächen eines Baukörpers, von hinten nach vorn. Rückgabe: Liste (Ecken, Rolle); Rolle: flaeche | giebel_ost | giebel_sued"""
+    D = k.get('dach') or {'form': 'flach'}
+    form, H, ue = D['form'], D.get('hoehe', 1.6), D.get('ueber', 0.35)
+    x0, x1, d0, d1, h = k['x'], k['x'] + k['b'], k['d'], k['d'] + k['t'], k['h']
+    us = ue * 0.8
+    aus = []
+    if form == 'flach':
+        aus.append(([(x0 - 0.1, d0 - 0.1, h + 0.15), (x1 + 0.1, d0 - 0.1, h + 0.15), (x1 + 0.1, d1 + 0.1, h + 0.15), (x0 - 0.1, d1 + 0.1, h + 0.15)], 'flaeche'))
+    elif form == 'sattel' and D.get('first', 'x') == 'x':
+        dm = (d0 + d1) / 2; sl = H / (k['t'] / 2); zE = h - ue * sl
+        aus.append(([(x0 - us, d1 + ue, zE), (x1 + us, d1 + ue, zE), (x1 + us, dm, h + H), (x0 - us, dm, h + H)], 'flaeche'))
+        aus.append(([(x1, d0, h), (x1, d1, h), (x1, dm, h + H)], 'giebel_ost'))
+        aus.append(([(x0 - us, d0 - ue, zE), (x1 + us, d0 - ue, zE), (x1 + us, dm, h + H), (x0 - us, dm, h + H)], 'flaeche'))
+    elif form == 'sattel':          # First nach Norden: Giebel zeigt nach Süden
+        xm = (x0 + x1) / 2; sl = H / (k['b'] / 2); zE = h - us * sl
+        aus.append(([(x0 - us, d0 - ue, zE), (xm, d0 - ue, h + H), (xm, d1 + ue, h + H), (x0 - us, d1 + ue, zE)], 'flaeche'))
+        aus.append(([(xm, d0 - ue, h + H), (x1 + us, d0 - ue, zE), (x1 + us, d1 + ue, zE), (xm, d1 + ue, h + H)], 'flaeche'))
+        aus.append(([(x0, d0, h), (x1, d0, h), (xm, d0, h + H)], 'giebel_sued'))
+    elif form == 'walm':
+        dm = (d0 + d1) / 2; w = min(k['t'] / 2, k['b'] / 2 - 0.2); sl = H / (k['t'] / 2); zE = h - ue * sl
+        fx0, fx1 = x0 + w, x1 - w
+        aus.append(([(x0 - us, d1 + ue, zE), (x1 + us, d1 + ue, zE), (fx1, dm, h + H), (fx0, dm, h + H)], 'flaeche'))
+        aus.append(([(x0 - us, d0 - ue, zE), (fx0, dm, h + H), (x0 - us, d1 + ue, zE)], 'flaeche'))
+        aus.append(([(x1 + us, d1 + ue, zE), (fx1, dm, h + H), (x1 + us, d0 - ue, zE)], 'flaeche'))
+        aus.append(([(x0 - us, d0 - ue, zE), (x1 + us, d0 - ue, zE), (fx1, dm, h + H), (fx0, dm, h + H)], 'flaeche'))
+    elif form == 'pult':            # hoch hinten, fällt nach Süden
+        zv = h; zh = h + H
+        aus.append(([(x1, d0, h), (x1, d1, h), (x1, d1, zh)], 'giebel_ost'))
+        aus.append(([(x0 - us, d0 - ue, zv - ue * H / k['t']), (x1 + us, d0 - ue, zv - ue * H / k['t']), (x1 + us, d1 + ue, zh + ue * H / k['t']), (x0 - us, d1 + ue, zh + ue * H / k['t'])], 'flaeche'))
+    elif form == 'zelt':
+        xm, dm = (x0 + x1) / 2, (d0 + d1) / 2; sp = (xm, dm, h + H)
+        a, b, c, d = (x0 - us, d0 - ue, h - 0.15), (x1 + us, d0 - ue, h - 0.15), (x1 + us, d1 + ue, h - 0.15), (x0 - us, d1 + ue, h - 0.15)
+        aus += [([d, c, sp], 'flaeche'), ([a, d, sp], 'flaeche'), ([c, b, sp], 'flaeche'), ([b, a, sp], 'flaeche')]
+    return aus
+
+
+def dach_oben(k, x, d):
+    """Höhe der Dachfläche über (x, d) – für Kamine"""
+    D = k.get('dach') or {'form': 'flach'}; H = D.get('hoehe', 1.6); h = k['h']
+    if D['form'] == 'sattel' and D.get('first', 'x') == 'x':
+        return h + H - abs(d - (k['d'] + k['t'] / 2)) * H / (k['t'] / 2)
+    if D['form'] == 'sattel':
+        return h + H - abs(x - (k['x'] + k['b'] / 2)) * H / (k['b'] / 2)
+    if D['form'] == 'pult':
+        return h + H * (d - k['d']) / k['t']
+    if D['form'] == 'walm':
+        return h + H - abs(d - (k['d'] + k['t'] / 2)) * H / (k['t'] / 2)
+    return h + 0.2
+
+
+# ---------- Teile ----------
+def quader(B, x0, d0, z0, b, t, h, textur, mass, farbe=None, hell_faktor=1.0, oben=True):
+    """Ein kleiner Quader (Möbel, Kamin): Südseite, Ostseite, Deckel"""
+    x1, d1, z1 = x0 + b, d0 + t, z0 + h
+    B.flaeche(PROJ, [(x0, d0, z0), (x1, d0, z0), (x1, d0, z1), (x0, d0, z1)], textur, 0.95 * hell_faktor, mass, farbe=farbe)
+    B.flaeche(PROJ, [(x1, d0, z0), (x1, d1, z0), (x1, d1, z1), (x1, d0, z1)], textur, 0.7 * hell_faktor, mass, farbe=farbe)
+    if oben:
+        B.flaeche(PROJ, [(x0, d0, z1), (x1, d0, z1), (x1, d1, z1), (x0, d1, z1)], textur, 1.1 * hell_faktor, mass, farbe=farbe)
+
+
+MOEBEL = {
+    'tisch':  lambda B, x, d: (quader(B, x - 0.5, d - 0.4, 0, 1.0, 0.8, 0.72, 'maserung', 0.18), None),
+    'bett':   lambda B, x, d: (quader(B, x - 0.5, d - 0.7, 0, 1.0, 1.4, 0.45, 'bretter', 0.06), B.flaeche(PROJ, [(x - 0.45, d - 0.65, 0.46), (x + 0.45, d - 0.65, 0.46), (x + 0.45, d + 0.65, 0.46), (x - 0.45, d + 0.65, 0.46)], 'putz', 1.0, 0.2, farbe=(170, 70, 60))),
+    'theke':  lambda B, x, d: (quader(B, x - 1.1, d - 0.3, 0, 2.2, 0.6, 1.0, 'maserung', 0.16), None),
+    'fass':   lambda B, x, d: (quader(B, x - 0.3, d - 0.3, 0, 0.6, 0.6, 0.8, 'bretter', 0.05, farbe=(130, 90, 56)), None),
+    'amboss': lambda B, x, d: (quader(B, x - 0.25, d - 0.2, 0, 0.5, 0.4, 0.5, 'maserung', 0.18), quader(B, x - 0.45, d - 0.22, 0.5, 0.9, 0.44, 0.2, 'putz', 0.2, farbe=(70, 72, 80))),
+    'regal':  lambda B, x, d: (quader(B, x - 0.8, d - 0.2, 0, 1.6, 0.4, 1.6, 'maserung', 0.18, hell_faktor=0.85), None),
+    'ofen':   lambda B, x, d: (quader(B, x - 0.6, d - 0.5, 0, 1.2, 1.0, 1.1, 'stein', 0.14), B.vieleck(PROJ, [(x - 0.3, d - 0.51, 0.2), (x + 0.3, d - 0.51, 0.2), (x + 0.3, d - 0.51, 0.7), (x - 0.3, d - 0.51, 0.7)], (255, 150, 60))),
+    'altar':  lambda B, x, d: (quader(B, x - 0.7, d - 0.35, 0, 1.4, 0.7, 0.9, 'stein', 0.14), B.vieleck(PROJ, [(x - 0.08, d, 0.9), (x + 0.08, d, 0.9), (x + 0.08, d, 1.4), (x - 0.08, d, 1.4)], (230, 200, 120))),
+    'bank':   lambda B, x, d: (quader(B, x - 0.9, d - 0.2, 0, 1.8, 0.4, 0.45, 'bretter', 0.06), None),
+    'heu':    lambda B, x, d: (quader(B, x - 0.9, d - 0.5, 0, 1.8, 1.0, 0.7, 'stroh', 0.3), quader(B, x - 0.6, d - 0.35, 0.7, 1.2, 0.8, 0.6, 'stroh', 0.3, hell_faktor=1.08)),
+    'saecke': lambda B, x, d: (quader(B, x - 0.6, d - 0.3, 0, 0.55, 0.55, 0.6, 'putz', 0.2, farbe=(196, 172, 128)), quader(B, x + 0.05, d - 0.25, 0, 0.55, 0.55, 0.55, 'putz', 0.2, farbe=(184, 160, 118))),
+    'muehlstein': lambda B, x, d: (quader(B, x - 0.7, d - 0.7, 0, 1.4, 1.4, 0.5, 'maserung', 0.18), quader(B, x - 0.6, d - 0.6, 0.5, 1.2, 1.2, 0.3, 'stein', 0.14)),
+    'loch':   lambda B, x, d: (B.vieleck(PROJ, [(x + math.cos(t) * 0.95, d + math.sin(t) * 0.7, 0.01) for t in np.linspace(0, 2 * math.pi, 24)], (64, 50, 38)),
+                           B.vieleck(PROJ, [(x + math.cos(t) * 0.8, d + math.sin(t) * 0.58, 0.02) for t in np.linspace(0, 2 * math.pi, 24)], (14, 12, 12)),
+                           B.flaeche(PROJ, [(x - 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.5, 0.03), (x + 0.25, d + 0.1, 0.03), (x - 0.25, d + 0.1, 0.03)], 'maserung', 0.5, 0.2)),
+    'kessel': lambda B, x, d: (quader(B, x - 0.35, d - 0.35, 0, 0.7, 0.7, 0.6, 'putz', 0.2, farbe=(56, 58, 62)), B.vieleck(PROJ, [(x - 0.28, d - 0.28, 0.61), (x + 0.28, d - 0.28, 0.61), (x + 0.28, d + 0.28, 0.61), (x - 0.28, d + 0.28, 0.61)], (96, 150, 70))),
+}
+
+
+def fenster_zeichnen(B, f, k):
+    """Ein Fenster auf der Süd- (Ebene d = k.d) oder Ostwand (Ebene x = k.x + k.b)"""
+    art = f.get('art', 'kreuz'); z0, z1 = f['z'], f['z'] + f['h']
+    if f.get('wand', 'sued') == 'sued':
+        dw = k['d'] - 0.03; a0, a1 = f['x'] - f['b'] / 2, f['x'] + f['b'] / 2
+        q = lambda a, b, z, w: [(a, dw - w, z), (b, dw - w, z), (b, dw - w, w if False else z), (a, dw - w, z)]
+        pt = lambda a, z, w=0.0: (a, dw - w, z)
+    else:
+        xw = k['x'] + k['b'] + 0.03; a0, a1 = f['d'] - f['b'] / 2, f['d'] + f['b'] / 2
+        pt = lambda a, z, w=0.0: (xw + w, a, z)
+    rechteck = lambda a, b, za, zb, w=0.0: [pt(a, za, w), pt(b, za, w), pt(b, zb, w), pt(a, zb, w)]
+    if art == 'rund':
+        m = ((a0 + a1) / 2, (z0 + z1) / 2); r = f['b'] / 2
+        ring = [pt(m[0] + math.cos(t) * (r + 0.12), m[1] + math.sin(t) * (r + 0.12), 0.01) for t in np.linspace(0, 2 * math.pi, 24)]
+        innen = [pt(m[0] + math.cos(t) * r, m[1] + math.sin(t) * r, 0.02) for t in np.linspace(0, 2 * math.pi, 24)]
+        B.vieleck(PROJ, ring, (70, 48, 30)); B.vieleck(PROJ, innen, (236, 176, 86))
+        B.linie(PROJ, [pt(m[0] - r, m[1], 0.03), pt(m[0] + r, m[1], 0.03)], (60, 40, 26), 2.5); B.linie(PROJ, [pt(m[0], m[1] - r, 0.03), pt(m[0], m[1] + r, 0.03)], (60, 40, 26), 2.5)
+        return
+    if f.get('laeden'):
+        for a, b in ((a0 - f['b'] * 0.42, a0 - 0.02), (a1 + 0.02, a1 + f['b'] * 0.42)):
+            B.flaeche(PROJ, rechteck(a, b, z0 - 0.05, z1 + 0.05, 0.01), 'bretter', 0.5, 0.07)
+    B.flaeche(PROJ, rechteck(a0 - 0.1, a1 + 0.1, z0 - 0.1, z1 + 0.1, 0.015), 'maserung', 0.6, 0.2)
+    if art == 'gruen':     # unheimliches grünes Licht (der Turm am Ostufer von Graufurt)
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 60, 44))
+        B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (150, 255, 170))
+        return
+    if art == 'glut':
+        B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (40, 26, 22))
+        B.vieleck(PROJ, rechteck(a0 + 0.06, a1 - 0.06, z0, z0 + (z1 - z0) * 0.45, 0.025), (255, 128, 40))
+        B.vieleck(PROJ, rechteck(a0 + 0.2, a1 - 0.2, z0, z0 + (z1 - z0) * 0.22, 0.03), (255, 220, 130))
+        return
+    B.vieleck(PROJ, rechteck(a0, a1, z0, z1, 0.02), (236, 176, 86))
+    B.vieleck(PROJ, rechteck(a0 + 0.07, a1 - 0.07, z0 + 0.07, z1 - 0.07, 0.025), (255, 216, 132), 150)
+    if art != 'schmal':
+        am = (a0 + a1) / 2; zm = (z0 + z1) / 2
+        B.linie(PROJ, [pt(am, z0, 0.03), pt(am, z1, 0.03)], (60, 40, 26), 3); B.linie(PROJ, [pt(a0, zm, 0.03), pt(a1, zm, 0.03)], (60, 40, 26), 3)
+    if f.get('blumen') and f.get('wand', 'sued') == 'sued':
+        rng = np.random.default_rng(int(f['x'] * 100) % 9973)
+        B.flaeche(PROJ, rechteck(a0 - 0.15, a1 + 0.15, z0 - 0.2, z0 - 0.03, 0.18), 'maserung', 0.8, 0.2)
+        for i in range(8):
+            a = a0 - 0.1 + (a1 - a0 + 0.2) * (i + rng.uniform(0.2, 0.8)) / 8
+            B.vieleck(PROJ, rechteck(a - 0.07, a + 0.07, z0 - 0.03, z0 + 0.1, 0.19), [(214, 70, 64), (236, 196, 72), (222, 222, 230), (80, 120, 50)][i % 4])
+
+
+def tuer_zeichnen(B, t, k, offen):
+    x0, x1, z1, dw = t['x'] - t['b'] / 2, t['x'] + t['b'] / 2, t['h'], k['d']
+    art = t.get('art', 'einfach')
+    B.flaeche(PROJ, [(x0 - 0.14, dw - 0.04, 0), (x1 + 0.14, dw - 0.04, 0), (x1 + 0.14, dw - 0.04, z1 + 0.14), (x0 - 0.14, dw - 0.04, z1 + 0.14)], 'maserung', 0.55, 0.2)
+    if offen:
+        B.vieleck(PROJ, [(x0, dw - 0.05, 0), (x1, dw - 0.05, 0), (x1, dw - 0.05, z1), (x0, dw - 0.05, z1)], (26, 20, 18))
+        if art == 'einfach':
+            B.flaeche(PROJ, [(x0, dw - 0.06, 0), (x0, dw + 0.8, 0), (x0, dw + 0.8, z1), (x0, dw - 0.06, z1)], 'bretter', 0.5, 0.075)
+        else:
+            w = (x1 - x0) / 2
+            B.flaeche(PROJ, [(x0, dw - 0.06, 0), (x0, dw + w * 0.8, 0), (x0, dw + w * 0.8, z1), (x0, dw - 0.06, z1)], 'bretter', 0.5, 0.075)
+            B.flaeche(PROJ, [(x1, dw - 0.06, 0), (x1, dw + w * 0.8, 0), (x1, dw + w * 0.8, z1), (x1, dw - 0.06, z1)], 'bretter', 0.45, 0.075)
+        return
+    B.flaeche(PROJ, [(x0, dw - 0.06, 0), (x1, dw - 0.06, 0), (x1, dw - 0.06, z1), (x0, dw - 0.06, z1)], 'bretter', 0.62, 0.075)
+    if art in ('doppel', 'tor'):
+        B.linie(PROJ, [((x0 + x1) / 2, dw - 0.07, 0), ((x0 + x1) / 2, dw - 0.07, z1)], (30, 22, 18), 3)
+    if art == 'tor':
+        for a, b in ((x0, (x0 + x1) / 2), ((x0 + x1) / 2, x1)):
+            B.linie(PROJ, [(a + 0.12, dw - 0.07, 0.15), (b - 0.12, dw - 0.07, z1 - 0.15)], (70, 50, 32), 5)
+    for z in (0.35, z1 - 0.4):
+        B.vieleck(PROJ, [(x0, dw - 0.07, z), (x1, dw - 0.07, z), (x1, dw - 0.07, z + 0.07), (x0, dw - 0.07, z + 0.07)], (46, 44, 46))
+    B.vieleck(PROJ, [(x1 - 0.2, dw - 0.08, 0.95), (x1 - 0.12, dw - 0.08, 0.95), (x1 - 0.12, dw - 0.08, 1.03), (x1 - 0.2, dw - 0.08, 1.03)], (200, 168, 90))
+
+
+def zubehoer_vorn(B, z, k):
+    """Zubehör an der Südwand eines Baukörpers"""
+    a, dw = z['art'], k['d'] - 0.05
+    if a == 'schild':
+        x, h = z['x'], z.get('z', 1.9); farbe = tuple(z.get('farbe', (196, 150, 60)))
+        B.flaeche(PROJ, [(x - 0.05, dw - 0.6, h + 0.3), (x + 0.05, dw - 0.6, h + 0.3), (x + 0.05, dw, h + 0.3), (x - 0.05, dw, h + 0.3)], 'maserung', 0.6, 0.2)
+        B.flaeche(PROJ, [(x - 0.3, dw - 0.55, h - 0.25), (x + 0.3, dw - 0.55, h - 0.25), (x + 0.3, dw - 0.55, h + 0.25), (x - 0.3, dw - 0.55, h + 0.25)], 'maserung', 0.95, 0.2)
+        ring = [(x + math.cos(t) * 0.15, dw - 0.56, h + math.sin(t) * 0.15) for t in np.linspace(0, 2 * math.pi, 16)]
+        B.vieleck(PROJ, ring, farbe)
+    elif a == 'laterne':
+        x, h = z['x'], z.get('z', 1.6)
+        B.vieleck(PROJ, [(x - 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h - 0.2), (x + 0.12, dw - 0.15, h + 0.12), (x - 0.12, dw - 0.15, h + 0.12)], (40, 38, 40))
+        B.vieleck(PROJ, [(x - 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h - 0.16), (x + 0.08, dw - 0.16, h + 0.08), (x - 0.08, dw - 0.16, h + 0.08)], (255, 214, 120))
+    elif a == 'banner':
+        x, h = z['x'], z.get('z', 2.0); farbe = (46, 70, 142) if STIL == 'gemalt' else tuple(z.get('farbe', (150, 40, 38)))   # Malstil: Königsblau wie Umhang und Schild
+        B.vieleck(PROJ, [(x - 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h), (x + 0.22, dw - 0.02, h - 1.1), (x, dw - 0.02, h - 0.85), (x - 0.22, dw - 0.02, h - 1.1)], farbe)
+        B.vieleck(PROJ, [(x - 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.1), (x + 0.22, dw - 0.03, h - 0.16), (x - 0.22, dw - 0.03, h - 0.16)], (214, 176, 86))
+        ring = [(x + math.cos(t) * 0.09, dw - 0.03, h - 0.45 + math.sin(t) * 0.09) for t in np.linspace(0, 2 * math.pi, 12)]
+        B.vieleck(PROJ, ring, (226, 190, 96))
+    elif a == 'esse':
+        x0, x1, h = z['x0'], z['x1'], z.get('h', 1.7)
+        B.flaeche(PROJ, [(x0 - 0.12, dw, 0), (x1 + 0.12, dw, 0), (x1 + 0.12, dw, h + 0.12), (x0 - 0.12, dw, h + 0.12)], 'maserung', 0.55, 0.2)
+        B.vieleck(PROJ, [(x0, dw - 0.01, 0), (x1, dw - 0.01, 0), (x1, dw - 0.01, h), (x0, dw - 0.01, h)], (34, 26, 24))
+        ex = x0 + (x1 - x0) * 0.32
+        quader(B, ex - 0.55, dw + 0.15, 0, 1.1, 0.6, 0.7, 'stein', 0.14)
+        B.vieleck(PROJ, [(ex - 0.42, dw + 0.15, 0.71), (ex + 0.42, dw + 0.15, 0.71), (ex + 0.42, dw + 0.7, 0.71), (ex - 0.42, dw + 0.7, 0.71)], (255, 140, 50))
+        B.vieleck(PROJ, [(ex - 0.2, dw + 0.3, 0.72), (ex + 0.2, dw + 0.3, 0.72), (ex + 0.2, dw + 0.55, 0.72), (ex - 0.2, dw + 0.55, 0.72)], (255, 230, 150))
+        ax = x0 + (x1 - x0) * 0.78
+        quader(B, ax - 0.2, dw + 0.25, 0, 0.4, 0.3, 0.42, 'maserung', 0.18)
+        quader(B, ax - 0.35, dw + 0.22, 0.42, 0.7, 0.36, 0.16, 'putz', 0.2, farbe=(70, 72, 80))
+    elif a == 'kraeuter':
+        rng = np.random.default_rng(7)
+        for i in range(z.get('anzahl', 6)):
+            x = z['x0'] + (z['x1'] - z['x0']) * (i + 0.5) / z.get('anzahl', 6); h = k['h'] - 0.45
+            B.linie(PROJ, [(x, dw - 0.25, h), (x, dw - 0.25, h - 0.25)], (90, 70, 40), 1.5)
+            farbe = [(96, 130, 60), (130, 110, 60), (150, 90, 120), (110, 140, 70)][i % 4]
+            B.vieleck(PROJ, [(x - 0.1, dw - 0.25, h - 0.25), (x + 0.1, dw - 0.25, h - 0.25), (x + 0.04, dw - 0.25, h - 0.7 - rng.uniform(0, 0.15)), (x - 0.04, dw - 0.25, h - 0.7)], farbe)
+    elif a == 'glocke':
+        x, h = z['x'], z.get('z', k['h'] - 0.9)
+        B.flaeche(PROJ, [(x - 0.55, dw, h - 0.6), (x + 0.55, dw, h - 0.6), (x + 0.55, dw, h + 0.6), (x - 0.55, dw, h + 0.6)], 'maserung', 0.5, 0.2)
+        B.vieleck(PROJ, [(x - 0.45, dw - 0.01, h - 0.5), (x + 0.45, dw - 0.01, h - 0.5), (x + 0.45, dw - 0.01, h + 0.3), (x, dw - 0.01, h + 0.5), (x - 0.45, dw - 0.01, h + 0.3)], (30, 24, 22))
+        B.vieleck(PROJ, [(x - 0.25, dw + 0.05, h - 0.35), (x + 0.25, dw + 0.05, h - 0.35), (x + 0.15, dw + 0.05, h + 0.15), (x - 0.15, dw + 0.05, h + 0.15)], (196, 150, 70))
+        B.vieleck(PROJ, [(x - 0.08, dw + 0.04, h + 0.15), (x + 0.08, dw + 0.04, h + 0.15), (x + 0.08, dw + 0.04, h + 0.3), (x - 0.08, dw + 0.04, h + 0.3)], (120, 90, 50))
+
+
+def fachwerk(B, a, b, hk, hell_faktor):
+    """Dunkle Balken auf eine Putzwand legen: Schwelle, Riegel, Pfosten, Streben in den Endfeldern. a, b: Wandenden (x, d) knapp vor der Wand"""
+    L = math.hypot(b[0] - a[0], b[1] - a[1]); w = (0.22 if STIL == 'gemalt' else 0.15) / L
+    P = lambda t, z: (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, z)
+    zm = hk * 0.52; n = max(2, round(L / 1.25)); hl = 0.5 * hell_faktor
+    for z in (0.32, zm):
+        B.flaeche(PROJ, [P(0, z - 0.07), P(1, z - 0.07), P(1, z + 0.07), P(0, z + 0.07)], 'maserung', hl, 0.2)
+    for i in range(n + 1):
+        t = min(1 - w, max(0, i / n - w / 2))
+        B.flaeche(PROJ, [P(t, 0.3), P(t + w, 0.3), P(t + w, hk), P(t, hk)], 'maserung', hl, 0.2)
+    for ta, tb in ((0, 1 / n), (1 - w, 1 - 1 / n)):                       # Streben im ersten und letzten Feld, oben
+        B.flaeche(PROJ, [P(ta, zm), P(ta + w, zm), P(tb + w, hk - 0.1), P(tb, hk - 0.1)], 'maserung', hl * 0.95, 0.2)
+
+
+def fluegel(B, z, k):
+    """Windmühlenflügel vor der Südwand: Nabe hoch oben, vier Flügel mit Lattengitter und Segeltuch, als X gestellt"""
+    d0 = k['d'] - 0.35; xc, zc, L = z['x'], z.get('z', k['h'] + 0.6), z.get('laenge', 3.2)
+    for w in (math.pi / 4, 3 * math.pi / 4, 5 * math.pi / 4, 7 * math.pi / 4):
+        c, si = math.cos(w), math.sin(w); qx, qz = -si, c
+        B.flaeche(PROJ, [(xc + qx * 0.07, d0, zc + qz * 0.07), (xc - qx * 0.07, d0, zc - qz * 0.07), (xc + c * L - qx * 0.07, d0, zc + si * L - qz * 0.07), (xc + c * L + qx * 0.07, d0, zc + si * L + qz * 0.07)], 'maserung', 0.7, 0.2)
+        a0, a1, br = 0.55, L * 0.97, 0.55                                    # Segel auf einer Seite der Rute
+        ecken = [(xc + c * a0, d0 - 0.01, zc + si * a0), (xc + c * a1, d0 - 0.01, zc + si * a1), (xc + c * a1 + qx * br, d0 - 0.01, zc + si * a1 + qz * br), (xc + c * a0 + qx * br, d0 - 0.01, zc + si * a0 + qz * br)]
+        B.flaeche(PROJ, ecken, 'putz', 0.98, 0.2, farbe=(222, 206, 170))
+        for t in np.linspace(0.08, 0.95, 6):
+            p0 = (xc + c * (a0 + (a1 - a0) * t), d0 - 0.02, zc + si * (a0 + (a1 - a0) * t)); B.linie(PROJ, [p0, (p0[0] + qx * br, d0 - 0.02, p0[2] + qz * br)], (110, 82, 54), 1.6)
+    B.vieleck(PROJ, [(xc + math.cos(t) * 0.22, d0 - 0.03, zc + math.sin(t) * 0.22) for t in np.linspace(0, 2 * math.pi, 16)], (70, 52, 36))
+
+
+def muehlrad(B, z, k):
+    """Ein Wasserrad vor der Südwand (zum Betrachter hin, damit es rund zu sehen ist): Kranz, Schaufeln, Speichen, Nabe.
+    Das untere Stück taucht in den Mühlgraben, der davor durchlaufen muss. z: {x (Mitte), r, b (Breite), z (Höhe der Nabe)}"""
+    d0 = k['d']; xc, r, bb = z['x'], z.get('r', 1.5), z.get('b', 0.7); zc = z.get('z', r - 0.55)
+    di, do = d0 - 0.14, d0 - 0.14 - bb                                     # hintere und vordere Ebene des Rads
+    Q = lambda dd, a, rr: (xc + math.cos(a) * rr, dd, zc + math.sin(a) * rr)
+    W = np.linspace(0, 2 * math.pi, 37)
+    def kranz(dd, hell_faktor):
+        for a0, a1 in zip(W[:-1], W[1:]):
+            B.flaeche(PROJ, [Q(dd, a0, r - 0.18), Q(dd, a1, r - 0.18), Q(dd, a1, r), Q(dd, a0, r)], 'maserung', hell_faktor, 0.2)
+    kranz(di, 0.4)
+    B.flaeche(PROJ, [(xc - 0.12, d0 - 0.01, zc - 0.12), (xc + 0.12, d0 - 0.01, zc - 0.12), (xc + 0.12, do, zc - 0.12), (xc - 0.12, do, zc - 0.12)], 'maserung', 0.35, 0.2)   # Welle
+    for a in sorted(np.linspace(0, 2 * math.pi, 19)[:-1], key=lambda a: math.sin(a)):                # Schaufeln, untere zuerst
+        B.flaeche(PROJ, [Q(di, a, r - 0.44), Q(do, a, r - 0.44), Q(do, a, r + 0.07), Q(di, a, r + 0.07)], 'bretter', 0.5 + 0.4 * max(0, math.sin(a)), 0.085)
+    for a in np.linspace(0, 2 * math.pi, 9)[:-1]:                                                     # Speichen vorn
+        c, si = math.cos(a), math.sin(a); qx, qz = -si * 0.07, c * 0.07; rr = r - 0.16
+        B.flaeche(PROJ, [(xc + qx, do, zc + qz), (xc - qx, do, zc - qz), (xc + c * rr - qx, do, zc + si * rr - qz), (xc + c * rr + qx, do, zc + si * rr + qz)], 'maserung', 0.75, 0.2)
+    kranz(do, 0.85)
+    B.vieleck(PROJ, [Q(do - 0.01, a, 0.22) for a in W], (70, 52, 36))
+    B.vieleck(PROJ, [Q(do - 0.02, a, 0.09) for a in W], (40, 32, 26))
+    rng = np.random.default_rng(5)                                                                   # Gischt, wo es eintaucht
+    for _ in range(34):
+        x = xc + rng.uniform(-r * 0.75, r * 0.75); dd = rng.uniform(do - 0.35, di); rr = rng.uniform(0.07, 0.18)
+        B.vieleck(PROJ, [(x + math.cos(t) * rr, dd, 0.03 + math.sin(t) * rr * 0.6 + rr * 0.5) for t in np.linspace(0, 2 * math.pi, 9)], (236, 244, 248))
+
+
+# ---------- Ein Gebäude ----------
+def rahmen(plan):
+    xs, ys = [], []
+    for k in plan['koerper']:
+        D = k.get('dach') or {}; ue = D.get('ueber', 0.35) + 0.3; H = D.get('hoehe', 1.6) + 1.2
+        for x in (k['x'] - ue, k['x'] + k['b'] + ue + 1.4):
+            for d in (k['d'] - ue - 1.2, k['d'] + k['t'] + ue):
+                for z in (0, k['h'] + H):
+                    X, Y = PROJ(x, d, z); xs.append(X); ys.append(Y)
+    ox, oy = -min(xs) + 6, -min(ys) + 6
+    return ox, oy, int(max(xs) + ox + 6), int(max(ys) + oy + 6)
+
+
+def baue(plan):
+    ox, oy, b, h = rahmen(plan)
+    neu = lambda: haus3d.Bild(b, h, ox, oy)
+    ebenen = []           # (name, Bild, tiefe, rolle, koerper-index, tuer-index)
+    koerper = plan['koerper']; tueren = plan.get('tueren', []); fenster = plan.get('fenster', []); zub = plan.get('zubehoer', [])
+    idx = {k['id']: i for i, k in enumerate(koerper)}
+
+    # Schatten am Boden (eine Ebene für das ganze Gebäude)
+    S = neu(); m = Image.new('L', S.im.size, 0); d = ImageDraw.Draw(m)
+    for k in koerper:
+        hh = k['h'] + (k.get('dach') or {}).get('hoehe', 0) * 0.6
+        pts = [S.p(PROJ(x, dd, 0)) for x, dd in [(k['x'] + 0.2, k['d'] - 0.1), (k['x'] + k['b'] + 0.25 * hh, k['d'] - 0.1), (k['x'] + k['b'] + 0.35 * hh, k['d'] + k['t'] + 0.3 * hh), (k['x'] + 0.3, k['d'] + k['t'] + 0.3 * hh)]]
+        d.polygon(pts, fill=150)
+    m = m.filter(ImageFilter.GaussianBlur(9 * K)); s = Image.new('RGBA', S.im.size, (10, 12, 6, 0)); s.putalpha(m); S.im = Image.alpha_composite(S.im, s)
+    ebenen.append(('schatten', S, TIEFE_SCHATTEN, 'schatten', None, None))
+
+    for i, k in enumerate(koerper):
+        x0, x1, d0, d1, hk, t = k['x'], k['x'] + k['b'], k['d'], k['d'] + k['t'], k['h'], 0.22
+        wt, wm, _ = WAND[k.get('wand', 'bretter')]
+        # innen
+        if k.get('betretbar'):
+            E = neu(); boden = (plan.get('innen') or {}).get('boden', 'bretter')
+            E.flaeche(PROJ, [(x0 + t, d0 + t, 0), (x1 - t, d0 + t, 0), (x1 - t, d1 - t, 0), (x0 + t, d1 - t, 0)], 'stein' if boden == 'stein' else 'bretter', 0.86, 0.14 if boden == 'stein' else 0.06)
+            E.flaeche(PROJ, [(x0 + t, d1 - t, 0), (x1 - t, d1 - t, 0), (x1 - t, d1 - t, hk), (x0 + t, d1 - t, hk)], wt, 0.74, wm, ton=(0.7, 1.0))
+            E.flaeche(PROJ, [(x0 + t, d0 + t, 0), (x0 + t, d1 - t, 0), (x0 + t, d1 - t, hk), (x0 + t, d0 + t, hk)], wt, 0.6, wm, ton=(0.7, 1.0))
+            for ecken in ([(x0, d1 - t, hk), (x1, d1 - t, hk), (x1, d1, hk), (x0, d1, hk)], [(x0, d0, hk), (x0 + t, d0, hk), (x0 + t, d1, hk), (x0, d1, hk)], [(x1 - t, d0, hk), (x1, d0, hk), (x1, d1, hk), (x1 - t, d1, hk)]):
+                E.flaeche(PROJ, ecken, 'maserung', 0.95, 0.2)
+            for mb in sorted([mb for mb in (plan.get('innen') or {}).get('moebel', []) if x0 < mb['x'] < x1 and d0 < mb['d'] < d1], key=lambda mb: -mb['d']):
+                MOEBEL[mb['art']](E, mb['x'], mb['d'])
+            ebenen.append((f'{k["id"]}_innen', E, -d1 + 0.02, 'innen', i, None))
+        # seite: Ostwand mit Fenstern und Giebel
+        Sd = neu()
+        Sd.flaeche(PROJ, [(x1, d0, 0), (x1, d1, 0), (x1, d1, hk), (x1, d0, hk)], wt, 0.72, wm, ton=(0.95, 0.78))
+        for fl, rolle in dach_flaechen(k):
+            if rolle == 'giebel_ost':
+                Sd.flaeche(PROJ, fl, wt, 0.68, wm)
+        for ecke in (d0, d1):
+            Sd.flaeche(PROJ, [(x1 + 0.02, ecke - 0.14, 0), (x1 + 0.02, ecke + 0.14, 0), (x1 + 0.02, ecke + 0.14, hk), (x1 + 0.02, ecke - 0.14, hk)], 'maserung', 0.55, 0.2)
+        if k.get('sockel', True) and k.get('wand') != 'stein':
+            Sd.flaeche(PROJ, [(x1 + 0.02, d0, 0), (x1 + 0.02, d1, 0), (x1 + 0.02, d1, 0.3), (x1 + 0.02, d0, 0.3)], 'stein', 0.6, 0.12)
+        if k.get('wand') == 'fachwerk':
+            fachwerk(Sd, (x1 + 0.015, d0), (x1 + 0.015, d1), hk, 0.8)
+        for f in fenster:
+            if f.get('koerper', koerper[0]['id']) == k['id'] and f.get('wand') == 'ost':
+                fenster_zeichnen(Sd, f, k)
+
+        ebenen.append((f'{k["id"]}_seite', Sd, -d1 + 0.03, 'seite', i, None))
+        # vorn: Südwand, Südgiebel, Fenster, Zubehör an der Wand
+        V = neu()
+        V.flaeche(PROJ, [(x0, d0, 0), (x1, d0, 0), (x1, d0, hk), (x0, d0, hk)], wt, 1.0, wm, ton=(1.0, 0.82))
+        for fl, rolle in dach_flaechen(k):
+            if rolle == 'giebel_sued':
+                V.flaeche(PROJ, fl, wt, 0.96, wm)
+                V.flaeche(PROJ, [(x0, d0 - 0.02, hk - 0.2), (x1, d0 - 0.02, hk - 0.2), (x1, d0 - 0.02, hk + 0.05), (x0, d0 - 0.02, hk + 0.05)], 'maserung', 0.6, 0.2)
+        ep = 0.36 if STIL == 'gemalt' else 0.28                             # Eckpfosten (im Malstil kräftiger)
+        for xe in (x0, x1 - ep):
+            V.flaeche(PROJ, [(xe, d0 - 0.02, 0), (xe + ep, d0 - 0.02, 0), (xe + ep, d0 - 0.02, hk), (xe, d0 - 0.02, hk)], 'maserung', 0.62, 0.2)
+        if k.get('sockel', True) and k.get('wand') != 'stein':
+            V.flaeche(PROJ, [(x0, d0 - 0.025, 0), (x1, d0 - 0.025, 0), (x1, d0 - 0.025, 0.3), (x0, d0 - 0.025, 0.3)], 'stein', 0.75, 0.12)
+        if k.get('wand') != 'stein':
+            V.flaeche(PROJ, [(x0, d0 - 0.02, hk - 0.24), (x1, d0 - 0.02, hk - 0.24), (x1, d0 - 0.02, hk), (x0, d0 - 0.02, hk)], 'maserung', 0.55, 0.2)
+        V.flaeche(PROJ, [(x0, d0, hk), (x1, d0, hk), (x1, d0 + 0.22, hk), (x0, d0 + 0.22, hk)], 'maserung', 1.0, 0.2)
+        if k.get('wand') == 'fachwerk':
+            fachwerk(V, (x0, d0 - 0.015), (x1, d0 - 0.015), hk, 1.0)
+        for f in fenster:
+            if f.get('koerper', koerper[0]['id']) == k['id'] and f.get('wand', 'sued') == 'sued':
+                fenster_zeichnen(V, f, k)
+        for z in zub:
+            if z.get('koerper', koerper[0]['id']) == k['id'] and z['art'] in ('schild', 'laterne', 'banner', 'esse', 'kraeuter', 'glocke'):
+                zubehoer_vorn(V, z, k)
+            if z['art'] == 'muehlrad' and z.get('koerper', koerper[0]['id']) == k['id']:
+                muehlrad(V, z, k)
+
+        ebenen.append((f'{k["id"]}_vorn', V, -d0, 'vorn', i, None))
+        # Türen dieses Körpers (eigene Ebenen, zwei Zustände)
+        for j, tu in enumerate(tueren):
+            if tu.get('koerper', koerper[0]['id']) != k['id']:
+                continue
+            for offen in (False, True):
+                T = neu(); tuer_zeichnen(T, tu, k, offen)
+                ebenen.append((f'tuer{j}_{"offen" if offen else "zu"}', T, -d0 + 0.002, 'tuer_offen' if offen else 'tuer_zu', i, j))
+        # Dach mit Kamin
+        if (k.get('dach') or {}).get('form', 'flach') != 'flach' or k.get('dach'):
+            Dd = neu(); D = k['dach']; deck, dmass = DECKUNG[D.get('deckung', 'ziegel')]
+            for fl, rolle in dach_flaechen(k):
+                if rolle != 'flaeche':
+                    continue
+                if STIL == 'gemalt':     # Malstil: hellere, wärmere Dächer (die Dächer sollen das Bild nicht verdunkeln)
+                    df = tuple(min(255, c * 1.35 + w) for c, w in zip(D.get('farbe', (150, 112, 80)), (14, 6, -6)))
+                    Dd.flaeche(PROJ, fl, deck, hell(fl) * 1.12, dmass, farbe=df)
+                else:
+                    Dd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(D['farbe']) if D.get('farbe') else None)
+                # dunkle Kante an der Traufe und Ortgängen; im Malstil kräftige, hell abgesetzte Randbretter
+                if STIL == 'gemalt':
+                    Dd.linie(PROJ, fl + [fl[0]], (40, 26, 18), 9, 255); Dd.linie(PROJ, fl + [fl[0]], (150, 106, 64), 5.5, 255); Dd.linie(PROJ, fl + [fl[0]], (196, 150, 96), 1.8, 230)
+                else:
+                    Dd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
+            for z in zub:
+                if z['art'] == 'kamin' and z.get('koerper', koerper[0]['id']) == k['id']:
+                    kx, kd, kb = z['x'], z['d'], z.get('b', 0.55); fuss = dach_oben(k, kx, kd) - 0.2
+                    quader(Dd, kx - kb / 2, kd - kb / 2, fuss, kb, kb, max(0.6, k['h'] + D.get('hoehe', 1.6) + 0.6 - fuss), 'stein', 0.12)
+                    Dd.vieleck(PROJ, [(kx - kb / 2, kd - kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx + kb / 2, kd - kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx + kb / 2, kd + kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6), (kx - kb / 2, kd + kb / 2, k['h'] + D.get('hoehe', 1.6) + 0.6)], (36, 32, 30))
+            ebenen.append((f'{k["id"]}_dach', Dd, -d0 + (k.get('dach') or {}).get('ueber', 0.35), 'dach', i, None))
+        # Windmühlenflügel: eigene Ebene vor Wand und Dach
+        for z in zub:
+            if z['art'] == 'fluegel' and z.get('koerper', koerper[0]['id']) == k['id']:
+                Fl = neu(); fluegel(Fl, z, k)
+                ebenen.append((f'{k["id"]}_fluegel', Fl, -d0 + 0.45, 'vordach', i, None))
+        # Vordach vor diesem Körper (eigene Ebene, liegt vor der Wand)
+        for z in zub:
+            if z['art'] == 'vordach' and z.get('koerper', koerper[0]['id']) == k['id']:
+                Vd = neu(); a0, a1, tf, hz = z['x0'], z['x1'], z.get('tiefe', 1.2), z.get('z', 2.1)
+                for xp in (a0 + 0.1, a1 - 0.25):
+                    Vd.flaeche(PROJ, [(xp, d0 - tf, 0), (xp + 0.15, d0 - tf, 0), (xp + 0.15, d0 - tf, hz - 0.1), (xp, d0 - tf, hz - 0.1)], 'maserung', 0.65, 0.2)
+                fl = [(a0 - 0.15, d0 - tf - 0.2, hz - 0.15), (a1 + 0.15, d0 - tf - 0.2, hz - 0.15), (a1 + 0.15, d0, hz + 0.45), (a0 - 0.15, d0, hz + 0.45)]
+                deck, dmass = DECKUNG[z.get('deckung', 'schindel')]
+                Vd.flaeche(PROJ, fl, deck, hell(fl), dmass, farbe=tuple(z['farbe']) if z.get('farbe') else None)
+                if STIL == 'gemalt':
+                    Vd.linie(PROJ, fl + [fl[0]], (40, 26, 18), 8, 255); Vd.linie(PROJ, fl + [fl[0]], (150, 106, 64), 4.5, 255)
+                else:
+                    Vd.linie(PROJ, fl + [fl[0]], (44, 30, 20), 2.2, 200)
+                ebenen.append((f'{k["id"]}_vordach', Vd, -d0 + tf + 0.2, 'vordach', i, None))
+    return ebenen, (ox, oy, b, h)
+
+
+def kollision(plan):
+    """Kollision relativ zum Fuß (y nach Süden positiv): Baukörper als Rechtecke, begehbare nur mit Wänden, Türlücken in der Südwand"""
+    kk = [{'x0': k['x'], 'x1': k['x'] + k['b'], 'y0': -(k['d'] + k['t']), 'y1': -k['d'], 'voll': not k.get('betretbar')} for k in plan['koerper']]
+    kmap = {k['id']: k for k in plan['koerper']}
+    tt = [{'x0': t['x'] - t['b'] / 2, 'x1': t['x'] + t['b'] / 2, 'y': -kmap[t.get('koerper', plan['koerper'][0]['id'])]['d']} for t in plan.get('tueren', [])]
+    return {'art': 'gebaeude', 'koerper': kk, 'tueren': tt}
+
+
+def sichtbarer_bereich(im):
+    """Wo das Gebäude im Bild wirklich etwas zeigt (ohne den weichen Schatten): [x0, y0, x1, y1] in Bildpunkten"""
+    a = np.asarray(im.getchannel('A')) > 200
+    ys, xs = np.where(a)
+    return [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1] if len(xs) else [0, 0, im.width, im.height]
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    vorschau = sys.argv[sys.argv.index('--vorschau') + 1] if '--vorschau' in sys.argv else None
+    if vorschau:
+        args = [a for a in args if a != vorschau]
+    with open(os.path.join(BIB, 'bauplaene.json'), encoding='utf8') as f:
+        plaene = {p['id']: p for p in json.load(f)['bauplaene']}
+    with open(os.path.join(BIB, 'objekte.json'), encoding='utf8') as f:
+        bib = json.load(f)
+    namen = args or list(plaene)
+    bilder = []
+    for n in namen:
+        plan = plaene[n]
+        ebenen, (ox, oy, b, h) = baue(plan)
+        ordner = os.path.join(ZIEL + ('' if STIL == 'gemalt' else '_' + STIL), n); os.makedirs(ordner, exist_ok=True)
+        gesamt = Image.new('RGBA', (b, h), (0, 0, 0, 0)); liste = []
+        for name, B, tiefe, rolle, ki, ti in ebenen:
+            im = B.fertig(malen=rolle not in ('schatten', 'innen'))
+            if rolle == 'schatten':
+                im = B.im.resize((b, h), Image.LANCZOS)
+            if rolle != 'tuer_offen':
+                gesamt.alpha_composite(im)
+            # auf den Inhalt zuschneiden: Das Spiel zeichnet sonst viele große, fast leere Flächen übereinander
+            box = im.getchannel('A').getbbox() or (0, 0, 1, 1)
+            im.crop(box).save(os.path.join(ordner, name + '.webp'), quality=90, method=6)
+            e = {'name': name, 'bild': f'img/welt/gebaeude/raeumlich/{n}/{name}.webp', 'tiefe': round(tiefe, 3), 'rolle': rolle, 'versatz': [box[0], box[1]]}
+            if ki is not None: e['koerper'] = ki
+            if ti is not None: e['tuer'] = ti
+            liste.append(e)
+        gesamt.save(os.path.join(ordner, 'gesamt.webp'), quality=90, method=6)
+        sichtbar = sichtbarer_bereich(gesamt)
+        kmap = {k['id']: k for k in plan['koerper']}
+        tueren = [{'x': round(t['x'], 3), 'y': round(-kmap[t.get('koerper', plan['koerper'][0]['id'])]['d'] + 0.6, 3)} for t in plan.get('tueren', [])]
+        raum = [{'x0': k['x'] + 0.2, 'x1': k['x'] + k['b'] - 0.2, 'y0': -(k['d'] + k['t']) + 0.2, 'y1': -k['d'] - 0.05, 'koerper': i} for i, k in enumerate(plan['koerper']) if k.get('betretbar')]
+        eintrag = {'id': n, 'name': plan['name'], 'kategorie': 'gebaeude', 'bild': f'img/welt/gebaeude/raeumlich/{n}/gesamt.webp', 'groesse': [b, h],
+                   'anker': [round(ox / b, 4), round(oy / h, 4)], 'massstab': 1, 'kollision': kollision(plan), 'tiefe': 'fuss',
+                   'ebenen': liste, 'raum': raum, 'tueren': tueren, 'sichtbar': sichtbar,
+                   'interaktion': ({'art': plan.get('interaktion', 'tuer'), 'dx': tueren[0]['x'], 'dy': tueren[0]['y'], 'radius': 1.4} if tueren else None),
+                   'herkunft': 'erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar' if STIL == 'gemalt' else 'erzeugt von werkzeug/welt/gebaeude.py aus Vorlagen mit UNGEKLÄRTER Lizenz (vermutlich Freepik; doku/world-pipeline/QUELLEN.md)'}
+        bib['objekte'] = [o for o in bib['objekte'] if o['id'] != n] + [eintrag]
+        bilder.append(gesamt)
+        print(f'  {n}: {b} × {h} px, {len(liste)} Ebenen, {len(tueren)} Türen, {len(raum)} begehbare Räume')
+    if STIL == 'gemalt':             # nur der Standardstil schreibt die Bibliothek; andere Stile sind Proben
+        with open(os.path.join(BIB, 'objekte.json'), 'w', encoding='utf8') as f:
+            json.dump(bib, f, ensure_ascii=False, indent=1); f.write('\n')
+    if vorschau:
+        sp = 4; zeilen = [bilder[i:i + sp] for i in range(0, len(bilder), sp)]
+        B = max(sum(i.width for i in z) + 20 * (len(z) + 1) for z in zeilen); Hh = sum(max(i.height for i in z) + 20 for z in zeilen) + 20
+        g = Image.new('RGBA', (B, Hh), (92, 128, 60, 255)); y = 20
+        for z in zeilen:
+            x = 20; zh = max(i.height for i in z)
+            for i in z:
+                g.alpha_composite(i, (x, y + zh - i.height)); x += i.width + 20
+            y += zh + 20
+        g.save(vorschau)
+    print(f'{len(namen)} Gebäude gebaut, Bibliothek ergänzt')
+
+
+if __name__ == '__main__':
+    main()

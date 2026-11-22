@@ -1,0 +1,28 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_haare_kurz",
+  "name": "Kurzes Haar (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "hair",
+  "type": "hair",
+  "rarity": "common",
+  "model": {
+    "file": "blender/equipment/test/test_haare_kurz.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Hair"
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {},
+  "special": {},
+  "visual": {
+    "material": "leder"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

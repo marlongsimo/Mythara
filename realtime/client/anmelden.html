@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mythara: Splitterlande – Anmelden</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../img/favicon.svg">
+  <!-- Dieselbe Gestaltung wie die Anmeldeseite des Würfelspiels (spiel.html): gleiche Bausteine, gleiches Stylesheet. -->
+  <link rel="stylesheet" href="../css/abenteuer.css?v=183">
+  <style>
+    .my-band b { font-weight: inherit; opacity: .8; margin-left: .5em; font-size: .8em; }
+    .mythara .my-schleier { background: linear-gradient(rgba(8,6,12,.45), rgba(8,6,12,.72)); }
+    .my-motto { text-shadow: 0 2px 6px #000, 0 0 14px #000; }
+    .my-klein-wege { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <section class="mythara" id="mythara" aria-labelledby="my-titel">
+      <picture class="my-hg" aria-hidden="true"><img src="../img/echtzeit/waldmark.webp" alt="" fetchpriority="high" decoding="async"></picture>
+      <div class="my-schleier" aria-hidden="true"></div>
+      <div class="my-inhalt">
+        <h1 class="my-logo" id="my-titel"><img src="../img/mythara/logo-neu.webp" srcset="../img/mythara/logo-neu-800.webp 800w, ../img/mythara/logo-neu.webp 2156w" sizes="(max-width: 700px) 92vw, 640px" alt="Mythara"></h1>
+        <p class="my-band">Splitterlande <b>Beta</b></p>
+        <p class="my-motto">Das Echtzeit-Abenteuer. Ein Held, ein Team, eine Welt.</p>
+        <div class="my-wahl">
+          <section class="my-karte" id="my-konto" aria-labelledby="my-konto-titel">
+            <span class="my-wappen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg></span>
+            <h2 id="my-konto-titel">Als Spieler anmelden</h2>
+            <div class="my-konto-inhalt" id="my-konto-inhalt"></div>
+          </section>
+          <span class="my-oder" aria-hidden="true">oder</span>
+          <section class="my-karte" aria-labelledby="my-gast-titel">
+            <span class="my-wappen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3.4"/><circle cx="5" cy="9" r="2.6"/><circle cx="19" cy="9" r="2.6"/><path d="M6 20c0-3.6 2.7-6.500 6-6.500s6 2.900 6 6.500z"/></svg></span>
+            <h2 id="my-gast-titel">Als Gast spielen</h2>
+            <p class="my-gast-text">Ohne Registrierung sofort losspielen. Dein Fortschritt in den Splitterlanden bleibt dann nur in diesem Browser.</p>
+            <button class="my-knopf rot" id="my-gast-start"><span class="my-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10a5 5 0 0 1 4.800 6.400l-1 3.400a2.600 2.600 0 0 1-4.400 1L14.600 16H9.400l-1.800 1.800a2.600 2.600 0 0 1-4.400-1l-1-3.400A5 5 0 0 1 7 7z"/></svg></span>Als Gast spielen</button>
+            <p class="my-klein-wege">Dein Konto aus dem Würfelspiel gilt auch hier. Der Fortschritt der Splitterlande ist eigenständig.</p>
+          </section>
+        </div>
+        <div class="my-registrieren" id="my-registrieren"></div>
+        <p class="my-hinweis"><span aria-hidden="true">i</span>Mit einem Konto bleibt dein Fortschritt in den Splitterlanden dauerhaft gespeichert – spiele auf jedem Gerät weiter.</p>
+        <p class="my-recht"><a href="../">← zur Startseite von Mythara</a> · <a href="https://case-unlocked.de/impressum.html" target="_blank" rel="noopener">Impressum</a> · <a href="https://case-unlocked.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a></p>
+      </div>
+    </section>
+  </main>
+  <script src="../vendor/supabase-js-2.45.4.js"></script>
+  <script src="../verbindung.js"></script>
+  <script>
+  /* Anmeldeseite der Splitterlande. Gleicher Ablauf wie im Würfelspiel (js/mythara.js): dieselben Datenbankfunktionen, derselbe Anmelde-Speicher „mr-rpg-auth“,
+     nur der veröffentlichbare Schlüssel. Nach Anmelden, Registrieren oder „Als Gast“ geht es ins Spiel (index.html im selben Ordner). */
+  (() => {
+    "use strict";
+    const $ = (s) => document.querySelector(s), NAME = /^[A-Za-z0-9_ÄÖÜäöüß]{3,20}$/;
+    const ICO = { person: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>',
+      schloss: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10h14v11H5z"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+      auge: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2" fill="#0d0b08"/></svg>',
+      neu: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.5" r="4"/><path d="M1 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/><path d="M19 8v6M16 11h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>' };
+    const feld = (id, ico, typ, platz, auto, extra = "") => `<label class="my-feld"><span class="my-ico">${ICO[ico]}</span><input type="${typ}" id="${id}" autocomplete="${auto}" placeholder="${platz}" aria-label="${platz}" ${extra}>${typ === "password" ? `<button type="button" class="my-auge" data-auge="${id}" aria-label="Passwort anzeigen"><span class="my-ico">${ICO.auge}</span></button>` : ""}</label>`;
+    const fb = (t, art = "") => { const e = $("#my-konto-fb"); if (e) { e.textContent = t; e.dataset.art = art; } };
+    /* wohin es danach geht: zurück ins Spiel, mit denselben Angaben wie beim Aufruf (nur eigene, harmlose Abfrageteile) */
+    const ziel = () => { const w = new URLSearchParams(location.search).get("weiter") || ""; return "./" + (/^\?[A-Za-z0-9_=&%.\-]*$/.test(w) ? w : ""); };
+    const insSpiel = () => { try { sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.replace(ziel()); };
+    let db = null; const c = window.MR_MULTIPLAYER_CONFIG;
+    try { if (window.supabase && c) db = window.supabase.createClient(c.supabaseUrl, c.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "mr-rpg-auth" } }); } catch (e) { db = null; }
+    const rpc = async (fn, args) => { const { data, error } = await db.rpc(fn, args); if (error) throw new Error(error.message); return data; };
+    const gast = async () => { const { data } = await db.auth.getSession(); if (!data.session) { const r = await db.auth.signInAnonymously(); if (r.error) throw new Error(r.error.message); } };
+    let ansicht = "anmelden";
+
+    async function anmelden() {
+      const name = $("#my-name").value.trim(), pw = $("#my-pw").value; if (!name || !pw) return fb("Bitte Benutzername und Passwort eingeben.", "fehler");
+      const knopf = $("#my-anmelden .my-knopf"); knopf.disabled = true; fb("Anmeldung …");
+      try { await gast(); const adresse = NAME.test(name) ? await rpc("rpg_login_email", { p_handle: name }) : null; if (!adresse) throw new Error("Benutzername oder Passwort ist falsch.");
+        const { error } = await db.auth.signInWithPassword({ email: adresse, password: pw }); if (error) throw new Error(/invalid/i.test(error.message) ? "Benutzername oder Passwort ist falsch." : error.message); insSpiel();
+      } catch (e) { fb(e.message, "fehler"); knopf.disabled = false; }
+    }
+    async function registrieren() {
+      const name = $("#my-reg-name").value.trim(), pw = $("#my-reg-pw").value, pw2 = $("#my-reg-pw2").value;
+      if (!NAME.test(name)) return fb("Der Benutzername braucht 3–20 Zeichen: Buchstaben, Ziffern oder _.", "fehler"); if (pw.length < 8) return fb("Das Passwort braucht mindestens 8 Zeichen.", "fehler"); if (pw !== pw2) return fb("Die beiden Passwörter stimmen nicht überein.", "fehler");
+      const knopf = $("#my-reg-form .my-knopf"); knopf.disabled = true; fb("Konto wird erstellt …");
+      try { await gast(); const p = await rpc("rpg_set_profile", { p_handle: name }); /* reserviert den Namen für diesen Gast */
+        const { error } = await db.auth.updateUser({ email: p.anmeldung, password: pw }); /* aus dem Gast wird ein Konto */
+        if (error) throw new Error(/password/i.test(error.message) && /weak|short|least/i.test(error.message) ? "Dieses Passwort ist zu schwach. Bitte ein längeres wählen." : error.message); insSpiel();
+      } catch (e) { fb(e.message, "fehler"); knopf.disabled = false; }
+    }
+    function zeichnen() {
+      const el = $("#my-konto-inhalt"), reg = $("#my-registrieren"), titel = $("#my-konto-titel");
+      if (!db) { el.innerHTML = `<p class="my-fb" data-art="fehler">Die Anmeldung ist gerade nicht erreichbar. Du kannst als Gast spielen.</p>`; reg.innerHTML = ""; return; }
+      if (ansicht === "registrieren") { titel.textContent = "Konto erstellen";
+        el.innerHTML = `<form class="my-anmelden" id="my-reg-form" novalidate>
+            ${feld("my-reg-name", "person", "text", "Benutzername", "username", 'maxlength="20" autocapitalize="off" spellcheck="false"')}
+            <p class="my-name-info" id="my-name-info">3–20 Zeichen: Buchstaben, Ziffern oder _. Diesen Namen sehen deine Mitspieler.</p>
+            ${feld("my-reg-pw", "schloss", "password", "Passwort (mind. 8 Zeichen)", "new-password", 'minlength="8"')}
+            ${feld("my-reg-pw2", "schloss", "password", "Passwort wiederholen", "new-password")}
+            <p class="my-bald klein">Merke dir dein Passwort gut: Ohne hinterlegte E-Mail kann es nicht zurückgesetzt werden. Das Konto gilt auch für das Würfelspiel.</p>
+            <button class="my-knopf rot" type="submit">Konto erstellen</button>
+            <button class="my-link" type="button" id="my-zur-anmeldung">Ich habe schon ein Konto</button>
+            <p class="my-fb" id="my-konto-fb" role="status"></p></form>`; reg.innerHTML = ""; let takt = null;
+        $("#my-reg-name").addEventListener("input", (e) => { const v = e.target.value.trim(), info = $("#my-name-info"); clearTimeout(takt);
+          if (!v) { info.textContent = "3–20 Zeichen: Buchstaben, Ziffern oder _. Diesen Namen sehen deine Mitspieler."; info.dataset.art = ""; return; }
+          if (!NAME.test(v)) { info.textContent = "Nur 3–20 Zeichen: Buchstaben, Ziffern oder _ (keine Leerzeichen)."; info.dataset.art = "fehler"; return; }
+          info.textContent = "Wird geprüft …"; info.dataset.art = "";
+          takt = setTimeout(async () => { try { await gast(); const r = await rpc("rpg_handle_frei", { p_handle: v }); if ($("#my-reg-name").value.trim() !== v) return;
+              info.textContent = r === "frei" ? `✓ „${v}“ ist frei.` : r === "gesperrt" ? "Dieser Name ist nicht erlaubt." : r === "vergeben" ? `„${v}“ ist schon vergeben.` : "Ungültiger Name."; info.dataset.art = r === "frei" ? "ok" : "fehler";
+            } catch (err) { info.textContent = err.message; info.dataset.art = "fehler"; } }, 350); });
+        $("#my-reg-form").onsubmit = (e) => { e.preventDefault(); registrieren(); }; $("#my-zur-anmeldung").onclick = () => { ansicht = "anmelden"; zeichnen(); };
+      } else { titel.textContent = "Als Spieler anmelden";
+        el.innerHTML = `<form class="my-anmelden" id="my-anmelden" novalidate>
+            ${feld("my-name", "person", "text", "Benutzername", "username", 'maxlength="20" autocapitalize="off" spellcheck="false"')}
+            ${feld("my-pw", "schloss", "password", "Passwort", "current-password")}
+            <button class="my-knopf rot" type="submit">Anmelden</button>
+            <button class="my-link" type="button" id="my-vergessen">Passwort vergessen?</button>
+            <p class="my-fb" id="my-konto-fb" role="status"></p></form>`;
+        reg.innerHTML = `<button class="my-reg-knopf" id="my-reg"><span class="my-ico gross">${ICO.neu}</span>Noch kein Konto? <b>Jetzt registrieren</b><span aria-hidden="true" class="my-pfeil">→</span></button>`;
+        $("#my-anmelden").onsubmit = (e) => { e.preventDefault(); anmelden(); };
+        $("#my-vergessen").onclick = () => fb("Ohne hinterlegte E-Mail lässt sich das Passwort leider nicht zurücksetzen. Eine E-Mail im Konto zu hinterlegen, wird später möglich.");
+        $("#my-reg").onclick = () => { ansicht = "registrieren"; zeichnen(); $("#my-reg-name").focus(); };
+      }
+      el.querySelectorAll("[data-auge]").forEach((b) => { b.onclick = () => { const i = $("#" + b.dataset.auge); i.type = i.type === "password" ? "text" : "password"; }; });
+    }
+    $("#my-gast-start").onclick = insSpiel; zeichnen();
+    /* wer schon angemeldet ist, braucht diese Seite nicht */
+    if (db) db.auth.getSession().then(({ data }) => { if (data.session && !data.session.user.is_anonymous) insSpiel(); }).catch(() => {});
+  })();
+  </script>
+</body>
+</html>

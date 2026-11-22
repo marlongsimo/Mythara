@@ -1,0 +1,36 @@
+{
+ "start": [
+  [
+   112,
+   2.5
+  ],
+  [
+   111,
+   1.5
+  ],
+  [
+   113,
+   1.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "lichtung_ansehen",
+   "art": "lesen",
+   "x": 210,
+   "y": 122,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine weite, stille Lichtung mitten im Wald. Das Gras steht hoch, dazwischen blühen Wildblumen."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ }
+}

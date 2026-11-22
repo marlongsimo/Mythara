@@ -1,0 +1,126 @@
+{
+ "start": [
+  [
+   32,
+   46.5
+  ],
+  [
+   31,
+   46
+  ],
+  [
+   33,
+   46
+  ]
+ ],
+ "figuren": [
+  {
+   "id": "wache_west",
+   "rolle": "wache",
+   "figur": "wache",
+   "x": 29.8,
+   "y": 53.6
+  },
+  {
+   "id": "wache_ost",
+   "rolle": "wache",
+   "figur": "wache",
+   "x": 34.2,
+   "y": 53.6,
+   "links": true
+  },
+  {
+   "id": "kraemer",
+   "rolle": "haendler",
+   "figur": "kraemer",
+   "x": 26,
+   "y": 42.2
+  },
+  {
+   "id": "junge",
+   "rolle": "npc",
+   "figur": "junge",
+   "x": 35.2,
+   "y": 36.2
+  },
+  {
+   "id": "ausrufer",
+   "rolle": "npc",
+   "figur": "ausrufer",
+   "x": 29,
+   "y": 29,
+   "links": true
+  }
+ ],
+ "spawnzonen": [],
+ "interaktionen": [
+  {
+   "id": "halle_tuer",
+   "art": "eingang",
+   "x": 32,
+   "y": 23.1,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.",
+    "tat": "halle",
+    "knopf": "Die Heldenhalle betreten"
+   }
+  },
+  {
+   "id": "taverne_tuer",
+   "art": "lesen",
+   "x": 19.5,
+   "y": 31.6,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.",
+    "tat": "bald",
+    "knopf": "Taverne – kommt noch"
+   }
+  },
+  {
+   "id": "schmiede_tuer",
+   "art": "lesen",
+   "x": 47.14,
+   "y": 31.6,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Schmiede. In der Esse glüht es Tag und Nacht."
+   }
+  },
+  {
+   "id": "brunnen_ansehen",
+   "art": "lesen",
+   "x": 32,
+   "y": 34.8,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Brunnen der Waldmark, mitten im Ring der Mauern."
+   }
+  }
+ ],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 30.5,
+    "y0": 50.4,
+    "x1": 31.3,
+    "y1": 52
+   },
+   {
+    "art": "rechteck",
+    "x0": 32.7,
+    "y0": 50.4,
+    "x1": 33.5,
+    "y1": 52
+   }
+  ],
+  "freigeben": []
+ }
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_kriegsaxt",
+  "name": "Kriegsaxt (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "main_hand",
+  "type": "axe_2h",
+  "rarity": "rare",
+  "model": {
+    "file": "blender/equipment/test/test_kriegsaxt.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "socket": "Hand_Right"
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "damage": [
+      20,
+      30
+    ]
+  },
+  "special": {
+    "zweihaendig": true
+  },
+  "visual": {
+    "material": null
+  },
+  "license": "Eigenbau (Pipeline-Test), frei",
+  "occupies": [
+    "main_hand",
+    "off_hand"
+  ],
+  "stance": "zweihand"
+}

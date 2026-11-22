@@ -1,0 +1,39 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_schulter_stahl",
+  "name": "Stahlschulterplatten (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "shoulders",
+  "type": "shoulder_armor",
+  "rarity": "uncommon",
+  "model": {
+    "file": "blender/equipment/test/test_schulter_stahl.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "parts": [
+      {
+        "object": "test_schulter_stahl_l",
+        "socket": "Shoulder_Left"
+      },
+      {
+        "object": "test_schulter_stahl_r",
+        "socket": "Shoulder_Right"
+      }
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 8
+  },
+  "special": {},
+  "visual": {
+    "material": "stahl"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

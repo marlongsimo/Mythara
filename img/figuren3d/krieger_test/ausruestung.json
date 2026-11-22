@@ -1,0 +1,389 @@
+{
+ "schema": "mythara-ausruestung/1",
+ "skelett": "warrior_base",
+ "seltenheit": {
+  "common": "Gewöhnlich",
+  "uncommon": "Ungewöhnlich",
+  "rare": "Selten",
+  "epic": "Episch",
+  "legendary": "Legendär"
+ },
+ "gegenstaende": [
+  {
+   "id": "test_beinschutz_stahl",
+   "name": "Stahlbeinschienen (TEST ASSET)",
+   "slot": "legs",
+   "type": "leg_armor",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 10
+   },
+   "special": {},
+   "visual": {
+    "material": "stahl"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "legs"
+   ],
+   "ebene": "item:test_beinschutz_stahl",
+   "atlas": "ebenen/item_test_beinschutz_stahl.json"
+  },
+  {
+   "id": "test_brust_schatten",
+   "name": "Schattenpanzer (TEST ASSET)",
+   "slot": "chest",
+   "type": "chest_armor",
+   "rarity": "epic",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 38
+   },
+   "special": {},
+   "visual": {
+    "material": null,
+    "glow": "violett",
+    "trim": "Runenband"
+   },
+   "hides": {
+    "regions": [
+     "rumpf"
+    ],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "chest"
+   ],
+   "ebene": "item:test_brust_schatten",
+   "atlas": "ebenen/item_test_brust_schatten.json"
+  },
+  {
+   "id": "test_brust_splitter",
+   "name": "Panzer der Splitterlande (TEST ASSET)",
+   "slot": "chest",
+   "type": "chest_armor",
+   "rarity": "legendary",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 52
+   },
+   "special": {
+    "leuchten": true
+   },
+   "visual": {
+    "material": null,
+    "glow": "splitterlicht",
+    "trim": "Gold"
+   },
+   "hides": {
+    "regions": [
+     "rumpf"
+    ],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "chest"
+   ],
+   "ebene": "item:test_brust_splitter",
+   "atlas": "ebenen/item_test_brust_splitter.json"
+  },
+  {
+   "id": "test_brust_stahl",
+   "name": "Stahlbrustpanzer (TEST ASSET)",
+   "slot": "chest",
+   "type": "chest_armor",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 25
+   },
+   "special": {},
+   "visual": {
+    "material": "stahl"
+   },
+   "hides": {
+    "regions": [
+     "rumpf"
+    ],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "chest"
+   ],
+   "ebene": "item:test_brust_stahl",
+   "atlas": "ebenen/item_test_brust_stahl.json"
+  },
+  {
+   "id": "test_haare_kurz",
+   "name": "Kurzes Haar (TEST ASSET)",
+   "slot": "hair",
+   "type": "hair",
+   "rarity": "common",
+   "skeleton": "warrior_base",
+   "stats": {},
+   "special": {},
+   "visual": {
+    "material": "leder"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "hair"
+   ],
+   "ebene": "item:test_haare_kurz",
+   "atlas": "ebenen/item_test_haare_kurz.json"
+  },
+  {
+   "id": "test_handschuhe_stahl",
+   "name": "Stahlhandschuhe mit Armschienen (TEST ASSET)",
+   "slot": "hands",
+   "type": "gloves",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 6
+   },
+   "special": {},
+   "visual": {
+    "material": "stahl"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "hands"
+   ],
+   "ebene": "item:test_handschuhe_stahl",
+   "atlas": "ebenen/item_test_handschuhe_stahl.json"
+  },
+  {
+   "id": "test_helm_schatten",
+   "name": "Schattenhelm (TEST ASSET)",
+   "slot": "head",
+   "type": "helmet",
+   "rarity": "epic",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 20
+   },
+   "special": {
+    "glow": "schatten_runen"
+   },
+   "visual": {
+    "material": null,
+    "trim": "hörner",
+    "glow": "violett"
+   },
+   "hides": {
+    "regions": [],
+    "slots": [
+     "hair"
+    ]
+   },
+   "testAsset": true,
+   "occupies": [
+    "head"
+   ],
+   "ebene": "item:test_helm_schatten",
+   "atlas": "ebenen/item_test_helm_schatten.json"
+  },
+  {
+   "id": "test_helm_stahl",
+   "name": "Stahlhelm (TEST ASSET)",
+   "slot": "head",
+   "type": "helmet",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 12
+   },
+   "special": {},
+   "visual": {
+    "material": "stahl"
+   },
+   "hides": {
+    "regions": [],
+    "slots": [
+     "hair"
+    ]
+   },
+   "testAsset": true,
+   "occupies": [
+    "head"
+   ],
+   "ebene": "item:test_helm_stahl",
+   "atlas": "ebenen/item_test_helm_stahl.json"
+  },
+  {
+   "id": "test_schild_rund",
+   "name": "Rundschild (TEST ASSET)",
+   "slot": "off_hand",
+   "type": "shield",
+   "rarity": "common",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 15,
+    "block": 0.25
+   },
+   "special": {},
+   "visual": {
+    "material": null
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "off_hand"
+   ],
+   "ebene": "item:test_schild_rund",
+   "atlas": "ebenen/item_test_schild_rund.json"
+  },
+  {
+   "id": "test_schulter_stahl",
+   "name": "Stahlschulterplatten (TEST ASSET)",
+   "slot": "shoulders",
+   "type": "shoulder_armor",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 8
+   },
+   "special": {},
+   "visual": {
+    "material": "stahl"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "shoulders"
+   ],
+   "ebene": "item:test_schulter_stahl",
+   "atlas": "ebenen/item_test_schulter_stahl.json"
+  },
+  {
+   "id": "test_schwert_kurz",
+   "name": "Kurzschwert (TEST ASSET)",
+   "slot": "main_hand",
+   "type": "sword_1h",
+   "rarity": "common",
+   "skeleton": "warrior_base",
+   "stats": {
+    "damage": [
+     10,
+     15
+    ]
+   },
+   "special": {},
+   "visual": {
+    "material": null
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "main_hand"
+   ],
+   "ebene": "item:test_schwert_kurz",
+   "atlas": "ebenen/item_test_schwert_kurz.json"
+  },
+  {
+   "id": "test_stiefel_schwer",
+   "name": "Schwere Stiefel (TEST ASSET)",
+   "slot": "feet",
+   "type": "boots",
+   "rarity": "common",
+   "skeleton": "warrior_base",
+   "stats": {
+    "armor": 5
+   },
+   "special": {},
+   "visual": {
+    "material": "leder"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "feet"
+   ],
+   "ebene": "item:test_stiefel_schwer",
+   "atlas": "ebenen/item_test_stiefel_schwer.json"
+  },
+  {
+   "id": "test_umhang_rot",
+   "name": "Roter Umhang (TEST ASSET)",
+   "slot": "back",
+   "type": "cape",
+   "rarity": "common",
+   "skeleton": "warrior_base",
+   "stats": {},
+   "special": {},
+   "visual": {
+    "material": "stoff_rot"
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "back"
+   ],
+   "ebene": "item:test_umhang_rot",
+   "atlas": "ebenen/item_test_umhang_rot.json"
+  },
+  {
+   "id": "test_zweihaender",
+   "name": "Zweihänder (TEST ASSET)",
+   "slot": "main_hand",
+   "type": "sword_2h",
+   "rarity": "uncommon",
+   "skeleton": "warrior_base",
+   "stats": {
+    "damage": [
+     18,
+     26
+    ]
+   },
+   "special": {
+    "zweihaendig": true
+   },
+   "visual": {
+    "material": null
+   },
+   "hides": {
+    "regions": [],
+    "slots": []
+   },
+   "testAsset": true,
+   "occupies": [
+    "main_hand",
+    "off_hand"
+   ],
+   "ebene": "item:test_zweihaender",
+   "atlas": "ebenen/item_test_zweihaender.json"
+  }
+ ]
+}

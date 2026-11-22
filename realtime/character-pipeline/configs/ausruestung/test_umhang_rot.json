@@ -1,0 +1,30 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_umhang_rot",
+  "name": "Roter Umhang (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "back",
+  "type": "cape",
+  "rarity": "common",
+  "model": {
+    "file": "blender/equipment/test/test_umhang_rot.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "skinned",
+    "bindTo": [
+      "rumpf"
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {},
+  "special": {},
+  "visual": {
+    "material": "stoff_rot"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

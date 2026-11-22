@@ -1,0 +1,41 @@
+{
+  "schema": "mythara-item/1",
+  "id": "test_schulter_runen",
+  "name": "Runenschulter der Splitterlande (TEST ASSET)",
+  "testAsset": true,
+  "hinweis": "TEST ASSET – Platzhalter zur Entwicklung der Pipeline, keine finale Mythara-Grafik",
+  "slot": "shoulders",
+  "type": "shoulder_armor",
+  "rarity": "rare",
+  "model": {
+    "file": "blender/equipment/test/test_schulter_runen.blend"
+  },
+  "skeleton": "warrior_base",
+  "attach": {
+    "mode": "rigid",
+    "parts": [
+      {
+        "object": "test_schulter_runen_l",
+        "socket": "Shoulder_Left"
+      },
+      {
+        "object": "test_schulter_runen_r",
+        "socket": "Shoulder_Right"
+      }
+    ]
+  },
+  "hides": {
+    "regions": [],
+    "slots": []
+  },
+  "stats": {
+    "armor": 11
+  },
+  "special": {},
+  "visual": {
+    "material": null,
+    "form": "zweilagig",
+    "glow": "splitterlicht"
+  },
+  "license": "Eigenbau (Pipeline-Test), frei"
+}

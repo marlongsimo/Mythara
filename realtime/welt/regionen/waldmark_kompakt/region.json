@@ -1,0 +1,16 @@
+{
+ "id": "waldmark_kompakt",
+ "name": "Waldmark",
+ "untertitel": "Probe: kompaktes Startdorf",
+ "ursprung": [
+  150,
+  150
+ ],
+ "chunks": [
+  2,
+  2
+ ],
+ "biom": "dorf",
+ "stufe": 1,
+ "entwurf": true
+}
