@@ -1,7 +1,8 @@
 /*
  * Mythara – Oberfläche der 3D-Welt (seit 22.11.2026):
  * links oben der Chat (nach oben einklappbar, Nachrichten und Eingabe halb durchsichtig), darunter hochkant die Leiste
- * Angriffsstil · Quests · Rucksack · Ausrüstung · Skills · Freunde · Einstellungen; das Profil oben links entfällt.
+ * Angriffsstil · Quests · Rucksack · Ausrüstung · Skills; das Profil oben links entfällt. Teleport, Spieler online und Einstellungen sitzen links an der Minikarte
+ * (PC: im Halbmond-Dock mit Karte und Sprint, Handy: auf einem Bogen links an der Karte – kartenBogen).
  * An der Minikarte: rechts im Halbkreis die Lebenspunkte und daneben eine gelbe Leiste (Ausdauer – Funktion kommt noch).
  * Die Knöpfe an der Karte selbst (Karte, Sprint) setzt anschluss.ts über rahmen.ts rundeKarte.
  */
@@ -15,22 +16,38 @@ export function leisteAufbauen(knoepfe: LeistenKnopf[]): void {
     el.addEventListener("pointerdown", (e) => e.stopPropagation()); /* Antippen der Leiste lässt den Helden nicht loslaufen */
     el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-l]") as HTMLElement | null; if (b) jetzt.find((k) => k.id === b.dataset.l)?.tat(); }); }
   jetzt = knoepfe;
-  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}" aria-label="${k.name}" title="${k.name}${k.taste ? ` (${k.taste})` : ""}"><span>${RZEICHEN[k.zeichen]}</span>${k.id === "freunde" ? `<em class="zahl" hidden></em>` : ""}</button>`).join("");
-  if (!beobachtet) { beobachtet = true; addEventListener("resize", () => einpassen()); setInterval(einpassen, 500); }
+  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}" aria-label="${k.name}" title="${k.name}${k.taste ? ` (${k.taste})` : ""}"><span>${RZEICHEN[k.zeichen]}</span>${k.id === "freunde" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
+  if (!beobachtet) { beobachtet = true; addEventListener("resize", () => einpassen());  }
   einpassen();
 }
-let jetzt: LeistenKnopf[] = [], beobachtet = false, chatBeobachtet: HTMLElement | null = null;
+let jetzt: LeistenKnopf[] = [], beobachtet = false;
 /** Wie viele sind online (Zahl am Freunde-Knopf) */
-export function leisteOnline(n: number): void { const z = document.querySelector("#ez-leiste .zahl") as HTMLElement | null; if (z) { z.hidden = n < 2; z.textContent = String(n); } }
+export function leisteOnline(n: number): void { zahlOnline = n; document.querySelectorAll<HTMLElement>(".ez-online-zahl").forEach((z) => { z.hidden = n < 2; z.textContent = String(n); }); }
+let zahlOnline = 0;
 
-/** Leiste unter den Chat setzen; reicht die Höhe nicht (Chat offen auf dem Handy), werden die Knöpfe kleiner – und notfalls steht die Leiste rechts neben dem Chat */
+/** Die Leiste steht fest unten links (CSS) – unabhängig vom Chat. Nur auf sehr niedrigen Bildschirmen werden die Knöpfe kleiner, damit sie den offenen Chat nicht berühren. */
 function einpassen(): void {
-  const el = document.getElementById("ez-leiste"), c = document.getElementById("ez-chat"); if (!el) return; const n = Math.max(1, el.childElementCount);
-  if (c && c !== chatBeobachtet && "ResizeObserver" in window) { chatBeobachtet = c; new ResizeObserver(() => einpassen()).observe(c); } /* Chat auf- und zuklappen: Leiste rückt sofort mit */
-  const r = c ? c.getBoundingClientRect() : null, oben = r && r.height ? r.bottom + 10 : 12, frei = innerHeight - oben - 10, abstand = innerHeight < 520 ? 5 : 8;
-  let g = Math.floor(Math.min(innerHeight < 520 ? 40 : 48, (frei - abstand * (n - 1)) / n)), links = "", top = Math.round(oben) + "px";
-  if (g < 30 && r) { g = Math.floor(Math.min(innerHeight < 520 ? 40 : 48, (innerHeight - r.top - 10 - abstand * (n - 1)) / n)); links = Math.round(r.right + 10) + "px"; top = Math.round(r.top) + "px"; }
-  el.style.setProperty("--g", Math.max(26, g) + "px"); el.style.setProperty("--a", abstand + "px"); el.style.top = top; el.style.left = links; }
+  const el = document.getElementById("ez-leiste"); if (!el) return; const n = Math.max(1, el.childElementCount), klein = innerHeight < 520;
+  const chatOffen = klein ? 175 : 215, abstand = klein ? 5 : 8, frei = innerHeight - chatOffen - 10; /* so hoch wird der Chat aufgeklappt (oben links) */
+  const g = Math.max(28, Math.min(klein ? 38 : 48, Math.floor((frei - abstand * (n - 1)) / n)));
+  el.style.setProperty("--g", g + "px"); el.style.setProperty("--a", abstand + "px"); el.style.top = ""; el.style.left = ""; }
+
+/* ───────── Handy: Knöpfe auf einem Bogen links an der Minikarte ───────── */
+let bogenJetzt: LeistenKnopf[] = [];
+/** Knöpfe links an der runden Karte entlang ihres Rings (leere Liste: weg) */
+export function kartenBogen(knoepfe: LeistenKnopf[]): void {
+  const rahmen = document.getElementById("ez-kartenrahmen"); if (!rahmen) return; let el = document.getElementById("ez-kbogen");
+  if (!knoepfe.length) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement("div"); el.id = "ez-kbogen"; rahmen.appendChild(el); el.addEventListener("pointerdown", (e) => e.stopPropagation());
+    el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-l]") as HTMLElement | null; if (b) bogenJetzt.find((k) => k.id === b.dataset.l)?.tat(); });
+    const rund = rahmen.querySelector(".rund") as HTMLElement | null; if (rund && "ResizeObserver" in window) new ResizeObserver(() => bogenLegen()).observe(rund); addEventListener("resize", () => bogenLegen()); }
+  bogenJetzt = knoepfe;
+  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}" aria-label="${k.name}" title="${k.name}"><span>${RZEICHEN[k.zeichen]}</span>${k.id === "spieler" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
+  leisteOnline(zahlOnline); bogenLegen(); }
+function bogenLegen(): void {
+  const rahmen = document.getElementById("ez-kartenrahmen"), rund = rahmen && rahmen.querySelector(".rund") as HTMLElement | null, el = document.getElementById("ez-kbogen"); if (!rund || !el) return;
+  const R = rund.offsetWidth / 2; if (!R) return; const g = Math.round(Math.max(30, Math.min(40, R * 0.6))), rb = R * 1.09 + g / 2 + 5, cx = rund.offsetLeft + R, cy = rund.offsetTop + R, n = el.children.length, schritt = (g + 7) / rb;
+  [...el.children].forEach((b, i) => { const w = Math.PI + (i - (n - 1) / 2) * schritt; Object.assign((b as HTMLElement).style, { width: g + "px", height: g + "px", left: (cx + rb * Math.cos(w) - g / 2) + "px", top: (cy + rb * Math.sin(w) - g / 2) + "px" }); }); }
 
 /* ───────── Lebenspunkte und gelbe Leiste im Halbkreis um die Minikarte ───────── */
 let boegen: SVGSVGElement | null = null, lebenText = "";

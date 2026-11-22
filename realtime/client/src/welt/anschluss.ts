@@ -16,7 +16,7 @@ import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, RKnopf } from "../rahmen";
-import { leisteAufbauen, leisteOnline, boegenAufbauen } from "../welt3d/oberflaeche";
+import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen } from "../welt3d/oberflaeche";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
@@ -207,10 +207,18 @@ export function menueEinrichten(s: WeltKern) {
 }
 /** 3D-Welt: Chat links oben, darunter die Leiste (Angriffsstil, Quests, Rucksack, Ausrüstung, Skills, Freunde, Einstellungen);
     an der Minikarte nur Karte und Sprint, rechts um die Karte Lebenspunkte und die gelbe Leiste. Teleport, Aussehen, Weltkarte und Quests bleiben auf ihren Tasten. */
+let karteMedien = false;
 function menue3D(s: WeltKern) {
     const rucksack = () => tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)), ausruestung = () => tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true));
     const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", tat: () => chatSystem("Sprinten kommt bald.") }];
-    rundeKarte(zoomJetzt, knoepfe); boegenAufbauen(); tastenFuellen(s.held);
+    /* links an der Karte: Teleport, Spieler online, Einstellungen – am PC im Halbmond-Dock mit Karte und Sprint, am Handy auf einem Bogen links an der Karte */
+    const links = [{ id: "teleport", name: "Teleport", zeichen: "teleport" as const, taste: "T", tat: () => teleport(s) }, { id: "spieler", name: "Spieler", zeichen: "spieler" as const, taste: "P", tat: () => tafel(s, spielerListe) },
+      { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen" as const, tat: () => oeffne("menue", s) }];
+    const karteKnoepfe = () => { if (GROSS.matches) { rundeKarte(zoomJetzt, [...knoepfe, ...links]); kartenBogen([]);
+        const sp = document.querySelector('#ez-kartenrahmen .rknoepfe button[aria-label="Spieler"]'); if (sp && !sp.querySelector(".zahl")) { const z = document.createElement("em"); z.className = "zahl ez-online-zahl"; z.hidden = true; sp.appendChild(z); } }
+      else { rundeKarte(zoomJetzt, knoepfe); kartenBogen(links); } onlineZeigen(); };
+    karteKnoepfe(); if (!karteMedien) { karteMedien = true; GROSS.addEventListener("change", karteKnoepfe); }
+    boegenAufbauen(); tastenFuellen(s.held);
     const tasten: Record<string, () => void> = { b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe), t: () => teleport(s), h: () => aussehenAendern(s) };
     if (torOffen()) tasten.m = () => oeffne("welt", s); else tasten.m = () => karteZeigen(s);
     if (freigabe("kampagnen")) tasten.l = () => tafel(s, questTafel);
@@ -220,9 +228,7 @@ function menue3D(s: WeltKern) {
       { id: "quests", name: "Quests", zeichen: "quest", tat: () => tafel(s, (zu) => baldTafel("Quests", "quest", zu)) },
       { id: "rucksack", name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack },
       { id: "ausruestung", name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung },
-      { id: "skills", name: "Skills", zeichen: "skills", tat: () => tafel(s, (zu) => baldTafel("Skills", "skills", zu)) },
-      { id: "freunde", name: "Freunde", zeichen: "spieler", taste: "P", tat: () => tafel(s, spielerListe) },
-      { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen", tat: () => oeffne("menue", s) }]);
+      { id: "skills", name: "Skills", zeichen: "skills", tat: () => tafel(s, (zu) => baldTafel("Skills", "skills", zu)) }]);
     onlineZeigen();
     if (!new URLSearchParams(location.search).has("server")) wecken();
 }
