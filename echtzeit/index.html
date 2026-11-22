@@ -556,7 +556,8 @@
     /* Gespräch wie die klassische Chatbox (OSRS): Pergament, Kopfbild links (Figur) oder rechts (du), Name dunkelrot, Text schwarz, „fortfahren“ blau */
     #ez-gespraech { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(540px, calc(100vw - 20px)); z-index: 12; cursor: pointer; user-select: none;
       border: 3px solid #3d3121; border-radius: 4px; box-shadow: 0 0 0 2px #7a6644, 0 6px 22px rgba(0,0,0,.6); background: #d8c9a0 linear-gradient(180deg, #e3d6b0, #cdbd92); font: 15px "Trebuchet MS", Verdana, sans-serif; color: #000; }
-    #ez-gespraech.imchat { transform: none; bottom: auto; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; overflow: hidden; } #ez-gespraech.imchat .kasten { min-height: 0; flex: 1; } #ez-gespraech.imchat .antworten { max-height: calc(100% - 30px); overflow: auto; }
+    #ez-gespraech[hidden] { display: none !important; }
+    #ez-gespraech.imchat { transform: none; bottom: auto; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; } #ez-gespraech.imchat .kasten { min-height: 0; flex: 1; }
     #ez-gespraech .kasten { display: flex; align-items: center; gap: 10px; min-height: 128px; padding: 10px 14px; box-sizing: border-box; }
     #ez-gespraech.ich .kasten { flex-direction: row-reverse; }
     #ez-gespraech .rahmen { flex: 0 0 96px; height: 96px; display: grid; place-items: center; }
@@ -625,6 +626,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwsfmzt3"></script>
+  <script src="spiel.js?v=mwsgdoxw"></script>
 </body>
 </html>

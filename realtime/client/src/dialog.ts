@@ -31,8 +31,8 @@ function waehlen(id: string): void { const a = wahl && wahl.find((x) => x.id ===
 /** Wie die klassische Chatbox: das Gespräch liegt genau über dem Chatfenster (eingeklappt: an seiner Stelle in voller Höhe); ohne Chat unten in der Mitte */
 function lage(): void { const d = document.getElementById("ez-gespraech"), c = document.querySelector<HTMLElement>(".ez-chat"); if (!d) return;
   const r = c && c.offsetWidth ? c.getBoundingClientRect() : null;
-  if (!r || r.width < 200) { d.classList.remove("imchat"); Object.assign(d.style, { left: "", top: "", width: "", height: "" }); return; }
-  d.classList.add("imchat"); Object.assign(d.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: Math.max(r.height, 140) + "px" }); }
+  if (!r || r.width < 200) { d.classList.remove("imchat"); Object.assign(d.style, { left: "", top: "", width: "", minHeight: "" }); return; }
+  d.classList.add("imchat"); Object.assign(d.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", minHeight: Math.max(r.height, 140) + "px" }); } /* mindestens so hoch wie der Chat, bei langen Antworten höher */
 addEventListener("resize", lage);
 function zeichnen(): void {
   const d = kasten(), x = `<button type="button" class="zu" data-a="__zu" aria-label="Gespräch beenden">✕</button>`;

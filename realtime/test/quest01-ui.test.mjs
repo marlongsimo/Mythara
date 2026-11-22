@@ -51,7 +51,7 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30));
   await anna.goto(B + S); await bereit(anna).catch(() => {}); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   /* Gespräch wie die klassische Chatbox: eine Aussage nach der anderen, dann die Antworten */
-  const offen = (p) => p.evaluate(() => { const d = document.getElementById("ez-gespraech"); return d && !d.hidden ? { art: d.className, name: (d.querySelector(".name") || {}).textContent || "", text: (d.querySelector(".text") || {}).textContent || "", bild: !!(d.querySelector(".bild") || {}).src, antworten: [...d.querySelectorAll(".antworten button")].map((b) => b.dataset.a) } : null; });
+  const offen = (p) => p.evaluate(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0 ? { passt: [...d.querySelectorAll(".antworten button")].every((b) => b.getBoundingClientRect().bottom <= d.getBoundingClientRect().bottom + 0.5), art: d.className.split(" ")[0], name: (d.querySelector(".name") || {}).textContent || "", text: (d.querySelector(".text") || {}).textContent || "", bild: !!(d.querySelector(".bild") || {}).src, antworten: [...d.querySelectorAll(".antworten button")].map((b) => b.dataset.a) } : null; });
   const bisWahl = async (p, max = 12) => { const gesehen = []; for (let i = 0; i < max; i++) { const o = await offen(p); if (!o) return { gesehen, o: null }; if (o.art === "wahl") return { gesehen, o }; gesehen.push(o); await p.keyboard.press(" "); await p.waitForTimeout(250); } return { gesehen, o: await offen(p) }; };
   /* Jori läuft auf Anna zu und spricht sie an (nur sie) */
   await anna.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && !d.hidden; }, null, { timeout: 60000 }).catch(() => {});
@@ -60,7 +60,7 @@ try {
     check(L.dx < 2 && L.dy < 2 && L.dw < 2, `Das Gespräch liegt genau über dem Chatfenster (${JSON.stringify(L)})`); }
   check(o0 && o0.art === "npc" && o0.name === "Jori" && /Bürgermeister braucht deine Hilfe/.test(o0.text) && o0.bild, `Jori läuft auf Anna zu und spricht sie an – mit Kopfbild links (${JSON.stringify(o0)})`);
   { const { gesehen, o } = await bisWahl(anna); if (BILD) await anna.screenshot({ path: BILD + "quest-wahl.png" });
-    check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen"), `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
+    check(gesehen.some((g) => g.art === "ich" && g.name === "Du") && o && o.antworten.includes("annehmen") && o.passt, `Aussage für Aussage (${gesehen.map((g) => g.name).join(" → ")}), dann „Wähle eine Antwort“: ${o && o.antworten.join(", ")}`); }
   await anna.click('#ez-gespraech [data-a="annehmen"]'); await anna.waitForTimeout(800);
   { const a = await offen(anna); check(a && a.art === "ich", "Die gewählte Antwort sagt der eigene Held (Bildnis rechts)"); if (BILD) await anna.screenshot({ path: BILD + "quest-ich.png" }); }
   await anna.keyboard.press(" "); await anna.waitForTimeout(500);
