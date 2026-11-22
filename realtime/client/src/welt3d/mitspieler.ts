@@ -14,7 +14,7 @@ interface Figur { f: FigurLeinwand; nm: HTMLElement; lb: HTMLElement; d: Fremder
 
 /** Ein HTML-Schild, das einem Punkt der 3D-Welt folgt */
 export function schildAn(el: HTMLElement, m: Welt3D, x: number, y: number, z: number): boolean {
-  const p = m.bildschirm(x, y, z); el.hidden = !p; if (p) el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; return Boolean(p); }
+  if (el.parentElement !== m.schilder) m.schilder.appendChild(el); const p = m.aufEbene(x, y, z); el.hidden = !p; if (p) el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; return Boolean(p); }
 /** Sprechblase über einem Punkt der 3D-Welt (wo: Weltfelder und Höhe; null = weg) */
 export function blase3d(m: Welt3D, wo: () => { x: number; y: number; z: number } | null, text: string): void {
   const t = text.length > 60 ? text.slice(0, 58) + "…" : text, el = document.createElement("div"); el.className = "ez-blase3d"; el.textContent = t; document.body.appendChild(el);

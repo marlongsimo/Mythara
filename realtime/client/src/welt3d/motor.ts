@@ -60,7 +60,7 @@ export class Welt3D {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
     this.r.setPixelRatio(Math.min(devicePixelRatio, HANDY ? 1.5 : 2)); this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
     this.r.toneMapping = THREE.ACESFilmicToneMapping; this.r.toneMappingExposure = 1.12;   /* filmisch und warm wie die Heldenbilder */
-    behaelter.appendChild(this.r.domElement); this.groesse(); addEventListener("resize", () => this.groesse());
+    behaelter.appendChild(this.r.domElement); behaelter.appendChild(this.schilder); this.groesse(); addEventListener("resize", () => this.groesse());
     this.szene.fog = new THREE.Fog(0xb9cfe0, 60, 150); this.szene.add(this.himmelLicht, this.licht, this.licht.target, this.fackel);
     /* feste Zahl Feuerlichter (keine Neuübersetzung der Shader): sie wandern zu den nächsten Feuern */
     for (let i = 0; i < (HANDY ? 3 : 6); i++) { const l = new THREE.PointLight(0xff9a40, 0, 13, 1.6); this.feuerLichter.push(l); this.szene.add(l); }
@@ -210,6 +210,10 @@ export class Welt3D {
     const t = ray.intersectObjects([...this.st.values()].map((s) => s.boden).filter((m): m is THREE.Mesh => Boolean(m)), false)[0]; return t ? { x: t.point.x, z: t.point.z } : null; }
   /** Weltpunkt → Bildschirmpunkt (CSS-Pixel) oder null, wenn hinter der Kamera */
   bildschirm(x: number, y: number, z: number): { x: number; y: number } | null { const v = new THREE.Vector3(x, y, z).project(this.kamera); if (v.z > 1) return null; const b = this.r.domElement.getBoundingClientRect(); return { x: b.left + (v.x + 1) / 2 * b.width, y: b.top + (1 - v.y) / 2 * b.height }; }
+  /** Ebene für Namen, Balken, Zahlen und Blasen – liegt genau über dem 3D-Bild und bewegt sich mit ihm (Safari verschiebt im Querformat sonst die Seite gegen das Bild) */
+  readonly schilder: HTMLElement = (() => { const e = document.createElement("div"); e.className = "ez-ebene3d"; return e; })();
+  /** Weltpunkt → Punkt in der Ebene (Bildpunkte des 3D-Bilds) oder null */
+  aufEbene(x: number, y: number, z: number): { x: number; y: number } | null { const v = new THREE.Vector3(x, y, z).project(this.kamera); if (v.z > 1) return null; const el = this.r.domElement; return { x: (v.x + 1) / 2 * el.clientWidth, y: (1 - v.y) / 2 * el.clientHeight }; }
   eingaben() {
     const el = this.r.domElement; let dreht = false, lx = 0, ly = 0; const finger = new Map<number, { x: number; y: number }>(); let pinch = 0, winkel = 0;
     el.addEventListener("contextmenu", (e) => e.preventDefault());

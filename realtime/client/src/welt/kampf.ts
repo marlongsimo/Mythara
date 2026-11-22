@@ -36,7 +36,14 @@ export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number };
 export interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
 
 /** Die Kampfsteuerung mit den Bildern und Namen des Helden füllen – auch außerhalb eines Kampfgebiets (dort gedimmt) */
-export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[held]; if (!D) return; const sym = SYMBOL[held] || {};
+/** Kampfregeln v1 (eigener Held): überall nur „Angreifen“ mit dem Symbol der angelegten Waffe – keine alten Fähigkeitstasten, kein Waffenwechsel */
+let v1Hoerer = false;
+export function v1Tasten(): void { if (!aktiverHeld()) return; document.body.classList.add("kampf-v1");
+  const W = inventar().angelegt.waffe ? GEGENSTAENDE[inventar().angelegt.waffe!] : null, art = W && W.waffe ? W.waffe.art : "nah", an = document.querySelector('[data-taste="a"]') as HTMLElement | null;
+  if (an) { const img = an.querySelector("img") as HTMLImageElement | null, src = symbolBild(art === "fern" ? "symbole/armbrust" : art === "magie" ? "symbole/stab" : "symbole/schwert"), k = an.querySelector("small") as HTMLElement | null;
+    if (img && img.dataset.src !== src) { img.dataset.src = src; img.src = src; } if (k) k.textContent = "Angreifen"; an.title = "Angreifen (1)"; }
+  if (!v1Hoerer) { v1Hoerer = true; window.addEventListener("ez-inventar", () => v1Tasten()); } }
+export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[held]; if (!D) return; const sym = SYMBOL[held] || {}; if (aktiverHeld()) { v1Tasten(); return; }
   for (const t of ["q", "e", "r"] as const) { const el = document.querySelector(`[data-taste="${t}"]`) as HTMLElement | null; if (!el) continue; const def = D[t]; (el.querySelector("small") as HTMLElement).textContent = def.name; el.title = `${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[t] || "sterne"); }
   const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
@@ -91,7 +98,7 @@ export class WeltKampf {
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
-    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } document.body.classList.remove("weltkampf", "kampf-v1"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
+    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
   /** Wie viele lebende Gegner in der Nähe des eigenen Helden sind (für das Kampf-Banner) */
   gegnerNah(felder = 8): number { const z = this.z; if (!z || !this.eingetreten) return 0; const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return 0;

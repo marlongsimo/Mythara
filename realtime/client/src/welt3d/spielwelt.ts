@@ -21,7 +21,7 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
 import { serverZusatz } from "../gruppe";
-import { Mitspieler3D, blase3d } from "./mitspieler";
+import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
@@ -55,7 +55,7 @@ export class Spielwelt3D implements WeltKern {
     await this.motor.start(behaelter, this.ort.x, this.ort.y);
     const h = aktiverHeld(); this.figur = new FigurLeinwand(this.motor.szene, MODUL[this.held] || "held.krieger", HOEHE, h ? { ...h, ich: true } : null, angelegteEbenen);
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffe9a8, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.motor.szene.add(this.marke);
-    this.schild.className = "ez-name3d eigen"; document.body.appendChild(this.schild);
+    this.schild.className = "ez-name3d eigen"; this.motor.schilder.appendChild(this.schild);
     this.blende.id = "ez-blende3d"; document.body.appendChild(this.blende);
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
@@ -189,8 +189,7 @@ export class Spielwelt3D implements WeltKern {
     this.umsehen(); this.regionZeigen();
     { const r = this.regionBei(o.x, o.y), pk = $("#ez-karte-punkt"); if (r && pk) { pk.style.left = (100 * (o.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%"; pk.style.top = (100 * (o.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%"; } }
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
-    { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; const p = this.motor.bildschirm(o.x, y + HOEHE + 0.35, o.y);
-      this.schild.hidden = !p; if (p) this.schild.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; }
+    { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, this.motor, o.x, y + HOEHE + 0.35, o.y); }
     anschluss3D.schritt(this, dt);
     { const dx = this.ort.x - this.vorher.x, dy = this.ort.y - this.vorher.y; this.laeuftFremd = Math.hypot(dx, dy) > 0.4 * dt; if (this.laeuftFremd && !this.pfad.length && Math.hypot(this.rx, this.ry) < 0.05) this.figur.blick(dx, dy); } /* vom Server bewegt: Blick in Laufrichtung */
   }

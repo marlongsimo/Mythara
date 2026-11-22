@@ -16,6 +16,8 @@ const BILD = process.env.BILD || '';
   check(st.canvas && st.chunks > 0, `3D-Welt läuft (${st.chunks} Chunks gebaut)`);
   check(st.hier === 'waldmark' && Math.abs(st.ort.x - 6448) < 3, `Start in der Waldmark (${st.ort.x.toFixed(1)} | ${st.ort.y.toFixed(1)}, Titel „${(st.titel || '').trim().slice(0, 40)}“)`);
   check(/Lv|Gast/.test(st.name), `Namensschild über dem Helden: „${st.name}“`);
+  check(await p.evaluate(() => ['q', 'e', 'r'].every((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display === 'none') && getComputedStyle(document.querySelector('#ez-modus')).display === 'none' && document.querySelector('[data-taste="a"] small').textContent === 'Angreifen'), 'Auch außerhalb der Kampfgebiete nur „Angreifen“ (keine alten Fähigkeitstasten)');
+  check(await p.evaluate(() => { const W = window.EZW.welt3d, o = W.ort, kopf = W.motor.bildschirm(o.x, W.motor.hoehe(o.x, o.y) + 2.0, o.y), r = W.schild.getBoundingClientRect(); return kopf && r.bottom <= kopf.y + 4 && r.bottom > kopf.y - 40 && Math.abs((r.left + r.right) / 2 - kopf.x) < 6; }), 'Das Namensschild sitzt über dem Kopf des Helden');
   if (BILD) await p.screenshot({ path: BILD + 'start.png' });
   /* WASD zur Kamera hin gedacht: W weg von der Kamera, S zu ihr hin, A links, D rechts */
   const lauf = { g: 0 }; const ergebnis = [];
