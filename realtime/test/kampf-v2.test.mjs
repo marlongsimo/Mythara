@@ -47,6 +47,19 @@ function duell(seed, waffe, stil) {
   h.x = b.x - 1.2; s.eingabe({ t: "ziel", id: b.id }, h.id); check(greiftAn(6), "Wird er selbst angegriffen, wehrt er sich trotzdem"); s.eingabe({ t: "ziel", id: 0 }, h.id);
   b.zielId = 0; b.wach = false; b.pfad = []; b.lp = b.max; b.x = b.heim.x; b.y = b.heim.y; h.aggroZeit = 15 * 60; h.x = b.x - 24; s.schritt(); h.x = b.x - 3; h.lp = h.max;
   check(greiftAn(4), `20 Felder weg und zurück: der Zähler beginnt neu, der Bandit greift wieder an (Zähler ${(h.aggroZeit ?? 0).toFixed(1)} s)`); }
+/* Autoangriff und Hinlaufen: an = wer mich angreift, bekommt Antwort; aus = nur angeklickte Gegner; Gegner anklicken = hinlaufen und angreifen */
+{ const hiebe = (s, id, sek) => { let n = 0; for (let i = 0; i < sek * 20; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === id) n++; } return n; };
+  { const { s, b, h } = duell(11, "schwert", 1); b.zielId = h.id; b.wach = true; check(hiebe(s, h.id, 4) > 0, "Autoangriff an (Standard): der Bandit greift an, der Held schlägt zurück"); }
+  { const { s, b, h } = duell(11, "schwert", 1); s.eingabe({ t: "auto", an: false }, h.id); b.zielId = h.id; b.wach = true; check(hiebe(s, h.id, 4) === 0 && b.zielId === h.id, "Autoangriff aus: der Held steht still, obwohl er angegriffen wird");
+    s.eingabe({ t: "ziel", id: b.id }, h.id); check(hiebe(s, h.id, 4) > 0, "… bis man den Gegner antippt"); }
+  { const { s, b, h } = duell(12, "schwert", 1); s.eingabe({ t: "auto", an: false }, h.id); h.x = b.x - 8; b.aggroReichSperre = true; b.zielId = 0; b.wach = false; h.aggroZeit = 15 * 60; /* Bandit soll nicht selbst kommen */
+    const x0 = h.x; s.eingabe({ t: "ziel", id: b.id }, h.id); const n = hiebe(s, h.id, 8);
+    check(h.x > x0 + 5 && n > 0, `Gegner 8 Felder weit angetippt: der Held läuft hin (${(h.x - x0).toFixed(1)} Felder) und greift in Reichweite an (${n} Hiebe)`); }
+  { const { s, b, h } = duell(13, "bogen", 1); s.eingabe({ t: "auto", an: false }, h.id); h.x = b.x - 12; b.zielId = 0; b.wach = false; h.aggroZeit = 15 * 60; const x0 = h.x;
+    s.eingabe({ t: "ziel", id: b.id }, h.id); let d = 0, gelaufen = 0; for (let i = 0; i < 8 * 20 && !d; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === h.id) { d = Math.hypot(b.x - h.x, b.y - h.y); gelaufen = h.x - x0; } }
+    check(gelaufen > 3 && d < 6.3 && d > 4.5, `Bogen: läuft nur bis in Schussweite und schießt dann (${gelaufen.toFixed(1)} Felder gelaufen, erster Schuss aus ${d.toFixed(1)} Feldern, Reichweite 6)`); }
+  { const { s, b, h } = duell(14, "schwert", 1); h.x = b.x - 8; s.eingabe({ t: "ziel", id: b.id }, h.id); s.schritt(); s.eingabe({ t: "lauf", x: h.x - 3, y: h.y }, h.id); for (let i = 0; i < 40; i++) s.schritt();
+    check(h.zielId === 0 && h.x < b.x - 8, "Wegklicken (laufen) bricht den Angriff ab"); } }
 { const s2 = Sim.welt(9, undefined, true), h2 = s2.nach(s2.beitreten("schildwaechter", 0, { x: 50, y: 50 }, kampfwerte(NULL, startAusruestung("schwert"))));
   for (let i = 0; i < 40; i++) s2.schritt(); check(h2.aggroZeit > 1.5 && h2.aggroZeit < 2.5, `Neues Betreten der Region: der Zähler beginnt bei 0 (${h2.aggroZeit.toFixed(2)} s nach 2 s)`); }
 /* XP nach Stil */

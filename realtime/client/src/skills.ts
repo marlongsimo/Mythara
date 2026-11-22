@@ -22,6 +22,10 @@ export function stilJetzt(): number { return stilLesen(kampfartJetzt()); }
 /** Stil wählen: merken und dem Kampf Bescheid geben (er meldet ihn dem Server oder rechnet neu) */
 export function stilSetzen(art: Art, stil: number): void { try { const o = JSON.parse(localStorage.getItem(STIL) || "{}") as Record<string, number>; o[art] = stil; localStorage.setItem(STIL, JSON.stringify(o)); } catch { /* privat */ }
   window.dispatchEvent(new CustomEvent("ez-stil")); }
+/** Autoangriff (Standard an): wer mich angreift, bekommt sofort Antwort; aus = nur angeklickte Gegner angreifen */
+const AUTO = "ez_autoangriff";
+export function autoLesen(): boolean { try { return localStorage.getItem(AUTO) !== "0"; } catch { return true; } }
+export function autoSetzen(an: boolean): void { try { localStorage.setItem(AUTO, an ? "1" : "0"); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-stil")); }
 /** Fortschritt eines Skills: Level, XP im Level, XP bis zum nächsten, Anteil 0…100 */
 export function skillStand(xp: number): { L: number; im: number; bis: number; anteil: number } { const L = levelAus(xp), von = xpFuer(L), nach = L < SKILL_MAX ? xpFuer(L + 1) : von;
   return { L, im: xp - von, bis: nach - von, anteil: L < SKILL_MAX ? Math.min(100, Math.round(100 * (xp - von) / Math.max(1, nach - von))) : 100 }; }

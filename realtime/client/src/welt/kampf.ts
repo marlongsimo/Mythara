@@ -14,7 +14,7 @@ import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BI
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { inventar } from "../inventar";
-import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt } from "../skills";
+import { skillsSchreiben, skillAnzeige, meineKampfwerte, stufenVon, stilJetzt, autoLesen } from "../skills";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { Held, heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import { setzeKarte } from "../../../shared/karte";
@@ -88,7 +88,8 @@ export class WeltKampf {
       else { const h = held(), k = h && h.kw ? meineKampfwerte(h.kw.skills) : null; if (h && k && n.sim) n.sim.kampfwerteSetzen(h.id, k); } };
     window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer);
     /* Angriffsstil (v2): dem Server melden, beim Rechnen im Browser die Werte neu setzen */
-    const stil = () => { if (this.vorbei) return; if (n.art === "server") n.sende({ t: "stil", stil: stilJetzt() } as unknown as Parameters<Netz["sende"]>[0]); else hoer(); };
+    const stil = () => { if (this.vorbei) return; n.sende({ t: "auto", an: autoLesen() } as unknown as Parameters<Netz["sende"]>[0]); /* Autoangriff an/aus */
+      if (n.art === "server") n.sende({ t: "stil", stil: stilJetzt() } as unknown as Parameters<Netz["sende"]>[0]); else hoer(); };
     window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
   private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */

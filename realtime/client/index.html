@@ -520,6 +520,19 @@
     .ez-wahl3d::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: #e2bf6a; }
     @keyframes ez-wahl-auf { from { transform: scale(.7); opacity: 0; } }
     /* Angriffsstil und Skills (Kampfregeln v2) */
+    #ez-stiltab { position: fixed; z-index: 8; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; overflow: auto; border-radius: 14px; border: 1.5px solid #8a6a3a; background: linear-gradient(rgba(38,29,18,.94), rgba(22,16,10,.94)); color: #f3e3b5; box-shadow: 0 6px 22px rgba(0,0,0,.5); font: 14px Georgia, serif; }
+    #ez-stiltab .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; } #ez-stiltab .kopf b { font: 600 16px Cinzel, Georgia, serif; color: #ffe7b0; } #ez-stiltab .kopf small { color: #cdb98a; font-size: 12px; }
+    #ez-stiltab .stile { display: grid; gap: 6px; flex: 1; align-content: start; }
+    #ez-stiltab .stil { display: grid; gap: 1px; text-align: left; padding: 6px 10px; border-radius: 9px; border: 1.5px solid #6a5232; background: linear-gradient(#2e2519, #1a140d); color: #f3e3b5; cursor: pointer; font: inherit; position: relative; }
+    #ez-stiltab .stil b { font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; display: flex; align-items: baseline; gap: 8px; } #ez-stiltab .stil b em { font: 11.5px Georgia, serif; font-style: normal; color: #e9dcb8; } #ez-stiltab .stil small { color: #cdb98a; font-size: 11.5px; }
+    #ez-stiltab.eng { gap: 5px; padding: 7px 9px; } #ez-stiltab.eng .stil { padding: 5px 9px; } #ez-stiltab.eng .stil small, #ez-stiltab.eng .kipp small { display: none; } #ez-stiltab.eng .stile { gap: 5px; }
+    #ez-stiltab .stil.an { border-color: #f0d48a; background: linear-gradient(#6a4f28, #2e2010); box-shadow: 0 0 10px rgba(240,212,138,.45); } #ez-stiltab .stil.an::after { content: "✓ aktiv"; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font: 600 11px Cinzel, Georgia, serif; color: #ffe08a; }
+    #ez-stiltab .kipp { display: flex; align-items: center; gap: 10px; text-align: left; padding: 6px 8px; border-radius: 9px; border: 1.5px solid #6a5232; background: #1a140d; color: #f3e3b5; cursor: pointer; font: inherit; }
+    #ez-stiltab .kipp i { flex: 0 0 42px; height: 22px; border-radius: 11px; background: #4a3a28; border: 1.5px solid #7a6040; position: relative; transition: background .15s; }
+    #ez-stiltab .kipp i::after { content: ""; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #cdb98a; transition: left .15s; }
+    #ez-stiltab .kipp.an i { background: #5f8a3a; border-color: #a8d070; } #ez-stiltab .kipp.an i::after { left: 22px; background: #fff3c8; }
+    #ez-stiltab .kipp span { display: grid; } #ez-stiltab .kipp b { font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } #ez-stiltab .kipp small { color: #cdb98a; font-size: 11.5px; }
+    #ez-leiste button.an { border-color: #ffe08a !important; box-shadow: 0 0 12px rgba(255,224,138,.7) !important; background: radial-gradient(#6a4f28, #2e2010) !important; }
     .tafel.stiltafel .stile { display: grid; gap: 8px; margin: 10px 0; }
     .tafel.stiltafel .stil { display: grid; gap: 3px; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #6a5232; background: linear-gradient(#2e2519, #1a140d); color: #f3e3b5; cursor: pointer; font: inherit; }
     .tafel.stiltafel .stil b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .tafel.stiltafel .stil small { color: #cdb98a; font-size: 12px; }

@@ -14,6 +14,7 @@ export type Taste = "q" | "e" | "r";
 export type Eingabe =
   | { t: "richtung"; x: number; y: number }  // direkt steuern: Laufrichtung in der Welt (Länge 0 bis 1), 0/0 = stehen bleiben
   | { t: "lauf"; x: number; y: number }      // zu einem Punkt laufen (Wegsuche)
+  | { t: "auto"; an: boolean }               // Autoangriff: an = wer mich angreift, bekommt sofort Antwort; aus = nur angeklickte Gegner
   | { t: "ziel"; id: number }                // Ziel wählen: Gegner (angreifen in Reichweite) oder im Heilmodus ein Verbündeter; id 0 = kein Ziel
   | { t: "faehig"; taste: Taste; x: number; y: number } // Fähigkeit in Richtung des Punktes
   | { t: "modus" }                           // Kippschalter: zwischen erster und zweiter Waffe wechseln
@@ -23,7 +24,7 @@ export type Eingabe =
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
 interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
-  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; rx: number; ry: number; fuehrer: number;
+  pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; /** Held: Autoangriff (Standard an) */ auto?: boolean; rx: number; ry: number; fuehrer: number;
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; wach: boolean;
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
@@ -139,6 +140,7 @@ export class Sim {
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = weg(h, { x: e.x, y: e.y }); }
     else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
+    else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
     else if (e.t === "faehig") { if (h.kw) return; /* v1: keine Fähigkeiten */ if ((e.taste !== "q" && e.taste !== "e" && e.taste !== "r") || !zahl(e.x) || !zahl(e.y)) return; this.faehigkeit(h, e.taste, { x: e.x, y: e.y }); }
   }
@@ -372,7 +374,10 @@ export class Sim {
         } else { if (ziel && ziel.team === w.team) { ziel = undefined; w.zielId = 0; }
           if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; this.ev.push({ a: "text", id: w.id, t: "Kämpft schon mit jemand anderem" }); }
           const nah = A.art === "nah", darf = nah || !faehrt; // Fernkämpfer schießen nur im Stehen
-          if (!ziel && !faehrt && !w.pfad.length) ziel = this.naechsterGegner(w, nah ? 2.2 : A.reich) || undefined; // wer steht und kein Ziel hat, wehrt sich von selbst
+          /* Autoangriff: wer steht, kein Ziel hat und angegriffen wird, schlägt zurück (nur gegen den, der ihn angreift) */
+          if (!ziel && !faehrt && !w.pfad.length && w.auto !== false) ziel = this.feinde(w).filter((o) => o.zielId === w.id && abstand(w, o) - o.r <= Math.max(nah ? 2.2 : 0, A.reich) + 0.3).sort((a, b) => abstand(w, a) - abstand(w, b))[0];
+          /* angeklickter Gegner außer Reichweite: hinlaufen (der Weg wird alle 0,4 s neu gesucht, das Ziel bewegt sich), in Reichweite stehen bleiben und angreifen */
+          if (ziel && ziel.id === w.zielId && !faehrt) { const dz = abstand(w, ziel) - ziel.r; if (dz > A.reich - 0.15 || !frei(w, ziel)) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, { x: ziel.x, y: ziel.y }); w.neuWeg = 0.4; } } else if (w.pfad.length) w.pfad = []; }
           if (ziel && darf && abstand(w, ziel) - ziel.r <= A.reich && frei(w, ziel)) { if (!faehrt || nah) w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); if (w.cdA <= 0) this.angriff(w, ziel); } }
       }
       if (w.pfad.length && w.aushol <= 0) { let rest = this.tempo(w) * DT; // laufen (Wegpunkte)

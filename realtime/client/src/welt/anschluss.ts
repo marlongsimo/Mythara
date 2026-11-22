@@ -15,7 +15,7 @@ import { weltkarte } from "../weltkarte";
 import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
-import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTafel, skillTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, skillTafel, RKnopf } from "../rahmen";
 import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen } from "../welt3d/oberflaeche";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
@@ -226,7 +226,7 @@ function menue3D(s: WeltKern) {
     if (freigabe("kampagnen")) tasten.l = () => tafel(s, questTafel);
     rahmenTasten(tasten);
     leisteAufbauen([
-      { id: "stil", name: "Angriffsstil", zeichen: "schwerter", tat: () => tafel(s, stilTafel) },
+      { id: "stil", name: "Angriffsstil", zeichen: "schwerter", tat: () => stilTab() },
       { id: "quests", name: "Quests", zeichen: "quest", tat: () => tafel(s, (zu) => baldTafel("Quests", "quest", zu)) },
       { id: "rucksack", name: "Rucksack", zeichen: "rucksack", taste: "B", tat: rucksack },
       { id: "ausruestung", name: "Ausrüstung", zeichen: "ausruestung", taste: "C", tat: ausruestung },

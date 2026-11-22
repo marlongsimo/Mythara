@@ -10,7 +10,7 @@ import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, maxLp } from "../../shared/kampfwerte";
-import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand } from "./skills";
+import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen } from "./skills";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const SVG = (inhalt: string) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inhalt}</svg>`;
@@ -176,6 +176,28 @@ export function stilTafel(zu: () => void): void {
   const f = tafel("stiltafel", zeichnen(), zu), neu = () => { const t = f.querySelector(".tafel") as HTMLElement; t.innerHTML = t.innerHTML.replace(/<h2>[\s\S]*$/, "") + zeichnen(); binden(); };
   const binden = () => f.querySelectorAll<HTMLElement>("[data-s]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); stilSetzen(kampfartJetzt(), Number(b.dataset.s)); neu(); }));
   binden(); }
+/** Angriffsstil als Tab neben der Leiste (3D-Welt): Heldenlevel, die drei Stile der Waffe (einer ist immer aktiv), Kippschalter Autoangriff.
+ *  Oben bündig mit dem obersten Knopf, unten mit dem untersten, rechts mit dem Chat. Nochmal antippen schließt. */
+export function stilTab(): void {
+  const knopf = document.querySelector<HTMLElement>('#ez-leiste [data-l="stil"]'); let el = document.getElementById("ez-stiltab");
+  if (el) { el.remove(); knopf?.classList.remove("an"); removeEventListener("resize", stilTabLage); removeEventListener("ez-inventar", stilTabZeichnen); removeEventListener("ez-skills", stilTabZeichnen); return; }
+  el = document.createElement("aside"); el.id = "ez-stiltab"; el.className = "stiltab"; el.setAttribute("aria-label", "Angriffsstil"); document.body.appendChild(el); knopf?.classList.add("an");
+  for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
+  el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return;
+    if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); stilTabZeichnen(); });
+  stilTabZeichnen(); stilTabLage(); addEventListener("resize", stilTabLage); addEventListener("ez-inventar", stilTabZeichnen); addEventListener("ez-skills", stilTabZeichnen); }
+function stilTabLage(): void {
+  const el = document.getElementById("ez-stiltab"), k = [...document.querySelectorAll<HTMLElement>("#ez-leiste [data-l]")], chat = document.querySelector<HTMLElement>(".ez-chat"); if (!el || !k.length) return;
+  const oben = k[0].getBoundingClientRect(), unten = k[k.length - 1].getBoundingClientRect(), links = Math.max(...k.map((b) => b.getBoundingClientRect().right)) + 12;
+  const rechts = chat && chat.offsetWidth ? chat.getBoundingClientRect().right : links + 340;
+  const h = Math.max(120, unten.bottom - oben.top); Object.assign(el.style, { left: links + "px", top: oben.top + "px", height: h + "px", width: Math.max(200, rechts - links) + "px" }); el.classList.toggle("eng", h < 300); /* niedrig (Handy): ohne Erklärzeilen */ }
+function stilTabZeichnen(): void {
+  const el = document.getElementById("ez-stiltab"); if (!el) return; const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
+  const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
+  const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>Treffer ${z(k.angriff[art])} · ${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
+  el.innerHTML = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
+    <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
+    <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
   const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert und Schaden" };
