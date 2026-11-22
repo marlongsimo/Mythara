@@ -8,11 +8,10 @@
  * Alle Koordinaten sind Weltfelder wie in der 2D-Welt und auf dem Server (x Osten, z = y der Welt nach Süden, Höhe nach oben).
  */
 import * as THREE from "three";
-import { Figurbild } from "./figurbild";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
-import { Npc3D, Wanderer, NPC3D, WANDERER, npc3dAn } from "./npc3d";
+import { Npc3D, Wanderer, NPC3D, WANDERER } from "./npc3d";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
@@ -177,14 +176,10 @@ export class Welt3D {
     else if (fertig) { const tt = t; if (tt.image && (tt.image as HTMLImageElement).complete !== false) fertig(tt); else setTimeout(() => this.textur(pfad, fertig), 200); }
     return t; }
   figuren(s: Stueck) {
-    /* Dorfbewohner: Bildstreifen mit 8 Bildern zu 176 × 176 – das erste zeigen */
-    for (const f of s.d.figuren) { const pfad = "img/echtzeit/" + f.figur + ".webp", fb = new Figurbild(this.textur(pfad));
-      this.textur(pfad, (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); fb.setze(t, [1 / n, 1], [0, 0], [2.25, 2.25], [0.5, 0.06]); });
-      fb.silhouette(false); fb.gruppe.position.set(f.x, this.hoehe(f.x, f.y) + 0.08, f.y); this.szene.add(fb.gruppe); s.obj.push(fb.gruppe, this.fleck(f.x, f.y));
-      /* mit 3D-Modell (z. B. die Wachen): das Modell an derselben Stelle, das Bild verschwindet, sobald es geladen ist */
-      if (NPC3D[f.figur] && npc3dAn()) { const n = new Npc3D(NPC3D[f.figur], fb.gruppe); n.gruppe.position.set(f.x, this.hoehe(f.x, f.y), f.y); n.blick(0, 1); this.szene.add(n.gruppe); s.obj.push(n.gruppe); (s.npcs ||= []).push(n); } }
+    /* nur Figuren mit 3D-Modell (npc3d.ts: die Wachen) – keine 2D-Bilder mehr in der Welt */
+    for (const f of s.d.figuren) { if (!NPC3D[f.figur]) continue; /* ohne 3D-Modell: weggelassen */ const n = new Npc3D(NPC3D[f.figur]); n.gruppe.position.set(f.x, this.hoehe(f.x, f.y), f.y); n.blick(0, 1); this.szene.add(n.gruppe); s.obj.push(n.gruppe, this.fleck(f.x, f.y)); (s.npcs ||= []).push(n); }
     /* Bewohner, die in ihrem Haus umhergehen (Nia in ihrem Salon) */
-    if (npc3dAn()) for (const w of WANDERER) if (w.chunk === s.d.cx + "_" + s.d.cy) { const n = new Wanderer(this, w); this.szene.add(n.npc.gruppe); s.obj.push(n.npc.gruppe); (s.wanderer ||= []).push(n); } }
+    for (const w of WANDERER) if (w.chunk === s.d.cx + "_" + s.d.cy) { const n = new Wanderer(this, w); this.szene.add(n.npc.gruppe); s.obj.push(n.npc.gruppe); (s.wanderer ||= []).push(n); } }
   fleck(x: number, z: number) { const m = new THREE.Mesh(FLECK, FLECK_MAT); m.rotation.x = -Math.PI / 2; m.position.set(x, this.hoehe(x, z) + 0.05, z); this.szene.add(m); return m; }
 
   /* ───────── Held ───────── */

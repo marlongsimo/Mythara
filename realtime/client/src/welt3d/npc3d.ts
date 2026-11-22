@@ -1,15 +1,15 @@
 /*
  * Mythara – Dorfbewohner der 3D-Welt als echte 3D-Modelle der Figuren-Fabrik (img/figuren-echt3d/, Bewegungen ruhe und gehen).
  *
- * Stehende Figuren: Wer in den Weltdaten steht (Chunk figuren[]) und hier ein Modell hat, steht als 3D-Modell da (z. B. die Wachen → stadtwache3d);
- *   alle anderen bleiben Bilder. Bis das Modell geladen ist – oder wenn es nicht lädt – steht das bisherige Bild da.
+ * Stehende Figuren: Wer in den Weltdaten steht (Chunk figuren[]) und hier ein Modell hat, steht als 3D-Modell da (die Wachen → stadtwache3d);
+ *   alle anderen Figuren der Weltdaten werden nicht gezeigt (keine 2D-Figuren in der Welt).
  * Wandernde Figuren (WANDERER): gehören zu einem Haus, laufen darin zwischen zufälligen Stellen umher, bleiben immer wieder eine Weile stehen,
  *   treten ab und zu vor die Tür und gehen dann wieder hinein. Wege über die Wegsuche der Welt (Wände, Möbel).
- * Abschaltbar wie die 3D-Helden: ?held3d=0.
+ * Immer 3D (auch mit ?held3d=0): in der Welt gibt es keine 2D-Figuren mehr.
  */
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
-import { vorlage, held3dAn } from "./held3d";
+import { vorlage } from "./held3d";
 
 /** Figur der Weltdaten → 3D-Modell */
 export const NPC3D: Record<string, string> = { wache: "stadtwache3d" };
@@ -65,4 +65,3 @@ export class Wanderer {
     this.npc.blick(dx, dz); this.npc.spiele("gehen"); this.setzen(); this.npc.schritt(dt); }
 }
 
-export const npc3dAn = (): boolean => held3dAn();

@@ -14,7 +14,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FigurLeinwand } from "./figurleinwand";
-import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN } from "../../../shared/aussehen";
+import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../shared/aussehen";
 
 const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.search);
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) und Bezugshelligkeit der Haut (img/figuren-fabrik/held.*: bezug.haut) */
@@ -48,8 +48,8 @@ export class Held3D {
   fertig: (() => void) | null = null;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
   constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string }) {
-    this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); szene.add(this.bild.gruppe);
-    vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => console.warn("3D-Figur:", e)); }
+    this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
+    vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.sichtbar(this.an); }); }
   private aufbauen(v: Vorlage) {
     if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; } });
@@ -91,7 +91,8 @@ export class Held3D {
 }
 /** Figur eines Helden: mit eigenem Aussehen als 3D-Modell (wenn eingeschaltet), sonst das bisherige Bild */
 export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, eigen?: (Held & { ich?: boolean }) | null, quelle?: (() => string[]) | null): FigurLeinwand | Held3D {
-  return eigen && held3dAn() ? new Held3D(szene, hoehe, eigen, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
+  /* ohne eigenes Aussehen (Gast, ältere Mitspieler): der Basismann im Standardaussehen statt des alten Heldenbilds */
+  return held3dAn() ? new Held3D(szene, hoehe, eigen || STANDARD, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
 /** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
 const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" } };

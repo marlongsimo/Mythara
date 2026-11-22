@@ -15,9 +15,13 @@ const BILD = process.env.BILD || '';
   await p.evaluate(() => window.EZW.welt3d.versetzen(6448, 6463));
   await p.waitForFunction(() => { const M = window.EZW.welt3d.motor, s = M.st.get('201_201'); return s && s.gebaut && s.npcs && s.npcs.length === 2 && s.npcs.every((n) => n.geladen); }, null, { timeout: 90000 }).catch(() => {});
   const w = await p.evaluate(() => { const s = window.EZW.welt3d.motor.st.get('201_201'); return s && s.npcs ? s.npcs.map((n) => ({ geladen: n.geladen, bildWeg: n.gruppe && n.ersatz ? !n.ersatz.visible : null, x: n.gruppe.position.x, z: n.gruppe.position.z })) : []; });
-  check(w.length === 2 && w.every((n) => n.geladen && n.bildWeg), `Beide Wachen am Tor als 3D-Modell, das alte Bild ist weg (${JSON.stringify(w.map((n) => [n.x, n.z]))})`);
+  check(w.length === 2 && w.every((n) => n.geladen), `Beide Wachen am Tor als 3D-Modell (${JSON.stringify(w.map((n) => [n.x, n.z]))})`);
   await p.evaluate(() => { const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 0.6; M.abstand = 10; }); await p.waitForTimeout(1500);
   if (BILD) await p.screenshot({ path: BILD + 'wachen.png' });
+  /* keine 2D-Figuren in der Welt: weder Bewohner-Bilder noch das alte Heldenbild (Bildaufsteller: ShaderMaterial, renderOrder ≥ 10) */
+  const zweiD = async () => p.evaluate(() => { let n = 0; window.EZW.welt3d.motor.szene.traverse((o) => { let v = o.visible, q = o.parent; while (v && q) { v = q.visible; q = q.parent; } if (v && o.isMesh && o.material && o.material.isShaderMaterial && o.renderOrder >= 10) n++; }); return n; });
+  check(await zweiD() === 0, 'Keine 2D-Figur sichtbar (Tor)');
+  check(await p.evaluate(() => window.EZW.welt3d.figur.constructor.name !== 'FigurLeinwand' && !!window.EZW.welt3d.figur.mixer), 'Auch der Held ohne eigenes Aussehen (Gast) ist ein 3D-Modell');
   /* zu Nias Salon */
   await p.evaluate(() => window.EZW.welt3d.versetzen(6458.5, 6431.5));
   await p.waitForFunction(() => { const s = window.EZW.welt3d.motor.st.get('201_200'); return s && s.wanderer && s.wanderer[0] && s.wanderer[0].npc.geladen; }, null, { timeout: 90000 }).catch(() => {});
@@ -38,6 +42,7 @@ const BILD = process.env.BILD || '';
   if (BILD) await p.screenshot({ path: BILD + 'nia.png' });
   await p.evaluate(() => window.EZW.welt3d.versetzen(6458.5, 6426.5)); await p.waitForTimeout(3000);
   if (BILD) await p.screenshot({ path: BILD + 'nia-drinnen.png' });
+  check(await zweiD() === 0, 'Keine 2D-Figur sichtbar (Marktplatz: Schmied, Junge, Krämer … sind weg)');
   check(!fehler.filter((e) => !/favicon|Failed to load resource|net::ERR/.test(e)).length, 'Keine Fehler im Browser ' + fehler.slice(0, 3).join(' | '));
   await b.close(); console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : '3D-Dorfbewohner: alles in Ordnung'); process.exit(f ? 1 : 0);
 })();

@@ -49,6 +49,7 @@ const FLECK = new THREE.CircleGeometry(0.42, 16), FLECK_MAT = new THREE.MeshBasi
 export class FigurLeinwand {
   readonly bild: Figurbild; readonly fleck: THREE.Mesh; private leinwand = document.createElement("canvas"); private g = this.leinwand.getContext("2d")!; private tex: THREE.CanvasTexture;
   private M: Meta | null = null; private ebenen = new Map<string, Atlas>(); private reihe: string[] = []; private waffen: string[] = []; private angriffName = "angriff";
+  /** aus: das Bild bleibt verborgen (Platzhalter eines 3D-Modells, das noch lädt) */ aus = false;
   private zustand = "ruhe"; private einmal: string | null = null; private nr = 0; private uhr = 0; private richtung = 2; private gestorben = false; private alt = ""; private blickW = 0;
   /** fertig: nach Ende einer einmaligen Bewegung (Angriff) */ fertig: (() => void) | null = null;
   /** figur: Ordner der Fabrik (etwa gegner.bandit.v003) oder der eigene Held (eigen); hoehe: sichtbare Körperhöhe in Feldern */
@@ -67,7 +68,7 @@ export class FigurLeinwand {
     for (const w of this.waffen) for (const s of [".hinten", ".vorn"]) auftraege.push(atlas(figur, w + s).then((a) => { if (a) this.ebenen.set(w + s, a); }));
     await Promise.all(auftraege); this.reihe = ebenen.map((e) => e.ebene);
     this.leinwand.width = this.leinwand.height = M0.feld; this.M = M0; const gr = M0.feld * this.hoehe / M0.sichtbar_px;
-    this.bild.setze(this.tex, [1, 1], [0, 0], [gr, gr], [M0.fuss[0], 1 - M0.fuss[1]]); this.bild.gruppe.visible = true; this.alt = ""; this.zeichnen();
+    this.bild.setze(this.tex, [1, 1], [0, 0], [gr, gr], [M0.fuss[0], 1 - M0.fuss[1]]); this.bild.gruppe.visible = !this.aus; this.alt = ""; this.zeichnen();
   }
   get geladen(): boolean { return Boolean(this.M); }
   /** Stelle (Weltfelder) und Bodenhöhe */
@@ -80,7 +81,7 @@ export class FigurLeinwand {
   angriff(): void { if (this.gestorben) return; this.einmal = this.angriffName; this.nr = 0; this.uhr = 0; }
   /** Besiegt: Todesbewegung einmal, liegen bleiben. Zurück: Dauer in ms (0 ohne Todesbewegung) */
   sterben(): number { const M = this.M; if (!M || !M.animationen.tod) return 0; this.gestorben = true; this.einmal = null; this.zustand = "tod"; this.nr = 0; this.uhr = 0; return 1000 * M.animationen.tod.bilder / M.animationen.tod.rate; }
-  sichtbar(an: boolean): void { this.bild.gruppe.visible = an && Boolean(this.M); this.fleck.visible = an; }
+  sichtbar(an: boolean): void { this.bild.gruppe.visible = an && Boolean(this.M) && !this.aus; this.fleck.visible = an; }
   private get anim(): string { const M = this.M, a = this.einmal || this.zustand; return M && M.animationen[a] ? a : "ruhe"; }
   /** weiterrechnen; gieren: Drehung der Kamera (Bogenmaß, wie Welt3D.gieren) */
   schritt(dtMs: number, gieren: number): void {
