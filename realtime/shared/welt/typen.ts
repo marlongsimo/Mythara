@@ -69,7 +69,7 @@ export type Kollision =
   | { art: "rechteck"; x: number; y: number; b: number; h: number }
   | { art: "vieleck"; punkte: number[][] }
   /** Räumliches Gebäude: Baukörper als Rechtecke (y nach Süden, 0 = Fußlinie); begehbare nur mit Wänden, Türlücken in der Südwand */
-  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[] };
+  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[]; /** Möbel im Haus (Hindernisse) */ moebel?: { x0: number; x1: number; y0: number; y1: number }[] };
 /** Eine Ebene eines räumlichen Gebäudes: eigenes Bild, eigene Tiefe (Felder relativ zum Fuß, + = weiter vorn) */
 export interface GebaeudeEbene { name: string; bild: string; /** Lage des zugeschnittenen Bildes im Gesamtrahmen (Bildpunkte) */ versatz?: number[]; tiefe: number; rolle: "schatten" | "innen" | "seite" | "vorn" | "dach" | "vordach" | "tuer_zu" | "tuer_offen"; koerper?: number; tuer?: number }
 /** Was ein Objekt kann, wenn man davorsteht. Die Logik dazu liegt in den bestehenden Systemen; hier steht nur, was wo auslöst. */

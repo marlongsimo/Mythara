@@ -21,12 +21,16 @@ export const WANDERER: { chunk: string; datei: string; drinnen: [number, number,
   { chunk: "201_200", datei: "npc.nia", drinnen: [6457, 6425, 6460, 6427], draussen: [6456, 6429, 6461, 6430] },
   /* der Bürgermeister im Erdgeschoss des Rathauses an der Westseite des Marktplatzes (waldmark_rathaus_01, Tür nach Süden bei 6438–6439/6427); bleibt drinnen */
   { chunk: "201_200", datei: "npc.buergermeister_waldmark", drinnen: [6435, 6421, 6442, 6426], draussen: null },
+  /* vier Leute schlendern über den gepflasterten Marktplatz der Waldmark (um den Brunnen) */
+  ...(["npc.marktfrau", "npc.alter_bauer", "npc.junger_knecht", "npc.kraeuterfrau"] as const).map((datei, i) => ({ chunk: i < 2 ? "201_200" : "201_201", datei, drinnen: [6442, 6428, 6455, 6437] as [number, number, number, number], draussen: null })),
 ];
 
 const HOEHE = 2.0, TEMPO = 1.25;
-const zufallFeld = (r: [number, number, number, number]): Feld => ({ x: r[0] + Math.floor(Math.random() * (r[2] - r[0] + 1)) + 0.5, z: r[1] + Math.floor(Math.random() * (r[3] - r[1] + 1)) + 0.5 });
+/** ein zufälliges freies Feld im Rechteck (Möbel, Brunnen und Wände sind gesperrt) */
+const zufallFeld = (r: [number, number, number, number], frei?: (x: number, z: number) => boolean): Feld => { let f: Feld = { x: 0, z: 0 };
+  for (let i = 0; i < 30; i++) { f = { x: r[0] + Math.floor(Math.random() * (r[2] - r[0] + 1)) + 0.5, z: r[1] + Math.floor(Math.random() * (r[3] - r[1] + 1)) + 0.5 }; if (!frei || frei(Math.floor(f.x), Math.floor(f.z))) break; } return f; };
 
-export interface Umgebung { szene: THREE.Scene; hoehe(x: number, z: number): number; weg(ax: number, az: number, bx: number, bz: number): Feld[] }
+export interface Umgebung { szene: THREE.Scene; hoehe(x: number, z: number): number; gehbar(x: number, z: number): boolean; weg(ax: number, az: number, bx: number, bz: number): Feld[] }
 
 /** Ein Dorfbewohner als 3D-Modell: gruppe steht in der Welt; ersatz (das Bild) wird ausgeblendet, sobald das Modell da ist */
 export class Npc3D {
@@ -53,11 +57,11 @@ export class Npc3D {
 export class Wanderer {
   readonly npc: Npc3D; x: number; z: number; private pfad: Feld[] = []; private warten = 1 + Math.random() * 3; private draussen = false;
   constructor(private u: Umgebung, private w: (typeof WANDERER)[number]) {
-    const s = zufallFeld(w.drinnen); this.x = s.x; this.z = s.z; this.npc = new Npc3D(w.datei); this.npc.blick(0, 1); this.setzen(); }
+    const s = zufallFeld(w.drinnen, (x, z) => u.gehbar(x, z)); this.x = s.x; this.z = s.z; this.npc = new Npc3D(w.datei); this.npc.blick(0, 1); this.setzen(); }
   private setzen() { this.npc.gruppe.position.set(this.x, this.u.hoehe(this.x, this.z), this.z); }
   private neuesZiel() {
     /* wer draußen war, geht wieder hinein; drinnen meist eine andere Stelle im Haus, etwa jedes vierte Mal vor die Tür */
-    const raus = Boolean(this.w.draussen) && !this.draussen && Math.random() < 0.2, z = zufallFeld(raus && this.w.draussen ? this.w.draussen : this.w.drinnen);
+    const raus = Boolean(this.w.draussen) && !this.draussen && Math.random() < 0.2, z = zufallFeld(raus && this.w.draussen ? this.w.draussen : this.w.drinnen, (x, zz) => this.u.gehbar(x, zz));
     const p = this.u.weg(this.x, this.z, z.x, z.z); if (!p.length) { this.warten = 1.5; return; } this.pfad = p; this.draussen = raus; }
   schritt(dt: number) {
     if (!this.pfad.length) { this.npc.spiele("ruhe"); this.warten -= dt; if (this.warten <= 0) this.neuesZiel(); this.npc.schritt(dt); return; }

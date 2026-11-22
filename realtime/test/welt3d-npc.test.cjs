@@ -52,6 +52,19 @@ const BILD = process.env.BILD || '';
   check(bm.s.every((q) => q.x >= 6435 && q.x <= 6443 && q.z >= 6421 && q.z <= 6427) && bm.s.every((q) => q.ok), 'Er bleibt immer drinnen und geht nie durch Wände');
   await p.evaluate(() => { const n = window.EZW.welt3d.motor.st.get('201_200').wanderer[1]; n.pfad = []; n.warten = 30; n.x = 6438.5; n.z = 6422.5; n.npc.blick(0, 1); window.EZW.welt3d.versetzen(6441.5, 6425.5); const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 1.25; M.abstand = 11; }); await p.waitForTimeout(3000);
   if (BILD) await p.screenshot({ path: BILD + 'rathaus.png' });
+  /* Möbel sind Hindernisse: die Tische im Rathaus sperren ihre Felder, die Treppe bleibt frei */
+  check(await p.evaluate(() => { const M = window.EZW.welt3d.motor; return !M.gehbar(6438, 6422) && M.gehbar(6435, 6423) && M.weg(6438.5, 6426.5, 6435.7, 6423.8).length > 0; }), 'Möbel im Rathaus sind Hindernisse, der Weg zur Treppe bleibt frei');
+  check(await p.evaluate(() => !window.EZW.welt3d.raster.frei({ x: 6438.5, y: 6426.2 }, { x: 6438.5, y: 6421.5 }, 0.3)), 'Auch der Held kann nicht durch die Tische laufen (Gehraster der Spielwelt)');
+  /* vier Leute auf dem Marktplatz */
+  await p.evaluate(() => window.EZW.welt3d.versetzen(6448, 6440));
+  await p.waitForFunction(() => { const M = window.EZW.welt3d.motor, a = M.st.get('201_200'), b = M.st.get('201_201'); const l = [...((a && a.wanderer) || []).slice(2), ...((b && b.wanderer) || [])]; return l.length === 4 && l.every((w) => w.npc.geladen); }, null, { timeout: 90000 }).catch(() => {});
+  const markt = await p.evaluate(() => { const M = window.EZW.welt3d.motor, l = [...M.st.get('201_200').wanderer.slice(2), ...M.st.get('201_201').wanderer]; const ergebnis = l.map((w) => ({ datei: w.w.datei, geladen: w.npc.geladen, s: [] }));
+    for (let i = 0; i < 1500; i++) l.forEach((w, k) => { w.schritt(0.1); ergebnis[k].s.push([w.x, w.z, w.pfad.length > 0, M.gehbar(Math.floor(w.x), Math.floor(w.z))]); }); return ergebnis; });
+  check(markt.length === 4 && markt.every((m) => m.geladen), `Vier Leute auf dem Marktplatz (${markt.map((m) => m.datei.replace('npc.', '')).join(', ')})`);
+  check(markt.every((m) => m.s.some((q) => q[2]) && m.s.some((q) => !q[2]) && Math.max(...m.s.map((q) => q[0])) - Math.min(...m.s.map((q) => q[0])) > 4), 'Sie schlendern über den ganzen Platz und bleiben immer wieder stehen');
+  check(markt.every((m) => m.s.every((q) => q[0] >= 6442 && q[0] <= 6456 && q[1] >= 6428 && q[1] <= 6438 && q[3])), 'Sie bleiben auf dem Platz und laufen nie durch den Brunnen');
+  await p.evaluate(() => { const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 0.85; M.abstand = 18; }); await p.waitForTimeout(3000);
+  if (BILD) await p.screenshot({ path: BILD + 'markt.png' });
   check(await zweiD() === 0, 'Keine 2D-Figur sichtbar (Marktplatz: Schmied, Junge, Krämer … sind weg)');
   check(!fehler.filter((e) => !/favicon|Failed to load resource|net::ERR/.test(e)).length, 'Keine Fehler im Browser ' + fehler.slice(0, 3).join(' | '));
   await b.close(); console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : '3D-Dorfbewohner: alles in Ordnung'); process.exit(f ? 1 : 0);
