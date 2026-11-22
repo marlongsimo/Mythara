@@ -47,7 +47,7 @@ export class Darsteller {
   private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number) {
     this.wurzel = SkeletonUtils.clone(v.szene); this.wurzel.visible = false;
     this.wurzel.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.frustumCulled = false; const n = o.name;
-      if (/^(waffe|schild|kopf)/.test(n) && !(o.parent && /^(waffe|schild|kopf)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });   // three.js entfernt die Punkte aus den Namen
+      if (/^(waffe|schild|kopf|ruestung|kleidung)/.test(n) && !(o.parent && /^(waffe|schild|kopf|ruestung|kleidung)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });   // three.js entfernt die Punkte aus den Namen
     this.mixer = new THREE.AnimationMixer(this.wurzel);
     this.mixer.addEventListener("finished", () => { const f = this.fertig; this.fertig = null; if (f) f(); });
     const ppm = (figurHoehePx / STEHHOEHE) * aufloesung;
@@ -62,6 +62,12 @@ export class Darsteller {
     const p = praefix.replace(/[.[\]:/]/g, ""), f = [0, 1, 2].map((i) => linear(ziel[i]) / Math.max(1e-4, linear(gebaut[i])));
     for (const [n, o] of this.teile) if (n.startsWith(p)) o.traverse((m) => { const mm = m as THREE.Mesh; if (!mm.isMesh) return;
       const mat = (mm.material as THREE.MeshStandardMaterial).clone(); mat.color.setRGB(f[0], f[1], f[2]); mm.material = mat; });
+  }
+  /** Körpertextur tauschen (Hautfarbe): eigene Textur je Hautfarbe, von fabrik/hautfarben.py */
+  async haut(url: string): Promise<void> {
+    const t = await new THREE.TextureLoader().loadAsync(url); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace;
+    this.wurzel.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !/^koerper/.test(o.name)) return;
+      const mat = (m.material as THREE.MeshStandardMaterial).clone(); mat.map = t; mat.needsUpdate = true; m.material = mat; });
   }
   hat(name: string): boolean { return this.v.clips.has(name); }
   /** Dauer einer Bewegung in Millisekunden */

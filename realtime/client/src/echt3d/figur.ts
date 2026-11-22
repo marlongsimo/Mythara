@@ -11,7 +11,7 @@ import { Held, STARTWAFFEN, HAARFARBEN } from "../../../shared/aussehen";
 
 interface DarstellerT {
   breite: number; hoehe: number; fussY: number; aufloesung: number;
-  zeige(ids: string[]): void; faerben(p: string, ziel: [number, number, number], gebaut: [number, number, number]): void;
+  zeige(ids: string[]): void; haut(url: string): Promise<void>; faerben(p: string, ziel: [number, number, number], gebaut: [number, number, number]): void;
   hat(n: string): boolean; dauer(n: string): number; spiele(n: string, einmal?: boolean, fertig?: () => void): void; blick(w: number): void;
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void;
 }
@@ -30,6 +30,8 @@ function echt3dLaden(): Promise<Echt3D> {
   return skript;
 }
 const MODELLE = "../img/figuren-echt3d/";
+/** Grundfiguren für Echtzeit-3D (fabrik/assets/basemann3d, basefrau3d) */
+const MODELL: Record<string, string> = { mann: "basemann3d", frau: "basefrau3d" };
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] };
 let zaehler = 0;
@@ -41,13 +43,13 @@ export class Figur3D extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number, private hoehePx: number, private held: Held & { ich?: boolean }, private waffenQuelle: (() => string[]) | null) {
     super(scene, x, y); scene.add.existing(this); this.setSize(hoehePx * 0.6, hoehePx);
     scene.events.on("update", this.schritt); this.once("destroy", () => { scene.events.off("update", this.schritt); if (this.d) this.d.entfernen(); if (this.tex) this.tex.destroy(); });
-    echt3dLaden().then((E) => E.Darsteller.erstellen(MODELLE + "held." + held.aussehen.g + ".glb", hoehePx, Math.min(2, window.devicePixelRatio || 1) * 1.25)).then((d) => this.aufbauen(d)).catch((e) => console.warn("Figur3D:", e));
+    echt3dLaden().then((E) => E.Darsteller.erstellen(MODELLE + MODELL[held.aussehen.g] + ".glb", hoehePx, Math.min(2, window.devicePixelRatio || 1) * 1.25)).then((d) => this.aufbauen(d)).catch((e) => console.warn("Figur3D:", e));
   }
   private aufbauen(d: DarstellerT) {
     if (!this.scene) { d.entfernen(); return; } this.d = d; const key = "figur3d:" + zaehler++;
     this.tex = this.scene.textures.createCanvas(key, d.breite, d.hoehe) as Phaser.Textures.CanvasTexture;
     this.bild = this.scene.add.image(0, 0, key).setOrigin(0.5, d.fussY).setScale(1 / d.aufloesung); this.add(this.bild);
-    const A = this.held.aussehen; d.faerben("kopf.haar", HAARFARBEN[A.haar].rgb, GEBAUT[A.g]); d.faerben("kopf.bart", HAARFARBEN[A.haar].rgb, GEBAUT[A.g]);
+    const A = this.held.aussehen; void d.haut(MODELLE + "haut/" + MODELL[A.g] + "." + A.haut + ".webp").catch((e) => console.warn("Figur3D Haut:", e)); d.faerben("kopf.haar", HAARFARBEN[A.haar].rgb, GEBAUT[A.g]); d.faerben("kopf.bart", HAARFARBEN[A.haar].rgb, GEBAUT[A.g]);
     this.ausruestung(); this.anwenden(); this.weiter(0);
   }
   private waffen(): string[] { return this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen; }
