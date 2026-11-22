@@ -40,8 +40,27 @@ function pinsel() { const n = 256, c = document.createElement("canvas"); c.width
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; }
 
 const BODEN = new THREE.MeshLambertMaterial({ vertexColors: true, color: new THREE.Color(1.1, 1.1, 1.1) });
-const WASSER = new THREE.MeshPhongMaterial({ color: 0x3f8fae, specular: 0x99bbcc, shininess: 60, transparent: true, opacity: 0.85 });
-const MOORWASSER = new THREE.MeshPhongMaterial({ color: 0x1f2c26, specular: 0x556655, shininess: 40, transparent: true, opacity: 0.92 });
+/* Wasser: matt, mit gemalten Wellen in zwei Schichten, die gegeneinander ziehen; die Oberfläche wogt leicht, am Ufer heller Schaum,
+   auf den Wellenkämmen kleine Lichtfunken. Eckpunktfarben tragen den Schaum (hell am Ufer, dunkler in der Mitte). */
+const ZEIT = { value: 0 };
+const WELLEN = (() => { const n = 256, c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d")!; g.fillStyle = "rgb(150,150,150)"; g.fillRect(0, 0, n, n);
+  let s = 3; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 260; i++) { const x = r() * n, y = r() * n, l = 10 + r() * 26, v = r() < 0.55 ? 205 + r() * 50 : 90 + r() * 40, b = 1.5 + r() * 3;
+    g.strokeStyle = `rgba(${v},${v},${v},0.7)`; g.lineWidth = b; g.lineCap = "round";
+    for (const dx of [-n, 0, n]) for (const dy of [-n, 0, n]) { g.beginPath(); g.moveTo(x + dx, y + dy); g.quadraticCurveTo(x + dx + l / 2, y + dy - 5 - r() * 4, x + dx + l, y + dy); g.stroke(); } }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; })();
+function wasserMaterial(farbe: number, deck: number, tempo: number) {
+  const m = new THREE.MeshLambertMaterial({ color: farbe, vertexColors: true, transparent: true, opacity: deck, map: WELLEN });
+  m.onBeforeCompile = (sh) => { sh.uniforms.zeit = ZEIT;
+    sh.vertexShader = "uniform float zeit;\nvarying vec2 vW;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
+      vW = position.xz; transformed.y += (sin(position.x * 0.9 + zeit * 1.4) + cos(position.z * 1.2 + zeit * 1.1)) * 0.03 * ${tempo.toFixed(2)};`);
+    sh.fragmentShader = "uniform float zeit;\nvarying vec2 vW;\n" + sh.fragmentShader.replace("#include <map_fragment>", `
+      float zt = zeit * ${tempo.toFixed(2)};
+      float w1 = texture2D(map, vW / 5.0 + vec2(zt * 0.035, zt * 0.012)).r, w2 = texture2D(map, vW / 8.0 + vec2(-zt * 0.02, zt * 0.03)).r, w = (w1 + w2) * 0.5;
+      diffuseColor.rgb *= 0.62 + 0.75 * w;`).replace("#include <opaque_fragment>", `outgoingLight += vec3(smoothstep(0.74, 0.86, w) * 0.22);
+      #include <opaque_fragment>`); };
+  return m; }
+const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x26342c, 0.94, 0.35);
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
@@ -113,7 +132,9 @@ class Welt3D {
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = farbe(unter(z(lx + dx, ly + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall((lx + x0) * 0.7, (ly + y0) * 1.3) - 0.5) * 0.14 + (zufall(Math.floor((lx + x0) / 3), Math.floor((ly + y0) / 3)) - 0.5) * 0.1 + (zufall(Math.floor((lx + x0) / 9), Math.floor((ly + y0) / 9)) - 0.5) * 0.12;
       const hell = unten ? Math.max(0.45, 1 - h(lx, ly) * 0.12) : 1; U[ly * (C + 1) + lx] = [(r / 4) * j * hell, (g / 4) * j * hell, (b / 4) * j * hell]; }
-    const pos: number[] = [], col: number[] = [], uv: number[] = [], nor: number[] = [], wpos: number[] = [], mpos: number[] = [];
+    /* Wasserspiegel je Eckpunkt (gemeinsam für benachbarte Kacheln, also ohne Stufen): knapp über dem höchsten Punkt ringsum */
+    const wl = (cx: number, cy: number) => { let m = -9; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) m = Math.max(m, h(Math.max(-1, Math.min(C + 1, cx + dx)), Math.max(-1, Math.min(C + 1, cy + dy)))); return m + 0.06; };
+    const pos: number[] = [], col: number[] = [], uv: number[] = [], nor: number[] = [], wpos: number[] = [], mpos: number[] = [], wcol: number[] = [], mcol: number[] = [];
     for (let ty = 0; ty < C; ty++) for (let tx = 0; tx < C; tx++) {
       const q = z(tx, ty), scharf = AUFLAGE.has(q), fz = farbe(q), jit = 1 + (zufall((tx + x0) * 1.7, (ty + y0) * 0.9) - 0.5) * 0.12;
       const ecken = [[tx, ty], [tx + 1, ty], [tx + 1, ty + 1], [tx, ty + 1]];
@@ -121,11 +142,14 @@ class Welt3D {
       const tri = (tx + ty) % 2 ? [[0, 3, 1], [1, 3, 2]] : [[0, 3, 2], [0, 2, 1]];
       for (const t of tri) for (const i of t) { const e = v[i]; pos.push(...e.p); col.push(...e.c); uv.push(e.p[0] / 7, e.p[2] / 7);
         const n = new THREE.Vector3(h(e.lx - 1, e.ly) - h(e.lx + 1, e.ly), 2, h(e.lx, e.ly - 1) - h(e.lx, e.ly + 1)).normalize(); nor.push(n.x, n.y, n.z); }
-      if (this.ix.arten[q]?.wasser) { const hw = Math.max(...v.map((e) => e.p[1])) + 0.12, X = tx + x0, Y = ty + y0; (q === "o" ? mpos : wpos).push(X, hw, Y, X, hw, Y + 1, X + 1, hw, Y + 1, X, hw, Y, X + 1, hw, Y + 1, X + 1, hw, Y); }
+      if (this.ix.arten[q]?.wasser) { const X = tx + x0, Y = ty + y0; const moor = q === "o", nass = (a: number, b: number) => Boolean(this.ix.arten[z(a, b)]?.wasser);
+        /* Schaum: Ecke liegt am Ufer, wenn eines der vier anliegenden Felder kein Wasser ist */
+        const schaum = (cx: number, cy: number) => (nass(cx - 1, cy - 1) && nass(cx, cy - 1) && nass(cx - 1, cy) && nass(cx, cy) ? (moor ? 0.9 : 0.86) : moor ? 1.15 : 1.32);
+        for (const [ax, ay] of [[0, 0], [0, 1], [1, 1], [0, 0], [1, 1], [1, 0]]) { (moor ? mpos : wpos).push(X + ax, wl(tx + ax, ty + ay), Y + ay); const f = schaum(tx + ax, ty + ay); (moor ? mcol : wcol).push(f, f, f); } }
     }
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); g.computeBoundingSphere();
     const m = new THREE.Mesh(g, BODEN); m.receiveShadow = true; this.szene.add(m); s.obj.push(m); s.boden = m;
-    for (const [p, mat] of [[wpos, WASSER], [mpos, MOORWASSER]] as const) if (p.length) { const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(p, 3)); wg.computeVertexNormals(); const wm = new THREE.Mesh(wg, mat); wm.receiveShadow = true; this.szene.add(wm); s.obj.push(wm); }
+    for (const [p, c, mat] of [[wpos, wcol, WASSER], [mpos, mcol, MOORWASSER]] as const) if (p.length) { const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(p, 3)); wg.setAttribute("color", new THREE.Float32BufferAttribute(c, 3)); wg.setAttribute("uv", new THREE.Float32BufferAttribute(new Array((p.length / 3) * 2).fill(0), 2)); wg.computeVertexNormals(); const wm = new THREE.Mesh(wg, mat); wm.receiveShadow = true; this.szene.add(wm); s.obj.push(wm); }
   }
 
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
@@ -222,7 +246,7 @@ class Welt3D {
 
   /* ───────── Bild für Bild ───────── */
   bild() {
-    const dt = Math.min(0.05, this.uhr.getDelta()), T = this.tasten, H = this.held;
+    const dt = Math.min(0.05, this.uhr.getDelta()), T = this.tasten, H = this.held; ZEIT.value += dt;
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
     if (this.warte.length) this.bauen(this.warte.shift()!);
     if (performance.now() > this.naechsterBlick) { this.naechsterBlick = performance.now() + 300; this.nachladen(); }
