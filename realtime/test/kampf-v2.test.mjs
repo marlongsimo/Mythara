@@ -27,7 +27,7 @@ check(xpFuer(2) === 359 && levelAus(359) === 2 && heldenlevel({ ...NULL, geschic
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("stab"), s));
   check(k[1].angriff.magie === 6 && k.map((x) => x.waffe.ticks).join() === "4,5,6" && k.every((x) => x.waffe.reich === 6), "Stab L1: Trefferwert 1 + 5 = 6, Schnell 4 · Normal 5 · Fokus 6 Ticks, Reichweite 6");
   const w = k[1].waffe; check(schadenWurf(w, 0) === Math.round((1 + 1 / 3) * 1.02) && schadenWurf(w, 0.999) === Math.round((5 + 1 / 3) * 1.02), `Stab Normal: Schaden (1…5 + Magie/3) × 1,02 → ${schadenWurf(w, 0)}–${schadenWurf(w, 0.999)}`); }
-{ const B = MONSTER.bandit_dolch; check(B.lp === 40 && B.v2 && B.v2.geschick === 6 && B.v2.staerke === 4 && B.v2.ticks === 4 && B.v2.abwehr.nah === 6 && B.v2.abwehr.fern === 6 && B.v2.abwehr.magie === 4 && B.angriff.reich === 1.5, "Bandit: Geschick 6, Stärke 4 (Schaden 1–4), 4 Ticks, Abwehr 6/6/4, 40 LP, Nahkampfreichweite 1,5 wie die Helden"); }
+{ const B = MONSTER.bandit_dolch; check(B.lp === 15 && B.angriff.schaden.join() === "1,3" && B.v2 && B.v2.geschick === 6 && B.v2.staerke === 3 && B.v2.ticks === 4 && B.v2.abwehr.nah === 6 && B.v2.abwehr.fern === 6 && B.v2.abwehr.magie === 4 && B.angriff.reich === 1.5, "Bandit: Geschick 6, Stärke 3 (Schaden 1–3), 4 Ticks, Abwehr 6/6/4, 15 LP, Nahkampfreichweite 1,5 wie die Helden"); }
 
 /* 2. Simulation: Duelle in der Weltzone (eigene Gegnerwerte) */
 const K = KARTEN.kreuzwald; setzeKarte(K, FEIN);
