@@ -18,7 +18,9 @@ type Index = { stand: string; chunkFelder: number; start: [number, number]; gebi
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
 type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; bruecken?: Bruecke[] };
+/** Eine Brücke als 3D-Deck: Rechteck in Weltfeldern und die Höhe der Lauffläche */
+type Bruecke = { x0: number; z0: number; x1: number; z1: number; y: number };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
@@ -89,7 +91,9 @@ export class Welt3D {
   eck(wx: number, wy: number) { const cx = Math.floor(wx / C), cy = Math.floor(wy / C);
     for (const [dx, dy] of [[0, 0], [-1, 0], [0, -1], [-1, -1]]) { const s = this.st.get(cx + dx + "_" + (cy + dy)); if (!s) continue; const lx = wx - (cx + dx) * C, ly = wy - (cy + dy) * C; if (lx > C + 1 || ly > C + 1) continue; return s.d.hoehe[(ly + 1) * (C + 3) + lx + 1] / 100; }
     return 0; }
-  hoehe(x: number, z: number) { const xi = Math.floor(x), zi = Math.floor(z), fx = x - xi, fz = z - zi;
+  /** Bodenhöhe (Weltfelder) – auf einer Brücke die Höhe des Decks */
+  hoehe(x: number, z: number) { const s = this.chunkBei(x, z); if (s && s.bruecken) for (const b of s.bruecken) if (x >= b.x0 && x <= b.x1 && z >= b.z0 && z <= b.z1) return b.y; return this.gelaendeHoehe(x, z); }
+  gelaendeHoehe(x: number, z: number) { const xi = Math.floor(x), zi = Math.floor(z), fx = x - xi, fz = z - zi;
     const a = this.eck(xi, zi), b = this.eck(xi + 1, zi), c = this.eck(xi, zi + 1), e = this.eck(xi + 1, zi + 1);
     return fx + fz < 1 ? a + (b - a) * fx + (c - a) * fz : e + (c - e) * (1 - fx) + (b - e) * (1 - fz); }
   gehbar(gx: number, gz: number) { const s = this.st.get(Math.floor(gx / C) + "_" + Math.floor(gz / C)); if (!s) return false; return s.d.geh[gz - s.d.cy * C]?.[gx - s.d.cx * C] === "."; }
@@ -124,6 +128,7 @@ export class Welt3D {
     const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
     for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.hoehe(x, y);
       if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.hoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
+      if (/bruecke/.test(typ.id)) { this.bruecke(s, x, y); continue; } /* gemalte Brücke (Schrägsicht) → echtes Deck über den begehbaren Wasserfeldern */
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
@@ -139,6 +144,27 @@ export class Welt3D {
       const sp = new THREE.Sprite(this.bildMat.get(typ.id)!), f = (typ.massstab * sk0) / 48; sp.center.set(typ.anker[0], 1 - typ.anker[1]); sp.scale.set(typ.groesse[0] * f, typ.groesse[1] * f, 1); sp.position.set(x, gy, y); this.szene.add(sp); s.obj.push(sp); }
     for (const [t, g] of gruppen) { const im = new THREE.InstancedMesh(modell(typen[t])!, MATERIALIEN, g.m.length);
       g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im); s.obj.push(im); }
+  }
+  /** Brücke: die begehbaren Wasserfelder um die Stelle der gemalten Brücke bilden das Deck; es reicht ein Feld auf jedes Ufer.
+   *  Richtung: quer zum Fluss (der Fluss läuft dort, wo sich das Wasser weiter erstreckt). Holzbohlen, zwei Geländer mit Pfosten. */
+  bruecke(s: Stueck, ax: number, ay: number) {
+    const d = s.d, wasser = (wx: number, wz: number) => { const c = this.chunkBei(wx + 0.5, wz + 0.5); if (!c) return false; const q = c.d.boden[wz - c.d.cy * C + 1]?.[wx - c.d.cx * C + 1]; return Boolean(q && this.ix.arten[q]?.wasser); };
+    const geh = (wx: number, wz: number) => { const c = this.chunkBei(wx + 0.5, wz + 0.5); return Boolean(c && c.d.geh[wz - c.d.cy * C]?.[wx - c.d.cx * C] === "."); };
+    let x0 = 1e9, z0 = 1e9, x1 = -1e9, z1 = -1e9, n = 0, wx0 = 1e9, wx1 = -1e9, wz0 = 1e9, wz1 = -1e9;
+    for (let dz = -8; dz <= 3; dz++) for (let dx = -8; dx <= 8; dx++) { const gx = Math.floor(ax) + dx, gz = Math.floor(ay) + dz; if (!wasser(gx, gz)) continue;
+      wx0 = Math.min(wx0, gx); wx1 = Math.max(wx1, gx); wz0 = Math.min(wz0, gz); wz1 = Math.max(wz1, gz);
+      if (geh(gx, gz)) { n++; x0 = Math.min(x0, gx); x1 = Math.max(x1, gx); z0 = Math.min(z0, gz); z1 = Math.max(z1, gz); } }
+    if (!n) return; void d; const quer = wz1 - wz0 > wx1 - wx0; /* der Fluss läuft von Norden nach Süden: die Brücke geht von Westen nach Osten */
+    if (quer) { x0 -= 1; x1 += 2; z1 += 1; } else { z0 -= 1; z1 += 2; x1 += 1; }
+    let y = 0; for (const [px, pz] of [[x0, z0], [x1, z0], [x0, z1], [x1, z1]]) y = Math.max(y, this.gelaendeHoehe(px, pz)); y += 0.28;
+    const g = new THREE.Group(), holz = new THREE.MeshLambertMaterial({ color: 0x8a6440 }), dunkel = new THREE.MeshLambertMaterial({ color: 0x5c4028 });
+    const lang = quer ? x1 - x0 : z1 - z0, breit = quer ? z1 - z0 : x1 - x0, mx = (x0 + x1) / 2, mz = (z0 + z1) / 2;
+    for (let i = 0; i < Math.ceil(lang / 0.45); i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(quer ? 0.4 : breit, 0.12, quer ? breit : 0.4), i % 2 ? holz : dunkel); const t = -lang / 2 + 0.225 + i * 0.45;
+      b.position.set(quer ? mx + t : mx, y - 0.06, quer ? mz : mz + t); b.castShadow = true; b.receiveShadow = true; g.add(b); }
+    for (const seite of [-1, 1]) { const o = (breit / 2 - 0.08) * seite, gel = new THREE.Mesh(new THREE.BoxGeometry(quer ? lang : 0.1, 0.1, quer ? 0.1 : lang), dunkel);
+      gel.position.set(quer ? mx : mx + o, y + 0.75, quer ? mz + o : mz); gel.castShadow = true; g.add(gel);
+      for (let k = 0; k <= Math.ceil(lang / 1.5); k++) { const t = -lang / 2 + Math.min(lang, k * 1.5), p = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), dunkel); p.position.set(quer ? mx + t : mx + o, y + 0.35, quer ? mz + o : mz + t); p.castShadow = true; g.add(p); } }
+    this.szene.add(g); s.obj.push(g); (s.bruecken || (s.bruecken = [])).push({ x0, z0, x1, z1, y });
   }
   textur(pfad: string, fertig?: (t: THREE.Texture) => void): THREE.Texture { let t = this.bildTex.get(pfad);
     if (!t) { t = this.bilder.load(BILD + pfad, fertig ? (q) => setTimeout(() => fertig(q), 0) : undefined); t.colorSpace = THREE.SRGBColorSpace; this.bildTex.set(pfad, t); }

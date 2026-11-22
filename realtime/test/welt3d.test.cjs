@@ -30,6 +30,10 @@ const BILD = process.env.BILD || '';
   const g0 = lauf.g; await p.mouse.move(640, 400); await p.mouse.down({ button: 'right' }); await p.mouse.move(760, 400, { steps: 6 }); await p.mouse.up({ button: 'right' });
   check(await p.evaluate((g) => Math.abs(window.EZW.welt3d.motor.gieren - g) > 0.3, g0), 'Kamera dreht sich mit der rechten Maustaste');
   if (BILD) await p.screenshot({ path: BILD + 'gedreht.png' });
+  /* Ziehen (linke Maustaste, am Handy ein Finger) dreht die Kamera ebenfalls – der Held bleibt stehen */
+  { const g1 = await p.evaluate(() => window.EZW.welt3d.motor.gieren), o1 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); await p.mouse.move(500, 300); await p.mouse.down(); await p.mouse.move(380, 300, { steps: 8 }); await p.mouse.up(); await p.waitForTimeout(300);
+    const g2 = await p.evaluate(() => window.EZW.welt3d.motor.gieren), o2 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })), marke = await p.evaluate(() => window.EZW.welt3d.marke.visible);
+    check(Math.abs(g2 - g1) > 0.3 && Math.hypot(o2.x - o1.x, o2.y - o1.y) < 0.3 && !marke, `Ziehen dreht die Kamera (${(g2 - g1).toFixed(2)}), ohne loszulaufen`); }
   /* Antippen: dorthin gehen */
   const ziel = await p.evaluate(() => { const W = window.EZW.welt3d, o = W.ort; for (const [dx, dy] of [[-4, 0], [4, 0], [0, 4], [0, -4], [-3, 3], [3, 3]]) { const x = o.x + dx, y = o.y + dy; if (W.raster.frei(x, y, 0.3)) { const q = W.motor.bildschirm(x, W.motor.hoehe(x, y), y); if (q) return { x, y, px: q.x, py: q.y }; } } return null; });
   if (ziel) { await p.mouse.click(ziel.px, ziel.py); await p.waitForFunction((z) => Math.hypot(window.EZW.welt3d.ort.x - z.x, window.EZW.welt3d.ort.y - z.y) < 0.8, ziel, { timeout: 30000 }).catch(() => {}); }

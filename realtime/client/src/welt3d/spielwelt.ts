@@ -43,7 +43,7 @@ export class Spielwelt3D implements WeltKern {
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
   hier = ""; gesperrt = false; gemerkteStelle = false; /** Schild erhoben (Kampf, Torvald) */ schildHoch = false; /** wie eine Phaser-Szene: Ende melden (der Kampf räumt sich dann auf) */ events = { once: (_n: string, _f: () => void): void => {} }; nah: { text: string; tat: () => void } | null = null;
   figur!: FigurLeinwand; marke!: THREE.Mesh; schild = document.createElement("div"); private blende = document.createElement("div");
-  private stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
+  private stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; private zugX = 0; private zugY = 0; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
 
   async start(behaelter: HTMLElement, fertig: () => void): Promise<void> {
     try { const h = localStorage.getItem("ez_held") || ""; if (HELDEN[h]) this.held = h; } catch { /* privat */ }
@@ -51,7 +51,7 @@ export class Spielwelt3D implements WeltKern {
     for (const g of WELT.gesperrteRegionen) delete w.regionen[g]; this.index = w;
     for (const r of Object.values(w.regionen)) for (let j = 0; j < r.region.chunks[1]; j++) for (let i = 0; i < r.region.chunks[0]; i++) this.gueltig.add(chunkName(r.region.ursprung[0] + i, r.region.ursprung[1] + j));
     const s = this.startPunkt(); this.ort = { ...s }; await this.strom(true); const frei = this.raster.naechstFrei(s); if (frei) this.ort = { x: frei.x, y: frei.y };
-    document.body.classList.add("dorf", "stadt", "welt3d"); $("#ez-dorf-titel").style.display = "none"; $("#ez-dorf-hilfe").textContent = HANDY ? "Finger ziehen: laufen · tippen: dorthin gehen · zwei Finger: Kamera" : "WASD: laufen · Klick: dorthin gehen · rechte Maustaste: Kamera drehen · Mausrad: Zoom";
+    document.body.classList.add("dorf", "stadt", "welt3d"); $("#ez-dorf-titel").style.display = "none"; $("#ez-dorf-hilfe").textContent = HANDY ? "Tippen: dorthin gehen · ziehen: Kamera drehen · zwei Finger: Zoom" : "Klick: dorthin gehen · ziehen: Kamera drehen · Mausrad: Zoom · WASD: laufen";
     await this.motor.start(behaelter, this.ort.x, this.ort.y);
     const h = aktiverHeld(); this.figur = new FigurLeinwand(this.motor.szene, MODUL[this.held] || "held.krieger", HOEHE, h ? { ...h, ich: true } : null, angelegteEbenen);
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffe9a8, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.motor.szene.add(this.marke);
@@ -106,14 +106,14 @@ export class Spielwelt3D implements WeltKern {
     addEventListener("keydown", (ev) => { if (!ev.repeat && !this.gesperrt) taste(ev, true); if ((ev.key === "e" || ev.key === "E" || ev.key === "Enter") && !ev.repeat && this.nah && !this.gesperrt && !(ev.target as HTMLElement).closest?.("input, textarea")) this.nah.tat(); });
     addEventListener("keyup", (ev) => taste(ev, false)); addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
     const el = this.motor.r.domElement, finger = new Set<number>();
-    el.addEventListener("pointerdown", (e) => { if (e.pointerType === "touch") finger.add(e.pointerId); if (finger.size > 1) { this.stickWeg(); return; }
-      if (e.button !== 0 || this.stick || this.gesperrt) return; this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), weit: 0 };
-      if (e.pointerType === "touch") { const s = $("#ez-stick"); s.hidden = false; s.style.left = e.clientX + "px"; s.style.top = e.clientY + "px"; ($("#ez-stick i") as HTMLElement).style.transform = "translate(-50%, -50%)"; } });
-    el.addEventListener("pointermove", (e) => { const st = this.stick; if (!st || e.pointerId !== st.id) return; const dx = e.clientX - st.x, dy = e.clientY - st.y, l = Math.hypot(dx, dy), m = 46; st.weit = Math.max(st.weit, l); if (e.pointerType !== "touch") return;
-      ($("#ez-stick i") as HTMLElement).style.transform = `translate(calc(-50% + ${dx / Math.max(l, 1) * Math.min(l, m)}px), calc(-50% + ${dy / Math.max(l, 1) * Math.min(l, m)}px))`;
-      if (l < 8) { this.rx = 0; this.ry = 0; } else { const k = Math.min(1, l / m); this.rx = dx / l * k; this.ry = dy / l * k; } });
-    const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return;
-      if (st.weit < 12 && performance.now() - st.t < 450) { const b = this.motor.boden(e.clientX, e.clientY); if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } const touch = e.pointerType === "touch"; this.stickWeg(); if (touch) { this.rx = 0; this.ry = 0; } };
+    /* Tippen/Klicken = dorthin gehen · mit einem Finger oder der Maus ziehen = Kamera drehen und neigen · zwei Finger = Zoom (das macht der Motor) */
+    el.addEventListener("pointerdown", (e) => { if (e.pointerType === "touch") finger.add(e.pointerId); if (finger.size > 1) { this.stick = null; return; }
+      if (e.button !== 0 || this.stick) return; this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), weit: 0 }; this.zugX = e.clientX; this.zugY = e.clientY; try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } });
+    el.addEventListener("pointermove", (e) => { const st = this.stick; if (!st || e.pointerId !== st.id || finger.size > 1) return; st.weit = Math.max(st.weit, Math.hypot(e.clientX - st.x, e.clientY - st.y));
+      if (st.weit < 10) return; const m = this.motor, dx = e.clientX - this.zugX, dy = e.clientY - this.zugY; this.zugX = e.clientX; this.zugY = e.clientY;
+      m.gieren -= dx * 0.006; m.neigen = Math.max(0.42, Math.min(1.35, m.neigen + dy * 0.004)); });
+    const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null;
+      if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY); if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } };
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
   }
