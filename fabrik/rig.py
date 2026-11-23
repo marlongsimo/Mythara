@@ -339,8 +339,22 @@ X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1)); RUHE = {b.nam
 def setze(name, q):
     """q: Drehung des Knochens im Raum der Figur, gemessen gegen seine Grundhaltung (einschließlich aller Elternknochen)"""
     e = ELTERN[name]; lokal = (ganz[e].inverted() @ q) if e else q; r = RUHE[name]; PB[name].rotation_quaternion = r.inverted() @ lokal @ r; ganz[name] = q
+def beine_eng():
+    """„beine_eng“: <halber Fußabstand in m> in der Ausrüstungsliste – breit modellierte Beine (Meshy) in jeder Bewegung leicht nach innen drehen,
+    bis die Knöchel so weit von der Mitte stehen; die Füße bleiben flach. Ohne die Angabe: 0 (unverändert)"""
+    if not AUS.get("beine_eng"): return {"L": 0.0, "R": 0.0}
+    w = {}
+    for S_, v in (("L", 1), ("R", -1)):
+        h, f = KN["oberschenkel." + S_].head_local, KN["fuss." + S_].head_local; ab = abs(f.x) - float(AUS["beine_eng"])
+        w[S_] = v * min(12.0, max(0.0, math.degrees(math.atan2(ab, h.z - f.z))))
+    print("Beine enger:", {k: round(x, 1) for k, x in w.items()}, "Grad"); return w
+ENG = beine_eng()
 def dreh(name, *schritte):
     """zusätzlich zum Elternknochen um Achsen des Raums drehen (Grad); der erste Schritt wirkt zuerst. +x: Rumpf nach vorn, Bein nach hinten"""
+    teil, _, S_ = name.partition(".")
+    if S_ in ENG and ENG[S_]:                                                                         # breite Beine nach innen (beine_eng), Fuß wieder waagerecht
+        if teil == "oberschenkel": schritte = ((Y, ENG[S_]),) + tuple(schritte)
+        elif teil == "fuss": schritte = ((Y, -ENG[S_]),) + tuple(schritte)
     q = Quaternion()
     for achse, w in schritte: q = Quaternion(achse, math.radians(w)) @ q
     e = ELTERN[name]; setze(name, (ganz[e] @ q) if e else q)

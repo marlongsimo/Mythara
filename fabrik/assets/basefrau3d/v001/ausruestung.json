@@ -331,5 +331,6 @@
     "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
     "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
-  }
+  },
+  "beine_eng": 0.12
 }
