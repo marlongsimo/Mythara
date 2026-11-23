@@ -34,7 +34,7 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
   lederpanzer: { id: "lederpanzer", name: "Anfänger-Lederpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.lederpanzer"],
     werte: [["Abwehr Nahkampf", "+3"], ["Abwehr Fernkampf", "+3"], ["Abwehr Magie", "+3"]],
     text: "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen." },
-  magiepanzer: { id: "magiepanzer", name: "Anfänger-Magiepanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
+  magiepanzer: { id: "magiepanzer", name: "Anfänger-Robe", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
     werte: [["Abwehr Nahkampf", "+2"], ["Abwehr Fernkampf", "+2"], ["Abwehr Magie", "+4"]],
     text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
   eisenwacht: { id: "eisenwacht", name: "Eisenwacht-Brustpanzer", platz: "brust", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.brust.eisenwacht"],
