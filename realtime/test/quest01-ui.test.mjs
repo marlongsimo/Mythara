@@ -82,7 +82,9 @@ try {
   { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
     check(gelb < 6, `Ziel außer Reichweite der Minikarte: noch kein gelbes ! (${gelb} gelbe Bildpunkte)`); }
-  await anna.evaluate(() => window.EZW.welt3d.versetzen(6446.5, 6436.5)); await anna.waitForTimeout(2500);
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6446.5, 6436.5));
+  await anna.waitForFunction(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return false; const n = c.width, d = c.getContext("2d").getImageData(0, 0, n, n).data; let k = 0;
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k > 25; }, null, { timeout: 20000, polling: 500 }).catch(() => {});
   { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
     check(gelb > 25, `In Reichweite: gelbes ! auf der Minikarte (${gelb} gelbe Bildpunkte)`); }
