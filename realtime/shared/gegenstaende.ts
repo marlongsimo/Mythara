@@ -70,6 +70,12 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     werte: [["Schaden", "Werte folgen"]], text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
   sterndorn: { id: "sterndorn", name: "Sterndorn", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
     werte: [["Schaden", "Werte folgen"]], text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
+  mondlangbogen: { id: "mondlangbogen", name: "Mond-Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
+    werte: [["Schaden", "Werte folgen"]], text: "Ein hoher Bogen mit geschwungenen Wurfarmen, bronzebeschlagen und mit grünen Steinen besetzt." },
+  mondkurzbogen: { id: "mondkurzbogen", name: "Mond-Kurzbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.kurz"],
+    werte: [["Schaden", "Werte folgen"]], text: "Die handliche Schwester des Mond-Langbogens – schneller gezogen, weniger Reichweite." },
+  sternarmbrust: { id: "sternarmbrust", name: "Sternarmbrust", platz: "waffe", art: "Armbrust", seltenheit: "selten", ebenen: ["waffe.sternarmbrust"],
+    werte: [["Schaden", "Werte folgen"]], text: "Eine schwere Armbrust mit sternförmigem Bügel und grün lackiertem Schaft." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
@@ -112,7 +118,7 @@ const WAFFEN_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
   { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
   { s: "mythisch", w: "Sternenschimmernd", text: "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet." },
 ];
-for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"], ["sternbrecher", "Sternbrecher", "er"], ["sterndorn", "Sterndorn", "er"]] as const) {
+for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"], ["sternbrecher", "Sternbrecher", "er"], ["sterndorn", "Sterndorn", "er"], ["mondlangbogen", "Mond-Langbogen", "er"], ["mondkurzbogen", "Mond-Kurzbogen", "er"], ["sternarmbrust", "Sternarmbrust", "e"]] as const) {
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }

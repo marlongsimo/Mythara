@@ -1,0 +1,9 @@
+{
+  "id": "waffe.mondbogen.lang",
+  "name": "Mond-Langbogen",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell, auf Länge und Lage der vorhandenen Waffe dieser Klasse gebracht; ausgelagert, Stufen mit fabrik/stufen_bauen.sh",
+  "herkunft": "Meshy"
+}
