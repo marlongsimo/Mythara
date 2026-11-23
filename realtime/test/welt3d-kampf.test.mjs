@@ -53,7 +53,7 @@ try {
     tasten: ["a", "q", "e", "r"].map((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display !== "none"), modus: getComputedStyle(document.querySelector("#ez-modus")).display !== "none", an: document.querySelector('[data-taste="a"] small').textContent }));
   check(hud.stufe === "Lv 9" && hud.lp === "69 / 69" && hud.name === "Einfaches Schwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
   check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 50, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
-  check(JSON.stringify(hud.tasten) === "[true,false,false,false]" && !hud.modus && hud.an === "Angreifen", "Nur die Taste „Angreifen“ – keine Fähigkeiten, kein Waffenwechsel");
+  check(JSON.stringify(hud.tasten) === "[false,false,false,false]" && !hud.modus, "Keine Aktionstasten unten rechts (kein „Angreifen“, keine Fähigkeiten, kein Waffenwechsel)");
   await anna.evaluate(() => { window.__drops = []; new MutationObserver((m) => { for (const r of m) for (const n of r.addedNodes) if (n.classList && n.classList.contains("xpdrop")) window.__drops.push({ text: n.textContent, bilder: n.querySelectorAll("img").length }); }).observe(document.body, { childList: true, subtree: true }); });
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.feind").length >= 1, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForFunction(() => [...window.EZK.bilder.values()].filter((b) => b.fl.geladen).length >= 1, null, { timeout: 60000 }).catch(() => {});
