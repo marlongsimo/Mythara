@@ -377,6 +377,63 @@
         "tod",
         "stich2h"
       ]
+    },
+    {
+      "id": "waffe.mondbogen.lang",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffe.mondbogen.lang/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "angriff": "bogen",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "bogen"
+      ]
+    },
+    {
+      "id": "waffe.mondbogen.kurz",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "waffe.mondbogen.kurz/v001/quelle/bogen.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "angriff": "bogen",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "bogen"
+      ]
+    },
+    {
+      "id": "waffe.sternarmbrust",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.sternarmbrust/v001/quelle/armbrust.glb",
+      "griff": 0.55,
+      "griff2_ort": [
+        -0.08,
+        0,
+        0.02
+      ],
+      "klasse": "armbrust",
+      "angriff": "armbrust1h",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "armbrust1h"
+      ]
     }
   ],
   "stuecke_behalten": true,

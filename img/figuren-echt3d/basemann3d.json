@@ -293,6 +293,30 @@
    ],
    "datei": "basemann3d.teile/waffe.langschwert.glb"
   },
+  "waffe.mondbogen.kurz": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.mondbogen.kurz.glb"
+  },
+  "waffe.mondbogen.lang": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.mondbogen.lang.glb"
+  },
   "waffe.schwert.ritter": {
    "art": "starr",
    "platz": "hand_r",
@@ -355,6 +379,18 @@
     "zauber_stab"
    ],
    "datei": "basemann3d.teile/waffe.stab.hirte.glb"
+  },
+  "waffe.sternarmbrust": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "armbrust1h"
+   ],
+   "datei": "basemann3d.teile/waffe.sternarmbrust.glb"
   },
   "waffe.sternbrecher": {
    "art": "starr",
