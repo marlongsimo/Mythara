@@ -52,7 +52,7 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 export class Darsteller {
   private wurzel: THREE.Object3D; private mixer: THREE.AnimationMixer; private aktion: THREE.AnimationAction | null = null; private name = "";
   private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null;
-  private soll = new Set<string>(); private ladend = new Set<string>();
+  private soll = new Set<string>(); private ladend = new Set<string>(); private aus = { ...AUSSCHNITT };
   /** Leinwand in Bildpunkten und wie viele Bildpunkte eine Kameraeinheit hat */
   readonly breite: number; readonly hoehe: number; readonly fussY: number;
   private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number, private url = "") {
@@ -62,7 +62,11 @@ export class Darsteller {
     this.mixer = new THREE.AnimationMixer(this.wurzel);
     this.mixer.addEventListener("finished", () => { const f = this.fertig; this.fertig = null; if (f) f(); });
     const ppm = (figurHoehePx / STEHHOEHE) * aufloesung; this.ppm = ppm;
-    this.breite = Math.ceil(2 * AUSSCHNITT.seite * ppm); this.hoehe = Math.ceil((AUSSCHNITT.oben + AUSSCHNITT.unten) * ppm); this.fussY = AUSSCHNITT.oben / (AUSSCHNITT.oben + AUSSCHNITT.unten);
+    /* große Figuren (Bosse über 2 m, weite Flügel): Ausschnitt nach ihrer Größe, sonst der übliche */
+    this.wurzel.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(this.wurzel), gr = box.getSize(new THREE.Vector3());
+    const seite = Math.max(AUSSCHNITT.seite, Math.max(Math.abs(box.min.x), Math.abs(box.max.x), Math.abs(box.min.z), Math.abs(box.max.z)) + 0.15);
+    const oben = Math.max(AUSSCHNITT.oben, gr.y * Math.cos(NEIGUNG) + seite * Math.sin(NEIGUNG) + 0.1); this.aus = { seite, oben, unten: AUSSCHNITT.unten };
+    this.breite = Math.ceil(2 * seite * ppm); this.hoehe = Math.ceil((oben + AUSSCHNITT.unten) * ppm); this.fussY = oben / (oben + AUSSCHNITT.unten);
     gemeinsam().buehne.add(this.wurzel);
   }
   static async erstellen(url: string, figurHoehePx: number, aufloesung = 2): Promise<Darsteller> { return new Darsteller(await vorlageLaden(url), figurHoehePx, aufloesung, url); }
@@ -122,6 +126,7 @@ export class Darsteller {
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
     const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt); if (PULS.size) pulsieren();
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
+    if (k.right !== this.aus.seite || k.top !== this.aus.oben) { k.left = -this.aus.seite; k.right = this.aus.seite; k.top = this.aus.oben; k.bottom = -this.aus.unten; k.updateProjectionMatrix(); }
     for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.wurzel || (!!fx && c === fx.gruppe);
     this.wurzel.visible = !fx || !fx.vergangen; z.render(b, k); this.wurzel.visible = false; if (fx) fx.gruppe.visible = false;
     ziel.clearRect(0, 0, this.breite, this.hoehe); ziel.drawImage(z.domElement, 0, 0);
