@@ -1,0 +1,26 @@
+{
+  "name": "Sternenschimmernder Eiddolch",
+  "gegenstand": "eiddolch_mythisch",
+  "klasse": "dolch",
+  "art": "Dolch",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eiddolch.mythisch",
+    "quelle": "fabrik/assets/waffen/dolch/waffe.eiddolch",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eiddolch.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eiddolch.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/dolch/waffe.eiddolch/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
+}

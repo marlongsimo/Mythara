@@ -1,0 +1,26 @@
+{
+  "name": "Rostiger Sterndorn",
+  "gegenstand": "sterndorn_gewoehnlich",
+  "klasse": "speer",
+  "art": "Speer",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sterndorn.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/speer/waffe.sterndorn",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sterndorn.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sterndorn.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/speer/waffe.sterndorn/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Fleckig vom Rost, die Vergoldung längst abgegriffen – aber noch scharf genug."
+}

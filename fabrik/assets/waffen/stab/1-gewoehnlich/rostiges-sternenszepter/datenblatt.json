@@ -1,0 +1,26 @@
+{
+  "name": "Rostiges Sternenszepter",
+  "gegenstand": "sternenszepter_gewoehnlich",
+  "klasse": "stab",
+  "art": "Stab",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternenszepter.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/stab/waffe.sternenszepter",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternenszepter.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternenszepter.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/stab/waffe.sternenszepter/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "zauber_stab",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Fleckig vom Rost, die Vergoldung längst abgegriffen – aber noch scharf genug."
+}

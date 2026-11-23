@@ -1,0 +1,31 @@
+{
+  "name": "Veredelter Stab",
+  "gegenstand": "hirtenstab_selten",
+  "klasse": "stab",
+  "art": "Stab",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.stab.hirte.selten",
+    "quelle": "fabrik/assets/waffen/stab/waffe.stab.hirte",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.stab.hirte.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.stab.hirte.selten.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "zauber_stab",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Schaden": "16–30",
+    "Schadensart": "Magie",
+    "Angriffe je Sekunde": "0,83",
+    "Reichweite": "8 Felder"
+  },
+  "werte_offen": false,
+  "text": "Blank poliert und frisch gefasst – deutlich mehr als ein Anfängerstück."
+}

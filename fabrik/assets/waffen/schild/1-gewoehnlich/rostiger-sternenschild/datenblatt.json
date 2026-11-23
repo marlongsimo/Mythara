@@ -1,0 +1,27 @@
+{
+  "name": "Rostiger Sternenschild",
+  "gegenstand": "sternenschild_gewoehnlich",
+  "klasse": "schild",
+  "art": "Schild",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Nebenhand",
+  "modell": {
+    "ebene": "schild.sternen.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/schild/schild.sternen",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.sternen.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.sternen.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/schild/schild.sternen/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "block",
+    "weitere": [
+      "block",
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Fleckig vom Rost, die Vergoldung längst abgegriffen – aber noch scharf genug."
+}

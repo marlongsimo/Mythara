@@ -1,0 +1,31 @@
+{
+  "name": "Sternenschimmerndes Schwert",
+  "gegenstand": "ritterschwert_mythisch",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.schwert.ritter.mythisch",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.schwert.ritter",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.schwert.ritter.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.schwert.ritter.mythisch.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Schaden": "18–30",
+    "Schadensart": "Nahkampf",
+    "Angriffe je Sekunde": "1,11",
+    "Reichweite": "1,6 Felder"
+  },
+  "werte_offen": false,
+  "text": "Schillernd wie Öl auf Wasser, von leuchtenden Adern durchzogen."
+}

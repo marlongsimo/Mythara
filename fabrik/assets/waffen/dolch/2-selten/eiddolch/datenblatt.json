@@ -1,0 +1,26 @@
+{
+  "name": "Eiddolch",
+  "gegenstand": "eiddolch",
+  "klasse": "dolch",
+  "art": "Dolch",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eiddolch",
+    "quelle": "fabrik/assets/waffen/dolch/waffe.eiddolch",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eiddolch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eiddolch.glb",
+    "stufenbild": "fabrik/assets/waffen/dolch/waffe.eiddolch/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert."
+}

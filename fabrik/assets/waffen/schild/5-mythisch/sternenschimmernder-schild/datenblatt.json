@@ -1,0 +1,32 @@
+{
+  "name": "Sternenschimmernder Schild",
+  "gegenstand": "rundschild_mythisch",
+  "klasse": "schild",
+  "art": "Schild",
+  "seltenheit": "Mythisch",
+  "platz": "Nebenhand",
+  "modell": {
+    "ebene": "schild.rund.mythisch",
+    "quelle": "fabrik/assets/waffen/schild/schild.rund",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.rund.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.rund.mythisch.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "block",
+    "weitere": [
+      "block",
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Abwehr Nahkampf (von vorn)": "60 %",
+    "Abwehr Fernkampf (von vorn)": "40 %",
+    "Abwehr Magie (von vorn)": "20 %",
+    "Schutzwinkel": "±70°"
+  },
+  "werte_offen": false,
+  "text": "Schillernd wie Öl auf Wasser, von leuchtenden Adern durchzogen."
+}

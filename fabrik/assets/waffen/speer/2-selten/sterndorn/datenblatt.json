@@ -1,0 +1,26 @@
+{
+  "name": "Sterndorn",
+  "gegenstand": "sterndorn",
+  "klasse": "speer",
+  "art": "Speer",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sterndorn",
+    "quelle": "fabrik/assets/waffen/speer/waffe.sterndorn",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sterndorn.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sterndorn.glb",
+    "stufenbild": "fabrik/assets/waffen/speer/waffe.sterndorn/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite."
+}

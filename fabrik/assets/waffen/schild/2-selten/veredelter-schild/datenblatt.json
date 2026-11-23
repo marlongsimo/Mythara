@@ -1,0 +1,32 @@
+{
+  "name": "Veredelter Schild",
+  "gegenstand": "rundschild_selten",
+  "klasse": "schild",
+  "art": "Schild",
+  "seltenheit": "Selten",
+  "platz": "Nebenhand",
+  "modell": {
+    "ebene": "schild.rund.selten",
+    "quelle": "fabrik/assets/waffen/schild/schild.rund",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.rund.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.rund.selten.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "block",
+    "weitere": [
+      "block",
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Abwehr Nahkampf (von vorn)": "60 %",
+    "Abwehr Fernkampf (von vorn)": "40 %",
+    "Abwehr Magie (von vorn)": "20 %",
+    "Schutzwinkel": "±70°"
+  },
+  "werte_offen": false,
+  "text": "Blank poliert und frisch gefasst – deutlich mehr als ein Anfängerstück."
+}

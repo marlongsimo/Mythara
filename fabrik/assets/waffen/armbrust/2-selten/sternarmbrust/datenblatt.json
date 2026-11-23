@@ -1,0 +1,26 @@
+{
+  "name": "Sternarmbrust",
+  "gegenstand": "sternarmbrust",
+  "klasse": "armbrust",
+  "art": "Armbrust",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternarmbrust",
+    "quelle": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternarmbrust.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternarmbrust.glb",
+    "stufenbild": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "armbrust1h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Eine schwere Armbrust mit sternförmigem Bügel und grün lackiertem Schaft."
+}

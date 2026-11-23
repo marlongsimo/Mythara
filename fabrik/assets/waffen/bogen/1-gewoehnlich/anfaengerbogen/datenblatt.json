@@ -1,0 +1,31 @@
+{
+  "name": "Anfängerbogen",
+  "gegenstand": "jagdbogen",
+  "klasse": "bogen",
+  "art": "Bogen",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.bogen.jagd",
+    "quelle": "fabrik/assets/waffen/bogen/waffe.bogen.jagd",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.bogen.jagd.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.bogen.jagd.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "bogen",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Schaden": "25–45",
+    "Schadensart": "Fernkampf",
+    "Angriffe je Sekunde": "0,69",
+    "Reichweite": "9 Felder"
+  },
+  "werte_offen": false,
+  "text": "Ein Eibenbogen, wie ihn die Jäger des Kreuzwalds führen. Hoher Einzelschaden aus sicherer Entfernung."
+}

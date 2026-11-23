@@ -1,0 +1,31 @@
+{
+  "name": "Geschwärztes Schwert",
+  "gegenstand": "ritterschwert_episch",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.schwert.ritter.episch",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.schwert.ritter",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.schwert.ritter.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.schwert.ritter.episch.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Schaden": "18–30",
+    "Schadensart": "Nahkampf",
+    "Angriffe je Sekunde": "1,11",
+    "Reichweite": "1,6 Felder"
+  },
+  "werte_offen": false,
+  "text": "Nachtschwarz behandelt, die Beschläge schimmern im Dunkeln blau."
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Glutgoldener Schild",
+  "gegenstand": "rundschild_legendaer",
+  "klasse": "schild",
+  "art": "Schild",
+  "seltenheit": "Legendär",
+  "platz": "Nebenhand",
+  "modell": {
+    "ebene": "schild.rund.legendaer",
+    "quelle": "fabrik/assets/waffen/schild/schild.rund",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.rund.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.rund.legendaer.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "block",
+    "weitere": [
+      "block",
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {
+    "Abwehr Nahkampf (von vorn)": "60 %",
+    "Abwehr Fernkampf (von vorn)": "40 %",
+    "Abwehr Magie (von vorn)": "20 %",
+    "Schutzwinkel": "±70°"
+  },
+  "werte_offen": false,
+  "text": "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse."
+}

@@ -22,7 +22,7 @@ for f in basemann3d basefrau3d; do for id in waffe.eidschwert waffe.eiddolch waf
 done; done; done
 # Anfängerwaffen (Grundstufe gewöhnlich): Schwert und Schild über das Metall (selten = poliert), Bogen und Stab über die Holzfarbe
 for f in basemann3d basefrau3d; do for st in selten episch legendaer mythisch; do
-  for id in waffe.schwert.ritter schild.rund; do "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st poliert=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"; done
+  for id in waffe.schwert.ritter schild.rund; do "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st poliert=1 stark=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"; done
   for id in waffe.bogen.jagd waffe.stab.hirte; do "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st art=leder 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"; done
 done; done
 # Sternenszepter: Kristall je Stufe eigens färben

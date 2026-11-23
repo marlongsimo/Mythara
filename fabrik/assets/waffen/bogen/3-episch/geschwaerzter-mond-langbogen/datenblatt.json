@@ -1,0 +1,26 @@
+{
+  "name": "Geschwärzter Mond-Langbogen",
+  "gegenstand": "mondlangbogen_episch",
+  "klasse": "bogen",
+  "art": "Bogen",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.mondbogen.lang.episch",
+    "quelle": "fabrik/assets/waffen/bogen/waffe.mondbogen.lang",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.mondbogen.lang.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.mondbogen.lang.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/bogen/waffe.mondbogen.lang/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "bogen",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ]
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
+}
