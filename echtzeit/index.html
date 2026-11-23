@@ -485,6 +485,24 @@
     .tafel.eigen .faecher .ifeld { height: auto; aspect-ratio: 1; }
     .tafel.eigen .iwahl { margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(20,15,10,.7); border: 1px solid #5a4528; } .tafel.eigen .iwahl b { font-family: Cinzel, Georgia, serif; color: #f0d48a; } .tafel.eigen .iwahl .reihe { margin-top: 8px; }
     .tafel.untersuchen .iart { margin: 2px 0 8px; color: #b9a57c; font-size: 13px; } .tafel.untersuchen .igross { width: 160px; height: 160px; display: block; margin: 0 auto 8px; border-radius: 10px; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #6a5232; }
+    /* Quest-Tab: nur Titel in einer Zeile; dunkel + grau = nicht gestartet · dunkel + hell = gestartet · hell + dunkel = verfolgt; Reiter „Abgeschlossen“ */
+    .seitentab .qreiter { display: flex; gap: 4px; margin: 6px 0 4px; flex: none; } .seitentab .qreiter button { flex: 1; padding: 6px 4px; border-radius: 7px 7px 0 0; border: 1.5px solid #6d5632; border-bottom-color: #c99a3c; background: #1a140d; color: #a8946a; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
+    .seitentab .qreiter button.an { background: linear-gradient(#3a2e1c, #2a2014); color: #ffe7b0; border-color: #c99a3c; border-bottom-color: transparent; }
+    .seitentab .qliste { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; overflow: auto; } .seitentab .qzeile { display: block; width: 100%; padding: 9px 10px; border-radius: 8px; text-align: left; font: 600 14px Cinzel, Georgia, serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; -webkit-touch-callout: none; }
+    .seitentab .qzeile.neu { background: #17120c; border: 1.5px solid #4a3c26; color: #7d7462; } .seitentab .qzeile.aktiv { background: #1f1810; border: 1.5px solid #8a6a3a; color: #ffe7b0; }
+    .seitentab .qzeile.verfolgt { background: linear-gradient(#f3e3b8, #dcc48c); border: 1.5px solid #c99a3c; color: #2e2110; } .seitentab .qzeile.fertig { background: #17120c; border: 1.5px solid #4a3c26; color: #b9a57c; }
+    /* Quest-Details: Pergament in der Bildschirmmitte */
+    #ez-konto .tafel.questinfo { width: min(460px, calc(100vw - 28px)); max-height: min(88vh, 640px); overflow: auto; text-align: left; background: linear-gradient(#f4e6c0, #e2cd98); border: 2px solid #8a6a3a; color: #33250f; box-shadow: 0 10px 40px rgba(0,0,0,.7), inset 0 0 40px rgba(138,106,58,.25); }
+    #ez-konto .tafel.questinfo h2 { color: #3a2a10; margin: 0 110px 2px 0; text-shadow: none; } #ez-konto .tafel.questinfo .qort { margin: 0 0 6px; font-size: 12.5px; color: #6b5330; } #ez-konto .tafel.questinfo .zier { opacity: .7; }
+    #ez-konto .tafel.questinfo h3 { margin: 12px 0 4px; font: 700 13px Cinzel, Georgia, serif; letter-spacing: .06em; text-transform: uppercase; color: #7a5a22; } #ez-konto .tafel.questinfo p, #ez-konto .tafel.questinfo li { color: #33250f; font-size: 14px; line-height: 1.45; }
+    #ez-konto .tafel.questinfo .qkeine { margin: 0; color: #6b5330; font-style: italic; } #ez-konto .tafel.questinfo .qvor { margin: 0; padding-left: 18px; }
+    #ez-konto .tafel.questinfo .qschritte { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } #ez-konto .tafel.questinfo .qschritte li { padding-left: 22px; position: relative; }
+    #ez-konto .tafel.questinfo .qschritte li.erledigt { color: #8b7a56; font-size: 13px; } #ez-konto .tafel.questinfo .qschritte li.erledigt::before { content: "✓"; position: absolute; left: 2px; color: #5c7a2e; font-weight: 700; }
+    #ez-konto .tafel.questinfo .qschritte li.jetzt { font-weight: 600; padding: 8px 10px 8px 26px; border-radius: 7px; background: rgba(138,106,58,.16); border: 1px solid rgba(138,106,58,.5); } #ez-konto .tafel.questinfo .qschritte li.jetzt::before { content: "➤"; position: absolute; left: 8px; color: #8a5a12; }
+    #ez-konto .tafel.questinfo .qschritte li.ende::before { content: "★"; position: absolute; left: 2px; color: #a8791c; } #ez-konto .tafel.questinfo .qbelohnung { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid rgba(138,106,58,.5); font-size: 12.5px; color: #5a4520; }
+    #ez-konto .tafel.questinfo .schliessen { color: #3a2a10; } #ez-konto .tafel.questinfo .ecke { border-color: #8a6a3a; }
+    #ez-konto .tafel.questinfo .qverfolgen { position: absolute; top: 12px; right: 46px; padding: 5px 9px; border-radius: 7px; border: 1.5px solid #8a6a3a; background: rgba(255,255,255,.35); color: #3a2a10; font: 600 12px Inter, sans-serif; cursor: pointer; width: auto; margin: 0; }
+    #ez-konto .tafel.questinfo .qverfolgen.an { background: #3a2a10; color: #f4e6c0; }
     .tafel.skillinfo { max-width: 380px; text-align: left; } .tafel.skillinfo .skopf { display: flex; align-items: center; gap: 12px; } .tafel.skillinfo .skopf h2 { margin: 0; }
     .tafel.skillinfo .skopf small { color: #b9a57c; font-size: 13px; } .tafel.skillinfo .sz.gross { width: 48px; height: 48px; flex: none; display: grid; place-items: center; font-size: 28px; border-radius: 50%; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #8a6a3a; }
     .tafel.skillinfo .sz.gross img { width: 34px; height: 34px; } .tafel.skillinfo h3 { margin: 12px 0 4px; font-size: 14px; color: #e8c97a; letter-spacing: .04em; } .tafel.skillinfo p { margin: 0; line-height: 1.45; color: #f1e4c4; }
@@ -715,6 +733,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwtkim4t"></script>
+  <script src="spiel.js?v=mwtno1ue"></script>
 </body>
 </html>
