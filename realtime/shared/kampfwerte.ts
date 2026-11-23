@@ -5,20 +5,22 @@
  *
  * Tick: 1 Tick = 0,5 Sekunden. Jeder Angriff dauert eine ganze Zahl von Ticks und fällt auf einen Tick.
  * Sechs Skills (Level 1–100), alle mit derselben Kurve: 85 % der kumulierten OSRS-XP je Level, kaufmännisch gerundet (Level 2 = 71, Level 99 = 11.079.266, Level 100 = 12.232.486).
- * Trefferwurf (bleibt Mythara): Zufall(0, Trefferwert) gegen Zufall(0, Verteidigung des Ziels für diese Angriffsart); Treffer nur, wenn der Angriffswurf strikt höher ist.
+ * Trefferwurf (OSRS-Rechnung, seit 23.11.2026): Zufall(0, Angriffswurf) gegen Zufall(0, Verteidigungswurf des Ziels für diese Angriffsart); Treffer nur, wenn der Angriffswurf strikt höher ist.
+ *   Jeder Wurf = effektives Level × (Ausrüstungsbonus + 64); effektives Level = Level + Stilbonus + 8 (Helden) bzw. Level + 9 (Gegner).
  * Schadenswurf (bleibt Mythara): ganzzahlig 1 … Max Hit.
- * Nahkampf – 4 Stile:  Trefferwert = Geschick + Stilbonus + Geschick der Ausrüstung;  Max Hit = ⌊0,5 + (Stärke + Stilbonus + 8) × (W + 64) ÷ 640⌋ (mind. 1), W = Summe aller Stärkeboni der Ausrüstung.
+ * Nahkampf – 4 Stile:  Angriffswurf = (Geschick + Stilbonus + 8) × (Geschick-Bonus der Ausrüstung + 64);  Max Hit = ⌊0,5 + (Stärke + Stilbonus + 8) × (W + 64) ÷ 640⌋ (mind. 1), W = Summe aller Stärkeboni der Ausrüstung.
  *   Akkurat +3 Geschick (4 Geschick-XP je Schaden) · Ausgewogen +1 Geschick, +1 Stärke, +1 Defense (je 1,33 Geschick/Stärke/Defense) · Aggressiv +3 Stärke (4 Stärke) · Verteidigung +3 Defense (4 Defense).
- * Fernkampf – 3 Stile: Trefferwert = Fernkampf + Stilbonus + fernAngriff ÷ 3;  Max Hit = ⌊0,5 + (Fernkampf + Stilbonus + 8) × (fernStaerke gesamt + 64) ÷ 640⌋ (mind. 1).
+ * Fernkampf – 3 Stile: Angriffswurf = (Fernkampf + Stilbonus + 8) × (fernAngriff gesamt + 64) – Bögen enthalten die Pfeile, Armbrüste die Bolzen;  Max Hit = ⌊0,5 + (Fernkampf + Stilbonus + 8) × (fernStaerke gesamt + 64) ÷ 640⌋ (mind. 1).
  *   Akkurat +3 Fernkampf (4 Fernkampf-XP) · Schnell −1 Tick (4 Fernkampf) · Fern +2 Felder, +3 Defense (2 Fernkampf + 2 Defense).
- * Magie – 3 Stile:     Trefferwert = Magie + Stilbonus + Magische Genauigkeit der Waffe;  Max Hit = ⌊0,5 + (Magie + Stilbonus) × (magieStaerke gesamt + 64) ÷ 640⌋ (mind. 1; ohne die +8).
+ * Magie – 3 Stile:     Angriffswurf = (Magie + Stilbonus + 8) × (Magische Genauigkeit gesamt + 64) – der Stab enthält den Zauber (Magie-Stärke);  Max Hit = ⌊0,5 + (Magie + Stilbonus) × (magieStaerke gesamt + 64) ÷ 640⌋ (mind. 1; ohne die +8).
  *   Akkurat +3 Magie (2 Magie-XP) · Schnell −1 Tick (2 Magie) · Defensiv +1 Magie, +3 Defense (1,33 Magie + 1 Defense).
  * Lebenspunkte: Startlevel 10 (feste Start-XP dazu); 1,33 XP je tatsächlich verursachtem Schadenspunkt (jeder Stil); Max-LP = LP-Level (Start 10).
  * Defense: bekommt XP nur noch über die Stile (kein XP mehr je Block). Die Stilboni auf Defense zählen für die Verteidigung gegen Nah- und Fernkampf.
- * Verteidigung: Nahkampf und Fernkampf = Defense-Level + Stilbonus + Ausrüstung; Magie = Magie-Level + Ausrüstung.
+ * Verteidigung: Nahkampf und Fernkampf = (Defense + Stilbonus + 8) × (Rüstungsbonus + 64); Magie = (⌊0,7 × Magie⌋ + ⌊0,3 × (Defense + Stilbonus + 8)⌋) × (Magie-Rüstungsbonus + 64).
+ *   Metallrüstung senkt wie in OSRS den Fernkampf- und Magie-Angriff (negative Boni).
  * XP werden intern mit Nachkommastellen geführt (Rest je Skill), gebucht werden ganze XP.
  * Heldenlevel (wie das Combat Level in OSRS, ohne Prayer) = ⌊0,25 × (Defense + Lebenspunkte) + max(0,325 × (Geschick + Stärke), 0,325 × (Fernkampf + ⌊Fernkampf ÷ 2⌋), 0,325 × (Magie + ⌊Magie ÷ 2⌋))⌋. Erholung: 1 LP je 100 Game-Ticks (50 s), immer (LP_REGEN_TICKS).
- * Gegner: feste Zahlen ohne Ausrüstung (config.ts MonsterDef.v2): Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Ticks, Abwehr, Nahkampfreichweite wie die Helden.
+ * Gegner wie OSRS-Monster (config.ts MonsterDef.v2): Level der Kampfart, Defense, Magie, optional Angriffs- und Stärkebonus, Verteidigungsboni je Angriffsart, Ticks.
  */
 import { GEGENSTAENDE, Platz, WaffenWerte } from "./gegenstaende";
 
@@ -79,6 +81,8 @@ export const stilIndex = (s: number | undefined, art: Art = "nah"): number => (t
 /** Max Hit nach der OSRS-Grundformel: ⌊0,5 + (Level + Stilbonus + 8) × (Ausrüstungsbonus + 64) ÷ 640⌋, mindestens 1.
  *  Magie (vereinfacht, grund = 0): effektive Magie = Magie-Level + Stilbonus, ohne die +8. */
 export const maxHit = (level: number, stilbonus: number, ausruestung: number, grund = 8): number => Math.max(1, Math.floor(0.5 + (level + stilbonus + grund) * (ausruestung + 64) / 640));
+/** OSRS-Wurfwert (Angriff oder Verteidigung): effektives Level × (Bonus + 64), nie unter 0 */
+export const wurfWert = (effLevel: number, bonus: number): number => Math.max(0, effLevel) * Math.max(0, bonus + 64);
 export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: number): number => maxHit(level, stilbonus, magieStaerke, 0);
 
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
@@ -86,16 +90,20 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k)])) as Record<Skill, number>;
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const s = stilIndex(stil, W.art), S = STILE[W.art][s], p = (k: Skill) => S.plus[k] || 0;
-  /* Ausrüstung gesamt: Waffe und die Boni aller angelegten Teile */
-  const aus = { geschick: W.geschick || 0, staerke: W.staerke || 0, fernAngriff: W.fernAngriff || 0, fernStaerke: W.fernStaerke || 0, magieStaerke: W.magieStaerke || 0 };
-  const abwehr: Record<Art, number> = { nah: lv.defense + p("defense"), fern: lv.defense + p("defense"), magie: lv.magie }; /* Defense-Level (+ Stilbonus) für Nah- und Fernkampf, Magie-Level für Magie */
+  /* Ausrüstung gesamt: Waffe und die Boni aller angelegten Teile (Rüstung kann Angriffsboni senken: Metall gegen Fernkampf und Magie) */
+  const aus = { geschick: W.geschick || 0, staerke: W.staerke || 0, fernAngriff: W.fernAngriff || 0, fernStaerke: W.fernStaerke || 0, genau: W.genau || 0, magieStaerke: W.magieStaerke || 0 };
+  const ab: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; /* Verteidigungsboni der Ausrüstung je Angriffsart */
   for (const pl of ["waffe", "kopf", "nebenhand", "brust", "beine"] as Platz[]) { /* auch die Waffe: Zweihänder und Speer haben eine kleine eigene Abwehr */ const G = angelegt[pl] && GEGENSTAENDE[angelegt[pl]!]; if (!G) continue;
-    if (G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) abwehr[a] += G.abwehr[a];
-    if (G.bonus) for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "magieStaerke"] as const) aus[k] += G.bonus[k] || 0; }
+    if (G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) ab[a] += G.abwehr[a];
+    if (G.bonus) for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += G.bonus[k] || 0; }
+  /* OSRS: Verteidigungswurf = effektives Defense-Level × (Bonus + 64); gegen Magie zählt 70 % Magie-Level und 30 % effektive Defense */
+  const effDef = lv.defense + p("defense") + 8;
+  const abwehr: Record<Art, number> = { nah: wurfWert(effDef, ab.nah), fern: wurfWert(effDef, ab.fern), magie: wurfWert(Math.floor(0.7 * lv.magie) + Math.floor(0.3 * effDef), ab.magie) };
   const angriff: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; let schaden: [number, number]; const plus = 0, ticks = Math.max(1, W.ticks + (S.ticks || 0)), reich = W.reich + (S.reich || 0);
-  if (W.art === "nah") { angriff.nah = lv.geschick + p("geschick") + aus.geschick; schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
-  else if (W.art === "fern") { angriff.fern = lv.fernkampf + p("fernkampf") + aus.fernAngriff / 3; schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
-  else { angriff.magie = lv.magie + p("magie") + (W.genau || 0); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
+  /* OSRS: Angriffswurf = (Level + Stilbonus + 8) × (Angriffsbonus + 64) */
+  if (W.art === "nah") { angriff.nah = wurfWert(lv.geschick + p("geschick") + 8, aus.geschick); schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
+  else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
+  else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
   return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x } };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */
@@ -109,13 +117,16 @@ export function skillXpPruefen(v: unknown): SkillXp { const o = (v || {}) as Par
 /** Trefferchance bei stetigen Würfen (Anzeige und Balancing): A gegen V */
 export const trefferChance = (a: number, v: number): number => (a <= 0 ? 0 : v <= 0 ? 1 : a >= v ? 1 - v / (2 * a) : a / (2 * v));
 
-/** Gegner nach denselben Regeln wie die Helden (v3), aber ohne Ausrüstung: eine Kampfart (Nahkampf, Fernkampf oder Magie) mit den Skill-Leveln dafür
- *  – Nahkampf: Geschick und Stärke, Fernkampf: Fernkampf, Magie: Magie – und feste Verteidigungswerte gegen alle drei Angriffsarten.
- *  Skills fehlen = Level 1. Kein Stilbonus, keine Ausrüstungsboni. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
-export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; /** Angriffstakt in Ticks */ ticks: number; /** Verteidigung je Angriffsart */ abwehr: Record<Art, number> }
-/** Trefferwert und Max Hit eines Gegners für seine Angriffsart – dieselben Formeln wie kampfwerte(), mit Ausrüstungsbonus 0 */
+/** Gegner nach den OSRS-Regeln für Monster: eine Kampfart (Nahkampf, Fernkampf oder Magie) mit den Skill-Leveln dafür
+ *  – Nahkampf: Geschick und Stärke, Fernkampf: Fernkampf, Magie: Magie –, ein Defense-Level und Verteidigungsboni gegen alle drei Angriffsarten.
+ *  Wie in OSRS: effektives Level = Level + 9 (Monster haben keinen Stil), Wurf = effektives Level × (Bonus + 64); gegen Magie verteidigt das Magie-Level.
+ *  Skills fehlen = Level 1, Angriffs- und Stärkebonus fehlen = 0. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
+export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; defense?: number; /** Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit) */ angriffBonus?: number; staerkeBonus?: number;
+  /** Angriffstakt in Ticks */ ticks: number; /** Verteidigungsboni je Angriffsart */ abwehr: Record<Art, number> }
+/** Angriffswurf, Max Hit und Verteidigungswürfe eines Gegners für seine Angriffsart */
 export function gegnerWerte(v: GegnerV3, art: Art): { treffer: number; maxHit: number; abwehr: Record<Art, number> } {
-  const L = (n?: number) => Math.max(1, n || 1), abwehr = v.abwehr;
-  if (art === "fern") return { treffer: L(v.fernkampf), maxHit: maxHit(L(v.fernkampf), 0, 0), abwehr };
-  if (art === "magie") return { treffer: L(v.magie), maxHit: maxHitMagie(L(v.magie), 0, 0), abwehr };
-  return { treffer: L(v.geschick), maxHit: maxHit(L(v.staerke), 0, 0), abwehr }; }
+  const L = (n?: number) => Math.max(1, n || 1), aB = v.angriffBonus || 0, sB = v.staerkeBonus || 0;
+  const abwehr: Record<Art, number> = { nah: wurfWert(L(v.defense) + 9, v.abwehr.nah), fern: wurfWert(L(v.defense) + 9, v.abwehr.fern), magie: wurfWert(L(v.magie) + 9, v.abwehr.magie) };
+  if (art === "fern") return { treffer: wurfWert(L(v.fernkampf) + 9, aB), maxHit: maxHit(L(v.fernkampf), 0, sB, 9), abwehr };
+  if (art === "magie") return { treffer: wurfWert(L(v.magie) + 9, aB), maxHit: maxHitMagie(L(v.magie), 0, sB), abwehr };
+  return { treffer: wurfWert(L(v.geschick) + 9, aB), maxHit: maxHit(L(v.staerke), 0, sB, 9), abwehr }; }

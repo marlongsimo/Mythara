@@ -121,8 +121,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
   drops?: { nur?: string; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
-  /** Kampfregeln v3: Gegner ohne Ausrüstung – die Skill-Level ihrer Kampfart (Nahkampf: Geschick und Stärke; Fernkampf; Magie) und Verteidigung gegen alle drei Angriffsarten.
-   *  Trefferwert und Max Hit rechnet kampfwerte.ts gegnerWerte() mit den Heldenformeln. Angriffstakt in Ticks (1 Tick = 0,5 s). */
+  /** Kampfregeln v3 (OSRS-Rechnung): die Skill-Level der Kampfart (Nahkampf: Geschick und Stärke; Fernkampf; Magie), Defense- und Magie-Level und Verteidigungsboni gegen alle drei Angriffsarten.
+   *  Würfe und Max Hit rechnet kampfwerte.ts gegnerWerte() wie OSRS für Monster (Level + 9). Angriffstakt in Ticks (1 Tick = 0,5 s). */
   v2?: GegnerV3;
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
@@ -159,7 +159,7 @@ export const MONSTER: Record<string, MonsterDef> = {
   bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 6, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
     angriff: { name: "Dolch", art: "nah", schaden: [1, 1], takt: 2.0, reich: 1.5, aushol: 0 },
     /* v3 (Simulation 23.11.2026, Helden starten mit 10 LP und Max Hit 1): Nahkämpfer – Geschick 5 = Trefferwert 5 · Stärke 1 → Max Hit 1 (ab Stärke 7: 2) · Abwehr 4/4/3 · 6 LP */
-    v2: { geschick: 5, staerke: 1, ticks: 4, abwehr: { nah: 4, fern: 4, magie: 3 } },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* OSRS-Rechnung: ein Level-1-Monster ohne Boni (Simulation 23.11.2026) */
     drops: [ /* 1. Splitter · 2. Ausrüstung oder Kleiner Heiltrank · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
       { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
       { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }, { g: "kleiner_heiltrank", chance: 8 }] }, /* 2. Wurf: je 1 % Trainingsausrüstung, 8 % Kleiner Heiltrank */

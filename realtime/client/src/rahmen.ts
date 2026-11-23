@@ -194,12 +194,12 @@ function questDetails(id: string): void {
   addEventListener("ez-quest", neu); neu(); }
 /** Infoblatt zu einem Skill (in der Bildschirmmitte): wofür er gut ist, wie man XP bekommt, Stand */
 const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
-  geschick: { wofuer: "Wie oft du im Nahkampf triffst (Trefferwert = Geschick + Stilbonus + Geschick-Bonus der Ausrüstung). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Akkurat: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
+  geschick: { wofuer: "Wie oft du im Nahkampf triffst (Angriffswurf = (Geschick + Stilbonus + 8) × (Geschick-Bonus der Ausrüstung + 64)). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Akkurat: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
   staerke: { wofuer: "Wie hart du im Nahkampf zuschlägst: dein höchster Schaden (Max Hit) steigt mit der Stärke und dem Stärke-Bonus der gesamten Ausrüstung.", xp: "Nahkampf im Stil Aggressiv: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
   fernkampf: { wofuer: "Wie oft du mit Bogen oder Armbrust triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Fernkampf-Stärke der Ausrüstung.", xp: "Fernkampf in den Stilen Akkurat und Schnell: 4 XP je abgezogenem Lebenspunkt. Im Stil Fern: 2 XP." },
-  magie: { wofuer: "Wie oft du mit dem Stab triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Magie-Stärke der Ausrüstung. Außerdem deine Verteidigung gegen Magie.", xp: "Magie in den Stilen Akkurat und Schnell: 2 XP je abgezogenem Lebenspunkt. Im Stil Defensiv: 1,33 XP." },
+  magie: { wofuer: "Wie oft du mit dem Stab triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Magie-Stärke der Ausrüstung. Außerdem zählt sie zu 70 % für deine Verteidigung gegen Magie.", xp: "Magie in den Stilen Akkurat und Schnell: 2 XP je abgezogenem Lebenspunkt. Im Stil Defensiv: 1,33 XP." },
   lp: { wofuer: "Deine Lebenspunkte: so viele wie dein Lebenspunkte-Level (du startest auf Level 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
-  defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
+  defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf und zu 30 % gegen Magie (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
 };
 function skillInfo(k: Skill): void {
   const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
@@ -333,20 +333,21 @@ const chatHinweis = (t: string) => { const el = tabEl(); const p = el && el.quer
 export function ausruestungsWerte(): void {
   const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
   const ab = { nah: 0, fern: 0, magie: 0 }; for (const G of teile) if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; }
+  const vz = (v: number) => (v < 0 ? "−" + -v : "+" + v), mal = { fern: 0, genau: 0 }; for (const G of teile) if (G.bonus) { mal.fern += G.bonus.fernAngriff || 0; mal.genau += G.bonus.genau || 0; }
   const angriff: [string, string][] = W ? [["Kampfart", W.art === "nah" ? "Nahkampf" : W.art === "fern" ? "Fernkampf" : "Magie"],
     ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampf-Angriff", "+" + (W.fernAngriff || 0)], ["Fernkampf-Stärke", "+" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Magie-Stärke", "+" + (W.magieStaerke || 0)]] as [string, string][]),
     ["Angriffstempo", `${W.ticks} Ticks (${z(W.ticks * TICK)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"]] : [["Waffe", "keine (Fäuste)"]];
   const liste = (z: [string, string][]) => `<dl class="iwerte">${z.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
   tafel("taschen eigen ausruestungswerte", `<h2>Werte der Ausrüstung</h2><div class="zier"></div><p class="klein">${teile.length ? teile.map((G) => G.name).join(" · ") : "Nichts angelegt"}</p>
-    <h3>Angriff</h3>${liste(angriff)}<h3>Verteidigung</h3>${liste([["Nahkampf", "+" + ab.nah], ["Fernkampf", "+" + ab.fern], ["Magie", "+" + ab.magie]])}
+    <h3>Angriff</h3>${liste(angriff)}${mal.fern || mal.genau ? `<h3>Rüstung auf den Angriff</h3>${liste([...(mal.fern ? [["Fernkampf-Angriff", vz(mal.fern)]] : []), ...(mal.genau ? [["Magische Genauigkeit", vz(mal.genau)]] : [])] as [string, string][])}` : ""}<h3>Verteidigung</h3>${liste([["Nahkampf", vz(ab.nah)], ["Fernkampf", vz(ab.fern)], ["Magie", vz(ab.magie)]])}
     <p class="klein">Nur die Gegenstände – deine Skills (Geschick, Defense, Magie …) kommen im Kampf noch dazu.</p>`, () => { /* schließen */ }); }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
-  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und Magieabwehr", lp: "Max-LP = 19 + Level · 1 XP je verursachtem Schadenspunkt", defense: "Abwehr Nah- und Fernkampf · 10 XP je Block" };
+  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und 70 % der Magieabwehr", lp: "Max-LP = Level (Start 10) · 1,33 XP je Schadenspunkt", defense: "Abwehr gegen alle Angriffe (gegen Magie zu 30 %)" };
   const zeilen = SKILLS.map((s) => { const S = skillStand(x[s], s); return `<li><b>${SKILL_NAME[s]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${WAS[s]} · ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></li>`; }).join("");
   const z = (v: number) => String(Math.round(v * 10) / 10).replace(".", ",");
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>
-    <p class="klein">Heldenlevel ${hl} (wie das Kampflevel: Defense und Leben, dazu die stärkste Kampfart) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
+    <p class="klein">Heldenlevel ${hl} (wie das Kampflevel: Defense und Leben, dazu die stärkste Kampfart) · ${k.max} Lebenspunkte · Abwehrwurf Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
     <p class="klein">Jeder Lebenspunkt Schaden bringt XP: Nah- und Fernkampf 4, Magie 2 – verteilt nach dem gewählten Stil – und dazu 1,33 Lebenspunkte-XP.</p>`, zu); }
 /** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
 function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament" | "trank" | "trankrot"): void {
