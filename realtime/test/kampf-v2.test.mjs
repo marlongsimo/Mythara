@@ -23,7 +23,7 @@ check(xpFuer(2) === 359 && levelAus(359) === 2 && heldenlevel({ ...NULL, geschic
   const s20 = kampfwerte({ ...NULL, geschick: xpFuer(10), staerke: xpFuer(10) }, { waffe: "ritterschwert" }, 2); check(s20.waffe.schaden[1] === Math.floor((5 + 10 / 3) * 1.05) && nah(s20.angriff.nah, 15 * 0.95), `Geschick und Stärke 10, Aggressiv: Treffer 14,25, Max Hit ${s20.waffe.schaden[1]} (Dokument: (10 + 5) × 0,95 / ⌊(5 + 10/3) × 1,05⌋)`); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("bogen"), s));
   check(nah(k[1].angriff.fern, 1 + 10 / 3) && k[1].waffe.schaden.join() === "1,10", "Kurzbogen L1: Trefferwert 1 + 10/3 = 4,33, Schaden 1–10 (der Skill erhöht den Schaden nicht)");
-  check(k.map((x) => x.waffe.ticks).join() === "3,4,5" && k.map((x) => Math.round(x.waffe.reich * 10) / 10).join() === "5.4,6,6.6", "Kurzbogen: Akkurat 3 Ticks / 5,4 · Normal 4 / 6 · Fern 5 / 6,6 Felder"); }
+  check(k.map((x) => x.waffe.ticks).join() === "3,4,5" && k.map((x) => Math.round(x.waffe.reich * 10) / 10).join() === "5,6,7", "Kurzbogen: Akkurat 3 Ticks / 5 · Normal 4 / 6 · Fern 5 / 7 Felder (ganze Felder)"); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("stab"), s));
   check(k[1].angriff.magie === 6 && k.map((x) => x.waffe.ticks).join() === "4,5,6" && k.every((x) => x.waffe.reich === 6), "Stab L1: Trefferwert 1 + 5 = 6, Schnell 4 · Normal 5 · Fokus 6 Ticks, Reichweite 6");
   const w = k[1].waffe; check(schadenWurf(w, 0) === Math.round((1 + 1 / 3) * 1.02) && schadenWurf(w, 0.999) === Math.round((5 + 1 / 3) * 1.02), `Stab Normal: Schaden (1…5 + Magie/3) × 1,02 → ${schadenWurf(w, 0)}–${schadenWurf(w, 0.999)}`); }

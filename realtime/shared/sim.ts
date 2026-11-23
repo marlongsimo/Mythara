@@ -390,8 +390,8 @@ export class Sim {
       if (!w.held) {
         if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; w.pfad = []; } /* Einzelkampf: der Held kämpft schon mit einem anderen */
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
-        if (ziel && abstand(ziel, w.heim) > (this.karte.LEINE ?? K.LEINE) && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
-        if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && abstand(o, w.heim) <= (this.karte.LEINE ?? K.LEINE)) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
+        if (ziel && (this.felder ? feldAbstand(ziel, w.heim) : abstand(ziel, w.heim)) > (this.karte.LEINE ?? K.LEINE) && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
+        if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && (this.felder ? feldAbstand(o, w.heim) : abstand(o, w.heim)) <= (this.karte.LEINE ?? K.LEINE)) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel && D.spezial && w.cdS <= 0 && abstand(w, ziel) <= D.spezial.reich) { w.ladeT = D.spezial.laden; w.ladeX = ziel.x; w.ladeY = ziel.y; w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "laden", id: w.id, x: ziel.x, y: ziel.y, r: D.spezial.radius, t: D.spezial.laden }); }
         else if (ziel) this.jagen(w, ziel, D.angriff.reich);
         else if (this.karte.WANDERN > 0 && abstand(w, w.heim) <= this.karte.WANDERN + 1.5) { /* streifen: ab und zu zu einer neuen Stelle um das Lager, dazwischen stehen bleiben */

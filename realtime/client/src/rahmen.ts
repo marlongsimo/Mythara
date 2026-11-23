@@ -196,6 +196,12 @@ export function seitenTab(art: TabArt): boolean {
   tabJetzt = art; const el = document.createElement("aside"); el.id = "ez-" + art + "tab"; el.className = "seitentab tab-" + art; el.setAttribute("aria-label", TAB_NAME[art]); document.body.appendChild(el);
   document.querySelector(`#ez-leiste [data-l="${art}"]`)?.classList.add("an");
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
+  { /* mit dem Finger ziehen = scrollen (die Seite sperrt Wischgesten für die Kamera, deshalb hier selbst); wer gezogen hat, tippt danach nichts an */
+    let zug: { id: number; y: number; top: number; weit: number } | null = null, gezogen = false;
+    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" ? null : { id: e.pointerId, y: e.clientY, top: el.scrollTop, weit: 0 }; });
+    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; el.scrollTop = zug.top - dy; } });
+    const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
+    el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest"]) addEventListener(t, tabZeichnen); return true; }
 const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests" };

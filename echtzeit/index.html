@@ -548,6 +548,7 @@
     .seitentab .twahl { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; padding: 5px 7px; border-radius: 8px; background: rgba(0,0,0,.35); border: 1px solid #6a5232; }
     .seitentab .twahl b { font: 600 13px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .twahl .reihe { display: flex; gap: 4px; flex-wrap: wrap; }
     .seitentab .twahl button { padding: 4px 8px; border-radius: 7px; border: 1px solid #8a6a3a; background: #2e2519; color: #f3e3b5; font: 12px Georgia, serif; cursor: pointer; } .seitentab .twahl button.haupt { background: linear-gradient(#6a4f28, #3b2c19); border-color: #c89b52; color: #ffe7a8; }
+    .seitentab { touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; } /* auf dem Handy: im Tab wischen = scrollen (sonst sperrt body touch-action: none) */
     .seitentab .tskills { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; flex: 1; align-content: space-evenly; }
     .seitentab .tskills li { display: grid; grid-template-columns: 26px minmax(0, 1fr) 24px 1.1fr 24px; align-items: center; gap: 6px; }
     .seitentab .tskills .sz img { width: 26px; height: 26px; display: block; } .seitentab .tskills b { font: 600 13px Cinzel, Georgia, serif; color: #ffe7b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -631,6 +632,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwt3ybzu"></script>
+  <script src="spiel.js?v=mwt636ou"></script>
 </body>
 </html>
