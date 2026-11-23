@@ -360,6 +360,47 @@
         "kopf",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.brust.jaeger",
+      "platz": "brust",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.brust.jaeger.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals",
+        "oberschenkel.L",
+        "oberschenkel.R"
+      ],
+      "beine_mitteln": true
+    },
+    {
+      "id": "ruestung.beine.jaeger",
+      "platz": "beine",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.beine.jaeger.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "becken",
+        "bauch",
+        "oberschenkel.L",
+        "oberschenkel.R",
+        "unterschenkel.L",
+        "unterschenkel.R",
+        "fuss.L",
+        "fuss.R"
+      ]
+    },
+    {
+      "id": "kopf.helm.jaegerkapuze",
+      "platz": "helm",
+      "glb": "basefrau3d/v001/quelle/teile/kopf.helm.jaegerkapuze.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "kopf",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {

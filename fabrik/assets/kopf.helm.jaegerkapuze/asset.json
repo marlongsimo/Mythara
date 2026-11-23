@@ -1,0 +1,9 @@
+{
+  "id": "kopf.helm.jaegerkapuze",
+  "name": "Jägerkapuze",
+  "kategorie": "ruestung",
+  "seltenheit": "gewoehnlich",
+  "aktuell": "v001",
+  "status": "Meshy „Emerald Shadow Hood“, mit fabrik/helm_anpassen.py oben=0.05 unten=-0.04 abstand=0.025",
+  "herkunft": "Meshy"
+}

@@ -46,6 +46,12 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
   eisenwachthelm: { id: "eisenwachthelm", name: "Eisenwacht-Helm", platz: "kopf", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["kopf.helm.eisenwacht"],
     werte: [["Abwehr", "Werte folgen"]],
     text: "Geschlossener Helm mit Nackenschirm und Halsschutz, die Kanten in Bronze gefasst. Gehört zum Eisenwacht-Set." },
+  jaegerwams: { id: "jaegerwams", name: "Jägerwams", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.jaeger"],
+    werte: [["Abwehr", "Werte folgen"]], text: "Dunkles, vielfach geschnürtes Leder mit grünem Halstuch – leise im Unterholz. Gehört zum Jäger-Set." },
+  jaegerhose: { id: "jaegerhose", name: "Jägerhose", platz: "beine", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.beine.jaeger"],
+    werte: [["Abwehr", "Werte folgen"]], text: "Lederhose mit Knieschützern und Taschen am Gürtel. Gehört zum Jäger-Set." },
+  jaegerkapuze: { id: "jaegerkapuze", name: "Jägerkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.jaegerkapuze"],
+    werte: [["Abwehr", "Werte folgen"]], text: "Moosgrüne Kapuze mit Blattschnalle; wirft einen Schatten über das Gesicht. Gehört zum Jäger-Set." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
