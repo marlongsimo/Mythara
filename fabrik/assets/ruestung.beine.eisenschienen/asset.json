@@ -1,0 +1,9 @@
+{
+  "id": "ruestung.beine.eisenschienen",
+  "name": "Eisenbeinschienen",
+  "kategorie": "ruestung",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy „Ironclad Greaves“, mit fabrik/beine_anpassen.py auf basemann3d (Standardwerte) und basefrau3d (abstand=0.014 min_weit=0.55 max_weit=1.45 richtung=1); Teilnetz nur an Becken, Bauch und Beinen",
+  "herkunft": "Meshy"
+}

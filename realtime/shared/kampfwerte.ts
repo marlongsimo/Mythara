@@ -71,7 +71,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k)])) as Record<Skill, number>, s = stilIndex(stil);
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const abwehr: Record<Art, number> = { nah: lv.defense, fern: lv.defense, magie: lv.magie }; /* Defense-Level für Nah- und Fernkampf, Magie-Level für Magie */
-  for (const p of ["nebenhand", "brust"] as Platz[]) { const G = angelegt[p] && GEGENSTAENDE[angelegt[p]!]; if (G && G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) abwehr[a] += G.abwehr[a]; }
+  for (const p of ["kopf", "nebenhand", "brust", "beine"] as Platz[]) { const G = angelegt[p] && GEGENSTAENDE[angelegt[p]!]; if (G && G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) abwehr[a] += G.abwehr[a]; }
   const angriff: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; let schaden: [number, number], plus = 0, bonus = 0, ticks = W.ticks, reich = W.reich;
   if (W.art === "nah") { const [fg, fs] = NAH_FAKTOR[s]; angriff.nah = (lv.geschick + (W.geschick || 0)) * fg; schaden = [1, Math.max(1, Math.floor(((W.staerke || 0) + lv.staerke / 3) * fs))]; }
   else if (W.art === "fern") { angriff.fern = lv.fernkampf + (W.fernStaerke || 0) / 3; schaden = [1, Math.max(1, W.fernStaerke || 1)]; ticks = Math.max(1, W.ticks + TICK_PLUS[s]); reich = W.reich * FERN_REICH[s]; }

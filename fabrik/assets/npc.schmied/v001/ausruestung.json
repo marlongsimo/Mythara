@@ -41,5 +41,6 @@
       "glb": "npc.schmied/v001/quelle/teile/kleidung.schuerze.glb",
       "beine_mitteln": true
     }
-  ]
+  ],
+  "arme_eng": 6
 }

@@ -382,6 +382,47 @@
         "becken",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.beine.eisenschienen",
+      "platz": "beine",
+      "glb": "basemann3d/v001/quelle/teile/ruestung.beine.eisenschienen.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "becken",
+        "bauch",
+        "oberschenkel.L",
+        "oberschenkel.R",
+        "unterschenkel.L",
+        "unterschenkel.R",
+        "fuss.L",
+        "fuss.R"
+      ]
+    },
+    {
+      "id": "ruestung.brust.eisenwacht",
+      "platz": "brust",
+      "glb": "basemann3d/v001/quelle/teile/ruestung.brust.eisenwacht.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals",
+        "oberschenkel.L",
+        "oberschenkel.R"
+      ],
+      "beine_mitteln": true
+    },
+    {
+      "id": "kopf.helm.eisenwacht",
+      "platz": "helm",
+      "glb": "basemann3d/v001/quelle/teile/kopf.helm.eisenwacht.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "kopf",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {
@@ -394,5 +435,6 @@
     "bogen": "linke Hand, Griff in der Mitte: bogen (rechte Hand zieht die Sehne)",
     "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
-  }
+  },
+  "beine_eng": 0.15
 }

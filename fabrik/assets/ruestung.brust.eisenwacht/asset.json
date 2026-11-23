@@ -1,0 +1,9 @@
+{
+  "id": "ruestung.brust.eisenwacht",
+  "name": "Eisenwacht-Brustpanzer",
+  "kategorie": "ruestung",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy „Ironbound Sentinel“ (Set mit ruestung.beine.eisenschienen), mit fabrik/teil_anpassen.py auf basemann3d (hoehe=0.95 oben=0.1 abstand=0.022 max_weit=1.5) und basefrau3d (hoehe=0.88 oben=0.06 vor=0 abstand=0.018 seite=0.78 max_weit=1.4); Schöße folgen dem Mittel beider Beine",
+  "herkunft": "Meshy"
+}

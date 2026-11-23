@@ -339,8 +339,22 @@ X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1)); RUHE = {b.nam
 def setze(name, q):
     """q: Drehung des Knochens im Raum der Figur, gemessen gegen seine Grundhaltung (einschließlich aller Elternknochen)"""
     e = ELTERN[name]; lokal = (ganz[e].inverted() @ q) if e else q; r = RUHE[name]; PB[name].rotation_quaternion = r.inverted() @ lokal @ r; ganz[name] = q
+def beine_eng():
+    """„beine_eng“: <halber Fußabstand in m> in der Ausrüstungsliste – breit modellierte Beine (Meshy) in jeder Bewegung leicht nach innen drehen,
+    bis die Knöchel so weit von der Mitte stehen; die Füße bleiben flach. Ohne die Angabe: 0 (unverändert)"""
+    if not AUS.get("beine_eng"): return {"L": 0.0, "R": 0.0}
+    w = {}
+    for S_, v in (("L", 1), ("R", -1)):
+        h, f = KN["oberschenkel." + S_].head_local, KN["fuss." + S_].head_local; ab = abs(f.x) - float(AUS["beine_eng"])
+        w[S_] = v * min(12.0, max(0.0, math.degrees(math.atan2(ab, h.z - f.z))))
+    print("Beine enger:", {k: round(x, 1) for k, x in w.items()}, "Grad"); return w
+ENG = beine_eng()
 def dreh(name, *schritte):
     """zusätzlich zum Elternknochen um Achsen des Raums drehen (Grad); der erste Schritt wirkt zuerst. +x: Rumpf nach vorn, Bein nach hinten"""
+    teil, _, S_ = name.partition(".")
+    if S_ in ENG and ENG[S_]:                                                                         # breite Beine nach innen (beine_eng), Fuß wieder waagerecht
+        if teil == "oberschenkel": schritte = ((Y, ENG[S_]),) + tuple(schritte)
+        elif teil == "fuss": schritte = ((Y, -ENG[S_]),) + tuple(schritte)
     q = Quaternion()
     for achse, w in schritte: q = Quaternion(achse, math.radians(w)) @ q
     e = ELTERN[name]; setze(name, (ganz[e] @ q) if e else q)
@@ -389,10 +403,15 @@ if ARMBRUST: BEREIT.update(o_r=(-0.1, -0.62, -0.78), u_r=(0.42, -0.85, 0.32), h_
 ANSCHLAG = mit(BEREIT, o_r=(-0.08, -0.64, -0.77), u_r=(0.6, -0.64, 0.49), h_r=(0.1, -0.99, 0.0), kl=(0.0, 0.0, -1.0), o_l=(-0.3, -0.8, -0.5), u_l=(-0.4, -0.9, 0.15))   # Hand vor dem Kinn, Lauf waagerecht
 if STAB: BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.22, -0.02, -0.98), u_l=(0.15, -0.3, -0.94)) if not LINKS else BEREIT.update(o_r=(-0.2, -0.05, -0.98), u_r=(-0.08, -0.95, -0.25), kl=(0.0, 0.05, 1.0), o_l=(0.24, -0.05, -0.97), u_l=(0.12, -0.75, -0.65))   # Unterarm waagerecht nach vorn, der Stab steht senkrecht (er liegt quer in der Faust)
 if ZIVIL: BEREIT.update(o_r=(-0.2, 0.0, -1.0), u_r=(-0.12, -0.22, -0.97), kl=(0.0, -0.7, 0.72), o_l=(0.2, 0.0, -1.0), u_l=(0.12, -0.22, -0.97))   # Arme hängen locker
+def zum_koerper(v, grad):
+    """eine Armrichtung um die Vorwärtsachse zur Mitte drehen (rechte Seite: x < 0)"""
+    w = math.radians(grad) * (-1 if v[0] < 0 else 1); c, s_ = math.cos(w), math.sin(w); return (v[0] * c + v[2] * s_, v[1], -v[0] * s_ + v[2] * c)
+ARME_ENG = float(AUS.get("arme_eng", 0))   # Grad: hängende Arme (zivil, gehen, laufen) zusätzlich an den Körper – Meshy-Figuren, deren Schultergewichte einen Teil des Oberarms am Rumpf halten
+if ZIVIL and ARME_ENG: BEREIT.update({k: zum_koerper(BEREIT[k], ARME_ENG) for k in ("o_r", "u_r", "o_l", "u_l")})
 def ruhe(i, n):
     s = math.sin(2 * math.pi * i / n); PB["becken"].location = (0, -0.004 * (1 - math.cos(2 * math.pi * i / n)), 0); rumpf(vor=2 + 1.2 * s, kopf=-1.5 * s, dreh_z=-15 if ARMBRUST else 0.0)
     for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 2)); dreh("fuss." + S)
-    if ZIVIL: arme(**mit(BEREIT, o_r=(-0.2, 0.01 * s, -1.0), o_l=(0.2, -0.01 * s, -1.0))); return
+    if ZIVIL: arme(**mit(BEREIT, o_r=zum_koerper((-0.2, 0.01 * s, -1.0), ARME_ENG), o_l=zum_koerper((0.2, -0.01 * s, -1.0), ARME_ENG))); return
     if STAB: arme(**mit(BEREIT, o_l=(0.22, -0.02 + 0.01 * s, -0.98))); return
     if ARMBRUST: arme(**mit(BEREIT, u_r=(0.42, -0.85, 0.32 + 0.02 * s))); return
     arme(**mit(BEREIT, u_r=(-0.15, -0.6, -0.8 + 0.02 * s), u_l=(0.2, -0.62, -0.78 + 0.02 * s)))
@@ -401,12 +420,13 @@ def laufen(i, n):
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
     if STAB: arme(**mit(BEREIT, o_r=(-0.25, -0.15 + 0.05 * s, -0.96), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # der Stab bleibt ruhig, der linke Arm schwingt
     if ARMBRUST: arme(**mit(BEREIT, o_r=(-0.1, -0.62 + 0.04 * s, -0.78))); return                              # die Armbrust bleibt ruhig in beiden Händen
-    if ZIVIL: arme(**mit(BEREIT, o_r=(-0.18, 0.32 * s, -0.95), u_r=(-0.1, -0.25 + 0.3 * s, -0.95), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # Arme schwingen gegen die Beine
+    if ZIVIL: E_ = lambda v: zum_koerper(v, ARME_ENG); arme(**mit(BEREIT, o_r=E_((-0.18, 0.32 * s, -0.95)), u_r=E_((-0.1, -0.25 + 0.3 * s, -0.95)), o_l=E_((0.18, -0.32 * s, -0.95)), u_l=E_((0.1, -0.25 - 0.3 * s, -0.95)))); return   # Arme schwingen gegen die Beine
     arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.18 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.18 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))
 def gehen(i, n):
     """ruhiges Gehen: kleinere Schritte als beim Laufen, Oberkörper aufrecht, Waffe und Schild bleiben in Bereitschaft"""
     p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.01 * math.cos(2 * p) - 0.01, 0); rumpf(vor=2, dreh_z=5 * s)
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -16 * s * v + 2)); dreh("unterschenkel." + S, (X, 4 + 24 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -5 * s * v))
+    if ZIVIL: E_ = lambda v: zum_koerper(v, ARME_ENG); arme(**mit(BEREIT, o_r=E_((-0.18, 0.2 * s, -0.98)), u_r=E_((-0.1, -0.22 + 0.18 * s, -0.97)), o_l=E_((0.18, -0.2 * s, -0.98)), u_l=E_((0.1, -0.22 - 0.18 * s, -0.97)))); return   # ruhig gehen: Arme schwingen dicht am Körper
     arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.08 * s, -1.0), o_l=(0.32, -0.1 - 0.08 * s, -1.0)))
 def schritt_(vor_l, t):
     """Ausfallschritt: linkes Bein vor, rechtes zurück (Grad), leicht in die Knie"""

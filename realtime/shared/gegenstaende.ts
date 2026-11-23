@@ -7,9 +7,9 @@
  */
 import { Startwaffe } from "./aussehen";
 
-export type Platz = "waffe" | "brust" | "nebenhand";
+export type Platz = "kopf" | "waffe" | "brust" | "beine" | "nebenhand";
 export type Art = "nah" | "fern" | "magie";
-export const PLAETZE: { id: Platz; name: string }[] = [{ id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "nebenhand", name: "Nebenhand" }];
+export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; fernStaerke?: number; genau?: number; schaden?: [number, number] }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: "gewoehnlich" | "selten"; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; text: string;
@@ -25,7 +25,7 @@ export function werteVon(G: Gegenstand): [string, string][] {
     else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Schaden", `${(W.schaden || [1, 1])[0]}–${(W.schaden || [1, 1])[1]} + Magie ÷ 3`]);
     z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : `${zahl(W.reich)} Felder`]); return z; }
   if (G.abwehr) return [["Verteidigung Nahkampf", `+${G.abwehr.nah}`], ["Verteidigung Fernkampf", `+${G.abwehr.fern}`], ["Verteidigung Magie", `+${G.abwehr.magie}`]];
-  return [];
+  return G.platz ? [["Verteidigung", "Werte folgen"]] : [];
 }
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
@@ -45,6 +45,13 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     text: "Ein schimmernder Splitter der zerbrochenen Lande. In der Waldmark nimmt man ihn als Zahlungsmittel." },
   hinweispergament: { id: "hinweispergament", name: "Hinweispergament", art: "Questgegenstand", seltenheit: "gewoehnlich", symbol: "pergament",
     text: "Ein zerknittertes Pergament mit einer hastig gekritzelten Nachricht. Gehört zum Einsteiger-Quest." },
+  /* Seltenes Eisenwacht-Set (Figuren-Fabrik): anlegbar, Werte folgen */
+  eisenwacht: { id: "eisenwacht", name: "Eisenwacht-Brustpanzer", platz: "brust", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.brust.eisenwacht"],
+    text: "Geschwärzte Eisenplatten über Leder, mit Schulterstücken und Plattenschößen. Gehört zu den Eisenbeinschienen." },
+  eisenbeinschienen: { id: "eisenbeinschienen", name: "Eisenbeinschienen", platz: "beine", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.beine.eisenschienen"],
+    text: "Eisenplatten über Oberschenkel, Knie und Schienbein, auf schwerem Leder genietet. Gehört zum Eisenwacht-Brustpanzer." },
+  eisenwachthelm: { id: "eisenwachthelm", name: "Eisenwacht-Helm", platz: "kopf", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["kopf.helm.eisenwacht"],
+    text: "Geschlossener Helm mit Nackenschirm und Halsschutz, die Kanten in Bronze gefasst. Gehört zum Eisenwacht-Set." },
 };
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
