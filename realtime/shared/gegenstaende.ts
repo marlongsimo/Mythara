@@ -9,10 +9,10 @@ import { Startwaffe } from "./aussehen";
 
 export type Platz = "kopf" | "amulett" | "waffe" | "brust" | "beine" | "nebenhand";
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
-export type Seltenheit = "anfaenger" | "gewoehnlich" | "selten" | "episch" | "legendaer" | "mythisch";
+export type Seltenheit = "anfaenger" | "gewoehnlich" | "set" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
 export const SELTENHEITEN: Record<Seltenheit, { name: string; farbe: string }> = {
-  anfaenger: { name: "Training", farbe: "#8e8a82" }, gewoehnlich: { name: "Einfach", farbe: "#b9b4a8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
+  anfaenger: { name: "Training", farbe: "#8e8a82" }, gewoehnlich: { name: "Einfach", farbe: "#b9b4a8" }, set: { name: "Set", farbe: "#b08ad8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
   legendaer: { name: "Legendär", farbe: "#ff9a2e" }, mythisch: { name: "Mythisch", farbe: "#ff4fd8" },
 };
 export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; werte: [string, string][]; text: string }
@@ -125,7 +125,7 @@ for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwe
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
 /* Rüstungen: Name nach Stufe und Teil, wie bei den Waffen (Einfacher Helm, Seltene Kapuze, Epische Robe …). Gruppe: Nahkampf, Fernkampf, Magie */
-export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie"> = {};
+export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie" | "rabenset"> = {};
 {
   const TEIL: Record<string, [string, "m" | "n" | "f" | "pl", "nahkampf" | "fernkampf" | "magie"]> = {
     eisenwachthelm: ["Helm", "m", "nahkampf"], eisenwacht: ["Brustpanzer", "m", "nahkampf"], eisenbeinschienen: ["Beinschienen", "pl", "nahkampf"],
@@ -137,6 +137,24 @@ export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie">
   for (const g of Object.values(GEGENSTAENDE)) { const basis = g.id.split("_")[0], t = TEIL[basis]; if (!t || !STAMM[g.seltenheit]) continue; g.name = `${STAMM[g.seltenheit]}${ENDUNG[t[1]]} ${t[0]}`; RUESTUNGSGRUPPE[g.id] = t[2]; }
   RUESTUNGSGRUPPE.lederpanzer = "nahkampf"; RUESTUNGSGRUPPE.magiepanzer = "magie";
 }
+/* ---------- Rabenset: Belohnung der Raben-Trilogie (je Abschnitt ein Teil). Defensiv ausgewogen, schwächer als „selten“ (zwischen einfach und selten),
+   dafür ein Set-Bonus, wenn alle drei Teile angelegt sind. Werte zur Abstimmung vorgeschlagen. ---------- */
+GEGENSTAENDE.rabenkapuze = { id: "rabenkapuze", name: "Rabenkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["kopf.helm.rabe"],
+  werte: [["Abwehr Nahkampf", "+3"], ["Abwehr Fernkampf", "+3"], ["Abwehr Magie", "+3"]], text: "Schwarzes Leder unter einem Kragen aus Rabenfedern. Teil 1 des Rabensets – Belohnung aus dem ersten Abschnitt der Raben-Trilogie." };
+GEGENSTAENDE.rabenpanzer = { id: "rabenpanzer", name: "Rabenpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.brust.rabe"],
+  werte: [["Abwehr Nahkampf", "+5"], ["Abwehr Fernkampf", "+5"], ["Abwehr Magie", "+5"]], text: "Federbesetzte Schulterstücke, das Leder bronzen gesäumt. Teil 2 des Rabensets – Belohnung aus dem zweiten Abschnitt der Raben-Trilogie." };
+GEGENSTAENDE.rabenbeinschuetzer = { id: "rabenbeinschuetzer", name: "Rabenbeinschützer", platz: "beine", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["ruestung.beine.rabe"],
+  werte: [["Abwehr Nahkampf", "+4"], ["Abwehr Fernkampf", "+4"], ["Abwehr Magie", "+4"]], text: "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie." };
+RUESTUNGSGRUPPE.rabenkapuze = RUESTUNGSGRUPPE.rabenpanzer = RUESTUNGSGRUPPE.rabenbeinschuetzer = "rabenset";
+export interface SetBonus { id: string; name: string; teile: string[]; text: string; heilung: { chance: number; anteil: number } }
+export const SETS: Record<string, SetBonus> = {
+  rabenset: { id: "rabenset", name: "Rabenset", teile: ["rabenkapuze", "rabenpanzer", "rabenbeinschuetzer"], heilung: { chance: 0.15, anteil: 0.5 },
+    text: "Alle drei Teile angelegt: Jeder Treffer, der Schaden macht, heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)." },
+};
+/** Aktive Set-Boni bei diesen angelegten Gegenständen */
+export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SETS).filter((s) => s.teile.every((t) => angelegt.includes(t)));
+/** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
+export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
 export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */

@@ -6,7 +6,7 @@
  */
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
-import { GEGENSTAENDE, PLAETZE, SELTENHEITEN, Platz, RUCKSACK_PLAETZE } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, PLAETZE, SELTENHEITEN, SETS, aktiveSets, Platz, RUCKSACK_PLAETZE } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen } from "./inventar";
 
@@ -114,7 +114,7 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void): void {
 function untersuchen(g: string, zurueck: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art} · ${PLAETZE.find((p) => p.id === G.platz)!.name}</p>
-    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${G.werte.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${G.werte.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>${Object.values(SETS).filter((st) => st.teile.includes(g)).map((st) => { const an = aktiveSets(Object.values(inventar().angelegt)).includes(st), n = st.teile.filter((t) => Object.values(inventar().angelegt).includes(t)).length; return `<p class="iset${an ? " an" : ""}"><b>${st.name} (${n}/${st.teile.length})</b><br>${st.text}</p>`; }).join("")}
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, () => { /* schließen */ });
   void gegenstandBild(t.querySelector("canvas") as HTMLCanvasElement, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf");
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });

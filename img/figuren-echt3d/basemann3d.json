@@ -73,6 +73,12 @@
    "bewegungen": [],
    "datei": "basemann3d.teile/kopf.helm.magierkapuze.glb"
   },
+  "kopf.helm.rabe": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.rabe.glb"
+  },
   "ruestung.beine.eisenschienen": {
    "art": "huelle",
    "platz": "beine",
@@ -90,6 +96,12 @@
    "platz": "beine",
    "bewegungen": [],
    "datei": "basemann3d.teile/ruestung.beine.magierrock.glb"
+  },
+  "ruestung.beine.rabe": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.rabe.glb"
   },
   "ruestung.brust.eisenwacht": {
    "art": "huelle",
@@ -120,6 +132,12 @@
    "platz": "brust",
    "bewegungen": [],
    "datei": "basemann3d.teile/ruestung.brust.magier.glb"
+  },
+  "ruestung.brust.rabe": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.rabe.glb"
   },
   "ruestung.brust.sternplatte": {
    "art": "huelle",
