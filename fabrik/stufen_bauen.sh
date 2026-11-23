@@ -25,3 +25,7 @@ for f in basemann3d basefrau3d; do for st in selten episch legendaer mythisch; d
   for id in waffe.schwert.ritter schild.rund; do "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st poliert=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"; done
   for id in waffe.bogen.jagd waffe.stab.hirte; do "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st art=leder 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"; done
 done; done
+# Sternenszepter: Kristall je Stufe eigens färben
+for f in basemann3d basefrau3d; do for st in gewoehnlich episch legendaer mythisch; do
+  "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/waffe.sternenszepter.glb img/figuren-echt3d/$f.teile/waffe.sternenszepter.$st.glb $st metall_c=18 stark=1 feld=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
+done; done
