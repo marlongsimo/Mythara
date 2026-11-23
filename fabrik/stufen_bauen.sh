@@ -17,7 +17,7 @@ for f in basemann3d basefrau3d; do for id in ruestung.brust.magier ruestung.bein
 done; done; done
 # Eid-Waffen und Sternenschild (Grundstufe selten, Metall)
 for f in basemann3d basefrau3d; do for id in waffe.eidschwert waffe.eiddolch waffe.eidzweihaender schild.sternen; do for st in gewoehnlich episch legendaer mythisch; do
-  extra=""; [ "${id#waffe.eid}" != "$id" ] && extra="metall_c=18 stark=1"   # Klingen mit warmem Ton als Metall behandeln
+  extra="stark=1 feld=1"; [ "${id#waffe.eid}" != "$id" ] && extra="metall_c=18 stark=1"   # Klingen mit warmem Ton als Metall behandeln
   "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st $extra 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
 done; done; done
 # Anfängerwaffen (Grundstufe gewöhnlich): Schwert und Schild über das Metall (selten = poliert), Bogen und Stab über die Holzfarbe

@@ -29,6 +29,8 @@ img = max(bpy.data.images, key=lambda b: b.size[0] * b.size[1]); B_, H_ = img.si
 a = np.array(img.pixels[:], dtype=np.float32).reshape(-1, 4); L = lab(a[:, :3]); C = np.hypot(L[:, 1], L[:, 2])
 MC = float(opt.get("metall_c", 9))   # Farbsättigung, bis zu der etwas als Metall zählt (Beinschienen mit beige-olivgrauen Platten: 17)
 metall = C < MC; messing = (C >= MC) & (L[:, 0] > 30); leder = (C >= MC) & ~messing
+FELD = (C >= MC) & (L[:, 2] < -6) if opt.get("feld") == "1" else np.zeros(len(L), bool)   # feld=1: farbiges Wappenfeld (Schild) eigens färben, nicht als Beschlag
+messing &= ~FELD; leder &= ~FELD
 kanten = messing & (L[:, 0] > max(45.0, float(np.percentile(L[messing, 0], 60)) if messing.any() else 45.0))   # nur die hellsten Beschläge leuchten (je Teil gemessen – helle Platten wie bei den Beinschienen nicht)
 print(f"Bereiche: Metall {metall.mean():.0%}, Beschläge {messing.mean():.0%} (davon leuchtend {kanten.sum() / max(1, messing.sum()):.0%}), Leder {leder.mean():.0%}")
 N = L.copy(); glut = np.zeros(len(L)); glutfarbe = (0, 0, 0); glutstaerke = 0.0
@@ -91,6 +93,10 @@ if opt.get("stark") == "1" and not LEDER:                                 # Waff
     if stufe == "episch": setze(metall, fL=0.6, fC=0.3, a=-2, b=-18); N[leder, 1] = 4 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = -24 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
     if stufe == "legendaer": setze(metall, fL=0.82, fC=1.0, a=6, b=26); N[leder, 1] = 32 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = 14 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
     if stufe == "gewoehnlich": setze(leder, fL=0.8, fC=0.5); setze(metall, fL=0.9, a=3, b=6)
+if FELD.any():                                                              # Wappenfeld je Stufe: verblasst, blau (Original), purpur, karmesin, nachtviolett
+    f_ = {"gewoehnlich": (2, -6, 0.8), "episch": (26, -36, 0.85), "legendaer": (44, 24, 0.9), "mythisch": (22, -30, 0.75)}.get(stufe)
+    if f_:
+        N[FELD, 0] = L[FELD, 0] * f_[2]; N[FELD, 1] = f_[0] + (L[FELD, 1] - L[FELD, 1].mean()) * 0.25; N[FELD, 2] = f_[1] + (L[FELD, 2] - L[FELD, 2].mean()) * 0.25
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()
 if glutstaerke:                                                             # Leuchtkarte: nur die Beschläge, weich ausgeblendet
     g = np.asarray(Image.fromarray((glut.reshape(H_, B_) * 255).astype(np.uint8)).resize((B_ // 2, H_ // 2), Image.BILINEAR).resize((B_, H_), Image.BILINEAR), np.float32) / 255
