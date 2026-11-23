@@ -22,14 +22,14 @@ const waffe = (satz: string) => { const m = HELDEN[satz].modi[0], art = { nah: "
 const prozent = (v: number) => `${Math.round(v * 100)} %`;
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
-  ritterschwert: { id: "ritterschwert", name: "Ritterschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"], werte: waffe("schildwaechter"),
+  ritterschwert: { id: "ritterschwert", name: "Anfängerschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"], werte: waffe("schildwaechter"),
     text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Treffer verlangsamen den Gegner kurz." },
-  rundschild: { id: "rundschild", name: "Rundschild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
+  rundschild: { id: "rundschild", name: "Anfängerschild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
     werte: [["Abwehr Nahkampf (von vorn)", prozent(K.BLOCK.nah)], ["Abwehr Fernkampf (von vorn)", prozent(K.BLOCK.fern)], ["Abwehr Magie (von vorn)", prozent(K.BLOCK.magie)], ["Schutzwinkel", `±${K.BLOCK.winkel}°`]],
     text: "Holz mit Eisenbeschlag. Fängt Angriffe von vorn ab – im Schildmodus (Taste Q wechselt die Haltung)." },
-  jagdbogen: { id: "jagdbogen", name: "Jagdbogen", platz: "waffe", art: "Bogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"], werte: waffe("kopfgeldjaeger"),
+  jagdbogen: { id: "jagdbogen", name: "Anfängerbogen", platz: "waffe", art: "Bogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"], werte: waffe("kopfgeldjaeger"),
     text: "Ein Eibenbogen, wie ihn die Jäger des Kreuzwalds führen. Hoher Einzelschaden aus sicherer Entfernung." },
-  hirtenstab: { id: "hirtenstab", name: "Hirtenstab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"], werte: waffe("elementarist"),
+  hirtenstab: { id: "hirtenstab", name: "Anfängerstab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"], werte: waffe("elementarist"),
     text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
   lederpanzer: { id: "lederpanzer", name: "Einfacher Lederpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.lederpanzer"],
     werte: [["Abwehr Nahkampf", "+3"], ["Abwehr Fernkampf", "+3"], ["Abwehr Magie", "+3"]],
