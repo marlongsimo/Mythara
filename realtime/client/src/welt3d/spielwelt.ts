@@ -9,7 +9,10 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem } from "../welt";
+import { chatSystem, fluestern, ichName } from "../welt";
+import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
+import { freundHinzufuegen } from "../freunde";
+import { gegenstandUntersuchen } from "../rahmen";
 import { SPRINT_MIN } from "../../../shared/sprint";
 import { GEHEN_TEMPO, schrittLaenge, inMitte, mitte, richtungsSchritt, schrittFrei } from "../../../shared/feld";
 import { AUSDAUER } from "../sprintzustand";
@@ -37,7 +40,7 @@ const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 import { bodenListe, aufheben, BodenDing } from "../welt";
-import { GEGENSTAENDE } from "../../../shared/gegenstaende";
+import { GEGENSTAENDE, SELTENHEITEN } from "../../../shared/gegenstaende";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 /** 3D-Modelle für Gegenstände am Boden (einmal laden, dann klonen) */
 const modelle = new Map<string, Promise<THREE.Object3D>>();
@@ -62,7 +65,7 @@ export class Spielwelt3D implements WeltKern {
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
   hier = ""; gesperrt = false; gemerkteStelle = false; /** Schild erhoben (Kampf, Torvald) */ schildHoch = false; /** wie eine Phaser-Szene: Ende melden (der Kampf räumt sich dann auf) */ events = { once: (_n: string, _f: () => void): void => {} }; nah: { text: string; tat: () => void } | null = null;
   figur!: FigurArt; marke!: THREE.Mesh; schild = document.createElement("div"); private blende = document.createElement("div");
-  private stick: { id: number; x: number; y: number; t: number; weit: number } | null = null; private zugX = 0; private zugY = 0; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
+  private stick: { id: number; x: number; y: number; t: number; weit: number; menue?: boolean } | null = null; private zugX = 0; private zugY = 0; private naechst = Infinity; private stillstand = 0; private gemerkt = 0; private vonTor: { x: number; y: number } | null = null;
 
   async start(behaelter: HTMLElement, fertig: () => void): Promise<void> {
     try { const h = localStorage.getItem("ez_held") || ""; if (HELDEN[h]) this.held = h; } catch { /* privat */ }
@@ -147,15 +150,24 @@ export class Spielwelt3D implements WeltKern {
     const el = this.motor.r.domElement, finger = new Set<number>();
     /* Tippen/Klicken = dorthin gehen · mit einem Finger oder der Maus ziehen = Kamera drehen und neigen · zwei Finger = Zoom (das macht der Motor) */
     el.addEventListener("pointerdown", (e) => { if (e.pointerType === "touch") finger.add(e.pointerId); if (finger.size > 1) { this.stick = null; return; }
-      if (e.button !== 0 || this.stick) return; this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), weit: 0 }; this.zugX = e.clientX; this.zugY = e.clientY; try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } });
+      if (e.button !== 0 || this.stick) return; menueZu(); this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), weit: 0 };
+      { const st = this.stick; window.setTimeout(() => { if (this.stick === st && st.weit < 10 && !this.gesperrt) { st.menue = true; this.menueBei(st.x, st.y); } }, 450); } /* lange drücken = Aktionsmenü */ this.zugX = e.clientX; this.zugY = e.clientY; try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } });
     el.addEventListener("pointermove", (e) => { const st = this.stick; if (!st || e.pointerId !== st.id || finger.size > 1) return; st.weit = Math.max(st.weit, Math.hypot(e.clientX - st.x, e.clientY - st.y));
       if (st.weit < 10) return; const m = this.motor, dx = e.clientX - this.zugX, dy = e.clientY - this.zugY; this.zugX = e.clientX; this.zugY = e.clientY;
       m.gieren -= dx * 0.006; m.neigen = Math.max(0.42, Math.min(1.35, m.neigen + dy * 0.004)); });
-    const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null;
+    const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null; if (st.menue) return;
       if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
-        /* auf eine Stelle mit einer Handlung getippt (Treppe, Leiter, Tür, Ausgang …): dort ein kleiner Knopf statt loszulaufen */
-        const stelle = b ? this.anStelle(b.x, b.z) : null; if (stelle) { this.wahlZeigen(stelle); return; } this.wahlWeg();
-        if (!(b && anschluss3D.kampfAntippen(b.x, b.z)) && !anschluss3D.antippen(this, e.clientX, e.clientY)) this.motor.klick(e.clientX, e.clientY); } };
+        /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
+        const stelle = b ? this.anStelle(b.x, b.z) : null; if (stelle) { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
+        if (b && anschluss3D.kampfAntippen(b.x, b.z)) return;
+        if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
+        this.motor.klick(e.clientX, e.clientY); } };
+    /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
+    let rechts: { x: number; y: number; weit: number } | null = null;
+    el.addEventListener("pointerdown", (e) => { if (e.button === 2) rechts = { x: e.clientX, y: e.clientY, weit: 0 }; });
+    el.addEventListener("pointermove", (e) => { if (rechts) rechts.weit = Math.max(rechts.weit, Math.hypot(e.clientX - rechts.x, e.clientY - rechts.y)); });
+    el.addEventListener("pointerup", (e) => { if (e.button === 2 && rechts) { if (rechts.weit > 8) menueZu(); rechts = null; } });
+    el.addEventListener("contextmenu", (e) => { e.preventDefault(); if (!this.gesperrt && !(rechts && rechts.weit > 8)) this.menueBei(e.clientX, e.clientY); });
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
     /* Antippen auf der Minikarte: dorthin gehen (die Karte zeigt die Region, in der man steht; daneben die Nachbarregionen) */
@@ -228,6 +240,27 @@ export class Spielwelt3D implements WeltKern {
     if (best) return best;
     const r = this.regionBei(x, y); if (r) for (const a of r.ausgaenge) if (inZone(a.zone, x, y)) return { x, y, text: a.text, tat: () => this.reisen(a), da: () => inZone(a.zone, this.ort.x, this.ort.y) };
     return null; }
+  /** Hingehen und dort handeln (ist man schon dort, sofort) */
+  ausfuehren(s: Stelle, tat: () => void) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
+  menueBei(px: number, py: number) { const b = this.motor.boden(px, py), gr: Gruppe[] = [], konto = Boolean(ichName());
+    const d = anschluss3D.spielerBei(px, py);
+    if (d) gr.push({ kopf: d.n + (d.s ? ` · Lv ${d.s}` : ""), farbe: FARBE.spieler, aktionen: [
+      ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
+      { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
+    if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] });
+      const st = this.anStelle(b.x, b.z);
+      if (st) { const boden = this.bodenHier(b.x, b.z);
+        if (boden) gr.push({ kopf: boden.hier.length > 1 ? `Am Boden · ${boden.hier.length} Gegenstände` : (GEGENSTAENDE[boden.d0.g] ? GEGENSTAENDE[boden.d0.g].name : boden.d0.g), farbe: FARBE.ding, liste: true, aktionen: [
+          ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort)), lupe: () => gegenstandUntersuchen(x.g) }; }),
+          ...(boden.hier.length > 1 ? [{ text: "Alles aufheben", sym: "✋", haupt: true, tat: () => this.ausfuehren(st, () => aufheben(boden.hier.map((x) => x.i), this.ort)) }] : [])] });
+        else { const n = /^Mit (.+) sprechen$/.exec(st.text);
+          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
+      gr.push({ kopf: "", aktionen: [{ text: "Hierhin gehen", sym: "👣", tat: () => { this.wahlWeg(); this.gehe(b.x, b.z); } }] }); }
+    aktionsMenue(px, py, gr); }
+  /** Gegenstände am Boden beim Punkt: der nächste (bis gut ein Feld) und alles auf seinem Feld */
+  bodenHier(x: number, y: number): { d0: BodenDing; hier: BodenDing[] } | null { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
+    if (!b) return null; const d0 = b; return { d0, hier: bodenListe().filter((d) => Math.floor(d.x) === Math.floor(d0.x) && Math.floor(d.y) === Math.floor(d0.y)) }; }
   /** Der kleine Knopf an der Stelle: antippen = hingehen und dort handeln (ist man schon dort, sofort) */
   wahlZeigen(s: Stelle) { this.wahlWeg(); const el = document.createElement("div"); el.className = "ez-wahl3d" + (s.knoepfe ? " mehr" : "");
     for (const ev of ["pointerdown", "pointerup"]) el.addEventListener(ev, (e) => e.stopPropagation());

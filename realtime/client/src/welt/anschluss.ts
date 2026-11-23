@@ -260,6 +260,10 @@ export const anschluss3D = {
   fremd: (s: WeltKern, rx: number, ry: number): boolean => fremd(s, rx, ry),
   /** Antippen eines Bodenpunkts (Weltfelder) im Kampf: ein Gegner wird zum Ziel. true = erledigt */
   kampfAntippen: (wx: number, wy: number): boolean => Boolean(kampf && kampf.bereit && kampf.antippen(wx, wy)),
+  /** Aktionsmenü: Gegner an der Weltstelle, Mitspieler unter dem Bildschirmpunkt, dessen Karte */
+  kampfZielBei: (wx: number, wy: number): { name: string } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
+  spielerBei: (px: number, py: number): Fremder | null => (mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null),
+  spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
   springen: () => kampfEnde(),
   /** Antippen: ein Mitspieler öffnet seine Karte. true = erledigt */

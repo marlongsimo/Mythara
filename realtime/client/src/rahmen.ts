@@ -6,6 +6,8 @@
  */
 import { questStand, questVerfolgt, questVerfolgen } from "./welt";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
+import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
+import { chatSystem, tafelZeigen } from "./welt";
 import { QUESTLOG } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
@@ -17,7 +19,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
   const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
   await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
-import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel } from "../../shared/kampfwerte";
+import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, Skill } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN } from "./skills";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -148,6 +150,31 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
       else if (t === "fallen") { nachher(); fallenLassen(Number(b.dataset.wo!.slice(1))); } }; })); /* mit Server-Inventar kommt das neue Inventar gleich zurück */
 }
 /** Untersuchen: die Werte eines Gegenstands */
+/** Aktionsmenü zu einem Gegenstand im Rucksack (wo = "r0" …) oder in der Ausrüstung (wo = Platz): Ausrüsten bzw. Ablegen zuerst, dann Untersuchen, Fallen lassen */
+/** Aktionen eines Gegenstands im Tab; die erste führt kurzes Antippen aus */
+function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a: Aktion[] } | null {
+  const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
+  if (!imRucksack && G.platz) a.push({ text: "Ablegen", sym: "⤵️", tat: () => { if (!ablegen(G.platz!)) chatSystem("Der Rucksack ist voll."); } });
+  if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
+  a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
+  if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
+  return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
+function dingMenue(wo: string, g: string, px: number, py: number): void { const d = dingAktionen(wo, g); if (d) aktionsMenue(px, py, [{ kopf: d.kopf, farbe: d.farbe, aktionen: d.a }]); }
+/** Infoblatt zu einem Skill (in der Bildschirmmitte): wofür er gut ist, wie man XP bekommt, Stand */
+const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
+  geschick: { wofuer: "Wie oft du im Nahkampf triffst (Trefferwert = Geschick + Geschick-Bonus der Waffe). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Genau (alle XP) oder Normal (die Hälfte): 2 XP je abgezogenem Lebenspunkt." },
+  staerke: { wofuer: "Wie hart du im Nahkampf zuschlägst: der höchste Schaden steigt mit Stärke ÷ 3 plus Stärke-Bonus der Waffe.", xp: "Nahkampf im Stil Aggressiv (alle XP) oder Normal (die Hälfte): 2 XP je abgezogenem Lebenspunkt." },
+  fernkampf: { wofuer: "Wie oft du mit Bogen oder Armbrust triffst. Den Schaden bestimmt die Waffe.", xp: "Jeder Treffer mit einer Fernkampfwaffe: 2 XP je abgezogenem Lebenspunkt." },
+  magie: { wofuer: "Wie oft du mit dem Stab triffst und wie viel Schaden deine Zauber machen (plus Magie ÷ 3). Außerdem deine Verteidigung gegen Magie.", xp: "Jeder Treffer mit einem Stab: 2 XP je abgezogenem Lebenspunkt." },
+  lp: { wofuer: "Deine Lebenspunkte: höchstens 19 + Lebenspunkte-Level. Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe: 1 XP je Schadenspunkt, den du verursachst." },
+  defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf (dazu kommen die Boni deiner Rüstung).", xp: "10 XP je Block – jeder Angriff eines Gegners, der dich verfehlt." },
+};
+function skillInfo(k: Skill): void {
+  const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
+  tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
+    <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
+/** Untersuchen-Fenster eines Gegenstands (auch aus dem Aktionsmenü am Boden) */
+export function gegenstandUntersuchen(g: string): void { untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }); }
 function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
@@ -206,6 +233,7 @@ export function seitenTab(art: TabArt): boolean {
     el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
+  langDruecken(el, (e) => { const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
   if (art === "freunde") { freundeBeobachten(true); el.addEventListener("submit", (e) => { e.preventDefault(); freundFormular(e.target as HTMLFormElement); }); document.querySelector('[aria-label="Freunde"]')?.classList.add("an"); }
@@ -236,7 +264,7 @@ function tabZeichnen(): void {
       : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p>${st !== "fertig" ? `<button type="button" class="kipp verfolgen${questVerfolgt() ? " an" : ""}" data-verfolgen="1" role="switch" aria-checked="${questVerfolgt()}"><i></i><span><b>Verfolgen</b><small>Ein Pfeil am Helden zeigt den Weg zum nächsten Ziel.</small></span></button>` : ""}</div>`; setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
-      return `<li title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
+      return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
   let wahl = ""; if (tabWahl) { const G = GEGENSTAENDE[tabWahl.g], angelegt = !tabWahl.wo.startsWith("r"), n = angelegt ? 1 : menge(Number(tabWahl.wo.slice(1)));
@@ -252,7 +280,8 @@ function tabKlick(e: Event): void {
   if (tabJetzt === "freunde") { freundKlick(t); return; }
   if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
-  const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { tabWahl = tabWahl && tabWahl.wo === f.dataset.wo ? null : { wo: f.dataset.wo!, g: f.dataset.g! }; tabZeichnen(); return; }
+  const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); return; } /* Gegenstand kurz antippen: erste Aktion (Ausrüsten / Ablegen / Untersuchen) */
+  const sk = t.closest<HTMLElement>("[data-skill]"); if (sk) { skillInfo(sk.dataset.skill as Skill); return; }
   const a = t.closest<HTMLElement>("[data-t]")?.dataset.t; if (!a) return;
   if (a === "werte") { ausruestungsWerte(); return; }
   const w = tabWahl; if (!w) return; const G = GEGENSTAENDE[w.g];

@@ -50,38 +50,59 @@ try {
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && i.angelegt && i.angelegt.waffe === "ritterschwert"; }, null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
   check(await anna.evaluate(() => window.EZW.welt3d.hier === "waldmark"), "Anna steht in der Waldmark (sicherer Ort)");
   /* Inventar im Spiel: Schild ablegen (Ausrüstung), fallen lassen (Rucksack), als Beutel am Boden sehen, antippen → Aufheben */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="nebenhand"]'); await anna.click('.seitentab .twahl [data-t="ablegen"]');
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="nebenhand"]', { button: 'right' }); await anna.click('.ez-aktionen button:has-text("Ablegen")');
   await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
   check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand && i.anzahl && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "Ausrüstungsfenster: Schild abgelegt – der Server hat ihn in den Rucksack gelegt");
   await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
-  await anna.click('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('.seitentab .twahl [data-t="fallen"]'), "Rucksack-Tab: „Fallen lassen“ ist da");
-  await anna.click('.seitentab .twahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
+  await anna.click('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]', { button: 'right' }); check(await anna.isVisible('.ez-aktionen button:has-text("Fallen lassen")'), "Rucksack-Tab: „Fallen lassen“ ist da");
+  await anna.click('.ez-aktionen button:has-text("Fallen lassen")'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 1, null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Trainingsschild"), "Der Schild liegt als Beutel mit Namen am Boden");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
   { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = W.bodenBild && [...W.bodenBild.values()][0]; if (!d) return null; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); });
     if (q) await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
-  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Trainingsschild aufheben", `Antippen des Beutels: „${knopf}“`);
-  if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
+  await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {}); /* kurz antippen = erste Aktion: hinlaufen und aufheben */
   check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   { const H = HELD["00000000-0000-0000-0000-00000000a001"]; await new Promise((r) => setTimeout(r, 2000)); check(H.inventar && H.inventar.rucksack.includes("rundschild") && !H.inventar.angelegt.nebenhand, `Der Server hat das Inventar gespeichert: ${JSON.stringify(H.inventar)}`); }
   /* Splitter: ein Fach mit Zähler; Splitter und Schild fallen lassen → an derselben Stelle → Auswahl je Gegenstand und „Alles aufheben“ */
   await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
   check(await anna.evaluate(() => (document.querySelector('#ez-rucksacktab .ifeld.voll[data-g="splitter"] .menge') || {}).textContent === "12"), "Rucksack: 12 Splitter in einem Fach mit Zähler");
-  for (const g of ["splitter", "rundschild"]) { await anna.click(`#ez-rucksacktab .ifeld.voll[data-g="${g}"]`); await anna.click('.seitentab .twahl [data-t="fallen"]'); await anna.waitForTimeout(700); }
+  for (const g of ["splitter", "rundschild"]) { await anna.click(`#ez-rucksacktab .ifeld.voll[data-g="${g}"]`, { button: 'right' }); await anna.click('.ez-aktionen button:has-text("Fallen lassen")'); await anna.waitForTimeout(700); }
   await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 2, null, { timeout: 8000 }).catch(() => {});
   await anna.waitForTimeout(1500); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "zwei.png" });
   check(await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()].find((b) => b.d.g === "splitter"); let glb = false; d && d.g.traverse((o) => { if (o.isMesh && o.parent && o.parent !== d.g) glb = true; }); return glb; }), "Die Splitter liegen als 3D-Modell der Figuren-Fabrik am Boden");
-  { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()][0]; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); }); await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
-  const knoepfe = await anna.evaluate(() => [...document.querySelectorAll(".ez-wahl3d button")].map((b) => b.textContent));
-  check(knoepfe.length === 3 && knoepfe.includes("Trainingsschild aufheben") && knoepfe.some((t) => /^Splitter.*12.*aufheben$/.test(t)) && knoepfe[2] === "Alles aufheben", `Antippen der Stelle: ${JSON.stringify(knoepfe)}`);
+  { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()][0]; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); }); await anna.mouse.click(q.x, q.y, { button: "right" }); await anna.waitForTimeout(500); }
+  const knoepfe = await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button:not(.lupe)")].map((b) => b.textContent));
+  check(knoepfe.includes("✋Trainingsschild") && knoepfe.some((t) => /^✋Splitter×12$/.test(t)) && knoepfe.includes("✋Alles aufheben") && (await anna.evaluate(() => document.querySelectorAll(".ez-aktionen .stapelliste .lupe").length)) === 2, `Rechtsklick auf die Stelle: ${JSON.stringify(knoepfe)}`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "auswahl.png" });
-  await anna.click(".ez-wahl3d button:last-child", { force: true });
+  await anna.click(".ez-aktionen button.alles", { force: true });
   await anna.waitForFunction(() => !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return !document.querySelector(".ez-name3d.boden") && i.rucksack.includes("rundschild") && i.anzahl[i.rucksack.indexOf("splitter")] === 12; }), "„Alles aufheben“: Schild und 12 Splitter wieder im Rucksack");
+  /* Handy (iPhone-Safari): echte Touch-Ereignisse. Lange drücken = Aktionsmenü (nichts passiert sonst), kurz tippen = erste Aktion („Ausrüsten“) */
+  { const cdp = await anna.context().newCDPSession(anna); await cdp.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
+    const finger = async (x, y, ms) => { await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] }); await anna.waitForTimeout(ms); await anna.waitForFunction(() => document.querySelector(".ez-aktionen"), null, { timeout: 6000 }).catch(() => {}) /* halten, bis das Menü da ist (der Testrechner zeichnet nur ~1 Bild je Sekunde) */; await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); await anna.waitForTimeout(400); }, tipp = async (x, y) => { await cdp.send("Input.synthesizeTapGesture", { x, y, duration: 60, gestureSourceType: "touch" }); await anna.waitForTimeout(400); };
+    await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400);
+    const r = await anna.evaluate(() => { const b = document.querySelector('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+    await finger(r.x, r.y, 800);
+    const lang = await anna.evaluate(() => ({ m: [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent), an: JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand || null }));
+    check(lang.m[0] === "🛡️Ausrüsten" && lang.m.includes("🔍Untersuchen") && !lang.an, `Touch: lange auf den Schild drücken → Menü ${JSON.stringify(lang.m)}, nichts ausgeführt`);
+    if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "touch-menue.png" });
+    await tipp(5, 300); check(await anna.evaluate(() => !document.querySelector(".ez-aktionen")), "Touch daneben schließt das Menü");
+    await tipp(r.x, r.y); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand === "rundschild", null, { timeout: 5000 }).catch(() => {});
+    check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").angelegt?.nebenhand === "rundschild" && !document.querySelector(".ez-aktionen")), "Touch: kurz auf den Schild tippen → gleich ausgerüstet (erste Aktion, kein Menü)");
+    await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(400);
+    { const a = await anna.evaluate(() => { const b = document.querySelector('#ez-ausruestungtab .ifeld.voll[data-wo="nebenhand"]').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }); await tipp(a.x, a.y); }
+    await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild"), null, { timeout: 5000 }).catch(() => {});
+    check(await anna.evaluate(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return i.rucksack.includes("rundschild") && !i.angelegt.nebenhand; }), "Touch: im Ausrüstungs-Tab kurz auf den Schild tippen → abgelegt (erste Aktion „Ablegen“)");
+    await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300);
+    const w = await anna.evaluate(() => { const W = window.EZW.welt3d, o = W.ort; return W.motor.bildschirm(o.x + 2, W.motor.hoehe(o.x + 2, o.y), o.y); });
+    const vorher = await anna.evaluate((w) => ({ stick: !!window.EZW.welt3d.stick, gesperrt: window.EZW.welt3d.gesperrt, oben: (document.elementFromPoint(w.x, w.y) || {}).tagName }), w);
+    await finger(w.x, w.y, 800); const wm = await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent));
+    check(wm.includes("👣Hierhin gehen"), `Touch in der Welt: lange drücken → Aktionsmenü ${JSON.stringify(wm)} (vorher ${JSON.stringify(vorher)})`);
+    await anna.keyboard.press("Escape"); await cdp.send("Emulation.setTouchEmulationEnabled", { enabled: false }); await cdp.detach(); }
   /* Untersuchen im Ausrüstungsfenster, dann mit ✕ schließen: das Spiel nimmt wieder Eingaben an (vorher blieb es gesperrt) */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.click('.seitentab .twahl [data-t="untersuchen"]'); await anna.waitForTimeout(300);
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]', { button: 'right' }); await anna.click('.ez-aktionen button:has-text("Untersuchen")'); await anna.waitForTimeout(300);
   check(await anna.isVisible("#ez-konto .tafel.untersuchen"), "Ausrüstung → Schwert → Untersuchen"); await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(300);
   /* i: Werte der Ausrüstung in der Mitte (nur Gegenstände) */
   await anna.click('#ez-ausruestungtab [data-t="werte"]'); await anna.waitForTimeout(300); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "werte.png" });
@@ -102,7 +123,7 @@ try {
   /* Teleport-Abreise der Figuren-Fabrik am 3D-Helden (in der Waldmark selbst gibt es keinen Teleport, darum direkt) */
   const ms = await anna.evaluate(() => window.EZW.welt3d.teleportAbreise()); await anna.waitForTimeout(700); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "teleport.png" });
   const mitte = await anna.evaluate(() => { const f = window.EZW.welt3d.figur; return { clip: f.name, saeule: !!f.effekt, sichtbar: f.wurzel.visible }; });
-  check(ms === 1800 && mitte.clip === "teleport_weg" && mitte.saeule && mitte.sichtbar, `Teleport: Bewegung teleport_weg mit Lichtsäule (${JSON.stringify(mitte)}) – das Vergehen dauert auf dem langsamen Testrechner zu lange zum Abwarten`);
+  check(ms === 1800 && mitte.clip === "teleport_weg" && mitte.saeule, `Teleport: Bewegung teleport_weg mit Lichtsäule (${JSON.stringify(mitte)}) – das Vergehen dauert auf dem langsamen Testrechner zu lange zum Abwarten`);
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
 console.log(fehler ? fehler + " Fehler" : "Inventar im Spiel: alles in Ordnung"); process.exit(fehler ? 1 : 0);

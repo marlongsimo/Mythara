@@ -54,47 +54,47 @@ const BILD = process.env.BILD || '';
     check(z && passt > 0.9, `Antippen auf der gedrehten Minikarte: Weg in die angetippte Richtung (Ziel ${ist.map((v) => v.toFixed(1)).join(' | ')} Felder, Richtung passt zu ${(passt * 100).toFixed(0)} %)`);
     await p.waitForTimeout(3000); const o2 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); check(Math.hypot(o2.x - o1.x, o2.y - o1.y) > 0.5, 'und der Held läuft los'); }
   /* Handeln durch Antippen der Stelle: beim Hinlaufen erscheint kein Knopf mehr; die angetippte Stelle zeigt einen kleinen Knopf, der Held geht hin und handelt */
-  const tippe = async (x, y) => { const q = await p.evaluate(([x, y]) => { const W = window.EZW.welt3d; return W.motor.bildschirm(x, W.motor.hoehe(x, y), y); }, [x, y]); await p.mouse.click(q.x, q.y); await p.waitForTimeout(400); };
+  const tippe = async (x, y, rechts = true) => { const q = await p.evaluate(([x, y]) => { const W = window.EZW.welt3d; return W.motor.bildschirm(x, W.motor.hoehe(x, y), y); }, [x, y]); await p.mouse.click(q.x, q.y, rechts ? { button: 'right' } : {}); await p.waitForTimeout(400); }; /* Rechtsklick = Aktionsmenü an der Stelle */
   await p.evaluate(() => window.EZW.gehe(6448, 6437.5)); await p.waitForFunction(() => Math.hypot(window.EZW.welt3d.ort.x - 6448, window.EZW.welt3d.ort.y - 6437.5) < 0.8, null, { timeout: 40000 }).catch(() => {});
   check(await p.evaluate(() => document.querySelector('#ez-dorf-knopf').hidden), 'Am Brunnen erscheint beim Hinlaufen kein Knopf mehr');
   await p.evaluate(() => { const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 0.95; M.abstand = 16; }); await p.waitForTimeout(800);
   await tippe(6448, 6435.6);
-  const wahl1 = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(wahl1 === 'Ansehen', `Antippen des Brunnens: kleiner Knopf „${wahl1}“ an der Stelle`);
+  const wahl1 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl1 === 'Ansehen', `Antippen des Brunnens: Aktionsmenü „${wahl1}“ an der Stelle`);
   if (BILD) await p.screenshot({ path: BILD + 'wahl-brunnen.png' });
-  await p.click('.ez-wahl3d button', { force: true }); await p.waitForFunction(() => /Brunnen der Waldmark/.test(document.querySelector('#ez-dorf-hilfe').textContent), null, { timeout: 30000 }).catch(() => {});
+  await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => /Brunnen der Waldmark/.test(document.querySelector('#ez-dorf-hilfe').textContent), null, { timeout: 30000 }).catch(() => {});
   check(await p.evaluate(() => /Brunnen der Waldmark/.test(document.querySelector('#ez-dorf-hilfe').textContent)), 'Der Knopf: hingehen und den Text des Brunnens zeigen');
   /* Rathaus: Treppe antippen → „Hoch“ → oben im Ratssaal; dort „Runter“ */
   await p.evaluate(() => window.EZW.welt3d.versetzen(6438.5, 6426)); await p.waitForTimeout(2500); await p.evaluate(() => { const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 1.2; M.abstand = 12; }); await p.waitForTimeout(1000);
   await tippe(6435.7, 6423.8);
-  const wahl2 = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(wahl2 === 'Hoch', `Treppe im Rathaus: „${wahl2}“`);
+  const wahl2 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl2 === 'Hoch', `Treppe im Rathaus: „${wahl2}“`);
   if (BILD) await p.screenshot({ path: BILD + 'wahl-treppe.png' });
-  await p.click('.ez-wahl3d button', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x > 7400 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
+  await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x > 7400 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
   const oben = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); check(oben.x > 7400, `Hoch: der Held steht oben im Ratssaal (${oben.x.toFixed(1)} | ${oben.y.toFixed(1)})`);
   await p.waitForTimeout(2500); await tippe(7500.7, 7377.4);
-  const wahl3 = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(wahl3 === 'Runter', `Oben an der Treppe: „${wahl3}“`);
+  const wahl3 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl3 === 'Runter', `Oben an der Treppe: „${wahl3}“`);
   if (BILD) await p.screenshot({ path: BILD + 'wahl-runter.png' });
-  await p.click('.ez-wahl3d button', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x < 6500 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
+  await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x < 6500 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
   check(await p.evaluate(() => Math.hypot(window.EZW.welt3d.ort.x - 6436, window.EZW.welt3d.ort.y - 6425) < 3), 'Runter: wieder unten im Rathaus');
   /* die Heldenhalle: Tür antippen → Knopf → Heldenhalle */
   await p.evaluate(() => window.EZW.welt3d.versetzen(6448, 6425)); await p.waitForFunction(() => { const W = window.EZW.welt3d, M = W.motor; return !M.warte.length && !M.laedt.size && W.anStelle(6448, 6421.2); }, null, { timeout: 60000 }).catch(() => {}); await p.waitForTimeout(1500); await p.evaluate(() => { const M = window.EZW.welt3d.motor; M.gieren = 0; M.neigen = 0.95; M.abstand = 14; }); await p.waitForTimeout(800);
   await tippe(6448, 6421.2);
-  const halle = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(halle.trim().length > 0 && !/Ansehen/.test(halle), `Tür der Heldenhalle: „${halle.trim()}“`);
+  const halle = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(halle.trim().length > 0 && !/Ansehen/.test(halle), `Tür der Heldenhalle: „${halle.trim()}“`);
   if (BILD) await p.screenshot({ path: BILD + 'halle.png' });
-  await p.click('.ez-wahl3d button', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.gesperrt, null, { timeout: 30000 }).catch(() => {}); await p.waitForTimeout(800);
+  await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.gesperrt, null, { timeout: 30000 }).catch(() => {}); await p.waitForTimeout(800);
   check(await p.evaluate(() => window.EZW.welt3d.gesperrt && [...document.querySelectorAll('.tafel, #ez-halle, [id*=halle]')].some((e) => e.offsetParent)), 'Der Knopf öffnet die Heldenhalle (die Welt steht still)');
   if (BILD) await p.screenshot({ path: BILD + 'halle-offen.png' });
   await p.keyboard.press('Escape'); await p.waitForTimeout(500); if (await p.evaluate(() => window.EZW.welt3d.gesperrt)) { await p.click('#ez-konto [data-t="zu"]').catch(() => {}); await p.waitForTimeout(500); }
   /* Leiter im Häuschen zum Unterschlupf: „Runter“, unten die Leiter „Hoch“ */
   await p.evaluate(() => window.EZW.welt3d.versetzen(6302.4, 6585)); await p.waitForFunction(() => { const M = window.EZW.welt3d.motor; return !M.warte.length && !M.laedt.size; }, null, { timeout: 60000 }).catch(() => {}); await p.waitForTimeout(2500);
   await tippe(6302.4, 6582.8);
-  const wahl4 = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(wahl4 === 'Runter', `Loch im Häuschen: „${wahl4}“`);
+  const wahl4 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl4 === 'Runter', `Loch im Häuschen: „${wahl4}“`);
   if (BILD) await p.screenshot({ path: BILD + 'wahl-loch.png' });
-  await p.click('.ez-wahl3d button', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x > 7300 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
+  await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x > 7300 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
   check(await p.evaluate(() => window.EZW.welt3d.ort.x > 7300), 'Runter: der Held ist unten im Unterschlupf');
   await p.waitForTimeout(2500); await tippe(7372, 7390.2);
-  const wahl5 = await p.evaluate(() => { const w = document.querySelector('.ez-wahl3d button'); return w ? w.textContent : ''; }); check(wahl5 === 'Hoch', `Unten an der Leiter: „${wahl5}“`);
+  const wahl5 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl5 === 'Hoch', `Unten an der Leiter: „${wahl5}“`);
   /* Tippen woanders schließt den Knopf und geht dorthin */
   { const o = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); const z = await p.evaluate(() => { const W = window.EZW.welt3d, o = W.ort; for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3]]) { const x = o.x + dx, y = o.y + dy; if (W.raster.frei(o, { x, y }, 0.3) && !W.anStelle(x, y)) return [x, y]; } return null; });
-    if (z) await tippe(z[0], z[1]); check(z && await p.evaluate(() => !document.querySelector('.ez-wahl3d')), 'Tippen auf freien Boden schließt den Knopf (und der Held geht dorthin)'); void o; }
+    if (z) await tippe(z[0], z[1], false); check(z && await p.evaluate(() => !document.querySelector('.ez-aktionen')), 'Tippen auf freien Boden schließt das Aktionsmenü (und der Held geht dorthin)'); void o; }
   check(!fehler.length, 'Keine Fehler im Browser ' + fehler.slice(0, 4).join(' | '));
   await b.close(); console.log(f ? f + ' Fehler' : '3D-Welt Stufe 1: alles in Ordnung'); process.exit(f ? 1 : 0); })();

@@ -104,11 +104,11 @@ try {
     check(JSON.stringify(r.aus) === "[[1,0],[1,1],[-1,0]]" && JSON.stringify(r.halb) === "[0.5,1]" && r.mitten && r.n === 5,
       `Feldschritte in der offenen Welt: je 0,5 s ein Feld (gerade ${JSON.stringify(r.aus[0])}, schräg ${JSON.stringify(r.aus[1])}), ein angefangener Schritt wird beendet (${JSON.stringify(r.halb)}), Klickweg über ${r.n} Feldmitten (5 schräg/gerade für 5×3)`); }
   /* Ausrüstungs-Tab mit Auswahl (auf dem Handy war der Kopf abgeschnitten): Kopf mit „i“ ganz sichtbar, nichts überlappt */
-  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.waitForTimeout(300);
-  { const L = await anna.evaluate(() => { const t = document.getElementById("ez-ausruestungtab").getBoundingClientRect(), k = document.querySelector("#ez-ausruestungtab .kopf").getBoundingClientRect(), i = document.querySelector("#ez-ausruestungtab .info").getBoundingClientRect(), w = document.querySelector("#ez-ausruestungtab .twahl").getBoundingClientRect(), fs = [...document.querySelectorAll("#ez-ausruestungtab .tplatz")].map((e) => e.getBoundingClientRect());
-      return { kopfDrin: k.top >= t.top - 0.5 && i.bottom <= t.bottom && i.top >= t.top - 0.5, ueberlapp: fs.some((f) => f.bottom > w.top + 0.5 || f.top < k.bottom - 0.5), wahlDrin: w.bottom <= t.bottom + 0.5 }; });
-    check(L.kopfDrin && !L.ueberlapp && L.wahlDrin, `Ausrüstungs-Tab mit Auswahl: Kopf und „i“ sichtbar, Fächer überlappen nichts (${JSON.stringify(L)})`); }
-  if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.click('#ez-leiste [data-l="ausruestung"]');
+  await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]', { button: 'right' }); await anna.waitForTimeout(300);
+  { const L = await anna.evaluate(() => { const m = document.querySelector(".ez-aktionen"); if (!m) return null; const r = m.getBoundingClientRect(), b = [...m.querySelectorAll("button")].map((x) => x.textContent);
+      return { erst: b[0], alle: b, drin: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight }; });
+    check(L && L.erst === "⤵️Ablegen" && L.drin, `Ausrüstung → Schwert: Aktionsmenü an der Klickstelle, „Ablegen“ zuerst (${JSON.stringify(L)})`); }
+  if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.keyboard.press("Escape"); await anna.click('#ez-leiste [data-l="ausruestung"]');
   /* Ben steht vor der Sperre (Stand: bestätigt); für ihn ist sie noch zu, nach dem Gespräch mit Raban offen. Anna bleibt draußen. */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6446.5, 6642.5, "waldweg"]);
   await ben.goto(B + S); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
@@ -118,9 +118,7 @@ try {
   check(await ben.evaluate(() => Math.abs(window.EZW.welt3d.ort.y - 6642.5) < 3) && !(await durch(ben)) && await ben.evaluate(() => window.EZW.welt3d.quest.sperreZu), "Ben steht vor der Straßensperre: kein Weg nach Süden");
   check(!(await kreuzung(ben)), "Auch an der Kreuzung im Kreuzwald kein Weg nach Süden");
   if (BILD) await ben.screenshot({ path: BILD + "quest-sperre.png", timeout: 90000 }).catch(() => {});
-  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); await ben.waitForFunction(() => /Raban sprechen/.test((document.querySelector(".ez-wahl3d button") || {}).textContent || ""), null, { timeout: 20000, polling: 300 }).catch(() => {}); } /* bei ~1 Bild je Sekunde braucht das Menü ein paar Bilder */
-  const knopf = await ben.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(/Raban sprechen/.test(knopf), `Raban antippen: „${knopf}“`);
-  if (knopf) await ben.click(".ez-wahl3d button", { force: true });
+  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); } /* kurz antippen = erste Aktion: hinlaufen und sprechen */
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }

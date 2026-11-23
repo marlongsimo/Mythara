@@ -196,6 +196,10 @@ export class WeltKampf {
 
   /* ---------- Eingaben ---------- */
   /** Antippen in der Welt: liegt dort ein Gegner (als Heiler: ein Verbündeter), wird er zum Ziel. true = erledigt */
+  /** Welcher Gegner steht an dieser Weltstelle? (Aktionsmenü) */
+  zielBei(wx: number, wy: number): { name: string } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
+    for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
+    if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; return { name: `${M && M.name ? M.name : String(best[1][2])}${M && M.stufe ? " · Lv " + M.stufe : ""}` }; }
   antippen(wx: number, wy: number): boolean { if (!this.netz || !this.z) return false; const ich = this.z.w.find((e) => e[0] === this.ichId), heilt = Boolean(ich && HELDEN[ich[2]].modi[ich[12]].art === "heil");
     let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
     if (!best) return false; this.netz.sende({ t: "ziel", id: best[1] }); return true; }
