@@ -42,6 +42,12 @@
    "bewegungen": [],
    "datei": "basefrau3d.teile/kopf.helm.jaegerkapuze.glb"
   },
+  "kopf.helm.magierkapuze": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/kopf.helm.magierkapuze.glb"
+  },
   "ruestung.beine.eisenschienen": {
    "art": "huelle",
    "platz": "beine",
@@ -53,6 +59,12 @@
    "platz": "beine",
    "bewegungen": [],
    "datei": "basefrau3d.teile/ruestung.beine.jaeger.glb"
+  },
+  "ruestung.beine.magierrock": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.beine.magierrock.glb"
   },
   "ruestung.brust.eisenwacht": {
    "art": "huelle",
@@ -77,6 +89,12 @@
    "platz": "brust",
    "bewegungen": [],
    "datei": "basefrau3d.teile/ruestung.brust.magiepanzer.glb"
+  },
+  "ruestung.brust.magier": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.magier.glb"
   },
   "ruestung.brust.sternplatte": {
    "art": "huelle",
