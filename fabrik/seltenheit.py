@@ -79,7 +79,7 @@ elif stufe == "legendaer":
 elif stufe == "mythisch":                                                  # über legendär, bewusst ausgefallen
     v_, u_ = np.divmod(np.arange(len(L)), B_); u_ = u_ / B_; v_ = v_ / H_   # Lage in der Textur (für Verläufe)
     schiller = np.stack([np.sin(u_ * 9 + v_ * 5) , np.cos(u_ * 7 - v_ * 8)], 1)   # Ölfilm-Schillern: Violett, Türkis, Rosa je nach Stelle
-    N[metall, 0] = L[metall, 0] * 0.42 + 4; N[metall, 1] = 22 * schiller[metall, 0] + 8; N[metall, 2] = 20 * schiller[metall, 1] - 10
+    N[metall, 0] = L[metall, 0] * (0.32 if opt.get('stark') == '1' else 0.42) + 4; amp = 9 if opt.get('stark') == '1' else 28; N[metall, 1] = amp * schiller[metall, 0] + 16; N[metall, 2] = amp * schiller[metall, 1] - 20   # Waffen: sanfter (die Klinge liegt über viele Texturstücke verteilt)
     N[messing, 0] = np.clip(L[messing, 0] * 1.05 + 22, 0, 96); N[messing, 1] = L[messing, 1] * 0.2 + 4; N[messing, 2] = L[messing, 2] * 0.35 + 6   # Weißgold
     N[leder, 0] = L[leder, 0] * 0.6; N[leder, 1] = 14; N[leder, 2] = -18     # Leder tief violett
     Lb = L[:, 0].reshape(H_, B_); gx = np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])); gy = np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))
@@ -88,9 +88,9 @@ elif stufe == "mythisch":                                                  # üb
     t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; glutfarbe = None; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, 1.0 * np.ones_like(t_)], 1)   # Türkis ↔ Magenta
 elif stufe != "selten": sys.exit("Stufe unbekannt: " + stufe)
 if opt.get("stark") == "1" and not LEDER:                                 # Waffen: die Klinge ist die Hauptfläche – Stufe kräftiger zeigen, Griff mitfärben
-    if stufe == "episch": setze(metall, fL=0.75, fC=0.3, b=-12); N[leder, 1] = 4 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = -24 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
-    if stufe == "legendaer": setze(metall, fC=1.0, a=4, b=16); N[leder, 1] = 32 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = 14 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
-    if stufe == "gewoehnlich": setze(leder, fL=0.8, fC=0.5)
+    if stufe == "episch": setze(metall, fL=0.6, fC=0.3, a=-2, b=-18); N[leder, 1] = 4 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = -24 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
+    if stufe == "legendaer": setze(metall, fL=0.82, fC=1.0, a=6, b=26); N[leder, 1] = 32 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = 14 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
+    if stufe == "gewoehnlich": setze(leder, fL=0.8, fC=0.5); setze(metall, fL=0.9, a=3, b=6)
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()
 if glutstaerke:                                                             # Leuchtkarte: nur die Beschläge, weich ausgeblendet
     g = np.asarray(Image.fromarray((glut.reshape(H_, B_) * 255).astype(np.uint8)).resize((B_ // 2, H_ // 2), Image.BILINEAR).resize((B_, H_), Image.BILINEAR), np.float32) / 255
