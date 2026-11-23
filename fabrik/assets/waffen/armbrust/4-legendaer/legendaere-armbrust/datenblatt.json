@@ -1,0 +1,27 @@
+{
+  "name": "Legendäre Armbrust",
+  "gegenstand": "sternarmbrust_legendaer",
+  "klasse": "armbrust",
+  "art": "Armbrust",
+  "seltenheit": "Legendär",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternarmbrust.legendaer",
+    "quelle": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternarmbrust.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternarmbrust.legendaer.glb",
+    "stufenbild": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "armbrust1h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/armbrust/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse."
+}

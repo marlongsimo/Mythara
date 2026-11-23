@@ -1,0 +1,17 @@
+{
+  "name": "Seltene Hose",
+  "gegenstand": "jaegerhose_selten",
+  "gruppe": "fernkampf",
+  "teil": "beine",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "ruestung.beine.jaeger.selten",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/beine/ruestung.beine.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.jaeger.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.jaeger.selten.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Waldgrün gegerbtes Leder – im Unterholz kaum zu sehen."
+}

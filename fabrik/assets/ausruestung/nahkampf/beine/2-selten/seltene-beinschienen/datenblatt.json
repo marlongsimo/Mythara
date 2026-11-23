@@ -1,0 +1,17 @@
+{
+  "name": "Seltene Beinschienen",
+  "gegenstand": "eisenbeinschienen",
+  "gruppe": "nahkampf",
+  "teil": "beine",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "ruestung.beine.eisenschienen",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/beine/ruestung.beine.eisenschienen",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.eisenschienen.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.eisenschienen.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Eisenplatten über Oberschenkel, Knie und Schienbein, auf schwerem Leder genietet. Gehört zum Eisenwacht-Brustpanzer."
+}

@@ -19,7 +19,7 @@
       "id": "waffe.schwert.schildwahrer",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "glb": "waffen/schwert/waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
       "griff": 0.1,
       "griff2": 0.03
     },
@@ -27,7 +27,7 @@
       "id": "schild.kreuz",
       "platz": "arm_l",
       "art": "schild",
-      "glb": "schild.kreuz/v001/quelle/schild.glb"
+      "glb": "waffen/schild/schild.kreuz/v001/quelle/schild.glb"
     }
   ],
   "huelle": [

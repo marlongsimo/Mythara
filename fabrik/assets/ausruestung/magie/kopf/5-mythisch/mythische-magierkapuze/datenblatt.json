@@ -1,0 +1,17 @@
+{
+  "name": "Mythische Magierkapuze",
+  "gegenstand": "magierkapuze_mythisch",
+  "gruppe": "magie",
+  "teil": "kopf",
+  "art": "Stoffrüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "kopf.helm.magierkapuze.mythisch",
+    "quelle": "fabrik/assets/ausruestung/magie/kopf/kopf.helm.magierkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.magierkapuze.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.magierkapuze.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Stoff, der wie der Nachthimmel schillert. Seine Nähte leuchten, als hielten sie Sternenlicht fest."
+}

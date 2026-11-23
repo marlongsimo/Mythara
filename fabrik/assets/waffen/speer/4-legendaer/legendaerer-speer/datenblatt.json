@@ -1,0 +1,27 @@
+{
+  "name": "Legendärer Speer",
+  "gegenstand": "sterndorn_legendaer",
+  "klasse": "speer",
+  "art": "Speer",
+  "seltenheit": "Legendär",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sterndorn.legendaer",
+    "quelle": "fabrik/assets/waffen/speer/waffe.sterndorn",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sterndorn.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sterndorn.legendaer.glb",
+    "stufenbild": "fabrik/assets/waffen/speer/waffe.sterndorn/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/speer/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse."
+}

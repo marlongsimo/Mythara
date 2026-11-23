@@ -156,7 +156,7 @@ export const MONSTER: Record<string, MonsterDef> = {
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
   bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 15, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
     angriff: { name: "Dolch", art: "nah", schaden: [1, 3], takt: 2.0, reich: 1.5, aushol: 0 }, v2: { geschick: 6, staerke: 3, /* LP & Defense v1: Helden starten mit 20 LP → 15 LP, Schaden 1–3 */ ticks: 4, abwehr: { nah: 6, fern: 6, magie: 4 } },
-    drops: [ /* 1. Splitter · 2. seltene Ausrüstung · 3. Hinweispergament, nur mit begonnenem Einsteiger-Quest */
+    drops: [ /* 1. Splitter · 2. seltene Ausrüstung · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
       { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
       { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }] },
       { nur: "einsteigerquest", wurf: [{ g: "hinweispergament", chance: 35 }] }] },

@@ -1,0 +1,27 @@
+{
+  "name": "Mythische Armbrust",
+  "gegenstand": "sternarmbrust_mythisch",
+  "klasse": "armbrust",
+  "art": "Armbrust",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternarmbrust.mythisch",
+    "quelle": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternarmbrust.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternarmbrust.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/armbrust/waffe.sternarmbrust/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "armbrust1h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/armbrust/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
+}

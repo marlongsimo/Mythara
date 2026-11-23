@@ -1,0 +1,17 @@
+{
+  "name": "Epische Beinschienen",
+  "gegenstand": "eisenbeinschienen_episch",
+  "gruppe": "nahkampf",
+  "teil": "beine",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Episch",
+  "modell": {
+    "ebene": "ruestung.beine.eisenschienen.episch",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/beine/ruestung.beine.eisenschienen",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.eisenschienen.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.eisenschienen.episch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit blauem Schimmer, die Kanten in Gold gefasst – sie glimmen schwach im Dunkeln."
+}

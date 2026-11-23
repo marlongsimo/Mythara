@@ -1,0 +1,13 @@
+{
+  "klasse": "armbrust",
+  "angriff": "armbrust1h",
+  "halten": "rechte Hand, Pistolengriff; linke Hand am Vorderschaft",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "armbrust1h",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

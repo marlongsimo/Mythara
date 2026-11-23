@@ -1,0 +1,14 @@
+{
+  "klasse": "dolch",
+  "angriff": "stich",
+  "halten": "rechte Hand; dolchwurf für Wurfdolche",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich",
+    "dolchwurf",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

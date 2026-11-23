@@ -1,0 +1,27 @@
+{
+  "name": "Einfacher Speer",
+  "gegenstand": "sterndorn_gewoehnlich",
+  "klasse": "speer",
+  "art": "Speer",
+  "seltenheit": "Einfach",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sterndorn.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/speer/waffe.sterndorn",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sterndorn.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sterndorn.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/speer/waffe.sterndorn/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/speer/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied."
+}

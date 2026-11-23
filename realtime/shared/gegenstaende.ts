@@ -6,11 +6,12 @@
  * Startausrüstung bewusst schwach, aber klar verschieden: Upgrades sollen sich deutlich bemerkbar machen, die Heldenwerte zählen von Anfang an.
  */
 import { Startwaffe } from "./aussehen";
+import { NAMEN_AUS_DATENBLAETTERN } from "./gegenstand_namen";
 
-export type Seltenheit = "gewoehnlich" | "selten" | "episch" | "legendaer" | "mythisch";
+export type Seltenheit = "anfaenger" | "gewoehnlich" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
 export const SELTENHEITEN: Record<Seltenheit, { name: string; farbe: string }> = {
-  gewoehnlich: { name: "Gewöhnlich", farbe: "#b9b4a8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
+  anfaenger: { name: "Training", farbe: "#8e8a82" }, gewoehnlich: { name: "Einfach", farbe: "#b9b4a8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
   legendaer: { name: "Legendär", farbe: "#ff9a2e" }, mythisch: { name: "Mythisch", farbe: "#ff4fd8" },
 };
 export type Platz = "kopf" | "waffe" | "brust" | "beine" | "nebenhand";
@@ -35,17 +36,17 @@ export function werteVon(G: Gegenstand): [string, string][] {
 }
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
-  ritterschwert: { id: "ritterschwert", name: "Startschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"],
+  ritterschwert: { id: "ritterschwert", name: "Trainingsschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "anfaenger", ebenen: ["waffe.schwert.ritter"],
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Ein solider Allrounder." },
-  jagdbogen: { id: "jagdbogen", name: "Startbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"],
+  jagdbogen: { id: "jagdbogen", name: "Trainingsbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"],
     waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernStaerke: 10 }, text: "Ein kurzer Eibenbogen, wie ihn die Jäger des Kreuzwalds führen." },
-  hirtenstab: { id: "hirtenstab", name: "Startstab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"],
+  hirtenstab: { id: "hirtenstab", name: "Trainingsstab", platz: "waffe", art: "Stab", seltenheit: "anfaenger", ebenen: ["waffe.stab.hirte"],
     waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 5, schaden: [1, 5] }, text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
-  rundschild: { id: "rundschild", name: "Startschild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
+  rundschild: { id: "rundschild", name: "Trainingsschild", platz: "nebenhand", art: "Schild", seltenheit: "anfaenger", ebenen: ["schild.rund"],
     abwehr: { nah: 3, fern: 3, magie: 2 }, text: "Holz mit Eisenbeschlag. Eine kleine defensive Ergänzung – aus allen Richtungen." },
-  lederpanzer: { id: "lederpanzer", name: "Startrüstung", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.lederpanzer"],
+  lederpanzer: { id: "lederpanzer", name: "Trainings-Lederpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "anfaenger", ebenen: ["ruestung.brust.lederpanzer"],
     abwehr: { nah: 3, fern: 3, magie: 3 }, text: "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen." },
-  magiepanzer: { id: "magiepanzer", name: "Startrobe", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
+  magiepanzer: { id: "magiepanzer", name: "Trainingsrobe", platz: "brust", art: "Leichte Rüstung", seltenheit: "anfaenger", ebenen: ["ruestung.brust.magiepanzer"],
     abwehr: { nah: 2, fern: 2, magie: 4 }, text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
   splitter: { id: "splitter", name: "Splitter", art: "Währung", seltenheit: "gewoehnlich", stapel: 1_000_000, modell3d: "img/objekte3d/splitter.glb", symbol: "kristall",
     text: "Ein schimmernder Splitter der zerbrochenen Lande. In der Waldmark nimmt man ihn als Zahlungsmittel." },
@@ -70,30 +71,30 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     text: "Langer, geschichteter Rock mit Quasten am Gürtel. Gehört zum Magier-Set." },
   magierkapuze: { id: "magierkapuze", name: "Magierkapuze", platz: "kopf", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.magierkapuze"],
     text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
-  eidschwert: { id: "eidschwert", name: "Eidschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
+  eidschwert: { id: "eidschwert", name: "Seltenes Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, /* vorläufig wie das Startschwert – Werte folgen */ text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
-  eiddolch: { id: "eiddolch", name: "Eiddolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
+  eiddolch: { id: "eiddolch", name: "Seltener Dolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
     waffe: { art: "nah", ticks: 2, reich: 1.5, geschick: 4, staerke: 3 }, /* vorläufig: Kurzwaffe, 2 Ticks – Werte folgen */ text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
-  eidzweihaender: { id: "eidzweihaender", name: "Eid-Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],
+  eidzweihaender: { id: "eidzweihaender", name: "Seltener Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],
     waffe: { art: "nah", ticks: 4, reich: 1.5, geschick: 5, staerke: 8 }, /* vorläufig: Zweihänder, 4 Ticks – Werte folgen */ text: "Ein langes Schwert für zwei Hände, die Parierstange wie gebogene Äste." },
-  sternenschild: { id: "sternenschild", name: "Sternenschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
+  sternenschild: { id: "sternenschild", name: "Seltener Schild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
     text: "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund." },
-  sternbrecher: { id: "sternbrecher", name: "Sternbrecher", platz: "waffe", art: "Streitkolben", seltenheit: "selten", ebenen: ["waffe.sternbrecher"],
+  sternbrecher: { id: "sternbrecher", name: "Seltener Streitkolben", platz: "waffe", art: "Streitkolben", seltenheit: "selten", ebenen: ["waffe.sternbrecher"],
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 4, staerke: 6 }, /* vorläufig: Streitkolben, 3 Ticks – Werte folgen */
     text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
-  sterndorn: { id: "sterndorn", name: "Sterndorn", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
+  sterndorn: { id: "sterndorn", name: "Seltener Speer", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
     waffe: { art: "nah", ticks: 4, reich: 1.5, geschick: 6, staerke: 6 }, /* vorläufig: Speer, 4 Ticks, Reichweite wie Nahkampf (Reichweite 2 folgt) – Werte folgen */
     text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
-  mondlangbogen: { id: "mondlangbogen", name: "Mond-Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
+  mondlangbogen: { id: "mondlangbogen", name: "Seltener Langbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.lang"],
     waffe: { art: "fern", ticks: 5, reich: 7, flug: 18, fernStaerke: 12 }, /* vorläufig: Langbogen – Werte folgen */
     text: "Ein hoher Bogen mit geschwungenen Wurfarmen, bronzebeschlagen und mit grünen Steinen besetzt." },
-  mondkurzbogen: { id: "mondkurzbogen", name: "Mond-Kurzbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.kurz"],
+  mondkurzbogen: { id: "mondkurzbogen", name: "Seltener Kurzbogen", platz: "waffe", art: "Bogen", seltenheit: "selten", ebenen: ["waffe.mondbogen.kurz"],
     waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernStaerke: 10 }, /* vorläufig wie der Startbogen – Werte folgen */
     text: "Die handliche Schwester des Mond-Langbogens – schneller gezogen, weniger Reichweite." },
-  sternarmbrust: { id: "sternarmbrust", name: "Sternarmbrust", platz: "waffe", art: "Armbrust", seltenheit: "selten", ebenen: ["waffe.sternarmbrust"],
+  sternarmbrust: { id: "sternarmbrust", name: "Seltene Armbrust", platz: "waffe", art: "Armbrust", seltenheit: "selten", ebenen: ["waffe.sternarmbrust"],
     waffe: { art: "fern", ticks: 5, reich: 6, flug: 22, fernStaerke: 12 }, /* vorläufig: Armbrust – Werte folgen */
     text: "Eine schwere Armbrust mit sternförmigem Bügel und grün lackiertem Schaft." },
-  sternenszepter: { id: "sternenszepter", name: "Sternenszepter", platz: "waffe", art: "Stab", seltenheit: "selten", ebenen: ["waffe.sternenszepter"],
+  sternenszepter: { id: "sternenszepter", name: "Seltener Zauberstab", platz: "waffe", art: "Stab", seltenheit: "selten", ebenen: ["waffe.sternenszepter"],
     waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 5, schaden: [1, 5] }, /* vorläufig wie der Startstab – Werte folgen */
     text: "Ein schlanker Zauberstab, dessen bronzene Krone einen blau leuchtenden Kristall umfasst." },
 };
@@ -131,27 +132,29 @@ for (const st of MAGIER_STUFEN) for (const [basis, nomen, endung] of [["magierro
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`, w = st.w === "Purpurn" ? (endung === "er" ? "Purpurner" : "Purpurne") : st.w + endung;
   GEGENSTAENDE[id] = { ...B, id, name: `${w} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
-/* Eid-Waffen und Sternenschild (Grundstufe selten): übrige Stufen wie beim Eisenwacht-Set */
+/* Die Waffen jeder Klasse (benannt nach Stufe und Klasse: Einfaches, Seltenes, Episches, Legendäres, Mythisches Schwert): übrige Stufen wie beim Eisenwacht-Set. Die Anfängerwaffen haben keine Stufen. */
 const WAFFEN_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
-  { s: "gewoehnlich", w: "Rostig", text: "Fleckig vom Rost, die Vergoldung längst abgegriffen – aber noch scharf genug." },
-  { s: "episch", w: "Geschwärzt", text: "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen." },
-  { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
-  { s: "mythisch", w: "Sternenschimmernd", text: "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet." },
+  { s: "gewoehnlich", w: "Einfach", text: "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied." },
+  { s: "episch", w: "Episch", text: "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen." },
+  { s: "legendaer", w: "Legendär", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
+  { s: "mythisch", w: "Mythisch", text: "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet." },
 ];
-for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"], ["sternbrecher", "Sternbrecher", "er"], ["sterndorn", "Sterndorn", "er"], ["mondlangbogen", "Mond-Langbogen", "er"], ["mondkurzbogen", "Mond-Kurzbogen", "er"], ["sternarmbrust", "Sternarmbrust", "e"], ["sternenszepter", "Sternenszepter", "es"]] as const) {
+for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Schwert", "es"], ["eiddolch", "Dolch", "er"], ["eidzweihaender", "Zweihänder", "er"], ["sternenschild", "Schild", "er"], ["sternbrecher", "Streitkolben", "er"], ["sterndorn", "Speer", "er"], ["mondlangbogen", "Langbogen", "er"], ["mondkurzbogen", "Kurzbogen", "er"], ["sternarmbrust", "Armbrust", "e"], ["sternenszepter", "Zauberstab", "er"]] as const) {
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
-/* Anfängerwaffen (Grundstufe gewöhnlich) in den höheren Stufen: Schwert und Schild über das Metall, Bogen und Stab über die Holzfarbe */
-const ANFAENGER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
-  { s: "selten", w: "Veredelt", text: "Blank poliert und frisch gefasst – deutlich mehr als ein Anfängerstück." },
-  { s: "episch", w: "Geschwärzt", text: "Nachtschwarz behandelt, die Beschläge schimmern im Dunkeln blau." },
-  { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
-  { s: "mythisch", w: "Sternenschimmernd", text: "Schillernd wie Öl auf Wasser, von leuchtenden Adern durchzogen." },
-];
-for (const st of ANFAENGER_STUFEN) for (const [basis, nomen, endung] of [["ritterschwert", "Schwert", "es"], ["rundschild", "Schild", "er"], ["jagdbogen", "Bogen", "er"], ["hirtenstab", "Stab", "er"]] as const) {
-  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
-  GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+/* Rüstungen: Name nach Stufe und Teil, wie bei den Waffen (Einfacher Helm, Seltene Kapuze, Epische Robe …). Gruppe: Nahkampf, Fernkampf, Magie */
+export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie"> = {};
+{
+  const TEIL: Record<string, [string, "m" | "n" | "f" | "pl", "nahkampf" | "fernkampf" | "magie"]> = {
+    eisenwachthelm: ["Helm", "m", "nahkampf"], eisenwacht: ["Brustpanzer", "m", "nahkampf"], eisenbeinschienen: ["Beinschienen", "pl", "nahkampf"],
+    jaegerkapuze: ["Kapuze", "f", "fernkampf"], jaegerwams: ["Wams", "n", "fernkampf"], jaegerhose: ["Hose", "f", "fernkampf"],
+    magierkapuze: ["Magierkapuze", "f", "magie"], magierrobe: ["Robe", "f", "magie"], magierrock: ["Rock", "m", "magie"],
+  };
+  const STAMM: Partial<Record<Seltenheit, string>> = { gewoehnlich: "Einfach", selten: "Selten", episch: "Episch", legendaer: "Legendär", mythisch: "Mythisch" };
+  const ENDUNG = { m: "er", n: "es", f: "e", pl: "e" };
+  for (const g of Object.values(GEGENSTAENDE)) { const basis = g.id.split("_")[0], t = TEIL[basis]; if (!t || !STAMM[g.seltenheit]) continue; g.name = `${STAMM[g.seltenheit]}${ENDUNG[t[1]]} ${t[0]}`; RUESTUNGSGRUPPE[g.id] = t[2]; }
+  RUESTUNGSGRUPPE.lederpanzer = "nahkampf"; RUESTUNGSGRUPPE.magiepanzer = "magie";
 }
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
 export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
@@ -160,6 +163,8 @@ export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];
   return null;
 }
+/* Anzeigenamen kommen aus den Datenblättern der Figuren-Fabrik (Trainings-, Einfache, Seltene … Stücke) – eine Quelle, von build.mjs erzeugt. Die IDs bleiben (gespeicherte Inventare). */
+for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };

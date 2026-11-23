@@ -1,0 +1,17 @@
+{
+  "name": "Seltenes Wams",
+  "gegenstand": "jaegerwams_selten",
+  "gruppe": "fernkampf",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "ruestung.brust.jaeger.selten",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/brust/ruestung.brust.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.jaeger.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.jaeger.selten.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Waldgrün gegerbtes Leder – im Unterholz kaum zu sehen."
+}

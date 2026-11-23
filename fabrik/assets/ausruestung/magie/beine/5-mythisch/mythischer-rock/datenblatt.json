@@ -1,0 +1,17 @@
+{
+  "name": "Mythischer Rock",
+  "gegenstand": "magierrock_mythisch",
+  "gruppe": "magie",
+  "teil": "beine",
+  "art": "Stoffrüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "ruestung.beine.magierrock.mythisch",
+    "quelle": "fabrik/assets/ausruestung/magie/beine/ruestung.beine.magierrock",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.magierrock.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.magierrock.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Stoff, der wie der Nachthimmel schillert. Seine Nähte leuchten, als hielten sie Sternenlicht fest."
+}

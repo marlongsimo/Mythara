@@ -1,0 +1,27 @@
+{
+  "name": "Episches Schwert",
+  "gegenstand": "eidschwert_episch",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eidschwert.episch",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.eidschwert",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidschwert.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidschwert.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/schwert/waffe.eidschwert/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
+}

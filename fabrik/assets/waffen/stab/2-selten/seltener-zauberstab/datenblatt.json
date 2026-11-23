@@ -1,0 +1,27 @@
+{
+  "name": "Seltener Zauberstab",
+  "gegenstand": "sternenszepter",
+  "klasse": "stab",
+  "art": "Stab",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternenszepter",
+    "quelle": "fabrik/assets/waffen/stab/waffe.sternenszepter",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternenszepter.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternenszepter.glb",
+    "stufenbild": "fabrik/assets/waffen/stab/waffe.sternenszepter/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "zauber_stab",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/stab/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Ein schlanker Zauberstab, dessen bronzene Krone einen blau leuchtenden Kristall umfasst."
+}

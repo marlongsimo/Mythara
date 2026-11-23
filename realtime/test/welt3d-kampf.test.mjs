@@ -51,7 +51,7 @@ try {
   const hud = await anna.evaluate(() => ({ stufe: document.querySelector("#ez-ich-stufe").textContent, lp: document.querySelector("#ez-lpzahl").textContent, name: document.querySelector("#ez-name").textContent,
     skills: [...document.querySelectorAll("#ez-skills .skill")].map((s) => s.querySelector("b").textContent + " " + s.querySelector(".lv").textContent), xp: getComputedStyle(document.querySelector("#ez-xpleiste")).display,
     tasten: ["a", "q", "e", "r"].map((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display !== "none"), modus: getComputedStyle(document.querySelector("#ez-modus")).display !== "none", an: document.querySelector('[data-taste="a"] small').textContent }));
-  check(hud.stufe === "Lv 9" && hud.lp === "69 / 69" && hud.name === "Startschwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
+  check(hud.stufe === "Lv 9" && hud.lp === "69 / 69" && hud.name === "Trainingsschwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
   check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 50, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[false,false,false,false]" && !hud.modus, "Keine Aktionstasten unten rechts (kein „Angreifen“, keine Fähigkeiten, kein Waffenwechsel)");
   await anna.evaluate(() => { window.__drops = []; new MutationObserver((m) => { for (const r of m) for (const n of r.addedNodes) if (n.classList && n.classList.contains("xpdrop")) window.__drops.push({ text: n.textContent, bilder: n.querySelectorAll("img").length }); }).observe(document.body, { childList: true, subtree: true }); });
@@ -86,7 +86,7 @@ try {
     check(st.name === "Fäuste", `Schwert abgelegt: Server und Anzeige kämpfen mit Fäusten (${JSON.stringify(st)})`); }
   /* Schwert wieder anlegen (mit Fäusten – Trefferwert 1 – überlebt man die Banditen nicht lange) */
   await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400); await anna.click('#ez-rucksacktab .ifeld.voll[data-g="ritterschwert"]'); await anna.click('.seitentab .twahl [data-t="anlegen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
-  await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Startschwert", null, { timeout: 8000 }).catch(() => {}); check(await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Startschwert", "Schwert aus dem Rucksack wieder angelegt");
+  await anna.waitForFunction(() => document.querySelector("#ez-name").textContent === "Trainingsschwert", null, { timeout: 8000 }).catch(() => {}); check(await anna.evaluate(() => document.querySelector("#ez-name").textContent) === "Trainingsschwert", "Schwert aus dem Rucksack wieder angelegt");
   /* gehen: die letzten XP werden gebucht */
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;

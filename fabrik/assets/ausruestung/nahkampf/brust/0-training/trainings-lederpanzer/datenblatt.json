@@ -1,0 +1,21 @@
+{
+  "name": "Trainings-Lederpanzer",
+  "gegenstand": "lederpanzer",
+  "gruppe": "nahkampf",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Training",
+  "modell": {
+    "ebene": "ruestung.brust.lederpanzer",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/brust/ruestung.brust.lederpanzer",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.lederpanzer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.lederpanzer.glb"
+  },
+  "werte": {
+    "Abwehr Nahkampf": "+3",
+    "Abwehr Fernkampf": "+3",
+    "Abwehr Magie": "+3"
+  },
+  "werte_offen": false,
+  "text": "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen."
+}

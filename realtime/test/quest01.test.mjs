@@ -1,5 +1,5 @@
 /*
- * Mythara – Quest 01 ohne Server: Dialogbuch vollständig (jede Antwort jedes Dialogs führt irgendwohin), Reihenfolge, Schriftstück-Bedingung (35 % nur solange die Quest läuft),
+ * Mythara – Quest 01 ohne Server: Dialogbuch vollständig (jede Antwort jedes Dialogs führt irgendwohin), Reihenfolge, Schriftstück-Bedingung (35 % erst mit dem Auftrag, es zu sichern),
  * Sperren liegen auf Wegen, Figuren stehen auf begehbaren Feldern. Aufruf: node test/quest01.test.mjs
  */
 import { build } from "esbuild"; import { fileURLToPath } from "node:url"; import path from "node:path"; import fs from "node:fs";
@@ -17,10 +17,12 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); i
   check(!Q.antwort("hagan", "auftrag", true, "zeigen") && !Q.antwort("hagan", "osthof", true, "zeigen") && (Q.antwort("hagan", "wachen", true, "zeigen") || {}).stand === "bestaetigt", "Das Schriftstück zählt erst, wenn man bei den Wachen war");
   check(!Q.antwort("fenna", "angenommen", false, "weiter") && !Q.antwort("raban", "auftrag", false, "lager") && !Q.antwort("othmar", "bestaetigt", false, "helfen"), "Schritte außer der Reihe gibt es nicht");
   check((Q.antwort("othmar", "frei", false, "helfen") || {}).abschluss && (Q.antwort("hagan", "wachen", true, "zeigen") || {}).abgeben, "Abschluss bei Othmar, Beweis wird bei Hagan abgegeben"); }
-/* Bedingung des Schriftstücks: nur solange die Quest läuft */
+/* Bedingung des Schriftstücks: erst mit dem Auftrag, es zu sichern */
 { const sb = async () => [{ quests: {} }], st = {}; for (const s of ["", ...Q.STAENDE]) st[s] = Q.laeuft(s);
   check(!st[""] && !st.angeboten && st.angenommen && st.wachen && st.frei && !st.fertig, "35 %-Wurf nur zwischen „angenommen“ und „frei“ (nicht vorher, nicht nach dem Abschluss)");
-  await Q.questsLaden(sb, "u1"); check(Q.bedingungErfuellt("u1", "einsteigerquest") === false, "Spieler ohne Quest: kein Schriftstück"); }
+  await Q.questsLaden(sb, "u1"); check(Q.bedingungErfuellt("u1", "einsteigerquest") === false, "Spieler ohne Quest: kein Schriftstück");
+  const mit = {}; for (const s0 of Q.STAENDE) { await Q.questsLaden(async () => [{ quests: { [Q.Q1]: { s: s0 } } }], "u-" + s0); mit[s0] = Q.bedingungErfuellt("u-" + s0, "einsteigerquest"); }
+  check(Object.entries(mit).every(([k, v]) => v === (k === "wachen")), `Pergament-Wurf erst mit dem Auftrag, das Schriftstück zu sichern (nur Stand „wachen“: ${Object.entries(mit).filter(([, v]) => v).map(([k]) => k).join()})`); }
 /* Figuren auf begehbaren Feldern, Sperren über den Weg */
 { const gel = (r) => fs.readFileSync(path.join(HIER, "..", "welt", "regionen", r, "gelaende.txt"), "utf8").split("\n"), R = { waldmark: [6400, 6400], osthof: [6496, 6400], waldweg: [6336, 6464], weidenhain: [6400, 6656], westmark: [6272, 6464] };
   const feld = (x, y) => { for (const [r, [ox, oy]] of Object.entries(R)) { const g = gel(r), lx = Math.floor(x) - ox, ly = Math.floor(y) - oy; if (ly >= 0 && ly < g.length && lx >= 0 && lx < g[ly].length) return g[ly][lx]; } return "?"; };

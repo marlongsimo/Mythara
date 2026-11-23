@@ -2,6 +2,12 @@
 import { build } from "esbuild";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 const v = Date.now().toString(36), aus = new URL("../echtzeit/", import.meta.url).pathname;
+/* Namen der Gegenstände aus den Datenblättern der Figuren-Fabrik (fabrik/assets/…/datenblatt.json): eine Quelle für die Anzeigenamen.
+   Fehlt der Ordner (z. B. auf einem Server ohne Fabrik), bleibt die zuletzt erzeugte Datei shared/gegenstand_namen.ts. */
+{ const { readdirSync, existsSync, statSync } = await import("node:fs"), wurzel = new URL("../fabrik/assets/", import.meta.url).pathname, namen = {};
+  const suche = (d) => { for (const n of readdirSync(d)) { const f = d + "/" + n; if (statSync(f).isDirectory()) suche(f); else if (n === "datenblatt.json") { try { const j = JSON.parse(readFileSync(f, "utf8")); if (j.gegenstand && j.name) namen[j.gegenstand] = j.name; } catch { /* kaputtes Datenblatt: überspringen */ } } } };
+  if (existsSync(wurzel)) { suche(wurzel.replace(/\/$/, "")); const sortiert = Object.fromEntries(Object.entries(namen).sort(([a], [b]) => a.localeCompare(b)));
+    writeFileSync("shared/gegenstand_namen.ts", "/* Erzeugt von build.mjs aus fabrik/assets/…/datenblatt.json – nicht von Hand ändern. Anzeigenamen je Gegenstand-ID. */\nexport const NAMEN_AUS_DATENBLAETTERN: Record<string, string> = " + JSON.stringify(sortiert, null, 1) + ";\n"); } }
 mkdirSync(aus, { recursive: true });
 await build({ entryPoints: ["client/src/main.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "spiel.js", legalComments: "none", define: { "process.env.NODE_ENV": '"production"' } });
 writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").replace("__V__", v));

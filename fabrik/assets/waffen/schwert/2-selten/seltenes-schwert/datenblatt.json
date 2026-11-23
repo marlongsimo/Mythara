@@ -1,0 +1,27 @@
+{
+  "name": "Seltenes Schwert",
+  "gegenstand": "eidschwert",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eidschwert",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.eidschwert",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidschwert.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidschwert.glb",
+    "stufenbild": "fabrik/assets/waffen/schwert/waffe.eidschwert/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden."
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Legendäre Magierkapuze",
+  "gegenstand": "magierkapuze_legendaer",
+  "gruppe": "magie",
+  "teil": "kopf",
+  "art": "Stoffrüstung",
+  "seltenheit": "Legendär",
+  "modell": {
+    "ebene": "kopf.helm.magierkapuze.legendaer",
+    "quelle": "fabrik/assets/ausruestung/magie/kopf/kopf.helm.magierkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.magierkapuze.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.magierkapuze.legendaer.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Karmesinroter Samt, schwer vergoldet; die Borten glühen wie Glut."
+}

@@ -24,8 +24,8 @@ async function setzen(sb: Sb, nutzer: string, s: Stand): Promise<void> {
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q1, p_stand: s }) }).catch((e) => console.error("Queststand speichern (Migration 045 eingespielt?):", (e as Error).message));
   if (s === "wachen" && hat(nutzer, SCHRIFTSTUECK)) await setzen(sb, nutzer, "beweis"); /* das Schriftstück schon dabei (früher gefunden) */ }
 
-/* Schriftstück: 35 % je Bandit, nur solange die Quest läuft (config.ts bandit_dolch, Roll 3 „nur: einsteigerquest“) */
-BEDINGUNGEN.set("einsteigerquest", (nutzer) => laeuft(q1(nutzer)));
+/* Schriftstück: 35 % je Bandit, nur mit dem Auftrag „Schriftstück sichern“ (Stand wachen) (config.ts bandit_dolch, Roll 3 „nur: einsteigerquest“) */
+BEDINGUNGEN.set("einsteigerquest", (nutzer) => q1(nutzer) === "wachen"); /* das Pergament fällt erst, wenn der Auftrag lautet: das Schriftstück der Banditen sichern */
 /* Aufgehoben, während die Wachen den Beweis verlangen: weiter zum Bürgermeister */
 AUFGENOMMEN.push((nutzer, g) => { const sb = sbJe.get(nutzer); if (g === SCHRIFTSTUECK && sb && q1(nutzer) === "wachen") void setzen(sb, nutzer, "beweis"); });
 

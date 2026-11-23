@@ -2,7 +2,7 @@
  * Mythara – Quest 01 „Die gesperrte Straße“ (Einführungsquest in Waldmark). Eine Quelle für Server (Ablauf, Dialoge) und Browser (Figuren, Sperren, Questlog).
  * Grundlage: Designdossier „Mythara_Quest01_Die_gesperrte_Strasse“ (22.11.2026) mit den Festlegungen aus dem Gespräch:
  *   Ort Weidenhain (Name im Spiel), Informationen auf dem Osthof (die Obstwiesen liegen hinter der Sperre), Belohnung 150 XP je Kampfskill + 100 LP + 200 Defense,
- *   Schriftstück = Hinweispergament (35 % je Bandit, nur solange die Quest läuft), keine Questtasche, sichtbare Sperren an drei Stellen.
+ *   Schriftstück = Hinweispergament (35 % je Bandit, nur mit dem Auftrag, es zu sichern – Stand „wachen“), keine Questtasche, sichtbare Sperren an drei Stellen.
  * Alles ist je Spieler: Der Server führt den Stand (Migration 045, rpg_held.quests) und schickt Dialoge nur an den, der spricht.
  */
 export const Q1 = "die_gesperrte_strasse";
