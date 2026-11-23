@@ -61,17 +61,35 @@
    "bewegungen": [],
    "datei": "basemann3d.teile/kopf.helm.eisenwacht.glb"
   },
+  "kopf.helm.jaegerkapuze": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.jaegerkapuze.glb"
+  },
   "ruestung.beine.eisenschienen": {
    "art": "huelle",
    "platz": "beine",
    "bewegungen": [],
    "datei": "basemann3d.teile/ruestung.beine.eisenschienen.glb"
   },
+  "ruestung.beine.jaeger": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.jaeger.glb"
+  },
   "ruestung.brust.eisenwacht": {
    "art": "huelle",
    "platz": "brust",
    "bewegungen": [],
    "datei": "basemann3d.teile/ruestung.brust.eisenwacht.glb"
+  },
+  "ruestung.brust.jaeger": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.jaeger.glb"
   },
   "ruestung.brust.lederpanzer": {
    "art": "huelle",

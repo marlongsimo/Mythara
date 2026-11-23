@@ -1,0 +1,9 @@
+{
+  "id": "ruestung.brust.jaeger",
+  "name": "Jägerwams",
+  "kategorie": "ruestung",
+  "seltenheit": "gewoehnlich",
+  "aktuell": "v001",
+  "status": "Meshy „Shadow Ranger Armor“, Ärmel mit fabrik/aermel_ab.py abgeschnitten (quelle/aermellos.glb), mit teil_anpassen.py wie der Eisenwacht-Brustpanzer",
+  "herkunft": "Meshy"
+}

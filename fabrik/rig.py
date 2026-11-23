@@ -25,6 +25,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   starr "art": "umhang"      Umhang aus umhang.py, hängt am Brustknochen hinter dem Rücken ("sitz": Höhe der Oberkante entlang der Brust, Standard 0.85)
   starr "art": "kopf"        sitzt auf dem Kopf (Hut): "sitz" = wie weit die Krempe unter dem Scheitel liegt (Anteil der Kopflänge)
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
+  Teilnetz "arme_nur_aussen": true  Jacke mit Ärmeln: nur die Ärmel folgen den Armen, der Rumpf nicht den herabhängenden Händen
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
 Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
@@ -315,6 +316,20 @@ for nr, t in enumerate(AUS.get("teilnetze", [])):
             for k in w:
                 if k not in erlaubt_: G_[k].remove([v.index])
             for k, x in ok.items(): (G_[k] if k in G_ else o.vertex_groups.new(name=k)).add([v.index], x / s_, "REPLACE")
+    if t.get("arme_nur_aussen"):                                                                   # Jacke: nur die Ärmel (außerhalb der Schultern) folgen den Armen – der Rumpf nicht den Händen, die an der Hüfte hängen
+        G_ = {g.name: g for g in o.vertex_groups}; xs = abs(KN["oberarm.L"].head_local.x) + 0.02; ARMK = [b.name for b in KN if b.name.split(".")[0] in ("oberarm", "unterarm", "hand")]
+        RUMPF = [b for b in ("brust", "bauch", "becken", "hals") if b in KN]
+        def am_arm(p):                                                                               # nahe an einem Arm (Schulter bis Handgelenk): Ärmel – darf dem Arm folgen
+            for S__ in "LR":
+                a_, b_ = KN["oberarm." + S__].head_local, KN["hand." + S__].tail_local; ab = b_ - a_; t_ = max(0.0, min(1.0, (p - a_).dot(ab) / ab.length_squared))
+                if t_ > 0.04 and (p - (a_ + ab * t_)).length < 0.13: return True
+            return False
+        for v in o.data.vertices:
+            if am_arm(v.co): continue
+            w = {o.vertex_groups[g.group].name: g.weight for g in v.groups}
+            if not any(k_ in ARMK for k_ in w): continue
+            for k_ in [k_ for k_ in w if k_ in ARMK]: G_[k_].remove([v.index]); del w[k_]
+            if sum(w.values()) < 1e-6: nah = min(RUMPF, key=lambda b: (KN[b].head_local.lerp(KN[b].tail_local, 0.5) - v.co).length); (G_.get(nah) or o.vertex_groups.new(name=nah)).add([v.index], 1.0, "REPLACE"); G_ = {g.name: g for g in o.vertex_groups}
     if t.get("beine_mitteln"):                                                                     # Umhang, Waffenrock: folgen dem Mittel beider Beine (sonst reißt das Tuch zwischen den Beinen auseinander)
         G_ = {g.name: g for g in o.vertex_groups}
         for v in o.data.vertices:
