@@ -14,7 +14,7 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1 } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, dingTat, mooshockerSehen } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen } from "./inventar";
 import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
@@ -65,7 +65,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { laden?: string; g?: string; anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; laden?: string; g?: string; anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -92,7 +92,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
       system(ort, `${s.name} ist da.`, s); console.log("Welt:", s.name, "in", ort, "·", spieler.size, "unterwegs");
       { const ich = s; void inventarLaden(H.sb, nutzer).then((iv) => { if (!iv || !spieler.has(ich)) return; senden(ich, { t: "inventar", inv: iv.inv }); ich.invAus = inventarHoeren(nutzer, (inv) => senden(ich, { t: "inventar", inv })); }); } /* das Inventar gehört dem Server (Migration 043) */
-      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q }); ich.questAus = questHoeren(nutzer, (n) => senden(ich, { t: "quests", q1: n }));
+      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q, q2: q2(nutzer) }); ich.questAus = questHoeren(nutzer, (n, n2) => senden(ich, { t: "quests", q1: n, q2: n2 }));
         if (HINTER_DER_SPERRE.has(ich.ort) && !sperreOffen(q)) senden(ich, { t: "zurueck", x: VOR_DER_SPERRE[0], y: VOR_DER_SPERRE[1], text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." }); }); } /* Quests (Migration 045); hinter der Sperre nur mit Freigabe */
       return; }
     s.zuletzt = jetzt;
@@ -135,6 +135,11 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (aw.fehler) { senden(s, { t: "chat", kanal: "system", text: aw.fehler, zeit: jetzt }); senden(s, { t: "dialog", npc, ende: true }); return; }
       senden(s, { t: "dialog", npc, ...aw }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
+    else if (e.t === "qding" || e.t === "untersucht") { /* Quest 02: Bruchstelle/Rutenbündel benutzen, Mooshocker untersuchen – der Server prüft Ort und Entfernung */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
+      { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle jetzt (die letzte „pos“ kann einen Schritt alt sein) */
+      if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, 12), s.wx, s.wy) });
+      else if (e.typ === "mooshocker") await mooshockerSehen(H.sb, s.nutzer, s.ort, s.wx, s.wy); }
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
     else if (e.t === "freunde") { if (s.gast) { senden(s, { t: "freunde", liste: [] }); return; }
       const liste = await freundeVon(H, s.nutzer, true); if (!s) return;

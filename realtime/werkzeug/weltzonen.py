@@ -25,6 +25,9 @@ BESONDERS = {
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
     "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4,
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
+    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
+    "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
+               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]},
 }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",

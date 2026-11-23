@@ -124,6 +124,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /** Kampfregeln v3 (OSRS-Rechnung): die Skill-Level der Kampfart (Nahkampf: Geschick und Stärke; Fernkampf; Magie), Defense- und Magie-Level und Verteidigungsboni gegen alle drei Angriffsarten.
    *  Würfe und Max Hit rechnet kampfwerte.ts gegnerWerte() wie OSRS für Monster (Level + 9). Angriffstakt in Ticks (1 Tick = 0,5 s). */
   v2?: GegnerV3;
+  /** Untersuchen (Bestiarium): kurzer Text über das Wesen */
+  info?: string;
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
@@ -164,6 +166,12 @@ export const MONSTER: Record<string, MonsterDef> = {
       { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
       { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }, { g: "kleiner_heiltrank", chance: 8 }] }, /* 2. Wurf: je 1 % Trainingsausrüstung, 8 % Kleiner Heiltrank */
       { nur: "einsteigerquest", wurf: [{ g: "hinweispergament", chance: 35 }] }] },
+  /* Mooshocker (Quest „Der stille Rain“, Osthof, 23.11.2026): passiver Trainingsgegner wie die Sand Crab in OSRS – viel Leben, Max Hit 1, langsam, greift nie von selbst an.
+     Für Helden um Kampflevel 5–6 gedacht (gut eine Minute je Mooshocker), ab Level 1 machbar. Modell img/figuren-echt3d/mooshocker3d.glb. */
+  mooshocker: { name: "Mooshocker", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
+    info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge
   moorleiche: { name: "Moorleiche", bild: "img/gegner/moorleiche.jpg", figur: "img/echtzeit/moorleiche.webp", fuss: [0.433, 0.957], lauf: "img/echtzeit/moorleiche-lauf.webp", laufMass: [0.433, 0.957, 0.936], hieb: "img/echtzeit/moorleiche-hieb.webp", hiebMass: [0.438, 0.945, 0.912], ruhe: "img/echtzeit/moorleiche-ruhe.webp", ruheMass: [0.482, 0.979, 0.958], hoehe: 88, lp: 190, tempo: 1.9, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 60, magie: 35 }, r: 0.38, untot: true, aufstehen: 0.5,

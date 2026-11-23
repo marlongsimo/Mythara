@@ -35,7 +35,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number; id?: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
-  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "beute"; x: number; y: number; besitzer: number; /** Gegenstand, Anzahl, Bedingung (nur wenn der Bezwinger sie erfüllt – prüft der Server) */ g: [string, number, string?][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
+  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "erlegt"; typ: string; besitzer: number } | { a: "beute"; x: number; y: number; besitzer: number; /** Gegenstand, Anzahl, Bedingung (nur wenn der Bezwinger sie erfüllt – prüft der Server) */ g: [string, number, string?][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
@@ -204,8 +204,10 @@ export class Sim {
     if (z.held) { z.wieder = K.WIEDER_HELD; return; }
     this.besiegt++; const B = STAERKE.beute, [a, b] = B || K.SPLITTER; let n = a + Math.floor(this.zf() * (b - a + 1)); if (B && MONSTER[z.typ].boss) n *= STAERKE.bossMal;
     if (this.weltZeit) { /* Drop-Tabelle: die Beute gehört dem, der am meisten Schaden gemacht hat – bei Gleichstand dem, der den letzten Schlag gemacht hat (der Server legt sie auf den Boden) */
-      const D = MONSTER[z.typ].drops, a = this.anteile.get(z.id); if (D && D.length) { let besitzer = von && von.held ? von.id : 0, best = -1;
-        if (a) for (const [id, n] of a) if (n > best || (n === best && von && id === von.id)) { best = n; besitzer = id; }
+      const D = MONSTER[z.typ].drops, a = this.anteile.get(z.id); let besitzer = von && von.held ? von.id : 0, best = -1;
+      if (a) for (const [id, n] of a) if (n > best || (n === best && von && id === von.id)) { best = n; besitzer = id; }
+      if (besitzer) this.ev.push({ a: "erlegt", typ: z.typ, besitzer }); /* Quests zählen Siege (wer am meisten Schaden gemacht hat) */
+      if (D && D.length) {
         const g: [string, number, string?][] = []; for (const R of D) { let z = this.zf() * 100; for (const d of R.wurf) { if (z < d.chance) { const [lo, hi] = d.anzahl || [1, 1], n = lo + Math.floor(this.zf() * (hi - lo + 1)); g.push(R.nur ? [d.g, n, R.nur] : [d.g, n]); break; } z -= d.chance; } } /* je Roll höchstens ein Treffer */
         if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }

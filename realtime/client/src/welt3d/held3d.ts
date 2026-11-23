@@ -54,7 +54,7 @@ export class Held3D {
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
   fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
-  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string }) {
+  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
     vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.sichtbar(this.an); }); }
   private aufbauen(v: Vorlage) {
@@ -70,7 +70,7 @@ export class Held3D {
       if (zuTeil === "haar") mat.color.copy(haar); else hautFaerben(mat, faktor); });
     this.fertigBauen(w); }
   private fertigBauen(w: THREE.Object3D) {
-    const s = this.hoehe / 1.8; w.scale.setScalar(s); this.wurzel = w; this.bild.gruppe.add(w); this.mixer = new THREE.AnimationMixer(w);
+    const s = ((this.gegner && this.gegner.mass) || this.hoehe) / 1.8; w.scale.setScalar(s); this.wurzel = w; this.bild.gruppe.add(w); this.mixer = new THREE.AnimationMixer(w);
     this.mixer.addEventListener("finished", () => { if (this.einmal) { this.einmal = false; this.anwenden(); const f = this.fertig; if (f) f(); } });
     this.zeigen(); this.anwenden(); this.ersatz.sichtbar(false); this.ersatz.entfernen(this.szene); }
   get geladen(): boolean { return Boolean(this.wurzel) || this.ersatz.geladen; }
@@ -112,7 +112,7 @@ export class Held3D {
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
      (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m, also 1,78 / 4,67 Felder/s: Gehen 2 Felder/s → ×1,12, Sprint 4 Felder/s → ×0,86 – „Felder und Schräge“) */
-  private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true);
+  private anwenden() { const z = this.zustand; if (z === "block") this.spiele(this.clips.has("block") ? "block" : "treffer" /* Mooshocker: zuckt zusammen */, true, true);
     else if (z === "rennen") this.spiele("laufen", false, false, 0.86);
     else if (z === "laufen") { if (this.clips.has("gehen")) this.spiele("gehen", false, false, 1.12); else this.spiele("laufen", false, false, 0.45); }
     else this.spiele(z === "schild_laufen" ? "gehen" : "ruhe", false); }
@@ -134,6 +134,8 @@ export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, 
   return held3dAn() ? new Held3D(szene, hoehe, eigen || STANDARD, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
 /** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
-const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" } };
+const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+  /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
+  mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 } };
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

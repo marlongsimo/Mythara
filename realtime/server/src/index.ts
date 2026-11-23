@@ -20,6 +20,7 @@ import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit } 
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
+import { erlegt } from "./quests";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
@@ -270,6 +271,7 @@ setInterval(() => {
     { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung && K0.weltRegion) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
       const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
       for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion, K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
+    for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
     for (const q of [...Z.spieler]) { if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { zoneVerlassen(q); continue; } /* Sicherheitsnetz: keine Helden ohne Verbindung */ if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
       if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
       if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt);
