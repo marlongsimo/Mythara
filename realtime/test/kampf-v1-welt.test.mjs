@@ -61,8 +61,8 @@ try {
   anna.on("console", () => {});
   for (let i = 0; i < 120 && xpSumme() === 0; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250);
     const t = await anna.evaluate(() => window.EZW.szene.children.list.filter((o) => o.type === "Text" && o.visible).map((o) => o.text)); if (t.includes("geblockt")) blocks++; if (t.some((x) => /^\d+$/.test(x))) treffer++; }
-  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Normal: je zur Hälfte an Geschick und Stärke): ${xpSumme()}`);
-  check(xpSumme() % 2 === 0, "2 XP je abgezogenem Lebenspunkt (gerade Summe)");
+  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_defense === x.p_geschick && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Ausgewogen: je ein Drittel an Geschick, Stärke und Defense): ${xpSumme()}`);
+  check(XPBUCH.every((x) => x.p_lp === x.p_geschick), "1,33 XP je abgezogenem Lebenspunkt an jeden der drei Skills und an Lebenspunkte (gleiche Buchung)");
   check(blocks > 0 && treffer > 0, `Treffer und „geblockt“ erscheinen in der Welt (${treffer} / ${blocks} Bilder)`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "v1-treffer.png" });
   const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Stärke ${lokal})`);
