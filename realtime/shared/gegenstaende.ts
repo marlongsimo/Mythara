@@ -77,6 +77,17 @@ for (const st of SET_STUFEN) for (const [basis, nomen, mehrzahl] of [["eisenwach
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${mehrzahl ? st.p : st.m} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
+/* Das Jäger-Set (Grundstufe gewöhnlich): höhere Stufen über die Lederfarbe (fabrik/seltenheit.py art=leder) */
+const JAEGER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
+  { s: "selten", w: "Waldgrün", text: "Waldgrün gegerbtes Leder – im Unterholz kaum zu sehen." },
+  { s: "episch", w: "Nachtblau", text: "Nachtblaues Leder mit Silberschnallen, die im Mondlicht schwach glimmen." },
+  { s: "legendaer", w: "Blutrot", text: "Ochsenblutrotes Leder, goldbeschlagen; die Schnallen glühen wie Kohlen." },
+  { s: "mythisch", w: "Schattenschimmernd", text: "Leder, das zwischen Violett und Nachtblau schillert. Seine Nähte leuchten, als wäre Sternenlicht hineingewebt." },
+];
+for (const st of JAEGER_STUFEN) for (const [basis, nomen, endung] of [["jaegerwams", "Jägerwams", "es"], ["jaegerhose", "Jägerhose", "e"], ["jaegerkapuze", "Jägerkapuze", "e"]] as const) {
+  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
+  GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+}
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };
