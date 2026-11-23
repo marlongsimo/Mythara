@@ -62,8 +62,8 @@ const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x2
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
-/** Höchstens so viel Spielzeit je Bild (s). Nur für Tests auf langsamen Rechnern ohne Grafikkarte: ?zeitraffer=1 rechnet die volle vergangene Zeit (bis 1 s) */
-const DT_MAX = new URLSearchParams(location.search).get("zeitraffer") === "1" ? 1 : 0.1;
+/** Höchstens so viel Spielzeit je Bild (s). Nur für Tests auf langsamen Rechnern ohne Grafikkarte: ?zeitraffer=1 erlaubt bis 0,3 s je Bild */
+const DT_MAX = new URLSearchParams(location.search).get("zeitraffer") === "1" ? 0.3 : 0.1;
 export class Welt3D {
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
@@ -78,7 +78,7 @@ export class Welt3D {
   beimBild: ((dt: number) => void) | null = null; beimKlick: ((x: number, z: number) => void) | null = null;
   async start(behaelter: HTMLElement, sx: number, sz: number, laden: (text: string) => void = () => {}) {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
-    this.r.setPixelRatio(Math.min(devicePixelRatio, HANDY ? 1.5 : 2)); this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.r.setPixelRatio(P.get("aufloesung") ? Math.max(0.25, Math.min(2, Number(P.get("aufloesung")) || 1)) : Math.min(devicePixelRatio, HANDY ? 1.5 : 2)); /* ?aufloesung=0.5: nur für Tests auf langsamen Rechnern */ this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
     this.r.toneMapping = THREE.ACESFilmicToneMapping; this.r.toneMappingExposure = 1.12;   /* filmisch und warm wie die Heldenbilder */
     behaelter.appendChild(this.r.domElement); behaelter.appendChild(this.schilder); this.groesse(); addEventListener("resize", () => this.groesse());
     this.szene.fog = new THREE.Fog(0xb9cfe0, 60, 150); this.szene.add(this.himmelLicht, this.licht, this.licht.target, this.fackel);
