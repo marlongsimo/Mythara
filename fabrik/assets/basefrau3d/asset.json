@@ -6,5 +6,5 @@
   "status": "v001: Grundfigur für Echtzeit-3D – Spieldatei img/figuren-echt3d/basefrau3d.glb (fabrik/export3d.py)",
   "herkunft": "Meshy „Bald Vanguard“, vom Projekt erzeugt",
   "anpassen": "wie basemann3d: lieber mehr Spiel als zu wenig; starre Brustteile mit nur_knochen",
-  "export": "python3 fabrik/export3d.py fabrik/assets/basefrau3d/v001/arbeit/figur.blend img/figuren-echt3d/basefrau3d.glb flaechen=12000 textur=1024 webp auslagern=ruestung.,kopf.helm. – Rüstungen und Helme landen als eigene Dateien in img/figuren-echt3d/basefrau3d.teile/ und werden im Spiel erst beim Anlegen geladen; danach Seltenheitsstufen des Eisenwacht-Sets: bash fabrik/stufen_bauen.sh <blender-python>"
+  "export": "python3 fabrik/export3d.py fabrik/assets/basefrau3d/v001/arbeit/figur.blend img/figuren-echt3d/basefrau3d.glb flaechen=12000 textur=1024 webp auslagern=ruestung.,kopf.helm.,waffe.,schild. – Rüstungen, Helme, Waffen und Schilde landen als eigene Dateien in img/figuren-echt3d/basefrau3d.teile/ und werden im Spiel erst beim Anlegen geladen; danach Seltenheitsstufen des Eisenwacht-Sets: bash fabrik/stufen_bauen.sh <blender-python>"
 }
