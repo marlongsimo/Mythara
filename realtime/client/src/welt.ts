@@ -72,7 +72,7 @@ let bodenJetzt: BodenDing[] = [];
 /** Was man in dieser Region am Boden sieht (Weltfelder) */
 export const bodenListe = (): BodenDing[] => bodenJetzt;
 /** Aufheben bitten (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
-export function aufheben(id: number | number[]): void { senden(Array.isArray(id) ? { t: "aufheben", ids: id } : { t: "aufheben", id }); }
+export function aufheben(id: number | number[], wo?: { x: number; y: number }): void { senden({ ...(Array.isArray(id) ? { t: "aufheben", ids: id } : { t: "aufheben", id }), ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 /** Eigene Position melden (gedrosselt: bei Bewegung höchstens 6-mal je Sekunde, sonst alle 2 Sekunden) */
 export function weltPos(x: number, y: number, blick: number, laeuft: boolean, wx?: number, wy?: number): void { const j = performance.now(), g = gesendet, l = laeuft ? 1 : 0; /* wx, wy: Weltfelder – der Server merkt sich die Stelle fürs nächste Anmelden */
   if ((Math.hypot(x - g.x, y - g.y) > 2 || l !== g.l) && j - g.t > 160 || j - g.t > 2000) { gesendet = { x, y, t: j, l }; senden({ t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) }); } }

@@ -6,7 +6,7 @@
  * An der Minikarte: rechts im Halbkreis die Lebenspunkte und daneben eine gelbe Leiste (Ausdauer – Funktion kommt noch).
  * Die Knöpfe an der Karte selbst (Karte, Sprint) setzt anschluss.ts über rahmen.ts rundeKarte.
  */
-import { RZEICHEN } from "../rahmen";
+import { RZEICHEN, RBILD, rbild } from "../rahmen";
 
 export interface LeistenKnopf { id: string; name: string; zeichen: keyof typeof RZEICHEN; tat: () => void; taste?: string }
 
@@ -44,7 +44,7 @@ export function kartenBogen(knoepfe: LeistenKnopf[]): void {
     el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-l]") as HTMLElement | null; if (b) bogenJetzt.find((k) => k.id === b.dataset.l)?.tat(); });
     const rund = rahmen.querySelector(".rund") as HTMLElement | null; if (rund && "ResizeObserver" in window) new ResizeObserver(() => bogenLegen()).observe(rund); addEventListener("resize", () => bogenLegen()); }
   bogenJetzt = knoepfe;
-  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}" aria-label="${k.name}" title="${k.name}"><span>${RZEICHEN[k.zeichen]}</span>${k.id === "spieler" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
+  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}"${RBILD.has(k.zeichen) ? ` class="mitbild"` : ""} aria-label="${k.name}" title="${k.name}"><span>${RBILD.has(k.zeichen) ? rbild(k.zeichen) : RZEICHEN[k.zeichen]}</span>${k.id === "spieler" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
   leisteOnline(zahlOnline); bogenLegen(); }
 function bogenLegen(): void {
   const rahmen = document.getElementById("ez-kartenrahmen"), rund = rahmen && rahmen.querySelector(".rund") as HTMLElement | null, el = document.getElementById("ez-kbogen"); if (!rund || !el) return;

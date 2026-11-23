@@ -214,13 +214,13 @@ export class Spielwelt3D implements WeltKern {
   /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
   anStelle(x: number, y: number): Stelle | null {
     { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
-    /* Gegenstände am Boden zuerst: antippen → „Aufheben“ (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
+    /* Gegenstände am Boden zuerst: antippen → hinlaufen aufs Feld → „Aufheben“ (der Server prüft Sichtbarkeit, das Feld und Platz im Rucksack) */
     { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
-      if (b) { const d0 = b, hier = bodenListe().filter((d) => Math.hypot(d.x - d0.x, d.y - d0.y) <= 0.8), name = (d: BodenDing) => `${GEGENSTAENDE[d.g] ? GEGENSTAENDE[d.g].name : d.g}${d.n > 1 ? " ×" + d.n : ""} aufheben`;
-        const da = () => Math.hypot(d0.x - this.ort.x, d0.y - this.ort.y) <= 1.5;
-        if (hier.length === 1) return { x: d0.x, y: d0.y, text: name(d0), tat: () => aufheben(d0.i), da };
+      if (b) { const d0 = b, hier = bodenListe().filter((d) => Math.floor(d.x) === Math.floor(d0.x) && Math.floor(d.y) === Math.floor(d0.y)) /* alles auf demselben Feld */, name = (d: BodenDing) => `${GEGENSTAENDE[d.g] ? GEGENSTAENDE[d.g].name : d.g}${d.n > 1 ? " ×" + d.n : ""} aufheben`;
+        const da = () => Math.floor(d0.x) === Math.floor(this.ort.x) && Math.floor(d0.y) === Math.floor(this.ort.y) && !this.schrittZiel; /* auf dem Feld des Gegenstands stehen */
+        if (hier.length === 1) return { x: d0.x, y: d0.y, text: name(d0), tat: () => aufheben(d0.i, this.ort), da };
         /* mehrere an derselben Stelle: je Gegenstand ein Knopf, ganz unten „Alles aufheben“ */
-        return { x: d0.x, y: d0.y, text: "", tat: () => {}, da, knoepfe: [...hier.map((d) => ({ text: name(d), tat: () => aufheben(d.i) })), { text: "Alles aufheben", tat: () => aufheben(hier.map((d) => d.i)) }] }; } }
+        return { x: d0.x, y: d0.y, text: "", tat: () => {}, da, knoepfe: [...hier.map((d) => ({ text: name(d), tat: () => aufheben(d.i, this.ort) })), { text: "Alles aufheben", tat: () => aufheben(hier.map((d) => d.i), this.ort) }] }; } }
     const cx = Math.floor(x / C), cy = Math.floor(y / C); let best: Stelle | null = null, bd = Infinity;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
       for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > Math.max(1.2, a.radius) || w >= bd) continue; const i = this.interaktion(a); if (!i) continue;

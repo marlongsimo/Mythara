@@ -21,6 +21,9 @@ import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLese
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const SVG = (inhalt: string) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inhalt}</svg>`;
+/** Gemalte Symbole (img/echtzeit/leiste/<zeichen>.webp, mit eigenem Goldring) – wo vorhanden, statt des gezeichneten Zeichens */
+export const RBILD = new Set(["karte", "sprint", "teleport", "spieler", "einstellungen"]);
+export const rbild = (zeichen: string): string => `<img class="rbild" src="../img/echtzeit/leiste/${zeichen}.webp" alt="" draggable="false">`;
 export const RZEICHEN = {
   karte: SVG('<path d="M3 6.2 9 4l6 2.2L21 4v13.8L15 20l-6-2.2L3 20z"/><path d="M9 4v13.8M15 6.2V20"/>'),
   teleport: SVG('<path d="M12 3c3.3 3 5 5.8 5 8.5a5 5 0 0 1-10 0C7 8.8 8.7 6 12 3z"/><path d="M12 9.5v6M9.5 13 12 15.5 14.5 13"/><path d="M5 20.5h14"/>'),
@@ -52,7 +55,7 @@ export function rundeKarte(zoom: number, knoepfe: RKnopf[]): void {
     leiste.onpointerdown = (e) => e.stopPropagation(); leiste.onclick = (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-i]") as HTMLElement | null; if (b) knoepfeJetzt[Number(b.dataset.i)].tat(); }; }
   /* Halbmond-Dock links an der Karte: die Knöpfe sitzen auf dem Bogen (Lage aus der Form berechnet, siehe dock()) */
   const D = dock(knoepfe.length);
-  leiste.innerHTML = D.svg + knoepfe.map((b, i) => `<button type="button" data-i="${i}" aria-label="${b.name}" title="${b.name}${b.taste ? ` (${b.taste})` : ""}" style="left:${D.lage[i][0].toFixed(2)}%;top:${D.lage[i][1].toFixed(2)}%"><span>${RZEICHEN[b.zeichen]}</span><small>${b.name}</small></button>`).join("");
+  leiste.innerHTML = D.svg + knoepfe.map((b, i) => `<button type="button" data-i="${i}" aria-label="${b.name}" title="${b.name}${b.taste ? ` (${b.taste})` : ""}" style="left:${D.lage[i][0].toFixed(2)}%;top:${D.lage[i][1].toFixed(2)}%"><span${RBILD.has(b.zeichen) ? ` class="mitbild"` : ""}>${RBILD.has(b.zeichen) ? rbild(b.zeichen) : RZEICHEN[b.zeichen]}</span><small>${b.name}</small></button>`).join("");
   /* Zier am Kartenring: Goldring und blaue Rauten links und rechts */
   if (!r.querySelector(".ring")) { const ring = document.createElement("i"); ring.className = "ring"; rund.after(ring);
     for (const seite of ["l", "r"]) { const ra = document.createElement("i"); ra.className = "raute " + seite; r.appendChild(ra); } }

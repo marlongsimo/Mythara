@@ -41,8 +41,10 @@ try {
   await new Promise((r) => setTimeout(r, 1300)); check(ben.boden.length === 0, "Ben (direkt daneben) sieht ihn in der ersten Minute nicht");
   sende(ben, { t: "aufheben", id: ding.i }); await warte(ben, (m) => m.t === "chat"); check(ben.chat.some((t) => /nicht/.test(t)) && !ben.inv.rucksack.includes("rundschild"), "Ben kann ihn nicht aufheben");
   sende(anna, { t: "pos", x: 0, y: 0, wx: 6510, wy: 6500 }); await new Promise((r) => setTimeout(r, 200)); sende(anna, { t: "aufheben", id: ding.i }); await warte(anna, (m) => m.t === "chat");
-  check(anna.chat.some((t) => /weit/.test(t)), "Anna 10 Felder entfernt: „Zu weit weg“");
-  sende(anna, { t: "pos", x: 0, y: 0, wx: 6500.5, wy: 6500 }); await new Promise((r) => setTimeout(r, 200)); sende(anna, { t: "aufheben", id: ding.i }); await warte(anna, (m) => m.t === "inventar");
+  check(anna.chat.some((t) => /Feld/.test(t)), "Anna 10 Felder entfernt: „Stell dich auf das Feld“");
+  anna.chat = []; sende(anna, { t: "pos", x: 0, y: 0, wx: 6501.5, wy: 6500.5 }); await new Promise((r) => setTimeout(r, 200)); sende(anna, { t: "aufheben", id: ding.i }); await warte(anna, (m) => m.t === "chat");
+  check(anna.chat.some((t) => /Feld/.test(t)), "Direkt daneben (Nachbarfeld) reicht nicht");
+  sende(anna, { t: "aufheben", id: ding.i, x: 6500.5, y: 6500.4 }); await warte(anna, (m) => m.t === "inventar"); /* die Stelle kommt mit der Bitte (die letzte „pos“ war noch das Nachbarfeld) */
   await warte(anna, (m) => m.t === "boden" && m.liste.length === 0, 2500); check(anna.inv.rucksack[0] === "rundschild" && anna.boden.length === 0, "Anna hebt ihn auf: wieder im Rucksack, vom Boden verschwunden");
   sende(anna, { t: "inv", tat: "anlegen", i: 0 }); await warte(anna, (m) => m.t === "inventar"); check(anna.inv.angelegt.nebenhand === "rundschild" && anna.inv.rucksack.length === 0, "Wieder angelegt: zählt im Ausrüstungsfenster");
   sende(anna, { t: "inv", tat: "anlegen", i: 7 }); await warte(anna, (m) => m.t === "chat"); check(anna.chat.some((t) => /gibt es im Rucksack nicht/.test(t)), "Unsinnige Bitte abgelehnt");

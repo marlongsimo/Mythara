@@ -67,9 +67,9 @@ check(I.bodenSicht(W, "u-anna", T + 60_000 + 10 * 60_000 - 1).some((d) => d.i ==
 const gast = I.bodenDazu(W, 70, 70, "hirtenstab", 1, "", I.LOOT, T); check(I.bodenSicht(W, "u-ben", T).some((d) => d.i === gast.id), "Beute ohne Besitzer (Gast hat gesiegt): sofort für alle");
 /* 4. Aufheben */
 check(/nicht/.test(I.bodenAufheben(sb, "u-ben", W, loot.id, 10, 10, T)), "Ben kann Annas Beute in den ersten 30 s nicht aufheben");
-check(/weit/.test(I.bodenAufheben(sb, "u-anna", W, loot.id, 14, 10, T)), "Zu weit weg (4 Felder): abgelehnt");
+check(/Feld/.test(I.bodenAufheben(sb, "u-anna", W, loot.id, 14, 10, T)) && /Feld/.test(I.bodenAufheben(sb, "u-anna", W, loot.id, 11.2, 10.5, T)), "Nicht auf dem Feld (4 Felder oder direkt daneben): abgelehnt");
 const vor = I.inventarVon("u-anna").rucksack.length;
-check(I.bodenAufheben(sb, "u-anna", W, loot.id, 11, 10, T) === null && I.inventarVon("u-anna").rucksack.length === vor + 1 && !I.bodenSicht(W, "u-anna", T).some((d) => d.i === loot.id), "Anna hebt ihre Beute auf: im Rucksack, vom Boden verschwunden");
+check(I.bodenAufheben(sb, "u-anna", W, loot.id, 10.5, 10.5, T) === null && I.inventarVon("u-anna").rucksack.length === vor + 1 && !I.bodenSicht(W, "u-anna", T).some((d) => d.i === loot.id), "Anna hebt ihre Beute auf: im Rucksack, vom Boden verschwunden");
 for (let i = 0; i < 30; i++) I.aufnehmen(sb, "u-anna", "hirtenstab", 1);
 check(I.inventarVon("u-anna").rucksack.length === 24, "Der Rucksack fasst 24 Gegenstände");
 check(/voll/.test(I.bodenAufheben(sb, "u-anna", W, gast.id, 70, 70, T)) && I.bodenSicht(W, "u-anna", T).some((d) => d.i === gast.id), "Voller Rucksack: nichts aufgehoben, es bleibt liegen");
