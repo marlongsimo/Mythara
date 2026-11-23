@@ -10,6 +10,11 @@ import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
+import { teilBild, TEIL_3D } from "./welt3d/teilbild";
+/** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
+async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string }): Promise<void> {
+  const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
+  await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN } from "./skills";
@@ -121,7 +126,7 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
        <div class="p-brust">${feld(inv.angelegt.brust, "brust", "brust")}</div><div class="p-nebenhand">${feld(inv.angelegt.nebenhand, "nebenhand", "nebenhand")}</div><div class="p-beine">${feld(inv.angelegt.beine, "beine", "beine")}</div></div><p class="klein">Tippe auf einen Gegenstand: untersuchen oder ablegen.</p>`
     : `<h2>Rucksack</h2><div class="zier"></div>${reiter}<div class="faecher">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div><p class="klein">${inv.rucksack.length ? "Tippe auf einen Gegenstand: untersuchen oder anlegen." : "Leer – abgelegte Ausrüstung und Beute landen hier."}</p>`;
   const f = tafel("taschen eigen", inhalt + `<div class="iwahl" hidden></div>`, zu);
-  f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); });
+  f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); });
   const neu = (a: "rucksack" | "ausruestung") => { f.hidden = true; f.innerHTML = ""; eigeneTasche(a, zu, ohneReiter); };
   f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) neu(a); }));
   const wahl = f.querySelector(".iwahl") as HTMLElement;
@@ -144,7 +149,7 @@ function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
     <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, zu); /* ✕ oder Esc: ganz schließen – das Spiel läuft weiter (früher blieb es gesperrt) */
-  { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
+  { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });
 }
 /** Rucksack und Ausrüstung: mit eigenem Helden das echte Inventar, sonst (Kampagnen ohne eigenen Helden) das bisherige Grundgerüst */
@@ -227,7 +232,7 @@ function tabZeichnen(): void {
   else neu = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
     <div class="tplaetze">${PLAETZE.map((p) => `<div class="tplatz">${feld(inv.angelegt[p.id], p.id, p.id)}<small>${p.name}</small></div>`).join("")}</div>${wahl || `<p class="klein">Antippen: untersuchen oder ablegen · i: Werte der Ausrüstung</p>`}`;
   if (!setzen()) return;
-  el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }); }
+  el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
   if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }

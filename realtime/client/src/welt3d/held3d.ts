@@ -20,6 +20,9 @@ import { FigurLeinwand } from "./figurleinwand";
 import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../shared/aussehen";
 
 const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.search);
+/* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb (Figuren-Fabrik, wie echt3d/darsteller.ts) – erst beim Anlegen geladen */
+const AUSGELAGERT = /^(ruestung|kopf\.helm)\./, teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
+const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) und Bezugshelligkeit der Haut (img/figuren-fabrik/held.*: bezug.haut) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] }, HAUT_BEZUG: Record<string, number> = { mann: 203, frau: 210.3 };
 const teil = (id: string) => id.replace(/[.[\]:/]/g, ""); /* three.js entfernt diese Zeichen aus Knotennamen */
@@ -71,8 +74,22 @@ export class Held3D {
     this.zeigen(); this.anwenden(); this.ersatz.sichtbar(false); this.ersatz.entfernen(this.szene); }
   get geladen(): boolean { return Boolean(this.wurzel) || this.ersatz.geladen; }
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */
-  private zeigen() { if (!this.held) return; const A = this.held.aussehen, soll = new Set([...(this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen), ...(A.frisur !== "glatze" ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil));
-    for (const [n, o] of this.teile) o.visible = soll.has(n); }
+  private zeigen() { if (!this.held) return; const A = this.held.aussehen, ids = this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen, helm = ids.some((e) => e.startsWith("kopf.helm."));
+    const soll = new Set([...ids, ...(A.frisur !== "glatze" && !helm ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil)); /* unter dem Helm keine Frisur */
+    this.soll = soll; for (const [n, o] of this.teile) o.visible = soll.has(n);
+    for (const id of ids) { const n = teil(id); if (AUSGELAGERT.test(id) && !this.teile.has(n) && !this.ladend.has(n)) { this.ladend.add(n); void this.teilLaden(id, n); } } }
+  private soll = new Set<string>(); private ladend = new Set<string>();
+  /** Ein ausgelagertes Teil laden und an das Skelett hängen (Knochen nach Namen, gleiche Grundhaltung: aus demselben Rig gebaut) */
+  private async teilLaden(id: string, n: string): Promise<void> {
+    try { const quelle = await teilVorlage(MODELLE + "base" + this.held!.aussehen.g + "3d.teile/" + id + ".glb"), w = this.wurzel; if (!w || this.weg) return;
+      const knochen = new Map<string, THREE.Bone>(); w.traverse((o) => { if ((o as THREE.Bone).isBone) knochen.set(o.name, o as THREE.Bone); });
+      let koerper: THREE.Object3D | null = null; w.traverse((o) => { if (!koerper && (o as THREE.SkinnedMesh).isSkinnedMesh && /^koerper/.test(o.name)) koerper = o; });
+      quelle.traverse((o) => { const sm = o as THREE.SkinnedMesh; if (!sm.isSkinnedMesh || this.teile.has(n)) return;
+        const bones = sm.skeleton.bones.map((b) => knochen.get(b.name)); if (bones.some((b) => !b)) { console.warn("Teil passt nicht aufs Skelett:", id); return; }
+        const neu = new THREE.SkinnedMesh(sm.geometry, sm.material); neu.name = n; neu.frustumCulled = false; neu.castShadow = true; neu.receiveShadow = true;
+        const k = koerper as THREE.Object3D | null; (k && k.parent ? k.parent : w).add(neu); neu.bind(new THREE.Skeleton(bones as THREE.Bone[], sm.skeleton.boneInverses.map((m) => m.clone())), sm.bindMatrix.clone());
+        neu.visible = this.soll.has(n); this.teile.set(n, neu); });
+    } catch (e) { console.warn("Teil fehlt:", id, e); } finally { this.ladend.delete(n); } }
   stelle(x: number, y: number, z: number): void { this.bild.gruppe.position.set(x, y, z); if (!this.wurzel) this.ersatz.stelle(x, y, z); }
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }

@@ -72,6 +72,9 @@ function duell(seed, waffe, stil) {
 { const weg = (an) => { const { s, b, h } = duell(41, "schwert", 1); b.x = b.heim.x = b.x + 80; const x0 = h.x; s.eingabe({ t: "sprint", an, wert: 100 }, h.id); const y0 = h.y; s.eingabe({ t: "richtung", x: 0, y: 1 }, h.id); for (let i = 0; i < 20; i++) s.schritt(); return { weg: h.y - y0, z: s.zustand(h.id).ich.ausdauer }; };
   const n = weg(false), sp = weg(true);
   check(Math.abs(n.weg - 2) < 0.01 && Math.abs(sp.weg - 4) < 0.01 && sp.z && sp.z[1] === 1 && sp.z[0] < 100 && n.z[0] === 100, `Felder: Gehen 1 Feld je Tick, Sprint 2 (${n.weg.toFixed(2)} → ${sp.weg.toFixed(2)} Felder in 1 s), Ausdauer ${sp.z && sp.z[0]} %, Zustand meldet sie`); }
+/* Eigene Helden bekommen keine alten EP und Stufen (früher: „Aufstieg auf Stufe 5“ im ersten Kampf und dabei volles Leben) */
+{ const { s, b, h } = duell(72, "schwert", 2); const ev = []; h.kw.skills;  s.eingabe({ t: "ziel", id: b.id }, h.id); for (let i = 0; i < 30 * 20 && !b.tot && !h.tot; i++) { s.schritt(); for (const e of s.zustand().ev) ev.push(e); }
+  const vor = h.lp; for (let i = 0; i < 4; i++) s.schritt(); check(b.tot && !h.tot && !ev.some((e) => e.a === "stufe" || e.a === "ep") && h.lp === vor && h.lp < h.max && h.max === 20, `Bandit besiegt: kein alter EP-Aufstieg, Leben bleibt (${h.lp} / ${h.max})`); }
 /* Felder und Schräge: schräg kostet wie gerade, Nahkampf nur von N/O/S/W, Fernkampf nach Feldabstand */
 { const mitteOk = (w) => Math.abs(w.x % 1 - 0.5) < 1e-6 && Math.abs(w.y % 1 - 0.5) < 1e-6, F = Math.floor;
   { const { s, b, h } = duell(51, "schwert", 1); b.x = b.heim.x += 80; for (let i = 0; i < 12; i++) s.schritt(); const x0 = h.x, y0 = h.y;

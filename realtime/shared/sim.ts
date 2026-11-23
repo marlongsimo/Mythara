@@ -134,11 +134,11 @@ export class Sim {
   /** Seelensplitter, die dieser Held in der Welt aufgehoben hat */
   splitterVon(id: number): number { return this.splitterJe.get(id) || 0; }
   /** Erfahrung für einen einzelnen Helden (gemeinsame Welt) */
-  private erfahrungFuer(w: Wesen, n: number): void { if (n <= 0) return; w.ep = (w.ep || 0) + n; const vor = w.stufe || 1, nach = Math.max(vor, stufeAusEp(w.ep)); if (nach <= vor) return;
+  private erfahrungFuer(w: Wesen, n: number): void { if (n <= 0 || w.kw) return; /* eigene Helden (Kampfregeln v2): keine alten EP und Stufen – sie steigen über ihre Skills auf */ w.ep = (w.ep || 0) + n; const vor = w.stufe || 1, nach = Math.max(vor, stufeAusEp(w.ep)); if (nach <= vor) return;
     w.stufe = nach; w.max = Math.round(HELDEN[w.typ].lp * (1 + STUFENBONUS(nach).lp)); if (!w.tot) w.lp = w.max; this.ev.push({ a: "stufe", id: w.id, s: nach }); }
   /** EP eines besiegten Gegners nach Schadensanteil verteilen; wer nichts getroffen hat, bekommt nichts */
   private epVerteilen(z: Wesen, e: number): void { const a = this.anteile.get(z.id); this.anteile.delete(z.id); if (!a) return; let summe = 0; for (const v of a.values()) summe += v; if (summe <= 0) return;
-    for (const [id, d] of a) { const h = this.nach(id); if (!h || !h.held) continue; const n = Math.max(1, Math.round(e * d / summe)); this.ev.push({ a: "ep", x: z.x, y: z.y, n, id }); this.erfahrungFuer(h, n); } }
+    for (const [id, d] of a) { const h = this.nach(id); if (!h || !h.held || h.kw) continue; const n = Math.max(1, Math.round(e * d / summe)); this.ev.push({ a: "ep", x: z.x, y: z.y, n, id }); this.erfahrungFuer(h, n); } }
   /** Erfahrung für jeden Helden im Team; wer dabei eine Stufe erreicht, wird sofort stärker und bekommt sein Leben ganz zurück */
   private erfahrung(n: number): void {
     for (const w of this.wesen) { if (!w.held || w.team !== 0) continue; const vor = this.stufen[w.typ] || 1; this.epStand[w.typ] = (this.epStand[w.typ] || 0) + n; const nach = Math.max(vor, stufeAusEp(this.epStand[w.typ]));

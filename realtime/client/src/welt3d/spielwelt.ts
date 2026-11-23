@@ -301,7 +301,7 @@ export class Spielwelt3D implements WeltKern {
     let faehrt = fremd ? will : false; if (!fremd) faehrt = this.feldSchritte(dt, richtung); else this.schrittZiel = null;
     if (faehrt && !fremd) { rx = o.x - vorher.x; ry = o.y - vorher.y; if (Math.hypot(rx, ry) < 1e-6) faehrt = false; }
     this.imKampf = fremd; this.sprintSchritt(dt, faehrt && !fremd); /* Sprint: Ausdauer im 0,5-s-Takt (shared/sprint.ts); im Kampfgebiet bewegt der Server, dort kein Sprint */
-    if (faehrt) this.figur.blick(rx, ry);
+    if (faehrt && (!fremd || direkt)) this.figur.blick(rx, ry); /* im Kampfgebiet beim Klicklaufen: Blick in die Richtung, in die der Server ihn wirklich bewegt (unten) – nicht zum Wegpunkt, der hinter ihm liegen kann */
     this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? (this.ausdauer.faktor > 1 ? "rennen" : "laufen") : "ruhe"); /* Sprint: Rennen */
     this.vorher = vorher;
     const y = this.motor.hoehe(o.x, o.y); this.motor.held.x = o.x; this.motor.held.z = o.y; this.figur.stelle(o.x, y, o.y); this.figur.schritt(dt * 1000, this.motor.gieren); this.marke.rotation.z += dt;
@@ -311,6 +311,6 @@ export class Spielwelt3D implements WeltKern {
     if (performance.now() - this.gemerkt > 2000) { this.gemerkt = performance.now(); try { localStorage.setItem("ez_welt_pos", JSON.stringify([Math.round(o.x * 100) / 100, Math.round(o.y * 100) / 100, this.hier])); } catch { /* privat */ } }
     { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, this.motor, o.x, y + HOEHE + 0.35, o.y); }
     karteDrehen(this.motor.gieren); anschluss3D.schritt(this, dt); this.minikarte();
-    { const dx = this.ort.x - this.vorher.x, dy = this.ort.y - this.vorher.y; this.laeuftFremd = Math.hypot(dx, dy) > 0.4 * dt; if (this.laeuftFremd && !this.pfad.length && Math.hypot(this.rx, this.ry) < 0.05) this.figur.blick(dx, dy); } /* vom Server bewegt: Blick in Laufrichtung */
+    { const dx = this.ort.x - this.vorher.x, dy = this.ort.y - this.vorher.y; this.laeuftFremd = Math.hypot(dx, dy) > 0.4 * dt; if (this.laeuftFremd && this.imKampf && Math.hypot(this.rx, this.ry) < 0.05) this.figur.blick(dx, dy); } /* vom Server bewegt: Blick in Laufrichtung */
   }
 }
