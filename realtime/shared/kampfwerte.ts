@@ -104,15 +104,13 @@ export function skillXpPruefen(v: unknown): SkillXp { const o = (v || {}) as Par
 /** Trefferchance bei stetigen Würfen (Anzeige und Balancing): A gegen V */
 export const trefferChance = (a: number, v: number): number => (a <= 0 ? 0 : v <= 0 ? 1 : a >= v ? 1 - v / (2 * a) : a / (2 * v));
 
-/** Gegner nach denselben Regeln wie die Helden (v3): Skill-Level und Ausrüstungsboni statt fester Treffer- und Schadenszahlen.
- *  Skills fehlen = Level 1, Boni fehlen = 0. Gegner haben keinen Stilbonus. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
-export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; defense?: number; /** Angriffstakt in Ticks */ ticks: number;
-  /** Boni der Waffe: Geschick/Stärke (Nahkampf), fernAngriff/fernStaerke, genau/magieStaerke */ waffe?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number };
-  /** Verteidigungsboni der Rüstung je Angriffsart */ ruestung?: Partial<Record<Art, number>> }
-/** Trefferwert und Max Hit eines Gegners für seine Angriffsart, Verteidigung je Angriffsart – dieselben Formeln wie kampfwerte() */
+/** Gegner nach denselben Regeln wie die Helden (v3), aber ohne Ausrüstung: eine Kampfart (Nahkampf, Fernkampf oder Magie) mit den Skill-Leveln dafür
+ *  – Nahkampf: Geschick und Stärke, Fernkampf: Fernkampf, Magie: Magie – und feste Verteidigungswerte gegen alle drei Angriffsarten.
+ *  Skills fehlen = Level 1. Kein Stilbonus, keine Ausrüstungsboni. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
+export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; /** Angriffstakt in Ticks */ ticks: number; /** Verteidigung je Angriffsart */ abwehr: Record<Art, number> }
+/** Trefferwert und Max Hit eines Gegners für seine Angriffsart – dieselben Formeln wie kampfwerte(), mit Ausrüstungsbonus 0 */
 export function gegnerWerte(v: GegnerV3, art: Art): { treffer: number; maxHit: number; abwehr: Record<Art, number> } {
-  const W = v.waffe || {}, R = v.ruestung || {}, L = (n?: number) => Math.max(1, n || 1), def = L(v.defense);
-  const abwehr: Record<Art, number> = { nah: def + (R.nah || 0), fern: def + (R.fern || 0), magie: L(v.magie) + (R.magie || 0) };
-  if (art === "fern") return { treffer: L(v.fernkampf) + (W.fernAngriff || 0) / 3, maxHit: maxHit(L(v.fernkampf), 0, W.fernStaerke || 0), abwehr };
-  if (art === "magie") return { treffer: L(v.magie) + (W.genau || 0), maxHit: maxHitMagie(L(v.magie), 0, W.magieStaerke || 0), abwehr };
-  return { treffer: L(v.geschick) + (W.geschick || 0), maxHit: maxHit(L(v.staerke), 0, W.staerke || 0), abwehr }; }
+  const L = (n?: number) => Math.max(1, n || 1), abwehr = v.abwehr;
+  if (art === "fern") return { treffer: L(v.fernkampf), maxHit: maxHit(L(v.fernkampf), 0, 0), abwehr };
+  if (art === "magie") return { treffer: L(v.magie), maxHit: maxHitMagie(L(v.magie), 0, 0), abwehr };
+  return { treffer: L(v.geschick), maxHit: maxHit(L(v.staerke), 0, 0), abwehr }; }
