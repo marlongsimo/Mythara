@@ -1,7 +1,7 @@
 /* Quest 01 im Browser (3D-Welt, echter Spielserver, nachgebildete Supabase): Jori spricht Anna beim ersten Besuch an, Quest-Tab zeigt den Auftrag; Ben steht an der Sperre, Raban lässt ihn durch, für Anna bleibt sie zu. Aufruf: node test/quest01-ui.test.mjs */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
-let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
+const T0 = Date.now(); let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t + (process.env.ZEIT ? ` [${((Date.now() - T0) / 1000).toFixed(0)} s]` : "")); if (!ok) fehler++; };
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
