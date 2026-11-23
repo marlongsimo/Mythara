@@ -4,7 +4,7 @@
  * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
  * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
  */
-import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, STILE, SKILLS } from "./sim.gebaut.mjs";
+import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, maxHitMagie, STILE, SKILLS } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
 
@@ -30,7 +30,8 @@ const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
   const h = kampfwerte({ ...NULL, fernkampf: xpFuer(99) }, { waffe: "jagdbogen" }, 0); check(h.waffe.schaden[1] === 13 && kampfwerte({ ...NULL, fernkampf: xpFuer(99) }, { waffe: "jagdbogen" }, 1).waffe.schaden[1] === 12, "Fernkampf 99, Bogen +10: Max Hit 13 (Akkurat) / 12 – der Skill erhöht jetzt den Schaden"); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("stab"), s));
   check(k.map((x) => x.angriff.magie).join() === "9,6,7" && k.map((x) => x.waffe.ticks).join() === "5,4,5" && k.every((x) => x.waffe.reich === 6) && k.map((x) => x.abwehr.nah - k[1].abwehr.nah).join() === "0,0,3", "Stab L1: Trefferwert Magie + Stil + 5 → Akkurat 9 · Schnell 6 · Defensiv 7; Schnell 4 Ticks, sonst 5; Defensiv +3 Defense");
-  check(k.every((x) => schadenWurf(x.waffe, 0) === Math.round(1 + 1 / 3) && schadenWurf(x.waffe, 0.999) === Math.round(5 + 1 / 3)), `Stab: Schaden Waffenwurf 1…5 + Magie ÷ 3, in allen Stilen gleich (${schadenWurf(k[1].waffe, 0)}–${schadenWurf(k[1].waffe, 0.999)}), keine Stil-Faktoren mehr`); }
+  check(k.every((x) => x.waffe.schaden.join() === "1,1" && schadenWurf(x.waffe, 0.999) === 1), "Stab L1 (Magie-Stärke +10): Max Hit 1 in allen Stilen");
+  check([3, 0, 1].map((b) => maxHitMagie(50, b, 10)).join() === "6,6,6" && kampfwerte({ ...NULL, magie: xpFuer(50) }, { waffe: "hirtenstab" }, 0).waffe.schaden[1] === 6, "Magie-Max-Hit: Level 50, Magie-Stärke +10 → 6 / 6 / 6 (Beispiel aus der Vorgabe); effektive Magie ohne +8"); }
 { const B = MONSTER.bandit_dolch; check(B.lp === 15 && B.angriff.schaden.join() === "1,3" && B.v2 && B.v2.geschick === 6 && B.v2.staerke === 3 && B.v2.ticks === 4 && B.v2.abwehr.nah === 6 && B.v2.abwehr.fern === 6 && B.v2.abwehr.magie === 4 && B.angriff.reich === 1.5, "Bandit: Geschick 6, Stärke 3 (Schaden 1–3), 4 Ticks, Abwehr 6/6/4, 15 LP, Nahkampfreichweite 1,5 wie die Helden"); }
 
 /* 2. Simulation: Duelle in der Weltzone (eigene Gegnerwerte) */
