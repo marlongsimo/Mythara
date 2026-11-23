@@ -9,6 +9,11 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
+import { chatSystem } from "../welt";
+import { Ausdauer, SPRINT_MIN } from "../../../shared/sprint";
+import { levelAus } from "../../../shared/kampfwerte";
+import { skillsLesen } from "../skills";
+import { gelbAnzeigen } from "./oberflaeche";
 import { QuestWelt } from "./quest3d";
 import * as THREE from "three";
 import { Welt3D } from "./motor";
@@ -77,6 +82,7 @@ export class Spielwelt3D implements WeltKern {
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
+    addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this);
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
@@ -102,6 +108,14 @@ export class Spielwelt3D implements WeltKern {
     const k = $("#ez-karte"); k.style.backgroundImage = `url(${weltDatei("karte-" + id + ".webp")})`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
   profil() { WELT.hud.profil(this.held); WELT.hud.karte(); const h = this.hier; this.hier = ""; this.regionZeigen(); if (!this.hier) this.hier = h; anschluss3D.menue(this); }
 
+  /* ───────────── Sprint (Sprintkonzept v1): +30 % Tempo, Ausdauer in der gelben Leiste ───────────── */
+  ausdauer = new Ausdauer(); private geschickLv = 1; private geschickZeit = 0; private gelbZuletzt = -1;
+  /** Sprint an/aus (Knopf an der Minikarte, Umschalttaste) */
+  sprint() { if (!this.ausdauer.an && this.ausdauer.wert < SPRINT_MIN) { chatSystem(`Zu erschöpft – sprinten geht wieder ab ${SPRINT_MIN} % Ausdauer.`); return; } this.ausdauer.umschalten(); this.sprintKnopf(); }
+  private sprintKnopf() { document.querySelectorAll<HTMLElement>('[aria-label="Sprint"]').forEach((b) => { b.classList.toggle("an", this.ausdauer.an); b.setAttribute("aria-pressed", String(this.ausdauer.an)); }); }
+  private sprintSchritt(dt: number, laeuft: boolean) { const jetzt = performance.now(); if (jetzt - this.geschickZeit > 2000) { this.geschickZeit = jetzt; this.geschickLv = levelAus(skillsLesen().geschick, "geschick"); }
+    const war = this.ausdauer.an; this.ausdauer.schritt(dt, laeuft, this.geschickLv); if (war !== this.ausdauer.an) this.sprintKnopf();
+    const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null;
   alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
@@ -249,7 +263,7 @@ export class Spielwelt3D implements WeltKern {
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
     if (!this.karteStand || performance.now() - this.karteZeit > (HANDY_KARTE ? 450 : 300)) { this.karteZeit = performance.now();
       const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
-      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
+      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); if (this.quest) this.quest.karteMarke(c, (R * KARTE_RAND) / f, this.ort, g); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
     /* Verschiebung seit dem Zeichnen in Bildpunkten des gezeichneten Bilds (oben = Blickrichtung beim Zeichnen) und Drehung um den Unterschied der Kamera */
     const S = this.karteStand, dx = this.ort.x - S.x, dy = this.ort.y - S.y, rx = Math.cos(S.g), rz = -Math.sin(S.g), ux = -Math.sin(S.g), uz = -Math.cos(S.g);
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
@@ -263,7 +277,8 @@ export class Spielwelt3D implements WeltKern {
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.visible = false; } else { rx = dx / l; ry = dy / l; } }
     const l = Math.hypot(rx, ry), faehrt = l > 0.05, vorher = { x: o.x, y: o.y };
     const fremd = anschluss3D.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0); /* im Kampfgebiet bewegt der Server den Helden (der Kampf setzt this.ort) */
-    if (faehrt && !fremd) { const k = Math.min(1, l) / l, e = { x: o.x + rx * k * D.tempo * dt, y: o.y + ry * k * D.tempo * dt, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; }
+    if (faehrt && !fremd) { const k = Math.min(1, l) / l, v = D.tempo * this.ausdauer.faktor * dt, e = { x: o.x + rx * k * v, y: o.y + ry * k * v, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; }
+    this.sprintSchritt(dt, faehrt && !fremd); /* Sprint: Ausdauer im 0,5-s-Takt (shared/sprint.ts); im Kampfgebiet bewegt der Server, dort kein Sprint */
     if (faehrt) this.figur.blick(rx, ry);
     this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? "laufen" : "ruhe");
     this.vorher = vorher;

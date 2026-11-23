@@ -17,7 +17,7 @@
  *   Defense: 10 XP je Block (jeder verfehlte Gegnerangriff zählt als Block); Defense-Grundwert = Defense-Level (Start 1).
  * Verteidigung: Nahkampf und Fernkampf = Defense-Level + Brust + Schild; Magie = Magie-Level + Brust + Schild (ersetzt 1 + 0,5 × (Heldenlevel − 1)).
  * Heldenlevel = ⌊Summe der sechs Skill-Level ÷ 6⌋. XP der vier Kampfskills für Level L (kumuliert) = ⌊100 × (L^2,2 − 1)⌋, Level 1–100.
- * Erholung: im Kampf keine; 5 s nach dem letzten Angriff 4 % der Max-LP je Sekunde.
+ * Erholung: 1 LP je 100 Game-Ticks (50 s), immer (LP_REGEN_TICKS).
  * Gegner: feste Zahlen ohne Ausrüstung (config.ts MonsterDef.v2): Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Ticks, Abwehr, Nahkampfreichweite wie die Helden.
  */
 import { GEGENSTAENDE, Platz, WaffenWerte } from "./gegenstaende";
@@ -29,6 +29,8 @@ export const SKILL_NAME: Record<Skill, string> = { geschick: "Geschick", staerke
 /** LP-XP je tatsächlich verursachtem Schadenspunkt, Defense-XP je Block */
 export const LP_XP_JE_SCHADEN = 1, DEFENSE_XP_JE_BLOCK = 10;
 export const XP_JE_SCHADEN = 2, SKILL_MAX = 100, ERHOLUNG = { nach: 5, jeSek: 0.04 };
+/** Lebensregeneration (eigener Held): 1 LP je 100 Game-Ticks (50 Sekunden), immer – auch im Kampf und außerhalb der Kampfgebiete */
+export const LP_REGEN_TICKS = 100, LP_REGEN_SEK = LP_REGEN_TICKS * 0.5;
 /** 1 Tick in Sekunden; gemeinsame Nahkampfreichweite (Felder, vom Rand des Ziels) */
 export const TICK = 0.5, NAH_REICH = 1.5;
 export interface SkillXp { geschick: number; staerke: number; fernkampf: number; magie: number; lp: number; defense: number }

@@ -56,6 +56,9 @@ let questJetzt: Stand = "", questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
 export const questStand = (): Stand => questJetzt;
 export const questGeladen = (): boolean => questBekannt;
+/** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
+export function questVerfolgt(): boolean { try { return localStorage.getItem("ez_q1_verfolgen") === "1"; } catch { return false; } }
+export function questVerfolgen(an: boolean): void { try { localStorage.setItem("ez_q1_verfolgen", an ? "1" : "0"); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
 export function rede(npc: string): void { senden({ t: "rede", npc }); }
 export function antworte(npc: string, a: string): void { senden({ t: "antwort", npc, a }); }
 export function dialogZu(): void { senden({ t: "dialogzu" }); }

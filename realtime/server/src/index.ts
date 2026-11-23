@@ -9,6 +9,7 @@
  *
  * Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers (SUPABASE_SERVICE_KEY), nie in den Browser.
  */
+import { LP_REGEN_SEK } from "../../shared/kampfwerte";
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
@@ -39,6 +40,8 @@ interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: numb
 /** Eine gemeinsame Kampfwelt: eine Simulation für alle Spieler dort; Gegner kehren zurück, EP nach Schadensanteil (shared/sim.ts, Sim.welt) */
 interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number }
 const zonen = new Map<string, Zone>();
+/** Lebenspunkte eines Kontos zwischen den Kampfgebieten (sonst wäre man nach jedem Betreten wieder voll): beim Verlassen gemerkt, beim Betreten plus Regeneration (1 LP je 50 s) */
+const lebenJe = new Map<string, { lp: number; zeit: number }>();
 /** Einen Spieler in die gemeinsame Welt eines Gebiets setzen (die Zone entsteht beim ersten Spieler) – jede Person nur einmal */
 function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert: number, name: string, wo?: { x: number; y: number }): void {
   let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].weltRegion); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */
@@ -46,6 +49,7 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
     Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
   const nutzer = p.kampf && p.kampf.nutzer; for (const q of [...Z.spieler]) if (q !== p && q.kampf && q.kampf.nutzer === nutzer) { zoneVerlassen(q); try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* der alte Held verschwindet sofort */
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
+  { const L = nutzer && p.v1 ? lebenJe.get(nutzer) : undefined, h = Z.sim.nach(p.heldId); if (L && h) h.lp = Math.max(1, Math.min(h.max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK))); }
   console.log("Welt:", name, "betritt", karte, "·", Z.spieler.size, "dort"); namenMelden(Z); }
 /** Einen Spieler aus seiner gemeinsamen Welt nehmen (genau einmal): Stelle merken, Gutschrift anstoßen, Held sofort weg */
 function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; if (p.invAus) { p.invAus(); p.invAus = undefined; } const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
@@ -53,6 +57,7 @@ function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId |
     void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100));
   void buchen(p, true); /* liest EP und Splitter sofort, bucht dann im Hintergrund */
   if (p.v1 && p.kampf && p.kampf.nutzer) v1Takt(sb, p.kampf.nutzer, p.v1, Z.sim, p.heldId, true); /* die letzten Skill-XP */
+  if (p.v1 && p.kampf && p.kampf.nutzer && h) { if (h.tot) lebenJe.delete(p.kampf.nutzer); else lebenJe.set(p.kampf.nutzer, { lp: h.lp, zeit: Date.now() }); } /* gefallen: in der Waldmark wieder voll */
   Z.sim.verlassen(p.heldId); Z.spieler.delete(p); if (!Z.spieler.size) Z.leerSeit = Date.now(); namenMelden(Z); }
 function namenMelden(Z: Zone) { const m = JSON.stringify({ t: "namen", liste: [...Z.spieler].map((q) => { const w = Z.sim.nach(q.heldId || 0) as { stufe?: number } | undefined; const a = q.kampf && q.kampf.nutzer ? aussehenJe.get(q.kampf.nutzer) : undefined; return { id: q.heldId, name: q.name || "Wanderer", stufe: (w && w.stufe) || 1, ...(a ? { a } : {}) }; }) });
   for (const q of Z.spieler) if (q.ws.readyState === WebSocket.OPEN) q.ws.send(m); }

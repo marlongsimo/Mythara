@@ -68,7 +68,31 @@ try {
   await anna.keyboard.press(" "); await anna.waitForTimeout(400); check(!(await offen(anna)), "Nach der letzten Aussage schließt sich das Gespräch");
   await anna.click('#ez-leiste [data-l="quests"]'); await anna.waitForTimeout(300);
   check(await anna.evaluate(() => /Die gesperrte Straße/.test(document.getElementById("ez-queststab")?.textContent || "") && /Bürgermeister von Waldmark braucht Hilfe/.test(document.getElementById("ez-queststab").textContent)), "Quest-Tab: „Die gesperrte Straße“ mit dem Auftrag");
+  await anna.click('#ez-queststab [data-verfolgen]'); await anna.waitForTimeout(800);
+  { const P = await anna.evaluate(() => { const W = window.EZW.welt3d, q = W.quest, z = q.ziel(), p = q.pfeil; if (!p || !z) return null; const zum = Math.atan2(z.x - W.ort.x, z.y - W.ort.y), hin = Math.atan2(p.position.x - W.ort.x, p.position.z - W.ort.y);
+      return { sichtbar: p.visible, ziel: [Math.round(z.x), Math.round(z.y)], abw: Math.abs(((zum - hin + 3 * Math.PI) % (2 * Math.PI)) - Math.PI), verfolgt: localStorage.getItem("ez_q1_verfolgen") }; });
+    check(P && P.sichtbar && P.abw < 0.15 && P.verfolgt === "1", `Quest abgehakt: Pfeil am Helden zeigt zum Bürgermeister (${JSON.stringify(P)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.click('#ez-leiste [data-l="quests"]');
+  /* Hagan geht im Rathaus umher: sein Name schwebt nicht von weitem über dem Dach */
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6450.5, 6440.5)); await anna.waitForTimeout(1500);
+  check(await anna.evaluate(() => { const n = [...document.querySelectorAll(".ez-name3d.quest")].find((e) => e.textContent === "Hagan Voss"); return !!n && n.hidden; }), "Von weitem: kein Namensschild über dem Rathausdach");
+  if (BILD) await anna.screenshot({ path: BILD + "quest-pfeil.png" });
+  /* außer Reichweite (weit im Süden) kein !, in Reichweite (vor dem Rathaus) das ! */
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6450.5, 6470)); await anna.waitForTimeout(2500);
+  { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
+    check(gelb < 6, `Ziel außer Reichweite der Minikarte: noch kein gelbes ! (${gelb} gelbe Bildpunkte)`); }
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6446.5, 6436.5)); await anna.waitForTimeout(2500);
+  { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
+    check(gelb > 25, `In Reichweite: gelbes ! auf der Minikarte (${gelb} gelbe Bildpunkte)`); }
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6450.5, 6440.5)); await anna.waitForTimeout(1500);
+  /* Sprint: Umschalttaste, +30 %, die gelbe Leiste leert sich */
+  { await anna.keyboard.press("Shift"); const v = await anna.evaluate(() => { const W = window.EZW.welt3d; return { an: W.ausdauer.an, faktor: W.ausdauer.faktor, knopf: !!document.querySelector('[aria-label="Sprint"].an') }; });
+    await anna.evaluate(() => window.EZW.welt3d.geheWeit(6450.5, 6470)); await anna.waitForFunction(() => window.EZW.welt3d.ausdauer.wert < 100, null, { timeout: 40000 }).catch(() => {}); await anna.waitForTimeout(300);
+    const n = await anna.evaluate(() => { const W = window.EZW.welt3d; return { wert: W.ausdauer.wert, gelb: (document.querySelector(".ez-boegen .voll.gelb") || {}).style?.strokeDasharray || "" }; });
+    check(v.an && v.faktor === 1.3 && v.knopf && n.wert < 100 && /^\d/.test(n.gelb) && !n.gelb.startsWith("100"), `Sprint: Umschalt schaltet ein (+30 %, Knopf leuchtet), die gelbe Leiste sinkt (${n.wert.toFixed(0)} %, ${n.gelb})`);
+    await anna.keyboard.press("Shift"); check(await anna.evaluate(() => !window.EZW.welt3d.ausdauer.an && window.EZW.welt3d.ausdauer.faktor === 1), "Nochmal Umschalt: Sprint aus"); }
   /* Ausrüstungs-Tab mit Auswahl (auf dem Handy war der Kopf abgeschnitten): Kopf mit „i“ ganz sichtbar, nichts überlappt */
   await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.waitForTimeout(300);
   { const L = await anna.evaluate(() => { const t = document.getElementById("ez-ausruestungtab").getBoundingClientRect(), k = document.querySelector("#ez-ausruestungtab .kopf").getBoundingClientRect(), i = document.querySelector("#ez-ausruestungtab .info").getBoundingClientRect(), w = document.querySelector("#ez-ausruestungtab .twahl").getBoundingClientRect(), fs = [...document.querySelectorAll("#ez-ausruestungtab .tplatz")].map((e) => e.getBoundingClientRect());
@@ -87,7 +111,7 @@ try {
   { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); await ben.waitForTimeout(500); }
   const knopf = await ben.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(/Raban sprechen/.test(knopf), `Raban antippen: „${knopf}“`);
   if (knopf) await ben.click(".ez-wahl3d button", { force: true });
-  await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && !d.hidden; }, null, { timeout: 15000 }).catch(() => {});
+  await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }
   await ben.waitForFunction(() => !window.EZW.welt3d.quest.sperreZu, null, { timeout: 8000 }).catch(() => {}); await ben.waitForTimeout(500);

@@ -68,6 +68,9 @@ function duell(seed, waffe, stil) {
     check(h.zielId === 0 && h.x < b.x - 8, "Wegklicken (laufen) bricht den Angriff ab"); } }
 { const s2 = Sim.welt(9, undefined, true), h2 = s2.nach(s2.beitreten("schildwaechter", 0, { x: 50, y: 50 }, kampfwerte(NULL, startAusruestung("schwert"))));
   for (let i = 0; i < 40; i++) s2.schritt(); check(h2.aggroZeit > 1.5 && h2.aggroZeit < 2.5, `Neues Betreten der Region: der Zähler beginnt bei 0 (${h2.aggroZeit.toFixed(2)} s nach 2 s)`); }
+/* Lebensregeneration: 1 LP je 100 Game-Ticks (50 s) */
+{ const { s, b, h } = duell(31, "schwert", 1); b.x = b.heim.x = b.x + 60; h.lp = 5; let t = 0; const lp0 = h.lp; for (; t < 151 * 20; t++) s.schritt();
+  check(h.lp === lp0 + 3, `Regeneration: in 151 s genau 3 LP (5 → ${h.lp}), also 1 LP je 50 s`); }
 /* XP nach Stil */
 for (const [waffe, stil, soll] of [["schwert", 0, "geschick"], ["schwert", 2, "staerke"], ["schwert", 1, "beide"], ["bogen", 1, "fernkampf"], ["stab", 1, "magie"]]) {
   const { s, b, h } = duell(21, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let abgezogen = 0;

@@ -4,7 +4,7 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
-import { questStand } from "./welt";
+import { questStand, questVerfolgt, questVerfolgen } from "./welt";
 import { QUESTLOG } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
@@ -214,7 +214,7 @@ function tabZeichnen(): void {
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
   if (tabJetzt === "quests") { const st = questStand();
     neu = !st ? `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Sprich mit den Leuten in der Waldmark – vielleicht braucht jemand Hilfe.</small></div>`
-      : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p></div>`; setzen(); return; }
+      : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p>${st !== "fertig" ? `<button type="button" class="kipp verfolgen${questVerfolgt() ? " an" : ""}" data-verfolgen="1" role="switch" aria-checked="${questVerfolgt()}"><i></i><span><b>Verfolgen</b><small>Ein Pfeil am Helden zeigt den Weg zum nächsten Ziel.</small></span></button>` : ""}</div>`; setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
@@ -229,6 +229,7 @@ function tabZeichnen(): void {
   el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust"); }); }
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
+  if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { tabWahl = tabWahl && tabWahl.wo === f.dataset.wo ? null : { wo: f.dataset.wo!, g: f.dataset.g! }; tabZeichnen(); return; }
   const a = t.closest<HTMLElement>("[data-t]")?.dataset.t; if (!a) return;

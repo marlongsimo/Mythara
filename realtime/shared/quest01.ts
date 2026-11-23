@@ -46,6 +46,8 @@ export const npc = (id: string): QuestNpc | undefined => NPCS.find((n) => n.id =
 /** So nah muss man stehen, um zu reden (Felder) */
 export const REDE_WEIT = 3.5;
 
+/** Wohin es als Nächstes geht (Pfeil am Helden, gelbes ! auf der Minikarte): eine Figur oder eine Stelle (Weltfelder) */
+export const ZIEL: Partial<Record<Stand, NpcId | [number, number]>> = { "": "jori", angeboten: "jori", angenommen: "hagan", auftrag: "fenna", osthof: "raban", wachen: [6546, 6586] /* Lichtung im Kreuzwald */, beweis: "hagan", bestaetigt: "raban", frei: "othmar" };
 /* ---------- Sperren: Baumstämme (gesperrte Felder x0, y0, x1, y1) – für jeden Spieler, bis die Wachen ihn durchlassen ---------- */
 export interface Sperre { id: string; feld: [number, number, number, number]; /** Baumstämme: Mitte x, y, Länge, Drehung (rad) */ staemme: [number, number, number, number][] }
 export const SPERREN: Sperre[] = [

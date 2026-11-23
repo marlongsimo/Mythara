@@ -212,7 +212,7 @@ export function menueEinrichten(s: WeltKern) {
 let karteMedien = false;
 function menue3D(s: WeltKern) {
     const rucksack = () => { if (!seitenTab("rucksack")) tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)); }, ausruestung = () => { if (!seitenTab("ausruestung")) tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true)); }; /* mit eigenem Held: Tabs neben der Leiste */
-    const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", tat: () => chatSystem("Sprinten kommt bald.") }];
+    const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", taste: "Umschalt", tat: () => { const w = s as unknown as { sprint?: () => void }; if (w.sprint) w.sprint(); else chatSystem("Sprinten geht in der 3D-Welt."); } }];
     /* links an der Karte: Teleport, Spieler online, Einstellungen – am PC im Halbmond-Dock mit Karte und Sprint, am Handy auf einem Bogen links an der Karte */
     const links = [{ id: "teleport", name: "Teleport", zeichen: "teleport" as const, taste: "T", tat: () => teleport(s) }, { id: "spieler", name: "Spieler", zeichen: "spieler" as const, taste: "P", tat: () => tafel(s, spielerListe) },
       { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen" as const, tat: () => oeffne("menue", s) }];

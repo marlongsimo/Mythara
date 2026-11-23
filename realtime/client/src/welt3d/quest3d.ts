@@ -8,8 +8,8 @@ import * as THREE from "three";
 import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
-import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, rang, NpcId } from "../../../shared/quest01";
-import { questStand, questGeladen, rede } from "../welt";
+import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, rang, NpcId, ZIEL } from "../../../shared/quest01";
+import { questStand, questGeladen, rede, questVerfolgt } from "../welt";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
 import type { Welt3D } from "./motor";
@@ -62,8 +62,25 @@ export class QuestWelt {
     else if (jori.npc && this.joriLaeuft && !this.joriFertig) { this.joriLaeuft = false; jori.npc.spiele("ruhe"); }
     for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
-      const h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
-      f.mk.hidden = !sichtbar || !warten.has(f.n.id) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); f.mk.textContent = s === "beweis" || s === "bestaetigt" || s === "frei" ? "?" : "!"; } }
+      /* wer im Haus umhergeht (Hagan im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
+      const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
+      f.mk.hidden = !sichtbar || !nah || !warten.has(f.n.id) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); f.mk.textContent = s === "beweis" || s === "bestaetigt" || s === "frei" ? "?" : "!"; }
+    this.pfeilSchritt(); }
+  /** Das nächste Ziel (Figur oder Stelle) für diesen Stand; null: nichts zu tun */
+  ziel(): { x: number; y: number } | null { if (!questGeladen()) return null; const z = ZIEL[questStand()]; if (!z) return null;
+    if (Array.isArray(z)) return { x: z[0], y: z[1] }; const f = this.figuren.find((x) => x.n.id === z); if (!f) return null; return this.wo(f) || { x: f.n.x, y: f.n.y }; }
+  /* Pfeil am Fuß des Helden (nur wenn die Quest im Quest-Tab abgehakt ist) */
+  private pfeil: THREE.Mesh | null = null;
+  private pfeilSchritt() { const z = questVerfolgt() ? this.ziel() : null, o = this.u.ort, d = z ? Math.hypot(z.x - o.x, z.y - o.y) : 0;
+    if (!this.pfeil) { const form = new THREE.Shape(); form.moveTo(0, 0.55); form.lineTo(0.32, 0.05); form.lineTo(0.12, 0.05); form.lineTo(0.12, -0.35); form.lineTo(-0.12, -0.35); form.lineTo(-0.12, 0.05); form.lineTo(-0.32, 0.05); form.closePath();
+      const g = new THREE.ShapeGeometry(form); g.rotateX(-Math.PI / 2); this.pfeil = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffd23a, transparent: true, opacity: 0.92, depthWrite: false, side: THREE.DoubleSide })); this.pfeil.renderOrder = 5; this.u.motor.szene.add(this.pfeil); }
+    const p = this.pfeil; p.visible = !!z && d > 2.5; if (!p.visible || !z) return;
+    const w = Math.atan2(z.x - o.x, z.y - o.y), puls = 1.15 + 0.12 * Math.sin(performance.now() / 220); /* zeigt in Laufrichtung, ein wenig vor dem Helden */
+    p.position.set(o.x + Math.sin(w) * puls, this.u.motor.hoehe(o.x, o.y) + 0.06, o.y + Math.cos(w) * puls); p.rotation.y = w + Math.PI; }
+  /** Gelbes ! auf der Minikarte (gezeichnet ins Kartenbild: mitte = Held, felder = Breite in Feldern, g = Drehung der Kamera beim Zeichnen) – nur, wenn das Ziel in ihrer Reichweite liegt */
+  karteMarke(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number) { const z = this.ziel(), x = c.getContext("2d"); if (!z || !x) return; const n = c.width, k = n / felder, dx = z.x - o.x, dy = z.y - o.y;
+    let px = (dx * Math.cos(g) + dy * -Math.sin(g)) * k, py = -(dx * -Math.sin(g) + dy * -Math.cos(g)) * k; const gr0 = Math.max(18, n * 0.12), rand = n / 2 / 1.5 - gr0 * 0.75 /* der runde Ausschnitt zeigt nur die Mitte des Kartenbilds (KARTE_RAND 1,5) */, l = Math.hypot(px, py); if (l > rand) return; /* nur wenn das Ziel im Ausschnitt der Minikarte liegt */
+    const sx = n / 2 + px, sy = n / 2 + py, gr = Math.max(18, n * 0.12); x.save(); x.font = `900 ${gr}px Georgia, serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = Math.max(3, gr * 0.22); x.strokeStyle = "#2a1a05"; x.strokeText("!", sx, sy); x.fillStyle = "#ffd23a"; x.fillText("!", sx, sy); x.restore(); }
   /** Stand für Tests */
   get sperreZu(): boolean { return !sperreOffen(questStand()); }
   get joriDa(): { x: number; y: number } { const j = this.figuren.find((f) => f.n.id === "jori")!; return { x: j.x, y: j.y }; }
