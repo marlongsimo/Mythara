@@ -305,6 +305,31 @@
    ],
    "datei": "basefrau3d.teile/waffe.stab.hirte.glb"
   },
+  "waffe.sternbrecher": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff",
+    "block"
+   ],
+   "datei": "basefrau3d.teile/waffe.sternbrecher.glb"
+  },
+  "waffe.sterndorn": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich2h"
+   ],
+   "datei": "basefrau3d.teile/waffe.sterndorn.glb"
+  },
   "waffe.zeremonienstab": {
    "art": "starr",
    "platz": "hand_r",
@@ -319,6 +344,11 @@
   }
  },
  "aktionen": {
+  "angriff": {
+   "bilder": 8,
+   "rate": 16,
+   "schleife": false
+  },
   "armbrust1h": {
    "bilder": 8,
    "rate": 12,
