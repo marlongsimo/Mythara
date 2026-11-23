@@ -138,14 +138,14 @@ for w, d in D4["start"].items():
     s.append(KeepTogether(blk))
 
 s.append(Paragraph("7  Waffen", H1))
-s.append(p("Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril – die Boni sind OSRS-Werte. Nahkampf hat Reichweite 1 Feld."))
-A = D4["ausruestung"]; FERTIG = ("anfaenger", "gewoehnlich", "selten")
+s.append(p("Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril, Episch (35) ↔ Adamant, Legendär (45) ↔ Rune, Mythisch (65) ↔ Dragon – die Boni sind OSRS-Werte. Nahkampf hat Reichweite 1 Feld."))
+A = D4["ausruestung"]; FERTIG = ("anfaenger", "gewoehnlich", "selten", "episch", "legendaer", "mythisch")
 wz = [a for a in A if a["waffe"] and a["seltenheit"] in FERTIG]
 wz.sort(key=lambda a: (FERTIG.index(a["seltenheit"]), a["waffe"]["art"]))
 s.append(tab(["Waffe", "Stufe", "Kampfart", "Benötigt", "Ticks", "Reichw.", "Angriff", "Stärke / Zauber"],
              [[a["name"] + (" (2H)" if a["zweihand"] else ""), SN[a["seltenheit"]], KA[a["waffe"]["art"]], anf(a), a["waffe"]["ticks"], "1" if a["waffe"]["art"] == "nah" else de(a["waffe"]["reich"]), *wbonus(a["waffe"])] for a in wz],
              [36, 15, 18, 22, 11, 13, 29, 30], klein=True))
-s.append(Paragraph("Zweihänder (2H) belegen Waffe und Nebenhand. Der Speer hat eine kleine eigene Abwehr (Einfach +5/+5/0, Selten +7/+7/0).", K))
+s.append(Paragraph("Zweihänder (2H) belegen Waffe und Nebenhand. Der Speer hat eine kleine eigene Abwehr (Einfach +5 bis Mythisch +15 gegen Nah- und Fernkampf).", K))
 
 s.append(Paragraph("8  Rüstung und Schilde", H1))
 s.append(p("Abwehr Nahkampf = Mittel aus Stich, Hieb und Wucht in OSRS. Metallrüstung senkt den Fernkampf- und Magie-Angriff (volle Helme −3/−6, Plattenpanzer −15/−30, Beinschienen −11/−21, Kite-Schilde −2/−8); Leder hebt den Fernkampf-Angriff, Roben die Magie."))
@@ -157,7 +157,7 @@ s.append(tab(["Teil", "Stufe", "Platz", "Benötigt", "Abwehr Nah / Fern / Magie"
 s.append(Paragraph("Beispiel Level 20 in allem, volle Mithril-Platte mit Schild: " + " · ".join(f"{b['n']}: Angriffswurf {de(b['ohne'])} → {de(b['mit'])}" for b in D4["beispiel"])
                    + f". Abwehrwurf damit {de(D4['abwehr20']['nah'])} / {de(D4['abwehr20']['fern'])} / {de(D4['abwehr20']['magie'])}.", K))
 rest = [a for a in A if a["seltenheit"] not in FERTIG]
-s.append(p(f"<b>Episch, Legendär, Mythisch</b> ({len(rest)} Teile): Namen und Plätze stehen, die Werte sind noch vorläufig (alte Skala) und werden nach OSRS-Vorbild neu gesetzt."))
+s.append(p("Leder: Grüner, Blauer, Schwarzer Drachenleder-Satz ab Episch. Roben: Mystik, Unendlichkeit, Ahrim ab Episch. Die Läden verkaufen nur bis Selten."))
 
 s.append(Paragraph("9  Gegner", H1))
 s.append(p("Gegner rechnen wie Monster in OSRS: eine Kampfart mit ihren Skill-Leveln (Nahkampf: Geschick und Stärke; Fernkampf; Magie), ein Defense- und ein Magie-Level, "
@@ -204,9 +204,9 @@ s.append(tab(["Gegner", "Felder"], [
 ], [30, 144], klein=True))
 
 s.append(Paragraph("13  Offen", H1))
-s += li(["Werte für Episch, Legendär und Mythisch nach OSRS-Vorbild.",
+s += li([
          "Weitere Gegner nach dem Monsterschema (Mooshocker für „Der stille Rain“: 50 LP).",
-         "Magie skaliert mit hohem Level stark (Seltener Stab auf Magie 99: Max Hit 37) – beim Setzen der höheren Stufen beachten."])
+         "Magie skaliert mit dem Level stärker als Nah- und Fernkampf (Mythischer Stab auf Magie 99: Max Hit 43, Mythischer Zweihänder auf Stärke 99: 27) – die Magie-Max-Hit-Formel sollte überarbeitet werden."])
 
 doc = SimpleDocTemplate(sys.argv[1], pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm, bottomMargin=20 * mm, title="Mythara – Kampfsystem v4", author="Mythara")
 doc.build(s, onFirstPage=seite, onLaterPages=seite)
