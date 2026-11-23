@@ -401,6 +401,48 @@
         "kopf",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.brust.magier",
+      "platz": "brust",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.brust.magier.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals",
+        "oberschenkel.L",
+        "oberschenkel.R"
+      ],
+      "beine_mitteln": true
+    },
+    {
+      "id": "ruestung.beine.magierrock",
+      "platz": "beine",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.beine.magierrock.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "becken",
+        "bauch",
+        "oberschenkel.L",
+        "oberschenkel.R",
+        "unterschenkel.L",
+        "unterschenkel.R",
+        "fuss.L",
+        "fuss.R"
+      ],
+      "beine_mitteln": true
+    },
+    {
+      "id": "kopf.helm.magierkapuze",
+      "platz": "helm",
+      "glb": "basefrau3d/v001/quelle/teile/kopf.helm.magierkapuze.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "kopf",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {

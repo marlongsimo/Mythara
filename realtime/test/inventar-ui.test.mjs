@@ -57,11 +57,11 @@ try {
   await anna.click('#ez-rucksacktab .ifeld.voll[data-g="rundschild"]'); check(await anna.isVisible('.seitentab .twahl [data-t="fallen"]'), "Rucksack-Tab: „Fallen lassen“ ist da");
   await anna.click('.seitentab .twahl [data-t="fallen"]'); await anna.waitForTimeout(800); await anna.click('#ez-leiste [data-l="rucksack"]');
   await anna.waitForFunction(() => document.querySelectorAll(".ez-name3d.boden").length === 1, null, { timeout: 8000 }).catch(() => {});
-  check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Einfacher Schild"), "Der Schild liegt als Beutel mit Namen am Boden");
+  check(await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d.boden")].map((e) => e.textContent).join() === "Startschild"), "Der Schild liegt als Beutel mit Namen am Boden");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "boden.png" });
   { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = W.bodenBild && [...W.bodenBild.values()][0]; if (!d) return null; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); });
     if (q) await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
-  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Einfacher Schild aufheben", `Antippen des Beutels: „${knopf}“`);
+  const knopf = await anna.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(knopf === "Startschild aufheben", `Antippen des Beutels: „${knopf}“`);
   if (knopf) await anna.click(".ez-wahl3d button"); await anna.waitForFunction(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.includes("rundschild") && !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
   check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack.includes("rundschild") && !document.querySelector(".ez-name3d.boden")), "Aufgehoben: wieder im Rucksack, der Beutel ist weg");
   { const H = HELD["00000000-0000-0000-0000-00000000a001"]; await new Promise((r) => setTimeout(r, 2000)); check(H.inventar && H.inventar.rucksack.includes("rundschild") && !H.inventar.angelegt.nebenhand, `Der Server hat das Inventar gespeichert: ${JSON.stringify(H.inventar)}`); }
@@ -75,7 +75,7 @@ try {
   check(await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()].find((b) => b.d.g === "splitter"); let glb = false; d && d.g.traverse((o) => { if (o.isMesh && o.parent && o.parent !== d.g) glb = true; }); return glb; }), "Die Splitter liegen als 3D-Modell der Figuren-Fabrik am Boden");
   { const q = await anna.evaluate(() => { const W = window.EZW.welt3d, d = [...W.bodenBild.values()][0]; return W.motor.bildschirm(d.d.x, W.motor.hoehe(d.d.x, d.d.y), d.d.y); }); await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(500); }
   const knoepfe = await anna.evaluate(() => [...document.querySelectorAll(".ez-wahl3d button")].map((b) => b.textContent));
-  check(knoepfe.length === 3 && knoepfe.includes("Einfacher Schild aufheben") && knoepfe.some((t) => /^Splitter.*12.*aufheben$/.test(t)) && knoepfe[2] === "Alles aufheben", `Antippen der Stelle: ${JSON.stringify(knoepfe)}`);
+  check(knoepfe.length === 3 && knoepfe.includes("Startschild aufheben") && knoepfe.some((t) => /^Splitter.*12.*aufheben$/.test(t)) && knoepfe[2] === "Alles aufheben", `Antippen der Stelle: ${JSON.stringify(knoepfe)}`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "auswahl.png" });
   await anna.click(".ez-wahl3d button:last-child", { force: true });
   await anna.waitForFunction(() => !document.querySelector(".ez-name3d.boden"), null, { timeout: 8000 }).catch(() => {});
@@ -87,7 +87,7 @@ try {
   await anna.click('#ez-ausruestungtab [data-t="werte"]'); await anna.waitForTimeout(300); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "werte.png" });
   check(await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.ausruestungswerte"); return !!t && /Angriff/.test(t.textContent) && /Verteidigung/.test(t.textContent) && /Geschick\+5/.test(t.textContent) && /Nahkampf\+0/.test(t.textContent); }), "Ausrüstung → i: Werte der Ausrüstung (Schwert +5 Geschick, Schild liegt im Rucksack: Verteidigung +0)");
   await anna.click('#ez-konto [data-t="zu"]'); await anna.waitForTimeout(200); await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(200);
-  { const vor = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, g: window.EZW.welt3d.gesperrt })); await anna.keyboard.down("d"); await anna.waitForTimeout(900); await anna.keyboard.up("d");
+  { const vor = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, g: window.EZW.welt3d.gesperrt })); await anna.evaluate(() => window.EZW.welt3d.gehe(window.EZW.welt3d.ort.x + 3, window.EZW.welt3d.ort.y)); await anna.waitForTimeout(2500);
     const nach = await anna.evaluate(() => window.EZW.welt3d.ort.x); check(!vor.g && nach > vor.x + 0.1, `Nach dem Schließen reagiert das Spiel wieder (gesperrt: ${vor.g}, ${vor.x.toFixed(2)} → ${nach.toFixed(2)})`); }
   /* Angriffsstil als Tab neben der Leiste: bündig oben/unten mit den Knöpfen, rechts mit dem Chat; Stil wählen, Autoangriff, nochmal antippen schließt */
   await anna.click('#ez-leiste [data-l="stil"]'); await anna.waitForTimeout(300); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "stiltab.png" });

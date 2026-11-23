@@ -35,17 +35,17 @@ export function werteVon(G: Gegenstand): [string, string][] {
 }
 
 export const GEGENSTAENDE: Record<string, Gegenstand> = {
-  ritterschwert: { id: "ritterschwert", name: "Einfaches Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"],
+  ritterschwert: { id: "ritterschwert", name: "Startschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "gewoehnlich", ebenen: ["waffe.schwert.ritter"],
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, text: "Eine schlichte, gut ausgewogene Klinge der Waldmark-Schmiede. Ein solider Allrounder." },
-  jagdbogen: { id: "jagdbogen", name: "Einfacher Kurzbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"],
+  jagdbogen: { id: "jagdbogen", name: "Startbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "gewoehnlich", ebenen: ["waffe.bogen.jagd"],
     waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernStaerke: 10 }, text: "Ein kurzer Eibenbogen, wie ihn die Jäger des Kreuzwalds führen." },
-  hirtenstab: { id: "hirtenstab", name: "Einfacher Stab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"],
+  hirtenstab: { id: "hirtenstab", name: "Startstab", platz: "waffe", art: "Stab", seltenheit: "gewoehnlich", ebenen: ["waffe.stab.hirte"],
     waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 5, schaden: [1, 5] }, text: "Ein knorriger Stab mit gekrümmtem Kopf. In den richtigen Händen bündelt er die Kräfte der Splitter." },
-  rundschild: { id: "rundschild", name: "Einfacher Schild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
+  rundschild: { id: "rundschild", name: "Startschild", platz: "nebenhand", art: "Schild", seltenheit: "gewoehnlich", ebenen: ["schild.rund"],
     abwehr: { nah: 3, fern: 3, magie: 2 }, text: "Holz mit Eisenbeschlag. Eine kleine defensive Ergänzung – aus allen Richtungen." },
-  lederpanzer: { id: "lederpanzer", name: "Einfacher Lederpanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.lederpanzer"],
+  lederpanzer: { id: "lederpanzer", name: "Startrüstung", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.lederpanzer"],
     abwehr: { nah: 3, fern: 3, magie: 3 }, text: "Gehärtetes Leder mit Messingschnallen und dem Eichenbaum der Waldmark. Schützt, ohne die Bewegung zu hemmen." },
-  magiepanzer: { id: "magiepanzer", name: "Einfacher Magiepanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
+  magiepanzer: { id: "magiepanzer", name: "Startrobe", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
     abwehr: { nah: 2, fern: 2, magie: 4 }, text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
   splitter: { id: "splitter", name: "Splitter", art: "Währung", seltenheit: "gewoehnlich", stapel: 1_000_000, modell3d: "img/objekte3d/splitter.glb", symbol: "kristall",
     text: "Ein schimmernder Splitter der zerbrochenen Lande. In der Waldmark nimmt man ihn als Zahlungsmittel." },
@@ -64,6 +64,12 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     text: "Lederhose mit Knieschützern und Taschen am Gürtel. Gehört zum Jäger-Set." },
   jaegerkapuze: { id: "jaegerkapuze", name: "Jägerkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.jaegerkapuze"],
     text: "Moosgrüne Kapuze mit Blattschnalle; wirft einen Schatten über das Gesicht. Gehört zum Jäger-Set." },
+  magierrobe: { id: "magierrobe", name: "Magierrobe", platz: "brust", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magier"],
+    text: "Nachtblaue Robe mit Goldborte und einem Splitterstein an der Brust. Gehört zum Magier-Set." },
+  magierrock: { id: "magierrock", name: "Magierrock", platz: "beine", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.beine.magierrock"],
+    text: "Langer, geschichteter Rock mit Quasten am Gürtel. Gehört zum Magier-Set." },
+  magierkapuze: { id: "magierkapuze", name: "Magierkapuze", platz: "kopf", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.magierkapuze"],
+    text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
@@ -87,6 +93,17 @@ const JAEGER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
 for (const st of JAEGER_STUFEN) for (const [basis, nomen, endung] of [["jaegerwams", "Jägerwams", "es"], ["jaegerhose", "Jägerhose", "e"], ["jaegerkapuze", "Jägerkapuze", "e"]] as const) {
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+}
+/* Das Magier-Set (Grundstufe gewöhnlich): höhere Stufen über die Stofffarbe (fabrik/seltenheit.py art=stoff) */
+const MAGIER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
+  { s: "selten", w: "Smaragdgrün", text: "Smaragdgrüner Stoff, golden bestickt." },
+  { s: "episch", w: "Purpurn", text: "Tiefer Purpur mit Silberborten, die im Dunkeln schwach glimmen." },
+  { s: "legendaer", w: "Karmesinrot", text: "Karmesinroter Samt, schwer vergoldet; die Borten glühen wie Glut." },
+  { s: "mythisch", w: "Sternenschimmernd", text: "Stoff, der wie der Nachthimmel schillert. Seine Nähte leuchten, als hielten sie Sternenlicht fest." },
+];
+for (const st of MAGIER_STUFEN) for (const [basis, nomen, endung] of [["magierrobe", "Magierrobe", "e"], ["magierrock", "Magierrock", "er"], ["magierkapuze", "Magierkapuze", "e"]] as const) {
+  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`, w = st.w === "Purpurn" ? (endung === "er" ? "Purpurner" : "Purpurne") : st.w + endung;
+  GEGENSTAENDE[id] = { ...B, id, name: `${w} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {

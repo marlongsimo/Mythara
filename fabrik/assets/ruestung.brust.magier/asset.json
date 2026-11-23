@@ -1,0 +1,9 @@
+{
+  "id": "ruestung.brust.magier",
+  "name": "Magierrobe",
+  "kategorie": "ruestung",
+  "seltenheit": "gewoehnlich",
+  "aktuell": "v001",
+  "status": "Meshy „Arcane Regalia“ (2), Ärmel mit aermel_ab.py ab, teil_anpassen.py (Mann vor=0.035 abstand=0.03; Frau vor=0.03 seite=0.8)",
+  "herkunft": "Meshy"
+}

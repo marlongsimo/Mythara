@@ -11,3 +11,7 @@ done; done; done
 for f in basemann3d basefrau3d; do for id in ruestung.brust.jaeger ruestung.beine.jaeger kopf.helm.jaegerkapuze; do for st in selten episch legendaer mythisch; do
   "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st art=leder 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
 done; done; done
+# Magier-Set (Grundstufe gewöhnlich, blaue Robe): Stofffarben
+for f in basemann3d basefrau3d; do for id in ruestung.brust.magier ruestung.beine.magierrock kopf.helm.magierkapuze; do for st in selten episch legendaer mythisch; do
+  "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st art=stoff 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
+done; done; done

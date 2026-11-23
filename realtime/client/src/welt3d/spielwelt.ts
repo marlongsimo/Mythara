@@ -70,7 +70,7 @@ export class Spielwelt3D implements WeltKern {
     for (const g of WELT.gesperrteRegionen) delete w.regionen[g]; this.index = w;
     for (const r of Object.values(w.regionen)) for (let j = 0; j < r.region.chunks[1]; j++) for (let i = 0; i < r.region.chunks[0]; i++) this.gueltig.add(chunkName(r.region.ursprung[0] + i, r.region.ursprung[1] + j));
     const s = this.startPunkt(); this.ort = { ...s }; await this.strom(true); const frei = this.raster.naechstFrei(s); if (frei) this.ort = { x: frei.x, y: frei.y };
-    document.body.classList.add("dorf", "stadt", "welt3d"); $("#ez-dorf-titel").style.display = "none"; $("#ez-dorf-hilfe").textContent = HANDY ? "Tippen: dorthin gehen · ziehen: Kamera drehen · zwei Finger: Zoom" : "Klick: dorthin gehen · ziehen: Kamera drehen · Mausrad: Zoom · WASD: laufen";
+    document.body.classList.add("dorf", "stadt", "welt3d"); $("#ez-dorf-titel").style.display = "none"; $("#ez-dorf-hilfe").textContent = HANDY ? "Tippen: dorthin gehen · ziehen: Kamera drehen · zwei Finger: Zoom" : "Klick: dorthin gehen · ziehen: Kamera drehen · Mausrad: Zoom";
     await this.motor.start(behaelter, this.ort.x, this.ort.y);
     const h = aktiverHeld(); this.figur = heldenFigur3D(this.motor.szene, MODUL[this.held] || "held.krieger", HOEHE, h ? { ...h, ich: true } : null, angelegteEbenen); /* eigener Held: 3D-Modell */
     this.marke = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.42, 20), new THREE.MeshBasicMaterial({ color: 0xffe9a8, transparent: true, opacity: 0.85, depthWrite: false })); this.marke.rotation.x = -Math.PI / 2; this.marke.visible = false; this.motor.szene.add(this.marke);
@@ -141,8 +141,9 @@ export class Spielwelt3D implements WeltKern {
     const taste = (ev: KeyboardEvent, an: boolean) => { const k = ev.key.toLowerCase(); if (!["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return;
       if ((ev.target as HTMLElement).closest && (ev.target as HTMLElement).closest("input, textarea, select")) return; ev.preventDefault(); this.tasten[k] = an; const t = this.tasten;
       this.rx = (t.d || t.arrowright ? 1 : 0) - (t.a || t.arrowleft ? 1 : 0); this.ry = (t.s || t.arrowdown ? 1 : 0) - (t.w || t.arrowup ? 1 : 0); };
-    addEventListener("keydown", (ev) => { if (!ev.repeat && !this.gesperrt) taste(ev, true); if ((ev.key === "e" || ev.key === "E" || ev.key === "Enter") && !ev.repeat && this.nah && !this.gesperrt && !(ev.target as HTMLElement).closest?.("input, textarea")) this.nah.tat(); });
-    addEventListener("keyup", (ev) => taste(ev, false)); addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
+    void taste; /* kein Laufen mit WASD/Pfeiltasten mehr – nur Klicken/Tippen (wie OSRS) */
+    addEventListener("keydown", (ev) => { if ((ev.key === "e" || ev.key === "E" || ev.key === "Enter") && !ev.repeat && this.nah && !this.gesperrt && !(ev.target as HTMLElement).closest?.("input, textarea")) this.nah.tat(); });
+    addEventListener("blur", () => { this.tasten = {}; this.rx = 0; this.ry = 0; });
     const el = this.motor.r.domElement, finger = new Set<number>();
     /* Tippen/Klicken = dorthin gehen · mit einem Finger oder der Maus ziehen = Kamera drehen und neigen · zwei Finger = Zoom (das macht der Motor) */
     el.addEventListener("pointerdown", (e) => { if (e.pointerType === "touch") finger.add(e.pointerId); if (finger.size > 1) { this.stick = null; return; }
