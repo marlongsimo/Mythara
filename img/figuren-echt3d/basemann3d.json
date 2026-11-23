@@ -364,7 +364,7 @@
     "gehen",
     "laufen",
     "tod",
-    "stich",
+    "angriff",
     "block"
    ],
    "datei": "basemann3d.teile/waffe.sternbrecher.glb"
@@ -395,6 +395,11 @@
   }
  },
  "aktionen": {
+  "angriff": {
+   "bilder": 8,
+   "rate": 16,
+   "schleife": false
+  },
   "armbrust1h": {
    "bilder": 8,
    "rate": 12,

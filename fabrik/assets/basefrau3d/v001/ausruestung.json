@@ -14,7 +14,8 @@
     "dolchwurf",
     "tod",
     "teleport_weg",
-    "trinken"
+    "trinken",
+    "angriff"
   ],
   "koerper_textur": true,
   "stil": "gemalt",
@@ -317,13 +318,13 @@
       "griff": 0.14,
       "griff2": 0.05,
       "klasse": "einhand",
-      "angriff": "stich",
+      "angriff": "angriff",
       "bewegungen": [
         "ruhe",
         "gehen",
         "laufen",
         "tod",
-        "stich",
+        "angriff",
         "block"
       ]
     },
@@ -332,7 +333,7 @@
       "platz": "hand_r",
       "art": "schwert",
       "glb": "waffe.sterndorn/v001/quelle/speer.glb",
-      "griff": 0.17,
+      "griff": 0.45,
       "griff2": 0.4,
       "klasse": "speer",
       "angriff": "stich2h",
