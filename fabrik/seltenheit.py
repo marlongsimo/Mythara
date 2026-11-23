@@ -2,7 +2,7 @@
 
   python3 fabrik/seltenheit.py <teil.glb> <ziel.glb> <stufe> [metall_c=9]
   teil.glb: am besten die fertige, ans Skelett gebundene Teil-Datei aus export3d.py auslagern=… (img/figuren-echt3d/<figur>.teile/<id>.glb)
-  stufe: gewoehnlich | selten | episch | legendaer | mythisch
+  stufe: gewoehnlich | selten | episch | legendaer | mythisch    [art=leder]: Ledersets – Lederfarbe je Stufe (waldgrün, nachtblau, ochsenblut, schillerndes Violett)
 Die Textur wird in drei Bereiche geteilt (Lab-Farbraum): Metall (grau, wenig Farbe), Beschläge (Messing: farbig und hell) und Leder (farbig und dunkel).
 Jede Stufe färbt sie eigen und legt bei episch/legendär eine Leuchtkarte auf die Beschläge (glTF emissive – three.js zeigt sie direkt):
   gewöhnlich – mattes, dunkles Eisen mit Rost, Beschläge aus Eisen      selten – unverändert (olivgrauer Stahl, Messing)
@@ -38,7 +38,26 @@ def setze(maske, L_=None, dL=0.0, fL=1.0, a=None, b=None, fC=None):
     if fC is not None: N[maske, 1] *= fC; N[maske, 2] *= fC
     if a is not None: N[maske, 1] += a
     if b is not None: N[maske, 2] += b
-if stufe == "gewoehnlich":
+LEDER = opt.get("art") == "leder"   # art=leder: Ledersets (wenig Metall) – die Stufe zeigt sich vor allem in der Lederfarbe, Schnallen und Nähte leuchten
+def leder_farbe(maske, a_, b_, fL=1.0, dL=0.0):
+    """Leder umfärben: Helligkeitsmuster bleibt, Farbton wird ersetzt (etwas Struktur aus der alten Farbe bleibt)"""
+    N[maske, 0] = L[maske, 0] * fL + dL; N[maske, 1] = a_ + (L[maske, 1] - L[maske, 1].mean()) * 0.3; N[maske, 2] = b_ + (L[maske, 2] - L[maske, 2].mean()) * 0.3
+if LEDER:
+    if stufe == "selten": leder_farbe(leder, -16, 12, 1.05, 2); setze(metall, fC=0.6, a=-3, b=2)                         # waldgrün, Messing bleibt
+    elif stufe == "episch": leder_farbe(leder, 6, -26, 1.0, 1); setze(metall, fL=0.85, fC=0.3, b=-8); setze(messing, fL=1.15, dL=8, fC=0.25)   # nachtblau, Silber
+    elif stufe == "legendaer": leder_farbe(leder, 34, 20, 1.0, 2); setze(metall, fL=0.8, fC=0.5, a=4, b=2); setze(messing, fL=1.1, dL=6, fC=1.5, a=5, b=16)   # ochsenblutrot, Gold
+    elif stufe == "mythisch":
+        v_, u_ = np.divmod(np.arange(len(L)), B_); u_ = u_ / B_; v_ = v_ / H_; sch = np.stack([np.sin(u_ * 9 + v_ * 5), np.cos(u_ * 7 - v_ * 8)], 1)
+        N[leder, 0] = L[leder, 0] * 0.75; N[leder, 1] = 26 + 14 * sch[leder, 0]; N[leder, 2] = -30 + 16 * sch[leder, 1]    # schillerndes Violett
+        setze(metall, fL=0.6, fC=0.3, a=8, b=-10); N[messing, 0] = np.clip(L[messing, 0] * 1.05 + 20, 0, 96); N[messing, 1] *= 0.2; N[messing, 2] *= 0.3
+    elif stufe != "gewoehnlich": sys.exit("Stufe unbekannt: " + stufe)
+    if stufe in ("episch", "legendaer", "mythisch"):                       # Schnallen und Beschläge leuchten; bei mythisch zusätzlich die Nähte im Leder
+        glut = (messing & (L[:, 0] > (np.percentile(L[messing, 0], 75) if messing.any() else 99))).astype(float); glutstaerke = {"episch": 0.35, "legendaer": 0.6, "mythisch": 0.8}[stufe]
+        glutfarbe = {"episch": (0.4, 0.6, 1.0), "legendaer": (1.0, 0.55, 0.15), "mythisch": None}[stufe]
+        if stufe == "mythisch":
+            Lb = L[:, 0].reshape(H_, B_); kante = (np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])) + np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))).ravel()
+            glut = np.maximum(glut, (leder & (kante > np.percentile(kante[leder], 95))) * 0.7); t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, np.ones_like(t_)], 1)
+elif stufe == "gewoehnlich":
     setze(metall, fL=0.78, dL=-2, fC=0.3, a=2.5, b=6)                     # stumpfes Eisen, leicht rostbraun
     rost = metall & (L[:, 0] < np.percentile(L[metall, 0], 35)); setze(rost, a=6, b=10)
     setze(messing, fL=0.62, fC=0.15, b=3)                                   # Beschläge: Eisen statt Messing

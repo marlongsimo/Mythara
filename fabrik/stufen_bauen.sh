@@ -7,3 +7,7 @@ for f in basemann3d basefrau3d; do for id in ruestung.brust.eisenwacht ruestung.
   extra=""; [ "$id" = ruestung.beine.eisenschienen ] && extra="metall_c=17"   # helle, leicht farbige Platten: als Metall behandeln, nicht als Messing
   "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st $extra 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
 done; done; done
+# Jäger-Set (Grundstufe gewöhnlich, Leder): selten bis mythisch über die Lederfarbe
+for f in basemann3d basefrau3d; do for id in ruestung.brust.jaeger ruestung.beine.jaeger kopf.helm.jaegerkapuze; do for st in selten episch legendaer mythisch; do
+  "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st art=leder 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
+done; done; done
