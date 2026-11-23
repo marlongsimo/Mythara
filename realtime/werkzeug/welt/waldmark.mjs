@@ -19,7 +19,8 @@ const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0]
 /** Was frei zu sehen sein soll: Bildflächen von Gebäuden, Bauteilen, Kleinteilen und Figuren (Waldmark-Koordinaten) */
 const SICHT = [];
 /** Darf ein Baum hier stehen, ohne etwas Wichtiges zu verdecken? dy: Versatz der Region gegenüber der Waldmark */
-const sichtFrei = (p, dy = 0, dx = 0) => { const t = bildRahmen(p.objekt, p.x + dx, p.y + dy, p.spiegeln, p.s);
+/* rand: Spielraum in Feldern links und rechts (das Ausrichten auf Felder verschiebt einen Baum um bis zu ein halbes Feld) */
+const sichtFrei = (p, dy = 0, dx = 0, rand = 0) => { const t0 = bildRahmen(p.objekt, p.x + dx, p.y + dy, p.spiegeln, p.s), t = [t0[0] - rand, t0[1], t0[2] + rand, t0[3]];
   return !SICHT.some((v) => p.y + dy > v.y - 0.1 && schnitt(t, v.r) > 0.1 * (v.r[2] - v.r[0]) * (v.r[3] - v.r[1])); };
 /** Türpunkt eines Objekts aus der Bibliothek */
 const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a ? [+(x + a.dx * (sp ? -1 : 1)).toFixed(2), +(y + a.dy).toFixed(2)] : [x, y]; };
@@ -68,9 +69,9 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     ["wachturm_w", "dorf_wachturm_01", 40.0, 54.6], ["wachturm_o", "dorf_wachturm_01", 54.5, 54.6], ["kapelle", "dorf_kapelle_01", 57, 22],
     ["kraeuterhaus", "dorf_kraeuterhaus_01", 19.5, 39], ["baeckerei", "dorf_baeckerei_01", 55, 49.5],
     /* Nias Salon (22.11.2026): an der Nordostecke des Marktplatzes zwischen Kapelle und Schmiede, die Tür zur Dorfstraße */
-    ["salon", "waldmark_salon_01", 59, 28.2],
+    ["salon", "waldmark_salon_01", 59.5, 28],
     /* Rathaus (22.11.2026): zweistöckig, an der Westseite des Marktplatzes zwischen Taverne und Heldenhalle, Glockenturm hinten links */
-    ["rathaus", "waldmark_rathaus_01", 39, 27.4],
+    ["rathaus", "waldmark_rathaus_01", 39.5, 27],
     ["stand_1", "dorf_marktstand_01", 39.2, 38.6], ["stand_2", "dorf_marktstand_02", 43.6, 41.6], ["stand_3", "dorf_marktstand_03", 56, 40.4], ["brunnen", "dorf_brunnen_01", 48, 32.8]];
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
@@ -95,7 +96,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   /* Sicht: Vor einem Gebäude, dem Tor oder einem Stand steht kein Baum, dessen Krone es verdecken würde (Krone gut 4 Felder breit, bis 10 hoch) */
   for (const o of objekte) SICHT.push({ y: o.y, r: bildRahmen(o.objekt, o.x, o.y, o.spiegeln) });
   for (const f of FIGUREN) SICHT.push({ y: f.y, r: [f.x - 0.5, f.y - 1.9, f.x + 0.5, f.y] });
-  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p)));
+  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p, 0, 0, 0.5)));
   objekte.sort((a, b) => a.y - b.y);
   /* tat: was das Spiel dort öffnet (halle = Heldenhalle, welt = Weltkarte, bald = kommt noch); ohne tat zeigt der Knopf den Text */
   const lies = (id, x, y, text, objekt, tat, knopf) => ({ id, art: tat && tat !== "bald" ? "eingang" : "lesen", x, y, radius: 1.5, ...(objekt ? { objekt } : {}), abgleich: "keiner", daten: { text, ...(tat ? { tat, knopf } : {}) } });
@@ -108,8 +109,8 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
-      lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59, 28.2), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
-      lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39, 27.4), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
+      lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59.5, 28), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
+      lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39.5, 27), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
       { id: "treppe_hoch", art: "eingang", x: UNTEN_TREPPE[0] - 200 * 32, y: UNTEN_TREPPE[1] - 200 * 32, radius: 1.3, abgleich: "keiner", daten: { text: "Eine Holztreppe führt hinauf in den Ratssaal.", tat: "aufstieg", knopf: "Die Treppe hinaufsteigen", ziel: RATSSAAL } },
       lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],

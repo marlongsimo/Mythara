@@ -118,7 +118,7 @@
   {
    "id": "schmiede_tuer",
    "art": "lesen",
-   "x": 70.14,
+   "x": 70,
    "y": 30.8,
    "radius": 1.5,
    "objekt": "schmiede",
@@ -142,7 +142,7 @@
   {
    "id": "kraeuter_tuer",
    "art": "lesen",
-   "x": 18.7,
+   "x": 19,
    "y": 39.6,
    "radius": 1.5,
    "objekt": "kraeuterhaus",
@@ -155,7 +155,7 @@
    "id": "salon_tuer",
    "art": "lesen",
    "x": 58.5,
-   "y": 28.8,
+   "y": 28.6,
    "radius": 1.5,
    "objekt": "salon",
    "abgleich": "keiner",
@@ -168,8 +168,8 @@
   {
    "id": "rathaus_tuer",
    "art": "lesen",
-   "x": 39,
-   "y": 28,
+   "x": 39.5,
+   "y": 27.6,
    "radius": 1.5,
    "objekt": "rathaus",
    "abgleich": "keiner",
@@ -182,8 +182,8 @@
   {
    "id": "treppe_hoch",
    "art": "eingang",
-   "x": 35.69999999999982,
-   "y": 23.800000000000182,
+   "x": 36.19999999999982,
+   "y": 23.400000000000546,
    "radius": 1.3,
    "abgleich": "keiner",
    "daten": {
@@ -191,7 +191,7 @@
     "tat": "aufstieg",
     "knopf": "Die Treppe hinaufsteigen",
     "ziel": [
-     7500.8,
+     7501.3,
      7378.5
     ]
    }
@@ -199,7 +199,7 @@
   {
    "id": "baecker_tuer",
    "art": "lesen",
-   "x": 54.4,
+   "x": 54,
    "y": 50.1,
    "radius": 1.5,
    "objekt": "baeckerei",

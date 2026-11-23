@@ -9,16 +9,16 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
-export const URSPRUNG = [234, 230], OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32, FUSS = [16, 21];
+export const URSPRUNG = [234, 230], OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32, FUSS = [16.5, 21];
 /** Rathaus unten (Waldmark, Weltfelder): Fuß und Treppe; oben: wo man ankommt */
-const UNTEN_FUSS = [200 * 32 + 39, 200 * 32 + 27.4], TREPPE = [-3.3, 5.4];
+const UNTEN_FUSS = [200 * 32 + 39.5, 200 * 32 + 27], TREPPE = [-3.3, 5.4];
 export const UNTEN_TREPPE = [UNTEN_FUSS[0] + TREPPE[0], UNTEN_FUSS[1] - TREPPE[1] + 1.8];          /* am Fuß der Treppe (Lesestelle) */
 export const UNTEN = [UNTEN_FUSS[0] + TREPPE[0] + 0.1, UNTEN_FUSS[1] - TREPPE[1] + 2.9];             /* hier kommt man unten an */
 export const OBEN = [OX + FUSS[0] + TREPPE[0] + 0.1, OY + FUSS[1] - TREPPE[1] + 2.9];               /* hier kommt man oben an */
 const OBEN_TREPPE = [FUSS[0] + TREPPE[0], FUSS[1] - TREPPE[1] + 1.8];
 
 if (process.argv[1] && process.argv[1].endsWith("rathaus.mjs")) {
-  const g = []; for (let y = 0; y < 32; y++) { let z = ""; for (let x = 0; x < 32; x++) z += x >= 12 && x < 20 && y >= 15 && y < 21 ? "d" : "X"; g.push(z); }
+  const g = []; for (let y = 0; y < 32; y++) { let z = ""; for (let x = 0; x < 32; x++) z += x >= 12 && x < 21 && y >= 14 && y < 21 ? "d" : "X"; g.push(z); }
   const dinge = [{ id: "rathaus_oben", objekt: "waldmark_rathaus_oben_01", x: FUSS[0], y: FUSS[1] }];
   const spiel = { start: [[OBEN[0] - OX, OBEN[1] - OY]], figuren: [], spawnzonen: [],
     interaktionen: [{ id: "treppe_runter", art: "eingang", x: OBEN_TREPPE[0], y: OBEN_TREPPE[1], radius: 1.3, abgleich: "keiner",
