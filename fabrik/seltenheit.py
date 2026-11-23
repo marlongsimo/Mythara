@@ -38,12 +38,16 @@ def setze(maske, L_=None, dL=0.0, fL=1.0, a=None, b=None, fC=None):
     if fC is not None: N[maske, 1] *= fC; N[maske, 2] *= fC
     if a is not None: N[maske, 1] += a
     if b is not None: N[maske, 2] += b
-LEDER = opt.get("art") == "leder"   # art=leder: Ledersets (wenig Metall) – die Stufe zeigt sich vor allem in der Lederfarbe, Schnallen und Nähte leuchten
+LEDER = opt.get("art") in ("leder", "stoff"); STOFF = opt.get("art") == "stoff"   # stoff: Roben (schon farbig) – eigene Farbfolge   # art=leder: Ledersets (wenig Metall) – die Stufe zeigt sich vor allem in der Lederfarbe, Schnallen und Nähte leuchten
 def leder_farbe(maske, a_, b_, fL=1.0, dL=0.0):
     """Leder umfärben: Helligkeitsmuster bleibt, Farbton wird ersetzt (etwas Struktur aus der alten Farbe bleibt)"""
     N[maske, 0] = L[maske, 0] * fL + dL; N[maske, 1] = a_ + (L[maske, 1] - L[maske, 1].mean()) * 0.3; N[maske, 2] = b_ + (L[maske, 2] - L[maske, 2].mean()) * 0.3
 if LEDER:
-    if stufe == "selten": leder_farbe(leder, -16, 12, 1.05, 2); setze(metall, fC=0.6, a=-3, b=2)                         # waldgrün, Messing bleibt
+    if STOFF and stufe in ("selten", "episch", "legendaer"):
+        a_, b_ = {"selten": (-24, 8), "episch": (34, -32), "legendaer": (40, 22)}[stufe]; leder_farbe(leder, a_, b_, 1.05, 2)   # smaragd, purpur, karmesin
+        if stufe == "episch": setze(messing, fL=1.15, dL=8, fC=0.25)
+        if stufe == "legendaer": setze(messing, fL=1.1, dL=6, fC=1.5, a=5, b=16)
+    elif stufe == "selten": leder_farbe(leder, -16, 12, 1.05, 2); setze(metall, fC=0.6, a=-3, b=2)                         # waldgrün, Messing bleibt
     elif stufe == "episch": leder_farbe(leder, 6, -26, 1.0, 1); setze(metall, fL=0.85, fC=0.3, b=-8); setze(messing, fL=1.15, dL=8, fC=0.25)   # nachtblau, Silber
     elif stufe == "legendaer": leder_farbe(leder, 34, 20, 1.0, 2); setze(metall, fL=0.8, fC=0.5, a=4, b=2); setze(messing, fL=1.1, dL=6, fC=1.5, a=5, b=16)   # ochsenblutrot, Gold
     elif stufe == "mythisch":
