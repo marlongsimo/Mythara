@@ -1,0 +1,8 @@
+{
+  "id": "helm.nasal",
+  "name": "Nasalhelm (Test)",
+  "kategorie": "ruestung",
+  "aktuell": "v001",
+  "status": "Test: mit fabrik/helm.py auf basemann3d angepasst; noch nicht in der Spieldatei (als Teilnetz eintragen: platz helm, wahlfrei, nur_knochen [kopf])",
+  "herkunft": "prozedural (fabrik/helm.py)"
+}
