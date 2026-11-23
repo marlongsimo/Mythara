@@ -5,6 +5,7 @@
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
 import { questStand, questVerfolgt, questVerfolgen } from "./welt";
+import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { QUESTLOG } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
@@ -189,7 +190,7 @@ export function stilTafel(zu: () => void): void {
   binden(); }
 /* ---------- Tabs neben der Leiste (3D-Welt): Angriffsstil, Rucksack, Ausrüstung, Skills ----------
  * Oben bündig mit dem obersten Knopf, unten mit dem untersten, rechts mit dem Chat. Immer nur einer offen; nochmal antippen schließt; der Knopf leuchtet. */
-export type TabArt = "stil" | "rucksack" | "ausruestung" | "skills" | "quests";
+export type TabArt = "stil" | "rucksack" | "ausruestung" | "skills" | "quests" | "freunde";
 let tabJetzt: TabArt | null = null;
 const tabEl = () => document.getElementById("ez-" + tabJetzt + "tab");
 /** Tab öffnen/schließen. false: geht nicht (ohne eigenen Helden gibt es Rucksack und Ausrüstung nur als Tafel) */
@@ -206,10 +207,12 @@ export function seitenTab(art: TabArt): boolean {
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
-  for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest"]) addEventListener(t, tabZeichnen); return true; }
-const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests" };
+  for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
+  if (art === "freunde") { freundeBeobachten(true); el.addEventListener("submit", (e) => { e.preventDefault(); freundFormular(e.target as HTMLFormElement); }); document.querySelector('[aria-label="Freunde"]')?.classList.add("an"); }
+  return true; }
+const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests", freunde: "Freunde" };
 function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
-  removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest"]) removeEventListener(t, tabZeichnen); }
+  removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) removeEventListener(t, tabZeichnen); freundeBeobachten(false); document.querySelector('[aria-label="Freunde"]')?.classList.remove("an"); }
 /** Angriffsstil-Tab (alter Name) */
 export const stilTab = (): void => { seitenTab("stil"); };
 function tabLage(): void {
@@ -227,6 +230,7 @@ function tabZeichnen(): void {
     neu = `<div class="kopf gross"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
       <div class="stile pergament">${[0, 1, 2].map(zeile).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
+  if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const st = questStand();
     neu = !st ? `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Sprich mit den Leuten in der Waldmark – vielleicht braucht jemand Hilfe.</small></div>`
       : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p>${st !== "fertig" ? `<button type="button" class="kipp verfolgen${questVerfolgt() ? " an" : ""}" data-verfolgen="1" role="switch" aria-checked="${questVerfolgt()}"><i></i><span><b>Verfolgen</b><small>Ein Pfeil am Helden zeigt den Weg zum nächsten Ziel.</small></span></button>` : ""}</div>`; setzen(); return; }
@@ -245,6 +249,7 @@ function tabZeichnen(): void {
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
   if (t.closest("[data-tzu]")) { tabZu(); return; } /* rotes ✕ oben rechts */
+  if (tabJetzt === "freunde") { freundKlick(t); return; }
   if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { tabWahl = tabWahl && tabWahl.wo === f.dataset.wo ? null : { wo: f.dataset.wo!, g: f.dataset.g! }; tabZeichnen(); return; }

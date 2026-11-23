@@ -4,6 +4,7 @@
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
 import type { Stand } from "../../shared/quest01";
+import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops } from "./skills";
 import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
@@ -42,6 +43,9 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
     else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); }
+    else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
+    else if (m.t === "zufreund") { if (m.ok && typeof m.x === "number" && typeof m.y === "number") window.dispatchEvent(new CustomEvent("ez-zufreund", { detail: m })); else chatSystem(String(m.text || "Teleport nicht möglich.")); }
+    else if (m.t === "freundanfrage") { chatSystem(m.angenommen ? `${m.von} hat deine Freundschaftsanfrage angenommen.` : `${m.von} möchte dein Freund sein – sieh unter Freunde nach.`); window.dispatchEvent(new CustomEvent("ez-freundanfrage", { detail: m })); }
     else if (m.t === "zurueck") { window.dispatchEvent(new CustomEvent("ez-zurueck", { detail: m })); if (m.text) chatSystem(String(m.text)); }
     else if (m.t === "boden") { bodenJetzt = (m.liste as BodenDing[]) || []; window.dispatchEvent(new CustomEvent("ez-boden")); }
     else if (m.t === "fort") { fremde = fremde.filter((f) => f.i !== Number(m.id)); if (hand.fort) hand.fort(Number(m.id)); }
@@ -51,6 +55,11 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };
+/* Freunde (Server: welt.ts „freunde“, „zufreund“, „freundanfrage“) */
+export const freundeAbfragen = (): void => senden({ t: "freunde" });
+export const zuFreund = (n: string): void => senden({ t: "zufreund", n });
+export const freundMelden = (n: string, angenommen = false): void => senden({ t: "freundanfrage", n, angenommen });
+export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
 let questJetzt: Stand = "", questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
@@ -93,7 +102,7 @@ const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 function zeichnen() { const liste = document.querySelector("#ez-chat .liste"); if (!liste) return;
   const zeige = nachrichten.filter((m) => reiter === "alle" || m.kanal === reiter);
   liste.innerHTML = zeige.slice(-60).map((m) => { const d = new Date(m.zeit), z = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-    return `<p class="k-${m.kanal}"><time>[${z}]</time> ${m.kanal === "fluestern" ? `<b>${esc(m.von || "")} → ${esc(m.an || "")}:</b> ` : m.von ? `<b>${esc(m.von)}:</b> ` : ""}${esc(m.text)}</p>`; }).join("") || `<p class="leer">Noch keine Nachrichten.</p>`;
+    return `<p class="k-${m.kanal}"><time>[${z}]</time> ${m.kanal === "fluestern" ? `<b><a class="cn" data-cn="${esc(m.von || "")}">${esc(m.von || "")}</a> → <a class="cn" data-cn="${esc(m.an || "")}">${esc(m.an || "")}</a>:</b> ` : m.von ? `<b><a class="cn" data-cn="${esc(m.von)}" data-ci="${m.i ?? ""}">${esc(m.von)}</a>:</b> ` : ""}${esc(m.text)}</p>`; }).join("") || `<p class="leer">Noch keine Nachrichten.</p>`;
   liste.scrollTop = liste.scrollHeight; }
 /** Das Chatfenster (unten in der Mitte); auf dem Handy einklappbar */
 export function chatAnzeigen(): void {
@@ -101,16 +110,18 @@ export function chatAnzeigen(): void {
   c.innerHTML = `<div class="reiter">${Object.entries(NAMEN).map(([k, v]) => `<button type="button" data-k="${k}" class="${k === reiter ? "an" : ""}">${v}</button>`).join("")}<button type="button" class="klapp" aria-label="Chat ein- oder ausklappen">▾</button></div>
     <div class="liste" aria-live="polite"></div><form class="eingabe"><select aria-label="Kanal"><option value="oeffentlich">Öffentlich</option><option value="gruppe">Gruppe</option></select><input type="text" maxlength="160" placeholder="Nachricht eingeben …" autocomplete="off"><button type="submit" aria-label="Senden">➤</button></form>`;
   document.body.appendChild(c); for (const ev of ["keydown", "keyup", "pointerdown"]) c.addEventListener(ev, (e) => e.stopPropagation()); /* Tippen steuert nicht den Helden */
+  (c.querySelector(".liste") as HTMLElement).addEventListener("click", (e) => { const a = (e.target as HTMLElement).closest<HTMLElement>("a.cn"); if (!a) return; const n = a.dataset.cn || ""; if (!n || (ich && n === ich.name)) return;
+    const d = fremde.find((x) => (a.dataset.ci ? x.i === Number(a.dataset.ci) : false) || x.n === n); if (d) spielerKarte(d, () => {}); else namenKarte(n); }); /* Namen im Chat antippen: Spielerkarte (Flüstern, Freund hinzufügen) */
   c.querySelectorAll<HTMLButtonElement>(".reiter button[data-k]").forEach((b) => b.onclick = () => { reiter = b.dataset.k as string; c.querySelectorAll(".reiter button").forEach((x) => x.classList.toggle("an", x === b)); zeichnen(); });
   (c.querySelector(".klapp") as HTMLElement).onclick = () => c.classList.toggle("zu");
   if (window.matchMedia("(max-width: 700px), (max-height: 500px)").matches) c.classList.add("zu");
   const f = c.querySelector("form") as HTMLFormElement, inp = c.querySelector("input") as HTMLInputElement, sel = c.querySelector("select") as HTMLSelectElement;
   f.onsubmit = (e) => { e.preventDefault(); const t = inp.value.trim(); if (!t) return; if (!ws || ws.readyState !== 1) { chatSystem("Nicht verbunden – Nachricht nicht gesendet."); return; } if (ich && ich.gast) { chatSystem("Zum Schreiben brauchst du ein Konto (Menü → Anmelden)."); return; }
-    if (sel.value === "fluestern" && fluesterZiel) senden({ t: "chat", kanal: "fluestern", an: fluesterZiel.id, text: t }); else senden({ t: "chat", kanal: sel.value === "gruppe" ? "gruppe" : "oeffentlich", text: t }); inp.value = ""; };
+    if (sel.value === "fluestern" && fluesterZiel) senden(fluesterZiel.id > 0 ? { t: "chat", kanal: "fluestern", an: fluesterZiel.id, text: t } : { t: "chat", kanal: "fluestern", anName: fluesterZiel.name, text: t }); /* Freunde: per Name, überall in der Welt */ else senden({ t: "chat", kanal: sel.value === "gruppe" ? "gruppe" : "oeffentlich", text: t }); inp.value = ""; };
   window.addEventListener("keydown", (e) => { if (e.key === "Enter" && document.activeElement !== inp && !(e.target instanceof HTMLInputElement)) { c.classList.remove("zu"); inp.focus(); } });
   zeichnen(); }
 
-/** Flüstern: die nächste Nachricht geht nur an diesen Spieler (Auswahl im Chat bleibt, bis man sie umstellt) */
+/** Flüstern: die nächste Nachricht geht nur an diesen Spieler (Auswahl im Chat bleibt, bis man sie umstellt); id 0 = Freund per Name */
 let fluesterZiel: { id: number; name: string } | null = null;
 export function fluestern(id: number, name: string): void { chatAnzeigen(); fluesterZiel = { id, name }; const c = document.getElementById("ez-chat"); if (!c) return; c.classList.remove("zu");
   const sel = c.querySelector("select") as HTMLSelectElement; let o = sel.querySelector('option[value="fluestern"]') as HTMLOptionElement | null; if (!o) { o = document.createElement("option"); o.value = "fluestern"; sel.appendChild(o); }
@@ -123,12 +134,16 @@ function tafelZeigen(klasse: string, html: string, zu: () => void): HTMLElement 
   const esc2 = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc2, true);
   f.innerHTML = `<div class="tafel ${klasse}"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>${html}</div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
-  f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f || (t && t.dataset.t === "zu")) { schliessen(); return; } if (t && t.dataset.t === "fl") { const id = Number(t.dataset.id), n = t.dataset.n || ""; schliessen(); fluestern(id, n); } if (t && t.dataset.t === "karte") { schliessen(); const d = fremde.find((x) => x.i === Number(t.dataset.id)); if (d) spielerKarte(d, zu); } };
+  f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f || (t && t.dataset.t === "zu")) { schliessen(); return; } if (t && t.dataset.t === "fl") { const id = Number(t.dataset.id), n = t.dataset.n || ""; schliessen(); fluestern(id, n); } if (t && t.dataset.t === "freund") { const n = t.dataset.n || ""; schliessen(); void freundHinzufuegen(n).then((x) => { if (x) chatSystem(x); }); return; } if (t && t.dataset.t === "karte") { schliessen(); const d = fremde.find((x) => x.i === Number(t.dataset.id)); if (d) spielerKarte(d, zu); } };
   return f; }
-/** Ein anderer Spieler angeklickt: Name, Held, Stufe – und Flüstern */
+/** Ein Name aus dem Chat, dessen Spieler nicht hier ist: Flüstern und Freund hinzufügen */
+function namenKarte(n: string): void { const darf = Boolean(ich && !ich.gast);
+  tafelZeigen("spieler", `<div class="skopf"><div><h2>${esc(n)}</h2><small>nicht hier in der Nähe</small></div></div><div class="zier"></div>
+    <div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="0" data-n="${esc(n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(n)}">Freund hinzufügen</button>` : `<p class="klein">Dafür brauchst du ein Konto.</p>`}</div>`, () => {}); }
+/** Ein anderer Spieler angeklickt: Name, Held, Stufe – Flüstern und Freund hinzufügen */
 export function spielerKarte(d: Fremder, zu: () => void): void { const D = HELDEN[d.h] || HELDEN.schildwaechter, gast = !d.s, darf = !gast && Boolean(ich && !ich.gast);
   tafelZeigen("spieler", `<div class="skopf"><img src="../${D.bild}" alt=""><div><h2>${esc(d.n)}</h2><small>${gast ? "Gast" : `Stufe ${d.s}`} · ${D.name}, ${D.klasse}</small></div></div><div class="zier"></div>
-    ${d.max ? `<p class="klein">Leben ${d.lp} / ${d.max}</p>` : ""}<div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="${d.i}" data-n="${esc(d.n)}">Flüstern</button>` : `<p class="klein">${gast ? "Gäste können keine Nachrichten empfangen." : "Zum Flüstern brauchst du ein Konto."}</p>`}</div>`, zu); }
+    ${d.max ? `<p class="klein">Leben ${d.lp} / ${d.max}</p>` : ""}<div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="${d.i}" data-n="${esc(d.n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(d.n)}">Freund hinzufügen</button>` : `<p class="klein">${gast ? "Gäste können keine Nachrichten empfangen." : "Zum Flüstern brauchst du ein Konto."}</p>`}</div>`, zu); }
 /** Wer ist hier? Alle Spieler am Ort, mit Held und Stufe */
 export function spielerListe(zu: () => void): void {
   const ichZeile = ich ? `<li class="ich"><img src="../${(HELDEN[ich.held] || HELDEN.schildwaechter).bild}" alt=""><b>${esc(ich.name)}</b><small>${ich.gast ? "Gast" : "Lv " + ich.stufe} · ${(HELDEN[ich.held] || HELDEN.schildwaechter).name} (du)</small></li>` : "";

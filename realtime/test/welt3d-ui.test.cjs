@@ -34,10 +34,10 @@ const BILD = process.env.BILD || '';
     check(zu.zu && zu.c.top < 30 && zu.c.height < 50 && Math.abs(zu.l.top - offen.l.top) < 1, `Eingeklappt nach oben (nur die Reiter, ${Math.round(zu.c.height)} px hoch); die Leiste bewegt sich nicht`);
     /* Minikarte: nur Karte und Sprint; Bögen */
     const karte = await p.evaluate(() => ({ k: [...document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kbogen button')].map((x) => x.getAttribute('aria-label')),
-      links: [...document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kbogen button')].filter((x) => ['Teleport', 'Spieler', 'Einstellungen'].includes(x.getAttribute('aria-label'))).every((x) => { const r = x.getBoundingClientRect(), m = document.querySelector('#ez-kartenrahmen .rund').getBoundingClientRect(); return r.right <= m.left + m.width * 0.3 && r.left >= 0 && r.width > 0; }), b: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.lp')?.getAttribute('d'), g: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.gelb')?.getAttribute('d'),
+      links: [...document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kbogen button')].filter((x) => ['Teleport', 'Freunde', 'Einstellungen'].includes(x.getAttribute('aria-label'))).every((x) => { const r = x.getBoundingClientRect(), m = document.querySelector('#ez-kartenrahmen .rund').getBoundingClientRect(); return r.right <= m.left + m.width * 0.3 && r.left >= 0 && r.width > 0; }), b: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.lp')?.getAttribute('d'), g: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.gelb')?.getAttribute('d'),
       im: (() => { const r = document.querySelector('#ez-kartenrahmen .ez-boegen').getBoundingClientRect(); return r.right <= innerWidth + 1 && r.top >= -1; })() }));
-    check(karte.k.join(',') === 'Karte,Sprint,Teleport,Spieler,Einstellungen', `An der Minikarte: ${karte.k.join(' · ')}`);
-    check(karte.links, 'Teleport, Spieler und Einstellungen sitzen links neben der Karte');
+    check(karte.k.join(',') === 'Karte,Sprint,Teleport,Freunde,Einstellungen', `An der Minikarte: ${karte.k.join(' · ')}`);
+    check(karte.links, 'Teleport, Freunde und Einstellungen sitzen links neben der Karte');
     check(karte.b && karte.g && karte.im, 'LP-Bogen und gelber Bogen an der Minikarte, ganz im Bild');
     await p.evaluate(() => window.__lp && 0); /* Lebenspunkte im Kampf: gleich über die Anzeige selbst prüfen */
     /* Rucksack ohne Verweis auf Ausrüstung */

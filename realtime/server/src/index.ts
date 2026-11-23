@@ -16,7 +16,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer } from "./welt";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
 
@@ -42,6 +42,9 @@ interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number 
 const zonen = new Map<string, Zone>();
 /** Lebenspunkte eines Kontos zwischen den Kampfgebieten (sonst wäre man nach jedem Betreten wieder voll): beim Verlassen gemerkt, beim Betreten plus Regeneration (1 LP je 50 s) */
 const lebenJe = new Map<string, { lp: number; zeit: number }>();
+/** Kämpft dieses Konto gerade? (Freunde-Teleport): im Einzelkampf gebunden oder ein lebender Gegner hat den Helden im Ziel */
+imKampfPruefer((nutzer) => { for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
+  if ((h.kampfMit && (h.kampfBis || 0) > Z.sim.zeit) || Z.sim.wesen.some((w) => !w.held && !w.tot && w.zielId === h.id)) return true; } return false; });
 /** Einen Spieler in die gemeinsame Welt eines Gebiets setzen (die Zone entsteht beim ersten Spieler) – jede Person nur einmal */
 function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert: number, name: string, wo?: { x: number; y: number }): void {
   let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].weltRegion); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */

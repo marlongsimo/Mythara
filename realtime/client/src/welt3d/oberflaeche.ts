@@ -44,7 +44,7 @@ export function kartenBogen(knoepfe: LeistenKnopf[]): void {
     el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-l]") as HTMLElement | null; if (b) bogenJetzt.find((k) => k.id === b.dataset.l)?.tat(); });
     const rund = rahmen.querySelector(".rund") as HTMLElement | null; if (rund && "ResizeObserver" in window) new ResizeObserver(() => bogenLegen()).observe(rund); addEventListener("resize", () => bogenLegen()); }
   bogenJetzt = knoepfe;
-  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}"${RBILD.has(k.zeichen) ? ` class="mitbild"` : ""} aria-label="${k.name}" title="${k.name}"><span>${RBILD.has(k.zeichen) ? rbild(k.zeichen) : RZEICHEN[k.zeichen]}</span>${k.id === "spieler" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
+  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}"${RBILD.has(k.zeichen) ? ` class="mitbild"` : ""} aria-label="${k.name}" title="${k.name}"><span>${RBILD.has(k.zeichen) ? rbild(k.zeichen) : RZEICHEN[k.zeichen]}</span>${k.id === "spieler" ? `<em class="zahl ez-freunde-zahl" hidden></em>` : ""}</button>`).join("");
   leisteOnline(zahlOnline); bogenLegen(); }
 function bogenLegen(): void {
   const rahmen = document.getElementById("ez-kartenrahmen"), rund = rahmen && rahmen.querySelector(".rund") as HTMLElement | null, el = document.getElementById("ez-kbogen"); if (!rund || !el) return;

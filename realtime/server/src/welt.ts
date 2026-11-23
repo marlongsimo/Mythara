@@ -14,7 +14,7 @@ import { heldenlevel, skillXpPruefen } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1 } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN } from "./inventar";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
@@ -30,6 +30,22 @@ export const WELTORTE = new Set([...WELTREGIONEN, ...ORTREIHE]);
 export function stelleMerken(H: Pick<WeltHilfen, "sb">, nutzer: string, region: string, x: number | null, y: number | null): Promise<unknown> {
   return H.sb("/rest/v1/rpc/rpg_echtzeit_position_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_region: region, p_x: x, p_y: y }) }).catch((e) => console.error("Stelle merken:", (e as Error).message)); }
 const spieler = new Set<Spieler>(); let naechste = 1;
+/* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
+   „freunde“: Liste mit online / im Kampf / zuletzt online · „zufreund“: Teleport zu einem Freund (nur wenn er online ist, nicht im Kampf steht
+   und sein Gebiet für einen selbst schon freigeschaltet ist) · „freundanfrage“: dem anderen Bescheid geben (die Anfrage selbst stellt der Browser
+   mit rpg_request_friend / rpg_answer_friend, Migration 003). Fremde Stellen gibt der Server nur an Freunde heraus. */
+let kampfPruefer: (nutzer: string) => boolean = () => false;
+/** index.ts meldet, wie man erkennt, ob ein Konto gerade kämpft (Einzelkampf gebunden oder ein Gegner hat es im Ziel) */
+export function imKampfPruefer(f: (nutzer: string) => boolean): void { kampfPruefer = f; }
+type Freund = { user_id: string; handle: string; zuletzt: string | null };
+const freundeJe = new Map<string, { t: number; liste: Freund[] }>();
+async function freundeVon(H: Pick<WeltHilfen, "sb">, nutzer: string, frisch = false): Promise<Freund[]> {
+  const c = freundeJe.get(nutzer); if (c && !frisch && Date.now() - c.t < 30_000) return c.liste;
+  const r = await H.sb("/rest/v1/rpc/rpg_freunde_von", { method: "POST", body: JSON.stringify({ p_user: nutzer }) }).catch((e) => { console.error("Freunde laden (Migration 047 eingespielt?):", (e as Error).message); return null; });
+  const liste = Array.isArray(r) ? (r as Freund[]).filter((f) => f && typeof f.user_id === "string" && typeof f.handle === "string") : c ? c.liste : [];
+  freundeJe.set(nutzer, { t: Date.now(), liste }); return liste; }
+const onlineKonto = (nutzer: string): Spieler | undefined => [...spieler].find((o) => !o.gast && o.nutzer === nutzer);
+const gebietName = (ort: string) => ort.charAt(0).toUpperCase() + ort.slice(1);
 const MAX_WELT = Number(process.env.MAX_WELT || 500); /* so viele gleichzeitig in der Welt */
 const zahl = (v: unknown, max = 20000) => typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= max;
 /** Chattext säubern: keine Steuerzeichen, keine spitzen Klammern, höchstens 160 Zeichen */
@@ -43,7 +59,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -95,8 +111,21 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       senden(s, { t: "dialog", npc, ...aw }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
+    else if (e.t === "freunde") { if (s.gast) { senden(s, { t: "freunde", liste: [] }); return; }
+      const liste = await freundeVon(H, s.nutzer, true); if (!s) return;
+      senden(s, { t: "freunde", liste: liste.map((f) => { const o = onlineKonto(f.user_id); return { n: f.handle, online: Boolean(o), ort: o ? o.ort : undefined, kampf: o ? kampfPruefer(f.user_id) : false, zuletzt: o ? null : f.zuletzt }; }) }); }
+    else if (e.t === "zufreund") { const n = String(e.n || "").slice(0, 40), nein = (text: string) => { if (s) senden(s, { t: "zufreund", ok: false, n, text }); };
+      if (s.gast) { nein("Freunde gibt es mit Konto."); return; }
+      const f = (await freundeVon(H, s.nutzer)).find((x) => x.handle === n); if (!s) return; if (!f) { nein(`${n} ist nicht in deiner Freundesliste.`); return; }
+      const z = onlineKonto(f.user_id); if (!z) { nein(`${n} ist gerade nicht online.`); return; }
+      if (!WELTREGIONEN.includes(z.ort) || z.wx === undefined || z.wy === undefined) { nein(`${n} ist gerade an einem Ort, an den kein Teleport führt.`); return; }
+      if (HINTER_DER_SPERRE.has(z.ort) && !sperreOffen(q1(s.nutzer))) { nein(`${gebietName(z.ort)} ist für dich noch nicht freigeschaltet – der Weg ist noch gesperrt.`); return; }
+      if (kampfPruefer(f.user_id)) { nein(`${n} ist gerade im Kampf – versuch es gleich noch einmal.`); return; }
+      senden(s, { t: "zufreund", ok: true, n, ort: z.ort, x: z.wx, y: z.wy }); }
+    else if (e.t === "freundanfrage") { if (s.gast) return; const n = String(e.n || "").slice(0, 40), z = [...spieler].find((o) => !o.gast && o.name === n); freundeJe.delete(s.nutzer);
+      if (z) { freundeJe.delete(z.nutzer); senden(z, { t: "freundanfrage", von: s.name, angenommen: Boolean(e.angenommen) }); } }
     else if (e.t === "chat") { const text = saeubern(e.text); if (!text) return; if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Schreiben brauchst du ein Konto (Menü → Anmelden).", zeit: jetzt }); return; } s.chat = s.chat.filter((t) => jetzt - t < 10000); if (s.chat.length >= 5) { senden(s, { t: "chat", kanal: "system", text: "Langsamer – höchstens 5 Nachrichten in 10 Sekunden.", zeit: jetzt }); return; } s.chat.push(jetzt);
-      if (e.kanal === "fluestern") { const z = [...spieler].find((o) => o.id === e.an); if (!z || z.gast) { senden(s, { t: "chat", kanal: "system", text: z ? "Gäste können keine Nachrichten empfangen." : "Dieser Spieler ist nicht mehr da.", zeit: jetzt }); return; }
+      if (e.kanal === "fluestern") { const z = [...spieler].find((o) => (e.anName !== undefined ? o.name === String(e.anName) && !o.gast : o.id === e.an)); /* an einen Spieler (Kennung) oder einen Freund (Name) */ if (!z || z.gast) { senden(s, { t: "chat", kanal: "system", text: z ? "Gäste können keine Nachrichten empfangen." : "Dieser Spieler ist nicht mehr da.", zeit: jetzt }); return; }
         const m = { t: "chat", kanal: "fluestern", i: s.id, von: s.name, an: z.name, anId: z.id, text, zeit: jetzt }; senden(s, m); if (z !== s) senden(z, m); return; }
       const m = { t: "chat", kanal: e.kanal === "gruppe" ? "gruppe" : "oeffentlich", i: s.id, von: s.name, text, zeit: jetzt };
       if (m.kanal === "gruppe") { if (!s.raum) { senden(s, { t: "chat", kanal: "system", text: "Du bist in keiner Gruppe.", zeit: jetzt }); return; } for (const o of spieler) if (o.raum === s.raum) senden(o, m); }

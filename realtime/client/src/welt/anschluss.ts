@@ -209,15 +209,19 @@ export function menueEinrichten(s: WeltKern) {
 }
 /** 3D-Welt: Chat links oben, darunter die Leiste (Angriffsstil, Quests, Rucksack, Ausrüstung, Skills, Freunde, Einstellungen);
     an der Minikarte nur Karte und Sprint, rechts um die Karte Lebenspunkte und die gelbe Leiste. Teleport, Aussehen, Weltkarte und Quests bleiben auf ihren Tasten. */
-let karteMedien = false;
-function menue3D(s: WeltKern) {
+let karteMedien = false, zuFreundS: WeltKern | null = null;
+/** Teleport zu einem Freund (der Server hat erlaubt: online, nicht im Kampf, Gebiet freigeschaltet): Lichtsäule, dann dort auftauchen */
+addEventListener("ez-zufreund", (e) => { const s = zuFreundS, m = (e as CustomEvent).detail as { n: string; x: number; y: number }; const w = s as unknown as { springen?: (x: number, y: number) => void } | null;
+  if (!s || !w || !w.springen || s.gesperrt) return; if (document.getElementById("ez-freundetab")) seitenTab("freunde"); chatSystem(`Teleport zu ${m.n} …`);
+  const ms = s.teleportAbreise(); setTimeout(() => w.springen!(m.x, m.y), Math.max(0, ms - 250)); });
+function menue3D(s: WeltKern) { zuFreundS = s;
     const rucksack = () => { if (!seitenTab("rucksack")) tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)); }, ausruestung = () => { if (!seitenTab("ausruestung")) tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true)); }; /* mit eigenem Held: Tabs neben der Leiste */
     const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", taste: "Umschalt", tat: () => { const w = s as unknown as { sprint?: () => void }; if (w.sprint) w.sprint(); else chatSystem("Sprinten geht in der 3D-Welt."); } }];
     /* links an der Karte: Teleport, Spieler online, Einstellungen – am PC im Halbmond-Dock mit Karte und Sprint, am Handy auf einem Bogen links an der Karte */
-    const links = [{ id: "teleport", name: "Teleport", zeichen: "teleport" as const, taste: "T", tat: () => teleport(s) }, { id: "spieler", name: "Spieler", zeichen: "spieler" as const, taste: "P", tat: () => tafel(s, spielerListe) },
+    const links = [{ id: "teleport", name: "Teleport", zeichen: "teleport" as const, taste: "T", tat: () => teleport(s) }, { id: "spieler", name: "Freunde", zeichen: "spieler" as const, taste: "P", tat: () => { if (!kontoName() || !seitenTab("freunde")) tafel(s, spielerListe); } }, /* Freunde (ersetzt „Spieler online“); Gäste sehen weiter, wer hier ist */
       { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen" as const, tat: () => oeffne("menue", s) }];
     const karteKnoepfe = () => { if (GROSS.matches) { rundeKarte(zoomJetzt, [...knoepfe, ...links]); kartenBogen([]);
-        const sp = document.querySelector('#ez-kartenrahmen .rknoepfe button[aria-label="Spieler"]'); if (sp && !sp.querySelector(".zahl")) { const z = document.createElement("em"); z.className = "zahl ez-online-zahl"; z.hidden = true; sp.appendChild(z); } }
+        const sp = document.querySelector('#ez-kartenrahmen .rknoepfe button[aria-label="Freunde"]'); if (sp && !sp.querySelector(".zahl")) { const z = document.createElement("em"); z.className = "zahl ez-freunde-zahl"; z.hidden = true; sp.appendChild(z); } }
       else { rundeKarte(zoomJetzt, knoepfe); kartenBogen(links); } onlineZeigen(); };
     karteKnoepfe(); if (!karteMedien) { karteMedien = true; GROSS.addEventListener("change", karteKnoepfe); }
     boegenAufbauen(); tastenFuellen(s.held);
