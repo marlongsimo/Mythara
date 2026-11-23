@@ -8,6 +8,7 @@
  */
 import Phaser from "phaser";
 import { Held, STARTWAFFEN, HAARFARBEN } from "../../../shared/aussehen";
+import { angriffFuer } from "../../../shared/gegenstaende";
 
 interface DarstellerT {
   breite: number; hoehe: number; fussY: number; aufloesung: number;
@@ -71,7 +72,7 @@ export class Figur3D extends Phaser.GameObjects.Container {
   setOrigin(): this { return this; }
   setScale(): this { return this; }
   play(a: string | { key: string }): this { if (this.gestorben) return this; const key = typeof a === "string" ? a : a.key;
-    if (key.startsWith("hieb")) { this.einmal = true; this.anwenden(STARTWAFFEN[this.held.waffe].angriff); }
+    if (key.startsWith("hieb")) { this.einmal = true; const a = angriffFuer(this.waffen()); this.anwenden(a && this.d && this.d.hat(a) ? a : STARTWAFFEN[this.held.waffe].angriff); }   /* Angriff passend zur angelegten Waffe */
     else this.setze(key.startsWith("schild") ? "schild_laufen" : key.startsWith("lauf") ? "laufen" : "ruhe"); return this; }
   stop(): this { return this; }
   setTexture(key: string): this { if (this.gestorben) return this; this.einmal = false; this.setze(key.startsWith("schildstand") || key.startsWith("schild-") ? "block" : "ruhe"); return this; }

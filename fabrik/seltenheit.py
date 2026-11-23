@@ -61,6 +61,8 @@ if LEDER:
         if stufe == "mythisch":
             Lb = L[:, 0].reshape(H_, B_); kante = (np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])) + np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))).ravel()
             glut = np.maximum(glut, (leder & (kante > np.percentile(kante[leder], 95))) * 0.7); t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, np.ones_like(t_)], 1)
+elif stufe == "selten" and opt.get("poliert") == "1":                     # Grundstufe gewöhnlich (Anfängerwaffen): selten = blank polierter Stahl, sattes Messing
+    setze(metall, fL=1.12, dL=2, fC=0.5, b=-2); setze(messing, fL=1.05, dL=3, fC=1.3, a=2, b=8)
 elif stufe == "gewoehnlich":
     setze(metall, fL=0.78, dL=-2, fC=0.3, a=2.5, b=6)                     # stumpfes Eisen, leicht rostbraun
     rost = metall & (L[:, 0] < np.percentile(L[metall, 0], 35)); setze(rost, a=6, b=10)

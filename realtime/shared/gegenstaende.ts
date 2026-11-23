@@ -112,6 +112,24 @@ for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwe
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
+/* Anfängerwaffen (Grundstufe gewöhnlich) in den höheren Stufen: Schwert und Schild über das Metall, Bogen und Stab über die Holzfarbe */
+const ANFAENGER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
+  { s: "selten", w: "Veredelt", text: "Blank poliert und frisch gefasst – deutlich mehr als ein Anfängerstück." },
+  { s: "episch", w: "Geschwärzt", text: "Nachtschwarz behandelt, die Beschläge schimmern im Dunkeln blau." },
+  { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
+  { s: "mythisch", w: "Sternenschimmernd", text: "Schillernd wie Öl auf Wasser, von leuchtenden Adern durchzogen." },
+];
+for (const st of ANFAENGER_STUFEN) for (const [basis, nomen, endung] of [["ritterschwert", "Schwert", "es"], ["rundschild", "Schild", "er"], ["jagdbogen", "Bogen", "er"], ["hirtenstab", "Stab", "er"]] as const) {
+  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
+  GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+}
+/** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
+export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+/** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
+export function angriffFuer(ebenen: string[]): string | null {
+  for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];
+  return null;
+}
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen" } : { waffe: "hirtenstab" };

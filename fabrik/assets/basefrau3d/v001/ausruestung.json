@@ -261,8 +261,8 @@
       "platz": "hand_r",
       "art": "schwert",
       "glb": "waffe.eiddolch/v001/quelle/dolch.glb",
-      "griff": 0.2,
-      "griff2": 0.08,
+      "griff": 0.1,
+      "griff2": 0.04,
       "klasse": "wurfdolch",
       "angriff": "dolchwurf",
       "bewegungen": [

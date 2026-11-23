@@ -121,7 +121,8 @@
     "zauber_stab",
     "armbrust1h",
     "dolchwurf"
-   ]
+   ],
+   "datei": "basefrau3d.teile/schild.kreuz.glb"
   },
   "schild.rund": {
    "art": "starr",
@@ -136,7 +137,8 @@
     "zauber_stab",
     "armbrust1h",
     "dolchwurf"
-   ]
+   ],
+   "datei": "basefrau3d.teile/schild.rund.glb"
   },
   "schild.sternen": {
    "art": "starr",
@@ -163,7 +165,8 @@
     "laufen",
     "tod",
     "armbrust1h"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.armbrust.glb"
   },
   "waffe.bogen": {
    "art": "starr",
@@ -174,7 +177,8 @@
     "laufen",
     "tod",
     "bogen"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.bogen.glb"
   },
   "waffe.bogen.jagd": {
    "art": "starr",
@@ -185,7 +189,8 @@
     "laufen",
     "tod",
     "bogen"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.bogen.jagd.glb"
   },
   "waffe.dolch": {
    "art": "starr",
@@ -197,7 +202,8 @@
     "tod",
     "dolchwurf",
     "stich"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.dolch.glb"
   },
   "waffe.eiddolch": {
    "art": "starr",
@@ -246,7 +252,8 @@
     "laufen",
     "tod",
     "hieb2h"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.langschwert.glb"
   },
   "waffe.schwert.ritter": {
    "art": "starr",
@@ -258,7 +265,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.schwert.ritter.glb"
   },
   "waffe.schwert.schildwahrer": {
    "art": "starr",
@@ -270,7 +278,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.schwert.schildwahrer.glb"
   },
   "waffe.speer": {
    "art": "starr",
@@ -281,7 +290,8 @@
     "laufen",
     "tod",
     "stich2h"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.speer.glb"
   },
   "waffe.stab.hirte": {
    "art": "starr",
@@ -292,7 +302,8 @@
     "laufen",
     "tod",
     "zauber_stab"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.stab.hirte.glb"
   },
   "waffe.zeremonienstab": {
    "art": "starr",
@@ -303,7 +314,8 @@
     "laufen",
     "tod",
     "zauber_stab"
-   ]
+   ],
+   "datei": "basefrau3d.teile/waffe.zeremonienstab.glb"
   }
  },
  "aktionen": {

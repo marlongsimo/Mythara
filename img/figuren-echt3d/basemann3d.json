@@ -146,7 +146,8 @@
     "zauber_stab",
     "armbrust1h",
     "dolchwurf"
-   ]
+   ],
+   "datei": "basemann3d.teile/schild.kreuz.glb"
   },
   "schild.rund": {
    "art": "starr",
@@ -161,7 +162,8 @@
     "zauber_stab",
     "armbrust1h",
     "dolchwurf"
-   ]
+   ],
+   "datei": "basemann3d.teile/schild.rund.glb"
   },
   "schild.sternen": {
    "art": "starr",
@@ -189,7 +191,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basemann3d.teile/schild.wache.glb"
   },
   "waffe.armbrust": {
    "art": "starr",
@@ -200,7 +203,8 @@
     "laufen",
     "tod",
     "armbrust1h"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.armbrust.glb"
   },
   "waffe.bogen": {
    "art": "starr",
@@ -211,7 +215,8 @@
     "laufen",
     "tod",
     "bogen"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.bogen.glb"
   },
   "waffe.bogen.jagd": {
    "art": "starr",
@@ -222,7 +227,8 @@
     "laufen",
     "tod",
     "bogen"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.bogen.jagd.glb"
   },
   "waffe.dolch": {
    "art": "starr",
@@ -234,7 +240,8 @@
     "tod",
     "dolchwurf",
     "stich"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.dolch.glb"
   },
   "waffe.eiddolch": {
    "art": "starr",
@@ -283,7 +290,8 @@
     "laufen",
     "tod",
     "hieb2h"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.langschwert.glb"
   },
   "waffe.schwert.ritter": {
    "art": "starr",
@@ -295,7 +303,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.schwert.ritter.glb"
   },
   "waffe.schwert.schildwahrer": {
    "art": "starr",
@@ -307,7 +316,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.schwert.schildwahrer.glb"
   },
   "waffe.speer": {
    "art": "starr",
@@ -318,7 +328,8 @@
     "laufen",
     "tod",
     "stich2h"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.speer.glb"
   },
   "waffe.speer.wache": {
    "art": "starr",
@@ -330,7 +341,8 @@
     "tod",
     "stich",
     "block"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.speer.wache.glb"
   },
   "waffe.stab.hirte": {
    "art": "starr",
@@ -341,7 +353,8 @@
     "laufen",
     "tod",
     "zauber_stab"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.stab.hirte.glb"
   },
   "waffe.zeremonienstab": {
    "art": "starr",
@@ -352,7 +365,8 @@
     "laufen",
     "tod",
     "zauber_stab"
-   ]
+   ],
+   "datei": "basemann3d.teile/waffe.zeremonienstab.glb"
   }
  },
  "aktionen": {
