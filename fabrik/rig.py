@@ -27,7 +27,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Teilnetz "arme_nur_aussen": true  Jacke mit Ärmeln: nur die Ärmel folgen den Armen, der Rumpf nicht den herabhängenden Händen
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -680,6 +680,14 @@ def trinken(i, n):
     mund = mit(BEREIT, o_r=MUND[0], u_r=MUND[1], h_r=MUND[2], kl=(-1.0, 0.0, 0.3))
     arme_spur([(0, BEREIT), (0.28, mund), (0.78, mund), (1, BEREIT)], t)
 
+def faustschlag(i, n):
+    """Faustschlag rechts (ohne Waffe, z. B. Golem): ausholen (Arm zurück und angewinkelt, Rumpf dreht weg), gerade nach vorn schlagen mit Schritt, zurück"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.35, 0.4), (0.55, 1.0), (0.75, 0.8), (1, 0.0)], t); schritt(14, w)
+    rumpf(vor=spur([(0, 2.0), (0.35, -4.0), (0.55, 12.0), (0.75, 10.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.35, -30.0), (0.55, 22.0), (0.75, 18.0), (1, 0.0)], t))
+    aus = mit(BEREIT, o_r=(-0.45, 0.55, -0.7), u_r=(-0.1, -0.35, 0.93), h_r=(-0.1, -0.35, 0.93))
+    schlag = mit(BEREIT, o_r=(-0.12, -0.99, -0.05), u_r=(-0.02, -1.0, 0.02), h_r=(-0.02, -1.0, 0.02))
+    arme_spur([(0, BEREIT), (0.35, aus), (0.55, schlag), (0.75, schlag), (1, BEREIT)], t)
+
 # name: (Funktion, Bilder, Bilder je Sekunde, Schleife, Zusatz)
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
@@ -692,7 +700,7 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
               "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
-              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]})}
+              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]}), "faustschlag": (faustschlag, 9, 12, False, {"treffer": 4})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 arm.animation_data_create()
