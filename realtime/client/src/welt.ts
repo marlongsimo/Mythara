@@ -129,7 +129,7 @@ export function fluestern(id: number, name: string): void { chatAnzeigen(); flue
 
 /* ---------- Spielerkarte und Spielerliste ---------- */
 const $t = (s: string) => document.querySelector(s) as HTMLElement;
-function tafelZeigen(klasse: string, html: string, zu: () => void): HTMLElement { const f = $t("#ez-konto"); f.hidden = false;
+export function tafelZeigen(klasse: string, html: string, zu: () => void): HTMLElement { const f = $t("#ez-konto"); f.hidden = false;
   const schliessen = () => { removeEventListener("keydown", esc2, true); f.hidden = true; f.innerHTML = ""; f.onclick = null; zu(); };
   const esc2 = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc2, true);
   f.innerHTML = `<div class="tafel ${klasse}"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>${html}</div>`;

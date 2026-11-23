@@ -6,7 +6,7 @@
  * und sein Gebiet für einen selbst schon freigeschaltet ist (prüft der Server, „zufreund“).
  */
 import { kontoRpc, kontoName } from "./konto";
-import { freundeAbfragen, zuFreund, freundMelden, fluestern, chatSystem } from "./welt";
+import { freundeAbfragen, zuFreund, freundMelden, fluestern, chatSystem, tafelZeigen } from "./welt";
 
 type Status = { n: string; online: boolean; ort?: string; kampf: boolean; zuletzt: string | null };
 type Person = { handle: string };
@@ -37,9 +37,9 @@ function zuletzt(z: string | null): string {
   if (s < 86400) return `Zuletzt online vor ${Math.round(s / 3600)} Std.`; const t = Math.round(s / 86400); return `Zuletzt online vor ${t} ${t === 1 ? "Tag" : "Tagen"}`;
 }
 /** Inhalt des Tabs */
-export function freundeHtml(): string {
-  const on = status.filter((f) => f.online).length;
-  const kopf = `<div class="kopf gross"><b>Freunde</b><small>${geladen ? `${on} von ${status.length} online` : "wird geladen …"}</small></div>`;
+export function freundeHtml(mitte = false): string {
+  const on = status.filter((f) => f.online).length, zahl = geladen ? `${on} von ${status.length} online` : "wird geladen …";
+  const kopf = mitte ? `<h2>Freunde</h2><div class="zier"></div><p class="klein fzahl">${zahl}</p>` : `<div class="kopf gross"><b>Freunde</b><small>${zahl}</small></div>`;
   if (fehler && !meine) return kopf + `<div class="tleer"><p>${esc(fehler)}</p></div>`;
   const an = meine ? meine.an_mich : [], von = meine ? meine.von_mir : [];
   const anfragen = an.length ? `<div class="fanfragen">${an.map((p) => `<div class="fanfrage"><span><b>${esc(p.handle)}</b><small>möchte dein Freund sein</small></span><button type="button" class="ja" data-fja="${esc(p.handle)}">Annehmen</button><button type="button" class="nein" data-fnein="${esc(p.handle)}">Ablehnen</button></div>`).join("")}</div>` : "";
@@ -73,3 +73,12 @@ export function freundFormular(f: HTMLFormElement): void {
   const i = f.querySelector("input") as HTMLInputElement; const h = i.value.trim(); if (!h) return; i.value = "";
   void freundHinzufuegen(h).then((t) => { hinweis = t; melden(); if (t) chatSystem(t); });
 }
+
+/** Freunde als Fenster in der Bildschirmmitte (wie früher „Spieler online“): Liste frischt sich auf, solange es offen ist */
+export function freundeTafel(zu: () => void): void {
+  let inh: HTMLElement | null = null; const neu = () => { if (!inh) return; if (!inh.isConnected) { aus(); return; } const h = freundeHtml(true); if ((inh as HTMLElement & { _h?: string })._h !== h) { (inh as HTMLElement & { _h?: string })._h = h; inh.innerHTML = h; } };
+  const aus = () => { freundeBeobachten(false); removeEventListener("ez-freunde-neu", neu); };
+  const f = tafelZeigen("freunde", `<div class="finhalt ftafel"></div>`, () => { aus(); zu(); }); inh = f.querySelector(".finhalt") as HTMLElement;
+  inh.addEventListener("click", (e) => { const t = e.target as HTMLElement; if (t.closest("[data-fl]")) { (f.querySelector(".schliessen") as HTMLElement | null)?.click(); } if (freundKlick(t)) e.stopPropagation(); });
+  inh.addEventListener("submit", (e) => { e.preventDefault(); e.stopPropagation(); freundFormular(e.target as HTMLFormElement); });
+  addEventListener("ez-freunde-neu", neu); freundeBeobachten(true); neu(); }
