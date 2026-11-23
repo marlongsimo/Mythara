@@ -588,6 +588,11 @@
     #ez-xpdrops .xpdrop { display: flex; gap: 10px; animation: xpsteigt 1.8s ease-out forwards; font: 700 17px Cinzel, Georgia, serif; color: #fff3c8; text-shadow: 0 1px 3px #000, 0 0 6px rgba(0,0,0,.8); grid-area: 1 / 1; }
     #ez-xpdrops .xpdrop span { display: inline-flex; align-items: center; gap: 4px; } #ez-xpdrops img { width: 24px; height: 24px; }
     @keyframes xpsteigt { 0% { opacity: 0; transform: translateY(14px); } 12% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-46px); } }
+    body.welt3d #ez-leiste button.mitbild { background: none; border: none; box-shadow: none; overflow: visible; } /* gemalte Symbole: der Goldring ist im Bild */
+    body.welt3d #ez-leiste button.mitbild img { width: 112%; height: 112%; display: block; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.7)); transition: filter .15s, transform .15s; }
+    body.welt3d #ez-leiste button.mitbild:hover img, body.welt3d #ez-leiste button.mitbild:focus-visible img { filter: drop-shadow(0 0 8px rgba(240,212,138,.6)) brightness(1.08); }
+    body.welt3d #ez-leiste button.mitbild:hover, body.welt3d #ez-leiste button.mitbild:focus-visible { box-shadow: none; }
+    #ez-leiste button.mitbild.an { background: none !important; box-shadow: none !important; } #ez-leiste button.mitbild.an img { filter: drop-shadow(0 0 9px rgba(255,224,138,.95)) brightness(1.18); transform: scale(1.06); }
     #ez-leiste button.an { border-color: #ffe08a !important; box-shadow: 0 0 12px rgba(255,224,138,.7) !important; background: radial-gradient(#6a4f28, #2e2010) !important; }
     .tafel.stiltafel .stile { display: grid; gap: 8px; margin: 10px 0; }
     .tafel.stiltafel .stil { display: grid; gap: 3px; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #6a5232; background: linear-gradient(#2e2519, #1a140d); color: #f3e3b5; cursor: pointer; font: inherit; }
@@ -632,6 +637,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwt76hhh"></script>
+  <script src="spiel.js?v=mwt7htit"></script>
 </body>
 </html>

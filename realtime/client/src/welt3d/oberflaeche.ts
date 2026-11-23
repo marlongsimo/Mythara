@@ -11,12 +11,14 @@ import { RZEICHEN } from "../rahmen";
 export interface LeistenKnopf { id: string; name: string; zeichen: keyof typeof RZEICHEN; tat: () => void; taste?: string }
 
 /** Die Leiste links unter dem Chat aufbauen (einmal je Seite; erneuter Aufruf ersetzt die Knöpfe) */
+/** Gemalte Symbole der linken Leiste (img/echtzeit/leiste/<id>.webp, mit eigenem Goldring) */
+const LEISTE_BILD = new Set(["stil", "quests", "rucksack", "ausruestung", "skills"]);
 export function leisteAufbauen(knoepfe: LeistenKnopf[]): void {
   let el = document.getElementById("ez-leiste"); if (!el) { el = document.createElement("nav"); el.id = "ez-leiste"; el.setAttribute("aria-label", "Spielmenü"); document.body.appendChild(el);
     el.addEventListener("pointerdown", (e) => e.stopPropagation()); /* Antippen der Leiste lässt den Helden nicht loslaufen */
     el.addEventListener("click", (e) => { e.stopPropagation(); const b = (e.target as HTMLElement).closest("[data-l]") as HTMLElement | null; if (b) jetzt.find((k) => k.id === b.dataset.l)?.tat(); }); }
   jetzt = knoepfe;
-  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}" aria-label="${k.name}" title="${k.name}${k.taste ? ` (${k.taste})` : ""}"><span>${RZEICHEN[k.zeichen]}</span>${k.id === "freunde" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
+  el.innerHTML = knoepfe.map((k) => `<button type="button" data-l="${k.id}"${LEISTE_BILD.has(k.id) ? ` class="mitbild"` : ""} aria-label="${k.name}" title="${k.name}${k.taste ? ` (${k.taste})` : ""}">${LEISTE_BILD.has(k.id) ? `<img src="../img/echtzeit/leiste/${k.id}.webp" alt="" draggable="false">` : `<span>${RZEICHEN[k.zeichen]}</span>`}${k.id === "freunde" ? `<em class="zahl ez-online-zahl" hidden></em>` : ""}</button>`).join("");
   if (!beobachtet) { beobachtet = true; addEventListener("resize", () => einpassen());  }
   einpassen();
 }
