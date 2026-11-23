@@ -4,7 +4,8 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
-import { questStand, questVerfolgt, questVerfolgen } from "./welt";
+import { questStand, questStand2, questVerfolgt, questVerfolgen } from "./welt";
+import { Q2, lage as lage2, laeuft2, questlog2, SCHRITTE2, BELOHNUNG2 } from "../../shared/quest02";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
@@ -172,11 +173,15 @@ function questListe(): QuestZeile[] {
   const schritte = STAENDE.filter((x) => x !== "angeboten" && x !== "fertig"), erledigt = schritte.filter((x) => rang(x) < r).map((x) => QUESTLOG[x]);
   const jetzt = fertig ? QUESTLOG.fertig : gestartet ? QUESTLOG[st as Exclude<typeof st, "">] : st === "angeboten" ? QUESTLOG.angeboten : "Sprich mit Jori in der Waldmark.";
   const B = BELOHNUNG, belohnung = `Belohnung: ${SKILLS.filter((k) => B[k]).map((k) => `${B[k]} ${k === "lp" ? "Lebenspunkte" : SKILL_NAME[k]}-XP`).join(", ")}`;
-  return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }]; }
+  const s2 = questStand2(), l2 = lage2(s2), p2 = ["", "angenommen", "spuren", "abgabe", "beobachten", "kampf", "bereit", "fertig"].indexOf(l2.phase), fertig2 = l2.phase === "fertig";
+  const q2: QuestZeile = { id: Q2, titel: "Der stille Rain", ort: "Osthof", art: fertig2 ? "fertig" : questVerfolgt(Q2) ? "verfolgt" : laeuft2(s2) ? "aktiv" : "neu", voraussetzungen: [],
+    start: "Sprich mit Brida Wegner am Wegposten im Süden der Waldmark.", erledigt: SCHRITTE2.filter((x) => ["", "angenommen", "spuren", "abgabe", "beobachten", "kampf", "bereit", "fertig"].indexOf(x.ab) <= p2 && !fertig2).map((x) => x.text).concat(fertig2 ? SCHRITTE2.map((x) => x.text) : []),
+    jetzt: questlog2(s2), belohnung: `Belohnung: ${BELOHNUNG2.splitter} Splitter – danach bleiben die Mooshocker als Trainingsgegner am Moosrain` };
+  return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }, q2]; }
 /** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
 function questMenue(id: string, px: number, py: number): void { const q = questListe().find((x) => x.id === id); if (!q) return;
   const a: Aktion[] = [{ text: "Details öffnen", sym: "📜", tat: () => questDetails(id) }];
-  if (q.art !== "fertig") a.push({ text: q.art === "verfolgt" ? "Nicht mehr verfolgen" : "Verfolgen", sym: "🧭", tat: () => questVerfolgen(q.art !== "verfolgt") });
+  if (q.art !== "fertig") a.push({ text: q.art === "verfolgt" ? "Nicht mehr verfolgen" : "Verfolgen", sym: "🧭", tat: () => questVerfolgen(q.art !== "verfolgt", id) });
   aktionsMenue(px, py, [{ kopf: q.titel, farbe: FARBE_QUEST, aktionen: a }]); }
 const FARBE_QUEST = "#ffd86a";
 /** Quest im Detail auf Pergament in der Bildschirmmitte; frischt sich auf, solange es offen ist (erledigte Schritte durchgestrichen, darunter der aktuelle) */
@@ -190,7 +195,7 @@ function questDetails(id: string): void {
       ${q.belohnung ? `<p class="qbelohnung">${q.belohnung}${q.art === "fertig" ? " – erhalten" : ""}</p>` : ""}`; };
   let inh: HTMLElement | null = null; const neu = () => { if (!inh) return; if (!inh.isConnected) { removeEventListener("ez-quest", neu); return; } const h = html(); if ((inh as HTMLElement & { _h?: string })._h !== h) { (inh as HTMLElement & { _h?: string })._h = h; inh.innerHTML = h; } };
   const f = tafelZeigen("questinfo", `<div class="qinhalt"></div>`, () => removeEventListener("ez-quest", neu)); inh = f.querySelector(".qinhalt") as HTMLElement;
-  inh.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-qv]")) { e.stopPropagation(); questVerfolgen(!questVerfolgt()); } });
+  inh.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-qv]")) { e.stopPropagation(); questVerfolgen(!questVerfolgt(id), id); } });
   addEventListener("ez-quest", neu); neu(); }
 /** Infoblatt zu einem Skill (in der Bildschirmmitte): wofür er gut ist, wie man XP bekommt, Stand */
 const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {

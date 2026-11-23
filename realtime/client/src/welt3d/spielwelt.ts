@@ -9,7 +9,8 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem, fluestern, ichName } from "../welt";
+import { chatSystem, fluestern, ichName, untersuchtMelden } from "../welt";
+import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
 import { freundHinzufuegen } from "../freunde";
 import { gegenstandUntersuchen } from "../rahmen";
@@ -273,7 +274,9 @@ export class Spielwelt3D implements WeltKern {
     if (d) gr.push({ kopf: d.n + (d.s ? ` · Lv ${d.s}` : ""), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
-    { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippenSchirm(px, py); } }] }); /* ganze Figur */
+    { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
+        gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippenSchirm(px, py); } },
+          ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
       else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */

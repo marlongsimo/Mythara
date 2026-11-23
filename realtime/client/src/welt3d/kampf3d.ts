@@ -42,14 +42,14 @@ export class WeltKampf3D extends WeltKampf {
     if (!dauer) { b.fl.entfernen(this.w.motor.szene); return; }
     const t0 = performance.now(), weiter = () => { if (performance.now() - t0 > dauer + 2000) { b.fl.entfernen(this.w.motor.szene); return; } b.fl.schritt(16, this.w.motor.gieren); requestAnimationFrame(weiter); }; requestAnimationFrame(weiter); }
   /** Wer steht am Bildschirmpunkt (px, py)? Die ganze Figur zählt (Füße bis Kopf), nicht nur der Boden darunter – der vorderste gewinnt */
-  amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown } | null {
+  amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ: string } | null {
     const m = this.w.motor; let best: { id: number; f: Figur; t: number } | null = null;
     for (const [id, f] of this.figuren) { if (id === this.ichId || f.tot) continue; const b = this.bilder.get(f); if (!b) continue;
       const x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z), fu = m.bildschirm(x, y, z), ko = m.bildschirm(x, y + b.h, z); if (!fu || !ko) continue;
       const breit = Math.max(20, Math.abs(fu.y - ko.y) * 0.4), dx = Math.abs(px - fu.x); if (dx > breit || py > fu.y + 10 || py < ko.y - 10) continue;
       if (!best || fu.y > best.t) best = { id, f, t: fu.y }; } /* weiter vorn (tiefer im Bild) zuerst */
     if (!best) return null; const f = best.f, n = f.held ? this.namen.get(best.id) : undefined, M = MONSTER[f.typ] as { name?: string; stufe?: number } | undefined;
-    return { id: best.id, held: f.held, team: f.team, name: f.held ? (n ? n.name : "Wanderer") : M && M.name ? M.name : f.typ, stufe: f.held ? (n ? n.stufe : 1) : (M && M.stufe) || 1, a: n && n.a }; }
+    return { id: best.id, held: f.held, team: f.team, name: f.held ? (n ? n.name : "Wanderer") : M && M.name ? M.name : f.typ, stufe: f.held ? (n ? n.stufe : 1) : (M && M.stufe) || 1, a: n && n.a, typ: f.typ }; }
   /** Antippen am Bildschirm: einen Gegner unter dem Finger angreifen */
   antippenSchirm(px: number, py: number): boolean { const t = this.amSchirm(px, py); if (!t || t.team === 0 || !this.netz) return false; this.netz.sende({ t: "ziel", id: t.id }); return true; }
   /** Wo eine Figur in der Welt steht (Weltfelder) und wie hoch sie ist */

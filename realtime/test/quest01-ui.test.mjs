@@ -80,7 +80,7 @@ try {
   check(await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent).join("|") === "📜Details öffnen|🧭Nicht mehr verfolgen"), "Lange drücken / Rechtsklick auf die Quest: „Details öffnen“ zuerst, dann Verfolgen");
   if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.keyboard.press("Escape"); await anna.waitForTimeout(500);
   { const P = await anna.evaluate(() => { const W = window.EZW.welt3d, q = W.quest, z = q.ziel(), p = q.pfeil; if (!p || !z) return null; const zum = Math.atan2(z.x - W.ort.x, z.y - W.ort.y), hin = Math.atan2(p.position.x - W.ort.x, p.position.z - W.ort.y);
-      return { sichtbar: p.visible, ziel: [Math.round(z.x), Math.round(z.y)], abw: Math.abs(((zum - hin + 3 * Math.PI) % (2 * Math.PI)) - Math.PI), verfolgt: localStorage.getItem("ez_q1_verfolgen") }; });
+      return { sichtbar: p.visible, ziel: [Math.round(z.x), Math.round(z.y)], abw: Math.abs(((zum - hin + 3 * Math.PI) % (2 * Math.PI)) - Math.PI), verfolgt: localStorage.getItem("ez_quest_verfolgt") === "die_gesperrte_strasse" ? "1" : null }; });
     check(P && P.sichtbar && P.abw < 0.15 && P.verfolgt === "1", `Quest abgehakt: Pfeil am Helden zeigt zum Bürgermeister (${JSON.stringify(P)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.click('#ez-leiste [data-l="quests"]');
   /* Hagan geht im Rathaus umher: sein Name schwebt nicht von weitem über dem Dach */

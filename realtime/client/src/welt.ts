@@ -4,6 +4,7 @@
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
+import { Q1 } from "../../shared/quest01";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops } from "./skills";
@@ -42,8 +43,9 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
-    else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); }
+    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
+    else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
     else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
     else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
@@ -64,13 +66,20 @@ export const zuFreund = (n: string): void => senden({ t: "zufreund", n });
 export const freundMelden = (n: string, angenommen = false): void => senden({ t: "freundanfrage", n, angenommen });
 export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
-let questJetzt: Stand = "", questBekannt = false;
+let questJetzt: Stand = "", quest2Jetzt = "", questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
 export const questStand = (): Stand => questJetzt;
 export const questGeladen = (): boolean => questBekannt;
+/** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
+export const questStand2 = (): string => quest2Jetzt;
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
-export function questVerfolgt(): boolean { try { return localStorage.getItem("ez_q1_verfolgen") === "1"; } catch { return false; } }
-export function questVerfolgen(an: boolean): void { try { localStorage.setItem("ez_q1_verfolgen", an ? "1" : "0"); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
+/* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
+export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }
+export function questVerfolgt(id: string = Q1): boolean { return verfolgteQuest() === id; }
+export function questVerfolgen(an: boolean, id: string = Q1): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
+/** Quest 02: Bruchstelle oder Rutenbündel benutzen (der Server prüft Stand und Abstand); Mooshocker untersucht */
+export function questDing(id: string, wo?: { x: number; y: number }): void { senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
+export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function rede(npc: string): void { senden({ t: "rede", npc }); }
 export function antworte(npc: string, a: string): void { senden({ t: "antwort", npc, a }); }
 export function dialogZu(): void { senden({ t: "dialogzu" }); }
