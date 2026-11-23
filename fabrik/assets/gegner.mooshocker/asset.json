@@ -1,0 +1,8 @@
+{
+  "id": "gegner.mooshocker",
+  "name": "Mooshocker",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: Meshy „Mossback Guardian“, fabrik/rig_schildkroete.py (0,7 m hoch, 1,45 m lang), Bewegungen ruhe, gehen, kopfstoss (1,0 s, Treffer Bild 5), treffer, einrollen, tod (letztes Bild halten) – Spieldatei img/figuren-echt3d/mooshocker3d.glb. Spiel: gehen 1,5 Felder/s, Kopfstoß alle 3 s.",
+  "herkunft": "Meshy"
+}
