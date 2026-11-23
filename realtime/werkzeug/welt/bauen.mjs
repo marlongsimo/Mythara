@@ -2,7 +2,7 @@
  * World Pipeline – baut Regionen für das Spiel.
  * Aufruf (im Ordner realtime): node werkzeug/welt/bauen.mjs [region …] [--ohne-boden]
  *
- * Schritte je Region: Formprüfung → Gehraster und Chunk-Dateien → Bodenbilder (werkzeug/welt/boden.py).
+ * Schritte je Region: auf Felder ausrichten (ausrichten.mjs) → Formprüfung → Gehraster und Chunk-Dateien → Bodenbilder (werkzeug/welt/boden.py).
  * Ergebnis in ../echtzeit/welt/:  welt.json (Regionen, verwendete Objekte) · <cx>_<cy>.json (Chunk) · <cx>_<cy>.webp (Boden)
  * Ohne Angabe werden alle Regionen gebaut. Bricht ab, wenn die Formprüfung Fehler meldet.
  */
@@ -10,10 +10,13 @@ import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { gemeinsam, bibliothek, region, regionNamen, formPruefen, WURZEL, REALTIME } from "./laden.mjs";
+import { ausrichten } from "./ausrichten.mjs";
 
 const args = process.argv.slice(2), ohneBoden = args.includes("--ohne-boden"), gewaehlt = args.filter((a) => !a.startsWith("--"));
 /* Ohne Angabe: alle Regionen außer Entwürfen */
 const namen = gewaehlt.length ? gewaehlt : regionNamen().filter((n) => !region(n).region.entwurf), ziel = join(WURZEL, "echtzeit", "welt");
+/* zuerst alles auf Felder ausrichten (Grundregel: Bild und Kollision decken sich feldgenau) */
+await ausrichten(namen);
 const fehler = Object.entries(await formPruefen(namen)).filter(([, f]) => f.length);
 if (fehler.length) { for (const [n, f] of fehler) { console.log("✗ " + n); for (const z of f.slice(0, 20)) console.log("    " + z); } console.log("\nNicht gebaut: erst die Fehler beheben."); process.exit(1); }
 
