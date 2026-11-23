@@ -175,30 +175,32 @@ export function angriffFuer(ebenen: string[]): string | null {
 }
 /* Anzeigenamen kommen aus den Datenblättern der Figuren-Fabrik (Trainings-, Einfache, Seltene … Stücke) – eine Quelle, von build.mjs erzeugt. Die IDs bleiben (gespeicherte Inventare). */
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
-/* ───────── Werte „Ausrüstungs-Balancing durchsimuliert“ (23.11.2026) für Einfach (Level 10) und Selten (Level 20), umgerechnet auf Kampfsystem v3 ─────────
-   Übernommen: Anforderungen, Ticks, Reichweiten (Nahkampf 1 Feld), Geschick-Boni, Fernkampf-Angriff (= Fernkampfstärke des Dokuments), Genauigkeit, Rüstungs- und Schildabwehr.
-   Neu gerechnet (das Dokument nutzte noch die Schadensformeln von v2): die Stärke-Boni für den Max Hit = Stärke-Wert des Dokuments × 148/65.
-   Anker (Vorgabe 23.11.2026): Stärke 99 mit der mythischen Stärke-Waffe (Zweihänder, Dokument +65 → +148) trifft höchstens 36 (aggressiv). Fernkampf-Stärke ebenso;
-   Magie-Stärke = höchster Schadenswurf des Dokuments × 130/30 (mythischer Zauberstab auf Magie 99: Max Hit 30).
-   Magie (ohne die +8 der Formel) braucht dafür höhere Magie-Stärke. Zweihänder und Speer: zweihändig, mit kleiner eigener Abwehr. Episch bis Mythisch: noch vorläufig. */
+/* ───────── Ausrüstung Einfach (Level 10) und Selten (Level 20), nach OSRS (Vorgabe 23.11.2026): Black ↔ Einfach, Mithril ↔ Selten ─────────
+   Anforderungen, Ticks und Reichweiten aus dem Balancing-Dokument (Nahkampf 1 Feld). OSRS rechnet Treffer und Abwehr als (Level + 8) × (Bonus + 64), wir zählen zusammen:
+   damit das Verhältnis Angriff zu Abwehr gleich bleibt, ist unser Bonus = Anforderungslevel × OSRS-Bonus ÷ 64. Stärke-Werte (Max Hit, OSRS-Formel) direkt aus OSRS.
+   Magie: der Zauber steckt im Stab (Magie-Stärke). Zweihänder und Speer: zweihändig, kleine eigene Abwehr. Episch bis Mythisch: noch vorläufig. */
 type Bal = { a?: [AnfSkill, number]; w?: Partial<WaffenWerte>; ab?: [number, number, number]; zweihand?: boolean };
 const BALANCING: Record<string, Bal> = {
-  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 9, staerke: 18 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 14, staerke: 27 } },
-  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 12, staerke: 14 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 18, staerke: 20 } },
-  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 6, staerke: 39 }, ab: [1, 0, 0], zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 9, staerke: 59 }, ab: [1, 0, 0], zweihand: true },
-  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 5, staerke: 36 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 8, staerke: 57 } },
-  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 10, staerke: 16 }, ab: [1, 1, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 23 }, ab: [1, 1, 0], zweihand: true },
-  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 9, fernStaerke: 20 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 12, fernStaerke: 27 } },
-  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 12, fernStaerke: 27 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 16, fernStaerke: 36 } },
-  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 15, fernStaerke: 34 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 19, fernStaerke: 43 } },
-  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 8, magieStaerke: 35 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 52 } },
-  sternenschild_gewoehnlich: { a: ["defense", 10], ab: [4, 3, 2] }, sternenschild: { a: ["defense", 20], ab: [5, 4, 3] },
-  eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [1, 1, 0] }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [3, 2, 1] }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [2, 1, 1] },
-  eisenwachthelm: { a: ["defense", 20], ab: [2, 1, 1] }, eisenwacht: { a: ["defense", 20], ab: [4, 3, 2] }, eisenbeinschienen: { a: ["defense", 20], ab: [3, 2, 0] },
-  jaegerkapuze: { a: ["defense", 10], ab: [1, 1, 0] }, jaegerwams: { a: ["defense", 10], ab: [2, 3, 1] }, jaegerhose: { a: ["defense", 10], ab: [0, 2, 1] },
-  jaegerkapuze_selten: { a: ["defense", 20], ab: [1, 2, 1] }, jaegerwams_selten: { a: ["defense", 20], ab: [2, 4, 2] }, jaegerhose_selten: { a: ["defense", 20], ab: [2, 3, 0] },
-  magierkapuze: { a: ["defense", 10], ab: [0, 1, 1] }, magierrobe: { a: ["defense", 10], ab: [1, 2, 3] }, magierrock: { a: ["defense", 10], ab: [1, 0, 2] },
-  magierkapuze_selten: { a: ["defense", 20], ab: [1, 1, 2] }, magierrobe_selten: { a: ["defense", 20], ab: [2, 2, 4] }, magierrock_selten: { a: ["defense", 20], ab: [0, 2, 3] },
+  /* Nahkampf: Geschick-Bonus = Level × OSRS-Angriff ÷ 64, Stärke wie OSRS (Black = Level 10, Mithril = Level 20) */
+  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 3, staerke: 16 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 6, staerke: 22 } },
+  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 2, staerke: 6 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 4, staerke: 11 } },
+  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 4, staerke: 26 }, ab: [1, 0, 0], zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 12, staerke: 38 }, ab: [1, 0, 0], zweihand: true },
+  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 2, staerke: 14 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 5, staerke: 20 } },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 2, staerke: 12 }, ab: [1, 1, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 5, staerke: 17 }, ab: [1, 1, 0], zweihand: true },
+  /* Fernkampf: Bogen und Munition in einem (keine Pfeile im Spiel); Angriff = 3 × Level × OSRS-Angriff ÷ 64 (er zählt im Trefferwert ÷ 3), Stärke = Pfeil/Bolzen wie OSRS */
+  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 7, fernStaerke: 16 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 19, fernStaerke: 22 } },
+  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 7, fernStaerke: 20 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 19, fernStaerke: 27 } },
+  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 20, fernStaerke: 46 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 51, fernStaerke: 64 } },
+  /* Magie: der eingebaute Zauber steckt in der Magie-Stärke – Einfach trifft auf Magie 10 bis 4 (wie Water Strike), Selten auf Magie 20 bis 8 (wie Fire Strike) */
+  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 2, magieStaerke: 160 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 3, magieStaerke: 176 } },
+  /* Schilde und Rüstung: Abwehr = Level × OSRS-Abwehr ÷ 64 (Black / Mithril, Leder, Zauberroben) */
+  sternenschild_gewoehnlich: { a: ["defense", 10], ab: [4, 3, 0] }, sternenschild: { a: ["defense", 20], ab: [8, 8, 0] },
+  eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [2, 2, 0] }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [6, 6, 0] }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [3, 3, 0] },
+  eisenwachthelm: { a: ["defense", 20], ab: [5, 4, 0] }, eisenwacht: { a: ["defense", 20], ab: [14, 14, 0] }, eisenbeinschienen: { a: ["defense", 20], ab: [7, 7, 0] },
+  jaegerkapuze: { a: ["defense", 10], ab: [1, 1, 0] }, jaegerwams: { a: ["defense", 10], ab: [2, 2, 1] }, jaegerhose: { a: ["defense", 10], ab: [0, 1, 0] },
+  jaegerkapuze_selten: { a: ["defense", 20], ab: [2, 3, 1] }, jaegerwams_selten: { a: ["defense", 20], ab: [4, 5, 1] }, jaegerhose_selten: { a: ["defense", 20], ab: [2, 3, 1] },
+  magierkapuze: { a: ["defense", 10], ab: [0, 0, 1] }, magierrobe: { a: ["defense", 10], ab: [1, 1, 1] }, magierrock: { a: ["defense", 10], ab: [0, 0, 0] },
+  magierkapuze_selten: { a: ["defense", 20], ab: [0, 0, 1] }, magierrobe_selten: { a: ["defense", 20], ab: [1, 1, 2] }, magierrock_selten: { a: ["defense", 20], ab: [1, 1, 1] },
 };
 for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; if (!G) continue;
   if (b.a) G.anforderung = { skill: b.a[0], level: b.a[1] }; if (b.w && G.waffe) G.waffe = { ...G.waffe, ...b.w }; if (b.ab) G.abwehr = { nah: b.ab[0], fern: b.ab[1], magie: b.ab[2] }; if (b.zweihand) G.zweihand = true; }
