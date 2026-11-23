@@ -67,8 +67,18 @@ try {
   { const a = await offen(anna); check(a && a.name === "Jori" && /Rathaus/.test(a.text), `Jori: „${a && a.text}“`); }
   await anna.keyboard.press(" "); await anna.waitForTimeout(400); check(!(await offen(anna)), "Nach der letzten Aussage schließt sich das Gespräch");
   await anna.click('#ez-leiste [data-l="quests"]'); await anna.waitForTimeout(300);
-  check(await anna.evaluate(() => /Die gesperrte Straße/.test(document.getElementById("ez-queststab")?.textContent || "") && /Bürgermeister von Waldmark braucht Hilfe/.test(document.getElementById("ez-queststab").textContent)), "Quest-Tab: „Die gesperrte Straße“ mit dem Auftrag");
-  await anna.click('#ez-queststab [data-verfolgen]'); await anna.waitForTimeout(800);
+  { const z = await anna.evaluate(() => { const b = document.querySelector("#ez-queststab .qzeile"); return b ? { text: b.textContent, klasse: b.className, zeilen: Math.round(b.getBoundingClientRect().height / parseFloat(getComputedStyle(b).lineHeight || "20")) <= 2, hell: getComputedStyle(b).color } : null; });
+    check(z && z.text === "Die gesperrte Straße" && /aktiv/.test(z.klasse), `Quest-Tab: nur der Titel in einer Zeile, gestartet = dunkel mit heller Schrift (${JSON.stringify(z)})`); }
+  await anna.click("#ez-queststab .qzeile"); await anna.waitForTimeout(400);
+  { const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); if (!t) return null; return { vor: /Voraussetzungen\s*Keine/.test(t.textContent), jetzt: (t.querySelector(".qschritte .jetzt") || {}).textContent || "", erledigt: t.querySelectorAll(".qschritte .erledigt").length, knopf: (t.querySelector("[data-qv]") || {}).textContent || "" }; });
+    check(d && d.vor && /Bürgermeister von Waldmark braucht Hilfe/.test(d.jetzt) && d.erledigt === 0 && /Verfolgen/.test(d.knopf), `Kurz antippen: Details auf Pergament – Voraussetzungen, aktueller Schritt, „Verfolgen“ oben rechts (${JSON.stringify(d)})`); }
+  if (BILD) await anna.screenshot({ path: BILD + "quest-details.png" });
+  await anna.click("#ez-konto .tafel.questinfo [data-qv]"); await anna.waitForTimeout(500);
+  check(await anna.evaluate(() => /Wird verfolgt/.test(document.querySelector("#ez-konto [data-qv]").textContent) && /verfolgt/.test(document.querySelector("#ez-queststab .qzeile").className)), "Verfolgen in den Details: Knopf „Wird verfolgt“, Zeile im Tab hell mit dunkler Schrift");
+  await anna.keyboard.press("Escape"); await anna.waitForTimeout(300);
+  await anna.click("#ez-queststab .qzeile", { button: "right" }); await anna.waitForTimeout(300);
+  check(await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent).join("|") === "📜Details öffnen|🧭Nicht mehr verfolgen"), "Lange drücken / Rechtsklick auf die Quest: „Details öffnen“ zuerst, dann Verfolgen");
+  if (BILD) await anna.screenshot({ path: BILD + "quest-tab.png" }); await anna.keyboard.press("Escape"); await anna.waitForTimeout(500);
   { const P = await anna.evaluate(() => { const W = window.EZW.welt3d, q = W.quest, z = q.ziel(), p = q.pfeil; if (!p || !z) return null; const zum = Math.atan2(z.x - W.ort.x, z.y - W.ort.y), hin = Math.atan2(p.position.x - W.ort.x, p.position.z - W.ort.y);
       return { sichtbar: p.visible, ziel: [Math.round(z.x), Math.round(z.y)], abw: Math.abs(((zum - hin + 3 * Math.PI) % (2 * Math.PI)) - Math.PI), verfolgt: localStorage.getItem("ez_q1_verfolgen") }; });
     check(P && P.sichtbar && P.abw < 0.15 && P.verfolgt === "1", `Quest abgehakt: Pfeil am Helden zeigt zum Bürgermeister (${JSON.stringify(P)})`); }

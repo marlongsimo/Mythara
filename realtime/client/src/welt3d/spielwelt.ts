@@ -150,13 +150,13 @@ export class Spielwelt3D implements WeltKern {
     const el = this.motor.r.domElement, finger = new Set<number>();
     /* Tippen/Klicken = dorthin gehen · mit einem Finger oder der Maus ziehen = Kamera drehen und neigen · zwei Finger = Zoom (das macht der Motor) */
     el.addEventListener("pointerdown", (e) => { if (e.pointerType === "touch") finger.add(e.pointerId); if (finger.size > 1) { this.stick = null; return; }
-      if (e.button !== 0 || this.stick) return; menueZu(); this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), weit: 0 };
+      if (e.button !== 0 || this.stick) return; menueZu(); this.stick = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, weit: 0 }; /* Zeit des Ereignisses, nicht der Verarbeitung: ein Ruckler macht aus einem kurzen Tippen kein langes */
       { const st = this.stick; window.setTimeout(() => { if (this.stick === st && st.weit < 10 && !this.gesperrt) { st.menue = true; this.menueBei(st.x, st.y); } }, 450); } /* lange drücken = Aktionsmenü */ this.zugX = e.clientX; this.zugY = e.clientY; try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } });
     el.addEventListener("pointermove", (e) => { const st = this.stick; if (!st || e.pointerId !== st.id || finger.size > 1) return; st.weit = Math.max(st.weit, Math.hypot(e.clientX - st.x, e.clientY - st.y));
       if (st.weit < 10) return; const m = this.motor, dx = e.clientX - this.zugX, dy = e.clientY - this.zugY; this.zugX = e.clientX; this.zugY = e.clientY;
       m.gieren -= dx * 0.006; m.neigen = Math.max(0.42, Math.min(1.35, m.neigen + dy * 0.004)); });
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null; if (st.menue) return;
-      if (st.weit < 12 && performance.now() - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
+      if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
         const stelle = b ? this.anStelle(b.x, b.z) : null; if (stelle) { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
         if (b && anschluss3D.kampfAntippen(b.x, b.z)) return;

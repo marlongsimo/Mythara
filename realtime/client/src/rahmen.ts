@@ -8,7 +8,7 @@ import { questStand, questVerfolgt, questVerfolgen } from "./welt";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
-import { QUESTLOG } from "../../shared/quest01";
+import { QUESTLOG, STAENDE, Q1, BELOHNUNG, rang, laeuft } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN } from "../../shared/gegenstaende";
@@ -160,6 +160,36 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
 function dingMenue(wo: string, g: string, px: number, py: number): void { const d = dingAktionen(wo, g); if (d) aktionsMenue(px, py, [{ kopf: d.kopf, farbe: d.farbe, aktionen: d.a }]); }
+/* ---- Quests: Liste im Tab (nur Titel, Farbe nach Stand), Details als Pergament in der Bildschirmmitte ---- */
+type QuestArt = "neu" | "aktiv" | "verfolgt" | "fertig";
+interface QuestZeile { id: string; titel: string; ort: string; art: QuestArt; voraussetzungen: string[]; /** erledigte Schritte (durchgestrichen) und der aktuelle */ erledigt: string[]; jetzt: string; belohnung?: string }
+const QART_TEXT: Record<QuestArt, string> = { neu: "nicht gestartet", aktiv: "gestartet", verfolgt: "wird verfolgt", fertig: "abgeschlossen" };
+let questReiter: "offen" | "fertig" = "offen";
+/** Alle Quests mit ihrem Stand. Bisher eine: „Die gesperrte Straße“ (shared/quest01.ts) – weitere kommen hier dazu. */
+function questListe(): QuestZeile[] {
+  const st = questStand(), r = rang(st), fertig = st === "fertig", gestartet = laeuft(st);
+  const schritte = STAENDE.filter((x) => x !== "angeboten" && x !== "fertig"), erledigt = schritte.filter((x) => rang(x) < r).map((x) => QUESTLOG[x]);
+  const jetzt = fertig ? QUESTLOG.fertig : gestartet ? QUESTLOG[st as Exclude<typeof st, "">] : st === "angeboten" ? QUESTLOG.angeboten : "Sprich mit Jori in der Waldmark.";
+  const B = BELOHNUNG, belohnung = `Belohnung: ${SKILLS.filter((k) => B[k]).map((k) => `${B[k]} ${k === "lp" ? "Lebenspunkte" : SKILL_NAME[k]}-XP`).join(", ")}`;
+  return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }]; }
+/** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
+function questMenue(id: string, px: number, py: number): void { const q = questListe().find((x) => x.id === id); if (!q) return;
+  const a: Aktion[] = [{ text: "Details öffnen", sym: "📜", tat: () => questDetails(id) }];
+  if (q.art !== "fertig") a.push({ text: q.art === "verfolgt" ? "Nicht mehr verfolgen" : "Verfolgen", sym: "🧭", tat: () => questVerfolgen(q.art !== "verfolgt") });
+  aktionsMenue(px, py, [{ kopf: q.titel, farbe: FARBE_QUEST, aktionen: a }]); }
+const FARBE_QUEST = "#ffd86a";
+/** Quest im Detail auf Pergament in der Bildschirmmitte; frischt sich auf, solange es offen ist (erledigte Schritte durchgestrichen, darunter der aktuelle) */
+function questDetails(id: string): void {
+  const html = (): string => { const q = questListe().find((x) => x.id === id); if (!q) return "";
+    return `${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}
+      <h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p><div class="zier"></div>
+      <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
+      <h3>${q.art === "fertig" ? "Verlauf" : "Aufgabe"}</h3><ol class="qschritte">${q.erledigt.map((t) => `<li class="erledigt"><s>${t}</s></li>`).join("")}<li class="${q.art === "fertig" ? "ende" : "jetzt"}">${q.jetzt}</li></ol>
+      ${q.belohnung ? `<p class="qbelohnung">${q.belohnung}${q.art === "fertig" ? " – erhalten" : ""}</p>` : ""}`; };
+  let inh: HTMLElement | null = null; const neu = () => { if (!inh) return; if (!inh.isConnected) { removeEventListener("ez-quest", neu); return; } const h = html(); if ((inh as HTMLElement & { _h?: string })._h !== h) { (inh as HTMLElement & { _h?: string })._h = h; inh.innerHTML = h; } };
+  const f = tafelZeigen("questinfo", `<div class="qinhalt"></div>`, () => removeEventListener("ez-quest", neu)); inh = f.querySelector(".qinhalt") as HTMLElement;
+  inh.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-qv]")) { e.stopPropagation(); questVerfolgen(!questVerfolgt()); } });
+  addEventListener("ez-quest", neu); neu(); }
 /** Infoblatt zu einem Skill (in der Bildschirmmitte): wofür er gut ist, wie man XP bekommt, Stand */
 const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
   geschick: { wofuer: "Wie oft du im Nahkampf triffst (Trefferwert = Geschick + Stilbonus + Geschick-Bonus der Ausrüstung). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Akkurat: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
@@ -233,7 +263,8 @@ export function seitenTab(art: TabArt): boolean {
     el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
-  langDruecken(el, (e) => { const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
+  langDruecken(el, (e) => { const qz = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-quest]"); if (qz) { questMenue(qz.dataset.quest!, e.clientX, e.clientY); return true; }
+    const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
   if (art === "freunde") { freundeBeobachten(true); el.addEventListener("submit", (e) => { e.preventDefault(); freundFormular(e.target as HTMLFormElement); }); document.querySelector('[aria-label="Freunde"]')?.classList.add("an"); }
@@ -259,9 +290,10 @@ function tabZeichnen(): void {
       <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
-  if (tabJetzt === "quests") { const st = questStand();
-    neu = !st ? `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Sprich mit den Leuten in der Waldmark – vielleicht braucht jemand Hilfe.</small></div>`
-      : `<div class="kopf"><b>Quests</b><small>${st === "fertig" ? "abgeschlossen" : "1 aktiv"}</small></div><div class="tquest${st === "fertig" ? " fertig" : ""}"><b>Die gesperrte Straße</b><small>Einführung · Waldmark</small><p>${QUESTLOG[st]}</p>${st !== "fertig" ? `<button type="button" class="kipp verfolgen${questVerfolgt() ? " an" : ""}" data-verfolgen="1" role="switch" aria-checked="${questVerfolgt()}"><i></i><span><b>Verfolgen</b><small>Ein Pfeil am Helden zeigt den Weg zum nächsten Ziel.</small></span></button>` : ""}</div>`; setzen(); return; }
+  if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
+    neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv</small></div>
+      <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Quests</button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen${fertig.length ? ` (${fertig.length})` : ""}</button></div>
+      ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}">${q.titel}</button></li>`).join("")}</ul>` : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`; setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
@@ -278,7 +310,8 @@ function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
   if (t.closest("[data-tzu]")) { tabZu(); return; } /* rotes ✕ oben rechts */
   if (tabJetzt === "freunde") { freundKlick(t); return; }
-  if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }
+  if (tabJetzt === "quests") { const r = t.closest<HTMLElement>("[data-qr]"); if (r) { questReiter = r.dataset.qr === "fertig" ? "fertig" : "offen"; tabZeichnen(); return; }
+    const q = t.closest<HTMLElement>("[data-quest]"); if (q) questDetails(q.dataset.quest!); return; } /* kurz antippen: erste Aktion = Details */
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); return; } /* Gegenstand kurz antippen: erste Aktion (Ausrüsten / Ablegen / Untersuchen) */
   const sk = t.closest<HTMLElement>("[data-skill]"); if (sk) { skillInfo(sk.dataset.skill as Skill); return; }
