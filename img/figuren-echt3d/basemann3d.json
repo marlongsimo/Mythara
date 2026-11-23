@@ -55,6 +55,11 @@
    "platz": "haar",
    "bewegungen": []
   },
+  "ruestung.beine.eisenschienen": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": []
+  },
   "ruestung.brust.lederpanzer": {
    "art": "huelle",
    "platz": "brust",

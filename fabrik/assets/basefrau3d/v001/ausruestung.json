@@ -319,6 +319,22 @@
         "becken",
         "hals"
       ]
+    },
+    {
+      "id": "ruestung.beine.eisenschienen",
+      "platz": "beine",
+      "glb": "basefrau3d/v001/quelle/teile/ruestung.beine.eisenschienen.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "becken",
+        "bauch",
+        "oberschenkel.L",
+        "oberschenkel.R",
+        "unterschenkel.L",
+        "unterschenkel.R",
+        "fuss.L",
+        "fuss.R"
+      ]
     }
   ],
   "waffenklassen": {
