@@ -8,7 +8,7 @@
  */
 import * as fs from "fs";
 import * as path from "path";
-import { GEGENSTAENDE, SELTENHEITEN, ANGRIFF_JE_ART, PLAETZE } from "../realtime/shared/gegenstaende";
+import { GEGENSTAENDE, SELTENHEITEN, ANGRIFF_JE_ART, PLAETZE, RUESTUNGSGRUPPE } from "../realtime/shared/gegenstaende";
 
 const WAFFEN = "fabrik/assets/waffen";
 const STUFEN = ["anfaenger", "gewoehnlich", "selten", "episch", "legendaer", "mythisch"];
@@ -55,6 +55,24 @@ for (const g of Object.values(GEGENSTAENDE)) {
   };
   if (alt) { const z = { ...blatt, ...alt, modell: { ...blatt.modell, ...(alt.modell || {}) }, animation: { ...blatt.animation, ...(alt.animation || {}) }, werte: { ...blatt.werte, ...(alt.werte || {}) } };
     fs.writeFileSync(datei, JSON.stringify(z, null, 2) + "\n"); ergaenzt++; }
+  else { fs.writeFileSync(datei, JSON.stringify(blatt, null, 2) + "\n"); neu++; }
+}
+/* Ausrüstung (Rüstungen): fabrik/assets/ausruestung/<gruppe>/<teil>/<n-stufe>/<gegenstand>/datenblatt.json; Quelle = Modellordner im selben Teil-Ordner */
+const AUS = "fabrik/assets/ausruestung", rquelle = new Map<string, string>();
+for (const gr of fs.readdirSync(AUS)) { const d1 = path.join(AUS, gr); if (!fs.statSync(d1).isDirectory()) continue;
+  for (const teil of fs.readdirSync(d1)) { const d2 = path.join(d1, teil); if (!fs.statSync(d2).isDirectory()) continue;
+    for (const id of fs.readdirSync(d2)) if (/^(ruestung|helm|kopf)\./.test(id)) rquelle.set(id, path.join(d2, id)); } }
+const TEIL: Record<string, string> = { kopf: "kopf", brust: "brust", beine: "beine" };
+for (const g of Object.values(GEGENSTAENDE)) {
+  if (!TEIL[g.platz]) continue; const ebene = (g.ebenen || [])[0]; const gruppe = RUESTUNGSGRUPPE[g.id]; if (!ebene || !gruppe) continue;
+  const stufe = STUFEN.find((x) => ebene.endsWith("." + x)); const basis = stufe ? ebene.slice(0, -(stufe.length + 1)) : ebene;
+  const q = rquelle.get(basis) || rquelle.get(basis.replace(/^kopf\./, "")) || null;
+  const ziel = path.join(AUS, gruppe, TEIL[g.platz], ordner(g.seltenheit), slug(g.name)); fs.mkdirSync(ziel, { recursive: true });
+  const datei = path.join(ziel, "datenblatt.json"); const alt = fs.existsSync(datei) ? JSON.parse(fs.readFileSync(datei, "utf8")) : null;
+  const blatt = { name: g.name, gegenstand: g.id, gruppe, teil: TEIL[g.platz], art: g.art, seltenheit: SELTENHEITEN[g.seltenheit].name,
+    modell: { ebene, quelle: q, spiel_mann: `img/figuren-echt3d/basemann3d.teile/${ebene}.glb`, spiel_frau: `img/figuren-echt3d/basefrau3d.teile/${ebene}.glb` },
+    werte: Object.fromEntries(g.werte.filter(([, v]) => v !== "Werte folgen").map(([k, v]) => [k, v])), werte_offen: g.werte.some(([, v]) => v === "Werte folgen"), text: g.text };
+  if (alt) { fs.writeFileSync(datei, JSON.stringify({ ...blatt, ...alt, modell: { ...blatt.modell, ...(alt.modell || {}) }, werte: { ...blatt.werte, ...(alt.werte || {}) } }, null, 2) + "\n"); ergaenzt++; }
   else { fs.writeFileSync(datei, JSON.stringify(blatt, null, 2) + "\n"); neu++; }
 }
 console.log(`Datenblätter: ${neu} neu, ${ergaenzt} ergänzt`);

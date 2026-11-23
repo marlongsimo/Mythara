@@ -1,0 +1,17 @@
+{
+  "name": "Seltene Magierkapuze",
+  "gegenstand": "magierkapuze_selten",
+  "gruppe": "magie",
+  "teil": "kopf",
+  "art": "Stoffrüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "kopf.helm.magierkapuze.selten",
+    "quelle": "fabrik/assets/ausruestung/magie/kopf/kopf.helm.magierkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.magierkapuze.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.magierkapuze.selten.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Smaragdgrüner Stoff, golden bestickt."
+}

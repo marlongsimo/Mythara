@@ -1,0 +1,17 @@
+{
+  "name": "Einfaches Wams",
+  "gegenstand": "jaegerwams",
+  "gruppe": "fernkampf",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Einfach",
+  "modell": {
+    "ebene": "ruestung.brust.jaeger",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/brust/ruestung.brust.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.jaeger.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.jaeger.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Dunkles, vielfach geschnürtes Leder mit grünem Halstuch – leise im Unterholz. Gehört zum Jäger-Set."
+}

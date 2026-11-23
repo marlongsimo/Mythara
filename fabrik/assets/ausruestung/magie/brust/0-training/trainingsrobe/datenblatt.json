@@ -1,0 +1,21 @@
+{
+  "name": "Trainingsrobe",
+  "gegenstand": "magiepanzer",
+  "gruppe": "magie",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Training",
+  "modell": {
+    "ebene": "ruestung.brust.magiepanzer",
+    "quelle": "fabrik/assets/ausruestung/magie/brust/ruestung.brust.magiepanzer",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.magiepanzer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.magiepanzer.glb"
+  },
+  "werte": {
+    "Abwehr Nahkampf": "+2",
+    "Abwehr Fernkampf": "+2",
+    "Abwehr Magie": "+4"
+  },
+  "werte_offen": false,
+  "text": "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen."
+}
