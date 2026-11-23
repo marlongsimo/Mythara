@@ -201,8 +201,8 @@ export function seitenTab(art: TabArt): boolean {
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   { /* mit dem Finger ziehen = scrollen (die Seite sperrt Wischgesten für die Kamera, deshalb hier selbst); wer gezogen hat, tippt danach nichts an */
     let zug: { id: number; y: number; top: number; weit: number } | null = null, gezogen = false;
-    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" ? null : { id: e.pointerId, y: e.clientY, top: el.scrollTop, weit: 0 }; });
-    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; el.scrollTop = zug.top - dy; } });
+    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
+    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   el.addEventListener("click", tabKlick); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
@@ -221,11 +221,11 @@ let tabWahl: { wo: string; g: string } | null = null;
 function tabZeichnen(): void {
   const el = tabEl(); if (!el || !tabJetzt) return; let neu = "";
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
-  const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = neu; return true; };
+  const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
   if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}"><b>${STILE[art][i].name}<em>${W.ticks} Ticks</em></b><small>${STILE[art][i].text}</small></button>`; };
-    neu = `<div class="kopf"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
-      <div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><em>${W.ticks} Ticks</em>${i === jetzt ? `<span class="aktiv">✓ Aktiv</span>` : ""}<small>${STILE[art][i].text}</small></button>`; };
+    neu = `<div class="kopf gross"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
+      <div class="stile pergament">${[0, 1, 2].map(zeile).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
   if (tabJetzt === "quests") { const st = questStand();
     neu = !st ? `<div class="kopf"><b>Quests</b><small>0 aktiv</small></div><div class="tleer"><span>${RZEICHEN.quest}</span><p>Noch keine Quests.</p><small>Sprich mit den Leuten in der Waldmark – vielleicht braucht jemand Hilfe.</small></div>`
@@ -244,6 +244,7 @@ function tabZeichnen(): void {
   el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
+  if (t.closest("[data-tzu]")) { tabZu(); return; } /* rotes ✕ oben rechts */
   if (tabJetzt === "quests") { if (t.closest("[data-verfolgen]")) { questVerfolgen(!questVerfolgt()); tabZeichnen(); } return; }
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { tabWahl = tabWahl && tabWahl.wo === f.dataset.wo ? null : { wo: f.dataset.wo!, g: f.dataset.g! }; tabZeichnen(); return; }
