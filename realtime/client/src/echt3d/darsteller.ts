@@ -29,6 +29,9 @@ function teilVorlage(url: string): Promise<THREE.Object3D> {
   let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p;
 }
 const name3 = (id: string) => id.replace(/[.[\]:/]/g, "");
+/** Leuchtende Stufen (legendär, mythisch): das Glühen der Kanten pulsiert langsam */
+const PULS = new Set<THREE.MeshStandardMaterial>();
+function pulsieren() { const t = performance.now() / 1000; for (const m of PULS) { const b = (m.userData.glut ??= m.emissiveIntensity) as number; m.emissiveIntensity = b * (0.65 + 0.35 * Math.sin(t * 2.4)); } }
 /* gemeinsamer Zeichner und Bühne */
 let zeichner: THREE.WebGLRenderer | null = null; let buehne: THREE.Scene | null = null; let kamera: THREE.OrthographicCamera | null = null;
 function gemeinsam() {
@@ -79,7 +82,8 @@ export class Darsteller {
         const bones = sm.skeleton.bones.map((b) => knochen.get(b.name)); if (bones.some((b) => !b)) { console.warn("Teil passt nicht aufs Skelett:", id); return; }
         const neu = new THREE.SkinnedMesh(sm.geometry, sm.material); neu.name = n; neu.frustumCulled = false;
         (koerper && koerper.parent ? koerper.parent : this.wurzel).add(neu); neu.bind(new THREE.Skeleton(bones as THREE.Bone[], sm.skeleton.boneInverses.map((m) => m.clone())), sm.bindMatrix.clone());
-        neu.visible = this.soll.has(n); this.teile.set(n, neu); });
+        neu.visible = this.soll.has(n); this.teile.set(n, neu);
+        if (/\.(legendaer|mythisch)$/.test(id)) for (const m of (Array.isArray(neu.material) ? neu.material : [neu.material])) if ((m as THREE.MeshStandardMaterial).emissiveMap) PULS.add(m as THREE.MeshStandardMaterial); });
     } catch (e) { console.warn("Teil fehlt:", id, e); } finally { this.ladend.delete(n); }
   }
   /** Teile färben (Haare, Bart): Zielfarbe relativ zur Farbe, in der sie gebaut sind */
@@ -111,7 +115,7 @@ export class Darsteller {
   blick(winkel: number): void { this.wurzel.rotation.y = winkel; }
   /** Weiterrechnen und in die Leinwand zeichnen */
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
-    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt);
+    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt); if (PULS.size) pulsieren();
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
     for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.wurzel || (!!fx && c === fx.gruppe);
     this.wurzel.visible = !fx || !fx.vergangen; z.render(b, k); this.wurzel.visible = false; if (fx) fx.gruppe.visible = false;

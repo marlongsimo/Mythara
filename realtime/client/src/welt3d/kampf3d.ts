@@ -53,6 +53,6 @@ export class WeltKampf3D extends WeltKampf {
     if (b.nm.textContent !== name) b.nm.textContent = name; schildAn(b.nm, m, x, y + b.h + 0.42, z);
     const a = Math.max(0, Math.min(1, f.lp / f.max)), i = b.lb.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; if (f.team === 0) i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; schildAn(b.lb, m, x, y + b.h + 0.18, z); }
   protected zielUndLeben(leben: number | null, zf: Figur | null) { const m = this.w.motor;
-    if (this.ichBalken) { if (leben === null) this.ichBalken.hidden = true; else { const a = Math.max(0, Math.min(1, leben)), i = this.ichBalken.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; schildAn(this.ichBalken, m, this.w.ort.x, m.hoehe(this.w.ort.x, this.w.ort.y) + HOEHE + 0.1, this.w.ort.y); } }
+    if (this.ichBalken) this.ichBalken.hidden = true; /* kein Lebensbalken über dem eigenen Helden (das Leben steht am Bogen der Minikarte) */
     if (this.ring) { if (zf) { const x = this.zone.x0 + zf.x, z = this.zone.y0 + zf.y; this.ring.position.set(x, m.hoehe(x, z) + 0.07, z); this.ring.visible = true; } else this.ring.visible = false; } }
 }

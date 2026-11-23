@@ -8,7 +8,7 @@ import { questStand, questVerfolgt, questVerfolgen } from "./welt";
 import { QUESTLOG } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
-import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel } from "../../shared/kampfwerte";
@@ -113,7 +113,7 @@ const PLATZBILD: Record<Platz, string> = {
   brust: SVG('<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 1.5-2.4 2-4 2s-3-.5-4-2z"/>'), nebenhand: SVG('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>'),
 };
 function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReiter = false): void {
-  const inv = inventar(), menge = (wo: string) => (wo.startsWith("r") ? (inv.anzahl || [])[Number(wo.slice(1))] || 1 : 1), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
+  const inv = inventar(), menge = (wo: string) => (wo.startsWith("r") ? (inv.anzahl || [])[Number(wo.slice(1))] || 1 : 1), feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll s-" + GEGENSTAENDE[g].seltenheit : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">
       ${g ? `<canvas width="120" height="120" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${platz ? `<small>${PLAETZE.find((p) => p.id === platz)!.name}</small>` : ""}${g && menge(wo) > 1 ? `<em class="menge">${menge(wo)}</em>` : ""}</button>`;
   const reiter = ohneReiter ? "" : `<div class="treiter"><button type="button" data-a="ausruestung" class="${art === "ausruestung" ? "an" : ""}">Ausrüstung</button><button type="button" data-a="rucksack" class="${art === "rucksack" ? "an" : ""}">Rucksack</button></div>`;
   const inhalt = art === "ausruestung"
@@ -141,7 +141,7 @@ function eigeneTasche(art: "rucksack" | "ausruestung", zu: () => void, ohneReite
 /** Untersuchen: die Werte eines Gegenstands */
 function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
-  const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart">${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
+  const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
     <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, zu); /* ✕ oder Esc: ganz schließen – das Spiel läuft weiter (früher blieb es gesperrt) */
   { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }

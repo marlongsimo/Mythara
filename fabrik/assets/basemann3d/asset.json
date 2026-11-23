@@ -6,5 +6,5 @@
   "status": "v001: Grundfigur für Echtzeit-3D – Spieldatei img/figuren-echt3d/basemann3d.glb (fabrik/export3d.py)",
   "herkunft": "basis.mann/v003 (Meshy „Ironclad Sentinel“, vom Projekt erzeugt)",
   "anpassen": "Neue Rüstungsteile: fabrik/teil_anpassen.py (3D-Teil) oder fabrik/kleidung_aus_bild.py (aus drei Ansichten) – lieber mehr Spiel als zu wenig; starre Brustteile mit nur_knochen [brust, bauch, becken, hals]",
-  "export": "python3 fabrik/export3d.py fabrik/assets/basemann3d/v001/arbeit/figur.blend img/figuren-echt3d/basemann3d.glb flaechen=12000 textur=1024 webp auslagern=ruestung.,kopf.helm. – Rüstungen und Helme landen als eigene Dateien in img/figuren-echt3d/basemann3d.teile/ und werden im Spiel erst beim Anlegen geladen"
+  "export": "python3 fabrik/export3d.py fabrik/assets/basemann3d/v001/arbeit/figur.blend img/figuren-echt3d/basemann3d.glb flaechen=12000 textur=1024 webp auslagern=ruestung.,kopf.helm. – Rüstungen und Helme landen als eigene Dateien in img/figuren-echt3d/basemann3d.teile/ und werden im Spiel erst beim Anlegen geladen; danach Seltenheitsstufen des Eisenwacht-Sets: bash fabrik/stufen_bauen.sh <blender-python>"
 }
