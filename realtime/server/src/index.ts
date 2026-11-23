@@ -185,7 +185,7 @@ wss.on("connection", (ws, req) => {
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
-    if ((e as { t: string }).t === "stil") { /* v2: Angriffsstil gewählt (0, 1 = Normal, 2) – Kampfwerte neu */
+    if ((e as { t: string }).t === "stil") { /* v3: Angriffsstil gewählt (Index der Kampfart, 1 = Standard) – Kampfwerte neu */
       if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     if ((e as { t: string }).t === "ausruestung") { /* v1: anderes angelegt – Kampfwerte neu (nur eigene Gegenstände, siehe kampfv1.ts) */
       if (p.v1 && p.kampf && p.kampf.nutzer && inventarVon(p.kampf.nutzer)) return; /* mit Server-Inventar zählt dessen Ausrüstung, nicht die Meldung des Browsers */

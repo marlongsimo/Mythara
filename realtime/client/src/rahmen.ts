@@ -162,12 +162,12 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
 function dingMenue(wo: string, g: string, px: number, py: number): void { const d = dingAktionen(wo, g); if (d) aktionsMenue(px, py, [{ kopf: d.kopf, farbe: d.farbe, aktionen: d.a }]); }
 /** Infoblatt zu einem Skill (in der Bildschirmmitte): wofür er gut ist, wie man XP bekommt, Stand */
 const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
-  geschick: { wofuer: "Wie oft du im Nahkampf triffst (Trefferwert = Geschick + Geschick-Bonus der Waffe). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Genau (alle XP) oder Normal (die Hälfte): 2 XP je abgezogenem Lebenspunkt." },
-  staerke: { wofuer: "Wie hart du im Nahkampf zuschlägst: der höchste Schaden steigt mit Stärke ÷ 3 plus Stärke-Bonus der Waffe.", xp: "Nahkampf im Stil Aggressiv (alle XP) oder Normal (die Hälfte): 2 XP je abgezogenem Lebenspunkt." },
-  fernkampf: { wofuer: "Wie oft du mit Bogen oder Armbrust triffst. Den Schaden bestimmt die Waffe.", xp: "Jeder Treffer mit einer Fernkampfwaffe: 2 XP je abgezogenem Lebenspunkt." },
-  magie: { wofuer: "Wie oft du mit dem Stab triffst und wie viel Schaden deine Zauber machen (plus Magie ÷ 3). Außerdem deine Verteidigung gegen Magie.", xp: "Jeder Treffer mit einem Stab: 2 XP je abgezogenem Lebenspunkt." },
-  lp: { wofuer: "Deine Lebenspunkte: höchstens 19 + Lebenspunkte-Level. Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe: 1 XP je Schadenspunkt, den du verursachst." },
-  defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf (dazu kommen die Boni deiner Rüstung).", xp: "10 XP je Block – jeder Angriff eines Gegners, der dich verfehlt." },
+  geschick: { wofuer: "Wie oft du im Nahkampf triffst (Trefferwert = Geschick + Stilbonus + Geschick-Bonus der Ausrüstung). Beim Sprinten: wie lange die Ausdauer reicht und wie schnell sie zurückkommt.", xp: "Nahkampf im Stil Akkurat: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
+  staerke: { wofuer: "Wie hart du im Nahkampf zuschlägst: dein höchster Schaden (Max Hit) steigt mit der Stärke und dem Stärke-Bonus der gesamten Ausrüstung.", xp: "Nahkampf im Stil Aggressiv: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
+  fernkampf: { wofuer: "Wie oft du mit Bogen oder Armbrust triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Fernkampf-Stärke der Ausrüstung.", xp: "Fernkampf in den Stilen Akkurat und Schnell: 4 XP je abgezogenem Lebenspunkt. Im Stil Fern: 2 XP." },
+  magie: { wofuer: "Wie oft du mit dem Stab triffst und wie viel Schaden deine Zauber machen (Waffenwurf plus Magie ÷ 3). Außerdem deine Verteidigung gegen Magie.", xp: "Magie in den Stilen Akkurat und Schnell: 2 XP je abgezogenem Lebenspunkt. Im Stil Defensiv: 1,33 XP." },
+  lp: { wofuer: "Deine Lebenspunkte: höchstens 9 + Lebenspunkte-Level (Start 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
+  defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
 };
 function skillInfo(k: Skill): void {
   const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
@@ -204,13 +204,13 @@ export function questTafel(zu: () => void): void {
 /** Eine Tafel für das, was noch kommt (Angriffsstil, Quests, Skills): Name, Zeichen und ein kurzer Hinweis */
 export function baldTafel(titel: string, zeichen: keyof typeof RZEICHEN, zu: () => void): void {
   tafel("bald", `<h2>${titel}</h2><div class="zier"></div><div class="bald-zeichen">${RZEICHEN[zeichen]}</div><p class="klein">Kommt bald – hier entsteht gerade etwas.</p>`, zu); }
-/** Angriffsstil: die drei Stile der angelegten Waffe mit den Werten, die sich daraus ergeben (Kampfregeln v2) */
+/** Angriffsstil: die Stile der angelegten Waffe mit den Werten, die sich daraus ergeben (Kampfregeln v3) */
 export function stilTafel(zu: () => void): void {
   const zeichnen = () => { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe, schaden = W.art === "magie" ? `${z((W.schaden[0] + W.plus) * (1 + W.bonus))}–${z((W.schaden[1] + W.plus) * (1 + W.bonus))}` : `${W.schaden[0]}–${W.schaden[1]}`;
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe, schaden = W.art === "magie" ? `${Math.max(1, Math.round(W.schaden[0] + W.plus))}–${Math.max(1, Math.round(W.schaden[1] + W.plus))}` : `${W.schaden[0]}–${W.schaden[1]}`;
       return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}"><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small>
         <span class="werte"><em>Treffer ${z(k.angriff[art])}</em><em>Schaden ${schaden}</em><em>${W.ticks} Ticks · ${z(W.ticks * TICK)} s</em><em>${art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"}</em></span></button>`; };
-    return `<h2>Angriffsstil</h2><div class="zier"></div><p class="klein">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</p><div class="stile">${[0, 1, 2].map(zeile).join("")}</div>
+    return `<h2>Angriffsstil</h2><div class="zier"></div><p class="klein">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</p><div class="stile">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
       <p class="klein">Der Stil gilt für alle Waffen dieser Kampfart. Getroffen wird, wenn dein Trefferwurf höher ist als der Abwehrwurf des Gegners.</p>`; };
   const f = tafel("stiltafel", zeichnen(), zu), neu = () => { const t = f.querySelector(".tafel") as HTMLElement; t.innerHTML = t.innerHTML.replace(/<h2>[\s\S]*$/, "") + zeichnen(); binden(); };
   const binden = () => f.querySelectorAll<HTMLElement>("[data-s]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); stilSetzen(kampfartJetzt(), Number(b.dataset.s)); neu(); }));
@@ -254,9 +254,9 @@ function tabZeichnen(): void {
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
   const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
   if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><em>${W.ticks} Ticks</em>${i === jetzt ? `<span class="aktiv">✓ Aktiv</span>` : ""}<small>${STILE[art][i].text}</small></button>`; };
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><em>Max ${W.art === "magie" ? Math.max(1, Math.round(W.schaden[1] + W.plus)) : W.schaden[1]} · ${W.ticks} Ticks</em>${i === jetzt ? `<span class="aktiv">✓ Aktiv</span>` : ""}<small>${STILE[art][i].text}</small></button>`; };
     neu = `<div class="kopf gross"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
-      <div class="stile pergament">${[0, 1, 2].map(zeile).join("")}</div>
+      <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const st = questStand();
@@ -297,7 +297,7 @@ export function ausruestungsWerte(): void {
   const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
   const ab = { nah: 0, fern: 0, magie: 0 }; for (const G of teile) if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; }
   const angriff: [string, string][] = W ? [["Kampfart", W.art === "nah" ? "Nahkampf" : W.art === "fern" ? "Fernkampf" : "Magie"],
-    ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampfstärke", "+" + (W.fernStaerke || 0)], ["Schaden", "1–" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Schaden", `${(W.schaden || [1, 1])[0]}–${(W.schaden || [1, 1])[1]}`]] as [string, string][]),
+    ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampf-Angriff", "+" + (W.fernAngriff || 0)], ["Fernkampf-Stärke", "+" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Schaden", `${(W.schaden || [1, 1])[0]}–${(W.schaden || [1, 1])[1]}`]] as [string, string][]),
     ["Angriffstempo", `${W.ticks} Ticks (${z(W.ticks * TICK)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"]] : [["Waffe", "keine (Fäuste)"]];
   const liste = (z: [string, string][]) => `<dl class="iwerte">${z.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
   tafel("taschen eigen ausruestungswerte", `<h2>Werte der Ausrüstung</h2><div class="zier"></div><p class="klein">${teile.length ? teile.map((G) => G.name).join(" · ") : "Nichts angelegt"}</p>
@@ -310,7 +310,7 @@ export function skillTafel(zu: () => void): void {
   const z = (v: number) => String(Math.round(v * 10) / 10).replace(".", ",");
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>
     <p class="klein">Heldenlevel ${hl} (Durchschnitt der sechs Skills) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
-    <p class="klein">Jeder Lebenspunkt Schaden bringt 2 XP – im Nahkampf je nach Stil an Geschick (Genau), Stärke (Aggressiv) oder beide (Normal).</p>`, zu); }
+    <p class="klein">Jeder Lebenspunkt Schaden bringt XP: Nah- und Fernkampf 4, Magie 2 – verteilt nach dem gewählten Stil – und dazu 1,33 Lebenspunkte-XP.</p>`, zu); }
 /** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
 function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament"): void {
   const x = c.getContext("2d"); if (!x) return; const W = c.width, H = c.height; x.clearRect(0, 0, W, H); x.save(); x.translate(W / 2, H / 2); x.scale(W / 120, H / 120); x.lineJoin = "round";

@@ -29,8 +29,8 @@ export function angelegtPruefen(roh: unknown, waffe: Startwaffe): Partial<Record
 }
 const stufenVon = (x: SkillXp) => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
 export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil);
-/** Gemeldeten Angriffsstil prüfen (0, 1, 2; sonst Normal) */
-export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 ? v : 1);
+/** Gemeldeten Angriffsstil prüfen (0 bis 3; was die Kampfart der Waffe nicht kennt, wird in kampfwerte zum Standard 1) */
+export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 || v === 3 ? v : 1);
 
 /** Im Takt (etwa einmal je Sekunde): neue XP aus der Simulation holen; steigt ein Skilllevel, die Kampfwerte neu setzen; alle 10 s (und beim Verlassen) buchen */
 export function v1Takt(sb: Sb, nutzer: string, h: HeldV1, sim: Sim, heldId: number, schluss = false): void {

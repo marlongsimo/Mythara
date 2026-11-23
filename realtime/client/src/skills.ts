@@ -3,7 +3,7 @@
  * Mit Konto zählt der Server (Migration 042, rpg_held); der Browser merkt sich den letzten Stand unter „ez_skills2“ für die Anzeige
  * und fürs Rechnen ohne Server (die v1-Werte unter „ez_skills“ bleiben unberührt). Als Gast zählt allein dieser Speicher auf dem Gerät.
  */
-import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS } from "../../shared/kampfwerte";
+import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS, stilIndex } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aktiverHeld } from "./held";
 import { inventar } from "./inventar";
@@ -16,8 +16,8 @@ export function meineKampfwerte(x = skillsLesen()): Kampfwerte | null { return a
 export const stufenVon = (x: SkillXp): string => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
 /** Kampfart der angelegten Waffe (ohne Waffe: Nahkampf mit den Fäusten) */
 export function kampfartJetzt(): Art { const w = inventar().angelegt.waffe, G = w ? GEGENSTAENDE[w] : null; return G && G.waffe ? G.waffe.art : "nah"; }
-/** Gewählter Angriffsstil je Kampfart (0, 1 = Normal, 2) */
-export function stilLesen(art: Art): number { try { const o = JSON.parse(localStorage.getItem(STIL) || "{}") as Record<string, number>; return o[art] === 0 || o[art] === 2 ? o[art] : 1; } catch { return 1; } }
+/** Gewählter Angriffsstil je Kampfart (Index in STILE; 1 = Standard) */
+export function stilLesen(art: Art): number { try { const o = JSON.parse(localStorage.getItem(STIL) || "{}") as Record<string, number>; return stilIndex(o[art], art); } catch { return 1; } }
 export function stilJetzt(): number { return stilLesen(kampfartJetzt()); }
 /** Stil wählen: merken und dem Kampf Bescheid geben (er meldet ihn dem Server oder rechnet neu) */
 export function stilSetzen(art: Art, stil: number): void { try { const o = JSON.parse(localStorage.getItem(STIL) || "{}") as Record<string, number>; o[art] = stil; localStorage.setItem(STIL, JSON.stringify(o)); } catch { /* privat */ }
