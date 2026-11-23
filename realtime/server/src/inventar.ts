@@ -55,7 +55,14 @@ export function inventarSichern(sb: Sb, nutzer: string): void { const e = je.get
 
 /* ───────── Aktionen (Rückgabe: Fehlertext für den Spieler oder null) ───────── */
 export function anlegen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const f = e.inv.rucksack[i], g = f !== undefined ? fachG(f) : "", G = g ? GEGENSTAENDE[g] : null; if (!g || !G) return "Diesen Gegenstand gibt es im Rucksack nicht.";
-  if (!G.platz) return "Das kann man nicht anlegen."; e.inv.rucksack.splice(i, 1); const alt = e.inv.angelegt[G.platz]; if (alt) e.inv.rucksack.splice(i, 0, alt); e.inv.angelegt[G.platz] = g; geaendert(sb, nutzer, e); return null; }
+  if (!G.platz) return "Das kann man nicht anlegen.";
+  /* Zweihänder und Speer belegen auch die Nebenhand; ein Schild bei angelegter Zweihandwaffe legt die Waffe ab. Was weg muss, kommt in den Rucksack. */
+  const W = e.inv.angelegt.waffe, wegPlatz: Platz | null = G.zweihand && e.inv.angelegt.nebenhand ? "nebenhand" : G.platz === "nebenhand" && W && GEGENSTAENDE[W] && GEGENSTAENDE[W].zweihand ? "waffe" : null;
+  const alt = e.inv.angelegt[G.platz], danach = e.inv.rucksack.length - 1 + (alt ? 1 : 0) + (wegPlatz ? 1 : 0); /* Fächer nach dem Tausch */
+  if (danach > RUCKSACK_PLAETZE) return "Der Rucksack ist voll.";
+  e.inv.rucksack.splice(i, 1); if (alt) e.inv.rucksack.splice(i, 0, alt);
+  if (wegPlatz) { e.inv.rucksack.push(e.inv.angelegt[wegPlatz]!); delete e.inv.angelegt[wegPlatz]; }
+  e.inv.angelegt[G.platz] = g; geaendert(sb, nutzer, e); return null; }
 export function ablegen(sb: Sb, nutzer: string, platz: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.angelegt[platz as Platz]; if (!g) return "Dort ist nichts angelegt.";
   if (e.inv.rucksack.length >= RUCKSACK_PLAETZE) return "Der Rucksack ist voll."; delete e.inv.angelegt[platz as Platz]; e.inv.rucksack.push(g); geaendert(sb, nutzer, e); return null; }
 /** Ein ganzes Fach aus dem Rucksack nehmen (zum Fallenlassen; ein Stapel als Ganzes). Zurück: Gegenstand und Anzahl oder null */

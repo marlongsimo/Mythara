@@ -12,7 +12,7 @@ export interface Laden { id: LadenId; name: string; spruch: string; haendler: st
 /** Währung */
 export const WAEHRUNG = "splitter";
 /** Vorläufige Preise nach Seltenheit (Splitter) */
-const PREIS: Partial<Record<Seltenheit, number>> = { anfaenger: 10, gewoehnlich: 40, selten: 150 };
+const PREIS: Partial<Record<Seltenheit, number>> = { anfaenger: 10, gewoehnlich: 350, selten: 800 };
 const BIS_SELTEN: Seltenheit[] = ["anfaenger", "gewoehnlich", "selten"];
 const nachSeltenheit = (a: string, b: string) => BIS_SELTEN.indexOf(GEGENSTAENDE[a].seltenheit) - BIS_SELTEN.indexOf(GEGENSTAENDE[b].seltenheit);
 const ware = (g: string): Ware => ({ g, preis: PREIS[GEGENSTAENDE[g].seltenheit] || 999 });
@@ -32,7 +32,7 @@ export const LAEDEN: Record<LadenId, Laden> = {
   ruestung: { id: "ruestung", name: "Blech & Bänder", spruch: "Wir halten was aus. Du hoffentlich auch.", haendler: "Gerold Dickfell", modell: "npc.marktschreier", x: 6443.6, y: 6442.2, blick: [0, -1], vor: [6443.5, 6439.5],
     gruss: "Willkommen! Ein Loch im Wams ist schnell geflickt – ein Loch im Helden nicht.", tschuess: "Wie du meinst. Die Banditen freuen sich über jeden ohne Rüstung.", waren: ruestung.map(ware) },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
-    gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 3 }, { g: "heiltrank", preis: 12 }] },
+    gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Symbol je Laden (Minikarte und Karte) */

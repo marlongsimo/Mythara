@@ -46,6 +46,8 @@ export function ablegen(platz: Platz): boolean { if (vomServer) { if (vomServer.
 /** Anlegen: aus dem Rucksack auf seinen Platz; was dort lag, kommt in den Rucksack */
 export function anlegen(id: string): boolean { const i = inventar(), G = GEGENSTAENDE[id], k = i.rucksack.indexOf(id); if (!G || k < 0 || !G.platz) return false;
   if (vomServer) return bitten({ t: "inv", tat: "anlegen", i: k });
-  const P = G.platz; i.rucksack.splice(k, 1); const alt = i.angelegt[P]; if (alt) i.rucksack.splice(k, 0, alt); i.angelegt[P] = id; schreib(i); return true; }
+  const P = G.platz; i.rucksack.splice(k, 1); const alt = i.angelegt[P]; if (alt) i.rucksack.splice(k, 0, alt);
+  const W = i.angelegt.waffe, weg = G.zweihand && i.angelegt.nebenhand ? "nebenhand" : P === "nebenhand" && W && GEGENSTAENDE[W] && GEGENSTAENDE[W].zweihand ? "waffe" : null; /* Zweihand: Schild bzw. Waffe in den Rucksack */
+  if (weg) { i.rucksack.push(i.angelegt[weg]!); delete i.angelegt[weg]; } i.angelegt[P] = id; schreib(i); return true; }
 /** Die Figurenebenen der angelegten Waffen (für die eigene Figur) */
 export function angelegteEbenen(): string[] { const i = inventar(); return Object.values(i.angelegt).flatMap((g) => (g && GEGENSTAENDE[g] && GEGENSTAENDE[g].ebenen) || []); }

@@ -84,7 +84,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   /* Ausrüstung gesamt: Waffe und die Boni aller angelegten Teile */
   const aus = { geschick: W.geschick || 0, staerke: W.staerke || 0, fernAngriff: W.fernAngriff || 0, fernStaerke: W.fernStaerke || 0, magieStaerke: W.magieStaerke || 0 };
   const abwehr: Record<Art, number> = { nah: lv.defense + p("defense"), fern: lv.defense + p("defense"), magie: lv.magie }; /* Defense-Level (+ Stilbonus) für Nah- und Fernkampf, Magie-Level für Magie */
-  for (const pl of ["kopf", "nebenhand", "brust", "beine"] as Platz[]) { const G = angelegt[pl] && GEGENSTAENDE[angelegt[pl]!]; if (!G) continue;
+  for (const pl of ["waffe", "kopf", "nebenhand", "brust", "beine"] as Platz[]) { /* auch die Waffe: Zweihänder und Speer haben eine kleine eigene Abwehr */ const G = angelegt[pl] && GEGENSTAENDE[angelegt[pl]!]; if (!G) continue;
     if (G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) abwehr[a] += G.abwehr[a];
     if (G.bonus) for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "magieStaerke"] as const) aus[k] += G.bonus[k] || 0; }
   const angriff: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; let schaden: [number, number]; const plus = 0, ticks = Math.max(1, W.ticks + (S.ticks || 0)), reich = W.reich + (S.reich || 0);

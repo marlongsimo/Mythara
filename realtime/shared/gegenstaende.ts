@@ -16,11 +16,13 @@ export const SELTENHEITEN: Record<Seltenheit, { name: string; farbe: string }> =
 };
 export type Platz = "kopf" | "waffe" | "brust" | "beine" | "nebenhand";
 export type Art = "nah" | "fern" | "magie";
+export type AnfSkill = "geschick" | "staerke" | "fernkampf" | "magie" | "defense";
+export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerke: "Stärke", fernkampf: "Fernkampf", magie: "Magie", defense: "Defense" };
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwert, ÷ 3) und Stärkebonus (Max Hit) – seit v3 getrennt */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; magieStaerke?: number }; text: string;
-  stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
+  stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -30,9 +32,11 @@ export function werteVon(G: Gegenstand): [string, string][] {
     if (W.art === "nah") z.push(["Geschick", `+${W.geschick || 0}`], ["Stärke", `+${W.staerke || 0}`]);
     else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
     else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
-    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : `${zahl(W.reich)} Felder`]); return z; }
+    z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
+    if (G.abwehr) z.push(["Eigene Abwehr", `Nah ${G.abwehr.nah} · Fern ${G.abwehr.fern} · Magie ${G.abwehr.magie}`]); if (G.zweihand) z.push(["Hände", "zweihändig (kein Schild)"]);
+    if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
   if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
-  if (G.abwehr) return [["Verteidigung Nahkampf", `+${G.abwehr.nah}`], ["Verteidigung Fernkampf", `+${G.abwehr.fern}`], ["Verteidigung Magie", `+${G.abwehr.magie}`]];
+  if (G.abwehr) return [["Verteidigung Nahkampf", `+${G.abwehr.nah}`], ["Verteidigung Fernkampf", `+${G.abwehr.fern}`], ["Verteidigung Magie", `+${G.abwehr.magie}`], ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
   return G.platz === "waffe" ? [["Kampfwerte", "Werte folgen (bis dahin wie Fäuste)"]] : G.platz ? [["Verteidigung", "Werte folgen"]] : [];
 }
 
@@ -171,6 +175,34 @@ export function angriffFuer(ebenen: string[]): string | null {
 }
 /* Anzeigenamen kommen aus den Datenblättern der Figuren-Fabrik (Trainings-, Einfache, Seltene … Stücke) – eine Quelle, von build.mjs erzeugt. Die IDs bleiben (gespeicherte Inventare). */
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
+/* ───────── Werte „Ausrüstungs-Balancing durchsimuliert“ (23.11.2026), übernommen für Einfach (Level 10) und Selten (Level 20) ─────────
+   Nahkampf: Geschick-/Stärke-Bonus, Reichweite 1 Feld (Vorgabe). Fernkampf: Fernkampfstärke des Dokuments als Angriff und Stärke (wie beim Trainingsbogen).
+   Magie: Genauigkeit des Dokuments; Magie-Stärke = 2 × höchster Schadenswurf des Dokuments (Trainingsstab: Wurf 1–5 ↔ Magie-Stärke 10).
+   Zweihänder und Speer: zweihändig, mit kleiner eigener Abwehr. Episch bis Mythisch: noch die alten vorläufigen Werte. */
+type Bal = { a?: [AnfSkill, number]; w?: Partial<WaffenWerte>; ab?: [number, number, number]; zweihand?: boolean };
+const BALANCING: Record<string, Bal> = {
+  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 9, staerke: 8 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 14, staerke: 12 } },
+  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 12, staerke: 6 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 18, staerke: 9 } },
+  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 6, staerke: 17 }, ab: [1, 0, 0], zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 9, staerke: 26 }, ab: [1, 0, 0], zweihand: true },
+  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 5, staerke: 16 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 8, staerke: 25 } },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 10, staerke: 7 }, ab: [1, 1, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 10 }, ab: [1, 1, 0], zweihand: true },
+  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 9, fernStaerke: 9 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 12, fernStaerke: 12 } },
+  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 12, fernStaerke: 12 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 16, fernStaerke: 16 } },
+  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 15, fernStaerke: 15 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 19, fernStaerke: 19 } },
+  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 8, magieStaerke: 16 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 24 } },
+  sternenschild_gewoehnlich: { a: ["defense", 10], ab: [4, 3, 2] }, sternenschild: { a: ["defense", 20], ab: [5, 4, 3] },
+  eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [1, 1, 0] }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [3, 2, 1] }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [2, 1, 1] },
+  eisenwachthelm: { a: ["defense", 20], ab: [2, 1, 1] }, eisenwacht: { a: ["defense", 20], ab: [4, 3, 2] }, eisenbeinschienen: { a: ["defense", 20], ab: [3, 2, 0] },
+  jaegerkapuze: { a: ["defense", 10], ab: [1, 1, 0] }, jaegerwams: { a: ["defense", 10], ab: [2, 3, 1] }, jaegerhose: { a: ["defense", 10], ab: [0, 2, 1] },
+  jaegerkapuze_selten: { a: ["defense", 20], ab: [1, 2, 1] }, jaegerwams_selten: { a: ["defense", 20], ab: [2, 4, 2] }, jaegerhose_selten: { a: ["defense", 20], ab: [2, 3, 0] },
+  magierkapuze: { a: ["defense", 10], ab: [0, 1, 1] }, magierrobe: { a: ["defense", 10], ab: [1, 2, 3] }, magierrock: { a: ["defense", 10], ab: [1, 0, 2] },
+  magierkapuze_selten: { a: ["defense", 20], ab: [1, 1, 2] }, magierrobe_selten: { a: ["defense", 20], ab: [2, 2, 4] }, magierrock_selten: { a: ["defense", 20], ab: [0, 2, 3] },
+};
+for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; if (!G) continue;
+  if (b.a) G.anforderung = { skill: b.a[0], level: b.a[1] }; if (b.w && G.waffe) G.waffe = { ...G.waffe, ...b.w }; if (b.ab) G.abwehr = { nah: b.ab[0], fern: b.ab[1], magie: b.ab[2] }; if (b.zweihand) G.zweihand = true; }
+/** Darf ein Held mit diesen Skill-Leveln den Gegenstand anlegen? Zurück: Fehlertext oder null */
+export function anforderungFehlt(G: Gegenstand, level: (s: AnfSkill) => number): string | null {
+  const a = G.anforderung; return a && level(a.skill) < a.level ? `Dafür brauchst du ${ANF_NAME[a.skill]} ${a.level} (du hast ${level(a.skill)}).` : null; }
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };

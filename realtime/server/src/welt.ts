@@ -10,14 +10,14 @@
  */
 import { WebSocket } from "ws";
 import { HELDEN, stufeAusEp } from "../../shared/config";
-import { heldenlevel, skillXpPruefen } from "../../shared/kampfwerte";
+import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1 } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen } from "./inventar";
-import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
 import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG } from "../../shared/laeden";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
 export const aussehenJe = new Map<string, Held>();
@@ -100,7 +100,12 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "inv") { /* Inventar: anlegen, ablegen, fallen lassen – der Server prüft alles selbst */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Ein Inventar gibt es mit Konto.", zeit: jetzt }); return; }
       let fehler: string | null = null;
-      if (e.tat === "anlegen" && Number.isInteger(e.i)) fehler = anlegen(H.sb, s.nutzer, e.i as number);
+      if (e.tat === "anlegen" && Number.isInteger(e.i)) { /* Anforderung (Skill-Level) aus den gebuchten XP prüfen */
+        const inv = inventarVon(s.nutzer), f = inv ? inv.rucksack[e.i as number] : undefined, G = f !== undefined ? GEGENSTAENDE[fachG(f)] : undefined;
+        if (G && G.anforderung) { const r = ((await H.sb(`/rest/v1/rpg_held?user_id=eq.${s.nutzer}&select=*`).catch(() => [])) as Record<string, unknown>[])[0] || {};
+          const xp = skillXpPruefen({ geschick: r.skill_geschick, staerke: r.skill_staerke, fernkampf: r.skill_fernkampf, magie: r.skill_magie, lp: r.skill_lp, defense: r.skill_defense });
+          fehler = anforderungFehlt(G, (k) => levelAus(xp[k] || 0, k)); }
+        if (!fehler) fehler = anlegen(H.sb, s.nutzer, e.i as number); }
       else if (e.tat === "ablegen" && typeof e.platz === "string") fehler = ablegen(H.sb, s.nutzer, e.platz);
       else if (e.tat === "fallen" && Number.isInteger(e.i)) { if (s.wx === undefined || s.wy === undefined) fehler = "Erst ein paar Schritte gehen.";
         else { const f = herausnehmen(H.sb, s.nutzer, e.i as number); if (!f) fehler = "Diesen Gegenstand gibt es im Rucksack nicht."; else bodenDazu(s.ort, s.wx, s.wy, f.g, f.n, s.nutzer, FALLEN); } }

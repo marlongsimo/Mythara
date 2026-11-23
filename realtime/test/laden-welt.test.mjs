@@ -10,7 +10,7 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); i
 const A = "00000000-0000-0000-0000-00000000a001";
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: A }, NAME = { [A]: "Anna" }, LP = [];
 const HELD = { [A]: { geschlecht: "mann", frisur: "scheitel", bart: "ohne", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_lp: 0, lp_stand: null,
-  inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [{ g: "splitter", n: 20 }, "kleiner_heiltrank", "kleiner_heiltrank"], v: 2 } } };
+  inventar: { angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [{ g: "splitter", n: 200 }, "kleiner_heiltrank", "kleiner_heiltrank", "eidschwert_gewoehnlich", "eidzweihaender_gewoehnlich"], v: 2 } } };
 const wer = (u) => (/user_id=eq\.([^&]+)/.exec(u) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url === "/auth/v1/user") { const id = NUTZER[(req.headers.authorization || "").replace("Bearer ", "")]; return id ? send(200, { id, is_anonymous: false }) : send(401, {}); }
@@ -36,17 +36,17 @@ const zahl = (inv, g) => inv.rucksack.reduce((n, x) => n + ((typeof x === "strin
 const system = (s) => warte(s, (m) => m.t === "chat" && m.kanal === "system");
 try {
   const anna = await spieler("tok_anna_" + "x".repeat(30)); await warte(anna, (m) => m.t === "inventar");
-  check(anna.inv && geld(anna.inv) === 20 && zahl(anna.inv, "kleiner_heiltrank") === 2, `Anna: 20 Splitter, 2 Kleine Heiltränke (${JSON.stringify(anna.inv.rucksack)})`);
+  check(anna.inv && geld(anna.inv) === 200 && zahl(anna.inv, "kleiner_heiltrank") === 2, `Anna: 200 Splitter, 2 Kleine Heiltränke (${JSON.stringify(anna.inv.rucksack)})`);
   /* zu weit weg */
   sende(anna, { t: "pos", x: 0, y: 0, wx: 6470.5, wy: 6450.5 }); await new Promise((r) => setTimeout(r, 300));
   sende(anna, { t: "kaufen", laden: "traenke", g: "kleiner_heiltrank" }); const weit = await system(anna);
-  check(weit && /näher an den Stand von Mira/.test(weit.text) && geld(anna.inv) === 20, `Zu weit vom Stand: „${weit && weit.text}“`);
+  check(weit && /näher an den Stand von Mira/.test(weit.text) && geld(anna.inv) === 200, `Zu weit vom Stand: „${weit && weit.text}“`);
   /* vor dem Tränkestand */
   sende(anna, { t: "pos", x: 0, y: 0, wx: 6456.5, wy: 6438.5 }); await new Promise((r) => setTimeout(r, 300));
   sende(anna, { t: "kaufen", laden: "traenke", g: "heiltrank" }); const k1 = await warte(anna, (m) => m.t === "gekauft"); await new Promise((r) => setTimeout(r, 200));
-  check(k1 && k1.preis === 12 && geld(anna.inv) === 8 && zahl(anna.inv, "heiltrank") === 1, `Heiltrank gekauft: −12 Splitter (${geld(anna.inv)} übrig), liegt im Rucksack`);
+  check(k1 && k1.preis === 150 && geld(anna.inv) === 50 && zahl(anna.inv, "heiltrank") === 1, `Heiltrank gekauft: −150 Splitter (${geld(anna.inv)} übrig), liegt im Rucksack`);
   sende(anna, { t: "kaufen", laden: "traenke", g: "heiltrank" }); const arm = await system(anna);
-  check(arm && /fehlen dir 4 Splitter/.test(arm.text) && geld(anna.inv) === 8, `Zu teuer: „${arm && arm.text}“`);
+  check(arm && /fehlen dir 100 Splitter/.test(arm.text) && geld(anna.inv) === 50, `Zu teuer: „${arm && arm.text}“`);
   sende(anna, { t: "kaufen", laden: "traenke", g: "eidschwert" }); const nicht = await system(anna);
   check(nicht && /gibt es hier nicht/.test(nicht.text), `Was der Laden nicht führt: „${nicht && nicht.text}“`);
   sende(anna, { t: "kaufen", laden: "waffen", g: "ritterschwert" }); const weit2 = await system(anna);
@@ -64,6 +64,16 @@ try {
   check(g2 && g2.n === 1 && g2.lp === 10 && LP.at(-1).p_lp === null, `Zweiter bei 9 / 10: nur +${g2 && g2.n} (nie über das Maximum), Leben wieder voll (${JSON.stringify(g2)} · ${JSON.stringify(LP.at(-1))})`);
   const k = anna.inv.rucksack.findIndex((x) => typeof x !== "string" && x.g === "splitter");
   sende(anna, { t: "inv", tat: "trinken", i: k }); const kein = await system(anna); check(kein && /nicht trinken/.test(kein.text), "Splitter kann man nicht trinken");
+  /* Anforderung: Einfaches Schwert braucht Geschick 10 */
+  { const i = anna.inv.rucksack.indexOf("eidschwert_gewoehnlich"); sende(anna, { t: "inv", tat: "anlegen", i }); const n = await system(anna);
+    check(n && /Geschick 10 \(du hast 1\)/.test(n.text) && anna.inv.angelegt.waffe === "ritterschwert", `Ohne Geschick 10 kein Einfaches Schwert: „${n && n.text}“`);
+    HELD[A].skill_geschick = 981; HELD[A].skill_staerke = 981; sende(anna, { t: "inv", tat: "anlegen", i }); await warte(anna, (m) => m.t === "inventar");
+    check(anna.inv.angelegt.waffe === "eidschwert_gewoehnlich" && anna.inv.rucksack.includes("ritterschwert"), "Mit Geschick 10 (981 XP): angelegt, das Trainingsschwert liegt im Rucksack"); }
+  /* Zweihänder: der Schild wandert in den Rucksack; ein Schild legt den Zweihänder wieder ab */
+  { sende(anna, { t: "inv", tat: "anlegen", i: anna.inv.rucksack.indexOf("eidzweihaender_gewoehnlich") }); await warte(anna, (m) => m.t === "inventar");
+    check(anna.inv.angelegt.waffe === "eidzweihaender_gewoehnlich" && !anna.inv.angelegt.nebenhand && anna.inv.rucksack.includes("rundschild"), `Zweihänder angelegt: kein Schild mehr in der Hand (${JSON.stringify(anna.inv.angelegt)})`);
+    sende(anna, { t: "inv", tat: "anlegen", i: anna.inv.rucksack.indexOf("rundschild") }); await warte(anna, (m) => m.t === "inventar");
+    check(anna.inv.angelegt.nebenhand === "rundschild" && !anna.inv.angelegt.waffe && anna.inv.rucksack.includes("eidzweihaender_gewoehnlich"), `Schild angelegt: der Zweihänder kommt in den Rucksack (${JSON.stringify(anna.inv.angelegt)})`); }
   /* Gast */
   const gast = await spieler(null); await new Promise((r) => setTimeout(r, 500)); sende(gast, { t: "pos", x: 0, y: 0, wx: 6456.5, wy: 6441.5 });
   sende(gast, { t: "kaufen", laden: "traenke", g: "kleiner_heiltrank" }); const g = await system(gast); check(g && /mit Konto/.test(g.text), "Ein Gast kann nicht einkaufen");

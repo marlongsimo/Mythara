@@ -13,8 +13,8 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); i
 
 /* 1. Drop-Tabelle in der Simulation: Besitzer = meister Schaden, bei Gleichstand der letzte Schlag */
 setzeKarte(KARTEN.kreuzwald, FEIN); const B = MONSTER.bandit_dolch, alt = B.drops;
-check(alt && alt.length === 3 && alt[0].wurf.map((w) => `${w.chance}:${w.anzahl.join("-")}`).join() === "95:1-5,5:15-20" && alt[1].wurf.length === 6 && alt[1].wurf.every((w) => w.chance === 1) && alt[2].nur === "einsteigerquest" && alt[2].wurf[0].g === "hinweispergament" && alt[2].wurf[0].chance === 35,
-  "Bandit: Roll 1 Splitter (95 % 1–5, 5 % 15–20) · Roll 2 je 1 % sechs Ausrüstungsteile · Roll 3 35 % Hinweispergament nur mit Einsteiger-Quest");
+check(alt && alt.length === 3 && alt[0].wurf.map((w) => `${w.chance}:${w.anzahl.join("-")}`).join() === "95:1-5,5:15-20" && alt[1].wurf.length === 7 && alt[1].wurf.slice(0, 6).every((w) => w.chance === 1) && alt[1].wurf[6].g === "kleiner_heiltrank" && alt[1].wurf[6].chance === 8 && alt[2].nur === "einsteigerquest" && alt[2].wurf[0].g === "hinweispergament" && alt[2].wurf[0].chance === 35,
+  "Bandit: Roll 1 Splitter (95 % 1–5, 5 % 15–20) · Roll 2 je 1 % sechs Ausrüstungsteile oder 8 % Kleiner Heiltrank · Roll 3 35 % Hinweispergament nur mit Einsteiger-Quest");
 B.drops = [{ wurf: [{ g: "ritterschwert", chance: 100 }] }, { wurf: [{ g: "rundschild", chance: 100, anzahl: [2, 2] }] }, { wurf: [{ g: "hirtenstab", chance: 0 }] }];
 function kampf(schlaege, seed = 4) { /* schlaege: [heldIndex, schaden] nacheinander; der letzte tötet */
   const s = Sim.welt(seed, undefined, true), b = s.wesen.find((w) => !w.held && /bandit/.test(w.typ)); for (const g of s.wesen.filter((w) => !w.held)) { g.streifT = 1e9; g.x = g.heim.x = 5; g.y = g.heim.y = 150; }
@@ -26,13 +26,14 @@ function kampf(schlaege, seed = 4) { /* schlaege: [heldIndex, schaden] nacheinan
 { const { beute, h } = kampf([[0, 6], [1, 6]]); check(beute && beute.besitzer === h[1].id, "Gleich viel Schaden (6 gegen 6): die Beute gehört dem mit dem letzten Schlag"); }
 { const { beute, h } = kampf([[1, 6], [0, 6]]); check(beute && beute.besitzer === h[0].id, "… auch andersherum"); }
 B.drops = alt; /* die echte Bandit-Tabelle: viele Kämpfe */
-{ let splitter = 0, viel = 0, ausr = 0, pergament = 0, mehrAusr = 0, N = 3000; const zaehl = {};
-  for (let i = 0; i < N; i++) { const { beute } = kampf([[0, 5]], 1000 + i); const g = beute ? beute.g : []; const sp = g.filter((e) => e[0] === "splitter"), au = g.filter((e) => !["splitter", "hinweispergament"].includes(e[0]));
-    if (sp.length === 1) { splitter++; if (sp[0][1] >= 15) viel++; if (!(sp[0][1] >= 1 && sp[0][1] <= 5 || sp[0][1] >= 15 && sp[0][1] <= 20)) splitter = -1e9; } if (au.length) ausr++; if (au.length > 1) mehrAusr++; for (const e of au) zaehl[e[0]] = (zaehl[e[0]] || 0) + 1;
+{ let splitter = 0, viel = 0, ausr = 0, pergament = 0, mehrAusr = 0, trank = 0, N = 3000; const zaehl = {};
+  for (let i = 0; i < N; i++) { const { beute } = kampf([[0, 5]], 1000 + i); const g = beute ? beute.g : []; const sp = g.filter((e) => e[0] === "splitter"), au = g.filter((e) => !["splitter", "hinweispergament", "kleiner_heiltrank"].includes(e[0])), tr = g.filter((e) => e[0] === "kleiner_heiltrank");
+    if (sp.length === 1) { splitter++; if (sp[0][1] >= 15) viel++; if (!(sp[0][1] >= 1 && sp[0][1] <= 5 || sp[0][1] >= 15 && sp[0][1] <= 20)) splitter = -1e9; } if (au.length) ausr++; if (au.length + tr.length > 1) mehrAusr++; if (tr.length) trank++; for (const e of au) zaehl[e[0]] = (zaehl[e[0]] || 0) + 1;
     const p = g.find((e) => e[0] === "hinweispergament"); if (p) { pergament++; if (p[2] !== "einsteigerquest") pergament = -1e9; } }
   check(splitter === N, `Roll 1: jeder Bandit lässt Splitter fallen (1–5 oder 15–20): ${splitter} von ${N}`);
   check(viel / N > 0.035 && viel / N < 0.065, `… davon 15–20 Splitter: ${(100 * viel / N).toFixed(1)} % (soll 5 %)`);
   check(ausr / N > 0.045 && ausr / N < 0.075 && mehrAusr === 0 && Object.keys(zaehl).length === 6, `Roll 2: Ausrüstung in ${(100 * ausr / N).toFixed(1)} % (soll 6 %), nie mehr als ein Teil: ${JSON.stringify(zaehl)}`);
+  check(trank / N > 0.065 && trank / N < 0.095, `Roll 2: Kleiner Heiltrank in ${(100 * trank / N).toFixed(1)} % (soll 8 %), nie zusammen mit Ausrüstung`);
   check(pergament / N > 0.31 && pergament / N < 0.39, `Roll 3: Hinweispergament in ${(100 * pergament / N).toFixed(1)} % (soll 35 %), markiert „nur mit Einsteiger-Quest“`); }
 
 /* 2. Inventar mit nachgebildeter Datenbank */
