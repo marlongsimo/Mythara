@@ -2,12 +2,13 @@
 
   python3 fabrik/seltenheit.py <teil.glb> <ziel.glb> <stufe>
   teil.glb: am besten die fertige, ans Skelett gebundene Teil-Datei aus export3d.py auslagern=… (img/figuren-echt3d/<figur>.teile/<id>.glb)
-  stufe: gewoehnlich | selten | episch | legendaer
+  stufe: gewoehnlich | selten | episch | legendaer | mythisch
 Die Textur wird in drei Bereiche geteilt (Lab-Farbraum): Metall (grau, wenig Farbe), Beschläge (Messing: farbig und hell) und Leder (farbig und dunkel).
 Jede Stufe färbt sie eigen und legt bei episch/legendär eine Leuchtkarte auf die Beschläge (glTF emissive – three.js zeigt sie direkt):
   gewöhnlich – mattes, dunkles Eisen mit Rost, Beschläge aus Eisen      selten – unverändert (olivgrauer Stahl, Messing)
   episch     – geschwärzter Stahl mit blauem Schimmer, Gold, schwaches blaues Leuchten der Kanten
   legendär   – dunkler Stahl mit warmem Glanz, leuchtendes Gold, glühende Kanten (orange)
+  mythisch   – Obsidian mit Ölfilm-Schillern (Violett, Türkis, Rosa), Weißgold, Kanten und Energieadern leuchten von Türkis bis Magenta
 """
 import os, sys
 import numpy as np
@@ -48,11 +49,22 @@ elif stufe == "legendaer":
     setze(messing, fL=1.1, dL=6, fC=1.5, a=5, b=16)                         # leuchtendes Gold
     setze(leder, fL=0.85, a=6, b=-2)                                        # Leder tief rotbraun
     glut = (messing & (L[:, 0] > 45)).astype(float); glutfarbe = (1.0, 0.55, 0.15); glutstaerke = 0.75
+elif stufe == "mythisch":                                                  # über legendär, bewusst ausgefallen
+    v_, u_ = np.divmod(np.arange(len(L)), B_); u_ = u_ / B_; v_ = v_ / H_   # Lage in der Textur (für Verläufe)
+    schiller = np.stack([np.sin(u_ * 9 + v_ * 5) , np.cos(u_ * 7 - v_ * 8)], 1)   # Ölfilm-Schillern: Violett, Türkis, Rosa je nach Stelle
+    N[metall, 0] = L[metall, 0] * 0.42 + 4; N[metall, 1] = 22 * schiller[metall, 0] + 8; N[metall, 2] = 20 * schiller[metall, 1] - 10
+    N[messing, 0] = np.clip(L[messing, 0] * 1.05 + 22, 0, 96); N[messing, 1] = L[messing, 1] * 0.2 + 4; N[messing, 2] = L[messing, 2] * 0.35 + 6   # Weißgold
+    N[leder, 0] = L[leder, 0] * 0.6; N[leder, 1] = 14; N[leder, 2] = -18     # Leder tief violett
+    Lb = L[:, 0].reshape(H_, B_); gx = np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])); gy = np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))
+    kante = (gx + gy).ravel(); adern = metall & (kante > np.percentile(kante[metall], 93)) & (L[:, 0] > 4)   # Energieadern: feine Linien im Metall
+    glut = np.maximum((messing & (L[:, 0] > 40)).astype(float), adern * 0.8); glutstaerke = 1.1
+    t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; glutfarbe = None; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, 1.0 * np.ones_like(t_)], 1)   # Türkis ↔ Magenta
 elif stufe != "selten": sys.exit("Stufe unbekannt: " + stufe)
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()
 if glutstaerke:                                                             # Leuchtkarte: nur die Beschläge, weich ausgeblendet
     g = np.asarray(Image.fromarray((glut.reshape(H_, B_) * 255).astype(np.uint8)).resize((B_ // 2, H_ // 2), Image.BILINEAR).resize((B_, H_), Image.BILINEAR), np.float32) / 255
-    g = np.clip(g * 1.2, 0, 1).ravel(); e = np.zeros((B_ * H_, 4), np.float32); e[:, 0], e[:, 1], e[:, 2], e[:, 3] = g * glutfarbe[0], g * glutfarbe[1], g * glutfarbe[2], 1
+    g = np.clip(g * 1.2, 0, 1).ravel(); e = np.zeros((B_ * H_, 4), np.float32); e[:, 3] = 1
+    farbe = GLUT_RGB if glutfarbe is None else np.tile(np.array(glutfarbe, np.float32), (B_ * H_, 1)); e[:, :3] = g[:, None] * farbe
     eb = bpy.data.images.new("glut", B_, H_); eb.pixels[:] = e.ravel(); eb.pack()
     for m in bpy.data.materials:
         if not m.node_tree: continue
