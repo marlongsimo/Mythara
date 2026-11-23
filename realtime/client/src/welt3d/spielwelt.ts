@@ -20,6 +20,7 @@ import { levelAus } from "../../../shared/kampfwerte";
 import { skillsLesen } from "../skills";
 import { gelbAnzeigen } from "./oberflaeche";
 import { QuestWelt } from "./quest3d";
+import { HaendlerWelt } from "./haendler3d";
 import * as THREE from "three";
 import { Welt3D } from "./motor";
 import { heldenFigur3D, FigurArt } from "./held3d";
@@ -29,7 +30,7 @@ import { HELDEN } from "../../../shared/config";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 /** Eine Stelle, an der man etwas tun kann: wohin gehen, was der Knopf sagt, was passiert und ob man schon dort ist */
-interface Stelle { x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[] }
+interface Stelle { x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
@@ -87,6 +88,8 @@ export class Spielwelt3D implements WeltKern {
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
+    this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
+    addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this);
@@ -122,7 +125,7 @@ export class Spielwelt3D implements WeltKern {
     const war = this.ausdauer.an; if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (war !== this.ausdauer.an) this.sprintKnopf();
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
-  quest: QuestWelt | null = null;
+  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null;
   alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
@@ -226,6 +229,7 @@ export class Spielwelt3D implements WeltKern {
   /** Was ist an diesem Bodenpunkt zu tun? Die nächste Interaktion in ihrem Umkreis (mindestens gut ein Feld), sonst ein Ausgang, dessen Zone ihn enthält */
   anStelle(x: number, y: number): Stelle | null {
     { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
+    { const h = this.haendler && this.haendler.stelle(x, y); if (h) return h; } /* Händler am Marktplatz: „Mit … sprechen“, dazu „Laden ansehen“ */
     /* Gegenstände am Boden zuerst: antippen → hinlaufen aufs Feld → „Aufheben“ (der Server prüft Sichtbarkeit, das Feld und Platz im Rucksack) */
     { let b: BodenDing | null = null, bd = 1.2; for (const d of bodenListe()) { const w = Math.hypot(d.x - x, d.y - y); if (w <= bd) { bd = w; b = d; } }
       if (b) { const d0 = b, hier = bodenListe().filter((d) => Math.floor(d.x) === Math.floor(d0.x) && Math.floor(d.y) === Math.floor(d0.y)) /* alles auf demselben Feld */, name = (d: BodenDing) => `${GEGENSTAENDE[d.g] ? GEGENSTAENDE[d.g].name : d.g}${d.n > 1 ? " ×" + d.n : ""} aufheben`;
@@ -255,7 +259,7 @@ export class Spielwelt3D implements WeltKern {
           ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort)), lupe: () => gegenstandUntersuchen(x.g) }; }),
           ...(boden.hier.length > 1 ? [{ text: "Alles aufheben", sym: "✋", haupt: true, tat: () => this.ausfuehren(st, () => aufheben(boden.hier.map((x) => x.i), this.ort)) }] : [])] });
         else { const n = /^Mit (.+) sprechen$/.exec(st.text);
-          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
+          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
       gr.push({ kopf: "", aktionen: [{ text: "Hierhin gehen", sym: "👣", tat: () => { this.wahlWeg(); this.gehe(b.x, b.z); } }] }); }
     aktionsMenue(px, py, gr); }
   /** Gegenstände am Boden beim Punkt: der nächste (bis gut ein Feld) und alles auf seinem Feld */
@@ -299,7 +303,7 @@ export class Spielwelt3D implements WeltKern {
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
     if (!this.karteStand || performance.now() - this.karteZeit > (HANDY_KARTE ? 450 : 300)) { this.karteZeit = performance.now();
       const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
-      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); if (this.quest) this.quest.karteMarke(c, (R * KARTE_RAND) / f, this.ort, g); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
+      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); if (this.haendler) this.haendler.karteMarken(c, (R * KARTE_RAND) / f, this.ort, g); if (this.quest) this.quest.karteMarke(c, (R * KARTE_RAND) / f, this.ort, g); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
     /* Verschiebung seit dem Zeichnen in Bildpunkten des gezeichneten Bilds (oben = Blickrichtung beim Zeichnen) und Drehung um den Unterschied der Kamera */
     const S = this.karteStand, dx = this.ort.x - S.x, dy = this.ort.y - S.y, rx = Math.cos(S.g), rz = -Math.sin(S.g), ux = -Math.sin(S.g), uz = -Math.cos(S.g);
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
@@ -323,7 +327,7 @@ export class Spielwelt3D implements WeltKern {
       if (d <= rest + 1e-9) { o.x = z.x; o.y = z.y; rest -= d; this.schrittZiel = null; if (!this.pfad.length && !richtung) this.marke.visible = false; }
       else { o.x += (z.x - o.x) / d * rest; o.y += (z.y - o.y) / d * rest; rest = 0; } }
     return bewegt; }
-  private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt);
+  private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt);
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
     if (direkt) { this.pfad = []; this.marke.visible = false; }
     else if (this.imKampf && this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);

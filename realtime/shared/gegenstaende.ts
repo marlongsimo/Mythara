@@ -20,7 +20,7 @@ export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf
 export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwert, ÷ 3) und Stärkebonus (Max Hit) – seit v3 getrennt */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; magieStaerke?: number }; text: string;
-  stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" }
+  stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -31,6 +31,7 @@ export function werteVon(G: Gegenstand): [string, string][] {
     else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
     else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
     z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : `${zahl(W.reich)} Felder`]); return z; }
+  if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
   if (G.abwehr) return [["Verteidigung Nahkampf", `+${G.abwehr.nah}`], ["Verteidigung Fernkampf", `+${G.abwehr.fern}`], ["Verteidigung Magie", `+${G.abwehr.magie}`]];
   return G.platz === "waffe" ? [["Kampfwerte", "Werte folgen (bis dahin wie Fäuste)"]] : G.platz ? [["Verteidigung", "Werte folgen"]] : [];
 }
@@ -50,6 +51,11 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     abwehr: { nah: 2, fern: 2, magie: 4 }, text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
   splitter: { id: "splitter", name: "Splitter", art: "Währung", seltenheit: "gewoehnlich", stapel: 1_000_000, modell3d: "img/objekte3d/splitter.glb", symbol: "kristall",
     text: "Ein schimmernder Splitter der zerbrochenen Lande. In der Waldmark nimmt man ihn als Zahlungsmittel." },
+  /* Tränke (Figuren-Fabrik, Werte in VERBRAUCH): im Rucksack kurz antippen = trinken. Der kleine liegt je einzeln in einem Fach, der normale stapelt */
+  kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", modell3d: "img/objekte3d/heiltrank-klein.glb", symbol: "trank", trank: "kleiner_heiltrank",
+    text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
+  heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", stapel: 1000, modell3d: "img/objekte3d/heiltrank.glb", symbol: "trankrot", trank: "heiltrank",
+    text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },
   hinweispergament: { id: "hinweispergament", name: "Hinweispergament", art: "Questgegenstand", seltenheit: "gewoehnlich", symbol: "pergament",
     text: "Ein zerknittertes Pergament mit einer hastig gekritzelten Nachricht. Gehört zum Einsteiger-Quest." },
   /* Seltenes Eisenwacht-Set (Figuren-Fabrik): anlegbar, Werte folgen */

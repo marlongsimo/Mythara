@@ -3,6 +3,7 @@
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
+import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops } from "./skills";
@@ -43,6 +44,8 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
     else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); }
+    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
+    else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
     else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
     else if (m.t === "zufreund") { if (m.ok && typeof m.x === "number" && typeof m.y === "number") window.dispatchEvent(new CustomEvent("ez-zufreund", { detail: m })); else chatSystem(String(m.text || "Teleport nicht möglich.")); }
     else if (m.t === "freundanfrage") { chatSystem(m.angenommen ? `${m.von} hat deine Freundschaftsanfrage angenommen.` : `${m.von} möchte dein Freund sein – sieh unter Freunde nach.`); window.dispatchEvent(new CustomEvent("ez-freundanfrage", { detail: m })); }

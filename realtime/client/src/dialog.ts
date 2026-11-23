@@ -14,6 +14,10 @@ export function bildnisseVon(f: typeof bildnisFuer): void { bildnisFuer = f; }
 
 /** schlange: die Aussagen, die noch kommen (die erste wird gezeigt); wahl: Antworten danach; wartet: die eigene Antwort ist unterwegs */
 let npcJetzt = "", schlange: Zeile[] = [], wahl: Antwort[] | null = null, wartet = false;
+/** Gespräch ohne Server (Händler am Marktplatz): die Wahl beantwortet der Browser selbst – Zeilen danach oder "zu" (Gespräch schließen) */
+let lokal: ((id: string) => Zeile[] | "zu") | null = null;
+export function lokalesGespraech(wer: string, zeilen: Zeile[], antworten: Antwort[], beiWahl: (id: string) => Zeile[] | "zu"): void {
+  schliessen(true); npcJetzt = "lokal:" + wer; lokal = beiWahl; schlange = zeilen; wahl = antworten; wartet = false; zeichnen(); }
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const zeigtWahl = () => Boolean(wahl) && schlange.length === 0;
 function kasten(): HTMLElement { let d = document.getElementById("ez-gespraech"); if (d) return d;
@@ -23,11 +27,12 @@ function kasten(): HTMLElement { let d = document.getElementById("ez-gespraech")
     if (b && b.dataset.a === "__zu") { schliessen(true); return; }
     if (zeigtWahl()) { if (b) waehlen(b.dataset.a!); return; } weiter(); });
   return neu; }
-export function schliessen(melden = false): void { const d = document.getElementById("ez-gespraech"); if (d) { d.hidden = true; d.innerHTML = ""; } if (melden && npcJetzt) dialogZu(); npcJetzt = ""; schlange = []; wahl = null; wartet = false; }
+export function schliessen(melden = false): void { const d = document.getElementById("ez-gespraech"); if (d) { d.hidden = true; d.innerHTML = ""; } if (melden && npcJetzt && !npcJetzt.startsWith("lokal:")) dialogZu(); npcJetzt = ""; schlange = []; wahl = null; wartet = false; lokal = null; }
 export const dialogOffen = (): boolean => { const d = document.getElementById("ez-gespraech"); return !!d && !d.hidden; };
 /** Weiter: nächste Aussage, dann die Antworten, sonst schließen */
 function weiter(): void { if (wartet) return; if (schlange.length > 1 || (schlange.length === 1 && wahl)) { schlange.shift(); zeichnen(); return; } schliessen(); }
-function waehlen(id: string): void { const a = wahl && wahl.find((x) => x.id === id); if (!a) return; wahl = null; wartet = true; schlange = [{ wer: "Du", text: a.text.replace(/\s*\([^)]*\)\s*$/, "") }]; zeichnen(); antworte(npcJetzt, a.id); }
+function waehlen(id: string): void { const a = wahl && wahl.find((x) => x.id === id); if (!a) return;
+  if (lokal) { const f = lokal, r = f(a.id); if (r === "zu") { schliessen(); return; } wahl = null; lokal = null; schlange = [{ wer: "Du", text: a.text }, ...r]; zeichnen(); return; } wahl = null; wartet = true; schlange = [{ wer: "Du", text: a.text.replace(/\s*\([^)]*\)\s*$/, "") }]; zeichnen(); antworte(npcJetzt, a.id); }
 /** Wie die klassische Chatbox: das Gespräch liegt genau über dem Chatfenster (eingeklappt: an seiner Stelle in voller Höhe); ohne Chat unten in der Mitte */
 function lage(): void { const d = document.getElementById("ez-gespraech"), c = document.querySelector<HTMLElement>(".ez-chat"); if (!d) return;
   const r = c && c.offsetWidth ? c.getBoundingClientRect() : null;

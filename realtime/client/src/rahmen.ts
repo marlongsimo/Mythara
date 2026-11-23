@@ -18,7 +18,7 @@ import { teilBild, TEIL_3D } from "./welt3d/teilbild";
 async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string }): Promise<void> {
   const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
   await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
-import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer } from "./inventar";
+import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer, trinken } from "./inventar";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, Skill } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN } from "./skills";
 
@@ -156,16 +156,17 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
   if (!imRucksack && G.platz) a.push({ text: "Ablegen", sym: "⤵️", tat: () => { if (!ablegen(G.platz!)) chatSystem("Der Rucksack ist voll."); } });
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
+  if (imRucksack && G.trank) a.push({ text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
 function dingMenue(wo: string, g: string, px: number, py: number): void { const d = dingAktionen(wo, g); if (d) aktionsMenue(px, py, [{ kopf: d.kopf, farbe: d.farbe, aktionen: d.a }]); }
 /* ---- Quests: Liste im Tab (nur Titel, Farbe nach Stand), Details als Pergament in der Bildschirmmitte ---- */
 type QuestArt = "neu" | "aktiv" | "verfolgt" | "fertig";
-interface QuestZeile { id: string; titel: string; ort: string; art: QuestArt; voraussetzungen: string[]; /** erledigte Schritte (durchgestrichen) und der aktuelle */ erledigt: string[]; jetzt: string; belohnung?: string }
+interface QuestZeile { id: string; titel: string; ort: string; art: QuestArt; voraussetzungen: string[]; /** wie man sie beginnt (fehlt bei der ersten Quest: Jori kommt von selbst) */ start?: string; /** erledigte Schritte (durchgestrichen) und der aktuelle */ erledigt: string[]; jetzt: string; belohnung?: string }
 const QART_TEXT: Record<QuestArt, string> = { neu: "nicht gestartet", aktiv: "gestartet", verfolgt: "wird verfolgt", fertig: "abgeschlossen" };
 let questReiter: "offen" | "fertig" = "offen";
-/** Alle Quests mit ihrem Stand. Bisher eine: „Die gesperrte Straße“ (shared/quest01.ts) – weitere kommen hier dazu. */
+/** Alle Quests mit ihrem Stand. Bisher eine: „Die gesperrte Straße“ (shared/quest01.ts) – weitere kommen hier dazu, jeweils mit start („Sprich mit … in …“). */
 function questListe(): QuestZeile[] {
   const st = questStand(), r = rang(st), fertig = st === "fertig", gestartet = laeuft(st);
   const schritte = STAENDE.filter((x) => x !== "angeboten" && x !== "fertig"), erledigt = schritte.filter((x) => rang(x) < r).map((x) => QUESTLOG[x]);
@@ -183,6 +184,7 @@ function questDetails(id: string): void {
   const html = (): string => { const q = questListe().find((x) => x.id === id); if (!q) return "";
     return `${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}
       <h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p><div class="zier"></div>
+      ${q.start ? `<h3>So startest du</h3><p class="qstart">${q.start}</p>` : ""}
       <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
       <h3>${q.art === "fertig" ? "Verlauf" : "Aufgabe"}</h3><ol class="qschritte">${q.erledigt.map((t) => `<li class="erledigt"><s>${t}</s></li>`).join("")}<li class="${q.art === "fertig" ? "ende" : "jetzt"}">${q.jetzt}</li></ol>
       ${q.belohnung ? `<p class="qbelohnung">${q.belohnung}${q.art === "fertig" ? " – erhalten" : ""}</p>` : ""}`; };
@@ -204,7 +206,9 @@ function skillInfo(k: Skill): void {
   tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
     <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
 /** Untersuchen-Fenster eines Gegenstands (auch aus dem Aktionsmenü am Boden) */
-export function gegenstandUntersuchen(g: string): void { untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }); }
+export function gegenstandUntersuchen(g: string, zurueck: () => void = () => { /* zurück */ }): void { untersuchen(g, zurueck, () => { /* zu */ }); }
+/** Bild eines Gegenstands auf eine Leinwand (Symbol oder Figurenebene/3D-Teil) – für das Ladenfenster */
+export function gegenstandMalen(c: HTMLCanvasElement, g: string): void { const G = GEGENSTAENDE[g]; if (!G) return; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }
 function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
@@ -345,12 +349,17 @@ export function skillTafel(zu: () => void): void {
     <p class="klein">Heldenlevel ${hl} (Durchschnitt der sechs Skills) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
     <p class="klein">Jeder Lebenspunkt Schaden bringt XP: Nah- und Fernkampf 4, Magie 2 – verteilt nach dem gewählten Stil – und dazu 1,33 Lebenspunkte-XP.</p>`, zu); }
 /** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
-function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament"): void {
+function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament" | "trank" | "trankrot"): void {
   const x = c.getContext("2d"); if (!x) return; const W = c.width, H = c.height; x.clearRect(0, 0, W, H); x.save(); x.translate(W / 2, H / 2); x.scale(W / 120, H / 120); x.lineJoin = "round";
   if (art === "kristall") { const g = x.createLinearGradient(-20, -40, 20, 40); g.addColorStop(0, "#e6d8ff"); g.addColorStop(0.45, "#9a6cf0"); g.addColorStop(1, "#4a2a9a");
     x.shadowColor = "rgba(170,120,255,.8)"; x.shadowBlur = 14; x.fillStyle = g; x.strokeStyle = "#2a1650"; x.lineWidth = 2.5;
     x.beginPath(); x.moveTo(0, -44); x.lineTo(20, -10); x.lineTo(12, 38); x.lineTo(-12, 38); x.lineTo(-20, -10); x.closePath(); x.fill(); x.shadowBlur = 0; x.stroke();
     x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 2; x.beginPath(); x.moveTo(0, -44); x.lineTo(-4, 36); x.moveTo(-20, -10); x.lineTo(20, -10); x.stroke(); }
+  else if (art === "trank" || art === "trankrot") { const gruen = art === "trank", g = x.createRadialGradient(-8, 8, 4, 0, 14, 34);
+    g.addColorStop(0, gruen ? "#c9f59a" : "#ff9a8a"); g.addColorStop(0.6, gruen ? "#4fae3a" : "#c8282a"); g.addColorStop(1, gruen ? "#1f5a1a" : "#5a0c10");
+    x.shadowColor = gruen ? "rgba(120,230,90,.7)" : "rgba(255,80,70,.7)"; x.shadowBlur = 12; x.fillStyle = g; x.strokeStyle = "#2a1d10"; x.lineWidth = 2.5;
+    const r = gruen ? 22 : 28; x.beginPath(); x.moveTo(-7, -30); x.lineTo(-7, -14); x.arc(0, 14 - (gruen ? 4 : 0), r, -Math.PI / 2 - 0.32, Math.PI * 1.5 + 0.32); x.lineTo(7, -30); x.closePath(); x.fill(); x.shadowBlur = 0; x.stroke();
+    x.fillStyle = "#8a5a2a"; x.fillRect(-9, -42, 18, 13); x.strokeRect(-9, -42, 18, 13); x.fillStyle = "rgba(255,255,255,.45)"; x.beginPath(); x.ellipse(-r * 0.42, 6, 4, 9, 0.4, 0, Math.PI * 2); x.fill(); }
   else { x.fillStyle = "#e9d7a8"; x.strokeStyle = "#7a5a2a"; x.lineWidth = 2.5; x.beginPath(); x.moveTo(-30, -36); x.lineTo(30, -36); x.lineTo(30, 30); x.quadraticCurveTo(0, 22, -30, 30); x.closePath(); x.fill(); x.stroke();
     x.fillStyle = "#c9ad72"; for (const y of [-36, 30]) { x.beginPath(); x.ellipse(0, y, 34, 7, 0, 0, Math.PI * 2); x.fill(); x.stroke(); }
     x.strokeStyle = "rgba(90,60,20,.7)"; x.lineWidth = 2; for (let i = 0; i < 4; i++) { x.beginPath(); x.moveTo(-20, -18 + i * 11); x.lineTo(14 - (i % 2) * 8, -18 + i * 11); x.stroke(); } }

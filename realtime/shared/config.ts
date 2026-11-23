@@ -160,9 +160,9 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Dolch", art: "nah", schaden: [1, 1], takt: 2.0, reich: 1.5, aushol: 0 },
     /* v3 (Simulation 23.11.2026, Helden starten mit 10 LP und Max Hit 1): Nahkämpfer – Geschick 5 = Trefferwert 5 · Stärke 1 → Max Hit 1 (ab Stärke 7: 2) · Abwehr 4/4/3 · 6 LP */
     v2: { geschick: 5, staerke: 1, ticks: 4, abwehr: { nah: 4, fern: 4, magie: 3 } },
-    drops: [ /* 1. Splitter · 2. seltene Ausrüstung · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
+    drops: [ /* 1. Splitter · 2. Ausrüstung oder Kleiner Heiltrank · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
       { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
-      { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }] },
+      { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }, { g: "kleiner_heiltrank", chance: 8 }] }, /* 2. Wurf: je 1 % Trainingsausrüstung, 8 % Kleiner Heiltrank */
       { nur: "einsteigerquest", wurf: [{ g: "hinweispergament", chance: 35 }] }] },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge

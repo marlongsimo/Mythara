@@ -23,7 +23,7 @@ export const WANDERER: { chunk: string; datei: string; drinnen: [number, number,
   /* der Bürgermeister im Erdgeschoss des Rathauses an der Westseite des Marktplatzes (waldmark_rathaus_01, Tür nach Süden bei 6438–6439/6427); bleibt drinnen */
   { chunk: "201_200", datei: "npc.buergermeister_waldmark", drinnen: [6435, 6421, 6442, 6426], draussen: null },
   /* vier Leute schlendern über den gepflasterten Marktplatz der Waldmark (um den Brunnen) */
-  ...(["npc.marktfrau", "npc.alter_bauer", "npc.junger_knecht", "npc.kraeuterfrau"] as const).map((datei, i) => ({ chunk: i < 2 ? "201_200" : "201_201", datei, drinnen: [6442, 6428, 6455, 6437] as [number, number, number, number], draussen: null })),
+  ...(["npc.marktfrau", "npc.alter_bauer", "npc.junger_knecht", "npc.fischer"] as const) /* die Kräuterfrau steht jetzt am Tränkestand (shared/laeden.ts) */.map((datei, i) => ({ chunk: i < 2 ? "201_200" : "201_201", datei, drinnen: [6442, 6428, 6455, 6437] as [number, number, number, number], draussen: null })),
 ];
 
 const HOEHE = 2.0, TEMPO = GEHEN_TEMPO; /* Felder je Sekunde: Bewohner gehen wie Helden 1 Feld je Tick („Felder und Schräge“) */

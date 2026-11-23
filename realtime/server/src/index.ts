@@ -9,14 +9,15 @@
  *
  * Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers (SUPABASE_SERVICE_KEY), nie in den Browser.
  */
-import { LP_REGEN_SEK } from "../../shared/kampfwerte";
+import { LP_REGEN_SEK, maxLp } from "../../shared/kampfwerte";
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit } from "./welt";
+import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
 
@@ -45,6 +46,19 @@ const lebenJe = new Map<string, { lp: number; zeit: number }>();
 /** Kämpft dieses Konto gerade? (Freunde-Teleport): im Einzelkampf gebunden oder ein lebender Gegner hat den Helden im Ziel */
 imKampfPruefer((nutzer) => { for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
   if ((h.kampfMit && (h.kampfBis || 0) > Z.sim.zeit) || Z.sim.wesen.some((w) => !w.held && !w.tot && w.zielId === h.id)) return true; } return false; });
+/** Trank trinken (welt.ts „inv“ trinken): im Kampfgebiet heilt der Held in der Simulation, sonst die gemerkten Lebenspunkte (lebenJe bzw. Migration 046).
+ *  Nie über das maximale Leben; bei vollem Leben bleibt der Trank im Rucksack. */
+heilenMit(async (nutzer, v) => {
+  for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId || p.zoneWeg) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
+    const n = trankHeilungBei(v, h.lp, h.max); if (n <= 0) return { fehler: "Du hast schon volles Leben." };
+    return { n, lp: Math.min(h.max, h.lp + n), max: h.max, anwenden: () => { h.lp = Math.min(h.max, h.lp + n); } }; }
+  let r: { lp_stand?: { lp?: number; z?: number } | null; skill_lp?: number } | undefined;
+  try { r = ((await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`)) as typeof r[])[0]; } catch { return { fehler: "Gerade nicht möglich." }; }
+  const max = maxLp(Number(r && r.skill_lp) || 0), ls = r && r.lp_stand, L = lebenJe.get(nutzer) || (ls && typeof ls.lp === "number" && typeof ls.z === "number" ? { lp: ls.lp, zeit: ls.z * 1000 } : undefined);
+  const jetzt = L ? Math.min(max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK)) : max;
+  const n = trankHeilungBei(v, jetzt, max); if (n <= 0) return { fehler: "Du hast schon volles Leben." };
+  return { n, lp: jetzt + n, max, anwenden: () => { const neu = Math.min(max, jetzt + n), voll = neu >= max; if (voll) lebenJe.delete(nutzer); else lebenJe.set(nutzer, { lp: neu, zeit: Date.now() });
+    void sb("/rest/v1/rpc/rpg_held_lp_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_lp: voll ? null : neu }) }).catch((e) => console.error("LP speichern:", (e as Error).message)); } }; });
 /** Einen Spieler in die gemeinsame Welt eines Gebiets setzen (die Zone entsteht beim ersten Spieler) – jede Person nur einmal */
 function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert: number, name: string, wo?: { x: number; y: number }): void {
   let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].weltRegion); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */

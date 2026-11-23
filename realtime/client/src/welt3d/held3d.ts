@@ -103,6 +103,8 @@ export class Held3D {
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
     this.spiele(this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, true); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
+  /** Trinken (Figuren-Fabrik „trinken“, Hand zum Mund) – nur wenn das Modell die Bewegung hat. Zurück: Dauer in ms */
+  trinken(): number { if (!this.wurzel || this.gestorben || !this.mixer) return 0; const c = this.clips.get("trinken"); if (!c) return 0; this.einmal = true; this.spiele("trinken", true); return c.duration * 1000; }
   /** Teleport (Abreise, Figuren-Fabrik): Bewegung teleport_weg, Lichtsäule, die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = kein Modell) */
   teleport(): number { if (!this.wurzel || this.gestorben || this.effekt) return 0; this.gestorben = true; this.einmal = false; if (this.clips.has("teleport_weg")) this.spiele("teleport_weg", true);
     const fx = new TeleportEffekt(this.wurzel, TELEPORT_S, 60); fx.gruppe.scale.setScalar(this.hoehe / 1.8); fx.gruppe.visible = true; this.bild.gruppe.add(fx.gruppe); this.effekt = fx;

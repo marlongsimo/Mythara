@@ -14,6 +14,7 @@ export interface WeltkarteOpts {
   chunkFelder: number;                           // Felder je Chunk
   ich: () => { x: number; y: number } | null;    // eigene Stelle in Feldern (Welt)
   hier?: () => string;                           // Region, in der man steht (für die Überschrift)
+  orte?: { x: number; y: number; zeichen: string; name: string }[]; // besondere Stellen (Läden) als kleines Symbol
 }
 
 const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
@@ -48,6 +49,8 @@ export function uebersicht(o: WeltkarteOpts): void {
     const n = document.createElement("div"); n.className = "wk-name"; n.textContent = r.name;
     Object.assign(n.style, { left: ((r.ursprung[0] + r.chunks[0] / 2) * C - x0) * PX + "px", top: ((r.ursprung[1] + r.chunks[1] / 2) * C - y0) * PX + "px" }); lw.appendChild(n);
   }
+  for (const o2 of o.orte || []) { const m = document.createElement("div"); m.className = "wk-ort"; m.title = o2.name; m.innerHTML = `<i>${o2.zeichen}</i>`;
+    Object.assign(m.style, { left: (o2.x - x0) * PX + "px", top: (o2.y - y0) * PX + "px" }); lw.appendChild(m); }
   const punkt = document.createElement("div"); punkt.className = "wk-ich"; punkt.innerHTML = "<i></i>"; lw.appendChild(punkt);
   document.body.appendChild(hülle);
 
@@ -105,6 +108,8 @@ function stil() {
 #ez-uebersicht .wk-leinwand{position:absolute;left:0;top:0;transform-origin:0 0}
 #ez-uebersicht .wk-leinwand img{position:absolute;display:block;pointer-events:none;image-rendering:auto}
 #ez-uebersicht .wk-name{position:absolute;transform:translate(-50%,-50%) scale(calc(1 / var(--wkz,1)));white-space:nowrap;pointer-events:none;font-size:15px;letter-spacing:.08em;color:#ffe9b0;text-shadow:0 0 4px #000,0 0 8px #000,0 1px 2px #000;opacity:.92}
+#ez-uebersicht .wk-ort{position:absolute;width:0;height:0}
+#ez-uebersicht .wk-ort i{position:absolute;left:-11px;top:-11px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-style:normal;background:#2a1f12;border:1.5px solid #e9c46a;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:scale(calc(1 / var(--wkz,1)))}
 #ez-uebersicht .wk-ich{position:absolute;width:0;height:0;pointer-events:none}
 #ez-uebersicht .wk-ich i{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:#ffd34d;border:2px solid #fff;box-shadow:0 0 0 3px rgba(0,0,0,.45),0 0 14px #ffd34d;transform:scale(calc(1 / var(--wkz,1)))}
 #ez-uebersicht .wk-ich i::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(255,211,77,.7);animation:wkpuls 1.6s ease-out infinite}

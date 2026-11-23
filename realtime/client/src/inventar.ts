@@ -24,6 +24,10 @@ export function inventarVomServer(roh: { angelegt?: Record<string, string>; ruck
 /** Gehört das Inventar dem Server (mit Konto verbunden)? */
 export const inventarAmServer = (): boolean => Boolean(vomServer && sender);
 const bitten = (m: object): boolean => { if (!vomServer || !sender) return false; sender(m); return true; };
+/** Trinken: einen Trank aus Fach i (nur mit Server-Inventar; der Server heilt und schickt „getrunken“) */
+export function trinken(i: number): boolean { return bitten({ t: "inv", tat: "trinken", i }); }
+/** Kaufen am Marktplatz (der Server prüft Preis, Nähe und Platz) */
+export function kaufenBitten(laden: string, g: string): boolean { return bitten({ t: "kaufen", laden, g }); }
 /** Fallen lassen: aus dem Rucksack auf den Boden (nur mit Server-Inventar) */
 export function fallenLassen(i: number): boolean { return bitten({ t: "inv", tat: "fallen", i }); }
 

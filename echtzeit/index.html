@@ -485,6 +485,16 @@
     .tafel.eigen .faecher .ifeld { height: auto; aspect-ratio: 1; }
     .tafel.eigen .iwahl { margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(20,15,10,.7); border: 1px solid #5a4528; } .tafel.eigen .iwahl b { font-family: Cinzel, Georgia, serif; color: #f0d48a; } .tafel.eigen .iwahl .reihe { margin-top: 8px; }
     .tafel.untersuchen .iart { margin: 2px 0 8px; color: #b9a57c; font-size: 13px; } .tafel.untersuchen .igross { width: 160px; height: 160px; display: block; margin: 0 auto 8px; border-radius: 10px; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #6a5232; }
+    /* Ladenfenster (Händler am Marktplatz): Raster der Waren, kurz antippen = kaufen */
+    #ez-konto .tafel.laden { width: min(560px, calc(100vw - 24px)); max-height: min(90vh, 680px); overflow: auto; }
+    #ez-konto .tafel.laden .lspruch { margin: -4px 0 4px; color: #c9b384; font-style: italic; font-size: 13px; } #ez-konto .tafel.laden .lkopf { display: flex; justify-content: space-between; align-items: center; margin: 2px 2px 8px; font-size: 13px; color: #d8c59a; }
+    #ez-konto .tafel.laden .lgeld { color: #d9c2ff; font-weight: 700; } #ez-konto .tafel.laden .lgeld i { font-style: normal; }
+    #ez-konto .tafel.laden .lraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 7px; }
+    #ez-konto .tafel.laden .lware { display: grid; justify-items: center; gap: 2px; padding: 6px 4px 7px; border-radius: 9px; border: 1.5px solid #6d5632; background: linear-gradient(#2e2519, #1a140d); cursor: pointer; width: auto; margin: 0; -webkit-touch-callout: none; user-select: none; }
+    #ez-konto .tafel.laden .lware:hover { border-color: #c99a3c; } #ez-konto .tafel.laden .lware.s-selten { border-color: #3f8a46; } #ez-konto .tafel.laden .lware canvas { width: 58px; height: 58px; }
+    #ez-konto .tafel.laden .lname { font: 600 11.5px Inter, sans-serif; line-height: 1.2; text-align: center; min-height: 2.4em; display: flex; align-items: center; }
+    #ez-konto .tafel.laden .lpreis { font: 700 12.5px Inter, sans-serif; color: #e8d6ff; } #ez-konto .tafel.laden .lpreis.zuteuer { color: #c36a5a; }
+    .ez-name3d.haendler small { display: block; font-size: 10.5px; color: #e9c46a; font-style: italic; }
     /* Quest-Tab: nur Titel in einer Zeile; dunkel + grau = nicht gestartet · dunkel + hell = gestartet · hell + dunkel = verfolgt; Reiter „Abgeschlossen“ */
     .seitentab .qreiter { display: flex; gap: 4px; margin: 6px 0 4px; flex: none; } .seitentab .qreiter button { flex: 1; padding: 6px 4px; border-radius: 7px 7px 0 0; border: 1.5px solid #6d5632; border-bottom-color: #c99a3c; background: #1a140d; color: #a8946a; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
     .seitentab .qreiter button.an { background: linear-gradient(#3a2e1c, #2a2014); color: #ffe7b0; border-color: #c99a3c; border-bottom-color: transparent; }
@@ -733,6 +743,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwtn7ew7"></script>
+  <script src="spiel.js?v=mwtpbnti"></script>
 </body>
 </html>

@@ -16,7 +16,9 @@ import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1 } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
-import { inventarLaden, inventarHoeren, inventarSichern, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen } from "./inventar";
+import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG } from "../../shared/gegenstaende";
+import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG } from "../../shared/laeden";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
 export const aussehenJe = new Map<string, Held>();
 
@@ -35,6 +37,10 @@ const spieler = new Set<Spieler>(); let naechste = 1;
    und sein Gebiet für einen selbst schon freigeschaltet ist) · „freundanfrage“: dem anderen Bescheid geben (die Anfrage selbst stellt der Browser
    mit rpg_request_friend / rpg_answer_friend, Migration 003). Fremde Stellen gibt der Server nur an Freunde heraus. */
 let kampfPruefer: (nutzer: string) => boolean = () => false;
+/** Heilen (Trank): der Kampfserver kennt die Lebenspunkte (im Kampfgebiet in der Simulation, sonst gemerkt). Zurück: Fehler oder Menge mit anwenden() */
+export type Heilung = { fehler: string } | { n: number; lp: number; max: number; anwenden: () => void };
+let heiler: (nutzer: string, v: Verbrauch) => Promise<Heilung> = async () => ({ fehler: "Gerade nicht möglich." });
+export function heilenMit(f: typeof heiler): void { heiler = f; }
 /** index.ts meldet, wie man erkennt, ob ein Konto gerade kämpft (Einzelkampf gebunden oder ein Gegner hat es im Ziel) */
 export function imKampfPruefer(f: (nutzer: string) => boolean): void { kampfPruefer = f; }
 type Freund = { user_id: string; handle: string; zuletzt: string | null };
@@ -59,7 +65,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { laden?: string; g?: string; anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -98,7 +104,21 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       else if (e.tat === "ablegen" && typeof e.platz === "string") fehler = ablegen(H.sb, s.nutzer, e.platz);
       else if (e.tat === "fallen" && Number.isInteger(e.i)) { if (s.wx === undefined || s.wy === undefined) fehler = "Erst ein paar Schritte gehen.";
         else { const f = herausnehmen(H.sb, s.nutzer, e.i as number); if (!f) fehler = "Diesen Gegenstand gibt es im Rucksack nicht."; else bodenDazu(s.ort, s.wx, s.wy, f.g, f.n, s.nutzer, FALLEN); } }
+      else if (e.tat === "trinken" && Number.isInteger(e.i)) { /* Trank: erst prüfen (volles Leben?), dann aus dem Rucksack nehmen und heilen */
+        const inv = inventarVon(s.nutzer), f = inv ? inv.rucksack[e.i as number] : undefined, G = f !== undefined ? GEGENSTAENDE[fachG(f)] : undefined, V = G && G.trank ? VERBRAUCH[G.trank] : undefined;
+        if (!G || !V) fehler = "Das kann man nicht trinken.";
+        else { const r = await heiler(s.nutzer, V); if ("fehler" in r) fehler = r.fehler;
+          else if (trankNehmen(H.sb, s.nutzer, e.i as number) !== G.trank) fehler = "Der Trank ist nicht mehr da.";
+          else { r.anwenden(); senden(s, { t: "getrunken", g: G.id, n: r.n, lp: r.lp, max: r.max }); } } }
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }
+    else if (e.t === "kaufen") { /* Laden am Marktplatz: nur in der Waldmark, nah am Händler, nur was er führt, zum Preis aus shared/laeden.ts */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Einkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
+      const L = LAEDEN[String(e.laden) as LadenId], w = L && L.waren.find((x) => x.g === e.g); let fehler: string | null = null;
+      if (!L || !w) fehler = "Das gibt es hier nicht.";
+      else if (s.ort !== "waldmark" || s.wx === undefined || s.wy === undefined || Math.hypot(s.wx - L.x, s.wy - L.y) > KAUF_WEIT) fehler = `Geh näher an den Stand von ${L.haendler}.`;
+      else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
+      if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
+      else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
     else if (e.t === "aufheben") { if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Aufheben brauchst du ein Konto.", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle beim Aufheben (die letzte „pos“ kann einen Schritt alt sein) */
       const ids = Array.isArray(e.ids) ? e.ids.filter((i) => Number.isInteger(i)).slice(0, 50) : Number.isInteger(e.id) ? [e.id as number] : []; if (!ids.length) return; /* „Alles aufheben“: mehrere auf einmal */

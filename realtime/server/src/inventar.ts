@@ -78,6 +78,24 @@ export function hat(nutzer: string, g: string): boolean { const e = je.get(nutze
 export function abgeben(sb: Sb, nutzer: string, g: string): boolean { const e = je.get(nutzer); if (!e) return false; const i = e.inv.rucksack.findIndex((f) => fachG(f) === g); if (i < 0) return false;
   const f = e.inv.rucksack[i]; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return true; }
 
+/** Wie viele davon im Rucksack liegen (alle Fächer zusammen) */
+export function anzahlVon(nutzer: string, g: string): number { const e = je.get(nutzer); return e ? e.inv.rucksack.reduce((n, f) => n + (fachG(f) === g ? fachN(f) : 0), 0) : 0; }
+/** Passt ein weiteres Stück davon in den Rucksack? */
+export function platzFuer(nutzer: string, g: string): boolean { const e = je.get(nutzer), G = GEGENSTAENDE[g]; if (!e || !G) return false;
+  return e.inv.rucksack.length < RUCKSACK_PLAETZE || Boolean(G.stapel && e.inv.rucksack.some((f) => typeof f !== "string" && f.g === g && f.n < G.stapel!)); }
+/** Kaufen: preis Stück der Währung abgeben, dann den Gegenstand in den Rucksack (alles oder nichts). Zurück: Fehlertext oder null */
+export function kaufen(sb: Sb, nutzer: string, g: string, preis: number, waehrung: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; if (!GEGENSTAENDE[g]) return "Das gibt es hier nicht.";
+  const hat = anzahlVon(nutzer, waehrung); if (hat < preis) return `Dafür fehlen dir ${preis - hat} ${GEGENSTAENDE[waehrung] ? GEGENSTAENDE[waehrung].name : waehrung}.`;
+  let rest = preis; for (let i = e.inv.rucksack.length - 1; i >= 0 && rest > 0; i--) { const f = e.inv.rucksack[i]; if (fachG(f) !== waehrung) continue; const n = fachN(f), k = Math.min(n, rest); rest -= k;
+    if (k >= n) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n = n - k; }
+  if (!platzFuer(nutzer, g)) { aufnehmen(sb, nutzer, waehrung, preis, false); return "Der Rucksack ist voll."; } /* Geld zurück (es lag eben noch drin, also passt es) */
+  aufnehmen(sb, nutzer, g, 1, false); geaendert(sb, nutzer, e); return null; }
+/** Einen Trank aus Fach i nehmen (eins vom Stapel). Zurück: die Trank-Art (VERBRAUCH) oder null */
+export function trankNehmen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null; const G = GEGENSTAENDE[fachG(f)];
+  if (!G || !G.trank) return null; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return G.trank; }
+/** Einen genommenen Trank zurücklegen (das Trinken ging nicht) */
+export function trankZurueck(sb: Sb, nutzer: string, g: string): void { aufnehmen(sb, nutzer, g, 1); }
+
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }
 const boden = new Map<number, BodenDing>(); let nr = 1;
