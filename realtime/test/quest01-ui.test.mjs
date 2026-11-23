@@ -48,7 +48,7 @@ const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit &&
 
 const BILD = process.env.BILD;
 try {
-  const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30));
+  const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6438.5, 6429.5, "waldmark"]); /* vor dem Rathaus, gut 20 Felder von Joris Platz */
   await anna.goto(B + S); await bereit(anna).catch(() => {}); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   /* Gespräch wie die klassische Chatbox: eine Aussage nach der anderen, dann die Antworten */
   const offen = (p) => p.evaluate(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0 ? { passt: [...d.querySelectorAll(".antworten button")].every((b) => b.getBoundingClientRect().bottom <= d.getBoundingClientRect().bottom + 0.5), art: d.className.split(" ")[0], name: (d.querySelector(".name") || {}).textContent || "", text: (d.querySelector(".text") || {}).textContent || "", bild: !!(d.querySelector(".bild") || {}).src, antworten: [...d.querySelectorAll(".antworten button")].map((b) => b.dataset.a) } : null; });

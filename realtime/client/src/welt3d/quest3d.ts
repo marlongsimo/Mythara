@@ -55,7 +55,9 @@ export class QuestWelt {
     const jori = this.figuren.find((f) => f.n.id === "jori")!;
     if (questGeladen() && s === "" && this.u.hier === "waldmark" && !this.joriFertig && !this.u.gesperrt) {
       const dx = this.u.ort.x - jori.x, dy = this.u.ort.y - jori.y, d = Math.hypot(dx, dy);
-      if (d < 18 && d > 1.8) { const v = 3.2 * dt; jori.x += dx / d * Math.min(v, d - 1.8); jori.y += dy / d * Math.min(v, d - 1.8); this.joriLaeuft = true; if (jori.npc) { jori.npc.blick(dx, dy); jori.npc.spiele("gehen"); } }
+      if (d >= 14) { /* der Spieler steht woanders in Waldmark: Jori kommt aus seiner Nähe herbeigelaufen (gut 12 Felder vor ihm, von ihrem Platz her) */
+        jori.x = this.u.ort.x - dx / d * 12; jori.y = this.u.ort.y - dy / d * 12; }
+      else if (d > 1.8) { const v = 3.2 * dt; jori.x += dx / d * Math.min(v, d - 1.8); jori.y += dy / d * Math.min(v, d - 1.8); this.joriLaeuft = true; if (jori.npc) { jori.npc.blick(dx, dy); jori.npc.spiele("gehen"); } }
       else if (d <= 1.8 && this.joriLaeuft) { this.joriFertig = true; if (jori.npc) { jori.npc.spiele("ruhe"); jori.npc.blick(dx, dy); } rede("jori"); } }
     else if (jori.npc && this.joriLaeuft && !this.joriFertig) { this.joriLaeuft = false; jori.npc.spiele("ruhe"); }
     for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
