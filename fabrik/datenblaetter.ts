@@ -1,6 +1,6 @@
 /*
  * Mythara Fabrik – Datenblätter der Waffen und Schilde anlegen oder ergänzen:
- *   fabrik/assets/waffen/<klasse>/<n-stufe>/<gegenstand>/datenblatt.json  (0-anfaenger … 5-mythisch)
+ *   fabrik/assets/waffen/<klasse>/<n-stufe>/<gegenstand>/datenblatt.json  (0-training, 1-einfach, 2-selten … 5-mythisch)
  *   fabrik/assets/waffen/<klasse>/klasse.json  (Bewegungen und Haltung der Klasse)
  * aus der Gegenstandsliste des Spiels (realtime/shared/gegenstaende.ts). Schon eingetragene Werte bleiben stehen,
  * es werden nur fehlende Felder ergänzt – die Datei darf also von Hand gepflegt werden.
@@ -12,7 +12,8 @@ import { GEGENSTAENDE, SELTENHEITEN, ANGRIFF_JE_ART, PLAETZE } from "../realtime
 
 const WAFFEN = "fabrik/assets/waffen";
 const STUFEN = ["anfaenger", "gewoehnlich", "selten", "episch", "legendaer", "mythisch"];
-const ordner = (s: string) => `${STUFEN.indexOf(s)}-${s}`;
+const ORDNER: Record<string, string> = { anfaenger: "training", gewoehnlich: "einfach" };   // Ordnernamen wie die angezeigten Stufen
+const ordner = (s: string) => `${STUFEN.indexOf(s)}-${ORDNER[s] || s}`;
 const slug = (n: string) => n.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 /* Modellordner (Quelle) je Grundebene: waffen/<klasse>/<id> */
 const quelle = new Map<string, string>();

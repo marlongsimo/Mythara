@@ -1,0 +1,27 @@
+{
+  "name": "Epischer Speer",
+  "gegenstand": "sterndorn_episch",
+  "klasse": "speer",
+  "art": "Speer",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sterndorn.episch",
+    "quelle": "fabrik/assets/waffen/speer/waffe.sterndorn",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sterndorn.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sterndorn.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/speer/waffe.sterndorn/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/speer/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
+}

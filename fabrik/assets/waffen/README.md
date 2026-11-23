@@ -3,9 +3,9 @@
 ```
 waffen/
   schwert/                         Klasse
-    0-anfaenger/                   Seltenheit (Startausrüstung)
-    1-gewoehnlich/
-      einfaches-schwert/           Gegenstand
+    0-training/                    Seltenheit (Startausrüstung, nur Schwert, Schild, Bogen, Stab)
+    1-einfach/
+      einfaches-schwert/           Gegenstand (Name = Stufe + Klasse)
         datenblatt.json            Name, Klasse, Seltenheit, Modell (Spieldateien), Animation, Werte, Text
         vorschau.png               die Waffe in dieser Stufe
     2-selten/ … 5-mythisch/

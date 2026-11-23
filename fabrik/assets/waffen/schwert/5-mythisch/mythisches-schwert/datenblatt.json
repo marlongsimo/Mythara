@@ -1,0 +1,27 @@
+{
+  "name": "Mythisches Schwert",
+  "gegenstand": "eidschwert_mythisch",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eidschwert.mythisch",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.eidschwert",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidschwert.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidschwert.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/schwert/waffe.eidschwert/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
+}

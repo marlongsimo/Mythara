@@ -1,0 +1,27 @@
+{
+  "name": "Epischer Streitkolben",
+  "gegenstand": "sternbrecher_episch",
+  "klasse": "streitkolben",
+  "art": "Streitkolben",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternbrecher.episch",
+    "quelle": "fabrik/assets/waffen/streitkolben/waffe.sternbrecher",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternbrecher.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternbrecher.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/streitkolben/waffe.sternbrecher/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "angriff",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/streitkolben/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
+}
