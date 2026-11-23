@@ -1,0 +1,8 @@
+{
+  "id": "objekt.heiltrank.klein",
+  "name": "Kleiner Heiltrank",
+  "kategorie": "objekt",
+  "aktuell": "v001",
+  "status": "aus objekt.heiltrank: Flüssigkeit rot → grün (nur Rottöne), mit fabrik/drehobjekt.py hoehe=0.22 – Spieldatei img/objekte3d/heiltrank-klein.glb; Werte in realtime/shared/gegenstaende.ts VERBRAUCH.kleiner_heiltrank (5, nicht stapelbar)",
+  "herkunft": "objekt.heiltrank"
+}
