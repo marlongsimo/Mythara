@@ -58,7 +58,7 @@ export class Figur3D extends Phaser.GameObjects.Container {
   }
   private waffen(): string[] { return this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen; }
   private ausruestung() { if (!this.d) return; const A = this.held.aussehen, t = [...this.waffen()];
-    if (A.frisur !== "glatze") t.push("kopf.haar." + A.frisur); if (A.g === "mann" && A.bart !== "ohne") t.push("kopf.bart." + A.bart); this.d.zeige(t); }
+    if (A.frisur !== "glatze" && !t.some((e) => e.startsWith("kopf.helm."))) t.push("kopf.haar." + A.frisur);   /* unter dem Helm keine Frisur (sie stäche durch) */ if (A.g === "mann" && A.bart !== "ohne") t.push("kopf.bart." + A.bart); this.d.zeige(t); }
   /** Ausrüstung geändert (Inventar): sofort übernehmen */
   neuZeichnen(): void { this.ausruestung(); }
   /** Blickrichtung am Bildschirm (x nach rechts, y nach unten) – stufenlos, nicht nur acht Richtungen */
@@ -85,7 +85,7 @@ export class Figur3D extends Phaser.GameObjects.Container {
   /** Trinken oder Essen: Hand zum Mund (Bewegung „trinken“, ohne Gegenstand). Die Waffe in der Hand ist währenddessen ausgeblendet, der Schild bleibt.
    *  fertig: am Ende. Zurück: Dauer in ms (0 = keine 3D-Figur bereit oder Bewegung fehlt) */
   trinken(fertig?: () => void): number { const d = this.d; if (!d || this.gestorben || !d.hat("trinken")) return 0;
-    const A = this.held.aussehen, t = this.waffen().filter((w) => !w.startsWith("waffe.")); if (A.frisur !== "glatze") t.push("kopf.haar." + A.frisur); if (A.g === "mann" && A.bart !== "ohne") t.push("kopf.bart." + A.bart);
+    const A = this.held.aussehen, t = this.waffen().filter((w) => !w.startsWith("waffe.")); if (A.frisur !== "glatze" && !t.some((e) => e.startsWith("kopf.helm."))) t.push("kopf.haar." + A.frisur); if (A.g === "mann" && A.bart !== "ohne") t.push("kopf.bart." + A.bart);
     d.zeige(t); this.einmal = true; d.spiele("trinken", true, () => { this.einmal = false; this.ausruestung(); this.anwenden(); if (fertig) fertig(); }); return d.dauer("trinken"); }
   /* ---------- Ablauf ---------- */
   private setze(z: string) { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }

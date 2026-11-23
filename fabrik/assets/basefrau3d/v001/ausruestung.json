@@ -350,6 +350,16 @@
         "oberschenkel.R"
       ],
       "beine_mitteln": true
+    },
+    {
+      "id": "kopf.helm.eisenwacht",
+      "platz": "helm",
+      "glb": "basefrau3d/v001/quelle/teile/kopf.helm.eisenwacht.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "kopf",
+        "hals"
+      ]
     }
   ],
   "waffenklassen": {

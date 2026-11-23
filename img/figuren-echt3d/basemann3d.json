@@ -55,6 +55,11 @@
    "platz": "haar",
    "bewegungen": []
   },
+  "kopf.helm.eisenwacht": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": []
+  },
   "ruestung.beine.eisenschienen": {
    "art": "huelle",
    "platz": "beine",
