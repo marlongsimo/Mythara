@@ -77,7 +77,7 @@ export class FigurLeinwand {
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); }
   /** Blickwinkel in der Welt (0 = Osten, π/2 = Süden) – wie ModulFigur.blick in der 2D-Welt */
   get blickWinkel(): number { return this.blickW; }
-  setze(z: "ruhe" | "laufen" | "block" | "schild_laufen"): void { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) { this.nr = 0; this.uhr = 0; } }
+  setze(z0: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { const z = z0 === "rennen" ? "laufen" : z0; if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) { this.nr = 0; this.uhr = 0; } }
   angriff(): void { if (this.gestorben) return; this.einmal = this.angriffName; this.nr = 0; this.uhr = 0; }
   /** Besiegt: Todesbewegung einmal, liegen bleiben. Zurück: Dauer in ms (0 ohne Todesbewegung) */
   sterben(): number { const M = this.M; if (!M || !M.animationen.tod) return 0; this.gestorben = true; this.einmal = null; this.zustand = "tod"; this.nr = 0; this.uhr = 0; return 1000 * M.animationen.tod.bilder / M.animationen.tod.rate; }

@@ -49,7 +49,8 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
     Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
   const nutzer = p.kampf && p.kampf.nutzer; for (const q of [...Z.spieler]) if (q !== p && q.kampf && q.kampf.nutzer === nutzer) { zoneVerlassen(q); try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* der alte Held verschwindet sofort */
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
-  { const L = nutzer && p.v1 ? lebenJe.get(nutzer) : undefined, h = Z.sim.nach(p.heldId); if (L && h) h.lp = Math.max(1, Math.min(h.max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK))); }
+  { const L = nutzer && p.v1 ? lebenJe.get(nutzer) || (p.v1.lpStand ? { lp: p.v1.lpStand.lp, zeit: p.v1.lpStand.z * 1000 } : undefined) : undefined, h = Z.sim.nach(p.heldId); /* aus dem Speicher, sonst aus der Datenbank (Migration 046) */
+    if (L && h) h.lp = Math.max(1, Math.min(h.max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK))); }
   console.log("Welt:", name, "betritt", karte, "·", Z.spieler.size, "dort"); namenMelden(Z); }
 /** Einen Spieler aus seiner gemeinsamen Welt nehmen (genau einmal): Stelle merken, Gutschrift anstoßen, Held sofort weg */
 function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; if (p.invAus) { p.invAus(); p.invAus = undefined; } const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
@@ -57,7 +58,8 @@ function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId |
     void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100));
   void buchen(p, true); /* liest EP und Splitter sofort, bucht dann im Hintergrund */
   if (p.v1 && p.kampf && p.kampf.nutzer) v1Takt(sb, p.kampf.nutzer, p.v1, Z.sim, p.heldId, true); /* die letzten Skill-XP */
-  if (p.v1 && p.kampf && p.kampf.nutzer && h) { if (h.tot) lebenJe.delete(p.kampf.nutzer); else lebenJe.set(p.kampf.nutzer, { lp: h.lp, zeit: Date.now() }); } /* gefallen: in der Waldmark wieder voll */
+  if (p.v1 && p.kampf && p.kampf.nutzer && h) { const n = p.kampf.nutzer, voll = h.tot || h.lp >= h.max; if (voll) lebenJe.delete(n); else lebenJe.set(n, { lp: h.lp, zeit: Date.now() }); /* gefallen: in der Waldmark wieder voll */
+    void sb("/rest/v1/rpc/rpg_held_lp_setzen", { method: "POST", body: JSON.stringify({ p_user: n, p_lp: voll ? null : Math.round(h.lp) }) }).catch((e) => console.error("LP speichern (Migration 046 eingespielt?):", (e as Error).message)); } /* bleibt auch über einen Neustart */
   Z.sim.verlassen(p.heldId); Z.spieler.delete(p); if (!Z.spieler.size) Z.leerSeit = Date.now(); namenMelden(Z); }
 function namenMelden(Z: Zone) { const m = JSON.stringify({ t: "namen", liste: [...Z.spieler].map((q) => { const w = Z.sim.nach(q.heldId || 0) as { stufe?: number } | undefined; const a = q.kampf && q.kampf.nutzer ? aussehenJe.get(q.kampf.nutzer) : undefined; return { id: q.heldId, name: q.name || "Wanderer", stufe: (w && w.stufe) || 1, ...(a ? { a } : {}) }; }) });
   for (const q of Z.spieler) if (q.ws.readyState === WebSocket.OPEN) q.ws.send(m); }

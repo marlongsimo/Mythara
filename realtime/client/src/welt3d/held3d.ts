@@ -76,7 +76,7 @@ export class Held3D {
   stelle(x: number, y: number, z: number): void { this.bild.gruppe.position.set(x, y, z); if (!this.wurzel) this.ersatz.stelle(x, y, z); }
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }
-  setze(z: "ruhe" | "laufen" | "block" | "schild_laufen"): void { this.ersatz.setze(z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
+  setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; this.spiele(this.gegner ? this.gegner.angriff : STARTWAFFEN[this.held!.waffe].angriff, true); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
   /** Teleport (Abreise, Figuren-Fabrik): Bewegung teleport_weg, Lichtsäule, die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = kein Modell) */
@@ -84,9 +84,14 @@ export class Held3D {
     const fx = new TeleportEffekt(this.wurzel, TELEPORT_S, 60); fx.gruppe.scale.setScalar(this.hoehe / 1.8); fx.gruppe.visible = true; this.bild.gruppe.add(fx.gruppe); this.effekt = fx;
     this.skala = this.wurzel.scale.x; return TELEPORT_S * 1000; }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
-  private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true); else this.spiele(z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : "ruhe", false); }
-  private spiele(name: string, einmal: boolean, halten = einmal) { const c = this.clips.get(name), m = this.mixer; if (!c || !m) return; if (this.name === name && !einmal) return;
-    const neu = m.clipAction(c); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat, Infinity); neu.clampWhenFinished = halten;
+  /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
+     (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m: Gehen 3,3 Felder/s → ×1,85, Sprint 4,3 Felder/s → ×0,92) */
+  private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true);
+    else if (z === "rennen") this.spiele("laufen", false, false, 0.92);
+    else if (z === "laufen") { if (this.clips.has("gehen")) this.spiele("gehen", false, false, 1.85); else this.spiele("laufen", false, false, 0.75); }
+    else this.spiele(z === "schild_laufen" ? "gehen" : "ruhe", false); }
+  private spiele(name: string, einmal: boolean, halten = einmal, tempo = 1) { const c = this.clips.get(name), m = this.mixer; if (!c || !m) return; if (this.name === name && !einmal) { if (this.aktion) this.aktion.timeScale = tempo; return; }
+    const neu = m.clipAction(c); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat, Infinity); neu.clampWhenFinished = halten; neu.timeScale = tempo;
     if (this.aktion && this.aktion !== neu) neu.crossFadeFrom(this.aktion, 0.12, false); neu.play(); this.aktion = neu; this.name = name; }
   /** weiterrechnen; der Blick dreht weich zur Laufrichtung (Modell schaut nach +z, also Süden) */
   schritt(dtMs: number, gieren: number): void {

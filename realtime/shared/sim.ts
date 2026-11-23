@@ -5,7 +5,8 @@
  *
  * Reihenfolge bei jedem Angriff (siehe treffen): 1 prüfen (Reichweite, Sicht) · 2 Trefferwurf · 3 Schadenswurf · 4 Boni · 5 Block und Schutz · 6 Leben
  */
-import { Kampfwerte, SkillXp, Art, XP_JE_SCHADEN, LP_XP_JE_SCHADEN, DEFENSE_XP_JE_BLOCK, ERHOLUNG, LP_REGEN_SEK, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
+import { Ausdauer } from "./sprint";
+import { Kampfwerte, SkillXp, Art, XP_JE_SCHADEN, LP_XP_JE_SCHADEN, DEFENSE_XP_JE_BLOCK, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, KB, KH } from "./karte";
@@ -19,6 +20,7 @@ export type Eingabe =
   | { t: "faehig"; taste: Taste; x: number; y: number } // Fähigkeit in Richtung des Punktes
   | { t: "modus" }                           // Kippschalter: zwischen erster und zweiter Waffe wechseln
   | { t: "halt" }
+  | { t: "sprint"; an: boolean; wert?: number }  // Sprint an/aus (eigener Held, Kampfregeln v2); wert: Ausdauer in Prozent beim Betreten (nur einmal übernommen)
   | { t: "neu" };
 
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
@@ -26,7 +28,7 @@ interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; oh
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
   pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; /** Held: Autoangriff (Standard an) */ auto?: boolean; rx: number; ry: number; fuehrer: number;
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
-  schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; /** v2: Zeit bis zum nächsten Regenerations-LP */ erholT?: number; wach: boolean;
+  schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; /** v2: Zeit bis zum nächsten Regenerations-LP */ erholT?: number; /** Sprint (eigener Held) */ ausdauer?: Ausdauer; ausdauerDa?: boolean; wach: boolean;
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
@@ -36,7 +38,7 @@ export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | {
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
   w: Array<[number, number, string, number, number, number, number, number, number, number, number, number, number]>; // id, held, typ, team, x, y, blick, lp, max, bits, tot, schutz, modus
-  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; sl?: [number, number, number, number]; pr?: number; /* Herausforderung: 0 läuft, 1 geschafft, 2 verfehlt */ /* Schleuse: x, y, offen (1/0), Fortschritt beim Schließen 0–1 */ /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number; /** Kampfregeln v2: Skill-XP gesamt und Angriffsstil (0, 1 = Normal, 2) */ xp?: SkillXp; stil?: number } }
+  g: Array<[number, number, number, string]>; b?: Array<[number, number, number, number]>; /* Beute am Boden: id, x, y, Anzahl */ ev: Ereignis[]; st?: Record<string, [number, number]>; sl?: [number, number, number, number]; pr?: number; /* Herausforderung: 0 läuft, 1 geschafft, 2 verfehlt */ /* Schleuse: x, y, offen (1/0), Fortschritt beim Schließen 0–1 */ /* Stufe und Erfahrung je Held im Team */ ich: { id: number; cdQ: number; cdE: number; cdR: number; zielId: number; wieder: number; modus: number; stufe?: number; ep?: number; /** Kampfregeln v2: Skill-XP gesamt und Angriffsstil (0, 1 = Normal, 2) */ xp?: SkillXp; stil?: number; /** Sprint: Ausdauer in Prozent, an (1/0) */ ausdauer?: [number, number] } }
 
 export class Sim {
   tick = 0; zeit = 0; phase: "lauf" | "sieg" = "lauf"; splitter = 0; besiegt = 0; monsterZahl = 0;
@@ -83,14 +85,14 @@ export class Sim {
   /** Gegner mit ihren eigenen Werten (ohne Stufen-Skalierung) – Weltzonen mit Kampfregeln v1, auch beim Rechnen im Browser */
   eigeneWerteSetzen(): void { this.eigeneWerte = true; for (const w of this.wesen) if (!w.held) w.lp = w.max = MONSTER[w.typ].lp; }
   /** Einen schon vorhandenen Helden auf die Kampfregeln v1 stellen (Rechnen im Browser: der Held entsteht dort mit der Simulation) */
-  heldV1(id: number, kw: Kampfwerte): void { const w = this.nach(id); if (!w || !w.held) return; w.kw = kw; w.xpNeu = { ...NULL_XP }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = kw.max; }
+  heldV1(id: number, kw: Kampfwerte): void { const w = this.nach(id); if (!w || !w.held) return; w.kw = kw; w.ausdauer = w.ausdauer || new Ausdauer(); w.xpNeu = { ...NULL_XP }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = kw.max; }
   eigeneWerte = false; /** in diesem Rechenschritt beginnt ein Kampf-Tick (alle 0,5 s) */ aufTick = true;
   /** Ein Spieler betritt die Welt mit seinem Helden und dessen Erfahrung. Zurück: Kennung des Helden. */
   beitreten(typ: string, ep: number, wo?: Punkt, kw?: Kampfwerte): number { this.bereit(); if (!HELDEN[typ]) typ = "schildwaechter"; const n = this.wesen.filter((w) => w.held).length;
     const p = wo && Number.isFinite(wo.x) && Number.isFinite(wo.y) ? naechstFrei({ x: Math.max(0.5, Math.min(KB - 0.5, wo.x)), y: Math.max(0.5, Math.min(KH - 0.5, wo.y)) }) : null; /* wo: dort hinein, wo man in der Welt steht */
     const w = this.neu(true, typ, 0, p || START[n % START.length] || START[0], false);
     w.ep = Math.max(0, ep); w.stufe = stufeAusEp(w.ep); w.max = Math.round(HELDEN[typ].lp * (1 + STUFENBONUS(w.stufe).lp)); w.lp = w.max;
-    if (kw) { w.kw = kw; w.xpNeu = { ...NULL_XP }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = w.max; } return w.id; }
+    if (kw) { w.kw = kw; w.xpNeu = { ...NULL_XP }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = w.max; w.ausdauer = new Ausdauer(); } return w.id; }
   /** Kampfregeln v1: Ausrüstung oder Skills haben sich geändert – Werte neu setzen (Leben im selben Verhältnis) */
   kampfwerteSetzen(id: number, kw: Kampfwerte): void { const w = this.nach(id); if (!w || !w.held || !w.kw) return; const q = w.lp / w.max; w.kw = kw; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = Math.max(1, Math.round(w.max * q)); }
   /** Kampfregeln v1: die seit dem letzten Aufruf verdienten Skill-XP abholen (der Server bucht sie ins Konto) */
@@ -115,7 +117,7 @@ export class Sim {
   private wert(w: Wesen) { return w.held ? HELDEN[w.typ] : MONSTER[w.typ]; }
   /** Der Angriff, der gerade gilt: beim Helden der gewählte Waffenmodus */
   waffe(w: Wesen): Modus | { art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } { if (w.kw) return { name: "Waffe", text: "", ...w.kw.waffe } as Modus; return w.held ? HELDEN[w.typ].modi[w.modus] : MONSTER[w.typ].angriff; }
-  private tempo(w: Wesen): number { return this.wert(w).tempo * (w.langsamT > 0 ? 1 - w.langsamF : 1) * (w.held && !w.kw && HELDEN[w.typ].modi[w.modus].schild ? K.BLOCK.tempo : 1); }
+  private tempo(w: Wesen): number { return this.wert(w).tempo * (w.ausdauer ? w.ausdauer.faktor : 1) * (w.langsamT > 0 ? 1 - w.langsamF : 1) * (w.held && !w.kw && HELDEN[w.typ].modi[w.modus].schild ? K.BLOCK.tempo : 1); }
   /* ---------- Einzel- und Mehrkampf (nur in der offenen Welt) ----------
      Einzelkampf (Standard): Ein Gegner kämpft nur mit einem Helden und ein Held nur mit einem Gegner. Wer gebunden ist, kann von anderen
      weder angegriffen werden noch andere angreifen, bis der Kampf endet (Tod, Gehen) oder EINZEL_BINDUNG Sekunden lang kein Treffer fällt.
@@ -142,6 +144,7 @@ export class Sim {
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
+    else if (e.t === "sprint") { if (!h.ausdauer) return; if (!h.ausdauerDa && zahl(e.wert)) { h.ausdauer.wert = Math.max(0, Math.min(100, e.wert as number)); h.ausdauerDa = true; } h.ausdauer.setzen(e.an === true); }
     else if (e.t === "faehig") { if (h.kw) return; /* v1: keine Fähigkeiten */ if ((e.taste !== "q" && e.taste !== "e" && e.taste !== "r") || !zahl(e.x) || !zahl(e.y)) return; this.faehigkeit(h, e.taste, { x: e.x, y: e.y }); }
   }
   private wechsel(w: Wesen): void { if (w.cdM > 0 || w.aushol > 0 || w.betaeubt > 0) return; w.modus = w.modus ? 0 : 1; w.cdM = K.WECHSEL; w.zielId = 0; w.cdA = Math.max(w.cdA, 0.25); }
@@ -345,6 +348,7 @@ export class Sim {
       if (w.dauer.length) { for (const d of w.dauer) { w.dauerRest += d.jeSek * DT; d.t -= DT; } const art = w.dauer[0].art, von = this.nach(w.dauer[0].von); w.dauer = w.dauer.filter((d) => d.t > 0); if (w.dauerRest >= 3 || !w.dauer.length) { const n = w.dauerRest; w.dauerRest = 0; this.abziehen(w, n, von, art); if (w.tot) continue; } }
       // Erholung
       w.ruhe += DT; if (w.kw) { if (w.held) { w.erholT = (w.erholT || 0) + DT; if (w.erholT >= LP_REGEN_SEK) { w.erholT -= LP_REGEN_SEK; if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + 1); } } /* v2: 1 LP je 100 Ticks */ } else { const E = K.ERHOLUNG; if (w.held && w.ruhe >= E.nach && w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * E.jeSek * DT); } /* v1: 5 s nach dem letzten Angriff 4 % je Sekunde */
+      if (w.ausdauer && w.kw) w.ausdauer.schritt(DT, w.rx !== 0 || w.ry !== 0 || w.pfad.length > 0, levelAus(w.kw.skills.geschick || 0, "geschick")); /* Sprint: Ausdauer im Game-Tick */
       if (w.betaeubt > 0) { w.betaeubt = Math.max(0, w.betaeubt - DT); continue; }
       if (w.ladeT > 0) { w.ladeT -= DT; if (w.ladeT <= 0) { { const P = this.karte.PROBE, Sz = MONSTER[w.typ].spezial!; if (P && P.art === "ausweichen" && this.probe === 0 && this.wesen.some((o) => o.held && !o.tot && Math.hypot(o.x - w.ladeX, o.y - w.ladeY) <= Sz.radius + o.r)) this.probe = 2; } const S = MONSTER[w.typ].spezial!; this.ev.push({ a: "speien", id: w.id, x: w.ladeX, y: w.ladeY, r: S.radius }); this.flaeche(w, { x: w.ladeX, y: w.ladeY }, S.radius, { grund: S.schaden[1] * STAERKE.schaden, min: S.schaden[0] * STAERKE.schaden, art: S.art }); w.cdS = S.alle; } continue; } // wer lädt, steht
       if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) this.ausloesen(w, z); } continue; } // wer ausholt, steht
@@ -418,7 +422,7 @@ export class Sim {
   private sieg(): void { this.phase = "sieg"; if (this.karte.PROBE && this.probe === 0) this.probe = 1; }
   /** Die Angaben zum eigenen Helden (für jeden Spieler einer Koop-Gruppe seine eigenen) */
   ichVon(id: number): Zustand["ich"] { const r = (v: number) => Math.round(v * 100) / 100, h = this.nach(id) || this.ich;
-    return { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: h.stufe || this.stufen[h.typ] || 1, ep: h.ep ?? (this.epStand[h.typ] || 0), ...(h.kw ? { xp: h.kw.skills, stil: h.kw.stil } : {}) }; }
+    return { id: h.id, cdQ: r(h.cdQ), cdE: r(h.cdE), cdR: r(h.cdR), zielId: h.zielId, wieder: r(Math.max(0, h.wieder)), modus: h.modus, stufe: h.stufe || this.stufen[h.typ] || 1, ep: h.ep ?? (this.epStand[h.typ] || 0), ...(h.kw ? { xp: h.kw.skills, stil: h.kw.stil } : {}), ...(h.ausdauer ? { ausdauer: [Math.round(h.ausdauer.wert * 10) / 10, h.ausdauer.an ? 1 : 0] as [number, number] } : {}) }; }
   /** Stufe eines Helden aus seiner Erfahrung setzen (Koop: jeder bringt seine eigene mit) – Leben passt sich an */
   setzeErfahrung(typ: string, ep: number): void { this.bereit(); this.epStand[typ] = ep; this.stufen[typ] = stufeAusEp(ep); HELDENSTUFE[typ] = this.stufen[typ];
     for (const w of this.wesen) if (w.held && w.typ === typ) { const q = w.lp / w.max; w.max = Math.round(HELDEN[typ].lp * (1 + STUFENBONUS(this.stufen[typ]).lp)); w.lp = Math.max(1, Math.round(w.max * q)); } }

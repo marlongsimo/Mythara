@@ -62,6 +62,8 @@ const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x2
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
+/** Höchstens so viel Spielzeit je Bild (s). Nur für Tests auf langsamen Rechnern ohne Grafikkarte: ?zeitraffer=1 rechnet die volle vergangene Zeit (bis 1 s) */
+const DT_MAX = new URLSearchParams(location.search).get("zeitraffer") === "1" ? 1 : 0.1;
 export class Welt3D {
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
@@ -259,7 +261,7 @@ export class Welt3D {
   /** Ein umhergehender Bewohner mit diesem Modell (Quests: der Bürgermeister im Rathaus), falls sein Chunk geladen ist */
   wandererMit(datei: string): { x: number; z: number } | null { for (const s of this.st.values()) for (const w of s.wanderer || []) if (w.datei === datei) return w; return null; }
   bild() {
-    const dt = Math.min(0.1, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
+    const dt = Math.min(DT_MAX, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
     if (this.warte.length) this.bauen(this.warte.shift()!);
     if (performance.now() > this.naechsterBlick) { this.naechsterBlick = performance.now() + 300; this.nachladen(); }

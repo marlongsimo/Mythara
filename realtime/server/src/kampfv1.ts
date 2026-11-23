@@ -11,14 +11,15 @@ import { Startwaffe } from "../../shared/aussehen";
 import type { Sim } from "../../shared/sim";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface HeldV1 { waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
+export interface HeldV1 { /** gespeicherte Lebenspunkte (Migration 046) */ lpStand?: { lp: number; z: number } | null; waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
 
 /** Der eigene Held mit seinen vier Skills (null: kein Held → alte Kampfwerte) */
 export async function heldV1Lesen(sb: Sb, nutzer: string): Promise<HeldV1 | null> {
   const z = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`).catch(() => [])) as Record<string, unknown>[];
   const r = z[0]; if (!r || !["schwert", "bogen", "stab"].includes(String(r.waffe))) return null;
   const xp = skillXpPruefen({ geschick: Number(r.skill_geschick), staerke: Number(r.skill_staerke), fernkampf: Number(r.skill_fernkampf), magie: Number(r.skill_magie), lp: Number(r.skill_lp), defense: Number(r.skill_defense) }) /* ohne Migration 044: LP und Defense Level 1 */, waffe = r.waffe as Startwaffe;
-  return { waffe, xp, angelegt: startAusruestung(waffe), stil: 1, offen: { ...NULL_XP }, bucht: false, zuletzt: Date.now(), stufen: stufenVon(xp) };
+  const ls = r.lp_stand as { lp?: unknown; z?: unknown } | null | undefined, lpStand = ls && typeof ls.lp === "number" && typeof ls.z === "number" ? { lp: ls.lp, z: ls.z } : null;
+  return { lpStand, waffe, xp, angelegt: startAusruestung(waffe), stil: 1, offen: { ...NULL_XP }, bucht: false, zuletzt: Date.now(), stufen: stufenVon(xp) };
 }
 /** Gemeldete Ausrüstung prüfen: nur bekannte Plätze, nur Gegenstände für diesen Platz, nur eigene (Startausrüstung) */
 export function angelegtPruefen(roh: unknown, waffe: Startwaffe): Partial<Record<Platz, string>> {

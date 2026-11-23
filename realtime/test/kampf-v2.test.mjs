@@ -68,6 +68,10 @@ function duell(seed, waffe, stil) {
     check(h.zielId === 0 && h.x < b.x - 8, "Wegklicken (laufen) bricht den Angriff ab"); } }
 { const s2 = Sim.welt(9, undefined, true), h2 = s2.nach(s2.beitreten("schildwaechter", 0, { x: 50, y: 50 }, kampfwerte(NULL, startAusruestung("schwert"))));
   for (let i = 0; i < 40; i++) s2.schritt(); check(h2.aggroZeit > 1.5 && h2.aggroZeit < 2.5, `Neues Betreten der Region: der Zähler beginnt bei 0 (${h2.aggroZeit.toFixed(2)} s nach 2 s)`); }
+/* Sprint im Kampfgebiet: der Server rechnet Tempo und Ausdauer selbst (shared/sprint.ts) */
+{ const weg = (an) => { const { s, b, h } = duell(41, "schwert", 1); b.x = b.heim.x = b.x + 80; const x0 = h.x; s.eingabe({ t: "sprint", an, wert: 100 }, h.id); const y0 = h.y; s.eingabe({ t: "richtung", x: 0, y: 1 }, h.id); for (let i = 0; i < 20; i++) s.schritt(); return { weg: h.y - y0, z: s.zustand(h.id).ich.ausdauer }; };
+  const n = weg(false), sp = weg(true);
+  check(Math.abs(sp.weg / n.weg - 1.3) < 0.03 && sp.z && sp.z[1] === 1 && sp.z[0] < 100 && n.z[0] === 100, `Sprint im Kampfgebiet: +30 % Weg (${n.weg.toFixed(2)} → ${sp.weg.toFixed(2)} Felder in 1 s), Ausdauer ${sp.z && sp.z[0]} %, Zustand meldet sie`); }
 /* Lebensregeneration: 1 LP je 100 Game-Ticks (50 s) */
 { const { s, b, h } = duell(31, "schwert", 1); b.x = b.heim.x = b.x + 60; h.lp = 5; let t = 0; const lp0 = h.lp; for (; t < 151 * 20; t++) s.schritt();
   check(h.lp === lp0 + 3, `Regeneration: in 151 s genau 3 LP (5 → ${h.lp}), also 1 LP je 50 s`); }

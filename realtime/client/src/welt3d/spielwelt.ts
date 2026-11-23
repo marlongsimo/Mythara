@@ -10,7 +10,8 @@
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
 import { chatSystem } from "../welt";
-import { Ausdauer, SPRINT_MIN } from "../../../shared/sprint";
+import { SPRINT_MIN } from "../../../shared/sprint";
+import { AUSDAUER } from "../sprintzustand";
 import { levelAus } from "../../../shared/kampfwerte";
 import { skillsLesen } from "../skills";
 import { gelbAnzeigen } from "./oberflaeche";
@@ -109,12 +110,12 @@ export class Spielwelt3D implements WeltKern {
   profil() { WELT.hud.profil(this.held); WELT.hud.karte(); const h = this.hier; this.hier = ""; this.regionZeigen(); if (!this.hier) this.hier = h; anschluss3D.menue(this); }
 
   /* ───────────── Sprint (Sprintkonzept v1): +30 % Tempo, Ausdauer in der gelben Leiste ───────────── */
-  ausdauer = new Ausdauer(); private geschickLv = 1; private geschickZeit = 0; private gelbZuletzt = -1;
+  ausdauer = AUSDAUER; private imKampf = false; private geschickLv = 1; private geschickZeit = 0; private gelbZuletzt = -1;
   /** Sprint an/aus (Knopf an der Minikarte, Umschalttaste) */
-  sprint() { if (!this.ausdauer.an && this.ausdauer.wert < SPRINT_MIN) { chatSystem(`Zu erschöpft – sprinten geht wieder ab ${SPRINT_MIN} % Ausdauer.`); return; } this.ausdauer.umschalten(); this.sprintKnopf(); }
+  sprint() { if (!this.ausdauer.an && this.ausdauer.wert < SPRINT_MIN) { chatSystem(`Zu erschöpft – sprinten geht wieder ab ${SPRINT_MIN} % Ausdauer.`); return; } this.ausdauer.umschalten(); this.sprintKnopf(); window.dispatchEvent(new CustomEvent("ez-sprint")); }
   private sprintKnopf() { document.querySelectorAll<HTMLElement>('[aria-label="Sprint"]').forEach((b) => { b.classList.toggle("an", this.ausdauer.an); b.setAttribute("aria-pressed", String(this.ausdauer.an)); }); }
   private sprintSchritt(dt: number, laeuft: boolean) { const jetzt = performance.now(); if (jetzt - this.geschickZeit > 2000) { this.geschickZeit = jetzt; this.geschickLv = levelAus(skillsLesen().geschick, "geschick"); }
-    const war = this.ausdauer.an; this.ausdauer.schritt(dt, laeuft, this.geschickLv); if (war !== this.ausdauer.an) this.sprintKnopf();
+    const war = this.ausdauer.an; if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (war !== this.ausdauer.an) this.sprintKnopf();
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null;
@@ -278,9 +279,9 @@ export class Spielwelt3D implements WeltKern {
     const l = Math.hypot(rx, ry), faehrt = l > 0.05, vorher = { x: o.x, y: o.y };
     const fremd = anschluss3D.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0); /* im Kampfgebiet bewegt der Server den Helden (der Kampf setzt this.ort) */
     if (faehrt && !fremd) { const k = Math.min(1, l) / l, v = D.tempo * this.ausdauer.faktor * dt, e = { x: o.x + rx * k * v, y: o.y + ry * k * v, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; }
-    this.sprintSchritt(dt, faehrt && !fremd); /* Sprint: Ausdauer im 0,5-s-Takt (shared/sprint.ts); im Kampfgebiet bewegt der Server, dort kein Sprint */
+    this.imKampf = fremd; this.sprintSchritt(dt, faehrt && !fremd); /* Sprint: Ausdauer im 0,5-s-Takt (shared/sprint.ts); im Kampfgebiet bewegt der Server, dort kein Sprint */
     if (faehrt) this.figur.blick(rx, ry);
-    this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? "laufen" : "ruhe");
+    this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? (this.ausdauer.faktor > 1 ? "rennen" : "laufen") : "ruhe"); /* Sprint: Rennen */
     this.vorher = vorher;
     const y = this.motor.hoehe(o.x, o.y); this.motor.held.x = o.x; this.motor.held.z = o.y; this.figur.stelle(o.x, y, o.y); this.figur.schritt(dt * 1000, this.motor.gieren); this.marke.rotation.z += dt;
     if (performance.now() - this.letzterStrom > 400) { this.letzterStrom = performance.now(); void this.strom(); }

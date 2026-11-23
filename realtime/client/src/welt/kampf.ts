@@ -9,6 +9,7 @@
  * Ohne Konto oder ohne Server rechnet der Browser dieselbe Simulation selbst (allein, ohne Gutschrift).
  * Koordinaten: Simulation in Rechenfeldern ab der linken oberen Ecke des Gebiets; Welt in Weltfeldern (Rechenfeld + Ursprung), Bild = Feld × FELD_PX.
  */
+import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
@@ -89,12 +90,14 @@ export class WeltKampf {
       else { const h = held(), k = h && h.kw ? meineKampfwerte(h.kw.skills) : null; if (h && k && n.sim) n.sim.kampfwerteSetzen(h.id, k); } };
     window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer);
     /* Angriffsstil (v2): dem Server melden, beim Rechnen im Browser die Werte neu setzen */
+    const sprint = () => { if (!this.vorbei) n.sende({ t: "sprint", an: AUSDAUER.an, wert: AUSDAUER.wert } as unknown as Parameters<Netz["sende"]>[0]); }; /* Sprint: Stand beim Betreten, danach jedes Umschalten */
+    window.addEventListener("ez-sprint", sprint); this.hoerer.push(sprint); sprint();
     const stil = () => { if (this.vorbei) return; n.sende({ t: "auto", an: autoLesen() } as unknown as Parameters<Netz["sende"]>[0]); /* Autoangriff an/aus */
       if (n.art === "server") n.sende({ t: "stil", stil: stilJetzt() } as unknown as Parameters<Netz["sende"]>[0]); else hoer(); };
     window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
   private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
-  private v1Xp(z: Zustand) { const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
+  private v1Xp(z: Zustand) { if (z.ich.ausdauer) ausdauerVomServer(z.ich.ausdauer); const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
     if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
   /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
   betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");
@@ -104,7 +107,7 @@ export class WeltKampf {
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
-    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); } if (this.stilHoerer) { window.removeEventListener("ez-stil", this.stilHoerer); this.stilHoerer = null; } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
+    for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); window.removeEventListener("ez-sprint", h); } if (this.stilHoerer) { window.removeEventListener("ez-stil", this.stilHoerer); this.stilHoerer = null; } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
   /** Wie viele lebende Gegner in der Nähe des eigenen Helden sind (für das Kampf-Banner) */
   gegnerNah(felder = 8): number { const z = this.z; if (!z || !this.eingetreten) return 0; const ich = z.w.find((e) => e[0] === z.ich.id); if (!ich) return 0;
