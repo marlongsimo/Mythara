@@ -3,6 +3,6 @@
   "name": "Oberster Rabenpriester",
   "kategorie": "gegner",
   "aktuell": "v001",
-  "status": "v001: Meshy „Raven King“ geriggt (Skelett, Gewichte), zwei Seltene Schwerter; nur Grundhaltung (ruhe, ohne Bewegung) – Bewegungen folgen. Spieldatei img/figuren-echt3d/oberster_rabenpriester3d.glb",
+  "status": "v001: Meshy „Raven King“ geriggt (Skelett, Gewichte), zwei Seltene Schwerter; 2,00 m hoch (zwei Felder; fabrik/kind.py groesse=1.1111 kopf=1.0 → arbeit/figur-2m.blend), nur Grundhaltung (ruhe, ohne Bewegung) – Bewegungen folgen. Spieldatei img/figuren-echt3d/oberster_rabenpriester3d.glb",
   "herkunft": "Meshy"
 }
