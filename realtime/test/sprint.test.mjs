@@ -1,4 +1,4 @@
-/* Mythara – Sprint (shared/sprint.ts): +30 %, Verbrauch und Erholung nach der OSRS-Formel der Laufenergie mit Geschick statt Agility, Tick 0,5 s,
+/* Mythara – Sprint (shared/sprint.ts): 2 Felder je Tick, Verbrauch und Erholung nach der OSRS-Formel der Laufenergie mit Geschick statt Agility, Tick 0,5 s,
    Erholung erst nach 1,5 s, Neustart ab 20 %. Aufruf: node test/sprint.test.mjs */
 import { build } from "esbuild"; import { fileURLToPath } from "node:url"; import path from "node:path"; import fs from "node:fs";
 const HIER = path.dirname(fileURLToPath(import.meta.url)), AUS = path.join(HIER, ".sprint.gebaut.mjs");
@@ -11,7 +11,7 @@ const lauf = (L) => { const a = new S.Ausdauer(); a.umschalten(); let t = 0; whi
 check(lauf(1) === 75 && lauf(99) === 111.5, `Sprintdauer: Geschick 1 ${lauf(1)} s, Geschick 50 ${lauf(50)} s, Geschick 99 ${lauf(99)} s (99 sprintet ~49 % länger)`);
 const erhol = (L) => { const a = new S.Ausdauer(); a.einheiten = 0; let t = 0; while (a.einheiten < S.AUSDAUER_MAX) { a.schritt(0.5, false, L); t += 0.5; } return t; };
 check(erhol(1) > 600 && erhol(1) < 620 && erhol(99) > 200 && erhol(99) < 210, `Erholung leer → voll: Geschick 1 ${erhol(1)} s, Geschick 99 ${erhol(99)} s`);
-{ const a = new S.Ausdauer(); a.umschalten(); check(a.faktor === 1.3, "Sprinttempo +30 % (für alle Geschick-Stufen gleich)");
+{ const a = new S.Ausdauer(); a.umschalten(); check(a.faktor === 2, "Sprint: 2 Felder je Tick statt 1 (für alle Geschick-Stufen gleich)");
   for (let i = 0; i < 400 && a.an; i++) a.schritt(0.5, true, 1); check(!a.an && a.wert === 0 && a.faktor === 1, "Bei 0 % endet der Sprint von selbst");
   check(!a.umschalten() && !a.an, "Neu sprinten erst ab 20 % Ausdauer");
   a.schritt(1.4, false, 1); check(a.wert === 0, "Erholung beginnt erst 1,5 s (3 Ticks) nach dem Sprintende"); a.schritt(1.1, false, 1); check(a.wert > 0, `… danach füllt sie sich (${a.wert.toFixed(2)} %)`);

@@ -10,6 +10,7 @@
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { vorlage } from "./held3d";
+import { GEHEN_TEMPO } from "../../../shared/feld";
 
 /** Figur der Weltdaten → 3D-Modell */
 export const NPC3D: Record<string, string> = { wache: "stadtwache3d" };
@@ -25,12 +26,12 @@ export const WANDERER: { chunk: string; datei: string; drinnen: [number, number,
   ...(["npc.marktfrau", "npc.alter_bauer", "npc.junger_knecht", "npc.kraeuterfrau"] as const).map((datei, i) => ({ chunk: i < 2 ? "201_200" : "201_201", datei, drinnen: [6442, 6428, 6455, 6437] as [number, number, number, number], draussen: null })),
 ];
 
-const HOEHE = 2.0, TEMPO = 1.25;
+const HOEHE = 2.0, TEMPO = GEHEN_TEMPO; /* Felder je Sekunde: Bewohner gehen wie Helden 1 Feld je Tick („Felder und Schräge“) */
 /** ein zufälliges freies Feld im Rechteck (Möbel, Brunnen und Wände sind gesperrt) */
 const zufallFeld = (r: [number, number, number, number], frei?: (x: number, z: number) => boolean): Feld => { let f: Feld = { x: 0, z: 0 };
   for (let i = 0; i < 30; i++) { f = { x: r[0] + Math.floor(Math.random() * (r[2] - r[0] + 1)) + 0.5, z: r[1] + Math.floor(Math.random() * (r[3] - r[1] + 1)) + 0.5 }; if (!frei || frei(Math.floor(f.x), Math.floor(f.z))) break; } return f; };
 
-export interface Umgebung { szene: THREE.Scene; hoehe(x: number, z: number): number; gehbar(x: number, z: number): boolean; weg(ax: number, az: number, bx: number, bz: number): Feld[] }
+export interface Umgebung { szene: THREE.Scene; hoehe(x: number, z: number): number; gehbar(x: number, z: number): boolean; weg(ax: number, az: number, bx: number, bz: number, felder?: boolean): Feld[] }
 
 /** Ein Dorfbewohner als 3D-Modell: gruppe steht in der Welt; ersatz (das Bild) wird ausgeblendet, sobald das Modell da ist */
 export class Npc3D {
@@ -63,10 +64,10 @@ export class Wanderer {
   private neuesZiel() {
     /* wer draußen war, geht wieder hinein; drinnen meist eine andere Stelle im Haus, etwa jedes vierte Mal vor die Tür */
     const raus = Boolean(this.w.draussen) && !this.draussen && Math.random() < 0.2, z = zufallFeld(raus && this.w.draussen ? this.w.draussen : this.w.drinnen, (x, zz) => this.u.gehbar(x, zz));
-    const p = this.u.weg(this.x, this.z, z.x, z.z); if (!p.length) { this.warten = 1.5; return; } this.pfad = p; this.draussen = raus; }
+    const p = this.u.weg(this.x, this.z, z.x, z.z, true); if (!p.length) { this.warten = 1.5; return; } this.pfad = p; this.draussen = raus; }
   schritt(dt: number) {
     if (!this.pfad.length) { this.npc.spiele("ruhe"); this.warten -= dt; if (this.warten <= 0) this.neuesZiel(); this.npc.schritt(dt); return; }
-    const z = this.pfad[0], dx = z.x - this.x, dz = z.z - this.z, d = Math.hypot(dx, dz), s = TEMPO * dt;
+    const z = this.pfad[0], dx = z.x - this.x, dz = z.z - this.z, d = Math.max(Math.abs(dx), Math.abs(dz)), s = TEMPO * dt; /* von Feldmitte zu Feldmitte, schräg zählt wie gerade */
     if (d <= s) { this.x = z.x; this.z = z.z; this.pfad.shift(); if (!this.pfad.length) this.warten = this.draussen ? 2 + Math.random() * 4 : 2.5 + Math.random() * 7; }
     else { this.x += dx / d * s; this.z += dz / d * s; }
     this.npc.blick(dx, dz); this.npc.spiele("gehen"); this.setzen(); this.npc.schritt(dt); }

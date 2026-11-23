@@ -85,10 +85,10 @@ export class Held3D {
     this.skala = this.wurzel.scale.x; return TELEPORT_S * 1000; }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
-     (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m: Gehen 3,3 Felder/s → ×1,85, Sprint 4,3 Felder/s → ×0,92) */
+     (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m, also 1,78 / 4,67 Felder/s: Gehen 2 Felder/s → ×1,12, Sprint 4 Felder/s → ×0,86 – „Felder und Schräge“) */
   private anwenden() { const z = this.zustand; if (z === "block") this.spiele("block", true, true);
-    else if (z === "rennen") this.spiele("laufen", false, false, 0.92);
-    else if (z === "laufen") { if (this.clips.has("gehen")) this.spiele("gehen", false, false, 1.85); else this.spiele("laufen", false, false, 0.75); }
+    else if (z === "rennen") this.spiele("laufen", false, false, 0.86);
+    else if (z === "laufen") { if (this.clips.has("gehen")) this.spiele("gehen", false, false, 1.12); else this.spiele("laufen", false, false, 0.45); }
     else this.spiele(z === "schild_laufen" ? "gehen" : "ruhe", false); }
   private spiele(name: string, einmal: boolean, halten = einmal, tempo = 1) { const c = this.clips.get(name), m = this.mixer; if (!c || !m) return; if (this.name === name && !einmal) { if (this.aktion) this.aktion.timeScale = tempo; return; }
     const neu = m.clipAction(c); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat, Infinity); neu.clampWhenFinished = halten; neu.timeScale = tempo;

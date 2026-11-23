@@ -1,5 +1,5 @@
 /*
- * Mythara – Sprint: +30 % Tempo, solange Ausdauer da ist („Sprintkonzept v1.0“), Verbrauch und Erholung nach der Formel der Laufenergie aus OSRS,
+ * Mythara – Sprint: 2 Felder je Tick statt 1 („Felder und Schräge“, shared/feld.ts), solange Ausdauer da ist („Sprintkonzept v1.0“), Verbrauch und Erholung nach der Formel der Laufenergie aus OSRS,
  * bei uns mit dem Geschick-Level an Stelle von Agility (ohne Gewicht):
  *   Ausdauer intern 0–10 000 (= 0–100 %), verarbeitet je Game-Tick (0,5 s).
  *   Verbrauch je Tick beim Sprinten:      67 × (1 − Geschick ÷ 300)          (OSRS: (67 + 67 × Gewicht ÷ 64) × (1 − Agility ÷ 300), Gewicht 0)
@@ -8,7 +8,7 @@
  * Aus dem Sprintkonzept bleiben: Erholung erst 3 Ticks (1,5 s) nach dem Sprintende, neu sprinten erst ab 20 %.
  * Dieselbe Rechnung läuft im Browser (offene Welt) und auf dem Server (Kampfgebiete, shared/sim.ts).
  */
-export const SPRINT_TEMPO = 1.3, SPRINT_TICK = 0.5, SPRINT_MIN = 20, SPRINT_ERHOLUNG_NACH = 3, AUSDAUER_MAX = 10000;
+export const SPRINT_TEMPO = 2, SPRINT_TICK = 0.5, SPRINT_MIN = 20, SPRINT_ERHOLUNG_NACH = 3, AUSDAUER_MAX = 10000;
 const lv = (g: number) => Math.max(1, Math.min(99, Math.floor(g || 1)));
 /** Verbrauch je Tick (Einheiten von 10 000) */
 export const verbrauchJeTick = (geschick: number): number => 67 * (1 - lv(geschick) / 300);

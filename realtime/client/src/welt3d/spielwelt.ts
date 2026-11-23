@@ -11,6 +11,7 @@
  */
 import { chatSystem } from "../welt";
 import { SPRINT_MIN } from "../../../shared/sprint";
+import { GEHEN_TEMPO, schrittLaenge, inMitte, mitte, richtungsSchritt, schrittFrei } from "../../../shared/feld";
 import { AUSDAUER } from "../sprintzustand";
 import { levelAus } from "../../../shared/kampfwerte";
 import { skillsLesen } from "../skills";
@@ -169,8 +170,8 @@ export class Spielwelt3D implements WeltKern {
   /* ───────────── Spielablauf ───────────── */
   /** Ein fernes Ziel (Minikarte): ganz hin, wenn der Weg in der geladenen Umgebung liegt – sonst so weit wie möglich in seine Richtung */
   geheWeit(x: number, y: number) { const o = this.ort, d = Math.hypot(x - o.x, y - o.y); if (d < 0.5) return;
-    for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS); if (w.length) { this.gehe(zx, zy); return; } } }
-  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
+    for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS, 24, true); if (w.length) { this.gehe(zx, zy); return; } } }
+  gehe(x: number, y: number) { if (this.gesperrt) return; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
     if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; }
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; if (this.marke) this.marke.visible = false; this.stickWeg(); }
   teleportAbreise(): number { const f = this.figur as { teleport?: () => number }; return f.teleport ? f.teleport() : 0; }
@@ -197,7 +198,7 @@ export class Spielwelt3D implements WeltKern {
     /* kein Knopf mehr beim Hinlaufen (gehandelt wird über das Antippen der Stelle); [E] bleibt in der Nähe als Abkürzung */
     $("#ez-dorf-knopf").hidden = true; this.nah = nah;
     /* vorgemerkte Handlung: ausführen, sobald man dort ist; wer vorher stehen bleibt oder selbst steuert, lässt sie fallen */
-    const v = this.vorhaben; if (v) { if (v.da()) { this.vorhaben = null; if (!this.gesperrt) v.tat(); } else if (!this.pfad.length) this.vorhaben = null; }
+    const v = this.vorhaben; if (v) { if (v.da()) { this.vorhaben = null; if (!this.gesperrt) v.tat(); } else if (!this.pfad.length && !this.schrittZiel) this.vorhaben = null; }
   }
   interaktion(a: Interaktion): { text: string; tat: () => void } | null {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "", tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
@@ -270,15 +271,35 @@ export class Spielwelt3D implements WeltKern {
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
     c.style.transform = `rotate(${(g - S.g).toFixed(4)}rad) translate(${(-px).toFixed(1)}px, ${(-py).toFixed(1)}px)`; }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
+  /** Feldbewegung („Felder und Schräge“, shared/feld.ts): der Held gleitet von Feldmitte zu Feldmitte, 1 Feld je Tick (2/s), im Sprint 2 (4/s);
+   *  schräg zählt wie gerade, keine Ecken schneiden. schrittZiel: die Feldmitte, zu der er gerade geht (ein angefangener Schritt wird zu Ende gegangen) */
+  schrittZiel: { x: number; y: number } | null = null; private schrittOrt: { x: number; y: number } | null = null;
+  private feldSchritte(dt: number, richtung: [number, number] | null): boolean {
+    const o = this.ort; if (this.schrittOrt !== o) { this.schrittZiel = null; this.schrittOrt = o; } /* versetzt (Teleport, Ausgang, Kampfgebiet): neu anfangen */
+    const fels = (i: number, j: number) => this.raster.fels(i, j); let rest = GEHEN_TEMPO * this.ausdauer.faktor * dt, bewegt = false;
+    for (let n = 0; n < 6 && rest > 1e-9; n++) {
+      if (!this.schrittZiel) { const i = Math.floor(o.x), j = Math.floor(o.y);
+        if (richtung) { const r = richtungsSchritt(richtung[0], richtung[1]); let z: { x: number; y: number } | null = null;
+          if (r) for (const [dx, dy] of [r, [r[0], 0], [0, r[1]]] as [number, number][]) if ((dx || dy) && schrittFrei((a, b) => !fels(a, b), i, j, dx, dy)) { z = { x: i + dx + 0.5, y: j + dy + 0.5 }; break; }
+          this.schrittZiel = z || (inMitte(o) ? null : mitte(o)); }
+        else if (this.pfad.length) { const z = this.pfad.shift()!; if (fels(Math.floor(z.x), Math.floor(z.y))) { this.pfad = []; this.schrittZiel = inMitte(o) ? null : mitte(o); } else this.schrittZiel = z; if (!this.pfad.length) this.marke.visible = this.schrittZiel !== null; }
+        else if (!inMitte(o) && !fels(i, j)) this.schrittZiel = mitte(o);
+        if (!this.schrittZiel) break; }
+      const z = this.schrittZiel, d = schrittLaenge(o, z); bewegt = true;
+      if (d <= rest + 1e-9) { o.x = z.x; o.y = z.y; rest -= d; this.schrittZiel = null; if (!this.pfad.length && !richtung) this.marke.visible = false; }
+      else { o.x += (z.x - o.x) / d * rest; o.y += (z.y - o.y) / d * rest; rest = 0; } }
+    return bewegt; }
   private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt);
-    const o = this.ort, D = HELDEN[this.held]; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry);
-    if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.visible = false; }
-    else if (this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
+    const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
+    if (direkt) { this.pfad = []; this.marke.visible = false; }
+    else if (this.imKampf && this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += dt;
       if (l < 0.12 || this.stillstand > 0.6) { this.pfad.shift(); this.naechst = Infinity; this.stillstand = 0; if (!this.pfad.length) this.marke.visible = false; } else { rx = dx / l; ry = dy / l; } }
-    const l = Math.hypot(rx, ry), faehrt = l > 0.05, vorher = { x: o.x, y: o.y };
-    const fremd = anschluss3D.fremd(this, faehrt ? rx : 0, faehrt ? ry : 0); /* im Kampfgebiet bewegt der Server den Helden (der Kampf setzt this.ort) */
-    if (faehrt && !fremd) { const k = Math.min(1, l) / l, v = D.tempo * this.ausdauer.faktor * dt, e = { x: o.x + rx * k * v, y: o.y + ry * k * v, r: RADIUS }; this.raster.schieben(e); o.x = e.x; o.y = e.y; }
+    else if (!direkt) { const z = this.schrittZiel || this.pfad[0]; if (z) { const dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy); if (l > 1e-6) { rx = dx / l; ry = dy / l; } } } /* Wunschrichtung (für den Rand eines Kampfgebiets) */
+    const l = Math.hypot(rx, ry), will = l > 0.05, vorher = { x: o.x, y: o.y };
+    const fremd = anschluss3D.fremd(this, will ? rx : 0, will ? ry : 0); /* im Kampfgebiet bewegt der Server den Helden (der Kampf setzt this.ort) */
+    let faehrt = fremd ? will : false; if (!fremd) faehrt = this.feldSchritte(dt, richtung); else this.schrittZiel = null;
+    if (faehrt && !fremd) { rx = o.x - vorher.x; ry = o.y - vorher.y; if (Math.hypot(rx, ry) < 1e-6) faehrt = false; }
     this.imKampf = fremd; this.sprintSchritt(dt, faehrt && !fremd); /* Sprint: Ausdauer im 0,5-s-Takt (shared/sprint.ts); im Kampfgebiet bewegt der Server, dort kein Sprint */
     if (faehrt) this.figur.blick(rx, ry);
     this.laeuft = fremd ? this.laeuftFremd : faehrt; this.figur.setze(this.schildHoch ? (this.laeuft ? "schild_laufen" : "block") : this.laeuft ? (this.ausdauer.faktor > 1 ? "rennen" : "laufen") : "ruhe"); /* Sprint: Rennen */

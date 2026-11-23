@@ -106,12 +106,13 @@ export function naechstFrei(p: Punkt): Punkt {
 }
 
 /** Wegsuche A* über die Felder, acht Richtungen, nicht um Ecken schneiden. Zurück: Wegpunkte (ohne den Start), geglättet. */
-export function weg(von: Punkt, nach: Punkt, rand = 0.3): Punkt[] {
-  const ziel = naechstFrei(nach), start = naechstFrei(von);
-  if (frei(start, ziel, rand)) return [ziel];
+export function weg(von: Punkt, nach: Punkt, rand = 0.3, felder = false): Punkt[] {
+  /* felder: Feldbewegung (shared/feld.ts) – der Weg geht über die Feldmitten, ohne Glätten; ein schräger Schritt kostet wie ein gerader */
+  const z0p = naechstFrei(nach), start = naechstFrei(von), ziel = felder ? { x: Math.floor(z0p.x) + 0.5, y: Math.floor(z0p.y) + 0.5 } : z0p;
+  if (!felder && frei(start, ziel, rand)) return [ziel];
   const si = Math.floor(start.x), sj = Math.floor(start.y), zi = Math.floor(ziel.x), zj = Math.floor(ziel.y), N = KB * KH;
   const g = new Float32Array(N).fill(Infinity), her = new Int32Array(N).fill(-1), zu = new Uint8Array(N), offen: number[] = [];
-  const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + 0.414 * Math.min(dx, dy); };
+  const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + (felder ? 0.001 : 0.414) * Math.min(dx, dy); };
   const f = new Float32Array(N).fill(Infinity), s0 = sj * KB + si; g[s0] = 0; f[s0] = h(si, sj); offen.push(s0);
   while (offen.length) {
     let bi = 0; for (let k = 1; k < offen.length; k++) if (f[offen[k]] < f[offen[bi]]) bi = k;
@@ -119,10 +120,11 @@ export function weg(von: Punkt, nach: Punkt, rand = 0.3): Punkt[] {
     const ci = c % KB, cj = (c - ci) / KB; if (ci === zi && cj === zj) break;
     for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const i = ci + di, j = cj + dj; if (fels(i, j)) continue;
       if (di && dj && (fels(ci + di, cj) || fels(ci, cj + dj))) continue;
-      const n = j * KB + i, kosten = g[c] + (di && dj ? 1.414 : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; f[n] = kosten + h(i, j); offen.push(n); } }
+      const n = j * KB + i, kosten = g[c] + (di && dj ? (felder ? 1.001 : 1.414) : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; f[n] = kosten + h(i, j); offen.push(n); } }
   }
   const z0 = zj * KB + zi; if (her[z0] < 0 && z0 !== s0) return [];
   const roh: Punkt[] = [ziel]; for (let c = her[z0]; c >= 0 && c !== s0; c = her[c]) roh.push({ x: (c % KB) + 0.5, y: Math.floor(c / KB) + 0.5 }); roh.reverse();
+  if (felder) return roh;
   // glätten: von der aktuellen Stelle aus immer den fernsten Punkt nehmen, zu dem der Weg frei ist
   const aus: Punkt[] = []; let hier = start, k = 0;
   while (k < roh.length) { let m = k; for (let n = roh.length - 1; n > k; n--) if (frei(hier, roh[n], rand)) { m = n; break; } aus.push(roh[m]); hier = roh[m]; k = m + 1; }

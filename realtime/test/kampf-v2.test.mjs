@@ -4,7 +4,7 @@
  * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
  * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
  */
-import { Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf } from "./sim.gebaut.mjs";
+import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
 
@@ -71,7 +71,32 @@ function duell(seed, waffe, stil) {
 /* Sprint im Kampfgebiet: der Server rechnet Tempo und Ausdauer selbst (shared/sprint.ts) */
 { const weg = (an) => { const { s, b, h } = duell(41, "schwert", 1); b.x = b.heim.x = b.x + 80; const x0 = h.x; s.eingabe({ t: "sprint", an, wert: 100 }, h.id); const y0 = h.y; s.eingabe({ t: "richtung", x: 0, y: 1 }, h.id); for (let i = 0; i < 20; i++) s.schritt(); return { weg: h.y - y0, z: s.zustand(h.id).ich.ausdauer }; };
   const n = weg(false), sp = weg(true);
-  check(Math.abs(sp.weg / n.weg - 1.3) < 0.03 && sp.z && sp.z[1] === 1 && sp.z[0] < 100 && n.z[0] === 100, `Sprint im Kampfgebiet: +30 % Weg (${n.weg.toFixed(2)} → ${sp.weg.toFixed(2)} Felder in 1 s), Ausdauer ${sp.z && sp.z[0]} %, Zustand meldet sie`); }
+  check(Math.abs(n.weg - 2) < 0.01 && Math.abs(sp.weg - 4) < 0.01 && sp.z && sp.z[1] === 1 && sp.z[0] < 100 && n.z[0] === 100, `Felder: Gehen 1 Feld je Tick, Sprint 2 (${n.weg.toFixed(2)} → ${sp.weg.toFixed(2)} Felder in 1 s), Ausdauer ${sp.z && sp.z[0]} %, Zustand meldet sie`); }
+/* Felder und Schräge: schräg kostet wie gerade, Nahkampf nur von N/O/S/W, Fernkampf nach Feldabstand */
+{ const mitteOk = (w) => Math.abs(w.x % 1 - 0.5) < 1e-6 && Math.abs(w.y % 1 - 0.5) < 1e-6, F = Math.floor;
+  { const { s, b, h } = duell(51, "schwert", 1); b.x = b.heim.x += 80; for (let i = 0; i < 12; i++) s.schritt(); const x0 = h.x, y0 = h.y;
+    s.eingabe({ t: "richtung", x: 1, y: 1 }, h.id); for (let i = 0; i < 20; i++) s.schritt(); s.eingabe({ t: "richtung", x: 0, y: 0 }, h.id); for (let i = 0; i < 12; i++) s.schritt();
+    check(mitteOk(h) && Math.abs(h.x - x0 - (h.y - y0)) < 1e-6 && h.x - x0 >= 2 && h.x - x0 <= 3, `Schräg gehen: ${(h.x - x0).toFixed(0)} Felder schräg in gut 1 s (wie gerade), danach steht der Held auf einer Feldmitte`); }
+  { const { s, b, h } = duell(52, "schwert", 1); s.eingabe({ t: "auto", an: false }, h.id); b.aggroReichSperre = true; b.zielId = 0; b.wach = false; h.aggroZeit = 15 * 60;
+    b.x = b.heim.x = 112.5; b.y = b.heim.y = 6.5; h.x = 111.5; h.y = 5.5; for (let i = 0; i < 2; i++) s.schritt();
+    s.eingabe({ t: "ziel", id: b.id }, h.id); const lagen = []; for (let i = 0; i < 6 * 20; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === h.id) lagen.push([F(h.x) - F(b.x), F(h.y) - F(b.y)]); }
+    check(lagen.length > 0 && lagen.every(([dx, dy]) => Math.abs(dx) + Math.abs(dy) === 1), `Nahkampf schräg daneben: der Held tritt erst auf ein Feld N/O/S/W und schlägt dann (${lagen.length} Hiebe, Lagen ${JSON.stringify([...new Set(lagen.map(String))])})`); }
+  { const { s, b, h } = duell(53, "schwert", 1); const lagen = []; s.eingabe({ t: "ziel", id: b.id }, h.id); for (let i = 0; i < 15 * 20 && !b.tot && !h.tot; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === b.id) lagen.push([F(h.x) - F(b.x), F(h.y) - F(b.y)]); }
+    check(lagen.length > 0 && lagen.every(([dx, dy]) => Math.abs(dx) + Math.abs(dy) === 1), `Der Bandit schlägt ebenfalls nur von N/O/S/W (${lagen.length} Hiebe)`); }
+  { const { s, b, h } = duell(54, "bogen", 1); s.eingabe({ t: "auto", an: false }, h.id); b.aggroReichSperre = true; b.zielId = 0; b.wach = false; h.aggroZeit = 15 * 60;
+    b.x = b.heim.x = 112.5; b.y = b.heim.y = 6.5; h.x = 104.5; h.y = 2.5; for (let i = 0; i < 2; i++) s.schritt(); s.eingabe({ t: "ziel", id: b.id }, h.id); let erst = null;
+    for (let i = 0; i < 6 * 20 && !erst; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === h.id) erst = Math.max(Math.abs(F(h.x) - F(b.x)), Math.abs(F(h.y) - F(b.y))); }
+    check(erst === 6, `Bogen: schießt ab Feldabstand 6 (max(|dx|, |dy|)), auch schräg – erster Schuss aus ${erst} Feldern`); }
+  /* Safespot: hinter einer langen Wand (mehr als 4 Felder Umweg) bleibt der Gegner stehen; hinter einem einzelnen Hindernis geht er kurz drumherum */
+  { const frei = (i0, j0) => { for (let j = j0 - 6; j <= j0 + 6; j++) for (let i = i0 - 3; i <= i0 + 3; i++) if (fels(i, j)) return false; return true; };
+    for (const [lang, text] of [[true, "lange Wand (9 Felder): der Bandit bleibt dahinter stehen (Safespot)"], [false, "einzelnes Hindernis: der Bandit geht kurz drumherum und greift an"]]) {
+      const { s, b, h } = duell(60 + Number(lang), "schwert", 1), KS = karteJetzt(); let p = null; for (let j = 20; j < KS.KH - 20 && !p; j++) for (let i = 20; i < KS.KB - 20 && !p; i++) if (frei(i, j)) p = { i, j };
+      const wand = []; for (let d = lang ? -4 : 0; d <= (lang ? 4 : 0); d++) { const k = (p.j + d) * KS.KB + p.i; wand.push(k); KS.FELS[k] = 1; }
+      s.eingabe({ t: "auto", an: false }, h.id); b.x = b.heim.x = p.i + 1.5; b.y = b.heim.y = p.j + 0.5; h.x = p.i - 0.5; h.y = p.j + 0.5; b.zielId = h.id; b.wach = true;
+      let hiebe = 0; const x0 = b.x, y0 = b.y; for (let i = 0; i < 8 * 20; i++) { s.schritt(); b.zielId = h.id; for (const e of s.zustand().ev) if (e.a === "hieb" && e.id === b.id) hiebe++; }
+      for (const k of wand) KS.FELS[k] = 0;
+      check(lang ? hiebe === 0 && Math.abs(b.x - x0) <= 1 : hiebe > 0, `${text} (${hiebe} Hiebe, Bandit ${(b.x - x0).toFixed(1)}/${(b.y - y0).toFixed(1)} Felder bewegt)`); } } }
+
 /* Lebensregeneration: 1 LP je 100 Game-Ticks (50 s) */
 { const { s, b, h } = duell(31, "schwert", 1); b.x = b.heim.x = b.x + 60; h.lp = 5; let t = 0; const lp0 = h.lp; for (; t < 151 * 20; t++) s.schritt();
   check(h.lp === lp0 + 3, `Regeneration: in 151 s genau 3 LP (5 → ${h.lp}), also 1 LP je 50 s`); }

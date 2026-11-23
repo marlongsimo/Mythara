@@ -6,10 +6,12 @@
  * Reihenfolge bei jedem Angriff (siehe treffen): 1 prüfen (Reichweite, Sicht) · 2 Trefferwurf · 3 Schadenswurf · 4 Boni · 5 Block und Schutz · 6 Leben
  */
 import { Ausdauer } from "./sprint";
+const UMWEG = 4; /* Felder: so viel länger darf der Umweg eines Gegners sein */
+import { GEHEN_TEMPO, SPRINT_TEMPO_FELDER, feldAbstand, schrittLaenge, nahkampfFeld, kreuzFelder, mitte, inMitte, richtungsSchritt, schrittFrei } from "./feld";
 import { Kampfwerte, SkillXp, Art, XP_JE_SCHADEN, LP_XP_JE_SCHADEN, DEFENSE_XP_JE_BLOCK, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
-import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, KB, KH } from "./karte";
+import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
 
 export type Taste = "q" | "e" | "r";
 export type Eingabe =
@@ -83,7 +85,36 @@ export class Sim {
   static welt(seed: number, wiederkehrSek = K.WELT_WIEDERKEHR, eigeneWerte = false): Sim { const s = new Sim("schildwaechter", seed, []); s.wesen.shift(); s.weltZeit = wiederkehrSek; s.blinzStart = new Set(s.blinzler);
     if (eigeneWerte) s.eigeneWerteSetzen(); return s; }
   /** Gegner mit ihren eigenen Werten (ohne Stufen-Skalierung) – Weltzonen mit Kampfregeln v1, auch beim Rechnen im Browser */
-  eigeneWerteSetzen(): void { this.eigeneWerte = true; for (const w of this.wesen) if (!w.held) w.lp = w.max = MONSTER[w.typ].lp; }
+  eigeneWerteSetzen(): void { this.eigeneWerte = true; for (const w of this.wesen) if (!w.held) { w.lp = w.max = MONSTER[w.typ].lp; const m = mitte(w); w.x = m.x; w.y = m.y; w.heim = mitte(w.heim); } }
+  /** Feldbewegung („Felder und Schräge“, shared/feld.ts): in den Weltzonen (Kampfregeln v1/v2) läuft alles von Feldmitte zu Feldmitte, 1 Feld je Tick (Sprint 2),
+   *  Nahkampf nur von N/O/S/W, Fernkampf nach Feldabstand. Die alten Kampagnenszenen bleiben stufenlos. */
+  get felder(): boolean { return this.weltZeit > 0 && this.eigeneWerte; }
+  private wegZu(a: Punkt, b: Punkt): Punkt[] { return weg(a, b, 0.3, this.felder); }
+  /** Felder je Sekunde: Gehen 2, Sprint 4; Gegner 2 (Feste 0); Verlangsamung wirkt weiter */
+  private feldTempo(w: Wesen): number { if (!w.held && !MONSTER[w.typ].tempo) return 0; return (w.ausdauer && w.ausdauer.faktor > 1 ? SPRINT_TEMPO_FELDER : GEHEN_TEMPO) * (w.langsamT > 0 ? 1 - w.langsamF : 1); }
+  /** In Reichweite? Feldmodus: Nahkampf nur N/O/S/W (locker: beim Treffen auch schräg daneben), sonst Feldabstand ≤ Reichweite und freie Sicht */
+  private inReich(w: Wesen, z: Wesen, A: { art: string; reich: number }, locker = false): boolean {
+    if (!this.felder) return abstand(w, z) - z.r <= A.reich + (locker ? (w.held ? 0.6 : 0.35) : 0) && frei(w, z);
+    if (A.art === "nah") return locker ? feldAbstand(w, z) <= 1 : nahkampfFeld(w, z);
+    return feldAbstand(w, z) <= Math.max(1, Math.floor(A.reich)) + (locker ? 1 : 0) && feldAbstand(w, z) > 0 && frei(w, z); }
+  /** Wohin laufen, um z anzugreifen: Nahkampf das freie N/O/S/W-Feld, das am nächsten liegt (nicht von einem anderen Gegner belegt), sonst das Ziel selbst */
+  private zielFeld(w: Wesen, z: Wesen, nah: boolean): Punkt {
+    if (!this.felder || !nah) return { x: z.x, y: z.y };
+    const belegt = (p: Punkt) => this.wesen.some((o) => o !== w && o !== z && !o.tot && !o.held && !w.held && feldAbstand(o.pfad.length ? o.pfad[o.pfad.length - 1] : o, p) === 0);
+    const k = kreuzFelder(z).filter((p) => !fels(Math.floor(p.x), Math.floor(p.y))).sort((a, b) => schrittLaenge(w, a) - schrittLaenge(w, b));
+    return k.find((p) => !belegt(p)) || k[0] || { x: z.x, y: z.y }; }
+  /** Gegner im Feldmodus (wie OSRS): ein Schritt direkt aufs Ziel – schräg, sonst waagerecht oder senkrecht. Geht das nicht, nur ein kurzer Umweg
+   *  (höchstens UMWEG Felder länger als der gerade Abstand); sonst bleibt er stehen – Safespots bleiben möglich, aber nicht trivial */
+  private dummerSchritt(w: Wesen, ziel: Punkt): Punkt[] {
+    const i = Math.floor(w.x), j = Math.floor(w.y), zi = Math.floor(ziel.x), zj = Math.floor(ziel.y), dx = Math.sign(zi - i), dy = Math.sign(zj - j); if (!dx && !dy) return [];
+    const ok = (a: number, b: number) => !fels(a, b);
+    for (const [a, b] of [[dx, dy], [dx, 0], [0, dy]] as [number, number][]) if ((a || b) && schrittFrei(ok, i, j, a, b)) return [{ x: i + a + 0.5, y: j + b + 0.5 }];
+    const um = this.wegZu(w, ziel); return um.length && um.length <= Math.max(Math.abs(zi - i), Math.abs(zj - j)) + UMWEG ? um : []; }
+  /** Gerade gesteuert (Tasten/Stick): der nächste Schritt aufs Nachbarfeld in diese Richtung (schräg nur ohne Ecken zu schneiden; sonst die gerade Hälfte) */
+  private richtungsFeld(w: Wesen): Punkt | null {
+    const r = richtungsSchritt(w.rx, w.ry); if (!r) return null; const i = Math.floor(w.x), j = Math.floor(w.y), ok = (a: number, b: number) => !fels(a, b);
+    for (const [dx, dy] of [r, [r[0], 0], [0, r[1]]] as [number, number][]) if ((dx || dy) && schrittFrei(ok, i, j, dx, dy)) return { x: i + dx + 0.5, y: j + dy + 0.5 };
+    return null; }
   /** Einen schon vorhandenen Helden auf die Kampfregeln v1 stellen (Rechnen im Browser: der Held entsteht dort mit der Simulation) */
   heldV1(id: number, kw: Kampfwerte): void { const w = this.nach(id); if (!w || !w.held) return; w.kw = kw; w.ausdauer = w.ausdauer || new Ausdauer(); w.xpNeu = { ...NULL_XP }; w.stufe = kw.heldenlevel; w.max = kw.max; w.lp = kw.max; }
   eigeneWerte = false; /** in diesem Rechenschritt beginnt ein Kampf-Tick (alle 0,5 s) */ aufTick = true;
@@ -138,8 +169,8 @@ export class Sim {
     if (e.t === "neu") { if (this.phase === "sieg") this.aufbau(); return; }
     if (h.tot || (this.phase !== "lauf" && !STAERKE.beute)) return;
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
-    if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = []; } }
-    else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = weg(h, { x: e.x, y: e.y }); }
+    if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = this.felder ? h.pfad.slice(0, 1) : []; } }
+    else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = this.wegZu(h, { x: e.x, y: e.y }); }
     else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
@@ -276,7 +307,7 @@ export class Sim {
   private ausloesen(w: Wesen, z: Wesen): void {
     const A = this.waffe(w); this.ev.push({ a: "hieb", id: w.id });
     if (A.art === "heil") { if (z.team === w.team && abstand(w, z) <= A.reich + 1) this.heilen(z, A.schaden[0] + this.zf() * (A.schaden[1] - A.schaden[0]), w); return; }
-    if (z.tot || abstand(w, z) - z.r > A.reich + (w.held ? 0.6 : 0.35) || !frei(w, z)) return; // wer inzwischen weg ist, wird nicht getroffen
+    if (z.tot || !this.inReich(w, z, A, true)) return; // wer inzwischen weg ist, wird nicht getroffen
     const M = w.held && !w.kw ? (A as Modus) : null, spec: Spec = { grund: A.schaden[1] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), min: A.schaden[0] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), art: A.art as Schadensart, wucht: Boolean(M && M.wucht), untot: M ? M.untot : 0, mal: w.typ === "kopfgeldjaeger" && !w.kw ? K.MAL.plus : 0 }; /* v1: keine Zusatzwirkungen der alten Helden */
     if (w.held && A.art !== "nah") { spec.nach = w.typ === "kopfgeldjaeger" && w.modus === 0 && !w.kw ? "durchbrechen" : ""; this.schuss(w, z, z, (A as Modus).flug || 14, spec, A.art === "magie" ? "blitz" : "bolzen"); return; }
     const n = this.treffen(w, z, spec); if (n > 0 && !z.tot && !w.kw) this.nachTreffer(w, z, w.typ === "schildwaechter" ? (w.modus === 0 ? "festnageln" : "schildhieb") : w.typ === "assassine" && w.modus === 0 ? "dolch" : w.typ === "elementarist" ? "rueckstoss" : "");
@@ -292,28 +323,29 @@ export class Sim {
   }
   /** Auf ein Ziel zugehen und angreifen, sobald es in Reichweite ist (Monster und Begleiter) */
   private jagen(w: Wesen, z: Wesen, reich: number): void {
-    const d = abstand(w, z) - z.r;
-    if (d <= reich && frei(w, z)) { w.pfad = []; w.blick = Math.atan2(z.y - w.y, z.x - w.x); if (w.cdA <= 0) this.angriff(w, z); return; }
-    w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, z); w.neuWeg = 0.3; }
+    const art = this.waffe(w).art, nah = art === "nah";
+    if (this.felder ? this.inReich(w, z, { art, reich }) : abstand(w, z) - z.r <= reich && frei(w, z)) { w.pfad = []; w.blick = Math.atan2(z.y - w.y, z.x - w.x); if (w.cdA <= 0) this.angriff(w, z); return; }
+    if (this.felder && !w.held) { if (!w.pfad.length) w.pfad = this.dummerSchritt(w, this.zielFeld(w, z, nah)); return; } /* Gegner: „dumm“ aufs Ziel zu, kurze Umwege */
+    w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, this.zielFeld(w, z, nah)); w.neuWeg = 0.3; }
   }
   /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
-  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; const d = abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
     const f = this.nach(w.fuehrer), D = HELDEN[w.typ]; let ziel: Wesen | undefined;
-    const folgen = () => { if (f && !f.tot && abstand(w, f) > 2.4) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = weg(w, { x: f.x - Math.cos(f.blick) * 1.2, y: f.y - Math.sin(f.blick) * 1.2 }); w.neuWeg = 0.4; } } };
+    const folgen = () => { if (f && !f.tot && abstand(w, f) > 2.4) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = this.wegZu(w, { x: f.x - Math.cos(f.blick) * 1.2, y: f.y - Math.sin(f.blick) * 1.2 }); w.neuWeg = 0.4; } } };
     /* Gefahr am Boden: Lädt ein Gegner einen Flächenangriff und der Begleiter steht darin, läuft er auf dem kürzesten Weg hinaus – in Richtung des Anführers, wenn der schon draußen ist. */
     for (const g of this.wesen) { if (g.held || g.tot || g.ladeT <= 0) continue; const S = MONSTER[g.typ].spezial!, d = Math.hypot(w.x - g.ladeX, w.y - g.ladeY), rand = S.radius + w.r + 0.5; if (d >= rand) continue;
       let wx = w.x - g.ladeX, wy = w.y - g.ladeY; if (f && !f.tot && Math.hypot(f.x - g.ladeX, f.y - g.ladeY) > rand) { wx = f.x - g.ladeX; wy = f.y - g.ladeY; } const l = Math.hypot(wx, wy) || 1;
-      w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, naechstFrei({ x: g.ladeX + wx / l * (rand + 0.8), y: g.ladeY + wy / l * (rand + 0.8) })); w.neuWeg = 0.5; } w.zielId = 0; return; }
+      w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, naechstFrei({ x: g.ladeX + wx / l * (rand + 0.8), y: g.ladeY + wy / l * (rand + 0.8) })); w.neuWeg = 0.5; } w.zielId = 0; return; }
     if (f && !f.tot && abstand(w, f) > 8) { w.zielId = 0; folgen(); return; }
     if (w.typ === "lichtbringer") { // heilen, wer es braucht; sonst mit dem Streitkolben helfen
       const v = this.schwaechster(w, 12, 0.92), feind = this.naechsterGegner(w, 2.6);
       if (v && v.lp / v.max < 0.6 && w.cdQ <= 0 && abstand(w, v) <= K.WORT.reich) { w.zielId = v.id; this.faehigkeit(w, "q", v); }
       if (w.cdR <= 0 && this.freunde(w).filter((o) => o.lp / o.max < 0.45 && abstand(w, o) <= K.GOETTLICH.radius).length >= (this.freunde(w).length > 1 ? 2 : 1)) this.faehigkeit(w, "r", w);
       if (feind && w.cdE <= 0 && w.lp / w.max < 0.8) this.faehigkeit(w, "e", w);
-      if (v) { if (w.modus !== 0) this.wechsel(w); if (w.modus === 0) { if (abstand(w, v) > D.modi[0].reich - 0.5) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = weg(w, v); w.neuWeg = 0.3; } } else { w.pfad = []; if (w.cdA <= 0 && w.aushol <= 0) this.angriff(w, v); } } return; }
+      if (v) { if (w.modus !== 0) this.wechsel(w); if (w.modus === 0) { if (abstand(w, v) > D.modi[0].reich - 0.5) { w.neuWeg -= DT; if (w.neuWeg <= 0) { w.pfad = this.wegZu(w, v); w.neuWeg = 0.3; } } else { w.pfad = []; if (w.cdA <= 0 && w.aushol <= 0) this.angriff(w, v); } } return; }
       if (feind) { if (w.modus !== 1) this.wechsel(w); if (w.modus === 1) this.jagen(w, feind, D.modi[1].reich); return; }
       folgen(); return;
     }
@@ -365,13 +397,13 @@ export class Sim {
         else if (this.karte.WANDERN > 0 && abstand(w, w.heim) <= this.karte.WANDERN + 1.5) { /* streifen: ab und zu zu einer neuen Stelle um das Lager, dazwischen stehen bleiben */
           if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * K.HEIM_HEILUNG * DT);
           if (!w.pfad.length) { w.streifT = (w.streifT ?? this.zf() * 3) - DT; if (w.streifT <= 0) { const a = this.zf() * Math.PI * 2, r = this.zf() * this.karte.WANDERN, p = { x: w.heim.x + Math.cos(a) * r, y: w.heim.y + Math.sin(a) * r };
-            if (begehbar(p.x, p.y)) w.pfad = weg(w, p); w.streifT = 2.5 + this.zf() * 4.5; } } }
-        else if (abstand(w, w.heim) > 0.3) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, w.heim); w.neuWeg = 1; } }
+            if (begehbar(p.x, p.y)) w.pfad = this.wegZu(w, p); w.streifT = 2.5 + this.zf() * 4.5; } } }
+        else if (abstand(w, w.heim) > 0.3) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, w.heim); w.neuWeg = 1; } }
         else if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * (D.boss ? K.HEIM_HEILUNG_BOSS : K.HEIM_HEILUNG) * DT);
       } else if (w.bot) this.begleiterZug(w);
       else { // der Held des Spielers: Er läuft nur, wohin gesteuert wird
         const A = this.waffe(w), faehrt = w.rx !== 0 || w.ry !== 0, v = this.tempo(w);
-        if (faehrt) { w.x += w.rx * v * DT; w.y += w.ry * v * DT; w.blick = Math.atan2(w.ry, w.rx); }
+        if (faehrt) { if (this.felder) { if (!w.pfad.length) { const n = this.richtungsFeld(w); if (n) w.pfad = [n]; } } else w.x += w.rx * v * DT, w.y += w.ry * v * DT; w.blick = Math.atan2(w.ry, w.rx); }
         if (w.held && (A as Modus).schild) { // Schild erhoben: kein Angriff. Torvald wendet den Schild dem gewählten Gegner zu, sonst dem nächsten in der Nähe.
           const g = ziel && ziel.team !== w.team && abstand(w, ziel) < 10 ? ziel : this.naechsterGegner(w, 5); if (g) w.blick = Math.atan2(g.y - w.y, g.x - w.x);
         } else if (A.art === "heil") { // Heilstab: gewählter Verbündeter, sonst wer am schwersten verletzt ist
@@ -380,17 +412,19 @@ export class Sim {
           if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; this.ev.push({ a: "text", id: w.id, t: "Kämpft schon mit jemand anderem" }); }
           const nah = A.art === "nah", darf = nah || !faehrt; // Fernkämpfer schießen nur im Stehen
           /* Autoangriff: wer steht, kein Ziel hat und angegriffen wird, schlägt zurück (nur gegen den, der ihn angreift) */
-          if (!ziel && !faehrt && !w.pfad.length && w.auto !== false) ziel = this.feinde(w).filter((o) => o.zielId === w.id && abstand(w, o) - o.r <= Math.max(nah ? 2.2 : 0, A.reich) + 0.3).sort((a, b) => abstand(w, a) - abstand(w, b))[0];
+          if (!ziel && !faehrt && !w.pfad.length && w.auto !== false) ziel = this.feinde(w).filter((o) => o.zielId === w.id && (this.felder ? feldAbstand(w, o) <= Math.max(1, Math.floor(A.reich)) : abstand(w, o) - o.r <= Math.max(nah ? 2.2 : 0, A.reich) + 0.3)).sort((a, b) => abstand(w, a) - abstand(w, b))[0];
           /* angeklickter Gegner außer Reichweite: hinlaufen (der Weg wird alle 0,4 s neu gesucht, das Ziel bewegt sich), in Reichweite stehen bleiben und angreifen */
-          if (ziel && ziel.id === w.zielId && !faehrt) { const dz = abstand(w, ziel) - ziel.r; if (dz > A.reich - 0.15 || !frei(w, ziel)) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = weg(w, { x: ziel.x, y: ziel.y }); w.neuWeg = 0.4; } } else if (w.pfad.length) w.pfad = []; }
-          if (ziel && darf && abstand(w, ziel) - ziel.r <= A.reich && frei(w, ziel)) { if (!faehrt || nah) w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); if (w.cdA <= 0) this.angriff(w, ziel); } }
+          if (ziel && ziel.id === w.zielId && !faehrt) { const weit = this.felder ? !this.inReich(w, ziel, A) : abstand(w, ziel) - ziel.r > A.reich - 0.15 || !frei(w, ziel); if (weit) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, this.zielFeld(w, ziel, nah)); w.neuWeg = 0.4; } } else if (w.pfad.length) w.pfad = []; }
+          if (ziel && darf && (this.felder ? this.inReich(w, ziel, A) : abstand(w, ziel) - ziel.r <= A.reich && frei(w, ziel))) { if (!faehrt || nah) w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); if (w.cdA <= 0) this.angriff(w, ziel); } }
       }
-      if (w.pfad.length && w.aushol <= 0) { let rest = this.tempo(w) * DT; // laufen (Wegpunkte)
-        while (rest > 0 && w.pfad.length) { const p = w.pfad[0], d = abstand(w, p); if (d <= rest) { w.x = p.x; w.y = p.y; rest -= d; w.pfad.shift(); } else { w.blick = Math.atan2(p.y - w.y, p.x - w.x); w.x += (p.x - w.x) / d * rest; w.y += (p.y - w.y) / d * rest; rest = 0; } } }
+      if (this.felder && !w.pfad.length && !inMitte(w) && w.aushol <= 0) w.pfad = [mitte(w)]; /* Feldmodus: wer steht, steht auf einer Feldmitte */
+      if (w.pfad.length && w.aushol <= 0) { const F = this.felder; let rest = (F ? this.feldTempo(w) : this.tempo(w)) * DT; // laufen (Wegpunkte; Feldmodus: Schritte, schräg = gerade)
+        while (rest > 1e-9 && w.pfad.length) { const p = w.pfad[0], d = F ? schrittLaenge(w, p) : abstand(w, p); if (d <= rest + 1e-9) { w.x = p.x; w.y = p.y; rest -= d; w.pfad.shift();
+            if (F && !w.pfad.length && w.held && !w.bot && (w.rx || w.ry)) { const n = this.richtungsFeld(w); if (n) { w.pfad = [n]; w.blick = Math.atan2(w.ry, w.rx); } } } else { w.blick = Math.atan2(p.y - w.y, p.x - w.x); w.x += (p.x - w.x) / d * rest; w.y += (p.y - w.y) / d * rest; rest = 0; } } }
     }
     if (this.sl && this.sl.offen && this.phase === "lauf") this.schleuse(this.sl);
-    for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) { const a = this.wesen[i], b = this.wesen[j]; if (a.tot || b.tot) continue; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } }
-    for (const w of this.wesen) if (!w.tot) schieben(w);
+    if (!this.felder) for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) { const a = this.wesen[i], b = this.wesen[j]; if (a.tot || b.tot) continue; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } }
+    if (!this.felder) for (const w of this.wesen) if (!w.tot) schieben(w); /* Feldmodus: keine Rempler, Figuren bleiben auf ihren Feldern */
     for (const w of this.wesen) if (!w.held && !w.tot && MONSTER[w.typ].fest) { w.x = w.heim.x; w.y = w.heim.y; } /* Festes bleibt, wo es ist, auch wenn jemand dagegenläuft */
     for (const g of this.geschosse) { const z = g.zielId ? this.nach(g.zielId) : undefined; if (z && !z.tot) { g.zx = z.x; g.zy = z.y; }
       const d = Math.hypot(g.zx - g.x, g.zy - g.y), s = g.tempo * DT;

@@ -189,7 +189,7 @@ export class Welt3D {
   springen(x: number, z: number) { this.held.x = x; this.held.z = z; this.ziel.set(0, 0, 0); this.nachladen(); }
   frei(x: number, z: number) { const r = 0.28; for (const [dx, dz] of [[-r, -r], [r, -r], [-r, r], [r, r]]) if (!this.gehbar(Math.floor(x + dx), Math.floor(z + dz))) return false; return true; }
   /** A* auf dem Feldraster der geladenen Chunks (8 Richtungen, keine Ecken abschneiden) */
-  weg(ax: number, az: number, bx: number, bz: number): { x: number; z: number }[] {
+  weg(ax: number, az: number, bx: number, bz: number, felder = false): { x: number; z: number }[] { /* felder: Feldmitten ohne Glätten, schräg = gerade */
     const ok = (x: number, z: number) => this.gehbar(x, z), K = 1 << 16;
     let zx = Math.floor(bx), zz = Math.floor(bz);
     if (!ok(zx, zz)) { /* Ziel gesperrt (Baum, Wand): das nächste freie Feld daneben */ let best = 1e9, nx = 0, nz = 0;
@@ -198,13 +198,14 @@ export class Welt3D {
     const sx = Math.floor(ax), sz = Math.floor(az), key = (x: number, z: number) => z * K + x, g = new Map<number, number>(), von = new Map<number, number>(), offen: [number, number][] = [];
     const push = (k: number, f: number) => { offen.push([f, k]); let i = offen.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (offen[p][0] <= offen[i][0]) break; [offen[p], offen[i]] = [offen[i], offen[p]]; i = p; } };
     const pop = () => { const top = offen[0], last = offen.pop()!; if (offen.length) { offen[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < offen.length && offen[l][0] < offen[m][0]) m = l; if (r < offen.length && offen[r][0] < offen[m][0]) m = r; if (m === i) break; [offen[m], offen[i]] = [offen[i], offen[m]]; i = m; } } return top; };
-    const hh = (x: number, z: number) => { const dx = Math.abs(x - zx), dz = Math.abs(z - zz); return Math.max(dx, dz) + 0.414 * Math.min(dx, dz); };
+    const hh = (x: number, z: number) => { const dx = Math.abs(x - zx), dz = Math.abs(z - zz); return Math.max(dx, dz) + (felder ? 0.001 : 0.414) * Math.min(dx, dz); };
     g.set(key(sx, sz), 0); push(key(sx, sz), hh(sx, sz)); let n = 0, gefunden = false;
     while (offen.length && n++ < 40000) { const [, k] = pop(), x = k % K, z = (k - x) / K; if (x === zx && z === zz) { gefunden = true; break; }
       for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) { const nx = x + dx, nz = z + dz; if (!ok(nx, nz)) continue; if (dx && dz && (!ok(x + dx, z) || !ok(x, z + dz))) continue;
-        const nk = key(nx, nz), ng = g.get(k)! + (dx && dz ? 1.414 : 1); if (ng < (g.get(nk) ?? Infinity)) { g.set(nk, ng); von.set(nk, k); push(nk, ng + hh(nx, nz)); } } }
+        const nk = key(nx, nz), ng = g.get(k)! + (dx && dz ? (felder ? 1.001 : 1.414) : 1); if (ng < (g.get(nk) ?? Infinity)) { g.set(nk, ng); von.set(nk, k); push(nk, ng + hh(nx, nz)); } } }
     if (!gefunden) return [];
     const p: { x: number; z: number }[] = []; let k = key(zx, zz); while (k !== key(sx, sz)) { const x = k % K; p.unshift({ x: x + 0.5, z: (k - x) / K + 0.5 }); k = von.get(k)!; }
+    if (felder) return p;
     if (p.length) p[p.length - 1] = { x: bx, z: bz };
     const glatt: { x: number; z: number }[] = []; let a = { x: ax, z: az }, i = 0;   /* glätten: Punkte überspringen, solange die Linie frei ist */
     while (i < p.length) { let j = p.length - 1; while (j > i && !this.sicht(a, p[j])) j--; glatt.push(p[j]); a = p[j]; i = j + 1; }

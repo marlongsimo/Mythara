@@ -84,17 +84,24 @@ try {
     check(gelb < 6, `Ziel außer Reichweite der Minikarte: noch kein gelbes ! (${gelb} gelbe Bildpunkte)`); }
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6446.5, 6436.5));
   await anna.waitForFunction(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return false; const n = c.width, d = c.getContext("2d").getImageData(0, 0, n, n).data; let k = 0;
-    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k > 25; }, null, { timeout: 20000, polling: 500 }).catch(() => {});
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k > 25; }, null, { timeout: 45000, polling: 500 }).catch(() => {});
   { const gelb = await anna.evaluate(() => { const c = document.querySelector("canvas.karte3d"); if (!c) return -1; const x = c.getContext("2d"), n = c.width, d = x.getImageData(0, 0, n, n).data; let k = 0;
       for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { if (Math.hypot(i - n / 2, j - n / 2) > n / 3) continue; const o = (j * n + i) * 4; if (d[o] > 225 && d[o + 1] > 170 && d[o + 1] < 235 && d[o + 2] < 120) k++; } return k; });
     check(gelb > 25, `In Reichweite: gelbes ! auf der Minikarte (${gelb} gelbe Bildpunkte)`); }
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6450.5, 6440.5)); await anna.waitForTimeout(1500);
-  /* Sprint: Umschalttaste, +30 %, die gelbe Leiste leert sich */
-  { await anna.keyboard.press("Shift"); const v = await anna.evaluate(() => { const W = window.EZW.welt3d; return { an: W.ausdauer.an, faktor: W.ausdauer.faktor, knopf: !!document.querySelector('[aria-label="Sprint"].an') }; });
+  /* Sprint: Umschalttaste, 2 Felder je Tick, die gelbe Leiste leert sich */
+  { await anna.keyboard.press("Shift"); await anna.waitForFunction(() => window.EZW.welt3d.ausdauer.an, null, { timeout: 15000, polling: 300 }).catch(() => {}); const v = await anna.evaluate(() => { const W = window.EZW.welt3d; return { an: W.ausdauer.an, faktor: W.ausdauer.faktor, knopf: !!document.querySelector('[aria-label="Sprint"].an') }; });
     await anna.evaluate(() => window.EZW.welt3d.geheWeit(6450.5, 6470)); await anna.waitForFunction(() => window.EZW.welt3d.ausdauer.wert < 100, null, { timeout: 40000 }).catch(() => {}); await anna.waitForTimeout(300);
     const n = await anna.evaluate(() => { const W = window.EZW.welt3d; return { wert: W.ausdauer.wert, gelb: (document.querySelector(".ez-boegen .voll.gelb") || {}).style?.strokeDasharray || "" }; });
-    check(v.an && v.faktor === 1.3 && v.knopf && n.wert < 100 && /^\d/.test(n.gelb) && !n.gelb.startsWith("100"), `Sprint: Umschalt schaltet ein (+30 %, Knopf leuchtet), die gelbe Leiste sinkt (${n.wert.toFixed(0)} %, ${n.gelb})`);
-    await anna.keyboard.press("Shift"); check(await anna.evaluate(() => !window.EZW.welt3d.ausdauer.an && window.EZW.welt3d.ausdauer.faktor === 1), "Nochmal Umschalt: Sprint aus"); }
+    check(v.an && v.faktor === 2 && v.knopf && n.wert < 100 && /^\d/.test(n.gelb) && !n.gelb.startsWith("100"), `Sprint: Umschalt schaltet ein (2 Felder je Tick, Knopf leuchtet), die gelbe Leiste sinkt (${n.wert.toFixed(0)} %, ${n.gelb})`);
+    await anna.keyboard.press("Shift"); await anna.waitForFunction(() => !window.EZW.welt3d.ausdauer.an, null, { timeout: 15000, polling: 300 }).catch(() => {}); check(await anna.evaluate(() => !window.EZW.welt3d.ausdauer.an && window.EZW.welt3d.ausdauer.faktor === 1), "Nochmal Umschalt: Sprint aus"); }
+  /* Felder und Schräge: Schritte von Feldmitte zu Feldmitte, 1 Feld je Tick, schräg wie gerade, angeklickte Wege über Feldmitten */
+  { const r = await anna.evaluate(() => { const W = window.EZW.welt3d; W.ausdauer.setzen(false); W.halt(); W.schrittZiel = null; W.ort.x = 6450.5; W.ort.y = 6440.5; const o = W.ort, aus = [];
+      for (const [dx, dy] of [[1, 0], [1, 1], [-1, 0]]) { const x0 = o.x, y0 = o.y; W.feldSchritte(0.5, [dx, dy]); aus.push([+(o.x - x0).toFixed(3), +(o.y - y0).toFixed(3)]); }
+      const halb = (() => { const x0 = o.x; W.feldSchritte(0.25, [1, 0]); const a = o.x - x0; W.feldSchritte(0.25, null); return [+a.toFixed(3), +(o.x - x0).toFixed(3)]; })();
+      W.gehe(o.x + 5, o.y + 3); const mitten = W.pfad.every((p) => Math.abs(p.x % 1 - 0.5) < 1e-6 && Math.abs(p.y % 1 - 0.5) < 1e-6), n = W.pfad.length; W.halt(); W.schrittZiel = null; return { aus, halb, mitten, n }; });
+    check(JSON.stringify(r.aus) === "[[1,0],[1,1],[-1,0]]" && JSON.stringify(r.halb) === "[0.5,1]" && r.mitten && r.n === 5,
+      `Feldschritte in der offenen Welt: je 0,5 s ein Feld (gerade ${JSON.stringify(r.aus[0])}, schräg ${JSON.stringify(r.aus[1])}), ein angefangener Schritt wird beendet (${JSON.stringify(r.halb)}), Klickweg über ${r.n} Feldmitten (5 schräg/gerade für 5×3)`); }
   /* Ausrüstungs-Tab mit Auswahl (auf dem Handy war der Kopf abgeschnitten): Kopf mit „i“ ganz sichtbar, nichts überlappt */
   await anna.click('#ez-leiste [data-l="ausruestung"]'); await anna.waitForTimeout(300); await anna.click('#ez-ausruestungtab .ifeld.voll[data-wo="waffe"]'); await anna.waitForTimeout(300);
   { const L = await anna.evaluate(() => { const t = document.getElementById("ez-ausruestungtab").getBoundingClientRect(), k = document.querySelector("#ez-ausruestungtab .kopf").getBoundingClientRect(), i = document.querySelector("#ez-ausruestungtab .info").getBoundingClientRect(), w = document.querySelector("#ez-ausruestungtab .twahl").getBoundingClientRect(), fs = [...document.querySelectorAll("#ez-ausruestungtab .tplatz")].map((e) => e.getBoundingClientRect());
@@ -110,7 +117,7 @@ try {
   check(await ben.evaluate(() => Math.abs(window.EZW.welt3d.ort.y - 6642.5) < 3) && !(await durch(ben)) && await ben.evaluate(() => window.EZW.welt3d.quest.sperreZu), "Ben steht vor der Straßensperre: kein Weg nach Süden");
   check(!(await kreuzung(ben)), "Auch an der Kreuzung im Kreuzwald kein Weg nach Süden");
   if (BILD) await ben.screenshot({ path: BILD + "quest-sperre.png", timeout: 90000 }).catch(() => {});
-  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); await ben.waitForTimeout(500); }
+  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6645.5) + 1, 6645.5); }); await ben.mouse.click(q.x, q.y); await ben.waitForFunction(() => /Raban sprechen/.test((document.querySelector(".ez-wahl3d button") || {}).textContent || ""), null, { timeout: 20000, polling: 300 }).catch(() => {}); } /* bei ~1 Bild je Sekunde braucht das Menü ein paar Bilder */
   const knopf = await ben.evaluate(() => (document.querySelector(".ez-wahl3d button") || {}).textContent || ""); check(/Raban sprechen/.test(knopf), `Raban antippen: „${knopf}“`);
   if (knopf) await ben.click(".ez-wahl3d button", { force: true });
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
