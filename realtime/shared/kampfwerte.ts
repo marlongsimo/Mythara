@@ -17,7 +17,7 @@
  * Defense: bekommt XP nur noch über die Stile (kein XP mehr je Block). Die Stilboni auf Defense zählen für die Verteidigung gegen Nah- und Fernkampf.
  * Verteidigung: Nahkampf und Fernkampf = Defense-Level + Stilbonus + Ausrüstung; Magie = Magie-Level + Ausrüstung.
  * XP werden intern mit Nachkommastellen geführt (Rest je Skill), gebucht werden ganze XP.
- * Heldenlevel = ⌊Summe der sechs Skill-Level ÷ 6⌋. Erholung: 1 LP je 100 Game-Ticks (50 s), immer (LP_REGEN_TICKS).
+ * Heldenlevel (wie das Combat Level in OSRS, ohne Prayer) = ⌊0,25 × (Defense + Lebenspunkte) + max(0,325 × (Geschick + Stärke), 0,325 × (Fernkampf + ⌊Fernkampf ÷ 2⌋), 0,325 × (Magie + ⌊Magie ÷ 2⌋))⌋. Erholung: 1 LP je 100 Game-Ticks (50 s), immer (LP_REGEN_TICKS).
  * Gegner: feste Zahlen ohne Ausrüstung (config.ts MonsterDef.v2): Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Ticks, Abwehr, Nahkampfreichweite wie die Helden.
  */
 import { GEGENSTAENDE, Platz, WaffenWerte } from "./gegenstaende";
@@ -64,7 +64,9 @@ const XP_KURVE: number[] = (() => { const k = [0, 0]; let punkte = 0; for (let L
 export const xpFuer = (L: number, _skill?: Skill): number => (L <= 1 ? 0 : XP_KURVE[Math.min(SKILL_MAX, Math.floor(L))]);
 /** Skilllevel aus XP (1–100) */
 export function levelAus(xp: number, skill?: Skill): number { let L = 1; while (L < SKILL_MAX && xp >= xpFuer(L + 1, skill)) L++; return L; }
-export const heldenlevel = (x: SkillXp): number => Math.floor(SKILLS.reduce((n, k) => n + levelAus(x[k] || 0, k), 0) / SKILLS.length);
+/** Heldenlevel wie das Combat Level in OSRS (Attack = Geschick, Strength = Stärke, Hitpoints = Lebenspunkte; Prayer gibt es nicht = 0) */
+export const heldenlevel = (x: SkillXp): number => { const L = (k: Skill) => levelAus(x[k] || 0, k), f = L("fernkampf"), m = L("magie");
+  return Math.floor(0.25 * (L("defense") + L("lp")) + Math.max(0.325 * (L("geschick") + L("staerke")), 0.325 * (f + Math.floor(f / 2)), 0.325 * (m + Math.floor(m / 2)))); };
 /** Max-LP aus den LP-XP: 9 + LP-Level (Start 10) */
 export const maxLp = (lpXp: number): number => LP_START - 1 + levelAus(lpXp || 0, "lp");
 /** Fäuste: wenn keine Waffe angelegt ist */

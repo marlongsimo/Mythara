@@ -346,7 +346,7 @@ export function skillTafel(zu: () => void): void {
   const zeilen = SKILLS.map((s) => { const S = skillStand(x[s], s); return `<li><b>${SKILL_NAME[s]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${WAS[s]} · ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></li>`; }).join("");
   const z = (v: number) => String(Math.round(v * 10) / 10).replace(".", ",");
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>
-    <p class="klein">Heldenlevel ${hl} (Durchschnitt der sechs Skills) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
+    <p class="klein">Heldenlevel ${hl} (wie das Kampflevel: Defense und Leben, dazu die stärkste Kampfart) · ${k.max} Lebenspunkte · Abwehr Nahkampf ${z(k.abwehr.nah)}, Fernkampf ${z(k.abwehr.fern)}, Magie ${z(k.abwehr.magie)}</p>
     <p class="klein">Jeder Lebenspunkt Schaden bringt XP: Nah- und Fernkampf 4, Magie 2 – verteilt nach dem gewählten Stil – und dazu 1,33 Lebenspunkte-XP.</p>`, zu); }
 /** Bild für Gegenstände ohne Figurenteil: Kristall (Splitter) oder Pergament */
 function symbolMalen(c: HTMLCanvasElement, art: "kristall" | "pergament" | "trank" | "trankrot"): void {
