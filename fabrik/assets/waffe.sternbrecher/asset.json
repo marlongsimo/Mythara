@@ -1,0 +1,9 @@
+{
+  "id": "waffe.sternbrecher",
+  "name": "Sternbrecher",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell, umgedreht (Schlagende unten) und skaliert; ausgelagert, Stufen mit fabrik/stufen_bauen.sh",
+  "herkunft": "Meshy"
+}

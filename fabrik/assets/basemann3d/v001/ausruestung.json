@@ -341,6 +341,41 @@
         "armbrust1h",
         "dolchwurf"
       ]
+    },
+    {
+      "id": "waffe.sternbrecher",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.sternbrecher/v001/quelle/kolben.glb",
+      "griff": 0.14,
+      "griff2": 0.05,
+      "klasse": "einhand",
+      "angriff": "stich",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "waffe.sterndorn",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.sterndorn/v001/quelle/speer.glb",
+      "griff": 0.17,
+      "griff2": 0.4,
+      "klasse": "speer",
+      "angriff": "stich2h",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich2h"
+      ]
     }
   ],
   "stuecke_behalten": true,

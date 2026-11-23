@@ -66,6 +66,10 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     werte: [["Schaden", "Werte folgen"]], text: "Ein langes Schwert für zwei Hände, die Parierstange wie gebogene Äste." },
   sternenschild: { id: "sternenschild", name: "Sternenschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
     werte: [["Abwehr", "Werte folgen"]], text: "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund." },
+  sternbrecher: { id: "sternbrecher", name: "Sternbrecher", platz: "waffe", art: "Streitkolben", seltenheit: "selten", ebenen: ["waffe.sternbrecher"],
+    werte: [["Schaden", "Werte folgen"]], text: "Ein Streitkolben mit sternförmigem Kopf aus dunklem Stahl, der Schaft grün lackiert und bronzebeschlagen." },
+  sterndorn: { id: "sterndorn", name: "Sterndorn", platz: "waffe", art: "Speer", seltenheit: "selten", ebenen: ["waffe.sterndorn"],
+    werte: [["Schaden", "Werte folgen"]], text: "Ein langer Speer mit schlanker Spitze und grünem Wimpel – für zwei Hände und große Reichweite." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
@@ -108,7 +112,7 @@ const WAFFEN_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
   { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
   { s: "mythisch", w: "Sternenschimmernd", text: "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet." },
 ];
-for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"]] as const) {
+for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"], ["sternbrecher", "Sternbrecher", "er"], ["sterndorn", "Sterndorn", "er"]] as const) {
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
@@ -124,7 +128,7 @@ for (const st of ANFAENGER_STUFEN) for (const [basis, nomen, endung] of [["ritte
   GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
-export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Streitkolben: "stich", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
 export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];
