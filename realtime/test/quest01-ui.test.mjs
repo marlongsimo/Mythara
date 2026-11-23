@@ -128,7 +128,9 @@ try {
   check(await ben.evaluate(() => Math.abs(window.EZW.welt3d.ort.y - 6642.5) < 3) && !(await durch(ben)) && await ben.evaluate(() => window.EZW.welt3d.quest.sperreZu), "Ben steht vor der Straßensperre: kein Weg nach Süden");
   check(await kreuzung(ben), "Die Kreuzung im Kreuzwald ist offen – Ben ist auf dem Weg zu den Wachen (sonst käme er nicht zu ihnen)");
   if (BILD) await ben.screenshot({ path: BILD + "quest-sperre.png", timeout: 90000 }).catch(() => {});
-  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6643.5) + 1, 6643.5); }); await ben.mouse.click(q.x, q.y); } /* kurz antippen = erste Aktion: hinlaufen und sprechen */
+  { const q = await ben.evaluate(() => { const W = window.EZW.welt3d; return W.motor.bildschirm(6442.5, W.motor.hoehe(6442.5, 6643.5) + 1, 6643.5); }); await ben.mouse.click(q.x, q.y, { button: "right" }); await ben.waitForTimeout(400);
+    const m = await ben.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent)); check(m[0] === "💬Sprechen", `Rechtsklick auf Raban (ganze Figur, Brusthöhe): ${JSON.stringify(m)}`);
+    await ben.click('.ez-aktionen button:has-text("Sprechen")', { force: true }); } /* kurz antippen läuft nur hin; reden über lange drücken / Rechtsklick */
   await ben.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return d && d.offsetHeight > 0; }, null, { timeout: 60000 }).catch(() => {});
   { const { gesehen, o } = await bisWahl(ben); check(gesehen.some((g) => /Bestätigung/.test(g.text)) && o && o.antworten.includes("durch"), "Raban: „Der Bote aus Waldmark hat uns die Bestätigung gebracht“ – Antwort „Nach Weidenhain weitergehen“");
     if (o) await ben.keyboard.press(String(o.antworten.indexOf("durch") + 1)); }

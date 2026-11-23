@@ -28,6 +28,8 @@ function kasten(): HTMLElement { let d = document.getElementById("ez-gespraech")
     if (zeigtWahl()) { if (b) waehlen(b.dataset.a!); return; } weiter(); });
   return neu; }
 export function schliessen(melden = false): void { const d = document.getElementById("ez-gespraech"); if (d) { d.hidden = true; d.innerHTML = ""; } if (melden && npcJetzt && !npcJetzt.startsWith("lokal:")) dialogZu(); npcJetzt = ""; schlange = []; wahl = null; wartet = false; lokal = null; }
+/** Mit wem gerade gesprochen wird: Quest-Id (jori, raban …) oder „lokal:Name“ (Händler) */
+export const gespraechMit = (): string => npcJetzt;
 export const dialogOffen = (): boolean => { const d = document.getElementById("ez-gespraech"); return !!d && !d.hidden; };
 /** Weiter: nächste Aussage, dann die Antworten, sonst schließen */
 function weiter(): void { if (wartet) return; if (schlange.length > 1 || (schlange.length === 1 && wahl)) { schlange.shift(); zeichnen(); return; } schliessen(); }

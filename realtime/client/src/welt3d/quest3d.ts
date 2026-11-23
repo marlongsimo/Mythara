@@ -48,14 +48,16 @@ export class QuestWelt {
   /** Wo steht die Figur gerade (Hagan: der umhergehende Bürgermeister) */
   private wo(f: Figur): { x: number; y: number } | null { if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
+  /** Wo steht die Figur mit dieser Id (Gespräch abbrechen, wenn man sich entfernt) */
+  ortVon(id: string): { x: number; y: number } | null { const f = this.figuren.find((x) => x.n.id === id); return f ? this.wo(f) : null; }
   /** Wo die Questfiguren gerade stehen (für das Antippen am Bildschirm: die ganze Figur zählt) */
   punkte(): { x: number; y: number }[] { if (!questGeladen()) return []; const aus: { x: number; y: number }[] = []; for (const f of this.figuren) { const p = this.wo(f); if (p) aus.push(p); } return aus; }
   /** Antippen: liegt dort eine Questfigur? Dann „Mit … sprechen“ (hingehen, dann reden) */
-  stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
+  stelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return null; const f = best, p = this.wo(f)!;
-    return { x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
+    return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
   schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []);
     /* Jori: beim ersten Besuch (noch nie angeboten) läuft sie auf den Spieler zu und spricht ihn an */
     const jori = this.figuren.find((f) => f.n.id === "jori")!;

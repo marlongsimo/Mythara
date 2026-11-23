@@ -38,6 +38,8 @@ export class HaendlerWelt {
       const sx = n / 2 + px, sy = n / 2 + py; x.beginPath(); x.arc(sx, sy, gr / 2, 0, Math.PI * 2); x.fillStyle = "#2a1f12"; x.fill(); x.lineWidth = Math.max(1.5, gr * 0.09); x.strokeStyle = "#e9c46a"; x.stroke();
       x.fillStyle = "#fff"; x.fillText(LADEN_ZEICHEN[h.l.id], sx, sy + gr * 0.03); }
     x.restore(); }
+  /** Wo steht der Händler mit diesem Namen (Gespräch abbrechen, wenn man sich entfernt) */
+  ortVon(name: string): { x: number; y: number } | null { const h = this.alle.find((x) => x.l.haendler === name); return h ? { x: h.l.x, y: h.l.y } : null; }
   /** Wo die Händler stehen (Antippen am Bildschirm: die ganze Figur zählt) */
   punkte(): { x: number; y: number }[] { return this.alle.map((h) => ({ x: h.l.x, y: h.l.y })); }
   /** für Tests: wo die Händler stehen */
