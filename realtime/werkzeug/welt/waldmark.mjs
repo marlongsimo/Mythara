@@ -19,7 +19,8 @@ const schnitt = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0]
 /** Was frei zu sehen sein soll: Bildflächen von Gebäuden, Bauteilen, Kleinteilen und Figuren (Waldmark-Koordinaten) */
 const SICHT = [];
 /** Darf ein Baum hier stehen, ohne etwas Wichtiges zu verdecken? dy: Versatz der Region gegenüber der Waldmark */
-const sichtFrei = (p, dy = 0, dx = 0) => { const t = bildRahmen(p.objekt, p.x + dx, p.y + dy, p.spiegeln, p.s);
+/* rand: Spielraum in Feldern links und rechts (das Ausrichten auf Felder verschiebt einen Baum um bis zu ein halbes Feld) */
+const sichtFrei = (p, dy = 0, dx = 0, rand = 0) => { const t0 = bildRahmen(p.objekt, p.x + dx, p.y + dy, p.spiegeln, p.s), t = [t0[0] - rand, t0[1], t0[2] + rand, t0[3]];
   return !SICHT.some((v) => p.y + dy > v.y - 0.1 && schnitt(t, v.r) > 0.1 * (v.r[2] - v.r[0]) * (v.r[3] - v.r[1])); };
 /** Türpunkt eines Objekts aus der Bibliothek */
 const tuerVon = (id, x, y, sp) => { const a = BIB.get(id).interaktion; return a ? [+(x + a.dx * (sp ? -1 : 1)).toFixed(2), +(y + a.dy).toFixed(2)] : [x, y]; };
@@ -95,7 +96,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   /* Sicht: Vor einem Gebäude, dem Tor oder einem Stand steht kein Baum, dessen Krone es verdecken würde (Krone gut 4 Felder breit, bis 10 hoch) */
   for (const o of objekte) SICHT.push({ y: o.y, r: bildRahmen(o.objekt, o.x, o.y, o.spiegeln) });
   for (const f of FIGUREN) SICHT.push({ y: f.y, r: [f.x - 0.5, f.y - 1.9, f.x + 0.5, f.y] });
-  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p)));
+  objekte.push(...baeume(B, H, wald, (x, y) => amWeg(x, y) || nahBau(x, y) || Math.hypot((x - 71) / 6.5, (y - 46) / 5) < 1 || (y > ZAUN - 6 && y < ZAUN && x > 15 && x < 81) || imVorfeld(x, y), 0.95, 0, (p) => sichtFrei(p, 0, 0, 0.5)));
   objekte.sort((a, b) => a.y - b.y);
   /* tat: was das Spiel dort öffnet (halle = Heldenhalle, welt = Weltkarte, bald = kommt noch); ohne tat zeigt der Knopf den Text */
   const lies = (id, x, y, text, objekt, tat, knopf) => ({ id, art: tat && tat !== "bald" ? "eingang" : "lesen", x, y, radius: 1.5, ...(objekt ? { objekt } : {}), abgleich: "keiner", daten: { text, ...(tat ? { tat, knopf } : {}) } });
