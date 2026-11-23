@@ -3,11 +3,13 @@
 ```
 waffen/
   schwert/                         Klasse
-    1-gewoehnlich/                 Seltenheit
-      anfaengerschwert/            Gegenstand
+    0-anfaenger/                   Seltenheit (Startausrüstung)
+    1-gewoehnlich/
+      einfaches-schwert/           Gegenstand
         datenblatt.json            Name, Klasse, Seltenheit, Modell (Spieldateien), Animation, Werte, Text
         vorschau.png               die Waffe in dieser Stufe
     2-selten/ … 5-mythisch/
+    klasse.json                    Bewegungen und Haltung dieser Klasse (gilt für alle ihre Waffen)
     waffe.eidschwert/              Modellquelle (Meshy-Datei, angepasstes Modell, Stufenbild) – alle Stufen entstehen daraus
 ```
 

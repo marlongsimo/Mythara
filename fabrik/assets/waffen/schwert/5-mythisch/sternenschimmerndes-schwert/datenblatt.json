@@ -1,16 +1,16 @@
 {
   "name": "Sternenschimmerndes Schwert",
-  "gegenstand": "ritterschwert_mythisch",
+  "gegenstand": "eidschwert_mythisch",
   "klasse": "schwert",
   "art": "Einhandschwert",
   "seltenheit": "Mythisch",
   "platz": "Waffe",
   "modell": {
-    "ebene": "waffe.schwert.ritter.mythisch",
-    "quelle": "fabrik/assets/waffen/schwert/waffe.schwert.ritter",
-    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.schwert.ritter.mythisch.glb",
-    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.schwert.ritter.mythisch.glb",
-    "stufenbild": null
+    "ebene": "waffe.eidschwert.mythisch",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.eidschwert",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidschwert.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidschwert.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/schwert/waffe.eidschwert/referenz/stufen.png"
   },
   "animation": {
     "angriff": "stich",
@@ -18,14 +18,10 @@
       "ruhe",
       "gehen",
       "laufen"
-    ]
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
   },
-  "werte": {
-    "Schaden": "18–30",
-    "Schadensart": "Nahkampf",
-    "Angriffe je Sekunde": "1,11",
-    "Reichweite": "1,6 Felder"
-  },
-  "werte_offen": false,
-  "text": "Schillernd wie Öl auf Wasser, von leuchtenden Adern durchzogen."
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
 }

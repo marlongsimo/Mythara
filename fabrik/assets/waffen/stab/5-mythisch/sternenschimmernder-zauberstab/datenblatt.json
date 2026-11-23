@@ -1,0 +1,27 @@
+{
+  "name": "Sternenschimmernder Zauberstab",
+  "gegenstand": "sternenszepter_mythisch",
+  "klasse": "stab",
+  "art": "Stab",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.sternenszepter.mythisch",
+    "quelle": "fabrik/assets/waffen/stab/waffe.sternenszepter",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.sternenszepter.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.sternenszepter.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/stab/waffe.sternenszepter/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "zauber_stab",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/stab/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
+}

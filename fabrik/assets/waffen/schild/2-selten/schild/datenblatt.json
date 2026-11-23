@@ -1,0 +1,28 @@
+{
+  "name": "Schild",
+  "gegenstand": "sternenschild",
+  "klasse": "schild",
+  "art": "Schild",
+  "seltenheit": "Selten",
+  "platz": "Nebenhand",
+  "modell": {
+    "ebene": "schild.sternen",
+    "quelle": "fabrik/assets/waffen/schild/schild.sternen",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.sternen.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.sternen.glb",
+    "stufenbild": "fabrik/assets/waffen/schild/schild.sternen/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "block",
+    "weitere": [
+      "block",
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schild/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund."
+}

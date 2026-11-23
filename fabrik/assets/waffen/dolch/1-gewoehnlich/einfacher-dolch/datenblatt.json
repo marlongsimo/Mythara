@@ -1,0 +1,27 @@
+{
+  "name": "Einfacher Dolch",
+  "gegenstand": "eiddolch_gewoehnlich",
+  "klasse": "dolch",
+  "art": "Dolch",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eiddolch.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/dolch/waffe.eiddolch",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eiddolch.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eiddolch.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/dolch/waffe.eiddolch/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/dolch/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied."
+}

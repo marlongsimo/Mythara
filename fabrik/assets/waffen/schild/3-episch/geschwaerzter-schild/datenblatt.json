@@ -1,16 +1,16 @@
 {
   "name": "Geschwärzter Schild",
-  "gegenstand": "rundschild_episch",
+  "gegenstand": "sternenschild_episch",
   "klasse": "schild",
   "art": "Schild",
   "seltenheit": "Episch",
   "platz": "Nebenhand",
   "modell": {
-    "ebene": "schild.rund.episch",
-    "quelle": "fabrik/assets/waffen/schild/schild.rund",
-    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.rund.episch.glb",
-    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.rund.episch.glb",
-    "stufenbild": null
+    "ebene": "schild.sternen.episch",
+    "quelle": "fabrik/assets/waffen/schild/schild.sternen",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/schild.sternen.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/schild.sternen.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/schild/schild.sternen/referenz/stufen.png"
   },
   "animation": {
     "angriff": "block",
@@ -19,14 +19,10 @@
       "ruhe",
       "gehen",
       "laufen"
-    ]
+    ],
+    "klasse": "fabrik/assets/waffen/schild/klasse.json"
   },
-  "werte": {
-    "Abwehr Nahkampf (von vorn)": "60 %",
-    "Abwehr Fernkampf (von vorn)": "40 %",
-    "Abwehr Magie (von vorn)": "20 %",
-    "Schutzwinkel": "±70°"
-  },
-  "werte_offen": false,
-  "text": "Nachtschwarz behandelt, die Beschläge schimmern im Dunkeln blau."
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
 }

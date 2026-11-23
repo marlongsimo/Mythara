@@ -1,0 +1,14 @@
+{
+  "klasse": "schwert",
+  "angriff": "stich",
+  "halten": "rechte Hand, Griff am Handballen; mit Schild in der linken Hand: block",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich",
+    "block",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

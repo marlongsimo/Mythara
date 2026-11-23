@@ -1,0 +1,27 @@
+{
+  "name": "Sternenschimmernder Zweihänder",
+  "gegenstand": "eidzweihaender_mythisch",
+  "klasse": "zweihand",
+  "art": "Zweihandschwert",
+  "seltenheit": "Mythisch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eidzweihaender.mythisch",
+    "quelle": "fabrik/assets/waffen/zweihand/waffe.eidzweihaender",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidzweihaender.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidzweihaender.mythisch.glb",
+    "stufenbild": "fabrik/assets/waffen/zweihand/waffe.eidzweihaender/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "hieb2h",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/zweihand/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet."
+}

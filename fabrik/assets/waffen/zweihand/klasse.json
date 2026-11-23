@@ -1,0 +1,13 @@
+{
+  "klasse": "zweihand",
+  "angriff": "hieb2h",
+  "halten": "rechte Hand, linke Hand 11 cm zum Knauf hin",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "hieb2h",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

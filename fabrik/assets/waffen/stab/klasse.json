@@ -1,0 +1,13 @@
+{
+  "klasse": "stab",
+  "angriff": "zauber_stab",
+  "halten": "rechte Hand, Kopf nach vorn",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "zauber_stab",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

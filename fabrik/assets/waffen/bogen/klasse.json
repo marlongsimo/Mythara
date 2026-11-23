@@ -1,0 +1,13 @@
+{
+  "klasse": "bogen",
+  "angriff": "bogen",
+  "halten": "linke Hand in der Mitte, die rechte zieht die Sehne",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "bogen",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

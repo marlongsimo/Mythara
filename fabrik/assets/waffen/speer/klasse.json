@@ -1,0 +1,13 @@
+{
+  "klasse": "speer",
+  "angriff": "stich2h",
+  "halten": "beide Hände am Schaft, etwa in der Mitte gegriffen",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "stich2h",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

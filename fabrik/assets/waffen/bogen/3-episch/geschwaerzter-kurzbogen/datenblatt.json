@@ -1,0 +1,27 @@
+{
+  "name": "Geschwärzter Kurzbogen",
+  "gegenstand": "mondkurzbogen_episch",
+  "klasse": "bogen",
+  "art": "Bogen",
+  "seltenheit": "Episch",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.mondbogen.kurz.episch",
+    "quelle": "fabrik/assets/waffen/bogen/waffe.mondbogen.kurz",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.mondbogen.kurz.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.mondbogen.kurz.episch.glb",
+    "stufenbild": "fabrik/assets/waffen/bogen/waffe.mondbogen.kurz/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "bogen",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/bogen/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen."
+}

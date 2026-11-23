@@ -1,0 +1,27 @@
+{
+  "name": "Einfaches Schwert",
+  "gegenstand": "eidschwert_gewoehnlich",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Gewöhnlich",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.eidschwert.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.eidschwert",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.eidschwert.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.eidschwert.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/schwert/waffe.eidschwert/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied."
+}
