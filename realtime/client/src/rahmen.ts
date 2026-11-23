@@ -198,7 +198,7 @@ const SKILL_INFO: Record<Skill, { wofuer: string; xp: string }> = {
   staerke: { wofuer: "Wie hart du im Nahkampf zuschlägst: dein höchster Schaden (Max Hit) steigt mit der Stärke und dem Stärke-Bonus der gesamten Ausrüstung.", xp: "Nahkampf im Stil Aggressiv: 4 XP je abgezogenem Lebenspunkt. Im Stil Ausgewogen: 1,33 XP." },
   fernkampf: { wofuer: "Wie oft du mit Bogen oder Armbrust triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Fernkampf-Stärke der Ausrüstung.", xp: "Fernkampf in den Stilen Akkurat und Schnell: 4 XP je abgezogenem Lebenspunkt. Im Stil Fern: 2 XP." },
   magie: { wofuer: "Wie oft du mit dem Stab triffst und wie hoch dein höchster Schaden (Max Hit) ist – zusammen mit der Magie-Stärke der Ausrüstung. Außerdem deine Verteidigung gegen Magie.", xp: "Magie in den Stilen Akkurat und Schnell: 2 XP je abgezogenem Lebenspunkt. Im Stil Defensiv: 1,33 XP." },
-  lp: { wofuer: "Deine Lebenspunkte: höchstens 9 + Lebenspunkte-Level (Start 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
+  lp: { wofuer: "Deine Lebenspunkte: so viele wie dein Lebenspunkte-Level (du startest auf Level 10). Sie regenerieren 1 LP je 50 Sekunden.", xp: "Mit jeder Waffe und in jedem Stil: 1,33 XP je Schadenspunkt, den du verursachst." },
   defense: { wofuer: "Deine Verteidigung gegen Nah- und Fernkampf (dazu kommen die Boni deiner Rüstung und des Stils).", xp: "Je abgezogenem Lebenspunkt: Nahkampf Verteidigung 4 XP, Ausgewogen 1,33 XP · Fernkampf Fern 2 XP · Magie Defensiv 1 XP. Ein Block gibt keine XP mehr." },
 };
 function skillInfo(k: Skill): void {

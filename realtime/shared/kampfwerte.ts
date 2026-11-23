@@ -13,7 +13,7 @@
  *   Akkurat +3 Fernkampf (4 Fernkampf-XP) · Schnell −1 Tick (4 Fernkampf) · Fern +2 Felder, +3 Defense (2 Fernkampf + 2 Defense).
  * Magie – 3 Stile:     Trefferwert = Magie + Stilbonus + Magische Genauigkeit der Waffe;  Max Hit = ⌊0,5 + (Magie + Stilbonus) × (magieStaerke gesamt + 64) ÷ 640⌋ (mind. 1; ohne die +8).
  *   Akkurat +3 Magie (2 Magie-XP) · Schnell −1 Tick (2 Magie) · Defensiv +1 Magie, +3 Defense (1,33 Magie + 1 Defense).
- * Lebenspunkte: 1,33 XP je tatsächlich verursachtem Schadenspunkt (jeder Stil); Max-LP = 9 + LP-Level (Start 10).
+ * Lebenspunkte: Startlevel 10 (feste Start-XP dazu); 1,33 XP je tatsächlich verursachtem Schadenspunkt (jeder Stil); Max-LP = LP-Level (Start 10).
  * Defense: bekommt XP nur noch über die Stile (kein XP mehr je Block). Die Stilboni auf Defense zählen für die Verteidigung gegen Nah- und Fernkampf.
  * Verteidigung: Nahkampf und Fernkampf = Defense-Level + Stilbonus + Ausrüstung; Magie = Magie-Level + Ausrüstung.
  * XP werden intern mit Nachkommastellen geführt (Rest je Skill), gebucht werden ganze XP.
@@ -62,13 +62,16 @@ export interface Kampfwerte {
 const XP_KURVE: number[] = (() => { const k = [0, 0]; let punkte = 0; for (let L = 2; L <= SKILL_MAX; L++) { punkte += Math.floor(L - 1 + 300 * Math.pow(2, (L - 1) / 7)); k[L] = Math.round(Math.floor(punkte / 4) * 0.85); } return k; })();
 /** Kumulierte XP für Level L (alle Skills dieselbe Kurve; der zweite Parameter bleibt für Aufrufer erhalten) */
 export const xpFuer = (L: number, _skill?: Skill): number => (L <= 1 ? 0 : XP_KURVE[Math.min(SKILL_MAX, Math.floor(L))]);
+/** Lebenspunkte starten auf Level 10 (wie in OSRS): zu den gebuchten LP-XP kommen fest die XP für Level 10 dazu */
+export const LP_START_LEVEL = 10;
+export const xpEffektiv = (xp: number, skill?: Skill): number => (skill === "lp" ? (xp || 0) + xpFuer(LP_START_LEVEL) : xp || 0);
 /** Skilllevel aus XP (1–100) */
-export function levelAus(xp: number, skill?: Skill): number { let L = 1; while (L < SKILL_MAX && xp >= xpFuer(L + 1, skill)) L++; return L; }
+export function levelAus(xp: number, skill?: Skill): number { xp = xpEffektiv(xp, skill); let L = 1; while (L < SKILL_MAX && xp >= xpFuer(L + 1, skill)) L++; return L; }
 /** Heldenlevel wie das Combat Level in OSRS (Attack = Geschick, Strength = Stärke, Hitpoints = Lebenspunkte; Prayer gibt es nicht = 0) */
 export const heldenlevel = (x: SkillXp): number => { const L = (k: Skill) => levelAus(x[k] || 0, k), f = L("fernkampf"), m = L("magie");
   return Math.floor(0.25 * (L("defense") + L("lp")) + Math.max(0.325 * (L("geschick") + L("staerke")), 0.325 * (f + Math.floor(f / 2)), 0.325 * (m + Math.floor(m / 2)))); };
-/** Max-LP aus den LP-XP: 9 + LP-Level (Start 10) */
-export const maxLp = (lpXp: number): number => LP_START - 1 + levelAus(lpXp || 0, "lp");
+/** Max-LP = Lebenspunkte-Level (Start Level 10 = 10 LP, Level 99 = 99 LP) */
+export const maxLp = (lpXp: number): number => levelAus(lpXp || 0, "lp");
 /** Fäuste: wenn keine Waffe angelegt ist */
 export const FAEUSTE: WaffenWerte = { art: "nah", ticks: 2, reich: NAH_REICH, geschick: 0, staerke: 0 };
 /** Gültiger Stil-Index für eine Kampfart (sonst der Standard 1) */

@@ -3,7 +3,7 @@
  * Mit Konto zählt der Server (Migration 042, rpg_held); der Browser merkt sich den letzten Stand unter „ez_skills2“ für die Anzeige
  * und fürs Rechnen ohne Server (die v1-Werte unter „ez_skills“ bleiben unberührt). Als Gast zählt allein dieser Speicher auf dem Gerät.
  */
-import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS, stilIndex } from "../../shared/kampfwerte";
+import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS, stilIndex, xpEffektiv } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aktiverHeld } from "./held";
 import { inventar } from "./inventar";
@@ -41,7 +41,7 @@ const AUTO = "ez_autoangriff";
 export function autoLesen(): boolean { try { return localStorage.getItem(AUTO) !== "0"; } catch { return true; } }
 export function autoSetzen(an: boolean): void { try { localStorage.setItem(AUTO, an ? "1" : "0"); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-stil")); }
 /** Fortschritt eines Skills: Level, XP im Level, XP bis zum nächsten, Anteil 0…100 */
-export function skillStand(xp: number, skill?: Skill): { L: number; im: number; bis: number; anteil: number } { xp = xp || 0; const L = levelAus(xp, skill), von = xpFuer(L, skill), nach = L < SKILL_MAX ? xpFuer(L + 1, skill) : von;
+export function skillStand(xp: number, skill?: Skill): { L: number; im: number; bis: number; anteil: number } { const L = levelAus(xp || 0, skill); xp = xpEffektiv(xp || 0, skill); const von = xpFuer(L, skill), nach = L < SKILL_MAX ? xpFuer(L + 1, skill) : von;
   return { L, im: xp - von, bis: nach - von, anteil: L < SKILL_MAX ? Math.min(100, Math.round(100 * (xp - von) / Math.max(1, nach - von))) : 100 }; }
 
 /** Die Skill-Balken im Heldenkasten (Level und Fortschritt zum nächsten Level) */

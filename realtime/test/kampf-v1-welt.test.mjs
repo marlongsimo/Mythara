@@ -50,8 +50,8 @@ try {
   const hud = await anna.evaluate(() => ({ stufe: document.querySelector("#ez-ich-stufe").textContent, lp: document.querySelector("#ez-lpzahl").textContent, name: document.querySelector("#ez-name").textContent,
     skills: [...document.querySelectorAll("#ez-skills .skill")].map((s) => s.querySelector("b").textContent + " " + s.querySelector(".lv").textContent), xp: getComputedStyle(document.querySelector("#ez-xpleiste")).display,
     tasten: ["a", "q", "e", "r"].map((t) => getComputedStyle(document.querySelector(`[data-taste="${t}"]`)).display !== "none"), modus: getComputedStyle(document.querySelector("#ez-modus")).display !== "none", an: document.querySelector('[data-taste="a"] small').textContent }));
-  check(hud.stufe === "Lv 1" && hud.lp === "10 / 10" && hud.name === "Trainingsschwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
-  check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 1, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
+  check(hud.stufe === "Lv 3" && hud.lp === "10 / 10" && hud.name === "Trainingsschwert", `Heldenkasten: ${hud.stufe}, ${hud.lp} LP, ${hud.name}`);
+  check(hud.skills.join(", ") === "Geschick 1, Stärke 1, Fernkampf 1, Magie 1, Lebenspunkte 10, Defense 1" && hud.xp === "none", `Sechs Skill-Balken statt EP: ${hud.skills.join(", ")}`);
   check(JSON.stringify(hud.tasten) === "[false,false,false,false]" && !hud.modus, "Keine Aktionstasten unten rechts (kein „Angreifen“, keine Fähigkeiten, kein Waffenwechsel)");
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...K.figuren.values()].filter((f) => !f.held).map((f) => f.nm.text) }; });
   check(sicht.max.every((m) => m === 6) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 6 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
