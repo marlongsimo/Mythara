@@ -60,6 +60,11 @@
    "platz": "beine",
    "bewegungen": []
   },
+  "ruestung.brust.eisenwacht": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
   "ruestung.brust.lederpanzer": {
    "art": "huelle",
    "platz": "brust",

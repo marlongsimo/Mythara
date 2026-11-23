@@ -398,6 +398,21 @@
         "fuss.L",
         "fuss.R"
       ]
+    },
+    {
+      "id": "ruestung.brust.eisenwacht",
+      "platz": "brust",
+      "glb": "basemann3d/v001/quelle/teile/ruestung.brust.eisenwacht.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken",
+        "hals",
+        "oberschenkel.L",
+        "oberschenkel.R"
+      ],
+      "beine_mitteln": true
     }
   ],
   "waffenklassen": {

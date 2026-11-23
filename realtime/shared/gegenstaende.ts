@@ -7,8 +7,8 @@
 import { HELDEN, K } from "./config";
 import { Startwaffe } from "./aussehen";
 
-export type Platz = "amulett" | "waffe" | "brust" | "nebenhand";
-export const PLAETZE: { id: Platz; name: string }[] = [{ id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "nebenhand", name: "Nebenhand" }];
+export type Platz = "amulett" | "waffe" | "brust" | "beine" | "nebenhand";
+export const PLAETZE: { id: Platz; name: string }[] = [{ id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
 export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: "gewoehnlich" | "selten"; ebenen?: string[]; werte: [string, string][]; text: string }
 
 const waffe = (satz: string) => { const m = HELDEN[satz].modi[0], art = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie", heil: "Heilung" }[m.art] || m.art;
@@ -31,6 +31,12 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
   magiepanzer: { id: "magiepanzer", name: "Einfacher Magiepanzer", platz: "brust", art: "Leichte Rüstung", seltenheit: "gewoehnlich", ebenen: ["ruestung.brust.magiepanzer"],
     werte: [["Abwehr Nahkampf", "+2"], ["Abwehr Fernkampf", "+2"], ["Abwehr Magie", "+4"]],
     text: "Nachtblaues Leder mit goldenen Sternzeichen und einem Splitterstein am Kragen. Lenkt Zauber besser ab als Klingen." },
+  eisenwacht: { id: "eisenwacht", name: "Eisenwacht-Brustpanzer", platz: "brust", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.brust.eisenwacht"],
+    werte: [["Abwehr", "Werte folgen"]],
+    text: "Geschwärzte Eisenplatten über Leder, mit Schulterstücken und Plattenschößen. Gehört zu den Eisenbeinschienen." },
+  eisenbeinschienen: { id: "eisenbeinschienen", name: "Eisenbeinschienen", platz: "beine", art: "Schwere Rüstung", seltenheit: "selten", ebenen: ["ruestung.beine.eisenschienen"],
+    werte: [["Abwehr", "Werte folgen"]],
+    text: "Eisenplatten über Oberschenkel, Knie und Schienbein, auf schwerem Leder genietet. Gehört zum Eisenwacht-Brustpanzer." },
 };
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
