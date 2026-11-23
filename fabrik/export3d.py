@@ -2,7 +2,7 @@
 Skelett, Körper, alle Teilnetze (Kleidung, Haare, Bärte) als skinned Meshes, Waffen und Schilde an ihren Knochen, alle Bewegungen als Animationen.
 Jedes Teil behält als Namen seine Ebenen-ID (z. B. kopf.haar.militaer) – die Szene blendet Teile ein und aus.
 
-  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000] [textur=1024] [webp]
+  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000] [textur=1024] [webp] [auslagern=ruestung.,kopf.helm.]
 """
 import json, os, sys
 import bpy
@@ -28,9 +28,22 @@ aktionen = {a.name: {"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schlei
 for a in bpy.data.actions:
     if a.get("bilder"): a.use_fake_user = True
 arm.animation_data.action = bpy.data.actions.get("ruhe")
+# auslagern=ruestung.,kopf.helm. – diese Teile (Präfixe) nicht in die Grundfigur, sondern je als eigene Datei <ziel>.teile/<id>.glb:
+# nur Skelett und dieses eine Teil, ohne Bewegungen. Das Spiel lädt sie erst beim Anlegen und hängt sie an das Skelett der Figur (echt3d/darsteller.ts).
+AUSLAGERN = tuple(x for x in opt.get("auslagern", "").split(",") if x); ausgelagert = {}
+if AUSLAGERN:
+    ordner = os.path.splitext(os.path.abspath(ziel))[0] + ".teile"; os.makedirs(ordner, exist_ok=True)
+    for f_ in os.listdir(ordner):
+        if f_.endswith(".glb"): os.remove(os.path.join(ordner, f_))
+    for o in [o for o in teile if o["ebene"].startswith(AUSLAGERN)]:
+        bpy.ops.object.select_all(action="DESELECT"); arm.select_set(True); o.select_set(True); d_ = os.path.join(ordner, o["ebene"] + ".glb")
+        bpy.ops.export_scene.gltf(filepath=d_, export_format="GLB", use_selection=True, export_animations=False, export_skins=True, export_yup=True, export_image_format="WEBP" if "webp" in sys.argv else "AUTO")
+        ausgelagert[o["ebene"]] = os.path.basename(ordner) + "/" + o["ebene"] + ".glb"; info[o["ebene"]]["datei"] = ausgelagert[o["ebene"]]
+        print(f"  ausgelagert: {o['ebene']} · {os.path.getsize(d_) / 1e6:.2f} MB")
+    teile = [o for o in teile if o["ebene"] not in ausgelagert]
 bpy.ops.object.select_all(action="DESELECT"); arm.select_set(True)
 for o in teile: o.select_set(True)
 bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_animations=True, export_animation_mode="ACTIONS",
                           export_force_sampling=True, export_frame_range=False, export_skins=True, export_yup=True, export_image_format="WEBP" if "webp" in sys.argv else "AUTO")
 json.dump({"teile": info, "aktionen": aktionen}, open(os.path.splitext(os.path.abspath(ziel))[0] + ".json", "w"), ensure_ascii=False, indent=1)
-print(f"export3d: {len(teile)} Teile, {len(aktionen)} Bewegungen · {os.path.getsize(ziel) / 1e6:.1f} MB · {ziel}")
+print(f"export3d: {len(teile)} Teile{f' (+{len(ausgelagert)} ausgelagert)' if ausgelagert else ''}, {len(aktionen)} Bewegungen · {os.path.getsize(ziel) / 1e6:.1f} MB · {ziel}")

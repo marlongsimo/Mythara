@@ -22,6 +22,13 @@ function vorlageLaden(url: string): Promise<Vorlage> {
   if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => ({ szene: g.scene, clips: new Map(g.animations.map((c) => [c.name, c])) })); vorlagen.set(url, p); }
   return p;
 }
+/* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb aus fabrik/export3d.py auslagern=…, erst beim Anlegen geladen */
+const AUSGELAGERT = /^(ruestung|kopf\.helm)\./;
+const teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
+function teilVorlage(url: string): Promise<THREE.Object3D> {
+  let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p;
+}
+const name3 = (id: string) => id.replace(/[.[\]:/]/g, "");
 /* gemeinsamer Zeichner und Bühne */
 let zeichner: THREE.WebGLRenderer | null = null; let buehne: THREE.Scene | null = null; let kamera: THREE.OrthographicCamera | null = null;
 function gemeinsam() {
@@ -42,9 +49,10 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 export class Darsteller {
   private wurzel: THREE.Object3D; private mixer: THREE.AnimationMixer; private aktion: THREE.AnimationAction | null = null; private name = "";
   private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null;
+  private soll = new Set<string>(); private ladend = new Set<string>();
   /** Leinwand in Bildpunkten und wie viele Bildpunkte eine Kameraeinheit hat */
   readonly breite: number; readonly hoehe: number; readonly fussY: number;
-  private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number) {
+  private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number, private url = "") {
     this.wurzel = SkeletonUtils.clone(v.szene); this.wurzel.visible = false;
     this.wurzel.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.frustumCulled = false; const n = o.name;
       if (/^(waffe|schild|kopf|ruestung|kleidung)/.test(n) && !(o.parent && /^(waffe|schild|kopf|ruestung|kleidung)/.test(o.parent.name)) && !this.teile.has(n)) this.teile.set(n, o); });   // three.js entfernt die Punkte aus den Namen
@@ -54,9 +62,26 @@ export class Darsteller {
     this.breite = Math.ceil(2 * AUSSCHNITT.seite * ppm); this.hoehe = Math.ceil((AUSSCHNITT.oben + AUSSCHNITT.unten) * ppm); this.fussY = AUSSCHNITT.oben / (AUSSCHNITT.oben + AUSSCHNITT.unten);
     gemeinsam().buehne.add(this.wurzel);
   }
-  static async erstellen(url: string, figurHoehePx: number, aufloesung = 2): Promise<Darsteller> { return new Darsteller(await vorlageLaden(url), figurHoehePx, aufloesung); }
-  /** Welche wählbaren Teile sichtbar sind (IDs mit Punkten, z. B. kopf.haar.militaer, waffe.schwert.ritter) */
-  zeige(ids: string[]): void { const soll = new Set(ids.map((i) => i.replace(/[.[\]:/]/g, ""))); for (const [n, o] of this.teile) o.visible = soll.has(n); }
+  static async erstellen(url: string, figurHoehePx: number, aufloesung = 2): Promise<Darsteller> { return new Darsteller(await vorlageLaden(url), figurHoehePx, aufloesung, url); }
+  /** Welche wählbaren Teile sichtbar sind (IDs mit Punkten, z. B. kopf.haar.militaer, waffe.schwert.ritter).
+   *  Rüstungen und Helme, die nicht in der Grundfigur stecken, werden beim ersten Mal nachgeladen und erscheinen, sobald sie da sind. */
+  zeige(ids: string[]): void { this.soll = new Set(ids.map(name3)); for (const [n, o] of this.teile) o.visible = this.soll.has(n);
+    for (const id of ids) { const n = name3(id); if (AUSGELAGERT.test(id) && !this.teile.has(n) && !this.ladend.has(n)) { this.ladend.add(n); void this.teilLaden(id, n); } } }
+  /** Wird gerade noch ein Teil nachgeladen? (Standbilder warten darauf) */
+  async geladen(): Promise<void> { while (this.ladend.size) await new Promise((r) => setTimeout(r, 30)); }
+  /** Ein ausgelagertes Teil laden und an das Skelett dieser Figur hängen (Knochen nach Namen; dieselbe Grundhaltung, weil aus demselben Rig gebaut) */
+  private async teilLaden(id: string, n: string): Promise<void> {
+    try {
+      const quelle = await teilVorlage(this.url.replace(/\.glb$/, ".teile/") + id + ".glb"), knochen = new Map<string, THREE.Bone>();
+      this.wurzel.traverse((o) => { if ((o as THREE.Bone).isBone) knochen.set(o.name, o as THREE.Bone); });
+      const koerper = (() => { let k: THREE.Object3D | null = null; this.wurzel.traverse((o) => { if (!k && (o as THREE.SkinnedMesh).isSkinnedMesh && /^koerper/.test(o.name)) k = o; }); return k as THREE.Object3D | null; })();
+      quelle.traverse((o) => { const sm = o as THREE.SkinnedMesh; if (!sm.isSkinnedMesh || this.teile.has(n)) return;
+        const bones = sm.skeleton.bones.map((b) => knochen.get(b.name)); if (bones.some((b) => !b)) { console.warn("Teil passt nicht aufs Skelett:", id); return; }
+        const neu = new THREE.SkinnedMesh(sm.geometry, sm.material); neu.name = n; neu.frustumCulled = false;
+        (koerper && koerper.parent ? koerper.parent : this.wurzel).add(neu); neu.bind(new THREE.Skeleton(bones as THREE.Bone[], sm.skeleton.boneInverses.map((m) => m.clone())), sm.bindMatrix.clone());
+        neu.visible = this.soll.has(n); this.teile.set(n, neu); });
+    } catch (e) { console.warn("Teil fehlt:", id, e); } finally { this.ladend.delete(n); }
+  }
   /** Teile färben (Haare, Bart): Zielfarbe relativ zur Farbe, in der sie gebaut sind */
   faerben(praefix: string, ziel: [number, number, number], gebaut: [number, number, number]): void {
     const p = praefix.replace(/[.[\]:/]/g, ""), f = [0, 1, 2].map((i) => linear(ziel[i]) / Math.max(1e-4, linear(gebaut[i])));
@@ -160,7 +185,7 @@ const standbildVorlagen = new Map<string, Promise<Darsteller>>();
 let sbZeichner: THREE.WebGLRenderer | null = null; let sbBuehne: THREE.Scene | null = null;
 export async function standbild(ziel: HTMLCanvasElement, o: StandbildOpt): Promise<void> {
   const schl = o.url; let p = standbildVorlagen.get(schl); if (!p) { p = Darsteller.erstellen(o.url, 100, 1); standbildVorlagen.set(schl, p); }
-  const d = await p; d.zeige(o.zeige); for (const h of o.haar || []) d.faerben(h.praefix, h.ziel, h.gebaut); if (o.haut) await d.haut(o.haut);
+  const d = await p; d.zeige(o.zeige); await d.geladen(); for (const h of o.haar || []) d.faerben(h.praefix, h.ziel, h.gebaut); if (o.haut) await d.haut(o.haut);
   if (!sbZeichner) { sbZeichner = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true }); sbZeichner.setClearColor(0x000000, 0); sbZeichner.outputColorSpace = THREE.SRGBColorSpace;
     sbBuehne = new THREE.Scene(); sbBuehne.add(new THREE.HemisphereLight(0xfff1dc, 0x3a2e22, 1.7)); const s1 = new THREE.DirectionalLight(0xffe2b8, 2.4); s1.position.set(-3, 6, 7); sbBuehne.add(s1); const s2 = new THREE.DirectionalLight(0xa8c4ff, 0.9); s2.position.set(5, 4, -6); sbBuehne.add(s2); }
   const w = d.wurzelObjekt; const alt = w.parent; sbBuehne!.add(w); w.visible = true; d.spiele("ruhe"); d.stand();
