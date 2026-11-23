@@ -20,7 +20,7 @@
       "id": "waffe.dolch",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.dolch/v001/quelle/dolch.glb",
+      "glb": "waffen/dolch/waffe.dolch/v001/quelle/dolch.glb",
       "griff": 0.15,
       "griff2": 0.05,
       "angriff": "stich"
@@ -29,7 +29,7 @@
       "id": "schild.beute",
       "platz": "arm_l",
       "art": "schild",
-      "glb": "schild.beute/v001/quelle/schild.glb"
+      "glb": "waffen/schild/schild.beute/v001/quelle/schild.glb"
     }
   ]
 }

@@ -21,7 +21,7 @@
       "id": "waffe.zweihaender.warlord",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.zweihaender.warlord/v001/quelle/zweihaender.glb",
+      "glb": "waffen/zweihand/waffe.zweihaender.warlord/v001/quelle/zweihaender.glb",
       "griff": 0.12,
       "griff2": 0.05,
       "angriff": "hieb2h"

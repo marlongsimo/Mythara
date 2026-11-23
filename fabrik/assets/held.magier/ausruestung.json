@@ -19,7 +19,7 @@
       "id": "waffe.elementarstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.elementarstab/v001/quelle/elementarstab.glb",
+      "glb": "waffen/stab/waffe.elementarstab/v001/quelle/elementarstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "geschoss"
@@ -28,7 +28,7 @@
       "id": "waffe.feuerstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.feuerstab/v001/quelle/feuerstab.glb",
+      "glb": "waffen/stab/waffe.feuerstab/v001/quelle/feuerstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "geschoss"
@@ -37,7 +37,7 @@
       "id": "waffe.eisstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.eisstab/v001/quelle/eisstab.glb",
+      "glb": "waffen/stab/waffe.eisstab/v001/quelle/eisstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "geschoss"
@@ -46,7 +46,7 @@
       "id": "waffe.blitzstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.blitzstab/v001/quelle/blitzstab.glb",
+      "glb": "waffen/stab/waffe.blitzstab/v001/quelle/blitzstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "geschoss"
@@ -55,7 +55,7 @@
       "id": "waffe.kristallstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.kristallstab/v001/quelle/kristallstab.glb",
+      "glb": "waffen/stab/waffe.kristallstab/v001/quelle/kristallstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "geschoss"

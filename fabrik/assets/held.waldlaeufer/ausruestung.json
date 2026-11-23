@@ -29,7 +29,7 @@
       "id": "waffe.armbrust",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.armbrust/v001/quelle/armbrust.glb",
+      "glb": "waffen/armbrust/waffe.armbrust/v001/quelle/armbrust.glb",
       "griff": 0.55,
       "griff2_ort": [
         -0.08,
@@ -43,7 +43,7 @@
       "id": "waffe.jagdmesser",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.jagdmesser/v001/quelle/jagdmesser.glb",
+      "glb": "waffen/dolch/waffe.jagdmesser/v001/quelle/jagdmesser.glb",
       "griff": 0.17,
       "griff2": 0.05,
       "angriff": "angriff_dolch"
@@ -52,7 +52,7 @@
       "id": "waffe.wurfaxt",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.wurfaxt/v001/quelle/wurfaxt.glb",
+      "glb": "waffen/axt/waffe.wurfaxt/v001/quelle/wurfaxt.glb",
       "griff": 0.2,
       "griff2": 0.05,
       "angriff": "angriff_axt"
@@ -310,7 +310,7 @@
   "vorbereitet": [
     {
       "id": "waffe.bogen.orin",
-      "glb": "waffe.bogen.orin/v001/quelle/bogen.glb",
+      "glb": "waffen/bogen/waffe.bogen.orin/v001/quelle/bogen.glb",
       "plan": "Bogen in der linken Hand – braucht eigene Bewegungen (Pfeil ziehen, spannen, lösen); gebaut, noch nicht angehängt"
     }
   ],
