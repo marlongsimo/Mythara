@@ -54,9 +54,9 @@ KA = {"nah": "Nahkampf", "fern": "Fernkampf", "magie": "Magie"}
 anf = lambda a: f"{AN[a['anforderung']['skill']]} {a['anforderung']['level']}" if a.get("anforderung") else "–"
 s = []
 s += [Paragraph("Kampfsystem v4", T), Paragraph("Mythara – Splitterlande · Treffer, Abwehr und Ausrüstung nach der OSRS-Rechnung · Stand 23.11.2026", U)]
-s.append(p("Kampfsystem v4 ersetzt alle früheren Fassungen (v2, v3). Neu gegenüber v3: Magie trifft wie in OSRS mit dem festen Max Hit des Zaubers im Stab; Angriff und Verteidigung sind <b>Würfe nach OSRS</b> "
+s.append(p("Kampfsystem v4 ersetzt alle früheren Fassungen (v2, v3). Neu gegenüber v3: Angriff und Verteidigung sind <b>Würfe nach OSRS</b> "
            "(effektives Level × (Bonus + 64)) statt Summen, die Ausrüstung trägt <b>OSRS-Werte</b> (auch die Abzüge der Metallrüstung auf Fernkampf und Magie), "
-           "und der Bandit ist ein Level-1-Monster ohne Boni. Unverändert aus v3: Ticks, Max-Hit-Formeln für Nah- und Fernkampf, Stile, XP je Schaden, 85-%-XP-Kurve, Lebenspunkte ab Level 10, Heldenlevel. "
+           "und der Bandit ist ein Level-1-Monster ohne Boni. Unverändert aus v3: Ticks, Max-Hit-Formeln, Stile, XP je Schaden, 85-%-XP-Kurve, Lebenspunkte ab Level 10, Heldenlevel. "
            "Alle Zahlen stammen aus dem Code (shared/kampfwerte.ts, gegenstaende.ts, config.ts, sim.ts); der Spielserver rechnet Treffer, Schaden und XP allein."))
 
 s.append(Paragraph("1  Grundbegriffe", H1))
@@ -86,10 +86,9 @@ s.append(Paragraph("Die Ausrüstung zählt gesamt: Waffe und alle angelegten Tei
 s.append(Paragraph("3  Max Hit und Schaden", H1))
 s.append(formel("<b>Nahkampf:</b> ⌊0,5 + (Stärke + Stilbonus + 8) × (Stärkebonus + 64) ÷ 640⌋<br/>"
                 "<b>Fernkampf:</b> ⌊0,5 + (Fernkampf + Stilbonus + 8) × (Fernkampf-Stärke + 64) ÷ 640⌋ – die Pfeil- bzw. Bolzenstärke steckt in der Waffe<br/>"
-                "<b>Magie (wie OSRS):</b> fester Max Hit des Zaubers im Stab × (1 + Magie-Schaden %) – das Magie-Level wirkt nur auf den Treffer, nicht auf den Schaden<br/>"
+                "<b>Magie:</b> ⌊0,5 + (Magie + Stilbonus) × (Magie-Stärke + 64) ÷ 640⌋ (ohne +8) – der Zauber steckt im Stab<br/>"
                 "<b>Gegner:</b> ⌊0,5 + (Stärke + 9) × (Stärkebonus + 64) ÷ 640⌋<br/>Immer mindestens 1. Schadenswurf: ganzzahlig 1 … Max Hit, gleich verteilt."))
-s.append(tab(["Level", "Stärkebonus", "Nah/Fern normal", "Nah/Fern +3 (Stil)"], [[de(a), "+" + de(b), de(c), de(d)] for a, b, c, d in D4["mh"]], [28, 36, 40, 40]))
-s.append(tab(["Stab", "Zauber (OSRS-Vorbild)", "Max Hit"], [["Training", "Wind Strike", "2"], ["Einfach (10)", "Water Strike", "4"], ["Selten (20)", "Fire Strike", "8"], ["Episch (35)", "Fire Bolt", "12"], ["Legendär (45)", "zwischen Wind und Water Blast", "14"], ["Mythisch (65)", "Water Wave", "18"]], [40, 80, 30]))
+s.append(tab(["Level", "Bonus", "Nah/Fern normal", "Nah/Fern +3", "Magie normal", "Magie +3"], [[de(a), "+" + de(b), de(c), de(d), de(e), de(f)] for a, b, c, d, e, f in D4["mh"]], [22, 22, 34, 32, 32, 32]))
 
 s.append(Paragraph("4  Angriffsstile", H1))
 s.append(p("Stilboni sind unsichtbare Level, die nur fürs effektive Level zählen."))
@@ -101,7 +100,7 @@ s.append(tab(["Kampfart", "Stil", "Wirkung", "XP je Schadenspunkt"], [
     ["Fernkampf", "Akkurat", "+3 Fernkampf (Angriff und Max Hit)", "4 Fernkampf"],
     ["", "Schnell", "1 Tick schneller", "4 Fernkampf"],
     ["", "Fern", "+2 Felder Reichweite, +3 Defense", "2 Fernkampf + 2 Defense"],
-    ["Magie", "Akkurat", "+3 Magie (Angriffswurf)", "2 Magie"],
+    ["Magie", "Akkurat", "+3 Magie (Angriff und Max Hit)", "2 Magie"],
     ["", "Schnell", "1 Tick schneller", "2 Magie"],
     ["", "Defensiv", "+1 Magie, +3 Defense", "1,33 Magie + 1 Defense"],
 ], [24, 26, 66, 58]))
@@ -117,7 +116,7 @@ s.append(tab(["Level", "Gesamt-XP", "Level", "Gesamt-XP"], [[de(xp[i][0]), de(xp
 def wbonus(W):
     if W["art"] == "nah": return f"Angriff {vz(W.get('geschick', 0))}", f"Stärke {vz(W.get('staerke', 0))}"
     if W["art"] == "fern": return f"Angriff {vz(W.get('fernAngriff', 0))}", f"Pfeil/Bolzen {vz(W.get('fernStaerke', 0))}"
-    return f"Genauigkeit {vz(W.get('genau', 0))}", f"Zauber: Max Hit {W.get('zauber', 1)}"
+    return f"Genauigkeit {vz(W.get('genau', 0))}", f"Zauber {vz(W.get('magieStaerke', 0))}"
 def rmal(a):
     b = a.get("bonus") or {}; t = []
     if b.get("fernAngriff"): t.append(f"Fern {vz(b['fernAngriff'])}")
@@ -169,7 +168,7 @@ s.append(tab(["Bandit (Kreuzwald)", "Wert"], [
     ["Angriffswurf / Max Hit", f"(1 + 9) × 64 = {de(B['treffer'])} / {B['maxHit']}"], ["Abwehrwurf Nah / Fern / Magie", f"{de(B['abwehr']['nah'])} / {de(B['abwehr']['fern'])} / {de(B['abwehr']['magie'])}"],
     ["Lebenspunkte", str(B["lp"])], ["Takt", f"{v['ticks']} Ticks ({de(v['ticks']*0.5)} s)"], ["Wiederkehr", "60 s nach dem Tod an seinem Lager"],
 ], [50, 124]))
-s.append(tab(["Startwaffe (Level 1)", "Siege", "Dauer", "LP übrig", "Bandit trifft"], [["Schwert", "98–100 %", "13–18 s", "56–66 %", "37–52 %"], ["Bogen", "99–100 %", "16–22 s", "63–64 %", "37–51 %"], ["Stab", "98–100 %", "14–16 s", "64–70 %", "42–59 %"]], [44, 28, 30, 34, 38]))
+s.append(tab(["Startwaffe (Level 1)", "Siege", "Dauer", "LP übrig", "Bandit trifft"], [["Schwert", "98–100 %", "13–18 s", "56–66 %", "37–52 %"], ["Bogen", "99–100 %", "16–22 s", "63–64 %", "37–51 %"], ["Stab", "92–98 %", "20–24 s", "50–56 %", "41–57 %"]], [44, 28, 30, 34, 38]))
 s.append(Paragraph("Simulation 23.11.2026: je Stil 120 Duelle Level-1-Held mit Startausrüstung gegen einen Banditen, ohne Tränke (test/kampf-v2.test.mjs).", K))
 s += li(["Aggro: Gegner greifen von selbst an, wenn ein Held in ihrem Umkreis steht (meist 4–5 Felder); nach 15 Minuten am selben Ort nicht mehr.",
          "Leine: Entfernt sich ein Gegner zu weit vom Lager (meist 10–14 Felder), kehrt er um und heilt sich.",
@@ -195,7 +194,7 @@ s.append(p("Läden am Marktplatz: Training 10, Einfach 350, Selten 800 Splitter.
 s.append(Paragraph("12  Datenvorlage (für neue Ausrüstung und Gegner)", H1))
 s.append(tab(["Ausrüstung", "Felder"], [
     ["Pflicht", "id, name, platz (waffe/kopf/brust/beine/nebenhand), art, seltenheit, text"],
-    ["Waffe", "waffe.art (nah/fern/magie), ticks, reich; Nahkampf geschick + staerke; Fernkampf fernAngriff + fernStaerke (Pfeil/Bolzen); Magie genau + zauber (fester Max Hit), optional magieStaerke (Magie-Schaden %); optional zweihand"],
+    ["Waffe", "waffe.art (nah/fern/magie), ticks, reich; Nahkampf geschick + staerke; Fernkampf fernAngriff + fernStaerke (Pfeil/Bolzen); Magie genau + magieStaerke (Zauber); optional zweihand"],
     ["Rüstung", "abwehr { nah, fern, magie } (auch negativ); bonus { fernAngriff, genau, … } für Auf- und Abschläge auf den Angriff"],
     ["Optional", "anforderung { skill, level }, ebenen / modell3d (Darstellung), stapel"],
 ], [30, 144], klein=True))
@@ -207,7 +206,7 @@ s.append(tab(["Gegner", "Felder"], [
 s.append(Paragraph("13  Offen", H1))
 s += li([
          "Weitere Gegner nach dem Monsterschema (Mooshocker für „Der stille Rain“: 50 LP).",
-         "Ausrüstung mit Magie-Schaden % (wie Occult-Halskette oder Tormented-Armband) gibt es noch nicht – Schmuckplätze fehlen."])
+         "Magie skaliert mit dem Level stärker als Nah- und Fernkampf (Mythischer Stab auf Magie 99: Max Hit 43, Mythischer Zweihänder auf Stärke 99: 27) – die Magie-Max-Hit-Formel sollte überarbeitet werden."])
 
 doc = SimpleDocTemplate(sys.argv[1], pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm, bottomMargin=20 * mm, title="Mythara – Kampfsystem v4", author="Mythara")
 doc.build(s, onFirstPage=seite, onLaterPages=seite)

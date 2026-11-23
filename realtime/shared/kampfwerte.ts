@@ -12,8 +12,7 @@
  *   Akkurat +3 Geschick (4 Geschick-XP je Schaden) · Ausgewogen +1 Geschick, +1 Stärke, +1 Defense (je 1,33 Geschick/Stärke/Defense) · Aggressiv +3 Stärke (4 Stärke) · Verteidigung +3 Defense (4 Defense).
  * Fernkampf – 3 Stile: Angriffswurf = (Fernkampf + Stilbonus + 8) × (fernAngriff gesamt + 64) – Bögen enthalten die Pfeile, Armbrüste die Bolzen;  Max Hit = ⌊0,5 + (Fernkampf + Stilbonus + 8) × (fernStaerke gesamt + 64) ÷ 640⌋ (mind. 1).
  *   Akkurat +3 Fernkampf (4 Fernkampf-XP) · Schnell −1 Tick (4 Fernkampf) · Fern +2 Felder, +3 Defense (2 Fernkampf + 2 Defense).
- * Magie – 3 Stile:     Angriffswurf = (Magie + Stilbonus + 8) × (Magische Genauigkeit gesamt + 64);  Max Hit wie OSRS = fester Zauber-Max-Hit des Stabs × (1 + Magie-Schaden %) – das Magie-Level wirkt nur auf den Treffer.
- *   (alt, nur noch für Gegner:)  Max Hit = ⌊0,5 + (Magie + Stilbonus) × (magieStaerke gesamt + 64) ÷ 640⌋ (mind. 1; ohne die +8).
+ * Magie – 3 Stile:     Angriffswurf = (Magie + Stilbonus + 8) × (Magische Genauigkeit gesamt + 64) – der Stab enthält den Zauber (Magie-Stärke);  Max Hit = ⌊0,5 + (Magie + Stilbonus) × (magieStaerke gesamt + 64) ÷ 640⌋ (mind. 1; ohne die +8).
  *   Akkurat +3 Magie (2 Magie-XP) · Schnell −1 Tick (2 Magie) · Defensiv +1 Magie, +3 Defense (1,33 Magie + 1 Defense).
  * Lebenspunkte: Startlevel 10 (feste Start-XP dazu); 1,33 XP je tatsächlich verursachtem Schadenspunkt (jeder Stil); Max-LP = LP-Level (Start 10).
  * Defense: bekommt XP nur noch über die Stile (kein XP mehr je Block). Die Stilboni auf Defense zählen für die Verteidigung gegen Nah- und Fernkampf.
@@ -50,7 +49,7 @@ export const STILE: Record<Art, Stil[]> = {
   fern: [{ id: "akkurat", name: "Akkurat", text: "+3 Fernkampf · 4 Fernkampf-XP je Schaden", plus: { fernkampf: 3 }, xp: { fernkampf: 4 } },
     { id: "schnell", name: "Schnell", text: "1 Tick schneller · 4 Fernkampf-XP je Schaden", plus: {}, ticks: -1, xp: { fernkampf: 4 } },
     { id: "fern", name: "Fern", text: "+2 Felder Reichweite, +3 Defense · 2 Fernkampf- und 2 Defense-XP", plus: { defense: 3 }, reich: 2, xp: { fernkampf: 2, defense: 2 } }],
-  magie: [{ id: "akkurat", name: "Akkurat", text: "+3 Magie (Treffer) · 2 Magie-XP je Schaden", plus: { magie: 3 }, xp: { magie: 2 } },
+  magie: [{ id: "akkurat", name: "Akkurat", text: "+3 Magie · 2 Magie-XP je Schaden", plus: { magie: 3 }, xp: { magie: 2 } },
     { id: "schnell", name: "Schnell", text: "1 Tick schneller · 2 Magie-XP je Schaden", plus: {}, ticks: -1, xp: { magie: 2 } },
     { id: "defensiv", name: "Defensiv", text: "+1 Magie, +3 Defense · 1,33 Magie- und 1 Defense-XP", plus: { magie: 1, defense: 3 }, xp: { magie: D, defense: 1 } }],
 };
@@ -84,8 +83,6 @@ export const stilIndex = (s: number | undefined, art: Art = "nah"): number => (t
 export const maxHit = (level: number, stilbonus: number, ausruestung: number, grund = 8): number => Math.max(1, Math.floor(0.5 + (level + stilbonus + grund) * (ausruestung + 64) / 640));
 /** OSRS-Wurfwert (Angriff oder Verteidigung): effektives Level × (Bonus + 64), nie unter 0 */
 export const wurfWert = (effLevel: number, bonus: number): number => Math.max(0, effLevel) * Math.max(0, bonus + 64);
-/** Magie wie OSRS: fester Max Hit des Zaubers, erhöht um den Magie-Schaden der Ausrüstung in Prozent (abgerundet), mindestens 1 */
-export const maxHitZauber = (zauber: number, prozent = 0): number => Math.max(1, Math.floor(zauber * (100 + prozent) / 100));
 export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: number): number => maxHit(level, stilbonus, magieStaerke, 0);
 
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
@@ -106,7 +103,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   /* OSRS: Angriffswurf = (Level + Stilbonus + 8) × (Angriffsbonus + 64) */
   if (W.art === "nah") { angriff.nah = wurfWert(lv.geschick + p("geschick") + 8, aus.geschick); schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
   else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
-  else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitZauber(W.zauber || 1, aus.magieStaerke)]; }
+  else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
   return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x } };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */

@@ -19,7 +19,7 @@ export type Art = "nah" | "fern" | "magie";
 export type AnfSkill = "geschick" | "staerke" | "fernkampf" | "magie" | "defense";
 export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerke: "Stärke", fernkampf: "Fernkampf", magie: "Magie", defense: "Defense" };
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
-export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie (OSRS): fester Max Hit des Zaubers im Stab */ zauber?: number; /** Magie-Schaden in Prozent (OSRS „Magic damage“), auch von Rüstung */ magieStaerke?: number }
+export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
   stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
@@ -32,7 +32,7 @@ export function werteVon(G: Gegenstand): [string, string][] {
   if (G.waffe) { const W = G.waffe, z: [string, string][] = [["Kampfart", KAMPFART[W.art]]];
     if (W.art === "nah") z.push(["Geschick", `+${W.geschick || 0}`], ["Stärke", `+${W.staerke || 0}`]);
     else if (W.art === "fern") z.push(["Fernkampf-Angriff", `+${W.fernAngriff || 0}`], ["Fernkampf-Stärke", `+${W.fernStaerke || 0}`]);
-    else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Zauber", `Max Hit ${W.zauber || 1}`], ...(W.magieStaerke ? [["Magie-Schaden", `+${W.magieStaerke} %`] as [string, string]] : []));
+    else z.push(["Magische Genauigkeit", `+${W.genau || 0}`], ["Magie-Stärke", `+${W.magieStaerke || 0}`]);
     z.push(["Angriffstempo", `${W.ticks} Ticks (${zahl(W.ticks * 0.5)} s)`], ["Reichweite", W.art === "nah" ? (W.reich <= 1 ? "1 Feld (Nahkampf)" : "Nahkampf") : `${zahl(W.reich)} Felder`]);
     if (G.abwehr) z.push(["Eigene Abwehr", `Nah ${G.abwehr.nah} · Fern ${G.abwehr.fern} · Magie ${G.abwehr.magie}`]); if (G.zweihand) z.push(["Hände", "zweihändig (kein Schild)"]);
     if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
@@ -179,14 +179,14 @@ for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE
 /* ───────── Ausrüstung nach OSRS (Vorgabe 23.11.2026): Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril ─────────
    Treffer und Abwehr rechnen wie OSRS: Wurf = (Level + Stil + 8) × (Bonus + 64) – die Boni sind die OSRS-Werte direkt.
    Nahkampf: ein Angriffsbonus (der passende OSRS-Angriffsstil der Waffe). Fernkampf: Bogen und Munition in einem (Pfeil-/Bolzenstärke in fernStaerke).
-   Magie: der Zauber steckt im Stab (fester Max Hit wie die OSRS-Zauber, das Magie-Level zählt nur für den Treffer). Rüstung: Abwehr nah = Mittel aus Stich/Hieb/Wucht; Metall senkt Fernkampf- und Magie-Angriff wie in OSRS.
+   Magie: der Zauber steckt im Stab (magieStaerke). Rüstung: Abwehr nah = Mittel aus Stich/Hieb/Wucht; Metall senkt Fernkampf- und Magie-Angriff wie in OSRS.
    Anforderungen, Ticks und Reichweiten aus dem Balancing-Dokument. Episch (35) ↔ Adamant, Legendär (45) ↔ Rune, Mythisch (65) ↔ Dragon. */
 type Bal = { a?: [AnfSkill, number]; w?: Partial<WaffenWerte>; ab?: [number, number, number]; /** Angriffsboni der Rüstung: [Fernkampf, Magie] */ mal?: [number, number]; zweihand?: boolean };
 /* OSRS-Abzüge der Metallrüstung auf Fernkampf- und Magie-Angriff (Volle Helme, Plattenpanzer, Beinschienen, Kite-Schilde) */
 const HELM: [number, number] = [-3, -6], PANZER: [number, number] = [-15, -30], BEINE: [number, number] = [-11, -21], KITE: [number, number] = [-2, -8];
 const BALANCING: Record<string, Bal> = {
   /* Training (Level 1): Bronze-Säbel, Kurzbogen + Bronzepfeile, Luftstab, Bronze-Kiteschild, Lederwams, Zauberrobe */
-  ritterschwert: { w: { geschick: 7, staerke: 6 } }, jagdbogen: { w: { fernAngriff: 8, fernStaerke: 7 } }, hirtenstab: { w: { genau: 10, zauber: 2, magieStaerke: 0 } },
+  ritterschwert: { w: { geschick: 7, staerke: 6 } }, jagdbogen: { w: { fernAngriff: 8, fernStaerke: 7 } }, hirtenstab: { w: { genau: 10 } },
   rundschild: { ab: [6, 6, -1], mal: KITE }, lederpanzer: { ab: [9, 9, 4], mal: [2, -2] }, magiepanzer: { ab: [0, 0, 3], mal: [0, 3] },
   /* Nahkampf: Black (Level 10) / Mithril (Level 20) – Langschwert, Dolch, Zweihänder, Streitkolben, Speer */
   eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 18, staerke: 16 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 22, staerke: 22 } },
@@ -198,8 +198,8 @@ const BALANCING: Record<string, Bal> = {
   mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 14, fernStaerke: 16 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 20, fernStaerke: 22 } },
   mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 14, fernStaerke: 20 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 20, fernStaerke: 27 } },
   sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 42, fernStaerke: 46 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 54, fernStaerke: 64 } },
-  /* Magie: Elementarstab mit eingebautem Zauber – Training Wind Strike (2), Einfach Water Strike (4), Selten Fire Strike (8) */
-  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 10, zauber: 4, magieStaerke: 0 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, zauber: 8, magieStaerke: 0 } },
+  /* Magie: Elementarstab; der eingebaute Zauber in der Magie-Stärke – Einfach trifft auf Magie 10 bis 4 (wie Water Strike), Selten auf Magie 20 bis 8 (wie Fire Strike) */
+  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 10, magieStaerke: 160 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 176 } },
   /* Schilde und Metallrüstung: Black (Einfach) / Mithril (Selten) */
   sternenschild_gewoehnlich: { a: ["defense", 10], ab: [22, 22, -1], mal: KITE }, sternenschild: { a: ["defense", 20], ab: [25, 25, -1], mal: KITE },
   eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [12, 12, -1], mal: HELM }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [37, 40, -6], mal: PANZER }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [20, 20, -4], mal: BEINE },
@@ -212,7 +212,7 @@ const BALANCING: Record<string, Bal> = {
   magierkapuze_selten: { a: ["defense", 20], ab: [2, 2, 4], mal: [0, 4] }, magierrobe_selten: { a: ["defense", 20], ab: [6, 6, 12], mal: [0, 12] }, magierrock_selten: { a: ["defense", 20], ab: [4, 4, 8], mal: [0, 8] },
   /* ───── Episch (Level 35) ↔ Adamant · Legendär (Level 45) ↔ Rune · Mythisch (Level 65) ↔ Dragon (Vorgabe 23.11.2026) ─────
      Nahkampf: Langschwert, Dolch, Zweihänder, Streitkolben, Speer. Fernkampf: Ahorn/Eibe/Magie-Bogen mit Adamant-/Runen-/Drachenpfeilen, Adamant-/Runen-/Drachen-Armbrust mit Bolzen.
-     Magie: Genauigkeit wie Mystik-/Alter/Kodai-Stäbe; Zauber Fire Bolt (12), zwischen Wind und Water Blast (14), Water Wave (18). Rüstung: Adamant/Rune/Dragon, Grüner/Blauer/Schwarzer Drachenleder-Satz, Mystik/Unendlichkeit/Ahrim. */
+     Magie: Genauigkeit wie Mystik-/Alter/Kodai-Stäbe; die Zauberstärke steigt nur leicht (die Magie-Formel skaliert schon mit dem Level). Rüstung: Adamant/Rune/Dragon, Grüner/Blauer/Schwarzer Drachenleder-Satz, Mystik/Unendlichkeit/Ahrim. */
   eidschwert_episch: { a: ["geschick", 35], w: { ticks: 3, reich: 1, geschick: 29, staerke: 28 } }, eidschwert_legendaer: { a: ["geschick", 45], w: { ticks: 3, reich: 1, geschick: 38, staerke: 39 } }, eidschwert_mythisch: { a: ["geschick", 65], w: { ticks: 3, reich: 1, geschick: 69, staerke: 71 } },
   eiddolch_episch: { a: ["geschick", 35], w: { ticks: 2, reich: 1, geschick: 15, staerke: 14 } }, eiddolch_legendaer: { a: ["geschick", 45], w: { ticks: 2, reich: 1, geschick: 25, staerke: 24 } }, eiddolch_mythisch: { a: ["geschick", 65], w: { ticks: 2, reich: 1, geschick: 40, staerke: 40 } },
   eidzweihaender_episch: { a: ["staerke", 35], w: { ticks: 4, reich: 1, geschick: 43, staerke: 44 }, zweihand: true }, eidzweihaender_legendaer: { a: ["staerke", 45], w: { ticks: 4, reich: 1, geschick: 69, staerke: 70 }, zweihand: true }, eidzweihaender_mythisch: { a: ["staerke", 65], w: { ticks: 4, reich: 1, geschick: 92, staerke: 93 }, zweihand: true },
@@ -221,7 +221,7 @@ const BALANCING: Record<string, Bal> = {
   mondkurzbogen_episch: { a: ["fernkampf", 35], w: { ticks: 3, reich: 5, fernAngriff: 29, fernStaerke: 31 } }, mondkurzbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 3, reich: 5, fernAngriff: 47, fernStaerke: 49 } }, mondkurzbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 3, reich: 5, fernAngriff: 69, fernStaerke: 60 } },
   mondlangbogen_episch: { a: ["fernkampf", 35], w: { ticks: 5, reich: 7, fernAngriff: 31, fernStaerke: 38 } }, mondlangbogen_legendaer: { a: ["fernkampf", 45], w: { ticks: 5, reich: 7, fernAngriff: 49, fernStaerke: 60 } }, mondlangbogen_mythisch: { a: ["fernkampf", 65], w: { ticks: 5, reich: 7, fernAngriff: 69, fernStaerke: 73 } },
   sternarmbrust_episch: { a: ["fernkampf", 35], w: { ticks: 6, reich: 6, fernAngriff: 55, fernStaerke: 82 } }, sternarmbrust_legendaer: { a: ["fernkampf", 45], w: { ticks: 6, reich: 6, fernAngriff: 90, fernStaerke: 100 } }, sternarmbrust_mythisch: { a: ["fernkampf", 65], w: { ticks: 6, reich: 6, fernAngriff: 94, fernStaerke: 122 } },
-  sternenszepter_episch: { a: ["magie", 35], w: { ticks: 5, reich: 6, genau: 15, zauber: 12, magieStaerke: 0 } }, sternenszepter_legendaer: { a: ["magie", 45], w: { ticks: 5, reich: 6, genau: 20, zauber: 14, magieStaerke: 0 } }, sternenszepter_mythisch: { a: ["magie", 65], w: { ticks: 5, reich: 6, genau: 25, zauber: 18, magieStaerke: 0 } },
+  sternenszepter_episch: { a: ["magie", 35], w: { ticks: 5, reich: 6, genau: 15, magieStaerke: 184 } }, sternenszepter_legendaer: { a: ["magie", 45], w: { ticks: 5, reich: 6, genau: 20, magieStaerke: 192 } }, sternenszepter_mythisch: { a: ["magie", 65], w: { ticks: 5, reich: 6, genau: 25, magieStaerke: 208 } },
   sternenschild_episch: { a: ["defense", 35], ab: [32, 32, -1], mal: KITE }, sternenschild_legendaer: { a: ["defense", 45], ab: [46, 46, -1], mal: KITE }, sternenschild_mythisch: { a: ["defense", 65], ab: [59, 60, 0], mal: KITE },
   eisenwachthelm_episch: { a: ["defense", 35], ab: [19, 19, -1], mal: HELM }, eisenwacht_episch: { a: ["defense", 35], ab: [61, 63, -6], mal: PANZER }, eisenbeinschienen_episch: { a: ["defense", 35], ab: [31, 31, -4], mal: BEINE },
   eisenwachthelm_legendaer: { a: ["defense", 45], ab: [30, 30, -1], mal: HELM }, eisenwacht_legendaer: { a: ["defense", 45], ab: [78, 80, -6], mal: PANZER }, eisenbeinschienen_legendaer: { a: ["defense", 45], ab: [49, 49, -4], mal: BEINE },

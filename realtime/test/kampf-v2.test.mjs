@@ -4,7 +4,7 @@
  * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
  * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
  */
-import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, maxHitMagie, maxHitZauber, gegnerWerte, STILE, SKILLS } from "./sim.gebaut.mjs";
+import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, maxHitMagie, gegnerWerte, STILE, SKILLS } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
 
@@ -30,10 +30,8 @@ const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
   const h = kampfwerte({ ...NULL, fernkampf: xpFuer(99) }, { waffe: "jagdbogen" }, 0); check(h.waffe.schaden[1] === 12 && kampfwerte({ ...NULL, fernkampf: xpFuer(99) }, { waffe: "jagdbogen" }, 1).waffe.schaden[1] === 12, "Fernkampf 99, Trainingsbogen (Pfeilstärke +7): Max Hit 12 – der Skill erhöht den Schaden"); }
 { const k = [0, 1, 2].map((s) => kampfwerte(NULL, startAusruestung("stab"), s));
   check(k.map((x) => x.angriff.magie).join() === "924,693,770" && k.map((x) => x.waffe.ticks).join() === "5,4,5" && k.every((x) => x.waffe.reich === 6) && k.map((x) => x.abwehr.nah - k[1].abwehr.nah).join() === "0,0,192", "Stab L1 (OSRS): Angriffswurf (Magie 1 + Stil + 8) × (Stab 10 + Robe 3 + 64) → Akkurat 924 · Schnell 693 · Defensiv 770; Schnell 4 Ticks, sonst 5; Defensiv +3 Defense");
-  check(k.every((x) => x.waffe.schaden.join() === "1,2" && schadenWurf(x.waffe, 0.999) === 2), "Stab L1 (Zauber wie Wind Strike): Max Hit 2 in allen Stilen");
-  const mz = (st, m, w) => kampfwerte({ ...NULL, magie: xpFuer(m) }, { waffe: w }, st).waffe.schaden[1];
-  check(mz(0, 50, "hirtenstab") === 2 && mz(1, 99, "hirtenstab") === 2 && mz(0, 99, "sternenszepter") === 8 && mz(0, 65, "sternenszepter_mythisch") === 18 && mz(2, 99, "sternenszepter_mythisch") === 18 && maxHitZauber(18, 10) === 19 && maxHitZauber(1, 0) === 1,
-    "Magie wie OSRS: der Zauber im Stab gibt den Max Hit fest vor (Training 2, Selten 8, Mythisch 18), unabhängig von Level und Stil; Magie-Schaden % erhöht ihn (18 + 10 % → 19)"); }
+  check(k.every((x) => x.waffe.schaden.join() === "1,1" && schadenWurf(x.waffe, 0.999) === 1), "Stab L1 (Magie-Stärke +10): Max Hit 1 in allen Stilen");
+  check([3, 0, 1].map((b) => maxHitMagie(50, b, 10)).join() === "6,6,6" && kampfwerte({ ...NULL, magie: xpFuer(50) }, { waffe: "hirtenstab" }, 0).waffe.schaden[1] === 6, "Magie-Max-Hit: Level 50, Magie-Stärke +10 → 6 / 6 / 6 (Beispiel aus der Vorgabe); effektive Magie ohne +8"); }
 { const B = MONSTER.bandit_dolch, g = gegnerWerte(B.v2, "nah"); check(B.lp === 6 && B.v2.geschick === 1 && B.v2.staerke === 1 && B.v2.defense === 1 && B.v2.ticks === 4 && g.treffer === 640 && g.maxHit === 1 && g.abwehr.nah === 640 && g.abwehr.fern === 640 && g.abwehr.magie === 640 && B.angriff.reich === 1.5, `Bandit (OSRS-Monster Level 1, ohne Boni): Angriffswurf (1 + 9) × 64 = ${g.treffer}, Max Hit ${g.maxHit}, Abwehr ${g.abwehr.nah}/${g.abwehr.fern}/${g.abwehr.magie}, 6 LP, 4 Ticks`);
   const A = { nah: 0, fern: 0, magie: 0 }, mh = (v, art) => gegnerWerte({ ticks: 4, abwehr: A, ...v }, art).maxHit;
   check(mh({ staerke: 5 }, "nah") === 1 && mh({ staerke: 6 }, "nah") === 2 && mh({ staerke: 99 }, "nah") === 11 && mh({ fernkampf: 50 }, "fern") === 6 && mh({ magie: 50 }, "magie") === 5 && gegnerWerte({ fernkampf: 20, ticks: 4, abwehr: A }, "fern").treffer === 29 * 64

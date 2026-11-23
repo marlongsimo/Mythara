@@ -2,11 +2,11 @@
  * Mythara – liest die Zahlen fürs Kampfsystem-PDF (v4) aus dem gebauten Spielcode und schreibt sie als JSON.
  * Aufruf (im Ordner realtime nach „node build.mjs“): node ../doku/kampfsystem/quelle/kampfdaten.mjs > ../doku/kampfsystem/quelle/kampfdaten.json
  */
-import { GEGENSTAENDE, MONSTER, STILE, kampfwerte, gegnerWerte, startAusruestung, xpFuer, maxHit, NULL_XP } from "../../../realtime/test/sim.gebaut.mjs";
+import { GEGENSTAENDE, MONSTER, STILE, kampfwerte, gegnerWerte, startAusruestung, xpFuer, maxHit, maxHitMagie, NULL_XP } from "../../../realtime/test/sim.gebaut.mjs";
 
 const NULL = { ...NULL_XP };
 const xp = [2, 3, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 99, 100].map((L) => [L, xpFuer(L)]);
-const mh = [[1, 0], [10, 16], [20, 22], [50, 50], [75, 80], [99, 114]].map(([L, b]) => [L, b, maxHit(L, 0, b), maxHit(L, 3, b)]);
+const mh = [[1, 0], [10, 16], [20, 22], [50, 50], [75, 80], [99, 114]].map(([L, b]) => [L, b, maxHit(L, 0, b), maxHit(L, 3, b), maxHitMagie(L, 0, b), maxHitMagie(L, 3, b)]);
 const teil = (id) => { const G = GEGENSTAENDE[id]; return { id, name: G.name, platz: G.platz, seltenheit: G.seltenheit, art: G.art, waffe: G.waffe || null, abwehr: G.abwehr || null, bonus: G.bonus || null, anforderung: G.anforderung || null, zweihand: Boolean(G.zweihand) }; };
 const start = {};
 for (const w of ["schwert", "bogen", "stab"]) {
