@@ -30,25 +30,65 @@
    "platz": "haar",
    "bewegungen": []
   },
+  "kopf.helm.eisenwacht": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/kopf.helm.eisenwacht.glb"
+  },
+  "kopf.helm.jaegerkapuze": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/kopf.helm.jaegerkapuze.glb"
+  },
+  "ruestung.beine.eisenschienen": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.beine.eisenschienen.glb"
+  },
+  "ruestung.beine.jaeger": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.beine.jaeger.glb"
+  },
+  "ruestung.brust.eisenwacht": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.eisenwacht.glb"
+  },
+  "ruestung.brust.jaeger": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.jaeger.glb"
+  },
   "ruestung.brust.lederpanzer": {
    "art": "huelle",
    "platz": "brust",
-   "bewegungen": []
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.lederpanzer.glb"
   },
   "ruestung.brust.magiepanzer": {
    "art": "huelle",
    "platz": "brust",
-   "bewegungen": []
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.magiepanzer.glb"
   },
   "ruestung.brust.sternplatte": {
    "art": "huelle",
    "platz": "brust",
-   "bewegungen": []
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.sternplatte.glb"
   },
   "ruestung.brust.sturmzahn": {
    "art": "huelle",
    "platz": "brust",
-   "bewegungen": []
+   "bewegungen": [],
+   "datei": "basefrau3d.teile/ruestung.brust.sturmzahn.glb"
   },
   "schild.kreuz": {
    "art": "starr",

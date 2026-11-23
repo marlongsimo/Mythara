@@ -468,9 +468,12 @@
     #ez-titel.ein { animation: ez-titel-ein .6s ease-out both; } #ez-titel.weg { opacity: 0 !important; transition: opacity .9s ease-in; }
     @keyframes ez-titel-ein { from { opacity: 0; } to { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) { #ez-titel.ein { animation: none; } #ez-titel.weg { transition: none; } }
-    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Waffe links, Brust Mitte, Nebenhand rechts */
-    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: "waffe brust nebenhand"; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
-    .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
+    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Kopf oben, Waffe links, Brust Mitte, Nebenhand rechts, Beine unten */
+    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: ". kopf ." "waffe brust nebenhand" ". beine ."; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
+    .tafel.eigen .p-kopf { grid-area: kopf; } .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-beine { grid-area: beine; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
+    .tafel .ifeld.voll.s-gewoehnlich { box-shadow: inset 0 0 0 2px #b9b4a888; } .tafel .ifeld.voll.s-selten { box-shadow: inset 0 0 0 2px #5fcf6aaa; } .tafel .ifeld.voll.s-episch { box-shadow: inset 0 0 0 2px #6f8cffcc, 0 0 10px #6f8cff55; }
+    .tafel .ifeld.voll.s-legendaer { box-shadow: inset 0 0 0 2px #ff9a2ecc, 0 0 12px #ff9a2e66; } .tafel .ifeld.voll.s-mythisch { box-shadow: inset 0 0 0 2px #ff4fd8dd, 0 0 14px #9a5cff88; }
+    .isel { font-weight: 600; } .isel.s-gewoehnlich { color: #b9b4a8; } .isel.s-selten { color: #5fcf6a; } .isel.s-episch { color: #8aa2ff; } .isel.s-legendaer { color: #ff9a2e; } .isel.s-mythisch { background: linear-gradient(90deg, #4fe3ff, #ff4fd8); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 150px; }
     .tafel.eigen .ifeld { position: relative; display: grid; place-items: center; width: 100%; height: 108px; padding: 0; cursor: default; border-radius: 8px; color: #8a7448;
       background: radial-gradient(rgba(70,54,32,.75), rgba(16,12,8,.95)); border: 1px solid #6a5232; box-shadow: inset 0 0 12px #000; }
@@ -551,6 +554,8 @@
     .seitentab .tskills .lv { font: 700 14px Georgia, serif; color: #fff3c8; text-align: center; } .seitentab .tskills .lv.nach { color: #a8946a; font-weight: 400; }
     .seitentab .tskills .ez-balken { display: block; height: 8px; border-radius: 4px; background: #1a140d; border: 1px solid #5a4528; overflow: hidden; } .seitentab .tskills .ez-balken u { display: block; height: 100%; background: linear-gradient(90deg, #c89b52, #ffe08a); text-decoration: none; }
     .seitentab .tleer { flex: 1; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; color: #cdb98a; } .seitentab .tleer span svg { width: 38px; height: 38px; opacity: .5; } .seitentab .tleer p { margin: 0; font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tleer small { font-size: 12px; max-width: 260px; }
+    .seitentab .tquest .kipp.verfolgen { margin-top: 8px; } .seitentab .tquest .kipp.verfolgen b::after { content: none; }
+    [aria-label="Sprint"].an { border-color: #ffe08a !important; box-shadow: 0 0 14px rgba(255,224,138,.85) !important; background: radial-gradient(#7a5a28, #2e2010) !important; }
     .seitentab .tquest { flex: 1; display: grid; align-content: start; gap: 4px; padding: 8px 10px; border-radius: 9px; border: 1.5px solid #8a6a3a; background: linear-gradient(#2e2519, #1a140d); overflow: auto; }
     .seitentab .tquest b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tquest small { color: #a8946a; font-size: 11.5px; } .seitentab .tquest p { margin: 4px 0 0; font-size: 13px; line-height: 1.4; color: #f3e3b5; } .seitentab .tquest.fertig b::after { content: " ✓"; color: #8fd06a; }
     /* Gespräch wie die klassische Chatbox (OSRS): Pergament, Kopfbild links (Figur) oder rechts (du), Name dunkelrot, Text schwarz, „fortfahren“ blau */
@@ -626,6 +631,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwssuwpl"></script>
+  <script src="spiel.js?v=mwt2nkuk"></script>
 </body>
 </html>
