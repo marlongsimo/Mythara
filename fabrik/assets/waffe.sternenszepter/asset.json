@@ -1,0 +1,9 @@
+{
+  "id": "waffe.sternenszepter",
+  "name": "Sternenszepter",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy „Astral Scepter“, umgedreht (Kopf unten) und auf 1,75 m skaliert; ausgelagert, Stufen mit fabrik/stufen_bauen.sh (Kristall mit feld=1)",
+  "herkunft": "Meshy"
+}

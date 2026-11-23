@@ -366,6 +366,18 @@
    ],
    "datei": "basefrau3d.teile/waffe.sterndorn.glb"
   },
+  "waffe.sternenszepter": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basefrau3d.teile/waffe.sternenszepter.glb"
+  },
   "waffe.zeremonienstab": {
    "art": "starr",
    "platz": "hand_r",

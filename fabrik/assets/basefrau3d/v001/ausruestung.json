@@ -401,6 +401,23 @@
         "tod",
         "armbrust1h"
       ]
+    },
+    {
+      "id": "waffe.sternenszepter",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.sternenszepter/v001/quelle/stab.glb",
+      "griff": 0.55,
+      "griff2": 0.35,
+      "klasse": "stab",
+      "angriff": "zauber_stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "zauber_stab"
+      ]
     }
   ],
   "stuecke_behalten": true,
