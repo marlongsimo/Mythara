@@ -87,6 +87,10 @@ elif stufe == "mythisch":                                                  # üb
     glut = np.maximum(kanten.astype(float), adern * 0.8); glutstaerke = 1.1
     t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; glutfarbe = None; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, 1.0 * np.ones_like(t_)], 1)   # Türkis ↔ Magenta
 elif stufe != "selten": sys.exit("Stufe unbekannt: " + stufe)
+if opt.get("stark") == "1" and not LEDER:                                 # Waffen: die Klinge ist die Hauptfläche – Stufe kräftiger zeigen, Griff mitfärben
+    if stufe == "episch": setze(metall, fL=0.75, fC=0.3, b=-12); N[leder, 1] = 4 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = -24 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
+    if stufe == "legendaer": setze(metall, fC=1.0, a=4, b=16); N[leder, 1] = 32 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = 14 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
+    if stufe == "gewoehnlich": setze(leder, fL=0.8, fC=0.5)
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()
 if glutstaerke:                                                             # Leuchtkarte: nur die Beschläge, weich ausgeblendet
     g = np.asarray(Image.fromarray((glut.reshape(H_, B_) * 255).astype(np.uint8)).resize((B_ // 2, H_ // 2), Image.BILINEAR).resize((B_, H_), Image.BILINEAR), np.float32) / 255
