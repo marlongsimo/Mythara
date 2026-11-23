@@ -138,6 +138,22 @@
     "dolchwurf"
    ]
   },
+  "schild.sternen": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basefrau3d.teile/schild.sternen.glb"
+  },
   "waffe.armbrust": {
    "art": "starr",
    "platz": "hand_r",
@@ -182,6 +198,44 @@
     "dolchwurf",
     "stich"
    ]
+  },
+  "waffe.eiddolch": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "dolchwurf",
+    "stich"
+   ],
+   "datei": "basefrau3d.teile/waffe.eiddolch.glb"
+  },
+  "waffe.eidschwert": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basefrau3d.teile/waffe.eidschwert.glb"
+  },
+  "waffe.eidzweihaender": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "hieb2h"
+   ],
+   "datei": "basefrau3d.teile/waffe.eidzweihaender.glb"
   },
   "waffe.langschwert": {
    "art": "starr",

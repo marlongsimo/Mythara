@@ -58,6 +58,14 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     werte: [["Abwehr", "Werte folgen"]], text: "Langer, geschichteter Rock mit Quasten am Gürtel. Gehört zum Magier-Set." },
   magierkapuze: { id: "magierkapuze", name: "Magierkapuze", platz: "kopf", art: "Stoffrüstung", seltenheit: "gewoehnlich", ebenen: ["kopf.helm.magierkapuze"],
     werte: [["Abwehr", "Werte folgen"]], text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
+  eidschwert: { id: "eidschwert", name: "Eidschwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
+    werte: [["Schaden", "Werte folgen"]], text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
+  eiddolch: { id: "eiddolch", name: "Eiddolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
+    werte: [["Schaden", "Werte folgen"]], text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
+  eidzweihaender: { id: "eidzweihaender", name: "Eid-Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],
+    werte: [["Schaden", "Werte folgen"]], text: "Ein langes Schwert für zwei Hände, die Parierstange wie gebogene Äste." },
+  sternenschild: { id: "sternenschild", name: "Sternenschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.sternen"],
+    werte: [["Abwehr", "Werte folgen"]], text: "Ein Drachenschild aus dunklem Stahl mit goldenem Stern auf nachtblauem Grund." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
    die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
@@ -92,6 +100,17 @@ const MAGIER_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
 for (const st of MAGIER_STUFEN) for (const [basis, nomen, endung] of [["magierrobe", "Magierrobe", "e"], ["magierrock", "Magierrock", "er"], ["magierkapuze", "Magierkapuze", "e"]] as const) {
   const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`, w = st.w === "Purpurn" ? (endung === "er" ? "Purpurner" : "Purpurne") : st.w + endung;
   GEGENSTAENDE[id] = { ...B, id, name: `${w} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+}
+/* Eid-Waffen und Sternenschild (Grundstufe selten): übrige Stufen wie beim Eisenwacht-Set */
+const WAFFEN_STUFEN: { s: Seltenheit; w: string; text: string }[] = [
+  { s: "gewoehnlich", w: "Rostig", text: "Fleckig vom Rost, die Vergoldung längst abgegriffen – aber noch scharf genug." },
+  { s: "episch", w: "Geschwärzt", text: "Nachtschwarzer Stahl mit Goldbeschlägen, die im Dunkeln schwach blau glimmen." },
+  { s: "legendaer", w: "Glutgolden", text: "Schwer vergoldet; Kanten und Beschläge glühen wie frisch aus der Esse." },
+  { s: "mythisch", w: "Sternenschimmernd", text: "Schillernder Obsidian mit leuchtenden Adern – als hätte jemand einen Stern hineingeschmiedet." },
+];
+for (const st of WAFFEN_STUFEN) for (const [basis, nomen, endung] of [["eidschwert", "Eidschwert", "es"], ["eiddolch", "Eiddolch", "er"], ["eidzweihaender", "Eid-Zweihänder", "er"], ["sternenschild", "Sternenschild", "er"]] as const) {
+  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
+  GEGENSTAENDE[id] = { ...B, id, name: `${st.w}${endung} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
 }
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {

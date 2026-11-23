@@ -23,7 +23,7 @@ function vorlageLaden(url: string): Promise<Vorlage> {
   return p;
 }
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb aus fabrik/export3d.py auslagern=…, erst beim Anlegen geladen */
-const AUSGELAGERT = /^(ruestung|kopf\.helm)\./;
+const AUSGELAGERT = /^(ruestung|kopf\.helm|waffe|schild)\./;   /* was nicht in der Grundfigur steckt, wird aus <figur>.teile/ nachgeladen */
 const teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
 function teilVorlage(url: string): Promise<THREE.Object3D> {
   let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p;
@@ -78,6 +78,11 @@ export class Darsteller {
       const quelle = await teilVorlage(this.url.replace(/\.glb$/, ".teile/") + id + ".glb"), knochen = new Map<string, THREE.Bone>();
       this.wurzel.traverse((o) => { if ((o as THREE.Bone).isBone) knochen.set(o.name, o as THREE.Bone); });
       const koerper = (() => { let k: THREE.Object3D | null = null; this.wurzel.traverse((o) => { if (!k && (o as THREE.SkinnedMesh).isSkinnedMesh && /^koerper/.test(o.name)) k = o; }); return k as THREE.Object3D | null; })();
+      quelle.traverse((o) => { const m = o as THREE.Mesh;                                        /* starre Teile (Waffen, Schilde): Kind eines Knochens – an denselben Knochen dieser Figur hängen */
+        if (!m.isMesh || (m as THREE.SkinnedMesh).isSkinnedMesh || this.teile.has(n)) return; let p = m.parent; while (p && !(p as THREE.Bone).isBone) p = p.parent;
+        const ziel = p && knochen.get(p.name); if (!ziel) return; const g = new THREE.Group(); g.name = n; p!.updateWorldMatrix(true, true);
+        const rel = new THREE.Matrix4().copy(p!.matrixWorld).invert().multiply(m.matrixWorld); rel.decompose(g.position, g.quaternion, g.scale);
+        const kopie = new THREE.Mesh(m.geometry, m.material); kopie.frustumCulled = false; g.add(kopie); ziel.add(g); g.visible = this.soll.has(n); this.teile.set(n, g); });
       quelle.traverse((o) => { const sm = o as THREE.SkinnedMesh; if (!sm.isSkinnedMesh || this.teile.has(n)) return;
         const bones = sm.skeleton.bones.map((b) => knochen.get(b.name)); if (bones.some((b) => !b)) { console.warn("Teil passt nicht aufs Skelett:", id); return; }
         const neu = new THREE.SkinnedMesh(sm.geometry, sm.material); neu.name = n; neu.frustumCulled = false;

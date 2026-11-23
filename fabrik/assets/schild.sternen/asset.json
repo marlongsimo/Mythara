@@ -1,0 +1,9 @@
+{
+  "id": "schild.sternen",
+  "name": "Sternenschild",
+  "kategorie": "schild",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell (Spitze unten), skaliert; ausgelagert als <figur>.teile/schild.sternen.glb, Stufen mit fabrik/stufen_bauen.sh",
+  "herkunft": "Meshy"
+}

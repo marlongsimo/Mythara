@@ -237,6 +237,77 @@
       ],
       "drehen": 180,
       "angriff": "bogen"
+    },
+    {
+      "id": "waffe.eidschwert",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.eidschwert/v001/quelle/schwert.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "klasse": "einhand",
+      "angriff": "stich",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
+      "id": "waffe.eiddolch",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.eiddolch/v001/quelle/dolch.glb",
+      "griff": 0.2,
+      "griff2": 0.08,
+      "klasse": "wurfdolch",
+      "angriff": "dolchwurf",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "dolchwurf",
+        "stich"
+      ]
+    },
+    {
+      "id": "waffe.eidzweihaender",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.eidzweihaender/v001/quelle/schwert.glb",
+      "griff": 0.2,
+      "griff2": 0.08,
+      "klasse": "zweihand",
+      "angriff": "hieb2h",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "hieb2h"
+      ]
+    },
+    {
+      "id": "schild.sternen",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.sternen/v001/quelle/schild.glb",
+      "klasse": "schild",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block",
+        "zauber_stab",
+        "armbrust1h",
+        "dolchwurf"
+      ]
     }
   ],
   "stuecke_behalten": true,
