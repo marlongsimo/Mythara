@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
-import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, rang, NpcId, ZIEL } from "../../../shared/quest01";
+import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, sperreHier, rang, NpcId, ZIEL } from "../../../shared/quest01";
 import { questStand, questGeladen, rede, questVerfolgt } from "../welt";
 import { Npc3D } from "./npc3d";
 import { LADEN_LISTE } from "../../../shared/laeden";
@@ -38,14 +38,18 @@ export class QuestWelt {
       const n = NPCS.find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
       const l = LADEN_LISTE.find((x) => x.haendler === wer); return l ? kopfbild(l.modell) : ""; }); }
   /** Stand geändert: Sperren, Wachen, Marker */
-  private stand() { const s = questStand(), auf = sperreOffen(s);
-    if (auf !== this.offen) { this.offen = auf; for (const g of this.staemme) g.visible = !auf; this.u.sperrenNeu();
+  private offenSchluessel = "";
+  private stand() { const s = questStand(), auf = sperreOffen(s), schl = SPERREN.map((sp) => (sperreHier(sp, s) ? 1 : 0)).join("");
+    if (schl !== this.offenSchluessel) { this.offenSchluessel = schl; for (const g of this.staemme) g.visible = !sperreHier(SPERREN.find((sp) => sp.id === g.userData.sperre)!, s); this.u.sperrenNeu(); }
+    if (auf !== this.offen) { this.offen = auf;
       for (const f of this.figuren) if (f.n.id === "raban" || f.n.id === "tilda") { f.x = f.n.x + (auf ? (f.n.id === "raban" ? -3 : 3) : 0); if (f.npc) f.npc.blick(auf ? 0 : f.n.blick[0], auf ? 1 : f.n.blick[1]); } } }
   /** Die gesperrten Felder für diesen Spieler (leer, sobald die Wachen ihn durchlassen) */
-  sperren(): number[][] { return sperreOffen(questStand()) ? [] : SPERREN.map((s) => [...s.feld]); }
+  sperren(): number[][] { const s = questStand(); return SPERREN.filter((sp) => !sperreHier(sp, s)).map((sp) => [...sp.feld]); }
   /** Wo steht die Figur gerade (Hagan: der umhergehende Bürgermeister) */
   private wo(f: Figur): { x: number; y: number } | null { if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
+  /** Wo die Questfiguren gerade stehen (für das Antippen am Bildschirm: die ganze Figur zählt) */
+  punkte(): { x: number; y: number }[] { if (!questGeladen()) return []; const aus: { x: number; y: number }[] = []; for (const f of this.figuren) { const p = this.wo(f); if (p) aus.push(p); } return aus; }
   /** Antippen: liegt dort eine Questfigur? Dann „Mit … sprechen“ (hingehen, dann reden) */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;

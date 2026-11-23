@@ -14,6 +14,8 @@ export const rang = (s: Stand): number => (s ? STAENDE.indexOf(s) : -1);
 export const laeuft = (s: Stand): boolean => rang(s) >= rang("angenommen") && rang(s) <= rang("frei");
 /** Die Sperre ist für diesen Spieler offen */
 export const sperreOffen = (s: Stand): boolean => s === "frei" || s === "fertig";
+/** Ist diese Sperre für diesen Stand offen? (die Straßensperre erst mit Freigabe, die Kreuzung schon auf dem Weg zu den Wachen) */
+export const sperreHier = (sp: { offenAb?: Stand }, s: Stand): boolean => sperreOffen(s) || (sp.offenAb !== undefined && rang(s) >= rang(sp.offenAb));
 /** Regionen hinter der Sperre */
 export const HINTER_DER_SPERRE = new Set(["weidenhain", "rabenmoor", "obstwiesen"]);
 export const SCHRIFTSTUECK = "hinweispergament";
@@ -38,8 +40,8 @@ export const NPCS: QuestNpc[] = [
   { id: "jori", name: "Jori", modell: "npc.maedchen", x: 6452.5, y: 6444.5, blick: [0, -1] },
   { id: "hagan", name: "Hagan Voss", modell: "npc.buergermeister_waldmark", x: 6438.5, y: 6423.5, blick: [0, 1], wandert: "npc.buergermeister_waldmark" },
   { id: "fenna", name: "Fenna Ried", modell: "npc.marktfrau", x: 6534.5, y: 6438.5, blick: [0, 1] },
-  { id: "raban", name: "Wachtmann Raban", modell: "stadtwache3d", x: 6442.5, y: 6645.5, blick: [0, -1] },
-  { id: "tilda", name: "Wachtfrau Tilda", modell: "stadtwache3d", x: 6450.5, y: 6645.5, blick: [0, -1] },
+  { id: "raban", name: "Wachtmann Raban", modell: "stadtwache3d", x: 6442.5, y: 6643.5, blick: [0, -1] }, /* vor der Straßensperre (Stämme ab 6648) */
+  { id: "tilda", name: "Wachtfrau Tilda", modell: "stadtwache3d", x: 6450.5, y: 6643.5, blick: [0, -1] },
   { id: "othmar", name: "Othmar Rehn", modell: "npc.alter_bauer", x: 6451.5, y: 6688.5, blick: [0, -1] },
 ];
 export const npc = (id: string): QuestNpc | undefined => NPCS.find((n) => n.id === id);
@@ -49,12 +51,12 @@ export const REDE_WEIT = 3.5;
 /** Wohin es als Nächstes geht (Pfeil am Helden, gelbes ! auf der Minikarte): eine Figur oder eine Stelle (Weltfelder) */
 export const ZIEL: Partial<Record<Stand, NpcId | [number, number]>> = { "": "jori", angeboten: "jori", angenommen: "hagan", auftrag: "fenna", osthof: "raban", wachen: [6546, 6586] /* Lichtung im Kreuzwald */, beweis: "hagan", bestaetigt: "raban", frei: "othmar" };
 /* ---------- Sperren: Baumstämme (gesperrte Felder x0, y0, x1, y1) – für jeden Spieler, bis die Wachen ihn durchlassen ---------- */
-export interface Sperre { id: string; feld: [number, number, number, number]; /** Baumstämme: Mitte x, y, Länge, Drehung (rad) */ staemme: [number, number, number, number][] }
+export interface Sperre { id: string; feld: [number, number, number, number]; /** Baumstämme: Mitte x, y, Länge, Drehung (rad) */ staemme: [number, number, number, number][]; /** schon offen ab diesem Stand (die Kreuzung: sobald man zu den Wachen geschickt wird) */ offenAb?: Stand }
 export const SPERREN: Sperre[] = [
   /* Hauptstraße vor Weidenhain (Raban und Tilda stehen davor) – gesperrt über die ganze Breite des Kreuzwalds (der Wald ist begehbar) */
   { id: "strasse", feld: [6336, 6647, 6592, 6650], staemme: [[6443, 6648.3, 6.5, 0.12], [6450.5, 6648.6, 6.5, -0.1], [6446.5, 6649.3, 5, 0.05]] },
   /* Kreuzung im Kreuzwald: der Weg nach Süden unterhalb der Lichtung, ebenfalls über die ganze Breite */
-  { id: "kreuzung", feld: [6336, 6614, 6592, 6616], staemme: [[6441, 6614.7, 6, 0.08], [6447.5, 6615.1, 6, -0.12]] },
+  { id: "kreuzung", offenAb: "osthof", feld: [6336, 6614, 6592, 6616], staemme: [[6441, 6614.7, 6, 0.08], [6447.5, 6615.1, 6, -0.12]] },
   /* Pfad von der Westmark nach Rabenmoor (ganze Breite der Westmark) */
   { id: "westmark", feld: [6272, 6650, 6336, 6653], staemme: [[6321, 6651.2, 6.5, 0.1], [6328, 6651.5, 6.5, -0.08], [6334, 6651.2, 5, 0.15]] },
   /* Osthang (unsichtbar): kein Umweg durch den Wald im Osten */

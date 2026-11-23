@@ -177,20 +177,21 @@ export function angriffFuer(ebenen: string[]): string | null {
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
 /* ───────── Werte „Ausrüstungs-Balancing durchsimuliert“ (23.11.2026) für Einfach (Level 10) und Selten (Level 20), umgerechnet auf Kampfsystem v3 ─────────
    Übernommen: Anforderungen, Ticks, Reichweiten (Nahkampf 1 Feld), Geschick-Boni, Fernkampf-Angriff (= Fernkampfstärke des Dokuments), Genauigkeit, Rüstungs- und Schildabwehr.
-   Neu gerechnet (das Dokument nutzte noch die Schadensformeln von v2): die Stärke-Boni für den Max Hit. Anker ist das v3-Ziel „+114 → Stärke 50: 16, 99: 30“ –
-   Schwert Einfach +30, Selten +50; jede andere Waffe hat zum Schwert dasselbe Max-Hit-Verhältnis wie im Dokument, Selten = Einfach im Verhältnis des Schwerts.
+   Neu gerechnet (das Dokument nutzte noch die Schadensformeln von v2): die Stärke-Boni für den Max Hit = Stärke-Wert des Dokuments × 148/65.
+   Anker (Vorgabe 23.11.2026): Stärke 99 mit der mythischen Stärke-Waffe (Zweihänder, Dokument +65 → +148) trifft höchstens 36 (aggressiv). Fernkampf-Stärke ebenso;
+   Magie-Stärke = höchster Schadenswurf des Dokuments × 130/30 (mythischer Zauberstab auf Magie 99: Max Hit 30).
    Magie (ohne die +8 der Formel) braucht dafür höhere Magie-Stärke. Zweihänder und Speer: zweihändig, mit kleiner eigener Abwehr. Episch bis Mythisch: noch vorläufig. */
 type Bal = { a?: [AnfSkill, number]; w?: Partial<WaffenWerte>; ab?: [number, number, number]; zweihand?: boolean };
 const BALANCING: Record<string, Bal> = {
-  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 9, staerke: 30 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 14, staerke: 50 } },
-  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 12, staerke: 13 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 18, staerke: 29 } },
-  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 6, staerke: 107 }, ab: [1, 0, 0], zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 9, staerke: 143 }, ab: [1, 0, 0], zweihand: true },
-  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 5, staerke: 98 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 8, staerke: 132 } },
-  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 10, staerke: 21 }, ab: [1, 1, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 39 }, ab: [1, 1, 0], zweihand: true },
-  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 9, fernStaerke: 13 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 12, fernStaerke: 29 } },
-  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 12, fernStaerke: 39 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 16, fernStaerke: 61 } },
-  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 15, fernStaerke: 64 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 19, fernStaerke: 91 } },
-  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 8, magieStaerke: 121 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 160 } },
+  eidschwert_gewoehnlich: { a: ["geschick", 10], w: { ticks: 3, reich: 1, geschick: 9, staerke: 18 } }, eidschwert: { a: ["geschick", 20], w: { ticks: 3, reich: 1, geschick: 14, staerke: 27 } },
+  eiddolch_gewoehnlich: { a: ["geschick", 10], w: { ticks: 2, reich: 1, geschick: 12, staerke: 14 } }, eiddolch: { a: ["geschick", 20], w: { ticks: 2, reich: 1, geschick: 18, staerke: 20 } },
+  eidzweihaender_gewoehnlich: { a: ["staerke", 10], w: { ticks: 4, reich: 1, geschick: 6, staerke: 39 }, ab: [1, 0, 0], zweihand: true }, eidzweihaender: { a: ["staerke", 20], w: { ticks: 4, reich: 1, geschick: 9, staerke: 59 }, ab: [1, 0, 0], zweihand: true },
+  sternbrecher_gewoehnlich: { a: ["staerke", 10], w: { ticks: 3, reich: 1, geschick: 5, staerke: 36 } }, sternbrecher: { a: ["staerke", 20], w: { ticks: 3, reich: 1, geschick: 8, staerke: 57 } },
+  sterndorn_gewoehnlich: { a: ["geschick", 10], w: { ticks: 4, reich: 1, geschick: 10, staerke: 16 }, ab: [1, 1, 0], zweihand: true }, sterndorn: { a: ["geschick", 20], w: { ticks: 4, reich: 1, geschick: 15, staerke: 23 }, ab: [1, 1, 0], zweihand: true },
+  mondkurzbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 3, reich: 5, fernAngriff: 9, fernStaerke: 20 } }, mondkurzbogen: { a: ["fernkampf", 20], w: { ticks: 3, reich: 5, fernAngriff: 12, fernStaerke: 27 } },
+  mondlangbogen_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 5, reich: 7, fernAngriff: 12, fernStaerke: 27 } }, mondlangbogen: { a: ["fernkampf", 20], w: { ticks: 5, reich: 7, fernAngriff: 16, fernStaerke: 36 } },
+  sternarmbrust_gewoehnlich: { a: ["fernkampf", 10], w: { ticks: 6, reich: 6, fernAngriff: 15, fernStaerke: 34 } }, sternarmbrust: { a: ["fernkampf", 20], w: { ticks: 6, reich: 6, fernAngriff: 19, fernStaerke: 43 } },
+  sternenszepter_gewoehnlich: { a: ["magie", 10], w: { ticks: 5, reich: 6, genau: 8, magieStaerke: 35 } }, sternenszepter: { a: ["magie", 20], w: { ticks: 5, reich: 6, genau: 12, magieStaerke: 52 } },
   sternenschild_gewoehnlich: { a: ["defense", 10], ab: [4, 3, 2] }, sternenschild: { a: ["defense", 20], ab: [5, 4, 3] },
   eisenwachthelm_gewoehnlich: { a: ["defense", 10], ab: [1, 1, 0] }, eisenwacht_gewoehnlich: { a: ["defense", 10], ab: [3, 2, 1] }, eisenbeinschienen_gewoehnlich: { a: ["defense", 10], ab: [2, 1, 1] },
   eisenwachthelm: { a: ["defense", 20], ab: [2, 1, 1] }, eisenwacht: { a: ["defense", 20], ab: [4, 3, 2] }, eisenbeinschienen: { a: ["defense", 20], ab: [3, 2, 0] },

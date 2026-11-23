@@ -97,7 +97,12 @@ export class WeltKampf {
     window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
   private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
-  private v1Xp(z: Zustand) { if (z.ich.ausdauer) ausdauerVomServer(z.ich.ausdauer); const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
+  /** Sprint beim Betreten: der Server übernimmt Ausdauer und Schalter erst, wenn sein Held da ist – bis er unseren Stand zurückmeldet, schicken wir ihn erneut und
+   *  übernehmen seine Werte nicht (sonst stünde der Sprint nach jedem Gebietswechsel wieder auf aus und die Leiste auf voll) */
+  private ausdauerDa = false; private ausdauerGesendet = 0;
+  private v1Xp(z: Zustand) { if (z.ich.ausdauer) { const [w, an] = z.ich.ausdauer;
+      if (!this.ausdauerDa && (Math.abs(w - AUSDAUER.wert) > 2 || (an === 1) !== AUSDAUER.an)) { if (performance.now() - this.ausdauerGesendet > 400 && this.netz) { this.ausdauerGesendet = performance.now(); this.netz.sende({ t: "sprint", an: AUSDAUER.an, wert: AUSDAUER.wert } as unknown as Parameters<Netz["sende"]>[0]); } }
+      else { this.ausdauerDa = true; ausdauerVomServer(z.ich.ausdauer); } } const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
     if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
   /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
   betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");

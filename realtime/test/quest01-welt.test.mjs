@@ -33,7 +33,7 @@ function spieler(token, ort = "waldmark") { return new Promise((fertig) => { con
   ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(s); }); }); }
 const warte = (s, fn, ms = 3000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m));
-const NPC = { jori: [6452.5, 6444.5], hagan: [6438.5, 6423.5], fenna: [6534.5, 6438.5], raban: [6442.5, 6645.5], othmar: [6451.5, 6688.5] };
+const NPC = { jori: [6452.5, 6444.5], hagan: [6438.5, 6423.5], fenna: [6534.5, 6438.5], raban: [6442.5, 6643.5], othmar: [6451.5, 6688.5] };
 const hin = async (s, id, d = 1) => { sende(s, { t: "pos", x: 0, y: 0, wx: NPC[id][0] + d, wy: NPC[id][1] }); await new Promise((r) => setTimeout(r, 120)); };
 const rede = async (s, id) => { sende(s, { t: "rede", npc: id }); return warte(s, (m) => m.t === "dialog"); };
 const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); return warte(s, (m) => m.t === "dialog"); };

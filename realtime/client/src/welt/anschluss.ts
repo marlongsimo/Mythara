@@ -261,9 +261,15 @@ export const anschluss3D = {
   fremd: (s: WeltKern, rx: number, ry: number): boolean => fremd(s, rx, ry),
   /** Antippen eines Bodenpunkts (Weltfelder) im Kampf: ein Gegner wird zum Ziel. true = erledigt */
   kampfAntippen: (wx: number, wy: number): boolean => Boolean(kampf && kampf.bereit && kampf.antippen(wx, wy)),
+  /** Bildschirm statt Boden: die ganze Figur (auch Kopf und Oberkörper) zählt */
+  kampfAntippenSchirm: (px: number, py: number): boolean => { const k = kampf as unknown as { bereit?: boolean; antippenSchirm?: (x: number, y: number) => boolean } | null; return Boolean(k && k.bereit && k.antippenSchirm && k.antippenSchirm(px, py)); },
+  kampfAmSchirm: (px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown } | null => { const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => ReturnType<NonNullable<typeof k>["amSchirm"] & ((...a: never[]) => unknown)> } | null; return k && k.bereit && k.amSchirm ? (k.amSchirm(px, py) as never) : null; },
   /** Aktionsmenü: Gegner an der Weltstelle, Mitspieler unter dem Bildschirmpunkt, dessen Karte */
   kampfZielBei: (wx: number, wy: number): { name: string } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
-  spielerBei: (px: number, py: number): Fremder | null => (mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null),
+  /** Mitspieler am Bildschirmpunkt: in der freien Welt die Mitspieler, im Kampfgebiet die anderen Helden der Zone (dann ohne Welt-Id: Flüstern per Name) */
+  spielerBei: (px: number, py: number): Fremder | null => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (d) return d;
+    const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => { held: boolean; name: string; stufe: number; a?: unknown } | null } | null, t = k && k.bereit && k.amSchirm ? k.amSchirm(px, py) : null;
+    return t && t.held ? { i: 0, n: t.name, h: "schildwaechter", s: t.stufe, x: 0, y: 0, b: 0, l: 0, ...(t.a ? { a: t.a as Fremder["a"] } : {}) } : null; },
   spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
   springen: () => kampfEnde(),

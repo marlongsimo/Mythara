@@ -120,9 +120,10 @@ export class Spielwelt3D implements WeltKern {
   ausdauer = AUSDAUER; private imKampf = false; private geschickLv = 1; private geschickZeit = 0; private gelbZuletzt = -1;
   /** Sprint an/aus (Knopf an der Minikarte, Umschalttaste) */
   sprint() { if (!this.ausdauer.an && this.ausdauer.wert < SPRINT_MIN) { chatSystem(`Zu erschöpft – sprinten geht wieder ab ${SPRINT_MIN} % Ausdauer.`); return; } this.ausdauer.umschalten(); this.sprintKnopf(); window.dispatchEvent(new CustomEvent("ez-sprint")); }
+  private knopfAn: boolean | null = null;
   private sprintKnopf() { document.querySelectorAll<HTMLElement>('[aria-label="Sprint"]').forEach((b) => { b.classList.toggle("an", this.ausdauer.an); b.setAttribute("aria-pressed", String(this.ausdauer.an)); }); }
   private sprintSchritt(dt: number, laeuft: boolean) { const jetzt = performance.now(); if (jetzt - this.geschickZeit > 2000) { this.geschickZeit = jetzt; this.geschickLv = levelAus(skillsLesen().geschick, "geschick"); }
-    const war = this.ausdauer.an; if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (war !== this.ausdauer.an) this.sprintKnopf();
+    if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (this.knopfAn !== this.ausdauer.an) { this.knopfAn = this.ausdauer.an; this.sprintKnopf(); } /* auch wenn der Server umschaltet oder der Knopf neu gebaut wurde */
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null;
@@ -161,8 +162,8 @@ export class Spielwelt3D implements WeltKern {
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null; if (st.menue) return;
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
-        const stelle = b ? this.anStelle(b.x, b.z) : null; if (stelle) { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        if (b && anschluss3D.kampfAntippen(b.x, b.z)) return;
+        const stelle = this.stelleAmSchirm(e.clientX, e.clientY) || (b ? this.anStelle(b.x, b.z) : null); if (stelle) { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
+        if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) return; /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -244,6 +245,19 @@ export class Spielwelt3D implements WeltKern {
     if (best) return best;
     const r = this.regionBei(x, y); if (r) for (const a of r.ausgaenge) if (inZone(a.zone, x, y)) return { x, y, text: a.text, tat: () => this.reisen(a), da: () => inZone(a.zone, this.ort.x, this.ort.y) };
     return null; }
+  /** Was liegt am Bildschirmpunkt? Figuren (Quest, Händler) zählen als ganze Gestalt bis zum Kopf, Treppen, Türen und andere Stellen als
+   *  Säule über ihrem Punkt (so trifft auch ein Tipp auf die obere Treppe oder den Türrahmen). Die vorderste gewinnt. */
+  stelleAmSchirm(px: number, py: number): Stelle | null {
+    const M = this.motor, o = this.ort, kand: { x: number; y: number; h: number; r: number }[] = [];
+    for (const p of [...(this.quest ? this.quest.punkte() : []), ...(this.haendler ? this.haendler.punkte() : [])]) kand.push({ ...p, h: 2.2, r: 0.45 });
+    const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
+      for (const a of d.interaktionen) if (Math.hypot(a.x - o.x, a.y - o.y) < 30 && this.interaktion(a)) kand.push({ x: a.x, y: a.y, h: 2.6, r: Math.max(0.6, Math.min(2, a.radius * 0.7)) }); }
+    let best: { k: (typeof kand)[number]; t: number } | null = null;
+    for (const k of kand) { const y = M.hoehe(k.x, k.y), fu = M.bildschirm(k.x, y, k.y), ko = M.bildschirm(k.x, y + k.h, k.y), rand = M.bildschirm(k.x + k.r, y, k.y); if (!fu || !ko || !rand) continue;
+      const breit = Math.max(20, Math.abs(rand.x - fu.x), Math.abs(fu.y - ko.y) * 0.35); if (Math.abs(px - fu.x) > breit || py > fu.y + 12 || py < ko.y - 8) continue;
+      if (!best || fu.y > best.t) best = { k, t: fu.y }; }
+    return best ? this.anStelle(best.k.x, best.k.y) : null; }
   /** Hingehen und dort handeln (ist man schon dort, sofort) */
   ausfuehren(s: Stelle, tat: () => void) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
   /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
@@ -252,8 +266,10 @@ export class Spielwelt3D implements WeltKern {
     if (d) gr.push({ kopf: d.n + (d.s ? ` · Lv ${d.s}` : ""), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
-    if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] });
-      const st = this.anStelle(b.x, b.z);
+    { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippenSchirm(px, py); } }] }); /* ganze Figur */
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+    if (b) {
+      const st = this.stelleAmSchirm(px, py) || this.anStelle(b.x, b.z); /* ganze Figur / ganze Treppe, sonst der Boden */
       if (st) { const boden = this.bodenHier(b.x, b.z);
         if (boden) gr.push({ kopf: boden.hier.length > 1 ? `Am Boden · ${boden.hier.length} Gegenstände` : (GEGENSTAENDE[boden.d0.g] ? GEGENSTAENDE[boden.d0.g].name : boden.d0.g), farbe: FARBE.ding, liste: true, aktionen: [
           ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort)), lupe: () => gegenstandUntersuchen(x.g) }; }),
