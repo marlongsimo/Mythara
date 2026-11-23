@@ -29,12 +29,10 @@ for a in bpy.data.actions:
     if a.get("bilder"): a.use_fake_user = True
 arm.animation_data.action = bpy.data.actions.get("ruhe")
 # auslagern=ruestung.,kopf.helm. – diese Teile (Präfixe) nicht in die Grundfigur, sondern je als eigene Datei <ziel>.teile/<id>.glb:
-# nur Skelett und dieses eine Teil, ohne Bewegungen. Das Spiel lädt sie erst beim Anlegen und hängt sie an das Skelett der Figur (echt3d/darsteller.ts).
+# nur Skelett und dieses eine Teil, ohne Bewegungen. Andere Dateien im Ordner (Seltenheitsstufen aus seltenheit.py) bleiben stehen. Das Spiel lädt sie erst beim Anlegen und hängt sie an das Skelett der Figur (echt3d/darsteller.ts).
 AUSLAGERN = tuple(x for x in opt.get("auslagern", "").split(",") if x); ausgelagert = {}
 if AUSLAGERN:
     ordner = os.path.splitext(os.path.abspath(ziel))[0] + ".teile"; os.makedirs(ordner, exist_ok=True)
-    for f_ in os.listdir(ordner):
-        if f_.endswith(".glb"): os.remove(os.path.join(ordner, f_))
     for o in [o for o in teile if o["ebene"].startswith(AUSLAGERN)]:
         bpy.ops.object.select_all(action="DESELECT"); arm.select_set(True); o.select_set(True); d_ = os.path.join(ordner, o["ebene"] + ".glb")
         bpy.ops.export_scene.gltf(filepath=d_, export_format="GLB", use_selection=True, export_animations=False, export_skins=True, export_yup=True, export_image_format="WEBP" if "webp" in sys.argv else "AUTO")

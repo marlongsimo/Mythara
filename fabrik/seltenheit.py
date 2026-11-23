@@ -1,6 +1,6 @@
 """Mythara Fabrik – ein Rüstungsteil in einer anderen Seltenheitsstufe: gleiche Form, anderes Material.
 
-  python3 fabrik/seltenheit.py <teil.glb> <ziel.glb> <stufe>
+  python3 fabrik/seltenheit.py <teil.glb> <ziel.glb> <stufe> [metall_c=9]
   teil.glb: am besten die fertige, ans Skelett gebundene Teil-Datei aus export3d.py auslagern=… (img/figuren-echt3d/<figur>.teile/<id>.glb)
   stufe: gewoehnlich | selten | episch | legendaer | mythisch
 Die Textur wird in drei Bereiche geteilt (Lab-Farbraum): Metall (grau, wenig Farbe), Beschläge (Messing: farbig und hell) und Leder (farbig und dunkel).
@@ -27,8 +27,10 @@ def rgb(L):
 bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=os.path.abspath(teil))
 img = max(bpy.data.images, key=lambda b: b.size[0] * b.size[1]); B_, H_ = img.size
 a = np.array(img.pixels[:], dtype=np.float32).reshape(-1, 4); L = lab(a[:, :3]); C = np.hypot(L[:, 1], L[:, 2])
-metall = C < 9; messing = (C >= 9) & (L[:, 0] > 30); leder = (C >= 9) & ~messing
-print(f"Bereiche: Metall {metall.mean():.0%}, Beschläge {messing.mean():.0%}, Leder {leder.mean():.0%}")
+MC = float(opt.get("metall_c", 9))   # Farbsättigung, bis zu der etwas als Metall zählt (Beinschienen mit beige-olivgrauen Platten: 17)
+metall = C < MC; messing = (C >= MC) & (L[:, 0] > 30); leder = (C >= MC) & ~messing
+kanten = messing & (L[:, 0] > max(45.0, float(np.percentile(L[messing, 0], 60)) if messing.any() else 45.0))   # nur die hellsten Beschläge leuchten (je Teil gemessen – helle Platten wie bei den Beinschienen nicht)
+print(f"Bereiche: Metall {metall.mean():.0%}, Beschläge {messing.mean():.0%} (davon leuchtend {kanten.sum() / max(1, messing.sum()):.0%}), Leder {leder.mean():.0%}")
 N = L.copy(); glut = np.zeros(len(L)); glutfarbe = (0, 0, 0); glutstaerke = 0.0
 def setze(maske, L_=None, dL=0.0, fL=1.0, a=None, b=None, fC=None):
     if L_ is not None: N[maske, 0] = L_
@@ -43,12 +45,12 @@ if stufe == "gewoehnlich":
 elif stufe == "episch":
     setze(metall, fL=0.62, fC=0.2, a=1, b=-9)                               # geschwärzter Stahl, blauer Schimmer
     setze(messing, fL=1.05, dL=4, fC=1.3, a=2, b=9)                         # Gold
-    glut = (messing & (L[:, 0] > 48)).astype(float); glutfarbe = (0.35, 0.55, 1.0); glutstaerke = 0.35
+    glut = kanten.astype(float); glutfarbe = (0.35, 0.55, 1.0); glutstaerke = 0.35
 elif stufe == "legendaer":
     setze(metall, fL=0.68, fC=0.45, a=3, b=3)                               # dunkler Stahl, warm
     setze(messing, fL=1.1, dL=6, fC=1.5, a=5, b=16)                         # leuchtendes Gold
     setze(leder, fL=0.85, a=6, b=-2)                                        # Leder tief rotbraun
-    glut = (messing & (L[:, 0] > 45)).astype(float); glutfarbe = (1.0, 0.55, 0.15); glutstaerke = 0.75
+    glut = kanten.astype(float); glutfarbe = (1.0, 0.55, 0.15); glutstaerke = 0.75
 elif stufe == "mythisch":                                                  # über legendär, bewusst ausgefallen
     v_, u_ = np.divmod(np.arange(len(L)), B_); u_ = u_ / B_; v_ = v_ / H_   # Lage in der Textur (für Verläufe)
     schiller = np.stack([np.sin(u_ * 9 + v_ * 5) , np.cos(u_ * 7 - v_ * 8)], 1)   # Ölfilm-Schillern: Violett, Türkis, Rosa je nach Stelle
@@ -57,7 +59,7 @@ elif stufe == "mythisch":                                                  # üb
     N[leder, 0] = L[leder, 0] * 0.6; N[leder, 1] = 14; N[leder, 2] = -18     # Leder tief violett
     Lb = L[:, 0].reshape(H_, B_); gx = np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])); gy = np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))
     kante = (gx + gy).ravel(); adern = metall & (kante > np.percentile(kante[metall], 93)) & (L[:, 0] > 4)   # Energieadern: feine Linien im Metall
-    glut = np.maximum((messing & (L[:, 0] > 40)).astype(float), adern * 0.8); glutstaerke = 1.1
+    glut = np.maximum(kanten.astype(float), adern * 0.8); glutstaerke = 1.1
     t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; glutfarbe = None; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, 1.0 * np.ones_like(t_)], 1)   # Türkis ↔ Magenta
 elif stufe != "selten": sys.exit("Stufe unbekannt: " + stufe)
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()

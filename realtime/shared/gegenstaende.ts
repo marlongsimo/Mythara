@@ -9,7 +9,13 @@ import { Startwaffe } from "./aussehen";
 
 export type Platz = "kopf" | "amulett" | "waffe" | "brust" | "beine" | "nebenhand";
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "amulett", name: "Amulett" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
-export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: "gewoehnlich" | "selten"; ebenen?: string[]; werte: [string, string][]; text: string }
+export type Seltenheit = "gewoehnlich" | "selten" | "episch" | "legendaer" | "mythisch";
+/** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
+export const SELTENHEITEN: Record<Seltenheit, { name: string; farbe: string }> = {
+  gewoehnlich: { name: "Gewöhnlich", farbe: "#b9b4a8" }, selten: { name: "Selten", farbe: "#5fcf6a" }, episch: { name: "Episch", farbe: "#6f8cff" },
+  legendaer: { name: "Legendär", farbe: "#ff9a2e" }, mythisch: { name: "Mythisch", farbe: "#ff4fd8" },
+};
+export interface Gegenstand { id: string; name: string; platz: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; werte: [string, string][]; text: string }
 
 const waffe = (satz: string) => { const m = HELDEN[satz].modi[0], art = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie", heil: "Heilung" }[m.art] || m.art;
   return [["Schaden", `${m.schaden[0]}–${m.schaden[1]}`], ["Schadensart", art], ["Angriffe je Sekunde", (1 / m.takt).toFixed(2).replace(".", ",")], ["Reichweite", `${String(m.reich).replace(".", ",")} Felder`]] as [string, string][]; };
@@ -41,6 +47,18 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     werte: [["Abwehr", "Werte folgen"]],
     text: "Geschlossener Helm mit Nackenschirm und Halsschutz, die Kanten in Bronze gefasst. Gehört zum Eisenwacht-Set." },
 };
+/* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
+   die übrigen Stufen tragen die Ebene <teil>.<stufe> (eigene Datei <figur>.teile/<teil>.<stufe>.glb, erst beim Anlegen geladen). */
+const SET_STUFEN: { s: Seltenheit; m: string; p: string; text: string }[] = [
+  { s: "gewoehnlich", m: "Rostiger", p: "Rostige", text: "Stumpfes Eisen mit Rost in den Fugen, die Beschläge längst nicht mehr aus Messing." },
+  { s: "episch", m: "Geschwärzter", p: "Geschwärzte", text: "Nachtschwarzer Stahl mit blauem Schimmer, die Kanten in Gold gefasst – sie glimmen schwach im Dunkeln." },
+  { s: "legendaer", m: "Glutgoldener", p: "Glutgoldene", text: "Dunkler Stahl, schwer vergoldet; die Kanten glühen, als käme die Rüstung gerade aus der Esse." },
+  { s: "mythisch", m: "Sternenschimmernder", p: "Sternenschimmernde", text: "Obsidian, der wie Öl auf Wasser schillert. Durch die Platten ziehen sich leuchtende Adern – niemand weiß, wer sie geschmiedet hat." },
+];
+for (const st of SET_STUFEN) for (const [basis, nomen, mehrzahl] of [["eisenwacht", "Eisenwacht-Brustpanzer", false], ["eisenbeinschienen", "Eisenbeinschienen", true], ["eisenwachthelm", "Eisenwacht-Helm", false]] as const) {
+  const B = GEGENSTAENDE[basis], id = `${basis}_${st.s}`;
+  GEGENSTAENDE[id] = { ...B, id, name: `${mehrzahl ? st.p : st.m} ${nomen}`, seltenheit: st.s, ebenen: (B.ebenen || []).map((e) => `${e}.${st.s}`), text: st.text };
+}
 /** Die Gegenstände, mit denen ein neuer Held beginnt (nach der Startwaffe) */
 export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> {
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen" } : { waffe: "hirtenstab" };
