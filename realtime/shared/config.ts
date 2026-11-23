@@ -7,6 +7,7 @@
  *  2. Schadenswurf: Bei einem Treffer wird zwischen Mindest- und Höchstschaden der Waffe gewürfelt.
  * Verteidigung senkt also die Trefferchance, nicht den Schaden. Torvalds Schild erhöht seinen Verteidigungswurf; Schutzpunkte fangen Schaden ab.
  */
+import type { GegnerV3 } from "./kampfwerte";
 export const TICK = 20;            // Rechenschritte je Sekunde (Server-Simulation)
 export const DT = 1 / TICK;
 export const ZUSTAND_JE = 1;       // jeder Schritt geht an den Client: 20 Zustände je Sekunde
@@ -120,8 +121,9 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
   drops?: { nur?: string; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
-  /** Kampfregeln v2: feste Werte ohne Ausrüstung – Geschick (Trefferwert), Stärke (Schaden 1…Stärke), Angriffstakt in Ticks (1 Tick = 0,5 s), Abwehr je Angriffsart. Nahkampfreichweite wie die Helden (kampfwerte.ts NAH_REICH). */
-  v2?: { geschick: number; staerke: number; ticks: number; abwehr: { nah: number; fern: number; magie: number } };
+  /** Kampfregeln v3: Gegner nach denselben Regeln wie die Helden – Skill-Level (Geschick, Stärke, Defense …) und Boni von Waffe und Rüstung; Trefferwert, Max Hit und Abwehr
+   *  rechnet kampfwerte.ts gegnerWerte(). Angriffstakt in Ticks (1 Tick = 0,5 s). Nahkampfreichweite wie die Helden (NAH_REICH). */
+  v2?: GegnerV3;
   fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
@@ -154,8 +156,10 @@ export const MONSTER: Record<string, MonsterDef> = {
   /* Bandit Level 1 (Kampfregeln v1): 40 LP, Nahkampf-Angriff 5 (Stärke 2 + 3), Verteidigung 5/3/2, Dolch 3–6 alle 2 s – Schild und Dolch der Figur sind nur Optik.
      Kreuzwald: Banditen mit Dolch und Beuteschild (Figur aus der Fabrik, gegner.bandit v003). Für Anfänger: wenig Leben, schnelle, schwache Stiche;
      auf der Lichtung als Gegner der Stufe 3 (setzeStaerke), damit sie zu frischen Helden passen. */
-  bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 15, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
-    angriff: { name: "Dolch", art: "nah", schaden: [1, 3], takt: 2.0, reich: 1.5, aushol: 0 }, v2: { geschick: 6, staerke: 3, /* LP & Defense v1: Helden starten mit 20 LP → 15 LP, Schaden 1–3 */ ticks: 4, abwehr: { nah: 6, fern: 6, magie: 4 } },
+  bandit_dolch: { name: "Bandit", stufe: 1, bild: "img/echtzeit/bandit.webp", figur: "img/echtzeit/bandit.webp", fuss: [0.5, 0.94], lauf: "img/echtzeit/bandit.webp", laufMass: [0.5, 0.94, 0.84], hieb: "img/echtzeit/bandit.webp", hiebMass: [0.5, 0.94, 0.84], hoehe: 84, lp: 6, tempo: 2.9, angriffswert: { nah: 5, fern: 1, magie: 0 }, abwehr: { nah: 5, fern: 3, magie: 2 }, r: 0.3,
+    angriff: { name: "Dolch", art: "nah", schaden: [1, 1], takt: 2.0, reich: 1.5, aushol: 0 },
+    /* v3 (Simulation 23.11.2026, Helden starten mit 10 LP und Max Hit 1): Geschick 2 + Dolch 3 = Trefferwert 5 · Stärke 1, Dolch +3 → Max Hit 1 · Defense 1 + Lederwams 3/3/2 = Abwehr 4/4/3 · 6 LP */
+    v2: { geschick: 2, staerke: 1, defense: 1, magie: 1, ticks: 4, waffe: { geschick: 3, staerke: 3 }, ruestung: { nah: 3, fern: 3, magie: 2 } },
     drops: [ /* 1. Splitter · 2. seltene Ausrüstung · 3. Hinweispergament, nur mit dem Quest-Auftrag, es zu sichern */
       { wurf: [{ g: "splitter", chance: 95, anzahl: [1, 5] }, { g: "splitter", chance: 5, anzahl: [15, 20] }] },
       { wurf: [{ g: "ritterschwert", chance: 1 }, { g: "rundschild", chance: 1 }, { g: "jagdbogen", chance: 1 }, { g: "hirtenstab", chance: 1 }, { g: "lederpanzer", chance: 1 }, { g: "magiepanzer", chance: 1 }] },

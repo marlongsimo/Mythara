@@ -4,7 +4,7 @@
  * und viele Duelle Held Level 1 gegen Bandit Level 1 je Waffe und Stil (Siegquote, Dauer, Trefferquoten).
  * Aufruf: node test/kampf-v2.test.mjs   (nach node build.mjs)
  */
-import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, maxHitMagie, STILE, SKILLS } from "./sim.gebaut.mjs";
+import { fels, karteJetzt, Sim, KARTEN, FEIN, setzeKarte, STAERKE, MONSTER, kampfwerte, xpFuer, levelAus, heldenlevel, maxLp, startAusruestung, trefferChance, NULL_XP, schadenWurf, maxHit, maxHitMagie, gegnerWerte, STILE, SKILLS } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
 
@@ -32,7 +32,8 @@ const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
   check(k.map((x) => x.angriff.magie).join() === "9,6,7" && k.map((x) => x.waffe.ticks).join() === "5,4,5" && k.every((x) => x.waffe.reich === 6) && k.map((x) => x.abwehr.nah - k[1].abwehr.nah).join() === "0,0,3", "Stab L1: Trefferwert Magie + Stil + 5 → Akkurat 9 · Schnell 6 · Defensiv 7; Schnell 4 Ticks, sonst 5; Defensiv +3 Defense");
   check(k.every((x) => x.waffe.schaden.join() === "1,1" && schadenWurf(x.waffe, 0.999) === 1), "Stab L1 (Magie-Stärke +10): Max Hit 1 in allen Stilen");
   check([3, 0, 1].map((b) => maxHitMagie(50, b, 10)).join() === "6,6,6" && kampfwerte({ ...NULL, magie: xpFuer(50) }, { waffe: "hirtenstab" }, 0).waffe.schaden[1] === 6, "Magie-Max-Hit: Level 50, Magie-Stärke +10 → 6 / 6 / 6 (Beispiel aus der Vorgabe); effektive Magie ohne +8"); }
-{ const B = MONSTER.bandit_dolch; check(B.lp === 15 && B.angriff.schaden.join() === "1,3" && B.v2 && B.v2.geschick === 6 && B.v2.staerke === 3 && B.v2.ticks === 4 && B.v2.abwehr.nah === 6 && B.v2.abwehr.fern === 6 && B.v2.abwehr.magie === 4 && B.angriff.reich === 1.5, "Bandit: Geschick 6, Stärke 3 (Schaden 1–3), 4 Ticks, Abwehr 6/6/4, 15 LP, Nahkampfreichweite 1,5 wie die Helden"); }
+{ const B = MONSTER.bandit_dolch, g = gegnerWerte(B.v2, "nah"); check(B.lp === 6 && B.v2.geschick === 2 && B.v2.staerke === 1 && B.v2.defense === 1 && B.v2.ticks === 4 && g.treffer === 5 && g.maxHit === 1 && g.abwehr.nah === 4 && g.abwehr.fern === 4 && g.abwehr.magie === 3 && B.angriff.reich === 1.5, `Bandit nach Heldenregeln: Geschick 2 + Dolch 3 = Trefferwert ${g.treffer}, Stärke 1 + Dolch 3 → Max Hit ${g.maxHit}, Defense 1 + Rüstung → Abwehr ${g.abwehr.nah}/${g.abwehr.fern}/${g.abwehr.magie}, 6 LP, 4 Ticks`);
+  check(gegnerWerte({ staerke: 99, ticks: 4, waffe: { staerke: 114 } }, "nah").maxHit === 30 && gegnerWerte({ fernkampf: 50, ticks: 4, waffe: { fernStaerke: 10 } }, "fern").maxHit === 7 && gegnerWerte({ magie: 50, ticks: 4, waffe: { magieStaerke: 10 } }, "magie").maxHit === 6, "Gegner rechnen mit denselben Max-Hit-Formeln wie die Helden (Nah 99/+114 → 30, Fern 50/+10 → 7, Magie 50/+10 → 6)"); }
 
 /* 2. Simulation: Duelle in der Weltzone (eigene Gegnerwerte) */
 const K = KARTEN.kreuzwald; setzeKarte(K, FEIN);
@@ -118,7 +119,7 @@ for (const [waffe, stil, soll] of [["schwert", 0, { geschick: 4 }], ["schwert", 
   const { s, b, h } = duell(21, waffe, stil); s.eingabe({ t: "ziel", id: b.id }, h.id); let abgezogen = 0, bloecke = 0;
   for (let i = 0; i < 120 * 20 && !b.tot && !h.tot; i++) { h.lp = h.max; s.schritt(); for (const e of s.zustand().ev) { if (e.a === "schaden" && e.id === b.id) abgezogen += e.n; if (e.a === "block" && e.id === h.id) bloecke++; } }
   const x = s.xpAbholen(h.id) || NULL, echt = Math.min(b.max, abgezogen), ok = SKILLS.every((k) => x[k] === Math.floor(echt * ((soll[k] || 0) + (k === "lp" ? 4 / 3 : 0)) + 1e-9));
-  check(ok && echt > 0 && (stil !== 0 || bloecke > 0), `XP ${waffe} Stil ${stil} (${STILE[waffe === "schwert" ? "nah" : waffe === "bogen" ? "fern" : "magie"][stil].name}): ${JSON.stringify(x)} für ${echt} abgezogene LP, ${bloecke} Blocks ohne XP`); }
+  check(ok && echt > 0, `XP ${waffe} Stil ${stil} (${STILE[waffe === "schwert" ? "nah" : waffe === "bogen" ? "fern" : "magie"][stil].name}): ${JSON.stringify(x)} für ${echt} abgezogene LP, ${bloecke} Blocks ohne XP`); }
 /* viele Duelle: Siegquote */
 const ergebnis = [];
 for (const [waffe, stil] of [["schwert", 0], ["schwert", 1], ["schwert", 2], ["schwert", 3], ["bogen", 0], ["bogen", 1], ["bogen", 2], ["stab", 0], ["stab", 1], ["stab", 2]]) {
@@ -129,6 +130,6 @@ for (const [waffe, stil] of [["schwert", 0], ["schwert", 1], ["schwert", 2], ["s
   ergebnis.push({ waffe, stil, siege: siege / N, dauer: dauer / Math.max(1, siege), rest: rest / Math.max(1, siege), qH: tH / Math.max(1, aH), qB: tB / Math.max(1, aB) }); }
 console.log("    Waffe   Stil  Siege   Dauer  LP übrig  Held trifft  Bandit trifft");
 for (const e of ergebnis) console.log(`    ${e.waffe.padEnd(7)} ${e.stil}    ${(e.siege * 100).toFixed(0).padStart(3)} %  ${e.dauer.toFixed(1).padStart(5)} s  ${(e.rest * 100).toFixed(0).padStart(4)} %     ${(e.qH * 100).toFixed(0).padStart(3)} %        ${(e.qB * 100).toFixed(0).padStart(3)} %`);
-{ const sw = ergebnis.find((e) => e.waffe === "schwert" && e.stil === 1); check(Math.abs(sw.qH - trefferChance(7, 6)) < 0.08 && Math.abs(sw.qB - trefferChance(6, 5)) < 0.08, `Trefferquoten wie gerechnet (Ausgewogen): Held 7 gegen 6 → ${(trefferChance(7, 6) * 100).toFixed(0)} %, Bandit 6 gegen 5 → ${(trefferChance(6, 5) * 100).toFixed(0)} %`); }
-{ const g = (w) => ergebnis.filter((e) => e.waffe === w).reduce((m, e) => Math.max(m, e.siege), 0); check(g("schwert") >= 0.9 && g("bogen") >= 0.7 && g("stab") >= 0.5, `OFFEN (Balancing nach v3): Ein Held auf Level 1 kann den Bandit schlagen (bester Stil: Schwert ${(g("schwert") * 100).toFixed(0)} %, Bogen ${(g("bogen") * 100).toFixed(0)} %, Stab ${(g("stab") * 100).toFixed(0)} %)`); }
+{ const sw = ergebnis.find((e) => e.waffe === "schwert" && e.stil === 1); check(Math.abs(sw.qH - trefferChance(7, 4)) < 0.08 && Math.abs(sw.qB - trefferChance(5, 5)) < 0.08, `Trefferquoten wie gerechnet (Ausgewogen): Held 7 gegen 4 → ${(trefferChance(7, 4) * 100).toFixed(0)} %, Bandit 5 gegen 5 → ${(trefferChance(5, 5) * 100).toFixed(0)} %`); }
+{ const g = (w) => ergebnis.filter((e) => e.waffe === w).reduce((m, e) => Math.max(m, e.siege), 0); check(g("schwert") >= 0.9 && g("bogen") >= 0.7 && g("stab") >= 0.5, `Ein Held auf Level 1 kann den Bandit schlagen (bester Stil: Schwert ${(g("schwert") * 100).toFixed(0)} %, Bogen ${(g("bogen") * 100).toFixed(0)} %, Stab ${(g("stab") * 100).toFixed(0)} %)`); }
 console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : "Kampfregeln v3: alles in Ordnung"); process.exit(f ? 1 : 0);

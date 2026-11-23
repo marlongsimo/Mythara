@@ -8,7 +8,7 @@
 import { Ausdauer } from "./sprint";
 const UMWEG = 4; /* Felder: so viel länger darf der Umweg eines Gegners sein */
 import { GEHEN_TEMPO, SPRINT_TEMPO_FELDER, feldAbstand, schrittLaenge, nahkampfFeld, kreuzFelder, mitte, inMitte, richtungsSchritt, schrittFrei } from "./feld";
-import { Kampfwerte, SkillXp, Art, LP_XP_JE_SCHADEN, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, TICK as KAMPF_TICK } from "./kampfwerte";
+import { Kampfwerte, SkillXp, Art, LP_XP_JE_SCHADEN, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, gegnerWerte, TICK as KAMPF_TICK } from "./kampfwerte";
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
@@ -225,15 +225,16 @@ export class Sim {
     // 2 Trefferwurf: Angriffswert des Angreifers gegen den Verteidigungswert des Ziels für diese Angriffsart
     const wurf = (!s.sicher || Boolean(von.kw || z.kw)) && K.TREFFERWURF; /* v1: jeder Angriff würfelt */
     if (wurf) {
-      const V2a = !von.held ? MONSTER[von.typ].v2 : undefined, V2z = !z.held ? MONSTER[z.typ].v2 : undefined; /* v2: Gegner mit festen Werten ohne Ausrüstung */
-      const a = von.kw ? von.kw.angriff[s.art as Art] : V2a ? V2a.geschick : (von.held ? HELDEN[von.typ].angriff : MONSTER[von.typ].angriffswert)[s.art] + (z.kw ? 0 : SB(von).angriff);
+      const V2a = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined, V2z = !z.held && MONSTER[z.typ].v2 ? gegnerWerte(MONSTER[z.typ].v2!, "nah") : undefined; /* v3: Gegner nach denselben Regeln wie die Helden (Skills + Ausrüstung) */
+      const a = von.kw ? von.kw.angriff[s.art as Art] : V2a ? V2a.treffer : (von.held ? HELDEN[von.typ].angriff : MONSTER[von.typ].angriffswert)[s.art] + (z.kw ? 0 : SB(von).angriff);
       let d = z.kw ? z.kw.abwehr[s.art as Art] : V2z ? V2z.abwehr[s.art as Art] ?? 0 : this.wert(z).abwehr[s.art] + (von.kw ? 0 : SB(z).abwehr); if (s.art === "magie") d += (z.mrPlusT > 0 ? K.SCHUTZKREIS.magie : 0) + (z.held && this.freunde(z).some((o) => o.typ === "lichtbringer" && abstand(o, z) <= K.BEISTAND.radius) ? K.BEISTAND.magie : 0); else if (z.bruchT > 0) d -= K.DURCHBRECHEN.abwehr;
       d = Math.max(0, d) / (1 - minder); // ein Block von 60 % heißt: der Verteidigungswurf reicht 2,5-mal so hoch
       const v1 = Boolean(von.kw || z.kw); /* v1: Angriffswurf Zufall(0, Angriff) gegen Blockwurf Zufall(0, Verteidigung); Blockwurf ≥ Angriffswurf → geblockt */
       if (!(v1 ? this.zf() * a > this.zf() * d : this.zf() * (a + 1) > this.zf() * (d + 1))) { /* v3: ein Block gibt keine Defense-XP mehr (Defense steigt über die Stile) */ this.ev.push(v1 || minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
     }
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
-    const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; let m = von.kw ? schadenWurf(von.kw.waffe, this.zf()) /* v2: Wurf der Waffe (Magie: + Magie ÷ 3, × Stil-Bonus) */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) /* ganzzahlig Min…Max (Gegner v2: 1…Stärke) */ : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
+    const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; const V3 = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined;
+    let m = von.kw ? schadenWurf(von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
     // 4 Boni
     if (s.mal && z.malT > 0) m *= 1 + s.mal;
     if (s.wucht && !z.held && MONSTER[z.typ].anfaellig === "wucht") m *= 1 + K.WUCHT;

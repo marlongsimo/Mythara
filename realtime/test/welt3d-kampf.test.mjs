@@ -59,7 +59,7 @@ try {
   await anna.waitForFunction(() => [...window.EZK.bilder.values()].filter((b) => b.fl.geladen).length >= 1, null, { timeout: 60000 }).catch(() => {});
   const sicht = await anna.evaluate(() => { const K = window.EZK; return { max: K.z.w.filter((e) => e[3] !== 0).map((e) => e[8]), schilder: [...document.querySelectorAll(".ez-name3d.feind")].map((e) => e.textContent), figuren: [...K.bilder.values()].filter((b) => b.fl.geladen).length }; });
   check(sicht.figuren >= 1, `Banditen als Figuren in der 3D-Welt (${sicht.figuren} geladen)`);
-  check(sicht.max.every((m) => m === 15) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 15 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
+  check(sicht.max.every((m) => m === 6) && sicht.schilder.every((t) => t === "Bandit · Lv 1"), `Banditen Level 1 mit 6 LP (${[...new Set(sicht.schilder)].join()} · ${[...new Set(sicht.max)].join()})`);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "kampf3d.png" });
   /* kämpfen, bis Skill-XP gebucht sind (alle 10 s) */
   const xpSumme = () => XPBUCH.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + x.p_geschick + x.p_staerke, 0); let blocks = 0, treffer = 0;
@@ -94,7 +94,7 @@ try {
   check(nachDb >= zuletzt && nachDb >= vorDb, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
   /* Gast mit eigenem Helden: der Browser rechnet nach v1 */
   const gast = await spieler("Gast", "", [6536, 6583, "waldweg"]); await gast.goto(B + S); await bereit(gast); await gast.waitForTimeout(1200);
-  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 15)), "Gast: der Browser rechnet nach v2, Banditen mit 15 LP");
+  check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 6)), "Gast: der Browser rechnet nach v3, Banditen mit 6 LP");
   for (let i = 0; i < 80 && !(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0)); i++) { await gast.keyboard.press("1"); await gast.waitForTimeout(250); }
   check(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0), "Gast: Nahkampf-XP auf dem Gerät gemerkt");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.slice(0, 3).join(" | "));
