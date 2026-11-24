@@ -7257,21 +7257,21 @@
   },
   {
    "id": "holz_eiche_01",
-   "name": "Azurherz-Eiche",
+   "name": "Eiche",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_eiche_01.webp",
    "groesse": [
-    389,
-    403
+    362,
+    375
    ],
    "anker": [
-    0.5681,
-    0.9206
+    0.5677,
+    0.92
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.5
+    "r": 0.42
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7280,6 +7280,141 @@
    "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
     "url": "img/objekte3d/holzfaellerei/eiche.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_01",
+   "name": "Tanne",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_01.webp",
+   "groesse": [
+    300,
+    475
+   ],
+   "anker": [
+    0.5317,
+    0.9453
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/tanne.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_01",
+   "name": "Eibe",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_01.webp",
+   "groesse": [
+    400,
+    404
+   ],
+   "anker": [
+    0.4913,
+    0.9183
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/eibe.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_01",
+   "name": "Moorweide",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_01.webp",
+   "groesse": [
+    392,
+    429
+   ],
+   "anker": [
+    0.4847,
+    0.9254
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.48
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/moorweide.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_01",
+   "name": "Kernbaum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_01.webp",
+   "groesse": [
+    360,
+    401
+   ],
+   "anker": [
+    0.4708,
+    0.9252
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/kernbaum.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_01",
+   "name": "Weltenbaum-Setzling",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_01.webp",
+   "groesse": [
+    119,
+    172
+   ],
+   "anker": [
+    0.5378,
+    0.9302
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/weltenbaum_setzling.glb"
    }
   }
  ]

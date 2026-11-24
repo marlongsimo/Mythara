@@ -87,15 +87,24 @@ def main():
     with open(BIB, 'w') as f: json.dump(B, f, ensure_ascii=False, indent=1); f.write('\n')
     for e in eintraege: print(e['id'], e['groesse'], [float(x) for x in e['anker']], e.get('vielfalt', ''))
 
-def einzeln(render, kennung, name, url, r=0.5):
-    """ein Baum (Holzfällerei): Ersatzbild aus dem Render, Eintrag mit 3D-Modell"""
-    im = zuschneiden(Image.open(render).convert('RGBA')); f = HOEHE / im.height; im = im.resize((round(im.width * f), HOEHE), Image.LANCZOS)
+def grau_gruen(im):
+    """graue Stellen (Blattunterseiten aus der Meshy-Textur) in Blattgrün – wie im Spiel-Shader (modell3d.grau)"""
+    a = np.array(im).astype(np.float32); rgb = a[..., :3] / 255; mx = rgb.max(-1); mn = rgb.min(-1); s = (mx - mn) / (mx + 1e-6)
+    g = (np.clip((0.16 - s) / 0.1, 0, 1) * np.clip((mx - 0.45) / 0.15, 0, 1))[..., None]; ziel = np.array([110, 170, 40], np.float32) / 255 * (mx[..., None] / 0.67)
+    a[..., :3] = (rgb * (1 - g) + np.clip(ziel, 0, 1) * g) * 255; return Image.fromarray(a.clip(0, 255).astype(np.uint8), 'RGBA')
+
+def einzeln(render, kennung, name, url, hoehe_m='7', grau=''):
+    """ein Baum (Holzfällerei): Ersatzbild aus dem Render (Höhe nach der echten Baumhöhe), Eintrag mit 3D-Modell; grau=grau: graue Stellen grün"""
+    hm = float(hoehe_m); r = round(max(0.2, min(0.6, 0.45 * hm / 7)), 2)
+    im = zuschneiden(Image.open(render).convert('RGBA'))
+    if grau == 'grau': im = grau_gruen(im)
+    hp = round(HOEHE * hm / 7); f = hp / im.height; im = im.resize((round(im.width * f), hp), Image.LANCZOS)   # 7 m = HOEHE Bildpunkte, wie die Laubbäume
     fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
-    e = speichern(kennung, im, name, r, "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url}
+    e = speichern(kennung, im, name, r, "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url, **({"grau": True} if grau == 'grau' else {})}
     B = json.load(open(BIB)); L = B['objekte']; L[:] = [o for o in L if o['id'] != kennung] + [e]
     with open(BIB, 'w') as f_: json.dump(B, f_, ensure_ascii=False, indent=1); f_.write('\n')
     print(kennung, e['groesse'], e['anker'], url)
 
 if __name__ == '__main__':
-    if sys.argv[1:2] == ['--einzeln']: einzeln(*sys.argv[2:6])
+    if sys.argv[1:2] == ['--einzeln']: einzeln(*sys.argv[2:8])
     else: main()

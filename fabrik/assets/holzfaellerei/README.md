@@ -8,9 +8,9 @@ Bäume für die Holzfällerei – jeder Baum ein eigener Ordner:
 
 Ablauf je Baum:
 
-    python3 fabrik/baum_export.py -- <meshy.blend> img/objekte3d/holzfaellerei/<baum>.glb <höhe in m>   # 3D-Spieldatei
-    python3 fabrik/baum_render.py -- <meshy.blend> <render.png> 0                                       # Ersatzbild (Quelle)
-    python3 realtime/werkzeug/welt/baum_bilder.py --einzeln <render.png> <kennung> "<Name>" img/objekte3d/holzfaellerei/<baum>.glb
+    python3 fabrik/baum_export.py -- <meshy.blend> img/objekte3d/holzfaellerei/<baum>.glb <höhe in m> luecken=1   # 3D-Spieldatei, graue Füllflächen der Textur aufgefüllt
+    python3 fabrik/baum_render.py -- img/objekte3d/holzfaellerei/<baum>.glb <render.png> 0                                       # Ersatzbild (Quelle)
+    python3 realtime/werkzeug/welt/baum_bilder.py --einzeln <render.png> <kennung> "<Name>" img/objekte3d/holzfaellerei/<baum>.glb <höhe in m>
 
 Im Spiel (mit 3D-Figuren) wird jeder Baum live in 3D gezeichnet: eigene Drehung und Wind je Standort.
 Blau leuchtende Stellen (Adern, Kristalle) pulsieren automatisch.

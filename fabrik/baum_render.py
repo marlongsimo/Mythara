@@ -1,10 +1,12 @@
 """Mythara Fabrik – einen Meshy-Baum für die offene Welt rendern (Blender): orthografisch, 30° von oben wie die Weltobjekte, durchsichtiger Hintergrund.
-  python3 fabrik/baum_render.py -- <baum.blend> <ziel.png> <drehung in Grad>
+  python3 fabrik/baum_render.py -- <baum.blend|baum.glb> <ziel.png> <drehung in Grad>
 Weiter mit realtime/werkzeug/welt/baum_bilder.py (Farbvarianten der Krone, Schatten, Anker, Bibliothekseintrag)."""
 import bpy, math, sys
 from mathutils import Vector
 blend, ziel, dreh = sys.argv[sys.argv.index("--")+1:][:3]
-bpy.ops.wm.open_mainfile(filepath=blend); sc=bpy.context.scene
+if blend.endswith(".glb"): bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=blend)   # auch die fertige Spieldatei (baum_export.py) prüfen
+else: bpy.ops.wm.open_mainfile(filepath=blend)
+sc=bpy.context.scene
 o=[x for x in bpy.data.objects if x.type=="MESH"][0]; o.rotation_mode="XYZ"; o.rotation_euler[2]+=math.radians(float(dreh)); bpy.context.view_layer.update()
 ps=[o.matrix_world@v.co for v in o.data.vertices]; lo=Vector([min(p[i] for p in ps) for i in range(3)]); hi=Vector([max(p[i] for p in ps) for i in range(3)])
 o.location -= Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z)); bpy.context.view_layer.update(); h=hi.z-lo.z

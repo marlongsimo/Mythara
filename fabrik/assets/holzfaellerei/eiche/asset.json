@@ -1,8 +1,9 @@
 {
   "id": "holzfaellerei.eiche",
-  "name": "Azurherz-Eiche",
+  "name": "Eiche",
   "kategorie": "holzfaellerei",
   "aktuell": "v001",
-  "status": "Meshy „Azureheart Oak“, 6,5 m; Spieldatei img/objekte3d/holzfaellerei/eiche.glb (live 3D, blaue Adern pulsieren); Weltobjekt holz_eiche_01 (Ersatzbild img/welt/stil/holz_eiche_01.webp); Holzfäller-Funktion folgt",
+  "hoehe_m": 6.5,
+  "status": "Meshy „Azureheart Oak“; Spieldatei img/objekte3d/holzfaellerei/eiche.glb (live 3D, Wind, blaue Stellen pulsieren); Weltobjekt holz_eiche_01 (Ersatzbild img/welt/stil/holz_eiche_01.webp); Holzfäller-Funktion folgt",
   "herkunft": "Meshy"
 }
