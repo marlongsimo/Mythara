@@ -52,7 +52,7 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 export class Darsteller {
   private wurzel: THREE.Object3D; private mixer: THREE.AnimationMixer; private aktion: THREE.AnimationAction | null = null; private name = "";
   private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null;
-  private soll = new Set<string>(); private ladend = new Set<string>(); private aus = { ...AUSSCHNITT };
+  private soll = new Set<string>(); private ladend = new Set<string>(); private aus = { ...AUSSCHNITT }; private glutFx: StabGlut | null = null;
   /** Leinwand in Bildpunkten und wie viele Bildpunkte eine Kameraeinheit hat */
   readonly breite: number; readonly hoehe: number; readonly fussY: number;
   private constructor(private v: Vorlage, figurHoehePx: number, readonly aufloesung: number, private url = "") {
@@ -127,6 +127,7 @@ export class Darsteller {
   /** Weiterrechnen und in die Leinwand zeichnen */
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
     const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt); if (PULS.size) pulsieren();
+    if (this.glutFx) { const p = this.waffenOrt(true); if (!this.glutFx.weiter(dt, p)) this.glutFx = null; }
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
     if (k.right !== this.aus.seite || k.top !== this.aus.oben) { k.left = -this.aus.seite; k.right = this.aus.seite; k.top = this.aus.oben; k.bottom = -this.aus.unten; k.updateProjectionMatrix(); }
     for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.wurzel || (!!fx && c === fx.gruppe);
@@ -135,6 +136,19 @@ export class Darsteller {
   }
   /** Teleport (Abreise): Lichtsäule, Bodenring, aufsteigende Funken; die Figur glüht auf, wird schmal und lang und vergeht im Licht.
    *  Die Bewegung dazu (teleport_weg) spielt der Aufrufer. Danach bleibt die Figur unsichtbar. dauer in Sekunden */
+  /** Wo die angelegte Waffe gerade ist, in Bildpunkten der Leinwand: spitze = oberstes Ende (Stab), sonst die Mitte (Bogen, Armbrust) */
+  waffenPunkt(spitze: boolean): { x: number; y: number } | null {
+    const p = this.waffenOrt(spitze); if (!p) return null; const { kamera: k } = gemeinsam();
+    k.left = -this.aus.seite; k.right = this.aus.seite; k.top = this.aus.oben; k.bottom = -this.aus.unten; k.updateProjectionMatrix(); k.updateMatrixWorld();
+    p.project(k); return { x: (p.x + 1) / 2 * this.breite, y: (1 - p.y) / 2 * this.hoehe };
+  }
+  private waffenOrt(spitze: boolean): THREE.Vector3 | null {
+    this.wurzel.updateMatrixWorld(true); const box = new THREE.Box3();
+    for (const [n, o] of this.teile) if (o.visible && /^waffe/.test(n)) box.expandByObject(o);
+    if (box.isEmpty()) return null; const c = box.getCenter(new THREE.Vector3()); if (spitze) c.y = box.max.y - 0.02; return c;
+  }
+  /** Der Stab leuchtet auf: an der Spitze wächst ein Licht bis zum Abschuss (nach bisAbschuss ms) und verglimmt danach */
+  glut(bisAbschuss: number, farbe = 0x8cc4ff): void { if (this.glutFx) this.glutFx.weg(); this.glutFx = new StabGlut(this.wurzel, bisAbschuss / 1000, farbe); }
   teleport(dauer = 1.8): void { if (this.effekt) return; this.effekt = new TeleportEffekt(this.wurzel, dauer, this.ppm); gemeinsam().buehne.add(this.effekt.gruppe); }
   entfernen(): void { gemeinsam().buehne.remove(this.wurzel); if (this.effekt) { gemeinsam().buehne.remove(this.effekt.gruppe); this.effekt.weg(); } this.mixer.stopAllAction(); }
 }
@@ -146,6 +160,33 @@ function leinwandTextur(b: number, h: number, mal: (x: CanvasRenderingContext2D)
 }
 let saeulenBild: THREE.CanvasTexture | null = null, funkenBild: THREE.CanvasTexture | null = null, ringBild: THREE.CanvasTexture | null = null;
 const glatt = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+/** Licht an der Stabspitze: zwei weiche, additive Lichtflecken (Kern weiß, Hof in der Zauberfarbe) als Kinder der Figur */
+let glutBild: THREE.Texture | null = null;
+function weichesLicht(): THREE.Texture { if (glutBild) return glutBild; const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d")!, g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(0.25, "rgba(255,255,255,0.75)"); g.addColorStop(0.6, "rgba(255,255,255,0.18)"); g.addColorStop(1, "rgba(255,255,255,0)"); x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+  glutBild = new THREE.CanvasTexture(c); glutBild.colorSpace = THREE.SRGBColorSpace; return glutBild; }
+class StabGlut {
+  private t = 0; private kern: THREE.Sprite; private hof: THREE.Sprite; private funken: THREE.Sprite[] = [];
+  constructor(private figur: THREE.Object3D, private abschuss: number, farbe: number) {
+    const mat = (f: number, a: number) => new THREE.SpriteMaterial({ map: weichesLicht(), color: f, transparent: true, opacity: a, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false });
+    this.hof = new THREE.Sprite(mat(farbe, 0)); this.kern = new THREE.Sprite(mat(0xffffff, 0)); this.hof.renderOrder = 998; this.kern.renderOrder = 999;
+    for (let i = 0; i < 5; i++) { const f = new THREE.Sprite(mat(farbe, 0)); f.renderOrder = 999; f.scale.setScalar(0.05); this.funken.push(f); figur.add(f); }
+    figur.add(this.hof); figur.add(this.kern);
+  }
+  /** false = fertig (entfernt) */
+  weiter(dt: number, spitze: THREE.Vector3 | null): boolean {
+    this.t += dt; const a = this.abschuss, t = this.t, nach = t - a; if (nach > 0.45 || !spitze) { this.weg(); return false; }
+    const ort = this.figur.worldToLocal(spitze.clone()); this.kern.position.copy(ort); this.hof.position.copy(ort);
+    const auf = Math.min(1, t / Math.max(0.05, a)), zit = 1 + 0.12 * Math.sin(t * 40);   // aufladen: wächst und flackert
+    const blitz = nach > 0 ? Math.max(0, 1 - nach / 0.45) : 0, groesse = nach > 0 ? 0.42 * (1 + nach * 2) * blitz + 0.05 : (0.08 + 0.26 * auf * auf) * zit;
+    this.hof.scale.setScalar(groesse * 2.2); this.kern.scale.setScalar(groesse * 0.9);
+    (this.hof.material as THREE.SpriteMaterial).opacity = nach > 0 ? blitz : 0.35 + 0.55 * auf; (this.kern.material as THREE.SpriteMaterial).opacity = nach > 0 ? blitz : 0.5 + 0.5 * auf;
+    this.funken.forEach((f, i) => { const w = t * 7 + i * 1.257, r = 0.16 * (1 - auf * 0.7) + 0.03; f.position.set(ort.x + Math.cos(w) * r, ort.y + Math.sin(w * 1.3) * r * 0.6, ort.z + Math.sin(w) * r);   // Funken kreisen und werden eingesogen
+      (f.material as THREE.SpriteMaterial).opacity = nach > 0 ? 0 : 0.9 * auf; });
+    return true;
+  }
+  weg(): void { for (const o of [this.kern, this.hof, ...this.funken]) { o.removeFromParent(); (o.material as THREE.Material).dispose(); } }
+}
 class TeleportEffekt {
   readonly gruppe = new THREE.Group(); vergangen = false; private t = 0;
   private saeule: THREE.Mesh; private kern: THREE.Mesh; private ring: THREE.Mesh; private funken: THREE.Points; private fp: Float32Array; private fv: { w: number; r: number; s: number; d: number }[] = [];

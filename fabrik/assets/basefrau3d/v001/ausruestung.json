@@ -15,7 +15,10 @@
     "tod",
     "teleport_weg",
     "trinken",
-    "angriff"
+    "angriff",
+    "ruhe_2h",
+    "gehen_2h",
+    "laufen_2h"
   ],
   "koerper_textur": true,
   "stil": "gemalt",
@@ -139,11 +142,14 @@
       "griff2": 0.1,
       "klasse": "zweihand",
       "bewegungen": [
-        "ruhe",
         "gehen",
+        "gehen_2h",
+        "hieb2h",
         "laufen",
-        "tod",
-        "hieb2h"
+        "laufen_2h",
+        "ruhe",
+        "ruhe_2h",
+        "tod"
       ],
       "angriff": "hieb2h"
     },
@@ -285,11 +291,14 @@
       "klasse": "zweihand",
       "angriff": "hieb2h",
       "bewegungen": [
-        "ruhe",
         "gehen",
+        "gehen_2h",
+        "hieb2h",
         "laufen",
-        "tod",
-        "hieb2h"
+        "laufen_2h",
+        "ruhe",
+        "ruhe_2h",
+        "tod"
       ]
     },
     {
@@ -679,5 +688,6 @@
     "armbrust": "rechte Hand, Pistolengriff: armbrust1h",
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
   },
-  "beine_eng": 0.12
+  "beine_eng": 0.12,
+  "kampftempo": 0.6
 }

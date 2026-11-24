@@ -23,6 +23,7 @@ import { kontoToken } from "../konto";
 import { epAlle } from "../halle";
 import { SYMBOL, symbolBild } from "../symbole";
 import { FELD_PX, HELD_PX } from "../../../shared/welt/typen";
+import { Geschoss, GeschossArt } from "./geschosse";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const P = new URLSearchParams(location.search);
@@ -38,6 +39,7 @@ export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[
   const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
 export class WeltKampf {
+  geschosse = new Map<number, { g: Geschoss; x: number; y: number; von: number }>(); schussBeginn = new Map<number, number>();
   netz: Netz | null = null; karteZeit = 0; schildWar = false; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
   figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number; a?: Held }>();
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
@@ -76,7 +78,7 @@ export class WeltKampf {
     if (this.netz.art === "lokal" && this.netz.sim) { const h = this.netz.sim.wesen.find((w) => w.held); if (h) { h.x = Math.max(0.5, Math.min(this.zone.b - 0.5, lx)); h.y = Math.max(0.5, Math.min(this.zone.h - 0.5, ly)); h.pfad = []; } }
     else this.netz.sende({ t: "betreten", x: lx, y: ly } as unknown as Parameters<Netz["sende"]>[0]); }
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
-  ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
+  ende() { if (this.vorbei) return; this.vorbei = true; for (const G of this.geschosse.values()) G.g.entfernen(); this.geschosse.clear(); if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     for (const f of this.figuren.values()) { f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); } this.figuren.clear(); this.ringZiel.destroy(); this.ichLb.destroy();
     for (const h of this.hoerer) window.removeEventListener("ez-server", h); document.body.classList.remove("weltkampf"); document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
@@ -94,7 +96,10 @@ export class WeltKampf {
       /* ein besiegter Gegner der Figuren-Fabrik fällt erst (Todesbewegung), bleibt kurz liegen und verblasst dann */
       const sp = f.sp as unknown as { sterben?: () => number }, dauer = !f.held && typeof sp.sterben === "function" ? sp.sterben() : 0;
       if (dauer) this.s.tweens.add({ targets: f.sp, alpha: 0, delay: dauer + 1400, duration: 700, onComplete: () => f.sp.destroy() }); else f.sp.destroy(); }
-    for (const ev of z.ev) this.ereignis(ev);
+    /* erst Anlegen und Schuss (Bewegung beginnt), dann die Geschosse abgleichen, dann alles andere – Treffer eines fliegenden Geschosses warten auf den Einschlag */
+    for (const ev of z.ev) if (ev.a === "anlegen" || ev.a === "hieb") this.ereignis(ev);
+    const halt = this.geschosseAbgleichen(z);
+    for (const ev of z.ev) { if (ev.a === "anlegen" || ev.a === "hieb") continue; const g = halt.get(ev); if (g) g.gehalten.push(() => this.ereignis(ev)); else this.ereignis(ev); }
     const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; this.s.ort.x = this.zone.x0 + ich[4]; this.s.ort.y = this.zone.y0 + ich[5]; }
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }
     this.hud(z); }
@@ -112,7 +117,27 @@ export class WeltKampf {
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
-    else if (ev.a === "hieb") { const sp = ev.id === this.ichId ? s.figur : this.figuren.get(ev.id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); } }
+    else if (ev.a === "hieb" || ev.a === "anlegen") { const j = performance.now(); if (ev.a === "hieb" && j - (this.schussBeginn.get(ev.id) || 0) < 700) return;   /* Schuss nach dem Anlegen: die Bewegung läuft schon */
+      this.schussBeginn.set(ev.id, j); const sp = ev.id === this.ichId ? s.figur : this.figuren.get(ev.id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); } }
+  /** Figur zu einer Wesen-Nummer (der eigene Held oder eine fremde Figur) */
+  private spVon(id: number): (Phaser.GameObjects.Sprite & { schussInfo?: () => { art: GeschossArt; verzug: number } | null; abschussPunkt?: () => { x: number; y: number } }) | undefined {
+    return (id === this.ichId ? this.s.figur : this.figuren.get(id)?.sp) as never; }
+  /** Rechenfeld → Szene, auf Brusthöhe */
+  private brust(x: number, y: number) { return { x: (this.zone.x0 + x) * FELD_PX, y: (this.zone.y0 + y) * FELD_PX - HELD_PX * 0.5 }; }
+  /** Geschosse des Servers zeichnen: neue anlegen (Art nach der Waffe des Schützen), bewegte nachführen, verschwundene einschlagen lassen.
+   *  Zurück: welche Treffer-Ereignisse auf welches Geschoss warten */
+  private geschosseAbgleichen(z: Zustand): Map<Ereignis, Geschoss> { const halt = new Map<Ereignis, Geschoss>(), da = new Set<number>(), jetzt = performance.now();
+    const naechste = (x: number, y: number, ohne = -1, max = 1e9) => { let b = -1, bd = max; for (const e of z.w) { if (e[0] === ohne) continue; const d = Math.hypot(e[4] - x, e[5] - y); if (d < bd) { bd = d; b = e[0]; } } return b; };
+    for (const g of z.g || []) { da.add(g[0]); const p = this.brust(g[1], g[2]), alt = this.geschosse.get(g[0]); if (alt) { alt.g.nach(p); alt.x = g[1]; alt.y = g[2]; continue; }
+      const von = naechste(g[1], g[2]), sp = von >= 0 ? this.spVon(von) : undefined, info = sp && typeof sp.schussInfo === "function" ? sp.schussInfo() : null;
+      const art: GeschossArt = g[3] === "feuer" ? "feuer" : info ? info.art : g[3] === "blitz" ? "zauber" : "pfeil", b = this.schussBeginn.get(von);
+      const los = info && b !== undefined && jetzt - b < 1500 ? b + info.verzug : jetzt;
+      const start = () => sp && typeof sp.abschussPunkt === "function" ? sp.abschussPunkt() : sp ? { x: sp.x, y: sp.y - HELD_PX * 0.6 } : p;
+      this.geschosse.set(g[0], { g: new Geschoss(this.s, art, los, start, p), x: g[1], y: g[2], von }); }
+    for (const [id, G] of this.geschosse) { if (da.has(id) || G.g.ende) continue; G.g.ende = true;
+      const ziel = naechste(G.x, G.y, G.von, 2.5); if (ziel < 0) continue; const e = z.w.find((w) => w[0] === ziel); if (e) G.g.nach(this.brust(e[4], e[5]));
+      for (const ev of z.ev) if ((ev.a === "schaden" || ev.a === "null" || ev.a === "block") && ev.id === ziel && !halt.has(ev)) halt.set(ev, G.g); }
+    return halt; }
 
   /* ---------- jedes Bild ---------- */
   /** Bewegung: die Welt hat aus Tasten, Stick oder Wegfindung eine Richtung (rx, ry); sie geht an den Server, die Stelle kommt von dort */
@@ -124,6 +149,7 @@ export class WeltKampf {
   gehe(wx: number, wy: number) { if (!this.netz) return; if (Math.hypot(wx - this.lauf.x, wy - this.lauf.y) < 0.3) return; this.lauf = { x: wx, y: wy }; this.gesendet = { x: 0, y: 0, t: performance.now() };
     this.netz.sende({ t: "lauf", x: wx - this.zone.x0, y: wy - this.zone.y0 }); }
   schritt(dt: number) { if (!this.z) return; const s = this.s, k = Math.min(1, dt * 12), ich = this.z.w.find((e) => e[0] === this.ichId);
+    { const j = performance.now(); for (const [id, G] of this.geschosse) if (!G.g.schritt(dt * 1000, j)) this.geschosse.delete(id); }
     /* der eigene Held mit erhobenem Schild (Torvald, Waffe „Schild“): Block im Stehen, Gang mit Schild – sonst wie die Welt es will */
     { const sp = s.figur as unknown as { play(k: string): void; setTexture(k: string): void }, laeuft = (s as unknown as { laeuft: boolean }).laeuft, schild = Boolean(ich && !ich[10] && (ich[9] & BIT.schild));
       if ("richte" in sp) { if (schild) { if (laeuft) sp.play("schild-x"); else sp.setTexture("schildstand-x"); } else if (this.schildWar) { if (laeuft) sp.play("lauf-x"); else sp.setTexture("figur-x"); } } this.schildWar = schild; }

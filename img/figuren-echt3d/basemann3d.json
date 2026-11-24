@@ -291,11 +291,14 @@
    "art": "starr",
    "platz": "hand_r",
    "bewegungen": [
-    "ruhe",
     "gehen",
+    "gehen_2h",
+    "hieb2h",
     "laufen",
-    "tod",
-    "hieb2h"
+    "laufen_2h",
+    "ruhe",
+    "ruhe_2h",
+    "tod"
    ],
    "datei": "basemann3d.teile/waffe.eidzweihaender.glb"
   },
@@ -303,11 +306,14 @@
    "art": "starr",
    "platz": "hand_r",
    "bewegungen": [
-    "ruhe",
     "gehen",
+    "gehen_2h",
+    "hieb2h",
     "laufen",
-    "tod",
-    "hieb2h"
+    "laufen_2h",
+    "ruhe",
+    "ruhe_2h",
+    "tod"
    ],
    "datei": "basemann3d.teile/waffe.langschwert.glb"
   },
@@ -463,27 +469,27 @@
  "aktionen": {
   "angriff": {
    "bilder": 8,
-   "rate": 16,
+   "rate": 10,
    "schleife": false
   },
   "armbrust1h": {
    "bilder": 8,
-   "rate": 12,
+   "rate": 7,
    "schleife": false
   },
   "block": {
    "bilder": 6,
-   "rate": 12,
+   "rate": 7,
    "schleife": false
   },
   "bogen": {
    "bilder": 9,
-   "rate": 12,
+   "rate": 7,
    "schleife": false
   },
   "dolchwurf": {
    "bilder": 8,
-   "rate": 16,
+   "rate": 10,
    "schleife": false
   },
   "gehen": {
@@ -491,12 +497,22 @@
    "rate": 8,
    "schleife": true
   },
+  "gehen_2h": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
   "hieb2h": {
    "bilder": 8,
-   "rate": 14,
+   "rate": 8,
    "schleife": false
   },
   "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "laufen_2h": {
    "bilder": 8,
    "rate": 11,
    "schleife": true
@@ -506,14 +522,19 @@
    "rate": 6,
    "schleife": true
   },
+  "ruhe_2h": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
   "stich": {
    "bilder": 7,
-   "rate": 16,
+   "rate": 10,
    "schleife": false
   },
   "stich2h": {
    "bilder": 8,
-   "rate": 14,
+   "rate": 8,
    "schleife": false
   },
   "teleport_weg": {
@@ -533,7 +554,7 @@
   },
   "zauber_stab": {
    "bilder": 8,
-   "rate": 12,
+   "rate": 7,
    "schleife": false
   }
  }
