@@ -809,6 +809,12 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 14,
+    "saett": 0.95,
+    "hell": 0.8
+   },
    "vielfalt": [
     "stil_eiche_01",
     "stil_laub_dunkel",
@@ -821,11 +827,11 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_02.webp",
    "groesse": [
-    371,
+    374,
     409
    ],
    "anker": [
-    0.5162,
+    0.508,
     0.9071
    ],
    "massstab": 1,
@@ -838,6 +844,12 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 0,
+    "saett": 1.0,
+    "hell": 1.0
+   },
    "vielfalt": [
     "stil_eiche_02",
     "stil_laub_oliv",
@@ -850,12 +862,12 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_linde_01.webp",
    "groesse": [
-    371,
-    409
+    345,
+    406
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.5435,
+    0.9138
    ],
    "massstab": 1,
    "kollision": {
@@ -867,6 +879,12 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 32,
+    "saett": 0.8,
+    "hell": 0.78
+   },
    "vielfalt": [
     "stil_linde_01",
     "stil_laub_dunkel",
@@ -879,11 +897,11 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_herbst_01.webp",
    "groesse": [
-    371,
+    374,
     409
    ],
    "anker": [
-    0.5162,
+    0.508,
     0.9071
    ],
    "massstab": 1,
@@ -896,6 +914,12 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -48,
+    "saett": 1.1,
+    "hell": 0.95
+   },
    "vielfalt": [
     "stil_herbst_01",
     "stil_laub_gold",
@@ -7089,12 +7113,12 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_oliv.webp",
    "groesse": [
-    371,
-    409
+    345,
+    406
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.5435,
+    0.9138
    ],
    "massstab": 1,
    "kollision": {
@@ -7105,7 +7129,13 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -12,
+    "saett": 0.8,
+    "hell": 0.9
+   }
   },
   {
    "id": "stil_laub_gold",
@@ -7129,7 +7159,13 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -32,
+    "saett": 1.05,
+    "hell": 1.02
+   }
   },
   {
    "id": "stil_laub_rot",
@@ -7137,12 +7173,12 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_rot.webp",
    "groesse": [
-    371,
-    409
+    345,
+    406
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.5435,
+    0.9138
    ],
    "massstab": 1,
    "kollision": {
@@ -7153,7 +7189,13 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -70,
+    "saett": 1.0,
+    "hell": 0.85
+   }
   },
   {
    "id": "stil_laub_dunkel",
@@ -7161,11 +7203,11 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_dunkel.webp",
    "groesse": [
-    371,
+    374,
     409
    ],
    "anker": [
-    0.5162,
+    0.508,
     0.9071
    ],
    "massstab": 1,
@@ -7177,7 +7219,13 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 20,
+    "saett": 0.85,
+    "hell": 0.62
+   }
   },
   {
    "id": "stil_tot_01",
@@ -7185,12 +7233,12 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_tot_01.webp",
    "groesse": [
-    360,
-    417
+    340,
+    374
    ],
    "anker": [
-    0.4597,
-    0.9376
+    0.4441,
+    0.9251
    ],
    "massstab": 1,
    "kollision": {
@@ -7201,7 +7249,11 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.tot (Bildvorlage), freigestellt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-tot.glb",
+    "wind": 0.05
+   }
   }
  ]
 }

@@ -108,6 +108,9 @@ export interface ObjektDef {
   spiegelbar?: boolean;
   /** Nur Optik: das Spiel wählt je Standort fest eine dieser Kennungen (z. B. Kronenfarben eines Baumes) – gleiche Größe und Kollision wie dieses Objekt */
   vielfalt?: string[];
+  /** Nur Optik: das Objekt wird (mit 3D-Figuren) live als 3D-Modell gezeichnet – eigene Drehung und Wind je Standort; bild bleibt der Ersatz.
+   *  farbton/saett/hell färben nur die grünen Teile (Blätter) um; wind: Ausschlag der Krone in Metern */
+  modell3d?: { url: string; farbton?: number; saett?: number; hell?: number; wind?: number };
   /** Herkunft und Lizenz */
   herkunft: string;
   /** Räumliches Gebäude (Standard, werkzeug/welt/gebaeude.py): die Ebenen; `bild` ist dann nur das Gesamtbild für Katalog und Vorschau */

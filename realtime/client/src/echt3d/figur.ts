@@ -20,7 +20,11 @@ interface DarstellerT {
 /** ein Geschoss als kleines 3D-Bild (darsteller.ts → GeschossBild) */
 export interface GeschossBildT { breite: number; hoehe: number; aufloesung: number; richte(sx: number, sy: number): void; zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void }
 type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void>;
-  GeschossBild: new (art: string, figurHoehePx: number, aufloesung: number) => GeschossBildT };
+  GeschossBild: new (art: string, figurHoehePx: number, aufloesung: number) => GeschossBildT;
+  BaumBild: { erstellen(url: string, figurHoehePx: number, aufloesung: number, w: BaumWerteT): Promise<BaumBildT> } };
+/** ein Baum als 3D-Bild (darsteller.ts → BaumBild) */
+export interface BaumWerteT { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number }
+export interface BaumBildT { breite: number; hoehe: number; fussY: number; aufloesung: number; zeichne(zeit: number, ziel: CanvasRenderingContext2D): void; entfernen(): void }
 
 const P = new URLSearchParams(location.search);
 /** Sind 3D-Figuren eingeschaltet? (Adresse oder Gerät) */
@@ -46,6 +50,9 @@ const TELEPORT_S = 1.8;
 /** Geschoss in 3D bauen (lädt das 3D-Modul nach, falls nötig); ohne 3D: null */
 export async function geschossBild(art: string, figurHoehePx: number): Promise<GeschossBildT | null> {
   if (!figur3dAn()) return null; try { const E = await echt3dLaden(); return new E.GeschossBild(art, figurHoehePx, Math.min(2, window.devicePixelRatio || 1) * 1.25); } catch { return null; } }
+/** Baum in 3D bauen (lädt das 3D-Modul nach, falls nötig); ohne 3D-Figuren oder bei Fehlern: null (die Welt behält das Bild) */
+export async function baumBild(url: string, figurHoehePx: number, w: BaumWerteT): Promise<BaumBildT | null> {
+  if (!figur3dAn()) return null; try { const E = await echt3dLaden(); return await E.BaumBild.erstellen(url, figurHoehePx, Math.min(1.5, window.devicePixelRatio || 1), w); } catch (e) { console.warn("Baum 3D:", e); return null; } }
 export function teleportAbreise(f: unknown): number { return f instanceof Figur3D ? f.teleport() : 0; }
 
 export class Figur3D extends Phaser.GameObjects.Container {

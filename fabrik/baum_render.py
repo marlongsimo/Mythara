@@ -5,7 +5,7 @@ import bpy, math, sys
 from mathutils import Vector
 blend, ziel, dreh = sys.argv[sys.argv.index("--")+1:][:3]
 bpy.ops.wm.open_mainfile(filepath=blend); sc=bpy.context.scene
-o=[x for x in bpy.data.objects if x.type=="MESH"][0]; o.rotation_euler[2]+=math.radians(float(dreh)); bpy.context.view_layer.update()
+o=[x for x in bpy.data.objects if x.type=="MESH"][0]; o.rotation_mode="XYZ"; o.rotation_euler[2]+=math.radians(float(dreh)); bpy.context.view_layer.update()
 ps=[o.matrix_world@v.co for v in o.data.vertices]; lo=Vector([min(p[i] for p in ps) for i in range(3)]); hi=Vector([max(p[i] for p in ps) for i in range(3)])
 o.location -= Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z)); bpy.context.view_layer.update(); h=hi.z-lo.z
 eng=[i.identifier for i in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items]; sc.render.engine="BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in eng else "BLENDER_EEVEE"
