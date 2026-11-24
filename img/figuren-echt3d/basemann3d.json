@@ -469,42 +469,42 @@
  "aktionen": {
   "angriff": {
    "bilder": 8,
-   "rate": 10,
+   "rate": 8,
    "schleife": false
   },
   "armbrust1h": {
    "bilder": 8,
-   "rate": 7,
+   "rate": 6,
    "schleife": false
   },
   "block": {
    "bilder": 6,
-   "rate": 7,
+   "rate": 6,
    "schleife": false
   },
   "bogen": {
    "bilder": 9,
-   "rate": 7,
+   "rate": 6,
    "schleife": false
   },
   "dolchwurf": {
    "bilder": 8,
-   "rate": 10,
+   "rate": 8,
    "schleife": false
   },
   "gehen": {
    "bilder": 8,
-   "rate": 8,
+   "rate": 4,
    "schleife": true
   },
   "gehen_2h": {
    "bilder": 8,
-   "rate": 8,
+   "rate": 4,
    "schleife": true
   },
   "hieb2h": {
    "bilder": 8,
-   "rate": 8,
+   "rate": 7,
    "schleife": false
   },
   "laufen": {
@@ -529,12 +529,12 @@
   },
   "stich": {
    "bilder": 7,
-   "rate": 10,
+   "rate": 8,
    "schleife": false
   },
   "stich2h": {
    "bilder": 8,
-   "rate": 8,
+   "rate": 7,
    "schleife": false
   },
   "teleport_weg": {
@@ -554,7 +554,7 @@
   },
   "zauber_stab": {
    "bilder": 8,
-   "rate": 7,
+   "rate": 6,
    "schleife": false
   }
  }
