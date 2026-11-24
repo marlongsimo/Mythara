@@ -1,14 +1,14 @@
 {
  "id": "nordwald",
  "name": "Der Nordwald",
- "untertitel": "Dichter Wald mit einer Köhlerlichtung",
+ "untertitel": "Köhlerlichtung, die verfallene Feste und ein alter Friedhof",
  "ursprung": [
   196,
-  200
+  198
  ],
  "chunks": [
   4,
-  2
+  4
  ],
  "biom": "wald",
  "stufe": 1

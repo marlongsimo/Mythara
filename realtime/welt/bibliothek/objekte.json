@@ -7553,6 +7553,401 @@
    ],
    "interaktion": null,
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_halbmauer",
+   "name": "Halbe Burgmauer (Ost–West)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_halbmauer.webp",
+   "groesse": [
+    206,
+    289
+   ],
+   "anker": [
+    0.4272,
+    0.8626
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -2.0,
+    "b": 2.0,
+    "h": 2.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    167,
+    250
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_halbmauer_tief",
+   "name": "Halbe Burgmauer (Nord–Süd)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_halbmauer_tief.webp",
+   "groesse": [
+    206,
+    301
+   ],
+   "anker": [
+    0.4272,
+    0.8696
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -2.0,
+    "b": 2.0,
+    "h": 2.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    167,
+    262
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_turmstumpf",
+   "name": "Turmstumpf",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_turmstumpf.webp",
+   "groesse": [
+    198,
+    398
+   ],
+   "anker": [
+    0.419,
+    0.908
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.24,
+    "y": -2.14,
+    "b": 2.48,
+    "h": 2.14
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    159,
+    359
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_ruine_katapult",
+   "name": "Zerstörtes Katapult",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_ruine_katapult.webp",
+   "groesse": [
+    298,
+    271
+   ],
+   "anker": [
+    0.4116,
+    0.8535
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.85,
+    "y": -3.67,
+    "b": 3.69,
+    "h": 3.67
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    259,
+    231
+   ],
+   "herkunft": "Form: Kenney castle kit (CC0, werkzeug/welt/kenney/castle/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_gruft",
+   "name": "Gruft",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_gruft.webp",
+   "groesse": [
+    199,
+    286
+   ],
+   "anker": [
+    0.3979,
+    0.8608
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.86,
+    "y": -2.68,
+    "b": 1.73,
+    "h": 2.68
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    160,
+    246
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_grabstein_kreuz",
+   "name": "Grabstein mit Kreuz",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_grabstein_kreuz.webp",
+   "groesse": [
+    140,
+    208
+   ],
+   "anker": [
+    0.4577,
+    0.8085
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    101,
+    168
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_grabstein_rund",
+   "name": "Runder Grabstein",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_grabstein_rund.webp",
+   "groesse": [
+    137,
+    169
+   ],
+   "anker": [
+    0.4677,
+    0.765
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    98,
+    130
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_grabstein_zerbrochen",
+   "name": "Zerbrochener Grabstein",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_grabstein_zerbrochen.webp",
+   "groesse": [
+    137,
+    158
+   ],
+   "anker": [
+    0.4544,
+    0.7509
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    98,
+    119
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_grabstein_breit",
+   "name": "Breiter Grabstein",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_grabstein_breit.webp",
+   "groesse": [
+    185,
+    174
+   ],
+   "anker": [
+    0.4709,
+    0.773
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    146,
+    135
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_obelisk",
+   "name": "Obelisk",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_obelisk.webp",
+   "groesse": [
+    133,
+    229
+   ],
+   "anker": [
+    0.4499,
+    0.8296
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    94,
+    190
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_saeule_gross",
+   "name": "Große Säule",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_saeule_gross.webp",
+   "groesse": [
+    140,
+    257
+   ],
+   "anker": [
+    0.4453,
+    0.8479
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    100,
+    218
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_altar_stein",
+   "name": "Steinaltar",
+   "kategorie": "sonderort",
+   "bild": "img/welt/gebaeude/kenney/k_altar_stein.webp",
+   "groesse": [
+    220,
+    207
+   ],
+   "anker": [
+    0.4456,
+    0.8074
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.25,
+    "y": -1.57,
+    "b": 2.5,
+    "h": 1.57
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    180,
+    167
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "k_truemmer",
+   "name": "Trümmer",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/gebaeude/kenney/k_truemmer.webp",
+   "groesse": [
+    145,
+    156
+   ],
+   "anker": [
+    0.4097,
+    0.7439
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.25
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "sichtbar": [
+    40,
+    40,
+    106,
+    116
+   ],
+   "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
   }
  ]
 }

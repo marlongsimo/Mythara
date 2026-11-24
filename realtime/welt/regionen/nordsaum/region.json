@@ -1,0 +1,15 @@
+{
+ "id": "nordsaum",
+ "name": "Der Nordsaum",
+ "untertitel": "Grenzwald im Norden, der Uferweg zum alten Friedhof",
+ "ursprung": [
+  200,
+  198
+ ],
+ "chunks": [
+  12,
+  2
+ ],
+ "biom": "wald",
+ "stufe": 2
+}
