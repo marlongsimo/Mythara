@@ -792,23 +792,29 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_01.webp",
    "groesse": [
-    371,
-    409
+    317,
+    351
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.511,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 14,
+    "saett": 0.95,
+    "hell": 0.8
+   },
    "vielfalt": [
     "stil_eiche_01",
     "stil_laub_dunkel",
@@ -821,23 +827,29 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_02.webp",
    "groesse": [
-    371,
-    409
+    321,
+    351
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 0,
+    "saett": 1.0,
+    "hell": 1.0
+   },
    "vielfalt": [
     "stil_eiche_02",
     "stil_laub_oliv",
@@ -850,23 +862,29 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_linde_01.webp",
    "groesse": [
-    371,
-    409
+    296,
+    349
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 32,
+    "saett": 0.8,
+    "hell": 0.78
+   },
    "vielfalt": [
     "stil_linde_01",
     "stil_laub_dunkel",
@@ -879,23 +897,29 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_herbst_01.webp",
    "groesse": [
-    371,
-    409
+    321,
+    351
    ],
    "anker": [
-    0.5162,
-    0.9071
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -48,
+    "saett": 1.1,
+    "hell": 0.95
+   },
    "vielfalt": [
     "stil_herbst_01",
     "stil_laub_gold",
@@ -8905,108 +8929,12 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_oliv.webp",
    "groesse": [
-    371,
-    409
+    296,
+    349
    ],
    "anker": [
-    0.5162,
-    0.9071
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.45
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
-  },
-  {
-   "id": "stil_laub_gold",
-   "name": "Laubbaum (goldgelb)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/stil/stil_laub_gold.webp",
-   "groesse": [
-    371,
-    409
-   ],
-   "anker": [
-    0.5162,
-    0.9071
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.45
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
-  },
-  {
-   "id": "stil_laub_rot",
-   "name": "Laubbaum (rotbraun)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/stil/stil_laub_rot.webp",
-   "groesse": [
-    371,
-    409
-   ],
-   "anker": [
-    0.5162,
-    0.9071
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.45
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
-  },
-  {
-   "id": "stil_laub_dunkel",
-   "name": "Laubbaum (dunkel)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/stil/stil_laub_dunkel.webp",
-   "groesse": [
-    371,
-    409
-   ],
-   "anker": [
-    0.5162,
-    0.9071
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.45
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
-  },
-  {
-   "id": "stil_tot_01",
-   "name": "Toter Baum",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/stil/stil_tot_01.webp",
-   "groesse": [
-    360,
-    417
-   ],
-   "anker": [
-    0.4597,
-    0.9376
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
@@ -9017,7 +8945,791 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/objekt.baum.tot (Bildvorlage), freigestellt von werkzeug/welt/baum_bilder.py"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -12,
+    "saett": 0.8,
+    "hell": 0.9
+   }
+  },
+  {
+   "id": "stil_laub_gold",
+   "name": "Laubbaum (goldgelb)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_gold.webp",
+   "groesse": [
+    317,
+    351
+   ],
+   "anker": [
+    0.511,
+    0.906
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -32,
+    "saett": 1.05,
+    "hell": 1.02
+   }
+  },
+  {
+   "id": "stil_laub_rot",
+   "name": "Laubbaum (rotbraun)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_rot.webp",
+   "groesse": [
+    296,
+    349
+   ],
+   "anker": [
+    0.4966,
+    0.9112
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -70,
+    "saett": 1.0,
+    "hell": 0.85
+   }
+  },
+  {
+   "id": "stil_laub_dunkel",
+   "name": "Laubbaum (dunkel)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_dunkel.webp",
+   "groesse": [
+    321,
+    351
+   ],
+   "anker": [
+    0.4735,
+    0.906
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 20,
+    "saett": 0.85,
+    "hell": 0.62
+   }
+  },
+  {
+   "id": "stil_tot_01",
+   "name": "Toter Baum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_tot_01.webp",
+   "groesse": [
+    312,
+    344
+   ],
+   "anker": [
+    0.4439,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-tot.glb",
+    "wind": 0.05
+   }
+  },
+  {
+   "id": "holz_eiche_01",
+   "name": "Eiche",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_01.webp",
+   "groesse": [
+    334,
+    346
+   ],
+   "anker": [
+    0.5659,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_01",
+   "name": "Tanne",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_01.webp",
+   "groesse": [
+    212,
+    337
+   ],
+   "anker": [
+    0.4528,
+    0.9436
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_01",
+   "name": "Eibe",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_01.webp",
+   "groesse": [
+    342,
+    346
+   ],
+   "anker": [
+    0.4927,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_01",
+   "name": "Moorweide",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_01.webp",
+   "groesse": [
+    314,
+    344
+   ],
+   "anker": [
+    0.4793,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_01",
+   "name": "Kernbaum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_01.webp",
+   "groesse": [
+    309,
+    344
+   ],
+   "anker": [
+    0.4693,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_01",
+   "name": "Weltenbaum-Setzling",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_01.webp",
+   "groesse": [
+    238,
+    339
+   ],
+   "anker": [
+    0.4664,
+    0.9381
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling.glb"
+   }
+  },
+  {
+   "id": "holz_eiche_stumpf",
+   "name": "Eichenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_stumpf.webp",
+   "groesse": [
+    155,
+    121
+   ],
+   "anker": [
+    0.471,
+    0.8843
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_stumpf",
+   "name": "Moorweidenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_stumpf.webp",
+   "groesse": [
+    167,
+    126
+   ],
+   "anker": [
+    0.3892,
+    0.881
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_stumpf",
+   "name": "Kernbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_stumpf.webp",
+   "groesse": [
+    272,
+    184
+   ],
+   "anker": [
+    0.4467,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_stumpf",
+   "name": "Eibenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_stumpf.webp",
+   "groesse": [
+    146,
+    115
+   ],
+   "anker": [
+    0.5103,
+    0.8783
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_stumpf",
+   "name": "Weltenbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_stumpf.webp",
+   "groesse": [
+    187,
+    130
+   ],
+   "anker": [
+    0.4866,
+    0.8615
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_stumpf",
+   "name": "Tannenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_stumpf.webp",
+   "groesse": [
+    87,
+    84
+   ],
+   "anker": [
+    0.5345,
+    0.8929
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne-stumpf.glb"
+   }
+  },
+  {
+   "id": "berg_kupferstein_01",
+   "name": "Kupferstein",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_01.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Embervein Outcrop“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_01",
+   "name": "Eisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_01.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossbound Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_01",
+   "name": "Schwarzeisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_01.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossy Obsidian Ridge“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_01",
+   "name": "Sterneisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_01.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Veinstone“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_01",
+   "name": "Splittereisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_01.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Rift Mountain“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_ureisen_01",
+   "name": "Ureisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_01.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Emberstone Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_kupferstein_leer",
+   "name": "Kupferstein (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_leer.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/kupferstein – Adern leer (fabrik/baum_export.py adern=leer ader_ton=warm)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_leer",
+   "name": "Eisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_leer.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/eisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_leer",
+   "name": "Schwarzeisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_leer.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/schwarzeisen – Adern leer (fabrik/baum_export.py adern=leer_schwarz)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_leer",
+   "name": "Sterneisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_leer.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/sterneisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_leer",
+   "name": "Splittereisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_leer.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/splittereisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_ureisen_leer",
+   "name": "Ureisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_leer.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/ureisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen-leer.glb",
+    "wind": 0
+   }
   }
  ]
 }

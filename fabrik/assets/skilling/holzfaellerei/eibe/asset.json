@@ -1,0 +1,15 @@
+{
+  "id": "holzfaellerei.eibe",
+  "name": "Eibe",
+  "kategorie": "holzfaellerei",
+  "aktuell": "v001",
+  "hoehe_m": "6 (im Spiel je Standort 5–7)",
+  "status": "Meshy „Azure Yew Tree“; Spieldatei img/objekte3d/skilling/holzfaellerei/eibe.glb (live 3D, Wind, blaue Stellen pulsieren); Weltobjekt holz_eibe_01 (Ersatzbild img/welt/stil/holz_eibe_01.webp); Holzfäller-Funktion folgt",
+  "herkunft": "Meshy",
+  "stumpf": {
+    "name": "Eibenstumpf",
+    "spieldatei": "img/objekte3d/skilling/holzfaellerei/eibe-stumpf.glb",
+    "weltobjekt": "holz_eibe_stumpf",
+    "hinweis": "bei 1.0 m abgeschnitten (fabrik/baum_export.py stumpf=1.0 blau=grau): blaue Adern dunkelgrau, kein Leuchten"
+  }
+}

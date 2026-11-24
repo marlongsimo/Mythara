@@ -1,0 +1,14 @@
+{
+  "name": "Legendäres Holzbeil",
+  "werkzeug": "holzbeil",
+  "skill": "Holzfällerei",
+  "seltenheit": "Legendär",
+  "modell": {
+    "spieldatei": "img/objekte3d/skilling/utensilien/holzbeil.legendaer.glb",
+    "quelle": "fabrik/assets/skilling/utensilien/holzbeil",
+    "stufenbild": "fabrik/assets/skilling/utensilien/holzbeil/referenz/stufen.png"
+  },
+  "erzeugt": "Grundstufe selten = Meshy-Modell; andere Stufen: fabrik/seltenheit.py <grund.glb> <ziel.glb> <stufe> metall_c=18 stark=1 holz=1",
+  "werte": {},
+  "werte_offen": true
+}

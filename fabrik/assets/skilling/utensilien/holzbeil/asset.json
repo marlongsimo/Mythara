@@ -1,0 +1,18 @@
+{
+  "id": "utensil.holzbeil",
+  "name": "Holzbeil",
+  "kategorie": "skilling-utensil",
+  "skill": "Holzfällerei",
+  "aktuell": "v001",
+  "laenge_m": 0.6,
+  "status": "Meshy „Oakfang Hatchet“; Spieldatei img/objekte3d/skilling/utensilien/holzbeil.glb (Kopf oben, Stielende im Ursprung, 0.6 m); an der Heldenhand und Bewegung folgen mit der Holzfällerei-Funktion",
+  "herkunft": "Meshy",
+  "stufen": {
+    "Training": "img/objekte3d/skilling/utensilien/holzbeil.training.glb",
+    "Einfach": "img/objekte3d/skilling/utensilien/holzbeil.gewoehnlich.glb",
+    "Selten": "img/objekte3d/skilling/utensilien/holzbeil.glb",
+    "Episch": "img/objekte3d/skilling/utensilien/holzbeil.episch.glb",
+    "Legendär": "img/objekte3d/skilling/utensilien/holzbeil.legendaer.glb",
+    "Mythisch": "img/objekte3d/skilling/utensilien/holzbeil.mythisch.glb"
+  }
+}

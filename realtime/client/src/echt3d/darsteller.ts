@@ -298,4 +298,63 @@ export class GeschossBild {
   entfernen(): void { this.gruppe.removeFromParent(); this.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (m.geometry) m.geometry.dispose(); const mt = (m as THREE.Mesh).material as THREE.Material | undefined; if (mt) mt.dispose(); }); }
 }
 
-(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller, standbild, GeschossBild };
+/* ---------- Bäume in 3D (offene Welt) ----------
+ * Jeder Baum ist ein eigenes 3D-Objekt im Licht der Figuren: eigene Drehung, eigene Kronenfarbe, eigener Wind, blaue Stellen pulsieren (alles im Shader, Modell und Textur
+ * teilen sich alle Bäume einer Sorte). Gezeichnet wird in ein eigenes kleines Bild je Baum; die Welt (welt/welt.ts) zeigt es an seinem Standort
+ * und zeichnet nur sichtbare Bäume, gedrosselt. */
+export interface BaumWerte { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number; grau?: number }
+const BAUM_U = { uZeit: { value: 0 }, uPhase: { value: 0 }, uWind: { value: 0.12 }, uHoehe: { value: 7 }, uFarbton: { value: 0 }, uSaett: { value: 1 }, uHell: { value: 1 }, uGrau: { value: 0 } };
+const HSV_GLSL = `
+vec3 baum_rgb2hsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));
+  float d=q.x-min(q.w,q.y); float e=1.0e-10; return vec3(abs(q.z+(q.w-q.y)/(6.*d+e)),d/(q.x+e),q.x); }
+vec3 baum_hsv2rgb(vec3 c){ vec4 K=vec4(1.,2./3.,1./3.,3.); vec3 p=abs(fract(c.xxx+K.xyz)*6.-K.www); return c.z*mix(K.xxx,clamp(p-K.xxx,0.,1.),c.y); }`;
+const baumVorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number; radius: number }>>();
+function baumVorlage(url: string) {
+  let p = baumVorlagen.get(url);
+  if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => {
+      const szene = g.scene, box = new THREE.Box3().setFromObject(szene); let radius = 0;
+      szene.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.frustumCulled = false; const pos = m.geometry.getAttribute("position");
+        for (let i = 0; i < pos.count; i++) radius = Math.max(radius, Math.hypot(pos.getX(i), pos.getZ(i)));
+        const mat = m.material as THREE.MeshStandardMaterial;
+        mat.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, BAUM_U);
+          sh.vertexShader = "uniform float uZeit, uPhase, uWind, uHoehe;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
+            { float hb = clamp(transformed.y / uHoehe, 0.0, 1.0), b = hb * hb * uWind;            // Wind: oben mehr, unten fest
+              transformed.x += sin(uZeit * 1.6 + uPhase + transformed.y * 0.35) * b; transformed.z += cos(uZeit * 1.1 + uPhase * 1.3) * b * 0.6; }`);
+          sh.fragmentShader = "uniform float uFarbton, uSaett, uHell, uZeit, uPhase, uGrau;\n" + sh.fragmentShader.replace("#include <common>", "#include <common>\n" + HSV_GLSL).replace("#include <map_fragment>", `#include <map_fragment>
+            if (uGrau > 0.) { vec3 hsv = baum_rgb2hsv(diffuseColor.rgb); float g = clamp((0.16 - hsv.y) / 0.1, 0., 1.) * clamp((hsv.z - 0.2) / 0.15, 0., 1.);   // graue Blattunterseiten → Blattgrün
+              diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.155, 0.40, 0.021) * (hsv.z / 0.4), g * uGrau); }
+            vec3 baumBlau = vec3(0.);                                                              // blau leuchtende Stellen (Adern, Kristalle): pulsieren
+            { vec3 hsv = baum_rgb2hsv(diffuseColor.rgb); float b = clamp((hsv.y - 0.45) / 0.2, 0., 1.) * clamp((hsv.z - 0.3) / 0.25, 0., 1.) * clamp(1. - abs(hsv.x * 360. - 210.) / 28., 0., 1.);
+              baumBlau = diffuseColor.rgb * b * (0.35 + 1.25 * (0.5 + 0.5 * sin(uZeit * 2.2 + uPhase))); }
+            { vec3 hsv = baum_rgb2hsv(diffuseColor.rgb); float maske = clamp((hsv.y - 0.25) / 0.2, 0., 1.) * sqrt(clamp(1. - abs(hsv.x * 360. - 95.) / 60., 0., 1.));   // nur Blätter (grün), nicht der Stamm
+              hsv.x = fract(hsv.x + uFarbton / 360. * maske); hsv.y = clamp(hsv.y * (1. + (uSaett - 1.) * maske), 0., 1.); hsv.z = clamp(hsv.z * (1. + (uHell - 1.) * maske), 0., 1.); diffuseColor.rgb = baum_hsv2rgb(hsv); }`).replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n totalEmissiveRadiance += baumBlau;"); };
+        mat.customProgramCacheKey = () => "baum"; });
+      return { szene, hoehe: box.max.y, radius }; });
+    baumVorlagen.set(url, p); }
+  return p;
+}
+export class BaumBild {
+  readonly breite: number; readonly hoehe: number; readonly fussY: number; private gruppe = new THREE.Group(); private aus: { seite: number; oben: number; unten: number }; private h: number; private schatten: THREE.Mesh | null = null;
+  private constructor(v: { szene: THREE.Object3D; hoehe: number; radius: number }, figurHoehePx: number, readonly aufloesung: number, private w: BaumWerte) {
+    const ppm = (figurHoehePx / STEHHOEHE) * aufloesung, r = v.radius + 0.3; this.h = v.hoehe;
+    const inhalt = v.szene.clone(true); inhalt.rotation.y = w.dreh; this.gruppe.add(inhalt);
+    const schatten = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshBasicMaterial({ color: 0x1c2636, map: weichesLicht(), transparent: true, opacity: 0.42, depthWrite: false }));   // weicher Bodenschatten
+    this.schatten = schatten; schatten.rotation.x = -Math.PI / 2; schatten.scale.set(v.radius * 0.62, v.radius * 0.5, 1); schatten.position.set(0.5, 0.02, -0.5); schatten.renderOrder = -1; this.gruppe.add(schatten);
+    this.aus = { seite: r, oben: v.hoehe * Math.cos(NEIGUNG) + r * Math.sin(NEIGUNG) + 0.2, unten: r * Math.sin(NEIGUNG) + 0.2 };
+    this.breite = Math.ceil(2 * this.aus.seite * ppm); this.hoehe = Math.ceil((this.aus.oben + this.aus.unten) * ppm); this.fussY = this.aus.oben / (this.aus.oben + this.aus.unten);
+    this.gruppe.visible = false; gemeinsam().buehne.add(this.gruppe);
+  }
+  static async erstellen(url: string, figurHoehePx: number, aufloesung: number, w: BaumWerte): Promise<BaumBild> { return new BaumBild(await baumVorlage(url), figurHoehePx, aufloesung, w); }
+  /** zeit in Sekunden (für den Wind) */
+  zeichne(zeit: number, ziel: CanvasRenderingContext2D): void {
+    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(), w = this.w, a = this.aus;
+    BAUM_U.uZeit.value = zeit; BAUM_U.uPhase.value = w.phase; BAUM_U.uWind.value = w.wind; BAUM_U.uHoehe.value = this.h; BAUM_U.uFarbton.value = w.farbton; BAUM_U.uSaett.value = w.saett; BAUM_U.uHell.value = w.hell; BAUM_U.uGrau.value = w.grau ?? 0;
+    if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
+    if (k.right !== a.seite || k.top !== a.oben || k.bottom !== -a.unten) { k.left = -a.seite; k.right = a.seite; k.top = a.oben; k.bottom = -a.unten; k.updateProjectionMatrix(); }
+    for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.gruppe;
+    z.render(b, k); this.gruppe.visible = false; ziel.clearRect(0, 0, this.breite, this.hoehe); ziel.drawImage(z.domElement, 0, 0);
+  }
+  entfernen(): void { this.gruppe.removeFromParent(); const sc = this.schatten; if (sc) { sc.geometry.dispose(); (sc.material as THREE.Material).dispose(); } }   // Modell und Textur gehören der Vorlage (geteilt), nur der Schatten ist eigen
+}
+
+(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller, standbild, GeschossBild, BaumBild };

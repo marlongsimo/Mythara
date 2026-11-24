@@ -1,12 +1,14 @@
 """
 World Pipeline – Zierbäume aus Fabrik-Renders (Meshy) und Bildern für die offene Welt: reine Optik, keine Funktion (keine Interaktion).
 
-  python3 realtime/werkzeug/welt/baum_bilder.py <render_0.png> <render_120.png> <render_240.png> <toter_baum.png>
+  python3 realtime/werkzeug/welt/baum_bilder.py <render_0.png> <render_120.png> <render_240.png> <toter_baum_render.png>
 
 - Laubbaum (fabrik/assets/objekt.baum.laub, Renders von fabrik/baum_render.py): die Krone wird je Sorte umgefärbt (nur grüne Bildpunkte, der Stamm bleibt),
   drei Ansichten für unterschiedliche Kronenformen. Die bisherigen Standardbäume (stil_eiche_01/02, stil_linde_01, stil_herbst_01) zeigen jetzt diesen Baum,
   dazu weitere Sorten zum Platzieren (stil_laub_*).
-- Toter Baum (fabrik/assets/objekt.baum.tot): vom schwarzen Hintergrund freigestellt → stil_tot_01.
+- Toter Baum (fabrik/assets/objekt.baum.tot, Meshy „Twisted Sentinel“, Render von fabrik/baum_render.py) → stil_tot_01.
+- Mit 3D-Figuren zeichnet das Spiel alle diese Bäume live in 3D (modell3d: img/objekte3d/baum-laub.glb, baum-tot.glb aus fabrik/baum_export.py);
+  die Bilder hier sind dann nur der Ersatz (bis das 3D-Modul geladen ist, außerhalb des Bildausschnitts, ohne 3D).
 Schreibt img/welt/stil/<kennung>.webp (mit weichem Bodenschatten) und die Einträge in realtime/welt/bibliothek/objekte.json.
 """
 import json, os, sys, colorsys
@@ -15,7 +17,8 @@ from PIL import Image, ImageFilter, ImageDraw
 
 HIER = os.path.dirname(os.path.abspath(__file__)); REALTIME = os.path.normpath(os.path.join(HIER, '..', '..')); WURZEL = os.path.normpath(os.path.join(REALTIME, '..'))
 BIB = os.path.join(REALTIME, 'welt', 'bibliothek', 'objekte.json'); ZIEL = os.path.join(WURZEL, 'img', 'welt', 'stil')
-HOEHE = 370   # Bildhöhe des Baumes in Bildpunkten (wie die bisherigen Stilbäume, ~7,5 Felder)
+HOEHE = 370   # Bildhöhe eines 7 m hohen Baumes in Bildpunkten (Bezug für alle Höhen)
+STANDARD_M = 6.0   # Grundhöhe aller Bäume; das Spiel streut je Standort 5–7 m (welt.ts)
 
 # Sorte: (Ansicht, Farbton-Verschiebung in Grad, Sättigung ×, Helligkeit ×)
 SORTEN = {
@@ -65,17 +68,17 @@ def main():
     renders, tot = sys.argv[1:4], sys.argv[4]; eintraege = []
     ansichten = []
     for r in renders:
-        im = zuschneiden(Image.open(r).convert('RGBA')); f = HOEHE / im.height; ansichten.append(im.resize((round(im.width * f), HOEHE), Image.LANCZOS))
+        hp = round(HOEHE * STANDARD_M / 7); im = zuschneiden(Image.open(r).convert('RGBA')); f = hp / im.height; ansichten.append(im.resize((round(im.width * f), hp), Image.LANCZOS))
     for kennung, (ans, dh, ds, dv, name) in SORTEN.items():
         im = krone_faerben(ansichten[ans], dh, ds, dv); fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width)
-        e = speichern(kennung, im, name, 0.45, "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py")
+        e = speichern(kennung, im, name, 0.4, "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py")
         e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; eintraege.append(e)
-    # toter Baum: Hintergrund schwarz → durchsichtig (weicher Übergang über die hellste Farbe), auf Höhe bringen
-    a = np.array(Image.open(tot).convert('RGB')).astype(np.float32); hell = a.max(-1); alpha = np.clip((hell - 14) / 26, 0, 1)
-    rgb = np.where(alpha[..., None] > 0, a / np.maximum(alpha[..., None], 0.35), a).clip(0, 255)   # Randpixel nicht schwärzlich lassen
-    im = Image.fromarray(np.dstack([rgb, alpha * 255]).astype(np.uint8), 'RGBA'); im = zuschneiden(im); f = (HOEHE + 20) / im.height; im = im.resize((round(im.width * f), HOEHE + 20), Image.LANCZOS)
-    fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.7)
-    e = speichern('stil_tot_01', im, 'Toter Baum', 0.4, "fabrik/assets/objekt.baum.tot (Bildvorlage), freigestellt von werkzeug/welt/baum_bilder.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; eintraege.append(e)
+    for e in eintraege: d = SORTEN[e['id']]; e['modell3d'] = {"url": "img/objekte3d/baum-laub.glb", "farbton": d[1], "saett": d[2], "hell": d[3]}
+    # toter Baum: Render des Meshy-Modells, Krone nicht umgefärbt (er hat keine)
+    hp = round(HOEHE * STANDARD_M / 7); im = zuschneiden(Image.open(tot).convert('RGBA')); f = hp / im.height; im = im.resize((round(im.width * f), hp), Image.LANCZOS)
+    fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
+    e = speichern('stil_tot_01', im, 'Toter Baum', 0.35, "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]
+    e['modell3d'] = {"url": "img/objekte3d/baum-tot.glb", "wind": 0.05}; eintraege.append(e)   # kahle Äste: kaum Wind
     B = json.load(open(BIB)); L = B['objekte']; ids = {e['id'] for e in eintraege}
     VIELFALT = {'stil_eiche_01': ['stil_eiche_01', 'stil_laub_dunkel', 'stil_laub_oliv'], 'stil_eiche_02': ['stil_eiche_02', 'stil_laub_oliv', 'stil_eiche_01'],
                 'stil_linde_01': ['stil_linde_01', 'stil_laub_dunkel', 'stil_eiche_02'], 'stil_herbst_01': ['stil_herbst_01', 'stil_laub_gold', 'stil_laub_rot']}
@@ -85,4 +88,26 @@ def main():
     with open(BIB, 'w') as f: json.dump(B, f, ensure_ascii=False, indent=1); f.write('\n')
     for e in eintraege: print(e['id'], e['groesse'], [float(x) for x in e['anker']], e.get('vielfalt', ''))
 
-if __name__ == '__main__': main()
+def grau_gruen(im):
+    """graue Stellen (Blattunterseiten aus der Meshy-Textur) in Blattgrün – wie im Spiel-Shader (modell3d.grau)"""
+    a = np.array(im).astype(np.float32); rgb = a[..., :3] / 255; mx = rgb.max(-1); mn = rgb.min(-1); s = (mx - mn) / (mx + 1e-6)
+    g = (np.clip((0.16 - s) / 0.1, 0, 1) * np.clip((mx - 0.45) / 0.15, 0, 1))[..., None]; ziel = np.array([110, 170, 40], np.float32) / 255 * (mx[..., None] / 0.67)
+    a[..., :3] = (rgb * (1 - g) + np.clip(ziel, 0, 1) * g) * 255; return Image.fromarray(a.clip(0, 255).astype(np.uint8), 'RGBA')
+
+def einzeln(render, kennung, name, url, hoehe_m='7', grau=''):
+    """ein Baum (Holzfällerei): Ersatzbild aus dem Render (Höhe nach der echten Baumhöhe), Eintrag mit 3D-Modell; grau=grau: graue Stellen grün"""
+    hm = float(hoehe_m); r = round(max(0.3, min(0.6, 0.45 * hm / 7)), 2)   # Stammradius in Feldern
+    im = zuschneiden(Image.open(render).convert('RGBA'))
+    if grau == 'grau': im = grau_gruen(im)
+    if os.path.exists(render + '.json'): f = (HOEHE / 7) / json.load(open(render + '.json'))['px_je_m']   # Maßstab aus dem Render (auch für flache Stümpfe richtig)
+    else: f = round(HOEHE * hm / 7) / im.height                                                            # sonst: Bildhöhe = Baumhöhe
+    im = im.resize((round(im.width * f), round(im.height * f)), Image.LANCZOS)   # 7 m = HOEHE Bildpunkte, wie die Laubbäume
+    fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
+    e = speichern(kennung, im, name, r, "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url, **({"grau": True} if grau == 'grau' else {})}
+    B = json.load(open(BIB)); L = B['objekte']; L[:] = [o for o in L if o['id'] != kennung] + [e]
+    with open(BIB, 'w') as f_: json.dump(B, f_, ensure_ascii=False, indent=1); f_.write('\n')
+    print(kennung, e['groesse'], e['anker'], url)
+
+if __name__ == '__main__':
+    if sys.argv[1:2] == ['--einzeln']: einzeln(*sys.argv[2:8])
+    else: main()

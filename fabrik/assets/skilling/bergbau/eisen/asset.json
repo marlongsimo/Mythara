@@ -1,0 +1,15 @@
+{
+  "id": "bergbau.eisen",
+  "name": "Eisen",
+  "kategorie": "bergbau",
+  "aktuell": "v001",
+  "hoehe_m": 1.4,
+  "status": "Meshy „Mossbound Monolith“; Spieldatei img/objekte3d/skilling/bergbau/eisen.glb (live 3D wie die Bäume, ohne Wind; blaue Adern pulsieren); Weltobjekt berg_eisen_01 (Ersatzbild img/welt/stil/berg_eisen_01.webp); Abbau-Funktion folgt",
+  "herkunft": "Meshy",
+  "leer": {
+    "name": "Eisen (abgebaut)",
+    "spieldatei": "img/objekte3d/skilling/bergbau/eisen-leer.glb",
+    "weltobjekt": "berg_eisen_leer",
+    "hinweis": "Adern abgebaut/leer: fabrik/baum_export.py … adern=leer"
+  }
+}
