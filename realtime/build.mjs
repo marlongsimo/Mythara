@@ -15,6 +15,7 @@ writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").repl
 writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "willkommen.html", readFileSync("client/willkommen.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "start.css", readFileSync("client/start.css", "utf8"));
+writeFileSync(aus + "start-passen.js", readFileSync("client/start-passen.js", "utf8"));
 writeFileSync(aus + "neuigkeiten.json", readFileSync("client/neuigkeiten.json", "utf8"));
 /* Heldeneditor: nach der Registrierung und beim ersten Spielstart ohne Helden */
 await build({ entryPoints: ["client/src/heldeneditor.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "held.js", legalComments: "none" });
