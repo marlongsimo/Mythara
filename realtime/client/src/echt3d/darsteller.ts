@@ -120,6 +120,8 @@ export class Darsteller {
     const neu = this.mixer.clipAction(c); neu.reset(); neu.setLoop(einmal ? THREE.LoopOnce : THREE.LoopRepeat, Infinity); neu.clampWhenFinished = einmal;
     if (this.aktion && this.aktion !== neu) neu.crossFadeFrom(this.aktion, 0.1, false); neu.play(); this.aktion = neu; this.name = name; this.fertig = fertig || null;
   }
+  /** die nächste spiele()-Anweisung beginnt die Bewegung neu, auch wenn es dieselbe ist (Testseite) */
+  neustart(): void { this.name = ""; }
   /** Blickrichtung am Boden (Bogenmaß): 0 = zur Kamera (Süden), π/2 = nach rechts */
   blick(winkel: number): void { this.wurzel.rotation.y = winkel; }
   /** Weiterrechnen und in die Leinwand zeichnen */
