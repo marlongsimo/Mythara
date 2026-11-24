@@ -95,7 +95,8 @@ const dinge = [
   o("stil_linde_01", RING[0] + 0.2, RING[1] - 1.3, { s: 1.05 }), o("dorf_steinring_01", ...RING),
   o("dorf_wehr_01", ...WEHR), ...BRUECKEN.map((b) => o(b.objekt, b.x, b.y)),
   o("dorf_kuerbisse_01", 37.6, 21.8), o("dorf_kuerbisse_01", 31.2, 34), o("dorf_heuballen_01", 22.4, 21.6), o("dorf_heuballen_01", 23.8, 22.3),
-  o("dorf_fass_01", 35.4, 21.3), o("dorf_fass_01", 36.1, 21.9), o("dorf_kiste_01", 25.9, 33.4), o("dorf_fass_01", 56.6, 34.6), o("dorf_holzstapel_01", 22.2, 44.6),
+  /* Bankschalter (24.11.2026): Schalterhäuschen am Nordrand des Platzes, neben dem Kornspeicher */ o("weidenhain_bankschalter_01", 36.5, 19),
+  o("dorf_fass_01", 33.4, 22.4), o("dorf_fass_01", 32.7, 23.0), o("dorf_kiste_01", 25.9, 33.4), o("dorf_fass_01", 56.6, 34.6), o("dorf_holzstapel_01", 22.2, 44.6),
   ...[[34, 23.6], [49.6, 24.6], [34.4, 38.4], [49.6, 38.4], [57.4, 36], [45.4, 14.6], [48.6, 10.6], [70.8, 10.8], [41.6, 49.6], [46.4, 64.4], [94.4, 28], [97.8, 44.4]].map(([x, y]) => o("dorf_laterne_01", x, y)),
   ...[32, 35, 38, 41, 47, 50, 53, 56].map((x) => o("dorf_zaun_01", x, 46.6)),   /* am Ufer des Grabens, vor dem Platz; bei x = 44 die Brücke */
   ...haeuser.map((h) => o(h.objekt, h.x, h.y)) ];
@@ -132,6 +133,7 @@ const spiel = {
     lies("muehle_tuer", MUEHLE[0] - 1.6, MUEHLE[1] + 0.7, "Die Wassermühle am Mühlgraben. Das Rad dreht sich unermüdlich, drinnen mahlt der Stein."),
     lies("haus_tuer", HAUS[0] + 0.9, HAUS[1] + 0.7, "Ein Bauernhaus aus Fachwerk. Hinter den Läden blühen Geranien."),
     lies("feuer", FEUER[0], FEUER[1] + 0.7, "Das Erntefeuer auf dem Dorfplatz. Hier wird gefeiert, wenn das Korn eingebracht ist."),
+    { id: "bankschalter", art: "lesen", x: 36.5, y: 20.4, radius: 1.6, abgleich: "keiner", daten: { text: "Der Bankschalter von Weidenhain. Hinter dem Messinggitter wird bald Gold eingezahlt und abgehoben – dasselbe Konto wie in der Bank der Waldmark.", tat: "bald", knopf: "Bankschalter – öffnet bald" } },
     lies("wehr", WEHR[0] - 2.8, WEHR[1] - 1.4, "Das Wehr staut den Mühlgraben. Durch drei Überläufe stürzt das Wasser schäumend hinab."),
     lies("linde", RING[0], RING[1] + 0.8, "Die alte Linde von Weidenhain. Zwischen ihren Wurzeln blühen Wildblumen.")],
   ausgaenge: [], kollision: { sperren: [], freigeben: [...BRUECKEN.map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })), { art: "rechteck", x0: WEHR[0] - 3.4, y0: WEHR[1] - 1.5, x1: WEHR[0] + 3.4, y1: WEHR[1] - 0.2 }] } };   /* über die Wehrkrone kann man gehen */

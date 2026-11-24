@@ -8640,6 +8640,244 @@
     116
    ],
    "herkunft": "Form: Kenney friedhof kit (CC0, werkzeug/welt/kenney/friedhof/License.txt); Texturen selbst gerechnet (gebaeude.tex) – frei verwendbar"
+  },
+  {
+   "id": "weidenhain_bankschalter_01",
+   "name": "Bankschalter",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/weidenhain_bankschalter_01/gesamt.webp",
+   "groesse": [
+    342,
+    458
+   ],
+   "anker": [
+    0.3839,
+    0.8044
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -1.5,
+      "x1": 1.5,
+      "y0": -2,
+      "y1": 0,
+      "voll": true
+     }
+    ],
+    "tueren": []
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bankschalter_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      48,
+      202
+     ]
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bankschalter_01/haupt_seite.webp",
+     "tiefe": -1.97,
+     "rolle": "seite",
+     "versatz": [
+      198,
+      132
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bankschalter_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      54,
+      224
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/weidenhain_bankschalter_01/haupt_dach.webp",
+     "tiefe": 0.25,
+     "rolle": "dach",
+     "versatz": [
+      37,
+      129
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [],
+   "tueren": [],
+   "sichtbar": [
+    40,
+    132,
+    253,
+    377
+   ],
+   "interaktion": null,
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "waldmark_bank_01",
+   "name": "Bank der Waldmark",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/gesamt.webp",
+   "groesse": [
+    538,
+    669
+   ],
+   "anker": [
+    0.3837,
+    0.8628
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -3,
+      "x1": 3,
+      "y0": -5,
+      "y1": 0,
+      "voll": false
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.0,
+      "x1": 1.0,
+      "y": 0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      51,
+      250
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/haupt_innen.webp",
+     "tiefe": -4.98,
+     "rolle": "innen",
+     "versatz": [
+      58,
+      160
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/haupt_seite.webp",
+     "tiefe": -4.97,
+     "rolle": "seite",
+     "versatz": [
+      345,
+      153
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      58,
+      389
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      147,
+      458
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      147,
+      424
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/haupt_dach.webp",
+     "tiefe": 0.3,
+     "rolle": "dach",
+     "versatz": [
+      38,
+      150
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_bank_01/haupt_vordach.webp",
+     "tiefe": 0.9,
+     "rolle": "vordach",
+     "versatz": [
+      120,
+      422
+     ],
+     "koerper": 0
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.8,
+     "x1": 2.8,
+     "y0": -4.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    41,
+    153,
+    449,
+    612
+   ],
+   "interaktion": {
+    "art": "lesen",
+    "dx": 0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   }
  ]
 }
