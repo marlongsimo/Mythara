@@ -177,7 +177,8 @@ export class Welt3D {
   dinge(s: Stueck) {
     const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
     for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.hoehe(x, y);
-      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.hoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
+      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.hoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh && !((o as THREE.Mesh).material as THREE.Material & { isMeshBasicMaterial?: boolean }).isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b);
+        for (const p of b.feuer) { s.feuer.push(p); const gl = new THREE.Sprite(GLUT); gl.position.copy(p); gl.scale.setScalar(2.6); this.szene.add(gl); s.obj.push(gl); } continue; }
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
@@ -328,11 +329,12 @@ export class Welt3D {
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
       for (const d of b.daecher) d.visible = !drin;
       for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
-      for (const f of b.drehen) f.rotation.z -= dt * 0.6; }
+      for (const f of b.drehen) f.rotation.z -= dt * 0.6;
+      for (const [i, f] of b.flackern.entries()) { const t = performance.now() / 1000 + i * 1.7; f.scale.set(1 + 0.08 * Math.sin(t * 7), 0.8 + 0.28 * Math.abs(Math.sin(t * 9.3) * Math.sin(t * 4.1 + 1)), 1 + 0.08 * Math.cos(t * 6)); } }
     this.marke.rotation.z += dt;
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));
-      const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
+      const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || (!unten && (p.x - H.x) ** 2 + (p.z - H.z) ** 2 > 144)) { l.intensity = 0; return; } l.position.copy(p); l.intensity = (unten ? 22 : 10) * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
     /* Hinweise: Türen, Leitern, Lesestellen leuchten golden, wenn man nahe ist */
     { const t = performance.now() / 1000; for (const h of this.hinweise) { const d = Math.hypot(h.x - H.x, h.y - H.z), an = d < h.r + 2.6; h.g.visible = an;
         if (an) { const k = d < h.r ? 1 : 1 - (d - h.r) / 2.6; h.g.scale.setScalar(0.9 + 0.08 * Math.sin(t * 3)); for (const c of h.g.children) { const m = (c as THREE.Mesh).material as THREE.Material & { opacity: number }; m.opacity = (c.userData.deck as number) * k; } h.g.children[2].position.y = h.g.userData.y + 0.15 * Math.sin(t * 2.4); } } }
