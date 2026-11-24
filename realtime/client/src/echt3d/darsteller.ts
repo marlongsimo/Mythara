@@ -253,4 +253,49 @@ export async function standbild(ziel: HTMLCanvasElement, o: StandbildOpt): Promi
   sbZeichner.setSize(W, H, false); sbZeichner.render(sbBuehne!, cam); const x = ziel.getContext("2d")!; x.clearRect(0, 0, W, H); x.drawImage(sbZeichner.domElement, 0, 0, W, H);
   w.visible = false; if (alt) alt.add(w);
 }
-(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller, standbild };
+/* ---------- Geschosse in 3D: Pfeil, Bolzen, Zauber- und Feuerkugel ----------
+ * Jedes Geschoss ist ein kleines Modell (entlang +x gebaut) und wird wie eine Figur in sein eigenes kleines Bild gerendert –
+ * mit derselben Kamera und demselben Licht, also im selben Blickwinkel wie die Figuren. Die Szene (welt/geschosse.ts) bewegt das Bild. */
+export type GeschossArt3D = "pfeil" | "bolzen" | "zauber" | "feuer";
+export class GeschossBild {
+  readonly breite: number; readonly hoehe: number; private gruppe = new THREE.Group(); private dreh = new THREE.Group(); private t = 0; private halb: number; private kugeln: THREE.Object3D[] = [];
+  constructor(readonly art: GeschossArt3D, figurHoehePx: number, readonly aufloesung: number) {
+    const ppm = (figurHoehePx / STEHHOEHE) * aufloesung, zauber = art === "zauber" || art === "feuer"; this.halb = art === "pfeil" ? 0.42 : art === "bolzen" ? 0.26 : 0.3;
+    this.breite = this.hoehe = Math.ceil(2 * this.halb * ppm); this.gruppe.add(this.dreh); this.gruppe.visible = false;
+    const std = (farbe: number, metall = 0, rau = 0.7) => new THREE.MeshStandardMaterial({ color: farbe, metalness: metall, roughness: rau });
+    const stab = (r: number, l: number, m: THREE.Material, x: number) => { const g = new THREE.CylinderGeometry(r, r, l, 8); g.rotateZ(-Math.PI / 2); const o = new THREE.Mesh(g, m); o.position.x = x; return o; };
+    const spitze = (r: number, l: number, m: THREE.Material, x: number) => { const g = new THREE.ConeGeometry(r, l, 10); g.rotateZ(-Math.PI / 2); const o = new THREE.Mesh(g, m); o.position.x = x; return o; };
+    const feder = (l: number, h: number, m: THREE.Material, x: number, w: number) => { const g = new THREE.BufferGeometry(), v = new Float32Array([-l / 2, 0, 0, l / 2, 0, 0, -l / 2, h, 0]);   // dreieckige Fahne, nach hinten breiter
+      g.setAttribute("position", new THREE.BufferAttribute(v, 3)); g.computeVertexNormals(); const o = new THREE.Mesh(g, m); o.position.x = x; o.rotation.x = w; return o; };
+    const d = this.dreh;
+    if (art === "pfeil") { const holz = std(0x8a5a2b), eisen = std(0xd4dbe3, 0.85, 0.3), rot = new THREE.MeshStandardMaterial({ color: 0xb8372b, roughness: 0.8, side: THREE.DoubleSide }), weiss = new THREE.MeshStandardMaterial({ color: 0xeee6d2, roughness: 0.8, side: THREE.DoubleSide });
+      d.add(stab(0.009, 0.62, holz, -0.02), spitze(0.024, 0.09, eisen, 0.33), stab(0.012, 0.03, std(0x3a2a1a), -0.34));
+      for (let i = 0; i < 3; i++) d.add(feder(0.13, 0.04, i ? weiss : rot, -0.25, (i * 2 * Math.PI) / 3)); }
+    else if (art === "bolzen") { const holz = std(0x4a3322), eisen = std(0x9aa3ad, 0.9, 0.35), leder = new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.9, side: THREE.DoubleSide });
+      d.add(stab(0.014, 0.3, holz, -0.02), spitze(0.032, 0.08, eisen, 0.17), stab(0.02, 0.02, eisen, 0.12));
+      for (let i = 0; i < 2; i++) d.add(feder(0.08, 0.035, leder, -0.13, i * Math.PI)); }
+    else { const [a, b] = art === "feuer" ? [0xff6a1a, 0xffd27a] : [0x6aa8ff, 0xcfe6ff], add = (f: number, o: number) => new THREE.MeshBasicMaterial({ color: f, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false });
+      d.add(new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })));   // weißer Kern
+      d.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.075, 1), add(b, 0.55)));                                           // facettierte Hülle, dreht sich
+      const hof = new THREE.Sprite(new THREE.SpriteMaterial({ map: weichesLicht(), color: a, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })); hof.scale.setScalar(0.42); this.gruppe.add(hof);
+      for (let i = 0; i < 3; i++) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), add(b, 1)); this.kugeln.push(k); this.gruppe.add(k); }   // kreisende Funken
+      if (zauber) this.dreh.scale.setScalar(art === "feuer" ? 1.25 : 1); }
+    gemeinsam().buehne.add(this.gruppe);
+  }
+  /** Flugrichtung am Bildschirm (x nach rechts, y nach unten): das Modell zeigt in diese Richtung am Boden */
+  richte(sx: number, sy: number): void { if (Math.hypot(sx, sy) < 1e-4 || this.kugeln.length) return;
+    const r = new THREE.Vector3(sx, 0, sy / Math.sin(NEIGUNG)).normalize(); this.gruppe.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), r); }
+  zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
+    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.t += dt; const t = this.t;
+    if (this.kugeln.length) { this.dreh.rotation.set(t * 3.1, t * 4.3, 0); const s = 1 + 0.12 * Math.sin(t * 30); this.dreh.scale.setScalar((this.art === "feuer" ? 1.25 : 1) * s);
+      this.kugeln.forEach((o, i) => { const w = t * 9 + (i * 2 * Math.PI) / 3; o.position.set(Math.cos(w) * 0.12, Math.sin(w * 1.4) * 0.05, Math.sin(w) * 0.12); }); }
+    else this.dreh.rotation.x = t * 14;                                                               // Pfeil und Bolzen drehen sich um die eigene Achse
+    if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
+    const h = this.halb; if (k.right !== h || k.top !== h || k.bottom !== -h) { k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix(); }
+    for (const c of b.children) if (c.type === "Group" || c.type === "Object3D") c.visible = c === this.gruppe;
+    z.render(b, k); this.gruppe.visible = false; ziel.clearRect(0, 0, this.breite, this.hoehe); ziel.drawImage(z.domElement, 0, 0);
+  }
+  entfernen(): void { this.gruppe.removeFromParent(); this.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (m.geometry) m.geometry.dispose(); const mt = (m as THREE.Mesh).material as THREE.Material | undefined; if (mt) mt.dispose(); }); }
+}
+
+(window as unknown as Record<string, unknown>).MytharaEcht3D = { Darsteller, standbild, GeschossBild };
