@@ -103,5 +103,6 @@ export const NAMEN_AUS_DATENBLAETTERN: Record<string, string> = {
  "sternenszepter_episch": "Epischer Zauberstab",
  "sternenszepter_gewoehnlich": "Einfacher Zauberstab",
  "sternenszepter_legendaer": "Legendärer Zauberstab",
- "sternenszepter_mythisch": "Mythischer Zauberstab"
+ "sternenszepter_mythisch": "Mythischer Zauberstab",
+ "waldsaebel": "Gesegneter Waldsäbel"
 };

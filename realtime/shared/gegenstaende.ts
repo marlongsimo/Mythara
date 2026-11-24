@@ -84,6 +84,8 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
   eidschwert: { id: "eidschwert", name: "Seltenes Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
     waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, /* vorläufig wie das Startschwert – Werte folgen */ text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
+  waldsaebel: { id: "waldsaebel", name: "Gesegneter Waldsäbel", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.waldsaebel"],
+    waffe: { art: "nah", ticks: 3, reich: 1.5, geschick: 5, staerke: 5 }, /* vorläufig wie das Startschwert – Werte folgen */ text: "Eine geschwungene Klinge, um deren Griff sich lebendige Dornenranken winden – vom Segen des Waldes durchdrungen." },
   eiddolch: { id: "eiddolch", name: "Seltener Dolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
     waffe: { art: "nah", ticks: 2, reich: 1.5, geschick: 4, staerke: 3 }, /* vorläufig: Kurzwaffe, 2 Ticks – Werte folgen */ text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
   eidzweihaender: { id: "eidzweihaender", name: "Seltener Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],

@@ -34,8 +34,9 @@ for (const n of namen) {
 }
 /* Nur die Objekte ausliefern, die irgendeine Region benutzt – und nur, was die Darstellung braucht */
 const benutzt = new Set(Object.values(index.regionen).flatMap((r) => r.benutzt)); index.objekte = {};
+for (const o of bib.objekte.objekte) if (benutzt.has(o.id) && o.vielfalt) for (const v of o.vielfalt) benutzt.add(v);   /* Farbvarianten (vielfalt) mit ausliefern */
 for (const o of bib.objekte.objekte) if (benutzt.has(o.id)) index.objekte[o.id] = { bild: o.bild, groesse: o.groesse, anker: o.anker, massstab: o.massstab, tiefe: o.tiefe,
-  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}),
+  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}), ...(o.vielfalt ? { vielfalt: o.vielfalt } : {}),
   ...(o.ebenen ? { ebenen: o.ebenen, raum: o.raum || [], tueren: o.tueren || [] } : {}) };
 index.stand = Date.now().toString(36);   /* Kennung dieses Baus: das Spiel hängt sie an die Dateien der Welt (gegen veraltete Bilder im Browser) */
 writeFileSync(indexPfad, JSON.stringify(index));

@@ -59,7 +59,13 @@ const ZEIGEN = 0.3, VORHOLEN = 1.0, BEHALTEN = 1.5;
 /** Halbe Breite des Helden für die Kollision (Rechenfelder), wie in der Simulation */
 const RADIUS = 0.3;
 
-type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende" | "ebenen" | "raum" | "tueren">;
+/** Nur Optik: ein Objekt mit Farbvarianten (vielfalt) zeigt je Standort fest eine davon – derselbe Standort sieht immer gleich aus */
+function vielfalt(p: Platzierung, o: Anzeige, alle: Record<string, Anzeige>): Platzierung {
+  const v = o.vielfalt; if (!v || v.length < 2 || p.zustand) return p;
+  let h = Math.imul(Math.round(p.x * 16) | 0, 0x27d4eb2d) ^ Math.imul(Math.round(p.y * 16) | 0, 0x165667b1); h = Math.imul(h ^ (h >>> 15), 0x85ebca6b); h ^= h >>> 13;
+  const id = v[(h >>> 0) % v.length]; return alle[id] ? { ...p, objekt: id } : p;
+}
+type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende" | "ebenen" | "raum" | "tueren" | "vielfalt">;
 /** Ein räumliches Gebäude im Bild: seine Ebenen nach Rolle, Innenräume und Türpunkte in Weltkoordinaten (Rechenfelder) */
 interface Bau { teile: { bild: Phaser.GameObjects.Image; rolle: string; tuer?: number; koerper?: number }[]; raum: { x0: number; x1: number; y0: number; y1: number; koerper: number }[]; tueren: { x: number; y: number }[] }
 interface RegionKopf { region: Region; start: number[][]; spawnzonen: Spawnzone[]; ausgaenge: Ausgang[]; benutzt: string[] }
@@ -209,7 +215,7 @@ export class Welt extends Phaser.Scene {
     /* einen Bildpunkt größer als der Chunk: So bleibt beim Zoomen kein Haarriss zwischen Nachbarn */
     st.boden = this.add.image(st.cx * CHUNK_PX, st.cy * CHUNK_PX, key).setOrigin(0, 0).setDisplaySize(CHUNK_PX + 1, CHUNK_PX + 1).setDepth(-1e6);
     st.stand = "aktiv"; this.mess.gezeigt++;
-    for (const p of d.objekte) { const o = this.index.objekte[p.objekt]; if (!o) continue; if (o.ebenen) { this.bau(st, p, o); continue; } const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
+    for (const p0 of d.objekte) { const o0 = this.index.objekte[p0.objekt]; if (!o0) continue; const p = vielfalt(p0, o0, this.index.objekte), o = this.index.objekte[p.objekt] || o0; if (o.ebenen) { this.bau(st, p, o); continue; } const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
       this.mitBild("obj-" + p.objekt + (zustand ? "-" + p.zustand : ""), weltBild(bild), () => { if (st.stand === "aktiv") this.objekt(st, p, o, "obj-" + p.objekt + (zustand ? "-" + p.zustand : "")); }); }
     for (const f of d.figuren) this.mitBild("leute-" + f.figur, `${WELT.bild}img/echtzeit/${f.figur}.webp`, () => { if (st.stand === "aktiv") this.person(st, f); });
     if (TEST) this.testChunk(st);

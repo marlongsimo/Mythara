@@ -238,7 +238,8 @@ def main():
         args = [a for a in args if a != vorschau]
     bib = json.load(open(BIB, encoding='utf8')); bilder = []
     os.makedirs(ZIEL, exist_ok=True)
-    for kennung in args or list(BAEUME):
+    ERSETZT = {'stil_eiche_01', 'stil_eiche_02', 'stil_linde_01', 'stil_herbst_01'}   # zeigen jetzt den Meshy-Laubbaum (werkzeug/welt/baum_bilder.py) – nur auf ausdrücklichen Wunsch überschreiben
+    for kennung in args or [k for k in BAEUME if k not in ERSETZT]:
         P = BAEUME[kennung]; B, anker, koll = ARTEN[P['art']](P, np.random.default_rng(P['saat']))
         im = B.fertig(kontur=P['art'] != 'licht'); im.save(os.path.join(ZIEL, kennung + '.webp'), quality=90, method=6); bilder.append(im)
         eintrag = {'id': kennung, 'name': f"Stilbaum ({P['art']})", 'kategorie': 'sonderort' if P['art'] == 'licht' else 'bewuchs', 'bild': f'img/welt/stil/{kennung}.webp', 'groesse': [im.width, im.height],

@@ -1,0 +1,8 @@
+{
+  "id": "objekt.baum.tot",
+  "name": "Toter Baum",
+  "kategorie": "objekt",
+  "aktuell": "v001",
+  "status": "Bildvorlage, freigestellt mit realtime/werkzeug/welt/baum_bilder.py → Weltobjekt stil_tot_01; reine Optik",
+  "herkunft": "Bildvorlage (Nutzer)"
+}

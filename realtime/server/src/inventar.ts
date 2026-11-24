@@ -11,13 +11,19 @@
  */
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
 import { Startwaffe } from "../../shared/aussehen";
+import { BANK_PLAETZE, BANK_MAX } from "../../shared/bank";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][] }
 const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}) });
+/** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
+function bankPruefen(roh: unknown): [string, number][] { const b: [string, number][] = []; if (!Array.isArray(roh)) return b;
+  for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
+    const da = b.find((x) => x[0] === g); if (da) da[1] = Math.min(BANK_MAX, da[1] + n); else if (b.length < BANK_PLAETZE) b.push([g, Math.min(BANK_MAX, n)]); }
+  return b; }
 
 /** Inventar aus unbekannter Quelle prüfen: nur bekannte Gegenstände, jeder auf seinem Platz, höchstens RUCKSACK_PLAETZE im Rucksack */
 export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
@@ -27,6 +33,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   const rucksack: Fach[] = []; for (const f of o.rucksack) { const g = typeof f === "string" ? f : f && typeof f === "object" ? String((f as { g?: unknown }).g) : "", G = GEGENSTAENDE[g]; if (!G) continue;
     if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
   const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
+  { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank; }
   if ((inv.v ?? 1) < INV_STAND) { /* Startausrüstung erweitert (Rüstung zu Bogen und Stab): einmal nachreichen, wenn der Platz frei ist und sie nirgends liegt */
     for (const [platz, g] of Object.entries(startAusruestung(waffe)) as [Platz, string][]) if (!inv.angelegt[platz] && !inv.rucksack.some((f) => fachG(f) === g)) inv.angelegt[platz] = g;
     inv.v = INV_STAND; }
@@ -69,11 +76,14 @@ export function ablegen(sb: Sb, nutzer: string, platz: string): string | null { 
 export function herausnehmen(sb: Sb, nutzer: string, i: number): { g: string; n: number } | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null;
   e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return { g: fachG(f), n: fachN(f) }; }
 /** In den Rucksack legen, so viele wie Platz ist – Stapelbares auf vorhandene Stapel, sonst je Gegenstand ein Fach. Zurück: wie viele genommen wurden */
-export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number, melden = true): number { const e = je.get(nutzer), G = GEGENSTAENDE[g]; if (!e || !G || n < 1) return 0; let rest = n;
+/** Einlegen ohne Meldung (Stapel auffüllen, dann freie Fächer). Zurück: wie viele hineinpassten */
+function einlegen(e: Eintrag, g: string, n: number): number { const G = GEGENSTAENDE[g]; if (!G || n < 1) return 0; let rest = n;
   if (G.stapel) { for (const f of e.inv.rucksack) if (typeof f !== "string" && f.g === g && f.n < G.stapel) { const k = Math.min(rest, G.stapel - f.n); f.n += k; rest -= k; if (!rest) break; }
     while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { const k = Math.min(rest, G.stapel); e.inv.rucksack.push({ g, n: k }); rest -= k; } }
   else while (rest > 0 && e.inv.rucksack.length < RUCKSACK_PLAETZE) { e.inv.rucksack.push(g); rest--; }
-  const k = n - rest; if (k && melden) geaendert(sb, nutzer, e); if (k) for (const f of AUFGENOMMEN) f(nutzer, g, k); return k; }
+  return n - rest; }
+export function aufnehmen(sb: Sb, nutzer: string, g: string, n: number, melden = true): number { const e = je.get(nutzer); if (!e || !GEGENSTAENDE[g] || n < 1) return 0;
+  const k = einlegen(e, g, n); if (k && melden) geaendert(sb, nutzer, e); if (k) for (const f of AUFGENOMMEN) f(nutzer, g, k); return k; }
 /** Bedingungen für Drop-Rolls (config.ts MonsterDef.drops nur), eingetragen von den Quests: „einsteigerquest“ – Quest 01 läuft (quests.ts) */
 export const BEDINGUNGEN = new Map<string, (nutzer: string) => boolean>();
 export function bedingungErfuellt(nutzer: string, name: string): boolean { const f = BEDINGUNGEN.get(name); return Boolean(f && nutzer && f(nutzer)); }
@@ -102,6 +112,30 @@ export function trankNehmen(sb: Sb, nutzer: string, i: number): string | null { 
   if (!G || !G.trank) return null; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return G.trank; }
 /** Einen genommenen Trank zurücklegen (das Trinken ging nicht) */
 export function trankZurueck(sb: Sb, nutzer: string, g: string): void { aufnehmen(sb, nutzer, g, 1); }
+
+/* ───────── Bank (shared/bank.ts) – Nähe zum Schalter prüft welt.ts ───────── */
+const bankVon = (e: Eintrag): [string, number][] => (e.inv.bank = e.inv.bank || []);
+/** Einzahlen: n Stück von g aus dem Rucksack (alle Fächer, hinten zuerst) in die Bank; n ≤ 0 = alle. Zurück: Fehlertext oder null */
+export function bankEinzahlen(sb: Sb, nutzer: string, g: string, n: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  const r = einzahlen(e, g, n); if (r === null) geaendert(sb, nutzer, e); return r; }
+function einzahlen(e: Eintrag, g: string, n: number): string | null { const hat = e.inv.rucksack.reduce((s, f) => s + (fachG(f) === g ? fachN(f) : 0), 0); if (!hat) return "Das hast du nicht im Rucksack.";
+  const B = bankVon(e), fach = B.find((b) => b[0] === g); if (!fach && B.length >= BANK_PLAETZE) return "Deine Bank ist voll.";
+  const menge = Math.min(n > 0 ? n : hat, hat, BANK_MAX - (fach ? fach[1] : 0)); if (menge <= 0) return "Davon passt nichts mehr in die Bank.";
+  let rest = menge; for (let i = e.inv.rucksack.length - 1; i >= 0 && rest > 0; i--) { const f = e.inv.rucksack[i]; if (fachG(f) !== g) continue; const k = Math.min(fachN(f), rest); rest -= k;
+    if (k >= fachN(f)) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n -= k; }
+  if (fach) fach[1] += menge; else B.push([g, menge]); return null; }
+/** Abheben: n Stück von g aus der Bank in den Rucksack (n ≤ 0 = alle, so viele passen). Zurück: Fehler-/Hinweistext oder null */
+export function bankAbheben(sb: Sb, nutzer: string, g: string, n: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  const B = bankVon(e), i = B.findIndex((b) => b[0] === g); if (i < 0) return "Das liegt nicht in deiner Bank.";
+  const will = Math.min(n > 0 ? n : B[i][1], B[i][1]), k = einlegen(e, g, will); if (!k) return "Dein Rucksack ist voll.";
+  B[i][1] -= k; if (B[i][1] <= 0) B.splice(i, 1); geaendert(sb, nutzer, e); return k < will ? "Nicht alles passte in den Rucksack." : null; }
+/** Alles einzahlen: den ganzen Rucksack oder die ganze angelegte Ausrüstung. Zurück: Fehler-/Hinweistext oder null */
+export function bankAlles(sb: Sb, nutzer: string, was: "rucksack" | "ausruestung"): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; let fehler: string | null = null, etwas = false;
+  if (was === "rucksack") { for (const g of [...new Set(e.inv.rucksack.map(fachG))]) { const r = einzahlen(e, g, 0); if (r) fehler = r; else etwas = true; } if (!etwas && !fehler) return "Dein Rucksack ist leer."; }
+  else { for (const { id } of PLAETZE) { const g = e.inv.angelegt[id]; if (!g) continue; const B = bankVon(e), fach = B.find((b) => b[0] === g);
+      if (!fach && B.length >= BANK_PLAETZE) { fehler = "Deine Bank ist voll."; continue; } if (fach) fach[1] = Math.min(BANK_MAX, fach[1] + 1); else B.push([g, 1]); delete e.inv.angelegt[id]; etwas = true; }
+    if (!etwas && !fehler) return "Du trägst nichts, was man einzahlen könnte."; }
+  if (etwas) geaendert(sb, nutzer, e); return fehler; }
 
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }

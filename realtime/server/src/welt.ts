@@ -16,7 +16,8 @@ import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, dingTat, mooshockerSehen } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
-import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankAbheben, bankAlles } from "./inventar";
+import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
 import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG } from "../../shared/laeden";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
@@ -65,7 +66,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; laden?: string; g?: string; anName?: string; n?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; laden?: string; g?: string; anName?: string; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -124,6 +125,15 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
       else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
+    else if (e.t === "bank") { /* Bank (shared/bank.ts): nur mit Konto, nur nah an einem Schalter oder Bankmitarbeiter; Mengen prüft inventar.ts */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Eine Bank gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
+      let fehler: string | null = null; const g = typeof e.g === "string" ? e.g : "", n = Number.isInteger(e.menge) && (e.menge as number) >= 0 && (e.menge as number) <= BANK_MAX ? (e.menge as number) : -1; /* 0 = alle */
+      if (s.wx === undefined || s.wy === undefined || !nahAnBank(s.ort, s.wx, s.wy)) fehler = "Geh näher an einen Bankschalter.";
+      else if (e.tat === "ein" && g && n >= 0) fehler = bankEinzahlen(H.sb, s.nutzer, g, n);
+      else if (e.tat === "ab" && g && n >= 0) fehler = bankAbheben(H.sb, s.nutzer, g, n);
+      else if (e.tat === "alles" && (e.was === "rucksack" || e.was === "ausruestung")) fehler = bankAlles(H.sb, s.nutzer, e.was);
+      else fehler = "Das versteht die Bank nicht.";
+      if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }
     else if (e.t === "aufheben") { if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Aufheben brauchst du ein Konto.", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle beim Aufheben (die letzte „pos“ kann einen Schritt alt sein) */
       const ids = Array.isArray(e.ids) ? e.ids.filter((i) => Number.isInteger(i)).slice(0, 50) : Number.isInteger(e.id) ? [e.id as number] : []; if (!ids.length) return; /* „Alles aufheben“: mehrere auf einmal */

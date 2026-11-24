@@ -788,16 +788,16 @@
   },
   {
    "id": "stil_eiche_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (sattgrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_01.webp",
    "groesse": [
-    332,
-    363
+    371,
+    409
    ],
    "anker": [
-    0.5,
-    0.9559
+    0.5162,
+    0.9071
    ],
    "massstab": 1,
    "kollision": {
@@ -808,20 +808,25 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "vielfalt": [
+    "stil_eiche_01",
+    "stil_laub_dunkel",
+    "stil_laub_oliv"
+   ]
   },
   {
    "id": "stil_eiche_02",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (hellgrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_02.webp",
    "groesse": [
-    298,
-    322
+    371,
+    409
    ],
    "anker": [
-    0.5,
-    0.9503
+    0.5162,
+    0.9071
    ],
    "massstab": 1,
    "kollision": {
@@ -832,20 +837,25 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "vielfalt": [
+    "stil_eiche_02",
+    "stil_laub_oliv",
+    "stil_eiche_01"
+   ]
   },
   {
    "id": "stil_linde_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (blaugrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_linde_01.webp",
    "groesse": [
-    377,
-    428
+    371,
+    409
    ],
    "anker": [
-    0.5,
-    0.9626
+    0.5162,
+    0.9071
    ],
    "massstab": 1,
    "kollision": {
@@ -856,20 +866,25 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "vielfalt": [
+    "stil_linde_01",
+    "stil_laub_dunkel",
+    "stil_eiche_02"
+   ]
   },
   {
    "id": "stil_herbst_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (herbstlich orange)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_herbst_01.webp",
    "groesse": [
-    298,
-    335
+    371,
+    409
    ],
    "anker": [
-    0.5,
-    0.9522
+    0.5162,
+    0.9071
    ],
    "massstab": 1,
    "kollision": {
@@ -880,7 +895,12 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "vielfalt": [
+    "stil_herbst_01",
+    "stil_laub_gold",
+    "stil_laub_rot"
+   ]
   },
   {
    "id": "stil_tanne_01",
@@ -8878,6 +8898,126 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "stil_laub_oliv",
+   "name": "Laubbaum (oliv)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_oliv.webp",
+   "groesse": [
+    371,
+    409
+   ],
+   "anker": [
+    0.5162,
+    0.9071
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+  },
+  {
+   "id": "stil_laub_gold",
+   "name": "Laubbaum (goldgelb)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_gold.webp",
+   "groesse": [
+    371,
+    409
+   ],
+   "anker": [
+    0.5162,
+    0.9071
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+  },
+  {
+   "id": "stil_laub_rot",
+   "name": "Laubbaum (rotbraun)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_rot.webp",
+   "groesse": [
+    371,
+    409
+   ],
+   "anker": [
+    0.5162,
+    0.9071
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+  },
+  {
+   "id": "stil_laub_dunkel",
+   "name": "Laubbaum (dunkel)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_dunkel.webp",
+   "groesse": [
+    371,
+    409
+   ],
+   "anker": [
+    0.5162,
+    0.9071
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py"
+  },
+  {
+   "id": "stil_tot_01",
+   "name": "Toter Baum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_tot_01.webp",
+   "groesse": [
+    360,
+    417
+   ],
+   "anker": [
+    0.4597,
+    0.9376
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.tot (Bildvorlage), freigestellt von werkzeug/welt/baum_bilder.py"
   }
  ]
 }

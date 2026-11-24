@@ -106,6 +106,8 @@ export interface ObjektDef {
   zustaende?: Record<string, { bild: string }>;
   /** Darf der Generator das Objekt spiegeln? */
   spiegelbar?: boolean;
+  /** Nur Optik: das Spiel wählt je Standort fest eine dieser Kennungen (z. B. Kronenfarben eines Baumes) – gleiche Größe und Kollision wie dieses Objekt */
+  vielfalt?: string[];
   /** Herkunft und Lizenz */
   herkunft: string;
   /** Räumliches Gebäude (Standard, werkzeug/welt/gebaeude.py): die Ebenen; `bild` ist dann nur das Gesamtbild für Katalog und Vorschau */
