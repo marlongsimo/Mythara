@@ -57,6 +57,7 @@ try {
   const liste = await anna.evaluate(() => window.EZW.welt3d.berg.liste);
   check(liste.length === 17, `Erzadern bekannt: ${liste.length}`);
   check(liste.filter((b) => b.geladen && /^(kupfer_[1-3]|eisen_[12])$/.test(b.id)).length === 5, "Die Adern der Senke sind geladen: " + liste.filter((b) => b.geladen).map((b) => b.id).join(", "));
+  { const sy = await anna.evaluate(() => window.EZW.welt3d.symboleNah(40).map((q) => q.s)); check(sy.includes("mine") && sy.includes("waffenhaendler"), "Minikarte: Symbole in der Nähe (Mine der Senke, Waffenhändler am Markt …): " + sy.join(", ")); }
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "berg-senke.png" });
   const st = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6441.5, 6475.5); return s && s.text; });
   check(st === "Kupferader abbauen", "An der Kupferader: „Kupferader abbauen“ (" + st + ")");
