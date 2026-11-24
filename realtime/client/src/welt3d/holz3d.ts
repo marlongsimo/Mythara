@@ -83,8 +83,8 @@ export class HolzWelt {
     for (const a of this.alle.values()) { const nah = Math.hypot(a.b.x - o.x, a.b.y - o.y) < 55; a.gruppe.visible = nah; if (!nah) continue;
       if (!a.laedt) void this.laden(a); a.gruppe.position.set(a.b.x, M.hoehe(a.b.x, a.b.y), a.b.y); a.u.uZeit.value = this.zeit;
       a.u.uKern.value = this.kern && this.kern.id === a.b.id ? 0.6 + 0.4 * Math.sin(jetzt / 70) : 0;
-      /* Held unter der Krone: der Baum wird halb durchsichtig, damit man sich und das Beil sieht */
-      if (a.mats && a.mats.length) { const ziel = Math.hypot(a.b.x - o.x, a.b.y - o.y) < 3.4 ? 0.38 : 1; a.deck = (a.deck ?? 1) + (ziel - (a.deck ?? 1)) * Math.min(1, dt * 6);
+      /* Held unter der Krone: der Baum wird zu 80 % durchsichtig, damit man sich und das Beil sieht */
+      if (a.mats && a.mats.length) { const ziel = Math.hypot(a.b.x - o.x, a.b.y - o.y) < 3.4 ? 0.2 : 1; a.deck = (a.deck ?? 1) + (ziel - (a.deck ?? 1)) * Math.min(1, dt * 6);
         const durch = a.deck < 0.99; for (const m of a.mats) { if (m.transparent !== durch) { m.transparent = durch; m.needsUpdate = true; } m.opacity = durch ? a.deck : 1; } } } }
   /** für Tests */
   get liste(): { id: string; art: string; x: number; y: number; geladen: boolean; stumpf: boolean }[] { return [...this.alle.values()].map((a) => ({ id: a.b.id, art: a.b.art, x: a.b.x, y: a.b.y, geladen: Boolean(a.baum), stumpf: this.gefallen.has(a.b.id) })); }

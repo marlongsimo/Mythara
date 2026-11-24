@@ -1,7 +1,7 @@
 /*
  * Mythara Echtzeit – Holzfällerei auf dem Server (shared/holz.ts). Der Server ist die einzige Wahrheit:
  *   · „holz“/„start“: Nähe zum Stamm, Holzfällerei-Level, bestes benutzbares Holzbeil, Baum steht noch, Platz im Rucksack.
- *   · Alle 4 Ticks (2 s) ein Hieb: Erfolg → Stamm (stapelt nicht) + XP, mit 25 % dazu 5–15 Splitter; danach fällt der Baum mit seiner Fällchance.
+ *   · Alle 3 Ticks (1,5 s) ein Hieb: Erfolg → Stamm (stapelt nicht) + XP, mit 25 % dazu 5–15 Splitter; danach fällt der Baum mit seiner Fällchance.
  *   · Kernschlag: nach einem Hieb manchmal (12 %) ein Fenster von 1,5 s; „holz“/„kern“ darin → zwei Stämme, 50 % mehr XP.
  *   · Gefällte Bäume sind für alle ein Stumpf, bis sie nachwachsen („baeume“ an alle; beim Anmelden der Stand).
  *   · Abbruch: weggegangen, Rucksack voll, Baum gefallen, anderes Ziel („holz“/„stop“) oder Verbindung weg.

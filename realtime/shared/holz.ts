@@ -1,7 +1,7 @@
 /*
  * Mythara – Holzfällerei (seit 24.11.2026, Konzept doku/berufe/Mythara-Holzfaellerei.pdf).
  * Nur die eigenen Holzfäller-Bäume (leuchtende Adern, Figuren-Fabrik: img/objekte3d/skilling/holzfaellerei/) sind fällbar; die Landschaftsbäume bleiben Schmuck.
- * Ablauf: Baum antippen → alle 4 Ticks (2 s) ein Hieb. Erfolg → ein Stamm (stapelt nicht) und XP; mit 25 % dazu 5–15 Splitter.
+ * Ablauf: Baum antippen → alle 3 Ticks (1,5 s) ein Hieb. Erfolg → ein Stamm (stapelt nicht) und XP; mit 25 % dazu 5–15 Splitter.
  * Nach jedem Stamm fällt der Baum mit seiner Fällchance (sinkt mit dem Baumlevel); dann steht für alle der Stumpf, bis er nachwächst.
  * Kernschlag: nach einem Hieb manchmal (12 %) glühen die Adern auf; wer binnen 1,5 s antippt, bekommt zwei Stämme und 50 % mehr XP.
  * Der Server rechnet alles (server/src/holz.ts). Die XP stehen im Inventar des Helden (Feld „berufe“), wie die Bank – keine neue Tabelle.
@@ -35,7 +35,7 @@ export const BEILE: Beil[] = [
   { g: "holzbeil_episch", stufe: 3, level: 35 }, { g: "holzbeil_legendaer", stufe: 4, level: 45 }, { g: "holzbeil_mythisch", stufe: 5, level: 65 }];
 export const beilVon = (g: string | undefined): Beil | undefined => BEILE.find((b) => b.g === g);
 
-export const HOLZ_TAKT_MS = 2000;           // 4 Ticks
+export const HOLZ_TAKT_MS = 1500;           // 3 Ticks
 export const HOLZ_WEIT = 2.2;               // so nah muss man am Stamm stehen (Felder)
 export const KERN_CHANCE = 0.12, KERN_FENSTER_MS = 1500;
 export const SPLITTER_CHANCE = 0.25, SPLITTER_MIN = 5, SPLITTER_MAX = 15;
