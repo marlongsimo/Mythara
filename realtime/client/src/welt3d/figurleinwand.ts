@@ -53,12 +53,15 @@ export class FigurLeinwand {
   private zustand = "ruhe"; private einmal: string | null = null; private nr = 0; private uhr = 0; private richtung = 2; private gestorben = false; private alt = ""; private blickW = 0;
   /** fertig: nach Ende einer einmaligen Bewegung (Angriff) */ fertig: (() => void) | null = null;
   /** figur: Ordner der Fabrik (etwa gegner.bandit.v003) oder der eigene Held (eigen); hoehe: sichtbare Körperhöhe in Feldern */
-  constructor(szene: THREE.Scene, figur: string, private hoehe: number, private eigen?: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null) {
+  constructor(szene: THREE.Scene, private figur: string, private hoehe: number, private eigen?: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, spaet = false) {
     this.tex = new THREE.CanvasTexture(this.leinwand); this.tex.colorSpace = THREE.SRGBColorSpace; this.tex.minFilter = THREE.LinearFilter; this.tex.generateMipmaps = false;
     this.bild = new Figurbild(this.tex); this.bild.silhouette(false); this.bild.gruppe.visible = false; szene.add(this.bild.gruppe);
     this.fleck = new THREE.Mesh(FLECK, FLECK_MAT); this.fleck.rotation.x = -Math.PI / 2; szene.add(this.fleck);
-    void this.laden(eigen ? figurVon(eigen.aussehen) : figur).catch((e) => console.warn("Figur:", e));
+    if (!spaet) this.jetztLaden();
   }
+  private ladeBeginn = false;
+  /** Die Bilder der Fabrik laden (bei einer 3D-Figur erst, wenn ihr Modell nicht lädt: spart viele MB und große Bilddekodierungen) */
+  jetztLaden(): void { if (this.ladeBeginn) return; this.ladeBeginn = true; void this.laden(this.eigen ? figurVon(this.eigen.aussehen) : this.figur).catch((e) => console.warn("Figur:", e)); }
   private async laden(figur: string) {
     const M0 = await meta(figur), H = this.eigen;
     const ebenen = H ? ebenenVon(H.aussehen) : M0.ebenen.map((e) => ({ ebene: e, faerben: undefined as undefined | "haut" | "haar" | "bart" }));

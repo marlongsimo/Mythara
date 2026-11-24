@@ -154,7 +154,8 @@ export class Welt3D {
   dinge(s: Stueck) {
     const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
     for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
-      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
+      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
+          if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox!, w = m.getWorldScale(new THREE.Vector3()); m.castShadow = Math.max((g.max.x - g.min.x) * w.x, (g.max.y - g.min.y) * w.y, (g.max.z - g.min.z) * w.z) >= 1.2; }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
@@ -215,18 +216,22 @@ export class Welt3D {
   /* ───────── Minikarte: von oben, ohne Dächer, mit der Kamera gedreht ───────── */
   private karteZiel: THREE.WebGLRenderTarget | null = null; private karteKam = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 400); private kartePixel: Uint8Array | null = null;
   /** Die Umgebung des Helden von oben in eine 2D-Leinwand zeichnen: felder = Breite des Ausschnitts in Weltfeldern; oben ist die Blickrichtung der Kamera */
-  karteZeichnen(ziel: HTMLCanvasElement, felder: number): void {
+  /** danach: wird gerufen, sobald das Bild in der Leinwand steht (Marken darüber zeichnen) */
+  karteZeichnen(ziel: HTMLCanvasElement, felder: number, danach?: () => void): void {
     const n = ziel.width; if (!n) return; if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
     const H = this.held, k = this.karteKam, h = felder / 2; k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix();
     k.position.set(H.x, this.gelaendeHoehe(H.x, H.z) + 200, H.z); k.up.set(-Math.sin(this.gieren), 0, -Math.cos(this.gieren)); k.lookAt(H.x, 0, H.z);
     const daecher: THREE.Object3D[] = []; for (const s of this.st.values()) for (const b of s.bauten) for (const d of b.daecher) if (d.visible) { d.visible = false; daecher.push(d); }
     const figuren: THREE.Object3D[] = []; this.szene.traverse((o) => { if (o.visible && (o as THREE.Mesh).isMesh && (o as THREE.Mesh).material instanceof THREE.ShaderMaterial && o.parent && o.parent.type === "Group" && o.renderOrder >= 10) { figuren.push(o); o.visible = false; } });
-    const nebel = this.szene.fog, schatten = this.r.shadowMap.autoUpdate, belichtung = this.r.toneMappingExposure, himmel = this.himmelLicht.intensity; this.szene.fog = null; this.r.shadowMap.autoUpdate = false;
+    /* Nebel nur weit wegschieben statt abschalten: sonst braucht jedes Material ein zweites Shaderprogramm (Haken beim ersten Kartenbild) */
+    const nebel = this.szene.fog as THREE.Fog | null, nah = nebel ? nebel.near : 0, fern = nebel ? nebel.far : 0, schatten = this.r.shadowMap.autoUpdate, belichtung = this.r.toneMappingExposure, himmel = this.himmelLicht.intensity;
+    if (nebel) { nebel.near = 1e5; nebel.far = 1e5 + 1; } this.r.shadowMap.autoUpdate = false;
     this.r.toneMappingExposure = belichtung * 1.35; this.himmelLicht.intensity = Math.max(himmel, 1.1) * 4.5; /* von oben ist es sonst zu dunkel (flaches Licht, Wände werfen Schatten) */
-    this.r.setRenderTarget(this.karteZiel); this.r.render(this.szene, k); this.r.readRenderTargetPixels(this.karteZiel, 0, 0, n, n, this.kartePixel!); this.r.setRenderTarget(null);
-    this.szene.fog = nebel; this.r.shadowMap.autoUpdate = schatten; this.r.toneMappingExposure = belichtung; this.himmelLicht.intensity = himmel; for (const d of daecher) d.visible = true; for (const f of figuren) f.visible = true;
-    const g = ziel.getContext("2d")!, bild = g.createImageData(n, n), q = this.kartePixel!; /* die Grafikkarte liefert die Zeilen von unten nach oben */
-    for (let y = 0; y < n; y++) bild.data.set(q.subarray((n - 1 - y) * n * 4, (n - y) * n * 4), y * n * 4); g.putImageData(bild, 0, 0); }
+    this.r.setRenderTarget(this.karteZiel); this.r.render(this.szene, k); this.r.setRenderTarget(null);
+    if (nebel) { nebel.near = nah; nebel.far = fern; } this.r.shadowMap.autoUpdate = schatten; this.r.toneMappingExposure = belichtung; this.himmelLicht.intensity = himmel; for (const d of daecher) d.visible = true; for (const f of figuren) f.visible = true;
+    const zeigen = () => { const g = ziel.getContext("2d")!, bild = g.createImageData(n, n), q = this.kartePixel!; /* die Grafikkarte liefert die Zeilen von unten nach oben */
+      for (let y = 0; y < n; y++) bild.data.set(q.subarray((n - 1 - y) * n * 4, (n - y) * n * 4), y * n * 4); g.putImageData(bild, 0, 0); if (danach) danach(); };
+    this.r.readRenderTargetPixels(this.karteZiel, 0, 0, n, n, this.kartePixel!); zeigen(); }
   /* ───────── Eingaben: nur die Kamera (Laufen und Antippen macht das Spiel) ───────── */
   /** Bildschirmpunkt → Bodenpunkt (Weltfelder) oder null */
   boden(px: number, py: number): { x: number; z: number } | null { const ray = new THREE.Raycaster(), b = this.r.domElement.getBoundingClientRect(); ray.setFromCamera(new THREE.Vector2(((px - b.left) / b.width) * 2 - 1, -((py - b.top) / b.height) * 2 + 1), this.kamera);
@@ -283,8 +288,11 @@ export class Welt3D {
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));
       const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
+    /* Schattenkarte nur jedes zweite Bild neu (halbiert die teuerste Arbeit je Bild; der Schatten folgt einen Bruchteil später) */
+    if (this.r.shadowMap.enabled) { this.bildNr++; this.r.shadowMap.autoUpdate = false; this.r.shadowMap.needsUpdate = this.bildNr % 2 === 0; }
     this.r.render(this.szene, this.kamera);
   }
+  private bildNr = 0;
 }
 const FLECK = new THREE.CircleGeometry(0.42, 16); FLECK.userData.geteilt = true;
 /** Leuchtschein über Feuern und Laternen (additiv, ohne Tiefe) */

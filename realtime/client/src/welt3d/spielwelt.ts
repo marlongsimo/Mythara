@@ -26,6 +26,8 @@ import { dialogOffen, gespraechMit, schliessen as dialogSchliessen } from "../di
 const GESPRAECH_WEIT = 5;
 import { HaendlerWelt } from "./haendler3d";
 import * as THREE from "three";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { vorlage } from "./held3d";
 import { Welt3D } from "./motor";
 import { heldenFigur3D, FigurArt } from "./held3d";
 import { WELT, weltDatei } from "../welt/welt";
@@ -91,6 +93,7 @@ export class Spielwelt3D implements WeltKern {
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
+    if (new URLSearchParams(location.search).get("vorwaermen") !== "0") setTimeout(() => void this.vorwaermen(), 2500); /* Gegner- und Wachenmodelle im Hintergrund laden und ihre Shader übersetzen: kein Haken beim ersten Gegner */
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
@@ -129,6 +132,13 @@ export class Spielwelt3D implements WeltKern {
   private sprintSchritt(dt: number, laeuft: boolean) { const jetzt = performance.now(); if (jetzt - this.geschickZeit > 2000) { this.geschickZeit = jetzt; this.geschickLv = levelAus(skillsLesen().geschick, "geschick"); }
     if (!this.imKampf) this.ausdauer.schritt(dt, laeuft, this.geschickLv); /* im Kampfgebiet rechnet der Server */ if (this.knopfAn !== this.ausdauer.an) { this.knopfAn = this.ausdauer.an; this.sprintKnopf(); } /* auch wenn der Server umschaltet oder der Knopf neu gebaut wurde */
     const w = Math.round(this.ausdauer.wert); if (w !== this.gelbZuletzt) { this.gelbZuletzt = w; gelbAnzeigen(w / 100); } }
+  /** Shader vorwärmen: die Modelle einmal unsichtbar-klein unter den Boden stellen, übersetzen lassen (parallel, wenn der Browser es kann), wieder entfernen */
+  private async vorwaermen(): Promise<void> {
+    const M = this.motor, g = new THREE.Group(); g.position.set(this.ort.x, M.hoehe(this.ort.x, this.ort.y) - 30, this.ort.y); g.scale.setScalar(0.01);
+    for (const d of ["bandit3d", "mooshocker3d", "banditenboss3d", "stadtwache3d"]) { try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
+    if (!g.children.length) return; M.szene.add(g);
+    try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
+    await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null;
   alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
@@ -328,9 +338,13 @@ export class Spielwelt3D implements WeltKern {
     const k = document.getElementById("ez-karte"), rund = k && k.parentElement, r = this.regionBei(this.ort.x, this.ort.y); if (!k || !rund || !rund.classList.contains("rund") || !r) return;
     if (!this.karteLeinwand || this.karteLeinwand.parentElement !== rund) { const c = document.createElement("canvas"); c.className = "karte3d"; rund.insertBefore(c, rund.firstChild); this.karteLeinwand = c; this.karteStand = null; }
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
-    if (!this.karteStand || performance.now() - this.karteZeit > (HANDY_KARTE ? 450 : 300)) { this.karteZeit = performance.now();
+    /* Neu zeichnen nur, wenn nötig: nach Bewegung (> 1 Feld) oder Drehung, höchstens alle 500 ms (Handy 700 ms) – dazwischen gleitet das Bild mit; sonst spätestens alle 2 s (Mitspieler, Marken) */
+    const alt = this.karteStand, seit = performance.now() - this.karteZeit, bewegt = !alt || Math.hypot(this.ort.x - alt.x, this.ort.y - alt.y) > 1 || Math.abs(g - alt.g) > 0.03 || alt.massstab !== f;
+    if (!alt || (bewegt && seit > (HANDY_KARTE ? 700 : 500)) || seit > 2000) { this.karteZeit = performance.now();
       const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
-      this.motor.karteZeichnen(c, (R * KARTE_RAND) / f); if (this.haendler) this.haendler.karteMarken(c, (R * KARTE_RAND) / f, this.ort, g); if (this.quest) this.quest.karteMarke(c, (R * KARTE_RAND) / f, this.ort, g); this.karteStand = { x: this.ort.x, y: this.ort.y, g, massstab: f }; }
+      const stand = { x: this.ort.x, y: this.ort.y, g, massstab: f }, felder = (R * KARTE_RAND) / f;
+      this.motor.karteZeichnen(c, felder, () => { if (this.haendler) this.haendler.karteMarken(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
+    if (!this.karteStand) return;
     /* Verschiebung seit dem Zeichnen in Bildpunkten des gezeichneten Bilds (oben = Blickrichtung beim Zeichnen) und Drehung um den Unterschied der Kamera */
     const S = this.karteStand, dx = this.ort.x - S.x, dy = this.ort.y - S.y, rx = Math.cos(S.g), rz = -Math.sin(S.g), ux = -Math.sin(S.g), uz = -Math.cos(S.g);
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;

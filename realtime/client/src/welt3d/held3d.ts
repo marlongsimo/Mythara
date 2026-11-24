@@ -55,8 +55,8 @@ export class Held3D {
   fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
   constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number }) {
-    this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
-    vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.sichtbar(this.an); }); }
+    this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle, true /* Bilder erst laden, wenn das 3D-Modell scheitert */); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
+    vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.jetztLaden(); this.ersatz.sichtbar(this.an); }); }
   private aufbauen(v: Vorlage) {
     if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
     w.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; } });
