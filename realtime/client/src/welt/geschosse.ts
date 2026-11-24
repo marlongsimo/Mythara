@@ -6,8 +6,12 @@
  * und holt die Stelle des Servers ein. Ist es dort verschwunden (Treffer), fliegt es die letzte Strecke zu Ende, schlägt ein
  * und gibt erst dann die zurückgehaltenen Trefferzahlen frei. Pfeile fliegen in einem flachen Bogen, Bolzen gerade,
  * Zauberkugeln leuchten und ziehen einen Schweif.
+ * Mit 3D-Figuren ist jedes Geschoss ein kleines 3D-Modell (echt3d/darsteller.ts → GeschossBild) im selben Licht und Blickwinkel wie die Figuren;
+ * bis es geladen ist (und ohne 3D) wird es flach gezeichnet.
  */
 import Phaser from "phaser";
+import { geschossBild, GeschossBildT } from "../echt3d/figur";
+import { HELD_PX } from "../../../shared/welt/typen";
 
 export type GeschossArt = "pfeil" | "bolzen" | "zauber" | "feuer";
 type Punkt = { x: number; y: number };
@@ -21,7 +25,14 @@ export class Geschoss {
   ende = false; gehalten: (() => void)[] = []; fertig = false;
   constructor(private s: Phaser.Scene, readonly art: GeschossArt, private los: number, private start: () => Punkt, ziel: Punkt) {
     this.ziel = ziel; this.obj = s.add.container(0, 0).setVisible(false).setDepth(1e7 - 1); this.zeichnen();
+    void geschossBild(art, HELD_PX).then((b) => { if (!b) return; if (this.fertig || !this.s.sys || !this.s.sys.isActive()) { b.entfernen(); return; }
+      const key = "geschoss3d:" + Geschoss.zaehler++, tex = this.s.textures.createCanvas(key, b.breite, b.hoehe) as Phaser.Textures.CanvasTexture;
+      this.obj.removeAll(true); this.obj.setRotation(0).setScale(1); this.obj.add(this.s.add.image(0, 0, key).setScale(1 / b.aufloesung)); this.b3 = { b, tex };
+      if (this.alt) this.drehen(this.ziel.x - this.alt.x, this.ziel.y - this.alt.y); else this.drehen(this.ziel.x - this.start().x, this.ziel.y - this.start().y); });
   }
+  private static zaehler = 0; private b3: { b: GeschossBildT; tex: Phaser.Textures.CanvasTexture } | null = null;
+  private drehen(dx: number, dy: number) { if (this.b3) this.b3.b.richte(dx, dy); else this.obj.setRotation(Math.atan2(dy, dx)); }
+  private aufraeumen() { this.obj.destroy(); if (this.b3) { this.b3.b.entfernen(); this.b3.tex.destroy(); this.b3 = null; } }
   private zeichnen() { const s = this.s, o = this.obj;
     if (this.art === "pfeil") { const g = s.add.graphics();
       g.lineStyle(2.2, 0x6b4423, 1).lineBetween(-17, 0, 9, 0);                                  // Schaft
@@ -44,13 +55,14 @@ export class Geschoss {
     if (this.ende && rest <= Math.max(v, 4)) { o.x = this.ziel.x; o.y = this.ziel.y; this.einschlag(); return false; }
     if (rest > 0.01) { const k = Math.min(1, v / rest); o.x += dx * k; o.y += dy * k; this.weg += Math.min(v, rest); }
     let hoch = 0; if (this.art === "pfeil") { const p = this.weg / (this.weg + rest + 1e-3); hoch = Math.sin(Math.PI * p) * Math.min(34, (this.weg + rest) * 0.1); }   // flacher Bogen
-    const x = o.x, y = o.y - hoch; if (this.alt && (Math.abs(x - this.alt.x) + Math.abs(y - this.alt.y)) > 0.3) this.obj.setRotation(Math.atan2(y - this.alt.y, x - this.alt.x));
+    const x = o.x, y = o.y - hoch; if (this.alt && (Math.abs(x - this.alt.x) + Math.abs(y - this.alt.y)) > 0.3) this.drehen(x - this.alt.x, y - this.alt.y);
     this.alt = { x, y }; this.obj.setPosition(x, y);
-    if (this.art === "zauber" || this.art === "feuer") { const t = jetzt / 1000; this.obj.setScale(1 + 0.12 * Math.sin(t * 30)); this.schweifUhr += dtMs;
+    if (this.b3) { this.b3.b.zeichne(dt, this.b3.tex.getContext()); this.b3.tex.refresh(); }
+    if (this.art === "zauber" || this.art === "feuer") { const t = jetzt / 1000; if (!this.b3) this.obj.setScale(1 + 0.12 * Math.sin(t * 30)); this.schweifUhr += dtMs;
       while (this.schweifUhr > 22) { this.schweifUhr -= 22; const [a] = FARBE[this.art], f = this.s.add.circle(x + (Math.random() - 0.5) * 5, y + (Math.random() - 0.5) * 5, 5 + Math.random() * 2, a, 0.55).setBlendMode(Phaser.BlendModes.ADD).setDepth(1e7 - 2);
         this.s.tweens.add({ targets: f, alpha: 0, scale: 0.2, duration: 320, onComplete: () => f.destroy() }); } }
     return true; }
-  private einschlag() { const s = this.s, o = this.ort!; this.fertig = true; this.obj.destroy(); for (const f of this.gehalten) f(); this.gehalten = [];
+  private einschlag() { const s = this.s, o = this.ort!; this.fertig = true; this.aufraeumen(); for (const f of this.gehalten) f(); this.gehalten = [];
     if (this.art === "zauber" || this.art === "feuer") { const [a, b] = FARBE[this.art];
       const blitz = s.add.circle(o.x, o.y, 10, b, 0.9).setBlendMode(Phaser.BlendModes.ADD).setDepth(1e7 - 1); s.tweens.add({ targets: blitz, scale: 2.6, alpha: 0, duration: 260, onComplete: () => blitz.destroy() });
       const ring = s.add.circle(o.x, o.y, 8).setStrokeStyle(3, a, 0.9).setDepth(1e7 - 1); s.tweens.add({ targets: ring, scale: 3.4, alpha: 0, duration: 380, onComplete: () => ring.destroy() });
@@ -59,5 +71,5 @@ export class Geschoss {
     else for (let i = 0; i < 4; i++) { const w = Math.random() * Math.PI * 2, f = s.add.rectangle(o.x, o.y, 3, 3, 0xd8c8a8, 1).setDepth(1e7 - 1);   // Splitter und Staub
       s.tweens.add({ targets: f, x: o.x + Math.cos(w) * 16, y: o.y + Math.sin(w) * 10 - 6, alpha: 0, duration: 260, onComplete: () => f.destroy() }); } }
   /** sofort entfernen (Gebiet verlassen) */
-  entfernen(): void { if (!this.fertig) { this.fertig = true; this.obj.destroy(); for (const f of this.gehalten) f(); } }
+  entfernen(): void { if (!this.fertig) { this.fertig = true; this.aufraeumen(); for (const f of this.gehalten) f(); } }
 }

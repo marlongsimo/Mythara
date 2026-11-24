@@ -45,7 +45,7 @@
   function spielen() { if (!d || !d.hat(bew)) return; d.neustart(); d.spiele(bew, !$("#schleife").checked); sichtbar(); }
   async function laden() {
     fig = figuren.find((f) => f.id === $("#figur").value); if (d) { d.entfernen(); d = null; }
-    d = await E.Darsteller.erstellen(M + fig.id + ".glb", Math.min(520, window.innerHeight * 0.62), Math.min(2, devicePixelRatio || 1));
+    d = await E.Darsteller.erstellen(M + fig.id + ".glb", hoehePx(), Math.min(2, devicePixelRatio || 1));
     c.width = d.breite; c.height = d.hoehe; c.style.width = d.breite / d.aufloesung + "px";
     $("#hautreihe").hidden = !fig.haut.length; $("#haut").innerHTML = '<option value="">Original</option>' + fig.haut.map((h) => `<option>${h}</option>`).join("");
     /* Bewegungen */
@@ -82,17 +82,22 @@
     const verzug = d.dauer(b) * anteil / Math.max(0.1, tempo); if (art === "zauber") d.glut(verzug);
     setTimeout(() => { const p = d.waffenPunkt(art === "zauber"), r = c.getBoundingClientRect(), br = fx.getBoundingClientRect(); fx.width = br.width; fx.height = br.height;
       const x0 = p ? r.left - br.left + p.x / d.aufloesung : br.width / 2, y0 = p ? r.top - br.top + p.y / d.aufloesung : br.height / 2;
-      flug.push({ art, x0, y0, x1: br.width - 40, y1: br.height * 0.55, t: 0, alt: null }); }, verzug); };
+      const b3 = new E.GeschossBild(art, hoehePx(), Math.min(2, devicePixelRatio || 1)), cv = document.createElement("canvas"); cv.width = b3.breite; cv.height = b3.hoehe;
+      flug.push({ art, x0, y0, x1: br.width - 40, y1: br.height * 0.55, t: 0, alt: null, b3, cv }); }, verzug); };
+  const hoehePx = () => Math.min(520, window.innerHeight * 0.62);
   function zeichneFx(dt) { const B = fx.getBoundingClientRect(); if (fx.width !== Math.round(B.width)) { fx.width = B.width; fx.height = B.height; } const g = fxx; g.clearRect(0, 0, fx.width, fx.height);
     const zx = fx.width - 40, zy = fx.height * 0.55; for (const [r, f] of [[16, "#c33"], [11, "#eee"], [6, "#c33"]]) { g.fillStyle = f; g.beginPath(); g.arc(zx, zy, r, 0, 7); g.fill(); }   // Zielscheibe
     flug = flug.filter((q) => { const L = Math.hypot(q.x1 - q.x0, q.y1 - q.y0), v = q.art === "zauber" ? 520 : q.art === "bolzen" ? 900 : 760; q.t += dt * tempo * v / L; const p = Math.min(1, q.t);
       const x = q.x0 + (q.x1 - q.x0) * p, y = q.y0 + (q.y1 - q.y0) * p - (q.art === "pfeil" ? Math.sin(Math.PI * p) * Math.min(34, L * 0.1) : 0), w = q.alt ? Math.atan2(y - q.alt[1], x - q.alt[0]) : Math.atan2(q.y1 - q.y0, q.x1 - q.x0); q.alt = [x, y];
-      g.save(); g.translate(x, y); g.rotate(w);
+      if (q.b3) { if (q.alt0) q.b3.richte(x - q.alt0[0], y - q.alt0[1]); else q.b3.richte(q.x1 - q.x0, q.y1 - q.y0); q.alt0 = [x, y]; q.b3.zeichne(dt * tempo, q.cv.getContext("2d"));
+        const bw = q.b3.breite / q.b3.aufloesung; g.drawImage(q.cv, x - bw / 2, y - bw / 2, bw, bw); if (q.art === "zauber") funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 * bw / 80 + 3 }); }
+      else { g.save(); g.translate(x, y); g.rotate(w);
       if (q.art === "pfeil") { g.strokeStyle = "#6b4423"; g.lineWidth = 2.2; g.beginPath(); g.moveTo(-17, 0); g.lineTo(9, 0); g.stroke(); g.fillStyle = "#d9dee6"; g.beginPath(); g.moveTo(9, -3.2); g.lineTo(17, 0); g.lineTo(9, 3.2); g.fill(); g.fillStyle = "#e8e2d0"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, -4); g.fill(); g.fillStyle = "#b8372b"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, 4); g.fill(); }
       else if (q.art === "bolzen") { g.strokeStyle = "#3b2a1c"; g.lineWidth = 3.4; g.beginPath(); g.moveTo(-11, 0); g.lineTo(6, 0); g.stroke(); g.fillStyle = "#9aa3ad"; g.beginPath(); g.moveTo(5, -4); g.lineTo(13, 0); g.lineTo(5, 4); g.fill(); g.fillStyle = "#2c2c2c"; g.fillRect(-12, -3.5, 4, 7); }
       else { g.globalCompositeOperation = "lighter"; for (const [r, f] of [[13, "rgba(127,180,255,.28)"], [8, "rgba(200,228,255,.6)"], [4, "#fff"]]) { g.fillStyle = f; g.beginPath(); g.arc(0, 0, r * (1 + 0.12 * Math.sin(performance.now() / 33)), 0, 7); g.fill(); }
         funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 }); }
-      g.restore(); if (p >= 1) { for (let i = 0; i < 8; i++) { const a = Math.random() * 7; funken.push({ x, y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 60, a: 1, r: 3 }); } return false; } return true; });
+      g.restore(); }
+      if (p >= 1) { if (q.b3) q.b3.entfernen(); for (let i = 0; i < 8; i++) { const a = Math.random() * 7; funken.push({ x, y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 60, a: 1, r: 3 }); } return false; } return true; });
     g.globalCompositeOperation = "lighter"; funken = funken.filter((f) => { f.a -= dt * 3; f.r *= 0.96; if (f.vx) { f.x += f.vx * dt; f.y += f.vy * dt; } if (f.a <= 0) return false; g.fillStyle = `rgba(160,205,255,${f.a})`; g.beginPath(); g.arc(f.x, f.y, f.r, 0, 7); g.fill(); return true; }); g.globalCompositeOperation = "source-over"; }
   let zuletzt = performance.now();
   (function bild(t) { const dt = Math.min(0.1, (t - zuletzt) / 1000); zuletzt = t; if (d) d.zeichne(pause ? 0 : dt * tempo, x); zeichneFx(pause ? 0 : dt); requestAnimationFrame(bild); })(zuletzt);

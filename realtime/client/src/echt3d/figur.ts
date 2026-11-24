@@ -17,7 +17,10 @@ interface DarstellerT {
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void; teleport(dauer?: number): void;
   waffenPunkt(spitze: boolean): { x: number; y: number } | null; glut(bisAbschuss: number, farbe?: number): void;
 }
-type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void> };
+/** ein Geschoss als kleines 3D-Bild (darsteller.ts → GeschossBild) */
+export interface GeschossBildT { breite: number; hoehe: number; aufloesung: number; richte(sx: number, sy: number): void; zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void }
+type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void>;
+  GeschossBild: new (art: string, figurHoehePx: number, aufloesung: number) => GeschossBildT };
 
 const P = new URLSearchParams(location.search);
 /** Sind 3D-Figuren eingeschaltet? (Adresse oder Gerät) */
@@ -40,6 +43,9 @@ let zaehler = 0;
 /** Dauer des Teleport-Effekts (Sekunden) */
 const TELEPORT_S = 1.8;
 /** Teleport-Abreise der eigenen Figur, falls sie eine 3D-Figur ist. Zurück: wie lange es dauert (ms); 0 = keine 3D-Figur, sofort weiter */
+/** Geschoss in 3D bauen (lädt das 3D-Modul nach, falls nötig); ohne 3D: null */
+export async function geschossBild(art: string, figurHoehePx: number): Promise<GeschossBildT | null> {
+  if (!figur3dAn()) return null; try { const E = await echt3dLaden(); return new E.GeschossBild(art, figurHoehePx, Math.min(2, window.devicePixelRatio || 1) * 1.25); } catch { return null; } }
 export function teleportAbreise(f: unknown): number { return f instanceof Figur3D ? f.teleport() : 0; }
 
 export class Figur3D extends Phaser.GameObjects.Container {
