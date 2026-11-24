@@ -21,13 +21,19 @@ const fehler = Object.entries(await formPruefen(namen)).filter(([, f]) => f.leng
 if (fehler.length) { for (const [n, f] of fehler) { console.log("✗ " + n); for (const z of f.slice(0, 20)) console.log("    " + z); } console.log("\nNicht gebaut: erst die Fehler beheben."); process.exit(1); }
 
 const G = await gemeinsam(), bib = bibliothek(); mkdirSync(ziel, { recursive: true });
+const SYMBOLE = JSON.parse(readFileSync(join(REALTIME, "welt", "bibliothek", "kartensymbole.json"), "utf8"));
 /* welt.json wächst mit: Regionen, die diesmal nicht gebaut werden, bleiben stehen */
 const indexPfad = join(ziel, "welt.json"), index = existsSync(indexPfad) ? JSON.parse(readFileSync(indexPfad, "utf8")) : { regionen: {}, objekte: {} };
-index.feldPx = G.FELD_PX; index.chunkFelder = G.CHUNK_FELDER;
+index.feldPx = G.FELD_PX; index.chunkFelder = G.CHUNK_FELDER; index.kartensymbole = SYMBOLE.symbole;
 for (const n of namen) {
   const gebaut = G.chunksBauen(region(n), bib.gelaende, bib.objekte);
   for (const c of gebaut.chunks) writeFileSync(join(ziel, `${c.cx}_${c.cy}.json`), JSON.stringify(c));
-  index.regionen[n] = { ...gebaut.kopf, benutzt: gebaut.benutzt };
+  /* Kartensymbole (welt/bibliothek/kartensymbole.json): an die Stelle der genannten Interaktion oder Figur, in Weltfeldern */
+  { const r = region(n), ox = r.region.ursprung[0] * G.CHUNK_FELDER, oy = r.region.ursprung[1] * G.CHUNK_FELDER, zuordnung = SYMBOLE.orte[n] || {};
+    const symbole = Object.entries(zuordnung).map(([id, s]) => { const q = r.spiel.interaktionen.find((i) => i.id === id) || r.spiel.figuren.find((f) => f.id === id);
+      if (!q) throw new Error(`Kartensymbol ${s}: ${n} hat keine Interaktion oder Figur „${id}“`); if (!SYMBOLE.symbole[s]) throw new Error(`Kartensymbol „${s}“ ist nicht beschrieben`);
+      return { s, x: +(q.x + ox).toFixed(2), y: +(q.y + oy).toFixed(2) }; });
+    index.regionen[n] = { ...gebaut.kopf, benutzt: gebaut.benutzt, ...(symbole.length ? { symbole } : {}) }; }
   const frei = gebaut.chunks.reduce((s, c) => s + c.geh.join("").split(".").length - 1, 0), felder = gebaut.chunks.length * G.CHUNK_FELDER ** 2;
   console.log(`✓ ${n}: ${gebaut.chunks.length} Chunks, ${gebaut.chunks.reduce((s, c) => s + c.objekte.length, 0)} Objekte, ${Math.round(100 * frei / felder)} % begehbar`);
   if (!ohneBoden) { const r = spawnSync("python3", ["werkzeug/welt/boden.py", n, "--vorschau"], { cwd: REALTIME, stdio: "inherit" }); if (r.status !== 0) process.exit(r.status || 1); }

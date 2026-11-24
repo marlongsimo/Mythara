@@ -190,7 +190,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */
 function karteZeigen(s: WeltKern) {
   const idx = (s as unknown as { index?: { chunkFelder: number; regionen: Record<string, { region: { id: string; name: string; ursprung: number[]; chunks: number[] } }> } }).index; if (!idx) return;
-  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, regionen: Object.values(idx.regionen).map((r) => r.region).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
+  uebersicht({ daten: WELT.daten, stand: WELT.stand, chunkFelder: idx.chunkFelder || 32, symbolNamen: (idx as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}, symbolBild: WELT.bild + "img/karte/symbole/", regionen: Object.values(idx.regionen).map((r) => ({ ...r.region, symbole: (r as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || [] })).filter((R) => !WELT.gesperrteRegionen.includes(R.id) && !(R as { ebene?: string }).ebene),
     ich: () => (s.ort ? { x: s.ort.x, y: s.ort.y } : null), hier: () => s.hier, orte: LADEN_LISTE.map((l) => ({ x: l.x, y: l.y, zeichen: LADEN_ZEICHEN[l.id], name: `${l.name} (${l.haendler})` })) });
 }
 

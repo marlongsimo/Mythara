@@ -1,0 +1,23 @@
+{
+ "hinweis": "Kartensymbole für Minikarte, Übersicht (Taste M) und Weltkarte. symbole: Kennung → Name und Bild (img/karte/symbole/<kennung>.webp). orte: je Gebiet die Kennung einer Interaktion oder Figur (spiel.json) → Symbol; der Bake (bauen.mjs) setzt das Symbol an deren Stelle.",
+ "symbole": {
+  "bank": "Bank",
+  "friseur": "Friseur / Makeover",
+  "amboss": "Schmiede",
+  "ofen": "Bäckerei",
+  "traenkehaendler": "Kräuter und Tränke",
+  "handwerkshaendler": "Händler",
+  "dungeon": "Dungeon",
+  "holzfaellerei": "Holzfällerei",
+  "ausruestungshaendler": "Ausrüstungshändler",
+  "waffenhaendler": "Waffenhändler",
+  "mine": "Mine"
+ },
+ "orte": {
+  "waldmark": { "bank_tuer": "bank", "salon_tuer": "friseur", "schmiede_tuer": "amboss", "baecker_tuer": "ofen", "kraeuter_tuer": "traenkehaendler", "markt": "handwerkshaendler" },
+  "weidenhain": { "bankschalter": "bank" },
+  "westmark": { "loch_abstieg": "dungeon" },
+  "nordwald": { "meiler": "holzfaellerei" },
+  "graufurt": { "kraemer": "handwerkshaendler" }
+ }
+}
