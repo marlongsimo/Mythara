@@ -59,6 +59,10 @@ for (const E of ebenen) {
     for (let i = 0; i < W * Hh; i++) { const x = i % W, y = (i - x) / W; hoehe[i] = Math.round(100 * (Math.pow(f[i], 0.8) * (3.6 + 0.8 * rauschen(x + X0, y + Y0)) + 0.12 * (rauschen(x * 3 + X0, y * 3 + Y0) - 0.8))); } }
   else for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) { const i = y * W + x, haus = glatt(Math.max(0, Math.min(1, (fuss[i] - 1) / 3)));
     hoehe[i] = Math.round(100 * (raum[i] * haus * (rauschen(x + X0, y + Y0) - 0.45) - 0.7 * nass[i] * haus)); }
+  /* Senken (Bergbau, spiel.json → senken, eingetragen von lichtungen.mjs): weiche Mulde, in der Mitte „tiefe“ Felder tiefer */
+  if (!innen && !unten) for (const r of E.regs) for (const sk of r.spiel.senken || []) { const mx = r.region.ursprung[0] * C - X0 + sk.x, my = r.region.ursprung[1] * C - Y0 + sk.y, R = sk.r + 1.5;
+    for (let y = Math.max(0, Math.floor(my - R)); y <= Math.min(Hh - 1, Math.ceil(my + R)); y++) for (let x = Math.max(0, Math.floor(mx - R)); x <= Math.min(W - 1, Math.ceil(mx + R)); x++) {
+      const t = 1 - Math.hypot(x - mx, y - my) / R; if (t > 0) hoehe[y * W + x] -= Math.round(100 * sk.tiefe * glatt(Math.min(1, t * 1.6))); } }
   /* je Chunk schreiben */
   const geh = new Map(); for (let cy = cy0; cy < cy1; cy++) for (let cx = cx0; cx < cx1; cx++) { const f = join(ECHTZEIT, `${cx}_${cy}.json`); if (existsSync(f)) geh.set(`${cx}_${cy}`, JSON.parse(readFileSync(f, "utf8"))); }
   for (let cy = cy0; cy < cy1; cy++) for (let cx = cx0; cx < cx1; cx++) { const d2 = geh.get(`${cx}_${cy}`); if (!d2) continue;

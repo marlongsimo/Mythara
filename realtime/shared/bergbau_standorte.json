@@ -1,0 +1,148 @@
+{
+ "_hinweis": "Bergbau-Senken (24.11.2026): Erzadern in Weltfeldern. Mulde, Steinboden, Feldweg und gesperrte Aderfelder trägt werkzeug/welt/lichtungen.mjs ein; die Mulde senkt werkzeug/welt/drei.mjs ab.",
+ "senken": [
+  {
+   "name": "Senke vor der Waldmark",
+   "x": 6438.5,
+   "y": 6474.5,
+   "r": 6,
+   "adern": [
+    {
+     "id": "kupfer_1",
+     "art": "kupfer",
+     "x": 6441.5,
+     "y": 6475.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "kupfer_2",
+     "art": "kupfer",
+     "x": 6438.5,
+     "y": 6477.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "kupfer_3",
+     "art": "kupfer",
+     "x": 6435.5,
+     "y": 6475.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_1",
+     "art": "eisen",
+     "x": 6437.5,
+     "y": 6472.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_2",
+     "art": "eisen",
+     "x": 6440.5,
+     "y": 6472.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Westliche Senke im Kreuzwald",
+   "x": 6380.5,
+   "y": 6564.5,
+   "r": 6,
+   "adern": [
+    {
+     "id": "eisen_3",
+     "art": "eisen",
+     "x": 6383.5,
+     "y": 6565.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 6380.5,
+     "y": 6567.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_4",
+     "art": "eisen",
+     "x": 6378.5,
+     "y": 6566.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 6377.5,
+     "y": 6563.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_5",
+     "art": "eisen",
+     "x": 6380.5,
+     "y": 6561.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 6382.5,
+     "y": 6562.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Östliche Senke im Kreuzwald",
+   "x": 6508.5,
+   "y": 6580.5,
+   "r": 6,
+   "adern": [
+    {
+     "id": "eisen_6",
+     "art": "eisen",
+     "x": 6511.5,
+     "y": 6581.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_4",
+     "art": "schwarzeisen",
+     "x": 6508.5,
+     "y": 6583.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_7",
+     "art": "eisen",
+     "x": 6506.5,
+     "y": 6582.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_5",
+     "art": "schwarzeisen",
+     "x": 6505.5,
+     "y": 6579.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eisen_8",
+     "art": "eisen",
+     "x": 6508.5,
+     "y": 6577.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "schwarzeisen_6",
+     "art": "schwarzeisen",
+     "x": 6510.5,
+     "y": 6578.5,
+     "region": "waldweg"
+    }
+   ]
+  }
+ ]
+}

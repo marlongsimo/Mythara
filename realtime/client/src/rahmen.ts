@@ -215,11 +215,18 @@ function skillInfo(k: Skill): void {
   const S = skillStand(skillsLesen()[k], k), I = SKILL_INFO[k], name = k === "lp" ? "Lebenspunkte" : SKILL_NAME[k];
   tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
     <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
+/** Info-Fenster der Berufe: Wofür, So steigst du auf */
+const BERUF_TEXT: Record<string, [string, string]> = {
+  holzfaellerei: [`Stämme für das Handwerk (Bögen, Stäbe, Schilde, Werkzeugstiele) und Brennstoff für die Esse. Jeder Stamm bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.`,
+    `Holzfäller-Bäume (leuchtende Adern) antippen, ein Holzbeil im Rucksack oder in der Hand. Eiche ab Level 1 (25 XP), Tanne 10 (40), Eibe 20 (70), Moorweide 35 (110), Kernbaum 45 (175), Weltenbaum-Setzling 65 (260). Ein besseres Beil fällt schneller. Glühen die Adern auf, schnell antippen: Kernschlag – zwei Stämme, 50 % mehr XP.`],
+  bergbau: ["Erze für das Handwerk: Barren schmelzen für Waffen, Rüstungen und Werkzeuge. Jedes Erz bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
+    "Erzadern in den Senken antippen, eine Spitzhacke im Rucksack oder in der Hand. Kupfer ab Level 1 (20 XP), Eisen 10 (35), Schwarzeisen 20 (60), Sterneisen 35 (100), Splittereisen 45 (160), Ureisen 65 (250). Eine bessere Spitzhacke baut schneller ab. Leuchtet ein Riss im Gestein auf, schnell die Ader antippen: zwei Erze und 50 % mehr XP. Eine erschöpfte Ader füllt sich nach einer Weile wieder."],
+};
 function berufInfo(k: string): void {
   const S = skillStand((inventar().berufe || {})[k] || 0);
   tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${BERUF_ZEICHEN[k]}</span><div><h2>${BERUF_NAME[k]}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
-    <h3>Wofür</h3><p>Stämme für das Handwerk (Bögen, Stäbe, Schilde, Werkzeugstiele) und Brennstoff für die Esse. Jeder Stamm bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.</p>
-    <h3>So steigst du auf</h3><p>Holzfäller-Bäume (leuchtende Adern) antippen, ein Holzbeil im Rucksack oder in der Hand. Eiche ab Level 1 (25 XP), Tanne 10 (40), Eibe 20 (70), Moorweide 35 (110), Kernbaum 45 (175), Weltenbaum-Setzling 65 (260). Ein besseres Beil fällt schneller. Glühen die Adern auf, schnell antippen: Kernschlag – zwei Stämme, 50 % mehr XP.</p>`, () => { /* zu */ }); }
+    <h3>Wofür</h3><p>${BERUF_TEXT[k] ? BERUF_TEXT[k][0] : ""}</p>
+    <h3>So steigst du auf</h3><p>${BERUF_TEXT[k] ? BERUF_TEXT[k][1] : ""}</p>`, () => { /* zu */ }); }
 /** Untersuchen-Fenster eines Gegenstands (auch aus dem Aktionsmenü am Boden) */
 export function gegenstandUntersuchen(g: string, zurueck: () => void = () => { /* zurück */ }): void { untersuchen(g, zurueck, () => { /* zu */ }); }
 /** Bild eines Gegenstands auf eine Leinwand (Symbol oder Figurenebene/3D-Teil) – für das Ladenfenster */
@@ -316,7 +323,7 @@ function tabZeichnen(): void {
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>
-      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${["holzfaellerei"].map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
+      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${["holzfaellerei", "bergbau"].map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
       return `<li data-beruf="${k}" title="${BERUF_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${BERUF_ZEICHEN[k]}</span><b>${BERUF_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
