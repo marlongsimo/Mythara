@@ -105,13 +105,13 @@ s += li(["Werkbank in die Waldmark setzen (beim Handwerker), Kartensymbol Amboss
 s.append(Paragraph("Spiel (Server und Browser)", H2))
 s += li(["shared/handwerk.ts: Rezepte, Vorstufen, Werkstätten – eine Liste, aus der Server, Rezeptfenster und dieses Heft lesen.",
          "Server: „handwerk“/„start“ (Rezept, Menge) mit Prüfung von Level, Zutaten, Nähe; Takt, Glut, Abbruch. Flachs pflücken über den gemeinsamen Sammel-Kern (wie Holz und Bergbau).",
-         "Kuh als Gegner (Level 1, 100 % Kuhhaut) im bestehenden Kampfsystem.",
+         "Kuh als Gegner im bestehenden Kampfsystem: Level 1, 10 Lebenspunkte, 100 % Kuhhaut, normale Kampf-XP.",
          "Browser: Rezeptfenster je Werkstatt, Fortschritt, Glut-Knopf; Handwerk unter Skills → Berufe; XP-Drop mit dem Handwerk-Symbol.",
          "Gegenstände: 6 Barren, Flachs, Garn, Kuhhaut, 6 Leder, 6 Stoffe – nichts stapelt.",
          "Keine neue Datenbank-Tabelle, keine Migration: XP und Zutaten liegen im Inventar des Helden."])
 s.append(Paragraph("Offene Fragen an dich", H2))
 s += li(["<b>Meisterstücke</b> (eigene, etwas stärkere Varianten) später als Ausbaustufe? Dafür müsste ein Gegenstand eigene Werte tragen können.",
-         "<b>Kühe:</b> 10 im Gehege, 20 s bis sie wiederkommen (festgelegt). Offen: gibt es für Kühe Kampf-XP wie bei den Banditen (Vorschlag: ja, wenig – Level 1, 4 LP)?",
+         "<b>Kühe</b> (festgelegt): 10 im Gehege, 20 s bis sie wiederkommen, Level 1 mit 10 Lebenspunkten, Kampf-XP wie bei jedem Gegner (1,33 XP je abgezogenem Lebenspunkt).",
          "<b>Leder- und Stoffnamen</b> (Raues … Urleder, Leinen … Weltentuch) – passen sie, oder hast du eigene?"])
 SimpleDocTemplate(sys.argv[1], pagesize=A4, leftMargin=16 * mm, rightMargin=16 * mm, topMargin=15 * mm, bottomMargin=18 * mm,
                   title="Mythara – Handwerk (Konzept)", author="Mythara").build(s, onFirstPage=seite, onLaterPages=seite)
