@@ -10,6 +10,7 @@
  * Abschaltbar je Gerät: ?held3d=0 (wieder an: ?held3d=1).
  * Schnittstelle wie FigurLeinwand: stelle, blick, blickWinkel, setze, angriff, sterben, sichtbar, schritt, entfernen, geladen, bild.gruppe.
  */
+import { TICK } from "../../../shared/kampfwerte";
 import { TeleportEffekt } from "../echt3d/darsteller";
 /** Dauer des Teleport-Effekts (Sekunden, wie echt3d/figur.ts) */
 const TELEPORT_S = 1.8;
@@ -47,6 +48,8 @@ function hautFaerben(m: THREE.MeshStandardMaterial, faktor: THREE.Vector3) {
         vec3 t = clamp(dot(s, vec3(0.299, 0.587, 0.114)) * hautFaktor, 0.0, 1.0); diffuseColor.rgb = mix(diffuseColor.rgb, pow(t, vec3(2.2)), haut); }`); };
   m.customProgramCacheKey = () => "haut"; m.needsUpdate = true; }
 
+/** So lange dauert ein Angriff bzw. Beilhieb: 2 Ticks (shared/kampfwerte.ts → TICK = 0,5 s) */
+const HIEB_MS = 2 * TICK * 1000;
 export class Held3D {
   /** wie FigurLeinwand: die Gruppe, die in der Welt steht (für Prüfungen: bild.gruppe.position) */
   readonly bild = { gruppe: new THREE.Group() }; private ersatz: FigurLeinwand; private wurzel: THREE.Object3D | null = null; private mixer: THREE.AnimationMixer | null = null;
@@ -77,7 +80,7 @@ export class Held3D {
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */
   private zeigen() { if (!this.held) return; const A = this.held.aussehen, ids = this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen, helm = ids.some((e) => e.startsWith("kopf.helm."));
     const soll = new Set([...ids, ...(A.frisur !== "glatze" && !helm ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil)); /* unter dem Helm keine Frisur */
-    this.soll = soll; for (const [n, o] of this.teile) o.visible = soll.has(n);
+    this.soll = soll; const beil = Boolean(this.beil && this.beil.visible); for (const [n, o] of this.teile) o.visible = soll.has(n) && !(beil && /^waffe/.test(n)); /* während eines Beilhiebs bleibt die Waffe weg */
     for (const id of ids) { const n = teil(id); if (AUSGELAGERT.test(id) && !this.teile.has(n) && !this.ladend.has(n)) { this.ladend.add(n); void this.teilLaden(id, n); } } }
   private soll = new Set<string>(); private ladend = new Set<string>();
   /** Ein ausgelagertes Teil laden und an das Skelett hängen (Knochen nach Namen, gleiche Grundhaltung: aus demselben Rig gebaut) */
@@ -101,13 +104,14 @@ export class Held3D {
   get blickWinkel(): number { return this.blickW; }
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
-    this.spiele(this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, true); }
+    const n = this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
+    this.spiele(n, true, true, c ? (c.duration * 1000) / HIEB_MS : 1); /* jeder Angriff dauert 2 Ticks, egal wie lang der Clip ist */ }
   /* ───────── Holzfällerei: Hieb mit dem Beil (das Beil liegt im Rucksack; während des Hiebs ist es in der rechten Hand, die angelegte Waffe ist so lange weg) ───────── */
   private beil: THREE.Object3D | null = null; private beilUrl = ""; private beilZurueck: ReturnType<typeof setTimeout> | null = null;
   private async beilAnhaengen(url: string): Promise<THREE.Object3D | null> {
     const w = this.wurzel; if (!w) return null; if (this.beil && this.beilUrl === url) return this.beil;
     if (this.beil) { this.beil.removeFromParent(); this.beil = null; }
-    let hand: THREE.Object3D | null = null; w.traverse((o) => { if (!hand && (o as THREE.Bone).isBone && /^hand\.R$|right.?hand/i.test(o.name)) hand = o; }); if (!hand) return null;
+    let hand: THREE.Object3D | null = null; w.traverse((o) => { if (!hand && (o as THREE.Bone).isBone && /^hand\.?R$|right.?hand/i.test(o.name)) hand = o; }); if (!hand) return null;
     const vorlage = await teilVorlage("../" + url); if (this.weg || !this.wurzel) return null;
     const g = new THREE.Group(), modell = vorlage.clone(true); modell.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.castShadow = true; m.frustumCulled = false; } });
     /* Ausrichtung wie die Waffe in dieser Hand: deren längste Achse zeigt dorthin, wohin der Stiel des Beils (+y) zeigen soll */
@@ -120,10 +124,12 @@ export class Held3D {
   /** Ein Hieb mit dem Beil (url: 3D-Modell des Beils). Dauer in ms */
   beilHieb(url: string): number {
     if (this.gestorben || !this.mixer || !this.wurzel) { this.ersatz.angriff(); return 0; }
-    const clip = this.clips.has("angriff") ? "angriff" : "stich", c = this.clips.get(clip); const dauer = c ? c.duration * 1000 : 800;
-    void this.beilAnhaengen(url).then((b) => { if (!b || this.gestorben) return; b.visible = true; for (const [n, o] of this.teile) if (/^waffe/.test(n)) o.visible = false; });
-    this.einmal = true; this.spiele(clip, true);
-    if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), dauer + 120); return dauer; }
+    /* der Einhand-Hieb (0,33 s im Kampf) wird zum Holzfällen auf HIEB_MS gedehnt: ausholen, zuschlagen – das Beil ist den ganzen Schwung zu sehen */
+    const clip = this.clips.has("angriff") ? "angriff" : "stich", c = this.clips.get(clip); const dauer = c ? HIEB_MS : 800;
+    if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), dauer + 120);
+    void this.beilAnhaengen(url).then((b) => { if (!b || this.gestorben || !this.beilZurueck /* Schwung schon vorbei (Beil lud zu lange) */) return; b.visible = true; for (const [n, o] of this.teile) if (/^waffe/.test(n)) o.visible = false; });
+    this.einmal = true; this.spiele(clip, true, true, c ? (c.duration * 1000) / HIEB_MS : 1);
+    return dauer; }
   /** Beil weg, angelegte Waffe wieder sichtbar */
   beilWeg(): void { if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^waffe/.test(n)) o.visible = this.soll.has(n); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }

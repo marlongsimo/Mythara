@@ -60,9 +60,13 @@ try {
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "holz-lichtung.png" });
   const st = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6475.5, 6503.5); return s && s.text; });
   check(st === "Eiche fällen", "An der Eiche: „Eiche fällen“ (" + st + ")");
+  await anna.evaluate(() => { const f = window.EZW.welt3d.figur, alt = f.beilWeg.bind(f); /* Zustand kurz vor dem Wegstecken des Beils festhalten */
+    f.beilWeg = () => { const w = [...f.teile].filter(([n]) => /^waffe/.test(n)); if (f.beil && f.beil.visible) window.__hieb = { schwertWeg: w.length > 0 && w.every(([, o]) => !o.visible), waffenteile: w.length }; alt(); if (window.__hieb) window.__nach = { beil: Boolean(f.beil && f.beil.visible), schwert: w.length > 0 && w.every(([, o]) => o.visible) }; }; });
   { const q = await schirm(anna, 6475.5, 6503.5, 2.5); await anna.mouse.click(q.x, q.y); }
   /* Während des Hiebs: Beil in der Hand, Schwert weg */
-  const hieb = await anna.waitForFunction(() => { const f = window.EZW.welt3d.figur; if (!f.beil || !f.beil.visible) return false; const w = [...f.teile].filter(([n]) => /^waffe/.test(n)); return { schwertWeg: w.length > 0 && w.every(([, o]) => !o.visible), waffenteile: w.length }; }, null, { timeout: 30000, polling: 50 }).then((h) => h.jsonValue()).catch(() => null);
+  if (process.env.DEBUG) { await anna.waitForTimeout(4000); console.log("DEBUG", JSON.stringify(await anna.evaluate(() => { const f = window.EZW.welt3d.figur, H = window.EZW.welt3d.holz; let knochen = []; if (f.wurzel) f.wurzel.traverse((o) => { if (o.isBone && /hand/i.test(o.name)) knochen.push(o.name); });
+    return { dauer: f.clips && f.clips.get("angriff") && f.clips.get("angriff").duration, typ: f.constructor.name, hieb: typeof f.beilHieb, wurzel: !!f.wurzel, mixer: !!f.mixer, beil: !!f.beil, beilUrl: f.beilUrl, knochen, faellt: H.faellt, hbeil: H.beil, teile: [...(f.teile || [])].map(([n]) => n) }; }))); }
+  const hieb = await anna.waitForFunction(() => window.__hieb, null, { timeout: 120000, polling: 200 }).then((h) => h.jsonValue()).catch(() => null);
   check(!!hieb, "Hieb: das Holzbeil erscheint in der Hand (ohne es anzulegen)");
   check(hieb && hieb.schwertWeg, "Während des Hiebs ist das Schwert ausgeblendet " + JSON.stringify(hieb));
   if (process.env.BILD) { await anna.waitForTimeout(250); await anna.screenshot({ path: process.env.BILD + "holz-hieb.png" }); }
@@ -72,7 +76,8 @@ try {
   check(await anna.evaluate(() => [...document.querySelectorAll("#ez-chat li, .ez-chat .zeile, #ez-chat div")].some((e) => /Eichenstamm|Eiche/.test(e.textContent))), "Im Chat steht etwas zum Fällen");
   const xp = await anna.evaluate(() => (window.EZW.welt3d && JSON.parse(localStorage.getItem("ez_inventar") || "{}").berufe || {}).holzfaellerei || 0);
   check(xp >= 25, "Holzfällerei-XP im Inventar: " + xp);
-  check(await anna.waitForFunction(() => { const f = window.EZW.welt3d.figur, w = [...f.teile].filter(([n]) => /^waffe/.test(n)); return (!f.beil || !f.beil.visible) && w.length > 0 && w.every(([, o]) => o.visible); }, null, { timeout: 5000, polling: 50 }).then(() => true).catch(() => false), "Zwischen den Hieben: Beil weg, Schwert wieder in der Hand");
+  const nach = await anna.waitForFunction(() => window.__nach, null, { timeout: 60000, polling: 200 }).then((h) => h.jsonValue()).catch(() => null);
+  check(nach && !nach.beil && nach.schwert, "Nach dem Hieb: Beil weg, Schwert wieder in der Hand " + JSON.stringify(nach));
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

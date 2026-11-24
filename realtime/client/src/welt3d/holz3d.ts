@@ -16,7 +16,7 @@ import type { Welt3D } from "./motor";
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Beilfigur { beilHieb(url: string): number; beilWeg(): void; blick(x: number, z: number): void }
-interface Baumbild { b: Holzbaum; gruppe: THREE.Group; baum: THREE.Object3D | null; stumpf: THREE.Object3D | null; laedt: boolean; u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number } } }
+interface Baumbild { b: Holzbaum; gruppe: THREE.Group; baum: THREE.Object3D | null; stumpf: THREE.Object3D | null; laedt: boolean; /** Materialien der Krone (Durchsicht) und deren Deckkraft */ mats?: THREE.Material[]; deck?: number; u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number } } }
 const BEIL_MODELL: Record<string, string> = { holzbeil_training: "training", holzbeil_einfach: "gewoehnlich", holzbeil_selten: "", holzbeil_episch: "episch", holzbeil_legendaer: "legendaer", holzbeil_mythisch: "mythisch" };
 const beilUrl = (g: string) => `img/objekte3d/skilling/utensilien/holzbeil${BEIL_MODELL[g] ? "." + BEIL_MODELL[g] : ""}.glb`;
 const vorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number }>>();
@@ -26,8 +26,8 @@ const WEIBLICH = new Set(["eiche", "tanne", "eibe", "moorweide"]);
 const art = (a: string, fall: "nom" | "akk" | "ein") => (WEIBLICH.has(a) ? (fall === "ein" ? "eine" : "die") : fall === "nom" ? "der" : fall === "akk" ? "den" : "ein");
 const zufall = (s: string) => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return ((h >>> 0) % 10000) / 10000; };
 /** Wind und pulsierende Adern im Shader (wie echt3d/darsteller.ts → BaumBild); uKern: Kernschlag – die Adern glühen hell */
-function shaderAn(o: THREE.Object3D, u: Baumbild["u"]) {
-  o.traverse((x) => { const m = x as THREE.Mesh; if (!m.isMesh) return; m.castShadow = true; m.receiveShadow = false; m.frustumCulled = false; const mat = (m.material as THREE.MeshStandardMaterial).clone(); m.material = mat;
+function shaderAn(o: THREE.Object3D, u: Baumbild["u"], mats?: THREE.Material[]) {
+  o.traverse((x) => { const m = x as THREE.Mesh; if (!m.isMesh) return; m.castShadow = true; m.receiveShadow = false; m.frustumCulled = false; const mat = (m.material as THREE.MeshStandardMaterial).clone(); m.material = mat; mats?.push(mat);
     mat.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u);
       sh.vertexShader = "uniform float uZeit, uPhase, uWind, uHoehe;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
         { float hb = clamp(transformed.y / uHoehe, 0.0, 1.0), b = hb * hb * uWind; transformed.x += sin(uZeit * 1.6 + uPhase + transformed.y * 0.35) * b; transformed.z += cos(uZeit * 1.1 + uPhase * 1.3) * b * 0.6; }`);
@@ -51,7 +51,7 @@ export class HolzWelt {
   private async laden(a: Baumbild) { a.laedt = true; const D = BAEUME[a.b.art];
     try { const [v, s] = await Promise.all([vorlage(D.modell), vorlage(D.stumpf)]); const f = D.hoehe / v.hoehe, dreh = zufall(a.b.id + "d") * Math.PI * 2;
       const baum = v.szene.clone(true), stumpf = s.szene.clone(true); for (const o of [baum, stumpf]) { o.scale.setScalar(f * (0.92 + 0.16 * zufall(a.b.id + "s"))); o.rotation.y = dreh; a.gruppe.add(o); }
-      a.u.uHoehe.value = v.hoehe; shaderAn(baum, a.u); shaderAn(stumpf, a.u); a.baum = baum; a.stumpf = stumpf; this.zustand(a);
+      a.u.uHoehe.value = v.hoehe; a.mats = []; shaderAn(baum, a.u, a.mats); shaderAn(stumpf, a.u); a.baum = baum; a.stumpf = stumpf; this.zustand(a);
     } catch (e) { console.warn("Holzfäller-Baum fehlt:", a.b.art, e); } }
   private nachricht(m: { tat: string; id?: string; beil?: string; text?: string; g?: string; name?: string; n?: number; xp?: number; splitter?: number; kern?: boolean; aufstieg?: number; grund?: string; ms?: number }) {
     const a = m.id ? this.alle.get(m.id) : undefined, D = a ? BAEUME[a.b.art] : null, f = this.figur;
@@ -82,7 +82,10 @@ export class HolzWelt {
     if (this.kern && jetzt > this.kern.bis) this.kern = null;
     for (const a of this.alle.values()) { const nah = Math.hypot(a.b.x - o.x, a.b.y - o.y) < 55; a.gruppe.visible = nah; if (!nah) continue;
       if (!a.laedt) void this.laden(a); a.gruppe.position.set(a.b.x, M.hoehe(a.b.x, a.b.y), a.b.y); a.u.uZeit.value = this.zeit;
-      a.u.uKern.value = this.kern && this.kern.id === a.b.id ? 0.6 + 0.4 * Math.sin(jetzt / 70) : 0; } }
+      a.u.uKern.value = this.kern && this.kern.id === a.b.id ? 0.6 + 0.4 * Math.sin(jetzt / 70) : 0;
+      /* Held unter der Krone: der Baum wird halb durchsichtig, damit man sich und das Beil sieht */
+      if (a.mats && a.mats.length) { const ziel = Math.hypot(a.b.x - o.x, a.b.y - o.y) < 3.4 ? 0.38 : 1; a.deck = (a.deck ?? 1) + (ziel - (a.deck ?? 1)) * Math.min(1, dt * 6);
+        const durch = a.deck < 0.99; for (const m of a.mats) { if (m.transparent !== durch) { m.transparent = durch; m.needsUpdate = true; } m.opacity = durch ? a.deck : 1; } } } }
   /** für Tests */
   get liste(): { id: string; art: string; x: number; y: number; geladen: boolean; stumpf: boolean }[] { return [...this.alle.values()].map((a) => ({ id: a.b.id, art: a.b.art, x: a.b.x, y: a.b.y, geladen: Boolean(a.baum), stumpf: this.gefallen.has(a.b.id) })); }
 }
