@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="manifest" href="mythara.webmanifest?v=mwuk3n2q">
+  <link rel="manifest" href="mythara.webmanifest?v=mwulrs9u">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,9 +12,9 @@
   <title>Mythara: Splitterlande – Willkommen</title>
   <meta name="robots" content="noindex">
   <link rel="icon" href="../img/favicon.svg">
-  <link rel="stylesheet" href="start.css?v=mwuk3n2q">
-  <script src="start-passen.js?v=mwuk3n2q"></script>
-  <script src="quer.js?v=mwuk3n2q" defer></script>
+  <link rel="stylesheet" href="start.css?v=mwulrs9u">
+  <script src="start-passen.js?v=mwulrs9u"></script>
+  <script src="quer.js?v=mwulrs9u" defer></script>
   <style>
     /* Landing-Page: kommt bei jedem Besuch vor dem Spiel – Neuigkeiten, Nachrichten, „Ins Spiel“ */
     .lager { width: min(1120px, 96vw); padding: 56px clamp(16px, 3vw, 40px) 30px;
@@ -145,6 +145,11 @@
       try { if (db) await db.auth.signOut(); } catch (e) { /* trotzdem weiter */ }
       for (const k of ["ez__offen", "ez__version", "mr-merken"]) schreib(k, null); try { for (const k of ["ez__neu", "ez__gefragt", "ez__lager", "mr-sitzung"]) sessionStorage.removeItem(k); } catch (e) { /* privat */ }
       location.replace("anmelden.html"); };
+
+    /* Aus dem Spiel abgemeldet (abmeldung.ts): untätig oder auf einem anderen Gerät angemeldet */
+    { const g = new URLSearchParams(location.search).get("grund");
+      if (g === "ruhe") $("#meldung").textContent = "Du warst 5 Minuten untätig und wurdest aus dem Spiel abgemeldet. Mit „Ins Spiel“ geht es weiter.";
+      else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter. Mit „Ins Spiel“ holst du den Helden hierher zurück."; }
 
     /* Ins Spiel */
     $("#insspiel").onclick = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };
