@@ -7578,6 +7578,146 @@
    "modell3d": {
     "url": "img/objekte3d/skilling/holzfaellerei/tanne-stumpf.glb"
    }
+  },
+  {
+   "id": "berg_kupferstein_01",
+   "name": "Kupferstein",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_01.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Embervein Outcrop“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_01",
+   "name": "Eisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_01.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossbound Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_01",
+   "name": "Schwarzeisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_01.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossy Obsidian Ridge“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_01",
+   "name": "Sterneisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_01.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Veinstone“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_01",
+   "name": "Splittereisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_01.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Rift Mountain“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen.glb",
+    "wind": 0
+   }
   }
  ]
 }

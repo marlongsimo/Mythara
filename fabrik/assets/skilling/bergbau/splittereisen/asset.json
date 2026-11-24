@@ -1,0 +1,9 @@
+{
+  "id": "bergbau.splittereisen",
+  "name": "Splittereisen",
+  "kategorie": "bergbau",
+  "aktuell": "v001",
+  "hoehe_m": 1.5,
+  "status": "Meshy „Azure Rift Mountain“; Spieldatei img/objekte3d/skilling/bergbau/splittereisen.glb (live 3D wie die Bäume, ohne Wind; blaue Adern pulsieren); Weltobjekt berg_splittereisen_01 (Ersatzbild img/welt/stil/berg_splittereisen_01.webp); Abbau-Funktion folgt",
+  "herkunft": "Meshy"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "bergbau.schwarzeisen",
+  "name": "Schwarzeisen",
+  "kategorie": "bergbau",
+  "aktuell": "v001",
+  "hoehe_m": 1.3,
+  "status": "Meshy „Mossy Obsidian Ridge“; Spieldatei img/objekte3d/skilling/bergbau/schwarzeisen.glb (live 3D wie die Bäume, ohne Wind; blaue Adern pulsieren); Weltobjekt berg_schwarzeisen_01 (Ersatzbild img/welt/stil/berg_schwarzeisen_01.webp); Abbau-Funktion folgt",
+  "herkunft": "Meshy"
+}

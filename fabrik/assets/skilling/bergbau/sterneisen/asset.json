@@ -1,0 +1,9 @@
+{
+  "id": "bergbau.sterneisen",
+  "name": "Sterneisen",
+  "kategorie": "bergbau",
+  "aktuell": "v001",
+  "hoehe_m": 1.3,
+  "status": "Meshy „Azure Veinstone“; Spieldatei img/objekte3d/skilling/bergbau/sterneisen.glb (live 3D wie die Bäume, ohne Wind; blaue Adern pulsieren); Weltobjekt berg_sterneisen_01 (Ersatzbild img/welt/stil/berg_sterneisen_01.webp); Abbau-Funktion folgt",
+  "herkunft": "Meshy"
+}
