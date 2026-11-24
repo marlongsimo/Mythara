@@ -127,7 +127,7 @@ function fremd(s: WeltKern, rx: number, ry: number): boolean {
   if (!kampf && naechster && naechster.region === s.hier) { kampf = naechster; naechster = null; } /* das Nachbargebiet war schon verbunden */
   nachbarVorbereiten(s);
   if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = kampfNeu(s, s.hier, s.ort.x, s.ort.y, gefallen); }
-  if (!kampf.eingetreten) kampf.betreten(s.ort.x, s.ort.y); /* vorverbunden: jetzt hinein, ohne Wartezeit */
+  if (!kampf.eingetreten) { const pf0 = (s as unknown as { pfad: { x: number; y: number }[] }).pfad; kampf.betreten(s.ort.x, s.ort.y, pf0.length ? pf0[pf0.length - 1] : null, [rx, ry]); } /* vorverbunden: jetzt hinein, ohne Wartezeit – mit dem Laufziel, damit der Server gleich weitergeht */
   if (!kampf.bereit && kampf.vorverbunden) return false; /* bis der Server den Helden meldet (Bruchteile einer Sekunde): selbst weiterlaufen */
   if (!kampf.bereit) { if (kampf.art === "warte") { const t = $("#ez-dorf-hilfe"); t.textContent = "Verbinde mit dem Spielserver …"; t.style.display = ""; } return true; } /* bis der Server antwortet, bleibt der Held stehen */
   /* am Rand des Gebiets und weiter hinaus: die Welt übernimmt wieder (etwa durchs Tor zurück in die Waldmark) */

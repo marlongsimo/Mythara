@@ -105,10 +105,12 @@ export class WeltKampf {
       else { this.ausdauerDa = true; ausdauerVomServer(z.ich.ausdauer); } } const x = z.ich.xp; if (!x) return; skillsSchreiben(x); xpDrops({ ...NULL_XP_K, ...x }); const st = stufenVon(x);
     if (st !== this.v1Stufen) { this.v1Stufen = st; const n = this.netz; if (n && n.art === "lokal" && n.sim) { const k = meineKampfwerte(x); if (k) n.sim.kampfwerteSetzen(z.ich.id, k); } } }
   /** Über die Grenze: jetzt hinein, an genau dieser Stelle (Weltfelder) – der Server ist schon angemeldet, es gibt keine Wartezeit */
-  betreten(wx: number, wy: number) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");
+  betreten(wx: number, wy: number, ziel?: { x: number; y: number } | null, richtung?: [number, number] | null) { if (this.eingetreten || this.vorbei) return; this.eingetreten = true; document.body.classList.add("weltkampf");
     const lx = wx - this.zone.x0, ly = wy - this.zone.y0; if (!this.netz) { this.betretenOffen = { x: wx, y: wy }; return; }
     if (this.netz.art === "lokal" && this.netz.sim) { const h = this.netz.sim.wesen.find((w) => w.held); if (h) { h.x = Math.max(0.5, Math.min(this.zone.b - 0.5, lx)); h.y = Math.max(0.5, Math.min(this.zone.h - 0.5, ly)); h.pfad = []; } }
-    else this.netz.sende({ t: "betreten", x: lx, y: ly } as unknown as Parameters<Netz["sende"]>[0]); }
+    else { this.netz.sende({ t: "betreten", x: lx, y: ly } as unknown as Parameters<Netz["sende"]>[0]);
+      /* gleich weiterlaufen lassen: sonst steht der Held auf dem Server an der Grenze, bis die erste Antwort da ist – und springt dann dorthin zurück */
+      if (ziel) this.gehe(ziel.x, ziel.y); else if (richtung && Math.hypot(richtung[0], richtung[1]) > 0.05) this.steuern(richtung[0], richtung[1]); } }
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
@@ -126,7 +128,7 @@ export class WeltKampf {
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); this.figurSichtbar(f, !f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; this.figuren.delete(id); this.figurEntfernen(f); }
     for (const ev of z.ev) this.ereignis(ev);
-    const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; this.s.ort.x = this.zone.x0 + ich[4]; this.s.ort.y = this.zone.y0 + ich[5]; }
+    const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; if (Math.hypot(zx - this.s.ort.x, zy - this.s.ort.y) > 3) { this.s.ort.x = zx; this.s.ort.y = zy; } } /* nah dran: nicht springen – die Glättung (schritt) führt weich zur Stelle des Servers */
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }
     this.hud(z); }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur { const s = this.s, D = held ? HELDEN[typ] : MONSTER[typ], nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, hoch = held ? HELD_PX : HELD_PX * ((D && (D as { hoehe?: number }).hoehe) || 88) / 96;

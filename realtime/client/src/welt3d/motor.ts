@@ -18,7 +18,7 @@ type Index = { stand: string; chunkFelder: number; start: [number, number]; gebi
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
 type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
@@ -91,7 +91,7 @@ export class Welt3D {
     try { setzeKenney(await (await fetch("welt3d/modelle.json?v=" + this.ix.stand)).json() as Record<string, KenneyModell>); } catch { /* ohne Kenney-Modelle: Bilder */ }
     this.held.x = sx; this.held.z = sz;
     laden("Baue die Welt …"); this.nachladen(); await this.alleGeladen();
-    while (this.warte.length) this.bauen(this.warte.shift()!);
+    for (const k of [...this.warte]) if (this.imRadius(k)) { this.warte.splice(this.warte.indexOf(k), 1); this.bauen(k); } /* der Ring dahinter ist schon geholt und wird im Spiel gebaut */
     this.eingaben(); this.r.setAnimationLoop(() => this.bild());
   }
   groesse() { const el = this.r.domElement.parentElement, w = (el && el.clientWidth) || innerWidth, h = (el && el.clientHeight) || innerHeight; /* Größe des Behälters (fest über den ganzen Bildschirm), nicht innerHeight: iOS meldet das beim Drehen verspätet */ this.r.setSize(w, h); this.kamera.aspect = w / h; this.kamera.updateProjectionMatrix(); }
@@ -99,8 +99,16 @@ export class Welt3D {
 
   /* ───────── Chunks laden, bauen, freigeben ───────── */
   nachladen() { const hx = Math.floor(this.held.x / C), hz = Math.floor(this.held.z / C);
-    for (let dz = -RADIUS; dz <= RADIUS; dz++) for (let dx = -RADIUS; dx <= RADIUS; dx++) { const k = hx + dx + "_" + (hz + dz); if (this.vorhanden.has(k) && !this.st.has(k) && !this.laedt.has(k)) { this.laedt.add(k); void this.holen(k); } }
-    for (const [k, s] of this.st) if (Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)) > RADIUS + 1) this.freigeben(k); }
+    /* Daten einen Ring weiter holen als gebaut wird (RADIUS + 1): beim Überqueren einer Chunk-Grenze liegen sie schon bereit */
+    for (let dz = -RADIUS - 1; dz <= RADIUS + 1; dz++) for (let dx = -RADIUS - 1; dx <= RADIUS + 1; dx++) { const k = hx + dx + "_" + (hz + dz); if (this.vorhanden.has(k) && !this.st.has(k) && !this.laedt.has(k)) { this.laedt.add(k); void this.holen(k); } }
+    for (const [k, s] of this.st) if (Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)) > RADIUS + 2) this.freigeben(k); }
+  /** Liegt der Chunk im Bau-Radius um den Helden? */
+  private imRadius(k: string): boolean { const s = this.st.get(k); return !!s && Math.max(Math.abs(s.d.cx - Math.floor(this.held.x / C)), Math.abs(s.d.cy - Math.floor(this.held.z / C))) <= RADIUS; }
+  /** Im Spiel: je Bild höchstens ein Bauschritt (Gelände, dann Dinge, dann Figuren – auf drei Bilder verteilt), der nächste Chunk zuerst */
+  private bauSchritt(): void { const hx = this.held.x / C - 0.5, hz = this.held.z / C - 0.5; let best = -1, bd = Infinity;
+    for (let i = 0; i < this.warte.length; i++) { const s = this.st.get(this.warte[i]); if (!s) continue; const d = Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)); if (d <= RADIUS + 0.5 && d < bd) { bd = d; best = i; } }
+    if (best < 0) return; const k = this.warte[best], s = this.st.get(k)!; s.stufe = (s.stufe || 0) + 1;
+    if (s.stufe === 1) { s.gebaut = true; this.gelaende(s); } else if (s.stufe === 2) this.dinge(s); else { this.figuren(s); this.warte.splice(best, 1); } }
   async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [], stege: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
   freigeben(k: string) { const s = this.st.get(k); if (!s) return; this.st.delete(k); const i = this.warte.indexOf(k); if (i >= 0) this.warte.splice(i, 1);
     for (const o of s.obj) { this.szene.remove(o); o.traverse((q) => { const im = q as THREE.InstancedMesh, m = q as THREE.Mesh; if (im.isInstancedMesh) im.dispose(); else if (m.isMesh && m.geometry && !m.geometry.userData.geteilt) m.geometry.dispose(); }); } }
@@ -269,7 +277,7 @@ export class Welt3D {
   bild() {
     const dt = Math.min(DT_MAX, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
-    if (this.warte.length) this.bauen(this.warte.shift()!);
+    if (this.warte.length) this.bauSchritt();
     if (performance.now() > this.naechsterBlick) { this.naechsterBlick = performance.now() + 300; this.nachladen(); }
     if (this.beimBild) this.beimBild(dt);
     for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) n.schritt(dt); if (s.wanderer) for (const w of s.wanderer) w.schritt(dt); }
