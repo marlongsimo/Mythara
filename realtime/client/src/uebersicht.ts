@@ -6,6 +6,7 @@
  * werkzeug/welt/karte.py an ihrer Weltstelle). Eine neue Region erscheint also von selbst, sobald die Welt-Pipeline sie gebaut hat.
  * Die Regionen stoßen ohne Rahmen aneinander; nur ihre Namen stehen klein darüber.
  */
+import { symboleOrdnen } from "./symbolordnung";
 export interface KartenRegion { id: string; name: string; ursprung: number[]; chunks: number[]; /** Kartensymbole in Weltfeldern (aus welt.json) */ symbole?: { s: string; x: number; y: number }[] }
 export interface WeltkarteOpts {
   daten: string;                                 // Ordner mit karte-<id>.webp
@@ -53,6 +54,8 @@ export function uebersicht(o: WeltkarteOpts): void {
   /* Kartensymbole: bleiben bei jedem Zoom gleich groß (wie die Namen) */
   for (const r of o.regionen) for (const q of r.symbole || []) { const im = document.createElement("img"); im.className = "wk-symbol"; im.draggable = false; im.src = (o.symbolBild || "") + q.s + ".webp";
     im.alt = im.title = (o.symbolNamen || {})[q.s] || q.s; Object.assign(im.style, { left: (q.x - x0) * PX + "px", top: (q.y - y0) * PX + "px" }); lw.appendChild(im); }
+  /* dicht beieinanderliegende Symbole je Zoomstufe so weit auseinander, dass jedes ganz zu sehen ist */
+  const symbole = [...lw.querySelectorAll<HTMLElement>(".wk-symbol")], ordnen = () => symboleOrdnen(symbole.map((el) => ({ el, x: parseFloat(el.style.left) * z, y: parseFloat(el.style.top) * z })), 26, z, ` scale(${(1 / z).toFixed(4)})`);
   const punkt = document.createElement("div"); punkt.className = "wk-ich"; punkt.innerHTML = "<i></i>"; lw.appendChild(punkt);
   document.body.appendChild(hülle);
 
@@ -62,7 +65,7 @@ export function uebersicht(o: WeltkarteOpts): void {
   const setzen = () => { /* nicht weiter hinaus schieben, als die Welt reicht (ein Rest bleibt sichtbar) */
     const W = flaeche.clientWidth, Hh = flaeche.clientHeight, b = B * z, h = H * z;
     vx = b <= W ? (W - b) / 2 : Math.min(W * 0.4, Math.max(W * 0.6 - b, vx)); vy = h <= Hh ? (Hh - h) / 2 : Math.min(Hh * 0.4, Math.max(Hh * 0.6 - h, vy));
-    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; hülle.style.setProperty("--wkz", String(z));
+    lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; hülle.style.setProperty("--wkz", String(z)); ordnen();
   };
   const zoomUm = (f: number, px: number, py: number) => { const n = Math.max(zMin(), Math.min(Z_MAX, z * f)); vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; setzen(); };
   const zuMir = () => { const i = o.ich(); if (!i) return; vx = flaeche.clientWidth / 2 - (i.x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (i.y - y0) * PX * z; setzen(); };

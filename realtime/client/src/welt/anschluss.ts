@@ -14,7 +14,8 @@ import { weltkarte } from "../weltkarte";
 import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
-import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, ladenTafel, RKnopf } from "../rahmen";
+import { LAEDEN } from "../../../shared/laden";
 import { frei as freigabe } from "../freigabe";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
 import { heldenFigur, richten, blickVon } from "../modulfigur";
@@ -48,6 +49,7 @@ function oeffne(art: string, s: Welt) {
   else if (art === "welt") { if (!torOffen()) { $("#ez-dorf-knopf").classList.add("bald"); return; }
     tafel(s, (zu) => weltkarte(() => { zu(); if (lokalerHeld() !== s.held) { location.reload(); return; } s.profil(); })); }
   else if (art === "menue") tafel(s, (zu) => menueTafel(() => { zu(); s.profil(); }));
+  else if (art.startsWith("laden:") && LAEDEN[art.slice(6)]) tafel(s, (zu) => ladenTafel(LAEDEN[art.slice(6)], () => { zu(); s.profil(); }));   /* Händler (shared/laden.ts) */
   else $("#ez-dorf-knopf").classList.add("bald");   /* „kommt noch“ */
 }
 /** Den Helden wechseln – nur in der Waldmark (der Server speichert ihn mit dem Konto) */

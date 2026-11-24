@@ -18,13 +18,14 @@ import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
 import { Figurbild } from "./figurbild";
+import { MODELLE } from "./leute3d";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
 type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; art?: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; stege: number[][] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; stege: number[][]; leute: { fb: Figurbild; n: number; links: boolean; takt: number }[]; modelle: { tick(t: number): void; takt: number }[] };
 
 const ATTRAPPE = document.createElement("div");
 const $ = (s: string) => (document.querySelector(s) as HTMLElement | null) || ATTRAPPE;   /* fehlt ein Element (im Spiel), wirkt der Zugriff ins Leere */
@@ -120,7 +121,7 @@ export class Welt3D {
   nachladen() { const hx = Math.floor(this.held.x / C), hz = Math.floor(this.held.z / C);
     for (let dz = -RADIUS; dz <= RADIUS; dz++) for (let dx = -RADIUS; dx <= RADIUS; dx++) { const k = hx + dx + "_" + (hz + dz); if (this.vorhanden.has(k) && !this.st.has(k) && !this.laedt.has(k)) { this.laedt.add(k); void this.holen(k); } }
     for (const [k, s] of this.st) if (Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)) > RADIUS + 1) this.freigeben(k); }
-  async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [], stege: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
+  async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [], stege: [], leute: [], modelle: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
   freigeben(k: string) { const s = this.st.get(k); if (!s) return; this.st.delete(k); this.hinweise = this.hinweise.filter((h) => !s.obj.includes(h.g)); const i = this.warte.indexOf(k); if (i >= 0) this.warte.splice(i, 1);
     for (const o of s.obj) { this.szene.remove(o); o.traverse((q) => { const im = q as THREE.InstancedMesh, m = q as THREE.Mesh; if (im.isInstancedMesh) im.dispose(); else if (m.isMesh && m.geometry && !m.geometry.userData.geteilt) m.geometry.dispose(); }); } }
   bauen(k: string) { const s = this.st.get(k); if (!s || s.gebaut) return; s.gebaut = true; this.gelaende(s); this.dinge(s); this.figuren(s); this.hinweiseBauen(s); }
@@ -202,9 +203,11 @@ export class Welt3D {
     else if (fertig) { const tt = t; if (tt.image && (tt.image as HTMLImageElement).complete !== false) fertig(tt); else setTimeout(() => this.textur(pfad, fertig), 200); }
     return t; }
   figuren(s: Stueck) {
-    /* Dorfbewohner: Bildstreifen mit 8 Bildern zu 176 × 176 – das erste zeigen */
-    for (const f of s.d.figuren) { const pfad = "img/echtzeit/" + f.figur + ".webp", fb = new Figurbild(this.textur(pfad));
-      this.textur(pfad, (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); fb.setze(t, [1 / n, 1], [0, 0], [2.25, 2.25], [0.5, 0.06]); });
+    /* Dorfbewohner: Bildstreifen aus quadratischen Einzelbildern – ruhiges Stehen (idle) wie in 2D: langsam vor und zurück durch die Bilder */
+    for (const [j, f] of (s.d.figuren as { figur: string; x: number; y: number; links?: boolean; modell?: string; blick?: number }[]).entries()) {
+      if (f.modell && MODELLE[f.modell]) { const m = MODELLE[f.modell](); m.gruppe.position.set(f.x, this.hoehe(f.x, f.y), f.y); m.gruppe.rotation.y = f.blick ?? 0; this.szene.add(m.gruppe); s.obj.push(m.gruppe, this.fleck(f.x, f.y)); s.modelle.push({ tick: m.tick, takt: j * 2.3 }); continue; }   /* echte 3D-Figur */
+      const pfad = "img/echtzeit/" + f.figur + ".webp", fb = new Figurbild(this.textur(pfad));
+      this.textur(pfad, (t) => { const n = Math.max(1, Math.round(t.image.width / t.image.height)); fb.setze(t, [1 / n, 1], [0, 0], [2.25, 2.25], [0.5, 0.06]); fb.bild(0, n, Boolean(f.links)); s.leute.push({ fb, n, links: Boolean(f.links), takt: j * 0.7 }); });
       fb.silhouette(false); fb.gruppe.position.set(f.x, this.hoehe(f.x, f.y) + 0.08, f.y); this.szene.add(fb.gruppe); s.obj.push(fb.gruppe, this.fleck(f.x, f.y)); } }
   fleck(x: number, z: number) { const m = new THREE.Mesh(FLECK, FLECK_MAT); m.rotation.x = -Math.PI / 2; m.position.set(x, this.hoehe(x, z) + 0.05, z); this.szene.add(m); return m; }
 
@@ -331,6 +334,9 @@ export class Welt3D {
       for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
       for (const f of b.drehen) f.rotation.z -= dt * 0.6;
       for (const [i, f] of b.flackern.entries()) { const t = performance.now() / 1000 + i * 1.7; f.scale.set(1 + 0.08 * Math.sin(t * 7), 0.8 + 0.28 * Math.abs(Math.sin(t * 9.3) * Math.sin(t * 4.1 + 1)), 1 + 0.08 * Math.cos(t * 6)); } }
+    /* Dorfbewohner stehen nicht starr: 2,5 Bilder je Sekunde vor und zurück (wie die 2D-Welt) */
+    { const t = performance.now() / 1000; for (const s of this.st.values()) for (const l of s.leute) { if (l.n < 2) continue; const k = Math.floor((t + l.takt) * 2.5) % (2 * l.n - 2); l.fb.bild(k < l.n ? k : 2 * l.n - 2 - k, l.n, l.links); }
+      for (const s of this.st.values()) for (const m of s.modelle) m.tick(t + m.takt); }
     this.marke.rotation.z += dt;
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));
