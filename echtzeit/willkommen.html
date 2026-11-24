@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mythara: Splitterlande – Willkommen</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../img/favicon.svg">
+  <link rel="stylesheet" href="start.css?v=mwug6yab">
+  <style>
+    /* Landing-Page: kommt bei jedem Besuch vor dem Spiel – Neuigkeiten, Nachrichten, „Ins Spiel“ */
+    .lager { width: min(1120px, 96vw); padding: 56px clamp(16px, 3vw, 40px) 30px;
+      } .lager .ranke { width: 86px; height: 78px; } .lager .kopf { margin: 0 34px; } .lager { display: flex; flex-direction: column; gap: 18px; }
+    .kopf { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid #4d3f2c; border-radius: 10px; background: rgba(10,9,8,.55); }
+    .kopf > svg { width: 30px; height: 30px; fill: var(--gold); flex: none; }
+    .kopf h1 { margin: 0; flex: 1; min-width: 0; font: 600 clamp(18px, 2.4vw, 26px)/1.2 var(--titel); color: var(--pergament); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .kopf h1 b { color: var(--gold-hell); font-weight: 600; }
+    .kopf .knoepfe { display: flex; gap: 10px; flex: none; }
+    .spalten { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 18px; min-height: 0; }
+    .kasten { border: 1px solid var(--gold-dunkel); border-radius: 10px; background: rgba(10,9,8,.6); box-shadow: inset 0 0 0 3px rgba(0,0,0,.4); padding: 12px 14px; min-width: 0; }
+    .kasten h2 { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(217,178,95,.3); font: 600 20px var(--titel); color: var(--pergament); }
+    .kasten h2 svg { width: 24px; height: 24px; fill: var(--gold); }
+    .liste { list-style: none; margin: 0; padding: 0 6px 0 0; max-height: clamp(150px, calc(100vh - 560px), 380px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold-dunkel) transparent; }
+    .neu { display: grid; grid-template-columns: 124px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 10px 0; border-bottom: 1px solid rgba(217,178,95,.18); }
+    .neu:last-child { border-bottom: 0; }
+    .neu img { width: 124px; height: 82px; object-fit: cover; border-radius: 6px; border: 1px solid var(--gold-dunkel); box-shadow: 0 3px 8px rgba(0,0,0,.6); }
+    .neu h3 { margin: 2px 0 4px; font: 600 19px/1.2 var(--titel); color: var(--gold-hell); }
+    .neu p { margin: 0; font: 400 17px/1.3 var(--schrift); color: var(--text); }
+    .neu time { font: 400 15px var(--schrift); color: var(--leise); white-space: nowrap; padding-top: 4px; }
+    .nachricht { position: relative; padding: 10px 4px 10px 22px; border-bottom: 1px solid rgba(217,178,95,.18); }
+    .nachricht:last-child { border-bottom: 0; }
+    .nachricht::before { content: ""; position: absolute; left: 4px; top: 17px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px rgba(217,178,95,.7); }
+    .nachricht[data-art="system"]::before { background: #d33a2c; box-shadow: 0 0 6px rgba(211,58,44,.8); }
+    .nachricht h3 { margin: 0 0 2px; font: 600 17px var(--titel); color: var(--gold-hell); } .nachricht p { margin: 0; font: 400 16px/1.3 var(--schrift); color: var(--text); }
+    .nachricht.neu-gelesen h3::after { content: " · neu"; color: #ff9a8a; font: 600 12px var(--klein); letter-spacing: .06em; }
+    .kasten.blinkt { animation: blinken 1.2s ease-out 1; } @keyframes blinken { 0% { box-shadow: 0 0 0 2px var(--gold-hell); } 100% { box-shadow: inset 0 0 0 3px rgba(0,0,0,.4); } }
+    .start { display: flex; justify-content: center; margin-top: 4px; }
+    .start .knopf { min-width: min(440px, 100%); height: 70px; font-size: 28px; }
+    .menue { position: absolute; right: 24px; top: 118px; z-index: 5; width: min(300px, 86vw); padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--gold); border-radius: 10px; background: #15120f; box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+    .menue[hidden] { display: none; }
+    .menue h3 { margin: 0; font: 600 16px var(--titel); color: var(--gold); } .menue p { margin: 0; font: 400 15px/1.3 var(--schrift); color: var(--leise); }
+    .menue a { color: var(--gold); font: 400 17px var(--schrift); }
+    @media (max-width: 820px) { .lager .kopf { margin: 0; flex-wrap: wrap; } .kopf > svg { display: none; } .kopf h1 { white-space: normal; font-size: 19px; } .spalten { grid-template-columns: 1fr; } .liste { max-height: none; } .neu { grid-template-columns: 96px minmax(0, 1fr); } .neu img { width: 96px; height: 70px; } .neu time { grid-column: 2; padding: 0; } .lager { padding-top: 46px; } }
+    @media (min-aspect-ratio: 1/1) { .logo-platz { height: clamp(150px, 24vh, 260px); } }
+  </style>
+</head>
+<body>
+  <main class="buehne">
+    <div class="logo-platz" aria-hidden="true"></div>
+    <div class="logo-text" aria-hidden="true"><b>MYTHARA</b><small>— SPLITTERLANDE —</small></div>
+    <section class="tafel lager" aria-labelledby="gruss">
+      <i class="emblem"></i><i class="ranke lo"></i><i class="ranke ro"></i><i class="ranke lu"></i><i class="ranke ru"></i>
+      <div class="kopf">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>
+        <h1 id="gruss">Willkommen, <b id="name">Wanderer</b>!</h1>
+        <div class="knoepfe">
+          <button class="rund" type="button" id="post" title="Nachrichten" aria-label="Nachrichten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h20v14H2z" opacity=".25"/><path d="M2 5h20v14H2zm2 2v.5l8 5.5 8-5.5V7zm16 10V9.9l-8 5.5-8-5.5V17z"/></svg><span class="zahl" id="zahl" hidden>0</span></button>
+          <button class="rund" type="button" id="einst" title="Einstellungen" aria-label="Einstellungen" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.8 7.8 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.8a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.5 11a7.8 7.8 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1L11 21h4l.4-2.8a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
+          <button class="rund" type="button" id="ab" title="Abmelden" aria-label="Abmelden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h10v4h-2V5H6v14h6v-2h2v4H4z"/><path d="M15 8l5 4-5 4v-3H9v-2h6z"/></svg></button>
+        </div>
+      </div>
+      <div class="menue" id="menue" hidden>
+        <h3>Einstellungen</h3>
+        <label class="haken"><input type="checkbox" id="merken"> Angemeldet bleiben</label>
+        <p id="merken-info">Ohne Häkchen endet die Anmeldung, wenn du den Browser schließt.</p>
+        <a href="../">Zur Startseite von Mythara</a>
+      </div>
+      <div class="spalten">
+        <section class="kasten" aria-labelledby="h-neu">
+          <h2 id="h-neu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l6 4V6L6 10zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM15 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>Neuigkeiten</h2>
+          <ul class="liste" id="neuigkeiten"></ul>
+        </section>
+        <section class="kasten" id="k-post" aria-labelledby="h-post">
+          <h2 id="h-post"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h20v14H2zm2 2v.5l8 5.5 8-5.5V7zm16 10V9.9l-8 5.5-8-5.5V17z"/></svg>Nachrichten</h2>
+          <ul class="liste" id="nachrichten"></ul>
+        </section>
+      </div>
+      <div class="start">
+        <button class="knopf" type="button" id="insspiel"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none;stroke:#f3d895;stroke-width:2;stroke-linecap:round"><path d="M4 4l11 11M20 4 9 15M14 18l4 4M10 18l-4 4M13 16l3-3M11 16l-3-3"/></svg>Ins Spiel</button>
+      </div>
+      <p class="meldung" id="meldung" role="status"></p>
+    </section>
+    <p class="fuss"><a href="../">← Zur Startseite von Mythara</a> · <a href="https://case-unlocked.de/impressum.html" target="_blank" rel="noopener">Impressum</a> · <a href="https://case-unlocked.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a></p>
+  </main>
+  <script src="../vendor/supabase-js-2.45.4.js"></script>
+  <script src="../verbindung.js"></script>
+  <script>
+  /* Landing-Page der Splitterlande (24.11.2026): kommt bei jedem Besuch vor dem Spiel, auch mit gespeicherter Anmeldung.
+     „Ins Spiel“ merkt sich das für diesen Tab (sessionStorage „ez__lager“), damit Neuladen im Spiel nicht wieder hierher führt.
+     Ohne Anmeldung (auch nicht als Gast) geht es zum Login. Neuigkeiten und Nachrichten: neuigkeiten.json. */
+  (() => {
+    "use strict";
+    const $ = (s) => document.querySelector(s), esc = (t) => String(t).replace(/[&<>"]/g, (z) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[z]);
+    const lies = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, schreib = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { /* privat */ } };
+    const weiter = () => { const w = new URLSearchParams(location.search).get("weiter") || ""; return /^\?[A-Za-z0-9_=&%.\-]*$/.test(w) ? w : ""; };
+    const zumLogin = () => location.replace("anmelden.html" + (weiter() ? "?weiter=" + encodeURIComponent(weiter()) : ""));
+    let db = null; const c = window.MR_MULTIPLAYER_CONFIG;
+    try { if (window.supabase && c) db = window.supabase.createClient(c.supabaseUrl, c.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "mr-rpg-auth" } }); } catch (e) { db = null; }
+    const MONATE = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
+    const datum = (d) => { const t = new Date(d + "T12:00:00"); return isNaN(t) ? "" : t.getDate() + ". " + MONATE[t.getMonth()]; };
+
+    /* Wer bin ich? (Gast: „Wanderer“) – und „Angemeldet bleiben“ beachten */
+    (async () => {
+      if (!db) return;   /* ohne Datenbank: als Gast weiter */
+      let sitzung = false; try { sitzung = sessionStorage.getItem("mr-sitzung") === "1"; } catch (e) { /* privat */ }
+      const { data } = await db.auth.getSession(); const s = data.session;
+      if (s && lies("mr-merken") === "0" && !sitzung) { await db.auth.signOut(); schreib("mr-merken", null); return zumLogin(); }
+      let gastGewaehlt = false; try { gastGewaehlt = sessionStorage.getItem("mr-gast") === "1"; } catch (e) { /* privat */ }
+      if (!s && !gastGewaehlt) return zumLogin();
+      if (!s) return;   /* als Gast gewählt, aber die Datenbank war nicht erreichbar: trotzdem weiter als Wanderer */
+      try { sessionStorage.setItem("mr-sitzung", "1"); } catch (e) { /* privat */ }
+      if (s.user.is_anonymous) { $("#name").textContent = "Wanderer"; $("#ab").title = "Zur Anmeldung"; $("#ab").setAttribute("aria-label", "Zur Anmeldung"); return; }
+      try { const { data: p } = await db.from("rpg_profiles").select("handle").eq("user_id", s.user.id).maybeSingle(); if (p && p.handle) $("#name").textContent = p.handle; } catch (e) { /* bleibt Wanderer */ }
+    })().catch(() => {});
+
+    /* Neuigkeiten und Nachrichten */
+    fetch("neuigkeiten.json?t=" + Math.floor(Date.now() / 60000)).then((r) => r.json()).then((d) => {
+      $("#neuigkeiten").innerHTML = (d.neuigkeiten || []).map((n) => `<li class="neu"><img src="../img/echtzeit/start/${esc(n.bild || "kristall")}.webp" alt="" loading="lazy"><div><h3>${esc(n.titel)}</h3><p>${esc(n.text)}</p></div><time datetime="${esc(n.datum)}">${datum(n.datum)}</time></li>`).join("");
+      let gelesen = []; try { gelesen = JSON.parse(lies("ez_gelesen") || "[]"); } catch (e) { gelesen = []; }
+      const post = d.nachrichten || [], neu = post.filter((m) => !gelesen.includes(m.id));
+      $("#nachrichten").innerHTML = post.map((m) => `<li class="nachricht${neu.includes(m) ? " neu-gelesen" : ""}" data-art="${esc(m.art || "info")}"><h3>${esc(m.titel)}</h3><p>${esc(m.text)}</p></li>`).join("");
+      const z = $("#zahl"); z.hidden = neu.length === 0; z.textContent = String(neu.length);
+      $("#post").onclick = () => { const k = $("#k-post"); k.scrollIntoView({ behavior: "smooth", block: "center" }); k.classList.remove("blinkt"); void k.offsetWidth; k.classList.add("blinkt");
+        schreib("ez_gelesen", JSON.stringify([...new Set([...gelesen, ...post.map((m) => m.id)])])); z.hidden = true; };
+    }).catch(() => { $("#neuigkeiten").innerHTML = '<li class="neu"><div><p>Neuigkeiten sind gerade nicht erreichbar.</p></div></li>'; });
+
+    /* Einstellungen: Angemeldet bleiben */
+    const menue = $("#menue"), merken = $("#merken"); merken.checked = lies("mr-merken") !== "0";
+    $("#einst").onclick = (e) => { e.stopPropagation(); menue.hidden = !menue.hidden; $("#einst").setAttribute("aria-expanded", String(!menue.hidden)); };
+    document.addEventListener("click", (e) => { if (!menue.hidden && !menue.contains(e.target)) { menue.hidden = true; $("#einst").setAttribute("aria-expanded", "false"); } });
+    merken.onchange = () => { schreib("mr-merken", merken.checked ? null : "0"); try { sessionStorage.setItem("mr-sitzung", "1"); } catch (e) { /* privat */ } };
+
+    /* Abmelden: wie im Spiel – der Fortschritt gehört zum Konto, auf dem Gerät bleibt nichts zurück */
+    $("#ab").onclick = async () => { $("#meldung").textContent = "Abmelden …";
+      try { if (db) await db.auth.signOut(); } catch (e) { /* trotzdem weiter */ }
+      for (const k of ["ez__offen", "ez__version", "mr-merken"]) schreib(k, null); try { for (const k of ["ez__neu", "ez__gefragt", "ez__lager", "mr-sitzung"]) sessionStorage.removeItem(k); } catch (e) { /* privat */ }
+      location.replace("anmelden.html"); };
+
+    /* Ins Spiel */
+    $("#insspiel").onclick = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };
+  })();
+  </script>
+</body>
+</html>
