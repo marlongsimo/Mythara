@@ -792,17 +792,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_01.webp",
    "groesse": [
-    159,
-    178
+    317,
+    351
    ],
    "anker": [
-    0.5094,
-    0.8989
+    0.511,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -827,17 +827,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_02.webp",
    "groesse": [
-    161,
-    178
+    321,
+    351
    ],
    "anker": [
-    0.472,
-    0.8989
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -862,17 +862,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_linde_01.webp",
    "groesse": [
-    148,
-    177
+    296,
+    349
    ],
    "anker": [
-    0.5,
-    0.904
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -897,17 +897,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_herbst_01.webp",
    "groesse": [
-    161,
-    178
+    321,
+    351
    ],
    "anker": [
-    0.472,
-    0.8989
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7113,17 +7113,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_oliv.webp",
    "groesse": [
-    148,
-    177
+    296,
+    349
    ],
    "anker": [
-    0.5,
-    0.904
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7143,17 +7143,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_gold.webp",
    "groesse": [
-    159,
-    178
+    317,
+    351
    ],
    "anker": [
-    0.5094,
-    0.8989
+    0.511,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7173,17 +7173,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_rot.webp",
    "groesse": [
-    148,
-    177
+    296,
+    349
    ],
    "anker": [
-    0.5,
-    0.904
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7203,17 +7203,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_laub_dunkel.webp",
    "groesse": [
-    161,
-    178
+    321,
+    351
    ],
    "anker": [
-    0.472,
-    0.8989
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7233,17 +7233,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_tot_01.webp",
    "groesse": [
-    157,
-    174
+    312,
+    344
    ],
    "anker": [
-    0.4076,
-    0.9195
+    0.4439,
+    0.9244
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.35
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7261,17 +7261,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_eiche_01.webp",
    "groesse": [
-    167,
-    175
+    334,
+    346
    ],
    "anker": [
-    0.5299,
-    0.9143
+    0.5659,
+    0.9191
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7288,17 +7288,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_tanne_01.webp",
    "groesse": [
-    106,
-    171
+    212,
+    337
    ],
    "anker": [
-    0.4717,
-    0.9357
+    0.4528,
+    0.9436
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7315,17 +7315,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_eibe_01.webp",
    "groesse": [
-    172,
-    176
+    342,
+    346
    ],
    "anker": [
-    0.4971,
-    0.9091
+    0.4927,
+    0.9191
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7342,17 +7342,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_moorweide_01.webp",
    "groesse": [
-    157,
-    174
+    314,
+    344
    ],
    "anker": [
-    0.4968,
-    0.9195
+    0.4793,
+    0.9244
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7369,17 +7369,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_kernbaum_01.webp",
    "groesse": [
-    155,
-    174
+    309,
+    344
    ],
    "anker": [
-    0.5065,
-    0.9195
+    0.4693,
+    0.9244
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,
@@ -7396,17 +7396,17 @@
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/holz_weltenbaum_setzling_01.webp",
    "groesse": [
-    119,
-    172
+    238,
+    339
    ],
    "anker": [
-    0.5378,
-    0.9302
+    0.4664,
+    0.9381
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.2
+    "r": 0.39
    },
    "tiefe": "fuss",
    "durchscheinend": true,

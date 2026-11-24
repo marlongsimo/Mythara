@@ -18,7 +18,7 @@ from PIL import Image, ImageFilter, ImageDraw
 HIER = os.path.dirname(os.path.abspath(__file__)); REALTIME = os.path.normpath(os.path.join(HIER, '..', '..')); WURZEL = os.path.normpath(os.path.join(REALTIME, '..'))
 BIB = os.path.join(REALTIME, 'welt', 'bibliothek', 'objekte.json'); ZIEL = os.path.join(WURZEL, 'img', 'welt', 'stil')
 HOEHE = 370   # Bildhöhe eines 7 m hohen Baumes in Bildpunkten (Bezug für alle Höhen)
-STANDARD_M = 3.0   # Laubbaum und toter Baum: 3 m hoch (wie die Holzfällerei-Bäume)
+STANDARD_M = 6.0   # Grundhöhe aller Bäume; das Spiel streut je Standort 5–7 m (welt.ts)
 
 # Sorte: (Ansicht, Farbton-Verschiebung in Grad, Sättigung ×, Helligkeit ×)
 SORTEN = {
@@ -71,13 +71,13 @@ def main():
         hp = round(HOEHE * STANDARD_M / 7); im = zuschneiden(Image.open(r).convert('RGBA')); f = hp / im.height; ansichten.append(im.resize((round(im.width * f), hp), Image.LANCZOS))
     for kennung, (ans, dh, ds, dv, name) in SORTEN.items():
         im = krone_faerben(ansichten[ans], dh, ds, dv); fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width)
-        e = speichern(kennung, im, name, 0.2, "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py")
+        e = speichern(kennung, im, name, 0.4, "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py")
         e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; eintraege.append(e)
     for e in eintraege: d = SORTEN[e['id']]; e['modell3d'] = {"url": "img/objekte3d/baum-laub.glb", "farbton": d[1], "saett": d[2], "hell": d[3]}
     # toter Baum: Render des Meshy-Modells, Krone nicht umgefärbt (er hat keine)
     hp = round(HOEHE * STANDARD_M / 7); im = zuschneiden(Image.open(tot).convert('RGBA')); f = hp / im.height; im = im.resize((round(im.width * f), hp), Image.LANCZOS)
     fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
-    e = speichern('stil_tot_01', im, 'Toter Baum', 0.2, "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]
+    e = speichern('stil_tot_01', im, 'Toter Baum', 0.35, "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]
     e['modell3d'] = {"url": "img/objekte3d/baum-tot.glb", "wind": 0.05}; eintraege.append(e)   # kahle Äste: kaum Wind
     B = json.load(open(BIB)); L = B['objekte']; ids = {e['id'] for e in eintraege}
     VIELFALT = {'stil_eiche_01': ['stil_eiche_01', 'stil_laub_dunkel', 'stil_laub_oliv'], 'stil_eiche_02': ['stil_eiche_02', 'stil_laub_oliv', 'stil_eiche_01'],

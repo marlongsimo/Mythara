@@ -3,7 +3,7 @@
   "name": "Tanne",
   "kategorie": "holzfaellerei",
   "aktuell": "v001",
-  "hoehe_m": 3.0,
+  "hoehe_m": "6 (im Spiel je Standort 5–7)",
   "status": "Meshy „Stormpine“; Spieldatei img/objekte3d/holzfaellerei/tanne.glb (live 3D, Wind, blaue Stellen pulsieren); Weltobjekt holz_tanne_01 (Ersatzbild img/welt/stil/holz_tanne_01.webp); Holzfäller-Funktion folgt",
   "herkunft": "Meshy"
 }
