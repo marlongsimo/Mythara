@@ -12,7 +12,7 @@ ps=[o.matrix_world@v.co for v in o.data.vertices]; lo=Vector([min(p[i] for p in 
 o.location -= Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z)); bpy.context.view_layer.update(); h=hi.z-lo.z
 eng=[i.identifier for i in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items]; sc.render.engine="BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in eng else "BLENDER_EEVEE"
 sc.render.film_transparent=True; sc.render.resolution_x=800; sc.render.resolution_y=880; sc.view_settings.view_transform="Standard"
-n=math.radians(30); cam=bpy.data.objects.new("k",bpy.data.cameras.new("k")); sc.collection.objects.link(cam); cam.data.type="ORTHO"; cam.data.ortho_scale=h*1.25
+n=math.radians(30); cam=bpy.data.objects.new("k",bpy.data.cameras.new("k")); sc.collection.objects.link(cam); cam.data.type="ORTHO"; cam.data.ortho_scale=max(h, hi.x-lo.x, hi.y-lo.y)*1.25
 cam.location=(0,-10*math.cos(n),h*0.5+10*math.sin(n)); cam.rotation_euler=(math.radians(90)-n,0,0); sc.camera=cam
 l=bpy.data.objects.new("l",bpy.data.lights.new("l","SUN")); l.data.energy=3.2; l.rotation_euler=(math.radians(45),0,math.radians(-35)); sc.collection.objects.link(l)
 w=bpy.data.worlds.new("w"); sc.world=w; w.use_nodes=True; w.node_tree.nodes["Background"].inputs[0].default_value=(0.75,0.8,0.9,1); w.node_tree.nodes["Background"].inputs[1].default_value=0.9
@@ -20,3 +20,4 @@ w=bpy.data.worlds.new("w"); sc.world=w; w.use_nodes=True; w.node_tree.nodes["Bac
 import bpy_extras
 f=bpy_extras.object_utils.world_to_camera_view(sc,cam,Vector((0,0,0))); print("FUSS", round(f.x,4), round(1-f.y,4))
 sc.render.filepath=ziel; bpy.ops.render.render(write_still=True)
+import json; json.dump({"px_je_m": max(sc.render.resolution_x, sc.render.resolution_y) / cam.data.ortho_scale}, open(ziel + ".json", "w"))   # Maßstab für baum_bilder.py

@@ -96,12 +96,14 @@ def grau_gruen(im):
 
 def einzeln(render, kennung, name, url, hoehe_m='7', grau=''):
     """ein Baum (Holzfällerei): Ersatzbild aus dem Render (Höhe nach der echten Baumhöhe), Eintrag mit 3D-Modell; grau=grau: graue Stellen grün"""
-    hm = float(hoehe_m); r = round(max(0.2, min(0.6, 0.45 * hm / 7)), 2)
+    hm = float(hoehe_m); r = round(max(0.3, min(0.6, 0.45 * hm / 7)), 2)   # Stammradius in Feldern
     im = zuschneiden(Image.open(render).convert('RGBA'))
     if grau == 'grau': im = grau_gruen(im)
-    hp = round(HOEHE * hm / 7); f = hp / im.height; im = im.resize((round(im.width * f), hp), Image.LANCZOS)   # 7 m = HOEHE Bildpunkte, wie die Laubbäume
+    if os.path.exists(render + '.json'): f = (HOEHE / 7) / json.load(open(render + '.json'))['px_je_m']   # Maßstab aus dem Render (auch für flache Stümpfe richtig)
+    else: f = round(HOEHE * hm / 7) / im.height                                                            # sonst: Bildhöhe = Baumhöhe
+    im = im.resize((round(im.width * f), round(im.height * f)), Image.LANCZOS)   # 7 m = HOEHE Bildpunkte, wie die Laubbäume
     fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
-    e = speichern(kennung, im, name, r, "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url, **({"grau": True} if grau == 'grau' else {})}
+    e = speichern(kennung, im, name, r, "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url, **({"grau": True} if grau == 'grau' else {})}
     B = json.load(open(BIB)); L = B['objekte']; L[:] = [o for o in L if o['id'] != kennung] + [e]
     with open(BIB, 'w') as f_: json.dump(B, f_, ensure_ascii=False, indent=1); f_.write('\n')
     print(kennung, e['groesse'], e['anker'], url)

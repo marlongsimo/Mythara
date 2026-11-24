@@ -7277,9 +7277,9 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/eiche.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche.glb"
    }
   },
   {
@@ -7304,9 +7304,9 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/tanne.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne.glb"
    }
   },
   {
@@ -7331,9 +7331,9 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/eibe.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe.glb"
    }
   },
   {
@@ -7358,9 +7358,9 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/moorweide.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide.glb"
    }
   },
   {
@@ -7385,9 +7385,9 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/kernbaum.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum.glb"
    }
   },
   {
@@ -7412,9 +7412,171 @@
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
    "modell3d": {
-    "url": "img/objekte3d/holzfaellerei/weltenbaum_setzling.glb"
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling.glb"
+   }
+  },
+  {
+   "id": "holz_eiche_stumpf",
+   "name": "Eichenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_stumpf.webp",
+   "groesse": [
+    155,
+    121
+   ],
+   "anker": [
+    0.471,
+    0.8843
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_stumpf",
+   "name": "Moorweidenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_stumpf.webp",
+   "groesse": [
+    167,
+    126
+   ],
+   "anker": [
+    0.3892,
+    0.881
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_stumpf",
+   "name": "Kernbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_stumpf.webp",
+   "groesse": [
+    272,
+    184
+   ],
+   "anker": [
+    0.4467,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_stumpf",
+   "name": "Eibenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_stumpf.webp",
+   "groesse": [
+    146,
+    115
+   ],
+   "anker": [
+    0.5103,
+    0.8783
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_stumpf",
+   "name": "Weltenbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_stumpf.webp",
+   "groesse": [
+    187,
+    130
+   ],
+   "anker": [
+    0.4866,
+    0.8615
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_stumpf",
+   "name": "Tannenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_stumpf.webp",
+   "groesse": [
+    87,
+    84
+   ],
+   "anker": [
+    0.5345,
+    0.8929
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne-stumpf.glb"
    }
   }
  ]
