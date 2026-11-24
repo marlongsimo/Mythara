@@ -135,7 +135,7 @@ export class Spielwelt3D implements WeltKern {
   /** Shader vorwärmen: die Modelle einmal unsichtbar-klein unter den Boden stellen, übersetzen lassen (parallel, wenn der Browser es kann), wieder entfernen */
   private async vorwaermen(): Promise<void> {
     const M = this.motor, g = new THREE.Group(); g.position.set(this.ort.x, M.hoehe(this.ort.x, this.ort.y) - 30, this.ort.y); g.scale.setScalar(0.01);
-    for (const d of ["bandit3d", "mooshocker3d", "banditenboss3d", "stadtwache3d"]) { try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
+    for (const d of ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"]) { try { const v = await vorlage(d); const k = SkeletonUtils.clone(v.szene); k.traverse((o) => { o.frustumCulled = false; if ((o as THREE.Mesh).isMesh) o.castShadow = true; }); g.add(k); } catch { /* fehlt: dann eben beim ersten Auftritt */ } }
     if (!g.children.length) return; M.szene.add(g);
     try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }

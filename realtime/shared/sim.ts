@@ -333,7 +333,7 @@ export class Sim {
     w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, this.zielFeld(w, z, nah)); w.neuWeg = 0.3; }
   }
   /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
-  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; if (aggro && o.held && !w.held) { const bis = MONSTER[w.typ] && MONSTER[w.typ].aggroBisLevel; if (bis && (o.kw ? o.kw.heldenlevel : 1) >= bis) continue; } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
