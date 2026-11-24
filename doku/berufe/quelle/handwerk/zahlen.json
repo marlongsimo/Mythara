@@ -59,7 +59,7 @@
      1
     ]
    ],
-   "splitter": 30,
+   "splitter": 0,
    "xp": 155,
    "ticks": 7
   },
@@ -80,7 +80,7 @@
      1
     ]
    ],
-   "splitter": 80,
+   "splitter": 0,
    "xp": 250,
    "ticks": 7
   },
@@ -101,7 +101,7 @@
      1
     ]
    ],
-   "splitter": 200,
+   "splitter": 0,
    "xp": 505,
    "ticks": 7
   },
@@ -185,7 +185,7 @@
      1
     ]
    ],
-   "splitter": 30,
+   "splitter": 0,
    "xp": 155,
    "ticks": 7
   },
@@ -206,7 +206,7 @@
      1
     ]
    ],
-   "splitter": 80,
+   "splitter": 0,
    "xp": 250,
    "ticks": 7
   },
@@ -227,7 +227,7 @@
      1
     ]
    ],
-   "splitter": 200,
+   "splitter": 0,
    "xp": 505,
    "ticks": 7
   },
@@ -311,7 +311,7 @@
      1
     ]
    ],
-   "splitter": 30,
+   "splitter": 0,
    "xp": 155,
    "ticks": 7
   },
@@ -332,7 +332,7 @@
      1
     ]
    ],
-   "splitter": 80,
+   "splitter": 0,
    "xp": 250,
    "ticks": 7
   },
@@ -353,7 +353,7 @@
      1
     ]
    ],
-   "splitter": 200,
+   "splitter": 0,
    "xp": 505,
    "ticks": 7
   },
@@ -437,7 +437,7 @@
      1
     ]
    ],
-   "splitter": 45,
+   "splitter": 0,
    "xp": 255,
    "ticks": 9
   },
@@ -458,7 +458,7 @@
      1
     ]
    ],
-   "splitter": 120,
+   "splitter": 0,
    "xp": 410,
    "ticks": 9
   },
@@ -479,7 +479,7 @@
      1
     ]
    ],
-   "splitter": 300,
+   "splitter": 0,
    "xp": 880,
    "ticks": 9
   },
@@ -542,7 +542,7 @@
      2
     ]
    ],
-   "splitter": 45,
+   "splitter": 0,
    "xp": 210,
    "ticks": 9
   },
@@ -563,7 +563,7 @@
      2
     ]
    ],
-   "splitter": 120,
+   "splitter": 0,
    "xp": 335,
    "ticks": 9
   },
@@ -584,7 +584,7 @@
      2
     ]
    ],
-   "splitter": 300,
+   "splitter": 0,
    "xp": 635,
    "ticks": 9
   },
@@ -601,7 +601,7 @@
      2
     ],
     [
-     "Wildleder",
+     "Weiches Leder",
      1
     ]
    ],
@@ -622,7 +622,7 @@
      2
     ],
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      1
     ]
    ],
@@ -647,7 +647,7 @@
      1
     ]
    ],
-   "splitter": 45,
+   "splitter": 0,
    "xp": 275,
    "ticks": 9
   },
@@ -668,7 +668,7 @@
      1
     ]
    ],
-   "splitter": 120,
+   "splitter": 0,
    "xp": 440,
    "ticks": 9
   },
@@ -689,7 +689,7 @@
      1
     ]
    ],
-   "splitter": 300,
+   "splitter": 0,
    "xp": 940,
    "ticks": 9
   },
@@ -752,7 +752,7 @@
      1
     ]
    ],
-   "splitter": 60,
+   "splitter": 0,
    "xp": 355,
    "ticks": 11
   },
@@ -773,7 +773,7 @@
      1
     ]
    ],
-   "splitter": 160,
+   "splitter": 0,
    "xp": 570,
    "ticks": 11
   },
@@ -794,7 +794,7 @@
      1
     ]
    ],
-   "splitter": 400,
+   "splitter": 0,
    "xp": 1255,
    "ticks": 11
   },
@@ -811,7 +811,7 @@
      3
     ],
     [
-     "Wildleder",
+     "Weiches Leder",
      1
     ]
    ],
@@ -832,7 +832,7 @@
      3
     ],
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      1
     ]
    ],
@@ -857,7 +857,7 @@
      1
     ]
    ],
-   "splitter": 60,
+   "splitter": 0,
    "xp": 375,
    "ticks": 11
   },
@@ -878,7 +878,7 @@
      1
     ]
    ],
-   "splitter": 160,
+   "splitter": 0,
    "xp": 600,
    "ticks": 11
   },
@@ -899,7 +899,7 @@
      1
     ]
    ],
-   "splitter": 400,
+   "splitter": 0,
    "xp": 1315,
    "ticks": 11
   },
@@ -920,7 +920,7 @@
      1
     ],
     [
-     "Wildleder",
+     "Weiches Leder",
      1
     ]
    ],
@@ -945,7 +945,7 @@
      1
     ],
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      1
     ]
    ],
@@ -974,7 +974,7 @@
      1
     ]
    ],
-   "splitter": 75,
+   "splitter": 0,
    "xp": 430,
    "ticks": 13
   },
@@ -999,7 +999,7 @@
      1
     ]
    ],
-   "splitter": 200,
+   "splitter": 0,
    "xp": 690,
    "ticks": 13
   },
@@ -1024,7 +1024,7 @@
      1
     ]
    ],
-   "splitter": 500,
+   "splitter": 0,
    "xp": 1445,
    "ticks": 13
   },
@@ -1041,7 +1041,7 @@
      5
     ],
     [
-     "Wildleder",
+     "Weiches Leder",
      1
     ]
    ],
@@ -1062,7 +1062,7 @@
      5
     ],
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      1
     ]
    ],
@@ -1087,7 +1087,7 @@
      1
     ]
    ],
-   "splitter": 90,
+   "splitter": 0,
    "xp": 575,
    "ticks": 15
   },
@@ -1108,7 +1108,7 @@
      1
     ]
    ],
-   "splitter": 240,
+   "splitter": 0,
    "xp": 920,
    "ticks": 15
   },
@@ -1129,7 +1129,7 @@
      1
     ]
    ],
-   "splitter": 600,
+   "splitter": 0,
    "xp": 2065,
    "ticks": 15
   },
@@ -1146,7 +1146,7 @@
      2
     ],
     [
-     "Flachsgarn",
+     "Garn",
      1
     ]
    ],
@@ -1167,12 +1167,12 @@
      2
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 60,
+   "xp": 50,
    "ticks": 9
   },
   {
@@ -1188,12 +1188,12 @@
      2
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 100,
+   "xp": 80,
    "ticks": 9
   },
   {
@@ -1209,12 +1209,12 @@
      2
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 45,
-   "xp": 160,
+   "splitter": 0,
+   "xp": 120,
    "ticks": 9
   },
   {
@@ -1230,12 +1230,12 @@
      2
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 120,
-   "xp": 255,
+   "splitter": 0,
+   "xp": 185,
    "ticks": 9
   },
   {
@@ -1251,12 +1251,12 @@
      2
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 300,
-   "xp": 385,
+   "splitter": 0,
+   "xp": 270,
    "ticks": 9
   },
   {
@@ -1272,12 +1272,12 @@
      3
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 80,
+   "xp": 70,
    "ticks": 11
   },
   {
@@ -1293,12 +1293,12 @@
      3
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 135,
+   "xp": 115,
    "ticks": 11
   },
   {
@@ -1314,12 +1314,12 @@
      3
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 60,
-   "xp": 215,
+   "splitter": 0,
+   "xp": 175,
    "ticks": 11
   },
   {
@@ -1335,12 +1335,12 @@
      3
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 160,
-   "xp": 340,
+   "splitter": 0,
+   "xp": 275,
    "ticks": 11
   },
   {
@@ -1356,12 +1356,12 @@
      3
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 400,
-   "xp": 515,
+   "splitter": 0,
+   "xp": 400,
    "ticks": 11
   },
   {
@@ -1444,7 +1444,7 @@
      1
     ]
    ],
-   "splitter": 60,
+   "splitter": 0,
    "xp": 265,
    "ticks": 11
   },
@@ -1465,7 +1465,7 @@
      1
     ]
    ],
-   "splitter": 160,
+   "splitter": 0,
    "xp": 420,
    "ticks": 11
   },
@@ -1486,7 +1486,7 @@
      1
     ]
    ],
-   "splitter": 400,
+   "splitter": 0,
    "xp": 765,
    "ticks": 11
   },
@@ -1503,7 +1503,7 @@
      3
     ],
     [
-     "Flachsgarn",
+     "Garn",
      1
     ]
    ],
@@ -1524,12 +1524,12 @@
      3
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 80,
+   "xp": 70,
    "ticks": 11
   },
   {
@@ -1545,12 +1545,12 @@
      3
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 135,
+   "xp": 115,
    "ticks": 11
   },
   {
@@ -1566,12 +1566,12 @@
      3
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 60,
-   "xp": 215,
+   "splitter": 0,
+   "xp": 175,
    "ticks": 11
   },
   {
@@ -1587,12 +1587,12 @@
      3
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 160,
-   "xp": 340,
+   "splitter": 0,
+   "xp": 275,
    "ticks": 11
   },
   {
@@ -1608,12 +1608,12 @@
      3
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 400,
-   "xp": 515,
+   "splitter": 0,
+   "xp": 400,
    "ticks": 11
   },
   {
@@ -1633,12 +1633,12 @@
      1
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 95,
+   "xp": 85,
    "ticks": 11
   },
   {
@@ -1658,12 +1658,12 @@
      1
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 160,
+   "xp": 140,
    "ticks": 11
   },
   {
@@ -1683,12 +1683,12 @@
      1
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 60,
-   "xp": 260,
+   "splitter": 0,
+   "xp": 220,
    "ticks": 11
   },
   {
@@ -1708,12 +1708,12 @@
      1
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 160,
-   "xp": 415,
+   "splitter": 0,
+   "xp": 345,
    "ticks": 11
   },
   {
@@ -1733,16 +1733,16 @@
      1
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 400,
-   "xp": 760,
+   "splitter": 0,
+   "xp": 645,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (leicht)",
    "stufe": "Einfach",
    "t": 1,
@@ -1750,20 +1750,20 @@
    "level": 11,
    "zutaten": [
     [
-     "Wildleder",
+     "Weiches Leder",
      2
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 70,
+   "xp": 60,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (leicht)",
    "stufe": "Selten",
    "t": 2,
@@ -1771,20 +1771,20 @@
    "level": 21,
    "zutaten": [
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      2
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 120,
+   "xp": 100,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (leicht)",
    "stufe": "Episch",
    "t": 3,
@@ -1796,16 +1796,16 @@
      2
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 45,
-   "xp": 200,
+   "splitter": 0,
+   "xp": 160,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (leicht)",
    "stufe": "Legendär",
    "t": 4,
@@ -1817,16 +1817,16 @@
      2
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 120,
-   "xp": 320,
+   "splitter": 0,
+   "xp": 250,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (leicht)",
    "stufe": "Mythisch",
    "t": 5,
@@ -1838,16 +1838,16 @@
      2
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 300,
-   "xp": 505,
+   "splitter": 0,
+   "xp": 390,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (Stoff)",
    "stufe": "Einfach",
    "t": 1,
@@ -1855,11 +1855,32 @@
    "level": 11,
    "zutaten": [
     [
-     "Nesselstoff",
+     "Grobtuch",
      2
     ],
     [
-     "Nesselgarn",
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 55,
+   "ticks": 9
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Kapuze (Stoff)",
+   "stufe": "Selten",
+   "t": 2,
+   "name": "Magierkapuze",
+   "level": 21,
+   "zutaten": [
+    [
+     "Feintuch",
+     2
+    ],
+    [
+     "Garn",
      1
     ]
    ],
@@ -1868,28 +1889,7 @@
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
-   "fam": "Kapuze (Stoff)",
-   "stufe": "Selten",
-   "t": 2,
-   "name": "Magierkapuze",
-   "level": 21,
-   "zutaten": [
-    [
-     "Silberhanfstoff",
-     2
-    ],
-    [
-     "Silberhanfgarn",
-     1
-    ]
-   ],
-   "splitter": 0,
-   "xp": 150,
-   "ticks": 9
-  },
-  {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (Stoff)",
    "stufe": "Episch",
    "t": 3,
@@ -1897,20 +1897,20 @@
    "level": 36,
    "zutaten": [
     [
-     "Moorseidestoff",
+     "Mondtuch",
      2
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 45,
-   "xp": 250,
+   "splitter": 0,
+   "xp": 140,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (Stoff)",
    "stufe": "Legendär",
    "t": 4,
@@ -1918,20 +1918,20 @@
    "level": 46,
    "zutaten": [
     [
-     "Kernfaserstoff",
+     "Splittertuch",
      2
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 120,
-   "xp": 400,
+   "splitter": 0,
+   "xp": 220,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Kapuze (Stoff)",
    "stufe": "Mythisch",
    "t": 5,
@@ -1939,20 +1939,20 @@
    "level": 66,
    "zutaten": [
     [
-     "Weltenseidestoff",
+     "Weltentuch",
      2
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 300,
-   "xp": 625,
+   "splitter": 0,
+   "xp": 350,
    "ticks": 9
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Hose (leicht)",
    "stufe": "Einfach",
    "t": 1,
@@ -1960,20 +1960,20 @@
    "level": 13,
    "zutaten": [
     [
-     "Wildleder",
+     "Weiches Leder",
      3
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 95,
+   "xp": 85,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Hose (leicht)",
    "stufe": "Selten",
    "t": 2,
@@ -1981,20 +1981,20 @@
    "level": 23,
    "zutaten": [
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      3
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 165,
+   "xp": 145,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Hose (leicht)",
    "stufe": "Episch",
    "t": 3,
@@ -2006,16 +2006,16 @@
      3
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 60,
-   "xp": 275,
+   "splitter": 0,
+   "xp": 235,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Hose (leicht)",
    "stufe": "Legendär",
    "t": 4,
@@ -2027,16 +2027,16 @@
      3
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 160,
-   "xp": 440,
+   "splitter": 0,
+   "xp": 370,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Hose (leicht)",
    "stufe": "Mythisch",
    "t": 5,
@@ -2048,16 +2048,16 @@
      3
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 400,
-   "xp": 695,
+   "splitter": 0,
+   "xp": 580,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Rock (Stoff)",
    "stufe": "Einfach",
    "t": 1,
@@ -2065,20 +2065,20 @@
    "level": 13,
    "zutaten": [
     [
-     "Nesselstoff",
+     "Grobtuch",
      3
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 125,
+   "xp": 80,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Rock (Stoff)",
    "stufe": "Selten",
    "t": 2,
@@ -2086,20 +2086,20 @@
    "level": 23,
    "zutaten": [
     [
-     "Silberhanfstoff",
+     "Feintuch",
      3
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 210,
+   "xp": 130,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Rock (Stoff)",
    "stufe": "Episch",
    "t": 3,
@@ -2107,20 +2107,20 @@
    "level": 38,
    "zutaten": [
     [
-     "Moorseidestoff",
+     "Mondtuch",
      3
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 60,
-   "xp": 350,
+   "splitter": 0,
+   "xp": 205,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Rock (Stoff)",
    "stufe": "Legendär",
    "t": 4,
@@ -2128,20 +2128,20 @@
    "level": 48,
    "zutaten": [
     [
-     "Kernfaserstoff",
+     "Splittertuch",
      3
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 160,
-   "xp": 560,
+   "splitter": 0,
+   "xp": 325,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Rock (Stoff)",
    "stufe": "Mythisch",
    "t": 5,
@@ -2149,20 +2149,20 @@
    "level": 68,
    "zutaten": [
     [
-     "Weltenseidestoff",
+     "Weltentuch",
      3
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 400,
-   "xp": 875,
+   "splitter": 0,
+   "xp": 520,
    "ticks": 11
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Training",
    "t": 0,
@@ -2174,7 +2174,7 @@
      4
     ],
     [
-     "Flachsgarn",
+     "Garn",
      1
     ]
    ],
@@ -2183,7 +2183,7 @@
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Einfach",
    "t": 1,
@@ -2191,20 +2191,20 @@
    "level": 18,
    "zutaten": [
     [
-     "Wildleder",
+     "Weiches Leder",
      4
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 120,
+   "xp": 110,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Selten",
    "t": 2,
@@ -2212,20 +2212,20 @@
    "level": 28,
    "zutaten": [
     [
-     "Dornleder",
+     "Gehärtetes Leder",
      4
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 210,
+   "xp": 190,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Episch",
    "t": 3,
@@ -2237,16 +2237,16 @@
      4
     ],
     [
-     "Moorseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 75,
-   "xp": 350,
+   "splitter": 0,
+   "xp": 310,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Legendär",
    "t": 4,
@@ -2258,16 +2258,16 @@
      4
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 200,
-   "xp": 560,
+   "splitter": 0,
+   "xp": 490,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Wams (leicht)",
    "stufe": "Mythisch",
    "t": 5,
@@ -2279,16 +2279,16 @@
      4
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 500,
-   "xp": 885,
+   "splitter": 0,
+   "xp": 770,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Robe (Stoff)",
    "stufe": "Training",
    "t": 0,
@@ -2296,20 +2296,20 @@
    "level": 9,
    "zutaten": [
     [
-     "Flachsstoff",
+     "Leinen",
      4
     ],
     [
-     "Flachsgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 90,
+   "xp": 60,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Robe (Stoff)",
    "stufe": "Einfach",
    "t": 1,
@@ -2317,20 +2317,20 @@
    "level": 18,
    "zutaten": [
     [
-     "Nesselstoff",
+     "Grobtuch",
      4
     ],
     [
-     "Nesselgarn",
+     "Garn",
      1
     ]
    ],
    "splitter": 0,
-   "xp": 160,
+   "xp": 100,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Robe (Stoff)",
    "stufe": "Selten",
    "t": 2,
@@ -2338,11 +2338,32 @@
    "level": 28,
    "zutaten": [
     [
-     "Silberhanfstoff",
+     "Feintuch",
      4
     ],
     [
-     "Silberhanfgarn",
+     "Garn",
+     1
+    ]
+   ],
+   "splitter": 0,
+   "xp": 170,
+   "ticks": 13
+  },
+  {
+   "werk": "Werkbank",
+   "fam": "Robe (Stoff)",
+   "stufe": "Episch",
+   "t": 3,
+   "name": "Magierrobe",
+   "level": 43,
+   "zutaten": [
+    [
+     "Mondtuch",
+     4
+    ],
+    [
+     "Garn",
      1
     ]
    ],
@@ -2351,28 +2372,7 @@
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
-   "fam": "Robe (Stoff)",
-   "stufe": "Episch",
-   "t": 3,
-   "name": "Magierrobe",
-   "level": 43,
-   "zutaten": [
-    [
-     "Moorseidestoff",
-     4
-    ],
-    [
-     "Moorseidegarn",
-     1
-    ]
-   ],
-   "splitter": 75,
-   "xp": 450,
-   "ticks": 13
-  },
-  {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Robe (Stoff)",
    "stufe": "Legendär",
    "t": 4,
@@ -2380,20 +2380,20 @@
    "level": 53,
    "zutaten": [
     [
-     "Kernfaserstoff",
+     "Splittertuch",
      4
     ],
     [
-     "Kernfasergarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 200,
-   "xp": 720,
+   "splitter": 0,
+   "xp": 430,
    "ticks": 13
   },
   {
-   "werk": "Nähtisch",
+   "werk": "Werkbank",
    "fam": "Robe (Stoff)",
    "stufe": "Mythisch",
    "t": 5,
@@ -2401,58 +2401,42 @@
    "level": 73,
    "zutaten": [
     [
-     "Weltenseidestoff",
+     "Weltentuch",
      4
     ],
     [
-     "Weltenseidegarn",
+     "Garn",
      1
     ]
    ],
-   "splitter": 500,
-   "xp": 1125,
+   "splitter": 0,
+   "xp": 690,
    "ticks": 13
   }
  ],
  "vor": [
+  {
+   "art": "Pflücken (Flachsfeld)",
+   "name": "Flachs",
+   "level": 1,
+   "zutaten": "Flachsfeld in der Welt, kein Werkzeug",
+   "xp": 8,
+   "ticks": 3
+  },
+  {
+   "art": "Garn drehen (Werkbank)",
+   "name": "Garn",
+   "level": 1,
+   "zutaten": "1 Flachs",
+   "xp": 4,
+   "ticks": 2
+  },
   {
    "art": "Schmelzen (Esse)",
    "name": "Kupferbarren",
    "level": 1,
    "zutaten": "1 Kupfererz + 1 Stamm (Brennholz, jede Sorte ab Eichenstamm)",
    "xp": 6,
-   "ticks": 3
-  },
-  {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Flachs",
-   "level": 1,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 10,
-   "ticks": 3
-  },
-  {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Flachsgarn",
-   "level": 1,
-   "zutaten": "2 Flachs",
-   "xp": 6,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Flachsstoff",
-   "level": 1,
-   "zutaten": "2 Flachsgarn",
-   "xp": 12,
-   "ticks": 3
-  },
-  {
-   "art": "Gerben (Gerbbottich)",
-   "name": "Raues Leder",
-   "level": 1,
-   "zutaten": "1 Raue Haut + 1 Stamm (Gerberlohe)",
-   "xp": 15,
    "ticks": 3
   },
   {
@@ -2464,75 +2448,11 @@
    "ticks": 3
   },
   {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Nessel",
-   "level": 10,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 18,
-   "ticks": 3
-  },
-  {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Nesselgarn",
-   "level": 10,
-   "zutaten": "2 Nessel",
-   "xp": 11,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Nesselstoff",
-   "level": 10,
-   "zutaten": "2 Nesselgarn",
-   "xp": 20,
-   "ticks": 3
-  },
-  {
-   "art": "Gerben (Gerbbottich)",
-   "name": "Wildleder",
-   "level": 10,
-   "zutaten": "1 Wildleder-Haut + 1 Stamm (Gerberlohe)",
-   "xp": 25,
-   "ticks": 3
-  },
-  {
    "art": "Schmelzen (Esse)",
    "name": "Schwarzeisenbarren",
    "level": 20,
    "zutaten": "2 Schwarzeisenerz + 1 Stamm (Brennholz, jede Sorte ab Eichenstamm)",
    "xp": 35,
-   "ticks": 3
-  },
-  {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Silberhanf",
-   "level": 20,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 30,
-   "ticks": 3
-  },
-  {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Silberhanfgarn",
-   "level": 20,
-   "zutaten": "2 Silberhanf",
-   "xp": 18,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Silberhanfstoff",
-   "level": 20,
-   "zutaten": "2 Silberhanfgarn",
-   "xp": 35,
-   "ticks": 3
-  },
-  {
-   "art": "Gerben (Gerbbottich)",
-   "name": "Dornleder",
-   "level": 20,
-   "zutaten": "1 Dornhaut + 1 Stamm (Gerberlohe)",
-   "xp": 45,
    "ticks": 3
   },
   {
@@ -2544,75 +2464,11 @@
    "ticks": 3
   },
   {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Moorseide",
-   "level": 35,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 50,
-   "ticks": 3
-  },
-  {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Moorseidegarn",
-   "level": 35,
-   "zutaten": "2 Moorseide",
-   "xp": 30,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Moorseidestoff",
-   "level": 35,
-   "zutaten": "2 Moorseidegarn",
-   "xp": 60,
-   "ticks": 3
-  },
-  {
-   "art": "Gerben (Gerbbottich)",
-   "name": "Moorleder",
-   "level": 35,
-   "zutaten": "1 Moorhaut + 1 Stamm (Gerberlohe)",
-   "xp": 75,
-   "ticks": 3
-  },
-  {
    "art": "Schmelzen (Esse)",
    "name": "Splittereisenbarren",
    "level": 45,
    "zutaten": "2 Splittereisenerz + 1 Stamm (Brennholz, jede Sorte ab Eibenstamm)",
    "xp": 95,
-   "ticks": 3
-  },
-  {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Kernfaser",
-   "level": 45,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 80,
-   "ticks": 3
-  },
-  {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Kernfasergarn",
-   "level": 45,
-   "zutaten": "2 Kernfaser",
-   "xp": 50,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Kernfaserstoff",
-   "level": 45,
-   "zutaten": "2 Kernfasergarn",
-   "xp": 95,
-   "ticks": 3
-  },
-  {
-   "art": "Gerben (Gerbbottich)",
-   "name": "Splitterleder",
-   "level": 45,
-   "zutaten": "1 Splitterhaut + 1 Stamm (Gerberlohe)",
-   "xp": 120,
    "ticks": 3
   },
   {
@@ -2624,43 +2480,107 @@
    "ticks": 3
   },
   {
-   "art": "Pflücken (Faserbusch)",
-   "name": "Weltenseide",
-   "level": 65,
-   "zutaten": "Faserbusch in der Welt, kein Werkzeug",
-   "xp": 125,
+   "art": "Gerben (Werkbank)",
+   "name": "Raues Leder",
+   "level": 1,
+   "zutaten": "1 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 15,
    "ticks": 3
   },
   {
-   "art": "Spinnen (Spinnrad)",
-   "name": "Weltenseidegarn",
-   "level": 65,
-   "zutaten": "2 Weltenseide",
+   "art": "Gerben (Werkbank)",
+   "name": "Weiches Leder",
+   "level": 10,
+   "zutaten": "1 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 25,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Gehärtetes Leder",
+   "level": 20,
+   "zutaten": "2 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 45,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
+   "name": "Moorleder",
+   "level": 35,
+   "zutaten": "2 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
    "xp": 75,
-   "ticks": 2
-  },
-  {
-   "art": "Weben (Webstuhl)",
-   "name": "Weltenseidestoff",
-   "level": 65,
-   "zutaten": "2 Weltenseidegarn",
-   "xp": 150,
    "ticks": 3
   },
   {
-   "art": "Gerben (Gerbbottich)",
+   "art": "Gerben (Werkbank)",
+   "name": "Splitterleder",
+   "level": 45,
+   "zutaten": "3 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
+   "xp": 120,
+   "ticks": 3
+  },
+  {
+   "art": "Gerben (Werkbank)",
    "name": "Urleder",
    "level": 65,
-   "zutaten": "1 Urhaut + 1 Stamm (Gerberlohe)",
+   "zutaten": "4 Kuhhaut + 1 Stamm (Gerberlohe, jede Sorte)",
    "xp": 190,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Leinen",
+   "level": 1,
+   "zutaten": "2 Garn",
+   "xp": 12,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Grobtuch",
+   "level": 10,
+   "zutaten": "3 Garn",
+   "xp": 22,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Feintuch",
+   "level": 20,
+   "zutaten": "4 Garn",
+   "xp": 40,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Mondtuch",
+   "level": 35,
+   "zutaten": "5 Garn",
+   "xp": 65,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Splittertuch",
+   "level": 45,
+   "zutaten": "6 Garn",
+   "xp": 105,
+   "ticks": 3
+  },
+  {
+   "art": "Weben (Werkbank)",
+   "name": "Weltentuch",
+   "level": 65,
+   "zutaten": "8 Garn",
+   "xp": 170,
    "ticks": 3
   }
  ],
  "proh": [
   {
    "stufe": "Training",
-   "rezept": "Magiepanzer (Robe (Stoff))",
-   "xph": 44900
+   "rezept": "Lederpanzer (Wams (leicht))",
+   "xph": 34900
   },
   {
    "stufe": "Einfach",
