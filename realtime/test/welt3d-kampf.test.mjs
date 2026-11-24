@@ -90,7 +90,7 @@ try {
   /* gehen: die letzten XP werden gebucht */
   for (let i = 0; i < 40 && (await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0)) <= HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); } /* mit Fäusten weiter, bis neue (noch nicht gebuchte) XP da sind */
   const zuletzt = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0), vorDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
-  await anna.close(); await new Promise((r) => setTimeout(r, 2500)); const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
+  await anna.close(); for (let i = 0; i < 30 && HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke < zuletzt; i++) await new Promise((r) => setTimeout(r, 500)); /* steht der Held beim Schließen noch im Kampf, bleibt er kurz in der Welt (Abmelden) – die Buchung kommt dann etwas später */ const nachDb = HELD["00000000-0000-0000-0000-00000000a001"].skill_staerke;
   check(nachDb >= zuletzt && nachDb >= vorDb, `Beim Verlassen: die offenen XP werden gebucht (Datenbank ${vorDb} → ${nachDb}, zuletzt angezeigt ${zuletzt})`);
   /* Gast mit eigenem Helden: der Browser rechnet nach v1 */
   const gast = await spieler("Gast", "", [6536, 6583, "waldweg"]); await gast.goto(B + S); await bereit(gast); await gast.waitForTimeout(1200);
