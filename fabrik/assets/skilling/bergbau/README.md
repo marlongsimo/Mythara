@@ -13,6 +13,7 @@ Gesteine für den Bergbau – jedes ein eigener Ordner:
 | Schwarzeisen | 1,3 m | img/objekte3d/skilling/bergbau/schwarzeisen.glb | berg_schwarzeisen_01 |
 | Sterneisen | 1,3 m | img/objekte3d/skilling/bergbau/sterneisen.glb | berg_sterneisen_01 |
 | Splittereisen | 1,5 m | img/objekte3d/skilling/bergbau/splittereisen.glb | berg_splittereisen_01 |
+| Ureisen | 1,6 m | img/objekte3d/skilling/bergbau/ureisen.glb | berg_ureisen_01 |
 
 Ablauf je Gestein (wie die Bäume der Holzfällerei, aber ohne luecken=1 – Grau ist hier die echte Gesteinsfarbe):
 

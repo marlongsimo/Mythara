@@ -7718,6 +7718,34 @@
     "url": "img/objekte3d/skilling/bergbau/splittereisen.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "berg_ureisen_01",
+   "name": "Ureisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_01.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Emberstone Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen.glb",
+    "wind": 0
+   }
   }
  ]
 }
