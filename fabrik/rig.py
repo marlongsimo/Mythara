@@ -150,16 +150,57 @@ def luecken_fuellen(o):
     """Punkte ohne Gewicht (z. B. an einer Schnittkante) übernehmen die Gewichte ihres nächsten gewichteten Nachbarn – sonst bleiben sie bei jeder Bewegung in der Grundhaltung stehen"""
     from mathutils.kdtree import KDTree
     leer = [v.index for v in o.data.vertices if not any(g.weight > 0.001 for g in v.groups)]
-    voll = [v for v in o.data.vertices if any(g.weight > 0.001 for g in v.groups)]
-    if not leer or not voll: return 0
+    if not leer: return 0
+    n_leer = len(leer)
+    # zuerst entlang der Netzkanten: ein Punkt ohne Gewicht übernimmt die Gewichte eines verbundenen Nachbarn (Fingerspitzen → Hand, nicht der räumlich nächste Oberschenkel)
+    nb = {}; offen = set(leer)
+    for e in o.data.edges: a, b = e.vertices; nb.setdefault(a, []).append(b); nb.setdefault(b, []).append(a)
+    while offen:
+        neu = {}
+        for i in offen:
+            for j in nb.get(i, ()):
+                if j not in offen and j not in neu and any(g.weight > 0.001 for g in o.data.vertices[j].groups): neu[i] = j; break
+        if not neu: break
+        for i, j in neu.items():
+            for g in o.data.vertices[j].groups: o.vertex_groups[g.group].add([i], g.weight, "REPLACE")
+        offen -= set(neu)
+    # was übrig bleibt, sind lose Stücke ohne gewichteten Nachbarn (z. B. ein Gegenstand neben der Hand): je Stück ganz an den Knochen, der seiner Mitte am nächsten ist
+    while offen:
+        stueck, rand = set(), [next(iter(offen))]
+        while rand:
+            i = rand.pop()
+            if i in stueck: continue
+            stueck.add(i); rand.extend(j for j in nb.get(i, ()) if j in offen and j not in stueck)
+        offen -= stueck; m = sum((o.data.vertices[i].co for i in stueck), Vector()) / len(stueck)
+        def abst(b):
+            a, c = Vector(b.head_local), Vector(b.tail_local); t = max(0.0, min(1.0, (m - a).dot(c - a) / max(1e-9, (c - a).length_squared))); return (a + t * (c - a) - m).length
+        kn = min(KN, key=abst); g = o.vertex_groups.get(kn.name) or o.vertex_groups.new(name=kn.name); g.add(list(stueck), 1.0, "REPLACE")
+    return n_leer
     kd = KDTree(len(voll))
     for j, v in enumerate(voll): kd.insert(v.co, j)
     kd.balance()
     for i in leer:
         _, j, _ = kd.find(o.data.vertices[i].co)
         for g in voll[j].groups: o.vertex_groups[g.group].add([i], g.weight, "REPLACE")
-    return len(leer)
+    return n_leer
 print("ohne Gewicht, vom Nachbarn übernommen:", luecken_fuellen(ob), "Punkte")
+def fehlgewichte(o):
+    """Punkte, deren Hauptknochen weit weg ist (> 20 cm), die aber dicht an einem anderen Knochen liegen (< 6 cm), gehören zu diesem –
+    z. B. Finger einer Hand, die in der Meshy-Haltung am Bein hängt und von der Wärmeverteilung dem Oberschenkel gegeben wurde"""
+    A = np.array([b.head_local for b in KN], np.float32); B = np.array([b.tail_local for b in KN], np.float32); AB = B - A; name = [b.name for b in KN]
+    Q = np.array([v.co for v in o.data.vertices], np.float32)
+    t_ = np.clip(((Q[:, None, :] - A[None]) * AB[None]).sum(-1) / np.maximum((AB * AB).sum(-1)[None], 1e-9), 0, 1); D = np.linalg.norm(Q[:, None, :] - (A[None] + t_[..., None] * AB[None]), axis=-1)
+    n = 0
+    for v in o.data.vertices:
+        if not v.groups: continue
+        g = max(v.groups, key=lambda x: x.weight); hn = o.vertex_groups[g.group].name
+        if hn not in name: continue
+        k = int(np.argmin(D[v.index])); dh = D[v.index, name.index(hn)]
+        if dh > 0.2 and D[v.index, k] < 0.1 and dh > 3 * D[v.index, k]:
+            for x in list(v.groups): o.vertex_groups[x.group].remove([v.index])
+            (o.vertex_groups.get(name[k]) or o.vertex_groups.new(name=name[k])).add([v.index], 1.0, "REPLACE"); n += 1
+    return n
+print("fern vom eigenen Knochen, an den nahen gegeben:", fehlgewichte(ob), "Punkte")
 anteil = gewichtet(ob); print("Gewichte:", weg, "·", round(anteil * 100, 1), "% der Punkte gewichtet")
 ob["ebene"] = "koerper"; ob["art"] = "koerper"
 
