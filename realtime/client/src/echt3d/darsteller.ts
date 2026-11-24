@@ -299,7 +299,7 @@ export class GeschossBild {
 }
 
 /* ---------- Bäume in 3D (offene Welt) ----------
- * Jeder Baum ist ein eigenes 3D-Objekt im Licht der Figuren: eigene Drehung, eigene Kronenfarbe und eigener Wind (alles im Shader, Modell und Textur
+ * Jeder Baum ist ein eigenes 3D-Objekt im Licht der Figuren: eigene Drehung, eigene Kronenfarbe, eigener Wind, blaue Stellen pulsieren (alles im Shader, Modell und Textur
  * teilen sich alle Bäume einer Sorte). Gezeichnet wird in ein eigenes kleines Bild je Baum; die Welt (welt/welt.ts) zeigt es an seinem Standort
  * und zeichnet nur sichtbare Bäume, gedrosselt. */
 export interface BaumWerte { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number }
@@ -320,9 +320,12 @@ function baumVorlage(url: string) {
           sh.vertexShader = "uniform float uZeit, uPhase, uWind, uHoehe;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
             { float hb = clamp(transformed.y / uHoehe, 0.0, 1.0), b = hb * hb * uWind;            // Wind: oben mehr, unten fest
               transformed.x += sin(uZeit * 1.6 + uPhase + transformed.y * 0.35) * b; transformed.z += cos(uZeit * 1.1 + uPhase * 1.3) * b * 0.6; }`);
-          sh.fragmentShader = "uniform float uFarbton, uSaett, uHell;\n" + sh.fragmentShader.replace("#include <common>", "#include <common>\n" + HSV_GLSL).replace("#include <map_fragment>", `#include <map_fragment>
+          sh.fragmentShader = "uniform float uFarbton, uSaett, uHell, uZeit, uPhase;\n" + sh.fragmentShader.replace("#include <common>", "#include <common>\n" + HSV_GLSL).replace("#include <map_fragment>", `#include <map_fragment>
+            vec3 baumBlau = vec3(0.);                                                              // blau leuchtende Stellen (Adern, Kristalle): pulsieren
+            { vec3 hsv = baum_rgb2hsv(diffuseColor.rgb); float b = clamp((hsv.y - 0.45) / 0.2, 0., 1.) * clamp((hsv.z - 0.3) / 0.25, 0., 1.) * clamp(1. - abs(hsv.x * 360. - 210.) / 28., 0., 1.);
+              baumBlau = diffuseColor.rgb * b * (0.35 + 1.25 * (0.5 + 0.5 * sin(uZeit * 2.2 + uPhase))); }
             { vec3 hsv = baum_rgb2hsv(diffuseColor.rgb); float maske = clamp((hsv.y - 0.25) / 0.2, 0., 1.) * sqrt(clamp(1. - abs(hsv.x * 360. - 95.) / 60., 0., 1.));   // nur Blätter (grün), nicht der Stamm
-              hsv.x = fract(hsv.x + uFarbton / 360. * maske); hsv.y = clamp(hsv.y * (1. + (uSaett - 1.) * maske), 0., 1.); hsv.z = clamp(hsv.z * (1. + (uHell - 1.) * maske), 0., 1.); diffuseColor.rgb = baum_hsv2rgb(hsv); }`); };
+              hsv.x = fract(hsv.x + uFarbton / 360. * maske); hsv.y = clamp(hsv.y * (1. + (uSaett - 1.) * maske), 0., 1.); hsv.z = clamp(hsv.z * (1. + (uHell - 1.) * maske), 0., 1.); diffuseColor.rgb = baum_hsv2rgb(hsv); }`).replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n totalEmissiveRadiance += baumBlau;"); };
         mat.customProgramCacheKey = () => "baum"; });
       return { szene, hoehe: box.max.y, radius }; });
     baumVorlagen.set(url, p); }

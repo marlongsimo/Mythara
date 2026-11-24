@@ -7254,6 +7254,33 @@
     "url": "img/objekte3d/baum-tot.glb",
     "wind": 0.05
    }
+  },
+  {
+   "id": "holz_eiche_01",
+   "name": "Azurherz-Eiche",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_01.webp",
+   "groesse": [
+    389,
+    403
+   ],
+   "anker": [
+    0.5681,
+    0.9206
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.5
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/holzfaellerei/eiche.glb"
+   }
   }
  ]
 }

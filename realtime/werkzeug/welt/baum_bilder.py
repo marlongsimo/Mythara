@@ -87,4 +87,15 @@ def main():
     with open(BIB, 'w') as f: json.dump(B, f, ensure_ascii=False, indent=1); f.write('\n')
     for e in eintraege: print(e['id'], e['groesse'], [float(x) for x in e['anker']], e.get('vielfalt', ''))
 
-if __name__ == '__main__': main()
+def einzeln(render, kennung, name, url, r=0.5):
+    """ein Baum (Holzfällerei): Ersatzbild aus dem Render, Eintrag mit 3D-Modell"""
+    im = zuschneiden(Image.open(render).convert('RGBA')); f = HOEHE / im.height; im = im.resize((round(im.width * f), HOEHE), Image.LANCZOS)
+    fx, fy = fuss_finden(im); im, anker = mit_schatten(im, fx, fy, im.width * 0.8)
+    e = speichern(kennung, im, name, r, "fabrik/assets/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py"); e["anker"] = [round(float(anker[0]), 4), round(float(anker[1]), 4)]; e["modell3d"] = {"url": url}
+    B = json.load(open(BIB)); L = B['objekte']; L[:] = [o for o in L if o['id'] != kennung] + [e]
+    with open(BIB, 'w') as f_: json.dump(B, f_, ensure_ascii=False, indent=1); f_.write('\n')
+    print(kennung, e['groesse'], e['anker'], url)
+
+if __name__ == '__main__':
+    if sys.argv[1:2] == ['--einzeln']: einzeln(*sys.argv[2:6])
+    else: main()
