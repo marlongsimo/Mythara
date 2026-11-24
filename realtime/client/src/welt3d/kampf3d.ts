@@ -13,6 +13,9 @@ import type { Spielwelt3D } from "./spielwelt";
 import { MONSTER } from "../../../shared/config";
 import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import type { KARTEN } from "../../../shared/karten";
+import { Geschosse3D, GeschossArt } from "./geschosse3d";
+import { inventar } from "../inventar";
+import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 
 const HOEHE = 2.0, MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.v003" };
 interface Bild { fl: FigurArt; nm: HTMLElement; lb: HTMLElement; h: number }
@@ -28,7 +31,18 @@ export class WeltKampf3D extends WeltKampf {
     this.ichBalken = document.createElement("div"); this.ichBalken.className = "ez-balken3d eigen"; this.ichBalken.innerHTML = "<i></i>"; this.ichBalken.hidden = true; document.body.appendChild(this.ichBalken);
   }
   protected lebenHud(lp: number, max: number) { lebenAnzeigen(lp, max); }
-  protected bildEnde() { lebenAnzeigen(null); for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
+  /* Geschosse (Pfeile, Bolzen, Zauber- und Feuerkugeln) als kleine 3D-Modelle (geschosse3d.ts) */
+  private geschosseMap?: Geschosse3D;
+  private get flug(): Geschosse3D { return this.geschosseMap || (this.geschosseMap = new Geschosse3D(this.w.motor.szene, (x, z) => this.w.motor.hoehe(x, z))); }
+  schritt(dt: number) { super.schritt(dt); const z = this.z; if (!z) return; const x0 = this.zone.x0, y0 = this.zone.y0;
+    this.flug.abgleich((z.g || []).map((g) => [g[0], x0 + g[1], y0 + g[2], String(g[3])] as [number, number, number, string]), (x, y, a) => {
+      /* Schütze = die nächste Figur am Startpunkt; Art nach der Waffe (eigener Held: Armbrust → Bolzen) */
+      let best: (typeof z.w)[number] | null = null, bd = 3; for (const e of z.w) { const d = Math.hypot(x0 + e[4] - x, y0 + e[5] - y); if (d < bd) { bd = d; best = e; } }
+      const sx = best ? x0 + best[4] : x, sy = best ? y0 + best[5] : y, W = best && best[0] === this.ichId && inventar().angelegt.waffe ? GEGENSTAENDE[inventar().angelegt.waffe!] : null;
+      const art: GeschossArt = a === "feuer" ? "feuer" : a === "blitz" ? "zauber" : W && W.art === "Armbrust" ? "bolzen" : "pfeil";
+      return { art, x: sx, y: sy }; });
+    this.flug.schritt(dt); }
+  protected bildEnde() { lebenAnzeigen(null); if (this.geschosseMap) this.geschosseMap.alleWeg(); for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
     if (this.ring) { this.w.motor.szene.remove(this.ring); this.ring = undefined; } if (this.ichBalken) { this.ichBalken.remove(); this.ichBalken = undefined; } }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur {
     const nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, h = held ? HOEHE : HOEHE * (((MONSTER[typ] as { hoehe?: number } | undefined)?.hoehe) || 88) / 96;
