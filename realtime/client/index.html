@@ -150,8 +150,12 @@
     @font-face { font-family: "Cormorant Garamond"; src: url("../fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
     /* Vorhang: Start- und Ladebildschirm im Stil des Spiels (verschwommene Waldmark, schwebender Seelensplitter, goldene Schrift) */
     .vorhang { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; color: #efe2c4; text-align: center; transition: opacity .5s;
-      background: radial-gradient(ellipse at 50% 45%, rgba(10,14,28,.15), rgba(4,3,8,.92) 75%), url("../img/echtzeit/laden-hg.webp") center / cover no-repeat, #07060b; }
+      background: radial-gradient(ellipse at 50% 55%, rgba(10,14,28,.05), rgba(4,3,8,.55) 80%), url("../img/echtzeit/laden-hg.webp") center / cover no-repeat, #07060b; }
     .vorhang[hidden] { display: none; } .vorhang.weg { opacity: 0; pointer-events: none; }
+    /* Riftmere-Ladebild: oben steht das Logo im Bild – Kristall und Text unten auf einer dunklen Tafel */
+    .vorhang { place-items: end center; padding-bottom: max(7vh, 28px); }
+    .vorhang .mitte { width: min(440px, 92vw); padding: 12px 22px 14px; border-radius: 14px; background: rgba(6,8,16,.62); box-shadow: 0 0 0 1px rgba(233,196,106,.25), 0 8px 30px rgba(0,0,0,.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .vorhang .mitte .kristall { width: 44px; height: 56px; margin-bottom: 4px; }
     .vorhang .mitte { width: min(460px, 100%); display: grid; justify-items: center; }
     .vorhang .kristall { position: relative; width: 120px; height: 150px; margin-bottom: 18px; animation: ezSchweben 3.2s ease-in-out infinite; }
     .vorhang .kristall::before { content: ""; position: absolute; inset: 18px 30px; clip-path: polygon(50% 0, 100% 38%, 72% 100%, 28% 100%, 0 38%); background: linear-gradient(160deg, #f4fdff 0%, #8fd8ff 35%, #3d7fc0 70%, #1d3a6a 100%); filter: drop-shadow(0 0 14px rgba(143,216,255,.9)); animation: ezGluehen 2.4s ease-in-out infinite; }

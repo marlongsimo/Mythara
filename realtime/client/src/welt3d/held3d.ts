@@ -59,6 +59,8 @@ export class Held3D {
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
   constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle, true /* Bilder erst laden, wenn das 3D-Modell scheitert */); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
+    /* angelegte Teile (Waffe, Schild, Rüstung) gleich mitladen – nicht erst nach dem Grundmodell: dann stehen Held und Ausrüstung zusammen da */
+    if (!gegner && held) { const ids = held.ich && waffenQuelle ? waffenQuelle() : STARTWAFFEN[held.waffe].waffen; for (const id of ids) if (AUSGELAGERT.test(id)) void teilVorlage(MODELLE + "base" + held.aussehen.g + "3d.teile/" + id + ".glb").catch(() => { /* fehlt: später beim Anlegen gemeldet */ }); }
     vorlage(gegner ? gegner.datei : "base" + held!.aussehen.g + "3d") /* Basismann/Basisfrau: die maßgeblichen Grundfiguren der Fabrik */.then((v) => this.aufbauen(v)).catch((e) => { console.warn("3D-Figur:", e); this.ersatz.aus = false; this.ersatz.jetztLaden(); this.ersatz.sichtbar(this.an); }); }
   private aufbauen(v: Vorlage) {
     if (this.weg) return; const w = SkeletonUtils.clone(v.szene); this.clips = v.clips;
@@ -77,6 +79,8 @@ export class Held3D {
     this.mixer.addEventListener("finished", () => { if (this.einmal) { this.einmal = false; this.anwenden(); const f = this.fertig; if (f) f(); } });
     this.zeigen(); this.anwenden(); this.ersatz.sichtbar(false); this.ersatz.entfernen(this.szene); }
   get geladen(): boolean { return Boolean(this.wurzel) || this.ersatz.geladen; }
+  /** Modell und alle angelegten Ausrüstungsteile sind da (für den Ladebildschirm: erst dann aufdecken) */
+  get vollstaendig(): boolean { return Boolean(this.wurzel) && this.ladend.size === 0; }
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */
   private zeigen() { if (!this.held) return; const A = this.held.aussehen, ids = this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen, helm = ids.some((e) => e.startsWith("kopf.helm."));
     const soll = new Set([...ids, ...(A.frisur !== "glatze" && !helm ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil)); /* unter dem Helm keine Frisur */
