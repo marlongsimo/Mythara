@@ -1,0 +1,10 @@
+{
+  "id": "utensil.spitzhacke",
+  "name": "Spitzhacke",
+  "kategorie": "skilling-utensil",
+  "skill": "Bergbau",
+  "aktuell": "v001",
+  "laenge_m": 0.8,
+  "status": "Meshy „Ironwood Talon“; Spieldatei img/objekte3d/skilling/utensilien/spitzhacke.glb (Kopf oben, Stielende im Ursprung, 0.8 m); an der Heldenhand und Bewegung folgen mit der Bergbau-Funktion",
+  "herkunft": "Meshy"
+}
