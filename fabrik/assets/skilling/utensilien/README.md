@@ -16,10 +16,10 @@ Später: als starres Teil an die rechte Hand der Grundfiguren (ausruestung.json 
 
 ## Stufen (Training bis Mythisch)
 
-Je Werkzeug  +  (0-training … 5-mythisch), Übersicht .
+Je Werkzeug `utensilien/<werkzeug>/<n-stufe>/<name>/datenblatt.json` + `vorschau.png` (0-training … 5-mythisch), Übersicht `referenz/stufen.png`.
 Grundstufe ist **selten** (das Meshy-Modell); die anderen Stufen:
 
     python3 fabrik/seltenheit.py img/objekte3d/skilling/utensilien/<werkzeug>.glb img/objekte3d/skilling/utensilien/<werkzeug>.<stufe>.glb <stufe> metall_c=18 stark=1 holz=1
 
-: der Stiel bleibt Holz (verwittert grau, schlicht, Original, Nussbaum, rotbraun, Ebenholz), episch/legendär/mythisch leuchten an den Metallkanten (blau, orange, türkis–magenta).
-: rostiges Eisen, ausgeblichenes Holz und Leder.
+`holz=1`: der Stiel bleibt Holz (verwittert grau, schlicht, Original, Nussbaum, rotbraun, Ebenholz); episch, legendär und mythisch leuchten an den Metallkanten (blau, orange, türkis bis magenta).
+`training`: rostiges Eisen, ausgeblichenes Holz und Leder.
