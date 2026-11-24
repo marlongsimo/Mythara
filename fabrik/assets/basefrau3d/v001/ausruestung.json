@@ -689,5 +689,6 @@
     "wurfdolch": "rechte Hand: dolchwurf (ab dem Loslassen leer), auch stich"
   },
   "beine_eng": 0.12,
-  "kampftempo": 0.6
+  "kampftempo": 0.5,
+  "gangtempo": 0.5
 }
