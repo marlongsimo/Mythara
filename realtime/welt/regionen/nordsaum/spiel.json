@@ -1,0 +1,39 @@
+{
+ "start": [
+  [
+   200,
+   31
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "wachturm",
+   "art": "lesen",
+   "x": 262.5,
+   "y": 27.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein eingestürzter Wachturm. Von hier sah man einst über den Fluss bis nach Graufurt."
+   }
+  },
+  {
+   "id": "uferweg_nord",
+   "art": "lesen",
+   "x": 307.5,
+   "y": 46,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Uferweg biegt hier nach Westen ab. Nach Norden ist der Wald zu dicht – der alte Weg nach Grauwacht ist zugewachsen."
+   }
+  }
+ ]
+}

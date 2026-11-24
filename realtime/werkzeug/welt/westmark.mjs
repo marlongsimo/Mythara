@@ -1,6 +1,6 @@
 /*
  * World Pipeline – Nordwald und Westmark (nach der Skizze vom 21.11.2026):
- *   Nordwald (4 × 2 Chunks ab 196|200): dichter Wald westlich der Waldmark.
+ *   Nordwald (4 × 4 Chunks ab 196|198, seit 24.11.2026): dichter Wald westlich und nördlich der Waldmark, Köhlerlichtung, verfallene Feste, alter Friedhof.
  *   Westmark (2 × 6 Chunks ab 196|202): oben dichter Wald; der westliche Steinweg aus dem Kreuzwald läuft durch bis an den Westrand
  *   (dort ein umgestürzter Baum); darunter ein Übergang von Wiese mit einzelnen Bäumen (Norden) zu kargem Moor (Süden, an Rabenmoor).
  *   Mittendrin eine verlassene Hütte mit einem Loch im Boden. Ein Trampelpfad führt von Rabenmoor durchs Moor an der Hütte vorbei hinauf zum Steinweg.
@@ -30,21 +30,58 @@ const wald = (B, H, wo, dichte = 0.95) => { const aus = [], gitter = new Map(), 
   return aus; };
 const leer = { start: [], figuren: [], spawnzonen: [], interaktionen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] } };
 
-/* ───── Nordwald ───── */
-{ const B = 128, H = 64, K = { x: 88, y: 28, r: 10 }, PFAD = [[88, H + 1], [86.6, 50], [88, 38]];   /* Köhlerlichtung; der Pfad kommt aus dem Kreuzwald (dort x = 24) */
+/* ───── Nordwald (seit 24.11.2026: 4 × 4 Chunks ab 196|198 – die alte Fläche ist der Süden, die Köhlerlichtung liegt unverändert) ─────
+   Im neuen Norden: die verfallene Feste (Mauerring aus Kenney-Burgteilen mit Lücken, Turmstümpfe an den Ecken, Säulenhalle, ein zerstörtes
+   Katapult im Hof) und östlich davon ein alter Friedhof (Gruft, Grabsteine, Obelisk, Altar, tote Erlen). Ein Pfad führt von der
+   Köhlerlichtung hinauf zum Tor der Feste, durch die Feste zum Friedhof und weiter nach Osten in den Nordsaum (Grenze bei y = NORD_WEG). */
+export const NORD_WEG = 30;
+{ const B = 128, H = 128, DY = 64, K = { x: 88, y: 28 + DY, r: 10 }, PFAD = [[88, H + 1], [86.6, 50 + DY], [88, 38 + DY]];   /* Köhlerlichtung; der Pfad kommt aus dem Kreuzwald (dort x = 24) */
+  const F = { x0: 36, x1: 76, y0: 16, y1: 48, tor: 56 }, FH = { x0: 86, x1: 116, y0: 18, y1: 44 };        /* Feste und Friedhof */
+  const AUF = [[88, 38 + DY], [87, 74], [76, 60], [F.tor, F.y1 + 3], [F.tor, F.y1 - 1]];                      /* Köhlerlichtung → Tor der Feste */
+  const QUER = [[F.tor, F.y1 - 2], [F.tor, 32], [F.x1 - 1, 32], [FH.x0, 31], [FH.x1, 30.5], [B + 1, NORD_WEG + 0.5]]; /* Hof → Osttor → Friedhof → Nordsaum */
   const lichtung = (x, y) => Math.hypot((x - K.x) / K.r, (y - K.y) / (K.r * 0.8)) < 1 + 0.1 * welle(x, y);
-  const g = Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => { const cx = x + 0.5, cy = y + 0.5; return strecke(cx, cy, PFAD) < 1.0 ? "e" : lichtung(cx, cy) ? (welle(cx, cy) > 0.9 ? "t" : ".") : strecke(cx, cy, PFAD) < 2.4 ? "." : "f"; }));
-  let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|wald|stil)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x, y, ...mehr });
+  const inFeste = (x, y, r = 0) => x > F.x0 - r && x < F.x1 + r && y > F.y0 - r && y < F.y1 + r, imFriedhof = (x, y, r = 0) => x > FH.x0 - r && x < FH.x1 + r && y > FH.y0 - r && y < FH.y1 + r;
+  const g = Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => { const cx = x + 0.5, cy = y + 0.5, w = welle(cx, cy);
+    if (strecke(cx, cy, PFAD) < 1.0 || strecke(cx, cy, AUF) < 1.0) return "e";
+    if (strecke(cx, cy, QUER) < (cx > FH.x1 ? 1.4 : 1.0)) return "e";
+    if (lichtung(cx, cy)) return w > 0.9 ? "t" : ".";
+    if (inFeste(cx, cy, 0.2)) return w > 0.55 ? "p" : w > -0.4 ? "." : ",";                 /* Hof: alte Pflastersteine zwischen Gras */
+    if (imFriedhof(cx, cy, 0.5)) return w > 1.1 ? "," : ".";
+    if (inFeste(cx, cy, 4 + w) || imFriedhof(cx, cy, 3 + w)) return ".";                     /* Lichtung um Feste und Friedhof */
+    return strecke(cx, cy, PFAD) < 2.4 || strecke(cx, cy, AUF) < 2.4 || strecke(cx, cy, QUER) < 2.6 ? "." : "f"; }));
+  let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|wald|stil|k)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });
   const dinge = [o("dorf_huette_holz_02", K.x - 4.5, K.y - 2), o("wald_meiler_01", K.x + 3.5, K.y + 1.5), o("wald_meiler_01", K.x + 6, K.y - 4.5, { s: 0.8 }), o("dorf_holzstapel_01", K.x - 0.5, K.y - 3.8), o("dorf_holzstapel_01", K.x + 1.5, K.y - 3.6),
-    /* verfallene Halle aus Kenney-Teilen: Südmauer in zwei Stücken, Westmauer, eine Säulenreihe davor */
+    /* verfallene Halle an der Köhlerlichtung (wie bisher) */
     o("k_ruine_mauer", K.x - 6.5, K.y + 7.2), o("k_ruine_mauer", K.x - 3.2, K.y + 7.2, { spiegeln: true }), o("k_ruine_mauer_tief", K.x - 8.3, K.y + 6.8),
     o("k_ruine_saeule", K.x - 0.6, K.y + 7.6), o("k_ruine_saeule_ganz", K.x + 1.6, K.y + 7.6), o("k_ruine_saeule", K.x - 0.6, K.y + 4.6, { spiegeln: true })];
-  const baeume = wald(B, H, (x, y) => !lichtung(x, y) && Math.hypot(x - K.x, y - K.y) > K.r + 1 && strecke(x, y, PFAD) > 2.6, 1.1);
+  /* Mauerring der Feste: Stücke zu 2 Feldern, mit eingestürzten Lücken; Tor im Süden, Durchgang im Osten */
+  const luecke = (i) => wurf() < 0.22;
+  for (let x = F.x0 + 1; x < F.x1; x += 2) { if (!luecke(x)) dinge.push(o(wurf() < 0.3 ? "k_ruine_mauer" : "k_ruine_halbmauer", x + 0.5, F.y0 + 1));
+    if (Math.abs(x + 0.5 - F.tor) > 2.6 && !luecke(x)) dinge.push(o(wurf() < 0.3 ? "k_ruine_mauer" : "k_ruine_halbmauer", x + 0.5, F.y1)); }
+  for (let y = F.y0 + 3; y < F.y1 - 1; y += 2) { if (!luecke(y)) dinge.push(o(wurf() < 0.3 ? "k_ruine_mauer_tief" : "k_ruine_halbmauer_tief", F.x0 + 1, y + 1));
+    if (Math.abs(y + 1 - 32) > 2.6 && !luecke(y)) dinge.push(o(wurf() < 0.3 ? "k_ruine_mauer_tief" : "k_ruine_halbmauer_tief", F.x1 - 1, y + 1)); }
+  dinge.push(o("k_ruine_turmstumpf", F.x0 + 1.5, F.y0 + 2), o("k_ruine_turmstumpf", F.x1 - 1.5, F.y0 + 2), o("k_ruine_turmstumpf", F.x0 + 1.5, F.y1 + 0.5), o("k_ruine_turmstumpf", F.x1 - 1.5, F.y1 + 0.5));
+  /* im Hof: Säulenhalle (zwei Reihen), Trümmer, das Katapult, Fässer der Belagerer */
+  for (const x of [44, 48, 52, 60, 64, 68]) for (const y of [21, 26.5]) dinge.push(o(wurf() < 0.45 ? "k_ruine_saeule" : "k_ruine_saeule_ganz", x + 0.5, y + 0.5, wurf() < 0.5 ? { spiegeln: true } : {}));
+  dinge.push(o("k_ruine_katapult", 45.5, 41.5), o("k_truemmer", 66.5, 38.5), o("k_truemmer", 41.5, 33.5), o("k_truemmer", 70.5, 22.5), o("k_faesser", 50.5, 43.5), o("k_kiste", 62.5, 43.5), o("k_fels_klein", 71.5, 44.5));
+  /* Friedhof: Gruft im Norden, Altar davor, Obelisk in der Mitte, Grabreihen, Säulen am Eingang, tote Erlen */
+  dinge.push(o("k_gruft", 101.5, 22.5), o("k_altar_stein", 101.5, 26.5), o("k_obelisk", 101.5, 36.5), o("k_saeule_gross", FH.x0 + 1.5, 28.5), o("k_saeule_gross", FH.x0 + 1.5, 34.5));
+  const STEINE = ["k_grabstein_kreuz", "k_grabstein_rund", "k_grabstein_zerbrochen", "k_grabstein_breit"];
+  for (const y of [24.5, 27.5, 35.5, 38.5, 41.5]) for (let x = FH.x0 + 4.5; x < FH.x1 - 1; x += 3) { if (Math.abs(x - 101.5) < 2.2 && y < 38) continue; if (wurf() < 0.82) dinge.push(o(STEINE[Math.floor(wurf() * 4)], x, y)); }
+  for (const [x, y] of [[FH.x0 - 1.5, 20.5], [FH.x1 + 1.5, 23.5], [FH.x0 + 0.5, 43.5], [FH.x1 + 0.5, 42.5], [108.5, 19.5]]) dinge.push(o("stil_erle_tot_01", x, y, wurf() < 0.5 ? { spiegeln: true } : {}));
+  dinge.push(o("k_truemmer", 92.5, 41.5), o("k_grabstein_zerbrochen", 112.5, 33.5));
+  const frei = (x, y) => !lichtung(x, y) && Math.hypot(x - K.x, y - K.y) > K.r + 1 && strecke(x, y, PFAD) > 2.6 && strecke(x, y, AUF) > 2.6 && strecke(x, y, QUER) > 2.8 && !inFeste(x, y, 5) && !imFriedhof(x, y, 4);
+  const baeume = wald(B, H, frei, 1.1);
   const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.6, abgleich: "keiner", daten: { text } });
-  const spiel = { ...leer, start: [[88, 60]], interaktionen: [lies("meiler", K.x + 3.5, K.y + 2.9, "Ein Kohlenmeiler. Unter der Erde schwelt das Holz seit Tagen und wird zu Kohle für die Schmiede."),
-    lies("ruine", K.x - 4.8, K.y + 8.4, "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt.")] };
-  schreibe("nordwald", { id: "nordwald", name: "Der Nordwald", untertitel: "Dichter Wald mit einer Köhlerlichtung", ursprung: [196, 200], chunks: [4, 2], biom: "wald", stufe: 1 }, g, [...dinge, ...baeume], spiel); }
+  const spiel = { ...leer, start: [[88, 60 + DY]], interaktionen: [lies("meiler", K.x + 3.5, K.y + 2.9, "Ein Kohlenmeiler. Unter der Erde schwelt das Holz seit Tagen und wird zu Kohle für die Schmiede."),
+    lies("ruine", K.x - 4.8, K.y + 8.4, "Mauerreste aus einer Zeit vor der Waldmark, halb vom Efeu verschluckt."),
+    lies("feste", F.tor + 2.4, F.y1 + 2.4, "Die verfallene Feste. Wer sie erbaut hat, weiß in der Waldmark niemand mehr – nur, dass hier einst eine Belagerung endete."),
+    lies("katapult", 45.5, 43.4, "Ein zerschlagenes Katapult. Die Belagerer kamen bis in den Hof – weiter nicht."),
+    lies("gruft", 101.5, 28.4, "Eine alte Gruft. Die Inschrift über der Tür ist verwittert, nur ein Wappen mit Turm ist noch zu erkennen."),
+    lies("obelisk", 101.5, 38.2, "Ein Obelisk für die Gefallenen der Feste. Hunderte Namen, kaum noch lesbar.")] };
+  schreibe("nordwald", { id: "nordwald", name: "Der Nordwald", untertitel: "Köhlerlichtung, die verfallene Feste und ein alter Friedhof", ursprung: [196, 198], chunks: [4, 4], biom: "wald", stufe: 1 }, g, [...dinge, ...baeume], spiel); }
 
+saat = 2103042816;   /* fester Zufall für die Westmark: Änderungen im Nordwald verschieben ihre Bäume nicht */
 /* ───── Westmark ───── */
 { const B = 64, H = 192, TOR = 112, KY = 44, XK = 64;                 /* XK: so weit liegt der Kreuzwald (x = 0) östlich – derselbe Steinweg wie dort */
   const steinY = (x) => { const xk = x - XK; return KY + 2.6 * Math.sin((xk - TOR) / 21) + 1.3 * Math.sin((xk - TOR) / 8.3) * Math.min(1, Math.abs(xk - TOR) / 14); };

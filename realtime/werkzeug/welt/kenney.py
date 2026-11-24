@@ -57,6 +57,20 @@ MODELLE = {
     'k_faesser': dict(name='Fässer', paket='retro', teile=['barrels'], mass=2.0, kategorie='kleinteil'),
     'k_kiste': dict(name='Kiste', paket='retro', teile=['detail-crate'], mass=2.0, kategorie='kleinteil'),
     'k_flaschenzug': dict(name='Flaschenzug', paket='retro', teile=['pulley-crate'], mass=2.0, kategorie='kleinteil'),
+    # Nordwald (24.11.2026): Ruinen einer verfallenen Feste (Castle Kit, Fantasy Town Kit) und ein alter Friedhof (Graveyard Kit)
+    'k_ruine_halbmauer': dict(name='Halbe Burgmauer (Ost–West)', paket='castle', teile=['wall-half'], mass=2.0, dreh=90, kategorie='sonderort', moos=True),
+    'k_ruine_halbmauer_tief': dict(name='Halbe Burgmauer (Nord–Süd)', paket='castle', teile=['wall-half'], mass=2.0, dreh=0, kategorie='sonderort', moos=True),
+    'k_ruine_turmstumpf': dict(name='Turmstumpf', paket='castle', teile=['tower-hexagon-base', 'tower-hexagon-mid'], mass=2.6, kategorie='sonderort', moos=True),
+    'k_ruine_katapult': dict(name='Zerstörtes Katapult', paket='castle', teile=['siege-catapult-demolished'], mass=2.2, kategorie='kleinteil'),
+    'k_gruft': dict(name='Gruft', paket='friedhof', teile=['crypt'], mass=2.4, kategorie='sonderort'),
+    'k_grabstein_kreuz': dict(name='Grabstein mit Kreuz', paket='friedhof', teile=['gravestone-cross'], mass=2.4, kategorie='kleinteil', klein=True),
+    'k_grabstein_rund': dict(name='Runder Grabstein', paket='friedhof', teile=['gravestone-round'], mass=2.4, kategorie='kleinteil', klein=True),
+    'k_grabstein_zerbrochen': dict(name='Zerbrochener Grabstein', paket='friedhof', teile=['gravestone-broken'], mass=2.4, kategorie='kleinteil', klein=True),
+    'k_grabstein_breit': dict(name='Breiter Grabstein', paket='friedhof', teile=['gravestone-wide'], mass=2.4, kategorie='kleinteil', klein=True),
+    'k_obelisk': dict(name='Obelisk', paket='friedhof', teile=['pillar-obelisk'], mass=2.6, kategorie='sonderort', klein=True),
+    'k_saeule_gross': dict(name='Große Säule', paket='friedhof', teile=['column-large'], mass=2.6, kategorie='sonderort', klein=True),
+    'k_altar_stein': dict(name='Steinaltar', paket='friedhof', teile=['altar-stone'], mass=2.4, kategorie='sonderort'),
+    'k_truemmer': dict(name='Trümmer', paket='friedhof', teile=['debris'], mass=2.4, kategorie='kleinteil', klein=True),
 }
 # Material aus der Farbe der Farbtafel: (Textur, Maßstab der Textur, Tönung oder None) oder ('farbe', rgb)
 def gedaempft(r, g, b, k=0.38):
