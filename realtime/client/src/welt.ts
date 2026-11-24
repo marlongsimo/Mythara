@@ -49,6 +49,8 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
     else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
+    else if (m.t === "holz") window.dispatchEvent(new CustomEvent("ez-holz", { detail: m })); /* Holzfällerei (welt3d/holz3d.ts) */
+    else if (m.t === "baeume") window.dispatchEvent(new CustomEvent("ez-baeume", { detail: m.weg || [] }));
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
     else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
     else if (m.t === "zufreund") { if (m.ok && typeof m.x === "number" && typeof m.y === "number") window.dispatchEvent(new CustomEvent("ez-zufreund", { detail: m })); else chatSystem(String(m.text || "Teleport nicht möglich.")); }
@@ -80,6 +82,8 @@ export function verfolgteQuest(): string { try { const v = localStorage.getItem(
 export function questVerfolgt(id: string = Q1): boolean { return verfolgteQuest() === id; }
 export function questVerfolgen(an: boolean, id: string = Q1): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
 /** Quest 02: Bruchstelle oder Rutenbündel benutzen (der Server prüft Stand und Abstand); Mooshocker untersucht */
+/** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
+export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
 export function questDing(id: string, wo?: { x: number; y: number }): void { senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function rede(npc: string): void { senden({ t: "rede", npc }); }

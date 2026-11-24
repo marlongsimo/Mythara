@@ -9,7 +9,64 @@
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 43,
+    "y0": 48,
+    "x1": 44,
+    "y1": 49
+   },
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 51,
+    "x1": 47,
+    "y1": 52
+   },
+   {
+    "art": "rechteck",
+    "x0": 38,
+    "y0": 46,
+    "x1": 39,
+    "y1": 47
+   },
+   {
+    "art": "rechteck",
+    "x0": 103,
+    "y0": 44,
+    "x1": 104,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 96,
+    "y0": 44,
+    "x1": 97,
+    "y1": 45
+   },
+   {
+    "art": "rechteck",
+    "x0": 99,
+    "y0": 46,
+    "x1": 100,
+    "y1": 47
+   },
+   {
+    "art": "rechteck",
+    "x0": 108,
+    "y0": 49,
+    "x1": 109,
+    "y1": 50
+   },
+   {
+    "art": "rechteck",
+    "x0": 99,
+    "y0": 42,
+    "x1": 100,
+    "y1": 43
+   }
+  ],
   "freigeben": []
  },
  "interaktionen": [

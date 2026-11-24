@@ -77,7 +77,36 @@
  ],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 93,
+    "x1": 98,
+    "y1": 94
+   },
+   {
+    "art": "rechteck",
+    "x0": 97,
+    "y0": 97,
+    "x1": 98,
+    "y1": 98
+   },
+   {
+    "art": "rechteck",
+    "x0": 101,
+    "y0": 93,
+    "x1": 102,
+    "y1": 94
+   },
+   {
+    "art": "rechteck",
+    "x0": 101,
+    "y0": 89,
+    "x1": 102,
+    "y1": 90
+   }
+  ],
   "freigeben": []
  }
 }

@@ -102,6 +102,30 @@ export class Held3D {
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
     this.spiele(this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, true); }
+  /* ───────── Holzfällerei: Hieb mit dem Beil (das Beil liegt im Rucksack; während des Hiebs ist es in der rechten Hand, die angelegte Waffe ist so lange weg) ───────── */
+  private beil: THREE.Object3D | null = null; private beilUrl = ""; private beilZurueck: ReturnType<typeof setTimeout> | null = null;
+  private async beilAnhaengen(url: string): Promise<THREE.Object3D | null> {
+    const w = this.wurzel; if (!w) return null; if (this.beil && this.beilUrl === url) return this.beil;
+    if (this.beil) { this.beil.removeFromParent(); this.beil = null; }
+    let hand: THREE.Object3D | null = null; w.traverse((o) => { if (!hand && (o as THREE.Bone).isBone && /^hand\.R$|right.?hand/i.test(o.name)) hand = o; }); if (!hand) return null;
+    const vorlage = await teilVorlage("../" + url); if (this.weg || !this.wurzel) return null;
+    const g = new THREE.Group(), modell = vorlage.clone(true); modell.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.castShadow = true; m.frustumCulled = false; } });
+    /* Ausrichtung wie die Waffe in dieser Hand: deren längste Achse zeigt dorthin, wohin der Stiel des Beils (+y) zeigen soll */
+    let ref: THREE.Object3D | null = null; for (const [n, o] of this.teile) if (/^waffe/.test(n) && o.parent === hand) { ref = o; break; }
+    if (ref) { const r = ref as THREE.Object3D; g.position.copy(r.position); g.quaternion.copy(r.quaternion); g.scale.copy(r.scale);
+      const box = new THREE.Box3(); r.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && m.geometry) { m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox!.clone().applyMatrix4(m.matrix)); } });
+      const gr = box.getSize(new THREE.Vector3()), achse = gr.x >= gr.y && gr.x >= gr.z ? 0 : gr.y >= gr.z ? 1 : 2, d = new THREE.Vector3(); d.setComponent(achse, Math.abs(box.max.getComponent(achse)) >= Math.abs(box.min.getComponent(achse)) ? 1 : -1);
+      modell.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d); }
+    g.add(modell); g.name = "werkzeug.beil"; g.visible = false; (hand as THREE.Object3D).add(g); this.beil = g; this.beilUrl = url; return g; }
+  /** Ein Hieb mit dem Beil (url: 3D-Modell des Beils). Dauer in ms */
+  beilHieb(url: string): number {
+    if (this.gestorben || !this.mixer || !this.wurzel) { this.ersatz.angriff(); return 0; }
+    const clip = this.clips.has("angriff") ? "angriff" : "stich", c = this.clips.get(clip); const dauer = c ? c.duration * 1000 : 800;
+    void this.beilAnhaengen(url).then((b) => { if (!b || this.gestorben) return; b.visible = true; for (const [n, o] of this.teile) if (/^waffe/.test(n)) o.visible = false; });
+    this.einmal = true; this.spiele(clip, true);
+    if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), dauer + 120); return dauer; }
+  /** Beil weg, angelegte Waffe wieder sichtbar */
+  beilWeg(): void { if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^waffe/.test(n)) o.visible = this.soll.has(n); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
   /** Trinken (Figuren-Fabrik „trinken“, Hand zum Mund) – nur wenn das Modell die Bewegung hat. Zurück: Dauer in ms */
   trinken(): number { if (!this.wurzel || this.gestorben || !this.mixer) return 0; const c = this.clips.get("trinken"); if (!c) return 0; this.einmal = true; this.spiele("trinken", true); return c.duration * 1000; }

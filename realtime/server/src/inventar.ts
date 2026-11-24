@@ -14,11 +14,11 @@ import { Startwaffe } from "../../shared/aussehen";
 import { BANK_PLAETZE, BANK_MAX } from "../../shared/bank";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][] }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number> }
 const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): [string, number][] { const b: [string, number][] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
@@ -34,6 +34,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
     if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
   const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
   { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank; }
+  { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
   if ((inv.v ?? 1) < INV_STAND) { /* Startausrüstung erweitert (Rüstung zu Bogen und Stab): einmal nachreichen, wenn der Platz frei ist und sie nirgends liegt */
     for (const [platz, g] of Object.entries(startAusruestung(waffe)) as [Platz, string][]) if (!inv.angelegt[platz] && !inv.rucksack.some((f) => fachG(f) === g)) inv.angelegt[platz] = g;
     inv.v = INV_STAND; }
@@ -112,6 +113,15 @@ export function trankNehmen(sb: Sb, nutzer: string, i: number): string | null { 
   if (!G || !G.trank) return null; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return G.trank; }
 /** Einen genommenen Trank zurücklegen (das Trinken ging nicht) */
 export function trankZurueck(sb: Sb, nutzer: string, g: string): void { aufnehmen(sb, nutzer, g, 1); }
+
+/* ───────── Berufe (Holzfällerei …): XP im Inventar ───────── */
+export function berufXp(nutzer: string, beruf: string): number { const e = je.get(nutzer); return (e && e.inv.berufe && e.inv.berufe[beruf]) || 0; }
+export function berufXpDazu(sb: Sb, nutzer: string, beruf: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return berufXp(nutzer, beruf);
+  const b = e.inv.berufe || (e.inv.berufe = {}); b[beruf] = Math.min(200_000_000, Math.round((b[beruf] || 0) + n)); geaendert(sb, nutzer, e); return b[beruf]; }
+/** Gegenstände, die der Held trägt (Rucksack und angelegt) – für Werkzeuge */
+export function besitzt(nutzer: string): string[] { const e = je.get(nutzer); if (!e) return []; return [...e.inv.rucksack.map(fachG), ...Object.values(e.inv.angelegt).filter((g): g is string => Boolean(g))]; }
+/** Freie Rucksackfächer */
+export function freieFaecher(nutzer: string): number { const e = je.get(nutzer); return e ? RUCKSACK_PLAETZE - e.inv.rucksack.length : 0; }
 
 /* ───────── Bank (shared/bank.ts) – Nähe zum Schalter prüft welt.ts ───────── */
 const bankVon = (e: Eintrag): [string, number][] => (e.inv.bank = e.inv.bank || []);

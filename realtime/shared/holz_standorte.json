@@ -1,0 +1,274 @@
+{
+ "_hinweis": "Holzfäller-Bäume (Weltfelder). Erzeugt mit werkzeug/welt/lichtungen.mjs-Vorbereitung; Lichtungen und Feldwege trägt werkzeug/welt/lichtungen.mjs in die Gebiete ein.",
+ "lichtungen": [
+  {
+   "name": "Lichtung am Westrand",
+   "baeume": [
+    {
+     "id": "eiche_1",
+     "art": "eiche",
+     "x": 6369.5,
+     "y": 6429.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_2",
+     "art": "eiche",
+     "x": 6369.5,
+     "y": 6433.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_3",
+     "art": "eiche",
+     "x": 6373.5,
+     "y": 6429.5,
+     "region": "nordwald"
+    },
+    {
+     "id": "eiche_4",
+     "art": "eiche",
+     "x": 6373.5,
+     "y": 6425.5,
+     "region": "nordwald"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung im Nordsaum",
+   "baeume": [
+    {
+     "id": "eiche_5",
+     "art": "eiche",
+     "x": 6443.5,
+     "y": 6384.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_6",
+     "art": "eiche",
+     "x": 6446.5,
+     "y": 6387.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_7",
+     "art": "eiche",
+     "x": 6438.5,
+     "y": 6382.5,
+     "region": "nordsaum"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung am Kreuzwald",
+   "baeume": [
+    {
+     "id": "eiche_8",
+     "art": "eiche",
+     "x": 6408.5,
+     "y": 6479.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_9",
+     "art": "eiche",
+     "x": 6408.5,
+     "y": 6475.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_10",
+     "art": "eiche",
+     "x": 6411.5,
+     "y": 6481.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_11",
+     "art": "eiche",
+     "x": 6411.5,
+     "y": 6477.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung im östlichen Nordsaum",
+   "baeume": [
+    {
+     "id": "eiche_12",
+     "art": "eiche",
+     "x": 6503.5,
+     "y": 6380.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_13",
+     "art": "eiche",
+     "x": 6496.5,
+     "y": 6380.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "eiche_14",
+     "art": "eiche",
+     "x": 6499.5,
+     "y": 6382.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "tanne_1",
+     "art": "tanne",
+     "x": 6508.5,
+     "y": 6385.5,
+     "region": "nordsaum"
+    },
+    {
+     "id": "tanne_2",
+     "art": "tanne",
+     "x": 6499.5,
+     "y": 6378.5,
+     "region": "nordsaum"
+    }
+   ]
+  },
+  {
+   "name": "Lichtung südlich der Waldmark",
+   "baeume": [
+    {
+     "id": "eiche_15",
+     "art": "eiche",
+     "x": 6475.5,
+     "y": 6503.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_16",
+     "art": "eiche",
+     "x": 6471.5,
+     "y": 6503.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eiche_17",
+     "art": "eiche",
+     "x": 6473.5,
+     "y": 6500.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_3",
+     "art": "tanne",
+     "x": 6477.5,
+     "y": 6500.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Tannenlichtung im Kreuzwald",
+   "baeume": [
+    {
+     "id": "tanne_4",
+     "art": "tanne",
+     "x": 6498.5,
+     "y": 6529.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_5",
+     "art": "tanne",
+     "x": 6502.5,
+     "y": 6525.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "tanne_6",
+     "art": "tanne",
+     "x": 6504.5,
+     "y": 6529.5,
+     "region": "waldweg"
+    },
+    {
+     "id": "eibe_1",
+     "art": "eibe",
+     "x": 6498.5,
+     "y": 6525.5,
+     "region": "waldweg"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 1",
+   "baeume": [
+    {
+     "id": "moorweide_1",
+     "art": "moorweide",
+     "x": 6332.5,
+     "y": 6691.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_2",
+     "art": "moorweide",
+     "x": 6336.5,
+     "y": 6691.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_3",
+     "art": "moorweide",
+     "x": 6331.5,
+     "y": 6695.5,
+     "region": "rabenmoor"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 2",
+   "baeume": [
+    {
+     "id": "moorweide_4",
+     "art": "moorweide",
+     "x": 6378.5,
+     "y": 6740.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_5",
+     "art": "moorweide",
+     "x": 6382.5,
+     "y": 6744.5,
+     "region": "rabenmoor"
+    }
+   ]
+  },
+  {
+   "name": "Moorweiden im Rabenmoor 3",
+   "baeume": [
+    {
+     "id": "moorweide_6",
+     "art": "moorweide",
+     "x": 6381.5,
+     "y": 6663.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_7",
+     "art": "moorweide",
+     "x": 6384.5,
+     "y": 6661.5,
+     "region": "rabenmoor"
+    },
+    {
+     "id": "moorweide_8",
+     "art": "moorweide",
+     "x": 6380.5,
+     "y": 6659.5,
+     "region": "rabenmoor"
+    }
+   ]
+  }
+ ]
+}
