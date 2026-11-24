@@ -1,0 +1,16 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}

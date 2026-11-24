@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="mythara.webmanifest?v=mwulrs9u">
+  <link rel="manifest" href="mythara.webmanifest?v=mwutwms4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Mythara">
@@ -500,6 +500,21 @@
     #ez-konto .tafel.laden .lware:hover { border-color: #c99a3c; } #ez-konto .tafel.laden .lware.s-selten { border-color: #3f8a46; } #ez-konto .tafel.laden .lware canvas { width: 58px; height: 58px; }
     #ez-konto .tafel.laden .lname { font: 600 11.5px Inter, sans-serif; line-height: 1.2; text-align: center; min-height: 2.4em; display: flex; align-items: center; }
     #ez-konto .tafel.laden .lpreis { font: 700 12.5px Inter, sans-serif; color: #e8d6ff; } #ez-konto .tafel.laden .lpreis.zuteuer { color: #c36a5a; }
+    /* Bank (client/src/bank.ts): Raster der Bank, Mengen-Leiste, Rucksack darunter – wie OSRS */
+    #ez-konto .tafel.bank { width: min(640px, calc(100vw - 24px)); max-height: min(92vh, 760px); overflow: auto; }
+    #ez-konto .tafel.bank .bkopf { display: flex; gap: 8px; align-items: center; margin: 2px 2px 8px; } #ez-konto .tafel.bank .bsuche { flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px; border: 1px solid #6d5632; background: #140f0a; color: #f1e3c2; font: 13px Inter, sans-serif; }
+    #ez-konto .tafel.bank .bplatz { font: 700 12.5px Inter, sans-serif; color: #d8c59a; white-space: nowrap; }
+    #ez-konto .tafel.bank .braster, #ez-konto .tafel.bank .brucksack { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
+    #ez-konto .tafel.bank .braster { min-height: 116px; max-height: 38vh; overflow: auto; padding: 6px; border-radius: 10px; background: rgba(0,0,0,.32); border: 1px solid #4a3a22; }
+    #ez-konto .tafel.bank .bfach { position: relative; display: grid; place-items: center; aspect-ratio: 1; padding: 2px; margin: 0; width: auto; border-radius: 8px; border: 1.5px solid #5a4629; background: linear-gradient(#2e2519, #1a140d); cursor: pointer; -webkit-touch-callout: none; user-select: none; }
+    #ez-konto .tafel.bank .bfach:hover { border-color: #c99a3c; } #ez-konto .tafel.bank .bfach.s-selten { border-color: #3f8a46; } #ez-konto .tafel.bank .bfach.s-episch { border-color: #7d4fc4; } #ez-konto .tafel.bank .bfach.s-legendaer { border-color: #d08a2a; } #ez-konto .tafel.bank .bfach.s-mythisch { border-color: #c43a3a; }
+    #ez-konto .tafel.bank .bfach canvas { width: 82%; height: 82%; } #ez-konto .tafel.bank .bfach b { position: absolute; left: 4px; top: 2px; font: 800 11.5px Inter, sans-serif; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000; pointer-events: none; }
+    #ez-konto .tafel.bank .bfach.leer { cursor: default; border-style: dashed; border-color: #3a2e1c; background: rgba(0,0,0,.2); }
+    #ez-konto .tafel.bank .bleer { grid-column: 1 / -1; margin: 18px 6px; text-align: center; color: #b9a57c; font-size: 13px; }
+    #ez-konto .tafel.bank .bleiste { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin: 9px 2px 4px; font: 600 12.5px Inter, sans-serif; color: #d8c59a; }
+    #ez-konto .tafel.bank .bleiste button { width: auto; margin: 0; padding: 5px 9px; border-radius: 7px; border: 1px solid #6d5632; background: #241b11; color: #f1e3c2; font: 700 12px Inter, sans-serif; cursor: pointer; }
+    #ez-konto .tafel.bank .bleiste .bmenge.an { background: #6b4e1f; border-color: #e9c46a; color: #fff3cf; } #ez-konto .tafel.bank .bluecke { flex: 1; }
+    #ez-konto .tafel.bank .brs { margin: 8px 2px 5px; font: 600 13px Cinzel, Georgia, serif; color: #e9c46a; } #ez-konto .tafel.bank .brucksack { grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 360px; }
     .ez-name3d.haendler small { display: block; font-size: 10.5px; color: #e9c46a; font-style: italic; }
     /* Quest-Tab: nur Titel in einer Zeile; dunkel + grau = nicht gestartet · dunkel + hell = gestartet · hell + dunkel = verfolgt; Reiter „Abgeschlossen“ */
     .seitentab .qreiter { display: flex; gap: 4px; margin: 6px 0 4px; flex: none; } .seitentab .qreiter button { flex: 1; padding: 6px 4px; border-radius: 7px 7px 0 0; border: 1.5px solid #6d5632; border-bottom-color: #c99a3c; background: #1a140d; color: #a8946a; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
@@ -749,6 +764,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwulrs9u"></script>
+  <script src="spiel.js?v=mwutwms4"></script>
 </body>
 </html>
