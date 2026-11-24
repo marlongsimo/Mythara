@@ -18,7 +18,7 @@
 <body>
 <header><b>Mythara · Animationen testen</b><small>alle 3D-Figuren, Bewegungen und Waffen – nur über diesen Link erreichbar</small></header>
 <main>
-  <div class="buehne" id="buehne"><canvas id="c"></canvas><div id="info"></div></div>
+  <div class="buehne" id="buehne" style="position:relative"><canvas id="c"></canvas><canvas id="fx" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas><div id="info"></div></div>
   <div>
     <div class="feld"><h3>Figur</h3><select id="figur"></select>
       <div class="reihe" id="hautreihe" hidden><label>Haut</label><select id="haut"></select></div></div>
@@ -26,15 +26,15 @@
       <div class="reihe"><label>Tempo</label><input type="range" id="tempo" min="0.1" max="2" step="0.05" value="1"><span id="tempowert">1,00×</span></div>
       <div class="reihe"><label>Wiederholen</label><input type="checkbox" id="schleife" checked><button id="pause">Pause</button><button id="nochmal">Neu starten</button></div>
       <div class="reihe"><label>Drehen</label><input type="range" id="blick" min="-3.14" max="3.14" step="0.01" value="0.5"></div>
-      <div class="reihe"><label>Effekt</label><button id="teleport">Teleport</button></div></div>
+      <div class="reihe"><label>Effekt</label><button id="teleport">Teleport</button><button id="schuss" title="Bogen, Armbrust oder Stab in der Hand: Schussbewegung mit Geschoss zur Zielscheibe">Schuss</button></div></div>
     <div class="feld"><h3>Waffen und Ausrüstung</h3><div id="teile"></div></div>
   </div>
 </main>
-<script src="figur3d.js?v=mwueww8a"></script>
+<script src="figur3d.js?v=mwui0b8x"></script>
 <script>
 (async () => {
   const E = window.MytharaEcht3D, M = "../img/figuren-echt3d/", $ = (s) => document.querySelector(s);
-  const L = await (await fetch("animationen-liste.json?v=mwueww8a")).json(); const figuren = L.figuren;
+  const L = await (await fetch("animationen-liste.json?v=mwui0b8x")).json(); const figuren = L.figuren;
   const PLATZNAME = { hand_r: "Rechte Hand", hand_l: "Linke Hand", arm_l: "Schild", haar: "Frisur", bart: "Bart", helm: "Kopf", brust: "Brust", beine: "Beine", schuerze: "Schürze" };
   const STUFE = { "": "Grundstufe", gewoehnlich: "Einfach", selten: "Selten", episch: "Episch", legendaer: "Legendär", mythisch: "Mythisch" };
   let d = null, fig = null, bew = "ruhe", tempo = 1, pause = false, gewaehlt = {}, stufe = {};
@@ -45,7 +45,7 @@
   function spielen() { if (!d || !d.hat(bew)) return; d.neustart(); d.spiele(bew, !$("#schleife").checked); sichtbar(); }
   async function laden() {
     fig = figuren.find((f) => f.id === $("#figur").value); if (d) { d.entfernen(); d = null; }
-    d = await E.Darsteller.erstellen(M + fig.id + ".glb", Math.min(520, window.innerHeight * 0.62), Math.min(2, devicePixelRatio || 1));
+    d = await E.Darsteller.erstellen(M + fig.id + ".glb", hoehePx(), Math.min(2, devicePixelRatio || 1));
     c.width = d.breite; c.height = d.hoehe; c.style.width = d.breite / d.aufloesung + "px";
     $("#hautreihe").hidden = !fig.haut.length; $("#haut").innerHTML = '<option value="">Original</option>' + fig.haut.map((h) => `<option>${h}</option>`).join("");
     /* Bewegungen */
@@ -72,8 +72,35 @@
   $("#pause").onclick = () => { pause = !pause; $("#pause").textContent = pause ? "Weiter" : "Pause"; };
   $("#nochmal").onclick = spielen; $("#schleife").onchange = spielen;
   $("#teleport").onclick = () => { if (!d) return; if (d.hat("teleport_weg")) d.spiele("teleport_weg", true); d.teleport(1.8); setTimeout(laden, 2600); };
+  /* Schuss: Bewegung zur Waffe, Stab leuchtet auf, Geschoss fliegt zur Zielscheibe (wie im Spiel: welt/geschosse.ts) */
+  const fx = $("#fx"), fxx = fx.getContext("2d"); let flug = [], funken = [];
+  $("#schuss").onclick = () => { if (!d) return; const w = [gewaehlt.hand_r, gewaehlt.hand_l].filter(Boolean).join(" ");
+    const art = /armbrust/.test(w) ? "bolzen" : /bogen/.test(w) ? "pfeil" : /stab|szepter/.test(w) ? "zauber" : null;
+    if (!art) { $("#info").textContent = "Für den Schuss einen Bogen, eine Armbrust oder einen Stab in die Hand nehmen."; return; }
+    const b = art === "pfeil" ? "bogen" : art === "bolzen" ? "armbrust1h" : "zauber_stab", anteil = art === "pfeil" ? 5 / 9 : art === "bolzen" ? 3 / 8 : 4 / 8;
+    if (!d.hat(b)) return; d.neustart(); d.spiele(b, true, () => { d.neustart(); d.spiele(bew, !$("#schleife").checked); }); sichtbar();
+    const verzug = d.dauer(b) * anteil / Math.max(0.1, tempo); if (art === "zauber") d.glut(verzug);
+    setTimeout(() => { const p = d.waffenPunkt(art === "zauber"), r = c.getBoundingClientRect(), br = fx.getBoundingClientRect(); fx.width = br.width; fx.height = br.height;
+      const x0 = p ? r.left - br.left + p.x / d.aufloesung : br.width / 2, y0 = p ? r.top - br.top + p.y / d.aufloesung : br.height / 2;
+      const b3 = new E.GeschossBild(art, hoehePx(), Math.min(2, devicePixelRatio || 1)), cv = document.createElement("canvas"); cv.width = b3.breite; cv.height = b3.hoehe;
+      flug.push({ art, x0, y0, x1: br.width - 40, y1: br.height * 0.55, t: 0, alt: null, b3, cv }); }, verzug); };
+  const hoehePx = () => Math.min(520, window.innerHeight * 0.62);
+  function zeichneFx(dt) { const B = fx.getBoundingClientRect(); if (fx.width !== Math.round(B.width)) { fx.width = B.width; fx.height = B.height; } const g = fxx; g.clearRect(0, 0, fx.width, fx.height);
+    const zx = fx.width - 40, zy = fx.height * 0.55; for (const [r, f] of [[16, "#c33"], [11, "#eee"], [6, "#c33"]]) { g.fillStyle = f; g.beginPath(); g.arc(zx, zy, r, 0, 7); g.fill(); }   // Zielscheibe
+    flug = flug.filter((q) => { const L = Math.hypot(q.x1 - q.x0, q.y1 - q.y0), v = q.art === "zauber" ? 520 : q.art === "bolzen" ? 900 : 760; q.t += dt * tempo * v / L; const p = Math.min(1, q.t);
+      const x = q.x0 + (q.x1 - q.x0) * p, y = q.y0 + (q.y1 - q.y0) * p - (q.art === "pfeil" ? Math.sin(Math.PI * p) * Math.min(34, L * 0.1) : 0), w = q.alt ? Math.atan2(y - q.alt[1], x - q.alt[0]) : Math.atan2(q.y1 - q.y0, q.x1 - q.x0); q.alt = [x, y];
+      if (q.b3) { if (q.alt0) q.b3.richte(x - q.alt0[0], y - q.alt0[1]); else q.b3.richte(q.x1 - q.x0, q.y1 - q.y0); q.alt0 = [x, y]; q.b3.zeichne(dt * tempo, q.cv.getContext("2d"));
+        const bw = q.b3.breite / q.b3.aufloesung; g.drawImage(q.cv, x - bw / 2, y - bw / 2, bw, bw); if (q.art === "zauber") funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 * bw / 80 + 3 }); }
+      else { g.save(); g.translate(x, y); g.rotate(w);
+      if (q.art === "pfeil") { g.strokeStyle = "#6b4423"; g.lineWidth = 2.2; g.beginPath(); g.moveTo(-17, 0); g.lineTo(9, 0); g.stroke(); g.fillStyle = "#d9dee6"; g.beginPath(); g.moveTo(9, -3.2); g.lineTo(17, 0); g.lineTo(9, 3.2); g.fill(); g.fillStyle = "#e8e2d0"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, -4); g.fill(); g.fillStyle = "#b8372b"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, 4); g.fill(); }
+      else if (q.art === "bolzen") { g.strokeStyle = "#3b2a1c"; g.lineWidth = 3.4; g.beginPath(); g.moveTo(-11, 0); g.lineTo(6, 0); g.stroke(); g.fillStyle = "#9aa3ad"; g.beginPath(); g.moveTo(5, -4); g.lineTo(13, 0); g.lineTo(5, 4); g.fill(); g.fillStyle = "#2c2c2c"; g.fillRect(-12, -3.5, 4, 7); }
+      else { g.globalCompositeOperation = "lighter"; for (const [r, f] of [[13, "rgba(127,180,255,.28)"], [8, "rgba(200,228,255,.6)"], [4, "#fff"]]) { g.fillStyle = f; g.beginPath(); g.arc(0, 0, r * (1 + 0.12 * Math.sin(performance.now() / 33)), 0, 7); g.fill(); }
+        funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 }); }
+      g.restore(); }
+      if (p >= 1) { if (q.b3) q.b3.entfernen(); for (let i = 0; i < 8; i++) { const a = Math.random() * 7; funken.push({ x, y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 60, a: 1, r: 3 }); } return false; } return true; });
+    g.globalCompositeOperation = "lighter"; funken = funken.filter((f) => { f.a -= dt * 3; f.r *= 0.96; if (f.vx) { f.x += f.vx * dt; f.y += f.vy * dt; } if (f.a <= 0) return false; g.fillStyle = `rgba(160,205,255,${f.a})`; g.beginPath(); g.arc(f.x, f.y, f.r, 0, 7); g.fill(); return true; }); g.globalCompositeOperation = "source-over"; }
   let zuletzt = performance.now();
-  (function bild(t) { const dt = Math.min(0.1, (t - zuletzt) / 1000); zuletzt = t; if (d) d.zeichne(pause ? 0 : dt * tempo, x); requestAnimationFrame(bild); })(zuletzt);
+  (function bild(t) { const dt = Math.min(0.1, (t - zuletzt) / 1000); zuletzt = t; if (d) d.zeichne(pause ? 0 : dt * tempo, x); zeichneFx(pause ? 0 : dt); requestAnimationFrame(bild); })(zuletzt);
   await laden();
 })();
 </script>

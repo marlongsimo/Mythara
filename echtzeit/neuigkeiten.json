@@ -1,0 +1,15 @@
+{
+ "hinweis": "Neuigkeiten und Nachrichten der Landing-Page (willkommen.html). Neueste zuerst. bild: Datei in img/echtzeit/start/ (kristall, rabe, lager, burg, insel). Nachrichten: art system (roter Punkt) oder info (goldener Punkt); jede id wird einmal als ungelesen gezählt.",
+ "neuigkeiten": [
+  { "id": "n-nordwald", "datum": "2026-11-24", "bild": "burg", "titel": "Der Nordwald wächst", "text": "Hinter der Köhlerlichtung liegen die Mauern einer verfallenen Feste – und daneben ein alter Friedhof. Der Uferweg führt durch den neuen Nordsaum dorthin." },
+  { "id": "n-rathaus", "datum": "2026-11-23", "bild": "insel", "titel": "Das Rathaus der Waldmark", "text": "Am Marktplatz steht jetzt ein zweistöckiges Rathaus mit Glockenturm. Über die Treppe geht es hinauf in den Ratssaal." },
+  { "id": "n-salon", "datum": "2026-11-22", "bild": "kristall", "titel": "Nias Salon öffnet bald", "text": "Die Wandlerin hat sich am Marktplatz niedergelassen. Bald verändert sie gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge." },
+  { "id": "n-unterschlupf", "datum": "2026-11-21", "bild": "lager", "titel": "Der Unterschlupf der Banditen", "text": "Unter der verlassenen Hütte in der Westmark führt ein Loch hinab in sechs Räume – das Hauptquartier der Banditen." },
+  { "id": "n-rabe", "datum": "2026-11-20", "bild": "rabe", "titel": "Die Splitterlande in Erprobung", "text": "Willkommen in der Beta! Die Welt wächst fast täglich. Fortschritt kann sich bis zum Start noch ändern." }
+ ],
+ "nachrichten": [
+  { "id": "m-beta", "art": "system", "titel": "System", "text": "Beta: Fortschritt kann bis zum Start zurückgesetzt werden." },
+  { "id": "m-3d", "art": "info", "titel": "Entwickler-Update", "text": "Die Welt in 3D wird erprobt – ein Blick hinter die Kulissen." },
+  { "id": "m-gemeinschaft", "art": "info", "titel": "Gemeinschaft", "text": "Lade Freunde ein: In der Waldmark seht ihr euch gegenseitig." }
+ ]
+}
