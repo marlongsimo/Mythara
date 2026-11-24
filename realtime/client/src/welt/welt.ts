@@ -171,7 +171,13 @@ export class Welt extends Phaser.Scene {
       while (neu) { neu = false; for (const a of alle) if (!dabei.has(a) && [...dabei].some((b) => grenzt(a, b))) { dabei.add(a); neu = true; } }
       x0 = Math.min(...[...dabei].map((a) => a.ursprung[0])); y0 = Math.min(...[...dabei].map((a) => a.ursprung[1])); x1 = Math.max(...[...dabei].map((a) => a.ursprung[0] + a.chunks[0])); y1 = Math.max(...[...dabei].map((a) => a.ursprung[1] + a.chunks[1]));
       this.cameras.main.setBounds(x0 * CHUNK_PX, y0 * CHUNK_PX, (x1 - x0) * CHUNK_PX, (y1 - y0) * CHUNK_PX); }
-    WELT.hud.titel(r.region.name, r.region.untertitel || "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${weltDatei("karte-" + id + ".webp")})`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name; }
+    WELT.hud.titel(r.region.name, r.region.untertitel || "Splitterlande"); const k = $("#ez-karte"); k.style.backgroundImage = `url(${weltDatei("karte-" + id + ".webp")})`; k.style.aspectRatio = `${r.region.chunks[0]} / ${r.region.chunks[1]}`; (k.querySelector("span") as HTMLElement).textContent = r.region.name;
+    /* Kartensymbole (Bank, Schmiede, Dungeon …) aus welt.json: an ihrer Stelle, gleich groß bei jedem Zoom */
+    for (const e of Array.from(k.querySelectorAll(".ez-symbol"))) e.remove();
+    const sy = (this.index.regionen[id] as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || [], namen = (this.index as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}, punkt = k.querySelector("#ez-karte-punkt");
+    for (const q of sy) { const im = document.createElement("img"); im.className = "ez-symbol"; im.src = `${WELT.bild}img/karte/symbole/${q.s}.webp`; im.alt = namen[q.s] || q.s; im.title = namen[q.s] || q.s; im.draggable = false;
+      Object.assign(im.style, { position: "absolute", width: "22px", height: "auto", left: (100 * (q.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%", top: (100 * (q.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%", transform: "translate(-50%, -58%)", pointerEvents: "none", filter: "drop-shadow(0 1px 2px rgba(0,0,0,.8))", zIndex: "1" });
+      k.insertBefore(im, punkt); } }
 
   /** Den Helden an eine andere Stelle der Welt versetzen (Weltfelder), mit kurzem Abblenden – etwa durch ein Loch in den Untergrund */
   springen(x: number, y: number) { if (this.gesperrt) return; if (WELT.springen) WELT.springen(this); this.halt(); this.gesperrt = true; this.pfad = [];

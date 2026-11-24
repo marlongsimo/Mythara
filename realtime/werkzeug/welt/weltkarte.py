@@ -49,6 +49,16 @@ def main():
             im = cache[k]; ax = (1 - o['anker'][0]) if p.get('spiegeln') else o['anker'][0]
             X = (p['x'] * feld - x0 * cpx) * s - ax * im.width; Y = (p['y'] * feld - y0 * cpx) * s - o['anker'][1] * im.height
             K.alpha_composite(im, (int(round(X)), int(round(Y)))) if X >= 0 and Y >= 0 else K.paste(im, (int(round(X)), int(round(Y))), im)
+    # Kartensymbole (aus welt.json): an ihrer Stelle, fest gut 1/4 Chunk groß
+    sym_ordner = os.path.join(WURZEL, 'img', 'karte', 'symbole'); groesse = max(16, int(px * 0.26))
+    for r in index['regionen'].values():
+        for q in r.get('symbole', []):
+            p = os.path.join(sym_ordner, q['s'] + '.webp')
+            if not os.path.exists(p) or (int(q['x'] // cf), int(q['y'] // cf)) not in set(chunks):
+                continue
+            im = Image.open(p).convert('RGBA'); im.thumbnail((groesse, groesse), Image.LANCZOS)
+            X = int(round((q['x'] * feld - x0 * cpx) * s - im.width / 2)); Y = int(round((q['y'] * feld - y0 * cpx) * s - im.height * 0.58))
+            K.alpha_composite(im, (max(0, X), max(0, Y)))
     K.convert('RGB').save(ziel, quality=88, method=6)
     print(f'Weltkarte: {len(chunks)} Chunks ({x0}|{y0} bis {x1}|{y1}), {K.width} × {K.height} px → {os.path.relpath(ziel, WURZEL)}')
 

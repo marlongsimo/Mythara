@@ -6,7 +6,7 @@
  * werkzeug/welt/karte.py an ihrer Weltstelle). Eine neue Region erscheint also von selbst, sobald die Welt-Pipeline sie gebaut hat.
  * Die Regionen stoßen ohne Rahmen aneinander; nur ihre Namen stehen klein darüber.
  */
-export interface KartenRegion { id: string; name: string; ursprung: number[]; chunks: number[] }
+export interface KartenRegion { id: string; name: string; ursprung: number[]; chunks: number[]; /** Kartensymbole in Weltfeldern (aus welt.json) */ symbole?: { s: string; x: number; y: number }[] }
 export interface WeltkarteOpts {
   daten: string;                                 // Ordner mit karte-<id>.webp
   stand?: string;                                // Kennung des Weltbaus (gegen veraltete Bilder im Browser)
@@ -14,6 +14,8 @@ export interface WeltkarteOpts {
   chunkFelder: number;                           // Felder je Chunk
   ich: () => { x: number; y: number } | null;    // eigene Stelle in Feldern (Welt)
   hier?: () => string;                           // Region, in der man steht (für die Überschrift)
+  symbolNamen?: Record<string, string>;          // Kennung → Name der Kartensymbole
+  symbolBild?: string;                           // Ordner der Symbolbilder (img/karte/symbole/)
 }
 
 const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
@@ -48,6 +50,9 @@ export function uebersicht(o: WeltkarteOpts): void {
     const n = document.createElement("div"); n.className = "wk-name"; n.textContent = r.name;
     Object.assign(n.style, { left: ((r.ursprung[0] + r.chunks[0] / 2) * C - x0) * PX + "px", top: ((r.ursprung[1] + r.chunks[1] / 2) * C - y0) * PX + "px" }); lw.appendChild(n);
   }
+  /* Kartensymbole: bleiben bei jedem Zoom gleich groß (wie die Namen) */
+  for (const r of o.regionen) for (const q of r.symbole || []) { const im = document.createElement("img"); im.className = "wk-symbol"; im.draggable = false; im.src = (o.symbolBild || "") + q.s + ".webp";
+    im.alt = im.title = (o.symbolNamen || {})[q.s] || q.s; Object.assign(im.style, { left: (q.x - x0) * PX + "px", top: (q.y - y0) * PX + "px" }); lw.appendChild(im); }
   const punkt = document.createElement("div"); punkt.className = "wk-ich"; punkt.innerHTML = "<i></i>"; lw.appendChild(punkt);
   document.body.appendChild(hülle);
 
@@ -103,6 +108,7 @@ function stil() {
 #ez-uebersicht .wk-flaeche{position:absolute;inset:0;overflow:hidden;cursor:grab}
 #ez-uebersicht .wk-flaeche.zieht{cursor:grabbing}
 #ez-uebersicht .wk-leinwand{position:absolute;left:0;top:0;transform-origin:0 0}
+#ez-uebersicht .wk-symbol{position:absolute;width:30px;height:auto;transform:translate(-50%,-58%) scale(calc(1 / var(--wkz,1)));transform-origin:50% 58%;filter:drop-shadow(0 1px 3px rgba(0,0,0,.85))}
 #ez-uebersicht .wk-leinwand img{position:absolute;display:block;pointer-events:none;image-rendering:auto}
 #ez-uebersicht .wk-name{position:absolute;transform:translate(-50%,-50%) scale(calc(1 / var(--wkz,1)));white-space:nowrap;pointer-events:none;font-size:15px;letter-spacing:.08em;color:#ffe9b0;text-shadow:0 0 4px #000,0 0 8px #000,0 1px 2px #000;opacity:.92}
 #ez-uebersicht .wk-ich{position:absolute;width:0;height:0;pointer-events:none}
