@@ -1,5 +1,5 @@
 /* Mythara – Querformat ab dem Heldeneditor: auf Handy und Tablet hochkant der Hinweis „Bitte dreh dein Gerät“, quer nicht; am PC nie;
-   die Anmeldeseite bleibt frei; auf Android ein Knopf für Vollbild und Querformat-Sperre, auf dem iPhone nicht (dort geht keine Sperre).
+   schon ab der Anmeldeseite (seit 24.11.2026); auf Android ein Knopf für Vollbild und Querformat-Sperre, auf dem iPhone nicht (dort geht keine Sperre).
    Aufruf: node test/querformat.test.cjs   (BILD=pfad/ für Bildschirmfotos) */
 const { chromium, devices } = require('playwright'); const fs = require('fs'), path = require('path');
 const WURZEL = path.resolve(__dirname, '..', '..'), TYP = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.css': 'text/css', '.svg': 'image/svg+xml' };
@@ -20,5 +20,8 @@ const BILD = process.env.BILD || '';
     check(await s.p.evaluate(() => [...document.querySelectorAll('.waffe')].every((e) => { const r = e.getBoundingClientRect(); return r.bottom <= innerHeight + 1 && r.right <= innerWidth + 1; })), 'Startwaffen quer: alle drei nebeneinander sichtbar'); await s.c.close(); }
   { const s = await seite(pixel, 'held.html'); check(s.hinweis.da && s.hinweis.knopf, 'Android hochkant: Hinweis mit Knopf „Querformat einschalten“'); await s.c.close(); }
   { const s = await seite(pc, 'held.html'); check(!s.hinweis.da, 'PC: nie ein Hinweis'); await s.c.close(); }
-  { const s = await seite(iphone, 'anmelden.html'); check(!s.hinweis.da, 'Anmeldeseite auf dem iPhone hochkant: kein Hinweis (bleibt, wie das Gerät gehalten wird)'); await s.c.close(); }
+  { const s = await seite(iphone, 'anmelden.html'); check(s.hinweis.da && !s.hinweis.knopf, 'Anmeldeseite auf dem iPhone hochkant: schon hier „Bitte dreh dein Gerät“ (Querformat ab dem Login)'); if (BILD) await s.p.screenshot({ path: BILD + 'quer-login.png' }); check(!s.fehler.length, 'keine Fehler auf der Anmeldeseite: ' + s.fehler.join(' | ')); await s.c.close(); }
+  { const s = await seite(iphoneQuer, 'anmelden.html'); check(!s.hinweis.da, 'Anmeldeseite auf dem iPhone quer: kein Hinweis'); await s.c.close(); }
+  { const s = await seite(pixel, 'willkommen.html'); check(s.hinweis.da && s.hinweis.knopf, 'Willkommensseite auf Android hochkant: Hinweis mit Knopf „Querformat einschalten“'); await s.c.close(); }
+  { const s = await seite(pc, 'anmelden.html'); check(!s.hinweis.da, 'Anmeldeseite am PC: nie ein Hinweis'); await s.c.close(); }
   await b.close(); console.log(f ? f + ' Fehler' : 'Querformat: alles in Ordnung'); process.exit(f ? 1 : 0); })();

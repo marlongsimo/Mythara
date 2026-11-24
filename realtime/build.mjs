@@ -16,6 +16,8 @@ writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8"
 writeFileSync(aus + "willkommen.html", readFileSync("client/willkommen.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "start.css", readFileSync("client/start.css", "utf8"));
 writeFileSync(aus + "start-passen.js", readFileSync("client/start-passen.js", "utf8"));
+/* Querformat schon ab dem Login (client/src/quer.ts): hochkant „Bitte dreh dein Gerät“, auf Android Vollbild + Querformat-Sperre beim ersten Tippen */
+await build({ stdin: { contents: 'import { querformat } from "./client/src/quer"; querformat();', resolveDir: ".", loader: "ts" }, bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "quer.js", legalComments: "none" });
 writeFileSync(aus + "neuigkeiten.json", readFileSync("client/neuigkeiten.json", "utf8"));
 /* Heldeneditor: nach der Registrierung und beim ersten Spielstart ohne Helden */
 await build({ entryPoints: ["client/src/heldeneditor.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "held.js", legalComments: "none" });
