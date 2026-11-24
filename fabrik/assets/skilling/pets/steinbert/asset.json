@@ -1,0 +1,13 @@
+{
+  "id": "pet.steinbert",
+  "name": "Steinbert",
+  "kategorie": "skilling-pet",
+  "skill": "Bergbau",
+  "name_vorlaeufig": true,
+  "aktuell": "v001",
+  "hoehe_m": 0.9,
+  "spieldatei": "img/figuren-echt3d/pet.steinbert.glb",
+  "bewegungen": "ruhe (wiegt sich, 2 s), laufen (vier Beine, diagonal, 0,67 s)",
+  "status": "Meshy „Crystalback Miner“, hüfthoch (0,9 m); gebaut mit fabrik/rig_vierbeiner.py → fabrik/export3d.py; Folgen im Spiel kommt später",
+  "herkunft": "Meshy"
+}

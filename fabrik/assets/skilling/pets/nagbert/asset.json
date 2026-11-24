@@ -1,0 +1,13 @@
+{
+  "id": "pet.nagbert",
+  "name": "Nagbert",
+  "kategorie": "skilling-pet",
+  "skill": "Holzfällerei",
+  "name_vorlaeufig": true,
+  "aktuell": "v001",
+  "hoehe_m": 0.9,
+  "spieldatei": "img/figuren-echt3d/pet.nagbert.glb",
+  "bewegungen": "ruhe (nagt an der Nuss, 1 s), laufen (tapselt in kleinen Hüpfern, Schwanz wedelt, 0,5 s)",
+  "status": "Meshy „Acorn Guardian“, hüfthoch (0,9 m); gebaut mit fabrik/rig_nager.py → fabrik/export3d.py; Folgen im Spiel kommt später",
+  "herkunft": "Meshy"
+}
