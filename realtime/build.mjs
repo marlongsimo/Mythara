@@ -5,7 +5,11 @@ const v = Date.now().toString(36), aus = new URL("../echtzeit/", import.meta.url
 mkdirSync(aus, { recursive: true });
 await build({ entryPoints: ["client/src/main.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "spiel.js", legalComments: "none", define: { "process.env.NODE_ENV": '"production"' } });
 writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").replace("__V__", v));
-writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8"));
+/* Login-Fenster und Landing-Page (seit 24.11.2026) mit gemeinsamer Gestaltung und den Neuigkeiten */
+writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8").replaceAll("__V__", v));
+writeFileSync(aus + "willkommen.html", readFileSync("client/willkommen.html", "utf8").replaceAll("__V__", v));
+writeFileSync(aus + "start.css", readFileSync("client/start.css", "utf8"));
+writeFileSync(aus + "neuigkeiten.json", readFileSync("client/neuigkeiten.json", "utf8"));
 /* Modulare 3D-Figuren (getrennt vom Spiel): isolierte Testszene und die Vorschau der Figuren-Pipeline */
 await build({ entryPoints: ["client/src/figurentest.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "figurentest.js", legalComments: "none", define: { "process.env.NODE_ENV": '"production"' } });
 writeFileSync(aus + "figurentest.html", readFileSync("client/figurentest.html", "utf8").replace("__V__", v));
