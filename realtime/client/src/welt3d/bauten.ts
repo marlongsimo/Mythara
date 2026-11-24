@@ -7,6 +7,7 @@
  */
 import * as THREE from "three";
 import { Teile, type Muster } from "./teile";
+import { esse, flammen, amboss } from "./werkstatt";
 
 export type Bauplan = {
   id: string;
@@ -26,12 +27,13 @@ const HOLZ = "#5b3b22", DUNKEL = "#3a2614", GLAS = "#33404c";
 const rgb = (f?: number[]) => (f ? new THREE.Color(f[0] / 255, f[1] / 255, f[2] / 255).convertSRGBToLinear() : null);
 
 export type Gebaeude = { gruppe: THREE.Group; daecher: THREE.Object3D[]; raeume: { x0: number; x1: number; z0: number; z1: number }[];
-  tueren: { fluegel: THREE.Object3D; x: number; z: number; zu: number; auf: number }[]; drehen: THREE.Object3D[] };
+  tueren: { fluegel: THREE.Object3D; x: number; z: number; zu: number; auf: number }[]; drehen: THREE.Object3D[];
+  /** Feuerstellen in Weltkoordinaten (für Schein und Licht) und Flammen, die flackern */ feuer: THREE.Vector3[]; flackern: THREE.Object3D[] };
 
 export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude {
   const g = new THREE.Group(); g.position.set(X, Y, Z);
   const mauer = new Teile(), K = plan.koerper, nr = (r?: string | number) => (typeof r === "string" ? Math.max(0, K.findIndex((k) => k.id === r)) : r ?? 0);
-  const aus: Gebaeude = { gruppe: g, daecher: [], raeume: [], tueren: [], drehen: [] }, w = 0.2;
+  const aus: Gebaeude = { gruppe: g, daecher: [], raeume: [], tueren: [], drehen: [], feuer: [], flackern: [] }, w = 0.2;
   K.forEach((k, ki) => {
     const x0 = k.x, x1 = k.x + k.b, zs = -k.d, zn = -k.d - k.t, h = k.h, farbe = WAND[k.wand || "bretter"] || WAND.bretter;
     const D = k.dach || { form: "flach" }, H = D.hoehe ?? 1.6, ue = D.ueber ?? 0.35, form = D.form;
@@ -88,7 +90,10 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     const n = t.netz(false); if (ost) { n.rotation.y = Math.PI / 2; n.position.set(k.x + k.b + 0.01, 0, -(f.d ?? k.t / 2)); } else n.position.set(f.x ?? 0, 0, -k.d + 0.01); g.add(n); }
   /* Zubehör */
   for (const z of plan.zubehoer || []) { const k = K[nr(z.koerper)], D = k.dach || { form: "flach" }, top = k.h + (D.hoehe ?? 1.6);
-    if (z.art === "kamin") mauer.box(0.6, top - k.h + 0.9, 0.6, z.x ?? 0, k.h - 0.2, -(z.d ?? k.t / 2), "#7a6f66", 0, { muster: "stein" });
+    if (z.art === "esse") { /* Schmiedeofen im Raum, unter dem Kamin (in 2D ist die Esse als Glut in der Vorderwand gemalt) */
+      const kamin = (plan.zubehoer || []).find((q) => q.art === "kamin"), ex = kamin ? kamin.x ?? 0 : (((z as { x0?: number }).x0 ?? -1) + ((z as { x1?: number }).x1 ?? 1)) / 2, ez = kamin ? -(kamin.d ?? k.t / 2) : -(k.d + k.t / 2);
+      const gh = esse(mauer, ex, ez), fl = flammen(); fl.position.set(ex, gh, ez); g.add(fl); aus.flackern.push(fl); aus.feuer.push(new THREE.Vector3(X + ex, Y + gh + 0.35, Z + ez)); }
+    else if (z.art === "kamin") mauer.box(0.6, top - k.h + 0.9, 0.6, z.x ?? 0, k.h - 0.2, -(z.d ?? k.t / 2), "#7a6f66", 0, { muster: "stein" });
     else if (z.art === "banner") { mauer.box(0.55, 1.1, 0.05, z.x ?? 0, (z.z ?? 2) - 1.1, -k.d + 0.05, rgb(z.farbe) || "#9b2f2a"); mauer.box(0.7, 0.06, 0.08, z.x ?? 0, z.z ?? 2, -k.d + 0.06, HOLZ, 0, { muster: "holz" }); }
     else if (z.art === "laterne" || z.art === "schild") mauer.box(0.24, 0.32, 0.24, z.x ?? 0, (z.z ?? 2) - 0.3, -k.d + 0.15, z.art === "laterne" ? "#f1b84d" : "#8a6440");
     else if (z.art === "vordach") { /* kleines Pultdach über der Tür auf zwei Pfosten */ const x0 = z.x0 ?? -1, x1 = z.x1 ?? 1, t = z.tiefe ?? 1, h0 = z.z ?? 2.2, zs = -k.d, dm = { muster: DACHMUSTER[z.deckung || "schindel"] || "schindel" } as const, df = rgb(z.farbe) || new THREE.Color(DECKUNG[z.deckung || "schindel"]);
@@ -105,9 +110,10 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     mauer.box(1.0, 1.95, 0.14, m.x, 0.06, -m.d, "#c49c46", 0, { muster: "metall" }); mauer.box(0.76, 1.55, 0.05, m.x, 0.26, -m.d + 0.09, "#c4a2ea", 0, { muster: "glatt" }); }
   for (const m of plan.innen?.moebel || []) if (m.art === "schalter") { mauer.box(1.6, 1.0, 0.5, m.x, 0.06, -m.d, "#7a5232", 0, { muster: "holz" }); for (let i = 0; i < 6; i++) mauer.box(0.04, 0.9, 0.04, m.x - 0.75 + i * 0.3, 1.06, -m.d + 0.2, "#c4a052", 0, { muster: "metall" }); mauer.box(1.6, 0.06, 0.06, m.x, 1.92, -m.d + 0.2, "#c4a052", 0, { muster: "metall" }); }
     else if (m.art === "tresor") { mauer.box(1.1, 1.2, 0.8, m.x, 0.06, -m.d, "#34363c", 0, { muster: "metall" }); mauer.add(new THREE.CylinderGeometry(0.22, 0.22, 0.05, 14), "#cca85a", new THREE.Matrix4().makeRotationX(Math.PI / 2).setPosition(m.x, 0.66, -m.d + 0.42), { muster: "metall" }); }
+  for (const m of plan.innen?.moebel || []) if (m.art === "amboss") amboss(mauer, m.x, -m.d, 0);
   for (const m of plan.innen?.moebel || []) if (m.art === "treppe") { for (let i = 0; i < 6; i++) mauer.box(1.1, 0.35 * (i + 1), 0.4, m.x, 0.06, -(m.d - 1.2 + i * 0.4 + 0.2), "#7a5232", 0, { muster: "holz" }); }
     else if (m.art === "treppe_oben") { mauer.box(1.2, 0.02, 2.4, m.x, 0.07, -m.d, "#181210", 0, { muster: "glatt" }); for (const s of [-0.65, 0.65]) mauer.box(0.1, 0.9, 2.4, m.x + s, 0.06, -m.d, "#5b3b22", 0, { muster: "holz" }); mauer.box(1.3, 0.1, 0.1, m.x, 0.9, -(m.d - 1.2), "#5b3b22", 0, { muster: "holz" }); }
-  for (const m of (plan.innen?.moebel || []).filter((q) => !["spiegel", "treppe", "treppe_oben", "schalter", "tresor"].includes(q.art))) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
+  for (const m of (plan.innen?.moebel || []).filter((q) => !["spiegel", "treppe", "treppe_oben", "schalter", "tresor", "amboss"].includes(q.art))) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
   const n = mauer.netz(); g.add(n);
   return aus;
 }

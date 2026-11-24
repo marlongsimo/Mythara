@@ -16,8 +16,9 @@ import { LADEN_LISTE, LADEN_ZEICHEN } from "../../../shared/laeden";
 import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
-import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, seitenTab, skillTafel, RKnopf } from "../rahmen";
+import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, seitenTab, skillTafel, ladenTafel, RKnopf } from "../rahmen";
 import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen } from "../welt3d/oberflaeche";
+import { LAEDEN } from "../../../shared/laden";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
 import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
@@ -63,6 +64,7 @@ export function oeffne(art: string, s: WeltKern) {
   else if (art === "welt") { if (!torOffen()) { $("#ez-dorf-knopf").classList.add("bald"); return; }
     tafel(s, (zu) => weltkarte(() => { zu(); if (lokalerHeld() !== s.held) { location.reload(); return; } s.profil(); })); }
   else if (art === "menue") tafel(s, (zu) => menueTafel(() => { zu(); s.profil(); }));
+  else if (art.startsWith("laden:") && LAEDEN[art.slice(6)]) tafel(s, (zu) => ladenTafel(LAEDEN[art.slice(6)], () => { zu(); s.profil(); }));   /* Händler (shared/laden.ts) */
   else $("#ez-dorf-knopf").classList.add("bald");   /* „kommt noch“ */
 }
 /** Den Helden wechseln – nur in der Waldmark (der Server speichert ihn mit dem Konto) */

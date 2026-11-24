@@ -40,6 +40,8 @@ export class Figurbild {
   /** Bild, Ausschnitt (rep/off wie Texture.repeat/offset), Größe in Feldern und Fußpunkt im Bild (0…1, von unten) */
   setze(map: THREE.Texture, rep: [number, number], off: [number, number], groesse: [number, number], mitte: [number, number]) {
     for (const m of [this.haupt, this.durch]) { const U = m.uniforms; U.map.value = map; U.rep.value.set(rep[0], rep[1]); U.off.value.set(off[0], off[1]); U.groesse.value.set(groesse[0], groesse[1]); U.mitte.value.set(mitte[0], mitte[1]); } }
+  /** Einzelbild i von n eines Bildstreifens zeigen (gespiegelt: Blick nach links) */
+  bild(i: number, n: number, gespiegelt = false) { for (const m of [this.haupt, this.durch]) { const U = m.uniforms; U.rep.value.x = (gespiegelt ? -1 : 1) / n; U.off.value.x = (i + (gespiegelt ? 1 : 0)) / n; } }
   /** Silhouette hinter Wänden an/aus (nur für den Helden) */
   silhouette(an: boolean) { this.gruppe.children[0].visible = an; }
 }

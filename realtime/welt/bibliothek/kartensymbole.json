@@ -4,7 +4,7 @@
   "bank": "Bank",
   "friseur": "Friseur / Makeover",
   "amboss": "Schmiede",
-  "ofen": "Bäckerei",
+  "ofen": "Schmiedeofen",
   "traenkehaendler": "Kräuter und Tränke",
   "handwerkshaendler": "Händler",
   "dungeon": "Dungeon",
@@ -14,7 +14,7 @@
   "mine": "Mine"
  },
  "orte": {
-  "waldmark": { "bank_tuer": "bank", "salon_tuer": "friseur", "schmiede_tuer": "amboss", "baecker_tuer": "ofen", "kraeuter_tuer": "traenkehaendler", "markt": "handwerkshaendler" },
+  "waldmark": { "bank_tuer": "bank", "salon_tuer": "friseur", "amboss": "amboss", "esse": "ofen", "handwerker": "handwerkshaendler", "kraeuter_tuer": "traenkehaendler", "markt": "handwerkshaendler" },
   "weidenhain": { "bankschalter": "bank" },
   "westmark": { "loch_abstieg": "dungeon" },
   "nordwald": { "meiler": "holzfaellerei" },

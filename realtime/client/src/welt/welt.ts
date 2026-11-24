@@ -7,6 +7,7 @@
  * Ausbaustufe 1: ein Held läuft allein durch die Welt, Bewegung rechnet der Browser. Gegner, Mitspieler und Server kommen mit der Integration (Phase 10).
  */
 import { teleportAbreise } from "../echt3d/figur";
+import { symboleOrdnen } from "../symbolordnung";
 import Phaser from "phaser";
 import { HELDEN } from "../../../shared/config";
 import { FELD_PX, CHUNK_FELDER, CHUNK_PX, HELD_PX, chunkName, inZone } from "../../../shared/welt/typen";
@@ -190,7 +191,13 @@ export class Welt extends Phaser.Scene {
     const sy = (this.index.regionen[id] as unknown as { symbole?: { s: string; x: number; y: number }[] }).symbole || [], namen = (this.index as unknown as { kartensymbole?: Record<string, string> }).kartensymbole || {}, punkt = k.querySelector("#ez-karte-punkt");
     for (const q of sy) { const im = document.createElement("img"); im.className = "ez-symbol"; im.src = `${WELT.bild}img/karte/symbole/${q.s}.webp`; im.alt = namen[q.s] || q.s; im.title = namen[q.s] || q.s; im.draggable = false;
       Object.assign(im.style, { position: "absolute", width: "22px", height: "auto", left: (100 * (q.x / C - r.region.ursprung[0]) / r.region.chunks[0]) + "%", top: (100 * (q.y / C - r.region.ursprung[1]) / r.region.chunks[1]) + "%", transform: "translate(-50%, -58%)", pointerEvents: "none", filter: "drop-shadow(0 1px 2px rgba(0,0,0,.8))", zIndex: "1" });
-      k.insertBefore(im, punkt); } }
+      k.insertBefore(im, punkt); }
+    this.symboleOrdnen();
+    if (!this.ordnenDa) { this.ordnenDa = true; const neu = () => requestAnimationFrame(() => this.symboleOrdnen()); window.addEventListener("ez-kartenzoom", neu); window.addEventListener("resize", neu); } }
+  ordnenDa = false;
+  /** Kartensymbole der Minikarte, die sich bei diesem Zoom überdecken würden, auseinanderschieben (Lage aus left/top in %) */
+  symboleOrdnen() { const k = document.getElementById("ez-karte"); if (!k || !k.offsetWidth) return; const w = k.offsetWidth, h = k.offsetHeight;
+    symboleOrdnen([...k.querySelectorAll<HTMLElement>(".ez-symbol")].map((el) => ({ el, x: parseFloat(el.style.left) / 100 * w, y: parseFloat(el.style.top) / 100 * h })), 19); }
 
   /** Den Helden an eine andere Stelle der Welt versetzen (Weltfelder), mit kurzem Abblenden – etwa durch ein Loch in den Untergrund */
   springen(x: number, y: number) { if (this.gesperrt) return; if (WELT.springen) WELT.springen(this); this.halt(); this.gesperrt = true; this.pfad = [];

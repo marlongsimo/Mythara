@@ -58,7 +58,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     /* vor der Palisade Wiese; der Waldboden beginnt etwas vor den ersten Bäumen */
     const vorfeld = cy >= ZAUN && imVorfeld(cx, cy, 1.6);
     z.push(platz ? "p" : weg ? "e" : vorfeld ? "." : !lichtung(cx, cy) ? "f" : teich(cx, cy) ? "w" : blume ? "," : "."); } g.push(z); }
-  const FIGUREN = [{ id: "wache_west", rolle: "wache", figur: "wache", x: 45.2, y: 58.6 }, { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 },
+  const FIGUREN = [{ id: "wache_west", rolle: "wache", figur: "wache", x: 45.2, y: 58.6 }, { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 }, { id: "handwerker", rolle: "haendler", figur: "harm", x: 71.6, y: 31.3, links: true, daten: { modell: "handwerker", blick: -0.45, laden: "handwerker" } },
       { id: "kraemer", rolle: "haendler", figur: "kraemer", x: 39.2, y: 39.9 }, { id: "kraeuterfrau", rolle: "haendler", figur: "kraeuterfrau", x: 43.6, y: 42.9 }, { id: "ausrufer", rolle: "npc", figur: "ausrufer", x: 52.6, y: 35.2, links: true },
       { id: "junge", rolle: "npc", figur: "junge", x: 44.2, y: 29.4 }, { id: "wanderer", rolle: "npc", figur: "wanderer", x: 33.2, y: 31.4 }];
   /* Gebäude: Fußpunkt (Mitte der Vorderwand unten) */
@@ -108,7 +108,10 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     interaktionen: [lies("brunnen_ansehen", 48, 34.6, "Der Brunnen der Waldmark. Das Wasser kommt kalt und klar aus dem Waldboden.", "brunnen"),
       lies("halle_tuer", ...tuerVon("dorf_heldenhalle_01", 48, 20.4), "Die Heldenhalle. Hier sammeln sich die Wanderer, bevor sie aufbrechen.", "heldenhalle", "halle", "Die Heldenhalle betreten"),
       lies("taverne_tuer", ...tuerVon("dorf_taverne_01", 28, 30.2), "Die Taverne. Drinnen riecht es nach Eintopf und Rauch.", "taverne", "bald", "Taverne – kommt noch"),
-      lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 68.5, 30.2), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
+      lies("schmiede_tuer", ...tuerVon("dorf_schmiede_01", 69, 30), "Die Schmiede. In der Esse glüht es Tag und Nacht.", "schmiede"),
+      lies("esse", 67.4, 27.8, "Der Schmiedeofen. Die Glut wird nie ganz kalt; der Blasebalg daneben facht sie in Sekunden wieder an."),
+      lies("amboss", 70.4, 27.6, "Der Amboss auf seinem Eichenklotz. Die Bahn ist blank geschlagen von unzähligen Hieben."),
+      { ...lies("handwerker_laden", 71.6, 31.3, "Der Handwerker der Waldmark lehnt vor der Schmiede. Er verkauft Beile, Spitzhacken und Hämmer – einfache und seltene.", null, "laden:handwerker", "Mit dem Handwerker handeln"), radius: 2.2 },
       lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
       lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59.5, 28), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),

@@ -37,6 +37,19 @@
    "y": 31.4
   },
   {
+   "id": "handwerker",
+   "rolle": "haendler",
+   "figur": "harm",
+   "x": 71.6,
+   "y": 31.3,
+   "links": true,
+   "daten": {
+    "modell": "handwerker",
+    "blick": -0.45,
+    "laden": "handwerker"
+   }
+  },
+  {
    "id": "kraemer",
    "rolle": "haendler",
    "figur": "kraemer",
@@ -118,13 +131,48 @@
   {
    "id": "schmiede_tuer",
    "art": "lesen",
-   "x": 70,
-   "y": 30.8,
+   "x": 70.5,
+   "y": 30.6,
    "radius": 1.5,
    "objekt": "schmiede",
    "abgleich": "keiner",
    "daten": {
     "text": "Die Schmiede. In der Esse glüht es Tag und Nacht."
+   }
+  },
+  {
+   "id": "esse",
+   "art": "lesen",
+   "x": 67.4,
+   "y": 27.8,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Schmiedeofen. Die Glut wird nie ganz kalt; der Blasebalg daneben facht sie in Sekunden wieder an."
+   }
+  },
+  {
+   "id": "amboss",
+   "art": "lesen",
+   "x": 70.4,
+   "y": 27.6,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Amboss auf seinem Eichenklotz. Die Bahn ist blank geschlagen von unzähligen Hieben."
+   }
+  },
+  {
+   "id": "handwerker_laden",
+   "art": "eingang",
+   "x": 71.6,
+   "y": 31.3,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Handwerker der Waldmark lehnt vor der Schmiede. Er verkauft Beile, Spitzhacken und Hämmer – einfache und seltene.",
+    "tat": "laden:handwerker",
+    "knopf": "Mit dem Handwerker handeln"
    }
   },
   {

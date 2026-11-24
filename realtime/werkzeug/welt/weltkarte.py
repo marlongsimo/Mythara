@@ -51,14 +51,32 @@ def main():
             K.alpha_composite(im, (int(round(X)), int(round(Y)))) if X >= 0 and Y >= 0 else K.paste(im, (int(round(X)), int(round(Y))), im)
     # Kartensymbole (aus welt.json): an ihrer Stelle, fest gut 1/4 Chunk groß
     sym_ordner = os.path.join(WURZEL, 'img', 'karte', 'symbole'); groesse = max(16, int(px * 0.26))
+    liste = []
     for r in index['regionen'].values():
         for q in r.get('symbole', []):
             p = os.path.join(sym_ordner, q['s'] + '.webp')
             if not os.path.exists(p) or (int(q['x'] // cf), int(q['y'] // cf)) not in set(chunks):
                 continue
-            im = Image.open(p).convert('RGBA'); im.thumbnail((groesse, groesse), Image.LANCZOS)
-            X = int(round((q['x'] * feld - x0 * cpx) * s - im.width / 2)); Y = int(round((q['y'] * feld - y0 * cpx) * s - im.height * 0.58))
-            K.alpha_composite(im, (max(0, X), max(0, Y)))
+            liste.append([p, (q['x'] * feld - x0 * cpx) * s, (q['y'] * feld - y0 * cpx) * s, 0.0, 0.0])
+    # dicht beieinander (Ofen, Amboss, Händler vor einer Schmiede): auseinanderschieben, bis jedes ganz zu sehen ist (wie Minikarte und Übersicht)
+    abstand = groesse * 0.88
+    for _ in range(60):
+        bewegt = False
+        for i in range(len(liste)):
+            for j in range(i + 1, len(liste)):
+                a, b = liste[i], liste[j]; ax, ay = a[1] + a[3] - b[1] - b[3], a[2] + a[4] - b[2] - b[4]; d = (ax * ax + ay * ay) ** 0.5
+                if d >= abstand - 0.01:
+                    continue
+                bewegt = True
+                if d < 0.01:
+                    ax, ay, d = (-1 if a[1] <= b[1] else 1), 0, 1
+                sch = (abstand - d) / 2 + 0.05; a[3] += ax / d * sch; a[4] += ay / d * sch; b[3] -= ax / d * sch; b[4] -= ay / d * sch
+        if not bewegt:
+            break
+    for p, x, y, dx, dy in liste:
+        im = Image.open(p).convert('RGBA'); im.thumbnail((groesse, groesse), Image.LANCZOS)
+        X = int(round(x + dx - im.width / 2)); Y = int(round(y + dy - im.height * 0.58))
+        K.alpha_composite(im, (max(0, X), max(0, Y)))
     K.convert('RGB').save(ziel, quality=88, method=6)
     print(f'Weltkarte: {len(chunks)} Chunks ({x0}|{y0} bis {x1}|{y1}), {K.width} × {K.height} px → {os.path.relpath(ziel, WURZEL)}')
 

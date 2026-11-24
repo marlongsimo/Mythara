@@ -88,7 +88,7 @@ function dock(n: number): { svg: string; lage: number[][] } {
   return { svg, lage };
 }
 /** Wie groß die Karte im Kreis erscheint (Kartenbreiten je Kreisbreite) – je Region, damit der Kreis immer etwa gleich viel Umgebung zeigt */
-export function karteZoom(zoom: number): void { zoomK = zoom; const k = document.getElementById("ez-karte"); if (k) k.style.setProperty("--zk", String(zoom)); }
+export function karteZoom(zoom: number): void { zoomK = zoom; const k = document.getElementById("ez-karte"); if (k) k.style.setProperty("--zk", String(zoom)); window.dispatchEvent(new Event("ez-kartenzoom")); }
 /** Die Karte so schieben, dass der Held (fx, fy: Anteil 0…1 der Kartenbreite und -höhe) in der Mitte des Kreises steht */
 export function karteFolgen(fx: number, fy: number): void {
   const k = document.getElementById("ez-karte"), rund = k && k.parentElement; if (!k || !rund || !rund.classList.contains("rund")) return;
@@ -252,6 +252,40 @@ export function taschenTafel(art: "rucksack" | "ausruestung", held: string, zu: 
   f.querySelectorAll<HTMLElement>(".treiter [data-a]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const a = b.dataset.a as "rucksack" | "ausruestung"; if (a !== art) { f.hidden = true; f.innerHTML = ""; taschenTafel(a, held, zu); } }));
 }
 /** Alle Quests auf einen Blick: je Kampagne der nächste Schritt und die Sterne */
+/** Laden eines Händlers (24.11.2026): Sortiment mit Seltenheit und Preis in Seelensplittern, dazu der eigene Splitter-Stand.
+    Kaufen prüft den Stand; das eigentliche Kaufen (Splitter abziehen, Gegenstand in den Rucksack) kommt mit dem Inventar auf dem Server. */
+const WARENBILD: Record<string, string> = {
+  beil: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6l3 3-17 31-4-2z" fill="#8a5a32"/><path d="M27 7c6-3 14 0 17 7-5 1-10 1-14-2l-3-5z" fill="currentColor"/><path d="M27 7l3 5" stroke="#00000055" stroke-width="1.5"/></svg>',
+  spitzhacke: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M25 12l3 2-14 28-4-2z" fill="#8a5a32"/><path d="M8 14c8-8 22-10 34-4-1 2-2 3-3 3-10-4-20-3-28 3z" fill="currentColor"/></svg>',
+  hammer: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 18l4 0 0 26-4 0z" fill="#8a5a32"/><rect x="12" y="8" width="24" height="11" rx="2" fill="currentColor"/></svg>' };
+export function ladenTafel(laden: { name: string; haendler: string; gruss: string; waren: { id: string; name: string; art: string; seltenheit: string; preis: number; text: string }[] }, zu: () => void): void {
+  let splitter = 0; try { splitter = Number(localStorage.getItem("ez_seelen")) || 0; } catch { /* privat */ }
+  if (!document.getElementById("ez-laden-stil")) { const st = document.createElement("style"); st.id = "ez-laden-stil"; st.textContent = `
+#ez-konto .tafel.laden { width: min(620px, 100%); text-align: left; }
+#ez-konto .laden .gruss { margin: 8px 0 12px; font-style: italic; color: #d9c9a2; text-align: center; }
+#ez-konto .laden .stand { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; font: 600 15px Cinzel, Georgia, serif; color: #f0d48a; }
+#ez-konto .laden .stand em { font-style: normal; color: #8fc6ff; }
+#ez-konto .laden ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+#ez-konto .laden li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 10px; border: 1px solid #5d4a2e; border-radius: 8px; background: rgba(0,0,0,.28); }
+#ez-konto .laden li .bild { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 8px; border: 2px solid #9a9a9a; background: radial-gradient(#2b2a2a, #141313); color: #cfd3d8; }
+#ez-konto .laden li.selten .bild { border-color: #4f8fe8; box-shadow: 0 0 10px rgba(79,143,232,.5); color: #b9d4ff; }
+#ez-konto .laden li .bild svg { width: 40px; height: 40px; }
+#ez-konto .laden li b { display: block; font: 600 16px Cinzel, Georgia, serif; color: #efe2c4; } #ez-konto .laden li.selten b { color: #8fc6ff; }
+#ez-konto .laden li small { display: block; color: #a8966a; } #ez-konto .laden li .art { font: 600 11px Inter, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #9a9a9a; } #ez-konto .laden li.selten .art { color: #4f8fe8; }
+#ez-konto .laden li .kauf { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+#ez-konto .laden li .preis { font: 600 16px Cinzel, Georgia, serif; color: #f0d48a; white-space: nowrap; } #ez-konto .laden li .preis.zuwenig { color: #d9776a; }
+#ez-konto .laden li button { font: 600 13px Cinzel, Georgia, serif; letter-spacing: .05em; padding: 6px 14px; border-radius: 6px; border: 1px solid #d6b066; background: linear-gradient(#4b2a78, #2c1748); color: #efe2c4; cursor: pointer; }
+#ez-konto .laden li button:disabled { opacity: .5; cursor: default; } #ez-konto .laden .meldung { min-height: 1.4em; margin: 10px 0 0; text-align: center; color: #d9c9a2; }`; document.head.appendChild(st); }
+  const zeile = (w: { id: string; name: string; art: string; seltenheit: string; preis: number; text: string }) => `<li class="${w.seltenheit}"><span class="bild">${WARENBILD[w.art] || ""}</span>
+    <span><b>${w.name}</b><span class="art">${w.seltenheit === "selten" ? "Selten" : "Einfach"}</span><small>${w.text}</small></span>
+    <span class="kauf"><span class="preis${splitter < w.preis ? " zuwenig" : ""}">◈ ${w.preis}</span><button type="button" data-kauf="${w.id}"${splitter < w.preis ? " disabled" : ""}>Kaufen</button></span></li>`;
+  const f = tafel("laden", `<h2>${laden.name}</h2><div class="zier"></div><p class="gruss">${laden.haendler}: „${laden.gruss}“</p>
+    <p class="stand">Deine Splitter: <em>◈ ${splitter}</em></p><ul>${laden.waren.map(zeile).join("")}</ul><p class="meldung" role="status"></p>
+    <p class="klein">Preise in Seelensplittern. Gekaufte Werkzeuge landen im Rucksack, sobald das Inventar da ist.</p>`, zu);
+  f.querySelectorAll<HTMLButtonElement>("[data-kauf]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); const w = laden.waren.find((q) => q.id === b.dataset.kauf); if (!w) return;
+    (f.querySelector(".meldung") as HTMLElement).textContent = `„${w.name}“ für ◈ ${w.preis}: Kaufen wird freigeschaltet, sobald der Rucksack Gegenstände speichert.`; }));
+}
+
 export function questTafel(zu: () => void): void {
   const zeilen = Object.entries(QUESTS).map(([ort, Q]) => { const m = merkerVon(ort), offen = Q.haupt.find((s) => !m[s.fertig]), begonnen = Object.keys(m).length > 0;
     return `<li class="${offen ? "" : "fertig"}"><b>${Q.titel}</b><small>${Q.ort} · Stufe ${Q.stufe} · <span class="sterne">${sternText(ort)}</span></small><span>${!begonnen ? "Noch nicht begonnen – über die Weltkarte aufbrechen" : offen ? "Als Nächstes: " + offen.text : "Abgeschlossen"}</span></li>`; }).join("");

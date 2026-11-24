@@ -71,7 +71,7 @@ for (const E of ebenen) {
     for (let y = -1; y <= C + 1; y++) for (let x = -1; x <= C + 1; x++) { const gx = Math.max(0, Math.min(B, lx + x)), gy = Math.max(0, Math.min(H, ly + y)); h.push(hoehe[gy * W + gx]); }
     const meine = dinge.filter(([, x, y]) => Math.floor(x / C) === cx && Math.floor(y / C) === cy);
     writeFileSync(join(ZIEL, `${cx}_${cy}.json`), JSON.stringify({ cx, cy, region: d2.region, ebene: E.name, art: E.art, boden: b, geh: d2.geh, hoehe: h, dinge: meine,
-      figuren: (d2.figuren || []).map((p) => ({ figur: p.figur, x: p.x, y: p.y })), interaktionen: d2.interaktionen || [] }));
+      figuren: (d2.figuren || []).map((p) => ({ figur: p.figur, x: p.x, y: p.y, ...(p.links ? { links: true } : {}), ...(p.daten?.modell ? { modell: p.daten.modell, blick: p.daten.blick ?? 0 } : {}) })), interaktionen: d2.interaktionen || [] }));
     chunks.push(`${cx}_${cy}`); }
 }
 const arten = Object.fromEntries(ARTEN.map((a) => [a.zeichen, { id: a.id, farbe: a.farbe, wasser: Boolean(a.wasser), begehbar: a.begehbar }]));
