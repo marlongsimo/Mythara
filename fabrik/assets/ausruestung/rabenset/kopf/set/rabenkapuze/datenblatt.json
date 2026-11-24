@@ -1,0 +1,31 @@
+{
+  "name": "Rabenkapuze",
+  "gegenstand": "rabenkapuze",
+  "gruppe": "rabenset",
+  "teil": "kopf",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Set",
+  "modell": {
+    "ebene": "kopf.helm.rabe",
+    "quelle": "fabrik/assets/ausruestung/rabenset/kopf/kopf.helm.rabe",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.rabe.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.rabe.glb"
+  },
+  "werte": {
+    "Abwehr Nahkampf": "+3",
+    "Abwehr Fernkampf": "+3",
+    "Abwehr Magie": "+3"
+  },
+  "werte_offen": false,
+  "text": "Schwarzes Leder unter einem Kragen aus Rabenfedern. Teil 1 des Rabensets – Belohnung aus dem ersten Abschnitt der Raben-Trilogie.",
+  "set": {
+    "name": "Rabenset",
+    "teile": [
+      "rabenkapuze",
+      "rabenpanzer",
+      "rabenbeinschuetzer"
+    ],
+    "bonus": "alle 3 Teile: jeder Treffer mit Schaden > 0 heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)"
+  },
+  "herkunft": "Raben-Trilogie, Abschnitt 1"
+}

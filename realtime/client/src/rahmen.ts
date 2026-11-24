@@ -12,7 +12,7 @@ import { chatSystem, tafelZeigen } from "./welt";
 import { QUESTLOG, STAENDE, Q1, BELOHNUNG, rang, laeuft } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
-import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { teilBild, TEIL_3D } from "./welt3d/teilbild";
 /** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
@@ -217,7 +217,7 @@ export function gegenstandMalen(c: HTMLCanvasElement, g: string): void { const G
 function untersuchen(g: string, zurueck: () => void, zu: () => void): void {
   const G = GEGENSTAENDE[g], f = $("#ez-konto"); f.hidden = true; f.innerHTML = "";
   const t = tafel("taschen eigen untersuchen", `<h2>${G.name}</h2><div class="zier"></div><p class="iart"><span class="isel s-${G.seltenheit}">${SELTENHEITEN[G.seltenheit].name}</span> · ${G.art}${G.platz ? " · " + PLAETZE.find((p) => p.id === G.platz)!.name : ""}</p>
-    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    <canvas class="igross" width="220" height="220" data-bild="${g}"></canvas><dl class="iwerte">${werteVon(G).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>${Object.values(SETS).filter((st) => st.teile.includes(g)).map((st) => { const an = aktiveSets(Object.values(inventar().angelegt)).includes(st), n = st.teile.filter((t) => Object.values(inventar().angelegt).includes(t)).length; return `<p class="iset${an ? " an" : ""}"><b>${st.name} (${n}/${st.teile.length})</b><br>${st.text}</p>`; }).join("")}
     <p class="klein">${G.text}</p><div class="reihe"><button type="button" class="haupt" data-t="zurueck">Zurück</button></div>`, zu); /* ✕ oder Esc: ganz schließen – das Spiel läuft weiter (früher blieb es gesperrt) */
   { const c = t.querySelector("canvas") as HTMLCanvasElement; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }
   (t.querySelector('[data-t="zurueck"]') as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); t.hidden = true; t.innerHTML = ""; zurueck(); });

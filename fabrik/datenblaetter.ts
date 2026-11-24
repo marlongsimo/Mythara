@@ -11,9 +11,10 @@ import * as path from "path";
 import { GEGENSTAENDE, SELTENHEITEN, ANGRIFF_JE_ART, PLAETZE, RUESTUNGSGRUPPE } from "../realtime/shared/gegenstaende";
 
 const WAFFEN = "fabrik/assets/waffen";
-const STUFEN = ["anfaenger", "gewoehnlich", "selten", "episch", "legendaer", "mythisch"];
-const ORDNER: Record<string, string> = { anfaenger: "training", gewoehnlich: "einfach" };   // Ordnernamen wie die angezeigten Stufen
-const ordner = (s: string) => `${STUFEN.indexOf(s)}-${ORDNER[s] || s}`;
+const STUFEN = ["anfaenger", "gewoehnlich", "selten", "episch", "legendaer", "mythisch", "set"];
+const ORDNER: Record<string, string> = { anfaenger: "training", gewoehnlich: "einfach" };
+const SONDER: Record<string, string> = { set: "set" };   // Set-Teile: eigener Ordner ohne Nummer   // Ordnernamen wie die angezeigten Stufen
+const ordner = (s: string) => SONDER[s] || `${STUFEN.indexOf(s)}-${ORDNER[s] || s}`;
 const slug = (n: string) => n.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 /* Modellordner (Quelle) je Grundebene: waffen/<klasse>/<id> */
 const quelle = new Map<string, string>();

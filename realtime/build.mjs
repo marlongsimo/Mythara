@@ -1,6 +1,6 @@
 // Baut den Client (nach ../echtzeit, wird von GitHub Pages ausgeliefert) und den Server (nach server/dist).
 import { build } from "esbuild";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
 const v = Date.now().toString(36), aus = new URL("../echtzeit/", import.meta.url).pathname;
 /* Namen der Gegenstände aus den Datenblättern der Figuren-Fabrik (fabrik/assets/…/datenblatt.json): eine Quelle für die Anzeigenamen.
    Fehlt der Ordner (z. B. auf einem Server ohne Fabrik), bleibt die zuletzt erzeugte Datei shared/gegenstand_namen.ts. */
@@ -25,6 +25,15 @@ await build({ entryPoints: ["client/src/welt3d/main.ts"], bundle: true, minify: 
 await build({ entryPoints: ["client/src/welt3d/spiel.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "welt3d-spiel.js", legalComments: "none" });
 writeFileSync(aus + "welt3d.html", readFileSync("client/welt3d.html", "utf8").replace("__V__", v));
 writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/preview/index.html", "utf8"));
+/* Animations-Testseite (nicht verlinkt): alle 3D-Figuren mit Bewegungen, Teilen, ausgelagerten Teilen und deren Seltenheitsstufen */
+{ const ORD = new URL("../img/figuren-echt3d/", import.meta.url).pathname, STUFEN = ["gewoehnlich", "selten", "episch", "legendaer", "mythisch"], figuren = [];
+  for (const f of readdirSync(ORD).filter((d) => d.endsWith(".json")).sort()) { const id = f.slice(0, -5); if (!existsSync(ORD + id + ".glb")) continue;
+    const d = JSON.parse(readFileSync(ORD + f, "utf8")), teile = d.teile || {}, stufen = {}, dateien = existsSync(ORD + id + ".teile") ? readdirSync(ORD + id + ".teile") : [];
+    for (const t of Object.keys(teile)) { const s = STUFEN.filter((st) => dateien.includes(`${t}.${st}.glb`)); if (s.length) stufen[t] = s; }
+    const haut = existsSync(ORD + "haut") ? readdirSync(ORD + "haut").filter((h) => h.startsWith(id + ".")).map((h) => h.slice(id.length + 1, -5)) : [];
+    figuren.push({ id, teile, aktionen: d.aktionen || {}, stufen, haut }); }
+  writeFileSync(aus + "animationen-liste.json", JSON.stringify({ figuren }));
+  writeFileSync(aus + "animationen.html", readFileSync("client/animationen.html", "utf8").replace(/__V__/g, v)); }
 await build({ entryPoints: ["server/src/index.ts"], bundle: true, platform: "node", format: "cjs", target: "node20", outfile: "server/dist/server.js", external: ["bufferutil", "utf-8-validate"] });
 await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { GEGENSTAENDE, startAusruestung } from "./shared/gegenstaende";', resolveDir: ".", loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: "test/sim.gebaut.mjs" });
 console.log("gebaut: echtzeit/ (Client), server/dist/server.js (Server)");

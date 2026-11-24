@@ -1,0 +1,30 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "waffe.schwert.links": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe"
+   ]
+  },
+  "waffe.schwert.rechts": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe"
+   ]
+  }
+ },
+ "aktionen": {
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}

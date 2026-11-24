@@ -1,0 +1,8 @@
+{
+  "id": "gegner.rabenpriester",
+  "name": "Rabenpriester",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: Meshy „Raven Archmage“, rig.py; Waffen (je eine zeigen): waffe.zauberstab.einfach (zauber_stab), waffe.bogen.einfach (bogen), waffe.speer.einfach (stich2h); dazu ruhe, gehen, laufen, treffer, tod – img/figuren-echt3d/rabenpriester3d.glb",
+  "herkunft": "Meshy"
+}

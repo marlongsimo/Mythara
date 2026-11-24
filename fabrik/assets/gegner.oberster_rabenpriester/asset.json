@@ -1,0 +1,15 @@
+{
+  "id": "gegner.oberster_rabenpriester",
+  "name": "Oberster Rabenpriester",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: Meshy „Raven King“ geriggt, zwei Seltene Schwerter, nur Grundhaltung. Groß: belegt 2×2 Felder (Flügelspannweite 1,95 m, Höhe ≈ 2,5 m; fabrik/kind.py groesse=1.38 kopf=1.0 → arbeit/figur-gross.blend). Im Spiel: Kollisionsradius r = 1.0 (2×2 Felder). Spieldatei img/figuren-echt3d/oberster_rabenpriester3d.glb",
+  "herkunft": "Meshy",
+  "spiel": {
+    "felder": [
+      2,
+      2
+    ],
+    "r": 1.0
+  }
+}
