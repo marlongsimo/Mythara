@@ -10,18 +10,19 @@ const v = Date.now().toString(36), aus = new URL("../echtzeit/", import.meta.url
     writeFileSync("shared/gegenstand_namen.ts", "/* Erzeugt von build.mjs aus fabrik/assets/…/datenblatt.json – nicht von Hand ändern. Anzeigenamen je Gegenstand-ID. */\nexport const NAMEN_AUS_DATENBLAETTERN: Record<string, string> = " + JSON.stringify(sortiert, null, 1) + ";\n"); } }
 mkdirSync(aus, { recursive: true });
 await build({ entryPoints: ["client/src/main.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "spiel.js", legalComments: "none", define: { "process.env.NODE_ENV": '"production"' } });
-writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").replace("__V__", v));
+writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").replaceAll("__V__", v));
 /* Login-Fenster und Landing-Page (seit 24.11.2026) mit gemeinsamer Gestaltung und den Neuigkeiten */
 writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "willkommen.html", readFileSync("client/willkommen.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "start.css", readFileSync("client/start.css", "utf8"));
 writeFileSync(aus + "start-passen.js", readFileSync("client/start-passen.js", "utf8"));
+writeFileSync(aus + "mythara.webmanifest", readFileSync("client/mythara.webmanifest", "utf8")); /* Web-App vom Home-Bildschirm: Querformat, Vollbild */
 /* Querformat schon ab dem Login (client/src/quer.ts): hochkant „Bitte dreh dein Gerät“, auf Android Vollbild + Querformat-Sperre beim ersten Tippen */
 await build({ stdin: { contents: 'import { querformat } from "./client/src/quer"; querformat();', resolveDir: ".", loader: "ts" }, bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "quer.js", legalComments: "none" });
 writeFileSync(aus + "neuigkeiten.json", readFileSync("client/neuigkeiten.json", "utf8"));
 /* Heldeneditor: nach der Registrierung und beim ersten Spielstart ohne Helden */
 await build({ entryPoints: ["client/src/heldeneditor.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "held.js", legalComments: "none" });
-writeFileSync(aus + "held.html", readFileSync("client/held.html", "utf8").replace("__V__", v));
+writeFileSync(aus + "held.html", readFileSync("client/held.html", "utf8").replaceAll("__V__", v));
 /* Echtzeit-3D-Figuren (Versuch, ?figur3d=1): three.js in eigener Datei, wird nur bei Bedarf geladen */
 await build({ entryPoints: ["client/src/echt3d/darsteller.ts"], bundle: true, minify: true, format: "iife", target: "es2020", outfile: aus + "figur3d.js", legalComments: "none" });
 /* Modulare 3D-Figuren (getrennt vom Spiel): isolierte Testszene und die Vorschau der Figuren-Pipeline */
