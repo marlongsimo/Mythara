@@ -402,6 +402,19 @@
    ],
    "datei": "basefrau3d.teile/waffe.sternenszepter.glb"
   },
+  "waffe.waldsaebel": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basefrau3d.teile/waffe.waldsaebel.glb"
+  },
   "waffe.zeremonienstab": {
    "art": "starr",
    "platz": "hand_r",

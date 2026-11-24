@@ -1,0 +1,27 @@
+{
+  "name": "Gesegneter Waldsäbel",
+  "gegenstand": "waldsaebel",
+  "klasse": "schwert",
+  "art": "Einhandschwert",
+  "seltenheit": "Selten",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.waldsaebel",
+    "quelle": "fabrik/assets/waffen/schwert/waffe.waldsaebel",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.waldsaebel.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.waldsaebel.glb",
+    "stufenbild": null
+  },
+  "animation": {
+    "angriff": "stich",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/schwert/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Eine geschwungene Klinge, um deren Griff sich lebendige Dornenranken winden – vom Segen des Waldes durchdrungen."
+}

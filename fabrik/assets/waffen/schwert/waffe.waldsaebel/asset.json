@@ -1,0 +1,9 @@
+{
+  "id": "waffe.waldsaebel",
+  "name": "Gesegneter Waldsäbel",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell (Spitze unten, 0,95 m wie das Eidschwert), ausgelagert als <figur>.teile/waffe.waldsaebel.glb; Werte folgen",
+  "herkunft": "Meshy (Verdant Thornblade)"
+}

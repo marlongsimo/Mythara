@@ -60,6 +60,8 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
     werte: [["Abwehr", "Werte folgen"]], text: "Spitze Kapuze mit leuchtendem Stirnstein. Gehört zum Magier-Set." },
   eidschwert: { id: "eidschwert", name: "Seltenes Schwert", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.eidschwert"],
     werte: [["Schaden", "Werte folgen"]], text: "Eine schlanke Klinge mit vergoldetem Korb, auf die Eide der Waldmark geschworen werden." },
+  waldsaebel: { id: "waldsaebel", name: "Gesegneter Waldsäbel", platz: "waffe", art: "Einhandschwert", seltenheit: "selten", ebenen: ["waffe.waldsaebel"],
+    werte: [["Schaden", "Werte folgen"]], text: "Eine geschwungene Klinge, um deren Griff sich lebendige Dornenranken winden – vom Segen des Waldes durchdrungen." },
   eiddolch: { id: "eiddolch", name: "Seltener Dolch", platz: "waffe", art: "Dolch", seltenheit: "selten", ebenen: ["waffe.eiddolch"],
     werte: [["Schaden", "Werte folgen"]], text: "Breit und kurz, mit lederumwickeltem Griff – das kleine Gegenstück zum Eidschwert." },
   eidzweihaender: { id: "eidzweihaender", name: "Seltener Zweihänder", platz: "waffe", art: "Zweihandschwert", seltenheit: "selten", ebenen: ["waffe.eidzweihaender"],

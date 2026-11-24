@@ -264,6 +264,24 @@
       ]
     },
     {
+      "id": "waffe.waldsaebel",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/schwert/waffe.waldsaebel/v001/quelle/schwert.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "klasse": "einhand",
+      "angriff": "stich",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "stich",
+        "block"
+      ]
+    },
+    {
       "id": "waffe.eiddolch",
       "platz": "hand_r",
       "art": "schwert",
