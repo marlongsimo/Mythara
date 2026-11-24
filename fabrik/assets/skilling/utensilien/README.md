@@ -10,7 +10,7 @@ Werkzeuge für die Skills – je Werkzeug ein Ordner:
 |---|---|---|---|
 | Holzbeil | Holzfällerei | 0,6 m | img/objekte3d/skilling/utensilien/holzbeil.glb |
 | Spitzhacke | Bergbau | 0,8 m | img/objekte3d/skilling/utensilien/spitzhacke.glb |
-| Hammer | offen | 0,5 m | img/objekte3d/skilling/utensilien/hammer.glb (ohne Stufen) |
+| Hammer | Handwerk | 0,5 m | img/objekte3d/skilling/utensilien/hammer.glb (ohne Stufen) |
 
 Ausgabe: `python3 fabrik/baum_export.py -- <meshy.blend> img/objekte3d/skilling/utensilien/<werkzeug>.glb <länge in m>` (Stielende im Ursprung, Kopf oben).
 Später: als starres Teil an die rechte Hand der Grundfiguren (ausruestung.json „starr“) mit eigener Schlagbewegung.

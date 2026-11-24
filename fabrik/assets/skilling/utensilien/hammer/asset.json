@@ -2,7 +2,7 @@
   "id": "utensil.hammer",
   "name": "Hammer",
   "kategorie": "skilling-utensil",
-  "skill": "offen",
+  "skill": "Handwerk",
   "aktuell": "v001",
   "laenge_m": 0.5,
   "stufen": null,
