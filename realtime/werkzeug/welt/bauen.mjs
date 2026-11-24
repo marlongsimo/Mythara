@@ -22,6 +22,9 @@ if (fehler.length) { for (const [n, f] of fehler) { console.log("✗ " + n); for
 
 const G = await gemeinsam(), bib = bibliothek(); mkdirSync(ziel, { recursive: true });
 const SYMBOLE = JSON.parse(readFileSync(join(REALTIME, "welt", "bibliothek", "kartensymbole.json"), "utf8"));
+const mitte = (l) => ({ x: +(l.baeume.reduce((t, b) => t + b.x, 0) / l.baeume.length).toFixed(1), y: +(l.baeume.reduce((t, b) => t + b.y, 0) / l.baeume.length).toFixed(1) });
+const SAMMELORTE = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.map((l) => ({ s: "holzfaellerei", region: l.baeume[0].region, ...mitte(l) })),
+  ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.map((k) => ({ s: "mine", region: k.adern[0].region, x: k.x, y: k.y }))];
 /* welt.json wächst mit: Regionen, die diesmal nicht gebaut werden, bleiben stehen */
 const indexPfad = join(ziel, "welt.json"), index = existsSync(indexPfad) ? JSON.parse(readFileSync(indexPfad, "utf8")) : { regionen: {}, objekte: {} };
 index.feldPx = G.FELD_PX; index.chunkFelder = G.CHUNK_FELDER; index.kartensymbole = SYMBOLE.symbole;
@@ -33,6 +36,9 @@ for (const n of namen) {
     const symbole = Object.entries(zuordnung).map(([id, s]) => { const q = r.spiel.interaktionen.find((i) => i.id === id) || r.spiel.figuren.find((f) => f.id === id);
       if (!q) throw new Error(`Kartensymbol ${s}: ${n} hat keine Interaktion oder Figur „${id}“`); if (!SYMBOLE.symbole[s]) throw new Error(`Kartensymbol „${s}“ ist nicht beschrieben`);
       return { s, x: +(q.x + ox).toFixed(2), y: +(q.y + oy).toFixed(2) }; });
+    for (const q of (SYMBOLE.punkte || {})[n] || []) { if (!SYMBOLE.symbole[q.s]) throw new Error(`Kartensymbol „${q.s}“ ist nicht beschrieben`); symbole.push({ s: q.s, x: q.x, y: q.y }); }
+    /* Holzfäller-Lichtungen und Bergbau-Senken: ein Symbol in der Mitte */
+    for (const l of SAMMELORTE) if (l.region === n) symbole.push({ s: l.s, x: l.x, y: l.y });
     index.regionen[n] = { ...gebaut.kopf, benutzt: gebaut.benutzt, ...(symbole.length ? { symbole } : {}) }; }
   const frei = gebaut.chunks.reduce((s, c) => s + c.geh.join("").split(".").length - 1, 0), felder = gebaut.chunks.length * G.CHUNK_FELDER ** 2;
   console.log(`✓ ${n}: ${gebaut.chunks.length} Chunks, ${gebaut.chunks.reduce((s, c) => s + c.objekte.length, 0)} Objekte, ${Math.round(100 * frei / felder)} % begehbar`);

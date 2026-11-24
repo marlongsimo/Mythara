@@ -1,5 +1,5 @@
 {
- "hinweis": "Kartensymbole für Minikarte, Übersicht (Taste M) und Weltkarte. symbole: Kennung → Name und Bild (img/karte/symbole/<kennung>.webp). orte: je Gebiet die Kennung einer Interaktion oder Figur (spiel.json) → Symbol; der Bake (bauen.mjs) setzt das Symbol an deren Stelle.",
+ "hinweis": "Kartensymbole für Minikarte, Übersicht (Taste M) und Weltkarte. symbole: Kennung → Name und Bild (img/karte/symbole/<kennung>.webp). orte: je Gebiet die Kennung einer Interaktion oder Figur (spiel.json) → Symbol; der Bake (bauen.mjs) setzt das Symbol an deren Stelle. punkte: Symbole an festen Weltfeldern (Händler aus shared/laeden.ts, die keine Figur in spiel.json sind). Holzfäller-Lichtungen (shared/holz_standorte.json) und Bergbau-Senken (shared/bergbau_standorte.json) setzt bauen.mjs von selbst.",
  "symbole": {
   "bank": "Bank",
   "friseur": "Friseur / Makeover",
@@ -14,10 +14,43 @@
   "mine": "Mine"
  },
  "orte": {
-  "waldmark": { "bank_tuer": "bank", "salon_tuer": "friseur", "amboss": "amboss", "esse": "ofen", "handwerker": "handwerkshaendler", "kraeuter_tuer": "traenkehaendler", "markt": "handwerkshaendler" },
-  "weidenhain": { "bankschalter": "bank" },
-  "westmark": { "loch_abstieg": "dungeon" },
-  "nordwald": { "meiler": "holzfaellerei" },
-  "graufurt": { "kraemer": "handwerkshaendler" }
+  "waldmark": {
+   "bank_tuer": "bank",
+   "salon_tuer": "friseur",
+   "amboss": "amboss",
+   "esse": "ofen",
+   "handwerker": "handwerkshaendler"
+  },
+  "weidenhain": {
+   "bankschalter": "bank"
+  },
+  "westmark": {
+   "loch_abstieg": "dungeon"
+  },
+  "graufurt": {
+   "kraemer": "handwerkshaendler"
+  }
+ },
+ "punkte": {
+  "waldmark": [
+   {
+    "s": "waffenhaendler",
+    "x": 6439.2,
+    "y": 6439.2,
+    "name": "Zur Scharfen Kante (Brann Hackebeil)"
+   },
+   {
+    "s": "ausruestungshaendler",
+    "x": 6443.6,
+    "y": 6442.2,
+    "name": "Blech & Bänder (Gerold Dickfell)"
+   },
+   {
+    "s": "traenkehaendler",
+    "x": 6456,
+    "y": 6441,
+    "name": "Schluck auf! (Mira Kräuterlieb)"
+   }
+  ]
  }
 }

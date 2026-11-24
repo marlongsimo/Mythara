@@ -357,12 +357,23 @@ export class Spielwelt3D implements WeltKern {
     if (!alt || (bewegt && seit > (HANDY_KARTE ? 700 : 500)) || seit > 2000) { this.karteZeit = performance.now();
       const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
       const stand = { x: this.ort.x, y: this.ort.y, g, massstab: f }, felder = (R * KARTE_RAND) / f;
-      this.motor.karteZeichnen(c, felder, () => { if (this.haendler) this.haendler.karteMarken(c, felder, stand, g); if (this.bank) this.bank.karteMarken(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
+      this.motor.karteZeichnen(c, felder, () => { this.symboleMalen(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
     if (!this.karteStand) return;
     /* Verschiebung seit dem Zeichnen in Bildpunkten des gezeichneten Bilds (oben = Blickrichtung beim Zeichnen) und Drehung um den Unterschied der Kamera */
     const S = this.karteStand, dx = this.ort.x - S.x, dy = this.ort.y - S.y, rx = Math.cos(S.g), rz = -Math.sin(S.g), ux = -Math.sin(S.g), uz = -Math.cos(S.g);
     const px = (dx * rx + dy * rz) * S.massstab, py = -(dx * ux + dy * uz) * S.massstab;
     c.style.transform = `rotate(${(g - S.g).toFixed(4)}rad) translate(${(-px).toFixed(1)}px, ${(-py).toFixed(1)}px)`; }
+  /** Kartensymbole aus welt.json (Bank, Schmiede, Händler, Holzfällerei, Mine …; welt/bibliothek/kartensymbole.json) ins Bild der Minikarte – Held in der Mitte, g = Drehung der Kamera */
+  private symbolBilder = new Map<string, HTMLImageElement>();
+  private symboleMalen(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number): void {
+    const x = c.getContext("2d"); if (!x || !this.index) return; const n = c.width, k = n / felder, rand = n / 2 / 1.5, gr = Math.max(16, n * 0.09);
+    for (const r of Object.values(this.index.regionen) as { symbole?: { s: string; x: number; y: number }[] }[]) for (const q of r.symbole || []) {
+      const dx = q.x - o.x, dy = q.y - o.y; if (Math.abs(dx) > felder || Math.abs(dy) > felder) continue;
+      const px = (dx * Math.cos(g) + dy * -Math.sin(g)) * k, py = -(dx * -Math.sin(g) + dy * -Math.cos(g)) * k; if (Math.hypot(px, py) > rand - gr / 2) continue;
+      let im = this.symbolBilder.get(q.s); if (!im) { im = new Image(); im.src = `${WELT.bild}img/karte/symbole/${q.s}.webp`; im.onload = () => { this.karteZeit = 0; }; this.symbolBilder.set(q.s, im); } /* geladen: beim nächsten Bild zeichnen */
+      if (im.complete && im.naturalWidth) x.drawImage(im, n / 2 + px - gr / 2, n / 2 + py - gr / 2, gr, gr); } }
+  /** für Tests: welche Symbole die Minikarte gerade zeigen würde */
+  symboleNah(r = 40): { s: string; x: number; y: number }[] { if (!this.index) return []; const o = this.ort; return (Object.values(this.index.regionen) as { symbole?: { s: string; x: number; y: number }[] }[]).flatMap((g) => g.symbole || []).filter((q) => Math.hypot(q.x - o.x, q.y - o.y) < r); }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
   /** Feldbewegung („Felder und Schräge“, shared/feld.ts): der Held gleitet von Feldmitte zu Feldmitte, 1 Feld je Tick (2/s), im Sprint 2 (4/s);
    *  schräg zählt wie gerade, keine Ecken schneiden. schrittZiel: die Feldmitte, zu der er gerade geht (ein angefangener Schritt wird zu Ende gegangen) */
