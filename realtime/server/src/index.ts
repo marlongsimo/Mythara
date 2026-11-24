@@ -9,20 +9,23 @@
  *
  * Geheime Schlüssel gehören ausschließlich in die Umgebung dieses Servers (SUPABASE_SERVICE_KEY), nie in den Browser.
  */
-import { LP_REGEN_SEK, maxLp } from "../../shared/kampfwerte";
+import { LP_REGEN_SEK, maxLp, SKILLS } from "../../shared/kampfwerte";
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
-import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN } from "../../shared/karten";
+import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN } from "../../shared/karten";
 import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit } from "./welt";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
 import { erlegt } from "./quests";
 
-const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5 * 60 * 1000;
+const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
+/* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
+   bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
+const KAMPF_RUHE_MS = 10000, HAENGEN_MS = 60000, RAND = 2.5;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
 const HERKUNFT = (process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(",").map((s) => s.trim()).filter(Boolean);
 const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = process.env.SUPABASE_SERVICE_KEY || "";
@@ -38,7 +41,8 @@ interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: numb
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
   /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** Inventar-Hörer abmelden */ invAus?: () => void; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
-  /** Kampfregeln v1: der eigene Held (Skill-XP, Ausrüstung) – ohne eigenen Helden die alten Kampfwerte */ v1?: HeldV1; v1T?: number }
+  /** Kampfregeln v1: der eigene Held (Skill-XP, Ausrüstung) – ohne eigenen Helden die alten Kampfwerte */ v1?: HeldV1; v1T?: number;
+  /** zuletzt im Kampf (ms); Verbindung weg, Held bleibt noch (seit, ms); ersetzt = übernommen oder ins Nachbargebiet gewechselt: beim Schließen sofort weg */ kampfZ?: number; haengt?: number; ersetzt?: boolean }
 /** Eine gemeinsame Kampfwelt: eine Simulation für alle Spieler dort; Gegner kehren zurück, EP nach Schadensanteil (shared/sim.ts, Sim.welt) */
 interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number }
 const zonen = new Map<string, Zone>();
@@ -65,11 +69,32 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
   let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].weltRegion); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */
   if (!Z) { setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort] || 1, 1); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
     Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
-  const nutzer = p.kampf && p.kampf.nutzer; for (const q of [...Z.spieler]) if (q !== p && q.kampf && q.kampf.nutzer === nutzer) { zoneVerlassen(q); try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* der alte Held verschwindet sofort */
+  const nutzer = p.kampf && p.kampf.nutzer;
+  /* Jede Person nur einmal (das neue Gerät übernimmt). Im selben Gebiet übernimmt die neue Verbindung den stehenden Helden samt Leben, Stelle und Kampf –
+     so rettet Neu-Einloggen nicht aus dem Kampf. In einem anderen Gebiet: ein stehender (abgebrochener) Held geht jetzt, eine offene Verbindung am Gebietsrand
+     ist der eigene Wechsel ins Nachbargebiet (die alte Verbindung schließt gleich selbst), jede andere offene ist ein anderes Gerät und wird abgemeldet. */
+  if (nutzer) for (const Z2 of zonen.values()) for (const q of [...Z2.spieler]) { if (q === p || !q.kampf || q.kampf.nutzer !== nutzer) continue;
+    const offen = q.ws.readyState === WebSocket.OPEN, h = q.heldId ? Z2.sim.nach(q.heldId) : undefined;
+    if (Z2 === Z && h && !h.tot && !q.zoneWeg) { uebernehmen(q, p, Z, typ, name); return; }
+    if (Z2 !== Z && offen && amRand(q)) { q.ersetzt = true; continue; }
+    q.ersetzt = true; zoneVerlassen(q); if (offen) try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } }
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
   { const L = nutzer && p.v1 ? lebenJe.get(nutzer) || (p.v1.lpStand ? { lp: p.v1.lpStand.lp, zeit: p.v1.lpStand.z * 1000 } : undefined) : undefined, h = Z.sim.nach(p.heldId); /* aus dem Speicher, sonst aus der Datenbank (Migration 046) */
     if (L && h) h.lp = Math.max(1, Math.min(h.max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK))); }
   console.log("Welt:", name, "betritt", karte, "·", Z.spieler.size, "dort"); namenMelden(Z); }
+/** Neues Gerät im selben Gebiet: die neue Verbindung steuert ab jetzt den Helden der alten (Leben, Stelle, Kampf bleiben). Die alte bucht ab und wird abgemeldet. */
+function uebernehmen(alt: Platz, p: Platz, Z: Zone, typ: string, name: string): void { const nutzer = (p.kampf && p.kampf.nutzer) || "", id = alt.heldId as number;
+  if (alt.v1 && nutzer) { v1Takt(sb, nutzer, alt.v1, Z.sim, id, true); if (p.v1) for (const k of SKILLS) p.v1.xp[k] = Math.max(p.v1.xp[k], alt.v1.xp[k]); } /* Skill-XP der alten Verbindung buchen; die neue rechnet ab dem höheren Stand weiter */
+  void buchen(alt, true); if (alt.invAus) { alt.invAus(); alt.invAus = undefined; }
+  alt.zoneWeg = true; alt.ersetzt = true; Z.spieler.delete(alt); if (alt.ws.readyState === WebSocket.OPEN) try { alt.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ }
+  p.zone = Z; p.heldId = id; p.v1T = Date.now(); p.name = name; p.kampfZ = alt.kampfZ; if (p.kampf) p.kampf.team = [typ]; if (p.v1) Z.sim.kampfwerteSetzen(id, kampfwerteVon(p.v1));
+  Z.spieler.add(p); Z.leerSeit = 0; console.log("Welt:", name, "übernimmt den Helden auf einem neuen Gerät in", Z.karte); namenMelden(Z); }
+/** Steht der Held am Rand seines Gebiets (Wechsel ins Nachbargebiet)? */
+function amRand(q: Platz): boolean { const Z = q.zone, K0 = Z && KARTEN[Z.karte], wz = K0 && K0.weltRegion ? WELTZONEN[K0.weltRegion] : undefined, h = Z && q.heldId ? Z.sim.nach(q.heldId) : undefined;
+  if (!wz || !h) return true; return h.x < RAND || h.y < RAND || h.x > wz.b - RAND || h.y > wz.h - RAND; }
+/** Verbindung weg: im Kampf (oder bis vor 10 s) bleibt der Held noch stehen; sonst sofort raus */
+function sollHaengen(p: Platz): boolean { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg || p.ersetzt) return false; const h = Z.sim.nach(p.heldId); if (!h || h.tot) return false;
+  return Date.now() - (p.kampfZ || 0) < KAMPF_RUHE_MS && !amRand(p); }
 /** Einen Spieler aus seiner gemeinsamen Welt nehmen (genau einmal): Stelle merken, Gutschrift anstoßen, Held sofort weg */
 function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; if (p.invAus) { p.invAus(); p.invAus = undefined; } const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
   if (p.kampf && p.kampf.nutzer && K0 && K0.ursprung && K0.weltRegion && h) /* wer hier aufhört, beginnt wieder hier – wer gefallen ist, in der Waldmark */
@@ -199,6 +224,7 @@ wss.on("connection", (ws, req) => {
         if (gruppe) { gruppe.kampf = p; p.raum = gruppe.code; gruppe.zuletzt = Date.now(); const erwartet = [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length; if (erwartet) p.start = { bis: Date.now() + 20000, erwartet, los: 0, zuletzt: "" }; losMelden(gruppe, ort, karte); }
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
+    if ((e as { t: string }).t === "da") return; /* Lebenszeichen des Browsers (es gab Eingaben, etwa im Chat): zählt gegen die Inaktivität */
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
     if ((e as { t: string }).t === "stil") { /* v3: Angriffsstil gewählt (Index der Kampfart, 1 = Standard) – Kampfwerte neu */
       if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
@@ -207,7 +233,9 @@ wss.on("connection", (ws, req) => {
       if (p.v1) { p.v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, p.v1.waffe); console.log(`Welt: Ausrüstung ${p.name || "?"}: waffe=${p.v1.angelegt.waffe || "-"} nebenhand=${p.v1.angelegt.nebenhand || "-"}`); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
     try { if (p.sim) p.sim.eingabe(e); else if (p.haupt && p.haupt.sim && p.heldId) p.haupt.sim.eingabe(e, p.heldId); else if (p.zone && p.heldId) p.zone.sim.eingabe(e, p.heldId); } catch (err) { console.error("Eingabe:", (err as Error).message); }
   });
-  const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist); void buchen(p, true); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
+  const weg = () => { if (!plaetze.has(p)) return; plaetze.delete(p); if (frist) clearTimeout(frist);
+    if (sollHaengen(p)) { p.haengt = Date.now(); console.log("Welt:", p.name || "?", "Verbindung weg im Kampf – der Held bleibt noch stehen"); return; } /* gebucht und entfernt wird in der Zonen-Runde */
+    void buchen(p, true); /* wer die Seite schließt, bekommt trotzdem, was er erkämpft hat */
     if (p.haupt) { p.haupt.mit?.delete(p); if (p.haupt.sim && p.heldId) p.haupt.sim.freigeben(p.heldId); } /* sein Held kämpft als Begleiter weiter */
     zoneVerlassen(p); /* sein Held verschwindet aus der gemeinsamen Welt, die Stelle wird gemerkt, gutgeschrieben wird trotzdem */
     if (p.mit) for (const m of p.mit) { void buchen(m, true).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
@@ -272,7 +300,11 @@ setInterval(() => {
       const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
       for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion, K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
     for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
-    for (const q of [...Z.spieler]) { if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { zoneVerlassen(q); continue; } /* Sicherheitsnetz: keine Helden ohne Verbindung */ if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
+    for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
+      if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
+        const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
+        if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }
+      else if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
       if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
       if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt);
       if (q.v1 && q.heldId && q.kampf && q.kampf.nutzer && jetzt - (q.v1T || 0) >= 1000) { q.v1T = jetzt; v1Takt(sb, q.kampf.nutzer, q.v1, Z.sim, q.heldId); } /* Skill-XP: Level prüfen, alle 10 s buchen */ }

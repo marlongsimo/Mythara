@@ -3,6 +3,7 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
+import { untaetigWaechter } from "./abmeldung";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { epAlle, epDazu } from "./halle";
 import type { HeldDef } from "../../shared/config";
@@ -409,6 +410,7 @@ const OHNE_DORF = P.get("dorf") === "0" || P.get("los") === "1" || FLACH; // ?do
 if (!adresseErlaubt(P0)) location.replace("./" + (P0.has("server") ? "?server=" + encodeURIComponent(P0.get("server") || "") : ""));
 else void Promise.race([kontoStart(), new Promise<boolean>((ok) => setTimeout(() => ok(false), 4000))]).then(async (neu) => { if (neu) return; if (!P.has("server") && !P.has("los")) await kontoSeite(); /* erst anmelden, Konto anlegen oder als Gast weiter (Testaufrufe überspringen das) */
   querformat(); /* Spiel: auf Handy und Tablet Querformat (seit 24.11.2026 schon ab dem Login, quer.js) */
+  if (!P.has("server")) untaetigWaechter(); /* 5 Minuten ohne Eingabe: abmelden (abmeldung.ts); Testaufrufe mit eigenem Server ausgenommen */
   /* dann der eigene Held: wer noch keinen hat (neu registriert oder zum ersten Mal nach dem Update), kommt erst in den Heldeneditor */
   { const mein = await heldLaden().catch(() => null);
     if (!mein && !P.has("server") && !inKampagne) { location.replace("held.html?weiter=" + encodeURIComponent(location.search)); return; }

@@ -174,7 +174,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
 /** 5-mal je Sekunde: jedem Spieler die anderen an seinem Ort melden (nur wenn sich etwas geändert hat, sonst alle 2 Sekunden) */
 let runde = 0;
 setInterval(() => { runde++; const jetzt = Date.now(), orte = new Map<string, Spieler[]>();
-  for (const s of spieler) { if (jetzt - s.zuletzt > 10 * 60 * 1000) { try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } (orte.get(s.ort) || orte.set(s.ort, []).get(s.ort)!).push(s); }
+  for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ */ try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } (orte.get(s.ort) || orte.set(s.ort, []).get(s.ort)!).push(s); }
   for (const liste of orte.values()) { const neu = liste.some((s) => s.geaendert); if (!neu && runde % 10) continue;
     const daten = liste.map((s) => ({ i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, b: s.b, l: s.l, ...(s.max ? { lp: s.lp, max: s.max } : {}) }));
     for (const s of liste) { s.geaendert = false; senden(s, { t: "spieler", liste: daten.filter((d) => d.i !== s.id), online: spieler.size }); } }

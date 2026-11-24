@@ -129,6 +129,10 @@ export class Sim {
   /** Kampfregeln v1: die seit dem letzten Aufruf verdienten Skill-XP abholen (der Server bucht sie ins Konto) */
   xpAbholen(id: number): SkillXp | null { const w = this.nach(id); if (!w || !w.xpNeu) return null; const x = w.xpNeu; if (!SKILLS.some((k) => x[k])) return null; w.xpNeu = { ...NULL_XP }; return x; }
   /** Ein Spieler verlässt die Welt: sein Held verschwindet, Gegner suchen sich ein neues Ziel */
+  /** Steht dieser Held gerade im Kampf? (gebunden, greift einen Feind an oder wird angegriffen) – für Abmelden und Verbindungsabbruch */
+  imKampf(id: number): boolean { const h = this.nach(id); if (!h || !h.held || h.tot) return false; if (this.gebunden(h)) return true;
+    if (h.zielId) { const z = this.nach(h.zielId); if (z && !z.tot && z.team !== h.team) return true; }
+    return this.wesen.some((o) => !o.tot && o.team !== h.team && o.zielId === id); }
   verlassen(id: number): void { const i = this.wesen.findIndex((w) => w.id === id && w.held); if (i < 0) return; this.wesen.splice(i, 1);
     for (const w of this.wesen) { if (w.zielId === id) { w.zielId = 0; w.pfad = []; } if (w.spottId === id) { w.spottId = 0; w.spottT = 0; } } for (const a of this.anteile.values()) a.delete(id); }
   /** Seelensplitter, die dieser Held in der Welt aufgehoben hat */
