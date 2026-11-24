@@ -121,6 +121,19 @@
    }
   },
   {
+   "id": "bankschalter",
+   "art": "lesen",
+   "x": 36.5,
+   "y": 20.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Bankschalter von Weidenhain. Hinter dem Messinggitter wird bald Gold eingezahlt und abgehoben – dasselbe Konto wie in der Bank der Waldmark.",
+    "tat": "bald",
+    "knopf": "Bankschalter – öffnet bald"
+   }
+  },
+  {
    "id": "wehr",
    "art": "lesen",
    "x": 60,

@@ -197,6 +197,44 @@
    }
   },
   {
+   "id": "bank_tuer",
+   "art": "lesen",
+   "x": 78,
+   "y": 31.6,
+   "radius": 1.5,
+   "objekt": "bank",
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank der Waldmark. Hinter dicken Mauern verwahrt sie das Gold der Wanderer – sicher, auch wenn man im Kampf fällt."
+   }
+  },
+  {
+   "id": "bankschalter_links",
+   "art": "lesen",
+   "x": 76.6,
+   "y": 29.1,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der linke Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.",
+    "tat": "bald",
+    "knopf": "Bankschalter – öffnet bald"
+   }
+  },
+  {
+   "id": "bankschalter_rechts",
+   "art": "lesen",
+   "x": 79.4,
+   "y": 29.1,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der rechte Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.",
+    "tat": "bald",
+    "knopf": "Bankschalter – öffnet bald"
+   }
+  },
+  {
    "id": "baecker_tuer",
    "art": "lesen",
    "x": 54,

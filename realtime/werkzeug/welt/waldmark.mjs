@@ -51,7 +51,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   const lq = (x, y) => { const dx = (x - MX) / 33, dy = (y - MY) / 24.5, w = Math.atan2(dy, dx), p = 2.9;
     return Math.pow(Math.pow(Math.abs(dx), p) + Math.pow(Math.abs(dy), p), 1 / p) / (1 + 0.06 * Math.sin(3 * w + 1.3) + 0.045 * Math.sin(5 * w + 0.4) + 0.025 * Math.sin(11 * w + 2.2)); };
   const lichtung = (x, y) => lq(x, y) < 1 && y < ZAUN;
-  const wege = [[[TOR, 38], [TOR, 64]], [[42, 32], [33, 31], [26, 32]], [[54, 32], [63, 31], [70, 32]], [[48, 26], [48, 21]], [[40, 36], [37, 44]], [[55, 36], [60, 46]]];
+  const wege = [[[TOR, 38], [TOR, 64]], [[42, 32], [33, 31], [26, 32]], [[54, 32], [63, 31], [70, 32], [74, 32.6], [78, 32.8]], [[48, 26], [48, 21]], [[40, 36], [37, 44]], [[55, 36], [60, 46]]];
   const teich = (x, y) => Math.hypot((x - 71) / 4.6, (y - 46) / 3.2) < 1;
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5;
     const platz = Math.hypot(cx - MX, cy - 32) < 6.6, weg = wege.some((p) => strecke(cx, cy, p) < 1.5), blume = Math.sin(x / 4.1) * Math.cos(y / 3.3) + Math.sin((x + y) / 6) > 1.25;
@@ -64,7 +64,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   /* Gebäude: Fußpunkt (Mitte der Vorderwand unten) */
   const bauten = [["heldenhalle", "dorf_heldenhalle_01", 48, 20.4], ["taverne", "dorf_taverne_01", 28, 30.2], ["schmiede", "dorf_schmiede_01", 68.5, 30.2],
     ["haus_nw", "dorf_haus_holz_01", 33, 17.5], ["haus_no", "dorf_haus_holz_02", 64, 17.5], ["huette_sw", "dorf_huette_holz_01", 25, 44], ["haus_s", "dorf_haus_holz_03", 36.5, 50],
-    ["scheune", "dorf_scheune_holz_01", 78, 39], ["schuppen", "dorf_schuppen_holz_01", 62, 50.5], ["huette_o", "dorf_huette_holz_02", 76.5, 23],
+    ["scheune", "dorf_scheune_holz_01", 80, 45], ["schuppen", "dorf_schuppen_holz_01", 62, 50.5], ["huette_o", "dorf_huette_holz_02", 76.5, 23],
     /* neu: Wachtürme am Tor, Kapelle mit Glockenturm, Kräuterhaus mit Erker, Bäckerei mit Ofenanbau */
     ["wachturm_w", "dorf_wachturm_01", 40.0, 54.6], ["wachturm_o", "dorf_wachturm_01", 54.5, 54.6], ["kapelle", "dorf_kapelle_01", 57, 22],
     ["kraeuterhaus", "dorf_kraeuterhaus_01", 19.5, 39], ["baeckerei", "dorf_baeckerei_01", 55, 49.5],
@@ -72,6 +72,8 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     ["salon", "waldmark_salon_01", 59.5, 28],
     /* Rathaus (22.11.2026): zweistöckig, an der Westseite des Marktplatzes zwischen Taverne und Heldenhalle, Glockenturm hinten links */
     ["rathaus", "waldmark_rathaus_01", 39.5, 27],
+    /* Bank (24.11.2026): östlich der Schmiede am Ende der Dorfstraße, zwei Schalter innen */
+    ["bank", "waldmark_bank_01", 78, 31],
     ["stand_1", "dorf_marktstand_01", 39.2, 38.6], ["stand_2", "dorf_marktstand_02", 43.6, 41.6], ["stand_3", "dorf_marktstand_03", 56, 40.4], ["brunnen", "dorf_brunnen_01", 48, 32.8]];
   const objekte = bauten.map(([id, objekt, x, y, sp]) => ({ id, objekt, x, y, ...(sp ? { spiegeln: true } : {}) }));
   for (let x = 17; x <= 79; x += 2) if (Math.abs(x - TOR) > 4) objekte.push({ id: "zaun_" + x, objekt: wurf() < 0.5 ? "dorf_palisade_01" : "dorf_palisade_02", x, y: ZAUN + 1 });
@@ -79,12 +81,12 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
   /* Kleinigkeiten an den Häusern: neben den Türen, nie davor */
   const details = [["taverne_fass_1", "dorf_fass_01", 24.6, 30.8], ["taverne_fass_2", "dorf_fass_01", 25.4, 31.3], ["taverne_bank", "dorf_bank_01", 31.6, 30.9],
     ["kraeuter_fass", "dorf_fass_01", 17.0, 39.5], ["kraeuter_kiste", "dorf_kiste_01", 21.6, 39.6], ["baecker_holz", "dorf_holzstapel_01", 51.3, 49.9], ["baecker_kiste", "dorf_kiste_01", 58.3, 49.6],
-    ["schmiede_holz", "dorf_holzstapel_01", 74.4, 30.7], ["schmiede_kiste", "dorf_kiste_01", 72.6, 31.3],
+    ["schmiede_holz", "dorf_holzstapel_01", 73.2, 27.5], ["schmiede_kiste", "dorf_kiste_01", 72.6, 31.3],
     ["halle_laterne_w", "dorf_laterne_01", 45.4, 21.1], ["halle_laterne_o", "dorf_laterne_01", 50.6, 21.1],
     ["haus_nw_holz", "dorf_holzstapel_01", 36.7, 17.9], ["haus_nw_fass", "dorf_fass_01", 30.0, 18.0],
     ["haus_no_fass", "dorf_fass_01", 68.1, 17.9], ["haus_no_bank", "dorf_bank_01", 61.6, 18.1],
     ["huette_sw_holz", "dorf_holzstapel_01", 28.0, 44.4], ["haus_s_fass", "dorf_fass_01", 33.6, 50.4],
-    ["scheune_heu_1", "dorf_heuballen_01", 74.4, 39.5], ["scheune_heu_2", "dorf_heuballen_01", 74.0, 40.8], ["scheune_kiste", "dorf_kiste_01", 81.4, 39.4],
+    ["scheune_heu_1", "dorf_heuballen_01", 76.2, 46.5], ["scheune_heu_2", "dorf_heuballen_01", 75.6, 47.7], ["scheune_kiste", "dorf_kiste_01", 83.2, 46.2],
     ["schuppen_holz", "dorf_holzstapel_01", 64.6, 50.8], ["huette_o_fass", "dorf_fass_01", 73.9, 23.4],
     ["salon_fass", "dorf_fass_01", 55.6, 28.6], ["salon_laterne", "dorf_laterne_01", 61.9, 28.9],
     ["markt_kiste_1", "dorf_kiste_01", 41.4, 38.7], ["markt_kiste_2", "dorf_kiste_01", 58.6, 40.7], ["markt_fass", "dorf_fass_01", 36.8, 38.9]];
@@ -112,6 +114,9 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59.5, 28), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
       lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39.5, 27), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
       { id: "treppe_hoch", art: "eingang", x: UNTEN_TREPPE[0] - 200 * 32, y: UNTEN_TREPPE[1] - 200 * 32, radius: 1.3, abgleich: "keiner", daten: { text: "Eine Holztreppe führt hinauf in den Ratssaal.", tat: "aufstieg", knopf: "Die Treppe hinaufsteigen", ziel: RATSSAAL } },
+      lies("bank_tuer", ...tuerVon("waldmark_bank_01", 78, 31), "Die Bank der Waldmark. Hinter dicken Mauern verwahrt sie das Gold der Wanderer – sicher, auch wenn man im Kampf fällt.", "bank"),
+      lies("bankschalter_links", 76.6, 29.1, "Der linke Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.", null, "bald", "Bankschalter – öffnet bald"),
+      lies("bankschalter_rechts", 79.4, 29.1, "Der rechte Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.", null, "bald", "Bankschalter – öffnet bald"),
       lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */

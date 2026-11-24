@@ -79,9 +79,10 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
       aus.raeume.push({ x0: X + x0, x1: X + x1, z0: Z + zn, z1: Z + zs }); }
   });
   /* Fenster: Rahmen, Glas, Sprossen, Läden, Blumenkasten – auf der Süd- oder Ostwand */
-  for (const f of plan.fenster || []) { const k = K[nr(f.koerper)], ost = f.wand === "ost", glas = f.art === "glut" ? "#e7a640" : f.art === "gruen" ? "#4e6a52" : f.art === "violett" ? "#b38ad6" : GLAS;
+  for (const f of plan.fenster || []) { const k = K[nr(f.koerper)], ost = f.wand === "ost", glas = f.art === "glut" ? "#e7a640" : f.art === "gruen" ? "#4e6a52" : f.art === "violett" ? "#b38ad6" : f.art === "schalter" ? "#221a16" : GLAS;
     const t = new Teile(), y = f.z; t.box(f.b + 0.16, f.h + 0.16, 0.06, 0, y - 0.08, 0, HOLZ, 0, { muster: "holz" }); t.box(f.b, f.h, 0.08, 0, y, 0.01, glas);
     if (f.art === "kreuz" || !f.art) { t.box(0.06, f.h, 0.1, 0, y, 0.02, HOLZ, 0, { muster: "holz" }); t.box(f.b, 0.06, 0.1, 0, y + f.h / 2 - 0.03, 0.02, HOLZ, 0, { muster: "holz" }); }
+    if (f.art === "schalter") { for (let i = 1; i < 6; i++) t.box(0.05, f.h - 0.12, 0.08, -f.b / 2 + (f.b * i) / 6, y + 0.12, 0.05, "#c4a052", 0, { muster: "metall" }); t.box(f.b + 0.24, 0.1, 0.45, 0, y - 0.1, 0.2, "#7a5232", 0, { muster: "holz" }); }
     if (f.laeden) for (const s of [-1, 1]) t.box(f.b / 2, f.h, 0.06, s * (f.b * 0.75 + 0.1), y, 0.03, "#4f6b4c", 0, 0.05);
     if (f.blumen) { t.box(f.b + 0.1, 0.18, 0.22, 0, y - 0.2, 0.1, "#6a4527"); for (let i = 0; i < 4; i++) t.box(0.14, 0.14, 0.14, -f.b / 2 + 0.15 + i * (f.b - 0.3) / 3, y - 0.04, 0.12, i % 2 ? "#d2463c" : "#e8c547"); }
     const n = t.netz(false); if (ost) { n.rotation.y = Math.PI / 2; n.position.set(k.x + k.b + 0.01, 0, -(f.d ?? k.t / 2)); } else n.position.set(f.x ?? 0, 0, -k.d + 0.01); g.add(n); }
@@ -102,9 +103,11 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     regal: [1.2, 1.8, 0.4, "#6a4527"], ofen: [1.0, 1.3, 1.0, "#6c655e"], altar: [1.4, 1.0, 0.7, "#bdb5a5"], bank: [1.5, 0.45, 0.4, "#7a5232"], kessel: [0.7, 0.6, 0.7, "#34332f"], heu: [1.2, 0.8, 1.0, "#c9a85a"], saecke: [0.9, 0.6, 0.6, "#c2ae86"], muehlstein: [1.2, 0.5, 1.2, "#8e8a80"], frisierstuhl: [0.7, 0.55, 0.7, "#74428c"] };
   for (const m of plan.innen?.moebel || []) if (m.art === "spiegel") {   /* Nias Zauberspiegel: Goldrahmen, violett schimmerndes Glas */
     mauer.box(1.0, 1.95, 0.14, m.x, 0.06, -m.d, "#c49c46", 0, { muster: "metall" }); mauer.box(0.76, 1.55, 0.05, m.x, 0.26, -m.d + 0.09, "#c4a2ea", 0, { muster: "glatt" }); }
+  for (const m of plan.innen?.moebel || []) if (m.art === "schalter") { mauer.box(1.6, 1.0, 0.5, m.x, 0.06, -m.d, "#7a5232", 0, { muster: "holz" }); for (let i = 0; i < 6; i++) mauer.box(0.04, 0.9, 0.04, m.x - 0.75 + i * 0.3, 1.06, -m.d + 0.2, "#c4a052", 0, { muster: "metall" }); mauer.box(1.6, 0.06, 0.06, m.x, 1.92, -m.d + 0.2, "#c4a052", 0, { muster: "metall" }); }
+    else if (m.art === "tresor") { mauer.box(1.1, 1.2, 0.8, m.x, 0.06, -m.d, "#34363c", 0, { muster: "metall" }); mauer.add(new THREE.CylinderGeometry(0.22, 0.22, 0.05, 14), "#cca85a", new THREE.Matrix4().makeRotationX(Math.PI / 2).setPosition(m.x, 0.66, -m.d + 0.42), { muster: "metall" }); }
   for (const m of plan.innen?.moebel || []) if (m.art === "treppe") { for (let i = 0; i < 6; i++) mauer.box(1.1, 0.35 * (i + 1), 0.4, m.x, 0.06, -(m.d - 1.2 + i * 0.4 + 0.2), "#7a5232", 0, { muster: "holz" }); }
     else if (m.art === "treppe_oben") { mauer.box(1.2, 0.02, 2.4, m.x, 0.07, -m.d, "#181210", 0, { muster: "glatt" }); for (const s of [-0.65, 0.65]) mauer.box(0.1, 0.9, 2.4, m.x + s, 0.06, -m.d, "#5b3b22", 0, { muster: "holz" }); mauer.box(1.3, 0.1, 0.1, m.x, 0.9, -(m.d - 1.2), "#5b3b22", 0, { muster: "holz" }); }
-  for (const m of (plan.innen?.moebel || []).filter((q) => !["spiegel", "treppe", "treppe_oben"].includes(q.art))) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
+  for (const m of (plan.innen?.moebel || []).filter((q) => !["spiegel", "treppe", "treppe_oben", "schalter", "tresor"].includes(q.art))) { const [b, h, t, c] = MOEBEL[m.art] || [0.8, 0.8, 0.8, "#7a5232"]; mauer.box(b, h, t, m.x, 0.06, -m.d, c, 0, { muster: c === "#8a857c" || m.art === "ofen" || m.art === "muehlstein" || m.art === "altar" ? "stein" : "holz" }); }
   const n = mauer.netz(); g.add(n);
   return aus;
 }

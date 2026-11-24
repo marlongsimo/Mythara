@@ -3561,6 +3561,209 @@
      }
     ]
    }
+  },
+  {
+   "id": "waldmark_bank_01",
+   "name": "Bank der Waldmark",
+   "interaktion": "lesen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3,
+     "d": 0,
+     "b": 6,
+     "t": 5,
+     "h": 3.6,
+     "wand": "quader",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.5,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       62,
+       70,
+       84
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0,
+     "b": 2,
+     "h": 2.3,
+     "art": "doppel"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 0.8,
+     "b": 0.8,
+     "h": 1.0,
+     "art": "schmal",
+     "x": -2.1
+    },
+    {
+     "wand": "sued",
+     "z": 0.8,
+     "b": 0.8,
+     "h": 1.0,
+     "art": "schmal",
+     "x": 2.1
+    },
+    {
+     "wand": "ost",
+     "z": 0.8,
+     "b": 0.8,
+     "h": 1.0,
+     "art": "schmal",
+     "d": 2.5
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "banner",
+     "x": -2.1,
+     "z": 3.05,
+     "farbe": [
+      46,
+      96,
+      70
+     ],
+     "eigenfarbe": true
+    },
+    {
+     "art": "banner",
+     "x": 2.1,
+     "z": 3.05,
+     "farbe": [
+      46,
+      96,
+      70
+     ],
+     "eigenfarbe": true
+    },
+    {
+     "art": "schild",
+     "x": 1.45,
+     "z": 2.85,
+     "farbe": [
+      226,
+      190,
+      96
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": -1.45,
+     "z": 2.3
+    },
+    {
+     "art": "vordach",
+     "x0": -1.2,
+     "x1": 1.2,
+     "tiefe": 0.7,
+     "z": 2.6,
+     "deckung": "schiefer",
+     "farbe": [
+      62,
+      70,
+      84
+     ]
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "schalter",
+      "x": -1.4,
+      "d": 3.0
+     },
+     {
+      "art": "schalter",
+      "x": 1.4,
+      "d": 3.0
+     },
+     {
+      "art": "tresor",
+      "x": 0,
+      "d": 4.3
+     },
+     {
+      "art": "regal",
+      "x": -2.2,
+      "d": 4.4
+     },
+     {
+      "art": "bank",
+      "x": 2.0,
+      "d": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "weidenhain_bankschalter_01",
+   "name": "Bankschalter",
+   "interaktion": "lesen",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -1.5,
+     "d": 0,
+     "b": 3,
+     "t": 2,
+     "h": 2.7,
+     "wand": "stein",
+     "betretbar": false,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.1,
+      "first": "x",
+      "ueber": 0.25,
+      "deckung": "schiefer",
+      "farbe": [
+       62,
+       70,
+       84
+      ]
+     }
+    }
+   ],
+   "tueren": [],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 0.85,
+     "b": 1.6,
+     "h": 1.25,
+     "art": "schalter",
+     "x": 0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "schild",
+     "x": 1.25,
+     "z": 2.45,
+     "farbe": [
+      226,
+      190,
+      96
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": -1.25,
+     "z": 1.9
+    }
+   ]
   }
  ]
 }
