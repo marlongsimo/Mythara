@@ -2,7 +2,8 @@
 
   python3 fabrik/seltenheit.py <teil.glb> <ziel.glb> <stufe> [metall_c=9]
   teil.glb: am besten die fertige, ans Skelett gebundene Teil-Datei aus export3d.py auslagern=… (img/figuren-echt3d/<figur>.teile/<id>.glb)
-  stufe: gewoehnlich | selten | episch | legendaer | mythisch    [art=leder]: Ledersets – Lederfarbe je Stufe (waldgrün, nachtblau, ochsenblut, schillerndes Violett)
+  stufe: training | gewoehnlich | selten | episch | legendaer | mythisch    [art=leder]: Ledersets – Lederfarbe je Stufe (waldgrün, nachtblau, ochsenblut, schillerndes Violett)
+[holz=1]: Werkzeuge – der Holzstiel bleibt Holz (je Stufe gebeizt), Leuchten an den Metallkanten statt an den Beschlägen
 Die Textur wird in drei Bereiche geteilt (Lab-Farbraum): Metall (grau, wenig Farbe), Beschläge (Messing: farbig und hell) und Leder (farbig und dunkel).
 Jede Stufe färbt sie eigen und legt bei episch/legendär eine Leuchtkarte auf die Beschläge (glTF emissive – three.js zeigt sie direkt):
   gewöhnlich – mattes, dunkles Eisen mit Rost, Beschläge aus Eisen      selten – unverändert (olivgrauer Stahl, Messing)
@@ -65,6 +66,10 @@ if LEDER:
             glut = np.maximum(glut, (leder & (kante > np.percentile(kante[leder], 95))) * 0.7); t_ = (np.sin(v_ * 12 + u_ * 3) + 1) / 2; GLUT_RGB = np.stack([0.2 + 0.8 * t_, 0.85 - 0.6 * t_, np.ones_like(t_)], 1)
 elif stufe == "selten" and opt.get("poliert") == "1":                     # Grundstufe gewöhnlich (Anfängerwaffen): selten = blank polierter Stahl, sattes Messing
     setze(metall, fL=1.12, dL=2, fC=0.5, b=-2); setze(messing, fL=1.05, dL=3, fC=1.3, a=2, b=8)
+elif stufe == "training":                                                    # unter einfach: stumpfes, fleckig rostiges Eisen, ausgeblichenes Leder (Werkzeuge, Waffen ohne eigenes Trainingsmodell)
+    setze(metall, fL=0.7, dL=-3, fC=0.2, a=9, b=15)
+    rost = metall & (L[:, 0] < np.percentile(L[metall, 0], 60)); setze(rost, a=16, b=24)
+    setze(messing, fL=0.6, fC=0.2, b=5); setze(leder, fL=0.88, dL=3, fC=0.35)
 elif stufe == "gewoehnlich":
     setze(metall, fL=0.78, dL=-2, fC=0.3, a=2.5, b=6)                     # stumpfes Eisen, leicht rostbraun
     rost = metall & (L[:, 0] < np.percentile(L[metall, 0], 35)); setze(rost, a=6, b=10)
@@ -93,10 +98,18 @@ if opt.get("stark") == "1" and not LEDER:                                 # Waff
     if stufe == "episch": setze(metall, fL=0.6, fC=0.3, a=-2, b=-18); N[leder, 1] = 4 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = -24 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
     if stufe == "legendaer": setze(metall, fL=0.82, fC=1.0, a=6, b=26); N[leder, 1] = 32 + (L[leder, 1] - L[leder, 1].mean()) * 0.3; N[leder, 2] = 14 + (L[leder, 2] - L[leder, 2].mean()) * 0.3
     if stufe == "gewoehnlich": setze(leder, fL=0.8, fC=0.5); setze(metall, fL=0.9, a=3, b=6)
+    if stufe == "training": setze(leder, fL=0.85, fC=0.3); setze(metall, fL=0.9, a=6, b=10)
 if FELD.any():                                                              # Wappenfeld je Stufe: verblasst, blau (Original), purpur, karmesin, nachtviolett
     f_ = {"gewoehnlich": (2, -6, 0.8), "episch": (26, -36, 0.85), "legendaer": (44, 24, 0.9), "mythisch": (22, -30, 0.75)}.get(stufe)
     if f_:
         N[FELD, 0] = L[FELD, 0] * f_[2]; N[FELD, 1] = f_[0] + (L[FELD, 1] - L[FELD, 1].mean()) * 0.25; N[FELD, 2] = f_[1] + (L[FELD, 2] - L[FELD, 2].mean()) * 0.25
+if opt.get("holz") == "1":                                                  # Werkzeuge: der helle, farbige Bereich ist der Holzstiel – Holz bleibt Holz (je Stufe gebeizt), das Leuchten sitzt an den Metallkanten
+    holz = messing; fL_, fC_, da_, db_ = {"training": (0.78, 0.25, 1, 2), "gewoehnlich": (0.92, 0.7, 0, 0), "selten": (1, 1, 0, 0), "episch": (0.55, 0.85, 2, -3),
+                                           "legendaer": (0.7, 1.1, 9, 3), "mythisch": (0.38, 0.5, 8, -10)}[stufe]   # verwittert grau, schlicht, Original, Nussbaum, rotbraun, Ebenholz
+    N[holz, 0] = L[holz, 0] * fL_; N[holz, 1] = L[holz, 1] * fC_ + da_; N[holz, 2] = L[holz, 2] * fC_ + db_
+    if glutstaerke:
+        Lb = L[:, 0].reshape(H_, B_); km = (np.abs(np.diff(Lb, axis=1, append=Lb[:, -1:])) + np.abs(np.diff(Lb, axis=0, append=Lb[-1:, :]))).ravel()
+        glut = (metall & (km > np.percentile(km[metall], 90)) & (L[:, 0] > np.percentile(L[metall, 0], 40))).astype(float)
 a[:, :3] = rgb(N); img.pixels[:] = a.ravel(); img.pack()
 if glutstaerke:                                                             # Leuchtkarte: nur die Beschläge, weich ausgeblendet
     g = np.asarray(Image.fromarray((glut.reshape(H_, B_) * 255).astype(np.uint8)).resize((B_ // 2, H_ // 2), Image.BILINEAR).resize((B_, H_), Image.BILINEAR), np.float32) / 255
