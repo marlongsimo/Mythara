@@ -10,6 +10,7 @@ def seite(c, d):
     c.drawRightString(194 * mm, 9 * mm, f"Seite {d.page}"); c.restoreState()
 Z0 = json.load(open("zahlen.json")); de = lambda v: f"{v:,}".replace(",", ".")
 PFAD = "/home/user/mythara/fabrik/assets/skilling/"
+FALL = [35, 22, 15, 12, 10, 8]
 STUFEN = ["Training", "Einfach", "Selten", "Episch", "Legendär", "Mythisch"]
 s = []
 s += [Paragraph("Holzfällerei", T), Paragraph(f"Bäume fällen, Stämme gewinnen – Ablauf, Bäume, Holzbeile, Fundorte, Balancing und was dafür noch fehlt · {STAND}", U)]
@@ -33,18 +34,16 @@ s += li(["<b>Antippen:</b> Baum kurz antippen → der Held läuft hin und beginn
          "Fehlt etwas: „Du brauchst ein Holzbeil.“ bzw. „Dafür brauchst du Holzfällerei 35.“",
          "<b>Takt:</b> alle 4 Ticks (2 Sekunden) ein Hieb. Gelingt er, kommt ein Stamm in den Rucksack und es gibt XP.",
          "<b>Weiter von selbst</b>, bis der Rucksack voll ist, der Baum fällt, man wegläuft oder angegriffen wird.",
-         "<b>Vorrat und Stumpf:</b> Jeder Baum gibt eine zufällige Zahl Stämme (Spanne je Art). Dann fällt er, an seiner Stelle steht für alle der Stumpf, bis der Baum nachwächst."])
+         "<b>Fällchance und Stumpf:</b> Nach jedem Stamm fällt der Baum mit einer Wahrscheinlichkeit, die mit dem Baumlevel sinkt (Eiche 35 % … Weltenbaum 8 %). Dann steht für alle der Stumpf, bis der Baum nachwächst."])
 s.append(Paragraph("Erfolgschance", H2))
 s.append(kasten("<b>Chance je Hieb</b> = ((lo + 8 · B) · (99 − L) + (hi + 8 · B) · (L − 1)) / 98 / 256, höchstens 95 %<br/>"
                 "L = Holzfällerei-Level, B = Beilstufe 0 (Training) bis 5 (Mythisch), lo/hi = Werte des Baums. Wie in OSRS machen Level und Beil schneller, nicht ertragreicher."))
 s.append(Paragraph("Kernschlag – der aktive Moment", H2))
 s.append(p("Ungefähr bei jedem achten Hieb <b>glühen die Adern des Baums an einer Stelle hell auf</b> (die blauen Adern, die die Modelle schon haben). 1,5 Sekunden lang kann man die Stelle antippen: "
            "Dieser Hieb gelingt sicher, bringt <b>zwei Stämme</b> und <b>50 % mehr XP</b>. Wer nicht tippt, hackt normal weiter. Den Moment lost der Server aus und prüft das Antippen."))
-s.append(Paragraph("Nebenfunde", H2))
-s.append(tab(["Fund", "Chance", "Wofür"], [
-    ["Harz", "1 von 40 Stämmen, alle Bäume", "Alchemie (Tränke), Handwerk (Sehnen, Leim)"],
-    ["Setzling", "1 von 150 Stämmen, Art des Baums", "An Pflanzstellen einsetzen: XP für Holzfällerei; nach einiger Zeit steht dort ein neuer Baum für alle"],
-    ["Splittersaft", "1 von 50, nur Weltenbaum-Setzling", "seltene Zutat für Alchemie und Veredelung (später)"]], [30, 52, 92]))
+s.append(Paragraph("Splitter beim Fällen", H2))
+s.append(p("Jeder Stamm bringt mit <b>25 % Wahrscheinlichkeit 5 bis 15 Splitter</b> dazu (gleich verteilt, im Schnitt 2,5 Splitter je Stamm). Das macht die Holzfällerei auch ohne Handwerk lohnend. "
+           "Weil man an höheren Bäumen langsamer Stämme bekommt, bringen sie <b>weniger Splitter pro Stunde, aber mehr XP</b> – wer Geld will, fällt eine Stufe tiefer. Nebenprodukte (Harz o. Ä.) gibt es vorerst nicht."))
 s.append(PageBreak())
 
 s.append(Paragraph("2 · Die Bäume", H1))
@@ -52,8 +51,8 @@ rows = []
 ort = ["Waldmark (Rand) und Kreuzwald an der Straße – ca. 20", "Westmark und Nordsaum – ca. 16", "Kreuzwald-Lichtungen und Obstwiesen – ca. 12",
        "Rabenmoor (erst nach Quest 1) – ca. 10", "Nordwald, Feste und Friedhof – ca. 6, bei den Waldgolems", "Nordsaum, an den Rissen – 3, sehr selten"]
 for i, r in enumerate(Z0["zeilen"]):
-    rows.append([f"<b>{r['baum']}</b>", r["level"], STUFEN[i], f"{r['name']}", r["xp"], f"{r['vorrat'][0]}–{r['vorrat'][1]}", f"{r['nach']} s", ort[i]])
-s.append(tab(["Baum", "Level", "Stufe", "Ertrag", "XP", "Vorrat", "Nachw.", "Wo (Vorschlag)"], rows, [26, 11, 15, 27, 9, 12, 13, 61], klein=True))
+    rows.append([f"<b>{r['baum']}</b>", r["level"], STUFEN[i], f"{r['name']}", r["xp"], f"{FALL[i]} % (Ø {100 / FALL[i]:.1f})".replace(".", ","), f"{r['nach']} s", ort[i]])
+s.append(tab(["Baum", "Level", "Stufe", "Ertrag", "XP", "Fällt je Stamm (Ø Stämme)", "Nachw.", "Wo (Vorschlag)"], rows, [24, 10, 14, 26, 8, 22, 12, 62], klein=True))
 s.append(Spacer(1, 3 * mm))
 s.append(Bild("staemme_reihe.jpg", width=178 * mm, height=178 * mm / 6))
 s.append(Paragraph("Die sechs Stämme (img/objekte3d/skilling/erzeugnisse/stamm_*.webp)", K))
@@ -84,7 +83,7 @@ s.append(PageBreak())
 
 s.append(Paragraph("4 · Balancing", H1))
 s.append(p("Mit der Formel aus Kapitel 1, 2 Sekunden je Hieb und 15 % Abzug für Laufen und Nachwachsen – <b>ohne</b> Kernschlag (damit rund 20 % mehr) und <b>ohne</b> Wege zur Bank."))
-rows = [[f"<b>{r['name']}</b>"] + [f"{c} % · {de(n)}/h · {de(x)} XP/h" for (c, n, x) in r["werte"]] for r in Z0["zeilen"]]
+rows = [[f"<b>{r['name']}</b>"] + [f"{c} % · {de(n)}/h · {de(x)} XP/h · ≈{de(round(n * 2.5))} Spl./h" for (c, n, x) in r["werte"]] for r in Z0["zeilen"]]
 s.append(tab(["Stamm", "Mindestlevel, passendes Beil", "Mindestlevel + 20", "Level 99, Mythisches Beil"], rows, [32, 48, 47, 47], klein=True))
 s.append(Paragraph("Wie lange bis …", H2))
 zi = Z0["ziele"]; t = lambda h: f"{round(h * 60)} Min." if h < 1 else f"{str(round(h, 1)).replace('.', ',')} Std."
@@ -92,7 +91,7 @@ s.append(tab(["Level"] + list(zi.keys()), [["Dauer"] + [t(v) for v in zi.values(
 s += li(["Immer am ergiebigsten Baum, ohne Bankwege und Kernschlag. <b>Mit Wegen zum Lager real eher 120 bis 150 Stunden bis 99</b> – in der Größenordnung von OSRS.",
          "<b>Stämme stapeln nicht</b> (wie in OSRS): 24 Stück je Gang, dann zur Bank. Dafür gibt es jetzt die Bank in der Waldmark und den Schalter in Weidenhain. "
          "Weite Wege (Rabenmoor, Nordwald) sind gewollt – dafür bringen die Bäume dort mehr.",
-         "Erste Werte zum Ausprobieren; nach dem Einbau stellen wir lo/hi, Vorrat und Nachwachsen im Spiel nach."])
+         "Erste Werte zum Ausprobieren; nach dem Einbau stellen wir lo/hi, Fällchance und Nachwachsen im Spiel nach."])
 s.append(PageBreak())
 
 s.append(Paragraph("5 · Was wir dafür noch brauchen", H1))
@@ -101,15 +100,13 @@ s += li(["Sechs Bäume mit Stumpf (3D, leuchtende Adern), Holzbeil in sechs Stuf
 s.append(Paragraph("Von dir (Figuren und Grafik)", H2))
 s += li(["<b>Hacken</b> – Bewegung des Helden mit dem Beil, ein Durchlauf 2 Sekunden, in Schleife (bis dahin nehme ich den vorhandenen Schlag).",
          "<b>Beil in der rechten Hand</b> – als starres Teil wie in der Utensilien-README vorgesehen.",
-         "<b>Symbole</b> für Harz, Setzling und Splittersaft (wie die Stämme: ein Bild, ich schneide aus).",
          "Optional: Geräusche (Hieb, fallender Baum)."])
 s.append(Paragraph("Von der Welt", H2))
-s += li(["Die Holzfäller-Bäume an ihre Plätze setzen (Weltobjekte der sechs Bäume, Zahlen und Orte wie in Kapitel 2) – der Server liest die Bäume dann direkt aus den Weltdaten.",
-         "Später: Pflanzstellen für Setzlinge."])
+s += li(["Die Holzfäller-Bäume an ihre Plätze setzen (Weltobjekte der sechs Bäume, Zahlen und Orte wie in Kapitel 2) – der Server liest die Bäume dann direkt aus den Weltdaten."])
 s.append(Paragraph("Von mir (Spiel und Server)", H2))
 s += li(["<b>Datenbank – Migration 048:</b> Spalten für Holzfällerei und gleich Bergbau, Handwerk, Alchemie; Buchen der XP nur durch den Server. SQL mit Rückbau und Test bekommst du vorher im Chat.",
-         "<b>Gegenstände:</b> sechs Stämme, sechs Holzbeile (mit Kampfwerten als Waffe), Harz, Setzling, Splittersaft.",
-         "<b>Server:</b> Zustand jedes Baums (Vorrat, Stumpf, Nachwachsen) für alle gemeinsam, Fällen im Takt, Kernschlag, XP buchen.",
+         "<b>Gegenstände:</b> sechs Stämme, sechs Holzbeile (mit Kampfwerten als Waffe).",
+         "<b>Server:</b> Zustand jedes Baums (steht oder Stumpf, Nachwachsen) für alle gemeinsam, Fällen im Takt, Fällchance, Splitter-Wurf, Kernschlag, XP buchen.",
          "<b>Spiel:</b> Antippen und Menü, Stumpf statt Baum, Leuchten beim Kernschlag, Späne, Meldungen, Holzfällerei im Skills-Fenster, Beile beim Händler."])
 s.append(Paragraph("Vorschlag für Version 1", H2))
 s.append(kasten("<b>Eiche und Tanne</b> in und um die Waldmark, <b>Trainings- und Einfaches Holzbeil</b> beim Händler, Kernschlag, Stumpf und Nachwachsen, Migration 048, "
