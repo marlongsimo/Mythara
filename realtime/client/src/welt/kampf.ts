@@ -28,6 +28,7 @@ import { kontoToken } from "../konto";
 import { epAlle } from "../halle";
 import { SYMBOL, symbolBild } from "../symbole";
 import { FELD_PX, HELD_PX } from "../../../shared/welt/typen";
+import { Geschoss, GeschossArt } from "./geschosse";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const P = new URLSearchParams(location.search);
@@ -50,6 +51,7 @@ export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[
   const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
 export class WeltKampf {
+  geschosse = new Map<number, { g: Geschoss; x: number; y: number; von: number }>(); schussBeginn = new Map<number, number>();
   netz: Netz | null = null; karteZeit = 0; schildWar = false; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
   figuren = new Map<number, Figur>(); namen = new Map<number, { name: string; stufe: number; a?: Held }>();
   private gesendet = { x: 0, y: 0, t: 0 }; private hoerer: ((ev: Event) => void)[] = []; private ringZiel!: Phaser.GameObjects.Ellipse; private ichLb!: Phaser.GameObjects.Graphics;
@@ -143,7 +145,7 @@ export class WeltKampf {
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
-    else if (ev.a === "hieb") this.hieb(ev.id); }
+    else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id); }
   /* ---------- Darstellung (2D, Phaser) – die 3D-Welt überschreibt diese Haken (welt3d/kampf3d.ts) ---------- */
   protected bildAufbau(K: (typeof KARTEN)[string]) { const s = this.s; this.ringZiel = s.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setVisible(false); this.ichLb = s.add.graphics().setDepth(1e7);
     for (const l of K.lager || []) figurVorladen(s, l.art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick */ }
@@ -168,6 +170,7 @@ export class WeltKampf {
   gehe(wx: number, wy: number) { if (!this.netz) return; if (Math.hypot(wx - this.lauf.x, wy - this.lauf.y) < 0.3) return; this.lauf = { x: wx, y: wy }; this.gesendet = { x: 0, y: 0, t: performance.now() };
     this.netz.sende({ t: "lauf", x: wx - this.zone.x0, y: wy - this.zone.y0 }); }
   schritt(dt: number) { if (!this.z) return; const s = this.s, k = Math.min(1, dt * 12), ich = this.z.w.find((e) => e[0] === this.ichId);
+    { const j = performance.now(); for (const [id, G] of this.geschosse) if (!G.g.schritt(dt * 1000, j)) this.geschosse.delete(id); }
     /* der eigene Held mit erhobenem Schild (Torvald, Waffe „Schild“): Block im Stehen, Gang mit Schild – sonst wie die Welt es will */
     { const schild = Boolean(ich && !ich[10] && (ich[9] & BIT.schild)); this.eigeneHaltung(schild, (s as unknown as { laeuft: boolean }).laeuft); this.schildWar = schild; }
     if (ich && this.bereit && !ich[10]) { const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; s.ort.x += (zx - s.ort.x) * k; s.ort.y += (zy - s.ort.y) * k; if (Math.hypot(zx - s.ort.x, zy - s.ort.y) > 3) { s.ort.x = zx; s.ort.y = zy; } }

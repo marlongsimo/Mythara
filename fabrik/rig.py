@@ -27,7 +27,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Teilnetz "arme_nur_aussen": true  Jacke mit Ärmeln: nur die Ärmel folgen den Armen, der Rumpf nicht den herabhängenden Händen
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: ruhe_2h, gehen_2h, laufen_2h (Zweihänder auf der Schulter), teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -431,18 +431,18 @@ def ruhe(i, n):
     if ARMBRUST: arme(**mit(BEREIT, u_r=(0.42, -0.85, 0.32 + 0.02 * s))); return
     arme(**mit(BEREIT, u_r=(-0.15, -0.6, -0.8 + 0.02 * s), u_l=(0.2, -0.62, -0.78 + 0.02 * s)))
 def laufen(i, n):
-    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4, dreh_z=9 * s - (15 if ARMBRUST else 0))
+    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=4 if ZIVIL else 13, dreh_z=9 * s - (15 if ARMBRUST else 0), kopf=0 if ZIVIL else -7)   # rennen: deutlich vorgebeugt, der Blick bleibt nach vorn
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
     if STAB: arme(**mit(BEREIT, o_r=(-0.25, -0.15 + 0.05 * s, -0.96), o_l=(0.18, -0.32 * s, -0.95), u_l=(0.1, -0.25 - 0.3 * s, -0.95))); return   # der Stab bleibt ruhig, der linke Arm schwingt
     if ARMBRUST: arme(**mit(BEREIT, o_r=(-0.1, -0.62 + 0.04 * s, -0.78))); return                              # die Armbrust bleibt ruhig in beiden Händen
     if ZIVIL: E_ = lambda v: zum_koerper(v, ARME_ENG); arme(**mit(BEREIT, o_r=E_((-0.18, 0.32 * s, -0.95)), u_r=E_((-0.1, -0.25 + 0.3 * s, -0.95)), o_l=E_((0.18, -0.32 * s, -0.95)), u_l=E_((0.1, -0.25 - 0.3 * s, -0.95)))); return   # Arme schwingen gegen die Beine
-    arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.18 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.18 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))
+    arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.38 * s, -1.0), u_r=(-0.15, -0.6 + 0.25 * s, -0.8), o_l=(0.32, -0.1 - 0.38 * s, -1.0), u_l=(0.2, -0.62 - 0.25 * s, -0.78)))   # rennen: Arme schwingen kräftig
 def gehen(i, n):
     """ruhiges Gehen: kleinere Schritte als beim Laufen, Oberkörper aufrecht, Waffe und Schild bleiben in Bereitschaft"""
     p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.01 * math.cos(2 * p) - 0.01, 0); rumpf(vor=2, dreh_z=5 * s)
     for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -16 * s * v + 2)); dreh("unterschenkel." + S, (X, 4 + 24 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -5 * s * v))
     if ZIVIL: E_ = lambda v: zum_koerper(v, ARME_ENG); arme(**mit(BEREIT, o_r=E_((-0.18, 0.2 * s, -0.98)), u_r=E_((-0.1, -0.22 + 0.18 * s, -0.97)), o_l=E_((0.18, -0.2 * s, -0.98)), u_l=E_((0.1, -0.22 - 0.18 * s, -0.97)))); return   # ruhig gehen: Arme schwingen dicht am Körper
-    arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.08 * s, -1.0), o_l=(0.32, -0.1 - 0.08 * s, -1.0)))
+    arme(**mit(BEREIT, o_r=(-0.28, -0.08 + 0.2 * s, -1.0), u_r=(-0.15, -0.6 + 0.12 * s, -0.8), o_l=(0.32, -0.1 - 0.2 * s, -1.0), u_l=(0.2, -0.62 - 0.12 * s, -0.78)))   # Arme schwingen leicht gegen die Beine, auch mit Waffe und Schild
 def schritt_(vor_l, t):
     """Ausfallschritt: linkes Bein vor, rechtes zurück (Grad), leicht in die Knie"""
     PB["becken"].location = (0, -0.03 * t, 0); dreh("oberschenkel.L", (X, -vor_l * t)); dreh("unterschenkel.L", (X, vor_l * 0.9 * t)); dreh("fuss.L", (X, 0)); dreh("oberschenkel.R", (X, vor_l * 0.6 * t)); dreh("unterschenkel.R", (X, 6 * t)); dreh("fuss.R", (X, -vor_l * 0.5 * t))
@@ -649,6 +649,21 @@ def teleport_weg(i, n):
     sammeln = mit(BEREIT, o_r=(-0.12, -0.72, -0.68), u_r=(0.55, -0.75, 0.36), kl=(0.0, 0.3, 0.95), o_l=(0.12, -0.72, -0.68), u_l=(-0.55, -0.75, 0.36), sch=(0.05, -1.0, 0.1))
     hoch = mit(BEREIT, o_r=(-0.3, -0.12, 0.95), u_r=(-0.12, -0.08, 0.99), kl=(0.0, -1.0, 0.05), o_l=(0.3, -0.12, 0.95), u_l=(0.12, -0.08, 0.99), sch=(1.0, 0.0, 0.0))
     arme_spur([(0, BEREIT), (0.35, sammeln), (0.65, hoch), (1, hoch)], t)
+# Zweihänder auf der Schulter (ruhe_2h, gehen_2h, laufen_2h): die rechte Faust vor der Brust, Handgelenk nach innen abgeknickt (h_r), damit die Klinge nach hinten über die rechte Schulter kippt; die linke Hand ist frei
+SCHULTER = mit(BEREIT, o_r=(-0.25, -0.1, -0.96), u_r=(0.45, -0.8, 0.4), h_r=(0.9, 0.05, -0.43), kl=(0.0, 0.86, 0.51), o_l=(0.2, 0.0, -1.0), u_l=(0.12, -0.22, -0.97))
+def ruhe_2h(i, n):
+    s = math.sin(2 * math.pi * i / n); PB["becken"].location = (0, -0.004 * (1 - math.cos(2 * math.pi * i / n)), 0); rumpf(vor=2 + 1.2 * s, kopf=-1.5 * s)
+    for S in "LR": dreh("oberschenkel." + S); dreh("unterschenkel." + S, (X, 2)); dreh("fuss." + S)
+    arme(**mit(SCHULTER, u_r=(0.45, -0.8, 0.4 + 0.02 * s)))
+def gehen_2h(i, n):
+    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.01 * math.cos(2 * p) - 0.01, 0); rumpf(vor=2, dreh_z=5 * s)
+    for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -16 * s * v + 2)); dreh("unterschenkel." + S, (X, 4 + 24 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -5 * s * v))
+    arme(**mit(SCHULTER, o_r=(-0.25, -0.1 + 0.03 * s, -0.96), o_l=(0.2, -0.25 * s, -0.97), u_l=(0.12, -0.22 - 0.2 * s, -0.97)))
+def laufen_2h(i, n):
+    p = 2 * math.pi * i / n; s, c = math.sin(p), math.cos(p); PB["becken"].location = (0, 0.022 * math.cos(2 * p) - 0.022, 0); rumpf(vor=13, dreh_z=7 * s, kopf=-7)
+    for S, v in (("L", 1), ("R", -1)): dreh("oberschenkel." + S, (X, -26 * s * v + 3)); dreh("unterschenkel." + S, (X, 6 + 42 * max(0.0, c * v) ** 1.3)); dreh("fuss." + S, (X, -8 * s * v))
+    arme(**mit(SCHULTER, o_r=(-0.25, -0.1 + 0.05 * s, -0.96), o_l=(0.22, -0.4 * s, -0.9), u_l=(0.15, -0.3 - 0.35 * s, -0.9)))
+
 def mund_haltung():
     """Rechter Arm so, dass die Fingerspitzen an den Lippen liegen und die Hand flach zum Mund zeigt (die Finger haben keine Knochen und stehen gerade –
     zielt man mit der Handfläche, decken sie Nase und Augen ab). Aus den Knochenlängen dieser Figur gerechnet (Zwei-Gelenk-Kette Schulter–Ellbogen–Handgelenk):
@@ -700,9 +715,14 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
               "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
-              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]}), "faustschlag": (faustschlag, 9, 12, False, {"treffer": 4})}
+              "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]}), "faustschlag": (faustschlag, 9, 12, False, {"treffer": 4}),
+              "ruhe_2h": (ruhe_2h, 6, 6, True, {}), "gehen_2h": (gehen_2h, 8, 8, True, {}), "laufen_2h": (laufen_2h, 8, 11, True, {})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
+KAMPF = {"angriff", "block", "angriff2h", "treffer", "ausweichen", "angriff_axt", "angriff_dolch", "zauber", "angriff_links", "segen", "nova", "stich", "hieb2h", "stich2h", "zauber_stab", "bogen",
+         "armbrust1h", "dolchwurf", "schildstoss", "kampfschrei", "zielen", "schiessen", "nachladen", "donnerwelle", "glutsphaere", "stabschlag", "faustschlag"}
+if AUS.get("kampftempo"):                                                                       # "kampftempo": 0.6 – alle Kampfbewegungen langsamer (Bilder je Sekunde × Faktor)
+    BEWEGUNGEN = {k: ((f, n, max(1, round(r * float(AUS["kampftempo"]))), sl, z) if k in KAMPF else (f, n, r, sl, z)) for k, (f, n, r, sl, z) in BEWEGUNGEN.items()}
 arm.animation_data_create()
 def schluessel(namen, nr):
     for b in PB:

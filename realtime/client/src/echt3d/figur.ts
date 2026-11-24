@@ -15,6 +15,7 @@ interface DarstellerT {
   zeige(ids: string[]): void; haut(url: string): Promise<void>; faerben(p: string, ziel: [number, number, number], gebaut: [number, number, number]): void;
   hat(n: string): boolean; dauer(n: string): number; spiele(n: string, einmal?: boolean, fertig?: () => void): void; blick(w: number): void;
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void; entfernen(): void; teleport(dauer?: number): void;
+  waffenPunkt(spitze: boolean): { x: number; y: number } | null; glut(bisAbschuss: number, farbe?: number): void;
 }
 type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung?: number): Promise<DarstellerT> }; standbild(ziel: HTMLCanvasElement, o: unknown): Promise<void> };
 
@@ -72,7 +73,8 @@ export class Figur3D extends Phaser.GameObjects.Container {
   setOrigin(): this { return this; }
   setScale(): this { return this; }
   play(a: string | { key: string }): this { if (this.gestorben) return this; const key = typeof a === "string" ? a : a.key;
-    if (key.startsWith("hieb")) { this.einmal = true; const a = angriffFuer(this.waffen()); this.anwenden(a && this.d && this.d.hat(a) ? a : STARTWAFFEN[this.held.waffe].angriff); }   /* Angriff passend zur angelegten Waffe */
+    if (key.startsWith("hieb")) { this.einmal = true; const a = angriffFuer(this.waffen()), b = a && this.d && this.d.hat(a) ? a : STARTWAFFEN[this.held.waffe].angriff; this.anwenden(b);
+      if (b === "zauber_stab" && this.d) { const i = this.schussInfo(); this.d.glut(i ? i.verzug : 400); } }   /* der Stab leuchtet bis zum Abschuss auf */   /* Angriff passend zur angelegten Waffe */
     else this.setze(key.startsWith("schild") ? "schild_laufen" : key.startsWith("lauf") ? "laufen" : "ruhe"); return this; }
   stop(): this { return this; }
   setTexture(key: string): this { if (this.gestorben) return this; this.einmal = false; this.setze(key.startsWith("schildstand") || key.startsWith("schild-") ? "block" : "ruhe"); return this; }
@@ -93,7 +95,19 @@ export class Figur3D extends Phaser.GameObjects.Container {
   /** Zustand des Spiels → Bewegung der Figur */
   private anwenden(einmalig?: string) { const d = this.d; if (!d) return;
     if (einmalig) { d.spiele(einmalig, true, () => { this.einmal = false; this.anwenden(); this.emit("animationcomplete"); }); return; }
-    const z = this.zustand; if (z === "block") d.spiele("block", true); else d.spiele(z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : z === "tod" ? "tod" : "ruhe", z === "tod"); }
+    const z = this.zustand; if (z === "block") { d.spiele("block", true); return; }
+    let b = z === "laufen" ? "laufen" : z === "schild_laufen" ? "gehen" : z === "tod" ? "tod" : "ruhe";
+    if (b !== "tod" && angriffFuer(this.waffen()) === "hieb2h" && d.hat(b + "_2h")) b += "_2h";   /* Zweihänder liegt in Ruhe und beim Laufen auf der Schulter */
+    d.spiele(b, z === "tod"); }
+  /** Fernkampf mit der angelegten Waffe: welches Geschoss, und wie lange (ms) nach Beginn der Schussbewegung es die Waffe verlässt */
+  schussInfo(): { art: "pfeil" | "bolzen" | "zauber"; verzug: number } | null { const a = angriffFuer(this.waffen()), d = this.d;
+    const art = a === "bogen" ? "pfeil" : a === "armbrust1h" ? "bolzen" : a === "zauber_stab" ? "zauber" : null; if (!art) return null;
+    const anteil = art === "pfeil" ? 5 / 9 : art === "bolzen" ? 3 / 8 : 4 / 8;   /* Bild des Loslassens / Bilder der Bewegung (fabrik/rig.py: treffer) */
+    return { art, verzug: d ? d.dauer(a!) * anteil : 0 }; }
+  /** Wo das Geschoss die Waffe verlässt (Szenenkoordinaten): Stab an der Spitze, Bogen und Armbrust in der Mitte */
+  abschussPunkt(): { x: number; y: number } { const d = this.d, i = this.schussInfo(), p = d && i ? d.waffenPunkt(i.art === "zauber") : null;
+    if (!d || !p) return { x: this.x, y: this.y - this.hoehePx * 0.62 };
+    return { x: this.x + (p.x - d.breite / 2) / d.aufloesung, y: this.y + (p.y - d.fussY * d.hoehe) / d.aufloesung }; }
   private weiter(dtMs: number) { const d = this.d; if (!d || !this.tex || !this.visible) return; d.blick(this.winkel); d.zeichne(dtMs / 1000, this.tex.getContext()); this.tex.refresh(); }
 }
 
