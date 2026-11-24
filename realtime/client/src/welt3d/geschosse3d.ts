@@ -36,18 +36,20 @@ function modell(art: GeschossArt): { gruppe: THREE.Group; dreh: THREE.Group; kug
   gruppe.scale.setScalar(MASS); gruppe.traverse((o) => { o.castShadow = false; }); return { gruppe, dreh, kugeln };
 }
 
-interface Flug { art: GeschossArt; gruppe: THREE.Group; dreh: THREE.Group; kugeln: THREE.Object3D[]; x: number; z: number; zx: number; zz: number; t: number; weg: boolean; rest: number }
+interface Flug { von: number; art: GeschossArt; gruppe: THREE.Group; dreh: THREE.Group; kugeln: THREE.Object3D[]; x: number; z: number; zx: number; zz: number; t: number; weg: boolean; rest: number }
 /** Alle Geschosse einer Kampfzone */
 export class Geschosse3D {
   private fluege = new Map<number, Flug>();
   constructor(private szene: THREE.Scene, private hoehe: (x: number, z: number) => number) {}
   /** Stand des Servers: liste = [id, x, y, art] in Weltfeldern; start(id, x, y) liefert für ein neues Geschoss Art und Startpunkt (Schütze) */
-  abgleich(liste: [number, number, number, string][], start: (x: number, y: number, art: string) => { art: GeschossArt; x: number; y: number }): void {
+  abgleich(liste: [number, number, number, string][], start: (x: number, y: number, art: string) => { art: GeschossArt; x: number; y: number; von: number },
+    /** Ziel beim Einschlag: die Figur, die dort getroffen wurde (nicht der Schütze) */ einschlag: (x: number, y: number, von: number) => { x: number; y: number } | null): void {
     const da = new Set<number>();
     for (const [id, x, y, a] of liste) { da.add(id); let f = this.fluege.get(id);
-      if (!f) { const s = start(x, y, a), m = modell(s.art); f = { art: s.art, ...m, x: s.x, z: s.y, zx: x, zz: y, t: 0, weg: false, rest: 0 }; this.fluege.set(id, f); this.szene.add(m.gruppe); }
+      if (!f) { const s = start(x, y, a), m = modell(s.art); f = { von: s.von, art: s.art, ...m, x: s.x, z: s.y, zx: x, zz: y, t: 0, weg: false, rest: 0 }; this.fluege.set(id, f); this.szene.add(m.gruppe); }
       f.zx = x; f.zz = y; }
-    for (const [id, f] of this.fluege) if (!da.has(id) && !f.weg) { f.weg = true; f.rest = 0.18; } }
+    /* beim Server verschwunden = Treffer: noch bis zur getroffenen Figur fliegen, dann verlöschen */
+    for (const [id, f] of this.fluege) if (!da.has(id) && !f.weg) { f.weg = true; const z = einschlag(f.zx, f.zz, f.von); if (z) { f.zx = z.x; f.zz = z.y; } f.rest = 0.22; } }
   schritt(dt: number): void {
     for (const [id, f] of this.fluege) { f.t += dt; const k = Math.min(1, dt * (f.weg ? 14 : 18)), vx = f.zx - f.x, vz = f.zz - f.z; f.x += vx * k; f.z += vz * k;
       const y = this.hoehe(f.x, f.z) + HOEHE; f.gruppe.position.set(f.x, y, f.z);

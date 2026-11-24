@@ -313,7 +313,7 @@ export class Sim {
     if (A.art === "heil") { if (z.team === w.team && abstand(w, z) <= A.reich + 1) this.heilen(z, A.schaden[0] + this.zf() * (A.schaden[1] - A.schaden[0]), w); return; }
     if (z.tot || !this.inReich(w, z, A, true)) return; // wer inzwischen weg ist, wird nicht getroffen
     const M = w.held && !w.kw ? (A as Modus) : null, spec: Spec = { grund: A.schaden[1] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), min: A.schaden[0] * (w.held || this.eigeneWerte ? 1 : STAERKE.schaden), art: A.art as Schadensart, wucht: Boolean(M && M.wucht), untot: M ? M.untot : 0, mal: w.typ === "kopfgeldjaeger" && !w.kw ? K.MAL.plus : 0 }; /* v1: keine Zusatzwirkungen der alten Helden */
-    if (w.held && A.art !== "nah") { spec.nach = w.typ === "kopfgeldjaeger" && w.modus === 0 && !w.kw ? "durchbrechen" : ""; this.schuss(w, z, z, (A as Modus).flug || 14, spec, A.art === "magie" ? "blitz" : "bolzen"); return; }
+    if (w.held && A.art !== "nah") { spec.nach = w.typ === "kopfgeldjaeger" && w.modus === 0 && !w.kw ? "durchbrechen" : ""; this.schuss(w, z, z, (A as Modus).flug || 14, spec, A.art === "magie" ? "blitz" : (w.kw && w.kw.waffe.geschoss) || "bolzen"); return; } /* die Art des Geschosses geht an alle Zuschauer (Pfeil oder Bolzen nach der Waffe) */
     const n = this.treffen(w, z, spec); if (n > 0 && !z.tot && !w.kw) this.nachTreffer(w, z, w.typ === "schildwaechter" ? (w.modus === 0 ? "festnageln" : "schildhieb") : w.typ === "assassine" && w.modus === 0 ? "dolch" : w.typ === "elementarist" ? "rueckstoss" : "");
   }
   /** Was ein Treffer zusätzlich auslöst */

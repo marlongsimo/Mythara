@@ -14,8 +14,6 @@ import { MONSTER } from "../../../shared/config";
 import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import type { KARTEN } from "../../../shared/karten";
 import { Geschosse3D, GeschossArt } from "./geschosse3d";
-import { inventar } from "../inventar";
-import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 
 const HOEHE = 2.0, MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.v003" };
 interface Bild { fl: FigurArt; nm: HTMLElement; lb: HTMLElement; h: number }
@@ -35,12 +33,12 @@ export class WeltKampf3D extends WeltKampf {
   private geschosseMap?: Geschosse3D;
   private get flug(): Geschosse3D { return this.geschosseMap || (this.geschosseMap = new Geschosse3D(this.w.motor.szene, (x, z) => this.w.motor.hoehe(x, z))); }
   schritt(dt: number) { super.schritt(dt); const z = this.z; if (!z) return; const x0 = this.zone.x0, y0 = this.zone.y0;
+    const naechste = (x: number, y: number, ohne: number, max: number) => { let best: (typeof z.w)[number] | null = null, bd = max; for (const e of z.w) { if (e[0] === ohne) continue; const d = Math.hypot(x0 + e[4] - x, y0 + e[5] - y); if (d < bd) { bd = d; best = e; } } return best; };
     this.flug.abgleich((z.g || []).map((g) => [g[0], x0 + g[1], y0 + g[2], String(g[3])] as [number, number, number, string]), (x, y, a) => {
-      /* Schütze = die nächste Figur am Startpunkt; Art nach der Waffe (eigener Held: Armbrust → Bolzen) */
-      let best: (typeof z.w)[number] | null = null, bd = 3; for (const e of z.w) { const d = Math.hypot(x0 + e[4] - x, y0 + e[5] - y); if (d < bd) { bd = d; best = e; } }
-      const sx = best ? x0 + best[4] : x, sy = best ? y0 + best[5] : y, W = best && best[0] === this.ichId && inventar().angelegt.waffe ? GEGENSTAENDE[inventar().angelegt.waffe!] : null;
-      const art: GeschossArt = a === "feuer" ? "feuer" : a === "blitz" ? "zauber" : W && W.art === "Armbrust" ? "bolzen" : "pfeil";
-      return { art, x: sx, y: sy }; });
+      /* Schütze = die nächste Figur am Startpunkt; die Art schickt der Server (Pfeil oder Bolzen nach der Waffe, Zauber, Feuer) */
+      const s = naechste(x, y, -1, 3), art: GeschossArt = a === "feuer" ? "feuer" : a === "blitz" ? "zauber" : a === "pfeil" ? "pfeil" : "bolzen";
+      return { art, x: s ? x0 + s[4] : x, y: s ? y0 + s[5] : y, von: s ? s[0] : -1 }; },
+      (x, y, von) => { const e = naechste(x, y, von, 2.5); return e ? { x: x0 + e[4], y: y0 + e[5] } : null; });
     this.flug.schritt(dt); }
   protected bildEnde() { lebenAnzeigen(null); if (this.geschosseMap) this.geschosseMap.alleWeg(); for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
     if (this.ring) { this.w.motor.szene.remove(this.ring); this.ring = undefined; } if (this.ichBalken) { this.ichBalken.remove(); this.ichBalken = undefined; } }

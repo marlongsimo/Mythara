@@ -57,7 +57,7 @@ export const STILE: Record<Art, Stil[]> = {
 export interface Kampfwerte {
   /** Trefferwert je Angriffsart (nur die der Waffe zählt) und Verteidigung je Angriffsart */ angriff: Record<Art, number>; abwehr: Record<Art, number>;
   /** schaden: Wurfbereich 1 … Max Hit; plus (Magie): Endschaden = Wurf + plus, gerundet; bonus: seit v3 immer 0 (bleibt für alte Aufrufer); takt in Sekunden = ticks × TICK */
-  waffe: { art: Art; schaden: [number, number]; plus: number; bonus: number; ticks: number; takt: number; reich: number; flug?: number };
+  waffe: { art: Art; schaden: [number, number]; plus: number; bonus: number; ticks: number; takt: number; reich: number; flug?: number; /** Fernkampf: was fliegt (Armbrust: Bolzen, sonst Pfeil) – für die Darstellung bei allen Spielern */ geschoss?: "pfeil" | "bolzen" };
   stil: number; max: number; heldenlevel: number; skills: SkillXp }
 
 /** XP-Kurve aller Skills: 85 % der kumulierten OSRS-XP je Level (OSRS-Formel, für Level 100 um eine Stufe fortgeführt), kaufmännisch gerundet */
@@ -104,7 +104,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   if (W.art === "nah") { angriff.nah = wurfWert(lv.geschick + p("geschick") + 8, aus.geschick); schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
   else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
   else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
-  return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x } };
+  return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}), ...(W.art === "fern" ? { geschoss: angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].art === "Armbrust" ? "bolzen" as const : "pfeil" as const } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x } };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */
 export function schadenWurf(w: Kampfwerte["waffe"], z: number): number { const r = w.schaden[0] + Math.floor(z * (w.schaden[1] - w.schaden[0] + 1));
