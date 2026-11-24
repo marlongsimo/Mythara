@@ -22,4 +22,10 @@ Ablauf je Gestein (wie die Bäume der Holzfällerei, aber ohne luecken=1 – Gra
     python3 realtime/werkzeug/welt/baum_bilder.py --einzeln <render.png> berg_<gestein>_01 "<Name>" img/objekte3d/skilling/bergbau/<gestein>.glb <höhe>
 
 Im Spiel (mit 3D-Figuren) live in 3D gezeichnet, eigene Drehung je Standort, kein Wind (modell3d.wind = 0); blaue Adern pulsieren.
+Zu jedem Gestein gibt es die abgebaute Fassung (<gestein>-leer.glb, Weltobjekt berg_<gestein>_leer): Erzadern leer, Moos bleibt.
+
+    python3 fabrik/baum_export.py -- <meshy.blend> img/objekte3d/skilling/bergbau/<gestein>-leer.glb <höhe> adern=leer          # farbige Adern → dunkles Gestein
+    … adern=leer ader_ton=warm     # Kupferstein: nur warme Töne sind Erz (das Gestein selbst ist bläulich)
+    … adern=leer_schwarz           # Schwarzeisen: schwarze Adern → helles, leeres Bruchgestein
+
 Die Abbau-Funktion kommt später; bis dahin reine Optik.

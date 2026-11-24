@@ -7746,6 +7746,174 @@
     "url": "img/objekte3d/skilling/bergbau/ureisen.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "berg_kupferstein_leer",
+   "name": "Kupferstein (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_leer.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/kupferstein – Adern leer (fabrik/baum_export.py adern=leer ader_ton=warm)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_leer",
+   "name": "Eisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_leer.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/eisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_leer",
+   "name": "Schwarzeisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_leer.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/schwarzeisen – Adern leer (fabrik/baum_export.py adern=leer_schwarz)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_leer",
+   "name": "Sterneisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_leer.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/sterneisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_leer",
+   "name": "Splittereisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_leer.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/splittereisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_ureisen_leer",
+   "name": "Ureisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_leer.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/ureisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen-leer.glb",
+    "wind": 0
+   }
   }
  ]
 }

@@ -3,6 +3,9 @@
 luecken=1: graue Füllflächen und schwarze Lücken der Textur mit den Farben der Nachbarn auffüllen (sonst sieht man an den Blatträndern graue Flecken)
 stumpf=1.0: nur den Stumpf ausgeben – in dieser Höhe (m, nach dem Skalieren) abgeschnitten, Schnittfläche geschlossen (helles Holz)
 blau=grau: blau leuchtende Stellen der Textur dunkelgrau färben (der Stumpf leuchtet und pulsiert nicht mehr)
+adern=leer: Gestein abgebaut – farbige Erzadern (orange, rost, blau …) werden dunkles, totes Gestein; Moos (grün) bleibt
+ader_ton=warm: bei adern=leer nur warme Töne (Kupfer) als Erz, dafür schon schwach gefärbte
+adern=leer_schwarz: dasselbe für schwarze Adern (Schwarzeisen) – sie werden helles, leeres Bruchgestein
 Stammfuß in den Ursprung, auf die gewünschte Höhe skaliert, Textur verkleinert (WebP). Das Spiel zeichnet den Baum live mit three.js
 (echt3d/darsteller.ts → BaumBild): eigene Drehung, Kronenfarbe und Wind je Standort."""
 import bpy, sys, os
@@ -45,6 +48,22 @@ if opt.get("stumpf"):                                                           
         if f_.is_valid: f_.material_index = k
     bm.to_mesh(o.data); bm.free(); print("Stumpf: bei", hs, "m abgeschnitten,", len(fl), "Schnittflächen")
 for im in bpy.data.images:
+    if opt.get("adern") in ("leer", "leer_schwarz"):
+        w, h = im.size; a = np.array(im.pixels[:], np.float32).reshape(h, w, 4); rgb = a[..., :3]; mx = rgb.max(-1); mn = rgb.min(-1); d = mx - mn + 1e-6; sat = d / (mx + 1e-6)
+        hue = np.where(mx == rgb[..., 0], ((rgb[..., 1] - rgb[..., 2]) / d) % 6, np.where(mx == rgb[..., 1], (rgb[..., 2] - rgb[..., 0]) / d + 2, (rgb[..., 0] - rgb[..., 1]) / d + 4)) * 60
+        moos = (hue > 55) & (hue < 160)
+        if opt["adern"] == "leer":                                                   # Gestein ~0,2–0,4 Sättigung, Erz deutlich darüber → dunkles, totes Gestein
+            m = np.clip((sat - 0.55) / 0.15, 0, 1) * np.clip((mx - 0.1) / 0.08, 0, 1) * ~moos; zf = (0.07 + 0.12 * mx)[..., None] * np.array([1.0, 0.98, 0.96])
+            if opt.get("ader_ton") == "warm":                                        # ader_ton=warm: nur warme Töne sind Erz, die dafür schon schwach gesättigt (Kupfer auf bläulichem Gestein)
+                warm = (hue < 50) | (hue > 330); m = np.maximum(m, np.clip((sat - 0.28) / 0.12, 0, 1) * np.clip((mx - 0.1) / 0.08, 0, 1) * warm)
+        else:                                                                        # schwarze Adern → helles, leeres Bruchgestein
+            m = np.clip((0.16 - mx) / 0.08, 0, 1) * ~moos; zf = np.full(rgb.shape, 0.34) * np.array([1.0, 0.98, 0.95])
+        if opt["adern"] == "leer":                                                   # Ränder der Adern (schwächer gefärbt) mitnehmen: Maske um einige Bildpunkte wachsen lassen, wo noch Farbe ist
+            r_ = m.copy()
+            for _ in range(int(opt.get("rand", 6))):
+                n_ = np.maximum.reduce([np.roll(r_, 1, 0), np.roll(r_, -1, 0), np.roll(r_, 1, 1), np.roll(r_, -1, 1)]); r_ = np.maximum(r_, n_ * 0.9)
+            m = np.maximum(m, r_ * np.clip((sat - (0.2 if opt.get('ader_ton') == 'warm' else 0.3)) / 0.12, 0, 1) * ~moos)
+        a[..., :3] = rgb * (1 - m[..., None]) + zf * m[..., None]; im.pixels[:] = a.ravel(); im.update(); print("Textur: Adern leer", int((m > 0.5).sum()), "Punkte")
     if opt.get("blau") == "grau":                                                    # blaue Adern → dunkelgrau, kein Leuchten (der Spiel-Shader pulsiert nur Blau)
         w, h = im.size; a = np.array(im.pixels[:], np.float32).reshape(h, w, 4); rgb = a[..., :3]; mx = rgb.max(-1); mn = rgb.min(-1); d = mx - mn + 1e-6
         hue = np.where(mx == rgb[..., 0], ((rgb[..., 1] - rgb[..., 2]) / d) % 6, np.where(mx == rgb[..., 1], (rgb[..., 2] - rgb[..., 0]) / d + 2, (rgb[..., 0] - rgb[..., 1]) / d + 4)) * 60
@@ -62,6 +81,6 @@ for im in bpy.data.images:
             neu = (~gut) & (zahl > 0); rgb[neu] = summe[neu] / zahl[neu][:, None]; gut = gut | neu
         a[..., :3] = rgb; im.pixels[:] = a.ravel(); im.update(); print("Textur: aufgefüllt", n0, "Punkte")
     if im.size[0] > T: im.scale(T, T)
-    if im.packed_file or opt.get("luecken") == "1" or opt.get("blau"): im.pack()                     # die geänderten Bildpunkte mitnehmen (sonst nimmt der Export die gepackte Originaldatei)
+    if im.packed_file or opt.get("luecken") == "1" or opt.get("blau") or opt.get("adern"): im.pack()                     # die geänderten Bildpunkte mitnehmen (sonst nimmt der Export die gepackte Originaldatei)
 o.name = "baum"; bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_image_format="WEBP", export_animations=False)
 print("Baum:", ziel, "Höhe", hoehe, "m · Breite", round((hi.x - lo.x) * f, 2), "m · Punkte", len(ps), "· Größe", os.path.getsize(ziel) // 1024, "KB")
