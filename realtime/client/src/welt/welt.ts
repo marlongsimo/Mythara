@@ -344,7 +344,7 @@ export class Welt extends Phaser.Scene {
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
-    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
+    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; if (WELT.springen) WELT.springen(this); this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 

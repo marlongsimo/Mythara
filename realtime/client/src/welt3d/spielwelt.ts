@@ -245,7 +245,7 @@ export class Spielwelt3D implements WeltKern {
   mitspielerNeu(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }) { return new Mitspieler3D(this.motor, o); }
   eigeneBlase(text: string) { blase3d(this.motor, () => ({ x: this.ort.x, y: this.motor.hoehe(this.ort.x, this.ort.y) + HOEHE + 0.9, z: this.ort.y }), text); }
   seit() { return performance.now() - this.beginn; }
-  versetzen(x: number, y: number) { this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
+  versetzen(x: number, y: number) { anschluss3D.springen(); this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
   blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
   springen(x: number, y: number) { if (this.gesperrt) return; anschluss3D.springen(); this.halt(); this.gesperrt = true;
@@ -366,7 +366,7 @@ export class Spielwelt3D implements WeltKern {
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
-    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const x = z.x + r.region.ursprung[0] * C, y = z.y + r.region.ursprung[1] * C; this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); return; }
+    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const x = z.x + r.region.ursprung[0] * C, y = z.y + r.region.ursprung[1] * C; anschluss3D.springen(); this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); return; } /* eine Kampfwelt: den Helden beim Server freigeben, am Ziel neu */
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 

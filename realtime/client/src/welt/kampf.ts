@@ -35,7 +35,7 @@ import { Geschoss, GeschossArt } from "./geschosse";
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const P = new URLSearchParams(location.search);
 /** Gebiet der offenen Welt (Gebietsname für Server und Stufe): der Kreuzwald */
-const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf" };
+const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf", welt: "welt" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
 export interface Figur { blick?: number; /** kämpft gerade (bis performance.now) */ kampfBis?: number; typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
@@ -122,6 +122,8 @@ export class WeltKampf {
       /* gleich weiterlaufen lassen: sonst steht der Held auf dem Server an der Grenze, bis die erste Antwort da ist – und springt dann dorthin zurück */
       if (ziel) this.gehe(ziel.x, ziel.y); else if (richtung && Math.hypot(richtung[0], richtung[1]) > 0.05) this.steuern(richtung[0], richtung[1]); } }
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
+  /** Teleport: dem Server sagen, dass der Held absichtlich abreist – er bleibt dann nicht als Kampfgeist stehen (eine Kampfwelt: sonst würde ihn die neue Verbindung an der alten Stelle übernehmen) */
+  abreise(teleport: boolean) { if (this.netz && this.netz.art === "server") try { this.netz.sende({ t: "abreise", tp: teleport } as unknown as Parameters<Netz["sende"]>[0]); } catch { /* zu */ } } /* teleport: neu in der Waldmark; sonst (Tür, Untergrund) gilt die neue Stelle */
   ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
     for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); window.removeEventListener("ez-sprint", h); } if (this.stilHoerer) { window.removeEventListener("ez-stil", this.stilHoerer); this.stilHoerer = null; } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }

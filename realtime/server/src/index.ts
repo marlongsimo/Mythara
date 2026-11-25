@@ -16,7 +16,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
-import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN } from "../../shared/karten";
+import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
 import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen } from "./welt";
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
@@ -40,7 +40,7 @@ interface Kampf { karte: string; ort: string; team: string[]; nutzer: string; ep
 const neuerKampf = (karte: string, ort: string, team: string[]): Kampf => ({ karte, ort, team, nutzer: "", ep: 0, fertig: false, gesiegt: false, gebuchtEp: 0, gebuchtS: 0, bucht: false, nochmal: false, ende: false, seit: Date.now(), geaendert: 0, letzterEp: 0, letzterS: 0, stand: null, wartende: [] });
 /** Zwischenbuchung: so lange nach der letzten neuen Beute Ruhe, spätestens so lange nach der letzten Buchung (Millisekunden) */
 const BUCHUNG_RUHE = Number(process.env.BUCHUNG_RUHE_MS) || 5000, BUCHUNG_SPAETESTENS = Number(process.env.BUCHUNG_SPAETESTENS_MS) || 30000;
-interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; /** zuletzt an alle gemeldete Heldenstufe (Namensschild) */ lvGemeldet?: number; fenster: number; zahl: number; kampf?: Kampf;
+interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; /** absichtlich abgereist: tp = Teleport (neu in der Waldmark), tor = Tür/Untergrund (neu am Ziel) – der Held ist sofort weg */ abreise?: "tp" | "tor"; /** zuletzt an alle gemeldete Heldenstufe (Namensschild) */ lvGemeldet?: number; fenster: number; zahl: number; kampf?: Kampf;
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
   /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** Inventar-Hörer abmelden */ invAus?: () => void; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
@@ -71,7 +71,7 @@ heilenMit(async (nutzer, v) => {
     void sb("/rest/v1/rpc/rpg_held_lp_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_lp: voll ? null : neu }) }).catch((e) => console.error("LP speichern:", (e as Error).message)); } }; });
 /** Einen Spieler in die gemeinsame Welt eines Gebiets setzen (die Zone entsteht beim ersten Spieler) – jede Person nur einmal */
 function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert: number, name: string, wo?: { x: number; y: number }): void {
-  let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].weltRegion); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */
+  let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].ursprung); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */
   if (!Z) { setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort] || 1, 1); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
     Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
   const nutzer = p.kampf && p.kampf.nutzer;
@@ -98,15 +98,15 @@ function uebernehmen(alt: Platz, p: Platz, Z: Zone, typ: string, name: string): 
   if (p.nachher) { for (const e of p.nachher) try { Z.sim.eingabe(e, id); } catch { /* egal */ } p.nachher = undefined; }
   Z.spieler.add(p); Z.leerSeit = 0; console.log("Welt:", name, "übernimmt den Helden auf einem neuen Gerät in", Z.karte); namenMelden(Z); }
 /** Steht der Held am Rand seines Gebiets (Wechsel ins Nachbargebiet)? */
-function amRand(q: Platz): boolean { const Z = q.zone, K0 = Z && KARTEN[Z.karte], wz = K0 && K0.weltRegion ? WELTZONEN[K0.weltRegion] : undefined, h = Z && q.heldId ? Z.sim.nach(q.heldId) : undefined;
+function amRand(q: Platz): boolean { const Z = q.zone, K0 = Z && KARTEN[Z.karte], wz = Z && Z.karte === "welt" ? WELTZONE : K0 && K0.weltRegion ? WELTZONEN[K0.weltRegion] : undefined, h = Z && q.heldId ? Z.sim.nach(q.heldId) : undefined;
   if (!wz || !h) return true; return h.x < RAND || h.y < RAND || h.x > wz.b - RAND || h.y > wz.h - RAND; }
 /** Verbindung weg: im Kampf (oder bis vor 10 s) bleibt der Held noch stehen; sonst sofort raus */
 function sollHaengen(p: Platz): boolean { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg || p.ersetzt) return false; const h = Z.sim.nach(p.heldId); if (!h || h.tot) return false;
   return Date.now() - (p.kampfZ || 0) < KAMPF_RUHE_MS && !amRand(p); }
 /** Einen Spieler aus seiner gemeinsamen Welt nehmen (genau einmal): Stelle merken, Gutschrift anstoßen, Held sofort weg */
 function zoneVerlassen(p: Platz): void { const Z = p.zone; if (!Z || !p.heldId || p.zoneWeg) return; p.zoneWeg = true; if (p.invAus) { p.invAus(); p.invAus = undefined; } const K0 = KARTEN[Z.karte], h = Z.sim.nach(p.heldId);
-  if (p.kampf && p.kampf.nutzer && K0 && K0.ursprung && K0.weltRegion && h) /* wer hier aufhört, beginnt wieder hier – wer gefallen ist, in der Waldmark */
-    void (h.tot ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion, Math.round((K0.ursprung[0] + h.x) * 100) / 100, Math.round((K0.ursprung[1] + h.y) * 100) / 100));
+  if (p.kampf && p.kampf.nutzer && K0 && K0.ursprung && h) { /* wer hier aufhört, beginnt wieder hier – wer gefallen ist, in der Waldmark */ const wx = K0.ursprung[0] + h.x, wy = K0.ursprung[1] + h.y;
+    void (h.tot || p.abreise === "tp" ? stelleMerken({ sb }, p.kampf.nutzer, "waldmark", null, null) : stelleMerken({ sb }, p.kampf.nutzer, K0.weltRegion || weltRegionBei(wx, wy), Math.round(wx * 100) / 100, Math.round(wy * 100) / 100)); }
   void buchen(p, true); /* liest EP und Splitter sofort, bucht dann im Hintergrund */
   if (p.v1 && p.kampf && p.kampf.nutzer) v1Takt(sb, p.kampf.nutzer, p.v1, Z.sim, p.heldId, true); /* die letzten Skill-XP */
   if (p.v1 && p.kampf && p.kampf.nutzer && h) { const n = p.kampf.nutzer, voll = h.tot || h.lp >= h.max; if (voll) lebenJe.delete(n); else lebenJe.set(n, { lp: h.lp, zeit: Date.now() }); /* gefallen: in der Waldmark wieder voll */
@@ -282,6 +282,7 @@ wss.on("connection", (ws, req) => {
       return; }
     if ((e as { t: string }).t === "da") return; /* Lebenszeichen des Browsers (es gab Eingaben, etwa im Chat): zählt gegen die Inaktivität */
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
+    if ((e as { t: string }).t === "abreise") { if (p.zone && p.heldId && !p.zoneWeg) { p.abreise = (e as { tp?: unknown }).tp === false ? "tor" : "tp"; zoneVerlassen(p); } return; } /* Teleport: Held sofort aus der Kampfwelt, neu beginnt er in der Waldmark */
     if ((e as { t: string }).t === "stil") { /* v3: Angriffsstil gewählt (Index der Kampfart, 1 = Standard) – Kampfwerte neu */
       if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } else p.stilVorab = (e as { stil?: unknown }).stil; /* Held lädt noch: merken */ return; }
     if ((e as { t: string }).t === "ausruestung") { /* v1: anderes angelegt – Kampfwerte neu (nur eigene Gegenstände, siehe kampfv1.ts) */
@@ -352,9 +353,9 @@ setInterval(() => {
     if (!Z.spieler.size) { if (Z.leerSeit && jetzt - Z.leerSeit > 120000) { zonen.delete(key); console.log("Welt: Zone", key, "geschlossen"); } continue; }
     try { Z.sim.schritt(); } catch (err) { console.error("Welt-Schritt:", (err as Error).stack); continue; }
     const z = Z.sim.zustand(); let stufe = false;
-    { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung && K0.weltRegion) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
+    { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
       const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
-      for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion, K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
+      for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion || weltRegionBei(K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y), K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* die eine Kampfwelt: Region nach der Stelle */ /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
     for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
     for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */

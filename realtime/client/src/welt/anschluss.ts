@@ -89,6 +89,7 @@ function teleport(s: WeltKern) { if (s.gesperrt) return; if (s.hier === "waldmar
   if (s.gesperrt) return; teleportFragen((ok, rest, gast) => { if (gast) lokal(); else if (ok) los(); else nein(rest); }, lokal); }
 function reise(s: WeltKern) { if (s.gesperrt) return;
   s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
+  if (kampf) kampf.abreise(true); /* der Server gibt den Helden frei (kein Zurückholen an die alte Stelle) */
   const ms = s.teleportAbreise(); /* 3D-Held: Lichtsäule, er vergeht im Licht – erst danach abblenden */
   setTimeout(() => s.abblenden(300, () => { location.href = "./?von=teleport" + serverZusatz(); }), Math.max(0, ms - 250)); }
 /** Kampf in der offenen Welt: in einem Kampfgebiet (WELTZONEN) bewegt der Spielserver den Helden, Gegner und Treffer erscheinen an Ort und Stelle */
@@ -109,6 +110,8 @@ function kampfartZeigen(s: WeltKern) { let el = document.getElementById("ez-kamp
   el.innerHTML = `<span class="sym">${KAMPFZEICHEN[art]}</span><b>${art === "sicher" ? "Sicherer Ort" : art === "mehr" ? "Mehrkampf" : "Einzelkampf"}</b><i class="kurz">${art === "sicher" ? "Sicher" : art === "mehr" ? "Multi" : "Solo"}</i>`;
   el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
+/** Der Held wird versetzt (Untergrund, Ausgang, gemerkte Stelle): in der einen Kampfwelt den Helden beim Server freigeben, dann neu verbinden – sonst holte die neue Verbindung ihn an die alte Stelle zurück */
+function kampfVersetzt() { if (kampf) kampf.abreise(false); kampfEnde(); naechsterEnde(); }
 /* für Prüfungen im Browser: das vorab verbundene Nachbargebiet */
 Object.defineProperty(window, "EZN", { get: () => naechster, configurable: true });
 /* für Prüfungen im Browser */
@@ -122,21 +125,21 @@ function vorverbinden(s: WeltKern) { if (!freigabe("suedtor") || s.gesperrt) ret
   if (kampf) { if (!kampf.eingetreten && abstandZu(s.ort.x, s.ort.y, kampf.zone) > 16) kampfEnde(); return; }
   const rid = naechstesGebiet(s, ""); if (rid) kampf = kampfNeu(s, rid, s.ort.x, s.ort.y, gefallen, true); }
 /** Das nächstgelegene Kampfgebiet in weniger als 10 Feldern (außer dem, in dem man steht) */
-function naechstesGebiet(s: WeltKern, ausser: string): string { let best = "", d = 10; for (const [rid, z] of Object.entries(WELTZONEN)) { const a = abstandZu(s.ort.x, s.ort.y, z); if (rid !== ausser && a < d) { d = a; best = rid; } } return best; }
+function naechstesGebiet(s: WeltKern, ausser: string): string { let best = "", d = 10; const zu = WELTZONEN[ausser]; for (const [rid, z] of Object.entries(WELTZONEN)) { const a = abstandZu(s.ort.x, s.ort.y, z); if (rid !== ausser && z !== zu && a < d) { d = a; best = rid; } } return best; } /* Regionen derselben Kampfwelt zählen nicht als Nachbargebiet */
 /* Zwischen zwei Kampfgebieten: Nähert sich der Held im Kampfgebiet der Grenze eines anderen (unter 10 Feldern), wird das Nachbargebiet
    schon vorab verbunden – beim Überschreiten der Grenze geht es ohne Halt weiter. Entfernt er sich wieder (über 16 Felder), wird es geschlossen. */
 let naechster: WeltKampf | null = null;
 function naechsterEnde() { if (naechster) { naechster.ende(); naechster = null; } }
 function nachbarVorbereiten(s: WeltKern) { if (s.gesperrt) return;
-  if (naechster) { if (naechster.region !== s.hier && abstandZu(s.ort.x, s.ort.y, naechster.zone) > 16) naechsterEnde(); return; }
+  if (naechster) { if (naechster.zone !== WELTZONEN[s.hier] && abstandZu(s.ort.x, s.ort.y, naechster.zone) > 16) naechsterEnde(); return; }
   const rid = naechstesGebiet(s, s.hier); if (rid) naechster = kampfNeu(s, rid, s.ort.x, s.ort.y, gefallen, true); }
 /** Bekommt die gewünschte Richtung; true = der Server bewegt (die Welt bewegt nicht selbst) */
 /** Kampf anlegen: die 3D-Welt mit eigener Darstellung, die 2D-Welt wie bisher */
 const kampfNeu = (s: WeltKern, rid: string, x: number, y: number, gef: () => void, wartend = false): WeltKampf => (s.kampfNeu ? s.kampfNeu(rid, x, y, gef, wartend) : new WeltKampf(s as unknown as WeltSzene, rid, x, y, gef, wartend));
 function fremd(s: WeltKern, rx: number, ry: number): boolean {
   const z = WELTZONEN[s.hier]; if (!z || !freigabe("suedtor")) { if (kampf && kampf.eingetreten) kampfEnde(); if (!kampf && naechster) { kampf = naechster; naechster = null; } vorverbinden(s); return false; } const rand = randAbstand(s, z);
-  if (kampf && kampf.region !== s.hier) kampfEnde();
-  if (!kampf && naechster && naechster.region === s.hier) { kampf = naechster; naechster = null; } /* das Nachbargebiet war schon verbunden */
+  if (kampf && kampf.zone !== z) kampfEnde(); /* Zonen Stufe 2: alle Regionen sind eine Kampfwelt – über Regionsgrenzen bleibt die Verbindung */
+  if (!kampf && naechster && naechster.zone === z) { kampf = naechster; naechster = null; } /* das Nachbargebiet war schon verbunden */
   nachbarVorbereiten(s);
   if (!kampf) { if (rand < 2 || s.gesperrt) return false; kampf = kampfNeu(s, s.hier, s.ort.x, s.ort.y, gefallen); }
   if (!kampf.eingetreten) { const pf0 = (s as unknown as { pfad: { x: number; y: number }[] }).pfad; kampf.betreten(s.ort.x, s.ort.y, pf0.length ? pf0[pf0.length - 1] : null, [rx, ry]); } /* vorverbunden: jetzt hinein, ohne Wartezeit – mit dem Laufziel, damit der Server gleich weitergeht */
@@ -194,7 +197,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
   karteRegion(s, id, ux, uy, b, h);
   mit = s.mitspielerNeu ? s.mitspielerNeu({ versatz: { x: region.x, y: region.y }, karte: { breit: region.b, hoch: region.h } }) : new Mitspieler(s as unknown as Welt, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: MitArt | null }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
-  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] ? [] : l); onlineZeigen(); }, /* im Kampfgebiet zeigt der Kampf die anderen Helden */ fort: (i) => { if (mit) mit.weg(i); },
+  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else if (mit) mit.blase(i, text); } });
 }
@@ -284,7 +287,7 @@ export const anschluss3D = {
     return t && t.held ? { i: 0, n: t.name, h: "schildwaechter", s: t.stufe, x: 0, y: 0, b: 0, l: 0, ...(t.a ? { a: t.a as Fremder["a"] } : {}) } : null; },
   spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
-  springen: () => kampfEnde(),
+  springen: () => kampfVersetzt(),
   /** Antippen: ein Mitspieler öffnet seine Karte. true = erledigt */
   antippen: (s: WeltKern, px: number, py: number): boolean => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; },
 };
@@ -309,7 +312,7 @@ export function weltAnschliessen(start: string, tor: string) {
   };
   WELT.regionWechsel = (s, r) => regionBetreten(s, r.region.id, r.region.ursprung[0], r.region.ursprung[1], r.region.chunks[0], r.region.chunks[1]);
   WELT.fremd = fremd;
-  WELT.springen = () => kampfEnde();   /* Abstieg in den Untergrund und zurück: der Kampf der alten Stelle endet, am Ziel beginnt (wenn dort Gegner sind) ein neuer */
+  WELT.springen = () => kampfVersetzt();   /* Abstieg in den Untergrund und zurück: der Kampf der alten Stelle endet, am Ziel beginnt (wenn dort Gegner sind) ein neuer */
   WELT.antippen = (s, p) => { if (kampf && kampf.bereit) { const w = s.cameras.main.getWorldPoint(p.x, p.y); if (kampf.antippen(w.x / FELD_PX, w.y / FELD_PX)) return true; } if (!mit) return false; const d = (mit as unknown as Mitspieler).unter(s.input.hitTestPointer(p)); if (!d) return false; tafel(s, (zu) => spielerKarte(d, zu)); return true; };
   WELT.schritt = (s, d) => {
     if (kampf) kampf.schritt(d);

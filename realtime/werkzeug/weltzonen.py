@@ -14,7 +14,7 @@ welt = json.load(open(os.path.join(WELT, "welt.json")))
 # Ausnahmen nur hier (aggro/leine/wandern: Angriffsreichweite, Verfolgungsweite, Umherstreifen der Gegner – sonst 5/14/4):
 #   SICHER     – Regionen, in denen nicht gekämpft wird (sicherer Ort)
 #   BESONDERS  – Regionen mit eigenem Kartennamen, eigener Stufe, Gegnerlagern und Mehrkampf-Bereichen (Weltfelder [x0, y0, x1, y1])
-SICHER = {"waldmark"}
+SICHER: set = set()  # seit Zonen Stufe 2 (25.11.2026) ist auch die Waldmark Teil der einen Kampfwelt (Einzelkampf, ohne Gegner)
 # Der Unterschlupf (Welt-Pipeline, werkzeug/welt/unterschlupf.mjs): Lager und Mehrkampf-Halle kommen aus der Quelle der Region
 import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
