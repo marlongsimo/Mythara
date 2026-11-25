@@ -85,7 +85,7 @@ export class Welt3D {
     this.szene.fog = new THREE.Fog(0xb9cfe0, 60, 150); this.szene.add(this.himmelLicht, this.licht, this.licht.target, this.fackel);
     /* feste Zahl Feuerlichter (keine Neuübersetzung der Shader): sie wandern zu den nächsten Feuern */
     for (let i = 0; i < (HANDY ? 3 : 6); i++) { const l = new THREE.PointLight(0xff9a40, 0, 13, 1.6); this.feuerLichter.push(l); this.szene.add(l); }
-    const s = this.licht.shadow; s.mapSize.set(2048, 2048); s.camera.left = s.camera.bottom = -38; s.camera.right = s.camera.top = 38; s.camera.near = 1; s.camera.far = 160; s.bias = -0.0006; s.normalBias = 0.04; this.licht.castShadow = true;
+    const s = this.licht.shadow, sw = HANDY ? 26 : 38; s.mapSize.set(HANDY ? 1024 : 2048, HANDY ? 1024 : 2048); s.camera.left = s.camera.bottom = -sw; s.camera.right = s.camera.top = sw; /* Handy: kleinere Schattenkarte über einen engeren Bereich */ s.camera.near = 1; s.camera.far = 160; s.bias = -0.0006; s.normalBias = 0.04; this.licht.castShadow = true;
     BODEN.map = pinsel();
     laden("Lade Weltdaten …");
     this.ix = await (await fetch("welt3d/index.json?t=" + Math.floor(Date.now() / 60000))).json(); this.vorhanden = new Set(this.ix.chunks);
@@ -191,7 +191,7 @@ export class Welt3D {
       if (!this.bildMat.has(typ.id)) this.bildMat.set(typ.id, new THREE.SpriteMaterial({ map: this.textur(typ.bild), alphaTest: 0.2, toneMapped: false }));
       const sp = new THREE.Sprite(this.bildMat.get(typ.id)!), f = (typ.massstab * sk0) / 48; sp.center.set(typ.anker[0], 1 - typ.anker[1]); sp.scale.set(typ.groesse[0] * f, typ.groesse[1] * f, 1); sp.position.set(x, gy, y); this.szene.add(sp); s.obj.push(sp); }
     for (const [t, g] of gruppen) { const im = new THREE.InstancedMesh(modell(typen[t])!, MATERIALIEN, g.m.length);
-      g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im); s.obj.push(im); }
+      g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = !(HANDY && istBaum(typen[t])); /* Handy: Deko-Bäume werfen keinen Schatten (spart viel) */ im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im); s.obj.push(im); }
   }
   textur(pfad: string, fertig?: (t: THREE.Texture) => void): THREE.Texture { let t = this.bildTex.get(pfad);
     if (!t) { t = this.bilder.load(BILD + pfad, fertig ? (q) => setTimeout(() => fertig(q), 0) : undefined); t.colorSpace = THREE.SRGBColorSpace; this.bildTex.set(pfad, t); }
@@ -297,7 +297,8 @@ export class Welt3D {
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);
     const hier = this.chunkBei(H.x, H.z); this.stimmung(hier ? hier.d.ebene : this.ebene || "oberwelt"); const unten = this.ebene !== "oberwelt", fog = this.szene.fog as THREE.Fog;
-    const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : weit * 0.45;
+    const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : HANDY ? 42 + this.abstand * 1.2 : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : weit * 0.45; /* Handy: kürzere Sichtweite */
+    { const fern = weit + 10; if (Math.abs(this.kamera.far - fern) > 2) { this.kamera.far = fern; this.kamera.updateProjectionMatrix(); } } /* nichts hinter dem Nebel zeichnen */
     this.licht.position.set(this.ziel.x - 30, this.ziel.y + 55, this.ziel.z + 22); this.licht.target.position.copy(this.ziel); this.fackel.position.set(H.x + 0.4, y + 2.6, H.z + 0.6);
     /* Gebäude: drinnen kein Dach, Türen öffnen sich in der Nähe, Mühlenflügel drehen sich */
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
@@ -308,7 +309,7 @@ export class Welt3D {
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));
       const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
     /* Schattenkarte nur jedes zweite Bild neu (halbiert die teuerste Arbeit je Bild; der Schatten folgt einen Bruchteil später) */
-    if (this.r.shadowMap.enabled) { this.bildNr++; this.r.shadowMap.autoUpdate = false; this.r.shadowMap.needsUpdate = this.bildNr % 2 === 0; }
+    if (this.r.shadowMap.enabled) { this.bildNr++; this.r.shadowMap.autoUpdate = false; this.r.shadowMap.needsUpdate = this.bildNr % (HANDY ? 3 : 2) === 0; }
     this.r.render(this.szene, this.kamera);
   }
   private bildNr = 0;
