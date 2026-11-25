@@ -178,7 +178,33 @@ function zwischenbuchen(q: Platz, sim: Sim, jetzt: number): void { const k = q.k
   if (k.ep !== k.letzterEp || sp !== k.letzterS) { k.letzterEp = k.ep; k.letzterS = sp; k.geaendert = jetzt; }
   if ((k.ep > k.gebuchtEp || sp > k.gebuchtS) && (jetzt - k.geaendert >= BUCHUNG_RUHE || jetzt - k.seit >= BUCHUNG_SPAETESTENS)) void buchen(q); }
 
+/* ---------- Konto löschen (Willkommensseite → Einstellungen): nur mit gültiger Anmeldung UND dem Passwort; dann löscht der Server das Konto bei Supabase
+   (Admin-Schnittstelle, nur mit dem geheimen Schlüssel hier auf dem Server). Alle Tabellen hängen mit „on delete cascade“ am Konto – es verschwinden nur die Daten dieses Kontos. */
+const loeschVersuche = new Map<string, number[]>(); /* je Konto: Zeitpunkte der Fehlversuche (höchstens 5 in 15 Minuten) */
+async function kontoLoeschen(token: string, passwort: string): Promise<{ code: number; text: string }> {
+  if (!SB_URL || !SB_KEY) return { code: 503, text: "Der Server ist nicht eingerichtet." };
+  if (!/^[A-Za-z0-9._-]{20,4000}$/.test(token) || typeof passwort !== "string" || !passwort || passwort.length > 200) return { code: 400, text: "Bitte melde dich an und gib dein Passwort ein." };
+  const r = await fetch(SB_URL + "/auth/v1/user", { headers: { apikey: SB_KEY, Authorization: "Bearer " + token }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) return { code: 401, text: "Deine Anmeldung ist abgelaufen. Bitte melde dich neu an." };
+  const u = (await r.json()) as { id?: string; email?: string; is_anonymous?: boolean }; if (!u.id || u.is_anonymous || !u.email) return { code: 401, text: "Nur angemeldete Konten können gelöscht werden." };
+  const jetzt = Date.now(), alt = (loeschVersuche.get(u.id) || []).filter((t) => jetzt - t < 15 * 60 * 1000); if (alt.length >= 5) return { code: 429, text: "Zu viele Versuche. Bitte warte 15 Minuten." };
+  const pr = await fetch(SB_URL + "/auth/v1/token?grant_type=password", { method: "POST", headers: { apikey: SB_KEY, "content-type": "application/json" }, body: JSON.stringify({ email: u.email, password: passwort }), signal: AbortSignal.timeout(8000) });
+  if (!pr.ok) { alt.push(jetzt); loeschVersuche.set(u.id, alt); return { code: 403, text: "Das Passwort stimmt nicht." }; }
+  const d = await fetch(SB_URL + "/auth/v1/admin/users/" + encodeURIComponent(u.id), { method: "DELETE", headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY }, signal: AbortSignal.timeout(10000) });
+  if (!d.ok) { console.error("Konto löschen:", d.status, (await d.text()).slice(0, 200)); return { code: 502, text: "Das Konto konnte gerade nicht gelöscht werden. Versuch es gleich noch einmal." }; }
+  loeschVersuche.delete(u.id); console.log("Konto gelöscht (auf Wunsch des Spielers)"); return { code: 200, text: "Dein Konto ist gelöscht." }; }
 const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
+  if (req.url === "/konto/loeschen") { /* nur von den eigenen Seiten (Herkunft wie beim Spiel) */
+    const herkunft = String(req.headers.origin || ""), erlaubt = !HERKUNFT.length || HERKUNFT.includes(herkunft);
+    const kopf = { "content-type": "application/json", ...(erlaubt ? { "access-control-allow-origin": herkunft, "access-control-allow-headers": "content-type, authorization", "access-control-allow-methods": "POST, OPTIONS", vary: "Origin" } : {}) };
+    if (req.method === "OPTIONS") { res.writeHead(erlaubt ? 204 : 403, kopf); res.end(); return; }
+    if (req.method !== "POST" || !erlaubt) { res.writeHead(403, kopf); res.end(JSON.stringify({ ok: false, text: "Nicht erlaubt." })); return; }
+    let b = ""; req.on("data", (c) => { b += c; if (b.length > 4000) req.destroy(); });
+    req.on("end", () => { let pw = ""; try { pw = String((JSON.parse(b || "{}") as { passwort?: string }).passwort || ""); } catch { /* leer */ }
+      const token = String(req.headers.authorization || "").replace(/^Bearer /, "");
+      kontoLoeschen(token, pw).then((e) => { res.writeHead(e.code, kopf); res.end(JSON.stringify({ ok: e.code === 200, text: e.text })); })
+        .catch((x) => { console.error("Konto löschen:", (x as Error).message); res.writeHead(500, kopf); res.end(JSON.stringify({ ok: false, text: "Fehler beim Löschen. Versuch es gleich noch einmal." })); }); });
+    return; }
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
   res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", stand: (process.env.RENDER_GIT_COMMIT || "lokal").slice(0, 8) /* welcher Commit läuft (Render setzt die Variable selbst) */, handwerk: true, protokoll: PROTOKOLL, spieler: plaetze.size, kampagnen: Boolean(SB_URL && SB_KEY) }));
 });
