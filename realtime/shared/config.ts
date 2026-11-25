@@ -117,7 +117,7 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
-  /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number;
+  /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number; /** Gegnerfamilie (Waffen mit „gegen“ treffen sie härter): wald = Waldgolem, Mooshocker */ familie?: string;
   aggressiv?: boolean; aggroReich?: number; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
@@ -169,7 +169,7 @@ export const MONSTER: Record<string, MonsterDef> = {
       { nur: "einsteigerquest", wurf: [{ g: "hinweispergament", chance: 35 }] }] },
   /* Mooshocker (Quest „Der stille Rain“, Osthof, 23.11.2026): passiver Trainingsgegner wie die Sand Crab in OSRS – viel Leben, Max Hit 1, langsam, greift nie von selbst an.
      Für Helden um Kampflevel 5–6 gedacht (gut eine Minute je Mooshocker), ab Level 1 machbar. Modell img/figuren-echt3d/mooshocker3d.glb. */
-  mooshocker: { name: "Mooshocker", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
+  mooshocker: { name: "Mooshocker", familie: "wald", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
     angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
     info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
@@ -182,7 +182,7 @@ export const MONSTER: Record<string, MonsterDef> = {
   /* Waldgolem (Nordwald, verfallene Feste, 24.11.2026): Level 15, wie ein OSRS-Monster – schlägt selten, aber hart (Max Hit 5 aus Stärke 36), langsam (6 Ticks),
      Holz: Pfeile bleiben stecken (+20 Fern), Magie trifft gut (−10). Greift nur Helden unter Level 15 von selbst an. Modell img/figuren-echt3d/waldgolem3d.glb.
      Simulation (Heldenlevel 15, Einfach-Ausrüstung, ohne Tränke): Schwert 90 % Siege, 42 s, 62 % LP übrig · Bogen 83 %, 34 s, 45 % · Stab 89 %, 24 s, 51 %. */
-  waldgolem: { name: "Waldgolem", stufe: 15, bild: "img/echtzeit/bandit.webp", hoehe: 134, lp: 30, tempo: 1.6, angriffswert: { nah: 6, fern: 0, magie: 0 }, abwehr: { nah: 12, fern: 12, magie: 3 }, r: 0.5, aggroBisLevel: 15, aggroReich: 4,
+  waldgolem: { name: "Waldgolem", familie: "wald", stufe: 15, bild: "img/echtzeit/bandit.webp", hoehe: 134, lp: 30, tempo: 1.6, angriffswert: { nah: 6, fern: 0, magie: 0 }, abwehr: { nah: 12, fern: 12, magie: 3 }, r: 0.5, aggroBisLevel: 15, aggroReich: 4,
     angriff: { name: "Faustschlag", art: "nah", schaden: [1, 5], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 6, staerke: 36, defense: 12, magie: 3, ticks: 6, abwehr: { nah: 10, fern: 20, magie: -10 } },
     info: "Ein hünenhaftes Wesen aus Wurzelholz, Moos und altem Mauerstein. Es bewegt sich schwerfällig und trifft selten – doch wenn seine Faust trifft, dann mit aller Wucht. Pfeile bleiben in seiner Rinde stecken; Zauber setzen ihm sichtlich zu.", /* Beute folgt später (vorerst keine) */ },

@@ -20,9 +20,9 @@ const nachLevel = (z: Zeile[]) => [...z].sort((a, b) => a.level - b.level);
 
 /** Die Reiter eines Berufs */
 function reiter(k: string): [string, Zeile[]][] {
-  if (k === "holzfaellerei") return [["Bäume", Object.values(BAEUME).map((b) => ({ level: b.level, g: b.stamm, name: b.name, text: `${b.xp} XP je Stamm` }))], ["Beile", werkzeugZeilen(BEILE, "Fällt")]];
-  if (k === "bergbau") return [["Adern", Object.values(ADERN).map((a) => ({ level: a.level, g: a.ertrag, name: a.name, text: `${a.xp} XP je Erz` }))], ["Spitzhacken", werkzeugZeilen(SPITZHACKEN, "Baut")]];
-  if (k === "handwerk") { const an = (f: (r: Rezept) => boolean) => nachLevel(REZEPTE.filter(f).map(rezeptZeile)), roh = ["Sehne und Garn", "Leder", "Stoff"];
+  if (k === "holzfaellerei") return [["Bäume", Object.values(BAEUME).filter((b) => !b.quest).map((b) => ({ level: b.level, g: b.stamm, name: b.name, text: `${b.xp} XP je Stamm` }))], ["Beile", werkzeugZeilen(BEILE, "Fällt")]];
+  if (k === "bergbau") return [["Adern", Object.values(ADERN).filter((a) => !a.quest).map((a) => ({ level: a.level, g: a.ertrag, name: a.name, text: `${a.xp} XP je Erz` }))], ["Spitzhacken", werkzeugZeilen(SPITZHACKEN, "Baut")]];
+  if (k === "handwerk") { const an = (f: (r: Rezept) => boolean) => nachLevel(REZEPTE.filter((r) => !r.quest && f(r)).map(rezeptZeile)), roh = ["Sehne und Garn", "Leder", "Stoff"];
     return [["Rohstoffe", an((r) => roh.includes(r.gruppe))],
       ["Barren", an((r) => r.station === "esse")], ["Schmieden", an((r) => r.station === "amboss")], ["Werkbank", an((r) => (r.station === "werkbank" || r.station === "hand") && !roh.includes(r.gruppe))]]; }
   return [];

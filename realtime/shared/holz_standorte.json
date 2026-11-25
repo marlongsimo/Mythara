@@ -269,6 +269,18 @@
      "region": "rabenmoor"
     }
    ]
+  },
+  {
+   "name": "Hain des Waldgottes",
+   "baeume": [
+    {
+     "id": "waldgott_1",
+     "art": "waldgott",
+     "x": 6350.5,
+     "y": 6442.5,
+     "region": "nordwald"
+    }
+   ]
   }
  ]
 }

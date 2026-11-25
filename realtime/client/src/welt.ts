@@ -49,7 +49,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
     else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
@@ -81,12 +81,13 @@ export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /** Angemeldet mit Konto? null = der Server hat sich noch nicht gemeldet */
 export const mitKonto = (): boolean | null => (ich ? !ich.gast : null);
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
-let questJetzt: Stand = "", quest2Jetzt = "", questBekannt = false;
+let questJetzt: Stand = "", quest2Jetzt = "", quest3Jetzt = "", questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
 export const questStand = (): Stand => questJetzt;
 export const questGeladen = (): boolean => questBekannt;
 /** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
 export const questStand2 = (): string => quest2Jetzt;
+export const questStand3 = (): string => quest3Jetzt;
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
 export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }

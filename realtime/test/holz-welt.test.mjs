@@ -32,7 +32,7 @@ function spieler(token, ort) { return new Promise((fertig) => { const ws = new W
 const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const anzahl = (s, g) => (s.inv.rucksack || []).filter((x) => (typeof x === "string" ? x : x.g) === g).length;
-const ST = JSON.parse(readFileSync("shared/holz_standorte.json", "utf8")).lichtungen.flatMap((l) => l.baeume), EICHE = ST.find((b) => b.art === "eiche"), TANNE = ST.find((b) => b.art === "tanne");
+const ST = JSON.parse(readFileSync("shared/holz_standorte.json", "utf8")).lichtungen.flatMap((l) => l.baeume).filter((b) => b.art !== "waldgott") /* ohne den Questbaum (Quest 03) */, EICHE = ST.find((b) => b.art === "eiche"), TANNE = ST.find((b) => b.art === "tanne");
 const TA = "tok_anna_" + "x".repeat(30), TB = "tok_ben__" + "x".repeat(30);
 const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x + d, wy: b.y }); await schlaf(150); };
 const nein = async (s, id) => { s.holz = []; sende(s, { t: "holz", tat: "start", id }); return (await warte(s, (m) => m.t === "holz" && (m.tat === "nein" || m.tat === "start"))) || {}; };

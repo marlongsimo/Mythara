@@ -20,10 +20,10 @@ export type Art = "nah" | "fern" | "magie";
 export type AnfSkill = "geschick" | "staerke" | "fernkampf" | "magie" | "defense";
 export const ANF_NAME: Record<AnfSkill, string> = { geschick: "Geschick", staerke: "Stärke", fernkampf: "Fernkampf", magie: "Magie", defense: "Defense" };
 export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf" }, { id: "waffe", name: "Waffe" }, { id: "brust", name: "Brust" }, { id: "beine", name: "Beine" }, { id: "nebenhand", name: "Nebenhand" }];
-export interface WaffenWerte { art: Art; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
+export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
-  stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
+  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -263,6 +263,17 @@ export function angriffFuer(ebenen: string[]): string | null {
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
 /* Rucksack-Bilder der Waffen und Rüstungen (werkzeug/ausruestung_bilder.py): ein festes Bild statt jedes Mal aus dem 3D-Modell gerendert; eigene Bilder bleiben */
 for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] && !GEGENSTAENDE[id].bild && !GEGENSTAENDE[id].symbol) GEGENSTAENDE[id].bild = b;
+/* Quest 03 „Der Säbel des Waldgottes“ (shared/quest03.ts): Holz, Erz, Barren und der Waldsäbel – nicht tauschbar */
+{ const Q = "img/objekte3d/skilling/erzeugnisse/";
+  GEGENSTAENDE.holz_waldgott = { id: "holz_waldgott", name: "Holz des Waldgottes", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "holz_waldgott.webp", modell3d: "img/objekte3d/skilling/holzfaellerei/stamm_weltenbaum.glb",
+    text: "Helles, warmes Holz vom Baum des Waldgottes. Kein Splitter hat diesen Baum je berührt." };
+  GEGENSTAENDE.erz_waldstein = { id: "erz_waldstein", name: "Waldstein", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "erz_waldstein.webp",
+    text: "Ein grünlich schimmernder Stein aus dem Nordwald. Er fühlt sich kühl an – wie Erde nach Regen." };
+  GEGENSTAENDE.barren_waldstein = { id: "barren_waldstein", name: "Waldsteinbarren", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: Q + "barren_waldstein.webp",
+    text: "Geschmolzener Waldstein. Das Metall nimmt keine Splitter an." };
+  GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
+    anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 21, staerke: 19, gegen: { wald: 0.15 } },
+    text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);

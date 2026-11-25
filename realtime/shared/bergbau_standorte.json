@@ -143,6 +143,21 @@
      "region": "waldweg"
     }
    ]
+  },
+  {
+   "name": "Waldstein im Nordwald",
+   "x": 6370.5,
+   "y": 6440.5,
+   "r": 3,
+   "adern": [
+    {
+     "id": "waldstein_1",
+     "art": "waldstein",
+     "x": 6370.5,
+     "y": 6440.5,
+     "region": "nordwald"
+    }
+   ]
   }
  ]
 }

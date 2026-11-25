@@ -42,7 +42,7 @@ const STOFF = ["stoff_hanf", "stoff_grob", "stoff_fein", "stoff_mond", "stoff_sp
 const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
-export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string }
+export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
@@ -98,6 +98,9 @@ for (const [gruppe, station, ids, versatz, zut] of FAMILIEN) for (let t = 1; t <
     dazu({ id: teil, station, ergebnis: teil, level, zutaten: ohneSehne.map(([e, n]) => ({ g: [einheit(e, t)], n })), xp: xpA, ticks: 3 + 2 * (einheiten - 1), stufe: t, gruppe });
     dazu({ id: g, station: "hand", ergebnis: g, level, zutaten: [{ g: [teil], n: 1 }, { g: ["bogensehne"], n: 1 }], xp: xp - xpA, ticks: 2, stufe: t, gruppe }); continue; }
   dazu({ id: g, station, ergebnis: g, level, zutaten: z.map(([e, n]) => ({ g: [einheit(e, t)], n })), xp, ticks: 3 + 2 * einheiten, stufe: t, gruppe }); }
+/* Quest 03 „Der Säbel des Waldgottes“: Waldstein schmelzen, Waldsäbel schmieden – nur mit dem Auftrag des Försters */
+dazu({ id: "barren_waldstein", station: "esse", ergebnis: "barren_waldstein", level: 1, zutaten: [{ g: ["erz_waldstein"], n: 1 }], xp: 25, ticks: 3, stufe: 0, gruppe: "Auftrag des Försters", quest: "nordwald_waldsaebel" });
+dazu({ id: "waldsaebel", station: "amboss", ergebnis: "waldsaebel", level: 1, zutaten: [{ g: ["barren_waldstein"], n: 1 }, { g: ["holz_waldgott"], n: 1 }], xp: 40, ticks: 5, stufe: 0, gruppe: "Auftrag des Försters", quest: "nordwald_waldsaebel" });
 export const rezept = (id: string): Rezept | undefined => REZEPTE.find((r) => r.id === id);
 export const rezepteAn = (st: StationId): Rezept[] => REZEPTE.filter((r) => r.station === st).sort((a, b) => a.level - b.level || a.gruppe.localeCompare(b.gruppe));
 

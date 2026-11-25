@@ -5,11 +5,14 @@
  * Ohne Migration 045 (Spalte fehlt): Stand nur im Arbeitsspeicher, Speichern scheitert mit Meldung im Log – das Spiel läuft weiter.
  */
 import { Q1, Stand, STAENDE, Dialog, Zeile, NpcId, dialog, antwort, npc, laeuft, rang, SCHRIFTSTUECK, BELOHNUNG, REDE_WEIT } from "../../shared/quest01";
-import { BEDINGUNGEN, AUFGENOMMEN, hat, abgeben, aufnehmen } from "./inventar";
+import { BEDINGUNGEN, AUFGENOMMEN, hat, abgeben, aufnehmen, besitzt } from "./inventar";
+import { Q3, Stand3, gueltig3, npc3, dialog3, antwort3, lage3, stand3, laeuft3, WERKZEUG3, HOLZ, ERZ, BARREN, SAEBEL } from "../../shared/quest03";
+import { SAMMEL_QUEST } from "./sammeln";
+import { HANDWERK_QUEST } from "./handwerk";
 import { Q2, Stand2, gueltig, npc2, dialog2, antwort2, Dialog2, BRUCHSTELLEN, RUTEN, DING_WEIT, MOOSRAIN, MOOSRAIN_WEIT, dingBenutzen, mooshockerUntersucht, mooshockerBesiegt, lage, BELOHNUNG2 } from "../../shared/quest02";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-const staende = new Map<string, Stand>(), staende2 = new Map<string, Stand2>(), hoerer = new Map<string, Set<(s: Stand, s2: Stand2) => void>>(), sbJe = new Map<string, Sb>();
+const staende = new Map<string, Stand>(), staende2 = new Map<string, Stand2>(), staende3 = new Map<string, Stand3>(), hoerer = new Map<string, Set<(s: Stand, s2: Stand2, s3: Stand3) => void>>(), sbJe = new Map<string, Sb>();
 const pruefen = (v: unknown): Stand => (typeof v === "string" && (STAENDE as readonly string[]).includes(v) ? (v as Stand) : "");
 
 /** Den Queststand laden (einmal je Anmeldung; danach aus dem Speicher) */
@@ -17,12 +20,15 @@ export async function questsLaden(sb: Sb, nutzer: string): Promise<Stand> {
   sbJe.set(nutzer, sb); if (staende.has(nutzer)) return staende.get(nutzer)!;
   const r = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=quests`).catch((e) => { console.error("Quests laden (Migration 045 eingespielt?):", (e as Error).message); return null; })) as { quests?: Record<string, { s?: string }> }[] | null;
   const s = pruefen(r && r[0] && r[0].quests && r[0].quests[Q1] ? r[0].quests[Q1].s : ""); staende.set(nutzer, s);
-  staende2.set(nutzer, gueltig(r && r[0] && r[0].quests && r[0].quests[Q2] ? r[0].quests[Q2].s : "")); return s; }
+  staende2.set(nutzer, gueltig(r && r[0] && r[0].quests && r[0].quests[Q2] ? r[0].quests[Q2].s : ""));
+  staende3.set(nutzer, gueltig3(r && r[0] && r[0].quests && r[0].quests[Q3] ? r[0].quests[Q3].s : "")); return s; }
 export const q1 = (nutzer: string): Stand => staende.get(nutzer) || "";
 /** Stand von Quest 02 „Der stille Rain“ */
 export const q2 = (nutzer: string): Stand2 => staende2.get(nutzer) || "";
-export function questHoeren(nutzer: string, f: (s: Stand, s2: Stand2) => void): () => void { let m = hoerer.get(nutzer); if (!m) hoerer.set(nutzer, (m = new Set())); m.add(f); return () => { m!.delete(f); }; }
-function melden(nutzer: string) { const s = q1(nutzer), s2 = q2(nutzer); for (const f of hoerer.get(nutzer) || []) try { f(s, s2); } catch (x) { console.error("Quest-Hörer:", (x as Error).message); } }
+/** Stand von Quest 03 „Der Säbel des Waldgottes“ */
+export const q3 = (nutzer: string): Stand3 => staende3.get(nutzer) || "";
+export function questHoeren(nutzer: string, f: (s: Stand, s2: Stand2, s3: Stand3) => void): () => void { let m = hoerer.get(nutzer); if (!m) hoerer.set(nutzer, (m = new Set())); m.add(f); return () => { m!.delete(f); }; }
+function melden(nutzer: string) { const s = q1(nutzer), s2 = q2(nutzer), s3 = q3(nutzer); for (const f of hoerer.get(nutzer) || []) try { f(s, s2, s3); } catch (x) { console.error("Quest-Hörer:", (x as Error).message); } }
 async function setzen(sb: Sb, nutzer: string, s: Stand): Promise<void> {
   if (q1(nutzer) === "fertig" || !s || s === "fertig") return; staende.set(nutzer, s); melden(nutzer);
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q1, p_stand: s }) }).catch((e) => console.error("Queststand speichern (Migration 045 eingespielt?):", (e as Error).message));
@@ -40,6 +46,9 @@ const offen = new Map<string, NpcId>(); /* je Spieler: mit wem er gerade spricht
 
 /** Ein Gespräch beginnen (wx/wy: Stelle des Spielers in Weltfeldern) */
 export function reden(nutzer: string, id: string, wx: number | undefined, wy: number | undefined): Antwort1 {
+  const N3 = npc3(id); if (N3) { /* Quest 03 „Der Säbel des Waldgottes“ */
+    if (wx === undefined || wy === undefined || Math.hypot(N3.x - wx, N3.y - wy) > REDE_WEIT) return { fehler: `Geh näher an ${N3.name} heran.` };
+    offen.set(nutzer, N3.id as unknown as NpcId); return { dialog: dialog3(q3(nutzer), saebelDa(nutzer)) as unknown as Dialog }; }
   const N2 = npc2(id); if (N2) { /* Quest 02 „Der stille Rain“ */
     if (wx === undefined || wy === undefined || Math.hypot(N2.x - wx, N2.y - wy) > REDE_WEIT) return { fehler: `Geh näher an ${N2.name} heran.` };
     const d = dialog2(N2.id, q2(nutzer)); if (!d) return { fehler: "Hier ist niemand." }; offen.set(nutzer, N2.id as unknown as NpcId); return { dialog: d as unknown as Dialog }; }
@@ -51,6 +60,7 @@ export function reden(nutzer: string, id: string, wx: number | undefined, wy: nu
 /** Eine Antwort wählen: der Server prüft sie gegen den Stand und führt sie aus */
 export async function antworten(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
   if (npc2(id)) return antworten2(sb, nutzer, id, a);
+  if (npc3(id)) return antworten3(sb, nutzer, id, a);
   const N = npc(id); if (!N || offen.get(nutzer) !== N.id) return { fehler: "Das Gespräch ist vorbei." };
   const s = q1(nutzer), mit = hat(nutzer, SCHRIFTSTUECK), f = antwort(N.id, s, mit, String(a || "").slice(0, 24)); if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
   let belohnung: typeof BELOHNUNG | undefined;
@@ -96,5 +106,38 @@ export async function mooshockerSehen(sb: Sb, nutzer: string, ort: string, wx: n
 /** Ein Gegner wurde besiegt (die Sim meldet den, der am meisten Schaden gemacht hat) */
 export function erlegt(nutzer: string, typ: string): void { if (typ !== "mooshocker") return; const sb = sbJe.get(nutzer); if (!sb) return;
   const n = mooshockerBesiegt(q2(nutzer)); if (n) void setzen2(sb, nutzer, n); }
+/* ───────── Quest 03 „Der Säbel des Waldgottes“ (shared/quest03.ts) ───────── */
+const saebelDa = (nutzer: string): boolean => besitzt(nutzer).includes("waldsaebel");
+async function setzen3(sb: Sb, nutzer: string, s: Stand3): Promise<void> {
+  if (q3(nutzer) === "fertig" || !s || s === q3(nutzer)) return; staende3.set(nutzer, s); melden(nutzer);
+  await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q3, p_stand: s }) }).catch((e) => console.error("Queststand 3 speichern:", (e as Error).message)); }
+/** Ein Schritt erledigt (Bit setzen) */
+function schritt3(nutzer: string, bit: number): void { const sb = sbJe.get(nutzer), l = lage3(q3(nutzer)); if (!sb || l.phase !== "auftrag" || l.bits & bit) return; void setzen3(sb, nutzer, stand3({ ...l, bits: l.bits | bit })); }
+/** Fehlendes Werkzeug geben (Einführung): was weder im Rucksack noch angelegt ist */
+function werkzeugGeben(sb: Sb, nutzer: string): string[] { const da = besitzt(nutzer), neu: string[] = []; for (const g of WERKZEUG3) if (!da.includes(g) && !(g === "holzbeil_training" && da.some((x) => /^holzbeil_/.test(x))) && !(g === "spitzhacke_training" && da.some((x) => /^spitzhacke_/.test(x))) && aufnehmen(sb, nutzer, g, 1)) neu.push(g); return neu; }
+async function antworten3(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
+  const N = npc3(id)!; if (offen.get(nutzer) !== (N.id as unknown as NpcId)) return { fehler: "Das Gespräch ist vorbei." };
+  const s = q3(nutzer), f = antwort3(s, String(a || "").slice(0, 24), saebelDa(nutzer)); if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
+  if (f.abschluss) {
+    if (!laeuft3(s) || !saebelDa(nutzer)) return { fehler: "Das ist schon erledigt." };
+    const ok = (await sb("/rest/v1/rpc/rpg_held_quest_abschluss", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q3, p_geschick: 0, p_staerke: 0, p_fernkampf: 0, p_magie: 0, p_lp: 0, p_defense: 0 }) })
+      .catch((e) => { console.error("Questabschluss 3:", (e as Error).message); return null; })) as boolean | null;
+    if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
+    staende3.set(nutzer, "fertig"); melden(nutzer); }
+  else if (f.stand) await setzen3(sb, nutzer, f.stand);
+  let zeilen = f.zeilen || [];
+  if (f.werkzeug) { const neu = werkzeugGeben(sb, nutzer); if (f.stand === undefined) zeilen = neu.length ? zeilen : [{ wer: N.name, text: "Du hast doch alles, was du brauchst. Beil, Spitzhacke, Hammer – los." }];
+    if (neu.length) zeilen = [...zeilen, { wer: N.name, text: `(Du bekommst: ${neu.map((g) => g === "hammer" ? "einen Hammer" : g.startsWith("holzbeil") ? "ein Trainings-Holzbeil" : "eine Trainings-Spitzhacke").join(", ")}.)` }]; }
+  if (f.weiter) return { zeilen, dialog: dialog3(q3(nutzer), saebelDa(nutzer)) as unknown as Dialog };
+  offen.delete(nutzer); return { zeilen, ende: true }; }
+/* Baum und Waldstein (Sammeln) und Esse/Amboss (Handwerk): nur mit dem Auftrag, jeweils solange der Schritt noch offen ist */
+SAMMEL_QUEST.pruefen = (nutzer, art) => { const l = lage3(q3(nutzer));
+  if (l.phase !== "auftrag") return art === "waldgott" ? "Ein uralter Baum, unberührt von den Splittern. Ohne Erlaubnis des Försters legst du hier kein Beil an." : "Ein grünlicher Fels, der keine Splitter annimmt. Förster Hartwig weiß mehr darüber.";
+  if (art === "waldgott" && (l.bits & HOLZ || hat(nutzer, "holz_waldgott"))) return "Du hast schon Holz vom Baum des Waldgottes."; if (art === "waldstein" && (l.bits & ERZ || hat(nutzer, "erz_waldstein"))) return "Du hast schon ein Stück Waldstein.";
+  return null; };
+SAMMEL_QUEST.ertrag = (nutzer, art) => schritt3(nutzer, art === "waldgott" ? HOLZ : ERZ);
+HANDWERK_QUEST.pruefen = (nutzer, r) => { const l = lage3(q3(nutzer)); if (l.phase !== "auftrag") return "Das kannst du nur im Auftrag von Förster Hartwig herstellen.";
+  if (r.id === "waldsaebel" && l.bits & SAEBEL) return "Den Waldsäbel hast du schon geschmiedet."; if (r.id === "barren_waldstein" && l.bits & BARREN) return "Den Waldstein hast du schon geschmolzen."; return null; };
+HANDWERK_QUEST.fertig = (nutzer, r) => schritt3(nutzer, r.id === "waldsaebel" ? SAEBEL : BARREN);
 /** Nur für Tests: Speicher leeren */
-export function questsVergessen(): void { staende2.clear(); staende.clear(); hoerer.clear(); offen.clear(); }
+export function questsVergessen(): void { staende3.clear(); staende2.clear(); staende.clear(); hoerer.clear(); offen.clear(); }

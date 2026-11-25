@@ -5,7 +5,7 @@
  */
 export interface SammelArt { name: string; level: number; xp: number; /** Erfolgschance: lo bei Level 1, hi bei 99 (je /256), +8 je Werkzeugstufe */ lo: number; hi: number;
   /** Wahrscheinlichkeit, dass das Ziel nach einem Stück leer ist (Baum fällt, Ader erschöpft) */ fall: number; /** Sekunden bis nachgewachsen */ nachwachsen: number;
-  /** Gegenstand, der in den Rucksack kommt */ ertrag: string }
+  /** Gegenstand, der in den Rucksack kommt */ ertrag: string; /** nur mit dieser Quest (ein Stück, dann ist es erledigt; das Ziel bleibt für andere stehen) */ quest?: string }
 /** Werkzeug: Stufe 0 (Training) bis 5 (Mythisch), benutzbar ab diesem Level des Berufs */
 export interface SammelWerkzeug { g: string; stufe: number; level: number }
 export const SPLITTER_CHANCE = 0.25, SPLITTER_MIN = 5, SPLITTER_MAX = 15;

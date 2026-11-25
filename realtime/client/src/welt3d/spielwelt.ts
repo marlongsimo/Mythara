@@ -53,7 +53,12 @@ import { karteDrehen } from "../rahmen";
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
-import { bodenListe, aufheben, BodenDing } from "../welt";
+import { bodenListe as bodenAlle, aufheben, BodenDing } from "../welt";
+import { unterLeiche } from "./leichen";
+/** Beute am Boden, die man schon sehen darf (unter einer Leiche erst, wenn sie verschwunden ist) */
+const gesehen = new Map<number, number>();
+function bodenListe(): BodenDing[] { const j = performance.now(), alle = bodenAlle(); if (gesehen.size > 500) gesehen.clear();
+  return alle.filter((d) => { let s = gesehen.get(d.i); if (s === undefined) { s = j; gesehen.set(d.i, s); } return !unterLeiche(d.x, d.y, s); }); }
 import { GEGENSTAENDE, SELTENHEITEN } from "../../../shared/gegenstaende";
 import { gltfLader } from "./gltf";
 /** 3D-Modelle für Gegenstände am Boden (einmal laden, dann klonen) */
@@ -339,7 +344,7 @@ export class Spielwelt3D implements WeltKern {
   private bodenZeichnen() { const da = new Set<number>();
     for (const d of bodenListe()) { da.add(d.i); let b = this.bodenBild.get(d.i);
       if (!b && GEGENSTAENDE[d.g] && GEGENSTAENDE[d.g].modell3d) { const g = new THREE.Group(); this.motor.szene.add(g); const nm = document.createElement("div"), G = GEGENSTAENDE[d.g]; nm.className = "ez-name3d boden"; nm.textContent = G.name + (d.n > 1 ? " ×" + d.n : "");
-        modellLaden(G.modell3d!).then((m) => { const c = m.clone(true); const box = new THREE.Box3().setFromObject(c), gr = Math.max(0.001, box.max.y - box.min.y); c.scale.setScalar(0.55 / gr); c.traverse((o) => { o.castShadow = true; }); g.add(c); }).catch(() => { /* ohne Modell: nur der Name */ });
+        modellLaden(G.modell3d!).then((m) => { const c = m.clone(true); const box = new THREE.Box3().setFromObject(c), gr = Math.max(0.001, box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z); c.scale.setScalar(0.6 / gr); /* nach der größten Ausdehnung: flache Dinge (Kuhhaut) werden sonst riesig */ c.traverse((o) => { o.castShadow = true; }); g.add(c); }).catch(() => { /* ohne Modell: nur der Name */ });
         b = { g, nm, d }; this.bodenBild.set(d.i, b); }
       if (!b) { const g = new THREE.Group(), stoff = new THREE.MeshStandardMaterial({ color: 0x8a6236, roughness: 0.9 }), schnur = new THREE.MeshStandardMaterial({ color: 0xd8b25a, roughness: 0.5, metalness: 0.4 });
         const sack = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), stoff); sack.scale.set(1, 0.85, 1); sack.position.y = 0.2; const hals = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.12, 0.14, 10), stoff); hals.position.y = 0.43;

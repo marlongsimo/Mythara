@@ -9,7 +9,7 @@
 import STANDORTE_JSON from "./bergbau_standorte.json";
 import { SammelArt, SammelWerkzeug } from "./sammeln";
 
-export type ErzArt = "kupfer" | "eisen" | "schwarzeisen" | "sterneisen" | "splittereisen" | "ureisen";
+export type ErzArt = "kupfer" | "eisen" | "schwarzeisen" | "sterneisen" | "splittereisen" | "ureisen" | "waldstein";
 export interface AderDef extends SammelArt { art: ErzArt; /** 3D-Modell der vollen und der leeren Ader */ modell: string; leer: string; /** Größe im Spiel (Felder, längste Seite) */ groesse: number }
 const M = "img/objekte3d/skilling/bergbau/";
 const A = (art: ErzArt, datei: string, name: string, level: number, xp: number, lo: number, hi: number, fall: number, nachwachsen: number, groesse = 1.5): AderDef =>
@@ -21,6 +21,8 @@ export const ADERN: Record<ErzArt, AderDef> = {
   sterneisen: A("sterneisen", "sterneisen", "Sterneisenader", 35, 100, 9, 85, 0.16, 90),
   splittereisen: A("splittereisen", "splittereisen", "Splitterfelsen", 45, 160, 5, 62, 0.12, 180, 1.8),
   ureisen: A("ureisen", "ureisen", "Urgestein", 65, 250, 2, 44, 0.09, 420, 1.8),
+  /* Quest 03: der Waldstein im Nordwald – ein Erz je Held, nur mit dem Auftrag des Försters; er erschöpft nie */
+  waldstein: { ...A("waldstein", "sterneisen", "Waldstein", 1, 25, 140, 220, 0, 1, 1.7), quest: "nordwald_waldsaebel" },
 };
 /** Eine Erzader in der Welt (Weltfelder) */
 export interface Erzader { id: string; art: ErzArt; x: number; y: number; region: string }

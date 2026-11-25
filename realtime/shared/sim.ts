@@ -240,7 +240,8 @@ export class Sim {
     }
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
     const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; const V3 = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined;
-    let m = von.kw ? schadenWurf(von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
+    const fam = !z.held && MONSTER[z.typ] ? (MONSTER[z.typ] as { familie?: string }).familie : undefined, gegen = von.kw && von.kw.waffe.gegen && fam ? von.kw.waffe.gegen[fam] || 0 : 0; /* Waldsäbel: mehr Max Hit gegen Wesen des Waldes */
+    let m = von.kw ? schadenWurf(gegen ? { ...von.kw.waffe, schaden: [von.kw.waffe.schaden[0], Math.floor(von.kw.waffe.schaden[1] * (1 + gegen))] } : von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
     // 4 Boni
     if (s.mal && z.malT > 0) m *= 1 + s.mal;
     if (s.wucht && !z.held && MONSTER[z.typ].anfaellig === "wucht") m *= 1 + K.WUCHT;

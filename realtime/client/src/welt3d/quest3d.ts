@@ -9,7 +9,9 @@ import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, sperreHier, rang, NpcId, ZIEL } from "../../../shared/quest01";
-import { questStand, questGeladen, rede, questVerfolgt, questStand2, questDing, verfolgteQuest } from "../welt";
+import { questStand, questGeladen, rede, questVerfolgt, questStand2, questStand3, questDing, verfolgteQuest } from "../welt";
+import { Q3, NPCS3, ziel3, lage3 } from "../../../shared/quest03";
+import { STATIONEN } from "../../../shared/handwerk";
 import { Q1 } from "../../../shared/quest01";
 import { Q2, NPCS2, ziel2, lage as lage2, BRUCHSTELLEN, RUTEN, Ding } from "../../../shared/quest02";
 import { Npc3D } from "./npc3d";
@@ -19,9 +21,11 @@ import type { Welt3D } from "./motor";
 
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
-interface Figur { n: QuestNpc | (Omit<QuestNpc, "id"> & { id: string }); q: 1 | 2; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement }
+interface Figur { n: QuestNpc | (Omit<QuestNpc, "id"> & { id: string }); q: 1 | 2 | 3; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement }
 /** Quest 02: wer wartet auf den Spieler („!“ / „?“) */
 const wartet2 = (s: string): [string, string] | null => { const p = lage2(s).phase; return p === "" ? ["brida", "!"] : p === "angenommen" || p === "abgabe" ? ["odo", "!"] : p === "bereit" ? ["odo", "?"] : null; };
+/** Quest 03: der Förster wartet vor dem Auftrag („!“) und wenn der Säbel fertig ist („?“) */
+const wartet3 = (s: string): string | null => { const l = lage3(s); return l.phase === "" ? "!" : l.phase === "auftrag" && l.bits === 15 ? "?" : null; };
 interface Objekt { d: Ding; art: "zaun" | "rute"; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
 /** Bei welchem Stand wartet welche Figur auf den Spieler (Questmarker „!“) */
 const WARTET: Partial<Record<Exclude<Stand, "">, NpcId[]>> = { angeboten: ["jori"], angenommen: ["hagan"], auftrag: ["fenna"], osthof: ["raban", "tilda"], beweis: ["hagan"], bestaetigt: ["raban", "tilda"], frei: ["othmar"] };
@@ -40,11 +44,14 @@ export class QuestWelt {
     for (const n of NPCS2) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
       const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
       const npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); this.figuren.push({ n, q: 2, npc, x: n.x, y: n.y, nm, mk }); }
+    for (const n of NPCS3) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
+      const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
+      const npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); this.figuren.push({ n, q: 3, npc, x: n.x, y: n.y, nm, mk }); }
     this.objekteBauen();
     addEventListener("ez-quest", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }
-      const n = [...NPCS, ...NPCS2].find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
+      const n = [...NPCS, ...NPCS2, ...NPCS3].find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
       const l = LADEN_LISTE.find((x) => x.haendler === wer); return l ? kopfbild(l.modell) : ""; }); }
   /** Stand geändert: Sperren, Wachen, Marker */
   private offenSchluessel = "";
@@ -66,8 +73,8 @@ export class QuestWelt {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return this.objektStelle(x, y); const f = best, p = this.wo(f)!;
-    return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
-  schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set<string>(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []), w2 = questGeladen() ? wartet2(questStand2()) : null;
+    return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
+  schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set<string>(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []), w2 = questGeladen() ? wartet2(questStand2()) : null, w3 = questGeladen() ? wartet3(questStand3()) : null;
     this.objekteSchritt();
     /* Jori: beim ersten Besuch (noch nie angeboten) läuft sie auf den Spieler zu und spricht ihn an */
     const jori = this.figuren.find((f) => f.n.id === "jori")!;
@@ -82,11 +89,13 @@ export class QuestWelt {
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
       /* wer im Haus umhergeht (Hagan im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
+      if (f.q === 3) { f.mk.hidden = !sichtbar || !w3 || !questVerfolgt(Q3) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (w3) f.mk.textContent = w3; continue; }
       if (f.q === 2) { f.mk.hidden = !sichtbar || !w2 || w2[0] !== f.n.id || !questVerfolgt(Q2) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (w2) f.mk.textContent = w2[1]; continue; }
       f.mk.hidden = !sichtbar || !nah || !warten.has(f.n.id) || !(questVerfolgt() || (s === "" && f.n.id === "jori")) /* Marker nur, wenn die Quest verfolgt wird (Jori vor dem Start ausgenommen) */ || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); f.mk.textContent = s === "beweis" || s === "bestaetigt" || s === "frei" ? "?" : "!"; }
     this.pfeilSchritt(); }
   /** Das nächste Ziel (Figur oder Stelle) für diesen Stand; null: nichts zu tun */
   ziel(): { x: number; y: number } | null { if (!questGeladen()) return null;
+    if (verfolgteQuest() === Q3) { const z3 = ziel3(questStand3(), [STATIONEN.esse.x, STATIONEN.esse.y], [STATIONEN.amboss.x, STATIONEN.amboss.y]); if (!z3) return null; if (Array.isArray(z3)) return { x: z3[0], y: z3[1] }; const f = this.figuren.find((x) => x.q === 3); return f ? { x: f.x, y: f.y } : null; }
     if (verfolgteQuest() === Q2) { const z2 = ziel2(questStand2()); if (!z2) return null; if (Array.isArray(z2)) return { x: z2[0], y: z2[1] }; const f = this.figuren.find((x) => x.q === 2 && x.n.id === z2); return f ? { x: f.x, y: f.y } : null; }
     const z = ZIEL[questStand()]; if (!z) return null;
     if (Array.isArray(z)) return { x: z[0], y: z[1] }; const f = this.figuren.find((x) => x.n.id === z); if (!f) return null; return this.wo(f) || { x: f.n.x, y: f.n.y }; }

@@ -19,6 +19,8 @@ const arbeiten = new Map<HandwerkSpieler, Arbeit>();
 const GLUT = process.env.HANDWERK_GLUT !== undefined ? Number(process.env.HANDWERK_GLUT) : GLUT_CHANCE;
 export let wuerfel = Math.random;
 
+/** Quest-Rezepte (Rezept.quest): quests.ts setzt, ob man darf und was ein fertiges Stück bewirkt */
+export const HANDWERK_QUEST = { pruefen: (_nutzer: string, _r: Rezept): string | null => "Das geht noch nicht.", fertig: (_nutzer: string, _r: Rezept): void => { /* quests.ts */ } };
 export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: object) => void }): void { sb = o.sb; senden = o.senden; }
 export const handwerkLevel = (nutzer: string): number => levelAus(berufXp(nutzer, BERUF_HAND));
 const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return s.wx !== undefined && s.wy !== undefined && WERKSTAETTEN.some((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT); };   /* irgendein Standort dieser Station */
@@ -38,6 +40,7 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   const r = rezept(id); if (!r) return "Dieses Rezept gibt es nicht.";
   if (!nah(s, r) && r.station !== "hand") return `Geh näher an die ${STATIONEN[r.station].name}.`;
   const L = handwerkLevel(s.nutzer); if (L < r.level) return `Dafür brauchst du Handwerk ${r.level}.`;
+  if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
   if (!passt(s.nutzer, r)) return "Dein Rucksack ist voll.";
@@ -58,7 +61,7 @@ function fertigStueck(a: Arbeit): boolean {
   for (let i = 0; i < r.zutaten.length; i++) { const z = r.zutaten[i], n = Math.max(0, z.n - (i === spar ? 1 : 0)), g = sorte(s.nutzer, z.g, n); if (!g) continue; for (let k = 0; k < n; k++) abgeben(sb, s.nutzer, g); }
   if (!aufnehmen(sb, s.nutzer, r.ergebnis, 1)) { handwerkStop(s, "voll"); return false; }
   const vorher = handwerkLevel(s.nutzer), xp = Math.round(r.xp * (glut ? 1.5 : 1)); berufXpDazu(sb, s.nutzer, BERUF_HAND, xp); const nachher = handwerkLevel(s.nutzer);
-  a.rest--; const G = GEGENSTAENDE[r.ergebnis];
+  a.rest--; const G = GEGENSTAENDE[r.ergebnis]; if (r.quest) { HANDWERK_QUEST.fertig(s.nutzer, r); a.rest = 0; } /* Questrezept: ein Stück */
   senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }

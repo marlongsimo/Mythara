@@ -27,6 +27,8 @@ export interface SammelBeruf {
 interface Sitzung { s: SammelSpieler; ziel: SammelZiel; naechst: number; momentBis: number; stufe: number }
 type Senden = (s: SammelSpieler, m: object) => void;
 
+/** Quest-Ziele (SammelArt.quest): quests.ts setzt, ob man darf und was ein Stück bewirkt */
+export const SAMMEL_QUEST = { pruefen: (_nutzer: string, _art: string, _quest: string): string | null => "Das geht noch nicht.", ertrag: (_nutzer: string, _art: string, _quest: string): void => { /* quests.ts */ } };
 /** Zufall (für Tests austauschbar) */
 export let wuerfel = Math.random; export function wuerfelSetzen(f: () => number): void { wuerfel = f; }
 
@@ -52,6 +54,7 @@ export function sammelBeruf(B: SammelBeruf) {
     if (!nah(s, z)) return B.texte.nah;
     if (!daNoch(id)) return B.texte.weg(A);
     const L = level(s.nutzer); if (L < A.level) return B.texte.level(A);
+    if (A.quest) { const f = SAMMEL_QUEST.pruefen(s.nutzer, z.art, A.quest); if (f) return f; } /* Questziel: nur mit dem Auftrag */
     const st = B.ohneWerkzeug ? 0 : bestes(s.nutzer, L);
     if (st < 0) { const hat = B.werkzeuge.filter((w) => besitzt(s.nutzer).includes(w.g)); return hat.length ? B.texte.werkzeugLevel(Math.min(...hat.map((w) => w.level))) : B.texte.ohneWerkzeug; }
     if (freieFaecher(s.nutzer) <= 0) return "Dein Rucksack ist voll.";
@@ -66,6 +69,7 @@ export function sammelBeruf(B: SammelBeruf) {
     if (!stuecke) { stop(s, "voll"); return false; }
     const vorher = level(s.nutzer), xp = A.xp * stuecke * (moment ? 1.5 : 1); berufXpDazu(sb, s.nutzer, B.beruf, xp); const nachher = level(s.nutzer);
     senden(s, { t: B.t, tat: B.tatErtrag, id: ziel.id, g: A.ertrag, name: G ? G.name : A.ertrag, n: stuecke, xp, splitter, [B.tatMoment]: moment, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
+    if (A.quest) { SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, A.quest); stop(s, "fertig"); return false; } /* Questziel: ein Stück, fertig – das Ziel bleibt für andere stehen */
     if (wuerfel() < A.fall * FAKTOR) { leer.set(ziel.id, jetzt + A.nachwachsen * 1000); for (const [o, w] of [...sitzungen]) if (w.ziel.id === ziel.id) stop(o, B.grundLeer); allenMelden(); return false; }
     if (freieFaecher(s.nutzer) <= 0) { stop(s, "voll"); return false; }
     return true;

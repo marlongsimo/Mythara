@@ -14,7 +14,7 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, dingTat, mooshockerSehen } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, q3, dingTat, mooshockerSehen } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
@@ -105,7 +105,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       senden(s, { t: "baeume", weg: gefaellte() }); /* Holzfällerei: welche Bäume gerade Stumpf sind */
       senden(s, { t: "adern", weg: leereAdern() }); /* Bergbau: welche Adern gerade leer sind */
       senden(s, { t: "pflanzen", weg: abgeerntete() }); /* Handwerk: welche Flachs- und Hanfpflanzen abgeerntet sind */
-      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q, q2: q2(nutzer) }); ich.questAus = questHoeren(nutzer, (n, n2) => senden(ich, { t: "quests", q1: n, q2: n2 }));
+      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q, q2: q2(nutzer), q3: q3(nutzer) }); ich.questAus = questHoeren(nutzer, (n, n2, n3) => senden(ich, { t: "quests", q1: n, q2: n2, q3: n3 }));
         if (HINTER_DER_SPERRE.has(ich.ort) && !sperreOffen(q)) senden(ich, { t: "zurueck", x: VOR_DER_SPERRE[0], y: VOR_DER_SPERRE[1], text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." }); }); } /* Quests (Migration 045); hinter der Sperre nur mit Freigabe */
       return; }
     s.zuletzt = jetzt;

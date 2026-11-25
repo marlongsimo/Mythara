@@ -10,7 +10,7 @@ import STANDORTE_JSON from "./holz_standorte.json";
 import { SammelArt, SammelWerkzeug } from "./sammeln";
 export { hiebChance, SPLITTER_CHANCE, SPLITTER_MIN, SPLITTER_MAX } from "./sammeln";
 
-export type BaumArt = "eiche" | "tanne" | "eibe" | "moorweide" | "kernbaum" | "weltenbaum";
+export type BaumArt = "eiche" | "tanne" | "eibe" | "moorweide" | "kernbaum" | "weltenbaum" | "waldgott";
 export interface BaumDef extends SammelArt { art: BaumArt; /** = ertrag */ stamm: string; modell: string; stumpf: string; /** Höhe im Spiel (Felder) */ hoehe: number }
 const M = "img/objekte3d/skilling/holzfaellerei/";
 const B = (d: Omit<BaumDef, "ertrag">): BaumDef => ({ ...d, ertrag: d.stamm });
@@ -21,6 +21,8 @@ export const BAEUME: Record<BaumArt, BaumDef> = {
   moorweide: B({ art: "moorweide", name: "Moorweide", level: 35, xp: 110, lo: 8, hi: 80, fall: 0.12, nachwachsen: 90, stamm: "stamm_moorweide", modell: M + "moorweide.glb", stumpf: M + "moorweide-stumpf.glb", hoehe: 6 }),
   kernbaum: B({ art: "kernbaum", name: "Kernbaum", level: 45, xp: 175, lo: 4, hi: 60, fall: 0.10, nachwachsen: 150, stamm: "stamm_kernbaum", modell: M + "kernbaum.glb", stumpf: M + "kernbaum-stumpf.glb", hoehe: 6.8 }),
   weltenbaum: B({ art: "weltenbaum", name: "Weltenbaum-Setzling", level: 65, xp: 260, lo: 2, hi: 42, fall: 0.08, nachwachsen: 300, stamm: "stamm_weltenbaum", modell: M + "weltenbaum_setzling.glb", stumpf: M + "weltenbaum_setzling-stumpf.glb", hoehe: 5 }),
+  /* Quest 03 (shared/quest03.ts): der Baum des Waldgottes im Nordwald – ein Stamm je Held, nur mit dem Auftrag des Försters; er fällt nie */
+  waldgott: B({ art: "waldgott", name: "Baum des Waldgottes", level: 1, xp: 30, lo: 140, hi: 220, fall: 0, nachwachsen: 1, stamm: "holz_waldgott", modell: M + "weltenbaum_setzling.glb", stumpf: M + "weltenbaum_setzling-stumpf.glb", hoehe: 8.5, quest: "nordwald_waldsaebel" }),
 };
 /** Ein Holzfäller-Baum in der Welt (Weltfelder; die Lichtungen und Feldwege trägt werkzeug/welt/lichtungen.mjs in die Gebiete ein) */
 export interface Holzbaum { id: string; art: BaumArt; x: number; y: number; region: string }

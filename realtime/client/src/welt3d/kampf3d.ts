@@ -10,6 +10,7 @@ import { heldenFigur3D, gegnerFigur3D, FigurArt } from "./held3d";
 import { schildAn } from "./mitspieler";
 import { lebenAnzeigen } from "./oberflaeche";
 import type { Spielwelt3D } from "./spielwelt";
+import { leicheMelden } from "./leichen";
 import { MONSTER } from "../../../shared/config";
 import { heldPruefen, aussehenSchluessel } from "../../../shared/aussehen";
 import type { KARTEN } from "../../../shared/karten";
@@ -51,8 +52,10 @@ export class WeltKampf3D extends WeltKampf {
   protected figurSichtbar(f: Figur, an: boolean) { const b = this.bilder.get(f); if (!b) return; b.fl.sichtbar(an); if (!an) { b.nm.hidden = true; b.lb.hidden = true; } }
   protected figurEntfernen(f: Figur) { const b = this.bilder.get(f); if (!b) return; this.bilder.delete(f); b.nm.remove(); b.lb.remove();
     const dauer = f.held ? 0 : b.fl.sterben(); /* ein besiegter Gegner fällt (Todesbewegung), bleibt kurz liegen, dann ist er weg */
+    const LIEGEN = 600; /* so lange bleibt er nach dem Fallen liegen; die Beute erscheint erst danach (leichen.ts) */
+    leicheMelden(this.zone.x0 + f.x, this.zone.y0 + f.y, (dauer || 0) + LIEGEN);
     if (!dauer) { b.fl.entfernen(this.w.motor.szene); return; }
-    const t0 = performance.now(), weiter = () => { if (performance.now() - t0 > dauer + 2000) { b.fl.entfernen(this.w.motor.szene); return; } b.fl.schritt(16, this.w.motor.gieren); requestAnimationFrame(weiter); }; requestAnimationFrame(weiter); }
+    const t0 = performance.now(), weiter = () => { if (performance.now() - t0 > dauer + LIEGEN) { b.fl.entfernen(this.w.motor.szene); return; } b.fl.schritt(16, this.w.motor.gieren); requestAnimationFrame(weiter); }; requestAnimationFrame(weiter); }
   /** Wer steht am Bildschirmpunkt (px, py)? Die ganze Figur zählt (Füße bis Kopf), nicht nur der Boden darunter – der vorderste gewinnt */
   amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ: string } | null {
     const m = this.w.motor; let best: { id: number; f: Figur; t: number } | null = null;
