@@ -1,6 +1,9 @@
 """Mythara Fabrik – ein Vierbeiner-Pet (Steinwesen, Hund …) aus einem Meshy-Modell: Skelett, Gewichte, Bewegungen.
 
-  python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9]
+  python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9] [bein=0.42] [hals=1] [schwanz=1] [bewegungen=ruhe,laufen]
+
+Optionen: bein = Hüfthöhe als Anteil der Höhe (Kuh: 0,5); hals = eigener Halsknochen zwischen Rumpf und Kopf (Kopf zum Boden senken);
+schwanz = Schwanzknochen hinten; bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), tod (kippt zur Seite).
 
 Erwartet: Kopf vorn (-y), Länge entlang y, vier Füße am Boden.
 Knochen: wurzel – rumpf – kopf; wurzel – bein.VL/VR/HL/HR (vorn/hinten, links/rechts; je Bein ein steifer Knochen von der Hüfte zum Fuß).
@@ -11,7 +14,7 @@ Bewegungen (24 Bilder/s im Spiel):
   laufen – Schritt auf vier Beinen (diagonal: vorn links mit hinten rechts), der Rumpf wippt und schaukelt
 Ausgabe danach mit fabrik/export3d.py (der Körper heißt koerper, Ebene koerper).
 """
-import math, sys
+import json, math, sys
 import numpy as np
 import bpy
 from mathutils import Quaternion, Vector
@@ -33,15 +36,23 @@ fuesse = {}
 for S, mx in (("L", boden[:, 0] > xc), ("R", boden[:, 0] <= xc)):
     for V_, my in (("V", boden[:, 1] < yc), ("H", boden[:, 1] >= yc)):
         f = boden[mx & my]; fuesse[V_ + S] = f.mean(0)
-yv = float(y.min()); kopf_y = yv + 0.28 * (y.max() - yv)                                         # vorderes gutes Viertel: Kopf
+yv = float(y.min()); LG = float(y.max()) - yv; kopf_y = yv + 0.28 * LG                                  # vorderes gutes Viertel: Kopf
+BEIN = float(opt.get("bein", 0.42)); HALS = opt.get("hals") == "1"; SCHWANZ = opt.get("schwanz") == "1"
+if HALS: hals_y = yv + 0.3 * LG; kopf_y = yv + 0.14 * LG
 ARM = bpy.data.objects.new("skelett", bpy.data.armatures.new("skelett")); bpy.context.collection.objects.link(ARM)
 bpy.context.view_layer.objects.active = ARM; bpy.ops.object.mode_set(mode="EDIT"); E = ARM.data.edit_bones
 def knochen(n, k, e, el=None):
     b = E.new(n); b.head = Vector(k); b.tail = Vector(e); b.parent = E[el] if el else None; b.use_connect = False
 knochen("wurzel", (xc, yc, 0), (xc, yc, 0.08 * H))
-knochen("rumpf", (xc, float(y.max()) - 0.15 * H, 0.5 * H), (xc, kopf_y, 0.55 * H), "wurzel")
-knochen("kopf", (xc, kopf_y, 0.55 * H), (xc, yv, 0.6 * H), "rumpf")
-for n, f in fuesse.items(): knochen("bein." + n, (f[0], f[1], 0.42 * H), (f[0], f[1], 0.02), "wurzel")
+if HALS:                                                                                         # langer Hals (Kuh): Rumpf – Hals – Kopf, der Kopf sitzt hoch vorn
+    knochen("rumpf", (xc, float(y.max()) - 0.15 * LG, 0.65 * H), (xc, hals_y, 0.7 * H), "wurzel")
+    knochen("hals", (xc, hals_y, 0.7 * H), (xc, kopf_y, 0.8 * H), "rumpf")
+    knochen("kopf", (xc, kopf_y, 0.8 * H), (xc, yv, 0.68 * H), "hals")
+else:
+    knochen("rumpf", (xc, float(y.max()) - 0.15 * H, 0.5 * H), (xc, kopf_y, 0.55 * H), "wurzel")
+    knochen("kopf", (xc, kopf_y, 0.55 * H), (xc, yv, 0.6 * H), "rumpf")
+if SCHWANZ: knochen("schwanz", (xc, float(y.max()) - 0.02 * LG, 0.82 * H), (xc, float(y.max()), 0.35 * H), "rumpf")
+for n, f in fuesse.items(): knochen("bein." + n, (f[0], f[1], BEIN * H), (f[0], f[1], 0.02), "wurzel")
 bpy.ops.object.mode_set(mode="OBJECT"); KN = ARM.data.bones; namen = [b.name for b in KN]
 
 # ---------------------------------------------------- Gewichte ----------------------------------------------------
@@ -50,8 +61,10 @@ t_ = np.clip(((P[:, None, :] - A[None]) * AB[None]).sum(-1) / (AB * AB).sum(-1)[
 W = 1.0 / (D + 0.015) ** 4
 for n, f in fuesse.items():                                                                     # Bein: nur unten und im eigenen Viertel
     k = namen.index("bein." + n); viertel = ((x > xc) == (n[1] == "L")) & ((y < yc) == (n[0] == "V"))
-    W[:, k] *= viertel * np.clip((0.4 * H - z) / (0.1 * H), 0, 1)
+    W[:, k] *= viertel * np.clip(((BEIN - 0.02) * H - z) / (0.1 * H), 0, 1)
 W[:, namen.index("kopf")] *= np.clip((kopf_y + 0.04 * H - y) / (0.08 * H), 0, 1) * (z > 0.25 * H)
+if HALS: W[:, namen.index("hals")] *= np.clip((hals_y + 0.04 * H - y) / (0.08 * H), 0, 1) * (z > 0.45 * H)
+if SCHWANZ: W[:, namen.index("schwanz")] *= np.clip((y - (float(y.max()) - 0.035 * LG)) / (0.01 * LG), 0, 1)   # nur der hängende Schwanz hinter dem Rumpf
 W[:, namen.index("wurzel")] *= 0.0
 K = np.array([e.vertices[:] for e in me.edges], int)
 for _ in range(6):
@@ -83,14 +96,44 @@ def laufen(t):                                                                  
     p = 2 * math.pi * t; hoch(0.025 * H * abs(math.sin(p)))
     dreh("rumpf", ((0, 1, 0), 3.5 * math.sin(p)), ((1, 0, 0), 2 * math.sin(2 * p))); dreh("kopf", ((1, 0, 0), -3 * math.sin(2 * p)), ((0, 0, 1), 3 * math.sin(p)))
     for n, ph in (("VL", 0), ("HR", 0), ("VR", math.pi), ("HL", math.pi)): dreh("bein." + n, ((1, 0, 0), 24 * math.sin(p + ph)))
-BEWEGUNGEN = {"ruhe": (ruhe, 48), "laufen": (laufen, 16)}                                     # bei 24 Bildern/s: 2 s Wiegen, 0,67 s je Doppelschritt
+def kopf_runter(g):                                                                              # Kopf zum Boden: mit Hals über den Hals, sonst über den Kopf
+    if HALS: dreh("hals", ((1, 0, 0), g)); dreh("kopf", ((1, 0, 0), g * 0.45))
+    else: dreh("kopf", ((1, 0, 0), g))
+def vor(f): PB["wurzel"].location = (0, PB["wurzel"].location[1], f)                             # lokale z-Achse des Wurzelknochens = nach vorn (-y)
+def fressen(t):                                                                                 # grasen: Kopf unten, kauen, ab und zu ein Schwanzschlag
+    kau = 3 * math.sin(2 * math.pi * 4 * t)
+    if HALS: dreh("hals", ((1, 0, 0), 80 + kau)); dreh("kopf", ((1, 0, 0), -28 + kau))                 # Hals tief, der Kopf richtet sich auf: das Maul zeigt nach vorn unten ins Gras
+    else: kopf_runter(40 + kau)
+    dreh("rumpf", ((1, 0, 0), 5), ((0, 1, 0), 1.5 * math.sin(2 * math.pi * t)))
+    if SCHWANZ: dreh("schwanz", ((0, 1, 0), 14 * math.sin(2 * math.pi * 2 * t) * max(0.0, math.sin(2 * math.pi * t))))
+def gehen(t):                                                                                   # ruhiger Schritt, diagonale Beinpaare
+    p = 2 * math.pi * t; hoch(0.012 * H * abs(math.sin(p)))
+    dreh("rumpf", ((0, 1, 0), 2 * math.sin(p))); kopf_runter(6 + 3 * math.sin(2 * p))
+    for n, ph in (("VL", 0), ("HR", 0), ("VR", math.pi), ("HL", math.pi)): dreh("bein." + n, ((1, 0, 0), 20 * math.sin(p + ph)))
+    if SCHWANZ: dreh("schwanz", ((0, 1, 0), 8 * math.sin(p)))
+def angriff(t):                                                                                 # Kopfstoß: Kopf senken, zurücknehmen – vorstoßen mit dem Kopf voran – zurück
+    k = [(0, 0, 0, 0), (0.35, 40, -0.06, -6), (0.5, -12, 0.22, 8), (0.62, -6, 0.18, 6), (1, 0, 0, 0)]
+    for (t0, g0, v0, r0), (t1, g1, v1, r1) in zip(k, k[1:]):
+        if t0 <= t <= t1: u = (t - t0) / (t1 - t0); u = u * u * (3 - 2 * u); g, v, r = g0 + (g1 - g0) * u, v0 + (v1 - v0) * u, r0 + (r1 - r0) * u; break
+    kopf_runter(g); vor(v * H); dreh("rumpf", ((1, 0, 0), r))
+    for n in ("VL", "VR"): dreh("bein." + n, ((1, 0, 0), -r * 2))
+    for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), r * 2.5))
+def tod(t):                                                                                     # kippt zur Seite und bleibt liegen
+    u = min(1.0, t / 0.7); u = u * u * (3 - 2 * u); d = max(0.0, (t - 0.7) / 0.3)
+    dreh("wurzel", ((0, 1, 0), 86 * u)); hoch(0.17 * H * u); kopf_runter(-10 * u + 20 * d)
+    for n in ("VL", "HL"): dreh("bein." + n, ((0, 1, 0), -12 * u))
+    for n in ("VR", "HR"): dreh("bein." + n, ((0, 1, 0), 10 * u))
+ALLE = {"ruhe": (ruhe, 48, True, {}), "laufen": (laufen, 16, True, {}), "fressen": (fressen, 72, True, {}), "gehen": (gehen, 32, True, {}),
+        "angriff": (angriff, 20, False, {"treffer": 10}), "tod": (tod, 30, False, {"halten": 30})}
+AUSWAHL = opt.get("bewegungen", "ruhe,laufen").split(",")
+BEWEGUNGEN = {("ruhe" if n == "fressen" else n): ALLE[n] for n in AUSWAHL}                       # fressen ist die Ruhe der Weidetiere
 ARM.animation_data_create()
-for name, (fn, n) in BEWEGUNGEN.items():
+for name, (fn, n, schleife, mehr) in BEWEGUNGEN.items():
     a = bpy.data.actions.new(name); a.use_fake_user = True; ARM.animation_data.action = a
     for i in range(n + 1):
         nullen(); fn(i / n)
         for b in PB: b.keyframe_insert("rotation_quaternion", frame=i + 1, group=b.name)
         PB["wurzel"].keyframe_insert("location", frame=i + 1, group="wurzel")
-    a["bilder"] = n + 1; a["rate"] = 24; a["schleife"] = True; print("Bewegung:", name, n, "Bilder")
+    a["bilder"] = n + 1; a["rate"] = 24; a["schleife"] = schleife; a["mehr"] = json.dumps(mehr); print("Bewegung:", name, n, "Bilder")
 ARM.animation_data.action = bpy.data.actions["ruhe"]; bpy.context.scene.frame_set(1); ARM["pet"] = True; ARM["hoehe"] = H
 bpy.ops.wm.save_as_mainfile(filepath=ziel); print("geschrieben:", ziel)
