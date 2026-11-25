@@ -9761,6 +9761,106 @@
     "url": "img/objekte3d/skilling/handwerk/werkbank.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "samm_flachs_01",
+   "name": "Flachs",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_flachs_01.webp",
+   "groesse": [
+    23,
+    56
+   ],
+   "anker": [
+    0.5217,
+    0.9286
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/flachs.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_flachs_geerntet",
+   "name": "Flachs (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_flachs_geerntet.webp",
+   "groesse": [
+    21,
+    19
+   ],
+   "anker": [
+    0.4762,
+    0.7895
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/flachs-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_hanf_01",
+   "name": "Hanf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_hanf_01.webp",
+   "groesse": [
+    42,
+    76
+   ],
+   "anker": [
+    0.4881,
+    0.9211
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/hanf.glb",
+    "wind": 0.1
+   }
+  },
+  {
+   "id": "samm_hanf_geerntet",
+   "name": "Hanf (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_hanf_geerntet.webp",
+   "groesse": [
+    37,
+    21
+   ],
+   "anker": [
+    0.4865,
+    0.7619
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
+    "wind": 0
+   }
   }
  ]
 }
