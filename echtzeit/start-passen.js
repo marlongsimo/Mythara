@@ -19,10 +19,14 @@
     if (t && "MutationObserver" in window) new MutationObserver(bald).observe(t, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] }); });
   bald();
 })();
-/* In der iOS-App (Kennung „RiftmereApp“ im User-Agent): keine Links zur Webseite des Würfelspiels – die App ist nur Riftmere */
+/* In der iOS-App (Kennung „RiftmereApp“ im User-Agent): keine Links zur Webseite des Würfelspiels, keine Fußzeile, kein Zoom in Eingabefelder */
 (function () {
   if (!/RiftmereApp/.test(navigator.userAgent)) return;
   document.documentElement.classList.add("app");
+  /* kein Hineinzoomen beim Antippen eines Eingabefelds (iOS zoomt sonst, weil die Tafel per CSS-zoom verkleinert ist) */
+  const vp = document.querySelector('meta[name="viewport"]'); if (vp && !/maximum-scale/.test(vp.content)) vp.content += ", maximum-scale=1, user-scalable=no";
+  /* Fußzeile (Würfelspiel, Impressum, Datenschutz) in der App ausblenden – Datenschutz und Impressum stehen in den Einstellungen im Spiel */
+  const st = document.createElement("style"); st.textContent = "html.app .fuss { display: none !important; }"; document.head.appendChild(st);
   const weg = () => document.querySelectorAll('a[href="../"]').forEach((a) => { const n = a.nextSibling; if (n && n.nodeType === 3 && /^\s*·\s*$/.test(n.textContent)) n.remove(); a.remove(); });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", weg); else weg();
 })();
