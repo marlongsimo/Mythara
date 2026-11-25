@@ -53,6 +53,7 @@ try {
   await anna.goto(B + S + "&vorwaermen=0"); await ben.goto(B + S + "&vorwaermen=0");
   for (const p of [anna, ben]) await p.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForTimeout(2500);
+  for (const p of [anna, ben]) await p.evaluate(() => { const c = document.getElementById("ez-chat"); if (c && c.classList.contains("zu")) c.querySelector(".klapp").click(); }); /* Handy: Chat ist anfangs eingeklappt */
   const schreiben = async (p, t) => { await p.fill("#ez-chat input", t); await p.press("#ez-chat input", "Enter"); await p.waitForTimeout(900); };
   const zeilen = (p) => p.evaluate(() => [...document.querySelectorAll("#ez-chat .liste p")].map((e) => e.textContent.replace(/^\[\d\d:\d\d\]\s*/, "")));
   /* 1) Wortfilter */

@@ -49,8 +49,8 @@ rpg,mmo,mmorpg,fantasy,abenteuer,online,quest,handwerk,schwert,magie,helden,mult
 
 - **Support-URL:** https://riftmere.de
 - **Marketing-URL (optional):** https://riftmere.de
-- **Datenschutzrichtlinie-URL:** https://case-unlocked.de/datenschutz.html
-  (Prüfen: Muss Riftmere erwähnen – Konto, Benutzername, Chatnachrichten, Spielstand, Speicherung bei Supabase und Render.)
+- **Datenschutzrichtlinie-URL:** https://riftmere.de/echtzeit/datenschutz.html
+  (eigene Seite für Riftmere – Konto, Spielstand, Chat, Meldungen, Supabase/Render/GitHub)
 
 ## Copyright
 

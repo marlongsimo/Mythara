@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script>/* iOS-App: bis an den Rand zeichnen, damit env(safe-area-inset-*) die Insel/Notch kennt – Leiste, Chat und Karte rücken dann daneben (nur in der App) */
+  if (/RiftmereApp/.test(navigator.userAgent)) { document.documentElement.classList.add("app"); document.querySelector('meta[name="viewport"]').content += ", viewport-fit=cover"; }</script>
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="mythara.webmanifest?v=mwwf48q6">
+  <link rel="manifest" href="mythara.webmanifest?v=mwwhgks6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Riftmere">
@@ -586,7 +588,7 @@
     @media (max-width: 420px) { .tafel.eigen .iplaetze { grid-template-columns: repeat(3, 86px); gap: 10px; } .tafel.eigen .ifeld { height: 86px; } .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 120px; } }
     /* ===== 3D-Welt: neue Oberfläche – kein Profil oben links; Chat links oben (nach oben einklappbar, halb durchsichtig), darunter die Leiste; LP-Bogen an der Minikarte ===== */
     body.welt3d #ez-profil, body.welt3d #ez-oben-knoepfe, body.welt3d #ez-menue, body.welt3d #ez-ich, body.welt3d #ez-kartenrahmen .raute.r { display: none !important; }
-    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(380px, 36vw); z-index: 7; background: rgba(20,15,10,.14); border-color: rgba(138,106,58,.45); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(520px, 44vw); z-index: 7; background: rgba(20,15,10,.14); border-color: rgba(138,106,58,.45); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
     /* Chat durchsichtig: die Welt scheint durch, die Schrift bleibt durch einen dunklen Rand gut lesbar */
     body.welt3d #ez-chat .reiter { padding: 0; } body.welt3d #ez-chat .reiter button { background: rgba(30,23,15,.45); border-color: rgba(200,155,82,.35); }
     body.welt3d #ez-chat .reiter button.an { background: rgba(91,68,38,.6); border-color: rgba(200,155,82,.7); }
@@ -605,7 +607,7 @@
     .tafel .blockliste { list-style: none; padding: 0; margin: 6px auto 10px; max-width: 320px; display: grid; gap: 6px; } .tafel .blockliste li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; border: 1px solid rgba(200,155,82,.3); border-radius: 8px; background: rgba(0,0,0,.2); }
     .tafel .blockliste button { background: #2e2519; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; }
     body.welt3d #ez-chat .klapp { transform: rotate(180deg); } body.welt3d #ez-chat.zu .klapp { transform: none; } /* offen: Pfeil nach oben (einklappen), zu: nach unten (aufklappen) */
-    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-chat { width: min(300px, 40vw); } body.welt3d #ez-chat .liste { height: 84px; } body.welt3d #ez-chat .reiter button { font-size: 10.5px; padding: 3px 2px; } }
+    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-chat { width: min(400px, 50vw); } body.welt3d #ez-chat .liste { height: 84px; } body.welt3d #ez-chat .reiter button { font-size: 10.5px; padding: 3px 2px; } }
     #ez-leiste { display: none; }
     body.welt3d #ez-leiste { position: fixed; z-index: 6; left: max(10px, env(safe-area-inset-left)); top: auto; bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--a, 8px); }
     body.welt3d #ez-leiste button { position: relative; width: var(--g, 46px); height: var(--g, 46px); padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a;
@@ -825,6 +827,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwwf48q6"></script>
+  <script src="spiel.js?v=mwwhgks6"></script>
 </body>
 </html>

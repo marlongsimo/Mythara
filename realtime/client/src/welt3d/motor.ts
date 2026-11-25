@@ -95,13 +95,22 @@ export class Welt3D {
     for (const k of [...this.warte]) if (this.imRadius(k)) { this.warte.splice(this.warte.indexOf(k), 1); this.bauen(k); } /* der Ring dahinter ist schon geholt und wird im Spiel gebaut */
     this.eingaben();
     /* Ein Fehler in einem Bild darf die Schleife nicht anhalten (three.js plant das nächste Bild erst nach dem Aufruf – sonst stünde das Spiel still) */
-    let gemeldet = false; this.r.setAnimationLoop(() => { try { this.bild(); } catch (e) { if (!gemeldet) { gemeldet = true; console.error("Bild:", e); } } });
+    let gemeldet = false, letztesBild = performance.now(), weg = 0;
+    const schleife = () => { letztesBild = performance.now(); try { this.bild(); } catch (e) { if (!gemeldet) { gemeldet = true; console.error("Bild:", e); } } };
+    this.r.setAnimationLoop(schleife);
     /* iPhone: wer die App kurz verlässt, verliert oft den Grafikspeicher (WebGL-Kontext). Dann beim Zurückkommen neu laden – sonst bleibt das Bild eingefroren */
     let verloren = false; const leinwand = this.r.domElement;
     leinwand.addEventListener("webglcontextlost", (e) => { e.preventDefault(); verloren = true; console.warn("WebGL-Kontext verloren"); });
+    /* In der iOS-App (WKWebView) bleibt das Bild nach dem Zurückkommen manchmal stehen, ohne dass der Kontext als verloren gemeldet wird:
+       Schleife neu anstoßen und die Zeichenfläche neu anlegen (setSize); laufen danach trotzdem keine Bilder, neu laden (Stand liegt auf dem Server). */
     const zurueck = () => { if (document.visibilityState !== "visible") return; this.uhr.getDelta(); /* keine lange Pause nachrechnen */
-      const gl = this.r.getContext(); if (verloren || (gl && gl.isContextLost())) { verloren = false; location.reload(); } };
-    document.addEventListener("visibilitychange", zurueck); addEventListener("pageshow", (e) => { if ((e as PageTransitionEvent).persisted) zurueck(); });
+      const gl = this.r.getContext(); if (verloren || (gl && gl.isContextLost())) { verloren = false; location.reload(); return; }
+      const lange = weg && Date.now() - weg > 1500; /* Date.now: performance.now kann im Hintergrund stehen bleiben */ weg = 0; if (!lange) return;
+      this.r.setAnimationLoop(null); this.r.setAnimationLoop(schleife); this.groesse();
+      const seit = performance.now(); setTimeout(() => { if (document.visibilityState === "visible" && letztesBild < seit + 200) { console.warn("Bild steht nach dem Zurückkommen – neu laden"); location.reload(); } }, 2500); };
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") { if (!weg) weg = Date.now(); } else zurueck(); });
+    addEventListener("pagehide", () => { if (!weg) weg = Date.now(); });
+    addEventListener("pageshow", (e) => { if ((e as PageTransitionEvent).persisted) zurueck(); });
   }
   groesse() { const el = this.r.domElement.parentElement, w = (el && el.clientWidth) || innerWidth, h = (el && el.clientHeight) || innerHeight; /* Größe des Behälters (fest über den ganzen Bildschirm), nicht innerHeight: iOS meldet das beim Drehen verspätet */ this.r.setSize(w, h); this.kamera.aspect = w / h; this.kamera.updateProjectionMatrix(); }
   async alleGeladen() { for (let i = 0; i < 300 && this.laedt.size; i++) await new Promise((r) => setTimeout(r, 30)); }

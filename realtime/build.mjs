@@ -14,6 +14,7 @@ writeFileSync(aus + "index.html", readFileSync("client/index.html", "utf8").repl
 /* Login-Fenster und Landing-Page (seit 24.11.2026) mit gemeinsamer Gestaltung und den Neuigkeiten */
 writeFileSync(aus + "anmelden.html", readFileSync("client/anmelden.html", "utf8").replaceAll("__V__", v));
 writeFileSync(aus + "willkommen.html", readFileSync("client/willkommen.html", "utf8").replaceAll("__V__", v));
+writeFileSync(aus + "datenschutz.html", readFileSync("client/datenschutz.html", "utf8").replaceAll("__V__", v)); /* Datenschutzerklärung Riftmere */
 writeFileSync(aus + "wache-9gv41g35qkwx.html", readFileSync("client/wache-9gv41g35qkwx.html", "utf8").replaceAll("__V__", v)); /* Admin-Seite (nicht verlinkt) */
 writeFileSync(aus + "start.css", readFileSync("client/start.css", "utf8"));
 writeFileSync(aus + "start-passen.js", readFileSync("client/start-passen.js", "utf8"));
