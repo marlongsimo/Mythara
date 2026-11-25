@@ -342,6 +342,8 @@ const BALANCING: Record<string, Bal> = {
 for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; if (!G) continue;
   if (b.a) G.anforderung = { skill: b.a[0], level: b.a[1] }; if (b.w && G.waffe) G.waffe = { ...G.waffe, ...b.w }; if (b.ab) G.abwehr = { nah: b.ab[0], fern: b.ab[1], magie: b.ab[2] }; if (b.zweihand) G.zweihand = true;
   if (b.mal) G.bonus = { ...G.bonus, ...(b.mal[0] ? { fernAngriff: b.mal[0] } : {}), ...(b.mal[1] ? { genau: b.mal[1] } : {}) }; }
+/* Bögen (Kurz-, Lang-, Jagdbogen …) brauchen beide Hände: kein Schild dazu – beim Anlegen geht die Nebenhand in den Rucksack (25.11.2026) */
+for (const G of Object.values(GEGENSTAENDE)) if (G.platz === "waffe" && /bogen/i.test(G.art || "") && !/armbrust/i.test(G.art || "")) G.zweihand = true;
 /** Darf ein Held mit diesen Skill-Leveln den Gegenstand anlegen? Zurück: Fehlertext oder null */
 export function anforderungFehlt(G: Gegenstand, level: (s: AnfSkill) => number): string | null {
   const a = G.anforderung; return a && level(a.skill) < a.level ? `Dafür brauchst du ${ANF_NAME[a.skill]} ${a.level} (du hast ${level(a.skill)}).` : null; }

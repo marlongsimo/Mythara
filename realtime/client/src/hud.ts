@@ -189,7 +189,9 @@ export function menueTafel(zu: () => void) {
     if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
     if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
-    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
+    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") { const n = wechselWarten(); /* wie beim Weltenwechsel: erst 10 s nach dem letzten Kampf (25.11.2026) */
+      if (n > 0) { const alt = t.innerHTML; t.innerHTML = `Im Kampf <small>Abmelden in ${n} s möglich</small>`; t.classList.add("gesperrt"); setTimeout(() => { if (t.isConnected) { t.innerHTML = alt; t.classList.remove("gesperrt"); } }, 2200); }
+      else void kontoAbmelden(); } else if (w === "hin") kontoAnmelden(); };
 }
 
 /* ---------- Blockierte Spieler: Liste mit „Aufheben“ (blockieren und melden geht über den Namen im Chat) ---------- */

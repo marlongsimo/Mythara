@@ -32,6 +32,8 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   const angelegt: Partial<Record<Platz, string>> = {}; for (const { id } of PLAETZE) { const g = o.angelegt[id]; if (typeof g === "string" && GEGENSTAENDE[g] && GEGENSTAENDE[g].platz === id) angelegt[id] = g; }
   const rucksack: Fach[] = []; for (const f of o.rucksack) { const g = typeof f === "string" ? f : f && typeof f === "object" ? String((f as { g?: unknown }).g) : "", G = GEGENSTAENDE[g]; if (!G) continue;
     if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
+  /* Zweihandwaffe und Nebenhand zugleich (alter Stand, z. B. Bogen mit Schild): die Nebenhand kommt in den Rucksack – passt sie nicht hinein, bleibt sie, wo sie war */
+  if (angelegt.waffe && angelegt.nebenhand && GEGENSTAENDE[angelegt.waffe].zweihand && rucksack.length < RUCKSACK_PLAETZE) { rucksack.push(angelegt.nebenhand); delete angelegt.nebenhand; }
   const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
   { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank;
     const t = (o as { bankTabs?: unknown }).bankTabs; if (t && typeof t === "object" && bank.length) { const tabs: Record<string, number> = {};
