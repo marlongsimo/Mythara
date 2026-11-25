@@ -50,7 +50,7 @@ export class HandwerkWelt {
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
       if (r) chatSystem(`Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
     else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); berufDrop(BERUF_HAND, m.xp || 0);
-      if (m.aufstieg) { chatSystem(`Glückwunsch! Handwerk ist jetzt Level ${m.aufstieg}.`); this.hinweis(`Handwerk Level ${m.aufstieg}!`, 2600); } }
+      if (m.aufstieg) chatSystem(`Glückwunsch! Handwerk ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis("Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
     else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; this.werkHalt(); if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); else if (m.grund === "werkzeug") chatSystem("Ohne Hammer im Rucksack geht es nicht weiter."); }

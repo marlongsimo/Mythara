@@ -64,13 +64,13 @@ try {
   /* kämpfen, bis Skill-XP gebucht sind (alle 10 s) */
   const xpSumme = () => XPBUCH.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + x.p_geschick + x.p_staerke, 0); let blocks = 0, treffer = 0;
   anna.on("console", () => {});
-  await anna.evaluate(() => { window.__zahlen = []; new MutationObserver((l) => { for (const m of l) for (const n of m.addedNodes) if (n.classList && n.classList.contains("ez-zahl3d")) window.__zahlen.push(n.textContent); }).observe(document.body, { childList: true }); });
-  for (let i = 0; i < 200 && (xpSumme() === 0 || !(await anna.evaluate(() => window.__zahlen.includes("geblockt") && window.__zahlen.some((x) => /^\d+$/.test(x))))); i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); }
-  { const z = await anna.evaluate(() => window.__zahlen); treffer = z.filter((x) => /^\d+$/.test(x)).length; blocks = z.filter((x) => x === "geblockt").length; }
+  await anna.evaluate(() => { window.__zahlen = []; new MutationObserver((l) => { for (const m of l) for (const n of m.addedNodes) if (n.classList && n.classList.contains("ez-splat")) window.__zahlen.push((n.classList.contains("rot") ? "rot:" : "blau:") + n.textContent); }).observe(document.body, { childList: true }); });
+  for (let i = 0; i < 200 && (xpSumme() === 0 || !(await anna.evaluate(() => window.__zahlen.includes("blau:0") && window.__zahlen.some((x) => /^rot:[1-9]\d*$/.test(x))))); i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); }
+  { const z = await anna.evaluate(() => window.__zahlen); treffer = z.filter((x) => /^rot:[1-9]\d*$/.test(x)).length; blocks = z.filter((x) => x === "blau:0").length; }
   check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_defense === x.p_geschick && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Ausgewogen: je ein Drittel an Geschick, Stärke und Defense): ${xpSumme()} (Fernkampf/Magie 0)`);
   { const d = await anna.evaluate(() => window.__drops); check(d.length > 0 && d.every((x) => x.bilder > 0 && /\+\d/.test(x.text)), `XP-Drops mit Zeichen am oberen Rand (${d.length}, z. B. „${d[0] && d[0].text}“)`); }
   check(XPBUCH.every((x) => x.p_lp === x.p_geschick), "1,33 XP je abgezogenem Lebenspunkt an jeden der drei Skills und an Lebenspunkte (gleiche Buchung)");
-  check(blocks > 0 && treffer > 0, `Schadenszahlen und „geblockt“ erscheinen über den Figuren (${treffer} Treffer, ${blocks} Blocks)`);
+  check(blocks > 0 && treffer > 0, `Hitsplats wie in OSRS: rot mit Schaden, blau mit 0 statt „geblockt“ (${treffer} rot, ${blocks} blau)`);
   { const b = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.bodenBild && W.bodenBild.size > 0 ? [...W.bodenBild.keys()].length : 0; }, null, { timeout: 30000, polling: 500 }).then((h) => h.jsonValue()).catch(() => 0);
     check(b > 0, `Beute der Banditen liegt am Boden (Splitter aus dem ersten Wurf, ${b} Stück sichtbar)`); }
   { const lp = await anna.evaluate(() => { const K = window.EZK, ich = K.z.w.find((e) => e[0] === K.z.ich.id); return { text: (document.querySelector("#ez-kartenrahmen .lpzahl") || {}).textContent, soll: ich ? `${Math.round(ich[7])} / ${ich[8]}` : "" }; });

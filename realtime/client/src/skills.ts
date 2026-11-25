@@ -6,11 +6,11 @@
 import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS, stilIndex, xpEffektiv } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aktiverHeld } from "./held";
-import { inventar } from "./inventar";
+import { inventar, inventarVomServerDa } from "./inventar";
 
 const SCHLUESSEL = "ez_skills2", STIL = "ez_stil";
 export function skillsLesen(): SkillXp { try { return skillXpPruefen(JSON.parse(localStorage.getItem(SCHLUESSEL) || "null")); } catch { return skillXpPruefen(null); } }
-export function skillsSchreiben(x: SkillXp): void { try { const v = JSON.stringify(skillXpPruefen(x)); if (localStorage.getItem(SCHLUESSEL) !== v) localStorage.setItem(SCHLUESSEL, v); } catch { /* privat */ } }
+export function skillsSchreiben(x: SkillXp): void { try { const v = JSON.stringify(skillXpPruefen(x)); if (localStorage.getItem(SCHLUESSEL) !== v) localStorage.setItem(SCHLUESSEL, v); } catch { /* privat */ } stufenPruefen(true); }
 /** Die Kampfwerte des eigenen Helden (null ohne eigenen Helden) */
 export function meineKampfwerte(x = skillsLesen()): Kampfwerte | null { return aktiverHeld() ? kampfwerte(x, inventar().angelegt, stilJetzt()) : null; }
 export const stufenVon = (x: SkillXp): string => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
@@ -63,3 +63,33 @@ export function skillAnzeige(x: SkillXp): void {
 export { heldenlevel };
 /** Das Level des eigenen Helden fürs Namensschild: Heldenlevel (v2); ohne eigenen Helden die alte Stufe aus der Erfahrung */
 export function eigenesLevel(altStufe: number): number { return aktiverHeld() ? heldenlevel(skillsLesen()) : altStufe; }
+
+/* ───────── Banner beim Level-Aufstieg (jeder Kampf-Skill und jeder Beruf): oben in der Mitte, schmal, ein paar Sekunden ───────── */
+let stufen: Record<string, number> | null = null, stufenBerufe = false;
+const reihe: { text: string; zeichen: string }[] = []; let zeigt = false;
+function stufenJetzt(): Record<string, number> { const x = skillsLesen(), aus: Record<string, number> = {};
+  for (const k of SKILLS) aus[k] = levelAus(x[k] || 0, k);
+  if (inventarVomServerDa()) { const b = inventar().berufe || {}; for (const k of Object.keys(BERUF_NAME)) aus["b:" + k] = levelAus(b[k] || 0); }
+  return aus; }
+/** Neue Stufen erkennen. vomServer: neue Kampf-XP sind da. Die ersten Werte (und Sprünge um mehr als zwei Stufen, etwa beim Anmelden) gelten nicht als Aufstieg */
+export function stufenPruefen(vomServer = false): void { const neu = stufenJetzt();
+  if (!stufen) { if (vomServer || inventarVomServerDa()) { stufen = neu; stufenBerufe = inventarVomServerDa(); } return; }
+  if (!stufenBerufe && inventarVomServerDa()) { for (const k of Object.keys(neu)) if (k.startsWith("b:")) stufen[k] = neu[k]; stufenBerufe = true; }
+  for (const [k, L] of Object.entries(neu)) { const alt = stufen[k]; if (alt !== undefined && L > alt && L - alt <= 2) {
+    const beruf = k.startsWith("b:") ? k.slice(2) : "", name = beruf ? BERUF_NAME[beruf] : k === "lp" ? "Lebenspunkte" : SKILL_NAME[k as Skill];
+    stufenBanner(`Du hast ${name} Stufe ${L} erreicht!`, beruf ? BERUF_ZEICHEN[beruf] || "" : SKILL_ZEICHEN[k as Skill] || ""); } }
+  stufen = neu; }
+export function stufenBanner(text: string, zeichen = ""): void { reihe.push({ text, zeichen }); if (!zeigt) naechstesBanner(); }
+function naechstesBanner(): void { const b = reihe.shift(); if (!b) { zeigt = false; return; } zeigt = true;
+  if (!document.getElementById("ez-stufe-stil")) { const s = document.createElement("style"); s.id = "ez-stufe-stil"; s.textContent = `
+#ez-stufe { position: fixed; left: 50%; top: max(12px, env(safe-area-inset-top)); transform: translate(-50%, -140%); z-index: 60; pointer-events: none; display: flex; align-items: center; gap: 10px;
+  max-width: min(92vw, 460px); padding: 7px 18px 7px 10px; border: 1px solid #c9a24a; border-radius: 10px; background: linear-gradient(#2c2112f0, #1a130af0); box-shadow: 0 4px 18px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,220,140,.12);
+  font: 600 15px Cinzel, Georgia, serif; color: #ffe7a6; text-shadow: 0 1px 2px #000; transition: transform .35s ease-out, opacity .35s; opacity: 0; }
+#ez-stufe.an { transform: translate(-50%, 0); opacity: 1; }
+#ez-stufe .skillbild, #ez-stufe img { width: 28px; height: 28px; flex: 0 0 auto; } #ez-stufe span.z { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; }
+#ez-stufe span.z svg { width: 26px; height: 26px; }`; document.head.appendChild(s); }
+  let el = document.getElementById("ez-stufe"); if (!el) { el = document.createElement("div"); el.id = "ez-stufe"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  el.innerHTML = `${b.zeichen ? `<span class="z">${b.zeichen}</span>` : ""}<span></span>`; (el.lastElementChild as HTMLElement).textContent = b.text;
+  const e = el; requestAnimationFrame(() => e.classList.add("an"));
+  setTimeout(() => { e.classList.remove("an"); setTimeout(naechstesBanner, 400); }, 3600); }
+if (typeof window !== "undefined") addEventListener("ez-inventar", () => stufenPruefen());

@@ -36,6 +36,10 @@ export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
 let verbindet = false;
+/* iPhone: nach dem Zurückkommen in die App sofort neu verbinden, statt die Wartezeit abzusitzen; eine Verbindung, die iOS still geschlossen hat, schließen */
+if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") return;
+  if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
+  if (!ws) { versuch = 0; void verbinden(); } });
 async function verbinden() { if (verbindet || ws) return; verbindet = true; /* nie zwei Verbindungen zugleich: während auf das Token gewartet wird, gibt es noch keine – ein zweiter Aufruf öffnete sonst eine zweite (der Server wirft dann eine hinaus) */
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;

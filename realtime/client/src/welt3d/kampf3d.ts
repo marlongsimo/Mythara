@@ -69,10 +69,20 @@ export class WeltKampf3D extends WeltKampf {
     if (id === this.ichId) return { x: this.w.ort.x, z: this.w.ort.y, h: HOEHE }; const f = this.figuren.get(id), b = f && this.bilder.get(f); return f && b ? { x: this.zone.x0 + f.x, z: this.zone.y0 + f.y, h: b.h } : null; }
   protected zahl(id: number, t: string, farbe: string) { const p = this.stelle(id); if (!p) return; const m = this.w.motor, el = document.createElement("div"); el.className = "ez-zahl3d"; el.textContent = t; el.style.color = farbe; document.body.appendChild(el);
     const y0 = m.hoehe(p.x, p.z) + p.h, t0 = performance.now(), lauf = () => { const a = (performance.now() - t0) / 900; if (a >= 1) { el.remove(); return; } el.style.opacity = String(1 - a * a); schildAn(el, m, p.x, y0 + a * 0.9, p.z); requestAnimationFrame(lauf); }; lauf(); }
-  protected hieb(id: number) { if (id === this.ichId) { this.w.figur.angriff(); return; } const f = this.figuren.get(id), b = f && this.bilder.get(f); if (b) b.fl.angriff(); }
+  protected hieb(id: number) { const bis = performance.now() + 3000; /* wer zuschlägt, kämpft: 3 s lang zum Gegner schauen */
+    if (id === this.ichId) { this.ichKampfBis = bis; this.w.figur.angriff(); return; } const f = this.figuren.get(id), b = f && this.bilder.get(f); if (f) f.kampfBis = bis; if (b) b.fl.angriff(); }
   protected eigeneHaltung(schild: boolean, _laeuft: boolean) { this.w.schildHoch = schild; }
+  /** Der eigene Held: steht er, schaut er zu seinem Gegner (Blick vom Server) */
+  protected eigenerBlick(winkel: number): void { if (!this.w.laeuft && this.ichKampfBis > performance.now() && Number.isFinite(winkel)) (this.w.figur as { blick(x: number, z: number): void }).blick(Math.cos(winkel), Math.sin(winkel)); }
+  /** Hitsplat wie in OSRS: roter Fleck mit dem Schaden, blauer Fleck mit 0 (verfehlt oder geblockt); bleibt kurz an der Figur stehen */
+  protected splat(id: number, n: number): void { const p = this.stelle(id); if (!p) return; const m = this.w.motor, el = document.createElement("div"), jetzt = performance.now();
+    el.className = "ez-splat " + (n > 0 ? "rot" : "blau"); el.innerHTML = `<b>${n > 0 ? n : 0}</b>`; document.body.appendChild(el);
+    const alt = (this.splats.get(id) || []).filter((t) => jetzt - t < 1000), versatz = alt.length % 3; alt.push(jetzt); this.splats.set(id, alt);   /* mehrere zugleich: leicht versetzt wie in OSRS */
+    const dx = [0, -0.35, 0.35][versatz], dy = [0, 0.3, 0.3][versatz], y0 = m.hoehe(p.x, p.z) + p.h * 0.62 + dy;
+    const lauf = () => { const a = (performance.now() - jetzt) / 1100; if (a >= 1) { el.remove(); return; } el.style.opacity = a > 0.75 ? String(1 - (a - 0.75) / 0.25) : "1"; schildAn(el, m, p.x + dx, y0, p.z); requestAnimationFrame(lauf); }; lauf(); }
+  private splats = new Map<number, number[]>(); private ichKampfBis = 0;
   protected figurZeichnen(f: Figur, vx: number, vy: number, lauf: boolean, _wechsel: boolean, name: string, dt: number) { const b = this.bilder.get(f); if (!b) return; const m = this.w.motor, x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z);
-    b.fl.sichtbar(true); b.fl.stelle(x, y, z); if (lauf) b.fl.blick(vx, vy); b.fl.setze(f.schild ? (lauf ? "schild_laufen" : "block") : lauf ? "laufen" : "ruhe"); b.fl.schritt(dt * 1000, m.gieren);
+    b.fl.sichtbar(true); b.fl.stelle(x, y, z); if (lauf) b.fl.blick(vx, vy); else if (f.blick !== undefined && (f.kampfBis || 0) > performance.now()) b.fl.blick(Math.cos(f.blick), Math.sin(f.blick)); /* steht er: zum Gegner, mit dem er kämpft (Blick vom Server) */ b.fl.setze(f.schild ? (lauf ? "schild_laufen" : "block") : lauf ? "laufen" : "ruhe"); b.fl.schritt(dt * 1000, m.gieren);
     if (b.nm.textContent !== name) b.nm.textContent = name; schildAn(b.nm, m, x, y + b.h + 0.42, z);
     const a = Math.max(0, Math.min(1, f.lp / f.max)), i = b.lb.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; if (f.team === 0) i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; schildAn(b.lb, m, x, y + b.h + 0.18, z); }
   protected zielUndLeben(leben: number | null, zf: Figur | null) { const m = this.w.motor;

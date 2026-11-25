@@ -37,7 +37,7 @@ const P = new URLSearchParams(location.search);
 const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
-export interface Figur { typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
+export interface Figur { blick?: number; /** kämpft gerade (bis performance.now) */ kampfBis?: number; typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
 
 /** Die Kampfsteuerung mit den Bildern und Namen des Helden füllen – auch außerhalb eines Kampfgebiets (dort gedimmt) */
 /** Kampfregeln v1 (eigener Held): überall nur „Angreifen“ mit dem Symbol der angelegten Waffe – keine alten Fähigkeitstasten, kein Waffenwechsel */
@@ -133,11 +133,11 @@ export class WeltKampf {
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
   private zustand(z: Zustand) { if (this.vorbei || !this.eingetreten || this.betretenOffen) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
     for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
-      if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9];
+      if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9]; f.blick = e[6]; /* Blickrichtung vom Server: zum Gegner, mit dem gekämpft wird */
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); this.figurSichtbar(f, !f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; this.figuren.delete(id); this.figurEntfernen(f); }
     for (const ev of z.ev) this.ereignis(ev);
-    const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { if (!this.bereit) { this.bereit = true; const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; if (Math.hypot(zx - this.s.ort.x, zy - this.s.ort.y) > 3) { this.s.ort.x = zx; this.s.ort.y = zy; } } /* nah dran: nicht springen – die Glättung (schritt) führt weich zur Stelle des Servers */
+    const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { this.eigenerBlick(ich[6]);  if (!this.bereit) { this.bereit = true; const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; if (Math.hypot(zx - this.s.ort.x, zy - this.s.ort.y) > 3) { this.s.ort.x = zx; this.s.ort.y = zy; } } /* nah dran: nicht springen – die Glättung (schritt) führt weich zur Stelle des Servers */
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }
     this.hud(z); }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur { const s = this.s, D = held ? HELDEN[typ] : MONSTER[typ], nA = held ? this.namen.get(id) : undefined, eigen = nA && nA.a ? heldPruefen(nA.a) : null, hoch = held ? HELD_PX : HELD_PX * ((D && (D as { hoehe?: number }).hoehe) || 88) / 96;
@@ -145,11 +145,10 @@ export class WeltKampf {
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: team === 0 ? "#f3e3b5" : "#ffc9b0", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" }; this.figuren.set(id, f); return f; }
   private ereignis(ev: Ereignis) { const zahl = (id: number, t: string, farbe: string) => this.zahl(id, t, farbe);
-    if (ev.a === "schaden") { zahl(ev.id, String(ev.n), ev.id === this.ichId ? "#ff6a5a" : "#ffe08a");
+    if (ev.a === "schaden") { this.splat(ev.id, ev.n);
       const f = ev.id === this.ichId ? undefined : this.figuren.get(ev.id), sp = f && !f.held ? (f.sp as unknown as { treffer?: () => void }) : undefined; if (sp && typeof sp.treffer === "function") sp.treffer(); }   /* Gegner zucken beim Treffer */
     else if (ev.a === "heil") zahl(ev.id, "+" + ev.n, "#7dff9a");
-    else if (ev.a === "null") zahl(ev.id, "verfehlt", "#c8c8c8");
-    else if (ev.a === "block") zahl(ev.id, "geblockt", "#9cc8ff");
+    else if (ev.a === "null" || ev.a === "block") this.splat(ev.id, 0); /* verfehlt oder geblockt: blauer Hitsplat mit 0 */
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
@@ -166,6 +165,9 @@ export class WeltKampf {
   protected zahl(id: number, t: string, farbe: string) { const s = this.s, f = this.figuren.get(id), p = id === this.ichId ? { x: s.figur.x, y: s.figur.y - HELD_PX } : f ? { x: f.sp.x, y: f.sp.y - HELD_PX } : null; if (!p) return;
     const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
     s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
+  /** Hitsplat wie in OSRS: Schaden > 0 rot, 0 (verfehlt, geblockt) blau. Die 2D-Welt zeigt weiter Zahlen */
+  protected splat(id: number, n: number): void { this.zahl(id, n > 0 ? String(n) : "0", n > 0 ? (id === this.ichId ? "#ff6a5a" : "#ffe08a") : "#9cc8ff"); }
+  /** Der eigene Held schaut in die Richtung des Servers – beim Kämpfen zu seinem Gegner (nur 3D) */ protected eigenerBlick(_winkel: number): void { /* 2D: nichts */ }
   protected hieb(id: number) { const sp = id === this.ichId ? this.s.figur : this.figuren.get(id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); }
 
   /* ---------- jedes Bild ---------- */

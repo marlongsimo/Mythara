@@ -5,7 +5,7 @@ let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + 
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000a001", ["tok_ben__" + "x".repeat(30)]: "00000000-0000-0000-0000-00000000b002" };
 const WERTE = { "00000000-0000-0000-0000-00000000a001": { ep: { schildwaechter: 300 }, seelen: 0 }, "00000000-0000-0000-0000-00000000b002": { ep: { kopfgeldjaeger: 120 }, seelen: 0 } }, SIEGE = [], buchungen = [];
 const EINL = []; const PROFIL = { "00000000-0000-0000-0000-00000000a001": "Anna", "00000000-0000-0000-0000-00000000b002": "Ben" }, AKTIV = { "00000000-0000-0000-0000-00000000b002": "kopfgeldjaeger" }, HELDSETZEN = [];
-const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0, inventar: { angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [{ g: "flachs", n: 1 }, { g: "flachs", n: 1 }, { g: "hanf", n: 1 }, { g: "stamm_eiche", n: 1 }, { g: "kuhhaut", n: 1 }, { g: "ungespannt_mondkurzbogen_gewoehnlich", n: 1 }], berufe: { handwerk: 5000 }, v: 2 }, quests: { die_gesperrte_strasse: { s: "fertig" } } } } /* Quest 1 erledigt: Jori läuft nicht herbei */, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
+const STELLE = {}; const HELD = { "00000000-0000-0000-0000-00000000a001": { geschlecht: "mann", frisur: "scheitel", bart: "vollbart", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", skill_geschick: 0, skill_staerke: 0, skill_fernkampf: 0, skill_magie: 0, inventar: { angelegt: { waffe: "ritterschwert", nebenhand: "rundschild" }, rucksack: [{ g: "flachs", n: 1 }, { g: "flachs", n: 1 }, { g: "hanf", n: 1 }, { g: "stamm_eiche", n: 1 }, { g: "kuhhaut", n: 1 }, { g: "ungespannt_mondkurzbogen_gewoehnlich", n: 1 }], berufe: { handwerk: 4263 } /* 2 XP unter Stufe 21: die Bogensehne bringt den Aufstieg (Banner) */, v: 2 }, quests: { die_gesperrte_strasse: { s: "fertig" } } } } /* Quest 1 erledigt: Jori läuft nicht herbei */, XPBUCH = []; const wer = (url) => (url.match(/user_id=eq\.([0-9a-f-]+)/) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url.startsWith("/fake/")) { res.setHeader("access-control-allow-origin", "*"); if (req.url === "/fake/einladen") { const a = JSON.parse(b || "{}"); EINL.push({ id: "e" + EINL.length, von: a.von, an: a.an, code: a.code }); return send(200, { ok: true }); }
     if (req.url.startsWith("/fake/einladungen")) return send(200, EINL.filter((e) => e.an === new URL(req.url, "http://x").searchParams.get("an")));
@@ -61,7 +61,10 @@ try {
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "werkbank.png" });
     await anna.click('#ez-konto .handwerk [data-t="hw"][data-n="2"]');
     const zwei = await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return (i.rucksack || []).filter((g) => g === "bogensehne").length === 2; }, null, { timeout: 30000 }).then(() => true).catch(() => false);
-    check(zwei, "Zwei Bogensehnen im Rucksack"); }
+    check(zwei, "Zwei Bogensehnen im Rucksack");
+    const banner = await anna.waitForFunction(() => { const b = document.getElementById("ez-stufe"); return b ? b.textContent : false; }, null, { timeout: 15000 }).then((h) => h.jsonValue()).catch(() => null);
+    check(banner === "Du hast Handwerk Stufe 21 erreicht!", `Aufstieg: Banner oben „${banner}“`);
+    if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "stufe-banner.png" }); }
   await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(400); await anna.click('[data-beruf="handwerk"]');
   const fu = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
   check(fu && (await anna.$$eval("#ez-konto .fuehrer [data-fr]", (b) => b.map((x) => x.textContent).join(","))) === "Rohstoffe,Barren,Schmieden,Werkbank,Info", "Skill-Übersicht Handwerk: Reiter Rohstoffe, Barren, Schmieden, Werkbank, Info");
@@ -94,6 +97,11 @@ try {
     for (const c of ["werk_ofen", "werk_hammer", "werk_weben", "werk_schnitzen", "werk_fuegen"]) for (const anteil of [0.25, 0.5]) {
       await anna.evaluate(([c]) => { const f = window.EZW.welt3d.figur; f.blick(1, 0); f.werken([c], c === "werk_hammer" ? "../img/objekte3d/skilling/utensilien/hammer.glb" : ""); }, [c]);
       await anna.waitForTimeout(1200 * anteil); await anna.screenshot({ path: process.env.WERKBILD + c + "_" + anteil + ".png", clip: { x: 440, y: 160, width: 400, height: 400 } }); await anna.waitForTimeout(1300); } }
+  /* iPhone: App kurz verlassen, iOS gibt den Grafikspeicher frei – beim Zurückkommen lädt die Seite neu statt einzufrieren */
+  { const neu = anna.waitForNavigation({ timeout: 30000 }).then(() => true).catch(() => false);
+    await anna.evaluate(() => { const c = document.querySelector("canvas"); const gl = c && (c.getContext("webgl2") || c.getContext("webgl")); const x = gl && gl.getExtension("WEBGL_lose_context"); if (x) x.loseContext();
+      setTimeout(() => document.dispatchEvent(new Event("visibilitychange")), 300); });
+    check(await neu, "Grafikspeicher verloren und zurück in der App: die Seite lädt neu (statt einzufrieren)"); }
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

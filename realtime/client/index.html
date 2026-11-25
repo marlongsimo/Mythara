@@ -40,6 +40,10 @@
     .ez-blase3d { position: absolute; left: 0; top: 0; z-index: 2; max-width: 190px; padding: 5px 8px; border-radius: 6px; background: #f3e6c4; color: #2a2014; font: 13px Inter, sans-serif; text-align: center; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
     .ez-blase3d[hidden] { display: none; }
     .ez-name3d.feind { color: #ffc9b0; } .ez-balken3d.feind i { background: #d04a3a !important; } .ez-balken3d.eigen { width: 46px; }
+    .ez-splat { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; width: 34px; height: 34px; display: grid; place-items: center; background: center / contain no-repeat; }
+    .ez-splat.rot { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 3 L38 15 L50 8 L47 22 L61 24 L50 33 L60 44 L46 44 L48 58 L36 50 L28 61 L25 48 L11 55 L16 41 L3 36 L15 29 L6 17 L20 18 L19 5 Z' fill='%23b0121a' stroke='%23000' stroke-width='3' stroke-linejoin='round'/></svg>"); }
+    .ez-splat.blau { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 3 L38 15 L50 8 L47 22 L61 24 L50 33 L60 44 L46 44 L48 58 L36 50 L28 61 L25 48 L11 55 L16 41 L3 36 L15 29 L6 17 L20 18 L19 5 Z' fill='%232f5fc4' stroke='%23000' stroke-width='3' stroke-linejoin='round'/></svg>"); }
+    .ez-splat b { font: 800 15px Inter, sans-serif; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; transform: translateY(1px); }
     .ez-zahl3d { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 700 17px Inter, sans-serif; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 2px #000; white-space: nowrap; }
     .ez-ebene3d { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
     /* 3D-Welt: die Minikarte kommt live aus der Welt (von oben, ohne Dächer) – das gebackene Kartenbild und die Nachbarkarten bleiben aus, die Punkte darüber */

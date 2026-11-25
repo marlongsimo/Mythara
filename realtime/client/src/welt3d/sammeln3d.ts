@@ -69,7 +69,7 @@ export class SammelWelt {
     else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) f.beilHieb(this.werkzeug, E.clip); this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
     else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]);
       chatSystem(`Du bekommst ${(m.n || 1) > 1 ? m.n + " × " : ""}${m.name || E.texte.einStueck}${mom ? ` – ${E.texte.momentKnopf}` : "."}${m.splitter ? ` Dazu ${m.splitter} Splitter.` : ""}`);
-      berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) { chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); this.hinweis(`${E.berufName} Level ${m.aufstieg}!`, 2600); } }
+      berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === E.tatMoment && a) { this.moment = { id: a.z.id, bis: performance.now() + (m.ms || 1500) }; this.hinweis(E.texte.moment, m.ms || 1500); }
     else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === E.grundLeer && D) chatSystem(E.texte.leer(D, art)); }
