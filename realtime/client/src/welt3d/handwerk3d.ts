@@ -47,16 +47,21 @@ export class HandwerkWelt {
     } catch (e) { console.warn("Handwerk: Werkbank fehlt", e); } }
   private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
     const f = this.figur, st = m.station || this.station, S = st && st !== "hand" ? STATIONEN[st] : null;
-    if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null;
+    if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
       if (r) chatSystem(`Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
-    else if (m.tat === "schlag" && f) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); const r = m.rezept ? rezept(m.rezept) : null, w = r ? WERK[werkTat(r)] : WERK.haemmern;
-      if (typeof f.werken === "function") f.werken(w.clips, w.werkzeug); else if (w.werkzeug) f.beilHieb(w.werkzeug, ""); }
     else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); berufDrop(BERUF_HAND, m.xp || 0);
       if (m.aufstieg) { chatSystem(`Glückwunsch! Handwerk ist jetzt Level ${m.aufstieg}.`); this.hinweis(`Handwerk Level ${m.aufstieg}!`, 2600); } }
     else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis("Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
-    else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; if (f) f.beilWeg();
+    else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; this.werkHalt(); if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); }
-    else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); this.aktiv = null; } }
+    else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); this.aktiv = null; this.werkHalt(); } }
+  /** Solange gearbeitet wird: die Werk-Bewegung immer wieder (Ofen, Hämmern, Weben, Schnitzen, Zusammenfügen; fabrik/werk_bewegungen.py) */
+  private werkZeit: ReturnType<typeof setTimeout> | null = null;
+  private werkLos(r: Rezept) { this.werkHalt(); const w = WERK[werkTat(r)], S = r.station !== "hand" ? STATIONEN[r.station] : null;
+    const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
+      if (this.aktiv) this.werkZeit = setTimeout(eins, ms); };
+    eins(); }
+  private werkHalt() { if (this.werkZeit) clearTimeout(this.werkZeit); this.werkZeit = null; }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
 
   /** Das Herstellfenster einer Werkstatt (wie in OSRS: Bilder nach Gruppe; antippen → Zutaten und Menge). nur: nur Rezepte mit diesem Gegenstand („Benutzen“) */

@@ -79,6 +79,14 @@ try {
   const bogen = await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return (i.rucksack || []).includes("mondkurzbogen_gewoehnlich") && !(i.rucksack || []).includes("ungespannt_mondkurzbogen_gewoehnlich"); }, null, { timeout: 20000 }).then(() => true).catch(() => false);
   check(bogen, "Rucksack: Benutzen auf den ungespannten Bogen, dann die Sehne antippen → Kurzbogen");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "rucksack-bogen.png" });
+  /* Werk-Bewegungen (fabrik/werk_bewegungen.py): geladen und abspielbar */
+  const werk = await anna.waitForFunction(() => { const f = window.EZW.welt3d.figur; return f.clips && ["werk_ofen", "werk_hammer", "werk_weben", "werk_schnitzen", "werk_fuegen"].every((c) => f.clips.has(c)); }, null, { timeout: 30000 }).then(() => true).catch(() => false);
+  check(werk, "Die fünf Werk-Bewegungen sind geladen (Ofen, Hammer, Weben, Schnitzen, Zusammenfügen)");
+  if (process.env.WERKBILD) { await anna.click('#ez-konto [data-t="zu"]').catch(() => {}); await anna.keyboard.press("Escape").catch(() => {});
+    await anna.evaluate(() => { const M = window.EZW.welt3d.motor; M.abstand = 10; M.neigen = 0.75; M.gieren = Math.PI / 2; });
+    for (const c of ["werk_ofen", "werk_hammer", "werk_weben", "werk_schnitzen", "werk_fuegen"]) for (const anteil of [0.25, 0.5]) {
+      await anna.evaluate(([c]) => { const f = window.EZW.welt3d.figur; f.blick(1, 0); f.werken([c], c === "werk_hammer" ? "../img/objekte3d/skilling/utensilien/hammer.glb" : ""); }, [c]);
+      await anna.waitForTimeout(1200 * anteil); await anna.screenshot({ path: process.env.WERKBILD + c + "_" + anteil + ".png", clip: { x: 440, y: 160, width: 400, height: 400 } }); await anna.waitForTimeout(1300); } }
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

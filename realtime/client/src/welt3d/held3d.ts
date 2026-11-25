@@ -36,8 +36,11 @@ export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localSt
 export interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
 export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
-  if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
+  if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
+    /* Grundfiguren: die Werk-Bewegungen des Handwerks (fabrik/werk_bewegungen.py) liegen in einer eigenen kleinen Datei – danach nachladen, sie kommen in dieselbe Liste */
+    if (WERK_BEWEGUNGEN.has(g)) void p.then((v) => gltfLader().loadAsync(MODELLE + "werk_" + g + ".glb").then((x) => { for (const c of x.animations) v.clips.set(c.name, c); })).catch(() => { /* ohne: Ersatzbewegungen */ }); }
   return p; }
+const WERK_BEWEGUNGEN = new Set(["basemann3d", "basefrau3d"]);
 
 /** Hautfarbe im Shader: Bildpunkte, die nach Haut aussehen (wie werkzeug/grundfigur.py), bekommen Helligkeit × Zielfarbe / Bezug */
 function hautFaerben(m: THREE.MeshStandardMaterial, faktor: THREE.Vector3) {
@@ -84,7 +87,7 @@ export class Held3D {
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */
   private zeigen() { if (!this.held) return; const A = this.held.aussehen, ids = this.held.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held.waffe].waffen, helm = ids.some((e) => e.startsWith("kopf.helm."));
     const soll = new Set([...ids, ...(A.frisur !== "glatze" && !helm ? ["kopf.haar." + A.frisur] : []), ...(A.g === "mann" && A.bart !== "ohne" ? ["kopf.bart." + A.bart] : [])].map(teil)); /* unter dem Helm keine Frisur */
-    this.soll = soll; const beil = Boolean(this.beil && this.beil.visible); for (const [n, o] of this.teile) o.visible = soll.has(n) && !(beil && this.verdeckt.test(n)); /* während eines Beilhiebs bleibt die Waffe weg */
+    this.soll = soll; const beil = Boolean(this.beil && this.beil.visible) || this.haendeFrei; for (const [n, o] of this.teile) o.visible = soll.has(n) && !(beil && this.verdeckt.test(n)); /* während eines Beilhiebs bleibt die Waffe weg */
     for (const id of ids) { const n = teil(id); if (AUSGELAGERT.test(id) && !this.teile.has(n) && !this.ladend.has(n)) { this.ladend.add(n); void this.teilLaden(id, n); } } }
   private soll = new Set<string>(); private ladend = new Set<string>();
   /** Ein ausgelagertes Teil laden und an das Skelett hängen (Knochen nach Namen, gleiche Grundhaltung: aus demselben Rig gebaut) */
@@ -111,7 +114,7 @@ export class Held3D {
     const n = this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
     this.spiele(n, true, true, c ? (c.duration * 1000) / HIEB_MS : 1); /* jeder Angriff dauert 2 Ticks, egal wie lang der Clip ist */ }
   /* ───────── Holzfällerei: Hieb mit dem Beil (das Beil liegt im Rucksack; während des Hiebs ist es in der rechten Hand, die angelegte Waffe ist so lange weg) ───────── */
-  /** was während eines Werkzeugschlags verschwindet */ private verdeckt = /^waffe/;
+  /** was während eines Werkzeugschlags verschwindet */ private verdeckt = /^waffe/; /** Werken ohne Werkzeug: Waffe und Schild sind weg */ private haendeFrei = false;
   private beil: THREE.Object3D | null = null; private beilUrl = ""; private beilZurueck: ReturnType<typeof setTimeout> | null = null;
   private async beilAnhaengen(url: string): Promise<THREE.Object3D | null> {
     const w = this.wurzel; if (!w) return null; if (this.beil && this.beilUrl === url) return this.beil;
@@ -140,11 +143,11 @@ export class Held3D {
   werken(wahl: string[], url = ""): number { const clip = wahl.find((c) => this.clips.has(c)) || "";
     if (url) return this.beilHieb(url, clip);
     if (this.gestorben || !this.mixer || !this.wurzel || !clip) return 0; const c = this.clips.get(clip)!;
-    this.verdeckt = /^(waffe|schild)/; for (const [n, o] of this.teile) if (this.verdeckt.test(n)) o.visible = false; /* Hände frei */
+    this.verdeckt = /^(waffe|schild)/; this.haendeFrei = true; for (const [n, o] of this.teile) if (this.verdeckt.test(n)) o.visible = false; /* Hände frei */
     if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), HIEB_MS + 120);
     this.einmal = true; this.spiele(clip, true, true, (c.duration * 1000) / HIEB_MS); return HIEB_MS; }
   /** Beil weg, angelegte Waffe wieder sichtbar */
-  beilWeg(): void { if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^(waffe|schild)/.test(n)) o.visible = this.soll.has(n); }
+  beilWeg(): void { this.haendeFrei = false; if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^(waffe|schild)/.test(n)) o.visible = this.soll.has(n); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
   /** Trinken (Figuren-Fabrik „trinken“, Hand zum Mund) – nur wenn das Modell die Bewegung hat. Zurück: Dauer in ms */
   trinken(): number { if (!this.wurzel || this.gestorben || !this.mixer) return 0; const c = this.clips.get("trinken"); if (!c) return 0; this.einmal = true; this.spiele("trinken", true); return c.duration * 1000; }
