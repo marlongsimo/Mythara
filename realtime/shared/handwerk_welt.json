@@ -1,5 +1,5 @@
 {
- "_hinweis": "Handwerk (25.11.2026): Kuhgehege im Osthof (Zaun und Sperren, Gebietsfelder; Tor unten in der Mitte) und die Felder der Werkbank in der Waldmark. Eingetragen von werkzeug/welt/lichtungen.mjs; die Kühe stehen in werkzeug/weltzonen.py (osthof → lager).",
+ "_hinweis": "Handwerk (25.11.2026): Kuhgehege im Osthof (24 × 13 Felder, Zaun geschlossen, Tor unten in der Mitte; Gebietsfelder) und die Felder der Werkbänke in der Waldmark und im Osthof (shared/handwerk.ts WERKSTAETTEN). Eingetragen von werkzeug/welt/lichtungen.mjs (alte Einträge derselben Region werden vorher entfernt); die Kühe stehen in werkzeug/weltzonen.py (osthof → lager).",
  "bauten": [
   {
    "name": "Kuhgehege",
@@ -7,120 +7,210 @@
    "objekte": [
     {
      "objekt": "dorf_zaun_01",
-     "x": 28,
-     "y": 9.6
+     "x": 23.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 30,
-     "y": 9.6
+     "x": 25.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 32,
-     "y": 9.6
+     "x": 27.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 34,
-     "y": 9.6
+     "x": 29.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 36,
-     "y": 9.6
+     "x": 31.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 38,
-     "y": 9.6
+     "x": 33.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 28,
-     "y": 17.6
+     "x": 35.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 30,
-     "y": 17.6
+     "x": 37.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 32,
-     "y": 17.6
+     "x": 39.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 36,
-     "y": 17.6
+     "x": 41.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 38,
-     "y": 17.6
+     "x": 43.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 27.2,
-     "y": 11
+     "x": 45.5,
+     "y": 6.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 38.8,
-     "y": 11
+     "x": 23.5,
+     "y": 19.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 27.2,
-     "y": 13
+     "x": 25.5,
+     "y": 19.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 38.8,
-     "y": 13
+     "x": 27.5,
+     "y": 19.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 27.2,
-     "y": 15
+     "x": 29.5,
+     "y": 19.5
     },
     {
      "objekt": "dorf_zaun_01",
-     "x": 38.8,
-     "y": 15
+     "x": 31.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 33.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 37.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 39.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 41.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 43.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 45.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 7.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 7.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 9.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 9.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 11.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 11.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 13.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 13.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 15.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 15.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 17.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 17.5
     }
    ],
    "sperren": [
     [
-     27,
-     9,
-     40,
-     10
+     22,
+     6,
+     47,
+     7
     ],
     [
-     27,
-     17,
-     33,
-     18
+     22,
+     19,
+     34,
+     20
     ],
     [
-     35,
-     17,
-     40,
-     18
+     36,
+     19,
+     47,
+     20
     ],
     [
-     27,
-     10,
-     28,
-     17
+     22,
+     7,
+     23,
+     19
     ],
     [
-     39,
-     10,
-     40,
-     17
+     46,
+     7,
+     47,
+     19
     ]
    ]
   },
@@ -134,6 +224,19 @@
      26,
      65,
      27
+    ]
+   ]
+  },
+  {
+   "name": "Werkbank Osthof",
+   "region": "osthof",
+   "objekte": [],
+   "sperren": [
+    [
+     39,
+     21,
+     42,
+     22
     ]
    ]
   }

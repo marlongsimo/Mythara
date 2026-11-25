@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
-import { STATIONEN, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, BERUF_HAND, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
+import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, BERUF_HAND, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
 import { chatSystem, handwerkBitten, tafelZeigen } from "../welt";
 import { berufDrop, skillStand } from "../skills";
 import { inventar } from "../inventar";
@@ -37,13 +37,13 @@ const handLevel = () => skillStand((inventar().berufe || {})[BERUF_HAND] || 0).L
 
 export class HandwerkWelt {
   /** gerade am Herstellen (Rezept-id) */ aktiv: string | null = null; private station: StationId | null = null; private glutBis = 0; private offen: StationId | null = null;
-  private bank: THREE.Object3D | null = null; private laedt = false;
+  private baenke = new Map<string, THREE.Object3D>(); private laedt = new Set<string>();
   constructor(private u: Umgebung) { addEventListener("ez-handwerk", (e) => this.nachricht((e as CustomEvent).detail)); }
   private get figur(): Werkzeugfigur | null { const f = this.u.figur as Partial<Werkzeugfigur> | null; return f && typeof f.beilHieb === "function" ? (f as Werkzeugfigur) : null; }
-  private async werkbankLaden() { this.laedt = true; const S = STATIONEN.werkbank;
+  private async werkbankLaden(S: Werkstatt) { this.laedt.add(S.id);
     try { const g = await gltfLader().loadAsync("../img/objekte3d/skilling/handwerk/werkbank.glb"), o = g.scene, box = new THREE.Box3().setFromObject(o), s = box.getSize(new THREE.Vector3());
       o.scale.setScalar(1.6 / Math.max(0.01, s.x, s.z)); o.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
-      o.position.set(S.x, this.u.motor.hoehe(S.x, S.y), S.y); this.u.motor.szene.add(o); this.bank = o;
+      o.position.set(S.x, this.u.motor.hoehe(S.x, S.y), S.y); this.u.motor.szene.add(o); this.baenke.set(S.id, o);
     } catch (e) { console.warn("Handwerk: Werkbank fehlt", e); } }
   private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
     const f = this.figur, st = m.station || this.station, S = st && st !== "hand" ? STATIONEN[st] : null;
@@ -57,7 +57,7 @@ export class HandwerkWelt {
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); this.aktiv = null; this.werkHalt(); } }
   /** Solange gearbeitet wird: die Werk-Bewegung immer wieder (Ofen, Hämmern, Weben, Schnitzen, Zusammenfügen; fabrik/werk_bewegungen.py) */
   private werkZeit: ReturnType<typeof setTimeout> | null = null;
-  private werkLos(r: Rezept) { this.werkHalt(); const w = WERK[werkTat(r)], S = r.station !== "hand" ? STATIONEN[r.station] : null;
+  private werkLos(r: Rezept) { this.werkHalt(); const w = WERK[werkTat(r)], o = this.u.ort, S = r.station !== "hand" ? WERKSTAETTEN.filter((W) => W.station === r.station).sort((a, b) => Math.hypot(a.x - o.x, a.y - o.y) - Math.hypot(b.x - o.x, b.y - o.y))[0] || null : null; /* die nächste Werkstatt dieser Art */
     const eins = () => { const f = this.figur; let ms = 1200; if (f && this.aktiv) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); ms = (typeof f.werken === "function" ? f.werken(w.clips, w.werkzeug) : w.werkzeug ? f.beilHieb(w.werkzeug, "") : 0) || 1200; }
       if (this.aktiv) this.werkZeit = setTimeout(eins, ms); };
     eins(); }
@@ -107,8 +107,8 @@ export class HandwerkWelt {
     const erstes = rs.find((r) => L >= r.level && wieOft(r) > 0); if (erstes) zeigen(erstes); }
   /** Liegt an diesem Bodenpunkt eine Werkstatt? Dann „Werkbank benutzen“ (hingehen, Rezeptfenster) bzw. in der Glut „Glut!“ */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr: { text: string; sym: string; tat: () => void }[] } | null {
-    let best: StationId | null = null, bd = 1.4; for (const S of Object.values(STATIONEN)) { const d = Math.hypot(S.x - x, S.y - y); if (d < bd) { bd = d; best = S.id; } } if (!best) return null;
-    const S = STATIONEN[best], o = this.u.ort, dx = o.x - S.x, dy = o.y - S.y, l = Math.hypot(dx, dy) || 1, glut = this.aktiv && performance.now() < this.glutBis;
+    let best: Werkstatt | null = null, bd = 1.4; for (const W of WERKSTAETTEN) { const d = Math.hypot(W.x - x, W.y - y); if (d < bd) { bd = d; best = W; } } if (!best) return null;
+    const W = best, S = { ...STATIONEN[W.station], x: W.x, y: W.y }, o = this.u.ort, dx = o.x - S.x, dy = o.y - S.y, l = Math.hypot(dx, dy) || 1, glut = this.aktiv && performance.now() < this.glutBis;
     const b = benutzt(), bn = b && GEGENSTAENDE[b.g] ? GEGENSTAENDE[b.g].name : "";
     return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? "Glut!" : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
       tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (this.aktiv) handwerkBitten("stop");
@@ -116,8 +116,8 @@ export class HandwerkWelt {
         this.fenster(S.id); },
       mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => chatSystem(`${S.name}: hier wird ${S.tun === "Werken" ? "gewerkt" : S.tun === "Schmelzen" ? "geschmolzen" : "geschmiedet"} (${rezepteAn(S.id).length} Rezepte).`) }] }; }
   /** Wo die Werkstätten stehen (Antippen am Bildschirm) */
-  punkte(): { x: number; y: number; h: number }[] { return Object.values(STATIONEN).filter((S) => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 40).map((S) => ({ x: S.x, y: S.y, h: 1.0 })); }
-  schritt(_dt: number): void { const S = STATIONEN.werkbank, nah = Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 60;
-    if (nah && !this.laedt) void this.werkbankLaden(); if (this.bank) this.bank.visible = nah; }
+  punkte(): { x: number; y: number; h: number }[] { return WERKSTAETTEN.filter((S) => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 40).map((S) => ({ x: S.x, y: S.y, h: 1.0 })); }
+  schritt(_dt: number): void { for (const S of WERKSTAETTEN) { if (S.station !== "werkbank") continue; const nah = Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 60;
+    if (nah && !this.laedt.has(S.id)) void this.werkbankLaden(S); const o = this.baenke.get(S.id); if (o) o.visible = nah; } }
   /** für Tests */ get fensterOffen(): StationId | null { return this.offen; }
 }

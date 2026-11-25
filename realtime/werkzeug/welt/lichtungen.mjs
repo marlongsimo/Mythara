@@ -72,17 +72,20 @@ for (const [rid, lichtungen] of nachRegion) {
   console.log(`${rid}: ${lichtungen.length} Lichtungen/Senken, ${gefaellt} Waldbäume entfernt, ${wiese} Felder Wiese, ${weg} Felder Feldweg, ${baumFelder.size} Baumfelder gesperrt`);
 }
 
-/* Handwerk (shared/handwerk_welt.json): Kuhgehege im Osthof und die Felder der Werkbank in der Waldmark – Zaun-Objekte und Sperren, mehrfach ausführbar */
-for (const b of JSON.parse(readFileSync(join(RT, "shared", "handwerk_welt.json"), "utf8")).bauten) {
-  const pfad = (n) => join(REG, b.region, n), spiel = JSON.parse(readFileSync(pfad("spiel.json"), "utf8")); let objekte = JSON.parse(readFileSync(pfad("objekte.json"), "utf8"));
-  const gleich = (p, q) => p.objekt === q.objekt && Math.abs(p.x - q.x) < 0.01 && Math.abs(p.y - q.y) < 0.01;
-  /* Bewuchs im Bereich weg, dann die Objekte (ohne doppelte) */
-  const [bx0, by0, bx1, by1] = b.sperren.reduce((r, [x0, y0, x1, y1]) => [Math.min(r[0], x0), Math.min(r[1], y0), Math.max(r[2], x1), Math.max(r[3], y1)], [1e9, 1e9, -1e9, -1e9]);
-  objekte = objekte.filter((p) => !(istBewuchs(p) && p.x > bx0 - 1 && p.x < bx1 + 1 && p.y > by0 - 1 && p.y < by1 + 1));
-  for (const o of b.objekte) if (!objekte.some((p) => gleich(p, o))) objekte.push({ id: `${b.region}_hw_${o.objekt}_${o.x}_${o.y}`.replace(/\./g, "_"), ...o });
+/* Handwerk (shared/handwerk_welt.json): Kuhgehege im Osthof und die Felder der Werkbänke – Zaun-Objekte und Sperren, mehrfach ausführbar:
+   je Region zuerst die früheren Handwerk-Einträge weg (Objekte „<region>_hw_…“, Sperren mit quelle „handwerk“), dann alle Bauten der Region neu */
+const HW = JSON.parse(readFileSync(join(RT, "shared", "handwerk_welt.json"), "utf8")).bauten;
+for (const region of [...new Set(HW.map((b) => b.region))]) {
+  const pfad = (n) => join(REG, region, n), spiel = JSON.parse(readFileSync(pfad("spiel.json"), "utf8")); let objekte = JSON.parse(readFileSync(pfad("objekte.json"), "utf8"));
   const k = spiel.kollision || (spiel.kollision = { sperren: [], freigeben: [] });
-  for (const [x0, y0, x1, y1] of b.sperren) if (!k.sperren.some((z) => z.x0 === x0 && z.y0 === y0 && z.x1 === x1 && z.y1 === y1)) k.sperren.push({ art: "rechteck", x0, y0, x1, y1 });
+  objekte = objekte.filter((p) => !String(p.id || "").startsWith(region + "_hw_")); k.sperren = k.sperren.filter((z) => z.quelle !== "handwerk");
+  for (const b of HW.filter((x) => x.region === region)) {
+    /* Bewuchs im Bereich weg, dann die Objekte */
+    const [bx0, by0, bx1, by1] = b.sperren.reduce((r, [x0, y0, x1, y1]) => [Math.min(r[0], x0), Math.min(r[1], y0), Math.max(r[2], x1), Math.max(r[3], y1)], [1e9, 1e9, -1e9, -1e9]);
+    objekte = objekte.filter((p) => !(istBewuchs(p) && p.x > bx0 - 1 && p.x < bx1 + 1 && p.y > by0 - 1 && p.y < by1 + 1));
+    for (const o of b.objekte) objekte.push({ id: `${region}_hw_${o.objekt}_${o.x}_${o.y}`.replace(/\./g, "_"), ...o });
+    for (const [x0, y0, x1, y1] of b.sperren) k.sperren.push({ art: "rechteck", x0, y0, x1, y1, quelle: "handwerk" });
+    console.log(`${region}: ${b.name} – ${b.objekte.length} Objekte, ${b.sperren.length} Sperren`); }
   writeFileSync(pfad("objekte.json"), "[\n" + objekte.map((o) => " " + JSON.stringify(o)).join(",\n") + "\n]\n");
   writeFileSync(pfad("spiel.json"), JSON.stringify(spiel, null, 1) + "\n");
-  console.log(`${b.region}: ${b.name} – ${b.objekte.length} Objekte, ${b.sperren.length} Sperren`);
 }

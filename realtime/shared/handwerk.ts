@@ -22,6 +22,14 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
+/** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
+export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string }
+export const WERKSTAETTEN: Werkstatt[] = [
+  { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
+  { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
+  { id: "werkbank", station: "werkbank", x: STATIONEN.werkbank.x, y: STATIONEN.werkbank.y, ort: "waldmark" },
+  { id: "werkbank_osthof", station: "werkbank", x: 6536.5, y: 6421.5, ort: "osthof" },   /* auf der Wiese südlich des Kuhgeheges, rechts neben dem Tor (handwerk_welt.json) */
+];
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
 

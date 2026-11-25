@@ -9,7 +9,7 @@ import { GEGENSTAENDE, Platz, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, f
 import { aktiverHeld } from "./held";
 
 /** rucksack: je Fach die Gegenstands-id; anzahl: je Fach die Menge (Stapel, z. B. Splitter) */
-export interface Inventar { angelegt: Partial<Record<Platz, string>>; rucksack: string[]; anzahl?: number[]; waffe?: string; /** Bank (nur mit Server): [Gegenstand, Menge] */ bank?: [string, number][]; /** XP der Berufe (Holzfällerei …) */ berufe?: Record<string, number> }
+export interface Inventar { angelegt: Partial<Record<Platz, string>>; rucksack: string[]; anzahl?: number[]; waffe?: string; /** Bank (nur mit Server): [Gegenstand, Menge] */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … 9 */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …) */ berufe?: Record<string, number> }
 const SCHLUESSEL = "ez_inventar";
 function lies(): Inventar | null { try { const v = JSON.parse(localStorage.getItem(SCHLUESSEL) || "null"); return v && v.angelegt && Array.isArray(v.rucksack) ? v : null; } catch { return null; } }
 function schreib(i: Inventar) { try { localStorage.setItem(SCHLUESSEL, JSON.stringify(i)); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-inventar", { detail: i })); }
@@ -21,8 +21,8 @@ export const inventarVomServerDa = (): boolean => vomServer !== null;
 /** Die Welt-Verbindung meldet sich als Weg zum Server an */
 export function inventarSender(f: ((m: object) => void) | null): void { sender = f; }
 /** Der Server schickt das Inventar (nach dem Anmelden und nach jeder Änderung) */
-export function inventarVomServer(roh: { angelegt?: Record<string, string>; rucksack?: Fach[]; bank?: [string, number][]; berufe?: Record<string, number> }): void { const h = aktiverHeld(), faecher = (roh.rucksack || []).filter((f) => GEGENSTAENDE[fachG(f)]);
-  vomServer = { angelegt: Object.fromEntries(Object.entries(roh.angelegt || {}).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"], rucksack: faecher.map(fachG), anzahl: faecher.map(fachN), waffe: h ? h.waffe : undefined, bank: (Array.isArray(roh.bank) ? roh.bank : []).filter((b) => Array.isArray(b) && GEGENSTAENDE[b[0]] && b[1] > 0), berufe: roh.berufe && typeof roh.berufe === "object" ? { ...roh.berufe } : {} }; schreib(vomServer); }
+export function inventarVomServer(roh: { angelegt?: Record<string, string>; rucksack?: Fach[]; bank?: [string, number][]; bankTabs?: Record<string, number>; berufe?: Record<string, number> }): void { const h = aktiverHeld(), faecher = (roh.rucksack || []).filter((f) => GEGENSTAENDE[fachG(f)]);
+  vomServer = { angelegt: Object.fromEntries(Object.entries(roh.angelegt || {}).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"], rucksack: faecher.map(fachG), anzahl: faecher.map(fachN), waffe: h ? h.waffe : undefined, bank: (Array.isArray(roh.bank) ? roh.bank : []).filter((b) => Array.isArray(b) && GEGENSTAENDE[b[0]] && b[1] > 0), berufe: roh.berufe && typeof roh.berufe === "object" ? { ...roh.berufe } : {}, bankTabs: roh.bankTabs && typeof roh.bankTabs === "object" ? { ...roh.bankTabs } : {} }; schreib(vomServer); }
 /** Gehört das Inventar dem Server (mit Konto verbunden)? */
 export const inventarAmServer = (): boolean => Boolean(vomServer && sender);
 const bitten = (m: object): boolean => { if (!vomServer || !sender) return false; sender(m); return true; };
@@ -33,11 +33,11 @@ export function kaufenBitten(laden: string, g: string): boolean { return bitten(
 /** Fallen lassen: aus dem Rucksack auf den Boden (nur mit Server-Inventar) */
 export function fallenLassen(i: number): boolean { return bitten({ t: "inv", tat: "fallen", i }); }
 /** Bank (shared/bank.ts): einzahlen/abheben (menge 0 = alle) oder alles einzahlen – der Server prüft Nähe, Platz und Mengen */
-export function bankBitten(m: { tat: "ein" | "ab"; g: string; menge: number } | { tat: "alles"; was: "rucksack" | "ausruestung" }): boolean { return bitten({ t: "bank", ...m }); }
+export function bankBitten(m: { tat: "ein" | "ab"; g: string; menge: number; tab?: number } | { tat: "alles"; was: "rucksack" | "ausruestung" } | { tat: "tab"; g: string; tab: number }): boolean { return bitten({ t: "bank", ...m }); }
 
 /** Das Inventar (neu aus der Startwaffe, wenn noch keins da ist oder die Startwaffe im Editor geändert wurde) */
 export function inventar(): Inventar {
-  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) } };
+  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) }, bankTabs: { ...(vomServer.bankTabs || {}) } };
   const h = aktiverHeld(), da = lies();
   if (da && (!h || da.waffe === h.waffe)) { const angelegt = Object.fromEntries(Object.entries(da.angelegt).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"]; /* nicht mehr vorhandene Gegenstände (etwa das frühere Leinenhemd) fallen weg */
     return { angelegt, rucksack: [...da.rucksack].filter((g) => GEGENSTAENDE[g]), waffe: da.waffe }; }

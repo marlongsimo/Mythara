@@ -16,7 +16,7 @@ import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, dingTat, mooshockerSehen } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
-import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankAbheben, bankAlles } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
@@ -75,7 +75,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; rezept?: string; laden?: string; g?: string; anName?: string; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; rezept?: string; tab?: unknown; laden?: string; g?: string; anName?: string; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -153,7 +153,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Eine Bank gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       let fehler: string | null = null; const g = typeof e.g === "string" ? e.g : "", n = Number.isInteger(e.menge) && (e.menge as number) >= 0 && (e.menge as number) <= BANK_MAX ? (e.menge as number) : -1; /* 0 = alle */
       if (s.wx === undefined || s.wy === undefined || !nahAnBank(s.ort, s.wx, s.wy)) fehler = "Geh näher an einen Bankschalter.";
-      else if (e.tat === "ein" && g && n >= 0) fehler = bankEinzahlen(H.sb, s.nutzer, g, n);
+      else if (e.tat === "ein" && g && n >= 0) fehler = bankEinzahlen(H.sb, s.nutzer, g, n, Number(e.tab) || 0);
+      else if (e.tat === "tab" && g) fehler = bankReiter(H.sb, s.nutzer, g, Number(e.tab));
       else if (e.tat === "ab" && g && n >= 0) fehler = bankAbheben(H.sb, s.nutzer, g, n);
       else if (e.tat === "alles" && (e.was === "rucksack" || e.was === "ausruestung")) fehler = bankAlles(H.sb, s.nutzer, e.was);
       else fehler = "Das versteht die Bank nicht.";

@@ -175,7 +175,9 @@ export class Welt3D {
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
-        else if (istReihe(typ)) { let best = 99, dx = 1, dy = 0; for (const [, x2, y2] of reihen) { const e = Math.hypot(x2 - x, y2 - y); if (e > 0.1 && e < best) { best = e; dx = x2 - x; dy = y2 - y; } } if (Math.abs(dy) > Math.abs(dx) * 1.2) ry = Math.PI / 2; }
+        else if (istReihe(typ)) { /* Zaun und Palisade: nach Nachbarn ausrichten, die genau in einer Reihe stehen (waagerecht oder senkrecht, höchstens 2,6 Felder) – so stehen an Ecken keine Stücke quer */
+          let waag = 99, senk = 99; for (const [, x2, y2] of reihen) { const ax = Math.abs(x2 - x), ay = Math.abs(y2 - y); if (ax + ay < 0.1) continue; if (ay < 0.3 && ax < 2.6) waag = Math.min(waag, ax); if (ax < 0.3 && ay < 2.6) senk = Math.min(senk, ay); }
+          if (senk < waag) ry = Math.PI / 2; }
         if (!gruppen.has(t)) gruppen.set(t, { m: [], f: [] });
         const sk = sk0 * (istBaum(typ) ? 0.9 + zufall(y, x) * 0.2 : 1), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry);
         gruppen.get(t)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));

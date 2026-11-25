@@ -184,6 +184,6 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
-  kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } };
+  kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

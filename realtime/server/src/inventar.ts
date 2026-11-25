@@ -11,14 +11,14 @@
  */
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
 import { Startwaffe } from "../../shared/aussehen";
-import { BANK_PLAETZE, BANK_MAX } from "../../shared/bank";
+import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number> }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number> }
 const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): [string, number][] { const b: [string, number][] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
@@ -33,7 +33,10 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   const rucksack: Fach[] = []; for (const f of o.rucksack) { const g = typeof f === "string" ? f : f && typeof f === "object" ? String((f as { g?: unknown }).g) : "", G = GEGENSTAENDE[g]; if (!G) continue;
     if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
   const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
-  { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank; }
+  { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank;
+    const t = (o as { bankTabs?: unknown }).bankTabs; if (t && typeof t === "object" && bank.length) { const tabs: Record<string, number> = {};
+      for (const [g, v] of Object.entries(t as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (bank.some((b) => b[0] === g) && n >= 1 && n <= BANK_REITER) tabs[g] = n; }
+      if (Object.keys(tabs).length) { inv.bankTabs = tabs; reiterOrdnen(inv); } } }
   { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
   if ((inv.v ?? 1) < INV_STAND) { /* Startausrüstung erweitert (Rüstung zu Bogen und Stab): einmal nachreichen, wenn der Platz frei ist und sie nirgends liegt */
     for (const [platz, g] of Object.entries(startAusruestung(waffe)) as [Platz, string][]) if (!inv.angelegt[platz] && !inv.rucksack.some((f) => fachG(f) === g)) inv.angelegt[platz] = g;
@@ -124,10 +127,22 @@ export function besitzt(nutzer: string): string[] { const e = je.get(nutzer); if
 export function freieFaecher(nutzer: string): number { const e = je.get(nutzer); return e ? RUCKSACK_PLAETZE - e.inv.rucksack.length : 0; }
 
 /* ───────── Bank (shared/bank.ts) – Nähe zum Schalter prüft welt.ts ───────── */
+/** Reiter aufräumen: nur Gegenstände, die in der Bank liegen; leere Reiter fallen weg, die folgenden rücken auf (1, 2, 3 … ohne Lücke) */
+function reiterOrdnen(inv: Inv): void { const t = inv.bankTabs; if (!t) return; const B = inv.bank || [];
+  for (const g of Object.keys(t)) if (!B.some((b) => b[0] === g)) delete t[g];
+  const benutzt = [...new Set(Object.values(t))].sort((a, b) => a - b), neu = new Map(benutzt.map((n, i) => [n, i + 1]));
+  for (const g of Object.keys(t)) t[g] = neu.get(t[g])!; if (!Object.keys(t).length) delete inv.bankTabs; }
+/** Einen Gegenstand der Bank in einen Reiter legen (0 = ohne Reiter). Ein neuer Reiter ist die nächste freie Nummer */
+export function bankReiter(sb: Sb, nutzer: string, g: string, tab: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  if (!bankVon(e).some((b) => b[0] === g)) return "Das liegt nicht in deiner Bank."; if (!Number.isInteger(tab) || tab < 0 || tab > BANK_REITER) return "Diesen Reiter gibt es nicht.";
+  const t = (e.inv.bankTabs = e.inv.bankTabs || {}), anzahl = new Set(Object.values(t)).size; if (tab > anzahl + 1 || (tab === anzahl + 1 && anzahl >= BANK_REITER)) return "Mehr Reiter gehen nicht.";
+  if (tab === 0) delete t[g]; else t[g] = tab; reiterOrdnen(e.inv); geaendert(sb, nutzer, e); return null; }
 const bankVon = (e: Eintrag): [string, number][] => (e.inv.bank = e.inv.bank || []);
 /** Einzahlen: n Stück von g aus dem Rucksack (alle Fächer, hinten zuerst) in die Bank; n ≤ 0 = alle. Zurück: Fehlertext oder null */
-export function bankEinzahlen(sb: Sb, nutzer: string, g: string, n: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
-  const r = einzahlen(e, g, n); if (r === null) geaendert(sb, nutzer, e); return r; }
+export function bankEinzahlen(sb: Sb, nutzer: string, g: string, n: number, tab = 0): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  const neu = !bankVon(e).some((b) => b[0] === g), r = einzahlen(e, g, n); if (r !== null) return r;
+  if (neu && Number.isInteger(tab) && tab >= 1 && tab <= BANK_REITER && new Set(Object.values(e.inv.bankTabs || {})).has(tab)) { (e.inv.bankTabs = e.inv.bankTabs || {})[g] = tab; } /* neu Eingezahltes landet im offenen Reiter (wie in OSRS) */
+  geaendert(sb, nutzer, e); return null; }
 function einzahlen(e: Eintrag, g: string, n: number): string | null { const hat = e.inv.rucksack.reduce((s, f) => s + (fachG(f) === g ? fachN(f) : 0), 0); if (!hat) return "Das hast du nicht im Rucksack.";
   const B = bankVon(e), fach = B.find((b) => b[0] === g); if (!fach && B.length >= BANK_PLAETZE) return "Deine Bank ist voll.";
   const menge = Math.min(n > 0 ? n : hat, hat, BANK_MAX - (fach ? fach[1] : 0)); if (menge <= 0) return "Davon passt nichts mehr in die Bank.";
@@ -138,7 +153,7 @@ function einzahlen(e: Eintrag, g: string, n: number): string | null { const hat 
 export function bankAbheben(sb: Sb, nutzer: string, g: string, n: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
   const B = bankVon(e), i = B.findIndex((b) => b[0] === g); if (i < 0) return "Das liegt nicht in deiner Bank.";
   const will = Math.min(n > 0 ? n : B[i][1], B[i][1]), k = einlegen(e, g, will); if (!k) return "Dein Rucksack ist voll.";
-  B[i][1] -= k; if (B[i][1] <= 0) B.splice(i, 1); geaendert(sb, nutzer, e); return k < will ? "Nicht alles passte in den Rucksack." : null; }
+  B[i][1] -= k; if (B[i][1] <= 0) { B.splice(i, 1); reiterOrdnen(e.inv); } geaendert(sb, nutzer, e); return k < will ? "Nicht alles passte in den Rucksack." : null; }
 /** Alles einzahlen: den ganzen Rucksack oder die ganze angelegte Ausrüstung. Zurück: Fehler-/Hinweistext oder null */
 export function bankAlles(sb: Sb, nutzer: string, was: "rucksack" | "ausruestung"): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; let fehler: string | null = null, etwas = false;
   if (was === "rucksack") { for (const g of [...new Set(e.inv.rucksack.map(fachG))]) { const r = einzahlen(e, g, 0); if (r) fehler = r; else etwas = true; } if (!etwas && !fehler) return "Dein Rucksack ist leer."; }

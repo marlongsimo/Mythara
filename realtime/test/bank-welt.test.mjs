@@ -54,7 +54,14 @@ try {
   await tun(anna, { tat: "ab", g: "heiltrank", menge: 2 }); check(imRucksack(anna, "heiltrank") === 2 && bank(anna).heiltrank === 1, "2 Heiltränke abgehoben, 1 bleibt");
   await tun(anna, { tat: "ab", g: "nichtda", menge: 1 }); check(anna.chat.some((t) => /nicht in deiner Bank/.test(t)), "Unbekanntes kann man nicht abheben");
   await tun(anna, { tat: "ein", g: "splitter", menge: -5 }); check(anna.chat.some((t) => /versteht/.test(t)), "Ungültige Menge wird abgelehnt");
+  /* Reiter wie in OSRS: Splitter in einen neuen Reiter, Lücken werden geschlossen, Unsinn abgelehnt */
+  const tabs = () => (anna.inv && anna.inv.bankTabs) || {};
+  await tun(anna, { tat: "tab", g: "splitter", tab: 1 }); check(tabs().splitter === 1, `Splitter in Reiter 1 gelegt (${JSON.stringify(tabs())})`);
+  await tun(anna, { tat: "tab", g: "splitter", tab: 5 }); check(anna.chat.some((t) => /Mehr Reiter|gibt es nicht/.test(t)) && tabs().splitter === 1, "Reiter 5 ohne Reiter 2–4: abgelehnt");
+  await tun(anna, { tat: "tab", g: "splitter", tab: 0 }); check(!tabs().splitter, "Aus dem Reiter genommen: ohne Reiter");
+  await tun(anna, { tat: "tab", g: "splitter", tab: 1 });
   await schlaf(1800); const zuletzt = GESPEICHERT[GESPEICHERT.length - 1];
+  check(zuletzt && zuletzt.p_inventar.bankTabs && zuletzt.p_inventar.bankTabs.splitter === 1, "Reiter gespeichert (Feld „bankTabs“)");
   check(zuletzt && Array.isArray(zuletzt.p_inventar.bank) && zuletzt.p_inventar.bank.some(([g, n]) => g === "splitter" && n === 100), "Gespeichert über rpg_held_inventar_setzen: die Bank liegt im Inventar (Feld „bank“)");
   check(JSON.stringify(zuletzt.p_inventar).length < 16384, `Inventar bleibt unter der Grenze der Datenbank (${JSON.stringify(zuletzt.p_inventar).length} Zeichen)`);
   /* falscher Ort: an denselben Koordinaten, aber im Kreuzwald angemeldet */

@@ -5,7 +5,7 @@
  *   · Glut (12 % je Stück): Fenster von 1,5 s; „handwerk“/„glut“ darin → beim nächsten Stück eine Einheit der häufigsten Zutat gespart, 50 % mehr XP.
  *   · Abbruch: Menge fertig, Zutaten aus, Rucksack voll, weggegangen, „stop“ oder Verbindung weg.
  */
-import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, BERUF_HAND } from "../../shared/handwerk";
+import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, BERUF_HAND } from "../../shared/handwerk";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer } from "./inventar";
@@ -21,7 +21,7 @@ export let wuerfel = Math.random;
 
 export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: object) => void }): void { sb = o.sb; senden = o.senden; }
 export const handwerkLevel = (nutzer: string): number => levelAus(berufXp(nutzer, BERUF_HAND));
-const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ const S = STATIONEN[r.station]; return s.wx !== undefined && s.wy !== undefined && Math.hypot(s.wx - S.x, s.wy - S.y) <= HANDWERK_WEIT; };
+const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return s.wx !== undefined && s.wy !== undefined && WERKSTAETTEN.some((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT); };   /* irgendein Standort dieser Station */
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
 /** Was fehlt für ein Stück (null = alles da); spar: diese Zutat (Index) braucht eine Einheit weniger (Glut) */

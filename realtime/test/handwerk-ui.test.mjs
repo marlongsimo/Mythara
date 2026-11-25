@@ -51,7 +51,7 @@ try {
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && (i.rucksack || []).includes("flachs"); }, null, { timeout: 30000 }).catch(() => {});
   const ort = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
   check(Math.hypot(ort.x - 6463.5, ort.y - 6428.5) < 2, `Anna steht vor der Werkbank (${ort.x.toFixed(1)}, ${ort.y.toFixed(1)}, ${ort.hier})`);
-  check(await anna.waitForFunction(() => window.EZW.welt3d.handwerk && window.EZW.welt3d.handwerk.bank, null, { timeout: 60000 }).then(() => true).catch(() => false), "Die Werkbank steht in der Welt (werkbank.glb)");
+  check(await anna.waitForFunction(() => window.EZW.welt3d.handwerk && window.EZW.welt3d.handwerk.baenke.size > 0, null, { timeout: 60000 }).then(() => true).catch(() => false), "Die Werkbank steht in der Welt (werkbank.glb)");
   const st = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6463.5, 6426.5); return s && s.text; }); check(st === "Werkbank benutzen", "An der Werkbank: „Werkbank benutzen“ (" + st + ")");
   { const q = await schirm(anna, 6463.5, 6426.5, 0.8); await anna.mouse.click(q.x, q.y); }
   const fenster = await anna.waitForSelector("#ez-konto .tafel.handwerk", { timeout: 20000 }).then(() => true).catch(() => false); check(fenster, "Antippen: das Herstellfenster der Werkbank geht auf");

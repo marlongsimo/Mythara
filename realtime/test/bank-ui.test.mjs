@@ -76,6 +76,13 @@ try {
   await anna.click('.tafel.bank .bmenge[data-m="alle"]'); await anna.click('.tafel.bank .brucksack .bfach[data-g="splitter"]'); await anna.waitForTimeout(800);
   check(await inBank(anna, "splitter") === 12 && await imRucksack(anna, "splitter") === 0, "Menge „Alle“: alle Splitter in der Bank (12)");
   check(await anna.evaluate(() => (document.querySelector('.tafel.bank .braster .bfach[data-g="splitter"] b') || {}).textContent === "12"), "Im Bankraster steht die Menge (12, gelb wie in OSRS)");
+  /* Reiter: Splitter per Rechtsklick „In neuen Reiter“ – oben erscheint Reiter 1 mit dem Bild der Splitter */
+  await anna.click('.tafel.bank .braster .bfach[data-g="splitter"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("In neuen Reiter")');
+  check(await anna.waitForSelector('.tafel.bank .breiter .breit[data-r="1"] canvas', { timeout: 10000 }).then(() => true).catch(() => false), "Bank-Reiter: „In neuen Reiter“ legt Reiter 1 an (mit Bild)");
+  await anna.click('.tafel.bank .breiter .breit[data-r="1"]'); await anna.waitForTimeout(300);
+  check(await anna.evaluate(() => [...document.querySelectorAll(".tafel.bank .braster .bfach")].map((b) => b.dataset.g).join() === "splitter"), "Reiter 1 zeigt nur die Splitter");
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "bank-reiter.png" });
+  await anna.click('.tafel.bank .breiter .breit[data-r="0"]'); await anna.waitForTimeout(200);
   await anna.click('.tafel.bank .bmenge[data-m="5"]'); await anna.click('.tafel.bank .braster .bfach[data-g="splitter"]'); await anna.waitForTimeout(800);
   check(await inBank(anna, "splitter") === 7 && await imRucksack(anna, "splitter") === 5, "Menge 5 in der Bank angetippt: 5 abgehoben (Bank 7)");
   await anna.click('.tafel.bank .balles[data-was="ausruestung"]'); await anna.waitForFunction(() => /rundschild/.test(JSON.stringify(JSON.parse(localStorage.getItem("ez_inventar") || "{}").bank || [])), null, { timeout: 30000 }).catch(() => {});

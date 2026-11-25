@@ -9,6 +9,8 @@
 
 /** So viele verschiedene Gegenstände fasst ein Bankkonto */
 export const BANK_PLAETZE = 200;
+/** Reiter der Bank (wie in OSRS): höchstens so viele; ein leerer Reiter verschwindet, die folgenden rücken auf */
+export const BANK_REITER = 9;
 /** Höchstmenge je Gegenstand in der Bank */
 export const BANK_MAX = 2_147_483_647;
 /** So nah muss man an einem Schalter oder Bankmitarbeiter stehen (Felder) */

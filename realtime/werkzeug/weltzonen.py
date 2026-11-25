@@ -32,7 +32,7 @@ BESONDERS = {
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
                "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
-               + [("kuh", 6525, 6411), ("kuh", 6528, 6411), ("kuh", 6531, 6411), ("kuh", 6534, 6411), ("kuh", 6526, 6413), ("kuh", 6529, 6413), ("kuh", 6532, 6413), ("kuh", 6525, 6415), ("kuh", 6528, 6415), ("kuh", 6531, 6415)]},
+               + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",

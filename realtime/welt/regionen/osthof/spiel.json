@@ -63,38 +63,51 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 27,
-    "y0": 9,
-    "x1": 40,
-    "y1": 10
+    "x0": 22,
+    "y0": 6,
+    "x1": 47,
+    "y1": 7,
+    "quelle": "handwerk"
    },
    {
     "art": "rechteck",
-    "x0": 27,
-    "y0": 17,
-    "x1": 33,
-    "y1": 18
+    "x0": 22,
+    "y0": 19,
+    "x1": 34,
+    "y1": 20,
+    "quelle": "handwerk"
    },
    {
     "art": "rechteck",
-    "x0": 35,
-    "y0": 17,
-    "x1": 40,
-    "y1": 18
+    "x0": 36,
+    "y0": 19,
+    "x1": 47,
+    "y1": 20,
+    "quelle": "handwerk"
    },
    {
     "art": "rechteck",
-    "x0": 27,
-    "y0": 10,
-    "x1": 28,
-    "y1": 17
+    "x0": 22,
+    "y0": 7,
+    "x1": 23,
+    "y1": 19,
+    "quelle": "handwerk"
+   },
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 7,
+    "x1": 47,
+    "y1": 19,
+    "quelle": "handwerk"
    },
    {
     "art": "rechteck",
     "x0": 39,
-    "y0": 10,
-    "x1": 40,
-    "y1": 17
+    "y0": 21,
+    "x1": 42,
+    "y1": 22,
+    "quelle": "handwerk"
    }
   ],
   "freigeben": []
