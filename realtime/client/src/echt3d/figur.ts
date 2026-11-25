@@ -94,6 +94,8 @@ export class Figur3D extends Phaser.GameObjects.Container {
   setFrame(): this { return this; }
   setInteractive(...a: unknown[]): this { if (a.length) return super.setInteractive(...(a as [])); return super.setInteractive(new Phaser.Geom.Rectangle(-this.width / 2, -this.height, this.width, this.height), Phaser.Geom.Rectangle.Contains); }
   /** Besiegt: Todesbewegung einmal, dann liegen bleiben. Zurück: Dauer in ms */
+  /** Getroffen: kurze Treffer-Bewegung, falls das Modell eine hat – nicht während eines Angriffs oder nach dem Tod */
+  treffer(): void { const d = this.d; if (!d || this.gestorben || this.einmal || !d.hat("treffer")) return; this.einmal = true; d.spiele("treffer", true, () => { this.einmal = false; this.anwenden(); }); }
   sterben(): number { if (!this.d || !this.d.hat("tod")) return 0; this.gestorben = true; this.einmal = false; this.zustand = "tod"; this.d.spiele("tod", true); return this.d.dauer("tod"); }
   /** Teleport (Abreise): Bewegung teleport_weg mit Lichtsäule; die Figur vergeht im Licht und bleibt weg. Zurück: Dauer in ms (0 = keine 3D-Figur bereit) */
   teleport(): number { const d = this.d; if (!d || this.gestorben) return 0; this.gestorben = true; this.einmal = false; this.zustand = "teleport";

@@ -81,6 +81,8 @@ export class ModulFigur extends Phaser.GameObjects.Container {
   /* ---------- Ablauf ---------- */
   /** Besiegt: die Todesbewegung einmal abspielen und auf dem letzten Bild liegen bleiben. false, wenn die Figur keine hat */
   private gestorben = false;
+  /** Getroffen: kurze Treffer-Bewegung, falls die Figur eine hat – nicht während eines Angriffs oder nach dem Tod */
+  treffer(): void { const M = this.meta; if (!M || this.gestorben || this.einmal || !M.animationen.treffer) return; this.einmal = "treffer"; this.bild = 0; this.uhr = 0; this.zeigen(); }
   sterben(): number { const M = this.meta; if (!M || !M.animationen.tod) return 0; this.gestorben = true; this.einmal = null; this.zustand = "tod"; this.bild = 0; this.uhr = 0; this.zeigen();
     return 1000 * M.animationen.tod.bilder / M.animationen.tod.rate; }
   private setze(z: string) { if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) { this.bild = 0; this.uhr = 0; this.zeigen(); } }

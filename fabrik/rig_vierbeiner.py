@@ -3,7 +3,7 @@
   python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9] [bein=0.42] [hals=1] [schwanz=1] [bewegungen=ruhe,laufen]
 
 Optionen: bein = Hüfthöhe als Anteil der Höhe (Kuh: 0,5); hals = eigener Halsknochen zwischen Rumpf und Kopf (Kopf zum Boden senken);
-schwanz = Schwanzknochen hinten; bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), tod (kippt zur Seite).
+schwanz = Schwanzknochen hinten; bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite).
 
 Erwartet: Kopf vorn (-y), Länge entlang y, vier Füße am Boden.
 Knochen: wurzel – rumpf – kopf; wurzel – bein.VL/VR/HL/HR (vorn/hinten, links/rechts; je Bein ein steifer Knochen von der Hüfte zum Fuß).
@@ -118,13 +118,19 @@ def angriff(t):                                                                 
     kopf_runter(g); vor(v * H); dreh("rumpf", ((1, 0, 0), r))
     for n in ("VL", "VR"): dreh("bein." + n, ((1, 0, 0), -r * 2))
     for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), r * 2.5))
+def treffer(t):                                                                                 # getroffen: Kopf hoch und zur Seite, Ruck zurück, Hinterbeine knicken kurz ein
+    u = math.sin(math.pi * min(1.0, t / 0.9)) ** 1.5
+    kopf_runter(-22 * u); dreh("kopf", ((0, 0, 1), 18 * u)) if not HALS else dreh("hals", ((1, 0, 0), -22 * u), ((0, 0, 1), 14 * u))
+    vor(-0.06 * H * u); dreh("rumpf", ((1, 0, 0), -5 * u), ((0, 1, 0), 4 * u)); hoch(-0.03 * H * u)
+    for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), -10 * u))
+    if SCHWANZ: dreh("schwanz", ((1, 0, 0), -25 * u))
 def tod(t):                                                                                     # kippt zur Seite und bleibt liegen
     u = min(1.0, t / 0.7); u = u * u * (3 - 2 * u); d = max(0.0, (t - 0.7) / 0.3)
     dreh("wurzel", ((0, 1, 0), 86 * u)); hoch(0.17 * H * u); kopf_runter(-10 * u + 20 * d)
     for n in ("VL", "HL"): dreh("bein." + n, ((0, 1, 0), -12 * u))
     for n in ("VR", "HR"): dreh("bein." + n, ((0, 1, 0), 10 * u))
 ALLE = {"ruhe": (ruhe, 48, True, {}), "laufen": (laufen, 16, True, {}), "fressen": (fressen, 72, True, {}), "gehen": (gehen, 32, True, {}),
-        "angriff": (angriff, 20, False, {"treffer": 10}), "tod": (tod, 30, False, {"halten": 30})}
+        "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30})}
 AUSWAHL = opt.get("bewegungen", "ruhe,laufen").split(",")
 BEWEGUNGEN = {("ruhe" if n == "fressen" else n): ALLE[n] for n in AUSWAHL}                       # fressen ist die Ruhe der Weidetiere
 ARM.animation_data_create()
