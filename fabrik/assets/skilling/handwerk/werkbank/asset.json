@@ -1,0 +1,9 @@
+{
+  "id": "handwerk.werkbank",
+  "name": "Werkbank",
+  "kategorie": "handwerk",
+  "aktuell": "v001",
+  "masse_m": "1,8 × 0,8 m, Platte 0,9 m hoch, Werkzeugwand bis 1,7 m",
+  "status": "In Blender gebaut (fabrik/werkbank.py, Holz mit fabrik/werkbank_backen.py in eine Textur gebacken): Bohlenplatte, Werkzeugwand mit Säge und Haken, Schraubstock, Ablage mit Brettern, Späne, Runenhammer und Holzbeil aus den Utensilien. Spieldatei img/objekte3d/skilling/handwerk/werkbank.glb (live 3D), Weltobjekt hand_werkbank_01; Handwerk-Funktion folgt",
+  "herkunft": "selbst gebaut"
+}

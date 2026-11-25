@@ -7914,6 +7914,37 @@
     "url": "img/objekte3d/skilling/bergbau/ureisen-leer.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "hand_werkbank_01",
+   "name": "Werkbank",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hand_werkbank_01.webp",
+   "groesse": [
+    95,
+    113
+   ],
+   "anker": [
+    0.4947,
+    0.9115
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.95,
+    "y": -0.45,
+    "b": 1.9,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "fabrik/assets/skilling/handwerk/werkbank (in Blender gebaut, fabrik/werkbank.py), Holz gebacken",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/handwerk/werkbank.glb",
+    "wind": 0
+   }
   }
  ]
 }

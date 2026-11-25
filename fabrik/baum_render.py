@@ -8,8 +8,10 @@ if blend.endswith(".glb"): bpy.ops.wm.read_factory_settings(use_empty=True); bpy
 else: bpy.ops.wm.open_mainfile(filepath=blend)
 sc=bpy.context.scene
 o=[x for x in bpy.data.objects if x.type=="MESH"][0]; o.rotation_mode="XYZ"; o.rotation_euler[2]+=math.radians(float(dreh)); bpy.context.view_layer.update()
-ps=[o.matrix_world@v.co for v in o.data.vertices]; lo=Vector([min(p[i] for p in ps) for i in range(3)]); hi=Vector([max(p[i] for p in ps) for i in range(3)])
-o.location -= Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z)); bpy.context.view_layer.update(); h=hi.z-lo.z
+ps=[x.matrix_world@v.co for x in bpy.data.objects if x.type=="MESH" for v in x.data.vertices]; lo=Vector([min(p[i] for p in ps) for i in range(3)]); hi=Vector([max(p[i] for p in ps) for i in range(3)])   # alle Teile (Werkbank aus mehreren Netzen)
+wurzeln=[x for x in bpy.data.objects if x.parent is None and x.type in ("MESH","EMPTY")]
+for x in wurzeln: x.location -= Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z))
+bpy.context.view_layer.update(); h=hi.z-lo.z
 eng=[i.identifier for i in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items]; sc.render.engine="BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in eng else "BLENDER_EEVEE"
 sc.render.film_transparent=True; sc.render.resolution_x=800; sc.render.resolution_y=880; sc.view_settings.view_transform="Standard"
 n=math.radians(30); cam=bpy.data.objects.new("k",bpy.data.cameras.new("k")); sc.collection.objects.link(cam); cam.data.type="ORTHO"; cam.data.ortho_scale=max(h, hi.x-lo.x, hi.y-lo.y)*1.25
