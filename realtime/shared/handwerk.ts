@@ -14,11 +14,11 @@ export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
 export type WeltStation = "esse" | "amboss" | "werkbank";
 export type StationId = WeltStation | "hand";
-/** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank davor) */
+/** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
   esse: { id: "esse", name: "Esse", x: 6467.4, y: 6427.8, tun: "Schmelzen" },
   amboss: { id: "amboss", name: "Amboss", x: 6470.4, y: 6427.6, tun: "Schmieden" },
-  werkbank: { id: "werkbank", name: "Werkbank", x: 6463.5, y: 6426.5, tun: "Werken" },
+  werkbank: { id: "werkbank", name: "Werkbank", x: 6530.5, y: 6426.5, /* die einzige Werkbank steht im Osthof (die in der Waldmark ist entfernt) */ tun: "Werken" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
@@ -27,8 +27,7 @@ export interface Werkstatt { id: string; station: WeltStation; x: number; y: num
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
-  { id: "werkbank", station: "werkbank", x: STATIONEN.werkbank.x, y: STATIONEN.werkbank.y, ort: "waldmark" },
-  { id: "werkbank_osthof", station: "werkbank", x: 6536.5, y: 6421.5, ort: "osthof" },   /* auf der Wiese südlich des Kuhgeheges, rechts neben dem Tor (handwerk_welt.json) */
+  { id: "werkbank_osthof", station: "werkbank", x: 6530.5, y: 6426.5, ort: "osthof" },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
 ];
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;

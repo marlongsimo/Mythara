@@ -46,14 +46,14 @@ const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit &&
 
 const schirm = (p, x, y, h = 1.0) => p.evaluate(([x, y, h]) => { const W = window.EZW.welt3d; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + h, y); }, [x, y, h]);
 try {
-  const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6463.5, 6428.5, "waldmark"]); anna.setDefaultTimeout(90000);
+  const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6530.5, 6428.5, "osthof"]); anna.setDefaultTimeout(90000);
   await anna.goto(B + S + "&vorwaermen=0"); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "null"); return i && (i.rucksack || []).includes("flachs"); }, null, { timeout: 30000 }).catch(() => {});
   const ort = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
-  check(Math.hypot(ort.x - 6463.5, ort.y - 6428.5) < 2, `Anna steht vor der Werkbank (${ort.x.toFixed(1)}, ${ort.y.toFixed(1)}, ${ort.hier})`);
+  check(Math.hypot(ort.x - 6530.5, ort.y - 6428.5) < 2, `Anna steht vor der Werkbank (${ort.x.toFixed(1)}, ${ort.y.toFixed(1)}, ${ort.hier})`);
   check(await anna.waitForFunction(() => window.EZW.welt3d.handwerk && window.EZW.welt3d.handwerk.baenke.size > 0, null, { timeout: 60000 }).then(() => true).catch(() => false), "Die Werkbank steht in der Welt (werkbank.glb)");
-  const st = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6463.5, 6426.5); return s && s.text; }); check(st === "Werkbank benutzen", "An der Werkbank: „Werkbank benutzen“ (" + st + ")");
-  { const q = await schirm(anna, 6463.5, 6426.5, 0.8); await anna.mouse.click(q.x, q.y); }
+  const st = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6530.5, 6426.5); return s && s.text; }); check(st === "Werkbank benutzen", "An der Werkbank: „Werkbank benutzen“ (" + st + ")");
+  { const q = await schirm(anna, 6530.5, 6426.5, 0.8); await anna.mouse.click(q.x, q.y); }
   const fenster = await anna.waitForSelector("#ez-konto .tafel.handwerk", { timeout: 20000 }).then(() => true).catch(() => false); check(fenster, "Antippen: das Herstellfenster der Werkbank geht auf");
   if (fenster) { const n = await anna.$$eval("#ez-konto .handwerk .ding", (d) => d.length), kann = await anna.$$eval("#ez-konto .handwerk .ding.kann", (d) => d.map((x) => x.dataset.r));
     check(n >= 60 && kann.includes("bogensehne") && kann.includes("garn") && kann.includes("leder_rau"), `Raster mit ${n} Bildern; herstellbar: ${kann.join(", ")}`);
@@ -72,8 +72,8 @@ try {
     await anna.click('#ez-konto .fuehrer [data-fr="2"]'); check((await anna.$$eval("#ez-konto .fuehrer li", (l) => l.length)) > 30, "Reiter Schmieden zeigt die Amboss-Rezepte"); await anna.click('#ez-konto [data-t="zu"]'); }
   await anna.click('#ez-leiste [data-l="rucksack"]'); await anna.waitForTimeout(400); await anna.click('#ez-rucksacktab .ifeld.voll[data-g="stamm_eiche"]');
   check(await anna.$('#ez-rucksacktab .ifeld.benutzt[data-g="stamm_eiche"]') !== null, "Eichenstamm kurz antippen: „Benutzen“ (erste Aktion), das Feld ist markiert");
-  const st2 = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6463.5, 6426.5); return s && s.text; }); check(st2 === "Eichenstamm → Werkbank", "Werkbank zeigt „Eichenstamm → Werkbank“ (" + st2 + ")");
-  await anna.evaluate(() => window.EZW.welt3d.anStelle(6463.5, 6426.5).tat()); await anna.waitForSelector("#ez-konto .tafel.handwerk", { timeout: 5000 }).catch(() => {});
+  const st2 = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6530.5, 6426.5); return s && s.text; }); check(st2 === "Eichenstamm → Werkbank", "Werkbank zeigt „Eichenstamm → Werkbank“ (" + st2 + ")");
+  await anna.evaluate(() => window.EZW.welt3d.anStelle(6530.5, 6426.5).tat()); await anna.waitForSelector("#ez-konto .tafel.handwerk", { timeout: 5000 }).catch(() => {});
   const nur = await anna.$$eval("#ez-konto .handwerk .ding", (d) => d.map((x) => x.dataset.r)); check(nur.length > 3 && nur.includes("leder_rau") && !nur.includes("garn"), `Nur Rezepte mit Eichenstamm (${nur.length})`);
   await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
   /* Bogensehne auf den ungespannten Bogen im Rucksack */

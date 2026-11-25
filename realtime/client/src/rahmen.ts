@@ -196,7 +196,7 @@ function questListe(): QuestZeile[] {
   const s3 = questStand3(), l3 = lage3(s3), fertig3 = l3.phase === "fertig";
   const q3: QuestZeile = { id: Q3, titel: "Der Säbel des Waldgottes", ort: "Einführung in die Berufe · Nordwald", art: fertig3 ? "fertig" : questVerfolgt(Q3) ? "verfolgt" : laeuft3(s3) ? "aktiv" : "neu", voraussetzungen: [],
     start: "Sprich mit Förster Hartwig am Waldweg, gleich westlich der Waldmark, wo der Nordwald beginnt.", erledigt: l3.phase === "" ? [] : SCHRITTE3.filter((x) => (l3.bits & x.bit) !== 0).map((x) => x.text),
-    jetzt: questlog3(s3), belohnung: "Belohnung: der Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk" };
+    jetzt: questlog3(s3), belohnung: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk" };
   return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }, q2, q3]; }
 /** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
 function questMenue(id: string, px: number, py: number): void { const q = questListe().find((x) => x.id === id); if (!q) return;
@@ -236,7 +236,7 @@ const BERUF_TEXT: Record<string, [string, string]> = {
     `Holzfäller-Bäume (leuchtende Adern) antippen, ein Holzbeil im Rucksack oder in der Hand. Eiche ab Level 1 (25 XP), Tanne 10 (40), Eibe 20 (70), Moorweide 35 (110), Kernbaum 45 (175), Weltenbaum-Setzling 65 (260). Ein besseres Beil fällt schneller. Glühen die Adern auf, schnell antippen: Kernschlag – zwei Stämme, 50 % mehr XP.`],
   bergbau: ["Erze für das Handwerk: Barren schmelzen für Waffen, Rüstungen und Werkzeuge. Jedes Erz bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
     "Erzadern in den Senken antippen, eine Spitzhacke im Rucksack oder in der Hand. Kupfer ab Level 1 (20 XP), Eisen 10 (35), Schwarzeisen 20 (60), Sterneisen 35 (100), Splittereisen 45 (160), Ureisen 65 (250). Eine bessere Spitzhacke baut schneller ab. Leuchtet ein Riss im Gestein auf, schnell die Ader antippen: zwei Erze und 50 % mehr XP. Eine erschöpfte Ader füllt sich nach einer Weile wieder."],
-  handwerk: ["Aus Rohstoffen wird Ausrüstung: Barren an der Esse, Waffen, Rüstungen und Werkzeuge am Amboss, Bogensehnen, Garn, Leder, Stoff und Holzwaren an der Werkbank (Schmiede der Waldmark). Herstellen gelingt immer und kostet keine Splitter.",
+  handwerk: ["Aus Rohstoffen wird Ausrüstung: Barren an der Esse, Waffen, Rüstungen und Werkzeuge am Amboss, Bogensehnen, Garn, Leder, Stoff und Holzwaren an der Werkbank. Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege. Herstellen gelingt immer und kostet keine Splitter.",
     "An der Werkstatt ein Rezept wählen (oder einen Rohstoff im Rucksack benutzen und die Werkstatt antippen): Bogensehne und Garn ab Level 1, Leder und Stoff je Stufe, Barren aus Erz und Holz. Jedes Stück braucht seine Ticks, auch bei „Alle“. Glüht die Werkstatt auf (Glut), schnell antippen: eine Zutat gespart und 50 % mehr XP."],
 };
 function berufInfo(k: string): void {

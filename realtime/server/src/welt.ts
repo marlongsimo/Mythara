@@ -39,6 +39,8 @@ export function stelleMerken(H: Pick<WeltHilfen, "sb">, nutzer: string, region: 
 /** Holz, Bergbau, Pflücken, Handwerk: es läuft immer nur eins */
 const alleStop = (s: Spieler) => { holzStop(s); bergStop(s); pflueckStop(s); handwerkStop(s); };
 const spieler = new Set<Spieler>(); let naechste = 1, holzBereit = false;
+/** Heim-Teleport: je Konto höchstens alle 5 Minuten (der Server merkt sich die Zeit – Browser-Speicher löschen oder ein anderes Gerät helfen nicht) */
+export const TELEPORT_PAUSE_MS = Number(process.env.TELEPORT_PAUSE_MS || 5 * 60 * 1000); const teleportZuletzt = new Map<string, number>();
 setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
    „freunde“: Liste mit online / im Kampf / zuletzt online · „zufreund“: Teleport zu einem Freund (nur wenn er online ist, nicht im Kampf steht
@@ -170,6 +172,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const npc = String(e.npc || "").slice(0, 16), aw = e.t === "rede" ? reden(s.nutzer, npc, s.wx, s.wy) : await antworten(H.sb, s.nutzer, npc, String(e.a || ""));
       if (aw.fehler) { senden(s, { t: "chat", kanal: "system", text: aw.fehler, zeit: jetzt }); senden(s, { t: "dialog", npc, ende: true }); return; }
       senden(s, { t: "dialog", npc, ...aw }); }
+    else if (e.t === "teleport") { /* fragt vor dem Teleport: erlaubt (und ab jetzt 5 Minuten Pause) oder die Restzeit */
+      if (s.gast) { senden(s, { t: "teleport", ok: true, gast: true }); return; }
+      const rest = (teleportZuletzt.get(s.nutzer) || 0) + TELEPORT_PAUSE_MS - jetzt; if (rest > 0) { senden(s, { t: "teleport", ok: false, rest }); return; }
+      teleportZuletzt.set(s.nutzer, jetzt); senden(s, { t: "teleport", ok: true }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "qding" || e.t === "untersucht") { /* Quest 02: Bruchstelle/Rutenbündel benutzen, Mooshocker untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }

@@ -1,6 +1,6 @@
 /*
  * Mythara – Handwerk in der 3D-Welt (shared/handwerk.ts; Server: server/src/handwerk.ts).
- *   · Esse und Amboss stehen in der Schmiede der Waldmark (bauten.ts), die Werkbank davor (hier geladen: img/objekte3d/skilling/handwerk/werkbank.glb).
+ *   · Esse und Amboss stehen in der Schmiede der Waldmark (bauten.ts), die Werkbank im Osthof beim Kuhgehege (hier geladen: img/objekte3d/skilling/handwerk/werkbank.glb).
  *   · Werkstatt antippen: hingehen, Rezeptfenster (nach Gruppe, Level, Zutaten im Rucksack; 1 / 5 / 10 / Alle).
  *   · Beim Herstellen schlägt der Held mit dem Hammer (Amboss, Werkbank). Glut: kurz „Glut!“ antippen – eine Zutat gespart, 50 % mehr XP.
  */

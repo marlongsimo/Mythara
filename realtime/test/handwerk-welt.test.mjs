@@ -32,7 +32,7 @@ const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(()
 const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const anzahl = (s, g) => (s.inv.rucksack || []).reduce((n, x) => n + ((typeof x === "string" ? x : x.g) === g ? (typeof x === "string" ? 1 : x.n) : 0), 0);
 const faecher = (s, g) => (s.inv.rucksack || []).filter((x) => (typeof x === "string" ? x : x.g) === g).length;
-const WERKBANK = { x: 6463.5, y: 6426.5 }, AMBOSS = { x: 6470.4, y: 6427.6 }, ESSE = { x: 6467.4, y: 6427.8 }, FLACHS = { id: "flachs_1", x: 6506.5, y: 6412.5 };
+const WERKBANK = { x: 6530.5, y: 6426.5 }, AMBOSS = { x: 6470.4, y: 6427.6 }, ESSE = { x: 6467.4, y: 6427.8 }, FLACHS = { id: "flachs_1", x: 6506.5, y: 6412.5 };
 const TA = "tok_anna_" + "x".repeat(30), TB = "tok_ben__" + "x".repeat(30);
 const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x + d, wy: b.y }); await schlaf(150); };
 const mach = async (s, rezept, menge = 1) => { s.handwerk = []; sende(s, { t: "handwerk", tat: "start", rezept, menge }); return (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; };

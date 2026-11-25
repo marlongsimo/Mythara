@@ -51,19 +51,13 @@
     "x": 6456,
     "y": 6441,
     "name": "Schluck auf! (Mira Kräuterlieb)"
-   },
-   {
-    "s": "werkbank",
-    "x": 6463.5,
-    "y": 6426.5,
-    "name": "Werkbank"
    }
   ],
   "osthof": [
    {
     "s": "werkbank",
-    "x": 6536.5,
-    "y": 6421.5,
+    "x": 6530.5,
+    "y": 6426.5,
     "name": "Werkbank (Osthof)"
    }
   ]

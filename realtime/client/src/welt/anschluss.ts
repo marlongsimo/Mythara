@@ -22,7 +22,7 @@ import { LAEDEN as LAEDEN_ECHT, LadenId } from "../../../shared/laeden";
 import { ladenZeigen } from "../laden";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
-import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline } from "../welt";
+import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline, teleportFragen } from "../welt";
 import { heldenFigur, richten, blickVon, eigeneWaffenQuelle } from "../modulfigur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
 import { stufeAusEp } from "../../../shared/config";
@@ -78,7 +78,16 @@ function aussehenAendern(s: WeltKern) { if (s.gesperrt || !nurWaldmark(s)) retur
 function heldWaehlen(s: WeltKern) { if (s.gesperrt || !nurWaldmark(s)) return; s.halt(); s.gesperrt = true; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
   wahl((held) => { s.gesperrt = false; if (held === s.held) return; s.gesperrt = true; weltHeld(held); setTimeout(() => location.reload(), 3000); }, () => { s.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
 /** Teleport: von überall in der Welt zurück an den Start der Waldmark (die gemerkte Stelle gilt dann nicht mehr) */
+/** Heim-Teleport: danach 5 Minuten Pause (auf dem Gerät gemerkt, übersteht das Neuladen nach dem Teleport) */
+const TELEPORT_PAUSE_MS = 5 * 60 * 1000;
+function teleportRest(): number { try { const t = Number(localStorage.getItem("ez_teleport_zuletzt")) || 0; return Math.max(0, t + TELEPORT_PAUSE_MS - Date.now()); } catch { return 0; } }
 function teleport(s: WeltKern) { if (s.gesperrt) return; if (s.hier === "waldmark") { chatSystem("Du bist schon in der Waldmark – der Teleport bringt dich von überall hierher zurück."); return; }
+  /* Mit Konto entscheidet der Server (je Konto 5 Minuten); Gäste und ohne Verbindung: der Zeitstempel auf dem Gerät */
+  const nein = (rest: number) => { const m = Math.floor(rest / 60000), sek = Math.ceil((rest % 60000) / 1000) % 60; chatSystem(`Der Teleport sammelt noch Kraft – noch ${m > 0 ? `${m}:${String(sek).padStart(2, "0")} Minuten` : `${Math.max(1, sek)} Sekunden`}.`); };
+  const lokal = () => { const rest = teleportRest(); if (rest > 0) { nein(rest); return; } los(); };
+  const los = () => { try { localStorage.setItem("ez_teleport_zuletzt", String(Date.now())); } catch { /* privat */ } reise(s); };
+  if (s.gesperrt) return; teleportFragen((ok, rest, gast) => { if (gast) lokal(); else if (ok) los(); else nein(rest); }, lokal); }
+function reise(s: WeltKern) { if (s.gesperrt) return;
   s.halt(); s.gesperrt = true; try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
   const ms = s.teleportAbreise(); /* 3D-Held: Lichtsäule, er vergeht im Licht – erst danach abblenden */
   setTimeout(() => s.abblenden(300, () => { location.href = "./?von=teleport" + serverZusatz(); }), Math.max(0, ms - 250)); }

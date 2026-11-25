@@ -215,17 +215,10 @@
    ]
   },
   {
-   "name": "Werkbank",
+   "name": "Waldmark: keine Werkbank mehr (Eintrag bleibt, damit alte Sperren entfernt werden)",
    "region": "waldmark",
    "objekte": [],
-   "sperren": [
-    [
-     62,
-     26,
-     65,
-     27
-    ]
-   ]
+   "sperren": []
   },
   {
    "name": "Werkbank Osthof",
@@ -233,10 +226,10 @@
    "objekte": [],
    "sperren": [
     [
-     39,
-     21,
-     42,
-     22
+     33,
+     26,
+     36,
+     27
     ]
    ]
   }
