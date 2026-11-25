@@ -138,7 +138,8 @@ export class WeltKampf {
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: team === 0 ? "#f3e3b5" : "#ffc9b0", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" }; this.figuren.set(id, f); return f; }
   private ereignis(ev: Ereignis) { const zahl = (id: number, t: string, farbe: string) => this.zahl(id, t, farbe);
-    if (ev.a === "schaden") zahl(ev.id, String(ev.n), ev.id === this.ichId ? "#ff6a5a" : "#ffe08a");
+    if (ev.a === "schaden") { zahl(ev.id, String(ev.n), ev.id === this.ichId ? "#ff6a5a" : "#ffe08a");
+      const f = ev.id === this.ichId ? undefined : this.figuren.get(ev.id), sp = f && !f.held ? (f.sp as unknown as { treffer?: () => void }) : undefined; if (sp && typeof sp.treffer === "function") sp.treffer(); }   /* Gegner zucken beim Treffer */
     else if (ev.a === "heil") zahl(ev.id, "+" + ev.n, "#7dff9a");
     else if (ev.a === "null") zahl(ev.id, "verfehlt", "#c8c8c8");
     else if (ev.a === "block") zahl(ev.id, "geblockt", "#9cc8ff");
