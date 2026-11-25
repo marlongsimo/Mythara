@@ -206,7 +206,7 @@ const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
         .catch((x) => { console.error("Konto löschen:", (x as Error).message); res.writeHead(500, kopf); res.end(JSON.stringify({ ok: false, text: "Fehler beim Löschen. Versuch es gleich noch einmal." })); }); });
     return; }
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
-  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", stand: (process.env.RENDER_GIT_COMMIT || "lokal").slice(0, 8) /* welcher Commit läuft (Render setzt die Variable selbst) */, handwerk: true, protokoll: PROTOKOLL, spieler: plaetze.size, welten: [{ id: "beta", name: "Beta", online: weltOnline() }] /* Weltenwahl auf der Willkommensseite (bisher nur eine Welt) */, kampagnen: Boolean(SB_URL && SB_KEY) }));
+  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", stand: (process.env.RENDER_GIT_COMMIT || "lokal").slice(0, 8) /* welcher Commit läuft (Render setzt die Variable selbst) */, handwerk: true, protokoll: PROTOKOLL, spieler: plaetze.size, welten: [{ id: "beta", name: "Riftmere 1", online: weltOnline() }] /* Weltenwahl auf der Willkommensseite (bisher nur eine Welt) */, kampagnen: Boolean(SB_URL && SB_KEY) }));
 });
 const wss = new WebSocketServer({ server: http, maxPayload: 65536, verifyClient: (info: { origin: string }) => { const ok = !HERKUNFT.length || HERKUNFT.includes(info.origin); if (!ok) console.log("Verbindung abgelehnt: Herkunft", info.origin); return ok; } });
 /* Ein Fehler in einer einzelnen Partie darf nicht den ganzen Server beenden: melden und weiterlaufen */

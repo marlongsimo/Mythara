@@ -4,6 +4,7 @@
  * darunter links die aktive Quest mit ihren Schritten (zum Ein- und Ausklappen), unten links das Team, unten rechts die Menüknöpfe.
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
+import { blockieren, blockierteNamen } from "./welt";
 import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
 import { eigenesLevel } from "./skills";
 import { profilZeigen } from "./held";
@@ -178,19 +179,34 @@ export function menueTafel(zu: () => void) {
       <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
       <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
     </div>
-    <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Beta</b><i>›</i></button>
+    <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
+    <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
     ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}
-    <p class="klein">Riftmere · Beta</p></div>`;
+    <p class="klein">Riftmere</p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
     if (w === "welt") { weltenFenster(f.querySelector(".tafel") as HTMLElement); return; }
+    if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
     if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
     if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
 }
 
-/* ---------- Welten (wie in OSRS): die verfügbaren Welten mit Spielerzahl; wechseln erst 10 s nach dem letzten Kampf. Bisher gibt es nur „Beta“. ---------- */
-const WELTEN = [{ id: "beta", name: "Beta" }];
+/* ---------- Blockierte Spieler: Liste mit „Aufheben“ (blockieren und melden geht über den Namen im Chat) ---------- */
+function blockiertFenster(tafel: HTMLElement): void {
+  const alt = tafel.innerHTML; const e2 = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+  const zeichnen = () => { const n = blockierteNamen();
+    tafel.innerHTML = `<i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-w="zurueck" aria-label="Zurück">‹</button>
+      <h2>Blockierte Spieler</h2><div class="zier"></div>
+      ${n.length ? `<ul class="blockliste">${n.map((x) => `<li><b>${e2(x)}</b><button type="button" data-frei="${e2(x)}">Aufheben</button></li>`).join("")}</ul>` : `<p class="klein">Du hast niemanden blockiert.</p>`}
+      <p class="klein">Blockieren oder melden: den Namen im Chat oder einen Spieler in der Welt antippen.</p>`; };
+  zeichnen();
+  tafel.onclick = (e) => { const t = e.target as HTMLElement; e.stopPropagation();
+    if (t.closest('[data-w="zurueck"]')) { tafel.onclick = null; tafel.innerHTML = alt; const z = tafel.querySelector('[data-t="blockiert"] b'); if (z) z.textContent = String(blockierteNamen().length); return; }
+    const b = t.closest<HTMLElement>("[data-frei]"); if (b) { blockieren(b.dataset.frei || "", false); zeichnen(); } }; }
+
+/* ---------- Welten (wie in OSRS): die verfügbaren Welten mit Spielerzahl; wechseln erst 10 s nach dem letzten Kampf. Bisher gibt es nur „Riftmere 1“ (id „beta“). ---------- */
+const WELTEN = [{ id: "beta", name: "Riftmere 1" }];
 const aktuelleWelt = (): string => { try { return localStorage.getItem("rift_welt") || "beta"; } catch { return "beta"; } };
 function weltenFenster(tafel: HTMLElement): void {
   const alt = tafel.innerHTML; const jetzt = aktuelleWelt(); let zahlen: Record<string, number> = {};

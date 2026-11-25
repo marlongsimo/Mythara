@@ -586,9 +586,24 @@
     @media (max-width: 420px) { .tafel.eigen .iplaetze { grid-template-columns: repeat(3, 86px); gap: 10px; } .tafel.eigen .ifeld { height: 86px; } .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 120px; } }
     /* ===== 3D-Welt: neue Oberfläche – kein Profil oben links; Chat links oben (nach oben einklappbar, halb durchsichtig), darunter die Leiste; LP-Bogen an der Minikarte ===== */
     body.welt3d #ez-profil, body.welt3d #ez-oben-knoepfe, body.welt3d #ez-menue, body.welt3d #ez-ich, body.welt3d #ez-kartenrahmen .raute.r { display: none !important; }
-    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(380px, 36vw); z-index: 7; }
-    body.welt3d #ez-chat .reiter { padding: 0; } body.welt3d #ez-chat .liste { margin: 0; height: 120px; background: rgba(239,226,195,.5); border-color: rgba(200,176,131,.5); color: #1d150b; text-shadow: 0 0 3px rgba(255,248,230,.8); }
-    body.welt3d #ez-chat .liste .k-system { color: #4a3008; } body.welt3d #ez-chat .liste time { color: #4e3f28; } body.welt3d #ez-chat .eingabe { padding: 6px 0 0; } body.welt3d #ez-chat .eingabe input { background: rgba(26,20,14,.5); border-color: rgba(106,82,50,.6); }
+    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(380px, 36vw); z-index: 7; background: rgba(20,15,10,.14); border-color: rgba(138,106,58,.45); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+    /* Chat durchsichtig: die Welt scheint durch, die Schrift bleibt durch einen dunklen Rand gut lesbar */
+    body.welt3d #ez-chat .reiter { padding: 0; } body.welt3d #ez-chat .reiter button { background: rgba(30,23,15,.45); border-color: rgba(200,155,82,.35); }
+    body.welt3d #ez-chat .reiter button.an { background: rgba(91,68,38,.6); border-color: rgba(200,155,82,.7); }
+    body.welt3d #ez-chat .liste { margin: 0; height: 120px; background: linear-gradient(rgba(14,10,6,.30), rgba(14,10,6,.20)); border-color: rgba(200,155,82,.30); color: #fbf1d8; font-weight: 500;
+      text-shadow: 0 0 2px #000, 0 1px 2px #000, 1px 0 1px rgba(0,0,0,.9), -1px 0 1px rgba(0,0,0,.9); scrollbar-width: thin; scrollbar-color: rgba(200,155,82,.5) transparent; }
+    body.welt3d #ez-chat .liste b, body.welt3d #ez-chat .liste b a { color: #ffd27a; } body.welt3d #ez-chat .liste .k-system { color: #f0c870; }
+    body.welt3d #ez-chat .liste .k-gruppe b, body.welt3d #ez-chat .liste .k-gruppe b a { color: #9fd4ff; } body.welt3d #ez-chat .liste .k-fluestern, body.welt3d #ez-chat .liste .k-fluestern b a { color: #e6b3ff; }
+    body.welt3d #ez-chat .liste time { color: #d8c79f; } body.welt3d #ez-chat .liste .leer { color: #e3d4b0; }
+    body.welt3d #ez-chat .eingabe { padding: 6px 0 0; } body.welt3d #ez-chat .eingabe input { background: rgba(26,20,14,.5); border-color: rgba(106,82,50,.6); }
+    body.welt3d #ez-chat .eingabe select, body.welt3d #ez-chat .eingabe button { background: rgba(46,37,25,.6); }
+    /* Spielerkarte: blockieren und melden; Meldeformular; Liste der Blockierten */
+    .tafel .reihe.schutz { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(200,155,82,.25); } .tafel .reihe.schutz button { font-size: 13px; opacity: .9; } .tafel .reihe.schutz .warn { color: #ffb4a0; border-color: #8a3a28; }
+    .tafel.melden form { display: grid; gap: 10px; text-align: left; max-width: 360px; margin: 0 auto; } .tafel.melden label { display: grid; gap: 4px; color: #d9c9a3; font-size: 14px; }
+    .tafel.melden select, .tafel.melden textarea { background: #1a140e; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 7px 8px; font: inherit; } .tafel.melden textarea { resize: vertical; }
+    .tafel.melden .haken { display: flex; align-items: center; gap: 8px; } .tafel.melden .status { min-height: 1.2em; color: #ffb4a0; margin: 0; }
+    .tafel .blockliste { list-style: none; padding: 0; margin: 6px auto 10px; max-width: 320px; display: grid; gap: 6px; } .tafel .blockliste li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; border: 1px solid rgba(200,155,82,.3); border-radius: 8px; background: rgba(0,0,0,.2); }
+    .tafel .blockliste button { background: #2e2519; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; }
     body.welt3d #ez-chat .klapp { transform: rotate(180deg); } body.welt3d #ez-chat.zu .klapp { transform: none; } /* offen: Pfeil nach oben (einklappen), zu: nach unten (aufklappen) */
     @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-chat { width: min(300px, 40vw); } body.welt3d #ez-chat .liste { height: 84px; } body.welt3d #ez-chat .reiter button { font-size: 10.5px; padding: 3px 2px; } }
     #ez-leiste { display: none; }

@@ -1,4 +1,4 @@
-/* Riftmere – Weltenwahl auf der Willkommensseite: „Beta“ gewählt, Spieler online aus der Statusseite des Spielservers; Nachrichten öffnen sich am Brief-Symbol.
+/* Riftmere – Weltenwahl auf der Willkommensseite: „Riftmere 1“ gewählt, Spieler online aus der Statusseite des Spielservers; Nachrichten öffnen sich am Brief-Symbol.
    Gerüst aus konto-loeschen-ui.test.mjs (Konto löschen auf der Willkommensseite (Browser): Einstellungen → „Konto löschen …“ → Passwort → falsches Passwort zeigt den Fehler,
    richtiges löscht, meldet ab und führt zur Anmeldeseite („Dein Konto ist gelöscht.“). Der Spielserver ist hier nachgebildet (Antworten wie server/src/index.ts).
    Aufruf: node test/konto-loeschen-ui.test.mjs (Webseite auf http://localhost:8765, Projektwurzel; BILD=pfad/ für Fotos) */
@@ -13,13 +13,13 @@ const br = await chromium.launch(), ctx = await br.newContext({ viewport: { widt
 await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: FAKE }));
 await ctx.route("**/konto/loeschen", async (r) => { const a = JSON.parse(r.request().postData() || "{}"); ANFRAGEN.push({ pw: a.passwort, auth: r.request().headers().authorization });
   const ok = a.passwort === "geheim123"; await r.fulfill({ status: ok ? 200 : 403, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ ok, text: ok ? "Dein Konto ist gelöscht." : "Das Passwort stimmt nicht." }) }); });
-await ctx.route("https://mythara-echtzeit.onrender.com/", (r) => r.fulfill({ contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ ok: true, welten: [{ id: "beta", name: "Beta", online: 3 }] }) }));
+await ctx.route("https://mythara-echtzeit.onrender.com/", (r) => r.fulfill({ contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ ok: true, welten: [{ id: "beta", name: "Riftmere 1", online: 3 }] }) }));
 await ctx.addInitScript(() => { if (!localStorage.getItem("test_t0")) { localStorage.setItem("test_t0", "1"); sessionStorage.setItem("fake_sitzung", JSON.stringify("anna")); localStorage.setItem("ez_probe", "5"); localStorage.setItem("ez_zoom", "1.2"); } });
 const WEG = []; p.on("framenavigated", (fr) => { if (fr === p.mainFrame()) WEG.push(fr.url().split("/").pop()); });
 try {
   await p.goto("http://localhost:8765/echtzeit/willkommen.html"); await p.waitForTimeout(1800);
   const w = await p.evaluate(() => [...document.querySelectorAll("#welten .welt")].map((b) => ({ name: b.querySelector("b").textContent, an: b.getAttribute("aria-checked"), online: b.querySelector(".online").textContent })));
-  check(w.length === 1 && w[0].name === "Beta" && w[0].an === "true", "Eine Welt „Beta“, vorausgewählt: " + JSON.stringify(w));
+  check(w.length === 1 && w[0].name === "Riftmere 1" && w[0].an === "true", "Eine Welt „Riftmere 1“, vorausgewählt: " + JSON.stringify(w));
   check(w[0] && w[0].online === "3 online", "Spieler online aus der Statusseite: " + (w[0] && w[0].online));
   check(await p.evaluate(() => localStorage.getItem("rift_welt")) === "beta", "Gewählte Welt gemerkt");
   if (process.env.BILD) await p.screenshot({ path: process.env.BILD + "weltenwahl.png" });

@@ -17,7 +17,7 @@ import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { heldenFigur, richten } from "./modulfigur";
 import { aktiverHeld } from "./held";
 import { Held, heldPruefen, aussehenSchluessel } from "../../shared/aussehen";
-import { kontoName, kontoToken } from "./konto";
+import { kontoName, kontoToken, kontoRpc } from "./konto";
 import { gruppe, serverAdresse } from "./gruppe";
 
 export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; b: number; l: number; lp?: number; max?: number }
@@ -45,7 +45,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
   { const puls = setInterval(() => { if (ws !== s || s.readyState > 1) { clearInterval(puls); return; } if (s.readyState === 1 && kuerzlichAktiv()) s.send('{"t":"da"}'); }, 60000); } /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */
-  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "" })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
+  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "" })); s.send(JSON.stringify({ t: "blockiert", namen: [...blockiert] })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
   s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
@@ -70,6 +70,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "boden") { bodenJetzt = (m.liste as BodenDing[]) || []; window.dispatchEvent(new CustomEvent("ez-boden")); }
     else if (m.t === "fort") { fremde = fremde.filter((f) => f.i !== Number(m.id)); if (hand.fort) hand.fort(Number(m.id)); }
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
+      if (n.von && n.kanal !== "system" && blockiert.has(n.von) && !(ich && n.von === ich.name)) return; /* blockiert: weder Chat noch Sprechblase */
       chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
   s.onclose = (ev) => { if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4409) { chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
@@ -185,16 +186,47 @@ export function tafelZeigen(klasse: string, html: string, zu: () => void): HTMLE
   const esc2 = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc2, true);
   f.innerHTML = `<div class="tafel ${klasse}"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>${html}</div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
-  f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f || (t && t.dataset.t === "zu")) { schliessen(); return; } if (t && t.dataset.t === "fl") { const id = Number(t.dataset.id), n = t.dataset.n || ""; schliessen(); fluestern(id, n); } if (t && t.dataset.t === "freund") { const n = t.dataset.n || ""; schliessen(); void freundHinzufuegen(n).then((x) => { if (x) chatSystem(x); }); return; } if (t && t.dataset.t === "karte") { schliessen(); const d = fremde.find((x) => x.i === Number(t.dataset.id)); if (d) spielerKarte(d, zu); } };
+  f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f || (t && t.dataset.t === "zu")) { schliessen(); return; } if (t && t.dataset.t === "fl") { const id = Number(t.dataset.id), n = t.dataset.n || ""; schliessen(); fluestern(id, n); } if (t && t.dataset.t === "freund") { const n = t.dataset.n || ""; schliessen(); void freundHinzufuegen(n).then((x) => { if (x) chatSystem(x); }); return; } if (t && t.dataset.t === "block") { const n = t.dataset.n || ""; schliessen(); blockieren(n, !blockiert.has(n)); return; }
+    if (t && t.dataset.t === "melden") { const n = t.dataset.n || ""; schliessen(); meldenFenster(n); return; }
+    if (t && t.dataset.t === "karte") { schliessen(); const d = fremde.find((x) => x.i === Number(t.dataset.id)); if (d) spielerKarte(d, zu); } };
   return f; }
+/* ---------- Schutz im Chat: blockieren und melden ---------- */
+/** Blockierte Spieler (Namen): liegen auf dem Gerät; der Server bekommt die Liste und stellt deren Nachrichten nicht mehr zu */
+const BLOCK_SCHLUESSEL = "rift_blockiert";
+const blockiert = new Set<string>(((): string[] => { try { const a = JSON.parse(localStorage.getItem(BLOCK_SCHLUESSEL) || "[]"); return Array.isArray(a) ? a.map(String).slice(0, 300) : []; } catch { return []; } })());
+export function istBlockiert(n: string): boolean { return blockiert.has(n); }
+export function blockierteNamen(): string[] { return [...blockiert].sort((a, b) => a.localeCompare(b)); }
+export function blockieren(n: string, an: boolean): void { if (!n) return; if (an) blockiert.add(n); else blockiert.delete(n);
+  try { localStorage.setItem(BLOCK_SCHLUESSEL, JSON.stringify([...blockiert])); } catch { /* privat */ }
+  senden({ t: "blockiert", namen: [...blockiert] });
+  if (an) { for (let k = nachrichten.length - 1; k >= 0; k--) if (nachrichten[k].von === n && nachrichten[k].kanal !== "system") nachrichten.splice(k, 1); }
+  chatSystem(an ? `${n} ist blockiert – du siehst keine Nachrichten mehr von ${n}. Aufheben: Einstellungen → Blockierte Spieler.` : `${n} ist nicht mehr blockiert.`); }
+/** Die zwei Knöpfe unter jeder Spielerkarte */
+function schutzKnoepfe(n: string): string { if (!ich || ich.gast || n === ich.name) return "";
+  return `<div class="reihe schutz"><button type="button" class="leise" data-t="block" data-n="${esc(n)}">${blockiert.has(n) ? "Nicht mehr blockieren" : "Blockieren"}</button><button type="button" class="leise warn" data-t="melden" data-n="${esc(n)}">Melden</button></div>`; }
+const GRUENDE = ["Beleidigung oder Belästigung", "Hassrede oder Drohung", "Anstößige Inhalte", "Spam oder Werbung", "Betrug", "Anstößiger Name", "Sonstiges"];
+/** Einen Spieler melden: Grund, eigene Worte, seine letzten Chatzeilen gehen mit; die Meldung landet im Admin-Bereich (Nachrichten) */
+function meldenFenster(n: string): void {
+  const f = tafelZeigen("melden", `<h2>${esc(n)} melden</h2><div class="zier"></div><p class="klein">Wir prüfen jede Meldung. Seine letzten Chat-Nachrichten werden mitgeschickt.</p>
+    <form class="meldung"><label>Grund<select name="grund">${GRUENDE.map((g) => `<option>${g}</option>`).join("")}</select></label>
+    <label>Was ist passiert? (freiwillig)<textarea name="text" maxlength="500" rows="3" placeholder="Kurz beschreiben …"></textarea></label>
+    <label class="haken"><input type="checkbox" name="block" checked> ${esc(n)} auch blockieren</label>
+    <div class="reihe"><button type="submit" class="haupt">Meldung senden</button><button type="button" data-t="zu">Abbrechen</button></div><p class="klein status" aria-live="polite"></p></form>`, () => {});
+  const form = f.querySelector("form.meldung") as HTMLFormElement, st = f.querySelector(".status") as HTMLElement;
+  form.onsubmit = (e) => { e.preventDefault(); e.stopPropagation(); const fd = new FormData(form), grund = String(fd.get("grund") || ""), eigen = String(fd.get("text") || "").trim().slice(0, 500), auch = fd.get("block") === "on";
+    const zeilen = nachrichten.filter((m) => m.von === n && m.kanal !== "system").slice(-20).map((m) => ({ zeit: new Date(m.zeit).toISOString(), kanal: m.kanal, text: m.text }));
+    const knopf = form.querySelector('button[type="submit"]') as HTMLButtonElement; knopf.disabled = true; st.textContent = "Wird gesendet …";
+    kontoRpc("rpg_feedback_send", { p_art: "feedback", p_text: `Spielermeldung: ${n} – ${grund}${eigen ? ": " + eigen : ""}`, p_kontext: { meldung: true, gemeldet: n, grund, ort: ich ? ich.ort : "", chat: zeilen } })
+      .then(() => { if (auch && !blockiert.has(n)) blockieren(n, true); chatSystem(`Danke – deine Meldung über ${n} ist eingegangen.`); (f.querySelector('[data-t="zu"]') as HTMLElement).click(); })
+      .catch((x: Error) => { knopf.disabled = false; st.textContent = (x && x.message) || "Senden hat nicht geklappt. Versuch es gleich noch einmal."; }); }; }
 /** Ein Name aus dem Chat, dessen Spieler nicht hier ist: Flüstern und Freund hinzufügen */
 function namenKarte(n: string): void { const darf = Boolean(ich && !ich.gast);
   tafelZeigen("spieler", `<div class="skopf"><div><h2>${esc(n)}</h2><small>nicht hier in der Nähe</small></div></div><div class="zier"></div>
-    <div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="0" data-n="${esc(n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(n)}">Freund hinzufügen</button>` : `<p class="klein">Dafür brauchst du ein Konto.</p>`}</div>`, () => {}); }
+    <div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="0" data-n="${esc(n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(n)}">Freund hinzufügen</button>` : `<p class="klein">Dafür brauchst du ein Konto.</p>`}</div>${schutzKnoepfe(n)}`, () => {}); }
 /** Ein anderer Spieler angeklickt: Name, Held, Stufe – Flüstern und Freund hinzufügen */
 export function spielerKarte(d: Fremder, zu: () => void): void { const D = HELDEN[d.h] || HELDEN.schildwaechter, gast = !d.s, darf = !gast && Boolean(ich && !ich.gast);
   tafelZeigen("spieler", `<div class="skopf"><img src="../${D.bild}" alt=""><div><h2>${esc(d.n)}</h2><small>${gast ? "Gast" : `Stufe ${d.s}`} · ${D.name}, ${D.klasse}</small></div></div><div class="zier"></div>
-    ${d.max ? `<p class="klein">Leben ${d.lp} / ${d.max}</p>` : ""}<div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="${d.i}" data-n="${esc(d.n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(d.n)}">Freund hinzufügen</button>` : `<p class="klein">${gast ? "Gäste können keine Nachrichten empfangen." : "Zum Flüstern brauchst du ein Konto."}</p>`}</div>`, zu); }
+    ${d.max ? `<p class="klein">Leben ${d.lp} / ${d.max}</p>` : ""}<div class="reihe">${darf ? `<button type="button" class="haupt" data-t="fl" data-id="${d.i}" data-n="${esc(d.n)}">Flüstern</button><button type="button" data-t="freund" data-n="${esc(d.n)}">Freund hinzufügen</button>` : `<p class="klein">${gast ? "Gäste können keine Nachrichten empfangen." : "Zum Flüstern brauchst du ein Konto."}</p>`}</div>${gast ? "" : schutzKnoepfe(d.n)}`, zu); }
 /** Wer ist hier? Alle Spieler am Ort, mit Held und Stufe */
 export function spielerListe(zu: () => void): void {
   const ichZeile = ich ? `<li class="ich"><img src="../${(HELDEN[ich.held] || HELDEN.schildwaechter).bild}" alt=""><b>${esc(ich.name)}</b><small>${ich.gast ? "Gast" : "Lv " + ich.stufe} · ${(HELDEN[ich.held] || HELDEN.schildwaechter).name} (du)</small></li>` : "";
