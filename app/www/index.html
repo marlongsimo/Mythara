@@ -1,15 +1,78 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Riftmere</title>
-<style>
-  html, body { margin: 0; height: 100%; background: #0d0b0a; color: #e6dcc6; font: 17px/1.4 Georgia, serif; }
-  body { display: grid; place-items: center; background: linear-gradient(rgba(10,8,6,.55), rgba(10,8,6,.8)), url("hintergrund.webp") center / cover; }
-  .k { width: min(440px, 88vw); padding: 28px 24px; text-align: center; background: rgba(20,17,15,.85); border: 1px solid #8a6a3a; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,.6); }
-  h1 { margin: 0 0 8px; color: #d9b25f; font: 600 24px Georgia, serif; letter-spacing: .12em; }
-  p { margin: 0 0 18px; color: #c9bb9c; }
-  button { font: 600 17px Georgia, serif; color: #fff3d6; background: linear-gradient(#8a2a1a, #5a1a10); border: 1px solid #d9b25f; border-radius: 10px; padding: 12px 26px; }
-</style></head>
-<body><div class="k"><h1>RIFTMERE</h1><p>Keine Verbindung zu den Splitterlanden.<br>Riftmere ist ein Online-Spiel – prüfe dein Internet und versuch es noch einmal.</p>
-<button type="button" onclick="location.href='https://riftmere.de/echtzeit/anmelden.html?app=ios'">Erneut verbinden</button></div>
-<script>addEventListener("online", () => location.href = "https://riftmere.de/echtzeit/anmelden.html?app=ios");</script>
-</body></html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Riftmere</title>
+  <style>
+    /* Startbildschirm der App (liegt in der App selbst, geht also auch ohne Internet). „Spielen“ öffnet das Spiel auf riftmere.de;
+       ohne Verbindung steht dort ein Hinweis, und der Knopf wird von selbst wieder aktiv, sobald das Netz zurück ist. */
+    @font-face { font-family: "Cinzel"; src: url("fonts/cinzel-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+    @font-face { font-family: "Cormorant Garamond"; src: url("fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+    @font-face { font-family: "Cormorant Garamond"; src: url("fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+    :root { --gold: #d9b25f; --gold-hell: #f3d58e; --pergament: #efe5cf; --leise: #c2b596; --violett: #4b2a78; --violett-hell: #7a4fb4; --violett-dunkel: #2a1546; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0d0b0a; color: var(--pergament); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    body { background: url("bilder/hintergrund.webp") center / cover no-repeat, #0d0b0a; font: 400 18px/1.35 "Cormorant Garamond", Georgia, serif; }
+    .buehne { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+    .tafel { position: relative; width: min(460px, 92vw); padding: 24px 46px 18px; margin-bottom: 4vh; display: flex; flex-direction: column; align-items: center; gap: 12px;
+      background: linear-gradient(rgba(20,17,15,.55), rgba(14,12,11,.72)), url("bilder/stein.webp") center / cover, #1c1916;
+      border: 2px solid #4a3f33; border-radius: 22px; outline: 1px solid rgba(217,178,95,.55); outline-offset: -9px;
+      box-shadow: 0 0 0 4px #2b241d, 0 0 0 6px rgba(217,178,95,.35), 0 26px 60px rgba(0,0,0,.65), inset 0 0 40px rgba(0,0,0,.6); }
+    .ranke { position: absolute; width: 66px; height: 60px; background: url("bilder/ranken.webp") left top / contain no-repeat; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+    .ranke.lo { left: -12px; top: -10px; } .ranke.ro { right: -12px; top: -10px; transform: scaleX(-1); } .ranke.lu { left: -12px; bottom: -10px; transform: scaleY(-1); } .ranke.ru { right: -12px; bottom: -10px; transform: scale(-1, -1); }
+    .knopf { width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; font: 600 24px/1 "Cinzel", Georgia, serif; letter-spacing: .06em; color: var(--pergament);
+      border-radius: 10px; border: 2px solid var(--gold); background: radial-gradient(120% 140% at 50% 0%, var(--violett-hell), var(--violett) 45%, var(--violett-dunkel));
+      box-shadow: 0 0 0 3px #2a1f12, 0 0 0 4px rgba(217,178,95,.6), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -10px 20px rgba(0,0,0,.35), 0 10px 26px rgba(0,0,0,.55); text-shadow: 0 2px 3px rgba(0,0,0,.6); }
+    .knopf:active { transform: translateY(1px); filter: brightness(1.15); }
+    .knopf:disabled { filter: grayscale(.85) brightness(.7); }
+    .status { display: flex; align-items: center; gap: 8px; font: 600 17px "Cormorant Garamond", Georgia, serif; color: var(--leise); min-height: 1.4em; text-align: center; }
+    .punkt { width: 10px; height: 10px; border-radius: 50%; background: #777; box-shadow: 0 0 0 2px rgba(0,0,0,.4); flex: none; }
+    .an .punkt { background: #5fd35f; box-shadow: 0 0 8px #5fd35f; } .aus .punkt { background: #d9534f; } .an { color: var(--pergament); }
+    .hinweis { margin: 0; text-align: center; color: var(--leise); font-size: 16px; }
+    .fuss { position: absolute; bottom: max(8px, env(safe-area-inset-bottom)); right: max(16px, env(safe-area-inset-right)); font: 400 14px "Cormorant Garamond", Georgia, serif; color: #cbbf9f; text-shadow: 0 1px 3px #000; }
+    .fuss a { color: inherit; }
+    .laden { display: none; position: fixed; inset: 0; background: rgba(8,6,5,.6); place-items: center; font: 600 20px "Cinzel", Georgia, serif; letter-spacing: .1em; color: var(--gold-hell); text-shadow: 0 2px 6px #000; }
+    .laden.an { display: grid; }
+    @media (min-height: 700px) { .tafel { width: min(600px, 60vw); padding: 32px 60px 24px; gap: 16px; } .knopf { height: 74px; font-size: 30px; } .status { font-size: 21px; } .hinweis { font-size: 19px; } .ranke { width: 90px; height: 82px; } .fuss { font-size: 17px; } }
+    @media (max-height: 430px) { .tafel { padding: 18px 40px 14px; gap: 8px; margin-bottom: 1vh; } .knopf { height: 52px; font-size: 21px; } }
+  </style>
+</head>
+<body>
+  <main class="buehne">
+    <section class="tafel" aria-label="Riftmere starten">
+      <i class="ranke lo"></i><i class="ranke ro"></i><i class="ranke lu"></i><i class="ranke ru"></i>
+      <button type="button" class="knopf" id="spielen" disabled>Spielen</button>
+      <div class="status" id="status" role="status"><span class="punkt"></span><span id="status-text">Verbinde mit den Splitterlanden …</span></div>
+      <p class="hinweis" id="hinweis" hidden>Riftmere ist ein Online-Spiel. Sobald dein Gerät wieder im Internet ist, geht es weiter.</p>
+    </section>
+    <p class="fuss"><a href="https://case-unlocked.de/impressum.html">Impressum</a> · <a href="https://case-unlocked.de/datenschutz.html">Datenschutz</a></p>
+  </main>
+  <div class="laden" id="laden">Betrete die Splitterlande …</div>
+  <script>
+  (() => {
+    "use strict";
+    const SPIEL = "https://riftmere.de/echtzeit/anmelden.html?app=ios", SERVER = "https://mythara-echtzeit.onrender.com/";
+    const $ = (s) => document.querySelector(s); let bereit = false, pruefe = 0;
+    const zeigen = (an, text) => { $("#status").className = "status " + (an ? "an" : "aus"); $("#status-text").textContent = text; $("#spielen").disabled = !an; $("#hinweis").hidden = an; bereit = an; };
+    async function pruefen() {
+      clearTimeout(pruefe);
+      if (!navigator.onLine) { zeigen(false, "Keine Internetverbindung"); pruefe = setTimeout(pruefen, 5000); return; }
+      try {
+        const st = new AbortController(), t = setTimeout(() => st.abort(), 9000);
+        const r = await fetch(SERVER + "?t=" + Date.now(), { cache: "no-store", signal: st.signal }); clearTimeout(t);
+        const d = await r.json(); const w = (d.welten || [])[0];
+        zeigen(true, (w ? w.name : "Riftmere 1") + " · " + (w ? w.online : (d.spieler || 0)) + " online");
+        pruefe = setTimeout(pruefen, 30000);
+      } catch (e) { zeigen(false, navigator.onLine ? "Die Splitterlande sind gerade nicht erreichbar" : "Keine Internetverbindung"); pruefe = setTimeout(pruefen, 5000); }
+    }
+    $("#spielen").onclick = () => { if (!bereit) return; $("#laden").classList.add("an"); location.href = SPIEL; };
+    addEventListener("online", pruefen); addEventListener("offline", pruefen);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) pruefen(); });
+    addEventListener("pageshow", () => $("#laden").classList.remove("an"));
+    pruefen();
+  })();
+  </script>
+</body>
+</html>

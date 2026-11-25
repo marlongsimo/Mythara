@@ -3,9 +3,11 @@
   "appName": "Riftmere",
   "webDir": "www",
   "server": {
-    "url": "https://riftmere.de/echtzeit/anmelden.html?app=ios",
-    "errorPath": "offline.html",
-    "allowNavigation": ["riftmere.de", "www.riftmere.de", "mythara-echtzeit.onrender.com"]
+    "allowNavigation": [
+      "riftmere.de",
+      "www.riftmere.de",
+      "mythara-echtzeit.onrender.com"
+    ]
   },
   "ios": {
     "contentInset": "never",
@@ -16,7 +18,15 @@
     "limitsNavigationsToAppBoundDomains": false
   },
   "plugins": {
-    "SplashScreen": { "launchShowDuration": 1200, "launchAutoHide": true, "backgroundColor": "#0d0b0a", "showSpinner": false },
-    "StatusBar": { "overlaysWebView": true, "style": "DARK" }
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#0d0b0a",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
   }
 }
