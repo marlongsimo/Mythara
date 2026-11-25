@@ -4,7 +4,7 @@
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
-import { abmelden, kuerzlichAktiv } from "./abmeldung";
+import { abmelden, kuerzlichAktiv, beimAbmelden, restAus } from "./abmeldung";
 import { Q1 } from "../../shared/quest01";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
@@ -37,8 +37,8 @@ export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
 let verbindet = false;
-/* Ein Konto spielt nur auf einem Gerät: jede Seite hat eine eigene Kennung. Eine automatische Wiederverbindung (nach Funkloch oder Hintergrund) darf
-   ein anderes Gerät, das sich inzwischen angemeldet hat, nicht verdrängen – der Server lehnt sie dann ab (4409), und dieses Gerät wird abgemeldet. */
+/* Ein Konto spielt nur auf einem Gerät (Server: sitz.ts): jede Seite hat eine eigene Kennung. Mit ihr darf dieselbe Seite nach einem Funkloch oder
+   Neuladen jederzeit wieder hinein; jedes andere Gerät wird abgewiesen (4410), bis abgemeldet wurde oder die Frist nach dem Abbruch abgelaufen ist. */
 const sitz = (k: string, v?: string | null): string | null => { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch { /* privat */ } return null; };
 const GERAET = sitz("rift_geraet") || ((): string => { const g = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sitz("rift_geraet", g); return g; })();
 /* „schon verbunden“ übersteht ein Neuladen (z. B. nach dem Einfrieren): auch das ist kein frisches Anmelden */
@@ -52,6 +52,7 @@ if (typeof document !== "undefined") document.addEventListener("visibilitychange
 async function verbinden() { if (verbindet || ws) return; verbindet = true; /* nie zwei Verbindungen zugleich: während auf das Token gewartet wird, gibt es noch keine – ein zweiter Aufruf öffnete sonst eine zweite (der Server wirft dann eine hinaus) */
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
+  const austragen = beimAbmelden(() => s.close(1000, "abmelden")); /* Abmelden gibt das Konto auf dem Server frei (sitz.ts) */
   { const puls = setInterval(() => { if (ws !== s || s.readyState > 1) { clearInterval(puls); return; } if (s.readyState === 1 && kuerzlichAktiv()) s.send('{"t":"da"}'); }, 60000); } /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */
   s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
   s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
@@ -81,7 +82,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
       if (n.von && n.kanal !== "system" && blockiert.has(n.von) && !(ich && n.von === ich.name)) return; /* blockiert: weder Chat noch Sprechblase */
       chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
-  s.onclose = (ev) => { if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Dein Konto ist gerade auf einem anderen Gerät im Spiel."); abmelden("bereits"); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
+  s.onclose = (ev) => { austragen(); if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Es ist aktuell schon ein Gerät in Riftmere."); abmelden("bereits", restAus(ev.reason)); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };

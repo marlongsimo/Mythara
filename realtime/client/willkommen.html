@@ -202,14 +202,31 @@
       try { const weg = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("ez_") && !["ez_zoom", "ez__offen", "ez__version"].includes(k)) weg.push(k); } for (const k of weg) localStorage.removeItem(k); } catch (e) { /* privat */ } try { for (const k of ["ez__neu", "ez__gefragt", "ez__lager", "mr-sitzung"]) sessionStorage.removeItem(k); } catch (e) { /* privat */ }
       location.replace("anmelden.html"); };
 
+    /* Ein Konto, ein Gerät (Server: sitz.ts). rest: Sekunden, bis das Konto nach einem Verbindungsabbruch auf dem anderen Gerät frei wird */
+    const belegtText = (rest) => "Es ist aktuell schon ein Gerät in Riftmere. " + (rest ? "Die Verbindung dort ist abgebrochen – in etwa " + (rest >= 90 ? Math.ceil(rest / 60) + " Minuten" : rest + " Sekunden") + " ist dein Konto wieder frei."
+      : "Melde dich dort ab (Einstellungen → Abmelden) oder warte, bis es wegen Inaktivität abgemeldet wird – dann geht es hier weiter.");
     /* Aus dem Spiel abgemeldet (abmeldung.ts): untätig oder auf einem anderen Gerät angemeldet */
     { const g = new URLSearchParams(location.search).get("grund");
       if (g === "ruhe") $("#meldung").textContent = "Du warst 5 Minuten untätig und wurdest aus dem Spiel abgemeldet. Mit „Ins Spiel“ geht es weiter.";
       else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter.";
-      else if (g === "bereits") $("#meldung").textContent = "Du bist bereits auf einem anderen Gerät im Spiel. Melde dich dort ab (Einstellungen → Abmelden), dann geht es hier weiter."; }
+      else if (g === "bereits") $("#meldung").textContent = belegtText(Number(new URLSearchParams(location.search).get("rest")) || null); }
 
     /* Ins Spiel */
-    $("#insspiel").onclick = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };
+    const insSpiel = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };
+    /* Vorher beim Server fragen, ob das Konto schon auf einem anderen Gerät in der Welt ist – dann gar nicht erst laden. Antwortet der Server nicht
+       (schläft, kein Netz), geht es trotzdem weiter: er weist ein zweites Gerät beim Verbinden ohnehin ab. */
+    let fragt = false;
+    $("#insspiel").onclick = async () => { if (fragt) return; fragt = true; const knopf = $("#insspiel"); knopf.setAttribute("aria-busy", "true");
+      try { const { data } = db ? await db.auth.getSession() : { data: { session: null } }; const s = data && data.session;
+        if (s && s.access_token && !(s.user && s.user.is_anonymous)) {
+          const weiterP = new URLSearchParams(new URLSearchParams(location.search).get("weiter") || ""), ws = weiterP.get("server") || new URLSearchParams(location.search).get("server") || "wss://mythara-echtzeit.onrender.com";
+          let geraet = ""; try { geraet = sessionStorage.getItem("rift_geraet") || ""; } catch (e) { /* privat */ }
+          const r = await fetch(ws.replace(/^ws/, "http").replace(/\/$/, "") + "/konto/belegt", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + s.access_token }, body: JSON.stringify({ geraet }), signal: AbortSignal.timeout(5000) });
+          const a = r.ok ? await r.json() : null;
+          if (a && a.belegt) { $("#meldung").textContent = belegtText(a.rest); return; } } }
+      catch (e) { /* keine Antwort: weiter wie bisher */ }
+      finally { fragt = false; knopf.removeAttribute("aria-busy"); }
+      insSpiel(); };
   })();
   </script>
 </body>

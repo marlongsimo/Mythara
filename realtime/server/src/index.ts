@@ -17,7 +17,8 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, kontoBelegt } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen } from "./welt";
+import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
@@ -194,6 +195,18 @@ async function kontoLoeschen(token: string, passwort: string): Promise<{ code: n
   if (!d.ok) { console.error("Konto löschen:", d.status, (await d.text()).slice(0, 200)); return { code: 502, text: "Das Konto konnte gerade nicht gelöscht werden. Versuch es gleich noch einmal." }; }
   loeschVersuche.delete(u.id); console.log("Konto gelöscht (auf Wunsch des Spielers)"); return { code: 200, text: "Dein Konto ist gelöscht." }; }
 const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
+  if (req.url === "/konto/belegt") { /* „Ins Spiel“ auf der Willkommensseite: ist das Konto schon auf einem anderen Gerät? (nur fragen, nichts nehmen) */
+    const herkunft = String(req.headers.origin || ""), erlaubt = !HERKUNFT.length || HERKUNFT.includes(herkunft);
+    const kopf = { "content-type": "application/json", ...(erlaubt ? { "access-control-allow-origin": herkunft, "access-control-allow-headers": "content-type, authorization", "access-control-allow-methods": "POST, OPTIONS", vary: "Origin" } : {}) };
+    if (req.method === "OPTIONS") { res.writeHead(erlaubt ? 204 : 403, kopf); res.end(); return; }
+    if (req.method !== "POST" || !erlaubt || !SB_URL || !SB_KEY) { res.writeHead(403, kopf); res.end(JSON.stringify({ ok: false })); return; }
+    let b = ""; req.on("data", (c) => { b += c; if (b.length > 2000) req.destroy(); });
+    req.on("end", () => { let g: unknown = ""; try { g = (JSON.parse(b || "{}") as { geraet?: unknown }).geraet; } catch { /* leer */ }
+      nutzerAus(String(req.headers.authorization || "").replace(/^Bearer /, "")).then((nutzer) => {
+        if (!nutzer) { res.writeHead(401, kopf); res.end(JSON.stringify({ ok: false })); return; }
+        const r = Sitz.belegt(nutzer, Sitz.geraetVon(g)); res.writeHead(200, kopf); res.end(JSON.stringify({ ok: true, belegt: r.belegt, rest: r.belegt && r.rest !== null ? Math.ceil(r.rest / 1000) : null })); })
+        .catch(() => { res.writeHead(503, kopf); res.end(JSON.stringify({ ok: false })); }); });
+    return; }
   if (req.url === "/konto/loeschen") { /* nur von den eigenen Seiten (Herkunft wie beim Spiel) */
     const herkunft = String(req.headers.origin || ""), erlaubt = !HERKUNFT.length || HERKUNFT.includes(herkunft);
     const kopf = { "content-type": "application/json", ...(erlaubt ? { "access-control-allow-origin": herkunft, "access-control-allow-headers": "content-type, authorization", "access-control-allow-methods": "POST, OPTIONS", vary: "Origin" } : {}) };
@@ -237,7 +250,9 @@ wss.on("connection", (ws, req) => {
         if (t === "auto" || t === "sprint") { p.nachher = (p.nachher || []).filter((x) => (x as { t: string }).t !== t).concat([e]); return; } }
       if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; }
-        { const d = e as { geraet?: unknown }; if (kontoBelegt(nutzer, d.geraet)) { console.log("Kampf abgelehnt: Konto ist auf einem anderen Gerät aktiv"); ws.close(4410, "bereits angemeldet"); return; } } /* wer zuerst spielt, bleibt (welt.ts) */
+        { const g = Sitz.geraetVon((e as { geraet?: unknown }).geraet), b = Sitz.belegt(nutzer, g); /* Ein Konto, ein Gerät (sitz.ts): wer zuerst spielt, bleibt */
+          if (b.belegt || !Sitz.nehmen(nutzer, g, ws)) { console.log("Kampf abgelehnt: Konto ist auf einem anderen Gerät"); belegtAbweisen(ws, b.belegt ? b.rest : null); return; }
+          ws.once("close", (_c: number, grund: Buffer) => Sitz.los(ws, String(grund) === "abmelden")); }
         p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
         if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
           const [aktiv, profil, v1] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>, heldV1Lesen(sb, nutzer)]);
@@ -249,6 +264,7 @@ wss.on("connection", (ws, req) => {
           if (ws.readyState !== WebSocket.OPEN || !plaetze.has(p)) { console.log("Welt: Anmeldung verworfen – Verbindung schon zu"); return; }
           if (frist) clearTimeout(frist);
           /* Vorverbinden (?warten=1): die offene Welt meldet sich schon an, wenn der Held sich der Grenze nähert – betreten wird erst mit „betreten“, ohne Wartezeit */
+          Sitz.drin(ws);
           if (url.searchParams.get("warten") === "1") { p.vorbereitet = { typ, ep: Number(ep[typ]) || 0, name }; los(); console.log("Welt:", name, "bereit an der Grenze von", karte); return; }
           const lx = Number(url.searchParams.get("lx")), ly = Number(url.searchParams.get("ly")), wo = KARTEN[karte].ursprung && Number.isFinite(lx) && Number.isFinite(ly) && url.searchParams.has("lx") ? { x: lx, y: ly } : undefined; /* Kampfzone der offenen Welt: dort hinein, wo man steht */
           zoneBetreten(p, karte, ort, typ, Number(ep[typ]) || 0, name, wo); if (ws.readyState === WebSocket.OPEN) los(); return; }
@@ -256,11 +272,11 @@ wss.on("connection", (ws, req) => {
           const R = raeume.get(raum), H = R && R.kampf; if (!R || !H || !H.sim || !H.kampf || H.kampf.karte !== karte || H.kampf.ort !== ort || H.kampf.fertig) { console.log("Koop abgelehnt: kein laufender Kampf in", raum); ws.close(4404, "kein gemeinsamer kampf"); return; }
           if ((H.mit || new Set()).size >= 2) { ws.close(4409, "gruppe voll"); return; }
           const id = H.sim.uebernehmen(held); if (!id) { ws.close(4409, "kein platz"); return; } const typ = (H.sim.nach(id) as { typ: string }).typ; H.sim.setzeErfahrung(typ, Number(ep[typ]) || 0);
-          p.haupt = H; p.heldId = id; p.kampf.team = [typ]; (H.mit = H.mit || new Set()).add(p); if (frist) clearTimeout(frist); console.log("Koop: Mitspieler kommt dazu", ort + "/" + karte, typ); if (ws.readyState === WebSocket.OPEN) los(); return; }
+          p.haupt = H; p.heldId = id; p.kampf.team = [typ]; (H.mit = H.mit || new Set()).add(p); Sitz.drin(ws); if (frist) clearTimeout(frist); console.log("Koop: Mitspieler kommt dazu", ort + "/" + karte, typ); if (ws.readyState === WebSocket.OPEN) los(); return; }
         if (!darfKaempfen(siege, ort, karte)) { console.log("Kampf abgelehnt: noch nicht freigeschaltet", ort, karte, [...siege].join(",")); ws.close(4403, "noch nicht freigeschaltet"); return; } /* Reihenfolge: erst der Kampf davor, erst die Kampagne davor */
         const R = raum && CODE.test(raum) ? raeume.get(raum) : undefined, gruppe = R && R.fuehrer === nutzer ? R : undefined, menschen = gruppe ? Math.min(3, [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length + 1) : 1;
         setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort], Math.max(1 + mit.length, menschen)); /* die Gegner richten sich nach der ganzen Gruppe */ for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k]; for (const [h, v] of Object.entries(ep)) { HELDENEP[h] = Number(v) || 0; HELDENSTUFE[h] = stufeAusEp(HELDENEP[h]); }
-        p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte, gruppe ? "(Koop " + gruppe.code + ")" : ""); if (ws.readyState === WebSocket.OPEN) los();
+        p.sim = new Sim(held, (Date.now() ^ (Math.random() * 1e9)) >>> 0, mit); Sitz.drin(ws); if (frist) clearTimeout(frist); console.log("Kampf beginnt:", ort + "/" + karte, gruppe ? "(Koop " + gruppe.code + ")" : ""); if (ws.readyState === WebSocket.OPEN) los();
         if (gruppe) { gruppe.kampf = p; p.raum = gruppe.code; gruppe.zuletzt = Date.now(); const erwartet = [...gruppe.warten].filter((w) => w.nutzer !== nutzer).length; if (erwartet) p.start = { bis: Date.now() + 20000, erwartet, los: 0, zuletzt: "" }; losMelden(gruppe, ort, karte); }
       } catch (err) { console.error("Anmeldung fehlgeschlagen [Schlüssel in Render: " + SCHLUESSELART + "]:", (err as Error).message); ws.close(4503, "anmeldung nicht moeglich"); }
       return; }
@@ -344,14 +360,14 @@ setInterval(() => {
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
         const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
         if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }
-      else if (jetzt - q.zuletzt > RUHE_MS) { q.ws.close(1000, "ruhe"); continue; }
+      else if (jetzt - q.zuletzt > RUHE_MS) { Sitz.abmelden(q.ws); q.ws.close(1000, "ruhe"); continue; } /* Zwangsabmeldung: das Konto ist frei */
       if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
       if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt);
       if (q.v1 && q.heldId && q.kampf && q.kampf.nutzer && jetzt - (q.v1T || 0) >= 1000) { q.v1T = jetzt; v1Takt(sb, q.kampf.nutzer, q.v1, Z.sim, q.heldId); } /* Skill-XP: Level prüfen, alle 10 s buchen */
       if (q.heldId && q.lvGemeldet !== undefined) { const w = Z.sim.nach(q.heldId) as { stufe?: number } | undefined; if (w && (w.stufe || 1) !== q.lvGemeldet) stufe = true; } /* Heldenlevel gestiegen (Skills): Namensschilder sofort neu */ }
     if (stufe) namenMelden(Z); }
   for (const p of plaetze) {
-    if (jetzt - p.zuletzt > RUHE_MS) { p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
+    if (jetzt - p.zuletzt > RUHE_MS) { Sitz.abmelden(p.ws); p.ws.close(1000, "ruhe"); continue; } // wer lange nichts tut, gibt den Platz frei
     if (!p.sim) continue;
     if (p.start && startHalt(p, jetzt)) { if (n % ZUSTAND_JE === 0 && p.ws.readyState === WebSocket.OPEN) { const z = p.sim.zustand(); p.ws.send(JSON.stringify({ t: "z", z })); if (p.mit) for (const m of p.mit) if (m.ws.readyState === WebSocket.OPEN) m.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: p.sim.ichVon(m.heldId || 0) } })); } continue; } /* gemeinsamer Start: noch steht alles */
     try { p.sim.schritt(); } catch (err) { console.error("Schritt:", (err as Error).stack); p.ws.close(1011, "fehler"); plaetze.delete(p); continue; }
