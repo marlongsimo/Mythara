@@ -27,7 +27,8 @@ const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIE
    bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
 const KAMPF_RUHE_MS = 10000, HAENGEN_MS = 60000, RAND = 2.5;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
-const HERKUNFT = (process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(",").map((s) => s.trim()).filter(Boolean);
+/* Erlaubte Seiten: aus ERLAUBTE_HERKUNFT (Render) – riftmere.de (seit 25.11.2026) und die alte Adresse gelten immer, damit der Umzug nicht an der Render-Einstellung hängt */
+const HERKUNFT = [...new Set([...(process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(","), "https://riftmere.de", "https://www.riftmere.de", "https://mythara-dungeon.de"].map((s) => s.trim()).filter(Boolean))];
 const SB_URL = (process.env.SUPABASE_URL || "").replace(/\/$/, ""), SB_KEY = process.env.SUPABASE_SERVICE_KEY || "";
 /* Stufe der Aufgabe je Ort – wie im Client (kampagne.ts) */
 

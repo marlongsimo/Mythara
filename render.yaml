@@ -19,7 +19,7 @@ services:
     healthCheckPath: /
     envVars:
       - key: ERLAUBTE_HERKUNFT
-        value: https://mythara-dungeon.de
+        value: https://riftmere.de,https://www.riftmere.de,https://mythara-dungeon.de
       - key: NODE_VERSION
         value: "22"
       # Für Kampagnenkämpfe mit Konto (Erfahrung und Seelensplitter schreibt der Server gut, Migration 035):
