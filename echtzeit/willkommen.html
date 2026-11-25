@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="manifest" href="mythara.webmanifest?v=mww9do63">
+  <link rel="manifest" href="mythara.webmanifest?v=mww9i024">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,9 +12,9 @@
   <title>Mythara: Splitterlande – Willkommen</title>
   <meta name="robots" content="noindex">
   <link rel="icon" href="../img/favicon.png" type="image/png">
-  <link rel="stylesheet" href="start.css?v=mww9do63">
-  <script src="start-passen.js?v=mww9do63"></script>
-  <script src="quer.js?v=mww9do63" defer></script>
+  <link rel="stylesheet" href="start.css?v=mww9i024">
+  <script src="start-passen.js?v=mww9i024"></script>
+  <script src="quer.js?v=mww9i024" defer></script>
   <style>
     /* Landing-Page: kommt bei jedem Besuch vor dem Spiel – Neuigkeiten, Nachrichten, „Ins Spiel“ */
     .lager { width: min(1120px, 96vw); padding: 56px clamp(16px, 3vw, 40px) 30px;
@@ -148,8 +148,9 @@
 
     /* Einstellungen: Angemeldet bleiben */
     const menue = $("#menue"), merken = $("#merken"); merken.checked = lies("mr-merken") !== "0";
-    $("#einst").onclick = (e) => { e.stopPropagation(); menue.hidden = !menue.hidden; $("#einst").setAttribute("aria-expanded", String(!menue.hidden)); };
-    document.addEventListener("click", (e) => { if (!menue.hidden && !menue.contains(e.target)) { menue.hidden = true; $("#einst").setAttribute("aria-expanded", "false"); } });
+    const loeschZu = () => { $("#loesch").hidden = true; $("#loesch-auf").hidden = false; $("#loesch-pw").value = ""; $("#loesch-info").textContent = ""; }; /* beim Schließen der Einstellungen: wieder nur „Konto löschen …“ */
+    $("#einst").onclick = (e) => { e.stopPropagation(); menue.hidden = !menue.hidden; if (menue.hidden) loeschZu(); $("#einst").setAttribute("aria-expanded", String(!menue.hidden)); };
+    document.addEventListener("click", (e) => { if (!menue.hidden && !menue.contains(e.target)) { menue.hidden = true; loeschZu(); $("#einst").setAttribute("aria-expanded", "false"); } });
     merken.onchange = () => { schreib("mr-merken", merken.checked ? null : "0"); try { sessionStorage.setItem("mr-sitzung", "1"); } catch (e) { /* privat */ } };
 
     /* Konto löschen: Passwort eingeben → der Spielserver prüft Anmeldung und Passwort und löscht das Konto bei Supabase (der Browser hat dafür keinen Schlüssel) */

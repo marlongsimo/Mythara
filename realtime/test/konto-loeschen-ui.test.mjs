@@ -17,7 +17,10 @@ const WEG = []; p.on("framenavigated", (fr) => { if (fr === p.mainFrame()) WEG.p
 try {
   await p.goto("http://localhost:8765/echtzeit/willkommen.html"); await p.waitForTimeout(1500);
   check(/willkommen/.test(p.url()), "Willkommensseite offen (" + p.url().split("/").pop() + ")");
-  await p.click("#einst"); await p.waitForTimeout(200); check(await p.isVisible("#loesch-auf"), "Einstellungen: „Konto löschen …“ ist da");
+  await p.click("#einst"); await p.waitForTimeout(200); check(await p.isVisible("#loesch-auf") && !(await p.isVisible("#loesch-pw")), "Einstellungen: nur „Konto löschen …“, noch kein Passwortfeld");
+  if (process.env.BILD) await p.screenshot({ path: process.env.BILD + "konto-einstellungen.png" });
+  await p.click("#loesch-auf"); await p.fill("#loesch-pw", "abc"); await p.click("#einst"); await p.waitForTimeout(150); await p.click("#einst"); await p.waitForTimeout(150);
+  check(await p.isVisible("#loesch-auf") && !(await p.isVisible("#loesch-pw")) && await p.inputValue("#loesch-pw") === "", "Einstellungen zu und wieder auf: zugeklappt, Passwort geleert");
   await p.click("#loesch-auf"); check(await p.isVisible("#loesch-pw"), "Nach dem Klick: Warnung und Passwortfeld");
   if (process.env.BILD) await p.screenshot({ path: process.env.BILD + "konto-loeschen.png" });
   await p.fill("#loesch-pw", "falsch"); await p.click('#loesch button[type="submit"]'); await p.waitForTimeout(800);
