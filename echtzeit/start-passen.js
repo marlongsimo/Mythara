@@ -19,3 +19,10 @@
     if (t && "MutationObserver" in window) new MutationObserver(bald).observe(t, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] }); });
   bald();
 })();
+/* In der iOS-App (Kennung „RiftmereApp“ im User-Agent): keine Links zur Webseite des Würfelspiels – die App ist nur Riftmere */
+(function () {
+  if (!/RiftmereApp/.test(navigator.userAgent)) return;
+  document.documentElement.classList.add("app");
+  const weg = () => document.querySelectorAll('a[href="../"]').forEach((a) => { const n = a.nextSibling; if (n && n.nodeType === 3 && /^\s*·\s*$/.test(n.textContent)) n.remove(); a.remove(); });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", weg); else weg();
+})();
