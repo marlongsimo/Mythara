@@ -1,10 +1,9 @@
-# Mythara Echtzeit – Spielserver bei Render (kostenloser Tarif, zum Ausprobieren).
-# Der kostenlose Dienst schläft bei Leerlauf ein; die erste Verbindung danach dauert etwa eine Minute.
+# Mythara Echtzeit – Spielserver bei Render (Tarif Starter: schläft nicht ein).
 services:
   - type: web
     name: mythara-echtzeit
     runtime: node
-    plan: free
+    plan: starter
     branch: feature/realtime-engine
     rootDir: realtime
     buildCommand: npm ci --include=dev && npm run build

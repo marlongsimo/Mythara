@@ -99,6 +99,10 @@ try {
   check(await gast.evaluate(() => window.EZK.art === "lokal" && window.EZK.v1 && window.EZK.netz.sim.wesen.filter((w) => !w.held).every((w) => w.max === 6)), "Gast: der Browser rechnet nach v3, Banditen mit 6 LP");
   for (let i = 0; i < 80 && !(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0)); i++) { await gast.keyboard.press("1"); await gast.waitForTimeout(250); }
   check(await gast.evaluate(() => (JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0) > 0), "Gast: Nahkampf-XP auf dem Gerät gemerkt");
+  /* Mit Konto, aber der Spielserver antwortet nicht: nach der Wartefrist rechnet der Browser – und sagt im Chat deutlich, dass es keine Beute gibt */
+  { const cara = await spieler("Cara", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]); await cara.goto(B + S.replace(/server=[^&]*/, "server=ws://localhost:1")); await bereit(cara).catch(() => {});
+    const hinweis = await cara.waitForFunction(() => [...document.querySelectorAll("#ez-chat li, .ez-chat .zeile, #ez-chat div, #ez-dorf-hilfe")].some((e) => /Keine Verbindung zum Spielserver.*keine Beute/.test(e.textContent)), null, { timeout: 120000, polling: 1000 }).then(() => true).catch(() => false);
+    check(hinweis, "Spielserver nicht erreichbar: Hinweis im Chat – keine Beute, XP nicht gespeichert"); }
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.slice(0, 3).join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
