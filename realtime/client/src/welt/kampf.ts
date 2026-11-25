@@ -110,7 +110,8 @@ export class WeltKampf {
   private ereignis(ev: Ereignis) { const s = this.s, wo = (id: number) => { if (id === this.ichId) return { x: s.figur.x, y: s.figur.y - HELD_PX }; const f = this.figuren.get(id); return f ? { x: f.sp.x, y: f.sp.y - HELD_PX } : null; };
     const zahl = (id: number, t: string, farbe: string) => { const p = wo(id); if (!p) return; const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
       s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); };
-    if (ev.a === "schaden") zahl(ev.id, String(ev.n), ev.id === this.ichId ? "#ff6a5a" : "#ffe08a");
+    if (ev.a === "schaden") { zahl(ev.id, String(ev.n), ev.id === this.ichId ? "#ff6a5a" : "#ffe08a");
+      const f = ev.id === this.ichId ? undefined : this.figuren.get(ev.id), sp = f && !f.held ? (f.sp as unknown as { treffer?: () => void }) : undefined; if (sp && typeof sp.treffer === "function") sp.treffer(); }   /* Gegner zucken beim Treffer */
     else if (ev.a === "heil") zahl(ev.id, "+" + ev.n, "#7dff9a");
     else if (ev.a === "null") zahl(ev.id, "verfehlt", "#c8c8c8");
     else if (ev.a === "block") zahl(ev.id, "geblockt", "#9cc8ff");
