@@ -7,7 +7,7 @@
   if (/RiftmereApp/.test(navigator.userAgent)) { document.documentElement.classList.add("app"); document.querySelector('meta[name="viewport"]').content += ", viewport-fit=cover"; }</script>
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="mythara.webmanifest?v=mwwkrpgb">
+  <link rel="manifest" href="mythara.webmanifest?v=mwwl6rwb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Riftmere">
@@ -836,6 +836,50 @@
     .seitentab.tab-stil .stile.pergament .stil b { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .seitentab.tab-stil .kipp { padding: 5px 8px; } .seitentab.tab-stil .kipp small { display: none; } .seitentab.tab-stil .kipp b { font-size: 13.5px; }
     @media (min-height: 700px) { .seitentab.tab-stil .stile.pergament .stil { padding: 9px 10px; } .seitentab.tab-stil .stile.pergament .stil b { font-size: 15px; } .seitentab.tab-stil .kipp small { display: block; } }
+      /* ===== Rechte Leiste und Werte-Balken (25.11.2026) ===== */
+    #ez-leiste-r { display: none; }
+    body.welt3d #ez-leiste-r { position: fixed; z-index: 6; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--a, 8px);
+      padding: 8px 6px; border-radius: 16px; border: 2px solid #8a6a32; background: linear-gradient(rgba(48,38,26,.92), rgba(26,20,13,.92)); box-shadow: inset 0 0 0 1px #2a1e0e, 0 6px 18px rgba(0,0,0,.55); }
+    body.welt3d #ez-leiste-r button { position: relative; width: var(--g, 46px); height: var(--g, 46px); padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a;
+      background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.6); }
+    body.welt3d #ez-leiste-r button span { display: grid; place-items: center; width: 100%; height: 100%; } body.welt3d #ez-leiste-r svg { width: 54%; height: 54%; filter: drop-shadow(0 1px 0 #000); }
+    body.welt3d #ez-leiste-r button.mitbild { background: none; border: none; box-shadow: none; overflow: visible; }
+    body.welt3d #ez-leiste-r .rbild { width: 112%; height: 112%; display: block; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.7)); transition: filter .15s, transform .15s; }
+    body.welt3d #ez-leiste-r button:hover .rbild { filter: drop-shadow(0 0 8px rgba(240,212,138,.6)) brightness(1.08); }
+    body.welt3d #ez-leiste-r button.an .rbild { filter: drop-shadow(0 0 9px rgba(255,224,138,.95)) brightness(1.18); transform: scale(1.06); } /* Sprint an */
+    body.welt3d #ez-leiste-r .zahl { position: absolute; right: -5px; top: -5px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 11px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #000; }
+    body.welt3d #ez-leiste-r .zahl[hidden] { display: none; }
+    body.welt3d #ez-kartenrahmen .rknoepfe, body.welt3d #ez-kbogen, body.welt3d #ez-kartenrahmen .ez-boegen { display: none !important; } /* Knöpfe und Bögen an der Karte gibt es nicht mehr */
+    /* Solo/Multi links neben der rechten Leiste */
+    body.welt3d #ez-kampfart, body.welt3d #ez-kartenrahmen.rund-an #ez-kampfart { right: calc(max(10px, env(safe-area-inset-right)) + var(--rbreite, 66px) + 8px) !important; }
+    /* Werte-Balken links neben der Minikarte: Leben breit, Laufenergie schmal */
+    body.welt3d #ez-kartenrahmen .ez-werte { position: absolute; z-index: 3; display: flex; gap: 6px; pointer-events: auto; padding-top: 14px; padding-bottom: 8px; box-sizing: border-box; }
+    /* Rahmen: Goldfassung wie die Leisten, innen eine dunkle Rinne aus Stein */
+    body.welt3d #ez-kartenrahmen .ez-werte .bal { position: relative; height: 100%; padding: 3px; border-radius: 12px; box-sizing: border-box;
+      background: linear-gradient(90deg, #6a4c18, #f3d58e 30%, #b08a3c 55%, #f0cf78 75%, #5a3e12); box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.65); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben { width: 26px; } body.welt3d #ez-kartenrahmen .ez-werte .lauf { width: 15px; padding: 2.5px; border-radius: 9px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .rinne { position: relative; display: block; height: 100%; border-radius: 9px; overflow: hidden;
+      background: radial-gradient(120% 60% at 50% 50%, #241812, #0c0806); box-shadow: inset 0 0 0 1px #2a1c0c, inset 0 3px 8px rgba(0,0,0,.95); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .rinne { border-radius: 7px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .fuell { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; transition: height .35s ease;
+      background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(0,0,0,.28) calc(10% - 1px) 10%); } /* feine Unterteilung je 10 % */
+    body.welt3d #ez-kartenrahmen .ez-werte .leben .fuell { background-color: #c62a1c; background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,0,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #5a0a08, #d8361f 35%, #ff6a48 50%, #c22818 70%, #4a0806);
+      box-shadow: 0 0 10px rgba(255,60,30,.55), inset 0 1px 0 rgba(255,190,160,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben.mittel .fuell { background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,10,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #5a2a04, #e0801c 40%, #ffb050 50%, #c06a12 70%, #4a2204); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben.wenig .fuell { animation: ez-puls 1s ease-in-out infinite; }
+    @keyframes ez-puls { 50% { filter: brightness(1.6) saturate(1.3); } }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .fuell { background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,30,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #6a4a08, #e8c030 40%, #fff0a0 50%, #d0a420 65%, #5a3e06);
+      box-shadow: 0 0 8px rgba(255,210,60,.5); }
+    body.welt3d #ez-kartenrahmen .ez-werte .glanz { position: absolute; left: 18%; width: 22%; top: 4px; bottom: 4px; border-radius: 4px; background: linear-gradient(rgba(255,255,255,.38), rgba(255,255,255,.06) 60%, transparent); pointer-events: none; }
+    /* Medaille oben (Herz bzw. Blitz) und Edelstein unten */
+    body.welt3d #ez-kartenrahmen .ez-werte .medaille { position: absolute; left: 50%; top: -13px; transform: translateX(-50%); z-index: 2; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 35%, #3a2414, #120a06 72%); border: 2px solid #e8c46a; box-shadow: 0 0 0 1px #000, 0 2px 5px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.8); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .medaille { width: 19px; height: 19px; top: -11px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .medaille svg { width: 64%; height: 64%; fill: #ff5a40; filter: drop-shadow(0 0 3px rgba(255,80,50,.8)); } body.welt3d #ez-kartenrahmen .ez-werte .lauf .medaille svg { fill: #ffd84a; filter: drop-shadow(0 0 3px rgba(255,210,70,.8)); }
+    body.welt3d #ez-kartenrahmen .ez-werte .stein { position: absolute; left: 50%; bottom: -7px; width: 11px; height: 11px; transform: translateX(-50%) rotate(45deg); z-index: 2;
+      background: radial-gradient(circle at 35% 35%, #ffb0a0, #c0281a 55%, #5a0a06); border: 1.5px solid #e8c46a; box-shadow: 0 0 0 1px #000, 0 0 6px rgba(255,80,50,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .stein { width: 8px; height: 8px; bottom: -5px; background: radial-gradient(circle at 35% 35%, #fff4b0, #d8a820 55%, #6a4a06); box-shadow: 0 0 0 1px #000, 0 0 6px rgba(255,210,70,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .zahl { position: absolute; left: 0; right: 0; bottom: 9px; z-index: 1; text-align: center; font: 800 11px Cinzel, Georgia, serif; color: #fff4e0; text-shadow: 0 0 2px #000, 0 0 3px #000, 0 1px 2px #000; }
   </style>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
@@ -853,6 +897,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwwkrpgb"></script>
+  <script src="spiel.js?v=mwwl6rwb"></script>
 </body>
 </html>

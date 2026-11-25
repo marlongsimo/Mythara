@@ -16,7 +16,7 @@ import { uebersicht } from "../uebersicht";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel, ZEICHEN } from "../hud";
 import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, seitenTab, skillTafel, ladenTafel, RKnopf } from "../rahmen";
-import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen } from "../welt3d/oberflaeche";
+import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen, rechteLeiste } from "../welt3d/oberflaeche";
 import { LAEDEN } from "../../../shared/laden";
 import { LAEDEN as LAEDEN_ECHT, LadenId } from "../../../shared/laeden";
 import { ladenZeigen } from "../laden";
@@ -234,9 +234,9 @@ function menue3D(s: WeltKern) { zuFreundS = s;
     /* links an der Karte: Teleport, Spieler online, Einstellungen – am PC im Halbmond-Dock mit Karte und Sprint, am Handy auf einem Bogen links an der Karte */
     const links = [{ id: "teleport", name: "Teleport", zeichen: "teleport" as const, taste: "T", tat: () => teleport(s) }, { id: "spieler", name: "Freunde", zeichen: "spieler" as const, taste: "P", tat: () => { if (kontoName()) tafel(s, freundeTafel); else tafel(s, spielerListe); } }, /* Freunde in der Bildschirmmitte (ersetzt „Spieler online“); Gäste sehen weiter, wer hier ist */
       { id: "einstellungen", name: "Einstellungen", zeichen: "einstellungen" as const, tat: () => oeffne("menue", s) }];
-    const karteKnoepfe = () => { if (GROSS.matches) { rundeKarte(zoomJetzt, [...knoepfe, ...links]); kartenBogen([]);
-        const sp = document.querySelector('#ez-kartenrahmen .rknoepfe button[aria-label="Freunde"]'); if (sp && !sp.querySelector(".zahl")) { const z = document.createElement("em"); z.className = "zahl ez-freunde-zahl"; z.hidden = true; sp.appendChild(z); } }
-      else { rundeKarte(zoomJetzt, knoepfe); kartenBogen(links); } onlineZeigen(); };
+    /* seit 25.11.2026: keine Knöpfe mehr an der Minikarte – alle in der rechten Leiste unten rechts (PC, iPad, Handy gleich) */
+    const karteKnoepfe = () => { rundeKarte(zoomJetzt, []); kartenBogen([]);
+      rechteLeiste([{ id: "karte", ...knoepfe[0] }, { id: "sprint", ...knoepfe[1] }, ...links]); onlineZeigen(); };
     karteKnoepfe(); if (!karteMedien) { karteMedien = true; GROSS.addEventListener("change", karteKnoepfe); }
     boegenAufbauen(); tastenFuellen(s.held);
     const tasten: Record<string, () => void> = { b: rucksack, i: rucksack, c: ausruestung, p: () => tafel(s, spielerListe), t: () => teleport(s), h: () => aussehenAendern(s) };
