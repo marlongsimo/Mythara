@@ -61,7 +61,11 @@ try {
   await anna.evaluate(() => window.EZW.welt3d.versetzen(6494, 6428)); await anna.waitForTimeout(3000);
   console.log("Anna jetzt:", await hier(anna));
   check(await hier(anna) === "waldmark", "Anna ist noch in der Waldmark");
-  const sieht = await anna.evaluate(() => (window.EZW.welt3d.mit && window.EZW.welt3d.mit.figuren ? [...window.EZW.welt3d.mit.figuren.values()].map((f) => f.d.n + "@" + f.d.wx) : []));
+  await anna.waitForFunction(() => window.EZK && window.EZK.bereit, null, { timeout: 30000 }).catch(() => {});
+  const sieht = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK, l = W.mit && W.mit.figuren ? [...W.mit.figuren.values()].map((f) => f.d.n + "@" + f.d.wx) : [];
+    /* Zonen Stufe 2: in der Kampfwelt zeigt der Kampf die anderen Helden (dieselbe Simulation, auch über die Regionsgrenze) */
+    if (K && K.z) for (const e of K.z.w) if (e[1] === 1 && e[0] !== K.ichId) { const n = K.namen.get(e[0]); if (n) l.push(n.name + "@" + (K.zone.x0 + e[4]).toFixed(0)); }
+    return l; });
   check(sieht.some((x) => x.startsWith("Ben@")), "Über die Regionsgrenze: Anna sieht Ben im Osthof (" + sieht.join(", ") + ")");
   await schreiben(ben, "Zweites Hallo aus Osthof"); await anna.waitForTimeout(800);
   check(await hoert("Zweites Hallo"), "Über die Regionsgrenze: Anna hört Ben (Chat in der Nähe nach Abstand)");
