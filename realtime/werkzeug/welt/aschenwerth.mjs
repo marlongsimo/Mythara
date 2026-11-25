@@ -28,18 +28,20 @@ for (const id of ["nordwald", "westmark", "rabenmoor"]) { const r = JSON.parse(r
 const LAND = new Set(["f", ".", ",", "v", "t", "m", "e", "k", "p", "a", "s"]);
 
 /* ───── die Insel und die Brücke (Weltfelder) ───── */
-const INSEL = { x: 6194, y: 6680, rx: 36, ry: 30 };
+const INSEL = { x: 6216, y: 6716, rx: 40, ry: 32 };   /* südwestlich von Rabenmoor */
 const welle = (x, y) => 1 + 0.1 * n2(x, y, 9, 3) + 0.06 * n2(x, y, 4, 8);
 const inInsel = (x, y, k = 1) => Math.hypot((x - INSEL.x) / INSEL.rx, (y - INSEL.y) / INSEL.ry) < k * welle(x, y);
 const BRUECKE_Y = 6656 + 45.6;   /* wie in rabenmoor.mjs (dort y = 45.6) */
-const TEILE = ["moor_bruecke_alt_03", "moor_bruecke_alt_01", "moor_bruecke_alt_02", "moor_bruecke_alt_01", "moor_bruecke_alt_03", "moor_bruecke_alt_02", "moor_bruecke_alt_01"];
-const BRUECKE = [6269, 6263, 6257, 6251, 6245, 6239, 6233].map((x, i) => ({ objekt: TEILE[i], x, y: BRUECKE_Y }));
-const LANDUNG = [6224, BRUECKE_Y - 1.3];   /* Westende der Brücke: hier beginnt die Insel */
+const TEILE = ["moor_bruecke_alt_03", "moor_bruecke_alt_02"];   /* mit den vier Teilen in Rabenmoor gut 36 Felder lang */
+const BRUECKE = [6269, 6263].map((x, i) => ({ objekt: TEILE[i], x, y: BRUECKE_Y }));
+const LANDUNG = [6254, BRUECKE_Y - 1.3];   /* Westende der Brücke: hier beginnt die Insel */
 const aufBahn = (x, y, r = 0) => x > LANDUNG[0] - 2 && x < X1 + 1 && y > BRUECKE_Y - 2.6 - r && y < BRUECKE_Y + r;
 /* Heiligtum: Mauergeviert mit Säulenhalle; Tor im Süden, der Pfad kommt von der Brücke */
-const H = { x0: 6176, x1: 6208, y0: 6658, y1: 6688, tor: 6192 };
-const PFAD = [[LANDUNG[0] + 3, LANDUNG[1]], [6214, BRUECKE_Y - 1.5], [6200, 6698], [H.tor, H.y1 + 1], [H.tor, H.y1 - 4]];
-const FRIEDHOF = { x: 6170, y: 6700, r: 9 }, KREIS = { x: 6216, y: 6664, r: 6.5 };
+const H = { x0: 6198, x1: 6230, y0: 6692, y1: 6722, tor: 6214 };
+const PFAD = [[LANDUNG[0] + 3, LANDUNG[1]], [6240, 6712], [6234, 6725], [H.tor, H.y1 + 4], [H.tor, H.y1 - 4]];
+const FRIEDHOF = { x: 6188, y: 6726, r: 7 }, KREIS = { x: 6242, y: 6732, r: 5.5 };
+/* Nordrand des Moors: südlich davon Wasser, nördlich davon wird es über Moorwiese und Tümpel zur Wiese (im Osten passend zur Westmark) */
+const UFER_Y = (x) => 6632 + 10 * n2(x, 0, 40, 4) + Math.max(0, x - 6236) * 0.45;
 
 /* ───── Gelände ───── */
 const B = X1 - X0, HH = Y1 - Y0, G = Array.from({ length: HH }, () => Array(B).fill("o"));
@@ -50,12 +52,12 @@ for (let j = 0; j < HH; j++) for (let i = 0; i < B; i++) { const x = X0 + i + 0.
     if (Math.hypot(x - FRIEDHOF.x, (y - FRIEDHOF.y) * 1.2) < FRIEDHOF.r) c = r2 > 0.4 ? "t" : "v";
     if (strecke(x, y, PFAD) < 1.1) c = r2 > 0.55 ? "t" : "e"; }
   else if (Math.hypot(x - LANDUNG[0], (y - LANDUNG[1]) * 1.4) < 7) c = "m";   /* Landestelle: Schlamm bis an die Brücke */
-  else if (!inInsel(x, y, 1.25) && !aufBahn(x, y, 3.5) && y > Y0 + 3 && Math.abs(y - GRENZE) > 5 && x < X1 - 8 && r1 > 0.5 && r2 > -0.2) c = r2 > 0.5 ? "t" : "v";   /* Riedbulten: einzeln, unerreichbar */
+  else if (y < UFER_Y(x) - 20 + 6 * r1) c = r1 > 0.35 ? "," : r2 > 0.6 && y > UFER_Y(x) - 34 ? "v" : ".";   /* Wiese */
+  else if (y < UFER_Y(x)) c = r2 > 0.45 ? "o" : r1 > 0.1 ? "t" : "v";   /* Übergang: Moorwiese mit Tümpeln */
+  else if (!inInsel(x, y, 1.35) && !aufBahn(x, y, 3.5) && y > UFER_Y(x) + 7 && x < X1 - 8 && r1 > 0.5 && r2 > -0.2) c = r2 > 0.5 ? "t" : "v";   /* Riedbulten im Moor: einzeln, unerreichbar */
   /* Ostrand wie der Nachbar (bündige Grenze), 3 Felder breit; Land davon wird zum schmalen Saum */
   if (x > X1 - 3) { const k = kante.get(Math.floor(y)) || "o"; c = LAND.has(k) ? (k === "e" || k === "k" || k === "p" ? "t" : k) : "o"; }
   G[j][i] = c; }
-/* die Grenze zwischen westried und aschenwerth: überall Wasser (außer im Saum), damit Wasser auf Wasser trifft */
-for (let y = GRENZE - 4; y < GRENZE + 4; y++) for (let i = 0; i < B - 3; i++) G[y - Y0][i] = "o";
 const feld = (x, y) => G[Math.floor(y) - Y0]?.[Math.floor(x) - X0] ?? "o";
 
 /* ───── Dinge ───── */
@@ -78,7 +80,7 @@ ding("k_gruft", FRIEDHOF.x, FRIEDHOF.y - 2.5);
 for (let i = 0; i < 9; i++) { const w = (i / 9) * Math.PI * 2 + 0.3, r = 4 + (i % 3) * 1.6; ding(["k_grabstein_kreuz", "k_grabstein_rund", "k_grabstein_zerbrochen", "k_grabstein_breit"][i % 4], FRIEDHOF.x + Math.cos(w) * r, FRIEDHOF.y + 1.5 + Math.sin(w) * r * 0.6, i % 2 ? { spiegeln: true } : {}); }
 for (let i = 0; i < 7; i++) { const w = (i / 7) * Math.PI * 2; ding(i % 3 === 1 ? "moor_menhir_02" : "moor_menhir_01", KREIS.x + Math.cos(w) * KREIS.r, KREIS.y + Math.sin(w) * KREIS.r * 0.75, i % 2 ? { spiegeln: true } : {}); }
 ding("moor_schrein_01", KREIS.x, KREIS.y + 0.6);
-for (const [x, y, id] of [[6166, 6668, "stil_erle_tot_01"], [6222, 6688, "stil_erle_tot_02"], [6180, 6712, "stil_birke_01"], [6210, 6705, "stil_erle_tot_01"], [6164, 6690, "stil_birke_01"], [6227, 6672, "stil_erle_tot_02"]])
+for (const [x, y, id] of [[6182, 6704, "stil_erle_tot_01"], [6246, 6720, "stil_erle_tot_02"], [6200, 6740, "stil_birke_01"], [6230, 6740, "stil_erle_tot_01"], [6180, 6716, "stil_birke_01"], [6250, 6708, "stil_erle_tot_02"]])
   ding(id, x, y, { s: +(0.85 + hash(x, y) * 0.3).toFixed(2), ...(hash(y, x) < 0.5 ? { spiegeln: true } : {}) });
 /* Moor ringsum: Schilf an allen Ufern, tote Erlen auf den Bulten, Irrlichter und Nebel über dem Wasser – nicht auf der Brücke */
 const frei = (x, y, ab) => !aufBahn(x, y, 2.5) && dinge.every((d) => Math.hypot(d.x - x, d.y - y) >= ab);
@@ -88,9 +90,13 @@ for (let i = 0; i < 30000 && dinge.filter((d) => d.objekt.startsWith("stil_schil
 for (let i = 0; i < 20000 && dinge.filter((d) => d.objekt.startsWith("stil_erle_tot")).length < 46; i++) { const x = X0 + 2 + wurf() * (B - 8), y = Y0 + 2 + wurf() * (HH - 4), c = feld(x, y);
   if ((c === "v" || c === "t") && !inInsel(x, y, 1.1) && frei(x, y, 5)) ding(wurf() < 0.6 ? "stil_erle_tot_01" : "stil_erle_tot_02", x, y, { s: +(0.8 + wurf() * 0.35).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
 for (let i = 0; i < 20000 && dinge.filter((d) => d.objekt === "stil_moorlicht_01").length < 34; i++) { const x = X0 + 2 + wurf() * (B - 8), y = Y0 + 2 + wurf() * (HH - 4);
-  if (feld(x, y) === "o" && !amUfer(x, y) && frei(x, y, 7)) ding("stil_moorlicht_01", x, y); }
+  if (feld(x, y) === "o" && y > UFER_Y(x) + 6 && !amUfer(x, y) && frei(x, y, 7)) ding("stil_moorlicht_01", x, y); }
 for (let i = 0; i < 6000 && dinge.filter((d) => d.objekt === "moor_nebel_01").length < 26; i++) { const x = X0 + 6 + wurf() * (B - 14), y = Y0 + 6 + wurf() * (HH - 12);
-  if (feld(x, y) === "o" && !aufBahn(x, y, 4) && !dinge.some((d) => d.objekt === "moor_nebel_01" && Math.hypot(d.x - x, d.y - y) < 15)) ding("moor_nebel_01", x, y, { s: +(1 + wurf() * 0.6).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
+  if (feld(x, y) === "o" && y > UFER_Y(x) + 8 && !aufBahn(x, y, 4) && !dinge.some((d) => d.objekt === "moor_nebel_01" && Math.hypot(d.x - x, d.y - y) < 15)) ding("moor_nebel_01", x, y, { s: +(1 + wurf() * 0.6).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
+/* Wiese im Norden: wenige Bäume und Büsche */
+for (let i = 0; i < 40000 && dinge.filter((d) => d.wiese).length < 70; i++) { const x = X0 + 3 + wurf() * (B - 9), y = Y0 + 3 + wurf() * (HH - 6), c = feld(x, y);
+  if ((c === "." || c === ",") && frei(x, y, 7)) dinge.push({ objekt: ["stil_eiche_01", "stil_linde_01", "stil_birke_01", "stil_busch_01", "stil_eiche_02", "stil_busch_02"][Math.floor(wurf() * 6)], x: +x.toFixed(2), y: +y.toFixed(2), s: +(0.85 + wurf() * 0.25).toFixed(2), wiese: true, ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
+for (const d of dinge) delete d.wiese;
 /* im Saum am Ostrand: Bäume, wo der Nachbar Wald hat */
 for (let y = Y0 + 1.5; y < Y1 - 1; y += 2.4) { const k = kante.get(Math.floor(y)); if (k !== "f") continue; const x = X1 - 1.5 - wurf() * 1.2; if (frei(x, y, 2.2)) ding(["stil_tanne_01", "stil_eiche_01", "stil_tanne_02", "stil_erle_tot_01"][Math.floor(wurf() * 4)], x, y, { s: +(0.85 + wurf() * 0.25).toFixed(2) }); }
 
@@ -103,7 +109,7 @@ lesen.push({ id: "steinkreis", x: KREIS.x, y: KREIS.y + 2.4, text: "Sieben Stein
 
 /* ───── schreiben ───── */
 const REG = [
-  { id: "westried", name: "Das Westried", untertitel: "Unbegehbares Marschland am Westrand", ursprung: [192, 198], chunks: [4, 8], biom: "sumpf", stufe: 2 },
+  { id: "westried", name: "Die Riedwiesen", untertitel: "Wiesen am Westrand, im Süden beginnt das Moor", ursprung: [192, 198], chunks: [4, 8], biom: "wiese", stufe: 2 },
   { id: "aschenwerth", name: "Aschenwerth", untertitel: "Die Ruineninsel im Sumpf – nur über die alte Brücke", ursprung: [192, 206], chunks: [4, 5], biom: "sumpf", stufe: 3 }];
 for (const R of REG) { const rx0 = R.ursprung[0] * C, ry0 = R.ursprung[1] * C, rb = R.chunks[0] * C, rh = R.chunks[1] * C, drin = (d) => d.x >= rx0 && d.x < rx0 + rb && d.y >= ry0 && d.y < ry0 + rh;
   const zeilen = G.slice(ry0 - Y0, ry0 - Y0 + rh).map((z) => z.join(""));

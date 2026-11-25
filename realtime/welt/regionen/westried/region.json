@@ -1,7 +1,7 @@
 {
  "id": "westried",
- "name": "Das Westried",
- "untertitel": "Unbegehbares Marschland am Westrand",
+ "name": "Die Riedwiesen",
+ "untertitel": "Wiesen am Westrand, im Süden beginnt das Moor",
  "ursprung": [
   192,
   198
@@ -10,6 +10,6 @@
   4,
   8
  ],
- "biom": "sumpf",
+ "biom": "wiese",
  "stufe": 2
 }
