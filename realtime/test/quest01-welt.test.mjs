@@ -30,7 +30,7 @@ await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8788/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, q1: null, dialoge: [], chat: [], zurueck: null, inv: null, boden: [], warte: [] };
   ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "quests") s.q1 = m.q1; if (m.t === "dialog") s.dialoge.push(m); if (m.t === "inventar") s.inv = m.inv; if (m.t === "zurueck") s.zurueck = m; if (m.t === "boden") s.boden = m.liste; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
     for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
-  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(s); }); }); }
+  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(s); }); }); }
 const warte = (s, fn, ms = 3000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m));
 const NPC = { jori: [6452.5, 6444.5], hagan: [6438.5, 6423.5], fenna: [6534.5, 6438.5], raban: [6442.5, 6643.5], othmar: [6451.5, 6688.5] };
