@@ -179,12 +179,15 @@ export function bodenDazu(ort: string, x: number, y: number, g: string, n: numbe
   if (!GEGENSTAENDE[g] || n < 1 || !Number.isFinite(x) || !Number.isFinite(y)) return null; const nurSelbst = Boolean(besitzer && GEGENSTAENDE[g].untauschbar) /* nicht tauschbar (Quest): sieht nie jemand anderes, liegt aber genauso lange */, offenAb = nurSelbst ? Number.MAX_SAFE_INTEGER : besitzer ? jetzt + zeiten.privat : jetzt;
   const d: BodenDing = { id: nr++, g, n: Math.floor(n), ort, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, besitzer, offenAb, bis: nurSelbst ? jetzt + zeiten.privat + zeiten.offen : offenAb + zeiten.offen }; boden.set(d.id, d); return d; }
 const sichtbar = (d: BodenDing, nutzer: string, jetzt: number) => jetzt < d.bis && (jetzt >= d.offenAb || (nutzer !== "" && d.besitzer === nutzer));
-/** Was dieser Spieler in seiner Region am Boden sieht */
-export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now()): { i: number; g: string; n: number; x: number; y: number }[] {
-  const aus: { i: number; g: string; n: number; x: number; y: number }[] = []; for (const d of boden.values()) if (d.ort === ort && sichtbar(d, nutzer, jetzt)) aus.push({ i: d.id, g: d.g, n: d.n, x: d.x, y: d.y }); return aus; }
+/** So weit (Weltfelder) sieht man Gegenstände am Boden – unabhängig von Regionsgrenzen (seit 26.11.2026) */
+export const BODEN_SICHT = 40;
+/** Was dieser Spieler am Boden sieht: in der offenen Welt alles im Umkreis seiner Weltstelle (wo), sonst (ohne Stelle) in seiner Region */
+export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now(), wo?: { x: number; y: number }): { i: number; g: string; n: number; x: number; y: number }[] {
+  const aus: { i: number; g: string; n: number; x: number; y: number }[] = [];
+  for (const d of boden.values()) if ((wo ? Math.max(Math.abs(d.x - wo.x), Math.abs(d.y - wo.y)) <= BODEN_SICHT : d.ort === ort) && sichtbar(d, nutzer, jetzt)) aus.push({ i: d.id, g: d.g, n: d.n, x: d.x, y: d.y }); return aus; }
 /** Aufheben: nur was man sieht und auf dessen Feld man steht (Feldabstand ≤ AUFHEBEN_WEIT). Zurück: Fehlertext oder null */
 export function bodenAufheben(sb: Sb, nutzer: string, ort: string, id: number, x: number | undefined, y: number | undefined, jetzt = Date.now()): string | null {
-  const d = boden.get(id); if (!d || d.ort !== ort || !sichtbar(d, nutzer, jetzt)) return "Das liegt hier nicht (mehr).";
+  const d = boden.get(id); if (!d || !sichtbar(d, nutzer, jetzt) || (x === undefined && d.ort !== ort)) return "Das liegt hier nicht (mehr)."; /* über Regionsgrenzen hinweg: es zählt nur der Abstand (unten) */
   if (x === undefined || y === undefined || Math.max(Math.abs(Math.floor(d.x) - Math.floor(x)), Math.abs(Math.floor(d.y) - Math.floor(y))) > AUFHEBEN_WEIT) return "Stell dich auf das Feld, um es aufzuheben.";
   if (!je.get(nutzer)) return "Kein Inventar."; const k = aufnehmen(sb, nutzer, d.g, d.n); if (!k) return "Der Rucksack ist voll.";
   if (k < d.n) { d.n -= k; return "Der Rucksack ist voll – ein Teil bleibt liegen."; }

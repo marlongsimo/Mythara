@@ -1,4 +1,4 @@
-/* Regionswechsel ohne Neuverbindung (25.11.2026): der Server erfährt die neue Region – Chat in der Nähe, Mitspieler und Bodengegenstände gelten je Region. Gerüst aus chat-schutz-ui.test.mjs. */
+/* Welt ohne Regionsgrenzen (26.11.2026): Mitspieler und Chat in der Nähe nach Abstand – auch über Regionsgrenzen hinweg; Regionswechsel ohne Neuverbindung. Gerüst aus chat-schutz-ui.test.mjs. */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
@@ -57,10 +57,18 @@ try {
   const hoert = (t) => anna.evaluate((t) => document.querySelector("#ez-chat .liste").textContent.includes(t), t);
   for (const p of [anna, ben]) await p.evaluate(() => { const c = document.getElementById("ez-chat"); if (c && c.classList.contains("zu")) c.querySelector(".klapp").click(); });
   await schreiben(ben, "Erstes Hallo aus Osthof"); check(!(await hoert("Erstes Hallo")), "Anna in der Waldmark hört Ben im Osthof nicht");
-  await anna.evaluate(() => window.EZW.welt3d.versetzen(6528, 6426)); await anna.waitForFunction(() => window.EZW.welt3d.hier === "osthof", null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
+  /* Anna geht an die Grenze (noch Waldmark), Ben steht 36 Felder weiter im Osthof */
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6494, 6428)); await anna.waitForTimeout(3000);
   console.log("Anna jetzt:", await hier(anna));
+  check(await hier(anna) === "waldmark", "Anna ist noch in der Waldmark");
+  const sieht = await anna.evaluate(() => (window.EZW.welt3d.mit && window.EZW.welt3d.mit.figuren ? [...window.EZW.welt3d.mit.figuren.values()].map((f) => f.d.n + "@" + f.d.wx) : []));
+  check(sieht.some((x) => x.startsWith("Ben@")), "Über die Regionsgrenze: Anna sieht Ben im Osthof (" + sieht.join(", ") + ")");
   await schreiben(ben, "Zweites Hallo aus Osthof"); await anna.waitForTimeout(800);
-  check(await hoert("Zweites Hallo"), "Nach dem Wechsel in den Osthof (ohne Neuverbindung) hört Anna Ben – der Server kennt die neue Region");
+  check(await hoert("Zweites Hallo"), "Über die Regionsgrenze: Anna hört Ben (Chat in der Nähe nach Abstand)");
+  /* Anna geht ganz in den Osthof: weiterhin alles da */
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6528, 6426)); await anna.waitForFunction(() => window.EZW.welt3d.hier === "osthof", null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(2500);
+  await schreiben(ben, "Drittes Hallo"); await anna.waitForTimeout(800);
+  check(await hoert("Drittes Hallo"), "Im Osthof: Anna hört Ben weiterhin");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-1500));

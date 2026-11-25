@@ -31,7 +31,7 @@ export const aussehenJe = new Map<string, Held>();
 
 export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean }
 interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
-  chat: number[]; /** Seitenkennung des Geräts (ein Konto spielt nur auf einem Gerät) */ geraet?: string; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
+  chat: number[]; /** Seitenkennung des Geräts (ein Konto spielt nur auf einem Gerät) */ geraet?: string; /** wen er zuletzt in Sichtweite hatte (Ids) */ sichtKey?: string; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
 /* Alle Regionen der Welt kommen automatisch aus werkzeug/weltzonen.py (WELTREGIONEN) – neue Gebiete muss niemand von Hand eintragen */
 export const WELTORTE = new Set([...WELTREGIONEN, ...ORTREIHE]);
@@ -79,6 +79,12 @@ export function stufeSetzen(nutzer: string, stufe: number): void { for (const s 
 /** Hat der Empfänger o den Absender s blockiert? */
 const sperrt = (o: Spieler, s: Spieler) => Boolean(o.blockiert && o.blockiert.has(s.name));
 const amOrt = (ort: string) => [...spieler].filter((s) => s.ort === ort);
+/** Wie weit (Weltfelder) man andere Spieler sieht und ihren Chat in der Nähe hört – über Regionsgrenzen hinweg (seit 26.11.2026) */
+export const SICHT_WEIT = 40;
+/** Sehen sich a und b? In der offenen Welt nach Abstand der Weltstellen, an Orten ohne Weltstelle (alte Karten) nach gleichem Ort */
+const sehen = (a: Spieler, b: Spieler): boolean => a.wx !== undefined && a.wy !== undefined && b.wx !== undefined && b.wy !== undefined && WELTREGIONEN.includes(a.ort) && WELTREGIONEN.includes(b.ort)
+  ? Math.max(Math.abs(a.wx - b.wx), Math.abs(a.wy - b.wy)) <= SICHT_WEIT : a.ort === b.ort;
+const nahBei = (a: Spieler) => [...spieler].filter((o) => o === a || sehen(a, o));
 function system(ort: string, text: string, ausser?: Spieler) { for (const s of amOrt(ort)) if (s !== ausser) senden(s, { t: "chat", kanal: "system", text, zeit: Date.now() }); }
 
 export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
@@ -221,7 +227,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         const m = { t: "chat", kanal: "fluestern", i: s.id, von: s.name, an: z.name, anId: z.id, text, zeit: jetzt }; if (z !== s && sperrt(z, s)) { senden(s, { t: "chat", kanal: "system", text: "Dieser Spieler nimmt gerade keine Nachrichten an.", zeit: jetzt }); return; } senden(s, m); if (z !== s) senden(z, m); return; }
       const m = { t: "chat", kanal: e.kanal === "gruppe" ? "gruppe" : "oeffentlich", i: s.id, von: s.name, text, zeit: jetzt };
       if (m.kanal === "gruppe") { if (!s.raum) { senden(s, { t: "chat", kanal: "system", text: "Du bist in keiner Gruppe.", zeit: jetzt }); return; } for (const o of spieler) if (o.raum === s.raum && !sperrt(o, s)) senden(o, m); }
-      else for (const o of amOrt(s.ort)) if (!sperrt(o, s)) senden(o, m); }
+      else for (const o of nahBei(s)) if (!sperrt(o, s)) senden(o, m); }
     else if (e.t === "held") { const h = String(e.held || ""); if (!HELDEN[h]) return; if (s.gast) { s.held = h; s.geaendert = true; senden(s, { t: "ich", id: s.id, name: s.name, held: h, stufe: 0, ort: s.ort, gast: true }); return; }
       if (s.ort !== "waldmark") { senden(s, { t: "chat", kanal: "system", text: "Den Helden wechselst du nur in der Waldmark.", zeit: jetzt }); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort: s.ort }); return; }
       try { await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: s.nutzer, p_held: h }) }); } catch (x) { console.error("Held setzen:", (x as Error).message); }
@@ -235,12 +241,16 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
 
 /** 5-mal je Sekunde: jedem Spieler die anderen an seinem Ort melden (nur wenn sich etwas geändert hat, sonst alle 2 Sekunden) */
 let runde = 0;
-setInterval(() => { runde++; const jetzt = Date.now(), orte = new Map<string, Spieler[]>();
-  for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ – das gibt das Konto frei */ Sitz.abmelden(s.ws); try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } (orte.get(s.ort) || orte.set(s.ort, []).get(s.ort)!).push(s); }
-  for (const liste of orte.values()) { const neu = liste.some((s) => s.geaendert); if (!neu && runde % 10) continue;
-    const daten = liste.map((s) => ({ i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, b: s.b, l: s.l, ...(s.max ? { lp: s.lp, max: s.max } : {}) }));
-    for (const s of liste) { s.geaendert = false; senden(s, { t: "spieler", liste: daten.filter((d) => d.i !== s.id), online: spieler.size }); } }
+setInterval(() => { runde++; const jetzt = Date.now(), alle: Spieler[] = [];
+  for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ – das gibt das Konto frei */ Sitz.abmelden(s.ws); try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } alle.push(s); }
+  /* jedem die Spieler in Sichtweite (offene Welt: nach Abstand, über Regionsgrenzen hinweg) – nur wenn sich dort etwas geändert hat, sonst alle 2 Sekunden */
+  const daten = new Map(alle.map((s) => [s, { i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, ...(s.wx !== undefined && s.wy !== undefined ? { wx: s.wx, wy: s.wy } : {}), b: s.b, l: s.l, ...(s.max ? { lp: s.lp, max: s.max } : {}) }]));
+  const schicken: Spieler[] = [];
+  for (const s of alle) { const nah = alle.filter((o) => o !== s && sehen(s, o)), key = nah.map((o) => o.id).join(",");
+    if (!(s.geaendert || key !== s.sichtKey || nah.some((o) => o.geaendert) || runde % 10 === 0)) continue; s.sichtKey = key;
+    senden(s, { t: "spieler", liste: nah.map((o) => daten.get(o)), online: spieler.size }); schicken.push(s); }
+  for (const s of alle) s.geaendert = false;
   if (runde % 5 === 0) { bodenAufraeumen(jetzt); /* einmal je Sekunde: jedem, was er am Boden sieht (nur wenn es sich geändert hat) */
-    for (const s of spieler) { const b = JSON.stringify(bodenSicht(s.ort, s.gast ? "" : s.nutzer, jetzt)); if (b === s.boden) continue; s.boden = b; senden(s, { t: "boden", liste: JSON.parse(b) }); } }
+    for (const s of spieler) { const b = JSON.stringify(bodenSicht(s.ort, s.gast ? "" : s.nutzer, jetzt, s.wx !== undefined && s.wy !== undefined && WELTREGIONEN.includes(s.ort) ? { x: s.wx, y: s.wy } : undefined)); if (b === s.boden) continue; s.boden = b; senden(s, { t: "boden", liste: JSON.parse(b) }); } }
 }, 200);
 export const weltZahl = () => spieler.size;
