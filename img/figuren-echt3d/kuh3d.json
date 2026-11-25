@@ -26,6 +26,11 @@
    "bilder": 31,
    "rate": 24,
    "schleife": false
+  },
+  "treffer": {
+   "bilder": 11,
+   "rate": 24,
+   "schleife": false
   }
  }
 }
