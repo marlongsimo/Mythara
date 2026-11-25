@@ -7,6 +7,9 @@
 import { GEGENSTAENDE, SELTENHEITEN, RUCKSACK_PLAETZE } from "../../shared/gegenstaende";
 import { BANK_PLAETZE, BANK_REITER } from "../../shared/bank";
 import { tafelZeigen, chatSystem } from "./welt";
+import { kontoName } from "./konto";
+/** Warum es gerade keine Bank gibt: ohne Konto – oder (mit Konto) noch keine Verbindung zum Spielserver */
+const keineBank = (): string => (kontoName() ? "Keine Verbindung zum Spielserver – die Bank öffnet sich, sobald er wieder erreichbar ist. Versuch es gleich noch einmal." : "Eine Bank gibt es mit Konto (Menü → Anmelden).");
 import { inventar, bankBitten, inventarAmServer } from "./inventar";
 import { gegenstandMalen, gegenstandUntersuchen } from "./rahmen";
 import { aktionsMenue, langDruecken } from "./aktionsmenue";
@@ -35,12 +38,12 @@ function stueck(m: Menge): number | null {
     xWert = n; try { localStorage.setItem(SPEICHER + "_x", String(n)); } catch { /* privat */ } return n; }
   return m;
 }
-function bitte(tat: "ein" | "ab", g: string, m: Menge) { const n = stueck(m); if (n === null) return; if (!bankBitten({ tat, g, menge: n, ...(tat === "ein" && reiter ? { tab: reiter } : {}) })) chatSystem("Eine Bank gibt es mit Konto (Menü → Anmelden)."); }
+function bitte(tat: "ein" | "ab", g: string, m: Menge) { const n = stueck(m); if (n === null) return; if (!bankBitten({ tat, g, menge: n, ...(tat === "ein" && reiter ? { tab: reiter } : {}) })) chatSystem(keineBank()); }
 const mengeName = (m: Menge) => (m === "alle" ? "Alle" : m === "x" ? `X (${xWert})` : String(m));
 
 /** Das Bankfenster zeigen (vom Schalter oder aus dem Gespräch mit einem Bankmitarbeiter) */
 export function bankZeigen(ort = "Bank der Splitterlande"): void {
-  if (!inventarAmServer()) { chatSystem("Eine Bank gibt es mit Konto (Menü → Anmelden)."); return; }
+  if (!inventarAmServer()) { chatSystem(keineBank()); return; }
   offen = true; suche = ""; let aus = () => { /* abmelden */ };
   const f = tafelZeigen("bank", `<h2>${esc(ort)}</h2><div class="zier"></div>
     <div class="bkoerper"><div class="blinks">
