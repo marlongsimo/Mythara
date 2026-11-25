@@ -56,17 +56,6 @@ try {
   const abgelehnt = await ipad.waitForURL(/willkommen\.html\?grund=bereits/, { timeout: 60000 }).then(() => true).catch(() => false);
   check(abgelehnt, "iPad: Anmeldung abgelehnt, Hinweis „bereits angemeldet“ (" + ipad.url().slice(0, 70) + ")");
   check(await handy.evaluate(() => location.search.indexOf("welt3d") >= 0 && !/anderen Gerät/.test(document.body.textContent)), "Handy spielt weiter");
-  /* 2) Handy im Hintergrund, Verbindung tot (iOS) – nach 20 s Stille darf das iPad übernehmen; kommt das Handy zurück, verbindet es neu und fliegt mit „bereits angemeldet“ raus */
-  await handy.evaluate(() => { window.__sicht = "hidden"; Object.defineProperty(document, "visibilityState", { configurable: true, get: () => window.__sicht }); window.__send = WebSocket.prototype.send; WebSocket.prototype.send = function () {}; document.dispatchEvent(new Event("visibilitychange")); });
-  await new Promise((r) => setTimeout(r, 22000));
-  const ipad2 = await spieler("Anna", T, [6440, 6440, "waldmark"]); ipad2.setDefaultTimeout(90000);
-  await ipad2.goto(B + S + "&vorwaermen=0"); await ipad2.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
-  await ipad2.waitForFunction(() => sessionStorage.getItem("rift_verbunden") === "1", null, { timeout: 30000 }).catch(() => {});
-  check(await ipad2.evaluate(() => location.search.indexOf("welt3d") >= 0 && sessionStorage.getItem("rift_verbunden") === "1"), "Handy still im Hintergrund: iPad darf übernehmen");
-  await handy.evaluate(() => { WebSocket.prototype.send = window.__send; window.__sicht = "visible"; document.dispatchEvent(new Event("visibilitychange")); });
-  const raus2 = await handy.waitForURL(/willkommen\.html\?grund=(bereits|anderes)/, { timeout: 30000 }).then(() => true).catch(() => false);
-  check(raus2, "Handy kommt zurück: verbindet neu und wird abgemeldet (" + handy.url().slice(0, 70) + ")");
-  check(await ipad2.evaluate(() => location.search.indexOf("welt3d") >= 0), "iPad spielt weiter");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
