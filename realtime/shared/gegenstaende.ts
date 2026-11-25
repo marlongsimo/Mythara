@@ -7,6 +7,7 @@
  */
 import { Startwaffe } from "./aussehen";
 import { NAMEN_AUS_DATENBLAETTERN } from "./gegenstand_namen";
+import { BILDER_AUS_FABRIK } from "./gegenstand_bilder";
 
 export type Seltenheit = "anfaenger" | "gewoehnlich" | "set" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
@@ -235,6 +236,8 @@ export function angriffFuer(ebenen: string[]): string | null {
 }
 /* Anzeigenamen kommen aus den Datenblättern der Figuren-Fabrik (Trainings-, Einfache, Seltene … Stücke) – eine Quelle, von build.mjs erzeugt. Die IDs bleiben (gespeicherte Inventare). */
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
+/* Rucksack-Bilder der Waffen und Rüstungen (werkzeug/ausruestung_bilder.py): ein festes Bild statt jedes Mal aus dem 3D-Modell gerendert; eigene Bilder bleiben */
+for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] && !GEGENSTAENDE[id].bild && !GEGENSTAENDE[id].symbol) GEGENSTAENDE[id].bild = b;
 /* ───────── Ausrüstung nach OSRS (Vorgabe 23.11.2026): Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril ─────────
    Treffer und Abwehr rechnen wie OSRS: Wurf = (Level + Stil + 8) × (Bonus + 64) – die Boni sind die OSRS-Werte direkt.
    Nahkampf: ein Angriffsbonus (der passende OSRS-Angriffsstil der Waffe). Fernkampf: Bogen und Munition in einem (Pfeil-/Bolzenstärke in fernStaerke).
