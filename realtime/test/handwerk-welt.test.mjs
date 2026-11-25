@@ -70,7 +70,7 @@ try {
   const gast = await spieler(null, "waldmark"); await schlaf(400); await bei(gast, WERKBANK); check(/Konto/.test((await mach(gast, "bogensehne")).text || ""), "Gast: Handwerk nur mit Konto"); gast.ws.close();
   anna.ws.close(); ben.ws.close(); srv.kill(); await schlaf(400);
   /* Lauf 2: Glut; dazu zwei Eichenstämme und Handwerk 5 für den Bogen in zwei Schritten */
-  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
+  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne", "ungespannt_mondkurzbogen_gewoehnlich", "ungespannt_mondkurzbogen_gewoehnlich", "bogensehne", "bogensehne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
   await starten({ HANDWERK_GLUT: "1" });
   const a2 = await spieler(TA, "waldmark"); await warte(a2, (m) => m.t === "inventar"); await schlaf(300); const garn0 = anzahl(a2, "garn");
   await bei(a2, WERKBANK); await mach(a2, "stoff_hanf", 2); const g = await warte(a2, (m) => m.t === "handwerk" && m.tat === "glut", 6000);
@@ -82,10 +82,15 @@ try {
   const sehnen0 = anzahl(a2, "bogensehne"), xp0 = a2.inv.berufe.handwerk;
   await bei(a2, WERKBANK); const u = await mach(a2, "ungespannt_mondkurzbogen_gewoehnlich"); const eu = u.tat === "start" ? await ende(a2) : null; await schlaf(200);
   const fu = a2.handwerk.find((m) => m.tat === "fertig");
-  check(eu && eu.grund === "fertig" && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 1 && anzahl(a2, "stamm_tanne") === 0, `Werkbank: zwei Tannenstämme → ungespannter Kurzbogen (${u.text || u.tat}, ${fu && fu.xp} XP)`);
+  check(eu && eu.grund === "fertig" && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 3 && anzahl(a2, "stamm_tanne") === 0, `Werkbank: zwei Tannenstämme → ungespannter Kurzbogen (${u.text || u.tat}, ${fu && fu.xp} XP)`);
   await bei(a2, WERKBANK, 40); const z = await mach(a2, "mondkurzbogen_gewoehnlich"); const ez = z.tat === "start" ? await ende(a2) : null; await schlaf(200); const fz = a2.handwerk.find((m) => m.tat === "fertig");
-  check(z.tat === "start" && ez && ez.grund === "fertig" && anzahl(a2, "mondkurzbogen_gewoehnlich") === 1 && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 0 && anzahl(a2, "bogensehne") === sehnen0 - 1,
+  check(z.tat === "start" && ez && ez.grund === "fertig" && anzahl(a2, "mondkurzbogen_gewoehnlich") === 1 && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 2 && anzahl(a2, "bogensehne") === sehnen0 - 1,
     `Im Rucksack (weit weg von der Werkbank): Bogensehne auf den ungespannten Bogen → Kurzbogen (${z.text || z.tat}, ${fz && fz.xp} XP)`);
+  /* Stück für Stück: zwei Bögen im Rucksack – nach dem ersten liegt das zweite Teil noch da, jedes Stück braucht seine 2 Ticks */
+  const t2 = Date.now(), z2 = await mach(a2, "mondkurzbogen_gewoehnlich", 2); const erst = await warte(a2, (m) => m.t === "handwerk" && m.tat === "fertig", 5000); const t3 = Date.now(); await schlaf(150);
+  const zwischen = anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich"); await ende(a2); const t4 = Date.now(); await schlaf(200);
+  check(z2.menge === 2 && erst && erst.rest === 1 && zwischen === 1 && t3 - t2 >= 900 && t4 - t3 >= 800 && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 0,
+    `Stück für Stück: erster Bogen nach ${t3 - t2} ms (das zweite Teil liegt noch im Rucksack: ${zwischen}), zweiter ${t4 - t3} ms später`);
   check(fu && fz && fu.xp > fz.xp && a2.inv.berufe.handwerk >= xp0 + fu.xp + fz.xp, `XP für beide Schritte: ${fu && fu.xp} + ${fz && fz.xp}`);
   a2.ws.close();
 } catch (e) { check(false, "Ausnahme: " + (e && e.stack || e)); }
