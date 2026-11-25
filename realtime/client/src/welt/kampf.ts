@@ -12,6 +12,7 @@
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
+import { chatSystem } from "../welt";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -50,6 +51,12 @@ export function tastenFuellen(held: string, modus = 0): void { const D = HELDEN[
   for (const t of ["q", "e", "r"] as const) { const el = document.querySelector(`[data-taste="${t}"]`) as HTMLElement | null; if (!el) continue; const def = D[t]; (el.querySelector("small") as HTMLElement).textContent = def.name; el.title = `${def.name}: ${def.text}`; (el.querySelector("img") as HTMLImageElement).src = symbolBild(sym[t] || "sterne"); }
   const an = document.querySelector('[data-taste="a"] img') as HTMLImageElement | null; if (an) an.src = symbolBild((sym.modi || [])[modus] || "hieb");
   const mo = document.getElementById("ez-modus"); if (mo && !mo.innerHTML) mo.innerHTML = `<img alt="" src="${symbolBild((sym.modi || [])[modus] || "hieb")}"><b>⇄</b>`; }
+/** Kampf ohne Spielserver (Server schläft oder ist nicht erreichbar): deutlich sagen, dass es dann keine Beute gibt und die XP nicht gespeichert werden */
+function ohneServerMelden(grund: string): void {
+  const text = "Keine Verbindung zum Spielserver – dieser Kampf läuft nur im Browser: keine Beute, und die XP werden nicht gespeichert. Lade die Seite neu, um es noch einmal zu versuchen." + (grund ? ` (${grund})` : "");
+  chatSystem(text); console.warn("Kampf ohne Server:", grund);
+  const el = document.getElementById("ez-dorf-hilfe"); if (el) { el.textContent = text; el.style.display = ""; }
+}
 export class WeltKampf {
   geschosse = new Map<number, { g: Geschoss; x: number; y: number; von: number }>(); schussBeginn = new Map<number, number>();
   netz: Netz | null = null; karteZeit = 0; schildWar = false; z: Zustand | null = null; ichId = 0; bereit = false; vorbei = false; totGemeldet = false; art = "";
@@ -80,7 +87,7 @@ export class WeltKampf {
           if (f.held && (f.a || "") !== k) { const neu = this.neu(id, true, f.typ, f.team, f.x, f.y); f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); Object.assign(neu, { tot: f.tot, lp: f.lp, max: f.max, zx: f.zx, zy: f.zy }); neu.sp.setVisible(!f.tot); } } }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
-    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art) => { this.art = art; }, url ? { t: "anmeldung", token, ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
+    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
     if (this.vorbei) { n.ende(); return; } this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
   }
   /** Kampfregeln v1 (eigener Held): beim Rechnen im Browser Held und Gegner umstellen; Ausrüstungswechsel an Server oder Simulation weitergeben */
