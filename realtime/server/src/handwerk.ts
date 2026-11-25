@@ -21,7 +21,7 @@ export let wuerfel = Math.random;
 
 export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: object) => void }): void { sb = o.sb; senden = o.senden; }
 export const handwerkLevel = (nutzer: string): number => levelAus(berufXp(nutzer, BERUF_HAND));
-const nah = (s: HandwerkSpieler, r: Rezept) => { const S = STATIONEN[r.station]; return s.wx !== undefined && s.wy !== undefined && Math.hypot(s.wx - S.x, s.wy - S.y) <= HANDWERK_WEIT; };
+const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ const S = STATIONEN[r.station]; return s.wx !== undefined && s.wy !== undefined && Math.hypot(s.wx - S.x, s.wy - S.y) <= HANDWERK_WEIT; };
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
 /** Was fehlt für ein Stück (null = alles da); spar: diese Zutat (Index) braucht eine Einheit weniger (Glut) */
@@ -36,7 +36,7 @@ const passt = (nutzer: string, r: Rezept) => platzFuer(nutzer, r.ergebnis) || r.
 export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): string | null {
   if (s.gast) return "Handwerk geht mit Konto (Menü → Anmelden).";
   const r = rezept(id); if (!r) return "Dieses Rezept gibt es nicht.";
-  if (!nah(s, r)) return `Geh näher an die ${STATIONEN[r.station].name}.`;
+  if (!nah(s, r) && r.station !== "hand") return `Geh näher an die ${STATIONEN[r.station].name}.`;
   const L = handwerkLevel(s.nutzer); if (L < r.level) return `Dafür brauchst du Handwerk ${r.level}.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
   if (!passt(s.nutzer, r)) return "Dein Rucksack ist voll.";

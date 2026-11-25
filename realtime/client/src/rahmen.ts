@@ -4,7 +4,7 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
-import { questStand, questStand2, questVerfolgt, questVerfolgen } from "./welt";
+import { questStand, questStand2, questVerfolgt, questVerfolgen, handwerkBitten } from "./welt";
 import { Q2, lage as lage2, laeuft2, questlog2, SCHRITTE2, BELOHNUNG2 } from "../../shared/quest02";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
@@ -26,6 +26,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
   await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
 import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer, trinken } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
+import { REZEPTE } from "../../shared/handwerk";
 import { skillFuehrer } from "./skillfuehrer";
 import { kampfwerte, STILE, SKILLS, SKILL_NAME, TICK, heldenlevel, Skill } from "../../shared/kampfwerte";
 import { skillsLesen, stilLesen, stilSetzen, kampfartJetzt, skillStand, autoLesen, autoSetzen, SKILL_ZEICHEN, BERUF_ZEICHEN, BERUF_NAME } from "./skills";
@@ -170,6 +171,11 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
+/** Benutzen: Gegenstand a auf b im Rucksack (z. B. Bogensehne auf ungespannten Bogen) – ein Rezept „im Rucksack“ (shared/handwerk.ts), so oft es geht; der Server prüft Level und Zutaten */
+function zusammensetzen(a: string, b: string): void {
+  const r = REZEPTE.find((x) => x.station === "hand" && [a, b].every((g) => x.zutaten.some((z) => z.g.includes(g)))); if (!r) { chatSystem("Nichts Interessantes passiert."); return; }
+  const inv = inventar(), hat = (g: string) => inv.rucksack.reduce((n, x, i) => n + (x === g ? (inv.anzahl && inv.anzahl[i]) || 1 : 0), 0);
+  const n = Math.min(...r.zutaten.map((z) => Math.floor(Math.max(...z.g.map(hat)) / z.n))); handwerkBitten("start", r.id, Math.max(1, n)); }
 function dingMenue(wo: string, g: string, px: number, py: number): void { const d = dingAktionen(wo, g); if (d) aktionsMenue(px, py, [{ kopf: d.kopf, farbe: d.farbe, aktionen: d.a }]); }
 /* ---- Quests: Liste im Tab (nur Titel, Farbe nach Stand), Details als Pergament in der Bildschirmmitte ---- */
 type QuestArt = "neu" | "aktiv" | "verfolgt" | "fertig";
@@ -381,7 +387,7 @@ function tabKlick(e: Event): void {
   if (tabJetzt === "quests") { const r = t.closest<HTMLElement>("[data-qr]"); if (r) { questReiter = r.dataset.qr === "fertig" ? "fertig" : "offen"; tabZeichnen(); return; }
     const q = t.closest<HTMLElement>("[data-quest]"); if (q) questDetails(q.dataset.quest!); return; } /* kurz antippen: erste Aktion = Details */
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
-  { const b = benutzt(); if (b && tabJetzt === "rucksack") { const f2 = t.closest<HTMLElement>(".ifeld"); if (f2) { benutzen(null); if (f2.dataset.wo !== b.wo && f2.dataset.g) chatSystem("Nichts Interessantes passiert."); tabZeichnen(); return; } } }
+  { const b = benutzt(); if (b && tabJetzt === "rucksack") { const f2 = t.closest<HTMLElement>(".ifeld"); if (f2) { benutzen(null); if (f2.dataset.wo !== b.wo && f2.dataset.g) zusammensetzen(b.g, f2.dataset.g); tabZeichnen(); return; } } }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); return; } /* Gegenstand kurz antippen: erste Aktion (Ausrüsten / Ablegen / Untersuchen) */
   const sk = t.closest<HTMLElement>("[data-skill]"); if (sk) { skillInfo(sk.dataset.skill as Skill); return; }
   const be = t.closest<HTMLElement>("[data-beruf]"); if (be) { skillFuehrer(be.dataset.beruf!, BERUF_TEXT[be.dataset.beruf!]); return; } /* Skill-Übersicht wie in OSRS (skillfuehrer.ts) */

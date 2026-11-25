@@ -8,11 +8,14 @@
  * Die XP stehen im Inventar des Helden (Feld „berufe“, Schlüssel „handwerk“) – keine neue Tabelle.
  */
 import { SammelArt } from "./sammeln";
+import { zwischenteil } from "./gegenstaende";
 
 export const BERUF_HAND = "handwerk";
-export type StationId = "esse" | "amboss" | "werkbank";
+/** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
+export type WeltStation = "esse" | "amboss" | "werkbank";
+export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank davor) */
-export const STATIONEN: Record<StationId, { id: StationId; name: string; x: number; y: number; tun: string }> = {
+export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
   esse: { id: "esse", name: "Esse", x: 6467.4, y: 6427.8, tun: "Schmelzen" },
   amboss: { id: "amboss", name: "Amboss", x: 6470.4, y: 6427.6, tun: "Schmieden" },
   werkbank: { id: "werkbank", name: "Werkbank", x: 6463.5, y: 6426.5, tun: "Werken" },
@@ -33,7 +36,7 @@ export interface Rezept { id: string; station: StationId; ergebnis: string; leve
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
-export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" ? "ofen" : r.station === "amboss" ? "haemmern"
+export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" ? "ofen" : r.station === "amboss" ? "haemmern" : r.station === "hand" ? "fuegen"
   : ["Sehne und Garn", "Leder", "Stoff"].includes(r.gruppe) ? "weben" : /Kapuze|Hose|Rock|Wams|Robe/.test(r.gruppe) ? "fuegen" : "schnitzen";
 const dazu = (r: Rezept) => { if (!REZEPTE.some((x) => x.id === r.id)) REZEPTE.push(r); };
 
@@ -77,9 +80,14 @@ const FAMILIEN: [string, StationId, string[], number, Partial<Record<E, number>>
 ];
 const einheit = (e: E, t: number): string => ({ B: "barren_" + ERZ[t], S: HOLZ[t], L: LEDER[t], G: "garn", N: "bogensehne", T: STOFF[t] })[e];
 const wert = (e: E, t: number): number => ({ B: EXP[t] * ERZ_JE_BARREN[t], S: HXP[t], L: GXP[t] * 2, G: (PFLUECK_XP + GARN_XP) * 2, N: (PFLUECK_XP + SEHNE_XP) * 2, T: WXP[t] * 2 })[e];
-for (const [gruppe, station, ids, versatz, zut] of FAMILIEN) for (let t = 0; t < 6; t++) { const g = ids[t]; if (!g || g === "-") continue;
+for (const [gruppe, station, ids, versatz, zut] of FAMILIEN) for (let t = 1; t < 6; t++) { const g = ids[t]; if (!g || g === "-") continue; /* Trainingsteile (Stufe 0) kann man nicht herstellen */
   const z = Object.entries(zut) as [E, number][], einheiten = z.reduce((s, [, n]) => s + n, 0);
-  dazu({ id: g, station, ergebnis: g, level: Math.min(99, LV[t] + versatz), zutaten: z.map(([e, n]) => ({ g: [einheit(e, t)], n })), xp: r5(0.5 * z.reduce((s, [e, n]) => s + wert(e, t) * n, 0)), ticks: 3 + 2 * einheiten, stufe: t, gruppe }); }
+  const level = Math.min(99, LV[t] + versatz), xp = r5(0.5 * z.reduce((s, [e, n]) => s + wert(e, t) * n, 0)), teil = zwischenteil(g);
+  if (teil) { /* zweistufig wie in OSRS: an der Werkbank schnitzen (ungespannter Bogen / Armbrustschaft), dann im Rucksack die Sehne darauf benutzen */
+    const ohneSehne = z.filter(([e]) => e !== "N"), xpA = r5(xp * 0.6);
+    dazu({ id: teil, station, ergebnis: teil, level, zutaten: ohneSehne.map(([e, n]) => ({ g: [einheit(e, t)], n })), xp: xpA, ticks: 3 + 2 * (einheiten - 1), stufe: t, gruppe });
+    dazu({ id: g, station: "hand", ergebnis: g, level, zutaten: [{ g: [teil], n: 1 }, { g: ["bogensehne"], n: 1 }], xp: xp - xpA, ticks: 2, stufe: t, gruppe }); continue; }
+  dazu({ id: g, station, ergebnis: g, level, zutaten: z.map(([e, n]) => ({ g: [einheit(e, t)], n })), xp, ticks: 3 + 2 * einheiten, stufe: t, gruppe }); }
 export const rezept = (id: string): Rezept | undefined => REZEPTE.find((r) => r.id === id);
 export const rezepteAn = (st: StationId): Rezept[] => REZEPTE.filter((r) => r.station === st).sort((a, b) => a.level - b.level || a.gruppe.localeCompare(b.gruppe));
 

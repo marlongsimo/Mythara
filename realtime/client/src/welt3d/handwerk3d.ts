@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
-import { STATIONEN, StationId, rezepteAn, rezept, Rezept, BERUF_HAND, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
+import { STATIONEN, StationId, WeltStation, rezepteAn, rezept, Rezept, BERUF_HAND, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
 import { chatSystem, handwerkBitten, tafelZeigen } from "../welt";
 import { berufDrop, skillStand } from "../skills";
 import { inventar } from "../inventar";
@@ -46,10 +46,10 @@ export class HandwerkWelt {
       o.position.set(S.x, this.u.motor.hoehe(S.x, S.y), S.y); this.u.motor.szene.add(o); this.bank = o;
     } catch (e) { console.warn("Handwerk: Werkbank fehlt", e); } }
   private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
-    const f = this.figur, S = m.station ? STATIONEN[m.station] : this.station ? STATIONEN[this.station] : null;
+    const f = this.figur, st = m.station || this.station, S = st && st !== "hand" ? STATIONEN[st] : null;
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null;
       if (r) chatSystem(`Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
-    else if (m.tat === "schlag" && f && S) { f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); const r = m.rezept ? rezept(m.rezept) : null, w = r ? WERK[werkTat(r)] : WERK.haemmern;
+    else if (m.tat === "schlag" && f) { if (S) f.blick(S.x - this.u.ort.x, S.y - this.u.ort.y); const r = m.rezept ? rezept(m.rezept) : null, w = r ? WERK[werkTat(r)] : WERK.haemmern;
       if (typeof f.werken === "function") f.werken(w.clips, w.werkzeug); else if (w.werkzeug) f.beilHieb(w.werkzeug, ""); }
     else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); berufDrop(BERUF_HAND, m.xp || 0);
       if (m.aufstieg) { chatSystem(`Glückwunsch! Handwerk ist jetzt Level ${m.aufstieg}.`); this.hinweis(`Handwerk Level ${m.aufstieg}!`, 2600); } }
@@ -60,7 +60,7 @@ export class HandwerkWelt {
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
 
   /** Das Herstellfenster einer Werkstatt (wie in OSRS: Bilder nach Gruppe; antippen → Zutaten und Menge). nur: nur Rezepte mit diesem Gegenstand („Benutzen“) */
-  fenster(st: StationId, nur = ""): void { const S = STATIONEN[st], L = handLevel(); this.offen = st;
+  fenster(st: WeltStation, nur = ""): void { const S = STATIONEN[st], L = handLevel(); this.offen = st;
     if (!document.getElementById("ez-handwerk-stil")) { const s = document.createElement("style"); s.id = "ez-handwerk-stil"; s.textContent = `
 #ez-konto .tafel.handwerk { width: min(640px, 100%); text-align: left; max-height: 90vh; display: flex; flex-direction: column; }
 #ez-konto .handwerk .raster { overflow-y: auto; padding: 2px 4px 2px 0; flex: 1 1 auto; min-height: 120px; }

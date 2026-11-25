@@ -262,6 +262,14 @@ export function angriffFuer(ebenen: string[]): string | null {
 for (const [id, n] of Object.entries(NAMEN_AUS_DATENBLAETTERN)) if (GEGENSTAENDE[id]) GEGENSTAENDE[id].name = n;
 /* Rucksack-Bilder der Waffen und Rüstungen (werkzeug/ausruestung_bilder.py): ein festes Bild statt jedes Mal aus dem 3D-Modell gerendert; eigene Bilder bleiben */
 for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] && !GEGENSTAENDE[id].bild && !GEGENSTAENDE[id].symbol) GEGENSTAENDE[id].bild = b;
+/* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
+const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
+export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);
+/** Das Zwischenteil zu einer Fernkampfwaffe ("" = keins) */
+export const zwischenteil = (g: string): string => (ZWISCHEN_BOEGEN.includes(g) ? "ungespannt_" + g : ZWISCHEN_ARMBRUESTE.includes(g) ? "schaft_" + g : "");
+for (const g of [...ZWISCHEN_BOEGEN, ...ZWISCHEN_ARMBRUESTE]) { const W = GEGENSTAENDE[g]; if (!W) continue; const id = zwischenteil(g), bogen = id.startsWith("ungespannt_");
+  GEGENSTAENDE[id] = { id, name: bogen ? `${W.name} (ungespannt)` : `${W.name} (Schaft)`, art: "Rohstoff", seltenheit: W.seltenheit, bild: `img/objekte3d/skilling/erzeugnisse/${id}.webp`,
+    text: bogen ? `Geschnitzt, aber noch ohne Sehne. Benutze eine Bogensehne darauf, dann wird daraus: ${W.name}.` : `Schaft und Bogenarme sind fertig, die Sehne fehlt. Benutze eine Bogensehne darauf, dann wird daraus: ${W.name}.` }; }
 /* ───────── Ausrüstung nach OSRS (Vorgabe 23.11.2026): Training ↔ Bronze/Leder/Zauberrobe, Einfach (Level 10) ↔ Black, Selten (Level 20) ↔ Mithril ─────────
    Treffer und Abwehr rechnen wie OSRS: Wurf = (Level + Stil + 8) × (Bonus + 64) – die Boni sind die OSRS-Werte direkt.
    Nahkampf: ein Angriffsbonus (der passende OSRS-Angriffsstil der Waffe). Fernkampf: Bogen und Munition in einem (Pfeil-/Bolzenstärke in fernStaerke).

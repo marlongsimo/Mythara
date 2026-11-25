@@ -15,7 +15,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 const nameVon = (g: string) => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g);
 const werkzeugZeilen = (liste: { g: string; level: number; stufe: number }[], was: string): Zeile[] =>
   liste.map((w) => ({ level: w.level, g: w.g, name: nameVon(w.g), text: w.stufe ? `${was} schneller (Stufe ${w.stufe})` : "Das erste Werkzeug" }));
-const rezeptZeile = (r: Rezept): Zeile => ({ level: r.level, g: r.ergebnis, name: nameVon(r.ergebnis), text: `${r.xp} XP · ${r.zutaten.map((z) => `${z.n} × ${z.g.map(nameVon).join(" / ")}`).join(", ")}` });
+const rezeptZeile = (r: Rezept): Zeile => ({ level: r.level, g: r.ergebnis, name: nameVon(r.ergebnis), text: `${r.station === "hand" ? "Im Rucksack zusammensetzen · " : ""}${r.xp} XP · ${r.zutaten.map((z) => `${z.n} × ${z.g.map(nameVon).join(" / ")}`).join(", ")}` });
 const nachLevel = (z: Zeile[]) => [...z].sort((a, b) => a.level - b.level);
 
 /** Die Reiter eines Berufs */
@@ -24,7 +24,7 @@ function reiter(k: string): [string, Zeile[]][] {
   if (k === "bergbau") return [["Adern", Object.values(ADERN).map((a) => ({ level: a.level, g: a.ertrag, name: a.name, text: `${a.xp} XP je Erz` }))], ["Spitzhacken", werkzeugZeilen(SPITZHACKEN, "Baut")]];
   if (k === "handwerk") { const an = (f: (r: Rezept) => boolean) => nachLevel(REZEPTE.filter(f).map(rezeptZeile)), roh = ["Sehne und Garn", "Leder", "Stoff"];
     return [["Rohstoffe", an((r) => roh.includes(r.gruppe))],
-      ["Barren", an((r) => r.station === "esse")], ["Schmieden", an((r) => r.station === "amboss")], ["Werkbank", an((r) => r.station === "werkbank" && !roh.includes(r.gruppe))]]; }
+      ["Barren", an((r) => r.station === "esse")], ["Schmieden", an((r) => r.station === "amboss")], ["Werkbank", an((r) => (r.station === "werkbank" || r.station === "hand") && !roh.includes(r.gruppe))]]; }
   return [];
 }
 const STIL = `

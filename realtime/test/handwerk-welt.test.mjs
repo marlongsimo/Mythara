@@ -45,6 +45,7 @@ try {
   await bei(anna, WERKBANK); check(/Handwerk 10/.test((await mach(anna, "leder_weich")).text || ""), "Weiches Leder mit Level 1: „… brauchst du Handwerk 10.“");
   await bei(ben, WERKBANK); check(/fehlt/.test((await mach(ben, "garn")).text || ""), "Ohne Hanf: „Dir fehlt: 1 × Hanf.“");
   check((await mach(anna, "gibtsnicht")).text === "Dieses Rezept gibt es nicht.", "Unbekanntes Rezept abgelehnt");
+  check((await mach(anna, "ritterschwert")).text === "Dieses Rezept gibt es nicht." && (await mach(anna, "jagdbogen")).text === "Dieses Rezept gibt es nicht.", "Trainingsteile (Ritterschwert, Trainingsbogen) kann man nicht herstellen");
   const t0 = Date.now(), s1 = await mach(anna, "bogensehne", 5); check(s1.tat === "start" && s1.menge === 5 && s1.station === "werkbank", "Bogensehne ab Level 1 an der Werkbank: es geht los");
   const e1 = await ende(anna); const fe = anna.handwerk.filter((m) => m.tat === "fertig");
   check(e1 && e1.grund === "zutaten" && fe.length === 2 && fe.every((m) => m.g === "bogensehne" && m.xp === 4), `Zwei Flachs → zwei Bogensehnen (je 4 XP), dann „Zutaten aus“ (${fe.length}, ${e1 && e1.grund})`);
@@ -68,7 +69,8 @@ try {
   const gesp = GESPEICHERT[GESPEICHERT.length - 1]; check(gesp && gesp.p_inventar.berufe && gesp.p_inventar.berufe.handwerk >= xp1, "Die XP sind gespeichert (rpg_held_inventar_setzen, berufe.handwerk)");
   const gast = await spieler(null, "waldmark"); await schlaf(400); await bei(gast, WERKBANK); check(/Konto/.test((await mach(gast, "bogensehne")).text || ""), "Gast: Handwerk nur mit Konto"); gast.ws.close();
   anna.ws.close(); ben.ws.close(); srv.kill(); await schlaf(400);
-  /* Lauf 2: Glut */
+  /* Lauf 2: Glut; dazu zwei Eichenstämme und Handwerk 5 für den Bogen in zwei Schritten */
+  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
   await starten({ HANDWERK_GLUT: "1" });
   const a2 = await spieler(TA, "waldmark"); await warte(a2, (m) => m.t === "inventar"); await schlaf(300); const garn0 = anzahl(a2, "garn");
   await bei(a2, WERKBANK); await mach(a2, "stoff_hanf", 2); const g = await warte(a2, (m) => m.t === "handwerk" && m.tat === "glut", 6000);
@@ -76,6 +78,15 @@ try {
   const e5 = await ende(a2); await schlaf(200); const f5 = a2.handwerk.filter((m) => m.tat === "fertig");
   check(e5 && f5.length === 2 && !f5[0].glut && f5[1].glut && f5[1].gespart && f5[1].xp === Math.round(f5[0].xp * 1.5), `Glut angetippt: zweites Hanftuch mit Glut, 50 % mehr XP (${f5.map((m) => m.xp)})`);
   check(anzahl(a2, "garn") === garn0 - 3 && faecher(a2, "stoff_hanf") === 2, `Garn ${garn0} → ${anzahl(a2, "garn")} (eins gespart), zwei Hanftücher`);
+  /* Bogen in zwei Schritten: an der Werkbank schnitzen, dann im Rucksack die Sehne darauf (überall) */
+  const sehnen0 = anzahl(a2, "bogensehne"), xp0 = a2.inv.berufe.handwerk;
+  await bei(a2, WERKBANK); const u = await mach(a2, "ungespannt_mondkurzbogen_gewoehnlich"); const eu = u.tat === "start" ? await ende(a2) : null; await schlaf(200);
+  const fu = a2.handwerk.find((m) => m.tat === "fertig");
+  check(eu && eu.grund === "fertig" && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 1 && anzahl(a2, "stamm_tanne") === 0, `Werkbank: zwei Tannenstämme → ungespannter Kurzbogen (${u.text || u.tat}, ${fu && fu.xp} XP)`);
+  await bei(a2, WERKBANK, 40); const z = await mach(a2, "mondkurzbogen_gewoehnlich"); const ez = z.tat === "start" ? await ende(a2) : null; await schlaf(200); const fz = a2.handwerk.find((m) => m.tat === "fertig");
+  check(z.tat === "start" && ez && ez.grund === "fertig" && anzahl(a2, "mondkurzbogen_gewoehnlich") === 1 && anzahl(a2, "ungespannt_mondkurzbogen_gewoehnlich") === 0 && anzahl(a2, "bogensehne") === sehnen0 - 1,
+    `Im Rucksack (weit weg von der Werkbank): Bogensehne auf den ungespannten Bogen → Kurzbogen (${z.text || z.tat}, ${fz && fz.xp} XP)`);
+  check(fu && fz && fu.xp > fz.xp && a2.inv.berufe.handwerk >= xp0 + fu.xp + fz.xp, `XP für beide Schritte: ${fu && fu.xp} + ${fz && fz.xp}`);
   a2.ws.close();
 } catch (e) { check(false, "Ausnahme: " + (e && e.stack || e)); }
 srv.kill(); sb.close(); if (f) console.log(log.split("\n").slice(-20).join("\n"));
