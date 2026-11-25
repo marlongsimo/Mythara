@@ -71,6 +71,8 @@ try {
   { const d = await anna.evaluate(() => window.__drops); check(d.length > 0 && d.every((x) => x.bilder > 0 && /\+\d/.test(x.text)), `XP-Drops mit Zeichen am oberen Rand (${d.length}, z. B. „${d[0] && d[0].text}“)`); }
   check(XPBUCH.every((x) => x.p_lp === x.p_geschick), "1,33 XP je abgezogenem Lebenspunkt an jeden der drei Skills und an Lebenspunkte (gleiche Buchung)");
   check(blocks > 0 && treffer > 0, `Schadenszahlen und „geblockt“ erscheinen über den Figuren (${treffer} Treffer, ${blocks} Blocks)`);
+  { const b = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.bodenBild && W.bodenBild.size > 0 ? [...W.bodenBild.keys()].length : 0; }, null, { timeout: 30000, polling: 500 }).then((h) => h.jsonValue()).catch(() => 0);
+    check(b > 0, `Beute der Banditen liegt am Boden (Splitter aus dem ersten Wurf, ${b} Stück sichtbar)`); }
   { const lp = await anna.evaluate(() => { const K = window.EZK, ich = K.z.w.find((e) => e[0] === K.z.ich.id); return { text: (document.querySelector("#ez-kartenrahmen .lpzahl") || {}).textContent, soll: ich ? `${Math.round(ich[7])} / ${ich[8]}` : "" }; });
     check(lp.text && /^\d+ \/ \d+$/.test(lp.text), `Lebenspunkte im Bogen an der Minikarte: ${lp.text} (Server: ${lp.soll})`); }
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "kampf3d-treffer.png" });

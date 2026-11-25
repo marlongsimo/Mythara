@@ -20,7 +20,7 @@ export function haendlerReden(l: Laden): void {
 export class HaendlerWelt {
   private alle: Haendler[] = [];
   constructor(private u: Umgebung) {
-    for (const l of LADEN_LISTE) { const npc = new Npc3D(l.modell); npc.blick(l.blick[0], l.blick[1]); this.u.motor.szene.add(npc.gruppe);
+    for (const l of LADEN_LISTE) { if (l.figurInWelt) continue; /* Handwerker: Figur aus den Weltdaten, angetippt öffnet er seinen Laden (welt/anschluss.ts) */ const npc = new Npc3D(l.modell); npc.blick(l.blick[0], l.blick[1]); this.u.motor.szene.add(npc.gruppe);
       const nm = document.createElement("div"); nm.className = "ez-name3d quest haendler"; nm.innerHTML = `${l.haendler}<small>${l.name}</small>`; document.body.appendChild(nm); this.alle.push({ l, npc, nm }); } }
   /** Liegt an diesem Bodenpunkt ein Händler? Dann „Mit … sprechen“ (hingehen, reden) und im Menü dazu „Laden ansehen“ */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr: { text: string; sym: string; tat: () => void }[] } | null {

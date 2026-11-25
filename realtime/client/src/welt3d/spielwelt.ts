@@ -275,7 +275,7 @@ export class Spielwelt3D implements WeltKern {
         return { x: d0.x, y: d0.y, text: "", tat: () => {}, da, knoepfe: [...hier.map((d) => ({ text: name(d), tat: () => aufheben(d.i, this.ort) })), { text: "Alles aufheben", tat: () => aufheben(hier.map((d) => d.i), this.ort) }] }; } }
     const cx = Math.floor(x / C), cy = Math.floor(y / C); let best: Stelle | null = null, bd = Infinity;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
-      for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > Math.max(1.2, a.radius) || w >= bd) continue; const i = this.interaktion(a); if (!i) continue;
+      for (const a of d.interaktionen) { const w = Math.hypot(a.x - x, a.y - y); if (w > (istBankschalter(a.id) ? 0.6 : Math.max(1.2, a.radius)) || w >= bd) continue; /* Bankschalter: nur der Schalter selbst, nicht der Boden davor (sonst öffnet die Bank beim Hinlaufen) */ const i = this.interaktion(a); if (!i) continue;
         bd = w; best = { x: a.x, y: a.y, text: i.text, tat: i.tat, da: () => Math.hypot(a.x - this.ort.x, a.y - this.ort.y) <= a.radius }; } }
     if (best) return best;
     const r = this.regionBei(x, y); if (r) for (const a of r.ausgaenge) if (inZone(a.zone, x, y)) return { x, y, text: a.text, tat: () => this.reisen(a), da: () => inZone(a.zone, this.ort.x, this.ort.y) };
@@ -291,7 +291,7 @@ export class Spielwelt3D implements WeltKern {
     if (this.handwerk) for (const p of this.handwerk.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.9 }); /* Erzadern */ /* Holzfäller-Bäume: der ganze Baum zählt */
     const cx = Math.floor(o.x / C), cy = Math.floor(o.y / C);
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const d = this.daten.get(chunkName(cx + dx, cy + dy)); if (!d || d === "holt") continue;
-      if (!nurFiguren) for (const a of d.interaktionen) if (Math.hypot(a.x - o.x, a.y - o.y) < 30 && this.interaktion(a)) kand.push({ x: a.x, y: a.y, h: 2.6, r: Math.max(0.6, Math.min(2, a.radius * 0.7)) }); }
+      for (const a of d.interaktionen) if ((!nurFiguren || istBankschalter(a.id)) /* der Tresen zählt wie eine Figur: nur er selbst */ && Math.hypot(a.x - o.x, a.y - o.y) < 30 && this.interaktion(a)) kand.push(istBankschalter(a.id) ? { x: a.x, y: a.y, h: 1.2, r: 0.5 } /* nur der Tresen */ : { x: a.x, y: a.y, h: 2.6, r: Math.max(0.6, Math.min(2, a.radius * 0.7)) }); }
     let best: { k: (typeof kand)[number]; t: number } | null = null;
     for (const k of kand) { const y = M.hoehe(k.x, k.y), fu = M.bildschirm(k.x, y, k.y), ko = M.bildschirm(k.x, y + k.h, k.y), rand = M.bildschirm(k.x + k.r, y, k.y); if (!fu || !ko || !rand) continue;
       const breit = Math.max(20, Math.abs(rand.x - fu.x), Math.abs(fu.y - ko.y) * 0.35); if (Math.abs(px - fu.x) > breit || py > fu.y + 12 || py < ko.y - 8) continue;

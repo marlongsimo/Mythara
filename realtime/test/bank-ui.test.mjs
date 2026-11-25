@@ -47,7 +47,7 @@ async function spieler(name, token, stelle) { const ctx = await br.newContext({ 
 const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && window.EZW && window.EZW.welt3d, null, { timeout: 120000 });
 
 const schirm = (p, x, y, h = 1.0) => p.evaluate(([x, y, h]) => { const W = window.EZW.welt3d; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + h, y); }, [x, y, h]);
-const bankFenster = (p) => p.waitForSelector("#ez-konto .tafel.bank", { timeout: 90000 }).then(() => true).catch(() => false);
+const bankFenster = (p, ms = 90000) => p.waitForSelector("#ez-konto .tafel.bank", { timeout: ms }).then(() => true).catch(() => false);
 const inBank = (p, g) => p.evaluate((g) => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); const b = (i.bank || []).find((x) => x[0] === g); return b ? b[1] : 0; }, g);
 const imRucksack = (p, g) => p.evaluate((g) => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return (i.rucksack || []).reduce((n, x, k) => n + (x === g ? (i.anzahl || [])[k] || 1 : 0), 0); }, g);
 try {
@@ -60,6 +60,10 @@ try {
   check(liste.length === 3 && liste.filter((b) => b.y < 6500).length === 2, `Drei Bankmitarbeiter: ${liste.map((b) => b.name).join(", ")}`);
   await anna.waitForFunction(() => { let n = 0; window.EZW.welt3d.bank.alle.forEach((f) => { if (f.npc.geladen || f.npc.gruppe.children.length > 1) n++; }); return n >= 2; }, null, { timeout: 60000 }).catch(() => {});
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "bank-schalter.png" });
+  /* Boden vor dem Schalter antippen: nur hinlaufen, die Bank bleibt zu (früher öffnete sie sich schon beim Hinlaufen) */
+  { const boden = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6476.6, 6430.1); return s ? s.text : null; });
+    const q = await schirm(anna, 6477.4, 6430.4, 0); await anna.mouse.click(q.x, q.y); await anna.waitForTimeout(2500);
+    check(boden !== "Bank" && !(await bankFenster(anna, 500)), `Boden vor dem Schalter angetippt: hingelaufen, die Bank bleibt zu (${boden})`); }
   /* Schalter antippen → gleich die Bank */
   { const q = await schirm(anna, 6476.6, 6429.1, 0.9);
     if (process.env.DEBUG) console.log("DEBUG", JSON.stringify(await anna.evaluate(([x, y]) => { const W = window.EZW.welt3d, a = W.anStelle(6476.6, 6429.1), b = W.stelleAmSchirm(x, y); return { boden: a && a.text, schirm: b && b.text, ort: [W.ort.x, W.ort.y] }; }, [q.x, q.y])));

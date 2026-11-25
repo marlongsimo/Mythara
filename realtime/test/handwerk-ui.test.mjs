@@ -79,6 +79,13 @@ try {
   const bogen = await anna.waitForFunction(() => { const i = JSON.parse(localStorage.getItem("ez_inventar") || "{}"); return (i.rucksack || []).includes("mondkurzbogen_gewoehnlich") && !(i.rucksack || []).includes("ungespannt_mondkurzbogen_gewoehnlich"); }, null, { timeout: 20000 }).then(() => true).catch(() => false);
   check(bogen, "Rucksack: Benutzen auf den ungespannten Bogen, dann die Sehne antippen → Kurzbogen");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "rucksack-bogen.png" });
+  /* Der Handwerker vor der Schmiede: sein Laden mit Beil, Spitzhacke und Hammer */
+  await anna.click('#ez-konto [data-t="zu"]').catch(() => {});
+  const hw = await anna.evaluate(() => { const s = window.EZW.welt3d.anStelle(6471.6, 6431.3); if (!s) return null; s.tat(); return s.text; });
+  const laden = await anna.waitForFunction(() => { const t = document.querySelector("#ez-konto .tafel"); return t && /Hammer/.test(t.textContent) && /Trainings-Holzbeil/.test(t.textContent) ? t.textContent.slice(0, 80) : false; }, null, { timeout: 15000 }).then((h) => h.jsonValue()).catch(() => null);
+  check(Boolean(laden), `Handwerker vor der Schmiede (${hw}): sein Laden zeigt Holzbeil, Spitzhacke und Hammer`);
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "handwerker-laden.png" });
+  await anna.click('#ez-konto [data-t="zu"]').catch(() => {}); await anna.keyboard.press("Escape").catch(() => {});
   /* Werk-Bewegungen (fabrik/werk_bewegungen.py): geladen und abspielbar */
   const werk = await anna.waitForFunction(() => { const f = window.EZW.welt3d.figur; return f.clips && ["werk_ofen", "werk_hammer", "werk_weben", "werk_schnitzen", "werk_fuegen"].every((c) => f.clips.has(c)); }, null, { timeout: 30000 }).then(() => true).catch(() => false);
   check(werk, "Die fünf Werk-Bewegungen sind geladen (Ofen, Hammer, Weben, Schnitzen, Zusammenfügen)");

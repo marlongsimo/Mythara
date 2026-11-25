@@ -51,6 +51,13 @@ try {
   check(nicht && /gibt es hier nicht/.test(nicht.text), `Was der Laden nicht führt: „${nicht && nicht.text}“`);
   sende(anna, { t: "kaufen", laden: "waffen", g: "ritterschwert" }); const weit2 = await system(anna);
   check(weit2 && /Brann/.test(weit2.text), "Am Tränkestand kann man keine Waffen beim Schmied kaufen (zu weit)");
+  /* Der Handwerker vor der Schmiede: Werkzeug (Hammer), Brann am Markt führt es nicht mehr */
+  sende(anna, { t: "pos", x: 0, y: 0, wx: 6471.6, wy: 6432.9 }); await new Promise((r) => setTimeout(r, 300));
+  sende(anna, { t: "kaufen", laden: "handwerker", g: "hammer" }); const hk = await warte(anna, (m) => m.t === "gekauft"); await new Promise((r) => setTimeout(r, 200));
+  check(hk && hk.preis === 10 && zahl(anna.inv, "hammer") === 1 && geld(anna.inv) === 40, `Hammer beim Handwerker vor der Schmiede gekauft (−10 Splitter, ${geld(anna.inv)} übrig)`);
+  sende(anna, { t: "pos", x: 0, y: 0, wx: 6439.5, wy: 6436.5 }); await new Promise((r) => setTimeout(r, 300));
+  sende(anna, { t: "kaufen", laden: "waffen", g: "holzbeil_training" }); const keinWz = await system(anna);
+  check(keinWz && /gibt es hier nicht/.test(keinWz.text), `Brann am Markt führt kein Werkzeug mehr: „${keinWz && keinWz.text}“`);
   /* Trinken: volles Leben → nichts passiert */
   const i = anna.inv.rucksack.findIndex((x) => x === "kleiner_heiltrank");
   sende(anna, { t: "inv", tat: "trinken", i }); const voll = await system(anna);
