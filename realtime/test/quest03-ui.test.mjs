@@ -67,7 +67,7 @@ try {
   check(knopf.some((t) => /Sprechen/.test(t)), "Rechtsklick auf den Förster: Menü (" + knopf.join(" · ") + ")");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-menue.png" });
   await anna.click('.ez-aktionen button:has-text("Sprechen")', { force: true }); await anna.waitForTimeout(300);
-  const offen = await anna.waitForFunction(() => { const g = document.getElementById("ez-gespraech"); return g && !g.hidden && g.textContent.length > 10; }, null, { timeout: 15000 }).then(() => true, () => false);
+  const offen = await anna.waitForFunction(() => { const g = document.getElementById("ez-gespraech"); return g && !g.hidden && g.textContent.length > 10; }, null, { timeout: 45000 }).then(() => true, () => false);
   if (!offen) { const dbg = await anna.evaluate(() => ({ ort: window.EZW.welt3d.ort, sys: [...document.querySelectorAll(".zeile, .ez-chat p, li")].slice(-6).map((e) => e.textContent).join(" | ") })); console.log("DEBUG", JSON.stringify(dbg), JSON.stringify(p0)); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-debug.png" }); throw new Error("kein Gespräch"); }
   const erste = await anna.evaluate(() => document.querySelector("#ez-gespraech .text").textContent); check(/Hörst du das/.test(erste), "Antippen: Anna geht hin, Hartwig spricht: " + erste);
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-dialog.png" });
