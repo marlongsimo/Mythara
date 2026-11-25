@@ -48,13 +48,16 @@ a = await konto("Anna"); check(a.stand.daten.ez_probe === "4", "Nicht gespeicher
 await p.evaluate(() => localStorage.setItem("ez_zoom", "1.2")); await p.waitForTimeout(700); a = await konto("Anna"); check(!("ez_zoom" in a.stand.daten), "Die Zoom-Einstellung bleibt auf dem Gerät");
 /* abmelden */
 await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(900);
-check(/anmelden\.html/.test(p.url()) && await p.evaluate(() => localStorage.getItem("ez_probe")) === null, "Abmelden: man landet auf der Anmeldeseite, der Fortschritt bleibt nicht auf dem Gerät");
+check(/willkommen\.html/.test(p.url()), "Abmelden im Spiel: man landet auf der Willkommensseite (noch angemeldet)");
+await Promise.all([p.waitForNavigation(), p.click("#ab")]); await p.waitForTimeout(900);
+check(/anmelden\.html/.test(p.url()) && await p.evaluate(() => localStorage.getItem("ez_probe")) === null, "Abmelden auf der Willkommensseite: Anmeldeseite, der Fortschritt bleibt nicht auf dem Gerät");
 /* ein zweites Konto sieht den Stand des ersten nicht */
 await p.fill("#my-name", "Bert"); await p.fill("#my-pw", "geheim2"); await Promise.all([p.waitForNavigation(), p.click("#my-anmelden .my-knopf")]); await imSpiel();
 check(await p.textContent("#ez-profil-name") === "Bert" && await p.evaluate(() => localStorage.getItem("ez_probe")) === null, "Ein anderes Konto beginnt ohne den Stand des ersten");
 check((await konto("Anna")).stand.daten.ez_probe === "4", "… und der Stand des ersten ist unberührt");
 /* ein ganz neues Konto anlegen */
 await p.click("#ez-profil"); await Promise.all([p.waitForNavigation(), p.click('#ez-konto [data-t="ab"]')]); await p.waitForTimeout(800);
+await Promise.all([p.waitForNavigation(), p.click("#ab")]); await p.waitForTimeout(800);
 await p.click("#my-reg"); await p.fill("#my-reg-name", "Cleo_7"); await p.fill("#my-reg-pw", "langgenug1"); await p.fill("#my-reg-pw2", "langgenug1"); await Promise.all([p.waitForNavigation(), p.click("#my-reg-form .my-knopf")]); await imSpiel();
 check(await p.textContent("#ez-profil-name") === "Cleo_7", "Neues Konto erstellt: Man ist gleich angemeldet und im Spiel");
 check(f.length === 0, "Keine Fehler im Browser" + (f.length ? ": " + f.join(" | ") : ""));

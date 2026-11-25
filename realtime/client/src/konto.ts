@@ -108,8 +108,8 @@ function fenster(danach?: () => void) {
   f.onclick = (e) => { const el = (e.target as HTMLElement).closest("[data-t],[data-held]") as HTMLElement | null; if (e.target === f) { fertig(); return; } if (!el) return;
     if (el.dataset.held) { held = el.dataset.held; zeige(); } /* gemerkt wird erst beim Schließen – und nur, wenn der Wechsel gilt */ else if (el.dataset.t === "zu") fertig(); else if (el.dataset.t === "aussehen") location.href = "held.html?weiter=" + encodeURIComponent(location.search); else if (el.dataset.t === "ab") void abmelden(); else if (el.dataset.t === "hin") zurAnmeldung(); };
 }
+/** Abmelden im Spiel (wie der Logout in OSRS): speichern und zur Willkommensseite – angemeldet bleibt man dort; erst ihr Abmelde-Knopf meldet ab und führt zur Anmeldeseite */
 async function abmelden() {
-  clearTimeout(takt); await speichern(); const d = verbindung(); if (d) await d.auth.signOut();
-  /* der Fortschritt gehört zum Konto: Auf dem Gerät bleibt nichts zurück, sonst landete er beim nächsten Anmelden in einem fremden Konto */
-  name = ""; setze({}); try { roh.entfernen("ez__offen"); roh.entfernen("ez__version"); sessionStorage.removeItem("ez__neu"); sessionStorage.removeItem("ez__gefragt"); sessionStorage.removeItem("ez__lager"); sessionStorage.removeItem("mr-sitzung"); localStorage.removeItem("mr-merken"); } catch { /* privat */ } location.replace("anmelden.html"); /* nach dem Abmelden zurück zur Anmeldeseite */
+  clearTimeout(takt); await speichern();
+  try { sessionStorage.removeItem("ez__lager"); /* „Ins Spiel“ auf der Willkommensseite setzt ihn wieder */ } catch { /* privat */ } location.replace("willkommen.html");
 }

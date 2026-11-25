@@ -143,7 +143,9 @@
     /* Abmelden: wie im Spiel – der Fortschritt gehört zum Konto, auf dem Gerät bleibt nichts zurück */
     $("#ab").onclick = async () => { $("#meldung").textContent = "Abmelden …";
       try { if (db) await db.auth.signOut(); } catch (e) { /* trotzdem weiter */ }
-      for (const k of ["ez__offen", "ez__version", "mr-merken"]) schreib(k, null); try { for (const k of ["ez__neu", "ez__gefragt", "ez__lager", "mr-sitzung"]) sessionStorage.removeItem(k); } catch (e) { /* privat */ }
+      for (const k of ["ez__offen", "ez__version", "mr-merken"]) schreib(k, null);
+      /* der Spielstand gehört zum Konto (konto.ts: alle „ez_…“ außer den Geräte-Einstellungen) – nichts bleibt auf dem Gerät, sonst landete er beim nächsten Anmelden in einem fremden Konto */
+      try { const weg = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("ez_") && !["ez_zoom", "ez__offen", "ez__version"].includes(k)) weg.push(k); } for (const k of weg) localStorage.removeItem(k); } catch (e) { /* privat */ } try { for (const k of ["ez__neu", "ez__gefragt", "ez__lager", "mr-sitzung"]) sessionStorage.removeItem(k); } catch (e) { /* privat */ }
       location.replace("anmelden.html"); };
 
     /* Aus dem Spiel abgemeldet (abmeldung.ts): untätig oder auf einem anderen Gerät angemeldet */
