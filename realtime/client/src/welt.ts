@@ -1,4 +1,4 @@
-/*
+/* (Stand 25.11.2026, Regionswechsel) 
  * Mythara Echtzeit – die gemeinsame Welt im Client: andere Spieler sehen (Name, Stufe, Leben), Chat, aktiver Held.
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
