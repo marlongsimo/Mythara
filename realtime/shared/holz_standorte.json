@@ -272,6 +272,9 @@
   },
   {
    "name": "Hain des Waldgottes",
+   "x": 6360.5,
+   "y": 6446.5,
+   "r": 14,
    "baeume": [
     {
      "id": "waldgott_1",

@@ -40,8 +40,8 @@ for (const [rid, lichtungen] of nachRegion) {
   const blockiert = (x, y) => WASSER.has(feld(x, y)) || GESPERRT.has(feld(x, y)) || fremd.some((p) => Math.abs(p.x - (x + 0.5)) < 1.6 && Math.abs(p.y - (y + 0.5)) < 1.6);
   const baumFelder = new Set(lichtungen.flatMap((l) => l.baeume.map((b) => `${Math.floor(b.x - ux)},${Math.floor(b.y - uy)}`)));
   for (const l of lichtungen) {
-    const bs = l.baeume.map((b) => ({ x: b.x - ux, y: b.y - uy })), mx = l.senke ? l.x - ux : bs.reduce((s, b) => s + b.x, 0) / bs.length, my = l.senke ? l.y - uy : bs.reduce((s, b) => s + b.y, 0) / bs.length;
-    const R = l.senke ? l.r : Math.max(5, Math.max(...bs.map((b) => Math.hypot(b.x - mx, b.y - my))) + 3.2);
+    const bs = l.baeume.map((b) => ({ x: b.x - ux, y: b.y - uy })), mx = l.senke || l.x !== undefined ? l.x - ux : bs.reduce((s, b) => s + b.x, 0) / bs.length, my = l.senke || l.y !== undefined ? l.y - uy : bs.reduce((s, b) => s + b.y, 0) / bs.length;
+    const R = l.senke || l.r ? l.r /* eine Lichtung kann Mitte und Radius selbst angeben (Hain des Waldgottes, Quest 03) */ : Math.max(5, Math.max(...bs.map((b) => Math.hypot(b.x - mx, b.y - my))) + 3.2);
     if (l.senke) senken.push({ x: +mx.toFixed(1), y: +my.toFixed(1), r: R, tiefe: 1.1 });
     /* 1. Bewuchs im Umkreis weg */
     const vor = objekte.length; objekte = objekte.filter((p) => !(istBewuchs(p) && Math.hypot(p.x - mx, p.y - my) < R + 0.6)); gefaellt += vor - objekte.length;
