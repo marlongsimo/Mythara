@@ -58,12 +58,22 @@ function kenney(m: KenneyModell) { const t = new Teile();
 
 /* ───────── Wasserbauten (begehbar: siehe STEGE), Moor, Höhle, Feuer, Schilf ───────── */
 const BRETT = "#7a5634", BRETT_HELL = "#8f6a42", STEIN = "#8a857a", EISEN = "#3a3836", FLAMME = "#ffb24a", FLAMME_KERN = "#fff0b0";
-function bruecke(laenge: number, breite: number, laengs: boolean) {
+/** Alte Moorbrücke (25.11.2026): fehlende Bohlen, gebrochenes Geländer (vorn/hinten: wie weit es reicht, kurz: abgebrochener Pfosten) */
+const ALTE_BRUECKE: Record<string, { luecken: number[]; vorn: number; kurzVorn: number; hinten: number; kurzHinten: number }> = {
+  moor_bruecke_alt_01: { luecken: [5, 11], vorn: 1, kurzVorn: 2, hinten: 1, kurzHinten: -1 }, moor_bruecke_alt_02: { luecken: [3, 9, 10], vorn: 0.42, kurzVorn: -1, hinten: 1, kurzHinten: 1 },
+  moor_bruecke_alt_03: { luecken: [7], vorn: 0, kurzVorn: -1, hinten: 0.7, kurzHinten: 3 } };
+function bruecke(laenge: number, breite: number, laengs: boolean, altId = "") {
   /* gebaut entlang x (Ost–West); laengs = Nord–Süd: am Ende um 90° gedreht. Fuß = Mitte der Südkante */
-  const t = new Teile("holz"), hoch = 0.85, z0 = laengs ? 0 : -breite / 2, n = Math.round(laenge / 0.42);
-  for (let i = 0; i < n; i++) { const x = -laenge / 2 + (i + 0.5) * laenge / n; t.box(laenge / n - 0.04, 0.12, breite, x, hoch - 0.12, z0, i % 3 ? BRETT : BRETT_HELL, 0, { muster: "holz", schwanken: 0.06 }); }
-  for (const zr of [z0 - breite / 2 + 0.1, z0 + breite / 2 - 0.1]) { t.box(laenge, 0.12, 0.12, 0, hoch + 0.75, zr, "#5b3b22");
-    for (let x = -laenge / 2 + 0.15; x <= laenge / 2; x += laenge / 4) { t.box(0.16, 0.9, 0.16, x, hoch - 0.1, zr, "#5b3b22"); t.box(0.22, 1.8, 0.22, x, hoch - 1.8, zr, "#4a3020"); } }
+  const t = new Teile("holz"), hoch = 0.85, z0 = laengs ? 0 : -breite / 2, n = Math.round(laenge / 0.42), A = ALTE_BRUECKE[altId];
+  for (let i = 0; i < n; i++) { if (A && A.luecken.includes(i)) continue; const x = -laenge / 2 + (i + 0.5) * laenge / n, kipp = A ? (zufall(i, 17) - 0.5) * 0.08 : 0, tief = A ? -zufall(i, 5) * 0.05 : 0;
+    t.add(new THREE.BoxGeometry(laenge / n - (A ? 0.07 : 0.04), 0.12, breite * (A ? 0.94 + zufall(i, 9) * 0.06 : 1)), A ? (i % 3 ? "#7a6a58" : i % 2 ? "#6a5c4c" : "#86745e") : i % 3 ? BRETT : BRETT_HELL, matrix(x, hoch - 0.06 + tief, z0 + (A ? (zufall(i, 11) - 0.5) * 0.12 : 0), kipp, (A ? (zufall(i, 13) - 0.5) * 0.06 : 0), 0), { muster: "holz", schwanken: 0.06 });
+    if (A && zufall(i, 21) < 0.3) t.box(laenge / n * 0.7, 0.02, breite * 0.4, x, hoch, z0 + (zufall(i, 23) - 0.5) * breite * 0.5, "#4f6236", 0, { muster: "laub" }); }   /* Moos */
+  for (const [zr, bis, kurz] of [[z0 - breite / 2 + 0.1, A ? A.hinten : 1, A ? A.kurzHinten : -1], [z0 + breite / 2 - 0.1, A ? A.vorn : 1, A ? A.kurzVorn : -1]] as const) {
+    let k = 0; for (let x = -laenge / 2 + 0.15; x <= laenge / 2; x += laenge / 4, k++) { t.box(0.22, 1.8, 0.22, x, hoch - 1.8, zr, A ? "#3d3226" : "#4a3020");
+      if (k / 4 > bis + 0.01) continue; const h = k === kurz ? 0.42 : 0.9; t.add(new THREE.BoxGeometry(0.16, h, 0.16), A ? "#4e4032" : "#5b3b22", matrix(x, hoch - 0.1 + h / 2, zr, 0, 0, A && k === kurz ? 0.25 : 0)); }
+    if (bis > 0) { const l = laenge * Math.min(1, bis); if (kurz >= 0 && A) { const kx = -laenge / 2 + 0.15 + kurz * laenge / 4, a = Math.atan2(0.4, kx + laenge / 2);   /* durchhängender Holm */
+        t.add(new THREE.BoxGeometry(Math.hypot(kx + laenge / 2, 0.4), 0.12, 0.12), "#5b4a38", matrix((-laenge / 2 + kx) / 2, hoch + 0.55, zr, 0, 0, -a)); }
+      else t.box(l, 0.12, 0.12, -laenge / 2 + l / 2, hoch + 0.75, zr, A ? "#5b4a38" : "#5b3b22"); } }
   const g = t.geometrie(); if (laengs) { g.rotateY(Math.PI / 2); g.translate(0, 0, -laenge / 2); } return g; }
 function wehr() { const t = new Teile("stein");
   t.box(7.6, 1.7, 1.5, 0, -0.8, -0.85, STEIN, 0, { muster: "stein", schwanken: 0.05 });
@@ -128,7 +138,7 @@ function schilf(breit: number) { const t = new Teile("glatt");
   return t.geometrie(); }
 /** Begehbare Flächen (Brücken, Wehr) relativ zum Fuß: x0, z0, x1, z1 (z nach Süden) und die Höhe der Lauffläche über dem Fuß */
 export const STEGE: Record<string, [number, number, number, number, number]> = {
-  dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1, 0.85], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1, 0.85], dorf_wehr_01: [-3.5, -1.6, 3.5, -0.1, 1.0] };
+  dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_02: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_03: [-3.2, -2.7, 3.2, 0.1, 0.85], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1, 0.85], dorf_wehr_01: [-3.5, -1.6, 3.5, -0.1, 1.0] };
 
 const SPEICHER = new Map<string, THREE.BufferGeometry | null>();
 /** Geometrie für eine Objektart (Maßstab 1, Fuß im Ursprung) oder null = als Bild zeigen */
@@ -161,6 +171,7 @@ export function modell(t: Typ): THREE.BufferGeometry | null {
   else if (/meiler/.test(id)) g = meiler();
   else if (/baumstamm_02/.test(id)) g = stamm();
   else if (id === "dorf_bruecke_01") g = bruecke(6.4, 2.7, false);
+  else if (ALTE_BRUECKE[id]) g = bruecke(6.4, 2.7, false, id);
   else if (id === "dorf_bruecke_02") g = bruecke(5.3, 2.7, true);
   else if (id === "dorf_wehr_01") g = wehr();
   else if (/faehre/.test(id)) g = faehre();

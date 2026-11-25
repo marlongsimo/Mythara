@@ -117,9 +117,20 @@
    }
   },
   {
+   "id": "bruecke_aschenwerth",
+   "art": "lesen",
+   "x": 24.6,
+   "y": 44.3,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die alte Brücke nach Aschenwerth. Manche Bohlen fehlen, das Geländer hängt durch – aber sie trägt noch. Am anderen Ende, im Nebel, stehen Mauern."
+   }
+  },
+  {
    "id": "hedda_tuer",
    "art": "lesen",
-   "x": 14.4,
+   "x": 14.5,
    "y": 20.6,
    "radius": 1.6,
    "abgleich": "keiner",
@@ -223,6 +234,34 @@
     "y0": 68.4,
     "x1": 57.3,
     "y1": 73.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 0,
+    "y0": 43,
+    "x1": 6,
+    "y1": 45.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 6,
+    "y0": 43,
+    "x1": 12,
+    "y1": 45.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 12,
+    "y0": 43,
+    "x1": 18,
+    "y1": 45.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 18,
+    "y0": 43,
+    "x1": 24,
+    "y1": 45.6
    }
   ]
  }

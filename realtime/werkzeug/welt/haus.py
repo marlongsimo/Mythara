@@ -51,6 +51,10 @@ HAEUSER = {
     'dorf_kuerbisse_01':    dict(name='Kürbisse', form='kuerbisse', saat=33),
     'dorf_bruecke_01':      dict(name='Holzbrücke (Ost–West)', form='bruecke', richtung='quer', tiefe='boden', saat=34),
     'dorf_bruecke_02':      dict(name='Holzbrücke (Nord–Süd)', form='bruecke', richtung='laengs', tiefe='boden', saat=35),
+    # die alte Brücke nach Aschenwerth (25.11.2026): verwittert, einzelne Bohlen fehlen, das Geländer ist teils gebrochen
+    'moor_bruecke_alt_01':  dict(name='Alte Moorbrücke', form='bruecke', richtung='quer', tiefe='boden', saat=36, alt=dict(luecken=[5, 11], vorn=1.0, kurz_vorn=2, hinten=1.0, kurz_hinten=None)),
+    'moor_bruecke_alt_02':  dict(name='Alte Moorbrücke (Geländer gebrochen)', form='bruecke', richtung='quer', tiefe='boden', saat=37, alt=dict(luecken=[3, 9, 10], vorn=0.42, kurz_vorn=None, hinten=1.0, kurz_hinten=1)),
+    'moor_bruecke_alt_03':  dict(name='Alte Moorbrücke (ohne Geländer)', form='bruecke', richtung='quer', tiefe='boden', saat=38, alt=dict(luecken=[7], vorn=0.0, kurz_vorn=None, hinten=0.7, kurz_hinten=3)),
     'moor_kahn_01':         dict(name='Kahn', form='kahn', tiefe='boden', saat=36),
     'moor_feuerkorb_01':    dict(name='Feuerkorb', form='feuerkorb', saat=37),
     'moor_menhir_01':       dict(name='Spiralstein', form='menhir', saat=38),
@@ -786,17 +790,29 @@ def bruecke(P, rng):
     B = Blatt(W, Hh)
     S = lambda x, d, z=0.0: (ox + (x + T * d) * FELD, oy - (d + z) * FELD)
     zd = 0.14
+    ALT = P.get('alt')
     def gelaender(seite):
-        """Pfosten und zwei Holme entlang einer Längsseite"""
+        """Pfosten und zwei Holme entlang einer Längsseite; bei der alten Brücke nur ein Stück davon (bis), ein Pfosten abgebrochen (kurz)"""
+        bis, kurz = (ALT['vorn'], ALT['kurz_vorn']) if ALT and seite == 'vorn' else (ALT['hinten'], ALT['kurz_hinten']) if ALT else (1.0, None)
+        if bis <= 0:
+            return
         if quer:
             d = 0.12 if seite == 'vorn' else LD - 0.12; punkte = [(x, d) for x in np.linspace(x0 + 0.15, x1 - 0.15, 4)]
         else:
             x = x0 + 0.12 if seite == 'links' else x1 - 0.12; punkte = [(x, d) for d in np.linspace(0.15, LD - 0.15, 4)]
-        for x, d in punkte:
-            a, b = S(x, d, zd), S(x, d, zd + 0.85)
+        ende = (punkte[0][0] + (punkte[-1][0] - punkte[0][0]) * bis, punkte[0][1] + (punkte[-1][1] - punkte[0][1]) * bis)
+        for k, (x, d) in enumerate(punkte):
+            if k / 3 > bis + 0.01:
+                continue
+            h = 0.42 if k == kurz else 0.85; a, b = S(x, d, zd), S(x, d, zd + h)
             B.balken(a[0] - 3, b[1], 6, a[1] - b[1], int(a[0]), 0.6)
         for zz, dick in ((0.85, 5), (0.48, 4)):
-            B.strich([S(*punkte[0], zd + zz), S(*punkte[-1], zd + zz)], dick, 90 + int(zz * 10), 0.7)
+            if ALT and kurz is not None and zz > 0.6:      # der obere Holm hängt am abgebrochenen Pfosten durch
+                knick = punkte[kurz]; B.strich([S(*punkte[0], zd + zz), S(*knick, zd + 0.4)], dick, 90 + int(zz * 10), 0.7)
+                if kurz < 3 and bis >= 1.0:
+                    B.strich([S(*knick, zd + 0.4), S(*ende, zd + zz)], dick, 91 + int(zz * 10), 0.7)
+                continue
+            B.strich([S(*punkte[0], zd + zz), S(*ende, zd + zz)], dick, 90 + int(zz * 10), 0.7)
     # Unterbau: vordere Stirnseite dunkel, damit die Brücke über dem Wasser steht
     if quer:
         B.lege((60, 44, 30), B.maske([S(x0, 0, zd), S(x1, 0, zd), S(x1, 0, -0.35), S(x0, 0, -0.35)]))
@@ -808,12 +824,18 @@ def bruecke(P, rng):
     B.lege((44, 32, 22), B.maske([S(x0, 0, zd), S(x1, 0, zd), S(x1, LD, zd), S(x0, LD, zd)]))
     n = int((LX if quer else LD) / 0.42)
     for i in range(n):
+        if ALT and i in ALT['luecken']:
+            continue                                                  # fehlende Bohle: das dunkle Wasser scheint durch
         a, b = i / n, (i + 1) / n - 0.012; g = float(rng.uniform(0.82, 1.08))
+        if ALT:
+            g *= float(rng.uniform(0.78, 0.96)); a += float(rng.uniform(-0.004, 0.004)); b += float(rng.uniform(-0.006, 0.002))
         if quer:
             pk = [S(x0 + a * LX, 0, zd), S(x0 + b * LX, 0, zd), S(x0 + b * LX, LD, zd), S(x0 + a * LX, LD, zd)]
         else:
             pk = [S(x0, a * LD, zd), S(x1, a * LD, zd), S(x1, b * LD, zd), S(x0, b * LD, zd)]
-        B.lege(faerben(B.voll('maserung', 0.07, drehen=quer, saat=i), (150, 112, 72)) * g, B.maske(pk))
+        B.lege(faerben(B.voll('maserung', 0.07, drehen=quer, saat=i), (132, 112, 90) if ALT else (150, 112, 72)) * g, B.maske(pk))
+        if ALT and rng.random() < 0.35:                               # Moos und dunkle Nässe auf alten Bohlen
+            mx, my = S(x0 + (a + b) / 2 * LX, rng.uniform(0.3, LD - 0.3), zd); B.lege((78, 96, 52), B.maske([(mx + 9 * math.cos(t), my + 4 * math.sin(t)) for t in np.linspace(0, 6.28, 9)]) * 0.55)
     # Randbalken an beiden Längsseiten
     for seite in ((0, 0.18) if quer else (x0, x0 + 0.18)), ((LD - 0.18, LD) if quer else (x1 - 0.18, x1)):
         if quer:

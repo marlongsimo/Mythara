@@ -1,0 +1,15 @@
+{
+ "id": "westried",
+ "name": "Die Riedwiesen",
+ "untertitel": "Wiesen am Westrand, im Süden beginnt das Moor",
+ "ursprung": [
+  192,
+  198
+ ],
+ "chunks": [
+  4,
+  8
+ ],
+ "biom": "wiese",
+ "stufe": 2
+}
