@@ -1,0 +1,16 @@
+{
+  "id": "sammeln.flachs",
+  "name": "Flachs",
+  "kategorie": "sammeln",
+  "aktuell": "v001",
+  "hoehe_m": 0.9,
+  "beschreibung": "Büschel aus ~30 schlanken Halmen, schmale Blätter, zartblaue Blüten und Samenkapseln",
+  "spieldatei": "img/objekte3d/skilling/sammeln/flachs.glb",
+  "geerntet": "img/objekte3d/skilling/sammeln/flachs-geerntet.glb",
+  "weltobjekte": [
+    "samm_flachs_01",
+    "samm_flachs_geerntet"
+  ],
+  "status": "in Blender gebaut (fabrik/pflanze.py -- flachs voll|geerntet …); live 3D, wiegt sich im Wind, begehbar (keine Kollision); Sammel-Funktion folgt",
+  "herkunft": "selbst gebaut"
+}
