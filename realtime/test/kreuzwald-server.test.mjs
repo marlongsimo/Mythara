@@ -26,7 +26,7 @@ const verbinde = (pfad) => new Promise((ok, nein) => { const ws = new WebSocket(
 const warte = async (f, ms = 5000) => { const t = Date.now(); while (Date.now() - t < ms) { const v = f(); if (v) return v; await new Promise((r) => setTimeout(r, 50)); } return null; };
 try {
   /* 1) Lichtung betreten, 22/37 Rechenfelder im Ausschnitt (= Weltfeld 6528/6587) */
-  const k = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=192&ly=123"); k.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const k = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=192&ly=123"); k.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const z = await warte(() => { const m = [...k.post].reverse().find((m) => m.t === "z"); return m && m.z; });
   check(Boolean(z), "Der Server lässt in den Kreuzwald (gemeinsames Kampfgebiet)");
   const ich = z && z.w.find((e) => e[0] === z.ich.id), banditen = z ? z.w.filter((e) => e[3] !== 0) : [];
@@ -36,25 +36,25 @@ try {
   const n1 = GESETZT.length; k.ws.close(); await warte(() => GESETZT.length > n1);
   const s1 = STELLE[ANNA]; check(s1 && s1.region === "waldweg" && Math.abs(s1.x - 6528) < 1.5 && Math.abs(s1.y - 6587) < 1.5, "Wer im Kreuzwald aufhört, dessen Stelle merkt der Server: " + JSON.stringify(s1));
   /* 2) In der Welt: pos mit Weltfeldern, beim Gehen gemerkt, beim nächsten Anmelden zurück */
-  const w = await verbinde("?welt=1&ort=waldweg"); w.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const w = await verbinde("?welt=1&ort=waldweg"); w.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const ich1 = await warte(() => w.post.find((m) => m.t === "ich")); check(ich1 && ich1.pos && ich1.pos.region === "waldweg" && Math.abs(ich1.pos.x - 6528) < 1.5, "Beim Anmelden schickt der Server die gemerkte Stelle mit");
   w.ws.send(JSON.stringify({ t: "pos", x: 100, y: 200, b: 0, l: 0, wx: 6450.5, wy: 6470.25 })); await new Promise((r) => setTimeout(r, 300));
   const n2 = GESETZT.length; w.ws.close(); await warte(() => GESETZT.length > n2);
   check(STELLE[ANNA].x === 6450.5 && STELLE[ANNA].y === 6470.25 && STELLE[ANNA].region === "waldweg", "Gehen in der Welt: die letzte Stelle ist gemerkt " + JSON.stringify(STELLE[ANNA]));
-  const w2 = await verbinde("?welt=1&ort=waldmark"); w2.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const w2 = await verbinde("?welt=1&ort=waldmark"); w2.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const ich2 = await warte(() => w2.post.find((m) => m.t === "ich")); check(ich2 && ich2.pos && ich2.pos.x === 6450.5, "…und kommt beim nächsten Anmelden (anderes Gerät) zurück");
   w2.ws.send(JSON.stringify({ t: "pos", x: 1, y: 2, wx: -5, wy: 99999999 })); await new Promise((r) => setTimeout(r, 200)); const n3 = GESETZT.length; w2.ws.close(); await new Promise((r) => setTimeout(r, 500));
   check(STELLE[ANNA].x === 6450.5 && GESETZT.length >= n3, "Unsinnige Stellen nimmt der Server nicht an");
   /* 4) Geisterhelden: Die Seite lädt neu, während der Server noch auf die Datenbank wartet – es darf kein Held ohne Verbindung zurückbleiben */
   const helden = (z) => z.w.filter((e) => e[1]).length;
-  LANGSAM = 700; const g1 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g1.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN })); await new Promise((r) => setTimeout(r, 150)); g1.ws.close();
+  LANGSAM = 700; const g1 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g1.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); await new Promise((r) => setTimeout(r, 150)); g1.ws.close();
   await new Promise((r) => setTimeout(r, 1200)); LANGSAM = 0;
-  const bn = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=104&ly=20"); bn.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN_BEN }));
+  const bn = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=104&ly=20"); bn.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN_BEN, geraet: "test-" + String(TOKEN_BEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const zb = await warte(() => { const m = [...bn.post].reverse().find((m) => m.t === "z"); return m && m.z; }); check(zb && helden(zb) === 1, `Ben schaut in den Kreuzwald: kein Geist von Anna, nur er selbst (${zb && helden(zb)} Held)`); bn.ws.close(); await new Promise((r) => setTimeout(r, 300));
-  const g2 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g2.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const g2 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=100&ly=20"); g2.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const z2 = await warte(() => { const m = [...g2.post].reverse().find((m) => m.t === "z"); return m && m.z; }); check(z2 && helden(z2) === 1, `Neu geladen während der Anmeldung: nur ein Held im Kreuzwald (${z2 && helden(z2)})`);
   /* zweites Fenster derselben Person: der alte Held verschwindet sofort */
-  const g3 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=102&ly=20"); g3.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN }));
+  const g3 = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=102&ly=20"); g3.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   await warte(() => g3.post.some((m) => m.t === "z")); await new Promise((r) => setTimeout(r, 400)); const z3 = [...g3.post].reverse().find((m) => m.t === "z").z;
   check(helden(z3) === 1 && g2.ws.readyState >= 2, `Zweites Fenster: der alte Held ist weg, das alte Fenster getrennt (${helden(z3)} Held)`); g3.ws.close();
   /* 3) Gast: nichts wird gemerkt */

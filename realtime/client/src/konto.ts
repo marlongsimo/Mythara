@@ -12,6 +12,7 @@
  */
 import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { geschaffteKampagnen } from "../../shared/karten";
+import { kontoFreigeben } from "./abmeldung";
 interface Db { auth: { getSession(): Promise<{ data: { session: { access_token?: string; user: { is_anonymous?: boolean } } | null } }>; signInAnonymously(): Promise<{ error: { message: string } | null }>; signInWithPassword(a: { email: string; password: string }): Promise<{ error: { message: string } | null }>; signOut(): Promise<unknown>; updateUser(a: { email: string; password: string }): Promise<{ error: { message: string } | null }> };
   rpc(name: string, args?: Record<string, unknown>): Promise<{ data: unknown; error: { message: string } | null }> }
 const W = window as unknown as { supabase?: { createClient(url: string, key: string, o: unknown): Db }; MR_MULTIPLAYER_CONFIG?: { supabaseUrl: string; supabasePublishableKey: string } };
@@ -111,5 +112,6 @@ function fenster(danach?: () => void) {
 /** Abmelden im Spiel (wie der Logout in OSRS): speichern und zur Willkommensseite – angemeldet bleibt man dort; erst ihr Abmelde-Knopf meldet ab und führt zur Anmeldeseite */
 async function abmelden() {
   clearTimeout(takt); await speichern();
+  kontoFreigeben(); /* Verbindungen mit „abmelden“ schließen: das Konto ist sofort frei für ein anderes Gerät (Server: sitz.ts) */
   try { sessionStorage.removeItem("ez__lager"); /* „Ins Spiel“ auf der Willkommensseite setzt ihn wieder */ } catch { /* privat */ } location.replace("willkommen.html");
 }

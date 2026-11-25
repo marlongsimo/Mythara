@@ -1,7 +1,8 @@
 /*
  * Mythara – Abmelden wie OSRS, mit dem echten Spielserver (server/dist/server.js) und nachgebildeter Supabase:
  *  · Verbindung weg im Kampf: der Held bleibt stehen und kämpft weiter (bis 10 s ohne Kampf, höchstens 60 s), dann geht er.
- *  · Neues Gerät im selben Gebiet übernimmt denselben Helden (keine zwei Helden); das alte Gerät bekommt 4409 „anderswo angemeldet“.
+ *  · Dieselbe Seite verbindet neu (Funkloch, Neuladen) und übernimmt denselben Helden (keine zwei Helden); eine noch offene alte Verbindung bekommt 4409.
+ *  · Ein anderes Gerät kommt nicht hinein (4410, Kontosperre sitz.ts – siehe ein-geraet.test.mjs).
  *  · Verbindung weg ohne Kampf: der Held geht sofort.
  * Aufruf: node test/abmelden.test.mjs   (nach node build.mjs; dauert gut eine Minute)
  */
@@ -33,33 +34,36 @@ let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d
 await new Promise((r) => setTimeout(r, 1200));
 const schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const TOK = { anna: "tok_anna_" + "x".repeat(30), ben: "tok_ben__" + "x".repeat(30) };
-function zone(token, lx, ly) { return new Promise((fertig) => { const ws = new WebSocket(`ws://localhost:8788/?kampf=welt_osthof&ort=welt_osthof&lx=${lx}&ly=${ly}`, { origin: "http://localhost:8765" }), Z = { ws, w: [], ev: [], namen: [], zu: null };
+function zone(token, lx, ly, geraet) { return new Promise((fertig) => { const ws = new WebSocket(`ws://localhost:8788/?kampf=welt_osthof&ort=welt_osthof&lx=${lx}&ly=${ly}`, { origin: "http://localhost:8765" }), Z = { ws, w: [], ev: [], namen: [], zu: null };
   ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "z") { Z.w = m.z.w; Z.ich = m.z.ich; for (const e of m.z.ev) Z.ev.push(e); } if (m.t === "namen") Z.namen = m.liste; });
   ws.on("close", (code, grund) => { Z.zu = { code, grund: String(grund) }; });
-  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(Z); }); }); }
+  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet })); fertig(Z); }); }); }
 const bens = (Z) => Z.namen.filter((n) => n.name === "Ben");
 try {
-  const anna = await zone(TOK.anna, 70.5, 14.5); /* schaut zu */
-  const b1 = await zone(TOK.ben, 79.5, 11.5); await schlaf(1500);
+  const anna = await zone(TOK.anna, 70.5, 14.5, "annaHandy01"); /* schaut zu */
+  const BEN = "benHandy001"; const b1 = await zone(TOK.ben, 79.5, 11.5, BEN); await schlaf(1500);
   const id = b1.ich && b1.ich.id, moos = () => b1.w.filter((w) => w[2] === "mooshocker" && !w[10]), ich = b1.w.find((w) => w[0] === id);
   const ziel = moos().sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
   b1.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); await schlaf(4000);
   check(b1.ev.some((e) => (e.a === "hieb" || e.a === "schaden" || e.a === "null" || e.a === "block") && (e.id === ziel[0] || e.id === id)), "Ben kämpft gegen einen Mooshocker");
   b1.ws.terminate(); await schlaf(3000); /* Verbindung bricht ab (Seite zu, Netz weg) */
   check(bens(anna).length === 1 && bens(anna)[0].id === id, `Verbindung weg im Kampf: Bens Held bleibt in der Welt (${bens(anna).length})`);
-  /* neues Gerät: übernimmt denselben Helden, an seiner Stelle – kein zweiter */
-  const b2 = await zone(TOK.ben, 20.5, 20.5); await schlaf(1500);
-  check(b2.ich && b2.ich.id === id && bens(anna).length === 1, `Neues Gerät übernimmt denselben Helden (id ${b2.ich && b2.ich.id} = ${id}, ${bens(anna).length} Ben)`);
+  /* ein anderes Gerät kommt nicht hinein – das Konto bleibt bis zur Frist belegt */
+  const fremd = await zone(TOK.ben, 20.5, 20.5, "benIpad0001"); await schlaf(1500);
+  check(fremd.zu && fremd.zu.code === 4410 && bens(anna).length === 1, `Anderes Gerät nach dem Abbruch: abgewiesen (${fremd.zu ? fremd.zu.code + " " + fremd.zu.grund : "nicht abgewiesen"})`);
+  /* dieselbe Seite verbindet neu: übernimmt denselben Helden, an seiner Stelle – kein zweiter */
+  const b2 = await zone(TOK.ben, 20.5, 20.5, BEN); await schlaf(1500);
+  check(b2.ich && b2.ich.id === id && bens(anna).length === 1, `Dieselbe Seite verbindet neu und übernimmt denselben Helden (id ${b2.ich && b2.ich.id} = ${id}, ${bens(anna).length} Ben)`);
   const h2 = b2.w.find((w) => w[0] === id); check(h2 && Math.hypot(h2[4] - 20.5, h2[5] - 20.5) > 10, "… und er steht weiter am Moosrain, nicht an der Stelle des neuen Geräts");
-  const b3 = await zone(TOK.ben, 79.5, 11.5); await schlaf(1500);
-  check(b2.zu && b2.zu.code === 4409 && b3.ich && b3.ich.id === id && bens(anna).length === 1, `Drittes Gerät: das vorige bekommt ${b2.zu ? b2.zu.code + " " + b2.zu.grund : "nichts"}, Held bleibt derselbe`);
+  const b3 = await zone(TOK.ben, 79.5, 11.5, BEN); await schlaf(1500);
+  check(b2.zu && b2.zu.code === 4409 && b3.ich && b3.ich.id === id && bens(anna).length === 1, `Dieselbe Seite noch einmal (zweiter Tab): die vorige Verbindung bekommt ${b2.zu ? b2.zu.code + " " + b2.zu.grund : "nichts"}, Held bleibt derselbe`);
   /* wieder in den Kampf, dann Abbruch: bleibt höchstens 60 s */
   const z2 = moos()[0] || ziel; b3.ws.send(JSON.stringify({ t: "ziel", id: z2[0] })); await schlaf(2500); const t0 = Date.now(); b3.ws.terminate();
   await schlaf(5000); check(bens(anna).length === 1, "Erneut abgebrochen im Kampf: nach 5 s noch da");
   while (bens(anna).length && Date.now() - t0 < 70000) await schlaf(500);
   const s = (Date.now() - t0) / 1000; check(!bens(anna).length && s <= 62, `… und spätestens nach 60 s weg (nach ${s.toFixed(1)} s)`);
   /* ohne Kampf: sofort weg */
-  const b4 = await zone(TOK.ben, 40.5, 30.5); await schlaf(1500); check(bens(anna).length === 1, "Ben wieder da (ohne Kampf)");
+  const b4 = await zone(TOK.ben, 40.5, 30.5, BEN); await schlaf(1500); check(bens(anna).length === 1, "Ben wieder da (ohne Kampf)");
   const t1 = Date.now(); b4.ws.terminate(); while (bens(anna).length && Date.now() - t1 < 5000) await schlaf(100);
   check(!bens(anna).length && Date.now() - t1 < 1500, `Verbindung weg ohne Kampf: sofort weg (${Date.now() - t1} ms)`);
   anna.ws.close();

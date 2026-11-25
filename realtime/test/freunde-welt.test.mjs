@@ -27,7 +27,7 @@ let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket(`ws://localhost:8785/?welt=1&ort=${ort}`, { origin: "http://localhost:8765" }), s = { ws, chat: [], alle: [], warte: [] };
   ws.on("message", (roh) => { const m = JSON.parse(String(roh)); s.alle.push(m); if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
-  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(s); }); }); }
+  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(s); }); }); }
 const warte = (s, f, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m));
 try {
