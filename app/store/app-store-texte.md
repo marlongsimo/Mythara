@@ -54,7 +54,7 @@ rpg,mmo,mmorpg,fantasy,abenteuer,online,quest,handwerk,schwert,magie,helden,mult
 
 ## Copyright
 
-2026 <dein Name wie im Apple-Konto>
+2026 Julian Deusch
 
 ## Altersfreigabe (Fragebogen)
 
