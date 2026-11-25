@@ -75,17 +75,19 @@ export class HandwerkWelt {
 #ez-konto .handwerk .ding { position: relative; aspect-ratio: 1; border: 2px solid #5d4a2e; border-radius: 8px; background: radial-gradient(#2e2a24, #141210); padding: 4px; cursor: pointer; }
 #ez-konto .handwerk .ding img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 #ez-konto .handwerk .ding .lv { position: absolute; left: 3px; top: 1px; font: 700 11px Inter, sans-serif; color: #f0d48a; text-shadow: 0 1px 2px #000; }
-#ez-konto .handwerk .ding.kann { border-color: #7fae5a; box-shadow: inset 0 0 8px rgba(127,174,90,.35); }
-#ez-konto .handwerk .ding.fehlt { border-color: #6b4a3a; }
-#ez-konto .handwerk .ding.zu { filter: grayscale(1) brightness(.45); }
+#ez-konto .handwerk .ding.kann { border-color: #f0c84a; box-shadow: inset 0 0 8px rgba(240,200,74,.35); } /* freigeschaltet, genug für mindestens eins */
+#ez-konto .handwerk .ding.fehlt { border-color: #c0443a; box-shadow: inset 0 0 6px rgba(192,68,58,.3); } /* freigeschaltet, aber zu wenig (oder Werkzeug fehlt) */
+#ez-konto .handwerk .ding.zu { filter: grayscale(1) brightness(.45); border-color: #4a4640; } /* noch nicht freigeschaltet */
 #ez-konto .handwerk .ding.wahl { border-color: #f0d48a; box-shadow: 0 0 10px rgba(240,212,138,.6); }
 #ez-konto .handwerk > .skopf, #ez-konto .handwerk > .zier { flex: 0 0 auto; }
-#ez-konto .handwerk .info { flex: 0 0 auto; border-top: 1px solid #5d4a2e; margin-top: 8px; padding-top: 8px; min-height: 92px; }
-#ez-konto .handwerk .info b { font: 600 16px Cinzel, Georgia, serif; color: #efe2c4; } #ez-konto .handwerk .info small { display: block; color: #a8966a; }
+#ez-konto .handwerk .info { flex: 0 0 auto; border-top: 1px solid #5d4a2e; margin-top: 6px; padding-top: 6px; }
+#ez-konto .tafel.handwerk { padding-top: 12px; } #ez-konto .handwerk > .skopf { display: flex; align-items: center; gap: 10px; text-align: left; } #ez-konto .handwerk > .skopf h2 { line-height: 1.1; } #ez-konto .handwerk > .skopf img { width: 28px; height: 28px; } #ez-konto .handwerk > .skopf h2 { font-size: 18px; margin: 0; } #ez-konto .handwerk > .skopf small { font-size: 12px; } #ez-konto .handwerk > .zier { margin: 4px 0; }
+#ez-konto .handwerk .zeile { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; } #ez-konto .handwerk .zeile .zut { flex: 1 1 auto; min-width: 0; margin: 4px 0; flex-wrap: nowrap; overflow-x: auto; }
+#ez-konto .handwerk .info b { font: 600 15px Cinzel, Georgia, serif; color: #efe2c4; } #ez-konto .handwerk .info small { color: #a8966a; font-size: 12px; } #ez-konto .handwerk .info .kopfzeile { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; } #ez-konto .handwerk .info .hinweis { display: block; }
 #ez-konto .handwerk .zut { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
-#ez-konto .handwerk .zut span { display: flex; align-items: center; gap: 4px; padding: 2px 8px 2px 2px; border-radius: 6px; background: rgba(0,0,0,.3); font-size: 13px; }
+#ez-konto .handwerk .zut span { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; padding: 2px 8px 2px 2px; border-radius: 6px; background: rgba(0,0,0,.3); font-size: 12px; white-space: nowrap; }
 #ez-konto .handwerk .zut img { width: 26px; height: 26px; object-fit: contain; } #ez-konto .handwerk .zut .da { color: #9fd08a; } #ez-konto .handwerk .zut .nicht { color: #e07a6a; }
-#ez-konto .handwerk .menge { display: flex; gap: 6px; flex-wrap: wrap; } #ez-konto .handwerk .menge button { min-width: 48px; }`; document.head.appendChild(s); }
+#ez-konto .handwerk .menge { display: flex; flex: 0 0 auto; gap: 5px; flex-wrap: nowrap; } #ez-konto .handwerk .menge button { min-width: 38px; padding: 6px 8px; font-size: 13px; }`; document.head.appendChild(s); }
     const q3 = laeuft3(questStand3()), rs = rezepteAn(st).filter((r) => (!r.quest || q3) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
     const gruppen = new Map<string, Rezept[]>(); for (const r of rs) { if (!gruppen.has(r.gruppe)) gruppen.set(r.gruppe, []); gruppen.get(r.gruppe)!.push(r); }
     const bild = (g: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild ? `<img src="../${GEGENSTAENDE[g].bild}" alt="" draggable="false">` : "");
@@ -99,8 +101,8 @@ export class HandwerkWelt {
     const zeigen = (r: Rezept) => { const G = GEGENSTAENDE[r.ergebnis], n = wieOft(r), offen = L >= r.level;
       tafel.querySelectorAll(".ding.wahl").forEach((x) => x.classList.remove("wahl")); tafel.querySelector(`.ding[data-r="${r.id}"]`)?.classList.add("wahl");
       const zut = r.zutaten.map((z) => { const da = sorteDa(z), g = z.g.find((x) => imRucksack(x) >= z.n) || z.g[0]; return `<span>${bild(g)}<i class="${da >= z.n ? "da" : "nicht"}">${da}/${z.n}</i> ${esc(z.g.map((x) => (GEGENSTAENDE[x] ? GEGENSTAENDE[x].name : x)).join(" / "))}</span>`; }).join("");
-      info.innerHTML = `<b>${esc(G ? G.name : r.ergebnis)}</b><small>Level ${r.level} · ${r.xp} XP je Stück · ${r.ticks} Ticks</small><div class="zut">${zut}</div>
-        ${!offen ? `<small>Dafür brauchst du Handwerk ${r.level}.</small>` : ohne ? `<small>Du brauchst einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack (Waffenhändler am Markt).</small>` : n <= 0 ? `<small>Dir fehlen Zutaten.</small>` : `<div class="menge">${[1, 5, 10].filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}`; };
+      info.innerHTML = `<div class="kopfzeile"><b>${esc(G ? G.name : r.ergebnis)}</b><small>Level ${r.level} · ${r.xp} XP je Stück · ${r.ticks} Ticks</small></div><div class="zeile"><div class="zut">${zut}</div>
+        ${!offen ? `<small class="hinweis">Braucht Handwerk ${r.level}.</small>` : ohne ? `<small class="hinweis">Braucht einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack.</small>` : n <= 0 ? `<small class="hinweis">Zutaten fehlen.</small>` : `<div class="menge">${[1, 5, 10].filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}</div>`; };
     tafel.addEventListener("click", (e) => { const t = e.target as HTMLElement, d = t.closest(".ding") as HTMLElement | null;
       if (d) { e.stopPropagation(); const r = rezept(d.dataset.r!); if (r) zeigen(r); return; }
       const b = t.closest('[data-t="hw"]') as HTMLElement | null; if (!b) return; e.stopPropagation();

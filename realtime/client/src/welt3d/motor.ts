@@ -7,6 +7,7 @@
  * rechte oder mittlere Maustaste ziehen, Mausrad, zwei Finger (drehen, auseinander/zusammen).
  * Alle Koordinaten sind Weltfelder wie in der 2D-Welt und auf dem Server (x Osten, z = y der Welt nach Süden, Höhe nach oben).
  */
+import { daecherAus } from "../skills";
 import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
@@ -300,7 +301,7 @@ export class Welt3D {
     this.licht.position.set(this.ziel.x - 30, this.ziel.y + 55, this.ziel.z + 22); this.licht.target.position.copy(this.ziel); this.fackel.position.set(H.x + 0.4, y + 2.6, H.z + 0.6);
     /* Gebäude: drinnen kein Dach, Türen öffnen sich in der Nähe, Mühlenflügel drehen sich */
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
-      for (const d of b.daecher) d.visible = !drin;
+      for (const d of b.daecher) d.visible = !drin && !daecherAus(); /* Einstellung „Dächer ausblenden“ (Menü) */
       for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 || (s.wanderer || []).some((w) => Math.hypot(w.x - t.x, w.z - t.z) < 1.8) ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
       for (const f of b.drehen) f.rotation.z -= dt * 0.6; }
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */

@@ -4,7 +4,7 @@
  * darunter links die aktive Quest mit ihren Schritten (zum Ein- und Ausklappen), unten links das Team, unten rechts die Menüknöpfe.
  * Nur was es im Spiel wirklich gibt; Händler, Schmiede, Taverne, Post und Taschen kommen, wenn sie gebaut sind.
  */
-import { dropsAn, dropsSetzen } from "./skills";
+import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
 import { eigenesLevel } from "./skills";
 import { profilZeigen } from "./held";
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
@@ -172,12 +172,16 @@ export function menueTafel(zu: () => void) {
   const schliessen = () => { removeEventListener("keydown", esc, true); f.hidden = true; f.innerHTML = ""; zu(); };
   const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); schliessen(); } }; addEventListener("keydown", esc, true);
   f.innerHTML = `<div class="tafel menue"><i class="ecke a"></i><i class="ecke b"></i><i class="ecke c"></i><i class="ecke d"></i><button type="button" class="schliessen" data-t="zu" aria-label="Schließen">✕</button>
-    <h2>Menü</h2><div class="zier"></div>
-    <div class="liste"><button type="button" data-t="koop">Zusammen spielen <small>(Freunde &amp; Koop)</small></button><button type="button" data-t="profil">Heldenprofil &amp; Bildnis</button><button type="button" data-t="drops" class="kipp${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}">XP-Drops anzeigen <small>(${dropsAn() ? "an" : "aus"})</small></button><button type="button" data-t="start">Zur Startseite von Mythara</button>
-    ${n ? `<button type="button" data-t="ab">Abmelden <small>(${n})</small></button>` : `<button type="button" data-t="hin">Anmelden</button>`}</div>
-    <p class="klein">Splitterlande · Beta</p></div>`;
+    <h2>Einstellungen</h2><div class="zier"></div>
+    <div class="einst">
+      <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
+      <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
+    </div>
+    ${n ? `<button type="button" class="abmelden" data-t="ab">Abmelden <small>${n}</small></button>` : `<button type="button" class="abmelden" data-t="hin">Anmelden</button>`}
+    <p class="klein">Riftmere · Beta</p></div>`;
   f.onpointerdown = (e) => e.stopPropagation(); f.onkeydown = (e) => e.stopPropagation(); f.onkeyup = (e) => e.stopPropagation();
   f.onclick = (e) => { const t = (e.target as HTMLElement).closest("[data-t]") as HTMLElement | null; if (e.target === f) { schliessen(); return; } if (!t) return; const w = t.dataset.t;
-    if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); t.innerHTML = `XP-Drops anzeigen <small>(${dropsAn() ? "an" : "aus"})</small>`; return; }
+    if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
+    if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
     if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
 }

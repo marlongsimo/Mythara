@@ -79,6 +79,14 @@ export function welt3dAn(): boolean {
   if (wahl === "0") return false; if (wahl !== "1" && navigator.webdriver) return false;
   try { const c = document.createElement("canvas"); return Boolean(c.getContext("webgl2") || c.getContext("webgl")); } catch { return false; }
 }
+/** „Eiche fällen“ → „Fällen: Eiche“, „Mit Hartwig sprechen“ → „Sprechen: Hartwig“ … (für die Anzeige oben mittig) */
+export function tatText(t: string): string { let m = /^Mit (.+) sprechen$/.exec(t); if (m) return "Sprechen: " + m[1];
+  m = /^(.+) (fällen|abbauen|benutzen|pflücken|untersuchen|öffnen|betreten|lesen|aufheben)$/.exec(t); if (m) return m[2].charAt(0).toUpperCase() + m[2].slice(1) + ": " + m[1]; return t; }
+/** Oben mittig kurz zeigen, was gerade gemacht wird (wie der Aktionstext in OSRS) */
+let tatUhr = 0;
+export function tatZeigen(text: string): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
+  if (!el) { el = document.createElement("div"); el.id = "ez-tat"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  el.textContent = text; el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
@@ -197,7 +205,7 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
         const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); this.gehe(stelle.x, stelle.y); return; } /* Quest-NPC: kurz = nur hingehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) return; /* Gegner: ganze Figur, sonst der Boden darunter */
+        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angreifen: ${g.name}`); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -307,7 +315,7 @@ export class Spielwelt3D implements WeltKern {
     const p = wer.startsWith("lokal:") ? ((this.haendler && this.haendler.ortVon(wer.slice(6))) || (this.bank && this.bank.ortVon(wer.slice(6))) || null) : this.quest ? this.quest.ortVon(wer) : null;
     if (p && Math.hypot(p.x - this.ort.x, p.y - this.ort.y) > GESPRAECH_WEIT) { dialogSchliessen(true); chatSystem("Du hast dich entfernt – das Gespräch ist beendet."); } }
   /** Hingehen und dort handeln (ist man schon dort, sofort) */
-  ausfuehren(s: Stelle, tat: () => void) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
   /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
   menueBei(px: number, py: number) { const b = this.motor.boden(px, py), gr: Gruppe[] = [], konto = Boolean(ichName());
     const d = anschluss3D.spielerBei(px, py);
@@ -315,17 +323,17 @@ export class Spielwelt3D implements WeltKern {
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippenSchirm(px, py); } },
+        gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
       else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);
         if (boden) gr.push({ kopf: boden.hier.length > 1 ? `Am Boden · ${boden.hier.length} Gegenstände` : (GEGENSTAENDE[boden.d0.g] ? GEGENSTAENDE[boden.d0.g].name : boden.d0.g), farbe: FARBE.ding, liste: true, aktionen: [
-          ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort)), lupe: () => gegenstandUntersuchen(x.g) }; }),
-          ...(boden.hier.length > 1 ? [{ text: "Alles aufheben", sym: "✋", haupt: true, tat: () => this.ausfuehren(st, () => aufheben(boden.hier.map((x) => x.i), this.ort)) }] : [])] });
+          ...boden.hier.map((x) => { const G = GEGENSTAENDE[x.g]; return { text: G ? G.name : x.g, sym: "✋", anzahl: x.n, farbe: G && SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, tat: () => this.ausfuehren(st, () => aufheben(x.i, this.ort), `Aufheben: ${G ? G.name : x.g}`), lupe: () => gegenstandUntersuchen(x.g) }; }),
+          ...(boden.hier.length > 1 ? [{ text: "Alles aufheben", sym: "✋", haupt: true, tat: () => this.ausfuehren(st, () => aufheben(boden.hier.map((x) => x.i), this.ort), "Aufheben: alles") }] : [])] });
         else { const n = /^Mit (.+) sprechen$/.exec(st.text);
-          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
+          gr.push(n ? { kopf: n[1], farbe: FARBE.figur, aktionen: [{ text: "Sprechen", sym: "💬", tat: () => this.ausfuehren(st, st.tat) }, ...(st.mehr || []).map((m) => ({ text: m.text, sym: m.sym, tat: () => this.ausfuehren(st, m.tat, `${m.text}: ${n[1]}`) }))] } : { kopf: st.text, farbe: FARBE.objekt, aktionen: [{ text: st.text, sym: "➜", tat: () => this.ausfuehren(st, st.tat) }] }); } }
       const gehen = { text: "Hierhin gehen", sym: "👣", tat: () => { this.wahlWeg(); this.gehe(b.x, b.z); } };
       if (gehenZuerst) gr.splice(Math.max(0, gr.findIndex((g) => g.farbe === FARBE.objekt || g.farbe === FARBE.figur)), 0, { kopf: "Hier", farbe: FARBE.objekt, aktionen: [gehen] }); else gr.push({ kopf: "", aktionen: [gehen] }); }
     aktionsMenue(px, py, gr); }

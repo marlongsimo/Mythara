@@ -19,6 +19,9 @@ import { Geschosse3D, GeschossArt } from "./geschosse3d";
 const HOEHE = 2.0, MODUL: Record<string, string> = { schildwaechter: "held.krieger", bandit_dolch: "gegner.bandit.v003" };
 interface Bild { fl: FigurArt; nm: HTMLElement; lb: HTMLElement; h: number }
 
+/** Wie in OSRS: der Level eines Gegners in der Farbe des Abstands zum eigenen Level – höher: gelb → orange → rot (ab +10), gleich: gelb, niedriger: gelbgrün → grün (ab −10) */
+export function levelFarbe(d: number): string { const k = Math.max(-10, Math.min(10, d)); if (k === 0) return "#ffff00";
+  if (k > 0) return `rgb(255,${Math.round(255 - 255 * k / 10)},0)`; return `rgb(${Math.round(255 + 255 * k / 10)},255,0)`; }
 export class WeltKampf3D extends WeltKampf {
   constructor(w: Spielwelt3D, region: string, wx: number, wy: number, gefallen: () => void, wartend = false) { super(w as unknown as WeltSzene, region, wx, wy, gefallen, wartend); }
   private get w(): Spielwelt3D { return this.s as unknown as Spielwelt3D; }
@@ -86,7 +89,9 @@ export class WeltKampf3D extends WeltKampf {
   private splats = new Map<number, number[]>(); private ichKampfBis = 0;
   protected figurZeichnen(f: Figur, vx: number, vy: number, lauf: boolean, _wechsel: boolean, name: string, dt: number) { const b = this.bilder.get(f); if (!b) return; const m = this.w.motor, x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z);
     b.fl.sichtbar(true); b.fl.stelle(x, y, z); if (lauf) b.fl.blick(vx, vy); else if (f.blick !== undefined && (f.kampfBis || 0) > performance.now()) b.fl.blick(Math.cos(f.blick), Math.sin(f.blick)); /* steht er: zum Gegner, mit dem er kämpft (Blick vom Server) */ b.fl.setze(f.schild ? (lauf ? "schild_laufen" : "block") : lauf ? "laufen" : "ruhe"); b.fl.schritt(dt * 1000, m.gieren);
-    if (b.nm.textContent !== name) b.nm.textContent = name; schildAn(b.nm, m, x, y + b.h + 0.42, z);
+    { const mein = this.namen.get(this.ichId), g = !f.held && mein ? /^(.*) · Lv (\d+)$/.exec(name) : null, schl = name + "|" + (g && mein ? mein.stufe : "");
+      if (b.nm.dataset.s !== schl) { b.nm.dataset.s = schl; if (g && mein) { b.nm.textContent = g[1] + " · "; const l = document.createElement("b"); l.className = "lvfarbe"; l.textContent = "Lv " + g[2]; l.style.color = levelFarbe(Number(g[2]) - mein.stufe); b.nm.appendChild(l); } else b.nm.textContent = name; } }
+    schildAn(b.nm, m, x, y + b.h + 0.42, z);
     const a = Math.max(0, Math.min(1, f.lp / f.max)), i = b.lb.firstChild as HTMLElement; i.style.width = Math.round(a * 100) + "%"; if (f.team === 0) i.className = a > 0.5 ? "" : a > 0.25 ? "mittel" : "wenig"; schildAn(b.lb, m, x, y + b.h + 0.18, z); }
   protected zielUndLeben(leben: number | null, zf: Figur | null) { const m = this.w.motor;
     if (this.ichBalken) this.ichBalken.hidden = true; /* kein Lebensbalken über dem eigenen Helden (das Leben steht am Bogen der Minikarte) */

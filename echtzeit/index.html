@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="mythara.webmanifest?v=mww9j44x">
+  <link rel="manifest" href="mythara.webmanifest?v=mwwa0kve">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Mythara">
@@ -34,7 +34,9 @@
     body.kampf-v1 #ez-tasten, body.kampf-v1 #ez-tasten button[data-taste], body.kampf-v1 #ez-modus { display: none !important; } /* eigener Held: keine Aktionstasten – angegriffen wird durch Antippen des Gegners */
     /* 3D-Welt (welt3d/spielwelt.ts): Namensschild über der Figur, Abblenden beim Versetzen */
     .ez-name3d { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; white-space: nowrap; font: 600 14px Cinzel, Georgia, serif; color: #ffe08a; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 6px rgba(0,0,0,.8); will-change: transform; }
-    .ez-name3d[hidden] { display: none; } .ez-name3d.fremd { color: #f3ead2; }
+    .ez-name3d[hidden] { display: none; } .ez-name3d .lvfarbe { font-weight: 700; }
+    #ez-tat { position: fixed; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translate(-50%, -6px); z-index: 55; pointer-events: none; padding: 4px 14px; border-radius: 14px; background: rgba(20, 14, 8, .72); border: 1px solid rgba(255, 216, 106, .45); color: #ffe08a; font: 600 15px Cinzel, Georgia, serif; text-shadow: 0 1px 2px #000; white-space: nowrap; opacity: 0; transition: opacity .25s, transform .25s; }
+    #ez-tat.an { opacity: 1; transform: translate(-50%, 0); } .ez-name3d.fremd { color: #f3ead2; }
     .ez-balken3d { position: absolute; left: 0; top: 0; z-index: 2; width: 54px; height: 6px; border-radius: 2px; background: rgba(0,0,0,.7); border: 1px solid rgba(0,0,0,.8); pointer-events: none; }
     .ez-balken3d[hidden] { display: none; } .ez-balken3d i { display: block; height: 100%; width: 100%; background: #5fc35a; } .ez-balken3d i.mittel { background: #e0b040; } .ez-balken3d i.wenig { background: #d04a3a; }
     .ez-blase3d { position: absolute; left: 0; top: 0; z-index: 2; max-width: 190px; padding: 5px 8px; border-radius: 6px; background: #f3e6c4; color: #2a2014; font: 13px Inter, sans-serif; text-align: center; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
@@ -319,6 +321,17 @@
     #ez-dorf-knopf { font-family: Cinzel, Georgia, serif !important; border: 2px solid #e2bf6a !important; } body.stadt #ez-dorf-knopf { bottom: 96px; font-family: Cinzel, Georgia, serif; letter-spacing: .03em; border: 2px solid #e2bf6a; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #8a6a2a, 0 8px 20px rgba(0,0,0,.6); }
     #ez-konto .tafel.menue .liste { display: grid; gap: 9px; margin: 6px 0 4px; } #ez-konto .tafel.menue .liste button { padding: 12px 16px; font: 600 15px Cinzel, Georgia, serif; letter-spacing: .04em; color: #e6d3a3; background: linear-gradient(#2c2216, #1a140d); border: 1px solid #5d4517; border-radius: 3px; cursor: pointer; }
     #ez-konto .tafel.menue .liste button:hover { border-color: #f0d48a; color: #fff3d2; } #ez-konto .tafel.menue .liste small { color: #a8966a; font: 400 12px Inter, sans-serif; }
+    #ez-konto .tafel.menue { width: min(400px, 92vw); padding: 22px 22px 16px; background: radial-gradient(120% 90% at 50% 0%, #241a2e 0%, #15110d 60%); border: 1px solid #c9a24f; box-shadow: 0 0 0 1px #3a2a12 inset, 0 18px 50px rgba(0,0,0,.7), 0 0 30px rgba(120,80,200,.18); }
+    #ez-konto .tafel.menue h2 { font-size: 22px; letter-spacing: .08em; }
+    #ez-konto .tafel.menue .einst { display: grid; gap: 8px; margin: 8px 0 14px; }
+    #ez-konto .tafel.menue .schalter { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 11px 14px; border: 1px solid #4a3a1c; border-radius: 9px; background: rgba(20,15,10,.75); color: #eadcb6; font: 500 15px Inter, sans-serif; cursor: pointer; text-align: left; }
+    #ez-konto .tafel.menue .schalter:hover { border-color: #c9a24f; }
+    #ez-konto .tafel.menue .regler { position: relative; flex: 0 0 auto; width: 42px; height: 24px; border-radius: 12px; background: #3a3128; border: 1px solid #6b5a3a; transition: background .2s; }
+    #ez-konto .tafel.menue .regler::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #cbb98f; transition: transform .2s; }
+    #ez-konto .tafel.menue .schalter.an .regler { background: linear-gradient(#7a4fd0, #5a35a8); border-color: #b89cff; }
+    #ez-konto .tafel.menue .schalter.an .regler::after { transform: translateX(18px); background: #fff3d2; }
+    #ez-konto .tafel.menue .abmelden { display: block; width: 100%; padding: 12px 16px; border: 1px solid #b89cff; border-radius: 10px; background: linear-gradient(#5d3aa8, #3e2478); color: #f6ecd2; font: 600 16px Cinzel, Georgia, serif; letter-spacing: .05em; cursor: pointer; box-shadow: 0 0 14px rgba(120,80,220,.35); }
+    #ez-konto .tafel.menue .abmelden:hover { filter: brightness(1.12); } #ez-konto .tafel.menue .abmelden small { display: block; font: 400 12px Inter, sans-serif; color: #d9c8ff; letter-spacing: 0; }
     @media (max-width: 1100px) { body.stadt #ez-dorf-hilfe { display: none !important; } }
     @media (max-width: 900px) { #ez-titel .fahne { display: none; } #ez-titel .schild { min-width: 220px; padding: 16px 30px 18px; } #ez-titel b { font-size: 20px; } #ez-titel small { font-size: 13px; } }
     @media (max-width: 700px) { body.stadt #ez-titel { display: none; } body.stadt #ez-profil { padding-right: 14px; gap: 9px; } #ez-profil img { width: 46px; height: 46px; } #ez-profil .name b { font-size: 14px; } #ez-profil .name small { font-size: 10.5px; } #ez-seelen { padding: 3px 9px 3px 7px; } #ez-seelen b { font-size: 13px; }
@@ -786,6 +799,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mww9j44x"></script>
+  <script src="spiel.js?v=mwwa0kve"></script>
 </body>
 </html>

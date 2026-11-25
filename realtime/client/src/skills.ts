@@ -27,6 +27,10 @@ export const SKILL_ZEICHEN: Record<Skill, string> = Object.fromEntries(SKILLS.ma
 /** XP-Drops: nach jedem Treffer steigen die neuen XP mit Zeichen am oberen Bildschirmrand auf und verblassen (in den Einstellungen abschaltbar) */
 const DROPS = "ez_xpdrops";
 export function dropsAn(): boolean { try { return localStorage.getItem(DROPS) !== "0"; } catch { return true; } }
+/** Einstellung: Dächer der begehbaren Gebäude immer ausblenden (welt3d/motor.ts liest sie je Bild) */
+let daecherAusMerk: boolean | null = null;
+export function daecherAus(): boolean { if (daecherAusMerk === null) { try { daecherAusMerk = localStorage.getItem("ez_daecher_aus") === "1"; } catch { daecherAusMerk = false; } } return daecherAusMerk; }
+export function daecherAusSetzen(an: boolean): void { daecherAusMerk = an; try { localStorage.setItem("ez_daecher_aus", an ? "1" : "0"); } catch { /* privat */ } }
 export function dropsSetzen(an: boolean): void { try { localStorage.setItem(DROPS, an ? "1" : "0"); } catch { /* privat */ } }
 let dropsVorher: SkillXp | null = null;
 /** Neuen Skill-Stand melden: was dazukam, erscheint als Drop. Der erste Stand (Laden) zeigt nichts */
