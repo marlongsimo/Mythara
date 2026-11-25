@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="manifest" href="mythara.webmanifest?v=mwwiamt0">
+  <link rel="manifest" href="mythara.webmanifest?v=mwwjjdvd">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,9 +12,9 @@
   <title>Riftmere – Willkommen</title>
   <meta name="robots" content="noindex">
   <link rel="icon" href="../img/favicon.png" type="image/png">
-  <link rel="stylesheet" href="start.css?v=mwwiamt0">
-  <script src="start-passen.js?v=mwwiamt0"></script>
-  <script src="quer.js?v=mwwiamt0" defer></script>
+  <link rel="stylesheet" href="start.css?v=mwwjjdvd">
+  <script src="start-passen.js?v=mwwjjdvd"></script>
+  <script src="quer.js?v=mwwjjdvd" defer></script>
   <style>
     /* Landing-Page: kommt bei jedem Besuch vor dem Spiel – Neuigkeiten, Nachrichten, „Ins Spiel“ */
     .lager { width: min(1120px, 96vw); padding: 56px clamp(16px, 3vw, 40px) 30px;
@@ -123,6 +123,7 @@
   </main>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
+  <script>try { sessionStorage.removeItem("rift_verbunden"); } catch (e) { /* privat */ } /* von hier aus ist „Spielen“ ein frisches Anmelden (übernimmt das Konto von einem anderen Gerät) */</script>
   <script>
   /* Landing-Page der Splitterlande (24.11.2026): kommt bei jedem Besuch vor dem Spiel, auch mit gespeicherter Anmeldung.
      „Ins Spiel“ merkt sich das für diesen Tab (sessionStorage „ez__lager“), damit Neuladen im Spiel nicht wieder hierher führt.
@@ -204,7 +205,8 @@
     /* Aus dem Spiel abgemeldet (abmeldung.ts): untätig oder auf einem anderen Gerät angemeldet */
     { const g = new URLSearchParams(location.search).get("grund");
       if (g === "ruhe") $("#meldung").textContent = "Du warst 5 Minuten untätig und wurdest aus dem Spiel abgemeldet. Mit „Ins Spiel“ geht es weiter.";
-      else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter. Mit „Ins Spiel“ holst du den Helden hierher zurück."; }
+      else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter.";
+      else if (g === "bereits") $("#meldung").textContent = "Du bist bereits auf einem anderen Gerät im Spiel. Melde dich dort ab (Einstellungen → Abmelden), dann geht es hier weiter."; }
 
     /* Ins Spiel */
     $("#insspiel").onclick = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };
