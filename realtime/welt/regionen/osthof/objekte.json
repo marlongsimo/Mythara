@@ -214,5 +214,22 @@
  {"id":"b0010","objekt":"stil_eiche_01","x":1.5,"y":63.5,"s":1.07},
  {"id":"b0092","objekt":"stil_eiche_02","x":50.5,"y":63.5,"s":1.1,"spiegeln":true},
  {"id":"b0162","objekt":"stil_linde_01","x":4.5,"y":63.5,"s":0.86,"spiegeln":true},
- {"id":"b0095","objekt":"stil_linde_01","x":46.5,"y":63.5,"s":0.91,"spiegeln":true}
+ {"id":"b0095","objekt":"stil_linde_01","x":46.5,"y":63.5,"s":0.91,"spiegeln":true},
+ {"id":"osthof_hw_dorf_zaun_01_28_9_6","objekt":"dorf_zaun_01","x":28,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_30_9_6","objekt":"dorf_zaun_01","x":30,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_32_9_6","objekt":"dorf_zaun_01","x":32,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_34_9_6","objekt":"dorf_zaun_01","x":34,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_36_9_6","objekt":"dorf_zaun_01","x":36,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_38_9_6","objekt":"dorf_zaun_01","x":38,"y":9.6},
+ {"id":"osthof_hw_dorf_zaun_01_28_17_6","objekt":"dorf_zaun_01","x":28,"y":17.6},
+ {"id":"osthof_hw_dorf_zaun_01_30_17_6","objekt":"dorf_zaun_01","x":30,"y":17.6},
+ {"id":"osthof_hw_dorf_zaun_01_32_17_6","objekt":"dorf_zaun_01","x":32,"y":17.6},
+ {"id":"osthof_hw_dorf_zaun_01_36_17_6","objekt":"dorf_zaun_01","x":36,"y":17.6},
+ {"id":"osthof_hw_dorf_zaun_01_38_17_6","objekt":"dorf_zaun_01","x":38,"y":17.6},
+ {"id":"osthof_hw_dorf_zaun_01_27_2_11","objekt":"dorf_zaun_01","x":27.2,"y":11},
+ {"id":"osthof_hw_dorf_zaun_01_38_8_11","objekt":"dorf_zaun_01","x":38.8,"y":11},
+ {"id":"osthof_hw_dorf_zaun_01_27_2_13","objekt":"dorf_zaun_01","x":27.2,"y":13},
+ {"id":"osthof_hw_dorf_zaun_01_38_8_13","objekt":"dorf_zaun_01","x":38.8,"y":13},
+ {"id":"osthof_hw_dorf_zaun_01_27_2_15","objekt":"dorf_zaun_01","x":27.2,"y":15},
+ {"id":"osthof_hw_dorf_zaun_01_38_8_15","objekt":"dorf_zaun_01","x":38.8,"y":15}
 ]

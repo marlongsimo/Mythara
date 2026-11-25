@@ -22,6 +22,7 @@ export interface SammelBeruf {
   texte: { ohneWerkzeug: string; werkzeugLevel: (level: number) => string; weg: (a: SammelArt) => string; level: (a: SammelArt) => string; gast: string; unbekannt: string; nah: string };
   /** nur Tests: Umgebungsvariablen <ENV>_KERN (Chance des Moments) und <ENV>_FALL (Faktor auf die Erschöpfung, 0 = nie leer) */
   env: string;
+  /** ohne Werkzeug sammeln (Pflücken) und ohne Splitter-Wurf */ ohneWerkzeug?: boolean; ohneSplitter?: boolean;
 }
 interface Sitzung { s: SammelSpieler; ziel: SammelZiel; naechst: number; momentBis: number; stufe: number }
 type Senden = (s: SammelSpieler, m: object) => void;
@@ -51,17 +52,17 @@ export function sammelBeruf(B: SammelBeruf) {
     if (!nah(s, z)) return B.texte.nah;
     if (!daNoch(id)) return B.texte.weg(A);
     const L = level(s.nutzer); if (L < A.level) return B.texte.level(A);
-    const st = bestes(s.nutzer, L);
+    const st = B.ohneWerkzeug ? 0 : bestes(s.nutzer, L);
     if (st < 0) { const hat = B.werkzeuge.filter((w) => besitzt(s.nutzer).includes(w.g)); return hat.length ? B.texte.werkzeugLevel(Math.min(...hat.map((w) => w.level))) : B.texte.ohneWerkzeug; }
     if (freieFaecher(s.nutzer) <= 0) return "Dein Rucksack ist voll.";
     sitzungen.set(s, { s, ziel: z, naechst: Date.now() + B.taktMs, momentBis: 0, stufe: st });
-    senden(s, { t: B.t, tat: "start", id, werkzeug: B.werkzeuge.find((w) => w.stufe === st)!.g }); return null;
+    senden(s, { t: B.t, tat: "start", id, werkzeug: B.ohneWerkzeug ? undefined : B.werkzeuge.find((w) => w.stufe === st)!.g }); return null;
   }
   /** Ein Stück (beim Moment zwei): Rucksack, XP, Splitter-Wurf, Erschöpfung. Zurück: ob es weitergeht */
   function ernten(z: Sitzung, moment: boolean, jetzt: number): boolean {
     const { s, ziel } = z, A = B.arten[ziel.art], G = GEGENSTAENDE[A.ertrag]; let stuecke = 0, splitter = 0;
     for (let i = 0; i < (moment ? 2 : 1); i++) { if (!aufnehmen(sb, s.nutzer, A.ertrag, 1)) break; stuecke++;
-      if (wuerfel() < SPLITTER_CHANCE) { const n = SPLITTER_MIN + Math.floor(wuerfel() * (SPLITTER_MAX - SPLITTER_MIN + 1)); if (platzFuer(s.nutzer, "splitter")) splitter += aufnehmen(sb, s.nutzer, "splitter", n); } }
+      if (!B.ohneSplitter && wuerfel() < SPLITTER_CHANCE) { const n = SPLITTER_MIN + Math.floor(wuerfel() * (SPLITTER_MAX - SPLITTER_MIN + 1)); if (platzFuer(s.nutzer, "splitter")) splitter += aufnehmen(sb, s.nutzer, "splitter", n); } }
     if (!stuecke) { stop(s, "voll"); return false; }
     const vorher = level(s.nutzer), xp = A.xp * stuecke * (moment ? 1.5 : 1); berufXpDazu(sb, s.nutzer, B.beruf, xp); const nachher = level(s.nutzer);
     senden(s, { t: B.t, tat: B.tatErtrag, id: ziel.id, g: A.ertrag, name: G ? G.name : A.ertrag, n: stuecke, xp, splitter, [B.tatMoment]: moment, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });

@@ -60,7 +60,43 @@
  ],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 27,
+    "y0": 9,
+    "x1": 40,
+    "y1": 10
+   },
+   {
+    "art": "rechteck",
+    "x0": 27,
+    "y0": 17,
+    "x1": 33,
+    "y1": 18
+   },
+   {
+    "art": "rechteck",
+    "x0": 35,
+    "y0": 17,
+    "x1": 40,
+    "y1": 18
+   },
+   {
+    "art": "rechteck",
+    "x0": 27,
+    "y0": 10,
+    "x1": 28,
+    "y1": 17
+   },
+   {
+    "art": "rechteck",
+    "x0": 39,
+    "y0": 10,
+    "x1": 40,
+    "y1": 17
+   }
+  ],
   "freigeben": []
  }
 }

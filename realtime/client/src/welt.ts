@@ -53,6 +53,9 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "baeume") window.dispatchEvent(new CustomEvent("ez-baeume", { detail: m.weg || [] }));
     else if (m.t === "berg") window.dispatchEvent(new CustomEvent("ez-berg", { detail: m })); /* Bergbau (welt3d/sammeln3d.ts) */
     else if (m.t === "adern") window.dispatchEvent(new CustomEvent("ez-adern", { detail: m.weg || [] }));
+    else if (m.t === "pflanze") window.dispatchEvent(new CustomEvent("ez-pflanze", { detail: m })); /* Handwerk: Flachs und Hanf (welt3d/pflanzen3d.ts) */
+    else if (m.t === "pflanzen") window.dispatchEvent(new CustomEvent("ez-pflanzen", { detail: m.weg || [] }));
+    else if (m.t === "handwerk") window.dispatchEvent(new CustomEvent("ez-handwerk", { detail: m })); /* Handwerk an den Werkstätten (welt3d/handwerk3d.ts) */
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
     else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
     else if (m.t === "zufreund") { if (m.ok && typeof m.x === "number" && typeof m.y === "number") window.dispatchEvent(new CustomEvent("ez-zufreund", { detail: m })); else chatSystem(String(m.text || "Teleport nicht möglich.")); }
@@ -89,6 +92,8 @@ export function questVerfolgen(an: boolean, id: string = Q1): void { try { local
 /** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
 export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
 export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
+export function pflanzeBitten(tat: "start" | "stop", id?: string): void { senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
+export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
 export function questDing(id: string, wo?: { x: number; y: number }): void { senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function rede(npc: string): void { senden({ t: "rede", npc }); }

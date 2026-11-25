@@ -30,7 +30,9 @@ BESONDERS = {
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
     # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
-               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]},
+               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
+               # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
+               + [("kuh", 6525, 6411), ("kuh", 6528, 6411), ("kuh", 6531, 6411), ("kuh", 6534, 6411), ("kuh", 6526, 6413), ("kuh", 6529, 6413), ("kuh", 6532, 6413), ("kuh", 6525, 6415), ("kuh", 6528, 6415), ("kuh", 6531, 6415)]},
 }
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",

@@ -117,6 +117,7 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
+  /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number;
   aggressiv?: boolean; aggroReich?: number; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
@@ -172,6 +173,12 @@ export const MONSTER: Record<string, MonsterDef> = {
     angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
     info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
+  /* Kuh (Handwerk, Gehege im Osthof, 25.11.2026): friedlich, Level 1, 10 Lebenspunkte, lässt immer eine Kuhhaut fallen, steht nach 20 s wieder da. Modell img/figuren-echt3d/kuh3d.glb. */
+  kuh: { name: "Kuh", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 10, tempo: 1.2, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.45, aggressiv: false, wiederkehr: 20,
+    angriff: { name: "Kopfstoß", art: "nah", schaden: [0, 1], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
+    drops: [{ wurf: [{ g: "kuhhaut", chance: 100 }] }],
+    info: "Eine gutmütige Kuh mit kastanienbraunen Flecken. Sie kaut, schaut und stößt höchstens einmal mit dem Kopf, wenn man sie ärgert." },
   /* Waldgolem (Nordwald, verfallene Feste, 24.11.2026): Level 15, wie ein OSRS-Monster – schlägt selten, aber hart (Max Hit 5 aus Stärke 36), langsam (6 Ticks),
      Holz: Pfeile bleiben stecken (+20 Fern), Magie trifft gut (−10). Greift nur Helden unter Level 15 von selbst an. Modell img/figuren-echt3d/waldgolem3d.glb.
      Simulation (Heldenlevel 15, Einfach-Ausrüstung, ohne Tränke): Schwert 90 % Siege, 42 s, 62 % LP übrig · Bogen 83 %, 34 s, 45 % · Stab 89 %, 24 s, 51 %. */

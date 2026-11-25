@@ -38,8 +38,9 @@ export function xpDrops(x: SkillXp): void {
   box.appendChild(d); setTimeout(() => d.remove(), 1900); }
 /** Berufe (Holzfällerei …): Zeichen und XP-Drop wie bei den Kampf-Skills */
 export const BERUF_ZEICHEN: Record<string, string> = { holzfaellerei: `<img class="skillbild" src="../img/objekte3d/skilling/symbole/holzfaellerei_klein.webp" alt="" width="32" height="32" draggable="false">`,
-  bergbau: `<img class="skillbild" src="../img/objekte3d/skilling/symbole/bergbau_klein.webp" alt="" width="32" height="32" draggable="false">` };
-export const BERUF_NAME: Record<string, string> = { holzfaellerei: "Holzfällerei", bergbau: "Bergbau" };
+  bergbau: `<img class="skillbild" src="../img/objekte3d/skilling/symbole/bergbau_klein.webp" alt="" width="32" height="32" draggable="false">`,
+  handwerk: `<img class="skillbild" src="../img/objekte3d/skilling/symbole/handwerk_klein.webp" alt="" width="32" height="32" draggable="false">` };
+export const BERUF_NAME: Record<string, string> = { holzfaellerei: "Holzfällerei", bergbau: "Bergbau", handwerk: "Handwerk" };
 export function berufDrop(beruf: string, n: number): void {
   if (!dropsAn() || !(n > 0)) return; let box = document.getElementById("ez-xpdrops"); if (!box) { box = document.createElement("div"); box.id = "ez-xpdrops"; box.setAttribute("aria-hidden", "true"); document.body.appendChild(box); }
   const d = document.createElement("div"); d.className = "xpdrop"; d.innerHTML = `<span class="${beruf}" title="${BERUF_NAME[beruf] || beruf}">${BERUF_ZEICHEN[beruf] || ""}+${Math.round(n)}</span>`;

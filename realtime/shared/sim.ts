@@ -215,7 +215,7 @@ export class Sim {
         const g: [string, number, string?][] = []; for (const R of D) { let z = this.zf() * 100; for (const d of R.wurf) { if (z < d.chance) { const [lo, hi] = d.anzahl || [1, 1], n = lo + Math.floor(this.zf() * (hi - lo + 1)); g.push(R.nur ? [d.g, n, R.nur] : [d.g, n]); break; } z -= d.chance; } } /* je Roll höchstens ein Treffer */
         if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }
-    if (this.weltZeit) { this.anteile.delete(z.id); this.wiederkehr.push({ w: z, t: this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
+    if (this.weltZeit) { this.anteile.delete(z.id); this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
     if (!this.weltZeit && this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.sieg(); /* die Welt hat kein Ende */ /* bei offener Schleuse kommen noch welche */
   }

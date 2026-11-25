@@ -65,8 +65,8 @@ export class SammelWelt {
     } catch (e) { console.warn(`${this.E.berufName}: Modell fehlt`, a.z.art, e); } }
   private nachricht(m: { tat: string; id?: string; werkzeug?: string; text?: string; name?: string; n?: number; xp?: number; splitter?: number; aufstieg?: number; grund?: string; ms?: number; [k: string]: unknown }) {
     const E = this.E, a = m.id ? this.alle.get(m.id) : undefined, D = a ? E.def(a.z.art) : null, art = D ? artikel(D.weiblich) : artikel(true), f = this.figur;
-    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugUrl(m.werkzeug || E.werkzeugStandard); if (D) chatSystem(E.texte.start(D, art)); }
-    else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); f.beilHieb(this.werkzeug, E.clip); this.spaene(a); }
+    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art)); }
+    else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) f.beilHieb(this.werkzeug, E.clip); this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
     else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]);
       chatSystem(`Du bekommst ${(m.n || 1) > 1 ? m.n + " × " : ""}${m.name || E.texte.einStueck}${mom ? ` – ${E.texte.momentKnopf}` : "."}${m.splitter ? ` Dazu ${m.splitter} Splitter.` : ""}`);
       berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) { chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); this.hinweis(`${E.berufName} Level ${m.aufstieg}!`, 2600); } }
@@ -86,7 +86,7 @@ export class SammelWelt {
     const mom = this.moment && this.moment.id === a.z.id && performance.now() < this.moment.bis, leer = this.weg.has(a.z.id);
     return { x: sx, y: sy, text: mom ? E.texte.momentKnopf : leer ? E.texte.leerKnopf : E.texte.tun(D), da: () => Math.hypot(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y) <= 2.0,
       tat: () => { if (mom) { this.moment = null; E.bitten(E.tatMoment); return; } if (leer) { chatSystem(E.texte.leerAnsehen(D, art)); return; } if (this.aktiv === a.z.id) return; E.bitten("start", a.z.id); },
-      mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${D.name}: ${E.berufName} ${D.level}, ${D.xp} XP ${E.texte.je}.`); gegenstandUntersuchen(D.ertrag); } }] }; }
+      mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(D.xp ? `${D.name}: ${E.berufName} ${D.level}, ${D.xp} XP ${E.texte.je}.` : `${D.name}: kann man pflücken.`); gegenstandUntersuchen(D.ertrag); } }] }; }
   /** Wo die Ziele stehen (Antippen am Bildschirm: das ganze Ziel zählt) */
   punkte(): { x: number; y: number; h: number }[] { return [...this.alle.values()].filter((a) => Math.hypot(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y) < 40)
     .map((a) => { const D = this.E.def(a.z.art); return { x: a.z.x, y: a.z.y, h: this.E.massArt === "hoehe" ? (this.weg.has(a.z.id) ? 1 : D.mass * 0.8) : D.mass * 0.6 }; }); }

@@ -136,6 +136,13 @@ export class Held3D {
     void this.beilAnhaengen(url).then((b) => { if (!b || this.gestorben || !this.beilZurueck /* Schwung schon vorbei (Beil lud zu lange) */) return; b.visible = true; for (const [n, o] of this.teile) if (this.verdeckt.test(n)) o.visible = false; });
     this.einmal = true; this.spiele(clip, true, true, c ? (c.duration * 1000) / HIEB_MS : 1);
     return dauer; }
+  /** Werken (Handwerk): die erste Bewegung aus wahl, die das Modell hat (eigene Werk-Clips der Figuren-Fabrik, sonst Ersatz); mit url ein Werkzeug in der Hand. Dauer in ms */
+  werken(wahl: string[], url = ""): number { const clip = wahl.find((c) => this.clips.has(c)) || "";
+    if (url) return this.beilHieb(url, clip);
+    if (this.gestorben || !this.mixer || !this.wurzel || !clip) return 0; const c = this.clips.get(clip)!;
+    this.verdeckt = /^(waffe|schild)/; for (const [n, o] of this.teile) if (this.verdeckt.test(n)) o.visible = false; /* Hände frei */
+    if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), HIEB_MS + 120);
+    this.einmal = true; this.spiele(clip, true, true, (c.duration * 1000) / HIEB_MS); return HIEB_MS; }
   /** Beil weg, angelegte Waffe wieder sichtbar */
   beilWeg(): void { if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^(waffe|schild)/.test(n)) o.visible = this.soll.has(n); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
@@ -173,6 +180,7 @@ export type FigurArt = FigurLeinwand | Held3D;
 const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
-  waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" } };
+  waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
+  kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } };
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }
