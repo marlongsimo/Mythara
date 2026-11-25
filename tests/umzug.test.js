@@ -15,7 +15,7 @@ const WURZEL = path.join(__dirname, ".."), BASE = "http://localhost:8765"; let o
     check(r.url === "/index.html" && /Pen & Paper/.test(r.h1), "Ein neuer Besucher sieht die Startseite mit der Beschreibung des Spiels");
     check(r.knopf === "Einloggen / Registrieren→spiel.html", "Oben rechts führt „Einloggen / Registrieren“ zur Anmeldeseite (spiel.html)");
     check(r.helden === 15 && r.kampagnen === 6 && r.breit, "Alle 15 Helden und 6 Kampagnen werden gezeigt, die Seite passt in Handybreite");
-    check(!/noindex/.test(r.robots) && r.canon === "https://mythara-dungeon.de/" && r.ld.join() === "VideoGame,FAQPage", "Für Suchmaschinen: nicht gesperrt, Adresse eindeutig, Angaben zu Spiel und Fragen lesbar");
+    check(!/noindex/.test(r.robots) && r.canon === "https://riftmere.de/" && r.ld.join() === "VideoGame,FAQPage", "Für Suchmaschinen: nicht gesperrt, Adresse eindeutig, Angaben zu Spiel und Fragen lesbar");
     check(!fehler.length && !fehlend.length, "keine Skriptfehler, keine fehlenden Dateien" + (fehlend.length ? ": " + fehlend.join(", ") : ""));
     await p.click(".kopf a.knopf"); await p.waitForURL(/spiel\.html/, { timeout: 10000 }).catch(() => {}); await p.waitForTimeout(1500);
     const s = await p.evaluate(() => ({ url: location.pathname, spiel: Boolean(window.MYTHARA), kopf: getComputedStyle(document.querySelector("header.top")).display, robots: (document.querySelector('meta[name="robots"]') || {}).content || "", apple: document.querySelector('link[rel="apple-touch-icon"]').getAttribute("href"), logo: document.querySelector(".my-logo img").getAttribute("src") }));
@@ -30,6 +30,6 @@ const WURZEL = path.join(__dirname, ".."), BASE = "http://localhost:8765"; let o
   { const { c, p } = await neu(); await p.goto(BASE + "/handy.html"); await p.evaluate(() => localStorage.setItem("mr-rpg-auth", "{}")); await p.goto(BASE + "/index.html"); await p.waitForTimeout(1500);
     check(/\/index\.html$/.test(p.url()) && await p.evaluate(() => Boolean(document.querySelector(".auftakt"))), "Auch wer angemeldet ist, sieht unter der Adresse die Startseite (kein Sprung ins Spiel)"); await c.close(); }
   const sm = fs.readFileSync(path.join(WURZEL, "sitemap.xml"), "utf8"), rb = fs.readFileSync(path.join(WURZEL, "robots.txt"), "utf8");
-  check(/<loc>https:\/\/mythara-dungeon\.de\/<\/loc>/.test(sm) && /Sitemap: https:\/\/mythara-dungeon\.de\/sitemap\.xml/.test(rb) && /Allow: \//.test(rb), "Sitemap und robots.txt nennen die Startseite");
+  check(/<loc>https:\/\/riftmere\.de\/<\/loc>/.test(sm) && /Sitemap: https:\/\/riftmere\.de\/sitemap\.xml/.test(rb) && /Allow: \//.test(rb), "Sitemap und robots.txt nennen die Startseite");
   await b.close(); console.log(ok ? "\nUMZUG IN ORDNUNG" : "\nUMZUG: FEHLER"); process.exit(ok ? 0 : 1);
 })();
