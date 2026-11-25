@@ -183,6 +183,15 @@ export const VERBRAUCH: Record<string, Verbrauch> = {
     werte: [["Heilung", "10 + 5 % des maximalen Lebens (nicht darüber)"], ["Stapelbar", "ja"]],
     text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },
 };
+/* ---------- Rohstoffe (Beute, Sammeln) ----------
+ * Noch nicht im Rucksack und noch ohne Beute-Tabelle: was ein Gegner fallen lässt, entscheidet der Spielserver (shared/sim.ts).
+ * modell: liegt am Boden (img/objekte3d), ohne Animation. */
+export interface Rohstoff { id: string; name: string; art: string; seltenheit: Seltenheit; stapelbar: boolean; modell: string; quelle: string; werte: [string, string][]; text: string }
+export const ROHSTOFFE: Record<string, Rohstoff> = {
+  kuhhaut: { id: "kuhhaut", name: "Kuhhaut", art: "Rohstoff", seltenheit: "gewoehnlich", stapelbar: true, modell: "img/objekte3d/kuhhaut.glb", quelle: "Beute der Kuh",
+    werte: [["Verwendung", "Handwerk (Leder)"], ["Stapelbar", "ja"]],
+    text: "Ein Fell mit kastanienbraunen Flecken, noch ungegerbt. Beim Gerber wird daraus Leder." },
+};
 /** Wie viel ein Trank heilt, bei diesem maximalen Leben (gerundet) */
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
