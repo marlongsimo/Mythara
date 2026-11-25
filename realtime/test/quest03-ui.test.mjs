@@ -60,6 +60,31 @@ try {
   check(/Hartwig/.test(st[0] || ""), "Förster antippen: " + st[0]); check(/fällen|Waldgott/.test(st[1] || ""), "Baum antippen: " + st[1]); check(!!st[2], "Waldstein antippen: " + st[2]);
   const marke = await anna.evaluate(() => [...document.querySelectorAll(".ez-questmarke")].filter((m) => !m.hidden).map((m) => m.textContent)); check(marke.includes("!"), "Questmarke „!“ über dem Förster: " + marke.join(","));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-nordwald.png" });
+  /* Wie ein Spieler: den Förster antippen → hingehen → Gespräch; durchklicken, Fragen stellen, annehmen */
+  const p0 = await schirm(anna, 6362.5, 6452.5, 1.0);
+  await anna.mouse.click(p0.x, p0.y, { button: "right" }); await anna.waitForTimeout(500);
+  const knopf = await anna.$$eval(".ez-aktionen button", (bs) => bs.map((b) => b.textContent.trim()));
+  check(knopf.some((t) => /Sprechen/.test(t)), "Rechtsklick auf den Förster: Menü (" + knopf.join(" · ") + ")");
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-menue.png" });
+  await anna.click('.ez-aktionen button:has-text("Sprechen")', { force: true }); await anna.waitForTimeout(300);
+  const offen = await anna.waitForFunction(() => { const g = document.getElementById("ez-gespraech"); return g && !g.hidden && g.textContent.length > 10; }, null, { timeout: 15000 }).then(() => true, () => false);
+  if (!offen) { const dbg = await anna.evaluate(() => ({ ort: window.EZW.welt3d.ort, sys: [...document.querySelectorAll(".zeile, .ez-chat p, li")].slice(-6).map((e) => e.textContent).join(" | ") })); console.log("DEBUG", JSON.stringify(dbg), JSON.stringify(p0)); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-debug.png" }); throw new Error("kein Gespräch"); }
+  const erste = await anna.evaluate(() => document.querySelector("#ez-gespraech .text").textContent); check(/Hörst du das/.test(erste), "Antippen: Anna geht hin, Hartwig spricht: " + erste);
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-dialog.png" });
+  const bisWahl = async (id) => { for (let i = 0; i < 20; i++) { if (await anna.$(`#ez-gespraech [data-a="${id}"]`)) return true; await anna.click("#ez-gespraech .kasten", { position: { x: 30, y: 20 } }).catch(() => {}); await anna.waitForTimeout(250); } return false; };
+  const gelesen = []; const lies = async () => { const t = await anna.evaluate(() => { const e = document.querySelector("#ez-gespraech .text"); return e ? e.textContent : ""; }); if (t && gelesen[gelesen.length - 1] !== t) gelesen.push(t); };
+  check(await bisWahl("splitter"), "Auswahl erscheint (Wald, Splitter, Wer, Annehmen, Später)");
+  await anna.click('#ez-gespraech [data-a="splitter"]'); for (let i = 0; i < 8; i++) { await anna.waitForTimeout(300); await lies(); if (await anna.$('#ez-gespraech [data-a="annehmen"]')) break; await anna.click("#ez-gespraech .kasten", { position: { x: 30, y: 20 } }).catch(() => {}); }
+  check(gelesen.some((t) => /nicht besser/i.test(t)), "Splitter-Gespräch im Fenster: „Aber nicht besser.“");
+  if (process.env.BILD) { await anna.click('#ez-gespraech [data-a="wald"]').catch(() => {}); await anna.waitForTimeout(600); await anna.screenshot({ path: process.env.BILD + "quest03-wald.png" }); }
+  check(await bisWahl("annehmen"), "Zurück bei der Auswahl"); await anna.click('#ez-gespraech [data-a="annehmen"]');
+  await anna.waitForFunction(() => window.EZW && JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack?.some((x) => (typeof x === "string" ? x : x.g) === "hammer"), null, { timeout: 8000 }).catch(() => {});
+  for (let i = 0; i < 12; i++) { const g = await anna.evaluate(() => { const e = document.getElementById("ez-gespraech"); return e && !e.hidden; }); if (!g) break; await lies(); await anna.click("#ez-gespraech .kasten", { position: { x: 30, y: 20 } }).catch(() => {}); await anna.waitForTimeout(300); }
+  const inv = await anna.evaluate(() => (JSON.parse(localStorage.getItem("ez_inventar") || "{}").rucksack || []).map((x) => (typeof x === "string" ? x : x.g)));
+  check(["holzbeil_training", "spitzhacke_training", "hammer"].every((g) => inv.includes(g)), "Angenommen: Beil, Spitzhacke und Hammer im Rucksack (" + inv.join(", ") + ")");
+  check(gelesen.some((t) => /bekommst/.test(t)), "Im Gespräch steht, was man bekommt");
+  const chat = await anna.evaluate(() => document.body.innerText); check(/Neue Quest: „Der Säbel des Waldgottes“/.test(chat), "Chat: „Neue Quest: Der Säbel des Waldgottes“");
+  await anna.waitForTimeout(800); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest03-angenommen.png" });
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

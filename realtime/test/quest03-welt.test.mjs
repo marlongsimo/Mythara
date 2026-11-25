@@ -29,7 +29,7 @@ let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8787/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, q3: null, inv: null, chat: [], holz: [], berg: [], handwerk: [], warte: [] };
   ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "quests") s.q3 = m.q3; if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
-    if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "handwerk") s.handwerk.push(m);
+    if (m.t === "boden") s.boden = m.liste; if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "handwerk") s.handwerk.push(m);
     for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
   ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(s); }); }); }
 const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
@@ -53,11 +53,14 @@ try {
   await stelle(anna, FOERSTER[0] + 1, FOERSTER[1]); let d = await rede(anna);
   check(d && d.dialog && d.dialog.name === "Förster Hartwig" && d.dialog.antworten.some((a) => a.id === "annehmen"), "Förster Hartwig bietet den Auftrag an");
   d = await sag(anna, "splitter"); check(d && d.zeilen && d.zeilen.some((z) => /stärker/.test(z.text)) && d.dialog, "Splitter-Gespräch: verändert und stärker, nicht besser");
-  d = await sag(anna, "wald"); check(d && d.zeilen && d.zeilen.some((z) => /Waldgolem/.test(z.text)), "Wald-Gespräch: Waldgolems und Mooshocker");
+  d = await sag(anna, "wald"); check(d && d.zeilen && d.zeilen.some((z) => /Waldgolem/.test(z.text)) && d.zeilen.some((z) => /Mooshocker/.test(z.text)), "Wald-Gespräch: Waldgolems und Mooshocker");
+  d = await sag(anna, "wer"); check(d && d.zeilen && /Hartwig/.test(d.zeilen[0].text) && d.dialog, "Wer bist du? – Hartwig, Förster");
   d = await sag(anna, "annehmen"); await warte(anna, (m) => m.t === "quests" && m.q3 === "auftrag_0", 1500); await schlaf(300);
   check(anna.q3 === "auftrag_0" && HELD[A].quests[Q].s === "auftrag_0", "Auftrag angenommen (gespeichert)");
   check(anzahl(anna, "holzbeil_training") === 1 && anzahl(anna, "spitzhacke_training") === 1 && anzahl(anna, "hammer") === 1 && d.zeilen.some((z) => /bekommst/.test(z.text)), "Fehlendes Werkzeug bekommen: Beil, Spitzhacke, Hammer");
-  await rede(anna); d = await sag(anna, "werkzeug"); check(d && d.zeilen.some((z) => /alles/.test(z.text)) && anzahl(anna, "hammer") === 1, "Noch einmal nach Werkzeug fragen: nichts doppelt");
+  d = await rede(anna); check(d && d.dialog && /nordwestlich/.test(d.dialog.zeilen[0].text) && d.dialog.antworten.some((a) => a.id === "hilfe"), "Im Auftrag: Hartwig sagt, wohin (nordwestlich), „Wie war das noch mal?“");
+  d = await sag(anna, "hilfe"); check(d && d.zeilen && d.zeilen.some((z) => /Holzfällerei/.test(z.text)) && d.zeilen.some((z) => /Bergbau/.test(z.text)) && d.zeilen.some((z) => /Handwerk/.test(z.text)), "Hilfe: alle Schritte mit ihren Berufen");
+  d = await sag(anna, "werkzeug"); check(d && d.zeilen.some((z) => /alles/.test(z.text)) && anzahl(anna, "hammer") === 1, "Noch einmal nach Werkzeug fragen: nichts doppelt");
   sende(anna, { t: "dialogzu" });
   /* Baum fällen */
   await stelle(anna, BAUM[0] + 1.2, BAUM[1]); const h0 = (anna.inv.berufe || {}).holzfaellerei || 0; const sh = await start(anna, "holz", { id: "waldgott_1" }); check(sh.tat === "start", `Baum des Waldgottes: es geht los (${sh.text || sh.tat})`);
@@ -88,6 +91,14 @@ try {
   check(anna.q3 === "fertig" && HELD[A].quests[Q].s === "fertig" && ABSCHLUSS.length === 1 && anzahl(anna, "waldsaebel") === 1, "Abgeschlossen: Stand fertig, Säbel bleibt im Rucksack");
   d = await rede(anna); check(d && d.dialog && /Golem/.test(d.dialog.zeilen[0].text) && !d.dialog.antworten.some((a) => a.id === "zeigen"), "Danach: Abschlussgespräch, kein zweites Zeigen");
   const x = HELD[A].inventar.berufe || {}; check(x.holzfaellerei === 30 && x.bergbau === 25 && x.handwerk === 65, `XP gespeichert: Holz 30, Bergbau 25, Handwerk 65 (${JSON.stringify(x)})`);
+  /* nicht tauschbar: weggeworfen sieht ihn nur Anna; verloren → Hartwig gibt ihn zurück */
+  ben.ws.close(); ben = await spieler(TB, "nordwald"); await warte(ben, (m) => m.t === "inventar"); await stelle(ben, FOERSTER[0] + 2, FOERSTER[1]);
+  const fach = anna.inv.rucksack.findIndex((x) => (typeof x === "string" ? x : x.g) === "waldsaebel"); sende(anna, { t: "inv", tat: "fallen", i: fach }); await schlaf(1500);
+  check(anzahl(anna, "waldsaebel") === 0 && anna.boden.some((b) => b.g === "waldsaebel") && !ben.boden.some((b) => b.g === "waldsaebel"), `Weggeworfen: Anna sieht ihn am Boden, Ben nicht (Anna ${anna.boden.length}, Ben ${ben.boden.length})`);
+  d = await rede(anna); check(d && d.dialog && d.dialog.antworten.some((a) => a.id === "verloren"), "Ohne Säbel: „Ich habe den Waldsäbel verloren.“");
+  d = await sag(anna, "verloren"); await schlaf(400); check(anzahl(anna, "waldsaebel") === 1 && d && d.ende, "Hartwig gibt den Säbel zurück");
+  d = await rede(anna); check(d && d.dialog && !d.dialog.antworten.some((a) => a.id === "verloren"), "Mit Säbel: keine zweite Rückgabe");
+  sende(anna, { t: "dialogzu" });
   anna.ws.close(); ben.ws.close();
 } catch (e) { check(false, "Ausnahme: " + e.stack); }
 srv.kill(); sb.close(); if (f) console.log(log.slice(-3000)); console.log(f ? `\n${f} Prüfungen fehlgeschlagen` : "\nAlle Prüfungen bestanden"); process.exit(f ? 1 : 0);

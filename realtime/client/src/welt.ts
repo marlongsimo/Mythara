@@ -8,7 +8,8 @@ import { abmelden, kuerzlichAktiv } from "./abmeldung";
 import { Q1 } from "../../shared/quest01";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
-import { skillsLesen, skillsSchreiben, xpDrops } from "./skills";
+import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
+import { lage3, SCHRITTE3 } from "../../shared/quest03";
 import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
@@ -49,7 +50,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "quests") { const alt = questBekannt ? [questJetzt as string, quest2Jetzt, quest3Jetzt] : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; if (alt) questFortschritt(alt, [questJetzt, quest2Jetzt, quest3Jetzt]); window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
     else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
@@ -88,6 +89,12 @@ export const questGeladen = (): boolean => questBekannt;
 /** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
 export const questStand2 = (): string => quest2Jetzt;
 export const questStand3 = (): string => quest3Jetzt;
+/** Fortschritt melden: erledigte Schritte (Quest 03) im Chat, Abschluss jeder Quest als Banner oben */
+const QTITEL = ["Die gesperrte Straße", "Der stille Rain", "Der Säbel des Waldgottes"];
+function questFortschritt(alt: string[], neu: string[]): void {
+  const a3 = lage3(alt[2]), n3 = lage3(neu[2]); if (n3.phase === "auftrag" && a3.phase === "auftrag") for (const x of SCHRITTE3) if (n3.bits & x.bit && !(a3.bits & x.bit)) chatSystem(`Quest „${QTITEL[2]}“: ${x.text} – erledigt.`);
+  if (n3.phase === "auftrag" && a3.phase === "") chatSystem(`Neue Quest: „${QTITEL[2]}“ (Quest-Tab).`);
+  neu.forEach((s, i) => { if (s === "fertig" && alt[i] !== "fertig") stufenBanner(`Quest abgeschlossen: ${QTITEL[i]}`, "📜"); }); }
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
 export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }
@@ -95,13 +102,16 @@ export function questVerfolgt(id: string = Q1): boolean { return verfolgteQuest(
 export function questVerfolgen(an: boolean, id: string = Q1): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
 /** Quest 02: Bruchstelle oder Rutenbündel benutzen (der Server prüft Stand und Abstand); Mooshocker untersucht */
 /** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
-export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
-export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
-export function pflanzeBitten(tat: "start" | "stop", id?: string): void { senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
-export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
-export function questDing(id: string, wo?: { x: number; y: number }): void { senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
-export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
-export function rede(npc: string): void { senden({ t: "rede", npc }); }
+export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
+export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
+export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
+export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { if (tat === "start") stelleMelden(); senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
+export function questDing(id: string, wo?: { x: number; y: number }): void { stelleMelden(); senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
+export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { stelleMelden(); senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
+/** Gespräch beginnen – vorher die genaue Stelle melden (sonst kennt der Server nach schnellem Hinlaufen nur eine ältere und sagt „Geh näher heran“) */
+export function rede(npc: string): void { stelleMelden(); senden({ t: "rede", npc }); }
+/** Die genaue eigene Stelle sofort melden – vor allem, wobei der Server den Abstand prüft (Reden, Fällen, Abbauen, Werken, Questdinge) */
+function stelleMelden(): void { if (posZuletzt) { senden(posZuletzt); gesendet = { ...gesendet, t: performance.now() }; } }
 export function antworte(npc: string, a: string): void { senden({ t: "antwort", npc, a }); }
 export function dialogZu(): void { senden({ t: "dialogzu" }); }
 /** Questbelohnung: die Skill-XP auf dem Gerät nachtragen (der Server hat sie schon gutgeschrieben) und als Drops zeigen */
@@ -116,7 +126,9 @@ export const bodenListe = (): BodenDing[] => bodenJetzt;
 /** Aufheben bitten (der Server prüft Sichtbarkeit, Abstand und Platz im Rucksack) */
 export function aufheben(id: number | number[], wo?: { x: number; y: number }): void { senden({ ...(Array.isArray(id) ? { t: "aufheben", ids: id } : { t: "aufheben", id }), ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 /** Eigene Position melden (gedrosselt: bei Bewegung höchstens 6-mal je Sekunde, sonst alle 2 Sekunden) */
+let posZuletzt: Record<string, unknown> | null = null; /* die jüngste Stelle, auch wenn sie (gedrosselt) noch nicht gesendet wurde */
 export function weltPos(x: number, y: number, blick: number, laeuft: boolean, wx?: number, wy?: number): void { const j = performance.now(), g = gesendet, l = laeuft ? 1 : 0; /* wx, wy: Weltfelder – der Server merkt sich die Stelle fürs nächste Anmelden */
+  posZuletzt = { t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) };
   if ((Math.hypot(x - g.x, y - g.y) > 2 || l !== g.l) && j - g.t > 160 || j - g.t > 2000) { gesendet = { x, y, t: j, l }; senden({ t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) }); } }
 export function weltLeben(lp: number, max: number): void { senden({ t: "leben", lp, max }); }
 /** Helden wechseln – nur in der Waldmark (der Server prüft das) */

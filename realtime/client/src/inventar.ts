@@ -31,6 +31,8 @@ export function trinken(i: number): boolean { return bitten({ t: "inv", tat: "tr
 /** Kaufen am Marktplatz (der Server prüft Preis, Nähe und Platz) */
 export function kaufenBitten(laden: string, g: string): boolean { return bitten({ t: "kaufen", laden, g }); }
 /** Fallen lassen: aus dem Rucksack auf den Boden (nur mit Server-Inventar) */
+/** Rucksack: Fach i auf Fach j ziehen (tauschen; auf ein leeres Fach: ans Ende) */
+export function tauschenBitten(i: number, j: number): boolean { return bitten({ t: "inv", tat: "tauschen", i, j }); }
 export function fallenLassen(i: number): boolean { return bitten({ t: "inv", tat: "fallen", i }); }
 /** Bank (shared/bank.ts): einzahlen/abheben (menge 0 = alle) oder alles einzahlen – der Server prüft Nähe, Platz und Mengen */
 export function bankBitten(m: { tat: "ein" | "ab"; g: string; menge: number; tab?: number } | { tat: "alles"; was: "rucksack" | "ausruestung" } | { tat: "tab"; g: string; tab: number }): boolean { return bitten({ t: "bank", ...m }); }

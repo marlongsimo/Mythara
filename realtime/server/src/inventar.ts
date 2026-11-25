@@ -77,6 +77,10 @@ export function anlegen(sb: Sb, nutzer: string, i: number): string | null { cons
 export function ablegen(sb: Sb, nutzer: string, platz: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const g = e.inv.angelegt[platz as Platz]; if (!g) return "Dort ist nichts angelegt.";
   if (e.inv.rucksack.length >= RUCKSACK_PLAETZE) return "Der Rucksack ist voll."; delete e.inv.angelegt[platz as Platz]; e.inv.rucksack.push(g); geaendert(sb, nutzer, e); return null; }
 /** Ein ganzes Fach aus dem Rucksack nehmen (zum Fallenlassen; ein Stapel als Ganzes). Zurück: Gegenstand und Anzahl oder null */
+/** Rucksack umsortieren (ziehen): Fach i mit Fach j tauschen; j hinter dem letzten belegten Fach = ans Ende legen. Zurück: Fehlertext oder null */
+export function tauschen(sb: Sb, nutzer: string, i: number, j: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const R = e.inv.rucksack;
+  if (!Number.isInteger(i) || !Number.isInteger(j) || i < 0 || j < 0 || i >= R.length || j >= RUCKSACK_PLAETZE) return "Dieses Fach gibt es nicht."; if (i === j) return null;
+  if (j >= R.length) { const [f] = R.splice(i, 1); R.push(f); } else [R[i], R[j]] = [R[j], R[i]]; geaendert(sb, nutzer, e); return null; }
 export function herausnehmen(sb: Sb, nutzer: string, i: number): { g: string; n: number } | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null;
   e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return { g: fachG(f), n: fachN(f) }; }
 /** In den Rucksack legen, so viele wie Platz ist – Stapelbares auf vorhandene Stapel, sonst je Gegenstand ein Fach. Zurück: wie viele genommen wurden */
@@ -122,6 +126,8 @@ export function berufXp(nutzer: string, beruf: string): number { const e = je.ge
 export function berufXpDazu(sb: Sb, nutzer: string, beruf: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return berufXp(nutzer, beruf);
   const b = e.inv.berufe || (e.inv.berufe = {}); b[beruf] = Math.min(200_000_000, Math.round((b[beruf] || 0) + n)); geaendert(sb, nutzer, e); return b[beruf]; }
 /** Gegenstände, die der Held trägt (Rucksack und angelegt) – für Werkzeuge */
+/** Hat man es irgendwo – Rucksack, angelegt oder in der Bank (Questgegenstände zurückgeben, wenn verloren) */
+export function besitztIrgendwo(nutzer: string, g: string): boolean { const e = je.get(nutzer); return Boolean(e && (besitzt(nutzer).includes(g) || (e.inv.bank || []).some(([b]) => b === g))); }
 export function besitzt(nutzer: string): string[] { const e = je.get(nutzer); if (!e) return []; return [...e.inv.rucksack.map(fachG), ...Object.values(e.inv.angelegt).filter((g): g is string => Boolean(g))]; }
 /** Freie Rucksackfächer */
 export function freieFaecher(nutzer: string): number { const e = je.get(nutzer); return e ? RUCKSACK_PLAETZE - e.inv.rucksack.length : 0; }
@@ -168,8 +174,8 @@ const boden = new Map<number, BodenDing>(); let nr = 1;
 export const LOOT = { privat: 30_000, offen: 5 * 60_000 }, FALLEN = { privat: 60_000, offen: 10 * 60_000 }, AUFHEBEN_WEIT = 0; /* Feldabstand: man muss auf dem Feld des Gegenstands stehen */
 /** Etwas auf den Boden legen. besitzer "": sofort für alle sichtbar */
 export function bodenDazu(ort: string, x: number, y: number, g: string, n: number, besitzer: string, zeiten: { privat: number; offen: number }, jetzt = Date.now()): BodenDing | null {
-  if (!GEGENSTAENDE[g] || n < 1 || !Number.isFinite(x) || !Number.isFinite(y)) return null; const offenAb = besitzer ? jetzt + zeiten.privat : jetzt;
-  const d: BodenDing = { id: nr++, g, n: Math.floor(n), ort, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, besitzer, offenAb, bis: offenAb + zeiten.offen }; boden.set(d.id, d); return d; }
+  if (!GEGENSTAENDE[g] || n < 1 || !Number.isFinite(x) || !Number.isFinite(y)) return null; const nurSelbst = Boolean(besitzer && GEGENSTAENDE[g].untauschbar) /* nicht tauschbar (Quest): sieht nie jemand anderes, liegt aber genauso lange */, offenAb = nurSelbst ? Number.MAX_SAFE_INTEGER : besitzer ? jetzt + zeiten.privat : jetzt;
+  const d: BodenDing = { id: nr++, g, n: Math.floor(n), ort, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, besitzer, offenAb, bis: nurSelbst ? jetzt + zeiten.privat + zeiten.offen : offenAb + zeiten.offen }; boden.set(d.id, d); return d; }
 const sichtbar = (d: BodenDing, nutzer: string, jetzt: number) => jetzt < d.bis && (jetzt >= d.offenAb || (nutzer !== "" && d.besitzer === nutzer));
 /** Was dieser Spieler in seiner Region am Boden sieht */
 export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now()): { i: number; g: string; n: number; x: number; y: number }[] {

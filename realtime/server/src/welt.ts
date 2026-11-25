@@ -16,7 +16,7 @@ import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, q3, dingTat, mooshockerSehen } from "./quests";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
-import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
@@ -75,7 +75,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; rezept?: string; tab?: unknown; laden?: string; g?: string; anName?: string; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -120,6 +120,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
           fehler = anforderungFehlt(G, (k) => levelAus(xp[k] || 0, k)); }
         if (!fehler) fehler = anlegen(H.sb, s.nutzer, e.i as number); }
       else if (e.tat === "ablegen" && typeof e.platz === "string") fehler = ablegen(H.sb, s.nutzer, e.platz);
+      else if (e.tat === "tauschen") fehler = tauschen(H.sb, s.nutzer, Number(e.i), Number(e.j));
       else if (e.tat === "fallen" && Number.isInteger(e.i)) { if (s.wx === undefined || s.wy === undefined) fehler = "Erst ein paar Schritte gehen.";
         else { const f = herausnehmen(H.sb, s.nutzer, e.i as number); if (!f) fehler = "Diesen Gegenstand gibt es im Rucksack nicht."; else bodenDazu(s.ort, s.wx, s.wy, f.g, f.n, s.nutzer, FALLEN); } }
       else if (e.tat === "trinken" && Number.isInteger(e.i)) { /* Trank: erst prüfen (volles Leben?), dann aus dem Rucksack nehmen und heilen */

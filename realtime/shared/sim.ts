@@ -13,6 +13,8 @@ import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDE
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
 
+/** Max Hit × (1 + Bonus); der Bruchteil wird zur Chance auf +1 (sonst verpufft der Bonus bei kleinen Max Hits: 3 × 1,15 → 3) */
+const mehrMax = (max: number, bonus: number, z: number): number => { const roh = max * (1 + bonus), g = Math.floor(roh); return g + (z < roh - g ? 1 : 0); };
 export type Taste = "q" | "e" | "r";
 export type Eingabe =
   | { t: "richtung"; x: number; y: number }  // direkt steuern: Laufrichtung in der Welt (Länge 0 bis 1), 0/0 = stehen bleiben
@@ -241,7 +243,7 @@ export class Sim {
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
     const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; const V3 = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined;
     const fam = !z.held && MONSTER[z.typ] ? (MONSTER[z.typ] as { familie?: string }).familie : undefined, gegen = von.kw && von.kw.waffe.gegen && fam ? von.kw.waffe.gegen[fam] || 0 : 0; /* Waldsäbel: mehr Max Hit gegen Wesen des Waldes */
-    let m = von.kw ? schadenWurf(gegen ? { ...von.kw.waffe, schaden: [von.kw.waffe.schaden[0], Math.floor(von.kw.waffe.schaden[1] * (1 + gegen))] } : von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
+    let m = von.kw ? schadenWurf(gegen ? { ...von.kw.waffe, schaden: [von.kw.waffe.schaden[0], mehrMax(von.kw.waffe.schaden[1], gegen, this.zf())] } : von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
     // 4 Boni
     if (s.mal && z.malT > 0) m *= 1 + s.mal;
     if (s.wucht && !z.held && MONSTER[z.typ].anfaellig === "wucht") m *= 1 + K.WUCHT;

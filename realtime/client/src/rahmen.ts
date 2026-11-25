@@ -25,7 +25,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
   if (G.bild) { await bildMalen(c, G.bild); return; }
   const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
   await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
-import { inventar, ablegen, anlegen, fallenLassen, inventarAmServer, trinken } from "./inventar";
+import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
 import { skillFuehrer } from "./skillfuehrer";
@@ -195,7 +195,7 @@ function questListe(): QuestZeile[] {
     jetzt: questlog2(s2), belohnung: `Belohnung: ${BELOHNUNG2.splitter} Splitter – danach bleiben die Mooshocker als Trainingsgegner am Moosrain` };
   const s3 = questStand3(), l3 = lage3(s3), fertig3 = l3.phase === "fertig";
   const q3: QuestZeile = { id: Q3, titel: "Der Säbel des Waldgottes", ort: "Einführung in die Berufe · Nordwald", art: fertig3 ? "fertig" : questVerfolgt(Q3) ? "verfolgt" : laeuft3(s3) ? "aktiv" : "neu", voraussetzungen: [],
-    start: "Sprich mit Förster Hartwig am Rand des Nordwalds, gleich nördlich der Waldmark.", erledigt: l3.phase === "" ? [] : SCHRITTE3.filter((x) => (l3.bits & x.bit) !== 0).map((x) => x.text),
+    start: "Sprich mit Förster Hartwig am Waldweg, gleich westlich der Waldmark, wo der Nordwald beginnt.", erledigt: l3.phase === "" ? [] : SCHRITTE3.filter((x) => (l3.bits & x.bit) !== 0).map((x) => x.text),
     jetzt: questlog3(s3), belohnung: "Belohnung: der Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk" };
   return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }, q2, q3]; }
 /** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
@@ -336,16 +336,37 @@ export function seitenTab(art: TabArt): boolean {
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   { /* mit dem Finger ziehen = scrollen (die Seite sperrt Wischgesten für die Kamera, deshalb hier selbst); wer gezogen hat, tippt danach nichts an */
     let zug: { id: number; y: number; top: number; weit: number } | null = null, gezogen = false;
-    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
+    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" || (art === "rucksack" && (e.target as HTMLElement).closest(".ifeld.voll")) /* auf einem Gegenstand: ziehen = umsortieren, nicht scrollen */ ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
     el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
+  if (art === "rucksack") rucksackZiehen(el);
   langDruecken(el, (e) => { const qz = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-quest]"); if (qz) { questMenue(qz.dataset.quest!, e.clientX, e.clientY); return true; }
     const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
   el.addEventListener("click", tabKlick); addEventListener("ez-benutzen", () => tabZeichnen()); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
   if (art === "freunde") { freundeBeobachten(true); el.addEventListener("submit", (e) => { e.preventDefault(); freundFormular(e.target as HTMLFormElement); }); document.querySelector('[aria-label="Freunde"]')?.classList.add("an"); }
   return true; }
+/** Rucksack umsortieren wie in OSRS: einen Gegenstand mit Finger oder Maus auf ein anderes Fach ziehen – die beiden tauschen (auf ein leeres Fach: ans Ende).
+    Erst ab 10 px Bewegung (sonst bleibt es Antippen bzw. langes Drücken = Menü); der Server tauscht und schickt das Inventar zurück. */
+function rucksackZiehen(el: HTMLElement): void {
+  let z: { id: number; von: number; x: number; y: number; geist: HTMLElement | null; ueber: HTMLElement | null } | null = null, gezogen = false;
+  const fachBei = (x: number, y: number): HTMLElement | null => (document.elementFromPoint(x, y) as HTMLElement | null)?.closest<HTMLElement>('.ifeld[data-wo^="r"]') || null;
+  el.addEventListener("pointerdown", (e) => { gezogen = false; if (e.button !== 0) return; const f = (e.target as HTMLElement).closest<HTMLElement>('.ifeld.voll[data-wo^="r"]'); if (!f) return;
+    z = { id: e.pointerId, von: Number(f.dataset.wo!.slice(1)), x: e.clientX, y: e.clientY, geist: null, ueber: null }; });
+  el.addEventListener("pointermove", (e) => { if (!z || e.pointerId !== z.id) return;
+    if (!z.geist) { if (Math.hypot(e.clientX - z.x, e.clientY - z.y) < 10) return; const f = el.querySelector<HTMLElement>(`.ifeld[data-wo="r${z.von}"]`); if (!f) { z = null; return; }
+      const r = f.getBoundingClientRect(), g = f.cloneNode(true) as HTMLElement; const c0 = f.querySelector("canvas"), c1 = g.querySelector("canvas"); if (c0 && c1) (c1 as HTMLCanvasElement).getContext("2d")?.drawImage(c0, 0, 0);
+      g.className = "ifeld voll ez-ziehgeist"; g.style.cssText = `position:fixed;left:0;top:0;width:${r.width}px;height:${r.height}px;pointer-events:none;z-index:90;opacity:.85;transform:translate(${e.clientX - r.width / 2}px,${e.clientY - r.height / 2}px) scale(1.1)`;
+      document.body.appendChild(g); z.geist = g; f.classList.add("zieht"); try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } }
+    e.preventDefault(); const g = z.geist; g.style.transform = `translate(${e.clientX - g.offsetWidth / 2}px,${e.clientY - g.offsetHeight / 2}px) scale(1.1)`;
+    const u = fachBei(e.clientX, e.clientY); if (u !== z.ueber) { z.ueber?.classList.remove("ziel"); z.ueber = u; u?.classList.add("ziel"); } });
+  const ende = (e: PointerEvent, ok: boolean) => { if (!z || e.pointerId !== z.id) return; const q = z; z = null; if (!q.geist) return;
+    q.geist.remove(); q.ueber?.classList.remove("ziel"); el.querySelector(".zieht")?.classList.remove("zieht"); gezogen = true;
+    const u = ok ? fachBei(e.clientX, e.clientY) : null; if (u) { const nach = Number(u.dataset.wo!.slice(1)); if (nach !== q.von) tauschenBitten(q.von, nach); } };
+  el.addEventListener("pointerup", (e) => ende(e, true)); el.addEventListener("pointercancel", (e) => ende(e, false));
+  el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  el.style.touchAction = "none"; }
 const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests", freunde: "Freunde" };
 function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
   removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) removeEventListener(t, tabZeichnen); freundeBeobachten(false); document.querySelector('[aria-label="Freunde"]')?.classList.remove("an"); }

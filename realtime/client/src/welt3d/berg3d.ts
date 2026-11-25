@@ -15,7 +15,7 @@ export class BergWelt extends SammelWelt {
   constructor(u: { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }) {
     super(u, {
       beruf: BERUF_BERG, berufName: "Bergbau", ereignis: "ez-berg", liste: "ez-adern", ziele: ERZADERN, bitten: (tat, id) => bergBitten(tat as "start" | "riss" | "stop", id),
-      def: (a) => { const D = ADERN[a as ErzArt]; return { name: D.name, level: D.level, xp: D.xp, ertrag: D.ertrag, modell: D.modell, leer: D.leer, mass: D.groesse, weiblich: D.name !== "Splitterfelsen" && D.name !== "Urgestein" }; },
+      def: (a) => { const D = ADERN[a as ErzArt]; return { name: D.name, level: D.level, xp: D.xp, ertrag: D.ertrag, modell: D.modell, leer: D.leer, mass: D.groesse, farbe: D.farbe, weiblich: D.name !== "Splitterfelsen" && D.name !== "Urgestein" }; },
       tatErtrag: "erz", tatMoment: "riss", grundLeer: "leer",
       werkzeugUrl: (g) => `img/objekte3d/skilling/utensilien/spitzhacke${HACKEN_MODELL[g] ? "." + HACKEN_MODELL[g] : ""}.glb`, werkzeugStandard: "spitzhacke_training", clip: "hieb2h",
       massArt: "laenge", durchsicht: false, spanFarbe: 0x8f8a82,
