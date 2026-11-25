@@ -4,7 +4,7 @@
  * Für diese Teile gibt es keine 2D-Ebenen mehr – ohne das stand dort nur das Grundhemd.
  */
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gltfLader } from "./gltf";
 
 const GROESSE = 240, bilder = new Map<string, Promise<string>>();
 export const TEIL_3D = /^(ruestung|kopf\.helm|waffe|schild)\./;
@@ -12,7 +12,7 @@ let zeichner: THREE.WebGLRenderer | null = null;
 /** Bild eines Teils als Daten-URL; "" wenn es nicht geht */
 export function teilBildUrl(g: string, id: string): Promise<string> {
   const k = g + "/" + id; let p = bilder.get(k); if (p) return p;
-  p = new GLTFLoader().loadAsync(`../img/figuren-echt3d/base${g}3d.teile/${id}.glb`).then((gl) => {
+  p = gltfLader().loadAsync(`../img/figuren-echt3d/base${g}3d.teile/${id}.glb`).then((gl) => {
     if (!zeichner) { zeichner = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true }); zeichner.setSize(GROESSE, GROESSE, false); zeichner.setClearColor(0x000000, 0); zeichner.outputColorSpace = THREE.SRGBColorSpace; }
     const szene = new THREE.Scene(), teil = gl.scene; szene.add(teil); teil.traverse((o) => { o.frustumCulled = false; }); teil.updateMatrixWorld(true);
     const huelle = () => { szene.updateMatrixWorld(true); const b = new THREE.Box3(); teil.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.geometry.computeBoundingBox(); b.union(m.geometry.boundingBox!.clone().applyMatrix4(m.matrixWorld)); } }); return b; };

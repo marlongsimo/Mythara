@@ -71,6 +71,8 @@ export const freundeAbfragen = (): void => senden({ t: "freunde" });
 export const zuFreund = (n: string): void => senden({ t: "zufreund", n });
 export const freundMelden = (n: string, angenommen = false): void => senden({ t: "freundanfrage", n, angenommen });
 export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
+/** Angemeldet mit Konto? null = der Server hat sich noch nicht gemeldet */
+export const mitKonto = (): boolean | null => (ich ? !ich.gast : null);
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
 let questJetzt: Stand = "", quest2Jetzt = "", questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */

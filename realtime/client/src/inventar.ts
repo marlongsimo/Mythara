@@ -16,6 +16,8 @@ function schreib(i: Inventar) { try { localStorage.setItem(SCHLUESSEL, JSON.stri
 
 /* ───────── Inventar vom Server ───────── */
 let vomServer: Inventar | null = null, sender: ((m: object) => void) | null = null;
+/** Hat der Server das Inventar schon geschickt? (Ladebildschirm: erst dann weiß man, was der Held angelegt hat) */
+export const inventarVomServerDa = (): boolean => vomServer !== null;
 /** Die Welt-Verbindung meldet sich als Weg zum Server an */
 export function inventarSender(f: ((m: object) => void) | null): void { sender = f; }
 /** Der Server schickt das Inventar (nach dem Anmelden und nach jeder Änderung) */

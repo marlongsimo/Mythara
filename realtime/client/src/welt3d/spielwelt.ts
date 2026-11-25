@@ -9,7 +9,7 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem, fluestern, ichName, untersuchtMelden } from "../welt";
+import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto } from "../welt";
 import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
 import { freundHinzufuegen } from "../freunde";
@@ -44,7 +44,7 @@ import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 interface Stelle { /** eine Figur zum Reden (kurz antippen: nur hingehen, reden über lange drücken) */ npc?: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
-import { angelegteEbenen } from "../inventar";
+import { angelegteEbenen, inventarVomServerDa } from "../inventar";
 import { serverZusatz } from "../gruppe";
 import { karteDrehen } from "../rahmen";
 /** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */
@@ -53,10 +53,10 @@ import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
 import { WeltKampf3D } from "./kampf3d";
 import { bodenListe, aufheben, BodenDing } from "../welt";
 import { GEGENSTAENDE, SELTENHEITEN } from "../../../shared/gegenstaende";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gltfLader } from "./gltf";
 /** 3D-Modelle für Gegenstände am Boden (einmal laden, dann klonen) */
 const modelle = new Map<string, Promise<THREE.Object3D>>();
-const modellLaden = (pfad: string): Promise<THREE.Object3D> => { let p = modelle.get(pfad); if (!p) { p = new GLTFLoader().loadAsync("../" + pfad).then((g) => g.scene); modelle.set(pfad, p); p.catch(() => modelle.delete(pfad)); } return p; };
+const modellLaden = (pfad: string): Promise<THREE.Object3D> => { let p = modelle.get(pfad); if (!p) { p = gltfLader().loadAsync("../" + pfad).then((g) => g.scene); modelle.set(pfad, p); p.catch(() => modelle.delete(pfad)); } return p; };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 const HANDY = matchMedia("(pointer: coarse)").matches, C = CHUNK_FELDER, RADIUS = 0.3, HOEHE = 2.0;
@@ -111,7 +111,8 @@ export class Spielwelt3D implements WeltKern {
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
-      if ((f.vollstaendig ?? f.geladen) || performance.now() - t0 > 8000) ok(); else setTimeout(pruefen, 50); }; pruefen(); });
+      const konto = mitKonto(), ausruestungBekannt = konto === false || (konto === true && inventarVomServerDa()); /* mit Konto: erst wenn der Server das Inventar geschickt hat, steht fest, was angelegt ist */
+      if (((f.vollstaendig ?? f.geladen) && ausruestungBekannt) || performance.now() - t0 > 8000) ok(); else setTimeout(pruefen, 50); }; pruefen(); });
     fertig();
   }
 

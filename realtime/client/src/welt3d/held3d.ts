@@ -16,7 +16,7 @@ import { TeleportEffekt } from "../echt3d/darsteller";
 const TELEPORT_S = 1.8;
 import * as THREE from "three";
 import { angriffFuer } from "../../../shared/gegenstaende";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gltfLader } from "./gltf";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FigurLeinwand } from "./figurleinwand";
 import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../shared/aussehen";
@@ -24,7 +24,7 @@ import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../sh
 const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.search);
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb (Figuren-Fabrik, wie echt3d/darsteller.ts) – erst beim Anlegen geladen */
 const AUSGELAGERT = /^(ruestung|kopf\.helm|waffe|schild)\./, teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
-const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
+const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = gltfLader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) und Bezugshelligkeit der Haut (img/figuren-fabrik/held.*: bezug.haut) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] }, HAUT_BEZUG: Record<string, number> = { mann: 203, frau: 210.3 };
 const teil = (id: string) => id.replace(/[.[\]:/]/g, ""); /* three.js entfernt diese Zeichen aus Knotennamen */
@@ -36,7 +36,7 @@ export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localSt
 export interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
 export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
-  if (!p) { p = new GLTFLoader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
+  if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g)); }
   return p; }
 
 /** Hautfarbe im Shader: Bildpunkte, die nach Haut aussehen (wie werkzeug/grundfigur.py), bekommen Helligkeit × Zielfarbe / Bezug */
@@ -93,7 +93,7 @@ export class Held3D {
       const knochen = new Map<string, THREE.Bone>(); w.traverse((o) => { if ((o as THREE.Bone).isBone) knochen.set(o.name, o as THREE.Bone); });
       let koerper: THREE.Object3D | null = null; w.traverse((o) => { if (!koerper && (o as THREE.SkinnedMesh).isSkinnedMesh && /^koerper/.test(o.name)) koerper = o; });
       quelle.traverse((o) => { const m = o as THREE.Mesh; /* starre Teile (Waffen, Schilde): Kind eines Knochens – an denselben Knochen dieser Figur hängen (wie echt3d/darsteller.ts) */
-        if (!m.isMesh || (m as THREE.SkinnedMesh).isSkinnedMesh || this.teile.has(n)) return; let pk = m.parent; while (pk && !(pk as THREE.Bone).isBone) pk = pk.parent;
+        if (!m.isMesh || (m as THREE.SkinnedMesh).isSkinnedMesh || this.teile.has(n)) return; let pk = m.parent; while (pk && !knochen.has(pk.name)) pk = pk.parent; /* Knochen über den Namen: komprimierte Teile (ohne Skin) laden ihre Knochen als einfache Knoten */
         const ziel = pk && knochen.get(pk.name); if (!ziel) return; const g = new THREE.Group(); g.name = n; pk!.updateWorldMatrix(true, true);
         const rel = new THREE.Matrix4().copy(pk!.matrixWorld).invert().multiply(m.matrixWorld); rel.decompose(g.position, g.quaternion, g.scale);
         const kopie = new THREE.Mesh(m.geometry, m.material); kopie.frustumCulled = false; kopie.castShadow = true; g.add(kopie); ziel.add(g); g.visible = this.soll.has(n); this.teile.set(n, g); });

@@ -6,7 +6,7 @@
  *   · Leer (gefällt / erschöpft) ist ein Ziel für alle, bis es nachwächst. Die Felder der Ziele sperrt das Gehraster (werkzeug/welt/lichtungen.mjs).
  */
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { chatSystem } from "../welt";
 import { berufDrop } from "../skills";
@@ -30,7 +30,7 @@ interface Bild { z: SammelZiel3D; gruppe: THREE.Group; voll: THREE.Object3D | nu
   u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number } } }
 
 const vorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number; laenge: number }>>();
-function vorlage(url: string) { let p = vorlagen.get(url); if (!p) { p = new GLTFLoader().loadAsync("../" + url).then((g) => { const box = new THREE.Box3().setFromObject(g.scene), s = box.getSize(new THREE.Vector3());
+function vorlage(url: string) { let p = vorlagen.get(url); if (!p) { p = gltfLader().loadAsync("../" + url).then((g) => { const box = new THREE.Box3().setFromObject(g.scene), s = box.getSize(new THREE.Vector3());
   return { szene: g.scene, hoehe: Math.max(0.01, s.y), laenge: Math.max(0.01, s.x, s.y, s.z) }; }); vorlagen.set(url, p); } return p; }
 /** Artikel: die/der (Nominativ), die/den (Akkusativ), eine/ein */
 const artikel = (weiblich: boolean) => (f: "nom" | "akk" | "ein") => (weiblich ? (f === "ein" ? "eine" : "die") : f === "nom" ? "der" : f === "akk" ? "den" : "ein");
