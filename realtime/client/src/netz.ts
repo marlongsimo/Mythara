@@ -13,6 +13,9 @@ export const SPIELSERVER = "wss://mythara-echtzeit.onrender.com";
 /** Den Server vorsorglich wecken (der kostenlose Dienst schläft nach einer Pause): ein einfacher Abruf seiner Startseite. Einmal je Seitenaufruf. */
 let geweckt = false;
 export function wecken(): void { if (geweckt) return; geweckt = true; try { void fetch(SPIELSERVER.replace(/^wss:/, "https:").replace(/^ws:/, "http:") + "/", { mode: "no-cors", cache: "no-store" }).catch(() => { /* egal */ }); } catch { /* egal */ } }
+/** Zonen Stufe 3: Kampf als Kanal über die Welt-Verbindung (welt.ts setzt die Fabrik). null = keine offene Welt-Verbindung – dann wie bisher ein eigener WebSocket. */
+let kanalFabrik: ((url: string) => WebSocket | null) | null = null;
+export function kanalFabrikSetzen(f: (url: string) => WebSocket | null): void { kanalFabrik = f; }
 export interface Netz { art: "server" | "lokal"; sende(e: Eingabe): void; ende(): void; sim?: Sim /* nur ohne Server: für Prüfungen */ }
 
 function lokal(held: string, mit: string[], beiZustand: (z: Zustand) => void): Netz {
@@ -35,7 +38,7 @@ export function verbinde(url: string, held: string, mit: string[], beiZustand: (
     const ersatz0 = ersatz; ersatz = (grund: string) => { clearInterval(anzeige); ersatz0(grund); };
     const versuche = () => {
       if (erledigt) return; if (Date.now() - beginn > FRIST) { ersatz("Server antwortet nicht" + (spur ? " [" + versuch + " Versuche, zuletzt: " + spur + "]" : "")); return; } versuch++;
-      try { ws = new WebSocket(url + (url.includes("?") ? "&" : "?") + "held=" + encodeURIComponent(held) + "&mit=" + encodeURIComponent(mit.join(","))); } catch { ersatz("Serveradresse ungültig"); return; }
+      try { const voll = url + (url.includes("?") ? "&" : "?") + "held=" + encodeURIComponent(held) + "&mit=" + encodeURIComponent(mit.join(",")); ws = (kanalFabrik && kanalFabrik(voll)) || new WebSocket(voll); } catch { ersatz("Serveradresse ungültig"); return; }
       const dieser = ws; let offenGewesen = false, offen = false; const austragen = beimAbmelden(() => dieser.close(1000, "abmelden")); /* Abmelden gibt das Konto frei (sitz.ts) */ dieser.onopen = () => { offen = true; if (erste) dieser.send(JSON.stringify(erste)); };
       dieser.onmessage = (ev) => { let m: { t: string; z?: Zustand }; try { m = JSON.parse(String(ev.data)); } catch { return; }
         if (m.t === "hallo" && !erledigt) { erledigt = true; offenGewesen = true; clearInterval(anzeige); beiArt("server", ""); const puls = setInterval(() => { if (dieser.readyState !== 1) { clearInterval(puls); return; } if (kuerzlichAktiv()) dieser.send('{"t":"da"}'); }, 60000); /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */ fertig({ art: "server", sende: (e) => { if (dieser.readyState === 1) dieser.send(JSON.stringify(e)); }, ende: () => dieser.close() }); }

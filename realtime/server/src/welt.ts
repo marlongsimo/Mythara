@@ -8,6 +8,7 @@
  * Gemerkte Stelle: Spielerkonten melden mit „pos“ auch Weltfelder (wx, wy); beim Gehen (und alle zwei Minuten) speichert der Server sie
  * (rpg_echtzeit_position, Migration 039) und schickt sie beim nächsten Anmelden mit „ich“ (pos) zurück – auch auf einem anderen Gerät.
  */
+import { Kanal, kanalRahmen } from "./kanal";
 import { WebSocket } from "ws";
 import { HELDEN, stufeAusEp } from "../../shared/config";
 import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
@@ -29,7 +30,7 @@ import * as Sitz from "./sitz";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
 export const aussehenJe = new Map<string, Held>();
 
-export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean }
+export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean; /** Zonen Stufe 3: Kampfkanal über diese Verbindung öffnen (kanal.ts) */ kanalAuf?(k: Kanal, q: string): void }
 interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
   chat: number[]; /** Seitenkennung des Geräts (ein Konto spielt nur auf einem Gerät) */ geraet?: string; /** wen er zuletzt in Sichtweite hatte (Ids) */ sichtKey?: string; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
@@ -92,7 +93,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     pflanzenEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); handwerkEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m) }); } /* Holzfällerei (holz.ts): einmal einrichten */
   const ort = url.searchParams.get("ort") || ""; if (!WELTORTE.has(ort)) { ws.close(4400, "ort unbekannt"); return; } if (spieler.size >= MAX_WELT) { ws.close(1013, "voll"); return; }
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
+  const kanal: { k: Kanal | null } = { k: null }; /* Zonen Stufe 3: die Kampfwelt als Kanal dieser Verbindung */
   ws.on("message", async (roh) => {
+    { const t = String(roh); if (kanalRahmen(ws, t, kanal, (k, q) => { if (H.kanalAuf) H.kanalAuf(k, q); else k.close(4400, "kein kanal"); })) { if (s) s.zuletzt = Date.now(); return; } } /* vor dem Überflutungsschutz: Kampfeingaben haben ihren eigenen */
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
     let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
@@ -234,7 +237,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const ep = await H.epLesen(s.nutzer).catch(() => ({} as Record<string, number>)); s.held = h; s.stufe = stufeAusEp(Number(ep[h]) || 0); s.geaendert = true; senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort: s.ort }); }
   });
   const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); handwerkWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
-  ws.on("close", weg); ws.on("error", weg);
+  ws.on("close", (code: number, grund: Buffer) => { if (kanal.k) kanal.k.weg(code === 1000 ? 1006 : code, String(grund || "")); weg(); }); ws.on("error", () => { if (kanal.k) kanal.k.weg(1006, ""); weg(); });
   const lebt = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(lebt); return; } try { ws.ping(); } catch { /* zu */ } }, 25000);
   const merken = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(merken); return; } if (!s || s.gast || s.wx === undefined || s.wy === undefined) return; const k = `${s.ort}:${s.wx}:${s.wy}`; if (k === s.gemerkt) return; s.gemerkt = k; void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); }, 120000); /* falls der Server abstürzt */
 }

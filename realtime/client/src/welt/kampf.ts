@@ -13,7 +13,7 @@ import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
-import { chatSystem, geraetAngaben } from "../welt";
+import { chatSystem, geraetAngaben, aufWeltWarten } from "../welt";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -80,6 +80,7 @@ export class WeltKampf {
   }
   private async verbinden(lx: number, ly: number, gebiet: string) {
     const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : ""; if (this.vorbei) return;
+    if (basis && token) { await aufWeltWarten(6000); if (this.vorbei) return; } /* Zonen Stufe 3: über die Welt-Verbindung, wenn sie gleich offen ist */
     const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}` + (this.vorverbunden ? "&warten=1" : `&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}`) : "";
     const hoer = (ev: Event) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[]; ep?: Record<string, number>; seelen?: number };
       if (m.t === "namen" && m.liste) { this.namen.clear(); for (const n of m.liste) this.namen.set(n.id, n);

@@ -226,13 +226,15 @@ const wss = new WebSocketServer({ server: http, maxPayload: 65536, verifyClient:
 process.on("uncaughtException", (e) => console.error("Unerwarteter Fehler:", e && (e as Error).stack || e));
 process.on("unhandledRejection", (e) => console.error("Unerwarteter Fehler (Zusage):", e && (e as Error).stack || e));
 
-wss.on("connection", (ws, req) => {
+/** Eine Kampfverbindung (eigener WebSocket oder – Zonen Stufe 3 – ein Kanal über die Welt-Verbindung, kanal.ts) */
+function kampfVerbindung(ws: WebSocket, req: { url?: string }): void {
   if (plaetze.size >= MAX) { ws.close(1013, "voll"); return; }
   const url = new URL(req.url || "/", "http://x"), held0 = url.searchParams.get("held") || "schildwaechter", held = HELDEN[held0] ? held0 : "schildwaechter", mit = (url.searchParams.get("mit") || "").split(",").filter((x) => HELDEN[x] && x !== held).slice(0, 2);
   const karte = url.searchParams.get("kampf") || "", ort = url.searchParams.get("ort") || "", raum = (url.searchParams.get("raum") || "").toUpperCase(), mitglied = url.searchParams.get("mitglied") === "1";
   if (url.searchParams.get("warte") === "1") { warten(ws, raum, url.searchParams.get("fuehrer") === "1"); return; } /* Wartebereich einer Koop-Gruppe */
   if (url.searchParams.get("welt") === "1") { if (!SB_URL || !SB_KEY) { ws.close(4400, "welt nicht eingerichtet"); return; } /* gemeinsame Welt: wer ist wo (welt.ts) */
-    weltVerbindung(ws, url, { nutzerAus, sb, epLesen, gruppeHat: (c, n) => { const R = raeume.get(c); return Boolean(R && [...R.warten].some((w) => w.nutzer === n)); } }); return; }
+    weltVerbindung(ws, url, { nutzerAus, sb, epLesen, gruppeHat: (c, n) => { const R = raeume.get(c); return Boolean(R && [...R.warten].some((w) => w.nutzer === n)); },
+      kanalAuf: (k, q) => { const u = new URLSearchParams(q); if (u.has("welt") || u.has("warte") || !u.get("kampf")) { k.close(4400, "kanal"); return; } kampfVerbindung(k as unknown as WebSocket, { url: "/?" + q }); } }); return; }
   const p: Platz = { ws, sim: null, zuletzt: Date.now(), fenster: Date.now(), zahl: 0 }; plaetze.add(p);
   console.log("Verbindung:", karte ? `Kampf ${ort}/${karte}` : "Riss", "· Held", held, "· Begleiter", mit.length);
   const los = () => ws.send(JSON.stringify({ t: "hallo", protokoll: PROTOKOLL, tick: TICK }));
@@ -297,7 +299,8 @@ wss.on("connection", (ws, req) => {
     zoneVerlassen(p); /* sein Held verschwindet aus der gemeinsamen Welt, die Stelle wird gemerkt, gutgeschrieben wird trotzdem */
     if (p.mit) for (const m of p.mit) { void buchen(m, true).finally(() => { if (m.ws.readyState === WebSocket.OPEN) { m.ws.send(JSON.stringify({ t: "koopende" })); m.ws.close(4410, "anfuehrer weg"); } }); }
     if (p.raum) { const R = raeume.get(p.raum); if (R && R.kampf === p) { R.kampf = null; R.zuletzt = Date.now(); gruppeMelden(R); } } }; ws.on("close", weg); ws.on("error", weg);
-});
+}
+wss.on("connection", (ws, req) => kampfVerbindung(ws, req));
 
 /** Wartebereich: erste Nachricht {t:"anmeldung", token, name, held}. Der Anführer gründet die Gruppe (fuehrer=1), andere treten mit dem Code bei. */
 function warten(ws: WebSocket, code: string, fuehrer: boolean) {

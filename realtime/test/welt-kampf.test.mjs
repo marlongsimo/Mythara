@@ -37,6 +37,7 @@ const dateien = (r) => { let u = new URL(r.request().url()).pathname; if (u.ends
 const FAKE_GAST = `window.supabase = { createClient() { return { auth: { async getSession() { return { data: { session: null } }; }, onAuthStateChange() { return { data: { subscription: { unsubscribe() {} } } }; } }, async rpc() { return { data: null, error: { message: "anon" } }; } }; } };`;
 const br = await chromium.launch({ args: ["--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessPermissionPrompt"] }), S = "?server=ws://localhost:8787", B = "http://localhost:8765/echtzeit/", fehlerSeite = [];
 async function spieler(name, token, stelle) { const ctx = await br.newContext({ viewport: { width: 1280, height: 720 } }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
+  await ctx.addInitScript(() => { const W = window.WebSocket; window.__ws = []; window.WebSocket = class extends W { constructor(u, p) { super(u, p); window.__ws.push(String(u)); } }; }); /* Zonen Stufe 3: Verbindungen zählen */
   await ctx.route("http://localhost:8765/**", dateien); await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: token ? FAKE(name) : FAKE_GAST }));
   await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.setItem("ez__hilfe", "1"); sessionStorage.setItem("ez__lager", "1") /* wie nach „Ins Spiel“ auf der Willkommensseite (seit 24.11.) */; if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
   return p; }
@@ -45,6 +46,7 @@ try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6533, 6588, "waldweg"]);
   await anna.goto(B + S); await ben.goto(B + S); await bereit(anna); await bereit(ben);
   await anna.evaluate(() => { window.__zahlen = 0; setInterval(() => { const sz = window.EZW && window.EZW.szene; if (sz && sz.children && sz.children.list.some((o) => o.type === "Text" && /^\d+$/.test(o.text))) window.__zahlen++; }, 50); }); /* Schadenszahlen von Anfang an alle 50 ms suchen (Banditen greifen schon beim Laufen an; die Zahlen verschwinden nach 0,9 s) */
+  { const l = await anna.evaluate(() => window.__ws); check(l.length === 1 && /welt=1/.test(l[0]), "Eine Verbindung je Gerät: der Kampf läuft als Kanal über die Welt-Verbindung (" + l.map((u) => u.replace(/^.*\?/, "?").slice(0, 40)).join(" | ") + ")"); }
   check(await anna.evaluate(() => document.body.classList.contains("weltkampf") && window.EZK.art === "server" && window.EZW.szene.scene.key !== "spiel"), "Im Kreuzwald kämpft man in der offenen Welt selbst (keine Kampfszene), gerechnet vom Server");
   check(await anna.evaluate(() => getComputedStyle(document.querySelector("#ez-tasten")).display !== "none" && getComputedStyle(document.querySelector("#ez-ich")).display !== "none"), "Aktionen 1–4 und Leben/Erfahrung sind eingeblendet");
   await anna.waitForTimeout(1500);
