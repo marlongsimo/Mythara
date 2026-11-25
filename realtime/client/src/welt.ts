@@ -33,7 +33,8 @@ export const weltOnline = (): number => online;
 export const weltIch = (): Ich | null => ich;
 
 /** Die Welt betreten (je Seite einmal). Ohne Konto oder ohne Server: nur der Chat zeigt einen Hinweis. */
-export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort === o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
+export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort === o, wechsel = Boolean(ws) && ort !== o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
+  if (wechsel) { fremde = []; bodenJetzt = []; window.dispatchEvent(new CustomEvent("ez-boden")); senden({ t: "ort", ort: o }); return; } /* andere Region bei bestehender Verbindung: dem Server melden (Boden, Mitspieler, Chat in der Nähe gelten je Region) – 25.11.2026 */
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
 let verbindet = false;

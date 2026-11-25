@@ -91,7 +91,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -211,6 +211,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       senden(s, { t: "zufreund", ok: true, n, ort: z.ort, x: z.wx, y: z.wy }); }
     else if (e.t === "freundanfrage") { if (s.gast) return; const n = String(e.n || "").slice(0, 40), z = [...spieler].find((o) => !o.gast && o.name === n); freundeJe.delete(s.nutzer);
       if (z) { freundeJe.delete(z.nutzer); senden(z, { t: "freundanfrage", von: s.name, angenommen: Boolean(e.angenommen) }); } }
+    else if (e.t === "ort") { /* Region gewechselt (laufen oder Teleport) bei bestehender Verbindung */ const neu = String((e as { ort?: unknown }).ort || ""); if (!WELTORTE.has(neu) || neu === s.ort) return;
+      const alt = s.ort; for (const o of amOrt(alt)) if (o !== s) senden(o, { t: "fort", id: s.id }); s.ort = neu; s.boden = ""; s.geaendert = true; }
     else if (e.t === "blockiert") { /* die Blockierliste des Spielers (liegt auf seinem Gerät, kommt nach der Anmeldung und bei jeder Änderung) */
       const n = Array.isArray(e.namen) ? (e.namen as unknown[]).map((x) => String(x ?? "").slice(0, 40)).filter(Boolean).slice(0, 300) : []; s.blockiert = new Set(n); }
     else if (e.t === "chat") { const text = filtern(saeubern(e.text)).text; if (!text) return; if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Schreiben brauchst du ein Konto (Menü → Anmelden).", zeit: jetzt }); return; } s.chat = s.chat.filter((t) => jetzt - t < 10000); if (s.chat.length >= 5) { senden(s, { t: "chat", kanal: "system", text: "Langsamer – höchstens 5 Nachrichten in 10 Sekunden.", zeit: jetzt }); return; } s.chat.push(jetzt);
