@@ -1,0 +1,40 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.foerster – Förster (NPC für Echtzeit-3D aus npcmann3d): Frisur zerzaust, Vollbart, Haarfarbe #5a3a22, Haut mittel; Kleidung umgefärbt (moosgrünes Hemd, tannengrüne Weste, braune Hose). Werkzeug: Holzbeil (Utensilien) in der rechten Hand.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.holzbeil",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.holzbeil/v001/quelle/holzbeil.glb",
+      "griff": 0.15,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npc.foerster/v001/quelle/teile/kopf.haar.zerzaust.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npc.foerster/v001/quelle/teile/kopf.bart.vollbart.glb"
+    }
+  ],
+  "arme_eng": 6
+}

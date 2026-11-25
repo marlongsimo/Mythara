@@ -1,0 +1,8 @@
+{
+  "id": "npc.foerster",
+  "name": "Förster",
+  "kategorie": "npc",
+  "aktuell": "v001",
+  "status": "v001: Ruhe und Gehen – Spieldatei img/figuren-echt3d/npc.foerster.glb; Kleidung umgefärbt mit fabrik/npc_umfaerben.py",
+  "herkunft": "npcmann3d"
+}
