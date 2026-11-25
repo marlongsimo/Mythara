@@ -9,22 +9,50 @@
    "art": "starr",
    "platz": "hand_l",
    "bewegungen": [
-    "ruhe"
+    "ruhe",
+    "gehen",
+    "doppelhieb",
+    "treffer",
+    "tod"
    ]
   },
   "waffe.schwert.rechts": {
    "art": "starr",
    "platz": "hand_r",
    "bewegungen": [
-    "ruhe"
+    "ruhe",
+    "gehen",
+    "doppelhieb",
+    "treffer",
+    "tod"
    ]
   }
  },
  "aktionen": {
+  "doppelhieb": {
+   "bilder": 14,
+   "rate": 14,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
   "ruhe": {
    "bilder": 6,
    "rate": 6,
    "schleife": true
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 5,
+   "rate": 12,
+   "schleife": false
   }
  }
 }
