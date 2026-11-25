@@ -16,7 +16,7 @@ export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; 
 interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
   chat: number[]; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
-export const WELTORTE = new Set(["waldmark", "waldweg", "nordwald", "westmark", "osthof", "obstwiesen", "osthang", "unterschlupf", "rathaus_oben", "nordsaum", ...ORTREIHE]);
+export const WELTORTE = new Set(["waldmark", "waldweg", "nordwald", "westmark", "osthof", "obstwiesen", "osthang", "unterschlupf", "rathaus_oben", "nordsaum", "westried", "aschenwerth", ...ORTREIHE]);
 /** Die Stelle eines Spielerkontos speichern (Weltfelder; x/y null = Start der Region) */
 export function stelleMerken(H: Pick<WeltHilfen, "sb">, nutzer: string, region: string, x: number | null, y: number | null): Promise<unknown> {
   return H.sb("/rest/v1/rpc/rpg_echtzeit_position_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_region: region, p_x: x, p_y: y }) }).catch((e) => console.error("Stelle merken:", (e as Error).message)); }

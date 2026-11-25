@@ -1,0 +1,15 @@
+{
+ "id": "westried",
+ "name": "Das Westried",
+ "untertitel": "Unbegehbares Marschland am Westrand",
+ "ursprung": [
+  192,
+  198
+ ],
+ "chunks": [
+  4,
+  8
+ ],
+ "biom": "sumpf",
+ "stufe": 2
+}

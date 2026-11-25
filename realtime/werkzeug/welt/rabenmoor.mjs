@@ -27,6 +27,10 @@ const HEDDA = { x: 15, y: 18, r: 7 }, inHedda = (x, y) => Math.hypot(x - HEDDA.x
 const PLATZ = { x: 50, y: 47, rx: 9, ry: 6.5 }, aufPlatz = (x, y) => Math.hypot((x - PLATZ.x) / PLATZ.rx, (y - PLATZ.y) / PLATZ.ry) < welle(x * 1.7, y * 1.3);
 const WEG = [[B + 1, 40], [118, 40.6], [108, 41.6], [100, 42.4]];                     /* aus Weidenhain (dort die westliche Gasse bei y ≈ 40) */
 const BOHLEN = [95, 89, 83, 77].map((x) => ({ objekt: "dorf_bruecke_01", x, y: 43.6, frei: [x - 3, 41.0, x + 3, 43.6] }));   /* Bohlenweg übers Moor */
+/* Die alte Brücke nach Aschenwerth (25.11.2026): vom Westufer der Insel nach Westen übers Moor, weiter in der Region aschenwerth (werkzeug/welt/aschenwerth.mjs).
+   Fuß der Teile auf y = BRUECKE_Y, Lauffläche 2,6 Felder nach Norden; die Teile stoßen bei x = 0 genau an die Regionsgrenze. */
+const BRUECKE_Y = 45.6, BRUECKE_TEILE = ["moor_bruecke_alt_01", "moor_bruecke_alt_02", "moor_bruecke_alt_01", "moor_bruecke_alt_03"];
+const ALTBRUECKE = [3, 9, 15, 21].map((x, i) => ({ objekt: BRUECKE_TEILE[i % BRUECKE_TEILE.length], x, y: BRUECKE_Y, frei: [x - 3, BRUECKE_Y - 2.6, x + 3, BRUECKE_Y] }));
 const STEG = { objekt: "dorf_bruecke_02", x: 56, y: 73.6, frei: [54.7, 68.4, 57.3, 73.6] };
 const TORFPFAD = [[31, 33], [26, 28.5], [21, 24.5], [18.5, 22]];
 const NORDPFAD = [[50, 26], [50.4, 14], [50.5, -1]];   /* Trampelpfad nach Norden durchs Moor (weiter in der Westmark) */
@@ -38,7 +42,7 @@ const aufTorf = (x, y) => torfInseln.some(([a, b, r]) => Math.hypot(x - a, (y - 
 const HAEUSER = [["moor_langhaus_01", 50, 36.4], ["moor_kate_01", 36.5, 42.5], ["moor_kate_02", 64.5, 43.5], ["moor_kate_01", 38.5, 57.5], ["moor_kate_02", 62.5, 58], ["moor_fischer_01", 51, 64.5], ["moor_kate_02", HEDDA.x, HEDDA.y + 2]];
 const tuer = (id, x, y) => { const t = PLAN.get(id).tueren[0]; return [x + t.x, y + 0.6]; };
 const GASSEN = HAEUSER.slice(0, 6).map(([id, x, y]) => { const [tx, ty] = tuer(id, x, y); return [[tx, ty], [PLATZ.x + (tx - PLATZ.x) * 0.35, PLATZ.y + (ty - PLATZ.y) * 0.35]]; });
-GASSEN.push([[76, 42.3], [58, 45.5]], [[51.9, 65.1], [55.6, 68.6]], [[38, 37], [31, 33]]);
+GASSEN.push([[23.6, 44.3], [29, 45.8], [42, 45.8]], [[76, 42.3], [58, 45.5]], [[51.9, 65.1], [55.6, 68.6]], [[38, 37], [31, 33]]);
 
 /* ───── Gelände ───── */
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5; let c = "o";
@@ -83,6 +87,10 @@ for (let i = 0; i < B * H * 0.6; i++) { const x = +(wurf() * B).toFixed(2), y = 
   if ((x < WALDRAND(y) + 2.5 && !(x > 58 && y < 2.6)) || strecke(x, y, WEG) < 4 || strecke(x, y, NORDPFAD) < 4 || !frei(x, y)) continue;
   const z = wurf(), a = z < 0.26 ? 1 : z < 0.5 ? 2 : z < 0.74 ? 3 : z < 0.8 ? 4 : z < 0.9 ? 5 : 6;
   wald.push({ id: "b" + String(wald.length + 1).padStart(4, "0"), objekt: BAUM[a], x, y, s: +(0.85 + wurf() * 0.27).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) }); }
+/* die alte Brücke kommt zuletzt dazu (die Zufallsfolge oben bleibt unverändert); Schilf, Irrlichter und Nebel auf ihrer Bahn weichen */
+const aufBruecke = (d) => d.x < 25 && Math.abs(d.y - (BRUECKE_Y - 1.3)) < 3.4 && /schilf|moorlicht|nebel|erle/.test(d.objekt);
+for (let i = dinge.length - 1; i >= 0; i--) if (aufBruecke(dinge[i])) dinge.splice(i, 1);
+dinge.push(...ALTBRUECKE.map((b) => o(b.objekt, b.x, b.y, b.objekt.endsWith("_02") ? { spiegeln: true } : {})));
 const objekte = [...dinge, ...wald].sort((a, b) => a.y - b.y);
 for (const p of objekte) if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt);
 
@@ -98,8 +106,9 @@ const spiel = {
     lies("bohlenweg", [97, 42.2], "Der Bohlenweg nach Rabenmoor. Die Bretter sind nass, und unter ihnen ist das Wasser schwarz."),
     lies("steg_ansehen", [56, 69.2], "Joosts Steg. Der Kahn liegt bereit; weiter draußen beginnt das Ried."),
     lies("schrein_ansehen", [SCHREIN.x, SCHREIN.y + 1.6], "Spiralsteine im Kreis, mitten im Moor. Auf dem Altar steht eine Schale mit stillem, hellem Wasser."),
+    lies("bruecke_aschenwerth", [24.6, 44.3], "Die alte Brücke nach Aschenwerth. Manche Bohlen fehlen, das Geländer hängt durch – aber sie trägt noch. Am anderen Ende, im Nebel, stehen Mauern."),
     lies("hedda_tuer", tuer("moor_kate_02", HEDDA.x, HEDDA.y + 2), "Heddas Hütte auf der letzten trockenen Insel. Getrocknete Kräuter hängen unter dem Vordach.")],
-  ausgaenge: [], kollision: { sperren: [], freigeben: [...BOHLEN, STEG].map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })) } };
+  ausgaenge: [], kollision: { sperren: [], freigeben: [...BOHLEN, STEG, ...ALTBRUECKE].map((b) => ({ art: "rechteck", x0: b.frei[0], y0: b.frei[1], x1: b.frei[2], y1: b.frei[3] })) } };
 
 const dir = join(WELT, "regionen", "rabenmoor"); mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "rabenmoor", name: "Rabenmoor", untertitel: "Das Dorf im Schwarzmoor", ursprung: [196, 208], chunks: [B / 32, H / 32], biom: "sumpf", stufe: 1 }, null, 1) + "\n");

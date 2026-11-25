@@ -1,0 +1,122 @@
+{
+ "start": [
+  [
+   48,
+   99
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 122,
+    "y0": 107,
+    "x1": 128,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 116,
+    "y0": 107,
+    "x1": 122,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 110,
+    "y0": 107,
+    "x1": 116,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 104,
+    "y0": 107,
+    "x1": 110,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 98,
+    "y0": 107,
+    "x1": 104,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 92,
+    "y0": 107,
+    "x1": 98,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 107,
+    "x1": 92,
+    "y1": 109.6
+   }
+  ]
+ },
+ "interaktionen": [
+  {
+   "id": "bruecke_west",
+   "art": "lesen",
+   "x": 82.5,
+   "y": 109.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Westende der alten Brücke. Hinter dir das Moor und die Lichter von Rabenmoor, vor dir Aschenwerth – eine Insel, auf der niemand mehr wohnt."
+   }
+  },
+  {
+   "id": "heiligtum_tor",
+   "art": "lesen",
+   "x": 48,
+   "y": 98,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das eingestürzte Tor des Heiligtums von Aschenwerth. Über dem Bogen ist ein Zeichen in den Stein geschlagen: ein zerbrochener Kreis."
+   }
+  },
+  {
+   "id": "altar",
+   "art": "lesen",
+   "x": 48,
+   "y": 73.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Altar aus schwarzem Stein, rissig von Frost und Feuer. In der Mulde liegt Asche, die nie kalt zu werden scheint."
+   }
+  },
+  {
+   "id": "gruft",
+   "art": "lesen",
+   "x": 26,
+   "y": 108.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen."
+   }
+  },
+  {
+   "id": "steinkreis",
+   "art": "lesen",
+   "x": 72,
+   "y": 74.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen."
+   }
+  }
+ ]
+}

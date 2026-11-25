@@ -1,0 +1,16 @@
+{
+ "start": [
+  [
+   126.5,
+   8.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": []
+}

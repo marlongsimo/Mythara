@@ -1460,26 +1460,6 @@
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   },
   {
-   "id": "dorf_bruecke_01",
-   "name": "Holzbrücke (Ost–West)",
-   "kategorie": "wasserbau",
-   "bild": "img/welt/gebaeude/dorf_bruecke_01.webp",
-   "groesse": [
-    367,
-    217
-   ],
-   "anker": [
-    0.4414,
-    0.9263
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "boden",
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
-  },
-  {
    "id": "dorf_bruecke_02",
    "name": "Holzbrücke (Nord–Süd)",
    "kategorie": "wasserbau",
@@ -8186,6 +8166,86 @@
     "radius": 1.4
    },
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "moor_bruecke_alt_01",
+   "name": "Alte Moorbrücke",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_bruecke_alt_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_bruecke_alt_02",
+   "name": "Alte Moorbrücke (Geländer gebrochen)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_bruecke_alt_02.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "moor_bruecke_alt_03",
+   "name": "Alte Moorbrücke (ohne Geländer)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_bruecke_alt_03.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "dorf_bruecke_01",
+   "name": "Holzbrücke (Ost–West)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/dorf_bruecke_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
   }
  ]
 }
