@@ -7,7 +7,7 @@
   if (/RiftmereApp/.test(navigator.userAgent)) { document.documentElement.classList.add("app"); document.querySelector('meta[name="viewport"]').content += ", viewport-fit=cover"; }</script>
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="mythara.webmanifest?v=mwwjippn">
+  <link rel="manifest" href="mythara.webmanifest?v=mwwjvsc8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Riftmere">
@@ -727,6 +727,7 @@
     /* Aktionsmenü im Pergament-Stil (aktionsmenue.ts): am angeklickten Ziel, klein */
     .ez-aktionen { position: fixed; z-index: 30; min-width: 176px; max-width: min(280px, calc(100vw - 12px)); padding: 5px; border-radius: 9px; border: 2px solid #c99a3c; background: linear-gradient(#d8c39a, #b89a6a); box-shadow: 0 0 0 1px #3a2a14, 0 8px 18px rgba(0,0,0,.6); user-select: none; -webkit-user-select: none; }
     .ez-aktionen .kopf { display: flex; align-items: center; gap: 6px; padding: 3px 6px 5px; font: 700 13px Cinzel, Georgia, serif; color: #3a2410; border-bottom: 1px solid rgba(90,60,20,.4); }
+    .ez-aktionen .kopf .lv { margin-left: 2px; padding: 1px 6px; border-radius: 5px; background: #2a1c10; font: 700 11.5px Cinzel, Georgia, serif; white-space: nowrap; } /* Levelfarbe (Gegner nach Schwierigkeit) auf dunklem Grund – auf dem Pergament sonst nicht lesbar */
     .ez-aktionen .kopf ~ .kopf { margin-top: 6px; } .ez-aktionen .kopf i { flex: none; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
     .ez-aktionen .trenn { height: 1px; margin: 6px 4px 2px; background: rgba(90,60,20,.4); }
     .ez-aktionen button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 7px; margin-top: 3px; border-radius: 6px; border: 1px solid #4a3820; background: linear-gradient(#3a3022, #241c12); color: #f3e3b5; font: 600 13px Cinzel, Georgia, serif; cursor: pointer; text-align: left; }
@@ -839,6 +840,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwwjippn"></script>
+  <script src="spiel.js?v=mwwjvsc8"></script>
 </body>
 </html>

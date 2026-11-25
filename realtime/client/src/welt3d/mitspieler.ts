@@ -14,6 +14,7 @@ interface Figur { f: FigurArt; nm: HTMLElement; lb: HTMLElement; d: Fremder; x: 
 
 /** Ein HTML-Schild, das einem Punkt der 3D-Welt folgt */
 export function schildAn(el: HTMLElement, m: Welt3D, x: number, y: number, z: number): boolean {
+  if (el.classList.contains("ez-name3d") && !el.classList.contains("boden")) { if (!el.hidden) el.hidden = true; return false; } /* Namensschilder über Figuren gibt es nicht mehr (25.11.2026): Name und Level stehen im Menü beim Gedrückthalten – spart jedes Bild Rechenzeit */
   if (el.parentElement !== m.schilder) m.schilder.appendChild(el); const p = m.aufEbene(x, y, z); el.hidden = !p; if (p) el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`; return Boolean(p); }
 /** Sprechblase über einem Punkt der 3D-Welt (wo: Weltfelder und Höhe; null = weg) */
 export function blase3d(m: Welt3D, wo: () => { x: number; y: number; z: number } | null, text: string): void {
