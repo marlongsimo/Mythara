@@ -1,11 +1,15 @@
 {
-  "hinweis": "gegner.oberster_rabenpriester v001 – Oberster Rabenpriester (Meshy „Raven King“), zwei Seltene Schwerter (rechts und links); vorerst nur die Grundhaltung, Bewegungen folgen.",
+  "hinweis": "gegner.oberster_rabenpriester v001 – Oberster Rabenpriester (Meshy „Raven King“), zwei Seltene Schwerter (rechts und links); Bewegungen ruhe, gehen, doppelhieb (Doppelschwert-Angriff), treffer, tod.",
   "koerper_textur": true,
   "stil": "gemalt",
   "stuecke_behalten": true,
   "luecken_schliessen": true,
   "bewegungen": [
-    "ruhe"
+    "ruhe",
+    "gehen",
+    "doppelhieb",
+    "treffer",
+    "tod"
   ],
   "huelle": [],
   "teilnetze": [],
@@ -18,9 +22,13 @@
       "griff": 0.12,
       "griff2": 0.05,
       "klasse": "einhand",
-      "angriff": "stich",
+      "angriff": "doppelhieb",
       "bewegungen": [
-        "ruhe"
+        "ruhe",
+        "gehen",
+        "doppelhieb",
+        "treffer",
+        "tod"
       ]
     },
     {
@@ -31,11 +39,16 @@
       "griff": 0.12,
       "griff2": 0.05,
       "klasse": "einhand",
-      "angriff": "stich",
+      "angriff": "doppelhieb",
       "bewegungen": [
-        "ruhe"
+        "ruhe",
+        "gehen",
+        "doppelhieb",
+        "treffer",
+        "tod"
       ],
       "hand": "L"
     }
-  ]
+  ],
+  "arm_radius": 0.09
 }
