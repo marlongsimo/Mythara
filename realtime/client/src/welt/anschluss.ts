@@ -97,17 +97,16 @@ const randAbstand = (s: WeltKern, z: { x0: number; y0: number; b: number; h: num
 /** Unter der Minimap: Sicherer Ort, Einzelkampf oder Mehrkampf – je nachdem, wo man steht */
 let zoomJetzt = 2.2;
 const KAMPFZEICHEN: Record<string, string> = {
-  mehr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11 11M4 4h3.5L17 13.5M4 4v3.5L13.5 17"/><path d="M14 17l3 3M17 14l3 3M15.5 18.5l3-3"/><path d="M20 4L9 15M20 4h-3.5M20 4v3.5"/><path d="M10 17l-3 3M7 14l-3 3M8.5 18.5l-3-3"/></svg>',
-  einzel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3h2v2L9 17l-2-2z"/><path d="M6 14l4 4M5 19l2-2M4 20l1-1"/></svg>',
+  mehr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6M8 16l-4 4M5 21l-2-2"/></svg>',
+  einzel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/></svg>',
   sicher: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5.5c0 4.4 3 7.8 7 9.5 4-1.7 7-5.1 7-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg>' };
 function kampfartZeigen(s: WeltKern) { let el = document.getElementById("ez-kampfart"); const r = document.getElementById("ez-kartenrahmen"); if (!r) return;
   if (!el) { el = document.createElement("div"); el.id = "ez-kampfart"; r.appendChild(el); }
-  const z = WELTZONEN[s.hier], art = !z || !freigabe("suedtor") ? "sicher" : kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel";
-  const n = art === "sicher" || !kampf ? 0 : kampf.gegnerNah(8);
-  if (el.dataset.art === art && el.dataset.n === String(n)) return; el.dataset.n = String(n);
-  const zahl = el.querySelector("em") as HTMLElement | null; if (el.dataset.art === art && zahl) { zahl.textContent = n === 1 ? "1 Gegner" : n + " Gegner"; zahl.hidden = !n; return; }
+  /* nur noch Solo (Einzelkampf) oder Multi (Mehrkampf) – auch die Waldmark gilt als Solo; keine Gegneranzahl (25.11.2026) */
+  const art = (kampf && kampf.mehrkampf(s.ort.x, s.ort.y) ? "mehr" : "einzel") as string;
+  if (el.dataset.art === art) return;
   el.dataset.art = art; el.className = art; r.dataset.art = art; /* auch die Farbe des Kartenrings zeigt es */
-  el.innerHTML = `<span class="sym">${KAMPFZEICHEN[art]}</span><b>${art === "sicher" ? "Sicherer Ort" : art === "mehr" ? "Mehrkampf" : "Einzelkampf"}</b><em${n ? "" : " hidden"}>${n === 1 ? "1 Gegner" : n + " Gegner"}</em>`;
+  el.innerHTML = `<span class="sym">${KAMPFZEICHEN[art]}</span><b>${art === "sicher" ? "Sicherer Ort" : art === "mehr" ? "Mehrkampf" : "Einzelkampf"}</b><i class="kurz">${art === "sicher" ? "Sicher" : art === "mehr" ? "Multi" : "Solo"}</i>`;
   el.title = art === "sicher" ? "Hier wird nicht gekämpft" : art === "mehr" ? "Viele gegen viele: mehrere Gegner können einen Helden angreifen und mehrere Helden einen Gegner" : "Einer gegen einen: Wer kämpft, kann von keinem Dritten angegriffen werden und greift keinen Dritten an"; }
 function kampfEnde() { if (kampf) { kampf.ende(); kampf = null; } }
 /* für Prüfungen im Browser: das vorab verbundene Nachbargebiet */

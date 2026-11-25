@@ -72,7 +72,7 @@ try {
   await anna.waitForTimeout(2500); /* der Server schickt inzwischen die im Kreuzwald gemerkte Stelle – sie darf nach dem Teleport nicht gelten */
   check(await anna.evaluate(() => window.EZW.szene.hier === "waldmark"), "Teleport bleibt: auch nachdem der Server die alte Stelle im Kreuzwald gemeldet hat (" + JSON.stringify(STELLE["00000000-0000-0000-0000-00000000a001"]) + ")");
   check(await anna.evaluate(() => !window.EZK && !document.body.classList.contains("weltkampf")), "Teleport: zurück in der Waldmark, dort wird nicht gekämpft");
-  check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
+  check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent === "Einzelkampf" && !document.querySelector("#ez-kampfart em")), "In der Waldmark: „Einzelkampf“ (Solo, seit 25.11. kein „Sicherer Ort“ mehr), keine Gegneranzahl");
   /* Die fünf Helden sind nicht mehr wählbar: H öffnet in der Waldmark den Heldeneditor (Aussehen und Startwaffe) */
   await Promise.all([anna.waitForURL(/held\.html/, { timeout: 15000 }).catch(() => {}), anna.keyboard.press("h")]);
   check(/held\.html/.test(anna.url()), "H in der Waldmark: Heldeneditor statt Heldenwechsel (" + anna.url() + " · " + (await anna.evaluate(() => [...document.querySelectorAll(".tafel h2, .tafel h1, dialog h2")].map((e) => e.textContent).join("|")).catch(() => "?")) + ")");

@@ -10,7 +10,7 @@ let letzte = Date.now(), weg = false, an = false;
 /** Gab es in der letzten Minute (plus Spielraum) eine Eingabe? */
 export const kuerzlichAktiv = (): boolean => Date.now() - letzte < 70000;
 /** Aus dem Spiel abmelden: grund "ruhe" (untätig) oder "anderes" (anderes Gerät). Die Verbindungen schließen beim Seitenwechsel. */
-export function abmelden(grund: "ruhe" | "anderes"): void {
+export function abmelden(grund: "ruhe" | "anderes" | "bereits"): void {
   if (weg) return; weg = true;
   try { sessionStorage.removeItem("ez__lager"); } catch { /* privat */ } /* zurück ins Spiel nur über „Ins Spiel“ */
   location.replace("willkommen.html?grund=" + grund + (location.search ? "&weiter=" + encodeURIComponent(location.search) : ""));

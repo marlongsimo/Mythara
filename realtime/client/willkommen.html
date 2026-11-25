@@ -123,6 +123,7 @@
   </main>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
+  <script>try { sessionStorage.removeItem("rift_verbunden"); } catch (e) { /* privat */ } /* von hier aus ist „Spielen“ ein frisches Anmelden (übernimmt das Konto von einem anderen Gerät) */</script>
   <script>
   /* Landing-Page der Splitterlande (24.11.2026): kommt bei jedem Besuch vor dem Spiel, auch mit gespeicherter Anmeldung.
      „Ins Spiel“ merkt sich das für diesen Tab (sessionStorage „ez__lager“), damit Neuladen im Spiel nicht wieder hierher führt.
@@ -204,7 +205,8 @@
     /* Aus dem Spiel abgemeldet (abmeldung.ts): untätig oder auf einem anderen Gerät angemeldet */
     { const g = new URLSearchParams(location.search).get("grund");
       if (g === "ruhe") $("#meldung").textContent = "Du warst 5 Minuten untätig und wurdest aus dem Spiel abgemeldet. Mit „Ins Spiel“ geht es weiter.";
-      else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter. Mit „Ins Spiel“ holst du den Helden hierher zurück."; }
+      else if (g === "anderes") $("#meldung").textContent = "Du hast dich auf einem anderen Gerät angemeldet – dort geht es weiter.";
+      else if (g === "bereits") $("#meldung").textContent = "Du bist bereits auf einem anderen Gerät im Spiel. Melde dich dort ab (Einstellungen → Abmelden), dann geht es hier weiter."; }
 
     /* Ins Spiel */
     $("#insspiel").onclick = () => { try { sessionStorage.setItem("ez__lager", "1"); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.removeItem("ez__neu"); } catch (e) { /* privat */ } location.href = "./" + weiter(); };

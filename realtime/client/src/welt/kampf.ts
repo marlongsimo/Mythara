@@ -13,7 +13,7 @@ import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
-import { chatSystem } from "../welt";
+import { chatSystem, geraetAngaben } from "../welt";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -88,7 +88,7 @@ export class WeltKampf {
           if (f.held && (f.a || "") !== k) { const neu = this.neu(id, true, f.typ, f.team, f.x, f.y); f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); Object.assign(neu, { tot: f.tot, lp: f.lp, max: f.max, zx: f.zx, zy: f.zy }); neu.sp.setVisible(!f.tot); } } }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
-    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
+    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...geraetAngaben(), ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
     if (this.vorbei) { n.ende(); return; } this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
   }
   /** Kampfregeln v1 (eigener Held): beim Rechnen im Browser Held und Gegner umstellen; Ausrüstungswechsel an Server oder Simulation weitergeben */

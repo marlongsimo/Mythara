@@ -37,6 +37,14 @@ export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
 let verbindet = false;
+/* Ein Konto spielt nur auf einem Gerät: jede Seite hat eine eigene Kennung. Eine automatische Wiederverbindung (nach Funkloch oder Hintergrund) darf
+   ein anderes Gerät, das sich inzwischen angemeldet hat, nicht verdrängen – der Server lehnt sie dann ab (4409), und dieses Gerät wird abgemeldet. */
+const sitz = (k: string, v?: string | null): string | null => { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch { /* privat */ } return null; };
+const GERAET = sitz("rift_geraet") || ((): string => { const g = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sitz("rift_geraet", g); return g; })();
+/* „schon verbunden“ übersteht ein Neuladen (z. B. nach dem Einfrieren): auch das ist kein frisches Anmelden */
+let verbundenGewesen = sitz("rift_verbunden") === "1";
+/** Für die Kampf-/Weltzonen-Verbindung: dieselbe Geräteregel */
+export function geraetAngaben(): { geraet: string; wieder: boolean } { return { geraet: GERAET, wieder: verbundenGewesen }; }
 /* iPhone: nach dem Zurückkommen in die App sofort neu verbinden, statt die Wartezeit abzusitzen; eine Verbindung, die iOS still geschlossen hat, schließen */
 if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") return;
   if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
@@ -45,9 +53,10 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
   { const puls = setInterval(() => { if (ws !== s || s.readyState > 1) { clearInterval(puls); return; } if (s.readyState === 1 && kuerzlichAktiv()) s.send('{"t":"da"}'); }, 60000); } /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */
-  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "" })); s.send(JSON.stringify({ t: "blockiert", namen: [...blockiert] })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
+  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
   s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
-    if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); }
+    if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); verbundenGewesen = true; sitz("rift_verbunden", "1"); if (blockiert.size) senden({ t: "blockiert", namen: [...blockiert] }); /* erst nach der Anmeldung – vorher verwirft der Server jede andere Nachricht */ }
+    else if (m.t === "stufe") { if (ich && typeof m.stufe === "number") ich.stufe = m.stufe; }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
     else if (m.t === "quests") { const alt = questBekannt ? [questJetzt as string, quest2Jetzt, quest3Jetzt] : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; if (alt) questFortschritt(alt, [questJetzt, quest2Jetzt, quest3Jetzt]); window.dispatchEvent(new CustomEvent("ez-quest")); }
@@ -72,7 +81,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
       if (n.von && n.kanal !== "system" && blockiert.has(n.von) && !(ich && n.von === ich.name)) return; /* blockiert: weder Chat noch Sprechblase */
       chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
-  s.onclose = (ev) => { if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4409) { chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
+  s.onclose = (ev) => { if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Dein Konto ist gerade auf einem anderen Gerät im Spiel."); abmelden("bereits"); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };

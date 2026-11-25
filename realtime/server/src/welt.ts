@@ -30,7 +30,7 @@ export const aussehenJe = new Map<string, Held>();
 
 export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean }
 interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
-  chat: number[]; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
+  chat: number[]; /** Seitenkennung des Geräts (ein Konto spielt nur auf einem Gerät) */ geraet?: string; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
 /* Alle Regionen der Welt kommen automatisch aus werkzeug/weltzonen.py (WELTREGIONEN) – neue Gebiete muss niemand von Hand eintragen */
 export const WELTORTE = new Set([...WELTREGIONEN, ...ORTREIHE]);
@@ -70,6 +70,15 @@ const zahl = (v: unknown, max = 20000) => typeof v === "number" && Number.isFini
 /** Chattext säubern: keine Steuerzeichen, keine spitzen Klammern, höchstens 160 Zeichen */
 export const saeubern = (t: unknown): string => String(t ?? "").replace(/[\u0000-\u001f\u007f-\u009f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
 const senden = (s: Spieler, m: object) => { if (s.ws.readyState === WebSocket.OPEN && s.ws.bufferedAmount < 262144) s.ws.send(JSON.stringify(m)); };
+/** Ein Konto spielt nur auf einem Gerät – wer zuerst da ist, bleibt: Ist das Konto auf einem anderen Gerät (andere Seitenkennung) noch aktiv
+ *  (Verbindung offen und in den letzten 20 s Lebenszeichen – im Vordergrund schickt das Spiel spätestens alle 2 s seine Stelle), wird die neue Anmeldung abgelehnt.
+ *  Ist das andere Gerät still (Hintergrund, Funkloch, abgestürzt), darf das neue übernehmen. */
+const AKTIV_MS = 20000;
+export function kontoBelegt(nutzer: string, geraet: unknown): boolean { const g = String(geraet || "").slice(0, 40), jetzt = Date.now();
+  for (const o of spieler) if (o.nutzer === nutzer && (!g || o.geraet !== g) && o.ws.readyState === WebSocket.OPEN && jetzt - o.zuletzt < AKTIV_MS) return true;
+  return false; }
+/** Heldenstufe eines Kontos hat sich im Kampf geändert (Skills): in der Welt übernehmen, damit Mitspieler und Spielerliste sie gleich sehen */
+export function stufeSetzen(nutzer: string, stufe: number): void { for (const s of spieler) if (s.nutzer === nutzer && s.stufe !== stufe) { s.stufe = stufe; s.geaendert = true; senden(s, { t: "stufe", stufe }); } }
 /** Hat der Empfänger o den Absender s blockiert? */
 const sperrt = (o: Spieler, s: Spieler) => Boolean(o.blockiert && o.blockiert.has(s.name));
 const amOrt = (ort: string) => [...spieler].filter((s) => s.ort === ort);
@@ -82,7 +91,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   ws.on("message", async (roh) => {
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -103,9 +112,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (eigen) aussehenJe.set(nutzer, eigen);
       if (!held) { held = HELDEN[String(e.held)] ? String(e.held) : "schildwaechter"; /* noch nie gewählt: der Wunsch des Spielers gilt als erste Wahl */
         if (aktiv) await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_held: held }) }).catch((x) => console.error("Held setzen:", (x as Error).message)); }
+      if (kontoBelegt(nutzer, e.geraet)) { console.log("Welt: Anmeldung abgelehnt – Konto ist auf einem anderen Gerät aktiv"); ws.close(4410, "bereits angemeldet"); return; }
       for (const o of [...spieler]) if (o.nutzer === nutzer) { spieler.delete(o); try { o.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal in der Welt */
       const raum = typeof e.raum === "string" && /^[A-Z]{6}$/.test(e.raum) && H.gruppeHat(e.raum, nutzer) ? e.raum : "";
-      s = { id: naechste++, ws, nutzer, gast: false, a: eigen || undefined, name: (profil[0] && profil[0].handle) || "Wanderer", held, stufe: eigen && hl ? hl : stufeAusEp(Number((ep as Record<string, number>)[held]) || 0), ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum, chat: [], geaendert: true, zuletzt: jetzt };
+      s = { id: naechste++, ws, nutzer, gast: false, geraet: String(e.geraet || "").slice(0, 40) || undefined, a: eigen || undefined, name: (profil[0] && profil[0].handle) || "Wanderer", held, stufe: eigen && hl ? hl : stufeAusEp(Number((ep as Record<string, number>)[held]) || 0), ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum, chat: [], geaendert: true, zuletzt: jetzt };
       clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
       system(ort, `${s.name} ist da.`, s); console.log("Welt:", s.name, "in", ort, "·", spieler.size, "unterwegs");
       { const ich = s; void inventarLaden(H.sb, nutzer).then((iv) => { if (!iv || !spieler.has(ich)) return; senden(ich, { t: "inventar", inv: iv.inv }); ich.invAus = inventarHoeren(nutzer, (inv) => senden(ich, { t: "inventar", inv })); }); } /* das Inventar gehört dem Server (Migration 043) */
