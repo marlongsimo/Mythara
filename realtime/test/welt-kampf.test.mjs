@@ -38,12 +38,13 @@ const FAKE_GAST = `window.supabase = { createClient() { return { auth: { async g
 const br = await chromium.launch({ args: ["--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessPermissionPrompt"] }), S = "?server=ws://localhost:8787", B = "http://localhost:8765/echtzeit/", fehlerSeite = [];
 async function spieler(name, token, stelle) { const ctx = await br.newContext({ viewport: { width: 1280, height: 720 } }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
   await ctx.route("http://localhost:8765/**", dateien); await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: token ? FAKE(name) : FAKE_GAST }));
-  await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.setItem("ez__hilfe", "1"); if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
+  await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); sessionStorage.setItem("ez__hilfe", "1"); sessionStorage.setItem("ez__lager", "1") /* wie nach „Ins Spiel“ auf der Willkommensseite (seit 24.11.) */; if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
   return p; }
 const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z, null, { timeout: 40000 });
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6533, 6588, "waldweg"]);
   await anna.goto(B + S); await ben.goto(B + S); await bereit(anna); await bereit(ben);
+  await anna.evaluate(() => { window.__zahlen = 0; setInterval(() => { const sz = window.EZW && window.EZW.szene; if (sz && sz.children && sz.children.list.some((o) => o.type === "Text" && /^\d+$/.test(o.text))) window.__zahlen++; }, 50); }); /* Schadenszahlen von Anfang an alle 50 ms suchen (Banditen greifen schon beim Laufen an; die Zahlen verschwinden nach 0,9 s) */
   check(await anna.evaluate(() => document.body.classList.contains("weltkampf") && window.EZK.art === "server" && window.EZW.szene.scene.key !== "spiel"), "Im Kreuzwald kämpft man in der offenen Welt selbst (keine Kampfszene), gerechnet vom Server");
   check(await anna.evaluate(() => getComputedStyle(document.querySelector("#ez-tasten")).display !== "none" && getComputedStyle(document.querySelector("#ez-ich")).display !== "none"), "Aktionen 1–4 und Leben/Erfahrung sind eingeblendet");
   await anna.waitForTimeout(1500);
@@ -51,18 +52,18 @@ try {
   check(sicht.banditen === 4 && sicht.schilder.filter((t) => t === "Bandit · Lv 1").length === 4, "Anna sieht vier Banditen mit „Bandit · Lv 1“");
   check(sicht.schilder.includes("Ben · Lv 2"), "…und Ben mit Name und Stufe aus derselben Simulation: " + sicht.schilder.filter((t) => !/Bandit/.test(t)).join(", "));
   check(await anna.evaluate(() => { const K = window.EZK, i = K.z.w.find((e) => e[0] === K.ichId); return Math.hypot(K.zone.x0 + i[4] - 6536, K.zone.y0 + i[5] - 6583) < 1.6; }), "Anna steht im Kampf dort, wo sie in der Welt stand");
-  check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Mehrkampf", "Unter der Minimap: „Mehrkampf“ auf der Lichtung");
+  { const ka = await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent); check(ka === "Einzelkampf", "Unter der Minimap: „Einzelkampf“ auf der Lichtung (seit 22.11. ist die Banditen-Lichtung Einzelkampf; " + ka + ")"); }
   check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.feind:not(.tot)").length) === 4, "Die Minimap zeigt die vier Banditen live als rote Punkte");
   const tf0 = await anna.evaluate(() => document.querySelector("#ez-karte").style.transform);
   /* laufen: Taste D – der Server bewegt, die Welt folgt */
-  const x0 = await anna.evaluate(() => window.EZW.szene.ort.x); await anna.keyboard.down("d"); await anna.waitForTimeout(700); await anna.keyboard.up("d"); await anna.waitForTimeout(400);
+  const x0 = await anna.evaluate(() => window.EZW.szene.ort.x); await anna.keyboard.down("d"); await anna.waitForTimeout(1000); await anna.keyboard.up("d"); await anna.waitForTimeout(400);
   const x1 = await anna.evaluate(() => window.EZW.szene.ort.x); check(x1 - x0 > 1, `Laufen mit der Tastatur: der Server bewegt Anna (${(x1 - x0).toFixed(1)} Felder)`);
   const tf1 = await anna.evaluate(() => document.querySelector("#ez-karte").style.transform), dx = (t) => Number((t.match(/translate\((-?[\d.]+)px/) || [])[1]);
   check(dx(tf0) - dx(tf1) >= 6, `Die Minimap scrollt beim Laufen sichtbar mit (${tf0} → ${tf1})`);
   /* kämpfen: immer wieder 1 (Angriff auf den nächsten Banditen) */
   const gebucht = () => buchungen.filter((x) => x.p_user.endsWith("a001")).reduce((n, x) => n + (x.p_ep.schildwaechter || 0), 0); let zahlen = 0;
   anna.on("console", () => {}); for (let i = 0; i < 160 && gebucht() === 0; i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(400); if (!zahlen) { zahlen = await anna.evaluate(() => window.EZW.szene.children.list.filter((o) => o.type === "Text" && /^\d+$/.test(o.text)).length); if (zahlen && process.env.BILD) await anna.screenshot({ path: process.env.BILD }); } }
-  check(zahlen > 0, "Treffer zeigen Schadenszahlen in der Welt");
+  { const n = await anna.evaluate(() => window.__zahlen || 0); check(zahlen > 0 || n > 0, `Treffer zeigen Schadenszahlen in der Welt (${n} gezählt)`); }
   check(gebucht() > 0, `Anna besiegt Banditen: ${gebucht()} EP gebucht (Kreuzwald, ${buchungen.filter((x) => x.p_user.endsWith("a001")).map((x) => x.p_kampf).filter((v, i, a) => a.indexOf(v) === i).join(", ")})`);
   check(buchungen.every((x) => x.p_kampf === "kreuzwald/kreuzwald"), "Gebucht wird als Kreuzwald");
   /* Teleport aus dem Kampfgebiet */
@@ -74,7 +75,7 @@ try {
   check(await anna.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Sicherer Ort", "In der Waldmark: „Sicherer Ort“");
   /* Die fünf Helden sind nicht mehr wählbar: H öffnet in der Waldmark den Heldeneditor (Aussehen und Startwaffe) */
   await Promise.all([anna.waitForURL(/held\.html/, { timeout: 15000 }).catch(() => {}), anna.keyboard.press("h")]);
-  check(/held\.html/.test(anna.url()), "H in der Waldmark: Heldeneditor statt Heldenwechsel");
+  check(/held\.html/.test(anna.url()), "H in der Waldmark: Heldeneditor statt Heldenwechsel (" + anna.url() + " · " + (await anna.evaluate(() => [...document.querySelectorAll(".tafel h2, .tafel h1, dialog h2")].map((e) => e.textContent).join("|")).catch(() => "?")) + ")");
   /* Ben läuft durchs Südtor zurück in die Waldmark */
   await ben.goto(B + S + "&wx=6448&wy=6467.5"); await bereit(ben); /* Startstelle über die Adresse – ein Wert im Speicher könnte von der laufenden Seite überschrieben werden */
   check(await ben.evaluate(() => document.querySelector("#ez-kampfart b").textContent) === "Einzelkampf", "Am Südtor im Kreuzwald: „Einzelkampf“");

@@ -135,8 +135,8 @@ export class WeltKampf {
     for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
       if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9]; f.blick = e[6]; /* Blickrichtung vom Server: zum Gegner, mit dem gekämpft wird */
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); this.figurSichtbar(f, !f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
+    for (const ev of z.ev) this.ereignis(ev); /* erst die Ereignisse (Schadenszahl/Hitsplat), dann Verschwundenes entfernen – sonst fehlt bei einem Treffer, der sofort tötet, die Zahl */
     for (const id of [...this.figuren.keys()]) if (!da.has(id)) { const f = this.figuren.get(id)!; this.figuren.delete(id); this.figurEntfernen(f); }
-    for (const ev of z.ev) this.ereignis(ev);
     const ich = z.w.find((e) => e[0] === this.ichId); if (ich) { this.eigenerBlick(ich[6]);  if (!this.bereit) { this.bereit = true; const zx = this.zone.x0 + ich[4], zy = this.zone.y0 + ich[5]; if (Math.hypot(zx - this.s.ort.x, zy - this.s.ort.y) > 3) { this.s.ort.x = zx; this.s.ort.y = zy; } } /* nah dran: nicht springen – die Glättung (schritt) führt weich zur Stelle des Servers */
       if (ich[10] && !this.totGemeldet) { this.totGemeldet = true; this.s.halt(); this.s.gesperrt = true; const t = $("#ez-dorf-hilfe"); t.textContent = "Du bist gefallen – deine Gefährten tragen dich zurück in die Waldmark …"; t.style.display = ""; setTimeout(() => this.gefallen(), 1800); } }
     this.hud(z); }
