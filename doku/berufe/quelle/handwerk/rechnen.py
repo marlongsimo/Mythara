@@ -5,14 +5,14 @@ import json, math
 STUFEN = ["Training", "Einfach", "Selten", "Episch", "Legendär", "Mythisch"]; LV = [1, 10, 20, 35, 45, 65]
 HOLZ = ["Eichenstamm", "Tannenstamm", "Eibenstamm", "Moorweidenstamm", "Kernbaumstamm", "Weltenbaumstamm"]; HXP = [25, 40, 70, 110, 175, 260]
 ERZ = ["Kupfer", "Eisen", "Schwarzeisen", "Sterneisen", "Splittereisen", "Ureisen"]; EXP = [20, 35, 60, 100, 160, 250]; ERZ_JE_BARREN = [1, 2, 2, 2, 2, 3]
-FLACHS_XP = 8; GARN_XP = 4                     # Flachs pflücken, Garn an der Werkbank (eine Sorte)
+PFLUECK_XP = 8; GARN_XP = 4; SEHNE_XP = 4      # Flachs und Hanf pflücken (beide ab Level 1); an der Werkbank: Flachs → Bogensehne, Hanf → Garn
 LEDER = ["Raues Leder", "Weiches Leder", "Gehärtetes Leder", "Moorleder", "Splitterleder", "Urleder"]; HAEUTE = [1, 1, 2, 2, 3, 4]; GXP = [15, 25, 45, 75, 120, 190]   # Kuhhaut → Leder je nach Level
-STOFF = ["Leinen", "Grobtuch", "Feintuch", "Mondtuch", "Splittertuch", "Weltentuch"]; GARNE = [2, 3, 4, 5, 6, 8]; WXP = [12, 22, 40, 65, 105, 170]   # Garn → Stoff je nach Level
+STOFF = ["Hanftuch", "Grobtuch", "Feintuch", "Mondtuch", "Splittertuch", "Weltentuch"]; GARNE = [2, 3, 4, 5, 6, 8]; WXP = [12, 22, 40, 65, 105, 170]   # Garn → Stoff je nach Level
 TICK = 0.6 * 0 + 0.5
 def r5(x): return int(5 * round(x / 5)) if x >= 20 else int(round(x))
 def barren_xp(t): return r5(0.3 * EXP[t] * ERZ_JE_BARREN[t])
 def wert(t, art):   # Sammel-XP, die in einer Einheit steckt
-    return {"B": EXP[t] * ERZ_JE_BARREN[t], "S": HXP[t], "L": GXP[t] * 2, "G": (FLACHS_XP + GARN_XP) * 2, "T": WXP[t] * 2}[art]
+    return {"B": EXP[t] * ERZ_JE_BARREN[t], "S": HXP[t], "L": GXP[t] * 2, "G": (PFLUECK_XP + GARN_XP) * 2, "N": (PFLUECK_XP + SEHNE_XP) * 2, "T": WXP[t] * 2}[art]
 # Rezepte: (Werkstatt, Familie, Gegenstand je Stufe (Name), Level-Versatz, Zutaten {B,S,L,G,T}, ab Stufe)
 R = [
  ("Amboss", "Dolch", ["–", "Eiddolch"], 0, {"B": 1, "S": 1}, 1),
@@ -25,11 +25,11 @@ R = [
  ("Amboss", "Beinschienen", ["–", "Eisenbeinschienen"], 6, {"B": 3, "L": 1}, 1),
  ("Amboss", "Zweihänder", ["–", "Eidzweihänder"], 7, {"B": 3, "S": 1, "L": 1}, 1),
  ("Amboss", "Brustpanzer (schwer)", ["–", "Eisenwacht"], 9, {"B": 5, "L": 1}, 1),
- ("Werkbank", "Kurzbogen", ["Jagdbogen", "Mondkurzbogen"], 1, {"S": 2, "G": 1}, 0),
- ("Werkbank", "Langbogen", ["–", "Mondlangbogen"], 4, {"S": 3, "G": 1}, 1),
+ ("Werkbank", "Kurzbogen", ["Jagdbogen", "Mondkurzbogen"], 1, {"S": 2, "N": 1}, 0),
+ ("Werkbank", "Langbogen", ["–", "Mondlangbogen"], 4, {"S": 3, "N": 1}, 1),
  ("Werkbank", "Schild", ["Rundschild", "Sternenschild"], 5, {"S": 3, "B": 1}, 0),
  ("Werkbank", "Stab", ["Hirtenstab", "Sternenszepter"], 6, {"S": 3, "G": 1}, 0),
- ("Werkbank", "Armbrust", ["–", "Sternarmbrust"], 6, {"S": 2, "B": 1, "G": 1}, 1),
+ ("Werkbank", "Armbrust", ["–", "Sternarmbrust"], 6, {"S": 2, "B": 1, "N": 1}, 1),
  ("Werkbank", "Kapuze (leicht)", ["–", "Jägerkapuze"], 1, {"L": 2, "G": 1}, 1),
  ("Werkbank", "Kapuze (Stoff)", ["–", "Magierkapuze"], 1, {"T": 2, "G": 1}, 1),
  ("Werkbank", "Hose (leicht)", ["–", "Jägerhose"], 3, {"L": 3, "G": 1}, 1),
@@ -38,7 +38,7 @@ R = [
  ("Werkbank", "Robe (Stoff)", ["Magiepanzer", "Magierrobe"], 8, {"T": 4, "G": 1}, 0),
 ]
 EINHEIT = {"B": lambda t: ERZ[t] + "barren", "S": lambda t: HOLZ[t], "L": lambda t: LEDER[t],
-           "G": lambda t: "Garn", "T": lambda t: STOFF[t]}
+           "G": lambda t: "Garn", "N": lambda t: "Bogensehne", "T": lambda t: STOFF[t]}
 rezepte = []
 for werk, fam, namen, versatz, zut, ab in R:
     for t in range(ab, 6):
@@ -47,8 +47,10 @@ for werk, fam, namen, versatz, zut, ab in R:
         rezepte.append(dict(werk=werk, fam=fam, stufe=STUFEN[t], t=t, name=name, level=min(99, LV[t] + versatz),
             zutaten=[[EINHEIT[a](t), n] for a, n in zut.items()], splitter=0, xp=xp, ticks=3 + 2 * einheiten))
 # Vorstufen
-vor = [dict(art="Pflücken (Flachsfeld)", name="Flachs", level=1, zutaten="Flachsfeld in der Welt, kein Werkzeug", xp=FLACHS_XP, ticks=3),
-       dict(art="Garn drehen (Werkbank)", name="Garn", level=1, zutaten="1 Flachs", xp=GARN_XP, ticks=2)]
+vor = [dict(art="Pflücken (Flachsfeld)", name="Flachs", level=1, zutaten="Flachsfeld in der Welt, kein Werkzeug", xp=PFLUECK_XP, ticks=3),
+       dict(art="Pflücken (Hanffeld)", name="Hanf", level=1, zutaten="Hanffeld in der Welt, kein Werkzeug", xp=PFLUECK_XP, ticks=3),
+       dict(art="Sehne drehen (Werkbank)", name="Bogensehne", level=1, zutaten="1 Flachs", xp=SEHNE_XP, ticks=2),
+       dict(art="Garn drehen (Werkbank)", name="Garn", level=1, zutaten="1 Hanf", xp=GARN_XP, ticks=2)]
 for t in range(6):
     vor.append(dict(art="Schmelzen (Esse)", name=ERZ[t] + "barren", level=LV[t], zutaten=f"{ERZ_JE_BARREN[t]} {ERZ[t]}erz + 1 Stamm (Brennholz, jede Sorte ab {HOLZ[max(0,t-2)]})", xp=barren_xp(t), ticks=3))
 for t in range(6):
