@@ -47,8 +47,12 @@ let verbundenGewesen = sitz("rift_verbunden") === "1";
 /** Für die Kampf-/Weltzonen-Verbindung: dieselbe Geräteregel */
 export function geraetAngaben(): { geraet: string; wieder: boolean } { return { geraet: GERAET, wieder: verbundenGewesen }; }
 /* iPhone: nach dem Zurückkommen in die App sofort neu verbinden, statt die Wartezeit abzusitzen; eine Verbindung, die iOS still geschlossen hat, schließen */
-if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") return;
-  if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
+let wegSeit = 0;
+if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") { if (!wegSeit) wegSeit = Date.now(); return; }
+  /* iOS trennt im Hintergrund oft still die Verbindung – das Objekt meldet danach trotzdem „offen“, und das Gerät spielte ohne Server weiter (zwei Geräte zugleich).
+     Darum nach mehr als 3 s im Hintergrund immer neu verbinden: Ist das Konto inzwischen auf einem anderen Gerät aktiv, lehnt der Server ab (4410) und dieses Gerät meldet sich ab. */
+  const lange = wegSeit && Date.now() - wegSeit > 3000; wegSeit = 0;
+  if (ws && (lange || ws.readyState > WebSocket.OPEN)) { const alt = ws; ws = null; try { alt.close(1000, "zurueck"); } catch { /* schon zu */ } }
   if (!ws) { versuch = 0; void verbinden(); } });
 async function verbinden() { if (verbindet || ws) return; verbindet = true; /* nie zwei Verbindungen zugleich: während auf das Token gewartet wird, gibt es noch keine – ein zweiter Aufruf öffnete sonst eine zweite (der Server wirft dann eine hinaus) */
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
