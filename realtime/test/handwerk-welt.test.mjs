@@ -32,7 +32,7 @@ const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(()
 const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const anzahl = (s, g) => (s.inv.rucksack || []).reduce((n, x) => n + ((typeof x === "string" ? x : x.g) === g ? (typeof x === "string" ? 1 : x.n) : 0), 0);
 const faecher = (s, g) => (s.inv.rucksack || []).filter((x) => (typeof x === "string" ? x : x.g) === g).length;
-const WERKBANK = { x: 6463.5, y: 6426.5 }, ESSE = { x: 6467.4, y: 6427.8 }, FLACHS = { id: "flachs_1", x: 6506.5, y: 6412.5 };
+const WERKBANK = { x: 6463.5, y: 6426.5 }, AMBOSS = { x: 6470.4, y: 6427.6 }, ESSE = { x: 6467.4, y: 6427.8 }, FLACHS = { id: "flachs_1", x: 6506.5, y: 6412.5 };
 const TA = "tok_anna_" + "x".repeat(30), TB = "tok_ben__" + "x".repeat(30);
 const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x + d, wy: b.y }); await schlaf(150); };
 const mach = async (s, rezept, menge = 1) => { s.handwerk = []; sende(s, { t: "handwerk", tat: "start", rezept, menge }); return (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; };
@@ -70,7 +70,8 @@ try {
   const gast = await spieler(null, "waldmark"); await schlaf(400); await bei(gast, WERKBANK); check(/Konto/.test((await mach(gast, "bogensehne")).text || ""), "Gast: Handwerk nur mit Konto"); gast.ws.close();
   anna.ws.close(); ben.ws.close(); srv.kill(); await schlaf(400);
   /* Lauf 2: Glut; dazu zwei Eichenstämme und Handwerk 5 für den Bogen in zwei Schritten */
-  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne", "ungespannt_mondkurzbogen_gewoehnlich", "ungespannt_mondkurzbogen_gewoehnlich", "bogensehne", "bogensehne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
+  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne", "ungespannt_mondkurzbogen_gewoehnlich", "ungespannt_mondkurzbogen_gewoehnlich", "bogensehne", "bogensehne", "hammer", "barren_eisen", "stamm_tanne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
+  HELD[B].inventar.rucksack = ["barren_eisen", "stamm_tanne"]; HELD[B].inventar.berufe = { handwerk: 5000 };
   await starten({ HANDWERK_GLUT: "1" });
   const a2 = await spieler(TA, "waldmark"); await warte(a2, (m) => m.t === "inventar"); await schlaf(300); const garn0 = anzahl(a2, "garn");
   await bei(a2, WERKBANK); await mach(a2, "stoff_hanf", 2); const g = await warte(a2, (m) => m.t === "handwerk" && m.tat === "glut", 6000);
@@ -78,6 +79,11 @@ try {
   const e5 = await ende(a2); await schlaf(200); const f5 = a2.handwerk.filter((m) => m.tat === "fertig");
   check(e5 && f5.length === 2 && !f5[0].glut && f5[1].glut && f5[1].gespart && f5[1].xp === Math.round(f5[0].xp * 1.5), `Glut angetippt: zweites Hanftuch mit Glut, 50 % mehr XP (${f5.map((m) => m.xp)})`);
   check(anzahl(a2, "garn") === garn0 - 3 && faecher(a2, "stoff_hanf") === 2, `Garn ${garn0} → ${anzahl(a2, "garn")} (eins gespart), zwei Hanftücher`);
+  /* Amboss nur mit Hammer im Rucksack */
+  const b2 = await spieler(TB, "waldmark"); await warte(b2, (m) => m.t === "inventar"); await schlaf(200); await bei(b2, AMBOSS);
+  check(/Hammer im Rucksack/.test((await mach(b2, "holzbeil_einfach")).text || ""), "Amboss ohne Hammer: „Du brauchst einen Hammer im Rucksack.“"); b2.ws.close();
+  await bei(a2, AMBOSS); const hb = await mach(a2, "holzbeil_einfach"); const eh = hb.tat === "start" ? await ende(a2) : null; await schlaf(200);
+  check(eh && eh.grund === "fertig" && anzahl(a2, "holzbeil_einfach") === 1 && anzahl(a2, "hammer") === 1 && anzahl(a2, "barren_eisen") === 0, `Amboss mit Hammer: Eisenbarren + Tannenstamm → Holzbeil, der Hammer bleibt (${hb.text || hb.tat})`);
   /* Bogen in zwei Schritten: an der Werkbank schnitzen, dann im Rucksack die Sehne darauf (überall) */
   const sehnen0 = anzahl(a2, "bogensehne"), xp0 = a2.inv.berufe.handwerk;
   await bei(a2, WERKBANK); const u = await mach(a2, "ungespannt_mondkurzbogen_gewoehnlich"); const eu = u.tat === "start" ? await ende(a2) : null; await schlaf(200);

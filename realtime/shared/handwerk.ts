@@ -20,6 +20,8 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   amboss: { id: "amboss", name: "Amboss", x: 6470.4, y: 6427.6, tun: "Schmieden" },
   werkbank: { id: "werkbank", name: "Werkbank", x: 6463.5, y: 6426.5, tun: "Werken" },
 };
+/** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
+export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
 

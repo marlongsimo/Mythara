@@ -5,7 +5,7 @@
  *   · Glut (12 % je Stück): Fenster von 1,5 s; „handwerk“/„glut“ darin → beim nächsten Stück eine Einheit der häufigsten Zutat gespart, 50 % mehr XP.
  *   · Abbruch: Menge fertig, Zutaten aus, Rucksack voll, weggegangen, „stop“ oder Verbindung weg.
  */
-import { REZEPTE, rezept, Rezept, STATIONEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, BERUF_HAND } from "../../shared/handwerk";
+import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, BERUF_HAND } from "../../shared/handwerk";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer } from "./inventar";
@@ -38,6 +38,7 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   const r = rezept(id); if (!r) return "Dieses Rezept gibt es nicht.";
   if (!nah(s, r) && r.station !== "hand") return `Geh näher an die ${STATIONEN[r.station].name}.`;
   const L = handwerkLevel(s.nutzer); if (L < r.level) return `Dafür brauchst du Handwerk ${r.level}.`;
+  const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
   if (!passt(s.nutzer, r)) return "Dein Rucksack ist voll.";
   const n = Math.max(1, Math.min(1000, Math.floor(menge) || 1));
@@ -53,6 +54,7 @@ export function handwerkGlut(s: HandwerkSpieler): void { const a = arbeiten.get(
 function fertigStueck(a: Arbeit): boolean {
   const { s, r } = a, spar = a.glut && sparIndex(r) >= 0 ? sparIndex(r) : -1, glut = a.glut; a.glut = false;
   if (fehlt(s.nutzer, r, spar)) { handwerkStop(s, "zutaten"); return false; }
+  { const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) { handwerkStop(s, "werkzeug"); return false; } }   /* Hammer unterwegs abgelegt */
   for (let i = 0; i < r.zutaten.length; i++) { const z = r.zutaten[i], n = Math.max(0, z.n - (i === spar ? 1 : 0)), g = sorte(s.nutzer, z.g, n); if (!g) continue; for (let k = 0; k < n; k++) abgeben(sb, s.nutzer, g); }
   if (!aufnehmen(sb, s.nutzer, r.ergebnis, 1)) { handwerkStop(s, "voll"); return false; }
   const vorher = handwerkLevel(s.nutzer), xp = Math.round(r.xp * (glut ? 1.5 : 1)); berufXpDazu(sb, s.nutzer, BERUF_HAND, xp); const nachher = handwerkLevel(s.nutzer);
