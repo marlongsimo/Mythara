@@ -9,6 +9,7 @@
  * Ohne Konto oder ohne Server rechnet der Browser dieselbe Simulation selbst (allein, ohne Gutschrift).
  * Koordinaten: Simulation in Rechenfeldern ab der linken oberen Ecke des Gebiets; Welt in Weltfeldern (Rechenfeld + Ursprung), Bild = Feld × FELD_PX.
  */
+import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
@@ -145,6 +146,7 @@ export class WeltKampf {
     const nm = s.add.text(0, 0, "", { fontFamily: "Cinzel, Georgia, serif", fontSize: "14px", color: team === 0 ? "#f3e3b5" : "#ffc9b0", stroke: "#000", strokeThickness: 4 }).setOrigin(0.5, 1).setResolution(2).setDepth(1e7);
     const f: Figur = { typ, held, team, sp, nm, lb: s.add.graphics().setDepth(1e7), x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" }; this.figuren.set(id, f); return f; }
   private ereignis(ev: Ereignis) { const zahl = (id: number, t: string, farbe: string) => this.zahl(id, t, farbe);
+    if ((ev.a === "schaden" || ev.a === "null" || ev.a === "block" || ev.a === "hieb") && ev.id === this.ichId) kampfMerken(); /* Weltenwechsel erst 10 s nach dem Kampf */
     if (ev.a === "schaden") { this.splat(ev.id, ev.n);
       const f = ev.id === this.ichId ? undefined : this.figuren.get(ev.id), sp = f && !f.held ? (f.sp as unknown as { treffer?: () => void }) : undefined; if (sp && typeof sp.treffer === "function") sp.treffer(); }   /* Gegner zucken beim Treffer */
     else if (ev.a === "heil") zahl(ev.id, "+" + ev.n, "#7dff9a");

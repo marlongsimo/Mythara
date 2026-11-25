@@ -77,6 +77,14 @@ try {
   if (knopf) { await knopf.click(); await anna.waitForTimeout(400); check(await anna.evaluate(() => localStorage.getItem("ez_daecher_aus")) === "1" && await knopf.getAttribute("aria-checked") === "true", "Eingeschaltet (gemerkt, Schalter an)");
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-menue.png" });
     await knopf.click(); await anna.waitForTimeout(200); check(await anna.evaluate(() => localStorage.getItem("ez_daecher_aus")) === "0", "Wieder aus"); }
+  /* Welt wechseln: Fenster mit „Beta“ (aktuell) und Spielerzahl; kurz nach dem Kampf der Hinweis auf die Wartezeit */
+  const wk = await anna.$('#ez-konto [data-t="welt"]'); check(Boolean(wk) && /Beta/.test(await wk.textContent()), "Einstellungen: „Welt · Beta ›“");
+  if (wk) { await wk.click(); await anna.waitForSelector("#ez-konto .weltliste", { timeout: 5000 }).catch(() => {}); await anna.waitForTimeout(1500);
+    const z = await anna.evaluate(() => [...document.querySelectorAll("#ez-konto .weltzeile")].map((b) => b.textContent.replace(/\s+/g, " ").trim()));
+    check(z.length === 1 && /Beta/.test(z[0]) && /aktuell/.test(z[0]) && /\d+ online/.test(z[0]), "Weltenfenster: " + z.join(" | "));
+    const note = await anna.evaluate(() => document.querySelector("#ez-konto .weltnote").textContent); check(/Kampf: wechseln erst in \d+ s|Weitere Welten folgen/.test(note), "Hinweis: " + note);
+    if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "welten-fenster.png" });
+    await anna.click('#ez-konto [data-w="zurueck"]'); await anna.waitForTimeout(200); check(Boolean(await anna.$('#ez-konto [data-t="daecher"]')), "Zurück zu den Einstellungen"); }
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-1500));

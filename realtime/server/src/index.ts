@@ -17,13 +17,13 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline } from "./welt";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
 import { erlegt } from "./quests";
 
-const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 40, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
+const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
    bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
 const KAMPF_RUHE_MS = 10000, HAENGEN_MS = 60000, RAND = 2.5;
@@ -206,7 +206,7 @@ const http = createServer((req, res) => { // Lebenszeichen für den Anbieter
         .catch((x) => { console.error("Konto löschen:", (x as Error).message); res.writeHead(500, kopf); res.end(JSON.stringify({ ok: false, text: "Fehler beim Löschen. Versuch es gleich noch einmal." })); }); });
     return; }
   res.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
-  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", stand: (process.env.RENDER_GIT_COMMIT || "lokal").slice(0, 8) /* welcher Commit läuft (Render setzt die Variable selbst) */, handwerk: true, protokoll: PROTOKOLL, spieler: plaetze.size, kampagnen: Boolean(SB_URL && SB_KEY) }));
+  res.end(JSON.stringify({ ok: true, dienst: "mythara-echtzeit", stand: (process.env.RENDER_GIT_COMMIT || "lokal").slice(0, 8) /* welcher Commit läuft (Render setzt die Variable selbst) */, handwerk: true, protokoll: PROTOKOLL, spieler: plaetze.size, welten: [{ id: "beta", name: "Beta", online: weltOnline() }] /* Weltenwahl auf der Willkommensseite (bisher nur eine Welt) */, kampagnen: Boolean(SB_URL && SB_KEY) }));
 });
 const wss = new WebSocketServer({ server: http, maxPayload: 65536, verifyClient: (info: { origin: string }) => { const ok = !HERKUNFT.length || HERKUNFT.includes(info.origin); if (!ok) console.log("Verbindung abgelehnt: Herkunft", info.origin); return ok; } });
 /* Ein Fehler in einer einzelnen Partie darf nicht den ganzen Server beenden: melden und weiterlaufen */

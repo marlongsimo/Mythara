@@ -40,6 +40,8 @@ export function stelleMerken(H: Pick<WeltHilfen, "sb">, nutzer: string, region: 
 const alleStop = (s: Spieler) => { holzStop(s); bergStop(s); pflueckStop(s); handwerkStop(s); };
 const spieler = new Set<Spieler>(); let naechste = 1, holzBereit = false;
 /** Heim-Teleport: je Konto höchstens alle 5 Minuten (der Server merkt sich die Zeit – Browser-Speicher löschen oder ein anderes Gerät helfen nicht) */
+/** Wie viele gerade in der Welt sind (Weltenwahl auf der Willkommensseite) */
+export const weltOnline = (): number => spieler.size;
 export const TELEPORT_PAUSE_MS = Number(process.env.TELEPORT_PAUSE_MS || 5 * 60 * 1000); const teleportZuletzt = new Map<string, number>();
 setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
@@ -62,7 +64,7 @@ async function freundeVon(H: Pick<WeltHilfen, "sb">, nutzer: string, frisch = fa
   freundeJe.set(nutzer, { t: Date.now(), liste }); return liste; }
 const onlineKonto = (nutzer: string): Spieler | undefined => [...spieler].find((o) => !o.gast && o.nutzer === nutzer);
 const gebietName = (ort: string) => ort.charAt(0).toUpperCase() + ort.slice(1);
-const MAX_WELT = Number(process.env.MAX_WELT || 500); /* so viele gleichzeitig in der Welt */
+const MAX_WELT = Number(process.env.MAX_WELT || 150); /* so viele gleichzeitig in der Welt */
 const zahl = (v: unknown, max = 20000) => typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= max;
 /** Chattext säubern: keine Steuerzeichen, keine spitzen Klammern, höchstens 160 Zeichen */
 export const saeubern = (t: unknown): string => String(t ?? "").replace(/[\u0000-\u001f\u007f-\u009f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
