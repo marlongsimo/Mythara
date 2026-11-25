@@ -41,7 +41,7 @@ interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; fenster: numb
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
   /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** Inventar-Hörer abmelden */ invAus?: () => void; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
-  /** Kampfregeln v1: der eigene Held (Skill-XP, Ausrüstung) – ohne eigenen Helden die alten Kampfwerte */ v1?: HeldV1; v1T?: number;
+  /** Kampfregeln v1: der eigene Held (Skill-XP, Ausrüstung) – ohne eigenen Helden die alten Kampfwerte */ v1?: HeldV1; v1T?: number; /** Eingaben vor dem Betreten der Zone (Autoangriff, Sprint) */ nachher?: Eingabe[]; /** Stil, den der Browser gemeldet hat, bevor der Held geladen war */ stilVorab?: unknown;
   /** zuletzt im Kampf (ms); Verbindung weg, Held bleibt noch (seit, ms); ersetzt = übernommen oder ins Nachbargebiet gewechselt: beim Schließen sofort weg */ kampfZ?: number; haengt?: number; ersetzt?: boolean }
 /** Eine gemeinsame Kampfwelt: eine Simulation für alle Spieler dort; Gegner kehren zurück, EP nach Schadensanteil (shared/sim.ts, Sim.welt) */
 interface Zone { karte: string; sim: Sim; spieler: Set<Platz>; leerSeit: number }
@@ -79,6 +79,7 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
     if (Z2 !== Z && offen && amRand(q)) { q.ersetzt = true; continue; }
     q.ersetzt = true; zoneVerlassen(q); if (offen) try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } }
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
+  if (p.nachher) { for (const e of p.nachher) try { Z.sim.eingabe(e, p.heldId); } catch { /* egal */ } p.nachher = undefined; } /* Autoangriff und Sprint von vor dem Betreten */
   { const L = nutzer && p.v1 ? lebenJe.get(nutzer) || (p.v1.lpStand ? { lp: p.v1.lpStand.lp, zeit: p.v1.lpStand.z * 1000 } : undefined) : undefined, h = Z.sim.nach(p.heldId); /* aus dem Speicher, sonst aus der Datenbank (Migration 046) */
     if (L && h) h.lp = Math.max(1, Math.min(h.max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK))); }
   console.log("Welt:", name, "betritt", karte, "·", Z.spieler.size, "dort"); namenMelden(Z); }
@@ -88,6 +89,7 @@ function uebernehmen(alt: Platz, p: Platz, Z: Zone, typ: string, name: string): 
   void buchen(alt, true); if (alt.invAus) { alt.invAus(); alt.invAus = undefined; }
   alt.zoneWeg = true; alt.ersetzt = true; Z.spieler.delete(alt); if (alt.ws.readyState === WebSocket.OPEN) try { alt.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ }
   p.zone = Z; p.heldId = id; p.v1T = Date.now(); p.name = name; p.kampfZ = alt.kampfZ; if (p.kampf) p.kampf.team = [typ]; if (p.v1) Z.sim.kampfwerteSetzen(id, kampfwerteVon(p.v1));
+  if (p.nachher) { for (const e of p.nachher) try { Z.sim.eingabe(e, id); } catch { /* egal */ } p.nachher = undefined; }
   Z.spieler.add(p); Z.leerSeit = 0; console.log("Welt:", name, "übernimmt den Helden auf einem neuen Gerät in", Z.karte); namenMelden(Z); }
 /** Steht der Held am Rand seines Gebiets (Wechsel ins Nachbargebiet)? */
 function amRand(q: Platz): boolean { const Z = q.zone, K0 = Z && KARTEN[Z.karte], wz = K0 && K0.weltRegion ? WELTZONEN[K0.weltRegion] : undefined, h = Z && q.heldId ? Z.sim.nach(q.heldId) : undefined;
@@ -197,11 +199,15 @@ wss.on("connection", (ws, req) => {
     let e: Eingabe & { token?: string }; try { e = JSON.parse(String(roh)); } catch { return; } p.zuletzt = jetzt;
     if (p.vorbereitet && (e as { t: string }).t === "betreten") { const v = p.vorbereitet, m = e as unknown as { x?: number; y?: number }; p.vorbereitet = undefined; /* an der Grenze: jetzt hinein, an der Stelle, an der der Held die Grenze überschreitet */
       const wo = Number.isFinite(m.x) && Number.isFinite(m.y) ? { x: Number(m.x), y: Number(m.y) } : undefined; if (KARTEN[karte] && KARTEN[karte].ursprung) zoneBetreten(p, karte, ort, v.typ, v.ep, v.name, wo); return; }
-    if (karte && !p.sim && !p.haupt && !p.zone) { /* Kampagnenkampf: zuerst die Anmeldung */ if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
+    if (karte && !p.sim && !p.haupt && !p.zone) { /* Kampagnenkampf: zuerst die Anmeldung */
+      /* Einstellungen, die der Browser gleich nach dem „hallo“ schickt (Stil, Autoangriff, Sprint), nicht verwerfen: merken und beim Betreten der Zone anwenden */
+      { const t = (e as { t: string }).t; if (t === "stil") { p.stilVorab = (e as { stil?: unknown }).stil; if (p.v1) p.v1.stil = stilPruefen(p.stilVorab); return; }
+        if (t === "auto" || t === "sprint") { p.nachher = (p.nachher || []).filter((x) => (x as { t: string }).t !== t).concat([e]); return; } }
+      if ((e as { t: string }).t !== "anmeldung" || p.kampf) return; p.kampf = neuerKampf(karte, ort, [held, ...mit]);
       try { const nutzer = await nutzerAus(String(e.token || "")); if (!nutzer) { console.log("Kampf abgelehnt: Anmeldung von Supabase nicht bestätigt"); ws.close(4401, "anmeldung ungueltig"); return; } p.kampf.nutzer = nutzer; const [ep, siege] = await Promise.all([epLesen(nutzer), siegeLesen(nutzer)]);
         if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
           const [aktiv, profil, v1] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>, heldV1Lesen(sb, nutzer)]);
-          if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); p.v1 = v1; } /* Kampfregeln v2: eigener Held mit Skill-XP und geprüfter Ausrüstung */
+          if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); if (p.stilVorab !== undefined) { v1.stil = stilPruefen(p.stilVorab); p.stilVorab = undefined; } p.v1 = v1; } /* Stil, der während des Ladens kam, gilt (sonst stand Akkurat im Browser, gerechnet wurde Ausgewogen) */ /* Kampfregeln v2: eigener Held mit Skill-XP und geprüfter Ausrüstung */
           if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
             p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
           const typ = aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : held, name = (profil[0] && profil[0].handle) || "Wanderer";
@@ -227,7 +233,7 @@ wss.on("connection", (ws, req) => {
     if ((e as { t: string }).t === "da") return; /* Lebenszeichen des Browsers (es gab Eingaben, etwa im Chat): zählt gegen die Inaktivität */
     if ((e as { t: string }).t === "verlassen") { void buchen(p, true); return; }
     if ((e as { t: string }).t === "stil") { /* v3: Angriffsstil gewählt (Index der Kampfart, 1 = Standard) – Kampfwerte neu */
-      if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }
+      if (p.v1) { p.v1.stil = stilPruefen((e as { stil?: unknown }).stil); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } else p.stilVorab = (e as { stil?: unknown }).stil; /* Held lädt noch: merken */ return; }
     if ((e as { t: string }).t === "ausruestung") { /* v1: anderes angelegt – Kampfwerte neu (nur eigene Gegenstände, siehe kampfv1.ts) */
       if (p.v1 && p.kampf && p.kampf.nutzer && inventarVon(p.kampf.nutzer)) return; /* mit Server-Inventar zählt dessen Ausrüstung, nicht die Meldung des Browsers */
       if (p.v1) { p.v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, p.v1.waffe); console.log(`Welt: Ausrüstung ${p.name || "?"}: waffe=${p.v1.angelegt.waffe || "-"} nebenhand=${p.v1.angelegt.nebenhand || "-"}`); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); } return; }

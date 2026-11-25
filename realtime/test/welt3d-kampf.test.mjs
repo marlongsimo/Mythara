@@ -46,6 +46,7 @@ async function spieler(name, token, stelle) { const ctx = await br.newContext({ 
 const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && window.EZW && window.EZW.welt3d, null, { timeout: 120000 });
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]);
+  await anna.addInitScript(() => { if (!sessionStorage.getItem("stil_gesetzt")) { sessionStorage.setItem("stil_gesetzt", "1"); localStorage.setItem("ez_stil", JSON.stringify({ nah: 0 })); } }); /* Stil „Akkurat“ schon vor dem Betreten gewählt */
   await anna.goto(B + S); await bereit(anna); await anna.waitForTimeout(1500);
   check(await anna.evaluate(() => window.EZK.art === "server" && window.EZK.v1 && document.body.classList.contains("kampf-v1")), "Eigener Held im Kreuzwald: Kampfregeln v2, gerechnet vom Server");
   const hud = await anna.evaluate(() => ({ stufe: document.querySelector("#ez-ich-stufe").textContent, lp: document.querySelector("#ez-lpzahl").textContent, name: document.querySelector("#ez-name").textContent,
@@ -67,9 +68,9 @@ try {
   await anna.evaluate(() => { window.__zahlen = []; new MutationObserver((l) => { for (const m of l) for (const n of m.addedNodes) if (n.classList && n.classList.contains("ez-splat")) window.__zahlen.push((n.classList.contains("rot") ? "rot:" : "blau:") + n.textContent); }).observe(document.body, { childList: true }); });
   for (let i = 0; i < 200 && (xpSumme() === 0 || !(await anna.evaluate(() => window.__zahlen.includes("blau:0") && window.__zahlen.some((x) => /^rot:[1-9]\d*$/.test(x))))); i++) { await anna.keyboard.press("1"); await anna.waitForTimeout(250); }
   { const z = await anna.evaluate(() => window.__zahlen); treffer = z.filter((x) => /^rot:[1-9]\d*$/.test(x)).length; blocks = z.filter((x) => x === "blau:0").length; }
-  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_geschick === x.p_staerke && x.p_defense === x.p_geschick && x.p_fernkampf === 0 && x.p_magie === 0), `Nahkampf-XP vom Server gebucht (Stil Ausgewogen: je ein Drittel an Geschick, Stärke und Defense): ${xpSumme()} (Fernkampf/Magie 0)`);
+  check(xpSumme() > 0 && XPBUCH.every((x) => x.p_staerke === 0 && x.p_defense === 0 && x.p_fernkampf === 0 && x.p_magie === 0), `Stil „Akkurat“ gilt vom ersten Schlag an: XP nur an Geschick (${xpSumme()}), Stärke und Defense 0`);
   { const d = await anna.evaluate(() => window.__drops); check(d.length > 0 && d.every((x) => x.bilder > 0 && /\+\d/.test(x.text)), `XP-Drops mit Zeichen am oberen Rand (${d.length}, z. B. „${d[0] && d[0].text}“)`); }
-  check(XPBUCH.every((x) => x.p_lp === x.p_geschick), "1,33 XP je abgezogenem Lebenspunkt an jeden der drei Skills und an Lebenspunkte (gleiche Buchung)");
+  check(XPBUCH.every((x) => x.p_lp > 0 && x.p_geschick > x.p_lp), "Akkurat: 4 XP je Lebenspunkt an Geschick, 1,33 XP an Lebenspunkte");
   check(blocks > 0 && treffer > 0, `Hitsplats wie in OSRS: rot mit Schaden, blau mit 0 statt „geblockt“ (${treffer} rot, ${blocks} blau)`);
   { const b = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.bodenBild && W.bodenBild.size > 0 ? [...W.bodenBild.keys()].length : 0; }, null, { timeout: 30000, polling: 500 }).then((h) => h.jsonValue()).catch(() => 0);
     check(b > 0, `Beute der Banditen liegt am Boden (Splitter aus dem ersten Wurf, ${b} Stück sichtbar)`); }
@@ -77,7 +78,7 @@ try {
     check(lp.text && /^\d+ \/ \d+$/.test(lp.text), `Lebenspunkte im Bogen an der Minikarte: ${lp.text} (Server: ${lp.soll})`); }
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "kampf3d-treffer.png" });
   console.log("    Zustand beim Foto:", await anna.evaluate(() => { const K = window.EZK, W = window.EZW.welt3d; return JSON.stringify({ art: K && K.art, region: K && K.region, hier: W.hier, xp: K && K.z && K.z.ich.xp, stufe: K && K.z && K.z.ich.stufe, lp: document.querySelector("#ez-lpzahl").textContent, v1: K && K.v1, naechster: window.EZN && window.EZN.region }); }));
-  const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").staerke || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Stärke ${lokal})`);
+  const lokal = await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_skills2") || "{}").geschick || 0); check(lokal > 0, `Der Browser zeigt den Stand des Servers (ez_skills2 Geschick ${lokal})`);
   /* Mogeln: eine fremde Waffe melden – mit Server-Inventar zählt allein das, was der Server als angelegt kennt */
   await anna.evaluate(() => window.EZK.netz.sende({ t: "ausruestung", angelegt: { waffe: "hirtenstab", nebenhand: "rundschild" } })); await anna.waitForTimeout(600);
   check(await anna.evaluate(() => { const K = window.EZK, h = K.netz && K.z && K.z.w.find((e) => e[0] === K.z.ich.id); return !/Stab/.test(document.querySelector("#ez-name").textContent); }) && !/Ausrüstung Anna: waffe=hirtenstab/.test(log), "Eine gemeldete fremde Waffe (Stab) ändert nichts – der Server nimmt seine eigene Ausrüstung");
@@ -105,5 +106,5 @@ try {
     check(hinweis, "Spielserver nicht erreichbar: Hinweis im Chat – keine Beute, XP nicht gespeichert"); }
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.slice(0, 3).join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
-await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));
+await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500)); if (process.env.STILDEBUG) console.log(log.split("\n").filter((l) => /STILDEBUG|Anmeldung|betritt/.test(l)).join("\n"));
 console.log(fehler ? fehler + " Fehler" : "Kampf in der 3D-Welt: alles in Ordnung"); process.exit(fehler ? 1 : 0);
