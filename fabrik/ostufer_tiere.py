@@ -1,6 +1,6 @@
 """Mythara Fabrik – Gegner des Ostufers aus einfachen Formen (wenige Flächen), mit Skelett und Bewegungen (wie fabrik/rabe.py).
 
-  <blender-python> fabrik/ostufer_tiere.py -- <art> <ziel.blend>      art: krebs | reiher | gruenlicht
+  <blender-python> fabrik/ostufer_tiere.py -- <art> <ziel.blend>      art: krebs | reiher | gruenlicht | wolf | rudelfuehrer
 Danach: fabrik/export3d.py <ziel.blend> <spiel.glb> echtzeit=1
 
 krebs      – Schlickkrebs (St. 45): flacher schlammbrauner Panzer (≈ 0,9 m breit), zwei große Scheren, acht Beine, Stielaugen.
@@ -9,6 +9,8 @@ reiher     – Splitterreiher (St. 50): grauer Stelzvogel (≈ 1,5 m), blaue Spl
              ruhe · gehen (staksen) · angriff (Splitter-Stoß: Hals zurück, nach vorn stoßen, Schnabel öffnet – Geschoss ab Bild 6) · treffer · tod
 gruenlicht – Grünlicht (St. 60): Irrlicht, leuchtender grüner Kern mit Flammenzungen und kreisenden Funken, schwebt (1,2 m).
              ruhe (schweben, flackern) · angriff (zusammenziehen, aufblähen – Treffer Bild 5) · heilen (ausdehnen, Funken weit) · treffer · tod (verlöscht)
+wolf       – Heidewolf (Fahle Weiten): graubraun · ruhe, gehen, laufen, angriff (Sprungbiss, Treffer Bild 6), treffer, tod
+rudelfuehrer – Rudelführer: ×1,22, dunkler, Nackenmähne, gelb glimmende Augen · dazu heulen (ruft das Rudel)
 Gesicht nach -y, oben +z. Jedes Teil hängt starr an einem Knochen.
 """
 import json, math, os, random, sys
@@ -73,6 +75,27 @@ elif ART == "reiher":
         knochen("bein." + S, (sx * 0.06, 0.02, Z - 0.1), (sx * 0.06, 0.02, 0.0), "koerper")
     knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, 0.2, Z), (0, -0.2, Z), "wurzel")
     knochen("hals1", (0, -0.2, Z + 0.06), (0, -0.25, Z + 0.3), "koerper"); knochen("hals2", (0, -0.25, Z + 0.3), (0, -0.22, Z + 0.52), "hals1"); knochen("kopf", (0, -0.23, Z + 0.53), (0, -0.5, Z + 0.54), "hals2")
+elif ART in ("wolf", "rudelfuehrer"):
+    G_ = 1.22 if ART == "rudelfuehrer" else 1.0
+    FE = mat("fell" + ART, (118, 108, 92) if G_ == 1 else (70, 66, 62), 0.9); BA = mat("bauch" + ART, (176, 166, 148) if G_ == 1 else (120, 114, 106), 0.9)
+    NA = mat("nase", (25, 22, 20), 0.4); AU = mat("auge_w", (230, 190, 70), 0.3, 0, 0.6 if G_ > 1 else 0.0); MA = mat("maehne", (52, 48, 44), 0.95)
+    Z = 0.55 * G_
+    kugel((0, 0.05 * G_, Z), (0.17 * G_, 0.42 * G_, 0.17 * G_), FE, "koerper", 12, 7); kugel((0, -0.18 * G_, Z - 0.05 * G_), (0.13 * G_, 0.18 * G_, 0.12 * G_), BA, "koerper", 10, 6)
+    if G_ > 1:
+        for k in range(7): kristall((random.uniform(-.08, .08) * G_, -0.2 * G_ + k * 0.06 * G_, Z + 0.14 * G_), 0.06 * G_, 0.18 * G_, MA, "koerper", (random.uniform(-.6, .6), 0.3, 0))   # Nackenmähne
+    kugel((0, -0.5 * G_, Z + 0.1 * G_), (0.1 * G_, 0.13 * G_, 0.1 * G_), FE, "kopf", 10, 6); rohr((0, -0.58 * G_, Z + 0.07 * G_), (0, -0.74 * G_, Z + 0.03 * G_), 0.055 * G_, FE, "kopf", 0.03 * G_)
+    kugel((0, -0.75 * G_, Z + 0.04 * G_), (0.025 * G_, 0.025 * G_, 0.022 * G_), NA, "kopf", 6, 4)
+    for sx in (-1, 1):
+        kristall((sx * 0.055 * G_, -0.47 * G_, Z + 0.21 * G_), 0.035 * G_, 0.1 * G_, FE, "kopf", (0, sx * 0.25, 0)); kugel((sx * 0.05 * G_, -0.6 * G_, Z + 0.13 * G_), (0.015, 0.015, 0.012), AU, "kopf", 6, 4)
+    rohr((0, -0.62 * G_, Z - 0.0), (0, -0.72 * G_, Z - 0.02 * G_), 0.035 * G_, FE, "kiefer", 0.02 * G_)
+    rohr((0, 0.45 * G_, Z + 0.05 * G_), (0, 0.78 * G_, Z - 0.12 * G_), 0.06 * G_, FE, "schwanz", 0.02 * G_)
+    for v_, S, sx, y in (("v", "L", 1, -0.25), ("v", "R", -1, -0.25), ("h", "L", 1, 0.32), ("h", "R", -1, 0.32)):
+        b = f"bein{v_}.{S}"; rohr((sx * 0.08 * G_, y * G_, Z - 0.05 * G_), (sx * 0.08 * G_, y * G_ + 0.03, 0.18 * G_), 0.04 * G_, FE, b, 0.03 * G_)
+        rohr((sx * 0.08 * G_, y * G_ + 0.03, 0.18 * G_), (sx * 0.08 * G_, y * G_ - 0.02, 0.02), 0.028 * G_, FE, b, 0.022 * G_); kugel((sx * 0.08 * G_, y * G_ - 0.04, 0.02), (0.035 * G_, 0.05 * G_, 0.02), FE, b, 6, 4)
+        knochen(b, (sx * 0.08 * G_, y * G_, Z - 0.05 * G_), (sx * 0.08 * G_, y * G_, 0.0), "koerper")
+    knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, 0.35 * G_, Z), (0, -0.35 * G_, Z), "wurzel")
+    knochen("kopf", (0, -0.4 * G_, Z + 0.05 * G_), (0, -0.74 * G_, Z + 0.04 * G_), "koerper"); knochen("kiefer", (0, -0.6 * G_, Z), (0, -0.72 * G_, Z - 0.02 * G_), "kopf")
+    knochen("schwanz", (0, 0.42 * G_, Z + 0.05 * G_), (0, 0.78 * G_, Z - 0.12 * G_), "koerper")
 else:
     KE = mat("kern", (230, 255, 200), 0.2, 0, 4.0); FL = mat("flamme", (90, 255, 140), 0.3, 0, 2.6); FU = mat("funke", (170, 255, 190), 0.3, 0, 3.0)
     Z = 1.2
@@ -145,6 +168,24 @@ elif ART == "reiher":
     def tod(t):
         f = glatt(min(1.0, t / 0.7)); dreh("wurzel", (Y, 85 * f)); dreh("hals1", (X, 40 * f)); dreh("hals2", (X, 30 * f)); dreh("bein.L", (X, -30 * f)); ort((0, 0, -0.85 * f * 0))
     BW = {"ruhe": (ruhe, 16, 8, True, {}), "gehen": (gehen, 10, 10, True, {}), "angriff": (angriff, 12, 12, False, {"treffer": 6}), "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 12, False, {"halten": 11})}
+elif ART in ("wolf", "rudelfuehrer"):
+    def bein(f, vorn, hinten):
+        for S, v in (("L", 1), ("R", -1)): dreh("beinv." + S, (X, vorn * v * f)); dreh("beinh." + S, (X, -hinten * v * f))
+    def ruhe(t): dreh("kopf", (X, 4 * s_(t)), (Zx, 10 * s_(t, 0.5))); dreh("schwanz", (Zx, 12 * s_(t, 1.5))); ort((0, 0, 0.005 * s_(t, 2)))
+    def gehen(t): bein(s_(t), 22, 22); dreh("kopf", (X, 4 * s_(t, 2))); dreh("schwanz", (Zx, 10 * s_(t))); ort((0, 0, 0.012 * abs(s_(t))))
+    def laufen(t):
+        f = s_(t); dreh("beinv.L", (X, 40 * f)); dreh("beinv.R", (X, 34 * f)); dreh("beinh.L", (X, -40 * f)); dreh("beinh.R", (X, -34 * f))
+        dreh("koerper", (X, 6 * f)); dreh("kopf", (X, -8 * f)); dreh("schwanz", (X, -20)); ort((0, 0, 0.06 * max(0.0, s_(t, 1, 0.5))))
+    def angriff(t):
+        zurueck = math.sin(math.pi * min(1, t / 0.35)) if t < 0.35 else 0.0; sprung = math.sin(math.pi * min(1, max(0, (t - 0.3) / 0.5)))
+        dreh("koerper", (X, 10 * zurueck - 12 * sprung)); dreh("kopf", (X, -10 * zurueck + 14 * sprung)); dreh("kiefer", (X, 35 * sprung))
+        bein(1, -25 * sprung + 10 * zurueck, 20 * sprung); ort((0, -0.25 * sprung, 0.12 * sprung - 0.04 * zurueck))
+    def treffer(t): w = math.sin(math.pi * t); dreh("koerper", (X, -8 * w), (Y, 10 * w)); dreh("kopf", (X, 12 * w)); ort((0, 0.1 * w, 0))
+    def heulen(t): w = math.sin(math.pi * min(1, t / 0.3)) if t < 0.85 else math.sin(math.pi * (1 - t) / 0.3); dreh("kopf", (X, -55 * w)); dreh("kiefer", (X, 25 * w)); dreh("koerper", (X, -10 * w))
+    def tod(t): f = glatt(min(1.0, t / 0.6)); dreh("wurzel", (Y, 90 * f)); dreh("kopf", (X, 15 * f)); ort((0, 0, 0.0)); bein(f, 15, 15)
+    BW = {"ruhe": (ruhe, 16, 8, True, {}), "gehen": (gehen, 10, 10, True, {}), "laufen": (laufen, 8, 12, True, {}), "angriff": (angriff, 10, 12, False, {"treffer": 6}),
+          "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 12, False, {"halten": 11})}
+    if ART == "rudelfuehrer": BW["heulen"] = (heulen, 20, 10, False, {})
 else:
     def flackern(t, f=1.0): gross("flamme", f * (1 + 0.12 * s_(t, 3) + 0.06 * s_(t, 7, 1))); dreh("flamme", (Zx, 40 * s_(t)))
     def ruhe(t): ort((0, 0, 0.1 * s_(t))); flackern(t); dreh("funken", (Zx, 360 * t)); gross("kern", 1 + 0.05 * s_(t, 2))
