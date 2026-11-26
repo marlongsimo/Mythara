@@ -4,13 +4,17 @@
   "zeichenfolge": true,
   "stuecke_behalten": true,
   "luecken_schliessen": true,
-  "hinweis": "banditenboss3d – Banditenanführer für Echtzeit-3D (Meshy „Crimson Warlord“), fest im Modell; eigenes Zweihandschwert (aus dem Meshy-Modell ausgeschnitten) zweihändig (Zweihandhieb, linke Hand am festen Griffpunkt). Block als Parade mit der Waffe.",
+  "hinweis": "banditenboss3d – Banditenanführer für Echtzeit-3D (Meshy „Crimson Warlord“), fest im Modell; eigenes Zweihandschwert (aus dem Meshy-Modell ausgeschnitten) zweihändig (Zweihandhieb, linke Hand am festen Griffpunkt). Block als Parade mit der Waffe. Boss-Bewegungen (Phase 4): rundumschlag (eine ganze Drehung, Klinge waagerecht), ruf (Helfer heranwinken), trinken (Heiltrank), treffer.",
   "bewegungen": [
     "ruhe",
     "gehen",
     "laufen",
     "hieb2h",
+    "rundumschlag",
+    "ruf",
+    "trinken",
     "block",
+    "treffer",
     "tod"
   ],
   "block": "waffe",
