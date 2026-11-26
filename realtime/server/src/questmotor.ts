@@ -38,7 +38,7 @@ export const kontext = (nutzer: string): QB.Kontext => ({
   skill: (k) => { if (beruf(k)) return levelAus(berufXp(nutzer, k)); /* Berufe (Holzfällerei, Handwerk …) aus dem Inventar */ const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
   heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; } });
 async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promise<void> {
-  const alt = qStand(nutzer, q.id); if (alt === "fertig" || !s || s === "fertig" || s === alt) return;
+  const alt = qStand(nutzer, q.id); if (alt === "fertig" || QB.abholbereit(alt) || !s || s === "fertig" || s === alt) return;
   let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, s); gemeldet(nutzer);
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_stand: s }) }).catch((e) => console.error(`Queststand ${q.id} speichern:`, (e as Error).message));
   const n = nachziehen(nutzer, q, s); if (n !== s) await setzen(sb, nutzer, q, n); }
@@ -73,7 +73,7 @@ async function buchen(sb: Sb, nutzer: string, q: QB.QuestDef): Promise<boolean |
 
 /* ───────── Gespräche ───────── */
 const offen = new Map<string, { q: string; npc: string }>();
-export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number }
+export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number; /** #77: abgeschlossen, der Lohn dieser Quest wartet aufs Abholen */ abholen?: string }
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
@@ -106,25 +106,11 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
   const nehmen = () => { for (const N of f.nehmen || []) for (let i = 0; i < (N.n || 1); i++) abgeben(sb, nutzer, N.g); };
   if (!f.abschluss) nehmen(); /* beim Abschluss erst nach der Buchung */
   const aus: MotorAntwort = {}; let neu: string[] = [];
-  if (f.abschluss) {
-    if (!QB.laeuft(q, s)) return { fehler: "Das ist schon erledigt." }; const B = q.belohnung || {}, X = B.xp || {};
-    const ok = await buchen(sb, nutzer, q);
-    if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
-    let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
-    if (ok) nehmen();
-    if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn; was nicht mehr in den Rucksack passt, liegt neben dem Spieler am Boden (30 Minuten nur für ihn) */
-      const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let amBoden = false;
-      /* Questlohn ist gebunden (Entscheidung zu #65: nicht handelbar) – außer Splittern, die sind Geld */
-      const lohn = (g: string, n: number): number => { const d = g === "splitter" ? undefined : { gebunden: true }, k = aufnehmen(sb, nutzer, g, n, true, d); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN, Date.now(), d)) amBoden = true; return n; };
-      neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohn).neu;
-      if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
-      for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); neu.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
-      if (amBoden) aus.amBoden = true;
-      if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
-      /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
-      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(QB.LOHN_JE_SKILL, n)); /* dieselbe Grenze wie in der Datenbank (Migration 051) */
-      for (const [g, n] of Object.entries(B.ladungen || {})) if (n > 0) ladungenDazu(sb, nutzer, g, n);   /* B1: 10 Ladungen im Wegstein */
-      if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ } } }
+  if (f.abschluss) { /* #77: die Quest ist jetzt abgeschlossen, der Lohn wartet aufs Abholen („Okay“ im Abschlussfenster) – gebucht wird erst dann, genau einmal */
+    if (!QB.laeuft(q, s)) return { fehler: "Das ist schon erledigt." };
+    const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let boden = 0;
+    nehmen(); neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; })).neu; /* was die Figur im Gespräch gibt (Waffe nach Wahl), gleich */
+    await setzen(sb, nutzer, q, QB.ABHOLBEREIT); if (boden) aus.amBoden = true; aus.abholen = q.id; }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
@@ -132,6 +118,34 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
   if (aus.amBoden) zeilen = [...zeilen, { wer: F.name, text: "(Dein Rucksack ist voll – der Rest liegt neben dir am Boden.)" }];
   if (f.weiter) { const d = QB.dialog(q, o.npc, qStand(nutzer, q.id), kontext(nutzer)); return { ...aus, zeilen, dialog: d || undefined }; }
   offen.delete(nutzer); return { ...aus, zeilen, ende: true }; }
+
+/* ───────── Abholen (#77): der Lohn nach dem Abschlussfenster ───────── */
+/** Lohn in den Rucksack – gebunden (Entscheidung zu #65, außer Splittern); was nicht passt, liegt am Boden unter dem Spieler, nur für ihn (beimBoden: wie viele) */
+function lohnGeber(sb: Sb, nutzer: string, bx: number, by: number, beimBoden: (n: number) => void): (g: string, n: number) => number {
+  return (g, n) => { const d = g === "splitter" ? undefined : { gebunden: true }, k = aufnehmen(sb, nutzer, g, n, true, d); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN, Date.now(), d)) beimBoden(n - k); return n; }; }
+export interface MotorAbgeholt { fehler?: string; /** gebucht für diese Quest */ abgeholt?: string; /** war schon gebucht (nichts doppelt) */ schon?: boolean; belohnung?: NonNullable<QB.Belohnung["xp"]>; berufe?: Record<string, number>; splitter?: number; gegenstaende?: string[]; punkte?: number; gesamtPunkte?: number; /** so viele Gegenstände liegen am Boden (Rucksack voll) */ amBoden?: number }
+const holt = new Set<string>();
+/** Den Lohn einer abgeschlossenen Quest abholen: bucht genau einmal (rpg_held_quest_abschluss_v2); doppeltes „Okay“ bucht nichts doppelt. wo: Stelle des Spielers */
+export async function motorAbholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }): Promise<MotorAbgeholt> {
+  const q = questDef(String(id || "")); if (!q) return { fehler: "Diese Quest gibt es nicht." };
+  const s = qStand(nutzer, q.id); if (!QB.abholbereit(s)) return s === "fertig" ? { abgeholt: q.id, schon: true } : { fehler: "Da gibt es nichts abzuholen." };
+  const key = nutzer + "|" + q.id; if (holt.has(key)) return { fehler: "Einen Moment …" }; holt.add(key);
+  try { const ok = await buchen(sb, nutzer, q); if (ok === null) return { fehler: "Der Lohn konnte nicht gebucht werden. Versuch es gleich noch einmal." };
+    let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
+    if (!ok) return { abgeholt: q.id, schon: true, gesamtPunkte: questpunkte(nutzer) }; /* in der Datenbank schon gebucht (z. B. nach einem Absturz): nichts doppelt */
+    const B = q.belohnung || {}, X = B.xp || {}, F0 = q.figuren.find((x) => x.id === (q.abgabe || q.geber)) || q.figuren[0], bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y;
+    let boden = 0; const lohn = lohnGeber(sb, nutzer, bx, by, (n) => { boden += n; }), aus: MotorAbgeholt = { abgeholt: q.id, gegenstaende: [] };
+    if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
+    for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); aus.gegenstaende!.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
+    if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
+    for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(QB.LOHN_JE_SKILL, n)); /* dieselbe Grenze wie in der Datenbank (Migration 051) */
+    if (B.berufe) aus.berufe = { ...B.berufe };
+    for (const [g, n] of Object.entries(B.ladungen || {})) if (n > 0) ladungenDazu(sb, nutzer, g, n);   /* B1: 10 Ladungen im Wegstein */
+    if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ }
+    aus.gesamtPunkte = questpunkte(nutzer); if (boden) aus.amBoden = boden; return aus; }
+  finally { holt.delete(key); } }
+/** Quests, deren Lohn aufs Abholen wartet (nach dem Einloggen zeigt der Browser das Fenster wieder) */
+export const abholbereitListe = (nutzer: string): string[] => QUESTS.filter((q) => QB.abholbereit(qStand(nutzer, q.id))).map((q) => q.id);
 
 /* ───────── Questobjekte ───────── */
 /** Gehört das Objekt zu einer Quest des Baukastens? */

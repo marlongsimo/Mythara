@@ -41,7 +41,10 @@ const sende = (s, m) => s.ws.send(JSON.stringify(m));
 const NPC = { jori: [6452.5, 6444.5], hagan: [6438.5, 6423.5], fenna: [6534.5, 6438.5], raban: [6442.5, 6643.5], othmar: [6451.5, 6688.5] };
 const hin = async (s, id, d = 1) => { sende(s, { t: "pos", x: 0, y: 0, wx: NPC[id][0] + d, wy: NPC[id][1] }); await new Promise((r) => setTimeout(r, 120)); };
 const rede = async (s, id) => { sende(s, { t: "rede", npc: id }); return warte(s, (m) => m.t === "dialog"); };
-const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); return warte(s, (m) => m.t === "dialog"); };
+const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); const d = await warte(s, (m) => m.t === "dialog");
+  /* #77: abgeschlossen – der Lohn wartet aufs Abholen („Okay“ im Abschlussfenster); hier gleich abholen, Lohn wie früher an der Antwort */
+  if (d && d.abholen) { sende(s, { t: "abholen", id: d.abholen }); const g = await warte(s, (m) => m.t === "abgeholt"); if (g) Object.assign(d, { belohnung: g.belohnung, splitter: g.splitter, punkte: g.punkte, amBoden: d.amBoden || Boolean(g.amBoden) }); if (g && g.amBoden) d.zeilen = [...(d.zeilen || []), { wer: "", text: `(Dein Rucksack ist voll – ${g.amBoden} liegen am Boden.)` }]; }
+  return d; };
 try {
   const anna = await spieler("tok_anna_" + "x".repeat(30)); await warte(anna, (m) => m.t === "quests"); const ben = await spieler("tok_ben__" + "x".repeat(30)); await warte(ben, (m) => m.t === "quests");
   check(anna.q1 === "" && ben.q1 === "", "Beide kommen mit leerem Queststand an");

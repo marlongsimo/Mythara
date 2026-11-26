@@ -9,7 +9,8 @@
  *   ""                 noch nicht angenommen
  *   "angeboten"        angeboten und (vorerst) abgelehnt – zählt wie „noch nicht angenommen“
  *   "auftrag_N[_Z…]"   angenommen; N = Bitmaske der erledigten Schritte (Bit i = schritte[i]); Z = Zähler der Schritte mit „anzahl“, in ihrer Reihenfolge
- *   "fertig"           abgeschlossen (nur über rpg_held_quest_abschluss)
+ *   "abholbereit"      alle Schritte und die Abgabe erledigt, der Lohn wartet auf „Okay“ im Abschlussfenster (#77) – zählt wie abgeschlossen
+ *   "fertig"           abgeschlossen und Lohn gebucht (nur über rpg_held_quest_abschluss)
  * Ältere Formate übersetzt die Quest selbst (QuestDef.alt) – beim Laden, gespeicherte Stände bleiben gültig.
  */
 
@@ -140,17 +141,21 @@ export interface QuestDef {
 }
 
 /* ───────── Stand ───────── */
-export interface Lage { phase: Phase; bits: number; z: number[]; angeboten: boolean }
+export interface Lage { phase: Phase; bits: number; z: number[]; angeboten: boolean; /** abgeschlossen, Lohn noch nicht abgeholt (#77) */ abholen?: boolean }
+/** Stand nach dem letzten Schritt: abgeschlossen, der Lohn wartet (#77) */
+export const ABHOLBEREIT = "abholbereit";
 const zaehlSchritte = (q: QuestDef) => q.schritte.filter((x) => x.anzahl);
 const alleBits = (q: QuestDef) => (1 << q.schritte.length) - 1;
 const MUSTER = /^auftrag_(\d{1,10})((?:_\d{1,4})*)$/;
 export function lage(q: QuestDef, s: string): Lage { const n = zaehlSchritte(q).length, leer = Array(n).fill(0);
-  if (s === "fertig") return { phase: "fertig", bits: alleBits(q), z: zaehlSchritte(q).map((x) => x.anzahl!), angeboten: true };
+  if (s === "fertig" || s === ABHOLBEREIT) return { phase: "fertig", bits: alleBits(q), z: zaehlSchritte(q).map((x) => x.anzahl!), angeboten: true, ...(s === ABHOLBEREIT ? { abholen: true } : {}) };
   if (s === "angeboten") return { phase: "neu", bits: 0, z: leer, angeboten: true };
   const m = MUSTER.exec(s || ""); if (m) { const b = Number(m[1]), zs = m[2] ? m[2].slice(1).split("_").map(Number) : [];
     if (b <= alleBits(q) && zs.length <= n) return { phase: "laeuft", bits: b, z: leer.map((_, i) => Math.min(zs[i] || 0, zaehlSchritte(q)[i].anzahl!)), angeboten: true }; }
   return { phase: "neu", bits: 0, z: leer, angeboten: false }; }
-export const stand = (l: Lage): string => (l.phase === "laeuft" ? `auftrag_${l.bits}` + (l.z.some((x) => x) ? l.z.map((x) => "_" + x).join("") : "") : l.phase === "fertig" ? "fertig" : l.angeboten ? "angeboten" : "");
+export const stand = (l: Lage): string => (l.phase === "laeuft" ? `auftrag_${l.bits}` + (l.z.some((x) => x) ? l.z.map((x) => "_" + x).join("") : "") : l.phase === "fertig" ? (l.abholen ? ABHOLBEREIT : "fertig") : l.angeboten ? "angeboten" : "");
+/** Wartet der Lohn dieser Quest aufs Abholen (#77)? */
+export const abholbereit = (s: string): boolean => s === ABHOLBEREIT;
 /** Gespeicherten Stand prüfen (ältere Formate übersetzt die Quest; Unbekanntes wird zu "") */
 export function gueltig(q: QuestDef, s: unknown): string { if (typeof s !== "string") return ""; const a = q.alt ? q.alt(s) : null; const t = a !== null ? a : s;
   const r = stand(lage(q, t)); return r === t ? r : ""; }
@@ -182,6 +187,14 @@ export function gilt(q: QuestDef, s: string, b: Bed | undefined, k: Kontext = OH
   if (b.heldenlevel !== undefined && !(k.heldenlevel && k.heldenlevel() >= b.heldenlevel)) return false;
   if (b.voraussetzungen && !(q.voraussetzungen || []).every((v) => gilt(q, s, v.wenn, k))) return false;
   return true; }
+
+/* ───────── Abschlussfenster (#77): was es als Lohn gibt ───────── */
+export type LohnZeile = { art: "xp"; k: string; n: number } | { art: "beruf"; k: string; n: number } | { art: "splitter"; n: number } | { art: "gegenstand"; g: string; n: number } | { art: "ladungen"; g: string; n: number } | { art: "punkte"; n: number };
+/** Die Belohnung einer Quest als Liste fürs Fenster (Reihenfolge: XP, Berufe, Splitter, Gegenstände, Ladungen, Questpunkte) */
+export function lohnListe(q: QuestDef): LohnZeile[] { const B = q.belohnung || {}, aus: LohnZeile[] = [];
+  for (const [k, n] of Object.entries(B.xp || {})) if (n) aus.push({ art: "xp", k, n }); for (const [k, n] of Object.entries(B.berufe || {})) if (n) aus.push({ art: "beruf", k, n });
+  if (B.splitter) aus.push({ art: "splitter", n: B.splitter }); for (const G of B.gegenstaende || []) aus.push({ art: "gegenstand", g: G.g, n: G.n || 1 });
+  for (const [g, n] of Object.entries(B.ladungen || {})) if (n) aus.push({ art: "ladungen", g, n }); if (q.punkte) aus.push({ art: "punkte", n: Math.min(10, q.punkte) }); return aus; }
 
 /* ───────── Texte ───────── */
 /** Fortschritt eines Zählers oder einer Gruppe: „2/3“ */

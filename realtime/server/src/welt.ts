@@ -16,7 +16,7 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte, questStand, schalter } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, abholen, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte, questStand, schalter } from "./quests";
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen } from "./inventar";
@@ -253,6 +253,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const rest = (teleportZuletzt.get(s.nutzer) || 0) + TELEPORT_PAUSE_MS - jetzt; if (rest > 0) { senden(s, { t: "teleport", ok: false, rest }); return; }
       teleportZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, HEIM.x, HEIM.y, HEIM.region); /* der Server setzt die Position, nicht der Browser */ senden(s, { t: "teleport", ok: true }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
+    else if (e.t === "abholen") { /* #77: „Okay“ im Abschlussfenster – der Server bucht den Lohn genau einmal */
+      if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, 40), { x: s.wx, y: s.wy });
+      if (r.fehler) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); senden(s, { t: "abgeholt", ...r }); }
     else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle jetzt (die letzte „pos“ kann einen Schritt alt sein) */

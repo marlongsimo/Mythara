@@ -3,6 +3,7 @@
  * und stellt dar, was die Simulation zurückmeldet. Er entscheidet nichts über Treffer oder Schaden.
  */
 import Phaser from "phaser";
+import "./abschluss"; /* #77: Quest-Abschlussfenster (Arbeitsfenster) */
 import { untaetigWaechter } from "./abmeldung";
 import { HELDEN, HELDENREIHE, MONSTER, TICK, ZUSTAND_JE, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
 import { epAlle, epDazu } from "./halle";
