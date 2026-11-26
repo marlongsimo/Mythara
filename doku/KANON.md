@@ -60,6 +60,9 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
 - **Essen** (Stand heute): Brot heilt 4, nicht stapelbar, 1,5 s zwischen zwei Bissen, auch im Kampf. Gerichte mit Wirkung kommen mit Kochen (Phase 3b). *(26.11., Erklärung, keine Änderung)*
 - **Quest-Lohn über 1.000 XP je Skill** wird gebraucht: neue Migration hebt die Grenze aus 048 an (Vorschlag 50.000 je Skill/Beruf, Issue #41). Bis dahin höchstens 1.000. *(26.11.)*
+- **Phase 3** vom Nutzer im Spiel getestet und freigegeben. *(26.11.)*
+- **Aufräumen:** Gruppe A freigegeben; Würfelspiel bleibt, bis eine **neue Startseite im Riftmere-Stil** live ist (#78). *(26.11.)*
+- **Querverbindungen** 1–9 aus #76 werden in die älteren Quest-Entwürfe eingebaut. *(26.11.)*
 - **Karte wächst in die Breite, den Quests folgend:** keine Sprünge zu fernen Zielen (Splitterinsel später). Nach Phase 9 werden die angrenzenden Großregionen ausgebaut, dorthin wo die Quests führen – Vorschlag: Phase 10 Smaragdküste (W4, Kielmund, Südstraße von Weidenhain), Phase 11 Hochlande (W5, Furt hinter Grauwacht). *(26.11.)*
 - **Quests über Regionsgrenzen:** Regionen greifen ineinander, Quests führen quer über die Karte. Jeder neue Quest-Block hat mindestens eine Quest durch zwei oder mehr ältere Regionen; Figuren und Gegenstände kehren wieder. Erste große Quer-Quest: „Die Karte des Boten“ (Phase 9). *(26.11.)*
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum). *(26.11.)*
