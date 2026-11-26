@@ -8,6 +8,7 @@
  * Positionen gehen relativ zur Region an den Server (Bildpunkte, wie seine Prüfung sie erwartet); der Server bleibt unverändert.
  */
 
+import { fremdeArbeit } from "../arbeit";
 import { SPIEL_SYMBOLE, SPIEL_SYMBOL_NAMEN } from "../../../shared/kartensymbole";
 import { eigenesLevel } from "../skills";
 import { WELT, Welt, weltDatei } from "./welt";
@@ -200,7 +201,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
   karteRegion(s, id, ux, uy, b, h);
   mit = s.mitspielerNeu ? s.mitspielerNeu({ versatz: { x: region.x, y: region.y }, karte: { breit: region.b, hoch: region.h } }) : new Mitspieler(s as unknown as Welt, { f: 1, gross: HELD_PX, tiefe: (y) => y + region.y, karte: { breit: region.b, hoch: region.h }, versatz: { x: region.x, y: region.y } });
   (s as unknown as { mit: MitArt | null }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
-  weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
+  weltBetreten(id, { spieler: (l) => { fremdeArbeit(l); /* #67: auch für die Helden im Kampfgebiet */ if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
     blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else if (mit) mit.blase(i, text); } });
 }
@@ -298,6 +299,8 @@ export const anschluss3D = {
     return t && t.held ? { i: 0, n: t.name, h: "schildwaechter", s: t.stufe, x: 0, y: 0, b: 0, l: 0, ...(t.a ? { a: t.a as Fremder["a"] } : {}) } : null; },
   /** Folgen (#54): wo steht dieser Spieler gerade (Weltfelder)? Erst die Mitspieler der Welt, sonst die Helden des Kampfgebiets – null: nicht hier */
   spielerOrt: (name: string): { x: number; y: number } | null => { const a = mit && mit.ortVon ? mit.ortVon(name) : null; if (a) return a; const k = kampf as unknown as { bereit?: boolean; heldOrt?: (n: string) => { x: number; y: number } | null } | null; return k && k.bereit && k.heldOrt ? k.heldOrt(name) : null; },
+  /** #67, für Prüfungen: welche Arbeit der Held mit diesem Namen im Kampfgebiet gerade zeigt */
+  kampfArbeitZeigt: (name: string): string => { const k = kampf as unknown as { arbeitZeigt?: (n: string) => string } | null; return k && k.arbeitZeigt ? k.arbeitZeigt(name) : ""; },
   spielerKarteZeigen: (s: WeltKern, d: Fremder): void => { tafel(s, (zu) => spielerKarte(d, zu)); },
   /** Versetzen (Untergrund): der Kampf der alten Stelle endet */
   springen: () => kampfVersetzt(),
