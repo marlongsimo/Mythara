@@ -35,11 +35,9 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 - Automatische Server-Tests nach jedem Push: Workflow „Tests“ (35 Tests). 4 rote Tests ausgenommen → Issue #10.
 - Issue-Brett mit Rollen-Labels eingerichtet; Startnachrichten und Dauerauftrag je Rolle in `doku/ARBEITSWEISE.md` Abschnitt 6.
 
-## Offen beim Nutzer (`für-dich`, Issue #9)
-- Migrationen **048** und **049** in Supabase einspielen (falls noch nicht geschehen).
-- Lage des Grenzlands auf dem Festland endgültig festlegen (vor Phase 3, wegen neuer Koordinaten).
-- Entscheidungen aus dem Weltkonzept (Namen, Gebirge A–D, Reihenfolge W2/W3, Splitterinsel).
-- Namen der neuen Figuren in Phase 3 bestätigen: Lambert Schilf, Hilde Krug (Agnes, Tebbe, Hanne Kalk gibt es schon).
+## Offen beim Nutzer (`für-dich`)
+- Issue #9 erledigt (26.11.): Migrationen 048/049 eingespielt, Grenzland-Lage fix, Namen bestätigt, Wegstein-Abklingzeit, Tränke-Regeln.
+- Noch offen: Entscheidungen aus dem Weltkonzept (Namen, Gebirge A–D, Reihenfolge W2/W3, Splitterinsel).
 
 ## Wer gerade woran arbeitet
 | Rolle | Arbeitet an |

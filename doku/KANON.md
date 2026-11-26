@@ -32,7 +32,7 @@ Zuletzt aktualisiert: 26.11.2026.
 | Hanne Kalk | Verwalterin des Kornspeichers | Weidenhain |
 | Gesa Brandt, Bruder Anselm, Köhler Ulf, Till Mahler, Grete Korn | Quests A1–A3 | Waldmark, Nordwald, Osthof |
 | Mira Kräuterlieb, Brann Hackebeil, Gerold Dickfell | Händler | Waldmark-Markt |
-| geplant: Agnes, Tebbe, Lambert Schilf, Hilde Krug | Phase 3 | Weidenhain, Waldmark |
+| geplant: Agnes, Tebbe, **Lambert Schilf** (Angler, bestätigt), **Hilde Krug** (Wirtin, bestätigt) | Phase 3 | Weidenhain, Waldmark |
 | geplant: Gisbert Ast, Hauptmann Rotmantel | Phase 4 | Obstwiesen, Unterschlupf |
 | geplant: Bertold Krähe, Joost, Mutter Hedda, Harm, Ebbo, Liske, Federmutter Ravena | Phase 6 | Rabenmoor, Aschenwerth |
 
@@ -49,10 +49,15 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Repository:** Altbestand des Würfelspiels bleibt (nicht löschen).
 - **Abstand zu OSRS:** keine OSRS-Begriffe in Spiel, Code-Kommentaren und Konzepten.
 
+- **Wegstein:** Ladungen (2 Splitter je Ladung) **und** 2 Minuten Abklingzeit. *(26.11.)*
+- **Tränke (Kräuterkunde):** Rezepte sind **fest je Level verfügbar**, wie bei der Ausrüstung – kein Entdecken durch Ausprobieren, kein persönliches Rezeptbuch.
+  **Nebenwirkungen nur bei den ganz starken Tränken der hohen Stufen.** Niedrige Tränke haben keine Nebenwirkungen, dafür eine deutlich schwächere Wirkung.
+  *(26.11.; ersetzt die Abschnitte „Rezepte entdecken“ und „Nebenwirkungen“ in `doku/quests/4-berufe.pdf`)*
+- **Lage des Grenzlands auf dem Festland:** fix (kann sich später noch ändern). *(26.11.)*
+- **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
+
 ## Offen (Fragen an den Nutzer)
 
-- Nebenwirkungen bei starken Tränken: ja/nein?
-- Rezepte entdecken (Ausprobieren) oder fest lernen?
-- Wegstein: zusätzlich zu den Ladungen eine kurze Abklingzeit (Vorschlag 2 min)?
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
+- Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel
