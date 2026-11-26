@@ -1,0 +1,68 @@
+{
+ "hinweis": "Trödler (#88): Standplätze in Weltfeldern. Ringsum 1,8 Felder frei und begehbar, an Wegen bzw. mitten im Dorf, vom Dorf aus erreichbar. variante: karren | bauchladen (Figuren). Erzeugt mit der Standortsuche der Welt-Rolle; Prüfung: test/welt-troedler.test.mjs.",
+ "standorte": [
+  {
+   "id": "troedler_kreuzwald",
+   "x": 6503.5,
+   "y": 6513.5,
+   "region": "waldweg",
+   "ort": "Am Kreuzweg im Kreuzwald (Steinweg trifft den Feldweg nach Weidenhain)",
+   "variante": "karren",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_osthof",
+   "x": 6522.5,
+   "y": 6436.5,
+   "region": "osthof",
+   "ort": "Vor dem Hof in Osthof, am Weg",
+   "variante": "bauchladen",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_rabenmoor_steg",
+   "x": 6327.5,
+   "y": 6721.5,
+   "region": "rabenmoor",
+   "ort": "Am Steg im Rabenmoor, auf dem Bohlenweg",
+   "variante": "bauchladen",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_faehrhafen_graufurt",
+   "x": 6707.5,
+   "y": 6515.5,
+   "region": "graufurt",
+   "ort": "Am Fährhafen von Graufurt, beim Wassertor",
+   "variante": "karren",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_heidrast",
+   "x": 6598.5,
+   "y": 5878.5,
+   "region": "fl_201_183",
+   "ort": "In Heidrast am Dorfplatz (Fahle Weiten)",
+   "variante": "karren",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_karawanenrast_glutbrunn",
+   "x": 7156.5,
+   "y": 6966.5,
+   "region": "fl_216_211",
+   "ort": "An der Karawanenrast in Glutbrunn",
+   "variante": "karren",
+   "frei": 1.8
+  },
+  {
+   "id": "troedler_moewenbucht",
+   "x": 6218.5,
+   "y": 7162.5,
+   "region": "fl_186_211",
+   "ort": "In Möwenbucht zwischen den Katen",
+   "variante": "bauchladen",
+   "frei": 1.8
+  }
+ ]
+}
