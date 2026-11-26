@@ -11,8 +11,9 @@ import { QUEST_A1 } from "./quest_a1";
 import { QUEST_A2 } from "./quest_a2";
 import { QUEST_A3 } from "./quest_a3";
 import { QUEST_B1 } from "./quest_b1";
+import { QUEST_SCHILF } from "./quest_schilf";
 
-export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1];
+export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1, QUEST_SCHILF];
 export const questDef = (id: string): QuestDef | undefined => QUESTS.find((q) => q.id === id);
 
 /** Ist ein Schalter je Spieler an (irgendeine Quest schaltet ihn ein)? stand: Stand einer Quest für diesen Spieler */
