@@ -14,7 +14,7 @@ Lohn nach Migration 051 (bis 50.000 je Skill), mit Maß: F1–F4 je 2.000–5.00
 | F1 | Start in **Graufurt** (Kord, Phase 7) → **Ostufer** (Fähre) → Glutsande → Glutbrunn |
 | F2 | Pfannenblech aus **Schwarzeisen vom Burgfels in Grauwacht** (Phase 8) |
 | F4 | Salz aus F2, Glutwels nur mit **Fischen 65 / Kochen 65** |
-| Karte des Boten | **Waldmark** (Hagan) · **Rabenmoor** (Hedda, Steinhaut aus Kräuterkunde 5c) · **Graufurt** (Merit) · **Grauwacht** (Grab des Hauptmanns, nach E4) · **Glutsande** (Tempel, nach F3); Start und Ende bei **Ysolde** (Ostufer, D2) |
+| Karte des Boten | **Waldmark** (Hagan) · **Rabenmoor** (Hedda, Steinhaut aus Kräuterkunde 5c) · **Graufurt** (Merit) · **Grauwacht** (Grab des Hauptmanns, nach E4) · **Glutsande** (Tempel, nach F3); Start und Ende bei **Ysolde** (Ostufer, D2). Am Ende zeigt die Karte die Nachbarregionen: **Smaragdküste/Kielmund** (südlich von Weidenhain) und die **Hochlande** (hinter der Furt bei Grauwacht) – nicht die Splitterinsel (Nutzer 26.11.) |
 
 ## Für den Motor (Rolle Spiel)
 

@@ -8,7 +8,8 @@
  *   4 Grauwacht – im Grab des Grauen Hauptmanns (erst nach E4)
  *   5 Glutsande – in der Kammer der Sandmutter (erst nach F3)
  * Jedes Stück nennt das nächste. Abgabe bei Ysolde. Lohn: die Reisekarte (gebunden; zeigt alle Wegstein-Ziele, einmal am Tag ein Wegstein-Sprung ohne Ladung),
- * je 6.000 XP Stärke, Geschick, Defense, Fernkampf, Magie, 4.000 LP, 3.000 Splitter, 4 Questpunkte. Haken: die Splitterinsel im Splittermeer.
+ * je 6.000 XP Stärke, Geschick, Defense, Fernkampf, Magie, 4.000 LP, 3.000 Splitter, 4 Questpunkte. Haken: Die Karte zeigt die angrenzenden Regionen – die Smaragdküste mit Kielmund südlich von Weidenhain und die Hochlande hinter der Furt bei Grauwacht.
+ * (Entscheidung des Nutzers 26.11.: Die Karte wächst in die Breite, den Quests folgend; die Splitterinsel ist kein Haken.)
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Reisekarte als Gegenstand mit täglichem Sprung, Kartenstücke, Steinhaut-Rezept aus 5c)
  * und auf „Figur in mehreren Quests“ (Ysolde, Hagan, Hedda, Merit). Stellen: shared/quest_f_orte.ts. Liste: doku/quests/f-bausteine.md.
@@ -35,7 +36,7 @@ export const QUEST_KARTE: QuestDef = {
   logNeu: "Auf dem Dach des Turms am Ostufer flackert Ysolde noch manchmal auf, wenn jemand kommt. Sie wartet auf einen Boten, der nie ankam.",
   logAngeboten: "Ysolde auf dem Turm am Ostufer hat dir vom Boten der Wacht erzählt.",
   logAbgabe: "Alle fünf Stücke der Karte sind beisammen. Bring sie Ysolde auf den Turm am Ostufer.",
-  logFertig: "Die Karte des Boten ist wieder ganz. Sie zeigt alle Wegsteine des Festlands – und östlich der Glutsande eine Insel im Splittermeer, die auf keiner anderen Karte steht.",
+  logFertig: "Die Karte des Boten ist wieder ganz. Sie zeigt alle Wegsteine des Grenzlands – und Wege, die weiterführen: nach Süden zur Smaragdküste und nach Kielmund, nach Norden über die Furt bei Grauwacht in die Hochlande.",
   geber: "ysolde",
   figuren: [
     { id: "ysolde", name: "Ysolde", modell: "npc.ysolde", x: YSOLDE[0], y: YSOLDE[1], blick: [-1, 0] },
@@ -89,7 +90,7 @@ export const QUEST_KARTE: QuestDef = {
         { id: "zusammenlegen", text: "Die fünf Stücke zusammenlegen.", folge: [{ f: { abschluss: true, nehmen: ALLE_STUECKE,
           zeilen: ["Du legst die Stücke aneinander. Die Risse schließen sich – nicht ganz, aber die Linien laufen ineinander. Wegsteine, Siegelorte, Straßen, die es nicht mehr gibt.",
             "Ysolde berührt die Karte. Für einen Augenblick leuchtet sie grün.", "Sie gehört dir. Sie zeigt dir jeden Wegstein, und einmal am Tag trägt sie dich hin, auch wenn dein Stein leer ist.",
-            "Und hier – östlich des Sandes. Eine Insel im Splittermeer. Die stand auf keiner Karte, die ich kannte. Der Bote wusste mehr als wir."] } }] },
+            "Und hier – die Linien hören nicht auf. Südlich von Weidenhain ein Weg zur Küste, „Kielmund“ steht daneben. Und hinter der Furt bei Grauwacht: die Hochlande.", "Der Bote kannte Wege, die wir vergessen haben. Geh sie, wenn du kannst."] } }] },
         { id: "tschuess", text: "Gehen.", folge: [{ f: { zeilen: ["…"] } }] },
       ],
     },
