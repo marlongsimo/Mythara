@@ -71,13 +71,18 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP je Skill) sind **eingespielt**. *(26.11.)*
 - **Quest-Abschluss:** eigenes Abschlussfenster (Glückwunsch, Belohnungen, Questpunkte), gutgeschrieben mit „Okay“ (bleibt abholbereit, nichts geht verloren). Passt etwas nicht in den Rucksack, **landet es auf dem Boden** (gebundene Gegenstände nur für den Besitzer). *(26.11., #77)*
 - **Verkaufen an Händler:** Jeder Händler kauft **nur Waren, die er selbst führt**, zu **80 % seines Verkaufspreises** (abgerundet). Im Laden ist der Rucksack daneben offen: antippen zeigt den Verkaufspreis, langes Drücken bietet „Verkaufen“. Gebundenes und geladene „(s)“-Ausrüstung kann man nicht verkaufen. *(26.11.)*
-- **Kutsche:** gestrichen für Phase 10; **Idee für später** als Kutschennetz zwischen den Großstädten (ab etwa 5 Städten, günstige Reise ohne Splitterbinden, kleine Splitter-Senke). *(26.11.)*
+- **Kutsche:** gestrichen für Phase 10, das gebaute Modell bleibt liegen (nicht löschen); **Idee für später** als Kutschennetz zwischen den Großstädten (ab etwa 5 Städten, günstige Reise ohne Splitterbinden, kleine Splitter-Senke). *(26.11.)*
 - **Trödler** (Wunsch 26.11.): über die Welt verstreute Händler, die **alles Handelbare** ankaufen, aber nur zu **50 %** des normalen Händlerpreises (Grundwert). Gebundenes, „(s)“ und Questgegenstände nicht. Der erste steht im **Rabenmoor** (nicht Kreuzwald/Osthof). Konzept `doku/konzepte/troedler.md`.
 - **Handelskontor** (zentraler Marktplatz): als Konzept für später aufgehoben, `doku/konzepte/handelskontor.md`. *(26.11.)*
 - **Nicht handelbar (gebunden):** **alle Quest-Belohnungen** (Gegenstände als Questlohn, z. B. Rabenset, Klinge des Grauen Hauptmanns, Rotes Banner) und **geladene Ausrüstung „(s)“**. *(26.11.)*
 - **Wachtrüstung** (zweites Set, Phase 8): **vorerst nicht**. Die gebauten Teile bleiben ungenutzt in der Fabrik; E4 gibt stattdessen die Klinge des Grauen Hauptmanns. *(26.11.)*
 - **HUD überarbeiten** (26.11., später am Tag): **ja** – kompakt, einfach, möglichst ohne Scrollen; eigener Chat „Oberfläche“, Regeln `doku/konzepte/hud.md`. Die neuen Symbole (#30/#32/#33) bleiben. (Die Gold-UI-Vorlagen von vorher sind kein Muss.) **Nichts einfach so ändern:** jede Oberflächen-Änderung zuerst als Vorschau zeigen und mit dem Nutzer gemeinsam ausarbeiten.
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
+
+## Für später (Ideen, noch nicht geplant)
+
+- **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
+- Kutschennetz zwischen den Großstädten · Handelskontor (`doku/konzepte/handelskontor.md`) · Splitterinsel
 
 ## Offen (Fragen an den Nutzer)
 
