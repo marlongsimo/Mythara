@@ -15,7 +15,7 @@ export type Bauplan = {
     dach?: { form: string; first?: string; hoehe?: number; ueber?: number; deckung?: string; farbe?: number[] } }[];
   tueren?: { koerper?: string | number; x: number; b: number; h: number; art?: string }[];
   fenster?: { koerper?: string | number; wand: string; x?: number; d?: number; z: number; b: number; h: number; art?: string; laeden?: boolean; blumen?: boolean }[];
-  zubehoer?: { art: string; koerper?: string | number; x?: number; d?: number; z?: number; farbe?: number[]; laenge?: number; r?: number; x0?: number; x1?: number; tiefe?: number; deckung?: string }[];
+  zubehoer?: { art: string; koerper?: string | number; x?: number; d?: number; z?: number; farbe?: number[]; laenge?: number; r?: number; /** Breite (Mühlrad) */ b?: number; x0?: number; x1?: number; tiefe?: number; deckung?: string }[];
   innen?: { boden?: string; moebel?: { art: string; x: number; d: number }[] };
 };
 
@@ -99,6 +99,14 @@ export function bauen(plan: Bauplan, X: number, Y: number, Z: number): Gebaeude 
     else if (z.art === "vordach") { /* kleines Pultdach über der Tür auf zwei Pfosten */ const x0 = z.x0 ?? -1, x1 = z.x1 ?? 1, t = z.tiefe ?? 1, h0 = z.z ?? 2.2, zs = -k.d, dm = { muster: DACHMUSTER[z.deckung || "schindel"] || "schindel" } as const, df = rgb(z.farbe) || new THREE.Color(DECKUNG[z.deckung || "schindel"]);
       const v = new Teile(); v.viereck([x0 - 0.15, h0 + 0.45, zs], [x1 + 0.15, h0 + 0.45, zs], [x1 + 0.15, h0 - 0.05, zs + t + 0.15], [x0 - 0.15, h0 - 0.05, zs + t + 0.15], df, dm);
       for (const px of [x0, x1]) v.box(0.12, h0 - 0.05, 0.12, px, 0, zs + t, HOLZ, 0, { muster: "holz" }); const n = v.netz(); g.add(n); }
+    else if (z.art === "muehlrad") { /* Wasserrad vor der Wand (Weidenhain): Kranz, Speichen und Schaufeln; dreht wie die Flügel um die Achse durch die Wand – je Spieler über QuestDef.drehen (B2) */
+      const f = new Teile(), R = z.r ?? 1.5, B = z.b ?? 0.8;
+      for (const zz of [-B / 2, B / 2]) f.add(new THREE.TorusGeometry(R, 0.07, 6, 24), HOLZ, new THREE.Matrix4().makeTranslation(0, 0, zz), { muster: "holz" });
+      for (let i = 0; i < 8; i++) { const a = (i * Math.PI) / 4;
+        f.add(new THREE.BoxGeometry(0.09, R * 2, 0.09), HOLZ, new THREE.Matrix4().makeRotationZ(a), { muster: "holz" });
+        f.add(new THREE.BoxGeometry(0.06, 0.42, B + 0.08), "#6a4a2c", new THREE.Matrix4().makeRotationZ(a).multiply(new THREE.Matrix4().makeTranslation(0, R - 0.12, 0)), { muster: "holz" }); }
+      f.add(new THREE.CylinderGeometry(0.16, 0.16, B + 0.4, 10), DUNKEL, new THREE.Matrix4().makeRotationX(Math.PI / 2));
+      const n = f.netz(); n.position.set(z.x ?? 0, z.z ?? R * 0.75, -k.d + B / 2 + 0.15); g.add(n); aus.drehen.push(n); }
     else if (z.art === "fluegel") { const f = new Teile(), L = z.laenge ?? 3; for (let i = 0; i < 4; i++) { const a = (i * Math.PI) / 2; f.add(new THREE.BoxGeometry(0.16, L, 0.06), HOLZ, new THREE.Matrix4().makeRotationZ(a).multiply(new THREE.Matrix4().makeTranslation(0, L / 2, 0)));
         f.add(new THREE.BoxGeometry(0.62, L * 0.8, 0.03), "#d8cfb9", new THREE.Matrix4().makeRotationZ(a).multiply(new THREE.Matrix4().makeTranslation(0.36, L * 0.55, 0.03))); }
       f.box(0.4, 0.4, 0.5, 0, -0.2, -0.2, DUNKEL); const n = f.netz(); n.position.set(z.x ?? 0, z.z ?? k.h, -k.d + 0.45); g.add(n); aus.drehen.push(n); }

@@ -78,6 +78,8 @@ SAMMEL_QUEST.pruefen = (nutzer, art, quest) => motorSperre(nutzer, "sammeln", ar
 SAMMEL_QUEST.ertrag = (nutzer, art) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "sammeln", ziel: art }); };
 HANDWERK_QUEST.pruefen = (nutzer, r) => motorSperre(nutzer, "herstellen", r.id, r.quest);
 HANDWERK_QUEST.schalter = (nutzer, id) => schalterAn(nutzer, id);   /* Werkstätten mit Quest-Schalter (Bindestein an der Linde nach B1) */
+HANDWERK_QUEST.weiter = (nutzer, r) => { const q = QUESTS.find((x) => x.id === r.quest); if (!q) return false; const st = qStand(nutzer, q.id);
+  return q.schritte.some((S) => S.ereignis.art === "herstellen" && S.ereignis.rezept === r.id && QB.moeglich(q, st, S.id)); };
 HANDWERK_QUEST.fertig = (nutzer, r) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "herstellen", rezept: r.id }); };
 /** Nur für Tests: Speicher leeren */
 export function questsVergessen(): void { motorVergessen(); hoerer.clear(); }

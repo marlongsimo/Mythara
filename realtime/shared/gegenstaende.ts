@@ -341,6 +341,13 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.mehl = { id: "mehl", name: "Mehl", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: K + "mehl.webp", text: "Fein gemahlen in der Mühle im Osthof. Zum Backen und für den Eintopf." };
   GEGENSTAENDE.krug = { id: "krug", name: "Krug", art: "Werkzeug", seltenheit: "anfaenger", bild: K + "krug.webp", text: "Ein leerer Tonkrug. Am Brunnen füllst du ihn mit Wasser." };
   GEGENSTAENDE.krug_wasser = { id: "krug_wasser", name: "Krug mit Wasser", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "krug_wasser.webp", text: "Frisches Brunnenwasser. Für Brot, Suppe und Eintopf." };
+  /* Phase 3c B2 „Wasser auf die Mühle“ – Bilder vorläufig aus vorhandenen (Issue an Figuren) */
+  GEGENSTAENDE.schuetztafel = { id: "schuetztafel", name: "Schütztafel", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/stamm_tanne.webp",
+    text: "Zwei Tannenbohlen, verzapft und gewachst. Passt in einen Überlauf am Wehr von Weidenhain." };
+  GEGENSTAENDE.eisenband = { id: "eisenband", name: "Eisenband", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, stapel: 100, bild: "img/objekte3d/skilling/erzeugnisse/barren_eisen.webp",
+    text: "Ein geschmiedetes Band mit zwei Nagellöchern. Zwei halten eine Schütztafel im Wehr." };
+  GEGENSTAENDE.hanftau = { id: "hanftau", name: "Hanftau", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp",
+    text: "Ein dickes Tau aus vier Strängen Garn. Für die obere Tafel – dort zieht das Wasser am stärksten." };
   GEGENSTAENDE.kuhfleisch = { id: "kuhfleisch", name: "Kuhfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", text: "Ein gutes Stück vom Rind. Roh nichts für den Magen – im Eintopf schon." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
