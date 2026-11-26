@@ -8,12 +8,15 @@ import { FISCHE, FISCH_GERAETE, BERUF_FISCHEN, FANGSTELLEN, fangstelle, fanggrun
   WURMACKER_ART, WURMACKER, WURMSTELLEN, wurmstelle, GRAB_TAKT_MS, GRAB_WEIT } from "../../shared/fischen";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { sammelBeruf } from "./sammeln";
+import { HANDWERK_QUEST } from "./handwerk";
+import { fangSchalter } from "../../shared/fischen";
 
 const name = (g: string) => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g);
 const F = sammelBeruf({
   beruf: BERUF_FISCHEN, t: "fisch", liste: "fanggruende", arten: FISCHE, ziel: fangstelle, werkzeuge: FISCH_GERAETE, env: "FISCH",
   taktMs: FANG_TAKT_MS, weit: ANGEL_WEIT, momentChance: STROEMUNG_CHANCE, momentMs: STROEMUNG_MS, tatErtrag: "fang", tatMoment: "stroemung", grundLeer: "weiter",
   wandern: { ziele: () => FANGSTELLEN, gruppe: (id) => (fangstelle(id) || { grund: "" }).grund, aktiv: (g) => (fanggrund(g) || { aktiv: 1 }).aktiv, ms: WANDER_MS },
+  erlaubt: (nutzer, z) => { const sch = fangSchalter(z.id); return sch && !HANDWERK_QUEST.schalter(nutzer, sch) ? "Hier ist nur trübes, stilles Wasser. Solange das Wehr nicht hält, steht hier kein Fisch." : null; },
   ohneKoeder: (a) => `Ohne ${name(a.koeder || "wurm")} beißt hier nichts. Würmer gräbt man auf den Äckern des Osthofs.`,
   texte: { gast: "Fischen geht mit Konto (Menü → Anmelden).", unbekannt: "Hier sind keine Fische.", nah: "Geh näher ans Wasser.",
     ohneWerkzeug: "Du brauchst eine Angelrute im Rucksack (für den Moorhecht eine Reuse).", werkzeugLevel: (l) => `Mit diesem Gerät fischst du erst ab Fischen ${l}.`,
