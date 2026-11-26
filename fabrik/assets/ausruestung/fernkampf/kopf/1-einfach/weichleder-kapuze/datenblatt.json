@@ -1,0 +1,17 @@
+{
+  "name": "Weichleder-Kapuze",
+  "gegenstand": "jaegerkapuze",
+  "gruppe": "fernkampf",
+  "teil": "kopf",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Einfach",
+  "modell": {
+    "ebene": "kopf.helm.jaegerkapuze",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/kopf/kopf.helm.jaegerkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.jaegerkapuze.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.jaegerkapuze.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Moosgrüne Kapuze mit Blattschnalle; wirft einen Schatten über das Gesicht. Gehört zum Jäger-Set."
+}

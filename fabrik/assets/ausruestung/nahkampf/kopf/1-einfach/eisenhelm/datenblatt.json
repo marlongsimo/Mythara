@@ -1,0 +1,17 @@
+{
+  "name": "Eisenhelm",
+  "gegenstand": "eisenwachthelm_gewoehnlich",
+  "gruppe": "nahkampf",
+  "teil": "kopf",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Einfach",
+  "modell": {
+    "ebene": "kopf.helm.eisenwacht.gewoehnlich",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/kopf/helm.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.eisenwacht.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.eisenwacht.gewoehnlich.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Stumpfes Eisen mit Rost in den Fugen, die Beschläge längst nicht mehr aus Messing."
+}

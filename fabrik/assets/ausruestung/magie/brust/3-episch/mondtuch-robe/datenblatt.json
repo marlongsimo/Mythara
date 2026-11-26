@@ -1,0 +1,17 @@
+{
+  "name": "Mondtuch-Robe",
+  "gegenstand": "magierrobe_episch",
+  "gruppe": "magie",
+  "teil": "brust",
+  "art": "Stoffrüstung",
+  "seltenheit": "Episch",
+  "modell": {
+    "ebene": "ruestung.brust.magier.episch",
+    "quelle": "fabrik/assets/ausruestung/magie/brust/ruestung.brust.magier",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.magier.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.magier.episch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Tiefer Purpur mit Silberborten, die im Dunkeln schwach glimmen."
+}

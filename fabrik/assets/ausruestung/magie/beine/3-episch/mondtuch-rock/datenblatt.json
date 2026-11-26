@@ -1,0 +1,17 @@
+{
+  "name": "Mondtuch-Rock",
+  "gegenstand": "magierrock_episch",
+  "gruppe": "magie",
+  "teil": "beine",
+  "art": "Stoffrüstung",
+  "seltenheit": "Episch",
+  "modell": {
+    "ebene": "ruestung.beine.magierrock.episch",
+    "quelle": "fabrik/assets/ausruestung/magie/beine/ruestung.beine.magierrock",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.magierrock.episch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.magierrock.episch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Tiefer Purpur mit Silberborten, die im Dunkeln schwach glimmen."
+}
