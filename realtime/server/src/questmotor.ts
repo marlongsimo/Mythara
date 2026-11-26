@@ -44,10 +44,15 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
   for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, s, S.id) && besitzt(nutzer).includes(S.ereignis.g)) { const n = QB.ereignis(q, s, { art: "aufheben", g: S.ereignis.g }); if (n !== s) { await setzen(sb, nutzer, q, n); return; } } }
 
 /* ───────── Abschluss (genau einmal) ───────── */
-const punkteJe = new Map<string, number>();
-/** Questpunkte des Spielers (Summe, rpg_held.questpunkte) */
-export const questpunkte = (nutzer: string): number => punkteJe.get(nutzer) || 0;
-export function punkteLaden(nutzer: string, n: unknown): void { punkteJe.set(nutzer, Math.max(0, Math.floor(Number(n)) || 0)); }
+/** Questpunkte des Spielers: immer aus den Queststand-Daten abgeleitet (Σ punkte aller abgeschlossenen Quests) – auch für Abschlüsse vor Migration 048.
+ *  rpg_held.questpunkte ist nur eine Kopie, die der Server nachführt (punkteAbgleichen). */
+export const questpunkte = (nutzer: string): number => QUESTS.reduce((n, q) => n + (qStand(nutzer, q.id) === "fertig" ? Math.min(10, q.punkte || 0) : 0), 0);
+/** Die gespeicherte Kopie (rpg_held.questpunkte) an den abgeleiteten Wert angleichen – über rpg_held_questpunkte_setzen (Migration 049); fehlt sie, bleibt es beim Anzeigen */
+let ohne049 = false;
+export async function punkteAbgleichen(sb: Sb, nutzer: string, gespeichert: unknown): Promise<void> { const soll = questpunkte(nutzer);
+  if (ohne049 || Math.floor(Number(gespeichert)) === soll) return;
+  await sb("/rest/v1/rpc/rpg_held_questpunkte_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_punkte: soll }) })
+    .catch((e) => { const t = (e as Error).message; if (/PGRST202|404|questpunkte_setzen/.test(t)) ohne049 = true; else console.error("Questpunkte speichern:", t); }); }
 let ohneV2 = false;
 /** Abschluss buchen: rpg_held_quest_abschluss_v2 (Migration 048: Kampf-XP, Berufe-XP, Questpunkte); fehlt sie noch, die alte Funktion (045: nur Kampf-XP).
  *  true = erster Abschluss (jetzt gibt es den Lohn), false = schon abgeschlossen, null = Fehler */
@@ -106,7 +111,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
       /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
       for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(1000, n));
-      if (q.punkte) { punkteJe.set(nutzer, (punkteJe.get(nutzer) || 0) + Math.min(10, q.punkte)); aus.punkte = Math.min(10, q.punkte); gemeldet(nutzer); } } }
+      if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
@@ -142,4 +147,4 @@ for (const q of QUESTS) for (const [name, b] of Object.entries(q.beute || {})) {
 AUFGENOMMEN.push((nutzer, g) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "aufheben", g }); });
 
 /** Nur für Tests */
-export function motorVergessen(): void { staende.clear(); offen.clear(); sbJe.clear(); punkteJe.clear(); }
+export function motorVergessen(): void { staende.clear(); offen.clear(); sbJe.clear(); ohne049 = false; }

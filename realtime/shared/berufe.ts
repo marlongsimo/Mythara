@@ -19,7 +19,7 @@ export const BERUFE: Beruf[] = [
   { id: "bergbau", name: "Bergbau", symbol: S + "bergbau.webp", symbolKlein: S + "bergbau_klein.webp", stationen: [],
     wofuer: "Erze für das Schmieden: Barren schmelzen für Waffen, Rüstungen und Werkzeuge. Jedes Erz bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
     aufstieg: "Erzadern in den Senken antippen, eine Spitzhacke im Rucksack oder in der Hand. Kupfer ab Level 1 (20 XP), Eisen 10 (35), Schwarzeisen 20 (60), Sterneisen 35 (100), Splittereisen 45 (160), Ureisen 65 (250). Eine bessere Spitzhacke baut schneller." },
-  { id: "schmieden", name: "Schmieden", symbol: S + "schmieden.webp", symbolKlein: S + "schmieden_klein.webp", stationen: ["esse", "amboss"],
+  { id: "schmieden", name: "Schmieden", symbol: S + "schmieden_2.webp", symbolKlein: S + "schmieden_2_klein.webp" /* eigenes Symbol (26.11.2026) */, stationen: ["esse", "amboss"],
     wofuer: "Aus Erz wird Metall: Barren an der Esse, Waffen, Rüstungen und Werkzeuge am Amboss. Esse und Amboss stehen in der Schmiede der Waldmark.",
     aufstieg: "An der Esse oder am Amboss ein Rezept wählen (oder Erz bzw. einen Barren im Rucksack benutzen und die Werkstatt antippen). Am Amboss braucht man einen Hammer im Rucksack. Jedes Stück braucht seine Ticks, auch bei „Alle“." },
   { id: "handwerk", name: "Handwerk", symbol: S + "handwerk.webp", symbolKlein: S + "handwerk_klein.webp", stationen: ["werkbank", "hand"],

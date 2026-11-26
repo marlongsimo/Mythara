@@ -6,7 +6,7 @@
  */
 import { QUESTS } from "../../shared/quests";
 import * as QB from "../../shared/questbau";
-import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteLaden, type MotorAntwort } from "./questmotor";
+import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteAbgleichen, type MotorAntwort } from "./questmotor";
 import type { SkillXp } from "../../shared/kampfwerte";
 import { SAMMEL_QUEST } from "./sammeln";
 import { HANDWERK_QUEST } from "./handwerk";
@@ -21,8 +21,8 @@ export async function questsLaden(sb: Sb, nutzer: string): Promise<Record<string
   sbJe.set(nutzer, sb); if (staendeGeladen(nutzer)) return alleStaende(nutzer);
   const r = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=quests`).catch((e) => { console.error("Quests laden (Migration 045 eingespielt?):", (e as Error).message); return null; })) as { quests?: Record<string, { s?: string }> }[] | null;
   staendeLaden(nutzer, r && r[0] ? r[0].quests : null, sb);
-  /* Questpunkte (Migration 048) – eigene Abfrage: ohne die Spalte bleibt es bei 0, der Queststand lädt trotzdem */
-  const p = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=questpunkte`).catch(() => null)) as { questpunkte?: number }[] | null; punkteLaden(nutzer, p && p[0] ? p[0].questpunkte : 0);
+    /* Questpunkte leiten sich aus dem Queststand ab; die gespeicherte Kopie (rpg_held.questpunkte, Migration 048) wird bei Abweichung nachgeführt */
+  const p = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=questpunkte`).catch(() => null)) as { questpunkte?: number }[] | null; if (p && p[0]) void punkteAbgleichen(sb, nutzer, p[0].questpunkte);
   return alleStaende(nutzer); }
 /** Summe der Questpunkte */
 export const punkte = (nutzer: string): number => questpunkte(nutzer);
