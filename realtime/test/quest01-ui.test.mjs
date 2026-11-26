@@ -121,7 +121,7 @@ try {
   if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.keyboard.press("Escape"); await anna.click('#ez-leiste [data-l="ausruestung"]');
   /* Ben steht vor der Sperre (Stand: bestätigt); für ihn ist sie noch zu, nach dem Gespräch mit Raban offen. Anna bleibt draußen. */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6446.5, 6642.5, "waldweg"]);
-  await ben.goto(B + S); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
+  await ben.goto(B + S, { timeout: 120000 }); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
   await ben.waitForTimeout(3000);
   const durch = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6446.5, y: 6643 }, { x: 6446.5, y: 6655 }, 0.3).length > 0; });
   const kreuzung = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6443.5, y: 6608 }, { x: 6443.5, y: 6622 }, 0.3).length > 0; });
