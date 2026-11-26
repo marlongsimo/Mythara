@@ -1,7 +1,7 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock
+  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock | staken
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
@@ -140,6 +140,10 @@ elif ART == "stock":                                                            
     pts += [Vector((0.04, 0, 0.88)), Vector((0.09, 0, 0.86))]
     for a, b in zip(pts, pts[1:]): rohr(tuple(a), tuple(b), 0.016, HOLZ, 8)
     for z in (0.25, 0.5, 0.7): kugel((0.012, 0, z), 0.012, HOLZ, (1, 1, 1.5), 6)                    # Astknoten
+elif ART == "staken":                                                                            # Fährstaken: 2,4 m Stange mit eiserner Spitze und Haken (Kord Weller); Ursprung = unteres Ende
+    HOLZ = mat("stakenholz", (140, 105, 65), 0.8); EIS = mat("eisen", (90, 88, 86), 0.45, 0.8)
+    rohr((0, 0, 0.08), (0, 0, 2.4), 0.018, HOLZ, 10); rohr((0, 0, 0), (0, 0, 0.1), 0.012, EIS, 8, 0.002); rohr((0, 0, 0.08), (0.06, 0, 0.16), 0.007, EIS, 6)
+    for z in (1.0, 1.6): rohr((0, 0, z), (0, 0, z + 0.04), 0.021, mat("wicklung", (110, 80, 50), 0.9), 10)
 elif ART == "splitterkern":
     KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
     for m_ in (KRIST, KERN):
