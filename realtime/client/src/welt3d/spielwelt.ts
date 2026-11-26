@@ -29,6 +29,7 @@ const GESPRAECH_WEIT = 5;
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
 import { HolzWelt, beilUrl } from "./holz3d";
+import { musikStarten } from "../musik";
 import { BergWelt, hackenUrl } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
 import { HandwerkWelt } from "./handwerk3d";
@@ -127,7 +128,7 @@ export class Spielwelt3D implements WeltKern {
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
-    this.profil(); anschluss3D.betreten(this);
+    this.profil(); anschluss3D.betreten(this); musikStarten(); /* Hintergrundmusik (musik.ts) */
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
