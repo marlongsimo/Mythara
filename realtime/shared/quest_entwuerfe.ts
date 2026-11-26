@@ -15,6 +15,11 @@ import { QUEST_MIRA } from "./quest_mira";
 import { QUEST_C1 } from "./quest_c1";
 import { QUEST_C2 } from "./quest_c2";
 import { QUEST_C3 } from "./quest_c3";
+import { QUEST_E1 } from "./quest_e1";
+import { QUEST_E2 } from "./quest_e2";
+import { QUEST_E3 } from "./quest_e3";
+import { QUEST_E4 } from "./quest_e4";
+import { QUEST_SCHAFE, QUEST_GRAEBER } from "./quest_e_neben";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
@@ -29,4 +34,10 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_C1, wartet: "Phase 6: Novizen, Rezept brueckenplanke, Gegenstände, Figuren in mehreren Quests (Ulf, Bertold)" },
   { q: QUEST_C2, wartet: "Phase 6: Gesang mit Zeitfenster, Verkleidung, Akoluthen und Federmutter, Zufalls-Reihenfolge" },
   { q: QUEST_C3, wartet: "Phase 6: Boss und Instanz, Folgen, Kerkermeister, Lohn nach Wahl" },
+  { q: QUEST_E1, wartet: "Phase 8: Nordsaum-Weg, Heidrast, Abtei (Welt), Mette und Gunhild (Figuren), Rudelführer" },
+  { q: QUEST_E2, wartet: "Phase 8: Abtei und Glockenturm, Rezepte glockenbronze/glocke/kloeppel, Glocke als Weltereignis" },
+  { q: QUEST_E3, wartet: "Phase 8: Grenzposten, Deserteure, Figur wird Gegner (Tjark), Wahl im Stand" },
+  { q: QUEST_E4, wartet: "Phase 8: Grab des Hauptmanns als Instanz, Grabwächter, Grauer Hauptmann, Wachtrüstung" },
+  { q: QUEST_SCHAFE, wartet: "Phase 8: Heidrast, Heidewolf, Rezept hammeleintopf" },
+  { q: QUEST_GRAEBER, wartet: "Phase 8: Hügelgräber, Grablicht (Seelenlicht 35)" },
 ];
