@@ -1,0 +1,19 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "gegner.turmwaechter – Turmwächter (Stufe 58, Turm am Ostufer): die Wacht-Figur (Meshy „Azure Lionguard“, Speer und Turmschild fest im Modell) als gerüstete Steinfigur (fabrik/stein.py), grünes Glühen in Kanten und Augen. Angriff Speerstoß (stich2h), Rundumschlag mit Ansage.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "stich2h",
+    "rundumschlag",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}

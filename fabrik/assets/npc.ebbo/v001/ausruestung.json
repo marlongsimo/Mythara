@@ -1,0 +1,28 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.ebbo – Ebbo, Torfstecher, abgerissen und verstört (aus dem jungen Knecht): Kleidung und Haut mit Torf verschmiert (fabrik/textur_umfaerben.py).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npc.junger_knecht/v001/quelle/teile/kopf.haar.zerzaust.glb"
+    },
+    {
+      "id": "kopf.bart.stoppeln",
+      "platz": "bart",
+      "glb": "npc.junger_knecht/v001/quelle/teile/kopf.bart.stoppeln.glb"
+    }
+  ],
+  "arme_eng": 6
+}

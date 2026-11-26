@@ -1,0 +1,40 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.gisbert – Gisbert Ast, Obstbauer in den Obstwiesen (Quest „Fallobst“), aus dem alten Bauern (npcmann3d): Kleidung des alten Bauern, zerzaustes braunes Haar und Vollbart (#6b4a2e), Apfelkorb (fabrik/beute.py apfelkorb) in der rechten Hand.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.apfelkorb",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.apfelkorb/v001/quelle/apfelkorb.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npc.gisbert/v001/quelle/teile/kopf.haar.zerzaust.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npc.gisbert/v001/quelle/teile/kopf.bart.vollbart.glb"
+    }
+  ],
+  "arme_eng": 6
+}

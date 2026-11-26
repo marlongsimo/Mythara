@@ -1,0 +1,41 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.alma – Alma Furtner, Wirtin der Taverne „Zur Furt“ in Graufurt (wie Hilde aus der Marktfrau): rotblonder Hochsteckschopf, moosgrüne Schürze, Tonkrug.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.krug",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.krug/v001/quelle/krug.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.wuschel_hoch",
+      "platz": "haar",
+      "glb": "npc.alma/v001/quelle/teile/kopf.haar.wuschel_hoch.glb"
+    },
+    {
+      "id": "kleidung.schuerze",
+      "platz": "schuerze",
+      "glb": "npc.alma/v001/quelle/teile/kleidung.schuerze.glb",
+      "beine_mitteln": true
+    }
+  ],
+  "arme_eng": 6
+}

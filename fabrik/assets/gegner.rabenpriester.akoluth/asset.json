@@ -1,0 +1,8 @@
+{
+  "id": "gegner.rabenpriester.akoluth",
+  "name": "Rabenpriester-Akoluth",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: ruhe, gehen, laufen, treffer, tod, bogen, stich2h – Spieldatei img/figuren-echt3d/rabenpriester_akoluth3d.glb",
+  "herkunft": "gegner.rabenpriester"
+}

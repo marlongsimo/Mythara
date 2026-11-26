@@ -1,0 +1,73 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "beine_eng": 0.12,
+  "exklusiv": true,
+  "hinweis": "npc.merit – Merit Stahl, Hauptfrau der Wacht von Graufurt (aus basefrau3d): eng geflochtener dunkler Zopf, Sternplatte und Eisenschienen, Schild der Wacht mit dem Wappen Turm über drei Wellen (schild.graufurt), Ritterschwert.",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zopf_eng",
+      "platz": "haar",
+      "glb": "npc.merit/v001/quelle/teile/kopf.haar.zopf_eng.glb"
+    },
+    {
+      "id": "ruestung.brust.sternplatte",
+      "platz": "brust",
+      "glb": "npc.merit/v001/quelle/teile/ruestung.brust.sternplatte.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "brust",
+        "bauch",
+        "becken"
+      ]
+    },
+    {
+      "id": "ruestung.beine.eisenschienen",
+      "platz": "beine",
+      "glb": "npc.merit/v001/quelle/teile/ruestung.beine.eisenschienen.glb",
+      "wahlfrei": true,
+      "nur_knochen": [
+        "becken",
+        "bauch",
+        "oberschenkel.L",
+        "oberschenkel.R",
+        "unterschenkel.L",
+        "unterschenkel.R",
+        "fuss.L",
+        "fuss.R"
+      ]
+    }
+  ],
+  "starr": [
+    {
+      "id": "waffe.schwert.ritter",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/schwert/waffe.schwert.ritter/v001/quelle/schwert.glb",
+      "griff": 0.2,
+      "griff2": 0.08,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    },
+    {
+      "id": "schild.graufurt",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "waffen/schild/schild.graufurt/v001/quelle/schild.glb",
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": []
+}
