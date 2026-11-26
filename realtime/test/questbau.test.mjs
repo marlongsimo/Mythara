@@ -27,12 +27,15 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   const genannt = new Set([...JSON.stringify(q).matchAll(/"(?:hat|verloren)":"([a-z0-9_]+)"|"g":"([a-z0-9_]+)"/g)].map((m) => m[1] || m[2]));
   for (const g of genannt) if (!GEG[g]) baustein(`Gegenstand ${g} gibt es nicht`);
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
-  for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) fehler.push(`${f.id}: steht außerhalb der Welt`);
+  for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) baustein(`${f.id}: steht außerhalb der Welt`);
+  /* Der Motor lässt eine Figur heute nur in der ersten Quest sprechen, die sie nennt (questmotor.ts motorReden): dieselbe Figur in zwei Quests braucht erst den Motor */
+  for (const f of q.figuren) { const andere = [...QUESTS, ...(wartet ? ENTWUERFE.map((e) => e.q) : [])].filter((x) => x.id !== q.id && x.figuren.some((g) => g.id === f.id)).map((x) => x.id);
+    if (andere.length) baustein(`Figur ${f.id} auch in ${andere.join(", ")} (Figur in mehreren Quests)`); }
   const bedPruefen = (b, wo) => { if (!b) return; for (const id of [...(b.erledigt || []), ...(b.offen || []), ...(b.zaehler ? [b.zaehler.schritt] : [])]) if (!ids.includes(id)) fehler.push(`${wo}: unbekannter Schritt ${id}`);
     if (b.zaehler && !q.schritte.find((x) => x.id === b.zaehler.schritt).anzahl) fehler.push(`${wo}: ${b.zaehler.schritt} zählt nicht`);
     if (b.quest && !ALLE_IDS.includes(b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
   const oIds = (q.objekte || []).map((o) => o.id); if (new Set(oIds).size !== oIds.length) fehler.push("Objekt-IDs doppelt");
-  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) fehler.push(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
+  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) baustein(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
   for (const x of q.schritte) { if (x.ereignis.art === "objekt" && !oIds.includes(x.ereignis.id)) fehler.push(`${x.id}: Objekt ${x.ereignis.id} fehlt`);
     for (const b of [].concat(x.bei || [])) if (!q.figuren.some((f) => f.id === b)) fehler.push(`${x.id}: bei unbekannter Figur ${b}`);
     if (x.ereignis.art === "antwort" && !Object.values(q.dialoge).some((D) => D.optionen.some((o) => o.folge.some((v) => (v.f.erledige || []).includes(x.id))))) fehler.push(`${x.id}: keine Antwort erledigt ihn`); }
