@@ -48,9 +48,12 @@ for (const q of QUESTS) {
   check(staende.every((s) => s.length <= 24 && /^[a-z0-9_]*$/.test(s)), "Alle Stände passen in die Datenbank (höchstens 24 Zeichen)");
 
   /* Erreichbarkeit: vom Annehmen über Ereignisse und Antworten bis zum Abschluss */
-  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 99 };
+  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999 }; /* genug von allem (B1: 250 Splitter) */
+  /* Annehmen mit einem Spieler, der alle Voraussetzungen erfüllt (Quests fertig, Skills und Heldenstufe hoch genug) */
+  const kBereit = { ...k0, quest: () => "fertig", skill: () => 999, heldenlevel: () => 999 };
   let s = ""; const ann = q.dialoge[q.geber].optionen.find((o) => o.folge.some((v) => v.f.start));
-  check(Boolean(ann), "Es gibt eine Antwort zum Annehmen"); if (ann) s = QB.nachFolge(q, s, QB.antwort(q, q.geber, s, ann.id, k0));
+  check(Boolean(ann), "Es gibt eine Antwort zum Annehmen");
+  const annF = ann && QB.antwort(q, q.geber, s, ann.id, kBereit); check(Boolean(annF), "Mit erfüllten Voraussetzungen lässt sich die Quest annehmen"); if (annF) s = QB.nachFolge(q, s, annF);
   check(QB.laeuft(q, s), `Nach dem Annehmen läuft die Quest (${s})`);
   /* Ereignis eines Schritts nachspielen (Stelle: Mitte von „bei“); Antwort-Schritte über die Figur, die sie erledigt */
   const melden = (e) => ({ ...e, ...(e.bei ? { x: e.bei[0], y: e.bei[1] } : {}) });
