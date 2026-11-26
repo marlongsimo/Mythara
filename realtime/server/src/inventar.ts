@@ -11,7 +11,7 @@
  */
 import { Wirkung, wirkungenPruefen, wirkungenAktiv, wirkungDazu } from "../../shared/wirkungen";
 import { LADBAR, LADUNG_MAX, WAFFE_LADEN, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
-import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN, fachD, Daten, datenPruefen, datenGleich, geladen, ablegbar } from "../../shared/gegenstaende";
+import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN, fachD, Daten, datenPruefen, datenGleich, geladen, ablegbar, handelbar, anzeigeName } from "../../shared/gegenstaende";
 import { berufeUmstellen, UMSTELLUNG_SCHMIEDEN } from "../../shared/berufe";
 import { Startwaffe } from "../../shared/aussehen";
 import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
@@ -146,6 +146,37 @@ export function verkaufen(sb: Sb, nutzer: string, i: number, n: number, preis: (
   if (raum < summe) return "Dein Rucksack ist voll – für die Splitter ist kein Platz.";
   if (k >= hat) e.inv.rucksack.splice(i, 1); else (f as { n: number }).n = hat - k;
   einlegen(e, "splitter", summe); geaendert(sb, nutzer, e); return { g, n: k, splitter: summe }; }
+/* ───────── Handel zwischen Spielern (#65) ───────── */
+/** Ein Posten im Angebot: Gegenstand, Menge, Daten (dieselben wie im Rucksack) */
+export interface Posten { g: string; n: number; d?: Daten }
+/** Wie viele davon (genau mit diesen Daten) liegen im Rucksack? */
+const zaehlen = (inv: Inv, g: string, d?: Daten): number => inv.rucksack.reduce((s, f) => s + (fachG(f) === g && datenGleich(fachD(f), d) ? fachN(f) : 0), 0);
+/** Ein Angebot prüfen: alles handelbar und im Rucksack vorhanden (Splitter extra). Zurück: Fehlertext oder null */
+export function angebotPruefen(nutzer: string, posten: Posten[], splitter: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  const summe = new Map<string, Posten>(); for (const p of posten) { if (!GEGENSTAENDE[p.g] || !(p.n >= 1)) return "Das gibt es nicht."; if (!handelbar(p.g, p.d)) return `${anzeigeName(p.g, p.d)} ist nicht handelbar.`;
+    const k = p.g + "|" + JSON.stringify(p.d || {}), x = summe.get(k); if (x) x.n += p.n; else summe.set(k, { ...p }); }
+  for (const p of summe.values()) if (zaehlen(e.inv, p.g, p.d) < p.n) return `So viel ${anzeigeName(p.g, p.d)} hast du nicht.`;
+  if (splitter < 0 || !Number.isInteger(splitter)) return "Ungültige Menge."; if (splitter > zaehlen(e.inv, "splitter")) return "So viele Splitter hast du nicht."; return null; }
+/** Aus einer Kopie des Inventars nehmen (hinten zuerst). Zurück: ob alles da war */
+function wegnehmen(e: Eintrag, g: string, n: number, d?: Daten): boolean { let rest = n;
+  for (let i = e.inv.rucksack.length - 1; i >= 0 && rest > 0; i--) { const f = e.inv.rucksack[i]; if (fachG(f) !== g || !datenGleich(fachD(f), d)) continue; const k = Math.min(fachN(f), rest); rest -= k;
+    if (k >= fachN(f)) e.inv.rucksack.splice(i, 1); else (f as { n: number }).n -= k; } return rest === 0; }
+/** Freie Rucksackfächer nach dem Tausch, wenn dieser Spieler gibt und bekommt (für die Anzeige und die Prüfung) – null: passt nicht */
+function nachTausch(e: Eintrag, gibt: Posten[], gibtS: number, bekommt: Posten[], bekommtS: number): Eintrag | null { const k: Eintrag = { ...e, inv: kopie(e.inv), hoerer: new Set() };
+  for (const p of gibt) if (!wegnehmen(k, p.g, p.n, p.d)) return null; if (gibtS && !wegnehmen(k, "splitter", gibtS)) return null;
+  for (const p of bekommt) if (einlegen(k, p.g, p.n, p.d) < p.n) return null; if (bekommtS && einlegen(k, "splitter", bekommtS) < bekommtS) return null; return k; }
+/** Passt der Tausch in beide Rucksäcke? Zurück: wer keinen Platz hat (a/b) oder null */
+export function tauschPasst(a: string, b: string, la: Posten[], sa: number, lb: Posten[], sb2: number): "a" | "b" | null { const ea = je.get(a), eb = je.get(b); if (!ea || !eb) return "a";
+  return !nachTausch(ea, la, sa, lb, sb2) ? "a" : !nachTausch(eb, lb, sb2, la, sa) ? "b" : null; }
+/** Freie Fächer im Rucksack */
+export const freiePlaetze = (nutzer: string): number => freieFaecher(nutzer);
+/** Der Tausch in einem Schritt: beide Angebote noch einmal prüfen, auf Kopien rechnen, dann beide Inventare zugleich ersetzen – alles oder nichts.
+ *  Zurück: Fehlertext oder null */
+export function handelTauschen(sb: Sb, a: string, b: string, la: Posten[], sa: number, lb: Posten[], sb2: number): string | null {
+  const ea = je.get(a), eb = je.get(b); if (!ea || !eb || a === b) return "Der Handel geht nicht.";
+  const fa = angebotPruefen(a, la, sa) || angebotPruefen(b, lb, sb2); if (fa) return fa;
+  const na = nachTausch(ea, la, sa, lb, sb2), nb = nachTausch(eb, lb, sb2, la, sa); if (!na || !nb) return "Für den Tausch fehlt Platz im Rucksack.";
+  ea.inv = na.inv; eb.inv = nb.inv; geaendert(sb, a, ea); geaendert(sb, b, eb); return null; }
 /** Einen Trank aus Fach i nehmen (eins vom Stapel). Zurück: die Trank-Art (VERBRAUCH) oder null */
 export function trankNehmen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null; const G = GEGENSTAENDE[fachG(f)];
   if (!G || !G.trank) return null; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return G.trank; }

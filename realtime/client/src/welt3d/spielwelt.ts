@@ -15,7 +15,8 @@ import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } f
 const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
 import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
-import { Folger, folgeEndeText } from "../../../shared/folgen";
+import { Folger, folgeEndeText, folgePunkt } from "../../../shared/folgen";
+import { handelAnfragen, handelAnfrageAnnehmen, hatGefragt } from "../handel";
 import { kampfZuletzt } from "../kampfzeit";
 import { freundHinzufuegen } from "../freunde";
 import { gegenstandUntersuchen } from "../rahmen";
@@ -242,7 +243,7 @@ export class Spielwelt3D implements WeltKern {
   geheWeit(x: number, y: number) { const o = this.ort, d = Math.hypot(x - o.x, y - o.y); if (d < 0.5) return;
     for (const weit of [d, 48, 32, 20, 12]) { if (weit > d) continue; const zx = o.x + (x - o.x) * weit / d, zy = o.y + (y - o.y) * weit / d; const w = this.raster.weg(o, { x: zx, y: zy }, RADIUS, 24, true); if (w.length) { this.gehe(zx, zy); return; } } }
   /** Selbst irgendwohin gehen (Antippen, Minikarte, Hingehen und Handeln): beendet das Folgen */
-  gehe(x: number, y: number) { this.folgenEnde("selbst"); this.laufen(x, y); }
+  gehe(x: number, y: number) { this.folgenEnde("selbst"); this.handelZiel = null; this.laufen(x, y); }
   /** Den Weg zu (x, y) suchen und loslaufen; true: es gibt einen Weg */
   private laufen(x: number, y: number): boolean { if (this.gesperrt) return false; const w = this.raster.weg(this.ort, { x, y }, RADIUS, 24, true); this.pfad = w; this.naechst = Infinity; this.stillstand = 0;
     if (w.length) { const z = w[w.length - 1]; this.marke.position.set(z.x, this.motor.hoehe(z.x, z.y) + 0.06, z.y); this.marke.visible = true; } else this.marke.visible = false; return w.length > 0 || Math.hypot(x - this.ort.x, y - this.ort.y) < 1; }
@@ -254,6 +255,12 @@ export class Spielwelt3D implements WeltKern {
     (el.querySelector("span") as HTMLElement).textContent = `Du folgst ${name}`; (el.querySelector("button") as HTMLElement).onclick = (e) => { e.stopPropagation(); this.folgenEnde("selbst"); };
     el.style.cssText = "position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;padding:4px 10px;border-radius:8px;background:rgba(30,20,8,.82);color:#f3e3b5;font:600 13px Georgia,serif";
     if (!el.parentElement) document.body.appendChild(el); el.hidden = false; }
+  /* ───── Handeln (#65): bis auf ein Feld an den anderen heranlaufen, dann anfragen (oder seine Anfrage annehmen) ───── */
+  private handelZiel: { name: string; bis: number } | null = null;
+  handeln(name: string) { const p = anschluss3D.spielerOrt(name); if (!p) { chatSystem(`${name} ist nicht hier.`); return; } this.folgenEnde(); this.handelZiel = { name, bis: performance.now() + 15000 }; this.handelSchritt(true); }
+  private handelSchritt(start = false) { const H = this.handelZiel; if (!H) return; const p = anschluss3D.spielerOrt(H.name); if (!p || performance.now() > H.bis) { this.handelZiel = null; if (!p) chatSystem(`${H.name} ist nicht mehr hier.`); return; }
+    const d = Math.hypot(p.x - this.ort.x, p.y - this.ort.y); if (d <= 1.6) { this.handelZiel = null; this.pfad = []; this.marke.visible = false; if (hatGefragt(H.name)) handelAnfrageAnnehmen(H.name); else handelAnfragen(H.name); return; }
+    if (start || (!this.pfad.length && d > 1.6)) { const t = folgePunkt(this.ort, p, 1) || p; if (!this.laufen(t.x, t.y)) { this.handelZiel = null; chatSystem(`Kein Weg zu ${H.name}.`); } } }
   /** Wo steht dieser Spieler gerade (Weltfelder; Mitspieler oder Held im Kampfgebiet)? */
   spielerOrt(name: string): { x: number; y: number } | null { return anschluss3D.spielerOrt(name); }
   /** Wem folgt der Held gerade (für Prüfungen)? */
@@ -360,7 +367,7 @@ export class Spielwelt3D implements WeltKern {
     if (d) gr.push({ kopf: d.n, ...(d.s ? { lv: { text: `(Level ${d.s})`, farbe: "#f3ead2" } } : {}), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
-      ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }] : [])] });
+      ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
         gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
@@ -458,7 +465,7 @@ export class Spielwelt3D implements WeltKern {
     return bewegt; }
   private bild(dt: number) { this.simZeit += dt; if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
-    if (direkt) this.folgenEnde("selbst"); else this.folgenSchritt(dt); /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
+    if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }
     else if (this.imKampf && this.pfad.length) { const z = this.pfad[0], dx = z.x - o.x, dy = z.y - o.y, l = Math.hypot(dx, dy);
       if (l < this.naechst - 0.03) { this.naechst = l; this.stillstand = 0; } else this.stillstand += dt;
