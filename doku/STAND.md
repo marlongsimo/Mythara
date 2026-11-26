@@ -45,8 +45,8 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 |---|---|---|
 | Riftmere · Leitstelle | Konzept, Review, Verteilen, Takt stündlich | `claude/relaxed-sagan-erl6lf` |
 | Riftmere · Integration | Zusammenführen, Live, Inhalte einbauen, Oberfläche | `claude/welt3d` → `feature/realtime-engine` |
-| Riftmere · Aufräumen | Altbestand aufräumen (einmalig, seit 26.11.) | `claude/aufraeumen` |
-| Riftmere · Oberfläche | HUD und Fenster überarbeiten (seit 26.11.) | `claude/oberflaeche` |
+| Riftmere · Aufräumen | Altbestand aufräumen (einmalig, seit 26.11., session_01TxcDgEcDbLo7f245QtC2EJ) | `claude/aufraeumen` |
+| Riftmere · Oberfläche | HUD und Fenster überarbeiten (seit 26.11., session_01TxcDgB4mevNoCcMXvpgjvs) | `claude/oberflaeche` |
 | Riftmere · Bugs | Fehler beheben (seit 26.11., session_01TxcDgCbmWBUtRdqteuxHgV) | `claude/bugs` |
 | Riftmere · Systeme | neue Mechaniken (seit 26.11., session_01TxcDgE5j3LqSdTzrgFQR7Y) | `claude/systeme` |
 | Riftmere · Quests | Quests als Daten (seit 26.11.) | `claude/riftmere-quests` |
