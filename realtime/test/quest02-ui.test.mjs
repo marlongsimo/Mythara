@@ -82,6 +82,22 @@ try {
   await anna.waitForFunction(() => window.EZK && window.EZK.z && window.EZK.z.w && window.EZK.z.w.some((w) => w[2] === "mooshocker"), null, { timeout: 30000 }).catch(() => {});
   const moos = await anna.evaluate(() => window.EZK && window.EZK.z && window.EZK.z.w ? window.EZK.z.w.filter((w) => w[2] === "mooshocker").length : 0);
   check(moos === 7, `In der Osthof-Zone stehen ${moos} Mooshocker`);
+  /* #97: Mooshocker auf der Minikarte – rote Punkte an ihrer Stelle in der Region der Karte (nicht relativ zur ganzen Kampfwelt) */
+  await anna.waitForTimeout(600);
+  const karte = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK, r = W.regionBei(W.ort.x, W.ort.y).region, C = 32, x0 = r.ursprung[0] * C, y0 = r.ursprung[1] * C, b = r.chunks[0] * C, h = r.chunks[1] * C, l = [];
+    for (const e of K.z.w) { if (e[2] !== "mooshocker") continue; const u = document.querySelector(`#ez-karte u[data-k="${e[0]}"]`); const wx = K.zone.x0 + e[4], wy = K.zone.y0 + e[5];
+      l.push({ rot: Boolean(u && u.classList.contains("feind") && getComputedStyle(u).backgroundColor === "rgb(224, 74, 58)"), dx: u ? Math.abs(parseFloat(u.style.left) - 100 * (wx - x0) / b) : 99, dy: u ? Math.abs(parseFloat(u.style.top) - 100 * (wy - y0) / h) : 99 }); }
+    return l; });
+  check(karte.length === 7 && karte.every((p) => p.rot && p.dx < 2 && p.dy < 2), `Minikarte: sieben rote Punkte an der Stelle der Mooshocker (${JSON.stringify(karte.map((p) => (p.rot ? "rot" : "–") + "/" + p.dx.toFixed(0) + "," + p.dy.toFixed(0)))})`);
+  /* #97: langes Drücken neben einen Mooshocker (Boden, nicht die Figur) – das Level im Menü ist eingefärbt */
+  const lv = await anna.evaluate(async () => { const W = window.EZW.welt3d, K = window.EZK, M = W.motor; window.EZW.welt3d.motor.abstand = 9;
+    for (const e of K.z.w) { if (e[2] !== "mooshocker" || e[10]) continue; const x = K.zone.x0 + e[4], y = K.zone.y0 + e[5];
+      for (const dy of [-1.3, -1.0, 0.4, -0.2]) { const p = M.bildschirm(x, M.hoehe(x, y + dy), y + dy); if (!p || K.amSchirm(p.x, p.y) || !K.zielBei(x, y + dy)) continue;
+        W.menueBei(p.x, p.y); await new Promise((r) => setTimeout(r, 200)); const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((d) => /Mooshocker/.test(d.textContent)), b = k && k.querySelector(".lv");
+        const t = { kopf: k ? k.textContent : null, farbe: b ? b.style.color : "" }; document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); return t; } }
+    return null; });
+  check(lv && lv.farbe && /Level 1/.test(lv.kopf || ""), `Langes Drücken neben einen Mooshocker: „${lv && lv.kopf}“, Level eingefärbt (${lv && lv.farbe})`);
+  await anna.keyboard.press("Escape").catch(() => {});
   /* #63: Odo ansprechen – der Held bleibt ein Feld vor ihm stehen (nicht auf seinem Feld), schaut zu ihm, das Gespräch öffnet sich */
   { await anna.keyboard.press("Escape").catch(() => {});
     await anna.evaluate(() => { const W = window.EZW.welt3d, s = W.anStelle(6546.5, 6441.5); if (s) W.ausfuehren(s, s.tat); });

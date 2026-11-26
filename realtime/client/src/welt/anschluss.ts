@@ -32,7 +32,7 @@ import { freundeTafel } from "../freunde";
 import { epAlle } from "../halle";
 import type Phaser from "phaser";
 import { serverZusatz } from "../gruppe";
-import { WeltKampf, WeltSzene, tastenFuellen } from "./kampf";
+import { WeltKampf, WeltSzene, tastenFuellen, karteRahmen } from "./kampf";
 import { WELTZONEN } from "../../../shared/karten";
 import { aktiverHeld } from "../held";
 import { angelegteEbenen } from "../inventar";
@@ -184,7 +184,7 @@ function onlineZeigen() { const z = document.querySelector("#ez-oben-knoepfe .za
 
 /** Minikarte für die Region, in der man steht: Maßstab und die Karten der Nachbarregionen rundherum */
 function karteRegion(s: WeltKern, id: string, ux: number, uy: number, b: number, h: number) {
-  region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX };
+  region = { id, x: ux * CHUNK_PX, y: uy * CHUNK_PX, b: b * CHUNK_PX, h: h * CHUNK_PX }; karteRahmen({ x0: region.x / FELD_PX, y0: region.y / FELD_PX, b: region.b / FELD_PX, h: region.h / FELD_PX }); /* Gegnerpunkte des Kampfs relativ zu dieser Karte (#97) */
   zoomJetzt = Math.max(2.2, b * CHUNK_PX / FELD_PX / 40); karteZoom(zoomJetzt);
   /* Nachbarregionen auf der Minimap: ihre Karten an der richtigen Stelle um die aktuelle – der Kreis zeigt die Welt ohne Lücke */
   { const k = document.getElementById("ez-karte"), idx = (s as unknown as { index?: { regionen: Record<string, { region: { id: string; ursprung: number[]; chunks: number[] } }> } }).index;
@@ -291,7 +291,7 @@ export const anschluss3D = {
   kampfAntippenSchirm: (px: number, py: number): boolean => { const k = kampf as unknown as { bereit?: boolean; antippenSchirm?: (x: number, y: number) => boolean } | null; return Boolean(k && k.bereit && k.antippenSchirm && k.antippenSchirm(px, py)); },
   kampfAmSchirm: (px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ?: string } | null => { const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => ReturnType<NonNullable<typeof k>["amSchirm"] & ((...a: never[]) => unknown)> } | null; return k && k.bereit && k.amSchirm ? (k.amSchirm(px, py) as never) : null; },
   /** Aktionsmenü: Gegner an der Weltstelle, Mitspieler unter dem Bildschirmpunkt, dessen Karte */
-  kampfZielBei: (wx: number, wy: number): { name: string } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
+  kampfZielBei: (wx: number, wy: number): { name: string; stufe: number } | null => (kampf && kampf.bereit ? kampf.zielBei(wx, wy) : null),
   /** Mitspieler am Bildschirmpunkt: in der freien Welt die Mitspieler, im Kampfgebiet die anderen Helden der Zone (dann ohne Welt-Id: Flüstern per Name) */
   spielerBei: (px: number, py: number): Fremder | null => { const d = mit && mit.unterPunkt ? mit.unterPunkt(px, py) : null; if (d) return d;
     const k = kampf as unknown as { bereit?: boolean; amSchirm?: (x: number, y: number) => { held: boolean; name: string; stufe: number; a?: unknown } | null } | null, t = k && k.bereit && k.amSchirm ? k.amSchirm(px, py) : null;
