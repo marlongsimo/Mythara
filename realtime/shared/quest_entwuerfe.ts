@@ -37,7 +37,7 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_E1, wartet: "Phase 8: Nordsaum-Weg, Heidrast, Abtei (Welt), Mette und Gunhild (Figuren), Rudelführer" },
   { q: QUEST_E2, wartet: "Phase 8: Abtei und Glockenturm, Rezepte glockenbronze/glocke/kloeppel, Glocke als Weltereignis" },
   { q: QUEST_E3, wartet: "Phase 8: Grenzposten, Deserteure, Figur wird Gegner (Tjark), Wahl im Stand" },
-  { q: QUEST_E4, wartet: "Phase 8: Grab des Hauptmanns als Instanz, Grabwächter, Grauer Hauptmann, Wachtrüstung" },
+  { q: QUEST_E4, wartet: "Phase 8: Grab des Hauptmanns als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert als Lohn" },
   { q: QUEST_SCHAFE, wartet: "Phase 8: Heidrast, Heidewolf, Rezept hammeleintopf" },
   { q: QUEST_GRAEBER, wartet: "Phase 8: Hügelgräber, Grablicht (Seelenlicht 35)" },
 ];

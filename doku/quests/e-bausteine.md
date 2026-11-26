@@ -34,8 +34,8 @@ Sobald die Welt die Regionen anlegt, werden die Stellen nur in `quest_e_orte.ts`
 | `glocke_neu` | die gegossene Glocke |
 | `kloeppel` | Klöppel aus Kernbaum |
 | `tjarks_eid` | Tjarks Eid, aufgeschrieben (E3, Weg „überreden“) |
-| `klinge_hauptmann` | Klinge des Grauen Hauptmanns (geht an Wigand) |
-| `wappenrock_grauwacht` | Grauwachts Wappenrock, Teil 1 der Wachtrüstung (neues Set, Nutzer entscheidet) |
+| `klinge_hauptmann` | die Klinge aus dem Grab, Questgegenstand (geht an Wigand) |
+| `klinge_grauer_hauptmann` | Lohn: Klinge des Grauen Hauptmanns, **Selten-Langschwert mit eigenem Aussehen, kein Set** (Nutzer 26.11.: vorerst keine Wachtrüstung). Werte: Rolle Spiel; Modell: Figuren |
 | `hammelfleisch`, `hammeleintopf` | Nebenquest „Mettes Schafe“ |
 | `grablicht` | Seelenlicht 35 |
 

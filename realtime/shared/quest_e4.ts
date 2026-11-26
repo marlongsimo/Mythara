@@ -2,10 +2,11 @@
  * Riftmere – Quest E4 „Das Grab des Grauen Hauptmanns“ (Phase 8), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-8.md. Burgvogt Wigand Fels: Der letzte Hauptmann von Grauwacht liegt im größten Hügelgrab und lässt die Wiedergänger nicht ruhen.
  * In die Grabkammer, zwei Grabwächter, das Siegel des Hauptmanns, der Graue Hauptmann (Instanz), seine Klinge zurück in die Burg.
- * Lohn: Grauwachts Wappenrock (Teil 1 der Wachtrüstung), Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter, 3 Questpunkte.
+ * Lohn: die Klinge des Grauen Hauptmanns (Selten-Langschwert mit eigenem Aussehen, kein Set – Entscheidung des Nutzers 26.11.: vorerst keine Wachtrüstung),
+ * Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter, 3 Questpunkte. Die Klinge aus dem Grab (Questgegenstand) bringt man Wigand; er gibt sie geschärft zurück.
  * Schalter grauwacht_stufe3 (voll belebt: Werkstatt, Markt, Wegstein), hauptmann_instanz (solange die Quest läuft). Haken: die Brücke zur Furt (W5).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Hügelgräber, Grab als Instanz, Grabwächter, Grauer Hauptmann, Wachtrüstung). Liste: doku/quests/e-bausteine.md.
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Hügelgräber, Grab als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert klinge_grauer_hauptmann). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E3 } from "./quest_e3";
@@ -22,7 +23,7 @@ export const QUEST_E4: QuestDef = {
   logNeu: "Auch wenn die Glocke läutet: Nachts wandern die Wiedergänger noch immer über die Fahlen Weiten – vom größten Hügelgrab aus.",
   logAngeboten: "Burgvogt Wigand Fels in Grauwacht weiß, wer im größten Hügelgrab liegt.",
   logAbgabe: "Der Graue Hauptmann ruht. Bring seine Klinge zu Burgvogt Wigand Fels.",
-  logFertig: "Der Graue Hauptmann ruht, die Klinge hängt in der Burg. Grauwacht ist wieder eine Stadt. Im Osten führt eine gesperrte Brücke zur Furt – und weiter in die Hochlande.",
+  logFertig: "Der Graue Hauptmann ruht, und seine Klinge wacht weiter – in deiner Hand. Grauwacht ist wieder eine Stadt. Im Osten führt eine gesperrte Brücke zur Furt – und weiter in die Hochlande.",
   geber: "wigand",
   figuren: [{ id: "wigand", name: "Wigand Fels", modell: "stadtwache3d", x: BURG.wigand[0], y: BURG.wigand[1], blick: [0, 1] }],
   voraussetzungen: [{ text: "„Fahnenflucht“ abgeschlossen", wenn: { quest: { id: E3, phase: ["fertig"] } } }],
@@ -50,19 +51,20 @@ export const QUEST_E4: QuestDef = {
         { wenn: { ...NEU, voraussetzungen: true }, zeilen: ["Die Glocke läutet, und doch wandern sie. Ich weiß, warum.",
           "Der letzte Hauptmann von Grauwacht liegt im größten Hügelgrab. Er hat geschworen, die Weiten zu halten, bis die Wacht zurückkehrt. Er hält sie noch. Mit den Toten."], antworten: ["annehmen", "spaeter"] },
         { wenn: NEU, zeilen: ["Für die Wacht."], antworten: ["tschuess"] },
-        { wenn: FERTIG, zeilen: ["Seine Klinge hängt über dem Tor. Jeder, der hindurchgeht, grüßt sie. Ich auch."], antworten: ["tschuess"] },
+        { wenn: FERTIG, zeilen: ["Trägst du sie gut? Seine Klinge? Er hätte nichts anderes gewollt."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true, hat: "klinge_hauptmann" }, zeilen: ["Du bist zurück. Und du trägst … ist das seine Klinge?"], antworten: ["klinge_geben"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Er ruht, sagst du. Und seine Klinge? Die gehört in die Burg."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["waechter"] }, zeilen: ["Die Wächter sind gefallen? Dann bist du weiter als ich je war."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Das größte Hügelgrab, östlich der Heide. Geh hinunter."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich bringe ihm Ruhe. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Ruhe. Ja. Das hat er verdient.", "Bring mir seine Klinge. Sie gehört in die Burg, über das Tor, wo jeder sie sieht."] } }] },
+        { id: "annehmen", text: "Ich bringe ihm Ruhe. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Ruhe. Ja. Das hat er verdient.", "Bring mir seine Klinge. Ich will sie sehen, ein letztes Mal."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Er hat Jahre gewartet. Er kann noch eine Nacht."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
         { id: "klinge_geben", text: "Die Klinge übergeben.", wenn: { hat: "klinge_hauptmann" }, folge: [{ f: { abschluss: true, nehmen: [{ g: "klinge_hauptmann" }],
           zeilen: ["Wigand nimmt die Klinge mit beiden Händen und kniet. Mitten im Hof.", "Grauwacht ist wieder eine Stadt. Die Werkstatt öffnet, der Markt, der Wegstein am Brunnen.",
-            "Und das hier – sein Wappenrock. Er lag bei ihm. Trag ihn. Die Wacht braucht wieder Gesichter.", "Im Osten ist eine Brücke, zur Furt. Gesperrt, seit … seit immer. Irgendwann gehen wir da hinüber."] } }] },
+            "Er lässt sie über Nacht in die Schmiede tragen. Am Morgen liegt sie vor dir, geschärft, die Scheide neu bezogen.",
+            "Über ein Tor gehört sie nicht. Sie hat lange genug gewartet. Nimm sie – sie soll wieder wachen.", "Im Osten ist eine Brücke, zur Furt. Gesperrt, seit … seit immer. Irgendwann gehen wir da hinüber."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Für die Wacht."] } }] },
       ],
     },
@@ -70,7 +72,7 @@ export const QUEST_E4: QuestDef = {
   /* Die Klinge: garantiert vom Grauen Hauptmann in der Quest-Instanz (Rolle Spiel: chance 100) */
   beute: { e4_klinge: { erledigt: ["hauptmann"], offen: ["klinge"] } },
   schalter: { grauwacht_stufe3: FERTIG, hauptmann_instanz: LAEUFT },
-  belohnungText: "Belohnung: Grauwachts Wappenrock, Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter · danach: Grauwacht ist voll belebt (Werkstatt, Markt, Wegstein)",
-  belohnung: { xp: { staerke: 1000, defense: 1000, lp: 500 }, splitter: 600, gegenstaende: [{ g: "wappenrock_grauwacht" }] },
+  belohnungText: "Belohnung: die Klinge des Grauen Hauptmanns (seltenes Langschwert), Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter · danach: Grauwacht ist voll belebt (Werkstatt, Markt, Wegstein)",
+  belohnung: { xp: { staerke: 1000, defense: 1000, lp: 500 }, splitter: 600, gegenstaende: [{ g: "klinge_grauer_hauptmann" }] },
   punkte: 3,
 };
