@@ -48,7 +48,7 @@ Genaue Werte und Beutetabellen schreibt die Leitstelle vor dem Einbau in `beute.
 Kord zeigt die gerissene Kette → Hauptfrau **Merit Stahl** (Bergfried) gibt die Erlaubnis, wenn man ihr das Wappen aus A2 zeigt →
 6 Splittereisenerz in der Furtklamm → 3 Splittereisenbarren (Esse Graufurt) → 8 Kettenglieder (Quest-Rezept, Amboss, Schmieden 45) →
 Kettenschloss bei der Schmiedin der Stadt abholen → Kette an der Winde des Westanlegers einhängen (Questobjekt) → erste Überfahrt mit Kord.
-Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze 1.000 je Skill aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter `faehre_frei` (Fähre fährt, Ostufer offen).
+Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (vorläufig, Grenze 1.000 aus Migration 048; nach #41 angedacht: 2.500 Schmieden-XP), 400 Splitter, 2 Questpunkte. Schalter `faehre_frei` (Fähre fährt, Ostufer offen).
 
 **D2 „Das grüne Licht“** – beginnt am Ostanleger (Kord: „Seit die Kette riss, brennt da drüben dieses Licht.“). Voraussetzung: D1, Heldenlevel 45 empfohlen.
 Zum Turm → Tür mit dem Wappen (Turm über drei Wellen) → Ebene 1 und 2: Turmwächter → Ebene 3: Wächterbuch (Lore: die Wacht, die Glocke von Grauwacht) →

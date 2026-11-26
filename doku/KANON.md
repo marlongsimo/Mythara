@@ -59,6 +59,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Lage des Grenzlands auf dem Festland:** fix (kann sich später noch ändern). *(26.11.)*
 - **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
 - **Essen** (Stand heute): Brot heilt 4, nicht stapelbar, 1,5 s zwischen zwei Bissen, auch im Kampf. Gerichte mit Wirkung kommen mit Kochen (Phase 3b). *(26.11., Erklärung, keine Änderung)*
+- **Quest-Lohn über 1.000 XP je Skill** wird gebraucht: neue Migration hebt die Grenze aus 048 an (Vorschlag 50.000 je Skill/Beruf, Issue #41). Bis dahin höchstens 1.000. *(26.11.)*
 - **Neues HUD** aus den Gold-UI-Vorlagen: **vorerst verworfen**, das HUD bleibt wie es ist (die neuen Symbole aus #30/#32/#33 bleiben). *(26.11.)*
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
 
