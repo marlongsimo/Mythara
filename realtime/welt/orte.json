@@ -96,6 +96,24 @@
      6609
     ]
    ]
+  },
+  {
+   "name": "Südstraße: Weidenhain → Kielmund (Phase 10, #82; weiter im Festland: kueste.mjs)",
+   "breite": 2.0,
+   "punkte": [
+    [
+     6444.5,
+     6737
+    ],
+    [
+     6444.5,
+     6745
+    ],
+    [
+     6444,
+     6753
+    ]
+   ]
   }
  ],
  "flaechen": [

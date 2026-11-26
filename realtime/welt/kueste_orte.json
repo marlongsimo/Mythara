@@ -1,0 +1,220 @@
+{
+ "hinweis": "Phase 10 (Welt #82): NPC-Plätze, Fischplätze, Adern und Eiben als Vorschlag (Weltfelder).",
+ "orte": {
+  "suedstrasse": [
+   6446,
+   6770
+  ],
+  "kielmund": [
+   6426,
+   7314
+  ],
+  "moewenbucht": [
+   6214,
+   7160
+  ],
+  "kraeuterhof": [
+   6418,
+   7064
+  ],
+  "leuchtturm": [
+   6176,
+   7034
+  ],
+  "wrack": [
+   6282,
+   7262
+  ],
+  "klippenhoehlen": [
+   6180,
+   7090
+  ],
+  "mangroven": [
+   6508,
+   7590
+  ]
+ },
+ "npc": [
+  {
+   "id": "wache_suedstrasse",
+   "rolle": "Wache an der Südstraße (keine Sperre)",
+   "x": 6444,
+   "y": 6770
+  },
+  {
+   "id": "hafenmeister",
+   "rolle": "Hafenmeister",
+   "x": 6383,
+   "y": 7314
+  },
+  {
+   "id": "wirtin_ankerkraut",
+   "rolle": "Taverne",
+   "x": 6437,
+   "y": 7298.4
+  },
+  {
+   "id": "fischhaendler",
+   "rolle": "Fischmarkt",
+   "x": 6422,
+   "y": 7322.8
+  },
+  {
+   "id": "bankier_kielmund",
+   "rolle": "Bank",
+   "x": 6452,
+   "y": 7298
+  },
+  {
+   "id": "schmied_kielmund",
+   "rolle": "Werkstatt",
+   "x": 6451,
+   "y": 7326
+  },
+  {
+   "id": "schiffbauer",
+   "rolle": "Werft",
+   "x": 6380,
+   "y": 7330
+  },
+  {
+   "id": "leuchtturmwaerter",
+   "rolle": "Leuchtturmwärter",
+   "x": 6188,
+   "y": 7037
+  },
+  {
+   "id": "fischerin_moewenbucht",
+   "rolle": "Fischerin",
+   "x": 6217,
+   "y": 7163
+  },
+  {
+   "id": "raeucherer",
+   "rolle": "Räucherhütte",
+   "x": 6216.5,
+   "y": 7168.6
+  },
+  {
+   "id": "kraeuterbaeuerin",
+   "rolle": "Kräuterhof",
+   "x": 6419,
+   "y": 7065
+  }
+ ],
+ "fischplaetze": [
+  {
+   "id": "fischplatz_kai",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6383.5,
+   "y": 7310.5,
+   "stehplatz": [
+    6384.5,
+    7310.5
+   ]
+  },
+  {
+   "id": "fischplatz_klippe",
+   "fisch": "klippenbarsch",
+   "stufe": 35,
+   "x": 6150,
+   "y": 7105,
+   "stehplatz": [
+    6150.5,
+    7104.5
+   ]
+  },
+  {
+   "id": "fischplatz_moewenbucht",
+   "fisch": "hering",
+   "stufe": 20,
+   "x": 6189.5,
+   "y": 7158.5,
+   "stehplatz": [
+    6190.5,
+    7158.5
+   ]
+  },
+  {
+   "id": "fischplatz_wrack",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6273.5,
+   "y": 7258.5,
+   "stehplatz": [
+    6274,
+    7258
+   ]
+  },
+  {
+   "id": "fischplatz_mangroven",
+   "fisch": "seeaal",
+   "stufe": 45,
+   "x": 6506,
+   "y": 7590,
+   "stehplatz": [
+    6505,
+    7590
+   ]
+  }
+ ],
+ "adern": [
+  {
+   "id": "kupfer_klippe_1",
+   "art": "kupfer",
+   "x": 6184.5,
+   "y": 7080.5
+  },
+  {
+   "id": "kupfer_klippe_2",
+   "art": "kupfer",
+   "x": 6186.5,
+   "y": 7096.5
+  },
+  {
+   "id": "eisen_klippe_1",
+   "art": "eisen",
+   "x": 6160.5,
+   "y": 7036.5
+  },
+  {
+   "id": "eisen_klippe_2",
+   "art": "eisen",
+   "x": 6166.5,
+   "y": 7032.5
+  }
+ ],
+ "eiben": [
+  {
+   "id": "eibe_kueste_1",
+   "art": "eibe",
+   "x": 6372,
+   "y": 7040
+  },
+  {
+   "id": "eibe_kueste_2",
+   "art": "eibe",
+   "x": 6382,
+   "y": 7030
+  },
+  {
+   "id": "eibe_kueste_3",
+   "art": "eibe",
+   "x": 6392,
+   "y": 7046
+  },
+  {
+   "id": "eibe_kueste_4",
+   "art": "eibe",
+   "x": 6366,
+   "y": 7056
+  },
+  {
+   "id": "eibe_kueste_5",
+   "art": "eibe",
+   "x": 6380,
+   "y": 7062
+  }
+ ]
+}

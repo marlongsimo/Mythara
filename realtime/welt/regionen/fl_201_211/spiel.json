@@ -12,5 +12,28 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "kiel_quelle",
+   "art": "lesen",
+   "x": 28,
+   "y": 442,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein stiller See zwischen Binsen. Hier entspringt die Kiel."
+   }
+  },
+  {
+   "id": "suedstrasse_schild",
+   "art": "lesen",
+   "x": 16.6,
+   "y": 19.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schild der Wacht: „Südstraße nach Kielmund. Ab hier ohne Geleit – Gefahrenstufe 20.“"
+   }
+  }
+ ]
 }

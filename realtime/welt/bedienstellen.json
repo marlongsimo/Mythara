@@ -355,8 +355,8 @@
   {
    "id": "ort_p5_bindestein_obelisk",
    "station": "bindestein",
-   "x": 6371,
-   "y": 6372.4,
+   "x": 6371.5,
+   "y": 6372.5,
    "quelle": "welt/regionen/nordwald (Objekt)",
    "innen": false,
    "region": "nordwald"
@@ -422,8 +422,8 @@
   {
    "id": "ort_p5_kessel_hedda",
    "station": "kessel",
-   "x": 6291.6,
-   "y": 6677.8,
+   "x": 6291.5,
+   "y": 6678,
    "quelle": "welt/regionen/rabenmoor (Objekt)",
    "innen": false,
    "region": "rabenmoor"

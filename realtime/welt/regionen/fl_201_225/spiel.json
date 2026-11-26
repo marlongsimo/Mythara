@@ -12,5 +12,63 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "taverne_ankerkraut",
+   "art": "lesen",
+   "x": 5.5,
+   "y": 96.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne „Zum Ankerkraut“. Drinnen singt jemand von einem Schiff, das nie zurückkam."
+   }
+  },
+  {
+   "id": "kielmund_bank_tuer",
+   "art": "lesen",
+   "x": 20,
+   "y": 96.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Kielmund."
+   }
+  },
+  {
+   "id": "kielmund_werkstatt",
+   "art": "lesen",
+   "x": 20,
+   "y": 127.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Kielmund: Esse, Amboss, Werkbank – und ein Haufen rostiger Anker."
+   }
+  },
+  {
+   "id": "mangroven",
+   "art": "lesen",
+   "x": 76,
+   "y": 363,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Mangroven. Wurzeln wie Finger im Brackwasser, schmale Wasserwege – irgendwann fahren hier Boote."
+   }
+  },
+  {
+   "id": "fischplatz_mangroven",
+   "art": "lesen",
+   "x": 73,
+   "y": 390,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Im Brackwasser der Mangroven ziehen Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  }
+ ]
 }

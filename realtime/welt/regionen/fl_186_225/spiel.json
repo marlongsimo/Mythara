@@ -10,7 +10,169 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 431,
+    "y0": 102.7,
+    "x1": 438.9,
+    "y1": 105.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 421,
+    "y0": 114.7,
+    "x1": 428.9,
+    "y1": 117.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 463.1,
+    "y0": 174,
+    "x1": 471,
+    "y1": 176.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 463.1,
+    "y0": 176.6,
+    "x1": 471,
+    "y1": 179.2
+   },
+   {
+    "art": "rechteck",
+    "x0": 432.5,
+    "y0": 98.7,
+    "x1": 441.5,
+    "y1": 101.3
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "werft",
+   "art": "lesen",
+   "x": 427,
+   "y": 121.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werft von Kielmund. Auf der Helling liegt ein halbfertiger Rumpf, daneben Spanten und Pech."
+   }
+  },
+  {
+   "id": "kai",
+   "art": "lesen",
+   "x": 433.5,
+   "y": 110,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Kai an der Kiel. Fässer, Taue, Möwen – und der Geruch von Hering."
+   }
+  },
+  {
+   "id": "fischplatz_kai",
+   "art": "lesen",
+   "x": 432.5,
+   "y": 110.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Kai beißen die Heringe.",
+    "fisch": "hering",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "kuestenhaus",
+   "art": "lesen",
+   "x": 462,
+   "y": 96.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Haus der Küstenhäuser – hier sitzen die Familien, die den Hafen verwalten."
+   }
+  },
+  {
+   "id": "fischmarkt",
+   "art": "lesen",
+   "x": 474,
+   "y": 123.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Fischmarkt. Hering, Klippenbarsch, Seeaal – und ein Händler, der schwört, einen Glutwels zu haben."
+   }
+  },
+  {
+   "id": "kielmund",
+   "art": "lesen",
+   "x": 474,
+   "y": 116.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Kielmund, wo die Kiel ins Meer fällt. Möwen über den Dächern, Salz in der Luft."
+   }
+  },
+  {
+   "id": "kielmund_wegstein",
+   "art": "lesen",
+   "x": 468,
+   "y": 172.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Kielmund."
+   }
+  },
+  {
+   "id": "kielmund_bindestein",
+   "art": "lesen",
+   "x": 476,
+   "y": 172.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Fuß der Mole, im Schein des Leuchtfeuers."
+   }
+  },
+  {
+   "id": "mole",
+   "art": "lesen",
+   "x": 468,
+   "y": 175.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Mole. Am Ende brennt das Leuchtfeuer, das die Boote heimholt."
+   }
+  },
+  {
+   "id": "wrack",
+   "art": "lesen",
+   "x": 331,
+   "y": 64.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Schiffswrack, halb im Sand. Am Bug noch lesbar: „Morgenstern“. Der Kapitän, sagen sie, ist nie von Bord gegangen."
+   }
+  },
+  {
+   "id": "fischplatz_wrack",
+   "art": "lesen",
+   "x": 322,
+   "y": 58,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Zwischen den Spanten des Wracks lauern Seeaale.",
+    "fisch": "seeaal",
+    "stufe": 45
+   }
+  }
+ ]
 }
