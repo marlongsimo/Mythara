@@ -23,7 +23,7 @@ export const QUEST_B1: QuestDef = {
   logAbgabe: "Der Wegstein ist geweiht. Bring ihn Agnes an der Linde.",
   logFertig: "Du hast einen Wegstein. Reib ihn im Rucksack, und er bringt dich zur Linde – eine Ladung je Reise. Laden kannst du ihn am Bindestein zwischen den Wurzeln der Linde.",
   geber: "agnes",
-  figuren: [{ id: "agnes", name: "Agnes", modell: "npcfrau3d", x: 6450.5, y: 6681.6, blick: [1, -1] }],
+  figuren: [{ id: "agnes", name: "Agnes", modell: "npc.agnes", x: 6450.5, y: 6681.6, blick: [1, -1] }],
   voraussetzungen: [
     { text: "„Die gesperrte Straße“ abgeschlossen", wenn: { quest: { id: "die_gesperrte_strasse", phase: ["fertig"] } } },
     { text: "Holzfällerei 15", wenn: { skill: { k: "holzfaellerei", min: 15 } } },

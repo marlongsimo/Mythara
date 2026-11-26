@@ -25,7 +25,7 @@ export const QUEST_TAVERNE: QuestDef = {
   logAbgabe: "Hilde Krug hat alle drei Proben. Sag ihr, dass sie aufmachen kann.",
   logFertig: "Die Taverne der Waldmark hat wieder offen. Hilde Krug verkauft einfache Gerichte, und an Herd und Kessel darfst du selbst kochen.",
   geber: "hilde",
-  figuren: [{ id: "hilde", name: "Hilde Krug", modell: "npcfrau3d", x: HILDE[0], y: HILDE[1], blick: [0, 1] }],
+  figuren: [{ id: "hilde", name: "Hilde Krug", modell: "npc.hilde", x: HILDE[0], y: HILDE[1], blick: [0, 1] }],
   voraussetzungen: [{ text: "Kochen 10", wenn: { skill: { k: "kochen", min: 10 } } }],
   schritte: [
     { id: "brot", text: "Ein Brot bringen", ereignis: { art: "antwort" }, bei: "hilde", gruppe: "proben",

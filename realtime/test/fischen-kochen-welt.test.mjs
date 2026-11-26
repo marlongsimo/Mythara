@@ -120,10 +120,12 @@ try {
   check(ok && anzahl(fred, "wurm") === 0, `Drei Bachlinge mit drei Würmern (${anzahl(fred, "fisch_bachling_roh") - 16} gefangen, ${anzahl(fred, "wurm")} Würmer übrig)`);
   check(((fred.inv.berufe || {}).fischen || 0) >= 60, `Fischen-XP: ${(fred.inv.berufe || {}).fischen} (20 je Bachling)`);
   check(fred.fisch.some((m) => m.tat === "stop" && m.grund === "koeder") || /Würmer/.test(fred.chat.join(" ")) || anzahl(fred, "wurm") === 0, "Würmer alle: das Fischen hört auf");
-  { const z = aktiveStelle(fred, "muehlgraben"); await stelle(fred, z.x + 1.2, z.y); check(/Ohne Wurm/.test(await nein(fred, "fisch", z.id)), "Ohne Würmer beißt nichts"); }
+  { let t = ""; for (let i = 0; i < 5 && !/Ohne Wurm/.test(t); i++) { const z = aktiveStelle(fred, "muehlgraben"); await stelle(fred, z.x + 1.2, z.y); t = await nein(fred, "fisch", z.id); } /* die Stelle kann gerade weitergezogen sein (#69) */
+    check(/Ohne Wurm/.test(t), "Ohne Würmer beißt nichts"); }
   check([...fred.ruht].sort().join() !== ruhtVorher, "Die Fische wandern: andere Stellen als am Anfang");
   check(FANGGRUENDE.every((g) => FANGSTELLEN.filter((x) => x.grund === g.id && !fred.ruht.has(x.id)).length === g.aktiv), "… und je Grund weiterhin genau „aktiv“ Stellen");
-  { const z = aktiveStelle(hugo, "muehlgraben"); await stelle(hugo, z.x + 1.2, z.y); check(/Ohne Wurm/.test(await nein(hugo, "fisch", z.id)), "Hugo ohne Würmer: Bachling geht nicht (Angelrute braucht Köder)"); }
+  { let t = ""; for (let i = 0; i < 5 && !/Ohne Wurm/.test(t); i++) { const z = aktiveStelle(hugo, "muehlgraben"); await stelle(hugo, z.x + 1.2, z.y); t = await nein(hugo, "fisch", z.id); }
+    check(/Ohne Wurm/.test(t), "Hugo ohne Würmer: Bachling geht nicht (Angelrute braucht Köder)"); }
   const hechtVor = anzahl(hugo, "fisch_moorhecht_roh"), fV = (hugo.inv.berufe || {}).fischen;
   check(await fischen(hugo, "rabenmoor_steg", "fisch_moorhecht_roh", hechtVor + 3, 150000, true), `Moorhecht mit der Reuse, ohne Köder (${anzahl(hugo, "fisch_moorhecht_roh")})`);
   check(hugo.fisch.some((m) => m.tat === "fang" && m.stroemung && m.n === 2), "Strömung lesen: zwei Fische auf einmal");
