@@ -20,7 +20,7 @@ export function haendlerReden(l: Laden): void {
 export class HaendlerWelt {
   private alle: Haendler[] = [];
   constructor(private u: Umgebung) {
-    for (const l of LADEN_LISTE) { /* Handwerker (figurInWelt): angetippt öffnet er seinen Laden über die Weltdaten (welt/anschluss.ts) – hier wird er nur gezeichnet (die 3D-Welt zeigt aus den Weltdaten nur Wachen) */ const npc = new Npc3D(l.modell); npc.blick(l.blick[0], l.blick[1]); this.u.motor.szene.add(npc.gruppe);
+    for (const l of LADEN_LISTE) { if (l.questFigur) continue; /* gehört zu einer Questfigur (quest3d.ts) */ /* Handwerker (figurInWelt): angetippt öffnet er seinen Laden über die Weltdaten (welt/anschluss.ts) – hier wird er nur gezeichnet (die 3D-Welt zeigt aus den Weltdaten nur Wachen) */ const npc = new Npc3D(l.modell); npc.blick(l.blick[0], l.blick[1]); this.u.motor.szene.add(npc.gruppe);
       const nm = document.createElement("div"); nm.className = "ez-name3d quest haendler"; nm.innerHTML = `${l.haendler}<small>${l.name}</small>`; document.body.appendChild(nm); this.alle.push({ l, npc, nm, nurBild: Boolean(l.figurInWelt) }); } }
   /** Liegt an diesem Bodenpunkt ein Händler? Dann „Mit … sprechen“ (hingehen, reden) und im Menü dazu „Laden ansehen“ */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr: { text: string; sym: string; tat: () => void }[] } | null {

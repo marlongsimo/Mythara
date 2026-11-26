@@ -10,6 +10,10 @@
  * Aufladen (die ersten 1,2 s): acht Splitter strömen spiralförmig von außen zur Klinge, das Leuchten wächst an, zum Schluss ein heller Blitz;
  *   danach bleiben drei Splitter, die kreisen. Dazu spielt die Figur (falls vorhanden) „block“ – die Waffe vor dem Körper erhoben.
  * Ablaufen: rest (0…1) – unter 0,2 flackert alles und die Splitter werden kleiner.
+ *
+ * Geladene Waffe „(s)“ (Phase 5b, dauerhaft, solange Ladungen da sind): new Aufladung(waffe, wurzel, SPLITTER_VIOLETT, { zart: true })
+ *   – schwaches Randleuchten (40 %), nur zwei kleine Splitter, keine Einleitung und kein Blitz; die Spur beim Hieb bleibt (schwächer).
+ *   Für alle Waffenklassen geeignet (die Klinge wird vermessen: längste Achse vom Griff aus).
  */
 import * as THREE from "three";
 
@@ -31,8 +35,10 @@ export class Aufladung {
   private spur: { a: THREE.Vector3; b: THREE.Vector3; t: number }[] = []; private spurMesh: THREE.Mesh; private letzteSpitze: THREE.Vector3 | null = null;
   static readonly EINLEITUNG = 1.2; private zustrom: THREE.Object3D[] = []; private blitz: THREE.Sprite;
 
-  constructor(private waffe: THREE.Object3D, private wurzel: THREE.Object3D, farbe = SPLITTER_VIOLETT) {
+  private staerke = 1; private zart = false;
+  constructor(private waffe: THREE.Object3D, private wurzel: THREE.Object3D, farbe = SPLITTER_VIOLETT, opt: { zart?: boolean } = {}) {
     this.uniform.uFarbe.value.set(farbe);
+    if (opt.zart) { this.zart = true; this.staerke = 0.4; this.t = Aufladung.EINLEITUNG + 1; }   // gleich im Dauerzustand, ohne Zustrom und Blitz
     /* Klinge vermessen (im Raum der Waffe): längste Achse; die Spitze ist das Ende weiter weg vom Griff (Ursprung = Griff) */
     const box = new THREE.Box3(); waffe.updateWorldMatrix(true, true); const inv = waffe.matrixWorld.clone().invert(); const p = new THREE.Vector3();
     let fern = 0; const pts: THREE.Vector3[] = [];
@@ -72,7 +78,7 @@ export class Aufladung {
   weiter(dt: number): void {
     this.t += dt; const t = this.t, ende = this.rest < 0.2, flacker = ende ? 0.55 + 0.45 * Math.sin(t * 38) * Math.sin(t * 11) : 1;
     const E = Aufladung.EINLEITUNG, auf = Math.min(1, t / E);                                    // Aufladen: 0 → 1
-    this.uniform.uLicht.value = (0.75 + 0.25 * Math.sin(t * 2.6)) * flacker * (t < E ? auf * auf : 1) + (t < E ? 0 : Math.max(0, 1.6 * (1 - (t - E) / 0.35)));
+    this.uniform.uLicht.value = this.staerke * ((0.75 + 0.25 * Math.sin(t * 2.6)) * flacker * (t < E ? auf * auf : 1) + (t < E ? 0 : Math.max(0, 1.6 * (1 - (t - E) / 0.35))));
     const blitzT = (t - E * 0.85) / 0.45; (this.blitz.material as THREE.SpriteMaterial).opacity = blitzT > 0 && blitzT < 1 ? Math.sin(Math.PI * blitzT) : 0;
     this.blitz.scale.setScalar(0.25 + 0.9 * Math.max(0, Math.min(1, blitzT)));
     /* Splitter kreisen um die Klinge (um ihre Achse, gegeneinander versetzt, leicht auf und ab) */
@@ -85,7 +91,7 @@ export class Aufladung {
       g.visible = f < 1; if (!g.visible) return; const w = i * 0.785 + f * 5.5, r = 0.7 * (1 - f) ** 1.4 + 0.02, h = 0.2 + 0.6 * ((i * 0.37) % 1);
       g.position.copy(this.basis).addScaledVector(achse, h * this.laenge).addScaledVector(u, Math.cos(w) * r).addScaledVector(v, Math.sin(w) * r).addScaledVector(achse, -0.3 * (1 - f));
       g.rotation.set(t * 6 + i, t * 4, 0); g.scale.setScalar(0.6 + 0.6 * f); });
-    this.splitter.forEach((g) => { g.scale.multiplyScalar(t < E ? auf * auf : 1); });
+    this.splitter.forEach((g, i) => { g.scale.multiplyScalar((t < E ? auf * auf : 1) * (this.zart ? 0.6 : 1)); if (this.zart && i === 2) g.visible = false; });
     /* Spur: Klingenpunkte in Figurenkoordinaten merken; schnelle Bewegung = helle Spur */
     this.waffe.updateWorldMatrix(true, false); this.wurzel.updateWorldMatrix(true, false); const zuFigur = this.wurzel.matrixWorld.clone().invert();
     const a = this.basis.clone().lerp(this.spitze, 0.35).applyMatrix4(this.waffe.matrixWorld).applyMatrix4(zuFigur), b = this.spitze.clone().applyMatrix4(this.waffe.matrixWorld).applyMatrix4(zuFigur);
@@ -93,7 +99,7 @@ export class Aufladung {
     this.spur.unshift({ a, b, t: Math.min(1, Math.max(0, (tempo - 1.2) / 2.5)) }); if (this.spur.length > 16) this.spur.pop();
     const pos = this.spurMesh.geometry.getAttribute("position") as THREE.BufferAttribute, al = this.spurMesh.geometry.getAttribute("alpha") as THREE.BufferAttribute;
     for (let i = 0; i < 16; i++) { const e = this.spur[Math.min(i, this.spur.length - 1)], f = (1 - i / 15) * e.t * flacker;
-      pos.setXYZ(2 * i, e.a.x, e.a.y, e.a.z); pos.setXYZ(2 * i + 1, e.b.x, e.b.y, e.b.z); al.setX(2 * i, f * 0.35); al.setX(2 * i + 1, f); }
+      pos.setXYZ(2 * i, e.a.x, e.a.y, e.a.z); pos.setXYZ(2 * i + 1, e.b.x, e.b.y, e.b.z); al.setX(2 * i, f * 0.35 * this.staerke); al.setX(2 * i + 1, f * this.staerke); }
     pos.needsUpdate = true; al.needsUpdate = true;
   }
 

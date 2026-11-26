@@ -17,6 +17,7 @@ TESTS=(
   freunde-welt
   handwerk-welt
   holz-welt
+  inventar
   inventar-welt
   kampf-v1
   kampf-v2
@@ -25,16 +26,20 @@ TESTS=(
   kreuzwald-server
   kreuzwald
   laden-welt
+  quest01
   quest01-welt
   quest02-welt
   quest03-welt
   questbau
   splitterbinden-welt
   fischen-kochen-welt
+  b2-welt
   sprint
   stufe
   teleport-welt
+  waldgolem
   waldland-welt
+  welt-waldmark
   waldweg
   welt-bau
   welt-daten
@@ -44,7 +49,6 @@ TESTS=(
   welt-unterschlupf
   welt-weidenhain
   weltkampf
-  # rot und vorerst ausgenommen (Issue „Veraltete Tests“): inventar quest01 waldgolem welt-waldmark
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

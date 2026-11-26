@@ -4,6 +4,10 @@
 
   matt       – „Mattes Licht“ (Stufe 1, um die Linde): blasses, milchiges Blaugrau, wenig Leuchten
   wiesen     – „Wiesenlicht“ (Stufe 10, Riedwiesen / Quelle der Obstwiesen): frisches Grüntürkis
+  irrlicht   – Irrlicht (Stufe 20, Rabenmoor über dem Wasser): fahles Grün
+  grablicht  – Grablicht (Stufe 35, Friedhof, Obelisk Nordwald): kaltes, helles Eisblau
+  nebellicht – Nebellicht (Stufe 45, Nebelfelder Rabenmoor): blasses Lavendel, schwebt tiefer und träger
+  splitterlicht – Splitterlicht (Stufe 65, über dem Splitterbecken): kräftiges Violett wie die Splitter
   erloschen  – abgeerntet/erschöpft: fast farblos, dunkel, sinkt tiefer und schwebt träge (kein Puls, da ohne Sättigung)
 
 Schreibt img/objekte3d/wahrzeichen/seelenlicht_<v>.glb, img/welt/stil/wz_seelenlicht_<v>.webp und Einträge wz_seelenlicht_<v> in
@@ -16,6 +20,8 @@ from PIL import Image
 
 W = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VAR = {"matt": ("Mattes Licht", 0, 0.38, 0.92, None), "wiesen": ("Wiesenlicht", -50, 0.85, 1.0, None),
+       "irrlicht": ("Irrlicht", -95, 0.75, 1.0, None), "grablicht": ("Grablicht", -10, 0.3, 1.45, None),
+       "nebellicht": ("Nebellicht", 45, 0.35, 0.95, {"hoehe": 0.7, "hub": 0.2, "takt": 4.5, "pendel": 0.5}), "splitterlicht": ("Splitterlicht", 55, 1.15, 1.1, None),
        "erloschen": ("Erloschenes Seelenlicht", 0, 0.08, 0.5, {"hoehe": 0.45, "hub": 0.04, "takt": 5.0, "pendel": 0.12})}
 
 def hsv(rgb):

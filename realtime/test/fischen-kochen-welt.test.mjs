@@ -8,9 +8,9 @@ import { createServer } from "node:http"; import { spawn } from "node:child_proc
 import { QB, QUESTS, xpFuer, kampfwerte, FISCHE, FANGGRUENDE, FANGSTELLEN, WURMSTELLEN, WIRKUNGEN, wirkungDazu, skillPlus, brennChance, REZEPTE, LAEDEN, MONSTER, BERUFE, VERBRAUCH, GEG } from "./sim.gebaut.mjs";
 const require = createRequire(import.meta.url), WebSocket = require("ws");
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
-const A = "00000000-0000-0000-0000-00000000f001", B = "00000000-0000-0000-0000-00000000f002", C = "00000000-0000-0000-0000-00000000f003", D = "00000000-0000-0000-0000-00000000f004";
-const TA = "tok_fred_" + "x".repeat(30), TB = "tok_gina_" + "x".repeat(30), TC = "tok_hugo_" + "x".repeat(30), TD = "tok_ida__" + "x".repeat(30);
-const NUTZER = { [TA]: A, [TB]: B, [TC]: C, [TD]: D }, NAME = { [A]: "Fred", [B]: "Gina", [C]: "Hugo", [D]: "Ida" };
+const A = "00000000-0000-0000-0000-00000000f001", B = "00000000-0000-0000-0000-00000000f002", C = "00000000-0000-0000-0000-00000000f003", D = "00000000-0000-0000-0000-00000000f004", E = "00000000-0000-0000-0000-00000000f005";
+const TA = "tok_fred_" + "x".repeat(30), TB = "tok_gina_" + "x".repeat(30), TC = "tok_hugo_" + "x".repeat(30), TD = "tok_ida__" + "x".repeat(30), TE = "tok_jule_" + "x".repeat(30);
+const NUTZER = { [TA]: A, [TB]: B, [TC]: C, [TD]: D, [TE]: E }, NAME = { [A]: "Fred", [B]: "Gina", [C]: "Hugo", [D]: "Ida", [E]: "Jule" };
 const roh = () => ({ geschlecht: "mann", frisur: "kurz", bart: "ohne", haarfarbe: "braun", hautfarbe: "hell", waffe: "schwert", skill_lp: 0, lp_stand: null, quests: { die_gesperrte_strasse: { s: "fertig" } } });
 const MERKER = ["schmieden"], BALD = Date.now() + 120_000;
 const roheFische = (n) => Array.from({ length: n }, () => "fisch_bachling_roh");
@@ -23,7 +23,9 @@ const HELD = {
   [C]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["reuse", "angelrute", "krug", "fisch_muehlbarsch_roh", "fisch_muehlbarsch_roh", "bauerneintopf", ...roheFische(6)], v: 2, merker: MERKER,
     berufe: { fischen: xpFuer(25), kochen: xpFuer(40) }, wirkungen: [{ id: "fischsuppe", bis: BALD }] } },
   /* Ida: spielt „Schilf und Schnur“ von vorn (nichts dabei) */
-  [D]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: roheFische(3) /* Reserve, falls beim Braten alles anbrennt */, v: 2, merker: MERKER } } };
+  [D]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: roheFische(3) /* Reserve, falls beim Braten alles anbrennt */, v: 2, merker: MERKER } },
+  /* Jule: Kochen 50 (nichts brennt an), bringt Brot und Bachling mit; Suppe kocht sie in der Taverne */
+  [E]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["brot", "fisch_bachling_gebraten", "fisch_muehlbarsch_roh", "krug_wasser"], v: 2, merker: MERKER, berufe: { kochen: xpFuer(50) } } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];
 const wer = (u) => (/user_id=eq\.([^&]+)/.exec(u) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
@@ -81,8 +83,8 @@ async function fischen(s, grund, g, n, ms = 150000, strom = false) { const t0 = 
 const nein = async (s, t, id) => { s[t] = []; sende(s, { t, tat: "start", id }); const m = await warte(s, (m) => m.t === t && (m.tat === "nein" || m.tat === "start")); sende(s, { t, tat: "stop" }); await schlaf(200); return m && m.tat === "nein" ? m.text : ""; };
 const essen = async (s, g) => { const i = s.inv.rucksack.findIndex((x) => (typeof x === "string" ? x : x.g) === g); sende(s, { t: "inv", tat: "trinken", i }); return warte(s, (m) => m.t === "getrunken" || (m.t === "chat" && m.kanal === "system"), 3000); };
 try {
-  const fred = await spieler(TA), gina = await spieler(TB), hugo = await spieler(TC), ida = await spieler(TD);
-  for (const s of [fred, gina, hugo, ida]) await warte(s, (m) => m.t === "inventar"); await schlaf(400);
+  const fred = await spieler(TA), gina = await spieler(TB), hugo = await spieler(TC), ida = await spieler(TD), jule = await spieler(TE);
+  for (const s of [fred, gina, hugo, ida, jule]) await warte(s, (m) => m.t === "inventar"); await schlaf(400);
 
   console.log("Wirkungen");
   { const x = { geschick: 0, staerke: 0, fernkampf: 0, magie: 0, lp: 0, defense: 0 }, an = { waffe: "trainingsschwert" };
@@ -159,6 +161,20 @@ try {
     const ab = ABSCHLUSS.find((a) => a.p_user === D && a.p_quest === Q.id);
     check(ida.b[Q.id] === "fertig" && ab && ab.p_punkte === 1 && anzahl(ida, "wurm") >= 20 && anzahl(ida, "fisch_bachling_gebraten") === 0, `Fertig: 1 Questpunkt, 20 Würmer (${anzahl(ida, "wurm")})`);
     check(((ida.inv.berufe || {}).fischen || 0) >= 250 + 60 && ((ida.inv.berufe || {}).kochen || 0) >= 120 + 30, `Lohn: Fischen- und Kochen-XP (${(ida.inv.berufe || {}).fischen} / ${(ida.inv.berufe || {}).kochen})`); }
+
+  console.log("Quest „Die Taverne öffnet“");
+  { const Q = QUESTS.find((q) => q.id === "waldmark_die_taverne_oeffnet"), H = Q.figuren[0], TK = [6428.5, 6426];
+    check(Boolean(Q), "Die Quest ist im Spiel");
+    check(/Wirtin/.test(await herstellen(jule, 6428.5, 6427.8 - 1.2, "fischsuppe")), "Vor der Quest: Hildes Kessel ist gesperrt");
+    await stelle(jule, H.x + 1, H.y); await rede(jule, "hilde"); await sag(jule, "hilde", "annehmen"); await schlaf(500);
+    check(stand(jule, Q).phase === "laeuft", "Angenommen (Kochen 10)");
+    for (const a of ["brot_geben", "fisch_geben"]) { await rede(jule, "hilde"); await sag(jule, "hilde", a); await schlaf(300); }
+    check(QB.erledigt(Q, jule.b[Q.id], "brot") && QB.erledigt(Q, jule.b[Q.id], "fisch") && !anzahl(jule, "brot"), "Brot und Bachling abgegeben");
+    check(await herstellen(jule, 6428.5, 6427.8 - 1.2, "fischsuppe") === "ok" && anzahl(jule, "fischsuppe") === 1, "Fischsuppe am Kessel der Taverne (Schalter taverne_kueche an, solange die Quest läuft)");
+    await stelle(jule, H.x + 1, H.y); await rede(jule, "hilde"); await sag(jule, "hilde", "suppe_geben"); await schlaf(300);
+    await rede(jule, "hilde"); await sag(jule, "hilde", "aufmachen"); await schlaf(800);
+    const ab = ABSCHLUSS.find((a) => a.p_user === E && a.p_quest === Q.id);
+    check(jule.b[Q.id] === "fertig" && ab && ab.p_punkte === 1 && anzahl(jule, "splitter") >= 80, `Fertig: 1 Questpunkt, 80 Splitter (${anzahl(jule, "splitter")})`); }
 
   console.log("Bausteine");
   check(BERUFE.some((b) => b.id === "fischen") && BERUFE.some((b) => b.id === "kochen" && b.stationen.includes("feuer") && b.stationen.includes("kessel")), "Berufe Fischen und Kochen (Skill-Tab)");
