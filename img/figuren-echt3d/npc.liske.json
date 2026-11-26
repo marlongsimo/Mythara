@@ -12,6 +12,11 @@
   }
  },
  "aktionen": {
+  "gefesselt": {
+   "bilder": 16,
+   "rate": 8,
+   "schleife": true
+  },
   "gehen": {
    "bilder": 8,
    "rate": 8,
