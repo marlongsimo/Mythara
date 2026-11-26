@@ -4,7 +4,8 @@
  * Gesetztes („ort_…“) und Bäume nahe an Wegen, Gebäuden, Lesestellen und Figuren bleiben. Die verbleibenden Bäume im Inneren werden etwas größer,
  * damit das Kronendach geschlossen wirkt.
  * Mehrfach ausführbar: entfernte Bäume stehen in welt/baumdichte/<gebiet>.json und werden vor jedem Lauf zurückgesetzt.
- * Aufruf (im Ordner realtime): node werkzeug/welt/baumdichte.mjs [--zuruecksetzen]   – nach naehte.mjs, vor bauen.mjs.
+ * Aufruf (im Ordner realtime): node werkzeug/welt/baumdichte.mjs [--zuruecksetzen]
+ * Reihenfolge: baumdichte.mjs --zuruecksetzen → orte → lichtungen → naehte → baumdichte.mjs → bauen (die Nähte spiegeln den ungelichteten Wald).
  * Messung #91 (Handy-Profil, Waldmark): bei Pixelverhältnis 1 +8 % Bilder/s im Stand, +12 % beim Gehen; bei 2,75 begrenzt die Pixelmenge (kein Gewinn).
  * Mit --zuruecksetzen ist alles wieder wie vorher.
  */
