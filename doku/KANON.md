@@ -47,7 +47,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Splitterbinden:** keine Splitterwaage. Lädt Teleport-Gegenstände und Waffen (ab Stufe Selten, „… (s)“), 2 Splitter je Ladung, +10 % Werte, 1 Ladung je Angriff, leer = normal. Geladene Waffen **nicht handelbar**; Entladen nur am Bindestein, die Splitter verfallen. Laden **nur am Bindestein**.
 - **XP-Kurve:** eigene Riftmere-Tabelle (kein Bezug mehr auf OSRS).
 - **Waffen und Rüstungen** heißen nach ihrem Material.
-- **Repository:** Altbestand des Würfelspiels bleibt (nicht löschen).
+- **Repository:** Altbestand (Würfelspiel, 2D/Phaser-Reste, alte Bodenbilder, ungenutzte Bilder) **wird aufgeräumt** *(26.11., ersetzt „bleibt“)*: einmaliger Auftrag „Aufräumen“, erst Liste mit Nachweis „nirgends verwendet“, der Nutzer gibt frei; Löschen auf `main` nur mit seinem ausdrücklichen einmaligen Okay. Konzept-PDFs, `fabrik/`-Quellen und Supabase-Migrationen bleiben.
 - **Abstand zu OSRS:** keine OSRS-Begriffe in Spiel, Code-Kommentaren und Konzepten.
 
 - **Wegstein:** Ladungen (2 Splitter je Ladung) **und** 2 Minuten Abklingzeit. *(26.11.)*

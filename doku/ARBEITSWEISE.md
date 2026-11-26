@@ -7,6 +7,7 @@ Stand: 26.11.2026. Kurzfassung in `CLAUDE.md` (wird von jeder Sitzung automatisc
 | Rolle | Aufgabe | Zweig | Kommt live über |
 |---|---|---|---|
 | **Integration & Inhalte** | Zweige zusammenführen, bauen, alle Tests, live stellen; Pipeline und Test-Werkzeuge; Inhalte einbauen (Figuren, Gegnerwerte, Beute, NPCs, Symbole, Karten, Quests), Oberfläche, Wünsche, kleine Fixes | `claude/welt3d` → `feature/realtime-engine` | führt selbst zusammen |
+| **Aufräumen** (Chat „Riftmere · Aufräumen“, einmalig, seit 26.11.) | ungenutzten Altbestand finden, Liste zur Freigabe, nach Freigabe löschen | `claude/aufraeumen` | Integration führt zusammen; `main` nur mit Okay des Nutzers |
 | **Oberfläche** (Chat „Riftmere · Oberfläche“, seit 26.11.) | HUD und alle Fenster überarbeiten und bauen: kompakt, einfach, ohne Scrollen (`doku/konzepte/hud.md`) | `claude/oberflaeche` | Integration führt zusammen, wenn „Tests“ grün |
 | **Bugs** (Chat „Riftmere · Bugs“, seit 26.11.) | gemeldete Fehler nachstellen, gezielt beheben, Test je Fehler | `claude/bugs` | Integration führt zusammen, wenn „Tests“ grün |
 | **Systeme** (Chat „Riftmere · Systeme“, seit 26.11.) | neue Spielmechaniken der Fahrplan-Phasen Ende-zu-Ende (Server, Spiellogik, nötige Oberfläche, Migrationen, Tests) | `claude/systeme` | Integration führt zusammen, wenn „Tests“ grün |
@@ -61,6 +62,7 @@ Das Ergebnis steht auf GitHub unter **Actions** und als Haken/Kreuz neben dem Co
 | `rolle:systeme` | Systeme (neue Mechaniken) |
 | `rolle:bugs` | Bugs (Fehler beheben) |
 | `rolle:ui` | Oberfläche (HUD, Fenster) |
+| `rolle:aufraeumen` | Aufräumen (einmalig) |
 | `bug` | Fehlerbericht (zusätzlich zum Rollen-Label) |
 | `rolle:quests` | Quest-Autor |
 | `rolle:figuren` | Figuren & 3D |
