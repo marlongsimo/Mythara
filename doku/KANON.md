@@ -62,7 +62,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Quest-Lohn über 1.000 XP je Skill** wird gebraucht: neue Migration hebt die Grenze aus 048 an (Vorschlag 50.000 je Skill/Beruf, Issue #41). Bis dahin höchstens 1.000. *(26.11.)*
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum). *(26.11.)*
 - **Wachtrüstung** (zweites Set, Phase 8): **vorerst nicht**. Die gebauten Teile bleiben ungenutzt in der Fabrik; E4 gibt stattdessen die Klinge des Grauen Hauptmanns. *(26.11.)*
-- **Neues HUD** aus den Gold-UI-Vorlagen: **vorerst verworfen**, das HUD bleibt wie es ist (die neuen Symbole aus #30/#32/#33 bleiben). *(26.11.)*
+- **HUD überarbeiten** (26.11., später am Tag): **ja** – kompakt, einfach, möglichst ohne Scrollen; eigener Chat „Oberfläche“, Regeln `doku/konzepte/hud.md`. Die neuen Symbole (#30/#32/#33) bleiben. (Die Gold-UI-Vorlagen von vorher sind kein Muss.)
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
 
 ## Offen (Fragen an den Nutzer)
