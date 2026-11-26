@@ -9,6 +9,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { Aufladung } from "./aufladung";
 
 const NEIGUNG = (35 * Math.PI) / 180;
 /** Ausschnitt um den Fußpunkt in Kameraeinheiten (m): seitlich, nach oben (erhobener Stab), nach unten (liegend) */
@@ -51,7 +52,7 @@ const linear = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.
 
 export class Darsteller {
   private wurzel: THREE.Object3D; private mixer: THREE.AnimationMixer; private aktion: THREE.AnimationAction | null = null; private name = "";
-  private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null;
+  private teile = new Map<string, THREE.Object3D>(); private fertig: (() => void) | null = null; private ppm: number; private effekt: TeleportEffekt | null = null; private aufladung: Aufladung | null = null;
   private soll = new Set<string>(); private ladend = new Set<string>(); private aus = { ...AUSSCHNITT }; private glutFx: StabGlut | null = null;
   /** Leinwand in Bildpunkten und wie viele Bildpunkte eine Kameraeinheit hat */
   readonly breite: number; readonly hoehe: number; readonly fussY: number;
@@ -126,7 +127,7 @@ export class Darsteller {
   blick(winkel: number): void { this.wurzel.rotation.y = winkel; }
   /** Weiterrechnen und in die Leinwand zeichnen */
   zeichne(dt: number, ziel: CanvasRenderingContext2D): void {
-    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt); if (PULS.size) pulsieren();
+    const { zeichner: z, buehne: b, kamera: k } = gemeinsam(); this.mixer.update(dt); const fx = this.effekt; if (fx) fx.weiter(dt); if (PULS.size) pulsieren(); if (this.aufladung) this.aufladung.weiter(dt);
     if (this.glutFx) { const p = this.waffenOrt(true); if (!this.glutFx.weiter(dt, p)) this.glutFx = null; }
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
     if (k.right !== this.aus.seite || k.top !== this.aus.oben) { k.left = -this.aus.seite; k.right = this.aus.seite; k.top = this.aus.oben; k.bottom = -this.aus.unten; k.updateProjectionMatrix(); }
@@ -149,6 +150,13 @@ export class Darsteller {
   }
   /** Der Stab leuchtet auf: an der Spitze wächst ein Licht bis zum Abschuss (nach bisAbschuss ms) und verglimmt danach */
   glut(bisAbschuss: number, farbe = 0x8cc4ff): void { if (this.glutFx) this.glutFx.weg(); this.glutFx = new StabGlut(this.wurzel, bisAbschuss / 1000, farbe); }
+  /** Splitterbinden: die sichtbare Waffe aufladen (an = true) oder die Aufladung beenden; rest (0…1) lässt sie zum Ende hin flackern */
+  aufladen(an: boolean, rest = 1): void {
+    if (!an) { if (this.aufladung) { this.aufladung.entfernen(); this.aufladung = null; } return; }
+    if (!this.aufladung) { const w = [...this.teile].find(([n, o]) => /^waffe/.test(n) && o.visible); if (!w) return; this.aufladung = new Aufladung(w[1], this.wurzel);
+      if (this.hat("block")) { const vorher = this.name; this.neustart(); this.spiele("block", true, () => setTimeout(() => { this.neustart(); if (vorher) this.spiele(vorher); }, Math.max(0, Aufladung.EINLEITUNG * 1000 - this.dauer("block")))); } }   /* Aufladen: Waffe erhoben, bis die Splitter eingeströmt sind */
+    this.aufladung.rest = rest;
+  }
   teleport(dauer = 1.8): void { if (this.effekt) return; this.effekt = new TeleportEffekt(this.wurzel, dauer, this.ppm); gemeinsam().buehne.add(this.effekt.gruppe); }
   entfernen(): void { gemeinsam().buehne.remove(this.wurzel); if (this.effekt) { gemeinsam().buehne.remove(this.effekt.gruppe); this.effekt.weg(); } this.mixer.stopAllAction(); }
 }
