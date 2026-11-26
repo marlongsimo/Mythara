@@ -8045,6 +8045,36 @@
     "url": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "wz_splitter_obelisk",
+   "name": "Splitter-Obelisk",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_splitter_obelisk.webp",
+   "groesse": [
+    71,
+    217
+   ],
+   "anker": [
+    0.4789,
+    0.9631
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/splitter_obelisk (Meshy „Amethyst Obelisk“)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/splitter_obelisk.glb",
+    "wind": 0,
+    "puls_ton": 250,
+    "puls_breite": 38
+   }
   }
  ]
 }

@@ -1,0 +1,9 @@
+{
+  "id": "wahrzeichen.splitter_obelisk",
+  "name": "Splitter-Obelisk",
+  "kategorie": "wahrzeichen",
+  "aktuell": "v001",
+  "hoehe_m": 4.0,
+  "status": "Meshy „Amethyst Obelisk“; Spieldatei img/objekte3d/wahrzeichen/splitter_obelisk.glb (live 3D, kein Wind, violette Kristalle pulsieren: puls_ton 250, puls_breite 38); Weltobjekt wz_splitter_obelisk (Kollision Kreis r 0,6); noch nicht platziert",
+  "herkunft": "Meshy"
+}
