@@ -1,0 +1,56 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.hedda – Mutter Hedda, alte Kräuterfrau in Rabenmoor (aus der Kräuterfrau): rotbraunes Kopftuch (Hülle über dem Kopf, Gesicht frei), grauer Zopf darunter, knorriger Stock (fabrik/beute.py stock) senkrecht in der rechten Hand.",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.stock",
+      "platz": "hand_r",
+      "glb": "werkzeug.stock/v001/quelle/stock.glb",
+      "art": "schwert",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.kopftuch",
+      "platz": "kopftuch",
+      "farbe": "#7a3328",
+      "dicke": 0.028,
+      "gesicht_frei": true,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "kopf",
+          0.3,
+          1
+        ],
+        [
+          "hals",
+          0.55,
+          1
+        ]
+      ]
+    }
+  ],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zopf_wild",
+      "platz": "haar",
+      "glb": "npc.kraeuterfrau/v001/quelle/teile/kopf.haar.zopf_wild.glb"
+    }
+  ],
+  "arme_eng": 6,
+  "haltung": "zivil"
+}

@@ -1,7 +1,7 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel
+  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel | stock
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
@@ -134,6 +134,12 @@ elif ART == "sichel":                                                           
     me = bpy.data.meshes.new("klinge"); vs = [tuple(p) for p in pts_a + pts_i]; n = len(pts_a)
     me.from_pydata(vs, [], [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]); k_ = bpy.data.objects.new("klinge", me); bpy.context.collection.objects.link(k_); k_.data.materials.append(STAHL); k_.modifiers.new("d", "SOLIDIFY").thickness = 0.004
     rohr((0, 0, 0.17), (0.02, 0, 0.2), 0.008, STAHL, 6)                                                # Angel zur Klinge
+elif ART == "stock":                                                                             # knorriger Wanderstock (0,9 m – reicht von der hängenden Hand zum Boden), Griffende oben gebogen; Ursprung = unteres Ende
+    HOLZ = mat("stockholz", (105, 75, 45), 0.85); random.seed(3); pts = [Vector((0, 0, 0))]
+    for k in range(1, 9): pts.append(Vector((random.uniform(-0.01, 0.01), random.uniform(-0.01, 0.01), 0.8 * k / 8)))
+    pts += [Vector((0.04, 0, 0.88)), Vector((0.09, 0, 0.86))]
+    for a, b in zip(pts, pts[1:]): rohr(tuple(a), tuple(b), 0.016, HOLZ, 8)
+    for z in (0.25, 0.5, 0.7): kugel((0.012, 0, z), 0.012, HOLZ, (1, 1, 1.5), 6)                    # Astknoten
 elif ART == "splitterkern":
     KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
     for m_ in (KRIST, KERN):
