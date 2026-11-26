@@ -6,13 +6,14 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 ## Vor jeder Arbeit
 1. Klären, welche Rolle diese Sitzung hat (steht in der ersten Nachricht des Nutzers; sonst nachfragen).
 2. `doku/STAND.md` lesen (wo stehen wir im Fahrplan) und `doku/KANON.md` (Namen, Entscheidungen).
-3. Offene GitHub-Issues mit dem Label der eigenen Rolle ansehen (`rolle:spiel`, `rolle:quests`, `rolle:figuren`, `rolle:welt`, `rolle:review`).
+3. Offene GitHub-Issues mit dem Label der eigenen Rolle ansehen (`rolle:spiel`, `rolle:systeme`, `rolle:quests`, `rolle:figuren`, `rolle:welt`, `rolle:review`).
 4. Den eigenen Zweig auf den neuesten Stand bringen: `git fetch origin feature/realtime-engine && git merge origin/feature/realtime-engine`.
 
 ## Wer was ändern darf
 | Rolle | Ändert | Ändert nicht |
 |---|---|---|
-| **Integration & Spielsysteme** | `realtime/client`, `realtime/server`, `realtime/shared` (außer Quest-Daten), `supabase/`, `realtime/test`, `.github/`; führt zusammen, baut, stellt live | Modellquellen (`fabrik/`), Weltquellen (`realtime/welt/`) |
+| **Integration & Inhalte** | Zusammenführen, Bauen, Live, `.github/`, Test-Werkzeuge (`realtime/test/parallel.mjs`, `server-tests.sh`); Inhaltsdaten in `realtime/shared` (Gegner-Einträge, Beute, Läden, Karten, Kartensymbole, Gegenstände); Client-Oberfläche (HUD, Karte, Menüs); Einbau von Figuren, Welt und Quests; Wünsche und Bugs | Modellquellen (`fabrik/`), Weltquellen (`realtime/welt/`), neue Systeme (→ Issue `rolle:systeme`) |
+| **Systeme** | Neue Spielmechaniken Ende-zu-Ende: `realtime/server/src`, System-Dateien in `realtime/shared` (Simulation, Kampf, Questmotor/-bau, Inventar, Wirkungen …), nötige Client-Teile des Systems, `supabase/` (neue Migrationen), Tests dazu | Inhaltsdaten, `.github/`, Live stellen, `fabrik/`, `realtime/welt/` |
 | **Quest-Autor** | Quest-Dateien `realtime/shared/quest*.ts`, Dialoge, Questfiguren, `doku/quests/` | Motor (`questbau.ts`, `questmotor.ts`), Server, Client |
 | **Figuren & 3D** | `fabrik/`, `img/figuren-*`, `img/objekte3d/`, Animationslisten | Spiellogik, Gegnerwerte, Quests |
 | **Worldbuilding** | `realtime/welt/`, Weltkarte, Minikarten, Gelände, Kacheln | Quests, Server, Client-Code |
@@ -20,6 +21,7 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 
 Braucht eine Rolle etwas aus einem fremden Bereich (z. B. Gegnerwerte für ein neues Modell, ein neues Quest-Ereignis):
 **nicht selbst ändern**, sondern ein GitHub-Issue mit dem Label der zuständigen Rolle anlegen.
+Systeme und Integration teilen sich `realtime/shared` und den Client: **Systeme baut Strukturen** (Felder, Funktionen, Ereignisse), **Integration trägt Inhalte ein**. Beide holen mindestens täglich `feature/realtime-engine` in ihren Zweig.
 
 ## Erzeugte Dateien
 `echtzeit/spiel.js`, `echtzeit/index.html`, `echtzeit/figurentest.*`, `realtime/shared/weltzonen.ts`, `realtime/server/dist/`,

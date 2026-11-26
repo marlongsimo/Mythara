@@ -43,7 +43,8 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | Chat | Rolle | Zweig |
 |---|---|---|
 | Riftmere · Leitstelle | Konzept, Review, Verteilen, Takt stündlich | `claude/relaxed-sagan-erl6lf` |
-| Riftmere · Integration | Spielsysteme, Zusammenführen, Live | `claude/welt3d` → `feature/realtime-engine` |
+| Riftmere · Integration | Zusammenführen, Live, Inhalte einbauen, Oberfläche | `claude/welt3d` → `feature/realtime-engine` |
+| Riftmere · Systeme | neue Mechaniken (seit 26.11.) | `claude/systeme` |
 | Riftmere · Quests | Quests als Daten (seit 26.11.) | `claude/riftmere-quests` |
 | Riftmere · Figuren | Figuren, Modelle, Bilder | `claude/tender-heisenberg-bruby2` |
 | Riftmere · Welt | Welt, Orte, Karten | `claude/mythara-world-pipeline-z4ynx5` |
@@ -51,7 +52,7 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 ## Wer gerade woran arbeitet
 | Rolle | Arbeitet an |
 |---|---|
-| Integration & Spielsysteme | Phase 3a abgeschlossen, Tests stabilisieren; danach 3b (#4) |
+| Integration & Inhalte | Phase 3a abgeschlossen, Tests stabilisieren; danach 3b (#4) |
 | Figuren & 3D | Symbole neu (#30, #32, #33 fertig); HUD-Prototyp nur zum Ansehen (Wunsch, kein Commit) |
 | Worldbuilding | #25 (Orte für Fischen, Taverne) |
 | Konzept & Review | Takt, Stand, Kanon |
