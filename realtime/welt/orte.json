@@ -242,14 +242,14 @@
   {
    "id": "ort_taverne_herd",
    "objekt": "hand_herd_01",
-   "x": 6422.8,
-   "y": 6427.4
+   "x": 6426.2,
+   "y": 6426.0
   },
   {
    "id": "ort_taverne_kessel",
    "objekt": "hand_kessel_01",
-   "x": 6421.6,
-   "y": 6430.8
+   "x": 6428.4,
+   "y": 6426.0
   },
   {
    "id": "ort_ried_kahn",
@@ -480,6 +480,12 @@
    "x": 6190.5,
    "y": 6728.5,
    "spiegeln": true
+  },
+  {
+   "id": "ort_p3_torffeuer",
+   "objekt": "dorf_festfeuer_01",
+   "x": 6317.0,
+   "y": 6703.4
   }
  ],
  "lichtungen": [
