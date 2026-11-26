@@ -1,0 +1,28 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "bandit3d.spaeher – Banditen-Variante aus bandit3d (Meshy „Crimson Warden“), Rot umgefärbt mit fabrik/textur_ton.py. Späher: Kapuze und Umhang waldgrün, leicht, Schleuder (Wurf = dolchwurf, lässt los).",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "dolchwurf",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.schleuder",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/schleuder/waffe.schleuder/v001/quelle/schleuder.glb",
+      "griff": 0.95,
+      "angriff": "dolchwurf"
+    }
+  ]
+}
