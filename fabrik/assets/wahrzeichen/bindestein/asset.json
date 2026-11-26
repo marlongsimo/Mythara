@@ -1,0 +1,9 @@
+{
+  "id": "wahrzeichen.bindestein",
+  "name": "Bindestein",
+  "kategorie": "wahrzeichen",
+  "aktuell": "v001",
+  "hoehe_m": 1.1,
+  "status": "Meshy „Voidstone Sigil“; aufrechter Stein mit Splitter-Zeichen zwischen den Wurzeln der Linde in Weidenhain (Splitterbinden). Spieldatei img/objekte3d/wahrzeichen/bindestein.glb; live 3D, Vorderseite zur Kamera (fest), nur Zeichen und Adern pulsieren violett (puls_ton 272, puls_hell 0,72); Weltobjekt wz_bindestein; noch nicht platziert",
+  "herkunft": "Meshy"
+}

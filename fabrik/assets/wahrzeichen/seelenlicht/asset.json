@@ -1,0 +1,9 @@
+{
+  "id": "wahrzeichen.seelenlicht",
+  "name": "Seelenlicht",
+  "kategorie": "wahrzeichen",
+  "aktuell": "v001",
+  "hoehe_m": 0.8,
+  "status": "Meshy-Modell (blaue Flamme mit Funken); Spieldatei img/objekte3d/wahrzeichen/seelenlicht.glb (graue Füllflächen aufgefüllt). Im Spiel: schwebt 0,9 m über dem Boden, wippt ±0,12 m in 3,2 s, pendelt und kreist sachte, zeigt immer zur Kamera, flackert leicht und leuchtet pulsierend (blau); weicher Schatten am Boden; begehbar. Weltobjekt wz_seelenlicht, noch nicht platziert",
+  "herkunft": "Meshy"
+}
