@@ -19,6 +19,8 @@ export interface Dialog { npc: string; name: string; zeilen: Zeile[]; antworten:
 /** Eine Zeile im Gespräch: Text der Figur, oder { wer, text } für andere Sprecher („Du“, eine zweite Wache) */
 export type Text = string | Zeile;
 
+/** Höchster Quest-Lohn je Kampfskill und Beruf (Migration 051, rpg_held_quest_abschluss_v2) und Questpunkte je Quest – mehr ist im Prüfer ein Fehler */
+export const LOHN_JE_SKILL = 50000, PUNKTE_JE_QUEST = 10;
 /** So nah muss man stehen, um zu reden (Felder) */
 export const REDE_WEIT = 3.5;
 /** Eine Figur der Quest (Weltfelder) */

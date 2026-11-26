@@ -121,7 +121,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       if (amBoden) aus.amBoden = true;
       if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
       /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
-      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(1000, n));
+      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(QB.LOHN_JE_SKILL, n)); /* dieselbe Grenze wie in der Datenbank (Migration 051) */
       for (const [g, n] of Object.entries(B.ladungen || {})) if (n > 0) ladungenDazu(sb, nutzer, g, n);   /* B1: 10 Ladungen im Wegstein */
       if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
