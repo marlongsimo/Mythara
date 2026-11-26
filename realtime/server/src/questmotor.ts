@@ -77,7 +77,7 @@ export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: 
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
-  for (const q of QUESTS) { const F = q.figuren.find((f) => f.id === id); if (!F) continue;
+  { const q = QB.figurQuest(QUESTS, (x) => qStand(nutzer, x), id, kontext(nutzer)), F = q && q.figuren.find((f) => f.id === id); if (!q || !F) return { fehler: "Hier ist niemand." }; /* Figur in mehreren Quests: die, bei der es etwas zu tun gibt */
     if (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? QB.REDE_WEIT)) return { fehler: `Geh näher an ${F.name} heran.` };
     const k = kontext(nutzer), s0 = qStand(nutzer, q.id), s = nachziehen(nutzer, q, s0); if (s !== s0) void setzen(sb, nutzer, q, s); /* schon Dabeigehabtes zählt, bevor die Figur spricht */
     const d = QB.dialog(q, F.id, s, k); if (!d) return { fehler: "Hier ist niemand." };
@@ -121,7 +121,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       if (amBoden) aus.amBoden = true;
       if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
       /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
-      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(1000, n));
+      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(QB.LOHN_JE_SKILL, n)); /* dieselbe Grenze wie in der Datenbank (Migration 051) */
       for (const [g, n] of Object.entries(B.ladungen || {})) if (n > 0) ladungenDazu(sb, nutzer, g, n);   /* B1: 10 Ladungen im Wegstein */
       if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;

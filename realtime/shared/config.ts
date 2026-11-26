@@ -116,6 +116,8 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
+  fliehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
   /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number; /** Gegnerfamilie (Waffen mit „gegen“ treffen sie härter): wald = Waldgolem, Mooshocker */ familie?: string;
   aggressiv?: boolean; aggroReich?: number; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
