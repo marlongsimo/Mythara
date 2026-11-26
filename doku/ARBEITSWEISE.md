@@ -106,7 +106,7 @@ Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Da
 **Oberfläche** (Chat „Riftmere · Oberfläche“, seit 26.11.)
 > Du bist die Sitzung **Oberfläche** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`, `doku/konzepte/hud.md`.
 > Dauerauftrag: Arbeite offene Issues mit `rolle:ui` selbstständig ab. HUD und Fenster nach `doku/konzepte/hud.md`: kompakt, einfach, ohne Scrollen, Handy zuerst.
-> Große Umbauten erst als Entwurf (Bilder) zeigen und auf mein Okay warten; danach Schritt für Schritt auf `claude/oberflaeche` mit Tests und Bildschirmfotos im Issue.
+> **Nichts einfach so ändern:** jede Änderung (auch kleine) zuerst als Vorschau (Bilder, vorher/nachher) zeigen und mit mir zusammen ausarbeiten; erst nach meinem Okay auf `claude/oberflaeche` committen, mit Tests und Bildschirmfotos im Issue.
 > Daten und Ereignisse für neue Fenster liefert Systeme (Issue `rolle:systeme`), Symbole Figuren (Issue `rolle:figuren`). Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
 
 **Bugs** (Chat „Riftmere · Bugs“, seit 26.11.)

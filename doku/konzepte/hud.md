@@ -30,6 +30,9 @@ Zuständig: Chat **„Riftmere · Oberfläche“** (`rolle:ui`). Die neuen Symbo
 
 ## Vorgehen
 
+**Grundsatz (Nutzer, 26.11.): Nichts wird einfach so geändert.** Jede Änderung an HUD oder Fenstern – auch kleine – zuerst als **Vorschau** (Bilder, gern vorher/nachher, Handy und PC) zeigen und **gemeinsam mit dem Nutzer ausarbeiten**. Erst nach seinem ausdrücklichen Okay committen.
+
+
 1. **Entwurf zuerst:** klickbarer Prototyp (nur Scratchpad, nichts committen) für Handy hoch/quer und PC mit allen Fenstern – dem Nutzer als Bilder zeigen, Rückmeldung abwarten.
-2. **Dann Schritt für Schritt umbauen**, je Schritt ein Commit mit Tests (betroffene `*-ui.test.mjs`) und Bildschirmfotos im Issue: Gerüst + Menüleiste → Seitenfenster (ein Kasten) → HUD-Leisten → Chat → große Fenster (Bank, Läden, Dialoge) → Karte.
+2. **Dann Schritt für Schritt umbauen** – jeder Schritt wieder mit Vorschau und Okay des Nutzers – je Schritt ein Commit mit Tests (betroffene `*-ui.test.mjs`) und Bildschirmfotos im Issue: Gerüst + Menüleiste → Seitenfenster (ein Kasten) → HUD-Leisten → Chat → große Fenster (Bank, Läden, Dialoge) → Karte.
 3. Neue Fenster aus den Systemen (z. B. **Handel #65**, Wirkungen, Set-Symbol, geladene Waffen) baut die Oberfläche **im neuen Stil**; Systeme liefert die Daten und Ereignisse.
