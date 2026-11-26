@@ -12,22 +12,26 @@ import { zwischenteil } from "./gegenstaende";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
-export type WeltStation = "esse" | "amboss" | "werkbank";
+export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein";
 export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
   esse: { id: "esse", name: "Esse", x: 6467.4, y: 6427.8, tun: "Schmelzen" },
   amboss: { id: "amboss", name: "Amboss", x: 6470.4, y: 6427.6, tun: "Schmieden" },
   werkbank: { id: "werkbank", name: "Werkbank", x: 6530.5, y: 6426.5, /* die einzige Werkbank steht im Osthof (die in der Waldmark ist entfernt) */ tun: "Werken" },
+  /* Splitterbinden (Phase 3a): Bindestein an der Linde im Steinring in Weidenhain – nutzbar nach B1 „Der Wegstein“ (Schalter bindestein_linde) */
+  bindestein: { id: "bindestein", name: "Bindestein", x: 6452, y: 6678.6, tun: "Binden" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 /** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
-export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string }
+export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string }
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
-  { id: "werkbank_osthof", station: "werkbank", x: 6530.5, y: 6426.5, ort: "osthof" },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
+  { id: "werkbank_osthof", station: "werkbank", x: 6530.5, y: 6426.5, ort: "osthof" },
+  { id: "bindestein_linde", station: "bindestein", x: STATIONEN.bindestein.x, y: STATIONEN.bindestein.y, ort: "weidenhain", schalter: "bindestein_linde",
+    gesperrt: "Ein glatter Stein zwischen den Wurzeln der Linde. Agnes weiß, was es mit ihm auf sich hat." },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
 ];
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
@@ -45,7 +49,7 @@ export interface Rezept { id: string; station: StationId; ergebnis: string; leve
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
-export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" ? "ofen" : r.station === "amboss" ? "haemmern" : r.station === "hand" ? "fuegen"
+export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" ? "ofen" : r.station === "amboss" ? "haemmern" : r.station === "hand" || r.station === "bindestein" ? "fuegen"
   : ["Sehne und Garn", "Leder", "Stoff"].includes(r.gruppe) ? "weben" : /Kapuze|Hose|Rock|Wams|Robe/.test(r.gruppe) ? "fuegen" : "schnitzen";
 const dazu = (r: Rezept) => { if (!REZEPTE.some((x) => x.id === r.id)) REZEPTE.push(r); };
 
@@ -123,3 +127,9 @@ export const PFLANZEN_STANDORTE: Pflanze[] = [
 ];
 export const pflanze = (id: string): Pflanze | undefined => PFLANZEN_STANDORTE.find((p) => p.id === id);
 export const PFLUECK_TAKT_MS = 1500, PFLUECK_WEIT = 1.8;
+
+/* Phase 3a Splitterbinden (shared/splitterbinden.ts): den Wegstein am Bindestein laden – „ladung:wegstein“ ist kein Gegenstand, sondern zählt die Ladungen im Inventar hoch */
+dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 2 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
+dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
+/* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */
+dazu({ id: "wegstein_ungeweiht", station: "werkbank", ergebnis: "wegstein_ungeweiht", level: 10, zutaten: [{ g: ["quellstein"], n: 1 }, { g: ["lindenspan"], n: 1 }, { g: ["geweihter_splitter"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Auftrag von Agnes", quest: "weidenhain_der_wegstein" });

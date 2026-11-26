@@ -284,6 +284,21 @@
      "region": "nordwald"
     }
    ]
+  },
+  {
+   "name": "Linde im Steinring",
+   "x": 6452.5,
+   "y": 6679.5,
+   "r": 6,
+   "baeume": [
+    {
+     "id": "linde_totholz_1",
+     "art": "linde_totholz",
+     "x": 6446.5,
+     "y": 6677.5,
+     "region": "weidenhain"
+    }
+   ]
   }
  ]
 }

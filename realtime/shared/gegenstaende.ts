@@ -300,7 +300,22 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Sack frisches Mehl aus der Mühle im Osthof. Grete Korn wartet darauf." };
   /* Essen: heilt fest, stapelt nicht (Werte in VERBRAUCH) */
   GEGENSTAENDE.brot = { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", bild: Q + "brot.webp", trank: "brot",
-    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm. Heilt 4 Lebenspunkte." }; }
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm. Heilt 4 Lebenspunkte." };
+  /* Phase 3a Splitterbinden und B1 „Der Wegstein“ (shared/splitterbinden.ts, shared/wegstein.ts). Der Wegstein trägt seine Ladungen nicht selbst – sie stehen im Inventar (inventar.ladungen.wegstein) */
+  GEGENSTAENDE.wegstein = { id: "wegstein", name: "Wegstein", art: "Splitterbinden", seltenheit: "selten", untauschbar: true, bild: Q + "wegstein.webp",
+    text: "Ein glatter Quellstein, gefasst in Lindenholz, ein geweihter Splitter in der Mitte. Reib ihn, und er bringt dich zu einem Ort, den du kennst – eine Ladung je Reise. Laden am Bindestein an der Linde." };
+  GEGENSTAENDE.wegstein_ungeweiht = { id: "wegstein_ungeweiht", name: "Wegstein (ungeweiht)", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "wegstein_ungeweiht.webp",
+    text: "Gefügt, aber noch stumm. Quellwasser darauf, über dem Erntefeuer in Weidenhain – so hat Agnes es gesagt." };
+  GEGENSTAENDE.seelenlicht = { id: "seelenlicht", name: "Seelenlicht", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: Q + "seelenlicht.webp",
+    text: "Ein eingefangenes Licht, warm in der Hand. Am Bindestein ersetzt es einen der zwei Splitter einer Ladung." };
+  GEGENSTAENDE.quellstein = { id: "quellstein", name: "Glatter Quellstein", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "quellstein.webp",
+    text: "Ein flacher, glatter Stein aus der Quelle der Obstwiesen, vom Wasser rund geschliffen." };
+  GEGENSTAENDE.quellwasser = { id: "quellwasser", name: "Quellwasser", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "quellwasser.webp",
+    text: "Eine Flasche klares Wasser aus der Quelle der Obstwiesen. Agnes braucht es zum Weihen." };
+  GEGENSTAENDE.lindenspan = { id: "lindenspan", name: "Lindenspan", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "lindenspan.webp",
+    text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
+  GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);

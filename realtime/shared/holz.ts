@@ -10,7 +10,7 @@ import STANDORTE_JSON from "./holz_standorte.json";
 import { SammelArt, SammelWerkzeug } from "./sammeln";
 export { hiebChance, SPLITTER_CHANCE, SPLITTER_MIN, SPLITTER_MAX } from "./sammeln";
 
-export type BaumArt = "eiche" | "tanne" | "eibe" | "moorweide" | "kernbaum" | "weltenbaum" | "waldgott";
+export type BaumArt = "eiche" | "tanne" | "eibe" | "moorweide" | "kernbaum" | "weltenbaum" | "waldgott" | "linde_totholz";
 export interface BaumDef extends SammelArt { art: BaumArt; /** = ertrag */ stamm: string; modell: string; stumpf: string; /** Höhe im Spiel (Felder) */ hoehe: number }
 const M = "img/objekte3d/skilling/holzfaellerei/";
 const B = (d: Omit<BaumDef, "ertrag">): BaumDef => ({ ...d, ertrag: d.stamm });
@@ -23,6 +23,8 @@ export const BAEUME: Record<BaumArt, BaumDef> = {
   weltenbaum: B({ art: "weltenbaum", name: "Weltenbaum-Setzling", level: 65, xp: 260, lo: 2, hi: 42, fall: 0.08, nachwachsen: 300, stamm: "stamm_weltenbaum", modell: M + "weltenbaum_setzling.glb", stumpf: M + "weltenbaum_setzling-stumpf.glb", hoehe: 5 }),
   /* Quest 03 (shared/quest03.ts): der Baum des Waldgottes im Nordwald – ein Stamm je Held, nur mit dem Auftrag des Försters; er fällt nie */
   waldgott: B({ art: "waldgott", name: "Baum des Waldgottes", level: 1, xp: 30, lo: 140, hi: 220, fall: 0, nachwachsen: 1, stamm: "holz_waldgott", modell: M + "weltenbaum_setzling.glb", stumpf: M + "weltenbaum_setzling-stumpf.glb", hoehe: 8.5, quest: "nordwald_waldsaebel" }),
+  /* B1 „Der Wegstein“ (shared/quest_b1.ts): Totholz der alten Linde in Weidenhain – ein Span je Held, Holzfällerei 15, nur mit dem Auftrag von Agnes; fällt nie */
+  linde_totholz: B({ art: "linde_totholz", name: "Totholz der Linde", level: 15, xp: 60, lo: 120, hi: 220, fall: 0, nachwachsen: 1, stamm: "lindenspan", modell: "img/objekte3d/baum-tot.glb", stumpf: "img/objekte3d/baum-tot.glb", hoehe: 4.5, quest: "weidenhain_der_wegstein" }),
 };
 /** Ein Holzfäller-Baum in der Welt (Weltfelder; die Lichtungen und Feldwege trägt werkzeug/welt/lichtungen.mjs in die Gebiete ein) */
 export interface Holzbaum { id: string; art: BaumArt; x: number; y: number; region: string }

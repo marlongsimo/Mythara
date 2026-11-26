@@ -17,7 +17,7 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn } from "./welt";
+import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn } from "./welt";
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
@@ -90,6 +90,8 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
     if (Z2 === Z && h && !h.tot && !q.zoneWeg) { uebernehmen(q, p, Z, typ, name); return; }
     if (Z2 !== Z && offen && amRand(q)) { q.ersetzt = true; continue; }
     q.ersetzt = true; zoneVerlassen(q); if (offen) try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } }
+  { const t = nutzer ? wegsteinZielNehmen(nutzer) : null, K = KARTEN[karte]; /* Wegstein: der Server setzt die Position (welt.ts), nicht der Browser */
+    if (t && K && K.ursprung && K.weltRegion === t.region) wo = { x: t.x - K.ursprung[0], y: t.y - K.ursprung[1] }; }
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); { const a = p.kampf && p.kampf.nutzer ? ausdauerJe.get(p.kampf.nutzer) : undefined, h = Z.sim.nach(p.heldId) as { ausdauer?: { wert: number }; ausdauerDa?: boolean; kw?: { skills: { geschick?: number } } } | undefined;
     if (a && h && h.ausdauer) { const g = levelAus((h.kw && h.kw.skills.geschick) || 0, "geschick"), ticks = Math.floor((Date.now() - a.zeit) / 1000 / SPRINT_TICK); h.ausdauer.wert = Math.min(100, a.wert + ticks * erholungJeTick(g) / 100); h.ausdauerDa = true; /* der Browser darf sie nicht mehr setzen */ } } p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
   if (p.nachher) { for (const e of p.nachher) try { Z.sim.eingabe(e, p.heldId); } catch { /* egal */ } p.nachher = undefined; } /* Autoangriff und Sprint von vor dem Betreten */
