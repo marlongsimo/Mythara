@@ -1,0 +1,88 @@
+{
+ "start": [
+  [
+   4.5,
+   115.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 82,
+    "y0": 216,
+    "x1": 83,
+    "y1": 217
+   },
+   {
+    "art": "rechteck",
+    "x0": 90,
+    "y0": 218,
+    "x1": 91,
+    "y1": 219
+   },
+   {
+    "art": "rechteck",
+    "x0": 86,
+    "y0": 226,
+    "x1": 87,
+    "y1": 227
+   },
+   {
+    "art": "rechteck",
+    "x0": 100,
+    "y0": 286,
+    "x1": 101,
+    "y1": 287
+   },
+   {
+    "art": "rechteck",
+    "x0": 106,
+    "y0": 289,
+    "x1": 107,
+    "y1": 290
+   },
+   {
+    "art": "rechteck",
+    "x0": 102,
+    "y0": 295,
+    "x1": 103,
+    "y1": 296
+   }
+  ],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "turm_wappentuer",
+   "art": "eingang",
+   "x": 56,
+   "y": 119,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Tür aus Eichenbohlen. In das Holz ist ein Wappen geschnitten: ein Turm über drei Wellen. Sie ist verschlossen.",
+    "tat": "turm",
+    "knopf": "Die Tür mit dem Wappen öffnen",
+    "ziel": [
+     10896,
+     9620.6
+    ]
+   }
+  },
+  {
+   "id": "turm_ansehen_nah",
+   "art": "lesen",
+   "x": 53,
+   "y": 121.5,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Turm mit dem grünen Licht. Oben brennt es, still und ohne zu flackern."
+   }
+  }
+ ]
+}

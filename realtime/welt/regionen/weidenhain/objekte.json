@@ -92,7 +92,6 @@
  {"id":"b0016","objekt":"stil_tanne_02","x":0.5,"y":19.5,"s":0.87,"spiegeln":true},
  {"id":"b0139","objekt":"stil_tanne_01","x":125.5,"y":20.5,"s":0.97},
  {"id":"kornspeicher_1","objekt":"weidenhain_kornspeicher_01","x":30,"y":21},
- {"id":"stil_linde_11","objekt":"stil_linde_01","x":52.5,"y":21.5,"s":1.05},
  {"id":"heuballen_18","objekt":"dorf_heuballen_01","x":22.5,"y":21.5},
  {"id":"kuerbisse_16","objekt":"dorf_kuerbisse_01","x":37.6,"y":21.8},
  {"id":"heuballen_19","objekt":"dorf_heuballen_01","x":23.5,"y":22.5},

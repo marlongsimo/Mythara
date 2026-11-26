@@ -10442,6 +10442,90 @@
     "puls_breite": 22,
     "puls_hell": 0.72
    }
+  },
+  {
+   "id": "graufurt_winde_01",
+   "name": "Winde der Fährkette",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/graufurt_winde_01.webp",
+   "groesse": [
+    94,
+    68
+   ],
+   "anker": [
+    0.5,
+    0.8088
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.9,
+    "y": -0.45,
+    "b": 1.8,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/winde.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "turm_signalfeuer_01",
+   "name": "Signalfeuer",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/turm_signalfeuer_01.webp",
+   "groesse": [
+    61,
+    100
+   ],
+   "anker": [
+    0.4918,
+    0.86
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/signalfeuer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "turm_gruenlicht_01",
+   "name": "Grünes Licht über dem Turm",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/turm_gruenlicht_01.webp",
+   "groesse": [
+    8,
+    8
+   ],
+   "anker": [
+    0.5,
+    1.0
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "oben",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/gruenlicht.glb",
+    "wind": 0
+   }
   }
  ]
 }

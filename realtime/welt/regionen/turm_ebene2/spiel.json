@@ -1,0 +1,51 @@
+{
+ "start": [
+  [
+   12.7,
+   18.3
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "treppe_hinauf",
+   "art": "eingang",
+   "x": 20.5,
+   "y": 12.5,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Wendeltreppe aus Stein führt nach oben.",
+    "tat": "turm_hinauf",
+    "knopf": "Die Treppe hinaufsteigen",
+    "ziel": [
+     10956.7,
+     9618.3
+    ]
+   }
+  },
+  {
+   "id": "treppe_hinunter",
+   "art": "eingang",
+   "x": 11.5,
+   "y": 19.5,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Wendeltreppe führt nach unten.",
+    "tat": "turm_hinunter",
+    "knopf": "Die Treppe hinuntergehen",
+    "ziel": [
+     10899.3,
+     9613.7
+    ]
+   }
+  }
+ ]
+}
