@@ -64,7 +64,7 @@ function fertigStueck(a: Arbeit): boolean {
   for (let i = 0; i < r.zutaten.length; i++) { const z = r.zutaten[i], n = Math.max(0, z.n - (i === spar ? 1 : 0)), g = sorte(s.nutzer, z.g, n); if (!g) continue; for (let k = 0; k < n; k++) abgeben(sb, s.nutzer, g); }
   if (!aufnehmen(sb, s.nutzer, r.ergebnis, 1)) { handwerkStop(s, "voll"); return false; }
   const vorher = handwerkLevel(s.nutzer, r.station), xp = Math.round(r.xp * (glut ? 1.5 : 1)), b = berufAn(r.station); berufXpDazu(sb, s.nutzer, b, xp); const nachher = handwerkLevel(s.nutzer, r.station);
-  a.rest--; const G = GEGENSTAENDE[r.ergebnis]; if (r.quest) { HANDWERK_QUEST.fertig(s.nutzer, r); a.rest = 0; } /* Questrezept: ein Stück */
+  a.rest--; const G = GEGENSTAENDE[r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest) a.rest = 0; /* Questrezept: ein Stück je Auftrag */
   senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }

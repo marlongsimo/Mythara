@@ -18,11 +18,11 @@ import { wecken } from "../netz";
 import { karteZoom, rundeKarte, karteFolgen, rahmenTasten, taschenTafel, questTafel, baldTafel, stilTab, seitenTab, skillTafel, ladenTafel, RKnopf } from "../rahmen";
 import { leisteAufbauen, leisteOnline, boegenAufbauen, kartenBogen, rechteLeiste } from "../welt3d/oberflaeche";
 import { LAEDEN } from "../../../shared/laden";
-import { LAEDEN as LAEDEN_ECHT, LadenId } from "../../../shared/laeden";
+import { LAEDEN as LAEDEN_ECHT, LadenId, ladenOffen as ladenOffenB } from "../../../shared/laeden";
 import { ladenZeigen } from "../laden";
 import { frei as freigabe } from "../freigabe";
 import type { Fremder } from "../welt";
-import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline, teleportFragen } from "../welt";
+import { weltBetreten, weltPos, heldenLaden, Mitspieler, lokalerHeld, chatSystem, weltHeld, weltIch, spielerKarte, spielerListe, sprechblase, weltOnline, teleportFragen, betenBitten, questStandB } from "../welt";
 import { heldenFigur, richten, blickVon, eigeneWaffenQuelle } from "../modulfigur";
 import { CHUNK_PX, FELD_PX, HELD_PX } from "../../../shared/welt/typen";
 import { stufeAusEp } from "../../../shared/config";
@@ -65,6 +65,8 @@ export function oeffne(art: string, s: WeltKern) {
   else if (art === "welt") { if (!torOffen()) { $("#ez-dorf-knopf").classList.add("bald"); return; }
     tafel(s, (zu) => weltkarte(() => { zu(); if (lokalerHeld() !== s.held) { location.reload(); return; } s.profil(); })); }
   else if (art === "menue") tafel(s, (zu) => menueTafel(() => { zu(); s.profil(); }));
+  else if (art === "beten") betenBitten();   /* heilende Stelle (Kapelle): der Server antwortet im Chat */
+  else if (art.startsWith("laden:") && art.slice(6) in LAEDEN_ECHT && !ladenOffenB(LAEDEN_ECHT[art.slice(6) as LadenId], (id) => questStandB(id))) chatSystem(LAEDEN_ECHT[art.slice(6) as LadenId].zu || "Hier ist zu.");   /* Laden mit Bedingung (Bäckerei nach Quest A3) */
   else if (art.startsWith("laden:") && art.slice(6) in LAEDEN_ECHT) ladenZeigen(art.slice(6) as LadenId);   /* echter Laden mit Kauf auf dem Server (shared/laeden.ts) */
   else if (art.startsWith("laden:") && LAEDEN[art.slice(6)]) tafel(s, (zu) => ladenTafel(LAEDEN[art.slice(6)], () => { zu(); s.profil(); }));   /* Händler (shared/laden.ts) */
   else $("#ez-dorf-knopf").classList.add("bald");   /* „kommt noch“ */

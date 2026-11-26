@@ -15,7 +15,7 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte, questStand, schalter } from "./quests";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
@@ -23,7 +23,8 @@ import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leere
 import { pflanzenEinrichten, pflueckStart, pflueckStop, pflueckTakt, pflueckWeg, abgeerntete } from "./pflanzen";
 import { handwerkEinrichten, handwerkStart, handwerkStop, handwerkGlut, handwerkTakt, handwerkWeg } from "./handwerk";
 import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
-import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG } from "../../shared/laeden";
+import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG, ladenOffen } from "../../shared/laeden";
+import { HEILSTELLEN } from "../../shared/heilstellen";
 import { filtern } from "./wortfilter";
 import * as Sitz from "./sitz";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
@@ -59,6 +60,8 @@ let heiler: (nutzer: string, v: Verbrauch) => Promise<Heilung> = async () => ({ 
 export function heilenMit(f: typeof heiler): void { heiler = f; }
 /** Essen: höchstens ein Bissen je 3 Ticks (1,5 s) */
 const BISSEN_MS = 1500, bissenZuletzt = new Map<string, number>();
+/** Heilende Stellen: wann zuletzt gebetet (Stelle:Konto → Zeit) */
+const gebetet = new Map<string, number>();
 /** index.ts meldet, wie man erkennt, ob ein Konto gerade kämpft (Einzelkampf gebunden oder ein Gegner hat es im Ziel) */
 export function imKampfPruefer(f: (nutzer: string) => boolean): void { kampfPruefer = f; }
 type Freund = { user_id: string; handle: string; zuletzt: string | null };
@@ -164,10 +167,21 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
           else if (trankNehmen(H.sb, s.nutzer, e.i as number) !== G.trank) fehler = "Der Trank ist nicht mehr da.";
           else { r.anwenden(); senden(s, { t: "getrunken", g: G.id, n: r.n, lp: r.lp, max: r.max }); } } }
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }
+    else if (e.t === "beten") { /* Heilende Stelle (shared/heilstellen.ts): nur mit Schalter, nah dran, Abklingzeit je Konto */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Beten geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
+      const ich = s, St = HEILSTELLEN.find((h) => ich.wx !== undefined && ich.wy !== undefined && Math.hypot(ich.wx - h.x, ich.wy - h.y) <= h.weit); let text = "";
+      if (!St) text = "Hier kann man nicht beten.";
+      else if (!schalter(s.nutzer, St.schalter)) text = St.zu;
+      else { const k = St.id + ":" + s.nutzer, bis = (gebetet.get(k) || 0) + St.abkling - jetzt;
+        if (bis > 0) text = `Du hast eben erst gebetet. Komm in ${Math.ceil(bis / 60000)} Minute${Math.ceil(bis / 60000) === 1 ? "" : "n"} wieder.`;
+        else { const r = await heiler(s.nutzer, { id: St.id, name: St.name, art: "Gebet", seltenheit: "gewoehnlich", heilt: { fest: 10_000, anteil: 0 }, stapelbar: false, modell: "", werte: [], text: "" });
+          if ("fehler" in r) text = St.voll; else { r.anwenden(); gebetet.set(k, jetzt); text = St.geheilt; senden(ich, { t: "getrunken", g: "", n: r.n, lp: r.lp, max: r.max, gebet: true }); } } }
+      senden(ich, { t: "chat", kanal: "system", text, zeit: jetzt }); }
     else if (e.t === "kaufen") { /* Laden am Marktplatz: nur in der Waldmark, nah am Händler, nur was er führt, zum Preis aus shared/laeden.ts */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Einkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
-      const L = LAEDEN[String(e.laden) as LadenId], w = L && L.waren.find((x) => x.g === e.g); let fehler: string | null = null;
+      const L = LAEDEN[String(e.laden) as LadenId], w = L && L.waren.find((x) => x.g === e.g), nutzerK = s.nutzer; let fehler: string | null = null;
       if (!L || !w) fehler = "Das gibt es hier nicht.";
+      else if (!ladenOffen(L, (id) => questStand(nutzerK, id))) fehler = L.zu || "Hier ist zu.";
       else if (s.ort !== "waldmark" || s.wx === undefined || s.wy === undefined || Math.hypot(s.wx - L.x, s.wy - L.y) > KAUF_WEIT) fehler = `Geh näher an den Stand von ${L.haendler}.`;
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });

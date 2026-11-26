@@ -48,14 +48,14 @@ for (const q of QUESTS) {
   check(staende.every((s) => s.length <= 24 && /^[a-z0-9_]*$/.test(s)), "Alle Stände passen in die Datenbank (höchstens 24 Zeichen)");
 
   /* Erreichbarkeit: vom Annehmen über Ereignisse und Antworten bis zum Abschluss */
-  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false };
+  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 99 };
   let s = ""; const ann = q.dialoge[q.geber].optionen.find((o) => o.folge.some((v) => v.f.start));
   check(Boolean(ann), "Es gibt eine Antwort zum Annehmen"); if (ann) s = QB.nachFolge(q, s, QB.antwort(q, q.geber, s, ann.id, k0));
   check(QB.laeuft(q, s), `Nach dem Annehmen läuft die Quest (${s})`);
   /* Ereignis eines Schritts nachspielen (Stelle: Mitte von „bei“); Antwort-Schritte über die Figur, die sie erledigt */
   const melden = (e) => ({ ...e, ...(e.bei ? { x: e.bei[0], y: e.bei[1] } : {}) });
   for (let runde = 0; runde < q.schritte.length + 1; runde++) for (const S of q.schritte) { if (!QB.moeglich(q, s, S.id)) continue;
-    if (S.ereignis.art === "objekt") { const r = QB.objekt(q, s, S.ereignis.id, k0); s = r.stand; continue; }
+    if (S.ereignis.art === "objekt") { const r = QB.objekt(q, s, S.ereignis.id, kHat); s = r.stand; continue; }
     if (S.ereignis.art !== "antwort") { for (let i = 0; i < (S.anzahl || 1); i++) s = QB.ereignis(q, s, melden(S.ereignis)); continue; }
     /* in jeder Lage des Spielers (z. B. mit dem Schriftstück im Rucksack) */
     suche: for (const k of [k0, kHat, ...lagen]) for (const npc of Object.keys(q.dialoge)) { const d = QB.dialog(q, npc, s, k); const a = d && d.antworten.find((x) => { const f = QB.antwort(q, npc, s, x.id, k); return f && (f.erledige || []).includes(S.id); }); if (a) { s = QB.nachFolge(q, s, QB.antwort(q, npc, s, a.id, k)); break suche; } } }

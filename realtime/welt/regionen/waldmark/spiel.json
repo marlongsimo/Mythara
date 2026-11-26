@@ -15,13 +15,6 @@
  ],
  "figuren": [
   {
-   "id": "wache_west",
-   "rolle": "wache",
-   "figur": "wache",
-   "x": 45.2,
-   "y": 58.6
-  },
-  {
    "id": "wache_ost",
    "rolle": "wache",
    "figur": "wache",
@@ -177,14 +170,16 @@
   },
   {
    "id": "kapelle_tuer",
-   "art": "lesen",
+   "art": "eingang",
    "x": 57,
    "y": 22.6,
    "radius": 1.5,
    "objekt": "kapelle",
    "abgleich": "keiner",
    "daten": {
-    "text": "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren."
+    "text": "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.",
+    "tat": "beten",
+    "knopf": "Beten"
    }
   },
   {
@@ -284,14 +279,16 @@
   },
   {
    "id": "baecker_tuer",
-   "art": "lesen",
+   "art": "eingang",
    "x": 54,
    "y": 50.1,
    "radius": 1.5,
    "objekt": "baeckerei",
    "abgleich": "keiner",
    "daten": {
-    "text": "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot."
+    "text": "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.",
+    "tat": "laden:baeckerei",
+    "knopf": "Brot kaufen"
    }
   },
   {

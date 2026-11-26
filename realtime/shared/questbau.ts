@@ -133,6 +133,8 @@ export interface QuestDef {
   /** Schalter je Spieler (Weltzustand: Mühle dreht, Kapelle offen, Bäckerei offen, Zielscheiben frei …) → an, wenn eine der Bedingungen gilt.
    *  Server und Browser werten sie gleich aus (schalterAn in shared/quests.ts). */
   schalter?: Record<string, Bed | Bed[]>;
+  /** Drehteile in der Welt (Mühlenflügel) im Umkreis r einer Stelle drehen sich nur, wenn der Schalter an ist – je Spieler */
+  drehen?: { schalter: string; x: number; y: number; r: number }[];
 }
 
 /* ───────── Stand ───────── */

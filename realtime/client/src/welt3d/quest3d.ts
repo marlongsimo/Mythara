@@ -9,7 +9,7 @@ import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest } from "../welt";
-import { QUESTS as QUESTS_B, questDef } from "../../../shared/quests";
+import { QUESTS as QUESTS_B, questDef, schalterAn } from "../../../shared/quests";
 import { zeichen as zeichenB, ziel as zielB, objektLage, gilt, frei, lage, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
 import { Npc3D } from "./npc3d";
@@ -39,6 +39,9 @@ export class QuestWelt {
       let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
       this.figuren.push({ n, q: q.id, npc, x: n.x, y: n.y, nm, mk }); }
     this.objekteBauen();
+    /* Mühlenflügel je Spieler (QuestDef.drehen): bei uns steht die Mühle, bis unser Schalter an ist */
+    const DREHEN = QUESTS_B.flatMap((q) => q.drehen || []);
+    if (DREHEN.length) this.u.motor.drehtHier = (x, z) => { const D = DREHEN.find((d) => Math.hypot(d.x - x, d.y - z) <= d.r); return !D || (questGeladen() && schalterAn((id) => questStandB(id), D.schalter)); };
     addEventListener("ez-quest", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }

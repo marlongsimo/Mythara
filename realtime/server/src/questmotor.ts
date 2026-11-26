@@ -40,8 +40,12 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
   const alt = qStand(nutzer, q.id); if (alt === "fertig" || !s || s === "fertig" || s === alt) return;
   let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, s); gemeldet(nutzer);
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_stand: s }) }).catch((e) => console.error(`Queststand ${q.id} speichern:`, (e as Error).message));
-  /* Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament schon früher gefunden): gleich erledigt */
-  for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, s, S.id) && besitzt(nutzer).includes(S.ereignis.g)) { const n = QB.ereignis(q, s, { art: "aufheben", g: S.ereignis.g }); if (n !== s) { await setzen(sb, nutzer, q, n); return; } } }
+  const n = nachziehen(nutzer, q, s); if (n !== s) await setzen(sb, nutzer, q, n); }
+/** Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament oder Bruchstücke schon früher gefunden): gleich erledigt, alle Stücke zählen */
+function nachziehen(nutzer: string, q: QB.QuestDef, s: string): string { let n = s;
+  for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, n, S.id) && besitzt(nutzer).includes(S.ereignis.g)) {
+    const g = S.ereignis.g, mal = Math.max(1, Math.min(anzahlVon(nutzer, g) || 1, (S.anzahl || 1) - QB.zaehler(q, n, S.id))); for (let i = 0; i < mal; i++) n = QB.ereignis(q, n, { art: "aufheben", g }); }
+  return n; }
 
 /** Weltzustand je Spieler (QuestDef.schalter): Mühle dreht, Kapelle offen, Zielscheiben frei … */
 export const schalterAn = (nutzer: string, id: string): boolean => schalterAnB((q) => qStand(nutzer, q), id);
@@ -74,7 +78,8 @@ export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.som
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
   for (const q of QUESTS) { const F = q.figuren.find((f) => f.id === id); if (!F) continue;
     if (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? QB.REDE_WEIT)) return { fehler: `Geh näher an ${F.name} heran.` };
-    const k = kontext(nutzer), s = qStand(nutzer, q.id), d = QB.dialog(q, F.id, s, k); if (!d) return { fehler: "Hier ist niemand." };
+    const k = kontext(nutzer), s0 = qStand(nutzer, q.id), s = nachziehen(nutzer, q, s0); if (s !== s0) void setzen(sb, nutzer, q, s); /* schon Dabeigehabtes zählt, bevor die Figur spricht */
+    const d = QB.dialog(q, F.id, s, k); if (!d) return { fehler: "Hier ist niemand." };
     const r = QB.rede(q, F.id, s, k); if (r && r.anbieten) { const n = QB.nachFolge(q, s, { zeilen: [], anbieten: true }); if (n !== s) void setzen(sb, nutzer, q, n); }
     offen.set(nutzer, { q: q.id, npc: F.id }); return { dialog: d }; }
   return { fehler: "Hier ist niemand." }; }
@@ -97,13 +102,15 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
   if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
   /* Gegenstände nehmen: erst prüfen, dann alle auf einmal */
   for (const N of f.nehmen || []) if (anzahlVon(nutzer, N.g) < (N.n || 1)) return { fehler: "Dafür fehlt dir noch etwas." };
-  for (const N of f.nehmen || []) for (let i = 0; i < (N.n || 1); i++) if (!abgeben(sb, nutzer, N.g)) return { fehler: "Dafür fehlt dir noch etwas." };
+  const nehmen = () => { for (const N of f.nehmen || []) for (let i = 0; i < (N.n || 1); i++) abgeben(sb, nutzer, N.g); };
+  if (!f.abschluss) nehmen(); /* beim Abschluss erst nach der Buchung */
   const aus: MotorAntwort = {}; let neu: string[] = [];
   if (f.abschluss) {
     if (!QB.laeuft(q, s)) return { fehler: "Das ist schon erledigt." }; const B = q.belohnung || {}, X = B.xp || {};
     const ok = await buchen(sb, nutzer, q);
     if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
     let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
+    if (ok) nehmen();
     if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn; was nicht mehr in den Rucksack passt, liegt neben dem Spieler am Boden (30 Minuten nur für ihn) */
       const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let amBoden = false;
       const lohn = (g: string, n: number): number => { const k = aufnehmen(sb, nutzer, g, n); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN)) amBoden = true; return n; };
