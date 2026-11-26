@@ -5,26 +5,59 @@ Liest die fertigen Chunks aus echtzeit/welt (Bodenbild und Objekte) und schreibt
 (dieselbe Größe wie bisher aus boden.py --vorschau: 8 bzw. 4 Bildpunkte je Feld geteilt durch … – siehe MASSSTAB).
 Bäume werden von oben als Kronen gezeichnet (dunkles Grün mit Licht von links oben und Schatten); Gebäude und alles andere Gesetzte
 (Häuser, Brücken, Palisaden, Stände …) kommt als verkleinertes Bild an seine Stelle darüber – so zeigen Minikarte und Weltkarte das Dorf.
+Regionen ohne gebackene Bodenbilder (das Festland, 26.11.2026): Grundlage sind die Geländefarben (dieselben wie in der 3D-Welt) Feld für Feld,
+weich verlaufen, mit Hangschattierung aus hoehen.json – 3 Bildpunkte je Feld, reines Meer gröber. Bäume und Gesetztes kommen wie sonst darüber.
 Aufruf (im Ordner realtime): python3 werkzeug/welt/karte.py <region> [<region> …]   ·   ohne Region: alle Regionen der Welt
 """
-import json, math, os, random, sys
+import json, math, os, random, re, sys
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
+from scipy import ndimage
 
 WURZEL = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 WELT = os.path.join(WURZEL, 'echtzeit', 'welt')
 FELD, CHUNK = 48, 32
 
 
+REALTIME = os.path.join(WURZEL, 'realtime')
+def _palette():
+    ts = open(os.path.join(REALTIME, 'client', 'src', 'welt3d', 'welt3d.ts'), encoding='utf8').read()
+    m = re.search(r'const FARBE: Record<string, string> = \{(.*?)\};', ts, re.S).group(1)
+    return {k.strip('"'): tuple(int(v[i:i + 2], 16) for i in (1, 3, 5)) for k, v in re.findall(r'("[^"]+"|\w+):\s*"(#[0-9a-fA-F]{6})"', m)}
+
+
+def gelaende_grund(rid, R, pf):
+    """Grundlage aus den Geländedaten: Farbe je Feld, weich verlaufen, leichte Körnung, Hänge schattiert (Licht von links oben)"""
+    P = _palette(); z = [l for l in open(os.path.join(REALTIME, 'welt', 'regionen', rid, 'gelaende.txt'), encoding='utf8').read().split('\n') if l]
+    H, W = len(z), len(z[0]); a = np.zeros((H, W, 3), np.float32); wasser = np.zeros((H, W), bool)
+    for c in set(''.join(z)):
+        m = np.array([[ch == c for ch in l] for l in z]); a[m] = P.get(c, P['.']); wasser |= m if c in 'M~wo' else False
+    hp = os.path.join(REALTIME, 'welt', 'regionen', rid, 'hoehen.json')
+    if os.path.exists(hp):
+        h = np.array(json.load(open(hp))['werte'], np.float32).reshape(H + 1, W + 1) / 100; h = (h[:-1, :-1] + h[1:, :-1] + h[:-1, 1:] + h[1:, 1:]) / 4
+        gy, gx = np.gradient(ndimage.gaussian_filter(h, 1)); a *= np.clip(1 - (gx * 0.55 + gy * 0.75) * 0.5, 0.6, 1.35)[..., None]
+    a[wasser] *= 0.92
+    f = max(1, int(round(pf))); big = np.kron(a, np.ones((f, f, 1), np.float32)); big = ndimage.gaussian_filter(big, (f * 0.4, f * 0.4, 0))
+    korn = ndimage.gaussian_filter(np.random.default_rng(len(rid)).standard_normal(big.shape[:2]).astype(np.float32), 0.8); big *= (1 + 0.05 * korn / (np.abs(korn).max() + 1e-6))[..., None]
+    return Image.fromarray(np.clip(big * 1.08, 0, 255).astype(np.uint8))
+
+
 def karte(rid, index):
     R = index['regionen'][rid]['region']; (ux, uy), (cb, ch) = R['ursprung'], R['chunks']; OBJ = index['objekte']
+    ohne_boden = any(not os.path.exists(os.path.join(WELT, json.load(open(os.path.join(WELT, f'{ux + i}_{uy + j}.json'))).get('boden') or f'{ux + i}_{uy + j}.webp'))
+                     for i in range(cb) for j in range(ch) if os.path.exists(os.path.join(WELT, f'{ux + i}_{uy + j}.json')))
     k = 4 if max(cb, ch) <= 4 else 8                      # wie boden.py: kleine Regionen feiner
-    n = CHUNK * FELD // k; pf = n / CHUNK                 # Bildpunkte je Chunk und je Feld
+    n = CHUNK * FELD // k
+    if ohne_boden: n = 16 if R.get('biom') == 'meer' else 96   # aus Geländefarben: 3 Bildpunkte je Feld, reines Meer 0,5
+    pf = n / CHUNK                                        # Bildpunkte je Chunk und je Feld
     bild = Image.new('RGB', (cb * n, ch * n), (40, 34, 24)); baeume, sonst = [], []
+    if ohne_boden: bild = gelaende_grund(rid, R, pf).resize((cb * n, ch * n), Image.LANCZOS)
     for cy in range(ch):
         for cx in range(cb):
             p = os.path.join(WELT, f'{ux + cx}_{uy + cy}.json')
             if not os.path.exists(p): continue
-            d = json.load(open(p)); bild.paste(Image.open(os.path.join(WELT, d['boden'])).convert('RGB').resize((n, n), Image.LANCZOS), (cx * n, cy * n))
+            d = json.load(open(p))
+            if not ohne_boden: bild.paste(Image.open(os.path.join(WELT, d['boden'])).convert('RGB').resize((n, n), Image.LANCZOS), (cx * n, cy * n))
             for o in d.get('objekte', []):
                 D = OBJ.get(o['objekt'])
                 if not D: continue

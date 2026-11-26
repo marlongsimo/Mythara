@@ -47,9 +47,18 @@ export function uebersicht(o: WeltkarteOpts): void {
     Object.assign(im.style, { left: (r.ursprung[0] * C - x0) * PX + "px", top: (r.ursprung[1] * C - y0) * PX + "px", width: r.chunks[0] * C * PX + "px", height: r.chunks[1] * C * PX + "px" });
     lw.appendChild(im);
   }
-  for (const r of o.regionen) { /* Namen nach den Bildern, damit sie oben liegen */
-    const n = document.createElement("div"); n.className = "wk-name"; n.textContent = r.name;
-    Object.assign(n.style, { left: ((r.ursprung[0] + r.chunks[0] / 2) * C - x0) * PX + "px", top: ((r.ursprung[1] + r.chunks[1] / 2) * C - y0) * PX + "px" }); lw.appendChild(n);
+  /* Namen nach den Bildern, damit sie oben liegen. Ein Land aus mehreren Regionen (das Festland ist in Kacheln geschnitten) bekommt seinen Namen
+     nur einmal, in der flächengewichteten Mitte seiner Regionen. */
+  const namen = new Map<string, { x: number; y: number; f: number }>();
+  for (const r of o.regionen) { const f = r.chunks[0] * r.chunks[1], q = namen.get(r.name) || { x: 0, y: 0, f: 0 };
+    q.x += (r.ursprung[0] + r.chunks[0] / 2) * f; q.y += (r.ursprung[1] + r.chunks[1] / 2) * f; q.f += f; namen.set(r.name, q); }
+  /* Meere umschließen das Land: ihre Mitte läge an Land – dort steht der Name auf der äußersten Kachel des Meeres */
+  const mx = o.regionen.reduce((s, r) => s + r.ursprung[0] + r.chunks[0] / 2, 0) / o.regionen.length, my = o.regionen.reduce((s, r) => s + r.ursprung[1] + r.chunks[1] / 2, 0) / o.regionen.length;
+  for (const [name, q] of namen) if (/meer/i.test(name)) { let best = -1;
+    for (const r of o.regionen) if (r.name === name) { const x = r.ursprung[0] + r.chunks[0] / 2, y = r.ursprung[1] + r.chunks[1] / 2, d = (x - mx) ** 2 + (y - my) ** 2; if (d > best) { best = d; q.x = x; q.y = y; q.f = 1; } } }
+  for (const [name, q] of namen) {
+    const n = document.createElement("div"); n.className = "wk-name"; n.textContent = name;
+    Object.assign(n.style, { left: ((q.x / q.f) * C - x0) * PX + "px", top: ((q.y / q.f) * C - y0) * PX + "px" }); lw.appendChild(n);
   }
   /* Kartensymbole: bleiben bei jedem Zoom gleich groß (wie die Namen) */
   for (const r of o.regionen) for (const q of r.symbole || []) { const im = document.createElement("img"); im.className = "wk-symbol"; im.draggable = false; im.src = (o.symbolBild || "") + q.s + ".webp";

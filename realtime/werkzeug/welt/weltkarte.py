@@ -28,12 +28,18 @@ def main():
     unten = {(r['region']['ursprung'][0] + i, r['region']['ursprung'][1] + j) for r in index['regionen'].values() if r['region'].get('ebene') for i in range(r['region']['chunks'][0]) for j in range(r['region']['chunks'][1])}
     chunks = [c for c in chunks if c not in unten]; x0, y0 = min(c[0] for c in chunks), min(c[1] for c in chunks); x1, y1 = max(c[0] for c in chunks), max(c[1] for c in chunks)
     K = Image.new('RGBA', ((x1 - x0 + 1) * px, (y1 - y0 + 1) * px), (16, 20, 14, 255))
-    dinge = []
+    dinge = []; karten = {}
     for cx, cy in chunks:
         d = json.load(open(os.path.join(WELT, f'{cx}_{cy}.json'), encoding='utf8'))
         b = os.path.join(WELT, d.get('boden') or f'{cx}_{cy}.webp')
         if os.path.exists(b):
             K.paste(Image.open(b).convert('RGBA').resize((px, px), Image.LANCZOS), ((cx - x0) * px, (cy - y0) * px))
+        elif d.get('region') in index['regionen']:   # ohne Bodenbild (Festland): das Stück aus der Übersichtskarte der Region
+            R = index['regionen'][d['region']]['region']; kp = os.path.join(WELT, f"karte-{d['region']}.webp")
+            if os.path.exists(kp):
+                if kp not in karten: karten[kp] = Image.open(kp).convert('RGBA')
+                ki = karten[kp]; n = ki.width // R['chunks'][0]; i, j = cx - R['ursprung'][0], cy - R['ursprung'][1]
+                K.paste(ki.crop((i * n, j * n, (i + 1) * n, (j + 1) * n)).resize((px, px), Image.LANCZOS), ((cx - x0) * px, (cy - y0) * px))
         dinge += d.get('objekte', [])
     if '--ohne-dinge' not in sys.argv:
         cache = {}
