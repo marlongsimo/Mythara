@@ -4,6 +4,8 @@ Konzept vom 26.11.2026 (Rolle Konzept & Review). Grundlage: `doku/quests/2-hinte
 Baut auf: Quest-Baukasten (`schalter`, `drehen`, Ereignisse `sammeln/herstellen/erlegen/treffen/untersuchen/objekt/aufheben/betreten/benutzen`),
 Berufe-Liste (`shared/berufe.ts`), Essen (`brot`, Art „Essen“), Heim-Teleport (`client/src/welt/anschluss.ts`).
 
+**Geändert 26.11.:** nur eine Angelrute ohne Stufen, keine „Lamberts Rute“.
+
 **Ziel:** Weidenhain wird das zweite Zentrum, die Riedwiesen das erste Sammelgebiet der neuen Berufe: Splitterbinden mit Wegstein-Teleport,
 Fischen und Kochen mit Wirkungs-System, Werkstatt Weidenhain, Rohstoffe über Stufe 35.
 **Reihenfolge:** 3a → 3b → 3c, jeder Teil für sich live-fähig.
@@ -43,11 +45,11 @@ Höchstens **eine Essens-Wirkung** gleichzeitig (neue ersetzt alte); Trank-Platz
 **Fischen**
 | Stufe | Fisch | XP | Wo | Gerät | gekocht heilt |
 |---|---|---|---|---|---|
-| 1 | Bachling | 20 | Bach der Obstwiesen, Mühlgraben Weidenhain, Ried am Moorrand (Riedwiesen) | Angel + Würmer | 3 |
-| 10 | Mühlbarsch | 35 | Mühlgraben (nach B2 auch Wehrkolk) | Angel + Würmer | 5 |
+| 1 | Bachling | 20 | Bach der Obstwiesen, Mühlgraben Weidenhain, Ried am Moorrand (Riedwiesen) | Angelrute + Würmer | 3 |
+| 10 | Mühlbarsch | 35 | Mühlgraben (nach B2 auch Wehrkolk) | Angelrute + Würmer | 5 |
 | 20 | Moorhecht | 60 | Rabenmoor, Joosts Steg | Reuse | 7 |
 
-Fanggründe als Standort-Datei · Angel (Handwerk 1 oder Training-Angel beim Handwerker), Reuse (Handwerk 20, Tannenholz + Garn); Werkzeugstufe wirkt auf die Chance ·
+Fanggründe als Standort-Datei · **eine Angelrute ohne Stufen** (wie der Hammer; Handwerk 1 an der Werkbank oder beim Handwerker), Reuse (Handwerk 20, Tannenholz + Garn); die Fangchance hängt nur vom Fischen-Level ab ·
 Würmer graben an den Äckern des Osthofs · Moment-Bonus „Strömung lesen“ · 25 % Splitter-Fund.
 
 **Kochen**
@@ -63,7 +65,7 @@ Würmer graben an den Äckern des Osthofs · Moment-Bonus „Strömung lesen“ 
 Stationen: Feuer (Erntefeuer Weidenhain, Torffeuer Rabenmoor, Rastplatz Osthang), Backofen (Bäckerei Waldmark nach A3), Herd + Kessel (Taverne Waldmark nach Quest).
 Rohstoffe: Mehl (Till nach A3), Wasser (Krug am Brunnen), Kuhfleisch (zweite Kuh-Beute, 100 %). Anbrennen sinkt mit der Stufe (0 bei +30). Moment-Bonus „Garpunkt“.
 
-**Quests:** „Schilf und Schnur“ (Lambert Schilf, Mühlgraben Weidenhain): Angel, Würmer, 3 Bachlinge, einen braten → Lamberts Rute, XP, 1 Questpunkt.
+**Quests:** „Schilf und Schnur“ (Lambert Schilf, Mühlgraben Weidenhain): Angelrute (gibt Lambert, wenn man keine hat), Würmer, 3 Bachlinge, einen braten → Fischen- und Kochen-XP, 1 Questpunkt.
 „Die Taverne öffnet“ (Hilde Krug, Taverne Waldmark; Kochen 10): Brot, gebratener Bachling, Fischsuppe → Schalter `taverne_offen` (Herd, Kessel, Verkauf), Kochen-XP, 80 Splitter, 1 Questpunkt.
 
 **Tests 3b:** Fischsuppe gibt Defense +2 im Kampf (Server), Ersetzen, Ablaufen · Fischen (Stufen, Werkzeug, Köder, Moment-Bonus) · Kochen (Stationen nur mit Schalter, Anbrennen, Kuhfleisch) · beide Quests im Prüfer und als Welt-Test.
