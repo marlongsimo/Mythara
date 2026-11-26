@@ -18,6 +18,11 @@ import { QUEST_E2 } from "./quest_e2";
 import { QUEST_E3 } from "./quest_e3";
 import { QUEST_E4 } from "./quest_e4";
 import { QUEST_SCHAFE, QUEST_GRAEBER } from "./quest_e_neben";
+import { QUEST_F1 } from "./quest_f1";
+import { QUEST_F2 } from "./quest_f2";
+import { QUEST_F3 } from "./quest_f3";
+import { QUEST_F4 } from "./quest_f4";
+import { QUEST_KARTE } from "./quest_karte";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
@@ -36,4 +41,9 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_E4, wartet: "Phase 8: Grab des Hauptmanns als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert als Lohn" },
   { q: QUEST_SCHAFE, wartet: "Phase 8: Heidrast, Heidewolf, Rezept hammeleintopf" },
   { q: QUEST_GRAEBER, wartet: "Phase 8: Hügelgräber, Grablicht (Seelenlicht 35)" },
+  { q: QUEST_F1, wartet: "Phase 9: Glutsande, Glutbrunn, Karawanenräuber, Selma" },
+  { q: QUEST_F2, wartet: "Phase 9: Salzpfanne, Glutskorpion, Rezept pfannenblech, Salz" },
+  { q: QUEST_F3, wartet: "Phase 9: Tempel mit Kammer als Instanz, Glutgeist, Sandmutter, Spiegel-Rätsel" },
+  { q: QUEST_F4, wartet: "Phase 9: Strom, Nalia, Glutwels, Rezept glutwels_salzkruste" },
+  { q: QUEST_KARTE, wartet: "Phase 9: Reisekarte (täglicher Sprung), Kartenstücke, Steinhaut (5c)" },
 ];

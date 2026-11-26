@@ -26,8 +26,8 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   /* Gegenstände, die die Quest nennt (hat, verloren, anzahl, geben, nehmen, Lohn), müssen es geben */
   const genannt = new Set([...JSON.stringify(q).matchAll(/"(?:hat|verloren)":"([a-z0-9_]+)"|"g":"([a-z0-9_]+)"/g)].map((m) => m[1] || m[2]));
   for (const g of genannt) if (!GEG[g]) baustein(`Gegenstand ${g} gibt es nicht`);
-  /* Der Abschluss bucht höchstens 1.000 XP je Skill und Beruf und 10 Questpunkte (Migration 048) – mehr ginge stillschweigend verloren */
-  for (const [k, n] of [...Object.entries((q.belohnung || {}).xp || {}), ...Object.entries((q.belohnung || {}).berufe || {})]) if (n > 1000) baustein(`Lohn ${k} ${n} über 1.000 (Grenze in Migration 048)`);
+  /* Der Abschluss bucht höchstens 50.000 XP je Skill und Beruf (Migration 051, vorher 1.000 aus 048) und 10 Questpunkte – mehr ginge stillschweigend verloren */
+  for (const [k, n] of [...Object.entries((q.belohnung || {}).xp || {}), ...Object.entries((q.belohnung || {}).berufe || {})]) if (n > 50000) baustein(`Lohn ${k} ${n} über 50.000 (Grenze in Migration 051)`);
   if ((q.punkte || 0) > 10) fehler.push("mehr als 10 Questpunkte");
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
   for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) baustein(`${f.id}: steht außerhalb der Welt`);
