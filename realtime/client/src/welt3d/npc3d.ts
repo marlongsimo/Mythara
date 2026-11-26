@@ -7,6 +7,7 @@
  *   treten ab und zu vor die Tür und gehen dann wieder hinein. Wege über die Wegsuche der Welt (Wände, Möbel).
  * Immer 3D (auch mit ?held3d=0): in der Welt gibt es keine 2D-Figuren mehr.
  */
+import { RUHE_TEMPO } from "./held3d";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { vorlage } from "./held3d";
@@ -46,7 +47,7 @@ export class Npc3D {
   private soll = "";
   get geladen(): boolean { return Boolean(this.wurzel); }
   spiele(n: string) { this.soll = n; const c = this.clips.get(n), m = this.mixer; if (!c || !m || this.name === n) return;
-    const a = m.clipAction(c); a.reset(); a.setLoop(THREE.LoopRepeat, Infinity); a.time = Math.random() * c.duration; /* nicht alle im Gleichschritt */
+    const a = m.clipAction(c); a.reset(); a.setLoop(THREE.LoopRepeat, Infinity); a.time = Math.random() * c.duration; /* nicht alle im Gleichschritt */ a.timeScale = n === "ruhe" ? RUHE_TEMPO : 1; /* Ruhe doppelt so lang wie bei den Helden */
     if (this.aktion) a.crossFadeFrom(this.aktion, 0.2, false); a.play(); this.aktion = a; this.name = n; }
   /** Blick in Richtung (dx, dz) – das Modell schaut nach +z */
   blick(dx: number, dz: number) { if (Math.hypot(dx, dz) > 1e-3) this.zielDreh = Math.atan2(dx, dz); }

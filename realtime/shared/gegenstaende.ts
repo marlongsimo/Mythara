@@ -344,6 +344,17 @@ for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; i
   if (b.mal) G.bonus = { ...G.bonus, ...(b.mal[0] ? { fernAngriff: b.mal[0] } : {}), ...(b.mal[1] ? { genau: b.mal[1] } : {}) }; }
 /* Bögen (Kurz-, Lang-, Jagdbogen …) brauchen beide Hände: kein Schild dazu – beim Anlegen geht die Nebenhand in den Rucksack (25.11.2026) */
 for (const G of Object.values(GEGENSTAENDE)) if (G.platz === "waffe" && /bogen/i.test(G.art || "") && !/armbrust/i.test(G.art || "")) G.zweihand = true;
+/* Angriffstakt je Waffenart in Ticks (26.11.2026, Vorgabe): gilt für alle Seltenheitsstufen. Der Stil „Schnell“ zieht davon wie bisher 1 Tick ab. */
+const TAKT_JE_ART: [RegExp, number][] = [[/^(hirtenstab|sternenszepter)/, 5], [/^(ritterschwert|eidschwert)/, 4], [/^waldsaebel/, 3], [/^eiddolch/, 3], [/^eidzweihaender/, 7], [/^sterndorn/, 7] /* Speer wie der Zweihänder */,
+  [/^sternbrecher/, 5], [/^(jagdbogen|mondkurzbogen)/, 4], [/^mondlangbogen/, 6], [/^sternarmbrust/, 6]];
+for (const G of Object.values(GEGENSTAENDE)) { if (!G.waffe) continue; const t = TAKT_JE_ART.find(([r]) => r.test(G.id)); if (t) G.waffe = { ...G.waffe, ticks: t[1] }; }
+/* Beil und Spitzhacke (26.11.2026, Vorgabe): Kampfwerte wie der Dolch eine Stufe darunter (Selten = Dolch Gewöhnlich …), immer 5 Ticks.
+   Training: die halben Werte des Trainingsschwerts. Gewöhnlich: darunter gibt es keinen Dolch – dort die Werte des Trainingsschwerts. */
+{ const W = (id: string) => GEGENSTAENDE[id] && GEGENSTAENDE[id].waffe, halb = (n: number) => Math.round(n / 2), T = W("ritterschwert");
+  const vorlage: Record<string, { geschick: number; staerke: number } | undefined> = { training: T && { geschick: halb(T.geschick ?? 0), staerke: halb(T.staerke ?? 0) }, einfach: T && { geschick: T.geschick ?? 0, staerke: T.staerke ?? 0 },
+    selten: W("eiddolch_gewoehnlich") as never, episch: W("eiddolch") as never, legendaer: W("eiddolch_episch") as never, mythisch: W("eiddolch_legendaer") as never };
+  for (const G of Object.values(GEGENSTAENDE)) { const m = /^(holzbeil|spitzhacke)_(training|einfach|selten|episch|legendaer|mythisch)$/.exec(G.id), v = m && vorlage[m[2]]; if (!m || !v || !G.waffe) continue;
+    G.waffe = { ...G.waffe, ticks: 5, geschick: v.geschick, staerke: v.staerke }; } }
 /** Darf ein Held mit diesen Skill-Leveln den Gegenstand anlegen? Zurück: Fehlertext oder null */
 export function anforderungFehlt(G: Gegenstand, level: (s: AnfSkill) => number): string | null {
   const a = G.anforderung; return a && level(a.skill) < a.level ? `Dafür brauchst du ${ANF_NAME[a.skill]} ${a.level} (du hast ${level(a.skill)}).` : null; }

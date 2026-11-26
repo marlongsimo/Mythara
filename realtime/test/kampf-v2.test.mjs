@@ -19,7 +19,7 @@ const nah = (a, b) => Math.abs(a - b) < 1e-9, NULL = { ...NULL_XP };
   const k = kampfwerte({ ...NULL, defense: xpFuer(5), magie: xpFuer(3) }, startAusruestung("schwert"), 0); check(k.abwehr.nah === 13 * 70 && k.abwehr.fern === 13 * 70 && k.abwehr.magie === (2 + 3) * 63 && k.max === 10, `Abwehr (OSRS): Nah/Fern = (Defense 5 + 8) × (Schild 6 + 64), Magie = (⌊0,7 × 3⌋ + ⌊0,3 × 13⌋) × (−1 + 64) (${k.abwehr.nah}/${k.abwehr.fern}/${k.abwehr.magie}), Max-LP 10`); }
 { const k = [0, 1, 2, 3].map((s) => kampfwerte(NULL, startAusruestung("schwert"), s));
   check(k.map((x) => x.angriff.nah).join() === "852,710,639,639", `Schwert L1 (OSRS): Angriffswurf (Geschick 1 + Stil + 8) × (7 + 64) → Akkurat 852 · Ausgewogen 710 · Aggressiv 639 · Verteidigung 639 (${k.map((x) => x.angriff.nah).join("/")})`);
-  check(k.every((x) => x.waffe.schaden.join() === "1,1" && x.waffe.ticks === 3), "Schwert L1: Max Hit 1 in allen Stilen (Kontrollwert des Dokuments), 3 Ticks");
+  check(k.every((x) => x.waffe.schaden.join() === "1,1" && x.waffe.ticks === 4), "Schwert L1: Max Hit 1 in allen Stilen (Kontrollwert des Dokuments), 4 Ticks (Takt-Vorgabe 26.11.2026)");
   check(k.map((x) => x.abwehr.nah).join() === "630,700,630,840" && k.map((x) => x.abwehr.magie).join() === "126,189,126,189", `Mit Schild (OSRS): Abwehr (Defense 1 + Stil + 8) × (6 + 64) → 630/700/630/840; gegen Magie (⌊0,7 × Magie⌋ + ⌊0,3 × eff. Defense⌋) × (−1 + 64) (${k.map((x) => x.abwehr.nah).join("/")} · ${k.map((x) => x.abwehr.magie).join("/")})`);
   const a = (st, s) => kampfwerte({ ...NULL, geschick: xpFuer(50), staerke: xpFuer(st) }, { waffe: "ritterschwert" }, s);
   check(a(50, 2).waffe.schaden[1] === 7 && a(50, 0).waffe.schaden[1] === 6 && a(50, 0).angriff.nah === 61 * 71 && a(50, 2).angriff.nah === 58 * 71, "Stärke 50, Schwert +6: Max Hit 6, aggressiv 7; Akkurat erhöht nur den Angriffswurf (61 × 71 statt 58 × 71)");
@@ -52,7 +52,7 @@ function duell(seed, waffe, stil) {
   for (let i = 0; i < 20 * 20 && !b.tot && !h.tot; i++) { s.schritt(); for (const e of s.zustand().ev) if (e.a === "hieb") (e.id === h.id ? zeitH : zeitB).push(s.tick); }
   const aufTick = (l) => l.every((t) => t % 10 === 0), abst = (l) => l.slice(1).map((t, i) => (t - l[i]) / 20);
   check(zeitH.length > 3 && aufTick(zeitH) && aufTick(zeitB), `Alle Angriffe fallen auf einen Kampf-Tick (0,5 s): Held ${zeitH.length}, Bandit ${zeitB.length} Angriffe`);
-  check(abst(zeitH).every((d) => d === 1.5) && abst(zeitB).every((d) => d === 2), `Takt: Schwert alle 1,5 s (3 Ticks) · Dolch alle 2,0 s (4 Ticks) – ${[...new Set(abst(zeitH))].join("/")} s · ${[...new Set(abst(zeitB))].join("/")} s`); }
+  check(abst(zeitH).every((d) => d === 2) && abst(zeitB).every((d) => d === 2), `Takt: Schwert alle 2,0 s (4 Ticks) · Dolch alle 2,0 s (4 Ticks) – ${[...new Set(abst(zeitH))].join("/")} s · ${[...new Set(abst(zeitB))].join("/")} s`); }
 /* Aggro: höchstens 15 Minuten, dann erst wieder nach 20 Feldern Abstand (oder neuem Betreten der Region) */
 { const { s, b, h } = duell(5, "schwert", 1); h.x = b.x - 3; h.y = b.y; b.wach = false; b.zielId = 0;
   const greiftAn = (sek) => { for (let i = 0; i < sek * 20; i++) { s.schritt(); s.zustand(); if (b.zielId === h.id) return true; } return false; };
@@ -84,7 +84,7 @@ function duell(seed, waffe, stil) {
 /* Die angelegte Waffe bestimmt die Kampfart – nicht die Startwaffe: Bogen aufheben = Pfeile, Zweihänder = Nahkampf mit 4 Ticks */
 { const kb = kampfwerte(NULL, { waffe: "jagdbogen" }), kz = kampfwerte(NULL, { waffe: "eidzweihaender" }), kd = kampfwerte(NULL, { waffe: "eiddolch_episch" });
   const { s, b, h } = duell(81, "schwert", 1); s.kampfwerteSetzen(h.id, kb); h.x = b.x - 5; b.wach = false; s.eingabe({ t: "ziel", id: b.id }, h.id); let pfeil = false; for (let i = 0; i < 6 * 20 && !pfeil; i++) { s.schritt(); pfeil = s.geschosse.some((g) => g.von === h.id); }
-  check(kb.waffe.art === "fern" && pfeil && kz.waffe.art === "nah" && kz.waffe.ticks === 4 && kd.waffe.ticks === 2, `Angelegte Waffe zählt: Schwert-Held mit Bogen schießt Pfeile (${pfeil}), Zweihänder Nahkampf 4 Ticks, Eiddolch (episch) 2 Ticks`); }
+  check(kb.waffe.art === "fern" && pfeil && kz.waffe.art === "nah" && kz.waffe.ticks === 7 && kd.waffe.ticks === 3, `Angelegte Waffe zählt: Schwert-Held mit Bogen schießt Pfeile (${pfeil}), Zweihänder Nahkampf 7 Ticks, Eiddolch (episch) 3 Ticks`); }
 /* Eigene Helden bekommen keine alten EP und Stufen (früher: „Aufstieg auf Stufe 5“ im ersten Kampf und dabei volles Leben) */
 { const { s, b, h } = duell(72, "schwert", 2); s.kampfwerteSetzen(h.id, kampfwerte({ ...NULL, geschick: xpFuer(30), staerke: xpFuer(30), defense: xpFuer(30) }, startAusruestung("schwert"), 2)); /* stark genug, um sicher zu gewinnen */ const ev = [];  s.eingabe({ t: "ziel", id: b.id }, h.id); for (let i = 0; i < 30 * 20 && !b.tot && !h.tot; i++) { s.schritt(); for (const e of s.zustand().ev) ev.push(e); }
   const vor = h.lp; for (let i = 0; i < 4; i++) s.schritt(); check(b.tot && !h.tot && !ev.some((e) => e.a === "stufe" || e.a === "ep") && h.lp === vor, `Bandit besiegt: kein alter EP-Aufstieg, Leben bleibt (${h.lp} / ${h.max})`); }

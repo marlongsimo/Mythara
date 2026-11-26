@@ -58,6 +58,9 @@ export function reden(nutzer: string, id: string, wx: number | undefined, wy: nu
   offen.set(nutzer, N.id); if (N.id === "jori" && q1(nutzer) === "") { const sb = sbJe.get(nutzer); if (sb) void setzen(sb, nutzer, "angeboten"); }
   return { dialog: d }; }
 /** Eine Antwort wählen: der Server prüft sie gegen den Stand und führt sie aus */
+/** Gutgeschriebene Quest-XP sofort an den laufenden Helden der Kampfwelt geben (index.ts) – sonst stimmte das Level erst nach dem Neuanmelden (26.11.2026) */
+let xpLive: (nutzer: string, xp: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>) => void = () => { /* noch nicht verbunden */ };
+export function xpLiveSetzen(f: typeof xpLive): void { xpLive = f; }
 export async function antworten(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
   if (npc2(id)) return antworten2(sb, nutzer, id, a);
   if (npc3(id)) return antworten3(sb, nutzer, id, a);
@@ -70,7 +73,7 @@ export async function antworten(sb: Sb, nutzer: string, id: string, a: string): 
     const ok = (await sb("/rest/v1/rpc/rpg_held_quest_abschluss", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q1, p_geschick: BELOHNUNG.geschick, p_staerke: BELOHNUNG.staerke, p_fernkampf: BELOHNUNG.fernkampf, p_magie: BELOHNUNG.magie, p_lp: BELOHNUNG.lp, p_defense: BELOHNUNG.defense }) })
       .catch((e) => { console.error("Questabschluss (Migration 045 eingespielt?):", (e as Error).message); return null; })) as boolean | null;
     if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
-    staende.set(nutzer, "fertig"); melden(nutzer); if (ok) belohnung = BELOHNUNG; /* false: schon früher abgeschlossen – keine zweite Belohnung */ }
+    staende.set(nutzer, "fertig"); melden(nutzer); if (ok) { belohnung = BELOHNUNG; try { xpLive(nutzer, BELOHNUNG); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } } /* false: schon früher abgeschlossen – keine zweite Belohnung */ }
   else if (f.stand && rang(f.stand) !== rang(s)) await setzen(sb, nutzer, f.stand);
   if (f.weiter) { const d = dialog(N.id, q1(nutzer), hat(nutzer, SCHRIFTSTUECK)); return { zeilen: f.zeilen, dialog: d || undefined }; }
   offen.delete(nutzer); return { zeilen: f.zeilen, ende: true, ...(belohnung ? { belohnung } : {}) }; }
