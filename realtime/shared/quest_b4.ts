@@ -7,7 +7,7 @@
  * Die Wahl: vier Abschluss-Antworten, jede gibt eine andere Waffe (geben beim Abschluss). Das rote Banner nimmt man in der Kammer selbst mit.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Issue #16 (Boss-Baukasten, Instanz, Tür mit Schlüssel, Ereignis für die Wellen, Gegenstände)
- * und darauf, dass eine Figur in mehreren Quests sprechen kann (Othmar gehört heute Quest 1). Liste: doku/quests/b3-b4-bausteine.md.
+ * Othmar spricht in Quest 1, B3 und B4 (Figur in mehreren Quests, questbau.figurQuest, #48). Liste: doku/quests/b3-b4-bausteine.md.
  * Orte: Issue #21 (Welt, 81778e67): Unterschlupf (Ursprung 10240 | 9600), Kammer rotmantel_kammer (Ursprung 10432 | 9600).
  */
 import type { QuestDef, Bed, Folge } from "./questbau";
@@ -127,7 +127,8 @@ export const QUEST_B4: QuestDef = {
   /* Schlüsselbund und Rabenbrief nur, solange sie fehlen (Rolle Spiel: Schlüsselbund vom Wachstubenführer, Rabenbrief garantiert von Rotmantel in der Quest-Instanz) */
   beute: { b4_schluessel: { erledigt: ["gesa"], offen: ["schluessel"] }, b4_rabenbrief: { erledigt: ["halle"], offen: ["brief"] } },
   /* Die Tür zum Beutelager ist je Spieler offen mit dem Schlüssel (oder danach); die Kammer ist für die Quest eine Instanz, danach Rotmantel öffentlich */
-  schalter: { beutelager_offen: [FERTIG, { erledigt: ["schluessel"] }], rotmantel_instanz: LAEUFT, rotmantel_oeffentlich: FERTIG },
+  /* Die Versammlungshalle ist für die Wellen eine eigene Kopie je Spieler (shared/bosse.ts, welle „unterschlupf_welle“), solange die Wellen noch offen sind */
+  schalter: { beutelager_offen: [FERTIG, { erledigt: ["schluessel"] }], halle_instanz: { phase: ["laeuft"], erledigt: ["schluessel"], offen: ["halle"] }, rotmantel_instanz: LAEUFT, rotmantel_oeffentlich: FERTIG },
   belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 500 Splitter, eine seltene Waffe nach Wahl, das rote Banner · danach: Rotmantel kehrt als Mini-Boss zurück",
   belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 500 },
   punkte: 1,
