@@ -8648,6 +8648,122 @@
     "url": "img/objekte3d/skilling/kraeuter/moorgloeckchen-geerntet.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "graufurt_waechterbuch",
+   "name": "Wächterbuch",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/graufurt_waechterbuch.webp",
+   "groesse": [
+    29,
+    65
+   ],
+   "anker": [
+    0.4828,
+    0.9231
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 7), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/graufurt/waechterbuch.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "graufurt_faehre",
+   "name": "Fähre (Graufurt)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/graufurt_faehre.webp",
+   "groesse": [
+    385,
+    167
+   ],
+   "anker": [
+    0.4987,
+    0.8084
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 7), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/graufurt/faehre.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "graufurt_winde",
+   "name": "Kettenwinde (Westanleger)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/graufurt_winde.webp",
+   "groesse": [
+    113,
+    135
+   ],
+   "anker": [
+    0.4425,
+    0.9185
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 7), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/graufurt/winde.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "graufurt_signalfeuer",
+   "name": "Signalfeuer (Turm)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/graufurt_signalfeuer.webp",
+   "groesse": [
+    66,
+    111
+   ],
+   "anker": [
+    0.5909,
+    0.9279
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 7), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/graufurt/signalfeuer.glb",
+    "wind": 0,
+    "fest": true,
+    "puls_ton": 140,
+    "puls_breite": 30,
+    "puls_hell": 0.4
+   }
   }
  ]
 }

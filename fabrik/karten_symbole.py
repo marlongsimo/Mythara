@@ -4,7 +4,7 @@
 
 1. Die 12 Symbole aus der Vorlage des Nutzers ausschneiden (fabrik/assets/skilling/symbole/quelle/kartensymbole-neu.png):
    Ring außen durchsichtig, ohne Beschriftung.
-2. Drei neue in derselben Optik zeichnen: fanggrund (Fisch über Wellen), bindestein (Stein mit Rune), taverne (Krug mit Schaum) –
+2. Neue in derselben Optik zeichnen: fanggrund (Fisch über Wellen), bindestein (Stein mit Rune), taverne (Krug mit Schaum), faehre (Floß mit Kette, Phase 7) –
    Ring und dunkler Grund vom ausgeschnittenen Amboss, Motiv als Goldfläche mit Verlauf (hell oben, warm unten) wie in der Vorlage.
 Ausgabe: img/karte/symbole/<name>.webp in der bisherigen Größe 143 × 160 – der Ring (143 px) sitzt unten, oben bleibt durchsichtig
 (dort saß früher der blaue Edelstein), damit die Symbole auf der Karte an derselben Stelle stehen wie bisher.
@@ -78,7 +78,14 @@ def bindestein(d):                                                              
     d.rectangle((249, 320, 265, 372), fill=0)
 def neu_dick(name, zeichnen, px):
     m = Image.new("L", (N, N), 0); zeichnen(ImageDraw.Draw(m)); fertig[name] = speichern(kraeftiger(gold(m), px), name); print("Kartensymbol (neu):", name)
-neu("taverne", taverne); neu("fanggrund", fanggrund); neu_dick("bindestein", bindestein, DICKER["bindestein"])
+def faehre(d):                                                                                      # Floß mit Geländer auf Wellen, Kette darüber
+    d.polygon([(140, 300), (372, 300), (352, 336), (160, 336)], fill=255)
+    for x in (170, 220, 270, 320): d.rectangle((x - 6, 236, x + 6, 300), fill=255)
+    d.rectangle((160, 232, 352, 246), fill=255)
+    for k, x in enumerate(range(130, 390, 30)): d.ellipse((x, 160 + 6 * (k % 2), x + 26, 176 + 6 * (k % 2)), outline=255, width=7)   # Kettenglieder
+    for y in (370, 410):
+        pts = [(x, y + 14 * math.sin((x - 130) / 40)) for x in range(130, 386, 4)]; d.line(pts, fill=255, width=18, joint="curve")
+neu("taverne", taverne); neu_dick("faehre", faehre, 5); neu("fanggrund", fanggrund); neu_dick("bindestein", bindestein, DICKER["bindestein"])
 # ---- Übersicht: 143 px und 30 px
 alle = list(fertig); U = Image.new("RGBA", (len(alle) * 150, 210), (52, 70, 52, 255))
 for j, n in enumerate(alle): U.alpha_composite(fertig[n], (j * 150 + 3, 2)); U.alpha_composite(fertig[n].resize((27, 30), Image.LANCZOS), (j * 150 + 60, 172))
