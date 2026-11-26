@@ -136,7 +136,9 @@ export class WeltKampf {
 
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
   private zustand(z: Zustand) { if (this.vorbei || !this.eingetreten || this.betretenOffen) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
-    for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
+    const mich = z.w.find((e) => e[0] === z.ich.id); /* eine Kampfwelt (Zonen Stufe 2): Figuren nur in Sichtweite anlegen (40 Felder, weg erst ab 52) – sonst lädt der Browser die Modelle aller Gegner der Welt auf einmal */
+    for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; if (id !== this.ichId && mich) { const d = Math.max(Math.abs(x - mich[4]), Math.abs(y - mich[5])); if (d > (this.figuren.has(id) ? 52 : 40)) continue; }
+      da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
       if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9]; f.blick = e[6]; /* Blickrichtung vom Server: zum Gegner, mit dem gekämpft wird */
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); this.figurSichtbar(f, !f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
     for (const ev of z.ev) this.ereignis(ev); /* erst die Ereignisse (Schadenszahl/Hitsplat), dann Verschwundenes entfernen – sonst fehlt bei einem Treffer, der sofort tötet, die Zahl */
