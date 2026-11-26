@@ -1,12 +1,12 @@
 /*
  * Riftmere – Quest E2 „Die Glocke“ (Phase 8), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-8.md. Äbtissin Gunhild: Die Glocke ist gesprungen; seit sie schweigt, wandern die Toten.
- * Glockenbronze aus Kupfer und Splittereisen (Esse, Quest-Rezept), die Glockenform im Ofen der Abtei (Quest-Rezept), der Klöppel aus Kernbaum (Werkbank),
+ * Glockenbronze aus Kupfer und Splittereisen (Esse, Quest-Rezept), die Glockenform am Herd der Abteiküche (Quest-Rezept), der Klöppel aus Kernbaum (Werkbank),
  * mit den Nonnen aufhängen, der erste Schlag – Ysoldes Stimme antwortet von Graufurt aus: „Endlich.“
  * Lohn: Schmieden 1.000 XP, 400 Splitter, 2 Questpunkte. Schalter glocke_laeutet (stündlich für alle), bindestein_abtei.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Abtei, Glockenturm, Rezepte glockenbronze, glocke, kloeppel; Glocke als Weltereignis).
- * Stellen vorläufig (shared/quest_e_orte.ts). Liste: doku/quests/e-bausteine.md.
+ * Stellen aus der Welt (#50, shared/quest_e_orte.ts; Lesestelle glocke mit questobjekt „glocke“). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E1 } from "./quest_e1";
@@ -15,7 +15,7 @@ import { ABTEI, KERNBAUM } from "./quest_e_orte";
 export const E2 = "grauwacht_die_glocke";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 const HILFE = ["Glockenbronze: vier Barren, aus Kupfer und Splittereisen, an der Esse. Splittereisen gibt es in der Furtklamm bei Graufurt.",
-  "Die Form gießt du im Ofen der Abtei. Schwester Ida hält das Feuer, du gießt.", "Der Klöppel aus Kernbaum – der wächst im windstillen Tal westlich der Abtei. Dann hängen wir sie auf. Zu fünft schaffen wir das."];
+  "Die Form gießt du in der Küche der Abtei, am großen Herd. Schwester Ida hält das Feuer, du gießt.", "Der Klöppel aus Kernbaum – der wächst im windstillen Tal westlich der Abtei. Dann hängen wir sie auf. Zu fünft schaffen wir das."];
 
 export const QUEST_E2: QuestDef = {
   id: E2, titel: "Die Glocke", ort: "Grauwacht · Furtklamm", start: "Sprich mit Äbtissin Gunhild in der Abtei von Grauwacht.",
@@ -32,17 +32,17 @@ export const QUEST_E2: QuestDef = {
   schritte: [
     { id: "bronze", text: "Vier Barren Glockenbronze schmelzen", ereignis: { art: "herstellen", rezept: "glockenbronze" }, anzahl: 4, wo: "esse",
       log: "Schmilz an der Esse vier Barren Glockenbronze – Kupfer und Splittereisen aus der Furtklamm ({n:bronze})." },
-    { id: "form", text: "Die Glocke im Ofen der Abtei gießen", ereignis: { art: "herstellen", rezept: "glocke" }, nach: ["bronze"], wo: ABTEI.ofen,
-      log: "Gieß die Glockenbronze im Ofen der Abtei in die Glockenform." },
+    { id: "form", text: "Die Glocke in der Abteiküche gießen", ereignis: { art: "herstellen", rezept: "glocke" }, nach: ["bronze"], wo: ABTEI.kueche,
+      log: "Gieß die Glockenbronze in der Küche der Abtei in die Glockenform." },
     { id: "kloeppel", text: "Einen Klöppel aus Kernbaum schnitzen", ereignis: { art: "herstellen", rezept: "kloeppel" }, wo: KERNBAUM,
       log: "Fäll im windstillen Tal westlich der Abtei einen Kernbaum und schnitz an der Werkbank einen Klöppel." },
-    { id: "aufhaengen", text: "Die Glocke aufhängen", ereignis: { art: "objekt", id: "e2_turm" }, nach: ["form", "kloeppel"], wo: ABTEI.turm,
+    { id: "aufhaengen", text: "Die Glocke aufhängen", ereignis: { art: "objekt", id: "e2_turm" }, nach: ["form", "kloeppel"], wo: ABTEI.glocke,
       log: "Häng mit den Schwestern die neue Glocke im Turm auf – Glocke und Klöppel." },
     { id: "schlag", text: "Den ersten Schlag läuten", ereignis: { art: "objekt", id: "e2_seil" }, nach: ["aufhaengen"], wo: ABTEI.seil,
       log: "Zieh am Glockenseil." },
   ],
   objekte: [
-    { id: "e2_turm", name: "Glockenstuhl", x: ABTEI.turm[0], y: ABTEI.turm[1], modell: "stelle", tat: "benutzen", tatText: "Die Glocke aufhängen", weit: 3,
+    { id: "e2_turm", name: "Glockenstuhl", x: ABTEI.glocke[0], y: ABTEI.glocke[1], modell: "stelle", tat: "benutzen", tatText: "Die Glocke aufhängen", weit: 3,
       braucht: { wenn: { hat: "glocke_neu", anzahl: { g: "kloeppel", min: 1 } }, text: "Der leere Glockenstuhl. Die alte Glocke liegt gesprungen daneben." }, nehmen: [{ g: "glocke_neu" }, { g: "kloeppel" }],
       text: "Fünf Hände am Seil, Gunhild zählt. Die Glocke steigt, schwingt, hängt. Schwester Ida setzt den Klöppel ein und tritt zurück, als könnte er beißen.",
       schon: "Die neue Glocke hängt im Stuhl.", sonst: [{ wenn: NEU, text: "Die Glocke hat einen Sprung von oben bis unten." }, { wenn: FERTIG, text: "Die Glocke hängt und schweigt bis zur nächsten Stunde." },
@@ -67,7 +67,7 @@ export const QUEST_E2: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich gieße eine neue Glocke. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Du kannst Glocken gießen? …Dann hat uns der Himmel dich geschickt. Oder Merit. Beides ist mir recht.",
-          "Vier Barren Glockenbronze. Die Form gießen wir im Ofen hier. Und einen Klöppel aus Kernbaum, der springt nicht."] } }] },
+          "Vier Barren Glockenbronze. Die Form gießen wir in der Küche, am großen Herd. Und einen Klöppel aus Kernbaum, der springt nicht."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Die Glocke hat Jahre geschwiegen. Sie kann noch etwas warten."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
         { id: "fertig", text: "Das war Ysolde. Aus dem Turm am Ostufer.", folge: [{ f: { abschluss: true, zeilen: ["Gunhild setzt sich auf die Stufe der Kirche. Ganz langsam.",

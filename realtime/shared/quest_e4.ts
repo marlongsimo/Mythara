@@ -6,7 +6,7 @@
  * Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter, 3 Questpunkte. Die Klinge aus dem Grab (Questgegenstand) bringt man Wigand; er gibt sie geschärft zurück.
  * Schalter grauwacht_stufe3 (voll belebt: Werkstatt, Markt, Wegstein), hauptmann_instanz (solange die Quest läuft). Haken: die Brücke zur Furt (W5).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Hügelgräber, Grab als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert klinge_grauer_hauptmann). Liste: doku/quests/e-bausteine.md.
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Hügelgräber hauptmann_grab und hauptmann_gruft aus #50, Gruft als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert klinge_grauer_hauptmann). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E3 } from "./quest_e3";
@@ -14,7 +14,7 @@ import { BURG, GRAEBER, GRAB } from "./quest_e_orte";
 
 export const E4 = "grauwacht_grab_des_hauptmanns";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-const HILFE = ["Das größte Hügelgrab, östlich der Heide. Die Wiedergänger kommen von dort. Steig hinab.",
+const HILFE = ["Das größte Hügelgrab, mitten im Menhirkreis. Die Wiedergänger kommen von dort. Steig hinab.",
   "Unten wachen Steinfiguren der Wacht. Sie schlagen rundum – geh aus dem Kreis, wenn er leuchtet.",
   "Hinter ihnen liegt sein Siegel. Brich es, und er steht auf. Dann gib ihm, was er will: Ruhe."];
 
@@ -28,14 +28,14 @@ export const QUEST_E4: QuestDef = {
   figuren: [{ id: "wigand", name: "Wigand Fels", modell: "stadtwache3d", x: BURG.wigand[0], y: BURG.wigand[1], blick: [0, 1] }],
   voraussetzungen: [{ text: "„Fahnenflucht“ abgeschlossen", wenn: { quest: { id: E3, phase: ["fertig"] } } }],
   schritte: [
-    { id: "abstieg", text: "In das größte Hügelgrab hinabsteigen", ereignis: { art: "betreten", region: "grab_hauptmann" }, wo: GRAEBER.feld,
-      log: "Steig in das größte Hügelgrab östlich der Heide hinab. (Heldenlevel 48 empfohlen.)" },
-    { id: "waechter", text: "Zwei Grabwächter besiegen", ereignis: { art: "erlegen", typ: "grabwaechter" }, anzahl: 2, nach: ["abstieg"], wo: GRAB.kampf,
+    { id: "abstieg", text: "In das größte Hügelgrab hinabsteigen", ereignis: { art: "betreten", region: "hauptmann_grab" }, wo: GRAEBER.hauptmann_eingang,
+      log: "Steig in das größte Hügelgrab im Menhirkreis hinab. (Heldenlevel 48 empfohlen.)" },
+    { id: "waechter", text: "Zwei Grabwächter besiegen", ereignis: { art: "erlegen", typ: "grabwaechter" }, anzahl: 2, nach: ["abstieg"], wo: GRAB.waechter,
       log: "In der Grabkammer stehen zwei Grabwächter. Besieg sie ({n:waechter}). Geh aus dem Kreis, wenn er leuchtet." },
     { id: "siegel", text: "Das Siegel des Hauptmanns brechen", ereignis: { art: "objekt", id: "e4_siegel" }, nach: ["waechter"], wo: GRAB.siegel,
       log: "Brich das Siegel auf dem Sarkophag des Hauptmanns." },
     { id: "hauptmann", text: "Den Grauen Hauptmann besiegen", ereignis: { art: "erlegen", typ: "grauer_hauptmann" }, nach: ["siegel"], wo: GRAB.kampf,
-      log: "Der Graue Hauptmann steht auf. Er ruft Wiedergänger, und hinter den Grabsteinen bist du vor seinem Sturm sicher." },
+      log: "Hinter dem Gruft-Tor steht der Graue Hauptmann auf. Er ruft Wiedergänger, und hinter den sechs Grabsteinen bist du vor seinem Sturm sicher." },
     { id: "klinge", text: "Die Klinge des Hauptmanns an dich nehmen", ereignis: { art: "aufheben", g: "klinge_hauptmann" }, nach: ["hauptmann"], wo: GRAB.kampf,
       log: "Nimm die Klinge des Grauen Hauptmanns an dich." },
   ],
@@ -55,7 +55,7 @@ export const QUEST_E4: QuestDef = {
         { wenn: { ...LAEUFT, alle: true, hat: "klinge_hauptmann" }, zeilen: ["Du bist zurück. Und du trägst … ist das seine Klinge?"], antworten: ["klinge_geben"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Er ruht, sagst du. Und seine Klinge? Die gehört in die Burg."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["waechter"] }, zeilen: ["Die Wächter sind gefallen? Dann bist du weiter als ich je war."], antworten: ["hilfe", "tschuess"] },
-        { zeilen: ["Das größte Hügelgrab, östlich der Heide. Geh hinunter."], antworten: ["hilfe", "tschuess"] },
+        { zeilen: ["Das größte Hügelgrab, mitten im Menhirkreis. Geh hinunter."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
         { id: "annehmen", text: "Ich bringe ihm Ruhe. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Ruhe. Ja. Das hat er verdient.", "Bring mir seine Klinge. Ich will sie sehen, ein letztes Mal."] } }] },

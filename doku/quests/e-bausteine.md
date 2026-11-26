@@ -4,8 +4,8 @@ Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-8.md`. Alle Namen sind
 Dateien: `realtime/shared/quest_e1.ts` … `quest_e4.ts`, `quest_e_neben.ts` („Mettes Schafe“, „Ruhelose Gräber“), Stellen in `quest_e_orte.ts`.
 Alle als **Entwurf** in `shared/quest_entwuerfe.ts`. Lohn höchstens 1.000 je Skill (Migration 048).
 
-**Stellen sind Platzhalter**: Die Fahlen Weiten gibt es in der Welt noch nicht. Nur der Dornenwall am Uferweg-Nord im Nordsaum (307,5 | 46) ist echt.
-Sobald die Welt die Regionen anlegt, werden die Stellen nur in `quest_e_orte.ts` umgestellt.
+**Stellen aus der Welt (#50)**, gesammelt in `quest_e_orte.ts`: Dornenwall, Heidrast, Abtei (Küche, Glocke), Burg, Grenzposten, Hügelgräber, `grabkammer_1/2`, `hauptmann_grab`, `hauptmann_gruft`.
+NPC-Plätze aus `welt/grauwacht_ausbau.json` (Mette, Gunhild, Wigand). Heidrast hat keinen Herd – der Hammeleintopf wird in der Abteiküche gekocht.
 
 ## Für den Motor (Rolle Spiel)
 
@@ -15,7 +15,7 @@ Sobald die Welt die Regionen anlegt, werden die Stellen nur in `quest_e_orte.ts`
 | 2 | **Figur wird Gegner** | E3: Tjark Sölde. Antwort „Ergib dich“ → er greift an. Sein Tod (`erlegen` `tjark_soelde`) erledigt den Schritt | `Folge.angriff: "tjark_soelde"`: die Figur verschwindet, ein Gegner erscheint an ihrer Stelle (nur für diesen Spieler) |
 | 3 | **Wahl im Stand** | E3: überredet oder besiegt. Heute zeigt nur der Gegenstand `tjarks_eid`, welcher Weg es war; `grauwacht_stufe2` gilt für beide | Bit „Wahl“ im Stand, eine Bedingung `wahl: "frieden"` (dieselbe Technik wie die Zufalls-Reihenfolge in C2) |
 | 4 | **Stadtstufen** | Schalter `grauwacht_stufe1` (E1), `grauwacht_stufe2` (E3), `grauwacht_stufe3` (E4) | Objekte und NPCs der Stadt mit `nurMitSchalter` (Gruppen, Konzept) |
-| 5 | **Weg frei** | E1: `nordsaum_frei` öffnet den Dornenwall (Questobjekte `e1_dornen_1–3`) | wie die Baumstamm-Schranken aus Quest 1 (`schranken`/`freigaben`) |
+| 5 | **Abkürzung frei** | E1: Schalter `dornenwall_offen` (Welt-Sperre am alten Weg, x 6693–6713, y 6364,8–6366,6) – nur eine Abkürzung, die Weiten sind auch vorher zu Fuß erreichbar (Nutzer 26.11.). Questobjekte `e1_dornen_1–3` davor | wie die Baumstamm-Schranken aus Quest 1 (`schranken`/`freigaben`) |
 | 6 | **Glocke als Weltereignis** | E2: `glocke_laeutet` – stündlich für alle, Wiedergänger 1 min friedlich | Weltuhr; die Bedingung gilt für irgendeinen Spieler (das Läuten hören alle) |
 | 7 | **Bindestein Abtei** | E2: Schalter `bindestein_abtei` | Werkstatt mit `schalter` wie an der Linde |
 | 8 | **Instanz** | E4: `grab_hauptmann` (eigene Region im Untergrund), Schalter `hauptmann_instanz` | wie Rotmantel (B4) |

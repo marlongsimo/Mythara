@@ -1,10 +1,10 @@
 /*
  * Riftmere – Phase 8, zwei kleine Nebenquests in den Fahlen Weiten, Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-8.md („Nebenquests (klein)“).
- * „Mettes Schafe“: Hirtin Mette Heider in Heidrast – fünf Heidewölfe, aus dem gerissenen Schaf einen Hammeleintopf am Herd in Heidrast.
+ * „Mettes Schafe“: Hirtin Mette Heider in Heidrast – fünf Heidewölfe, aus dem gerissenen Schaf einen Hammeleintopf am Herd der Abteiküche (Heidrast hat keinen Herd).
  * „Ruhelose Gräber“: Äbtissin Gunhild – drei Grablichter einfangen (Splitterbinden 35) und in den drei Grabkammern zur Ruhe legen.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Heidrast, Hügelgräber, Heidewolf, Grablicht, Rezept hammeleintopf). Liste: doku/quests/e-bausteine.md.
+ * Stellen aus der Welt (#50, shared/quest_e_orte.ts). ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Spiel: Heidewolf, Grablicht, Rezept hammeleintopf). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E1 } from "./quest_e1";
@@ -28,8 +28,8 @@ export const QUEST_SCHAFE: QuestDef = {
       log: "Besieg auf der Heide um Heidrast fünf Heidewölfe ({n:woelfe}). Sie jagen zu dritt." },
     { id: "fleisch", text: "Das gerissene Schaf von Mette holen", ereignis: { art: "antwort" }, nach: ["woelfe"], bei: "mette",
       log: "Die Wölfe sind fort. Geh zurück zu Mette." },
-    { id: "eintopf", text: "Einen Hammeleintopf kochen", ereignis: { art: "herstellen", rezept: "hammeleintopf" }, nach: ["fleisch"], wo: HEIDRAST.herd,
-      log: "Koch am Herd in Heidrast einen Hammeleintopf." },
+    { id: "eintopf", text: "Einen Hammeleintopf kochen", ereignis: { art: "herstellen", rezept: "hammeleintopf" }, nach: ["fleisch"], wo: ABTEI.kueche,
+      log: "Koch am Herd der Abteiküche in Grauwacht einen Hammeleintopf." },
   ],
   dialoge: {
     mette: {
@@ -40,7 +40,7 @@ export const QUEST_SCHAFE: QuestDef = {
         { wenn: FERTIG, zeilen: ["Vierundvierzig. Seit Tagen. Hunger? Der Topf steht auf dem Herd."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true, hat: "hammeleintopf" }, zeilen: ["Riecht nach Thymian. Hast du Thymian reingetan? Ich hab keinen."], antworten: ["abgeben"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Gekocht hast du? Und gegessen auch, wie's aussieht."], antworten: ["tschuess"] },
-        { wenn: { ...LAEUFT, erledigt: ["fleisch"] }, zeilen: ["Der Herd ist warm. Einen Eintopf. Ich hab seit Wochen nichts Warmes gegessen."], antworten: ["tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["fleisch"] }, zeilen: ["Der Herd in der Abtei ist warm. Einen Eintopf. Ich hab seit Wochen nichts Warmes gegessen."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["woelfe"] }, zeilen: ["Fünf? Hab sie heulen hören, dann nicht mehr. Gut.", "Eins haben sie mir heut Nacht noch geholt. Liegt hinten. Wär schade drum."], antworten: ["fleisch_nehmen"] },
         { zeilen: ["Die Wölfe. Draußen auf der Heide. Fünf, dann reden wir."], antworten: ["tschuess"] },
       ],
@@ -48,7 +48,7 @@ export const QUEST_SCHAFE: QuestDef = {
         { id: "annehmen", text: "Ich halte dir die Wölfe vom Leib. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Fünf Stück. Dann trauen sie sich nicht mehr her. Wölfe zählen auch."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Zweiundvierzig, morgen."] } }] },
         { id: "fleisch_nehmen", text: "Das Schaf nehmen.", folge: [{ f: { erledige: ["fleisch"], geben: [{ g: "hammelfleisch", name: "Hammelfleisch" }],
-          zeilen: ["Hier. Ein Eintopf draus, am Herd hinter der Kate. Mehr will ich nicht. Nur was Warmes."] } }] },
+          zeilen: ["Hier. Bring's den Schwestern in der Abtei, die haben einen Herd. Ein Eintopf draus. Mehr will ich nicht. Nur was Warmes."] } }] },
         { id: "abgeben", text: "Den Eintopf geben.", wenn: { hat: "hammeleintopf" }, folge: [{ f: { abschluss: true, nehmen: [{ g: "hammeleintopf" }],
           zeilen: ["Mette isst schweigend. Dann noch einmal.", "…Gut. Komm wieder, wenn du Hunger hast. Ich koch dann. Schlechter als du, aber ich koch."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Halt den Wind im Rücken."] } }] },

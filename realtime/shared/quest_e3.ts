@@ -7,7 +7,7 @@
  * Die Wahl: Der Schritt „tjark“ ist erledigt, wenn Tjark fällt (erlegen) ODER wenn man ihn überredet (Antwort erledigt ihn, er gibt „Tjarks Eid“).
  * Dass die Burg nach dem Überreden schneller besetzt ist, braucht eine Wahl im Queststand (Baukasten) – bis dahin gilt grauwacht_stufe2 für beide Wege.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Grenzposten, Deserteure mit Fliehen, Tjark als Gegner auf Ansage, Wigand). Liste: doku/quests/e-bausteine.md.
+ * Stellen aus der Welt (#50, shared/quest_e_orte.ts). ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Spiel: Deserteure mit Fliehen, Tjark als Gegner auf Ansage, Wigand). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E2 } from "./quest_e2";
