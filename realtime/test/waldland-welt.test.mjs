@@ -99,6 +99,11 @@ try {
   if (sb2) { zb.ws.send(JSON.stringify({ t: "ziel", id: sb2[0] })); await schlaf(8000); zb.ws.send(JSON.stringify({ t: "ziel", id: 0 })); }
   await schlaf(5000); const fernB = GUTSCHRIFT.slice(vorB).filter((g) => g.p_user === B).reduce((n, g) => n + (g.p_fernkampf || 0), 0);
   check(fernB === 0 && ben.chat.some((t) => /nichts mehr/.test(t)), `Über Fernkampf 10: keine XP, „Hier lernst du nichts mehr.“ (${fernB})`); zb.ws.close();
+  /* #55: Dora (ohne A1) – für sie gibt es die Zielscheibe nicht: antippen, Fähigkeit darauf → kein Ziel, kein Treffer, keine Trefferzahl, kein Hinweis */
+  { const zd = await kampf(TD, 36.5, 57); await schlaf(1500); const sd = zd.w.find((w) => w[2] === "zielscheibe"), c0 = dora.chat.length, e0 = zd.ev.length;
+    if (sd) { zd.ws.send(JSON.stringify({ t: "ziel", id: sd[0] })); await schlaf(300); zd.ws.send(JSON.stringify({ t: "faehig", taste: "q", x: sd[4], y: sd[5] })); await schlaf(4000); }
+    const ich = zd.ich && zd.ich.id, ev = zd.ev.slice(e0).filter((e) => (e.a === "treffer" && e.von === ich) || ((e.a === "schaden" || e.a === "null") && sd && e.id === sd[0]));
+    check(sd && zd.ich && !zd.ich.zielId && ev.length === 0 && !dora.chat.slice(c0).some((t) => /nur üben/.test(t)), `Ohne Freigabe: die Zielscheibe wird kein Ziel, keine Treffer, kein Hinweis (Ziel ${zd.ich && zd.ich.zielId}, ${ev.length} Ereignisse)`); zd.ws.close(); }
 
   console.log("A2 „Das Wappen mit dem Turm“");
   await stelle(anna, ...ANSELM); await rede(anna, "anselm"); await sag(anna, "anselm", "annehmen"); await schlaf(400);

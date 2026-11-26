@@ -13,7 +13,10 @@ import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
-import { chatSystem, geraetAngaben, aufWeltWarten } from "../welt";
+import { chatSystem, geraetAngaben, aufWeltWarten, questStandB } from "../welt";
+import { zielscheibeFrei } from "../../../shared/quests";
+/** Zielscheibe ohne Freigabe (#55): unsichtbar – also auch nicht antippbar und kein automatisches Ziel */
+const scheibeVerborgen = (typ: unknown): boolean => Boolean((MONSTER[String(typ)] as { zielscheibe?: boolean } | undefined)?.zielscheibe) && !zielscheibeFrei((id) => questStandB(id));
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -242,15 +245,15 @@ export class WeltKampf {
   /** Antippen in der Welt: liegt dort ein Gegner (als Heiler: ein Verbündeter), wird er zum Ziel. true = erledigt */
   /** Welcher Gegner steht an dieser Weltstelle? (Aktionsmenü) */
   zielBei(wx: number, wy: number): { name: string } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
-    for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
+    for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
     if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; return { name: `${M && M.name ? M.name : String(best[1][2])}${M && M.stufe ? " · Lv " + M.stufe : ""}` }; }
   antippen(wx: number, wy: number): boolean { if (!this.netz || !this.z) return false; const ich = this.z.w.find((e) => e[0] === this.ichId), heilt = Boolean(ich && HELDEN[ich[2]].modi[ich[12]].art === "heil");
-    let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
+    let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
     if (!best) return false; this.netz.sende({ t: "ziel", id: best[1] }); return true; }
   /** 1: den nächsten Gegner angreifen (läuft hin, wenn er zu weit weg ist) */
   angriff() { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return; const W = HELDEN[ich[2]].modi[ich[12]], heilt = W.art === "heil", d = (e: typeof ich) => Math.hypot(e[4] - ich[4], e[5] - ich[5]);
     const z = heilt ? this.z.w.filter((e) => e[3] === 0 && !e[10] && e[0] !== ich[0] && e[7] < e[8] && d(e) < 12).sort((a, b) => a[7] / a[8] - b[7] / b[8])[0]
-      : this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10]) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && d(e) < 15).sort((a, b) => d(a) - d(b))[0]; /* in der offenen Welt etwas weiter als in der Kampfszene */
+      : this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10] && !scheibeVerborgen(e[2])) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && !scheibeVerborgen(e[2]) && d(e) < 15).sort((a, b) => d(a) - d(b))[0]; /* in der offenen Welt etwas weiter als in der Kampfszene */
     if (!z) return; if (d(z) > W.reich + 0.3) this.netz.sende({ t: "lauf", x: z[4], y: z[5] }); this.netz.sende({ t: "ziel", id: z[0] }); }
   /** 2–4: Fähigkeit auf das Ziel, sonst den nächsten Gegner, sonst in Blickrichtung */
   faehig(taste: Taste) { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return;
