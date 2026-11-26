@@ -28,6 +28,8 @@ BESONDERS = {
     # Die verfallene Feste im Nordwald (24.11.2026): fünf Waldgolems im Innenhof, Aggro 4 Felder (nur gegen Helden unter Level 15, config.ts), Leine 10, Streifen 2
     "nordwald": {"aggro": 4, "leine": 10, "wandern": 2,
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
+    # Zielscheiben am Südturm der Waldmark (Phase 2 „Waldland“, Quest A1, 26.11.2026): unverwundbare Strohscheiben, greifen nie an (config.ts zielscheibe)
+    "waldmark": {"aggro": 0, "leine": 1, "wandern": 0, "lager": [("zielscheibe", 6436, 6460), ("zielscheibe", 6433, 6460)]},
     # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
                "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]

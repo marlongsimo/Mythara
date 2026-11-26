@@ -17,12 +17,14 @@ import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENST
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
-import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen } from "./welt";
+import { weltVerbindung, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn } from "./welt";
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
-import { erlegt, xpLiveSetzen, heldXpSetzen } from "./quests";
+import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei } from "./quests";
+import { ZIELSCHEIBE_BIS } from "../../shared/sim";
+import { levelAus as levelVon } from "../../shared/kampfwerte";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
@@ -40,7 +42,7 @@ interface Kampf { karte: string; ort: string; team: string[]; nutzer: string; ep
 const neuerKampf = (karte: string, ort: string, team: string[]): Kampf => ({ karte, ort, team, nutzer: "", ep: 0, fertig: false, gesiegt: false, gebuchtEp: 0, gebuchtS: 0, bucht: false, nochmal: false, ende: false, seit: Date.now(), geaendert: 0, letzterEp: 0, letzterS: 0, stand: null, wartende: [] });
 /** Zwischenbuchung: so lange nach der letzten neuen Beute Ruhe, spätestens so lange nach der letzten Buchung (Millisekunden) */
 const BUCHUNG_RUHE = Number(process.env.BUCHUNG_RUHE_MS) || 5000, BUCHUNG_SPAETESTENS = Number(process.env.BUCHUNG_SPAETESTENS_MS) || 30000;
-interface Platz { ws: WebSocket; sim: Sim | null; zuletzt: number; /** absichtlich abgereist: tp = Teleport (neu in der Waldmark), tor = Tür/Untergrund (neu am Ziel) – der Held ist sofort weg */ abreise?: "tp" | "tor"; /** zuletzt an alle gemeldete Heldenstufe (Namensschild) */ lvGemeldet?: number; fenster: number; zahl: number; kampf?: Kampf;
+interface Platz { /** Zielscheibe: letzter Hinweis */ zielHinweis?: number; ws: WebSocket; sim: Sim | null; zuletzt: number; /** absichtlich abgereist: tp = Teleport (neu in der Waldmark), tor = Tür/Untergrund (neu am Ziel) – der Held ist sofort weg */ abreise?: "tp" | "tor"; /** zuletzt an alle gemeldete Heldenstufe (Namensschild) */ lvGemeldet?: number; fenster: number; zahl: number; kampf?: Kampf;
   /* Koop: beim Anführer die Mitspieler, beim Mitspieler der Platz des Anführers und die Kennung seines Helden */ mit?: Set<Platz>; haupt?: Platz; heldId?: number; raum?: string;
   /* gemeinsamer Start: warten, bis die erwarteten Mitspieler da sind (höchstens bis „bis“), dann ab „los“ herunterzählen */ start?: { bis: number; erwartet: number; los: number; zuletzt: string };
   /* gemeinsame Kampfwelt (Strecken wie der Waldweg): die Zone, in der sein Held steht */ zone?: Zone; name?: string; zoneWeg?: boolean; /** Inventar-Hörer abmelden */ invAus?: () => void; /** vorverbunden, noch nicht im Gebiet */ vorbereitet?: { typ: string; ep: number; name: string };
@@ -364,8 +366,14 @@ setInterval(() => {
     { const K0 = KARTEN[Z.karte]; if (K0 && K0.ursprung) for (const ev of z.ev) if (ev.a === "beute") { /* Beute auf den Boden der Region: 30 s nur für den Besitzer, dann 5 min für alle */
       const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), besitzer = (q && q.kampf && q.kampf.nutzer) || "";
       for (const [g, n, nur] of ev.g) if (!nur || (besitzer && bedingungErfuellt(besitzer, nur))) bodenDazu(K0.weltRegion || weltRegionBei(K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y), K0.ursprung[0] + ev.x, K0.ursprung[1] + ev.y, g, n, besitzer, LOOT); } } /* die eine Kampfwelt: Region nach der Stelle */ /* bedingte Beute nur, wenn der Bezwinger die Bedingung erfüllt */
+    for (const ev of z.ev) if (ev.a === "treffer") { /* Zielscheibe: Treffer zählen für Quests; wer über Fernkampf 10 ist (oder sie nicht freigeschaltet hat), lernt nichts */
+      const q = [...Z.spieler].find((o) => o.heldId === ev.von), nutzer = q && q.kampf && q.kampf.nutzer; if (!q || !nutzer) continue; getroffen(nutzer, ev.typ, ev.art);
+      if (jetzt - (q.zielHinweis || 0) > 60000) { const frei = zielscheibeFrei(nutzer), h = q.heldId ? Z.sim.nach(q.heldId) : undefined, fern = h && h.kw ? levelVon(h.kw.skills.fernkampf || 0, "fernkampf") : 0;
+        const t = !frei ? "Die Wachen lassen hier nur üben, wer für sie arbeitet." : ev.art !== "fern" ? "An der Zielscheibe übt man mit Pfeil und Bogen." : fern >= ZIELSCHEIBE_BIS ? "Hier lernst du nichts mehr." : "";
+        if (t) { q.zielHinweis = jetzt; systemAn(nutzer, t); } } }
     for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
     for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
+      if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); } /* Zielscheibe: alle 1 s nach dem Queststand */
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
         const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
         if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }

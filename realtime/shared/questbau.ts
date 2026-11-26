@@ -30,7 +30,10 @@ export interface QuestFigur { id: string; name: string; modell: string; x: numbe
 export interface Schranke { id: string; feld: [number, number, number, number]; staemme: [number, number, number, number][] }
 
 /** Ein Questobjekt in der Welt (Zaun, Rutenbündel …): Antippen → untersuchen / aufheben; erledigt einen Schritt */
-export interface QuestObjekt { id: string; name: string; x: number; y: number; /** wie der Browser es zeichnet */ modell: string; tat: "untersuchen" | "aufheben";
+export interface QuestObjekt { id: string; name: string; x: number; y: number; /** wie der Browser es zeichnet: „zaun“, „ruten“ oder „stelle“ (nur der Leuchtring – an vorhandener Kulisse wie Obelisk, Gruft, Mühle) */ modell: string;
+  /** Wort im Antippen-Menü (sonst nach tat) */ tatText?: string; tat: "untersuchen" | "aufheben" | "benutzen";
+  /** nur, wenn das gilt (z. B. Gegenstände dabei) – sonst dieser Text */ braucht?: { wenn: Bed; text: string };
+  /** beim Erledigen aus dem Rucksack nehmen / in den Rucksack geben */ nehmen?: { g: string; n?: number }[]; geben?: { g: string; n?: number }[];
   /** Text beim Erledigen ({n:gruppe} = Fortschritt) */ text: string; /** schon erledigt */ schon: string; /** wenn der Schritt gerade nicht möglich ist (die erste passende gilt, vor „schon“) */ sonst: Sperre[];
   /** wie nah man sein muss (Felder), sonst 3,2 */ weit?: number; /** im heilen Zustand zeigen, wenn eine davon gilt (z. B. Zaun geflickt) */ heil?: Bed[] }
 
@@ -44,6 +47,7 @@ export type Ereignis =
   | { art: "aufheben"; g: string }                           /* Gegenstand vom Boden aufgehoben */
   | { art: "betreten"; region?: string; bei?: [number, number, number] } /* Region betreten oder Stelle erreicht */
   | { art: "benutzen"; g: string; ziel: string }             /* Gegenstand an einem Ding benutzen */
+  | { art: "treffen"; ziel: string; waffe?: "nah" | "fern" | "magie" } /* ein Angriff trifft ein Ziel (Zielscheibe), optional nur mit dieser Kampfart – zählt mit „anzahl“ */
   | { art: "antwort" };                                      /* nur über eine Dialogantwort (erledige) */
 /** Was dem Motor gemeldet wird (Stelle in Weltfeldern, wo es geschah) */
 export type Meldung = Exclude<Ereignis, { art: "antwort" }> & { x?: number; y?: number };
@@ -126,6 +130,9 @@ export interface QuestDef {
   /** Sperre (Schranke-ID) oder Region → offen, wenn eine der Bedingungen gilt. Gilt gleich auf dem Server (Zurückschicken, Teleport) und im Browser (Stämme, Gehraster). */
   freigaben?: Record<string, Bed[]>;
   /** wohin der Server zurückschickt, wer ohne Freigabe in einer gesperrten Region steht */ zurueck?: { x: number; y: number; text: string };
+  /** Schalter je Spieler (Weltzustand: Mühle dreht, Kapelle offen, Bäckerei offen, Zielscheiben frei …) → an, wenn eine der Bedingungen gilt.
+   *  Server und Browser werten sie gleich aus (schalterAn in shared/quests.ts). */
+  schalter?: Record<string, Bed | Bed[]>;
 }
 
 /* ───────── Stand ───────── */
@@ -216,6 +223,7 @@ function passt(e: Ereignis, m: Meldung): boolean { if (e.art !== m.art) return f
     case "aufheben": return e.g === (m as typeof e).g;
     case "betreten": return (!e.region || e.region === (m as typeof e).region) && nah(e.bei);
     case "benutzen": return e.g === (m as typeof e).g && e.ziel === (m as typeof e).ziel;
+    case "treffen": return e.ziel === (m as typeof e).ziel && (!e.waffe || e.waffe === (m as typeof e).waffe);
     default: return false; } }
 /** Etwas ist geschehen: neuer Stand (oder derselbe). Schritte mit „anzahl“ zählen mit. */
 export function ereignis(q: QuestDef, s: string, m: Meldung): string { let l = lage(q, s); if (l.phase !== "laeuft") return s; const zs = zaehlSchritte(q);
@@ -229,7 +237,8 @@ export function sperre(q: QuestDef, art: "sammeln" | "herstellen", id: string, s
 /** Ein Questobjekt benutzen: Text und neuer Stand */
 export function objekt(q: QuestDef, s: string, id: string, k: Kontext = OHNE): { text: string; stand: string } | null { const O = (q.objekte || []).find((o) => o.id === id); if (!O) return null;
   const S = q.schritte.find((x) => x.ereignis.art === "objekt" && x.ereignis.id === id);
-  if (S && moeglich(q, s, S.id)) { const n = ereignis(q, s, { art: "objekt", id }); return { text: einsetzen(q, n, O.text), stand: n }; }
+  if (S && moeglich(q, s, S.id)) { if (O.braucht && !gilt(q, s, O.braucht.wenn, k)) return { text: einsetzen(q, s, O.braucht.text), stand: s };
+    const n = ereignis(q, s, { art: "objekt", id }); return { text: einsetzen(q, n, O.text), stand: n }; }
   const x = O.sonst.find((p) => gilt(q, s, p.wenn, k)); if (x) return { text: einsetzen(q, s, x.text), stand: s };
   return { text: S && erledigt(q, s, S.id) ? einsetzen(q, s, O.schon) : O.name, stand: s }; }
 /** Wie ein Questobjekt gerade aussieht: weg (aufgehoben), heil, ob es leuchtet (zu tun) */
@@ -265,6 +274,9 @@ export function zeichen(q: QuestDef, s: string, npc: string): "!" | "?" | null {
   if (l.phase === "neu") return npc === q.geber ? "!" : null; if (l.phase === "fertig") return null;
   if (l.bits === alleBits(q)) return npc === (q.abgabe || q.geber) ? "?" : null;
   return moeglichListe(q, s).some((x) => beiListe(x).includes(npc)) ? "!" : null; }
+/** Ist dieser Schalter für den Spieler an? undefined: die Quest kennt ihn nicht */
+export function schalter(q: QuestDef, s: string, id: string, k: Kontext = OHNE): boolean | undefined { const B = q.schalter && q.schalter[id]; if (!B) return undefined;
+  return (Array.isArray(B) ? B : [B]).some((b) => gilt(q, s, b, k)); }
 /** Ist diese Sperre / Region für den Spieler offen? undefined: die Quest regelt sie nicht */
 export function frei(q: QuestDef, s: string, id: string, k: Kontext = OHNE): boolean | undefined { const L = q.freigaben && q.freigaben[id]; return L ? L.some((b) => gilt(q, s, b, k)) : undefined; }
 /** Voraussetzungen mit erfüllt / nicht erfüllt */

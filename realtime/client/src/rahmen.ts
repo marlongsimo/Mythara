@@ -166,7 +166,7 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
   if (!imRucksack && G.platz) a.push({ text: "Ablegen", sym: "⤵️", tat: () => { if (!ablegen(G.platz!)) chatSystem("Der Rucksack ist voll."); } });
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
-  if (imRucksack && G.trank) a.push({ text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
+  if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
   if (imRucksack && !G.platz && !G.trank && g !== "splitter") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });

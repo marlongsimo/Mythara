@@ -274,6 +274,33 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
     anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 21, staerke: 19, gegen: { wald: 0.15 } },
     text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
+/* Phase 2 „Waldland“ (26.11.2026): Gegenstände der Einsteigerquests A1–A3, Essen und Golem-Beute (Bilder: fabrik/waldland_dinge.py) */
+{ const Q = "img/objekte3d/skilling/erzeugnisse/";
+  /* A1 „Sehnen für den Wachturm“: Wachbogen – zwischen Training und Einfach, nicht tauschbar */
+  GEGENSTAENDE.wachbogen = { id: "wachbogen", name: "Wachbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"], untauschbar: true, bild: "img/objekte3d/ausruestung/bilder/jagdbogen.webp",
+    waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernAngriff: 11, fernStaerke: 11 },
+    text: "Der erste selbst gebaute Bogen: Eiche, Flachssehne und Gesas strenger Blick. Etwas besser als ein Trainingsbogen. Nicht tauschbar." };
+  GEGENSTAENDE.wachbogen_ungespannt = { id: "wachbogen_ungespannt", name: "Wachbogen (ungespannt)", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "wachbogen_ungespannt.webp",
+    text: "Geschnitzt, aber noch ohne Sehne. Benutze eine Bogensehne darauf, dann wird daraus ein Wachbogen." };
+  /* A2 „Das Wappen mit dem Turm“ */
+  GEGENSTAENDE.pergament = { id: "pergament", name: "Leeres Pergament", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, symbol: "pergament",
+    text: "Ein Bogen festes Pergament aus Bruder Anselms Truhe. Für einen Abrieb gedacht." };
+  GEGENSTAENDE.kohle = { id: "kohle", name: "Holzkohle", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "kohle.webp",
+    text: "Ein schwarzes, leichtes Stück Kohle aus Ulfs Meiler. Färbt die Finger und alles, was man damit berührt." };
+  GEGENSTAENDE.wappenabrieb = { id: "wappenabrieb", name: "Wappenabrieb", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: Q + "wappenabrieb.webp",
+    text: "Kohle auf Pergament: ein Turm über drei Wellen, abgerieben vom Stein der Gruft im Nordwald." };
+  GEGENSTAENDE.steintafel = { id: "steintafel", name: "Steintafel-Bruchstück", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: Q + "steintafel.webp",
+    text: "Ein Stück einer beschrifteten Steintafel, eingewachsen in den Leib eines Waldgolems. Die Bruchkanten sind scharf." };
+  GEGENSTAENDE.golemstein = { id: "golemstein", name: "Golemstein", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: Q + "golemstein.webp",
+    text: "Mauerstein, durchzogen von Wurzeln und Moos – was von einem Waldgolem übrig bleibt. Handwerksmaterial; Kräuterkundige sollen ihn eines Tages schätzen." };
+  /* A3 „Die Mühle steht still“ */
+  GEGENSTAENDE.muehlenachslager = { id: "muehlenachslager", name: "Mühlenachslager", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "muehlenachslager.webp",
+    text: "Ein Lagerring aus zwei Kupferbarren, frisch vom Amboss. Hält, bis die Mühle umfällt – sagt Tills Vater." };
+  GEGENSTAENDE.mehlsack = { id: "mehlsack", name: "Mehlsack", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "mehlsack.webp",
+    text: "Ein Sack frisches Mehl aus der Mühle im Osthof. Grete Korn wartet darauf." };
+  /* Essen: heilt fest, stapelt nicht (Werte in VERBRAUCH) */
+  GEGENSTAENDE.brot = { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", bild: Q + "brot.webp", trank: "brot",
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm. Heilt 4 Lebenspunkte." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);
@@ -377,6 +404,9 @@ export const VERBRAUCH: Record<string, Verbrauch> = {
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
+  brot: { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 4, anteil: 0 }, stapelbar: false, modell: "",
+    werte: [["Heilung", "4 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm." },
   heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 10, anteil: 0.05 }, stapelbar: true, modell: "img/objekte3d/heiltrank.glb",
     werte: [["Heilung", "10 + 5 % des maximalen Lebens (nicht darüber)"], ["Stapelbar", "ja"]],
     text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },

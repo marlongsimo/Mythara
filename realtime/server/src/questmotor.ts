@@ -6,7 +6,7 @@
  * Belohnung: erst nachdem rpg_held_quest_abschluss den ersten Abschluss bestätigt hat (true) – Splitter und Gegenstände nie doppelt.
  */
 import * as QB from "../../shared/questbau";
-import { QUESTS, questDef } from "../../shared/quests";
+import { QUESTS, questDef, schalterAn as schalterAnB } from "../../shared/quests";
 import { levelAus, heldenlevel, SKILLS, type SkillXp, type Skill } from "../../shared/kampfwerte";
 import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, berufXpDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
 import { weltRegionBei } from "../../shared/karten";
@@ -42,6 +42,9 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_stand: s }) }).catch((e) => console.error(`Queststand ${q.id} speichern:`, (e as Error).message));
   /* Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament schon früher gefunden): gleich erledigt */
   for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, s, S.id) && besitzt(nutzer).includes(S.ereignis.g)) { const n = QB.ereignis(q, s, { art: "aufheben", g: S.ereignis.g }); if (n !== s) { await setzen(sb, nutzer, q, n); return; } } }
+
+/** Weltzustand je Spieler (QuestDef.schalter): Mühle dreht, Kapelle offen, Zielscheiben frei … */
+export const schalterAn = (nutzer: string, id: string): boolean => schalterAnB((q) => qStand(nutzer, q), id);
 
 /* ───────── Abschluss (genau einmal) ───────── */
 /** Questpunkte des Spielers: immer aus den Queststand-Daten abgeleitet (Σ punkte aller abgeschlossenen Quests) – auch für Abschlüsse vor Migration 048.
@@ -127,7 +130,13 @@ export const objektDa = (id: string): boolean => QUESTS.some((q) => (q.objekte |
 export async function motorObjekt(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): Promise<string> {
   for (const q of QUESTS) { const O = (q.objekte || []).find((o) => o.id === id); if (!O) continue;
     if (wx === undefined || wy === undefined || Math.hypot(O.x - wx, O.y - wy) > (O.weit ?? 3.2)) return "Geh näher heran.";
-    const s = qStand(nutzer, q.id), r = QB.objekt(q, s, id, kontext(nutzer)); if (!r) return "Hier ist nichts."; if (r.stand !== s) await setzen(sb, nutzer, q, r.stand); return r.text; }
+    const s = qStand(nutzer, q.id), r = QB.objekt(q, s, id, kontext(nutzer)); if (!r) return "Hier ist nichts.";
+    if (r.stand !== s) { /* erledigt: erst nehmen (alles da?), dann geben, dann den Stand */
+      for (const N of O.nehmen || []) if (anzahlVon(nutzer, N.g) < (N.n || 1)) return "Dafür fehlt dir noch etwas.";
+      for (const N of O.nehmen || []) for (let i = 0; i < (N.n || 1); i++) abgeben(sb, nutzer, N.g);
+      for (const G of O.geben || []) { const n = G.n || 1, k = aufnehmen(sb, nutzer, G.g, n); if (k < n) bodenDazu(weltRegionBei(O.x, O.y), wx, wy, G.g, n - k, nutzer, QUESTLOHN); }
+      await setzen(sb, nutzer, q, r.stand); }
+    return r.text; }
   return "Hier ist nichts."; }
 
 /* ───────── Sammeln, Herstellen, Erlegen … ───────── */

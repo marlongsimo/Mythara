@@ -3,6 +3,8 @@
  * nur die Darstellung ist 3D: Gegner und andere Helden als Aufsteller mit ihren bisherigen Bildern (FigurLeinwand, Todesbewegung),
  * Namen, Lebensbalken und Schadenszahlen als HTML über der Szene, das gewählte Ziel mit einem roten Ring am Boden.
  */
+import { zielscheibeFrei } from "../../../shared/quests";
+import { questStandB } from "../welt";
 import * as THREE from "three";
 import { WeltKampf, WeltSzene, Figur } from "../welt/kampf";
 import { FigurLeinwand } from "./figurleinwand";
@@ -52,7 +54,9 @@ export class WeltKampf3D extends WeltKampf {
     const nm = document.createElement("div"), lb = document.createElement("div"); nm.className = "ez-name3d " + (team === 0 ? "fremd" : "feind"); lb.className = "ez-balken3d" + (team === 0 ? "" : " feind"); lb.innerHTML = "<i></i>"; document.body.append(nm, lb);
     const leer = { destroy() {}, setVisible() { return leer; } } as unknown, f = { typ, held, team, sp: leer, nm: leer, lb: leer, x, y, zx: x, zy: y, laeuft: false, tot: false, lp: 1, max: 1, bits: 0, schild: false, a: eigen ? aussehenSchluessel(eigen) : "" } as unknown as Figur;
     this.figuren.set(id, f); this.bilder.set(f, { fl, nm, lb, h }); return f; }
-  protected figurSichtbar(f: Figur, an: boolean) { const b = this.bilder.get(f); if (!b) return; b.fl.sichtbar(an); if (!an) { b.nm.hidden = true; b.lb.hidden = true; } }
+  /** Zielscheiben (Phase 2): nur sichtbar für Spieler, die dort üben dürfen (Schalter oder Questschritt) */
+  private zielscheibeVerborgen(f: Figur): boolean { return Boolean(MONSTER[f.typ] && (MONSTER[f.typ] as { zielscheibe?: boolean }).zielscheibe) && !zielscheibeFrei((id) => questStandB(id)); }
+  protected figurSichtbar(f: Figur, an: boolean) { if (an && this.zielscheibeVerborgen(f)) an = false; const b = this.bilder.get(f); if (!b) return; b.fl.sichtbar(an); if (!an) { b.nm.hidden = true; b.lb.hidden = true; } }
   protected figurEntfernen(f: Figur) { const b = this.bilder.get(f); if (!b) return; this.bilder.delete(f); b.nm.remove(); b.lb.remove();
     const dauer = f.held ? 0 : b.fl.sterben(); /* ein besiegter Gegner fällt (Todesbewegung), bleibt kurz liegen, dann ist er weg */
     const LIEGEN = 600; /* so lange bleibt er nach dem Fallen liegen; die Beute erscheint erst danach (leichen.ts) */
@@ -62,7 +66,7 @@ export class WeltKampf3D extends WeltKampf {
   /** Wer steht am Bildschirmpunkt (px, py)? Die ganze Figur zählt (Füße bis Kopf), nicht nur der Boden darunter – der vorderste gewinnt */
   amSchirm(px: number, py: number): { id: number; held: boolean; team: number; name: string; stufe: number; a?: unknown; typ: string } | null {
     const m = this.w.motor; let best: { id: number; f: Figur; t: number } | null = null;
-    for (const [id, f] of this.figuren) { if (id === this.ichId || f.tot) continue; const b = this.bilder.get(f); if (!b) continue;
+    for (const [id, f] of this.figuren) { if (id === this.ichId || f.tot || this.zielscheibeVerborgen(f)) continue; const b = this.bilder.get(f); if (!b) continue;
       const x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z), fu = m.bildschirm(x, y, z), ko = m.bildschirm(x, y + b.h, z); if (!fu || !ko) continue;
       const breit = Math.max(20, Math.abs(fu.y - ko.y) * 0.4), dx = Math.abs(px - fu.x); if (dx > breit || py > fu.y + 10 || py < ko.y - 10) continue;
       if (!best || fu.y > best.t) best = { id, f, t: fu.y }; } /* weiter vorn (tiefer im Bild) zuerst */
@@ -87,7 +91,8 @@ export class WeltKampf3D extends WeltKampf {
     const dx = [0, -0.35, 0.35][versatz], dy = [0, 0.3, 0.3][versatz], y0 = m.hoehe(p.x, p.z) + p.h * 0.62 + dy;
     const lauf = () => { const a = (performance.now() - jetzt) / 1100; if (a >= 1) { el.remove(); return; } el.style.opacity = a > 0.75 ? String(1 - (a - 0.75) / 0.25) : "1"; schildAn(el, m, p.x + dx, y0, p.z); requestAnimationFrame(lauf); }; lauf(); }
   private splats = new Map<number, number[]>(); private ichKampfBis = 0;
-  protected figurZeichnen(f: Figur, vx: number, vy: number, lauf: boolean, _wechsel: boolean, name: string, dt: number) { const b = this.bilder.get(f); if (!b) return; const m = this.w.motor, x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z);
+  protected figurZeichnen(f: Figur, vx: number, vy: number, lauf: boolean, _wechsel: boolean, name: string, dt: number) { const b = this.bilder.get(f); if (!b) return;
+    if (this.zielscheibeVerborgen(f)) { this.figurSichtbar(f, false); return; } const m = this.w.motor, x = this.zone.x0 + f.x, z = this.zone.y0 + f.y, y = m.hoehe(x, z);
     b.fl.sichtbar(true); b.fl.stelle(x, y, z); if (lauf) b.fl.blick(vx, vy); else if (f.blick !== undefined && (f.kampfBis || 0) > performance.now()) b.fl.blick(Math.cos(f.blick), Math.sin(f.blick)); /* steht er: zum Gegner, mit dem er kämpft (Blick vom Server) */ b.fl.setze(f.schild ? (lauf ? "schild_laufen" : "block") : lauf ? "laufen" : "ruhe"); b.fl.schritt(dt * 1000, m.gieren);
     { const mein = this.namen.get(this.ichId), g = !f.held && mein ? /^(.*) · Lv (\d+)$/.exec(name) : null, schl = name + "|" + (g && mein ? mein.stufe : "");
       if (b.nm.dataset.s !== schl) { b.nm.dataset.s = schl; if (g && mein) { b.nm.textContent = g[1] + " · "; const l = document.createElement("b"); l.className = "lvfarbe"; l.textContent = "Lv " + g[2]; l.style.color = levelFarbe(Number(g[2]) - mein.stufe); b.nm.appendChild(l); } else b.nm.textContent = name; } }

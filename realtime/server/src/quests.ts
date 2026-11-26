@@ -4,9 +4,9 @@
  * Der Server führt den Stand je Spieler, prüft jede Antwort, schickt Dialoge nur an den, der spricht, und bucht den Abschluss genau einmal.
  * Ohne Migration 045 (Spalte fehlt): Stand nur im Arbeitsspeicher, Speichern scheitert mit Meldung im Log – das Spiel läuft weiter.
  */
-import { QUESTS } from "../../shared/quests";
+import { QUESTS, zielscheibeFrei as zielscheibeFreiB } from "../../shared/quests";
 import * as QB from "../../shared/questbau";
-import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteAbgleichen, type MotorAntwort } from "./questmotor";
+import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteAbgleichen, schalterAn, type MotorAntwort } from "./questmotor";
 import type { SkillXp } from "../../shared/kampfwerte";
 import { SAMMEL_QUEST } from "./sammeln";
 import { HANDWERK_QUEST } from "./handwerk";
@@ -58,6 +58,12 @@ export async function dingTat(sb: Sb, nutzer: string, ort: string, id: string, w
 export async function untersucht(sb: Sb, nutzer: string, typ: string, wx: number | undefined, wy: number | undefined): Promise<void> { motorEreignis(sb, nutzer, { art: "untersuchen", ziel: typ, x: wx, y: wy }); }
 /** Ein Gegner wurde besiegt (die Sim meldet den, der am meisten Schaden gemacht hat) */
 export function erlegt(nutzer: string, typ: string): void { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "erlegen", typ }); }
+/** Ein Angriff traf eine Zielscheibe (index.ts, Kampfwelt) */
+export function getroffen(nutzer: string, ziel: string, waffe: string): void { const sb = sbJe.get(nutzer); if (sb && (waffe === "nah" || waffe === "fern" || waffe === "magie")) motorEreignis(sb, nutzer, { art: "treffen", ziel, waffe }); }
+/** Darf der Spieler an der Zielscheibe üben? Schalter „zielscheibe_frei“ oder ein Questschritt, der Treffer verlangt */
+export function zielscheibeFrei(nutzer: string): boolean { return zielscheibeFreiB((id) => questStand(nutzer, id)); }
+/** Weltzustand je Spieler (QuestDef.schalter) */
+export const schalter = (nutzer: string, id: string): boolean => schalterAn(nutzer, id);
 /** Region betreten / Stelle erreicht (welt.ts) */
 const BETRETEN = QUESTS.some((q) => q.schritte.some((x) => x.ereignis.art === "betreten"));
 export function betreten(nutzer: string, region: string, wx: number, wy: number): void { if (!BETRETEN) return; const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "betreten", region, x: wx, y: wy }); }

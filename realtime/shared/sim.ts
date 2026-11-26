@@ -8,6 +8,8 @@
 import { Ausdauer } from "./sprint";
 const UMWEG = 4; /* Felder: so viel länger darf der Umweg eines Gegners sein */
 import { GEHEN_TEMPO, SPRINT_TEMPO_FELDER, feldAbstand, schrittLaenge, nahkampfFeld, kreuzFelder, mitte, inMitte, richtungsSchritt, schrittFrei } from "./feld";
+/** Bis zu diesem Fernkampf-Level lehrt die Zielscheibe etwas (danach keine XP mehr) */
+export const ZIELSCHEIBE_BIS = 10;
 import { Kampfwerte, SkillXp, Art, LP_XP_JE_SCHADEN, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, gegnerWerte, TICK as KAMPF_TICK } from "./kampfwerte";
 import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
@@ -35,10 +37,11 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   schutz: number; schutzT: number; mrPlusT: number; spottT: number; spottId: number; giftHiebe: number; ruhe: number; /** v2: Zeit bis zum nächsten Regenerations-LP */ erholT?: number; /** Sprint (eigener Held) */ ausdauer?: Ausdauer; ausdauerDa?: boolean; wach: boolean;
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
   /** gemeinsame Kampfwelt: Werte des Gebiets, aus dem das Lager stammt (sonst die der Karte) */ lagerAggro?: number; lagerLeine?: number; lagerWandern?: number; lagerStufe?: number;
+  /** Zielscheiben: darf dieser Held dort üben (Schalter oder Questschritt, setzt der Server)? */ zielscheibeFrei?: boolean;
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number; id?: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
-  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "erlegt"; typ: string; besitzer: number } | { a: "beute"; x: number; y: number; besitzer: number; /** Gegenstand, Anzahl, Bedingung (nur wenn der Bezwinger sie erfüllt – prüft der Server) */ g: [string, number, string?][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
+  | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "erlegt"; typ: string; besitzer: number } | { a: "treffer"; typ: string; von: number; art: string } | { a: "beute"; x: number; y: number; besitzer: number; /** Gegenstand, Anzahl, Bedingung (nur wenn der Bezwinger sie erfüllt – prüft der Server) */ g: [string, number, string?][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
 export interface Zustand { tick: number; phase: "lauf" | "sieg"; zeit: number; splitter: number; besiegt: number; monster: number;
@@ -194,6 +197,11 @@ export class Sim {
   /** Direkter Schaden ohne Würfe (Gift, Blutung, Brand, heiliges Licht): nur Schutzpunkte fangen ihn ab */
   private abziehen(z: Wesen, menge: number, von: Wesen | undefined, art?: string): void {
     if (z.tot || menge <= 0) return; let m = Math.max(1, Math.round(menge));
+    if (!z.held && MONSTER[z.typ].zielscheibe) { /* Zielscheibe (Phase 2): unverwundbar, keine Beute – nur Fernkampf-XP bis Fernkampf-Level 10, Treffer zählen für Quests */
+      if (von && von.held && art !== "dauer") { const kampfart = von.kw ? von.kw.waffe.art : "nah"; this.ev.push({ a: "treffer", typ: z.typ, von: von.id, art: kampfart });
+        if (von.kw && von.xpNeu && von.zielscheibeFrei && kampfart === "fern" && levelAus(von.kw.skills.fernkampf || 0, "fernkampf") < ZIELSCHEIBE_BIS) { const ziel = xpZiel("fern", von.kw.stil), rest = von.xpRest || (von.xpRest = { ...NULL_XP });
+          for (const k of SKILLS) { const rate = ziel[k] || 0; if (!rate) continue; rest[k] += m * rate; const n = Math.floor(rest[k] + 1e-9); if (n) { rest[k] -= n; von.xpNeu[k] += n; von.kw.skills[k] += n; } } } }
+      this.ev.push({ a: "schaden", id: z.id, n: m }); z.lp = z.max; return; }
     if (z.schutz > 0) { const a = Math.min(z.schutz, m); z.schutz -= a; m -= a; if (m <= 0) { this.ev.push({ a: "block", id: z.id }); return; } }
     if (this.weltZeit && !z.held && von && von.held) { const a = this.anteile.get(z.id) || new Map<number, number>(); a.set(von.id, (a.get(von.id) || 0) + Math.min(m, Math.max(0, z.lp))); this.anteile.set(z.id, a); } /* Schadensanteil für die EP */
     if (von && von.kw && von.xpNeu && art !== "dauer") { const echt = Math.min(m, Math.max(0, z.lp)), ziel = xpZiel(von.kw.waffe.art, von.kw.stil); 

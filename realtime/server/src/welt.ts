@@ -44,6 +44,8 @@ const spieler = new Set<Spieler>(); let naechste = 1, holzBereit = false;
 /** Heim-Teleport: je Konto höchstens alle 5 Minuten (der Server merkt sich die Zeit – Browser-Speicher löschen oder ein anderes Gerät helfen nicht) */
 /** Wie viele gerade in der Welt sind (Weltenwahl auf der Willkommensseite) */
 export const weltOnline = (): number => spieler.size;
+/** Eine Systemzeile an einen Spieler (z. B. aus der Kampfwelt) */
+export function systemAn(nutzer: string, text: string): void { for (const s of spieler) if (s.nutzer === nutzer) senden(s, { t: "chat", kanal: "system", text, zeit: Date.now() }); }
 export const TELEPORT_PAUSE_MS = Number(process.env.TELEPORT_PAUSE_MS || 5 * 60 * 1000); const teleportZuletzt = new Map<string, number>();
 setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
@@ -55,6 +57,8 @@ let kampfPruefer: (nutzer: string) => boolean = () => false;
 export type Heilung = { fehler: string } | { n: number; lp: number; max: number; anwenden: () => void };
 let heiler: (nutzer: string, v: Verbrauch) => Promise<Heilung> = async () => ({ fehler: "Gerade nicht möglich." });
 export function heilenMit(f: typeof heiler): void { heiler = f; }
+/** Essen: höchstens ein Bissen je 3 Ticks (1,5 s) */
+const BISSEN_MS = 1500, bissenZuletzt = new Map<string, number>();
 /** index.ts meldet, wie man erkennt, ob ein Konto gerade kämpft (Einzelkampf gebunden oder ein Gegner hat es im Ziel) */
 export function imKampfPruefer(f: (nutzer: string) => boolean): void { kampfPruefer = f; }
 type Freund = { user_id: string; handle: string; zuletzt: string | null };
@@ -153,8 +157,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         else { const f = herausnehmen(H.sb, s.nutzer, e.i as number); if (!f) fehler = "Diesen Gegenstand gibt es im Rucksack nicht."; else bodenDazu(s.ort, s.wx, s.wy, f.g, f.n, s.nutzer, FALLEN); } }
       else if (e.tat === "trinken" && Number.isInteger(e.i)) { /* Trank: erst prüfen (volles Leben?), dann aus dem Rucksack nehmen und heilen */
         const inv = inventarVon(s.nutzer), f = inv ? inv.rucksack[e.i as number] : undefined, G = f !== undefined ? GEGENSTAENDE[fachG(f)] : undefined, V = G && G.trank ? VERBRAUCH[G.trank] : undefined;
+        const essen = Boolean(V && V.art === "Essen"), bissen = bissenZuletzt.get(s.nutzer) || 0;
         if (!G || !V) fehler = "Das kann man nicht trinken.";
-        else { const r = await heiler(s.nutzer, V); if ("fehler" in r) fehler = r.fehler;
+        else if (essen && jetzt - bissen < BISSEN_MS) fehler = "Du kaust noch."; /* Essen: kleine Abklingzeit je Bissen (3 Ticks) */
+        else { const r = await heiler(s.nutzer, V); if (essen && !("fehler" in r)) bissenZuletzt.set(s.nutzer, jetzt); if ("fehler" in r) fehler = r.fehler;
           else if (trankNehmen(H.sb, s.nutzer, e.i as number) !== G.trank) fehler = "Der Trank ist nicht mehr da.";
           else { r.anwenden(); senden(s, { t: "getrunken", g: G.id, n: r.n, lp: r.lp, max: r.max }); } } }
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }

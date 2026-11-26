@@ -91,7 +91,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
-    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
+    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(G && G.art === "Essen" ? `Du isst ${G.name === "Brot" ? "ein Brot" : G.name}: +${m.n} Leben (${m.lp} / ${m.max}).` : `Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
     else if (m.t === "holz") window.dispatchEvent(new CustomEvent("ez-holz", { detail: m })); /* Holzfällerei (welt3d/holz3d.ts) */
     else if (m.t === "baeume") window.dispatchEvent(new CustomEvent("ez-baeume", { detail: m.weg || [] }));
     else if (m.t === "berg") window.dispatchEvent(new CustomEvent("ez-berg", { detail: m })); /* Bergbau (welt3d/sammeln3d.ts) */

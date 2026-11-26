@@ -122,6 +122,8 @@ export class QuestWelt {
       g.add(kaputt, heil); const r = ring(); r.position.y = 0.03; g.add(r);
       g.position.set(d.x, M.hoehe(d.x, d.y), d.y); g.rotation.y = nr * 0.9; g.traverse((o) => { o.castShadow = o !== r; o.receiveShadow = true; }); M.szene.add(g);
       this.objekte.push({ d, q, g, kaputt, heil, ring: r }); }
+    /* „stelle“: nur der Leuchtring an vorhandener Kulisse (Obelisk, Gruft, Mühle …) */
+    for (const { d, q } of alle.filter((o) => o.d.modell === "stelle")) { const g = new THREE.Group(), r = ring(); r.position.y = 0.05; g.add(r); g.position.set(d.x, M.hoehe(d.x, d.y), d.y); M.szene.add(g); this.objekte.push({ d, q, g, ring: r }); }
     for (const { d, q, nr } of alle.filter((o) => o.d.modell === "ruten")) { const g = new THREE.Group();
       for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 1.3, 5), rute); c.rotation.z = Math.PI / 2; c.rotation.y = (i - 4) * 0.035; c.position.set(0, 0.05 + (i % 3) * 0.035, (i - 4) * 0.025); g.add(c); }
       for (const x of [-0.3, 0.3]) { const b = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.018, 5, 10), band); b.rotation.y = Math.PI / 2; b.position.set(x, 0.09, 0); g.add(b); }
@@ -133,12 +135,13 @@ export class QuestWelt {
     for (const o of this.objekte) { const nah = Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) < 45; o.g.visible = nah;
       if (!nah) continue; const q = questDef(o.q)!, L = objektLage(q, questStandB(q.id), o.d);
       if (o.kaputt && o.heil) { o.kaputt.visible = !L.heil; o.heil.visible = L.heil; } if (L.weg) o.g.visible = false;
+      if (o.d.modell === "stelle" && !(L.leuchtet && questGeladen())) o.g.visible = false; /* eine Stelle an der Kulisse gibt es nur, solange sie zu tun ist (sonst bleibt deren eigenes „Ansehen“) */
       o.ring.visible = L.leuchtet && questGeladen(); (o.ring.material as THREE.MeshBasicMaterial).opacity = puls; } }
   /** Antippen einer Bruchstelle oder eines Rutenbündels: „Untersuchen“ / „Aufheben“ (hingehen, dann den Server fragen) */
   private objektStelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
     let best: Objekt | null = null, bd = 1.2; for (const o of this.objekte) { if (!o.g.visible) continue; const d = Math.hypot(o.d.x - x, o.d.y - y); if (d < bd) { bd = d; best = o; } }
     if (!best) return null; const o = best;
-    return { npc: false, x: o.d.x, y: o.d.y, text: `${o.d.name} ${o.d.tat === "aufheben" ? "aufheben" : "untersuchen"}`, tat: () => questDing(o.d.id, { x: this.u.ort.x, y: this.u.ort.y }), da: () => Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) <= 1.8 }; }
+    return { npc: false, x: o.d.x, y: o.d.y, text: o.d.tatText || `${o.d.name} ${o.d.tat === "aufheben" ? "aufheben" : o.d.tat === "benutzen" ? "benutzen" : "untersuchen"}`, tat: () => questDing(o.d.id, { x: this.u.ort.x, y: this.u.ort.y }), da: () => Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) <= 1.8 }; }
   /** Stand für Tests: ist eine Sperre (Baumstämme) für diesen Spieler noch zu? */
   get sperreZu(): boolean { return SCHRANKEN.some(({ q, s }) => !offenFuer(q, s.id)); }
 }
