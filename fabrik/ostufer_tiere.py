@@ -1,0 +1,167 @@
+"""Mythara Fabrik – Gegner des Ostufers aus einfachen Formen (wenige Flächen), mit Skelett und Bewegungen (wie fabrik/rabe.py).
+
+  <blender-python> fabrik/ostufer_tiere.py -- <art> <ziel.blend>      art: krebs | reiher | gruenlicht
+Danach: fabrik/export3d.py <ziel.blend> <spiel.glb> echtzeit=1
+
+krebs      – Schlickkrebs (St. 45): flacher schlammbrauner Panzer (≈ 0,9 m breit), zwei große Scheren, acht Beine, Stielaugen.
+             ruhe (Scheren klappern) · gehen (seitwärts) · angriff (Scherenhieb, Treffer Bild 5) · treffer · tod (kippt auf den Rücken)
+reiher     – Splitterreiher (St. 50): grauer Stelzvogel (≈ 1,5 m), blaue Splitterkristalle auf Rücken und Schopf.
+             ruhe · gehen (staksen) · angriff (Splitter-Stoß: Hals zurück, nach vorn stoßen, Schnabel öffnet – Geschoss ab Bild 6) · treffer · tod
+gruenlicht – Grünlicht (St. 60): Irrlicht, leuchtender grüner Kern mit Flammenzungen und kreisenden Funken, schwebt (1,2 m).
+             ruhe (schweben, flackern) · angriff (zusammenziehen, aufblähen – Treffer Bild 5) · heilen (ausdehnen, Funken weit) · treffer · tod (verlöscht)
+Gesicht nach -y, oben +z. Jedes Teil hängt starr an einem Knochen.
+"""
+import json, math, os, random, sys
+import bpy
+from mathutils import Quaternion, Vector
+
+a_ = sys.argv[sys.argv.index("--") + 1:]; ART, ZIEL = a_[0], a_[1]
+bpy.ops.wm.read_factory_settings(use_empty=True); random.seed(5)
+def mat(n, c, r=0.6, gl=0.0, leucht=0.0):
+    m = bpy.data.materials.get(n)
+    if m: return m
+    m = bpy.data.materials.new(n); m.use_nodes = True; b = m.node_tree.nodes["Principled BSDF"]; f = (*[(x / 255) ** 2.2 for x in c], 1)
+    b.inputs["Base Color"].default_value = f; b.inputs["Roughness"].default_value = r; b.inputs["Metallic"].default_value = gl
+    if leucht: b.inputs["Emission Color"].default_value = f; b.inputs["Emission Strength"].default_value = leucht
+    return m
+teile = []
+def kugel(ort, sk, m, kn, seg=10, ringe=6):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=ringe, radius=1, location=ort); o = bpy.context.object; o.scale = sk; o.data.materials.append(m); teile.append((o, kn)); return o
+def rohr(p0, p1, r0, m, kn, r1=None, n=6):
+    p0, p1 = Vector(p0), Vector(p1); d = p1 - p0
+    bpy.ops.mesh.primitive_cone_add(vertices=n, radius1=r0, radius2=r0 if r1 is None else r1, depth=d.length, location=(p0 + p1) / 2)
+    o = bpy.context.object; o.rotation_mode = "QUATERNION"; o.rotation_quaternion = Vector((0, 0, 1)).rotation_difference(d.normalized()); o.data.materials.append(m); teile.append((o, kn)); return o
+def kristall(ort, r, h, m, kn, kipp=(0, 0, 0)):
+    bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=r, radius2=0, depth=h, location=ort, rotation=kipp); o = bpy.context.object; o.data.materials.append(m); teile.append((o, kn)); return o
+KN = {}
+def knochen(n, k, e, el=None): KN[n] = (k, e, el)
+
+if ART == "krebs":
+    PZ = mat("panzer", (96, 78, 58), 0.55, 0.1); PH = mat("panzerhell", (150, 120, 85), 0.5); SCH = mat("schlamm", (70, 62, 48), 0.9); AU = mat("auge", (20, 18, 16), 0.2)
+    Z = 0.32
+    kugel((0, 0, Z), (0.42, 0.32, 0.15), PZ, "koerper", 14, 7); kugel((0, -0.05, Z + 0.06), (0.32, 0.22, 0.08), PH, "koerper", 12, 6)
+    for k in range(5): kugel((random.uniform(-.3, .3), random.uniform(-.2, .2), Z + 0.1), (0.06, 0.05, 0.02), SCH, "koerper", 6, 4)
+    for sx in (-1, 1):
+        rohr((sx * 0.08, -0.28, Z + 0.08), (sx * 0.1, -0.33, Z + 0.22), 0.015, PZ, "koerper"); kugel((sx * 0.1, -0.33, Z + 0.24), (0.035, 0.035, 0.035), AU, "koerper", 8, 4)
+        S = "L" if sx > 0 else "R"
+        rohr((sx * 0.32, -0.18, Z), (sx * 0.5, -0.38, Z + 0.06), 0.05, PZ, "arm." + S)                   # Oberarm
+        kugel((sx * 0.55, -0.5, Z + 0.08), (0.13, 0.17, 0.09), PZ, "schere." + S, 10, 6)                    # Scherenhand
+        kristall((sx * 0.6, -0.68, Z + 0.1), 0.05, 0.18, PH, "schere." + S, (math.radians(90), 0, 0))       # fester Finger
+        kristall((sx * 0.5, -0.66, Z + 0.06), 0.04, 0.16, PH, "finger." + S, (math.radians(90), 0, 0))      # beweglicher Finger
+        knochen("arm." + S, (sx * 0.3, -0.16, Z), (sx * 0.5, -0.38, Z + 0.06), "koerper"); knochen("schere." + S, (sx * 0.5, -0.38, Z + 0.06), (sx * 0.58, -0.6, Z + 0.08), "arm." + S)
+        knochen("finger." + S, (sx * 0.5, -0.56, Z + 0.06), (sx * 0.5, -0.72, Z + 0.06), "schere." + S)
+        for i in range(4):
+            y = -0.12 + i * 0.1; b = f"bein{i}.{S}"
+            rohr((sx * 0.36, y, Z), (sx * 0.58, y + 0.03, Z + 0.08), 0.022, PZ, b); rohr((sx * 0.58, y + 0.03, Z + 0.08), (sx * 0.72, y + 0.05, 0.0), 0.018, PZ, b, 0.006)
+            knochen(b, (sx * 0.34, y, Z), (sx * 0.72, y + 0.05, 0.0), "koerper")
+    knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, 0.2, Z), (0, -0.2, Z), "wurzel")
+elif ART == "reiher":
+    GR = mat("gefieder", (128, 134, 142), 0.7); HE = mat("brust", (205, 208, 212), 0.7); SN = mat("schnabel", (205, 170, 70), 0.4); BE = mat("bein", (150, 120, 70), 0.6)
+    BL = mat("splitter", (100, 170, 245), 0.15, 0, 1.4); AU = mat("auge", (230, 200, 60), 0.3)
+    Z = 0.95
+    kugel((0, 0, Z), (0.14, 0.26, 0.16), GR, "koerper", 12, 7); kugel((0, -0.1, Z - 0.03), (0.11, 0.14, 0.12), HE, "koerper", 10, 6)
+    for sx in (-1, 1): kugel((sx * 0.12, 0.04, Z + 0.03), (0.05, 0.25, 0.1), GR, "koerper", 8, 5)                  # angelegte Flügel
+    rohr((0, 0.22, Z), (0, 0.4, Z - 0.08), 0.06, GR, "koerper", 0.01)                                              # Schwanz
+    for k in range(4): kristall((random.uniform(-.06, .06), 0.02 + k * 0.05, Z + 0.15), 0.025, 0.12, BL, "koerper", (random.uniform(-.4, .4), random.uniform(-.4, .4), 0))
+    rohr((0, -0.2, Z + 0.06), (0, -0.25, Z + 0.3), 0.04, HE, "hals1"); rohr((0, -0.25, Z + 0.3), (0, -0.22, Z + 0.52), 0.035, HE, "hals2")
+    kugel((0, -0.25, Z + 0.56), (0.06, 0.08, 0.06), GR, "kopf", 8, 5); rohr((0, -0.31, Z + 0.56), (0, -0.55, Z + 0.53), 0.022, SN, "kopf", 0.003)
+    for sx in (-1, 1): kugel((sx * 0.04, -0.29, Z + 0.58), (0.012, 0.012, 0.012), AU, "kopf", 6, 4)
+    kristall((0, -0.2, Z + 0.63), 0.02, 0.14, BL, "kopf", (math.radians(-55), 0, 0))                              # Splitterschopf
+    for sx, S in ((1, "L"), (-1, "R")):
+        rohr((sx * 0.06, 0.02, Z - 0.12), (sx * 0.06, 0.06, 0.45), 0.02, BE, "bein." + S); rohr((sx * 0.06, 0.06, 0.45), (sx * 0.06, 0.02, 0.02), 0.016, BE, "bein." + S)
+        for a in (-0.5, 0, 0.5): rohr((sx * 0.06, 0.02, 0.01), (sx * 0.06 + 0.08 * math.sin(a), 0.02 - 0.09 * math.cos(a), 0.0), 0.008, BE, "bein." + S)
+        knochen("bein." + S, (sx * 0.06, 0.02, Z - 0.1), (sx * 0.06, 0.02, 0.0), "koerper")
+    knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, 0.2, Z), (0, -0.2, Z), "wurzel")
+    knochen("hals1", (0, -0.2, Z + 0.06), (0, -0.25, Z + 0.3), "koerper"); knochen("hals2", (0, -0.25, Z + 0.3), (0, -0.22, Z + 0.52), "hals1"); knochen("kopf", (0, -0.23, Z + 0.53), (0, -0.5, Z + 0.54), "hals2")
+else:
+    KE = mat("kern", (230, 255, 200), 0.2, 0, 4.0); FL = mat("flamme", (90, 255, 140), 0.3, 0, 2.6); FU = mat("funke", (170, 255, 190), 0.3, 0, 3.0)
+    Z = 1.2
+    kugel((0, 0, Z), (0.1, 0.1, 0.11), KE, "kern", 12, 7); kugel((0, 0, Z - 0.02), (0.16, 0.16, 0.13), FL, "kern", 10, 6)
+    kristall((0, 0, Z + 0.3), 0.07, 0.6, FL, "flamme")
+    for k in range(7):
+        a = k / 7 * 2 * math.pi; kristall((0.08 * math.cos(a), 0.08 * math.sin(a), Z + 0.2), 0.075, 0.48 - 0.08 * (k % 3), FL, "flamme", (0.3 * math.sin(a), -0.3 * math.cos(a), 0))
+    for k in range(6):
+        a = k / 6 * 2 * math.pi; kugel((0.32 * math.cos(a), 0.32 * math.sin(a), Z + 0.05 * math.sin(3 * a)), (0.025, 0.025, 0.025), FU, "funken", 6, 4)
+    knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("kern", (0, 0, Z - 0.15), (0, 0, Z + 0.15), "wurzel"); knochen("flamme", (0, 0, Z + 0.05), (0, 0, Z + 0.4), "kern"); knochen("funken", (0, 0, Z), (0, 0, Z + 0.2), "kern")
+
+# ---- Skelett, Teile starr an ihre Knochen, ein Netz „koerper“
+arm = bpy.data.objects.new("skelett", bpy.data.armatures.new("skelett")); bpy.context.collection.objects.link(arm)
+bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode="EDIT")
+for n, (k, e, el) in KN.items(): b = arm.data.edit_bones.new(n); b.head = Vector(k); b.tail = Vector(e)
+for n, (k, e, el) in KN.items():
+    if el: arm.data.edit_bones[n].parent = arm.data.edit_bones[el]
+bpy.ops.object.mode_set(mode="OBJECT")
+for o, kn in teile:
+    bpy.context.view_layer.objects.active = o
+    for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
+    for p in o.data.polygons: p.use_smooth = ART != "krebs"
+    g = o.vertex_groups.new(name=kn); g.add(list(range(len(o.data.vertices))), 1.0, "REPLACE")
+bpy.ops.object.select_all(action="DESELECT")
+for o, _ in teile: o.select_set(True)
+bpy.context.view_layer.objects.active = teile[0][0]; bpy.ops.object.join(); bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+ob = bpy.context.object; ob.name = "koerper"; ob["ebene"] = "koerper"; ob["art"] = "koerper"; ob.parent = arm; ob.modifiers.new("skelett", "ARMATURE").object = arm
+print(ART, "–", len(ob.data.polygons), "Flächen")
+
+# ---- Bewegungen
+PB = arm.pose.bones; B = arm.data.bones
+for b in PB: b.rotation_mode = "QUATERNION"
+X, Y, Zx = (1, 0, 0), (0, 1, 0), (0, 0, 1)
+def dreh(n, *schritte):
+    R = B[n].matrix_local.to_quaternion(); q = Quaternion()
+    for achse, grad in schritte: q = Quaternion(Vector(achse), math.radians(grad)) @ q
+    PB[n].rotation_quaternion = R.inverted() @ q @ R
+def ort(v): PB["wurzel"].location = (v[0], v[2], -v[1])
+def gross(n, f): PB[n].scale = (f, f, f)
+def nullen():
+    for b in PB: b.rotation_quaternion = (1, 0, 0, 0); b.location = (0, 0, 0); b.scale = (1, 1, 1)
+s_ = lambda t, k=1.0, ph=0.0: math.sin(2 * math.pi * k * t + ph)
+glatt = lambda u: u * u * (3 - 2 * u)
+if ART == "krebs":
+    def beine(t, k=1.0):
+        for i in range(4):
+            for S, v in (("L", 1), ("R", -1)): dreh(f"bein{i}.{S}", (Y, v * 12 * s_(t, k, i * 1.6 + (0 if S == "L" else math.pi))), (Zx, 10 * s_(t, k, i * 1.6 + 1.5)))
+    def ruhe(t):
+        for S, v in (("L", 1), ("R", -1)): dreh("finger." + S, (Zx, v * 18 * max(0, s_(t, 2, 0 if S == "L" else 1)))); dreh("arm." + S, (X, 4 * s_(t)))
+        ort((0, 0, 0.01 * s_(t)))
+    def gehen(t): beine(t, 2); ort((0.03 * s_(t, 2), 0, 0.015 * abs(s_(t, 2)))); dreh("koerper", (Y, 4 * s_(t, 2)))
+    def angriff(t):
+        w = math.sin(math.pi * min(1, t / 0.45)) if t < 0.45 else 0.0; h = math.sin(math.pi * min(1, max(0, (t - 0.4) / 0.4)))
+        for S, v in (("L", 1), ("R", -1)): dreh("arm." + S, (X, 35 * w - 25 * h), (Zx, -v * 20 * h)); dreh("finger." + S, (Zx, v * 30 * w))
+        dreh("koerper", (X, -6 * w + 8 * h)); ort((0, -0.08 * h, 0))
+    def treffer(t): w = math.sin(math.pi * t); dreh("koerper", (X, -10 * w), (Y, 8 * w)); ort((0, 0.08 * w, 0.03 * w))
+    def tod(t):
+        f = glatt(min(1.0, t / 0.6)); dreh("koerper", (Y, 180 * f)); ort((0, 0, 0.28 * math.sin(math.pi * f) + 0.3 * f))
+        for i in range(4):
+            for S in "LR": dreh(f"bein{i}.{S}", (X, 25 * f * s_(t, 3, i)))
+    BW = {"ruhe": (ruhe, 16, 10, True, {}), "gehen": (gehen, 12, 12, True, {}), "angriff": (angriff, 10, 12, False, {"treffer": 5}), "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 12, False, {"halten": 11})}
+elif ART == "reiher":
+    def ruhe(t): dreh("hals1", (X, 4 * s_(t))); dreh("kopf", (Zx, 12 * s_(t, 1, 1)) if t > 0.5 else (X, 0)); ort((0, 0, 0.005 * s_(t, 2)))
+    def gehen(t):
+        dreh("bein.L", (X, 26 * s_(t))); dreh("bein.R", (X, -26 * s_(t))); dreh("hals1", (X, 10 * s_(t, 2))); dreh("kopf", (X, -10 * s_(t, 2))); ort((0, 0, 0.02 * abs(s_(t))))
+    def angriff(t):
+        zu = glatt(min(1.0, t / 0.4)) if t < 0.5 else 1 - glatt(min(1.0, (t - 0.5) / 0.15)); vor = math.sin(math.pi * min(1.0, max(0.0, (t - 0.45) / 0.45)))
+        dreh("hals1", (X, -30 * zu + 45 * vor)); dreh("hals2", (X, -20 * zu + 35 * vor)); dreh("kopf", (X, 10 * zu - 25 * vor)); dreh("koerper", (X, 10 * vor)); ort((0, -0.08 * vor, 0))
+    def treffer(t): w = math.sin(math.pi * t); dreh("koerper", (X, -12 * w)); dreh("hals1", (X, -25 * w)); dreh("kopf", (X, 20 * w)); ort((0, 0.06 * w, 0))
+    def tod(t):
+        f = glatt(min(1.0, t / 0.7)); dreh("wurzel", (Y, 85 * f)); dreh("hals1", (X, 40 * f)); dreh("hals2", (X, 30 * f)); dreh("bein.L", (X, -30 * f)); ort((0, 0, -0.85 * f * 0))
+    BW = {"ruhe": (ruhe, 16, 8, True, {}), "gehen": (gehen, 10, 10, True, {}), "angriff": (angriff, 12, 12, False, {"treffer": 6}), "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 12, False, {"halten": 11})}
+else:
+    def flackern(t, f=1.0): gross("flamme", f * (1 + 0.12 * s_(t, 3) + 0.06 * s_(t, 7, 1))); dreh("flamme", (Zx, 40 * s_(t)))
+    def ruhe(t): ort((0, 0, 0.1 * s_(t))); flackern(t); dreh("funken", (Zx, 360 * t)); gross("kern", 1 + 0.05 * s_(t, 2))
+    def angriff(t):
+        z = math.sin(math.pi * min(1, t / 0.4)) if t < 0.4 else 0.0; a = math.sin(math.pi * min(1, max(0, (t - 0.35) / 0.5)))
+        gross("kern", 1 - 0.3 * z + 0.4 * a); flackern(t, 1 - 0.4 * z + 0.7 * a); dreh("funken", (Zx, 720 * t)); gross("funken", 1 - 0.4 * z + 0.6 * a); ort((0, -0.15 * a, 0))
+    def heilen(t): w = math.sin(math.pi * t); gross("funken", 1 + 1.4 * w); dreh("funken", (Zx, -540 * t)); flackern(t, 1 + 0.3 * w); ort((0, 0, 0.2 * w))
+    def treffer(t): w = math.sin(math.pi * t); gross("kern", 1 - 0.25 * w); flackern(t, 1 - 0.5 * w); ort((0, 0.12 * w, 0))
+    def tod(t): f = glatt(min(1.0, t / 0.8)); gross("kern", max(0.01, 1 - f)); gross("flamme", max(0.01, 1 - f * 1.2)); gross("funken", 1 + 1.5 * f); ort((0, 0, -0.9 * f))
+    BW = {"ruhe": (ruhe, 16, 10, True, {}), "angriff": (angriff, 10, 12, False, {"treffer": 5}), "heilen": (heilen, 14, 10, False, {}), "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 10, False, {"halten": 11})}
+arm.animation_data_create()
+for name, (fn, n, rate, schleife, mehr) in BW.items():
+    a = bpy.data.actions.new(name); a.use_fake_user = True; arm.animation_data.action = a; k = n + 1 if schleife else n
+    for i in range(k):
+        nullen(); fn(i / n if schleife else i / (n - 1))
+        for b in PB: b.keyframe_insert("rotation_quaternion", frame=i + 1, group=b.name); b.keyframe_insert("scale", frame=i + 1, group=b.name)
+        PB["wurzel"].keyframe_insert("location", frame=i + 1, group="wurzel")
+    a["bilder"] = k; a["rate"] = rate; a["schleife"] = schleife; a["mehr"] = json.dumps(mehr); print("Bewegung:", name, k, "Bilder")
+arm.animation_data.action = bpy.data.actions["ruhe"]; bpy.context.scene.frame_set(1)
+bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(ZIEL)); print("geschrieben:", ZIEL)

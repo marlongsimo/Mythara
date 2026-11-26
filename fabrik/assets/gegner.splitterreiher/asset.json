@@ -1,0 +1,8 @@
+{
+  "id": "gegner.splitterreiher",
+  "name": "Splitterreiher",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001 (Stufe 50, Ostufer): ruhe, gehen, angriff (Splitter-Stoß, Geschoss ab Bild 6), treffer, tod – fabrik/ostufer_tiere.py, Spieldatei img/figuren-echt3d/splitterreiher3d.glb",
+  "herkunft": "in Blender aus Grundformen gebaut"
+}

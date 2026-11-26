@@ -822,7 +822,7 @@ if "angriff2h" in bpy.data.actions and "griff2" in bpy.data.objects:
     for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
     print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
 for name, zielname in (("hieb2h", "griff2.hieb"), ("stich2h", "griff2.stich"), ("rundumschlag", "griff2.hieb")):                    # Zweihand mit festem Griffpunkt (für jede Waffe gleich)
-    if name not in bpy.data.actions: continue
+    if name not in bpy.data.actions or zielname not in bpy.data.objects: continue                  # ohne Waffe im Starr-Teil (Meshy-Figur mit fester Waffe): keine linke Hand am Griff
     a = bpy.data.actions[name]; arm.animation_data.action = a; zg = bpy.data.objects[zielname]; ik = PB["unterarm.L"].constraints.new("IK"); ik.target = zg; ik.chain_count = 2; gemerkt = []
     for i in range(int(a["bilder"])): sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt.append((PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy()))
     PB["unterarm.L"].constraints.remove(ik)
