@@ -42,6 +42,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
   /** gemeinsame Kampfwelt: Werte des Gebiets, aus dem das Lager stammt (sonst die der Karte) */ lagerAggro?: number; lagerLeine?: number; lagerWandern?: number; lagerStufe?: number;
   /** Zielscheiben: darf dieser Held dort üben (Schalter oder Questschritt, setzt der Server)? */ zielscheibeFrei?: boolean;
+  /** Schalter dieses Helden, die Gegner kennen (MonsterDef.aggressivNach, setzt der Server je Sekunde) */ schalterAn?: string[];
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number;
   /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
   /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number;
@@ -441,6 +442,9 @@ export class Sim {
         else {
         const LEINE = w.lagerLeine ?? this.karte.LEINE ?? K.LEINE, WANDERN = w.lagerWandern ?? this.karte.WANDERN;
         if (ziel && (this.felder ? feldAbstand(ziel, w.heim) : abstand(ziel, w.heim)) > LEINE && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
+        if (!ziel && D.aggressiv === false && D.aggressivNach) { const A = D.aggressivNach; let best: Wesen | null = null, bd = A.weit + 0.01; /* #81: nur gegen Helden mit diesem Schalter */
+          for (const o of this.feinde(w)) { if (!o.held || !(o.schalterAn || []).includes(A.schalter) || (this.weltZeit && !this.darf(w, o))) continue; const d = this.felder ? feldAbstand(o, w) : abstand(o, w); if (d < bd && frei(w, o)) { bd = d; best = o; } }
+          if (best) { ziel = best; w.zielId = best.id; w.wach = true; } }
         if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? w.lagerAggro ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && (this.felder ? feldAbstand(o, w.heim) : abstand(o, w.heim)) <= LEINE) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel && D.spezial && w.cdS <= 0 && abstand(w, ziel) <= D.spezial.reich) { w.ladeT = D.spezial.laden; w.ladeX = ziel.x; w.ladeY = ziel.y; w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "laden", id: w.id, x: ziel.x, y: ziel.y, r: D.spezial.radius, t: D.spezial.laden }); }
         else if (ziel) this.jagen(w, ziel, D.angriff.reich);

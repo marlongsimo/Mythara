@@ -115,6 +115,13 @@ console.log("\nFigur in mehreren Quests (Othmar: Quest 1, B3, B4)");
   const folgen = wahl.map((a) => QB.antwort(QUEST_B4, "othmar", alle, a, kk));
   check(wahl.every((a) => d.antworten.some((x) => x.id === a)) && folgen.every((f) => f && f.abschluss && f.geben && f.geben.length === 1) && new Set(folgen.map((f) => f.geben[0].g)).size === 4, "Abschluss mit Wahl: vier Antworten, jede schließt ab und gibt eine andere Waffe"); }
 
+console.log("\nAggressiv nach der Quest (#81)");
+MONSTER.test_moos = { ...MONSTER.bandit_dolch, name: "Test-Mooshocker", lp: 40, aggressiv: false, aggressivNach: { schalter: "moos_boese", weit: 8 } };
+{ const ziel = (abst, schalter) => { const { s, h } = welt(11, P.x, P.y), m = gegner(s, "test_moos", P.x + abst, P.y); h.schalterAn = schalter; lauf(s, 1); return m.zielId === h.id; };
+  check(ziel(5, ["moos_boese"]), "Quest fertig (Schalter an), 5 Felder: der Mooshocker greift an");
+  check(!ziel(3, []), "ohne die Quest, 3 Felder: er bleibt friedlich");
+  check(!ziel(10, ["moos_boese"]), "Schalter an, aber 10 Felder weit: noch nicht"); }
+
 console.log("\nFolgen (Regel, #54 – auch für Befreite und das Rabenküken)");
 { const F = new Folger("Ben"), ich = { x: 0, y: 0 };
   const t1 = F.schritt(0.5, ich, { x: 6, y: 0 }); check(t1.tun === "gehen" && Math.abs(t1.x - 4.5) < 1e-9 && t1.y === 0, "weit weg: ein Laufziel 1,5 Felder vor dem Ziel");

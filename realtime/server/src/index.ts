@@ -14,7 +14,7 @@ import { SPRINT_TICK, erholungJeTick } from "../../shared/sprint";
 import { wirkungenAktiv } from "../../shared/wirkungen";
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
+import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, MONSTER, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
@@ -29,6 +29,8 @@ import { weltJeSpieler, instanzAus, bossSieg } from "./bosse";
 import { ZIELSCHEIBE_BIS } from "../../shared/sim";
 import { levelAus as levelVon } from "../../shared/kampfwerte";
 
+/** Schalter, die Gegner kennen (MonsterDef.aggressivNach, #81) */
+const SCHALTER_GEGNER = [...new Set(Object.values(MONSTER).map((m) => m.aggressivNach && m.aggressivNach.schalter).filter((s): s is string => Boolean(s)))];
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
    bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
@@ -385,7 +387,7 @@ setInterval(() => {
     for (const ev of z.ev) if (ev.a === "boss") for (const id of ev.ids) { const q = [...Z.spieler].find((o) => o.heldId === id), nutzer = q && q.kampf && q.kampf.nutzer; /* Bosszähler und Bestzeit je Konto (Migration 050) */
       if (nutzer) void bossSieg(sb, nutzer, ev.typ, ev.sek).then((t) => systemAn(nutzer, t)).catch((e) => console.error("Bosszähler:", (e as Error).message)); }
     for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
-      if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); } /* Zielscheibe: alle 1 s nach dem Queststand */
+      if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) { h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); if (SCHALTER_GEGNER.length) { const nu = q.kampf.nutzer; h.schalterAn = SCHALTER_GEGNER.filter((s) => schalter(nu, s)); } } } /* Zielscheibe und Gegner-Schalter (#81): alle 1 s nach dem Queststand */
       if (n % 10 === 0 && q.heldId && q.kampf && q.kampf.nutzer && !q.zoneWeg) { const h = Z.sim.nach(q.heldId), K0 = KARTEN[Z.karte], nu = q.kampf.nutzer; /* Instanzen und Türen je Spieler (shared/boss.ts) nach seinem Queststand */
         if (h && !h.tot && K0 && K0.ursprung) { const d = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s)); if (d && d.text) systemAn(nu, d.text); } }
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
