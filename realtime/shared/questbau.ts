@@ -28,7 +28,11 @@ export const REDE_WEIT = 3.5;
 export interface QuestFigur { id: string; name: string; modell: string; x: number; y: number; blick: [number, number];
   /** Gesprächsweite (Felder), sonst REDE_WEIT */ weit?: number; /** geht umher (Modell des Wanderers in der Welt, z. B. der Bürgermeister im Rathaus) */ wandert?: string;
   /** tritt beiseite, wenn (z. B. die Wachen, sobald der Weg frei ist): um dx/dy versetzt, mit neuer Blickrichtung */ beiseite?: { wenn: Bed; dx: number; dy: number; blick: [number, number] };
-  /** läuft dem Spieler in dieser Region entgegen und spricht ihn an, solange die Bedingung gilt (z. B. Jori beim ersten Besuch) */ kommt?: { region: string; wenn: Bed } }
+  /** läuft dem Spieler in dieser Region entgegen und spricht ihn an, solange die Bedingung gilt (z. B. Jori beim ersten Besuch) */ kommt?: { region: string; wenn: Bed };
+  /** nur da (sichtbar, ansprechbar), wenn das gilt – sonst steht dort niemand (Ysolde erst nach dem Feuer, #49) */ sichtbar?: Bed;
+  /** folgt dem Spieler, solange das gilt (Befreite bis zur Treppe, später das Rabenküken – shared/folgen.ts). Nur im eigenen Browser;
+   *  ansprechbar bleibt sie, wo sie gerade ist. Das Ziel ist ein gewöhnlicher Schritt (betreten bei …); danach steht sie an ihrer Stelle bzw. beiseite. */
+  folgt?: { wenn: Bed; abstand?: number } }
 /** Baumstamm-Sperre (gesperrte Felder x0, y0, x1, y1; Stämme: Mitte x, y, Länge, Drehung) – offen nach QuestDef.freigaben[id] */
 export interface Schranke { id: string; feld: [number, number, number, number]; staemme: [number, number, number, number][] }
 
@@ -38,7 +42,9 @@ export interface QuestObjekt { id: string; name: string; x: number; y: number; /
   /** nur, wenn das gilt (z. B. Gegenstände dabei) – sonst dieser Text */ braucht?: { wenn: Bed; text: string };
   /** beim Erledigen aus dem Rucksack nehmen / in den Rucksack geben */ nehmen?: { g: string; n?: number }[]; geben?: { g: string; n?: number }[];
   /** Text beim Erledigen ({n:gruppe} = Fortschritt) */ text: string; /** schon erledigt */ schon: string; /** wenn der Schritt gerade nicht möglich ist (die erste passende gilt, vor „schon“) */ sonst: Sperre[];
-  /** wie nah man sein muss (Felder), sonst 3,2 */ weit?: number; /** im heilen Zustand zeigen, wenn eine davon gilt (z. B. Zaun geflickt) */ heil?: Bed[] }
+  /** wie nah man sein muss (Felder), sonst 3,2 */ weit?: number; /** im heilen Zustand zeigen, wenn eine davon gilt (z. B. Zaun geflickt) */ heil?: Bed[];
+  /** Gesang mit Zeitfenster (#49): erledigt den Schritt nur in den ersten dauer Sekunden von je alle Sekunden der Weltuhr (Server-Zeit);
+   *  sonst Text still ({sek} = Sekunden bis zum nächsten Mal). Der Browser zeigt das Fenster mit hoerbarJetzt / hoerbarIn. */ hoerbar?: { alle: number; dauer: number; still: string } }
 
 /** Was einen Schritt erledigt */
 export type Ereignis =
@@ -136,24 +142,30 @@ export interface QuestDef {
   /** Schalter je Spieler (Weltzustand: Mühle dreht, Kapelle offen, Bäckerei offen, Zielscheiben frei …) → an, wenn eine der Bedingungen gilt.
    *  Server und Browser werten sie gleich aus (schalterAn in shared/quests.ts). */
   schalter?: Record<string, Bed | Bed[]>;
+  /** Rätsel-Reihenfolge je Spieler (#49): der Zähler-Schritt schritt (anzahl = teile.length) zählt Questobjekte (Ids in teile) nur in einer
+   *  Reihenfolge, die beim Annehmen zufällig festgelegt und im Stand gespeichert wird. Falsches Objekt: von vorn (Text falsch).
+   *  {reihe} in Texten = die namen (sonst die Objektnamen) in dieser Reihenfolge – z. B. Heddas Silben. */
+  reihenfolge?: { schritt: string; teile: string[]; namen?: string[]; falsch: string };
   /** Drehteile in der Welt (Mühlenflügel) im Umkreis r einer Stelle drehen sich nur, wenn der Schalter an ist – je Spieler */
   drehen?: { schalter: string; x: number; y: number; r: number }[];
 }
 
 /* ───────── Stand ───────── */
-export interface Lage { phase: Phase; bits: number; z: number[]; angeboten: boolean; /** abgeschlossen, Lohn noch nicht abgeholt (#77) */ abholen?: boolean }
+export interface Lage { phase: Phase; bits: number; z: number[]; angeboten: boolean; /** abgeschlossen, Lohn noch nicht abgeholt (#77) */ abholen?: boolean; /** Rätsel-Reihenfolge: Nummer der Anordnung (QuestDef.reihenfolge) */ r?: number }
 /** Stand nach dem letzten Schritt: abgeschlossen, der Lohn wartet (#77) */
 export const ABHOLBEREIT = "abholbereit";
 const zaehlSchritte = (q: QuestDef) => q.schritte.filter((x) => x.anzahl);
 const alleBits = (q: QuestDef) => (1 << q.schritte.length) - 1;
-const MUSTER = /^auftrag_(\d{1,10})((?:_\d{1,4})*)$/;
+const MUSTER = /^auftrag_(\d{1,10})((?:_\d{1,4})*)(?:_r(\d{1,4}))?$/;
+const fakultaet = (n: number): number => (n <= 1 ? 1 : n * fakultaet(n - 1));
 export function lage(q: QuestDef, s: string): Lage { const n = zaehlSchritte(q).length, leer = Array(n).fill(0);
   if (s === "fertig" || s === ABHOLBEREIT) return { phase: "fertig", bits: alleBits(q), z: zaehlSchritte(q).map((x) => x.anzahl!), angeboten: true, ...(s === ABHOLBEREIT ? { abholen: true } : {}) };
   if (s === "angeboten") return { phase: "neu", bits: 0, z: leer, angeboten: true };
   const m = MUSTER.exec(s || ""); if (m) { const b = Number(m[1]), zs = m[2] ? m[2].slice(1).split("_").map(Number) : [];
-    if (b <= alleBits(q) && zs.length <= n) return { phase: "laeuft", bits: b, z: leer.map((_, i) => Math.min(zs[i] || 0, zaehlSchritte(q)[i].anzahl!)), angeboten: true }; }
+    const r = m[3] !== undefined && q.reihenfolge && Number(m[3]) < fakultaet(q.reihenfolge.teile.length) ? { r: Number(m[3]) } : {};
+    if (b <= alleBits(q) && zs.length <= n) return { phase: "laeuft", bits: b, z: leer.map((_, i) => Math.min(zs[i] || 0, zaehlSchritte(q)[i].anzahl!)), angeboten: true, ...r }; }
   return { phase: "neu", bits: 0, z: leer, angeboten: false }; }
-export const stand = (l: Lage): string => (l.phase === "laeuft" ? `auftrag_${l.bits}` + (l.z.some((x) => x) ? l.z.map((x) => "_" + x).join("") : "") : l.phase === "fertig" ? (l.abholen ? ABHOLBEREIT : "fertig") : l.angeboten ? "angeboten" : "");
+export const stand = (l: Lage): string => (l.phase === "laeuft" ? `auftrag_${l.bits}` + (l.z.some((x) => x) ? l.z.map((x) => "_" + x).join("") : "") + (l.r !== undefined ? `_r${l.r}` : "") : l.phase === "fertig" ? (l.abholen ? ABHOLBEREIT : "fertig") : l.angeboten ? "angeboten" : "");
 /** Wartet der Lohn dieser Quest aufs Abholen (#77)? */
 export const abholbereit = (s: string): boolean => s === ABHOLBEREIT;
 /** Gespeicherten Stand prüfen (ältere Formate übersetzt die Quest; Unbekanntes wird zu "") */
@@ -170,7 +182,8 @@ export function moeglich(q: QuestDef, s: string, id: string): boolean { const l 
   return (S.nach || []).every((n) => (l.bits & bit(q, n)) !== 0); }
 
 /** Was der Motor über den Spieler wissen muss (der Server weiß alles; der Browser kennt den Rest nicht – fehlt eine Angabe, gilt die Bedingung nicht) */
-export interface Kontext { hat(g: string): boolean; verloren(g: string): boolean; anzahl?(g: string): number; quest?(id: string): Phase; skill?(k: string): number; heldenlevel?(): number }
+export interface Kontext { hat(g: string): boolean; verloren(g: string): boolean; anzahl?(g: string): number; quest?(id: string): Phase; skill?(k: string): number; heldenlevel?(): number;
+  /** Weltuhr in Sekunden (Server: Date.now() / 1000) – für hoerbar; fehlt sie, ist nie etwas hörbar */ zeit?(): number }
 const OHNE: Kontext = { hat: () => false, verloren: () => false };
 export function gilt(q: QuestDef, s: string, b: Bed | undefined, k: Kontext = OHNE): boolean { if (!b) return true; const l = lage(q, s);
   if (b.phase && !b.phase.includes(l.phase)) return false;
@@ -202,7 +215,24 @@ export function fortschritt(q: QuestDef, s: string, id: string): string { const 
   if (S && S.anzahl) return `${zaehler(q, s, id)}/${S.anzahl}`;
   const g = q.schritte.filter((x) => x.gruppe === id), l = lage(q, s); return `${g.filter((x) => l.bits & bit(q, x.id)).length}/${g.length}`; }
 /** Platzhalter {n:id} einsetzen */
-export const einsetzen = (q: QuestDef, s: string, t: string): string => t.replace(/\{n:([a-z0-9_]+)\}/g, (_, id) => fortschritt(q, s, id));
+export const einsetzen = (q: QuestDef, s: string, t: string): string => t.replace(/\{n:([a-z0-9_]+)\}/g, (_, id) => fortschritt(q, s, id)).replace(/\{reihe\}/g, () => reiheNamen(q, s).join(" – "));
+
+/* ───────── Rätsel-Reihenfolge und Gesang (#49) ───────── */
+/** Die Anordnung Nummer r von n Teilen (0 … n!-1) */
+export function anordnung(n: number, r: number): number[] { const rest = Array.from({ length: n }, (_, i) => i), aus: number[] = []; let k = Math.max(0, Math.floor(r)) % fakultaet(n);
+  for (let i = n; i > 0; i--) { const f = fakultaet(i - 1), j = Math.floor(k / f); k %= f; aus.push(rest.splice(j, 1)[0]); } return aus; }
+/** Die Teile (Objekt-Ids) in der Reihenfolge dieses Spielers (ohne festgelegte Reihenfolge: wie angegeben) */
+export function reihe(q: QuestDef, s: string): string[] { const R = q.reihenfolge; if (!R) return []; const r = lage(q, s).r; return r === undefined ? [...R.teile] : anordnung(R.teile.length, r).map((i) => R.teile[i]); }
+/** Die Namen der Teile in dieser Reihenfolge (für {reihe}) */
+export function reiheNamen(q: QuestDef, s: string): string[] { const R = q.reihenfolge; if (!R) return []; return reihe(q, s).map((id) => { const i = R.teile.indexOf(id); return (R.namen && R.namen[i]) || ((q.objekte || []).find((o) => o.id === id) || { name: id }).name; }); }
+/** Gesang: ist das Objekt zu dieser Weltzeit (Sekunden) hörbar? */
+export const hoerbarJetzt = (O: QuestObjekt, sek: number): boolean => !O.hoerbar || ((sek % O.hoerbar.alle) + O.hoerbar.alle) % O.hoerbar.alle < O.hoerbar.dauer;
+/** Gesang: Sekunden bis zum nächsten hörbaren Fenster (0: jetzt) */
+export const hoerbarIn = (O: QuestObjekt, sek: number): number => (!O.hoerbar || hoerbarJetzt(O, sek) ? 0 : Math.ceil(O.hoerbar.alle - (((sek % O.hoerbar.alle) + O.hoerbar.alle) % O.hoerbar.alle)));
+/** Ist die Figur für diesen Spieler da (QuestFigur.sichtbar)? */
+export const figurDa = (q: QuestDef, F: QuestFigur, s: string, k: Kontext = OHNE): boolean => !F.sichtbar || gilt(q, s, F.sichtbar, k);
+/** Folgt die Figur diesem Spieler gerade (QuestFigur.folgt)? */
+export const figurFolgt = (q: QuestDef, F: QuestFigur, s: string, k: Kontext = OHNE): boolean => Boolean(F.folgt && gilt(q, s, F.folgt.wenn, k));
 
 /* ───────── Dialog ───────── */
 const figur = (q: QuestDef, id: string) => q.figuren.find((f) => f.id === id);
@@ -236,9 +266,9 @@ export function antwort(q: QuestDef, npc: string, s: string, a: string, k: Konte
 /** Die Zeilen einer Folge als Gespräch (Name der Figur, Platzhalter) */
 export const folgeZeilen = (q: QuestDef, npc: string, s: string, t: Text[]): Zeile[] => { const F = figur(q, npc); return zeilen(q, s, F ? F.name : npc, t); };
 /** Den Stand nach einer Folge (ohne Abschluss – der geht über die Datenbank) */
-export function nachFolge(q: QuestDef, s: string, f: Folge): string { let l = lage(q, s);
+export function nachFolge(q: QuestDef, s: string, f: Folge, zufall: () => number = Math.random): string { let l = lage(q, s);
   if (f.anbieten && l.phase === "neu") l = { ...l, angeboten: true };
-  if (f.start && l.phase === "neu") l = { ...l, phase: "laeuft", bits: 0, angeboten: true };
+  if (f.start && l.phase === "neu") { l = { ...l, phase: "laeuft", bits: 0, angeboten: true }; if (q.reihenfolge) l.r = Math.floor(zufall() * fakultaet(q.reihenfolge.teile.length)) % fakultaet(q.reihenfolge.teile.length); } /* Rätsel: Reihenfolge je Spieler */
   if (f.vonVorn && l.phase === "laeuft") l = { ...l, bits: 0, z: l.z.map(() => 0) };
   if (f.erledige && l.phase === "laeuft") for (const id of f.erledige) l = { ...l, bits: l.bits | bit(q, id) };
   return stand(l); }
@@ -259,7 +289,10 @@ function passt(e: Ereignis, m: Meldung): boolean { if (e.art !== m.art) return f
     default: return false; } }
 /** Etwas ist geschehen: neuer Stand (oder derselbe). Schritte mit „anzahl“ zählen mit. */
 export function ereignis(q: QuestDef, s: string, m: Meldung): string { let l = lage(q, s); if (l.phase !== "laeuft") return s; const zs = zaehlSchritte(q);
-  for (const S of q.schritte) { if (!passt(S.ereignis, m) || !moeglich(q, stand(l), S.id)) continue;
+  const R = q.reihenfolge;
+  for (const S of q.schritte) { if (R && S.id === R.schritt && S.anzahl) { if (m.art !== "objekt" || !R.teile.includes(m.id) || !moeglich(q, stand(l), S.id)) continue; /* Rätsel: nur das nächste Teil zählt, ein falsches setzt zurück */
+      const i = zs.indexOf(S), z = [...l.z], soll = reihe(q, stand(l))[z[i]]; z[i] = m.id === soll ? Math.min(S.anzahl, z[i] + 1) : 0; l = { ...l, z }; if (z[i] >= S.anzahl) l = { ...l, bits: l.bits | bit(q, S.id) }; continue; }
+    if (!passt(S.ereignis, m) || !moeglich(q, stand(l), S.id)) continue;
     if (S.anzahl) { const i = zs.indexOf(S), z = [...l.z]; z[i] = Math.min(S.anzahl, z[i] + 1); l = { ...l, z }; if (z[i] >= S.anzahl) l = { ...l, bits: l.bits | bit(q, S.id) }; }
     else l = { ...l, bits: l.bits | bit(q, S.id) }; }
   return stand(l); }
@@ -267,10 +300,13 @@ export function ereignis(q: QuestDef, s: string, m: Meldung): string { let l = l
 export function sperre(q: QuestDef, art: "sammeln" | "herstellen", id: string, s: string, k: Kontext = OHNE): string | null | undefined {
   const L = q.sperren && q.sperren[art] && q.sperren[art]![id]; if (!L) return undefined; const x = L.find((p) => gilt(q, s, p.wenn, k)); return x ? einsetzen(q, s, x.text) : null; }
 /** Ein Questobjekt benutzen: Text und neuer Stand */
-export function objekt(q: QuestDef, s: string, id: string, k: Kontext = OHNE): { text: string; stand: string } | null { const O = (q.objekte || []).find((o) => o.id === id); if (!O) return null;
-  const S = q.schritte.find((x) => x.ereignis.art === "objekt" && x.ereignis.id === id);
+export function objekt(q: QuestDef, s: string, id: string, k: Kontext = OHNE): { text: string; stand: string; falsch?: boolean } | null { const O = (q.objekte || []).find((o) => o.id === id); if (!O) return null;
+  const R = q.reihenfolge && q.reihenfolge.teile.includes(id) ? q.reihenfolge : undefined, S = R ? q.schritte.find((x) => x.id === R.schritt) : q.schritte.find((x) => x.ereignis.art === "objekt" && x.ereignis.id === id);
   if (S && moeglich(q, s, S.id)) { if (O.braucht && !gilt(q, s, O.braucht.wenn, k)) return { text: einsetzen(q, s, O.braucht.text), stand: s };
-    const n = ereignis(q, s, { art: "objekt", id }); return { text: einsetzen(q, n, O.text), stand: n }; }
+    if (O.hoerbar) { const t = k.zeit ? k.zeit() : NaN; if (!(t >= 0) || !hoerbarJetzt(O, t)) return { text: einsetzen(q, s, O.hoerbar.still).replace(/\{sek\}/g, String(t >= 0 ? hoerbarIn(O, t) : O.hoerbar.alle)), stand: s }; }
+    const n = ereignis(q, s, { art: "objekt", id });
+    if (R && zaehler(q, n, S.id) === 0) return { text: einsetzen(q, n, R.falsch), stand: n, falsch: true }; /* falsche Reihenfolge: von vorn, ohne nehmen/geben */
+    return { text: einsetzen(q, n, O.text), stand: n }; }
   const x = O.sonst.find((p) => gilt(q, s, p.wenn, k)); if (x) return { text: einsetzen(q, s, x.text), stand: s };
   return { text: S && erledigt(q, s, S.id) ? einsetzen(q, s, O.schon) : O.name, stand: s }; }
 /** Wie ein Questobjekt gerade aussieht: weg (aufgehoben), heil, ob es leuchtet (zu tun) */

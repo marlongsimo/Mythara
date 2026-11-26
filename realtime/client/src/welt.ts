@@ -113,6 +113,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "fanggruende") window.dispatchEvent(new CustomEvent("ez-fanggruende", { detail: m.weg || [] }));
     else if (m.t === "wurm") window.dispatchEvent(new CustomEvent("ez-wurm", { detail: m }));
     else if (m.t === "wurmacker") window.dispatchEvent(new CustomEvent("ez-wurmacker", { detail: m.weg || [] }));
+    else if (m.t === "faehre") window.dispatchEvent(new CustomEvent("ez-faehre", { detail: m })); /* Fähre (#49): Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "wegstein") window.dispatchEvent(new CustomEvent("ez-wegstein", { detail: m })); /* Wegstein: Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "handwerk") window.dispatchEvent(new CustomEvent("ez-handwerk", { detail: m })); /* Handwerk an den Werkstätten (welt3d/handwerk3d.ts) */
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
@@ -175,6 +176,8 @@ export function fischBitten(tat: "start" | "stop" | "stroemung", id?: string): v
 export function wurmBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "wurm", tat, ...(id ? { id } : {}) }); }
 /** Wegstein reiben: der Server prüft Ziel, Ladung, Kampf und Abklingzeit und antwortet mit „wegstein“ */
 export function wegsteinReiben(ziel: string): void { stelleMelden(); senden({ t: "wegstein", ziel }); }
+/** Fähre (#49): übersetzen – der Server prüft Anleger und Schalter und antwortet mit { t: "faehre", ok, … } */
+export function faehreFahren(id: string): void { stelleMelden(); senden({ t: "faehre", id }); }
 export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
 export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { if (tat === "start") stelleMelden(); senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
 /** Beten an einer heilenden Stelle (shared/heilstellen.ts) – der Server prüft Schalter, Abstand und Abklingzeit */
