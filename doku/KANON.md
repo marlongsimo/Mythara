@@ -35,6 +35,7 @@ Zuletzt aktualisiert: 26.11.2026.
 | geplant: Agnes, Tebbe, **Lambert Schilf** (Angler, bestätigt), **Hilde Krug** (Wirtin, bestätigt) | Phase 3 | Weidenhain, Waldmark |
 | geplant: Gisbert Ast, Hauptmann Rotmantel | Phase 4 | Obstwiesen, Unterschlupf |
 | geplant: Bertold Krähe, Joost, Mutter Hedda, Harm, Ebbo, Liske, Federmutter Ravena | Phase 6 | Rabenmoor, Aschenwerth |
+| Vorschlag: Kord Weller (Fährmann), Merit Stahl (Hauptfrau der Wacht), Alma Furtner (Wirtin „Zur Furt“), Ysolde (Geist der Wächterin) | Phase 7 | Graufurt, Ostufer |
 
 **Vergeben, nicht neu verwenden:** Fenna (Marktfrau), Mira (Händlerin). Jorins Schwester heißt **Liske**.
 
@@ -57,9 +58,13 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Rabenküken** (Begleiter, Beute des Obersten Rabenpriesters 1/2000): eine **Mini-Version des Obersten Rabenpriesters**. *(26.11., über den Figuren-Chat)*
 - **Lage des Grenzlands auf dem Festland:** fix (kann sich später noch ändern). *(26.11.)*
 - **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
+- **Essen** (Stand heute): Brot heilt 4, nicht stapelbar, 1,5 s zwischen zwei Bissen, auch im Kampf. Gerichte mit Wirkung kommen mit Kochen (Phase 3b). *(26.11., Erklärung, keine Änderung)*
+- **Neues HUD** aus den Gold-UI-Vorlagen: **vorerst verworfen**, das HUD bleibt wie es ist (die neuen Symbole aus #30/#32/#33 bleiben). *(26.11.)*
+- **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
 
 ## Offen (Fragen an den Nutzer)
 
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
+- Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
 - Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel

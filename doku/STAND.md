@@ -15,9 +15,9 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 2 | Waldland: Quests A1–A3, Zielscheibe, Kapelle, Bäckerei, Brot, Golem-Beute, Mühle je Spieler | ✅ live |
 | **3** | **Weidenhain & Riedwiesen** – 3a Splitterbinden + Wegstein + B1 · 3b Wirkungen, Fischen, Kochen · 3c B2, Werkstatt Weidenhain, Sterneisen/Kernbaum | 🟡 **3a fertig** (#2, #3, 26.11.); 3b/3c in Arbeit – Quests B2, „Schilf und Schnur“, „Taverne“ als Entwurf; Spiel #4, #6; Welt #25 |
 | 4 | Westmark & erster Boss: Banditen-Varianten, B3, Boss-Baukasten, Instanzen, B4 Rotmantel | ⬜ Konzept `doku/konzepte/phase-4.md`, Beute `beute.md`; Figuren (#19) und Welt (#21) fertig, Einbau #15, #16, #24 |
-| 5 | Vorbereitung Moor: Kräuterkunde, Gegenstände mit eigenen Daten, geladene Waffen, Set-Bonus | ⬜ |
+| 5 | Vorbereitung Moor: Kräuterkunde, Gegenstände mit eigenen Daten, geladene Waffen, Set-Bonus | ⬜ Kräuter/Tränke/Sichel (Figuren #28) fertig; Kräuter-Fundstellen (Welt) in Arbeit |
 | 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | 🟡 Modelle (#20, #28) und Aschenwerth/Rabengrund (#23) fertig; Einbau #17, #18, #26, #29 |
-| 7 | Graufurt zur Stadt, Fährkette, grüner Turm | ⬜ |
+| 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Konzept `doku/konzepte/phase-7.md`; Vorarbeit Welt/Figuren/Quests läuft, Einbau nach Phase 6 |
 
 ## Festland (Weltkonzept)
 
