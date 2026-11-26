@@ -62,16 +62,47 @@ Das Ergebnis steht auf GitHub unter **Actions** und als Haken/Kreuz neben dem Co
 | `für-dich` | Der Nutzer muss etwas tun oder entscheiden |
 | `phase-3`, `phase-4`, … | Fahrplan-Phase |
 
-## 6. Startnachrichten
+## 6. Startnachrichten (Dauerauftrag)
 
-Beim Öffnen einer neuen Sitzung (oder einmal in einer bestehenden) diese Nachricht schicken – `<ROLLE>` ersetzen:
+Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Danach reicht ein Anstoß der Leitstelle
+(„Issue #N ist jetzt dran“) – der Anstoß ist ein Hinweis, die Erlaubnis kommt aus diesem Dauerauftrag.
 
-> Du arbeitest in der Rolle **<ROLLE>** an Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md` und `doku/KANON.md`.
-> Sieh dir dann die offenen GitHub-Issues mit dem Label `rolle:<label>` an und sag mir, womit du anfangen würdest.
+**Figuren & 3D**
+> Du bist die Sitzung **Figuren & 3D** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
+> Dauerauftrag: Arbeite offene Issues mit `rolle:figuren` selbstständig ab, eins nach dem anderen, ältestes zuerst, solange nichts aus einem anderen Issue fehlt.
+> Nur in deinen Ordnern arbeiten, auf deinen Zweig pushen, im Issue melden was fertig ist (mit Commit) und es schließen.
+> Brauchst du etwas von mir: Issue mit `für-dich`. Brauchst du etwas von einer anderen Rolle: Issue mit deren Label.
+> Wenn dich die Leitstelle anstößt, schau in deine Issues.
 
-Rollen und Labels: Integration & Spielsysteme (`rolle:spiel`), Quest-Autor (`rolle:quests`), Figuren & 3D (`rolle:figuren`), Worldbuilding (`rolle:welt`), Konzept & Review (`rolle:review`).
+**Worldbuilding** – wie oben, mit `rolle:welt` und „Sitzung **Worldbuilding**“.
 
-## 7. Was der Nutzer tut
+**Integration & Spielsysteme**
+> Du bist die Sitzung **Integration & Spielsysteme** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
+> Dauerauftrag: Arbeite offene Issues mit `rolle:spiel` selbstständig ab (Reihenfolge nach Phase, dann Abhängigkeiten).
+> Führe die Zweige der anderen Rollen zusammen, wenn ihr Workflow „Tests“ grün ist, und stelle live wie bisher.
+> Live nur mit grünen Tests. Nach jeder abgeschlossenen Phase: Issue `für-dich` „Phase N bitte im Spiel testen“ anlegen und auf mein Okay warten, bevor die nächste Phase live geht.
+> Solange es keine Sitzung Quest-Autor gibt, übernimmst du auch `rolle:quests`.
+
+**Leitstelle (Konzept, Quests & Fahrplan)**
+> Du bist die **Leitstelle** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
+> Dauerauftrag: Halte den Fahrplan nach. Schreibe Konzepte, lege daraus Issues mit Rollen-Label und Abhängigkeiten an.
+> Prüfe regelmäßig das Issue-Brett: Was ist erledigt? Was ist jetzt frei? Stoße die zuständige Sitzung per Nachricht an.
+> Prüfe fertige Arbeit gegen Konzept und Kanon (Befunde als Issue). Führe `doku/STAND.md` und `doku/KANON.md` nach.
+> Wenn eine Phase fertig ist: mir eine kurze Zusammenfassung schicken. Antworten aus `für-dich`-Issues in den Kanon übernehmen.
+
+**Bugs** *(optional)*
+> Du bist die Sitzung **Bugs** für Riftmere. Lies `CLAUDE.md` und `doku/ARBEITSWEISE.md`.
+> Dauerauftrag: Fehlerberichte (von mir, aus dem Spiel-Feedback, aus roten Tests) nachstellen und als Issue mit der zuständigen Rolle,
+> Schritten zum Nachstellen und Dringlichkeit anlegen. Kleine Fehler in Tests oder Doku darfst du selbst beheben; Spielcode nur über Issues.
+
+Rollen und Labels: Integration & Spielsysteme (`rolle:spiel`), Quest-Autor (`rolle:quests`), Figuren & 3D (`rolle:figuren`), Worldbuilding (`rolle:welt`), Leitstelle / Konzept & Review (`rolle:review`).
+
+## 7. Takt (automatisch)
+
+Eine geplante Aufgabe weckt die Leitstelle regelmäßig (Vorschlag: alle 2 Stunden tagsüber). Sie prüft das Issue-Brett, stößt Sitzungen an,
+führt `doku/STAND.md` nach und meldet dem Nutzer fertige Phasen. Nachts und am Wochenende kein Takt (spart Nutzung).
+
+## 8. Was der Nutzer tut
 
 - Entscheidungen treffen (Issues mit `für-dich`, offene Fragen in den Konzept-PDFs).
 - Supabase-Migrationen einspielen, wenn ein Issue das verlangt (Datei im Ordner `supabase/`, unverändert in den SQL-Editor).
