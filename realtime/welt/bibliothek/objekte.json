@@ -8075,6 +8075,64 @@
     "puls_ton": 250,
     "puls_breite": 38
    }
+  },
+  {
+   "id": "dorf_brunnen_3d",
+   "name": "Brunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/dorf_brunnen_3d.webp",
+   "groesse": [
+    94,
+    166
+   ],
+   "anker": [
+    0.5,
+    0.9398
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/brunnen (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/brunnen.glb",
+    "wind": 0,
+    "puls_ton": 300,
+    "puls_breite": 1
+   }
+  },
+  {
+   "id": "dorf_holzstapel_3d",
+   "name": "Holzstapel mit Hackklotz",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/dorf_holzstapel_3d.webp",
+   "groesse": [
+    78,
+    85
+   ],
+   "anker": [
+    0.3974,
+    0.9059
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/holzstapel (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/holzstapel.glb",
+    "wind": 0
+   }
   }
  ]
 }

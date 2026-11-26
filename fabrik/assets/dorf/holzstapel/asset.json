@@ -1,0 +1,10 @@
+{
+  "id": "dorf.holzstapel",
+  "name": "Holzstapel mit Hackklotz",
+  "kategorie": "dorf",
+  "aktuell": "v001",
+  "hoehe_m": 1.1,
+  "beschreibung": "aufgeschichtete Scheite, Hackklotz mit eingeschlagenem Beil, Späne",
+  "status": "Meshy; Spieldatei img/objekte3d/dorf/holzstapel.glb (live 3D, kein Wind); Weltobjekt dorf_holzstapel_3d; noch nicht platziert",
+  "herkunft": "Meshy"
+}
