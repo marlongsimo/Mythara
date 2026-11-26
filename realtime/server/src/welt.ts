@@ -19,12 +19,13 @@ import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, unt
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen } from "./inventar";
-import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
 import { pflanzenEinrichten, pflueckStart, pflueckStop, pflueckTakt, pflueckWeg, abgeerntete } from "./pflanzen";
 import { lichterEinrichten, lichtStart, lichtStop, lichtTakt, lichtWeg, verloschene } from "./lichter";
+import { fischEinrichten, fischStart, fischStop, fischTakt, fischWeg, fischMoment, leereFangstellen, wurmEinrichten, wurmStart, wurmStop, wurmTakt, wurmWeg, leereWurmstellen } from "./fischen";
 import { handwerkEinrichten, handwerkStart, handwerkStop, handwerkGlut, handwerkTakt, handwerkWeg } from "./handwerk";
 import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
 import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG, ladenOffen } from "../../shared/laeden";
@@ -44,7 +45,7 @@ export const WELTORTE = new Set([...WELTREGIONEN, ...ORTREIHE]);
 export function stelleMerken(H: Pick<WeltHilfen, "sb">, nutzer: string, region: string, x: number | null, y: number | null): Promise<unknown> {
   return H.sb("/rest/v1/rpc/rpg_echtzeit_position_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_region: region, p_x: x, p_y: y }) }).catch((e) => console.error("Stelle merken:", (e as Error).message)); }
 /** Holz, Bergbau, Pflücken, Handwerk: es läuft immer nur eins */
-const alleStop = (s: Spieler) => { holzStop(s); bergStop(s); pflueckStop(s); lichtStop(s); handwerkStop(s); };
+const alleStop = (s: Spieler) => { holzStop(s); bergStop(s); pflueckStop(s); lichtStop(s); fischStop(s); wurmStop(s); handwerkStop(s); };
 const spieler = new Set<Spieler>(); let naechste = 1, holzBereit = false;
 /** Heim-Teleport: je Konto höchstens alle 5 Minuten (der Server merkt sich die Zeit – Browser-Speicher löschen oder ein anderes Gerät helfen nicht) */
 /** Wie viele gerade in der Welt sind (Weltenwahl auf der Willkommensseite) */
@@ -60,7 +61,7 @@ const wegsteinZiele = new Map<string, { x: number; y: number; region: string; bi
 function teleportZiel(H: Pick<WeltHilfen, "sb">, nutzer: string, x: number, y: number, region: string): void { wegsteinZiele.set(nutzer, { x, y, region, bis: Date.now() + 120_000 }); void stelleMerken(H, nutzer, region, x, y); }
 /** Teleport-Ziel dieses Kontos abholen (einmal, höchstens 2 min alt) */
 export function wegsteinZielNehmen(nutzer: string): { x: number; y: number; region: string } | null { const z = wegsteinZiele.get(nutzer); wegsteinZiele.delete(nutzer); return z && z.bis > Date.now() ? z : null; }
-setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); lichtTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
+setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); lichtTakt(); fischTakt(); wurmTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
    „freunde“: Liste mit online / im Kampf / zuletzt online · „zufreund“: Teleport zu einem Freund (nur wenn er online ist, nicht im Kampf steht
    und sein Gebiet für einen selbst schon freigeschaltet ist) · „freundanfrage“: dem anderen Bescheid geben (die Anfrage selbst stellt der Browser
@@ -71,6 +72,7 @@ export type Heilung = { fehler: string } | { n: number; lp: number; max: number;
 let heiler: (nutzer: string, v: Verbrauch) => Promise<Heilung> = async () => ({ fehler: "Gerade nicht möglich." });
 export function heilenMit(f: typeof heiler): void { heiler = f; }
 /** Essen: höchstens ein Bissen je 3 Ticks (1,5 s) */
+/** Text des Heilers bei vollem Leben (index.ts heilenMit) */ export const VOLLES_LEBEN = "Du hast schon volles Leben.";
 const BISSEN_MS = 1500, bissenZuletzt = new Map<string, number>();
 /** Heilende Stellen: wann zuletzt gebetet (Stelle:Konto → Zeit) */
 const gebetet = new Map<string, number>();
@@ -108,7 +110,7 @@ function system(ort: string, text: string, ausser?: Spieler) { for (const s of a
 
 export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   if (!holzBereit) { holzBereit = true; holzEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); bergEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler });
-    pflanzenEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); lichterEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); handwerkEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m) }); } /* Holzfällerei (holz.ts): einmal einrichten */
+    pflanzenEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); lichterEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); fischEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); wurmEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m), alle: () => spieler }); handwerkEinrichten({ sb: H.sb, senden: (x, m) => senden(x as Spieler, m) }); } /* Holzfällerei (holz.ts): einmal einrichten */
   const ort = url.searchParams.get("ort") || ""; if (!WELTORTE.has(ort)) { ws.close(4400, "ort unbekannt"); return; } if (spieler.size >= MAX_WELT) { ws.close(1013, "voll"); return; }
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   const kanal: { k: Kanal | null } = { k: null }; /* Zonen Stufe 3: die Kampfwelt als Kanal dieser Verbindung */
@@ -150,7 +152,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       { const ich = s; void inventarLaden(H.sb, nutzer).then((iv) => { if (!iv || !spieler.has(ich)) return; senden(ich, { t: "inventar", inv: iv.inv }); ich.invAus = inventarHoeren(nutzer, (inv) => senden(ich, { t: "inventar", inv })); }); } /* das Inventar gehört dem Server (Migration 043) */
       senden(s, { t: "baeume", weg: gefaellte() }); /* Holzfällerei: welche Bäume gerade Stumpf sind */
       senden(s, { t: "adern", weg: leereAdern() }); /* Bergbau: welche Adern gerade leer sind */
-      senden(s, { t: "pflanzen", weg: abgeerntete() }); senden(s, { t: "lichter", weg: verloschene() }); /* Splitterbinden: verloschene Seelenlichter */ /* Handwerk: welche Flachs- und Hanfpflanzen abgeerntet sind */
+      senden(s, { t: "pflanzen", weg: abgeerntete() }); senden(s, { t: "lichter", weg: verloschene() }); senden(s, { t: "fanggruende", weg: leereFangstellen() }); senden(s, { t: "wurmacker", weg: leereWurmstellen() }); /* Fischen: welche Stellen gerade ruhen */ /* Splitterbinden: verloschene Seelenlichter */ /* Handwerk: welche Flachs- und Hanfpflanzen abgeerntet sind */
       { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", b: q, punkte: punkte(nutzer) }); ich.questAus = questHoeren(nutzer, (nb, p) => senden(ich, { t: "quests", b: nb, punkte: p }));
         const sp = regionGesperrt(nutzer, ich.ort); if (sp && sp.zurueck) senden(ich, { t: "zurueck", x: sp.zurueck.x, y: sp.zurueck.y, text: sp.zurueck.text }); }); } /* Quests (Migration 045); gesperrte Regionen nur mit Freigabe (QuestDef.freigaben) */
       return; }
@@ -175,9 +177,14 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         const essen = Boolean(V && V.art === "Essen"), bissen = bissenZuletzt.get(s.nutzer) || 0;
         if (!G || !V) fehler = "Das kann man nicht trinken.";
         else if (essen && jetzt - bissen < BISSEN_MS) fehler = "Du kaust noch."; /* Essen: kleine Abklingzeit je Bissen (3 Ticks) */
-        else { const r = await heiler(s.nutzer, V); if (essen && !("fehler" in r)) bissenZuletzt.set(s.nutzer, jetzt); if ("fehler" in r) fehler = r.fehler;
+        else { const r0 = await heiler(s.nutzer, V);
+          /* Essen mit Wirkung (Fischsuppe …): auch mit vollem Leben – dann nur die Wirkung */
+          const r = "fehler" in r0 && V.wirkung && r0.fehler === VOLLES_LEBEN ? null : r0;
+          if (r && "fehler" in r) fehler = r.fehler;
           else if (trankNehmen(H.sb, s.nutzer, e.i as number) !== G.trank) fehler = "Der Trank ist nicht mehr da.";
-          else { r.anwenden(); senden(s, { t: "getrunken", g: G.id, n: r.n, lp: r.lp, max: r.max }); } } }
+          else { if (essen) bissenZuletzt.set(s.nutzer, jetzt); if (r) r.anwenden();
+            const wirkungen = V.wirkung ? wirkungSetzen(H.sb, s.nutzer, V.wirkung) : undefined;
+            senden(s, { t: "getrunken", g: G.id, n: r ? r.n : 0, ...(r ? { lp: r.lp, max: r.max } : {}), ...(wirkungen ? { wirkung: V.wirkung, wirkungen } : {}) }); } } }
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }
     else if (e.t === "beten") { /* Heilende Stelle (shared/heilstellen.ts): nur mit Schalter, nah dran, Abklingzeit je Konto */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Beten geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
@@ -204,6 +211,13 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "berg") { /* Bergbau (bergbau.ts): abbauen, Riss, aufhören */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = bergStart(s, e.id); if (f) senden(s, { t: "berg", tat: "nein", id: e.id, text: f }); }
       else if (e.tat === "riss") bergRiss(s); else if (e.tat === "stop") bergStop(s); }
+    else if (e.t === "fisch") { /* Fischen (fischen.ts) */
+      if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = fischStart(s, e.id); if (f) senden(s, { t: "fisch", tat: "nein", id: e.id, text: f }); }
+      else if (e.tat === "stroemung") fischMoment(s);
+      else if (e.tat === "stop") fischStop(s); }
+    else if (e.t === "wurm") { /* Würmer graben (fischen.ts) */
+      if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = wurmStart(s, e.id); if (f) senden(s, { t: "wurm", tat: "nein", id: e.id, text: f }); }
+      else if (e.tat === "stop") wurmStop(s); }
     else if (e.t === "licht") { /* Splitterbinden: Seelenlichter einfangen (lichter.ts) */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = lichtStart(s, e.id); if (f) senden(s, { t: "licht", tat: "nein", id: e.id, text: f }); }
       else if (e.tat === "stop") lichtStop(s); }
@@ -284,7 +298,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       try { await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: s.nutzer, p_held: h }) }); } catch (x) { console.error("Held setzen:", (x as Error).message); }
       const ep = await H.epLesen(s.nutzer).catch(() => ({} as Record<string, number>)); s.held = h; s.stufe = stufeAusEp(Number(ep[h]) || 0); s.geaendert = true; senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort: s.ort }); }
   });
-  const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); lichtWeg(s); handwerkWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
+  const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); lichtWeg(s); fischWeg(s); wurmWeg(s); handwerkWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
   ws.on("close", (code: number, grund: Buffer) => { if (kanal.k) kanal.k.weg(code === 1000 ? 1006 : code, String(grund || "")); weg(); }); ws.on("error", () => { if (kanal.k) kanal.k.weg(1006, ""); weg(); });
   /* Herzschlag: alle 15 s ein Ping; bleiben zwei unbeantwortet, ist die Verbindung tot (iOS im Hintergrund) – weg damit, samt Kampfkanal und Gerätesperre */
   let pingsOffen = 0; ws.on("pong", () => { pingsOffen = 0; });

@@ -7,9 +7,17 @@
  */
 import { GEGENSTAENDE, Platz, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
 import { aktiverHeld } from "./held";
+import { Wirkung, wirkungenPruefen, wirkungenAktiv, ausdauerMal } from "../../shared/wirkungen";
+import { AUSDAUER } from "./sprintzustand";
+/** Laufende Wirkungen (vom Server; abgelaufene fallen weg) */
+export const wirkungenJetzt = (): Wirkung[] => wirkungenAktiv(vomServer ? vomServer.wirkungen : []);
+/** Wirkungen haben sich geändert: Ausdauer-Erholung anpassen, HUD neu zeichnen (ez-wirkungen) */
+function wirkungenMelden(): void { const w = wirkungenJetzt(); AUSDAUER.erholMal = ausdauerMal(w); try { window.dispatchEvent(new CustomEvent("ez-wirkungen", { detail: w })); } catch { /* Tests ohne Fenster */ } }
+/** Nach dem Essen (getrunken mit wirkungen): sofort übernehmen, ohne auf das nächste Inventar zu warten */
+export function wirkungenSetzen(roh: unknown): void { if (!vomServer) return; vomServer.wirkungen = wirkungenPruefen(roh); wirkungenMelden(); }
 
 /** rucksack: je Fach die Gegenstands-id; anzahl: je Fach die Menge (Stapel, z. B. Splitter) */
-export interface Inventar { angelegt: Partial<Record<Platz, string>>; rucksack: string[]; anzahl?: number[]; waffe?: string; /** Bank (nur mit Server): [Gegenstand, Menge] */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … 9 */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …) */ berufe?: Record<string, number>; /** Ladungen (Wegstein …, nur der Server schreibt) */ ladungen?: Record<string, number> }
+export interface Inventar { /** laufende Wirkungen (Essen, shared/wirkungen.ts) */ wirkungen?: Wirkung[]; angelegt: Partial<Record<Platz, string>>; rucksack: string[]; anzahl?: number[]; waffe?: string; /** Bank (nur mit Server): [Gegenstand, Menge] */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … 9 */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …) */ berufe?: Record<string, number>; /** Ladungen (Wegstein …, nur der Server schreibt) */ ladungen?: Record<string, number> }
 const SCHLUESSEL = "ez_inventar";
 function lies(): Inventar | null { try { const v = JSON.parse(localStorage.getItem(SCHLUESSEL) || "null"); return v && v.angelegt && Array.isArray(v.rucksack) ? v : null; } catch { return null; } }
 function schreib(i: Inventar) { try { localStorage.setItem(SCHLUESSEL, JSON.stringify(i)); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-inventar", { detail: i })); }
@@ -21,8 +29,8 @@ export const inventarVomServerDa = (): boolean => vomServer !== null;
 /** Die Welt-Verbindung meldet sich als Weg zum Server an */
 export function inventarSender(f: ((m: object) => void) | null): void { sender = f; }
 /** Der Server schickt das Inventar (nach dem Anmelden und nach jeder Änderung) */
-export function inventarVomServer(roh: { angelegt?: Record<string, string>; rucksack?: Fach[]; bank?: [string, number][]; bankTabs?: Record<string, number>; berufe?: Record<string, number>; ladungen?: Record<string, number> }): void { const h = aktiverHeld(), faecher = (roh.rucksack || []).filter((f) => GEGENSTAENDE[fachG(f)]);
-  vomServer = { angelegt: Object.fromEntries(Object.entries(roh.angelegt || {}).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"], rucksack: faecher.map(fachG), anzahl: faecher.map(fachN), waffe: h ? h.waffe : undefined, bank: (Array.isArray(roh.bank) ? roh.bank : []).filter((b) => Array.isArray(b) && GEGENSTAENDE[b[0]] && b[1] > 0), berufe: roh.berufe && typeof roh.berufe === "object" ? { ...roh.berufe } : {}, bankTabs: roh.bankTabs && typeof roh.bankTabs === "object" ? { ...roh.bankTabs } : {}, ladungen: roh.ladungen && typeof roh.ladungen === "object" ? { ...roh.ladungen } : {} }; schreib(vomServer); }
+export function inventarVomServer(roh: { angelegt?: Record<string, string>; rucksack?: Fach[]; bank?: [string, number][]; bankTabs?: Record<string, number>; berufe?: Record<string, number>; ladungen?: Record<string, number>; wirkungen?: unknown }): void { const h = aktiverHeld(), faecher = (roh.rucksack || []).filter((f) => GEGENSTAENDE[fachG(f)]);
+  vomServer = { angelegt: Object.fromEntries(Object.entries(roh.angelegt || {}).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"], rucksack: faecher.map(fachG), anzahl: faecher.map(fachN), waffe: h ? h.waffe : undefined, bank: (Array.isArray(roh.bank) ? roh.bank : []).filter((b) => Array.isArray(b) && GEGENSTAENDE[b[0]] && b[1] > 0), berufe: roh.berufe && typeof roh.berufe === "object" ? { ...roh.berufe } : {}, bankTabs: roh.bankTabs && typeof roh.bankTabs === "object" ? { ...roh.bankTabs } : {}, ladungen: roh.ladungen && typeof roh.ladungen === "object" ? { ...roh.ladungen } : {}, wirkungen: wirkungenPruefen(roh.wirkungen) }; schreib(vomServer); wirkungenMelden(); }
 /** Gehört das Inventar dem Server (mit Konto verbunden)? */
 export const inventarAmServer = (): boolean => Boolean(vomServer && sender);
 const bitten = (m: object): boolean => { if (!vomServer || !sender) return false; sender(m); return true; };
@@ -39,7 +47,7 @@ export function bankBitten(m: { tat: "ein" | "ab"; g: string; menge: number; tab
 
 /** Das Inventar (neu aus der Startwaffe, wenn noch keins da ist oder die Startwaffe im Editor geändert wurde) */
 export function inventar(): Inventar {
-  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) }, bankTabs: { ...(vomServer.bankTabs || {}) } , ladungen: { ...(vomServer.ladungen || {}) } };
+  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) }, bankTabs: { ...(vomServer.bankTabs || {}) } , ladungen: { ...(vomServer.ladungen || {}) }, wirkungen: (vomServer.wirkungen || []).map((w) => ({ ...w })) };
   const h = aktiverHeld(), da = lies();
   if (da && (!h || da.waffe === h.waffe)) { const angelegt = Object.fromEntries(Object.entries(da.angelegt).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"]; /* nicht mehr vorhandene Gegenstände (etwa das frühere Leinenhemd) fallen weg */
     return { angelegt, rucksack: [...da.rucksack].filter((g) => GEGENSTAENDE[g]), waffe: da.waffe }; }

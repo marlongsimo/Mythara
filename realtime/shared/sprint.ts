@@ -20,7 +20,7 @@ export const erholDauer = (geschick: number): number => Math.ceil(AUSDAUER_MAX /
 
 /** Der Zustand eines Sprinters; schritt() rechnet in ganzen Ticks weiter. wert in Prozent (0–100) */
 export class Ausdauer {
-  einheiten = AUSDAUER_MAX; an = false; private rest = 0; private ruhe = SPRINT_ERHOLUNG_NACH;
+  einheiten = AUSDAUER_MAX; an = false; /** Faktor auf die Erholung (Wirkungen, z. B. Bauerneintopf 1.25) */ erholMal = 1; private rest = 0; private ruhe = SPRINT_ERHOLUNG_NACH;
   get wert(): number { return this.einheiten / 100; }
   set wert(p: number) { this.einheiten = Math.max(0, Math.min(AUSDAUER_MAX, Math.round(p * 100))); }
   /** Sprint an/aus; an nur ab 20 %. Zurück: ob er jetzt läuft */
@@ -31,7 +31,7 @@ export class Ausdauer {
     this.rest += dt; while (this.rest >= SPRINT_TICK) { this.rest -= SPRINT_TICK;
       if (this.an && laeuft) { this.einheiten = Math.max(0, this.einheiten - verbrauchJeTick(geschick)); this.ruhe = 0; if (this.einheiten <= 0) this.an = false; }
       else if (this.ruhe < SPRINT_ERHOLUNG_NACH) this.ruhe++;
-      else this.einheiten = Math.min(AUSDAUER_MAX, this.einheiten + erholungJeTick(geschick)); } }
+      else this.einheiten = Math.min(AUSDAUER_MAX, this.einheiten + erholungJeTick(geschick) * this.erholMal); } }
   /** Tempo-Faktor jetzt */
   get faktor(): number { return this.an && this.einheiten > 0 ? SPRINT_TEMPO : 1; }
 }
