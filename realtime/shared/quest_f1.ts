@@ -14,7 +14,7 @@ import { KORD, GRASENDE, KANAL, GLUTBRUNN } from "./quest_f_orte";
 
 export const F1 = "glutsande_ende_des_grases";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-const HILFE = ["Übers Ostufer, immer nach Osten, bis das Gras aufhört. Dann ist es Sand. Viel Sand.",
+const HILFE = ["Übers Ostufer, durch den Pass im Südosten, bis das Gras aufhört. Dann ist es Sand. Viel Sand.",
   "Am alten Kanal lagern Räuber. Die lassen keinen durch, der allein kommt. Du bist allein. Also pass auf.",
   "Glutbrunn liegt am Strom. Gib den Brief der Händlerin an der Karawanenrast. Sie heißt Selma. Hieß sie jedenfalls."];
 
@@ -35,7 +35,7 @@ export const QUEST_F1: QuestDef = {
   ],
   schritte: [
     { id: "gras", text: "Das Ende des Grases erreichen", ereignis: { art: "objekt", id: "f1_grasende" }, wo: GRASENDE,
-      log: "Setz mit der Fähre ans Ostufer über und geh nach Osten, bis das Gras aufhört – zur Wegmarke „Ende des Grases“." },
+      log: "Setz mit der Fähre ans Ostufer über und geh durch den Pass im Südosten, bis das Gras aufhört – zur Wegmarke „Ende des Grases“." },
     { id: "raeuber", text: "Drei Karawanenräuber am Kanal besiegen", ereignis: { art: "erlegen", typ: "karawanenraeuber" }, anzahl: 3, nach: ["gras"], wo: KANAL,
       log: "Am ausgetrockneten Kanal lauern Karawanenräuber. Besieg drei ({n:raeuber}) – sie fliehen, wenn es eng wird." },
   ],
@@ -57,7 +57,7 @@ export const QUEST_F1: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich bringe deinen Brief. (Quest annehmen)", folge: [{ f: { start: true, geben: [{ g: "kords_brief", name: "Kords Brief", fehlt: true }],
-          zeilen: ["Gut. Übers Ostufer, nach Osten, bis das Gras aufhört.", "An Selma Dornfeld, an der Karawanenrast. Wenn sie noch da ist. …Wenn nicht, wirf ihn in den Strom."] } }] },
+          zeilen: ["Gut. Übers Ostufer, durch den Pass im Südosten, bis das Gras aufhört.", "An Selma Dornfeld, an der Karawanenrast. Wenn sie noch da ist. …Wenn nicht, wirf ihn in den Strom."] } }] },
         { id: "brief_wer", text: "An wen ist der Brief?", folge: [{ f: { weiter: true, zeilen: ["Geht dich nichts an.", "…Eine Händlerin. Sie kam mit der Karawane bis zum Fluss, jeden Herbst. Dann riss die Kette, und keiner kam mehr."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Zwanzig Jahre hat er gewartet. Auf einen Tag kommt's nicht an."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },

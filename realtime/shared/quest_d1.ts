@@ -3,7 +3,7 @@
  * Grundlage: doku/konzepte/phase-7.md. Fährmann Kord Weller (Fährhaus Graufurt), Hauptfrau Merit Stahl (Bergfried), die Schmiedin der Stadt.
  * Merit gibt die Erlaubnis gegen das Wappen aus A2. 6 Splittereisenerz in der Furtklamm, an der Esse Barren, am Amboss 8 Kettenglieder (Quest-Rezept),
  * das Kettenschloss bei der Schmiedin (QUER: sie braucht Meilerpech gegen den Flussnebel – von Köhler Ulf im Nordwald, wie in C1), die Kette an der Winde des Westanlegers einhängen, erste Überfahrt mit Kord.
- * Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter faehre_frei (Fähre fährt, Ostufer offen).
+ * Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter faehre_frei (die Fähre fährt: die Abkürzung zum Ostufer – zu Fuß geht es auch, der lange Weg über den Pass in den Glutsanden, #74).
  * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Figuren #37, Spiel nach Phase 6). Stellen aus der Welt (#36, Region graufurt, Ursprung 6656 | 6400).
@@ -26,7 +26,7 @@ export const QUEST_D1: QuestDef = {
   logNeu: "Am Fährhaus von Graufurt liegt die Fähre schief am Anleger. Ihre Kette ist gerissen. Der Fährmann sitzt daneben und flickt ein Netz, das nicht kaputt ist.",
   logAngeboten: "Fährmann Kord Weller in Graufurt wartet, ob du die Fährkette neu schmiedest.",
   logAbgabe: "Die Kette hängt an der Winde. Sag Kord Weller Bescheid – die erste Überfahrt gehört dir.",
-  logFertig: "Die Fähre von Graufurt fährt wieder. Kord Weller setzt dich ans Ostufer über, wann immer du willst.",
+  logFertig: "Die Fähre von Graufurt fährt wieder. Kord Weller setzt dich ans Ostufer über, wann immer du willst – kürzer als der lange Weg durch die Glutsande.",
   geber: "kord",
   figuren: [
     { id: "kord", name: "Kord Weller", modell: "npc.kord", x: KORD[0], y: KORD[1], blick: [-1, 0] },
@@ -80,7 +80,7 @@ export const QUEST_D1: QuestDef = {
       optionen: [
         { id: "annehmen", text: "Ich schmiede eine neue Kette. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Du? Hm. Splittereisen schmiedet nicht jeder.",
           "Aber erst die Hauptfrau. Merit Stahl, oben im Bergfried. Die Fähre gehört der Wacht, nicht mir. Ich fahr sie nur."] } }] },
-        { id: "licht", text: "Was für ein Licht?", folge: [{ f: { weiter: true, zeilen: ["Drüben, am Ostufer. Im Turm. Grün.", "Seit die Kette riss, brennt es jede Nacht. Ich schau nicht hin. Meistens."] } }] },
+        { id: "licht", text: "Was für ein Licht?", folge: [{ f: { weiter: true, zeilen: ["Drüben, am Ostufer. Im Turm. Grün.", "Seit die Kette riss, brennt es jede Nacht. Ich schau nicht hin. Meistens.", "Hinkommen? Zu Fuß, durch den Sand im Süden und über den Pass. Tage. Mit der Fähre: ein Lied lang."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Der Fluss läuft nicht weg. Ich auch nicht."] } }] },
         { id: "was_fehlt", text: "Was muss ich können?", folge: [{ f: { weiter: true, zeilen: ["Schmieden 45, Bergbau 45. Und die Hauptfrau muss dich kennen – mit dem Wappen mit dem Turm.", "Steht alles in deinem Questlog."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
@@ -134,7 +134,7 @@ export const QUEST_D1: QuestDef = {
   },
   sperren: { herstellen: { kettenglied: [{ wenn: { phase: ["neu", "fertig"] }, text: "Kettenglieder schmiedest du nur für Kords Fähre." }, { wenn: { erledigt: ["glieder"] }, text: "Acht Glieder hast du schon." }] } },
   schalter: { faehre_frei: FERTIG },
-  belohnungText: "Belohnung: 1.000 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter · danach: die Fähre fährt, das Ostufer ist offen",
+  belohnungText: "Belohnung: 1.000 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter · danach: die Fähre fährt – der kurze Weg zum Ostufer",
   belohnung: { berufe: { schmieden: 1000, bergbau: 1000 }, splitter: 400 },
   punkte: 2,
 };

@@ -20,7 +20,7 @@ const HILFE = ["Der Turm steht oben auf der Anhöhe. Die Tür hat das Wappen –
   "Drinnen sollen Wächter stehen. Steinerne. Die alten Leute sagen, die haben nie aufgehört zu wachen.", "Ganz oben brennt das Licht. Bring der Hauptfrau, was du findest."];
 
 export const QUEST_D2: QuestDef = {
-  id: D2, titel: "Das grüne Licht", ort: "Ostufer · Turm · Graufurt", start: "Sprich mit Kord Weller am Ostanleger, wenn er dich übergesetzt hat.",
+  id: D2, titel: "Das grüne Licht", ort: "Ostufer · Turm · Graufurt", start: "Sprich mit Kord Weller am Ostanleger, gegenüber von Graufurt.",
   logNeu: "Am Ostufer steht auf einer Anhöhe ein Turm. In seinem obersten Fenster brennt ein grünes Licht – jede Nacht, seit die Fährkette riss.",
   logAngeboten: "Kord Weller am Ostanleger hat dir vom grünen Licht im Turm erzählt.",
   logAbgabe: "Bring den Splitterkern aus dem Signalfeuer zu Hauptfrau Merit Stahl in den Bergfried von Graufurt.",
@@ -66,7 +66,7 @@ export const QUEST_D2: QuestDef = {
     kord_ost: {
       reden: [
         { wenn: { ...NEU, voraussetzungen: true }, zeilen: ["Da. Siehst du's? Seit die Kette riss, brennt da drüben dieses Licht.", "Ich fahr dich her. Weiter geh ich nicht."], antworten: ["annehmen", "spaeter"] },
-        { wenn: NEU, zeilen: ["Hier fährt keiner rüber. Noch nicht."], antworten: ["tschuess"] },
+        { wenn: NEU, zeilen: ["Zu Fuß hergekommen? Über den Pass? Respekt. Ich fahr dich zurück, wenn du willst."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Dunkel da oben. Endlich. Ich schlaf wieder."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["kern"] }, zeilen: ["Das Licht ist aus! Ich hab's gesehen, vom Boot aus.", "Was hast du da oben gefunden? …Nein. Sag's der Hauptfrau, nicht mir."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["tuer"] }, zeilen: ["Du warst drin? Und kommst wieder raus? Respekt."], antworten: ["hilfe", "tschuess"] },

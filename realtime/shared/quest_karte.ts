@@ -2,7 +2,7 @@
  * Riftmere – Quer-Quest „Die Karte des Boten“ (Phase 9), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-9.md (neuer Grundsatz: Quests über Regionsgrenzen). Startet bei Ysolde (Geist auf dem Grünen Turm, D2): „Der Bote ist nie in Grauwacht angekommen.“
  * Fünf Stücke der Karte, in beliebiger Reihenfolge – wer weiter ist, sammelt schneller:
- *   1 Waldmark – Bürgermeister Hagan Voss im Rathaus (ein Rätsel um das alte Archiv)
+ *   1 Waldmark – Bürgermeister Hagan Voss lässt dich ins Archiv hinter dem Ratssaal, wenn du sein Rätsel löst (Gebiet rathaus_archiv, #74)
  *   2 Rabenmoor – Mutter Hedda (sie gibt es gegen eine schwache Steinhaut, Kräuterkunde 30)
  *   3 Graufurt – Merit Stahl verwahrt es im Bergfried
  *   4 Grauwacht – im Grab des Grauen Hauptmanns (erst nach E4)
@@ -18,7 +18,7 @@ import type { QuestDef, Bed, Option } from "./questbau";
 import { D2 } from "./quest_d2";
 import { E4 } from "./quest_e4";
 import { F3 } from "./quest_f3";
-import { YSOLDE, HAGAN, HEDDA, MERIT, SARKOPHAG, TEMPEL } from "./quest_f_orte";
+import { YSOLDE, HAGAN, ARCHIV, HEDDA, MERIT, SARKOPHAG, TEMPEL } from "./quest_f_orte";
 
 export const KARTE = "festland_karte_des_boten";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
@@ -46,7 +46,9 @@ export const QUEST_KARTE: QuestDef = {
   ],
   voraussetzungen: [{ text: "„Das grüne Licht“ abgeschlossen", wenn: { quest: { id: D2, phase: ["fertig"] } } }],
   schritte: [
-    { id: "stueck_1", text: "Das Stück der Karte in der Waldmark", ereignis: { art: "antwort" }, bei: "hagan", gruppe: "karte", wo: HAGAN,
+    { id: "archiv", text: "Hagan Voss um das Archiv bitten", ereignis: { art: "antwort" }, bei: "hagan", wo: HAGAN,
+      log: "Bürgermeister Hagan Voss in der Waldmark hütet das Archiv hinter dem Ratssaal. Frag ihn, ob du hinein darfst." },
+    { id: "stueck_1", text: "Das Stück der Karte in der Waldmark", ereignis: { art: "objekt", id: "karte_archiv" }, nach: ["archiv"], gruppe: "karte", wo: ARCHIV,
       log: "Sammle die fünf Stücke der Karte des Boten ({n:karte}): in der Waldmark, im Rabenmoor, in Graufurt, in Grauwacht und in den Glutsanden." },
     { id: "stueck_2", text: "Das Stück der Karte im Rabenmoor", ereignis: { art: "antwort" }, bei: "hedda", gruppe: "karte", wo: HEDDA,
       log: "Sammle die fünf Stücke der Karte des Boten ({n:karte}): in der Waldmark, im Rabenmoor, in Graufurt, in Grauwacht und in den Glutsanden." },
@@ -58,12 +60,16 @@ export const QUEST_KARTE: QuestDef = {
       log: "Sammle die fünf Stücke der Karte des Boten ({n:karte}): in der Waldmark, im Rabenmoor, in Graufurt, in Grauwacht und in den Glutsanden." },
   ],
   objekte: [
+    { id: "karte_archiv", name: "Archivregal", x: ARCHIV[0], y: ARCHIV[1], modell: "stelle", tat: "untersuchen", tatText: "Das Regal durchsuchen", weit: 2.5, geben: [{ g: "kartenstueck_1" }],
+      text: "Zwischen Steuerlisten und Grenzbriefen steckt ein Pergament, das nicht dazugehört. Am Rand, in zierlicher Schrift: „Weiter nach Rabenmoor. Die Kräuterfrau weiß, wo man trocken schläft.“ ({n:karte})",
+      schon: "Das Regal riecht nach Staub und alten Steuern.", sonst: [{ wenn: NEU, text: "Ein Regal voller Akten." }, { wenn: FERTIG, text: "Ein Regal voller Akten." },
+        { wenn: { offen: ["archiv"] }, text: "Das Archiv des Bürgermeisters. Ohne seine Erlaubnis rührst du hier nichts an." }] },
     { id: "karte_sarkophag", name: "Sarkophag des Hauptmanns", x: SARKOPHAG[0], y: SARKOPHAG[1], modell: "stelle", tat: "untersuchen", tatText: "Den Sarkophag durchsuchen", weit: 2.5,
       braucht: { wenn: { quest: { id: E4, phase: ["fertig"] } }, text: "Der Sarkophag des Grauen Hauptmanns. Solange er nicht ruht, rührst du hier nichts an. (Erst nach „Das Grab des Grauen Hauptmanns“.)" },
       geben: [{ g: "kartenstueck_4" }],
       text: "Unter der Platte, in der Hand des Hauptmanns, steckt ein gefaltetes Pergament. Ein Stück Karte – Grauwacht ist darauf eingezeichnet, mit einem Pfeil nach Süden, in den Sand ({n:karte}).",
       schon: "Der Sarkophag ist leer bis auf Staub.", sonst: [{ wenn: NEU, text: "Ein schwerer Sarkophag aus grauem Stein." }, { wenn: FERTIG, text: "Der Sarkophag ist leer bis auf Staub." }] },
-    { id: "karte_tempel", name: "Sandverwehte Nische", x: TEMPEL.kammer[0] + 2, y: TEMPEL.kammer[1], modell: "stelle", tat: "untersuchen", tatText: "Die Nische durchsuchen", weit: 2.5,
+    { id: "karte_tempel", name: "Sandverwehte Nische", x: TEMPEL.kartenstueck[0], y: TEMPEL.kartenstueck[1], modell: "stelle", tat: "untersuchen", tatText: "Die Nische durchsuchen", weit: 2.5,
       braucht: { wenn: { quest: { id: F3, phase: ["fertig"] } }, text: "Eine Nische, halb voller Sand. Solange die Sandmutter hier lebt, gräbst du nicht. (Erst nach „Der versandete Tempel“.)" },
       geben: [{ g: "kartenstueck_5" }],
       text: "Im Sand ein Lederbeutel, die Naht von Hand geflickt. Darin: ein Stück Karte und ein Abzeichen der Wacht. Der Bote ist bis hierher gekommen. Nicht weiter ({n:karte}).",
@@ -96,14 +102,14 @@ export const QUEST_KARTE: QuestDef = {
     },
     hagan: {
       reden: [
-        { wenn: { ...LAEUFT, offen: ["stueck_1"] }, zeilen: ["Eine Karte? Von einem Boten der Wacht? …Im Archiv liegt allerhand. Mein Vorgänger hat alles aufgehoben, was nicht weglief.",
+        { wenn: { ...LAEUFT, offen: ["archiv"] }, zeilen: ["Eine Karte? Von einem Boten der Wacht? …Im Archiv liegt allerhand. Mein Vorgänger hat alles aufgehoben, was nicht weglief.",
           "Aber ich gebe Akten nicht jedem. Sag mir: Was steht über dem Tor jeder Wachtburg?"], antworten: ["raetsel_turm", "raetsel_rabe", "raetsel_linde", tschuess.id] },
-        { wenn: { erledigt: ["stueck_1"] }, zeilen: ["Ich hoffe, die Karte führt dich weit. Und bring sie mir irgendwann zum Abschreiben."], antworten: [tschuess.id] },
+        { wenn: { erledigt: ["archiv"] }, zeilen: ["Das Archiv ist hinter dem Ratssaal, die Tür links. Fass nichts an, was du nicht brauchst. Ich hoffe, die Karte führt dich weit. Und bring sie mir irgendwann zum Abschreiben."], antworten: [tschuess.id] },
         { zeilen: ["Das Rathaus der Waldmark. Was kann ich für dich tun? Kurz, bitte. Ich habe Akten."], antworten: [tschuess.id] },
       ],
       optionen: [
-        { id: "raetsel_turm", text: "Ein Turm über drei Wellen.", folge: [{ f: { erledige: ["stueck_1"], geben: gib(1),
-          zeilen: ["Richtig. Das wissen nur noch wenige.", "Hagan holt einen Ordner, blättert, zieht ein Pergament heraus. Am Rand, in zierlicher Schrift: „Weiter nach Rabenmoor. Die Kräuterfrau weiß, wo man trocken schläft.“"] } }] },
+        { id: "raetsel_turm", text: "Ein Turm über drei Wellen.", folge: [{ f: { erledige: ["archiv"],
+          zeilen: ["Richtig. Das wissen nur noch wenige.", "Gut. Das Archiv ist oben, hinter dem Ratssaal. Such selbst – ich hab keine Zeit für Boten, die schon dreißig Jahre tot sind."] } }] },
         { id: "raetsel_rabe", text: "Ein Rabe über einem Steinkreis.", folge: [{ f: { weiter: true, zeilen: ["Das ist das Zeichen der Rabenpriester. Wenn du das über einem Wachttor siehst, lauf."] } }] },
         { id: "raetsel_linde", text: "Eine Linde mit sieben Wurzeln.", folge: [{ f: { weiter: true, zeilen: ["Hübsch. Das ist aber das Wappen von Weidenhain. Noch einmal."] } }] },
         tschuess,

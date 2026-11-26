@@ -4,8 +4,12 @@ Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-9.md` (neuer Grundsatz
 Dateien: `realtime/shared/quest_f1.ts` … `quest_f4.ts`, `quest_karte.ts`, Stellen in `quest_f_orte.ts`. Alle als **Entwurf** in `shared/quest_entwuerfe.ts`.
 Lohn nach Migration 051 (bis 50.000 je Skill), mit Maß: F1–F4 je 2.000–5.000, die Karte des Boten je 6.000 in fünf Kampfskills. Der Prüfer meldet jetzt erst über 50.000.
 
-**Stellen:** in den älteren Regionen echt (Kord, Merit, Hagan, Hedda, Ysolde, Sarkophag in `hauptmann_gruft`). Die **Glutsande sind Platzhalter**
-östlich des Ostufers. Sobald die Welt sie anlegt, werden die Stellen nur in `quest_f_orte.ts` umgestellt.
+**Stellen aus der Welt (#74)**, gesammelt in `quest_f_orte.ts`: Wegmarke `ende_des_grases` hinter dem Pass im Südosten des Ostufers, Kanal-Lager, Salzpfanne mit Siederei,
+Tempel (`tempel`: Vorhalle, vier Spiegelplatten, Inschriftensaal, Kammertor), Kammer der Sandmutter (`tempel_kammer`, Kartenstück 5), Glutbrunn (Karawanenrast, Werkstatt mit Herd, Fischplatz),
+Archiv hinter dem Ratssaal der Waldmark (`rathaus_archiv`, Kartenstück 1). Hasim Tal wartet **vor dem Tempel**, nicht in Glutbrunn (NPC-Platz der Welt).
+F3: Die Welt hat **vier** Spiegelplatten gebaut; das Rätsel hat jetzt vier Schritte. Der Inschriftensaal liegt im Tempel vor der Kammer – erst die Inschrift, dann die Sandmutter.
+Karte, Stück 1: Hagans Rätsel öffnet das Archiv (Schritt `archiv`), das Stück liegt im Regal (Questobjekt `karte_archiv`).
+Das Ostufer ist seit #74 auch zu Fuß erreichbar (Pass über die Glutsande); die Fähre aus D1 ist die Abkürzung – die Texte von D1, D2 und F1 sind angepasst.
 
 ## Querverbindungen in Block F (Grundsatz Phase 9)
 
