@@ -8,7 +8,7 @@ Konzept vom 26.11.2026 (Leitstelle). Grundlage: Weltkonzept (W4 Smaragdküste, G
 Südlich von Weidenhain führt die **Südstraße** an die **Smaragdküste** (Gefahr 20–40): regenreiche Küstenwälder, Klippen, Buchten, im Süden Mangroven.
 An einer Flussmündung liegt **Kielmund**, die Hafenstadt (Werft, Fischmarkt, Sitz der Küstenhäuser) – die vierte Großstadt.
 Die Küste füllt die **Stufenlücke 20–40** zwischen Grenzland und den schweren Regionen und ist die zweite Fischerei-Hochburg.
-Der Weg dorthin ist **offen** (offene Welt); die Quest „Die Südstraße“ belohnt mit Wegstein-Ziel und Kutsche als Abkürzung.
+Der Weg dorthin ist **offen** (offene Welt); die Quest „Die Südstraße“ belohnt mit dem Wegstein-Ziel Kielmund als Abkürzung. *(Kutsche gestrichen, 26.11. – nur noch Idee für später.)*
 
 ## Region (Welt)
 
@@ -43,7 +43,7 @@ Räucherhütte als neue Kochstation (Räuchern = länger haltbar, kleine Wirkung
 ## Quests (Block G)
 
 **G1 „Die Südstraße“** (quer) – Othmar Rehn (Weidenhain) schickt Getreide nach Kielmund, der letzte Wagen kam nie an. Spuren auf der Südstraße → Strandräuber → Kielmund: Kaufmann des Küstenhauses.
-Lohn: Wegstein-Ziel Kielmund, Kutsche Weidenhain ↔ Kielmund (Splitter), XP, Questpunkte.
+Lohn: Wegstein-Ziel Kielmund, XP, Questpunkte.
 
 **G2 „Das Leuchtfeuer“** – Leuchtturmwärterin: das Feuer ist erloschen, Schiffe laufen auf. Öl aus Seeaal-Tran (Fischen) **und Splitter-Glut** (Splitterbinden, Seelenlicht) → Linse polieren (Handwerk) → Feuer an.
 *Quer:* Seelenlicht aus der Waldmark/Weidenhain.
@@ -60,11 +60,10 @@ Lohn: Wegstein-Ziel Kielmund, Kutsche Weidenhain ↔ Kielmund (Splitter), XP, Qu
 | Rolle | Aufgabe |
 |---|---|
 | Welt | Südstraße, Kielmund (Hafen, Werft, Fischmarkt, Küstenhaus, Bank, Werkstatt, Taverne, Wegstein, Bindestein), Möwenbucht mit Räucherhütte, Kräuterhof, Leuchtturm, Wrack, Klippenhöhlen (Untergrund + Instanz-Raum), Mangroven, Eiben, Fischplätze |
-| Figuren | NPCs: Kaufmann/-frau des Küstenhauses, Leuchtturmwärterin, Fischer/innen der Möwenbucht, Kräuterhofbäuerin, Hafenleute; Gegner: Strandkrabbe, Riesenkrabbe, Seevogel, Strandräuber (2), Mangrovenlurch, Der Wrackkapitän; Objekte: Kutsche, Leuchtfeuer-Linse, Räucherhütte, Netze, Wrackkiste mit Rabensiegel; Fische und Gerichte als Bilder. Keine neuen Rüstungssets. |
+| Figuren | NPCs: Kaufmann/-frau des Küstenhauses, Leuchtturmwärterin, Fischer/innen der Möwenbucht, Kräuterhofbäuerin, Hafenleute; Gegner: Strandkrabbe, Riesenkrabbe, Seevogel, Strandräuber (2), Mangrovenlurch, Der Wrackkapitän; Objekte: Leuchtfeuer-Linse, Räucherhütte, Netze, Wrackkiste mit Rabensiegel; Fische und Gerichte als Bilder. Keine neuen Rüstungssets. |
 | Quests | G1–G4 und der Kräuterhof als Entwurf |
-| Systeme (später) | Kutsche (bezahlter Teleport zwischen zwei Haltestellen), Räucherhütte als Kochstation mit Wartezeit |
+| Systeme (später) | Räucherhütte als Kochstation mit Wartezeit |
 
 ## Offen (Nutzer)
 
 - Namen: Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser.
-- Kutsche als neues Reisemittel – gewünscht?

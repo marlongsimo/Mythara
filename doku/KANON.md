@@ -70,6 +70,8 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP je Skill) sind **eingespielt**. *(26.11.)*
 - **Quest-Abschluss:** eigenes Abschlussfenster (Glückwunsch, Belohnungen, Questpunkte), gutgeschrieben mit „Okay“ (bleibt abholbereit, nichts geht verloren). Passt etwas nicht in den Rucksack, **landet es auf dem Boden** (gebundene Gegenstände nur für den Besitzer). *(26.11., #77)*
 - **Verkaufen an Händler:** Jeder Händler kauft **nur Waren, die er selbst führt**, zu **80 % seines Verkaufspreises** (abgerundet). Im Laden ist der Rucksack daneben offen: antippen zeigt den Verkaufspreis, langes Drücken bietet „Verkaufen“. Gebundenes und geladene „(s)“-Ausrüstung kann man nicht verkaufen. *(26.11.)*
+- **Kutsche:** gestrichen für Phase 10; **Idee für später** als Kutschennetz zwischen den Großstädten (ab etwa 5 Städten, günstige Reise ohne Splitterbinden, kleine Splitter-Senke). *(26.11.)*
+- **Trödler** (Wunsch 26.11.): über die Welt verstreute Händler, die **alles Handelbare** ankaufen, aber nur zu **50 %** des normalen Händlerpreises (Grundwert). Gebundenes, „(s)“ und Questgegenstände nicht. Konzept `doku/konzepte/troedler.md`.
 - **Handelskontor** (zentraler Marktplatz): als Konzept für später aufgehoben, `doku/konzepte/handelskontor.md`. *(26.11.)*
 - **Nicht handelbar (gebunden):** **alle Quest-Belohnungen** (Gegenstände als Questlohn, z. B. Rabenset, Klinge des Grauen Hauptmanns, Rotes Banner) und **geladene Ausrüstung „(s)“**. *(26.11.)*
 - **Wachtrüstung** (zweites Set, Phase 8): **vorerst nicht**. Die gebauten Teile bleiben ungenutzt in der Fabrik; E4 gibt stattdessen die Klinge des Grauen Hauptmanns. *(26.11.)*
@@ -80,7 +82,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
-- Phase 10: Namen (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser), Kutsche als neues Reisemittel?
+- Phase 10: Namen (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser)
 - Phase 9: Namen (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter).
 - Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann)
 - Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
