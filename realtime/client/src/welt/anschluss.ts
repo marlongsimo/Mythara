@@ -202,7 +202,7 @@ function regionBetreten(s: WeltKern, id: string, ux: number, uy: number, b: numb
   (s as unknown as { mit: MitArt | null }).mit = mit;   /* für Prüfungen sichtbar, wie in der gemalten Waldmark */
   weltBetreten(id, { spieler: (l) => { if (mit) mit.liste(WELTZONEN[id] && freigabe("suedtor") ? [] : l); onlineZeigen(); }, /* in der Kampfwelt zeigt der Kampf die anderen Helden (vor dem Südtor gibt es keinen Kampf: dann die Welt) */ fort: (i) => { if (mit) mit.weg(i); },
     ich: (i) => { if (i.held !== s.held) { location.reload(); return; } serverStelle(s, i.pos); },
-    blase: (i, text) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else if (mit) mit.blase(i, text); } });
+    blase: (i, text, von) => { const ich = weltIch(); if (ich && i === ich.id) { if (s.eigeneBlase) s.eigeneBlase(text); else { const w = s as unknown as Welt; sprechblase(w, () => (w.figur && w.figur.active ? { x: w.figur.x, y: w.figur.y - HELD_PX - 30 } : null), text); } } else { const k = kampf as unknown as { blaseHeld?: (n: string, t: string) => boolean } | null; if (!(von && k && k.blaseHeld && k.blaseHeld(von, text)) && mit) mit.blase(i, text); } } }); /* in der Kampfwelt zeigt der Kampf die anderen Helden: die Blase dort (#68) */
 }
 
 /** Die Übersichtskarte öffnen: Regionen aus dem Weltindex (gesperrte sind dort schon entfernt), die eigene Stelle läuft mit */

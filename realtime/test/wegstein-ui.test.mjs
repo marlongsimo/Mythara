@@ -107,6 +107,13 @@ try {
     await anna.waitForTimeout(8000); const f = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
     { const fd = await figurDa(anna); check(fd.ok, "Freunde-Teleport: Annas eigene Figur ist bei Ben sichtbar (" + fd.grund + ")"); }
     check(da2 && Math.hypot(f.x - bo.x, f.y - bo.y) < 3, `Freunde-Teleport: Anna bei Ben (${bo.x.toFixed(1)}, ${bo.y.toFixed(1)}) und bleibt dort (${f.x.toFixed(1)}, ${f.y.toFixed(1)}, ${f.hier})`); }
+  /* #68: öffentlicher Chat nach dem Teleport – der andere sieht die Sprechblase über dem Kopf (in der Kampfwelt zeigt der Kampf die Helden) */
+  if (tp) for (const [von, an, text] of [[anna, ben, "Hallo Ben an der Linde"], [ben, anna, "Hallo Anna"]]) {
+    await an.evaluate((t) => { window.__blase = false; new MutationObserver(() => { if ([...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === t)) window.__blase = true; }).observe(document.body, { childList: true, subtree: true }); }, text);
+    await von.evaluate(() => document.activeElement && document.activeElement.blur()); await von.fill("#ez-chat input", text); await von.press("#ez-chat input", "Enter");
+    const da = await an.waitForFunction(() => window.__blase, null, { timeout: 15000 }).then(() => true, () => false);
+    const imChat = await an.evaluate((t) => JSON.stringify(window.EZW.chat ? window.EZW.chat().slice(-3).map((n) => n.text) : []).includes(t), text);
+    check(da, `Sprechblase „${text}“ über dem anderen Helden (Chatbox: ${imChat})`); }
   check(fehlerSeite.length === 0, "Keine Seitenfehler " + fehlerSeite.join(" | "));
 } catch (e) { console.log("✗ Abbruch: " + e.message + " @ " + (e.stack || "").split("\n").find((z) => z.includes("wegstein-ui"))); fehler++; }
 clearInterval(wach); await br.close(); srv.kill(); sb.close();

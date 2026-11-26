@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { WeltKampf, WeltSzene, Figur } from "../welt/kampf";
 import { FigurLeinwand } from "./figurleinwand";
 import { heldenFigur3D, gegnerFigur3D, FigurArt } from "./held3d";
-import { schildAn } from "./mitspieler";
+import { schildAn, blase3d } from "./mitspieler";
 import { lebenAnzeigen } from "./oberflaeche";
 import type { Spielwelt3D } from "./spielwelt";
 import { leicheMelden } from "./leichen";
@@ -75,6 +75,9 @@ export class WeltKampf3D extends WeltKampf {
   /** Antippen am Bildschirm: einen Gegner unter dem Finger angreifen */
   antippenSchirm(px: number, py: number): boolean { const t = this.amSchirm(px, py); if (!t || t.team === 0 || !this.netz) return false; this.netz.sende({ t: "ziel", id: t.id }); return true; }
   /** Wo eine Figur in der Welt steht (Weltfelder) und wie hoch sie ist */
+  /** Sprechblase über einem anderen Helden der Kampfwelt (nach Name – die Welt-Id des Chats ist nicht die Id im Kampf). Zurück: gefunden (#68) */
+  blaseHeld(name: string, text: string): boolean { let id = 0; for (const [i, n] of this.namen) if (i !== this.ichId && n.name === name && this.figuren.get(i)?.held) { id = i; break; } if (!id) return false;
+    const f = this.figuren.get(id); blase3d(this.w.motor, () => { if (this.figuren.get(id) !== f) return null; const p = this.stelle(id); return p ? { x: p.x, y: this.w.motor.hoehe(p.x, p.z) + p.h + 0.9, z: p.z } : null; }, text); return true; }
   private stelle(id: number): { x: number; z: number; h: number } | null {
     if (id === this.ichId) return { x: this.w.ort.x, z: this.w.ort.y, h: HOEHE }; const f = this.figuren.get(id), b = f && this.bilder.get(f); return f && b ? { x: this.zone.x0 + f.x, z: this.zone.y0 + f.y, h: b.h } : null; }
   protected zahl(id: number, t: string, farbe: string) { { const f = id === this.ichId ? undefined : this.figuren.get(id); if (f) f.kampfBis = Math.max(f.kampfBis || 0, performance.now() + 3000); } /* getroffen = im Kampf */ const p = this.stelle(id); if (!p) return; const m = this.w.motor, el = document.createElement("div"); el.className = "ez-zahl3d"; el.textContent = t; el.style.color = farbe; document.body.appendChild(el);

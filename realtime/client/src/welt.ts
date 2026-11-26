@@ -26,7 +26,7 @@ import { kanalFabrikSetzen } from "./netz";
 export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
 export interface Ich { id: number; name: string; held: string; stufe: number; ort: string; festerHeld?: boolean; gast?: boolean; /** zuletzt gemerkte Stelle in der Welt (Weltfelder; null = Start der Region) */ pos?: { region: string; x: number | null; y: number | null } }
 type Kanal = "oeffentlich" | "gruppe" | "system" | "fluestern";
-export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string): void }
+export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string, von?: string): void }
 /** Zonen Stufe 3: der Kampfkanal über diese Verbindung (kanal.ts) */
 let kanal: KanalWs | null = null;
 let ws: WebSocket | null = null, ich: Ich | null = null, hand: Hand = {}, ort = "", versuch = 0, gesendet = { x: NaN, y: NaN, t: 0, l: -1 };
@@ -117,7 +117,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "fort") { fremde = fremde.filter((f) => f.i !== Number(m.id)); if (hand.fort) hand.fort(Number(m.id)); }
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
       if (n.von && n.kanal !== "system" && blockiert.has(n.von) && !(ich && n.von === ich.name)) return; /* blockiert: weder Chat noch Sprechblase */
-      chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
+      chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text, n.von); } };
   s.onclose = (ev) => { austragen(); if (kanal && ws === s) kanal.weg(1006, ""); /* der Kampfkanal hängt an dieser Verbindung */ if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Es ist aktuell schon ein Gerät in Riftmere."); abmelden("bereits", restAus(ev.reason)); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
