@@ -2,7 +2,7 @@
  * Riftmere – Quest D1 „Die Fährkette“ (Phase 7), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-7.md. Fährmann Kord Weller (Fährhaus Graufurt), Hauptfrau Merit Stahl (Bergfried), die Schmiedin der Stadt.
  * Merit gibt die Erlaubnis gegen das Wappen aus A2. 6 Splittereisenerz in der Furtklamm, an der Esse Barren, am Amboss 8 Kettenglieder (Quest-Rezept),
- * das Kettenschloss bei der Schmiedin, die Kette an der Winde des Westanlegers einhängen, erste Überfahrt mit Kord.
+ * das Kettenschloss bei der Schmiedin (QUER: sie braucht Meilerpech gegen den Flussnebel – von Köhler Ulf im Nordwald, wie in C1), die Kette an der Winde des Westanlegers einhängen, erste Überfahrt mit Kord.
  * Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter faehre_frei (Fähre fährt, Ostufer offen).
  * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
@@ -16,10 +16,10 @@ export const D1 = "graufurt_die_faehrkette";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Graufurt (#36): Fährmann 61,8 | 115,6, Winde 60,1 | 111,8, vor dem Bergfried 21,5 | 82,6, vor der Schmiede 19,5 | 138,6, Furtklamm 34,4 | 44,6 */
 const KORD: [number, number] = [6717.8, 6515.6], WINDE: [number, number] = [6716.1, 6511.8], MERIT: [number, number] = [6677.5, 6484.5];
-const SCHMIEDIN: [number, number] = [6675.5, 6540.5], KLAMM: [number, number] = [6690.4, 6444.6];
+const SCHMIEDIN: [number, number] = [6675.5, 6540.5], KLAMM: [number, number] = [6690.4, 6444.6], ULF: [number, number] = [6360.5, 6428.5];
 const HILFE = ["Erst zu Hauptfrau Stahl im Bergfried. Ohne ihr Wort fass ich die Fähre nicht an. Zeig ihr dein Wappen.",
   "Dann Splittereisen aus der Furtklamm, sechs Brocken. An der Esse Barren draus, am Amboss acht Glieder. Schmieden 45, darunter wird's Draht.",
-  "Das Schloss macht die Schmiedin. Hol's ab. Und dann hängen wir die Kette an die Winde, hier am Anleger."];
+  "Das Schloss macht die Schmiedin, aber sie will Pech von Köhler Ulf aus dem Nordwald. Hol's ab. Und dann hängen wir die Kette an die Winde, hier am Anleger."];
 
 export const QUEST_D1: QuestDef = {
   id: D1, titel: "Die Fährkette", ort: "Graufurt · Furtklamm", start: "Sprich mit Fährmann Kord Weller am Fährhaus in Graufurt.",
@@ -32,6 +32,7 @@ export const QUEST_D1: QuestDef = {
     { id: "kord", name: "Kord Weller", modell: "npc.kord", x: KORD[0], y: KORD[1], blick: [-1, 0] },
     { id: "merit", name: "Merit Stahl", modell: "npc.merit", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
     { id: "schmiedin", name: "Die Schmiedin", modell: "npc.schmiedin", x: SCHMIEDIN[0], y: SCHMIEDIN[1], blick: [0, 1] },
+    { id: "ulf", name: "Köhler Ulf", modell: "npc.schmied", x: ULF[0], y: ULF[1], blick: [1, 0] },
   ],
   voraussetzungen: [
     { text: "„Das Wappen mit dem Turm“ abgeschlossen", wenn: { quest: { id: A2, phase: ["fertig"] } } },
@@ -45,8 +46,10 @@ export const QUEST_D1: QuestDef = {
       log: "Bau in der Furtklamm sechs Splittereisenerz ab ({n:erz})." },
     { id: "glieder", text: "Acht Kettenglieder schmieden", ereignis: { art: "herstellen", rezept: "kettenglied" }, anzahl: 8, nach: ["erz"], wo: "amboss",
       log: "Schmilz an der Esse Splittereisenbarren und schmiede am Amboss acht Kettenglieder ({n:glieder}). Ein Hammer muss im Rucksack sein." },
-    { id: "schloss", text: "Das Kettenschloss bei der Schmiedin abholen", ereignis: { art: "antwort" }, nach: ["merit"], bei: "schmiedin",
-      log: "Hol bei der Schmiedin von Graufurt das Kettenschloss ab." },
+    { id: "pech", text: "Meilerpech von Köhler Ulf holen", ereignis: { art: "antwort" }, nach: ["merit"], bei: "ulf",
+      log: "Die Schmiedin braucht Meilerpech für das Kettenschloss. Köhler Ulf auf der Köhlerlichtung im Nordwald brennt es dir – gegen drei Tannenstämme." },
+    { id: "schloss", text: "Das Kettenschloss bei der Schmiedin abholen", ereignis: { art: "antwort" }, nach: ["pech"], bei: "schmiedin",
+      log: "Bring der Schmiedin von Graufurt das Meilerpech und hol das Kettenschloss ab." },
     { id: "winde", text: "Die Kette an der Winde einhängen", ereignis: { art: "objekt", id: "d1_winde" }, nach: ["glieder", "schloss"], wo: WINDE,
       log: "Häng die neue Kette an der Winde des Westanlegers ein: acht Glieder und das Schloss." },
   ],
@@ -102,15 +105,28 @@ export const QUEST_D1: QuestDef = {
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Für die Wacht."] } }] },
       ],
     },
+    ulf: {
+      reden: [
+        { wenn: { ...LAEUFT, erledigt: ["merit"], offen: ["pech"] }, zeilen: ["Pech? Für Graufurt? Für eine Kette?", "Hm. Drei Tannenstämme. Dann brenn ich's dir."], antworten: ["tannen", "tschuess"] },
+        { zeilen: ["Der Meiler brennt. Komm nicht zu nah."], antworten: ["tschuess"] },
+      ],
+      optionen: [
+        { id: "tannen", text: "Drei Tannenstämme geben.", wenn: { anzahl: { g: "stamm_tanne", min: 3 } }, folge: [{ f: { erledige: ["pech"], nehmen: [{ g: "stamm_tanne", n: 3 }], geben: [{ g: "meilerpech", name: "einen Topf Meilerpech" }],
+          zeilen: ["Ulf wirft die Stämme in den Meiler. „Graufurt. Da war ich mal. Zu viel Nebel.“", "Hier. Noch warm."] } }] },
+        { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Hm."] } }] },
+      ],
+    },
     schmiedin: {
       reden: [
-        { wenn: { ...LAEUFT, erledigt: ["merit"], offen: ["schloss"] }, zeilen: ["Du bist das mit der Kette? Kord hat's rumerzählt. Ganz Graufurt weiß es.", "Das Schloss liegt bereit. Hab's schon vor Wochen gemacht. Hat nur keiner abgeholt."],
+        { wenn: { ...LAEUFT, erledigt: ["merit"], offen: ["pech"] }, zeilen: ["Du bist das mit der Kette? Kord hat's rumerzählt.", "Das Schloss ist fertig, aber roh. Im Flussnebel rostet es dir in einem Winter weg. Ich brauch Meilerpech zum Versiegeln. Köhler Ulf im Nordwald hat das beste."],
+          antworten: ["tschuess"] },
+        { wenn: { ...LAEUFT, erledigt: ["pech"], offen: ["schloss"] }, zeilen: ["Pech von Ulf? Riecht man bis hier. Gut.", "Das Schloss liegt bereit. Hab's schon vor Wochen gemacht. Hat nur keiner abgeholt."],
           antworten: ["schloss_nehmen", "tschuess"] },
         { wenn: FERTIG, zeilen: ["Hält das Schloss? Natürlich hält es. Ich hab's gemacht."], antworten: ["tschuess"] },
         { zeilen: ["Keine Zeit, keine Zeit. Wenn du was willst, sag's schnell."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "schloss_nehmen", text: "Das Kettenschloss nehmen.", folge: [{ f: { erledige: ["schloss"], geben: [{ g: "kettenschloss", name: "das Kettenschloss" }],
+        { id: "schloss_nehmen", text: "Das Meilerpech geben und das Kettenschloss nehmen.", wenn: { hat: "meilerpech" }, folge: [{ f: { erledige: ["schloss"], nehmen: [{ g: "meilerpech" }], geben: [{ g: "kettenschloss", name: "das Kettenschloss" }],
           zeilen: ["Hier. Splittereisen, gehärtet, zweimal. Das reißt nicht – eher reißt der Fluss."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Ja, ja."] } }] },
       ],

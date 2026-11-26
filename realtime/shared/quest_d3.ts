@@ -1,7 +1,7 @@
 /*
  * Riftmere – Quest D3 „Wels im Trüben“ (Phase 7, kleine Nebenquest), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-7.md. Wirtin Alma Furtner, Taverne „Zur Furt“ in Graufurt. Voraussetzung Fischen 45, Kochen 45.
- * 3 Graufurter Welse am Fährhafen, 2 Welspasteten am Herd der Taverne, Abgabe. Lohn: Fischen- und Kochen-XP, 150 Splitter, 1 Questpunkt;
+ * 3 Graufurter Welse am Fährhafen, 2 Welspasteten am Herd der Taverne (QUER: Teig aus dem Mehl von Hanne Kalk, Weidenhain, nach B2), Abgabe. Lohn: Fischen- und Kochen-XP, 150 Splitter, 1 Questpunkt;
  * danach verkauft Alma Welspastete (Schalter alma_pastete). Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Taverne und Fischplatz aus #36, Alma aus #37, Fischen/Kochen 45 im Spiel).
@@ -14,7 +14,7 @@ const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT
 /** Alma vor der Taverne „Zur Furt“ (Tür 44 | 140,6), Fischplatz am Fährhafen (61,4 | 126) – Graufurt, Ursprung 6656 | 6400 */
 const ALMA: [number, number] = [6700.5, 6542.5], HAFEN: [number, number] = [6717.4, 6526];
 const HILFE = ["Drei Welse. Graufurter, aus dem Fährhafen – keine Bachlinge, keine Barsche. Die brauchen Geduld und Fischen 45.",
-  "Dann an meinen Herd. Zwei Pasteten. Der Teig liegt bereit, den Rest machst du.", "Und wenn sie mir schmecken, kommen sie auf die Karte."];
+  "Dann an meinen Herd. Zwei Pasteten. Mehl brauchst du – das gute, aus Weidenhain. Hanne Kalk am Kornspeicher verkauft es, seit die Mühle wieder läuft.", "Und wenn sie mir schmecken, kommen sie auf die Karte."];
 
 export const QUEST_D3: QuestDef = {
   id: D3, titel: "Wels im Trüben", ort: "Graufurt · Fährhafen", start: "Sprich mit Alma Furtner vor der Taverne „Zur Furt“ in Graufurt.",
@@ -32,7 +32,7 @@ export const QUEST_D3: QuestDef = {
     { id: "welse", text: "Drei Graufurter Welse fangen", ereignis: { art: "sammeln", ziel: "wels" }, anzahl: 3, wo: HAFEN,
       log: "Fang am Fährhafen von Graufurt drei Graufurter Welse ({n:welse})." },
     { id: "pasteten", text: "Zwei Welspasteten backen", ereignis: { art: "herstellen", rezept: "welspastete" }, anzahl: 2, nach: ["welse"], wo: ALMA,
-      log: "Back am Herd der Taverne „Zur Furt“ zwei Welspasteten ({n:pasteten})." },
+      log: "Back am Herd der Taverne „Zur Furt“ zwei Welspasteten ({n:pasteten}) – mit Mehl von Hanne Kalk aus Weidenhain." },
   ],
   /* Alma: Wirtin, schnell, spöttisch, kocht besser als sie redet – und redet viel. */
   dialoge: {
@@ -48,7 +48,7 @@ export const QUEST_D3: QuestDef = {
         { zeilen: ["Welse beißen am Fährhafen, wenn's trüb ist. Also immer."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich fange dir Welse. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Gut! Drei Graufurter Welse, aus dem Hafen. Und dann kochst du sie mir. Zwei Pasteten.",
+        { id: "annehmen", text: "Ich fange dir Welse. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Gut! Drei Graufurter Welse, aus dem Hafen. Und dann kochst du sie mir. Zwei Pasteten.", "Mehl hab ich keins mehr. Das gute kommt aus Weidenhain, von Hanne Kalk. Das andere ist Sägemehl.",
           "Mein Herd steht dir offen. Aber putz ihn danach."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Dann eben Suppe aus Steinen. Wie letzte Woche."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },

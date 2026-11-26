@@ -1,6 +1,7 @@
 /*
  * Riftmere – Quest E2 „Die Glocke“ (Phase 8), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-8.md. Äbtissin Gunhild: Die Glocke ist gesprungen; seit sie schweigt, wandern die Toten.
+ * QUER: Gunhild schickt dich erst zu Merit Stahl nach Graufurt – die Wacht hat das Rezept der Glockenbronze im Bergfried: Kupfer aus der Senke vor der Waldmark, Splittereisen aus der Furtklamm.
  * Glockenbronze aus Kupfer und Splittereisen (Esse, Quest-Rezept), die Glockenform am Herd der Abteiküche (Quest-Rezept), der Klöppel aus Kernbaum (Werkbank),
  * mit den Nonnen aufhängen, der erste Schlag – Ysoldes Stimme antwortet von Graufurt aus: „Endlich.“
  * Lohn: Schmieden 1.000 XP, 400 Splitter, 2 Questpunkte. Schalter glocke_laeutet (stündlich für alle), bindestein_abtei.
@@ -10,11 +11,11 @@
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E1 } from "./quest_e1";
-import { ABTEI, KERNBAUM } from "./quest_e_orte";
+import { ABTEI, KERNBAUM, MERIT } from "./quest_e_orte";
 
 export const E2 = "grauwacht_die_glocke";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-const HILFE = ["Glockenbronze: vier Barren, aus Kupfer und Splittereisen, an der Esse. Splittereisen gibt es in der Furtklamm bei Graufurt.",
+const HILFE = ["Das Rezept der Glockenbronze hat die Wacht in Graufurt – frag Merit Stahl. Dann vier Barren, aus Kupfer und Splittereisen, an der Esse. Splittereisen gibt es in der Furtklamm bei Graufurt.",
   "Die Form gießt du in der Küche der Abtei, am großen Herd. Schwester Ida hält das Feuer, du gießt.", "Der Klöppel aus Kernbaum – der wächst im windstillen Tal westlich der Abtei. Dann hängen wir sie auf. Zu fünft schaffen wir das."];
 
 export const QUEST_E2: QuestDef = {
@@ -24,13 +25,18 @@ export const QUEST_E2: QuestDef = {
   logAbgabe: "Die Glocke läutet. Sag es Äbtissin Gunhild.",
   logFertig: "Die Glocke von Grauwacht läutet wieder – zu jeder vollen Stunde, weit über die Fahlen Weiten. Für eine Minute ruhen dann die Wiedergänger.",
   geber: "gunhild",
-  figuren: [{ id: "gunhild", name: "Äbtissin Gunhild", modell: "npcfrau3d", x: ABTEI.gunhild[0], y: ABTEI.gunhild[1], blick: [0, 1] }],
+  figuren: [
+    { id: "gunhild", name: "Äbtissin Gunhild", modell: "npcfrau3d", x: ABTEI.gunhild[0], y: ABTEI.gunhild[1], blick: [0, 1] },
+    { id: "merit", name: "Merit Stahl", modell: "npc.merit", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
+  ],
   voraussetzungen: [
     { text: "„Der Weg nach Grauwacht“ abgeschlossen", wenn: { quest: { id: E1, phase: ["fertig"] } } },
     { text: "Schmieden 45", wenn: { skill: { k: "schmieden", min: 45 } } },
   ],
   schritte: [
-    { id: "bronze", text: "Vier Barren Glockenbronze schmelzen", ereignis: { art: "herstellen", rezept: "glockenbronze" }, anzahl: 4, wo: "esse",
+    { id: "rezept", text: "Merit Stahl nach der Glockenbronze fragen", ereignis: { art: "antwort" }, bei: "merit",
+      log: "Frag Hauptfrau Merit Stahl in Graufurt nach dem Rezept der Glockenbronze. Die Wacht hat es im Bergfried aufbewahrt." },
+    { id: "bronze", text: "Vier Barren Glockenbronze schmelzen", ereignis: { art: "herstellen", rezept: "glockenbronze" }, anzahl: 4, nach: ["rezept"], wo: "esse",
       log: "Schmilz an der Esse vier Barren Glockenbronze – Kupfer und Splittereisen aus der Furtklamm ({n:bronze})." },
     { id: "form", text: "Die Glocke in der Abteiküche gießen", ereignis: { art: "herstellen", rezept: "glocke" }, nach: ["bronze"], wo: ABTEI.kueche,
       log: "Gieß die Glockenbronze in der Küche der Abtei in die Glockenform." },
@@ -67,12 +73,24 @@ export const QUEST_E2: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich gieße eine neue Glocke. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Du kannst Glocken gießen? …Dann hat uns der Himmel dich geschickt. Oder Merit. Beides ist mir recht.",
-          "Vier Barren Glockenbronze. Die Form gießen wir in der Küche, am großen Herd. Und einen Klöppel aus Kernbaum, der springt nicht."] } }] },
+          "Das Rezept hat die Wacht in Graufurt – frag Merit Stahl. Dann vier Barren Glockenbronze. Die Form gießen wir in der Küche, am großen Herd. Und einen Klöppel aus Kernbaum, der springt nicht."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Die Glocke hat Jahre geschwiegen. Sie kann noch etwas warten."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
         { id: "fertig", text: "Das war Ysolde. Aus dem Turm am Ostufer.", folge: [{ f: { abschluss: true, zeilen: ["Gunhild setzt sich auf die Stufe der Kirche. Ganz langsam.",
           "Ysolde. Wir haben zusammen gelernt, als Mädchen. Sie hat gewartet. Sie hat all die Jahre gewartet.", "Die Abtei hat einen Bindestein, unten in der Krypta. Er gehört dir. Und Grauwacht … Grauwacht wacht wieder."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh mit dem Wind."] } }] },
+      ],
+    },
+    merit: {
+      reden: [
+        { wenn: { ...LAEUFT, offen: ["rezept"] }, zeilen: ["Gunhild schickt dich? Wegen der Glocke?", "…Es gibt ein Rezept. Im Bergfried, in der Truhe der Wacht. Ich hab's nie gebraucht."], antworten: ["rezept_fragen", "tschuess"] },
+        { wenn: { erledigt: ["rezept"] }, zeilen: ["Läutet sie schon? Ich will sie hören. Bis hierher."], antworten: ["tschuess"] },
+        { zeilen: ["Für die Wacht."], antworten: ["tschuess"] },
+      ],
+      optionen: [
+        { id: "rezept_fragen", text: "Wie macht man Glockenbronze?", folge: [{ f: { erledige: ["rezept"], zeilen: ["Merit holt ein vergilbtes Blatt. „Vier Teile Kupfer aus der Senke vor der Waldmark – das weiche, rote. Ein Teil Splittereisen aus der Furtklamm.“",
+          "„Wer Splittereisen in die Glocke tut, dessen Glocke hört man auch dort, wo kein Ohr ist.“ …Ich wusste nie, was das heißt. Jetzt vielleicht."] } }] },
+        { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Für die Wacht."] } }] },
       ],
     },
   },

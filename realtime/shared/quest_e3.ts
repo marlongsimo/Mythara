@@ -4,6 +4,7 @@
  * die nach dem Zerfall fortliefen. Das Lager auskundschaften, Anführer Tjark Sölde stellen – und wählen: überreden oder besiegen.
  * Lohn: Stärke 1.000, Geschick 600 XP, 400 Splitter, 2 Questpunkte. Schalter grauwacht_stufe2 (Burg besetzt, Bank und Waffenladen).
  *
+ * QUER: Tjark ist ein Vetter von Raban, der Wache an der Straßensperre (Quest 1) – wer das weiß, kommt leichter an ihn heran (Gespräch).
  * Die Wahl: Der Schritt „tjark“ ist erledigt, wenn Tjark fällt (erlegen) ODER wenn man ihn überredet (Antwort erledigt ihn, er gibt „Tjarks Eid“).
  * Dass die Burg nach dem Überreden schneller besetzt ist, braucht eine Wahl im Queststand (Baukasten) – bis dahin gilt grauwacht_stufe2 für beide Wege.
  *
@@ -72,11 +73,13 @@ export const QUEST_E3: QuestDef = {
     tjark: {
       reden: [
         { wenn: { ...LAEUFT, erledigt: ["lager"], offen: ["tjark"] }, zeilen: ["Wigand schickt dich? Natürlich. Der alte Bock schickt immer andere.",
-          "Sag, was du sagen willst. Und dann geh, oder zieh."], antworten: ["glocke", "kampf"] },
+          "Sag, was du sagen willst. Und dann geh, oder zieh."], antworten: ["raban", "glocke", "kampf"] },
         { wenn: { erledigt: ["tjark"] }, zeilen: ["Ich hab's versprochen. Ich halt's. Sag Wigand, wir kommen."], antworten: ["tschuess"] },
         { zeilen: ["Halt. Hier ist das Lager der Freien. Wer hier rein will, braucht einen Grund."], antworten: ["tschuess"] },
       ],
       optionen: [
+        { id: "raban", text: "Kennst du Raban? Die Wache an der Straßensperre vor Weidenhain.", folge: [{ f: { weiter: true, zeilen: ["Tjark sieht dich lange an.",
+          "Raban. Mein Vetter. Er hat damals gesagt: „Bleib, die Wacht kommt zurück.“ Ich bin gegangen. Er ist geblieben. Steht er immer noch an der Sperre?", "…Natürlich steht er noch da. Der Dummkopf."] } }] },
         { id: "glocke", text: "Die Glocke läutet wieder. Die Wacht ruft.", folge: [{ f: { erledige: ["tjark"], geben: [{ g: "tjarks_eid", name: "Tjarks Eid" }],
           zeilen: ["Tjark schweigt. Hinter ihm sind die Gespräche am Feuer verstummt.", "Wir haben sie gehört. Gestern. Zur vollen Stunde. Bolko hat geheult wie ein Kind.",
             "…Gut. Hier. Mein Eid, aufgeschrieben, mit meinem Namen. Bring ihn Wigand. Wenn er uns noch will."] } }] },

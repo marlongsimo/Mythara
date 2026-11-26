@@ -1,6 +1,7 @@
 /*
  * Riftmere – Quest C3 „Der Oberste Rabenpriester“ (Phase 6, Raben-Trilogie Teil 3), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/quests/3-raben-trilogie.pdf (Seite 7–8), doku/konzepte/phase-6.md. Mutter Hedda gibt den Auftrag, Bertold Krähe den Lohn.
+ * QUER: Heddas Moorwasser muss erst am Bindestein an der Linde in Weidenhain geweiht werden (Wegstein), sonst trübt es das Becken nicht.
  * Abstieg durch die Gruft, Federgänge, Kerkerschlüssel vom Kerkermeister, die vier Käfige (Liske und die anderen folgen bis zur Treppe), Heddas Moorwasser
  * ins Splitterbecken (dann heilt sich der Oberste nicht), der Oberste Rabenpriester im Thronsaal (Instanz), Liske bei Hedda, Fest im Langhaus.
  * Lohn: Rabenpanzer (Set komplett), je 1.000 XP Geschick, Stärke, Defense, 1.000 Splitter, 2 Questpunkte.
@@ -17,10 +18,10 @@ export const C3 = "rabengrund_der_oberste";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 const HEDDA: [number, number] = [6289.4, 6677.4], LISKE: [number, number] = [6291.5, 6679.5], BERTOLD: [number, number] = [6320, 6697], GRUFT: [number, number] = [6188, 6726.6];
 /** Rabengrund: Kerker 85 | 16, Splitterbecken 92 | 67,2, Tor zum Thronsaal 115 | 62 · Thronsaal Mitte 16 | 16 */
-const KERKER: [number, number] = [10645, 9616], BECKEN: [number, number] = [10652, 9667.2], THRON: [number, number] = [10768, 9616];
+const LINDE: [number, number] = [6453.2, 6679.4], KERKER: [number, number] = [10645, 9616], BECKEN: [number, number] = [10652, 9667.2], THRON: [number, number] = [10768, 9616];
 const HILFE = ["Durch die Gruft hinunter. Raben in den Gängen, viele, klein. Lass dich nicht einkreisen.",
   "Der Kerkermeister hat den Schlüssel. Lass sie raus, alle vier. Sie finden den Weg zur Treppe, wenn du ihnen vorangehst.",
-  "Das Moorwasser gießt du ins Becken, bevor du zu ihm gehst. Sonst trinkt er sich gesund, so oft du ihn auch schlägst.", "Und dann … komm wieder. Mit Liske."];
+  "Das Moorwasser trägst du erst zur Linde nach Weidenhain, an den Bindestein – geweiht trübt es das Becken. Dann gießt du es hinein, bevor du zu ihm gehst.", "Und dann … komm wieder. Mit Liske."];
 
 export const QUEST_C3: QuestDef = {
   id: C3, titel: "Der Oberste Rabenpriester", ort: "Aschenwerth · Rabengrund · Rabenmoor", start: "Sprich mit Mutter Hedda vor ihrer Hütte in Rabenmoor.",
@@ -45,7 +46,9 @@ export const QUEST_C3: QuestDef = {
       log: "Der Kerkermeister trägt den Schlüssel zu den Käfigen. Nimm ihn ihm ab." },
     { id: "kaefige", text: "Die Gefangenen befreien", ereignis: { art: "objekt", id: "c3_kaefige" }, nach: ["schluessel"], wo: KERKER,
       log: "Schließ die vier Käfige im Kerker auf." },
-    { id: "becken", text: "Das Moorwasser ins Splitterbecken gießen", ereignis: { art: "objekt", id: "c3_becken" }, nach: ["abstieg"], wo: BECKEN,
+    { id: "weihen", text: "Das Moorwasser an der Linde weihen", ereignis: { art: "objekt", id: "c3_linde" }, wo: LINDE,
+      log: "Heddas Moorwasser wirkt erst, wenn es geweiht ist. Halt die Phiole an den Bindestein unter der Linde in Weidenhain – der Wegstein bringt dich hin." },
+    { id: "becken", text: "Das Moorwasser ins Splitterbecken gießen", ereignis: { art: "objekt", id: "c3_becken" }, nach: ["abstieg", "weihen"], wo: BECKEN,
       log: "Gieß Heddas Moorwasser ins Splitterbecken, damit der Oberste sich nicht daraus heilen kann." },
     { id: "oberster", text: "Den Obersten Rabenpriester besiegen", ereignis: { art: "erlegen", typ: "oberster_rabenpriester" }, nach: ["kaefige", "becken"], wo: THRON,
       log: "Im Thronsaal wartet der Oberste Rabenpriester. Weich den dunklen Feldern aus, wenn er schwebt; geh hinter eine Säule, wenn er die Flügel hebt." },
@@ -53,16 +56,22 @@ export const QUEST_C3: QuestDef = {
       log: "Liske wartet oben bei Mutter Hedda in Rabenmoor." },
   ],
   objekte: [
+    { id: "c3_linde", name: "Bindestein an der Linde", x: LINDE[0], y: LINDE[1], modell: "stelle", tat: "benutzen", tatText: "Das Moorwasser weihen", weit: 3,
+      braucht: { wenn: { hat: "moorwasser" }, text: "Der Bindestein zwischen den Wurzeln der Linde. Hedda hat gesagt, du sollst ihr Moorwasser hierher bringen." },
+      nehmen: [{ g: "moorwasser" }], geben: [{ g: "moorwasser_geweiht" }],
+      text: "Du hältst die Phiole an den Stein. Das braune Wasser wird klar, dann golden, als hätte die Linde hineingeatmet. Agnes nickt dir von ihrer Bank aus zu.",
+      schon: "Dein Moorwasser ist geweiht.", sonst: [{ wenn: NEU, text: "Der Bindestein zwischen den Wurzeln der Linde." }, { wenn: FERTIG, text: "Der Bindestein zwischen den Wurzeln der Linde." }] },
     { id: "c3_kaefige", name: "Käfige", x: KERKER[0], y: KERKER[1], modell: "stelle", tat: "benutzen", tatText: "Die Käfige aufschließen", weit: 3,
       braucht: { wenn: { hat: "kerkerschluessel" }, text: "Vier Käfige, schwere Schlösser. Ohne den Schlüssel des Kerkermeisters geht keiner auf." }, nehmen: [{ g: "kerkerschluessel" }],
       text: "Ein Schloss nach dem anderen. Ebbos Bruder, zwei Fremde, die nicht wissen, welcher Tag ist – und ein Mädchen mit Jorins Augen. „Liske?“ Sie nickt. Sie folgen dir zur Treppe.",
       schon: "Die Käfige stehen offen und leer.", sonst: [{ wenn: NEU, text: "Vier Käfige an der Wand." }, { wenn: FERTIG, text: "Die Käfige stehen offen und leer." }] },
     { id: "c3_becken", name: "Splitterbecken", x: BECKEN[0], y: BECKEN[1], modell: "stelle", tat: "benutzen", tatText: "Das Moorwasser hineingießen", weit: 3,
-      braucht: { wenn: { hat: "moorwasser" }, text: "Das Becken ist voll von etwas, das wie Wasser aussieht und wie Splitter leuchtet. Hedda hat dir Moorwasser mitgegeben – wo ist es?" },
-      nehmen: [{ g: "moorwasser" }],
+      braucht: { wenn: { hat: "moorwasser_geweiht" }, text: "Das Becken ist voll von etwas, das wie Wasser aussieht und wie Splitter leuchtet. Ohne geweihtes Moorwasser trübst du es nicht." },
+      nehmen: [{ g: "moorwasser_geweiht" }],
       text: "Das braune Moorwasser zieht in Schlieren durch das Leuchten. Das Becken wird trüb, das Licht matt. Irgendwo hinter dem Tor schreit etwas.",
       schon: "Das Becken ist trüb.", sonst: [{ wenn: NEU, text: "Das Becken ist voll von etwas, das wie Wasser aussieht und wie Splitter leuchtet." }, { wenn: FERTIG, text: "Das Becken ist zerbrochen. Darüber schwebt ein stilles Licht." }] },
   ],
+  /* Bindestein an der Linde: dasselbe Weidenhain wie B1 (Agnes) – das Moorwasser wird geweiht */
   /* Hedda: gefasst, aber die Stimme bricht bei Liske. Liske: still, müde, will nach Hause zu Jorin. Bertold: feierlich, endlich erleichtert. */
   dialoge: {
     hedda: {
@@ -77,7 +86,7 @@ export const QUEST_C3: QuestDef = {
       ],
       optionen: [
         { id: "annehmen", text: "Ich gehe hinunter. (Quest annehmen)", folge: [{ f: { start: true, geben: [{ g: "moorwasser", name: "eine Phiole Moorwasser", fehlt: true }],
-          zeilen: ["Dann nimm das. Moorwasser, vom tiefsten Loch im Moor. Gieß es ins Becken, bevor du ihm gegenübertrittst.", "Und bring sie nach Hause. Alle, die noch laufen können."] } }] },
+          zeilen: ["Dann nimm das. Moorwasser, vom tiefsten Loch im Moor. Trag es zur Linde nach Weidenhain und lass es am Bindestein weihen. Dann gieß es ins Becken, bevor du ihm gegenübertrittst.", "Und bring sie nach Hause. Alle, die noch laufen können."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Sie warten schon lange. Ein paar Tage mehr … ich hoffe, sie halten das aus."] } }] },
         { id: "hilfe", text: "Wie war das noch?", folge: [{ f: { weiter: true, zeilen: HILFE } }] },
         { id: "moorwasser", text: "Ich brauche noch Moorwasser.", folge: [{ f: { weiter: true, geben: [{ g: "moorwasser", name: "eine Phiole Moorwasser", fehlt: true }], zeilen: ["Hier. Verschütt's nicht."],

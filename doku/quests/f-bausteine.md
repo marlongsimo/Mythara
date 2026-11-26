@@ -45,15 +45,18 @@ Lohn nach Migration 051 (bis 50.000 je Skill), mit Maß: F1–F4 je 2.000–5.00
 | `kartenstueck_1` … `_5` | Karte des Boten, Questgegenstände |
 | `reisekarte` | Lohn der Karte, gebunden |
 
-## Vorschläge: Querverbindungen in älteren Entwürfen (nur Liste, nicht umgesetzt)
+## Querverbindungen in älteren Entwürfen (Nutzer 26.11.: 1–9 eingebaut, 10 später)
 
-1. **D3 „Wels im Trüben“:** Die Welspastete braucht **Mehl von Hanne Kalk** (Weidenhain, nach B2) – Alma: „Das gute Mehl kommt aus Weidenhain.“
-2. **E2 „Die Glocke“:** Kupfer ausdrücklich aus der **Senke vor der Waldmark** (wie A3), Splittereisen aus der **Furtklamm** (Graufurt) – steht schon im Text, könnte als eigener Hinweis-Schritt bei Merit laufen.
-3. **E1 „Der Weg nach Grauwacht“:** **Othmar Rehn** (Weidenhain) gibt Merit einen Brief für Gunhild mit – E1 beginnt dann mit einem kurzen Gang Weidenhain → Graufurt.
-4. **C3 „Der Oberste Rabenpriester“:** Das Moorwasser muss erst am **Bindestein an der Linde** (Agnes, Weidenhain) geweiht werden – ein Reiseschritt mit dem Wegstein.
-5. **D1 „Die Fährkette“:** Das Kettenschloss braucht **Meilerpech von Köhler Ulf** (Nordwald, wie C1), damit es nicht rostet.
-6. **C1 „Schwarze Federn“:** Joost weiß von der Brücke, aber **Gisbert Ast** (Obstwiesen, B3) hat das Holz einst geliefert – er sagt, welche Weiden taugen.
-7. **E3 „Fahnenflucht“:** Einer der Deserteure ist **Raban** von der Straßensperre (Quest 1) – Wiedersehen, erleichtert das Überreden.
-8. **„Mettes Schafe“:** Hammeleintopf braucht **Ringelblume aus den Obstwiesen** (Kräuterkunde 10) als Würze.
-9. **B4 „Das rote Banner“:** Das rote Banner kann man **Bertold Krähe** (Rabenmoor) zeigen – er erkennt das Rabenzeichen darunter (kleiner Hinweis-Dialog, schon im Sinn von C1).
-10. **F-Block später:** Selma Dornfeld reist mit der nächsten Karawane nach **Graufurt** und steht dann bei Kord am Fährhaus (wiederkehrende Figur, eigener kleiner Abschluss).
+| # | Quest | eingebaut | neu für die Rolle Spiel |
+|---|---|---|---|
+| 1 | D3 | Alma will Mehl von **Hanne Kalk** (Weidenhain) für die Welspastete | Rezept `welspastete`: Wels + `mehl` |
+| 2 | E2 | neuer erster Schritt `rezept`: **Merit Stahl** in Graufurt kennt das Rezept der Glockenbronze (Kupfer aus der Senke vor der Waldmark, Splittereisen aus der Furtklamm) | – |
+| 3 | E1 | neuer Schritt `othmar`: **Othmar Rehn** in Weidenhain gibt einen Brief für Gunhild mit; Abgabe nur mit dem Brief | Gegenstand `othmars_brief` |
+| 4 | C3 | neuer Schritt `weihen`: das Moorwasser am **Bindestein an der Linde** (Weidenhain) weihen, erst dann trübt es das Becken | Gegenstand `moorwasser_geweiht` |
+| 5 | D1 | neuer Schritt `pech`: die Schmiedin will **Meilerpech von Köhler Ulf** (Nordwald, 3 Tannenstämme) für das Kettenschloss | `meilerpech` (wie C1) |
+| 6 | C1 | neuer Schritt `gisbert`: **Gisbert Ast** (Obstwiesen) sagt, welche Moorweiden taugen | – |
+| 7 | E3 | Tjark ist ein **Vetter von Raban** (Straßensperre, Quest 1) – eine Gesprächsantwort bei Tjark. Raban selbst bleibt an der Sperre (er steht in Quest 1 fest dort) | – |
+| 8 | Mettes Schafe | Mette will eine **Ringelblume aus den Obstwiesen** in den Eintopf | Rezept `hammeleintopf`: Hammelfleisch + Wasser + `ringelblume` |
+| 9 | C1 (statt B4) | Wer das **rote Banner aus B4** trägt, dem zeigt Bertold das Rabenzeichen darunter (Gesprächsantwort). In C1 statt B4, damit B4 vor dem Einbau unverändert bleibt | – |
+
+Punkt 10 (Selma reist nach Graufurt) kommt später.
