@@ -173,6 +173,15 @@ export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie" 
       GEGENSTAENDE[id] = { id, name: w.endsWith("-") ? `${w}${nomen}` : `${artikel} ${nomen}`, platz: "waffe", art, seltenheit: s, ebenen: [ebene ? `waffe.${basis}.${ebene}` : `waffe.${basis}`],
         werte: [["Werkzeug", basis === "holzbeil" ? "Holzfällerei" : "Bergbau"], ["Werte", "folgen"]], text };
     }
+  for (const [s, ebene, w] of STUFE_W) {                                                      // Angelrute: wie Holzbeil und Spitzhacke in sechs Stufen
+    const id = s === "selten" ? "angelrute" : `angelrute_${ebene || s}`;
+    GEGENSTAENDE[id] = { id, name: w.endsWith("-") ? `${w}Angelrute` : `${w} Angelrute`, platz: "waffe", art: "Angelrute", seltenheit: s, ebenen: [ebene ? `waffe.angelrute.${ebene}` : "waffe.angelrute"],
+      werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Biegsame Rute mit Rolle und Schwimmer – für Bachling, Mühlbarsch und Moorhecht." };
+  }
+  GEGENSTAENDE.lamberts_rute = { id: "lamberts_rute", name: "Lamberts Rute", platz: "waffe", art: "Angelrute", seltenheit: "episch", ebenen: ["waffe.lamberts_rute"],
+    werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Lambert Schilfs alte Nussholzrute mit Messingbeschlägen und grüner Seidenwicklung. Er gibt sie nicht jedem." };
+  GEGENSTAENDE.fischreuse = { id: "fischreuse", name: "Fischreuse", platz: "waffe", art: "Fischreuse", seltenheit: "gewoehnlich", ebenen: ["waffe.fischreuse"],
+    werte: [["Werkzeug", "Angeln"], ["Werte", "folgen"]], text: "Geflochtene Weidenreuse mit Trichter – ins Wasser gelegt, fängt sie von selbst." };
   GEGENSTAENDE.hammer = { id: "hammer", name: "Runenhammer", platz: "waffe", art: "Hammer", seltenheit: "selten", ebenen: ["waffe.hammer"],
     werte: [["Werkzeug", "Handwerk"], ["Werte", "folgen"]], text: "Schwerer Schmiedehammer mit türkis leuchtender Rune – Werkzeug des Handwerks am Amboss." };
 }
@@ -195,7 +204,7 @@ export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SE
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
 export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
-export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Hammer: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Hammer: "angriff", Angelrute: "angriff", Fischreuse: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
 export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];

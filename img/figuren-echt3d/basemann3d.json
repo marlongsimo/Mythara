@@ -513,6 +513,42 @@
     "angriff"
    ],
    "datei": "basemann3d.teile/waffe.hammer.glb"
+  },
+  "waffe.angelrute": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.angelrute.glb"
+  },
+  "waffe.lamberts_rute": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.lamberts_rute.glb"
+  },
+  "waffe.fischreuse": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.fischreuse.glb"
   }
  },
  "aktionen": {
