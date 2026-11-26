@@ -14,8 +14,9 @@ import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQue
 import { QUESTS as QUESTS_B, questDef, schalterAn } from "../../../shared/quests";
 import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
-import { TUEREN } from "../../../shared/bosse";
+import { TUEREN, INSTANZEN } from "../../../shared/bosse";
 import { tuerenZu } from "../../../shared/boss";
+import { inventar } from "../inventar";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
 import type { Welt3D } from "./motor";
@@ -45,7 +46,7 @@ export class QuestWelt {
     /* Mühlenflügel je Spieler (QuestDef.drehen): bei uns steht die Mühle, bis unser Schalter an ist */
     const DREHEN = QUESTS_B.flatMap((q) => q.drehen || []);
     if (DREHEN.length) this.u.motor.drehtHier = (x, z) => { const D = DREHEN.find((d) => Math.hypot(d.x - x, d.y - z) <= d.r); return !D || (questGeladen() && schalterAn((id) => questStandB(id), D.schalter)); };
-    addEventListener("ez-quest", () => this.stand()); this.stand();
+    addEventListener("ez-quest", () => this.stand()); addEventListener("ez-inventar", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }
       const n = QUESTS_B.flatMap((q) => q.figuren).find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
@@ -59,7 +60,9 @@ export class QuestWelt {
   /** Die gesperrten Felder für diesen Spieler (leer, sobald die Quest sie freigibt) */
   sperren(): number[][] { return [...SCHRANKEN.filter(({ q, s }) => !offenFuer(q, s.id)).map(({ s }) => [...s.feld]), ...this.tuerenZu().map((t) => [t.feld[0], t.feld[1], t.feld[2] + 1, t.feld[3] + 1])]; } /* Türen: Ecken eingeschlossen, das Raster sperrt bis ausschließlich x1/y1 */
   /** Türen (shared/bosse.ts), die für diesen Spieler zu sind – dieselben sperrt der Server in der Kampfwelt */
-  private tuerenZu() { return TUEREN.length && questGeladen() ? tuerenZu(TUEREN, (s) => schalterAn((id) => questStandB(id), s)) : TUEREN; }
+  private tuerenZu() { return TUEREN.length && questGeladen() ? tuerenZu(TUEREN, (s) => schalterAn((id) => questStandB(id), s), { hat: (g) => inventar().rucksack.includes(g), x: this.u.ort.x, y: this.u.ort.y }, INSTANZEN) : TUEREN; }
+  /** Türen vor Instanzen mit Eintritt hängen an der Stelle (im Raum, in der Tür): zweimal je Sekunde nachsehen */
+  private tuerT = 0;
   /** Wo steht die Figur gerade (wer umhergeht: der Wanderer in der Welt) */
   private wo(f: Figur): { x: number; y: number } | null { if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
@@ -86,6 +89,7 @@ export class QuestWelt {
     else if (f.npc && f.laeuft && !f.fertig) { f.laeuft = false; f.npc.spiele("ruhe"); } }
   schritt(dt: number) { const M = this.u.motor;
     this.objekteSchritt();
+    if (TUEREN.some((t) => t.instanz)) { this.tuerT -= dt; if (this.tuerT <= 0) { this.tuerT = 0.5; this.stand(); } }
     for (const f of this.figuren) if (f.n.kommt) this.entgegen(f, dt);
     for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }

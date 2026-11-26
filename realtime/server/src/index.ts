@@ -22,7 +22,7 @@ import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfP
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
-import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen, hat as invHat, abgeben } from "./inventar";
 import { geladen as istGeladen } from "../../shared/gegenstaende";
 import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei, schalter } from "./quests";
 import { weltJeSpieler, instanzAus, bossSieg } from "./bosse";
@@ -31,6 +31,8 @@ import { levelAus as levelVon } from "../../shared/kampfwerte";
 
 /** Schalter, die Gegner kennen (MonsterDef.aggressivNach, #81) */
 const SCHALTER_GEGNER = [...new Set(Object.values(MONSTER).map((m) => m.aggressivNach && m.aggressivNach.schalter).filter((s): s is string => Boolean(s)))];
+/** Verkleidung (#49): Gegenstände, die Gegner friedlich machen (MonsterDef.friedlichMit) */
+const VERKLEIDUNG = new Set(Object.values(MONSTER).flatMap((m) => m.friedlichMit || []));
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
    bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
@@ -387,9 +389,10 @@ setInterval(() => {
     for (const ev of z.ev) if (ev.a === "boss") for (const id of ev.ids) { const q = [...Z.spieler].find((o) => o.heldId === id), nutzer = q && q.kampf && q.kampf.nutzer; /* Bosszähler und Bestzeit je Konto (Migration 050) */
       if (nutzer) void bossSieg(sb, nutzer, ev.typ, ev.sek).then((t) => systemAn(nutzer, t)).catch((e) => console.error("Bosszähler:", (e as Error).message)); }
     for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
-      if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) { h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); if (SCHALTER_GEGNER.length) { const nu = q.kampf.nutzer; h.schalterAn = SCHALTER_GEGNER.filter((s) => schalter(nu, s)); } } } /* Zielscheibe und Gegner-Schalter (#81): alle 1 s nach dem Queststand */
+      if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) { h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); if (SCHALTER_GEGNER.length) { const nu = q.kampf.nutzer; h.schalterAn = SCHALTER_GEGNER.filter((s) => schalter(nu, s)); }
+        if (VERKLEIDUNG.size) { const I = inventarVon(q.kampf.nutzer); h.angelegt = I ? Object.values(I.angelegt).filter((g): g is string => Boolean(g) && VERKLEIDUNG.has(g!)) : []; } } } /* Verkleidung (#49): was der Held angelegt hat (nur, was Gegner kennen) */ /* Zielscheibe und Gegner-Schalter (#81): alle 1 s nach dem Queststand */
       if (n % 10 === 0 && q.heldId && q.kampf && q.kampf.nutzer && !q.zoneWeg) { const h = Z.sim.nach(q.heldId), K0 = KARTEN[Z.karte], nu = q.kampf.nutzer; /* Instanzen und Türen je Spieler (shared/boss.ts) nach seinem Queststand */
-        if (h && !h.tot && K0 && K0.ursprung) { const d = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s)); if (d && d.text) systemAn(nu, d.text); } }
+        if (h && !h.tot && K0 && K0.ursprung) { const t = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s), { hat: (g) => invHat(nu, g), abgeben: (g) => abgeben(sb, nu, g) }); if (t) systemAn(nu, t); } }
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
         const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
         if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }

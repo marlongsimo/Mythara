@@ -116,6 +116,10 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
+  friedlichMit?: string[];
+  /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
+  stile?: { sek: number; name?: string; angriff?: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number }; v2?: Partial<GegnerV3>; text?: string }[];
   /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
   fliehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */

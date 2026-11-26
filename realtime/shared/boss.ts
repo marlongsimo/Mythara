@@ -9,10 +9,20 @@
  *   - Helfer rufen (beim Eintritt in die Phase, einmal je Leben): n Gegner der Art art neben dem Boss; sie kehren nicht wieder.
  *   - Heilorte: steht der Boss im Umkreis r und hat weniger als unter seines Lebens, heilt er menge (Anteil des Lebens), höchstens mal-mal
  *     (Standard 1) je Leben. Mit hingehen läuft er von selbst dorthin. dauer: so lange steht er (Trinken, Splitterbecken).
- *   Phase 6 (Schweben, Deckung) kommt als weitere Felder dazu.
+ *   Phase 6 (#49):
+ *   - Schweben (schweben: Sekunden ab Eintritt in die Phase): der Boss erhebt sich – Nahkampf erreicht ihn nicht („unerreichbar“), er selbst schlägt
+ *     nicht zu und läuft nicht, seine Ansagen (nach sek) laufen weiter. Fern und Magie treffen wie immer.
+ *   - Deckung (Ansage.deckung): Felder im Windschatten – vom Boss aus hinter Fels, Säule oder Wand – bleiben frei; sie leuchten gar nicht erst.
+ *     Mit felder „raum“ trifft eine Ansage den ganzen Raum der Instanz (ohne Instanz: das Quadrat weite um den Boss) – „Schwarzer Flügelschlag“.
+ *   - Mehrfachhieb (hiebe): so viele Treffer je Grundangriff in dieser Phase (Doppelhieb: 2).
+ *
+ * Stilwechsel (MonsterDef.stile, config.ts): ein Gegner wechselt im Kampf nach Zeit Waffe und Angriffsart (Federmutter) – reihum, je Stil sek Sekunden.
+ * Verkleidung (MonsterDef.friedlichMit): wer einen dieser Gegenstände angelegt hat, wird von diesem Gegner nicht von selbst angegriffen.
  *
  * Instanz: ein Raum (Rechteck in Weltfeldern), der für jeden Spieler eine eigene Kopie ist, solange sein Schalter an ist
- * (QuestDef.schalter, z. B. „rotmantel_instanz“, solange B4 läuft). Wer darin steht, sieht und trifft nur die Gegner seiner Kopie –
+ * (QuestDef.schalter, z. B. „rotmantel_instanz“, solange B4 läuft). Mit eintritt kostet jeder Versuch einen Gegenstand (Federsiegel, #49): er wird beim
+ * Betreten verbraucht; wer den Raum verlässt oder darin fällt, beendet den Versuch (die Kopie verschwindet sofort). Die Tür davor (Tuer.instanz)
+ * ist dann nur offen, wenn der Spieler einen solchen Gegenstand dabeihat – oder im Raum bzw. in der Tür steht (hinaus geht es immer). Wer darin steht, sieht und trifft nur die Gegner seiner Kopie –
  * und andere Spieler nicht. Gegner einer Kopie kehren nicht wieder; die Kopie verschwindet 60 s, nachdem der Spieler sie verlassen hat.
  * Wellen: die Gegner einer Welle kommen, wenn die vorige gefallen ist; jede gefallene Welle meldet dem Questmotor
  * { art: "erlegen", typ: welle } (z. B. B4 „unterschlupf_welle“, der Schritt zählt 2).
@@ -23,7 +33,7 @@
 import type { Schadensart } from "./config";
 
 /** Welche Felder eine Ansage trifft */
-export type AnsageFelder = "rundum" | "ziel" | [number, number][];
+export type AnsageFelder = "rundum" | "ziel" | "raum" | [number, number][];
 export interface Ansage {
   name: string;
   /** nach so vielen Grundangriffen des Bosses … */ alle?: number;
@@ -32,11 +42,14 @@ export interface Ansage {
   /** so viele Kampf-Ticks (0,5 s) leuchten die Felder vorher (Standard 2) */ vorlauf?: number;
   /** Schaden je Getroffenem (von–bis, kein Trefferwurf: wer stehen bleibt, wird getroffen) */ schaden: [number, number];
   art?: Schadensart;
+  /** Deckung: Felder, die vom Boss aus hinter Fels oder Säule liegen, bleiben frei (Windschatten) */ deckung?: boolean;
 }
 export interface Ruf { /** Gegnerart (MONSTER) */ art: string; n: number; /** Abstand zum Boss in Feldern (Standard 2) */ weite?: number; text?: string }
 export interface Heilort { /** Weltfelder */ x: number; y: number; r: number; /** Anteil des vollen Lebens */ menge: number; /** nur unter diesem Anteil des Lebens */ unter: number;
   /** so oft je Leben (Standard 1) */ mal?: number; /** von selbst hingehen */ hingehen?: boolean; /** so lange steht er dabei (Sekunden, Standard 1,5) */ dauer?: number; text?: string }
-export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erste Phase: 1) */ ab: number; text?: string; ansagen?: Ansage[]; ruf?: Ruf; heilorte?: Heilort[] }
+export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erste Phase: 1) */ ab: number; text?: string; ansagen?: Ansage[]; ruf?: Ruf; heilorte?: Heilort[];
+  /** Schweben: so viele Sekunden ab Eintritt in die Phase für Nahkampf unerreichbar (schlägt selbst nicht zu) */ schweben?: number; /** Text beim Landen */ landen?: string;
+  /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number }
 export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[] }
 
 export interface InstanzGegner { /** Gegnerart (MONSTER) */ art: string; /** Weltfelder */ x: number; y: number }
@@ -47,10 +60,12 @@ export interface InstanzDef { id: string; name: string;
   /** kommen nacheinander, die nächste, wenn die vorige gefallen ist */ wellen?: InstanzGegner[][];
   /** Ereignis je gefallener Welle: { art: "erlegen", typ: welle } */ welle?: string;
   /** Sekunden zwischen zwei Wellen (Standard 3) */ pause?: number;
-  /** Text beim Betreten der Kopie (Chat) */ text?: string }
+  /** Text beim Betreten der Kopie (Chat) */ text?: string;
+  /** Eintritt: dieser Gegenstand wird je Versuch verbraucht (Federsiegel); ohne ihn entsteht keine Kopie */ eintritt?: string; /** Text, wenn er fehlt */ ohne?: string }
 
 export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
-  /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string }
+  /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;
+  /** Tür vor einer Instanz mit Eintritt (InstanzDef.id): zusätzlich nur offen mit dem Gegenstand dabei – oder wenn man im Raum bzw. in der Tür steht */ instanz?: string }
 
 /** So lange bleibt eine Kopie ohne ihren Spieler bestehen (Sekunden) */
 export const INSTANZ_LEER = 60;
@@ -61,14 +76,21 @@ export const imFeld = (f: [number, number, number, number], x: number, y: number
 /** Die Phase (Index) eines Bosses bei diesem Anteil seines Lebens */
 export function phaseBei(B: BossDef, anteil: number): number { let n = 0; B.phasen.forEach((p, i) => { if (anteil <= p.ab + 1e-9) n = i; }); return n; }
 /** Die Felder einer Ansage (Mitten der Felder): um das Feld des Bosses (bx, by) bzw. des Ziels (zx, zy) */
-export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: number): [number, number][] {
+export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: number, raum?: [number, number, number, number]): [number, number][] {
   const w = Math.max(0, Math.floor(A.weite ?? 1)), bi = Math.floor(bx), bj = Math.floor(by), aus: [number, number][] = [];
   if (A.felder === "rundum") { for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) if (dx || dy) aus.push([bi + dx + 0.5, bj + dy + 0.5]); }
+  else if (A.felder === "raum") { const R = raum || [bi - w, bj - w, bi + w, bj + w]; for (let i = R[0]; i <= R[2]; i++) for (let j = R[1]; j <= R[3]; j++) if (i !== bi || j !== bj) aus.push([i + 0.5, j + 0.5]); }
   else if (A.felder === "ziel") { const zi = Math.floor(zx), zj = Math.floor(zy); for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) aus.push([zi + dx + 0.5, zj + dy + 0.5]); }
   else for (const [dx, dy] of A.felder) aus.push([bi + dx + 0.5, bj + dy + 0.5]);
   return aus; }
 /** In welcher Instanz steht ein Spieler an dieser Stelle (Weltfelder)? an: ist ein Schalter für ihn an */
 export function instanzBei(liste: InstanzDef[], x: number, y: number, an: (schalter: string) => boolean): InstanzDef | null {
   return liste.find((d) => imFeld(d.feld, x, y) && an(d.schalter)) || null; }
+/** Für Türen vor einer Instanz mit Eintritt: hat der Spieler den Gegenstand dabei, wo steht er (Weltfelder) */
+export interface TuerLage { hat: (g: string) => boolean; x: number; y: number }
+/** Ist die Tür für einen Spieler offen? */
+export function tuerOffen(t: Tuer, an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): boolean { if (!an(t.schalter)) return false;
+  const I = t.instanz ? instanzen.find((d) => d.id === t.instanz) : undefined; if (!I || !I.eintritt) return true; if (!L) return false;
+  return L.hat(I.eintritt) || imFeld(I.feld, L.x, L.y) || imFeld(t.feld, L.x, L.y); }
 /** Die Türen, die für einen Spieler zu sind */
-export const tuerenZu = (liste: Tuer[], an: (schalter: string) => boolean): Tuer[] => liste.filter((t) => !an(t.schalter));
+export const tuerenZu = (liste: Tuer[], an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): Tuer[] => liste.filter((t) => !tuerOffen(t, an, L, instanzen));
