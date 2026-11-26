@@ -162,6 +162,20 @@ export const RUESTUNGSGRUPPE: Record<string, "nahkampf" | "fernkampf" | "magie" 
     g.name = m + t[1];
   }
 }
+/* ---------- Werkzeuge (Utensilien der Berufe): wie eine Einhandwaffe in der rechten Hand (fabrik/assets/skilling/utensilien, Teile waffe.holzbeil/…),
+ * Angriff = Einhand-Hieb. Holzbeil und Spitzhacke in sechs Stufen (Training bis Mythisch), der Hammer (Handwerk) nur in einer. Werte folgen. ---------- */
+{
+  const STUFE_W: [Seltenheit, string, string][] = [["anfaenger", "training", "Trainings-"], ["gewoehnlich", "gewoehnlich", "Einfache"], ["selten", "", "Seltene"], ["episch", "episch", "Epische"], ["legendaer", "legendaer", "Legendäre"], ["mythisch", "mythisch", "Mythische"]];
+  for (const [basis, nomen, art, text] of [["holzbeil", "Holzbeil", "Holzbeil", "Werkzeug der Holzfällerei – fällt Bäume, taugt zur Not auch als Waffe."],
+                                           ["spitzhacke", "Spitzhacke", "Spitzhacke", "Werkzeug des Bergbaus – bricht Erz aus dem Gestein."]] as const)
+    for (const [s, ebene, w] of STUFE_W) {
+      const id = s === "selten" ? basis : `${basis}_${ebene || s}`, artikel = basis === "holzbeil" ? (w.endsWith("-") ? w : w + "s") : w;   // das Holzbeil (Einfaches), die Spitzhacke (Einfache)
+      GEGENSTAENDE[id] = { id, name: w.endsWith("-") ? `${w}${nomen}` : `${artikel} ${nomen}`, platz: "waffe", art, seltenheit: s, ebenen: [ebene ? `waffe.${basis}.${ebene}` : `waffe.${basis}`],
+        werte: [["Werkzeug", basis === "holzbeil" ? "Holzfällerei" : "Bergbau"], ["Werte", "folgen"]], text };
+    }
+  GEGENSTAENDE.hammer = { id: "hammer", name: "Runenhammer", platz: "waffe", art: "Hammer", seltenheit: "selten", ebenen: ["waffe.hammer"],
+    werte: [["Werkzeug", "Handwerk"], ["Werte", "folgen"]], text: "Schwerer Schmiedehammer mit türkis leuchtender Rune – Werkzeug des Handwerks am Amboss." };
+}
 /* ---------- Rabenset: Belohnung der Raben-Trilogie (je Abschnitt ein Teil). Defensiv ausgewogen, schwächer als „selten“ (zwischen einfach und selten),
    dafür ein Set-Bonus, wenn alle drei Teile angelegt sind. Werte zur Abstimmung vorgeschlagen. ---------- */
 GEGENSTAENDE.rabenkapuze = { id: "rabenkapuze", name: "Rabenkapuze", platz: "kopf", art: "Leichte Rüstung", seltenheit: "set", ebenen: ["kopf.helm.rabe"],
@@ -181,7 +195,7 @@ export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SE
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
 export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
-export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Hammer: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
 export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];

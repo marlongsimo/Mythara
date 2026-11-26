@@ -426,6 +426,42 @@
     "zauber_stab"
    ],
    "datei": "basefrau3d.teile/waffe.zeremonienstab.glb"
+  },
+  "waffe.holzbeil": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basefrau3d.teile/waffe.holzbeil.glb"
+  },
+  "waffe.spitzhacke": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basefrau3d.teile/waffe.spitzhacke.glb"
+  },
+  "waffe.hammer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basefrau3d.teile/waffe.hammer.glb"
   }
  },
  "aktionen": {
