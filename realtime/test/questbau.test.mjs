@@ -1,24 +1,36 @@
 /* Prüfer für alle Quests des Baukastens (shared/questbau.ts, Fahrplan Phase 1): jede Quest-Datei wird auf Fehler geprüft –
    Verweise, Erreichbarkeit, Begrüßung in jedem Stand, Abschluss möglich, Stände passen in die Datenbank. Dazu Quest 3 Schritt für Schritt.
    Aufruf: node test/questbau.test.mjs (nach node build.mjs) */
-import { QB, QUESTS, QUEST1, QUEST2, QUEST3, REZEPTE, weltRegionBei } from "./sim.gebaut.mjs";
+import { QB, QUESTS, QUEST1, QUEST2, QUEST3, REZEPTE, GEG, weltRegionBei } from "./sim.gebaut.mjs";
+import { build } from "esbuild"; import { tmpdir } from "node:os"; import { pathToFileURL } from "node:url";
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 check(QUESTS.length >= 2 && new Set(QUESTS.map((q) => q.id)).size === QUESTS.length, `Gemeinsame Questliste (shared/quests.ts): ${QUESTS.map((q) => q.id).join(", ")}`);
+/* Entwürfe (shared/quest_entwuerfe.ts): noch nicht im Spiel, aber genauso geprüft; fehlende Rezepte und Gegenstände sind „wartet auf“, kein Fehler */
+const ENTW_DATEI = `${tmpdir()}/riftmere-entwuerfe-${process.pid}.mjs`;
+await build({ stdin: { contents: 'export { ENTWUERFE } from "./shared/quest_entwuerfe";', resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: ENTW_DATEI, logLevel: "silent" });
+const { ENTWUERFE } = await import(pathToFileURL(ENTW_DATEI).href);
+check(ENTWUERFE.every((e) => !QUESTS.some((q) => q.id === e.q.id)) && new Set(ENTWUERFE.map((e) => e.q.id)).size === ENTWUERFE.length, `Entwürfe (shared/quest_entwuerfe.ts), nicht doppelt im Spiel: ${ENTWUERFE.map((e) => e.q.id).join(", ") || "–"}`);
+const ALLE_IDS = [...QUESTS, ...ENTWUERFE.map((e) => e.q)].map((q) => q.id);
 
-for (const q of QUESTS) {
-  console.log(`Quest „${q.titel}“ (${q.id}):`);
-  const ids = q.schritte.map((s) => s.id), fehler = [];
+for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
+  console.log(`Quest „${q.titel}“ (${q.id})${wartet ? ` – Entwurf, wartet auf ${wartet}` : ""}:`);
+  const ids = q.schritte.map((s) => s.id), fehler = [], fehlt = [];
+  /* fehlender Baustein: in einer Quest des Spiels ein Fehler, in einem Entwurf ein Hinweis */
+  const baustein = (t) => (wartet ? fehlt : fehler).push(t);
   if (!/^[a-z0-9_]{1,40}$/.test(q.id)) fehler.push("Quest-ID passt nicht in die Datenbank");
   if (new Set(ids).size !== ids.length) fehler.push("Schritt-IDs doppelt");
   if (q.schritte.length > 20) fehler.push("mehr als 20 Schritte (Stand zu lang)");
   q.schritte.forEach((s, i) => { for (const n of s.nach || []) { const j = ids.indexOf(n); if (j < 0) fehler.push(`${s.id}: unbekannter Vorgänger ${n}`); else if (j >= i) fehler.push(`${s.id}: Vorgänger ${n} steht nicht davor`); }
     if (!s.text || !s.log) fehler.push(`${s.id}: Text fehlt`);
-    if (s.ereignis.art === "herstellen" && !REZEPTE.some((r) => r.id === s.ereignis.rezept)) fehler.push(`${s.id}: Rezept ${s.ereignis.rezept} gibt es nicht`); });
+    if (s.ereignis.art === "herstellen" && !REZEPTE.some((r) => r.id === s.ereignis.rezept)) baustein(`${s.id}: Rezept ${s.ereignis.rezept} gibt es nicht`); });
+  /* Gegenstände, die die Quest nennt (hat, verloren, anzahl, geben, nehmen, Lohn), müssen es geben */
+  const genannt = new Set([...JSON.stringify(q).matchAll(/"(?:hat|verloren)":"([a-z0-9_]+)"|"g":"([a-z0-9_]+)"/g)].map((m) => m[1] || m[2]));
+  for (const g of genannt) if (!GEG[g]) baustein(`Gegenstand ${g} gibt es nicht`);
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
   for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) fehler.push(`${f.id}: steht außerhalb der Welt`);
   const bedPruefen = (b, wo) => { if (!b) return; for (const id of [...(b.erledigt || []), ...(b.offen || []), ...(b.zaehler ? [b.zaehler.schritt] : [])]) if (!ids.includes(id)) fehler.push(`${wo}: unbekannter Schritt ${id}`);
     if (b.zaehler && !q.schritte.find((x) => x.id === b.zaehler.schritt).anzahl) fehler.push(`${wo}: ${b.zaehler.schritt} zählt nicht`);
-    if (b.quest && !QUESTS.some((x) => x.id === b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
+    if (b.quest && !ALLE_IDS.includes(b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
   const oIds = (q.objekte || []).map((o) => o.id); if (new Set(oIds).size !== oIds.length) fehler.push("Objekt-IDs doppelt");
   for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) fehler.push(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
   for (const x of q.schritte) { if (x.ereignis.art === "objekt" && !oIds.includes(x.ereignis.id)) fehler.push(`${x.id}: Objekt ${x.ereignis.id} fehlt`);
@@ -34,6 +46,7 @@ for (const q of QUESTS) {
       for (const v of o.folge) { bedPruefen(v.wenn, `${npc}/${o.id}`); for (const id of v.f.erledige || []) if (!ids.includes(id)) fehler.push(`${npc}/${o.id}: erledigt unbekannten Schritt ${id}`); if (!v.f.zeilen.length) fehler.push(`${npc}/${o.id}: Folge ohne Text`); } } }
   for (const art of ["sammeln", "herstellen"]) for (const [z, L] of Object.entries((q.sperren || {})[art] || {})) L.forEach((p, i) => bedPruefen(p.wenn, `Sperre ${art}/${z} ${i}`));
   check(!fehler.length, "Verweise stimmen" + (fehler.length ? ": " + fehler.join(" · ") : ""));
+  if (fehlt.length) console.log(`  … wartet auf: ${fehlt.join(" · ")}`);
 
   /* Jeder Stand × jede Lage des Spielers (hat / verloren für jeden genannten Gegenstand): der Geber begrüßt und bietet etwas an */
   const dinge = [...new Set(JSON.stringify(q).match(/"(hat|verloren)":"([a-z0-9_]+)"/g)?.map((m) => m.split(":")[1].replace(/"/g, "")) || [])];
