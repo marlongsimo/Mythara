@@ -486,6 +486,12 @@
    "objekt": "dorf_festfeuer_01",
    "x": 6317.0,
    "y": 6703.4
+  },
+  {
+   "id": "ort_p5_kessel_hedda",
+   "objekt": "hand_kessel_01",
+   "x": 6291.6,
+   "y": 6677.8
   }
  ],
  "lichtungen": [
