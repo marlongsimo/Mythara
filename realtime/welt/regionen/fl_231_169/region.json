@@ -1,0 +1,16 @@
+{
+ "id": "fl_231_169",
+ "name": "Die Hochlande",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
+ "ursprung": [
+  231,
+  169
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "gebirge",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

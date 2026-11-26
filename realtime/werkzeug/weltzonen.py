@@ -39,7 +39,10 @@ BESONDERS = {
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "export const WELTKAMPF: WeltKampfGebiet[] = ["]
+# Das Festland (Entwurf, 26.11.2026: nur Gelände und Höhen, ohne Orte, Wege und Gegner) ist noch kein Kampfgebiet und kein Teil der gemeinsamen Welt
+FESTLAND = {rid for rid, e in welt["regionen"].items() if e["region"].get("nahtlos") == "festland"}
 for rid, eintrag in welt["regionen"].items():
+    if rid in FESTLAND: continue
     if rid in SICHER: print(f"{rid}: sicherer Ort"); continue
     z = BESONDERS.get(rid, {}); R = eintrag["region"]; ux, uy = R["ursprung"]; bw, bh = R["chunks"]; x0, y0, B, H = ux * C, uy * C, bw * C, bh * C
     raster = [["T"] * B for _ in range(H)]
@@ -59,5 +62,5 @@ for rid, eintrag in welt["regionen"].items():
     print(f"{rid} → {karte}: {B}×{H}, {sum(r.count('.') for r in raster)} frei, {len(lager)} Gegner, {'Mehrkampf-Bereiche: ' + str(len(z['mehrkampf'])) if z.get('mehrkampf') else 'Einzelkampf'}")
 aus.append("];")
 aus.append("/** Alle Regionen der Welt (auch die sicheren) – der Server lässt dort die gemeinsame Welt zu (Anwesenheit, Chat) */")
-aus.append("export const WELTREGIONEN: string[] = " + json.dumps(list(welt["regionen"])) + ";")
+aus.append("export const WELTREGIONEN: string[] = " + json.dumps([r for r in welt["regionen"] if r not in FESTLAND]) + ";")
 open(os.path.join(WURZEL, "realtime", "shared", "weltzonen.ts"), "w").write("\n".join(aus) + "\n")

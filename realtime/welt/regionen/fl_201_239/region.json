@@ -1,0 +1,16 @@
+{
+ "id": "fl_201_239",
+ "name": "Die Ockerlande",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  201,
+  239
+ ],
+ "chunks": [
+  15,
+  15
+ ],
+ "biom": "wueste",
+ "stufe": 3,
+ "nahtlos": "festland"
+}
