@@ -17,7 +17,7 @@ export class FischWelt extends SammelWelt {
     super(u, {
       beruf: BERUF_FISCHEN, berufName: "Fischen", ereignis: "ez-fisch", liste: "ez-fanggruende", ziele: FANGSTELLEN, bitten: (tat, id) => fischBitten(tat as "start" | "stop" | "stroemung", id),
       def: (a) => { const F = FISCHE[a as FischArt]; return { name: F.name, level: F.level, xp: F.xp, ertrag: F.ertrag, modell: "", leer: "", mass: 1, weiblich: false }; },
-      tatErtrag: "fang", tatMoment: "stroemung", grundLeer: "weiter", werkzeugUrl: GERAET, werkzeugStandard: "" /* Rute und Angel-Bewegung fehlen noch (Issue an Figuren & 3D): solange nur der Blick aufs Wasser */, clip: "",
+      tatErtrag: "fang", tatMoment: "stroemung", grundLeer: "weiter", werkzeugUrl: GERAET, werkzeugStandard: "", clip: "", angelnMit: "angelrute" /* Rute als Waffenteil und Bewegungen angeln/angeln_warten/angeln_einholen (Figuren, #39) */,
       massArt: "laenge", durchsicht: false, spanFarbe: 0xbfe3ff, prozedural: "wellen", leerUnsichtbar: true,
       texte: { tun: (D) => `${D.name} angeln`, start: (D) => `Du wirfst die Schnur aus und wartest auf einen ${D.name} …`, moment: "Das Wasser schäumt – Strömung lesen!", momentKnopf: "Strömung lesen!", leerKnopf: "",
         leer: () => "Die Fische sind weitergezogen. Such die nächsten Wellenkreise.", leerAnsehen: () => "Hier ist nur Wasser.", einStueck: "einen Fisch", je: "je Fisch" },
