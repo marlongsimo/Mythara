@@ -21,7 +21,7 @@ Konzept vom 26.11.2026 (Leitstelle), Wunsch des Nutzers. Vorbild für den Aufbau
 |---|---|
 | Plätze je Seite | so viele wie der Rucksack, Stapel zählen als ein Platz |
 | Platz-Prüfung | Mitte zeigt „Name hat N freie Plätze“; Annehmen geht nicht, wenn der Empfänger keinen Platz hat (Stapel mit Vorhandenem zählen mit) |
-| Nicht handelbar | **geladene Waffen „(s)“** (Kanon), Questgegenstände, Belohnungen mit Kennzeichen `gebunden` (z. B. Rabenset, Klinge des Grauen Hauptmanns – Liste vor dem Einbau festlegen). Sie erscheinen im Rucksack-Teil des Fensters ausgegraut |
+| Nicht handelbar | **geladene Ausrüstung „(s)“**, Questgegenstände und **alle Quest-Belohnungen** (Entscheidung des Nutzers, 26.11.) – Kennzeichen `gebunden`, automatisch für alles, was eine Quest als Lohn gibt. Sie erscheinen im Rucksack-Teil des Fensters ausgegraut |
 | Wert-Anzeige | je Seite „Wert: N Splitter“ = Summe der Ladenpreise (wo es einen gibt), nur als Orientierung |
 | Gäste | handeln nicht (nur mit Konto) |
 | Gerätesperre | gilt wie immer – ein Konto, ein Gerät |
@@ -57,4 +57,3 @@ Stil: Rahmen und Knöpfe wie die übrigen Fenster (Bank, Rucksack), grüne Umran
 
 ## Offen (Nutzer)
 
-- Welche Belohnungen sollen **gebunden** (nicht handelbar) sein? Vorschlag: Quest-Belohnungen mit eigenem Namen (Rabenset, Klinge des Grauen Hauptmanns, Rotes Banner), Rabenküken.
