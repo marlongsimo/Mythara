@@ -9327,6 +9327,35 @@
     "wind": 0,
     "fest": true
    }
+  },
+  {
+   "id": "troedler_karren",
+   "name": "Trödlerkarren",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/troedler_karren.webp",
+   "groesse": [
+    97,
+    126
+   ],
+   "anker": [
+    0.3454,
+    0.9206
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/troedel.py (#88), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/troedler/karren.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
