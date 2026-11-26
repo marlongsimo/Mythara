@@ -1,0 +1,101 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.nonne – Nonne, Nonne der Abtei (aus npcfrau3d): Kutte im Grau der Wacht, dunkler Schleier – für drei Nonnen mehrfach setzen.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [
+    {
+      "id": "kleidung.kutte",
+      "platz": "kutte",
+      "farbe": "#6b7179",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.85
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.85
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.9
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.9
+        ]
+      ]
+    },
+    {
+      "id": "kleidung.schleier",
+      "platz": "kopftuch",
+      "farbe": "#3e4248",
+      "dicke": 0.03,
+      "gesicht_frei": true,
+      "ueberlage": true,
+      "bereich": [
+        [
+          "kopf",
+          0.25,
+          1
+        ],
+        [
+          "hals",
+          0.3,
+          1
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}
