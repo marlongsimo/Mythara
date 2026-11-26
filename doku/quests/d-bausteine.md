@@ -2,13 +2,13 @@
 
 Rolle Quests, 26.11.2026. Die Quests stehen in `realtime/shared/quest_d1.ts`, `quest_d2.ts` und `quest_d3.ts`, als **Entwurf** in `shared/quest_entwuerfe.ts`.
 Grundlage: `doku/konzepte/phase-7.md`. Alle neuen Namen sind Vorschläge (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm, „Zur Furt“).
-Die **Stellen sind vorläufig**: in Graufurt aus der heutigen Region, am Ostufer Platzhalter östlich von Graufurt. Sobald #36 (Orte) und #37 (Figuren) fertig sind, trägt die Rolle Quests die echten Stellen und Modelle ein.
+Die **Stellen stammen aus der Welt (#36)**, vom Zweig `claude/mythara-world-pipeline-z4ynx5`: Regionen `graufurt`, `ostufer`, `turm_ebene1`–`3`, `turm_dach`. Die Modelle sind vorläufig, bis #37 fertig ist.
 
 ## Für den Motor und die Datenbank (Rolle Spiel)
 
 | # | Baustein | Warum | Vorschlag |
 |---|---|---|---|
-| 1 | **Lohn über 1.000 XP** | D1: 2.500 Schmieden-XP. D2: je 2.000 Stärke, Geschick, Defense. Migration 048 kappt je Skill und Beruf bei 1.000, der Rest ginge stillschweigend verloren | Neue Migration mit höherer Grenze (z. B. 5.000), mit Rückbau und Test. **Oder** die Leitstelle senkt den Lohn im Konzept auf 1.000. Der Prüfer meldet das als „Lohn … über 1.000“ |
+| 1 | ~~Lohn über 1.000 XP~~ | erledigt: Die Leitstelle hat das Konzept korrigiert (D1: 1.000 Schmieden, 1.000 Bergbau · D2: je 1.000 Stärke, Geschick, Defense, 500 LP). Die Grenze aus Migration 048 gilt | – |
 | 2 | **Figur in mehreren Quests** | Merit Stahl steht in D1 (Erlaubnis) und D2 (Abgabe). Wie Othmar in B3/B4 (siehe `b3-b4-bausteine.md`) | wie dort |
 | 3 | **Fähre** | Überfahrt Westanleger ↔ Ostanleger, nur mit Schalter `faehre_frei` (D1 fertig) | Wie der Wegstein-Teleport über den Server, mit kurzer Blende. Ohne Schalter sagt der Fährmann, warum nicht |
 | 4 | **Wappentür des Turms** | D2 „tuer“ | Questobjekt `d2_tuer`. Die Tür im Gehraster ist je Spieler offen, sobald der Schritt erledigt ist (`erledigt: ["tuer"]`) oder D2 fertig ist. A2 ist über D1 schon Voraussetzung |
@@ -32,11 +32,21 @@ Die **Stellen sind vorläufig**: in Graufurt aus der heutigen Region, am Ostufer
 
 | Kennung | Name | Stelle (vorläufig) | Modell (vorläufig) |
 |---|---|---|---|
-| `kord` | Kord Weller (D1) | 6718 · 6513,2 – heutige Dorffigur `faehrmann`, wird Questfigur | `npcmann3d` |
-| `kord_ost` | Kord Weller am Ostanleger (D2, eigene Figur) | Platzhalter 6790,5 · 6513,5 | `npcmann3d` |
-| `merit` | Merit Stahl (D1, D2) | 6679,5 · 6502,5 vor dem Bergfried | `stadtwache3d` |
-| `schmiedin` | Die Schmiedin (noch ohne Namen) | 6690,5 · 6512,5 | `npc.schmied` |
-| `ysolde` | Ysolde, Geist (D2) | auf dem Turmdach | `npc.ysolde` (neu, durchscheinend, grün) |
-| `alma` | Alma Furtner (D3) | 6696,5 · 6520,5 | `npcfrau3d` |
+| `kord` | Kord Weller (D1) | 6717,8 · 6515,6 – heutige Dorffigur `faehrmann` (graufurt 61,8 | 115,6), wird Questfigur | `npcmann3d` |
+| `kord_ost` | Kord Weller am Ostanleger (D2, eigene Figur) | 6736,4 · 6515,4 (Ostanleger 80,4 | 113,4) | `npcmann3d` |
+| `merit` | Merit Stahl (D1, D2) | 6677,5 · 6484,5 vor dem Bergfried (Tür 21,5 | 82,6) | `stadtwache3d` |
+| `schmiedin` | Die Schmiedin (noch ohne Namen) | 6675,5 · 6540,5 vor der Schmiede (Tür 19,5 | 138,6) | `npc.schmied` |
+| `ysolde` | Ysolde, Geist (D2) | 10994 · 9617,2 neben dem Signalfeuer (turm_dach 16 | 17,2) | `npc.ysolde` (neu, durchscheinend, grün) |
+| `alma` | Alma Furtner (D3) | 6700,5 · 6542,5 vor der Taverne „Zur Furt“ (Tür 44 | 140,6) | `npcfrau3d` |
+
+| Questobjekt / Pfeil | Stelle |
+|---|---|
+| `d1_winde` | 6716,1 · 6511,8 (Interaktion `winde_westanleger`) |
+| Furtklamm (Pfeil Erz) | 6690,4 · 6444,6 |
+| `d2_tuer` | 6840 · 6519 (Interaktion `turm_wappentuer`, ostufer 56 | 119) |
+| Turmwächter (Pfeil) | 10896,5 · 9614,5 (turm_ebene1) |
+| `d2_buch` | 10960 · 9616,4 (Interaktion `waechterbuch`) |
+| `d2_feuer` | 10992 · 9617,2 (Interaktion `signalfeuer`) |
+| Fischplatz (Pfeil Welse) | 6717,4 · 6526 |
 
 Ysolde steht immer auf dem Dach. Bevor das Feuer erlischt, „flackert“ sie nur (eigene Rede). Soll sie erst danach sichtbar sein, braucht es eine Sichtbarkeits-Bedingung für Questfiguren (Baukasten).
