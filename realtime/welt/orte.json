@@ -1,0 +1,273 @@
+{
+ "_hinweis": "Orte für Systeme und Quests (Phase 3, Issue #7). Alle Koordinaten in Weltfeldern. werkzeug/welt/orte.mjs trägt Flächen, Wege, Objekte und Freiräume in die Gebiete ein (mehrfach ausführbar); lichtungen und senken sind Vorschläge im Format von shared/holz_standorte.json und shared/bergbau_standorte.json – lichtungen.mjs schneidet sie schon frei, bis die Rolle Spiel sie dorthin übernimmt. stellen sind reine Lagenangaben für Standort-Dateien (Seelenlichter, Fanggründe, Wasser, Würmer).",
+ "wege": [
+  {
+   "name": "Feldweg Westmark → Riedwiesen → Kernbaum-Hain",
+   "breite": 1.7,
+   "punkte": [
+    [
+     6298.5,
+     6541.5
+    ],
+    [
+     6284,
+     6540
+    ],
+    [
+     6262,
+     6537
+    ],
+    [
+     6236,
+     6528
+    ],
+    [
+     6212,
+     6514
+    ],
+    [
+     6188,
+     6496
+    ],
+    [
+     6168,
+     6481
+    ]
+   ]
+  },
+  {
+   "name": "Pfad zum Ried am Moorrand",
+   "breite": 1.4,
+   "punkte": [
+    [
+     6212,
+     6514
+    ],
+    [
+     6204,
+     6546
+    ],
+    [
+     6192,
+     6580
+    ],
+    [
+     6180,
+     6606
+    ],
+    [
+     6172,
+     6624
+    ]
+   ]
+  }
+ ],
+ "flaechen": [
+  {
+   "name": "Sterneisen-Senke: Rand",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 5.0,
+   "zeichen": "e",
+   "auf": ".,f",
+   "frei": 0
+  },
+  {
+   "name": "Sterneisen-Senke: Steinboden",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 3.8,
+   "zeichen": "h",
+   "auf": ".,fe",
+   "frei": 0
+  },
+  {
+   "name": "Wiesenlicht 1 (Riedwiesen)",
+   "x": 6196.5,
+   "y": 6402.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Wiesenlicht 2 (Riedwiesen)",
+   "x": 6238.5,
+   "y": 6452.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Wiesenlicht 3 (Riedwiesen)",
+   "x": 6186.5,
+   "y": 6556.5,
+   "r": 3.2,
+   "zeichen": ",",
+   "auf": ".,",
+   "frei": 4
+  },
+  {
+   "name": "Ried am Moorrand: Uferplatz",
+   "x": 6172.5,
+   "y": 6626.5,
+   "r": 2.6,
+   "zeichen": "m",
+   "auf": "vt",
+   "frei": 3
+  },
+  {
+   "name": "Wehrkolk unterhalb des Wehrs",
+   "x": 6465.5,
+   "y": 6705.5,
+   "r": 2.7,
+   "zeichen": "~",
+   "auf": ".,e",
+   "frei": 0
+  },
+  {
+   "name": "Steg am Mühlgraben (Lambert Schilf)",
+   "rechteck": [
+    6451,
+    6704,
+    6453,
+    6706
+   ],
+   "zeichen": "d",
+   "auf": "~.,"
+  }
+ ],
+ "objekte": [
+  {
+   "id": "ort_schuppen_tebbe",
+   "objekt": "hand_tebbes_schuppen",
+   "x": 6446,
+   "y": 6672.5,
+   "weg": [
+    "laterne_31"
+   ]
+  },
+  {
+   "id": "ort_schuppen_werkbank",
+   "objekt": "hand_werkbank_01",
+   "x": 6447.25,
+   "y": 6671.6
+  },
+  {
+   "id": "ort_steg_fass",
+   "objekt": "dorf_fass_01",
+   "x": 6455.2,
+   "y": 6707.4
+  },
+  {
+   "id": "ort_steg_kiste",
+   "objekt": "dorf_kiste_01",
+   "x": 6449.2,
+   "y": 6707.6
+  },
+  {
+   "id": "ort_kolk_schilf_1",
+   "objekt": "stil_schilf_01",
+   "x": 6468.6,
+   "y": 6708.2
+  },
+  {
+   "id": "ort_kolk_schilf_2",
+   "objekt": "stil_schilf_02",
+   "x": 6462.4,
+   "y": 6708.6,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_quellstein",
+   "objekt": "moor_menhir_01",
+   "x": 6571.5,
+   "y": 6692.4
+  },
+  {
+   "id": "ort_taverne_herd",
+   "objekt": "hand_herd_01",
+   "x": 6422.8,
+   "y": 6427.4
+  },
+  {
+   "id": "ort_taverne_kessel",
+   "objekt": "hand_kessel_01",
+   "x": 6421.6,
+   "y": 6430.8
+  },
+  {
+   "id": "ort_ried_kahn",
+   "objekt": "moor_kahn_01",
+   "x": 6178.5,
+   "y": 6630.4
+  }
+ ],
+ "lichtungen": [
+  {
+   "name": "Kernbaum-Hain am Westrand der Riedwiesen",
+   "baeume": [
+    {
+     "id": "kernbaum_1",
+     "art": "kernbaum",
+     "x": 6155.5,
+     "y": 6475.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_2",
+     "art": "kernbaum",
+     "x": 6161.5,
+     "y": 6474.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_3",
+     "art": "kernbaum",
+     "x": 6154.5,
+     "y": 6481.5,
+     "region": "westried"
+    },
+    {
+     "id": "kernbaum_4",
+     "art": "kernbaum",
+     "x": 6160.5,
+     "y": 6482.5,
+     "region": "westried"
+    }
+   ]
+  }
+ ],
+ "senken": [
+  {
+   "name": "Sterneisen-Senke in der Westmark",
+   "x": 6318.5,
+   "y": 6530.5,
+   "r": 5,
+   "adern": [
+    {
+     "id": "sterneisen_1",
+     "art": "sterneisen",
+     "x": 6316.5,
+     "y": 6528.5,
+     "region": "westmark"
+    },
+    {
+     "id": "sterneisen_2",
+     "art": "sterneisen",
+     "x": 6320.5,
+     "y": 6529.5,
+     "region": "westmark"
+    },
+    {
+     "id": "sterneisen_3",
+     "art": "sterneisen",
+     "x": 6318.5,
+     "y": 6533.5,
+     "region": "westmark"
+    }
+   ]
+  }
+ ]
+}

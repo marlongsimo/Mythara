@@ -180,5 +180,6 @@
  {"id":"b0040","objekt":"stil_eiche_02","x":61.5,"y":93.5,"s":1.02,"spiegeln":true},
  {"id":"b0061","objekt":"stil_tanne_02","x":5.5,"y":95.5,"s":1.04},
  {"id":"b0104","objekt":"stil_eiche_02","x":63.5,"y":95.5,"s":0.89,"spiegeln":true},
- {"id":"b0047","objekt":"stil_eiche_01","x":1.5,"y":95.5,"s":0.99,"spiegeln":true}
+ {"id":"b0047","objekt":"stil_eiche_01","x":1.5,"y":95.5,"s":0.99,"spiegeln":true},
+ {"id":"ort_quellstein","objekt":"moor_menhir_01","x":43.5,"y":36.5}
 ]

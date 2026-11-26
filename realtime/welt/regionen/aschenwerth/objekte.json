@@ -14,7 +14,6 @@
  {"id":"erle_tot_193","objekt":"stil_erle_tot_02","x":24.5,"y":21.5,"s":0.92,"spiegeln":true},
  {"id":"schilf_123","objekt":"stil_schilf_01","x":37.73,"y":22.07,"spiegeln":true},
  {"id":"schilf_167","objekt":"stil_schilf_01","x":6.91,"y":22.31},
- {"id":"schilf_170","objekt":"stil_schilf_01","x":33.95,"y":22.38,"spiegeln":true},
  {"id":"erle_tot_179","objekt":"stil_erle_tot_01","x":89.5,"y":22.5,"s":0.82,"spiegeln":true},
  {"id":"erle_tot_184","objekt":"stil_erle_tot_01","x":109.5,"y":22.5,"s":0.97,"spiegeln":true},
  {"id":"erle_tot_183","objekt":"stil_erle_tot_02","x":95.5,"y":23.5,"s":0.86},
@@ -24,7 +23,6 @@
  {"id":"erle_tot_189","objekt":"stil_erle_tot_02","x":85.5,"y":25.5,"s":1.03,"spiegeln":true},
  {"id":"erle_tot_204","objekt":"stil_erle_tot_02","x":61.5,"y":25.5,"s":0.91,"spiegeln":true},
  {"id":"erle_tot_212","objekt":"stil_erle_tot_01","x":77.5,"y":26.5,"s":0.95},
- {"id":"erle_tot_186","objekt":"stil_erle_tot_01","x":28.5,"y":26.5,"s":0.82},
  {"id":"schilf_92","objekt":"stil_schilf_01","x":21.93,"y":26.74},
  {"id":"schilf_102","objekt":"stil_schilf_01","x":102.18,"y":27.13,"spiegeln":true},
  {"id":"erle_tot_177","objekt":"stil_erle_tot_01","x":44.5,"y":27.5,"s":0.97},
@@ -47,7 +45,6 @@
  {"id":"erle_tot_211","objekt":"stil_erle_tot_01","x":92.5,"y":34.5,"s":0.9},
  {"id":"erle_tot_195","objekt":"stil_erle_tot_02","x":101.5,"y":34.5,"s":1.06,"spiegeln":true},
  {"id":"schilf_166","objekt":"stil_schilf_01","x":43.35,"y":34.43,"spiegeln":true},
- {"id":"schilf_160","objekt":"stil_schilf_02","x":31.16,"y":35.41},
  {"id":"erle_tot_188","objekt":"stil_erle_tot_01","x":70.5,"y":35.5,"s":0.96},
  {"id":"erle_tot_207","objekt":"stil_erle_tot_01","x":81.5,"y":35.5,"s":1.14,"spiegeln":true},
  {"id":"erle_tot_203","objekt":"stil_erle_tot_01","x":118.5,"y":36.5,"s":0.88},
@@ -275,5 +272,6 @@
  {"id":"moorlicht_224","objekt":"stil_moorlicht_01","x":73.59,"y":156.99},
  {"id":"moorlicht_232","objekt":"stil_moorlicht_01","x":119.41,"y":157.65},
  {"id":"schilf_98","objekt":"stil_schilf_01","x":66.37,"y":158.09},
- {"id":"schilf_173","objekt":"stil_schilf_01","x":26.73,"y":158.39,"spiegeln":true}
+ {"id":"schilf_173","objekt":"stil_schilf_01","x":26.73,"y":158.39,"spiegeln":true},
+ {"id":"ort_ried_kahn","objekt":"moor_kahn_01","x":34.5,"y":38.4}
 ]
