@@ -1,0 +1,46 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.lambert – Lambert Schilf, alter Angler am Mühlgraben (Weidenhain), aus dem Fischer (npcmann3d): Glatze unter dem Strohhut, grauer Vollbart (#9c978e). Lamberts Rute (Nussholz, Messing) in der rechten Hand.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.kopf.strohhut",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.strohhut/v001/quelle/strohhut.glb",
+      "sitz": 0.32,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    },
+    {
+      "id": "werkzeug.lamberts_rute",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.lamberts_rute/v001/quelle/lamberts_rute.glb",
+      "griff": 0.85,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npc.lambert/v001/quelle/teile/kopf.bart.vollbart.glb"
+    }
+  ],
+  "arme_eng": 6
+}
