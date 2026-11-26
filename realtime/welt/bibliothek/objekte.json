@@ -8348,6 +8348,306 @@
     "puls_hell": 0.6,
     "wind": 0.03
    }
+  },
+  {
+   "id": "samm_nebelkraut_01",
+   "name": "Nebelkraut",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_nebelkraut_01.webp",
+   "groesse": [
+    23,
+    33
+   ],
+   "anker": [
+    0.3261,
+    0.8788
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/nebelkraut.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_nebelkraut_geerntet",
+   "name": "Nebelkraut (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_nebelkraut_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/nebelkraut-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_ringelblume_01",
+   "name": "Ringelblume",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_ringelblume_01.webp",
+   "groesse": [
+    22,
+    30
+   ],
+   "anker": [
+    0.3864,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/ringelblume.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_ringelblume_geerntet",
+   "name": "Ringelblume (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_ringelblume_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/ringelblume-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_wegerich_01",
+   "name": "Wegerich",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_wegerich_01.webp",
+   "groesse": [
+    16,
+    23
+   ],
+   "anker": [
+    0.4688,
+    0.8261
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/wegerich.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_wegerich_geerntet",
+   "name": "Wegerich (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_wegerich_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/wegerich-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_eisenhut_01",
+   "name": "Eisenhut",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_eisenhut_01.webp",
+   "groesse": [
+    16,
+    47
+   ],
+   "anker": [
+    0.4688,
+    0.9149
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/eisenhut.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_eisenhut_geerntet",
+   "name": "Eisenhut (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_eisenhut_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/eisenhut-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_lindenbluete_01",
+   "name": "Lindenblüte",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_lindenbluete_01.webp",
+   "groesse": [
+    42,
+    45
+   ],
+   "anker": [
+    0.4524,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/lindenbluete.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_lindenbluete_geerntet",
+   "name": "Lindenblüte (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_lindenbluete_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/lindenbluete-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_moorgloeckchen_01",
+   "name": "Moorglöckchen",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_moorgloeckchen_01.webp",
+   "groesse": [
+    21,
+    26
+   ],
+   "anker": [
+    0.4286,
+    0.8462
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/moorgloeckchen.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_moorgloeckchen_geerntet",
+   "name": "Moorglöckchen (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_moorgloeckchen_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Kräuterkunde)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/moorgloeckchen-geerntet.glb",
+    "wind": 0
+   }
   }
  ]
 }
