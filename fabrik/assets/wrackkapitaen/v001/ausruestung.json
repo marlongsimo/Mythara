@@ -1,0 +1,101 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "wrackkapitaen – Der Wrackkapitän (Phase 10, Mini-Boss St. 40): Kapitän in dunkelblauem Rock mit Dreispitz und Krummsäbel; danach mit fabrik/geist.py durchscheinend blaugrün.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "treffer",
+    "ruf",
+    "tod"
+  ],
+  "starr": [
+    {
+      "id": "waffe.krummsaebel",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/schwert/waffe.krummsaebel/v001/quelle/krummsaebel.glb",
+      "griff": 0.08
+    },
+    {
+      "id": "kleidung.kopf.dreispitz",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.dreispitz/v001/quelle/dreispitz.glb",
+      "sitz": 0.3
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.kapitaensrock",
+      "platz": "kutte",
+      "farbe": "#22324a",
+      "dicke": 0.035,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.85
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.85
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.6
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.6
+        ]
+      ]
+    }
+  ],
+  "teilnetze": []
+}
