@@ -23,6 +23,11 @@ import { QUEST_F2 } from "./quest_f2";
 import { QUEST_F3 } from "./quest_f3";
 import { QUEST_F4 } from "./quest_f4";
 import { QUEST_KARTE } from "./quest_karte";
+import { QUEST_G1 } from "./quest_g1";
+import { QUEST_G2 } from "./quest_g2";
+import { QUEST_G3 } from "./quest_g3";
+import { QUEST_G4 } from "./quest_g4";
+import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
@@ -46,4 +51,9 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_F3, wartet: "Phase 9: Tempel mit Kammer als Instanz, Glutgeist, Sandmutter, Spiegel-Rätsel" },
   { q: QUEST_F4, wartet: "Phase 9: Strom, Nalia, Glutwels, Rezept glutwels_salzkruste" },
   { q: QUEST_KARTE, wartet: "Phase 9: Reisekarte (täglicher Sprung), Kartenstücke, Steinhaut (5c)" },
+  { q: QUEST_G1, wartet: "Phase 10: Südstraße, Kielmund, Strandräuber, Kutsche" },
+  { q: QUEST_G2, wartet: "Phase 10: Leuchtturm, Hering, Rezepte lampenoel und splitterglut" },
+  { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
+  { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
+  { q: QUEST_KRAEUTERHOF, wartet: "Phase 10: Kräuterhof mit Kessel; Kräuterkunde (5c)" },
 ];
