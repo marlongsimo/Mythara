@@ -67,5 +67,6 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
+- Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann), Wachtrüstung als zweites Set?
 - Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
 - Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel
