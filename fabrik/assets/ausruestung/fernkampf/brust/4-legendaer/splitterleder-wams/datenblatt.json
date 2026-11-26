@@ -1,0 +1,17 @@
+{
+  "name": "Splitterleder-Wams",
+  "gegenstand": "jaegerwams_legendaer",
+  "gruppe": "fernkampf",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Legendär",
+  "modell": {
+    "ebene": "ruestung.brust.jaeger.legendaer",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/brust/ruestung.brust.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.jaeger.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.jaeger.legendaer.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Ochsenblutrotes Leder, goldbeschlagen; die Schnallen glühen wie Kohlen."
+}

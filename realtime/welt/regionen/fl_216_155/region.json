@@ -1,0 +1,16 @@
+{
+ "id": "fl_216_155",
+ "name": "Die Frostkrone",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
+ "ursprung": [
+  216,
+  155
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "schnee",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

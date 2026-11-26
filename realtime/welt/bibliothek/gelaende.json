@@ -1,22 +1,500 @@
 {
-  "arten": [
-    {"id": "wasser", "name": "Wasser", "zeichen": "~", "kategorie": "wasser", "begehbar": false, "wasser": true, "kachel": "realtime/werkzeug/boden/gemalt/wasser.webp", "rang": 0, "rand": {"art": "ufer", "breite": 1.2, "bild": "realtime/werkzeug/boden/verlauf-wiese-wasser.webp"}, "farbe": "#2f6f8f", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 440},
-    {"id": "wasser_ruhig", "name": "Ruhiges Wasser", "zeichen": "w", "kategorie": "wasser", "begehbar": false, "wasser": true, "kachel": "realtime/werkzeug/boden/gemalt/wasser-ruhig.webp", "rang": 1, "rand": {"art": "ufer", "breite": 1.2, "bild": "realtime/werkzeug/boden/verlauf-wiese-wasser.webp"}, "farbe": "#3d7f93", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 440},
-    {"id": "moorwasser", "name": "Moorwasser", "zeichen": "o", "kategorie": "wasser", "begehbar": false, "wasser": true, "kachel": "realtime/werkzeug/boden/gemalt/moorwasser.webp", "rang": 2, "rand": {"art": "ufer", "breite": 0.6}, "farbe": "#1f2b24", "kachelPx": 420, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "schlamm", "name": "Schlamm", "zeichen": "m", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/schlamm.webp", "rang": 10, "rand": {"art": "fransen", "breite": 1.2}, "farbe": "#4a3f2c", "kachelPx": 420, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "torf", "name": "Torf", "zeichen": "t", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/torf.webp", "rang": 12, "rand": {"art": "fransen", "breite": 1}, "farbe": "#3a2c20", "kachelPx": 420, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "streu": [{"art": "bueschel", "dichte": 0.3}, {"art": "zweige", "dichte": 0.04}]},
-    {"id": "sand", "name": "Sand", "zeichen": "s", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/sand.webp", "rang": 15, "rand": {"art": "fransen", "breite": 1.2}, "farbe": "#b9a777", "kachelPx": 420, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "waldboden", "name": "Waldboden", "zeichen": "f", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/waldboden.webp", "rang": 20, "rand": {"art": "fransen", "breite": 2.2}, "farbe": "#3d4a2a", "kachelPx": 420, "streu": [{"art": "zweige", "dichte": 0.07}, {"art": "steinchen", "dichte": 0.025}, {"art": "bueschel", "dichte": 0.05}], "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "moorwiese", "name": "Moorwiese (welkes Gras)", "zeichen": "v", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/moorwiese.webp", "rang": 29, "rand": {"art": "fransen", "breite": 1.5}, "farbe": "#5f8a3a", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 420, "streu": [{"art": "bueschel", "dichte": 0.16}, {"art": "steinchen", "dichte": 0.012}, {"art": "blumen", "dichte": 0.02}]},
-    {"id": "wiese", "name": "Wiese", "zeichen": ".", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/wiese.webp", "rang": 30, "rand": {"art": "fransen", "breite": 1.5}, "farbe": "#5f8a3a", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "varianten": ["realtime/werkzeug/boden/gemalt/wiese-blumen.webp", "realtime/werkzeug/boden/gemalt/wiese-trocken.webp", "realtime/werkzeug/boden/gemalt/wiese-satt.webp"], "kachelPx": 420, "streu": [{"art": "bueschel", "dichte": 0.16}, {"art": "steinchen", "dichte": 0.012}, {"art": "blumen", "dichte": 0.02}]},
-    {"id": "wiese_blumen", "name": "Blumenwiese", "zeichen": ",", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/wiese-blumen.webp", "rang": 31, "rand": {"art": "fransen", "breite": 2}, "farbe": "#74994a", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 420, "varianten": ["realtime/werkzeug/boden/gemalt/wiese-satt.webp"], "streu": [{"art": "bueschel", "dichte": 0.12}, {"art": "blumen", "dichte": 0.09}]},
-    {"id": "acker", "name": "Acker", "zeichen": "a", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/acker.webp", "rang": 35, "rand": {"art": "hart", "breite": 0.3}, "farbe": "#7a5c36", "kachelPx": 420, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "erde", "name": "Erdweg", "zeichen": "e", "kategorie": "weg", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/erde.webp", "rang": 40, "rand": {"art": "fransen", "breite": 1.1, "saum": {"breite": 1.3, "staerke": 0.55}}, "farbe": "#8a6a42", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 420, "streu": [{"art": "kiesel", "dichte": 0.35}, {"art": "steinchen", "dichte": 0.03}]},
-    {"id": "steinweg", "name": "Steinweg", "zeichen": "k", "kategorie": "weg", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/pflaster.webp", "rang": 45, "rand": {"art": "steine", "breite": 0.7}, "farbe": "#8d8a84", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 150, "streu": [{"art": "steinchen", "dichte": 0.04}]},
-    {"id": "pflaster", "name": "Pflaster", "zeichen": "p", "kategorie": "weg", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/pflaster.webp", "rang": 50, "rand": {"art": "steine", "breite": 0.8}, "farbe": "#8d8a84", "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar", "kachelPx": 200},
-    {"id": "hoehlenboden", "name": "Höhlenboden", "zeichen": "h", "kategorie": "gelaende", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/hoehlenboden.webp", "rang": 42, "rand": {"art": "hart", "breite": 0.3}, "farbe": "#5c544a", "kachelPx": 380, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "holzboden", "name": "Dielenboden", "zeichen": "d", "kategorie": "weg", "begehbar": true, "kachel": "realtime/werkzeug/boden/gemalt/holzboden.webp", "rang": 44, "rand": {"art": "hart", "breite": 0.2}, "farbe": "#7a5638", "kachelPx": 300, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "leere", "name": "Leere (um Innenräume)", "zeichen": "X", "kategorie": "gelaende", "begehbar": false, "kachel": "realtime/werkzeug/boden/gemalt/leere.webp", "rang": 59, "rand": {"art": "hart", "breite": 0.2}, "farbe": "#100c09", "kachelPx": 256, "herkunft": "selbst gerechnet (dunkle Rauschkachel, ohne Bildvorlage) – frei verwendbar"},
-    {"id": "fels", "name": "Fels", "zeichen": "F", "kategorie": "gelaende", "begehbar": false, "kachel": "realtime/werkzeug/boden/gemalt/felswand.webp", "rang": 60, "rand": {"art": "hart", "breite": 0.4}, "farbe": "#6b6860", "kachelPx": 380, "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"}
-  ]
+ "arten": [
+  {
+   "id": "wasser",
+   "name": "Wasser",
+   "zeichen": "~",
+   "kategorie": "wasser",
+   "begehbar": false,
+   "wasser": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/wasser.webp",
+   "rang": 0,
+   "rand": {
+    "art": "ufer",
+    "breite": 1.2,
+    "bild": "realtime/werkzeug/boden/verlauf-wiese-wasser.webp"
+   },
+   "farbe": "#2f6f8f",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 440
+  },
+  {
+   "id": "wasser_ruhig",
+   "name": "Ruhiges Wasser",
+   "zeichen": "w",
+   "kategorie": "wasser",
+   "begehbar": false,
+   "wasser": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/wasser-ruhig.webp",
+   "rang": 1,
+   "rand": {
+    "art": "ufer",
+    "breite": 1.2,
+    "bild": "realtime/werkzeug/boden/verlauf-wiese-wasser.webp"
+   },
+   "farbe": "#3d7f93",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 440
+  },
+  {
+   "id": "moorwasser",
+   "name": "Moorwasser",
+   "zeichen": "o",
+   "kategorie": "wasser",
+   "begehbar": false,
+   "wasser": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/moorwasser.webp",
+   "rang": 2,
+   "rand": {
+    "art": "ufer",
+    "breite": 0.6
+   },
+   "farbe": "#1f2b24",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "schlamm",
+   "name": "Schlamm",
+   "zeichen": "m",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/schlamm.webp",
+   "rang": 10,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.2
+   },
+   "farbe": "#4a3f2c",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "torf",
+   "name": "Torf",
+   "zeichen": "t",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/torf.webp",
+   "rang": 12,
+   "rand": {
+    "art": "fransen",
+    "breite": 1
+   },
+   "farbe": "#3a2c20",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "streu": [
+    {
+     "art": "bueschel",
+     "dichte": 0.3
+    },
+    {
+     "art": "zweige",
+     "dichte": 0.04
+    }
+   ]
+  },
+  {
+   "id": "sand",
+   "name": "Sand",
+   "zeichen": "s",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/sand.webp",
+   "rang": 15,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.2
+   },
+   "farbe": "#b9a777",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "waldboden",
+   "name": "Waldboden",
+   "zeichen": "f",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/waldboden.webp",
+   "rang": 20,
+   "rand": {
+    "art": "fransen",
+    "breite": 2.2
+   },
+   "farbe": "#3d4a2a",
+   "kachelPx": 420,
+   "streu": [
+    {
+     "art": "zweige",
+     "dichte": 0.07
+    },
+    {
+     "art": "steinchen",
+     "dichte": 0.025
+    },
+    {
+     "art": "bueschel",
+     "dichte": 0.05
+    }
+   ],
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "moorwiese",
+   "name": "Moorwiese (welkes Gras)",
+   "zeichen": "v",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/moorwiese.webp",
+   "rang": 29,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.5
+   },
+   "farbe": "#5f8a3a",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 420,
+   "streu": [
+    {
+     "art": "bueschel",
+     "dichte": 0.16
+    },
+    {
+     "art": "steinchen",
+     "dichte": 0.012
+    },
+    {
+     "art": "blumen",
+     "dichte": 0.02
+    }
+   ]
+  },
+  {
+   "id": "wiese",
+   "name": "Wiese",
+   "zeichen": ".",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/wiese.webp",
+   "rang": 30,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.5
+   },
+   "farbe": "#5f8a3a",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "varianten": [
+    "realtime/werkzeug/boden/gemalt/wiese-blumen.webp",
+    "realtime/werkzeug/boden/gemalt/wiese-trocken.webp",
+    "realtime/werkzeug/boden/gemalt/wiese-satt.webp"
+   ],
+   "kachelPx": 420,
+   "streu": [
+    {
+     "art": "bueschel",
+     "dichte": 0.16
+    },
+    {
+     "art": "steinchen",
+     "dichte": 0.012
+    },
+    {
+     "art": "blumen",
+     "dichte": 0.02
+    }
+   ]
+  },
+  {
+   "id": "wiese_blumen",
+   "name": "Blumenwiese",
+   "zeichen": ",",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/wiese-blumen.webp",
+   "rang": 31,
+   "rand": {
+    "art": "fransen",
+    "breite": 2
+   },
+   "farbe": "#74994a",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 420,
+   "varianten": [
+    "realtime/werkzeug/boden/gemalt/wiese-satt.webp"
+   ],
+   "streu": [
+    {
+     "art": "bueschel",
+     "dichte": 0.12
+    },
+    {
+     "art": "blumen",
+     "dichte": 0.09
+    }
+   ]
+  },
+  {
+   "id": "acker",
+   "name": "Acker",
+   "zeichen": "a",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/acker.webp",
+   "rang": 35,
+   "rand": {
+    "art": "hart",
+    "breite": 0.3
+   },
+   "farbe": "#7a5c36",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "erde",
+   "name": "Erdweg",
+   "zeichen": "e",
+   "kategorie": "weg",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/erde.webp",
+   "rang": 40,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.1,
+    "saum": {
+     "breite": 1.3,
+     "staerke": 0.55
+    }
+   },
+   "farbe": "#8a6a42",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 420,
+   "streu": [
+    {
+     "art": "kiesel",
+     "dichte": 0.35
+    },
+    {
+     "art": "steinchen",
+     "dichte": 0.03
+    }
+   ]
+  },
+  {
+   "id": "steinweg",
+   "name": "Steinweg",
+   "zeichen": "k",
+   "kategorie": "weg",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/pflaster.webp",
+   "rang": 45,
+   "rand": {
+    "art": "steine",
+    "breite": 0.7
+   },
+   "farbe": "#8d8a84",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 150,
+   "streu": [
+    {
+     "art": "steinchen",
+     "dichte": 0.04
+    }
+   ]
+  },
+  {
+   "id": "pflaster",
+   "name": "Pflaster",
+   "zeichen": "p",
+   "kategorie": "weg",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/pflaster.webp",
+   "rang": 50,
+   "rand": {
+    "art": "steine",
+    "breite": 0.8
+   },
+   "farbe": "#8d8a84",
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar",
+   "kachelPx": 200
+  },
+  {
+   "id": "hoehlenboden",
+   "name": "Höhlenboden",
+   "zeichen": "h",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/hoehlenboden.webp",
+   "rang": 42,
+   "rand": {
+    "art": "hart",
+    "breite": 0.3
+   },
+   "farbe": "#5c544a",
+   "kachelPx": 380,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "holzboden",
+   "name": "Dielenboden",
+   "zeichen": "d",
+   "kategorie": "weg",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/holzboden.webp",
+   "rang": 44,
+   "rand": {
+    "art": "hart",
+    "breite": 0.2
+   },
+   "farbe": "#7a5638",
+   "kachelPx": 300,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "leere",
+   "name": "Leere (um Innenräume)",
+   "zeichen": "X",
+   "kategorie": "gelaende",
+   "begehbar": false,
+   "kachel": "realtime/werkzeug/boden/gemalt/leere.webp",
+   "rang": 59,
+   "rand": {
+    "art": "hart",
+    "breite": 0.2
+   },
+   "farbe": "#100c09",
+   "kachelPx": 256,
+   "herkunft": "selbst gerechnet (dunkle Rauschkachel, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "fels",
+   "name": "Fels",
+   "zeichen": "F",
+   "kategorie": "gelaende",
+   "begehbar": false,
+   "kachel": "realtime/werkzeug/boden/gemalt/felswand.webp",
+   "rang": 60,
+   "rand": {
+    "art": "hart",
+    "breite": 0.4
+   },
+   "farbe": "#6b6860",
+   "kachelPx": 380,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "meer",
+   "name": "Meer",
+   "zeichen": "M",
+   "kategorie": "wasser",
+   "begehbar": false,
+   "wasser": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/meer.webp",
+   "rang": 3,
+   "rand": {
+    "art": "ufer",
+    "breite": 1.4
+   },
+   "farbe": "#24607e",
+   "kachelPx": 440,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "geroell",
+   "name": "Geröll",
+   "zeichen": "g",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/geroell.webp",
+   "rang": 16,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.2
+   },
+   "farbe": "#8a8478",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "schnee",
+   "name": "Schnee",
+   "zeichen": "S",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/schnee.webp",
+   "rang": 18,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.6
+   },
+   "farbe": "#e6ecef",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "tundra",
+   "name": "Tundra",
+   "zeichen": "T",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/tundra.webp",
+   "rang": 19,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.6
+   },
+   "farbe": "#8a8c68",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "duene",
+   "name": "Dünensand",
+   "zeichen": "u",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/duene.webp",
+   "rang": 14,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.8
+   },
+   "farbe": "#d7b071",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "steppe",
+   "name": "Steppe",
+   "zeichen": "y",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/steppe.webp",
+   "rang": 20,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.6
+   },
+   "farbe": "#a39a5a",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  },
+  {
+   "id": "dschungel",
+   "name": "Dschungelboden",
+   "zeichen": "j",
+   "kategorie": "gelaende",
+   "begehbar": true,
+   "kachel": "realtime/werkzeug/boden/gemalt/dschungel.webp",
+   "rang": 21,
+   "rand": {
+    "art": "fransen",
+    "breite": 1.4
+   },
+   "farbe": "#3e6a2a",
+   "kachelPx": 420,
+   "herkunft": "selbst gerechnet (werkzeug/welt/boden_gemalt.py, ohne Bildvorlage) – frei verwendbar"
+  }
+ ]
 }

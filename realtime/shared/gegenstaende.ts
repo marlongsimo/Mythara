@@ -119,17 +119,17 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
   stamm_kernbaum: { id: "stamm_kernbaum", name: "Kernbaumstamm", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/stamm_kernbaum.webp", text: "Uraltes Holz aus den Ruinen des Nordwalds. Im Kern schimmert ein goldenes Licht." },
   stamm_weltenbaum: { id: "stamm_weltenbaum", name: "Weltenbaumstamm", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/stamm_weltenbaum.webp", text: "Holz eines jungen Weltenbaums, gewachsen an den Rissen. Es fühlt sich warm an und summt leise." },
   hammer: { id: "hammer", name: "Hammer", art: "Werkzeug", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/hammer.webp", modell3d: "img/objekte3d/skilling/utensilien/hammer.glb", text: "Ein schwerer Schmiedehammer. Ohne ihn im Rucksack geht am Amboss nichts." },
-  holzbeil_training: { id: "holzbeil_training", name: "Trainings-Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.training.webp",
+  holzbeil_training: { id: "holzbeil_training", name: "Trainings-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.training"], art: "Holzbeil", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.training.webp",
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 5, staerke: 4 }, text: "Ein rostiges Beil mit ausgeblichenem Stiel. Fällt Eichen – und taugt im Notfall zur Verteidigung." },
-  holzbeil_einfach: { id: "holzbeil_einfach", name: "Einfaches Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.einfach.webp", anforderung: { skill: "geschick", level: 10 },
+  holzbeil_einfach: { id: "holzbeil_einfach", name: "Eisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.gewoehnlich"], art: "Holzbeil", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.einfach.webp", anforderung: { skill: "geschick", level: 10 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 12, staerke: 11 }, text: "Ein solides Beil aus Eisen. Fällt Bäume bis zur Tanne zügiger." },
-  holzbeil_selten: { id: "holzbeil_selten", name: "Seltenes Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.selten.webp", anforderung: { skill: "geschick", level: 20 },
+  holzbeil_selten: { id: "holzbeil_selten", name: "Schwarzeisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil"], art: "Holzbeil", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.selten.webp", anforderung: { skill: "geschick", level: 20 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 15, staerke: 15 }, text: "Ein scharfes Beil mit gehärteter Klinge und Nussbaumstiel." },
-  holzbeil_episch: { id: "holzbeil_episch", name: "Episches Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.episch.webp", anforderung: { skill: "geschick", level: 35 },
+  holzbeil_episch: { id: "holzbeil_episch", name: "Sterneisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.episch"], art: "Holzbeil", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.episch.webp", anforderung: { skill: "geschick", level: 35 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 19, staerke: 19 }, text: "Blau glimmende Metallkanten – es beißt sich tief ins Holz." },
-  holzbeil_legendaer: { id: "holzbeil_legendaer", name: "Legendäres Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
+  holzbeil_legendaer: { id: "holzbeil_legendaer", name: "Splittereisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.legendaer"], art: "Holzbeil", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 25, staerke: 26 }, text: "Orange glühende Schneide, Stiel aus rotbraunem Holz. Ein Meisterwerkzeug." },
-  holzbeil_mythisch: { id: "holzbeil_mythisch", name: "Mythisches Holzbeil", platz: "waffe", art: "Holzbeil", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
+  holzbeil_mythisch: { id: "holzbeil_mythisch", name: "Ureisen-Holzbeil", platz: "waffe", ebenen: ["waffe.holzbeil.mythisch"], art: "Holzbeil", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/holzbeil.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 46, staerke: 47 }, text: "Türkis bis magenta leuchtende Kanten, Ebenholzstiel. Selbst Weltenbaumholz gibt ihm nach." },
   /* Handwerk (shared/handwerk.ts, 25.11.2026): Barren (Esse), Flachs und Hanf (Felder im Osthof), Bogensehne und Garn (Werkbank), Kuhhaut (Kühe im Osthof), Leder und Stoff je Stufe (Werkbank). Nur Garn stapelt */
   barren_kupfer: { id: "barren_kupfer", name: "Kupferbarren", art: "Rohstoff", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/erzeugnisse/barren_kupfer.webp", text: "Ein rötlich schimmernder Barren. Weich genug für Übungsklingen und erste Werkzeuge." },
@@ -162,17 +162,17 @@ export const GEGENSTAENDE: Record<string, Gegenstand> = {
   erz_sterneisen: { id: "erz_sterneisen", name: "Sterneisenerz", art: "Rohstoff", seltenheit: "episch", bild: "img/objekte3d/skilling/erzeugnisse/erz_sterneisen.webp", text: "Erz mit hellen, funkelnden Einschlüssen – als wäre ein Stück Nachthimmel darin gefangen." },
   erz_splittereisen: { id: "erz_splittereisen", name: "Splittereisenerz", art: "Rohstoff", seltenheit: "legendaer", bild: "img/objekte3d/skilling/erzeugnisse/erz_splittereisen.webp", text: "Erz von den Rissen, durchzogen von blau glimmenden Splitteradern. Es summt leise in der Hand." },
   erz_ureisen: { id: "erz_ureisen", name: "Ureisenerz", art: "Rohstoff", seltenheit: "mythisch", bild: "img/objekte3d/skilling/erzeugnisse/erz_ureisen.webp", text: "Uraltes Erz aus der Tiefe. Es ist schwerer, als es aussieht, und fühlt sich warm an." },
-  spitzhacke_training: { id: "spitzhacke_training", name: "Trainings-Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.training.webp",
+  spitzhacke_training: { id: "spitzhacke_training", name: "Trainings-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.training"], art: "Spitzhacke", seltenheit: "anfaenger", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.training.webp",
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 5, staerke: 4 }, text: "Eine stumpfe Hacke mit wackligem Stiel. Bricht Kupfererz – und taugt im Notfall zur Verteidigung." },
-  spitzhacke_einfach: { id: "spitzhacke_einfach", name: "Einfache Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.einfach.webp", anforderung: { skill: "geschick", level: 10 },
+  spitzhacke_einfach: { id: "spitzhacke_einfach", name: "Eisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.gewoehnlich"], art: "Spitzhacke", seltenheit: "gewoehnlich", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.einfach.webp", anforderung: { skill: "geschick", level: 10 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 12, staerke: 11 }, text: "Eine solide Hacke aus Eisen. Kommt bis zum Eisenerz zügiger voran." },
-  spitzhacke_selten: { id: "spitzhacke_selten", name: "Seltene Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.selten.webp", anforderung: { skill: "geschick", level: 20 },
+  spitzhacke_selten: { id: "spitzhacke_selten", name: "Schwarzeisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke"], art: "Spitzhacke", seltenheit: "selten", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.selten.webp", anforderung: { skill: "geschick", level: 20 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 15, staerke: 15 }, text: "Gehärtete Spitze, Stiel aus Eisenholz. Beißt sich durch Schwarzeisen." },
-  spitzhacke_episch: { id: "spitzhacke_episch", name: "Epische Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.episch.webp", anforderung: { skill: "geschick", level: 35 },
+  spitzhacke_episch: { id: "spitzhacke_episch", name: "Sterneisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.episch"], art: "Spitzhacke", seltenheit: "episch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.episch.webp", anforderung: { skill: "geschick", level: 35 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 19, staerke: 19 }, text: "Blau glimmende Kanten – das Gestein gibt nach, bevor sie es trifft." },
-  spitzhacke_legendaer: { id: "spitzhacke_legendaer", name: "Legendäre Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
+  spitzhacke_legendaer: { id: "spitzhacke_legendaer", name: "Splittereisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.legendaer"], art: "Spitzhacke", seltenheit: "legendaer", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.legendaer.webp", anforderung: { skill: "geschick", level: 45 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 25, staerke: 26 }, text: "Orange glühende Spitze. Ein Meisterwerkzeug für die Splitterfelsen." },
-  spitzhacke_mythisch: { id: "spitzhacke_mythisch", name: "Mythische Spitzhacke", platz: "waffe", art: "Spitzhacke", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
+  spitzhacke_mythisch: { id: "spitzhacke_mythisch", name: "Ureisen-Spitzhacke", platz: "waffe", ebenen: ["waffe.spitzhacke.mythisch"], art: "Spitzhacke", seltenheit: "mythisch", bild: "img/objekte3d/skilling/utensilien/symbole/spitzhacke.mythisch.webp", anforderung: { skill: "geschick", level: 65 },
     waffe: { art: "nah", ticks: 4, reich: 1, geschick: 46, staerke: 47 }, text: "Türkis bis magenta leuchtende Kanten. Selbst Ureisen bricht unter ihr." },
 };
 /* Das Eisenwacht-Set in allen Stufen (gleiche Form, anderes Material: fabrik/seltenheit.py, fabrik/stufen_bauen.sh). „selten“ sind die Grundteile oben;
@@ -253,7 +253,7 @@ export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SE
 /** Heilung durch den Set-Bonus für einen Treffer (zufall: 0..1, z. B. Math.random()); 0 bei Schaden 0 oder ohne Glück */
 export const setHeilung = (s: SetBonus, schaden: number, zufall: number) => (schaden > 0 && zufall < s.heilung.chance ? Math.round(schaden * s.heilung.anteil) : 0);
 /** Angriffsbewegung der 3D-Figur je Waffenart (nur Darstellung – der Kampf rechnet weiter mit dem Ausrüstungssatz der Startwaffe) */
-export const ANGRIFF_JE_ART: Record<string, string> = { Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
+export const ANGRIFF_JE_ART: Record<string, string> = { Holzbeil: "angriff", Spitzhacke: "angriff", Einhandschwert: "stich", Streitkolben: "angriff", Speer: "stich2h", Dolch: "stich", Zweihandschwert: "hieb2h", Bogen: "bogen", Kurzbogen: "bogen", Stab: "zauber_stab", Armbrust: "armbrust1h" };
 /** Angriffsbewegung zu den angelegten Figurenebenen (die Waffe in der Hand) – oder null, wenn keine bekannte Waffe angelegt ist */
 export function angriffFuer(ebenen: string[]): string | null {
   for (const g of Object.values(GEGENSTAENDE)) if (g.platz === "waffe" && g.ebenen && g.ebenen.some((e) => ebenen.includes(e)) && ANGRIFF_JE_ART[g.art]) return ANGRIFF_JE_ART[g.art];
@@ -274,6 +274,33 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.waldsaebel = { ...GEGENSTAENDE.waldsaebel /* der vorhandene Gesegnete Waldsäbel: eigenes Modell (waffe.waldsaebel) und Bild */, untauschbar: true,
     anforderung: { skill: "geschick", level: 5 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 21, staerke: 19, gegen: { wald: 0.15 } },
     text: "Eine geschwungene Klinge aus Waldstein, der Griff aus dem Holz des Waldgottes, umrankt von lebendigen Dornen. Er trifft, was die Splitter verändert haben, härter: +15 % Schaden gegen Wesen des Waldes (Waldgolems, Mooshocker). Nicht tauschbar." }; }
+/* Phase 2 „Waldland“ (26.11.2026): Gegenstände der Einsteigerquests A1–A3, Essen und Golem-Beute (Bilder: fabrik/waldland_dinge.py) */
+{ const Q = "img/objekte3d/skilling/erzeugnisse/";
+  /* A1 „Sehnen für den Wachturm“: Wachbogen – zwischen Training und Einfach, nicht tauschbar */
+  GEGENSTAENDE.wachbogen = { id: "wachbogen", name: "Wachbogen", platz: "waffe", art: "Kurzbogen", seltenheit: "anfaenger", ebenen: ["waffe.bogen.jagd"], untauschbar: true, bild: "img/objekte3d/ausruestung/bilder/jagdbogen.webp",
+    waffe: { art: "fern", ticks: 4, reich: 6, flug: 18, fernAngriff: 11, fernStaerke: 11 },
+    text: "Der erste selbst gebaute Bogen: Eiche, Flachssehne und Gesas strenger Blick. Etwas besser als ein Trainingsbogen. Nicht tauschbar." };
+  GEGENSTAENDE.wachbogen_ungespannt = { id: "wachbogen_ungespannt", name: "Wachbogen (ungespannt)", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "wachbogen_ungespannt.webp",
+    text: "Geschnitzt, aber noch ohne Sehne. Benutze eine Bogensehne darauf, dann wird daraus ein Wachbogen." };
+  /* A2 „Das Wappen mit dem Turm“ */
+  GEGENSTAENDE.pergament = { id: "pergament", name: "Leeres Pergament", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, symbol: "pergament",
+    text: "Ein Bogen festes Pergament aus Bruder Anselms Truhe. Für einen Abrieb gedacht." };
+  GEGENSTAENDE.kohle = { id: "kohle", name: "Holzkohle", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "kohle.webp",
+    text: "Ein schwarzes, leichtes Stück Kohle aus Ulfs Meiler. Färbt die Finger und alles, was man damit berührt." };
+  GEGENSTAENDE.wappenabrieb = { id: "wappenabrieb", name: "Wappenabrieb", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: Q + "wappenabrieb.webp",
+    text: "Kohle auf Pergament: ein Turm über drei Wellen, abgerieben vom Stein der Gruft im Nordwald." };
+  GEGENSTAENDE.steintafel = { id: "steintafel", name: "Steintafel-Bruchstück", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: Q + "steintafel.webp",
+    text: "Ein Stück einer beschrifteten Steintafel, eingewachsen in den Leib eines Waldgolems. Die Bruchkanten sind scharf." };
+  GEGENSTAENDE.golemstein = { id: "golemstein", name: "Golemstein", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: Q + "golemstein.webp",
+    text: "Mauerstein, durchzogen von Wurzeln und Moos – was von einem Waldgolem übrig bleibt. Handwerksmaterial; Kräuterkundige sollen ihn eines Tages schätzen." };
+  /* A3 „Die Mühle steht still“ */
+  GEGENSTAENDE.muehlenachslager = { id: "muehlenachslager", name: "Mühlenachslager", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "muehlenachslager.webp",
+    text: "Ein Lagerring aus zwei Kupferbarren, frisch vom Amboss. Hält, bis die Mühle umfällt – sagt Tills Vater." };
+  GEGENSTAENDE.mehlsack = { id: "mehlsack", name: "Mehlsack", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "mehlsack.webp",
+    text: "Ein Sack frisches Mehl aus der Mühle im Osthof. Grete Korn wartet darauf." };
+  /* Essen: heilt fest, stapelt nicht (Werte in VERBRAUCH) */
+  GEGENSTAENDE.brot = { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", bild: Q + "brot.webp", trank: "brot",
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm. Heilt 4 Lebenspunkte." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);
@@ -342,6 +369,19 @@ const BALANCING: Record<string, Bal> = {
 for (const [id, b] of Object.entries(BALANCING)) { const G = GEGENSTAENDE[id]; if (!G) continue;
   if (b.a) G.anforderung = { skill: b.a[0], level: b.a[1] }; if (b.w && G.waffe) G.waffe = { ...G.waffe, ...b.w }; if (b.ab) G.abwehr = { nah: b.ab[0], fern: b.ab[1], magie: b.ab[2] }; if (b.zweihand) G.zweihand = true;
   if (b.mal) G.bonus = { ...G.bonus, ...(b.mal[0] ? { fernAngriff: b.mal[0] } : {}), ...(b.mal[1] ? { genau: b.mal[1] } : {}) }; }
+/* Bögen (Kurz-, Lang-, Jagdbogen …) brauchen beide Hände: kein Schild dazu – beim Anlegen geht die Nebenhand in den Rucksack (25.11.2026) */
+for (const G of Object.values(GEGENSTAENDE)) if (G.platz === "waffe" && /bogen/i.test(G.art || "") && !/armbrust/i.test(G.art || "")) G.zweihand = true;
+/* Angriffstakt je Waffenart in Ticks (26.11.2026, Vorgabe): gilt für alle Seltenheitsstufen. Der Stil „Schnell“ zieht davon wie bisher 1 Tick ab. */
+const TAKT_JE_ART: [RegExp, number][] = [[/^(hirtenstab|sternenszepter)/, 5], [/^(ritterschwert|eidschwert)/, 4], [/^waldsaebel/, 3], [/^eiddolch/, 3], [/^eidzweihaender/, 7], [/^sterndorn/, 7] /* Speer wie der Zweihänder */,
+  [/^sternbrecher/, 5], [/^(jagdbogen|mondkurzbogen)/, 4], [/^mondlangbogen/, 6], [/^sternarmbrust/, 6]];
+for (const G of Object.values(GEGENSTAENDE)) { if (!G.waffe) continue; const t = TAKT_JE_ART.find(([r]) => r.test(G.id)); if (t) G.waffe = { ...G.waffe, ticks: t[1] }; }
+/* Beil und Spitzhacke (26.11.2026, Vorgabe): Kampfwerte wie der Dolch eine Stufe darunter (Selten = Dolch Gewöhnlich …), immer 5 Ticks.
+   Training: die halben Werte des Trainingsschwerts. Gewöhnlich: darunter gibt es keinen Dolch – dort die Werte des Trainingsschwerts. */
+{ const W = (id: string) => GEGENSTAENDE[id] && GEGENSTAENDE[id].waffe, halb = (n: number) => Math.round(n / 2), T = W("ritterschwert");
+  const vorlage: Record<string, { geschick: number; staerke: number } | undefined> = { training: T && { geschick: halb(T.geschick ?? 0), staerke: halb(T.staerke ?? 0) }, einfach: T && { geschick: T.geschick ?? 0, staerke: T.staerke ?? 0 },
+    selten: W("eiddolch_gewoehnlich") as never, episch: W("eiddolch") as never, legendaer: W("eiddolch_episch") as never, mythisch: W("eiddolch_legendaer") as never };
+  for (const G of Object.values(GEGENSTAENDE)) { const m = /^(holzbeil|spitzhacke)_(training|einfach|selten|episch|legendaer|mythisch)$/.exec(G.id), v = m && vorlage[m[2]]; if (!m || !v || !G.waffe) continue;
+    G.waffe = { ...G.waffe, ticks: 5, geschick: v.geschick, staerke: v.staerke }; } }
 /** Darf ein Held mit diesen Skill-Leveln den Gegenstand anlegen? Zurück: Fehlertext oder null */
 export function anforderungFehlt(G: Gegenstand, level: (s: AnfSkill) => number): string | null {
   const a = G.anforderung; return a && level(a.skill) < a.level ? `Dafür brauchst du ${ANF_NAME[a.skill]} ${a.level} (du hast ${level(a.skill)}).` : null; }
@@ -364,6 +404,9 @@ export const VERBRAUCH: Record<string, Verbrauch> = {
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein Fläschchen grüner Kräutersud. Lindert Kratzer – für mehr reicht es nicht." },
+  brot: { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 4, anteil: 0 }, stapelbar: false, modell: "",
+    werte: [["Heilung", "4 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm." },
   heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 10, anteil: 0.05 }, stapelbar: true, modell: "img/objekte3d/heiltrank.glb",
     werte: [["Heilung", "10 + 5 % des maximalen Lebens (nicht darüber)"], ["Stapelbar", "ja"]],
     text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },

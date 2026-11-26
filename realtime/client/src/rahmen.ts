@@ -4,13 +4,13 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
-import { questStand, questStand2, questStand3, questVerfolgt, questVerfolgen, handwerkBitten } from "./welt";
-import { Q2, lage as lage2, laeuft2, questlog2, SCHRITTE2, BELOHNUNG2 } from "../../shared/quest02";
-import { Q3, lage3, laeuft3, questlog3, SCHRITTE3 } from "../../shared/quest03";
+import { BERUFE } from "../../shared/berufe";
+import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten } from "./welt";
+import { QUESTS as QUESTS_B } from "../../shared/quests";
+import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
-import { QUESTLOG, STAENDE, Q1, BELOHNUNG, rang, laeuft } from "../../shared/quest01";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets } from "../../shared/gegenstaende";
@@ -166,7 +166,7 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   const G = GEGENSTAENDE[g]; if (!G) return null; const imRucksack = wo.startsWith("r"), n = imRucksack ? (inventar().anzahl || [])[Number(wo.slice(1))] || 1 : 1, a: Aktion[] = [];
   if (!imRucksack && G.platz) a.push({ text: "Ablegen", sym: "⤵️", tat: () => { if (!ablegen(G.platz!)) chatSystem("Der Rucksack ist voll."); } });
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
-  if (imRucksack && G.trank) a.push({ text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
+  if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
   if (imRucksack && !G.platz && !G.trank && g !== "splitter") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
@@ -183,21 +183,11 @@ type QuestArt = "neu" | "aktiv" | "verfolgt" | "fertig";
 interface QuestZeile { id: string; titel: string; ort: string; art: QuestArt; voraussetzungen: string[]; /** wie man sie beginnt (fehlt bei der ersten Quest: Jori kommt von selbst) */ start?: string; /** erledigte Schritte (durchgestrichen) und der aktuelle */ erledigt: string[]; jetzt: string; belohnung?: string }
 const QART_TEXT: Record<QuestArt, string> = { neu: "nicht gestartet", aktiv: "gestartet", verfolgt: "wird verfolgt", fertig: "abgeschlossen" };
 let questReiter: "offen" | "fertig" = "offen";
-/** Alle Quests mit ihrem Stand. Bisher eine: „Die gesperrte Straße“ (shared/quest01.ts) – weitere kommen hier dazu, jeweils mit start („Sprich mit … in …“). */
+/** Alle Quests mit ihrem Stand – alles aus den Quest-Daten (shared/quests.ts, shared/questbau.ts) */
 function questListe(): QuestZeile[] {
-  const st = questStand(), r = rang(st), fertig = st === "fertig", gestartet = laeuft(st);
-  const schritte = STAENDE.filter((x) => x !== "angeboten" && x !== "fertig"), erledigt = schritte.filter((x) => rang(x) < r).map((x) => QUESTLOG[x]);
-  const jetzt = fertig ? QUESTLOG.fertig : gestartet ? QUESTLOG[st as Exclude<typeof st, "">] : st === "angeboten" ? QUESTLOG.angeboten : "Sprich mit Jori in der Waldmark.";
-  const B = BELOHNUNG, belohnung = `Belohnung: ${SKILLS.filter((k) => B[k]).map((k) => `${B[k]} ${k === "lp" ? "Lebenspunkte" : SKILL_NAME[k]}-XP`).join(", ")}`;
-  const s2 = questStand2(), l2 = lage2(s2), p2 = ["", "angenommen", "spuren", "abgabe", "beobachten", "kampf", "bereit", "fertig"].indexOf(l2.phase), fertig2 = l2.phase === "fertig";
-  const q2: QuestZeile = { id: Q2, titel: "Der stille Rain", ort: "Osthof", art: fertig2 ? "fertig" : questVerfolgt(Q2) ? "verfolgt" : laeuft2(s2) ? "aktiv" : "neu", voraussetzungen: [],
-    start: "Sprich mit Brida Wegner am Wegposten im Süden der Waldmark.", erledigt: SCHRITTE2.filter((x) => ["", "angenommen", "spuren", "abgabe", "beobachten", "kampf", "bereit", "fertig"].indexOf(x.ab) <= p2 && !fertig2).map((x) => x.text).concat(fertig2 ? SCHRITTE2.map((x) => x.text) : []),
-    jetzt: questlog2(s2), belohnung: `Belohnung: ${BELOHNUNG2.splitter} Splitter – danach bleiben die Mooshocker als Trainingsgegner am Moosrain` };
-  const s3 = questStand3(), l3 = lage3(s3), fertig3 = l3.phase === "fertig";
-  const q3: QuestZeile = { id: Q3, titel: "Der Säbel des Waldgottes", ort: "Einführung in die Berufe · Nordwald", art: fertig3 ? "fertig" : questVerfolgt(Q3) ? "verfolgt" : laeuft3(s3) ? "aktiv" : "neu", voraussetzungen: [],
-    start: "Sprich mit Förster Hartwig am Waldweg, gleich westlich der Waldmark, wo der Nordwald beginnt.", erledigt: l3.phase === "" ? [] : SCHRITTE3.filter((x) => (l3.bits & x.bit) !== 0).map((x) => x.text),
-    jetzt: questlog3(s3), belohnung: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk" };
-  return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }, q2, q3]; }
+  return QUESTS_B.map((q) => { const st = questStandB(q.id), l = QB.lage(q, st);
+    return { id: q.id, titel: q.titel, ort: q.ort, art: l.phase === "fertig" ? "fertig" : questVerfolgt(q.id) ? "verfolgt" : l.phase === "laeuft" ? "aktiv" : "neu", voraussetzungen: (q.voraussetzungen || []).map((v) => v.text),
+      start: q.start, erledigt: QB.erledigteSchritte(q, st), jetzt: QB.questlog(q, st), belohnung: q.belohnungText + (q.punkte ? ` · ${q.punkte} Questpunkt${q.punkte > 1 ? "e" : ""}` : "") }; }); }
 /** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
 function questMenue(id: string, px: number, py: number): void { const q = questListe().find((x) => x.id === id); if (!q) return;
   const a: Aktion[] = [{ text: "Details öffnen", sym: "📜", tat: () => questDetails(id) }];
@@ -231,14 +221,7 @@ function skillInfo(k: Skill): void {
   tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${SKILL_ZEICHEN[k]}</span><div><h2>${name}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
     <h3>Wofür</h3><p>${I.wofuer}</p><h3>So steigst du auf</h3><p>${I.xp}</p>`, () => { /* zu */ }); }
 /** Info-Fenster der Berufe: Wofür, So steigst du auf */
-const BERUF_TEXT: Record<string, [string, string]> = {
-  holzfaellerei: [`Stämme für das Handwerk (Bögen, Stäbe, Schilde, Werkzeugstiele) und Brennstoff für die Esse. Jeder Stamm bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.`,
-    `Holzfäller-Bäume (leuchtende Adern) antippen, ein Holzbeil im Rucksack oder in der Hand. Eiche ab Level 1 (25 XP), Tanne 10 (40), Eibe 20 (70), Moorweide 35 (110), Kernbaum 45 (175), Weltenbaum-Setzling 65 (260). Ein besseres Beil fällt schneller. Glühen die Adern auf, schnell antippen: Kernschlag – zwei Stämme, 50 % mehr XP.`],
-  bergbau: ["Erze für das Handwerk: Barren schmelzen für Waffen, Rüstungen und Werkzeuge. Jedes Erz bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
-    "Erzadern in den Senken antippen, eine Spitzhacke im Rucksack oder in der Hand. Kupfer ab Level 1 (20 XP), Eisen 10 (35), Schwarzeisen 20 (60), Sterneisen 35 (100), Splittereisen 45 (160), Ureisen 65 (250). Eine bessere Spitzhacke baut schneller ab. Leuchtet ein Riss im Gestein auf, schnell die Ader antippen: zwei Erze und 50 % mehr XP. Eine erschöpfte Ader füllt sich nach einer Weile wieder."],
-  handwerk: ["Aus Rohstoffen wird Ausrüstung: Barren an der Esse, Waffen, Rüstungen und Werkzeuge am Amboss, Bogensehnen, Garn, Leder, Stoff und Holzwaren an der Werkbank. Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege. Herstellen gelingt immer und kostet keine Splitter.",
-    "An der Werkstatt ein Rezept wählen (oder einen Rohstoff im Rucksack benutzen und die Werkstatt antippen): Bogensehne und Garn ab Level 1, Leder und Stoff je Stufe, Barren aus Erz und Holz. Jedes Stück braucht seine Ticks, auch bei „Alle“. Glüht die Werkstatt auf (Glut), schnell antippen: eine Zutat gespart und 50 % mehr XP."],
-};
+const BERUF_TEXT: Record<string, [string, string]> = Object.fromEntries(BERUFE.map((b) => [b.id, [b.wofuer, b.aufstieg]]));
 function berufInfo(k: string): void {
   const S = skillStand((inventar().berufe || {})[k] || 0);
   tafelZeigen("skillinfo", `<div class="skopf"><span class="sz gross">${BERUF_ZEICHEN[k]}</span><div><h2>${BERUF_NAME[k]}</h2><small>Level ${S.L}${S.L < 100 ? ` · ${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : " · höchstes Level"}</small></div></div><div class="zier"></div>
@@ -384,18 +367,18 @@ function tabZeichnen(): void {
   const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
   if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
     const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small></button>`; };
-    neu = `<div class="kopf gross"><b>Heldenlevel ${heldenlevel(x)}</b><small>${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
+    neu = `<div class="kopf gross stilkopf"><b class="hl">Heldenlevel <em>${heldenlevel(x)}</em></b><small class="waffe">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
       <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
-    neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv</small></div>
+    neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv · ${questpunkte()} Questpunkte</small></div>
       <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Quests</button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen${fertig.length ? ` (${fertig.length})` : ""}</button></div>
       ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}">${q.titel}</button></li>`).join("")}</ul>` : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`; setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen();
     neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
       return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>
-      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${["holzfaellerei", "bergbau", "handwerk"].map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
+      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${BERUFE.map((b) => b.id).map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
       return `<li data-beruf="${k}" title="${BERUF_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${BERUF_ZEICHEN[k]}</span><b>${BERUF_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;

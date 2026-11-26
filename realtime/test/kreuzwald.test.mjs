@@ -6,8 +6,9 @@
 import { Sim, KARTEN, FEIN, setzeKarte, setzeStaerke, STAERKE, MONSTER, WELTZONEN, ORTSTUFE, darfKaempfen, STRECKEN } from "./sim.gebaut.mjs";
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 const lauf = (s, sek) => { for (let i = 0; i < sek * 20; i++) s.schritt(); };
-const Z = WELTZONEN.waldweg, K = KARTEN.kreuzwald;
-check(Z && Z.karte === "kreuzwald" && Z.b === 256 && Z.h === 192 && Z.x0 === 6336 && Z.y0 === 6464, "Die Region „waldweg“ (Kreuzwald) ist ein Kampfgebiet: 256 × 192 Felder ab Weltfeld 6336|6464");
+const K = KARTEN.kreuzwald, Z = { karte: "kreuzwald", x0: K.ursprung[0], y0: K.ursprung[1], b: K.zeilen[0].length, h: K.zeilen.length }; /* Zonen Stufe 2: die Region gehört zur einen Kampfwelt – hier wird das Gebiet Kreuzwald für sich geprüft */
+check(WELTZONEN.waldweg && WELTZONEN.waldweg.karte === "welt" && WELTZONEN.waldweg === WELTZONEN.waldmark, "Die Region „waldweg“ (Kreuzwald) gehört zur einen Kampfwelt – wie die Waldmark");
+check(Z.b === 256 && Z.h === 192 && Z.x0 === 6336 && Z.y0 === 6464, "Das Gebiet Kreuzwald: 256 × 192 Felder ab Weltfeld 6336|6464");
 check(STRECKEN.has("kreuzwald") && darfKaempfen(new Set(), "kreuzwald", "kreuzwald") && ORTSTUFE.kreuzwald === 3, "Immer frei, Gegner der Stufe 3");
 setzeKarte(K, FEIN); setzeStaerke(ORTSTUFE.kreuzwald, 1);
 check(Math.abs(STAERKE.lp - 0.9) < 1e-9, `Stufe 3: Banditen haben ${Math.round(MONSTER.bandit_dolch.lp * STAERKE.lp)} Leben`);

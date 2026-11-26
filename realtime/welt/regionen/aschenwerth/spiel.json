@@ -1,0 +1,87 @@
+{
+ "start": [
+  [
+   70,
+   133
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 122,
+    "y0": 107,
+    "x1": 128,
+    "y1": 109.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 116,
+    "y0": 107,
+    "x1": 122,
+    "y1": 109.6
+   }
+  ]
+ },
+ "interaktionen": [
+  {
+   "id": "bruecke_west",
+   "art": "lesen",
+   "x": 112.5,
+   "y": 109.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Westende der alten Brücke. Hinter dir das Moor und die Lichter von Rabenmoor, vor dir Aschenwerth – eine Insel, auf der niemand mehr wohnt."
+   }
+  },
+  {
+   "id": "heiligtum_tor",
+   "art": "lesen",
+   "x": 70,
+   "y": 132,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das eingestürzte Tor des Heiligtums von Aschenwerth. Über dem Bogen ist ein Zeichen in den Stein geschlagen: ein zerbrochener Kreis."
+   }
+  },
+  {
+   "id": "altar",
+   "art": "lesen",
+   "x": 70,
+   "y": 107.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Altar aus schwarzem Stein, rissig von Frost und Feuer. In der Mulde liegt Asche, die nie kalt zu werden scheint."
+   }
+  },
+  {
+   "id": "gruft",
+   "art": "lesen",
+   "x": 44,
+   "y": 134.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen."
+   }
+  },
+  {
+   "id": "steinkreis",
+   "art": "lesen",
+   "x": 98,
+   "y": 142.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen."
+   }
+  }
+ ]
+}

@@ -254,7 +254,7 @@ export class Welt extends Phaser.Scene {
     for (const st of this.stuecke.values()) { if (st.stand !== "aktiv" || !st.baeume) continue;
       for (const e of st.baeume) { const x = e.bild.x, y = e.bild.y, sicht = x > v.x - rand && x < v.right + rand && y > v.y - rand && y < v.bottom + rand * 2;
         if (sicht && !e.b && !e.laedt) { e.laedt = true;
-          void baumBild(weltBild(e.m.url), HELD_PX, { dreh: e.dreh, phase: e.phase, farbton: e.m.farbton ?? 0, saett: e.m.saett ?? 1, hell: e.m.hell ?? 1, wind: e.m.wind ?? 0.12, grau: e.m.grau ? 1 : 0 }).then((b) => { e.laedt = false;
+          void baumBild(weltBild(e.m.url), HELD_PX, { dreh: e.dreh, phase: e.phase, farbton: e.m.farbton ?? 0, saett: e.m.saett ?? 1, hell: e.m.hell ?? 1, wind: e.m.wind ?? 0.12, grau: e.m.grau ? 1 : 0, pulsTon: e.m.puls_ton, pulsBreite: e.m.puls_breite }).then((b) => { e.laedt = false;
             if (!b) return; if (e.weg || !e.bild.scene) { b.entfernen(); return; }
             const key = "baum3d:" + baumZaehler++, tex = this.textures.createCanvas(key, b.breite, b.hoehe) as Phaser.Textures.CanvasTexture; e.b = b; e.tex = tex;
             b.zeichne(zeit, tex.getContext()); tex.refresh(); e.zuletzt = performance.now();
@@ -344,7 +344,7 @@ export class Welt extends Phaser.Scene {
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
-    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
+    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; if (WELT.springen) WELT.springen(this); this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 

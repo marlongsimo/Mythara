@@ -127,7 +127,7 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   v2?: GegnerV3;
   /** Untersuchen (Bestiarium): kurzer Text über das Wesen */
   info?: string;
-  fest?: boolean; unsichtbar?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
+  fest?: boolean; unsichtbar?: boolean; /** Zielscheibe: unverwundbar, greift nicht an, keine Beute; Treffer melden sich als Ereignis „treffer“ (Phase 2) */ zielscheibe?: boolean; brut?: { art: string; takt: number; max: number; gesamt: number };
   spezial?: { name: string; laden: number; alle: number; radius: number; reich: number; schaden: [number, number]; art: Schadensart; bild?: string; mass?: [number, number, number] } }
 /* Stärke der Gegner: hängt an der Stufe der Aufgabe und an der Zahl der Helden. Die Grundwerte in MONSTER gelten für Stufe 1 … und werden hiermit malgenommen.
    Stufe 1 ist Einsteigerniveau (0,6-fach), je Stufe 0,15 mehr. Leben wächst je weiterem Helden um die Hälfte, der Schaden um ein Zehntel. Im Riss gilt 1. */
@@ -185,7 +185,15 @@ export const MONSTER: Record<string, MonsterDef> = {
   waldgolem: { name: "Waldgolem", familie: "wald", stufe: 15, bild: "img/echtzeit/bandit.webp", hoehe: 134, lp: 30, tempo: 1.6, angriffswert: { nah: 6, fern: 0, magie: 0 }, abwehr: { nah: 12, fern: 12, magie: 3 }, r: 0.5, aggroBisLevel: 15, aggroReich: 4,
     angriff: { name: "Faustschlag", art: "nah", schaden: [1, 5], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 6, staerke: 36, defense: 12, magie: 3, ticks: 6, abwehr: { nah: 10, fern: 20, magie: -10 } },
-    info: "Ein hünenhaftes Wesen aus Wurzelholz, Moos und altem Mauerstein. Es bewegt sich schwerfällig und trifft selten – doch wenn seine Faust trifft, dann mit aller Wucht. Pfeile bleiben in seiner Rinde stecken; Zauber setzen ihm sichtlich zu.", /* Beute folgt später (vorerst keine) */ },
+    info: "Ein hünenhaftes Wesen aus Wurzelholz, Moos und altem Mauerstein. Es bewegt sich schwerfällig und trifft selten – doch wenn seine Faust trifft, dann mit aller Wucht. Pfeile bleiben in seiner Rinde stecken; Zauber setzen ihm sichtlich zu.",
+    /* Beute (Phase 2, 26.11.2026): 1. Golemstein · 2. Splitter oder ein Eichenstamm · 3. Steintafel-Bruchstück, nur im passenden Schritt von A2 „Das Wappen mit dem Turm“ */
+    drops: [{ wurf: [{ g: "golemstein", chance: 60, anzahl: [1, 2] }] },
+      { wurf: [{ g: "splitter", chance: 50, anzahl: [5, 15] }, { g: "stamm_eiche", chance: 20 }] },
+      { nur: "a2_steintafel", wurf: [{ g: "steintafel", chance: 30 }] }] },
+  /* Zielscheibe (Phase 2 „Waldland“, A1): Strohscheibe neben dem Südturm der Waldmark – unverwundbar, greift nie an, keine Beute. Fernkampf-XP nur bis Fernkampf 10. */
+  zielscheibe: { name: "Zielscheibe", bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 100, tempo: 0, fest: true, zielscheibe: true, aggressiv: false, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 0, fern: 0, magie: 0 }, r: 0.5,
+    angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 },
+    info: "Eine Strohscheibe auf einem Holzgestell, bemalt mit drei Ringen. Hier üben die Wachen der Waldmark – bis Fernkampf 10 lernst du daran etwas, danach nicht mehr." },
   laich: { name: "Krötenlaich", bild: "img/gegner/schlammkroete.jpg", fest: true, unsichtbar: true, lp: 170, tempo: 0, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 35, magie: 30 }, r: 0.6,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 }, brut: { art: "kroetchen", takt: 9, max: 2, gesamt: 3 } }, // liegt im Tümpel; solange er heil ist, schlüpfen Junge
   moorleiche: { name: "Moorleiche", bild: "img/gegner/moorleiche.jpg", figur: "img/echtzeit/moorleiche.webp", fuss: [0.433, 0.957], lauf: "img/echtzeit/moorleiche-lauf.webp", laufMass: [0.433, 0.957, 0.936], hieb: "img/echtzeit/moorleiche-hieb.webp", hiebMass: [0.438, 0.945, 0.912], ruhe: "img/echtzeit/moorleiche-ruhe.webp", ruheMass: [0.482, 0.979, 0.958], hoehe: 88, lp: 190, tempo: 1.9, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 60, magie: 35 }, r: 0.38, untot: true, aufstehen: 0.5,

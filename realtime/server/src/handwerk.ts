@@ -1,11 +1,13 @@
 /*
  * Mythara Echtzeit – Handwerk auf dem Server (shared/handwerk.ts). Der Server ist die einzige Wahrheit:
  *   · „handwerk“/„start“ (Rezept, Menge): Nähe zur Werkstatt, Handwerk-Level, Zutaten im Rucksack, Platz für das Ergebnis.
- *   · Je Stück so viele Ticks wie im Rezept; dann Zutaten weg, Ergebnis in den Rucksack, XP (berufe.handwerk). Herstellen gelingt immer.
+ *   · Je Stück so viele Ticks wie im Rezept; dann Zutaten weg, Ergebnis in den Rucksack, XP für den Beruf der Werkstatt (shared/berufe.ts:
+ *     Esse und Amboss → Schmieden, Werkbank und Rucksack → Handwerk). Herstellen gelingt immer.
  *   · Glut (12 % je Stück): Fenster von 1,5 s; „handwerk“/„glut“ darin → beim nächsten Stück eine Einheit der häufigsten Zutat gespart, 50 % mehr XP.
  *   · Abbruch: Menge fertig, Zutaten aus, Rucksack voll, weggegangen, „stop“ oder Verbindung weg.
  */
-import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS, BERUF_HAND } from "../../shared/handwerk";
+import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK_WEIT, GLUT_CHANCE, GLUT_MS, TICK_MS } from "../../shared/handwerk";
+import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer } from "./inventar";
@@ -22,7 +24,8 @@ export let wuerfel = Math.random;
 /** Quest-Rezepte (Rezept.quest): quests.ts setzt, ob man darf und was ein fertiges Stück bewirkt */
 export const HANDWERK_QUEST = { pruefen: (_nutzer: string, _r: Rezept): string | null => "Das geht noch nicht.", fertig: (_nutzer: string, _r: Rezept): void => { /* quests.ts */ } };
 export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: object) => void }): void { sb = o.sb; senden = o.senden; }
-export const handwerkLevel = (nutzer: string): number => levelAus(berufXp(nutzer, BERUF_HAND));
+/** Level im Beruf dieser Werkstatt (Schmieden an Esse und Amboss, sonst Handwerk) */
+export const handwerkLevel = (nutzer: string, station: Rezept["station"] = "werkbank"): number => levelAus(berufXp(nutzer, berufAn(station)));
 const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return s.wx !== undefined && s.wy !== undefined && WERKSTAETTEN.some((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT); };   /* irgendein Standort dieser Station */
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
@@ -39,7 +42,7 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   if (s.gast) return "Handwerk geht mit Konto (Menü → Anmelden).";
   const r = rezept(id); if (!r) return "Dieses Rezept gibt es nicht.";
   if (!nah(s, r) && r.station !== "hand") return `Geh näher an die ${STATIONEN[r.station].name}.`;
-  const L = handwerkLevel(s.nutzer); if (L < r.level) return `Dafür brauchst du Handwerk ${r.level}.`;
+  const L = handwerkLevel(s.nutzer, r.station); if (L < r.level) return `Dafür brauchst du ${(beruf(berufAn(r.station)) || { name: "Handwerk" }).name} ${r.level}.`;
   if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
@@ -60,9 +63,9 @@ function fertigStueck(a: Arbeit): boolean {
   { const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) { handwerkStop(s, "werkzeug"); return false; } }   /* Hammer unterwegs abgelegt */
   for (let i = 0; i < r.zutaten.length; i++) { const z = r.zutaten[i], n = Math.max(0, z.n - (i === spar ? 1 : 0)), g = sorte(s.nutzer, z.g, n); if (!g) continue; for (let k = 0; k < n; k++) abgeben(sb, s.nutzer, g); }
   if (!aufnehmen(sb, s.nutzer, r.ergebnis, 1)) { handwerkStop(s, "voll"); return false; }
-  const vorher = handwerkLevel(s.nutzer), xp = Math.round(r.xp * (glut ? 1.5 : 1)); berufXpDazu(sb, s.nutzer, BERUF_HAND, xp); const nachher = handwerkLevel(s.nutzer);
-  a.rest--; const G = GEGENSTAENDE[r.ergebnis]; if (r.quest) { HANDWERK_QUEST.fertig(s.nutzer, r); a.rest = 0; } /* Questrezept: ein Stück */
-  senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
+  const vorher = handwerkLevel(s.nutzer, r.station), xp = Math.round(r.xp * (glut ? 1.5 : 1)), b = berufAn(r.station); berufXpDazu(sb, s.nutzer, b, xp); const nachher = handwerkLevel(s.nutzer, r.station);
+  a.rest--; const G = GEGENSTAENDE[r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest) a.rest = 0; /* Questrezept: ein Stück je Auftrag */
+  senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }
   if (!passt(s.nutzer, r)) { handwerkStop(s, "voll"); return false; }

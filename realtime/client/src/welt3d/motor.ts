@@ -66,6 +66,8 @@ const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 /** Höchstens so viel Spielzeit je Bild (s). Nur für Tests auf langsamen Rechnern ohne Grafikkarte: ?zeitraffer=1 erlaubt bis 0,3 s je Bild */
 const DT_MAX = new URLSearchParams(location.search).get("zeitraffer") === "1" ? 0.3 : 0.1;
 export class Welt3D {
+  /** Mühlenflügel je Spieler (Quest-Schalter): darf sich das Drehteil an dieser Weltstelle drehen? Ohne Prüfer drehen alle */
+  drehtHier: ((x: number, z: number) => boolean) | null = null;
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
   st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0;
@@ -313,7 +315,7 @@ export class Welt3D {
     for (const s of this.st.values()) for (const b of s.bauten) { const drin = b.raeume.some((r) => H.x > r.x0 && H.x < r.x1 && H.z > r.z0 && H.z < r.z1);
       for (const d of b.daecher) d.visible = !drin && !daecherAus(); /* Einstellung „Dächer ausblenden“ (Menü) */
       for (const t of b.tueren) { const soll = Math.hypot(H.x - t.x, H.z - t.z) < 2.2 || (s.wanderer || []).some((w) => Math.hypot(w.x - t.x, w.z - t.z) < 1.8) ? t.auf : t.zu; t.fluegel.rotation.y += (soll - t.fluegel.rotation.y) * 0.18; }
-      for (const f of b.drehen) f.rotation.z -= dt * 0.6; }
+      for (const f of b.drehen) { if (this.drehtHier) { const w = (f.userData.welt as THREE.Vector3 | undefined) || (f.userData.welt = f.getWorldPosition(new THREE.Vector3())); if (!this.drehtHier(w.x, w.z)) continue; } f.rotation.z -= dt * 0.6; } }
     /* Feuerlichter zu den nächsten Feuern (nur im Untergrund und abends wichtig), leicht flackernd */
     { const nah: THREE.Vector3[] = []; for (const s of this.st.values()) for (const p of s.feuer) nah.push(p); nah.sort((a, b) => (a.x - H.x) ** 2 + (a.z - H.z) ** 2 - ((b.x - H.x) ** 2 + (b.z - H.z) ** 2));
       const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }

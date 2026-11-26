@@ -6,11 +6,12 @@
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module"; import { readFileSync } from "node:fs";
 const require = createRequire(import.meta.url), WebSocket = require("ws");
+import { xpFuer, levelAus } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const A = "00000000-0000-0000-0000-00000000a001", B = "00000000-0000-0000-0000-00000000b002";
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: A, ["tok_ben__" + "x".repeat(30)]: B }, NAME = { [A]: "Anna", [B]: "Ben" };
 const roh = () => ({ geschlecht: "mann", frisur: "scheitel", bart: "ohne", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", quests: { die_gesperrte_strasse: { s: "fertig" } } });
-const HELD = { [A]: { ...roh(), inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: ["flachs", "flachs", "hanf", "hanf", "hanf", "hanf", "kuhhaut", "stamm_eiche", "erz_kupfer", "stamm_eiche"], v: 2 } }, [B]: { ...roh(), inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [], v: 2 } } }, GESPEICHERT = [];
+const HELD = { [A]: { ...roh(), inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: ["flachs", "flachs", "hanf", "hanf", "hanf", "hanf", "kuhhaut", "stamm_eiche", "erz_kupfer", "stamm_eiche"], v: 2 } }, [B]: { ...roh(), inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [], v: 2, berufe: { handwerk: xpFuer(15) } } } }, GESPEICHERT = []; /* Ben: Handwerk 15 aus der Zeit vor dem Schmieden */
 const wer = (u) => (/user_id=eq\.([^&]+)/.exec(u) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
   if (req.url === "/auth/v1/user") { const id = NUTZER[(req.headers.authorization || "").replace("Bearer ", "")]; return id ? send(200, { id, is_anonymous: false }) : send(401, {}); }
@@ -40,6 +41,7 @@ const ende = async (s, ms = 15000) => s.handwerk.find((m) => m.tat === "stop") |
 try {
   await starten({ HANDWERK_GLUT: "0", PFLANZE_FALL: "0" });
   const anna = await spieler(TA, "waldmark"), ben = await spieler(TB, "waldmark"); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
+  { const b = ben.inv.berufe || {}; check(levelAus(b.handwerk) === 15 && levelAus(b.schmieden) === 15 && (ben.inv.merker || []).includes("schmieden"), `Umstellung: alter Stand Handwerk 15 → Schmieden 15, Handwerk bleibt 15 (${JSON.stringify(b)})`); }
   check(Array.isArray(anna.pflanzen) && anna.pflanzen.length === 0, "Beim Anmelden: Stand der Pflanzen (alle voll)");
   await bei(anna, WERKBANK, 6); check(/näher/.test((await mach(anna, "bogensehne")).text || ""), "Zu weit weg: „Geh näher an die Werkbank.“");
   await bei(anna, WERKBANK); check(/Handwerk 10/.test((await mach(anna, "leder_weich")).text || ""), "Weiches Leder mit Level 1: „… brauchst du Handwerk 10.“");
@@ -58,7 +60,8 @@ try {
   check((await mach(anna, "barren_kupfer")).text && /Esse/.test((await mach(anna, "barren_kupfer")).text), "Kupferbarren an der Werkbank: „Geh näher an die Esse.“");
   await bei(anna, ESSE); const s4 = await mach(anna, "barren_kupfer"); const e4 = s4.tat === "start" ? await ende(anna) : null; await schlaf(200);
   check(e4 && e4.grund === "fertig" && anzahl(anna, "barren_kupfer") === 1 && anzahl(anna, "erz_kupfer") === 0, `An der Esse: Kupfererz + Holz → Kupferbarren (${s4.text || s4.tat})`);
-  const xp1 = anna.inv.berufe && anna.inv.berufe.handwerk; check(xp1 > 16, `Handwerk-XP im Inventar (berufe.handwerk): ${xp1}`);
+  const xp1 = anna.inv.berufe && anna.inv.berufe.handwerk; check(xp1 > 16, `Handwerk-XP der Werkbank im Inventar (berufe.handwerk): ${xp1}`);
+  { const fe = anna.handwerk.find((m) => m.tat === "fertig"), sch = anna.inv.berufe.schmieden; check(fe && fe.beruf === "schmieden" && sch === fe.xp, `Esse gibt Schmieden-XP, nicht Handwerk (${sch})`); }
   /* Weggehen bricht ab */
   await bei(anna, WERKBANK); const s5 = await mach(anna, "stoff_hanf", 2); await bei(anna, WERKBANK, 8); const w = await ende(anna, 3000); check(w && w.grund === "weg", `Weggegangen: das Herstellen hört auf (${s5.text || s5.tat}, ${w && w.grund})`);
   /* Pflücken */
@@ -70,8 +73,8 @@ try {
   const gast = await spieler(null, "waldmark"); await schlaf(400); await bei(gast, WERKBANK); check(/Konto/.test((await mach(gast, "bogensehne")).text || ""), "Gast: Handwerk nur mit Konto"); gast.ws.close();
   anna.ws.close(); ben.ws.close(); srv.kill(); await schlaf(400);
   /* Lauf 2: Glut; dazu zwei Eichenstämme und Handwerk 5 für den Bogen in zwei Schritten */
-  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne", "ungespannt_mondkurzbogen_gewoehnlich", "ungespannt_mondkurzbogen_gewoehnlich", "bogensehne", "bogensehne", "hammer", "barren_eisen", "stamm_tanne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000 };
-  HELD[B].inventar.rucksack = ["barren_eisen", "stamm_tanne"]; HELD[B].inventar.berufe = { handwerk: 5000 };
+  HELD[A].inventar.rucksack.push("stamm_tanne", "stamm_tanne", "ungespannt_mondkurzbogen_gewoehnlich", "ungespannt_mondkurzbogen_gewoehnlich", "bogensehne", "bogensehne", "hammer", "barren_eisen", "stamm_tanne"); HELD[A].inventar.berufe = { ...(HELD[A].inventar.berufe || {}), handwerk: 5000, schmieden: 5000 };
+  HELD[B].inventar.rucksack = ["barren_eisen", "stamm_tanne"]; HELD[B].inventar.berufe = { handwerk: 5000, schmieden: 5000 };
   await starten({ HANDWERK_GLUT: "1" });
   const a2 = await spieler(TA, "waldmark"); await warte(a2, (m) => m.t === "inventar"); await schlaf(300); const garn0 = anzahl(a2, "garn");
   await bei(a2, WERKBANK); await mach(a2, "stoff_hanf", 2); const g = await warte(a2, (m) => m.t === "handwerk" && m.tat === "glut", 6000);

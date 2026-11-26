@@ -2,7 +2,7 @@
 Skelett, Körper, alle Teilnetze (Kleidung, Haare, Bärte) als skinned Meshes, Waffen und Schilde an ihren Knochen, alle Bewegungen als Animationen.
 Jedes Teil behält als Namen seine Ebenen-ID (z. B. kopf.haar.militaer) – die Szene blendet Teile ein und aus.
 
-  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000] [textur=1024] [webp] [auslagern=ruestung.,kopf.helm.]
+  python3 fabrik/export3d.py <figur.blend> <ziel.glb> [flaechen=60000] [textur=1024] [webp] [auslagern=ruestung.,kopf.helm.] [echtzeit=1]
 """
 import json, os, sys
 import bpy
@@ -24,6 +24,16 @@ if T:
     for img in bpy.data.images:
         if img.size[0] > T: img.scale(T, max(1, int(img.size[1] * T / img.size[0]))); img.pack()
 info = {o["ebene"]: {"art": o["art"], "platz": o.get("platz"), "bewegungen": json.loads(o.get("bewegungen", "[]") or "[]")} for o in teile}
+ECHTZEIT = opt.get("echtzeit") == "1"                                                               # echtzeit=1: Zeitachse auf „bilder / rate“ Sekunden dehnen (im glTF zählt sonst 24 Bilder/s)
+if ECHTZEIT:
+    fps = bpy.context.scene.render.fps / bpy.context.scene.render.fps_base
+    for a in bpy.data.actions:
+        if not a.get("bilder"): continue
+        f = fps / float(a["rate"])
+        kurven = list(getattr(a, "fcurves", None) or []) or [fc for ly in a.layers for st in ly.strips for cb in st.channelbags for fc in cb.fcurves]   # Blender 5: geschichtete Aktionen
+        for fc in kurven:
+            for k in fc.keyframe_points:
+                for p_ in (k.co, k.handle_left, k.handle_right): p_.x = 1 + (p_.x - 1) * f
 aktionen = {a.name: {"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])} for a in bpy.data.actions if a.get("bilder")}
 for a in bpy.data.actions:
     if a.get("bilder"): a.use_fake_user = True

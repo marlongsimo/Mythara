@@ -1,6 +1,6 @@
 /*
  * Mythara – Ladenfenster der Händler am Marktplatz (shared/laeden.ts): ein Pergament in der Bildschirmmitte mit dem Namen des Ladens und den Waren als Raster.
- * Kurz antippen = kaufen. Lange drücken / Rechtsklick = Aktionsmenü: „Kaufen“, „Untersuchen“. Bezahlt wird mit Splittern; der Server prüft Preis, Nähe und Platz.
+ * Kurz antippen = untersuchen. Lange drücken / Rechtsklick = Aktionsmenü: „Kaufen“, „Untersuchen“ (seit 25.11.2026 – vorher kaufte schon das Antippen). Bezahlt wird mit Splittern; der Server prüft Preis, Nähe und Platz.
  */
 import { LAEDEN, LadenId, WAEHRUNG } from "../../shared/laeden";
 import { GEGENSTAENDE, SELTENHEITEN } from "../../shared/gegenstaende";
@@ -23,12 +23,12 @@ export function ladenZeigen(id: LadenId): void {
   const f = tafelZeigen("laden", `<h2>${esc(L.name)}</h2><p class="lspruch">${esc(L.spruch)}</p><div class="zier"></div>
     <div class="lkopf"><span>${esc(L.haendler)}</span><b class="lgeld">◆ <i>${geld()}</i> Splitter</b></div>
     <div class="lraster">${L.waren.map((w) => { const G = GEGENSTAENDE[w.g], S = SELTENHEITEN[G.seltenheit];
-      return `<button type="button" class="lware s-${G.seltenheit}" data-g="${w.g}" title="${esc(G.name)} – ${w.preis} Splitter (kurz: kaufen · lang: mehr)"><canvas width="96" height="96" data-bild="${w.g}"></canvas>
+      return `<button type="button" class="lware s-${G.seltenheit}" data-g="${w.g}" title="${esc(G.name)} – ${w.preis} Splitter (antippen: untersuchen · lang drücken: kaufen)"><canvas width="96" height="96" data-bild="${w.g}"></canvas>
         <span class="lname" style="color:${S.farbe}">${esc(G.name)}</span><span class="lpreis${geld() < w.preis ? " zuteuer" : ""}">◆ ${w.preis}</span></button>`; }).join("")}</div>
-    <p class="klein">Antippen: kaufen · lange drücken: untersuchen</p>`, () => { offen = null; aus(); });
+    <p class="klein">Antippen: untersuchen · lange drücken: kaufen</p>`, () => { offen = null; aus(); });
   f.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => gegenstandMalen(c, c.dataset.bild!));
   const raster = f.querySelector(".lraster") as HTMLElement;
-  raster.addEventListener("click", (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>(".lware"); if (!b) return; e.stopPropagation(); kaufen(id, b.dataset.g!); });
+  raster.addEventListener("click", (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>(".lware"); if (!b) return; e.stopPropagation(); const g = b.dataset.g!; gegenstandUntersuchen(g, () => ladenZeigen(id)); });
   langDruecken(raster, (e) => { const b = (e.target as HTMLElement | null)?.closest<HTMLElement>(".lware"); if (!b) return false; const g = b.dataset.g!, G = GEGENSTAENDE[g], w = L.waren.find((x) => x.g === g)!;
     aktionsMenue(e.clientX, e.clientY, [{ kopf: G.name, farbe: SELTENHEITEN[G.seltenheit].farbe, aktionen: [
       { text: `Kaufen (◆ ${w.preis})`, sym: "🛒", tat: () => kaufen(id, g) }, { text: "Untersuchen", sym: "🔍", tat: () => gegenstandUntersuchen(g, () => ladenZeigen(id)) }] }]); return true; });

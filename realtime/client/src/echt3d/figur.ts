@@ -23,7 +23,7 @@ type Echt3D = { Darsteller: { erstellen(url: string, hoehePx: number, aufloesung
   GeschossBild: new (art: string, figurHoehePx: number, aufloesung: number) => GeschossBildT;
   BaumBild: { erstellen(url: string, figurHoehePx: number, aufloesung: number, w: BaumWerteT): Promise<BaumBildT> } };
 /** ein Baum als 3D-Bild (darsteller.ts → BaumBild) */
-export interface BaumWerteT { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number; grau?: number }
+export interface BaumWerteT { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number; grau?: number; pulsTon?: number; pulsBreite?: number }
 export interface BaumBildT { breite: number; hoehe: number; fussY: number; aufloesung: number; zeichne(zeit: number, ziel: CanvasRenderingContext2D): void; entfernen(): void }
 
 const P = new URLSearchParams(location.search);

@@ -11,7 +11,7 @@ import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
-export const URSPRUNG = [230, 230], B = 96, H = 64, OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32;
+export const URSPRUNG = [320, 300], B = 96, H = 64, OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32;
 /** Wo man in der Hütte ankommt (Weltfelder) und wo unten an der Leiter */
 export const OBEN = [196 * 32 + 30.4, 202 * 32 + 118.9], UNTEN = [OX + 12, OY + 31];
 const BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.json"), "utf8")).objekte.map((o) => [o.id, o]));

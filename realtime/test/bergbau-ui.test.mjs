@@ -55,7 +55,7 @@ try {
   const ort = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
   check(Math.hypot(ort.x - 6438.5, ort.y - 6474.5) < 2, `Anna steht in der Senke vor der Waldmark (${ort.x.toFixed(1)}, ${ort.y.toFixed(1)}, ${ort.hier})`);
   const liste = await anna.evaluate(() => window.EZW.welt3d.berg.liste);
-  check(liste.length === 17, `Erzadern bekannt: ${liste.length}`);
+  check(liste.filter((a) => a.art !== "waldstein").length === 17 && liste.length === 18, `Erzadern bekannt: ${liste.length} (17 normale + der Waldstein aus Quest 3)`);
   check(liste.filter((b) => b.geladen && /^(kupfer_[1-3]|eisen_[12])$/.test(b.id)).length === 5, "Die Adern der Senke sind geladen: " + liste.filter((b) => b.geladen).map((b) => b.id).join(", "));
   { const sy = await anna.evaluate(() => window.EZW.welt3d.symboleNah(40).map((q) => q.s)); check(sy.includes("mine") && sy.includes("waffenhaendler"), "Minikarte: Symbole in der Nähe (Mine der Senke, Waffenhändler am Markt …): " + sy.join(", ")); }
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "berg-senke.png" });

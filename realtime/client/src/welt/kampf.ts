@@ -13,7 +13,7 @@ import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
-import { chatSystem, geraetAngaben } from "../welt";
+import { chatSystem, geraetAngaben, aufWeltWarten } from "../welt";
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -35,7 +35,7 @@ import { Geschoss, GeschossArt } from "./geschosse";
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const P = new URLSearchParams(location.search);
 /** Gebiet der offenen Welt (Gebietsname für Server und Stufe): der Kreuzwald */
-const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf" };
+const GEBIET: Record<string, string> = { kreuzwald: "kreuzwald", unterschlupf: "unterschlupf", welt: "welt" };
 /** Die Szene der offenen Welt, soweit der Kampf sie braucht */
 export interface WeltSzene extends Phaser.Scene { ort: { x: number; y: number }; held: string; figur: Phaser.GameObjects.Sprite; gesperrt: boolean; halt(): void }
 export interface Figur { blick?: number; /** kämpft gerade (bis performance.now) */ kampfBis?: number; typ: string; held: boolean; team: number; sp: Phaser.GameObjects.Sprite; nm: Phaser.GameObjects.Text; lb: Phaser.GameObjects.Graphics; x: number; y: number; zx: number; zy: number; laeuft: boolean; tot: boolean; lp: number; max: number; bits: number; schild: boolean; a?: string }
@@ -75,36 +75,54 @@ export class WeltKampf {
     K.start = [[lx / FEIN - 0.5, ly / FEIN - 0.5]]; setzeKarte(K, FEIN); setzeStaerke(this.stufe, 1);
     for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
     for (const [h, v] of Object.entries(epAlle())) { HELDENEP[h] = Number(v) || 0; HELDENSTUFE[h] = stufeAusEp(HELDENEP[h]); }
-    this.bildAufbau(K);
+    this.bildAufbau(K); this.gebiet = gebiet;
     if (this.eingetreten) document.body.classList.add("weltkampf"); this.tastenAn(); void this.verbinden(lx, ly, gebiet);
+    /* die Welt-Verbindung steht wieder (nach Funkloch oder App-Hintergrund): Kampfwelt sofort neu verbinden */
+    const welt = () => { if (!this.vorbei && !this.netz && this.verlorenSeit) { if (this.wiederT) { clearTimeout(this.wiederT); this.wiederT = 0; } void this.wiederVerbinden(); } };
+    window.addEventListener("ez-welt-verbunden", welt); this.weltHoerer = welt;
   }
-  private async verbinden(lx: number, ly: number, gebiet: string) {
+  /* ---------- Neu verbinden nach Verlust (iOS trennt im Hintergrund; 26.11.2026) ---------- */
+  private gebiet = ""; private verlorenSeit = 0; private wiederVersuch = 0; private wiederT: ReturnType<typeof setTimeout> | 0 = 0; private wiederLaeuft = false; private hoerDa = false; private weltHoerer: (() => void) | null = null;
+  private v1Weg: (() => void)[] = [];
+  /** Die Verbindung ist weg (nicht abgelehnt, nicht abgemeldet): Held steht, bis sie wieder da ist – kein Neuladen */
+  private verbindungWeg(grund: string): void { if (this.vorbei) return; console.warn("Kampfwelt: Verbindung weg –", grund); this.netz = null; if (!this.verlorenSeit) this.verlorenSeit = Date.now(); this.wiederPlanen(); }
+  private wiederPlanen(): void { if (this.vorbei || this.wiederT || this.netz) return; const warte = Math.min(10000, 1000 * 2 ** this.wiederVersuch++);
+    this.wiederT = setTimeout(() => { this.wiederT = 0; void this.wiederVerbinden(); }, warte); }
+  private async wiederVerbinden(): Promise<void> { if (this.vorbei || this.netz || this.wiederLaeuft) return; this.wiederLaeuft = true;
+    try { const lx = this.s.ort.x - this.zone.x0, ly = this.s.ort.y - this.zone.y0; this.lauf = { x: NaN, y: NaN }; this.gesendet = { x: 0, y: 0, t: 0 };
+      await this.verbinden(lx, ly, this.gebiet, true); } finally { this.wiederLaeuft = false; }
+    if (this.netz) { this.verlorenSeit = 0; this.wiederVersuch = 0; const t = document.getElementById("ez-dorf-hilfe"); if (t && t.dataset.neu) { t.textContent = ""; t.style.display = "none"; delete t.dataset.neu; } return; }
+    if (this.verlorenSeit && Date.now() - this.verlorenSeit > 60000) { const t = document.getElementById("ez-dorf-hilfe"); if (t && !t.dataset.neu) { t.dataset.neu = "1"; t.innerHTML = "Keine Verbindung zum Spielserver. <button type=\"button\" class=\"neuladen\">Neu laden</button>"; t.style.display = ""; const b = t.querySelector("button"); if (b) b.addEventListener("click", () => location.reload()); } }
+    this.wiederPlanen(); }
+  private async verbinden(lx: number, ly: number, gebiet: string, wieder = false) {
     const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : ""; if (this.vorbei) return;
-    const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}` + (this.vorverbunden ? "&warten=1" : `&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}`) : "";
+    if (basis && token) { await aufWeltWarten(6000); if (this.vorbei) return; } /* Zonen Stufe 3: über die Welt-Verbindung, wenn sie gleich offen ist */
+    const url = basis && token ? `${basis}?kampf=${encodeURIComponent(this.zone.karte)}&ort=${encodeURIComponent(gebiet)}` + (this.vorverbunden && !wieder ? "&warten=1" : `&lx=${lx.toFixed(2)}&ly=${ly.toFixed(2)}`) : "";
+    if (wieder && !url) return; /* ohne Server (Gast): nichts neu zu verbinden */
     const hoer = (ev: Event) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[]; ep?: Record<string, number>; seelen?: number };
       if (m.t === "namen" && m.liste) { this.namen.clear(); for (const n of m.liste) this.namen.set(n.id, n);
         /* fremde Helden mit eigenem Aussehen: Figur neu anlegen, sobald das Aussehen bekannt ist */
         for (const [id, f] of this.figuren) { const n = this.namen.get(id), a = n && n.a ? heldPruefen(n.a) : null, k = a ? aussehenSchluessel(a) : "";
           if (f.held && (f.a || "") !== k) { const neu = this.neu(id, true, f.typ, f.team, f.x, f.y); f.sp.destroy(); f.nm.destroy(); f.lb.destroy(); Object.assign(neu, { tot: f.tot, lp: f.lp, max: f.max, zx: f.zx, zy: f.zy }); neu.sp.setVisible(!f.tot); } } }
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
-    window.addEventListener("ez-server", hoer); this.hoerer.push(hoer);
-    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...geraetAngaben(), ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined);
-    if (this.vorbei) { n.ende(); return; } this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
+    if (!this.hoerDa) { this.hoerDa = true; window.addEventListener("ez-server", hoer); this.hoerer.push(hoer); }
+    const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...geraetAngaben(), ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined, (grund) => this.verbindungWeg(grund));
+    if (this.vorbei) { n.ende(); return; } if (wieder && n.art !== "server") { n.ende(); return; } /* neu verbinden: nicht auf das Rechnen im Browser ausweichen */ this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
   }
   /** Kampfregeln v1 (eigener Held): beim Rechnen im Browser Held und Gegner umstellen; Ausrüstungswechsel an Server oder Simulation weitergeben */
   v1 = false; private v1Stufen = "";
-  private v1Start(n: Netz) { if (n.art === "lokal" && n.sim) n.sim.eigeneWerteSetzen(); /* wie auf dem Server: Gegner der Weltzonen mit ihren eigenen Werten */ const kw = meineKampfwerte(); if (!kw) return; this.v1 = true; this.v1Stufen = stufenVon(kw.skills); document.body.classList.add("kampf-v1");
+  private v1Start(n: Netz) { for (const w of this.v1Weg.splice(0)) w(); /* nach einem Neuverbinden: die Hörer der alten Verbindung ab */ if (n.art === "lokal" && n.sim) n.sim.eigeneWerteSetzen(); /* wie auf dem Server: Gegner der Weltzonen mit ihren eigenen Werten */ const kw = meineKampfwerte(); if (!kw) return; this.v1 = true; this.v1Stufen = stufenVon(kw.skills); document.body.classList.add("kampf-v1");
     const held = () => n.sim && n.sim.wesen.find((w) => w.held);
     if (n.art === "lokal" && n.sim) { const h = held(); if (h) n.sim.heldV1(h.id, kw); }
     const hoer = () => { if (this.vorbei) return; if (n.art === "server") n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]);
       else { const h = held(), k = h && h.kw ? meineKampfwerte(h.kw.skills) : null; if (h && k && n.sim) n.sim.kampfwerteSetzen(h.id, k); } };
-    window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer);
+    window.addEventListener("ez-inventar", hoer); this.hoerer.push(hoer); this.v1Weg.push(() => window.removeEventListener("ez-inventar", hoer));
     /* Angriffsstil (v2): dem Server melden, beim Rechnen im Browser die Werte neu setzen */
     const sprint = () => { if (!this.vorbei) n.sende({ t: "sprint", an: AUSDAUER.an, wert: AUSDAUER.wert } as unknown as Parameters<Netz["sende"]>[0]); }; /* Sprint: Stand beim Betreten, danach jedes Umschalten */
-    window.addEventListener("ez-sprint", sprint); this.hoerer.push(sprint); sprint();
+    window.addEventListener("ez-sprint", sprint); this.hoerer.push(sprint); this.v1Weg.push(() => window.removeEventListener("ez-sprint", sprint)); sprint();
     const stil = () => { if (this.vorbei) return; n.sende({ t: "auto", an: autoLesen() } as unknown as Parameters<Netz["sende"]>[0]); /* Autoangriff an/aus */
       if (n.art === "server") n.sende({ t: "stil", stil: stilJetzt() } as unknown as Parameters<Netz["sende"]>[0]); else hoer(); };
-    window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
+    if (this.stilHoerer) window.removeEventListener("ez-stil", this.stilHoerer); window.addEventListener("ez-stil", stil); this.stilHoerer = stil; if (n.art === "server") { stil(); n.sende({ t: "ausruestung", angelegt: inventar().angelegt } as unknown as Parameters<Netz["sende"]>[0]); } }
   private stilHoerer: (() => void) | null = null;
   /** Neue Skill-XP merken; beim Rechnen im Browser steigt mit einem neuen Skilllevel auch der Kampfwert */
   /** Sprint beim Betreten: der Server übernimmt Ausdauer und Schalter erst, wenn sein Held da ist – bis er unseren Stand zurückmeldet, schicken wir ihn erneut und
@@ -122,7 +140,9 @@ export class WeltKampf {
       /* gleich weiterlaufen lassen: sonst steht der Held auf dem Server an der Grenze, bis die erste Antwort da ist – und springt dann dorthin zurück */
       if (ziel) this.gehe(ziel.x, ziel.y); else if (richtung && Math.hypot(richtung[0], richtung[1]) > 0.05) this.steuern(richtung[0], richtung[1]); } }
   /** Gebiet verlassen: gutschreiben lassen (der Server bucht beim Trennen), Figuren weg */
-  ende() { if (this.vorbei) return; this.vorbei = true; if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
+  /** Teleport: dem Server sagen, dass der Held absichtlich abreist – er bleibt dann nicht als Kampfgeist stehen (eine Kampfwelt: sonst würde ihn die neue Verbindung an der alten Stelle übernehmen) */
+  abreise(teleport: boolean) { if (this.netz && this.netz.art === "server") try { this.netz.sende({ t: "abreise", tp: teleport } as unknown as Parameters<Netz["sende"]>[0]); } catch { /* zu */ } } /* teleport: neu in der Waldmark; sonst (Tür, Untergrund) gilt die neue Stelle */
+  ende() { if (this.vorbei) return; this.vorbei = true; if (this.wiederT) { clearTimeout(this.wiederT); this.wiederT = 0; } if (this.weltHoerer) { window.removeEventListener("ez-welt-verbunden", this.weltHoerer); this.weltHoerer = null; } if (this.netz) { try { this.netz.sende({ t: "halt" }); } catch { /* zu */ } this.netz.ende(); }
     this.bildEnde(); this.figuren.clear();
     for (const h of this.hoerer) { window.removeEventListener("ez-server", h); window.removeEventListener("ez-inventar", h); window.removeEventListener("ez-sprint", h); } if (this.stilHoerer) { window.removeEventListener("ez-stil", this.stilHoerer); this.stilHoerer = null; } document.body.classList.remove("weltkampf", "kampf-v1"); v1Tasten(); /* mit eigenem Held bleibt es bei „Angreifen“ */ document.querySelectorAll("#ez-karte u[data-k]").forEach((u) => u.remove()); }
   /** Gilt hier Mehrkampf (viele gegen viele)? Sonst Einzelkampf */
@@ -133,7 +153,9 @@ export class WeltKampf {
 
   /* ---------- Zustand vom Server (oder aus dem Browser) ---------- */
   private zustand(z: Zustand) { if (this.vorbei || !this.eingetreten || this.betretenOffen) return; this.z = z; this.ichId = z.ich.id; const da = new Set<number>();
-    for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
+    const mich = z.w.find((e) => e[0] === z.ich.id); /* eine Kampfwelt (Zonen Stufe 2): Figuren nur in Sichtweite anlegen (40 Felder, weg erst ab 52) – sonst lädt der Browser die Modelle aller Gegner der Welt auf einmal */
+    for (const e of z.w) { const [id, held, typ, team, x, y, , lp, max, , tot] = e; if (id !== this.ichId && mich) { const d = Math.max(Math.abs(x - mich[4]), Math.abs(y - mich[5])); if (d > (this.figuren.has(id) ? 52 : 40)) continue; }
+      da.add(id); if (id === this.ichId) continue; let f = this.figuren.get(id);
       if (!f) f = this.neu(id, Boolean(held), typ, team, x, y); f.zx = x; f.zy = y; f.lp = lp; f.max = max; f.bits = e[9]; f.blick = e[6]; /* Blickrichtung vom Server: zum Gegner, mit dem gekämpft wird */
       if (Boolean(tot) !== f.tot) { f.tot = Boolean(tot); this.figurSichtbar(f, !f.tot); if (!f.tot) { f.x = x; f.y = y; } } }
     for (const ev of z.ev) this.ereignis(ev); /* erst die Ereignisse (Schadenszahl/Hitsplat), dann Verschwundenes entfernen – sonst fehlt bei einem Treffer, der sofort tötet, die Zahl */

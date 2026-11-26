@@ -45,7 +45,7 @@ try {
   check(!/ort=/.test(gast.url()), "Waldweg-Adresse führt zurück in die Waldmark (" + gast.url().replace(B, "") + ")");
   await gast.goto(B + "?ort=weidenhain" + S); await gast.waitForURL((u) => !/ort=/.test(u), { timeout: 15000 }).catch(() => {}); check(!/ort=/.test(gast.url()), "Kampagnen-Adresse führt zurück in die Waldmark");
   await gast.waitForFunction(() => window.EZW && window.EZW.ich(), null, { timeout: 30000 });
-  check(await gast.$$eval("#ez-kartenrahmen .rknoepfe small", (l) => !l.some((x) => /Weltkarte|Quests/.test(x.textContent))), "Unter der Karte keine Weltkarte und keine Quests (Kampagnen ausgeblendet)");
+  check(await gast.$$eval("#ez-leiste-r small, #ez-kartenrahmen .rknoepfe small", (l) => !l.some((x) => /Weltkarte|Quests/.test(x.textContent))), "Unter der Karte keine Weltkarte und keine Quests (Kampagnen ausgeblendet)");
   check(!(await gast.$('#ez-menue [aria-label="Weltkarte"]')), "Kein Weg zur Weltkarte im Menü");
   check(await gast.evaluate(() => window.EZW.ich().gast === true && /^Gast \d{4}$/.test(window.EZW.ich().name)), "Ohne Konto ist man als Gast in der Welt: " + await gast.evaluate(() => window.EZW.ich().name));
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");

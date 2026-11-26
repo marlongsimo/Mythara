@@ -10,15 +10,16 @@
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
+import { berufeUmstellen, UMSTELLUNG_SCHMIEDEN } from "../../shared/berufe";
 import { Startwaffe } from "../../shared/aussehen";
 import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number> }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[] }
 const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.merker ? { merker: [...i.merker] } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): [string, number][] { const b: [string, number][] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
@@ -28,16 +29,21 @@ function bankPruefen(roh: unknown): [string, number][] { const b: [string, numbe
 /** Inventar aus unbekannter Quelle prüfen: nur bekannte Gegenstände, jeder auf seinem Platz, höchstens RUCKSACK_PLAETZE im Rucksack */
 export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   const o = (roh && typeof roh === "object" ? roh : null) as { angelegt?: Record<string, unknown>; rucksack?: unknown[] } | null;
-  if (!o || !o.angelegt || !Array.isArray(o.rucksack)) return { angelegt: startAusruestung(waffe), rucksack: [], v: INV_STAND };
+  if (!o || !o.angelegt || !Array.isArray(o.rucksack)) return { angelegt: startAusruestung(waffe), rucksack: [], v: INV_STAND, merker: [UMSTELLUNG_SCHMIEDEN] }; /* neuer Held: nichts umzustellen */
   const angelegt: Partial<Record<Platz, string>> = {}; for (const { id } of PLAETZE) { const g = o.angelegt[id]; if (typeof g === "string" && GEGENSTAENDE[g] && GEGENSTAENDE[g].platz === id) angelegt[id] = g; }
   const rucksack: Fach[] = []; for (const f of o.rucksack) { const g = typeof f === "string" ? f : f && typeof f === "object" ? String((f as { g?: unknown }).g) : "", G = GEGENSTAENDE[g]; if (!G) continue;
     if (G.stapel) { const n = Math.max(1, Math.min(G.stapel, Math.floor(Number(typeof f === "string" ? 1 : (f as { n?: unknown }).n) || 1))); rucksack.push({ g, n }); } else rucksack.push(g); }
+  /* Zweihandwaffe und Nebenhand zugleich (alter Stand, z. B. Bogen mit Schild): die Nebenhand kommt in den Rucksack – passt sie nicht hinein, bleibt sie, wo sie war */
+  if (angelegt.waffe && angelegt.nebenhand && GEGENSTAENDE[angelegt.waffe].zweihand && rucksack.length < RUCKSACK_PLAETZE) { rucksack.push(angelegt.nebenhand); delete angelegt.nebenhand; }
   const inv: Inv = { angelegt, rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
   { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank;
     const t = (o as { bankTabs?: unknown }).bankTabs; if (t && typeof t === "object" && bank.length) { const tabs: Record<string, number> = {};
       for (const [g, v] of Object.entries(t as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (bank.some((b) => b[0] === g) && n >= 1 && n <= BANK_REITER) tabs[g] = n; }
       if (Object.keys(tabs).length) { inv.bankTabs = tabs; reiterOrdnen(inv); } } }
   { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
+  /* Einmalige Umstellung der Berufe (shared/berufe.ts): Schmieden startet mit dem Stand des Handwerks – mit Merker, damit es nur einmal geschieht */
+  { const m = (o as { merker?: unknown }).merker, merker = Array.isArray(m) ? m.filter((x): x is string => typeof x === "string" && /^[a-z0-9_]{1,30}$/.test(x)).slice(0, 50) : [];
+    const u = berufeUmstellen(inv.berufe || {}, merker); if (Object.keys(u.berufe).length) inv.berufe = u.berufe; inv.merker = u.merker; }
   if ((inv.v ?? 1) < INV_STAND) { /* Startausrüstung erweitert (Rüstung zu Bogen und Stab): einmal nachreichen, wenn der Platz frei ist und sie nirgends liegt */
     for (const [platz, g] of Object.entries(startAusruestung(waffe)) as [Platz, string][]) if (!inv.angelegt[platz] && !inv.rucksack.some((f) => fachG(f) === g)) inv.angelegt[platz] = g;
     inv.v = INV_STAND; }
@@ -171,18 +177,21 @@ export function bankAlles(sb: Sb, nutzer: string, was: "rucksack" | "ausruestung
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number }
 const boden = new Map<number, BodenDing>(); let nr = 1;
-export const LOOT = { privat: 30_000, offen: 5 * 60_000 }, FALLEN = { privat: 60_000, offen: 10 * 60_000 }, AUFHEBEN_WEIT = 0; /* Feldabstand: man muss auf dem Feld des Gegenstands stehen */
+export const LOOT = { privat: 30_000, offen: 5 * 60_000 }, FALLEN = { privat: 60_000, offen: 10 * 60_000 }, /** Questlohn, der nicht mehr in den Rucksack passte: 30 Minuten nur für den Spieler */ QUESTLOHN = { privat: 30 * 60_000, offen: 0 }, AUFHEBEN_WEIT = 0; /* Feldabstand: man muss auf dem Feld des Gegenstands stehen */
 /** Etwas auf den Boden legen. besitzer "": sofort für alle sichtbar */
 export function bodenDazu(ort: string, x: number, y: number, g: string, n: number, besitzer: string, zeiten: { privat: number; offen: number }, jetzt = Date.now()): BodenDing | null {
   if (!GEGENSTAENDE[g] || n < 1 || !Number.isFinite(x) || !Number.isFinite(y)) return null; const nurSelbst = Boolean(besitzer && GEGENSTAENDE[g].untauschbar) /* nicht tauschbar (Quest): sieht nie jemand anderes, liegt aber genauso lange */, offenAb = nurSelbst ? Number.MAX_SAFE_INTEGER : besitzer ? jetzt + zeiten.privat : jetzt;
   const d: BodenDing = { id: nr++, g, n: Math.floor(n), ort, x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, besitzer, offenAb, bis: nurSelbst ? jetzt + zeiten.privat + zeiten.offen : offenAb + zeiten.offen }; boden.set(d.id, d); return d; }
 const sichtbar = (d: BodenDing, nutzer: string, jetzt: number) => jetzt < d.bis && (jetzt >= d.offenAb || (nutzer !== "" && d.besitzer === nutzer));
-/** Was dieser Spieler in seiner Region am Boden sieht */
-export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now()): { i: number; g: string; n: number; x: number; y: number }[] {
-  const aus: { i: number; g: string; n: number; x: number; y: number }[] = []; for (const d of boden.values()) if (d.ort === ort && sichtbar(d, nutzer, jetzt)) aus.push({ i: d.id, g: d.g, n: d.n, x: d.x, y: d.y }); return aus; }
+/** So weit (Weltfelder) sieht man Gegenstände am Boden – unabhängig von Regionsgrenzen (seit 26.11.2026) */
+export const BODEN_SICHT = 40;
+/** Was dieser Spieler am Boden sieht: in der offenen Welt alles im Umkreis seiner Weltstelle (wo), sonst (ohne Stelle) in seiner Region */
+export function bodenSicht(ort: string, nutzer: string, jetzt = Date.now(), wo?: { x: number; y: number }): { i: number; g: string; n: number; x: number; y: number }[] {
+  const aus: { i: number; g: string; n: number; x: number; y: number }[] = [];
+  for (const d of boden.values()) if ((wo ? Math.max(Math.abs(d.x - wo.x), Math.abs(d.y - wo.y)) <= BODEN_SICHT : d.ort === ort) && sichtbar(d, nutzer, jetzt)) aus.push({ i: d.id, g: d.g, n: d.n, x: d.x, y: d.y }); return aus; }
 /** Aufheben: nur was man sieht und auf dessen Feld man steht (Feldabstand ≤ AUFHEBEN_WEIT). Zurück: Fehlertext oder null */
 export function bodenAufheben(sb: Sb, nutzer: string, ort: string, id: number, x: number | undefined, y: number | undefined, jetzt = Date.now()): string | null {
-  const d = boden.get(id); if (!d || d.ort !== ort || !sichtbar(d, nutzer, jetzt)) return "Das liegt hier nicht (mehr).";
+  const d = boden.get(id); if (!d || !sichtbar(d, nutzer, jetzt) || (x === undefined && d.ort !== ort)) return "Das liegt hier nicht (mehr)."; /* über Regionsgrenzen hinweg: es zählt nur der Abstand (unten) */
   if (x === undefined || y === undefined || Math.max(Math.abs(Math.floor(d.x) - Math.floor(x)), Math.abs(Math.floor(d.y) - Math.floor(y))) > AUFHEBEN_WEIT) return "Stell dich auf das Feld, um es aufzuheben.";
   if (!je.get(nutzer)) return "Kein Inventar."; const k = aufnehmen(sb, nutzer, d.g, d.n); if (!k) return "Der Rucksack ist voll.";
   if (k < d.n) { d.n -= k; return "Der Rucksack ist voll – ein Teil bleibt liegen."; }

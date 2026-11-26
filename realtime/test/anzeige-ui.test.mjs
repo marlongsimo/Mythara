@@ -53,16 +53,19 @@ const schirm = (p, x, y, h = 1.0) => p.evaluate(([x, y, h]) => { const W = windo
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6536, 6583, "waldweg"]); anna.setDefaultTimeout(90000);
   await anna.goto(B + S + "&vorwaermen=0"); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
-  await anna.waitForFunction(() => [...document.querySelectorAll(".ez-name3d .lvfarbe")].length > 0, null, { timeout: 60000 }).catch(() => {});
-  const lv = await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d")].filter((e) => e.querySelector(".lvfarbe")).map((e) => ({ t: e.textContent, c: getComputedStyle(e.querySelector(".lvfarbe")).color })));
-  check(lv.length > 0 && lv.some((x) => /Bandit · Lv 1/.test(x.t)), "Gegner-Schild mit farbigem Level: " + (lv[0] ? lv[0].t + " " + lv[0].c : "keins"));
-  check(lv.every((x) => /rgb\(\d+, 255, 0\)/.test(x.c)), "Banditen Lv 1 gegen Anna (höher): grün (" + [...new Set(lv.map((x) => x.c))].join(", ") + ")");
+  await anna.waitForTimeout(3000);
+  const sichtbar = await anna.evaluate(() => [...document.querySelectorAll(".ez-name3d:not(.boden)")].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0).map((e) => e.textContent));
+  check(sichtbar.length === 0, "Keine Namensschilder über Figuren (" + sichtbar.slice(0, 3).join(", ") + ")");
+  let menueLv = null;
+  const balken = () => anna.evaluate(() => [...document.querySelectorAll(".ez-balken3d")].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0 && !e.classList.contains("eigen")).length);
+  check(await balken() === 0, "Gegner außerhalb des Kampfes: kein Lebensbalken");
   /* Angreifen per Rechtsklick → Anzeige oben */
   for (let v = 0; v < 3; v++) { const ziel = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK; const f = [...K.figuren.entries()].find(([, g]) => !g.held && !g.tot); if (!f) return null; const x = K.zone.x0 + f[1].x, y = K.zone.y0 + f[1].y; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + 0.9, y); });
-    if (ziel) { await anna.mouse.click(ziel.x, ziel.y, { button: "right" }); await anna.waitForTimeout(400); await anna.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 3000 }).catch(() => {}); await anna.waitForTimeout(300); }
+    if (ziel) { await anna.mouse.click(ziel.x, ziel.y, { button: "right" }); await anna.waitForTimeout(400); if (!menueLv && process.env.BILD) await anna.screenshot({ path: process.env.BILD + "menue-level.png" }); if (!menueLv) menueLv = await anna.evaluate(() => { const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((e) => e.querySelector(".lv")); return k ? { t: k.textContent, c: getComputedStyle(k.querySelector(".lv")).color } : null; }); await anna.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 3000 }).catch(() => {}); await anna.waitForTimeout(300); }
     if (await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return Boolean(e && e.classList.contains("an")); })) break; await anna.keyboard.press("Escape"); }
   const tat = await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return e ? { t: e.textContent, an: e.classList.contains("an") } : null; });
   check(tat && tat.an && /^Angreifen: Bandit/.test(tat.t), "Oben mittig: " + JSON.stringify(tat));
+  check(menueLv && /Bandit \(Level 1\)/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit (Level 1)“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-angreifen.png" });
   check(await anna.evaluate(() => { const W = window.EZW.welt3d; return typeof W.ausfuehren === "function"; }), "3D-Welt bereit");
   await anna.evaluate(() => { const W = window.EZW.welt3d; W.ausfuehren({ x: W.ort.x, y: W.ort.y, text: "Eiche fällen", tat: () => {}, da: () => true }, () => {}); });

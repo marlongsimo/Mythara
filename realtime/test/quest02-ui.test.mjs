@@ -23,7 +23,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_held_setzen") { const a = JSON.parse(b); AKTIV[a.p_user] = a.p_held; HELDSETZEN.push(a); return send(200, { ok: true, held: a.p_held }); }
   if (req.url.startsWith("/rest/v1/rpg_held?")) return send(200, HELD[wer(req.url)] ? [HELD[wer(req.url)]] : []);
   if (req.url === "/rest/v1/rpc/rpg_held_quest_setzen") { const a = JSON.parse(b); const H = HELD[a.p_user]; H.quests = H.quests || {}; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: a.p_stand }; return send(200, true); }
-  if (req.url === "/rest/v1/rpc/rpg_held_quest_abschluss") { const a = JSON.parse(b); const H = HELD[a.p_user]; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: "fertig" }; return send(200, true); }
+  if (/^\/rest\/v1\/rpc\/rpg_held_quest_abschluss(_v2)?$/.test(req.url)) { const a = JSON.parse(b); a.v2 = req.url.endsWith("_v2"); if (a.v2 && (HELD[a.p_user].quests[a.p_quest] || {}).s !== "fertig") HELD[a.p_user].questpunkte = (HELD[a.p_user].questpunkte || 0) + Math.min(10, a.p_punkte || 0); const H = HELD[a.p_user]; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: "fertig" }; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_inventar_setzen") { const a = JSON.parse(b); if (HELD[a.p_user]) HELD[a.p_user].inventar = a.p_inventar; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_skill_gutschrift") { const a = JSON.parse(b); XPBUCH.push(a); const H = HELD[a.p_user]; if (!H) return send(200, null); for (const k of ["geschick", "staerke", "fernkampf", "magie"]) H["skill_" + k] += a["p_" + k]; return send(200, { geschick: H.skill_geschick, staerke: H.skill_staerke, fernkampf: H.skill_fernkampf, magie: H.skill_magie }); }
   send(404, {}); }); }).listen(8799);
@@ -50,12 +50,12 @@ const BILD = process.env.BILD;
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6555.5, 6429.5, "osthof"]); /* in Osthof, neben der ersten Bruchstelle */
   await anna.goto(B + S); await bereit(anna).catch(() => {}); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
-  await anna.waitForFunction(() => window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length === 7, null, { timeout: 30000 }).catch(() => {});
+  await anna.waitForFunction(() => window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length >= 7, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForTimeout(2500);
-  const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === 2).map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
+  const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === "osthof_der_stille_rain").map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
   let L = await lage();
   check(L.figuren.join() === "Brida Wegner,Odo Kern,Wenzel", `Quest-2-Figuren: ${L.figuren.join(", ")}`);
-  check(L.objekte.length === 7 && L.objekte.every((o) => o.sicht && o.ring), `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
+  const Q2O = L.objekte.filter((o) => /^(zaun|rute)\d/.test(o.id)); check(Q2O.length === 7 && Q2O.every((o) => o.sicht && o.ring) && L.objekte.filter((o) => !Q2O.includes(o)).every((o) => !o.sicht) /* Objekte anderer Quests (A2, A3) bleiben verborgen */, `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
   if (BILD) await anna.screenshot({ path: BILD + "q2-osthof.png" });
   /* Bruchstelle antippen: „untersuchen“ → der Server zählt, der Text kommt im Chat */
   const st = await anna.evaluate(() => { const s = window.EZW.welt3d.quest.stelle(6556.5, 6428.5); if (!s) return null; s.tat(); return s.text; });

@@ -11,13 +11,16 @@ import type { Welt3D } from "./motor";
 
 const HACKEN_MODELL: Record<string, string> = { spitzhacke_training: "training", spitzhacke_einfach: "gewoehnlich", spitzhacke_selten: "", spitzhacke_episch: "episch", spitzhacke_legendaer: "legendaer", spitzhacke_mythisch: "mythisch" };
 
+/** Modell einer Spitzhacke (auch für die angelegte Hacke in der Hand, held3d.ts) */
+export const hackenUrl = (g: string) => `img/objekte3d/skilling/utensilien/spitzhacke${HACKEN_MODELL[g] ? "." + HACKEN_MODELL[g] : ""}.glb`;
+
 export class BergWelt extends SammelWelt {
   constructor(u: { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }) {
     super(u, {
       beruf: BERUF_BERG, berufName: "Bergbau", ereignis: "ez-berg", liste: "ez-adern", ziele: ERZADERN, bitten: (tat, id) => bergBitten(tat as "start" | "riss" | "stop", id),
       def: (a) => { const D = ADERN[a as ErzArt]; return { name: D.name, level: D.level, xp: D.xp, ertrag: D.ertrag, modell: D.modell, leer: D.leer, mass: D.groesse, farbe: D.farbe, weiblich: D.name !== "Splitterfelsen" && D.name !== "Urgestein" }; },
       tatErtrag: "erz", tatMoment: "riss", grundLeer: "leer",
-      werkzeugUrl: (g) => `img/objekte3d/skilling/utensilien/spitzhacke${HACKEN_MODELL[g] ? "." + HACKEN_MODELL[g] : ""}.glb`, werkzeugStandard: "spitzhacke_training", clip: "hieb2h",
+      werkzeugUrl: hackenUrl, werkzeugStandard: "spitzhacke_training", clip: "hieb2h",
       massArt: "laenge", durchsicht: false, spanFarbe: 0x8f8a82,
       texte: { tun: (D) => `${D.name} abbauen`, start: (D, art) => `Du schlägst die Spitzhacke in ${art("akk")} ${D.name} …`, moment: "Riss! Tippe schnell die Ader an!", momentKnopf: "Riss!",
         leerKnopf: "Leere Ader ansehen", einStueck: "ein Erz", je: "je Erz",

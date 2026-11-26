@@ -14,7 +14,7 @@ welt = json.load(open(os.path.join(WELT, "welt.json")))
 # Ausnahmen nur hier (aggro/leine/wandern: Angriffsreichweite, Verfolgungsweite, Umherstreifen der Gegner – sonst 5/14/4):
 #   SICHER     – Regionen, in denen nicht gekämpft wird (sicherer Ort)
 #   BESONDERS  – Regionen mit eigenem Kartennamen, eigener Stufe, Gegnerlagern und Mehrkampf-Bereichen (Weltfelder [x0, y0, x1, y1])
-SICHER = {"waldmark"}
+SICHER: set = set()  # seit Zonen Stufe 2 (25.11.2026) ist auch die Waldmark Teil der einen Kampfwelt (Einzelkampf, ohne Gegner)
 # Der Unterschlupf (Welt-Pipeline, werkzeug/welt/unterschlupf.mjs): Lager und Mehrkampf-Halle kommen aus der Quelle der Region
 import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
@@ -28,6 +28,8 @@ BESONDERS = {
     # Die verfallene Feste im Nordwald (24.11.2026): fünf Waldgolems im Innenhof, Aggro 4 Felder (nur gegen Helden unter Level 15, config.ts), Leine 10, Streifen 2
     "nordwald": {"aggro": 4, "leine": 10, "wandern": 2,
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
+    # Zielscheiben am Südturm der Waldmark (Phase 2 „Waldland“, Quest A1, 26.11.2026): unverwundbare Strohscheiben, greifen nie an (config.ts zielscheibe)
+    "waldmark": {"aggro": 0, "leine": 1, "wandern": 0, "lager": [("zielscheibe", 6436, 6460), ("zielscheibe", 6433, 6460)]},
     # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
                "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
@@ -37,7 +39,10 @@ BESONDERS = {
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
        "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "export const WELTKAMPF: WeltKampfGebiet[] = ["]
+# Das Festland (Entwurf, 26.11.2026: nur Gelände und Höhen, ohne Orte, Wege und Gegner) ist noch kein Kampfgebiet und kein Teil der gemeinsamen Welt
+FESTLAND = {rid for rid, e in welt["regionen"].items() if e["region"].get("nahtlos") == "festland"}
 for rid, eintrag in welt["regionen"].items():
+    if rid in FESTLAND: continue
     if rid in SICHER: print(f"{rid}: sicherer Ort"); continue
     z = BESONDERS.get(rid, {}); R = eintrag["region"]; ux, uy = R["ursprung"]; bw, bh = R["chunks"]; x0, y0, B, H = ux * C, uy * C, bw * C, bh * C
     raster = [["T"] * B for _ in range(H)]
@@ -57,5 +62,5 @@ for rid, eintrag in welt["regionen"].items():
     print(f"{rid} → {karte}: {B}×{H}, {sum(r.count('.') for r in raster)} frei, {len(lager)} Gegner, {'Mehrkampf-Bereiche: ' + str(len(z['mehrkampf'])) if z.get('mehrkampf') else 'Einzelkampf'}")
 aus.append("];")
 aus.append("/** Alle Regionen der Welt (auch die sicheren) – der Server lässt dort die gemeinsame Welt zu (Anwesenheit, Chat) */")
-aus.append("export const WELTREGIONEN: string[] = " + json.dumps(list(welt["regionen"])) + ";")
+aus.append("export const WELTREGIONEN: string[] = " + json.dumps([r for r in welt["regionen"] if r not in FESTLAND]) + ";")
 open(os.path.join(WURZEL, "realtime", "shared", "weltzonen.ts"), "w").write("\n".join(aus) + "\n")

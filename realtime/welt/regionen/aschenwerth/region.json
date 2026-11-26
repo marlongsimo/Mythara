@@ -1,0 +1,15 @@
+{
+ "id": "aschenwerth",
+ "name": "Aschenwerth",
+ "untertitel": "Die Ruineninsel im Sumpf – nur über die alte Brücke",
+ "ursprung": [
+  192,
+  206
+ ],
+ "chunks": [
+  4,
+  5
+ ],
+ "biom": "sumpf",
+ "stufe": 3
+}

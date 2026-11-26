@@ -1,0 +1,17 @@
+{
+  "name": "Schwarzeisenhelm",
+  "gegenstand": "eisenwachthelm",
+  "gruppe": "nahkampf",
+  "teil": "kopf",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "kopf.helm.eisenwacht",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/kopf/helm.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.eisenwacht.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.eisenwacht.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Geschlossener Helm mit Nackenschirm und Halsschutz, die Kanten in Bronze gefasst. Gehört zum Eisenwacht-Set."
+}

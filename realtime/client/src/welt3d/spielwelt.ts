@@ -9,7 +9,9 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
-import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto } from "../welt";
+import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } from "../welt";
+/** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
+const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
 import { MONSTER } from "../../../shared/config";
 import { aktionsMenue, menueZu, FARBE, Gruppe } from "../aktionsmenue";
 import { freundHinzufuegen } from "../freunde";
@@ -27,6 +29,7 @@ const GESPRAECH_WEIT = 5;
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
 import { HolzWelt } from "./holz3d";
+import { musikStarten } from "../musik";
 import { BergWelt } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
 import { HandwerkWelt } from "./handwerk3d";
@@ -46,13 +49,14 @@ import { CHUNK_FELDER, chunkName, inZone } from "../../../shared/welt/typen";
 interface Stelle { /** eine Figur zum Reden (kurz antippen: nur hingehen, reden über lange drücken) */ npc?: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; /** mehrere Knöpfe untereinander (z. B. je Gegenstand am Boden und „Alles aufheben“) */ knoepfe?: { text: string; tat: () => void }[]; /** weitere Aktionen im Aktionsmenü nach der ersten (Händler: „Laden ansehen“) */ mehr?: { text: string; sym: string; tat: () => void }[] }
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../../shared/welt/typen";
 import { aktiverHeld } from "../held";
-import { angelegteEbenen, inventarVomServerDa } from "../inventar";
+import { angelegteEbenen, inventarVomServerDa, inventar } from "../inventar";
+/* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
 import { serverZusatz } from "../gruppe";
 import { karteDrehen } from "../rahmen";
 /** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */
 const KARTE_RAND = 1.5, HANDY_KARTE = matchMedia("(pointer: coarse)").matches;
 import { Mitspieler3D, blase3d, schildAn } from "./mitspieler";
-import { WeltKampf3D } from "./kampf3d";
+import { WeltKampf3D, levelFarbe } from "./kampf3d";
 import { bodenListe as bodenAlle, aufheben, BodenDing } from "../welt";
 import { unterLeiche } from "./leichen";
 /** Beute am Boden, die man schon sehen darf (unter einer Leiche erst, wenn sie verschwunden ist) */
@@ -123,7 +127,7 @@ export class Spielwelt3D implements WeltKern {
     addEventListener("ez-getrunken", () => { const f = this.figur as { trinken?: () => number }; if (f.trinken) f.trinken(); }); /* Trank: Hand zum Mund */
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
-    this.profil(); anschluss3D.betreten(this);
+    this.profil(); anschluss3D.betreten(this); musikStarten(); /* Hintergrundmusik (musik.ts) */
     (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
@@ -243,7 +247,7 @@ export class Spielwelt3D implements WeltKern {
   mitspielerNeu(o: { versatz: { x: number; y: number }; karte: { breit: number; hoch: number } }) { return new Mitspieler3D(this.motor, o); }
   eigeneBlase(text: string) { blase3d(this.motor, () => ({ x: this.ort.x, y: this.motor.hoehe(this.ort.x, this.ort.y) + HOEHE + 0.9, z: this.ort.y }), text); }
   seit() { return performance.now() - this.beginn; }
-  versetzen(x: number, y: number) { this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
+  versetzen(x: number, y: number) { anschluss3D.springen(); this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); }
   blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
   springen(x: number, y: number) { if (this.gesperrt) return; anschluss3D.springen(); this.halt(); this.gesperrt = true;
@@ -319,11 +323,11 @@ export class Spielwelt3D implements WeltKern {
   /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
   menueBei(px: number, py: number) { const b = this.motor.boden(px, py), gr: Gruppe[] = [], konto = Boolean(ichName());
     const d = anschluss3D.spielerBei(px, py);
-    if (d) gr.push({ kopf: d.n + (d.s ? ` · Lv ${d.s}` : ""), farbe: FARBE.spieler, aktionen: [
+    if (d) gr.push({ kopf: d.n, ...(d.s ? { lv: { text: `(Level ${d.s})`, farbe: "#f3ead2" } } : {}), farbe: FARBE.spieler, aktionen: [
       ...(konto && d.s ? [{ text: "Flüstern", sym: "✉️", tat: () => fluestern(d.i, d.n) }, { text: "Freund hinzufügen", sym: "➕", tat: () => { void freundHinzufuegen(d.n).then((t) => { if (t) chatSystem(t); }); } }] : []),
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) }] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: `${t.name} · Lv ${t.stufe}`, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
+        gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
       else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
@@ -364,7 +368,7 @@ export class Spielwelt3D implements WeltKern {
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
-    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const x = z.x + r.region.ursprung[0] * C, y = z.y + r.region.ursprung[1] * C; this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); return; }
+    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const x = z.x + r.region.ursprung[0] * C, y = z.y + r.region.ursprung[1] * C; anschluss3D.springen(); this.halt(); this.ort = { x, y }; this.motor.springen(x, y); void this.strom(); return; } /* eine Kampfwelt: den Helden beim Server freigeben, am Ziel neu */
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 

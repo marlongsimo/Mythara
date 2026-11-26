@@ -91,7 +91,7 @@ const BILD = process.env.BILD || '';
   if (BILD) await p.screenshot({ path: BILD + 'wahl-loch.png' });
   await p.click('.ez-aktionen button >> nth=0', { force: true }); await p.waitForFunction(() => window.EZW.welt3d.ort.x > 7300 && !window.EZW.welt3d.gesperrt, null, { timeout: 40000 }).catch(() => {});
   check(await p.evaluate(() => window.EZW.welt3d.ort.x > 7300), 'Runter: der Held ist unten im Unterschlupf');
-  await p.waitForTimeout(2500); await tippe(7372, 7390.2);
+  await p.waitForTimeout(2500); await tippe(10252, 9630.2);
   const wahl5 = await p.evaluate(() => { const w = document.querySelector('.ez-aktionen button b'); return w ? w.textContent : ''; }); check(wahl5 === 'Hoch', `Unten an der Leiter: „${wahl5}“`);
   /* Tippen woanders schließt den Knopf und geht dorthin */
   { const o = await p.evaluate(() => ({ ...window.EZW.welt3d.ort })); const z = await p.evaluate(() => { const W = window.EZW.welt3d, o = W.ort; for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3]]) { const x = o.x + dx, y = o.y + dy; if (W.raster.frei(o, { x, y }, 0.3) && !W.anStelle(x, y)) return [x, y]; } return null; });

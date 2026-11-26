@@ -1,15 +1,14 @@
-/*
+/* (Stand 25.11.2026, Regionswechsel) 
  * Mythara Echtzeit – die gemeinsame Welt im Client: andere Spieler sehen (Name, Stufe, Leben), Chat, aktiver Held.
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { abmelden, kuerzlichAktiv, beimAbmelden, restAus } from "./abmeldung";
-import { Q1 } from "../../shared/quest01";
-import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
-import { lage3, SCHRITTE3 } from "../../shared/quest03";
+import { QUESTS as QUESTS_B } from "../../shared/quests";
+import { neuErledigt, laeuft as laeuftB, lage as lageB, gueltig as gueltigB } from "../../shared/questbau";
 import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
@@ -19,11 +18,15 @@ import { aktiverHeld } from "./held";
 import { Held, heldPruefen, aussehenSchluessel } from "../../shared/aussehen";
 import { kontoName, kontoToken, kontoRpc } from "./konto";
 import { gruppe, serverAdresse } from "./gruppe";
+import { KanalWs } from "./kanal";
+import { kanalFabrikSetzen } from "./netz";
 
-export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; b: number; l: number; lp?: number; max?: number }
+export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
 export interface Ich { id: number; name: string; held: string; stufe: number; ort: string; festerHeld?: boolean; gast?: boolean; /** zuletzt gemerkte Stelle in der Welt (Weltfelder; null = Start der Region) */ pos?: { region: string; x: number | null; y: number | null } }
 type Kanal = "oeffentlich" | "gruppe" | "system" | "fluestern";
 export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string): void }
+/** Zonen Stufe 3: der Kampfkanal über diese Verbindung (kanal.ts) */
+let kanal: KanalWs | null = null;
 let ws: WebSocket | null = null, ich: Ich | null = null, hand: Hand = {}, ort = "", versuch = 0, gesendet = { x: NaN, y: NaN, t: 0, l: -1 };
 const nachrichten: { kanal: Kanal; von?: string; an?: string; i?: number; text: string; zeit: number }[] = [];
 let fremde: Fremder[] = [], online = 0;
@@ -33,7 +36,8 @@ export const weltOnline = (): number => online;
 export const weltIch = (): Ich | null => ich;
 
 /** Die Welt betreten (je Seite einmal). Ohne Konto oder ohne Server: nur der Chat zeigt einen Hinweis. */
-export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort === o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
+export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort === o, wechsel = Boolean(ws) && ort !== o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
+  if (wechsel) { fremde = []; bodenJetzt = []; window.dispatchEvent(new CustomEvent("ez-boden")); senden({ t: "ort", ort: o }); return; } /* andere Region bei bestehender Verbindung: dem Server melden (Boden, Mitspieler, Chat in der Nähe gelten je Region) – 25.11.2026 */
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
 let verbindet = false;
@@ -46,25 +50,48 @@ let verbundenGewesen = sitz("rift_verbunden") === "1";
 /** Für die Kampf-/Weltzonen-Verbindung: dieselbe Geräteregel */
 export function geraetAngaben(): { geraet: string; wieder: boolean } { return { geraet: GERAET, wieder: verbundenGewesen }; }
 /* iPhone: nach dem Zurückkommen in die App sofort neu verbinden, statt die Wartezeit abzusitzen; eine Verbindung, die iOS still geschlossen hat, schließen */
-if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") return;
-  if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
-  if (!ws) { versuch = 0; void verbinden(); } });
+/* Wachhund (26.11.2026): iOS schließt die Verbindung im Hintergrund oft still – readyState bleibt OPEN, es kommt nur nichts mehr. Darum ein eigenes
+   Lebenszeichen: bei sichtbarer Seite alle 2 s {"t":"puls"}, der Server antwortet sofort (zählt nicht als Aktivität). Kam 5 s lang gar nichts
+   (auch kein Zustand der Kampfwelt), wird neu verbunden – ohne Wartezeit; die Kampfwelt folgt von selbst (kampf.ts). */
+let letzteNachricht = Date.now(), verstecktSeit = 0, pulseOffen = 0;
+/** Die Verbindung gilt als tot: sofort neu (der Kampfkanal hängt daran und verbindet sich danach selbst neu) */
+function neuVerbinden(grund: string): void { const alt = ws; if (!alt) return; console.warn("Welt: neu verbinden –", grund); ws = null; if (kanal) kanal.weg(1006, ""); inventarSender(null);
+  try { alt.close(4000, "stumm"); } catch { /* schon zu */ } versuch = 0; void verbinden(); }
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") { verstecktSeit = Date.now(); return; }
+    const weg = verstecktSeit ? Date.now() - verstecktSeit : 0; verstecktSeit = 0;
+    if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
+    if (!ws) { versuch = 0; void verbinden(); return; }
+    if (weg > 3000 && ws.readyState === WebSocket.OPEN) { /* nach dem Hintergrund: sofort fragen – kommt binnen 1,5 s nichts, neu verbinden */
+      const s = ws, vor = Date.now(); letzteNachricht = Math.min(letzteNachricht, vor - 1); try { s.send('{"t":"puls"}'); } catch { /* zu */ }
+      setTimeout(() => { if (ws === s && letzteNachricht < vor) neuVerbinden("keine Antwort nach dem Hintergrund"); }, 1500); } });
+  /* gezählt werden Pulse ohne jede Antwort dazwischen: hängt der Browser selbst (Laden, Grafik), gehen in der Zeit auch keine Pulse hinaus – kein Fehlalarm */
+  setInterval(() => { if (document.visibilityState !== "visible" || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (pulseOffen >= 3 && Date.now() - letzteNachricht > 5000) { neuVerbinden("3 Pulse ohne Antwort"); return; } pulseOffen++; try { ws.send('{"t":"puls"}'); } catch { /* zu */ } }, 2000);
+  /* Netz wieder da: nicht die wachsende Wartezeit absitzen */
+  addEventListener("online", () => { versuch = 0; if (!ws) void verbinden(); else if (ws.readyState === WebSocket.OPEN && Date.now() - letzteNachricht > 2500) neuVerbinden("Netz wieder da"); }); }
 async function verbinden() { if (verbindet || ws) return; verbindet = true; /* nie zwei Verbindungen zugleich: während auf das Token gewartet wird, gibt es noch keine – ein zweiter Aufruf öffnete sonst eine zweite (der Server wirft dann eine hinaus) */
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
   const austragen = beimAbmelden(() => s.close(1000, "abmelden")); /* Abmelden gibt das Konto auf dem Server frei (sitz.ts) */
   { const puls = setInterval(() => { if (ws !== s || s.readyState > 1) { clearInterval(puls); return; } if (s.readyState === 1 && kuerzlichAktiv()) s.send('{"t":"da"}'); }, 60000); } /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */
-  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
-  s.onmessage = (ev) => { let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(String(ev.data)); } catch { return; }
-    if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); verbundenGewesen = true; sitz("rift_verbunden", "1"); if (blockiert.size) senden({ t: "blockiert", namen: [...blockiert] }); /* erst nach der Anmeldung – vorher verwirft der Server jede andere Nachricht */ }
+  s.onopen = () => { versuch = 0; letzteNachricht = Date.now(); pulseOffen = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
+  s.onmessage = (ev) => { if (ws === s) { letzteNachricht = Date.now(); pulseOffen = 0; } const roh = String(ev.data); /* jede Nachricht zählt für den Wachhund, auch Kampfrahmen */
+    if (roh.charCodeAt(0) === 75 /* K: Kampfkanal */) { if (roh.charCodeAt(1) === 33) { try { const c = JSON.parse(roh.slice(2)) as { t?: string; code?: number; grund?: string }; if (c.t === "zu" && kanal) kanal.weg(Number(c.code) || 1000, String(c.grund || "")); } catch { /* kaputt */ } } else if (kanal) kanal.rein(roh.slice(1)); return; }
+    let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(roh); } catch { return; }
+    if (m.t === "puls") return;
+    if (m.t === "ich") { window.dispatchEvent(new CustomEvent("ez-welt-verbunden")); /* die Kampfwelt verbindet sich wieder (kampf.ts) */ ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); verbundenGewesen = true; sitz("rift_verbunden", "1"); if (blockiert.size) senden({ t: "blockiert", namen: [...blockiert] }); /* erst nach der Anmeldung – vorher verwirft der Server jede andere Nachricht */ }
     else if (m.t === "stufe") { if (ich && typeof m.stufe === "number") ich.stufe = m.stufe; }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { const alt = questBekannt ? [questJetzt as string, quest2Jetzt, quest3Jetzt] : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; if (alt) questFortschritt(alt, [questJetzt, quest2Jetzt, quest3Jetzt]); window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "quests") { const alt = questBekannt ? { ...questB } : null;
+      /* Stände aller Quests (b: id → Stand, shared/quests.ts) */
+      const b = (m.b && typeof m.b === "object" ? m.b : {}) as Record<string, unknown>; questB = {}; for (const q of QUESTS_B) questB[q.id] = gueltigB(q, b[q.id]);
+      questPunkte = Math.max(0, Math.floor(Number(m.punkte)) || 0); questBekannt = true; if (alt) questFortschritt(alt); window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
-    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
+    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; if (!m.gebet) chatSystem(G && G.art === "Essen" ? `Du isst ${G.name === "Brot" ? "ein Brot" : G.name}: +${m.n} Leben (${m.lp} / ${m.max}).` : `Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
     else if (m.t === "holz") window.dispatchEvent(new CustomEvent("ez-holz", { detail: m })); /* Holzfällerei (welt3d/holz3d.ts) */
     else if (m.t === "baeume") window.dispatchEvent(new CustomEvent("ez-baeume", { detail: m.weg || [] }));
     else if (m.t === "berg") window.dispatchEvent(new CustomEvent("ez-berg", { detail: m })); /* Bergbau (welt3d/sammeln3d.ts) */
@@ -82,10 +109,15 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "chat") { const n = { kanal: (m.kanal as Kanal) || "oeffentlich", von: m.von as string | undefined, an: m.an as string | undefined, i: typeof m.i === "number" ? m.i : undefined, text: String(m.text || ""), zeit: Number(m.zeit) || Date.now() };
       if (n.von && n.kanal !== "system" && blockiert.has(n.von) && !(ich && n.von === ich.name)) return; /* blockiert: weder Chat noch Sprechblase */
       chatDazu(n); if (n.kanal === "oeffentlich" && n.i !== undefined && hand.blase) hand.blase(n.i, n.text); } };
-  s.onclose = (ev) => { austragen(); if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Es ist aktuell schon ein Gerät in Riftmere."); abmelden("bereits", restAus(ev.reason)); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
+  s.onclose = (ev) => { austragen(); if (kanal && ws === s) kanal.weg(1006, ""); /* der Kampfkanal hängt an dieser Verbindung */ if (ws !== s) return; ws = null; inventarSender(null); /* getrennt: das Inventar zeigt den letzten Stand, ändern geht erst wieder verbunden */ if (ev.code === 4410) { chatSystem("Es ist aktuell schon ein Gerät in Riftmere."); abmelden("bereits", restAus(ev.reason)); return; } if (ev.code === 4409) { verbundenGewesen = false; sitz("rift_verbunden", null); /* über Willkommen → Spielen meldet man sich wieder frisch an */ chatSystem("Du bist an einem anderen Gerät unterwegs."); abmelden("anderes"); return; } if (ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* abmeldung.ts */ if (ev.code === 4401 && ev.reason === "keine anmeldung") { /* die Seite war zu beschäftigt (Laden der 3D-Welt) und hat sich nicht rechtzeitig angemeldet: gleich neu */ setTimeout(() => { if (!ws) void verbinden(); }, 1500); return; } if (ev.code === 4401 || ev.code === 4400) return;   /* 4400: diesen Ort kennt der Server (noch) nicht – nicht endlos neu verbinden */
     const warte = Math.min(30000, 2000 * 2 ** versuch++); setTimeout(() => { if (!ws) void verbinden(); }, warte); };
 }
 const senden = (m: object) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(m)); };
+/* Zonen Stufe 3: Kampfverbindungen zum selben Server laufen als Kanal über diese Verbindung – ein Gerät, eine Verbindung */
+kanalFabrikSetzen((url) => { const basis = serverAdresse(), s = ws; if (!s || s.readyState !== 1 || kanal || !basis || !url.startsWith(basis + "?")) return null;
+  const k = new KanalWs((t) => { if (s.readyState === 1) s.send(t); }, (x) => { if (kanal === x) kanal = null; }, url.slice(basis.length + 1)); kanal = k; return k as unknown as WebSocket; });
+/** Auf die offene Welt-Verbindung warten (höchstens ms) – damit der Kampf als Kanal darüber läuft statt über eine zweite Verbindung */
+export function aufWeltWarten(ms: number): Promise<void> { return new Promise((fertig) => { const bis = Date.now() + ms; const pruefe = () => { if ((ws && ws.readyState === 1) || Date.now() > bis || (!ws && !verbindet)) { fertig(); return; } setTimeout(pruefe, 100); }; pruefe(); }); }
 /* Freunde (Server: welt.ts „freunde“, „zufreund“, „freundanfrage“) */
 export const freundeAbfragen = (): void => senden({ t: "freunde" });
 export const zuFreund = (n: string): void => senden({ t: "zufreund", n });
@@ -94,24 +126,25 @@ export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /** Angemeldet mit Konto? null = der Server hat sich noch nicht gemeldet */
 export const mitKonto = (): boolean | null => (ich ? !ich.gast : null);
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
-let questJetzt: Stand = "", quest2Jetzt = "", quest3Jetzt = "", questBekannt = false;
-/** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
-export const questStand = (): Stand => questJetzt;
+let questB: Record<string, string> = {}, questBekannt = false, questPunkte = 0;
+/** Summe der Questpunkte (rpg_held.questpunkte, Migration 048) */
+export const questpunkte = (): number => questPunkte;
+/** bekannt: der Server hat die Stände geschickt (mit Konto) */
 export const questGeladen = (): boolean => questBekannt;
-/** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
-export const questStand2 = (): string => quest2Jetzt;
-export const questStand3 = (): string => quest3Jetzt;
-/** Fortschritt melden: erledigte Schritte (Quest 03) im Chat, Abschluss jeder Quest als Banner oben */
-const QTITEL = ["Die gesperrte Straße", "Der stille Rain", "Der Säbel des Waldgottes"];
-function questFortschritt(alt: string[], neu: string[]): void {
-  const a3 = lage3(alt[2]), n3 = lage3(neu[2]); if (n3.phase === "auftrag" && a3.phase === "auftrag") for (const x of SCHRITTE3) if (n3.bits & x.bit && !(a3.bits & x.bit)) chatSystem(`Quest „${QTITEL[2]}“: ${x.text} – erledigt.`);
-  if (n3.phase === "auftrag" && a3.phase === "") chatSystem(`Neue Quest: „${QTITEL[2]}“ (Quest-Tab).`);
-  neu.forEach((s, i) => { if (s === "fertig" && alt[i] !== "fertig") stufenBanner(`Quest abgeschlossen: ${QTITEL[i]}`, "📜"); }); }
+/** Stand einer Quest (shared/quests.ts) */
+export const questStandB = (id: string): string => questB[id] || "";
+/** Fortschritt melden: erledigte Schritte im Chat, Abschluss jeder Quest als Banner oben */
+function questFortschritt(alt: Record<string, string>): void {
+  /* Quests des Baukastens: erledigte Schritte und neue Quest im Chat (Questobjekte melden sich selbst mit ihrem Text) */
+  for (const q of QUESTS_B) { const a = alt[q.id] || "", n = questStandB(q.id);
+    for (const x of neuErledigt(q, a, n)) if (x.ereignis.art !== "objekt") chatSystem(`Quest „${q.titel}“: ${x.text} – erledigt.`);
+    if (laeuftB(q, n) && lageB(q, a).phase === "neu") chatSystem(`Neue Quest: „${q.titel}“ (Quest-Tab).`);
+    if (n === "fertig" && a !== "fertig") stufenBanner(`Quest abgeschlossen: ${q.titel}`, "📜"); } }
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
-export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }
-export function questVerfolgt(id: string = Q1): boolean { return verfolgteQuest() === id; }
-export function questVerfolgen(an: boolean, id: string = Q1): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
+export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? "die_gesperrte_strasse" /* alter Merker der ersten Quest */ : ""; } catch { return ""; } }
+export function questVerfolgt(id: string): boolean { return verfolgteQuest() === id; }
+export function questVerfolgen(an: boolean, id: string): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
 /** Quest 02: Bruchstelle oder Rutenbündel benutzen (der Server prüft Stand und Abstand); Mooshocker untersucht */
 /** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
 /** Heim-Teleport beim Server anfragen: antwort(ok, Restzeit in ms, gast). Ohne Verbindung (oder ohne Antwort nach 3 s): null */
@@ -123,6 +156,8 @@ export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { 
 export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
 export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
 export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { if (tat === "start") stelleMelden(); senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
+/** Beten an einer heilenden Stelle (shared/heilstellen.ts) – der Server prüft Schalter, Abstand und Abklingzeit */
+export function betenBitten(): void { stelleMelden(); senden({ t: "beten" }); }
 export function questDing(id: string, wo?: { x: number; y: number }): void { stelleMelden(); senden({ t: "qding", id, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 export function untersuchtMelden(typ: string, wo?: { x: number; y: number }): void { stelleMelden(); senden({ t: "untersucht", typ, ...(wo ? { x: wo.x, y: wo.y } : {}) }); }
 /** Gespräch beginnen – vorher die genaue Stelle melden (sonst kennt der Server nach schnellem Hinlaufen nur eine ältere und sagt „Geh näher heran“) */

@@ -1,0 +1,17 @@
+{
+  "name": "Weichleder-Hose",
+  "gegenstand": "jaegerhose",
+  "gruppe": "fernkampf",
+  "teil": "beine",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Einfach",
+  "modell": {
+    "ebene": "ruestung.beine.jaeger",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/beine/ruestung.beine.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.jaeger.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.jaeger.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Lederhose mit Knieschützern und Taschen am Gürtel. Gehört zum Jäger-Set."
+}

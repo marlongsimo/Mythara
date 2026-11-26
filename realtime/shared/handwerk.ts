@@ -100,6 +100,10 @@ for (const [gruppe, station, ids, versatz, zut] of FAMILIEN) for (let t = 1; t <
 /* Quest 03 „Der Säbel des Waldgottes“: Waldstein schmelzen, Waldsäbel schmieden – nur mit dem Auftrag des Försters */
 dazu({ id: "barren_waldstein", station: "esse", ergebnis: "barren_waldstein", level: 1, zutaten: [{ g: ["erz_waldstein"], n: 1 }], xp: 25, ticks: 3, stufe: 0, gruppe: "Auftrag des Försters", quest: "nordwald_waldsaebel" });
 dazu({ id: "waldsaebel", station: "amboss", ergebnis: "waldsaebel", level: 1, zutaten: [{ g: ["barren_waldstein"], n: 1 }, { g: ["holz_waldgott"], n: 1 }], xp: 40, ticks: 5, stufe: 0, gruppe: "Auftrag des Försters", quest: "nordwald_waldsaebel" });
+/* Phase 2 „Waldland“: Quest-Rezepte (nur mit dem Auftrag) – A1 Wachbogen an der Werkbank und im Rucksack, A3 Mühlenachslager am Amboss */
+dazu({ id: "wachbogen_ungespannt", station: "werkbank", ergebnis: "wachbogen_ungespannt", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }], xp: 30, ticks: 3, stufe: 0, gruppe: "Auftrag der Wachführerin", quest: "waldmark_sehnen_fuer_den_wachturm" });
+dazu({ id: "wachbogen", station: "hand", ergebnis: "wachbogen", level: 1, zutaten: [{ g: ["wachbogen_ungespannt"], n: 1 }, { g: ["bogensehne"], n: 1 }], xp: 15, ticks: 2, stufe: 0, gruppe: "Auftrag der Wachführerin", quest: "waldmark_sehnen_fuer_den_wachturm" });
+dazu({ id: "muehlenachslager", station: "amboss", ergebnis: "muehlenachslager", level: 1, zutaten: [{ g: ["barren_kupfer"], n: 2 }], xp: 40, ticks: 5, stufe: 0, gruppe: "Auftrag des Müllerjungen", quest: "osthof_die_muehle_steht_still" });
 export const rezept = (id: string): Rezept | undefined => REZEPTE.find((r) => r.id === id);
 export const rezepteAn = (st: StationId): Rezept[] => REZEPTE.filter((r) => r.station === st).sort((a, b) => a.level - b.level || a.gruppe.localeCompare(b.gruppe));
 

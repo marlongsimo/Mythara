@@ -27,7 +27,7 @@ export interface SammelEinstellung {
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void }
 interface Bild { z: SammelZiel3D; gruppe: THREE.Group; voll: THREE.Object3D | null; leer: THREE.Object3D | null; laedt: boolean; mats?: THREE.Material[]; deck?: number;
-  u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number } } }
+  u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number }; /** Krone durchsichtig: Deckkraft oberhalb des Stamms (1 = fest) */ uDurch: { value: number } } }
 
 const vorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number; laenge: number }>>();
 function vorlage(url: string) { let p = vorlagen.get(url); if (!p) { p = gltfLader().loadAsync("../" + url).then((g) => { const box = new THREE.Box3().setFromObject(g.scene), s = box.getSize(new THREE.Vector3());
@@ -38,11 +38,14 @@ const zufall = (s: string) => { let h = 2166136261; for (let i = 0; i < s.length
 /** Wind und pulsierende Adern im Shader (wie echt3d/darsteller.ts → BaumBild); uKern: aktiver Moment – die Adern glühen hell */
 function shaderAn(o: THREE.Object3D, u: Bild["u"], mats?: THREE.Material[]) {
   o.traverse((x) => { const m = x as THREE.Mesh; if (!m.isMesh) return; m.castShadow = true; m.receiveShadow = false; m.frustumCulled = false; const mat = (m.material as THREE.MeshStandardMaterial).clone(); m.material = mat; mats?.push(mat);
-    mat.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u);
-      sh.vertexShader = "uniform float uZeit, uPhase, uWind, uHoehe;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
+    m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox!, kroneH = { value: Math.max(1e-3, bb.max.y) }; /* Höhe im Modell selbst (das Modell wird skaliert) */
+    mat.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u, { uModellH: kroneH });
+      sh.vertexShader = "uniform float uZeit, uPhase, uWind, uHoehe, uModellH;\nvarying float vHb;\n" + sh.vertexShader.replace("#include <begin_vertex>", `#include <begin_vertex>
+        vHb = clamp(transformed.y / uModellH, 0.0, 1.0);
         { float hb = clamp(transformed.y / uHoehe, 0.0, 1.0), b = hb * hb * uWind; transformed.x += sin(uZeit * 1.6 + uPhase + transformed.y * 0.35) * b; transformed.z += cos(uZeit * 1.1 + uPhase * 1.3) * b * 0.6; }`);
-      sh.fragmentShader = "uniform float uZeit, uPhase, uKern;\nvec3 holzHsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r)); float d=q.x-min(q.w,q.y); return vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x); }\n"
-        + sh.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+      sh.fragmentShader = "uniform float uZeit, uPhase, uKern, uDurch;\nvarying float vHb;\nvec3 holzHsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r)); float d=q.x-min(q.w,q.y); return vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x); }\n"
+        + sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
+        diffuseColor.a *= mix(1.0, uDurch, smoothstep(0.16, 0.24, vHb)); /* nur die Krone wird durchsichtig, der Stamm bleibt fest (26.11.2026) */`).replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
         { vec3 hsv = holzHsv(diffuseColor.rgb); float b = clamp((hsv.y - 0.45) / 0.2, 0., 1.) * clamp((hsv.z - 0.3) / 0.25, 0., 1.) * clamp(1. - abs(hsv.x * 360. - 210.) / 34., 0., 1.);
           totalEmissiveRadiance += diffuseColor.rgb * b * ((0.35 + 1.1 * (0.5 + 0.5 * sin(uZeit * 2.2 + uPhase))) + uKern * 3.5); }`); };
     mat.customProgramCacheKey = () => "sammelziel"; }); }
@@ -53,7 +56,7 @@ export class SammelWelt {
   aktiv: string | null = null; private werkzeug = ""; private moment: { id: string; bis: number } | null = null;
   constructor(private u: Umgebung, private E: SammelEinstellung) {
     for (const z of E.ziele) { const g = new THREE.Group(); g.visible = false; this.u.motor.szene.add(g);
-      this.alle.set(z.id, { z, gruppe: g, voll: null, leer: null, laedt: false, u: { uZeit: { value: 0 }, uPhase: { value: zufall(z.id) * 6.28 }, uKern: { value: 0 }, uHoehe: { value: 6 }, uWind: { value: E.massArt === "hoehe" ? 0.1 : 0 } } }); }
+      this.alle.set(z.id, { z, gruppe: g, voll: null, leer: null, laedt: false, u: { uZeit: { value: 0 }, uPhase: { value: zufall(z.id) * 6.28 }, uKern: { value: 0 }, uHoehe: { value: 6 }, uWind: { value: E.massArt === "hoehe" ? 0.1 : 0 }, uDurch: { value: 1 } } }); }
     addEventListener(E.liste, (e) => { this.weg = new Set(((e as CustomEvent).detail as [string, number][]).map(([id]) => id)); for (const a of this.alle.values()) this.zustand(a); });
     addEventListener(E.ereignis, (e) => this.nachricht((e as CustomEvent).detail)); }
   private get figur(): Werkzeugfigur | null { const f = this.u.figur as Partial<Werkzeugfigur> | null; return f && typeof f.beilHieb === "function" ? (f as Werkzeugfigur) : null; }
@@ -97,7 +100,7 @@ export class SammelWelt {
       a.u.uKern.value = this.moment && this.moment.id === a.z.id ? 0.6 + 0.4 * Math.sin(jetzt / 70) : 0;
       /* Held unter der Krone: der Baum wird zu 80 % durchsichtig, damit man sich und das Beil sieht */
       if (a.mats && a.mats.length) { const ziel = Math.hypot(a.z.x - o.x, a.z.y - o.y) < 3.4 ? 0.2 : 1; a.deck = (a.deck ?? 1) + (ziel - (a.deck ?? 1)) * Math.min(1, dt * 6);
-        const durch = a.deck < 0.99; for (const m of a.mats) { if (m.transparent !== durch) { m.transparent = durch; m.needsUpdate = true; } m.opacity = durch ? a.deck : 1; } } } }
+        const durch = a.deck < 0.99; a.u.uDurch.value = durch ? a.deck : 1; for (const m of a.mats) { if (m.transparent !== durch) { m.transparent = durch; m.needsUpdate = true; } } } } }
   /** für Tests */
   get liste(): { id: string; art: string; x: number; y: number; geladen: boolean; leer: boolean; stumpf: boolean }[] {
     return [...this.alle.values()].map((a) => ({ id: a.z.id, art: a.z.art, x: a.z.x, y: a.z.y, geladen: Boolean(a.voll), leer: this.weg.has(a.z.id), stumpf: this.weg.has(a.z.id) })); }

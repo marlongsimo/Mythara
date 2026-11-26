@@ -23,7 +23,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url === "/rest/v1/rpc/rpg_echtzeit_held_setzen") { const a = JSON.parse(b); AKTIV[a.p_user] = a.p_held; HELDSETZEN.push(a); return send(200, { ok: true, held: a.p_held }); }
   if (req.url.startsWith("/rest/v1/rpg_held?")) return send(200, HELD[wer(req.url)] ? [HELD[wer(req.url)]] : []);
   if (req.url === "/rest/v1/rpc/rpg_held_quest_setzen") { const a = JSON.parse(b); const H = HELD[a.p_user]; H.quests = H.quests || {}; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: a.p_stand }; return send(200, true); }
-  if (req.url === "/rest/v1/rpc/rpg_held_quest_abschluss") { const a = JSON.parse(b); const H = HELD[a.p_user]; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: "fertig" }; return send(200, true); }
+  if (/^\/rest\/v1\/rpc\/rpg_held_quest_abschluss(_v2)?$/.test(req.url)) { const a = JSON.parse(b); a.v2 = req.url.endsWith("_v2"); if (a.v2 && (HELD[a.p_user].quests[a.p_quest] || {}).s !== "fertig") HELD[a.p_user].questpunkte = (HELD[a.p_user].questpunkte || 0) + Math.min(10, a.p_punkte || 0); const H = HELD[a.p_user]; if ((H.quests[a.p_quest] || {}).s === "fertig") return send(200, false); H.quests[a.p_quest] = { s: "fertig" }; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_inventar_setzen") { const a = JSON.parse(b); if (HELD[a.p_user]) HELD[a.p_user].inventar = a.p_inventar; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_skill_gutschrift") { const a = JSON.parse(b); XPBUCH.push(a); const H = HELD[a.p_user]; if (!H) return send(200, null); for (const k of ["geschick", "staerke", "fernkampf", "magie"]) H["skill_" + k] += a["p_" + k]; return send(200, { geschick: H.skill_geschick, staerke: H.skill_staerke, fernkampf: H.skill_fernkampf, magie: H.skill_magie }); }
   send(404, {}); }); }).listen(8799);
@@ -103,7 +103,7 @@ try {
   { await anna.keyboard.press("Escape"); await anna.waitForFunction(() => { const d = document.getElementById("ez-gespraech"); return (!d || d.hidden) && !window.EZW.welt3d.gesperrt; }, null, { timeout: 15000, polling: 300 }).catch(() => {}); /* Jori kann gerade angesprochen haben */
     await anna.keyboard.press("Shift"); await anna.waitForFunction(() => window.EZW.welt3d.ausdauer.an, null, { timeout: 15000, polling: 300 }).catch(() => {}); const v = await anna.evaluate(() => { const W = window.EZW.welt3d; return { an: W.ausdauer.an, faktor: W.ausdauer.faktor, knopf: !!document.querySelector('[aria-label="Sprint"].an') }; });
     await anna.evaluate(() => window.EZW.welt3d.geheWeit(6450.5, 6470)); await anna.waitForFunction(() => window.EZW.welt3d.ausdauer.wert < 100, null, { timeout: 40000 }).catch(() => {}); await anna.waitForTimeout(300);
-    const n = await anna.evaluate(() => { const W = window.EZW.welt3d; return { wert: W.ausdauer.wert, gelb: (document.querySelector(".ez-boegen .voll.gelb") || {}).style?.strokeDasharray || "" }; });
+    const n = await anna.evaluate(() => { const W = window.EZW.welt3d; return { wert: W.ausdauer.wert, gelb: (document.querySelector(".ez-werte .lauf .fuell") || {}).style?.height || "" }; });
     check(v.an && v.faktor === 2 && v.knopf && n.wert < 100 && /^\d/.test(n.gelb) && !n.gelb.startsWith("100"), `Sprint: Umschalt schaltet ein (2 Felder je Tick, Knopf leuchtet), die gelbe Leiste sinkt (${n.wert.toFixed(0)} %, ${n.gelb})`);
     await anna.keyboard.press("Shift"); await anna.waitForFunction(() => !window.EZW.welt3d.ausdauer.an, null, { timeout: 15000, polling: 300 }).catch(() => {}); check(await anna.evaluate(() => !window.EZW.welt3d.ausdauer.an && window.EZW.welt3d.ausdauer.faktor === 1), "Nochmal Umschalt: Sprint aus"); }
   /* Felder und Schräge: Schritte von Feldmitte zu Feldmitte, 1 Feld je Tick, schräg wie gerade, angeklickte Wege über Feldmitten */
@@ -121,7 +121,7 @@ try {
   if (BILD) await anna.screenshot({ path: BILD + "ausruestung-tab.png" }); await anna.keyboard.press("Escape"); await anna.click('#ez-leiste [data-l="ausruestung"]');
   /* Ben steht vor der Sperre (Stand: bestätigt); für ihn ist sie noch zu, nach dem Gespräch mit Raban offen. Anna bleibt draußen. */
   const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6446.5, 6642.5, "waldweg"]);
-  await ben.goto(B + S); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
+  await ben.goto(B + S, { timeout: 120000 }); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen && window.EZW.welt3d.quest, null, { timeout: 120000 });
   await ben.waitForTimeout(3000);
   const durch = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6446.5, y: 6643 }, { x: 6446.5, y: 6655 }, 0.3).length > 0; });
   const kreuzung = (p) => p.evaluate(() => { const W = window.EZW.welt3d; return W.raster.weg({ x: 6443.5, y: 6608 }, { x: 6443.5, y: 6622 }, 0.3).length > 0; });

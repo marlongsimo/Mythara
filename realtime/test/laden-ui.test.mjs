@@ -1,5 +1,5 @@
 /* Händler am Marktplatz und Tränke im Browser (3D-Welt, echter Spielserver, nachgebildete Supabase): Händler stehen an ihren Ständen, kurz antippen = Gespräch
-   mit „Nein danke“ / „Laden ansehen“, Rechtsklick = Menü mit „Laden ansehen“, Ladenfenster als Raster (kurz = kaufen, lang = untersuchen), Trank im Rucksack.
+   mit „Nein danke“ / „Laden ansehen“, Rechtsklick = Menü mit „Laden ansehen“, Ladenfenster als Raster (kurz = untersuchen, lang = Menü mit Kaufen), Trank im Rucksack.
    Gerüst aus inventar-ui.test.mjs. Aufruf: node test/laden-ui.test.mjs  (BILD=… für Bilder) */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
@@ -71,8 +71,12 @@ try {
   await anna.click('#ez-gespraech [data-a="laden"]'); await anna.waitForTimeout(600);
   check(await anna.evaluate(() => /Schluck auf!/.test(document.querySelector("#ez-konto .tafel.laden")?.textContent || "") && document.querySelectorAll("#ez-konto .lware").length === 2), "„Laden ansehen“: Ladenfenster „Schluck auf!“ mit zwei Waren");
   if (BILD) await anna.screenshot({ path: BILD + "laden-traenke.png" });
-  await anna.click('#ez-konto .lware[data-g="heiltrank"]'); await anna.waitForFunction(() => /^◆ 150 Splitter$/.test((document.querySelector("#ez-konto .lgeld")?.textContent || "").trim()), null, { timeout: 8000 }).catch(() => {});
-  check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar")).rucksack.includes("heiltrank") && /150/.test(document.querySelector("#ez-konto .lgeld").textContent)), "Kurz antippen: Heiltrank gekauft (300 → 150 Splitter), im Rucksack");
+  await anna.click('#ez-konto .lware[data-g="heiltrank"]'); await anna.waitForTimeout(400);
+  check(await anna.evaluate(() => Boolean(document.querySelector("#ez-konto .tafel.untersuchen")) && !JSON.parse(localStorage.getItem("ez_inventar")).rucksack.includes("heiltrank")), "Kurz antippen: untersuchen (kein Kauf)");
+  await anna.click('#ez-konto [data-t="zurueck"]'); await anna.waitForTimeout(400);
+  await anna.click('#ez-konto .lware[data-g="heiltrank"]', { button: "right" }); await anna.waitForTimeout(300); await anna.click('.ez-aktionen button:has-text("Kaufen")');
+  await anna.waitForFunction(() => /^◆ 150 Splitter$/.test((document.querySelector("#ez-konto .lgeld")?.textContent || "").trim()), null, { timeout: 8000 }).catch(() => {});
+  check(await anna.evaluate(() => JSON.parse(localStorage.getItem("ez_inventar")).rucksack.includes("heiltrank") && /150/.test(document.querySelector("#ez-konto .lgeld").textContent)), "Lange drücken → Kaufen: Heiltrank gekauft (300 → 150 Splitter), im Rucksack");
   await anna.click('#ez-konto .lware[data-g="kleiner_heiltrank"]', { button: "right" }); await anna.waitForTimeout(300);
   const lm = await anna.evaluate(() => [...document.querySelectorAll(".ez-aktionen button")].map((b) => b.textContent)); check(/Kaufen/.test(lm[0] || "") && /Untersuchen/.test(lm[1] || ""), `Lange drücken / Rechtsklick auf eine Ware: ${JSON.stringify(lm)}`);
   await anna.click('.ez-aktionen button:has-text("Untersuchen")'); await anna.waitForTimeout(400);

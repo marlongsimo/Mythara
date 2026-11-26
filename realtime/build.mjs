@@ -37,7 +37,7 @@ await build({ entryPoints: ["client/src/welt3d/spiel.ts"], bundle: true, minify:
 writeFileSync(aus + "welt3d.html", readFileSync("client/welt3d.html", "utf8").replace("__V__", v));
 writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/preview/index.html", "utf8"));
 /* Animations-Testseite (nicht verlinkt): alle 3D-Figuren mit Bewegungen, Teilen, ausgelagerten Teilen und deren Seltenheitsstufen */
-{ const ORD = new URL("../img/figuren-echt3d/", import.meta.url).pathname, STUFEN = ["gewoehnlich", "selten", "episch", "legendaer", "mythisch"], figuren = [];
+{ const ORD = new URL("../img/figuren-echt3d/", import.meta.url).pathname, STUFEN = ["training", "gewoehnlich", "selten", "episch", "legendaer", "mythisch"], figuren = [];
   for (const f of readdirSync(ORD).filter((d) => d.endsWith(".json")).sort()) { const id = f.slice(0, -5); if (!existsSync(ORD + id + ".glb")) continue;
     const d = JSON.parse(readFileSync(ORD + f, "utf8")), teile = d.teile || {}, stufen = {}, dateien = existsSync(ORD + id + ".teile") ? readdirSync(ORD + id + ".teile") : [];
     for (const t of Object.keys(teile)) { const s = STUFEN.filter((st) => dateien.includes(`${t}.${st}.glb`)); if (s.length) stufen[t] = s; }
@@ -46,5 +46,5 @@ writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/pre
   writeFileSync(aus + "animationen-liste.json", JSON.stringify({ figuren }));
   writeFileSync(aus + "animationen.html", readFileSync("client/animationen.html", "utf8").replace(/__V__/g, v)); }
 await build({ entryPoints: ["server/src/index.ts"], bundle: true, platform: "node", format: "cjs", target: "node20", outfile: "server/dist/server.js", external: ["bufferutil", "utf-8-validate"] });
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { GEGENSTAENDE, startAusruestung } from "./shared/gegenstaende";', resolveDir: ".", loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: "test/sim.gebaut.mjs" });
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { GEGENSTAENDE, startAusruestung } from "./shared/gegenstaende"; export * as QB from "./shared/questbau"; export { QUEST3 } from "./shared/quest03"; export { QUEST2 } from "./shared/quest02"; export { QUEST1 } from "./shared/quest01"; export { QUEST_A1 } from "./shared/quest_a1"; export { QUEST_A2 } from "./shared/quest_a2"; export { QUEST_A3 } from "./shared/quest_a3"; export { LAEDEN, ladenOffen } from "./shared/laeden"; export { GEGENSTAENDE as GEG, VERBRAUCH } from "./shared/gegenstaende"; export { QUESTS } from "./shared/quests"; export { REZEPTE } from "./shared/handwerk";', resolveDir: ".", loader: "ts" }, bundle: true, platform: "node", format: "esm", target: "node20", outfile: "test/sim.gebaut.mjs" });
 console.log("gebaut: echtzeit/ (Client), server/dist/server.js (Server)");

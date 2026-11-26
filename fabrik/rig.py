@@ -499,6 +499,19 @@ def angriff_links(i, n):
     L = lambda o, u, k: mit(BEREIT, o_l=spiegel(o), u_l=spiegel(u), kl_l=spiegel(k))
     arme_spur([(0, BEREIT), (0.3, L((-0.65, 0.35, 0.3), (-0.2, 0.45, 0.9), (0.1, 0.75, 0.65))), (0.5, L((-0.35, -0.75, 0.3), (-0.15, -0.9, 0.35), (0.05, -0.45, 0.9))),
                (0.65, L((-0.15, -0.85, -0.45), (0.1, -0.9, -0.4), (0.25, -0.92, -0.3))), (0.82, L((0.0, -0.6, -0.8), (0.35, -0.6, -0.7), (0.7, -0.55, -0.45))), (1, BEREIT)], t)
+def doppelhieb(i, n):
+    """Doppelschwert-Angriff (zwei Klingen): rechts von oben, gleich danach links von oben über Kreuz – der Oberkörper dreht mit, ein Ausfallschritt"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.25, 1.0), (0.75, 1.0), (1, 0.0)], t); schritt(18, w)
+    rumpf(vor=spur([(0, 2.0), (0.22, -5.0), (0.42, 12.0), (0.6, -2.0), (0.78, 14.0), (1, 2.0)], t), dreh_z=spur([(0, 0.0), (0.22, -24.0), (0.42, 18.0), (0.6, 22.0), (0.78, -20.0), (1, 0.0)], t))
+    R = [(0, BEREIT), (0.3, mit(BEREIT, o_r=(-0.65, 0.35, 0.3), u_r=(-0.2, 0.45, 0.9), kl=(0.1, 0.75, 0.65))), (0.5, mit(BEREIT, o_r=(-0.35, -0.75, 0.3), u_r=(-0.15, -0.9, 0.35), kl=(0.05, -0.45, 0.9))),
+         (0.65, mit(BEREIT, o_r=(-0.15, -0.85, -0.45), u_r=(0.1, -0.9, -0.4), kl=(0.25, -0.92, -0.3))), (0.82, mit(BEREIT, o_r=(0.0, -0.6, -0.8), u_r=(0.35, -0.6, -0.7), kl=(0.7, -0.55, -0.45))), (1, BEREIT)]
+    Lm = lambda o, u, k: mit(BEREIT, o_l=spiegel(o), u_l=spiegel(u), kl_l=spiegel(k))
+    Lk = [(0, BEREIT), (0.3, Lm((-0.65, 0.35, 0.3), (-0.2, 0.45, 0.9), (0.1, 0.75, 0.65))), (0.5, Lm((-0.35, -0.75, 0.3), (-0.15, -0.9, 0.35), (0.05, -0.45, 0.9))),
+          (0.65, Lm((-0.15, -0.85, -0.45), (0.1, -0.9, -0.4), (0.25, -0.92, -0.3))), (0.82, Lm((0.0, -0.6, -0.8), (0.35, -0.6, -0.7), (0.7, -0.55, -0.45))), (1, BEREIT)]
+    pose = lambda keys, u: {k: spur([(tt, w_[k]) for tt, w_ in keys], max(0.0, min(1.0, u))) for k in BEREIT}
+    pr = pose(R, t / 0.62); pl = pose(Lk, (t - 0.36) / 0.64)                                  # rechts zuerst, links setzt nach (Treffer bei etwa 0,4 und 0,75)
+    for k in ("o_l", "u_l", "kl_l"): pr[k] = pl[k]
+    arme(**pr)
 BLOCK = mit(BEREIT, o_l=(0.12, -0.72, -0.6), u_l=(-0.82, -0.32, 0.42), sch=(0.05, -1.0, 0.08), o_r=(-0.32, 0.1, -0.94), u_r=(-0.2, -0.6, -0.78), kl=(-0.05, -0.72, 0.69))   # Unterarm quer vor der Brust, Schildfläche nach vorn; Schwert neben dem Schild nach vorn oben, stichbereit
 # (die Klinge steht quer zur Hand: zeigt der Unterarm nach unten, kann sie nicht senkrecht nach oben zeigen – sonst kippt sie seitlich weg)
 PARADE = mit(BEREIT, o_r=(-0.35, -0.6, 0.15), u_r=(0.5, -0.55, 0.65), kl=(0.95, -0.15, 0.25), o_l=(0.35, -0.2, -0.9), u_l=(0.2, -0.75, -0.6))   # ohne Schild: Waffe quer vor Kopf und Brust
@@ -748,7 +761,7 @@ def faustschlag(i, n):
 BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}), "angriff": (angriff, 8, 16, False, {"treffer": 5}), "block": (block, 6, 12, False, {"halten": 5}),
               "angriff2h": (angriff2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "treffer": (treffer, 5, 12, False, {}), "ausweichen": (ausweichen, 6, 12, False, {}),
               "angriff_axt": (angriff_axt, 8, 12, False, {"treffer": 5}), "angriff_dolch": (angriff_dolch, 7, 18, False, {"treffer": 3}),
-              "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7}),
+              "zauber": (zauber, 8, 14, False, {"treffer": 4}), "angriff_links": (angriff_links, 8, 16, False, {"treffer": 5}), "doppelhieb": (doppelhieb, 14, 14, False, {"treffer": 6}), "segen": (segen, 8, 12, False, {}), "nova": (nova, 8, 12, False, {"treffer": 4}), "tod": (tod, 8, 10, False, {"halten": 7}),
               "stabhaltung": (stabhaltung, 6, 8, True, {}), "geschoss": (geschoss, 8, 14, False, {"treffer": 4}), "frosthauch": (frosthauch, 8, 12, False, {"treffer": 4}),
               "donnerwelle": (donnerwelle, 8, 12, False, {"treffer": 4}), "glutsphaere": (glutsphaere, 8, 12, False, {"treffer": 4}), "stabschlag": (angriff, 8, 16, False, {"treffer": 5}),
               "gehen": (gehen, 8, 8, True, {}), "schildstoss": (schildstoss, 8, 14, False, {"treffer": 4}), "kampfschrei": (kampfschrei, 8, 10, False, {"treffer": 3}),
@@ -760,7 +773,7 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "ruhe_2h": (ruhe_2h, 6, 6, True, {}), "gehen_2h": (gehen_2h, 8, 8, True, {}), "laufen_2h": (laufen_2h, 8, 11, True, {})}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
-KAMPF = {"angriff", "block", "angriff2h", "treffer", "ausweichen", "angriff_axt", "angriff_dolch", "zauber", "angriff_links", "segen", "nova", "stich", "hieb2h", "stich2h", "zauber_stab", "bogen",
+KAMPF = {"doppelhieb", "angriff", "block", "angriff2h", "treffer", "ausweichen", "angriff_axt", "angriff_dolch", "zauber", "angriff_links", "segen", "nova", "stich", "hieb2h", "stich2h", "zauber_stab", "bogen",
          "armbrust1h", "dolchwurf", "schildstoss", "kampfschrei", "zielen", "schiessen", "nachladen", "donnerwelle", "glutsphaere", "stabschlag", "faustschlag"}
 if AUS.get("gangtempo"):                                                                         # "gangtempo": 0.5 – alle Gehbewegungen (gehen, gehen_2h, …) mit langsameren Schritten
     BEWEGUNGEN = {k: ((f, n, max(1, round(r * float(AUS["gangtempo"]))), sl, z) if k.startswith("gehen") else (f, n, r, sl, z)) for k, (f, n, r, sl, z) in BEWEGUNGEN.items()}

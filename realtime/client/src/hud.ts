@@ -6,6 +6,7 @@
  */
 import { blockieren, blockierteNamen } from "./welt";
 import { dropsAn, dropsSetzen, daecherAus, daecherAusSetzen } from "./skills";
+import { musikAus, musikAusSetzen } from "./musik";
 import { eigenesLevel } from "./skills";
 import { profilZeigen } from "./held";
 import { HELDEN, stufeAusEp, EP_BIS, STUFE_MAX } from "../../shared/config";
@@ -178,6 +179,7 @@ export function menueTafel(zu: () => void) {
     <div class="einst">
       <button type="button" data-t="drops" class="schalter${dropsAn() ? " an" : ""}" role="switch" aria-checked="${dropsAn()}"><span>XP-Drops anzeigen</span><i class="regler"></i></button>
       <button type="button" data-t="daecher" class="schalter${daecherAus() ? " an" : ""}" role="switch" aria-checked="${daecherAus()}"><span>Dächer immer ausblenden</span><i class="regler"></i></button>
+      <button type="button" data-t="musik" class="schalter${musikAus() ? "" : " an"}" role="switch" aria-checked="${!musikAus()}"><span>Musik</span><i class="regler"></i></button>
     </div>
     <button type="button" class="weltknopf" data-t="welt"><span>Welt</span><b>Riftmere 1</b><i>›</i></button>
     <button type="button" class="weltknopf" data-t="blockiert"><span>Blockierte Spieler</span><b>${blockierteNamen().length}</b><i>›</i></button>
@@ -188,8 +190,11 @@ export function menueTafel(zu: () => void) {
     if (w === "welt") { weltenFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "blockiert") { blockiertFenster(f.querySelector(".tafel") as HTMLElement); return; }
     if (w === "daecher") { daecherAusSetzen(!daecherAus()); t.classList.toggle("an", daecherAus()); t.setAttribute("aria-checked", String(daecherAus())); return; }
+    if (w === "musik") { musikAusSetzen(!musikAus()); t.classList.toggle("an", !musikAus()); t.setAttribute("aria-checked", String(!musikAus())); return; }
     if (w === "drops") { dropsSetzen(!dropsAn()); t.classList.toggle("an", dropsAn()); t.setAttribute("aria-checked", String(dropsAn())); return; }
-    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") void kontoAbmelden(); else if (w === "hin") kontoAnmelden(); };
+    if (w === "zu") schliessen(); else if (w === "koop") { removeEventListener("keydown", esc, true); f.innerHTML = ""; gruppenTafel(zu); } else if (w === "profil") { removeEventListener("keydown", esc, true); f.innerHTML = ""; kontoFenster(zu); } else if (w === "start") location.href = "../"; else if (w === "ab") { const n = wechselWarten(); /* wie beim Weltenwechsel: erst 10 s nach dem letzten Kampf (25.11.2026) */
+      if (n > 0) { const alt = t.innerHTML; t.innerHTML = `Im Kampf <small>Abmelden in ${n} s möglich</small>`; t.classList.add("gesperrt"); setTimeout(() => { if (t.isConnected) { t.innerHTML = alt; t.classList.remove("gesperrt"); } }, 2200); }
+      else void kontoAbmelden(); } else if (w === "hin") kontoAnmelden(); };
 }
 
 /* ---------- Blockierte Spieler: Liste mit „Aufheben“ (blockieren und melden geht über den Namen im Chat) ---------- */

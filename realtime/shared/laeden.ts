@@ -5,10 +5,10 @@
  */
 import { GEGENSTAENDE, Seltenheit } from "./gegenstaende";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker";
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei";
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
-  gruss: string; tschuess: string; waren: Ware[]; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean }
+  gruss: string; tschuess: string; waren: Ware[]; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean }
 /** Währung */
 export const WAEHRUNG = "splitter";
 /** Vorläufige Preise nach Seltenheit (Splitter) */
@@ -35,11 +35,17 @@ export const LAEDEN: Record<LadenId, Laden> = {
   handwerker: { id: "handwerker", name: "Werkzeug des Handwerkers", spruch: "Gutes Werkzeug ist die halbe Arbeit.", haendler: "Der Handwerker", modell: "npc.schmied", x: 6471.6, y: 6431.3, blick: [0, 1], vor: [6471.6, 6432.9], figurInWelt: true,
     gruss: "Gutes Werkzeug ist die halbe Arbeit. Was brauchst du?", tschuess: "Dann eben ein andermal. Pass auf deine Daumen auf.",
     waren: [ware("holzbeil_training"), ware("holzbeil_einfach"), ware("spitzhacke_training"), ware("spitzhacke_einfach"), ware("hammer")] /* die besseren über das Handwerk */ },
+  /* Die Bäckerei der Waldmark (Phase 2): Grete Korn verkauft Brot – erst, wenn die Mühle wieder mahlt (Quest A3 „Die Mühle steht still“) */
+  baeckerei: { id: "baeckerei", name: "Gretes Backstube", spruch: "Frisch aus dem Ofen – solange das Mehl reicht.", haendler: "Grete Korn", modell: "npcfrau3d", x: 6454, y: 6450.1, blick: [0, 1], vor: [6454, 6451.5], figurInWelt: true,
+    gruss: "Brot? Heute wieder, dank dir. Nimm, solange es warm ist.", tschuess: "Komm wieder, wenn der Magen knurrt.", waren: [{ g: "brot", preis: 8 }],
+    wenn: { quest: "osthof_die_muehle_steht_still", phase: "fertig" }, zu: "Die Bäckerei hat geschlossen. Ohne Mehl backt Grete Korn nicht – die Mühle im Osthof steht still." },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
     gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
 export const LADEN_LISTE = Object.values(LAEDEN);
+/** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
+export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨" };
+export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞" };
 /** So nah muss man stehen, um zu kaufen (Felder vom Händler) */
 export const KAUF_WEIT = 4;
