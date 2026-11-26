@@ -151,5 +151,8 @@
  {"id":"fw_busch_207","objekt":"stil_busch_02","x":121.5,"y":442.5,"s":0.74},
  {"id":"fw_birke_209","objekt":"stil_birke_01","x":237.5,"y":410.5,"s":0.77},
  {"id":"fw_busch_210","objekt":"stil_busch_02","x":225.5,"y":418.5,"s":0.87},
- {"id":"fw_busch_216","objekt":"stil_busch_02","x":62.5,"y":411.5,"s":0.94}
+ {"id":"fw_busch_216","objekt":"stil_busch_02","x":62.5,"y":411.5,"s":0.94},
+ {"id":"rast_heidrast_grauwacht_feuer","objekt":"dorf_festfeuer_01","x":228,"y":424.25},
+ {"id":"rast_heidrast_grauwacht_stamm_1","objekt":"wald_baumstamm_01","x":225,"y":425.9},
+ {"id":"rast_heidrast_grauwacht_stamm_2","objekt":"wald_baumstamm_02","x":231,"y":422.5,"spiegeln":true}
 ]

@@ -10,7 +10,15 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 294.5,
+    "y0": 35.7,
+    "x1": 316.5,
+    "y1": 38.3
+   }
+  ]
  },
  "interaktionen": [
   {
@@ -33,6 +41,60 @@
    "abgleich": "keiner",
    "daten": {
     "text": "Ein Schild der Wacht: „Südstraße nach Kielmund. Ab hier ohne Geleit – Gefahrenstufe 20.“"
+   }
+  },
+  {
+   "id": "wegweiser_weidenhain_sued_lesen",
+   "x": 16,
+   "y": 11.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Kielmund ↓ · Nach Weidenhain ↑",
+    "ziele": [
+     "Nach Kielmund ↓",
+     "Nach Weidenhain ↑"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "wegweiser_glutstrasse_bruecke_lesen",
+   "x": 330,
+   "y": 43.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Glutbrunn → · Nach Graufurt ↖",
+    "ziele": [
+     "Nach Glutbrunn →",
+     "Nach Graufurt ↖"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "rast_glutstrasse",
+   "art": "lesen",
+   "x": 448,
+   "y": 116.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
+  },
+  {
+   "id": "rast_suedstrasse",
+   "art": "lesen",
+   "x": 42,
+   "y": 260.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
    }
   }
  ]

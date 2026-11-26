@@ -69,6 +69,22 @@
     "fisch": "seeaal",
     "stufe": 45
    }
+  },
+  {
+   "id": "wegweiser_kielmund_nord_lesen",
+   "x": 8,
+   "y": 87.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Weidenhain ↑ · Nach Möwenbucht ↖ · Nach Kielmund ↙",
+    "ziele": [
+     "Nach Weidenhain ↑",
+     "Nach Möwenbucht ↖",
+     "Nach Kielmund ↙"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
   }
  ]
 }

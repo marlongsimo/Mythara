@@ -23,15 +23,15 @@ const GRUND_H = JSON.parse(readFileSync(join(WELT, "festland", "ostufer_hoehen.j
 /* Orte (Gebietsfelder) */
 export const TURM = { x: 56, y: 118 }, HAIN = { x: 70, y: 215 }, HALDE = { x: 78, y: 280 };
 export const WELTENBAEUME = [[66, 211], [74, 213], [70, 221]], URGESTEIN = [[74, 276], [80, 279], [76, 285]];
-const PFAD = [[0, 115.5], [20, 114], [40, 118], [52, 121], [56, 124]], PFAD2 = [[40, 118], [50, 160], [62, 198], [68, 208]], PFAD3 = [[64, 200], [72, 248], [76, 270]];
+const PFAD = [[0, 115.5], [20, 114], [40, 118], [52, 121], [56, 124]], PFAD2 = [[40, 118], [50, 160], [62, 198], [68, 208]], PFAD3 = [[64, 200], [72, 248], [76, 270]], PFAD4 = [[72, 248], [72, 270], [72, 282], [FORM.PASS[0][0] - 6784, FORM.PASS[0][1] - 6400]];   /* zum Pass (#89) */
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy || 1))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 const wiese = (x, y) => Math.sin(x / 17 + y / 23 + 0.7) + 0.7 * Math.sin(y / 13 - x / 19) + 0.35 * welle(x, y);   /* > 0: Wiese, sonst Wald */
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, w = welle(cx, cy), a = FORM.art(X0 + cx, Y0 + cy); let c;
-  if (a !== "pass" && x > B - 14 && FORM.passWeg(X0 + cx, Y0 + cy)) c = "e";   /* der Weg läuft bis an den Rand weiter */
+  if (FORM.passWeg(X0 + cx, Y0 + cy) && !"~wM".includes(GRUND[y][x])) c = "e";   /* der Passweg: vom Inneren durch den Grat bis an den Rand (#89) */
   else if (a === "pass") c = FORM.passWeg(X0 + cx, Y0 + cy) ? "e" : w > 0.5 ? "g" : "y";   /* der Pass in die Glutsande: Weg, Geröll, Steppe */
   else if (a === "aussen") c = GRUND[y][x];
   else if (a === "F" || a === "g") c = "~wM".includes(GRUND[y][x]) && FORM.abstand(X0 + cx, Y0 + cy) > 0 ? GRUND[y][x] : a;   /* der Grat geht nicht ins Meer hinaus */
-  else if (strecke(cx, cy, PFAD) < 1.3 || strecke(cx, cy, PFAD2) < 1.1 || strecke(cx, cy, PFAD3) < 1.1) c = "e";
+  else if (strecke(cx, cy, PFAD) < 1.3 || strecke(cx, cy, PFAD2) < 1.1 || strecke(cx, cy, PFAD3) < 1.1 || strecke(cx, cy, PFAD4) < 1.1) c = "e";
   else if (Math.hypot(cx - HALDE.x, cy - HALDE.y) < 9 + w) c = "g";
   else if (Math.hypot(cx - TURM.x, cy - TURM.y) < 7 + 0.5 * w) c = w > 0.6 ? "g" : ".";
   else if (Math.hypot(cx - HAIN.x, cy - HAIN.y) < 10 + w) c = w > 0.4 ? "," : ".";
@@ -43,7 +43,7 @@ const dinge = [o("graufurt_turm_ost_01", TURM.x, TURM.y), o("turm_gruenlicht_01"
 for (const [wx, wy] of FORM.gratPunkte(8)) { const x = wx - X0, y = wy - Y0; if (x < 1 || y < 1 || x > B - 1 || y > H - 1) continue; if (g[Math.floor(y)][Math.floor(x)] !== "F") continue;
   dinge.push(o("hoehle_felswand_01", x + (wurf() - 0.5) * 1.5, y + (wurf() - 0.5) * 1.5, { s: +(0.8 + wurf() * 0.6).toFixed(2), ...(wurf() < 0.5 ? { spiegeln: true } : {}) })); }
 const frei = (x, y, ab) => !dinge.some((d) => Math.hypot(d.x - x, d.y - y) < ab);
-const wegNah = (x, y) => strecke(x, y, PFAD) < 3 || strecke(x, y, PFAD2) < 3 || strecke(x, y, PFAD3) < 3 || Math.hypot(x - TURM.x, y - TURM.y) < 11 || Math.hypot(x - HAIN.x, y - HAIN.y) < 12 || Math.hypot(x - HALDE.x, y - HALDE.y) < 11;
+const wegNah = (x, y) => strecke(x, y, PFAD) < 3 || strecke(x, y, PFAD2) < 3 || strecke(x, y, PFAD3) < 3 || strecke(x, y, PFAD4) < 3 || Math.hypot(x - TURM.x, y - TURM.y) < 11 || Math.hypot(x - HAIN.x, y - HAIN.y) < 12 || Math.hypot(x - HALDE.x, y - HALDE.y) < 11;
 /* Bäume: dicht auf Waldboden, vereinzelt auf den Wiesen (innen); außen am Grat ein lockerer Waldsaum, der ins Festland ausläuft */
 const ARTEN = ["stil_eiche_02", "stil_birke_01", "stil_linde_01", "stil_eiche_02", "stil_busch_01", "stil_busch_02"];
 for (let i = 0; i < 60000; i++) { const x = 1 + wurf() * (B - 2), y = 1 + wurf() * (H - 2), c = g[Math.floor(y)][Math.floor(x)], d = FORM.abstand(X0 + x, Y0 + y);

@@ -152,6 +152,22 @@
    "daten": {
     "text": "Ein Fischplatz am Strom. Im braunen Wasser zieht ein Glutwels seine Kreise."
    }
+  },
+  {
+   "id": "wegweiser_glutbrunn_west_lesen",
+   "x": 196,
+   "y": 183.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Glutbrunn → · Nach Ostufer ↖ · Nach Graufurt ←",
+    "ziele": [
+     "Nach Glutbrunn →",
+     "Nach Ostufer ↖",
+     "Nach Graufurt ←"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
   }
  ]
 }

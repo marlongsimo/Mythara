@@ -95,6 +95,21 @@
      9660
     ]
    }
+  },
+  {
+   "id": "wegweiser_ende_des_grases_lesen",
+   "x": 6,
+   "y": 413.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Ostufer ↖ · Nach Glutbrunn ↘",
+    "ziele": [
+     "Nach Ostufer ↖",
+     "Nach Glutbrunn ↘"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
   }
  ]
 }

@@ -41,6 +41,22 @@
    "daten": {
     "text": "Ein Wall aus Dornen, mannshoch und dicht verflochten. Dahinter läuft der alte Weg nach Grauwacht weiter. Mit einer Axt ließe er sich roden."
    }
+  },
+  {
+   "id": "ort_wegweiser_nordsaum_knick_lesen",
+   "art": "lesen",
+   "x": 311,
+   "y": 49.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wegweiser: Nach Grauwacht ↑ · Nach Graufurt ↓ · Nach Waldmark ←",
+    "ziele": [
+     "Nach Grauwacht ↑",
+     "Nach Graufurt ↓",
+     "Nach Waldmark ←"
+    ]
+   }
   }
  ],
  "kollision": {

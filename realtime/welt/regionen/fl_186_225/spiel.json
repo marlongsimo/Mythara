@@ -173,6 +173,18 @@
     "fisch": "seeaal",
     "stufe": 45
    }
+  },
+  {
+   "id": "rast_kuestenweg",
+   "art": "lesen",
+   "x": 348,
+   "y": 28.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
   }
  ]
 }

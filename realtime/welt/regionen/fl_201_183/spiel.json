@@ -67,6 +67,34 @@
    "daten": {
     "text": "Der Schafpferch. Im Zaun hängen Wollfetzen – und an einer Stelle ist er von außen eingedrückt."
    }
+  },
+  {
+   "id": "wegweiser_heidrast_lesen",
+   "x": 171,
+   "y": 25.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Grauwacht ↗ · Nach Hügelgräber ↖ · Nach Graufurt ↓",
+    "ziele": [
+     "Nach Grauwacht ↗",
+     "Nach Hügelgräber ↖",
+     "Nach Graufurt ↓"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
+  },
+  {
+   "id": "rast_nordsaumweg",
+   "art": "lesen",
+   "x": 258,
+   "y": 378.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
   }
  ]
 }

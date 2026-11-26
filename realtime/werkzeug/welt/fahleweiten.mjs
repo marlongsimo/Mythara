@@ -38,7 +38,8 @@ const W_NORD = [NORDSAUM_ENDE, [6694, 6300], [6682, 6246], [6662, 6182], [6648, 
 const W_GRAUWACHT = [[6604, 5866], [6622, 5846], [6648, 5826], [6676, 5812], [6700, 5800], [6702, 5792]];
 const W_GRAEBER = [[6584, 5872], [6556, 5858], [6520, 5830], [6494, 5800], [6476, 5786]];
 const W_TAL = [[6444, 5770], [6400, 5778], [6344, 5786], [6288, 5784], [6252, 5780]];
-for (const w of [W_NORD, W_GRAUWACHT, W_GRAEBER, W_TAL]) weg(w, 1.8);
+for (const w of [W_NORD, W_GRAUWACHT]) weg(w, 2.2, "k");   /* Straße zwischen Großstädten (#89) */
+for (const w of [W_GRAEBER, W_TAL]) weg(w, 1.8);
 
 /* ───── Grenzposten der Wacht (verfallen, Deserteure-Lager) ───── */
 { const [cx, cy] = ORTE.grenzposten; male(cx - 16, cy - 12, cx + 16, cy + 12, (x, y) => Math.hypot((x - cx) / 15, (y - cy) / 11) < 1 + 0.06 * welle(x, y) ? (welle(x, y) > 0.9 ? "g" : ".") : null);

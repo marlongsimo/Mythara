@@ -268,6 +268,18 @@ export function winde() {
   for (let i = 0; i < 9; i++) t.add(new THREE.TorusGeometry(0.05, 0.013, 4, 8), EISEN_HELL, matrix(0.2, 0.95 - i * 0.1, 0.27 + i * 0.03, 0, i % 2 ? Math.PI / 2 : 0, 0, 1, 1.5, 1), { muster: "metall" });
   return { teile: t, flammen: new Teile("glatt") };
 }
+/** Wegweiser (#89): Pfahl mit drei Pfeilbrettern in verschiedene Richtungen, Kappe, Stein am Fuß */
+export function wegweiser() {
+  const t = new Teile("holz");
+  t.add(new THREE.CylinderGeometry(0.07, 0.09, 2.1, 8), "#6a4a2e", matrix(0, 1.05, 0), { muster: "holz" });
+  t.add(new THREE.ConeGeometry(0.13, 0.14, 4), "#4e3622", matrix(0, 2.16, 0, 0, Math.PI / 4, 0), { muster: "holz" });
+  for (const [h, w, l] of [[1.85, 0.5, 0.9], [1.55, -0.7, 0.8], [1.25, 2.2, 0.85]] as const) {
+    const brett = new Teile("holz"); brett.box(l, 0.16, 0.04, l / 2 - 0.05, 0, 0, "#9a7448", 0, { muster: "holz", schwanken: 0.04 });
+    brett.add(new THREE.ConeGeometry(0.11, 0.16, 3), "#9a7448", matrix(l + 0.02, 0, 0, 0, 0, -Math.PI / 2), { muster: "holz" });
+    t.add(brett.geometrie(), "#ffffff", matrix(0, h, 0, 0, w, 0), { muster: "holz" }); }
+  t.add(bausch(3, 0.25, 31), "#8a8378", matrix(0.05, 0.08, 0.05, 0, 0, 0, 0.32, 0.16, 0.28), { muster: "stein" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
 /** Signalfeuer: eiserne Schale auf Dreibein, darin ein Splitterkern mit grüner, unbeleuchteter Flamme */
 export function signalfeuer() {
   const t = new Teile("metall"), l = new Teile("glatt");
@@ -298,7 +310,7 @@ function flammenNetz(t: Teile) { const m = new THREE.Mesh(t.geometrie(), new THR
 
 export function alle(): Record<string, THREE.Group> {
   const aus: Record<string, THREE.Group> = {};
-  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer], ["kaefig", kaefig], ["federn", federn], ["splitterbecken", splitterbecken], ["steinsaeule", steinsaeule], ["felswand", felswand], ["winde", winde], ["signalfeuer", signalfeuer], ["gruenlicht", gruenlicht]] as const) {
+  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer], ["kaefig", kaefig], ["federn", federn], ["splitterbecken", splitterbecken], ["steinsaeule", steinsaeule], ["felswand", felswand], ["winde", winde], ["wegweiser", wegweiser], ["signalfeuer", signalfeuer], ["gruenlicht", gruenlicht]] as const) {
     const g = new THREE.Group(); g.name = id; const r = f(); if (!r.teile.leer) g.add(netz(r.teile, "modell")); if (!r.flammen.leer) g.add(flammenNetz(r.flammen)); aus[id] = g; }
   const w = wasserrad(), g = new THREE.Group(); g.name = "wasserrad"; g.add(netz(w.teile, "modell")); const rad = netz(w.rad, "rad"); rad.position.y = w.mitte; g.add(rad); aus.wasserrad = g;
   return aus;

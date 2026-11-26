@@ -45,5 +45,6 @@
  {"id":"ks_busch_71","objekt":"stil_busch_01","x":23.5,"y":21.5,"s":0.92},
  {"id":"ks_laub_oliv_77","objekt":"stil_laub_oliv","x":1.5,"y":76.5,"s":0.71},
  {"id":"ks_busch_84","objekt":"stil_busch_01","x":14.5,"y":93.5,"s":0.98},
- {"id":"ks_laub_oliv_88","objekt":"stil_laub_oliv","x":10.5,"y":48.5,"s":0.76}
+ {"id":"ks_laub_oliv_88","objekt":"stil_laub_oliv","x":10.5,"y":48.5,"s":0.76},
+ {"id":"wegweiser_kielmund_nord","objekt":"welt_wegweiser_01","x":8.5,"y":86.5}
 ]

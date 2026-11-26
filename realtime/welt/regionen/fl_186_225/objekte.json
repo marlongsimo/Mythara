@@ -22,5 +22,8 @@
  {"id":"ks_truemmer_12","objekt":"k_truemmer","x":326.5,"y":64.5},
  {"id":"ks_wald_baumstamm_13","objekt":"wald_baumstamm_02","x":335,"y":61,"spiegeln":true},
  {"id":"ks_kiste_14","objekt":"k_kiste","x":333,"y":65},
- {"id":"ks_faesser_15","objekt":"k_faesser","x":324,"y":60}
+ {"id":"ks_faesser_15","objekt":"k_faesser","x":324,"y":60},
+ {"id":"rast_kuestenweg_feuer","objekt":"dorf_festfeuer_01","x":348,"y":26.25},
+ {"id":"rast_kuestenweg_stamm_1","objekt":"wald_baumstamm_01","x":345,"y":27.9},
+ {"id":"rast_kuestenweg_stamm_2","objekt":"wald_baumstamm_02","x":351,"y":24.5,"spiegeln":true}
 ]

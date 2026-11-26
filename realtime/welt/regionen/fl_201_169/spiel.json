@@ -266,6 +266,18 @@
      9658
     ]
    }
+  },
+  {
+   "id": "rast_heidrast_grauwacht",
+   "art": "lesen",
+   "x": 228,
+   "y": 426.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz am Weg. Die Glut im Feuer ist noch warm – hier kann man kochen.",
+    "station": "feuer"
+   }
   }
  ]
 }

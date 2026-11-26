@@ -41,7 +41,7 @@ lies("kiel_quelle", 6460, 7194, "Ein stiller See zwischen Binsen. Hier entspring
 
 /* ───── Südstraße ───── */
 const SUED = [[6444, 6752.5], [6446, 6790], [6452, 6860], [6460, 6940], [6466, 7020], [6470, 7100], [6466, 7180], [6462, 7230], [6450, 7270], [6436, 7296]];
-weg(SUED, 2.0);
+weg(SUED, 2.2, "k");   /* Straße zwischen Großstädten (Waldmark/Weidenhain → Kielmund, #89) */
 ding("k_banner_rot", ORTE.suedstrasse[0] + 2.6, ORTE.suedstrasse[1], { id: "suedstrasse_schild" });
 lies("suedstrasse_schild", ORTE.suedstrasse[0] + 2.6, ORTE.suedstrasse[1] + 1.4, "Ein Schild der Wacht: „Südstraße nach Kielmund. Ab hier ohne Geleit – Gefahrenstufe 20.“");
 npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sperre)", x: ORTE.suedstrasse[0] - 2, y: ORTE.suedstrasse[1] });

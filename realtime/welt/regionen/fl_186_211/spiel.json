@@ -148,6 +148,21 @@
    "daten": {
     "text": "Der Kräuterhof. Beete voller Salzkraut, Strandflieder und Meerfenchel – ein zweites Kräutergebiet."
    }
+  },
+  {
+   "id": "wegweiser_moewenbucht_lesen",
+   "x": 282,
+   "y": 421.2,
+   "radius": 1.8,
+   "daten": {
+    "text": "Ein Wegweiser: Nach Kielmund ↘ · Nach Leuchtturm ↖",
+    "ziele": [
+     "Nach Kielmund ↘",
+     "Nach Leuchtturm ↖"
+    ]
+   },
+   "art": "lesen",
+   "abgleich": "keiner"
   }
  ]
 }

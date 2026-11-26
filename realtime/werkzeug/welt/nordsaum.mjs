@@ -26,7 +26,7 @@ const BAUM = ["stil_tanne_01", "stil_tanne_02", "stil_eiche_01", "stil_eiche_02"
 const g = Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => { const cx = x + 0.5, cy = y + 0.5, d = strecke(cx, cy, WEG);
   if (imFluss(cx, cy)) return "~";
   if (d < 1.4) return "e";
-  if (strecke(cx, cy, NORDWEG) < 0.9 + 0.2 * welle(cx, cy)) return cy < DORN_Y + 2 && welle(cx, cy) > 0.4 ? "t" : "e";   /* zugewachsen: Erde mit Torf und Gras */
+  if (strecke(cx, cy, NORDWEG) < 0.9 + 0.2 * welle(cx, cy)) return "e";   /* zugewachsen: Erde mit Torf und Gras */
   if (d < 2.6 || Math.hypot(cx - TURM[0], cy - TURM[1]) < 6 + welle(cx, cy)) return welle(cx, cy) > 1.1 ? "," : ".";
   return "f"; }));
 let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(stil|k)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });
