@@ -18,8 +18,11 @@ import { benutzt, benutzen } from "../benutzen";
 import type { Welt3D } from "./motor";
 /** Ergebnis eines Rezepts zum Anzeigen: „ladung:wegstein“ (Splitterbinden) ist kein Gegenstand, sondern eine Ladung für ihn */
 const ladungVon = (r: { ergebnis: string }): string => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : "");
-const ergName = (r: { ergebnis: string }): string => { const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
-const ergBild = (r: { ergebnis: string }): string => ladungVon(r) || r.ergebnis;
+/* Phase 5b: „ladung:@waffe“ / „entladen:@waffe“ meinen die angelegte Waffe (Rezept.fuer: ihre Seltenheit) */
+const SELTEN_TEXT: Record<string, string> = { selten: "seltene", episch: "epische", legendaer: "legendäre", mythisch: "mythische" };
+const ergName = (r: { ergebnis: string; fuer?: string }): string => { if (r.ergebnis === "entladen:@waffe") return "Waffe entladen (die Splitter verfallen)"; if (r.ergebnis === "ladung:@waffe") return `Ladung für die ${SELTEN_TEXT[r.fuer || ""] || ""} Waffe`.replace("  ", " ");
+  const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
+const ergBild = (r: { ergebnis: string }): string => (r.ergebnis.endsWith(":@waffe") ? inventar().angelegt.waffe || "splitter" : ladungVon(r) || r.ergebnis);
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; werken?(wahl: string[], url?: string): number }

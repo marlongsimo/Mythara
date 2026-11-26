@@ -438,10 +438,26 @@ export function startAusruestung(w: Startwaffe): Partial<Record<Platz, string>> 
   return w === "schwert" ? { waffe: "ritterschwert", nebenhand: "rundschild" } : w === "bogen" ? { waffe: "jagdbogen", brust: "lederpanzer" } : { waffe: "hirtenstab", brust: "magiepanzer" };
 }
 export const RUCKSACK_PLAETZE = 24;
-/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n } (stapelbare Gegenstände) */
-export type Fach = string | { g: string; n: number };
+/** Daten je Exemplar (Phase 5a): ladungen = Ladungen einer Waffe (Splitterbinden, Phase 5b); gebunden = Questlohn, gehört dem Spieler (nicht handelbar, #65) */
+export interface Daten { ladungen?: number; gebunden?: boolean }
+/** Ein Rucksackfach: eine Gegenstands-id oder ein Stapel { g, n }, mit Daten { g, n, d } (stapeln nur mit gleichen Daten; Geladenes nie) */
+export type Fach = string | { g: string; n: number; d?: Daten };
 export const fachG = (f: Fach): string => (typeof f === "string" ? f : f.g);
 export const fachN = (f: Fach): number => (typeof f === "string" ? 1 : f.n);
+export const fachD = (f: Fach): Daten | undefined => (typeof f === "string" ? undefined : f.d);
+/** Daten aus unbekannter Quelle prüfen (Speicherstand, Bank, Boden): nur bekannte Felder, Ladungen 1 … 1000; leer = undefined */
+export function datenPruefen(roh: unknown): Daten | undefined { if (!roh || typeof roh !== "object") return undefined; const o = roh as Record<string, unknown>, d: Daten = {};
+  const l = Math.floor(Number(o.ladungen)); if (l > 0) d.ladungen = Math.min(1000, l); if (o.gebunden === true) d.gebunden = true; return Object.keys(d).length ? d : undefined; }
+/** Gleiche Daten (beide ohne = gleich) */
+export const datenGleich = (a?: Daten, b?: Daten): boolean => (a?.ladungen || 0) === (b?.ladungen || 0) && Boolean(a?.gebunden) === Boolean(b?.gebunden);
+/** Geladen (Splitterbinden): Ladungen > 0 */
+export const geladen = (d?: Daten): boolean => Boolean(d && d.ladungen && d.ladungen > 0);
+/** Darf das gehandelt werden? Nicht: Questgegenstände (untauschbar), gebundener Questlohn, geladene Waffen */
+export const handelbar = (g: string, d?: Daten): boolean => Boolean(GEGENSTAENDE[g]) && !GEGENSTAENDE[g].untauschbar && !(d && (d.gebunden || geladen(d)));
+/** Darf das auf den Boden? Geladene Waffen nicht (Kanon) */
+export const ablegbar = (_g: string, d?: Daten): boolean => !geladen(d);
+/** Name zum Anzeigen: geladene Waffen heißen „… (s)“ */
+export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? GEGENSTAENDE[g].name : g) + (geladen(d) ? " (s)" : "");
 
 /* ---------- Verbrauchsgegenstände (Tränke) ----------
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.

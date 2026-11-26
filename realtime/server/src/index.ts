@@ -22,7 +22,8 @@ import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfP
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
-import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen } from "./inventar";
+import { geladen as istGeladen } from "../../shared/gegenstaende";
 import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei, schalter } from "./quests";
 import { weltJeSpieler, instanzAus, bossSieg } from "./bosse";
 import { ZIELSCHEIBE_BIS } from "../../shared/sim";
@@ -273,8 +274,8 @@ function kampfVerbindung(ws: WebSocket, req: { url?: string }): void {
         if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
           const [aktiv, profil, v1] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>, heldV1Lesen(sb, nutzer)]);
           if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); if (p.stilVorab !== undefined) { v1.stil = stilPruefen(p.stilVorab); p.stilVorab = undefined; } p.v1 = v1; } /* Stil, der während des Ladens kam, gilt (sonst stand Akkurat im Browser, gerechnet wurde Ausgewogen) */ /* Kampfregeln v2: eigener Held mit Skill-XP und geprüfter Ausrüstung */
-          if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(iv.inv.wirkungen); /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
-            p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(inv.wirkungen); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
+          if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(iv.inv.wirkungen); p.v1.geladen = istGeladen(iv.inv.angelegtD && iv.inv.angelegtD.waffe); /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
+            p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(inv.wirkungen); p.v1.geladen = istGeladen(inv.angelegtD && inv.angelegtD.waffe); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
           const typ = aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : held, name = (profil[0] && profil[0].handle) || "Wanderer";
           /* Während auf die Datenbank gewartet wurde, kann die Seite schon wieder weg sein (Neuladen): dann keinen Helden mehr hineinsetzen – er bliebe sonst als Geist stehen */
           if (ws.readyState !== WebSocket.OPEN || !plaetze.has(p)) { console.log("Welt: Anmeldung verworfen – Verbindung schon zu"); return; }
@@ -379,6 +380,7 @@ setInterval(() => {
         const t = !frei ? "Die Wachen lassen hier nur üben, wer für sie arbeitet." : ev.art !== "fern" ? "An der Zielscheibe übt man mit Pfeil und Bogen." : fern >= ZIELSCHEIBE_BIS ? "Hier lernst du nichts mehr." : "";
         if (t) { q.zielHinweis = jetzt; systemAn(nutzer, t); } } }
     for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
+    for (const ev of z.ev) if (ev.a === "hieb") { const q = [...Z.spieler].find((o) => o.heldId === ev.id); if (q && q.v1 && q.v1.geladen && q.kampf && q.kampf.nutzer) waffeLadungVerbrauchen(sb, q.kampf.nutzer); } /* Phase 5b: jeder Angriff mit geladener Waffe kostet eine Ladung, auch ein Fehlschlag */
     for (const ev of z.ev) if (ev.a === "welle") { const I = instanzAus(ev.instanz); if (I && I.def.welle) erlegt(I.nutzer, I.def.welle); } /* Instanz: eine Welle ist gefallen (B4: Versammlungshalle) */
     for (const ev of z.ev) if (ev.a === "boss") for (const id of ev.ids) { const q = [...Z.spieler].find((o) => o.heldId === id), nutzer = q && q.kampf && q.kampf.nutzer; /* Bosszähler und Bestzeit je Konto (Migration 050) */
       if (nutzer) void bossSieg(sb, nutzer, ev.typ, ev.sek).then((t) => systemAn(nutzer, t)).catch((e) => console.error("Bosszähler:", (e as Error).message)); }

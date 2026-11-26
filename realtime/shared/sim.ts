@@ -228,6 +228,7 @@ export class Sim {
       const rest = von.xpRest || (von.xpRest = { ...NULL_XP });
       for (const k of SKILLS) { const rate = (ziel[k] || 0) + (k === "lp" ? LP_XP_JE_SCHADEN : 0); if (!rate) continue; rest[k] += echt * rate; const n = Math.floor(rest[k] + 1e-9); if (n) { rest[k] -= n; von.xpNeu[k] += n; von.kw.skills[k] += n; } } }
     z.lp -= m; z.ruhe = 0; this.ev.push(art ? { a: "schaden", id: z.id, n: m, art } : { a: "schaden", id: z.id, n: m });
+    if (z.held && z.kw && z.kw.set && !art && z.lp > 0 && this.zf() < z.kw.set.chance) this.heilen(z, Math.round(m * z.kw.set.anteil)); /* Set-Bonus (Phase 5d, Rabenset): ein Treffer, der Schaden macht, heilt mit chance um anteil – nie über das Leben */
     if (!z.held) { z.wach = true; if (von && von.held && !z.zielId) z.zielId = von.id; this.wecken(z); }
     if (z.lp > 0 && z.lp < z.max * 0.4 && this.blinzler.delete(z.id)) { /* fast besiegt: huscht ein Stück vom Angreifer weg */ const v = von || this.ich, dx = z.x - v.x, dy = z.y - v.y, l = Math.hypot(dx, dy) || 1, a = Math.atan2(dy / l, dx / l) + (this.zf() - 0.5) * 1.2;
       const p = naechstFrei({ x: z.x + Math.cos(a) * 5, y: z.y + Math.sin(a) * 5 }); z.x = p.x; z.y = p.y; z.pfad = []; z.aushol = 0; this.ev.push({ a: "blinzeln", id: z.id, x: p.x, y: p.y }); }
