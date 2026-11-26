@@ -5,14 +5,14 @@
  * danach verkauft Alma Welspastete (Schalter alma_pastete). Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Taverne und Fischplatz aus #36, Alma aus #37, Fischen/Kochen 45 im Spiel).
- * Stellen vorläufig in Graufurt. Fischen meldet { art: "sammeln", ziel: "<fischart>" } wie in „Schilf und Schnur“. Liste: doku/quests/d-bausteine.md.
+ * Stellen aus der Welt (#36, Region graufurt). Fischen meldet { art: "sammeln", ziel: "<fischart>" } wie in „Schilf und Schnur“. Liste: doku/quests/d-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 
 export const D3 = "graufurt_wels_im_trueben";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-/** vorläufig: Alma vor der Taverne, Fischplatz am Fährhafen (Graufurt, Ursprung 6656 | 6400) */
-const ALMA: [number, number] = [6696.5, 6520.5], HAFEN: [number, number] = [6714.5, 6518.5];
+/** Alma vor der Taverne „Zur Furt“ (Tür 44 | 140,6), Fischplatz am Fährhafen (61,4 | 126) – Graufurt, Ursprung 6656 | 6400 */
+const ALMA: [number, number] = [6700.5, 6542.5], HAFEN: [number, number] = [6717.4, 6526];
 const HILFE = ["Drei Welse. Graufurter, aus dem Fährhafen – keine Bachlinge, keine Barsche. Die brauchen Geduld und Fischen 45.",
   "Dann an meinen Herd. Zwei Pasteten. Der Teig liegt bereit, den Rest machst du.", "Und wenn sie mir schmecken, kommen sie auf die Karte."];
 

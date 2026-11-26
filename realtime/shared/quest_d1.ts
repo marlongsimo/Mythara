@@ -3,20 +3,20 @@
  * Grundlage: doku/konzepte/phase-7.md. Fährmann Kord Weller (Fährhaus Graufurt), Hauptfrau Merit Stahl (Bergfried), die Schmiedin der Stadt.
  * Merit gibt die Erlaubnis gegen das Wappen aus A2. 6 Splittereisenerz in der Furtklamm, an der Esse Barren, am Amboss 8 Kettenglieder (Quest-Rezept),
  * das Kettenschloss bei der Schmiedin, die Kette an der Winde des Westanlegers einhängen, erste Überfahrt mit Kord.
- * Lohn: 2.500 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter, 2 Questpunkte. Schalter faehre_frei (Fähre fährt, Ostufer offen).
+ * Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter faehre_frei (Fähre fährt, Ostufer offen).
  * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Welt #36, Figuren #37, Spiel nach Phase 6). Stellen sind vorläufig aus der heutigen Region Graufurt
- * (Ursprung 6656 | 6400) und werden nach #36 ersetzt. Liste: doku/quests/d-bausteine.md.
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Figuren #37, Spiel nach Phase 6). Stellen aus der Welt (#36, Region graufurt, Ursprung 6656 | 6400).
+ * Liste: doku/quests/d-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { A2 } from "./quest_a2";
 
 export const D1 = "graufurt_die_faehrkette";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-/** vorläufig: Fährmann 62 | 113,2, Fähre 61,6 | 113,4, Bergfried 23,5 | 100,1 (Graufurt) */
-const KORD: [number, number] = [6718, 6513.2], WINDE: [number, number] = [6716.5, 6515.5], MERIT: [number, number] = [6679.5, 6502.5];
-const SCHMIEDIN: [number, number] = [6690.5, 6512.5], KLAMM: [number, number] = [6664.5, 6470.5];
+/** Graufurt (#36): Fährmann 61,8 | 115,6, Winde 60,1 | 111,8, vor dem Bergfried 21,5 | 82,6, vor der Schmiede 19,5 | 138,6, Furtklamm 34,4 | 44,6 */
+const KORD: [number, number] = [6717.8, 6515.6], WINDE: [number, number] = [6716.1, 6511.8], MERIT: [number, number] = [6677.5, 6484.5];
+const SCHMIEDIN: [number, number] = [6675.5, 6540.5], KLAMM: [number, number] = [6690.4, 6444.6];
 const HILFE = ["Erst zu Hauptfrau Stahl im Bergfried. Ohne ihr Wort fass ich die Fähre nicht an. Zeig ihr dein Wappen.",
   "Dann Splittereisen aus der Furtklamm, sechs Brocken. An der Esse Barren draus, am Amboss acht Glieder. Schmieden 45, darunter wird's Draht.",
   "Das Schloss macht die Schmiedin. Hol's ab. Und dann hängen wir die Kette an die Winde, hier am Anleger."];
@@ -118,7 +118,7 @@ export const QUEST_D1: QuestDef = {
   },
   sperren: { herstellen: { kettenglied: [{ wenn: { phase: ["neu", "fertig"] }, text: "Kettenglieder schmiedest du nur für Kords Fähre." }, { wenn: { erledigt: ["glieder"] }, text: "Acht Glieder hast du schon." }] } },
   schalter: { faehre_frei: FERTIG },
-  belohnungText: "Belohnung: 2.500 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter · danach: die Fähre fährt, das Ostufer ist offen",
-  belohnung: { berufe: { schmieden: 2500, bergbau: 1000 }, splitter: 400 },
+  belohnungText: "Belohnung: 1.000 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter · danach: die Fähre fährt, das Ostufer ist offen",
+  belohnung: { berufe: { schmieden: 1000, bergbau: 1000 }, splitter: 400 },
   punkte: 2,
 };

@@ -2,20 +2,20 @@
  * Riftmere – Quest D2 „Das grüne Licht“ (Phase 7), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-7.md. Beginnt am Ostanleger bei Kord Weller („Seit die Kette riss, brennt da drüben dieses Licht.“), Abgabe bei Merit Stahl.
  * Wappentür des Turms, Turmwächter auf Ebene 1 und 2, das Wächterbuch auf Ebene 3, das Grünlicht auf dem Dach, der Splitterkern im Signalfeuer,
- * der Geist der Wächterin Ysolde. Lohn: je 2.000 XP Stärke, Geschick, Defense, 600 Splitter, 2 Questpunkte, Wegstein-Ziel Ostufer (Turm).
+ * der Geist der Wächterin Ysolde. Lohn: je 1.000 XP Stärke, Geschick, Defense, 500 LP-XP, 600 Splitter, 2 Questpunkte, Wegstein-Ziel Ostufer (Turm).
  * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Ostufer und Turm aus #36, Ysolde und Gegner aus #37, Spiel nach Phase 6).
- * Alle Stellen am Ostufer sind Platzhalter östlich von Graufurt, bis #36 die Region anlegt. Liste: doku/quests/d-bausteine.md.
+ * Stellen aus der Welt (#36): Ostanleger in graufurt, Wappentür in ostufer (Ursprung 6784 | 6400), Turm turm_ebene1–3 und turm_dach (Ursprung 10880 … 10976 | 9600). Liste: doku/quests/d-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { D1 } from "./quest_d1";
 
 export const D2 = "ostufer_das_gruene_licht";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
-/** Platzhalter am Ostufer (östlich der Region Graufurt, x > 6784) */
-const OSTANLEGER: [number, number] = [6790.5, 6513.5], TUER: [number, number] = [6830.5, 6490.5], EBENE: [number, number] = [6830.5, 6486.5];
-const BUCH: [number, number] = [6831.5, 6484.5], DACH: [number, number] = [6830.5, 6482.5], MERIT: [number, number] = [6679.5, 6502.5];
+/** Ostanleger (graufurt 80,4 | 113,4), Wappentür (ostufer 56 | 119), Ebene 1 Mitte, Wächterbuch (turm_ebene3 16 | 16,4), Signalfeuer (turm_dach 16 | 17,2), Merit vor dem Bergfried */
+const OSTANLEGER: [number, number] = [6736.4, 6515.4], TUER: [number, number] = [6840, 6519], EBENE: [number, number] = [10896.5, 9614.5];
+const BUCH: [number, number] = [10960, 9616.4], DACH: [number, number] = [10992, 9617.2], MERIT: [number, number] = [6677.5, 6484.5];
 const HILFE = ["Der Turm steht oben auf der Anhöhe. Die Tür hat das Wappen – Turm über drei Wellen. Du weißt ja, wie das aussieht.",
   "Drinnen sollen Wächter stehen. Steinerne. Die alten Leute sagen, die haben nie aufgehört zu wachen.", "Ganz oben brennt das Licht. Bring der Hauptfrau, was du findest."];
 
@@ -108,7 +108,7 @@ export const QUEST_D2: QuestDef = {
       ],
     },
   },
-  belohnungText: "Belohnung: je 2.000 XP Stärke, Geschick und Defense, 600 Splitter · danach: Wegstein-Ziel Ostufer (Turm)",
-  belohnung: { xp: { staerke: 2000, geschick: 2000, defense: 2000 }, splitter: 600 },
+  belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 600 Splitter · danach: Wegstein-Ziel Ostufer (Turm)",
+  belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 600 },
   punkte: 2,
 };
