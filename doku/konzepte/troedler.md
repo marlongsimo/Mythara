@@ -12,7 +12,7 @@ Wunsch des Nutzers (26.11.2026). Ergänzt die Regel „Händler kaufen nur, was 
 - Bedienung wie beim Händler-Verkauf (#87): Rucksack daneben offen, Antippen = Preis, langes Drücken = „Verkaufen“ (Menge).
 
 ## Standorte (Vorschlag)
-Nicht in jeder Stadt – eher an Wegen und in Dörfern, damit Reisen sich lohnt: Kreuzwald (Straßensperre), Osthof, Rabenmoor (Steg), Graufurt (Fährhafen), Heidrast, Karawanenrast Glutbrunn, Möwenbucht.
+Nicht in jeder Stadt – eher an Wegen und in Dörfern. **Der erste Trödler steht im Rabenmoor** (Entscheidung des Nutzers, 26.11.; Kreuzwald und Osthof bekommen keinen): Rabenmoor (Steg), Graufurt (Fährhafen), Heidrast, Karawanenrast Glutbrunn, Möwenbucht.
 
 ## Wer macht was
 | Rolle | Aufgabe |
