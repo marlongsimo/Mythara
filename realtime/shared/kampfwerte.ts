@@ -1,10 +1,10 @@
 /*
  * Mythara – Kampf- und Progressionsregeln v3 (eigener Held). Eine Quelle für Simulation, Server und Anzeige.
  * Grundlage (23.11.2026): „Kampf-XP & Kampfstile – Grundlagen“, „Nahkampf / Max-Hit – OSRS-basierte Schadensformel“, „Fernkampf – OSRS-basierte Regelübernahme“,
- *   „Magie: Überarbeitung der Kampfstile“, „XP-Kurven pro Skill (85 % OSRS)“.
+ *   „Magie: Überarbeitung der Kampfstile“.
  *
  * Tick: 1 Tick = 0,5 Sekunden. Jeder Angriff dauert eine ganze Zahl von Ticks und fällt auf einen Tick.
- * Sechs Skills (Level 1–100), alle mit derselben Kurve: 85 % der kumulierten OSRS-XP je Level, kaufmännisch gerundet (Level 2 = 71, Level 99 = 11.079.266, Level 100 = 12.232.486).
+ * Sechs Skills (Level 1–100), alle mit derselben Riftmere-Kurve (XP_KURVE, feste Tabelle: Level 2 = 71, Level 10 = 981, Level 99 = 11.079.266, Level 100 = 12.232.486).
  * Trefferwurf (OSRS-Rechnung, seit 23.11.2026): Zufall(0, Angriffswurf) gegen Zufall(0, Verteidigungswurf des Ziels für diese Angriffsart); Treffer nur, wenn der Angriffswurf strikt höher ist.
  *   Jeder Wurf = effektives Level × (Ausrüstungsbonus + 64); effektives Level = Level + Stilbonus + 8 (Helden) bzw. Level + 9 (Gegner).
  * Schadenswurf (bleibt Mythara): ganzzahlig 1 … Max Hit.
@@ -60,11 +60,24 @@ export interface Kampfwerte {
   waffe: { art: Art; schaden: [number, number]; plus: number; bonus: number; ticks: number; takt: number; reich: number; flug?: number; /** mehr Max Hit gegen eine Gegnerfamilie */ gegen?: Record<string, number>; /** Fernkampf: was fliegt (Armbrust: Bolzen, sonst Pfeil) – für die Darstellung bei allen Spielern */ geschoss?: "pfeil" | "bolzen" };
   stil: number; max: number; heldenlevel: number; skills: SkillXp }
 
-/** XP-Kurve aller Skills: 85 % der kumulierten OSRS-XP je Level (OSRS-Formel, für Level 100 um eine Stufe fortgeführt), kaufmännisch gerundet */
-const XP_KURVE: number[] = (() => { const k = [0, 0]; let punkte = 0; for (let L = 2; L <= SKILL_MAX; L++) { punkte += Math.floor(L - 1 + 300 * Math.pow(2, (L - 1) / 7)); k[L] = Math.round(Math.floor(punkte / 4) * 0.85); } return k; })();
+/** Die Riftmere-Kurve (festgelegt 26.11.2026): kumulierte XP je Level, Index = Level (0 und 1 = 0 XP). Gilt für alle Kampfskills und alle Berufe.
+ *  Die Werte sind fest – wer sie ändert, ändert die Level aller gespeicherten Helden. */
+const XP_KURVE: readonly number[] = [
+  0, 0, 71, 148, 235, 330, 435, 553, 681, 824,
+  981, 1154, 1346, 1558, 1791, 2049, 2334, 2648, 2995, 3377,
+  3800, 4265, 4780, 5347, 5974, 6666, 7429, 8271, 9200, 10226,
+  11359, 12608, 13988, 15510, 17190, 19045, 21093, 23352, 25847, 28601,
+  31640, 34995, 38700, 42788, 47302, 52285, 57786, 63858, 70562, 77963,
+  86133, 95153, 105111, 116105, 128241, 141641, 156434, 172766, 190796, 210703,
+  232681, 256945, 283733, 313309, 345963, 382014, 421816, 465760, 514277, 567843,
+  626983, 692278, 764368, 843961, 931836, 1028858, 1135977, 1254244, 1384820, 1528987,
+  1688158, 1863895, 2057924, 2272147, 2508667, 2769805, 3058123, 3376450, 3727910, 4115951,
+  4544382, 5017406, 5539665, 6116285, 6752922, 7455824, 8231890, 9088735, 10034765, 11079266,
+  12232486,
+];
 /** Kumulierte XP für Level L (alle Skills dieselbe Kurve; der zweite Parameter bleibt für Aufrufer erhalten) */
 export const xpFuer = (L: number, _skill?: Skill): number => (L <= 1 ? 0 : XP_KURVE[Math.min(SKILL_MAX, Math.floor(L))]);
-/** Lebenspunkte starten auf Level 10 (wie in OSRS): zu den gebuchten LP-XP kommen fest die XP für Level 10 dazu */
+/** Lebenspunkte starten auf Level 10: zu den gebuchten LP-XP kommen fest die XP für Level 10 dazu */
 export const LP_START_LEVEL = 10;
 export const xpEffektiv = (xp: number, skill?: Skill): number => (skill === "lp" ? (xp || 0) + xpFuer(LP_START_LEVEL) : xp || 0);
 /** Skilllevel aus XP (1–100) */
