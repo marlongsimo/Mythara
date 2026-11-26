@@ -45,7 +45,15 @@ export class WeltKampf3D extends WeltKampf {
       const s = naechste(x, y, -1, 3), art: GeschossArt = a === "feuer" ? "feuer" : a === "blitz" ? "zauber" : a === "pfeil" ? "pfeil" : "bolzen";
       return { art, x: s ? x0 + s[4] : x, y: s ? y0 + s[5] : y, von: s ? s[0] : -1 }; },
       (x, y, von) => { const e = naechste(x, y, von, 2.5); return e ? { x: x0 + e[4], y: y0 + e[5] } : null; });
-    this.flug.schritt(dt); }
+    this.flug.schritt(dt); this.ansageSchritt(); }
+  /* Ansagen des Boss-Baukastens: rote Felder am Boden, kräftiger bis zum Schlag, dann weg */
+  private ansagenListe?: { g: THREE.Group; mat: THREE.MeshBasicMaterial; von: number; bis: number }[];
+  protected ansageZeigen(felder: [number, number][], t: number) { const M = this.w.motor, g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0xff3a2a, transparent: true, opacity: 0.3, depthWrite: false }), geo = new THREE.PlaneGeometry(0.92, 0.92);
+    geo.rotateX(-Math.PI / 2); for (const [x, y] of felder) { const wx = this.zone.x0 + x, wy = this.zone.y0 + y, m = new THREE.Mesh(geo, mat); m.position.set(wx, M.hoehe(wx, wy) + 0.06, wy); m.renderOrder = 4; g.add(m); }
+    M.szene.add(g); const jetzt = performance.now(); (this.ansagenListe || (this.ansagenListe = [])).push({ g, mat, von: jetzt, bis: jetzt + Math.max(150, t * 1000) }); }
+  private ansageSchritt() { const L = this.ansagenListe; if (!L || !L.length) return; const jetzt = performance.now();
+    for (const a of [...L]) { if (jetzt >= a.bis) { this.w.motor.szene.remove(a.g); a.g.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); a.mat.dispose(); L.splice(L.indexOf(a), 1); continue; }
+      const k = (jetzt - a.von) / (a.bis - a.von); a.mat.opacity = 0.3 + 0.5 * k + 0.1 * Math.sin(jetzt / 60); } }
   protected bildEnde() { lebenAnzeigen(null); if (this.geschosseMap) this.geschosseMap.alleWeg(); for (const [, b] of this.bilder) { b.fl.entfernen(this.w.motor.szene); b.nm.remove(); b.lb.remove(); } this.bilder.clear();
     if (this.ring) { this.w.motor.szene.remove(this.ring); this.ring = undefined; } if (this.ichBalken) { this.ichBalken.remove(); this.ichBalken = undefined; } }
   protected neu(id: number, held: boolean, typ: string, team: number, x: number, y: number): Figur {

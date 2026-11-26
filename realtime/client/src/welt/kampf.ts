@@ -176,7 +176,14 @@ export class WeltKampf {
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
-    else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id); }
+    else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id);
+    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
+    else if (ev.a === "bossphase" && ev.text) zahl(ev.id, ev.text, "#ffb27a");
+    else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); }
+  /** Ansage: diese Felder (Rechenfelder, Mitte) leuchten t Sekunden rot – wer dann noch darauf steht, wird getroffen */
+  protected ansageZeigen(felder: [number, number][], t: number): void { const s = this.s;
+    for (const [x, y] of felder) { const r = s.add.rectangle((this.zone.x0 + x) * FELD_PX, (this.zone.y0 + y) * FELD_PX, FELD_PX - 2, FELD_PX - 2, 0xff3a2a, 0.45).setDepth(2);
+      s.tweens.add({ targets: r, alpha: 0.85, duration: Math.max(100, t * 1000), onComplete: () => r.destroy() }); } }
   /* ---------- Darstellung (2D, Phaser) – die 3D-Welt überschreibt diese Haken (welt3d/kampf3d.ts) ---------- */
   protected bildAufbau(K: (typeof KARTEN)[string]) { const s = this.s; this.ringZiel = s.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setVisible(false); this.ichLb = s.add.graphics().setDepth(1e7);
     for (const l of K.lager || []) figurVorladen(s, l.art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick */ }

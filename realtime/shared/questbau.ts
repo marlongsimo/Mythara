@@ -199,6 +199,21 @@ export function dialog(q: QuestDef, npc: string, s: string, k: Kontext): Dialog 
   const r = rede(q, npc, s, k); if (!r) return null;
   const antworten = r.antworten.map((id) => D.optionen.find((o) => o.id === id)).filter((o): o is Option => Boolean(o) && gilt(q, s, o!.wenn, k)).map((o) => ({ id: o.id, text: o.text }));
   return { npc, name: F.name, zeilen: zeilen(q, s, F.name, r.zeilen), antworten }; }
+/** Figur in mehreren Quests (Othmar Rehn: Quest 1, B3, B4): welche Quest spricht, wenn man sie anspricht? Server und Browser gleich.
+ *  1. eine laufende Quest, deren Rede für diese Figur eine Bedingung hat (nicht nur die Standard-Rede am Ende),
+ *  2. eine neue Quest, deren Voraussetzungen erfüllt sind und die die Figur anbietet (eine Antwort nimmt sie an),
+ *  3. irgendeine laufende Quest, 4. die letzte abgeschlossene (in der Reihenfolge der Liste), 5. die erste. */
+export function figurQuest(liste: QuestDef[], stand: (id: string) => string, npc: string, k: Kontext = OHNE): QuestDef | null {
+  const mit = liste.filter((q) => q.dialoge[npc] && q.figuren.some((f) => f.id === npc)); if (mit.length <= 1) return mit[0] || null;
+  const ph = (q: QuestDef) => lage(q, stand(q.id)).phase;
+  for (const q of mit) if (ph(q) === "laeuft") { const r = rede(q, npc, stand(q.id), k); if (r && r.wenn) return q; }
+  for (const q of mit) { const s = stand(q.id); if (ph(q) !== "neu" || !gilt(q, s, { voraussetzungen: true }, k)) continue; const d = dialog(q, npc, s, k), D = q.dialoge[npc];
+    if (d && d.antworten.some((a) => (D.optionen.find((o) => o.id === a.id)?.folge || []).some((v) => v.f.start))) return q; }
+  const lauf = mit.find((q) => ph(q) === "laeuft"); if (lauf) return lauf;
+  const fertig = mit.filter((q) => ph(q) === "fertig"); return fertig.length ? fertig[fertig.length - 1] : mit[0]; }
+/** Zeichen über einer Figur, die in mehreren Quests steht: „?“ vor „!“ (verfolgt: nur Quests, für die das gilt) */
+export function zeichenAlle(liste: QuestDef[], stand: (id: string) => string, npc: string, zaehlt: (q: QuestDef) => boolean = () => true): "!" | "?" | null {
+  let aus: "!" | "?" | null = null; for (const q of liste) { if (!q.figuren.some((f) => f.id === npc) || !zaehlt(q)) continue; const z = zeichen(q, stand(q.id), npc); if (z === "?") return "?"; if (z) aus = z; } return aus; }
 /** Was eine Antwort bewirkt (null: gibt es hier nicht). Nur Antworten, die die aktuelle Begrüßung anbietet, zählen. */
 export function antwort(q: QuestDef, npc: string, s: string, a: string, k: Kontext): Folge | null { const D = q.dialoge[npc]; if (!D) return null;
   const angeboten = dialog(q, npc, s, k); if (!angeboten || !angeboten.antworten.some((x) => x.id === a)) return null;

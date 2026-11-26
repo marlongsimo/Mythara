@@ -23,7 +23,8 @@ import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
-import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei } from "./quests";
+import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei, schalter } from "./quests";
+import { weltJeSpieler, instanzAus, bossSieg } from "./bosse";
 import { ZIELSCHEIBE_BIS } from "../../shared/sim";
 import { levelAus as levelVon } from "../../shared/kampfwerte";
 
@@ -81,7 +82,8 @@ heilenMit(async (nutzer, v) => {
 function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert: number, name: string, wo?: { x: number; y: number }): void {
   let Z = zonen.get(karte); const eigen = Boolean(KARTEN[karte] && KARTEN[karte].ursprung); /* Weltzonen: Gegner mit ihren eigenen Werten (Kampfregeln v1) */
   if (!Z) { setzeKarte(KARTEN[karte], FEIN); setzeStaerke(ORTSTUFE[ort] || 1, 1); for (const k of Object.keys(HELDENSTUFE)) delete HELDENSTUFE[k]; for (const k of Object.keys(HELDENEP)) delete HELDENEP[k];
-    Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
+    Z = { karte, sim: Sim.welt((Date.now() ^ (Math.random() * 1e9)) >>> 0, undefined, eigen), spieler: new Set(), leerSeit: 0 }; { const U = KARTEN[karte] && KARTEN[karte].ursprung; if (U) Z.sim.ursprung = [U[0], U[1]]; } /* Instanzen, Türen, Heilorte stehen in Weltfeldern */
+    zonen.set(karte, Z); console.log("Welt: Zone", karte, "eröffnet"); }
   const nutzer = p.kampf && p.kampf.nutzer;
   /* Jede Person nur einmal (das neue Gerät übernimmt). Im selben Gebiet übernimmt die neue Verbindung den stehenden Helden samt Leben, Stelle und Kampf –
      so rettet Neu-Einloggen nicht aus dem Kampf. In einem anderen Gebiet: ein stehender (abgebrochener) Held geht jetzt, eine offene Verbindung am Gebietsrand
@@ -377,14 +379,19 @@ setInterval(() => {
         const t = !frei ? "Die Wachen lassen hier nur üben, wer für sie arbeitet." : ev.art !== "fern" ? "An der Zielscheibe übt man mit Pfeil und Bogen." : fern >= ZIELSCHEIBE_BIS ? "Hier lernst du nichts mehr." : "";
         if (t) { q.zielHinweis = jetzt; systemAn(nutzer, t); } } }
     for (const ev of z.ev) if (ev.a === "erlegt") { const q = [...Z.spieler].find((o) => o.heldId === ev.besitzer), nutzer = q && q.kampf && q.kampf.nutzer; if (nutzer) erlegt(nutzer, ev.typ); } /* Quests: Siege zählen (Quest 02: Mooshocker) */
+    for (const ev of z.ev) if (ev.a === "welle") { const I = instanzAus(ev.instanz); if (I && I.def.welle) erlegt(I.nutzer, I.def.welle); } /* Instanz: eine Welle ist gefallen (B4: Versammlungshalle) */
+    for (const ev of z.ev) if (ev.a === "boss") for (const id of ev.ids) { const q = [...Z.spieler].find((o) => o.heldId === id), nutzer = q && q.kampf && q.kampf.nutzer; /* Bosszähler und Bestzeit je Konto (Migration 050) */
+      if (nutzer) void bossSieg(sb, nutzer, ev.typ, ev.sek).then((t) => systemAn(nutzer, t)).catch((e) => console.error("Bosszähler:", (e as Error).message)); }
     for (const q of [...Z.spieler]) { if (q.heldId && Z.sim.imKampf(q.heldId)) q.kampfZ = jetzt;
       if (n % 10 === 0 && q.heldId && q.kampf) { const h = Z.sim.nach(q.heldId); if (h) h.zielscheibeFrei = zielscheibeFrei(q.kampf.nutzer); } /* Zielscheibe: alle 1 s nach dem Queststand */
+      if (n % 10 === 0 && q.heldId && q.kampf && q.kampf.nutzer && !q.zoneWeg) { const h = Z.sim.nach(q.heldId), K0 = KARTEN[Z.karte], nu = q.kampf.nutzer; /* Instanzen und Türen je Spieler (shared/boss.ts) nach seinem Queststand */
+        if (h && !h.tot && K0 && K0.ursprung) { const d = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s)); if (d && d.text) systemAn(nu, d.text); } }
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
         const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
         if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }
       else if (jetzt - q.zuletzt > RUHE_MS) { Sitz.abmelden(q.ws); q.ws.close(1000, "ruhe"); continue; } /* Zwangsabmeldung: das Konto ist frei */
       if (q.kampf && !q.kampf.fertig) for (const ev of z.ev) { if (ev.a === "ep" && ev.id === q.heldId) q.kampf.ep += ev.n; if (ev.a === "stufe") stufe = true; }
-      if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: { ...z, ich: Z.sim.ichVon(q.heldId || 0) } })); zwischenbuchen(q, Z.sim, jetzt);
+      if (q.ws.readyState === WebSocket.OPEN && q.ws.bufferedAmount < 65536) q.ws.send(JSON.stringify({ t: "z", z: Z.sim.sichtFuer(z, q.heldId || 0) })); zwischenbuchen(q, Z.sim, jetzt);
       if (q.v1 && q.heldId && q.kampf && q.kampf.nutzer && jetzt - (q.v1T || 0) >= 1000) { q.v1T = jetzt; v1Takt(sb, q.kampf.nutzer, q.v1, Z.sim, q.heldId); } /* Skill-XP: Level prüfen, alle 10 s buchen */
       if (q.heldId && q.lvGemeldet !== undefined) { const w = Z.sim.nach(q.heldId) as { stufe?: number } | undefined; if (w && (w.stufe || 1) !== q.lvGemeldet) stufe = true; } /* Heldenlevel gestiegen (Skills): Namensschilder sofort neu */ }
     if (stufe) namenMelden(Z); }

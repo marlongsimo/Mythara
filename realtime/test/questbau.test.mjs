@@ -31,9 +31,10 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   if ((q.punkte || 0) > 10) fehler.push("mehr als 10 Questpunkte");
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
   for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) baustein(`${f.id}: steht außerhalb der Welt`);
-  /* Der Motor lässt eine Figur heute nur in der ersten Quest sprechen, die sie nennt (questmotor.ts motorReden): dieselbe Figur in zwei Quests braucht erst den Motor */
   for (const f of q.figuren) { const andere = [...QUESTS, ...(wartet ? ENTWUERFE.map((e) => e.q) : [])].filter((x) => x.id !== q.id && x.figuren.some((g) => g.id === f.id)).map((x) => x.id);
-    if (andere.length) baustein(`Figur ${f.id} auch in ${andere.join(", ")} (Figur in mehreren Quests)`); }
+    /* Figur in mehreren Quests (Baukasten seit #48, questbau.figurQuest): erlaubt, aber überall dieselbe Figur – gleicher Name, Ort und Modell */
+    for (const x of [...QUESTS, ...ENTWUERFE.map((e) => e.q)].filter((x) => andere.includes(x.id))) { const g = x.figuren.find((y) => y.id === f.id);
+      if (g.name !== f.name || g.modell !== f.modell || Math.hypot(g.x - f.x, g.y - f.y) > 0.01) fehler.push(`Figur ${f.id} steht in ${x.id} anders da (Name, Ort oder Modell) – eine Figur in mehreren Quests ist überall dieselbe`); } }
   const bedPruefen = (b, wo) => { if (!b) return; for (const id of [...(b.erledigt || []), ...(b.offen || []), ...(b.zaehler ? [b.zaehler.schritt] : [])]) if (!ids.includes(id)) fehler.push(`${wo}: unbekannter Schritt ${id}`);
     if (b.zaehler && !q.schritte.find((x) => x.id === b.zaehler.schritt).anzahl) fehler.push(`${wo}: ${b.zaehler.schritt} zählt nicht`);
     if (b.quest && !ALLE_IDS.includes(b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
