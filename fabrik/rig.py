@@ -27,7 +27,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Teilnetz "arme_nur_aussen": true  Jacke mit Ärmeln: nur die Ärmel folgen den Armen, der Rumpf nicht den herabhängenden Händen
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: rundumschlag (Zweihänder, Boss: eine ganze Drehung), ruf (Helfer heranwinken), ruhe_2h, gehen_2h, laufen_2h (Zweihänder auf der Schulter), teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: gefesselt (Gefangene: kniend, Hände auf dem Rücken), rundumschlag (Zweihänder, Boss: eine ganze Drehung), ruf (Helfer heranwinken), ruhe_2h, gehen_2h, laufen_2h (Zweihänder auf der Schulter), teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -665,6 +665,12 @@ def rundumschlag(i, n):
     quer = mit(BEREIT, o_r=(-0.3, -0.45, -0.84), u_r=(0.2, -0.6, -0.77), kl=(-0.95, -0.3, 0.05), o_l=(0.15, -0.45, -0.88), u_l=(-0.55, -0.5, -0.67))   # Unterarme vorn unten, Klinge waagerecht nach rechts außen
     pose = {k: tuple(spur([(0, a), (0.2, b), (0.85, b), (1, a)], t)) for k, a, b in ((k, BEREIT[k], quer[k]) for k in BEREIT)}
     arme(**{k: tuple(q @ Vector(v)) if any(v) else v for k, v in pose.items()})
+def gefesselt(i, n):
+    """Gefangen (Käfig im Kerker): auf den Knien, Hände auf dem Rücken gebunden, Kopf gesenkt; atmet schwer, zittert ab und zu (Schleife)"""
+    t = i / n; atem = math.sin(2 * math.pi * t); zittern = 1.5 * math.sin(2 * math.pi * 6 * t) * (0.5 + 0.5 * math.sin(2 * math.pi * t))
+    hocke(62, vor=-8); rumpf(vor=14 + 3 * atem, kipp=zittern * 0.6, kopf=26 + 4 * atem)
+    hinten = mit(BEREIT, o_r=(-0.3, 0.45, -0.84), u_r=(0.75, 0.55, -0.35), kl=(0.0, 0.2, 0.98), o_l=(0.3, 0.45, -0.84), u_l=(-0.75, 0.55, -0.35))
+    arme(**hinten)
 def ruf(i, n):
     """Ruf-Geste (Boss ruft Helfer): Kopf in den Nacken – der linke Arm geht auf Schulterhöhe nach vorn und winkt zweimal heran (nicht höher: Umhänge
     am Arm würden sonst mitgezogen), die Waffe bleibt gesenkt rechts"""
@@ -786,6 +792,7 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {}),
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
               "rundumschlag": (rundumschlag, 12, 14, False, {"treffer": 7, "ohne": ["arm_l"]}), "ruf": (ruf, 12, 10, False, {}),
+              "gefesselt": (gefesselt, 16, 8, True, {}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
               "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
               "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]}), "faustschlag": (faustschlag, 9, 12, False, {"treffer": 4}),

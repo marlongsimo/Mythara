@@ -25,7 +25,7 @@ const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.searc
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb (Figuren-Fabrik, wie echt3d/darsteller.ts) – erst beim Anlegen geladen */
 /** Beil und Spitzhacke in der Hand größer (sie wirkten sehr klein, 26.11.2026) */
 /** Werkzeug-Modell (img/objekte3d/skilling/utensilien/<art>[.<stufe>].glb) → gleichnamiges Waffenteil der Figur (base…3d.teile/waffe.<art>[.<stufe>].glb, Figuren-Fabrik) */
-const werkzeugTeil = (url: string): string => { const m = /((?:holzbeil|spitzhacke)(?:\.\w+)?)\.glb$/.exec(url); return m ? "waffe." + m[1] : ""; };
+const werkzeugTeil = (url: string): string => { const m = /((?:holzbeil|spitzhacke|angelrute)(?:\.\w+)?)\.glb$/.exec(url); return m ? "waffe." + m[1] : ""; };
 /** Ruhe-Bewegung (Stehen) halb so schnell: dauert doppelt so lang (26.11.2026) */
 export const RUHE_TEMPO = 0.5;
 /** Welches Werkzeug der eigene Held angelegt hat (Modell-Adresse oder "") – gesetzt von spielwelt.ts */
@@ -44,7 +44,8 @@ const vorlagen = new Map<string, Promise<Vorlage>>();
 export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
   if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
     /* Grundfiguren: die Werk-Bewegungen des Handwerks (fabrik/werk_bewegungen.py) liegen in einer eigenen kleinen Datei – danach nachladen, sie kommen in dieselbe Liste */
-    if (WERK_BEWEGUNGEN.has(g)) void p.then((v) => gltfLader().loadAsync(MODELLE + "werk_" + g + ".glb").then((x) => { for (const c of x.animations) v.clips.set(c.name, c); })).catch(() => { /* ohne: Ersatzbewegungen */ }); }
+    if (WERK_BEWEGUNGEN.has(g)) for (const datei of ["werk_", "angeln_"]) /* Angeln (Phase 3b): angeln, angeln_warten, angeln_einholen – fabrik/angel_bewegungen.py */
+      void p.then((v) => gltfLader().loadAsync(MODELLE + datei + g + ".glb").then((x) => { for (const c of x.animations) v.clips.set(c.name, c); })).catch(() => { /* ohne: Ersatzbewegungen */ }); }
   return p; }
 const WERK_BEWEGUNGEN = new Set(["basemann3d", "basefrau3d"]);
 
@@ -151,7 +152,7 @@ export class Held3D {
     if (this.beilZurueck) clearTimeout(this.beilZurueck); this.beilZurueck = setTimeout(() => this.beilWeg(), HIEB_MS + 120);
     this.einmal = true; this.spiele(clip, true, true, (c.duration * 1000) / HIEB_MS); return HIEB_MS; }
   /** Beil weg, angelegte Waffe wieder sichtbar */
-  beilWeg(): void { this.haendeFrei = false; if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^(waffe|schild)/.test(n)) o.visible = this.soll.has(n) && !(this.beil && this.beil.visible); }
+  beilWeg(): void { const angelte = Boolean(this.angelClip); this.angelClip = null; if (angelte && !this.einmal) this.anwenden(); this.haendeFrei = false; if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } if (this.beil) this.beil.visible = false; for (const [n, o] of this.teile) if (/^(waffe|schild)/.test(n)) o.visible = this.soll.has(n) && !(this.beil && this.beil.visible); }
   sterben(): number { if (!this.wurzel) return this.ersatz.sterben(); const c = this.clips.get("tod"); if (!c) return 0; this.gestorben = true; this.einmal = false; this.spiele("tod", true); return c.duration * 1000; }
   /** Trinken (Figuren-Fabrik „trinken“, Hand zum Mund) – nur wenn das Modell die Bewegung hat. Zurück: Dauer in ms */
   trinken(): number { if (!this.wurzel || this.gestorben || !this.mixer) return 0; const c = this.clips.get("trinken"); if (!c) return 0; this.einmal = true; this.spiele("trinken", true); return c.duration * 1000; }
@@ -162,7 +163,18 @@ export class Held3D {
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
      (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m, also 1,78 / 4,67 Felder/s: Gehen 2 Felder/s → ×1,12, Sprint 4 Felder/s → ×0,86 – „Felder und Schräge“) */
-  private anwenden() { const z = this.zustand; if (z === "block") this.spiele(this.clips.has("block") ? "block" : "treffer" /* Mooshocker: zuckt zusammen */, true, true);
+  /* ───────── Angeln (Phase 3b): die Rute bleibt in der Hand, bis beilWeg; auswerfen → warten (Schleife) → einholen → warten ───────── */
+  private angelClip: string | null = null;
+  /** Rute (url des Modells) in die Hand und eine Phase des Angelns; Zurück: ob das Modell die Bewegung hat */
+  angeln(url: string, phase: "auswerfen" | "warten" | "einholen"): boolean {
+    if (this.gestorben || !this.mixer || !this.wurzel) return false; const clip = phase === "warten" ? "angeln_warten" : phase === "einholen" ? "angeln_einholen" : "angeln";
+    if (!this.clips.has(clip)) return false;
+    if (this.beilZurueck) { clearTimeout(this.beilZurueck); this.beilZurueck = null; } this.verdeckt = /^(waffe|schild)/;
+    void this.beilAnhaengen(url).then((b) => { if (!b || this.gestorben || !this.angelClip) return; b.visible = true; for (const [n, o] of this.teile) if (this.verdeckt.test(n)) o.visible = false; });
+    this.angelClip = "angeln_warten";
+    if (phase === "warten") { this.einmal = false; this.spiele(clip, false); } else { this.einmal = true; this.spiele(clip, true, true); }
+    return true; }
+  private anwenden() { if (this.angelClip && (this.zustand === "ruhe" || this.zustand === "")) { this.spiele(this.angelClip, false); return; } const z = this.zustand; if (z === "block") this.spiele(this.clips.has("block") ? "block" : "treffer" /* Mooshocker: zuckt zusammen */, true, true);
     else if (z === "rennen") this.spiele("laufen", false, false, 0.86);
     else if (z === "laufen") { if (this.clips.has("gehen")) this.spiele("gehen", false, false, 1.12); else this.spiele("laufen", false, false, 0.45); }
     else if (z === "schild_laufen") this.spiele("gehen", false); else this.spiele("ruhe", false, false, RUHE_TEMPO); } /* Ruhe-Bewegung doppelt so lang (26.11.2026) */

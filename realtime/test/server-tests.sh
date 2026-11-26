@@ -31,6 +31,7 @@ TESTS=(
   questbau
   splitterbinden-welt
   fischen-kochen-welt
+  b2-welt
   sprint
   stufe
   teleport-welt

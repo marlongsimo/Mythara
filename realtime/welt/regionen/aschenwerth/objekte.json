@@ -1,8 +1,4 @@
 [
- {"id":"linde_274","objekt":"stil_linde_01","x":8.5,"y":1.5,"s":0.92},
- {"id":"eiche_277","objekt":"stil_eiche_02","x":35.5,"y":2.5,"s":1.08},
- {"id":"linde_276","objekt":"stil_linde_01","x":109.5,"y":3.5,"s":0.95,"spiegeln":true},
- {"id":"erle_tot_199","objekt":"stil_erle_tot_01","x":14.5,"y":8.5,"s":0.92},
  {"id":"erle_tot_213","objekt":"stil_erle_tot_02","x":92.5,"y":9.5,"s":1},
  {"id":"erle_tot_200","objekt":"stil_erle_tot_01","x":24.5,"y":16.5,"s":0.83},
  {"id":"erle_tot_185","objekt":"stil_erle_tot_01","x":92.5,"y":16.5,"s":1.1,"spiegeln":true},
@@ -142,7 +138,6 @@
  {"id":"schilf_95","objekt":"stil_schilf_02","x":93.7,"y":97.56,"spiegeln":true},
  {"id":"schilf_103","objekt":"stil_schilf_02","x":14.53,"y":97.96,"spiegeln":true},
  {"id":"nebel_266","objekt":"moor_nebel_01","x":99.32,"y":99.16,"s":1.27},
- {"id":"schilf_130","objekt":"stil_schilf_02","x":6.91,"y":99.67},
  {"id":"schilf_107","objekt":"stil_schilf_01","x":99.95,"y":100.31,"spiegeln":true},
  {"id":"ruine_mauer_4","objekt":"k_ruine_mauer","x":59.5,"y":100.5},
  {"id":"ruine_mauer_6","objekt":"k_ruine_mauer","x":62.5,"y":100.5},
@@ -272,12 +267,12 @@
  {"id":"schilf_98","objekt":"stil_schilf_01","x":66.37,"y":158.09},
  {"id":"schilf_173","objekt":"stil_schilf_01","x":26.73,"y":158.39,"spiegeln":true},
  {"id":"ort_ried_kahn","objekt":"moor_kahn_01","x":34.5,"y":38.4},
- {"id":"ort_p4_moor_zelt_1","objekt":"welt_zelt_01","x":65.5,"y":14.6},
- {"id":"ort_p4_moor_zelt_2","objekt":"welt_zelt_01","x":73.5,"y":14.2,"spiegeln":true},
- {"id":"ort_p4_moor_feuer","objekt":"moor_feuerkorb_01","x":69.5,"y":19.4},
+ {"id":"ort_p4_moor_zelt_1","objekt":"welt_zelt_01","x":65.5,"y":14.5},
+ {"id":"ort_p4_moor_zelt_2","objekt":"welt_zelt_01","x":73.5,"y":14,"spiegeln":true},
+ {"id":"ort_p4_moor_feuer","objekt":"moor_feuerkorb_01","x":69.5,"y":19.5},
  {"id":"ort_p4_moor_kiste","objekt":"k_kiste","x":64.4,"y":20},
  {"id":"ort_p4_moor_faesser","objekt":"k_faesser","x":74.6,"y":20.2},
- {"id":"ort_p4_moor_banner","objekt":"k_banner_rot","x":69.5,"y":12.4},
+ {"id":"ort_p4_moor_banner","objekt":"k_banner_rot","x":69.5,"y":12.5},
  {"id":"ort_p6_akoluth_feuer_1","objekt":"moor_feuerkorb_01","x":61.5,"y":110.5},
  {"id":"ort_p6_akoluth_feuer_2","objekt":"moor_feuerkorb_01","x":78.5,"y":110.5},
  {"id":"ort_p6_akoluth_lager_1","objekt":"hoehle_lager_01","x":59.5,"y":119.5},
@@ -286,5 +281,8 @@
  {"id":"ort_p6_akoluth_federn_2","objekt":"hoehle_federn_01","x":73.5,"y":122.5,"spiegeln":true},
  {"id":"ort_p6_novizen_feuer","objekt":"moor_feuerkorb_01","x":105.5,"y":146.5},
  {"id":"ort_p6_novizen_federn","objekt":"hoehle_federn_01","x":95.5,"y":142.5},
- {"id":"ort_p6_gruft_federn","objekt":"hoehle_federn_01","x":46.5,"y":136.5,"spiegeln":true}
+ {"id":"ort_p6_gruft_federn","objekt":"hoehle_federn_01","x":46.5,"y":136.5,"spiegeln":true},
+ {"id":"erle_tot_199","objekt":"stil_erle_tot_01","x":14.5,"y":8.5,"s":0.92},
+ {"id":"naht_1","objekt":"stil_busch_02","x":19.5,"y":3,"s":0.93},
+ {"id":"naht_2","objekt":"stil_busch_01","x":30.5,"y":12.5,"s":1.08,"spiegeln":true}
 ]

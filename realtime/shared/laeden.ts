@@ -5,10 +5,10 @@
  */
 import { GEGENSTAENDE, Seltenheit } from "./gegenstaende";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei";
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher";
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
-  gruss: string; tschuess: string; waren: Ware[]; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean }
+  gruss: string; tschuess: string; waren: Ware[]; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
 /** Währung */
 export const WAEHRUNG = "splitter";
 /** Vorläufige Preise nach Seltenheit (Splitter) */
@@ -39,6 +39,10 @@ export const LAEDEN: Record<LadenId, Laden> = {
   baeckerei: { id: "baeckerei", name: "Gretes Backstube", spruch: "Frisch aus dem Ofen – solange das Mehl reicht.", haendler: "Grete Korn", modell: "npcfrau3d", x: 6454, y: 6450.1, blick: [0, 1], vor: [6454, 6451.5], figurInWelt: true,
     gruss: "Brot? Heute wieder, dank dir. Nimm, solange es warm ist.", tschuess: "Komm wieder, wenn der Magen knurrt.", waren: [{ g: "brot", preis: 8 }, { g: "mehl", preis: 3 }] /* Mehl für Brot und Eintopf (Phase 3b) */,
     wenn: { quest: "osthof_die_muehle_steht_still", phase: "fertig" }, zu: "Die Bäckerei hat geschlossen. Ohne Mehl backt Grete Korn nicht – die Mühle im Osthof steht still." },
+  /* Phase 3c: Hanne Kalk verkauft Mehl aus dem Kornspeicher in Weidenhain – erst, wenn das Wehr wieder hält (B2, Schalter hanne_mehl); sie ist Questfigur (quest_b2.ts) */
+  kornspeicher: { id: "kornspeicher", name: "Kornspeicher", spruch: "Mehl aus Weidenhain.", haendler: "Hanne Kalk", modell: "npcfrau3d", x: 6433.4, y: 6679.4, blick: [0, 1], vor: [6433.4, 6680.6], questFigur: "hanne",
+    gruss: "Mehl? Endlich wieder. Nimm, so viel du tragen kannst.", tschuess: "Grüß Tebbe von mir.", waren: [{ g: "mehl", preis: 3 }],
+    wenn: { quest: "weidenhain_wasser_auf_die_muehle", phase: "fertig" }, zu: "Der Kornspeicher ist leer. Ohne die Mühle gibt es kein Mehl." },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
     gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
@@ -46,6 +50,6 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞" };
+export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾" };
 /** So nah muss man stehen, um zu kaufen (Felder vom Händler) */
 export const KAUF_WEIT = 4;

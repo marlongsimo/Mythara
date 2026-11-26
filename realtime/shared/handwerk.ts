@@ -55,7 +55,8 @@ const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
-  /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string }
+  /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
+  /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
@@ -159,3 +160,11 @@ dazu({ id: "bauerneintopf", station: "herd", ergebnis: "bauerneintopf", level: 2
 /* Fischen: Angelrute (Handwerk 1) und Reuse (Handwerk 20) an der Werkbank */
 dazu({ id: "angelrute", station: "werkbank", ergebnis: "angelrute", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }, { g: ["garn"], n: 1 }], xp: 20, ticks: 3, stufe: 0, gruppe: "Fischen" });
 dazu({ id: "reuse", station: "werkbank", ergebnis: "reuse", level: 20, zutaten: [{ g: ["stamm_tanne"], n: 2 }, { g: ["garn"], n: 3 }], xp: 70, ticks: 5, stufe: 0, gruppe: "Fischen" });
+
+/* Phase 3c B2 „Wasser auf die Mühle“ (shared/quest_b2.ts): Quest-Rezepte – Schütztafeln und Hanftau an der Werkbank, Eisenbänder am Amboss (1 Barren → 2 Bänder) */
+const B2 = "weidenhain_wasser_auf_die_muehle";
+dazu({ id: "schuetztafel", station: "werkbank", ergebnis: "schuetztafel", level: 15, zutaten: [{ g: ["stamm_tanne"], n: 2 }], xp: 50, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
+dazu({ id: "eisenbaender", station: "amboss", ergebnis: "eisenband", menge: 2, level: 10, zutaten: [{ g: ["barren_eisen"], n: 1 }], xp: 35, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
+dazu({ id: "hanftau", station: "werkbank", ergebnis: "hanftau", level: 15, zutaten: [{ g: ["garn"], n: 4 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
+/* Werkstatt Weidenhain in Tebbes Schuppen: erst nach B2 (Schalter werkstatt_weidenhain); Esse und Amboss folgen, sobald die Welt sie aufstellt (#64) */
+WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält." });

@@ -4,6 +4,8 @@
  * Baumstamm-Sperren (schranken/freigaben) samt persönlicher Sperre im Gehraster, Questobjekte, Pfeil und Minikarten-Marke, Antippen zum Reden.
  * Alles, was man sieht, richtet sich nach dem eigenen Stand – andere Spieler sehen ihre eigene Welt.
  */
+import { LADEN_LISTE, ladenOffen } from "../../../shared/laeden";
+import { ladenZeigen } from "../laden";
 import * as THREE from "three";
 import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
@@ -15,7 +17,6 @@ import { STATIONEN } from "../../../shared/handwerk";
 import { TUEREN } from "../../../shared/bosse";
 import { tuerenZu } from "../../../shared/boss";
 import { Npc3D } from "./npc3d";
-import { LADEN_LISTE } from "../../../shared/laeden";
 import { schildAn } from "./mitspieler";
 import type { Welt3D } from "./motor";
 
@@ -67,11 +68,13 @@ export class QuestWelt {
   /** Wo die Questfiguren gerade stehen (für das Antippen am Bildschirm: die ganze Figur zählt) */
   punkte(): { x: number; y: number }[] { if (!questGeladen()) return []; const aus: { x: number; y: number }[] = []; for (const f of this.figuren) { const p = this.wo(f); if (p) aus.push(p); } return aus; }
   /** Antippen: liegt dort eine Questfigur? Dann „Mit … sprechen“ (hingehen, dann reden) */
-  stelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
+  stelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr?: { text: string; sym: string; tat: () => void }[] } | null {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return this.objektStelle(x, y); const f = best, p = this.wo(f)!;
-    return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
+    const laden = LADEN_LISTE.find((l) => l.questFigur === f.n.id && ladenOffen(l, (id) => questStandB(id)));   /* Questfigur mit Laden (Hanne Kalk nach B2): dazu „Laden ansehen“ */
+    return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; },
+      ...(laden ? { mehr: [{ text: "Laden ansehen", sym: "🛒", tat: () => ladenZeigen(laden.id) }] } : {}) }; }
   /** Figuren mit „kommt“ (z. B. Jori beim ersten Besuch): laufen dem Spieler in ihrer Region entgegen und sprechen ihn an */
   private entgegen(f: Figur, dt: number) { const K = f.n.kommt!, q = questDef(f.q)!;
     if (questGeladen() && gilt(q, questStandB(q.id), K.wenn) && this.u.hier === K.region && !f.fertig && !this.u.gesperrt) {

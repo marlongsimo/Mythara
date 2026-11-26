@@ -1,7 +1,7 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
@@ -87,6 +87,25 @@ elif ART == "krug_wasser":
     dreh("wasser", [(0.0, 0.178), (0.041, 0.178)], mat("wasser", (90, 150, 200), 0.05), 36)
     rohr([(0.06, 0, 0.16), (0.11, 0, 0.15), (0.11, 0, 0.07), (0.07, 0, 0.05)], 0.008, TON)
     dreh("band", [(0.0756, 0.06), (0.078, 0.065), (0.078, 0.075), (0.0756, 0.08)], mat("band", (110, 60, 35), 0.8), 36)
+elif ART == "krug":                                                                               # leerer Tonkrug (wie krug_wasser, ohne Wasser)
+    TON = mat("ton", (170, 100, 60), 0.75)
+    dreh("krug", [(0.0, 0.0), (0.05, 0.0), (0.065, 0.02), (0.075, 0.07), (0.068, 0.12), (0.05, 0.16), (0.045, 0.18), (0.052, 0.195), (0.047, 0.2), (0.04, 0.185), (0.04, 0.1), (0.0, 0.1)], TON, 36)
+    dreh("innen", [(0.0, 0.1), (0.04, 0.1)], mat("innen", (70, 40, 25), 0.9), 36)
+    rohr([(0.06, 0, 0.16), (0.11, 0, 0.15), (0.11, 0, 0.07), (0.07, 0, 0.05)], 0.008, TON)
+    dreh("band", [(0.0756, 0.06), (0.078, 0.065), (0.078, 0.075), (0.0756, 0.08)], mat("band", (110, 60, 35), 0.8), 36)
+elif ART == "suppe_verbrannt":                                                                    # angebrannter Topf: schwarze Kruste, Rauchfahne
+    EISEN = mat("eisen", (105, 105, 112), 0.5, 0.6)
+    dreh("topf", [(0.0, 0.0), (0.06, 0.0), (0.1, 0.02), (0.11, 0.08), (0.105, 0.09), (0.1, 0.085), (0.0, 0.085)], EISEN, 36)
+    o = dreh("kruste", [(0.0, 0.07), (0.1, 0.07)], mat("kruste", (25, 20, 16), 0.95), 36)
+    for v in o.data.vertices: v.co.z += random.uniform(-0.004, 0.006)
+    for k in range(6): kugel((random.uniform(-.06, .06), random.uniform(-.06, .06), 0.074), 0.012, mat("kohle", (15, 12, 10), 0.9), (1, 1, 0.5), 8)
+    for sx in (-1, 1): rohr([(sx * 0.105, 0, 0.07), (sx * 0.14, 0, 0.075), (sx * 0.16, 0, 0.07)], 0.007, EISEN)
+    for k, (x, z) in enumerate(((0.0, 0.12), (0.02, 0.17), (-0.01, 0.22))): kugel((x, 0.0, z - 0.02), 0.018 + 0.006 * k, mat("rauch", (175, 172, 168), 1.0), (1, 1, 0.8), 10)
+elif ART == "brot_verbrannt":                                                                     # verkohlter Laib mit Rissen
+    o = kugel((0, 0, 0.035), 0.06, mat("verbrannt", (35, 24, 16), 0.9), (1.5, 1.0, 0.65), 18)
+    for v in o.data.vertices: v.co += Vector((0, 0, 0.004 * math.sin(v.co.x * 90) * (v.co.z > 0.03)))
+    for k in range(3): kugel((-0.04 + 0.04 * k, 0.0, 0.07), 0.008, mat("riss", (12, 10, 8), 0.95), (0.6, 4.5, 0.3), 8).rotation_euler = (0, 0, 0.5)
+    for k in range(5): kugel((random.uniform(-.1, .1), random.uniform(-.07, .07), 0.003), 0.008, mat("asche", (110, 106, 100), 1.0), (1, 1, 0.3), 6)
 elif ART == "kessel":
     EISEN = mat("eisen", (105, 105, 112), 0.5, 0.6)
     dreh("kessel", [(0.0, 0.0), (0.06, 0.0), (0.12, 0.04), (0.14, 0.1), (0.13, 0.15), (0.125, 0.16), (0.12, 0.155), (0.0, 0.155)], EISEN, 40)

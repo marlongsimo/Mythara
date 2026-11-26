@@ -148,6 +148,11 @@ hz = np.where(np.isin(G, ['M', '~', 'w', '#']), 0, hz * maske_h)
 hz = ndimage.gaussian_filter(hz, 1.2)
 ecken = np.zeros((H + 1, W + 1), np.float32); ecken[:-1, :-1] += hz; ecken[1:, :-1] += hz; ecken[:-1, 1:] += hz; ecken[1:, 1:] += hz; ecken /= 4
 
+# ───── Untergrund für das Ostufer (212–215 × 200–210, eigene Region): ostufer.mjs legt seinen Felskessel darauf ─────
+_i0, _i1, _j0, _j1 = (200 - CY0) * C, (211 - CY0) * C, (212 - CX0) * C, (216 - CX0) * C
+open(os.path.join(WELT, 'festland', 'ostufer_grund.txt'), 'w', encoding='utf8').write('\n'.join(''.join(z) for z in G[_i0:_i1, _j0:_j1]) + '\n')
+json.dump({'werte': np.round(ecken[_i0:_i1 + 1, _j0:_j1 + 1] * 100).astype(int).ravel().tolist()}, open(os.path.join(WELT, 'festland', 'ostufer_hoehen.json'), 'w'), separators=(',', ':'))
+
 # ───── in Regionen schneiden ─────
 NAMEN = {1: 'Die Fahlen Weiten', 2: 'Die Smaragdküste', 3: 'Die Glutsande', 4: 'Die Ockerlande', 5: 'Das Weiße Ende', 6: 'Das Grenzland', 7: 'Die Hochlande', 8: 'Die Frostkrone', 9: 'Der Drachenarm'}
 BIOM = {1: 'tundra', 2: 'tropen', 3: 'wueste', 4: 'wueste', 5: 'schnee', 6: 'wiese', 7: 'gebirge', 8: 'schnee', 9: 'kueste'}

@@ -8,6 +8,7 @@
  * Gleich große Chunks, die Welt bleibt ein lückenloses Rechteck. Der Server kennt „graufurt“ schon.
  * Aufruf (im Ordner realtime): node werkzeug/welt/graufurt.mjs     danach: node werkzeug/welt/bauen.mjs osthang graufurt
  */
+import * as FORM from "./ostufer_form.mjs";
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
@@ -69,18 +70,18 @@ export const GRAUFURT = { W0: 8, W1: 58, N0: 60, S0: 170, GN: 34, GO: 112 };
   const GASSEN = [[[W0, GW], [PLATZ.x, PLATZ.y]], [[PLATZ.x, PLATZ.y], [GN, N0]], [[PLATZ.x, PLATZ.y], [W1, GO]], [[PLATZ.x, PLATZ.y], [33, 152]], [[12, 152], [54, 152]], [[22, 84], [47, 84]], [[33, 84], [33, 100]], [[18, 139], [18, 152]], [[44, 141], [44, 152]], [[49, 123], [49, 116]]];
   const innen = (x, y) => x > W0 + 1 && x < W1 - 1 && y > N0 + 1 && y < S0 - 1;
   const KLAMM = { x0: 6, x1: 33, y0: 34, y1: 52 }, klammBoden = (x, y) => Math.abs(y - (43 + 1.2 * Math.sin(x / 4))) < 2.4 + 0.5 * Math.sin(x / 2.3) && x > KLAMM.x0 + 2 && x < KLAMM.x1;
-  const ostRiegel = (x, y) => { const r = 2.4 + 1.4 * Math.sin(x / 4.3) * Math.sin(x / 2.1); return x > flussX(y) + 3 && (Math.abs(y - 22 - 2 * Math.sin(x / 7)) < r || Math.abs(y - 330 - 2 * Math.sin(x / 6)) < r); };
+  const gx0 = 208 * 32, gy0 = 200 * 32, grat = (x, y) => x > flussX(y) + 3 ? FORM.art(gx0 + x, gy0 + y) : "aussen";   /* der Felsgrat um das Ostufer (ostufer_form.mjs) */
+  const uferwald = (x, y) => Math.sin(x / 13 + y / 29) + 0.6 * Math.sin(y / 11 - x / 7) + 0.4 * Math.sin(y / 37 + 1.7);
   const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, w = welle(cx, cy); let c;
     if (imFluss(cx, cy)) c = "~";
-    else if (ostRiegel(cx, cy)) c = "F";                                                     /* Felsriegel: das Ostufer nur mit der Fähre */
+    else if (grat(cx, cy) === "F" || grat(cx, cy) === "g") c = grat(cx, cy);                 /* Felsgrat: das Ostufer nur mit der Fähre */
     else if (cx < W0 + 0.5 && Math.abs(cy - sy(cx)) < 3.1) c = "k";
     else if (innen(cx, cy)) c = Math.hypot((cx - PLATZ.x) / PLATZ.rx, (cy - PLATZ.y) / PLATZ.ry) < 1 || GASSEN.some((p) => strecke(cx, cy, p) < 1.5) || (cx > HOF[0] && cx < HOF[2] && cy > HOF[1] && cy < HOF[3]) ? "p" : w > 1.0 ? "," : ".";
     else if (strecke(cx, cy, UFERWEG) < 1.4 || strecke(cx, cy, WASSERWEG) < 1.4 || strecke(cx, cy, OSTWEG) < 1.3 || strecke(cx, cy, KLAMMWEG) < 1.2) c = "e";
     else if (cx > KLAMM.x0 && cx < KLAMM.x1 + 2 && cy > KLAMM.y0 && cy < KLAMM.y1) c = klammBoden(cx, cy) ? "g" : "F";   /* Furtklamm */
     else if (cx < W0 + 2 && Math.abs(cy - sy(cx)) < 5.2 + w) c = ".";
     else if (cy < 16 + w && strecke(cx, cy, UFERWEG) > 2.6) c = "f";
-    else if (cx > flussX(cy) + 6) c = cx > 100 + 2 * w || cy < 10 || cy > H - 8 ? "f" : (w > 0.9 ? "," : ".");
-    else if (cx < 5 + w || cy > H - 5 - w) c = "f";
+    else if (cx > flussX(cy) + 6) c = uferwald(cx, cy) + 0.3 * w > 0.5 + (grat(cx, cy) === "innen" ? 0.5 : 0) ? "f" : (w > 0.9 ? "," : ".");
     else c = w > 1.1 ? "," : w < -1.3 ? "t" : ".";
     z.push(c); } g.push(z); }
   let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|graufurt|wald|stil|burg|k|hand|moor)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });

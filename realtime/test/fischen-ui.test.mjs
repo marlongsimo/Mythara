@@ -66,7 +66,11 @@ try {
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fischen-muehlgraben.png" });
   /* antippen: hingehen, angeln, bis ein Bachling im Rucksack ist */
   const p = await schirm(anna, ziel.x, ziel.y, 0.05); await anna.mouse.click(p.x, p.y);
-  await anna.waitForFunction(() => window.EZW.chat().some((c) => /Bachling/.test(c.text || "") && /bekommst/.test(c.text || "")), null, { timeout: 90000 }).catch(() => {});
+  await anna.waitForFunction(() => window.EZW.chat().some((c) => /wirfst die Schnur/.test(c.text || "")), null, { timeout: 60000 }).catch(() => {}); await anna.waitForTimeout(3000);
+  const rute = await anna.evaluate(() => { const f = window.EZW.welt3d.figur; let b = null; if (f && f.wurzel) f.wurzel.traverse((o) => { if (o.name === "werkzeug.beil") b = o; }); return { clip: f && f.angelClip, name: f && f.name, sichtbar: Boolean(b && b.visible) }; });
+  check(rute.clip === "angeln_warten" && /angeln/.test(rute.name || "") && rute.sichtbar, `Held angelt: Rute in der Hand, Bewegung ${rute.name}`);
+  if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fischen-angel.png" });
+  await anna.waitForFunction(() => window.EZW.chat().some((c) => /Bachling/.test(c.text || "") && /bekommst/.test(c.text || "")), null, { timeout: 150000 }).catch(() => {});
   const chat = await anna.evaluate(() => window.EZW.chat().map((c) => c.text || "")); if (process.env.DBG) console.log(chat.slice(-8), await anna.evaluate(() => [window.EZW.welt3d.ort.x, window.EZW.welt3d.ort.y, window.EZW.welt3d.fische.aktiv]), p, ziel);
   check(chat.some((c) => /wirfst die Schnur/.test(c)) && chat.some((c) => /Du bekommst .*Bachling/.test(c)), "Angeln per Antippen: Schnur ausgeworfen, Bachling gefangen");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fischen-fang.png" });
