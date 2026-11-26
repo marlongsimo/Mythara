@@ -30,7 +30,8 @@ import { levelAus as levelVon } from "../../shared/kampfwerte";
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
    bis 10 Sekunden ohne Kampf vergangen sind, höchstens 60 Sekunden. Am Gebietsrand (Wechsel ins Nachbargebiet) und ohne Kampf geht er sofort. */
-const KAMPF_RUHE_MS = 10000, HAENGEN_MS = 60000, RAND = 2.5;
+/* für Tests über die Umgebung einstellbar (#27) */
+const KAMPF_RUHE_MS = Number(process.env.KAMPF_RUHE_MS) || 10000, HAENGEN_MS = Number(process.env.HAENGEN_MS) || 60000, RAND = 2.5;
 /* Von welchen Seiten aus verbunden werden darf (Komma-getrennt). Leer = alle, nur für Tests gedacht. */
 /* Erlaubte Seiten: aus ERLAUBTE_HERKUNFT (Render) – riftmere.de (seit 25.11.2026) und die alte Adresse gelten immer, damit der Umzug nicht an der Render-Einstellung hängt */
 const HERKUNFT = [...new Set([...(process.env.ERLAUBTE_HERKUNFT || "https://mythara-dungeon.de,http://localhost:8765").split(","), "https://riftmere.de", "https://www.riftmere.de", "https://mythara-dungeon.de"].map((s) => s.trim()).filter(Boolean))];
