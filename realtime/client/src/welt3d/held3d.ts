@@ -160,6 +160,9 @@ export class Held3D {
   teleport(): number { if (!this.wurzel || this.gestorben || this.effekt) return 0; this.gestorben = true; this.einmal = false; if (this.clips.has("teleport_weg")) this.spiele("teleport_weg", true);
     const fx = new TeleportEffekt(this.wurzel, TELEPORT_S, 60); fx.gruppe.scale.setScalar(this.hoehe / 1.8); fx.gruppe.visible = true; this.bild.gruppe.add(fx.gruppe); this.effekt = fx;
     this.skala = this.wurzel.scale.x; return TELEPORT_S * 1000; }
+  /** Ankunft nach einem Teleport ohne Neuladen der Seite (Freunde, Wegstein): Lichtsäule weg, Figur wieder da (#53). Ohne laufenden Teleport: nichts */
+  ankunft(): void { const fx = this.effekt; if (!fx || !this.wurzel) return; fx.weg(); fx.gruppe.removeFromParent(); this.effekt = null;
+    this.wurzel.scale.setScalar(this.skala); this.wurzel.visible = true; this.gestorben = false; this.einmal = false; this.anwenden(); }
   sichtbar(an: boolean): void { this.an = an; this.bild.gruppe.visible = an; if (!this.wurzel) this.ersatz.sichtbar(an); }
   /* Bewegungen der Figuren-Fabrik: „gehen“ fürs normale Bewegen, „laufen“ ist dort das Rennen (Sprint). Abgespielt so schnell, dass die Schritte zum Tempo passen
      (Fabrik: Gehen 1,6 m/s, Rennen 4,2 m/s bei 1,8 m; hier 2,0 m, also 1,78 / 4,67 Felder/s: Gehen 2 Felder/s → ×1,12, Sprint 4 Felder/s → ×0,86 – „Felder und Schräge“) */
