@@ -37,7 +37,7 @@ const TA = "tok_anna_" + "x".repeat(30), TB = "tok_ben__" + "x".repeat(30);
 const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x + d, wy: b.y }); await schlaf(150); };
 const nein = async (s, id) => { s.holz = []; sende(s, { t: "holz", tat: "start", id }); return (await warte(s, (m) => m.t === "holz" && (m.tat === "nein" || m.tat === "start"))) || {}; };
 try {
-  check(ST.length === 32 && ST.filter((b) => b.art === "eiche").length === 17 && ST.filter((b) => b.art === "moorweide").length === 8, `32 Holzfäller-Bäume: 17 Eichen, 6 Tannen, 1 Eibe, 8 Moorweiden (${ST.length})`);
+  check(ST.length === 33 && ST.filter((b) => b.art === "linde_totholz").length === 1 && ST.filter((b) => b.art === "eiche").length === 17 && ST.filter((b) => b.art === "moorweide").length === 8, `33 Holzfäller-Bäume: 17 Eichen, 6 Tannen, 1 Eibe, 8 Moorweiden, 1 Linden-Totholz (B1) (${ST.length})`);
   await starten({ HOLZ_FALL: "0", HOLZ_KERN: "1" });
   const anna = await spieler(TA, EICHE.region), ben = await spieler(TB, EICHE.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
   await bei(ben, EICHE); check((await nein(ben, EICHE.id)).text === "Du brauchst ein Holzbeil.", "Ohne Beil: „Du brauchst ein Holzbeil.“");

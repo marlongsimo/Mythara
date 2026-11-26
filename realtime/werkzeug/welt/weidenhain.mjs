@@ -92,7 +92,7 @@ const dinge = [
   o("weidenhain_kornspeicher_01", ...SPEICHER), o("weidenhain_bauernhaus_01", ...HAUS), o("weidenhain_muehle_01", ...MUEHLE),
   o("dorf_marktstand_02", 40, 19.6), o("dorf_marktstand_01", 28.6, 31.6),
   o("dorf_festfeuer_01", ...FEUER), o("dorf_bank_01", 37.5, 28.5), o("dorf_bank_01", 46.5, 28.5), o("dorf_bank_01", 37.5, 34.6), o("dorf_bank_01", 46.5, 34.6),
-  o("stil_linde_01", RING[0] + 0.2, RING[1] - 1.3, { s: 1.05 }), o("dorf_steinring_01", ...RING),
+  o("stil_linde_01", RING[0] + 0.2, RING[1] - 1.3, { s: 1.05 }), o("dorf_steinring_01", ...RING), o("wz_bindestein", RING[0] + 1.2, RING[1] + 1.2) /* Bindestein (Splitterbinden, Phase 3a) zwischen den Wurzeln der Linde */,
   o("dorf_wehr_01", ...WEHR), ...BRUECKEN.map((b) => o(b.objekt, b.x, b.y)),
   o("dorf_kuerbisse_01", 37.6, 21.8), o("dorf_kuerbisse_01", 31.2, 34), o("dorf_heuballen_01", 22.4, 21.6), o("dorf_heuballen_01", 23.8, 22.3),
   /* Bankschalter (24.11.2026): Schalterhäuschen am Nordrand des Platzes, neben dem Kornspeicher */ o("weidenhain_bankschalter_01", 36.5, 19),
@@ -125,7 +125,7 @@ const lies = (id, x, y, text) => ({ id, art: "lesen", x, y, radius: 1.6, abgleic
 const spiel = {
   start: [[47.5, 3], [46.5, 2.2], [48.5, 2.2]],
   figuren: [{ id: "hanne", rolle: "npc", figur: "hanne", x: 33.4, y: 23.4 }, { id: "lene", rolle: "npc", figur: "lene", x: 40.6, y: 25.2 }, { id: "tebbe", rolle: "npc", figur: "tebbe", x: 58.6, y: 36.6, links: true },
-    { id: "agnes", rolle: "npc", figur: "agnes", x: 50.2, y: 33.2, links: true }, { id: "mette", rolle: "npc", figur: "mette", x: 32.4, y: 43.2 },
+    /* Agnes steht jetzt als Questfigur an der Linde (shared/quest_b1.ts) */ { id: "mette", rolle: "npc", figur: "mette", x: 32.4, y: 43.2 },
     { id: "junge_sued", rolle: "npc", figur: "junge", x: 46.6, y: 70.4 }, { id: "wanderer_ost", rolle: "npc", figur: "wanderer", x: 98.6, y: 37.6, links: true }, { id: "kraeuterfrau_ost", rolle: "npc", figur: "kraeuterfrau", x: 80.6, y: 31.6 }],
   spawnzonen: [],
   interaktionen: [

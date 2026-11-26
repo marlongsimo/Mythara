@@ -526,6 +526,54 @@
         "tod",
         "angriff"
       ]
+    },
+    {
+      "id": "waffe.angelrute",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/angelrute/v001/hand/angelrute.glb",
+      "griff": 0.09,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
+    },
+    {
+      "id": "waffe.lamberts_rute",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/lamberts_rute/v001/hand/lamberts_rute.glb",
+      "griff": 0.09,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
+    },
+    {
+      "id": "waffe.fischreuse",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/fischreuse/v001/hand/fischreuse.glb",
+      "griff": 0.03,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
     }
   ],
   "stuecke_behalten": true,

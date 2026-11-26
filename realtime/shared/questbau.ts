@@ -106,7 +106,7 @@ export interface Sperre { wenn: Bed; text: string }
 /** Voraussetzung (Questlog: grün / rot) */
 export interface Voraussetzung { text: string; wenn: Bed }
 /** Lohn beim Abschluss – alles in einer Buchung, genau einmal (Kampf-XP über rpg_held_quest_abschluss, danach Splitter und Gegenstände) */
-export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; /** Berufe-XP (shared/berufe.ts) */ berufe?: Record<string, number>; splitter?: number; gegenstaende?: { g: string; n?: number }[] }
+export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; /** Berufe-XP (shared/berufe.ts) */ berufe?: Record<string, number>; splitter?: number; gegenstaende?: { g: string; n?: number }[]; /** Ladungen (inventar.ladungen, shared/splitterbinden.ts) */ ladungen?: Record<string, number> }
 
 export interface QuestDef {
   id: string; titel: string; ort: string;
