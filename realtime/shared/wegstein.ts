@@ -14,3 +14,5 @@ export const WEGSTEIN_ZIELE: WegZiel[] = [
 export const wegZiel = (id: string): WegZiel | undefined => WEGSTEIN_ZIELE.find((z) => z.id === id);
 /** eigene Abklingzeit des Wegsteins (unabhängig vom Heim-Teleport) */
 export const WEGSTEIN_PAUSE_MS = 2 * 60 * 1000;
+/** Heim-Teleport (Taste T): Startpunkt der Waldmark (wie welt.json regionen.waldmark.start[0], test/wegstein-ui prüft das) */
+export const HEIM = { x: 6448, y: 6437.5, region: "waldmark" };

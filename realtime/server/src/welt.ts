@@ -16,7 +16,7 @@ import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte, questStand, schalter } from "./quests";
-import { wegZiel, WEGSTEIN_PAUSE_MS } from "../../shared/wegstein";
+import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen } from "./inventar";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
@@ -56,7 +56,9 @@ export const TELEPORT_PAUSE_MS = Number(process.env.TELEPORT_PAUSE_MS || 5 * 60 
    nicht an die Stelle, die der Browser meldet */
 export const WEGSTEIN_PAUSE = Number(process.env.WEGSTEIN_PAUSE_MS || WEGSTEIN_PAUSE_MS); const wegsteinZuletzt = new Map<string, number>();
 const wegsteinZiele = new Map<string, { x: number; y: number; region: string; bis: number }>();
-/** Wegstein-Ziel dieses Kontos abholen (einmal, höchstens 2 min alt) */
+/** Ziel eines Teleports (Wegstein, Freund, Heim) setzen: die Kampfwelt setzt den Helden dorthin, die Stelle ist gemerkt */
+function teleportZiel(H: Pick<WeltHilfen, "sb">, nutzer: string, x: number, y: number, region: string): void { wegsteinZiele.set(nutzer, { x, y, region, bis: Date.now() + 120_000 }); void stelleMerken(H, nutzer, region, x, y); }
+/** Teleport-Ziel dieses Kontos abholen (einmal, höchstens 2 min alt) */
 export function wegsteinZielNehmen(nutzer: string): { x: number; y: number; region: string } | null { const z = wegsteinZiele.get(nutzer); wegsteinZiele.delete(nutzer); return z && z.bis > Date.now() ? z : null; }
 setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); lichtTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
@@ -234,7 +236,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "teleport") { /* fragt vor dem Teleport: erlaubt (und ab jetzt 5 Minuten Pause) oder die Restzeit */
       if (s.gast) { senden(s, { t: "teleport", ok: true, gast: true }); return; }
       const rest = (teleportZuletzt.get(s.nutzer) || 0) + TELEPORT_PAUSE_MS - jetzt; if (rest > 0) { senden(s, { t: "teleport", ok: false, rest }); return; }
-      teleportZuletzt.set(s.nutzer, jetzt); senden(s, { t: "teleport", ok: true }); }
+      teleportZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, HEIM.x, HEIM.y, HEIM.region); /* der Server setzt die Position, nicht der Browser */ senden(s, { t: "teleport", ok: true }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
     else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
@@ -254,8 +256,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (kampfPruefer(s.nutzer)) { nein("Mitten im Kampf schweigt der Stein."); return; }
       { const rest = (wegsteinZuletzt.get(s.nutzer) || 0) + WEGSTEIN_PAUSE - jetzt; if (rest > 0) { nein(`Der Stein ist noch warm – in ${Math.ceil(rest / 1000)} s ruft er wieder.`, rest); return; } }
       if (!ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
-      wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); wegsteinZiele.set(s.nutzer, { x: z.x, y: z.y, region: z.region, bis: jetzt + 120_000 });
-      s.wx = z.x; s.wy = z.y; void stelleMerken(H, s.nutzer, z.region, z.x, z.y);
+      wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, z.x, z.y, z.region); s.wx = z.x; s.wy = z.y;
       senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein") }); }
     else if (e.t === "zufreund") { const n = String(e.n || "").slice(0, 40), nein = (text: string) => { if (s) senden(s, { t: "zufreund", ok: false, n, text }); };
       if (s.gast) { nein("Freunde gibt es mit Konto."); return; }
@@ -264,6 +265,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (!WELTREGIONEN.includes(z.ort) || z.wx === undefined || z.wy === undefined) { nein(`${n} ist gerade an einem Ort, an den kein Teleport führt.`); return; }
       if (regionGesperrt(s.nutzer, z.ort)) { nein(`${gebietName(z.ort)} ist für dich noch nicht freigeschaltet – der Weg ist noch gesperrt.`); return; }
       if (kampfPruefer(f.user_id)) { nein(`${n} ist gerade im Kampf – versuch es gleich noch einmal.`); return; }
+      alleStop(s); teleportZiel(H, s.nutzer, z.wx, z.wy, z.ort); /* wie der Wegstein: die Kampfwelt setzt den Helden zum Freund, statt den alten samt alter Stelle zu übernehmen */
       senden(s, { t: "zufreund", ok: true, n, ort: z.ort, x: z.wx, y: z.wy }); }
     else if (e.t === "freundanfrage") { if (s.gast) return; const n = String(e.n || "").slice(0, 40), z = [...spieler].find((o) => !o.gast && o.name === n); freundeJe.delete(s.nutzer);
       if (z) { freundeJe.delete(z.nutzer); senden(z, { t: "freundanfrage", von: s.name, angenommen: Boolean(e.angenommen) }); } }
