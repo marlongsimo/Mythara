@@ -90,6 +90,8 @@ try {
   await stelle(anna, ...AGNES); await rede(anna, "agnes"); await sag(anna, "agnes", "abgeben"); await schlaf(700);
   const ab = ABSCHLUSS.find((a) => a.p_quest === QUEST_B1.id);
   check(anna.b[QUEST_B1.id] === "fertig" && ab && ab.p_xp.magie === 400 && ab.p_punkte === 1 && lad(anna) === 10, `B1 fertig: 400 Magie-XP, 1 Questpunkt, 10 Ladungen (${lad(anna)})`);
+  await stelle(anna, ...AGNES); await rede(anna, "agnes"); await sag(anna, "agnes", "abgeben"); await schlaf(500);
+  check(ABSCHLUSS.filter((a) => a.p_quest === QUEST_B1.id).length === 1 && lad(anna) === 10 && anzahl(anna, "wegstein") === 1, `Lohn genau einmal: zweites Abgeben bringt nichts (${lad(anna)} Ladungen)`);
   check(((anna.inv.berufe || {}).splitterbinden || 0) >= 20, `Splitterbinden-XP aus dem ersten Laden (${(anna.inv.berufe || {}).splitterbinden})`);
 
   console.log("Bindestein");
