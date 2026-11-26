@@ -61,6 +61,8 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Essen** (Stand heute): Brot heilt 4, nicht stapelbar, 1,5 s zwischen zwei Bissen, auch im Kampf. Gerichte mit Wirkung kommen mit Kochen (Phase 3b). *(26.11., Erklärung, keine Änderung)*
 - **Quest-Lohn über 1.000 XP je Skill** wird gebraucht: neue Migration hebt die Grenze aus 048 an (Vorschlag 50.000 je Skill/Beruf, Issue #41). Bis dahin höchstens 1.000. *(26.11.)*
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum). *(26.11.)*
+- **Handel zwischen Spielern:** „Handeln“ führt den Helden bis auf **ein Feld** an den anderen heran (das ist die Nähe). Der andere bekommt die Anfrage im Chat: Zeile antippen öffnet das Handelsfenster, oder selbst per langem Drücken „Handeln“. *(26.11.)*
+- **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP) an den Nutzer übergeben – eingespielt? *(26.11., offen)*
 - **Wachtrüstung** (zweites Set, Phase 8): **vorerst nicht**. Die gebauten Teile bleiben ungenutzt in der Fabrik; E4 gibt stattdessen die Klinge des Grauen Hauptmanns. *(26.11.)*
 - **HUD überarbeiten** (26.11., später am Tag): **ja** – kompakt, einfach, möglichst ohne Scrollen; eigener Chat „Oberfläche“, Regeln `doku/konzepte/hud.md`. Die neuen Symbole (#30/#32/#33) bleiben. (Die Gold-UI-Vorlagen von vorher sind kein Muss.) **Nichts einfach so ändern:** jede Oberflächen-Änderung zuerst als Vorschau zeigen und mit dem Nutzer gemeinsam ausarbeiten.
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*

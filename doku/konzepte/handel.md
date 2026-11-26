@@ -5,15 +5,15 @@ Konzept vom 26.11.2026 (Leitstelle), Wunsch des Nutzers. Vorbild für den Aufbau
 
 ## Ablauf
 
-1. **Anfrage:** anderen Spieler lange drücken / rechts anklicken → Aktionsmenü → **„Handeln“**.
-   Beim anderen erscheint im Chat (Kanal System, hervorgehoben) „**Name möchte mit dir handeln.**“ – Antippen der Zeile oder selbst „Handeln“ auf den Anfragenden öffnet das Fenster.
-   Anfrage verfällt nach 30 s. Beide müssen im selben Gebiet und höchstens ~8 Felder voneinander entfernt sein; nicht im Kampf.
+1. **Anfrage:** anderen Spieler lange drücken / rechts anklicken → Aktionsmenü → **„Handeln“**. Der eigene Held **läuft bis auf ein Feld** an den anderen heran – das ist die Nähe zum Handeln (Entscheidung des Nutzers, 26.11.).
+   Beim anderen erscheint im Chat (hervorgehoben) „**Name möchte mit dir handeln.**“ Er kann **die Zeile antippen** – dann öffnet sich das Handelsfenster (sein Held läuft dafür ebenfalls bis auf ein Feld heran, falls nötig) –
+   **oder selbst** den Anfragenden lange drücken → „Handeln“. Anfrage verfällt nach 30 s. Nicht im Kampf.
 2. **Fenster 1 – Angebot:** Jeder legt Gegenstände aus seinem Rucksack hinein (antippen = 1, lange drücken = Menge wählen: 1 / 5 / 10 / X / Alle) und optional **Splitter** (eigenes Feld mit Zahl).
    Antippen eines angebotenen Gegenstands nimmt ihn wieder heraus.
    **Annehmen** färbt die eigene Seite grün; der andere sieht „Name hat angenommen“. **Jede Änderung** an einem der beiden Angebote setzt beide Annahmen zurück.
 3. **Fenster 2 – Bestätigen:** Wenn beide angenommen haben, kommt eine **Zusammenfassung** als Liste („Du gibst: … / Du bekommst: …“), keine Änderung mehr möglich.
    Erst wenn beide hier **noch einmal** annehmen, tauscht der Server. (Schutz gegen Last-Second-Tricks.)
-4. **Tausch:** auf dem Server **in einem Schritt** (alles oder nichts), danach Meldung „Handel abgeschlossen.“ Ablehnen, Weglaufen (> 8 Felder), Kampf, Gebietswechsel, Teleport oder Verbindungsabbruch brechen ab – nichts wechselt den Besitzer.
+4. **Tausch:** auf dem Server **in einem Schritt** (alles oder nichts), danach Meldung „Handel abgeschlossen.“ Ablehnen, Weglaufen (mehr als ein paar Felder auseinander), Kampf, Gebietswechsel, Teleport oder Verbindungsabbruch brechen ab – nichts wechselt den Besitzer.
 
 ## Regeln
 
@@ -58,4 +58,3 @@ Stil: Rahmen und Knöpfe wie die übrigen Fenster (Bank, Rucksack), grüne Umran
 ## Offen (Nutzer)
 
 - Welche Belohnungen sollen **gebunden** (nicht handelbar) sein? Vorschlag: Quest-Belohnungen mit eigenem Namen (Rabenset, Klinge des Grauen Hauptmanns, Rotes Banner), Rabenküken.
-- Maximale Entfernung zum Handeln (Vorschlag 8 Felder) oder überall im selben Gebiet?
