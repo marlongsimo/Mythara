@@ -32,7 +32,8 @@ check(!vomFestland(ost) && !vomFestland(nah(ia("ostufer", "turm_wappentuer"))), 
 console.log("\nOstufer");
 const amOst = flut(ost, BOX);
 check(amOst(nah(ia("ostufer", "turm_wappentuer"))), "vom Ostanleger zu Fuß bis zur Wappentür");
-for (const [x, y] of [[82, 216], [90, 218], [86, 226], [100, 286], [106, 289], [102, 295]]) check(amOst(nah({ x: OX + x + 0.5, y: OY + y + 2 })), `neben Weltenbaum/Urgestein ${x}|${y} erreichbar`);
+check(reg.ostufer.spiel.kollision.sperren.length === 6, "6 gesperrte Felder: 3 Weltenbäume, 3 Urgestein-Adern");
+for (const { x0: x, y0: y } of reg.ostufer.spiel.kollision.sperren) check(amOst(nah({ x: OX + x + 0.5, y: OY + y + 2 })), `neben Weltenbaum/Urgestein ${x}|${y} erreichbar`);
 console.log("\nTurm");
 const tuer = ia("ostufer", "turm_wappentuer"), e1 = { x: tuer.daten.ziel[0], y: tuer.daten.ziel[1] };
 check(R.begehbar(e1.x, e1.y), "die Wappentür führt in den Turm auf freien Boden");
