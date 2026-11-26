@@ -10,6 +10,7 @@
 import { SammelArt } from "./sammeln";
 import { zwischenteil } from "./gegenstaende";
 import KOCHSTELLEN from "./kochstellen.json";
+import { WELTKAMPF } from "./weltzonen";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
@@ -43,6 +44,21 @@ export const WERKSTAETTEN: Werkstatt[] = [
 /* Kochen (Phase 3b): Feuer, Brunnen – und später Backofen, Herd, Kessel – aus kochstellen.json */
 for (const k of (KOCHSTELLEN as unknown as { stellen: (Werkstatt & { name: string })[] }).stellen) WERKSTAETTEN.push({ id: k.id, station: k.station, x: k.x, y: k.y, ort: k.ort, ...(k.schalter ? { schalter: k.schalter, gesperrt: k.gesperrt } : {}) });
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
+/** Versperrt das Gehraster der Kampfwelt dieses Weltfeld? (wie karten.ts weltZeilen: frei, wo irgendeine Region frei ist; außerhalb aller Regionen: unbekannt = nicht versperrt) */
+export function versperrt(i: number, j: number): boolean { let drin = false;
+  for (const z of WELTKAMPF) { const x = i - z.x0, y = j - z.y0; if (x < 0 || y < 0 || x >= z.b || y >= z.h) continue; drin = true; if (z.zeilen[y].charCodeAt(x) === 46) return false; } return drin; }
+/** Höchstens so viele Schritte (über freie Felder) vom Helden bis neben die Werkstatt – um eine Mauer herum durch die Tür sind es viel mehr */
+export const WERKSTATT_SCHRITTE = 4;
+/** Keine Wand zwischen Held und Werkstatt (#57): vom Feld des Helden in wenigen Schritten über freie Felder (acht Richtungen, nicht um Ecken schneiden)
+ *  auf ein Feld neben der Station (oder ihr eigenes). So bedient man die Esse nicht durch die Mauer der Schmiede, wohl aber die Werkbank von allen Seiten (Server und Browser gleich) */
+export function werkstattErreichbar(hx: number, hy: number, W: { x: number; y: number }): boolean {
+  const si = Math.floor(W.x), sj = Math.floor(W.y), neben = (i: number, j: number) => Math.abs(i - si) <= 1 && Math.abs(j - sj) <= 1;
+  let rand: [number, number][] = [[Math.floor(hx), Math.floor(hy)]]; const gesehen = new Set([rand[0].join()]);
+  for (let schritt = 0; schritt <= WERKSTATT_SCHRITTE; schritt++) { const neu: [number, number][] = [];
+    for (const [i, j] of rand) { if (neben(i, j)) return true; if (schritt === WERKSTATT_SCHRITTE) continue;
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const a = i + dx, b = j + dy, k = a + "," + b; if ((!dx && !dy) || gesehen.has(k) || versperrt(a, b) || (dx && dy && (versperrt(i + dx, j) || versperrt(i, j + dy)))) continue; gesehen.add(k); neu.push([a, b]); } }
+    rand = neu; }
+  return false; }
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
 
 const LV = [1, 10, 20, 35, 45, 65];
