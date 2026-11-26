@@ -70,7 +70,6 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Handel zwischen Spielern:** „Handeln“ führt den Helden bis auf **ein Feld** an den anderen heran (das ist die Nähe). Der andere bekommt die Anfrage im Chat: Zeile antippen öffnet das Handelsfenster, oder selbst per langem Drücken „Handeln“. *(26.11.)*
 - **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP je Skill) sind **eingespielt**. *(26.11.)*
 - **Quest-Abschluss:** eigenes Abschlussfenster (Glückwunsch, Belohnungen, Questpunkte), gutgeschrieben mit „Okay“ (bleibt abholbereit, nichts geht verloren). Passt etwas nicht in den Rucksack, **landet es auf dem Boden** nach den **allgemeinen Boden-Regeln** (kurz privat, dann offen, dann verfällt). **Gebundene Gegenstände** verschwinden nach derselben allgemeinen Zeit, werden dabei aber **nie für andere sichtbar** (nur der Besitzer sieht und hebt sie auf). *(26.11., #77)*
-- **Live-Zeiten:** Neues geht nur noch **zweimal am Tag** live, **3:00 und 16:00 Uhr** (deutsche Zeit), mit **15-Minuten-Countdown** im Spiel; **Bugfixes** dürfen jederzeit (kurzer Countdown). Umsetzung #96. *(26.11.)*
 - **Verkaufen an Händler:** Jeder Händler kauft **nur Waren, die er selbst führt**, zu **80 % seines Verkaufspreises** (abgerundet). Im Laden ist der Rucksack daneben offen: antippen zeigt den Verkaufspreis, langes Drücken bietet „Verkaufen“. Gebundenes und geladene „(s)“-Ausrüstung kann man nicht verkaufen. *(26.11.)*
 - **Kutsche:** gestrichen für Phase 10, das gebaute Modell bleibt liegen (nicht löschen); **Idee für später** als Kutschennetz zwischen den Großstädten (ab etwa 5 Städten, günstige Reise ohne Splitterbinden, kleine Splitter-Senke). *(26.11.)*
 - **Trödler** (Wunsch 26.11.): über die Welt verstreute Händler, die **alles Handelbare** ankaufen, aber nur zu **50 %** des normalen Händlerpreises (Grundwert). Gebundenes, „(s)“ und Questgegenstände nicht. Der erste steht im **Rabenmoor** (nicht Kreuzwald/Osthof). Konzept `doku/konzepte/troedler.md`.
@@ -83,6 +82,7 @@ Zuletzt aktualisiert: 26.11.2026.
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
+- **Feste Live-Zeiten** (3:00 und 16:00 Uhr deutscher Zeit, 15-Minuten-Countdown im Spiel, Bugfixes jederzeit) – Vorlage in #96 (geschlossen, „für später“).
 - Kutschennetz zwischen den Großstädten · Handelskontor (`doku/konzepte/handelskontor.md`) · Splitterinsel
 
 ## Offen (Fragen an den Nutzer)
