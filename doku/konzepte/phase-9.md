@@ -77,7 +77,7 @@ Ein alter **Bote der Wacht** ist vor dem Zerfall mit einer Karte aufgebrochen, d
 Startet bei **Ysolde** (Geist am Grünen Turm, Phase 7): „Der Bote ist nie in Grauwacht angekommen.“
 Jedes Stück zeigt einen Hinweis auf das nächste (keine feste Reihenfolge – wer weiter ist, sammelt schneller).
 **Lohn:** die **Reisekarte** (Gegenstand, gebunden): zeigt auf der Weltkarte alle Wegstein-Ziele und erlaubt **einmal am Tag** einen Wegstein-Sprung ohne Ladung; dazu großer Lohn (XP bis zur neuen Grenze, Splitter, 4 Questpunkte).
-**Haken:** Die Karte zeigt östlich der Glutsande eine Insel im Splittermeer – die **Splitterinsel** (Weltkonzept, offene Frage).
+**Haken:** Die Karte zeigt die angrenzenden Regionen (Smaragdküste, Hochlande) und ganz am Rand die Splitterinsel – die Karte wächst aber **in die Breite, den Quests folgend** (Kanon); die Splitterinsel kommt später.
 
 ## Wer macht was (Vorarbeit jetzt)
 
@@ -91,4 +91,3 @@ Jedes Stück zeigt einen Hinweis auf das nächste (keine feste Reihenfolge – w
 ## Offen (Nutzer)
 
 - Namen: Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter.
-- Splitterinsel: als nächstes Ziel nach der Karte des Boten?
