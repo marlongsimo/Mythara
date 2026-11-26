@@ -1,0 +1,154 @@
+{
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "schildstoss",
+    "kampfschrei",
+    "treffer",
+    "tod"
+  ],
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "tod_schild_flach": true,
+  "exklusiv": true,
+  "starr": [
+    {
+      "id": "waffe.schwert.schildwahrer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffe.schwert.schildwahrer/v001/quelle/schwert.glb",
+      "griff": 0.1,
+      "griff2": 0.03
+    },
+    {
+      "id": "schild.kreuz",
+      "platz": "arm_l",
+      "art": "schild",
+      "glb": "schild.kreuz/v001/quelle/schild.glb"
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.hemd.basis",
+      "platz": "hemd",
+      "bild": "hemd",
+      "farbe": "#8c6f4c",
+      "dicke": 0.022,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          0.5
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.7
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.7
+        ]
+      ],
+      "wahlfrei": true
+    },
+    {
+      "id": "kleidung.hose.basis",
+      "platz": "hose",
+      "bild": "hose",
+      "farbe": "#4b3526",
+      "dicke": 0.035,
+      "unten": true,
+      "bereich": [
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          1
+        ]
+      ],
+      "wahlfrei": true
+    },
+    {
+      "id": "kleidung.schuh.basis",
+      "platz": "schuh",
+      "bild": "schuh",
+      "farbe": "#5c3720",
+      "dicke": 0.02,
+      "unten": true,
+      "bereich": [
+        [
+          "fuss.L",
+          0,
+          1
+        ],
+        [
+          "fuss.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0.8,
+          1
+        ],
+        [
+          "unterschenkel.R",
+          0.8,
+          1
+        ]
+      ],
+      "wahlfrei": true
+    }
+  ],
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "Vorlage für eine Grundstruktur (nach basis.mann): schlichter Körper aus Meshy mit Textur; Unterkleidung als Lagen (unten), Waffen, Baukasten mit Zeichenreihenfolge, gemalter Stil. Teile (Rüstung, Sets) kommen über baukasten.py, set_aus_bild.py, kleidung_aus_bild.py oder teile_uebertragen.py dazu. Startausrüstung: kleidung.start.leinen (set_aus_bild.py … frei_wo_leer), als Unterkleidung standardmäßig angezogen; die einfachen Lagen hemd/hose/schuh sind wählbar.",
+  "teilnetze": [],
+  "arm_radius": 0.1
+}

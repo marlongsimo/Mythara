@@ -4,6 +4,7 @@
  * Alle Punkte sind in Bildpunkten der Vorlage (1671 x 941) angegeben; gezeigt wird sie F-fach vergrößert.
  * Die alte, aus Einzelteilen gebaute Stadt gibt es noch unter ?stadt=alt (dorf.ts).
  */
+import { eigenesLevel } from "./skills";
 import { weltkarte } from "./weltkarte";
 import { heldenhalle } from "./halle";
 import { hudProfil, hudTitel, hudKarte, hudMenue, menueTafel } from "./hud";
@@ -169,7 +170,7 @@ export class Stadt extends Phaser.Scene {
   heldWaehlen() { if (this.gesperrt) return; this.gesperrt = true; this.halt(); const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL;
     wahl((held) => { weltHeld(held); this.gesperrt = false; if (held !== this.held) this.scene.restart({ held }); }, () => { this.gesperrt = false; }, { los: "Mit diesem Helden ziehen", zurueck: "Zurück" }); }
   /** Name und Stufe über dem eigenen Helden: wie die anderen mich sehen (vom Server), sonst Konto- bzw. Gastname und die Stufe auf dem Gerät */
-  schildText(): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · St. ${i.stufe}`; return `${kontoName() || "Gast"} · St. ${stufeAusEp(epAlle()[this.held] || 0)}`; }
+  schildText(): string { const i = weltIch(); if (i) return i.gast ? i.name : `${i.name} · Lv ${i.stufe}`; return `${kontoName() || "Gast"} · Lv ${eigenesLevel(stufeAusEp(epAlle()[this.held] || 0))}`; }
   /** Zahl der Spieler am Knopf „Spieler“ */
   onlineZeigen() { const b = document.querySelector('#ez-kartenrahmen [aria-label="Spieler"] small') as HTMLElement | null; if (b) { const n = weltOnline(); b.textContent = n > 1 ? `Spieler (${n})` : "Spieler"; } }
   /** Riss, Heldenhalle oder Weltkarte öffnen – vor Ort oder über die Knöpfe unten rechts */

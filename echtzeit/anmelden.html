@@ -3,10 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Mythara: Splitterlande – Anmelden</title>
+  <link rel="manifest" href="mythara.webmanifest?v=mwxp3axm">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Riftmere">
+  <link rel="apple-touch-icon" href="../img/app/mythara-180.png">
+  <title>Riftmere – Anmelden</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="../img/favicon.svg">
-  <link rel="stylesheet" href="start.css?v=mwwl21mi">
+  <link rel="icon" href="../img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="start.css?v=mwxp3axm">
+  <script src="start-passen.js?v=mwxp3axm"></script>
+  <script src="quer.js?v=mwxp3axm" defer></script>
   <style>
     /* Login-Fenster: quer, unter dem Logo im Hintergrund */
     .login { width: min(620px, 94vw); padding: 64px clamp(22px, 6vw, 64px) 34px; display: flex; flex-direction: column; gap: 16px; }
@@ -29,7 +37,7 @@
       <div id="inhalt"></div>
       <p class="meldung" id="meldung" role="status"></p>
     </section>
-    <p class="fuss"><a href="../">← Zur Startseite von Mythara</a> · <a href="https://case-unlocked.de/impressum.html" target="_blank" rel="noopener">Impressum</a> · <a href="https://case-unlocked.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a></p>
+    <p class="fuss"><a href="../">← Zur Startseite von Mythara</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
   </main>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
@@ -45,6 +53,7 @@
       auge: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3.2" fill="#0f0d0c"/></svg>' };
     const feld = (id, ico, typ, platz, auto, extra = "") => `<label class="feld">${ICO[ico]}<input type="${typ}" id="${id}" autocomplete="${auto}" placeholder="${platz}" aria-label="${platz}" ${extra}>${typ === "password" ? `<button type="button" class="auge" data-auge="${id}" aria-label="Passwort anzeigen">${ICO.auge}</button>` : ""}</label>`;
     const fb = (t, art = "") => { const e = $("#meldung"); e.textContent = t; e.dataset.art = art; };
+    if (new URLSearchParams(location.search).get("geloescht") === "1") setTimeout(() => fb("Dein Konto ist gelöscht."), 0); /* nach „Konto löschen“ auf der Willkommensseite */
     const lies = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, schreib = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { /* privat */ } };
     const weiter = () => { const w = new URLSearchParams(location.search).get("weiter") || ""; return /^\?[A-Za-z0-9_=&%.\-]*$/.test(w) ? w : ""; };
     const zurLandung = () => { try { sessionStorage.setItem("mr-sitzung", "1"); } catch (e) { /* privat */ } location.replace("willkommen.html" + (weiter() ? "?weiter=" + encodeURIComponent(weiter()) : "")); };

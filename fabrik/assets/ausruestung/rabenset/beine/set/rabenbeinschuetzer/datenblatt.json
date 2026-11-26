@@ -1,0 +1,31 @@
+{
+  "name": "Rabenbeinschützer",
+  "gegenstand": "rabenbeinschuetzer",
+  "gruppe": "rabenset",
+  "teil": "beine",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Set",
+  "modell": {
+    "ebene": "ruestung.beine.rabe",
+    "quelle": "fabrik/assets/ausruestung/rabenset/beine/ruestung.beine.rabe",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.rabe.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.rabe.glb"
+  },
+  "werte": {
+    "Abwehr Nahkampf": "+4",
+    "Abwehr Fernkampf": "+4",
+    "Abwehr Magie": "+4"
+  },
+  "werte_offen": false,
+  "text": "Gehärtetes Leder mit Federsaum und einem Rabenwappen am Gürtel. Teil 3 des Rabensets – Belohnung aus dem dritten Abschnitt der Raben-Trilogie.",
+  "set": {
+    "name": "Rabenset",
+    "teile": [
+      "rabenkapuze",
+      "rabenpanzer",
+      "rabenbeinschuetzer"
+    ],
+    "bonus": "alle 3 Teile: jeder Treffer mit Schaden > 0 heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)"
+  },
+  "herkunft": "Raben-Trilogie, Abschnitt 3"
+}

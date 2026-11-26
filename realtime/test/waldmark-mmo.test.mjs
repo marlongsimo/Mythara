@@ -45,7 +45,7 @@ try {
   check(!/ort=/.test(gast.url()), "Waldweg-Adresse führt zurück in die Waldmark (" + gast.url().replace(B, "") + ")");
   await gast.goto(B + "?ort=weidenhain" + S); await gast.waitForURL((u) => !/ort=/.test(u), { timeout: 15000 }).catch(() => {}); check(!/ort=/.test(gast.url()), "Kampagnen-Adresse führt zurück in die Waldmark");
   await gast.waitForFunction(() => window.EZW && window.EZW.ich(), null, { timeout: 30000 });
-  check(await gast.$$eval("#ez-kartenrahmen .rknoepfe small", (l) => !l.some((x) => /Weltkarte|Quests/.test(x.textContent))), "Unter der Karte keine Weltkarte und keine Quests (Kampagnen ausgeblendet)");
+  check(await gast.$$eval("#ez-leiste-r small, #ez-kartenrahmen .rknoepfe small", (l) => !l.some((x) => /Weltkarte|Quests/.test(x.textContent))), "Unter der Karte keine Weltkarte und keine Quests (Kampagnen ausgeblendet)");
   check(!(await gast.$('#ez-menue [aria-label="Weltkarte"]')), "Kein Weg zur Weltkarte im Menü");
   check(await gast.evaluate(() => window.EZW.ich().gast === true && /^Gast \d{4}$/.test(window.EZW.ich().name)), "Ohne Konto ist man als Gast in der Welt: " + await gast.evaluate(() => window.EZW.ich().name));
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), "schildwaechter"), ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), "kopfgeldjaeger");
@@ -56,7 +56,7 @@ try {
   await gast.waitForFunction(() => window.EZW.spieler().length === 2, null, { timeout: 8000 }).catch(() => {});
   check(await gast.evaluate(() => window.EZW.spieler().map((d) => d.n).sort().join(",")) === "Anna,Ben", "Der Gast sieht Anna und Ben");
   check(await anna.evaluate(() => document.querySelectorAll("#ez-karte u.freund").length) === 2, "Die anderen erscheinen auf Annas Minikarte");
-  check(await anna.evaluate(() => window.EZW.szene.schild.text) === "Anna · St. 3", "Über Annas eigenem Helden: „" + await anna.evaluate(() => window.EZW.szene.schild.text) + "“");
+  check(await anna.evaluate(() => window.EZW.szene.schild.text) === "Anna · Lv 3", "Über Annas eigenem Helden: „" + await anna.evaluate(() => window.EZW.szene.schild.text) + "“");
   check(/^Gast \d{4}$/.test(await gast.evaluate(() => window.EZW.szene.schild.text)), "Über dem Gast steht sein Gastname");
   /* öffentlicher Chat mit Sprechblase */
   await anna.fill("#ez-chat input", "Hallo Waldmark"); await anna.press("#ez-chat input", "Enter");

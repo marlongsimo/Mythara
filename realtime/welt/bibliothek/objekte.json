@@ -788,99 +788,143 @@
   },
   {
    "id": "stil_eiche_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (sattgrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_01.webp",
    "groesse": [
-    332,
-    363
+    317,
+    351
    ],
    "anker": [
-    0.5,
-    0.9559
+    0.511,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 14,
+    "saett": 0.95,
+    "hell": 0.8
+   },
+   "vielfalt": [
+    "stil_eiche_01",
+    "stil_laub_dunkel",
+    "stil_laub_oliv"
+   ]
   },
   {
    "id": "stil_eiche_02",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (hellgrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_eiche_02.webp",
    "groesse": [
-    298,
-    322
+    321,
+    351
    ],
    "anker": [
-    0.5,
-    0.9503
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 0,
+    "saett": 1.0,
+    "hell": 1.0
+   },
+   "vielfalt": [
+    "stil_eiche_02",
+    "stil_laub_oliv",
+    "stil_eiche_01"
+   ]
   },
   {
    "id": "stil_linde_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (blaugrün)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_linde_01.webp",
    "groesse": [
-    377,
-    428
+    296,
+    349
    ],
    "anker": [
-    0.5,
-    0.9626
+    0.4966,
+    0.9112
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 32,
+    "saett": 0.8,
+    "hell": 0.78
+   },
+   "vielfalt": [
+    "stil_linde_01",
+    "stil_laub_dunkel",
+    "stil_eiche_02"
+   ]
   },
   {
    "id": "stil_herbst_01",
-   "name": "Stilbaum (laub)",
+   "name": "Laubbaum (herbstlich orange)",
    "kategorie": "bewuchs",
    "bild": "img/welt/stil/stil_herbst_01.webp",
    "groesse": [
-    298,
-    335
+    321,
+    351
    ],
    "anker": [
-    0.5,
-    0.9522
+    0.4735,
+    0.906
    ],
    "massstab": 1,
    "kollision": {
     "art": "kreis",
-    "r": 0.45
+    "r": 0.4
    },
    "tiefe": "fuss",
    "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/baum.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -48,
+    "saett": 1.1,
+    "hell": 0.95
+   },
+   "vielfalt": [
+    "stil_herbst_01",
+    "stil_laub_gold",
+    "stil_laub_rot"
+   ]
   },
   {
    "id": "stil_tanne_01",
@@ -2221,6 +2265,26 @@
       "x1": -0.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.2,
+      "x1": 1.4,
+      "y0": -1.8,
+      "y1": -1.0
+     },
+     {
+      "x0": -2.1,
+      "x1": -1.1,
+      "y0": -4.0,
+      "y1": -2.0
+     },
+     {
+      "x0": 0.6,
+      "x1": 1.8,
+      "y0": -3.6,
+      "y1": -3.2
+     }
     ]
    },
    "tiefe": "fuss",
@@ -2363,6 +2427,32 @@
       "x0": -0.5,
       "x1": 0.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.1,
+      "x1": -0.9,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": -2.25,
+      "x1": -0.75,
+      "y0": -2.6,
+      "y1": -2.2
+     },
+     {
+      "x0": 1.7,
+      "x1": 2.7,
+      "y0": -3.8,
+      "y1": -1.8
+     },
+     {
+      "x0": -0.2,
+      "x1": 1.0,
+      "y0": -3.6,
+      "y1": -3.2
      }
     ]
    },
@@ -2518,6 +2608,26 @@
       "x1": 1.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -1.8,
+      "x1": -0.6,
+      "y0": -1.9,
+      "y1": -1.1
+     },
+     {
+      "x0": -2.1,
+      "x1": -1.1,
+      "y0": -3.6,
+      "y1": -1.6
+     },
+     {
+      "x0": 1.3,
+      "x1": 1.9,
+      "y0": -3.1,
+      "y1": -2.5
+     }
     ]
    },
    "tiefe": "fuss",
@@ -2660,6 +2770,20 @@
       "x0": 0.0,
       "x1": 1.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.4,
+      "x1": -0.4,
+      "y0": -3.4,
+      "y1": -1.4
+     },
+     {
+      "x0": 0.7,
+      "x1": 1.3,
+      "y0": -2.9,
+      "y1": -2.3
      }
     ]
    },
@@ -2804,6 +2928,20 @@
       "x1": 0.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.45,
+      "x1": 1.15,
+      "y0": -1.95,
+      "y1": -1.25
+     },
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y0": -3.4,
+      "y1": -1.4
+     }
     ]
    },
    "tiefe": "fuss",
@@ -2946,6 +3084,26 @@
       "x0": -1.0,
       "x1": 1.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.1,
+      "x1": -1.5,
+      "y0": -1.5,
+      "y1": -0.9
+     },
+     {
+      "x0": -2.1,
+      "x1": -1.5,
+      "y0": -2.4,
+      "y1": -1.8
+     },
+     {
+      "x0": 0.4,
+      "x1": 1.6,
+      "y0": -4.6,
+      "y1": -4.2
      }
     ]
    },
@@ -3221,6 +3379,44 @@
       "x1": 0.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.6,
+      "x1": 3.0,
+      "y0": -4.0,
+      "y1": -3.4
+     },
+     {
+      "x0": -2.6,
+      "x1": -1.4,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": -1.0,
+      "x1": 0.2,
+      "y0": -3.1,
+      "y1": -2.3
+     },
+     {
+      "x0": -2.75,
+      "x1": -1.25,
+      "y0": -2.7,
+      "y1": -2.3
+     },
+     {
+      "x0": 2.6,
+      "x1": 3.2,
+      "y0": -1.5,
+      "y1": -0.9
+     },
+     {
+      "x0": 2.6,
+      "x1": 3.2,
+      "y0": -2.3,
+      "y1": -1.7
+     }
     ]
    },
    "tiefe": "fuss",
@@ -3408,6 +3604,26 @@
       "x1": 2.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 1.05,
+      "x1": 1.75,
+      "y0": -2.6,
+      "y1": -2.2
+     },
+     {
+      "x0": 0.9,
+      "x1": 2.1,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": 2.0,
+      "x1": 2.6,
+      "y0": -1.6,
+      "y1": -1.0
+     }
     ]
    },
    "tiefe": "fuss",
@@ -3550,6 +3766,38 @@
       "x0": -1.5,
       "x1": 1.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -3.0,
+      "y1": -2.2
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -2.0,
+      "y1": -1.6
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": -2.6,
+      "x1": -1.4,
+      "y0": -4.6,
+      "y1": -4.2
+     },
+     {
+      "x0": 1.4,
+      "x1": 2.6,
+      "y0": -4.6,
+      "y1": -4.2
      }
     ]
    },
@@ -3825,6 +4073,26 @@
       "x1": 1.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -0.7,
+      "x1": 0.7,
+      "y0": -5.55,
+      "y1": -4.85
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -2.4,
+      "y1": -2.0
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -3.6,
+      "y1": -3.2
+     }
     ]
    },
    "tiefe": "fuss",
@@ -4008,6 +4276,26 @@
       "x1": 0.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.55,
+      "x1": 1.25,
+      "y0": -1.85,
+      "y1": -1.15
+     },
+     {
+      "x0": -1.2,
+      "x1": 0.0,
+      "y0": -2.6,
+      "y1": -2.2
+     },
+     {
+      "x0": -1.8,
+      "x1": -0.6,
+      "y0": -1.7,
+      "y1": -0.9
+     }
     ]
    },
    "tiefe": "fuss",
@@ -4190,6 +4478,26 @@
       "x0": -1.5,
       "x1": -0.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.8,
+      "x1": 1.8,
+      "y0": -3.1,
+      "y1": -2.1
+     },
+     {
+      "x0": -1.8,
+      "x1": 0.6,
+      "y0": -3.2,
+      "y1": -2.6
+     },
+     {
+      "x0": -2.2,
+      "x1": -1.0,
+      "y0": -1.7,
+      "y1": -0.9
      }
     ]
    },
@@ -4385,6 +4693,44 @@
       "x1": 2.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -3.2,
+      "x1": -2.0,
+      "y0": -4.2,
+      "y1": -3.2
+     },
+     {
+      "x0": 2.1,
+      "x1": 3.3,
+      "y0": -4.3,
+      "y1": -3.3
+     },
+     {
+      "x0": -3.35,
+      "x1": -2.45,
+      "y0": -1.6,
+      "y1": -1.0
+     },
+     {
+      "x0": 2.45,
+      "x1": 3.35,
+      "y0": -1.8,
+      "y1": -1.2
+     },
+     {
+      "x0": 2.45,
+      "x1": 3.35,
+      "y0": -2.8,
+      "y1": -2.2
+     },
+     {
+      "x0": -1.8,
+      "x1": -1.2,
+      "y0": -1.3,
+      "y1": -0.7
+     }
     ]
    },
    "tiefe": "fuss",
@@ -4572,6 +4918,32 @@
       "x1": 1.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -2.3,
+      "x1": -1.3,
+      "y0": -3.9,
+      "y1": -2.9
+     },
+     {
+      "x0": -0.4,
+      "x1": 0.8,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": 1.7,
+      "x1": 2.7,
+      "y0": -4.1,
+      "y1": -2.1
+     },
+     {
+      "x0": -0.9,
+      "x1": 0.3,
+      "y0": -3.6,
+      "y1": -3.2
+     }
     ]
    },
    "tiefe": "fuss",
@@ -4732,6 +5104,26 @@
       "x0": -2.5,
       "x1": -1.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -3.4,
+      "y1": -2.2
+     },
+     {
+      "x0": -1.95,
+      "x1": -1.05,
+      "y0": -1.5,
+      "y1": -0.9
+     },
+     {
+      "x0": -1.85,
+      "x1": -0.95,
+      "y0": -3.9,
+      "y1": -3.3
      }
     ]
    },
@@ -4909,6 +5301,26 @@
       "x1": 0.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -1.9,
+      "y1": -1.1
+     },
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y0": -3.6,
+      "y1": -1.6
+     },
+     {
+      "x0": 0.4,
+      "x1": 1.6,
+      "y0": -3.4,
+      "y1": -3.0
+     }
     ]
    },
    "tiefe": "fuss",
@@ -5058,6 +5470,26 @@
       "x0": -2.5,
       "x1": -1.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.7,
+      "x1": -1.7,
+      "y0": -3.7,
+      "y1": -2.7
+     },
+     {
+      "x0": -1.2,
+      "x1": 0.0,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": -0.2,
+      "x1": 0.8,
+      "y0": -4.0,
+      "y1": -2.0
      }
     ]
    },
@@ -5235,6 +5667,20 @@
       "x1": 1.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y0": -3.4,
+      "y1": -1.4
+     },
+     {
+      "x0": 0.3,
+      "x1": 1.5,
+      "y0": -2.7,
+      "y1": -1.9
+     }
     ]
    },
    "tiefe": "fuss",
@@ -5377,6 +5823,20 @@
       "x0": 0.0,
       "x1": 1.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.6,
+      "x1": -0.6,
+      "y0": -3.5,
+      "y1": -1.5
+     },
+     {
+      "x0": 0.4,
+      "x1": 1.6,
+      "y0": -2.8,
+      "y1": -2.0
      }
     ]
    },
@@ -5527,6 +5987,20 @@
       "x0": -1.0,
       "x1": 0.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.5,
+      "x1": 1.5,
+      "y0": -3.3,
+      "y1": -1.3
+     },
+     {
+      "x0": -1.6,
+      "x1": -1.0,
+      "y0": -2.7,
+      "y1": -2.1
      }
     ]
    },
@@ -5704,6 +6178,32 @@
       "x1": 0.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -2.1,
+      "x1": -0.9,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": 0.9,
+      "x1": 2.1,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -4.0,
+      "y1": -3.6
+     },
+     {
+      "x0": 2.6,
+      "x1": 3.2,
+      "y0": -4.2,
+      "y1": -3.6
+     }
     ]
    },
    "tiefe": "fuss",
@@ -5846,6 +6346,20 @@
       "x0": 0.0,
       "x1": 1.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y0": -3.2,
+      "y1": -1.2
+     },
+     {
+      "x0": 0.9,
+      "x1": 1.5,
+      "y0": -2.7,
+      "y1": -2.1
      }
     ]
    },
@@ -6001,6 +6515,20 @@
       "x1": -0.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -2.2,
+      "x1": -1.6,
+      "y0": -3.7,
+      "y1": -3.1
+     },
+     {
+      "x0": 0.8,
+      "x1": 2.0,
+      "y0": -3.6,
+      "y1": -3.2
+     }
     ]
    },
    "tiefe": "fuss",
@@ -6143,6 +6671,20 @@
       "x0": -1.0,
       "x1": 0.0,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -0.4,
+      "x1": 0.8,
+      "y0": -2.8,
+      "y1": -1.6
+     },
+     {
+      "x0": -1.45,
+      "x1": -0.55,
+      "y0": -1.3,
+      "y1": -0.7
      }
     ]
    },
@@ -6298,6 +6840,26 @@
       "x1": 0.0,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -2.8,
+      "y1": -2.0
+     },
+     {
+      "x0": -1.4,
+      "x1": -0.2,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": 1.1,
+      "x1": 1.7,
+      "y0": -3.7,
+      "y1": -3.1
+     }
     ]
    },
    "tiefe": "fuss",
@@ -6440,6 +7002,26 @@
       "x0": -1.5,
       "x1": -0.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.0,
+      "x1": 1.2,
+      "y0": -2.0,
+      "y1": -1.2
+     },
+     {
+      "x0": -1.9,
+      "x1": -0.9,
+      "y0": -3.8,
+      "y1": -1.8
+     },
+     {
+      "x0": 0.9,
+      "x1": 1.9,
+      "y0": -3.7,
+      "y1": -2.7
      }
     ]
    },
@@ -6590,6 +7172,20 @@
       "x0": -1.5,
       "x1": -0.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -2.1,
+      "x1": -1.1,
+      "y0": -3.6,
+      "y1": -1.6
+     },
+     {
+      "x0": -0.2,
+      "x1": 1.0,
+      "y0": -2.8,
+      "y1": -2.0
      }
     ]
    },
@@ -6773,6 +7369,26 @@
       "x0": -1.5,
       "x1": -0.5,
       "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": -1.0,
+      "x1": 1.4,
+      "y0": -3.1,
+      "y1": -2.5
+     },
+     {
+      "x0": -2.2,
+      "x1": -1.6,
+      "y0": -1.3,
+      "y1": -0.7
+     },
+     {
+      "x0": -2.2,
+      "x1": -1.6,
+      "y0": -2.1,
+      "y1": -1.5
      }
     ]
    },
@@ -7081,6 +7697,26 @@
       "x1": -0.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": 0.65,
+      "x1": 1.35,
+      "y0": -2.85,
+      "y1": -2.15
+     },
+     {
+      "x0": -1.9,
+      "x1": -0.7,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": -2.0,
+      "x1": -0.8,
+      "y0": -2.1,
+      "y1": -1.3
+     }
     ]
    },
    "tiefe": "fuss",
@@ -7275,6 +7911,56 @@
       "x1": 1.5,
       "y": 0
      }
+    ],
+    "moebel": [
+     {
+      "x0": -1.8,
+      "x1": -0.6,
+      "y0": -6.0,
+      "y1": -5.2
+     },
+     {
+      "x0": -0.6,
+      "x1": 0.6,
+      "y0": -6.0,
+      "y1": -5.2
+     },
+     {
+      "x0": 0.6,
+      "x1": 1.8,
+      "y0": -6.0,
+      "y1": -5.2
+     },
+     {
+      "x0": -0.75,
+      "x1": 0.75,
+      "y0": -5.0,
+      "y1": -4.6
+     },
+     {
+      "x0": 2.7,
+      "x1": 3.9,
+      "y0": -6.6,
+      "y1": -6.2
+     },
+     {
+      "x0": 1.7,
+      "x1": 4.1,
+      "y0": -1.6,
+      "y1": -1.0
+     },
+     {
+      "x0": -4.1,
+      "x1": -3.5,
+      "y0": -1.3,
+      "y1": -0.7
+     },
+     {
+      "x0": -4.1,
+      "x1": -3.5,
+      "y0": -2.1,
+      "y1": -1.5
+     }
     ]
    },
    "tiefe": "fuss",
@@ -7456,7 +8142,57 @@
       "voll": false
      }
     ],
-    "tueren": []
+    "tueren": [],
+    "moebel": [
+     {
+      "x0": -1.3,
+      "x1": -0.1,
+      "y0": -3.8,
+      "y1": -3.0
+     },
+     {
+      "x0": -0.3,
+      "x1": 0.9,
+      "y0": -3.8,
+      "y1": -3.0
+     },
+     {
+      "x0": 0.7,
+      "x1": 1.9,
+      "y0": -3.8,
+      "y1": -3.0
+     },
+     {
+      "x0": -0.45,
+      "x1": 1.05,
+      "y0": -2.8,
+      "y1": -2.4
+     },
+     {
+      "x0": -0.45,
+      "x1": 1.05,
+      "y0": -4.4,
+      "y1": -4.0
+     },
+     {
+      "x0": -0.4,
+      "x1": 2.0,
+      "y0": -6.3,
+      "y1": -5.7
+     },
+     {
+      "x0": 2.7,
+      "x1": 3.9,
+      "y0": -6.6,
+      "y1": -6.2
+     },
+     {
+      "x0": 3.5,
+      "x1": 4.1,
+      "y0": -1.3,
+      "y1": -0.7
+     }
+    ]
    },
    "tiefe": "fuss",
    "ebenen": [
@@ -8168,6 +8904,920 @@
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   },
   {
+   "id": "stil_laub_oliv",
+   "name": "Laubbaum (oliv)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_oliv.webp",
+   "groesse": [
+    296,
+    349
+   ],
+   "anker": [
+    0.4966,
+    0.9112
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -12,
+    "saett": 0.8,
+    "hell": 0.9
+   }
+  },
+  {
+   "id": "stil_laub_gold",
+   "name": "Laubbaum (goldgelb)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_gold.webp",
+   "groesse": [
+    317,
+    351
+   ],
+   "anker": [
+    0.511,
+    0.906
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -32,
+    "saett": 1.05,
+    "hell": 1.02
+   }
+  },
+  {
+   "id": "stil_laub_rot",
+   "name": "Laubbaum (rotbraun)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_rot.webp",
+   "groesse": [
+    296,
+    349
+   ],
+   "anker": [
+    0.4966,
+    0.9112
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": -70,
+    "saett": 1.0,
+    "hell": 0.85
+   }
+  },
+  {
+   "id": "stil_laub_dunkel",
+   "name": "Laubbaum (dunkel)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_laub_dunkel.webp",
+   "groesse": [
+    321,
+    351
+   ],
+   "anker": [
+    0.4735,
+    0.906
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.laub (Meshy „Verdant Twist“), gerendert mit fabrik/baum_render.py, Krone umgefärbt von werkzeug/welt/baum_bilder.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-laub.glb",
+    "farbton": 20,
+    "saett": 0.85,
+    "hell": 0.62
+   }
+  },
+  {
+   "id": "stil_tot_01",
+   "name": "Toter Baum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/stil_tot_01.webp",
+   "groesse": [
+    312,
+    344
+   ],
+   "anker": [
+    0.4439,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/objekt.baum.tot (Meshy „Twisted Sentinel“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/baum-tot.glb",
+    "wind": 0.05
+   }
+  },
+  {
+   "id": "holz_eiche_01",
+   "name": "Eiche",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_01.webp",
+   "groesse": [
+    334,
+    346
+   ],
+   "anker": [
+    0.5659,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_01",
+   "name": "Tanne",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_01.webp",
+   "groesse": [
+    212,
+    337
+   ],
+   "anker": [
+    0.4528,
+    0.9436
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_01",
+   "name": "Eibe",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_01.webp",
+   "groesse": [
+    342,
+    346
+   ],
+   "anker": [
+    0.4927,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_01",
+   "name": "Moorweide",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_01.webp",
+   "groesse": [
+    314,
+    344
+   ],
+   "anker": [
+    0.4793,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_01",
+   "name": "Kernbaum",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_01.webp",
+   "groesse": [
+    309,
+    344
+   ],
+   "anker": [
+    0.4693,
+    0.9244
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_01",
+   "name": "Weltenbaum-Setzling",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_01.webp",
+   "groesse": [
+    238,
+    339
+   ],
+   "anker": [
+    0.4664,
+    0.9381
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.39
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling.glb"
+   }
+  },
+  {
+   "id": "holz_eiche_stumpf",
+   "name": "Eichenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eiche_stumpf.webp",
+   "groesse": [
+    155,
+    121
+   ],
+   "anker": [
+    0.471,
+    0.8843
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eiche-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_moorweide_stumpf",
+   "name": "Moorweidenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_moorweide_stumpf.webp",
+   "groesse": [
+    167,
+    126
+   ],
+   "anker": [
+    0.3892,
+    0.881
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/moorweide-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_kernbaum_stumpf",
+   "name": "Kernbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_kernbaum_stumpf.webp",
+   "groesse": [
+    272,
+    184
+   ],
+   "anker": [
+    0.4467,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/kernbaum-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_eibe_stumpf",
+   "name": "Eibenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_eibe_stumpf.webp",
+   "groesse": [
+    146,
+    115
+   ],
+   "anker": [
+    0.5103,
+    0.8783
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/eibe-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_weltenbaum_setzling_stumpf",
+   "name": "Weltenbaumstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_weltenbaum_setzling_stumpf.webp",
+   "groesse": [
+    187,
+    130
+   ],
+   "anker": [
+    0.4866,
+    0.8615
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/weltenbaum_setzling-stumpf.glb"
+   }
+  },
+  {
+   "id": "holz_tanne_stumpf",
+   "name": "Tannenstumpf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/holz_tanne_stumpf.webp",
+   "groesse": [
+    87,
+    84
+   ],
+   "anker": [
+    0.5345,
+    0.8929
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/holzfaellerei (Meshy), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/holzfaellerei/tanne-stumpf.glb"
+   }
+  },
+  {
+   "id": "berg_kupferstein_01",
+   "name": "Kupferstein",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_01.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Embervein Outcrop“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_01",
+   "name": "Eisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_01.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossbound Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_01",
+   "name": "Schwarzeisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_01.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Mossy Obsidian Ridge“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_01",
+   "name": "Sterneisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_01.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Veinstone“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_01",
+   "name": "Splittereisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_01.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Azure Rift Mountain“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_ureisen_01",
+   "name": "Ureisen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_01.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau (Meshy „Emberstone Monolith“), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_kupferstein_leer",
+   "name": "Kupferstein (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_kupferstein_leer.webp",
+   "groesse": [
+    77,
+    83
+   ],
+   "anker": [
+    0.5195,
+    0.9036
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/kupferstein – Adern leer (fabrik/baum_export.py adern=leer ader_ton=warm)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/kupferstein-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_eisen_leer",
+   "name": "Eisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_eisen_leer.webp",
+   "groesse": [
+    95,
+    99
+   ],
+   "anker": [
+    0.5579,
+    0.899
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/eisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/eisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_schwarzeisen_leer",
+   "name": "Schwarzeisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_schwarzeisen_leer.webp",
+   "groesse": [
+    93,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.9057
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/schwarzeisen – Adern leer (fabrik/baum_export.py adern=leer_schwarz)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/schwarzeisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_sterneisen_leer",
+   "name": "Sterneisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_sterneisen_leer.webp",
+   "groesse": [
+    86,
+    97
+   ],
+   "anker": [
+    0.5116,
+    0.9072
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/sterneisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/sterneisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_splittereisen_leer",
+   "name": "Splittereisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_splittereisen_leer.webp",
+   "groesse": [
+    97,
+    125
+   ],
+   "anker": [
+    0.4742,
+    0.92
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/splittereisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/splittereisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "berg_ureisen_leer",
+   "name": "Ureisen (abgebaut)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/berg_ureisen_leer.webp",
+   "groesse": [
+    101,
+    115
+   ],
+   "anker": [
+    0.5099,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.65
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/skilling/bergbau/ureisen – Adern leer (fabrik/baum_export.py adern=leer)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/bergbau/ureisen-leer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hand_werkbank_01",
+   "name": "Werkbank",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hand_werkbank_01.webp",
+   "groesse": [
+    95,
+    113
+   ],
+   "anker": [
+    0.4947,
+    0.9115
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.95,
+    "y": -0.45,
+    "b": 1.9,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "fabrik/assets/skilling/handwerk/werkbank (in Blender gebaut, fabrik/werkbank.py), Holz gebacken",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/handwerk/werkbank.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_flachs_01",
+   "name": "Flachs",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_flachs_01.webp",
+   "groesse": [
+    23,
+    56
+   ],
+   "anker": [
+    0.5217,
+    0.9286
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/flachs.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_flachs_geerntet",
+   "name": "Flachs (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_flachs_geerntet.webp",
+   "groesse": [
+    21,
+    19
+   ],
+   "anker": [
+    0.4762,
+    0.7895
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/flachs-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_hanf_01",
+   "name": "Hanf",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_hanf_01.webp",
+   "groesse": [
+    42,
+    76
+   ],
+   "anker": [
+    0.4881,
+    0.9211
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/hanf.glb",
+    "wind": 0.1
+   }
+  },
+  {
    "id": "moor_bruecke_alt_01",
    "name": "Alte Moorbrücke",
    "kategorie": "wasserbau",
@@ -8183,9 +9833,14 @@
    "massstab": 1,
    "kollision": null,
    "tiefe": "boden",
+   "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
+    "wind": 0
+   }
   },
   {
    "id": "moor_bruecke_alt_02",
@@ -8246,6 +9901,94 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "wz_splitter_obelisk",
+   "name": "Splitter-Obelisk",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_splitter_obelisk.webp",
+   "groesse": [
+    71,
+    217
+   ],
+   "anker": [
+    0.4789,
+    0.9631
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/splitter_obelisk (Meshy „Amethyst Obelisk“)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/splitter_obelisk.glb",
+    "wind": 0,
+    "puls_ton": 250,
+    "puls_breite": 38
+   }
+  },
+  {
+   "id": "dorf_brunnen_3d",
+   "name": "Brunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/dorf_brunnen_3d.webp",
+   "groesse": [
+    94,
+    166
+   ],
+   "anker": [
+    0.5,
+    0.9398
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/brunnen (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/brunnen.glb",
+    "wind": 0,
+    "puls_ton": 300,
+    "puls_breite": 1
+   }
+  },
+  {
+   "id": "dorf_holzstapel_3d",
+   "name": "Holzstapel mit Hackklotz",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/dorf_holzstapel_3d.webp",
+   "groesse": [
+    78,
+    85
+   ],
+   "anker": [
+    0.3974,
+    0.9059
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/holzstapel (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/holzstapel.glb",
+    "wind": 0
+   }
   }
  ]
 }

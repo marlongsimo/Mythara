@@ -1,0 +1,9 @@
+{
+  "id": "waffe.eiddolch",
+  "name": "Eiddolch",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell (Spitze unten), skaliert; ausgelagert als <figur>.teile/waffe.eiddolch.glb, Stufen mit fabrik/stufen_bauen.sh",
+  "herkunft": "Meshy"
+}

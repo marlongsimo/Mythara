@@ -1,0 +1,16 @@
+{
+ "id": "fl_246_169",
+ "name": "Der Drachenarm",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
+ "ursprung": [
+  246,
+  169
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "kueste",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "gegner.kuh",
+  "name": "Kuh",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "hoehe_m": 1.5,
+  "bewegungen": {
+    "ruhe": "grast: Hals tief, Maul im Gras, kaut, Schwanz schlägt ab und zu (3 s)",
+    "gehen": "ruhiger Schritt, diagonale Beinpaare (1,33 s)",
+    "angriff": "Kopfstoß: senken, ausholen, vorstoßen (0,83 s, Treffer Bild 10)",
+    "tod": "kippt zur Seite und bleibt liegen (1,25 s, letztes Bild halten)",
+    "treffer": "getroffen: Kopf hoch und zur Seite, Ruck zurück, Schwanz schlägt (0,42 s)"
+  },
+  "status": "v001: Meshy „Chestnut Dairy Cow“, fabrik/rig_vierbeiner.py hoehe=1.5 bein=0.5 hals=1 schwanz=1 bewegungen=fressen,gehen,angriff,treffer,tod – Spieldatei img/figuren-echt3d/kuh3d.glb; Werte/Verhalten im Spiel folgen",
+  "herkunft": "Meshy"
+}

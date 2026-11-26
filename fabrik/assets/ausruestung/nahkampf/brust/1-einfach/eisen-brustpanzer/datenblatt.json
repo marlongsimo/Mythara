@@ -1,0 +1,17 @@
+{
+  "name": "Eisen-Brustpanzer",
+  "gegenstand": "eisenwacht_gewoehnlich",
+  "gruppe": "nahkampf",
+  "teil": "brust",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Einfach",
+  "modell": {
+    "ebene": "ruestung.brust.eisenwacht.gewoehnlich",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/brust/ruestung.brust.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.eisenwacht.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.eisenwacht.gewoehnlich.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Stumpfes Eisen mit Rost in den Fugen, die Beschläge längst nicht mehr aus Messing."
+}

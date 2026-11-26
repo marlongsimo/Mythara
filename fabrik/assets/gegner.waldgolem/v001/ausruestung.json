@@ -1,0 +1,18 @@
+{
+  "hinweis": "gegner.waldgolem v001 – Waldgolem (Meshy „Elderwood Sentinel“), Nahkampf mit der Faust; Bewegungen ruhe, gehen, faustschlag, tod.",
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "haltung": "zivil",
+  "arme_eng": 4,
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "faustschlag",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": []
+}

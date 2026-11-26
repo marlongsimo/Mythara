@@ -1,0 +1,14 @@
+{
+  "klasse": "streitkolben",
+  "angriff": "angriff",
+  "halten": "rechte Hand; Hieb von oben (ausholen, schlagen, durchziehen)",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff",
+    "block",
+    "tod"
+  ],
+  "hinweis": "Alle Waffen dieser Klasse nutzen diese Bewegungen (fabrik/rig.py). Welche Angriffsbewegung das Spiel zeigt, steht in realtime/shared/gegenstaende.ts ANGRIFF_JE_ART."
+}

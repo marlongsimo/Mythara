@@ -1,0 +1,14 @@
+{
+  "name": "Trainings-Spitzhacke",
+  "werkzeug": "spitzhacke",
+  "skill": "Bergbau",
+  "seltenheit": "Training",
+  "modell": {
+    "spieldatei": "img/objekte3d/skilling/utensilien/spitzhacke.training.glb",
+    "quelle": "fabrik/assets/skilling/utensilien/spitzhacke",
+    "stufenbild": "fabrik/assets/skilling/utensilien/spitzhacke/referenz/stufen.png"
+  },
+  "erzeugt": "Grundstufe selten = Meshy-Modell; andere Stufen: fabrik/seltenheit.py <grund.glb> <ziel.glb> <stufe> metall_c=18 stark=1 holz=1",
+  "werte": {},
+  "werte_offen": true
+}

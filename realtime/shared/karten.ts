@@ -4,10 +4,29 @@
  */
 import type { Lager, Probe } from "./karte";
 import { WALDWEG_ZEILEN, WALDWEG_START, WALDWEG_LAGER, WALDWEG_DEKO, WALDWEG_BAEUME } from "./waldweg";
-import { KREUZWALD, KREUZWALD_ZEILEN, KREUZWALD_START, KREUZWALD_LAGER, KREUZWALD_MEHRKAMPF, UNTERSCHLUPF, UNTERSCHLUPF_ZEILEN, UNTERSCHLUPF_START, UNTERSCHLUPF_LAGER, UNTERSCHLUPF_MEHRKAMPF } from "./weltzonen";
-/** Kampfgebiete der offenen Welt: Region der Welt → Karte der gemeinsamen Simulation (werkzeug/weltzonen.py) */
-export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = { [KREUZWALD.region]: { karte: "kreuzwald", x0: KREUZWALD.x0, y0: KREUZWALD.y0, b: KREUZWALD.b, h: KREUZWALD.h },
-  [UNTERSCHLUPF.region]: { karte: "unterschlupf", x0: UNTERSCHLUPF.x0, y0: UNTERSCHLUPF.y0, b: UNTERSCHLUPF.b, h: UNTERSCHLUPF.h } };
+import { WELTKAMPF } from "./weltzonen";
+/* Zonen Stufe 2 (25.11.2026): EINE Kampfwelt für die ganze offene Welt. Alle Regionen (werkzeug/weltzonen.py) werden zu einer Karte „welt“
+   zusammengesetzt – in Weltfeldern, links oben bei (WELT_X0, WELT_Y0). Ein Held bleibt beim Gang über eine Regionsgrenze in derselben Simulation:
+   kein Wechsel der Verbindung, kein Vorverbinden, Gegner und Beute sind über Grenzen hinweg sichtbar. Aggro, Leine, Streifen und Stufe
+   gelten je Lager (aus dem Gebiet, aus dem es stammt); Mehrkampf-Bereiche in Feldern der ganzen Welt. */
+export const WELT_X0 = Math.min(...WELTKAMPF.map((z) => z.x0)), WELT_Y0 = Math.min(...WELTKAMPF.map((z) => z.y0));
+const WELT_B = Math.max(...WELTKAMPF.map((z) => z.x0 + z.b)) - WELT_X0, WELT_H = Math.max(...WELTKAMPF.map((z) => z.y0 + z.h)) - WELT_Y0;
+/** Die eine Kampfwelt (gleiches Objekt für jede Region – so erkennt der Browser, dass er beim Regionswechsel in derselben bleibt) */
+export const WELTZONE = { karte: "welt", x0: WELT_X0, y0: WELT_Y0, b: WELT_B, h: WELT_H };
+/** Kampfgebiete der offenen Welt je Region: jede Region gehört zur einen Kampfwelt */
+export const WELTZONEN: Record<string, { karte: string; x0: number; y0: number; b: number; h: number }> = Object.fromEntries(WELTKAMPF.map((z) => [z.region, WELTZONE]));
+/** Region an einer Stelle der Welt (Weltfelder) – für Beute am Boden und die gemerkte Stelle */
+export function weltRegionBei(wx: number, wy: number): string { let best = "", fl = Infinity; for (const z of WELTKAMPF) if (wx >= z.x0 && wy >= z.y0 && wx < z.x0 + z.b && wy < z.y0 + z.h && z.b * z.h < fl) { fl = z.b * z.h; best = z.region; } return best || "waldmark"; }
+/** Das Gehraster der ganzen Welt: frei, wo irgendeine Region frei ist (erst beim ersten Gebrauch gebaut, etwa 1,5 Mio. Felder) */
+let weltZeilenFertig: string[] | null = null;
+function weltZeilen(): string[] { if (weltZeilenFertig) return weltZeilenFertig;
+  const r = Array.from({ length: WELT_H }, () => new Uint8Array(WELT_B)); /* 0 = versperrt, 1 = frei */
+  for (const z of WELTKAMPF) { const dx = z.x0 - WELT_X0, dy = z.y0 - WELT_Y0; z.zeilen.forEach((zeile, j) => { const ziel = r[dy + j]; for (let i = 0; i < zeile.length; i++) if (zeile.charCodeAt(i) === 46) ziel[dx + i] = 1; }); }
+  weltZeilenFertig = r.map((z) => { let t = ""; for (let i = 0; i < z.length; i += 4096) t += String.fromCharCode(...Array.from(z.subarray(i, i + 4096), (v) => (v ? 46 : 84))); return t; }); return weltZeilenFertig; }
+/** Lager aller Gebiete in der einen Kampfwelt (Positionen in halben Weltfeldern wie in weltzonen.ts, setzeKarte rechnet mit FEIN um) */
+const WELT_LAGER: Lager[] = (() => { let g = 0; return WELTKAMPF.flatMap((z) => { const dx = (z.x0 - WELT_X0) / 2, dy = (z.y0 - WELT_Y0) / 2, basis = g; g += z.lager.length + 1;
+  return z.lager.map((l) => ({ ...l, x: l.x + dx, y: l.y + dy, gruppe: basis + l.gruppe, aggro: z.aggro, leine: z.leine, wandern: z.wandern, stufe: z.stufe })); }); })();
+const WELT_MEHRKAMPF = WELTKAMPF.flatMap((z) => z.mehrkampf.map(([a, b, c, d]) => [a + z.x0 - WELT_X0, b + z.y0 - WELT_Y0, c + z.x0 - WELT_X0, d + z.y0 - WELT_Y0]));
 /** Eine Schleuse: Solange sie offen ist, kriechen alle `takt` Sekunden Gegner aus dem Wasser (an den Quellen, höchstens `max` zugleich).
  *  Schließen: drei Sekunden ungestört am Hebel stehen. Erst wenn sie zu ist, kann der Kampf gewonnen werden. */
 export interface Schleuse { x: number; y: number; quellen: number[][]; art: string; takt: number; erst: number; max: number; gesamt: number /* danach ist der Graben leer */ }
@@ -27,13 +46,13 @@ const L = (art: string, x: number, y: number, gruppe: number): Lager => ({ art, 
 export const ORTREIHE = ["weidenhain", "rabenmoor", "graufurt", "grauwacht", "hochwacht", "krone"];
 export const KAMPFFOLGE: Record<string, string[]> = { weidenhain: ["speicher", "muehle", "wehr"], rabenmoor: ["bohlenweg", "ried", "totenpfad", "schrein"] };
 /** Stufe der Aufgabe je Ort: bestimmt mit der Gruppengröße die Stärke der Gegner (Server und Spiel gleich). Rabenmoor ist für Helden auf Stufe 1 anspruchsvoll. */
-export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2, kreuzwald: 3, unterschlupf: 4 };
+export const ORTSTUFE: Record<string, number> = { weidenhain: 1, rabenmoor: 2, ...Object.fromEntries(WELTKAMPF.map((z) => [z.karte, z.stufe])), welt: 1 /* die eine Kampfwelt: Stufe je Lager */ }; /* Kreuzwald: Stufe 3 (BESONDERS) */
 /** Gebiete der offenen Welt mit gemeinsamen Kampfzonen (keine Kampagne): immer frei */
-export const WELTGEBIETE = new Set(["kreuzwald", "unterschlupf"]);
+export const WELTGEBIETE = new Set([...WELTKAMPF.map((z) => z.karte), "welt"]);
 /* Nebenkämpfe: freiwillig, frei, sobald der Ort selbst offen ist; sie zählen nicht für das Ende der Kampagne */
 export const NEBENKAEMPFE: Record<string, string[]> = { weidenhain: ["nest", "ufer"] };
 /** Strecken zwischen den Orten: immer begehbar */
-export const STRECKEN = new Set(["waldweg", "kreuzwald", "unterschlupf"]);
+export const STRECKEN = new Set(["waldweg", ...WELTKAMPF.map((z) => z.karte), "welt"]); /* die Kampfgebiete der offenen Welt teilen sich je eine Simulation */
 const geschafft = (siege: Set<string>, ort: string) => { const f = KAMPFFOLGE[ort]; return Boolean(f && f.length && siege.has(ort + "/" + f[f.length - 1])); };
 /** Wie viele Kampagnen der Reihe nach geschafft sind (Siege als „ort/kampf“) */
 export function geschaffteKampagnen(siege: Set<string>): number { let n = 0; while (n < ORTREIHE.length && geschafft(siege, ORTREIHE[n])) n++; return n; }
@@ -52,14 +71,15 @@ export const KARTEN: Record<string, KampfKarte> = {
   waldweg: { name: "Der Waldweg", bild: "img/welt/waldweg.webp", zeilen: WALDWEG_ZEILEN, feinZeilen: true, start: WALDWEG_START, aggro: 7, leine: 16, weg: true,
     lager: WALDWEG_LAGER.map((l) => ({ ...l })), deko: WALDWEG_DEKO, dekoBilder: WALDWEG_BAEUME,
     ausgaenge: [{ x0: 0, x1: 0.8, y0: 0, y1: 18, nach: "waldmark", text: "Zurück in die Waldmark" }, { x0: 39.2, x1: 40, y0: 0, y1: 18, nach: "weidenhain", text: "Weiter nach Weidenhain" }] },
-  /* Der Kreuzwald als Kampfgebiet der offenen Welt (werkzeug/weltzonen.py): die ganze Region als gemeinsame Simulation. Auf der Lichtung
-     streifen vier Dolch-Banditen der Stufe 3 umher und greifen an, sobald ein Held auf 5 Rechenfelder herankommt. Kein eigenes Bild:
-     die offene Welt zeigt Gegner und Treffer an derselben Stelle. */
-  kreuzwald: { name: "Der Kreuzwald", bild: "", zeilen: KREUZWALD_ZEILEN, feinZeilen: true, start: KREUZWALD_START, aggro: 5, leine: 14, wandern: 4, weg: true,
-    ursprung: [KREUZWALD.x0, KREUZWALD.y0], weltRegion: KREUZWALD.region, lager: KREUZWALD_LAGER.map((l) => ({ ...l })), mehrkampf: KREUZWALD_MEHRKAMPF },
-  /* Der Unterschlupf unter der Hütte in der Westmark: Hauptquartier der Banditen, neun Dolch-Banditen in sechs Räumen; die Halle ist Mehrkampf */
-  unterschlupf: { name: "Der Unterschlupf", bild: "", zeilen: UNTERSCHLUPF_ZEILEN, feinZeilen: true, start: UNTERSCHLUPF_START, aggro: 5, leine: 10, wandern: 2, weg: true,
-    ursprung: [UNTERSCHLUPF.x0, UNTERSCHLUPF.y0], weltRegion: UNTERSCHLUPF.region, lager: UNTERSCHLUPF_LAGER.map((l) => ({ ...l })), mehrkampf: UNTERSCHLUPF_MEHRKAMPF },
+  /* Die Kampfgebiete der offenen Welt (werkzeug/weltzonen.py): je Region eine gemeinsame Simulation über die ganze Region. Kein eigenes Bild –
+     die offene Welt zeigt Gegner und Treffer an derselben Stelle. Im Kreuzwald streifen auf der Lichtung vier Dolch-Banditen der Stufe 3 umher
+     und greifen an, sobald ein Held auf 5 Rechenfelder herankommt. */
+  ...Object.fromEntries(WELTKAMPF.map((z): [string, KampfKarte] => [z.karte, { name: z.name, bild: "", zeilen: z.zeilen, feinZeilen: true, start: z.start, aggro: z.aggro, leine: z.leine, wandern: z.wandern, weg: true,
+    ursprung: [z.x0, z.y0], weltRegion: z.region, lager: z.lager.map((l) => ({ ...l })), mehrkampf: z.mehrkampf }])),
+  /* Die eine Kampfwelt (Zonen Stufe 2): alle Gebiete in einer Simulation. Grundwerte wie die meisten Regionen; je Lager die Werte seines Gebiets. */
+  welt: { name: "Die Splitterlande", bild: "", get zeilen() { return weltZeilen(); }, feinZeilen: true,
+    start: [[(WELTKAMPF[0].start[0][0] + (WELTKAMPF[0].x0 - WELT_X0) / 2), (WELTKAMPF[0].start[0][1] + (WELTKAMPF[0].y0 - WELT_Y0) / 2)]], aggro: 5, leine: 14, wandern: 4, weg: true,
+    ursprung: [WELT_X0, WELT_Y0], lager: WELT_LAGER.map((l) => ({ ...l })), mehrkampf: WELT_MEHRKAMPF } as KampfKarte,
   /* Der Kornspeicher: links das Tor, rechts das Loch zum Graben, dazwischen Säcke und Fässer */
   speicher: { name: "Der Kornspeicher", bild: "img/weidenhain/speicher.webp",
     zeilen: ["MMMMMMMMMMMM", "MMKK.....KMM", "M..KK..KK.MM", "M..KK..KK.MM", "............", "M..KK..KK.MM", "M.........MM", "MMKK.....KMM", "MMMMMMMMMMMM"],

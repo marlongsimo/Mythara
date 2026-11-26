@@ -1,0 +1,43 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npcfrau3d – Grundfigur für NPCs in Echtzeit-3D (Frau, Meshy, stilisiert): Leinenhemd, Lederweste, Gürteltasche fest im Modell; zivile Haltung ohne Waffen; Frisuren für Vielfalt.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.dutt_hoch",
+      "platz": "haar",
+      "glb": "npcfrau3d/v001/quelle/teile/kopf.haar.dutt_hoch.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.pixie",
+      "platz": "haar",
+      "glb": "npcfrau3d/v001/quelle/teile/kopf.haar.pixie.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.seitenbob",
+      "platz": "haar",
+      "glb": "npcfrau3d/v001/quelle/teile/kopf.haar.seitenbob.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zopf_wild",
+      "platz": "haar",
+      "glb": "npcfrau3d/v001/quelle/teile/kopf.haar.zopf_wild.glb",
+      "wahlfrei": true
+    }
+  ]
+}

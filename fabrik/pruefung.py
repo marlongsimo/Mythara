@@ -31,12 +31,14 @@ def ueber(unten, oben): a = oben[..., 3:]; aus = unten.copy(); aus[..., :3] = ob
 huellen = [e for e, d in EB.items() if d["art"] == "huelle"]; starr = [e for e, d in EB.items() if d["art"] == "starr"]; erst = {p: t[0] for p, t in meta["plaetze"].items()}
 def gesamt(anim, r, i, teile):
     """So setzt das Spiel die Figur zusammen: Waffen hinten (fernste zuerst), Körper, Rüstung, Waffen vorn"""
-    w = sorted([t for t in teile if EB[t]["art"] == "starr"], key=lambda t: -meta["tiefe"][t][anim][r][i]); bild = np.zeros((F, F, 4), np.float32)
-    for e in [t + ".hinten" for t in w] + ["koerper"] + [t for t in teile if EB[t]["art"] == "huelle"] + [t + ".vorn" for t in w]: bild = ueber(bild, feld(blatt(e, anim), r, i))
+    w = sorted([t for t in teile if EB[t]["art"] == "starr" and (not EB[t].get("bewegungen") or anim in EB[t]["bewegungen"])], key=lambda t: -meta["tiefe"][t][anim][r][i]); bild = np.zeros((F, F, 4), np.float32)
+    hl = sorted([t for t in teile if EB[t]["art"] == "huelle"], key=lambda t: list(EB).index(t)); um = [t for t in hl if meta.get("zeichenfolge") and EB[t].get("umhang")]; rest = [t for t in hl if t not in um]
+    for e in [t + ".hinten" for t in w] + ["koerper"] + (rest + um if r >= 5 else um + rest) + [t + ".vorn" for t in w]: bild = ueber(bild, feld(blatt(e, anim), r, i))
     return bild
 
 print("Bildblätter")
-fehlend = [f"{e}.{a}" for e in ["koerper"] + huellen + [s + x for s in starr for x in (".hinten", ".vorn")] for a in ANIM if blatt(e, a) is None]
+def vorgesehen(e, a): t = e.rsplit(".", 1)[0] if e.endswith((".hinten", ".vorn")) else e; return not EB.get(t, {}).get("bewegungen") or a in EB[t]["bewegungen"]   # Waffe nur in ihren Bewegungen
+fehlend = [f"{e}.{a}" for e in ["koerper"] + huellen + [s + x for s in starr for x in (".hinten", ".vorn")] for a in ANIM if vorgesehen(e, a) and blatt(e, a) is None]
 melde("bild", "alle Blätter vorhanden", f"{len(fehlend)} fehlen", "0", not fehlend, mehr=fehlend[:6])
 falsch = [f"{e}.{a}" for (e, a), b in _blatt.items() if b is not None and b.shape[:2] != (8 * F, ANIM[a]["bilder"] * F)]
 melde("bild", "Blattgröße = 8 Richtungen × Bilder × Feld", f"{len(falsch)} abweichend", "0", not falsch, mehr=falsch[:6])
@@ -70,9 +72,21 @@ doppelt = 0.0
 for a in ANIM:
     for x in range(len(huellen)):
         for y in range(x + 1, len(huellen)):
-            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage"): continue   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
+            if EB[huellen[x]]["platz"] == EB[huellen[y]]["platz"] or EB[huellen[x]].get("ueberlage") or EB[huellen[y]].get("ueberlage") or EB[huellen[x]].get("unten") or EB[huellen[y]].get("unten"): continue   # Unterkleidung liegt absichtlich unter der Rüstung   # wahlfreie Lagen (Schürze, Halstuch) liegen absichtlich darüber
             p = blatt(huellen[x], a)[..., 3] > 0.6 * 255; q = blatt(huellen[y], a)[..., 3] > 0.6 * 255; doppelt = max(doppelt, float((p & q).sum() / max(1, min(p.sum(), q.sum()))))
-melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
+if meta.get("zeichenfolge"):                                                                        # Baukasten: Teile überlappen absichtlich – stattdessen hart: jedes Teil ist im Gesamtbild auch zu sehen
+    sicht = {}
+    for e in huellen:
+        bestes = 0.0
+        for r in range(8):
+            grund = [t for t in alle if not EB[t].get("wahlfrei") and EB[t]["platz"] != EB[e]["platz"] and EB[t]["platz"] not in EB[e].get("ersetzt", [])]
+            if EB[e].get("unten"): grund = [t for t in grund if EB[t].get("unten") or EB[t]["art"] == "starr"]   # Unterkleidung liegt absichtlich unter der Rüstung: nur gegen Unterkleidung prüfen
+            mit_ = gesamt("ruhe", r, 0, grund + [e]); ohne_ = gesamt("ruhe", r, 0, grund); eig = feld(blatt(e, "ruhe"), r, 0)[..., 3] > 0.5
+            if eig.sum() > 8: bestes = max(bestes, float((np.abs(mit_ - ohne_).sum(-1) > 0.05)[eig].mean()))
+        sicht[e] = round(bestes, 2)
+    verdeckt = {e: v for e, v in sicht.items() if v < 0.3}
+    melde("bild", "jedes Rüstungsteil ist im Gesamtbild sichtbar (Anteil seiner Bildpunkte, die das Bild verändern – beste Richtung)", min(sicht.values()) if sicht else 1.0, "≥ 0.3", not verdeckt, mehr=verdeckt)
+else: melde("bild", "keine Überlagerung zwischen Rüstungsebenen (größter gemeinsamer Anteil)", round(doppelt, 4), "≤ 0.02", doppelt <= 0.02)
 # keine Löcher: mit voller Ausrüstung entstehen im Umriss keine durchsichtigen Stellen, die der Körper allein nicht hat
 def loecher(al): voll = al > 0.5; return ndimage.binary_fill_holes(voll) & ~voll
 neu = 0; echt = 0
@@ -82,6 +96,16 @@ for a in ANIM:
             voll = gesamt(a, r, i, [t for t in alle if EB[t]["art"] == "huelle"])[..., 3]; kal = feld(blatt("koerper", a), r, i)[..., 3]; g = loecher(voll); k = loecher(kal)
             neu = max(neu, int((g & ~ndimage.binary_dilation(k, iterations=2)).sum())); echt = max(echt, int(((kal > 0.5) & (voll < 0.5)).sum()))
 melde("bild", "keine Löcher durch die Ausrüstung (Bildpunkte, an denen der Körper allein deckt, die angezogene Figur aber durchsichtig ist – je Bild)", echt, "0", echt == 0)
+# Ebenen sind flächig: nimmt man feine Linien weg (Öffnen mit 3×3), bleibt bei einem flächigen Teil fast alles stehen – bei zerfallenen Netzen (Gitterlinien, Splitter) kaum etwas
+flaechig = {}
+for e in huellen:
+    werte = []
+    for a in ANIM:
+        al = blatt(e, a)[..., 3] > 128; n_ = int(al.sum())
+        if n_ > 200: werte.append(float(ndimage.binary_opening(al, np.ones((3, 3), bool)).sum()) / n_)
+    if werte: flaechig[e] = round(min(werte), 2)
+schlecht = {e: v for e, v in flaechig.items() if v < 0.5}
+melde("bild", "Ebenen sind flächig (Anteil der Fläche, der nach Wegnehmen feiner Linien bleibt – je Ebene, schlechteste Bewegung)", min(flaechig.values()) if flaechig else 1.0, "≥ 0.5", not schlecht, mehr=schlecht)
 melde("bild", "umschlossene Spalten (px je Bild) – nur Hinweis: Rüstungsebenen legen nur Deckung über den Körper und können ihn nicht durchlöchern; gemessen werden natürliche Spalten zwischen Beinen oder zwischen Arm und Rumpf, die die Kleidung umschließt", neu, "Hinweis", True)
 # Handzuordnung im Bild: von vorn (Süden) ist das Schwert links im Bild, der Schild rechts; von hinten (Norden) umgekehrt
 def schwerpunkt(e, a, r, i): al = feld(blatt(e + ".hinten", a), r, i)[..., 3]; return float((al.sum(0) * np.arange(F)).sum() / max(1e-6, al.sum()))
@@ -116,7 +140,7 @@ melde("rig", "Art der Gewichtung", arm.get("gewichte", "?"), "automatisch", "aut
 seiten = {e: (o.parent_bone, round(arm.data.bones[o.parent_bone].head_local.x, 2)) for e, o in teile.items() if o["art"] == "starr"}
 gut = all((b.endswith(".R") and x < 0) or (b.endswith(".L") and x > 0) or (b in ("kopf", "hals", "brust", "becken") and abs(x) < 0.02) for b, x in seiten.values())
 melde("rig", "starre Teile hängen am richtigen Knochen (rechte Körperseite = -x; Kopf, Brust, Becken mittig)", seiten, "hand.R bei x < 0, unterarm.L bei x > 0, mittige Knochen bei |x| < 0.02", gut)
-fest = 0.0; boden = {}; luft = {}; innen = 0.0; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
+fest = 0.0; boden = {}; luft = {}; innen = 0.0; innen_je = {}; hoch = {}; wpos = {}; dg = bpy.context.evaluated_depsgraph_get(); zur_figur = arm.matrix_world.inverted()
 for a in [x for x in bpy.data.actions if x.name in ANIM]:
     arm.animation_data.action = a; ab = {e: [] for e, o in teile.items() if o["art"] == "starr"}; tief = []
     for i in range(ANIM[a.name]["bilder"]):
@@ -132,7 +156,7 @@ for a in [x for x in bpy.data.actions if x.name in ANIM]:
                 for q in Q:
                     ort, nrm, _, d = baum.find_nearest(Vector(q.tolist()))
                     if ort is not None and (Vector(q.tolist()) - ort).dot(nrm) < -0.004: drin += 1
-                innen = max(innen, drin / len(Q)); o.evaluated_get(dg).to_mesh_clear()
+                innen = max(innen, drin / len(Q)); innen_je[e] = max(innen_je.get(e, 0), round(drin / len(Q), 3)); o.evaluated_get(dg).to_mesh_clear()
         ko.to_mesh_clear()
     for e, l in ab.items(): fest = max(fest, max((p - l[0]).length for p in l) * 1000)
     flug = set(ANIM[a.name].get("sprung", []))                                                   # Flugbilder eines Sprungs: müssen in der Luft sein, die übrigen am Boden
@@ -162,7 +186,7 @@ if "tod" in ANIM:
 if "block" in ANIM and not any(EB[t]["platz"] == "arm_l" for t in starr):
     for e, o in teile.items():
         if o["art"] == "starr" and EB[e]["platz"] == "hand_r": v = wpos[(e, "block")][ANIM["block"].get("halten", -1)]; melde("animation", f"Block ohne Schild: {e} deckt vor dem Oberkörper (Mitte der Waffe, m: vor / Höhe)", [round(-v.y, 2), round(v.z, 2)], "vor ≥ 0.2 m, Höhe 1.1–1.9 m", -v.y >= 0.2 and 1.1 <= v.z <= 1.9)
-melde("rig", "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)", round(innen, 4), "≤ 0.03", innen <= 0.03, warn=innen <= 0.1)
+melde("rig", "Rüstung liegt über dem Körper (größter Anteil geprüfter Punkte unter der Körperoberfläche)", round(innen, 4), "≤ 0.03", innen <= 0.03, warn=innen <= 0.1, mehr={e: v for e, v in sorted(innen_je.items(), key=lambda x: -x[1])[:6] if v > 0.03})
 luecke = float(bpy.data.actions["angriff2h"].get("griffluecke_cm", -1)) if "angriff2h" in bpy.data.actions else -1
 if luecke >= 0: melde("animation", "beidhändiger Angriff: linkes Handgelenk am Griff (größter Abstand in den Bildern 2–7, cm)", round(luecke, 1), "≤ 6 im Hieb, Übergangsbilder dürfen abweichen", luecke <= 6, warn=True)
 liste = os.path.join(os.path.dirname(os.path.abspath(ordner)), "ausruestung.json")

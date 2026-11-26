@@ -1,0 +1,237 @@
+{
+ "_hinweis": "Handwerk (25.11.2026): Kuhgehege im Osthof (24 × 13 Felder, Zaun geschlossen, Tor unten in der Mitte; Gebietsfelder) und die Felder der Werkbänke in der Waldmark und im Osthof (shared/handwerk.ts WERKSTAETTEN). Eingetragen von werkzeug/welt/lichtungen.mjs (alte Einträge derselben Region werden vorher entfernt); die Kühe stehen in werkzeug/weltzonen.py (osthof → lager).",
+ "bauten": [
+  {
+   "name": "Kuhgehege",
+   "region": "osthof",
+   "objekte": [
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 23.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 25.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 27.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 29.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 31.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 33.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 35.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 37.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 39.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 41.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 43.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 45.5,
+     "y": 6.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 23.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 25.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 27.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 29.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 31.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 33.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 37.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 39.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 41.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 43.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 45.5,
+     "y": 19.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 7.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 7.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 9.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 9.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 11.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 11.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 13.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 13.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 15.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 15.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 22.5,
+     "y": 17.5
+    },
+    {
+     "objekt": "dorf_zaun_01",
+     "x": 46.5,
+     "y": 17.5
+    }
+   ],
+   "sperren": [
+    [
+     22,
+     6,
+     47,
+     7
+    ],
+    [
+     22,
+     19,
+     34,
+     20
+    ],
+    [
+     36,
+     19,
+     47,
+     20
+    ],
+    [
+     22,
+     7,
+     23,
+     19
+    ],
+    [
+     46,
+     7,
+     47,
+     19
+    ]
+   ]
+  },
+  {
+   "name": "Waldmark: keine Werkbank mehr (Eintrag bleibt, damit alte Sperren entfernt werden)",
+   "region": "waldmark",
+   "objekte": [],
+   "sperren": []
+  },
+  {
+   "name": "Werkbank Osthof",
+   "region": "osthof",
+   "objekte": [],
+   "sperren": [
+    [
+     33,
+     26,
+     36,
+     27
+    ]
+   ]
+  }
+ ]
+}

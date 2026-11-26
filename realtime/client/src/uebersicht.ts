@@ -15,6 +15,7 @@ export interface WeltkarteOpts {
   chunkFelder: number;                           // Felder je Chunk
   ich: () => { x: number; y: number } | null;    // eigene Stelle in Feldern (Welt)
   hier?: () => string;                           // Region, in der man steht (für die Überschrift)
+  orte?: { x: number; y: number; zeichen: string; name: string }[]; // besondere Stellen (Läden) als kleines Symbol
   symbolNamen?: Record<string, string>;          // Kennung → Name der Kartensymbole
   symbolBild?: string;                           // Ordner der Symbolbilder (img/karte/symbole/)
 }
@@ -47,10 +48,21 @@ export function uebersicht(o: WeltkarteOpts): void {
     Object.assign(im.style, { left: (r.ursprung[0] * C - x0) * PX + "px", top: (r.ursprung[1] * C - y0) * PX + "px", width: r.chunks[0] * C * PX + "px", height: r.chunks[1] * C * PX + "px" });
     lw.appendChild(im);
   }
-  for (const r of o.regionen) { /* Namen nach den Bildern, damit sie oben liegen */
-    const n = document.createElement("div"); n.className = "wk-name"; n.textContent = r.name;
-    Object.assign(n.style, { left: ((r.ursprung[0] + r.chunks[0] / 2) * C - x0) * PX + "px", top: ((r.ursprung[1] + r.chunks[1] / 2) * C - y0) * PX + "px" }); lw.appendChild(n);
+  /* Namen nach den Bildern, damit sie oben liegen. Ein Land aus mehreren Regionen (das Festland ist in Kacheln geschnitten) bekommt seinen Namen
+     nur einmal, in der flächengewichteten Mitte seiner Regionen. */
+  const namen = new Map<string, { x: number; y: number; f: number }>();
+  for (const r of o.regionen) { const f = r.chunks[0] * r.chunks[1], q = namen.get(r.name) || { x: 0, y: 0, f: 0 };
+    q.x += (r.ursprung[0] + r.chunks[0] / 2) * f; q.y += (r.ursprung[1] + r.chunks[1] / 2) * f; q.f += f; namen.set(r.name, q); }
+  /* Meere umschließen das Land: ihre Mitte läge an Land – dort steht der Name auf der äußersten Kachel des Meeres */
+  const mx = o.regionen.reduce((s, r) => s + r.ursprung[0] + r.chunks[0] / 2, 0) / o.regionen.length, my = o.regionen.reduce((s, r) => s + r.ursprung[1] + r.chunks[1] / 2, 0) / o.regionen.length;
+  for (const [name, q] of namen) if (/meer/i.test(name)) { let best = -1;
+    for (const r of o.regionen) if (r.name === name) { const x = r.ursprung[0] + r.chunks[0] / 2, y = r.ursprung[1] + r.chunks[1] / 2, d = (x - mx) ** 2 + (y - my) ** 2; if (d > best) { best = d; q.x = x; q.y = y; q.f = 1; } } }
+  for (const [name, q] of namen) {
+    const n = document.createElement("div"); n.className = "wk-name"; n.textContent = name;
+    Object.assign(n.style, { left: ((q.x / q.f) * C - x0) * PX + "px", top: ((q.y / q.f) * C - y0) * PX + "px" }); lw.appendChild(n);
   }
+  for (const o2 of o.orte || []) { const m = document.createElement("div"); m.className = "wk-ort"; m.title = o2.name; m.innerHTML = `<i>${o2.zeichen}</i>`;
+    Object.assign(m.style, { left: (o2.x - x0) * PX + "px", top: (o2.y - y0) * PX + "px" }); lw.appendChild(m); }
   /* Kartensymbole: bleiben bei jedem Zoom gleich groß (wie die Namen) */
   for (const r of o.regionen) for (const q of r.symbole || []) { const im = document.createElement("img"); im.className = "wk-symbol"; im.draggable = false; im.src = (o.symbolBild || "") + q.s + ".webp";
     im.alt = im.title = (o.symbolNamen || {})[q.s] || q.s; Object.assign(im.style, { left: (q.x - x0) * PX + "px", top: (q.y - y0) * PX + "px" }); lw.appendChild(im); }
@@ -114,6 +126,8 @@ function stil() {
 #ez-uebersicht .wk-symbol{position:absolute;width:30px;height:auto;transform:translate(-50%,-58%) scale(calc(1 / var(--wkz,1)));transform-origin:50% 58%;filter:drop-shadow(0 1px 3px rgba(0,0,0,.85))}
 #ez-uebersicht .wk-leinwand img{position:absolute;display:block;pointer-events:none;image-rendering:auto}
 #ez-uebersicht .wk-name{position:absolute;transform:translate(-50%,-50%) scale(calc(1 / var(--wkz,1)));white-space:nowrap;pointer-events:none;font-size:15px;letter-spacing:.08em;color:#ffe9b0;text-shadow:0 0 4px #000,0 0 8px #000,0 1px 2px #000;opacity:.92}
+#ez-uebersicht .wk-ort{position:absolute;width:0;height:0}
+#ez-uebersicht .wk-ort i{position:absolute;left:-11px;top:-11px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-style:normal;background:#2a1f12;border:1.5px solid #e9c46a;box-shadow:0 0 0 2px rgba(0,0,0,.45);transform:scale(calc(1 / var(--wkz,1)))}
 #ez-uebersicht .wk-ich{position:absolute;width:0;height:0;pointer-events:none}
 #ez-uebersicht .wk-ich i{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:#ffd34d;border:2px solid #fff;box-shadow:0 0 0 3px rgba(0,0,0,.45),0 0 14px #ffd34d;transform:scale(calc(1 / var(--wkz,1)))}
 #ez-uebersicht .wk-ich i::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(255,211,77,.7);animation:wkpuls 1.6s ease-out infinite}

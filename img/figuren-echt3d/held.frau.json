@@ -1,0 +1,239 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.haar.dutt_hoch": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.pixie": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.seitenbob": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.wuschel_hoch": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.zopf_wild": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "schild.kreuz": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ]
+  },
+  "schild.rund": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ]
+  },
+  "waffe.armbrust": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "armbrust1h"
+   ]
+  },
+  "waffe.bogen": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ]
+  },
+  "waffe.bogen.jagd": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ]
+  },
+  "waffe.dolch": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "dolchwurf",
+    "stich"
+   ]
+  },
+  "waffe.langschwert": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "hieb2h"
+   ]
+  },
+  "waffe.schwert.ritter": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ]
+  },
+  "waffe.schwert.schildwahrer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ]
+  },
+  "waffe.speer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich2h"
+   ]
+  },
+  "waffe.stab.hirte": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ]
+  },
+  "waffe.zeremonienstab": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ]
+  }
+ },
+ "aktionen": {
+  "armbrust1h": {
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false
+  },
+  "block": {
+   "bilder": 6,
+   "rate": 12,
+   "schleife": false
+  },
+  "bogen": {
+   "bilder": 9,
+   "rate": 12,
+   "schleife": false
+  },
+  "dolchwurf": {
+   "bilder": 8,
+   "rate": 16,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "hieb2h": {
+   "bilder": 8,
+   "rate": 14,
+   "schleife": false
+  },
+  "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "stich": {
+   "bilder": 7,
+   "rate": 16,
+   "schleife": false
+  },
+  "stich2h": {
+   "bilder": 8,
+   "rate": 14,
+   "schleife": false
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "zauber_stab": {
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "basis.mann",
+  "name": "Grundstruktur Mann",
+  "kategorie": "basis",
+  "aktuell": "v002",
+  "status": {
+    "v001": "bisherige Grundstruktur (Meshy-Körper in Unterhose, Startausrüstung als Lage darüber) – bleibt unverändert",
+    "v002": "maßgeblich: kahler Meshy-Wanderer mit fester Startausrüstung"
+  },
+  "lizenz": {
+    "koerper": "Meshy, vom Projekt erzeugt (v001, v002)"
+  }
+}

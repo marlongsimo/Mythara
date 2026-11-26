@@ -91,13 +91,15 @@ export class WeltRaster {
 
   /** Wegsuche A* über die Felder, acht Richtungen, nicht um Ecken schneiden. Zurück: Wegpunkte (ohne den Start), geglättet. Kein Weg: leere Liste.
    *  Gesucht wird in einem Fenster um Start und Ziel (mit `luft` Feldern Rand) und höchstens über `suchGrenze` Felder. */
-  weg(von: Punkt, nach: Punkt, rand = 0.3, luft = 24): Punkt[] {
-    const ziel = this.naechstFrei(nach), start = this.naechstFrei(von); if (!ziel || !start) return [];
-    if (this.frei(start, ziel, rand)) return [ziel];
+  weg(von: Punkt, nach: Punkt, rand = 0.3, luft = 24, felder = false): Punkt[] {
+    /* felder: Feldbewegung (shared/feld.ts) – Feldmitten ohne Glätten, schräg kostet wie gerade */
+    const z0p = this.naechstFrei(nach), start = this.naechstFrei(von); if (!z0p || !start) return [];
+    const ziel = felder ? { x: Math.floor(z0p.x) + 0.5, y: Math.floor(z0p.y) + 0.5 } : z0p;
+    if (!felder && this.frei(start, ziel, rand)) return [ziel];
     const si = Math.floor(start.x), sj = Math.floor(start.y), zi = Math.floor(ziel.x), zj = Math.floor(ziel.y);
     const x0 = Math.min(si, zi) - luft, y0 = Math.min(sj, zj) - luft, B = Math.abs(si - zi) + 2 * luft + 1, H = Math.abs(sj - zj) + 2 * luft + 1, N = B * H;
     const g = new Float32Array(N).fill(Infinity), her = new Int32Array(N).fill(-1), zu = new Uint8Array(N), offen = new Halde();
-    const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + 0.414 * Math.min(dx, dy); };
+    const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + (felder ? 0.001 : 0.414) * Math.min(dx, dy); };
     const s0 = (sj - y0) * B + (si - x0), z0 = (zj - y0) * B + (zi - x0); g[s0] = 0; offen.dazu(s0, h(si, sj));
     let gesehen = 0, da = false;
     while (!offen.leer) {
@@ -106,10 +108,11 @@ export class WeltRaster {
       for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const i = ci + di, j = cj + dj;
         if (i < x0 || j < y0 || i >= x0 + B || j >= y0 + H || this.fels(i, j)) continue;
         if (di && dj && (this.fels(ci + di, cj) || this.fels(ci, cj + dj))) continue;
-        const n = (j - y0) * B + (i - x0), kosten = g[c] + (di && dj ? 1.414 : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; offen.dazu(n, kosten + h(i, j)); } }
+        const n = (j - y0) * B + (i - x0), kosten = g[c] + (di && dj ? (felder ? 1.001 : 1.414) : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; offen.dazu(n, kosten + h(i, j)); } }
     }
     if (!da) return [];
     const roh: Punkt[] = [ziel]; for (let c = her[z0]; c >= 0 && c !== s0; c = her[c]) roh.push({ x: c % B + x0 + 0.5, y: Math.floor(c / B) + y0 + 0.5 }); roh.reverse();
+    if (felder) return roh;
     /* glätten: von der aktuellen Stelle aus immer den fernsten Punkt nehmen, zu dem der Weg frei ist */
     const aus: Punkt[] = []; let hier = start, k = 0;
     while (k < roh.length) { let m = k; for (let n = roh.length - 1; n > k; n--) if (this.frei(hier, roh[n], rand)) { m = n; break; } aus.push(roh[m]); hier = roh[m]; k = m + 1; }

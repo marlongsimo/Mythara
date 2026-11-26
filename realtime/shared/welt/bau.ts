@@ -54,6 +54,10 @@ function gebaeudeFelder(p: Platzierung, k: Extract<Kollision, { art: "gebaeude" 
     for (const t of k.tueren) { if (Math.abs(t.y - b.y1) > 0.01 || t.x0 < b.x0 || t.x1 > b.x1) continue;
       const tx0 = p.x + t.x0 * s, tx1 = p.x + t.x1 * s;
       for (let i = cW + 1; i < cO; i++) if (Math.min(i + 1, tx1) - Math.max(i, tx0) > 0.3) frei.add(i + "," + rS); } }
+  /* Möbel: jedes Feld, das ein Möbelstück zu mehr als einem Viertel bedeckt oder dessen Mitte darin liegt, ist gesperrt (die Türlücke bleibt frei) */
+  for (const m of k.moebel || []) { const x0 = p.x + m.x0 * s, x1 = p.x + m.x1 * s, y0 = p.y + m.y0 * s, y1 = p.y + m.y1 * s;
+    for (let j = Math.floor(y0); j < Math.ceil(y1); j++) for (let i = Math.floor(x0); i < Math.ceil(x1); i++) {
+      const mitte = i + 0.5 >= x0 && i + 0.5 <= x1 && j + 0.5 >= y0 && j + 0.5 <= y1; if (mitte || ueber(x0, y0, x1, y1, i, j) > 0.25) zu.add(i + "," + j); } }
   return [...zu].filter((f) => !frei.has(f)).map((f) => f.split(",").map(Number));
 }
 

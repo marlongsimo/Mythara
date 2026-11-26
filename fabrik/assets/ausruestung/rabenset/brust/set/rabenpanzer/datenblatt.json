@@ -1,0 +1,31 @@
+{
+  "name": "Rabenpanzer",
+  "gegenstand": "rabenpanzer",
+  "gruppe": "rabenset",
+  "teil": "brust",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Set",
+  "modell": {
+    "ebene": "ruestung.brust.rabe",
+    "quelle": "fabrik/assets/ausruestung/rabenset/brust/ruestung.brust.rabe",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.rabe.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.rabe.glb"
+  },
+  "werte": {
+    "Abwehr Nahkampf": "+5",
+    "Abwehr Fernkampf": "+5",
+    "Abwehr Magie": "+5"
+  },
+  "werte_offen": false,
+  "text": "Federbesetzte Schulterstücke, das Leder bronzen gesäumt. Teil 2 des Rabensets – Belohnung aus dem zweiten Abschnitt der Raben-Trilogie.",
+  "set": {
+    "name": "Rabenset",
+    "teile": [
+      "rabenkapuze",
+      "rabenpanzer",
+      "rabenbeinschuetzer"
+    ],
+    "bonus": "alle 3 Teile: jeder Treffer mit Schaden > 0 heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)"
+  },
+  "herkunft": "Raben-Trilogie, Abschnitt 2"
+}

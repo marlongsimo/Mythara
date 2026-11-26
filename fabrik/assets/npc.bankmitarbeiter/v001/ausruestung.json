@@ -1,0 +1,16 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.bankmitarbeiter v001 – Bankmitarbeiter aus Meshy „The Gilded Magistrate“; nur Ruhe (Idle), zivile Haltung.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [],
+  "arme_eng": 10
+}

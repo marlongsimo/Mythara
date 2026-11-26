@@ -22,6 +22,9 @@ if (fehler.length) { for (const [n, f] of fehler) { console.log("✗ " + n); for
 
 const G = await gemeinsam(), bib = bibliothek(); mkdirSync(ziel, { recursive: true });
 const SYMBOLE = JSON.parse(readFileSync(join(REALTIME, "welt", "bibliothek", "kartensymbole.json"), "utf8"));
+const mitte = (l) => ({ x: +(l.baeume.reduce((t, b) => t + b.x, 0) / l.baeume.length).toFixed(1), y: +(l.baeume.reduce((t, b) => t + b.y, 0) / l.baeume.length).toFixed(1) });
+const SAMMELORTE = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.map((l) => ({ s: "holzfaellerei", region: l.baeume[0].region, ...mitte(l) })),
+  ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.map((k) => ({ s: "mine", region: k.adern[0].region, x: k.x, y: k.y }))];
 /* welt.json wächst mit: Regionen, die diesmal nicht gebaut werden, bleiben stehen */
 const indexPfad = join(ziel, "welt.json"), index = existsSync(indexPfad) ? JSON.parse(readFileSync(indexPfad, "utf8")) : { regionen: {}, objekte: {} };
 index.feldPx = G.FELD_PX; index.chunkFelder = G.CHUNK_FELDER; index.kartensymbole = SYMBOLE.symbole;
@@ -33,6 +36,9 @@ for (const n of namen) {
     const symbole = Object.entries(zuordnung).map(([id, s]) => { const q = r.spiel.interaktionen.find((i) => i.id === id) || r.spiel.figuren.find((f) => f.id === id);
       if (!q) throw new Error(`Kartensymbol ${s}: ${n} hat keine Interaktion oder Figur „${id}“`); if (!SYMBOLE.symbole[s]) throw new Error(`Kartensymbol „${s}“ ist nicht beschrieben`);
       return { s, x: +(q.x + ox).toFixed(2), y: +(q.y + oy).toFixed(2) }; });
+    for (const q of (SYMBOLE.punkte || {})[n] || []) { if (!SYMBOLE.symbole[q.s]) throw new Error(`Kartensymbol „${q.s}“ ist nicht beschrieben`); symbole.push({ s: q.s, x: q.x, y: q.y }); }
+    /* Holzfäller-Lichtungen und Bergbau-Senken: ein Symbol in der Mitte */
+    for (const l of SAMMELORTE) if (l.region === n) symbole.push({ s: l.s, x: l.x, y: l.y });
     index.regionen[n] = { ...gebaut.kopf, benutzt: gebaut.benutzt, ...(symbole.length ? { symbole } : {}) }; }
   const frei = gebaut.chunks.reduce((s, c) => s + c.geh.join("").split(".").length - 1, 0), felder = gebaut.chunks.length * G.CHUNK_FELDER ** 2;
   console.log(`✓ ${n}: ${gebaut.chunks.length} Chunks, ${gebaut.chunks.reduce((s, c) => s + c.objekte.length, 0)} Objekte, ${Math.round(100 * frei / felder)} % begehbar`);
@@ -40,9 +46,14 @@ for (const n of namen) {
 }
 /* Nur die Objekte ausliefern, die irgendeine Region benutzt – und nur, was die Darstellung braucht */
 const benutzt = new Set(Object.values(index.regionen).flatMap((r) => r.benutzt)); index.objekte = {};
+for (const o of bib.objekte.objekte) if (benutzt.has(o.id) && o.vielfalt) for (const v of o.vielfalt) benutzt.add(v);   /* Farbvarianten (vielfalt) mit ausliefern */
 for (const o of bib.objekte.objekte) if (benutzt.has(o.id)) index.objekte[o.id] = { bild: o.bild, groesse: o.groesse, anker: o.anker, massstab: o.massstab, tiefe: o.tiefe,
-  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}),
+  ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}), ...(o.vielfalt ? { vielfalt: o.vielfalt } : {}), ...(o.modell3d ? { modell3d: o.modell3d } : {}),
   ...(o.ebenen ? { ebenen: o.ebenen, raum: o.raum || [], tueren: o.tueren || [] } : {}) };
+/* Symbole der Holzfäller-Lichtungen und Bergbau-Senken in ALLEN Regionen erneuern – auch in denen, die diesmal nicht gebaut wurden
+   (sonst fehlten neue Standorte auf Karte und Minikarte, bis ihre Region neu gebaut wird; 26.11.2026) */
+for (const [n, r] of Object.entries(index.regionen)) { const rest = (r.symbole || []).filter((q) => q.s !== "holzfaellerei" && q.s !== "mine"), neu = SAMMELORTE.filter((l) => l.region === n).map((l) => ({ s: l.s, x: l.x, y: l.y }));
+  if (rest.length + neu.length) r.symbole = [...rest, ...neu]; else delete r.symbole; }
 index.stand = Date.now().toString(36);   /* Kennung dieses Baus: das Spiel hängt sie an die Dateien der Welt (gegen veraltete Bilder im Browser) */
 writeFileSync(indexPfad, JSON.stringify(index));
 console.log(`geschrieben: echtzeit/welt/welt.json (${Object.keys(index.regionen).length} Regionen, ${Object.keys(index.objekte).length} Objekte)`);

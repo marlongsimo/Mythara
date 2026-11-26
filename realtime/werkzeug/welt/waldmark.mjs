@@ -58,7 +58,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
     /* vor der Palisade Wiese; der Waldboden beginnt etwas vor den ersten Bäumen */
     const vorfeld = cy >= ZAUN && imVorfeld(cx, cy, 1.6);
     z.push(platz ? "p" : weg ? "e" : vorfeld ? "." : !lichtung(cx, cy) ? "f" : teich(cx, cy) ? "w" : blume ? "," : "."); } g.push(z); }
-  const FIGUREN = [{ id: "wache_west", rolle: "wache", figur: "wache", x: 45.2, y: 58.6 }, { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 }, { id: "handwerker", rolle: "haendler", figur: "harm", x: 71.6, y: 31.3, links: true, daten: { modell: "handwerker", blick: -0.45, laden: "handwerker" } },
+  const FIGUREN = [/* wache_west: dort steht seit Phase 2 Gesa Brandt, die Wachführerin (Quest A1, shared/quest_a1.ts) */ { id: "wache_ost", rolle: "wache", figur: "wache", x: 50.8, y: 58.6, links: true }, { id: "schmied", rolle: "haendler", figur: "schmied", x: 61.5, y: 31.4 }, { id: "handwerker", rolle: "haendler", figur: "harm", x: 71.6, y: 31.3, links: true, daten: { modell: "handwerker", blick: -0.45, laden: "handwerker" } },
       { id: "kraemer", rolle: "haendler", figur: "kraemer", x: 39.2, y: 39.9 }, { id: "kraeuterfrau", rolle: "haendler", figur: "kraeuterfrau", x: 43.6, y: 42.9 }, { id: "ausrufer", rolle: "npc", figur: "ausrufer", x: 52.6, y: 35.2, links: true },
       { id: "junge", rolle: "npc", figur: "junge", x: 44.2, y: 29.4 }, { id: "wanderer", rolle: "npc", figur: "wanderer", x: 33.2, y: 31.4 }];
   /* Gebäude: Fußpunkt (Mitte der Vorderwand unten) */
@@ -112,7 +112,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("esse", 67.4, 27.8, "Der Schmiedeofen. Die Glut wird nie ganz kalt; der Blasebalg daneben facht sie in Sekunden wieder an."),
       lies("amboss", 70.4, 27.6, "Der Amboss auf seinem Eichenklotz. Die Bahn ist blank geschlagen von unzähligen Hieben."),
       { ...lies("handwerker_laden", 71.6, 31.3, "Der Handwerker der Waldmark lehnt vor der Schmiede. Er verkauft Beile, Spitzhacken und Hämmer – einfache und seltene.", null, "laden:handwerker", "Mit dem Handwerker handeln"), radius: 2.2 },
-      lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle"),
+      lies("kapelle_tuer", ...tuerVon("dorf_kapelle_01", 57, 22), "Die Kapelle der Waldmark. Die Glocke ruft, wenn Wanderer heimkehren.", "kapelle", "beten", "Beten") /* heilt nach Quest A2 (Schalter kapelle_offen) */,
       lies("kraeuter_tuer", ...tuerVon("dorf_kraeuterhaus_01", 19.5, 39), "Das Kräuterhaus. Unter dem Strohdach trocknen Bündel von Salbei und Wermut.", "kraeuterhaus"),
       lies("salon_tuer", ...tuerVon("waldmark_salon_01", 59.5, 28), "Nias Salon. Hinter violettem Glas funkeln Fläschchen, Kämme und ein Spiegel mit goldenem Rahmen. Hier verändert die Wandlerin gegen Gold Frisur, Haarfarbe, Bart und Gesichtszüge – Werte, Klasse und Fortschritt bleiben unberührt.", "salon", "bald", "Nias Salon – öffnet bald"),
       lies("rathaus_tuer", ...tuerVon("waldmark_rathaus_01", 39.5, 27), "Das Rathaus der Waldmark. Unten hängen Aushänge, Steckbriefe und die Liste der Wanderer; oben tagt der Dorfrat. Vom Glockenturm sieht man bis zum Kreuzwald.", "rathaus", "bald", "Rathaus – kommt noch"),
@@ -120,7 +120,7 @@ function baeume(B, H, wald, tabu, dichte, licht = 0, passt = () => true) { /* wa
       lies("bank_tuer", ...tuerVon("waldmark_bank_01", 78, 31), "Die Bank der Waldmark. Hinter dicken Mauern verwahrt sie das Gold der Wanderer – sicher, auch wenn man im Kampf fällt.", "bank"),
       lies("bankschalter_links", 76.6, 29.1, "Der linke Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.", null, "bald", "Bankschalter – öffnet bald"),
       lies("bankschalter_rechts", 79.4, 29.1, "Der rechte Bankschalter. Bald zahlst du hier Gold ein oder hebst es ab.", null, "bald", "Bankschalter – öffnet bald"),
-      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei"), lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
+      lies("baecker_tuer", ...tuerVon("dorf_baeckerei_01", 55, 49.5), "Die Bäckerei. Aus dem Ofenanbau zieht der Duft von frischem Brot.", "baeckerei", "laden:baeckerei", "Brot kaufen") /* offen nach Quest A3 (shared/laeden.ts wenn) */, lies("markt", 41.4, 40.6, "Der Markt der Waldmark: Kräuter, Brot und allerlei Nützliches.", undefined, "bald", "Markt – kommt noch")],
     ausgaenge: [],
     /* Torpfosten versperren, die Durchfahrt bleibt frei – ohne Knopf: man läuft einfach hindurch */
     kollision: { sperren: [{ art: "rechteck", x0: 44, y0: 56, x1: 45.6, y1: 57 }, { art: "rechteck", x0: 50.4, y0: 56, x1: 52, y1: 57 }], freigeben: [{ art: "rechteck", x0: 45.6, y0: 55, x1: 50.4, y1: 58 }] } };

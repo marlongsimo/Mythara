@@ -692,7 +692,17 @@ def kollision(plan):
     kk = [{'x0': k['x'], 'x1': k['x'] + k['b'], 'y0': -(k['d'] + k['t']), 'y1': -k['d'], 'voll': not k.get('betretbar')} for k in plan['koerper']]
     kmap = {k['id']: k for k in plan['koerper']}
     tt = [{'x0': t['x'] - t['b'] / 2, 'x1': t['x'] + t['b'] / 2, 'y': -kmap[t.get('koerper', plan['koerper'][0]['id'])]['d']} for t in plan.get('tueren', [])]
-    return {'art': 'gebaeude', 'koerper': kk, 'tueren': tt}
+    # Möbel im Haus sind Hindernisse (Größe wie client/src/welt3d/bauten.ts MOEBEL); Treppen, Spiegel an der Wand und Löcher bleiben begehbar
+    mm = [{'x0': round(m['x'] - MOEBEL_MASS.get(m['art'], (0.8, 0.8))[0] / 2, 3), 'x1': round(m['x'] + MOEBEL_MASS.get(m['art'], (0.8, 0.8))[0] / 2, 3),
+           'y0': round(-m['d'] - MOEBEL_MASS.get(m['art'], (0.8, 0.8))[1] / 2, 3), 'y1': round(-m['d'] + MOEBEL_MASS.get(m['art'], (0.8, 0.8))[1] / 2, 3)}
+          for m in plan.get('innen', {}).get('moebel', []) if m['art'] not in MOEBEL_FREI]
+    return {'art': 'gebaeude', 'koerper': kk, 'tueren': tt, **({'moebel': mm} if mm else {})}
+
+
+# Grundfläche der Möbel (Breite in x, Tiefe in y) – wie client/src/welt3d/bauten.ts MOEBEL
+MOEBEL_MASS = {'tisch': (1.2, 0.8), 'bett': (1.0, 2.0), 'theke': (2.4, 0.6), 'fass': (0.6, 0.6), 'amboss': (0.7, 0.4), 'regal': (1.2, 0.4), 'ofen': (1.0, 1.0), 'altar': (1.4, 0.7),
+               'bank': (1.5, 0.4), 'kessel': (0.7, 0.7), 'heu': (1.2, 1.0), 'saecke': (0.9, 0.6), 'muehlstein': (1.2, 1.2), 'frisierstuhl': (0.7, 0.7)}
+MOEBEL_FREI = {'treppe', 'treppe_oben', 'spiegel', 'loch'}
 
 
 def sichtbarer_bereich(im):

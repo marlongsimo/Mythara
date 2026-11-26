@@ -13,7 +13,7 @@ const BILD = '/tmp/claude-0/-home-user/41c9406e-0350-52e3-a9f4-165cb5f77c3a/scra
   const info = await p.evaluate(() => { const u = document.getElementById('ez-uebersicht'), im = [...u.querySelectorAll('.wk-leinwand img')], fl = u.querySelector('.wk-flaeche').getBoundingClientRect(), ich = u.querySelector('.wk-ich i').getBoundingClientRect();
     return { regionen: im.map((i) => i.dataset.region), geladen: im.every((i) => i.complete && i.naturalWidth > 0), namen: [...u.querySelectorAll('.wk-name')].map((n) => n.textContent), ort: u.querySelector('.wk-ort').textContent,
       mitte: Math.hypot(ich.x + ich.width / 2 - (fl.x + fl.width / 2), ich.y + ich.height / 2 - (fl.y + fl.height / 2)), tf: u.querySelector('.wk-leinwand').style.transform, gegner: u.querySelectorAll('.wk-leinwand *:not(img):not(.wk-name):not(.wk-ich):not(i)').length }; });
-  const erwartet = await p.evaluate(() => Object.keys(window.EZW.szene.index.regionen));
+  const erwartet = await p.evaluate(() => Object.values(window.EZW.szene.index.regionen).filter((r) => r.region.ebene !== "untergrund").map((r) => r.region.id)); /* unterirdische Gebiete (etwa der Unterschlupf) zeigt die Karte nicht */
   check(JSON.stringify(info.regionen.sort()) === JSON.stringify(erwartet.sort()) && info.geladen, `${name}: alle Regionen aus welt.json als Bilder geladen (${info.regionen.join(', ')})`);
   check(info.namen.length === erwartet.length, `${name}: Regionsnamen (${info.namen.join(', ')}), Ort oben: ${info.ort}`);
   check(info.mitte < 3, `${name}: eigene Stelle beim Öffnen in der Mitte (${info.mitte.toFixed(1)} px)`);

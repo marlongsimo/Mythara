@@ -1,0 +1,30 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "banditenboss3d – Banditenanführer für Echtzeit-3D (Meshy „Crimson Warlord“), fest im Modell; eigenes Zweihandschwert (aus dem Meshy-Modell ausgeschnitten) zweihändig (Zweihandhieb, linke Hand am festen Griffpunkt). Block als Parade mit der Waffe.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "hieb2h",
+    "block",
+    "tod"
+  ],
+  "block": "waffe",
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.zweihaender.warlord",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/zweihand/waffe.zweihaender.warlord/v001/quelle/zweihaender.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "angriff": "hieb2h"
+    }
+  ]
+}

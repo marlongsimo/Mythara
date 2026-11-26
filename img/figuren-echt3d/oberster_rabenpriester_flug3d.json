@@ -1,0 +1,58 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "waffe.schwert.links": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "abheben",
+    "fliegen",
+    "flug_hieb",
+    "flug_treffer",
+    "flug_tod"
+   ]
+  },
+  "waffe.schwert.rechts": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "abheben",
+    "fliegen",
+    "flug_hieb",
+    "flug_treffer",
+    "flug_tod"
+   ]
+  }
+ },
+ "aktionen": {
+  "abheben": {
+   "bilder": 13,
+   "rate": 14,
+   "schleife": false
+  },
+  "fliegen": {
+   "bilder": 12,
+   "rate": 17,
+   "schleife": true
+  },
+  "flug_hieb": {
+   "bilder": 14,
+   "rate": 14,
+   "schleife": false
+  },
+  "flug_tod": {
+   "bilder": 16,
+   "rate": 12,
+   "schleife": false
+  },
+  "flug_treffer": {
+   "bilder": 6,
+   "rate": 14,
+   "schleife": false
+  }
+ }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "sammeln.hanf",
+  "name": "Hanf",
+  "kategorie": "sammeln",
+  "aktuell": "v001",
+  "hoehe_m": 1.3,
+  "beschreibung": "fünf kräftige Stängel mit gefingerten Blättern (7 Fiedern) und Blütenständen",
+  "spieldatei": "img/objekte3d/skilling/sammeln/hanf.glb",
+  "geerntet": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
+  "weltobjekte": [
+    "samm_hanf_01",
+    "samm_hanf_geerntet"
+  ],
+  "status": "in Blender gebaut (fabrik/pflanze.py -- hanf voll|geerntet …); live 3D, wiegt sich im Wind, begehbar (keine Kollision); Sammel-Funktion folgt",
+  "herkunft": "selbst gebaut"
+}

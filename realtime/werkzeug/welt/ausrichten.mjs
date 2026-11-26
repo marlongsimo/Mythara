@@ -16,7 +16,7 @@ const r2 = (v) => Math.round(v * 100) / 100;
 export async function ausrichten(namen, still = false) {
   const G = await gemeinsam(), bib = bibliothek(), OBJ = new Map(bib.objekte.objekte.map((o) => [o.id, o])), summe = { gebaeude: 0, dinge: 0, gleich: 0, frei: 0 };
   for (const n of namen) {
-    const d = region(n); let geaendert = false;
+    const d = region(n, true) /* roh: schreibt objekte.json zurück – nie die ausgelichtete Liste */; let geaendert = false;
     for (const p of d.objekte) { const def = OBJ.get(p.objekt), k = def && def.kollision; if (!k) { summe.frei++; continue; }
       const alt = [p.x, p.y];
       if (k.art === "gebaeude") { const s = p.s ?? 1, x0 = k.koerper[0].x0 * s, y1 = k.koerper[0].y1 * s;

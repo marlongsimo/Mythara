@@ -6,6 +6,7 @@
  * Aufruf zum Ausprobieren: ?welt=<region>   (mit &test=1: Raster, Chunk-Grenzen und Messwerte einblenden)
  * Ausbaustufe 1: ein Held läuft allein durch die Welt, Bewegung rechnet der Browser. Gegner, Mitspieler und Server kommen mit der Integration (Phase 10).
  */
+import { teleportAbreise } from "../echt3d/figur";
 import { symboleOrdnen } from "../symbolordnung";
 import Phaser from "phaser";
 import { HELDEN } from "../../../shared/config";
@@ -13,6 +14,7 @@ import { FELD_PX, CHUNK_FELDER, CHUNK_PX, HELD_PX, chunkName, inZone } from "../
 import type { ChunkDaten, Region, Ausgang, Spawnzone, Platzierung, Interaktion, Figur, ObjektDef } from "../../../shared/welt/typen";
 import { WeltRaster } from "../../../shared/welt/raster";
 import { zoomFaktor, zoomKnopf } from "../zoom";
+import { baumBild, figur3dAn, BaumBildT } from "../echt3d/figur";
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement, P = new URLSearchParams(location.search);
 /** Region, in der man die Welt betritt (leer = die Welt ist nicht gewählt) */
@@ -59,14 +61,25 @@ const ZEIGEN = 0.3, VORHOLEN = 1.0, BEHALTEN = 1.5;
 /** Halbe Breite des Helden für die Kollision (Rechenfelder), wie in der Simulation */
 const RADIUS = 0.3;
 
-type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende" | "ebenen" | "raum" | "tueren">;
+/** Nur Optik: ein Objekt mit Farbvarianten (vielfalt) zeigt je Standort fest eine davon – derselbe Standort sieht immer gleich aus */
+function vielfalt(p: Platzierung, o: Anzeige, alle: Record<string, Anzeige>): Platzierung {
+  const v = o.vielfalt; if (!v || v.length < 2 || p.zustand) return p;
+  let h = Math.imul(Math.round(p.x * 16) | 0, 0x27d4eb2d) ^ Math.imul(Math.round(p.y * 16) | 0, 0x165667b1); h = Math.imul(h ^ (h >>> 15), 0x85ebca6b); h ^= h >>> 13;
+  const id = v[(h >>> 0) % v.length]; return alle[id] ? { ...p, objekt: id } : p;
+}
+type Anzeige = Pick<ObjektDef, "bild" | "groesse" | "anker" | "massstab" | "tiefe" | "durchscheinend" | "animation" | "zustaende" | "ebenen" | "raum" | "tueren" | "vielfalt" | "modell3d">;
 /** Ein räumliches Gebäude im Bild: seine Ebenen nach Rolle, Innenräume und Türpunkte in Weltkoordinaten (Rechenfelder) */
 interface Bau { teile: { bild: Phaser.GameObjects.Image; rolle: string; tuer?: number; koerper?: number }[]; raum: { x0: number; x1: number; y0: number; y1: number; koerper: number }[]; tueren: { x: number; y: number }[] }
 interface RegionKopf { region: Region; start: number[][]; spawnzonen: Spawnzone[]; ausgaenge: Ausgang[]; benutzt: string[] }
 interface WeltIndex { feldPx: number; chunkFelder: number; regionen: Record<string, RegionKopf>; objekte: Record<string, Anzeige> }
 /** Ein Chunk auf dem Weg ins Bild: holt (Daten unterwegs) → bereit (Daten und Bild im Speicher) → aktiv (im Bild) */
 interface Stueck { name: string; cx: number; cy: number; stand: "holt" | "bereit" | "aktiv" | "fehler"; daten?: ChunkDaten; bild?: HTMLImageElement; boden?: Phaser.GameObjects.Image;
-  dinge: Phaser.GameObjects.GameObject[]; scheinend: Phaser.GameObjects.Image[]; bauten: Bau[]; seit: number }
+  dinge: Phaser.GameObjects.GameObject[]; scheinend: Phaser.GameObjects.Image[]; bauten: Bau[]; seit: number; baeume?: Baum3D[] }
+/** Ein Baum mit 3D-Modell: das Bild am Standort zeigt, solange er sichtbar ist, das live gezeichnete 3D-Bild (sonst das flache Ersatzbild) */
+interface Baum3D { bild: Phaser.GameObjects.Image; m: NonNullable<ObjektDef["modell3d"]>; s: number; dreh: number; phase: number; alt: { key: string; ox: number; oy: number; sk: number; flip: boolean };
+  b?: BaumBildT; tex?: Phaser.Textures.CanvasTexture; laedt?: boolean; weg?: boolean; zuletzt: number }
+const BAUM_TAKT = HANDY ? 160 : 80;   /* Wind: so oft wird ein sichtbarer Baum neu gezeichnet (ms) */
+let baumZaehler = 0;
 
 export class Welt extends Phaser.Scene {
   index!: WeltIndex; raster = new WeltRaster(); stuecke = new Map<string, Stueck>(); gueltig = new Set<string>();
@@ -221,7 +234,7 @@ export class Welt extends Phaser.Scene {
     /* einen Bildpunkt größer als der Chunk: So bleibt beim Zoomen kein Haarriss zwischen Nachbarn */
     st.boden = this.add.image(st.cx * CHUNK_PX, st.cy * CHUNK_PX, key).setOrigin(0, 0).setDisplaySize(CHUNK_PX + 1, CHUNK_PX + 1).setDepth(-1e6);
     st.stand = "aktiv"; this.mess.gezeigt++;
-    for (const p of d.objekte) { const o = this.index.objekte[p.objekt]; if (!o) continue; if (o.ebenen) { this.bau(st, p, o); continue; } const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
+    for (const p0 of d.objekte) { const o0 = this.index.objekte[p0.objekt]; if (!o0) continue; const p = vielfalt(p0, o0, this.index.objekte), o = this.index.objekte[p.objekt] || o0; if (o.ebenen) { this.bau(st, p, o); continue; } const zustand = p.zustand && o.zustaende ? o.zustaende[p.zustand] : null, bild = zustand ? zustand.bild : o.bild;
       this.mitBild("obj-" + p.objekt + (zustand ? "-" + p.zustand : ""), weltBild(bild), () => { if (st.stand === "aktiv") this.objekt(st, p, o, "obj-" + p.objekt + (zustand ? "-" + p.zustand : "")); }); }
     for (const f of d.figuren) this.mitBild("leute-" + f.figur, `${WELT.bild}img/echtzeit/${f.figur}.webp`, () => { if (st.stand === "aktiv") this.person(st, f); });
     if (TEST) this.testChunk(st);
@@ -230,7 +243,25 @@ export class Welt extends Phaser.Scene {
     const bild = this.add.image(p.x * F, p.y * F, key).setOrigin(p.spiegeln ? 1 - o.anker[0] : o.anker[0], o.anker[1]).setScale(o.massstab * (p.s ?? 1)).setFlipX(Boolean(p.spiegeln));
     bild.setDepth(o.tiefe === "boden" ? -5e5 + p.y : o.tiefe === "oben" ? 1e7 + p.y : p.y * F);
     st.dinge.push(bild); if (o.durchscheinend) st.scheinend.push(bild);
+    if (o.modell3d) { let h = Math.imul(Math.round(p.x * 16) | 0, 0x9e3779b1) ^ Math.imul(Math.round(p.y * 16) | 0, 0x85ebca77); h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
+      const gross = 5 / 6 + ((h >>> 20) % 1000) / 1000 * (2 / 6); bild.setScale(bild.scaleX * gross);   /* Bäume (Grundhöhe 6 m): je Standort fest 5–7 m */
+      if (figur3dAn()) (st.baeume ||= []).push({ bild, m: o.modell3d, s: (p.s ?? 1) * gross, dreh: (h % 3600) / 3600 * Math.PI * 2, phase: ((h >>> 12) % 1000) / 1000 * 6.28, zuletzt: 0,
+        alt: { key, ox: bild.originX, oy: bild.originY, sk: bild.scaleX, flip: bild.flipX } }); }   /* jeder Baum: eigene Drehung und eigener Windtakt, fest je Standort */
   }
+  /** 3D-Bäume: sichtbare bekommen ihr 3D-Bild (und werden für den Wind gedrosselt neu gezeichnet), Bäume außerhalb des Bildes gehen aufs flache Bild zurück */
+  baeumeWeiter() {
+    const v = this.cameras.main.worldView, rand = 260, jetzt = performance.now(), zeit = jetzt / 1000; let budget = HANDY ? 4 : 10;
+    for (const st of this.stuecke.values()) { if (st.stand !== "aktiv" || !st.baeume) continue;
+      for (const e of st.baeume) { const x = e.bild.x, y = e.bild.y, sicht = x > v.x - rand && x < v.right + rand && y > v.y - rand && y < v.bottom + rand * 2;
+        if (sicht && !e.b && !e.laedt) { e.laedt = true;
+          void baumBild(weltBild(e.m.url), HELD_PX, { dreh: e.dreh, phase: e.phase, farbton: e.m.farbton ?? 0, saett: e.m.saett ?? 1, hell: e.m.hell ?? 1, wind: e.m.wind ?? 0.12, grau: e.m.grau ? 1 : 0, pulsTon: e.m.puls_ton, pulsBreite: e.m.puls_breite }).then((b) => { e.laedt = false;
+            if (!b) return; if (e.weg || !e.bild.scene) { b.entfernen(); return; }
+            const key = "baum3d:" + baumZaehler++, tex = this.textures.createCanvas(key, b.breite, b.hoehe) as Phaser.Textures.CanvasTexture; e.b = b; e.tex = tex;
+            b.zeichne(zeit, tex.getContext()); tex.refresh(); e.zuletzt = performance.now();
+            e.bild.setTexture(key).setOrigin(0.5, b.fussY).setScale(e.s / b.aufloesung).setFlipX(false); }); }
+        else if (!sicht && e.b) this.baumZurueck(e);
+        else if (e.b && e.tex && jetzt - e.zuletzt > BAUM_TAKT && budget > 0) { budget--; e.zuletzt = jetzt; e.b.zeichne(zeit, e.tex.getContext()); e.tex.refresh(); } } } }
+  baumZurueck(e: Baum3D) { if (e.bild.scene) e.bild.setTexture(e.alt.key).setOrigin(e.alt.ox, e.alt.oy).setScale(e.alt.sk).setFlipX(e.alt.flip); if (e.b) e.b.entfernen(); if (e.tex) e.tex.destroy(); e.b = undefined; e.tex = undefined; }
   /** Ein räumliches Gebäude: jede Ebene ein eigenes Bild im gemeinsamen Rahmen, mit eigener Tiefe (Schatten liegt am Boden) */
   bau(st: Stueck, p: Platzierung, o: Anzeige) {
     const b: Bau = { teile: [], raum: (o.raum || []).map((r) => ({ x0: p.x + r.x0, x1: p.x + r.x1, y0: p.y + r.y0, y1: p.y + r.y1, koerper: r.koerper })), tueren: (o.tueren || []).map((t) => ({ x: p.x + t.x, y: p.y + t.y })) };
@@ -266,7 +297,7 @@ export class Welt extends Phaser.Scene {
     const sp = this.add.sprite(f.x * F, f.y * F, blatt).setOrigin(0.5, 0.95).setScale(HELD_PX * 1.12 / feld).setFlipX(Boolean(f.links)).setDepth(f.y * F); sp.play(blatt); st.dinge.push(sp);
   }
   /** Einen Chunk aus dem Bild nehmen; Daten und Bodenbild bleiben im Speicher, die Textur wird freigegeben */
-  verbergen(st: Stueck) { for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; st.bauten = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name;
+  verbergen(st: Stueck) { for (const e of st.baeume || []) { e.weg = true; if (e.b) { e.b.entfernen(); if (e.tex) e.tex.destroy(); e.b = undefined; } } st.baeume = []; for (const g of st.dinge) g.destroy(); st.dinge = []; st.scheinend = []; st.bauten = []; if (st.boden) { st.boden.destroy(); st.boden = undefined; } const key = "boden-" + st.name;
     /* Das Bodenbild behalten, bevor die Textur geht: Chunks, die schon beim Start geladen wurden, hätten es sonst nicht mehr */
     if (this.textures.exists(key)) { if (!st.bild) st.bild = this.textures.get(key).getSourceImage() as HTMLImageElement; this.textures.remove(key); } st.stand = "bereit"; }
   entladen(st: Stueck) { if (st.stand === "aktiv") this.verbergen(st); this.raster.weg_damit(st.cx, st.cy); this.stuecke.delete(st.name); this.mess.entladen++;
@@ -313,17 +344,21 @@ export class Welt extends Phaser.Scene {
   reisen(a: Ausgang) {
     if (WELT.ausgang && WELT.ausgang(a)) return;
     try { localStorage.removeItem("ez_welt_pos"); } catch { /* privat */ }
-    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
+    const z = a.nach; if (z.art === "welt") { const r = this.index.regionen[z.region]; if (!r) return; const [x, y] = [z.x + r.region.ursprung[0] * C, z.y + r.region.ursprung[1] * C]; if (WELT.springen) WELT.springen(this); this.ort = { x, y }; this.pfad = []; this.marke.setVisible(false); this.cameras.main.centerOn(x * F, y * F); return; }
     this.gesperrt = true; location.href = z.art === "kampf" ? `./?ort=${encodeURIComponent(z.ort)}&kampf=${encodeURIComponent(z.kampf)}` : z.ort === "waldmark" ? "./?von=tor" : `./?ort=${encodeURIComponent(z.ort)}&eingang=1`;
   }
 
   gemerkt = 0; naechst = Infinity; stillstand = 0; vonTor: { x: number; y: number } | null = null;
+  /** Eine Szene des Spiels starten (Riss) und abblenden – gemeinsame Schnittstelle mit der 3D-Welt (anschluss.ts WeltKern) */
+  szeneStarten(key: string, daten: object): void { this.scene.start(key, daten); }
+  abblenden(ms: number, dann: () => void): void { this.cameras.main.fadeOut(ms, 0, 0, 0); this.time.delayedCall(ms + 20, dann); }
+  teleportAbreise(): number { return teleportAbreise(this.figur); }
   /** Stehen bleiben (vor einer Tafel) */
   halt() { this.rx = 0; this.ry = 0; this.tasten = {}; this.pfad = []; this.marke.setVisible(false); }
   /** Oben links Held, oben Mitte Region, oben rechts Minikarte, unten rechts Menü */
   profil() { WELT.hud.profil(this.held); WELT.hud.karte(); const h = this.hier; this.hier = ""; this.regionZeigen(); if (!this.hier) this.hier = h; if (WELT.menue) WELT.menue(this); }
   update(_t: number, dt: number) {
-    if (!this.index) return;
+    if (!this.index) return; this.baeumeWeiter();
     const d = Math.min(0.05, dt / 1000), o = this.ort, D = HELDEN[this.held]; let rx = this.gesperrt ? 0 : this.rx, ry = this.gesperrt ? 0 : this.ry;
     if (this.drei && !this.stickDrei && (rx || ry)) [rx, ry] = this.drei.drehen(rx, ry);   /* Tasten: „hoch“ ist in 3D vom Betrachter weg (der Stick rechnet selbst um) */
     if (Math.hypot(rx, ry) > 0.05) { this.pfad = []; this.marke.setVisible(false); }

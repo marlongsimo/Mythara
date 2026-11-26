@@ -69,7 +69,7 @@ export type Kollision =
   | { art: "rechteck"; x: number; y: number; b: number; h: number }
   | { art: "vieleck"; punkte: number[][] }
   /** Räumliches Gebäude: Baukörper als Rechtecke (y nach Süden, 0 = Fußlinie); begehbare nur mit Wänden, Türlücken in der Südwand */
-  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[] };
+  | { art: "gebaeude"; koerper: { x0: number; x1: number; y0: number; y1: number; voll: boolean }[]; tueren: { x0: number; x1: number; y: number }[]; /** Möbel im Haus (Hindernisse) */ moebel?: { x0: number; x1: number; y0: number; y1: number }[] };
 /** Eine Ebene eines räumlichen Gebäudes: eigenes Bild, eigene Tiefe (Felder relativ zum Fuß, + = weiter vorn) */
 export interface GebaeudeEbene { name: string; bild: string; /** Lage des zugeschnittenen Bildes im Gesamtrahmen (Bildpunkte) */ versatz?: number[]; tiefe: number; rolle: "schatten" | "innen" | "seite" | "vorn" | "dach" | "vordach" | "tuer_zu" | "tuer_offen"; koerper?: number; tuer?: number }
 /** Was ein Objekt kann, wenn man davorsteht. Die Logik dazu liegt in den bestehenden Systemen; hier steht nur, was wo auslöst. */
@@ -106,6 +106,12 @@ export interface ObjektDef {
   zustaende?: Record<string, { bild: string }>;
   /** Darf der Generator das Objekt spiegeln? */
   spiegelbar?: boolean;
+  /** Nur Optik: das Spiel wählt je Standort fest eine dieser Kennungen (z. B. Kronenfarben eines Baumes) – gleiche Größe und Kollision wie dieses Objekt */
+  vielfalt?: string[];
+  /** Nur Optik: das Objekt wird (mit 3D-Figuren) live als 3D-Modell gezeichnet – eigene Drehung und Wind je Standort; bild bleibt der Ersatz.
+   *  farbton/saett/hell färben nur die grünen Teile (Blätter) um; wind: Ausschlag der Krone in Metern */
+  modell3d?: { url: string; farbton?: number; saett?: number; hell?: number; wind?: number; /** graue Stellen (Blattunterseiten) grün färben */ grau?: boolean;
+    /** welche Farbe pulsiert (Farbton in Grad, Standard 210 = Blau) und wie breit der Bereich ist (Standard 28°) */ puls_ton?: number; puls_breite?: number };
   /** Herkunft und Lizenz */
   herkunft: string;
   /** Räumliches Gebäude (Standard, werkzeug/welt/gebaeude.py): die Ebenen; `bild` ist dann nur das Gesamtbild für Katalog und Vorschau */
@@ -123,7 +129,7 @@ export interface ObjektBibliothek { objekte: ObjektDef[] }
 
 /* ───────────── Region ───────────── */
 
-export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer" | "hoehle" | "innen";
+export type Biom = "wald" | "wiese" | "dorf" | "sumpf" | "gebirge" | "ufer" | "hoehle" | "innen" | "tundra" | "kueste" | "wueste" | "tropen" | "schnee" | "meer";
 export interface Region {
   id: string;
   name: string;

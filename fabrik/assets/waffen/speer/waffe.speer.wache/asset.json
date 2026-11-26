@@ -1,0 +1,6 @@
+{
+  "id": "waffe.speer.wache",
+  "name": "Speer der Stadtwache",
+  "kategorie": "waffe",
+  "herkunft": "Konzeptbild Stadtwache (referenz/blatt.png); Speer nachgebaut (fabrik/speer_wache.py), Schild aus dem Bild (flachteil.py)"
+}

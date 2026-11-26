@@ -1,0 +1,15 @@
+{
+  "id": "bergbau.ureisen",
+  "name": "Ureisen",
+  "kategorie": "bergbau",
+  "aktuell": "v001",
+  "hoehe_m": 1.6,
+  "status": "Meshy „Emberstone Monolith“; Spieldatei img/objekte3d/skilling/bergbau/ureisen.glb (live 3D wie die Bäume, ohne Wind; blaue Adern pulsieren); Weltobjekt berg_ureisen_01 (Ersatzbild img/welt/stil/berg_ureisen_01.webp); Abbau-Funktion folgt",
+  "herkunft": "Meshy",
+  "leer": {
+    "name": "Ureisen (abgebaut)",
+    "spieldatei": "img/objekte3d/skilling/bergbau/ureisen-leer.glb",
+    "weltobjekt": "berg_ureisen_leer",
+    "hinweis": "Adern abgebaut/leer: fabrik/baum_export.py … adern=leer"
+  }
+}

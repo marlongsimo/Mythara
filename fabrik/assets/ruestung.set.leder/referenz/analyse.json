@@ -1,0 +1,153 @@
+{
+ "quelle": "original.png",
+ "sha256": "0604278973f6a8aea1cabae6a1e89b25ced6bdfa38e072a0eda25d02d18cdb0a",
+ "groesse": [
+  1536,
+  1024
+ ],
+ "papier": "#18191e",
+ "assets": {
+  "ruestung.set.leder": [
+   "vorn",
+   "seite",
+   "hinten"
+  ]
+ },
+ "ausschnitte": [
+  {
+   "name": "vorn",
+   "asset": "ruestung.set.leder",
+   "ansicht": "vorn",
+   "datei": "teile/vorn.png",
+   "kasten": [
+    85,
+    45,
+    492,
+    691
+   ],
+   "breite": 407,
+   "hoehe": 646,
+   "verhaeltnis": 0.63,
+   "deckung": 0.544,
+   "farben": [
+    {
+     "farbe": "#482d23",
+     "anteil": 0.288
+    },
+    {
+     "farbe": "#241814",
+     "anteil": 0.189
+    },
+    {
+     "farbe": "#745345",
+     "anteil": 0.16
+    },
+    {
+     "farbe": "#4f3b35",
+     "anteil": 0.141
+    },
+    {
+     "farbe": "#653e2f",
+     "anteil": 0.127
+    },
+    {
+     "farbe": "#a3887c",
+     "anteil": 0.095
+    }
+   ],
+   "warnungen": [
+    "Motiv berührt den Rand des Kastens"
+   ]
+  },
+  {
+   "name": "seite",
+   "asset": "ruestung.set.leder",
+   "ansicht": "seite",
+   "datei": "teile/seite.png",
+   "kasten": [
+    611,
+    35,
+    848,
+    696
+   ],
+   "breite": 237,
+   "hoehe": 661,
+   "verhaeltnis": 0.359,
+   "deckung": 0.688,
+   "farben": [
+    {
+     "farbe": "#5c3d31",
+     "anteil": 0.207
+    },
+    {
+     "farbe": "#201511",
+     "anteil": 0.197
+    },
+    {
+     "farbe": "#4c3126",
+     "anteil": 0.179
+    },
+    {
+     "farbe": "#735244",
+     "anteil": 0.163
+    },
+    {
+     "farbe": "#42271d",
+     "anteil": 0.154
+    },
+    {
+     "farbe": "#a1877d",
+     "anteil": 0.099
+    }
+   ],
+   "warnungen": [
+    "Motiv berührt den Rand des Kastens"
+   ]
+  },
+  {
+   "name": "hinten",
+   "asset": "ruestung.set.leder",
+   "ansicht": "hinten",
+   "datei": "teile/hinten.png",
+   "kasten": [
+    977,
+    45,
+    1392,
+    690
+   ],
+   "breite": 415,
+   "hoehe": 645,
+   "verhaeltnis": 0.643,
+   "deckung": 0.563,
+   "farben": [
+    {
+     "farbe": "#5a3d32",
+     "anteil": 0.202
+    },
+    {
+     "farbe": "#251915",
+     "anteil": 0.18
+    },
+    {
+     "farbe": "#452a20",
+     "anteil": 0.178
+    },
+    {
+     "farbe": "#4e3228",
+     "anteil": 0.177
+    },
+    {
+     "farbe": "#704f40",
+     "anteil": 0.174
+    },
+    {
+     "farbe": "#9b7f73",
+     "anteil": 0.089
+    }
+   ],
+   "warnungen": [
+    "Motiv berührt den Rand des Kastens"
+   ]
+  }
+ ]
+}

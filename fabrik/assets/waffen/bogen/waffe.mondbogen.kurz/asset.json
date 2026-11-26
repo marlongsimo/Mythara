@@ -1,0 +1,9 @@
+{
+  "id": "waffe.mondbogen.kurz",
+  "name": "Mond-Kurzbogen",
+  "kategorie": "waffe",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy-Modell, auf Länge und Lage der vorhandenen Waffe dieser Klasse gebracht; ausgelagert, Stufen mit fabrik/stufen_bauen.sh",
+  "herkunft": "Meshy"
+}

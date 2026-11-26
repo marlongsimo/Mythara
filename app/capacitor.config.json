@@ -1,0 +1,32 @@
+{
+  "appId": "de.riftmere.app",
+  "appName": "Riftmere",
+  "webDir": "www",
+  "server": {
+    "allowNavigation": [
+      "riftmere.de",
+      "www.riftmere.de",
+      "mythara-echtzeit.onrender.com"
+    ]
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0d0b0a",
+    "appendUserAgent": "RiftmereApp/1.0",
+    "scrollEnabled": false,
+    "allowsLinkPreview": false,
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#0d0b0a",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
+  }
+}

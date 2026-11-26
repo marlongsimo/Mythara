@@ -1,0 +1,8 @@
+{
+  "id": "werkzeug.hammer",
+  "name": "Schmiedehammer",
+  "kategorie": "werkzeug",
+  "aktuell": "v001",
+  "status": "v001: aus fabrik/werkzeuge.py",
+  "herkunft": "prozedural"
+}

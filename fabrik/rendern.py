@@ -49,6 +49,7 @@ if os.path.exists(alt):
         for d in os.listdir(ziel):
             if d.endswith(".webp"): os.remove(os.path.join(ziel, d))
         print("das bisherige Feld reicht nicht mehr – alle Blätter werden neu gerendert", flush=True)
+        if BEW is not None: print("  (bewegungen=… wird ignoriert: mit dem neuen Feld müssen alle Bewegungen neu gerendert werden)", flush=True); BEW = None
 print(f"Renderbereich: Feld {FELD} px · Fußpunkt {FUSS} · Platz über dem Fußpunkt {round(ueber)} px, darunter {round(unter)} px, seitlich {round(seite)} px", flush=True)
 sc.render.engine = "CYCLES"; sc.cycles.samples = 12; sc.cycles.device = "CPU"; sc.cycles.use_denoising = False; sc.render.film_transparent = True; sc.render.resolution_x = sc.render.resolution_y = FELD; sc.render.use_persistent_data = False
 sc.render.image_settings.file_format = "PNG"; sc.render.image_settings.color_mode = "RGBA"; sc.view_settings.view_transform = "Standard"
@@ -60,11 +61,11 @@ for name, rot, staerke in [("haupt", (50, 0, -40), 5.0), ("fuell", (65, 0, 60), 
 welt = bpy.data.worlds.new("welt"); sc.world = welt; welt.use_nodes = True; welt.node_tree.nodes["Background"].inputs[1].default_value = 1.3
 STIL = arm.get("stil", "")                                                                         # "gemalt": weiches warmes Hauptlicht, kühle Randlichter, Schatten in Falten, helle Kanten (aus der Ausrüstungsliste)
 if STIL == "gemalt":
-    for name, farbe_, staerke, winkel, rot in (("haupt", (1.0, 0.92, 0.8), 3.6, 35, None), ("fuell", (0.72, 0.8, 1.0), 1.2, 40, None), ("rand", (0.85, 0.9, 1.0), 3.2, 8, None), ("rand2", (1.0, 0.95, 0.85), 2.2, 8, (-35, 0, -150))):
+    for name, farbe_, staerke, winkel, rot in (("haupt", (1.0, 0.92, 0.8), 3.0, 35, None), ("fuell", (0.75, 0.8, 0.95), 1.0, 40, None), ("rand", (0.9, 0.92, 1.0), 2.4, 8, None), ("rand2", (1.0, 0.95, 0.85), 1.6, 8, (-35, 0, -150))):
         l = bpy.data.objects.get(name)
         if l is None: l = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN")); sc.collection.objects.link(l); l.rotation_euler = tuple(math.radians(v) for v in rot)
         l.data.color = farbe_; l.data.energy = staerke; l.data.angle = math.radians(winkel)
-    bg = welt.node_tree.nodes["Background"]; bg.inputs[0].default_value = (0.55, 0.62, 0.8, 1); bg.inputs[1].default_value = 1.0
+    bg = welt.node_tree.nodes["Background"]; bg.inputs[0].default_value = (0.55, 0.6, 0.72, 1); bg.inputs[1].default_value = 0.85
     def veredeln(mat):
         """Grundfarbe × Umgebungsverdeckung (dunkle Falten) + helle Kanten (Bevel-Normale weicht von der Flächennormale ab)"""
         if not mat or not mat.use_nodes or mat.get("veredelt"): return
@@ -79,7 +80,7 @@ if STIL == "gemalt":
         nt.links.new(quelle, dunkel.inputs["Color1"]); nt.links.new(stufe.outputs["Result"], dunkel.inputs["Color2"])
         bev = nt.nodes.new("ShaderNodeBevel"); bev.inputs["Radius"].default_value = 0.014; bev.samples = 6; geo = nt.nodes.new("ShaderNodeNewGeometry")
         dot = nt.nodes.new("ShaderNodeVectorMath"); dot.operation = "DOT_PRODUCT"; nt.links.new(bev.outputs[0], dot.inputs[0]); nt.links.new(geo.outputs["Normal"], dot.inputs[1])
-        kante = nt.nodes.new("ShaderNodeMapRange"); kante.inputs["From Min"].default_value = 0.985; kante.inputs["From Max"].default_value = 0.8; kante.inputs["To Max"].default_value = 0.28
+        kante = nt.nodes.new("ShaderNodeMapRange"); kante.inputs["From Min"].default_value = 0.95; kante.inputs["From Max"].default_value = 0.7; kante.inputs["To Max"].default_value = 0.22   # nur deutliche Kanten (feine Netze rauschen sonst)
         nt.links.new(dot.outputs["Value"], kante.inputs["Value"])
         hell = nt.nodes.new("ShaderNodeMixRGB"); hell.blend_type = "SCREEN"; nt.links.new(kante.outputs["Result"], hell.inputs["Fac"]); nt.links.new(dunkel.outputs[0], hell.inputs["Color1"]); hell.inputs["Color2"].default_value = (1.0, 0.95, 0.85, 1)
         nt.links.new(hell.outputs[0], ein); mat["veredelt"] = True
@@ -92,15 +93,18 @@ teile = sorted([o for o in bpy.data.objects if o.get("ebene")], key=lambda o: (o
 koerper = next(o for o in teile if o["art"] == "koerper"); huellen = [o for o in teile if o["art"] == "huelle"]; starr = [o for o in teile if o["art"] == "starr"]
 volumen = [o for o in huellen if o.get("volumen")]                                                # wahlfreie Lagen (ueberlage) schneiden nichts aus
 # Durchgänge: (Dateiname der Ebene, sichtbares Teil, Teile, die nur ausschneiden)
-laeufe = [("koerper", koerper, [])] + [(o["ebene"], o, [koerper] + [v for v in volumen if v["platz"] != o["platz"]]) for o in huellen]
-for o in starr: laeufe += [(o["ebene"] + ".hinten", o, []), (o["ebene"] + ".vorn", o, [koerper] + volumen)]
+# Unterkleidung ("unten": Hemd, Hose, Schuhe) wird nur vom Körper und von anderer Unterkleidung ausgestanzt – nie von abnehmbarer Rüstung,
+# sonst hätte sie dort Löcher, sobald die Rüstung abgelegt ist; die Rüstung liegt in der Zeichenreihenfolge darüber (höhere „reihe“)
+ZEICHENFOLGE = bool(arm.get("zeichenfolge"))                                                        # Baukasten: nur der Körper stanzt aus, die Reihenfolge der Ebenen entscheidet
+laeufe = [("koerper", koerper, [])] + [(o["ebene"], o, [koerper] + ([] if ZEICHENFOLGE else [v for v in volumen if v["platz"] != o["platz"] and (v.get("unten") or not o.get("unten"))])) for o in huellen]
+for o in starr: laeufe += [(o["ebene"] + ".hinten", o, []), (o["ebene"] + ".vorn", o, [koerper] + ([] if ZEICHENFOLGE else volumen))]
 aktionen = [a for a in bpy.data.actions if a.get("bilder") and (BEW is None or a.name in BEW)]
 
 meta = {"id": kennung, "feld": FELD, "richtungen": RICHTUNGEN, "winkel0": "osten", "drehsinn": "im Uhrzeigersinn am Bildschirm (y nach unten)", "zeile": "round(winkel / (pi/4)) mod 8",
         "fuss": list(FUSS), "mass": [FUSS[0], FUSS[1], round(float(arm.get("hoehe", 1.8)) * math.cos(n) * PX_JE_M / FELD, 3)], "kamera": {"neigung": NEIGUNG, "px_je_m": PX_JE_M},
         "animationen": {a.name: dict({"bilder": int(a["bilder"]), "rate": int(a["rate"]), "schleife": bool(a["schleife"])}, **json.loads(a["mehr"])) for a in aktionen},
-        "ebenen": {"koerper": {"art": "koerper"}}, "plaetze": {}, "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)", "tiefe": {}}
-for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"wahlfrei": True} if o.get("wahlfrei") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
+        "ebenen": {"koerper": {"art": "koerper"}}, "plaetze": {}, "reihenfolge": "hinten-Ebenen der Waffen (fernste zuerst) · koerper · Rüstung (beliebig) · vorn-Ebenen der Waffen (fernste zuerst)", "zeichenfolge": ZEICHENFOLGE, "tiefe": {}}
+for o in huellen + starr: meta["ebenen"][o["ebene"]] = {"art": o["art"], "platz": o["platz"], **({"ueberlage": True} if o.get("ueberlage") else {}), **({"wahlfrei": True} if o.get("wahlfrei") else {}), **({"unten": True} if o.get("unten") else {}), **({"umhang": True} if o.get("umhang") else {}), **({"ersetzt": o["ersetzt"].split(",")} if o.get("ersetzt") else {}), **({"knochen": o.parent_bone, "angriff": o.get("angriff", "angriff")} if o["art"] == "starr" else {}), **({"bewegungen": json.loads(o["bewegungen"])} if o.get("bewegungen") and json.loads(o["bewegungen"]) else {})}; meta["plaetze"].setdefault(o["platz"], []).append(o["ebene"])
 # Tiefe der Waffen je Bewegung, Richtung und Bild (in cm entlang der Blickrichtung)
 for a in aktionen:
     arm.animation_data.action = a
@@ -125,12 +129,17 @@ for name, sichtbar, schneider in laeufe:
     if NUR and name not in NUR and name.rsplit(".", 1)[0] not in NUR: continue
     for o in teile: o.hide_render = not (o is sichtbar or o in schneider); o.is_holdout = o in schneider
     for a in aktionen:
+        nur_in = json.loads(sichtbar.get("bewegungen", "[]") or "[]") if sichtbar is not None else []
+        if nur_in and a.name not in nur_in: continue                                                # Waffe nur in ihren Bewegungen (wechselbare Waffen)
+        los = json.loads(a["mehr"]).get("loslassen") if sichtbar is not None and sichtbar.get("art") == "starr" and sichtbar.get("platz") == "hand_r" else None   # Wurfwaffe: ab hier leer
         datei = os.path.join(ziel, f"{name}.{a.name}.webp")
         if os.path.exists(datei) and not NUR and os.path.getmtime(datei) > os.path.getmtime(quelle): continue   # nur Blätter wiederverwenden, die neuer sind als die Figur (sonst zeigen sie eine alte Fassung)
         bilder = int(a["bilder"]); arm.animation_data.action = a; blatt = Image.new("RGBA", (FELD * bilder, FELD * 8), (0, 0, 0, 0))
         for r in range(8):
             arm.rotation_euler = (0, 0, math.radians(90 - 45 * r))
-            for b in range(bilder): sc.frame_set(b + 1); sc.render.filepath = tmp; bpy.ops.render.render(write_still=True); blatt.paste(Image.open(tmp).convert("RGBA"), (b * FELD, r * FELD)); gerendert += 1
+            for b in range(bilder):
+                if los is not None and b >= los: continue                                           # geworfen: die Hand ist leer
+                sc.frame_set(b + 1); sc.render.filepath = tmp; bpy.ops.render.render(write_still=True); blatt.paste(Image.open(tmp).convert("RGBA"), (b * FELD, r * FELD)); gerendert += 1
         px = np.asarray(blatt).copy(); px[px[..., 3] < 8] = 0; Image.fromarray(px, "RGBA").save(datei, lossless=True, method=4)
         print(f"Blatt: {name}.{a.name} · {gerendert} Bilder in {round(time.time() - start)} s", flush=True)
 if os.path.exists(tmp): os.remove(tmp)

@@ -1,0 +1,67 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npcmann3d – Grundfigur für NPCs in Echtzeit-3D (Mann, Meshy, stilisiert): Leinenhemd, Lederweste, Gürteltasche fest im Modell; zivile Haltung ohne Waffen; Frisuren und Bärte für Vielfalt.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.bart.schnurrbart",
+      "platz": "bart",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.bart.schnurrbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.stoppeln",
+      "platz": "bart",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.bart.stoppeln.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.bart.vollbart.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.bart.wikinger",
+      "platz": "bart",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.bart.wikinger.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.militaer",
+      "platz": "haar",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.haar.militaer.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.scheitel",
+      "platz": "haar",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.haar.scheitel.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.haar.zerzaust.glb",
+      "wahlfrei": true
+    },
+    {
+      "id": "kopf.haar.zopf_eng",
+      "platz": "haar",
+      "glb": "npcmann3d/v001/quelle/teile/kopf.haar.zopf_eng.glb",
+      "wahlfrei": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Hartleder-Kapuze",
+  "gegenstand": "jaegerkapuze_selten",
+  "gruppe": "fernkampf",
+  "teil": "kopf",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Selten",
+  "modell": {
+    "ebene": "kopf.helm.jaegerkapuze.selten",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/kopf/kopf.helm.jaegerkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.jaegerkapuze.selten.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.jaegerkapuze.selten.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Waldgrün gegerbtes Leder – im Unterholz kaum zu sehen."
+}

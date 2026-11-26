@@ -1,0 +1,21 @@
+{
+  "name": "riftmere-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Riftmere als App (iOS, später Android): Capacitor-Hülle um das Spiel auf riftmere.de",
+  "scripts": {
+    "icons": "python3 werkzeug/icons.py",
+    "sync": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/splash-screen": "8.0.2",
+    "@capacitor/status-bar": "8.0.4",
+    "@capacitor/app": "8.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2"
+  }
+}

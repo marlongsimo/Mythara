@@ -1,0 +1,19 @@
+{
+  "id": "gegner.oberster_rabenpriester",
+  "name": "Oberster Rabenpriester",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: Meshy „Raven King“, zwei Seltene Schwerter. Bewegungen ruhe, gehen, doppelhieb (Doppelschwert: rechts, dann links über Kreuz, 0,93 s, Treffer Bild 6), treffer, tod. Groß: 2×2 Felder (≈ 2,5 m, fabrik/kind.py groesse=1.38). arm_radius 0,09 hält die Flügel ruhig. Export mit echtzeit=1 (Dauern wie eingestellt). Im Spiel: Kollisionsradius r = 1.0. Spieldatei img/figuren-echt3d/oberster_rabenpriester3d.glb",
+  "herkunft": "Meshy",
+  "spiel": {
+    "felder": [
+      2,
+      2
+    ],
+    "r": 1.0
+  },
+  "phasen": {
+    "1 Boden": "img/figuren-echt3d/oberster_rabenpriester3d.glb – ruhe, gehen, doppelhieb, treffer, tod",
+    "2 Flug": "img/figuren-echt3d/oberster_rabenpriester_flug3d.glb – abheben (Übergang aus Phase 1), fliegen (Schweben und Fortbewegung), flug_hieb, flug_treffer, flug_tod (Absturz); gebaut mit fabrik/fluegel.py (Flügelknochen, Schwebehöhe 0,6 m vor der Vergrößerung)"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Ureisenhelm",
+  "gegenstand": "eisenwachthelm_mythisch",
+  "gruppe": "nahkampf",
+  "teil": "kopf",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "kopf.helm.eisenwacht.mythisch",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/kopf/helm.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.eisenwacht.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.eisenwacht.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Obsidian, der wie Öl auf Wasser schillert. Durch die Platten ziehen sich leuchtende Adern – niemand weiß, wer sie geschmiedet hat."
+}

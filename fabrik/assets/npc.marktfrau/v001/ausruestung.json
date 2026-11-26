@@ -1,0 +1,23 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.marktfrau – Marktfrau (NPC für Echtzeit-3D aus npcfrau3d): Frisur dutt_hoch, Haarfarbe #221e1c, Haut braun.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.dutt_hoch",
+      "platz": "haar",
+      "glb": "npc.marktfrau/v001/quelle/teile/kopf.haar.dutt_hoch.glb"
+    }
+  ],
+  "arme_eng": 6
+}

@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Mythara – Arbeitsstände automatisch live stellen (läuft im GitHub-Workflow „Welt live“, alle 15 Minuten und auf Knopfdruck).
+#
+# 1. Neue Commits der Arbeitszweige (QUELLEN) werden in feature/realtime-engine gemergt. Konflikte nur in erzeugten Dateien
+#    (gebautes Spiel, Kampfraster) werden aufgelöst und danach neu erzeugt; ein Konflikt in einer echten Quelldatei bricht ab
+#    (der Workflow schlägt fehl, es wird nichts gepusht).
+# 2. Danach: Kampfraster neu (werkzeug/weltzonen.py), Typprüfung, Spiel bauen, schnelle Tests – erst wenn alles grün ist, wird gepusht.
+#    Render baut den Spielserver aus feature/realtime-engine.
+# 3. main (die Webseite): Was in feature/realtime-engine unter echtzeit/, img/ und UI/ neu oder geändert ist, kommt nach main.
+#    Es wird nie etwas auf main gelöscht. Das geht ohne Auschecken (nur Git-Objekte).
+#
+# Lokal ausprobieren ohne zu pushen:  TROCKEN=1 bash .github/scripts/welt-live.sh
+set -euo pipefail
+
+ZIEL="feature/realtime-engine"
+QUELLEN="${QUELLEN:-claude/mythara-world-pipeline-z4ynx5 claude/tender-heisenberg-bruby2}"
+ERZEUGT='^(echtzeit/(spiel\.js|index\.html|figurentest\.(html|js))|realtime/shared/weltzonen\.ts|realtime/server/dist/.*|realtime/test/sim\.gebaut\.mjs)$'
+NAME="marlongsimo"; MAIL="208301081+marlongsimo@users.noreply.github.com"
+REPO_URL="${REPO_URL:-https://github.com/${GITHUB_REPOSITORY:-marlongsimo/mythara}.git}"
+ARBEIT="${ARBEIT:-$(mktemp -d)}"
+pushen() { if [ "${TROCKEN:-0}" = 1 ]; then echo "(trocken) git push origin $1"; else git push origin "$1"; fi; }
+
+cd "$ARBEIT"
+if [ ! -d repo/.git ]; then git init -q repo; fi
+cd repo
+git remote remove origin 2>/dev/null || true
+if [ -n "${GH_TOKEN:-}" ]; then git remote add origin "https://x-access-token:${GH_TOKEN}@${REPO_URL#https://}"; else git remote add origin "$REPO_URL"; fi
+git config user.name "$NAME"; git config user.email "$MAIL"
+# nur Commits und Bäume holen (keine Dateiinhalte) – Dateien kommen erst, wenn sie gebraucht werden
+git fetch -q --filter=blob:none origin "+refs/heads/$ZIEL:refs/remotes/origin/$ZIEL" "+refs/heads/main:refs/remotes/origin/main"
+NEU=()
+for q in $QUELLEN; do
+  git fetch -q --filter=blob:none origin "+refs/heads/$q:refs/remotes/origin/$q" 2>/dev/null || { echo "Zweig $q gibt es nicht (mehr) – übersprungen"; continue; }
+  if git merge-base --is-ancestor "origin/$q" "origin/$ZIEL"; then echo "$q: nichts Neues"; else echo "$q: $(git rev-list --count "origin/$ZIEL..origin/$q") neue Commits"; NEU+=("$q"); fi
+done
+
+STAND="origin/$ZIEL"
+if [ "${#NEU[@]}" -gt 0 ]; then
+  # Arbeitskopie nur mit dem, was zum Bauen nötig ist (die Figuren-Fabrik mit ihren großen Dateien bleibt außen vor)
+  git sparse-checkout set realtime echtzeit img   # img: die Formprüfung der Welt sieht nach, ob die Objektbilder da sind
+  git checkout -q -B "$ZIEL" "origin/$ZIEL"
+  for q in "${NEU[@]}"; do
+    if ! git merge -q --no-edit -m "Automatisch: Merge $q" "origin/$q"; then
+      while IFS= read -r f; do
+        if [[ "$f" =~ $ERZEUGT ]]; then git checkout -q --ours -- "$f"; git add -- "$f"
+        else echo "::error::Konflikt in $f (Merge von $q) – bitte von Hand zusammenführen"; git merge --abort; exit 1; fi
+      done < <(git diff --name-only --diff-filter=U)
+      git commit -q --no-edit
+    fi
+  done
+  ( cd realtime
+    npm ci --no-audit --no-fund --loglevel=error
+    python3 werkzeug/weltzonen.py
+    npx tsc --noEmit -p .
+    node build.mjs
+    for t in kreuzwald einzelkampf welt-raster welt-daten; do node "test/$t.test.mjs" > "/tmp/test-$t.log" 2>&1 || { cat "/tmp/test-$t.log"; echo "::error::Test $t fehlgeschlagen – nichts gepusht"; exit 1; }; tail -1 "/tmp/test-$t.log"; done )
+  git add -A realtime echtzeit
+  git diff --cached --quiet || git commit -q -m "Automatisch: Kampfraster und Spiel neu gebaut"
+  pushen "HEAD:refs/heads/$ZIEL"
+  STAND="HEAD"
+fi
+
+# main: neue und geänderte Dateien aus echtzeit/, img/, UI/ übernehmen – ohne Auschecken, nichts löschen
+AENDERUNG="$(git diff --name-only --diff-filter=AM origin/main "$STAND" -- echtzeit img UI)"
+if [ -z "$AENDERUNG" ]; then echo "main: schon aktuell"; exit 0; fi
+echo "main: $(printf '%s\n' "$AENDERUNG" | wc -l) Dateien neu oder geändert"
+export GIT_INDEX_FILE="$ARBEIT/main.index"
+git read-tree origin/main
+printf '%s\n' "$AENDERUNG" > "$ARBEIT/liste"
+git ls-tree -r "$STAND" -- echtzeit img UI | python3 -c '
+import sys
+liste = set(open(sys.argv[1], encoding="utf-8").read().splitlines())
+for zeile in sys.stdin:
+    if zeile.rstrip("\n").split("\t", 1)[1] in liste: sys.stdout.write(zeile)' "$ARBEIT/liste" | git update-index --index-info
+BAUM="$(git write-tree)"; unset GIT_INDEX_FILE
+COMMIT="$(git commit-tree "$BAUM" -p origin/main -m "Automatisch live: Spiel, Welt und Bilder aus $ZIEL ($(git rev-parse --short "$STAND"))")"
+pushen "$COMMIT:refs/heads/main"
+echo "main aktualisiert: $COMMIT"

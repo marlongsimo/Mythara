@@ -1,0 +1,9 @@
+{
+  "id": "helm.eisenwacht",
+  "name": "Eisenwacht-Helm",
+  "kategorie": "ruestung",
+  "seltenheit": "selten",
+  "aktuell": "v001",
+  "status": "Meshy „Bronze Sentinel“ (Set mit ruestung.brust.eisenwacht und ruestung.beine.eisenschienen), Farbe mit fabrik/farbe_angleichen.py an den Eisenwacht-Brustpanzer angeglichen (staerke=0.9 metall=1 → quelle/angeglichen.glb), mit fabrik/helm_anpassen.py auf basemann3d und basefrau3d (Standardwerte); Teilnetz kopf.helm.eisenwacht, nur_knochen kopf, hals; Frisur wird beim Tragen ausgeblendet",
+  "herkunft": "Meshy"
+}

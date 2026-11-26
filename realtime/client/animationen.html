@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Mythara – Animationen testen</title>
+<style>
+  :root { --bg: #1b2028; --tafel: #242b35; --rand: #3a4452; --text: #e9e4d8; --leise: #9aa3ad; --akzent: #d9a54a; }
+  * { box-sizing: border-box; } [hidden] { display: none !important; } body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, sans-serif; }
+  header { padding: 10px 16px; border-bottom: 1px solid var(--rand); display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; } header b { color: var(--akzent); } header small { color: var(--leise); }
+  main { display: grid; grid-template-columns: minmax(280px, 1fr) 360px; gap: 12px; padding: 12px 16px; }
+  @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
+  .buehne { background: radial-gradient(#4a6b36, #2f4422); border-radius: 10px; min-height: 420px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .buehne canvas { max-width: 100%; max-height: 78vh; } #info { position: absolute; left: 10px; bottom: 8px; color: #e9e4d8cc; font-size: 13px; }
+  .feld { background: var(--tafel); border: 1px solid var(--rand); border-radius: 10px; padding: 10px; margin-bottom: 10px; } .feld h3 { margin: 0 0 8px; font-size: 13px; color: var(--leise); text-transform: uppercase; letter-spacing: .05em; }
+  select, button, input { font: inherit; } select { width: 100%; padding: 6px; background: #161a21; color: var(--text); border: 1px solid var(--rand); border-radius: 6px; }
+  .knoepfe { display: flex; flex-wrap: wrap; gap: 6px; } .knoepfe button { padding: 5px 9px; border-radius: 6px; border: 1px solid var(--rand); background: #161a21; color: var(--text); cursor: pointer; }
+  .knoepfe button.an { background: var(--akzent); color: #1b2028; border-color: var(--akzent); } .reihe { display: flex; gap: 8px; align-items: center; margin-top: 6px; } .reihe label { min-width: 92px; color: var(--leise); font-size: 13px; } .reihe input[type=range] { flex: 1; }
+  .teil { display: grid; grid-template-columns: 1fr 120px; gap: 6px; margin-bottom: 6px; } .teil .name { font-size: 13px; color: var(--leise); align-self: center; }
+</style></head>
+<body>
+<header><b>Mythara · Animationen testen</b><small>alle 3D-Figuren, Bewegungen und Waffen – nur über diesen Link erreichbar</small></header>
+<main>
+  <div class="buehne" id="buehne" style="position:relative"><canvas id="c"></canvas><canvas id="fx" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas><div id="info"></div></div>
+  <div>
+    <div class="feld"><h3>Figur</h3><select id="figur"></select>
+      <div class="reihe" id="hautreihe" hidden><label>Haut</label><select id="haut"></select></div></div>
+    <div class="feld"><h3>Bewegung</h3><div class="knoepfe" id="bewegungen"></div>
+      <div class="reihe"><label>Tempo</label><input type="range" id="tempo" min="0.1" max="2" step="0.05" value="1"><span id="tempowert">1,00×</span></div>
+      <div class="reihe"><label>Wiederholen</label><input type="checkbox" id="schleife" checked><button id="pause">Pause</button><button id="nochmal">Neu starten</button></div>
+      <div class="reihe"><label>Drehen</label><input type="range" id="blick" min="-3.14" max="3.14" step="0.01" value="0.5"></div>
+      <div class="reihe"><label>Effekt</label><button id="teleport">Teleport</button><button id="schuss" title="Bogen, Armbrust oder Stab in der Hand: Schussbewegung mit Geschoss zur Zielscheibe">Schuss</button></div></div>
+    <div class="feld"><h3>Waffen und Ausrüstung</h3><div id="teile"></div></div>
+  </div>
+</main>
+<script src="figur3d.js?v=__V__"></script>
+<script>
+(async () => {
+  const E = window.MytharaEcht3D, M = "../img/figuren-echt3d/", $ = (s) => document.querySelector(s);
+  const L = await (await fetch("animationen-liste.json?v=__V__")).json(); const figuren = L.figuren;
+  const PLATZNAME = { hand_r: "Rechte Hand", hand_l: "Linke Hand", arm_l: "Schild", haar: "Frisur", bart: "Bart", helm: "Kopf", brust: "Brust", beine: "Beine", schuerze: "Schürze" };
+  const STUFE = { "": "Grundstufe", training: "Training", gewoehnlich: "Einfach", selten: "Selten", episch: "Episch", legendaer: "Legendär", mythisch: "Mythisch" };
+  let d = null, fig = null, bew = "ruhe", tempo = 1, pause = false, gewaehlt = {}, stufe = {};
+  const c = $("#c"), x = c.getContext("2d");
+  for (const f of figuren) $("#figur").add(new Option(f.id, f.id)); $("#figur").value = figuren.find((f) => f.id === "basemann3d") ? "basemann3d" : figuren[0].id;
+  function sichtbar() { if (!d) return; const ids = Object.entries(gewaehlt).filter(([, t]) => t).map(([p, t]) => t + (stufe[t] ? "." + stufe[t] : "")); d.zeige(ids);
+    $("#info").textContent = `${fig.id} · ${bew} · ${ids.join(", ") || "ohne Teile"}`; }
+  function spielen() { if (!d || !d.hat(bew)) return; d.neustart(); d.spiele(bew, !$("#schleife").checked); sichtbar(); }
+  async function laden() {
+    fig = figuren.find((f) => f.id === $("#figur").value); if (d) { d.entfernen(); d = null; }
+    d = await E.Darsteller.erstellen(M + fig.id + ".glb", hoehePx(), Math.min(2, devicePixelRatio || 1));
+    c.width = d.breite; c.height = d.hoehe; c.style.width = d.breite / d.aufloesung + "px";
+    $("#hautreihe").hidden = !fig.haut.length; $("#haut").innerHTML = '<option value="">Original</option>' + fig.haut.map((h) => `<option>${h}</option>`).join("");
+    /* Bewegungen */
+    const namen = Object.keys(fig.aktionen).sort(); if (!namen.includes(bew)) bew = namen.includes("ruhe") ? "ruhe" : namen[0];
+    $("#bewegungen").innerHTML = namen.map((n) => `<button data-b="${n}" class="${n === bew ? "an" : ""}" title="${fig.aktionen[n].bilder} Bilder · ${(fig.aktionen[n].bilder / fig.aktionen[n].rate).toFixed(2)} s">${n}</button>`).join("");
+    $("#bewegungen").querySelectorAll("button").forEach((b) => b.onclick = () => { bew = b.dataset.b; $("#bewegungen").querySelectorAll("button").forEach((k) => k.classList.toggle("an", k === b)); spielen(); });
+    /* Teile je Platz */
+    const plaetze = {}; for (const [t, i] of Object.entries(fig.teile)) if (i.platz) (plaetze[i.platz] ||= []).push(t);
+    gewaehlt = {}; stufe = {};
+    if (plaetze.hand_r) gewaehlt.hand_r = plaetze.hand_r.find((t) => t.includes("schwert")) || plaetze.hand_r[0];
+    $("#teile").innerHTML = Object.entries(plaetze).map(([p, ts]) => `<div class="teil"><span class="name">${PLATZNAME[p] || p}</span><span></span>
+        <select data-p="${p}"><option value="">– nichts –</option>${ts.sort().map((t) => `<option ${gewaehlt[p] === t ? "selected" : ""}>${t}</option>`).join("")}</select>
+        <select data-s="${p}"></select></div>`).join("") || "<small>Diese Figur hat keine wechselbaren Teile.</small>";
+    const stufenAuswahl = (p) => { const t = gewaehlt[p], s = (t && fig.stufen[t]) || [], el = $(`select[data-s="${p}"]`); el.hidden = !s.length;
+      el.innerHTML = ["", ...s].map((v) => `<option value="${v}">${STUFE[v] || v}</option>`).join(""); el.value = stufe[t] || ""; };
+    for (const p of Object.keys(plaetze)) stufenAuswahl(p);
+    $("#teile").querySelectorAll("select[data-p]").forEach((el) => el.onchange = () => { gewaehlt[el.dataset.p] = el.value; stufenAuswahl(el.dataset.p); sichtbar(); });
+    $("#teile").querySelectorAll("select[data-s]").forEach((el) => el.onchange = () => { const t = gewaehlt[el.dataset.s]; if (t) stufe[t] = el.value; sichtbar(); });
+    d.blick(+$("#blick").value); spielen();
+  }
+  $("#figur").onchange = laden; $("#haut").onchange = () => { if (d && $("#haut").value) d.haut(M + "haut/" + fig.id + "." + $("#haut").value + ".webp"); else laden(); };
+  $("#tempo").oninput = () => { tempo = +$("#tempo").value; $("#tempowert").textContent = tempo.toFixed(2).replace(".", ",") + "×"; };
+  $("#blick").oninput = () => d && d.blick(+$("#blick").value);
+  $("#pause").onclick = () => { pause = !pause; $("#pause").textContent = pause ? "Weiter" : "Pause"; };
+  $("#nochmal").onclick = spielen; $("#schleife").onchange = spielen;
+  $("#teleport").onclick = () => { if (!d) return; if (d.hat("teleport_weg")) d.spiele("teleport_weg", true); d.teleport(1.8); setTimeout(laden, 2600); };
+  /* Schuss: Bewegung zur Waffe, Stab leuchtet auf, Geschoss fliegt zur Zielscheibe (wie im Spiel: welt/geschosse.ts) */
+  const fx = $("#fx"), fxx = fx.getContext("2d"); let flug = [], funken = [];
+  $("#schuss").onclick = () => { if (!d) return; const w = [gewaehlt.hand_r, gewaehlt.hand_l].filter(Boolean).join(" ");
+    const art = /armbrust/.test(w) ? "bolzen" : /bogen/.test(w) ? "pfeil" : /stab|szepter/.test(w) ? "zauber" : null;
+    if (!art) { $("#info").textContent = "Für den Schuss einen Bogen, eine Armbrust oder einen Stab in die Hand nehmen."; return; }
+    const b = art === "pfeil" ? "bogen" : art === "bolzen" ? "armbrust1h" : "zauber_stab", anteil = art === "pfeil" ? 5 / 9 : art === "bolzen" ? 3 / 8 : 4 / 8;
+    if (!d.hat(b)) return; d.neustart(); d.spiele(b, true, () => { d.neustart(); d.spiele(bew, !$("#schleife").checked); }); sichtbar();
+    const verzug = d.dauer(b) * anteil / Math.max(0.1, tempo); if (art === "zauber") d.glut(verzug);
+    setTimeout(() => { const p = d.waffenPunkt(art === "zauber"), r = c.getBoundingClientRect(), br = fx.getBoundingClientRect(); fx.width = br.width; fx.height = br.height;
+      const x0 = p ? r.left - br.left + p.x / d.aufloesung : br.width / 2, y0 = p ? r.top - br.top + p.y / d.aufloesung : br.height / 2;
+      const b3 = new E.GeschossBild(art, hoehePx(), Math.min(2, devicePixelRatio || 1)), cv = document.createElement("canvas"); cv.width = b3.breite; cv.height = b3.hoehe;
+      flug.push({ art, x0, y0, x1: br.width - 40, y1: br.height * 0.55, t: 0, alt: null, b3, cv }); }, verzug); };
+  const hoehePx = () => Math.min(520, window.innerHeight * 0.62);
+  function zeichneFx(dt) { const B = fx.getBoundingClientRect(); if (fx.width !== Math.round(B.width)) { fx.width = B.width; fx.height = B.height; } const g = fxx; g.clearRect(0, 0, fx.width, fx.height);
+    const zx = fx.width - 40, zy = fx.height * 0.55; for (const [r, f] of [[16, "#c33"], [11, "#eee"], [6, "#c33"]]) { g.fillStyle = f; g.beginPath(); g.arc(zx, zy, r, 0, 7); g.fill(); }   // Zielscheibe
+    flug = flug.filter((q) => { const L = Math.hypot(q.x1 - q.x0, q.y1 - q.y0), v = q.art === "zauber" ? 520 : q.art === "bolzen" ? 900 : 760; q.t += dt * tempo * v / L; const p = Math.min(1, q.t);
+      const x = q.x0 + (q.x1 - q.x0) * p, y = q.y0 + (q.y1 - q.y0) * p - (q.art === "pfeil" ? Math.sin(Math.PI * p) * Math.min(34, L * 0.1) : 0), w = q.alt ? Math.atan2(y - q.alt[1], x - q.alt[0]) : Math.atan2(q.y1 - q.y0, q.x1 - q.x0); q.alt = [x, y];
+      if (q.b3) { if (q.alt0) q.b3.richte(x - q.alt0[0], y - q.alt0[1]); else q.b3.richte(q.x1 - q.x0, q.y1 - q.y0); q.alt0 = [x, y]; q.b3.zeichne(dt * tempo, q.cv.getContext("2d"));
+        const bw = q.b3.breite / q.b3.aufloesung; g.drawImage(q.cv, x - bw / 2, y - bw / 2, bw, bw); if (q.art === "zauber") funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 * bw / 80 + 3 }); }
+      else { g.save(); g.translate(x, y); g.rotate(w);
+      if (q.art === "pfeil") { g.strokeStyle = "#6b4423"; g.lineWidth = 2.2; g.beginPath(); g.moveTo(-17, 0); g.lineTo(9, 0); g.stroke(); g.fillStyle = "#d9dee6"; g.beginPath(); g.moveTo(9, -3.2); g.lineTo(17, 0); g.lineTo(9, 3.2); g.fill(); g.fillStyle = "#e8e2d0"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, -4); g.fill(); g.fillStyle = "#b8372b"; g.beginPath(); g.moveTo(-17, 0); g.lineTo(-11, 0); g.lineTo(-19, 4); g.fill(); }
+      else if (q.art === "bolzen") { g.strokeStyle = "#3b2a1c"; g.lineWidth = 3.4; g.beginPath(); g.moveTo(-11, 0); g.lineTo(6, 0); g.stroke(); g.fillStyle = "#9aa3ad"; g.beginPath(); g.moveTo(5, -4); g.lineTo(13, 0); g.lineTo(5, 4); g.fill(); g.fillStyle = "#2c2c2c"; g.fillRect(-12, -3.5, 4, 7); }
+      else { g.globalCompositeOperation = "lighter"; for (const [r, f] of [[13, "rgba(127,180,255,.28)"], [8, "rgba(200,228,255,.6)"], [4, "#fff"]]) { g.fillStyle = f; g.beginPath(); g.arc(0, 0, r * (1 + 0.12 * Math.sin(performance.now() / 33)), 0, 7); g.fill(); }
+        funken.push({ x: x + (Math.random() - 0.5) * 5, y: y + (Math.random() - 0.5) * 5, a: 0.55, r: 6 }); }
+      g.restore(); }
+      if (p >= 1) { if (q.b3) q.b3.entfernen(); for (let i = 0; i < 8; i++) { const a = Math.random() * 7; funken.push({ x, y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 60, a: 1, r: 3 }); } return false; } return true; });
+    g.globalCompositeOperation = "lighter"; funken = funken.filter((f) => { f.a -= dt * 3; f.r *= 0.96; if (f.vx) { f.x += f.vx * dt; f.y += f.vy * dt; } if (f.a <= 0) return false; g.fillStyle = `rgba(160,205,255,${f.a})`; g.beginPath(); g.arc(f.x, f.y, f.r, 0, 7); g.fill(); return true; }); g.globalCompositeOperation = "source-over"; }
+  let zuletzt = performance.now();
+  (function bild(t) { const dt = Math.min(0.1, (t - zuletzt) / 1000); zuletzt = t; if (d) d.zeichne(pause ? 0 : dt * tempo, x); zeichneFx(pause ? 0 : dt); requestAnimationFrame(bild); })(zuletzt);
+  await laden();
+})();
+</script>
+</body></html>

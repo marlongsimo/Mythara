@@ -1,0 +1,10 @@
+{
+  "id": "dorf.brunnen",
+  "name": "Brunnen",
+  "kategorie": "dorf",
+  "aktuell": "v001",
+  "hoehe_m": 2.6,
+  "beschreibung": "Steinbrunnen mit sechseckigem Holzdach, Seilzug und Eimer, Wasser im Schacht",
+  "status": "Meshy; Spieldatei img/objekte3d/dorf/brunnen.glb (live 3D, kein Wind); Weltobjekt dorf_brunnen_3d; noch nicht platziert",
+  "herkunft": "Meshy"
+}

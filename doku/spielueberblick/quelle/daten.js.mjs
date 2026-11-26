@@ -1,0 +1,14 @@
+const D = await import("./daten.mjs");
+const G = D.G.GEGENSTAENDE, preis = {};
+for (const l of Object.values(D.L.LAEDEN)) for (const w of l.waren) (preis[w.g] = preis[w.g] || []).push(l.name + " " + w.preis);
+const drop = {};
+for (const [mid, m] of Object.entries(D.MONSTER)) for (const r of m.drops || []) for (const w of r.wurf || []) (drop[w.g] = drop[w.g] || []).push(`${m.name} ${w.chance} %`);
+const teile = Object.values(G).map((g) => ({ id: g.id, name: g.name, platz: g.platz || null, art: g.art, s: g.seltenheit, werte: D.G.werteVon(g), anf: g.anforderung || null, text: g.text || "", zweihand: !!g.zweihand, preis: preis[g.id] || [], drop: drop[g.id] || [] }));
+const monster = ["bandit_dolch", "mooshocker", "waldgolem"].map((k) => { const m = D.MONSTER[k], gw = D.KW.gegnerWerte(m.v2, m.angriff.art); return { id: k, name: m.name, stufe: m.stufe, lp: m.lp, aggressiv: m.aggressiv !== false, aggroBis: m.aggroBisLevel || null, angriff: m.angriff.name, art: m.angriff.art, ticks: m.v2.ticks, maxHit: gw.maxHit, treffer: gw.treffer, abwehr: gw.abwehr, v2: m.v2, info: m.info || "", drops: (m.drops || []).map((r) => (r.wurf || []).map((w) => `${G[w.g] ? G[w.g].name : w.g}${w.anzahl ? " ×" + w.anzahl.join("–") : ""} (${w.chance} %)`).join(", ")) }; });
+const zonen = D.WZ.WELTKAMPF.map((z) => ({ region: z.region, name: z.name, x0: z.x0, y0: z.y0, b: z.b, h: z.h, stufe: z.stufe, aggro: z.aggro, lager: z.lager.map((l) => ({ art: l.art, x: z.x0 + l.x, y: z.y0 + l.y })) }));
+const laeden = Object.values(D.L.LAEDEN).map((l) => ({ name: l.name, haendler: l.haendler, x: l.x, y: l.y, spruch: l.spruch, waren: l.waren.map((w) => [G[w.g] ? G[w.g].name : w.g, w.preis]) }));
+const q1 = { id: D.Q1.Q1, log: D.Q1.QUESTLOG, npcs: D.Q1.NPCS.map((n) => ({ name: n.name, x: n.x, y: n.y })), belohnung: D.Q1.BELOHNUNG };
+const q2 = { id: D.Q2.Q2, schritte: D.Q2.SCHRITTE2, npcs: D.Q2.NPCS2.map((n) => ({ name: n.name, x: n.x, y: n.y })), belohnung: D.Q2.BELOHNUNG2, moosrain: D.Q2.MOOSRAIN, dinge: [...D.Q2.BRUCHSTELLEN, ...D.Q2.RUTEN].map((d) => ({ id: d.id, x: d.x, y: d.y })) };
+const sets = Object.values(D.G.SETS).map((s) => ({ name: s.name, teile: s.teile.map((t) => G[t].name), text: s.text }));
+const stile = D.KW.STILE;
+console.log(JSON.stringify({ teile, monster, zonen, laeden, q1, q2, sets, stile, regionen: D.WZ.WELTREGIONEN }));

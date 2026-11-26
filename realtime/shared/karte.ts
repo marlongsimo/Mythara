@@ -3,7 +3,8 @@
  * Dazu Wegsuche (A*) und Sichtlinien. Reine Rechnung, läuft auf dem Server und im Browser gleich.
  */
 export interface Punkt { x: number; y: number }
-export interface Lager { art: string; x: number; y: number; gruppe: number; blinzeln?: boolean /* huscht einmal davon, wenn es fast besiegt ist */ }
+export interface Lager { art: string; x: number; y: number; gruppe: number; blinzeln?: boolean /* huscht einmal davon, wenn es fast besiegt ist */;
+  /** gemeinsame Kampfwelt (alle Regionen in einer Simulation): Aggro, Leine, Streifen und Stufe des Gebiets, aus dem das Lager stammt – sonst gelten die Werte der Karte */ aggro?: number; leine?: number; wandern?: number; stufe?: number }
 
 export let KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */
@@ -101,17 +102,52 @@ export function schieben(e: { x: number; y: number; r: number }): void {
 export function naechstFrei(p: Punkt): Punkt {
   if (begehbar(p.x, p.y)) return { x: p.x, y: p.y };
   let best: Punkt | null = null, bd = Infinity;
+  if (KB * KH > GROSS) { /* große Karte (gemeinsame Kampfwelt): erst in der Nähe suchen, nicht über alle Felder */
+    const ci = Math.floor(p.x), cj = Math.floor(p.y), R = 48;
+    for (let i = Math.max(0, ci - R); i <= Math.min(KB - 1, ci + R); i++) for (let j = Math.max(0, cj - R); j <= Math.min(KH - 1, cj + R); j++) { if (fels(i, j)) continue; const d = Math.hypot(i + 0.5 - p.x, j + 0.5 - p.y); if (d < bd) { bd = d; best = { x: i + 0.5, y: j + 0.5 }; } }
+    if (best) return best; }
   for (let i = 0; i < KB; i++) for (let j = 0; j < KH; j++) { if (fels(i, j)) continue; const d = Math.hypot(i + 0.5 - p.x, j + 0.5 - p.y); if (d < bd) { bd = d; best = { x: i + 0.5, y: j + 0.5 }; } }
   return best || { x: START[0].x, y: START[0].y };
 }
 
+/** Ab so vielen Feldern gilt eine Karte als groß (die gemeinsame Kampfwelt): Wegsuche und Suche nach freien Feldern nur in einem Fenster */
+const GROSS = 400000;
+/** Wegsuche auf großen Karten: A* nur im Rechteck um Start und Ziel (mit Rand), mit Vorrangliste – sonst würde jede Suche Millionen Felder anlegen.
+ *  Findet sich im Fenster kein Weg, wird es einmal vergrößert. Ergebnis wie bei weg(). */
+function wegFenster(start: Punkt, ziel: Punkt, rand: number, felder: boolean): Punkt[] {
+  const si = Math.floor(start.x), sj = Math.floor(start.y), zi = Math.floor(ziel.x), zj = Math.floor(ziel.y);
+  for (const M of [24, 72]) {
+    const x0 = Math.max(0, Math.min(si, zi) - M), y0 = Math.max(0, Math.min(sj, zj) - M), x1 = Math.min(KB - 1, Math.max(si, zi) + M), y1 = Math.min(KH - 1, Math.max(sj, zj) + M), B = x1 - x0 + 1, N = B * (y1 - y0 + 1);
+    const idx = (i: number, j: number) => (j - y0) * B + (i - x0), zu0 = (i: number, j: number) => i < x0 || j < y0 || i > x1 || j > y1 || fels(i, j);
+    const g = new Float32Array(N).fill(Infinity), her = new Int32Array(N).fill(-1), zu = new Uint8Array(N);
+    const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + (felder ? 0.001 : 0.414) * Math.min(dx, dy); };
+    /* Vorrangliste (binärer Haufen) nach f, mit dem f-Wert beim Einfügen (Doppelte werden über „zu“ übersprungen) */
+    const hn: number[] = [], hf: number[] = [];
+    const rein = (n: number, v: number) => { let k = hn.length; hn.push(n); hf.push(v); while (k > 0) { const e = (k - 1) >> 1; if (hf[e] <= v) break; hn[k] = hn[e]; hf[k] = hf[e]; k = e; } hn[k] = n; hf[k] = v; };
+    const nimm = (): number => { const top = hn[0], ln = hn.pop()!, lf = hf.pop()!; const n = hn.length; if (n) { let k = 0; for (;;) { const l = 2 * k + 1, r = l + 1; let m = -1, fm = lf; if (l < n && hf[l] < fm) { m = l; fm = hf[l]; } if (r < n && hf[r] < fm) m = r; if (m < 0) break; hn[k] = hn[m]; hf[k] = hf[m]; k = m; } hn[k] = ln; hf[k] = lf; } return top; };
+    const s0 = idx(si, sj), z0 = idx(zi, zj); g[s0] = 0; rein(s0, h(si, sj));
+    while (hn.length) { const c = nimm(); if (zu[c]) continue; zu[c] = 1; const ci = (c % B) + x0, cj = Math.floor(c / B) + y0; if (ci === zi && cj === zj) break;
+      for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const i = ci + di, j = cj + dj; if (zu0(i, j)) continue;
+        if (di && dj && (zu0(ci + di, cj) || zu0(ci, cj + dj))) continue;
+        const n = idx(i, j), kosten = g[c] + (di && dj ? (felder ? 1.001 : 1.414) : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; rein(n, kosten + h(i, j)); } } }
+    if (her[z0] < 0 && z0 !== s0) continue;
+    const roh: Punkt[] = [ziel]; for (let c = her[z0]; c >= 0 && c !== s0; c = her[c]) roh.push({ x: (c % B) + x0 + 0.5, y: Math.floor(c / B) + y0 + 0.5 }); roh.reverse();
+    if (felder) return roh;
+    const aus: Punkt[] = []; let hier = start, k = 0;
+    while (k < roh.length) { let m = k; for (let n = roh.length - 1; n > k; n--) if (frei(hier, roh[n], rand)) { m = n; break; } aus.push(roh[m]); hier = roh[m]; k = m + 1; }
+    return aus; }
+  return [];
+}
+
 /** Wegsuche A* über die Felder, acht Richtungen, nicht um Ecken schneiden. Zurück: Wegpunkte (ohne den Start), geglättet. */
-export function weg(von: Punkt, nach: Punkt, rand = 0.3): Punkt[] {
-  const ziel = naechstFrei(nach), start = naechstFrei(von);
-  if (frei(start, ziel, rand)) return [ziel];
+export function weg(von: Punkt, nach: Punkt, rand = 0.3, felder = false): Punkt[] {
+  /* felder: Feldbewegung (shared/feld.ts) – der Weg geht über die Feldmitten, ohne Glätten; ein schräger Schritt kostet wie ein gerader */
+  const z0p = naechstFrei(nach), start = naechstFrei(von), ziel = felder ? { x: Math.floor(z0p.x) + 0.5, y: Math.floor(z0p.y) + 0.5 } : z0p;
+  if (!felder && frei(start, ziel, rand)) return [ziel];
+  if (KB * KH > GROSS) return wegFenster(start, ziel, rand, felder);
   const si = Math.floor(start.x), sj = Math.floor(start.y), zi = Math.floor(ziel.x), zj = Math.floor(ziel.y), N = KB * KH;
   const g = new Float32Array(N).fill(Infinity), her = new Int32Array(N).fill(-1), zu = new Uint8Array(N), offen: number[] = [];
-  const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + 0.414 * Math.min(dx, dy); };
+  const h = (i: number, j: number) => { const dx = Math.abs(i - zi), dy = Math.abs(j - zj); return Math.max(dx, dy) + (felder ? 0.001 : 0.414) * Math.min(dx, dy); };
   const f = new Float32Array(N).fill(Infinity), s0 = sj * KB + si; g[s0] = 0; f[s0] = h(si, sj); offen.push(s0);
   while (offen.length) {
     let bi = 0; for (let k = 1; k < offen.length; k++) if (f[offen[k]] < f[offen[bi]]) bi = k;
@@ -119,10 +155,11 @@ export function weg(von: Punkt, nach: Punkt, rand = 0.3): Punkt[] {
     const ci = c % KB, cj = (c - ci) / KB; if (ci === zi && cj === zj) break;
     for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const i = ci + di, j = cj + dj; if (fels(i, j)) continue;
       if (di && dj && (fels(ci + di, cj) || fels(ci, cj + dj))) continue;
-      const n = j * KB + i, kosten = g[c] + (di && dj ? 1.414 : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; f[n] = kosten + h(i, j); offen.push(n); } }
+      const n = j * KB + i, kosten = g[c] + (di && dj ? (felder ? 1.001 : 1.414) : 1); if (kosten < g[n]) { g[n] = kosten; her[n] = c; f[n] = kosten + h(i, j); offen.push(n); } }
   }
   const z0 = zj * KB + zi; if (her[z0] < 0 && z0 !== s0) return [];
   const roh: Punkt[] = [ziel]; for (let c = her[z0]; c >= 0 && c !== s0; c = her[c]) roh.push({ x: (c % KB) + 0.5, y: Math.floor(c / KB) + 0.5 }); roh.reverse();
+  if (felder) return roh;
   // glätten: von der aktuellen Stelle aus immer den fernsten Punkt nehmen, zu dem der Weg frei ist
   const aus: Punkt[] = []; let hier = start, k = 0;
   while (k < roh.length) { let m = k; for (let n = roh.length - 1; n > k; n--) if (frei(hier, roh[n], rand)) { m = n; break; } aus.push(roh[m]); hier = roh[m]; k = m + 1; }

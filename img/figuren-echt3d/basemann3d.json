@@ -1,0 +1,610 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.bart.hufeisen": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.bart.schnurrbart": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.bart.stoppeln": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.bart.vollbart": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.bart.wikinger": {
+   "art": "huelle",
+   "platz": "bart",
+   "bewegungen": []
+  },
+  "kopf.haar.militaer": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.scheitel": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.undercut_bun": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.zerzaust": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.haar.zopf_eng": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "kopf.helm.eisenwacht": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.eisenwacht.glb"
+  },
+  "kopf.helm.jaegerkapuze": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.jaegerkapuze.glb"
+  },
+  "kopf.helm.magierkapuze": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.magierkapuze.glb"
+  },
+  "kopf.helm.rabe": {
+   "art": "huelle",
+   "platz": "helm",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/kopf.helm.rabe.glb"
+  },
+  "ruestung.beine.eisenschienen": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.eisenschienen.glb"
+  },
+  "ruestung.beine.jaeger": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.jaeger.glb"
+  },
+  "ruestung.beine.magierrock": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.magierrock.glb"
+  },
+  "ruestung.beine.rabe": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.beine.rabe.glb"
+  },
+  "ruestung.brust.eisenwacht": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.eisenwacht.glb"
+  },
+  "ruestung.brust.jaeger": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.jaeger.glb"
+  },
+  "ruestung.brust.lederpanzer": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.lederpanzer.glb"
+  },
+  "ruestung.brust.magiepanzer": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.magiepanzer.glb"
+  },
+  "ruestung.brust.magier": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.magier.glb"
+  },
+  "ruestung.brust.rabe": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.rabe.glb"
+  },
+  "ruestung.brust.sternplatte": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.sternplatte.glb"
+  },
+  "ruestung.brust.sturmzahn": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": [],
+   "datei": "basemann3d.teile/ruestung.brust.sturmzahn.glb"
+  },
+  "schild.kreuz": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basemann3d.teile/schild.kreuz.glb"
+  },
+  "schild.rund": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basemann3d.teile/schild.rund.glb"
+  },
+  "schild.sternen": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basemann3d.teile/schild.sternen.glb"
+  },
+  "schild.wache": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/schild.wache.glb"
+  },
+  "waffe.armbrust": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "armbrust1h"
+   ],
+   "datei": "basemann3d.teile/waffe.armbrust.glb"
+  },
+  "waffe.bogen": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.bogen.glb"
+  },
+  "waffe.bogen.jagd": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.bogen.jagd.glb"
+  },
+  "waffe.dolch": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "dolchwurf",
+    "stich"
+   ],
+   "datei": "basemann3d.teile/waffe.dolch.glb"
+  },
+  "waffe.eiddolch": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "dolchwurf",
+    "stich"
+   ],
+   "datei": "basemann3d.teile/waffe.eiddolch.glb"
+  },
+  "waffe.eidschwert": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.eidschwert.glb"
+  },
+  "waffe.eidzweihaender": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "gehen",
+    "gehen_2h",
+    "hieb2h",
+    "laufen",
+    "laufen_2h",
+    "ruhe",
+    "ruhe_2h",
+    "tod"
+   ],
+   "datei": "basemann3d.teile/waffe.eidzweihaender.glb"
+  },
+  "waffe.langschwert": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "gehen",
+    "gehen_2h",
+    "hieb2h",
+    "laufen",
+    "laufen_2h",
+    "ruhe",
+    "ruhe_2h",
+    "tod"
+   ],
+   "datei": "basemann3d.teile/waffe.langschwert.glb"
+  },
+  "waffe.mondbogen.kurz": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.mondbogen.kurz.glb"
+  },
+  "waffe.mondbogen.lang": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basemann3d.teile/waffe.mondbogen.lang.glb"
+  },
+  "waffe.schwert.ritter": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.schwert.ritter.glb"
+  },
+  "waffe.schwert.schildwahrer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.schwert.schildwahrer.glb"
+  },
+  "waffe.speer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich2h"
+   ],
+   "datei": "basemann3d.teile/waffe.speer.glb"
+  },
+  "waffe.speer.wache": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.speer.wache.glb"
+  },
+  "waffe.stab.hirte": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basemann3d.teile/waffe.stab.hirte.glb"
+  },
+  "waffe.sternarmbrust": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "armbrust1h"
+   ],
+   "datei": "basemann3d.teile/waffe.sternarmbrust.glb"
+  },
+  "waffe.sternbrecher": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.sternbrecher.glb"
+  },
+  "waffe.sterndorn": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich2h"
+   ],
+   "datei": "basemann3d.teile/waffe.sterndorn.glb"
+  },
+  "waffe.sternenszepter": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basemann3d.teile/waffe.sternenszepter.glb"
+  },
+  "waffe.waldsaebel": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block"
+   ],
+   "datei": "basemann3d.teile/waffe.waldsaebel.glb"
+  },
+  "waffe.zeremonienstab": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basemann3d.teile/waffe.zeremonienstab.glb"
+  },
+  "waffe.holzbeil": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.holzbeil.glb"
+  },
+  "waffe.spitzhacke": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.spitzhacke.glb"
+  },
+  "waffe.hammer": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basemann3d.teile/waffe.hammer.glb"
+  }
+ },
+ "aktionen": {
+  "angriff": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": false
+  },
+  "armbrust1h": {
+   "bilder": 8,
+   "rate": 6,
+   "schleife": false
+  },
+  "block": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": false
+  },
+  "bogen": {
+   "bilder": 9,
+   "rate": 6,
+   "schleife": false
+  },
+  "dolchwurf": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 8,
+   "rate": 4,
+   "schleife": true
+  },
+  "gehen_2h": {
+   "bilder": 8,
+   "rate": 4,
+   "schleife": true
+  },
+  "hieb2h": {
+   "bilder": 8,
+   "rate": 7,
+   "schleife": false
+  },
+  "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "laufen_2h": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "ruhe_2h": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "stich": {
+   "bilder": 7,
+   "rate": 8,
+   "schleife": false
+  },
+  "stich2h": {
+   "bilder": 8,
+   "rate": 7,
+   "schleife": false
+  },
+  "teleport_weg": {
+   "bilder": 14,
+   "rate": 12,
+   "schleife": false
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "trinken": {
+   "bilder": 16,
+   "rate": 12,
+   "schleife": false
+  },
+  "zauber_stab": {
+   "bilder": 8,
+   "rate": 6,
+   "schleife": false
+  }
+ }
+}

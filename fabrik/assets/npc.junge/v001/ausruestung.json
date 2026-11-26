@@ -1,0 +1,27 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.junge – Junge (Kind, NPC für Echtzeit-3D aus npcmann3d, mit fabrik/kind.py verkleinert: Größe ×0.68, Kopf ×1.22): Frisur zerzaust, Haarfarbe #c9a25a, Haut mittel.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npc.junge/v001/quelle/teile/kopf.haar.zerzaust.glb"
+    }
+  ],
+  "kind": {
+    "groesse": 0.68,
+    "kopf": 1.22
+  },
+  "arme_eng": 6
+}

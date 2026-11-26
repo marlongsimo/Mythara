@@ -1,0 +1,9 @@
+{
+  "id": "objekt.kuhhaut",
+  "name": "Kuhhaut",
+  "kategorie": "beute",
+  "aktuell": "v001",
+  "masse_m": "0,95 × 0,72 m, flach",
+  "status": "In Blender gebaut (fabrik/kuhhaut.py): flach am Boden liegendes Fell mit Beinlappen und Hals, gewellt, eine Ecke umgeschlagen, Fleckenmuster wie die Kuh (gebacken). Ohne Animation. Spieldatei img/objekte3d/kuhhaut.glb; Gegenstand ROHSTOFFE.kuhhaut (realtime/shared/gegenstaende.ts). Beute der Kuh: Drop-Tabelle braucht den Server (Kuh ist dort noch kein Gegner)",
+  "herkunft": "selbst gebaut"
+}

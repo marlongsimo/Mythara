@@ -1,0 +1,39 @@
+{
+  "id": "kopf.haar.damen",
+  "name": "Frisuren Frau",
+  "kategorie": "teil",
+  "platz": "haar",
+  "fuer": "basis.frau/v002",
+  "frisuren": {
+    "glatze": {
+      "name": "Glatze",
+      "datei": null
+    },
+    "dutt_hoch": {
+      "name": "Dutt oben mit Pony",
+      "stil": "dutt_hoch",
+      "datei": "teile/kopf.haar.dutt_hoch.glb"
+    },
+    "wuschel_hoch": {
+      "name": "Hochgesteckt, wuschelig",
+      "stil": "wuschel_hoch",
+      "datei": "teile/kopf.haar.wuschel_hoch.glb"
+    },
+    "pixie": {
+      "name": "Pixie",
+      "stil": "pixie",
+      "datei": "teile/kopf.haar.pixie.glb"
+    },
+    "zopf_wild": {
+      "name": "Voller Zopf",
+      "stil": "zopf_wild",
+      "datei": "teile/kopf.haar.zopf_wild.glb"
+    },
+    "seitenbob": {
+      "name": "Seitenbob",
+      "stil": "seitenbob",
+      "datei": "teile/kopf.haar.seitenbob.glb"
+    }
+  },
+  "verfahren": "fabrik/frisuren.py (breite Bandsträhnen, Farbe #6e4529) nach dem Zielbild referenz/zielbild.jpg · Vorschau: fabrik/frisuren_blatt.py"
+}

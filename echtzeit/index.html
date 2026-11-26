@@ -3,13 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script>/* iOS-App: bis an den Rand zeichnen, damit env(safe-area-inset-*) die Insel/Notch kennt – Leiste, Chat und Karte rücken dann daneben (nur in der App) */
+  if (/RiftmereApp/.test(navigator.userAgent)) { document.documentElement.classList.add("app"); document.querySelector('meta[name="viewport"]').content += ", viewport-fit=cover"; }</script>
   <meta name="robots" content="noindex">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Mythara: Splitterlande (Beta)</title>
-  <link rel="icon" href="../img/favicon.svg">
+  <link rel="manifest" href="mythara.webmanifest?v=mwxp3axm">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Riftmere">
+  <link rel="apple-touch-icon" href="../img/app/mythara-180.png">
+  <title>Riftmere</title>
+  <link rel="icon" href="../img/favicon.png" type="image/png">
   <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: #07060b; color: #efe8d8; font-family: Inter, system-ui, sans-serif; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: none; }
+    html, body { margin: 0; height: 100%; background: #07060b; color: #efe8d8; font-family: Inter, system-ui, sans-serif; overflow: hidden; -webkit-user-select: none; user-select: none; touch-action: none; -webkit-touch-callout: none; } img, canvas { -webkit-touch-callout: none; -webkit-user-drag: none; } /* iPhone-Safari: langes Drücken zeigt sonst Lupe/„Bild sichern“ statt unseres Menüs */
     #ez-feld { position: fixed; inset: 0; }
     #ez-dunkel { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 38%, rgba(4,3,8,.5) 78%, rgba(2,2,5,.82) 100%); }
     .ez-kasten { position: fixed; z-index: 3; background: rgba(12,10,18,.72); border-radius: 12px; padding: 7px 11px; pointer-events: none; font-size: 13px; }
@@ -20,6 +27,36 @@
     .leiste { display: flex; align-items: center; gap: 6px; } .leiste > b { width: 14px; flex: none; text-align: center; font-size: 13px; line-height: 1; } .leiste .herz { color: #e8473f; text-shadow: 0 0 6px rgba(232,71,63,.6); } .leiste .stern { color: #8fd8ff; text-shadow: 0 0 6px rgba(143,216,255,.6); }
     .leiste .ez-balken { position: relative; flex: 1; height: 16px; border-radius: 3px; background: #120c08; border: 1px solid #5d4517; box-shadow: inset 0 1px 3px #000; } .leiste .ez-balken u { border-radius: 2px; background: linear-gradient(#7fe08a, #3f9a4a); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); transition: width .25s; }
     .leiste .ez-balken small { position: absolute; inset: 0; display: grid; place-items: center; font: 600 11px Inter, sans-serif; color: #fff; text-shadow: 0 1px 2px #000, 0 0 3px #000; white-space: nowrap; } .leiste .ez-balken.xp { height: 13px; margin: 0; } .leiste .ez-balken.xp u { background: linear-gradient(#6aa5ff, #2f5fb0); }
+    /* Kampfregeln v1 (eigener Held): drei Skill-Balken unter den Lebenspunkten, nur die Taste „Angreifen“ */
+    #ez-skills { display: grid; gap: 3px; } #ez-skills[hidden] { display: none; }
+    #ez-skills .skill { display: grid; grid-template-columns: 62px 1fr 22px; align-items: center; gap: 6px; }
+    #ez-skills .skill b { font: 600 10.5px Cinzel, Georgia, serif; color: #f1dfb4; text-shadow: 0 1px 0 #000; }
+    #ez-skills .skill .ez-balken { height: 7px; } #ez-skills .skill .lv { font: 700 11px Cinzel, Georgia, serif; color: #fff3d2; text-align: right; }
+    #ez-skills .staerke u { background: linear-gradient(#ff9a7a, #c2412a) !important; } #ez-skills .geschick u { background: linear-gradient(#b6f08a, #4f9a2c) !important; } #ez-skills .magie u { background: linear-gradient(#b9b0ff, #5a4ad6) !important; }
+    body.kampf-v1 #ez-tasten, body.kampf-v1 #ez-tasten button[data-taste], body.kampf-v1 #ez-modus { display: none !important; } /* eigener Held: keine Aktionstasten – angegriffen wird durch Antippen des Gegners */
+    /* 3D-Welt (welt3d/spielwelt.ts): Namensschild über der Figur, Abblenden beim Versetzen */
+    .ez-name3d { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; white-space: nowrap; font: 600 14px Cinzel, Georgia, serif; color: #ffe08a; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 6px rgba(0,0,0,.8); will-change: transform; }
+    .ez-name3d[hidden] { display: none; } .ez-name3d .lvfarbe { font-weight: 700; }
+    #ez-tat { position: fixed; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translate(-50%, -6px); z-index: 55; pointer-events: none; padding: 4px 14px; border-radius: 14px; background: rgba(20, 14, 8, .72); border: 1px solid rgba(255, 216, 106, .45); color: #ffe08a; font: 600 15px Cinzel, Georgia, serif; text-shadow: 0 1px 2px #000; white-space: nowrap; opacity: 0; transition: opacity .25s, transform .25s; }
+    #ez-tat.an { opacity: 1; transform: translate(-50%, 0); } .ez-name3d.fremd { color: #f3ead2; }
+    .ez-balken3d { position: absolute; left: 0; top: 0; z-index: 2; width: 54px; height: 6px; border-radius: 2px; background: rgba(0,0,0,.7); border: 1px solid rgba(0,0,0,.8); pointer-events: none; }
+    .ez-balken3d[hidden] { display: none; } .ez-balken3d i { display: block; height: 100%; width: 100%; background: #5fc35a; } .ez-balken3d i.mittel { background: #e0b040; } .ez-balken3d i.wenig { background: #d04a3a; }
+    .ez-blase3d { position: absolute; left: 0; top: 0; z-index: 2; max-width: 190px; padding: 5px 8px; border-radius: 6px; background: #f3e6c4; color: #2a2014; font: 13px Inter, sans-serif; text-align: center; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+    .ez-blase3d[hidden] { display: none; }
+    .ez-name3d.feind { color: #ffc9b0; } .ez-balken3d.feind i { background: #d04a3a !important; } .ez-balken3d.eigen { width: 46px; }
+    .ez-splat { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; width: 34px; height: 34px; display: grid; place-items: center; background: center / contain no-repeat; }
+    .ez-splat.rot { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 3 L38 15 L50 8 L47 22 L61 24 L50 33 L60 44 L46 44 L48 58 L36 50 L28 61 L25 48 L11 55 L16 41 L3 36 L15 29 L6 17 L20 18 L19 5 Z' fill='%23b0121a' stroke='%23000' stroke-width='3' stroke-linejoin='round'/></svg>"); }
+    .ez-splat.blau { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 3 L38 15 L50 8 L47 22 L61 24 L50 33 L60 44 L46 44 L48 58 L36 50 L28 61 L25 48 L11 55 L16 41 L3 36 L15 29 L6 17 L20 18 L19 5 Z' fill='%232f5fc4' stroke='%23000' stroke-width='3' stroke-linejoin='round'/></svg>"); }
+    .ez-splat b { font: 800 15px Inter, sans-serif; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; transform: translateY(1px); }
+    .ez-zahl3d { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 700 17px Inter, sans-serif; text-shadow: 0 0 3px #000, 0 1px 2px #000, 0 0 2px #000; white-space: nowrap; }
+    .ez-ebene3d { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+    /* 3D-Welt: die Minikarte kommt live aus der Welt (von oben, ohne Dächer) – das gebackene Kartenbild und die Nachbarkarten bleiben aus, die Punkte darüber */
+    #ez-kartenrahmen .rund canvas.karte3d { position: absolute; left: -25%; top: -25%; width: 150%; height: 150%; display: block; transform-origin: 50% 50%; will-change: transform; }
+    body.welt3d #ez-karte { background-image: none !important; background-color: transparent !important; border: 0 !important; box-shadow: none !important; } body.welt3d #ez-karte img.nachbar, body.welt3d #ez-karte > span { display: none !important; }
+    /* 3D-Welt: die Seite darf nie verrutschen (iPhone verschob sie beim Drehen ins Querformat – dann lagen Tippen und Anzeige versetzt) */
+    html:has(body.welt3d), body.welt3d { height: 100%; overflow: hidden; overscroll-behavior: none; } body.welt3d { position: fixed; inset: 0; width: 100%; }
+    #ez-blende3d { position: fixed; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; transition: opacity .3s; } #ez-blende3d.an { opacity: 1; }
+    body.welt3d #ez-feld canvas { display: block; touch-action: none; }
     #ez-xpleiste.plus .ez-balken.xp { animation: ezxp .7s ease-out; } @keyframes ezxp { 0% { box-shadow: 0 0 0 0 #b9d4ff; } 30% { box-shadow: 0 0 10px 2px #b9d4ff; } 100% { box-shadow: 0 0 0 0 transparent; } } #ez-xpleiste[hidden] { display: none; }
     .ez-balken { display: block; height: 8px; background: #2a2636; border-radius: 4px; overflow: hidden; } .ez-balken u { display: block; height: 100%; background: #5fd08a; }
     /* Begleiter: eingerückt unter dem eigenen Helden */
@@ -121,8 +158,12 @@
     @font-face { font-family: "Cormorant Garamond"; src: url("../fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
     /* Vorhang: Start- und Ladebildschirm im Stil des Spiels (verschwommene Waldmark, schwebender Seelensplitter, goldene Schrift) */
     .vorhang { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; color: #efe2c4; text-align: center; transition: opacity .5s;
-      background: radial-gradient(ellipse at 50% 45%, rgba(10,14,28,.15), rgba(4,3,8,.92) 75%), url("../img/echtzeit/laden-hg.webp") center / cover no-repeat, #07060b; }
+      background: radial-gradient(ellipse at 50% 55%, rgba(10,14,28,.05), rgba(4,3,8,.55) 80%), url("../img/echtzeit/laden-hg.webp") center / cover no-repeat, #07060b; }
     .vorhang[hidden] { display: none; } .vorhang.weg { opacity: 0; pointer-events: none; }
+    /* Riftmere-Ladebild: oben steht das Logo im Bild – Kristall und Text unten auf einer dunklen Tafel */
+    .vorhang { place-items: end center; padding-bottom: max(7vh, 28px); }
+    .vorhang .mitte { width: min(440px, 92vw); padding: 12px 22px 14px; border-radius: 14px; background: rgba(6,8,16,.62); box-shadow: 0 0 0 1px rgba(233,196,106,.25), 0 8px 30px rgba(0,0,0,.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .vorhang .mitte .kristall { width: 44px; height: 56px; margin-bottom: 4px; }
     .vorhang .mitte { width: min(460px, 100%); display: grid; justify-items: center; }
     .vorhang .kristall { position: relative; width: 120px; height: 150px; margin-bottom: 18px; animation: ezSchweben 3.2s ease-in-out infinite; }
     .vorhang .kristall::before { content: ""; position: absolute; inset: 18px 30px; clip-path: polygon(50% 0, 100% 38%, 72% 100%, 28% 100%, 0 38%); background: linear-gradient(160deg, #f4fdff 0%, #8fd8ff 35%, #3d7fc0 70%, #1d3a6a 100%); filter: drop-shadow(0 0 14px rgba(143,216,255,.9)); animation: ezGluehen 2.4s ease-in-out infinite; }
@@ -282,6 +323,27 @@
     #ez-dorf-knopf { font-family: Cinzel, Georgia, serif !important; border: 2px solid #e2bf6a !important; } body.stadt #ez-dorf-knopf { bottom: 96px; font-family: Cinzel, Georgia, serif; letter-spacing: .03em; border: 2px solid #e2bf6a; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #8a6a2a, 0 8px 20px rgba(0,0,0,.6); }
     #ez-konto .tafel.menue .liste { display: grid; gap: 9px; margin: 6px 0 4px; } #ez-konto .tafel.menue .liste button { padding: 12px 16px; font: 600 15px Cinzel, Georgia, serif; letter-spacing: .04em; color: #e6d3a3; background: linear-gradient(#2c2216, #1a140d); border: 1px solid #5d4517; border-radius: 3px; cursor: pointer; }
     #ez-konto .tafel.menue .liste button:hover { border-color: #f0d48a; color: #fff3d2; } #ez-konto .tafel.menue .liste small { color: #a8966a; font: 400 12px Inter, sans-serif; }
+    #ez-konto .tafel.menue { width: min(400px, 92vw); padding: 22px 22px 16px; background: radial-gradient(120% 90% at 50% 0%, #241a2e 0%, #15110d 60%); border: 1px solid #c9a24f; box-shadow: 0 0 0 1px #3a2a12 inset, 0 18px 50px rgba(0,0,0,.7), 0 0 30px rgba(120,80,200,.18); }
+    #ez-konto .tafel.menue h2 { font-size: 22px; letter-spacing: .08em; }
+    #ez-konto .tafel.menue .einst { display: grid; gap: 8px; margin: 8px 0 14px; }
+    #ez-konto .tafel.menue .schalter { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 11px 14px; border: 1px solid #4a3a1c; border-radius: 9px; background: rgba(20,15,10,.75); color: #eadcb6; font: 500 15px Inter, sans-serif; cursor: pointer; text-align: left; }
+    #ez-konto .tafel.menue .schalter:hover { border-color: #c9a24f; }
+    #ez-konto .tafel.menue .regler { position: relative; flex: 0 0 auto; width: 42px; height: 24px; border-radius: 12px; background: #3a3128; border: 1px solid #6b5a3a; transition: background .2s; }
+    #ez-konto .tafel.menue .regler::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #cbb98f; transition: transform .2s; }
+    #ez-konto .tafel.menue .schalter.an .regler { background: linear-gradient(#7a4fd0, #5a35a8); border-color: #b89cff; }
+    #ez-konto .tafel.menue .schalter.an .regler::after { transform: translateX(18px); background: #fff3d2; }
+    #ez-konto .tafel.menue .abmelden { display: block; width: 100%; padding: 12px 16px; border: 1px solid #b89cff; border-radius: 10px; background: linear-gradient(#5d3aa8, #3e2478); color: #f6ecd2; font: 600 16px Cinzel, Georgia, serif; letter-spacing: .05em; cursor: pointer; box-shadow: 0 0 14px rgba(120,80,220,.35); }
+    #ez-konto .tafel.menue .weltknopf { display: flex; align-items: center; gap: 10px; width: 100%; margin: -6px 0 14px; padding: 11px 14px; border: 1px solid #4a3a1c; border-radius: 9px; background: rgba(20,15,10,.75); color: #eadcb6; font: 500 15px Inter, sans-serif; cursor: pointer; }
+    #ez-konto .tafel.menue .weltknopf span { flex: 1 1 auto; text-align: left; } #ez-konto .tafel.menue .weltknopf b { font: 600 15px Cinzel, Georgia, serif; color: #f0d48a; } #ez-konto .tafel.menue .weltknopf i { font-style: normal; color: #c9a24f; font-size: 20px; line-height: 1; }
+    #ez-konto .tafel.menue .weltknopf:hover { border-color: #c9a24f; }
+    #ez-konto .tafel.menue .weltliste { list-style: none; margin: 8px 0 10px; padding: 0; display: grid; gap: 8px; }
+    #ez-konto .tafel.menue .weltzeile { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border: 1px solid #4a3a1c; border-radius: 9px; background: rgba(20,15,10,.75); color: #eadcb6; cursor: pointer; }
+    #ez-konto .tafel.menue .weltzeile.an { border-color: #b89cff; background: linear-gradient(rgba(93,58,168,.55), rgba(40,25,70,.55)); box-shadow: 0 0 12px rgba(120,80,220,.3); cursor: default; }
+    #ez-konto .tafel.menue .weltzeile .punkt { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #f0d48a; flex: 0 0 auto; } #ez-konto .tafel.menue .weltzeile.an .punkt { background: #f0d48a; }
+    #ez-konto .tafel.menue .weltzeile b { flex: 1 1 auto; text-align: left; font: 600 18px Cinzel, Georgia, serif; color: #f0d48a; } #ez-konto .tafel.menue .weltzeile small { color: #9fd08a; font: 400 13px Inter, sans-serif; }
+    #ez-konto .tafel.menue .weltzeile em { font: 600 12px Inter, sans-serif; font-style: normal; color: #d9c8ff; padding: 3px 8px; border-radius: 10px; background: rgba(120,80,220,.25); } #ez-konto .tafel.menue .weltzeile em.wechsel { background: linear-gradient(#5d3aa8, #3e2478); color: #fff; }
+    #ez-konto .tafel.menue .weltnote { text-align: center; }
+    #ez-konto .tafel.menue .abmelden:hover { filter: brightness(1.12); } #ez-konto .tafel.menue .abmelden small { display: block; font: 400 12px Inter, sans-serif; color: #d9c8ff; letter-spacing: 0; }
     @media (max-width: 1100px) { body.stadt #ez-dorf-hilfe { display: none !important; } }
     @media (max-width: 900px) { #ez-titel .fahne { display: none; } #ez-titel .schild { min-width: 220px; padding: 16px 30px 18px; } #ez-titel b { font-size: 20px; } #ez-titel small { font-size: 13px; } }
     @media (max-width: 700px) { body.stadt #ez-titel { display: none; } body.stadt #ez-profil { padding-right: 14px; gap: 9px; } #ez-profil img { width: 46px; height: 46px; } #ez-profil .name b { font-size: 14px; } #ez-profil .name small { font-size: 10.5px; } #ez-seelen { padding: 3px 9px 3px 7px; } #ez-seelen b { font-size: 13px; }
@@ -440,7 +502,313 @@
     body.offenewelt.menue-spalte #ez-tasten { right: max(14px, env(safe-area-inset-right)); } body.offenewelt:not(.menue-spalte) #ez-tasten { right: calc(max(14px, env(safe-area-inset-right)) + 92px); }
     @media (max-width: 700px), (max-height: 500px) { body.offenewelt #ez-menue { padding: 10px 6px; gap: 7px; } body.offenewelt:not(.menue-spalte) #ez-menue { bottom: max(18px, env(safe-area-inset-bottom)); } body.offenewelt.menue-spalte #ez-menue span { width: 42px; height: 42px; } body.offenewelt.menue-spalte #ez-menue svg { width: 21px; height: 21px; } body.offenewelt.menue-spalte #ez-menue small { font-size: 8.5px; } body.offenewelt.menue-spalte #ez-tasten { right: max(8px, env(safe-area-inset-right)); } body.offenewelt:not(.menue-spalte) #ez-tasten { right: calc(max(8px, env(safe-area-inset-right)) + 58px); } }
     }
-</style>
+    /* Ortsbanner: kurz beim Betreten (hud.ts hudTitel), dann verblassen */
+    #ez-titel.ein { animation: ez-titel-ein .6s ease-out both; } #ez-titel.weg { opacity: 0 !important; transition: opacity .9s ease-in; }
+    @keyframes ez-titel-ein { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #ez-titel.ein { animation: none; } #ez-titel.weg { transition: none; } }
+    /* Ausrüstung und Rucksack des eigenen Helden (rahmen.ts eigeneTasche): Kopf oben, Waffe links, Brust Mitte, Nebenhand rechts, Beine unten */
+    .tafel.eigen .iplaetze { display: grid; grid-template-columns: repeat(3, 108px); grid-template-areas: ". kopf ." "waffe brust nebenhand" ". beine ."; gap: 14px 18px; justify-content: center; margin: 6px 0 10px; }
+    .tafel.eigen .p-kopf { grid-area: kopf; } .tafel.eigen .p-waffe { grid-area: waffe; } .tafel.eigen .p-brust { grid-area: brust; } .tafel.eigen .p-beine { grid-area: beine; } .tafel.eigen .p-nebenhand { grid-area: nebenhand; }
+    .tafel .ifeld.voll.s-gewoehnlich { box-shadow: inset 0 0 0 2px #b9b4a888; } .tafel .ifeld.voll.s-selten { box-shadow: inset 0 0 0 2px #5fcf6aaa; } .tafel .ifeld.voll.s-episch { box-shadow: inset 0 0 0 2px #6f8cffcc, 0 0 10px #6f8cff55; }
+    .tafel .ifeld.voll.s-legendaer { box-shadow: inset 0 0 0 2px #ff9a2ecc, 0 0 12px #ff9a2e66; } .tafel .ifeld.voll.s-mythisch { box-shadow: inset 0 0 0 2px #ff4fd8dd, 0 0 14px #9a5cff88; }
+    .isel { font-weight: 600; } .isel.s-gewoehnlich { color: #b9b4a8; } .isel.s-selten { color: #5fcf6a; } .isel.s-episch { color: #8aa2ff; } .isel.s-legendaer { color: #ff9a2e; } .isel.s-mythisch { background: linear-gradient(90deg, #4fe3ff, #ff4fd8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .tafel .ifeld.voll.s-anfaenger { box-shadow: inset 0 0 0 2px #8e8a8266; } .tafel .ifeld.voll.s-gewoehnlich { box-shadow: inset 0 0 0 2px #b9b4a888; } .tafel .ifeld.voll.s-selten { box-shadow: inset 0 0 0 2px #5fcf6aaa; } .tafel .ifeld.voll.s-episch { box-shadow: inset 0 0 0 2px #6f8cffcc, 0 0 10px #6f8cff55; }
+    .isel { font-weight: 600; } .isel.s-anfaenger { color: #8e8a82; } .isel.s-gewoehnlich { color: #b9b4a8; } .isel.s-selten { color: #5fcf6a; } .isel.s-episch { color: #8aa2ff; } .isel.s-legendaer { color: #ff9a2e; } .isel.s-mythisch { background: linear-gradient(90deg, #4fe3ff, #ff4fd8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .isel.s-set { color: #b08ad8; } .tafel .ifeld.voll.s-set { box-shadow: inset 0 0 0 2px #b08ad8cc, 0 0 10px #b08ad855; } .iset { margin: 8px 0 0; font-size: 13px; opacity: .65; } .iset.an { opacity: 1; color: #cdb4f0; }
+    .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 150px; }
+    .tafel.eigen .ifeld { position: relative; display: grid; place-items: center; width: 100%; height: 108px; padding: 0; cursor: default; border-radius: 8px; color: #8a7448;
+      background: radial-gradient(rgba(70,54,32,.75), rgba(16,12,8,.95)); border: 1px solid #6a5232; box-shadow: inset 0 0 12px #000; }
+    .tafel.eigen .ifeld.voll { cursor: pointer; border-color: #b08a3c; } .tafel.eigen .ifeld.voll:hover, .tafel.eigen .ifeld.gewaehlt { border-color: #ffd36a; box-shadow: inset 0 0 12px #000, 0 0 12px rgba(255,190,80,.5); }
+    .tafel.eigen .ifeld canvas { width: 86%; height: 86%; } .tafel.eigen .ifeld .leer svg { width: 40px; height: 40px; opacity: .45; }
+    .tafel.eigen .ifeld small { position: absolute; left: 0; right: 0; bottom: 3px; font: 600 10px Cinzel, Georgia, serif; color: #b9a57c; letter-spacing: .05em; text-transform: uppercase; }
+    .tafel.eigen .faecher .ifeld { height: auto; aspect-ratio: 1; }
+    .tafel.eigen .iwahl { margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(20,15,10,.7); border: 1px solid #5a4528; } .tafel.eigen .iwahl b { font-family: Cinzel, Georgia, serif; color: #f0d48a; } .tafel.eigen .iwahl .reihe { margin-top: 8px; }
+    .tafel.untersuchen .iart { margin: 2px 0 8px; color: #b9a57c; font-size: 13px; } .tafel.untersuchen .igross { width: 160px; height: 160px; display: block; margin: 0 auto 8px; border-radius: 10px; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #6a5232; }
+    /* Ladenfenster (Händler am Marktplatz): Raster der Waren, kurz antippen = kaufen */
+    #ez-konto .tafel.laden { width: min(560px, calc(100vw - 24px)); max-height: min(90vh, 680px); overflow: auto; }
+    #ez-konto .tafel.laden .lspruch { margin: -4px 0 4px; color: #c9b384; font-style: italic; font-size: 13px; } #ez-konto .tafel.laden .lkopf { display: flex; justify-content: space-between; align-items: center; margin: 2px 2px 8px; font-size: 13px; color: #d8c59a; }
+    #ez-konto .tafel.laden .lgeld { color: #d9c2ff; font-weight: 700; } #ez-konto .tafel.laden .lgeld i { font-style: normal; }
+    #ez-konto .tafel.laden .lraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 7px; }
+    #ez-konto .tafel.laden .lware { display: grid; justify-items: center; gap: 2px; padding: 6px 4px 7px; border-radius: 9px; border: 1.5px solid #6d5632; background: linear-gradient(#2e2519, #1a140d); cursor: pointer; width: auto; margin: 0; -webkit-touch-callout: none; user-select: none; }
+    #ez-konto .tafel.laden .lware:hover { border-color: #c99a3c; } #ez-konto .tafel.laden .lware.s-selten { border-color: #3f8a46; } #ez-konto .tafel.laden .lware canvas { width: 58px; height: 58px; }
+    #ez-konto .tafel.laden .lname { font: 600 11.5px Inter, sans-serif; line-height: 1.2; text-align: center; min-height: 2.4em; display: flex; align-items: center; }
+    #ez-konto .tafel.laden .lpreis { font: 700 12.5px Inter, sans-serif; color: #e8d6ff; } #ez-konto .tafel.laden .lpreis.zuteuer { color: #c36a5a; }
+    /* Bank (client/src/bank.ts): Raster der Bank, Mengen-Leiste, Rucksack darunter – wie OSRS */
+    #ez-konto .tafel.bank { width: min(640px, calc(100vw - 24px)); max-height: min(92vh, 760px); overflow: auto; }
+    #ez-konto .tafel.bank .bkopf { display: flex; gap: 8px; align-items: center; margin: 2px 2px 8px; } #ez-konto .tafel.bank .bsuche { flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px; border: 1px solid #6d5632; background: #140f0a; color: #f1e3c2; font: 13px Inter, sans-serif; }
+    #ez-konto .tafel.bank .bplatz { font: 700 12.5px Inter, sans-serif; color: #d8c59a; white-space: nowrap; }
+    #ez-konto .tafel.bank .braster, #ez-konto .tafel.bank .brucksack { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
+    #ez-konto .tafel.bank .braster { min-height: 116px; max-height: 38vh; overflow: auto; padding: 6px; border-radius: 10px; background: rgba(0,0,0,.32); border: 1px solid #4a3a22; }
+    #ez-konto .tafel.bank .bfach { position: relative; display: grid; place-items: center; aspect-ratio: 1; padding: 2px; margin: 0; width: auto; border-radius: 8px; border: 1.5px solid #5a4629; background: linear-gradient(#2e2519, #1a140d); cursor: pointer; -webkit-touch-callout: none; user-select: none; }
+    #ez-konto .tafel.bank .bfach:hover { border-color: #c99a3c; } #ez-konto .tafel.bank .bfach.s-selten { border-color: #3f8a46; } #ez-konto .tafel.bank .bfach.s-episch { border-color: #7d4fc4; } #ez-konto .tafel.bank .bfach.s-legendaer { border-color: #d08a2a; } #ez-konto .tafel.bank .bfach.s-mythisch { border-color: #c43a3a; }
+    #ez-konto .tafel.bank .bfach canvas { width: 82%; height: 82%; } #ez-konto .tafel.bank .bfach b { position: absolute; left: 4px; top: 2px; font: 800 11.5px Inter, sans-serif; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000; pointer-events: none; }
+    #ez-konto .tafel.bank .bfach.leer { cursor: default; border-style: dashed; border-color: #3a2e1c; background: rgba(0,0,0,.2); }
+    #ez-konto .tafel.bank .bleer { grid-column: 1 / -1; margin: 18px 6px; text-align: center; color: #b9a57c; font-size: 13px; }
+    #ez-konto .tafel.bank .bleiste { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin: 9px 2px 4px; font: 600 12.5px Inter, sans-serif; color: #d8c59a; }
+    #ez-konto .tafel.bank .bleiste button { width: auto; margin: 0; padding: 5px 9px; border-radius: 7px; border: 1px solid #6d5632; background: #241b11; color: #f1e3c2; font: 700 12px Inter, sans-serif; cursor: pointer; }
+    #ez-konto .tafel.bank .bleiste .bmenge.an { background: #6b4e1f; border-color: #e9c46a; color: #fff3cf; } #ez-konto .tafel.bank .bluecke { flex: 1; }
+    #ez-konto .tafel.bank .brs { margin: 8px 2px 5px; font: 600 13px Cinzel, Georgia, serif; color: #e9c46a; } #ez-konto .tafel.bank .brucksack { grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 360px; }
+    /* wie in OSRS: Bank links, Rucksack rechts daneben (4 × 7), kompakt; im schmalen Hochformat untereinander */
+    #ez-konto .tafel.bank .breiter { display: flex; gap: 4px; margin: 0 2px 5px; overflow-x: auto; scrollbar-width: none; } #ez-konto .tafel.bank .breiter::-webkit-scrollbar { display: none; }
+    #ez-konto .tafel.bank .breit { flex: 0 0 auto; width: 42px; height: 38px; margin: 0; padding: 2px; display: grid; place-items: center; border-radius: 7px 7px 2px 2px; border: 1px solid #5a4629; border-bottom-width: 2px; background: linear-gradient(#2a2116, #17110b); color: #e9d3a0; font: 700 17px Inter, sans-serif; cursor: pointer; }
+    #ez-konto .tafel.bank .breit canvas { width: 32px; height: 32px; } #ez-konto .tafel.bank .breit.an { border-color: #e9c46a; background: linear-gradient(#5a4220, #2a1e0e); } #ez-konto .tafel.bank .breit.neu { color: #9a8458; border-style: dashed; }
+    #ez-konto .tafel.bank .btrenn { grid-column: 1 / -1; height: 0; border-top: 1px solid #6d5632; margin: 2px 4px; }
+    #ez-konto .tafel.bank .bkoerper { align-items: stretch; } #ez-konto .tafel.bank .blinks { display: flex; flex-direction: column; min-width: 0; } #ez-konto .tafel.bank .blinks .braster { flex: 1 1 auto; min-height: 200px; }
+    #ez-konto .tafel.bank { width: min(900px, calc(100vw - 16px)); padding-top: 12px; padding-bottom: 10px; } #ez-konto .tafel.bank h2 { font-size: 18px; margin: 0 0 2px; } #ez-konto .tafel.bank .zier { margin: 4px auto 8px; }
+    #ez-konto .tafel.bank .bkoerper { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+    #ez-konto .tafel.bank .braster { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 4px; max-height: min(52vh, 420px); }
+    #ez-konto .tafel.bank .brechts { padding: 6px; border-radius: 10px; background: rgba(0,0,0,.32); border: 1px solid #4a3a22; } #ez-konto .tafel.bank .brechts .brs { margin: 0 2px 5px; text-align: center; }
+    #ez-konto .tafel.bank .brechts .brucksack { grid-template-columns: repeat(4, 44px); gap: 4px; max-width: none; }
+    #ez-konto .tafel.bank .bleiste { margin: 7px 2px 2px; } #ez-konto .tafel.bank .bleiste .balles { font-size: 14px; padding: 4px 8px; } #ez-konto .tafel.bank p.klein { margin: 6px 2px 0; font-size: 11.5px; }
+    @media (max-height: 520px) { #ez-konto .tafel.bank { max-height: calc(100vh - 8px); padding-top: 8px; padding-bottom: 8px; } #ez-konto .tafel.bank h2 { font-size: 15px; } #ez-konto .tafel.bank .zier { display: none; } #ez-konto .tafel.bank .braster { max-height: calc(100vh - 150px); } #ez-konto .tafel.bank .brechts { padding: 4px; } #ez-konto .tafel.bank .brechts .brs { font-size: 11px; margin-bottom: 3px; } #ez-konto .tafel.bank .brechts .brucksack { grid-template-columns: repeat(4, 34px); gap: 3px; } #ez-konto .tafel.bank p.klein { display: none; } }
+    @media (max-width: 560px) and (orientation: portrait) { #ez-konto .tafel.bank .bkoerper { grid-template-columns: 1fr; } #ez-konto .tafel.bank .brechts .brucksack { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+    .ez-name3d.haendler small { display: block; font-size: 10.5px; color: #e9c46a; font-style: italic; }
+    /* Quest-Tab: nur Titel in einer Zeile; dunkel + grau = nicht gestartet · dunkel + hell = gestartet · hell + dunkel = verfolgt; Reiter „Abgeschlossen“ */
+    .seitentab .qreiter { display: flex; gap: 4px; margin: 6px 0 4px; flex: none; } .seitentab .qreiter button { flex: 1; padding: 6px 4px; border-radius: 7px 7px 0 0; border: 1.5px solid #6d5632; border-bottom-color: #c99a3c; background: #1a140d; color: #a8946a; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
+    .seitentab .qreiter button.an { background: linear-gradient(#3a2e1c, #2a2014); color: #ffe7b0; border-color: #c99a3c; border-bottom-color: transparent; }
+    .seitentab .qliste { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; overflow: auto; } .seitentab .qzeile { display: block; width: 100%; padding: 9px 10px; border-radius: 8px; text-align: left; font: 600 14px Cinzel, Georgia, serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; -webkit-touch-callout: none; }
+    .seitentab .qzeile.neu { background: #17120c; border: 1.5px solid #4a3c26; color: #7d7462; } .seitentab .qzeile.aktiv { background: #1f1810; border: 1.5px solid #8a6a3a; color: #ffe7b0; }
+    .seitentab .qzeile.verfolgt { background: linear-gradient(#f3e3b8, #dcc48c); border: 1.5px solid #c99a3c; color: #2e2110; } .seitentab .qzeile.fertig { background: #17120c; border: 1.5px solid #4a3c26; color: #b9a57c; }
+    /* Quest-Details: Pergament in der Bildschirmmitte */
+    #ez-konto .tafel.questinfo { width: min(460px, calc(100vw - 28px)); max-height: min(88vh, 640px); overflow: auto; text-align: left; background: linear-gradient(#f4e6c0, #e2cd98); border: 2px solid #8a6a3a; color: #33250f; box-shadow: 0 10px 40px rgba(0,0,0,.7), inset 0 0 40px rgba(138,106,58,.25); }
+    #ez-konto .tafel.questinfo h2 { color: #3a2a10; margin: 0 110px 2px 0; text-shadow: none; } #ez-konto .tafel.questinfo .qort { margin: 0 0 6px; font-size: 12.5px; color: #6b5330; } #ez-konto .tafel.questinfo .zier { opacity: .7; }
+    #ez-konto .tafel.questinfo h3 { margin: 12px 0 4px; font: 700 13px Cinzel, Georgia, serif; letter-spacing: .06em; text-transform: uppercase; color: #7a5a22; } #ez-konto .tafel.questinfo p, #ez-konto .tafel.questinfo li { color: #33250f; font-size: 14px; line-height: 1.45; }
+    #ez-konto .tafel.questinfo .qkeine { margin: 0; color: #6b5330; font-style: italic; } #ez-konto .tafel.questinfo .qvor { margin: 0; padding-left: 18px; }
+    #ez-konto .tafel.questinfo .qschritte { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } #ez-konto .tafel.questinfo .qschritte li { padding-left: 22px; position: relative; }
+    #ez-konto .tafel.questinfo .qschritte li.erledigt { color: #8b7a56; font-size: 13px; } #ez-konto .tafel.questinfo .qschritte li.erledigt::before { content: "✓"; position: absolute; left: 2px; color: #5c7a2e; font-weight: 700; }
+    #ez-konto .tafel.questinfo .qschritte li.jetzt { font-weight: 600; padding: 8px 10px 8px 26px; border-radius: 7px; background: rgba(138,106,58,.16); border: 1px solid rgba(138,106,58,.5); } #ez-konto .tafel.questinfo .qschritte li.jetzt::before { content: "➤"; position: absolute; left: 8px; color: #8a5a12; }
+    #ez-konto .tafel.questinfo .qschritte li.ende::before { content: "★"; position: absolute; left: 2px; color: #a8791c; } #ez-konto .tafel.questinfo .qbelohnung { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid rgba(138,106,58,.5); font-size: 12.5px; color: #5a4520; }
+    #ez-konto .tafel.questinfo .schliessen { color: #3a2a10; } #ez-konto .tafel.questinfo .ecke { border-color: #8a6a3a; }
+    #ez-konto .tafel.questinfo .qverfolgen { position: absolute; top: 12px; right: 46px; padding: 5px 9px; border-radius: 7px; border: 1.5px solid #8a6a3a; background: rgba(255,255,255,.35); color: #3a2a10; font: 600 12px Inter, sans-serif; cursor: pointer; width: auto; margin: 0; }
+    #ez-konto .tafel.questinfo .qverfolgen.an { background: #3a2a10; color: #f4e6c0; }
+    .tafel.skillinfo { max-width: 380px; text-align: left; } .tafel.skillinfo .skopf { display: flex; align-items: center; gap: 12px; } .tafel.skillinfo .skopf h2 { margin: 0; }
+    .tafel.skillinfo .skopf small { color: #b9a57c; font-size: 13px; } .tafel.skillinfo .sz.gross { width: 48px; height: 48px; flex: none; display: grid; place-items: center; font-size: 28px; border-radius: 50%; background: radial-gradient(rgba(70,54,32,.6), rgba(16,12,8,.9)); border: 1px solid #8a6a3a; }
+    .tafel.skillinfo .sz.gross img { width: 34px; height: 34px; } .tafel.skillinfo h3 { margin: 12px 0 4px; font-size: 14px; color: #e8c97a; letter-spacing: .04em; } .tafel.skillinfo p { margin: 0; line-height: 1.45; color: #f1e4c4; }
+    .tafel.untersuchen .iwerte { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 6px auto 10px; max-width: 320px; text-align: left; } .tafel.untersuchen dt { color: #b9a57c; } .tafel.untersuchen dd { margin: 0; font-weight: 600; color: #fff1cc; text-align: right; }
+    @media (max-width: 420px) { .tafel.eigen .iplaetze { grid-template-columns: repeat(3, 86px); gap: 10px; } .tafel.eigen .ifeld { height: 86px; } .tafel.eigen .p-waffe .ifeld, .tafel.eigen .p-nebenhand .ifeld { height: 120px; } }
+    /* ===== 3D-Welt: neue Oberfläche – kein Profil oben links; Chat links oben (nach oben einklappbar, halb durchsichtig), darunter die Leiste; LP-Bogen an der Minikarte ===== */
+    body.welt3d #ez-profil, body.welt3d #ez-oben-knoepfe, body.welt3d #ez-menue, body.welt3d #ez-ich, body.welt3d #ez-kartenrahmen .raute.r { display: none !important; }
+    body.welt3d #ez-chat { position: fixed; left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); right: auto; bottom: auto; transform: none; width: min(520px, 44vw); z-index: 7; background: rgba(20,15,10,.14); border-color: rgba(138,106,58,.45); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+    /* Chat durchsichtig: die Welt scheint durch, die Schrift bleibt durch einen dunklen Rand gut lesbar */
+    body.welt3d #ez-chat .reiter { padding: 0; } body.welt3d #ez-chat .reiter button { background: rgba(30,23,15,.45); border-color: rgba(200,155,82,.35); }
+    body.welt3d #ez-chat .reiter button.an { background: rgba(91,68,38,.6); border-color: rgba(200,155,82,.7); }
+    body.welt3d #ez-chat .liste { margin: 0; height: 120px; background: linear-gradient(rgba(14,10,6,.30), rgba(14,10,6,.20)); border-color: rgba(200,155,82,.30); color: #fbf1d8; font-weight: 500;
+      text-shadow: 0 0 2px #000, 0 1px 2px #000, 1px 0 1px rgba(0,0,0,.9), -1px 0 1px rgba(0,0,0,.9); scrollbar-width: thin; scrollbar-color: rgba(200,155,82,.5) transparent; }
+    body.welt3d #ez-chat .liste b, body.welt3d #ez-chat .liste b a { color: #ffd27a; } body.welt3d #ez-chat .liste .k-system { color: #f0c870; }
+    body.welt3d #ez-chat .liste .k-gruppe b, body.welt3d #ez-chat .liste .k-gruppe b a { color: #9fd4ff; } body.welt3d #ez-chat .liste .k-fluestern, body.welt3d #ez-chat .liste .k-fluestern b a { color: #e6b3ff; }
+    body.welt3d #ez-chat .liste time { color: #d8c79f; } body.welt3d #ez-chat .liste .leer { color: #e3d4b0; }
+    body.welt3d #ez-chat .eingabe { padding: 6px 0 0; } body.welt3d #ez-chat .eingabe input { background: rgba(26,20,14,.5); border-color: rgba(106,82,50,.6); }
+    body.welt3d #ez-chat .eingabe select, body.welt3d #ez-chat .eingabe button { background: rgba(46,37,25,.6); }
+    /* Spielerkarte: blockieren und melden; Meldeformular; Liste der Blockierten */
+    .tafel .reihe.schutz { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(200,155,82,.25); } .tafel .reihe.schutz button { font-size: 13px; opacity: .9; } .tafel .reihe.schutz .warn { color: #ffb4a0; border-color: #8a3a28; }
+    .tafel.melden form { display: grid; gap: 10px; text-align: left; max-width: 360px; margin: 0 auto; } .tafel.melden label { display: grid; gap: 4px; color: #d9c9a3; font-size: 14px; }
+    .tafel.melden select, .tafel.melden textarea { background: #1a140e; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 7px 8px; font: inherit; } .tafel.melden textarea { resize: vertical; }
+    .tafel.melden .haken { display: flex; align-items: center; gap: 8px; } .tafel.melden .status { min-height: 1.2em; color: #ffb4a0; margin: 0; }
+    .tafel .blockliste { list-style: none; padding: 0; margin: 6px auto 10px; max-width: 320px; display: grid; gap: 6px; } .tafel .blockliste li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; border: 1px solid rgba(200,155,82,.3); border-radius: 8px; background: rgba(0,0,0,.2); }
+    .tafel .blockliste button { background: #2e2519; color: #f3e3b5; border: 1px solid #6a5232; border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; }
+    body.welt3d #ez-chat .klapp { transform: rotate(180deg); } body.welt3d #ez-chat.zu .klapp { transform: none; } /* offen: Pfeil nach oben (einklappen), zu: nach unten (aufklappen) */
+    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-chat { width: min(400px, 50vw); } body.welt3d #ez-chat .liste { height: 84px; } body.welt3d #ez-chat .reiter button { font-size: 10.5px; padding: 3px 2px; } }
+    #ez-leiste { display: none; }
+    body.welt3d #ez-leiste { position: fixed; z-index: 6; left: max(10px, env(safe-area-inset-left)); top: auto; bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--a, 8px); }
+    body.welt3d #ez-leiste button { position: relative; width: var(--g, 46px); height: var(--g, 46px); padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a;
+      background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.6); }
+    body.welt3d #ez-leiste button:hover, body.welt3d #ez-leiste button:focus-visible { border-color: #f0d48a; box-shadow: 0 0 0 1px #000, 0 0 12px rgba(240,212,138,.45); }
+    body.welt3d #ez-leiste svg { width: 54%; height: 54%; filter: drop-shadow(0 1px 0 #000); }
+    body.welt3d #ez-leiste .zahl { position: absolute; right: -5px; top: -5px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 11px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    body.welt3d #ez-leiste .zahl[hidden] { display: none; }
+    body.welt3d #ez-kartenrahmen.rund-an { margin-right: calc(var(--m, 0px) * .09 + 24px); margin-top: calc(var(--m, 0px) * .1 + 8px); }
+    @media (max-width: 700px), (max-height: 500px) { body.welt3d #ez-kartenrahmen.rund-an { margin-top: 26px; margin-right: 26px; } }
+    #ez-kbogen { position: absolute; left: 0; top: 0; z-index: 4; }
+    /* gemalte Symbole an der Minikarte (rahmen.ts RBILD): der Goldring ist im Bild */
+    #ez-kbogen button.mitbild, #ez-kartenrahmen .rknoepfe span.mitbild { background: none !important; border: none !important; box-shadow: none !important; overflow: visible; }
+    #ez-kbogen .rbild, #ez-kartenrahmen .rknoepfe .rbild { width: 112%; height: 112%; display: block; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.7)); transition: filter .15s, transform .15s; }
+    #ez-kbogen button.mitbild:hover .rbild, #ez-kartenrahmen .rknoepfe button:hover .rbild { filter: drop-shadow(0 0 8px rgba(240,212,138,.6)) brightness(1.08); }
+    #ez-kbogen button.an .rbild, #ez-kartenrahmen .rknoepfe button.an .rbild { filter: drop-shadow(0 0 9px rgba(255,224,138,.95)) brightness(1.18); transform: scale(1.06); } /* Sprint an */
+    [aria-label="Sprint"].an:has(.rbild) { border-color: transparent !important; box-shadow: none !important; background: none !important; }
+    #ez-kbogen button { position: absolute; padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a; background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, 0 3px 8px rgba(0,0,0,.6); }
+    #ez-kbogen svg { width: 54%; height: 54%; filter: drop-shadow(0 1px 0 #000); } #ez-kbogen span { display: grid; place-items: center; width: 100%; height: 100%; }
+    #ez-kbogen .zahl, #ez-kartenrahmen .rknoepfe .zahl { position: absolute; right: -6px; top: -6px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 10.5px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #5b3d0c; }
+    #ez-kbogen .zahl[hidden], #ez-kartenrahmen .rknoepfe .zahl[hidden] { display: none; }
+    #ez-kartenrahmen .ez-boegen { position: absolute; z-index: 3; pointer-events: none; overflow: visible; }
+    .ez-boegen path { fill: none; stroke-linecap: round; } .ez-boegen .grund.lp { stroke: rgba(10,6,3,.7); stroke-width: 9; } .ez-boegen .grund.gelb { stroke: rgba(10,6,3,.7); stroke-width: 7; }
+    .ez-boegen .voll.lp { stroke: #d8392b; stroke-width: 6; transition: stroke-dasharray .25s; filter: drop-shadow(0 0 3px rgba(255,60,40,.55)); } .ez-boegen .voll.lp.mittel { stroke: #e07a24; } .ez-boegen .voll.lp.wenig { stroke: #9a1a14; }
+    .ez-boegen .voll.gelb { stroke: #f2c531; stroke-width: 4; filter: drop-shadow(0 0 3px rgba(255,210,60,.5)); }
+    .ez-boegen .lpzahl { font: 700 11px Cinzel, Georgia, serif; fill: #ffe9b0; text-anchor: middle; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+    /* kleiner Knopf an einer angetippten Stelle (Treppe, Leiter, Tür …) */
+    .ez-name3d.boden { font-size: 11px; color: #ffe39a; opacity: .92; }
+    .ez-wahl3d { position: absolute; left: 0; top: 0; pointer-events: auto; will-change: transform; }
+    .ez-wahl3d button { padding: 5px 12px; border-radius: 999px; border: 1.5px solid #e2bf6a; background: linear-gradient(#4a3518, #20160a); color: #ffe7b0; font: 600 13px Cinzel, Georgia, serif; letter-spacing: .03em; white-space: nowrap; cursor: pointer;
+      box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.55); animation: ez-wahl-auf .16s ease-out; }
+    .ez-wahl3d button:hover { border-color: #fff0c4; background: linear-gradient(#5e4420, #2a1c0c); }
+    .ez-wahl3d.mehr { display: flex; flex-direction: column; gap: 4px; align-items: stretch; } .ez-wahl3d.mehr button { animation-delay: 0s; } .ez-wahl3d.mehr button:last-child { border-color: #f0d48a; background: linear-gradient(#6a4c1e, #2e1f0c); }
+    .ifeld .menge { position: absolute; right: 4px; bottom: 3px; font: 700 12px Inter, sans-serif; font-style: normal; color: #fff3cf; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
+    .ez-wahl3d::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: #e2bf6a; }
+    @keyframes ez-wahl-auf { from { transform: scale(.7); opacity: 0; } }
+    /* Angriffsstil und Skills (Kampfregeln v2) */
+    .seitentab { position: fixed; z-index: 8; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; overflow: auto; border-radius: 14px; border: 1.5px solid #8a6a3a; background: linear-gradient(rgba(38,29,18,.94), rgba(22,16,10,.94)); color: #f3e3b5; box-shadow: 0 6px 22px rgba(0,0,0,.5); font: 14px Georgia, serif; }
+    .seitentab .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; } .seitentab .kopf b { font: 600 16px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .kopf small { color: #cdb98a; font-size: 12px; }
+    .seitentab .stile { display: grid; gap: 6px; flex: 1; align-content: start; }
+    .seitentab .stil { display: grid; gap: 1px; text-align: left; padding: 6px 10px; border-radius: 9px; border: 1.5px solid #6a5232; background: linear-gradient(#2e2519, #1a140d); color: #f3e3b5; cursor: pointer; font: inherit; position: relative; }
+    .seitentab .stil b { font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; display: flex; align-items: baseline; gap: 8px; } .seitentab .stil b em { font: 11.5px Georgia, serif; font-style: normal; color: #e9dcb8; } .seitentab .stil small { color: #cdb98a; font-size: 11.5px; }
+    .seitentab.eng { gap: 5px; padding: 7px 9px; } .seitentab.eng .stil { padding: 5px 9px; } .seitentab.eng .stil small, .seitentab.eng .kipp small { display: none; } .seitentab.eng .stile { gap: 5px; }
+    .seitentab .stil.an { border-color: #f0d48a; background: linear-gradient(#6a4f28, #2e2010); box-shadow: 0 0 10px rgba(240,212,138,.45); } .seitentab .stil.an::after { content: "✓ aktiv"; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font: 600 11px Cinzel, Georgia, serif; color: #ffe08a; }
+    .seitentab .kipp { display: flex; align-items: center; gap: 10px; text-align: left; padding: 6px 8px; border-radius: 9px; border: 1.5px solid #6a5232; background: #1a140d; color: #f3e3b5; cursor: pointer; font: inherit; }
+    .seitentab .kipp i { flex: 0 0 42px; height: 22px; border-radius: 11px; background: #4a3a28; border: 1.5px solid #7a6040; position: relative; transition: background .15s; }
+    .seitentab .kipp i::after { content: ""; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #cdb98a; transition: left .15s; }
+    .seitentab .kipp.an i { background: #5f8a3a; border-color: #a8d070; } .seitentab .kipp.an i::after { left: 22px; background: #fff3c8; }
+    .seitentab .kipp span { display: grid; } .seitentab .kipp b { font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .kipp small { color: #cdb98a; font-size: 11.5px; }
+    .seitentab .kopf .info { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #c89b52; background: #2e2519; color: #ffe7a8; font: italic 700 15px Georgia, serif; cursor: pointer; padding: 0; }
+    .seitentab .traster { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); gap: 4px; flex: 1; min-height: 0; }
+    .seitentab .traster .ifeld, .seitentab .tplatz .ifeld { position: relative; padding: 0; min-width: 0; min-height: 0; border-radius: 7px; border: 1.5px solid #5a4528; background: radial-gradient(#2a2117, #15100b); cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .seitentab .traster .ifeld canvas, .seitentab .tplatz .ifeld canvas { width: 92%; height: 92%; } .seitentab .ifeld.voll { border-color: #8a6a3a; } .seitentab .ifeld.zieht { opacity: .35; } .seitentab .ifeld.ziel { border-color: #ffe08a; box-shadow: 0 0 10px rgba(255,210,110,.7); } .ez-ziehgeist { border-radius: 6px; background: rgba(40,28,14,.85); border: 2px solid #ffe08a; } .seitentab .ifeld.gewaehlt { border-color: #ffe08a; box-shadow: 0 0 8px rgba(255,224,138,.6); } .seitentab .ifeld.benutzt { border-color: #ffffff; box-shadow: 0 0 0 2px #ffffff, 0 0 12px rgba(255,255,255,.7); }
+    .seitentab .ifeld .menge { position: absolute; right: 3px; bottom: 1px; font: 700 11px Georgia, serif; font-style: normal; color: #fff3c8; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
+    .seitentab .ifeld .leer svg { width: 55%; height: 55%; opacity: .35; color: #cdb98a; }
+    .seitentab .kopf { flex: none; } .seitentab { overflow: hidden !important; }
+    .seitentab .tplaetze { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex: 1 1 0; min-height: 0; align-items: stretch; }
+    .seitentab .tplatz { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 3px; justify-items: center; min-height: 0; } .seitentab .tplatz .ifeld { height: 100%; max-height: 86px; max-width: 100%; aspect-ratio: 1; width: auto; min-width: 0; } .seitentab .tplatz small { color: #cdb98a; font-size: 11.5px; line-height: 1.1; }
+    .seitentab .twahl, .seitentab .klein { flex: none; } .seitentab.eng .tab-ausruestung .klein, .seitentab.eng.tab-ausruestung > .klein { display: none; }
+    .seitentab .twahl { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; padding: 5px 7px; border-radius: 8px; background: rgba(0,0,0,.35); border: 1px solid #6a5232; }
+    .seitentab .twahl b { font: 600 13px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .twahl .reihe { display: flex; gap: 4px; flex-wrap: wrap; }
+    .seitentab .twahl button { padding: 4px 8px; border-radius: 7px; border: 1px solid #8a6a3a; background: #2e2519; color: #f3e3b5; font: 12px Georgia, serif; cursor: pointer; } .seitentab .twahl button.haupt { background: linear-gradient(#6a4f28, #3b2c19); border-color: #c89b52; color: #ffe7a8; }
+    /* ── Seitentabs im Rahmen-Stil (Entwurf „Angriffsstil“): Goldrahmen mit Rauten oben und unten, rotes ✕, großer Titel, Pergament-Feld ── */
+    .seitentab { border: 2.5px solid #c99a3c; border-radius: 14px; padding: 14px 16px 16px; background: linear-gradient(rgba(56,44,30,.97), rgba(30,23,15,.97)); box-shadow: inset 0 0 0 1.5px #3a2a14, inset 0 0 0 3px rgba(240,200,120,.25), 0 8px 26px rgba(0,0,0,.6); overflow: visible !important; }
+    .seitentab .tinhalt { display: flex; flex-direction: column; gap: 7px; flex: 1 1 auto; min-height: 0; overflow: hidden; touch-action: pan-y; } .seitentab.eng .tinhalt { gap: 5px; }
+    .seitentab::before, .seitentab::after { content: ""; position: absolute; left: 50%; width: 30px; height: 22px; transform: translateX(-50%); background: linear-gradient(135deg, #fff1b8, #d9a531 45%, #8a5a14); clip-path: polygon(50% 0, 64% 36%, 100% 50%, 64% 64%, 50% 100%, 36% 64%, 0 50%, 36% 36%); filter: drop-shadow(0 1px 1px #000); pointer-events: none; }
+    .seitentab::before { top: -12px; } .seitentab::after { bottom: -12px; }
+    .seitentab .tzu { position: absolute; right: 8px; top: 8px; z-index: 2; width: 30px; height: 30px; padding: 0; border-radius: 7px; border: 2px solid #e0b252; background: linear-gradient(#d0412f, #8c1c12); color: #fff3d0; font: 700 17px/1 Georgia, serif; cursor: pointer; box-shadow: 0 0 0 1px #3a1408, 0 2px 4px rgba(0,0,0,.5); text-shadow: 0 1px 1px #000; }
+    .seitentab .tzu:hover { filter: brightness(1.12); }
+    .seitentab .kopf { padding-right: 36px; } .seitentab .kopf.gross { display: grid; gap: 4px; padding-bottom: 8px; border-bottom: 1.5px solid rgba(201,154,60,.45); }
+    .seitentab .kopf.gross b { font: 700 22px Cinzel, Georgia, serif; color: #f6e3b4; text-shadow: 0 2px 3px #000; } .seitentab .kopf.gross small { font: 600 13.5px Cinzel, Georgia, serif; color: #ead6a6; }
+    .seitentab .stile.pergament { padding: 9px; gap: 7px; border-radius: 10px; border: 1.5px solid #a88a58; background: linear-gradient(#d8c39a, #b89a6a); box-shadow: inset 0 0 14px rgba(70,45,15,.45); }
+    .seitentab .stile.pergament .stil { display: grid; grid-template-columns: 22px minmax(0, 1.1fr) minmax(0, 1fr) 82px; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 9px; border: 1.5px solid #4a3820; background: linear-gradient(#3a3022, #241c12); box-shadow: inset 0 1px 0 rgba(255,230,170,.08); }
+    .seitentab .stile.pergament .stil::after { content: none; }
+    .seitentab .stile.pergament .stil .punkt { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #6a5838; background: radial-gradient(#1a140d, #0d0a06); box-shadow: inset 0 1px 2px #000; }
+    .seitentab .stile.pergament .stil b { font: 600 17px Cinzel, Georgia, serif; color: #f3e3b5; } .seitentab .stile.pergament .stil em { font: 14px Georgia, serif; font-style: normal; color: #e9dcb8; }
+    .seitentab .stile.pergament .stil small { display: none; } .seitentab .stile.pergament .stil .aktiv { font: 600 14px Cinzel, Georgia, serif; color: #ffd86a; text-shadow: 0 1px 1px #000; }
+    .seitentab .stile.pergament .stil.an { border: 2px solid #f0c860; background: linear-gradient(#6a5022, #3a2a10); box-shadow: 0 0 12px rgba(240,200,96,.55), inset 0 0 8px rgba(255,220,130,.25); }
+    .seitentab .stile.pergament .stil.an .punkt { border-color: #f0c860; background: radial-gradient(circle at 40% 35%, #fff6c8, #f0c040 45%, #a46a10); box-shadow: 0 0 6px rgba(255,210,90,.8); }
+    .seitentab .tinhalt > .kipp { padding: 9px 14px; border-radius: 9px; border: 2px solid #b8893a; background: linear-gradient(#2e2519, #1a140d); }
+    .seitentab .tinhalt > .kipp i { flex: 0 0 52px; height: 28px; border-radius: 14px; } .seitentab .tinhalt > .kipp i::after { width: 22px; height: 22px; top: 1.5px; left: 2px; }
+    .seitentab .tinhalt > .kipp.an i { background: linear-gradient(#5fa045, #2f6a22); border-color: #9ed070; } .seitentab .tinhalt > .kipp.an i::after { left: 26px; background: #fff; content: "✓"; display: grid; place-items: center; font: 700 14px/1 sans-serif; color: #2f6a22; }
+    .seitentab .tinhalt > .kipp b { font: 600 17px Cinzel, Georgia, serif; } .seitentab .tinhalt > .kipp small { display: none; }
+    .seitentab.eng { padding: 10px 12px 12px; } .seitentab.eng .kopf.gross b { font-size: 17px; } .seitentab.eng .stile.pergament { padding: 6px; gap: 5px; } .seitentab.eng .stile.pergament .stil { padding: 5px 10px; } .seitentab.eng .stile.pergament .stil b { font-size: 14px; }
+    /* Freunde-Tab (freunde.ts): Anfragen, Liste mit Status, Flüstern und Teleport, Hinzufügen */
+    .seitentab .fanfragen { display: grid; gap: 6px; } .seitentab .fanfrage { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 9px; border: 1.5px solid #f0c860; background: linear-gradient(#5a4420, #2e2010); box-shadow: 0 0 8px rgba(240,200,96,.35); }
+    .seitentab .fanfrage span { display: grid; min-width: 0; } .seitentab .fanfrage b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; overflow: hidden; text-overflow: ellipsis; } .seitentab .fanfrage small { color: #e9d6a6; font-size: 12px; }
+    .seitentab .fanfrage button { padding: 5px 9px; border-radius: 7px; font: 600 12px Cinzel, Georgia, serif; cursor: pointer; } .seitentab .fanfrage .ja { border: 1.5px solid #9ed070; background: linear-gradient(#5fa045, #2f6a22); color: #fff; } .seitentab .fanfrage .nein { border: 1.5px solid #8a6a3a; background: #2e2519; color: #f3e3b5; }
+    .seitentab .fliste { list-style: none; margin: 0; padding: 8px; display: grid; gap: 6px; border-radius: 10px; border: 1.5px solid #a88a58; background: linear-gradient(#d8c39a, #b89a6a); box-shadow: inset 0 0 14px rgba(70,45,15,.45); }
+    .seitentab .fliste li { display: grid; grid-template-columns: 12px minmax(0, 1fr) 34px 34px; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px; border: 1.5px solid #4a3820; background: linear-gradient(#3a3022, #241c12); }
+    .seitentab .fliste .dot { width: 11px; height: 11px; border-radius: 50%; background: #6a5a44; box-shadow: inset 0 1px 2px #000; } .seitentab .fliste .online .dot { background: radial-gradient(#b8ff8a, #3f9a2a); box-shadow: 0 0 6px rgba(120,230,90,.8); } .seitentab .fliste .kampf .dot { background: radial-gradient(#ffb08a, #c2412a); box-shadow: 0 0 6px rgba(255,120,80,.8); }
+    .seitentab .fliste .wer { display: grid; min-width: 0; } .seitentab .fliste .wer b { font: 600 15px Cinzel, Georgia, serif; color: #f3e3b5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .seitentab .fliste .wer small { color: #cdb98a; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .seitentab .fliste .aus .wer b { color: #b8a57e; } .seitentab .fliste .fk { width: 32px; height: 32px; padding: 0; border-radius: 50%; border: 1.5px solid #c99a3c; background: radial-gradient(circle at 50% 35%, #4a3a22, #16100a 75%); color: #ffe7b0; font: 16px system-ui, sans-serif; cursor: pointer; }
+    .seitentab .fliste .fk:disabled { opacity: .35; cursor: default; } .seitentab .fliste .fk:not(:disabled):hover { box-shadow: 0 0 8px rgba(240,212,138,.6); }
+    .seitentab .fneu { display: flex; gap: 6px; } .seitentab .fneu input { flex: 1; min-width: 0; padding: 7px 9px; border-radius: 8px; border: 1.5px solid #8a6a3a; background: #1a140d; color: #f3e3b5; font: 14px Georgia, serif; } .seitentab .fneu button { padding: 7px 11px; border-radius: 8px; border: 1.5px solid #c99a3c; background: linear-gradient(#6a4f28, #2e2010); color: #ffe7b0; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
+    .seitentab .foffen, .seitentab .fhinweis { margin: 0; color: #cdb98a; font-size: 12.5px; } .seitentab .fhinweis { color: #ffd86a; }
+    /* Freunde im Fenster (gleiche Gestaltung wie im Tab) */
+    .ftafel .fanfragen { display: grid; gap: 6px; } .ftafel .fanfrage { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 9px; border: 1.5px solid #f0c860; background: linear-gradient(#5a4420, #2e2010); box-shadow: 0 0 8px rgba(240,200,96,.35); }
+    .ftafel .fanfrage span { display: grid; min-width: 0; } .ftafel .fanfrage b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; overflow: hidden; text-overflow: ellipsis; } .ftafel .fanfrage small { color: #e9d6a6; font-size: 12px; }
+    .ftafel .fanfrage button { padding: 5px 9px; border-radius: 7px; font: 600 12px Cinzel, Georgia, serif; cursor: pointer; } .ftafel .fanfrage .ja { border: 1.5px solid #9ed070; background: linear-gradient(#5fa045, #2f6a22); color: #fff; } .ftafel .fanfrage .nein { border: 1.5px solid #8a6a3a; background: #2e2519; color: #f3e3b5; }
+    .ftafel .fliste { list-style: none; margin: 0; padding: 8px; display: grid; gap: 6px; border-radius: 10px; border: 1.5px solid #a88a58; background: linear-gradient(#d8c39a, #b89a6a); box-shadow: inset 0 0 14px rgba(70,45,15,.45); }
+    .ftafel .fliste li { display: grid; grid-template-columns: 12px minmax(0, 1fr) 34px 34px; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px; border: 1.5px solid #4a3820; background: linear-gradient(#3a3022, #241c12); }
+    .ftafel .fliste .dot { width: 11px; height: 11px; border-radius: 50%; background: #6a5a44; box-shadow: inset 0 1px 2px #000; } .ftafel .fliste .online .dot { background: radial-gradient(#b8ff8a, #3f9a2a); box-shadow: 0 0 6px rgba(120,230,90,.8); } .ftafel .fliste .kampf .dot { background: radial-gradient(#ffb08a, #c2412a); box-shadow: 0 0 6px rgba(255,120,80,.8); }
+    .ftafel .fliste .wer { display: grid; min-width: 0; } .ftafel .fliste .wer b { font: 600 15px Cinzel, Georgia, serif; color: #f3e3b5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ftafel .fliste .wer small { color: #cdb98a; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ftafel .fliste .aus .wer b { color: #b8a57e; } .ftafel .fliste .fk { width: 32px; height: 32px; padding: 0; border-radius: 50%; border: 1.5px solid #c99a3c; background: radial-gradient(circle at 50% 35%, #4a3a22, #16100a 75%); color: #ffe7b0; font: 16px system-ui, sans-serif; cursor: pointer; }
+    .ftafel .fliste .fk:disabled { opacity: .35; cursor: default; } .ftafel .fliste .fk:not(:disabled):hover { box-shadow: 0 0 8px rgba(240,212,138,.6); }
+    .ftafel .fneu { display: flex; gap: 6px; } .ftafel .fneu input { flex: 1; min-width: 0; padding: 7px 9px; border-radius: 8px; border: 1.5px solid #8a6a3a; background: #1a140d; color: #f3e3b5; font: 14px Georgia, serif; } .ftafel .fneu button { padding: 7px 11px; border-radius: 8px; border: 1.5px solid #c99a3c; background: linear-gradient(#6a4f28, #2e2010); color: #ffe7b0; font: 600 12.5px Cinzel, Georgia, serif; cursor: pointer; }
+    .ftafel .foffen, .ftafel .fhinweis { margin: 0; color: #cdb98a; font-size: 12.5px; } .ftafel .fhinweis { color: #ffd86a; }
+    #ez-konto .tafel.freunde .fanfrage button { padding: 5px 9px; border-radius: 7px; font: 600 12px Cinzel, Georgia, serif; min-height: 0; box-shadow: none; }
+    #ez-konto .tafel.freunde .fanfrage .ja { border: 1.5px solid #9ed070; background: linear-gradient(#5fa045, #2f6a22); color: #fff; } #ez-konto .tafel.freunde .fanfrage .nein { border: 1.5px solid #8a6a3a; background: #2e2519; color: #f3e3b5; }
+    #ez-konto .tafel.freunde .fliste .fk { width: 32px; height: 32px; min-height: 0; padding: 0; border-radius: 50%; border: 1.5px solid #c99a3c; background: radial-gradient(circle at 50% 35%, #4a3a22, #16100a 75%); color: #ffe7b0; font: 16px system-ui, sans-serif; box-shadow: none; }
+    #ez-konto .tafel.freunde .fneu button { padding: 7px 11px; min-height: 0; border-radius: 8px; border: 1.5px solid #c99a3c; background: linear-gradient(#6a4f28, #2e2010); color: #ffe7b0; font: 600 12.5px Cinzel, Georgia, serif; box-shadow: none; }
+    #ez-konto .tafel.freunde .fneu input { padding: 7px 9px; border-radius: 8px; border: 1.5px solid #8a6a3a; background: #1a140d; color: #f3e3b5; font: 14px Georgia, serif; }
+    #ez-konto .tafel.freunde { width: min(440px, calc(100vw - 32px)); max-height: min(86vh, 620px); overflow: auto; }
+    #ez-konto .tafel.freunde .finhalt { display: grid; gap: 9px; text-align: left; } #ez-konto .tafel.freunde .fzahl { margin: -4px 0 0; text-align: center; }
+    .ez-chat a.cn { color: inherit; cursor: pointer; text-decoration: none; } .ez-chat a.cn:hover { text-decoration: underline; }
+    /* Aktionsmenü im Pergament-Stil (aktionsmenue.ts): am angeklickten Ziel, klein */
+    .ez-aktionen { position: fixed; z-index: 30; min-width: 176px; max-width: min(280px, calc(100vw - 12px)); padding: 5px; border-radius: 9px; border: 2px solid #c99a3c; background: linear-gradient(#d8c39a, #b89a6a); box-shadow: 0 0 0 1px #3a2a14, 0 8px 18px rgba(0,0,0,.6); user-select: none; -webkit-user-select: none; }
+    .ez-aktionen .kopf { display: flex; align-items: center; gap: 6px; padding: 3px 6px 5px; font: 700 13px Cinzel, Georgia, serif; color: #3a2410; border-bottom: 1px solid rgba(90,60,20,.4); }
+    .ez-aktionen .kopf .lv { margin-left: 2px; padding: 1px 6px; border-radius: 5px; background: #2a1c10; font: 700 11.5px Cinzel, Georgia, serif; white-space: nowrap; } /* Levelfarbe (Gegner nach Schwierigkeit) auf dunklem Grund – auf dem Pergament sonst nicht lesbar */
+    .ez-aktionen .kopf ~ .kopf { margin-top: 6px; } .ez-aktionen .kopf i { flex: none; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+    .ez-aktionen .trenn { height: 1px; margin: 6px 4px 2px; background: rgba(90,60,20,.4); }
+    .ez-aktionen button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 7px; margin-top: 3px; border-radius: 6px; border: 1px solid #4a3820; background: linear-gradient(#3a3022, #241c12); color: #f3e3b5; font: 600 13px Cinzel, Georgia, serif; cursor: pointer; text-align: left; }
+    .ez-aktionen button:hover, .ez-aktionen button:focus-visible { border-color: #f0d48a; box-shadow: 0 0 6px rgba(240,200,96,.5); outline: none; }
+    .ez-aktionen button .sy { flex: none; width: 18px; text-align: center; font-family: system-ui, sans-serif; } .ez-aktionen button b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ez-aktionen button em { margin-left: auto; padding-left: 6px; font: 12px Georgia, serif; font-style: normal; color: #e9dcb8; }
+    .ez-aktionen .ding { display: grid; grid-template-columns: minmax(0, 1fr) 30px; gap: 3px; margin-top: 3px; } .ez-aktionen .ding button { margin-top: 0; } .ez-aktionen .ding .lupe { justify-content: center; padding: 5px 0; }
+    .ez-aktionen .stapelliste { max-height: 172px; overflow: auto; } .ez-aktionen button.alles { justify-content: center; border: 1.5px solid #f0c860; background: linear-gradient(#6a5022, #3a2a10); color: #ffe7b0; box-shadow: 0 0 8px rgba(240,200,96,.45); }
+    /* Leiste links: gerahmte Säule hinter den gemalten Symbolen */
+    body.welt3d #ez-leiste { padding: 8px 6px; border-radius: 16px; border: 2px solid #8a6a32; background: linear-gradient(rgba(48,38,26,.92), rgba(26,20,13,.92)); box-shadow: inset 0 0 0 1px #2a1e0e, 0 6px 18px rgba(0,0,0,.55); }
+    .seitentab { touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; } /* auf dem Handy: im Tab wischen = scrollen (sonst sperrt body touch-action: none) */
+    .seitentab .tskills { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; flex: 1; align-content: space-evenly; }
+    .seitentab .tskills li { display: grid; grid-template-columns: 26px minmax(0, 1fr) 24px 1.1fr 24px; align-items: center; gap: 6px; }
+    .seitentab .tskills .sz img { width: 26px; height: 26px; display: block; } .seitentab .tskills b { font: 600 13px Cinzel, Georgia, serif; color: #ffe7b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .seitentab .tskills .lv { font: 700 14px Georgia, serif; color: #fff3c8; text-align: center; } .seitentab .tskills .lv.nach { color: #a8946a; font-weight: 400; }
+    .seitentab .tskills .ez-balken { display: block; height: 8px; border-radius: 4px; background: #1a140d; border: 1px solid #5a4528; overflow: hidden; } .seitentab .tskills .ez-balken u { display: block; height: 100%; background: linear-gradient(90deg, #c89b52, #ffe08a); text-decoration: none; }
+    .seitentab .tleer { flex: 1; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; color: #cdb98a; } .seitentab .tleer span svg { width: 38px; height: 38px; opacity: .5; } .seitentab .tleer p { margin: 0; font: 600 14px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tleer small { font-size: 12px; max-width: 260px; }
+    .seitentab .tquest .kipp.verfolgen { margin-top: 8px; } .seitentab .tquest .kipp.verfolgen b::after { content: none; }
+    [aria-label="Sprint"].an { border-color: #ffe08a !important; box-shadow: 0 0 14px rgba(255,224,138,.85) !important; background: radial-gradient(#7a5a28, #2e2010) !important; }
+    .seitentab .tquest { flex: 1; display: grid; align-content: start; gap: 4px; padding: 8px 10px; border-radius: 9px; border: 1.5px solid #8a6a3a; background: linear-gradient(#2e2519, #1a140d); overflow: auto; }
+    .seitentab .tquest b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .seitentab .tquest small { color: #a8946a; font-size: 11.5px; } .seitentab .tquest p { margin: 4px 0 0; font-size: 13px; line-height: 1.4; color: #f3e3b5; } .seitentab .tquest.fertig b::after { content: " ✓"; color: #8fd06a; }
+    /* Gespräch wie die klassische Chatbox (OSRS): Pergament, Kopfbild links (Figur) oder rechts (du), Name dunkelrot, Text schwarz, „fortfahren“ blau */
+    #ez-gespraech { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(540px, calc(100vw - 20px)); z-index: 12; cursor: pointer; user-select: none;
+      border: 3px solid #3d3121; border-radius: 4px; box-shadow: 0 0 0 2px #7a6644, 0 6px 22px rgba(0,0,0,.6); background: #d8c9a0 linear-gradient(180deg, #e3d6b0, #cdbd92); font: 15px "Trebuchet MS", Verdana, sans-serif; color: #000; }
+    #ez-gespraech[hidden] { display: none !important; }
+    #ez-gespraech.imchat { transform: none; bottom: auto; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; } #ez-gespraech.imchat .kasten { min-height: 0; flex: 1; }
+    #ez-gespraech .kasten { display: flex; align-items: center; gap: 10px; min-height: 128px; padding: 10px 14px; box-sizing: border-box; }
+    #ez-gespraech.ich .kasten { flex-direction: row-reverse; }
+    #ez-gespraech .rahmen { flex: 0 0 96px; height: 96px; display: grid; place-items: center; }
+    #ez-gespraech .bild { width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(1px 2px 1px rgba(0,0,0,.35)); }
+    #ez-gespraech .bild:not([src]) { visibility: hidden; }
+    #ez-gespraech .mitte { flex: 1; display: grid; justify-items: center; gap: 6px; text-align: center; }
+    #ez-gespraech .name { color: #800000; font-weight: 700; font-size: 15px; }
+    #ez-gespraech .text { margin: 0; line-height: 1.38; max-width: 380px; }
+    #ez-gespraech .weiter { color: #0000ff; font-size: 14px; } #ez-gespraech:hover .weiter { color: #fff; text-shadow: 1px 1px 0 #000; }
+    #ez-gespraech .zu { position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; padding: 0; border: 1px solid #5a4528; border-radius: 3px; background: #b9a678; color: #3d3121; font: 700 12px sans-serif; cursor: pointer; }
+    #ez-gespraech.wahl { cursor: default; } #ez-gespraech .titel { display: block; text-align: center; color: #800000; font-weight: 700; margin-bottom: 4px; }
+    #ez-gespraech.wahl .kasten { display: block; padding-top: 12px; }
+    #ez-gespraech .antworten { display: grid; gap: 1px; justify-items: center; }
+    #ez-gespraech .antworten button { border: 0; background: none; padding: 3px 10px; color: #000; font: 15px "Trebuchet MS", Verdana, sans-serif; cursor: pointer; }
+    #ez-gespraech .antworten button i { font-style: normal; color: #5a4528; } #ez-gespraech .antworten button:hover, #ez-gespraech .antworten button:focus-visible { color: #fff; text-shadow: 1px 1px 0 #000; outline: none; }
+    .ez-questmarke { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 800 26px Cinzel, Georgia, serif; color: #ffd84a; text-shadow: 0 0 4px #000, 0 2px 3px #000, 0 0 10px rgba(255,200,40,.8); animation: questhuepf 1.2s ease-in-out infinite; }
+    @keyframes questhuepf { 0%, 100% { margin-top: 0; } 50% { margin-top: -5px; } }
+    .ez-name3d.quest { color: #fff3c8; font-size: 13px; }
+    .tafel.ausruestungswerte .iwerte { display: grid; grid-template-columns: 1fr auto; gap: 4px 18px; margin: 0 auto; max-width: 320px; text-align: left; } .tafel.ausruestungswerte .iwerte dt, .tafel.ausruestungswerte .iwerte dd { margin: 0; padding: 0; } .tafel.ausruestungswerte .iwerte dd { text-align: right; color: #ffe7a8; font-weight: 600; }
+    .tafel.ausruestungswerte h3 { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; margin: 12px 0 4px; }
+    #ez-xpdrops { position: fixed; left: 50%; top: 64px; transform: translateX(-50%); z-index: 9; pointer-events: none; display: grid; justify-items: center; }
+    #ez-xpdrops .xpdrop { display: flex; gap: 10px; animation: xpsteigt 1.8s ease-out forwards; font: 700 17px Cinzel, Georgia, serif; color: #fff3c8; text-shadow: 0 1px 3px #000, 0 0 6px rgba(0,0,0,.8); grid-area: 1 / 1; }
+    #ez-xpdrops .xpdrop span { display: inline-flex; align-items: center; gap: 4px; } #ez-xpdrops img { width: 24px; height: 24px; }
+    @keyframes xpsteigt { 0% { opacity: 0; transform: translateY(14px); } 12% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-46px); } }
+    body.welt3d #ez-leiste button.mitbild { background: none; border: none; box-shadow: none; overflow: visible; } /* gemalte Symbole: der Goldring ist im Bild */
+    body.welt3d #ez-leiste button.mitbild img { width: 112%; height: 112%; display: block; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.7)); transition: filter .15s, transform .15s; }
+    body.welt3d #ez-leiste button.mitbild:hover img, body.welt3d #ez-leiste button.mitbild:focus-visible img { filter: drop-shadow(0 0 8px rgba(240,212,138,.6)) brightness(1.08); }
+    body.welt3d #ez-leiste button.mitbild:hover, body.welt3d #ez-leiste button.mitbild:focus-visible { box-shadow: none; }
+    #ez-leiste button.mitbild.an { background: none !important; box-shadow: none !important; } #ez-leiste button.mitbild.an img { filter: drop-shadow(0 0 9px rgba(255,224,138,.95)) brightness(1.18); transform: scale(1.06); }
+    #ez-leiste button.an { border-color: #ffe08a !important; box-shadow: 0 0 12px rgba(255,224,138,.7) !important; background: radial-gradient(#6a4f28, #2e2010) !important; }
+    .tafel.stiltafel .stile { display: grid; gap: 8px; margin: 10px 0; }
+    .tafel.stiltafel .stil { display: grid; gap: 3px; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #6a5232; background: linear-gradient(#2e2519, #1a140d); color: #f3e3b5; cursor: pointer; font: inherit; }
+    .tafel.stiltafel .stil b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .tafel.stiltafel .stil small { color: #cdb98a; font-size: 12px; }
+    .tafel.stiltafel .stil .werte { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; color: #e9dcb8; } .tafel.stiltafel .stil .werte em { font-style: normal; }
+    .tafel.stiltafel .stil.an { border-color: #f0d48a; background: linear-gradient(#5b4426, #2e2010); box-shadow: 0 0 10px rgba(240,212,138,.35); }
+    .tafel.skilltafel .skills { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 10px; }
+    .tafel.skilltafel .skills li { text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: center; }
+    .tafel.skilltafel .skills b { font: 600 15px Cinzel, Georgia, serif; color: #ffe7b0; } .tafel.skilltafel .skills .lv { font: 700 15px Cinzel, Georgia, serif; color: #f0d48a; }
+    .tafel.skilltafel .skills .ez-balken { grid-column: 1 / -1; display: block; height: 8px; border-radius: 4px; background: rgba(0,0,0,.45); overflow: hidden; } .tafel.skilltafel .skills .ez-balken u { display: block; height: 100%; background: linear-gradient(90deg, #b88a2e, #f2d27e); }
+    .tafel.skilltafel .skills small { grid-column: 1 / -1; color: #cdb98a; font-size: 12px; }
+    .tafel.bald .bald-zeichen { display: grid; place-items: center; margin: 18px auto 6px; width: 84px; height: 84px; border-radius: 50%; color: #f0d48a; background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; }
+    .tafel.bald .bald-zeichen svg { width: 46px; height: 46px; } .tafel.bald { text-align: center; }
+    #ez-kampfart .kurz { display: none; font-style: normal; }
+    /* 3D-Welt: Solo/Multi/Sicher klein unten rechts in der Ecke (wie in OSRS) */
+    body.welt3d #ez-kampfart, body.welt3d #ez-kartenrahmen.rund-an #ez-kampfart { display: flex !important; position: fixed; z-index: 6; left: auto; top: auto; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom));
+      width: auto; height: auto; margin: 0; padding: 5px 12px 5px 8px; gap: 6px; border-radius: 10px; background: rgba(19,14,9,.78); border: 1px solid #b08a3c; box-shadow: 0 2px 8px rgba(0,0,0,.5); font: 700 12px Cinzel, Georgia, serif; pointer-events: auto; }
+    body.welt3d #ez-kampfart::before, body.welt3d #ez-kampfart::after { display: none; }
+    body.welt3d #ez-kampfart b, body.welt3d #ez-kampfart em { display: none; } body.welt3d #ez-kampfart .kurz { display: inline; }
+    body.welt3d #ez-kampfart .sym { display: grid !important; width: 18px; height: 18px; color: #f6dd92; } body.welt3d #ez-kampfart.mehr .sym { color: #ffb08a; }
+    #ez-kampfart em { display: none !important; } /* keine Gegneranzahl */
+    body.welt3d #ez-kampfart.mehr { border-color: #d0603a; } body.welt3d #ez-kampfart.sicher { border-color: #5d8a4a; }
+    /* Minimap-Ring golden auch in Safari/iOS: dort malt die gedrehte Karte über den Rand – den Ring daher zusätzlich obenauf zeichnen */
+    #ez-kartenrahmen .rund::after { box-shadow: inset 0 0 0 4px var(--ring, #b08a3c), inset 0 0 22px rgba(0,0,0,.85); }
+    #ez-kartenrahmen[data-art=sicher] .rund { --ring: #6f9a52; } #ez-kartenrahmen[data-art=mehr] .rund { --ring: #d0603a; }
+    </style>
 </head>
 <body>
   <div id="ez-start" class="vorhang" role="status" aria-live="polite"><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><p class="was">Die Waldmark erwacht</p><p class="tipp"></p></div></div>
@@ -450,11 +818,69 @@
     t.textContent = s[Math.floor(Math.random() * s.length)]; })();</script>
   <div id="ez-feld"></div>
   <div id="ez-dunkel"></div>
-  <div class="ez-kasten" id="ez-ich"><span class="bild"><img id="ez-ich-bild" alt=""><em id="ez-ich-stufe" hidden></em></span><div class="werte"><b id="ez-name">…</b><span class="leiste"><b class="herz">♥</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u><small id="ez-lpzahl"></small></i></span><span class="leiste" id="ez-xpleiste" hidden><b class="stern">✦</b><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u><small id="ez-xpzahl"></small></i></span></div></div>
+  <div class="ez-kasten" id="ez-ich"><span class="bild"><img id="ez-ich-bild" alt=""><em id="ez-ich-stufe" hidden></em></span><div class="werte"><b id="ez-name">…</b><span class="leiste"><b class="herz">♥</b><i class="ez-balken"><u id="ez-lp" style="width:100%"></u><small id="ez-lpzahl"></small></i></span><span class="leiste" id="ez-xpleiste" hidden><b class="stern">✦</b><i class="ez-balken xp"><u id="ez-xp" style="width:0%"></u><small id="ez-xpzahl"></small></i></span><span id="ez-skills" hidden></span></div></div>
   <div id="ez-gefolge"></div><button type="button" id="ez-frage" aria-label="Hilfe" title="Steuerung">?</button>
   <div class="ez-kasten" id="ez-oben"><span id="ez-stand">verbinde …</span></div>
   <div class="ez-kasten" id="ez-art">…</div>
   <div class="ez-kasten" id="ez-hilfe"></div>
+  <script>if (/RiftmereApp/.test(navigator.userAgent)) document.documentElement.classList.add("app");</script><style>html.app #ez-heim { display: none !important; }    /* Kampfstile (25.11.2026): Heldenlevel groß hervorgehoben, die Stile 2×2, Autoangriff in einer Zeile – alles ohne Scrollen auf einer Seite */
+    .seitentab.tab-stil { overflow: hidden; }
+    .seitentab.tab-stil .kopf.stilkopf { display: grid; gap: 1px; padding-bottom: 6px; }
+    .seitentab.tab-stil .stilkopf .hl { display: flex; align-items: baseline; gap: 8px; font: 700 16px Cinzel, Georgia, serif !important; color: #f6e3b4; letter-spacing: .04em; }
+    .seitentab.tab-stil .stilkopf .hl em { font: 800 26px/1 Cinzel, Georgia, serif; font-style: normal; color: #ffd860; text-shadow: 0 2px 3px #000, 0 0 10px rgba(255,200,80,.7); }
+    .seitentab.tab-stil .stilkopf .waffe { font: 600 12.5px Cinzel, Georgia, serif !important; color: #ead6a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .seitentab.tab-stil .stile.pergament { grid-template-columns: 1fr 1fr; padding: 6px; gap: 5px; flex: none; }
+    .seitentab.tab-stil .stile.pergament .stil { grid-template-columns: 16px minmax(0, 1fr); gap: 7px; padding: 6px 8px; }
+    .seitentab.tab-stil .stile.pergament .stil .punkt { width: 14px; height: 14px; }
+    .seitentab.tab-stil .stile.pergament .stil:last-child:nth-child(odd) { grid-column: 1 / -1; } /* drei Stile: der letzte über die ganze Breite */
+    .seitentab.tab-stil .stile.pergament .stil b { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .seitentab.tab-stil .kipp { padding: 5px 8px; } .seitentab.tab-stil .kipp small { display: none; } .seitentab.tab-stil .kipp b { font-size: 13.5px; }
+    @media (min-height: 700px) { .seitentab.tab-stil .stile.pergament .stil { padding: 9px 10px; } .seitentab.tab-stil .stile.pergament .stil b { font-size: 15px; } .seitentab.tab-stil .kipp small { display: block; } }
+      /* ===== Rechte Leiste und Werte-Balken (25.11.2026) ===== */
+    #ez-leiste-r { display: none; }
+    body.welt3d #ez-leiste-r { position: fixed; z-index: 6; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--a, 8px);
+      padding: 8px 6px; border-radius: 16px; border: 2px solid #8a6a32; background: linear-gradient(rgba(48,38,26,.92), rgba(26,20,13,.92)); box-shadow: inset 0 0 0 1px #2a1e0e, 0 6px 18px rgba(0,0,0,.55); }
+    body.welt3d #ez-leiste-r button { position: relative; width: var(--g, 46px); height: var(--g, 46px); padding: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #f0d48a;
+      background: radial-gradient(circle at 50% 35%, #3a2b18, #140e08 70%); border: 2px solid #b08a3c; box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.6); }
+    body.welt3d #ez-leiste-r button span { display: grid; place-items: center; width: 100%; height: 100%; } body.welt3d #ez-leiste-r svg { width: 54%; height: 54%; filter: drop-shadow(0 1px 0 #000); }
+    body.welt3d #ez-leiste-r button.mitbild { background: none; border: none; box-shadow: none; overflow: visible; }
+    body.welt3d #ez-leiste-r .rbild { width: 112%; height: 112%; display: block; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.7)); transition: filter .15s, transform .15s; }
+    body.welt3d #ez-leiste-r button:hover .rbild { filter: drop-shadow(0 0 8px rgba(240,212,138,.6)) brightness(1.08); }
+    body.welt3d #ez-leiste-r button.an .rbild { filter: drop-shadow(0 0 9px rgba(255,224,138,.95)) brightness(1.18); transform: scale(1.06); } /* Sprint an */
+    body.welt3d #ez-leiste-r .zahl { position: absolute; right: -5px; top: -5px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; display: grid; place-items: center; font: 700 11px Inter, sans-serif; font-style: normal; color: #2a1c06; background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a531); border: 1px solid #000; }
+    body.welt3d #ez-leiste-r .zahl[hidden] { display: none; }
+    body.welt3d #ez-kartenrahmen .rknoepfe, body.welt3d #ez-kbogen, body.welt3d #ez-kartenrahmen .ez-boegen { display: none !important; } /* Knöpfe und Bögen an der Karte gibt es nicht mehr */
+    /* Solo/Multi links neben der rechten Leiste */
+    body.welt3d #ez-kampfart, body.welt3d #ez-kartenrahmen.rund-an #ez-kampfart { right: calc(max(10px, env(safe-area-inset-right)) + var(--rbreite, 66px) + 8px) !important; }
+    /* Werte-Balken links neben der Minikarte: Leben breit, Laufenergie schmal */
+    body.welt3d #ez-kartenrahmen .ez-werte { position: absolute; z-index: 3; display: flex; gap: 6px; pointer-events: auto; padding-top: 14px; padding-bottom: 8px; box-sizing: border-box; }
+    /* Rahmen: Goldfassung wie die Leisten, innen eine dunkle Rinne aus Stein */
+    body.welt3d #ez-kartenrahmen .ez-werte .bal { position: relative; height: 100%; padding: 3px; border-radius: 12px; box-sizing: border-box;
+      background: linear-gradient(90deg, #6a4c18, #f3d58e 30%, #b08a3c 55%, #f0cf78 75%, #5a3e12); box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0,0,0,.65); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben { width: 26px; } body.welt3d #ez-kartenrahmen .ez-werte .lauf { width: 15px; padding: 2.5px; border-radius: 9px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .rinne { position: relative; display: block; height: 100%; border-radius: 9px; overflow: hidden;
+      background: radial-gradient(120% 60% at 50% 50%, #241812, #0c0806); box-shadow: inset 0 0 0 1px #2a1c0c, inset 0 3px 8px rgba(0,0,0,.95); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .rinne { border-radius: 7px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .fuell { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; transition: height .35s ease;
+      background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(0,0,0,.28) calc(10% - 1px) 10%); } /* feine Unterteilung je 10 % */
+    body.welt3d #ez-kartenrahmen .ez-werte .leben .fuell { background-color: #c62a1c; background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,0,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #5a0a08, #d8361f 35%, #ff6a48 50%, #c22818 70%, #4a0806);
+      box-shadow: 0 0 10px rgba(255,60,30,.55), inset 0 1px 0 rgba(255,190,160,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben.mittel .fuell { background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,10,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #5a2a04, #e0801c 40%, #ffb050 50%, #c06a12 70%, #4a2204); }
+    body.welt3d #ez-kartenrahmen .ez-werte .leben.wenig .fuell { animation: ez-puls 1s ease-in-out infinite; }
+    @keyframes ez-puls { 50% { filter: brightness(1.6) saturate(1.3); } }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .fuell { background-image: repeating-linear-gradient(to top, transparent 0 calc(10% - 1px), rgba(40,30,0,.35) calc(10% - 1px) 10%), linear-gradient(90deg, #6a4a08, #e8c030 40%, #fff0a0 50%, #d0a420 65%, #5a3e06);
+      box-shadow: 0 0 8px rgba(255,210,60,.5); }
+    body.welt3d #ez-kartenrahmen .ez-werte .glanz { position: absolute; left: 18%; width: 22%; top: 4px; bottom: 4px; border-radius: 4px; background: linear-gradient(rgba(255,255,255,.38), rgba(255,255,255,.06) 60%, transparent); pointer-events: none; }
+    /* Medaille oben (Herz bzw. Blitz) und Edelstein unten */
+    body.welt3d #ez-kartenrahmen .ez-werte .medaille { position: absolute; left: 50%; top: -13px; transform: translateX(-50%); z-index: 2; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 35%, #3a2414, #120a06 72%); border: 2px solid #e8c46a; box-shadow: 0 0 0 1px #000, 0 2px 5px rgba(0,0,0,.7), inset 0 0 6px rgba(0,0,0,.8); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .medaille { width: 19px; height: 19px; top: -11px; }
+    body.welt3d #ez-kartenrahmen .ez-werte .medaille svg { width: 64%; height: 64%; fill: #ff5a40; filter: drop-shadow(0 0 3px rgba(255,80,50,.8)); } body.welt3d #ez-kartenrahmen .ez-werte .lauf .medaille svg { fill: #ffd84a; filter: drop-shadow(0 0 3px rgba(255,210,70,.8)); }
+    body.welt3d #ez-kartenrahmen .ez-werte .stein { position: absolute; left: 50%; bottom: -7px; width: 11px; height: 11px; transform: translateX(-50%) rotate(45deg); z-index: 2;
+      background: radial-gradient(circle at 35% 35%, #ffb0a0, #c0281a 55%, #5a0a06); border: 1.5px solid #e8c46a; box-shadow: 0 0 0 1px #000, 0 0 6px rgba(255,80,50,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .lauf .stein { width: 8px; height: 8px; bottom: -5px; background: radial-gradient(circle at 35% 35%, #fff4b0, #d8a820 55%, #6a4a06); box-shadow: 0 0 0 1px #000, 0 0 6px rgba(255,210,70,.6); }
+    body.welt3d #ez-kartenrahmen .ez-werte .zahl { position: absolute; left: 0; right: 0; bottom: 9px; z-index: 1; text-align: center; font: 800 11px Cinzel, Georgia, serif; color: #fff4e0; text-shadow: 0 0 2px #000, 0 0 3px #000, 0 1px 2px #000; }
+  </style>
   <a id="ez-heim" href="../" title="Zur Startseite von Mythara">← Mythara <span>Splitterlande · Beta</span></a>
   <div class="ez-kasten" id="ez-dorf-titel">Die Stadt</div><div class="ez-kasten" id="ez-dorf-hilfe"></div><button type="button" id="ez-dorf-knopf" hidden></button>
   <div class="ez-kasten" id="ez-profil"><span class="bild"><img id="ez-profil-bild" alt=""><em id="ez-profil-stufe">St. 1</em></span><div class="name"><b id="ez-profil-name">Gast</b><small id="ez-profil-held"></small></div><span id="ez-seelen" title="Seelensplitter"><i class="kristall"></i><b>0</b></span></div>
@@ -471,6 +897,6 @@
   <div id="ez-laden" class="vorhang" hidden><div class="mitte"><div class="kristall"><i></i></div><h1>Splitterlande</h1><div class="zier"></div><div class="balken"><i></i></div><p class="zeit">Verbinde mit dem Spielserver …</p><p class="tipp"></p></div></div>
   <script src="../vendor/supabase-js-2.45.4.js"></script>
   <script src="../verbindung.js"></script>
-  <script src="spiel.js?v=mwwl21mi"></script>
+  <script src="spiel.js?v=mwxp3axm"></script>
 </body>
 </html>

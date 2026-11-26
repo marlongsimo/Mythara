@@ -17,7 +17,7 @@
       "id": "waffe.lichtstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.lichtstab/v001/quelle/lichtstab.glb",
+      "glb": "waffen/stab/waffe.lichtstab/v001/quelle/lichtstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "zauber"
@@ -26,7 +26,7 @@
       "id": "waffe.streitkolben",
       "platz": "hand_l",
       "art": "schwert",
-      "glb": "waffe.streitkolben/v001/quelle/streitkolben.glb",
+      "glb": "waffen/streitkolben/waffe.streitkolben/v001/quelle/streitkolben.glb",
       "griff": 0.14,
       "griff2": 0.05,
       "angriff": "angriff_links",
@@ -36,7 +36,7 @@
       "id": "waffe.heilstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.heilstab/v001/quelle/heilstab.glb",
+      "glb": "waffen/stab/waffe.heilstab/v001/quelle/heilstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "zauber"
@@ -45,7 +45,7 @@
       "id": "waffe.zeremonienstab",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "waffe.zeremonienstab/v001/quelle/zeremonienstab.glb",
+      "glb": "waffen/stab/waffe.zeremonienstab/v001/quelle/zeremonienstab.glb",
       "griff": 0.55,
       "griff2": 0.4,
       "angriff": "zauber"

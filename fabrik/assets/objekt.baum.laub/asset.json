@@ -1,0 +1,8 @@
+{
+  "id": "objekt.baum.laub",
+  "name": "Laubbaum (Standardbaum)",
+  "kategorie": "objekt",
+  "aktuell": "v001",
+  "status": "Meshy „Verdant Twist“ – gerendert (fabrik/baum_render.py), Kronenfarben und Weltobjekte mit realtime/werkzeug/welt/baum_bilder.py: stil_eiche_01/02, stil_linde_01, stil_herbst_01, stil_laub_*; reine Optik",
+  "herkunft": "Meshy"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "utensil.hammer",
+  "name": "Hammer",
+  "kategorie": "skilling-utensil",
+  "skill": "Handwerk",
+  "aktuell": "v001",
+  "laenge_m": 0.5,
+  "stufen": null,
+  "status": "Meshy „Runebreaker“ (Runenhammer, türkise Rune); Spieldatei img/objekte3d/skilling/utensilien/hammer.glb (Kopf oben, Stielende im Ursprung, 0,5 m); keine Seltenheitsstufen",
+  "herkunft": "Meshy"
+}

@@ -1,0 +1,36 @@
+/* Mythara – Ausrüstung und Rucksack des eigenen Helden: angelegte Gegenstände auf ihren Plätzen (Kopf, Waffe, Brust, Nebenhand), untersuchen (Werte),
+   ablegen (→ Rucksack, die Figur trägt die Waffe nicht mehr), im Rucksack untersuchen und wieder anlegen. Aufruf: node test/ausruestung.test.cjs */
+const { chromium } = require('playwright'); const fs = require('fs'), path = require('path');
+const WURZEL = path.resolve(__dirname, '..', '..'), TYP = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
+const BILD = process.env.BILD || '';
+(async () => { let f = 0; const check = (ok, t) => { console.log((ok ? '✓ ' : '✗ ') + t); if (!ok) f++; };
+  const b = await chromium.launch(), c = await b.newContext({ viewport: { width: 1280, height: 860 } }), p = await c.newPage(); const fehler = []; p.on('pageerror', (e) => fehler.push(String(e)));
+  await c.route('http://localhost:8765/**', (r) => { let u = new URL(r.request().url()).pathname; if (u.endsWith('/')) u += 'index.html'; const fl = path.join(WURZEL, decodeURIComponent(u)); if (!fs.existsSync(fl)) return r.fulfill({ status: 404, body: '' }); r.fulfill({ status: 200, body: fs.readFileSync(fl), headers: { 'content-type': TYP[path.extname(fl)] || 'application/octet-stream' } }); });
+  await c.route('https://**', (r) => r.abort());
+  await c.addInitScript(() => { sessionStorage.setItem('ez__gefragt', '1'); sessionStorage.setItem('ez__hilfe', '1'); if (!localStorage.getItem('ez_mein_held')) localStorage.setItem('ez_mein_held', JSON.stringify({ aussehen: { g: 'mann', frisur: 'scheitel', bart: 'vollbart', haar: 'dunkelbraun', haut: 'mittel' }, waffe: 'schwert' })); });
+  await p.goto('http://localhost:8765/echtzeit/?server=&wx=6440&wy=6440'); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 }); await p.waitForTimeout(2500);
+  const schwertSichtbar = () => p.evaluate(() => { const fg = window.EZW.szene.figur; return fg.list.some((s) => s.visible && /waffe\.schwert\.ritter/.test(s.texture.key)); });
+  check(await schwertSichtbar(), 'Die Figur trägt das Ritterschwert');
+  await p.click('#ez-menue [aria-label="Ausrüstung"]'); await p.waitForSelector('.tafel.eigen .iplaetze'); await p.waitForTimeout(1200);
+  const plaetze = await p.evaluate(() => ['waffe', 'brust', 'nebenhand'].map((w) => { const e = document.querySelector(`.ifeld[data-wo="${w}"]`); return [w, e && e.dataset.g || ''] }));
+  check(JSON.stringify(plaetze) === JSON.stringify([ ['waffe', 'ritterschwert'], ['brust', ''], ['nebenhand', 'rundschild']]), `Plätze: ${JSON.stringify(plaetze)}`);
+  if (BILD) await p.screenshot({ path: BILD + 'ausruestung.png' });
+  await p.click('.ifeld[data-wo="waffe"]'); await p.click('.iwahl [data-t="untersuchen"]'); await p.waitForSelector('.tafel.untersuchen'); await p.waitForTimeout(800);
+  const werte = await p.evaluate(() => [...document.querySelectorAll('.iwerte dt')].map((d) => d.textContent + ': ' + d.nextElementSibling.textContent));
+  check(werte.some((w) => /Schaden: 4–8/.test(w)), `Untersuchen zeigt die Werte (${werte.join(' · ')})`);
+  if (BILD) await p.screenshot({ path: BILD + 'untersuchen.png' });
+  await p.click('.tafel.untersuchen [data-t="zurueck"]'); await p.waitForSelector('.tafel.eigen .iplaetze');
+  await p.click('.ifeld[data-wo="waffe"]'); await p.click('.iwahl [data-t="ablegen"]'); await p.waitForTimeout(300);
+  check(await p.evaluate(() => !document.querySelector('.ifeld[data-wo="waffe"]').dataset.g), 'Ablegen: der Waffenplatz ist leer');
+  check(!(await schwertSichtbar()), 'und die Figur trägt das Schwert nicht mehr');
+  await p.click('.treiter [data-a="rucksack"]'); await p.waitForSelector('.tafel.eigen .faecher'); await p.waitForTimeout(800);
+  check(await p.evaluate(() => document.querySelector('.ifeld[data-wo="r0"]').dataset.g === 'ritterschwert'), 'Das Schwert liegt im Rucksack');
+  if (BILD) await p.screenshot({ path: BILD + 'rucksack.png' });
+  await p.click('.ifeld[data-wo="r0"]'); check(await p.locator('.iwahl [data-t="untersuchen"]').count() === 1 && await p.locator('.iwahl [data-t="anlegen"]').count() === 1, 'Im Rucksack: untersuchen oder anlegen');
+  await p.click('.iwahl [data-t="anlegen"]'); await p.waitForTimeout(300);
+  check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_inventar')).angelegt.waffe === 'ritterschwert'), 'Anlegen: wieder auf dem Waffenplatz (gespeichert im Spielstand)');
+  check(await schwertSichtbar(), 'und die Figur trägt es wieder');
+  await p.reload(); await p.waitForFunction(() => window.EZW && window.EZW.szene && window.EZW.szene.figur, null, { timeout: 30000 });
+  check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_inventar')).angelegt.waffe === 'ritterschwert'), 'Nach dem Neuladen bleibt die Ausrüstung');
+  check(!fehler.length, 'Keine Fehler im Browser ' + fehler.slice(0, 3).join(' | '));
+  await b.close(); console.log(f ? f + ' Fehler' : 'Ausrüstung: alles in Ordnung'); process.exit(f ? 1 : 0); })();

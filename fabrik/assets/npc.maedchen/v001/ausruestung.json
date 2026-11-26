@@ -1,0 +1,27 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.maedchen – Mädchen (Kind, NPC für Echtzeit-3D aus npcfrau3d, mit fabrik/kind.py verkleinert: Größe ×0.68, Kopf ×1.22): Frisur seitenbob, Haarfarbe #7a3a1c, Haut eigen.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.seitenbob",
+      "platz": "haar",
+      "glb": "npc.maedchen/v001/quelle/teile/kopf.haar.seitenbob.glb"
+    }
+  ],
+  "kind": {
+    "groesse": 0.68,
+    "kopf": 1.22
+  },
+  "arme_eng": 6
+}

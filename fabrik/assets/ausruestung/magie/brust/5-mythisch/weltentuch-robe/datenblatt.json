@@ -1,0 +1,17 @@
+{
+  "name": "Weltentuch-Robe",
+  "gegenstand": "magierrobe_mythisch",
+  "gruppe": "magie",
+  "teil": "brust",
+  "art": "Stoffrüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "ruestung.brust.magier.mythisch",
+    "quelle": "fabrik/assets/ausruestung/magie/brust/ruestung.brust.magier",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.magier.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.magier.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Stoff, der wie der Nachthimmel schillert. Seine Nähte leuchten, als hielten sie Sternenlicht fest."
+}
