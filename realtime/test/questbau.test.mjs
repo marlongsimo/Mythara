@@ -26,13 +26,19 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   /* Gegenstände, die die Quest nennt (hat, verloren, anzahl, geben, nehmen, Lohn), müssen es geben */
   const genannt = new Set([...JSON.stringify(q).matchAll(/"(?:hat|verloren)":"([a-z0-9_]+)"|"g":"([a-z0-9_]+)"/g)].map((m) => m[1] || m[2]));
   for (const g of genannt) if (!GEG[g]) baustein(`Gegenstand ${g} gibt es nicht`);
+  /* Der Abschluss bucht höchstens 1.000 XP je Skill und Beruf und 10 Questpunkte (Migration 048) – mehr ginge stillschweigend verloren */
+  for (const [k, n] of [...Object.entries((q.belohnung || {}).xp || {}), ...Object.entries((q.belohnung || {}).berufe || {})]) if (n > 1000) baustein(`Lohn ${k} ${n} über 1.000 (Grenze in Migration 048)`);
+  if ((q.punkte || 0) > 10) fehler.push("mehr als 10 Questpunkte");
   if (!q.figuren.some((f) => f.id === q.geber)) fehler.push("Questgeber ist keine Figur");
-  for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) fehler.push(`${f.id}: steht außerhalb der Welt`);
+  for (const f of q.figuren) if (!weltRegionBei(f.x, f.y)) baustein(`${f.id}: steht außerhalb der Welt`);
+  /* Der Motor lässt eine Figur heute nur in der ersten Quest sprechen, die sie nennt (questmotor.ts motorReden): dieselbe Figur in zwei Quests braucht erst den Motor */
+  for (const f of q.figuren) { const andere = [...QUESTS, ...(wartet ? ENTWUERFE.map((e) => e.q) : [])].filter((x) => x.id !== q.id && x.figuren.some((g) => g.id === f.id)).map((x) => x.id);
+    if (andere.length) baustein(`Figur ${f.id} auch in ${andere.join(", ")} (Figur in mehreren Quests)`); }
   const bedPruefen = (b, wo) => { if (!b) return; for (const id of [...(b.erledigt || []), ...(b.offen || []), ...(b.zaehler ? [b.zaehler.schritt] : [])]) if (!ids.includes(id)) fehler.push(`${wo}: unbekannter Schritt ${id}`);
     if (b.zaehler && !q.schritte.find((x) => x.id === b.zaehler.schritt).anzahl) fehler.push(`${wo}: ${b.zaehler.schritt} zählt nicht`);
     if (b.quest && !ALLE_IDS.includes(b.quest.id) && b.quest.id !== "die_gesperrte_strasse") fehler.push(`${wo}: unbekannte Quest ${b.quest.id}`); };
   const oIds = (q.objekte || []).map((o) => o.id); if (new Set(oIds).size !== oIds.length) fehler.push("Objekt-IDs doppelt");
-  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) fehler.push(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
+  for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) baustein(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
   for (const x of q.schritte) { if (x.ereignis.art === "objekt" && !oIds.includes(x.ereignis.id)) fehler.push(`${x.id}: Objekt ${x.ereignis.id} fehlt`);
     for (const b of [].concat(x.bei || [])) if (!q.figuren.some((f) => f.id === b)) fehler.push(`${x.id}: bei unbekannter Figur ${b}`);
     if (x.ereignis.art === "antwort" && !Object.values(q.dialoge).some((D) => D.optionen.some((o) => o.folge.some((v) => (v.f.erledige || []).includes(x.id))))) fehler.push(`${x.id}: keine Antwort erledigt ihn`); }
@@ -55,18 +61,18 @@ for (const { q, wartet } of [...QUESTS.map((q) => ({ q })), ...ENTWUERFE]) {
   for (let b = 0; b < 1 << q.schritte.length; b++) { let varianten = [[]]; for (const [x, i] of zs) varianten = varianten.flatMap((v) => (b >> i & 1 ? [x.anzahl] : Array.from({ length: x.anzahl }, (_, n) => n)).map((n) => [...v, n]));
     for (const v of varianten) staende.push(QB.stand({ phase: "laeuft", bits: b, z: v, angeboten: true })); }
   check(staende.every((s) => QB.gueltig(q, s) === s), `Alle ${staende.length} Stände lesen sich zurück`);
-  const lagen = []; for (let m = 0; m < 1 << (dinge.length * 2); m++) { const hat = new Set(dinge.filter((_, i) => m >> (2 * i) & 1)), weg = new Set(dinge.filter((_, i) => m >> (2 * i + 1) & 1)); if ([...hat].some((g) => weg.has(g))) continue; lagen.push({ hat: (g) => hat.has(g), verloren: (g) => weg.has(g) }); }
+  /* Voraussetzungen (Skills, andere Quests, Heldenlevel) gelten als erfüllt – geprüft werden Dialog und Ablauf */
+  const alleVoraus = { skill: () => 99, quest: () => "fertig", heldenlevel: () => 99 };
+  const lagen = []; for (let m = 0; m < 1 << (dinge.length * 2); m++) { const hat = new Set(dinge.filter((_, i) => m >> (2 * i) & 1)), weg = new Set(dinge.filter((_, i) => m >> (2 * i + 1) & 1)); if ([...hat].some((g) => weg.has(g))) continue; lagen.push({ hat: (g) => hat.has(g), verloren: (g) => weg.has(g), ...alleVoraus }); }
   const stumm = []; for (const s of staende) for (const k of lagen) { const d = QB.dialog(q, q.geber, s, k); if (!d || !d.antworten.length) stumm.push(s); }
   check(!stumm.length, `Der Questgeber hat in allen ${staende.length} Ständen × ${lagen.length} Lagen etwas zu sagen` + (stumm.length ? ` (stumm: ${[...new Set(stumm)].join(", ")})` : ""));
   check(staende.every((s) => s.length <= 24 && /^[a-z0-9_]*$/.test(s)), "Alle Stände passen in die Datenbank (höchstens 24 Zeichen)");
 
   /* Erreichbarkeit: vom Annehmen über Ereignisse und Antworten bis zum Abschluss */
-  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999 }; /* genug von allem (B1: 250 Splitter) */
-  /* Annehmen mit einem Spieler, der alle Voraussetzungen erfüllt (Quests fertig, Skills und Heldenstufe hoch genug) */
-  const kBereit = { ...k0, quest: () => "fertig", skill: () => 999, heldenlevel: () => 999 };
+  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999, ...alleVoraus }; /* genug von allem (B1: 250 Splitter) */
   let s = ""; const ann = q.dialoge[q.geber].optionen.find((o) => o.folge.some((v) => v.f.start));
   check(Boolean(ann), "Es gibt eine Antwort zum Annehmen");
-  const annF = ann && QB.antwort(q, q.geber, s, ann.id, kBereit); check(Boolean(annF), "Mit erfüllten Voraussetzungen lässt sich die Quest annehmen"); if (annF) s = QB.nachFolge(q, s, annF);
+  const annF = ann && QB.antwort(q, q.geber, s, ann.id, k0); check(Boolean(annF), "Mit erfüllten Voraussetzungen lässt sich die Quest annehmen"); if (annF) s = QB.nachFolge(q, s, annF);
   check(QB.laeuft(q, s), `Nach dem Annehmen läuft die Quest (${s})`);
   /* Ereignis eines Schritts nachspielen (Stelle: Mitte von „bei“); Antwort-Schritte über die Figur, die sie erledigt */
   const melden = (e) => ({ ...e, ...(e.bei ? { x: e.bei[0], y: e.bei[1] } : {}) });
