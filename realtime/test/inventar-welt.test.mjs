@@ -26,7 +26,7 @@ let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8786/?welt=1&ort=waldweg", { origin: "http://localhost:8765" }), s = { ws, inv: null, boden: [], chat: [], ich: null, warte: [] };
   ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "inventar") s.inv = m.inv; if (m.t === "boden") s.boden = m.liste; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "ich") s.ich = m; for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
-  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(s); }); }); }
+  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(s); }); }); }
 const warte = (s, f, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m));
 try {

@@ -34,7 +34,7 @@ const TOK = { anna: "tok_anna_" + "x".repeat(30), ben: "tok_ben__" + "x".repeat(
 function zone(token, lx, ly) { return new Promise((fertig) => { const ws = new WebSocket(`ws://localhost:8788/?kampf=welt_osthof&ort=welt_osthof&lx=${lx}&ly=${ly}`, { origin: "http://localhost:8765" }), Z = { ws, w: [], ev: [], namen: [], zu: null };
   ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "z") { Z.w = m.z.w; Z.ich = m.z.ich; for (const e of m.z.ev) Z.ev.push(e); } if (m.t === "namen") Z.namen = m.liste; });
   ws.on("close", (code, grund) => { Z.zu = { code, grund: String(grund) }; });
-  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(Z); }); }); }
+  ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token })); fertig(Z); }); }); }
 const aus = (Z) => (Z.ich && Z.ich.ausdauer ? Z.ich.ausdauer[0] : null);
 try {
   let a = await zone(TOK.anna, 70.5, 14.5); await schlaf(1500);
