@@ -26,6 +26,7 @@ export interface SammelBeruf {
   /** Wandernde Stellen (Fischen, Würmer): je Gruppe sind nur „aktiv“ Ziele da; ist eine Stelle leer gefischt oder nach „ms“, zieht sie zu einer anderen der Gruppe */
   wandern?: { ziele: () => SammelZiel[]; gruppe: (id: string) => string; aktiv: (gruppe: string) => number; ms: number };
   /** Text, wenn der Köder fehlt (SammelArt.koeder) */ ohneKoeder?: (a: SammelArt) => string;
+  /** Darf dieser Spieler hier sammeln? (Fischen: Wehrkolk erst mit Quest-Schalter) Zurück: Fehlertext oder null */ erlaubt?: (nutzer: string, ziel: SammelZiel) => string | null;
 }
 interface Sitzung { s: SammelSpieler; ziel: SammelZiel; naechst: number; momentBis: number; stufe: number }
 type Senden = (s: SammelSpieler, m: object) => void;
@@ -68,6 +69,7 @@ export function sammelBeruf(B: SammelBeruf) {
     const z = B.ziel(id); if (!z) return B.texte.unbekannt; const A = B.arten[z.art];
     if (!nah(s, z)) return B.texte.nah;
     if (!daNoch(id)) return B.texte.weg(A);
+    if (B.erlaubt) { const e = B.erlaubt(s.nutzer, z); if (e) return e; }
     const L = level(s.nutzer); if (L < A.level) return B.texte.level(A);
     if (A.quest) { const f = SAMMEL_QUEST.pruefen(s.nutzer, z.art, A.quest); if (f) return f; } /* Questziel: nur mit dem Auftrag */
     const st = B.ohneWerkzeug ? 0 : bestes(s.nutzer, L, A);

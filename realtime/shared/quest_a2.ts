@@ -21,7 +21,7 @@ export const QUEST_A2: QuestDef = {
   logFertig: "Anselm hat die Seite neu geschrieben: Die Feste war ein Vorposten der Wacht, und ihr Zeichen ist der Turm über drei Wellen – das Zeichen von Grauwacht. Die Kapelle steht dir offen: Beten heilt dich alle zehn Minuten.",
   geber: "anselm",
   figuren: [
-    { id: "anselm", name: "Bruder Anselm", modell: "npcmann3d", x: 6457.5, y: 6424.8, blick: [0, 1] },
+    { id: "anselm", name: "Bruder Anselm", modell: "npcmann3d", x: 6457.5, y: 6423.6, blick: [0, 1] } /* vor der Kapelle auf freiem Boden (6424,8 lag im Mauerfeld, #10) */,
     { id: "ulf", name: "Köhler Ulf", modell: "npc.schmied", x: 6360.5, y: 6428.5, blick: [1, 0] },
   ],
   schritte: [
