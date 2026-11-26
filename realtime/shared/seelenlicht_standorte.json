@@ -1,0 +1,13 @@
+{
+ "_hinweis": "Seelenlichter (shared/splitterbinden.ts): Weltfelder. Mattes Licht um die Linde im Steinring (Weidenhain), Wiesenlicht in den Riedwiesen und an der Quelle der Obstwiesen.",
+ "lichter": [
+  { "id": "matt_1", "art": "matt", "x": 6448.5, "y": 6679.5, "region": "weidenhain" },
+  { "id": "matt_2", "art": "matt", "x": 6456.5, "y": 6679.5, "region": "weidenhain" },
+  { "id": "matt_3", "art": "matt", "x": 6449.5, "y": 6683.5, "region": "weidenhain" },
+  { "id": "matt_4", "art": "matt", "x": 6455.5, "y": 6682.5, "region": "weidenhain" },
+  { "id": "wiese_1", "art": "wiese", "x": 6228.5, "y": 6428.5, "region": "westried" },
+  { "id": "wiese_2", "art": "wiese", "x": 6233.5, "y": 6432.5, "region": "westried" },
+  { "id": "wiese_3", "art": "wiese", "x": 6251.5, "y": 6479.5, "region": "westried" },
+  { "id": "wiese_4", "art": "wiese", "x": 6564.5, "y": 6699.5, "region": "obstwiesen" }
+ ]
+}

@@ -42,13 +42,15 @@ for (const q of QUESTS) {
   for (let b = 0; b < 1 << q.schritte.length; b++) { let varianten = [[]]; for (const [x, i] of zs) varianten = varianten.flatMap((v) => (b >> i & 1 ? [x.anzahl] : Array.from({ length: x.anzahl }, (_, n) => n)).map((n) => [...v, n]));
     for (const v of varianten) staende.push(QB.stand({ phase: "laeuft", bits: b, z: v, angeboten: true })); }
   check(staende.every((s) => QB.gueltig(q, s) === s), `Alle ${staende.length} Stände lesen sich zurück`);
-  const lagen = []; for (let m = 0; m < 1 << (dinge.length * 2); m++) { const hat = new Set(dinge.filter((_, i) => m >> (2 * i) & 1)), weg = new Set(dinge.filter((_, i) => m >> (2 * i + 1) & 1)); if ([...hat].some((g) => weg.has(g))) continue; lagen.push({ hat: (g) => hat.has(g), verloren: (g) => weg.has(g) }); }
+  /* Voraussetzungen (Skills, andere Quests, Heldenlevel) gelten als erfüllt – geprüft werden Dialog und Ablauf */
+  const alleVoraus = { skill: () => 99, quest: () => "fertig", heldenlevel: () => 99 };
+  const lagen = []; for (let m = 0; m < 1 << (dinge.length * 2); m++) { const hat = new Set(dinge.filter((_, i) => m >> (2 * i) & 1)), weg = new Set(dinge.filter((_, i) => m >> (2 * i + 1) & 1)); if ([...hat].some((g) => weg.has(g))) continue; lagen.push({ hat: (g) => hat.has(g), verloren: (g) => weg.has(g), ...alleVoraus }); }
   const stumm = []; for (const s of staende) for (const k of lagen) { const d = QB.dialog(q, q.geber, s, k); if (!d || !d.antworten.length) stumm.push(s); }
   check(!stumm.length, `Der Questgeber hat in allen ${staende.length} Ständen × ${lagen.length} Lagen etwas zu sagen` + (stumm.length ? ` (stumm: ${[...new Set(stumm)].join(", ")})` : ""));
   check(staende.every((s) => s.length <= 24 && /^[a-z0-9_]*$/.test(s)), "Alle Stände passen in die Datenbank (höchstens 24 Zeichen)");
 
   /* Erreichbarkeit: vom Annehmen über Ereignisse und Antworten bis zum Abschluss */
-  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 99 };
+  const k0 = lagen[0], kHat = { hat: () => true, verloren: () => false, anzahl: () => 9999, ...alleVoraus };
   let s = ""; const ann = q.dialoge[q.geber].optionen.find((o) => o.folge.some((v) => v.f.start));
   check(Boolean(ann), "Es gibt eine Antwort zum Annehmen"); if (ann) s = QB.nachFolge(q, s, QB.antwort(q, q.geber, s, ann.id, k0));
   check(QB.laeuft(q, s), `Nach dem Annehmen läuft die Quest (${s})`);

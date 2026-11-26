@@ -102,6 +102,7 @@
  {"id":"fass_82","objekt":"dorf_fass_01","x":7.5,"y":22.5},
  {"id":"kate_57","objekt":"weidenhain_kate_01","x":18,"y":23},
  {"id":"fachwerk_56","objekt":"weidenhain_fachwerk_02","x":11,"y":23},
+ {"id":"bindestein_linde","objekt":"wz_bindestein","x":53.5,"y":23.5},
  {"id":"fass_22","objekt":"dorf_fass_01","x":32.5,"y":23.5},
  {"id":"laterne_26","objekt":"dorf_laterne_01","x":34.5,"y":23.5},
  {"id":"b0037","objekt":"stil_tanne_01","x":124.5,"y":24.5,"s":1.05,"spiegeln":true},
