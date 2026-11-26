@@ -63,6 +63,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Phase 3** vom Nutzer im Spiel getestet und freigegeben. *(26.11.)*
 - **Aufräumen:** Gruppe A freigegeben; Würfelspiel bleibt, bis eine **neue Startseite im Riftmere-Stil** live ist (#78). *(26.11.)*
 - **Querverbindungen** 1–9 aus #76 werden in die älteren Quest-Entwürfe eingebaut. *(26.11.)*
+- **Vorarbeit begrenzen:** Welt, Figuren und Quests sind bis Phase 10 vorgearbeitet. Bis die Integration aufholt, keine weiteren neuen Regionen; Welt macht Qualität (Wegenetz #89, Grenzland verfeinern #90, Handy-Leistung #91). *(26.11.)*
 - **Karte wächst in die Breite, den Quests folgend:** keine Sprünge zu fernen Zielen (Splitterinsel später). Nach Phase 9 werden die angrenzenden Großregionen ausgebaut, dorthin wo die Quests führen – Vorschlag: Phase 10 Smaragdküste (W4, Kielmund, Südstraße von Weidenhain), Phase 11 Hochlande (W5, Furt hinter Grauwacht). *(26.11.)*
 - **Quests über Regionsgrenzen:** Regionen greifen ineinander, Quests führen quer über die Karte. Jeder neue Quest-Block hat mindestens eine Quest durch zwei oder mehr ältere Regionen; Figuren und Gegenstände kehren wieder. Erste große Quer-Quest: „Die Karte des Boten“ (Phase 9). *(26.11.)*
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum; D1 die **Fähre** – das Ostufer ist auch über den langen Weg durch die Glutsande und einen Pass im Südosten zu Fuß erreichbar, Welt #74). *(26.11.)*
