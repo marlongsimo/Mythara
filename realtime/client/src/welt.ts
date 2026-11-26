@@ -9,7 +9,8 @@ import { Q1 } from "../../shared/quest01";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
-import { lage3, SCHRITTE3 } from "../../shared/quest03";
+import { QUEST3 } from "../../shared/quest03";
+import { neuErledigt, laeuft as laeuftB, lage as lageB } from "../../shared/questbau";
 import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
@@ -116,8 +117,9 @@ export const questStand3 = (): string => quest3Jetzt;
 /** Fortschritt melden: erledigte Schritte (Quest 03) im Chat, Abschluss jeder Quest als Banner oben */
 const QTITEL = ["Die gesperrte Straße", "Der stille Rain", "Der Säbel des Waldgottes"];
 function questFortschritt(alt: string[], neu: string[]): void {
-  const a3 = lage3(alt[2]), n3 = lage3(neu[2]); if (n3.phase === "auftrag" && a3.phase === "auftrag") for (const x of SCHRITTE3) if (n3.bits & x.bit && !(a3.bits & x.bit)) chatSystem(`Quest „${QTITEL[2]}“: ${x.text} – erledigt.`);
-  if (n3.phase === "auftrag" && a3.phase === "") chatSystem(`Neue Quest: „${QTITEL[2]}“ (Quest-Tab).`);
+  /* Quests des Baukastens: erledigte Schritte und neue Quest im Chat (shared/questbau.ts) */
+  for (const x of neuErledigt(QUEST3, alt[2], neu[2])) chatSystem(`Quest „${QUEST3.titel}“: ${x.text} – erledigt.`);
+  if (laeuftB(QUEST3, neu[2]) && lageB(QUEST3, alt[2]).phase === "neu") chatSystem(`Neue Quest: „${QUEST3.titel}“ (Quest-Tab).`);
   neu.forEach((s, i) => { if (s === "fertig" && alt[i] !== "fertig") stufenBanner(`Quest abgeschlossen: ${QTITEL[i]}`, "📜"); }); }
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */

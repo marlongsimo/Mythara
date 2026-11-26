@@ -10,7 +10,9 @@ import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, sperreHier, rang, NpcId, ZIEL } from "../../../shared/quest01";
 import { questStand, questGeladen, rede, questVerfolgt, questStand2, questStand3, questDing, verfolgteQuest } from "../welt";
-import { Q3, NPCS3, ziel3, lage3 } from "../../../shared/quest03";
+import { Q3, QUEST3 } from "../../../shared/quest03";
+import { zeichen as zeichenB, ziel as zielB } from "../../../shared/questbau";
+const NPCS3 = QUEST3.figuren;
 import { STATIONEN } from "../../../shared/handwerk";
 import { Q1 } from "../../../shared/quest01";
 import { Q2, NPCS2, ziel2, lage as lage2, BRUCHSTELLEN, RUTEN, Ding } from "../../../shared/quest02";
@@ -25,7 +27,7 @@ interface Figur { n: QuestNpc | (Omit<QuestNpc, "id"> & { id: string }); q: 1 | 
 /** Quest 02: wer wartet auf den Spieler („!“ / „?“) */
 const wartet2 = (s: string): [string, string] | null => { const p = lage2(s).phase; return p === "" ? ["brida", "!"] : p === "angenommen" || p === "abgabe" ? ["odo", "!"] : p === "bereit" ? ["odo", "?"] : null; };
 /** Quest 03: der Förster wartet vor dem Auftrag („!“) und wenn der Säbel fertig ist („?“) */
-const wartet3 = (s: string): string | null => { const l = lage3(s); return l.phase === "" ? "!" : l.phase === "auftrag" && l.bits === 15 ? "?" : null; };
+const wartet3 = (s: string): string | null => zeichenB(QUEST3, s, QUEST3.geber);
 interface Objekt { d: Ding; art: "zaun" | "rute"; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
 /** Bei welchem Stand wartet welche Figur auf den Spieler (Questmarker „!“) */
 const WARTET: Partial<Record<Exclude<Stand, "">, NpcId[]>> = { angeboten: ["jori"], angenommen: ["hagan"], auftrag: ["fenna"], osthof: ["raban", "tilda"], beweis: ["hagan"], bestaetigt: ["raban", "tilda"], frei: ["othmar"] };
@@ -95,7 +97,7 @@ export class QuestWelt {
     this.pfeilSchritt(); }
   /** Das nächste Ziel (Figur oder Stelle) für diesen Stand; null: nichts zu tun */
   ziel(): { x: number; y: number } | null { if (!questGeladen()) return null;
-    if (verfolgteQuest() === Q3) { const z3 = ziel3(questStand3(), [STATIONEN.esse.x, STATIONEN.esse.y], [STATIONEN.amboss.x, STATIONEN.amboss.y]); if (!z3) return null; if (Array.isArray(z3)) return { x: z3[0], y: z3[1] }; const f = this.figuren.find((x) => x.q === 3); return f ? { x: f.x, y: f.y } : null; }
+    if (verfolgteQuest() === Q3) { const z3 = zielB(QUEST3, questStand3(), { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] }); if (!z3) return null; if (Array.isArray(z3)) return { x: z3[0], y: z3[1] }; const f = this.figuren.find((x) => x.q === 3); return f ? { x: f.x, y: f.y } : null; }
     if (verfolgteQuest() === Q2) { const z2 = ziel2(questStand2()); if (!z2) return null; if (Array.isArray(z2)) return { x: z2[0], y: z2[1] }; const f = this.figuren.find((x) => x.q === 2 && x.n.id === z2); return f ? { x: f.x, y: f.y } : null; }
     const z = ZIEL[questStand()]; if (!z) return null;
     if (Array.isArray(z)) return { x: z[0], y: z[1] }; const f = this.figuren.find((x) => x.n.id === z); if (!f) return null; return this.wo(f) || { x: f.n.x, y: f.n.y }; }

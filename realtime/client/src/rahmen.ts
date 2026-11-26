@@ -6,7 +6,8 @@
  */
 import { questStand, questStand2, questStand3, questVerfolgt, questVerfolgen, handwerkBitten } from "./welt";
 import { Q2, lage as lage2, laeuft2, questlog2, SCHRITTE2, BELOHNUNG2 } from "../../shared/quest02";
-import { Q3, lage3, laeuft3, questlog3, SCHRITTE3 } from "../../shared/quest03";
+import { QUEST3 } from "../../shared/quest03";
+import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
@@ -193,10 +194,11 @@ function questListe(): QuestZeile[] {
   const q2: QuestZeile = { id: Q2, titel: "Der stille Rain", ort: "Osthof", art: fertig2 ? "fertig" : questVerfolgt(Q2) ? "verfolgt" : laeuft2(s2) ? "aktiv" : "neu", voraussetzungen: [],
     start: "Sprich mit Brida Wegner am Wegposten im Süden der Waldmark.", erledigt: SCHRITTE2.filter((x) => ["", "angenommen", "spuren", "abgabe", "beobachten", "kampf", "bereit", "fertig"].indexOf(x.ab) <= p2 && !fertig2).map((x) => x.text).concat(fertig2 ? SCHRITTE2.map((x) => x.text) : []),
     jetzt: questlog2(s2), belohnung: `Belohnung: ${BELOHNUNG2.splitter} Splitter – danach bleiben die Mooshocker als Trainingsgegner am Moosrain` };
-  const s3 = questStand3(), l3 = lage3(s3), fertig3 = l3.phase === "fertig";
-  const q3: QuestZeile = { id: Q3, titel: "Der Säbel des Waldgottes", ort: "Einführung in die Berufe · Nordwald", art: fertig3 ? "fertig" : questVerfolgt(Q3) ? "verfolgt" : laeuft3(s3) ? "aktiv" : "neu", voraussetzungen: [],
-    start: "Sprich mit Förster Hartwig am Waldweg, gleich westlich der Waldmark, wo der Nordwald beginnt.", erledigt: l3.phase === "" ? [] : SCHRITTE3.filter((x) => (l3.bits & x.bit) !== 0).map((x) => x.text),
-    jetzt: questlog3(s3), belohnung: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk" };
+  /* Quests des Baukastens: alles aus den Daten (shared/questbau.ts) */
+  const ausBaukasten = (q: QB.QuestDef, st0: string): QuestZeile => { const l = QB.lage(q, st0);
+    return { id: q.id, titel: q.titel, ort: q.ort, art: l.phase === "fertig" ? "fertig" : questVerfolgt(q.id) ? "verfolgt" : l.phase === "laeuft" ? "aktiv" : "neu", voraussetzungen: [],
+      start: q.start, erledigt: QB.erledigteSchritte(q, st0), jetzt: QB.questlog(q, st0), belohnung: q.belohnungText }; };
+  const q3 = ausBaukasten(QUEST3, questStand3());
   return [{ id: Q1, titel: "Die gesperrte Straße", ort: "Einführung · Waldmark", art: fertig ? "fertig" : questVerfolgt() ? "verfolgt" : gestartet ? "aktiv" : "neu", voraussetzungen: [], erledigt, jetzt, belohnung }, q2, q3]; }
 /** Aktionsmenü einer Quest (lange drücken / Rechtsklick): Details öffnen, Verfolgen */
 function questMenue(id: string, px: number, py: number): void { const q = questListe().find((x) => x.id === id); if (!q) return;
