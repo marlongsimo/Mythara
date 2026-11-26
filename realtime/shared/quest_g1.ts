@@ -2,10 +2,10 @@
  * Riftmere – Quest G1 „Die Südstraße“ (Phase 10), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-10.md. QUER: Othmar Rehn (Weidenhain) schickte Getreide nach Kielmund, der letzte Wagen kam nie an.
  * Zwei Spuren auf der Südstraße, vier Strandräuber, der umgestürzte Wagen (Frachtbrief), in Kielmund Kaufherr Jasper Kranich vom Küstenhaus.
- * Lohn: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter, 2 Questpunkte; Wegstein-Ziel Kielmund, Kutsche Weidenhain ↔ Kielmund (Schalter kutsche_kielmund).
+ * Lohn: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter, 2 Questpunkte; Wegstein-Ziel Kielmund (die Kutsche ist gestrichen, Nutzer 26.11.).
  * Der Weg ist offen (offene Welt) – die Quest belohnt mit der Abkürzung. Alle Namen sind Vorschläge (Jasper Kranich neu).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Smaragdküste, Kielmund, Strandräuber, Kutsche). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Strandräuber, Wegstein-Ziel Kielmund). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { OTHMAR, SUEDSTRASSE, KIELMUND } from "./quest_g_orte";
@@ -21,7 +21,7 @@ export const QUEST_G1: QuestDef = {
   logNeu: "Othmar Rehn in Weidenhain wartet auf Nachricht aus dem Süden. Ein Getreidewagen nach Kielmund ist nie angekommen.",
   logAngeboten: "Othmar Rehn in Weidenhain sucht jemanden, der der Südstraße folgt.",
   logAbgabe: "Bring den Frachtbrief zu Kaufherr Jasper Kranich im Haus der Küstenhäuser in Kielmund.",
-  logFertig: "Die Südstraße ist wieder sicher. Zwischen Weidenhain und Kielmund fährt eine Kutsche, und der Wegstein kennt Kielmund.",
+  logFertig: "Die Südstraße ist wieder sicher, und der Wegstein kennt Kielmund – ein Reiben, und du stehst an der Mole.",
   geber: "othmar", abgabe: "kranich",
   figuren: [
     { id: "othmar", name: "Othmar Rehn", modell: "npc.alter_bauer", x: OTHMAR[0], y: OTHMAR[1], blick: [0, -1] },
@@ -56,7 +56,7 @@ export const QUEST_G1: QuestDef = {
       reden: [
         { wenn: { ...NEU, voraussetzungen: true }, zeilen: ["Sechzig Sack Korn, nach Kielmund. Die Küstenhäuser zahlen gut. Wenn das Korn ankommt.", "Der Wagen ist vor drei Wochen los. Seitdem nichts."], antworten: ["annehmen", "spaeter"] },
         { wenn: NEU, zeilen: ["Weidenhain hat wieder Gäste, seit die Straße offen ist."], antworten: ["tschuess"] },
-        { wenn: FERTIG, zeilen: ["Die Kutsche nach Kielmund fährt. Wer hätte das gedacht. Weidenhain hat wieder einen Weg zum Meer."], antworten: ["tschuess"] },
+        { wenn: FERTIG, zeilen: ["Kranich hat gezahlt. Und Weidenhain hat wieder einen Weg zum Meer. Wer hätte das gedacht."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["wagen"] }, zeilen: ["Das Korn ist fort? …Dann bring wenigstens den Brief nach Kielmund. Kranich soll wissen, dass wir geliefert haben."], antworten: ["hilfe", "tschuess"] },
         { zeilen: ["Die Südstraße, nach Süden. Folg den Spuren."], antworten: ["hilfe", "tschuess"] },
       ],
@@ -71,19 +71,18 @@ export const QUEST_G1: QuestDef = {
       reden: [
         { wenn: { ...LAEUFT, alle: true, hat: "frachtbrief" }, zeilen: ["Aus Weidenhain? Zu Fuß? Dann hat Othmar Sie geschickt. Willkommen im Haus der Küstenhäuser.", "Sie haben etwas für mich?"], antworten: ["brief_geben"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Ein Brief, sagen Sie? Und wo ist er?"], antworten: ["tschuess"] },
-        { wenn: FERTIG, zeilen: ["Die Kutsche nach Weidenhain fährt jeden Morgen. Auf Kosten des Hauses für Sie – nun ja, fast."], antworten: ["tschuess"] },
+        { wenn: FERTIG, zeilen: ["Das Haus Kranich vergisst nicht, wer seinen Weizen gerettet hat. Nun ja – den Brief zum Weizen."], antworten: ["tschuess"] },
         { zeilen: ["Jasper Kranich, Küstenhaus Kranich. Womit kann ich dienen?"], antworten: ["tschuess"] },
       ],
       optionen: [
         { id: "brief_geben", text: "Den Frachtbrief übergeben.", wenn: { hat: "frachtbrief" }, folge: [{ f: { abschluss: true, nehmen: [{ g: "frachtbrief" }],
-          zeilen: ["Kranich liest, seine Augenbrauen wandern nach oben. „Sechzig Sack. Geliefert. Und auf der Straße gestohlen.“", "Dann zahlt das Haus. Und das Haus stellt eine Kutsche – zweimal am Tag, Weidenhain und zurück. Wer die Straße frei macht, soll sie auch fahren.",
+          zeilen: ["Kranich liest, seine Augenbrauen wandern nach oben. „Sechzig Sack. Geliefert. Und auf der Straße gestohlen.“", "Dann zahlt das Haus. Othmar bekommt sein Geld, und Sie bekommen Ihren Anteil.",
             "Der Wegstein am Markt kennt Sie jetzt. Willkommen in Kielmund."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Gute Geschäfte."] } }] },
       ],
     },
   },
-  schalter: { kutsche_kielmund: FERTIG },
-  belohnungText: "Belohnung: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter · danach: Wegstein-Ziel Kielmund, Kutsche Weidenhain ↔ Kielmund",
+  belohnungText: "Belohnung: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter · danach: Wegstein-Ziel Kielmund",
   belohnung: { xp: { staerke: 2000, fernkampf: 2000, defense: 1500 }, splitter: 400 },
   punkte: 2,
 };

@@ -5,7 +5,7 @@
  * QUER: Bertold Krähe (Rabenmoor) und Merit Stahl (Graufurt) müssen den Fund sehen, bevor Kranich die Wahrheit hört.
  * Lohn: Stärke 3.000, Geschick 3.000, Defense 3.000 XP, 800 Splitter, 2 Questpunkte. Schalter wrack_instanz (solange die Quest läuft).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Wrack, Klippenhöhlen mit Instanz, Strandräuber, Wrackkapitän). Liste: doku/quests/g-bausteine.md.
+ * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Wrack, Klippenhöhlen und Kajüte wrack_kajuete als Instanz aus #82, Strandräuber, Wrackkapitän). Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { G1 } from "./quest_g1";
@@ -45,9 +45,15 @@ export const QUEST_G3: QuestDef = {
     { id: "merit", text: "Merit Stahl den Fund zeigen", ereignis: { art: "antwort" }, nach: ["kiste"], bei: "merit", gruppe: "zeugen",
       log: "Zeig den Brief aus der Kiste Bertold Krähe im Rabenmoor und Merit Stahl in Graufurt ({n:zeugen})." },
     { id: "kapitaen", text: "Den Wrackkapitän in den Klippenhöhlen stellen", ereignis: { art: "erlegen", typ: "wrackkapitaen" }, nach: ZEUGEN, wo: HOEHLE.kapitaen,
-      log: "Merit und Bertold sagen dasselbe: Der Kapitän wusste, was er fuhr. Steig in die Klippenhöhlen und stell den Wrackkapitän." },
+      log: "Merit und Bertold sagen dasselbe: Der Kapitän wusste, was er fuhr. Steig durch die Felstür an der Klippe in die Höhlen und stell den Wrackkapitän in seiner Kajüte." },
+    { id: "logbuch", text: "Die Logbuchseite in der Kajüte lesen", ereignis: { art: "objekt", id: "g3_logbuch" }, nach: ["kapitaen"], wo: HOEHLE.logbuch,
+      log: "In der Kajüte liegt eine Seite aus dem Logbuch der „Morgenstern“. Lies sie." },
   ],
   objekte: [
+    { id: "g3_logbuch", name: "Logbuchseite", x: HOEHLE.logbuch[0], y: HOEHLE.logbuch[1], modell: "stelle", tat: "untersuchen", tatText: "Die Seite lesen", weit: 2.5,
+      text: "„Morgenstern, letzte Fahrt. Ladung: 40 Säckchen. Abnehmer: die Insel. Bezahlung: Federn.“ Darunter, zittrig: „Sie sagen, die Federn machen stark. Sie machen nur kalt.“",
+      schon: "Die Logbuchseite der „Morgenstern“.", sonst: [{ wenn: NEU, text: "Eine Seite Papier, feucht und gewellt." }, { wenn: FERTIG, text: "Die Logbuchseite der „Morgenstern“." },
+        { wenn: { offen: ["logbuch"] }, text: "Der Kapitän steht zwischen dir und dem Tisch." }] },
     { id: "g3_kiste", name: "Kiste im Wrack", x: WRACK.kiste[0], y: WRACK.kiste[1], modell: "stelle", tat: "untersuchen", tatText: "Die Kiste öffnen", weit: 2.5, geben: [{ g: "wrackbrief" }],
       text: "Unter nassem Segeltuch: Splitter, sorgfältig in Säckchen genäht. Und ein Brief, das Siegel schwarz – ein Rabe über einem Kreis aus Steinen.",
       schon: "Die Kiste ist leer.", sonst: [{ wenn: NEU, text: "Eine Kiste im Bauch des Wracks, mit Ketten gesichert." }, { wenn: FERTIG, text: "Die Kiste ist leer." }, { wenn: { offen: ["kiste"] }, text: "Die Strandräuber hocken auf der Kiste." }] },

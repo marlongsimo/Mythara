@@ -4,7 +4,7 @@ Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-10.md`. Alle Namen sin
 Fischerin **Bente Möller** (Möwenbucht), Kräuterbäuerin **Frieda Saat**. Dateien: `realtime/shared/quest_g1.ts` … `quest_g4.ts`, `quest_kraeuterhof.ts`, Stellen in `quest_g_orte.ts`.
 Alle als **Entwurf** in `shared/quest_entwuerfe.ts`. Lohn für Stufe 20–40: 800–3.000 je Skill.
 
-**Stellen:** echt in den älteren Regionen (Othmar, Mira, Hedda, Bertold, Merit, Linde). Die **Smaragdküste ist Platzhalter** südlich von Weidenhain – nach dem Welt-Issue nur `quest_g_orte.ts` umstellen.
+**Stellen aus der Welt (#82)**, gesammelt in `quest_g_orte.ts`: Küstenhaus, Kai, Leuchtturm und Wärterin, Wrack, Klippenhöhlen und Kajüte (`wrack_kajuete`, mit der Logbuchseite als neuem Schritt in G3), Möwenbucht mit Räucherhütte, Kräuterhof. Vorschläge, weil die Welt sie nicht nennt: Spuren und Wagen auf der Südstraße, die zwei Beete, der Kessel im Wärterhaus.
 
 ## Querverbindungen (Grundsatz Phase 9)
 
@@ -19,9 +19,9 @@ Alle als **Entwurf** in `shared/quest_entwuerfe.ts`. Lohn für Stufe 20–40: 80
 
 | # | Baustein | Wo | Vorschlag |
 |---|---|---|---|
-| 1 | **Kutsche** | G1: Schalter `kutsche_kielmund` | bezahlter Teleport zwischen den Haltestellen Weidenhain ↔ Kielmund (Konzept „später“) |
+| 1 | ~~Kutsche~~ | gestrichen (Nutzer 26.11.) – G1 gibt nur Wegstein-Ziel Kielmund, XP und Questpunkte | – |
 | 2 | **Räucherhütte** | G4: Kochstation mit Wartezeit, Schalter `raeucherhuette` (während G4 und danach) | |
-| 3 | **Instanz** | G3: Klippenhöhlen mit dem Raum des Wrackkapitäns, Schalter `wrack_instanz` | wie Rotmantel |
+| 3 | **Instanz** | G3: Kajüte `wrack_kajuete` hinter den Klippenhöhlen, Schalter `wrack_instanz` | wie Rotmantel |
 | 4 | **Gegner, die `erlegen` melden** | `strandraeuber` (G1 4×, G3 4×), `wrackkapitaen` (G3) | |
 | 5 | **Fischen** | `hering` (G2 5×, G4 5×) | `{ art: "sammeln", ziel: "hering" }` |
 | 6 | **Rezepte** | `lampenoel` (Kessel im Wärterhaus, 5 Heringe → 1 Lampenöl), `splitterglut` (Bindestein, Splitterbinden 20, 1 Seelenlicht + 5 Splitter, Quest-Rezept G2), `fischernetz` (Werkbank, Handwerk 20, 6 Garn, Quest-Rezept G4), `raeucherhering` (Räucherhütte, Hering), `heiltrank` (Kessel, aus 5c) | |

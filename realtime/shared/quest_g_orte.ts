@@ -1,7 +1,7 @@
 /*
  * Riftmere – Phase 10 „Salz und Segel“: gemeinsame Stellen der Quests G1–G4 und „Der Kräuterhof“ (shared/quest_g*.ts), in Weltfeldern.
  * Echt sind die Stellen in den älteren Regionen (Othmar in Weidenhain, Mira in der Waldmark, Hedda und Bertold im Rabenmoor, Merit in Graufurt, Bindestein an der Linde).
- * VORLÄUFIG für die Smaragdküste: Die Region gibt es in der Welt noch nicht – Platzhalter südlich von Weidenhain (Ursprung 6400 | 6656, 128 × 96). Nach dem Welt-Issue zu Phase 10 nur hier umstellen.
+ * Die Smaragdküste aus der Welt (#82); was die Welt nicht als Stelle nennt (Spuren, Wagen, Beete, Kessel im Wärterhaus), ist als Vorschlag markiert.
  */
 export type Feld = [number, number];
 /* ── ältere Regionen ── */
@@ -11,12 +11,18 @@ export const HEDDA: Feld = [6289.4, 6677.4];
 export const BERTOLD: Feld = [6320, 6697];
 export const MERIT: Feld = [6677.5, 6484.5];
 export const LINDE: Feld = [6453.2, 6679.4];          /* Bindestein an der Linde (B1) */
-/* ── Smaragdküste (Platzhalter) ── */
-export const SUEDSTRASSE = { spur_1: [6450.5, 6790.5] as Feld, spur_2: [6455.5, 6830.5] as Feld, wagen: [6460.5, 6868.5] as Feld, raeuber: [6466.5, 6872.5] as Feld };
-export const KIELMUND = { kaufherr: [6480.5, 6950.5] as Feld, kai: [6490.5, 6962.5] as Feld, werkstatt: [6472.5, 6944.5] as Feld };
-export const LEUCHTTURM = { waerterin: [6540.5, 6930.5] as Feld, linse: [6542.5, 6926.5] as Feld, feuer: [6542.5, 6924.5] as Feld, kessel: [6538.5, 6932.5] as Feld };
-export const WRACK = { kiste: [6520.5, 6990.5] as Feld, raeuber: [6516.5, 6986.5] as Feld, hoehle: [6560.5, 6960.5] as Feld };
-/** Klippenhöhlen: Untergrund mit Raum des Wrackkapitäns (Instanz) – Platzhalter */
-export const HOEHLE = { kapitaen: [11440.5, 9616.5] as Feld };
-export const MOEWENBUCHT = { fischerin: [6420.5, 6980.5] as Feld, steg: [6416.5, 6986.5] as Feld, raeucherhuette: [6426.5, 6978.5] as Feld };
-export const KRAEUTERHOF = { baeuerin: [6400.5, 6900.5] as Feld, beet_1: [6396.5, 6904.5] as Feld, beet_2: [6404.5, 6904.5] as Feld, kessel: [6398.5, 6898.5] as Feld };
+/* ── Smaragdküste (#82, Zweig claude/mythara-world-pipeline-z4ynx5, 773b1f09; NPC-Plätze welt/kueste_orte.json) ── */
+/** Südstraße von Weidenhain (6444 | 6738) nach Kielmund: Spuren und Wagen als Vorschlag entlang der Straße */
+export const SUEDSTRASSE = { spur_1: [6446.5, 6820.5] as Feld, spur_2: [6441.5, 6930.5] as Feld, wagen: [6436.5, 7040.5] as Feld, raeuber: [6439.5, 7044.5] as Feld };
+/** Kielmund: Kaufherr vor dem Küstenhaus (Tür 6414 | 7296,8), Fischplatz am Kai (Stehplatz), Werkstatt */
+export const KIELMUND = { kaufherr: [6414.5, 7299] as Feld, kai: [6384.5, 7310.5] as Feld, werkstatt: [6452, 7327.4] as Feld };
+/** Leuchtturm auf der Klippe (6176 | 7035,2), Wärterin am NPC-Platz leuchtturmwaerter, Kessel im Wärterhaus (Vorschlag) */
+export const LEUCHTTURM = { waerterin: [6188, 7037] as Feld, linse: [6176, 7034] as Feld, feuer: [6177.5, 7035.2] as Feld, kessel: [6190, 7039.5] as Feld };
+/** Schiffswrack am Strand (Lesestelle wrack), Eingang der Klippenhöhlen */
+export const WRACK = { kiste: [6283, 7264.6] as Feld, raeuber: [6280, 7262] as Feld, hoehle: [6180, 7091.2] as Feld };
+/** Klippenhöhlen (Ursprung 11424 | 9600, 2×2) und die Kajüte des Wrackkapitäns (wrack_kajuete, Ursprung 11488 | 9600, Instanz) mit der Logbuchseite */
+export const HOEHLE = { kapitaen: [11504, 9614] as Feld, logbuch: [11504, 9612.4] as Feld };
+/** Möwenbucht: Fischerin (fischerin_moewenbucht), Fischplatz am Steg (Stehplatz), Räucherhütte (Station raeucherhuette) */
+export const MOEWENBUCHT = { fischerin: [6217, 7163] as Feld, steg: [6190.5, 7158.5] as Feld, raeucherhuette: [6214.5, 7166.6] as Feld };
+/** Kräuterhof: Bäuerin (kraeuterbaeuerin), Beete (Vorschlag links und rechts vom Haus), Kessel kraeuterhof_kessel (Vorschlag) */
+export const KRAEUTERHOF = { baeuerin: [6419, 7065] as Feld, beet_1: [6412.5, 7068.5] as Feld, beet_2: [6424.5, 7068.5] as Feld, kessel: [6421, 7062] as Feld };
