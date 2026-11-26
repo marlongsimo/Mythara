@@ -2,7 +2,7 @@
  "_hinweis": "Fischen (shared/fischen.ts): Fanggründe als Weltfelder auf dem Wasser, je Grund sind nur „aktiv“ Stellen gleichzeitig da – die Fische wandern (der Server wechselt die Stellen). Die Welt (Rolle Worldbuilding) darf Felder verschieben oder Gründe ergänzen. Wurmacker: Felder auf den Äckern des Osthofs.",
  "gruende": [
   { "id": "muehlgraben", "name": "Mühlgraben", "art": "bachling", "region": "weidenhain", "aktiv": 2,
-    "felder": [[6466.5, 6681.5], [6466.5, 6684.5], [6468.5, 6686.5], [6465.5, 6687.5], [6462.5, 6688.5], [6467.5, 6689.5], [6461.5, 6691.5], [6463.5, 6692.5]] },
+    "felder": [[6466.5, 6681.5], [6466.5, 6684.5], [6468.5, 6686.5], [6465.5, 6687.5], [6461.5, 6690.5], [6467.5, 6689.5], [6461.5, 6691.5], [6463.5, 6692.5]] },
   { "id": "muehlgraben_unten", "name": "Mühlgraben (unten)", "art": "muehlbarsch", "region": "weidenhain", "aktiv": 2,
     "felder": [[6461.5, 6695.5], [6463.5, 6696.5], [6461.5, 6697.5], [6463.5, 6698.5], [6461.5, 6699.5], [6463.5, 6700.5], [6460.5, 6702.5], [6463.5, 6702.5]] },
   { "id": "obstwiesen_bach", "name": "Bach der Obstwiesen", "art": "bachling", "region": "obstwiesen", "aktiv": 2,
