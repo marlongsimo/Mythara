@@ -85,13 +85,15 @@ function zoneBetreten(p: Platz, karte: string, ort: string, typ: string, epWert:
   /* Jede Person nur einmal (das neue Gerät übernimmt). Im selben Gebiet übernimmt die neue Verbindung den stehenden Helden samt Leben, Stelle und Kampf –
      so rettet Neu-Einloggen nicht aus dem Kampf. In einem anderen Gebiet: ein stehender (abgebrochener) Held geht jetzt, eine offene Verbindung am Gebietsrand
      ist der eigene Wechsel ins Nachbargebiet (die alte Verbindung schließt gleich selbst), jede andere offene ist ein anderes Gerät und wird abgemeldet. */
+  /* Wegstein (welt.ts): der Server hat das Ziel gesetzt – der alte Held geht (kein Übernehmen samt alter Stelle), der neue beginnt am Ziel */
+  const weg = nutzer ? wegsteinZielNehmen(nutzer) : null;
   if (nutzer) for (const Z2 of zonen.values()) for (const q of [...Z2.spieler]) { if (q === p || !q.kampf || q.kampf.nutzer !== nutzer) continue;
     const offen = q.ws.readyState === WebSocket.OPEN, h = q.heldId ? Z2.sim.nach(q.heldId) : undefined;
-    if (Z2 === Z && h && !h.tot && !q.zoneWeg) { uebernehmen(q, p, Z, typ, name); return; }
+    if (Z2 === Z && h && !h.tot && !q.zoneWeg && !weg) { uebernehmen(q, p, Z, typ, name); return; }
     if (Z2 !== Z && offen && amRand(q)) { q.ersetzt = true; continue; }
     q.ersetzt = true; zoneVerlassen(q); if (offen) try { q.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } }
-  { const t = nutzer ? wegsteinZielNehmen(nutzer) : null, K = KARTEN[karte]; /* Wegstein: der Server setzt die Position (welt.ts), nicht der Browser */
-    if (t && K && K.ursprung && K.weltRegion === t.region) wo = { x: t.x - K.ursprung[0], y: t.y - K.ursprung[1] }; }
+  { const t = weg, K = KARTEN[karte]; /* Wegstein: der Server setzt die Position (welt.ts), nicht der Browser – in der gemeinsamen Kampfwelt (ohne weltRegion) oder im Gebiet des Ziels */
+    if (t && K && K.ursprung && (!K.weltRegion || K.weltRegion === t.region)) { wo = { x: t.x - K.ursprung[0], y: t.y - K.ursprung[1] }; void stelleMerken({ sb }, nutzer as string, t.region, t.x, t.y); /* das Gehen des alten Helden hat seine alte Stelle gemerkt */ } }
   p.zone = Z; p.heldId = Z.sim.beitreten(typ, epWert, wo, p.v1 ? kampfwerteVon(p.v1) : undefined); { const a = p.kampf && p.kampf.nutzer ? ausdauerJe.get(p.kampf.nutzer) : undefined, h = Z.sim.nach(p.heldId) as { ausdauer?: { wert: number }; ausdauerDa?: boolean; kw?: { skills: { geschick?: number } } } | undefined;
     if (a && h && h.ausdauer) { const g = levelAus((h.kw && h.kw.skills.geschick) || 0, "geschick"), ticks = Math.floor((Date.now() - a.zeit) / 1000 / SPRINT_TICK); h.ausdauer.wert = Math.min(100, a.wert + ticks * erholungJeTick(g) / 100); h.ausdauerDa = true; /* der Browser darf sie nicht mehr setzen */ } } p.v1T = Date.now(); p.name = name; if (p.kampf) p.kampf.team = [typ]; Z.spieler.add(p); Z.leerSeit = 0;
   if (p.nachher) { for (const e of p.nachher) try { Z.sim.eingabe(e, p.heldId); } catch { /* egal */ } p.nachher = undefined; } /* Autoangriff und Sprint von vor dem Betreten */

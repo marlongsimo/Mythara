@@ -52,11 +52,11 @@ export const weltOnline = (): number => spieler.size;
 /** Eine Systemzeile an einen Spieler (z. B. aus der Kampfwelt) */
 export function systemAn(nutzer: string, text: string): void { for (const s of spieler) if (s.nutzer === nutzer) senden(s, { t: "chat", kanal: "system", text, zeit: Date.now() }); }
 export const TELEPORT_PAUSE_MS = Number(process.env.TELEPORT_PAUSE_MS || 5 * 60 * 1000); const teleportZuletzt = new Map<string, number>();
-/* Wegstein (shared/wegstein.ts, Phase 3a): eigene Abklingzeit; das Ziel merkt sich der Server 30 s lang – die Kampfwelt (index.ts zoneBetreten) setzt den Helden dorthin,
+/* Wegstein (shared/wegstein.ts, Phase 3a): eigene Abklingzeit; das Ziel merkt sich der Server 2 min lang (bis die neue Kampfverbindung steht) – die Kampfwelt (index.ts zoneBetreten) setzt den Helden dorthin,
    nicht an die Stelle, die der Browser meldet */
 export const WEGSTEIN_PAUSE = Number(process.env.WEGSTEIN_PAUSE_MS || WEGSTEIN_PAUSE_MS); const wegsteinZuletzt = new Map<string, number>();
 const wegsteinZiele = new Map<string, { x: number; y: number; region: string; bis: number }>();
-/** Wegstein-Ziel dieses Kontos abholen (einmal, höchstens 30 s alt) */
+/** Wegstein-Ziel dieses Kontos abholen (einmal, höchstens 2 min alt) */
 export function wegsteinZielNehmen(nutzer: string): { x: number; y: number; region: string } | null { const z = wegsteinZiele.get(nutzer); wegsteinZiele.delete(nutzer); return z && z.bis > Date.now() ? z : null; }
 setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); lichtTakt(); handwerkTakt(); }, 100); /* Holzfällerei und Bergbau: Schläge im Takt, nachwachsende Bäume und Adern */
 /* ---------- Freunde (Migration 047: rpg_freunde_von – nur der Server) ----------
@@ -254,7 +254,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (kampfPruefer(s.nutzer)) { nein("Mitten im Kampf schweigt der Stein."); return; }
       { const rest = (wegsteinZuletzt.get(s.nutzer) || 0) + WEGSTEIN_PAUSE - jetzt; if (rest > 0) { nein(`Der Stein ist noch warm – in ${Math.ceil(rest / 1000)} s ruft er wieder.`, rest); return; } }
       if (!ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
-      wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); wegsteinZiele.set(s.nutzer, { x: z.x, y: z.y, region: z.region, bis: jetzt + 30_000 });
+      wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); wegsteinZiele.set(s.nutzer, { x: z.x, y: z.y, region: z.region, bis: jetzt + 120_000 });
       s.wx = z.x; s.wy = z.y; void stelleMerken(H, s.nutzer, z.region, z.x, z.y);
       senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein") }); }
     else if (e.t === "zufreund") { const n = String(e.n || "").slice(0, 40), nein = (text: string) => { if (s) senden(s, { t: "zufreund", ok: false, n, text }); };

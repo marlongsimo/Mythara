@@ -39,7 +39,7 @@ export function bankBitten(m: { tat: "ein" | "ab"; g: string; menge: number; tab
 
 /** Das Inventar (neu aus der Startwaffe, wenn noch keins da ist oder die Startwaffe im Editor geändert wurde) */
 export function inventar(): Inventar {
-  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) }, bankTabs: { ...(vomServer.bankTabs || {}) } };
+  if (vomServer) return { angelegt: { ...vomServer.angelegt }, rucksack: [...vomServer.rucksack], anzahl: [...(vomServer.anzahl || [])], waffe: vomServer.waffe, bank: (vomServer.bank || []).map(([g, n]) => [g, n] as [string, number]), berufe: { ...(vomServer.berufe || {}) }, bankTabs: { ...(vomServer.bankTabs || {}) } , ladungen: { ...(vomServer.ladungen || {}) } };
   const h = aktiverHeld(), da = lies();
   if (da && (!h || da.waffe === h.waffe)) { const angelegt = Object.fromEntries(Object.entries(da.angelegt).filter(([, g]) => g && GEGENSTAENDE[g])) as Inventar["angelegt"]; /* nicht mehr vorhandene Gegenstände (etwa das frühere Leinenhemd) fallen weg */
     return { angelegt, rucksack: [...da.rucksack].filter((g) => GEGENSTAENDE[g]), waffe: da.waffe }; }
