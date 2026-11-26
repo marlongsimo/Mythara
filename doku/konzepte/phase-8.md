@@ -65,21 +65,20 @@ Lohn: Burg besetzt (Stufe 2), Bank und Waffenladen in Grauwacht, XP, 400 Splitte
 **E4 „Das Grab des Grauen Hauptmanns“** – Wigand Fels / Äbtissin Gunhild. Voraussetzung: E3, Heldenlevel 48 empfohlen.
 Der letzte Hauptmann von Grauwacht liegt im größten Hügelgrab und lässt die Wiedergänger nicht ruhen. Grabkammer (Grabwächter, Wiedergänger) →
 Siegel des Hauptmanns → **Der Graue Hauptmann** (Instanz) → seine Klinge bringt Wigand zurück in die Burg.
-Lohn: **Grauwachts Wappenrock** (Teil 1 der Wachtrüstung), Grauwacht voll belebt (Werkstatt, Markt, Wegstein), XP, 600 Splitter, 3 Questpunkte. Haken: die Brücke zur Furt (W5).
+Lohn: **Klinge des Grauen Hauptmanns** (Selten-Langschwert mit eigenem Aussehen, kein Set), Grauwacht voll belebt (Werkstatt, Markt, Wegstein), XP, 600 Splitter, 3 Questpunkte. Haken: die Brücke zur Furt (W5).
 
 **Nebenquests (klein):** „Mettes Schafe“ (Heidewölfe, Kochen: Hammeleintopf), „Ruhelose Gräber“ (Seelenlichter in den drei Grabkammern, Splitterbinden 35).
 
-## Wachtrüstung (neues Set, Vorschlag)
+## Wachtrüstung
 
-Zweites Set des Spiels, für Nahkampf: Wappenrock (E4), Wachthelm und Wachtbeinschienen als seltene Beute des Grauen Hauptmanns (wiederholbar als Instanz-Boss).
-Set-Bonus (Vorschlag): **„Standhaft“** – unter 30 % LP +5 Defense. Daten wie das Rabenset (`SETS`), Rechnung aus Phase 5d.
+**Vorerst nicht** (Entscheidung des Nutzers, 26.11.). Die Teile `*.wacht` von Figuren (#51) bleiben in der Fabrik liegen und werden nicht als Gegenstände eingetragen.
 
 ## Wer macht was (Vorarbeit jetzt)
 
 | Rolle | Aufgabe |
 |---|---|
 | Welt | Nordsaum-Weg mit Dornenwall, Region Fahle Weiten, Heidrast, Grenzposten, Hügelgräberfeld + 3 Grabkammern, Grauwacht (Burg, Abtei, Unterstadt in drei Stufen), Brücke zur Furt (gesperrt) |
-| Figuren | NPCs: Mette Heider, Äbtissin Gunhild + 3 Nonnen, Burgvogt Wigand Fels, Tjark Sölde, Deserteure (Schwert/Armbrust), Hirten; Gegner: Heidewolf (+ Rudelführer), Wiedergänger, Grabwächter, Der Graue Hauptmann (Geist); Objekte: Glocke (gesprungen/heil), Glockenform, Dornenwall, Grabhügel-Eingang; Wachtrüstung (3 Teile) |
+| Figuren | NPCs: Mette Heider, Äbtissin Gunhild + 3 Nonnen, Burgvogt Wigand Fels, Tjark Sölde, Deserteure (Schwert/Armbrust), Hirten; Gegner: Heidewolf (+ Rudelführer), Wiedergänger, Grabwächter, Der Graue Hauptmann (Geist); Objekte: Glocke (gesprungen/heil), Glockenform, Dornenwall, Grabhügel-Eingang |
 | Quests | E1–E4 und die zwei Nebenquests als Entwurf |
 | Systeme (später) | Stadtstufen über Schaltergruppen, Wind-Ereignis, Glocke als stündliches Weltereignis mit friedlichen Wiedergängern |
 
@@ -87,4 +86,3 @@ Set-Bonus (Vorschlag): **„Standhaft“** – unter 30 % LP +5 Defense. Daten w
 
 - **Reihenfolge W2/W3** (siehe Annahme oben).
 - Namen: Fahle Weiten, Grauwacht, Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann.
-- Wachtrüstung als zweites Set – ja/nein?
