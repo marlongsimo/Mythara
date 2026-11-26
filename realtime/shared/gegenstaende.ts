@@ -316,13 +316,13 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
   GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
     text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." };
-  /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder unter img/platzhalter sind vorläufig (Issue an Figuren & 3D) */
-  const A = "img/objekte3d/skilling/angeln/symbole/", PH = "img/platzhalter/", U = "img/objekte3d/skilling/utensilien/";
+  /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder von Figuren & 3D (#39) */
+  const A = "img/objekte3d/skilling/angeln/symbole/", K = "img/objekte3d/skilling/kochen/symbole/", U = "img/objekte3d/skilling/utensilien/";
   GEGENSTAENDE.angelrute = { id: "angelrute", name: "Angelrute", art: "Werkzeug", seltenheit: "anfaenger", bild: A + "angelrute.webp", modell3d: U + "angelrute.glb",
     text: "Eine biegsame Rute mit Schnur und Haken. Mit Würmern im Rucksack fängst du damit Bachlinge und Mühlbarsche. Eine bessere gibt es nicht – den Fisch fängt, wer sie hält." };
   GEGENSTAENDE.reuse = { id: "reuse", name: "Fischreuse", art: "Werkzeug", seltenheit: "gewoehnlich", bild: A + "fischreuse.webp", modell3d: U + "fischreuse.glb",
     text: "Ein Korb aus Tannenruten und Garn. Im Moorwasser fängt er Moorhechte, ganz ohne Köder. Ab Fischen 20." };
-  GEGENSTAENDE.wurm = { id: "wurm", name: "Wurm", art: "Köder", seltenheit: "anfaenger", stapel: 1000, bild: PH + "wurm.webp",
+  GEGENSTAENDE.wurm = { id: "wurm", name: "Wurm", art: "Köder", seltenheit: "anfaenger", stapel: 1000, bild: A + "wuermer.webp",
     text: "Fett und lebendig, frisch aus dem Acker im Osthof. Ein Wurm je Fisch." };
   const FN: Record<string, string> = { bachling: "Bachling", muehlbarsch: "Mühlbarsch", moorhecht: "Moorhecht" }, HEIL: Record<string, number> = { bachling: 3, muehlbarsch: 5, moorhecht: 7 };
   for (const f of Object.keys(FN)) {
@@ -332,16 +332,16 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
       text: `Knusprig gebraten. Heilt ${HEIL[f]} Lebenspunkte.` };
     GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${FN[f]}`, art: "Abfall", seltenheit: "anfaenger", bild: A + `fisch_${f}_verbrannt.webp`,
       text: "Schwarz bis auf die Gräten. Den will niemand essen." }; }
-  GEGENSTAENDE.fischsuppe = { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", bild: PH + "fischsuppe.webp", trank: "fischsuppe",
+  GEGENSTAENDE.fischsuppe = { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", bild: K + "fischsuppe.webp", trank: "fischsuppe",
     text: "Mühlbarsch, Wasser und Geduld. Heilt 6 Lebenspunkte und gibt 5 Minuten lang Defense +2." };
-  GEGENSTAENDE.bauerneintopf = { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", bild: PH + "bauerneintopf.webp", trank: "bauerneintopf",
+  GEGENSTAENDE.bauerneintopf = { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp", trank: "bauerneintopf",
     text: "Kuhfleisch, Mehl und Wasser, lange auf dem Herd. Heilt 8 Lebenspunkte; 10 Minuten lang erholt sich die Ausdauer 25 % schneller." };
-  GEGENSTAENDE.suppe_verbrannt = { id: "suppe_verbrannt", name: "Angebrannter Topf", art: "Abfall", seltenheit: "anfaenger", bild: PH + "suppe_verbrannt.webp", text: "Am Boden klebt etwas Schwarzes. Es war einmal Essen." };
-  GEGENSTAENDE.brot_verbrannt = { id: "brot_verbrannt", name: "Verbranntes Brot", art: "Abfall", seltenheit: "anfaenger", bild: PH + "brot_verbrannt.webp", text: "Hart wie ein Stein und genauso schmackhaft." };
-  GEGENSTAENDE.mehl = { id: "mehl", name: "Mehl", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: "img/objekte3d/skilling/erzeugnisse/mehlsack.webp", text: "Fein gemahlen in der Mühle im Osthof. Zum Backen und für den Eintopf." };
-  GEGENSTAENDE.krug = { id: "krug", name: "Krug", art: "Werkzeug", seltenheit: "anfaenger", bild: PH + "krug.webp", text: "Ein leerer Tonkrug. Am Brunnen füllst du ihn mit Wasser." };
-  GEGENSTAENDE.krug_wasser = { id: "krug_wasser", name: "Krug mit Wasser", art: "Rohstoff", seltenheit: "anfaenger", bild: PH + "krug_wasser.webp", text: "Frisches Brunnenwasser. Für Brot, Suppe und Eintopf." };
-  GEGENSTAENDE.kuhfleisch = { id: "kuhfleisch", name: "Kuhfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: PH + "kuhfleisch.webp", text: "Ein gutes Stück vom Rind. Roh nichts für den Magen – im Eintopf schon." }; }
+  GEGENSTAENDE.suppe_verbrannt = { id: "suppe_verbrannt", name: "Angebrannter Topf", art: "Abfall", seltenheit: "anfaenger", bild: K + "suppe_verbrannt.webp", text: "Am Boden klebt etwas Schwarzes. Es war einmal Essen." };
+  GEGENSTAENDE.brot_verbrannt = { id: "brot_verbrannt", name: "Verbranntes Brot", art: "Abfall", seltenheit: "anfaenger", bild: K + "brot_verbrannt.webp", text: "Hart wie ein Stein und genauso schmackhaft." };
+  GEGENSTAENDE.mehl = { id: "mehl", name: "Mehl", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: K + "mehl.webp", text: "Fein gemahlen in der Mühle im Osthof. Zum Backen und für den Eintopf." };
+  GEGENSTAENDE.krug = { id: "krug", name: "Krug", art: "Werkzeug", seltenheit: "anfaenger", bild: K + "krug.webp", text: "Ein leerer Tonkrug. Am Brunnen füllst du ihn mit Wasser." };
+  GEGENSTAENDE.krug_wasser = { id: "krug_wasser", name: "Krug mit Wasser", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "krug_wasser.webp", text: "Frisches Brunnenwasser. Für Brot, Suppe und Eintopf." };
+  GEGENSTAENDE.kuhfleisch = { id: "kuhfleisch", name: "Kuhfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", text: "Ein gutes Stück vom Rind. Roh nichts für den Magen – im Eintopf schon." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);

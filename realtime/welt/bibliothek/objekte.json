@@ -10591,6 +10591,134 @@
    }
   },
   {
+   "id": "wz_seelenlicht_irrlicht",
+   "name": "Irrlicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_irrlicht.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (irrlicht)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_irrlicht.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    },
+    "puls_ton": 115
+   }
+  },
+  {
+   "id": "wz_seelenlicht_grablicht",
+   "name": "Grablicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_grablicht.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (grablicht)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_grablicht.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    },
+    "puls_ton": 200
+   }
+  },
+  {
+   "id": "wz_seelenlicht_nebellicht",
+   "name": "Nebellicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_nebellicht.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (nebellicht)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_nebellicht.glb",
+    "wind": 0.02,
+    "schweben": {
+     "hoehe": 0.7,
+     "hub": 0.2,
+     "takt": 4.5,
+     "pendel": 0.5
+    },
+    "puls_ton": 255
+   }
+  },
+  {
+   "id": "wz_seelenlicht_splitterlicht",
+   "name": "Splitterlicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_splitterlicht.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (splitterlicht)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_splitterlicht.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    },
+    "puls_ton": 265
+   }
+  },
+  {
    "id": "wz_seelenlicht_erloschen",
    "name": "Erloschenes Seelenlicht",
    "kategorie": "sonderort",

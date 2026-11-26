@@ -21,12 +21,12 @@ export interface SammelEinstellung {
   /** Nachrichtennamen des Servers */ tatErtrag: string; tatMoment: string; grundLeer: string;
   werkzeugUrl: (g: string) => string; werkzeugStandard: string; /** Clip des Werkzeugschlags ("" = Einhand-Hieb) */ clip: string;
   /** Größe als Höhe (Bäume) oder längste Seite (Adern) */ massArt: "hoehe" | "laenge"; /** Krone durchsichtig, wenn der Held darunter steht */ durchsicht: boolean; spanFarbe: number;
-  /** ohne Modell: selbst gebautes Bild – „wellen“ (Kreise auf dem Wasser, Fischen) oder „erde“ (frisches Erdhäufchen, Würmer) */ prozedural?: "wellen" | "erde"; /** leere (ruhende) Ziele gar nicht antippbar (Fischen: die Fische sind weg, das Wasser ist nur Wasser) */ leerUnsichtbar?: boolean;
+  /** ohne Modell: selbst gebautes Bild – „wellen“ (Kreise auf dem Wasser, Fischen) oder „erde“ (frisches Erdhäufchen, Würmer) */ prozedural?: "wellen" | "erde"; /** leere (ruhende) Ziele gar nicht antippbar (Fischen: die Fische sind weg, das Wasser ist nur Wasser) */ leerUnsichtbar?: boolean; /** Angeln: Rute bleibt in der Hand (held3d.angeln), Auswerfen beim Start, Einholen beim Fang – nur mit diesem Werkzeug */ angelnMit?: string;
   texte: { tun: (d: SammelDef3D) => string; start: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; moment: string; momentKnopf: string; leerKnopf: string;
     leer: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; leerAnsehen: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; einStueck: string; je: string };
 }
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
-interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void }
+interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; angeln?(url: string, phase: "auswerfen" | "warten" | "einholen"): boolean }
 interface Bild { z: SammelZiel3D; gruppe: THREE.Group; voll: THREE.Object3D | null; leer: THREE.Object3D | null; laedt: boolean; mats?: THREE.Material[]; deck?: number; /** Wellenkreise (prozedural) */ ringe?: THREE.Mesh[];
   u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number }; /** Krone durchsichtig: Deckkraft oberhalb des Stamms (1 = fest) */ uDurch: { value: number } } }
 
@@ -54,7 +54,7 @@ function shaderAn(o: THREE.Object3D, u: Bild["u"], mats?: THREE.Material[]) {
 export class SammelWelt {
   private alle = new Map<string, Bild>(); private weg = new Set<string>(); private zeit = 0;
   /** gerade am Sammeln (Ziel-id), Werkzeug (Modell), aktiver Moment bis (performance.now) */
-  aktiv: string | null = null; private werkzeug = ""; private moment: { id: string; bis: number } | null = null;
+  aktiv: string | null = null; private werkzeug = ""; private angelUrl = ""; private moment: { id: string; bis: number } | null = null;
   constructor(private u: Umgebung, private E: SammelEinstellung) {
     for (const z of E.ziele) { const g = new THREE.Group(); g.visible = false; this.u.motor.szene.add(g);
       this.alle.set(z.id, { z, gruppe: g, voll: null, leer: null, laedt: false, u: { uZeit: { value: 0 }, uPhase: { value: zufall(z.id) * 6.28 }, uKern: { value: 0 }, uHoehe: { value: 6 }, uWind: { value: E.massArt === "hoehe" ? 0.1 : 0 }, uDurch: { value: 1 } } }); }
@@ -80,13 +80,16 @@ export class SammelWelt {
     } catch (e) { console.warn(`${this.E.berufName}: Modell fehlt`, a.z.art, e); } }
   private nachricht(m: { tat: string; id?: string; werkzeug?: string; text?: string; name?: string; n?: number; xp?: number; splitter?: number; aufstieg?: number; grund?: string; ms?: number; [k: string]: unknown }) {
     const E = this.E, a = m.id ? this.alle.get(m.id) : undefined, D = a ? E.def(a.z.art) : null, art = D ? artikel(D.weiblich) : artikel(true), f = this.figur;
-    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art)); }
+    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art));
+      this.angelUrl = E.angelnMit && m.werkzeug === E.angelnMit ? E.werkzeugUrl(E.angelnMit) : "";
+      if (this.angelUrl && f && a) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (!f.angeln || !f.angeln(this.angelUrl, "auswerfen")) this.angelUrl = ""; } }
+    else if (m.tat === "hieb" && this.angelUrl) { /* angeln: die Rute bleibt draußen, kein Schlag */ }
     else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) f.beilHieb(this.werkzeug, E.clip); this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
-    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]);
+    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]); if (this.angelUrl && f && f.angeln) f.angeln(this.angelUrl, "einholen");
       chatSystem(`Du bekommst ${(m.n || 1) > 1 ? m.n + " × " : ""}${m.name || E.texte.einStueck}${mom ? ` – ${E.texte.momentKnopf}` : "."}${m.splitter ? ` Dazu ${m.splitter} Splitter.` : ""}`);
       berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === E.tatMoment && a) { this.moment = { id: a.z.id, bis: performance.now() + (m.ms || 1500) }; this.hinweis(E.texte.moment, m.ms || 1500); }
-    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; if (f) f.beilWeg();
+    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; this.angelUrl = ""; if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "koeder") chatSystem("Deine Würmer sind alle. Neue gräbst du auf dem Acker im Osthof."); else if (m.grund === E.grundLeer && D) chatSystem(E.texte.leer(D, art)); }
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); if (this.aktiv === m.id) this.aktiv = null; } }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }

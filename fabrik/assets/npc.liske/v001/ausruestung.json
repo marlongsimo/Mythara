@@ -4,11 +4,12 @@
   "zeichenfolge": true,
   "stuecke_behalten": true,
   "luecken_schliessen": true,
-  "hinweis": "npc.liske – Liske, Mädchen, aus dem Kerker befreit (aus dem Mädchen): Kleidung schmutzig-dunkel (fabrik/textur_umfaerben.py).",
+  "hinweis": "npc.liske – Liske, Mädchen, aus dem Kerker befreit (aus dem Mädchen): Kleidung schmutzig-dunkel (fabrik/textur_umfaerben.py). Gefangene im Kerker (Quest C3): gefesselt (kniend, Hände auf dem Rücken) – befreit: ruhe, gehen (folgen).",
   "haltung": "zivil",
   "bewegungen": [
     "ruhe",
-    "gehen"
+    "gehen",
+    "gefesselt"
   ],
   "starr": [],
   "huelle": [],
