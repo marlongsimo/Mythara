@@ -936,7 +936,7 @@
  {"id":"b0817","objekt":"stil_linde_01","x":63.5,"y":342.5,"s":1.02,"spiegeln":true},
  {"id":"b0563","objekt":"stil_eiche_02","x":60.5,"y":343.5,"s":0.91,"spiegeln":true},
  {"id":"b0270","objekt":"stil_eiche_01","x":60.5,"y":347.5,"s":1,"spiegeln":true},
- {"id":"naht_592","objekt":"stil_tanne_01","x":43.5,"y":0.5,"s":0.94,"spiegeln":true},
+ {"id":"naht_592","objekt":"stil_tanne_01","x":43.94,"y":0.46,"s":0.94,"spiegeln":true},
  {"id":"naht_593","objekt":"stil_eiche_01","x":46.5,"y":0.5,"s":1.07,"spiegeln":true},
  {"id":"naht_594","objekt":"stil_tanne_02","x":53.5,"y":0.5,"s":0.96,"spiegeln":true},
  {"id":"naht_595","objekt":"stil_tanne_02","x":42.5,"y":2.5,"s":1.1,"spiegeln":true},

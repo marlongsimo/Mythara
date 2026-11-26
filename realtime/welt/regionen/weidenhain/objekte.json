@@ -217,6 +217,7 @@
  {"id":"ort_kolk_schilf_2","objekt":"stil_schilf_02","x":62.4,"y":52.6,"spiegeln":true},
  {"id":"ort_p4_spur_weg_1","objekt":"welt_spuren_01","x":89.5,"y":65.5,"spiegeln":true},
  {"id":"ort_p4_spur_weg_2","objekt":"welt_spuren_01","x":43.5,"y":51.5},
+ {"id":"ort_p3_fanggrund_wehrkolk","objekt":"fanggrund_kolk","x":65.5,"y":49.5},
  {"id":"naht_1151","objekt":"stil_eiche_02","x":31.5,"y":0.5,"s":0.9},
  {"id":"naht_1152","objekt":"stil_tanne_02","x":34.5,"y":0.5,"s":1.11,"spiegeln":true},
  {"id":"naht_1153","objekt":"stil_eiche_01","x":40.5,"y":0.5,"s":0.96},

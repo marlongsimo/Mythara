@@ -499,6 +499,13 @@
    "x": 6371,
    "y": 6372.4,
    "hinweis": "Phase 5b: Bindestein am Obelisk im Nordwald (Station, nach A2)"
+  },
+  {
+   "id": "ort_p3_fanggrund_wehrkolk",
+   "objekt": "fanggrund_kolk",
+   "x": 6465.5,
+   "y": 6705.5,
+   "hinweis": "Fanggrund Wehrkolk (Mühlbarsch, nach B2 mit Schalter wehr_heil) – #64"
   }
  ],
  "lichtungen": [
