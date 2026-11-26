@@ -3,17 +3,18 @@
  * Mit Konto zählt der Server (Migration 042, rpg_held); der Browser merkt sich den letzten Stand unter „ez_skills2“ für die Anzeige
  * und fürs Rechnen ohne Server (die v1-Werte unter „ez_skills“ bleiben unberührt). Als Gast zählt allein dieser Speicher auf dem Gerät.
  */
+import { skillPlus } from "../../shared/wirkungen";
 import { BERUFE } from "../../shared/berufe";
 import { Kampfwerte, SkillXp, Skill, Art, kampfwerte, skillXpPruefen, levelAus, xpFuer, heldenlevel, SKILL_NAME, SKILL_MAX, SKILLS, stilIndex, xpEffektiv } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aktiverHeld } from "./held";
-import { inventar, inventarVomServerDa } from "./inventar";
+import { inventar, inventarVomServerDa, wirkungenJetzt } from "./inventar";
 
 const SCHLUESSEL = "ez_skills2", STIL = "ez_stil";
 export function skillsLesen(): SkillXp { try { return skillXpPruefen(JSON.parse(localStorage.getItem(SCHLUESSEL) || "null")); } catch { return skillXpPruefen(null); } }
 export function skillsSchreiben(x: SkillXp): void { try { const v = JSON.stringify(skillXpPruefen(x)); if (localStorage.getItem(SCHLUESSEL) !== v) localStorage.setItem(SCHLUESSEL, v); } catch { /* privat */ } stufenPruefen(true); }
 /** Die Kampfwerte des eigenen Helden (null ohne eigenen Helden) */
-export function meineKampfwerte(x = skillsLesen()): Kampfwerte | null { return aktiverHeld() ? kampfwerte(x, inventar().angelegt, stilJetzt()) : null; }
+export function meineKampfwerte(x = skillsLesen()): Kampfwerte | null { return aktiverHeld() ? kampfwerte(x, inventar().angelegt, stilJetzt(), skillPlus(wirkungenJetzt())) : null; }
 export const stufenVon = (x: SkillXp): string => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
 /** Kampfart der angelegten Waffe (ohne Waffe: Nahkampf mit den Fäusten) */
 export function kampfartJetzt(): Art { const w = inventar().angelegt.waffe, G = w ? GEGENSTAENDE[w] : null; return G && G.waffe ? G.waffe.art : "nah"; }

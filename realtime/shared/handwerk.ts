@@ -9,10 +9,11 @@
  */
 import { SammelArt } from "./sammeln";
 import { zwischenteil } from "./gegenstaende";
+import KOCHSTELLEN from "./kochstellen.json";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
-export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein";
+export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen";
 export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
@@ -21,6 +22,12 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   werkbank: { id: "werkbank", name: "Werkbank", x: 6530.5, y: 6426.5, /* die einzige Werkbank steht im Osthof (die in der Waldmark ist entfernt) */ tun: "Werken" },
   /* Splitterbinden (Phase 3a): Bindestein an der Linde im Steinring in Weidenhain – nutzbar nach B1 „Der Wegstein“ (Schalter bindestein_linde) */
   bindestein: { id: "bindestein", name: "Bindestein", x: 6453.2, y: 6679.4, tun: "Binden" },
+  /* Kochen (Phase 3b): Standorte in kochstellen.json – hier nur der erste je Station (für Texte); Backofen, Herd und Kessel stehen erst, wenn die Welt sie gebaut hat */
+  feuer: { id: "feuer", name: "Feuer", x: 6442, y: 6687.25, tun: "Kochen" },
+  backofen: { id: "backofen", name: "Backofen", x: 0, y: 0, tun: "Backen" },
+  herd: { id: "herd", name: "Herd", x: 0, y: 0, tun: "Kochen" },
+  kessel: { id: "kessel", name: "Kessel", x: 0, y: 0, tun: "Kochen" },
+  brunnen: { id: "brunnen", name: "Brunnen", x: 6448, y: 6432.85, tun: "Schöpfen" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
@@ -33,6 +40,8 @@ export const WERKSTAETTEN: Werkstatt[] = [
   { id: "bindestein_linde", station: "bindestein", x: STATIONEN.bindestein.x, y: STATIONEN.bindestein.y, ort: "weidenhain", schalter: "bindestein_linde",
     gesperrt: "Ein glatter Stein zwischen den Wurzeln der Linde. Agnes weiß, was es mit ihm auf sich hat." },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
 ];
+/* Kochen (Phase 3b): Feuer, Brunnen – und später Backofen, Herd, Kessel – aus kochstellen.json */
+for (const k of (KOCHSTELLEN as unknown as { stellen: (Werkstatt & { name: string })[] }).stellen) WERKSTAETTEN.push({ id: k.id, station: k.station, x: k.x, y: k.y, ort: k.ort, ...(k.schalter ? { schalter: k.schalter, gesperrt: k.gesperrt } : {}) });
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
 
@@ -45,11 +54,12 @@ const STOFF = ["stoff_hanf", "stoff_grob", "stoff_fein", "stoff_mond", "stoff_sp
 const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
-export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string }
+export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
+  /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
-export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" ? "ofen" : r.station === "amboss" ? "haemmern" : r.station === "hand" || r.station === "bindestein" ? "fuegen"
+export const werkTat = (r: { station: StationId; gruppe: string }): WerkTat => r.station === "esse" || r.station === "feuer" || r.station === "backofen" || r.station === "herd" ? "ofen" : r.station === "kessel" || r.station === "brunnen" ? "fuegen" : r.station === "amboss" ? "haemmern" : r.station === "hand" || r.station === "bindestein" ? "fuegen"
   : ["Sehne und Garn", "Leder", "Stoff"].includes(r.gruppe) ? "weben" : /Kapuze|Hose|Rock|Wams|Robe/.test(r.gruppe) ? "fuegen" : "schnitzen";
 const dazu = (r: Rezept) => { if (!REZEPTE.some((x) => x.id === r.id)) REZEPTE.push(r); };
 
@@ -133,3 +143,19 @@ dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein",
 dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
 /* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */
 dazu({ id: "wegstein_ungeweiht", station: "werkbank", ergebnis: "wegstein_ungeweiht", level: 10, zutaten: [{ g: ["quellstein"], n: 1 }, { g: ["lindenspan"], n: 1 }, { g: ["geweihter_splitter"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Auftrag von Agnes", quest: "weidenhain_der_wegstein" });
+
+/* Phase 3b Kochen (doku/konzepte/phase-3.md, Tabelle „Kochen“): Fisch am Feuer, Brot im Backofen, Suppe im Kessel, Eintopf am Herd. Wasser schöpft man am Brunnen in einen Krug.
+ * Anbrennen: Chance sinkt mit dem Kochen-Level über dem Rezept, ab +30 brennt nichts mehr. Garpunkt (der Moment wie die Glut): das Stück brennt sicher nicht an und gibt 50 % mehr XP. */
+export const BRENN_GRUND = 0.35, BRENN_BIS = 30;
+export const brennChance = (level: number, r: Rezept): number => (r.verbrannt ? Math.max(0, BRENN_GRUND * (1 - (level - r.level) / BRENN_BIS)) : 0);
+const fisch = (f: string, level: number, xp: number, name: string) => dazu({ id: `fisch_${f}_gebraten`, station: "feuer", ergebnis: `fisch_${f}_gebraten`, level, zutaten: [{ g: [`fisch_${f}_roh`], n: 1 }], xp, ticks: 4, stufe: 0, gruppe: name, verbrannt: `fisch_${f}_verbrannt` });
+fisch("bachling", 1, 30, "Fisch");
+fisch("muehlbarsch", 10, 50, "Fisch");
+fisch("moorhecht", 20, 80, "Fisch");
+dazu({ id: "krug_wasser", station: "brunnen", ergebnis: "krug_wasser", level: 1, zutaten: [{ g: ["krug"], n: 1 }], xp: 0, ticks: 2, stufe: 0, gruppe: "Wasser" });
+dazu({ id: "brot_backen", station: "backofen", ergebnis: "brot", level: 1, zutaten: [{ g: ["mehl"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 25, ticks: 5, stufe: 0, gruppe: "Brot", verbrannt: "brot_verbrannt" });
+dazu({ id: "fischsuppe", station: "kessel", ergebnis: "fischsuppe", level: 15, zutaten: [{ g: ["fisch_muehlbarsch_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 70, ticks: 5, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
+dazu({ id: "bauerneintopf", station: "herd", ergebnis: "bauerneintopf", level: 25, zutaten: [{ g: ["kuhfleisch"], n: 1 }, { g: ["mehl"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 100, ticks: 6, stufe: 0, gruppe: "Eintopf", verbrannt: "suppe_verbrannt" });
+/* Fischen: Angelrute (Handwerk 1) und Reuse (Handwerk 20) an der Werkbank */
+dazu({ id: "angelrute", station: "werkbank", ergebnis: "angelrute", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }, { g: ["garn"], n: 1 }], xp: 20, ticks: 3, stufe: 0, gruppe: "Fischen" });
+dazu({ id: "reuse", station: "werkbank", ergebnis: "reuse", level: 20, zutaten: [{ g: ["stamm_tanne"], n: 2 }, { g: ["garn"], n: 3 }], xp: 70, ticks: 5, stufe: 0, gruppe: "Fischen" });

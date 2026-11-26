@@ -315,7 +315,33 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
   GEGENSTAENDE.lindenspan = { id: "lindenspan", name: "Lindenspan", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: Q + "lindenspan.webp",
     text: "Ein Span vom Totholz der alten Linde in Weidenhain. Er riecht nach Honig." };
   GEGENSTAENDE.geweihter_splitter = { id: "geweihter_splitter", name: "Geweihter Splitter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
-    text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." }; }
+    text: "Einer der 250 Splitter, die Agnes in die Wurzeln der Linde gelegt hat – er schimmert jetzt grünlich." };
+  /* Phase 3b Fischen und Kochen (shared/fischen.ts, Kochen in shared/handwerk.ts). Bilder von Figuren & 3D (#39) */
+  const A = "img/objekte3d/skilling/angeln/symbole/", K = "img/objekte3d/skilling/kochen/symbole/", U = "img/objekte3d/skilling/utensilien/";
+  GEGENSTAENDE.angelrute = { id: "angelrute", name: "Angelrute", art: "Werkzeug", seltenheit: "anfaenger", bild: A + "angelrute.webp", modell3d: U + "angelrute.glb",
+    text: "Eine biegsame Rute mit Schnur und Haken. Mit Würmern im Rucksack fängst du damit Bachlinge und Mühlbarsche. Eine bessere gibt es nicht – den Fisch fängt, wer sie hält." };
+  GEGENSTAENDE.reuse = { id: "reuse", name: "Fischreuse", art: "Werkzeug", seltenheit: "gewoehnlich", bild: A + "fischreuse.webp", modell3d: U + "fischreuse.glb",
+    text: "Ein Korb aus Tannenruten und Garn. Im Moorwasser fängt er Moorhechte, ganz ohne Köder. Ab Fischen 20." };
+  GEGENSTAENDE.wurm = { id: "wurm", name: "Wurm", art: "Köder", seltenheit: "anfaenger", stapel: 1000, bild: A + "wuermer.webp",
+    text: "Fett und lebendig, frisch aus dem Acker im Osthof. Ein Wurm je Fisch." };
+  const FN: Record<string, string> = { bachling: "Bachling", muehlbarsch: "Mühlbarsch", moorhecht: "Moorhecht" }, HEIL: Record<string, number> = { bachling: 3, muehlbarsch: 5, moorhecht: 7 };
+  for (const f of Object.keys(FN)) {
+    GEGENSTAENDE[`fisch_${f}_roh`] = { id: `fisch_${f}_roh`, name: `${FN[f]} (roh)`, art: "Rohstoff", seltenheit: "anfaenger", bild: A + `fisch_${f}_roh.webp`,
+      text: `Ein frisch gefangener ${FN[f]}. Roh isst ihn niemand – am Feuer gebraten heilt er ${HEIL[f]} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_gebraten`] = { id: `fisch_${f}_gebraten`, name: f === "moorhecht" ? "Moorhecht am Spieß" : `Gebratener ${FN[f]}`, art: "Essen", seltenheit: "anfaenger", bild: A + `fisch_${f}_gebraten.webp`, trank: `fisch_${f}_gebraten`,
+      text: `Knusprig gebraten. Heilt ${HEIL[f]} Lebenspunkte.` };
+    GEGENSTAENDE[`fisch_${f}_verbrannt`] = { id: `fisch_${f}_verbrannt`, name: `Verbrannter ${FN[f]}`, art: "Abfall", seltenheit: "anfaenger", bild: A + `fisch_${f}_verbrannt.webp`,
+      text: "Schwarz bis auf die Gräten. Den will niemand essen." }; }
+  GEGENSTAENDE.fischsuppe = { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", bild: K + "fischsuppe.webp", trank: "fischsuppe",
+    text: "Mühlbarsch, Wasser und Geduld. Heilt 6 Lebenspunkte und gibt 5 Minuten lang Defense +2." };
+  GEGENSTAENDE.bauerneintopf = { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp", trank: "bauerneintopf",
+    text: "Kuhfleisch, Mehl und Wasser, lange auf dem Herd. Heilt 8 Lebenspunkte; 10 Minuten lang erholt sich die Ausdauer 25 % schneller." };
+  GEGENSTAENDE.suppe_verbrannt = { id: "suppe_verbrannt", name: "Angebrannter Topf", art: "Abfall", seltenheit: "anfaenger", bild: K + "suppe_verbrannt.webp", text: "Am Boden klebt etwas Schwarzes. Es war einmal Essen." };
+  GEGENSTAENDE.brot_verbrannt = { id: "brot_verbrannt", name: "Verbranntes Brot", art: "Abfall", seltenheit: "anfaenger", bild: K + "brot_verbrannt.webp", text: "Hart wie ein Stein und genauso schmackhaft." };
+  GEGENSTAENDE.mehl = { id: "mehl", name: "Mehl", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: K + "mehl.webp", text: "Fein gemahlen in der Mühle im Osthof. Zum Backen und für den Eintopf." };
+  GEGENSTAENDE.krug = { id: "krug", name: "Krug", art: "Werkzeug", seltenheit: "anfaenger", bild: K + "krug.webp", text: "Ein leerer Tonkrug. Am Brunnen füllst du ihn mit Wasser." };
+  GEGENSTAENDE.krug_wasser = { id: "krug_wasser", name: "Krug mit Wasser", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "krug_wasser.webp", text: "Frisches Brunnenwasser. Für Brot, Suppe und Eintopf." };
+  GEGENSTAENDE.kuhfleisch = { id: "kuhfleisch", name: "Kuhfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", text: "Ein gutes Stück vom Rind. Roh nichts für den Magen – im Eintopf schon." }; }
 /* Zwischenteile des Handwerks (wie in OSRS): ungespannte Bögen und Armbrustschäfte – an der Werkbank geschnitzt, im Rucksack mit einer Bogensehne zur Waffe (Bilder: werkzeug/zwischenteile_bilder.py) */
 const ZW_STUFEN = ["_gewoehnlich", "", "_episch", "_legendaer", "_mythisch"];
 export const ZWISCHEN_BOEGEN = [...ZW_STUFEN.map((s) => "mondkurzbogen" + s), ...ZW_STUFEN.map((s) => "mondlangbogen" + s)], ZWISCHEN_ARMBRUESTE = ZW_STUFEN.map((s) => "sternarmbrust" + s);
@@ -414,7 +440,7 @@ export const fachN = (f: Fach): number => (typeof f === "string" ? 1 : f.n);
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.
  * Hier stehen schon Werte, Text und Modell (img/objekte3d, fabrik/drehobjekt.py: schwebt und dreht sich, Animation „drehen“). */
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
-export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
+export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
   kleiner_heiltrank: { id: "kleiner_heiltrank", name: "Kleiner Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "img/objekte3d/heiltrank-klein.glb",
     werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
@@ -422,6 +448,13 @@ export const VERBRAUCH: Record<string, Verbrauch> = {
   brot: { id: "brot", name: "Brot", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 4, anteil: 0 }, stapelbar: false, modell: "",
     werte: [["Heilung", "4 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
     text: "Ein runder Laib aus Gretes Ofen, die Kruste noch warm." },
+  fisch_bachling_gebraten: { id: "fisch_bachling_gebraten", name: "Gebratener Bachling", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 3, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "3 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fisch_muehlbarsch_gebraten: { id: "fisch_muehlbarsch_gebraten", name: "Gebratener Mühlbarsch", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 5, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "5 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fisch_moorhecht_gebraten: { id: "fisch_moorhecht_gebraten", name: "Moorhecht am Spieß", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 7, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "7 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Knusprig gebraten." },
+  fischsuppe: { id: "fischsuppe", name: "Fischsuppe", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 6, anteil: 0 }, stapelbar: false, modell: "", wirkung: "fischsuppe",
+    werte: [["Heilung", "6 (nicht über das maximale Leben)"], ["Wirkung", "Defense +2 für 5 Minuten (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Mühlbarsch, Wasser und Geduld." },
+  bauerneintopf: { id: "bauerneintopf", name: "Bauerneintopf", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 8, anteil: 0 }, stapelbar: false, modell: "", wirkung: "bauerneintopf",
+    werte: [["Heilung", "8 (nicht über das maximale Leben)"], ["Wirkung", "Ausdauer erholt sich 10 Minuten lang 25 % schneller (ersetzt anderes Essen)"], ["Stapelbar", "nein"]], text: "Kuhfleisch, Mehl und Wasser." },
   heiltrank: { id: "heiltrank", name: "Heiltrank", art: "Trank", seltenheit: "gewoehnlich", heilt: { fest: 10, anteil: 0.05 }, stapelbar: true, modell: "img/objekte3d/heiltrank.glb",
     werte: [["Heilung", "10 + 5 % des maximalen Lebens (nicht darüber)"], ["Stapelbar", "ja"]],
     text: "Ein rotes Elixier in bauchiger Flasche, mit dem Kreuz der Heiler auf dem Beschlag. Schließt Wunden, ersetzt aber keinen Rückzug." },

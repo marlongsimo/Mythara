@@ -10,7 +10,9 @@ import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
 import { QUESTS as QUESTS_B } from "../../shared/quests";
 import { neuErledigt, laeuft as laeuftB, lage as lageB, gueltig as gueltigB } from "../../shared/questbau";
 import { SKILL_NAME } from "../../shared/kampfwerte";
-import { inventarSender, inventarVomServer } from "./inventar";
+import { inventarSender, inventarVomServer, wirkungenSetzen } from "./inventar";
+import { WIRKUNGEN } from "../../shared/wirkungen";
+import { wirkanzeigeStarten } from "./wirkanzeige";
 import Phaser from "phaser";
 import { HELDEN, HELDENREIHE } from "../../shared/config";
 import { heldenFigur, richten } from "./modulfigur";
@@ -36,7 +38,7 @@ export const weltOnline = (): number => online;
 export const weltIch = (): Ich | null => ich;
 
 /** Die Welt betreten (je Seite einmal). Ohne Konto oder ohne Server: nur der Chat zeigt einen Hinweis. */
-export function weltBetreten(o: string, h: Hand): void { const schon = ws && ort === o, wechsel = Boolean(ws) && ort !== o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
+export function weltBetreten(o: string, h: Hand): void { wirkanzeigeStarten(); const schon = ws && ort === o, wechsel = Boolean(ws) && ort !== o; ort = o; hand = h; chatAnzeigen(); if (schon) return;
   if (wechsel) { fremde = []; bodenJetzt = []; window.dispatchEvent(new CustomEvent("ez-boden")); senden({ t: "ort", ort: o }); return; } /* andere Region bei bestehender Verbindung: dem Server melden (Boden, Mitspieler, Chat in der Nähe gelten je Region) – 25.11.2026 */
   if (!serverAdresse()) { chatSystem("Ohne Spielserver bist du allein unterwegs."); return; }
   if (!kontoName()) chatSystem("Als Gast siehst du die anderen Spieler. Zum Schreiben brauchst du ein Konto."); void verbinden(); }
@@ -91,7 +93,7 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
-    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; if (!m.gebet) chatSystem(G && G.art === "Essen" ? `Du isst ${G.name === "Brot" ? "ein Brot" : G.name}: +${m.n} Leben (${m.lp} / ${m.max}).` : `Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
+    else if (m.t === "getrunken") { const G = GEGENSTAENDE[String(m.g)]; if (!m.gebet) chatSystem(G && G.art === "Essen" ? `Du isst ${G.name === "Brot" ? "ein Brot" : G.name}` + (m.n ? `: +${m.n} Leben (${m.lp} / ${m.max})` : "") + (m.wirkung && WIRKUNGEN[String(m.wirkung)] ? `${m.n ? " –" : ":"} ${WIRKUNGEN[String(m.wirkung)].text} für ${Math.round(WIRKUNGEN[String(m.wirkung)].ms / 60000)} Minuten` : "") + "." : `Du trinkst ${G ? (/^Kleiner /.test(G.name) ? "einen " + G.name.replace(/^Kleiner/, "kleinen") : "einen " + G.name) : "einen Trank"}: +${m.n} Leben (${m.lp} / ${m.max}).`); if (m.wirkungen) wirkungenSetzen(m.wirkungen); window.dispatchEvent(new CustomEvent("ez-getrunken", { detail: m })); }
     else if (m.t === "holz") window.dispatchEvent(new CustomEvent("ez-holz", { detail: m })); /* Holzfällerei (welt3d/holz3d.ts) */
     else if (m.t === "baeume") window.dispatchEvent(new CustomEvent("ez-baeume", { detail: m.weg || [] }));
     else if (m.t === "berg") window.dispatchEvent(new CustomEvent("ez-berg", { detail: m })); /* Bergbau (welt3d/sammeln3d.ts) */
@@ -100,6 +102,10 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "pflanzen") window.dispatchEvent(new CustomEvent("ez-pflanzen", { detail: m.weg || [] }));
     else if (m.t === "licht") window.dispatchEvent(new CustomEvent("ez-licht", { detail: m })); /* Splitterbinden: Seelenlichter (welt3d/lichter3d.ts) */
     else if (m.t === "lichter") window.dispatchEvent(new CustomEvent("ez-lichter", { detail: m.weg || [] }));
+    else if (m.t === "fisch") window.dispatchEvent(new CustomEvent("ez-fisch", { detail: m })); /* Fischen (welt3d/fischen3d.ts) */
+    else if (m.t === "fanggruende") window.dispatchEvent(new CustomEvent("ez-fanggruende", { detail: m.weg || [] }));
+    else if (m.t === "wurm") window.dispatchEvent(new CustomEvent("ez-wurm", { detail: m }));
+    else if (m.t === "wurmacker") window.dispatchEvent(new CustomEvent("ez-wurmacker", { detail: m.weg || [] }));
     else if (m.t === "wegstein") window.dispatchEvent(new CustomEvent("ez-wegstein", { detail: m })); /* Wegstein: Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "handwerk") window.dispatchEvent(new CustomEvent("ez-handwerk", { detail: m })); /* Handwerk an den Werkstätten (welt3d/handwerk3d.ts) */
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
@@ -158,6 +164,8 @@ export function teleportFragen(antwort: (ok: boolean, rest: number, gast: boolea
 export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
 export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
 export function lichtBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "licht", tat, ...(id ? { id } : {}) }); }
+export function fischBitten(tat: "start" | "stop" | "stroemung", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "fisch", tat, ...(id ? { id } : {}) }); }
+export function wurmBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "wurm", tat, ...(id ? { id } : {}) }); }
 /** Wegstein reiben: der Server prüft Ziel, Ladung, Kampf und Abklingzeit und antwortet mit „wegstein“ */
 export function wegsteinReiben(ziel: string): void { stelleMelden(); senden({ t: "wegstein", ziel }); }
 export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }

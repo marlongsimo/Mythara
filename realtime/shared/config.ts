@@ -177,7 +177,7 @@ export const MONSTER: Record<string, MonsterDef> = {
   kuh: { name: "Kuh", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 50, lp: 10, tempo: 1.2, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.45, aggressiv: false, wiederkehr: 20,
     angriff: { name: "Kopfstoß", art: "nah", schaden: [0, 1], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -60, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } },
-    drops: [{ wurf: [{ g: "kuhhaut", chance: 100 }] }],
+    drops: [{ wurf: [{ g: "kuhhaut", chance: 100 }] }, { wurf: [{ g: "kuhfleisch", chance: 100 }] }] /* Phase 3b: Kuhfleisch für den Bauerneintopf */,
     info: "Eine gutmütige Kuh mit kastanienbraunen Flecken. Sie kaut, schaut und stößt höchstens einmal mit dem Kopf, wenn man sie ärgert." },
   /* Waldgolem (Nordwald, verfallene Feste, 24.11.2026): Level 15, wie ein OSRS-Monster – schlägt selten, aber hart (Max Hit 5 aus Stärke 36), langsam (6 Ticks),
      Holz: Pfeile bleiben stecken (+20 Fern), Magie trifft gut (−10). Greift nur Helden unter Level 15 von selbst an. Modell img/figuren-echt3d/waldgolem3d.glb.

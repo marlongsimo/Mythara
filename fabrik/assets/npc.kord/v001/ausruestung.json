@@ -1,0 +1,40 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.kord – Kord Weller, Fährmann am Fährhaus Graufurt (aus dem Fischer): kurzes graues Haar, grauer Vollbart, langer Fährstaken (fabrik/beute.py staken).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.staken",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.staken/v001/quelle/staken.glb",
+      "griff": 0.62,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.kurz",
+      "platz": "haar",
+      "glb": "npc.kord/v001/quelle/teile/kopf.haar.kurz.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npc.kord/v001/quelle/teile/kopf.bart.vollbart.glb"
+    }
+  ],
+  "arme_eng": 6
+}

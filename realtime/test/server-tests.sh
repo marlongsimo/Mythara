@@ -30,6 +30,7 @@ TESTS=(
   quest03-welt
   questbau
   splitterbinden-welt
+  fischen-kochen-welt
   sprint
   stufe
   teleport-welt

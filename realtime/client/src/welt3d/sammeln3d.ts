@@ -21,12 +21,13 @@ export interface SammelEinstellung {
   /** Nachrichtennamen des Servers */ tatErtrag: string; tatMoment: string; grundLeer: string;
   werkzeugUrl: (g: string) => string; werkzeugStandard: string; /** Clip des Werkzeugschlags ("" = Einhand-Hieb) */ clip: string;
   /** Größe als Höhe (Bäume) oder längste Seite (Adern) */ massArt: "hoehe" | "laenge"; /** Krone durchsichtig, wenn der Held darunter steht */ durchsicht: boolean; spanFarbe: number;
+  /** ohne Modell: selbst gebautes Bild – „wellen“ (Kreise auf dem Wasser, Fischen) oder „erde“ (frisches Erdhäufchen, Würmer) */ prozedural?: "wellen" | "erde"; /** leere (ruhende) Ziele gar nicht antippbar (Fischen: die Fische sind weg, das Wasser ist nur Wasser) */ leerUnsichtbar?: boolean; /** Angeln: Rute bleibt in der Hand (held3d.angeln), Auswerfen beim Start, Einholen beim Fang – nur mit diesem Werkzeug */ angelnMit?: string;
   texte: { tun: (d: SammelDef3D) => string; start: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; moment: string; momentKnopf: string; leerKnopf: string;
     leer: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; leerAnsehen: (d: SammelDef3D, art: (f: "nom" | "akk" | "ein") => string) => string; einStueck: string; je: string };
 }
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
-interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void }
-interface Bild { z: SammelZiel3D; gruppe: THREE.Group; voll: THREE.Object3D | null; leer: THREE.Object3D | null; laedt: boolean; mats?: THREE.Material[]; deck?: number;
+interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; angeln?(url: string, phase: "auswerfen" | "warten" | "einholen"): boolean }
+interface Bild { z: SammelZiel3D; gruppe: THREE.Group; voll: THREE.Object3D | null; leer: THREE.Object3D | null; laedt: boolean; mats?: THREE.Material[]; deck?: number; /** Wellenkreise (prozedural) */ ringe?: THREE.Mesh[];
   u: { uZeit: { value: number }; uPhase: { value: number }; uKern: { value: number }; uHoehe: { value: number }; uWind: { value: number }; /** Krone durchsichtig: Deckkraft oberhalb des Stamms (1 = fest) */ uDurch: { value: number } } }
 
 const vorlagen = new Map<string, Promise<{ szene: THREE.Object3D; hoehe: number; laenge: number }>>();
@@ -53,7 +54,7 @@ function shaderAn(o: THREE.Object3D, u: Bild["u"], mats?: THREE.Material[]) {
 export class SammelWelt {
   private alle = new Map<string, Bild>(); private weg = new Set<string>(); private zeit = 0;
   /** gerade am Sammeln (Ziel-id), Werkzeug (Modell), aktiver Moment bis (performance.now) */
-  aktiv: string | null = null; private werkzeug = ""; private moment: { id: string; bis: number } | null = null;
+  aktiv: string | null = null; private werkzeug = ""; private angelUrl = ""; private moment: { id: string; bis: number } | null = null;
   constructor(private u: Umgebung, private E: SammelEinstellung) {
     for (const z of E.ziele) { const g = new THREE.Group(); g.visible = false; this.u.motor.szene.add(g);
       this.alle.set(z.id, { z, gruppe: g, voll: null, leer: null, laedt: false, u: { uZeit: { value: 0 }, uPhase: { value: zufall(z.id) * 6.28 }, uKern: { value: 0 }, uHoehe: { value: 6 }, uWind: { value: E.massArt === "hoehe" ? 0.1 : 0 }, uDurch: { value: 1 } } }); }
@@ -61,7 +62,17 @@ export class SammelWelt {
     addEventListener(E.ereignis, (e) => this.nachricht((e as CustomEvent).detail)); }
   private get figur(): Werkzeugfigur | null { const f = this.u.figur as Partial<Werkzeugfigur> | null; return f && typeof f.beilHieb === "function" ? (f as Werkzeugfigur) : null; }
   private zustand(a: Bild) { const leer = this.weg.has(a.z.id); if (a.voll) a.voll.visible = !leer; if (a.leer) a.leer.visible = leer; }
-  private async laden(a: Bild) { a.laedt = true; const D = this.E.def(a.z.art);
+  /** Selbst gebautes Bild: Wellenkreise (Fangstelle) oder Erdhäufchen (Wurmacker) – das Leere ist nichts */
+  private bauen(a: Bild): void { const g = new THREE.Group(), leer = new THREE.Group();
+    if (this.E.prozedural === "wellen") { a.ringe = [];
+      for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.5, 40), new THREE.MeshBasicMaterial({ color: 0xeaf6ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+        m.rotation.x = -Math.PI / 2; m.position.y = 0.04 + i * 0.002; m.renderOrder = 3; g.add(m); a.ringe.push(m); }
+      const glanz = new THREE.Mesh(new THREE.CircleGeometry(0.28, 24), new THREE.MeshBasicMaterial({ color: 0xbfe3ff, transparent: true, opacity: 0.35, depthWrite: false })); glanz.rotation.x = -Math.PI / 2; glanz.position.y = 0.03; g.add(glanz); }
+    else { const erde = new THREE.MeshStandardMaterial({ color: 0x5a3d24, roughness: 1 });
+      for (let i = 0; i < 5; i++) { const r = 0.16 + zufall(a.z.id + i) * 0.12, m = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 6), erde); m.scale.y = 0.45; m.position.set((zufall(a.z.id + "x" + i) - 0.5) * 0.6, 0.02, (zufall(a.z.id + "y" + i) - 0.5) * 0.6); m.castShadow = true; g.add(m); }
+      const wurm = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.025, 6, 12, Math.PI * 1.3), new THREE.MeshStandardMaterial({ color: 0xc98585 })); wurm.position.set(0.1, 0.1, 0.05); wurm.rotation.x = -1.1; g.add(wurm); }
+    a.gruppe.add(g, leer); a.voll = g; a.leer = leer; this.zustand(a); }
+  private async laden(a: Bild) { a.laedt = true; if (this.E.prozedural) { this.bauen(a); return; } const D = this.E.def(a.z.art);
     try { const [v, s] = await Promise.all([vorlage(D.modell), D.leer ? vorlage(D.leer) : Promise.resolve(null)]), f = D.mass / (this.E.massArt === "hoehe" ? v.hoehe : v.laenge), dreh = zufall(a.z.id + "d") * Math.PI * 2;
       const voll = v.szene.clone(true), leer = s ? s.szene.clone(true) : new THREE.Group() /* ohne Leer-Modell (Seelenlicht): verloschen = nichts */;
       for (const o of [voll, leer]) { o.scale.setScalar(f * (0.92 + 0.16 * zufall(a.z.id + "s"))); o.rotation.y = dreh; if (D.schweben) o.position.y = D.schweben; a.gruppe.add(o); }
@@ -69,14 +80,17 @@ export class SammelWelt {
     } catch (e) { console.warn(`${this.E.berufName}: Modell fehlt`, a.z.art, e); } }
   private nachricht(m: { tat: string; id?: string; werkzeug?: string; text?: string; name?: string; n?: number; xp?: number; splitter?: number; aufstieg?: number; grund?: string; ms?: number; [k: string]: unknown }) {
     const E = this.E, a = m.id ? this.alle.get(m.id) : undefined, D = a ? E.def(a.z.art) : null, art = D ? artikel(D.weiblich) : artikel(true), f = this.figur;
-    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art)); }
+    if (m.tat === "start") { this.aktiv = m.id || null; this.werkzeug = E.werkzeugStandard ? E.werkzeugUrl(m.werkzeug || E.werkzeugStandard) : ""; if (D) chatSystem(E.texte.start(D, art));
+      this.angelUrl = E.angelnMit && m.werkzeug === E.angelnMit ? E.werkzeugUrl(E.angelnMit) : "";
+      if (this.angelUrl && f && a) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (!f.angeln || !f.angeln(this.angelUrl, "auswerfen")) this.angelUrl = ""; } }
+    else if (m.tat === "hieb" && this.angelUrl) { /* angeln: die Rute bleibt draußen, kein Schlag */ }
     else if (m.tat === "hieb" && a && f) { f.blick(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y); if (this.werkzeug) f.beilHieb(this.werkzeug, E.clip); this.spaene(a); } /* ohne Werkzeug (Pflücken): nur hinschauen */
-    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]);
+    else if (m.tat === E.tatErtrag) { const mom = Boolean(m[E.tatMoment]); if (this.angelUrl && f && f.angeln) f.angeln(this.angelUrl, "einholen");
       chatSystem(`Du bekommst ${(m.n || 1) > 1 ? m.n + " × " : ""}${m.name || E.texte.einStueck}${mom ? ` – ${E.texte.momentKnopf}` : "."}${m.splitter ? ` Dazu ${m.splitter} Splitter.` : ""}`);
       berufDrop(E.beruf, m.xp || 0); if (m.aufstieg) chatSystem(`Glückwunsch! ${E.berufName} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === E.tatMoment && a) { this.moment = { id: a.z.id, bis: performance.now() + (m.ms || 1500) }; this.hinweis(E.texte.moment, m.ms || 1500); }
-    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; if (f) f.beilWeg();
-      if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === E.grundLeer && D) chatSystem(E.texte.leer(D, art)); }
+    else if (m.tat === "stop") { if (this.aktiv === m.id) this.aktiv = null; this.moment = null; this.angelUrl = ""; if (f) f.beilWeg();
+      if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "koeder") chatSystem("Deine Würmer sind alle. Neue gräbst du auf dem Acker im Osthof."); else if (m.grund === E.grundLeer && D) chatSystem(E.texte.leer(D, art)); }
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); if (this.aktiv === m.id) this.aktiv = null; } }
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
   /** Späne bzw. Steinsplitter beim Schlag */
@@ -85,20 +99,27 @@ export class SammelWelt {
     let t = 0; const los = () => { t += 0.03; for (const p of teile) { p.v.y -= 9.8 * 0.03; p.m.position.addScaledVector(p.v, 0.03); p.m.rotation.x += 0.4; } if (t < 0.6) setTimeout(los, 30); else { for (const p of teile) { M.szene.remove(p.m); p.m.geometry.dispose(); } mat.dispose(); } }; setTimeout(los, 260); }
   /** Liegt an diesem Bodenpunkt ein Ziel? Dann „… fällen / abbauen“ (hingehen, sammeln) bzw. im aktiven Moment dessen Knopf */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr: { text: string; sym: string; tat: () => void }[] } | null {
-    let best: Bild | null = null, bd = 1.5; for (const a of this.alle.values()) { const d = Math.hypot(a.z.x - x, a.z.y - y); if (d < bd) { bd = d; best = a; } } if (!best) return null;
-    const E = this.E, a = best, D = E.def(a.z.art), art = artikel(D.weiblich), o = this.u.ort, dx = o.x - a.z.x, dy = o.y - a.z.y, l = Math.hypot(dx, dy) || 1, sx = a.z.x + (dx / l) * 1.4, sy = a.z.y + (dy / l) * 1.4;
+    let best: Bild | null = null, bd = 1.5; for (const a of this.alle.values()) { if (this.E.leerUnsichtbar && this.weg.has(a.z.id)) continue; const d = Math.hypot(a.z.x - x, a.z.y - y); if (d < bd) { bd = d; best = a; } } if (!best) return null;
+    const E = this.E, a = best, D = E.def(a.z.art), art = artikel(D.weiblich), o = this.u.ort, dx = o.x - a.z.x, dy = o.y - a.z.y, l = Math.hypot(dx, dy) || 1; let sx = a.z.x + (dx / l) * 1.4, sy = a.z.y + (dy / l) * 1.4;
+    if (E.prozedural === "wellen") { /* Fangstelle im Wasser: das nächste begehbare Ufer-Feld (bei schmalen Gräben läge der Punkt sonst noch im Wasser) */ let bu = 1e9;
+      for (let ix = -2; ix <= 2; ix++) for (let iy = -2; iy <= 2; iy++) { const px = Math.floor(a.z.x) + ix + 0.5, py = Math.floor(a.z.y) + iy + 0.5; if (Math.hypot(px - a.z.x, py - a.z.y) > 2.05 || !this.u.motor.frei(px, py)) continue;
+        const d = Math.hypot(px - o.x, py - o.y); if (d < bu) { bu = d; sx = px; sy = py; } } }
     const mom = this.moment && this.moment.id === a.z.id && performance.now() < this.moment.bis, leer = this.weg.has(a.z.id);
     return { x: sx, y: sy, text: mom ? E.texte.momentKnopf : leer ? E.texte.leerKnopf : E.texte.tun(D), da: () => Math.hypot(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y) <= 2.0,
       tat: () => { if (mom) { this.moment = null; E.bitten(E.tatMoment); return; } if (leer) { chatSystem(E.texte.leerAnsehen(D, art)); return; } if (this.aktiv === a.z.id) return; E.bitten("start", a.z.id); },
       mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(D.xp ? `${D.name}: ${E.berufName} ${D.level}, ${D.xp} XP ${E.texte.je}.` : `${D.name}: kann man pflücken.`); gegenstandUntersuchen(D.ertrag); } }] }; }
   /** Wo die Ziele stehen (Antippen am Bildschirm: das ganze Ziel zählt) */
-  punkte(): { x: number; y: number; h: number }[] { return [...this.alle.values()].filter((a) => Math.hypot(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y) < 40)
+  punkte(): { x: number; y: number; h: number }[] { return [...this.alle.values()].filter((a) => Math.hypot(a.z.x - this.u.ort.x, a.z.y - this.u.ort.y) < 40 && !(this.E.leerUnsichtbar && this.weg.has(a.z.id)))
     .map((a) => { const D = this.E.def(a.z.art); return { x: a.z.x, y: a.z.y, h: this.E.massArt === "hoehe" ? (this.weg.has(a.z.id) ? 1 : D.mass * 0.8) : D.mass * 0.6 }; }); }
+  /** Wasserspiegel wie motor.ts gelaende: knapp über dem höchsten Punkt ringsum (die Wellenkreise liegen auf dem Wasser, nicht auf dem Grund) */
+  private spiegel(x: number, y: number): number { const M = this.u.motor; let m = -9; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) m = Math.max(m, M.hoehe(x + dx * 0.5, y + dy * 0.5)); return m + 0.08; }
   schritt(dt: number): void { this.zeit += dt; const M = this.u.motor, o = this.u.ort, jetzt = performance.now();
     if (this.moment && jetzt > this.moment.bis) this.moment = null;
     for (const a of this.alle.values()) { const nah = Math.hypot(a.z.x - o.x, a.z.y - o.y) < 55; a.gruppe.visible = nah; if (!nah) continue;
-      if (!a.laedt) void this.laden(a); a.gruppe.position.set(a.z.x, M.hoehe(a.z.x, a.z.y), a.z.y); a.u.uZeit.value = this.zeit;
+      if (!a.laedt) void this.laden(a); a.gruppe.position.set(a.z.x, a.ringe ? this.spiegel(a.z.x, a.z.y) : M.hoehe(a.z.x, a.z.y), a.z.y); a.u.uZeit.value = this.zeit;
       a.u.uKern.value = this.moment && this.moment.id === a.z.id ? 0.6 + 0.4 * Math.sin(jetzt / 70) : 0;
+      if (a.ringe) { const mom = a.u.uKern.value > 0, tempo = mom ? 1.6 : 0.55; a.ringe.forEach((m, i) => { const ph = (this.zeit * tempo + i / 3 + a.u.uPhase.value) % 1; m.scale.setScalar(0.35 + ph * 1.5);
+        const mat = m.material as THREE.MeshBasicMaterial; mat.opacity = (mom ? 0.95 : 0.6) * (1 - ph); mat.color.setHex(mom ? 0xfff2b0 : 0xeaf6ff); }); }
       /* Held unter der Krone: der Baum wird zu 80 % durchsichtig, damit man sich und das Beil sieht */
       if (a.mats && a.mats.length) { const ziel = Math.hypot(a.z.x - o.x, a.z.y - o.y) < 3.4 ? 0.2 : 1; a.deck = (a.deck ?? 1) + (ziel - (a.deck ?? 1)) * Math.min(1, dt * 6);
         const durch = a.deck < 0.99; a.u.uDurch.value = durch ? a.deck : 1; for (const m of a.mats) { if (m.transparent !== durch) { m.transparent = durch; m.needsUpdate = true; } } } } }

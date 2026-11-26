@@ -9,6 +9,7 @@
  *   Beute eines Gegners: 30 s nur für den, der den meisten Schaden gemacht hat (bei Gleichstand den letzten Schlag), dann 5 min für alle.
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
+import { Wirkung, wirkungenPruefen, wirkungenAktiv, wirkungDazu } from "../../shared/wirkungen";
 import { LADBAR, LADUNG_MAX } from "../../shared/splitterbinden";
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN } from "../../shared/gegenstaende";
 import { berufeUmstellen, UMSTELLUNG_SCHMIEDEN } from "../../shared/berufe";
@@ -16,11 +17,11 @@ import { Startwaffe } from "../../shared/aussehen";
 import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[] }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge], alles stapelt */ bank?: [string, number][]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[] }
 const INV_STAND = 2;
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.merker ? { merker: [...i.merker] } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map(([g, n]) => [g, n] as [string, number]) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): [string, number][] { const b: [string, number][] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
@@ -43,6 +44,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
       if (Object.keys(tabs).length) { inv.bankTabs = tabs; reiterOrdnen(inv); } } }
   { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
   { const l = (o as { ladungen?: unknown }).ladungen; if (l && typeof l === "object") { const la: Record<string, number> = {}; for (const [k, v] of Object.entries(l as Record<string, unknown>)) { const n = Math.floor(Number(v)); if ((LADBAR as readonly string[]).includes(k) && n > 0) la[k] = Math.min(LADUNG_MAX, n); } if (Object.keys(la).length) inv.ladungen = la; } }
+  { const w = wirkungenAktiv(wirkungenPruefen((o as { wirkungen?: unknown }).wirkungen)); if (w.length) inv.wirkungen = w; }
   /* Einmalige Umstellung der Berufe (shared/berufe.ts): Schmieden startet mit dem Stand des Handwerks – mit Merker, damit es nur einmal geschieht */
   { const m = (o as { merker?: unknown }).merker, merker = Array.isArray(m) ? m.filter((x): x is string => typeof x === "string" && /^[a-z0-9_]{1,30}$/.test(x)).slice(0, 50) : [];
     const u = berufeUmstellen(inv.berufe || {}, merker); if (Object.keys(u.berufe).length) inv.berufe = u.berufe; inv.merker = u.merker; }
@@ -136,6 +138,11 @@ export function ladungen(nutzer: string, g: string): number { const e = je.get(n
 export function ladungenDazu(sb: Sb, nutzer: string, g: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return 0;
   const l = e.inv.ladungen || (e.inv.ladungen = {}), vorher = l[g] || 0, neu = Math.min(LADUNG_MAX, vorher + Math.floor(n)); l[g] = neu; geaendert(sb, nutzer, e); return neu - vorher; }
 /** eine Ladung verbrauchen. Zurück: ob eine da war */
+/** Laufende Wirkungen (abgelaufene fallen weg) */
+export function wirkungenVon(nutzer: string): Wirkung[] { const e = je.get(nutzer); return e ? wirkungenAktiv(e.inv.wirkungen) : []; }
+/** Eine Wirkung beginnen (ersetzt eine laufende derselben Art, z. B. Essen). Zurück: die laufenden Wirkungen */
+export function wirkungSetzen(sb: Sb, nutzer: string, id: string): Wirkung[] { const e = je.get(nutzer); if (!e) return [];
+  const w = wirkungDazu(e.inv.wirkungen, id); if (w.length) e.inv.wirkungen = w; else delete e.inv.wirkungen; geaendert(sb, nutzer, e); return wirkungenAktiv(e.inv.wirkungen); }
 export function ladungAbziehen(sb: Sb, nutzer: string, g: string): boolean { const e = je.get(nutzer); if (!e || !e.inv.ladungen || !(e.inv.ladungen[g] > 0)) return false;
   e.inv.ladungen[g]--; if (!e.inv.ladungen[g]) delete e.inv.ladungen[g]; geaendert(sb, nutzer, e); return true; }
 export function berufXp(nutzer: string, beruf: string): number { const e = je.get(nutzer); return (e && e.inv.berufe && e.inv.berufe[beruf]) || 0; }

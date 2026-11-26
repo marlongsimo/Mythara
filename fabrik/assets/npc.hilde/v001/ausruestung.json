@@ -1,0 +1,41 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.hilde – Hilde Krug, Wirtin der Taverne Waldmark (aus der Marktfrau, npcfrau3d): Frisur dutt_hoch, Haarfarbe #8a4a26, helle Leinenschürze (#d9cdb2), Tonkrug in der rechten Hand.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.krug",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.krug/v001/quelle/krug.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.dutt_hoch",
+      "platz": "haar",
+      "glb": "npc.hilde/v001/quelle/teile/kopf.haar.dutt_hoch.glb"
+    },
+    {
+      "id": "kleidung.schuerze",
+      "platz": "schuerze",
+      "glb": "npc.hilde/v001/quelle/teile/kleidung.schuerze.glb",
+      "beine_mitteln": true
+    }
+  ],
+  "arme_eng": 6
+}

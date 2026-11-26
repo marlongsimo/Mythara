@@ -1,0 +1,38 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.agnes – Agnes (Mädchen an der Linde, Weidenhain; Quest „Der Wegstein“), aus npc.maedchen: lange blonde Haare (#d6b46c), moosgrüner Umhang (fabrik/umhang.py).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.umhang",
+      "platz": "umhang",
+      "art": "umhang",
+      "glb": "npc.agnes/v001/quelle/teile/kleidung.umhang.glb",
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.lang",
+      "platz": "haar",
+      "glb": "npc.agnes/v001/quelle/teile/kopf.haar.lang.glb"
+    }
+  ],
+  "kind": {
+    "groesse": 0.68,
+    "kopf": 1.22
+  },
+  "arme_eng": 6
+}

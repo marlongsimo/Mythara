@@ -27,7 +27,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   Waffe "drehen": <Grad>      die Waffe um ihre Längsachse gedreht in die Hand legen (Bogen: Sehne zum Körper)
   Teilnetz "arme_nur_aussen": true  Jacke mit Ärmeln: nur die Ärmel folgen den Armen, der Rumpf nicht den herabhängenden Händen
   Waffe "angriff": "<name>"  welche Angriffsbewegung zu dieser Waffe gehört (angriff, angriff_axt, angriff_dolch); Standard: angriff
-Bewegungen, die es zusätzlich gibt: ruhe_2h, gehen_2h, laufen_2h (Zweihänder auf der Schulter), teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
+Bewegungen, die es zusätzlich gibt: gefesselt (Gefangene: kniend, Hände auf dem Rücken), rundumschlag (Zweihänder, Boss: eine ganze Drehung), ruf (Helfer heranwinken), ruhe_2h, gehen_2h, laufen_2h (Zweihänder auf der Schulter), teleport_weg (Teleport: Abreise), trinken (Trinken/Essen: Hand zum Mund), faustschlag (ohne Waffe), angriff_axt, angriff_dolch, angriff_links (Waffe in der linken Hand), zauber, segen, nova, tod (bleibt liegen).
 Für wechselbare Waffen (Bewegung hängt nur von der Waffenklasse ab): stich, block, hieb2h, stich2h, zauber_stab, bogen, armbrust1h, dolchwurf –
   Waffe "bewegungen": [...]  nur in diesen Bewegungen wird die Waffe gerendert; Zweihand greift an festen Punkten (griff_hieb 0.11 m zum Knauf, griff_stich 0.32 m zur Spitze).
   Waffe "hand": "L"          sitzt in der linken Hand (z. B. Streitkolben neben dem Stab); Platz hand_l
@@ -654,6 +654,30 @@ def hieb2h(i, n):
     arme_spur([(0, BEREIT), (0.14, vorn), (0.35, mit(BEREIT, o_r=(0.15, -0.2, 0.95), u_r=(0.5, 0.35, 0.8), kl=(0.0, 0.8, 0.6), o_l=(0.2, -0.3, 0.9), u_l=(-0.3, 0.3, 0.9))),
                (0.5, mit(BEREIT, o_r=(0.2, -0.8, 0.5), u_r=(0.5, -0.85, 0.2), kl=(0.0, -0.35, 0.94), o_l=(0.2, -0.8, 0.4), u_l=(-0.3, -0.9, 0.2))),
                (0.65, mit(BEREIT, o_r=(0.25, -0.8, -0.5), u_r=(0.55, -0.75, -0.4), kl=(0.0, -0.96, -0.28), o_l=(0.15, -0.8, -0.5), u_l=(-0.25, -0.85, -0.45))), (0.86, vorn), (1, BEREIT)], t)
+def rundumschlag(i, n):
+    """Rundumschlag mit dem Zweihänder (Boss): nach rechts ausholen, dann mit waagerecht ausgestreckter Klinge einmal ganz um sich selbst drehen.
+    Die Armrichtungen gelten im Raum der Figur – sie werden mit der Drehung mitgedreht; die linke Hand bleibt am Griffpunkt (wie hieb2h)"""
+    t = i / (n - 1); s = spur([(0, 0.0), (0.25, -70.0), (0.85, 320.0), (1, 360.0)], t); w = spur([(0, 0.0), (0.2, 1.0), (0.85, 1.0), (1, 0.0)], t)
+    q = Quaternion(Z, math.radians(s)); hocke(12 * w)
+    dreh("becken", (Z, s)); dreh("bauch", (X, 4 * w)); dreh("brust", (X, 4 * w)); dreh("hals", (X, -4 * w)); dreh("kopf", (X, -4 * w))
+    for f in spaeter: f()
+    spaeter.clear()
+    quer = mit(BEREIT, o_r=(-0.3, -0.45, -0.84), u_r=(0.2, -0.6, -0.77), kl=(-0.95, -0.3, 0.05), o_l=(0.15, -0.45, -0.88), u_l=(-0.55, -0.5, -0.67))   # Unterarme vorn unten, Klinge waagerecht nach rechts außen
+    pose = {k: tuple(spur([(0, a), (0.2, b), (0.85, b), (1, a)], t)) for k, a, b in ((k, BEREIT[k], quer[k]) for k in BEREIT)}
+    arme(**{k: tuple(q @ Vector(v)) if any(v) else v for k, v in pose.items()})
+def gefesselt(i, n):
+    """Gefangen (Käfig im Kerker): auf den Knien, Hände auf dem Rücken gebunden, Kopf gesenkt; atmet schwer, zittert ab und zu (Schleife)"""
+    t = i / n; atem = math.sin(2 * math.pi * t); zittern = 1.5 * math.sin(2 * math.pi * 6 * t) * (0.5 + 0.5 * math.sin(2 * math.pi * t))
+    hocke(62, vor=-8); rumpf(vor=14 + 3 * atem, kipp=zittern * 0.6, kopf=26 + 4 * atem)
+    hinten = mit(BEREIT, o_r=(-0.3, 0.45, -0.84), u_r=(0.75, 0.55, -0.35), kl=(0.0, 0.2, 0.98), o_l=(0.3, 0.45, -0.84), u_l=(-0.75, 0.55, -0.35))
+    arme(**hinten)
+def ruf(i, n):
+    """Ruf-Geste (Boss ruft Helfer): Kopf in den Nacken – der linke Arm geht auf Schulterhöhe nach vorn und winkt zweimal heran (nicht höher: Umhänge
+    am Arm würden sonst mitgezogen), die Waffe bleibt gesenkt rechts"""
+    t = i / (n - 1); w = spur([(0, 0.0), (0.2, 1.0), (0.85, 1.0), (1, 0.0)], t); wink = math.sin(t * 4 * math.pi) * w
+    rumpf(vor=2 - 10 * w, dreh_z=12 * w, kopf=-22 * w)
+    hoch = mit(BEREIT, o_r=(-0.32, -0.05, -1.0), u_r=(-0.2, -0.35, -0.9), kl=(0.0, -0.8, 0.6), o_l=(0.4, -0.7, 0.55), u_l=(0.1 - 0.25 * wink, -0.45 - 0.3 * wink, 0.88 - 0.2 * wink))
+    arme_spur([(0, BEREIT), (0.2, hoch), (0.85, hoch), (1, BEREIT)], t)
 def stich2h(i, n):
     """Speerstoß: linke Schulter vor, Schaft waagerecht an der rechten Hüfte (rechter Unterarm hängt, der Schaft liegt quer in der Faust),
     zurückziehen, mit Ausfallschritt nach vorn stoßen; die linke Hand greift 40 cm weiter vorn (fester Griffpunkt)"""
@@ -767,6 +791,8 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
               "gehen": (gehen, 8, 8, True, {}), "schildstoss": (schildstoss, 8, 14, False, {"treffer": 4}), "kampfschrei": (kampfschrei, 8, 10, False, {"treffer": 3}),
               "zielen": (zielen, 6, 12, False, {"halten": 5}), "schiessen": (schiessen, 8, 12, False, {"treffer": 3}), "nachladen": (nachladen, 8, 8, False, {}),
               "stich": (stich_rechts, 7, 16, False, {"treffer": 3}), "hieb2h": (hieb2h, 8, 14, False, {"treffer": 5, "ohne": ["arm_l"]}), "stich2h": (stich2h, 8, 14, False, {"treffer": 4, "ohne": ["arm_l"]}),
+              "rundumschlag": (rundumschlag, 12, 14, False, {"treffer": 7, "ohne": ["arm_l"]}), "ruf": (ruf, 12, 10, False, {}),
+              "gefesselt": (gefesselt, 16, 8, True, {}),
               "zauber_stab": (zauber_stab, 8, 12, False, {"treffer": 4}), "bogen": (bogenschuss, 9, 12, False, {"treffer": 5, "ohne": ["arm_l", "hand_r"]}),
               "armbrust1h": (armbrust1h, 8, 12, False, {"treffer": 3}), "dolchwurf": (dolchwurf, 8, 16, False, {"treffer": 4, "loslassen": 4}),
               "teleport_weg": (teleport_weg, 14, 12, False, {"halten": 13}), "trinken": (trinken, 16, 12, False, {"ohne": ["hand_r"]}), "faustschlag": (faustschlag, 9, 12, False, {"treffer": 4}),
@@ -774,7 +800,7 @@ BEWEGUNGEN = {"ruhe": (ruhe, 6, 6, True, {}), "laufen": (laufen, 8, 11, True, {}
 GRUND = ["ruhe", "laufen", "angriff", "block", "angriff2h", "treffer", "ausweichen"]                 # ohne eigene Liste: die sieben Bewegungen des Kriegers v004
 BEWEGUNGEN = {k: v for k, v in BEWEGUNGEN.items() if k in (AUS.get("bewegungen") or GRUND)}
 KAMPF = {"doppelhieb", "angriff", "block", "angriff2h", "treffer", "ausweichen", "angriff_axt", "angriff_dolch", "zauber", "angriff_links", "segen", "nova", "stich", "hieb2h", "stich2h", "zauber_stab", "bogen",
-         "armbrust1h", "dolchwurf", "schildstoss", "kampfschrei", "zielen", "schiessen", "nachladen", "donnerwelle", "glutsphaere", "stabschlag", "faustschlag"}
+         "armbrust1h", "dolchwurf", "schildstoss", "kampfschrei", "rundumschlag", "ruf", "zielen", "schiessen", "nachladen", "donnerwelle", "glutsphaere", "stabschlag", "faustschlag"}
 if AUS.get("gangtempo"):                                                                         # "gangtempo": 0.5 – alle Gehbewegungen (gehen, gehen_2h, …) mit langsameren Schritten
     BEWEGUNGEN = {k: ((f, n, max(1, round(r * float(AUS["gangtempo"]))), sl, z) if k.startswith("gehen") else (f, n, r, sl, z)) for k, (f, n, r, sl, z) in BEWEGUNGEN.items()}
 if AUS.get("kampftempo"):                                                                       # "kampftempo": 0.6 – alle Kampfbewegungen langsamer (Bilder je Sekunde × Faktor)
@@ -802,8 +828,8 @@ if "angriff2h" in bpy.data.actions and "griff2" in bpy.data.objects:
     luecke = []
     for i in range(1, len(gemerkt) - 1): sc.frame_set(i + 1); bpy.context.view_layer.update(); luecke.append(((arm.matrix_world @ PB["unterarm.L"].tail) - bpy.data.objects["griff2"].matrix_world.translation).length * 100)
     print("beidhändig: Abstand linkes Handgelenk – Griff in den Bildern 2 bis 7 (cm):", [round(v, 1) for v in luecke]); a["griffluecke_cm"] = max(luecke)
-for name, zielname in (("hieb2h", "griff2.hieb"), ("stich2h", "griff2.stich")):                    # Zweihand mit festem Griffpunkt (für jede Waffe gleich)
-    if name not in bpy.data.actions: continue
+for name, zielname in (("hieb2h", "griff2.hieb"), ("stich2h", "griff2.stich"), ("rundumschlag", "griff2.hieb")):                    # Zweihand mit festem Griffpunkt (für jede Waffe gleich)
+    if name not in bpy.data.actions or zielname not in bpy.data.objects: continue                  # ohne Waffe im Starr-Teil (Meshy-Figur mit fester Waffe): keine linke Hand am Griff
     a = bpy.data.actions[name]; arm.animation_data.action = a; zg = bpy.data.objects[zielname]; ik = PB["unterarm.L"].constraints.new("IK"); ik.target = zg; ik.chain_count = 2; gemerkt = []
     for i in range(int(a["bilder"])): sc.frame_set(i + 1); bpy.context.view_layer.update(); gemerkt.append((PB["oberarm.L"].matrix.copy(), PB["unterarm.L"].matrix.copy()))
     PB["unterarm.L"].constraints.remove(ik)

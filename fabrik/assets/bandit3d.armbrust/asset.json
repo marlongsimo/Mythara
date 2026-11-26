@@ -1,0 +1,8 @@
+{
+  "id": "bandit3d.armbrust",
+  "name": "Banditen-Armbrustschütze",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "status": "v001: ruhe, gehen, laufen, zielen, schiessen, nachladen, treffer, tod – Spieldatei img/figuren-echt3d/bandit3d_armbrust.glb",
+  "herkunft": "bandit3d"
+}

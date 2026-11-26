@@ -1,0 +1,65 @@
+{
+ "_hinweis": "Kochen (shared/handwerk.ts, Phase 3b): Werkstätten in Weltfeldern. Feuer und Brunnen stehen schon in der Welt (Erntefeuer Weidenhain, Festfeuer am Rastplatz Osthang, Feuerkorb im Rabenmoor, Brunnen Waldmark und Osthof). Herd und Kessel in der Taverne der Waldmark (Welt, #25; nur mit dem Schalter taverne_kueche aus „Die Taverne öffnet“). Der Backofen der Bäckerei fehlt noch. schalter: nur mit diesem Quest-Schalter nutzbar.",
+ "stellen": [
+  {
+   "id": "feuer_weidenhain",
+   "station": "feuer",
+   "x": 6442,
+   "y": 6687.25,
+   "ort": "weidenhain",
+   "name": "Erntefeuer"
+  },
+  {
+   "id": "feuer_osthang",
+   "station": "feuer",
+   "x": 6626,
+   "y": 6516.75,
+   "ort": "osthang",
+   "name": "Feuer am Rastplatz"
+  },
+  {
+   "id": "feuer_rabenmoor",
+   "station": "feuer",
+   "x": 6317,
+   "y": 6703.25,
+   "ort": "rabenmoor",
+   "name": "Torffeuer"
+  },
+  {
+   "id": "brunnen_waldmark",
+   "station": "brunnen",
+   "x": 6448,
+   "y": 6432.85,
+   "ort": "waldmark",
+   "name": "Brunnen"
+  },
+  {
+   "id": "brunnen_osthof",
+   "station": "brunnen",
+   "x": 6529.6,
+   "y": 6431.2,
+   "ort": "osthof",
+   "name": "Brunnen"
+  },
+  {
+   "id": "herd_taverne",
+   "station": "herd",
+   "x": 6426.2,
+   "y": 6426,
+   "ort": "waldmark",
+   "name": "Herd",
+   "schalter": "taverne_kueche",
+   "gesperrt": "Hildes Herd. Ohne ihr Wort kocht hier niemand."
+  },
+  {
+   "id": "kessel_taverne",
+   "station": "kessel",
+   "x": 6428.5,
+   "y": 6426,
+   "ort": "waldmark",
+   "name": "Kessel",
+   "schalter": "taverne_kueche",
+   "gesperrt": "Hildes Kessel. Frag erst die Wirtin."
+  }
+ ]
+}

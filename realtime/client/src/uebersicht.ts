@@ -1,6 +1,7 @@
 /*
 ^ * Die Karte als Übersicht (Knopf „Karte“ an der Minikarte, Taste M): die ganze bekannte Welt aus der Vogelperspektive,
- * zum Verschieben (ziehen) und Zoomen (Mausrad, zwei Finger, + / −). Gezeigt werden Boden, Wald und Gebäude – keine Gegner.
+ * zum Verschieben (ziehen), mit festem Zoom: sichtbar sind immer etwa SICHT_FELDER Felder in der Breite (Wunsch des Nutzers, #11) – auf Handy und PC derselbe Ausschnitt.
+ * Gezeigt werden Boden, Wald und Gebäude – keine Gegner.
  *
  * Erweiterbar: Die Karte setzt sich aus allen Regionen in welt.json zusammen (je Region das Bild karte-<id>.webp aus
  * werkzeug/welt/karte.py an ihrer Weltstelle). Eine neue Region erscheint also von selbst, sobald die Welt-Pipeline sie gebaut hat.
@@ -21,6 +22,8 @@ export interface WeltkarteOpts {
 }
 
 const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
+/** So viele Felder zeigt die Karte in der Breite (fester Zoom, #11: von den Riedwiesen bis Graufurt) */
+export const SICHT_FELDER = 750;
 let offen: (() => void) | null = null;
 
 export function uebersichtOffen(): boolean { return !!offen; }
@@ -38,10 +41,10 @@ export function uebersicht(o: WeltkarteOpts): void {
 
   const hülle = document.createElement("div"); hülle.id = "ez-uebersicht"; hülle.setAttribute("role", "dialog"); hülle.setAttribute("aria-label", "Karte");
   hülle.innerHTML = `<div class="wk-flaeche"><div class="wk-leinwand" style="width:${B}px;height:${H}px"></div></div>
-    <div class="wk-kopf"><b>Karte</b><span class="wk-ort"></span></div>
-    <div class="wk-knoepfe"><button type="button" data-k="plus" aria-label="Näher">+</button><button type="button" data-k="minus" aria-label="Weiter weg">−</button><button type="button" data-k="ich" aria-label="Zu mir">◎</button></div>
+    <div class="wk-kopf"><b>Karte</b><span class="wk-kopfort"></span></div>
+    <div class="wk-knoepfe"><button type="button" data-k="ich" aria-label="Zu mir">◎</button></div>
     <button type="button" class="wk-zu" aria-label="Schließen">✕</button>
-    <p class="wk-hilfe">Ziehen zum Verschieben · Mausrad oder zwei Finger zum Zoomen · M oder Esc schließt</p>`;
+    <p class="wk-hilfe">Ziehen zum Verschieben · M oder Esc schließt</p>`;
   const flaeche = hülle.querySelector(".wk-flaeche") as HTMLElement, lw = hülle.querySelector(".wk-leinwand") as HTMLElement;
   for (const r of o.regionen) {
     const im = document.createElement("img"); im.alt = ""; im.draggable = false; im.src = `${o.daten}karte-${r.id}.webp${o.stand ? "?v=" + o.stand : ""}`; im.dataset.region = r.id;
@@ -73,43 +76,41 @@ export function uebersicht(o: WeltkarteOpts): void {
 
   /* Ansicht: Verschiebung (px am Bildschirm) und Zoom */
   let z = 1, vx = 0, vy = 0;
-  const zMin = () => Math.min(1, Math.min(flaeche.clientWidth / B, flaeche.clientHeight / H) * 0.9), Z_MAX = 4;
+  /** fester Zoom aus der Breite der Kartenfläche */ const zFest = () => Math.max(0.05, flaeche.clientWidth / (SICHT_FELDER * PX));
   const setzen = () => { /* nicht weiter hinaus schieben, als die Welt reicht (ein Rest bleibt sichtbar) */
     const W = flaeche.clientWidth, Hh = flaeche.clientHeight, b = B * z, h = H * z;
     vx = b <= W ? (W - b) / 2 : Math.min(W * 0.4, Math.max(W * 0.6 - b, vx)); vy = h <= Hh ? (Hh - h) / 2 : Math.min(Hh * 0.4, Math.max(Hh * 0.6 - h, vy));
     lw.style.transform = `translate(${vx.toFixed(1)}px, ${vy.toFixed(1)}px) scale(${z.toFixed(4)})`; hülle.style.setProperty("--wkz", String(z)); ordnen();
   };
-  const zoomUm = (f: number, px: number, py: number) => { const n = Math.max(zMin(), Math.min(Z_MAX, z * f)); vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; setzen(); };
+  /** Zoom neu (Fenstergröße geändert): die Mitte bleibt, wo sie war */
+  const neuZoomen = () => { const n = zFest(), px = flaeche.clientWidth / 2, py = flaeche.clientHeight / 2; vx = px - (px - vx) * (n / z); vy = py - (py - vy) * (n / z); z = n; setzen(); };
   const zuMir = () => { const i = o.ich(); if (!i) return; vx = flaeche.clientWidth / 2 - (i.x - x0) * PX * z; vy = flaeche.clientHeight / 2 - (i.y - y0) * PX * z; setzen(); };
-  z = Math.max(zMin(), Math.min(Z_MAX, 1.5)); zuMir(); if (!o.ich()) setzen();
+  z = zFest(); zuMir(); if (!o.ich()) setzen();
 
   /* eigene Stelle laufend nachführen (der Held läuft weiter, auch während die Karte offen ist) */
   let lauf = 0;
   const folgen = () => { const i = o.ich(); punkt.hidden = !i; if (i) { punkt.style.left = (i.x - x0) * PX + "px"; punkt.style.top = (i.y - y0) * PX + "px"; }
-    const r = o.hier && o.regionen.find((q) => q.id === o.hier!()); (hülle.querySelector(".wk-ort") as HTMLElement).textContent = r ? r.name : ""; lauf = requestAnimationFrame(folgen); };
+    const r = o.hier && o.regionen.find((q) => q.id === o.hier!()); (hülle.querySelector(".wk-kopfort") as HTMLElement).textContent = r ? r.name : ""; lauf = requestAnimationFrame(folgen); };
   folgen();
 
-  /* Ziehen und Zoomen mit Zeigern (Maus, Finger) */
-  const zeiger = new Map<number, { x: number; y: number }>(); let abstand = 0;
-  flaeche.addEventListener("pointerdown", (e) => { flaeche.setPointerCapture(e.pointerId); zeiger.set(e.pointerId, { x: e.clientX, y: e.clientY }); flaeche.classList.add("zieht");
-    if (zeiger.size === 2) { const [a, b] = [...zeiger.values()]; abstand = Math.hypot(a.x - b.x, a.y - b.y); } });
+  /* Ziehen mit Zeigern (Maus, Finger); kein Zoomen (fester Ausschnitt) */
+  const zeiger = new Map<number, { x: number; y: number }>();
+  flaeche.addEventListener("pointerdown", (e) => { flaeche.setPointerCapture(e.pointerId); zeiger.set(e.pointerId, { x: e.clientX, y: e.clientY }); flaeche.classList.add("zieht"); });
   flaeche.addEventListener("pointermove", (e) => { const alt = zeiger.get(e.pointerId); if (!alt) return; const neu = { x: e.clientX, y: e.clientY }; zeiger.set(e.pointerId, neu);
-    if (zeiger.size === 1) { vx += neu.x - alt.x; vy += neu.y - alt.y; setzen(); return; }
-    const [a, b] = [...zeiger.values()], d = Math.hypot(a.x - b.x, a.y - b.y), r = flaeche.getBoundingClientRect();
-    if (abstand > 0) zoomUm(d / abstand, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); abstand = d; });
-  const los = (e: PointerEvent) => { zeiger.delete(e.pointerId); abstand = 0; if (!zeiger.size) flaeche.classList.remove("zieht"); };
+    if (zeiger.size === 1) { vx += neu.x - alt.x; vy += neu.y - alt.y; setzen(); } });
+  const los = (e: PointerEvent) => { zeiger.delete(e.pointerId); if (!zeiger.size) flaeche.classList.remove("zieht"); };
   flaeche.addEventListener("pointerup", los); flaeche.addEventListener("pointercancel", los);
-  flaeche.addEventListener("wheel", (e) => { e.preventDefault(); const r = flaeche.getBoundingClientRect(); zoomUm(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  flaeche.addEventListener("wheel", (e) => e.preventDefault(), { passive: false }); /* kein Zoomen mit dem Mausrad (und die Seite rollt nicht) */
   hülle.querySelector(".wk-knoepfe")!.addEventListener("click", (e) => { const k = (e.target as HTMLElement).closest("[data-k]") as HTMLElement | null; if (!k) return;
-    if (k.dataset.k === "ich") zuMir(); else zoomUm(k.dataset.k === "plus" ? 1.4 : 1 / 1.4, flaeche.clientWidth / 2, flaeche.clientHeight / 2); });
+    if (k.dataset.k === "ich") zuMir(); });
   hülle.addEventListener("pointerdown", (e) => e.stopPropagation());
 
-  /* Tasten: M / Esc schließen, + / − zoomen; das Spiel bekommt solange keine Tasten (der Held bleibt stehen) */
+  /* Tasten: M / Esc schließen; das Spiel bekommt solange keine Tasten (der Held bleibt stehen) */
   const taste = (e: KeyboardEvent) => { if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return; e.stopPropagation(); e.preventDefault();
     if (e.type !== "keydown" || e.repeat) return; const k = e.key.toLowerCase();
-    if (k === "escape" || k === "m") schliessen(); else if (k === "+" || k === "=") zoomUm(1.4, flaeche.clientWidth / 2, flaeche.clientHeight / 2); else if (k === "-") zoomUm(1 / 1.4, flaeche.clientWidth / 2, flaeche.clientHeight / 2); };
+    if (k === "escape" || k === "m") schliessen(); };
   window.addEventListener("keydown", taste, true); window.addEventListener("keyup", taste, true);
-  const groesse = () => setzen(); window.addEventListener("resize", groesse);
+  const groesse = () => neuZoomen(); /* Handy gedreht: Zoom aus der neuen Breite */ window.addEventListener("resize", groesse);
   const schliessen = () => { cancelAnimationFrame(lauf); window.removeEventListener("keydown", taste, true); window.removeEventListener("keyup", taste, true); window.removeEventListener("resize", groesse); hülle.remove(); offen = null; };
   hülle.querySelector(".wk-zu")!.addEventListener("click", schliessen);
   offen = schliessen;
@@ -133,7 +134,7 @@ function stil() {
 #ez-uebersicht .wk-ich i::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(255,211,77,.7);animation:wkpuls 1.6s ease-out infinite}
 @keyframes wkpuls{from{transform:scale(.5);opacity:1}to{transform:scale(1.5);opacity:0}}
 #ez-uebersicht .wk-kopf{position:absolute;left:50%;top:max(12px,env(safe-area-inset-top));transform:translateX(-50%);padding:7px 18px;border-radius:999px;background:rgba(20,16,10,.82);border:1px solid #8a6d3b;display:flex;gap:10px;align-items:baseline;font-size:16px;white-space:nowrap;pointer-events:none}
-#ez-uebersicht .wk-kopf .wk-ort{font-size:13px;color:#d8c28e}
+#ez-uebersicht .wk-kopf .wk-kopfort{font-size:13px;color:#d8c28e}
 #ez-uebersicht .wk-knoepfe{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
 #ez-uebersicht button{width:44px;height:44px;border-radius:50%;border:1px solid #8a6d3b;background:rgba(28,22,14,.9);color:#ffe08a;font:600 22px/1 Georgia,serif;cursor:pointer;display:grid;place-items:center}
 #ez-uebersicht button:hover{background:rgba(60,46,26,.95)}
