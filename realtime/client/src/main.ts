@@ -26,7 +26,7 @@ import { Welt, weltName } from "./welt/welt";
 import { weltAnschliessen } from "./welt/anschluss";
 import { Spielwelt3D, welt3dAn } from "./welt3d/spielwelt";
 import { querformat } from "./quer";
-import { lokalerHeld, weltBetreten, geraetAngaben } from "./welt";
+import { lokalerHeld, weltBetreten } from "./welt";
 import { heldenFigur, richten } from "./modulfigur";
 import { hudKarte } from "./hud";
 import { SYMBOL, symbolBild } from "./symbole";
@@ -142,7 +142,7 @@ class Spiel extends Phaser.Scene {
   async starte(held: string, mit: string[]) {
     let url = SERVER, erste: unknown = undefined;
     if (FLACH && kampfJetzt) { const basis = P.has("server") ? P.get("server") || "" : SPIELSERVER, token = basis ? await kontoToken() : "";
-      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token, ...geraetAngaben() }; /* Ein Konto, ein Gerät: dieselbe Seitenkennung wie in der Welt */ this.serverKampf = true; } else url = ""; }
+      if (basis && token) { url = basis + "?kampf=" + encodeURIComponent(kampfJetzt.karte) + "&ort=" + encodeURIComponent(P0.get("ort") || "") + kampfZusatz(); erste = { t: "anmeldung", token }; this.serverKampf = true; } else url = ""; }
     const SERVER0 = url;
     window.addEventListener("ez-server", (ev) => { const m = (ev as CustomEvent).detail as { t: string; liste?: { id: number; name: string; stufe: number }[] }; if (m.t === "namen" && m.liste) { this.spielerNamen.clear(); for (const s of m.liste) this.spielerNamen.set(s.id, s); } });
     /* Zwischenbuchungen des Servers: Die Werte aus der Datenbank gleich merken (falls der Tab danach abstürzt) */

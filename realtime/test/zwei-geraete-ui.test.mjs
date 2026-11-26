@@ -1,4 +1,4 @@
-/* Ein Konto, zwei Geräte (25.11.2026): wer zuerst spielt, bleibt – meldet sich das iPad an, während das Handy spielt, bekommt das iPad „bereits angemeldet“ (auch wenn das Handy nur dasteht; „Ins Spiel“ prüft vorab). Gerüst aus chat-schutz-ui.test.mjs. */
+/* Ein Konto, zwei Geräte (25.11.2026): wer zuerst spielt, bleibt – meldet sich das iPad an, während das Handy spielt, bekommt das iPad „bereits angemeldet“. Gerüst aus chat-schutz-ui.test.mjs. */
 import { createRequire } from "node:module"; import { createServer } from "node:http"; import { spawn } from "node:child_process";
 const require = createRequire(import.meta.url), { chromium } = require("playwright");
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
@@ -56,16 +56,6 @@ try {
   const abgelehnt = await ipad.waitForURL(/willkommen\.html\?grund=bereits/, { timeout: 60000 }).then(() => true).catch(() => false);
   check(abgelehnt, "iPad: Anmeldung abgelehnt, Hinweis „bereits angemeldet“ (" + ipad.url().slice(0, 70) + ")");
   check(await handy.evaluate(() => location.search.indexOf("welt3d") >= 0 && !/anderen Gerät/.test(document.body.textContent)), "Handy spielt weiter");
-  check(/Es ist aktuell schon ein Gerät in Riftmere/.test(await ipad.textContent("#meldung")), "iPad: Meldung „Es ist aktuell schon ein Gerät in Riftmere“");
-  /* „Ins Spiel“ fragt vorher beim Server: das iPad bleibt auf der Willkommensseite und lädt das Spiel gar nicht erst */
-  await ipad.goto(B + "willkommen.html?weiter=" + encodeURIComponent(S + "&vorwaermen=0")); await ipad.waitForTimeout(800);
-  await ipad.evaluate(() => { document.querySelector("#meldung").textContent = ""; }); await ipad.click("#insspiel");
-  const vorab = await ipad.waitForFunction(() => /Es ist aktuell schon ein Gerät in Riftmere/.test(document.querySelector("#meldung").textContent), null, { timeout: 15000 }).then(() => true).catch(() => false);
-  check(vorab && /willkommen\.html/.test(ipad.url()), "„Ins Spiel“ auf dem iPad: Meldung sofort, das Spiel lädt nicht (" + ipad.url().slice(0, 60) + ")");
-  await ipad.waitForTimeout(20000); /* das Handy steht nur da – früher kam das iPad nach 20 s Stille durch und verdrängte es */
-  await ipad.goto(B + S + "&vorwaermen=0").catch(() => {});
-  check(await ipad.waitForURL(/willkommen\.html\?grund=bereits/, { timeout: 60000 }).then(() => true).catch(() => false), "iPad nach 20 s Stille des Handys: weiterhin abgewiesen");
-  check(await handy.evaluate(() => location.search.indexOf("welt3d") >= 0 && !/anderen Gerät/.test(document.body.textContent)), "Handy spielt immer noch");
   check(!fehlerSeite.length, "Keine Fehler im Browser " + fehlerSeite.join(" | "));
 } catch (e) { check(false, "Abbruch: " + (e && e.stack || e)); }
 await br.close(); srv.kill(); sb.close(); if (fehler) console.log(log.slice(-2500));

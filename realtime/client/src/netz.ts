@@ -5,7 +5,7 @@
  *    Das ist zum Ausprobieren gedacht; geschützt gegen Schummeln ist nur der Weg über den Server.
  */
 import { TICK, ZUSTAND_JE } from "../../shared/config";
-import { abmelden, kuerzlichAktiv, beimAbmelden, restAus } from "./abmeldung";
+import { abmelden, kuerzlichAktiv } from "./abmeldung";
 import { Sim, Eingabe, Zustand } from "../../shared/sim";
 
 /** Adresse des Spielservers */
@@ -36,11 +36,11 @@ export function verbinde(url: string, held: string, mit: string[], beiZustand: (
     const versuche = () => {
       if (erledigt) return; if (Date.now() - beginn > FRIST) { ersatz("Server antwortet nicht" + (spur ? " [" + versuch + " Versuche, zuletzt: " + spur + "]" : "")); return; } versuch++;
       try { ws = new WebSocket(url + (url.includes("?") ? "&" : "?") + "held=" + encodeURIComponent(held) + "&mit=" + encodeURIComponent(mit.join(","))); } catch { ersatz("Serveradresse ungültig"); return; }
-      const dieser = ws; let offenGewesen = false, offen = false; const austragen = beimAbmelden(() => dieser.close(1000, "abmelden")); /* Abmelden gibt das Konto frei (sitz.ts) */ dieser.onopen = () => { offen = true; if (erste) dieser.send(JSON.stringify(erste)); };
+      const dieser = ws; let offenGewesen = false, offen = false; dieser.onopen = () => { offen = true; if (erste) dieser.send(JSON.stringify(erste)); };
       dieser.onmessage = (ev) => { let m: { t: string; z?: Zustand }; try { m = JSON.parse(String(ev.data)); } catch { return; }
         if (m.t === "hallo" && !erledigt) { erledigt = true; offenGewesen = true; clearInterval(anzeige); beiArt("server", ""); const puls = setInterval(() => { if (dieser.readyState !== 1) { clearInterval(puls); return; } if (kuerzlichAktiv()) dieser.send('{"t":"da"}'); }, 60000); /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */ fertig({ art: "server", sende: (e) => { if (dieser.readyState === 1) dieser.send(JSON.stringify(e)); }, ende: () => dieser.close() }); }
         else if (m.t === "z" && m.z) beiZustand(m.z); else window.dispatchEvent(new CustomEvent("ez-server", { detail: m })); };
-      dieser.onclose = (ev) => { austragen(); if (ev.code === 4410) { abmelden("bereits", restAus(ev.reason)); return; } if (offenGewesen && ev.code === 4409) { abmelden("anderes"); return; } if (offenGewesen && ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* anderes Gerät / untätig: zur Willkommensseite */ spur = (offen ? "verbunden, dann getrennt" : "keine Verbindung") + ", Code " + ev.code + (ev.reason ? " " + ev.reason : ""); if (!offenGewesen && ev.code >= 4400 && ev.code < 4600) { ersatz(ev.code === 4403 ? "dieser Kampf ist noch nicht freigeschaltet" : ev.code === 4401 ? "Anmeldung vom Server nicht angenommen" : ev.code === 4503 ? "Konto gerade nicht erreichbar" : "Server kennt diesen Kampf nicht"); return; } /* abgelehnt: nicht weiter versuchen */ if (offenGewesen) beiArt("server", "Verbindung getrennt – bitte neu laden"); else if (!erledigt) setTimeout(versuche, Math.min(4000, 800 * versuch)); }; // noch nicht wach: gleich noch einmal
+      dieser.onclose = (ev) => { if (ev.code === 4410) { abmelden("bereits"); return; } if (offenGewesen && ev.code === 4409) { abmelden("anderes"); return; } if (offenGewesen && ev.code === 1000 && ev.reason === "ruhe") { abmelden("ruhe"); return; } /* anderes Gerät / untätig: zur Willkommensseite */ spur = (offen ? "verbunden, dann getrennt" : "keine Verbindung") + ", Code " + ev.code + (ev.reason ? " " + ev.reason : ""); if (!offenGewesen && ev.code >= 4400 && ev.code < 4600) { ersatz(ev.code === 4403 ? "dieser Kampf ist noch nicht freigeschaltet" : ev.code === 4401 ? "Anmeldung vom Server nicht angenommen" : ev.code === 4503 ? "Konto gerade nicht erreichbar" : "Server kennt diesen Kampf nicht"); return; } /* abgelehnt: nicht weiter versuchen */ if (offenGewesen) beiArt("server", "Verbindung getrennt – bitte neu laden"); else if (!erledigt) setTimeout(versuche, Math.min(4000, 800 * versuch)); }; // noch nicht wach: gleich noch einmal
       dieser.onerror = () => { /* onclose folgt */ };
     };
     beiArt("warte", "verbinde mit dem Server …"); versuche();
