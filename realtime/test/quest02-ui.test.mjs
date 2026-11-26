@@ -82,6 +82,14 @@ try {
   await anna.waitForFunction(() => window.EZK && window.EZK.z && window.EZK.z.w && window.EZK.z.w.some((w) => w[2] === "mooshocker"), null, { timeout: 30000 }).catch(() => {});
   const moos = await anna.evaluate(() => window.EZK && window.EZK.z && window.EZK.z.w ? window.EZK.z.w.filter((w) => w[2] === "mooshocker").length : 0);
   check(moos === 7, `In der Osthof-Zone stehen ${moos} Mooshocker`);
+  /* #63: Odo ansprechen – der Held bleibt ein Feld vor ihm stehen (nicht auf seinem Feld), schaut zu ihm, das Gespräch öffnet sich */
+  { await anna.keyboard.press("Escape").catch(() => {});
+    await anna.evaluate(() => { const W = window.EZW.welt3d, s = W.anStelle(6546.5, 6441.5); if (s) W.ausfuehren(s, s.tat); });
+    const offen = await anna.waitForFunction(() => /Odo/.test((document.getElementById("ez-gespraech") || {}).textContent || ""), null, { timeout: 45000, polling: 200 }).then(() => true, () => false);
+    await anna.waitForTimeout(800); const h = await anna.evaluate(() => { const W = window.EZW.welt3d; return { x: W.ort.x, y: W.ort.y, blick: W.blick() }; });
+    const fi = Math.floor(h.x) - 6546, fj = Math.floor(h.y) - 6441, w = Math.atan2(6441.5 - h.y, 6546.5 - h.x), dw = Math.abs(Math.atan2(Math.sin(h.blick - w), Math.cos(h.blick - w)));
+    check(offen && Math.max(Math.abs(fi), Math.abs(fj)) === 1, `Odo ansprechen: Gespräch offen (${offen}), der Held steht auf einem Nachbarfeld, nicht auf Odos Feld (${h.x.toFixed(1)}, ${h.y.toFixed(1)}; Blick ${dw.toFixed(2)} rad neben Odo)`);
+    await anna.keyboard.press("Escape").catch(() => {}); await anna.waitForTimeout(400); }
   /* #62: Ben beginnt weit weg in Weidenhain – die Questobjekte entstehen, bevor Osthof geladen ist – und springt dann nach Osthof: alle stehen auf dem Gelände */
   { const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6451.5, 6686.5, "weidenhain"]); ben.setDefaultTimeout(90000); await ben.goto(B + S);
     await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length >= 7 && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
