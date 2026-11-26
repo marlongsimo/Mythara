@@ -54,6 +54,11 @@ try {
   await anna.waitForTimeout(2500);
   const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === "osthof_der_stille_rain").map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
   let L = await lage();
+  /* #62: jedes Objekt steht auf dem Boden – auch zaun3 und rute4 im Chunk östlich (x ≥ 6560), der beim Aufbau noch nicht geladen ist */
+  const boden = await anna.waitForFunction(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor, l = q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id));
+    const ab = l.map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2)]); return l.length === 7 && ab.every(([, d]) => Math.abs(d) < 0.05) ? ab : false; }, null, { timeout: 20000, polling: 500 }).then((h) => h.jsonValue(), () => null);
+  const bodenIst = boden || await anna.evaluate(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor; return q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id)).map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2)]); });
+  check(Boolean(boden), `Bruchstellen und Rutenbündel stehen auf dem Gelände, nicht darunter (Abstand zum Boden: ${JSON.stringify(bodenIst)})`);
   check(L.figuren.join() === "Brida Wegner,Odo Kern,Wenzel", `Quest-2-Figuren: ${L.figuren.join(", ")}`);
   const Q2O = L.objekte.filter((o) => /^(zaun|rute)\d/.test(o.id)); check(Q2O.length === 7 && Q2O.every((o) => o.sicht && o.ring) && L.objekte.filter((o) => !Q2O.includes(o)).every((o) => !o.sicht) /* Objekte anderer Quests (A2, A3) bleiben verborgen */, `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
   if (BILD) await anna.screenshot({ path: BILD + "q2-osthof.png" });
@@ -77,6 +82,14 @@ try {
   await anna.waitForFunction(() => window.EZK && window.EZK.z && window.EZK.z.w && window.EZK.z.w.some((w) => w[2] === "mooshocker"), null, { timeout: 30000 }).catch(() => {});
   const moos = await anna.evaluate(() => window.EZK && window.EZK.z && window.EZK.z.w ? window.EZK.z.w.filter((w) => w[2] === "mooshocker").length : 0);
   check(moos === 7, `In der Osthof-Zone stehen ${moos} Mooshocker`);
+  /* #62: Ben beginnt weit weg in Weidenhain – die Questobjekte entstehen, bevor Osthof geladen ist – und springt dann nach Osthof: alle stehen auf dem Gelände */
+  { const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6451.5, 6686.5, "weidenhain"]); ben.setDefaultTimeout(90000); await ben.goto(B + S);
+    await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length >= 7 && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
+    await ben.waitForTimeout(2000); await ben.evaluate(() => window.EZW.welt3d.springen(6555.5, 6429.5));
+    const ab = () => ben.evaluate(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor; return q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id)).map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2), Boolean(M.chunkBei(o.d.x, o.d.y))]); });
+    const ok = await ben.waitForFunction(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor, l = q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id));
+      return l.length === 7 && l.every((o) => M.chunkBei(o.d.x, o.d.y) && Math.abs(o.g.position.y - M.hoehe(o.d.x, o.d.y)) < 0.05); }, null, { timeout: 30000, polling: 500 }).then(() => true, () => false);
+    check(ok, `Start weit weg (Weidenhain), dann Osthof: Bruchstellen und Rutenbündel stehen auf dem Gelände (Abstand zum Boden, Chunk geladen: ${JSON.stringify(await ab())})`); }
   check(!fehlerSeite.length, "Keine Fehler auf der Seite" + (fehlerSeite.length ? ": " + fehlerSeite.join(" | ").slice(0, 300) : ""));
 } catch (e) { console.error(e); fehler++; }
 await br.close(); srv.kill(); sb.close();
