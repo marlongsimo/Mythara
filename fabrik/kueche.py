@@ -1,11 +1,12 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
 mehl: Leinensack, zugebunden, Mehl obenauf und daneben · krug_wasser: Tonkrug mit Henkel, Wasser oben · kessel: eiserner Kessel mit Bügel.
+Phase 9: salz (offener Beutel Salz mit Kristallen) · glutwels_salzkruste (Glutwels in aufgebrochener Salzkruste auf dem Tonteller).
 """
 import math, os, random, sys
 import bpy
@@ -106,6 +107,34 @@ elif ART == "brot_verbrannt":                                                   
     for v in o.data.vertices: v.co += Vector((0, 0, 0.004 * math.sin(v.co.x * 90) * (v.co.z > 0.03)))
     for k in range(3): kugel((-0.04 + 0.04 * k, 0.0, 0.07), 0.008, mat("riss", (12, 10, 8), 0.95), (0.6, 4.5, 0.3), 8).rotation_euler = (0, 0, 0.5)
     for k in range(5): kugel((random.uniform(-.1, .1), random.uniform(-.07, .07), 0.003), 0.008, mat("asche", (110, 106, 100), 1.0), (1, 1, 0.3), 6)
+elif ART == "salz":                                                                              # Phase 9: Salz aus der Salzpfanne – offener Beutel, Salz obenauf und daneben, ein paar Kristalle
+    SACK = mat("leinen_salz", (196, 172, 130), 0.95); SALZ = mat("salz", (246, 244, 238), 0.55); KR = mat("salzkristall", (235, 238, 242), 0.15)
+    o = dreh("beutel", [(0.0, 0.0), (0.06, 0.0), (0.078, 0.025), (0.082, 0.07), (0.075, 0.1), (0.082, 0.11), (0.07, 0.112), (0.0, 0.112)], SACK, 32)
+    for v in o.data.vertices: v.co += Vector((0.004 * math.sin(v.co.z * 70 + v.co.x * 40), 0.004 * math.cos(v.co.z * 60), 0))
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.079, minor_radius=0.007, location=(0, 0, 0.106)); bpy.context.object.data.materials.append(SACK)   # umgeschlagener Rand
+    bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.072, radius2=0.01, depth=0.05, location=(0, 0, 0.13)); o = glatt(bpy.context.object); o.data.materials.append(SALZ)   # Salzberg im Beutel
+    for v in o.data.vertices: v.co.z += 0.003 * math.sin(v.co.x * 160) * math.cos(v.co.y * 140)
+    bpy.ops.mesh.primitive_cone_add(vertices=20, radius1=0.04, radius2=0.004, depth=0.022, location=(0.1, -0.05, 0.011)); glatt(bpy.context.object).data.materials.append(SALZ)
+    for k in range(7):
+        bpy.ops.mesh.primitive_cube_add(size=random.uniform(0.01, 0.016), location=(random.uniform(0.05, 0.14), random.uniform(-0.1, 0.0), 0.006), rotation=(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 3)))
+        bpy.context.object.data.materials.append(KR)
+elif ART == "glutwels_salzkruste":                                                              # Phase 9: Glutwels in Salzkruste – auf dem Tonteller, Kruste aufgebrochen, Kopf und Schwanz schauen heraus
+    TON = mat("tonteller", (120, 62, 36), 0.75); KRUSTE = mat("salzkruste", (252, 248, 236), 0.7); BRAUN = mat("kruste_braun", (214, 162, 96), 0.8)
+    FISCH = mat("glutwels_gegart", (196, 92, 40), 0.5); FLEISCH = mat("fischfleisch", (250, 226, 200), 0.6); KRAUT = mat("kraut", (70, 120, 50), 0.7); RISS = mat("riss", (120, 100, 80), 0.9)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.2, depth=0.014, location=(0, 0, 0.007)); t = bpy.context.object; t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)   # flacher Tonteller
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.2, minor_radius=0.009, location=(0, 0, 0.016), major_segments=48, minor_segments=8); t = glatt(bpy.context.object); t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)
+    k = kugel((0, 0, 0.03), 0.07, KRUSTE, (2.6, 0.95, 0.62), 24)
+    for v in k.data.vertices: v.co += Vector((0, 0, 0.004 * math.sin(v.co.x * 55) * math.cos(v.co.y * 70)))
+    kugel((0.02, 0.0, 0.07), 0.05, BRAUN, (2.0, 0.7, 0.12), 16)                                  # angebräunte Oberseite
+    for a, x in ((0.4, -0.06), (-0.5, 0.02), (0.3, 0.09)): kugel((x, 0.0, 0.074), 0.04, RISS, (0.08, 1.2, 0.06), 8).rotation_euler = (0, 0, a)
+    kugel((0.05, -0.045, 0.06), 0.035, FLEISCH, (1.3, 0.8, 0.5), 14)                            # aufgebrochen: helles Fischfleisch
+    for x, y, r in ((0.11, -0.08, 0.02), (0.13, -0.05, 0.016), (0.08, -0.1, 0.013)): wuerfel((x, y, 0.03), r, KRUSTE, (0.4, 0.7, x * 10))   # Krustenbrocken
+    kugel((-0.2, 0, 0.045), 0.04, FISCH, (1.4, 0.85, 0.8), 14)                                    # Kopf
+    for sy in (1, -1): kugel((-0.225, sy * 0.026, 0.06), 0.008, mat("auge_gegart", (240, 235, 220), 0.2), (1, 1, 1), 8)
+    for sy in (1, -1): rohr([(-0.235, sy * 0.012, 0.035), (-0.26, sy * 0.04, 0.03), (-0.27, sy * 0.06, 0.025)], 0.0025, FISCH)   # Barteln
+    bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.055, radius2=0.0, depth=0.07, location=(0.21, 0, 0.05), rotation=(0, math.radians(-90), 0)); o = bpy.context.object; o.scale = (1, 1, 0.2); o.data.materials.append(FISCH)   # Schwanz
+    for x, y in ((-0.1, 0.07), (-0.05, 0.08), (0.13, 0.07), (0.16, -0.06)): kugel((x, y, 0.03), 0.011, KRAUT, (1.6, 0.8, 0.4), 8).rotation_euler = (0, 0, x * 9)
+    for k_ in range(10): kugel((random.uniform(-.2, .2), random.uniform(-.12, .12), 0.028), 0.004, mat("salz", (246, 244, 238), 0.55), (1, 1, 0.7), 6)
 elif ART == "kessel":
     EISEN = mat("eisen", (105, 105, 112), 0.5, 0.6)
     dreh("kessel", [(0.0, 0.0), (0.06, 0.0), (0.12, 0.04), (0.14, 0.1), (0.13, 0.15), (0.125, 0.16), (0.12, 0.155), (0.0, 0.155)], EISEN, 40)

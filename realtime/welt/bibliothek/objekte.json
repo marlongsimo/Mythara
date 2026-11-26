@@ -9066,6 +9066,93 @@
     "wind": 0,
     "fest": true
    }
+  },
+  {
+   "id": "glutsande_spiegelplatte",
+   "name": "Spiegelplatte",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/glutsande_spiegelplatte.webp",
+   "groesse": [
+    58,
+    98
+   ],
+   "anker": [
+    0.4914,
+    0.9286
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.45
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Phase 9), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/spiegelplatte.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "glutsande_salzpfanne",
+   "name": "Salzpfanne",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/glutsande_salzpfanne.webp",
+   "groesse": [
+    205,
+    175
+   ],
+   "anker": [
+    0.2317,
+    0.8971
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Phase 9), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/salzpfanne.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "glutsande_schoepfrad",
+   "name": "Schöpfrad",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/glutsande_schoepfrad.webp",
+   "groesse": [
+    176,
+    260
+   ],
+   "anker": [
+    0.3267,
+    0.9385
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Phase 9), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/schoepfrad.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
