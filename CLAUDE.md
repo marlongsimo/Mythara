@@ -6,7 +6,7 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 ## Vor jeder Arbeit
 1. Klären, welche Rolle diese Sitzung hat (steht in der ersten Nachricht des Nutzers; sonst nachfragen).
 2. `doku/STAND.md` lesen (wo stehen wir im Fahrplan) und `doku/KANON.md` (Namen, Entscheidungen).
-3. Offene GitHub-Issues mit dem Label der eigenen Rolle ansehen (`rolle:spiel`, `rolle:systeme`, `rolle:quests`, `rolle:figuren`, `rolle:welt`, `rolle:review`).
+3. Offene GitHub-Issues mit dem Label der eigenen Rolle ansehen (`rolle:spiel`, `rolle:systeme`, `rolle:bugs`, `rolle:quests`, `rolle:figuren`, `rolle:welt`, `rolle:review`).
 4. Den eigenen Zweig auf den neuesten Stand bringen: `git fetch origin feature/realtime-engine && git merge origin/feature/realtime-engine`.
 
 ## Wer was ändern darf
@@ -14,6 +14,7 @@ Diese Datei liest jede Sitzung beim Start. Ausführlich: `doku/ARBEITSWEISE.md`.
 |---|---|---|
 | **Integration & Inhalte** | Zusammenführen, Bauen, Live, `.github/`, Test-Werkzeuge (`realtime/test/parallel.mjs`, `server-tests.sh`); Inhaltsdaten in `realtime/shared` (Gegner-Einträge, Beute, Läden, Karten, Kartensymbole, Gegenstände); Client-Oberfläche (HUD, Karte, Menüs); Einbau von Figuren, Welt und Quests; Wünsche und Bugs | Modellquellen (`fabrik/`), Weltquellen (`realtime/welt/`), neue Systeme (→ Issue `rolle:systeme`) |
 | **Systeme** | Neue Spielmechaniken Ende-zu-Ende: `realtime/server/src`, System-Dateien in `realtime/shared` (Simulation, Kampf, Questmotor/-bau, Inventar, Wirkungen …), nötige Client-Teile des Systems, `supabase/` (neue Migrationen), Tests dazu | Inhaltsdaten, `.github/`, Live stellen, `fabrik/`, `realtime/welt/` |
+| **Bugs** | Gezielte Fehlerbehebung in `realtime/client`, `realtime/server`, `realtime/shared` (nur so viel wie der Fehler braucht) + Test je Fehler, Zweig `claude/bugs` | Neue Funktionen, Umbauten, Inhaltsdaten, `.github/`, Live stellen, `fabrik/`, `realtime/welt/` |
 | **Quest-Autor** | Quest-Dateien `realtime/shared/quest*.ts`, Dialoge, Questfiguren, `doku/quests/` | Motor (`questbau.ts`, `questmotor.ts`), Server, Client |
 | **Figuren & 3D** | `fabrik/`, `img/figuren-*`, `img/objekte3d/`, Animationslisten | Spiellogik, Gegnerwerte, Quests |
 | **Worldbuilding** | `realtime/welt/`, Weltkarte, Minikarten, Gelände, Kacheln | Quests, Server, Client-Code |
