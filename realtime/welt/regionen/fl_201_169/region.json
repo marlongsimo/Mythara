@@ -1,0 +1,16 @@
+{
+ "id": "fl_201_169",
+ "name": "Die Fahlen Weiten",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  201,
+  169
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "tundra",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

@@ -1,0 +1,16 @@
+{
+ "id": "fl_231_169",
+ "name": "Das Splittermeer",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  231,
+  169
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "meer",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

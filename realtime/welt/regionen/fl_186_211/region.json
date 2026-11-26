@@ -1,0 +1,16 @@
+{
+ "id": "fl_186_211",
+ "name": "Die Smaragdküste",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  186,
+  211
+ ],
+ "chunks": [
+  15,
+  14
+ ],
+ "biom": "tropen",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

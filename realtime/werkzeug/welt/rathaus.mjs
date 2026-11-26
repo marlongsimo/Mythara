@@ -9,7 +9,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
 
-export const URSPRUNG = [234, 230], OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32, FUSS = [16.5, 21];
+export const URSPRUNG = [324, 300], OX = URSPRUNG[0] * 32, OY = URSPRUNG[1] * 32, FUSS = [16.5, 21];
 /** Rathaus unten (Waldmark, Weltfelder): Fuß und Treppe; oben: wo man ankommt */
 const UNTEN_FUSS = [200 * 32 + 39.5, 200 * 32 + 27], TREPPE = [-3.3, 5.4];
 export const UNTEN_TREPPE = [UNTEN_FUSS[0] + TREPPE[0], UNTEN_FUSS[1] - TREPPE[1] + 1.8];          /* am Fuß der Treppe (Lesestelle) */

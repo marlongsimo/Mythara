@@ -234,7 +234,80 @@ KACHELN = {
     'wasser': lambda r: wasser(r), 'wasser-ruhig': lambda r: wasser(r, True),
     'moorwasser': moorwasser, 'torf': torf, 'schlamm': schlamm, 'sand': sand,
     'acker': acker, 'hoehlenboden': hoehlenboden, 'felswand': felswand, 'holzboden': holzboden,
-    'moorwiese': lambda r: wiese(r, (112, 116, 66), 90, blumen=6, gelb=8)}
+    'moorwiese': lambda r: wiese(r, (112, 116, 66), 90, blumen=6, gelb=8),
+    'meer': lambda r: meer(r), 'geroell': lambda r: geroell(r), 'schnee': lambda r: schnee(r), 'tundra': lambda r: tundra(r), 'duene': lambda r: duene(r), 'steppe': lambda r: steppe(r), 'dschungel': lambda r: dschungel(r)}
+
+
+def meer(rng):
+    """Offenes Meer: tiefer und blauer als Flusswasser, lange Dünungsstreifen"""
+    a = wasser(rng) * np.array((0.78, 0.9, 1.05), np.float32)
+    yy = np.arange(N, dtype=np.float32)[:, None]; xx = np.arange(N, dtype=np.float32)[None, :]
+    duenung = 0.5 + 0.5 * np.sin((yy + 0.35 * xx) / N * 2 * math.pi * 7 + 1.3 * np.sin(xx / N * 2 * math.pi * 2))
+    return a * (0.9 + 0.12 * duenung)[..., None]
+
+
+def geroell(rng):
+    """Steiniger Bergboden: grauer Grus mit vielen Steinen, wenig Grün"""
+    a = grund((132, 126, 114), rng, gross=0.1, mittel=0.06)
+    M = Maler(a)
+    for _ in range(220):
+        g = rng.uniform(0.75, 1.15); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(2.0, 6.5), tuple(int(c * g) for c in (150, 144, 134)))
+    for _ in range(14):
+        bueschel(M, rng.uniform(0, N), rng.uniform(0, N), (110, 120, 72), rng, 0.6)
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def schnee(rng):
+    """Schnee: fast weiß, kühl verschattete Mulden und Windgangeln"""
+    a = grund((226, 232, 238), rng, gross=0.05, mittel=0.025)
+    yy = np.arange(N, dtype=np.float32)[:, None]; xx = np.arange(N, dtype=np.float32)[None, :]
+    wind = 0.5 + 0.5 * np.sin((xx + 0.6 * yy) / N * 2 * math.pi * 9 + 2 * np.sin(yy / N * 2 * math.pi * 3))
+    a = a * (0.95 + 0.06 * wind)[..., None] * np.array((0.98, 0.99, 1.02), np.float32)
+    M = Maler(a)
+    for _ in range(18):
+        g = rng.uniform(0.8, 1.0); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(1.5, 3.5), tuple(int(c * g) for c in (120, 118, 116)))
+    return ndimage.gaussian_filter(M.bild(), (0.9, 0.9, 0))
+
+
+def tundra(rng):
+    """Karges nordisches Flachland: graugrünes, kurzes Gras, Flechten und Steine"""
+    a = wiese(rng, (128, 134, 96), 34, gelb=6)
+    M = Maler(a)
+    for _ in range(70):
+        g = rng.uniform(0.8, 1.1); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(1.8, 4.2), tuple(int(c * g) for c in (150, 146, 136)))
+    for _ in range(30):
+        x, y, r = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(5, 12); M.form('ellipse', [x - r, y - r * 0.7, x + r, y + r * 0.7], fill=(168, 160, 112))
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def duene(rng):
+    """Wüstensand: warmes Ocker mit weichen Rippeln vom Wind"""
+    a = grund((214, 176, 112), rng, gross=0.07, mittel=0.03)
+    yy = np.arange(N, dtype=np.float32)[:, None]; xx = np.arange(N, dtype=np.float32)[None, :]
+    rippel = 0.5 + 0.5 * np.sin((yy - 0.25 * xx) / N * 2 * math.pi * 22 + 1.5 * np.sin(xx / N * 2 * math.pi * 3))
+    return ndimage.gaussian_filter(a * (0.92 + 0.11 * rippel)[..., None], (0.8, 0.8, 0))
+
+
+def steppe(rng):
+    """Steppe: trockenes, gelbliches Gras in Büscheln, dazwischen Erde"""
+    a = grund((150, 130, 82), rng, gross=0.08, mittel=0.04)
+    M = Maler(a)
+    for _ in range(170):
+        bueschel(M, rng.uniform(0, N), rng.uniform(0, N), (168, 156, 84), rng, rng.uniform(0.7, 1.2))
+    for _ in range(30):
+        g = rng.uniform(0.85, 1.05); kiesel(M, rng.uniform(0, N), rng.uniform(0, N), rng.uniform(1.6, 3.0), tuple(int(c * g) for c in (160, 146, 116)))
+    return ndimage.gaussian_filter(M.bild(), (0.7, 0.7, 0))
+
+
+def dschungel(rng):
+    """Tropischer Boden: sattes Dunkelgrün, große Blätter, Farn"""
+    a = wiese(rng, (62, 112, 44), 90, gelb=0)
+    M = Maler(a)
+    for _ in range(60):
+        x, y, r = rng.uniform(0, N), rng.uniform(0, N), rng.uniform(6, 13); w = rng.uniform(0, math.pi); g = float(rng.uniform(0.8, 1.2))
+        pk = [(x + math.cos(w + t) * r * (1 if k % 2 else 0.35), y + math.sin(w + t) * r * (1 if k % 2 else 0.35)) for k, t in enumerate(np.linspace(0, 2 * math.pi, 9, endpoint=False))]
+        M.form('polygon', pk, fill=tuple(int(c * g) for c in (52, 118, 48)))
+    return ndimage.gaussian_filter(M.bild(), (0.6, 0.6, 0))
 
 
 def main():

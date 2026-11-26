@@ -1,0 +1,16 @@
+{
+ "id": "fl_246_239",
+ "name": "Das Endlose Meer",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  246,
+  239
+ ],
+ "chunks": [
+  15,
+  15
+ ],
+ "biom": "meer",
+ "stufe": 3,
+ "nahtlos": "festland"
+}
