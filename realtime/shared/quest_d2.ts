@@ -27,9 +27,9 @@ export const QUEST_D2: QuestDef = {
   logFertig: "Das grüne Licht ist erloschen. Ysolde hat gewartet, dass Grauwacht antwortet – niemand antwortete. Der Weg nach Grauwacht im Nordsaum ist zugewachsen. Noch.",
   geber: "kord_ost", abgabe: "merit",
   figuren: [
-    { id: "kord_ost", name: "Kord Weller", modell: "npcmann3d", x: OSTANLEGER[0], y: OSTANLEGER[1], blick: [1, 0] },
+    { id: "kord_ost", name: "Kord Weller", modell: "npc.kord", x: OSTANLEGER[0], y: OSTANLEGER[1], blick: [1, 0] },
     { id: "ysolde", name: "Ysolde", modell: "npc.ysolde", x: DACH[0] + 2, y: DACH[1], blick: [-1, 0] },
-    { id: "merit", name: "Merit Stahl", modell: "stadtwache3d", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
+    { id: "merit", name: "Merit Stahl", modell: "npc.merit", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
   ],
   voraussetzungen: [{ text: "„Die Fährkette“ abgeschlossen", wenn: { quest: { id: D1, phase: ["fertig"] } } }],
   schritte: [

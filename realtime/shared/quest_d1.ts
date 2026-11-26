@@ -29,9 +29,9 @@ export const QUEST_D1: QuestDef = {
   logFertig: "Die Fähre von Graufurt fährt wieder. Kord Weller setzt dich ans Ostufer über, wann immer du willst.",
   geber: "kord",
   figuren: [
-    { id: "kord", name: "Kord Weller", modell: "npcmann3d", x: KORD[0], y: KORD[1], blick: [-1, 0] },
-    { id: "merit", name: "Merit Stahl", modell: "stadtwache3d", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
-    { id: "schmiedin", name: "Die Schmiedin", modell: "npc.schmied", x: SCHMIEDIN[0], y: SCHMIEDIN[1], blick: [0, 1] },
+    { id: "kord", name: "Kord Weller", modell: "npc.kord", x: KORD[0], y: KORD[1], blick: [-1, 0] },
+    { id: "merit", name: "Merit Stahl", modell: "npc.merit", x: MERIT[0], y: MERIT[1], blick: [0, 1] },
+    { id: "schmiedin", name: "Die Schmiedin", modell: "npc.schmiedin", x: SCHMIEDIN[0], y: SCHMIEDIN[1], blick: [0, 1] },
   ],
   voraussetzungen: [
     { text: "„Das Wappen mit dem Turm“ abgeschlossen", wenn: { quest: { id: A2, phase: ["fertig"] } } },

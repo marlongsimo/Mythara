@@ -27,16 +27,17 @@ const WAHL: { id: string; text: string; g: string; name: string; satz: string }[
   { id: "wahl_bogen", text: "Den Kurzbogen.", g: "mondkurzbogen", name: "einen seltenen Kurzbogen", satz: "Den Bogen. Gesa wird nicken, wenn sie ihn sieht." },
   { id: "wahl_stab", text: "Den Stab.", g: "sternenszepter", name: "einen seltenen Zauberstab", satz: "Einen Stab hätte ich bei Banditen nicht erwartet. Gestohlen, sicher. Jetzt gehört er dir." },
 ];
-const abschluss = (w: (typeof WAHL)[number]): Folge => ({ abschluss: true, nehmen: [{ g: "rabenbrief" }, { g: "silberleuchter" }], geben: [{ g: w.g, name: w.name }],
+/* Den Rabenbrief behält der Spieler: Bertold Krähe will ihn in C1 sehen (shared/quest_c1.ts) */
+const abschluss = (w: (typeof WAHL)[number]): Folge => ({ abschluss: true, nehmen: [{ g: "silberleuchter" }], geben: [{ g: w.g, name: w.name }],
   zeilen: [w.satz, "Weidenhain schuldet dir mehr, als ich zahlen kann. Nimm, was ich habe.",
-    "Und der Brief … „Die Insel wartet.“ Federn, Splitter, eine Insel. Das führt ins Rabenmoor. Ich fürchte, das ist erst der Anfang."] });
+    "Und der Brief … „Die Insel wartet.“ Federn, Splitter, eine Insel. Das führt ins Rabenmoor.", "Behalt ihn. Zeig ihn Bertold Krähe, dem Schulzen von Rabenmoor. Wenn einer weiß, welche Insel gemeint ist, dann er."] });
 
 export const QUEST_B4: QuestDef = {
   id: B4, titel: "Das rote Banner", ort: "Westmark · Unterschlupf · Weidenhain", start: "Sprich mit Othmar Rehn in Weidenhain.",
   logNeu: "Othmar Rehn in Weidenhain hat den Namen Rotmantel nicht vergessen. Er sucht jemanden, der in die Westmark hinabsteigt.",
   logAngeboten: "Othmar Rehn in Weidenhain wartet, ob du gegen Rotmantel ziehst.",
   logAbgabe: "Rotmantel ist besiegt. Bring den Brief mit dem Rabensiegel und die Silberleuchter zu Othmar Rehn nach Weidenhain.",
-  logFertig: "Hauptmann Rotmantel ist geschlagen, Weidenhain ist sicher. Doch der Brief mit dem Rabensiegel spricht von einer Insel und vom „Obersten“ – die Spur führt ins Rabenmoor.",
+  logFertig: "Hauptmann Rotmantel ist geschlagen, Weidenhain ist sicher. Doch der Brief mit dem Rabensiegel spricht von einer Insel und vom „Obersten“ – die Spur führt ins Rabenmoor. Bertold Krähe, der Schulze von Rabenmoor, sollte den Brief sehen.",
   geber: "othmar",
   figuren: [
     { id: "othmar", name: "Othmar Rehn", modell: "npc.alter_bauer", x: 6451.5, y: 6688.5, blick: [0, -1] },

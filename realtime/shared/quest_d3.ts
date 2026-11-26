@@ -23,7 +23,7 @@ export const QUEST_D3: QuestDef = {
   logAbgabe: "Bring Alma Furtner die zwei Welspasteten.",
   logFertig: "Almas Welspastete steht auf der Karte der Taverne „Zur Furt“. Du kannst sie bei ihr kaufen.",
   geber: "alma",
-  figuren: [{ id: "alma", name: "Alma Furtner", modell: "npcfrau3d", x: ALMA[0], y: ALMA[1], blick: [0, 1] }],
+  figuren: [{ id: "alma", name: "Alma Furtner", modell: "npc.alma", x: ALMA[0], y: ALMA[1], blick: [0, 1] }],
   voraussetzungen: [
     { text: "Fischen 45", wenn: { skill: { k: "fischen", min: 45 } } },
     { text: "Kochen 45", wenn: { skill: { k: "kochen", min: 45 } } },
