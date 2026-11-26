@@ -48,12 +48,12 @@ Genaue Werte und Beutetabellen schreibt die Leitstelle vor dem Einbau in `beute.
 Kord zeigt die gerissene Kette → Hauptfrau **Merit Stahl** (Bergfried) gibt die Erlaubnis, wenn man ihr das Wappen aus A2 zeigt →
 6 Splittereisenerz in der Furtklamm → 3 Splittereisenbarren (Esse Graufurt) → 8 Kettenglieder (Quest-Rezept, Amboss, Schmieden 45) →
 Kettenschloss bei der Schmiedin der Stadt abholen → Kette an der Winde des Westanlegers einhängen (Questobjekt) → erste Überfahrt mit Kord.
-Lohn: 2.500 Schmieden-XP, 1.000 Bergbau-XP, 400 Splitter, 2 Questpunkte. Schalter `faehre_frei` (Fähre fährt, Ostufer offen).
+Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze 1.000 je Skill aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter `faehre_frei` (Fähre fährt, Ostufer offen).
 
 **D2 „Das grüne Licht“** – beginnt am Ostanleger (Kord: „Seit die Kette riss, brennt da drüben dieses Licht.“). Voraussetzung: D1, Heldenlevel 45 empfohlen.
 Zum Turm → Tür mit dem Wappen (Turm über drei Wellen) → Ebene 1 und 2: Turmwächter → Ebene 3: Wächterbuch (Lore: die Wacht, die Glocke von Grauwacht) →
 Dach: das grüne Signalfeuer brennt aus einem Splitterkern; das Grünlicht bewacht es → Geist der Wächterin **Ysolde** erscheint, erzählt, dass das Feuer Grauwacht rufen sollte und niemand mehr antwortet →
-Splitterkern zu Merit Stahl. Lohn: je 2.000 XP Stärke/Geschick/Defense, 600 Splitter, 2 Questpunkte, **Wegstein-Ziel Ostufer (Turm)**. Haken für W3: „Der Weg nach Grauwacht“.
+Splitterkern zu Merit Stahl. Lohn: je 1.000 XP Stärke/Geschick/Defense, 500 LP-XP, 600 Splitter, 2 Questpunkte, **Wegstein-Ziel Ostufer (Turm)**. Haken für W3: „Der Weg nach Grauwacht“.
 
 **D3 „Wels im Trüben“** (Nebenquest, klein) – Wirtin **Alma Furtner** (Taverne „Zur Furt“, Graufurt). Voraussetzung: Fischen 45, Kochen 45.
 3 Graufurter Welse fangen → 2 Welspasteten am Herd der Taverne → Abgabe. Lohn: Fischen- und Kochen-XP, 150 Splitter, 1 Questpunkt; Alma verkauft danach Welspastete.
