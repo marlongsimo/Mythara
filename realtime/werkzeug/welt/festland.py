@@ -137,6 +137,19 @@ G[bach] = '~'; G[(np.hypot((wx - 6426) / 14, (wy - AY1 - 38) / 9) < 1 + 0.12 * n
 G[innen] = '#'
 
 # ───── Höhen (Eckpunkte, Hundertstel Feld) ─────
+# ───── Pläne anderer Werkzeuge (z. B. fahleweiten.mjs): Gelände, Höhen, ebene Plätze, Objekte, Lesestellen, Sperren ─────
+PLAENE = []
+for _f in sorted(os.listdir(os.path.join(WELT, 'festland'))):
+    if _f.startswith('plan_') and _f.endswith('.json'): PLAENE.append(json.load(open(os.path.join(WELT, 'festland', _f), encoding='utf8')))
+for _p in PLAENE:
+    for _st in _p.get('gelaende', []):
+        for _j, _z in enumerate(_st['zeilen']):
+            _y = _st['y0'] + _j - Y0
+            if not 0 <= _y < H: continue
+            for _i, _c in enumerate(_z):
+                _x = _st['x0'] + _i - X0
+                if _c != ' ' and 0 <= _x < W and G[_y, _x] not in ('M',): G[_y, _x] = _c
+print(f'Pläne: {len(PLAENE)}')
 print('Höhen …')
 hz = np.zeros((H, W), np.float32)
 hz += np.clip(bk - 0.35, 0, None) ** 1.4 * 26                     # Gebirge
@@ -145,6 +158,12 @@ hz += 0.9 * (n3 + 0.4)                                             # weite Welle
 hz += np.where(G == 'u', 0.9 * (1 + np.sin((wx * 0.8 - wy) / 9 + 2 * n1)), 0)   # Dünen
 maske_h = np.clip(e / 14, 0, 1) ** 1.5 * np.clip(o / 26, 0, 1) ** 1.5
 hz = np.where(np.isin(G, ['M', '~', 'w', '#']), 0, hz * maske_h)
+for _p in PLAENE:
+    for _x, _y, _h in _p.get('hoehen', []):
+        if 0 <= _y - Y0 < H and 0 <= _x - X0 < W: hz[_y - Y0, _x - X0] += _h
+    for _x0, _y0, _x1, _y1 in _p.get('eben', []):   # ebene Plätze: Höhen sanft auf 0 (Rand 4 Felder)
+        _r = np.clip(np.minimum(np.minimum(wx - _x0, _x1 - wx), np.minimum(wy - _y0, _y1 - wy)) / 4, 0, 1)
+        hz = hz * (1 - _r)
 hz = ndimage.gaussian_filter(hz, 1.2)
 ecken = np.zeros((H + 1, W + 1), np.float32); ecken[:-1, :-1] += hz; ecken[1:, :-1] += hz; ecken[:-1, 1:] += hz; ecken[1:, 1:] += hz; ecken /= 4
 
@@ -180,10 +199,17 @@ for (xa, ya, xb, yb) in [tuple(int(v) for v in k) for k in kacheln]:
     region = {'id': rid, 'name': name, 'untertitel': ('Die Hochlande-Insel' if k in (7, 8, 9) else 'Das erste Festland') + ' – noch unbesiedelt' if anteil >= 0.04 else 'Offenes Meer', 'ursprung': [xa, ya], 'chunks': [xb - xa, yb - ya], 'biom': biom, 'stufe': 3, 'nahtlos': 'festland'}
     json.dump(region, open(os.path.join(d, 'region.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
     open(os.path.join(d, 'gelaende.txt'), 'w', encoding='utf8').write('\n'.join(''.join(z) for z in t) + '\n')
-    open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8').write('[\n]\n')
+    _in = lambda q: xa * C <= q['x'] < xb * C and ya * C <= q['y'] < yb * C
+    _lok = lambda q: {**q, 'x': round(q['x'] - xa * C, 2), 'y': round(q['y'] - ya * C, 2)}
+    _obj = [_lok(q) for _p in PLAENE for q in _p.get('objekte', []) if _in(q)]
+    _ia = [_lok(q) for _p in PLAENE for q in _p.get('interaktionen', []) if _in(q)]
+    _rk = lambda q: {**q, 'x0': round(q['x0'] - xa * C, 2), 'x1': round(q['x1'] - xa * C, 2), 'y0': round(q['y0'] - ya * C, 2), 'y1': round(q['y1'] - ya * C, 2)}
+    _inr = lambda q: xa * C <= (q['x0'] + q['x1']) / 2 < xb * C and ya * C <= (q['y0'] + q['y1']) / 2 < yb * C
+    _sp = [_rk(q) for _p in PLAENE for q in _p.get('sperren', []) if _inr(q)]; _fr = [_rk(q) for _p in PLAENE for q in _p.get('freigeben', []) if _inr(q)]
+    open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8').write('[\n' + ',\n'.join(' ' + json.dumps(q, ensure_ascii=False, separators=(',', ':')) for q in _obj) + ('\n' if _obj else '') + ']\n')
     bh, bw = (yb - ya) * C, (xb - xa) * C
-    json.dump({'start': [[bw / 2, bh / 2]], 'figuren': [], 'spawnzonen': [], 'ausgaenge': [], 'kollision': {'sperren': [], 'freigeben': []}, 'interaktionen': []},
-              open(os.path.join(d, 'spiel.json'), 'w', encoding='utf8'), indent=1)
+    json.dump({'start': [[bw / 2, bh / 2]], 'figuren': [], 'spawnzonen': [], 'ausgaenge': [], 'kollision': {'sperren': _sp, 'freigeben': _fr}, 'interaktionen': _ia},
+              open(os.path.join(d, 'spiel.json'), 'w', encoding='utf8'), indent=1, ensure_ascii=False)
     werte = np.round(ecken[i0:i1 + 1, j0:j1 + 1] * 100).astype(int)
     json.dump({'hinweis': 'Zusatzhöhe je Eckpunkt in Hundertsteln eines Feldes, (Breite+1) × (Höhe+1), zeilenweise', 'werte': werte.ravel().tolist()}, open(os.path.join(d, 'hoehen.json'), 'w'), separators=(',', ':'))
 print(f'Festland: {len(kacheln)} Regionen, {W} × {H} Felder, Land {land_gesamt / C / C:.0f} Chunks ({land_gesamt / C / C / 260:.1f} × heute)')

@@ -8,8 +8,51 @@
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
+ "interaktionen": [
+  {
+   "id": "wachturm",
+   "art": "lesen",
+   "x": 262.5,
+   "y": 27.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein eingestürzter Wachturm. Von hier sah man einst über den Fluss bis nach Graufurt."
+   }
+  },
+  {
+   "id": "uferweg_nord",
+   "art": "lesen",
+   "x": 307.5,
+   "y": 46,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Uferweg biegt hier nach Westen ab. Nach Norden führt ein alter, zugewachsener Weg – nach Grauwacht."
+   }
+  },
+  {
+   "id": "dornenwall",
+   "art": "lesen",
+   "x": 302.5,
+   "y": 32.2,
+   "radius": 2.2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Wall aus Dornen, mannshoch und dicht verflochten. Dahinter läuft der alte Weg nach Grauwacht weiter. Mit einer Axt ließe er sich roden."
+   }
+  }
+ ],
  "kollision": {
   "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 293,
+    "y0": 28.8,
+    "x1": 313,
+    "y1": 30.6,
+    "schalter": "dornenwall_offen"
+   },
    {
     "art": "rechteck",
     "x0": 43,
@@ -68,29 +111,5 @@
    }
   ],
   "freigeben": []
- },
- "interaktionen": [
-  {
-   "id": "wachturm",
-   "art": "lesen",
-   "x": 262.5,
-   "y": 27.4,
-   "radius": 1.6,
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Ein eingestürzter Wachturm. Von hier sah man einst über den Fluss bis nach Graufurt."
-   }
-  },
-  {
-   "id": "uferweg_nord",
-   "art": "lesen",
-   "x": 307.5,
-   "y": 46,
-   "radius": 1.6,
-   "abgleich": "keiner",
-   "daten": {
-    "text": "Der Uferweg biegt hier nach Westen ab. Nach Norden ist der Wald zu dicht – der alte Weg nach Grauwacht ist zugewachsen."
-   }
-  }
- ]
+ }
 }

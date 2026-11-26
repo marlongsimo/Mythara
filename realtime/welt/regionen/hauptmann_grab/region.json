@@ -1,0 +1,16 @@
+{
+ "id": "hauptmann_grab",
+ "name": "Grab des Grauen Hauptmanns",
+ "untertitel": "Der größte Hügel der Fahlen Weiten",
+ "ursprung": [
+  348,
+  300
+ ],
+ "chunks": [
+  2,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 8,
+ "ebene": "untergrund"
+}
