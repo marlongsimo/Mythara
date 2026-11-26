@@ -39,6 +39,15 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 - Issue #9 erledigt (26.11.): Migrationen 048/049 eingespielt, Grenzland-Lage fix, Namen bestätigt, Wegstein-Abklingzeit, Tränke-Regeln.
 - Noch offen: Entscheidungen aus dem Weltkonzept (Namen, Gebirge A–D, Reihenfolge W2/W3, Splitterinsel).
 
+## Die Chats
+| Chat | Rolle | Zweig |
+|---|---|---|
+| Riftmere · Leitstelle | Konzept, Review, Verteilen, Takt stündlich | `claude/relaxed-sagan-erl6lf` |
+| Riftmere · Integration | Spielsysteme, Zusammenführen, Live | `claude/welt3d` → `feature/realtime-engine` |
+| Riftmere · Quests | Quests als Daten (seit 26.11.) | `claude/riftmere-quests` |
+| Riftmere · Figuren | Figuren, Modelle, Bilder | `claude/tender-heisenberg-bruby2` |
+| Riftmere · Welt | Welt, Orte, Karten | `claude/mythara-world-pipeline-z4ynx5` |
+
 ## Wer gerade woran arbeitet
 | Rolle | Arbeitet an |
 |---|---|

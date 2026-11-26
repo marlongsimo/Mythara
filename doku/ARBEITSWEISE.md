@@ -7,7 +7,7 @@ Stand: 26.11.2026. Kurzfassung in `CLAUDE.md` (wird von jeder Sitzung automatisc
 | Rolle | Aufgabe | Zweig | Kommt live über |
 |---|---|---|---|
 | **Integration & Spielsysteme** | Fahrplan-Phasen technisch umsetzen (Systeme, Server, Client, Datenbank), Zweige der anderen zusammenführen, bauen, alle Tests, live stellen, kleine Fixes | `claude/welt3d` → `feature/realtime-engine` | führt selbst zusammen |
-| **Quest-Autor** *(optional, ab Phase 3)* | Quests als Daten schreiben (`shared/quest*.ts`): Schritte, Dialoge, Figuren, Belohnungen | eigener `claude/…`-Zweig | Integration führt zusammen |
+| **Quest-Autor** (Chat „Riftmere · Quests“, seit 26.11.) | Quests als Daten schreiben (`shared/quest*.ts`): Schritte, Dialoge, Figuren, Belohnungen | `claude/riftmere-quests` | Integration führt zusammen (geplant: Pipeline, #22) |
 | **Figuren & 3D** | Modelle, Animationen, Figuren-Fabrik, Objekte | `claude/tender-heisenberg-bruby2` | Pipeline „Welt live“ (alle 15 min automatisch) |
 | **Worldbuilding** | Regionen, Gelände, Festland, Karten | `claude/mythara-world-pipeline-z4ynx5` | Pipeline „Welt live“ (alle 15 min automatisch) |
 | **Konzept & Review** | Konzepte (PDFs in `doku/quests/`), Commits gegen Konzept und Kanon prüfen, `doku/STAND.md` und `doku/KANON.md` pflegen, Issues anlegen | `claude/relaxed-sagan-erl6lf` | Integration führt zusammen |
