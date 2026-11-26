@@ -219,6 +219,7 @@ export class Welt extends Phaser.Scene {
     st.dinge.push(bild); if (o.durchscheinend) st.scheinend.push(bild);
     if (o.modell3d) { let h = Math.imul(Math.round(p.x * 16) | 0, 0x9e3779b1) ^ Math.imul(Math.round(p.y * 16) | 0, 0x85ebca77); h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
       const gross = 5 / 6 + ((h >>> 20) % 1000) / 1000 * (2 / 6); bild.setScale(bild.scaleX * gross);   /* Bäume (Grundhöhe 6 m): je Standort fest 5–7 m */
+      if (o.modell3d.schweben) bild.setY(bild.y - o.modell3d.schweben.hoehe * F);                       /* Ersatzbild: in der Luft (eine Höhe von 1 m ≈ 1 Feld) */
       if (figur3dAn()) (st.baeume ||= []).push({ bild, m: o.modell3d, s: (p.s ?? 1) * gross, dreh: (h % 3600) / 3600 * Math.PI * 2, phase: ((h >>> 12) % 1000) / 1000 * 6.28, zuletzt: 0,
         alt: { key, ox: bild.originX, oy: bild.originY, sk: bild.scaleX, flip: bild.flipX } }); }   /* jeder Baum: eigene Drehung und eigener Windtakt, fest je Standort */
   }
@@ -228,14 +229,15 @@ export class Welt extends Phaser.Scene {
     for (const st of this.stuecke.values()) { if (st.stand !== "aktiv" || !st.baeume) continue;
       for (const e of st.baeume) { const x = e.bild.x, y = e.bild.y, sicht = x > v.x - rand && x < v.right + rand && y > v.y - rand && y < v.bottom + rand * 2;
         if (sicht && !e.b && !e.laedt) { e.laedt = true;
-          void baumBild(weltBild(e.m.url), HELD_PX, { dreh: e.dreh, phase: e.phase, farbton: e.m.farbton ?? 0, saett: e.m.saett ?? 1, hell: e.m.hell ?? 1, wind: e.m.wind ?? 0.12, grau: e.m.grau ? 1 : 0, pulsTon: e.m.puls_ton, pulsBreite: e.m.puls_breite }).then((b) => { e.laedt = false;
+          void baumBild(weltBild(e.m.url), HELD_PX, { dreh: e.dreh, phase: e.phase, farbton: e.m.farbton ?? 0, saett: e.m.saett ?? 1, hell: e.m.hell ?? 1, wind: e.m.wind ?? 0.12, grau: e.m.grau ? 1 : 0, pulsTon: e.m.puls_ton, pulsBreite: e.m.puls_breite, schweben: e.m.schweben }).then((b) => { e.laedt = false;
             if (!b) return; if (e.weg || !e.bild.scene) { b.entfernen(); return; }
+            if (e.m.schweben) e.bild.setY(e.bild.y + e.m.schweben.hoehe * F);                            /* das 3D-Bild schwebt selbst: zurück an den Standort */
             const key = "baum3d:" + baumZaehler++, tex = this.textures.createCanvas(key, b.breite, b.hoehe) as Phaser.Textures.CanvasTexture; e.b = b; e.tex = tex;
             b.zeichne(zeit, tex.getContext()); tex.refresh(); e.zuletzt = performance.now();
             e.bild.setTexture(key).setOrigin(0.5, b.fussY).setScale(e.s / b.aufloesung).setFlipX(false); }); }
         else if (!sicht && e.b) this.baumZurueck(e);
         else if (e.b && e.tex && jetzt - e.zuletzt > BAUM_TAKT && budget > 0) { budget--; e.zuletzt = jetzt; e.b.zeichne(zeit, e.tex.getContext()); e.tex.refresh(); } } } }
-  baumZurueck(e: Baum3D) { if (e.bild.scene) e.bild.setTexture(e.alt.key).setOrigin(e.alt.ox, e.alt.oy).setScale(e.alt.sk).setFlipX(e.alt.flip); if (e.b) e.b.entfernen(); if (e.tex) e.tex.destroy(); e.b = undefined; e.tex = undefined; }
+  baumZurueck(e: Baum3D) { if (e.bild.scene && e.m.schweben && e.b) e.bild.setY(e.bild.y - e.m.schweben.hoehe * F); if (e.bild.scene) e.bild.setTexture(e.alt.key).setOrigin(e.alt.ox, e.alt.oy).setScale(e.alt.sk).setFlipX(e.alt.flip); if (e.b) e.b.entfernen(); if (e.tex) e.tex.destroy(); e.b = undefined; e.tex = undefined; }
   /** Ein räumliches Gebäude: jede Ebene ein eigenes Bild im gemeinsamen Rahmen, mit eigener Tiefe (Schatten liegt am Boden) */
   bau(st: Stueck, p: Platzierung, o: Anzeige) {
     const b: Bau = { teile: [], raum: (o.raum || []).map((r) => ({ x0: p.x + r.x0, x1: p.x + r.x1, y0: p.y + r.y0, y1: p.y + r.y1, koerper: r.koerper })), tueren: (o.tueren || []).map((t) => ({ x: p.x + t.x, y: p.y + t.y })) };

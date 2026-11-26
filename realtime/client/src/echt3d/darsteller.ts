@@ -302,7 +302,7 @@ export class GeschossBild {
  * Jeder Baum ist ein eigenes 3D-Objekt im Licht der Figuren: eigene Drehung, eigene Kronenfarbe, eigener Wind, blaue Stellen pulsieren (alles im Shader, Modell und Textur
  * teilen sich alle Bäume einer Sorte). Gezeichnet wird in ein eigenes kleines Bild je Baum; die Welt (welt/welt.ts) zeigt es an seinem Standort
  * und zeichnet nur sichtbare Bäume, gedrosselt. */
-export interface BaumWerte { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number; grau?: number; pulsTon?: number; pulsBreite?: number }
+export interface BaumWerte { dreh: number; phase: number; farbton: number; saett: number; hell: number; wind: number; grau?: number; pulsTon?: number; pulsBreite?: number; schweben?: { hoehe: number; hub: number; takt: number; pendel: number } }
 const BAUM_U = { uZeit: { value: 0 }, uPhase: { value: 0 }, uWind: { value: 0.12 }, uHoehe: { value: 7 }, uFarbton: { value: 0 }, uSaett: { value: 1 }, uHell: { value: 1 }, uGrau: { value: 0 }, uPulsTon: { value: 210 }, uPulsBreite: { value: 28 } };
 const HSV_GLSL = `
 vec3 baum_rgb2hsv(vec3 c){ vec4 K=vec4(0.,-1./3.,2./3.,-1.); vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g)); vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));
@@ -334,13 +334,15 @@ function baumVorlage(url: string) {
   return p;
 }
 export class BaumBild {
-  readonly breite: number; readonly hoehe: number; readonly fussY: number; private gruppe = new THREE.Group(); private aus: { seite: number; oben: number; unten: number }; private h: number; private schatten: THREE.Mesh | null = null;
+  readonly breite: number; readonly hoehe: number; readonly fussY: number; private gruppe = new THREE.Group(); private aus: { seite: number; oben: number; unten: number }; private h: number; private schatten: THREE.Mesh | null = null; private inhalt: THREE.Object3D;
   private constructor(v: { szene: THREE.Object3D; hoehe: number; radius: number }, figurHoehePx: number, readonly aufloesung: number, private w: BaumWerte) {
     const ppm = (figurHoehePx / STEHHOEHE) * aufloesung, r = v.radius + 0.3; this.h = v.hoehe;
-    const inhalt = v.szene.clone(true); inhalt.rotation.y = w.dreh; this.gruppe.add(inhalt);
+    const inhalt = v.szene.clone(true); inhalt.rotation.y = w.schweben ? 0 : w.dreh; this.gruppe.add(inhalt); this.inhalt = inhalt;   /* Schwebendes (flach, z. B. Seelenlicht): immer zur Kamera */
     const schatten = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshBasicMaterial({ color: 0x1c2636, map: weichesLicht(), transparent: true, opacity: 0.42, depthWrite: false }));   // weicher Bodenschatten
     this.schatten = schatten; schatten.rotation.x = -Math.PI / 2; schatten.scale.set(v.radius * 0.62, v.radius * 0.5, 1); schatten.position.set(0.5, 0.02, -0.5); schatten.renderOrder = -1; this.gruppe.add(schatten);
-    this.aus = { seite: r, oben: v.hoehe * Math.cos(NEIGUNG) + r * Math.sin(NEIGUNG) + 0.2, unten: r * Math.sin(NEIGUNG) + 0.2 };
+    const sw = w.schweben ? w.schweben.hoehe + w.schweben.hub : 0;                                       // Platz nach oben für das Schweben
+    if (w.schweben) { schatten.scale.multiplyScalar(0.7); schatten.position.set(0, 0.02, 0); (schatten.material as THREE.MeshBasicMaterial).opacity = 0.25; }
+    this.aus = { seite: r, oben: (v.hoehe + sw) * Math.cos(NEIGUNG) + r * Math.sin(NEIGUNG) + 0.2, unten: r * Math.sin(NEIGUNG) + 0.2 };
     this.breite = Math.ceil(2 * this.aus.seite * ppm); this.hoehe = Math.ceil((this.aus.oben + this.aus.unten) * ppm); this.fussY = this.aus.oben / (this.aus.oben + this.aus.unten);
     this.gruppe.visible = false; gemeinsam().buehne.add(this.gruppe);
   }
@@ -348,6 +350,8 @@ export class BaumBild {
   /** zeit in Sekunden (für den Wind) */
   zeichne(zeit: number, ziel: CanvasRenderingContext2D): void {
     const { zeichner: z, buehne: b, kamera: k } = gemeinsam(), w = this.w, a = this.aus;
+    if (w.schweben) { const S = w.schweben, ph = 2 * Math.PI * zeit / S.takt + w.phase;               // schweben: auf und ab, leicht pendeln, sachte kreisen
+      this.inhalt.position.set(0.06 * Math.sin(ph * 0.5), S.hoehe + S.hub * Math.sin(ph), 0.04 * Math.cos(ph * 0.5)); this.inhalt.rotation.set(0, S.pendel * Math.sin(ph * 0.7), 0.06 * Math.sin(ph * 1.3)); }
     BAUM_U.uZeit.value = zeit; BAUM_U.uPhase.value = w.phase; BAUM_U.uWind.value = w.wind; BAUM_U.uHoehe.value = this.h; BAUM_U.uFarbton.value = w.farbton; BAUM_U.uSaett.value = w.saett; BAUM_U.uHell.value = w.hell; BAUM_U.uGrau.value = w.grau ?? 0; BAUM_U.uPulsTon.value = w.pulsTon ?? 210; BAUM_U.uPulsBreite.value = w.pulsBreite ?? 28;
     if (z.domElement.width !== this.breite || z.domElement.height !== this.hoehe) z.setSize(this.breite, this.hoehe, false);
     if (k.right !== a.seite || k.top !== a.oben || k.bottom !== -a.unten) { k.left = -a.seite; k.right = a.seite; k.top = a.oben; k.bottom = -a.unten; k.updateProjectionMatrix(); }
