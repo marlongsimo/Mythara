@@ -24,7 +24,7 @@ Grauwacht wird die zweite Großstadt und das Tor zu den Hochlanden (W5).
 
 ## Region Fahle Weiten (Welt)
 
-- **Nordsaum-Weg**: heute zugewachsen. Ab E1 frei (Dornenwall je Spieler offen).
+- **Nordsaum-Weg**: heute zugewachsen. Ab E1 frei (Dornenwall je Spieler offen). Die Fahlen Weiten sind **schon vorher zu Fuß** durch Wald und Festland erreichbar (Entscheidung 26.11.) – E1 öffnet nur die Abkürzung.
 - **Heidrast**: Hirtensiedlung mit 4–5 Katen, Schafpferch, Brunnen. Erste Rast, Wegstein-Ziel nach E1.
 - **Grenzposten** der Wacht am Nordsaum (verfallen, Deserteure-Lager).
 - **Hügelgräber**: Feld mit 7–9 Grabhügeln, drei davon begehbar; das **Grab des Grauen Hauptmanns** als Dungeon.
