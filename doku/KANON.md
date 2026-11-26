@@ -54,6 +54,7 @@ Zuletzt aktualisiert: 26.11.2026.
   **Nebenwirkungen nur bei den ganz starken Tränken der hohen Stufen.** Niedrige Tränke haben keine Nebenwirkungen, dafür eine deutlich schwächere Wirkung.
   *(26.11.; ersetzt die Abschnitte „Rezepte entdecken“ und „Nebenwirkungen“ in `doku/quests/4-berufe.pdf`)*
 - **Angelrute:** nur **eine** Angelrute, **ohne Stufen** (wie der Hammer beim Schmieden). Die Fangchance hängt nur vom Fischen-Level ab. Keine „Lamberts Rute“. Die Reuse bleibt ein eigenes Gerät. *(26.11.)*
+- **Rabenküken** (Begleiter, Beute des Obersten Rabenpriesters 1/2000): eine **Mini-Version des Obersten Rabenpriesters**. *(26.11., über den Figuren-Chat)*
 - **Lage des Grenzlands auf dem Festland:** fix (kann sich später noch ändern). *(26.11.)*
 - **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
 
