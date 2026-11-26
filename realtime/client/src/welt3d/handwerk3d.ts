@@ -125,9 +125,9 @@ export class HandwerkWelt {
     const b = benutzt(), bn = b && GEGENSTAENDE[b.g] ? GEGENSTAENDE[b.g].name : "";
     /* Wohin gehen: vor die Station auf der Seite des Helden – liegt dort eine Wand dazwischen (Esse in der Schmiede), auf das nächste freie Feld daneben, von dem aus sie erreichbar ist (#57) */
     let hin = { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2 };
-    if (versperrt(Math.floor(hin.x), Math.floor(hin.y)) || !werkstattErreichbar(hin.x, hin.y, S)) { let bd = Infinity; for (let i = Math.floor(S.x) - 2; i <= Math.floor(S.x) + 2; i++) for (let j = Math.floor(S.y) - 2; j <= Math.floor(S.y) + 2; j++) { const p = { x: i + 0.5, y: j + 0.5 };
-      if ((i === Math.floor(S.x) && j === Math.floor(S.y)) || versperrt(i, j) || Math.hypot(p.x - S.x, p.y - S.y) > HANDWERK_WEIT - 0.3 || !werkstattErreichbar(p.x, p.y, S)) continue; const d = Math.hypot(p.x - S.x, p.y - S.y); if (d < bd) { bd = d; hin = p; } } }
-    return { x: hin.x, y: hin.y, text: glut ? `${momentName(W.station)}!` : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT && werkstattErreichbar(this.u.ort.x, this.u.ort.y, S),
+    if (versperrt(Math.floor(hin.x), Math.floor(hin.y)) || !werkstattErreichbar(hin.x, hin.y, W)) { let bd = Infinity; for (let i = Math.floor(S.x) - 2; i <= Math.floor(S.x) + 2; i++) for (let j = Math.floor(S.y) - 2; j <= Math.floor(S.y) + 2; j++) { const p = { x: i + 0.5, y: j + 0.5 };
+      if ((i === Math.floor(S.x) && j === Math.floor(S.y)) || versperrt(i, j) || Math.hypot(p.x - S.x, p.y - S.y) > HANDWERK_WEIT - 0.3 || !werkstattErreichbar(p.x, p.y, W)) continue; const d = Math.hypot(p.x - S.x, p.y - S.y); if (d < bd) { bd = d; hin = p; } } }
+    return { x: hin.x, y: hin.y, text: glut ? `${momentName(W.station)}!` : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT && werkstattErreichbar(this.u.ort.x, this.u.ort.y, W),
       tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (W.schalter && !schalterAn((id) => questStandB(id), W.schalter)) { chatSystem(W.gesperrt || "Das geht hier noch nicht."); return; } if (this.aktiv) handwerkBitten("stop");
         const b = benutzt(); if (b) { benutzen(null); if (!rezepteAn(S.id).some((r) => r.zutaten.some((z) => z.g.includes(b.g)))) { chatSystem("Nichts Interessantes passiert."); return; } this.fenster(S.id, b.g); return; }
         this.fenster(S.id); },

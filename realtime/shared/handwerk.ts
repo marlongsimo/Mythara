@@ -33,7 +33,8 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 /** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
-export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string }
+export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string;
+  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number] }
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
@@ -51,7 +52,8 @@ export function versperrt(i: number, j: number): boolean { let drin = false;
 export const WERKSTATT_SCHRITTE = 4;
 /** Keine Wand zwischen Held und Werkstatt (#57): vom Feld des Helden in wenigen Schritten über freie Felder (acht Richtungen, nicht um Ecken schneiden)
  *  auf ein Feld neben der Station (oder ihr eigenes). So bedient man die Esse nicht durch die Mauer der Schmiede, wohl aber die Werkbank von allen Seiten (Server und Browser gleich) */
-export function werkstattErreichbar(hx: number, hy: number, W: { x: number; y: number }): boolean {
+export function werkstattErreichbar(hx: number, hy: number, W: { x: number; y: number; bereich?: [number, number, number, number] }): boolean {
+  if (W.bereich) { const [x0, y0, x1, y1] = W.bereich; return hx >= x0 && hx <= x1 && hy >= y0 && hy <= y1; } /* Stehbereich aus der Welt (#64) */
   const si = Math.floor(W.x), sj = Math.floor(W.y), neben = (i: number, j: number) => Math.abs(i - si) <= 1 && Math.abs(j - sj) <= 1;
   let rand: [number, number][] = [[Math.floor(hx), Math.floor(hy)]]; const gesehen = new Set([rand[0].join()]);
   for (let schritt = 0; schritt <= WERKSTATT_SCHRITTE; schritt++) { const neu: [number, number][] = [];
@@ -183,4 +185,5 @@ dazu({ id: "schuetztafel", station: "werkbank", ergebnis: "schuetztafel", level:
 dazu({ id: "eisenbaender", station: "amboss", ergebnis: "eisenband", menge: 2, level: 10, zutaten: [{ g: ["barren_eisen"], n: 1 }], xp: 35, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
 dazu({ id: "hanftau", station: "werkbank", ergebnis: "hanftau", level: 15, zutaten: [{ g: ["garn"], n: 4 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
 /* Werkstatt Weidenhain in Tebbes Schuppen: erst nach B2 (Schalter werkstatt_weidenhain); Esse und Amboss folgen, sobald die Welt sie aufstellt (#64) */
-WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält." });
+WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält.",
+  bereich: [6443.5, 6672.9, 6448.5, 6675] /* nur von vorn (Welt, #64): der Schuppen ist im Gehraster ein voller Block, hinten liegt die Rückwand */ });
