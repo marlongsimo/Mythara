@@ -20,6 +20,7 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Konzept `doku/konzepte/phase-7.md`; Vorarbeit fertig: Welt (#36), Figuren (#37), Quest-Entwürfe D1–D3 (#38); Einbau #40 nach Phase 6 |
 | 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | 🟡 Konzept `doku/konzepte/phase-8.md` (Annahme: W3 vor W2); Vorarbeit Welt/Figuren/Quests freigegeben |
 | 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | 🟡 Konzept `doku/konzepte/phase-9.md`; Vorarbeit Welt/Figuren/Quests freigegeben |
+| 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | 🟡 Konzept `doku/konzepte/phase-10.md`; Vorarbeit Welt/Figuren/Quests |
 
 ## Festland (Weltkonzept)
 

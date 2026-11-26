@@ -78,6 +78,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
+- Phase 10: Namen (Smaragdküste, Kielmund, Möwenbucht, „Zum Ankerkraut“, Wrackkapitän, Küstenhäuser), Kutsche als neues Reisemittel?
 - Phase 9: Namen (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter).
 - Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann)
 - Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
