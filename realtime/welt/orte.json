@@ -492,6 +492,13 @@
    "objekt": "hand_kessel_01",
    "x": 6291.6,
    "y": 6677.8
+  },
+  {
+   "id": "ort_p5_bindestein_obelisk",
+   "objekt": "wz_bindestein",
+   "x": 6371,
+   "y": 6372.4,
+   "hinweis": "Phase 5b: Bindestein am Obelisk im Nordwald (Station, nach A2)"
   }
  ],
  "lichtungen": [

@@ -1200,6 +1200,7 @@
  {"id":"b0855","objekt":"stil_eiche_02","x":109.5,"y":127.5,"s":0.98},
  {"id":"b0716","objekt":"stil_linde_01","x":113.5,"y":127.5,"s":1.07,"spiegeln":true},
  {"id":"b0568","objekt":"stil_eiche_01","x":119.5,"y":127.5,"s":1.02,"spiegeln":true},
+ {"id":"ort_p5_bindestein_obelisk","objekt":"wz_bindestein","x":99.5,"y":36.5},
  {"id":"naht_491","objekt":"stil_tanne_01","x":1.5,"y":1.5,"s":0.85,"spiegeln":true},
  {"id":"naht_492","objekt":"stil_eiche_02","x":127.5,"y":1.5,"s":1.01,"spiegeln":true},
  {"id":"naht_493","objekt":"stil_tanne_02","x":2.5,"y":3.5,"s":0.98,"spiegeln":true},

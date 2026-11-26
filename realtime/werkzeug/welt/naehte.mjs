@@ -45,7 +45,7 @@ for (const g of gebiete) { for (const i of g.spiel.interaktionen || []) schutz.p
   for (const s of g.spiel.kollision?.sperren || []) if (s.art === "rechteck") schutz.push([g.x0 + (s.x0 + s.x1) / 2, g.y0 + (s.y0 + s.y1) / 2, Math.hypot(s.x1 - s.x0, s.y1 - s.y0) / 2 + 2]);
   for (const o of g.obj) if (!istBewuchs(o)) schutz.push([g.x0 + o.x, g.y0 + o.y, 2.5]); }
 const sammle = (v) => { if (Array.isArray(v)) v.forEach(sammle); else if (v && typeof v === "object") { if (typeof v.x === "number" && typeof v.y === "number") schutz.push([v.x, v.y, (v.r || 1) + 2.5]); Object.values(v).forEach(sammle); } };
-for (const f of ["shared/bergbau_standorte.json", "shared/holz_standorte.json", "shared/seelenlicht_standorte.json", "welt/kraeuter_standorte.json"]) if (existsSync(join(RT, f))) sammle(JSON.parse(readFileSync(join(RT, f), "utf8")));
+for (const f of ["shared/bergbau_standorte.json", "shared/holz_standorte.json", "shared/seelenlicht_standorte.json", "welt/seelenlicht_standorte.json", "welt/kraeuter_standorte.json"]) if (existsSync(join(RT, f))) sammle(JSON.parse(readFileSync(join(RT, f), "utf8")));
 const SG = new Map(); for (const s of schutz) { const k = Math.floor(s[0] / 16) + "," + Math.floor(s[1] / 16); (SG.get(k) || SG.set(k, []).get(k)).push(s); }
 const geschuetzt = (x, y, um = 1.2) => { for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) for (const [a, b, r] of SG.get((Math.floor(x / 16) + di) + "," + (Math.floor(y / 16) + dj)) || []) if (Math.hypot(a - x, b - y) < r) return true;
   for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const c = zeichenAn(x + di * um, y + dj * um); if (c && !NATUR.has(c) && c !== MOOR) return true; } return false; };
