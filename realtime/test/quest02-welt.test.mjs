@@ -10,9 +10,11 @@ import { QB, QUEST2 } from "./sim.gebaut.mjs";
 /** Stände seit dem Baukasten (26.11.2026): die alten Namen übersetzt die Quest selbst */
 const N = (alt) => QB.gueltig(QUEST2, alt);
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
-const A = "00000000-0000-0000-0000-00000000a001", B = "00000000-0000-0000-0000-00000000b002";
-const NUTZER = { ["tok_anna_" + "x".repeat(30)]: A, ["tok_ben__" + "x".repeat(30)]: B }, NAME = { [A]: "Anna", [B]: "Ben" };
+const A = "00000000-0000-0000-0000-00000000a001", B = "00000000-0000-0000-0000-00000000b002", C = "00000000-0000-0000-0000-00000000c003";
+const NUTZER = { ["tok_anna_" + "x".repeat(30)]: A, ["tok_ben__" + "x".repeat(30)]: B, ["tok_cora_" + "x".repeat(30)]: C }, NAME = { [A]: "Anna", [B]: "Ben", [C]: "Cora" };
 const HELD = { [A]: { geschlecht: "mann", frisur: "scheitel", bart: "ohne", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [], v: 2 }, quests: {}, skill_geschick: 11079266, skill_staerke: 11079266, skill_lp: 11079266, skill_defense: 11079266 },
+  /* Cora: alter Stand „bereit“ (vor dem Baukasten gespeichert) und ein voller Rucksack */
+  [C]: { geschlecht: "frau", frisur: "zopf", bart: "ohne", haarfarbe: "blond", hautfarbe: "hell", waffe: "schwert", inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: Array(24).fill("ritterschwert"), v: 2 }, quests: { osthof_der_stille_rain: { s: "bereit" } } },
   [B]: { geschlecht: "frau", frisur: "zopf", bart: "ohne", haarfarbe: "blond", hautfarbe: "hell", waffe: "bogen", inventar: null, quests: {} } }, SETZEN = [], ABSCHLUSS = [];
 const wer = (u) => (/user_id=eq\.([^&]+)/.exec(u) || [])[1];
 const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => { const send = (code, o) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
@@ -99,6 +101,15 @@ try {
   const splitter1 = (anna2.inv && anna2.inv.rucksack || []).reduce((n, f) => n + (f && (f.g || f) === "splitter" ? (f.n || 1) : 0), 0); check(splitter1 - splitter0 >= 20, `Splitter im Rucksack (+${splitter1 - splitter0})`);
   await rede(anna2, "odo"); d = await sag(anna2, "odo", "lohn"); check(!d || d.ende, "Zweiter Abschluss: nichts"); check(ABSCHLUSS.filter((a) => a.p_quest === "osthof_der_stille_rain").length === 1, "Die Belohnung gibt es genau einmal");
   check(HELD[A].quests.die_gesperrte_strasse === undefined, "Quest 01 bleibt unberührt");
+  /* Cora: alter Stand wird übersetzt; voller Rucksack → der Lohn liegt neben ihr am Boden (nur für sie), nichts geht verloren */
+  const cora = await spieler("tok_cora_" + "x".repeat(30)); await warte(cora, (m) => m.t === "quests", 4000);
+  check(cora.q2 === N("bereit") && cora.q2 === "auftrag_2047_3", `Alter Stand „bereit“ wird beim Laden übersetzt (${cora.q2})`);
+  await stelle(cora, ...NPC2.odo); await rede(cora, "odo"); d = await sag(cora, "odo", "lohn"); await q2warte(cora, "fertig");
+  const bodenTxt = d && (d.zeilen || []).map((z) => z.text).join(" ");
+  check(d && d.splitter === 20 && cora.q2 === "fertig" && ABSCHLUSS.filter((a) => a.p_user === C).length === 1 && /am Boden/.test(bodenTxt), "Voller Rucksack: Abschluss gebucht, Hinweis „liegt neben dir am Boden“");
+  await new Promise((r) => setTimeout(r, 1500)); const amBoden = cora.boden.filter((x) => x.g === "splitter").reduce((n, x) => n + x.n, 0);
+  check(amBoden === 20 && Math.hypot(cora.boden[0].x - (NPC2.odo[0] + 0), cora.boden[0].y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`);
+  await new Promise((r) => setTimeout(r, 300)); check(!(anna2.boden || []).some((x) => x.g === "splitter"), "Anna sieht Coras Splitter nicht");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close(); if (f) console.log("404:", [...new Set(FEHLT)].join(" ")); if (f) console.log(log.split("\n").slice(-30).join("\n"));
 console.log(f ? `${f} Prüfung(en) fehlgeschlagen` : "Quest 02 „Der stille Rain“: alles in Ordnung"); process.exit(f ? 1 : 0);

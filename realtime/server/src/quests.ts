@@ -61,8 +61,8 @@ export function reden(nutzer: string, id: string, wx: number | undefined, wy: nu
 /** Gutgeschriebene Quest-XP sofort an den laufenden Helden der Kampfwelt geben (index.ts) – sonst stimmte das Level erst nach dem Neuanmelden (26.11.2026) */
 let xpLive: (nutzer: string, xp: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>) => void = () => { /* noch nicht verbunden */ };
 export function xpLiveSetzen(f: typeof xpLive): void { xpLive = f; }
-export async function antworten(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
-  if (motorImGespraech(nutzer, id)) return motorAntworten(sb, nutzer, id, a) as unknown as Promise<Antwort1>;
+export async function antworten(sb: Sb, nutzer: string, id: string, a: string, wo?: { x?: number; y?: number }): Promise<Antwort1> {
+  if (motorImGespraech(nutzer, id)) return motorAntworten(sb, nutzer, id, a, wo) as unknown as Promise<Antwort1>;
   const N = npc(id); if (!N || offen.get(nutzer) !== N.id) return { fehler: "Das Gespräch ist vorbei." };
   const s = q1(nutzer), mit = hat(nutzer, SCHRIFTSTUECK), f = antwort(N.id, s, mit, String(a || "").slice(0, 24)); if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
   let belohnung: typeof BELOHNUNG | undefined;

@@ -9,7 +9,9 @@ import * as QB from "../../shared/questbau";
 import { QUESTS, questDef } from "../../shared/quests";
 import { REDE_WEIT } from "../../shared/quest01";
 import { levelAus, heldenlevel, SKILLS, type SkillXp, type Skill } from "../../shared/kampfwerte";
-import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
+import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
+import { weltRegionBei } from "../../shared/karten";
+import { GEGENSTAENDE } from "../../shared/gegenstaende";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 export { QUESTS, questDef };
@@ -44,7 +46,7 @@ async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promis
 
 /* ───────── Gespräche ───────── */
 const offen = new Map<string, { q: string; npc: string }>();
-export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number }
+export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean }
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
@@ -58,15 +60,16 @@ export const motorImGespraech = (nutzer: string, id: string): boolean => { const
 export function motorEnde(nutzer: string): void { offen.delete(nutzer); }
 
 /** Gegenstände einer Folge geben: verlorene zurück (Pflicht – sonst Fehler), fehlende Werkzeuge (nur, was weder im Rucksack noch angelegt ist, auch nichts Gleichwertiges) */
-function geben(sb: Sb, nutzer: string, L: QB.Geben[], k: QB.Kontext): { neu: string[]; fehler?: string } {
+function geben(sb: Sb, nutzer: string, L: QB.Geben[], k: QB.Kontext, rein: (g: string, n: number) => number = (g, n) => aufnehmen(sb, nutzer, g, n)): { neu: string[]; fehler?: string } {
   const neu: string[] = [];
   for (const G of L) {
     if (G.verloren) { if (!k.verloren(G.g)) return { neu, fehler: "Das hast du doch noch." }; if (!aufnehmen(sb, nutzer, G.g, 1)) return { neu, fehler: "Dein Rucksack ist voll." }; neu.push(G.name); continue; }
     if (G.fehlt) { const da = besitzt(nutzer), re = G.gleich ? new RegExp(G.gleich) : null; if (da.includes(G.g) || (re && da.some((x) => re.test(x)))) continue; }
-    if (aufnehmen(sb, nutzer, G.g, 1)) neu.push(G.name); }
+    if (rein(G.g, 1)) neu.push(G.name); }
   return { neu }; }
 
-export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: string): Promise<MotorAntwort> {
+/** wo: Stelle des Spielers (Weltfelder) – dort landet Lohn, der nicht mehr in den Rucksack passt */
+export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: string, wo?: { x?: number; y?: number }): Promise<MotorAntwort> {
   const o = offen.get(nutzer), q = o && questDef(o.q); if (!o || !q || o.npc !== id) return { fehler: "Das Gespräch ist vorbei." };
   const k = kontext(nutzer), s = qStand(nutzer, q.id), f = QB.antwort(q, o.npc, s, String(a || "").slice(0, 24), k);
   if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
@@ -80,15 +83,19 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       .catch((e) => { console.error(`Questabschluss ${q.id}:`, (e as Error).message); return null; })) as boolean | null;
     if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
     let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
-    if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn */
-      neu = geben(sb, nutzer, f.geben || [], k).neu;
-      if (B.splitter) { const n = aufnehmen(sb, nutzer, "splitter", B.splitter); if (n < B.splitter) console.error(`Quest ${q.id}: Splitter passten nicht in den Rucksack:`, nutzer, n); aus.splitter = n; }
-      for (const G of B.gegenstaende || []) { const n = aufnehmen(sb, nutzer, G.g, G.n || 1); if (n < (G.n || 1)) console.error(`Quest ${q.id}: ${G.g} passte nicht in den Rucksack:`, nutzer, n); }
+    if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn; was nicht mehr in den Rucksack passt, liegt neben dem Spieler am Boden (30 Minuten nur für ihn) */
+      const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let amBoden = false;
+      const lohn = (g: string, n: number): number => { const k = aufnehmen(sb, nutzer, g, n); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN)) amBoden = true; return n; };
+      neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohn).neu;
+      if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
+      for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); neu.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
+      if (amBoden) aus.amBoden = true;
       if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
   const F = q.figuren.find((x) => x.id === o.npc)!; if (neu.length) zeilen = [...zeilen, { wer: F.name, text: `(Du bekommst: ${neu.join(", ")}.)` }];
+  if (aus.amBoden) zeilen = [...zeilen, { wer: F.name, text: "(Dein Rucksack ist voll – der Rest liegt neben dir am Boden.)" }];
   if (f.weiter) { const d = QB.dialog(q, o.npc, qStand(nutzer, q.id), kontext(nutzer)); return { ...aus, zeilen, dialog: d || undefined }; }
   offen.delete(nutzer); return { ...aus, zeilen, ende: true }; }
 
