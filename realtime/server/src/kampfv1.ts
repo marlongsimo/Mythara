@@ -9,9 +9,10 @@ import { Kampfwerte, SkillXp, kampfwerte, skillXpPruefen, levelAus, SKILLS, NULL
 import { GEGENSTAENDE, Platz, PLAETZE, startAusruestung } from "../../shared/gegenstaende";
 import { Startwaffe } from "../../shared/aussehen";
 import type { Sim } from "../../shared/sim";
+import { Wirkung, skillPlus, wirkungenAktiv } from "../../shared/wirkungen";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface HeldV1 { /** gespeicherte Lebenspunkte (Migration 046) */ lpStand?: { lp: number; z: number } | null; waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
+export interface HeldV1 { /** laufende Wirkungen aus dem Server-Inventar (Essen, shared/wirkungen.ts) */ wirkungen?: Wirkung[]; /** gespeicherte Lebenspunkte (Migration 046) */ lpStand?: { lp: number; z: number } | null; waffe: Startwaffe; xp: SkillXp; angelegt: Partial<Record<Platz, string>>; /** Angriffsstil 0, 1 = Normal, 2 */ stil: number; offen: SkillXp; bucht: boolean; zuletzt: number; stufen: string; schluss?: boolean }
 
 /** Der eigene Held mit seinen vier Skills (null: kein Held → alte Kampfwerte) */
 export async function heldV1Lesen(sb: Sb, nutzer: string): Promise<HeldV1 | null> {
@@ -28,7 +29,7 @@ export function angelegtPruefen(roh: unknown, waffe: Startwaffe): Partial<Record
   return aus;
 }
 const stufenVon = (x: SkillXp) => SKILLS.map((k) => levelAus(x[k] || 0, k)).join("/");
-export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil);
+export const kampfwerteVon = (h: HeldV1): Kampfwerte => kampfwerte(h.xp, h.angelegt, h.stil, skillPlus(h.wirkungen));
 /** Gemeldeten Angriffsstil prüfen (0 bis 3; was die Kampfart der Waffe nicht kennt, wird in kampfwerte zum Standard 1) */
 export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 || v === 3 ? v : 1);
 
@@ -36,6 +37,8 @@ export const stilPruefen = (v: unknown): number => (v === 0 || v === 2 || v === 
 export function v1Takt(sb: Sb, nutzer: string, h: HeldV1, sim: Sim, heldId: number, schluss = false): void {
   const x = sim.xpAbholen(heldId); if (x) { for (const k of SKILLS) { h.offen[k] += x[k]; h.xp[k] += x[k]; } }
   const st = stufenVon(h.xp); if (st !== h.stufen && !schluss) { h.stufen = st; sim.kampfwerteSetzen(heldId, kampfwerteVon(h)); }
+  /* Wirkung abgelaufen (Fischsuppe …): ohne sie neu rechnen */
+  if (h.wirkungen && h.wirkungen.length && !schluss) { const w = wirkungenAktiv(h.wirkungen); if (w.length !== h.wirkungen.length) { h.wirkungen = w; sim.kampfwerteSetzen(heldId, kampfwerteVon(h)); } }
   const jetzt = Date.now(); if (schluss) h.schluss = true;
   if (h.bucht || !SKILLS.some((k) => h.offen[k]) || (!h.schluss && jetzt - h.zuletzt < 10000)) return;
   void xpBuchen(sb, nutzer, h, 0);

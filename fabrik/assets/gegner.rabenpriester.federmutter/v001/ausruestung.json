@@ -1,0 +1,77 @@
+{
+  "hinweis": "gegner.rabenpriester.federmutter – aus gegner.rabenpriester (Meshy „Raven Archmage“), Textur umgefärbt mit fabrik/textur_ton.py. Federmutter Ravena: weiß-schwarz, wechselt sichtbar zwischen Stab, Bogen und Speer (je Bewegung eine Waffe).",
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "treffer",
+    "tod",
+    "zauber_stab",
+    "bogen",
+    "stich2h"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.zauberstab.einfach",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "gegner.rabenpriester/v001/quelle/teile/waffe.zauberstab.einfach.glb",
+      "griff": 0.55,
+      "griff2": 0.35,
+      "klasse": "stab",
+      "angriff": "zauber_stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "treffer",
+        "tod",
+        "zauber_stab"
+      ]
+    },
+    {
+      "id": "waffe.bogen.einfach",
+      "platz": "hand_l",
+      "art": "schwert",
+      "hand": "L",
+      "glb": "gegner.rabenpriester/v001/quelle/teile/waffe.bogen.einfach.glb",
+      "griff": 0.5,
+      "griff2": 0.45,
+      "klasse": "bogen",
+      "angriff": "bogen",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "treffer",
+        "tod",
+        "bogen"
+      ]
+    },
+    {
+      "id": "waffe.speer.einfach",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "gegner.rabenpriester/v001/quelle/teile/waffe.speer.einfach.glb",
+      "griff": 0.45,
+      "griff2": 0.4,
+      "klasse": "speer",
+      "angriff": "stich2h",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "treffer",
+        "tod",
+        "stich2h"
+      ]
+    }
+  ],
+  "beine_eng": 0.15
+}

@@ -1,0 +1,260 @@
+{
+ "_hinweis": "Kräuter-Fundstellen (Phase 5, Issue #35). Erzeugt von werkzeug/welt/kraeuter.py; Weltfelder, Stehplatz = Fundstelle. Kessel: siehe kessel.",
+ "stellen": [
+  {
+   "id": "wegerich_1",
+   "art": "wegerich",
+   "x": 6458.5,
+   "y": 6429.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_2",
+   "art": "wegerich",
+   "x": 6449.5,
+   "y": 6462.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_3",
+   "art": "wegerich",
+   "x": 6453.5,
+   "y": 6437.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_4",
+   "art": "wegerich",
+   "x": 6423.5,
+   "y": 6431.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_5",
+   "art": "wegerich",
+   "x": 6435.5,
+   "y": 6437.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_6",
+   "art": "wegerich",
+   "x": 6578.5,
+   "y": 6439.5,
+   "region": "osthof"
+  },
+  {
+   "id": "wegerich_7",
+   "art": "wegerich",
+   "x": 6517.5,
+   "y": 6422.5,
+   "region": "osthof"
+  },
+  {
+   "id": "wegerich_8",
+   "art": "wegerich",
+   "x": 6575.5,
+   "y": 6426.5,
+   "region": "osthof"
+  },
+  {
+   "id": "wegerich_9",
+   "art": "wegerich",
+   "x": 6583.5,
+   "y": 6424.5,
+   "region": "osthof"
+  },
+  {
+   "id": "wegerich_10",
+   "art": "wegerich",
+   "x": 6558.5,
+   "y": 6406.5,
+   "region": "osthof"
+  },
+  {
+   "id": "ringelblume_1",
+   "art": "ringelblume",
+   "x": 6561.5,
+   "y": 6680.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_2",
+   "art": "ringelblume",
+   "x": 6536.5,
+   "y": 6749.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_3",
+   "art": "ringelblume",
+   "x": 6559.5,
+   "y": 6743.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_4",
+   "art": "ringelblume",
+   "x": 6554.5,
+   "y": 6745.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_5",
+   "art": "ringelblume",
+   "x": 6573.5,
+   "y": 6670.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_6",
+   "art": "ringelblume",
+   "x": 6575.5,
+   "y": 6679.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "ringelblume_7",
+   "art": "ringelblume",
+   "x": 6534.5,
+   "y": 6713.5,
+   "region": "obstwiesen"
+  },
+  {
+   "id": "moorgloeckchen_1",
+   "art": "moorgloeckchen",
+   "x": 6284.5,
+   "y": 6678.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "moorgloeckchen_2",
+   "art": "moorgloeckchen",
+   "x": 6294.5,
+   "y": 6682.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "moorgloeckchen_3",
+   "art": "moorgloeckchen",
+   "x": 6289.5,
+   "y": 6677.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "moorgloeckchen_4",
+   "art": "moorgloeckchen",
+   "x": 6303.5,
+   "y": 6699.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "moorgloeckchen_5",
+   "art": "moorgloeckchen",
+   "x": 6330.5,
+   "y": 6697.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "moorgloeckchen_6",
+   "art": "moorgloeckchen",
+   "x": 6316.5,
+   "y": 6713.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "eisenhut_1",
+   "art": "eisenhut",
+   "x": 6369.5,
+   "y": 6365.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "eisenhut_2",
+   "art": "eisenhut",
+   "x": 6375.5,
+   "y": 6371.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "eisenhut_3",
+   "art": "eisenhut",
+   "x": 6371.5,
+   "y": 6355.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "eisenhut_4",
+   "art": "eisenhut",
+   "x": 6343.5,
+   "y": 6366.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "eisenhut_5",
+   "art": "eisenhut",
+   "x": 6335.5,
+   "y": 6362.5,
+   "region": "nordwald"
+  },
+  {
+   "id": "nebelkraut_1",
+   "art": "nebelkraut",
+   "x": 6353.5,
+   "y": 6668.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebelkraut_2",
+   "art": "nebelkraut",
+   "x": 6297.5,
+   "y": 6714.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebelkraut_3",
+   "art": "nebelkraut",
+   "x": 6364.5,
+   "y": 6697.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "nebelkraut_4",
+   "art": "nebelkraut",
+   "x": 6335.5,
+   "y": 6660.5,
+   "region": "rabenmoor"
+  },
+  {
+   "id": "lindenbluete_1",
+   "art": "lindenbluete",
+   "x": 6452.0,
+   "y": 6680.6,
+   "region": "weidenhain"
+  }
+ ],
+ "kessel": [
+  {
+   "id": "kessel_kraeuterhaus",
+   "ort": "Kräuterhaus der Waldmark (Möbel im Bauplan)",
+   "x": 6420.9,
+   "y": 6437.5,
+   "stehen": [
+    6420.9,
+    6438.6
+   ],
+   "region": "waldmark"
+  },
+  {
+   "id": "kessel_hedda",
+   "ort": "vor Heddas Hütte (Objekt ort_p5_kessel_hedda)",
+   "x": 6291.6,
+   "y": 6677.8,
+   "stehen": [
+    6291.6,
+    6679.2
+   ],
+   "region": "rabenmoor"
+  }
+ ]
+}

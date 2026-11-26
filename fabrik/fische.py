@@ -3,7 +3,7 @@
   python3 fabrik/fische.py -- <ziel-ordner> [art=alle] [zustand=alle] [glb=1]
 
 Arten: bachling (kleine Bachforelle, rot-schwarz getupft), muehlbarsch (Barsch: grüngold mit dunklen Querbinden, rote Flossen),
-       moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken).
+       moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken), wels (Graufurter Wels: dunkelgrau marmoriert, breiter Kopf, Barteln).
 Zustand: roh · gebraten (goldbraun, Grillstreifen) · verbrannt (schwarz verkohlt, Asche).
 Ausgabe: <ziel>/fisch_<art>_<zustand>.webp (und mit glb=1 auch .glb, liegt flach am Boden).
 """
@@ -15,6 +15,7 @@ a_ = sys.argv[sys.argv.index("--") + 1:]; ZIEL = a_[0]; opt = dict(x.split("=", 
 ARTEN = {   # Länge (m), Höhe/Länge, Breite/Höhe, Kopfspitze, Farben (Rücken, Seite, Bauch), Flossen
     "bachling":   dict(L=0.30, h=0.27, w=0.55, schnabel=0.0, ruecken=(0.18, 0.2, 0.12), seite=(0.55, 0.5, 0.32), bauch=(0.92, 0.86, 0.7), flosse=(0.55, 0.42, 0.3), muster="tupfen"),
     "muehlbarsch": dict(L=0.34, h=0.32, w=0.5, schnabel=0.0, ruecken=(0.14, 0.24, 0.1), seite=(0.55, 0.6, 0.22), bauch=(0.95, 0.9, 0.72), flosse=(0.85, 0.25, 0.12), muster="binden"),
+    "wels":       dict(L=0.7, h=0.17, w=0.95, schnabel=0.0, ruecken=(0.16, 0.15, 0.13), seite=(0.34, 0.32, 0.27), bauch=(0.78, 0.74, 0.66), flosse=(0.22, 0.2, 0.17), muster="marmor"),   # Graufurter Wels (Phase 7): lang, flacher breiter Kopf, Barteln
     "moorhecht":  dict(L=0.62, h=0.19, w=0.6, schnabel=0.12, ruecken=(0.12, 0.17, 0.08), seite=(0.34, 0.42, 0.18), bauch=(0.86, 0.84, 0.66), flosse=(0.45, 0.35, 0.18), muster="flecken"),
 }
 ZUSTAENDE = ["roh", "gebraten", "verbrannt"]
@@ -55,7 +56,7 @@ def fisch(art, zustand):
         r2 = nt.nodes.new("ShaderNodeMapRange"); r2.inputs["From Min"].default_value = 0.65; r2.inputs["From Max"].default_value = 0.8; nt.links.new(wv.outputs["Fac"], r2.inputs["Value"])
         mx = nt.nodes.new("ShaderNodeMixRGB"); mx.blend_type = "MULTIPLY"; mx.inputs["Color2"].default_value = (0.25, 0.3, 0.15, 1); nt.links.new(r2.outputs["Result"], mx.inputs["Fac"]); nt.links.new(farbe, mx.inputs["Color1"]); farbe = mx.outputs["Color"]
     else:                                                                                # Tupfen (Bachling: rot und schwarz) / helle Flecken (Hecht)
-        for skala, farbe_t, schwelle in ((("tupfen" == A["muster"]) and [(38, (0.03, 0.02, 0.02), 0.72), (30, (0.75, 0.08, 0.03), 0.75)] or [(18, lin((0.85, 0.82, 0.55)), 0.68)])):
+        for skala, farbe_t, schwelle in ({"tupfen": [(38, (0.03, 0.02, 0.02), 0.72), (30, (0.75, 0.08, 0.03), 0.75)], "marmor": [(11, (0.035, 0.035, 0.03), 0.7), (24, (0.06, 0.055, 0.05), 0.7)]}.get(A["muster"]) or [(18, lin((0.85, 0.82, 0.55)), 0.68)]):
             v = nt.nodes.new("ShaderNodeTexVoronoi"); v.inputs["Scale"].default_value = skala; nt.links.new(tc.outputs["Object"], v.inputs["Vector"])
             r2 = nt.nodes.new("ShaderNodeMapRange"); r2.inputs["From Min"].default_value = 0.3; r2.inputs["From Max"].default_value = 0.2; nt.links.new(v.outputs["Distance"], r2.inputs["Value"])
             mk = nt.nodes.new("ShaderNodeMath"); mk.operation = "MULTIPLY"; nt.links.new(r2.outputs["Result"], mk.inputs[0]); mk.inputs[1].default_value = 1.0
@@ -93,6 +94,13 @@ def fisch(art, zustand):
         o.data.materials.append(am); teile.append(o)
         bpy.ops.mesh.primitive_uv_sphere_add(radius=H * 0.055, location=(aug_x + H * 0.03, sy * W * 0.5, ah)); o = bpy.context.object
         pm = bpy.data.materials.new("pupille"); pm.use_nodes = True; pm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.01, 0.01, 0.01, 1); o.data.materials.append(pm); teile.append(o)
+    if art == "wels":                                                                    # vier Barteln am breiten Maul
+        bm_ = bpy.data.materials.new("bartel"); bm_.use_nodes = True; bm_.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (*lin(fl_farbe), 1)
+        mx_ = x0 + L * 1.0
+        for sy, lz, dz in ((1, 0.32, -0.02), (-1, 0.32, -0.02), (1, 0.18, -0.1), (-1, 0.18, -0.1)):
+            p0 = Vector((mx_ - L * 0.02, sy * W * 0.3, -H * 0.05)); p1 = p0 + Vector((-L * lz * 0.3, sy * L * lz * 0.55, dz * L))
+            bpy.ops.mesh.primitive_cone_add(vertices=6, radius1=H * 0.035, radius2=H * 0.008, depth=(p1 - p0).length, location=(p0 + p1) / 2)
+            o = bpy.context.object; o.rotation_mode = "QUATERNION"; o.rotation_quaternion = Vector((0, 0, 1)).rotation_difference((p1 - p0).normalized()); o.data.materials.append(bm_); teile.append(o)
     return teile
 
 def bild(teile, ziel_png, kipp=0.0):

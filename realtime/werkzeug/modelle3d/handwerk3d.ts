@@ -161,6 +161,132 @@ export function wasserrad() {
   return { teile: fest, rad, mitte: MY };
 }
 
+/* ───────── Phase 4: Zelt der Banditen, Fußspuren, verschlossene Tür im Fels ───────── */
+/** Spitzzelt aus grober Plane über zwei Stangen und einem Firstholz, vorn halb offen, rot geflickt; 2,6 × 2,2 m */
+export function zelt() {
+  const t = new Teile("putz"), B = 2.6, T = 2.2, H = 1.75, PLANE = "#8c7a5c", FLICK = "#8a2e24";
+  stab(t, V(0, 0, T / 2 + 0.05), V(0, H + 0.12, T / 2 + 0.05), 0.04, HOLZ_ALT); stab(t, V(0, 0, -T / 2 - 0.05), V(0, H + 0.12, -T / 2 - 0.05), 0.04, HOLZ_ALT);
+  stab(t, V(0, H, -T / 2 - 0.15), V(0, H, T / 2 + 0.15), 0.035, HOLZ_ALT);
+  for (const s of [-1, 1]) { const g = new THREE.BufferGeometry(); const p = new Float32Array([0, H, -T / 2, s * B / 2, 0, -T / 2, s * B / 2, 0, T / 2, 0, H, -T / 2, s * B / 2, 0, T / 2, 0, H, T / 2]);
+    g.setAttribute("position", new THREE.BufferAttribute(p, 3)); g.computeVertexNormals(); t.add(g, PLANE, undefined, { muster: "putz", schwanken: 0.05 }); }
+  t.flaechen([[[0, H, -T / 2], [-B / 2, 0, -T / 2], [B / 2, 0, -T / 2]]], "#7d6c50", { muster: "putz" });                           /* Rückwand */
+  t.flaechen([[[0, H, T / 2], [-B / 2, 0, T / 2], [-0.25, 0, T / 2 + 0.15]]], "#7d6c50", { muster: "putz" });                     /* Vorderseite halb, Eingang offen */
+  t.flaechen([[[0.05, H * 0.95, T / 2 + 0.02], [0.35, 0, T / 2 + 0.45], [B / 2, 0, T / 2]]], "#6e5e44", { muster: "putz" });          /* zurückgeschlagene Klappe */
+  t.box(0.5, 0.35, 0.02, -0.65, 0.4, -T / 2 - 0.01, FLICK, 0, { muster: "putz" }); t.add(new THREE.BoxGeometry(0.45, 0.4, 0.02), FLICK, matrix(0.75, 0.75, 0.2, 0, Math.PI / 2, 0.55), { muster: "putz" });
+  for (const [x, z] of [[-B / 2 - 0.25, -T / 2 + 0.2], [B / 2 + 0.25, -T / 2 + 0.2], [-B / 2 - 0.25, T / 2 - 0.2], [B / 2 + 0.25, T / 2 - 0.2]] as const) { stab(t, V(x, 0, z), V(x * 0.9, 0.25, z), 0.02, HOLZ_ALT); stab(t, V(x * 0.9, 0.22, z), V(x > 0 ? 1.0 : -1.0, 0.6, z), 0.006, "#c8b88a"); }
+  t.box(1.0, 0.08, 0.7, 0, 0, -0.2, "#5a4a3a", 0.1, { muster: "putz" });                                                            /* Lager drinnen */
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Fußspuren im Boden: zwei Paar Stiefel, eine Karrenspur, ein liegengelassener Apfel (flach, ohne Kollision) */
+export function spuren() {
+  const t = new Teile("glatt"), MATSCH = "#4a3a28";
+  for (let i = 0; i < 7; i++) { const z = -1.1 + i * 0.36, x = (i % 2 ? 0.14 : -0.14) - 0.35 + i * 0.03;
+    t.add(new THREE.CylinderGeometry(0.075, 0.07, 0.012, 9), MATSCH, matrix(x, 0.006, z, 0, 0.1, 0, 0.75, 1, 1.35), { muster: "glatt" });
+    t.add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 8), MATSCH, matrix(x, 0.006, z - 0.17, 0, 0, 0, 0.8, 1, 0.8), { muster: "glatt" }); }
+  for (let i = 0; i < 5; i++) { const z = -0.9 + i * 0.42, x = 0.45 + (i % 2 ? 0.12 : -0.12);
+    t.add(new THREE.CylinderGeometry(0.07, 0.065, 0.012, 9), "#3f3122", matrix(x, 0.007, z, 0, -0.15, 0, 0.8, 1, 1.4), { muster: "glatt" }); }
+  for (const x of [-0.95, -0.55]) t.box(0.07, 0.008, 2.4, x, 0, 0, "#54432f", 0.05, { muster: "glatt" });
+  t.add(new THREE.SphereGeometry(0.06, 9, 7), "#b8352c", matrix(0.15, 0.055, 0.85), { muster: "glatt" }); t.add(new THREE.CylinderGeometry(0.006, 0.006, 0.04, 4), "#4a3520", matrix(0.15, 0.12, 0.85), { muster: "holz" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Verschlossene Tür in einem Felsgang: Bohlentür mit Eisenbändern und Schloss in einem Rahmen aus Balken, 3 m breit (füllt den Gang) */
+export function felstuer() {
+  const t = new Teile("holz"), B = 3.0, H = 2.3;
+  t.box(0.35, H + 0.3, 0.5, -B / 2 + 0.17, 0, 0, "#6f6a63", 0, { muster: "stein", schwanken: 0.06 }); t.box(0.35, H + 0.3, 0.5, B / 2 - 0.17, 0, 0, "#6f6a63", 0, { muster: "stein", schwanken: 0.06 });
+  t.box(B, 0.3, 0.5, 0, H, 0, "#5e4128", 0, { muster: "holz" });
+  for (let i = 0; i < 7; i++) t.box((B - 0.7) / 7 - 0.02, H, 0.12, -B / 2 + 0.35 + (i + 0.5) * (B - 0.7) / 7, 0, 0, i % 2 ? "#6a4628" : "#5e3e24", 0, { muster: "holz", schwanken: 0.06 });
+  for (const y of [0.35, 1.15, 1.95]) t.box(B - 0.7, 0.09, 0.03, 0, y, 0.075, EISEN, 0, { muster: "metall" });
+  for (const y of [0.35, 1.15, 1.95]) for (const x of [-1.0, -0.4, 0.2, 0.8]) t.add(new THREE.SphereGeometry(0.025, 6, 4), EISEN_HELL, matrix(x, y + 0.045, 0.1), { muster: "metall" });
+  t.box(0.22, 0.28, 0.06, 0.75, 0.95, 0.09, "#3a3c40", 0, { muster: "metall" }); t.add(new THREE.TorusGeometry(0.07, 0.015, 5, 12), "#8a6a2a", matrix(0.75, 1.0, 0.14), { muster: "metall" });
+  t.add(new THREE.CylinderGeometry(0.018, 0.018, 0.04, 6), "#111111", matrix(0.75, 1.03, 0.12, Math.PI / 2), { muster: "glatt" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+
+/* ───────── Phase 6: Käfig im Kerker, Federn am Boden ───────── */
+/** Eiserner Käfig 1,6 × 1,6 × 2,1 m: Bodenplatte, Gitterstäbe, Querbänder, Tür mit Vorhängeschloss, darin Stroh und eine Kette */
+export function kaefig() {
+  const t = new Teile("metall"), B = 1.6, H = 2.1, E = "#2e3035";
+  t.box(B + 0.1, 0.1, B + 0.1, 0, 0, 0, "#3a3b3f", 0, { muster: "metall" }); t.box(B + 0.1, 0.08, B + 0.1, 0, H, 0, "#3a3b3f", 0, { muster: "metall" });
+  const n = 7; for (let i = 0; i <= n; i++) { const u = -B / 2 + i * B / n; for (const [x, z] of [[u, -B / 2], [u, B / 2], [-B / 2, u], [B / 2, u]] as const) if (!(z === B / 2 && Math.abs(x) < 0.35 && x > -0.35)) stab(t, V(x, 0.1, z), V(x, H, z), 0.022, E, "metall"); }
+  for (const y of [0.8, 1.5]) for (const [w, d, x, z] of [[B, 0.04, 0, -B / 2], [B, 0.04, 0, B / 2], [0.04, B, -B / 2, 0], [0.04, B, B / 2, 0]] as const) t.box(w, 0.05, d, x, y, z, "#45474d", 0, { muster: "metall" });
+  for (const x of [-0.12, 0.12]) stab(t, V(x + 0.18, 0.12, B / 2 + 0.25), V(x + 0.18, H - 0.05, B / 2 + 0.25), 0.02, E, "metall");   /* offene Tür, leicht ausgeschwenkt */
+  t.box(0.12, 0.14, 0.05, 0.3, 1.0, B / 2 + 0.27, "#8a6a2a", 0, { muster: "metall" });
+  t.box(1.1, 0.12, 0.9, -0.1, 0.1, -0.2, "#b49a5a", 0.3, { muster: "stroh" });
+  for (let i = 0; i < 8; i++) t.add(new THREE.TorusGeometry(0.035, 0.01, 4, 8), "#55575d", matrix(-0.6 + i * 0.07, 0.15 + Math.max(0, 3 - i) * 0.03, -0.65, 0, i % 2 ? Math.PI / 2 : 0, 0), { muster: "metall" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Federn am Boden: schwarze Rabenfedern, ein paar violett schimmernd (flach, ohne Kollision) */
+export function federn() {
+  const t = new Teile("glatt");
+  for (let i = 0; i < 14; i++) { const a = zufall(i, 3) * Math.PI * 2, r = zufall(i, 5) * 0.9, l = 0.18 + zufall(i, 7) * 0.16, w = a + zufall(i, 9) * 3;
+    t.add(new THREE.BoxGeometry(l, 0.006, l * 0.28), i % 5 === 0 ? "#5a3a86" : i % 3 ? "#1a1a20" : "#2a2a33", matrix(Math.cos(a) * r, 0.004 + i * 0.0006, Math.sin(a) * r, 0, w, 0), { muster: "glatt" });
+    t.add(new THREE.BoxGeometry(l * 0.9, 0.008, 0.008), "#6a6a72", matrix(Math.cos(a) * r, 0.008 + i * 0.0006, Math.sin(a) * r, 0, w, 0), { muster: "glatt" }); }
+  return { teile: t, flammen: new Teile("glatt") };
+}
+
+/* ───────── Thronsaal: leuchtendes Splitterbecken, Steinsäule ───────── */
+/** Splitterbecken r 3: Rand aus behauenen Steinen, violett leuchtende Fläche (unbeleuchtet, eigenes Netz „leuchten“), schwebende Splitter */
+export function splitterbecken() {
+  const t = new Teile("stein"), l = new Teile("glatt"), R = 3.0, n = 20;
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; t.add(new THREE.BoxGeometry(2 * Math.PI * R / n + 0.04, 0.42, 0.5), i % 2 ? "#4a4650" : "#5a5560", matrix(Math.cos(a) * R, 0.21, Math.sin(a) * R, 0, -a + Math.PI / 2, 0), { muster: "stein", schwanken: 0.07 }); }
+  t.add(new THREE.CylinderGeometry(R - 0.2, R - 0.2, 0.1, 32), "#1b1424", matrix(0, -0.05, 0), { muster: "glatt" });
+  l.add(new THREE.CircleGeometry(R - 0.22, 40), "#9b5cff", matrix(0, 0.3, 0, -Math.PI / 2), { muster: "glatt" });
+  l.add(new THREE.RingGeometry(0.6, 1.4, 32), "#d7b8ff", matrix(0, 0.31, 0, -Math.PI / 2), { muster: "glatt" });
+  for (let i = 0; i < 7; i++) { const a = zufall(i, 4) * 6.28, r = 0.4 + zufall(i, 6) * 1.6, h = 0.7 + zufall(i, 8) * 1.1, s = 0.12 + zufall(i, 9) * 0.12;
+    l.add(new THREE.OctahedronGeometry(1, 0), i % 2 ? "#c79bff" : "#8a4dff", matrix(Math.cos(a) * r, h, Math.sin(a) * r, zufall(i, 1), zufall(i, 2) * 3, 0, s, s * 2.4, s), { muster: "glatt" }); }
+  return { teile: t, flammen: l };
+}
+/** Steinsäule 3,6 m: Sockel, kannelierter Schaft, Kapitell, Risse; eine violette Rune */
+export function steinsaeule() {
+  const t = new Teile("stein"), l = new Teile("glatt"), S = "#6a6670";
+  t.box(1.1, 0.35, 1.1, 0, 0, 0, "#5a5660", 0, { muster: "stein" }); t.box(0.95, 0.15, 0.95, 0, 0.35, 0, S, 0, { muster: "stein" });
+  t.add(new THREE.CylinderGeometry(0.36, 0.42, 2.7, 12), S, matrix(0, 0.5 + 1.35, 0), { muster: "stein", verlauf: [0.8, 1.1] });
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; t.box(0.04, 2.6, 0.04, Math.cos(a) * 0.39, 0.55, Math.sin(a) * 0.39, "#4e4a55", 0, { muster: "stein" }); }
+  t.box(1.0, 0.18, 1.0, 0, 3.2, 0, S, 0, { muster: "stein" }); t.box(1.15, 0.22, 1.15, 0, 3.38, 0, "#5a5660", 0, { muster: "stein" });
+  t.box(0.05, 0.6, 0.03, 0.1, 1.2, 0.39, "#2a2830", 0.3, { muster: "glatt" }); t.box(0.04, 0.4, 0.03, -0.15, 2.3, 0.38, "#2a2830", -0.4, { muster: "glatt" });
+  l.add(new THREE.TorusGeometry(0.14, 0.025, 4, 12), "#b07aff", matrix(0, 1.9, 0.43), { muster: "glatt" }); l.box(0.03, 0.26, 0.02, 0, 1.77, 0.44, "#b07aff", 0, { muster: "glatt" });
+  return { teile: t, flammen: l };
+}
+
+/** Felswand-Stück 3 m breit, 3,4 m hoch: übereinandergeschichtete, kantige Brocken in dunklem Grau-Violett, unten breiter */
+export function felswand() {
+  const t = new Teile("stein");
+  for (let i = 0; i < 9; i++) { const x = -1.2 + (i % 3) * 1.2 + (zufall(i, 2) - 0.5) * 0.4, y = Math.floor(i / 3) * 1.05 + 0.5, s = 0.85 - Math.floor(i / 3) * 0.15 + zufall(i, 3) * 0.2;
+    t.add(bausch(0, 0.22, i + 60), i % 3 === 1 ? "#4a4550" : i % 2 ? "#3d3943" : "#55505a", matrix(x, y, -0.2 - Math.floor(i / 3) * 0.15, zufall(i, 4), zufall(i, 5) * 3, 0, s, s * 0.9, s * 0.8), { muster: "stein", verlauf: [0.7, 1.1] }); }
+  t.add(bausch(0, 0.2, 77), "#4a4550", matrix(0, 3.1, -0.6, 0, 1, 0, 1.1, 0.6, 0.7), { muster: "stein" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+
+/* ───────── Phase 7: Winde der Fährkette, grünes Signalfeuer ───────── */
+/** Seilwinde am Anleger: zwei Böcke, Walze mit Kurbeln, Kette (gerissen: ein Stück hängt herab) */
+export function winde() {
+  const t = new Teile("holz");
+  for (const x of [-0.8, 0.8]) { stab(t, V(x, 0, -0.35), V(x, 1.15, 0), 0.07, HOLZ); stab(t, V(x, 0, 0.35), V(x, 1.15, 0), 0.07, HOLZ); t.box(0.2, 0.1, 0.9, x, 0, 0, "#5e4128", 0, { muster: "holz" }); }
+  t.add(new THREE.CylinderGeometry(0.22, 0.22, 1.5, 12), "#6a4628", matrix(0, 1.1, 0, 0, 0, Math.PI / 2), { muster: "holz" });
+  for (const x of [-0.5, 0, 0.5]) t.add(new THREE.TorusGeometry(0.23, 0.02, 4, 16), EISEN, matrix(x, 1.1, 0, 0, Math.PI / 2, 0), { muster: "metall" });
+  for (const s of [-1, 1]) { t.box(0.06, 0.45, 0.06, s * 0.95, 0.9, 0.12, EISEN, 0, { muster: "metall" }); t.box(0.06, 0.06, 0.3, s * 0.95, 0.9, 0.24, EISEN, 0, { muster: "metall" }); }
+  for (let i = 0; i < 9; i++) t.add(new THREE.TorusGeometry(0.05, 0.013, 4, 8), EISEN_HELL, matrix(0.2, 0.95 - i * 0.1, 0.27 + i * 0.03, 0, i % 2 ? Math.PI / 2 : 0, 0, 1, 1.5, 1), { muster: "metall" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Signalfeuer: eiserne Schale auf Dreibein, darin ein Splitterkern mit grüner, unbeleuchteter Flamme */
+export function signalfeuer() {
+  const t = new Teile("metall"), l = new Teile("glatt");
+  for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI * 2; stab(t, V(Math.cos(a) * 0.55, 0, Math.sin(a) * 0.55), V(Math.cos(a) * 0.25, 0.9, Math.sin(a) * 0.25), 0.04, EISEN, "metall"); }
+  t.add(new THREE.CylinderGeometry(0.6, 0.3, 0.3, 14, 1, true), "#3a3c40", matrix(0, 1.05, 0), { muster: "metall" }); t.add(new THREE.TorusGeometry(0.6, 0.03, 5, 18), EISEN_HELL, matrix(0, 1.2, 0, Math.PI / 2), { muster: "metall" });
+  t.add(new THREE.OctahedronGeometry(0.22, 0), "#3fae6a", matrix(0, 1.25, 0, 0.3, 0.4, 0, 1, 1.4, 1), { muster: "glatt" });
+  for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2, r = i ? 0.28 : 0, h = i ? 0.45 + zufall(i, 3) * 0.3 : 0.95;
+    l.add(new THREE.ConeGeometry(i ? 0.12 : 0.2, h, 7), i % 2 ? "#5dff8f" : "#2bd968", matrix(Math.cos(a) * r, 1.25 + h / 2, Math.sin(a) * r), { muster: "glatt" });
+    l.add(new THREE.ConeGeometry(i ? 0.05 : 0.09, h * 0.6, 6), "#c8ffd8", matrix(Math.cos(a) * r, 1.25 + h * 0.3, Math.sin(a) * r), { muster: "glatt" }); }
+  return { teile: t, flammen: l };
+}
+/** Grünes Licht über dem Turm (für die Außenansicht): nur die Flamme, 9,4 m über dem Fuß, weithin sichtbar */
+export function gruenlicht() {
+  const l = new Teile("glatt");
+  l.add(new THREE.IcosahedronGeometry(0.55, 1), "#3dff86", matrix(0, 9.4, 0), { muster: "glatt" });
+  for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; l.add(new THREE.ConeGeometry(0.16, 0.9, 6), "#7dffab", matrix(Math.cos(a) * 0.3, 9.9, Math.sin(a) * 0.3), { muster: "glatt" }); }
+  return { teile: new Teile("glatt"), flammen: l };
+}
+
 /* ───────── Ausgabe ───────── */
 /** Teile → Mesh mit glTF-tauglichen Materialien (Standard statt Lambert, Farbe ≤ 1; die Aufhellung der Muster steckt in den Eckpunktfarben) */
 const STANDARD = MUSTER.map((m, i) => { const alt = MATERIALIEN[i] as THREE.MeshLambertMaterial;
@@ -172,8 +298,8 @@ function flammenNetz(t: Teile) { const m = new THREE.Mesh(t.geometrie(), new THR
 
 export function alle(): Record<string, THREE.Group> {
   const aus: Record<string, THREE.Group> = {};
-  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen]] as const) {
-    const g = new THREE.Group(); g.name = id; const r = f(); g.add(netz(r.teile, "modell")); if (!r.flammen.leer) g.add(flammenNetz(r.flammen)); aus[id] = g; }
+  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer], ["kaefig", kaefig], ["federn", federn], ["splitterbecken", splitterbecken], ["steinsaeule", steinsaeule], ["felswand", felswand], ["winde", winde], ["signalfeuer", signalfeuer], ["gruenlicht", gruenlicht]] as const) {
+    const g = new THREE.Group(); g.name = id; const r = f(); if (!r.teile.leer) g.add(netz(r.teile, "modell")); if (!r.flammen.leer) g.add(flammenNetz(r.flammen)); aus[id] = g; }
   const w = wasserrad(), g = new THREE.Group(); g.name = "wasserrad"; g.add(netz(w.teile, "modell")); const rad = netz(w.rad, "rad"); rad.position.y = w.mitte; g.add(rad); aus.wasserrad = g;
   return aus;
 }

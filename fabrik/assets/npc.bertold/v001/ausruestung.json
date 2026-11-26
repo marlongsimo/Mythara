@@ -1,0 +1,39 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.bertold – Bertold Krähe, Schulze von Rabenmoor, wettergegerbt: grauer Scheitel und Wikingerbart (vom alten Bauern), brauner Fellumhang (fabrik/umhang.py).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.fellumhang",
+      "platz": "umhang",
+      "glb": "npc.bertold/v001/quelle/teile/kleidung.fellumhang.glb",
+      "art": "umhang",
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.scheitel",
+      "platz": "haar",
+      "glb": "npc.alter_bauer/v001/quelle/teile/kopf.haar.scheitel.glb"
+    },
+    {
+      "id": "kopf.bart.wikinger",
+      "platz": "bart",
+      "glb": "npc.alter_bauer/v001/quelle/teile/kopf.bart.wikinger.glb"
+    }
+  ],
+  "arme_eng": 6
+}

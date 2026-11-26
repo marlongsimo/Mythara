@@ -54,6 +54,8 @@ HAEUSER = {
     # die alte Brücke nach Aschenwerth (25.11.2026): verwittert, einzelne Bohlen fehlen, das Geländer ist teils gebrochen
     'moor_bruecke_alt_01':  dict(name='Alte Moorbrücke', form='bruecke', richtung='quer', tiefe='boden', saat=36, alt=dict(luecken=[5, 11], vorn=1.0, kurz_vorn=2, hinten=1.0, kurz_hinten=None)),
     'moor_bruecke_alt_02':  dict(name='Alte Moorbrücke (Geländer gebrochen)', form='bruecke', richtung='quer', tiefe='boden', saat=37, alt=dict(luecken=[3, 9, 10], vorn=0.42, kurz_vorn=None, hinten=1.0, kurz_hinten=1)),
+    # morsche Stelle (Phase 6, Quest C1): in der Mitte fehlen fünf Bohlen, das Geländer ist weg – erst mit Planken reparieren
+    'moor_bruecke_morsch_01': dict(name='Alte Moorbrücke (morsche Stelle)', form='bruecke', richtung='quer', tiefe='boden', saat=39, alt=dict(luecken=[2, 6, 7, 8, 9, 10, 13], vorn=0.0, kurz_vorn=None, hinten=0.3, kurz_hinten=None)),
     'moor_bruecke_alt_03':  dict(name='Alte Moorbrücke (ohne Geländer)', form='bruecke', richtung='quer', tiefe='boden', saat=38, alt=dict(luecken=[7], vorn=0.0, kurz_vorn=None, hinten=0.7, kurz_hinten=3)),
     'moor_kahn_01':         dict(name='Kahn', form='kahn', tiefe='boden', saat=36),
     'moor_feuerkorb_01':    dict(name='Feuerkorb', form='feuerkorb', saat=37),

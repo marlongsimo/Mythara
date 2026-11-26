@@ -32,14 +32,34 @@
    "rate": 11,
    "schleife": true
   },
+  "ruf": {
+   "bilder": 12,
+   "rate": 10,
+   "schleife": false
+  },
   "ruhe": {
    "bilder": 6,
    "rate": 6,
    "schleife": true
   },
+  "rundumschlag": {
+   "bilder": 12,
+   "rate": 14,
+   "schleife": false
+  },
   "tod": {
    "bilder": 8,
    "rate": 10,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 5,
+   "rate": 12,
+   "schleife": false
+  },
+  "trinken": {
+   "bilder": 16,
+   "rate": 12,
    "schleife": false
   }
  }

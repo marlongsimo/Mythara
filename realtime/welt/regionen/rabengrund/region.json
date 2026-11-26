@@ -1,0 +1,16 @@
+{
+ "id": "rabengrund",
+ "name": "Rabengrund",
+ "untertitel": "Unter der Gruft von Aschenwerth",
+ "ursprung": [
+  330,
+  300
+ ],
+ "chunks": [
+  4,
+  3
+ ],
+ "biom": "hoehle",
+ "stufe": 7,
+ "ebene": "untergrund"
+}

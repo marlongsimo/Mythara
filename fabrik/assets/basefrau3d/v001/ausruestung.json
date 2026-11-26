@@ -541,6 +541,22 @@
         "tod",
         "angriff"
       ]
+    },
+    {
+      "id": "waffe.sichel",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/sichel/v001/hand/sichel.glb",
+      "griff": 0.3,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
     }
   ],
   "stuecke_behalten": true,

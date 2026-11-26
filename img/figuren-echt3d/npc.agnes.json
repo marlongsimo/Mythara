@@ -1,0 +1,34 @@
+{
+ "teile": {
+  "kleidung.umhang": {
+   "art": "starr",
+   "platz": "umhang",
+   "bewegungen": [
+    "ruhe",
+    "gehen"
+   ]
+  },
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.haar.lang": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}

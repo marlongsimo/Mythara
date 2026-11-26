@@ -1,0 +1,15 @@
+{
+ "id": "ostufer",
+ "name": "Das Ostufer",
+ "untertitel": "Jenseits des grauen Flusses – nur mit der Fähre",
+ "ursprung": [
+  212,
+  200
+ ],
+ "chunks": [
+  4,
+  11
+ ],
+ "biom": "wiese",
+ "stufe": 3
+}

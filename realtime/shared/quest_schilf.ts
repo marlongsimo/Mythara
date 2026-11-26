@@ -5,16 +5,16 @@
  * Lohn: Fischen- und Kochen-XP, 20 Würmer, 1 Questpunkt. Kanon 26.11.: nur eine Angelrute ohne Stufen, keine „Lamberts Rute“ –
  * Lambert gibt seine alte Angelrute nur, wenn man keine hat.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 3b (Issue #4). Erwartete Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
+ * Seit Phase 3b (Issue #4) im Spiel (shared/quests.ts). Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
  * Sammelziel „wurmacker“ (Ertrag wurm), Fischen meldet „sammeln“ mit der Fischart als Ziel („bachling“), Rezept „fisch_bachling_gebraten“ (Station Feuer),
- * Gegenstände angelrute, wurm, fisch_bachling_roh, fisch_bachling_gebraten. Erst danach in shared/quests.ts eintragen.
+ * Gegenstände angelrute, wurm, fisch_bachling_roh, fisch_bachling_gebraten.
  */
 import type { QuestDef, Bed, Geben } from "./questbau";
 
 export const SCHILF = "weidenhain_schilf_und_schnur";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Lambert am Mühlgraben, oberhalb der Wassermühle (Vorschlag, Welt prüft die Stelle) */
-const LAMBERT: [number, number] = [6463.5, 6686.5], ACKER: [number, number] = [6512.5, 6440.5], GRABEN: [number, number] = [6464.5, 6688.5], FEUER: [number, number] = [6442, 6687.9];
+const LAMBERT: [number, number] = [6462.5, 6687.5] /* 6463,5 · 6686,5 war im Gehraster gesperrt (Mühlengebäude) – das freie Ufer-Feld daneben (Integration, 26.11.) */, ACKER: [number, number] = [6512.5, 6440.5], GRABEN: [number, number] = [6464.5, 6688.5], FEUER: [number, number] = [6442, 6687.9];
 const RUTE: Geben[] = [{ g: "angelrute", name: "Lamberts alte Angelrute", fehlt: true, gleich: "^angelrute" }];
 const HILFE = ["Würmer zuerst. Auf den Äckern am Osthof, wo die Erde schwer ist. Drei Hände voll.",
   "Dann hierher, an den Graben. Rute rein, Wurm dran, warten. Drei Bachlinge.", "Einen davon bratest du am Erntefeuer auf dem Dorfplatz. Und den bringst du mir. Ich hab Hunger."];

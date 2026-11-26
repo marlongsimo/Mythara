@@ -4,6 +4,7 @@
  * Rucksack und Ausrüstung als Tafeln (noch ohne Gegenstände – das Grundgerüst für das kommende Inventar).
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
+import { skillPlus } from "../../shared/wirkungen";
 import { BERUFE } from "../../shared/berufe";
 import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten, wegsteinReiben } from "./welt";
 import { QUESTS as QUESTS_B, wegzieleFrei } from "../../shared/quests";
@@ -25,7 +26,7 @@ async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: st
   if (G.bild) { await bildMalen(c, G.bild); return; }
   const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
   await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
-import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken } from "./inventar";
+import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";
 import { skillFuehrer } from "./skillfuehrer";
@@ -303,7 +304,7 @@ export function baldTafel(titel: string, zeichen: keyof typeof RZEICHEN, zu: () 
 /** Angriffsstil: die Stile der angelegten Waffe mit den Werten, die sich daraus ergeben (Kampfregeln v3) */
 export function stilTafel(zu: () => void): void {
   const zeichnen = () => { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe, schaden = W.art === "magie" ? `${Math.max(1, Math.round(W.schaden[0] + W.plus))}–${Math.max(1, Math.round(W.schaden[1] + W.plus))}` : `${W.schaden[0]}–${W.schaden[1]}`;
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i, skillPlus(wirkungenJetzt())), W = k.waffe, schaden = W.art === "magie" ? `${Math.max(1, Math.round(W.schaden[0] + W.plus))}–${Math.max(1, Math.round(W.schaden[1] + W.plus))}` : `${W.schaden[0]}–${W.schaden[1]}`;
       return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}"><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small>
         <span class="werte"><em>Treffer ${z(k.angriff[art])}</em><em>Schaden ${schaden}</em><em>${W.ticks} Ticks · ${z(W.ticks * TICK)} s</em><em>${art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"}</em></span></button>`; };
     return `<h2>Angriffsstil</h2><div class="zier"></div><p class="klein">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</p><div class="stile">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
@@ -372,7 +373,7 @@ function tabZeichnen(): void {
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
   const setzen = (): boolean => { if ((el as HTMLElement & { _html?: string })._html === neu) return false; (el as HTMLElement & { _html?: string })._html = neu; el.innerHTML = `<button type="button" class="tzu" data-tzu="1" aria-label="Schließen">✕</button><div class="tinhalt">${neu}</div>`; return true; }; /* Inhalt eigens (scrollt), der Rahmen mit Rauten bleibt außen */
   if (tabJetzt === "stil") { const art = kampfartJetzt(), jetzt = stilLesen(art), x = skillsLesen(), an = inventar().angelegt, w = an.waffe ? GEGENSTAENDE[an.waffe] : null, auto = autoLesen();
-    const zeile = (i: number) => { const k = kampfwerte(x, an, i), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small></button>`; };
+    const zeile = (i: number) => { const k = kampfwerte(x, an, i, skillPlus(wirkungenJetzt())), W = k.waffe; return `<button type="button" class="stil${i === jetzt ? " an" : ""}" data-s="${i}" aria-pressed="${i === jetzt}" title="${STILE[art][i].text}"><i class="punkt"></i><b>${STILE[art][i].name}</b><small>${STILE[art][i].text}</small></button>`; };
     neu = `<div class="kopf gross stilkopf"><b class="hl">Heldenlevel <em>${heldenlevel(x)}</em></b><small class="waffe">${w ? w.name : "Fäuste"} · ${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"}</small></div>
       <div class="stile pergament">${STILE[art].map((_, i) => zeile(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`; setzen(); return; }
@@ -430,7 +431,7 @@ export function ausruestungsWerte(): void {
     <p class="klein">Nur die Gegenstände – deine Skills (Geschick, Defense, Magie …) kommen im Kampf noch dazu.</p>`, () => { /* schließen */ }); }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
-  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und 70 % der Magieabwehr", lp: "Max-LP = Level (Start 10) · 1,33 XP je Schadenspunkt", defense: "Abwehr gegen alle Angriffe (gegen Magie zu 30 %)" };
+  const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt, 1, skillPlus(wirkungenJetzt())), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und 70 % der Magieabwehr", lp: "Max-LP = Level (Start 10) · 1,33 XP je Schadenspunkt", defense: "Abwehr gegen alle Angriffe (gegen Magie zu 30 %)" };
   const zeilen = SKILLS.map((s) => { const S = skillStand(x[s], s); return `<li><b>${SKILL_NAME[s]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${WAS[s]} · ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></li>`; }).join("");
   const z = (v: number) => String(Math.round(v * 10) / 10).replace(".", ",");
   tafel("skilltafel", `<h2>Skills</h2><div class="zier"></div><ul class="skills">${zeilen}</ul>

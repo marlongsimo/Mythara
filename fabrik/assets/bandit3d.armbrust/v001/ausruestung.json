@@ -1,0 +1,36 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "bandit3d.armbrust – Banditen-Variante aus bandit3d (Meshy „Crimson Warden“), Rot umgefärbt mit fabrik/textur_ton.py. Armbrustschütze: Kapuze und Umhang ocker, Armbrust (zielen, schiessen, nachladen).",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "zielen",
+    "schiessen",
+    "nachladen",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.armbrust",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/armbrust/waffe.armbrust/v001/quelle/armbrust.glb",
+      "griff": 0.55,
+      "griff2_ort": [
+        -0.08,
+        0,
+        0.02
+      ],
+      "angriff": "schiessen"
+    }
+  ],
+  "haltung": "armbrust"
+}

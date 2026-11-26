@@ -1,0 +1,27 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.liske – Liske, Mädchen, aus dem Kerker befreit (aus dem Mädchen): Kleidung schmutzig-dunkel (fabrik/textur_umfaerben.py).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.seitenbob",
+      "platz": "haar",
+      "glb": "npc.maedchen/v001/quelle/teile/kopf.haar.seitenbob.glb"
+    }
+  ],
+  "kind": {
+    "groesse": 0.68,
+    "kopf": 1.22
+  },
+  "arme_eng": 6
+}

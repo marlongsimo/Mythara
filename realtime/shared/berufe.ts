@@ -28,6 +28,12 @@ export const BERUFE: Beruf[] = [
   { id: "splitterbinden", name: "Splitterbinden", symbol: S + "splitterbinden.webp", symbolKlein: S + "splitterbinden_klein.webp", stationen: ["bindestein"],
     wofuer: "Splitter tragen Kraft. Am Bindestein legst du sie in den Wegstein: jede Ladung bringt dich einmal zu einem Ziel, das du freigeschaltet hast. Der erste Bindestein steht an der Linde in Weidenhain.",
     aufstieg: "Am Bindestein den Wegstein laden: 2 Splitter je Ladung (2 XP) – oder 1 Splitter und 1 Seelenlicht. Seelenlichter fängst du ohne Werkzeug: Mattes Licht ab Level 1 um die Linde (8 XP), Wiesenlicht ab 10 in den Riedwiesen und an der Quelle der Obstwiesen (15). Schwingt der Stein (Resonanz), tipp schnell: doppelt so viele Ladungen." },
+  { id: "fischen", name: "Fischen", symbol: S + "fischen.webp", symbolKlein: S + "fischen_klein.webp", stationen: [],
+    wofuer: "Fische zum Kochen: gebraten heilen sie, in der Suppe stärken sie. Jeder Fang bringt mit 25 % Wahrscheinlichkeit 5–15 Splitter.",
+    aufstieg: "Eine Stelle im Wasser antippen, wo sich Wellen kräuseln – mit Angelrute und Würmern im Rucksack. Die Fische ziehen weiter, dann such die nächste Stelle. Bachling ab Level 1 (20 XP) im Mühlgraben von Weidenhain und im Bach der Obstwiesen, Mühlbarsch ab 10 (35) weiter unten im Mühlgraben, Moorhecht ab 20 (60) im Rabenmoor mit der Reuse. Würmer gräbst du auf dem Acker im Osthof. Schäumt das Wasser (Strömung lesen), tipp schnell: zwei Fische." },
+  { id: "kochen", name: "Kochen", symbol: S + "kochen.webp", symbolKlein: S + "kochen_klein.webp", stationen: ["feuer", "backofen", "herd", "kessel", "brunnen"],
+    wofuer: "Essen, das heilt – und manches stärkt dich eine Weile (Fischsuppe: Defense +2 für 5 Minuten). Feuer stehen in Weidenhain, am Rastplatz Osthang und im Rabenmoor; Wasser schöpfst du am Brunnen in einen Krug.",
+    aufstieg: "Am Feuer ein Rezept wählen (oder einen rohen Fisch benutzen und das Feuer antippen): Bachling ab Level 1 (30 XP), Mühlbarsch ab 10 (50), Moorhecht ab 20 (80); Fischsuppe ab 15 im Kessel, Bauerneintopf ab 25 am Herd. Anfangs brennt manches an – je höher dein Level, desto seltener. Glüht der Garpunkt, tipp schnell: das Stück gelingt sicher, mit 50 % mehr XP." },
 ];
 export const beruf = (id: string): Beruf | undefined => BERUFE.find((b) => b.id === id);
 /** Welcher Beruf bekommt die XP an dieser Werkstatt? */

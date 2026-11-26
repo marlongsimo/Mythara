@@ -1,0 +1,45 @@
+{
+ "start": [
+  [
+   12.7,
+   18.3
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "treppe_hinunter",
+   "art": "eingang",
+   "x": 11.5,
+   "y": 19.5,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Wendeltreppe führt nach unten.",
+    "tat": "turm_hinunter",
+    "knopf": "Die Treppe hinuntergehen",
+    "ziel": [
+     10963.3,
+     9613.7
+    ]
+   }
+  },
+  {
+   "id": "signalfeuer",
+   "art": "lesen",
+   "x": 16,
+   "y": 17.2,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Signalfeuer brennt grün aus einem Splitterkern. Es soll Grauwacht rufen – aber niemand antwortet."
+   }
+  }
+ ]
+}

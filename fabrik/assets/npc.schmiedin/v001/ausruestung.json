@@ -1,0 +1,41 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.schmiedin – Schmiedin von Graufurt, Schmiedin am Werkstatt-Hof (aus npcfrau3d): kurzes dunkles Haar, Lederschürze, Hammer.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.hammer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.hammer/v001/quelle/hammer.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.pixie",
+      "platz": "haar",
+      "glb": "npc.schmiedin/v001/quelle/teile/kopf.haar.pixie.glb"
+    },
+    {
+      "id": "kleidung.schuerze",
+      "platz": "schuerze",
+      "glb": "npc.schmiedin/v001/quelle/teile/kleidung.schuerze.glb",
+      "beine_mitteln": true
+    }
+  ],
+  "arme_eng": 6
+}

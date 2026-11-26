@@ -1,7 +1,8 @@
 """Mythara Fabrik – Sammelpflanzen (Flachs, Hanf) in Blender bauen und als 3D-Spieldatei ausgeben.
 
   python3 fabrik/pflanze.py -- <art> <zustand> <ziel.glb> [vorschau.png]
-  art: flachs | hanf      zustand: voll | geerntet (Stoppeln)
+  art: flachs | hanf | wegerich | ringelblume | moorgloeckchen | eisenhut | nebelkraut | lindenbluete (Kräuterkunde)
+  zustand: voll | geerntet (Stoppeln)
 
 Flachs: ein Büschel aus etwa 30 schlanken Halmen (bis 0,9 m) mit schmalen Blättern, zartblauen Blüten (leicht lavendel, damit der
 Spiel-Shader sie nicht als leuchtende Ader pulsieren lässt) und runden Samenkapseln.
@@ -14,7 +15,7 @@ import bpy, bmesh
 from mathutils import Vector, Matrix
 
 a_ = sys.argv[sys.argv.index("--") + 1:]; ART, ZUSTAND, ZIEL = a_[0], a_[1], a_[2]; VORSCHAU = a_[3] if len(a_) > 3 else None
-bpy.ops.wm.read_factory_settings(use_empty=True); random.seed(7 if ART == "flachs" else 11)
+bpy.ops.wm.read_factory_settings(use_empty=True); random.seed({"flachs": 7, "hanf": 11}.get(ART, sum(map(ord, ART))))
 def mat(name, farbe, rau=0.75):
     m = bpy.data.materials.get(name)
     if m: return m
@@ -48,6 +49,7 @@ def bluete(ort, r, m, mitte):
         a = k * 2 * math.pi / 5; blatt(Vector(ort), (math.cos(a), math.sin(a), 0), r, r * 0.9, m, kipp=-0.25, form="rund")
     kugel(ort, r * 0.25, mitte, 6)
 
+KRAEUTER = ("wegerich", "ringelblume", "moorgloeckchen", "eisenhut", "nebelkraut", "lindenbluete")
 GRUEN = mat("gruen", lin((86, 128, 52))); GRUEN2 = mat("gruen2", lin((112, 150, 62))); HALM = mat("halm", lin((128, 150, 70)))
 if ART == "flachs":
     BLAU = mat("bluete", lin((150, 150, 230))); MITTE = mat("mitte", lin((235, 220, 120))); KAPSEL = mat("kapsel", lin((185, 160, 85)))
@@ -61,7 +63,7 @@ if ART == "flachs":
         if random.random() < 0.55: bluete(oben + Vector((0, 0, 0.01)), 0.022, BLAU, MITTE)
         else:
             for k in range(random.randint(1, 3)): kugel(oben + Vector((random.uniform(-.02, .02), random.uniform(-.02, .02), random.uniform(0, .02))), 0.011, KAPSEL, 8)
-else:
+elif ART == "hanf":
     BLUETE = mat("hanfbluete", lin((150, 170, 80))); HAARE = mat("haare", lin((205, 170, 110)))
     for i in range(5):
         a = i * 2 * math.pi / 5 + random.uniform(-0.3, 0.3); r = random.uniform(0.05, 0.14); p0 = (r * math.cos(a), r * math.sin(a), 0)
@@ -79,8 +81,72 @@ else:
         for k in range(5):                                                                       # Blütenstand: dichte Knospen an der Spitze
             kugel(pts[-1] + Vector((random.uniform(-.03, .03), random.uniform(-.03, .03), -0.05 + k * 0.025)), 0.03 - k * 0.003, BLUETE, 8)
         for k in range(4): kugel(pts[-1] + Vector((random.uniform(-.035, .035), random.uniform(-.035, .035), -0.03 + k * 0.02)), 0.008, HAARE, 6)
+elif ART in KRAEUTER:
+    def stoppeln(n, h, farbe=(150, 140, 85)):
+        for i in range(n):
+            a = random.uniform(0, 2 * math.pi); r = random.uniform(0, 0.08); halm((r * math.cos(a), r * math.sin(a), 0), (0.2 * math.cos(a), 0.2 * math.sin(a), 1), random.uniform(h * 0.5, h), 0.004, mat("stoppel", lin(farbe)), n=1, kruemmung=0)
+        for i in range(3):
+            a = random.uniform(0, 2 * math.pi); blatt(Vector((0.05 * math.cos(a), 0.05 * math.sin(a), 0.012)), (math.cos(a), math.sin(a), 0), 0.07, 0.025, mat("welk", lin((130, 125, 70))), kipp=0.02)
+    if ART == "wegerich":                                                                        # Rosette breiter, gerippter Blätter, schlanke Ähren mit braunen Blütenköpfen
+        if ZUSTAND == "geerntet": stoppeln(5, 0.05)
+        else:
+            for k in range(9):
+                a = k * 2 * math.pi / 9 + random.uniform(-.2, .2); blatt(Vector((0, 0, 0.026)), (math.cos(a), math.sin(a), 0), random.uniform(0.13, 0.18), 0.075, GRUEN if k % 2 else GRUEN2, kipp=random.uniform(0.05, 0.25), form="rund")
+            for k in range(4):
+                a = random.uniform(0, 2 * math.pi); pts = halm((0.02 * math.cos(a), 0.02 * math.sin(a), 0.01), (0.15 * math.cos(a), 0.15 * math.sin(a), 1), random.uniform(0.25, 0.34), 0.003, HALM, n=4)
+                for j in range(5): kugel(pts[-1] + Vector((0, 0, -0.012 * j)), 0.009 - j * 0.0008, mat("aehre", lin((120, 95, 60))), 6)
+    elif ART == "ringelblume":                                                                   # buschig, leuchtend orange Korbblüten
+        if ZUSTAND == "geerntet": stoppeln(8, 0.08)
+        else:
+            OR = mat("ringel", lin((240, 140, 25)), 0.6); MI = mat("ringelmitte", lin((150, 80, 20)))
+            for i in range(9):
+                a = random.uniform(0, 2 * math.pi); r = random.uniform(0, 0.08); pts = halm((r * math.cos(a), r * math.sin(a), 0), (0.4 * math.cos(a), 0.4 * math.sin(a), 1), random.uniform(0.28, 0.42), 0.005, HALM, n=4)
+                for j in (1, 2, 3): blatt(pts[j], (random.uniform(-1, 1), random.uniform(-1, 1), 0), 0.08, 0.025, GRUEN2, kipp=random.uniform(0.2, 0.6))
+                o = pts[-1] + Vector((0, 0, 0.005))
+                for k in range(12): b = k * 2 * math.pi / 12; blatt(o, (math.cos(b), math.sin(b), 0), 0.03, 0.011, OR, kipp=-0.15)
+                kugel(o, 0.011, MI, 8)
+    elif ART == "moorgloeckchen":                                                                # dünne Stiele, nickende Glöckchen (zartlila – pulsiert nicht im Spiel-Shader)
+        if ZUSTAND == "geerntet": stoppeln(6, 0.06)
+        else:
+            GL = mat("gloeckchen", lin((185, 160, 225)), 0.5)
+            for i in range(7):
+                a = random.uniform(0, 2 * math.pi); r = random.uniform(0, 0.07); pts = halm((r * math.cos(a), r * math.sin(a), 0), (0.25 * math.cos(a), 0.25 * math.sin(a), 1), random.uniform(0.25, 0.36), 0.0035, HALM, n=5, kruemmung=0.3)
+                blatt(pts[1], (math.cos(a), math.sin(a), 0), 0.12, 0.018, GRUEN, kipp=0.3)
+                for j in (3, 4, 5):
+                    bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=0.016, radius2=0.004, depth=0.022, location=pts[j] + Vector((0.015, 0, -0.018))); g = bpy.context.object; g.data.materials.append(GL); teile.append(g)
+    elif ART == "eisenhut":                                                                      # hoher Blütenstand mit dunkelvioletten Helmblüten, gefingerte Blätter
+        if ZUSTAND == "geerntet": stoppeln(4, 0.1)
+        else:
+            EH = mat("eisenhut", lin((70, 40, 120)), 0.5)
+            for i in range(3):
+                a = i * 2.1; pts = halm((0.04 * math.cos(a), 0.04 * math.sin(a), 0), (0.08 * math.cos(a), 0.08 * math.sin(a), 1), random.uniform(0.65, 0.85), 0.007, HALM, n=8, kruemmung=0.05)
+                for j in (1, 2, 3):
+                    for f in range(5): w = random.uniform(0, 6.3); blatt(pts[j], (math.cos(w + f * 0.5), math.sin(w + f * 0.5), 0), 0.1 - j * 0.015, 0.025, GRUEN, kipp=0.35)
+                for j in range(5, 9):
+                    for k in range(3):
+                        b = k * 2.1 + j; o = pts[j] + Vector((0.02 * math.cos(b), 0.02 * math.sin(b), 0)); kugel(o, 0.016, EH, 8).scale = (1, 1, 1.4); kugel(o + Vector((0, 0, 0.018)), 0.011, EH, 6)
+    elif ART == "nebelkraut":                                                                    # silbergraue, fein gefiederte Blätter, kleine weiße Doldenblüten
+        if ZUSTAND == "geerntet": stoppeln(7, 0.07, (160, 160, 150))
+        else:
+            SI = mat("silber", lin((175, 185, 178)), 0.8); WE = mat("weiss", lin((240, 240, 235)), 0.6)
+            for i in range(8):
+                a = random.uniform(0, 2 * math.pi); r = random.uniform(0, 0.09); pts = halm((r * math.cos(a), r * math.sin(a), 0), (0.35 * math.cos(a), 0.35 * math.sin(a), 1), random.uniform(0.3, 0.45), 0.004, mat("silberhalm", lin((150, 160, 140))), n=5)
+                for j in (1, 2, 3, 4):
+                    for f in range(4): w = random.uniform(0, 6.3); blatt(pts[j], (math.cos(w), math.sin(w), 0), 0.06, 0.008, SI, kipp=0.4)
+                for k in range(7): kugel(pts[-1] + Vector((random.uniform(-.025, .025), random.uniform(-.025, .025), random.uniform(-.005, .01))), 0.006, WE, 6)
+    elif ART == "lindenbluete":                                                                  # junger Lindenstrauch: herzförmige Blätter, gelbliche Blütenbüschel mit hellem Hochblatt
+        if ZUSTAND == "geerntet": stoppeln(3, 0.2, (110, 85, 55))
+        else:
+            LB = mat("lindenbluete", lin((235, 220, 130)), 0.6); HB = mat("hochblatt", lin((190, 200, 120)))
+            for i in range(4):
+                a = i * 1.6; pts = halm((0.02 * math.cos(a), 0.02 * math.sin(a), 0), (0.3 * math.cos(a), 0.3 * math.sin(a), 1), random.uniform(0.55, 0.75), 0.009, mat("rinde", lin((110, 85, 55))), n=6, kruemmung=0.2)
+                for j in range(2, 7):
+                    for f in range(2): w = random.uniform(0, 6.3); blatt(pts[j], (math.cos(w), math.sin(w), 0), 0.09, 0.08, GRUEN if f else GRUEN2, kipp=0.5, form="rund")
+                    if j >= 4:
+                        b = random.uniform(0, 6.3); o = pts[j] + Vector((0.04 * math.cos(b), 0.04 * math.sin(b), -0.03)); blatt(o, (math.cos(b), math.sin(b), 0), 0.06, 0.018, HB, kipp=0.8)
+                        for k in range(5): kugel(o + Vector((random.uniform(-.015, .015), random.uniform(-.015, .015), random.uniform(-.02, 0))), 0.007, LB, 6)
 # Erde
-bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.2 if ART == "flachs" else 0.22, depth=0.02, location=(0, 0, 0.0)); o = bpy.context.object; o.data.materials.append(mat("erde", lin((92, 70, 48)), 0.95)); teile.append(o)
+bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius={"flachs": 0.2, "hanf": 0.22}.get(ART, 0.15), depth=0.02, location=(0, 0, 0.0)); o = bpy.context.object; o.data.materials.append(mat("erde", lin((92, 70, 48)), 0.95)); teile.append(o)
 for o in teile: o.select_set(True)
 bpy.context.view_layer.objects.active = teile[0]; bpy.ops.object.convert(target="MESH"); bpy.ops.object.join(); p = bpy.context.object; p.name = ART
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)

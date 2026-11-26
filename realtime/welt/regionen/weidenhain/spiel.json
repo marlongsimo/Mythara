@@ -150,7 +150,15 @@
  ],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 46,
+    "y0": 21,
+    "x1": 47,
+    "y1": 22
+   }
+  ],
   "freigeben": [
    {
     "art": "rechteck",

@@ -1,0 +1,16 @@
+{
+ "id": "turm_ebene2",
+ "name": "Der Turm – Rüstkammer",
+ "untertitel": "Ebene 2",
+ "ursprung": [
+  341,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "innen",
+ "stufe": 3,
+ "ebene": "innen"
+}
