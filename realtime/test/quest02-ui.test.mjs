@@ -50,12 +50,12 @@ const BILD = process.env.BILD;
 try {
   const anna = await spieler("Anna", "tok_anna_" + "x".repeat(30), [6555.5, 6429.5, "osthof"]); /* in Osthof, neben der ersten Bruchstelle */
   await anna.goto(B + S); await bereit(anna).catch(() => {}); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
-  await anna.waitForFunction(() => window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length === 7, null, { timeout: 30000 }).catch(() => {});
+  await anna.waitForFunction(() => window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length >= 7, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForTimeout(2500);
   const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === "osthof_der_stille_rain").map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
   let L = await lage();
   check(L.figuren.join() === "Brida Wegner,Odo Kern,Wenzel", `Quest-2-Figuren: ${L.figuren.join(", ")}`);
-  check(L.objekte.length === 7 && L.objekte.every((o) => o.sicht && o.ring), `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
+  const Q2O = L.objekte.filter((o) => /^(zaun|rute)\d/.test(o.id)); check(Q2O.length === 7 && Q2O.every((o) => o.sicht && o.ring) && L.objekte.filter((o) => !Q2O.includes(o)).every((o) => !o.sicht) /* Objekte anderer Quests (A2, A3) bleiben verborgen */, `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
   if (BILD) await anna.screenshot({ path: BILD + "q2-osthof.png" });
   /* Bruchstelle antippen: „untersuchen“ → der Server zählt, der Text kommt im Chat */
   const st = await anna.evaluate(() => { const s = window.EZW.welt3d.quest.stelle(6556.5, 6428.5); if (!s) return null; s.tat(); return s.text; });
