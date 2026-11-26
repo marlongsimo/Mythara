@@ -11,9 +11,11 @@
    "bewegungen": [
     "abheben",
     "fliegen",
+    "fluegelschlag",
     "flug_hieb",
+    "flug_tod",
     "flug_treffer",
-    "flug_tod"
+    "sturzraben_rufen"
    ]
   },
   "waffe.schwert.rechts": {
@@ -22,9 +24,11 @@
    "bewegungen": [
     "abheben",
     "fliegen",
+    "fluegelschlag",
     "flug_hieb",
+    "flug_tod",
     "flug_treffer",
-    "flug_tod"
+    "sturzraben_rufen"
    ]
   }
  },
@@ -39,6 +43,11 @@
    "rate": 17,
    "schleife": true
   },
+  "fluegelschlag": {
+   "bilder": 14,
+   "rate": 14,
+   "schleife": false
+  },
   "flug_hieb": {
    "bilder": 14,
    "rate": 14,
@@ -52,6 +61,11 @@
   "flug_treffer": {
    "bilder": 6,
    "rate": 14,
+   "schleife": false
+  },
+  "sturzraben_rufen": {
+   "bilder": 14,
+   "rate": 12,
    "schleife": false
   }
  }

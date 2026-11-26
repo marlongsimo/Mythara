@@ -26,15 +26,15 @@
       <div class="reihe"><label>Tempo</label><input type="range" id="tempo" min="0.1" max="2" step="0.05" value="1"><span id="tempowert">1,00×</span></div>
       <div class="reihe"><label>Wiederholen</label><input type="checkbox" id="schleife" checked><button id="pause">Pause</button><button id="nochmal">Neu starten</button></div>
       <div class="reihe"><label>Drehen</label><input type="range" id="blick" min="-3.14" max="3.14" step="0.01" value="0.5"></div>
-      <div class="reihe"><label>Effekt</label><button id="teleport">Teleport</button><button id="schuss" title="Bogen, Armbrust oder Stab in der Hand: Schussbewegung mit Geschoss zur Zielscheibe">Schuss</button></div></div>
+      <div class="reihe"><label>Effekt</label><button id="teleport">Teleport</button><button id="aufladen" title="Splitterbinden: die Waffe in der Hand aufladen (violettes Leuchten, kreisende Splitter, Leuchtspur beim Hieb)">Aufladen</button><button id="schuss" title="Bogen, Armbrust oder Stab in der Hand: Schussbewegung mit Geschoss zur Zielscheibe">Schuss</button></div></div>
     <div class="feld"><h3>Waffen und Ausrüstung</h3><div id="teile"></div></div>
   </div>
 </main>
-<script src="figur3d.js?v=mwxxm5hh"></script>
+<script src="figur3d.js?v=mwy1pyjn"></script>
 <script>
 (async () => {
   const E = window.MytharaEcht3D, M = "../img/figuren-echt3d/", $ = (s) => document.querySelector(s);
-  const L = await (await fetch("animationen-liste.json?v=mwxxm5hh")).json(); const figuren = L.figuren;
+  const L = await (await fetch("animationen-liste.json?v=mwy1pyjn")).json(); const figuren = L.figuren;
   const PLATZNAME = { hand_r: "Rechte Hand", hand_l: "Linke Hand", arm_l: "Schild", haar: "Frisur", bart: "Bart", helm: "Kopf", brust: "Brust", beine: "Beine", schuerze: "Schürze" };
   const STUFE = { "": "Grundstufe", training: "Training", gewoehnlich: "Einfach", selten: "Selten", episch: "Episch", legendaer: "Legendär", mythisch: "Mythisch" };
   let d = null, fig = null, bew = "ruhe", tempo = 1, pause = false, gewaehlt = {}, stufe = {};
@@ -99,6 +99,7 @@
       g.restore(); }
       if (p >= 1) { if (q.b3) q.b3.entfernen(); for (let i = 0; i < 8; i++) { const a = Math.random() * 7; funken.push({ x, y, vx: Math.cos(a) * 90, vy: Math.sin(a) * 60, a: 1, r: 3 }); } return false; } return true; });
     g.globalCompositeOperation = "lighter"; funken = funken.filter((f) => { f.a -= dt * 3; f.r *= 0.96; if (f.vx) { f.x += f.vx * dt; f.y += f.vy * dt; } if (f.a <= 0) return false; g.fillStyle = `rgba(160,205,255,${f.a})`; g.beginPath(); g.arc(f.x, f.y, f.r, 0, 7); g.fill(); return true; }); g.globalCompositeOperation = "source-over"; }
+  let geladen = false; $("#aufladen").onclick = () => { if (!d) return; geladen = !geladen; d.aufladen(geladen); $("#aufladen").textContent = geladen ? "Aufladung aus" : "Aufladen"; };
   let zuletzt = performance.now();
   (function bild(t) { const dt = Math.min(0.1, (t - zuletzt) / 1000); zuletzt = t; if (d) d.zeichne(pause ? 0 : dt * tempo, x); zeichneFx(pause ? 0 : dt); requestAnimationFrame(bild); })(zuletzt);
   await laden();

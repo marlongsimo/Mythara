@@ -1,0 +1,52 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "kopf.haar.zopf_eng": {
+   "art": "huelle",
+   "platz": "haar",
+   "bewegungen": []
+  },
+  "ruestung.beine.eisenschienen": {
+   "art": "huelle",
+   "platz": "beine",
+   "bewegungen": []
+  },
+  "ruestung.brust.sternplatte": {
+   "art": "huelle",
+   "platz": "brust",
+   "bewegungen": []
+  },
+  "schild.graufurt": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen"
+   ]
+  },
+  "waffe.schwert.ritter": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen"
+   ]
+  }
+ },
+ "aktionen": {
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  }
+ }
+}
