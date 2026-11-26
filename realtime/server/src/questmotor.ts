@@ -114,7 +114,8 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
     if (ok) nehmen();
     if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn; was nicht mehr in den Rucksack passt, liegt neben dem Spieler am Boden (30 Minuten nur für ihn) */
       const F0 = q.figuren.find((x) => x.id === o.npc)!, bx = wo && Number.isFinite(wo.x) ? wo.x! : F0.x, by = wo && Number.isFinite(wo.y) ? wo.y! : F0.y; let amBoden = false;
-      const lohn = (g: string, n: number): number => { const k = aufnehmen(sb, nutzer, g, n); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN)) amBoden = true; return n; };
+      /* Questlohn ist gebunden (Entscheidung zu #65: nicht handelbar) – außer Splittern, die sind Geld */
+      const lohn = (g: string, n: number): number => { const d = g === "splitter" ? undefined : { gebunden: true }, k = aufnehmen(sb, nutzer, g, n, true, d); if (k < n && bodenDazu(weltRegionBei(bx, by), bx, by, g, n - k, nutzer, QUESTLOHN, Date.now(), d)) amBoden = true; return n; };
       neu = geben(sb, nutzer, (f.geben || []).filter((G) => !G.verloren), k, lohn).neu;
       if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
       for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); neu.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }

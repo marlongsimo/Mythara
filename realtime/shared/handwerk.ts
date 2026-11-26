@@ -9,6 +9,7 @@
  */
 import { SammelArt } from "./sammeln";
 import { zwischenteil } from "./gegenstaende";
+import { WAFFE_LADEN, AN_WAFFE } from "./splitterbinden";
 import KOCHSTELLEN from "./kochstellen.json";
 
 export const BERUF_HAND = "handwerk";
@@ -56,7 +57,8 @@ const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
-  /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number }
+  /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
+  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
@@ -141,6 +143,12 @@ export const PFLUECK_TAKT_MS = 1500, PFLUECK_WEIT = 1.8;
 
 /* Phase 3a Splitterbinden (shared/splitterbinden.ts): den Wegstein am Bindestein laden – „ladung:wegstein“ ist kein Gegenstand, sondern zählt die Ladungen im Inventar hoch */
 dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 2 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
+/* Phase 5b: Waffen ab Selten laden – die angelegte Waffe (ladung:@waffe); 2 Splitter oder 1 Splitter + 1 Seelenlicht je Ladung, Stufe und XP nach Seltenheit (Kanon) */
+for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
+  dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
+  dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
+/* Entladen: nur am Bindestein, die Splitter verfallen */
+dazu({ id: "waffe_entladen", station: "bindestein", ergebnis: "entladen:" + AN_WAFFE, level: 1, zutaten: [], xp: 0, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
 /* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */
 dazu({ id: "wegstein_ungeweiht", station: "werkbank", ergebnis: "wegstein_ungeweiht", level: 10, zutaten: [{ g: ["quellstein"], n: 1 }, { g: ["lindenspan"], n: 1 }, { g: ["geweihter_splitter"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Auftrag von Agnes", quest: "weidenhain_der_wegstein" });

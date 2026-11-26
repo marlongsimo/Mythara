@@ -11,8 +11,8 @@ import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK
 import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
-import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu } from "./inventar";
-import { LADUNG_MAX, RESONANZ_MAL } from "../../shared/splitterbinden";
+import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen } from "./inventar";
+import { LADUNG_MAX, RESONANZ_MAL, AN_WAFFE, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 export interface HandwerkSpieler { nutzer: string; gast: boolean; wx?: number; wy?: number }
@@ -39,6 +39,10 @@ const naheWerkstaetten = (s: HandwerkSpieler, r: Rezept) => s.wx !== undefined &
 const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return naheWerkstaetten(s, r).some((W) => offen(s, W)); };   /* irgendein (freigeschalteter) Standort dieser Station */
 /** „ladung:wegstein“ → wegstein (Rezepte, die Ladungen statt eines Gegenstands geben) */
 const ladungZiel = (r: Rezept): string | null => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : null);
+/** Phase 5b: Waffe laden/entladen – die angelegte Waffe passt zum Rezept (Seltenheit)? Zurück: Fehlertext oder null */
+const entladen = (r: Rezept): boolean => r.ergebnis === "entladen:" + AN_WAFFE;
+function waffePasst(nutzer: string, r: Rezept): string | null { const w = waffeLadung(nutzer), G = w && GEGENSTAENDE[w.g]; if (!w || !G || !G.waffe) return "Leg die Waffe an, die du laden willst.";
+  if (entladen(r)) return w.n > 0 ? null : `${G.name} ist nicht geladen.`; if (r.fuer && G.seltenheit !== r.fuer) return `Dieses Binden ist für ${r.fuer === "selten" ? "seltene" : r.fuer === "episch" ? "epische" : r.fuer === "legendaer" ? "legendäre" : "mythische"} Waffen – ${G.name} ist das nicht.`; return null; }
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
 /** Was fehlt für ein Stück (null = alles da); spar: diese Zutat (Index) braucht eine Einheit weniger (Glut) */
@@ -47,7 +51,7 @@ function fehlt(nutzer: string, r: Rezept, spar = -1): string | null {
   return null; }
 const sparIndex = (r: Rezept) => { let best = -1, n = 1; r.zutaten.forEach((z, i) => { if (z.n > n) { n = z.n; best = i; } }); return best; };   // die häufigste Zutat (mindestens 2 nötig)
 /** Passt das Ergebnis noch in den Rucksack? Wenn eine verbrauchte Zutat einzeln liegt, wird ihr Fach frei */
-const passt = (nutzer: string, r: Rezept) => { const l = ladungZiel(r); return l ? ladungen(nutzer, l) < LADUNG_MAX : passtG(nutzer, r); };
+const passt = (nutzer: string, r: Rezept) => { if (entladen(r)) return true; const l = ladungZiel(r); return l === AN_WAFFE ? (waffeLadung(nutzer) || { n: WAFFE_LADUNG_MAX }).n < WAFFE_LADUNG_MAX : l ? ladungen(nutzer, l) < LADUNG_MAX : passtG(nutzer, r); };
 const passtG = (nutzer: string, r: Rezept) => platzFuer(nutzer, r.ergebnis) || r.zutaten.some((z) => z.g.some((g) => GEGENSTAENDE[g] && !GEGENSTAENDE[g].stapel && anzahlVon(nutzer, g) > 0));
 
 const ARTIKEL: Partial<Record<string, string>> = { bindestein: "den", amboss: "den", feuer: "ein", backofen: "einen", herd: "einen", kessel: "einen", brunnen: "einen" };
@@ -60,8 +64,9 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
-  if (!passt(s.nutzer, r)) return ladungZiel(r) ? `Der ${GEGENSTAENDE[ladungZiel(r)!] ? GEGENSTAENDE[ladungZiel(r)!].name : "Stein"} ist voll – mehr als ${LADUNG_MAX} Ladungen hält er nicht.` : "Dein Rucksack ist voll.";
-  if (ladungZiel(r) && anzahlVon(s.nutzer, ladungZiel(r)!) <= 0) return `Du brauchst deinen ${GEGENSTAENDE[ladungZiel(r)!].name} im Rucksack.`;
+  if (ladungZiel(r) === AN_WAFFE || entladen(r)) { const w = waffePasst(s.nutzer, r); if (w) return w; if (!passt(s.nutzer, r)) return `Mehr als ${WAFFE_LADUNG_MAX} Ladungen hält keine Waffe.`; } /* Phase 5b */
+  else if (!passt(s.nutzer, r)) return ladungZiel(r) ? `Der ${GEGENSTAENDE[ladungZiel(r)!] ? GEGENSTAENDE[ladungZiel(r)!].name : "Stein"} ist voll – mehr als ${LADUNG_MAX} Ladungen hält er nicht.` : "Dein Rucksack ist voll.";
+  if (ladungZiel(r) && ladungZiel(r) !== AN_WAFFE && anzahlVon(s.nutzer, ladungZiel(r)!) <= 0) return `Du brauchst deinen ${GEGENSTAENDE[ladungZiel(r)!].name} im Rucksack.`;
   const n = Math.max(1, Math.min(1000, Math.floor(menge) || 1));
   arbeiten.set(s, { s, r, rest: n, naechst: Date.now() + r.ticks * TICK_MS, glutBis: 0, glut: false });
   senden(s, { t: "handwerk", tat: "start", rezept: r.id, station: r.station, menge: n, ms: r.ticks * TICK_MS }); return null;
@@ -75,6 +80,10 @@ export function handwerkGlut(s: HandwerkSpieler): void { const a = arbeiten.get(
 function fertigStueck(a: Arbeit): boolean {
   const { s, r } = a, laden = ladungZiel(r), kochen = Boolean(r.verbrannt), spar = a.glut && !laden && !kochen && sparIndex(r) >= 0 ? sparIndex(r) : -1, glut = a.glut; a.glut = false; /* Resonanz (Laden): statt Sparen doppelt so viele Ladungen; Garpunkt (Kochen): brennt sicher nicht an */
   if (fehlt(s.nutzer, r, spar)) { handwerkStop(s, "zutaten"); return false; }
+  if ((laden === AN_WAFFE || entladen(r)) && waffePasst(s.nutzer, r)) { handwerkStop(s, "werkzeug"); return false; } /* Waffe unterwegs abgelegt oder gewechselt */
+  if (entladen(r)) { const n = waffeEntladen(sb, s.nutzer), w = waffeLadung(s.nutzer); a.rest = 0; arbeiten.delete(s); /* Entladen: die Splitter verfallen */
+    senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: w ? w.g : "", name: w && GEGENSTAENDE[w.g] ? GEGENSTAENDE[w.g].name : "Waffe", xp: 0, beruf: berufAn(r.station), glut: false, gespart: false, rest: 0, level: handwerkLevel(s.nutzer, r.station), aufstieg: 0, ladungen: 0, entladen: n });
+    senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   { const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) { handwerkStop(s, "werkzeug"); return false; } }   /* Hammer unterwegs abgelegt */
   for (let i = 0; i < r.zutaten.length; i++) { const z = r.zutaten[i], n = Math.max(0, z.n - (i === spar ? 1 : 0)), g = sorte(s.nutzer, z.g, n); if (!g) continue; for (let k = 0; k < n; k++) abgeben(sb, s.nutzer, g); }
   let stueck = 1;
@@ -86,12 +95,13 @@ function fertigStueck(a: Arbeit): boolean {
     if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
     if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }
     return true; }
-  if (laden) { if (anzahlVon(s.nutzer, laden) <= 0) { handwerkStop(s, "werkzeug"); return false; } stueck = ladungenDazu(sb, s.nutzer, laden, glut ? RESONANZ_MAL : 1); if (!stueck) { handwerkStop(s, "voll"); return false; } }
+  if (laden === AN_WAFFE) { stueck = waffeLadenDazu(sb, s.nutzer, glut ? RESONANZ_MAL : 1); if (!stueck) { handwerkStop(s, "voll"); return false; } } /* Phase 5b: Ladungen an der angelegten Waffe */
+  else if (laden) { if (anzahlVon(s.nutzer, laden) <= 0) { handwerkStop(s, "werkzeug"); return false; } stueck = ladungenDazu(sb, s.nutzer, laden, glut ? RESONANZ_MAL : 1); if (!stueck) { handwerkStop(s, "voll"); return false; } }
   else if (!aufnehmen(sb, s.nutzer, r.ergebnis, r.menge || 1)) { handwerkStop(s, "voll"); return false; } else stueck = r.menge || 1;
   const vorher = handwerkLevel(s.nutzer, r.station), xp = Math.round(r.xp * (glut ? 1.5 : 1)), b = berufAn(r.station); berufXpDazu(sb, s.nutzer, b, xp); const nachher = handwerkLevel(s.nutzer, r.station);
-  a.rest--; const G = GEGENSTAENDE[laden || r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest && !HANDWERK_QUEST.weiter(s.nutzer, r)) a.rest = 0; /* Questrezept: nur so viele, wie die Quest noch braucht (B2: drei Tafeln) */
+  a.rest--; const G = GEGENSTAENDE[laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { g: "" }).g : laden || r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest && !HANDWERK_QUEST.weiter(s.nutzer, r)) a.rest = 0; /* Questrezept: nur so viele, wie die Quest noch braucht (B2: drei Tafeln) */
   senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0,
-    ...(laden ? { ladungen: ladungen(s.nutzer, laden), stueck } : r.menge ? { stueck } : {}) });
+    ...(laden ? { ladungen: laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { n: 0 }).n : ladungen(s.nutzer, laden), stueck } : r.menge ? { stueck } : {}) });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }
   if (fehlt(s.nutzer, r)) { handwerkStop(s, "zutaten"); return false; }
   if (!passt(s.nutzer, r)) { handwerkStop(s, "voll"); return false; }
