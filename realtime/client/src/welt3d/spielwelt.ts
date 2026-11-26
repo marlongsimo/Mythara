@@ -9,6 +9,7 @@
  * Die Figuren bleiben die bisherigen Bilder (welt3d/figurleinwand.ts), als Aufsteller in der 3D-Welt.
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
+import { arbeitMelden, arbeitVon } from "../arbeit";
 import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } from "../welt";
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
 const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
@@ -133,7 +134,8 @@ export class Spielwelt3D implements WeltKern {
     addEventListener("keydown", (e) => { if (e.key === "Shift" && !e.repeat && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) this.sprint(); }); /* Umschalt: Sprint an/aus */
     addEventListener("ez-zurueck", (e) => { const m = (e as CustomEvent).detail as { x: number; y: number }; if (typeof m.x === "number" && typeof m.y === "number") this.springen(m.x, m.y); }); /* ohne Freigabe hinter der Sperre: zurück */
     this.profil(); anschluss3D.betreten(this); musikStarten(); /* Hintergrundmusik (musik.ts) */
-    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y) });
+    (window as unknown as Record<string, unknown>).EZW = Object.assign((window as unknown as { EZW?: object }).EZW || {}, { szene: this, welt3d: this, ort: () => this.ort, raster: this.raster, gehe: (x: number, y: number) => this.gehe(x, y),
+      /* #67, für Prüfungen */ arbeit: { melden: arbeitMelden, von: arbeitVon, zeigt: (n: string) => { const z = anschluss3D.kampfArbeitZeigt(n); if (z) return z; const m = (this as unknown as { mit?: { figuren?: Map<number, { d: { n: string }; ar?: { zeigt: string } }> } }).mit; for (const f of (m && m.figuren ? m.figuren.values() : [])) if (f.d.n === n) return f.ar ? f.ar.zeigt : ""; return ""; } } });
     /* den Ladebildschirm erst wegnehmen, wenn der eigene Held samt Ausrüstung dasteht – sonst sieht man ihn ein paar Sekunden nicht und die Ausrüstung springt später dazu (höchstens 8 s warten) */
     await new Promise<void>((ok) => { const t0 = performance.now(), pruefen = () => { const f = this.figur as { vollstaendig?: boolean; geladen: boolean };
       const konto = mitKonto(), ausruestungBekannt = konto === false || (konto === true && inventarVomServerDa()); /* mit Konto: erst wenn der Server das Inventar geschickt hat, steht fest, was angelegt ist */

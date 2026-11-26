@@ -8,6 +8,7 @@
  * Gemerkte Stelle: Spielerkonten melden mit „pos“ auch Weltfelder (wx, wy); beim Gehen (und alle zwei Minuten) speichert der Server sie
  * (rpg_echtzeit_position, Migration 039) und schickt sie beim nächsten Anmelden mit „ich“ (pos) zurück – auch auf einem anderen Gerät.
  */
+import { arbeitPruefen, type Arbeit } from "../../shared/arbeit";
 import { Kanal, kanalRahmen } from "./kanal";
 import { WebSocket } from "ws";
 import { HELDEN, stufeAusEp } from "../../shared/config";
@@ -36,7 +37,7 @@ import * as Sitz from "./sitz";
 export const aussehenJe = new Map<string, Held>();
 
 export interface WeltHilfen { nutzerAus(token: string): Promise<string | null>; sb(pfad: string, init?: RequestInit): Promise<unknown>; epLesen(nutzer: string): Promise<Record<string, number>>; gruppeHat(code: string, nutzer: string): boolean; /** Zonen Stufe 3: Kampfkanal über diese Verbindung öffnen (kanal.ts) */ kanalAuf?(k: Kanal, q: string): void }
-interface Spieler { id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
+interface Spieler { /** arbeitet gerade (#67, shared/arbeit.ts) */ w?: Arbeit; id: number; ws: WebSocket; nutzer: string; gast: boolean; name: string; held: string; /** gewähltes Aussehen und Startwaffe (Heldeneditor) */ a?: Held; stufe: number; ort: string; x: number; y: number; b: number; l: number; lp: number; max: number; raum: string;
   chat: number[]; /** Seitenkennung des Geräts (ein Konto spielt nur auf einem Gerät) */ geraet?: string; /** wen er zuletzt in Sichtweite hatte (Ids) */ sichtKey?: string; /** Namen, die dieser Spieler blockiert hat (seine Nachrichten sieht er nicht) */ blockiert?: Set<string>; geaendert: boolean; zuletzt: number; wx?: number; wy?: number; gemerkt?: string; /** Inventar: abmelden vom Hörer; zuletzt geschickter Boden */ invAus?: () => void; boden?: string; /** Quests: abmelden vom Hörer */ questAus?: () => void }
 /** Orte der gemeinsamen Welt: die Basis, die Dörfer der Kampagnen und die Strecken */
 /* Alle Regionen der Welt kommen automatisch aus werkzeug/weltzonen.py (WELTREGIONEN) – neue Gebiete muss niemand von Hand eintragen */
@@ -157,7 +158,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         const sp = regionGesperrt(nutzer, ich.ort); if (sp && sp.zurueck) senden(ich, { t: "zurueck", x: sp.zurueck.x, y: sp.zurueck.y, text: sp.zurueck.text }); }); } /* Quests (Migration 045); gesperrte Regionen nur mit Freigabe (QuestDef.freigaben) */
       return; }
     s.zuletzt = jetzt;
-    if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.geaendert = true;
+    if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.w = s.l ? undefined : arbeitPruefen((e as { w?: unknown }).w); s.geaendert = true; /* #67: Arbeit (geprüft), wer läuft, arbeitet nicht */
       if (!s.gast && s.wx !== undefined && s.wy !== undefined) betreten(s.nutzer, s.ort, s.wx, s.wy); /* Quests: Stelle erreicht / Region betreten */ }
     else if (e.t === "inv") { /* Inventar: anlegen, ablegen, fallen lassen – der Server prüft alles selbst */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Ein Inventar gibt es mit Konto.", zeit: jetzt }); return; }
@@ -311,7 +312,7 @@ let runde = 0;
 setInterval(() => { runde++; const jetzt = Date.now(), alle: Spieler[] = [];
   for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ – das gibt das Konto frei */ Sitz.abmelden(s.ws); try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } alle.push(s); }
   /* jedem die Spieler in Sichtweite (offene Welt: nach Abstand, über Regionsgrenzen hinweg) – nur wenn sich dort etwas geändert hat, sonst alle 2 Sekunden */
-  const daten = new Map(alle.map((s) => [s, { i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, ...(s.wx !== undefined && s.wy !== undefined ? { wx: s.wx, wy: s.wy } : {}), b: s.b, l: s.l, ...(s.max ? { lp: s.lp, max: s.max } : {}) }]));
+  const daten = new Map(alle.map((s) => [s, { i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, ...(s.wx !== undefined && s.wy !== undefined ? { wx: s.wx, wy: s.wy } : {}), b: s.b, l: s.l, ...(s.w ? { w: s.w } : {}), ...(s.max ? { lp: s.lp, max: s.max } : {}) }]));
   const schicken: Spieler[] = [];
   for (const s of alle) { const nah = alle.filter((o) => o !== s && sehen(s, o)), key = nah.map((o) => o.id).join(",");
     if (!(s.geaendert || key !== s.sichtKey || nah.some((o) => o.geaendert) || runde % 10 === 0)) continue; s.sichtKey = key;

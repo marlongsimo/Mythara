@@ -3,6 +3,8 @@
  * Verbindung zum Spielserver mit ?welt=1&ort=<ort> (nur mit Spielerkonto). Name, Held und Stufe bestimmt der Server.
  * Den Helden wechselt man nur in der Waldmark – der Server lehnt den Wechsel anderswo ab.
  */
+import { arbeitMelden, arbeitJetzt, arbeitKey } from "./arbeit";
+import type { Arbeit } from "../../shared/arbeit";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { abmelden, kuerzlichAktiv, beimAbmelden, restAus } from "./abmeldung";
 import { freundHinzufuegen } from "./freunde";
@@ -23,13 +25,13 @@ import { gruppe, serverAdresse } from "./gruppe";
 import { KanalWs } from "./kanal";
 import { kanalFabrikSetzen } from "./netz";
 
-export interface Fremder { i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
+export interface Fremder { /** arbeitet gerade (#67, shared/arbeit.ts) */ w?: Arbeit; i: number; n: string; h: string; /** gewähltes Aussehen (Heldeneditor) */ a?: Held; s: number; x: number; y: number; /** Weltfelder (offene Welt) – gilt vor x/y, auch über Regionsgrenzen */ wx?: number; wy?: number; b: number; l: number; lp?: number; max?: number }
 export interface Ich { id: number; name: string; held: string; stufe: number; ort: string; festerHeld?: boolean; gast?: boolean; /** zuletzt gemerkte Stelle in der Welt (Weltfelder; null = Start der Region) */ pos?: { region: string; x: number | null; y: number | null } }
 type Kanal = "oeffentlich" | "gruppe" | "system" | "fluestern";
 export interface Hand { spieler?(l: Fremder[]): void; fort?(id: number): void; ich?(i: Ich): void; blase?(id: number, text: string): void }
 /** Zonen Stufe 3: der Kampfkanal über diese Verbindung (kanal.ts) */
 let kanal: KanalWs | null = null;
-let ws: WebSocket | null = null, ich: Ich | null = null, hand: Hand = {}, ort = "", versuch = 0, gesendet = { x: NaN, y: NaN, t: 0, l: -1 };
+let ws: WebSocket | null = null, ich: Ich | null = null, hand: Hand = {}, ort = "", versuch = 0, gesendet: { x: number; y: number; t: number; l: number; w?: string } = { x: NaN, y: NaN, t: 0, l: -1 };
 const nachrichten: { kanal: Kanal; von?: string; an?: string; i?: number; text: string; zeit: number }[] = [];
 let fremde: Fremder[] = [], online = 0;
 /** Wer gerade am selben Ort ist (ohne mich) und wie viele insgesamt in der Welt sind */
@@ -194,8 +196,9 @@ export function aufheben(id: number | number[], wo?: { x: number; y: number }): 
 /** Eigene Position melden (gedrosselt: bei Bewegung höchstens 6-mal je Sekunde, sonst alle 2 Sekunden) */
 let posZuletzt: Record<string, unknown> | null = null; /* die jüngste Stelle, auch wenn sie (gedrosselt) noch nicht gesendet wurde */
 export function weltPos(x: number, y: number, blick: number, laeuft: boolean, wx?: number, wy?: number): void { const j = performance.now(), g = gesendet, l = laeuft ? 1 : 0; /* wx, wy: Weltfelder – der Server merkt sich die Stelle fürs nächste Anmelden */
-  posZuletzt = { t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) };
-  if ((Math.hypot(x - g.x, y - g.y) > 2 || l !== g.l) && j - g.t > 160 || j - g.t > 2000) { gesendet = { x, y, t: j, l }; senden({ t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}) }); } }
+  if (l) arbeitMelden(null); const w = arbeitJetzt(), wk = arbeitKey(); /* #67: was der Held gerade tut (wer läuft, arbeitet nicht) */
+  posZuletzt = { t: "pos", x, y, b: blick, l, ...(wx !== undefined && wy !== undefined ? { wx: Math.round(wx * 100) / 100, wy: Math.round(wy * 100) / 100 } : {}), ...(w ? { w } : {}) };
+  if ((Math.hypot(x - g.x, y - g.y) > 2 || l !== g.l) && j - g.t > 160 || j - g.t > 2000 || (wk !== (g.w || "") && j - g.t > 160)) { gesendet = { x, y, t: j, l, w: wk }; senden(posZuletzt); } }
 export function weltLeben(lp: number, max: number): void { senden({ t: "leben", lp, max }); }
 /** Helden wechseln – nur in der Waldmark (der Server prüft das) */
 export function weltHeld(held: string): void { heldMerken(held); senden({ t: "held", held }); }
