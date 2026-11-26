@@ -8892,6 +8892,180 @@
     "puls_breite": 30,
     "puls_hell": 0.4
    }
+  },
+  {
+   "id": "grauwacht_grabstein",
+   "name": "Grabstein",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_grabstein.webp",
+   "groesse": [
+    48,
+    71
+   ],
+   "anker": [
+    0.4896,
+    0.9155
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/grabstein.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "grauwacht_grabhuegel_eingang",
+   "name": "Hügelgrab (Eingang)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_grabhuegel_eingang.webp",
+   "groesse": [
+    196,
+    200
+   ],
+   "anker": [
+    0.4974,
+    0.915
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/grabhuegel_eingang.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "grauwacht_dornenwall",
+   "name": "Dornenwall",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_dornenwall.webp",
+   "groesse": [
+    230,
+    100
+   ],
+   "anker": [
+    0.4717,
+    0.8
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/dornenwall.glb",
+    "wind": 0.03,
+    "fest": true
+   }
+  },
+  {
+   "id": "grauwacht_glockenform",
+   "name": "Glockenform",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_glockenform.webp",
+   "groesse": [
+    72,
+    92
+   ],
+   "anker": [
+    0.4931,
+    0.913
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/glockenform.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "grauwacht_glocke",
+   "name": "Glocke von Grauwacht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_glocke.webp",
+   "groesse": [
+    90,
+    89
+   ],
+   "anker": [
+    0.4944,
+    0.8989
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/glocke.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "grauwacht_glocke_gesprungen",
+   "name": "Glocke (gesprungen)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/grauwacht_glocke_gesprungen.webp",
+   "groesse": [
+    90,
+    98
+   ],
+   "anker": [
+    0.4944,
+    0.9082
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/graufurt_objekte.py (Phase 8), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/grauwacht/glocke_gesprungen.glb",
+    "wind": 0,
+    "fest": true
+   }
   }
  ]
 }
