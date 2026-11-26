@@ -37,14 +37,6 @@
    "links": true
   },
   {
-   "id": "agnes",
-   "rolle": "npc",
-   "figur": "agnes",
-   "x": 50.2,
-   "y": 33.2,
-   "links": true
-  },
-  {
    "id": "mette",
    "rolle": "npc",
    "figur": "mette",

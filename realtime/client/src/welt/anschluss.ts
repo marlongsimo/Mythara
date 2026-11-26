@@ -233,6 +233,13 @@ let karteMedien = false, zuFreundS: WeltKern | null = null;
 addEventListener("ez-zufreund", (e) => { const s = zuFreundS, m = (e as CustomEvent).detail as { n: string; x: number; y: number }; const w = s as unknown as { springen?: (x: number, y: number) => void } | null;
   if (!s || !w || !w.springen || s.gesperrt) return; (document.querySelector("#ez-konto .tafel.freunde .schliessen") as HTMLElement | null)?.click(); chatSystem(`Teleport zu ${m.n} …`);
   const ms = s.teleportAbreise(); setTimeout(() => w.springen!(m.x, m.y), Math.max(0, ms - 250)); });
+/** Wegstein (Phase 3a): der Server hat geprüft, eine Ladung abgezogen und die Stelle gesetzt – hier nur Lichtsäule und Sprung dorthin */
+addEventListener("ez-wegstein", (e) => { const m = (e as CustomEvent).detail as { ok?: boolean; text?: string; name?: string; x?: number; y?: number; ladungen?: number };
+  if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Der Stein bleibt kalt."); return; }
+  const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
+  (document.querySelector("#ez-konto .tafel .schliessen") as HTMLElement | null)?.click();
+  chatSystem(`Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
+  const x = m.x, y = m.y, ms = s.teleportAbreise(); setTimeout(() => w.springen!(x, y), Math.max(0, ms - 250)); });
 function menue3D(s: WeltKern) { zuFreundS = s;
     const rucksack = () => { if (!seitenTab("rucksack")) tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)); }, ausruestung = () => { if (!seitenTab("ausruestung")) tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true)); }; /* mit eigenem Held: Tabs neben der Leiste */
     const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", taste: "Umschalt", tat: () => { const w = s as unknown as { sprint?: () => void }; if (w.sprint) w.sprint(); else chatSystem("Sprinten geht in der 3D-Welt."); } }];

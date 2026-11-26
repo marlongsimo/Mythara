@@ -64,7 +64,7 @@ async function sammeln(s, art, id, x, y, g, n, ms = 120000) { await stelle(s, x 
 async function herstellen(s, x, y, rezept, menge = 1) { if (x !== null) await stelle(s, x + 1.2, y); s.handwerk = []; sende(s, { t: "handwerk", tat: "start", rezept, menge });
   const a = (await warte(s, (m) => m.t === "handwerk" && (m.tat === "nein" || m.tat === "start"))) || {}; if (a.tat !== "start") return a.text || "?";
   await (s.handwerk.find((m) => m.tat === "stop") || warte(s, (m) => m.t === "handwerk" && m.tat === "stop", 30000)); await schlaf(300); return "ok"; }
-const AGNES = [6450.5, 6681.6], QUELLE = [6567.8, 6696.4], FEUER = [6442, 6687.9], WERKBANK = [6530.5, 6426.5], BINDESTEIN = [6452, 6678.6], TOTHOLZ = [6446.5, 6677.5];
+const AGNES = [6450.5, 6681.6], QUELLE = [6567.8, 6696.4], FEUER = [6442, 6687.9], WERKBANK = [6530.5, 6426.5], BINDESTEIN = [6453.2, 6679.4], TOTHOLZ = [6446.5, 6677.5];
 const lad = (s) => (s.inv && s.inv.ladungen && s.inv.ladungen.wegstein) || 0;
 const reiben = async (s, ziel) => { sende(s, { t: "wegstein", ziel }); return (await warte(s, (m) => m.t === "wegstein")) || {}; };
 /** Glut/Resonanz: jedes Fenster sofort antippen */

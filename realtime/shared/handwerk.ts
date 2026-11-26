@@ -20,7 +20,7 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   amboss: { id: "amboss", name: "Amboss", x: 6470.4, y: 6427.6, tun: "Schmieden" },
   werkbank: { id: "werkbank", name: "Werkbank", x: 6530.5, y: 6426.5, /* die einzige Werkbank steht im Osthof (die in der Waldmark ist entfernt) */ tun: "Werken" },
   /* Splitterbinden (Phase 3a): Bindestein an der Linde im Steinring in Weidenhain – nutzbar nach B1 „Der Wegstein“ (Schalter bindestein_linde) */
-  bindestein: { id: "bindestein", name: "Bindestein", x: 6452, y: 6678.6, tun: "Binden" },
+  bindestein: { id: "bindestein", name: "Bindestein", x: 6453.2, y: 6679.4, tun: "Binden" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };

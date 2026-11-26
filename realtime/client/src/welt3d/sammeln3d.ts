@@ -14,7 +14,7 @@ import { gegenstandUntersuchen } from "../rahmen";
 import type { Welt3D } from "./motor";
 
 export interface SammelZiel3D { id: string; art: string; x: number; y: number }
-export interface SammelDef3D { name: string; level: number; xp: number; ertrag: string; modell: string; leer: string; /** Größe im Spiel: Höhe (Baum) bzw. längste Seite (Ader) */ mass: number; /** Tönung (Waldstein) */ farbe?: number; weiblich: boolean }
+export interface SammelDef3D { name: string; level: number; xp: number; ertrag: string; modell: string; /** leer = kein Leer-Modell (verloschen: nichts zu sehen) */ leer: string; /** so hoch über dem Boden (Felder, Seelenlicht) */ schweben?: number; /** Größe im Spiel: Höhe (Baum) bzw. längste Seite (Ader) */ mass: number; /** Tönung (Waldstein) */ farbe?: number; weiblich: boolean }
 export interface SammelEinstellung {
   beruf: string; berufName: string; /** Ereignisse aus welt.ts */ ereignis: string; liste: string;
   ziele: SammelZiel3D[]; def: (art: string) => SammelDef3D; bitten: (tat: string, id?: string) => void;
@@ -62,8 +62,9 @@ export class SammelWelt {
   private get figur(): Werkzeugfigur | null { const f = this.u.figur as Partial<Werkzeugfigur> | null; return f && typeof f.beilHieb === "function" ? (f as Werkzeugfigur) : null; }
   private zustand(a: Bild) { const leer = this.weg.has(a.z.id); if (a.voll) a.voll.visible = !leer; if (a.leer) a.leer.visible = leer; }
   private async laden(a: Bild) { a.laedt = true; const D = this.E.def(a.z.art);
-    try { const [v, s] = await Promise.all([vorlage(D.modell), vorlage(D.leer)]), f = D.mass / (this.E.massArt === "hoehe" ? v.hoehe : v.laenge), dreh = zufall(a.z.id + "d") * Math.PI * 2;
-      const voll = v.szene.clone(true), leer = s.szene.clone(true); for (const o of [voll, leer]) { o.scale.setScalar(f * (0.92 + 0.16 * zufall(a.z.id + "s"))); o.rotation.y = dreh; a.gruppe.add(o); }
+    try { const [v, s] = await Promise.all([vorlage(D.modell), D.leer ? vorlage(D.leer) : Promise.resolve(null)]), f = D.mass / (this.E.massArt === "hoehe" ? v.hoehe : v.laenge), dreh = zufall(a.z.id + "d") * Math.PI * 2;
+      const voll = v.szene.clone(true), leer = s ? s.szene.clone(true) : new THREE.Group() /* ohne Leer-Modell (Seelenlicht): verloschen = nichts */;
+      for (const o of [voll, leer]) { o.scale.setScalar(f * (0.92 + 0.16 * zufall(a.z.id + "s"))); o.rotation.y = dreh; if (D.schweben) o.position.y = D.schweben; a.gruppe.add(o); }
       a.u.uHoehe.value = v.hoehe; a.mats = []; shaderAn(voll, a.u, this.E.durchsicht ? a.mats : undefined); shaderAn(leer, a.u); if (D.farbe !== undefined) for (const o of [voll, leer]) o.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) (m.material as THREE.MeshStandardMaterial).color.multiply(new THREE.Color(D.farbe)); }); a.voll = voll; a.leer = leer; this.zustand(a);
     } catch (e) { console.warn(`${this.E.berufName}: Modell fehlt`, a.z.art, e); } }
   private nachricht(m: { tat: string; id?: string; werkzeug?: string; text?: string; name?: string; n?: number; xp?: number; splitter?: number; aufstieg?: number; grund?: string; ms?: number; [k: string]: unknown }) {
