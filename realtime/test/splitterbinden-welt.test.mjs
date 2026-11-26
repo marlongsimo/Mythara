@@ -81,8 +81,9 @@ try {
   check(/glatten Stein/.test(t) && anzahl(anna, "quellstein") === 1 && anzahl(anna, "quellwasser") === 1, "Quelle der Obstwiesen: Quellstein und Quellwasser");
   check(await sammeln(anna, "holz", "linde_totholz_1", ...TOTHOLZ, "lindenspan", 1), "Totholz der Linde: ein Span"); await schlaf(300);
   check(QB.erledigt(QUEST_B1, anna.b[QUEST_B1.id], "span"), "Schritt „Span“ erledigt");
+  const splVor = anzahl(anna, "splitter"); /* Holzfällen kann nebenbei Splitter finden */
   await stelle(anna, ...AGNES); await rede(anna, "agnes"); await sag(anna, "agnes", "opfern"); await schlaf(400);
-  check(anzahl(anna, "splitter") === 350 && anzahl(anna, "geweihter_splitter") === 1, `250 Splitter für die Wurzeln, ein geweihter Splitter (${anzahl(anna, "splitter")} übrig)`);
+  check(anzahl(anna, "splitter") === splVor - 250 && anzahl(anna, "geweihter_splitter") === 1, `250 Splitter für die Wurzeln, ein geweihter Splitter (${anzahl(anna, "splitter")} übrig)`);
   check(await herstellen(anna, ...WERKBANK, "wegstein_ungeweiht") === "ok" && anzahl(anna, "wegstein_ungeweiht") === 1 && anzahl(anna, "quellstein") === 0, "Werkbank: Wegstein (ungeweiht) gefügt (Quest-Rezept, Handwerk 10)");
   await stelle(anna, ...FEUER); t = await ding(anna, "b1_feuer"); await schlaf(300);
   check(/Lindenblüten/.test(t) && anzahl(anna, "wegstein") === 1 && anzahl(anna, "quellwasser") === 0, "Erntefeuer: geweiht – der Wegstein");
