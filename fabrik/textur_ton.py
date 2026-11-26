@@ -1,6 +1,6 @@
 """Mythara Fabrik – einen Farbbereich in der Textur eines Körpers umfärben (z. B. das Banditenrot → Grün für den Späher).
 
-  <blender-python> fabrik/textur_ton.py <koerper.glb> <ziel.glb> ton=<grad> [von=0] [breite=30] [saett=1.0] [hell=1.0] [ab_saett=0.3]
+  <blender-python> fabrik/textur_ton.py <koerper.glb> <ziel.glb> ton=<grad> [von=0] [breite=30] [saett=1.0] [hell=1.0] [ab_saett=0.3] [leuchten=0]
 
 Getroffen werden Bildpunkte mit Farbton in von ± breite (Grad, Rot = 0) und Sättigung über ab_saett; sie bekommen den Farbton „ton“,
 die Sättigung × saett und die Helligkeit × hell. Licht, Schatten und Muster bleiben; Haut (orange, ≈ 25°) liegt bei breite ≤ 18 außerhalb.
@@ -36,5 +36,10 @@ for im in bpy.data.images:
     n = c.copy(); n[..., 0] = TON % 360; n[..., 1] = np.clip(c[..., 1] * SA, 0, 1); n[..., 2] = np.clip(c[..., 2] * HE, 0, 1)
     a[..., :3] = a[..., :3] * (1 - k[..., None]) + rgb(n) * k[..., None]; im.pixels[:] = a.ravel(); im.update()
     print("umgefärbt:", im.name, f"{float(k.mean()) * 100:.1f} % der Bildpunkte")
+if float(opt.get("leuchten", 0)) > 0:                                                              # leuchten=<Stärke>: die Textur zusätzlich als Leuchtkarte (glTF emissive)
+    for m in bpy.data.materials:
+        if not m.node_tree: continue
+        b = m.node_tree.nodes.get("Principled BSDF"); t = next((n for n in m.node_tree.nodes if n.type == "TEX_IMAGE"), None)
+        if b and t: m.node_tree.links.new(t.outputs["Color"], b.inputs["Emission Color"]); b.inputs["Emission Strength"].default_value = float(opt["leuchten"])
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.export_scene.gltf(filepath=os.path.abspath(ziel), export_format="GLB", use_selection=True, export_image_format="WEBP")

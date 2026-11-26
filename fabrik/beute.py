@@ -1,7 +1,7 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge
+  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge | sichel
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
@@ -123,6 +123,17 @@ elif ART in ("rabenfedern", "federsiegel", "rabenschwinge"):
                        [], [(0, 1, 5), (1, 2, 5), (2, 3, 5), (3, 4, 5), (4, 0, 5), (1, 0, 6), (2, 1, 6), (3, 2, 6), (4, 3, 6), (0, 4, 6)]); k_ = bpy.data.objects.new("k", me); bpy.context.collection.objects.link(k_); k_.data.materials.append(STAHL)
         rohr((0, 0, 0.1), (0, 0, 0.08 + L * 0.85), 0.003, SCH, 5)                                     # Blutrinne violett
         rohr((0, 0, -0.1), (0, 0, 0.075), 0.013, GRIFF, 10); kugel((0, 0, -0.115), 0.02, GOLD, (1, 1.3, 1), 10); rohr((0, -0.02, -0.11), (0, -0.05, -0.118), 0.007, GOLD, 6, 0.0)   # Rabenkopf-Knauf mit Schnabel
+elif ART == "sichel":                                                                            # Erntesichel: Holzgriff (Ursprung = Griffende, oben +z), halbmondförmige Klinge
+    HOLZ = mat("holz", (150, 105, 60), 0.75); STAHL = mat("sichelstahl", (185, 188, 195), 0.35, 0.45); ZW = mat("zwinge", (110, 85, 50), 0.4, 0.8)
+    rohr((0, 0, 0), (0, 0, 0.16), 0.016, HOLZ, 10, 0.014); rohr((0, 0, 0.155), (0, 0, 0.18), 0.017, ZW, 10)
+    pts_a, pts_i = [], []
+    for k in range(17):                                                                          # Halbmond in der x-z-Ebene: Außen- und Innenkante
+        t = k / 16; a = math.radians(-20 + 200 * t); r = 0.13; c = Vector((-0.11, 0, 0.2))
+        pts_a.append(c + Vector((r * math.cos(a), 0, r * math.sin(a)))); w = 0.028 * math.sin(math.pi * min(1.0, t * 1.1)) + 0.004
+        pts_i.append(c + Vector(((r - w) * math.cos(a), 0, (r - w) * math.sin(a))))
+    me = bpy.data.meshes.new("klinge"); vs = [tuple(p) for p in pts_a + pts_i]; n = len(pts_a)
+    me.from_pydata(vs, [], [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]); k_ = bpy.data.objects.new("klinge", me); bpy.context.collection.objects.link(k_); k_.data.materials.append(STAHL); k_.modifiers.new("d", "SOLIDIFY").thickness = 0.004
+    rohr((0, 0, 0.17), (0.02, 0, 0.2), 0.008, STAHL, 6)                                                # Angel zur Klinge
 elif ART == "splitterkern":
     KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
     for m_ in (KRIST, KERN):
