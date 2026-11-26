@@ -9,10 +9,10 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-phase4-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN, TUEREN } from "./shared/bosse"; export * from "./shared/boss"; export * as QB from "./shared/questbau"; export { QUEST1 } from "./shared/quest01"; export { QUEST_B3 } from "./shared/quest_b3"; export { QUEST_B4 } from "./shared/quest_b4";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN, TUEREN } from "./shared/bosse"; export * from "./shared/boss"; export * as QB from "./shared/questbau"; export { QUEST1 } from "./shared/quest01"; export { QUEST_B3 } from "./shared/quest_b3"; export { QUEST_B4 } from "./shared/quest_b4"; export * from "./shared/folgen";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const M = await import(datei);
-const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, BOSSE, QB, QUEST1, QUEST_B3, QUEST_B4, fels } = M;
+const { Folger, folgePunkt, Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, BOSSE, QB, QUEST1, QUEST_B3, QUEST_B4, fels } = M;
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 const lauf = (s, sek, bis) => { const ev = []; for (let i = 0; i < sek * 20; i++) { s.schritt(); ev.push(...s.zustand().ev); if (bis && bis(ev)) break; } return ev; };
 
@@ -114,6 +114,16 @@ console.log("\nFigur in mehreren Quests (Othmar: Quest 1, B3, B4)");
   const alle = "auftrag_" + ((1 << QUEST_B4.schritte.length) - 1), kk = k(["rabenbrief", "silberleuchter"]), d = QB.dialog(QUEST_B4, "othmar", alle, kk), wahl = ["wahl_schwert", "wahl_zweihaender", "wahl_bogen", "wahl_stab"];
   const folgen = wahl.map((a) => QB.antwort(QUEST_B4, "othmar", alle, a, kk));
   check(wahl.every((a) => d.antworten.some((x) => x.id === a)) && folgen.every((f) => f && f.abschluss && f.geben && f.geben.length === 1) && new Set(folgen.map((f) => f.geben[0].g)).size === 4, "Abschluss mit Wahl: vier Antworten, jede schließt ab und gibt eine andere Waffe"); }
+
+console.log("\nFolgen (Regel, #54 – auch für Befreite und das Rabenküken)");
+{ const F = new Folger("Ben"), ich = { x: 0, y: 0 };
+  const t1 = F.schritt(0.5, ich, { x: 6, y: 0 }); check(t1.tun === "gehen" && Math.abs(t1.x - 4.5) < 1e-9 && t1.y === 0, "weit weg: ein Laufziel 1,5 Felder vor dem Ziel");
+  check(F.schritt(0.1, ich, { x: 6, y: 0 }).tun === "warten", "dazwischen: im Takt (0,4 s) kein neues Ziel");
+  check(folgePunkt({ x: 4.5, y: 0 }, { x: 6, y: 0 }) === null, "nah genug: stehen bleiben");
+  check(F.schritt(0.5, ich, null).tun === "ende" && F.schritt(0.5, ich, null).grund === "weg", "Ziel nicht mehr da: Ende („weg“)");
+  check(new Folger("B").schritt(0.5, ich, { x: 1, y: 1 }, false).grund === "kein_weg", "kein Weg: Ende („Kein Weg zu …“)");
+  const G = new Folger("B"); G.schritt(0.5, ich, { x: 3, y: 0 }); check(G.schritt(0.05, ich, { x: 30, y: 0 }).grund === "sprung", "das Ziel springt weit (Teleport): Ende, kein Hinterherteleportieren");
+  check(new Folger("B").schritt(0.5, ich, { x: 60, y: 0 }).grund === "weit", "zu weit weg: Ende"); }
 
 console.log(f ? `\nPhase 4: ${f} FEHLER` : "\nPhase 4: alles in Ordnung");
 process.exit(f ? 1 : 0);

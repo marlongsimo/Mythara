@@ -180,6 +180,8 @@ export class WeltKampf {
     else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
     else if (ev.a === "bossphase" && ev.text) zahl(ev.id, ev.text, "#ffb27a");
     else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); }
+  /** Folgen (#54): Stelle (Weltfelder) eines anderen Helden in diesem Kampfgebiet, nach seinem Namen – null: nicht (mehr) hier */
+  heldOrt(name: string): { x: number; y: number } | null { for (const [id, f] of this.figuren) { if (!f.held || f.tot || id === this.ichId) continue; const n = this.namen.get(id); if (n && n.name === name) return { x: this.zone.x0 + f.zx, y: this.zone.y0 + f.zy }; } return null; }
   /** Ansage: diese Felder (Rechenfelder, Mitte) leuchten t Sekunden rot – wer dann noch darauf steht, wird getroffen */
   protected ansageZeigen(felder: [number, number][], t: number): void { const s = this.s;
     for (const [x, y] of felder) { const r = s.add.rectangle((this.zone.x0 + x) * FELD_PX, (this.zone.y0 + y) * FELD_PX, FELD_PX - 2, FELD_PX - 2, 0xff3a2a, 0.45).setDepth(2);

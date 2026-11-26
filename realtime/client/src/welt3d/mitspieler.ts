@@ -31,6 +31,8 @@ export class Mitspieler3D {
   unterPunkt(px: number, py: number): Fremder | null { let best: Fremder | null = null, bd = 1e9;
     for (const f of this.figuren.values()) { const w = this.feld(f), h = this.m.hoehe(w.x, w.z), a = this.m.bildschirm(w.x, h, w.z), b = this.m.bildschirm(w.x, h + HOEHE, w.z); if (!a || !b) continue;
       const breit = Math.max(18, Math.abs(a.y - b.y) * 0.35), dx = Math.abs(px - a.x), innen = py <= a.y + 6 && py >= b.y - 6 && dx <= breit; if (innen && dx < bd) { bd = dx; best = f.d; } } return best; }
+  /** Folgen (#54): Stelle eines Mitspielers in Weltfeldern, nach Namen */
+  ortVon(name: string): { x: number; y: number } | null { for (const f of this.figuren.values()) if (f.d.n === name) { const w = this.feld(f.d.wx !== undefined && f.d.wy !== undefined ? { x: f.d.x, y: f.d.y, wx: f.d.wx, wy: f.d.wy } : f.d); return { x: w.x, y: w.z }; } return null; }
   blase(id: number, text: string): void { const f = this.figuren.get(id); if (!f) return; blase3d(this.m, () => { if (this.figuren.get(id) !== f) return null; const w = this.feld(f); return { x: w.x, y: this.m.hoehe(w.x, w.z) + HOEHE + 0.9, z: w.z }; }, text); }
   liste(l: Fremder[]): void { const da = new Set<number>();
     for (const d of l) { da.add(d.i); let f = this.figuren.get(d.i); const a = d.a ? heldPruefen(d.a) : null, k = a ? aussehenSchluessel(a) : "";
