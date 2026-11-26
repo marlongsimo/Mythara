@@ -60,6 +60,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Supabase:** Migrationen 048 und 049 sind eingespielt. *(26.11.)*
 - **Essen** (Stand heute): Brot heilt 4, nicht stapelbar, 1,5 s zwischen zwei Bissen, auch im Kampf. Gerichte mit Wirkung kommen mit Kochen (Phase 3b). *(26.11., Erklärung, keine Änderung)*
 - **Quest-Lohn über 1.000 XP je Skill** wird gebraucht: neue Migration hebt die Grenze aus 048 an (Vorschlag 50.000 je Skill/Beruf, Issue #41). Bis dahin höchstens 1.000. *(26.11.)*
+- **Quests über Regionsgrenzen:** Regionen greifen ineinander, Quests führen quer über die Karte. Jeder neue Quest-Block hat mindestens eine Quest durch zwei oder mehr ältere Regionen; Figuren und Gegenstände kehren wieder. Erste große Quer-Quest: „Die Karte des Boten“ (Phase 9). *(26.11.)*
 - **Offene Welt statt Sperren:** Großregionen sind zu Fuß erreichbar, wer früher hingeht, trägt das Risiko. Quests öffnen nur Abkürzungen (z. B. E1 den Weg durch den Dornenwall im Nordsaum). *(26.11.)*
 - **Handel zwischen Spielern:** „Handeln“ führt den Helden bis auf **ein Feld** an den anderen heran (das ist die Nähe). Der andere bekommt die Anfrage im Chat: Zeile antippen öffnet das Handelsfenster, oder selbst per langem Drücken „Handeln“. *(26.11.)*
 - **Supabase:** Migrationen 050 (Bosszähler) und 051 (Quest-Lohn bis 50.000 XP je Skill) sind **eingespielt**. *(26.11.)*
@@ -72,6 +73,7 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - Rotmantel nach Quest B4: öffentlicher Mini-Boss oder Instanz?
 - Bossing allein oder in Gruppen?
+- Phase 9: Namen (Glutsande, Glutbrunn, Selma Dornfeld, Ruwen Kehl, Hasim Tal, Nalia, Sandmutter), Splitterinsel als nächstes Ziel?
 - Phase 8: Reihenfolge W2/W3 (Konzept nimmt W3 Fahle Weiten zuerst an), Namen (Heidrast, Mette Heider, Äbtissin Gunhild, Wigand Fels, Tjark Sölde, Der Graue Hauptmann)
 - Phase 7: Namen (Kord Weller, Merit Stahl, Alma Furtner, Ysolde, Furtklamm), Turmkampf öffentlich oder Instanz, Ostufer mit Blick auf die Glutsande?
 - Weltkonzept: Namen (Riftmere/Mythara, Städte), Gebirge A–D, Reihenfolge W2/W3, Splitterinsel
