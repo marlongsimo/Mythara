@@ -202,6 +202,28 @@ export function felstuer() {
   return { teile: t, flammen: new Teile("glatt") };
 }
 
+/* ───────── Phase 6: Käfig im Kerker, Federn am Boden ───────── */
+/** Eiserner Käfig 1,6 × 1,6 × 2,1 m: Bodenplatte, Gitterstäbe, Querbänder, Tür mit Vorhängeschloss, darin Stroh und eine Kette */
+export function kaefig() {
+  const t = new Teile("metall"), B = 1.6, H = 2.1, E = "#2e3035";
+  t.box(B + 0.1, 0.1, B + 0.1, 0, 0, 0, "#3a3b3f", 0, { muster: "metall" }); t.box(B + 0.1, 0.08, B + 0.1, 0, H, 0, "#3a3b3f", 0, { muster: "metall" });
+  const n = 7; for (let i = 0; i <= n; i++) { const u = -B / 2 + i * B / n; for (const [x, z] of [[u, -B / 2], [u, B / 2], [-B / 2, u], [B / 2, u]] as const) if (!(z === B / 2 && Math.abs(x) < 0.35 && x > -0.35)) stab(t, V(x, 0.1, z), V(x, H, z), 0.022, E, "metall"); }
+  for (const y of [0.8, 1.5]) for (const [w, d, x, z] of [[B, 0.04, 0, -B / 2], [B, 0.04, 0, B / 2], [0.04, B, -B / 2, 0], [0.04, B, B / 2, 0]] as const) t.box(w, 0.05, d, x, y, z, "#45474d", 0, { muster: "metall" });
+  for (const x of [-0.12, 0.12]) stab(t, V(x + 0.18, 0.12, B / 2 + 0.25), V(x + 0.18, H - 0.05, B / 2 + 0.25), 0.02, E, "metall");   /* offene Tür, leicht ausgeschwenkt */
+  t.box(0.12, 0.14, 0.05, 0.3, 1.0, B / 2 + 0.27, "#8a6a2a", 0, { muster: "metall" });
+  t.box(1.1, 0.12, 0.9, -0.1, 0.1, -0.2, "#b49a5a", 0.3, { muster: "stroh" });
+  for (let i = 0; i < 8; i++) t.add(new THREE.TorusGeometry(0.035, 0.01, 4, 8), "#55575d", matrix(-0.6 + i * 0.07, 0.15 + Math.max(0, 3 - i) * 0.03, -0.65, 0, i % 2 ? Math.PI / 2 : 0, 0), { muster: "metall" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Federn am Boden: schwarze Rabenfedern, ein paar violett schimmernd (flach, ohne Kollision) */
+export function federn() {
+  const t = new Teile("glatt");
+  for (let i = 0; i < 14; i++) { const a = zufall(i, 3) * Math.PI * 2, r = zufall(i, 5) * 0.9, l = 0.18 + zufall(i, 7) * 0.16, w = a + zufall(i, 9) * 3;
+    t.add(new THREE.BoxGeometry(l, 0.006, l * 0.28), i % 5 === 0 ? "#5a3a86" : i % 3 ? "#1a1a20" : "#2a2a33", matrix(Math.cos(a) * r, 0.004 + i * 0.0006, Math.sin(a) * r, 0, w, 0), { muster: "glatt" });
+    t.add(new THREE.BoxGeometry(l * 0.9, 0.008, 0.008), "#6a6a72", matrix(Math.cos(a) * r, 0.008 + i * 0.0006, Math.sin(a) * r, 0, w, 0), { muster: "glatt" }); }
+  return { teile: t, flammen: new Teile("glatt") };
+}
+
 /* ───────── Ausgabe ───────── */
 /** Teile → Mesh mit glTF-tauglichen Materialien (Standard statt Lambert, Farbe ≤ 1; die Aufhellung der Muster steckt in den Eckpunktfarben) */
 const STANDARD = MUSTER.map((m, i) => { const alt = MATERIALIEN[i] as THREE.MeshLambertMaterial;
@@ -213,7 +235,7 @@ function flammenNetz(t: Teile) { const m = new THREE.Mesh(t.geometrie(), new THR
 
 export function alle(): Record<string, THREE.Group> {
   const aus: Record<string, THREE.Group> = {};
-  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer]] as const) {
+  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer], ["kaefig", kaefig], ["federn", federn]] as const) {
     const g = new THREE.Group(); g.name = id; const r = f(); g.add(netz(r.teile, "modell")); if (!r.flammen.leer) g.add(flammenNetz(r.flammen)); aus[id] = g; }
   const w = wasserrad(), g = new THREE.Group(); g.name = "wasserrad"; g.add(netz(w.teile, "modell")); const rad = netz(w.rad, "rad"); rad.position.y = w.mitte; g.add(rad); aus.wasserrad = g;
   return aus;

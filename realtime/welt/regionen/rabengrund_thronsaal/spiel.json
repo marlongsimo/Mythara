@@ -1,0 +1,34 @@
+{
+ "start": [
+  [
+   16,
+   28.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "thronsaal_ausgang",
+   "art": "eingang",
+   "x": 16,
+   "y": 30,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Tor zurück zum Splitterbecken.",
+    "tat": "thronsaal_zurueck",
+    "knopf": "Zurück zum Splitterbecken",
+    "ziel": [
+     10673,
+     9662
+    ]
+   }
+  }
+ ]
+}

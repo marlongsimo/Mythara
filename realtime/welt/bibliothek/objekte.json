@@ -10222,6 +10222,82 @@
     "url": "img/objekte3d/handwerk/felstuer.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "moor_bruecke_morsch_01",
+   "name": "Alte Moorbrücke (morsche Stelle)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_bruecke_morsch_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_kaefig_01",
+   "name": "Käfig",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hoehle_kaefig_01.webp",
+   "groesse": [
+    82,
+    134
+   ],
+   "anker": [
+    0.5,
+    0.8134
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.85,
+    "y": -0.85,
+    "b": 1.7,
+    "h": 1.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/kaefig.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_federn_01",
+   "name": "Rabenfedern",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/hoehle_federn_01.webp",
+   "groesse": [
+    77,
+    32
+   ],
+   "anker": [
+    0.4935,
+    0.625
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/federn.glb",
+    "wind": 0
+   }
   }
  ]
 }

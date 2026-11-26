@@ -1,0 +1,19 @@
+[
+ {"id":"altar_stein_1","objekt":"k_altar_stein","x":16,"y":5.28},
+ {"id":"saeule_gross_2","objekt":"k_saeule_gross","x":10.5,"y":9.5},
+ {"id":"saeule_gross_3","objekt":"k_saeule_gross","x":22.5,"y":9.5},
+ {"id":"saeule_gross_4","objekt":"k_saeule_gross","x":10.5,"y":21.5},
+ {"id":"saeule_gross_5","objekt":"k_saeule_gross","x":22.5,"y":21.5},
+ {"id":"splitter_obelisk_6","objekt":"wz_splitter_obelisk","x":16,"y":10.5},
+ {"id":"splitter_obelisk_7","objekt":"wz_splitter_obelisk","x":20.5,"y":15},
+ {"id":"splitter_obelisk_8","objekt":"wz_splitter_obelisk","x":16,"y":19.5},
+ {"id":"splitter_obelisk_9","objekt":"wz_splitter_obelisk","x":11.5,"y":15},
+ {"id":"federn_10","objekt":"hoehle_federn_01","x":6,"y":12},
+ {"id":"federn_11","objekt":"hoehle_federn_01","x":26,"y":12,"spiegeln":true},
+ {"id":"federn_12","objekt":"hoehle_federn_01","x":7,"y":20},
+ {"id":"federn_13","objekt":"hoehle_federn_01","x":25,"y":20,"spiegeln":true},
+ {"id":"federn_14","objekt":"hoehle_federn_01","x":13,"y":25},
+ {"id":"federn_15","objekt":"hoehle_federn_01","x":19,"y":25,"spiegeln":true},
+ {"id":"feuerkorb_16","objekt":"moor_feuerkorb_01","x":12.5,"y":24.5},
+ {"id":"feuerkorb_17","objekt":"moor_feuerkorb_01","x":19.5,"y":24.5}
+]

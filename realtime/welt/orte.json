@@ -424,6 +424,62 @@
    "objekt": "welt_spuren_01",
    "x": 6294.5,
    "y": 6616.5
+  },
+  {
+   "id": "ort_p6_akoluth_feuer_1",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6205.5,
+   "y": 6702.5
+  },
+  {
+   "id": "ort_p6_akoluth_feuer_2",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6222.5,
+   "y": 6702.5
+  },
+  {
+   "id": "ort_p6_akoluth_lager_1",
+   "objekt": "hoehle_lager_01",
+   "x": 6203.5,
+   "y": 6711.5
+  },
+  {
+   "id": "ort_p6_akoluth_lager_2",
+   "objekt": "hoehle_lager_01",
+   "x": 6224.5,
+   "y": 6711.5
+  },
+  {
+   "id": "ort_p6_akoluth_federn_1",
+   "objekt": "hoehle_federn_01",
+   "x": 6211.5,
+   "y": 6706.5
+  },
+  {
+   "id": "ort_p6_akoluth_federn_2",
+   "objekt": "hoehle_federn_01",
+   "x": 6217.5,
+   "y": 6714.5,
+   "spiegeln": true
+  },
+  {
+   "id": "ort_p6_novizen_feuer",
+   "objekt": "moor_feuerkorb_01",
+   "x": 6249.5,
+   "y": 6738.5
+  },
+  {
+   "id": "ort_p6_novizen_federn",
+   "objekt": "hoehle_federn_01",
+   "x": 6239.5,
+   "y": 6734.5
+  },
+  {
+   "id": "ort_p6_gruft_federn",
+   "objekt": "hoehle_federn_01",
+   "x": 6190.5,
+   "y": 6728.5,
+   "spiegeln": true
   }
  ],
  "lichtungen": [
