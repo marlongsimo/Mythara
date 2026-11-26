@@ -1,0 +1,87 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  },
+  "waffe.bogen.einfach": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "treffer",
+    "tod",
+    "bogen"
+   ]
+  },
+  "waffe.speer.einfach": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "treffer",
+    "tod",
+    "stich2h"
+   ]
+  },
+  "waffe.zauberstab.einfach": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "treffer",
+    "tod",
+    "zauber_stab"
+   ]
+  }
+ },
+ "aktionen": {
+  "bogen": {
+   "bilder": 9,
+   "rate": 12,
+   "schleife": false
+  },
+  "gehen": {
+   "bilder": 8,
+   "rate": 8,
+   "schleife": true
+  },
+  "laufen": {
+   "bilder": 8,
+   "rate": 11,
+   "schleife": true
+  },
+  "ruhe": {
+   "bilder": 6,
+   "rate": 6,
+   "schleife": true
+  },
+  "stich2h": {
+   "bilder": 8,
+   "rate": 14,
+   "schleife": false
+  },
+  "tod": {
+   "bilder": 8,
+   "rate": 10,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 5,
+   "rate": 12,
+   "schleife": false
+  },
+  "zauber_stab": {
+   "bilder": 8,
+   "rate": 12,
+   "schleife": false
+  }
+ }
+}
