@@ -1,7 +1,7 @@
 {
  "id": "fl_245_198",
- "name": "Das Splittermeer",
- "untertitel": "Das erste Festland – noch unbesiedelt",
+ "name": "Der Drachenarm",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
  "ursprung": [
   245,
   198
@@ -10,7 +10,7 @@
   16,
   13
  ],
- "biom": "meer",
+ "biom": "kueste",
  "stufe": 3,
  "nahtlos": "festland"
 }

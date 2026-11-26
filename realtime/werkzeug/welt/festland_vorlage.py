@@ -1,10 +1,11 @@
 """
 World Pipeline – Vorlage für das erste Festland (26.11.2026): leitet aus einer gemalten Kontinentkarte (Bild, nicht im Repo) eine grobe
 Datenkarte ab und legt sie als welt/festland/vorlage.png ab. Nur abgeleitete Werte, keine Bildinhalte:
-  R = Land (0 Meer, 1 Fahle Weiten, 2 Smaragdküste, 3 Glutsande, 4 Ockerlande, 5 Weißes Ende, 6 Splitterlande-Umland)
+  R = Land (0 Meer, 1 Fahle Weiten, 2 Smaragdküste, 3 Glutsande, 4 Ockerlande, 5 Weißes Ende, 6 Splitterlande-Umland,
+      7 Hochlande, 8 Frostkrone, 9 Drachenarm – die drei auf der Hochlande-Insel jenseits des Grauen Sunds)
   G = Gebirge (0 eben … 255 schroff)   B = Trockenheit (0 feucht … 128 mittel … 255 trocken)   A = Wald/Dunkelgrün (0 … 255)
 Maßstab: halbe Kantenlänge, 13 Bildpunkte je Chunk; Chunk 192|198 (Nordwestecke der heutigen Karte) liegt bei Bildpunkt 110|640.
-Ausschnitt: Chunks 186–260 × 155–253 (der Weltrahmen). Die Hochlande-Insel (Hochlande, Frostkrone, Drachenarm) wird zu Meer.
+Ausschnitt: Chunks 186–260 × 155–253 (der Weltrahmen). Der Graue Sund und die Nordwestbucht trennen die Hochlande-Insel vom Festland.
 Aufruf: python3 werkzeug/welt/festland_vorlage.py <kontinentbild.jpg> [--pruefen bild.png]
 """
 import sys, os, math
@@ -16,6 +17,7 @@ HIER = os.path.dirname(os.path.abspath(__file__)); ZIEL = os.path.normpath(os.pa
 PX, SX, SY = 13.0, 110, 640
 X0, X1, Y0, Y1 = 186, 261, 155, 254
 LAENDER = [(1, (245, 520)), (2, (175, 900)), (3, (470, 900)), (4, (690, 1130)), (6, (265, 720))]
+INSEL = [(7, (590, 430)), (8, (430, 230)), (9, (900, 590))]
 SUND = [(318, 330), (340, 352), (356, 385), (366, 415), (382, 442), (398, 470), (410, 500), (424, 528), (442, 552), (466, 584), (484, 604)]
 HOCHLANDE = (590, 420)
 
@@ -31,7 +33,7 @@ def main():
     ds.polygon([(470, 600), (530, 588), (600, 572), (700, 552), (790, 556), (790, 712), (640, 710), (560, 706), (470, 700)], fill=255)
     ds.polygon([(705, 715), (860, 700), (880, 960), (705, 960)], fill=255)
     meer |= (np.asarray(see) > 0) & wolke
-    fest = Image.new('L', (W, H), 0); ImageDraw.Draw(fest).polygon([(470, 560), (720, 548), (720, 688), (640, 698), (470, 690)], fill=255)
+    fest = Image.new('L', (W, H), 0); ImageDraw.Draw(fest).polygon([(470, 606), (720, 594), (720, 688), (640, 698), (470, 690)], fill=255)
     meer |= np.asarray(fest) > 0                                   # Splittermeer: offen bis an die Nordküste der Glutsande
     # Beschriftungen der Vorlage (Ozean-Namen, Titel) sind kein Land
     schrift = Image.new('L', (W, H), 0); dsch = ImageDraw.Draw(schrift)
@@ -46,20 +48,21 @@ def main():
     meer |= np.asarray(m) > 0
     land = ~meer
     lab, n = ndimage.label(land)
-    weg = {lab[HOCHLANDE[1], HOCHLANDE[0]]}
-    for k, (cy, cx) in enumerate(ndimage.center_of_mass(land, lab, range(1, n + 1)), 1):
-        if cy < 330: weg.add(k)
-    for k in weg: land[lab == k] = False
+    insel_nr = lab[HOCHLANDE[1], HOCHLANDE[0]]; fest_nr = lab[720, 265]
+    assert insel_nr and insel_nr != fest_nr, 'Hochlande-Insel und Festland hängen zusammen'
     land = ndimage.binary_opening(land, iterations=1)
     lab2, n2 = ndimage.label(land); groesse = ndimage.sum(land, lab2, range(1, n2 + 1))
     for k, gr in enumerate(groesse, 1):
         if gr < 260: land[lab2 == k] = False                   # Krümel (Wolkenreste) weg, echte kleine Inseln bleiben
-    for k, (cy, cx) in enumerate(ndimage.center_of_mass(land, lab2, range(1, n2 + 1)), 1):
-        if cx > 450 and cy < 650 and groesse[k - 1] < 20000: land[lab2 == k] = False   # Küstenreste der Hochlande-Insel im Splittermeer
     # Gebirge: Kontrast in mittlerer Größe (die Bergzeichen), Baumpunkte vorher weichgezeichnet
     weich = ndimage.gaussian_filter(lum, 1.6); band = np.abs(weich - ndimage.gaussian_filter(weich, 6))
     berg = ndimage.gaussian_filter(band, 5); berg[wolke] *= 0.4
     q = np.percentile(berg[land], [50, 97]); berg = np.clip((berg - q[0]) / (q[1] - q[0]), 0, 1)
+    # Beschriftungen der Vorlage (Ländernamen) sind keine Berge und kein Wald: dort gilt der Mittelwert ringsum
+    for x0_, y0_, x1_, y1_ in [(352, 222, 436, 242), (462, 396, 664, 430), (188, 512, 302, 552), (206, 775, 322, 815), (402, 892, 556, 922), (604, 1122, 748, 1144), (542, 1258, 642, 1278)]:
+        ring = (slice(max(0, y0_ - 14), y1_ + 14), slice(max(0, x0_ - 14), x1_ + 14)); innen_ = (slice(y0_ - 4, y1_ + 4), slice(x0_ - 4, x1_ + 4))
+        berg[innen_] = np.median(berg[ring]); band[innen_] = np.median(band[ring])
+        for arr in (r, g, b, lum): arr[innen_] = np.median(arr[ring])
     trocken = np.clip(128 + (r - g) * 4.5 + (lum - 150) * 0.6, 0, 255); trocken = ndimage.gaussian_filter(np.where(wolke, 128, trocken), 6)
     wald = np.clip((150 - lum) * 4, 0, 255); wald[wolke] = 0; wald = ndimage.gaussian_filter(wald, 4)
     # Länder: nächster Name (Splitterlande-Umland um die heutige Karte)
@@ -69,6 +72,13 @@ def main():
         welches = np.where(dd < best, k, welches); best = np.minimum(best, dd)
     schnee = ndimage.binary_closing((a.min(-1) > 195) & (sat < 45), iterations=3) & (yy > 1225)   # das Weiße Ende: nur die Schneefläche ganz im Süden
     welches = np.where(schnee, 5, welches)
+    # die Hochlande-Insel (und Inselchen nördlich des Sunds): eigene Länder
+    lab3, _ = ndimage.label(land); insel = lab3 == lab3[HOCHLANDE[1], HOCHLANDE[0]]
+    ib = np.full((H, W), 1e12); iw = np.zeros((H, W), np.uint8)
+    for k, (lx, ly) in INSEL:
+        dd = (xx - lx) ** 2 + (yy - ly) ** 2; iw = np.where(dd < ib, k, iw); ib = np.minimum(ib, dd)
+    nord = (yy < 330) & ~insel
+    welches = np.where(insel | nord, iw, welches)
     klasse = np.where(land, welches, 0).astype(np.uint8)
     # Ausschnitt des Weltrahmens
     px0, py0 = int(SX + (X0 - 192) * PX), int(SY + (Y0 - 198) * PX); px1, py1 = int(SX + (X1 - 192) * PX), int(SY + (Y1 - 198) * PX)
@@ -77,7 +87,7 @@ def main():
     os.makedirs(os.path.dirname(ZIEL), exist_ok=True); Image.fromarray(rgba, 'RGBA').save(ZIEL)
     print(f'Vorlage {rgba.shape[1]} × {rgba.shape[0]} → {os.path.relpath(ZIEL, os.path.join(HIER, "..", ".."))}, Land: {(rgba[..., 0] > 0).mean():.0%}')
     if '--pruefen' in sys.argv:
-        farben = np.array([(30, 80, 110), (150, 160, 110), (60, 130, 60), (220, 180, 110), (190, 140, 80), (235, 240, 245), (90, 140, 70)], np.uint8)
+        farben = np.array([(30, 80, 110), (150, 160, 110), (60, 130, 60), (220, 180, 110), (190, 140, 80), (235, 240, 245), (90, 140, 70), (120, 150, 90), (215, 225, 235), (170, 150, 100)], np.uint8)
         v = farben[rgba[..., 0]].astype(np.float32); v *= (1 - 0.55 * rgba[..., 1:2] / 255)
         Image.fromarray(v.astype(np.uint8)).save(sys.argv[sys.argv.index('--pruefen') + 1])
 

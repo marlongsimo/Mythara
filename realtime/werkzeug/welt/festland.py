@@ -1,5 +1,5 @@
 """
-World Pipeline – das erste Festland (26.11.2026): nur Gelände und Höhen, keine Bäume, Orte, Wege oder Figuren.
+World Pipeline – das erste Festland und die Hochlande-Insel (26.11.2026): nur Gelände und Höhen, keine Bäume, Orte, Wege oder Figuren.
 Liest welt/festland/vorlage.png (aus festland_vorlage.py) und rechnet Feld für Feld über den ganzen Weltrahmen (Chunks 186–260 × 155–253),
 außer dem Rechteck der heutigen Karte (192–211 × 198–210). Ergebnis: 34 Regionen fl_<cx>_<cy> mit gelaende.txt, hoehen.json, leeren Objekten.
   Länder: Fahle Weiten (Tundra → Wiese, Wald), Umland der Splitterlande (Wiese, Wald, Moorwiese), Smaragdküste (Dschungel, Wiese),
@@ -75,6 +75,7 @@ G = np.full((H, W), 'M', dtype='<U1')
 breite_nord = (wy - 5700) / 450                                   # Fahle Weiten: Norden karg, Süden grün
 basis = np.full((H, W), '.', dtype='<U1')
 k1 = klasse == 1; k2 = klasse == 2; k3 = klasse == 3; k4 = klasse == 4; k5 = klasse == 5; k6 = (klasse == 6) | (klasse == 0)
+k7 = klasse == 7; k8 = klasse == 8; k9 = klasse == 9          # Hochlande-Insel: Hochlande, Frostkrone, Drachenarm
 basis[k1] = np.where(breite_nord[k1] + 0.6 * n1[k1] < 0.35, np.where(n2[k1] > 0.6, 'g', 'T'), np.where(wald[k1] + 0.2 * n2[k1] > 0.55, 'f', np.where(n2[k1] > 0.45, ',', '.')))
 basis[k6] = np.where(wald[k6] + 0.25 * n1[k6] > 0.5, 'f', np.where(n2[k6] > 0.55, 'v', np.where(n1[k6] > 0.35, ',', '.')))
 basis[k2] = np.where(wald[k2] + 0.35 * n1[k2] > 0.35, 'j', np.where(n2[k2] > 0.5, 'v', '.'))
@@ -82,15 +83,20 @@ dt = trocken + 0.12 * n1 + 0.05 * n2
 basis[k3] = np.where(dt[k3] > 0.62, 'u', np.where(dt[k3] > 0.5, 'y', np.where(wald[k3] > 0.45, 'f', '.')))
 basis[k4] = np.where(dt[k4] > 0.72, 'u', np.where(dt[k4] > 0.42, 'y', '.'))
 basis[k5] = np.where(n2[k5] > 0.5, 'g', 'S')
+# Hochlande: Grasland und Bergwald, im Norden karger; Frostkrone: Schnee und Fels, am Südrand Tundra; Drachenarm: trockene, felsige Halbinsel
+basis[k7] = np.where(wald[k7] + 0.25 * n1[k7] > 0.5, 'f', np.where(n2[k7] > 0.55, ',', np.where(breite_nord[k7] + 0.5 * n1[k7] < -0.9, 'T', '.')))
+sued8 = (wy - 5150) / 220 + 0.5 * n1
+basis[k8] = np.where(sued8[k8] > 0.8, np.where(n2[k8] > 0.4, 'g', 'T'), np.where(n2[k8] > 0.55, 'g', 'S'))
+basis[k9] = np.where(dt[k9] > 0.6, 'u', np.where(n2[k9] + 0.3 * n1[k9] > 0.3, 'g', np.where(wald[k9] > 0.45, '.', 'y')))
 # Gebirge: Felswände im Kern, Geröll an den Flanken (im Weißen Ende Schnee)
-bk = berg + 0.12 * n1 + 0.06 * n2
-basis = np.where(bk > 0.78, 'F', np.where(bk > 0.6, np.where(k5, 'S', 'g'), basis))
+bk = berg * np.where(k7, 1.35, np.where(k8 | k9, 1.15, 1.0)) + 0.12 * n1 + 0.06 * n2   # die Hochlande sind bergiger
+basis = np.where(bk > 0.78, 'F', np.where(bk > 0.6, np.where(k5 | k8, 'S', 'g'), basis))
 # kleine Seen (nur in den feuchten Ländern)
 see = (n2 > 0.82) & (n1 > 0.2) & (k1 | k6 | k2) & (e > 12)
 basis[see] = 'w'
 # Küste: Sand im Süden und Westen, Kies im kalten Norden
 kuestenbreite = 3.5 + 2.5 * n1
-strand = np.where(k1 | k5, 'g', 's')
+strand = np.where(k1 | k5 | k7 | k8, 'g', 's')
 G = np.where(land, np.where(e < kuestenbreite, strand, basis), 'M')
 # an der heutigen Karte: genau deren Rand, dann ausklingend
 nah = ~innen & (o < 4)
@@ -105,6 +111,10 @@ def flussX(y):
 tief = np.clip((AY0 - wy) / 80, 0, 1)                            # ab der Kartengrenze beginnt er zu mäandern
 mitte = flussX(wy) + tief * (38 * np.sin((AY0 - wy) / 95) + 14 * np.sin((AY0 - wy) / 31) - 20 * np.clip((AY0 - wy) / 600, 0, 1))
 nord = (wy < AY0) & (np.abs(wx - mitte) < 6.4 + 0.5 * np.sin((wy - 200 * C) / 3.7) + tief * 1.5) & (G != 'M')
+# er mündet an der ersten Küste nördlich der Karte (nicht weiter über den Sund auf die Insel)
+lab_f, _ = ndimage.label(nord | ((G == 'M') & False)); rand_y = AY0 - Y0 - 1
+start = set(np.unique(lab_f[rand_y - 2:rand_y + 1, :][lab_f[rand_y - 2:rand_y + 1, :] > 0]).tolist())
+nord = np.isin(lab_f, list(start)) if start else nord
 G[nord] = '~'
 # nach Süden: dem Lauf von Graufurt folgen, dann in weiten Bögen nach Osten zur Küste
 lauf = [(6731, 6752), (6736, 6800), (6770, 6860), (6850, 6905), (6960, 6930), (7080, 6990), (7200, 7010), (7330, 7060), (7470, 7080), (7600, 7090)]
@@ -139,8 +149,8 @@ hz = ndimage.gaussian_filter(hz, 1.2)
 ecken = np.zeros((H + 1, W + 1), np.float32); ecken[:-1, :-1] += hz; ecken[1:, :-1] += hz; ecken[:-1, 1:] += hz; ecken[1:, 1:] += hz; ecken /= 4
 
 # ───── in Regionen schneiden ─────
-NAMEN = {1: 'Die Fahlen Weiten', 2: 'Die Smaragdküste', 3: 'Die Glutsande', 4: 'Die Ockerlande', 5: 'Das Weiße Ende', 6: 'Das Grenzland'}
-BIOM = {1: 'tundra', 2: 'tropen', 3: 'wueste', 4: 'wueste', 5: 'schnee', 6: 'wiese'}
+NAMEN = {1: 'Die Fahlen Weiten', 2: 'Die Smaragdküste', 3: 'Die Glutsande', 4: 'Die Ockerlande', 5: 'Das Weiße Ende', 6: 'Das Grenzland', 7: 'Die Hochlande', 8: 'Die Frostkrone', 9: 'Der Drachenarm'}
+BIOM = {1: 'tundra', 2: 'tropen', 3: 'wueste', 4: 'wueste', 5: 'schnee', 6: 'wiese', 7: 'gebirge', 8: 'schnee', 9: 'kueste'}
 def stuecke(a, b, n):
     g = np.linspace(a, b, n + 1).round().astype(int); return list(zip(g[:-1], g[1:]))
 kacheln = []
@@ -161,7 +171,7 @@ for (xa, ya, xb, yb) in [tuple(int(v) for v in k) for k in kacheln]:
     if anteil < 0.04: name, biom = ('Das Splittermeer' if xa >= 212 and ya < 215 else 'Das Endlose Meer'), 'meer'
     else: k = int(np.bincount(kl[kl > 0]).argmax()); name, biom = NAMEN[k], BIOM[k]
     rid = f'fl_{xa}_{ya}'; d = os.path.join(WELT, 'regionen', rid); os.makedirs(d, exist_ok=True)
-    region = {'id': rid, 'name': name, 'untertitel': 'Das erste Festland – noch unbesiedelt', 'ursprung': [xa, ya], 'chunks': [xb - xa, yb - ya], 'biom': biom, 'stufe': 3, 'nahtlos': 'festland'}
+    region = {'id': rid, 'name': name, 'untertitel': ('Die Hochlande-Insel' if k in (7, 8, 9) else 'Das erste Festland') + ' – noch unbesiedelt' if anteil >= 0.04 else 'Offenes Meer', 'ursprung': [xa, ya], 'chunks': [xb - xa, yb - ya], 'biom': biom, 'stufe': 3, 'nahtlos': 'festland'}
     json.dump(region, open(os.path.join(d, 'region.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
     open(os.path.join(d, 'gelaende.txt'), 'w', encoding='utf8').write('\n'.join(''.join(z) for z in t) + '\n')
     open(os.path.join(d, 'objekte.json'), 'w', encoding='utf8').write('[\n]\n')
@@ -181,5 +191,7 @@ if '--vorschau' in sys.argv:
     bild = Image.fromarray(np.clip(farbe, 0, 255).astype(np.uint8)).resize((W // 2, H // 2), Image.LANCZOS)
     karte = os.path.normpath(os.path.join(WELT, '..', '..', 'echtzeit', 'welt', 'weltkarte.webp'))
     if os.path.exists(karte):
-        k = Image.open(karte).convert('RGB').resize(((AX1 - AX0) // 2, (AY1 - AY0) // 2), Image.LANCZOS); bild.paste(k, ((AX0 - X0) // 2, (AY0 - Y0) // 2))
+        k = Image.open(karte).convert('RGB'); s_ = k.width / (W / C)   # Weltkarte: Bildpunkte je Chunk
+        if k.width > (AX1 - AX0) // C * s_ + 1: k = k.crop((int((AX0 - X0) / C * s_), int((AY0 - Y0) / C * s_), int((AX1 - X0) / C * s_), int((AY1 - Y0) / C * s_)))
+        bild.paste(k.resize(((AX1 - AX0) // 2, (AY1 - AY0) // 2), Image.LANCZOS), ((AX0 - X0) // 2, (AY0 - Y0) // 2))
     bild.save(sys.argv[sys.argv.index('--vorschau') + 1]); print('Vorschau gespeichert')

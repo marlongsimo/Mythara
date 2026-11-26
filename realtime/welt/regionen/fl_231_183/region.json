@@ -1,7 +1,7 @@
 {
  "id": "fl_231_183",
- "name": "Das Splittermeer",
- "untertitel": "Das erste Festland – noch unbesiedelt",
+ "name": "Die Hochlande",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
  "ursprung": [
   231,
   183
@@ -10,7 +10,7 @@
   15,
   15
  ],
- "biom": "meer",
+ "biom": "gebirge",
  "stufe": 3,
  "nahtlos": "festland"
 }

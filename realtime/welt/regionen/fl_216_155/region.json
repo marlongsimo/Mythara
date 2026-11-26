@@ -1,7 +1,7 @@
 {
  "id": "fl_216_155",
- "name": "Das Splittermeer",
- "untertitel": "Das erste Festland – noch unbesiedelt",
+ "name": "Die Frostkrone",
+ "untertitel": "Die Hochlande-Insel – noch unbesiedelt",
  "ursprung": [
   216,
   155
@@ -10,7 +10,7 @@
   15,
   14
  ],
- "biom": "meer",
+ "biom": "schnee",
  "stufe": 3,
  "nahtlos": "festland"
 }
