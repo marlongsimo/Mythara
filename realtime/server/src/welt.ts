@@ -25,6 +25,7 @@ import { handwerkEinrichten, handwerkStart, handwerkStop, handwerkGlut, handwerk
 import { GEGENSTAENDE, VERBRAUCH, Verbrauch, fachG, anforderungFehlt } from "../../shared/gegenstaende";
 import { LAEDEN, LadenId, KAUF_WEIT, WAEHRUNG } from "../../shared/laeden";
 import { filtern } from "./wortfilter";
+import * as Sitz from "./sitz";
 /** Das Aussehen der Spieler je Konto (für die Kampfgebiete: dort zeigt der Server es den anderen Helden) */
 export const aussehenJe = new Map<string, Held>();
 
@@ -70,13 +71,9 @@ const zahl = (v: unknown, max = 20000) => typeof v === "number" && Number.isFini
 /** Chattext säubern: keine Steuerzeichen, keine spitzen Klammern, höchstens 160 Zeichen */
 export const saeubern = (t: unknown): string => String(t ?? "").replace(/[\u0000-\u001f\u007f-\u009f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
 const senden = (s: Spieler, m: object) => { if (s.ws.readyState === WebSocket.OPEN && s.ws.bufferedAmount < 262144) s.ws.send(JSON.stringify(m)); };
-/** Ein Konto spielt nur auf einem Gerät – wer zuerst da ist, bleibt: Ist das Konto auf einem anderen Gerät (andere Seitenkennung) noch aktiv
- *  (Verbindung offen und in den letzten 20 s Lebenszeichen – im Vordergrund schickt das Spiel spätestens alle 2 s seine Stelle), wird die neue Anmeldung abgelehnt.
- *  Ist das andere Gerät still (Hintergrund, Funkloch, abgestürzt), darf das neue übernehmen. */
-const AKTIV_MS = 20000;
-export function kontoBelegt(nutzer: string, geraet: unknown): boolean { const g = String(geraet || "").slice(0, 40), jetzt = Date.now();
-  for (const o of spieler) if (o.nutzer === nutzer && (!g || o.geraet !== g) && o.ws.readyState === WebSocket.OPEN && jetzt - o.zuletzt < AKTIV_MS) return true;
-  return false; }
+/** Ein Konto spielt nur auf einem Gerät: siehe sitz.ts (Kontosperre) */
+/** Abgelehnt, weil das Konto auf einem anderen Gerät ist: der Browser zeigt „Es ist aktuell schon ein Gerät in Riftmere“ (rest: Sekunden bis zur Freigabe nach einem Verbindungsabbruch) */
+export function belegtAbweisen(ws: WebSocket, rest: number | null): void { try { ws.close(4410, "bereits angemeldet" + (rest !== null ? ";rest=" + Math.ceil(rest / 1000) : "")); } catch { /* zu */ } }
 /** Heldenstufe eines Kontos hat sich im Kampf geändert (Skills): in der Welt übernehmen, damit Mitspieler und Spielerliste sie gleich sehen */
 export function stufeSetzen(nutzer: string, stufe: number): void { for (const s of spieler) if (s.nutzer === nutzer && s.stufe !== stufe) { s.stufe = stufe; s.geaendert = true; senden(s, { t: "stufe", stufe }); } }
 /** Hat der Empfänger o den Absender s blockiert? */
@@ -99,6 +96,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
         s = { id: naechste++, ws, nutzer: "", gast: true, a: a || undefined, name: "Gast " + (1000 + Math.floor(Math.random() * 9000)), held, stufe: 0, ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum: "", chat: [], geaendert: true, zuletzt: jetzt };
         clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: 0, ort, gast: true }); console.log("Welt: Gast in", ort, "·", spieler.size, "unterwegs"); return; }
       const nutzer = await H.nutzerAus(String(e.token || "")).catch(() => null); if (!nutzer) { ws.close(4401, "anmeldung ungueltig"); return; }
+      /* Ein Konto, ein Gerät: den Sitz sofort nehmen, noch vor den Abfragen – wer zuerst kommt, bleibt; das spätere Gerät wird abgewiesen */
+      { const g = Sitz.geraetVon(e.geraet), b = Sitz.belegt(nutzer, g); if (b.belegt || !Sitz.nehmen(nutzer, g, ws)) { console.log("Welt: Anmeldung abgelehnt – Konto ist auf einem anderen Gerät"); belegtAbweisen(ws, b.belegt ? b.rest : null); return; }
+        e.geraet = g; ws.once("close", (_c: number, grund: Buffer) => Sitz.los(ws, String(grund) === "abmelden")); }
+      if (ws.readyState !== WebSocket.OPEN) return; /* während der Anmeldung schon wieder zu */
       const [profil, aktiv, ep, stelle] = await Promise.all([
         H.sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>,
         H.sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => null) as Promise<{ held: string }[] | null>, H.epLesen(nutzer).catch(() => ({})), H.sb(`/rest/v1/rpg_echtzeit_position?user_id=eq.${nutzer}&select=region,x,y`).catch(() => []) as Promise<{ region: string; x: number | null; y: number | null }[]>]);
@@ -112,11 +113,11 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       if (eigen) aussehenJe.set(nutzer, eigen);
       if (!held) { held = HELDEN[String(e.held)] ? String(e.held) : "schildwaechter"; /* noch nie gewählt: der Wunsch des Spielers gilt als erste Wahl */
         if (aktiv) await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_held: held }) }).catch((x) => console.error("Held setzen:", (x as Error).message)); }
-      if (kontoBelegt(nutzer, e.geraet)) { console.log("Welt: Anmeldung abgelehnt – Konto ist auf einem anderen Gerät aktiv"); ws.close(4410, "bereits angemeldet"); return; }
-      for (const o of [...spieler]) if (o.nutzer === nutzer) { spieler.delete(o); try { o.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal in der Welt */
+      if (ws.readyState !== WebSocket.OPEN) return; /* während der Abfragen geschlossen (Neuladen): nicht als Geist hineinsetzen */
+      for (const o of [...spieler]) if (o.nutzer === nutzer) { spieler.delete(o); try { o.ws.close(4409, "anderswo angemeldet"); } catch { /* zu */ } } /* jede Person nur einmal in der Welt (hierher kommt nur dasselbe Gerät, etwa ein zweiter Tab – andere weist der Sitz ab) */
       const raum = typeof e.raum === "string" && /^[A-Z]{6}$/.test(e.raum) && H.gruppeHat(e.raum, nutzer) ? e.raum : "";
       s = { id: naechste++, ws, nutzer, gast: false, geraet: String(e.geraet || "").slice(0, 40) || undefined, a: eigen || undefined, name: (profil[0] && profil[0].handle) || "Wanderer", held, stufe: eigen && hl ? hl : stufeAusEp(Number((ep as Record<string, number>)[held]) || 0), ort, x: 0, y: 0, b: 0, l: 0, lp: 0, max: 0, raum, chat: [], geaendert: true, zuletzt: jetzt };
-      clearTimeout(frist); spieler.add(s); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
+      clearTimeout(frist); spieler.add(s); Sitz.drin(ws); senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort, festerHeld: aktiv !== null, ...(Array.isArray(stelle) && stelle[0] ? { pos: stelle[0] } : {}) });
       system(ort, `${s.name} ist da.`, s); console.log("Welt:", s.name, "in", ort, "·", spieler.size, "unterwegs");
       { const ich = s; void inventarLaden(H.sb, nutzer).then((iv) => { if (!iv || !spieler.has(ich)) return; senden(ich, { t: "inventar", inv: iv.inv }); ich.invAus = inventarHoeren(nutzer, (inv) => senden(ich, { t: "inventar", inv })); }); } /* das Inventar gehört dem Server (Migration 043) */
       senden(s, { t: "baeume", weg: gefaellte() }); /* Holzfällerei: welche Bäume gerade Stumpf sind */
@@ -233,7 +234,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
 /** 5-mal je Sekunde: jedem Spieler die anderen an seinem Ort melden (nur wenn sich etwas geändert hat, sonst alle 2 Sekunden) */
 let runde = 0;
 setInterval(() => { runde++; const jetzt = Date.now(), orte = new Map<string, Spieler[]>();
-  for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ */ try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } (orte.get(s.ort) || orte.set(s.ort, []).get(s.ort)!).push(s); }
+  for (const s of spieler) { if (jetzt - s.zuletzt > 5.5 * 60 * 1000) { /* Inaktivität: der Browser meldet nach 5 Minuten selbst ab (abmeldung.ts), der Server nach 5½ – das gibt das Konto frei */ Sitz.abmelden(s.ws); try { s.ws.close(1000, "ruhe"); } catch { /* zu */ } continue; } (orte.get(s.ort) || orte.set(s.ort, []).get(s.ort)!).push(s); }
   for (const liste of orte.values()) { const neu = liste.some((s) => s.geaendert); if (!neu && runde % 10) continue;
     const daten = liste.map((s) => ({ i: s.id, n: s.name, h: s.held, ...(s.a ? { a: s.a } : {}), s: s.stufe, x: s.x, y: s.y, b: s.b, l: s.l, ...(s.max ? { lp: s.lp, max: s.max } : {}) }));
     for (const s of liste) { s.geaendert = false; senden(s, { t: "spieler", liste: daten.filter((d) => d.i !== s.id), online: spieler.size }); } }
