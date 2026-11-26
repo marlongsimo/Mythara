@@ -136,6 +136,16 @@ export function kaufen(sb: Sb, nutzer: string, g: string, preis: number, waehrun
     if (k >= n) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n = n - k; }
   if (!platzFuer(nutzer, g)) { aufnehmen(sb, nutzer, waehrung, preis, false); return "Der Rucksack ist voll."; } /* Geld zurück (es lag eben noch drin, also passt es) */
   aufnehmen(sb, nutzer, g, 1, false); geaendert(sb, nutzer, e); return null; }
+/** An einen Händler verkaufen (#87/#88): n Stück aus Fach i für preis Splitter je Stück – alles oder nichts. Zurück: Fehlertext oder { n, splitter, g } */
+export function verkaufen(sb: Sb, nutzer: string, i: number, n: number, preis: (g: string, d?: Daten) => number | null): string | { g: string; n: number; splitter: number } {
+  const e = je.get(nutzer); if (!e) return "Kein Inventar."; if (!Number.isInteger(i) || i < 0 || i >= e.inv.rucksack.length) return "Diesen Gegenstand gibt es im Rucksack nicht.";
+  const f = e.inv.rucksack[i], g = fachG(f), d = fachD(f), p = preis(g, d); if (p === null || !(p > 0)) return "Das kauft dieser Händler nicht.";
+  const hat = fachN(f), k = Math.max(1, Math.min(hat, Math.floor(Number(n) || 1))), summe = k * p, G = GEGENSTAENDE.splitter;
+  /* passen die Splitter hinein? auf einen Stapel, in ein freies Fach oder in das Fach, das der Verkauf frei macht */
+  const raum = e.inv.rucksack.reduce((s, x) => s + (typeof x !== "string" && x.g === "splitter" && !x.d ? Math.max(0, (G.stapel || 1) - x.n) : 0), 0) + (RUCKSACK_PLAETZE - e.inv.rucksack.length + (k >= hat ? 1 : 0)) * (G.stapel || 1);
+  if (raum < summe) return "Dein Rucksack ist voll – für die Splitter ist kein Platz.";
+  if (k >= hat) e.inv.rucksack.splice(i, 1); else (f as { n: number }).n = hat - k;
+  einlegen(e, "splitter", summe); geaendert(sb, nutzer, e); return { g, n: k, splitter: summe }; }
 /** Einen Trank aus Fach i nehmen (eins vom Stapel). Zurück: die Trank-Art (VERBRAUCH) oder null */
 export function trankNehmen(sb: Sb, nutzer: string, i: number): string | null { const e = je.get(nutzer); if (!e) return null; const f = e.inv.rucksack[i]; if (f === undefined) return null; const G = GEGENSTAENDE[fachG(f)];
   if (!G || !G.trank) return null; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return G.trank; }

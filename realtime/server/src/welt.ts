@@ -8,6 +8,7 @@
  * Gemerkte Stelle: Spielerkonten melden mit „pos“ auch Weltfelder (wx, wy); beim Gehen (und alle zwei Minuten) speichert der Server sie
  * (rpg_echtzeit_position, Migration 039) und schickt sie beim nächsten Anmelden mit „ich“ (pos) zurück – auch auf einem anderen Gerät.
  */
+import { ladenVerkauf } from "./verkauf";
 import { arbeitPruefen, type Arbeit } from "../../shared/arbeit";
 import { Kanal, kanalRahmen } from "./kanal";
 import { WebSocket } from "ws";
@@ -206,6 +207,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
       else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
+    else if (e.t === "verkaufen") { /* #87/#88: an einen Händler verkaufen – nur was er führt (80 %) bzw. beim Trödler alles Handelbare (50 % des Grundwerts) */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Verkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; } const nutzerK = s.nutzer;
+      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id));
+      if ("fehler" in r) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); else { senden(s, { t: "verkauft", ...r }); senden(s, { t: "chat", kanal: "system", text: `Verkauft: ${r.n > 1 ? r.n + " × " : ""}${r.name} für ${r.splitter} Splitter.`, zeit: jetzt }); } }
     else if (e.t === "holz") { /* Holzfällerei (holz.ts): fällen, Kernschlag, aufhören */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = holzStart(s, e.id); if (f) senden(s, { t: "holz", tat: "nein", id: e.id, text: f }); }
       else if (e.tat === "kern") holzKern(s); else if (e.tat === "stop") holzStop(s); }
