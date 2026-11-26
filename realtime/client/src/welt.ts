@@ -5,12 +5,8 @@
  */
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { abmelden, kuerzlichAktiv, beimAbmelden, restAus } from "./abmeldung";
-import { Q1 } from "../../shared/quest01";
-import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
-import { Q2 } from "../../shared/quest02";
-import { Q3 } from "../../shared/quest03";
 import { QUESTS as QUESTS_B } from "../../shared/quests";
 import { neuErledigt, laeuft as laeuftB, lage as lageB, gueltig as gueltigB } from "../../shared/questbau";
 import { SKILL_NAME } from "../../shared/kampfwerte";
@@ -88,10 +84,10 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "stufe") { if (ich && typeof m.stufe === "number") ich.stufe = m.stufe; }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { const alt = questBekannt ? { q1: questJetzt as string, b: { ...questB } } : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand;
-      /* Stände aller Quests des Baukastens (b: id → Stand); ältere Server schicken nur q2/q3 */
-      const b = (m.b && typeof m.b === "object" ? m.b : { [Q2]: m.q2, [Q3]: m.q3 }) as Record<string, unknown>; questB = {}; for (const q of QUESTS_B) questB[q.id] = gueltigB(q, b[q.id]);
-      questBekannt = true; if (alt) questFortschritt(alt.q1, alt.b); window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "quests") { const alt = questBekannt ? { ...questB } : null;
+      /* Stände aller Quests (b: id → Stand, shared/quests.ts) */
+      const b = (m.b && typeof m.b === "object" ? m.b : {}) as Record<string, unknown>; questB = {}; for (const q of QUESTS_B) questB[q.id] = gueltigB(q, b[q.id]);
+      questPunkte = Math.max(0, Math.floor(Number(m.punkte)) || 0); questBekannt = true; if (alt) questFortschritt(alt); window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
@@ -130,18 +126,15 @@ export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /** Angemeldet mit Konto? null = der Server hat sich noch nicht gemeldet */
 export const mitKonto = (): boolean | null => (ich ? !ich.gast : null);
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
-let questJetzt: Stand = "", questB: Record<string, string> = {}, questBekannt = false;
-/** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
-export const questStand = (): Stand => questJetzt;
+let questB: Record<string, string> = {}, questBekannt = false, questPunkte = 0;
+/** Summe der Questpunkte (rpg_held.questpunkte, Migration 048) */
+export const questpunkte = (): number => questPunkte;
+/** bekannt: der Server hat die Stände geschickt (mit Konto) */
 export const questGeladen = (): boolean => questBekannt;
-/** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
-/** Stand einer Quest des Baukastens (shared/quests.ts) */
+/** Stand einer Quest (shared/quests.ts) */
 export const questStandB = (id: string): string => questB[id] || "";
-export const questStand2 = (): string => questStandB(Q2);
-export const questStand3 = (): string => questStandB(Q3);
-/** Fortschritt melden: erledigte Schritte (Quest 03) im Chat, Abschluss jeder Quest als Banner oben */
-function questFortschritt(alt1: string, alt: Record<string, string>): void {
-  if (questJetzt === "fertig" && alt1 !== "fertig") stufenBanner("Quest abgeschlossen: Die gesperrte Straße", "📜");
+/** Fortschritt melden: erledigte Schritte im Chat, Abschluss jeder Quest als Banner oben */
+function questFortschritt(alt: Record<string, string>): void {
   /* Quests des Baukastens: erledigte Schritte und neue Quest im Chat (Questobjekte melden sich selbst mit ihrem Text) */
   for (const q of QUESTS_B) { const a = alt[q.id] || "", n = questStandB(q.id);
     for (const x of neuErledigt(q, a, n)) if (x.ereignis.art !== "objekt") chatSystem(`Quest „${q.titel}“: ${x.text} – erledigt.`);
@@ -149,9 +142,9 @@ function questFortschritt(alt1: string, alt: Record<string, string>): void {
     if (n === "fertig" && a !== "fertig") stufenBanner(`Quest abgeschlossen: ${q.titel}`, "📜"); } }
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
-export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }
-export function questVerfolgt(id: string = Q1): boolean { return verfolgteQuest() === id; }
-export function questVerfolgen(an: boolean, id: string = Q1): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
+export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? "die_gesperrte_strasse" /* alter Merker der ersten Quest */ : ""; } catch { return ""; } }
+export function questVerfolgt(id: string): boolean { return verfolgteQuest() === id; }
+export function questVerfolgen(an: boolean, id: string): void { try { localStorage.setItem("ez_quest_verfolgt", an ? id : verfolgteQuest() === id ? "" : verfolgteQuest()); } catch { /* privat */ } window.dispatchEvent(new CustomEvent("ez-quest")); }
 /** Quest 02: Bruchstelle oder Rutenbündel benutzen (der Server prüft Stand und Abstand); Mooshocker untersucht */
 /** Holzfällerei: fällen („start“ mit Baum-id), Kernschlag („kern“), aufhören („stop“) – der Server prüft alles */
 /** Heim-Teleport beim Server anfragen: antwort(ok, Restzeit in ms, gast). Ohne Verbindung (oder ohne Antwort nach 3 s): null */

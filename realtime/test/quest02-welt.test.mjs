@@ -28,7 +28,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpg_held?")) return send(200, HELD[wer(req.url)] ? [HELD[wer(req.url)]] : []);
   if (req.url === "/rest/v1/rpc/rpg_held_inventar_setzen") { const a = JSON.parse(b); HELD[a.p_user].inventar = a.p_inventar; return send(200, true); }
   if (req.url === "/rest/v1/rpc/rpg_held_quest_setzen") { const a = JSON.parse(b); SETZEN.push(a); const q = HELD[a.p_user].quests; if ((q[a.p_quest] || {}).s === "fertig") return send(200, false); q[a.p_quest] = { s: a.p_stand }; return send(200, true); }
-  if (req.url === "/rest/v1/rpc/rpg_held_quest_abschluss") { const a = JSON.parse(b); const q = HELD[a.p_user].quests; if ((q[a.p_quest] || {}).s === "fertig") return send(200, false); q[a.p_quest] = { s: "fertig" }; ABSCHLUSS.push(a); return send(200, true); }
+  if (/^\/rest\/v1\/rpc\/rpg_held_quest_abschluss(_v2)?$/.test(req.url)) { const a = JSON.parse(b); a.v2 = req.url.endsWith("_v2"); if (a.v2 && (HELD[a.p_user].quests[a.p_quest] || {}).s !== "fertig") HELD[a.p_user].questpunkte = (HELD[a.p_user].questpunkte || 0) + Math.min(10, a.p_punkte || 0); const q = HELD[a.p_user].quests; if ((q[a.p_quest] || {}).s === "fertig") return send(200, false); q[a.p_quest] = { s: "fertig" }; ABSCHLUSS.push(a); return send(200, true); }
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true); /* Buchungen der Kampfzone (XP, Leben) */
   FEHLT.push(req.url); send(404, {}); }); }).listen(8799);
 const FEHLT = [];
@@ -36,7 +36,7 @@ const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...proce
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8789/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, q1: null, q2: null, texte: [], dialoge: [], chat: [], zurueck: null, inv: null, boden: [], warte: [] };
-  ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "quests") { s.q1 = m.q1; s.q2 = m.q2; } if (m.t === "qtext") s.texte.push(m.text); if (m.t === "dialog") s.dialoge.push(m); if (m.t === "inventar") s.inv = m.inv; if (m.t === "zurueck") s.zurueck = m; if (m.t === "boden") s.boden = m.liste; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
+  ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "quests") { s.q1 = (m.b || {}).die_gesperrte_strasse; s.q2 = (m.b || {}).osthof_der_stille_rain; } if (m.t === "qtext") s.texte.push(m.text); if (m.t === "dialog") s.dialoge.push(m); if (m.t === "inventar") s.inv = m.inv; if (m.t === "zurueck") s.zurueck = m; if (m.t === "boden") s.boden = m.liste; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text);
     for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
   ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(s); }); }); }
 const warte = (s, fn, ms = 3000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
@@ -49,7 +49,7 @@ const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); return
 const NPC2 = { brida: [6452.5, 6462.5], odo: [6546.5, 6441.5], wenzel: [6544.5, 6443.5] };
 const DINGE = { zaun1: [6556.5, 6428.5], zaun2: [6562.5, 6416.5], zaun3: [6560.5, 6409.5], rute1: [6543.5, 6437.5], rute2: [6551.5, 6435.5], rute3: [6559.5, 6431.5], rute4: [6566.5, 6426.5] };
 const stelle = async (s, x, y) => { sende(s, { t: "pos", x: 0, y: 0, wx: x, wy: y }); await new Promise((r) => setTimeout(r, 120)); };
-const q2warte = (s, soll) => warte(s, (m) => m.t === "quests" && m.q2 === soll, 1500);
+const q2warte = (s, soll) => warte(s, (m) => m.t === "quests" && (m.b || {}).osthof_der_stille_rain === soll, 1500);
 const ding = async (s, id) => { const [x, y] = DINGE[id]; await stelle(s, x + 1, y); const n = s.texte.length; sende(s, { t: "qding", id, x: x + 1, y }); await warte(s, (m) => m.t === "qtext"); return s.texte[n]; };
 try {
   const anna = await spieler("tok_anna_" + "x".repeat(30)); await warte(anna, (m) => m.t === "quests"); const ben = await spieler("tok_ben__" + "x".repeat(30)); await warte(ben, (m) => m.t === "quests");
@@ -97,6 +97,7 @@ try {
   const splitter0 = (HELD[A].inventar.rucksack || []).reduce((n, f) => n + (f && (f.g || f) === "splitter" ? (f.n || 1) : 0), 0);
   await stelle(anna2, ...NPC2.odo); await rede(anna2, "odo"); await sag(anna2, "odo", "wieder"); d = await sag(anna2, "odo", "lohn"); await q2warte(anna2, "fertig");
   check(d && d.ende && d.splitter === 20 && anna2.q2 === "fertig" && ABSCHLUSS.filter((a) => a.p_quest === "osthof_der_stille_rain").length === 1, "Abschluss bei Odo: 20 Splitter, Quest fertig");
+  { const ab = ABSCHLUSS.find((x) => x.p_user === A && x.p_quest === "osthof_der_stille_rain"); check(ab && ab.v2 && ab.p_punkte === 1 && HELD[A].questpunkte === 1, `Gebucht über rpg_held_quest_abschluss_v2 mit 1 Questpunkt (${HELD[A].questpunkte})`); }
   await new Promise((r) => setTimeout(r, 2500)); /* das Inventar wird verzögert gespeichert */
   const splitter1 = (anna2.inv && anna2.inv.rucksack || []).reduce((n, f) => n + (f && (f.g || f) === "splitter" ? (f.n || 1) : 0), 0); check(splitter1 - splitter0 >= 20, `Splitter im Rucksack (+${splitter1 - splitter0})`);
   await rede(anna2, "odo"); d = await sag(anna2, "odo", "lohn"); check(!d || d.ende, "Zweiter Abschluss: nichts"); check(ABSCHLUSS.filter((a) => a.p_quest === "osthof_der_stille_rain").length === 1, "Die Belohnung gibt es genau einmal");

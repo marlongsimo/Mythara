@@ -120,5 +120,6 @@ export const QUEST2: QuestDef = {
   },
   belohnungText: "Belohnung: 20 Splitter",
   belohnung: { splitter: 20 },
+  punkte: 1,
   alt,
 };

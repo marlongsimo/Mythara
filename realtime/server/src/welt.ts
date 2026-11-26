@@ -15,10 +15,7 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, questsB, dingTat, untersucht, betreten } from "./quests";
-import { Q2 } from "../../shared/quest02";
-import { Q3 } from "../../shared/quest03";
-import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte } from "./quests";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
@@ -135,8 +132,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       senden(s, { t: "baeume", weg: gefaellte() }); /* Holzfällerei: welche Bäume gerade Stumpf sind */
       senden(s, { t: "adern", weg: leereAdern() }); /* Bergbau: welche Adern gerade leer sind */
       senden(s, { t: "pflanzen", weg: abgeerntete() }); /* Handwerk: welche Flachs- und Hanfpflanzen abgeerntet sind */
-      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; const b = questsB(nutzer); senden(ich, { t: "quests", q1: q, q2: b[Q2], q3: b[Q3], b }); ich.questAus = questHoeren(nutzer, (n, nb) => senden(ich, { t: "quests", q1: n, q2: nb[Q2], q3: nb[Q3], b: nb }));
-        if (HINTER_DER_SPERRE.has(ich.ort) && !sperreOffen(q)) senden(ich, { t: "zurueck", x: VOR_DER_SPERRE[0], y: VOR_DER_SPERRE[1], text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." }); }); } /* Quests (Migration 045); hinter der Sperre nur mit Freigabe */
+      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", b: q, punkte: punkte(nutzer) }); ich.questAus = questHoeren(nutzer, (nb, p) => senden(ich, { t: "quests", b: nb, punkte: p }));
+        const sp = regionGesperrt(nutzer, ich.ort); if (sp && sp.zurueck) senden(ich, { t: "zurueck", x: sp.zurueck.x, y: sp.zurueck.y, text: sp.zurueck.text }); }); } /* Quests (Migration 045); gesperrte Regionen nur mit Freigabe (QuestDef.freigaben) */
       return; }
     s.zuletzt = jetzt;
     if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.geaendert = true;
@@ -220,7 +217,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const f = (await freundeVon(H, s.nutzer)).find((x) => x.handle === n); if (!s) return; if (!f) { nein(`${n} ist nicht in deiner Freundesliste.`); return; }
       const z = onlineKonto(f.user_id); if (!z) { nein(`${n} ist gerade nicht online.`); return; }
       if (!WELTREGIONEN.includes(z.ort) || z.wx === undefined || z.wy === undefined) { nein(`${n} ist gerade an einem Ort, an den kein Teleport führt.`); return; }
-      if (HINTER_DER_SPERRE.has(z.ort) && !sperreOffen(q1(s.nutzer))) { nein(`${gebietName(z.ort)} ist für dich noch nicht freigeschaltet – der Weg ist noch gesperrt.`); return; }
+      if (regionGesperrt(s.nutzer, z.ort)) { nein(`${gebietName(z.ort)} ist für dich noch nicht freigeschaltet – der Weg ist noch gesperrt.`); return; }
       if (kampfPruefer(f.user_id)) { nein(`${n} ist gerade im Kampf – versuch es gleich noch einmal.`); return; }
       senden(s, { t: "zufreund", ok: true, n, ort: z.ort, x: z.wx, y: z.wy }); }
     else if (e.t === "freundanfrage") { if (s.gast) return; const n = String(e.n || "").slice(0, 40), z = [...spieler].find((o) => !o.gast && o.name === n); freundeJe.delete(s.nutzer);

@@ -4,14 +4,15 @@
  *   · Werkstatt antippen: hingehen, Rezeptfenster (nach Gruppe, Level, Zutaten im Rucksack; 1 / 5 / 10 / Alle).
  *   · Beim Herstellen schlägt der Held mit dem Hammer (Amboss, Werkbank). Glut: kurz „Glut!“ antippen – eine Zutat gespart, 50 % mehr XP.
  */
+import { berufAn, beruf } from "../../../shared/berufe";
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
 import { questDef } from "../../../shared/quests";
 import { laeuft as laeuftB } from "../../../shared/questbau";
-import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, BERUF_HAND, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
+import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
 import { chatSystem, handwerkBitten, tafelZeigen, questStandB } from "../welt";
-import { berufDrop, skillStand } from "../skills";
+import { berufDrop, skillStand, BERUF_NAME } from "../skills";
 import { inventar } from "../inventar";
 import { benutzt, benutzen } from "../benutzen";
 import type { Welt3D } from "./motor";
@@ -35,7 +36,8 @@ export function imRucksack(g: string): number { const i = inventar(); let n = 0;
 const sorteDa = (z: { g: string[]; n: number }) => Math.max(...z.g.map(imRucksack));
 /** Wie oft das Rezept mit dem Rucksack geht */
 export const wieOft = (r: Rezept): number => Math.min(...r.zutaten.map((z) => Math.floor(sorteDa(z) / z.n)));
-const handLevel = () => skillStand((inventar().berufe || {})[BERUF_HAND] || 0).L;
+/** Beruf und Level dieser Werkstatt (Esse und Amboss: Schmieden, sonst Handwerk – shared/berufe.ts) */
+const handLevel = (st: StationId) => skillStand((inventar().berufe || {})[berufAn(st)] || 0).L;
 
 export class HandwerkWelt {
   /** gerade am Herstellen (Rezept-id) */ aktiv: string | null = null; private station: StationId | null = null; private glutBis = 0; private offen: StationId | null = null;
@@ -47,12 +49,12 @@ export class HandwerkWelt {
       o.scale.setScalar(1.6 / Math.max(0.01, s.x, s.z)); o.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
       o.position.set(S.x, this.u.motor.hoehe(S.x, S.y), S.y); this.u.motor.szene.add(o); this.baenke.set(S.id, o);
     } catch (e) { console.warn("Handwerk: Werkbank fehlt", e); } }
-  private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
+  private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; beruf?: string; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
     const f = this.figur, st = m.station || this.station, S = st && st !== "hand" ? STATIONEN[st] : null;
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
       if (r) chatSystem(`Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
-    else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); berufDrop(BERUF_HAND, m.xp || 0);
-      if (m.aufstieg) chatSystem(`Glückwunsch! Handwerk ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
+    else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
+      if (m.aufstieg) chatSystem(`Glückwunsch! ${BERUF_NAME[b] || "Handwerk"} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
     else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis("Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
     else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; this.werkHalt(); if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); else if (m.grund === "werkzeug") chatSystem("Ohne Hammer im Rucksack geht es nicht weiter."); }
@@ -67,7 +69,7 @@ export class HandwerkWelt {
   private hinweis(text: string, ms: number) { const el = document.getElementById("ez-dorf-hilfe"); if (!el) return; el.textContent = text; el.style.display = ""; setTimeout(() => { if (el.textContent === text) { el.textContent = ""; el.style.display = "none"; } }, ms); }
 
   /** Das Herstellfenster einer Werkstatt (wie in OSRS: Bilder nach Gruppe; antippen → Zutaten und Menge). nur: nur Rezepte mit diesem Gegenstand („Benutzen“) */
-  fenster(st: WeltStation, nur = ""): void { const S = STATIONEN[st], L = handLevel(), wz = WERKZEUG_AN[st], ohne = wz && imRucksack(wz) <= 0 ? wz : ""; this.offen = st;
+  fenster(st: WeltStation, nur = ""): void { const S = STATIONEN[st], L = handLevel(st), B = beruf(berufAn(st))!, wz = WERKZEUG_AN[st], ohne = wz && imRucksack(wz) <= 0 ? wz : ""; this.offen = st;
     if (!document.getElementById("ez-handwerk-stil")) { const s = document.createElement("style"); s.id = "ez-handwerk-stil"; s.textContent = `
 #ez-konto .tafel.handwerk { width: min(640px, 100%); text-align: left; max-height: 90vh; display: flex; flex-direction: column; }
 #ez-konto .handwerk .raster { overflow-y: auto; padding: 2px 4px 2px 0; flex: 1 1 auto; min-height: 120px; }
@@ -95,7 +97,7 @@ export class HandwerkWelt {
     const ding = (r: Rezept) => { const offen = L >= r.level, n = wieOft(r), G = GEGENSTAENDE[r.ergebnis];
       return `<button type="button" class="ding ${!offen ? "zu" : n > 0 && !ohne ? "kann" : "fehlt"}" data-r="${r.id}" title="${esc(G ? G.name : r.ergebnis)} – Level ${r.level}" aria-label="${esc(G ? G.name : r.ergebnis)}">${bild(r.ergebnis)}<span class="lv">${r.level}</span></button>`; };
     const nurName = nur && GEGENSTAENDE[nur] ? GEGENSTAENDE[nur].name : "";
-    const f = tafelZeigen("handwerk", `<div class="skopf"><img class="skillbild" src="../img/objekte3d/skilling/symbole/handwerk_klein.webp" alt="" width="40" height="40"><div><h2>${S.name}</h2><small>${nurName ? `${esc(nurName)} benutzen · ` : ""}${S.tun} · Handwerk Level ${L}${ohne ? ` · <b style="color:#e07a6a">ohne ${esc(GEGENSTAENDE[ohne].name)}</b>` : ""}</small></div></div><div class="zier"></div>
+    const f = tafelZeigen("handwerk", `<div class="skopf"><img class="skillbild" src="../${B.symbolKlein}" alt="" width="40" height="40"><div><h2>${S.name}</h2><small>${nurName ? `${esc(nurName)} benutzen · ` : ""}${S.tun} · Handwerk Level ${L}${ohne ? ` · <b style="color:#e07a6a">ohne ${esc(GEGENSTAENDE[ohne].name)}</b>` : ""}</small></div></div><div class="zier"></div>
       <div class="raster">${[...gruppen].map(([g, liste]) => `<h3>${esc(g)}</h3><div class="gitter">${liste.map(ding).join("")}</div>`).join("")}</div>
       <div class="info"><small>Tippe ein Bild an: Zutaten und wie viele du herstellen willst.</small></div>`, () => { this.offen = null; });
     const tafel = f.querySelector(".tafel") as HTMLElement, info = tafel.querySelector(".info") as HTMLElement;
@@ -103,7 +105,7 @@ export class HandwerkWelt {
       tafel.querySelectorAll(".ding.wahl").forEach((x) => x.classList.remove("wahl")); tafel.querySelector(`.ding[data-r="${r.id}"]`)?.classList.add("wahl");
       const zut = r.zutaten.map((z) => { const da = sorteDa(z), g = z.g.find((x) => imRucksack(x) >= z.n) || z.g[0]; return `<span>${bild(g)}<i class="${da >= z.n ? "da" : "nicht"}">${da}/${z.n}</i> ${esc(z.g.map((x) => (GEGENSTAENDE[x] ? GEGENSTAENDE[x].name : x)).join(" / "))}</span>`; }).join("");
       info.innerHTML = `<div class="kopfzeile"><b>${esc(G ? G.name : r.ergebnis)}</b><small>Level ${r.level} · ${r.xp} XP je Stück · ${r.ticks} Ticks</small></div><div class="zeile"><div class="zut">${zut}</div>
-        ${!offen ? `<small class="hinweis">Braucht Handwerk ${r.level}.</small>` : ohne ? `<small class="hinweis">Braucht einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack.</small>` : n <= 0 ? `<small class="hinweis">Zutaten fehlen.</small>` : `<div class="menge">${[1, 5, 10].filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}</div>`; };
+        ${!offen ? `<small class="hinweis">Braucht ${B.name} ${r.level}.</small>` : ohne ? `<small class="hinweis">Braucht einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack.</small>` : n <= 0 ? `<small class="hinweis">Zutaten fehlen.</small>` : `<div class="menge">${[1, 5, 10].filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}</div>`; };
     tafel.addEventListener("click", (e) => { const t = e.target as HTMLElement, d = t.closest(".ding") as HTMLElement | null;
       if (d) { e.stopPropagation(); const r = rezept(d.dataset.r!); if (r) zeigen(r); return; }
       const b = t.closest('[data-t="hw"]') as HTMLElement | null; if (!b) return; e.stopPropagation();

@@ -19,9 +19,15 @@ export interface Dialog { npc: string; name: string; zeilen: Zeile[]; antworten:
 /** Eine Zeile im Gespräch: Text der Figur, oder { wer, text } für andere Sprecher („Du“, eine zweite Wache) */
 export type Text = string | Zeile;
 
+/** So nah muss man stehen, um zu reden (Felder) */
+export const REDE_WEIT = 3.5;
 /** Eine Figur der Quest (Weltfelder) */
 export interface QuestFigur { id: string; name: string; modell: string; x: number; y: number; blick: [number, number];
-  /** Gesprächsweite (Felder), sonst REDE_WEIT */ weit?: number; /** geht umher (Modell des Wanderers in der Welt, z. B. der Bürgermeister im Rathaus) */ wandert?: string }
+  /** Gesprächsweite (Felder), sonst REDE_WEIT */ weit?: number; /** geht umher (Modell des Wanderers in der Welt, z. B. der Bürgermeister im Rathaus) */ wandert?: string;
+  /** tritt beiseite, wenn (z. B. die Wachen, sobald der Weg frei ist): um dx/dy versetzt, mit neuer Blickrichtung */ beiseite?: { wenn: Bed; dx: number; dy: number; blick: [number, number] };
+  /** läuft dem Spieler in dieser Region entgegen und spricht ihn an, solange die Bedingung gilt (z. B. Jori beim ersten Besuch) */ kommt?: { region: string; wenn: Bed } }
+/** Baumstamm-Sperre (gesperrte Felder x0, y0, x1, y1; Stämme: Mitte x, y, Länge, Drehung) – offen nach QuestDef.freigaben[id] */
+export interface Schranke { id: string; feld: [number, number, number, number]; staemme: [number, number, number, number][] }
 
 /** Ein Questobjekt in der Welt (Zaun, Rutenbündel …): Antippen → untersuchen / aufheben; erledigt einen Schritt */
 export interface QuestObjekt { id: string; name: string; x: number; y: number; /** wie der Browser es zeichnet */ modell: string; tat: "untersuchen" | "aufheben";
@@ -51,7 +57,7 @@ export interface Schritt {
   /** Schritte einer Gruppe erscheinen im Questlog als ein Satz (der log des ersten offenen) */ gruppe?: string;
   /** erst, wenn diese Schritte erledigt sind */ nach?: string[];
   /** wohin der Pfeil zeigt: Weltfeld, Figur-ID oder benannte Stelle (orte beim Aufruf, z. B. "esse") */ wo?: [number, number] | string;
-  /** diese Figur wartet auf den Spieler („!“ über ihr), solange der Schritt möglich ist */ bei?: string;
+  /** diese Figur(en) wartet auf den Spieler („!“ über ihr), solange der Schritt möglich ist */ bei?: string | string[];
 }
 
 /** Bedingung (alle Teile müssen gelten) */
@@ -96,7 +102,7 @@ export interface Sperre { wenn: Bed; text: string }
 /** Voraussetzung (Questlog: grün / rot) */
 export interface Voraussetzung { text: string; wenn: Bed }
 /** Lohn beim Abschluss – alles in einer Buchung, genau einmal (Kampf-XP über rpg_held_quest_abschluss, danach Splitter und Gegenstände) */
-export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; splitter?: number; gegenstaende?: { g: string; n?: number }[] }
+export interface Belohnung { xp?: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>; /** Berufe-XP (shared/berufe.ts) */ berufe?: Record<string, number>; splitter?: number; gegenstaende?: { g: string; n?: number }[] }
 
 export interface QuestDef {
   id: string; titel: string; ort: string;
@@ -115,6 +121,11 @@ export interface QuestDef {
   /** Text für das Questlog */ belohnungText: string;
   belohnung?: Belohnung;
   /** Stände aus der Zeit vor dem Baukasten übersetzen (null = unbekannt) */ alt?: (s: string) => string | null;
+  /** Einführung: Marker und Pfeil auch ohne Verfolgen, solange die Quest nicht angenommen ist */ einfuehrung?: boolean;
+  /** Baumstamm-Sperren in der Welt (je Spieler) */ schranken?: Schranke[];
+  /** Sperre (Schranke-ID) oder Region → offen, wenn eine der Bedingungen gilt. Gilt gleich auf dem Server (Zurückschicken, Teleport) und im Browser (Stämme, Gehraster). */
+  freigaben?: Record<string, Bed[]>;
+  /** wohin der Server zurückschickt, wer ohne Freigabe in einer gesperrten Region steht */ zurueck?: { x: number; y: number; text: string };
 }
 
 /* ───────── Stand ───────── */
@@ -246,12 +257,15 @@ export const neuErledigt = (q: QuestDef, alt: string, neu: string): Schritt[] =>
 export function ziel(q: QuestDef, s: string, orte: Record<string, [number, number]> = {}): string | [number, number] | null { const l = lage(q, s);
   if (l.phase === "neu") return q.geber; if (l.phase === "fertig") return null; if (l.bits === alleBits(q)) return q.abgabe || q.geber;
   const n = naechster(q, s); if (!n) return q.abgabe || q.geber;
-  if (!n.wo) { const e = n.ereignis, O = e.art === "objekt" ? (q.objekte || []).find((o) => o.id === e.id) : undefined; return O ? [O.x, O.y] : n.bei || q.geber; }
+  if (!n.wo) { const e = n.ereignis, O = e.art === "objekt" ? (q.objekte || []).find((o) => o.id === e.id) : undefined; return O ? [O.x, O.y] : beiListe(n)[0] || q.geber; }
   if (Array.isArray(n.wo)) return n.wo; return orte[n.wo] ? orte[n.wo] : n.wo; }
 /** Zeichen über einer Figur: „!“ (Quest zu haben / ein Schritt wartet bei ihr), „?“ (Abgabe), sonst null */
+const beiListe = (x: Schritt): string[] => (x.bei === undefined ? [] : Array.isArray(x.bei) ? x.bei : [x.bei]);
 export function zeichen(q: QuestDef, s: string, npc: string): "!" | "?" | null { const l = lage(q, s);
   if (l.phase === "neu") return npc === q.geber ? "!" : null; if (l.phase === "fertig") return null;
   if (l.bits === alleBits(q)) return npc === (q.abgabe || q.geber) ? "?" : null;
-  return moeglichListe(q, s).some((x) => x.bei === npc) ? "!" : null; }
+  return moeglichListe(q, s).some((x) => beiListe(x).includes(npc)) ? "!" : null; }
+/** Ist diese Sperre / Region für den Spieler offen? undefined: die Quest regelt sie nicht */
+export function frei(q: QuestDef, s: string, id: string, k: Kontext = OHNE): boolean | undefined { const L = q.freigaben && q.freigaben[id]; return L ? L.some((b) => gilt(q, s, b, k)) : undefined; }
 /** Voraussetzungen mit erfüllt / nicht erfüllt */
 export const voraussetzungen = (q: QuestDef, s: string, k: Kontext = OHNE): { text: string; ok: boolean }[] => (q.voraussetzungen || []).map((v) => ({ text: v.text, ok: gilt(q, s, v.wenn, k) }));

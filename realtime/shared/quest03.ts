@@ -1,7 +1,7 @@
 /*
  * Mythara – Quest 03 „Der Säbel des Waldgottes“ (Nordwald, 25.11.2026): Einführung in die Berufe. Der Förster Hartwig schickt den Spieler
  * den Baum des Waldgottes fällen (Holzfällerei), den Waldstein abbauen (Bergbau), ihn an der Esse schmelzen und am Amboss mit dem Holz
- * zum Waldsäbel schmieden (Handwerk). Jeder Schritt gibt die XP seines Berufs; der Lohn ist der Säbel selbst (shared/gegenstaende.ts waldsaebel).
+ * zum Waldsäbel schmieden (Schmieden). Jeder Schritt gibt die XP seines Berufs; der Lohn ist der Säbel selbst (shared/gegenstaende.ts waldsaebel).
  * Nebenbei erzählt der Förster, was die Splitter sind: Scherben, die Wesen verändern und stärker machen – nicht besser.
  *
  * Seit 26.11.2026 eine Datei des Quest-Baukastens (shared/questbau.ts): nur Daten, kein eigener Code. Stand wie bisher „auftrag_N“
@@ -24,7 +24,8 @@ export const QUEST3: QuestDef = {
   logNeu: "Förster Hartwig steht am Waldweg, gleich westlich der Waldmark, wo der Nordwald beginnt. Er sucht jemanden, der ihm hilft.",
   logFertig: "Du hast den Waldsäbel geschmiedet. Er trifft, was die Splitter verändert haben, härter – Waldgolems und Mooshocker.",
   logAbgabe: "Der Waldsäbel ist fertig. Zeig ihn Förster Hartwig am Waldweg westlich der Waldmark.",
-  belohnungText: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Handwerk",
+  punkte: 1,
+  belohnungText: "Belohnung: der Gesegnete Waldsäbel (untauschbar, ab Geschick 5, +15 % Schaden gegen Waldwesen) und XP in Holzfällerei, Bergbau und Schmieden",
   figuren: [{ id: "foerster", name: F, modell: "npc.foerster", x: 6362.5, y: 6452.5, blick: [0, 1] }],
   schritte: [
     { id: "holz", text: "Den Baum des Waldgottes fällen", ereignis: { art: "sammeln", ziel: "waldgott" }, wo: [6350.5, 6442.5],
@@ -70,7 +71,7 @@ export const QUEST3: QuestDef = {
         "Und der Waldstein ist das Gegenstück: kühl, grün, still. Die Splitter gleiten an beiden ab wie Regen an Wachs.", "Zusammen ergeben sie eine Klinge, die trifft, was die Splitter verändert haben. Als würde der Wald zurückschlagen."] } }] },
       { id: "hilfe", text: "Wie war das noch mal?", wenn: LAEUFT, folge: [{ f: { weiter: true, zeilen: ["Der Reihe nach:",
         "Mit dem Beil einen Ast vom Baum des Waldgottes, nordwestlich im Hain. Das ist Holzfällerei.", "Mit der Spitzhacke ein Stück vom Waldstein, nordöstlich von hier. Das ist Bergbau.",
-        "In der Schmiede der Waldmark, östlich: an der Esse den Stein zu einem Barren schmelzen, dann am Amboss Barren und Holz zum Säbel schmieden. Das ist Handwerk – und dafür brauchst du einen Hammer im Rucksack.",
+        "In der Schmiede der Waldmark, östlich: an der Esse den Stein zu einem Barren schmelzen, dann am Amboss Barren und Holz zum Säbel schmieden. Das ist Schmieden – und dafür brauchst du einen Hammer im Rucksack.",
         "Dann bring mir den Säbel. Und jeder Schritt lehrt dich etwas – das wirst du merken."] } }] },
       { id: "annehmen", text: "Kann ich dir helfen? (Quest annehmen)", wenn: NEU, folge: [{ f: { start: true, geben: WERKZEUG, zeilen: ["Du? Hm. Du hast ruhige Hände. Das reicht.",
         "Nordwestlich von hier, im Hain, steht der Baum des Waldgottes – der mit den leuchtenden Adern. Nimm dir einen Ast. Er lässt es zu, wenn ich dich schicke.",
@@ -83,7 +84,7 @@ export const QUEST3: QuestDef = {
         "Er gehört dir – und nur dir. Kein Händler wird ihn kaufen, und in fremden Händen ist er nur ein Stück Metall.",
         "Gegen Waldgolems und Mooshocker beißt er tiefer als jede andere Klinge deiner Stufe. Und wenn du mehr Splitter findest … denk an die Eichen. Stärker ist nicht dasselbe wie besser."] } }] },
     ] } },
-  /* Baum und Waldstein (Sammeln) und Esse/Amboss (Handwerk): nur mit dem Auftrag, jeweils solange der Schritt noch offen ist */
+  /* Baum und Waldstein (Sammeln) und Esse/Amboss (Schmieden): nur mit dem Auftrag, jeweils solange der Schritt noch offen ist */
   sperren: {
     sammeln: {
       waldgott: [{ wenn: FERTIG, text: "Der Baum hat dir gegeben, was du brauchtest. Die Adern unter der Rinde leuchten ruhig." },

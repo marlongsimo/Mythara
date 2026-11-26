@@ -1,7 +1,7 @@
 /* Prüfer für alle Quests des Baukastens (shared/questbau.ts, Fahrplan Phase 1): jede Quest-Datei wird auf Fehler geprüft –
    Verweise, Erreichbarkeit, Begrüßung in jedem Stand, Abschluss möglich, Stände passen in die Datenbank. Dazu Quest 3 Schritt für Schritt.
    Aufruf: node test/questbau.test.mjs (nach node build.mjs) */
-import { QB, QUESTS, QUEST2, QUEST3, REZEPTE, weltRegionBei } from "./sim.gebaut.mjs";
+import { QB, QUESTS, QUEST1, QUEST2, QUEST3, REZEPTE, weltRegionBei } from "./sim.gebaut.mjs";
 let ok = true; const check = (b, t) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) ok = false; };
 check(QUESTS.length >= 2 && new Set(QUESTS.map((q) => q.id)).size === QUESTS.length, `Gemeinsame Questliste (shared/quests.ts): ${QUESTS.map((q) => q.id).join(", ")}`);
 
@@ -22,7 +22,7 @@ for (const q of QUESTS) {
   const oIds = (q.objekte || []).map((o) => o.id); if (new Set(oIds).size !== oIds.length) fehler.push("Objekt-IDs doppelt");
   for (const o of q.objekte || []) { if (!weltRegionBei(o.x, o.y)) fehler.push(`${o.id}: liegt außerhalb der Welt`); if (!q.schritte.some((x) => x.ereignis.art === "objekt" && x.ereignis.id === o.id)) fehler.push(`${o.id}: kein Schritt dazu`); o.sonst.forEach((p, i) => bedPruefen(p.wenn, `Objekt ${o.id} ${i}`)); (o.heil || []).forEach((b) => bedPruefen(b, `Objekt ${o.id} heil`)); }
   for (const x of q.schritte) { if (x.ereignis.art === "objekt" && !oIds.includes(x.ereignis.id)) fehler.push(`${x.id}: Objekt ${x.ereignis.id} fehlt`);
-    if (x.bei && !q.figuren.some((f) => f.id === x.bei)) fehler.push(`${x.id}: bei unbekannter Figur ${x.bei}`);
+    for (const b of [].concat(x.bei || [])) if (!q.figuren.some((f) => f.id === b)) fehler.push(`${x.id}: bei unbekannter Figur ${b}`);
     if (x.ereignis.art === "antwort" && !Object.values(q.dialoge).some((D) => D.optionen.some((o) => o.folge.some((v) => (v.f.erledige || []).includes(x.id))))) fehler.push(`${x.id}: keine Antwort erledigt ihn`); }
   for (const [n, b] of Object.entries(q.beute || {})) bedPruefen(b, `Beute ${n}`); (q.voraussetzungen || []).forEach((v, i) => bedPruefen(v.wenn, `Voraussetzung ${i}`));
   for (const [npc, D] of Object.entries(q.dialoge)) {
@@ -57,7 +57,8 @@ for (const q of QUESTS) {
   for (let runde = 0; runde < q.schritte.length + 1; runde++) for (const S of q.schritte) { if (!QB.moeglich(q, s, S.id)) continue;
     if (S.ereignis.art === "objekt") { const r = QB.objekt(q, s, S.ereignis.id, k0); s = r.stand; continue; }
     if (S.ereignis.art !== "antwort") { for (let i = 0; i < (S.anzahl || 1); i++) s = QB.ereignis(q, s, melden(S.ereignis)); continue; }
-    for (const npc of Object.keys(q.dialoge)) { const d = QB.dialog(q, npc, s, k0); const a = d && d.antworten.find((x) => { const f = QB.antwort(q, npc, s, x.id, k0); return f && (f.erledige || []).includes(S.id); }); if (a) { s = QB.nachFolge(q, s, QB.antwort(q, npc, s, a.id, k0)); break; } } }
+    /* in jeder Lage des Spielers (z. B. mit dem Schriftstück im Rucksack) */
+    suche: for (const k of [k0, kHat, ...lagen]) for (const npc of Object.keys(q.dialoge)) { const d = QB.dialog(q, npc, s, k); const a = d && d.antworten.find((x) => { const f = QB.antwort(q, npc, s, x.id, k); return f && (f.erledige || []).includes(S.id); }); if (a) { s = QB.nachFolge(q, s, QB.antwort(q, npc, s, a.id, k)); break suche; } } }
   check(QB.lage(q, s).bits === (1 << q.schritte.length) - 1, `Alle Schritte über ihre Ereignisse erreichbar (${s})`);
   const wer = q.abgabe || q.geber, abg = QB.dialog(q, wer, s, kHat), abschluss = abg && abg.antworten.find((a) => { const f = QB.antwort(q, wer, s, a.id, kHat); return f && f.abschluss; });
   check(Boolean(abschluss), `Abgabe möglich: „${abschluss ? abschluss.text : "?"}“`);
@@ -103,6 +104,22 @@ console.log("Quest 2 Schritt für Schritt:");
   check(QB.dialog(q, "wenzel", "auftrag_1023_1", k).zeilen.length === 2 && QB.dialog(q, "wenzel", "auftrag_1023", k).zeilen.length === 1, "Wenzel hat's gesehen, sobald ein Mooshocker besiegt ist");
   check(QB.nachFolge(q, "", QB.antwort(q, "brida", "", "spaeter", k)) === "angeboten" && QB.dialog(q, "brida", "angeboten", k).antworten.some((a) => a.id === "annehmen"), "„Jetzt nicht.“ → angeboten, annehmen geht weiter");
   check(q.belohnung.splitter === 20 && !q.dialoge.odo.optionen.find((o) => o.id === "lohn").folge[0].f.geben, "Lohn (20 Splitter) kommt aus belohnung – erst nach der Buchung");
+}
+console.log("Quest 1 Schritt für Schritt:");
+{ const q = QUEST1, k = { hat: () => false, verloren: () => false }, mit = { hat: (g) => g === "hinweispergament", verloren: () => false };
+  const alt = { "": "", angeboten: "angeboten", angenommen: "auftrag_0", auftrag: "auftrag_1", osthof: "auftrag_3", wachen: "auftrag_7", beweis: "auftrag_15", bestaetigt: "auftrag_31", frei: "auftrag_63", fertig: "fertig", quatsch: "" };
+  check(Object.entries(alt).every(([a, n]) => QB.gueltig(q, a) === n), "Alte Stände (angeboten … frei) werden richtig übersetzt");
+  const w = QB.gueltig(q, "wachen"); check(QB.questlog(q, w).startsWith("Die Wachen bestätigen die Überfälle") && QB.gilt(q, w, q.beute.einsteigerquest), "Alter Stand „wachen“: Questlog „Lager suchen“, Pergament kann fallen");
+  check(!QB.gilt(q, QB.gueltig(q, "osthof"), q.beute.einsteigerquest) && !QB.gilt(q, QB.gueltig(q, "beweis"), q.beute.einsteigerquest), "Pergament fällt nur im Abschnitt „wachen“");
+  check(QB.frei(q, QB.gueltig(q, "auftrag"), "kreuzung") === false && QB.frei(q, QB.gueltig(q, "osthof"), "kreuzung") === true, "Kreuzung öffnet bei „osthof“");
+  check(["strasse", "westmark", "osthang", "weidenhain", "rabenmoor", "obstwiesen"].every((id) => QB.frei(q, QB.gueltig(q, "bestaetigt"), id) === false && QB.frei(q, QB.gueltig(q, "frei"), id) === true && QB.frei(q, "fertig", id) === true), "Straße, Westmark, Osthang und Weidenhain/Rabenmoor/Obstwiesen erst nach „durch“ frei");
+  check(QB.frei(q, "", "waldmark") === undefined, "Andere Regionen regelt die Quest nicht");
+  check(QB.dialog(q, "hagan", w, mit).antworten.map((a) => a.id).join() === "zeigen" && QB.nachFolge(q, w, QB.antwort(q, "hagan", w, "zeigen", mit)) === "auftrag_31", "Pergament schon vor dem Lager gefunden: Hagan nimmt es gleich (beweis + vorzeigen)");
+  check(QB.antwort(q, "hagan", w, "zeigen", mit).nehmen[0].g === "hinweispergament" && QB.antwort(q, "hagan", w, "zeigen", k) === null, "Vorzeigen nimmt das Pergament – ohne Pergament gibt es die Antwort nicht");
+  const d = QB.dialog(q, "tilda", QB.gueltig(q, "osthof"), k); check(d.zeilen.some((z) => z.wer === "Tilda") && d.zeilen.some((z) => z.wer === "Raban") && d.zeilen.some((z) => z.wer === "Du"), "Wachen: zweite Sprecherin und „Du“ im selben Gespräch");
+  check(QB.zeichen(q, "", "jori") === "!" && QB.zeichen(q, "auftrag_3", "tilda") === "!" && QB.zeichen(q, "auftrag_63", "othmar") === "?", "Zeichen: Jori ! · Wachen ! · Othmar ?");
+  check(QB.nachFolge(q, "", { zeilen: [], anbieten: true }) === "angeboten" && QB.dialog(q, "jori", "angeboten", k).antworten.some((a) => a.id === "annehmen"), "Ansprechen bietet an, Annehmen geht später");
+  check(q.belohnung.xp.defense === 200 && q.belohnung.xp.lp === 100, "Belohnung wie bisher (150 je Kampfskill, 100 LP, 200 Defense)");
 }
 console.log("Bausteine (Test-Auftrag, nicht im Spiel):");
 { const q = { id: "test", titel: "T", ort: "", start: "", logNeu: "neu", logFertig: "fertig", logAbgabe: "abgabe", geber: "a", figuren: [{ id: "a", name: "A", modell: "", x: 0, y: 0, blick: [0, 1] }],

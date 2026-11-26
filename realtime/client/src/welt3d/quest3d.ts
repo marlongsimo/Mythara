@@ -1,17 +1,16 @@
 /*
- * Mythara – Quest 01 „Die gesperrte Straße“ in der 3D-Welt (shared/quest01.ts): die Figuren (Jori, Fenna, Raban, Tilda, Othmar; Hagan ist der umhergehende
- * Bürgermeister im Rathaus) mit Namen und Questmarker, Jori läuft beim ersten Besuch auf den Spieler zu, Baumstämme an den drei Sperren,
- * die persönliche Sperre im Gehraster (für jeden Spieler nach seinem eigenen Stand) und das Antippen zum Reden.
+ * Riftmere – Quests in der 3D-Welt, alles aus den Quest-Daten (shared/quests.ts, shared/questbau.ts): Figuren mit Namen und Questmarker
+ * (wer umhergeht, z. B. der Bürgermeister im Rathaus, nur aus der Nähe), Figuren, die dem Spieler entgegenlaufen (kommt) oder beiseitetreten (beiseite),
+ * Baumstamm-Sperren (schranken/freigaben) samt persönlicher Sperre im Gehraster, Questobjekte, Pfeil und Minikarten-Marke, Antippen zum Reden.
  * Alles, was man sieht, richtet sich nach dem eigenen Stand – andere Spieler sehen ihre eigene Welt.
  */
 import * as THREE from "three";
 import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
-import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, sperreHier, rang, NpcId, ZIEL } from "../../../shared/quest01";
-import { questStand, questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest } from "../welt";
+import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest } from "../welt";
 import { QUESTS as QUESTS_B, questDef } from "../../../shared/quests";
-import { zeichen as zeichenB, ziel as zielB, objektLage, type QuestObjekt, type QuestFigur } from "../../../shared/questbau";
+import { zeichen as zeichenB, ziel as zielB, objektLage, gilt, frei, lage, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
 import { Npc3D } from "./npc3d";
 import { LADEN_LISTE } from "../../../shared/laeden";
@@ -20,25 +19,21 @@ import type { Welt3D } from "./motor";
 
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
-/** q: 1 = Quest 01, sonst die Id einer Quest des Baukastens (shared/quests.ts) */
-interface Figur { n: QuestNpc | (QuestFigur & { wandert?: string }); q: 1 | string; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement }
+/** q: Id der Quest (shared/quests.ts); beiseite: steht gerade zur Seite; laeuft/fertig: entgegenlaufen (kommt) */
+interface Figur { n: QuestFigur; q: string; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement; beiseite?: boolean; laeuft?: boolean; fertig?: boolean }
 interface Objekt { d: QuestObjekt; q: string; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
 /** benannte Stellen für den Pfeil (QuestDef-Schritte mit wo: "esse" …) */
 const ORTE: Record<string, [number, number]> = { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] };
-/** Bei welchem Stand wartet welche Figur auf den Spieler (Questmarker „!“) */
-const WARTET: Partial<Record<Exclude<Stand, "">, NpcId[]>> = { angeboten: ["jori"], angenommen: ["hagan"], auftrag: ["fenna"], osthof: ["raban", "tilda"], beweis: ["hagan"], bestaetigt: ["raban", "tilda"], frei: ["othmar"] };
+const SCHRANKEN: { q: QuestDef; s: Schranke }[] = QUESTS_B.flatMap((q) => (q.schranken || []).map((s) => ({ q, s })));
+const offenFuer = (q: QuestDef, id: string): boolean => frei(q, questStandB(q.id), id) !== false;
 
 export class QuestWelt {
-  private figuren: Figur[] = []; private staemme: THREE.Group[] = []; private offen: boolean | null = null; private joriLaeuft = false; private joriFertig = false;
+  private figuren: Figur[] = []; private staemme: THREE.Group[] = [];
   constructor(private u: QuestUmgebung) {
     const holz = new THREE.MeshStandardMaterial({ color: 0x6b4a2b, roughness: 0.95 }), schnitt = new THREE.MeshStandardMaterial({ color: 0xc9a46a, roughness: 0.8 });
-    for (const sp of SPERREN) for (const [x, y, l, w] of sp.staemme) { const g = new THREE.Group(), r = 0.32;
+    for (const { q, s: sp } of SCHRANKEN) for (const [x, y, l, w] of sp.staemme) { const g = new THREE.Group(), r = 0.32;
       const stamm = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.08, l, 12), [holz, schnitt, schnitt]); stamm.rotation.z = Math.PI / 2; stamm.position.y = r; g.add(stamm);
-      g.position.set(x, this.u.motor.hoehe(x, y), y); g.rotation.y = w; g.traverse((o) => { o.castShadow = true; o.receiveShadow = true; }); g.userData.sperre = sp.id; this.u.motor.szene.add(g); this.staemme.push(g); }
-    for (const n of NPCS) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
-      const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
-      let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
-      this.figuren.push({ n, q: 1, npc, x: n.x, y: n.y, nm, mk }); }
+      g.position.set(x, this.u.motor.hoehe(x, y), y); g.rotation.y = w; g.traverse((o) => { o.castShadow = true; o.receiveShadow = true; }); g.userData.sperre = sp.id; g.userData.q = q.id; this.u.motor.szene.add(g); this.staemme.push(g); }
     for (const q of QUESTS_B) for (const n of q.figuren) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
       const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
       let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
@@ -47,17 +42,17 @@ export class QuestWelt {
     addEventListener("ez-quest", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }
-      const n = [...NPCS, ...QUESTS_B.flatMap((q) => q.figuren)].find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
+      const n = QUESTS_B.flatMap((q) => q.figuren).find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
       const l = LADEN_LISTE.find((x) => x.haendler === wer); return l ? kopfbild(l.modell) : ""; }); }
-  /** Stand geändert: Sperren, Wachen, Marker */
+  /** Stand geändert: Sperren (Baumstämme, Gehraster), Figuren, die beiseitetreten */
   private offenSchluessel = "";
-  private stand() { const s = questStand(), auf = sperreOffen(s), schl = SPERREN.map((sp) => (sperreHier(sp, s) ? 1 : 0)).join("");
-    if (schl !== this.offenSchluessel) { this.offenSchluessel = schl; for (const g of this.staemme) g.visible = !sperreHier(SPERREN.find((sp) => sp.id === g.userData.sperre)!, s); this.u.sperrenNeu(); }
-    if (auf !== this.offen) { this.offen = auf;
-      for (const f of this.figuren) if (f.n.id === "raban" || f.n.id === "tilda") { f.x = f.n.x + (auf ? (f.n.id === "raban" ? -3 : 3) : 0); if (f.npc) f.npc.blick(auf ? 0 : f.n.blick[0], auf ? 1 : f.n.blick[1]); } } }
-  /** Die gesperrten Felder für diesen Spieler (leer, sobald die Wachen ihn durchlassen) */
-  sperren(): number[][] { const s = questStand(); return SPERREN.filter((sp) => !sperreHier(sp, s)).map((sp) => [...sp.feld]); }
-  /** Wo steht die Figur gerade (Hagan: der umhergehende Bürgermeister) */
+  private stand() { const schl = SCHRANKEN.map(({ q, s }) => (offenFuer(q, s.id) ? 1 : 0)).join("");
+    if (schl !== this.offenSchluessel) { this.offenSchluessel = schl; for (const g of this.staemme) g.visible = !offenFuer(questDef(g.userData.q)!, g.userData.sperre); this.u.sperrenNeu(); }
+    for (const f of this.figuren) { const B = f.n.beiseite; if (!B) continue; const q = questDef(f.q)!, auf = gilt(q, questStandB(q.id), B.wenn); if (auf === Boolean(f.beiseite)) continue; f.beiseite = auf;
+      f.x = f.n.x + (auf ? B.dx : 0); f.y = f.n.y + (auf ? B.dy : 0); if (f.npc) f.npc.blick(...(auf ? B.blick : f.n.blick)); } }
+  /** Die gesperrten Felder für diesen Spieler (leer, sobald die Quest sie freigibt) */
+  sperren(): number[][] { return SCHRANKEN.filter(({ q, s }) => !offenFuer(q, s.id)).map(({ s }) => [...s.feld]); }
+  /** Wo steht die Figur gerade (wer umhergeht: der Wanderer in der Welt) */
   private wo(f: Figur): { x: number; y: number } | null { if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
   /** Wo steht die Figur mit dieser Id (Gespräch abbrechen, wenn man sich entfernt) */
@@ -70,31 +65,30 @@ export class QuestWelt {
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return this.objektStelle(x, y); const f = best, p = this.wo(f)!;
     return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
-  schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set<string>(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []);
+  /** Figuren mit „kommt“ (z. B. Jori beim ersten Besuch): laufen dem Spieler in ihrer Region entgegen und sprechen ihn an */
+  private entgegen(f: Figur, dt: number) { const K = f.n.kommt!, q = questDef(f.q)!;
+    if (questGeladen() && gilt(q, questStandB(q.id), K.wenn) && this.u.hier === K.region && !f.fertig && !this.u.gesperrt) {
+      const dx = this.u.ort.x - f.x, dy = this.u.ort.y - f.y, d = Math.hypot(dx, dy);
+      if (d >= 14) { /* der Spieler steht woanders in der Region: die Figur kommt aus seiner Nähe herbeigelaufen (gut 12 Felder vor ihm, von ihrem Platz her) */
+        f.x = this.u.ort.x - dx / d * 12; f.y = this.u.ort.y - dy / d * 12; }
+      else if (d > 1.8) { const v = 3.2 * dt; f.x += dx / d * Math.min(v, d - 1.8); f.y += dy / d * Math.min(v, d - 1.8); f.laeuft = true; if (f.npc) { f.npc.blick(dx, dy); f.npc.spiele("gehen"); } }
+      else if (f.laeuft) { f.fertig = true; if (f.npc) { f.npc.spiele("ruhe"); f.npc.blick(dx, dy); } rede(f.n.id); } }
+    else if (f.npc && f.laeuft && !f.fertig) { f.laeuft = false; f.npc.spiele("ruhe"); } }
+  schritt(dt: number) { const M = this.u.motor;
     this.objekteSchritt();
-    /* Jori: beim ersten Besuch (noch nie angeboten) läuft sie auf den Spieler zu und spricht ihn an */
-    const jori = this.figuren.find((f) => f.n.id === "jori")!;
-    if (questGeladen() && s === "" && this.u.hier === "waldmark" && !this.joriFertig && !this.u.gesperrt) {
-      const dx = this.u.ort.x - jori.x, dy = this.u.ort.y - jori.y, d = Math.hypot(dx, dy);
-      if (d >= 14) { /* der Spieler steht woanders in Waldmark: Jori kommt aus seiner Nähe herbeigelaufen (gut 12 Felder vor ihm, von ihrem Platz her) */
-        jori.x = this.u.ort.x - dx / d * 12; jori.y = this.u.ort.y - dy / d * 12; }
-      else if (d > 1.8) { const v = 3.2 * dt; jori.x += dx / d * Math.min(v, d - 1.8); jori.y += dy / d * Math.min(v, d - 1.8); this.joriLaeuft = true; if (jori.npc) { jori.npc.blick(dx, dy); jori.npc.spiele("gehen"); } }
-      else if (d <= 1.8 && this.joriLaeuft) { this.joriFertig = true; if (jori.npc) { jori.npc.spiele("ruhe"); jori.npc.blick(dx, dy); } rede("jori"); } }
-    else if (jori.npc && this.joriLaeuft && !this.joriFertig) { this.joriLaeuft = false; jori.npc.spiele("ruhe"); }
+    for (const f of this.figuren) if (f.n.kommt) this.entgegen(f, dt);
     for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
-      /* wer im Haus umhergeht (Hagan im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
+      /* wer im Haus umhergeht (der Bürgermeister im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
-      if (f.q !== 1) { const q = questDef(f.q), z = q && questGeladen() ? zeichenB(q, questStandB(q.id), f.n.id) : null; /* „!“ / „?“ aus den Quest-Daten, nur beim Verfolgen */
-        f.mk.hidden = !sichtbar || !nah || !z || !questVerfolgt(f.q) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (z) f.mk.textContent = z; continue; }
-      f.mk.hidden = !sichtbar || !nah || !warten.has(f.n.id) || !(questVerfolgt() || (s === "" && f.n.id === "jori")) /* Marker nur, wenn die Quest verfolgt wird (Jori vor dem Start ausgenommen) */ || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); f.mk.textContent = s === "beweis" || s === "bestaetigt" || s === "frei" ? "?" : "!"; }
+      /* „!“ / „?“ aus den Quest-Daten, nur beim Verfolgen – eine Einführung zeigt ihren Geber auch vorher */
+      const q = questDef(f.q)!, st = questStandB(q.id), z = questGeladen() ? zeichenB(q, st, f.n.id) : null, zeigen = questVerfolgt(q.id) || Boolean(q.einfuehrung && lage(q, st).phase === "neu");
+      f.mk.hidden = !sichtbar || !nah || !z || !zeigen || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (z) f.mk.textContent = z; }
     this.pfeilSchritt(); }
-  /** Das nächste Ziel (Figur oder Stelle) für diesen Stand; null: nichts zu tun */
+  /** Das nächste Ziel (Figur oder Stelle) der verfolgten Quest; null: nichts zu tun */
   ziel(): { x: number; y: number } | null { if (!questGeladen()) return null;
-    const qb = questDef(verfolgteQuest()); if (qb) { const z = zielB(qb, questStandB(qb.id), ORTE); if (!z) return null; if (Array.isArray(z)) return { x: z[0], y: z[1] };
-      const f = this.figuren.find((x) => x.q === qb.id && x.n.id === z); return f ? this.wo(f) || { x: f.n.x, y: f.n.y } : null; }
-    const z = ZIEL[questStand()]; if (!z) return null;
-    if (Array.isArray(z)) return { x: z[0], y: z[1] }; const f = this.figuren.find((x) => x.n.id === z); if (!f) return null; return this.wo(f) || { x: f.n.x, y: f.n.y }; }
+    const qb = questDef(verfolgteQuest()); if (!qb) return null; const z = zielB(qb, questStandB(qb.id), ORTE); if (!z) return null; if (Array.isArray(z)) return { x: z[0], y: z[1] };
+    const f = this.figuren.find((x) => x.q === qb.id && x.n.id === z); return f ? this.wo(f) || { x: f.n.x, y: f.n.y } : null; }
   /* Pfeil am Fuß des Helden (nur wenn die Quest im Quest-Tab abgehakt ist) */
   private pfeil: THREE.Mesh | null = null;
   private pfeilSchritt() { const z = verfolgteQuest() ? this.ziel() : null, o = this.u.ort, d = z ? Math.hypot(z.x - o.x, z.y - o.y) : 0;
@@ -145,9 +139,6 @@ export class QuestWelt {
     let best: Objekt | null = null, bd = 1.2; for (const o of this.objekte) { if (!o.g.visible) continue; const d = Math.hypot(o.d.x - x, o.d.y - y); if (d < bd) { bd = d; best = o; } }
     if (!best) return null; const o = best;
     return { npc: false, x: o.d.x, y: o.d.y, text: `${o.d.name} ${o.d.tat === "aufheben" ? "aufheben" : "untersuchen"}`, tat: () => questDing(o.d.id, { x: this.u.ort.x, y: this.u.ort.y }), da: () => Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) <= 1.8 }; }
-  /** Stand für Tests */
-  get sperreZu(): boolean { return !sperreOffen(questStand()); }
-  get joriDa(): { x: number; y: number } { const j = this.figuren.find((f) => f.n.id === "jori")!; return { x: j.x, y: j.y }; }
-  /** nur für Tests: wie weit ist der Stand */
-  rang(): number { return rang(questStand()); }
+  /** Stand für Tests: ist eine Sperre (Baumstämme) für diesen Spieler noch zu? */
+  get sperreZu(): boolean { return SCHRANKEN.some(({ q, s }) => !offenFuer(q, s.id)); }
 }

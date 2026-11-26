@@ -7,9 +7,8 @@
  */
 import * as QB from "../../shared/questbau";
 import { QUESTS, questDef } from "../../shared/quests";
-import { REDE_WEIT } from "../../shared/quest01";
 import { levelAus, heldenlevel, SKILLS, type SkillXp, type Skill } from "../../shared/kampfwerte";
-import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
+import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, berufXpDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
 import { weltRegionBei } from "../../shared/karten";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 
@@ -28,30 +27,45 @@ export const staendeGeladen = (nutzer: string): boolean => staende.has(nutzer);
 let gemeldet: (nutzer: string) => void = () => { /* quests.ts */ };
 let xpGutschrift: (nutzer: string, xp: NonNullable<QB.Belohnung["xp"]>) => void = () => { /* quests.ts → index.ts */ };
 let heldXp: (nutzer: string) => SkillXp | undefined = () => undefined;
-/** Fremde Quests (noch nicht im Baukasten, z. B. Quest 01): Phase für Bedingungen */
-let fremdePhase: (nutzer: string, id: string) => QB.Phase | undefined = () => undefined;
-export function motorVerbinden(f: { melden(nutzer: string): void; xp(nutzer: string, xp: NonNullable<QB.Belohnung["xp"]>): void; heldXp?(nutzer: string): SkillXp | undefined; phase?(nutzer: string, id: string): QB.Phase | undefined }): void {
-  gemeldet = f.melden; xpGutschrift = f.xp; if (f.heldXp) heldXp = f.heldXp; if (f.phase) fremdePhase = f.phase; }
+export function motorVerbinden(f: { melden(nutzer: string): void; xp(nutzer: string, xp: NonNullable<QB.Belohnung["xp"]>): void; heldXp?(nutzer: string): SkillXp | undefined }): void {
+  gemeldet = f.melden; xpGutschrift = f.xp; if (f.heldXp) heldXp = f.heldXp; }
 
 /** Was der Motor über den Spieler weiß: Rucksack, Bank, andere Quests, Skills (Kampfskills aus dem geladenen Helden) */
 export const kontext = (nutzer: string): QB.Kontext => ({
   hat: (g) => besitzt(nutzer).includes(g), verloren: (g) => !besitztIrgendwo(nutzer, g), anzahl: (g) => anzahlVon(nutzer, g),
-  quest: (id) => { const q = questDef(id); return q ? QB.lage(q, qStand(nutzer, id)).phase : fremdePhase(nutzer, id) || "neu"; },
+  quest: (id) => { const q = questDef(id); return q ? QB.lage(q, qStand(nutzer, id)).phase : "neu"; },
   skill: (k) => { const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
   heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; } });
 async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promise<void> {
   const alt = qStand(nutzer, q.id); if (alt === "fertig" || !s || s === "fertig" || s === alt) return;
   let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, s); gemeldet(nutzer);
-  await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_stand: s }) }).catch((e) => console.error(`Queststand ${q.id} speichern:`, (e as Error).message)); }
+  await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_stand: s }) }).catch((e) => console.error(`Queststand ${q.id} speichern:`, (e as Error).message));
+  /* Aufheben-Schritte, deren Gegenstand der Spieler schon bei sich hat (z. B. das Pergament schon früher gefunden): gleich erledigt */
+  for (const S of q.schritte) if (S.ereignis.art === "aufheben" && QB.moeglich(q, s, S.id) && besitzt(nutzer).includes(S.ereignis.g)) { const n = QB.ereignis(q, s, { art: "aufheben", g: S.ereignis.g }); if (n !== s) { await setzen(sb, nutzer, q, n); return; } } }
+
+/* ───────── Abschluss (genau einmal) ───────── */
+const punkteJe = new Map<string, number>();
+/** Questpunkte des Spielers (Summe, rpg_held.questpunkte) */
+export const questpunkte = (nutzer: string): number => punkteJe.get(nutzer) || 0;
+export function punkteLaden(nutzer: string, n: unknown): void { punkteJe.set(nutzer, Math.max(0, Math.floor(Number(n)) || 0)); }
+let ohneV2 = false;
+/** Abschluss buchen: rpg_held_quest_abschluss_v2 (Migration 048: Kampf-XP, Berufe-XP, Questpunkte); fehlt sie noch, die alte Funktion (045: nur Kampf-XP).
+ *  true = erster Abschluss (jetzt gibt es den Lohn), false = schon abgeschlossen, null = Fehler */
+async function buchen(sb: Sb, nutzer: string, q: QB.QuestDef): Promise<boolean | null> { const B = q.belohnung || {}, X = B.xp || {};
+  if (!ohneV2) try { return (await sb("/rest/v1/rpc/rpg_held_quest_abschluss_v2", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_xp: X, p_berufe: B.berufe || {}, p_punkte: q.punkte || 0 }) })) as boolean; }
+    catch (e) { const t = (e as Error).message; if (!/PGRST202|404|abschluss_v2/.test(t)) { console.error(`Questabschluss ${q.id}:`, t); return null; }
+      ohneV2 = true; console.error("Migration 048 fehlt noch: Questabschluss über rpg_held_quest_abschluss (ohne Questpunkte; Berufe-XP nur über das Inventar)."); }
+  return (await sb("/rest/v1/rpc/rpg_held_quest_abschluss", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_geschick: X.geschick || 0, p_staerke: X.staerke || 0, p_fernkampf: X.fernkampf || 0, p_magie: X.magie || 0, p_lp: X.lp || 0, p_defense: X.defense || 0 }) })
+    .catch((e) => { console.error(`Questabschluss ${q.id}:`, (e as Error).message); return null; })) as boolean | null; }
 
 /* ───────── Gespräche ───────── */
 const offen = new Map<string, { q: string; npc: string }>();
-export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean }
+export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: boolean; fehler?: string; /** Kampf-XP (der Browser trägt sie nach) */ belohnung?: NonNullable<QB.Belohnung["xp"]>; splitter?: number; /** ein Teil des Lohns liegt am Boden */ amBoden?: boolean; /** Questpunkte für diesen Abschluss */ punkte?: number }
 /** Gehört die Figur zu einer Quest des Baukastens? */
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
   for (const q of QUESTS) { const F = q.figuren.find((f) => f.id === id); if (!F) continue;
-    if (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? REDE_WEIT)) return { fehler: `Geh näher an ${F.name} heran.` };
+    if (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? QB.REDE_WEIT)) return { fehler: `Geh näher an ${F.name} heran.` };
     const k = kontext(nutzer), s = qStand(nutzer, q.id), d = QB.dialog(q, F.id, s, k); if (!d) return { fehler: "Hier ist niemand." };
     const r = QB.rede(q, F.id, s, k); if (r && r.anbieten) { const n = QB.nachFolge(q, s, { zeilen: [], anbieten: true }); if (n !== s) void setzen(sb, nutzer, q, n); }
     offen.set(nutzer, { q: q.id, npc: F.id }); return { dialog: d }; }
@@ -79,8 +93,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
   const aus: MotorAntwort = {}; let neu: string[] = [];
   if (f.abschluss) {
     if (!QB.laeuft(q, s)) return { fehler: "Das ist schon erledigt." }; const B = q.belohnung || {}, X = B.xp || {};
-    const ok = (await sb("/rest/v1/rpc/rpg_held_quest_abschluss", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: q.id, p_geschick: X.geschick || 0, p_staerke: X.staerke || 0, p_fernkampf: X.fernkampf || 0, p_magie: X.magie || 0, p_lp: X.lp || 0, p_defense: X.defense || 0 }) })
-      .catch((e) => { console.error(`Questabschluss ${q.id}:`, (e as Error).message); return null; })) as boolean | null;
+    const ok = await buchen(sb, nutzer, q);
     if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
     let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, "fertig"); gemeldet(nutzer);
     if (ok) { /* erster Abschluss: jetzt – und nur jetzt – der Lohn; was nicht mehr in den Rucksack passt, liegt neben dem Spieler am Boden (30 Minuten nur für ihn) */
@@ -90,7 +103,10 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       if (B.splitter) aus.splitter = lohn("splitter", B.splitter);
       for (const G of B.gegenstaende || []) { lohn(G.g, G.n || 1); neu.push(GEGENSTAENDE[G.g] ? GEGENSTAENDE[G.g].name : G.g); }
       if (amBoden) aus.amBoden = true;
-      if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } } } }
+      if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
+      /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
+      for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(1000, n));
+      if (q.punkte) { punkteJe.set(nutzer, (punkteJe.get(nutzer) || 0) + Math.min(10, q.punkte)); aus.punkte = Math.min(10, q.punkte); gemeldet(nutzer); } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }
   let zeilen = QB.folgeZeilen(q, o.npc, qStand(nutzer, q.id), f.geben && f.geben.length && !neu.length && f.nichtsZuGeben ? f.nichtsZuGeben : f.zeilen);
@@ -126,4 +142,4 @@ for (const q of QUESTS) for (const [name, b] of Object.entries(q.beute || {})) {
 AUFGENOMMEN.push((nutzer, g) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "aufheben", g }); });
 
 /** Nur für Tests */
-export function motorVergessen(): void { staende.clear(); offen.clear(); sbJe.clear(); }
+export function motorVergessen(): void { staende.clear(); offen.clear(); sbJe.clear(); punkteJe.clear(); }

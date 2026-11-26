@@ -5,7 +5,7 @@
  * dann antwortet die Figur. Privat: der Server schickt Gespräche nur an den, der spricht ({t:"dialog", npc, dialog?, zeilen?, ende?}, welt.ts → „ez-dialog“).
  */
 import { antworte, dialogZu } from "./welt";
-import type { Dialog, Zeile, Antwort } from "../../shared/quest01";
+import type { Dialog, Zeile, Antwort } from "../../shared/questbau";
 
 type Nachricht = { npc: string; dialog?: Dialog; zeilen?: Zeile[]; ende?: boolean };
 /** Kopfbild zu einem Sprecher („Du“ = der eigene Held); die 3D-Welt setzt das (welt3d/quest3d.ts) */
