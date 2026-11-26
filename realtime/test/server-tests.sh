@@ -29,6 +29,7 @@ TESTS=(
   quest02-welt
   quest03-welt
   questbau
+  splitterbinden-welt
   sprint
   stufe
   teleport-welt
