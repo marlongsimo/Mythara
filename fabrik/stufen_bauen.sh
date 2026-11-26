@@ -29,3 +29,7 @@ done; done
 for f in basemann3d basefrau3d; do for st in gewoehnlich episch legendaer mythisch; do
   "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/waffe.sternenszepter.glb img/figuren-echt3d/$f.teile/waffe.sternenszepter.$st.glb $st metall_c=18 stark=1 feld=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
 done; done
+# Werkzeuge (Utensilien, Grundstufe selten): Stiel bleibt Holz, sechs Stufen inkl. Training
+for f in basemann3d basefrau3d; do for id in waffe.holzbeil waffe.spitzhacke; do for st in training gewoehnlich episch legendaer mythisch; do
+  "$B" fabrik/seltenheit.py img/figuren-echt3d/$f.teile/$id.glb img/figuren-echt3d/$f.teile/$id.$st.glb $st metall_c=18 stark=1 holz=1 2>&1 | grep -E "^Seltenheit|Trace|Error:" | sed "s|^|$f |"
+done; done; done

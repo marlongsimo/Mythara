@@ -1,0 +1,17 @@
+{
+  "name": "Urleder-Hose",
+  "gegenstand": "jaegerhose_mythisch",
+  "gruppe": "fernkampf",
+  "teil": "beine",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "ruestung.beine.jaeger.mythisch",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/beine/ruestung.beine.jaeger",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.beine.jaeger.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.beine.jaeger.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Leder, das zwischen Violett und Nachtblau schillert. Seine Nähte leuchten, als wäre Sternenlicht hineingewebt."
+}

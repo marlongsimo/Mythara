@@ -28,9 +28,9 @@ import { dialogOffen, gespraechMit, schliessen as dialogSchliessen } from "../di
 const GESPRAECH_WEIT = 5;
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
-import { HolzWelt, beilUrl } from "./holz3d";
+import { HolzWelt } from "./holz3d";
 import { musikStarten } from "../musik";
-import { BergWelt, hackenUrl } from "./berg3d";
+import { BergWelt } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
 import { HandwerkWelt } from "./handwerk3d";
 import { bankZeigen } from "../bank";
@@ -39,7 +39,7 @@ import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { vorlage } from "./held3d";
 import { Welt3D } from "./motor";
-import { heldenFigur3D, FigurArt, werkzeugQuelleSetzen } from "./held3d";
+import { heldenFigur3D, FigurArt } from "./held3d";
 import { WELT, weltDatei } from "../welt/welt";
 import { anschluss3D, schildText, WeltKern } from "../welt/anschluss";
 import { HELDEN } from "../../../shared/config";
@@ -51,7 +51,6 @@ import type { ChunkDaten, Region, Ausgang, Spawnzone, Interaktion } from "../../
 import { aktiverHeld } from "../held";
 import { angelegteEbenen, inventarVomServerDa, inventar } from "../inventar";
 /* angelegtes Beil / angelegte Spitzhacke: in der Hand zeigen */
-werkzeugQuelleSetzen(() => { const w = inventar().angelegt.waffe || ""; return /^holzbeil_/.test(w) ? beilUrl(w) : /^spitzhacke_/.test(w) ? hackenUrl(w) : ""; });
 import { serverZusatz } from "../gruppe";
 import { karteDrehen } from "../rahmen";
 /** die Minikarte zeichnet einen größeren Ausschnitt als sichtbar (Rand zum Verschieben und Drehen bis zum nächsten Zeichnen) */

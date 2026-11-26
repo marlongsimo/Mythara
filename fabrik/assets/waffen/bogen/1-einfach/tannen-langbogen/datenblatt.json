@@ -1,0 +1,27 @@
+{
+  "name": "Tannen-Langbogen",
+  "gegenstand": "mondlangbogen_gewoehnlich",
+  "klasse": "bogen",
+  "art": "Bogen",
+  "seltenheit": "Einfach",
+  "platz": "Waffe",
+  "modell": {
+    "ebene": "waffe.mondbogen.lang.gewoehnlich",
+    "quelle": "fabrik/assets/waffen/bogen/waffe.mondbogen.lang",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/waffe.mondbogen.lang.gewoehnlich.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/waffe.mondbogen.lang.gewoehnlich.glb",
+    "stufenbild": "fabrik/assets/waffen/bogen/waffe.mondbogen.lang/referenz/stufen.png"
+  },
+  "animation": {
+    "angriff": "bogen",
+    "weitere": [
+      "ruhe",
+      "gehen",
+      "laufen"
+    ],
+    "klasse": "fabrik/assets/waffen/bogen/klasse.json"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Schlicht gearbeitet, ohne Zierrat – solide Ware vom Dorfschmied."
+}

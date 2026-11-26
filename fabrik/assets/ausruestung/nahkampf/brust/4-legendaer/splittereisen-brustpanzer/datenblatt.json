@@ -1,0 +1,17 @@
+{
+  "name": "Splittereisen-Brustpanzer",
+  "gegenstand": "eisenwacht_legendaer",
+  "gruppe": "nahkampf",
+  "teil": "brust",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Legendär",
+  "modell": {
+    "ebene": "ruestung.brust.eisenwacht.legendaer",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/brust/ruestung.brust.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.eisenwacht.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.eisenwacht.legendaer.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Dunkler Stahl, schwer vergoldet; die Kanten glühen, als käme die Rüstung gerade aus der Esse."
+}

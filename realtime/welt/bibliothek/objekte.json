@@ -9818,29 +9818,6 @@
    }
   },
   {
-   "id": "samm_hanf_geerntet",
-   "name": "Hanf (geerntet)",
-   "kategorie": "bewuchs",
-   "bild": "img/welt/stil/samm_hanf_geerntet.webp",
-   "groesse": [
-    37,
-    21
-   ],
-   "anker": [
-    0.4865,
-    0.7619
-   ],
-   "massstab": 1,
-   "kollision": null,
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/pflanze.py (in Blender gebaut)",
-   "modell3d": {
-    "url": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
-    "wind": 0
-   },
    "id": "moor_bruecke_alt_01",
    "name": "Alte Moorbrücke",
    "kategorie": "wasserbau",
@@ -9856,9 +9833,14 @@
    "massstab": 1,
    "kollision": null,
    "tiefe": "boden",
+   "durchscheinend": true,
    "interaktion": null,
    "spiegelbar": true,
-   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/sammeln/hanf-geerntet.glb",
+    "wind": 0
+   }
   },
   {
    "id": "moor_bruecke_alt_02",
@@ -9919,6 +9901,94 @@
    "interaktion": null,
    "spiegelbar": true,
    "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "wz_splitter_obelisk",
+   "name": "Splitter-Obelisk",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_splitter_obelisk.webp",
+   "groesse": [
+    71,
+    217
+   ],
+   "anker": [
+    0.4789,
+    0.9631
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/splitter_obelisk (Meshy „Amethyst Obelisk“)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/splitter_obelisk.glb",
+    "wind": 0,
+    "puls_ton": 250,
+    "puls_breite": 38
+   }
+  },
+  {
+   "id": "dorf_brunnen_3d",
+   "name": "Brunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/dorf_brunnen_3d.webp",
+   "groesse": [
+    94,
+    166
+   ],
+   "anker": [
+    0.5,
+    0.9398
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/brunnen (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/brunnen.glb",
+    "wind": 0,
+    "puls_ton": 300,
+    "puls_breite": 1
+   }
+  },
+  {
+   "id": "dorf_holzstapel_3d",
+   "name": "Holzstapel mit Hackklotz",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/dorf_holzstapel_3d.webp",
+   "groesse": [
+    78,
+    85
+   ],
+   "anker": [
+    0.3974,
+    0.9059
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/dorf/holzstapel (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/dorf/holzstapel.glb",
+    "wind": 0
+   }
   }
  ]
 }

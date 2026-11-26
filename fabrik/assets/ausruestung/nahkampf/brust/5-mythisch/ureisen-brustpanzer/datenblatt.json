@@ -1,0 +1,17 @@
+{
+  "name": "Ureisen-Brustpanzer",
+  "gegenstand": "eisenwacht_mythisch",
+  "gruppe": "nahkampf",
+  "teil": "brust",
+  "art": "Schwere Rüstung",
+  "seltenheit": "Mythisch",
+  "modell": {
+    "ebene": "ruestung.brust.eisenwacht.mythisch",
+    "quelle": "fabrik/assets/ausruestung/nahkampf/brust/ruestung.brust.eisenwacht",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.eisenwacht.mythisch.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.eisenwacht.mythisch.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Obsidian, der wie Öl auf Wasser schillert. Durch die Platten ziehen sich leuchtende Adern – niemand weiß, wer sie geschmiedet hat."
+}

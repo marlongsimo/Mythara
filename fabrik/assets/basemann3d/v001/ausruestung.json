@@ -478,6 +478,54 @@
         "tod",
         "zauber_stab"
       ]
+    },
+    {
+      "id": "waffe.holzbeil",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/holzbeil/v001/hand/holzbeil.glb",
+      "griff": 0.12,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
+    },
+    {
+      "id": "waffe.spitzhacke",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/spitzhacke/v001/hand/spitzhacke.glb",
+      "griff": 0.1,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
+    },
+    {
+      "id": "waffe.hammer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/hammer/v001/hand/hammer.glb",
+      "griff": 0.12,
+      "klasse": "werkzeug",
+      "angriff": "angriff",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "tod",
+        "angriff"
+      ]
     }
   ],
   "stuecke_behalten": true,

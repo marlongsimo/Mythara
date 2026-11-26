@@ -1,0 +1,17 @@
+{
+  "name": "Splitterleder-Kapuze",
+  "gegenstand": "jaegerkapuze_legendaer",
+  "gruppe": "fernkampf",
+  "teil": "kopf",
+  "art": "Leichte Rüstung",
+  "seltenheit": "Legendär",
+  "modell": {
+    "ebene": "kopf.helm.jaegerkapuze.legendaer",
+    "quelle": "fabrik/assets/ausruestung/fernkampf/kopf/kopf.helm.jaegerkapuze",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/kopf.helm.jaegerkapuze.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/kopf.helm.jaegerkapuze.legendaer.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Ochsenblutrotes Leder, goldbeschlagen; die Schnallen glühen wie Kohlen."
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Splittertuch-Robe",
+  "gegenstand": "magierrobe_legendaer",
+  "gruppe": "magie",
+  "teil": "brust",
+  "art": "Stoffrüstung",
+  "seltenheit": "Legendär",
+  "modell": {
+    "ebene": "ruestung.brust.magier.legendaer",
+    "quelle": "fabrik/assets/ausruestung/magie/brust/ruestung.brust.magier",
+    "spiel_mann": "img/figuren-echt3d/basemann3d.teile/ruestung.brust.magier.legendaer.glb",
+    "spiel_frau": "img/figuren-echt3d/basefrau3d.teile/ruestung.brust.magier.legendaer.glb"
+  },
+  "werte": {},
+  "werte_offen": true,
+  "text": "Karmesinroter Samt, schwer vergoldet; die Borten glühen wie Glut."
+}

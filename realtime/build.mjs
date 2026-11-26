@@ -37,7 +37,7 @@ await build({ entryPoints: ["client/src/welt3d/spiel.ts"], bundle: true, minify:
 writeFileSync(aus + "welt3d.html", readFileSync("client/welt3d.html", "utf8").replace("__V__", v));
 writeFileSync(aus + "figurenvorschau.html", readFileSync("character-pipeline/preview/index.html", "utf8"));
 /* Animations-Testseite (nicht verlinkt): alle 3D-Figuren mit Bewegungen, Teilen, ausgelagerten Teilen und deren Seltenheitsstufen */
-{ const ORD = new URL("../img/figuren-echt3d/", import.meta.url).pathname, STUFEN = ["gewoehnlich", "selten", "episch", "legendaer", "mythisch"], figuren = [];
+{ const ORD = new URL("../img/figuren-echt3d/", import.meta.url).pathname, STUFEN = ["training", "gewoehnlich", "selten", "episch", "legendaer", "mythisch"], figuren = [];
   for (const f of readdirSync(ORD).filter((d) => d.endsWith(".json")).sort()) { const id = f.slice(0, -5); if (!existsSync(ORD + id + ".glb")) continue;
     const d = JSON.parse(readFileSync(ORD + f, "utf8")), teile = d.teile || {}, stufen = {}, dateien = existsSync(ORD + id + ".teile") ? readdirSync(ORD + id + ".teile") : [];
     for (const t of Object.keys(teile)) { const s = STUFEN.filter((st) => dateien.includes(`${t}.${st}.glb`)); if (s.length) stufen[t] = s; }
