@@ -15,7 +15,9 @@ import { heldenlevel, skillXpPruefen, levelAus } from "../../shared/kampfwerte";
 import { ORTREIHE } from "../../shared/karten";
 import { WELTREGIONEN } from "../../shared/weltzonen";
 import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
-import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, q2, q3, dingTat, mooshockerSehen } from "./quests";
+import { questsLaden, questHoeren, reden, antworten, gespraechEnde, q1, questsB, dingTat, untersucht, betreten } from "./quests";
+import { Q2 } from "../../shared/quest02";
+import { Q3 } from "../../shared/quest03";
 import { HINTER_DER_SPERRE, sperreOffen, VOR_DER_SPERRE } from "../../shared/quest01";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
@@ -133,11 +135,12 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       senden(s, { t: "baeume", weg: gefaellte() }); /* Holzfällerei: welche Bäume gerade Stumpf sind */
       senden(s, { t: "adern", weg: leereAdern() }); /* Bergbau: welche Adern gerade leer sind */
       senden(s, { t: "pflanzen", weg: abgeerntete() }); /* Handwerk: welche Flachs- und Hanfpflanzen abgeerntet sind */
-      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; senden(ich, { t: "quests", q1: q, q2: q2(nutzer), q3: q3(nutzer) }); ich.questAus = questHoeren(nutzer, (n, n2, n3) => senden(ich, { t: "quests", q1: n, q2: n2, q3: n3 }));
+      { const ich = s; void questsLaden(H.sb, nutzer).then((q) => { if (!spieler.has(ich)) return; const b = questsB(nutzer); senden(ich, { t: "quests", q1: q, q2: b[Q2], q3: b[Q3], b }); ich.questAus = questHoeren(nutzer, (n, nb) => senden(ich, { t: "quests", q1: n, q2: nb[Q2], q3: nb[Q3], b: nb }));
         if (HINTER_DER_SPERRE.has(ich.ort) && !sperreOffen(q)) senden(ich, { t: "zurueck", x: VOR_DER_SPERRE[0], y: VOR_DER_SPERRE[1], text: "Die Wachen lassen dich nicht durch – der Weg nach Weidenhain ist gesperrt." }); }); } /* Quests (Migration 045); hinter der Sperre nur mit Freigabe */
       return; }
     s.zuletzt = jetzt;
-    if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.geaendert = true; }
+    if (e.t === "pos") { if (!zahl(e.x) || !zahl(e.y)) return; s.x = Math.round(e.x as number); s.y = Math.round(e.y as number); if (zahl(e.wx, 1e5) && zahl(e.wy, 1e5) && (e.wx as number) >= 0 && (e.wy as number) >= 0) { s.wx = Math.round((e.wx as number) * 100) / 100; s.wy = Math.round((e.wy as number) * 100) / 100; } s.b = zahl(e.b, 10) ? Math.round((e.b as number) * 100) / 100 : 0; s.l = e.l ? 1 : 0; s.geaendert = true;
+      if (!s.gast && s.wx !== undefined && s.wy !== undefined) betreten(s.nutzer, s.ort, s.wx, s.wy); /* Quests: Stelle erreicht / Region betreten */ }
     else if (e.t === "inv") { /* Inventar: anlegen, ablegen, fallen lassen – der Server prüft alles selbst */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Ein Inventar gibt es mit Konto.", zeit: jetzt }); return; }
       let fehler: string | null = null;
@@ -203,11 +206,11 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const rest = (teleportZuletzt.get(s.nutzer) || 0) + TELEPORT_PAUSE_MS - jetzt; if (rest > 0) { senden(s, { t: "teleport", ok: false, rest }); return; }
       teleportZuletzt.set(s.nutzer, jetzt); senden(s, { t: "teleport", ok: true }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
-    else if (e.t === "qding" || e.t === "untersucht") { /* Quest 02: Bruchstelle/Rutenbündel benutzen, Mooshocker untersuchen – der Server prüft Ort und Entfernung */
+    else if (e.t === "qding" || e.t === "untersucht") { /* Questobjekt benutzen (Bruchstelle, Rutenbündel …), Gegner untersuchen – der Server prüft Ort und Entfernung */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Aufträge gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       { const x = e.x as number, y = e.y as number; if (zahl(x, 1e6) && zahl(y, 1e6) && s.wx !== undefined && s.wy !== undefined && Math.hypot(x - s.wx, y - s.wy) < 3) { s.wx = x; s.wy = y; } } /* die Stelle jetzt (die letzte „pos“ kann einen Schritt alt sein) */
-      if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, 12), s.wx, s.wy) });
-      else if (e.typ === "mooshocker") await mooshockerSehen(H.sb, s.nutzer, s.ort, s.wx, s.wy); }
+      if (e.t === "qding") senden(s, { t: "qtext", text: await dingTat(H.sb, s.nutzer, s.ort, String(e.id || "").slice(0, 16), s.wx, s.wy) });
+      else if (typeof e.typ === "string" && /^[a-z0-9_]{1,32}$/.test(e.typ)) await untersucht(H.sb, s.nutzer, e.typ, s.wx, s.wy); }
     else if (e.t === "leben") { if (!zahl(e.lp, 1e6) || !zahl(e.max, 1e6)) return; s.lp = Math.max(0, Math.round(e.lp as number)); s.max = Math.max(0, Math.round(e.max as number)); s.geaendert = true; }
     else if (e.t === "freunde") { if (s.gast) { senden(s, { t: "freunde", liste: [] }); return; }
       const liste = await freundeVon(H, s.nutzer, true); if (!s) return;

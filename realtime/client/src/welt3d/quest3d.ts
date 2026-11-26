@@ -9,13 +9,10 @@ import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
 import { NPCS, QuestNpc, SPERREN, Stand, sperreOffen, sperreHier, rang, NpcId, ZIEL } from "../../../shared/quest01";
-import { questStand, questGeladen, rede, questVerfolgt, questStand2, questStand3, questDing, verfolgteQuest } from "../welt";
-import { Q3, QUEST3 } from "../../../shared/quest03";
-import { zeichen as zeichenB, ziel as zielB } from "../../../shared/questbau";
-const NPCS3 = QUEST3.figuren;
+import { questStand, questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest } from "../welt";
+import { QUESTS as QUESTS_B, questDef } from "../../../shared/quests";
+import { zeichen as zeichenB, ziel as zielB, objektLage, type QuestObjekt, type QuestFigur } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
-import { Q1 } from "../../../shared/quest01";
-import { Q2, NPCS2, ziel2, lage as lage2, BRUCHSTELLEN, RUTEN, Ding } from "../../../shared/quest02";
 import { Npc3D } from "./npc3d";
 import { LADEN_LISTE } from "../../../shared/laeden";
 import { schildAn } from "./mitspieler";
@@ -23,12 +20,11 @@ import type { Welt3D } from "./motor";
 
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
-interface Figur { n: QuestNpc | (Omit<QuestNpc, "id"> & { id: string }); q: 1 | 2 | 3; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement }
-/** Quest 02: wer wartet auf den Spieler („!“ / „?“) */
-const wartet2 = (s: string): [string, string] | null => { const p = lage2(s).phase; return p === "" ? ["brida", "!"] : p === "angenommen" || p === "abgabe" ? ["odo", "!"] : p === "bereit" ? ["odo", "?"] : null; };
-/** Quest 03: der Förster wartet vor dem Auftrag („!“) und wenn der Säbel fertig ist („?“) */
-const wartet3 = (s: string): string | null => zeichenB(QUEST3, s, QUEST3.geber);
-interface Objekt { d: Ding; art: "zaun" | "rute"; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
+/** q: 1 = Quest 01, sonst die Id einer Quest des Baukastens (shared/quests.ts) */
+interface Figur { n: QuestNpc | (QuestFigur & { wandert?: string }); q: 1 | string; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement }
+interface Objekt { d: QuestObjekt; q: string; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
+/** benannte Stellen für den Pfeil (QuestDef-Schritte mit wo: "esse" …) */
+const ORTE: Record<string, [number, number]> = { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] };
 /** Bei welchem Stand wartet welche Figur auf den Spieler (Questmarker „!“) */
 const WARTET: Partial<Record<Exclude<Stand, "">, NpcId[]>> = { angeboten: ["jori"], angenommen: ["hagan"], auftrag: ["fenna"], osthof: ["raban", "tilda"], beweis: ["hagan"], bestaetigt: ["raban", "tilda"], frei: ["othmar"] };
 
@@ -43,17 +39,15 @@ export class QuestWelt {
       const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
       let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
       this.figuren.push({ n, q: 1, npc, x: n.x, y: n.y, nm, mk }); }
-    for (const n of NPCS2) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
+    for (const q of QUESTS_B) for (const n of q.figuren) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
       const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
-      const npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); this.figuren.push({ n, q: 2, npc, x: n.x, y: n.y, nm, mk }); }
-    for (const n of NPCS3) { const nm = document.createElement("div"); nm.className = "ez-name3d quest"; nm.textContent = n.name; document.body.appendChild(nm);
-      const mk = document.createElement("div"); mk.className = "ez-questmarke"; mk.textContent = "!"; mk.hidden = true; document.body.appendChild(mk);
-      const npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); this.figuren.push({ n, q: 3, npc, x: n.x, y: n.y, nm, mk }); }
+      let npc: Npc3D | null = null; if (!n.wandert) { npc = new Npc3D(n.modell); npc.blick(n.blick[0], n.blick[1]); this.u.motor.szene.add(npc.gruppe); }
+      this.figuren.push({ n, q: q.id, npc, x: n.x, y: n.y, nm, mk }); }
     this.objekteBauen();
     addEventListener("ez-quest", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }
-      const n = [...NPCS, ...NPCS2, ...NPCS3].find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
+      const n = [...NPCS, ...QUESTS_B.flatMap((q) => q.figuren)].find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
       const l = LADEN_LISTE.find((x) => x.haendler === wer); return l ? kopfbild(l.modell) : ""; }); }
   /** Stand geändert: Sperren, Wachen, Marker */
   private offenSchluessel = "";
@@ -76,7 +70,7 @@ export class QuestWelt {
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return this.objektStelle(x, y); const f = best, p = this.wo(f)!;
     return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; } }; }
-  schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set<string>(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []), w2 = questGeladen() ? wartet2(questStand2()) : null, w3 = questGeladen() ? wartet3(questStand3()) : null;
+  schritt(dt: number) { const s = questStand(), M = this.u.motor, warten = new Set<string>(s ? WARTET[s] || [] : questGeladen() ? ["jori"] : []);
     this.objekteSchritt();
     /* Jori: beim ersten Besuch (noch nie angeboten) läuft sie auf den Spieler zu und spricht ihn an */
     const jori = this.figuren.find((f) => f.n.id === "jori")!;
@@ -91,14 +85,14 @@ export class QuestWelt {
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
       /* wer im Haus umhergeht (Hagan im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);
-      if (f.q === 3) { f.mk.hidden = !sichtbar || !w3 || !questVerfolgt(Q3) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (w3) f.mk.textContent = w3; continue; }
-      if (f.q === 2) { f.mk.hidden = !sichtbar || !w2 || w2[0] !== f.n.id || !questVerfolgt(Q2) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (w2) f.mk.textContent = w2[1]; continue; }
+      if (f.q !== 1) { const q = questDef(f.q), z = q && questGeladen() ? zeichenB(q, questStandB(q.id), f.n.id) : null; /* „!“ / „?“ aus den Quest-Daten, nur beim Verfolgen */
+        f.mk.hidden = !sichtbar || !nah || !z || !questVerfolgt(f.q) || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); if (z) f.mk.textContent = z; continue; }
       f.mk.hidden = !sichtbar || !nah || !warten.has(f.n.id) || !(questVerfolgt() || (s === "" && f.n.id === "jori")) /* Marker nur, wenn die Quest verfolgt wird (Jori vor dem Start ausgenommen) */ || !schildAn(f.mk, M, p!.x, h + 2.85, p!.y); f.mk.textContent = s === "beweis" || s === "bestaetigt" || s === "frei" ? "?" : "!"; }
     this.pfeilSchritt(); }
   /** Das nächste Ziel (Figur oder Stelle) für diesen Stand; null: nichts zu tun */
   ziel(): { x: number; y: number } | null { if (!questGeladen()) return null;
-    if (verfolgteQuest() === Q3) { const z3 = zielB(QUEST3, questStand3(), { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] }); if (!z3) return null; if (Array.isArray(z3)) return { x: z3[0], y: z3[1] }; const f = this.figuren.find((x) => x.q === 3); return f ? { x: f.x, y: f.y } : null; }
-    if (verfolgteQuest() === Q2) { const z2 = ziel2(questStand2()); if (!z2) return null; if (Array.isArray(z2)) return { x: z2[0], y: z2[1] }; const f = this.figuren.find((x) => x.q === 2 && x.n.id === z2); return f ? { x: f.x, y: f.y } : null; }
+    const qb = questDef(verfolgteQuest()); if (qb) { const z = zielB(qb, questStandB(qb.id), ORTE); if (!z) return null; if (Array.isArray(z)) return { x: z[0], y: z[1] };
+      const f = this.figuren.find((x) => x.q === qb.id && x.n.id === z); return f ? this.wo(f) || { x: f.n.x, y: f.n.y } : null; }
     const z = ZIEL[questStand()]; if (!z) return null;
     if (Array.isArray(z)) return { x: z[0], y: z[1] }; const f = this.figuren.find((x) => x.n.id === z); if (!f) return null; return this.wo(f) || { x: f.n.x, y: f.n.y }; }
   /* Pfeil am Fuß des Helden (nur wenn die Quest im Quest-Tab abgehakt ist) */
@@ -113,14 +107,15 @@ export class QuestWelt {
   karteMarke(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number) { if (!verfolgteQuest()) return; /* nur beim Verfolgen */ const z = this.ziel(), x = c.getContext("2d"); if (!z || !x) return; const n = c.width, k = n / felder, dx = z.x - o.x, dy = z.y - o.y;
     let px = (dx * Math.cos(g) + dy * -Math.sin(g)) * k, py = -(dx * -Math.sin(g) + dy * -Math.cos(g)) * k; const gr0 = Math.max(18, n * 0.12), rand = n / 2 / 1.5 - gr0 * 0.75 /* der runde Ausschnitt zeigt nur die Mitte des Kartenbilds (KARTE_RAND 1,5) */, l = Math.hypot(px, py); if (l > rand) return; /* nur wenn das Ziel im Ausschnitt der Minikarte liegt */
     const sx = n / 2 + px, sy = n / 2 + py, gr = Math.max(18, n * 0.12); x.save(); x.font = `900 ${gr}px Georgia, serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = Math.max(3, gr * 0.22); x.strokeStyle = "#2a1a05"; x.strokeText("!", sx, sy); x.fillStyle = "#ffd23a"; x.fillText("!", sx, sy); x.restore(); }
-  /* ───────── Quest 02: Bruchstellen und Rutenbündel in Osthof ───────── */
+  /* ───────── Questobjekte des Baukastens (QuestDef.objekte): Modelle „zaun“ (Bruchstelle, geflickt) und „ruten“ (Rutenbündel) ───────── */
   private objekte: Objekt[] = [];
   private objekteBauen() { const M = this.u.motor, holz = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 0.95 }), moos = new THREE.MeshStandardMaterial({ color: 0x4f7a2e, roughness: 1 }),
       stein = new THREE.MeshStandardMaterial({ color: 0x8a8a82, roughness: 0.9 }), rute = new THREE.MeshStandardMaterial({ color: 0x9a8a4a, roughness: 0.9 }), band = new THREE.MeshStandardMaterial({ color: 0x6b8a3a, roughness: 0.9 }),
       leuchten = new THREE.MeshBasicMaterial({ color: 0xffd23a, transparent: true, opacity: 0.5, depthWrite: false });
     const kiste = (b: number, h: number, t: number, m: THREE.Material) => new THREE.Mesh(new THREE.BoxGeometry(b, h, t), m);
     const ring = () => { const r = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.72, 28), leuchten); r.rotation.x = -Math.PI / 2; r.renderOrder = 4; return r; };
-    for (const d of BRUCHSTELLEN) { const g = new THREE.Group(), kaputt = new THREE.Group(), heil = new THREE.Group();
+    const alle = QUESTS_B.flatMap((q) => (q.objekte || []).map((d, nr) => ({ d, q: q.id, nr })));
+    for (const { d, q, nr } of alle.filter((o) => o.d.modell === "zaun")) { const g = new THREE.Group(), kaputt = new THREE.Group(), heil = new THREE.Group();
       /* kaputt: ein Pfahl steht, einer ist samt Wurzel herausgedrückt und liegt schräg, die Latte hängt herunter, Moos am Boden */
       const p1 = kiste(0.14, 1.1, 0.14, holz); p1.position.set(-0.7, 0.55, 0); kaputt.add(p1);
       const p2 = kiste(0.14, 1.1, 0.14, holz); p2.position.set(0.6, 0.35, 0.15); p2.rotation.z = -0.95; kaputt.add(p2);
@@ -129,27 +124,27 @@ export class QuestWelt {
       /* geflickt (nach der Abgabe der Ruten): beide Pfähle stehen, mit Weidenruten umwickelt */
       for (const x of [-0.7, 0.7]) { const p = kiste(0.14, 1.1, 0.14, holz); p.position.set(x, 0.55, 0); heil.add(p); const w = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.025, 6, 12), band); w.rotation.x = Math.PI / 2; w.position.set(x, 0.75, 0); heil.add(w); }
       for (const y of [0.4, 0.8]) { const l = kiste(1.5, 0.08, 0.06, holz); l.position.set(0, y, 0); heil.add(l); }
-      if (d.id === "zaun2") for (const [x, z, r] of [[-1.2, 0.5, 0.28], [1.1, -0.4, 0.22], [0.3, 0.9, 0.18]]) { const st = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), stein); st.position.set(x, r * 0.6, z); g.add(st); }
+      if (/Steine/.test(d.name)) for (const [x, z, r] of [[-1.2, 0.5, 0.28], [1.1, -0.4, 0.22], [0.3, 0.9, 0.18]]) { const st = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), stein); st.position.set(x, r * 0.6, z); g.add(st); }
       g.add(kaputt, heil); const r = ring(); r.position.y = 0.03; g.add(r);
-      g.position.set(d.x, M.hoehe(d.x, d.y), d.y); g.rotation.y = d.nr * 0.9; g.traverse((o) => { o.castShadow = o !== r; o.receiveShadow = true; }); M.szene.add(g);
-      this.objekte.push({ d, art: "zaun", g, kaputt, heil, ring: r }); }
-    for (const d of RUTEN) { const g = new THREE.Group();
+      g.position.set(d.x, M.hoehe(d.x, d.y), d.y); g.rotation.y = nr * 0.9; g.traverse((o) => { o.castShadow = o !== r; o.receiveShadow = true; }); M.szene.add(g);
+      this.objekte.push({ d, q, g, kaputt, heil, ring: r }); }
+    for (const { d, q, nr } of alle.filter((o) => o.d.modell === "ruten")) { const g = new THREE.Group();
       for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 1.3, 5), rute); c.rotation.z = Math.PI / 2; c.rotation.y = (i - 4) * 0.035; c.position.set(0, 0.05 + (i % 3) * 0.035, (i - 4) * 0.025); g.add(c); }
       for (const x of [-0.3, 0.3]) { const b = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.018, 5, 10), band); b.rotation.y = Math.PI / 2; b.position.set(x, 0.09, 0); g.add(b); }
       const r = ring(); r.position.y = 0.03; g.add(r);
-      g.position.set(d.x, M.hoehe(d.x, d.y), d.y); g.rotation.y = d.nr * 1.3 + 0.4; g.traverse((o) => { o.castShadow = o !== r; o.receiveShadow = true; }); M.szene.add(g);
-      this.objekte.push({ d, art: "rute", g, ring: r }); } }
-  /** Sichtbarkeit nach dem eigenen Stand: Ruten verschwinden, wenn gesammelt; Bruchstellen sind nach der Abgabe geflickt; leuchten, solange sie zu tun sind */
-  private objekteSchritt() { const l = lage2(questStand2()), spur = l.phase === "spuren", nach = ["beobachten", "kampf", "bereit", "fertig"].includes(l.phase), puls = 0.35 + 0.25 * Math.sin(performance.now() / 260);
+      g.position.set(d.x, M.hoehe(d.x, d.y), d.y); g.rotation.y = nr * 1.3 + 0.4; g.traverse((o) => { o.castShadow = o !== r; o.receiveShadow = true; }); M.szene.add(g);
+      this.objekte.push({ d, q, g, ring: r }); } }
+  /** Sichtbarkeit nach dem eigenen Stand (aus den Quest-Daten): Aufgehobenes verschwindet; „heil“ zeigt z. B. den geflickten Zaun; leuchtet, solange es zu tun ist */
+  private objekteSchritt() { const puls = 0.35 + 0.25 * Math.sin(performance.now() / 260);
     for (const o of this.objekte) { const nah = Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) < 45; o.g.visible = nah;
-      if (!nah) continue; const bit = 1 << o.d.nr, erledigt = o.art === "zaun" ? (l.zaun & bit) !== 0 : (l.ruten & bit) !== 0;
-      if (o.art === "zaun") { o.kaputt!.visible = !nach; o.heil!.visible = nach; } else o.g.visible = !(erledigt || l.phase === "abgabe" || nach);
-      o.ring.visible = spur && !erledigt && questGeladen(); (o.ring.material as THREE.MeshBasicMaterial).opacity = puls; } }
+      if (!nah) continue; const q = questDef(o.q)!, L = objektLage(q, questStandB(q.id), o.d);
+      if (o.kaputt && o.heil) { o.kaputt.visible = !L.heil; o.heil.visible = L.heil; } if (L.weg) o.g.visible = false;
+      o.ring.visible = L.leuchtet && questGeladen(); (o.ring.material as THREE.MeshBasicMaterial).opacity = puls; } }
   /** Antippen einer Bruchstelle oder eines Rutenbündels: „Untersuchen“ / „Aufheben“ (hingehen, dann den Server fragen) */
   private objektStelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean } | null {
     let best: Objekt | null = null, bd = 1.2; for (const o of this.objekte) { if (!o.g.visible) continue; const d = Math.hypot(o.d.x - x, o.d.y - y); if (d < bd) { bd = d; best = o; } }
     if (!best) return null; const o = best;
-    return { npc: false, x: o.d.x, y: o.d.y, text: o.art === "zaun" ? `${o.d.name} untersuchen` : "Weidenruten aufheben", tat: () => questDing(o.d.id, { x: this.u.ort.x, y: this.u.ort.y }), da: () => Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) <= 1.8 }; }
+    return { npc: false, x: o.d.x, y: o.d.y, text: `${o.d.name} ${o.d.tat === "aufheben" ? "aufheben" : "untersuchen"}`, tat: () => questDing(o.d.id, { x: this.u.ort.x, y: this.u.ort.y }), da: () => Math.hypot(o.d.x - this.u.ort.x, o.d.y - this.u.ort.y) <= 1.8 }; }
   /** Stand für Tests */
   get sperreZu(): boolean { return !sperreOffen(questStand()); }
   get joriDa(): { x: number; y: number } { const j = this.figuren.find((f) => f.n.id === "jori")!; return { x: j.x, y: j.y }; }

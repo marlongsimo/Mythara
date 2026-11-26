@@ -7,14 +7,17 @@
 import { Q1, Stand, STAENDE, Dialog, Zeile, NpcId, dialog, antwort, npc, laeuft, rang, SCHRIFTSTUECK, BELOHNUNG, REDE_WEIT } from "../../shared/quest01";
 import { BEDINGUNGEN, AUFGENOMMEN, hat, abgeben, aufnehmen, besitzt, besitztIrgendwo } from "./inventar";
 import { Q3 } from "../../shared/quest03";
-import { staendeLaden, qStand, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen } from "./questmotor";
-type Stand3 = string;
+import { Q2 } from "../../shared/quest02";
+import { QUESTS } from "../../shared/quests";
+import { staendeLaden, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt } from "./questmotor";
+import type { SkillXp } from "../../shared/kampfwerte";
 import { SAMMEL_QUEST } from "./sammeln";
 import { HANDWERK_QUEST } from "./handwerk";
-import { Q2, Stand2, gueltig, npc2, dialog2, antwort2, Dialog2, BRUCHSTELLEN, RUTEN, DING_WEIT, MOOSRAIN, MOOSRAIN_WEIT, dingBenutzen, mooshockerUntersucht, mooshockerBesiegt, lage, BELOHNUNG2 } from "../../shared/quest02";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-const staende = new Map<string, Stand>(), staende2 = new Map<string, Stand2>(), hoerer = new Map<string, Set<(s: Stand, s2: Stand2, s3: Stand3) => void>>(), sbJe = new Map<string, Sb>();
+/** Hörer: Stand von Quest 01 und die Stände aller Quests des Baukastens (id → Stand) */
+type Hoerer = (s: Stand, b: Record<string, string>) => void;
+const staende = new Map<string, Stand>(), hoerer = new Map<string, Set<Hoerer>>(), sbJe = new Map<string, Sb>();
 const pruefen = (v: unknown): Stand => (typeof v === "string" && (STAENDE as readonly string[]).includes(v) ? (v as Stand) : "");
 
 /** Den Queststand laden (einmal je Anmeldung; danach aus dem Speicher) */
@@ -22,15 +25,15 @@ export async function questsLaden(sb: Sb, nutzer: string): Promise<Stand> {
   sbJe.set(nutzer, sb); if (staende.has(nutzer)) return staende.get(nutzer)!;
   const r = (await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=quests`).catch((e) => { console.error("Quests laden (Migration 045 eingespielt?):", (e as Error).message); return null; })) as { quests?: Record<string, { s?: string }> }[] | null;
   const s = pruefen(r && r[0] && r[0].quests && r[0].quests[Q1] ? r[0].quests[Q1].s : ""); staende.set(nutzer, s);
-  staende2.set(nutzer, gueltig(r && r[0] && r[0].quests && r[0].quests[Q2] ? r[0].quests[Q2].s : ""));
-  staendeLaden(nutzer, r && r[0] ? r[0].quests : null); /* Quests des Baukastens (questmotor.ts) */ return s; }
+  staendeLaden(nutzer, r && r[0] ? r[0].quests : null, sb); /* Quests des Baukastens (questmotor.ts) */ return s; }
 export const q1 = (nutzer: string): Stand => staende.get(nutzer) || "";
-/** Stand von Quest 02 „Der stille Rain“ */
-export const q2 = (nutzer: string): Stand2 => staende2.get(nutzer) || "";
-/** Stand von Quest 03 „Der Säbel des Waldgottes“ */
-export const q3 = (nutzer: string): Stand3 => qStand(nutzer, Q3);
-export function questHoeren(nutzer: string, f: (s: Stand, s2: Stand2, s3: Stand3) => void): () => void { let m = hoerer.get(nutzer); if (!m) hoerer.set(nutzer, (m = new Set())); m.add(f); return () => { m!.delete(f); }; }
-function melden(nutzer: string) { const s = q1(nutzer), s2 = q2(nutzer), s3 = q3(nutzer); for (const f of hoerer.get(nutzer) || []) try { f(s, s2, s3); } catch (x) { console.error("Quest-Hörer:", (x as Error).message); } }
+/** Stand von Quest 02 „Der stille Rain“ und Quest 03 „Der Säbel des Waldgottes“ (Baukasten) */
+export const q2 = (nutzer: string): string => qStand(nutzer, Q2);
+export const q3 = (nutzer: string): string => qStand(nutzer, Q3);
+/** Stände aller Quests des Baukastens */
+export const questsB = (nutzer: string): Record<string, string> => alleStaende(nutzer);
+export function questHoeren(nutzer: string, f: Hoerer): () => void { let m = hoerer.get(nutzer); if (!m) hoerer.set(nutzer, (m = new Set())); m.add(f); return () => { m!.delete(f); }; }
+function melden(nutzer: string) { const s = q1(nutzer), b = alleStaende(nutzer); for (const f of hoerer.get(nutzer) || []) try { f(s, b); } catch (x) { console.error("Quest-Hörer:", (x as Error).message); } }
 async function setzen(sb: Sb, nutzer: string, s: Stand): Promise<void> {
   if (q1(nutzer) === "fertig" || !s || s === "fertig") return; staende.set(nutzer, s); melden(nutzer);
   await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q1, p_stand: s }) }).catch((e) => console.error("Queststand speichern (Migration 045 eingespielt?):", (e as Error).message));
@@ -43,15 +46,12 @@ AUFGENOMMEN.push((nutzer, g) => { const sb = sbJe.get(nutzer); if (g === SCHRIFT
 
 /** Wie weit man von der Figur entfernt sein darf: Jori läuft dem Spieler entgegen, der Bürgermeister geht im Rathaus umher */
 const WEIT: Partial<Record<NpcId, number>> = { jori: 40, hagan: 9 };
-export interface Antwort1 { dialog?: Dialog; zeilen?: Zeile[]; ende?: boolean; belohnung?: typeof BELOHNUNG; fehler?: string; /** Quest 02: Splitter als Lohn */ splitter?: number }
+export interface Antwort1 { dialog?: Dialog; zeilen?: Zeile[]; ende?: boolean; belohnung?: Partial<typeof BELOHNUNG>; fehler?: string; /** Splitter als Lohn */ splitter?: number }
 const offen = new Map<string, NpcId>(); /* je Spieler: mit wem er gerade spricht */
 
 /** Ein Gespräch beginnen (wx/wy: Stelle des Spielers in Weltfeldern) */
 export function reden(nutzer: string, id: string, wx: number | undefined, wy: number | undefined): Antwort1 {
-  if (figurDa(id)) return motorReden(nutzer, id, wx, wy) as unknown as Antwort1; /* Quests des Baukastens (questmotor.ts) */
-  const N2 = npc2(id); if (N2) { /* Quest 02 „Der stille Rain“ */
-    if (wx === undefined || wy === undefined || Math.hypot(N2.x - wx, N2.y - wy) > REDE_WEIT) return { fehler: `Geh näher an ${N2.name} heran.` };
-    const d = dialog2(N2.id, q2(nutzer)); if (!d) return { fehler: "Hier ist niemand." }; offen.set(nutzer, N2.id as unknown as NpcId); return { dialog: d as unknown as Dialog }; }
+  if (figurDa(id)) { const sb = sbJe.get(nutzer); return sb ? (motorReden(sb, nutzer, id, wx, wy) as unknown as Antwort1) : { fehler: "Einen Moment …" }; } /* Quests des Baukastens (questmotor.ts) */
   const N = npc(id); if (!N) return { fehler: "Hier ist niemand." };
   if (wx === undefined || wy === undefined || Math.hypot(N.x - wx, N.y - wy) > (WEIT[N.id] ?? REDE_WEIT)) return { fehler: `Geh näher an ${N.name} heran.` };
   const d = dialog(N.id, q1(nutzer), hat(nutzer, SCHRIFTSTUECK)); if (!d) return { fehler: "Hier ist niemand." };
@@ -62,7 +62,6 @@ export function reden(nutzer: string, id: string, wx: number | undefined, wy: nu
 let xpLive: (nutzer: string, xp: Partial<Record<"geschick" | "staerke" | "fernkampf" | "magie" | "lp" | "defense", number>>) => void = () => { /* noch nicht verbunden */ };
 export function xpLiveSetzen(f: typeof xpLive): void { xpLive = f; }
 export async function antworten(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
-  if (npc2(id)) return antworten2(sb, nutzer, id, a);
   if (motorImGespraech(nutzer, id)) return motorAntworten(sb, nutzer, id, a) as unknown as Promise<Antwort1>;
   const N = npc(id); if (!N || offen.get(nutzer) !== N.id) return { fehler: "Das Gespräch ist vorbei." };
   const s = q1(nutzer), mit = hat(nutzer, SCHRIFTSTUECK), f = antwort(N.id, s, mit, String(a || "").slice(0, 24)); if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
@@ -79,42 +78,26 @@ export async function antworten(sb: Sb, nutzer: string, id: string, a: string): 
   offen.delete(nutzer); return { zeilen: f.zeilen, ende: true, ...(belohnung ? { belohnung } : {}) }; }
 export function gespraechEnde(nutzer: string): void { offen.delete(nutzer); motorEnde(nutzer); }
 
-/* ───────── Quest 02 „Der stille Rain“ (shared/quest02.ts) ───────── */
-async function setzen2(sb: Sb, nutzer: string, s: Stand2): Promise<void> {
-  if (q2(nutzer) === "fertig" || !s || s === "fertig" || s === q2(nutzer)) return; staende2.set(nutzer, s); melden(nutzer);
-  await sb("/rest/v1/rpc/rpg_held_quest_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q2, p_stand: s }) }).catch((e) => console.error("Queststand 2 speichern:", (e as Error).message)); }
-async function antworten2(sb: Sb, nutzer: string, id: string, a: string): Promise<Antwort1> {
-  const N = npc2(id)!; if (offen.get(nutzer) !== (N.id as unknown as NpcId)) return { fehler: "Das Gespräch ist vorbei." };
-  const s = q2(nutzer), f = antwort2(N.id, s, String(a || "").slice(0, 24)); if (!f) return { fehler: "Darauf weiß niemand eine Antwort." };
-  let splitter = 0;
-  if (f.abschluss) {
-    if (lage(s).phase !== "bereit") return { fehler: "Das ist schon erledigt." };
-    const ok = (await sb("/rest/v1/rpc/rpg_held_quest_abschluss", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_quest: Q2, p_geschick: 0, p_staerke: 0, p_fernkampf: 0, p_magie: 0, p_lp: 0, p_defense: 0 }) })
-      .catch((e) => { console.error("Questabschluss 2:", (e as Error).message); return null; })) as boolean | null;
-    if (ok === null) return { fehler: "Der Abschluss konnte nicht gespeichert werden. Versuch es gleich noch einmal." };
-    staende2.set(nutzer, "fertig"); melden(nutzer);
-    if (ok) { splitter = BELOHNUNG2.splitter; const n = aufnehmen(sb, nutzer, "splitter", splitter); if (n < splitter) console.error("Quest 2: Splitter passten nicht in den Rucksack:", nutzer, n); } }
-  else if (f.stand) await setzen2(sb, nutzer, f.stand);
-  if (f.weiter) { const d = dialog2(N.id, q2(nutzer)); return { zeilen: f.zeilen, dialog: (d || undefined) as unknown as Dialog }; }
-  offen.delete(nutzer); return { zeilen: f.zeilen, ende: true, ...(splitter ? { splitter } : {}) }; }
-/** Ein Questobjekt (Bruchstelle, Rutenbündel) benutzen – nur in Osthof und nah dran. Zurück: Text für den Spieler */
-export async function dingTat(sb: Sb, nutzer: string, ort: string, id: string, wx: number | undefined, wy: number | undefined): Promise<string> {
-  const d = [...BRUCHSTELLEN, ...RUTEN].find((x) => x.id === id); if (!d) return "Hier ist nichts.";
-  if (wx === undefined || wy === undefined || Math.hypot(d.x - wx, d.y - wy) > DING_WEIT + 1) return "Geh näher heran."; /* Weltfelder sind eindeutig: die Objekte liegen nur in Osthof */ void ort;
-  const r = dingBenutzen(q2(nutzer), id); if (r.stand) await setzen2(sb, nutzer, r.stand); return r.text; }
-/** Einen Mooshocker untersuchen (Bestiarium): zählt für die Quest, wenn man am Moosrain steht */
-export async function mooshockerSehen(sb: Sb, nutzer: string, ort: string, wx: number | undefined, wy: number | undefined): Promise<void> {
-  void ort; if (wx === undefined || wy === undefined || Math.hypot(MOOSRAIN[0] - wx, MOOSRAIN[1] - wy) > MOOSRAIN_WEIT) return;
-  const n = mooshockerUntersucht(q2(nutzer)); if (n) await setzen2(sb, nutzer, n); }
+/* ───────── Questobjekte, Untersuchen, Erlegen (Baukasten) ───────── */
+/** Ein Questobjekt (Bruchstelle, Rutenbündel …) benutzen – nur nah dran. Zurück: Text für den Spieler */
+export async function dingTat(sb: Sb, nutzer: string, ort: string, id: string, wx: number | undefined, wy: number | undefined): Promise<string> { void ort; return motorObjekt(sb, nutzer, id, wx, wy); }
+/** Eine Gegnerart untersuchen (Bestiarium): zählt für Quests (z. B. Mooshocker am Moosrain) */
+export async function untersucht(sb: Sb, nutzer: string, typ: string, wx: number | undefined, wy: number | undefined): Promise<void> { motorEreignis(sb, nutzer, { art: "untersuchen", ziel: typ, x: wx, y: wy }); }
 /** Ein Gegner wurde besiegt (die Sim meldet den, der am meisten Schaden gemacht hat) */
-export function erlegt(nutzer: string, typ: string): void { const sb = sbJe.get(nutzer); if (!sb) return; motorEreignis(sb, nutzer, { art: "erlegen", typ }); if (typ !== "mooshocker") return;
-  const n = mooshockerBesiegt(q2(nutzer)); if (n) void setzen2(sb, nutzer, n); }
+export function erlegt(nutzer: string, typ: string): void { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "erlegen", typ }); }
+/** Region betreten / Stelle erreicht (welt.ts) */
+const BETRETEN = QUESTS.some((q) => q.schritte.some((x) => x.ereignis.art === "betreten"));
+export function betreten(nutzer: string, region: string, wx: number, wy: number): void { if (!BETRETEN) return; const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "betreten", region, x: wx, y: wy }); }
+/** Kampf-XP des geladenen Helden (index.ts), für Voraussetzungen und Bedingungen */
+let heldXp: (nutzer: string) => SkillXp | undefined = () => undefined;
+export function heldXpSetzen(f: typeof heldXp): void { heldXp = f; }
 /* ───────── Quests des Baukastens (questmotor.ts, shared/questbau.ts) ───────── */
-motorVerbinden({ melden, xp: (nutzer, x) => xpLive(nutzer, x) });
+motorVerbinden({ melden, xp: (nutzer, x) => xpLive(nutzer, x), heldXp: (nutzer) => heldXp(nutzer),
+  phase: (nutzer, id) => (id === Q1 ? (q1(nutzer) === "fertig" ? "fertig" : laeuft(q1(nutzer)) ? "laeuft" : "neu") : undefined) });
 /* Questziele beim Sammeln (Baum des Waldgottes, Waldstein …) und Questrezepte (Esse, Amboss): Sperren und Schritte aus den Quest-Daten */
 SAMMEL_QUEST.pruefen = (nutzer, art, quest) => motorSperre(nutzer, "sammeln", art, quest);
 SAMMEL_QUEST.ertrag = (nutzer, art) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "sammeln", ziel: art }); };
 HANDWERK_QUEST.pruefen = (nutzer, r) => motorSperre(nutzer, "herstellen", r.id, r.quest);
 HANDWERK_QUEST.fertig = (nutzer, r) => { const sb = sbJe.get(nutzer); if (sb) motorEreignis(sb, nutzer, { art: "herstellen", rezept: r.id }); };
 /** Nur für Tests: Speicher leeren */
-export function questsVergessen(): void { motorVergessen(); staende2.clear(); staende.clear(); hoerer.clear(); offen.clear(); }
+export function questsVergessen(): void { motorVergessen(); staende.clear(); hoerer.clear(); offen.clear(); }

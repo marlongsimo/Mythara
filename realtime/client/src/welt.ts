@@ -9,8 +9,10 @@ import { Q1 } from "../../shared/quest01";
 import type { Stand } from "../../shared/quest01";
 import { freundHinzufuegen } from "./freunde";
 import { skillsLesen, skillsSchreiben, xpDrops, stufenBanner } from "./skills";
-import { QUEST3 } from "../../shared/quest03";
-import { neuErledigt, laeuft as laeuftB, lage as lageB } from "../../shared/questbau";
+import { Q2 } from "../../shared/quest02";
+import { Q3 } from "../../shared/quest03";
+import { QUESTS as QUESTS_B } from "../../shared/quests";
+import { neuErledigt, laeuft as laeuftB, lage as lageB, gueltig as gueltigB } from "../../shared/questbau";
 import { SKILL_NAME } from "../../shared/kampfwerte";
 import { inventarSender, inventarVomServer } from "./inventar";
 import Phaser from "phaser";
@@ -86,7 +88,10 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "stufe") { if (ich && typeof m.stufe === "number") ich.stufe = m.stufe; }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }
-    else if (m.t === "quests") { const alt = questBekannt ? [questJetzt as string, quest2Jetzt, quest3Jetzt] : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand; quest2Jetzt = typeof m.q2 === "string" ? m.q2 : ""; quest3Jetzt = typeof m.q3 === "string" ? m.q3 : ""; questBekannt = true; if (alt) questFortschritt(alt, [questJetzt, quest2Jetzt, quest3Jetzt]); window.dispatchEvent(new CustomEvent("ez-quest")); }
+    else if (m.t === "quests") { const alt = questBekannt ? { q1: questJetzt as string, b: { ...questB } } : null; questJetzt = (typeof m.q1 === "string" ? m.q1 : "") as Stand;
+      /* Stände aller Quests des Baukastens (b: id → Stand); ältere Server schicken nur q2/q3 */
+      const b = (m.b && typeof m.b === "object" ? m.b : { [Q2]: m.q2, [Q3]: m.q3 }) as Record<string, unknown>; questB = {}; for (const q of QUESTS_B) questB[q.id] = gueltigB(q, b[q.id]);
+      questBekannt = true; if (alt) questFortschritt(alt.q1, alt.b); window.dispatchEvent(new CustomEvent("ez-quest")); }
     else if (m.t === "teleport") { const f = teleportWarten; teleportWarten = null; if (f) f(Boolean(m.ok), Number(m.rest) || 0, Boolean(m.gast)); }
     else if (m.t === "qtext") { chatSystem(String(m.text || "")); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: String(m.text || "") })); }
     else if (m.t === "dialog") { window.dispatchEvent(new CustomEvent("ez-dialog", { detail: m })); if (m.belohnung) belohnungBuchen(m.belohnung as Record<string, number>); if (m.splitter) chatSystem(`Belohnung: ${m.splitter} Splitter.`); }
@@ -125,20 +130,23 @@ export const ichName = (): string => (ich && !ich.gast ? ich.name : "");
 /** Angemeldet mit Konto? null = der Server hat sich noch nicht gemeldet */
 export const mitKonto = (): boolean | null => (ich ? !ich.gast : null);
 /* ---------- Quests (der Server führt den Stand; Dialoge bekommt nur, wer spricht) ---------- */
-let questJetzt: Stand = "", quest2Jetzt = "", quest3Jetzt = "", questBekannt = false;
+let questJetzt: Stand = "", questB: Record<string, string> = {}, questBekannt = false;
 /** Stand von Quest 01; bekannt: der Server hat ihn geschickt (mit Konto) */
 export const questStand = (): Stand => questJetzt;
 export const questGeladen = (): boolean => questBekannt;
 /** Stand von Quest 02 „Der stille Rain“ (shared/quest02.ts) */
-export const questStand2 = (): string => quest2Jetzt;
-export const questStand3 = (): string => quest3Jetzt;
+/** Stand einer Quest des Baukastens (shared/quests.ts) */
+export const questStandB = (id: string): string => questB[id] || "";
+export const questStand2 = (): string => questStandB(Q2);
+export const questStand3 = (): string => questStandB(Q3);
 /** Fortschritt melden: erledigte Schritte (Quest 03) im Chat, Abschluss jeder Quest als Banner oben */
-const QTITEL = ["Die gesperrte Straße", "Der stille Rain", "Der Säbel des Waldgottes"];
-function questFortschritt(alt: string[], neu: string[]): void {
-  /* Quests des Baukastens: erledigte Schritte und neue Quest im Chat (shared/questbau.ts) */
-  for (const x of neuErledigt(QUEST3, alt[2], neu[2])) chatSystem(`Quest „${QUEST3.titel}“: ${x.text} – erledigt.`);
-  if (laeuftB(QUEST3, neu[2]) && lageB(QUEST3, alt[2]).phase === "neu") chatSystem(`Neue Quest: „${QUEST3.titel}“ (Quest-Tab).`);
-  neu.forEach((s, i) => { if (s === "fertig" && alt[i] !== "fertig") stufenBanner(`Quest abgeschlossen: ${QTITEL[i]}`, "📜"); }); }
+function questFortschritt(alt1: string, alt: Record<string, string>): void {
+  if (questJetzt === "fertig" && alt1 !== "fertig") stufenBanner("Quest abgeschlossen: Die gesperrte Straße", "📜");
+  /* Quests des Baukastens: erledigte Schritte und neue Quest im Chat (Questobjekte melden sich selbst mit ihrem Text) */
+  for (const q of QUESTS_B) { const a = alt[q.id] || "", n = questStandB(q.id);
+    for (const x of neuErledigt(q, a, n)) if (x.ereignis.art !== "objekt") chatSystem(`Quest „${q.titel}“: ${x.text} – erledigt.`);
+    if (laeuftB(q, n) && lageB(q, a).phase === "neu") chatSystem(`Neue Quest: „${q.titel}“ (Quest-Tab).`);
+    if (n === "fertig" && a !== "fertig") stufenBanner(`Quest abgeschlossen: ${q.titel}`, "📜"); } }
 /** Quest verfolgen (im Quest-Tab abgehakt): Pfeil am Helden zum nächsten Ziel */
 /* Immer nur eine Quest wird verfolgt (ez_quest_verfolgt = ihre Id); früher: ez_q1_verfolgen = "1" für Quest 01 */
 export function verfolgteQuest(): string { try { const v = localStorage.getItem("ez_quest_verfolgt"); if (v !== null) return v; return localStorage.getItem("ez_q1_verfolgen") === "1" ? Q1 : ""; } catch { return ""; } }

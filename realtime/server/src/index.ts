@@ -22,7 +22,7 @@ import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
 import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT } from "./inventar";
-import { erlegt, xpLiveSetzen } from "./quests";
+import { erlegt, xpLiveSetzen, heldXpSetzen } from "./quests";
 
 const PORT = Number(process.env.PORT) || 8787, MAX = Number(process.env.MAX_SPIELER) || 150, RUHE_MS = 5.5 * 60 * 1000; /* Inaktivität: der Browser meldet nach 5 Minuten ohne Eingabe selbst ab, der Server nach 5½ als Sicherheitsnetz */
 /* Abbruch im Kampf (wie OSRS): Wer die Verbindung verliert, das Spiel schließt oder sich abmeldet, solange er kämpft, dessen Held bleibt stehen und wehrt sich –
@@ -61,6 +61,8 @@ imKampfPruefer((nutzer) => { for (const Z of zonen.values()) for (const p of Z.s
 /* Quest-XP (schon in der Datenbank gebucht): auch dem laufenden Helden dazu – Level, Kampfwerte und Namensschild sofort neu, ohne doppelte Buchung (h.xp ist der Gesamtstand, h.offen bleibt) */
 xpLiveSetzen((nutzer, xp) => { for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.v1 || !p.kampf || p.kampf.nutzer !== nutzer || !p.heldId || p.zoneWeg) continue;
   for (const k of SKILLS) p.v1.xp[k] += Number(xp[k as keyof typeof xp]) || 0; Z.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); namenMelden(Z); console.log("Welt: Quest-XP live für", p.name || "?"); } });
+/* Quest-Bedingungen (Skill-Level, Heldenlevel): die Kampf-XP des geladenen Helden */
+heldXpSetzen((nutzer) => { for (const Z of zonen.values()) for (const p of Z.spieler) if (p.v1 && p.kampf && p.kampf.nutzer === nutzer && !p.zoneWeg) return p.v1.xp; return undefined; });
 heilenMit(async (nutzer, v) => {
   for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId || p.zoneWeg) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
     const n = trankHeilungBei(v, h.lp, h.max); if (n <= 0) return { fehler: "Du hast schon volles Leben." };

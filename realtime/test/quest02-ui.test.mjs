@@ -52,7 +52,7 @@ try {
   await anna.goto(B + S); await bereit(anna).catch(() => {}); await anna.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
   await anna.waitForFunction(() => window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length === 7, null, { timeout: 30000 }).catch(() => {});
   await anna.waitForTimeout(2500);
-  const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === 2).map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
+  const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === "osthof_der_stille_rain").map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
   let L = await lage();
   check(L.figuren.join() === "Brida Wegner,Odo Kern,Wenzel", `Quest-2-Figuren: ${L.figuren.join(", ")}`);
   check(L.objekte.length === 7 && L.objekte.every((o) => o.sicht && o.ring), `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);

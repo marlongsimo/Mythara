@@ -6,6 +6,9 @@
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module";
 const require = createRequire(import.meta.url), WebSocket = require("ws");
+import { QB, QUEST2 } from "./sim.gebaut.mjs";
+/** Stände seit dem Baukasten (26.11.2026): die alten Namen übersetzt die Quest selbst */
+const N = (alt) => QB.gueltig(QUEST2, alt);
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const A = "00000000-0000-0000-0000-00000000a001", B = "00000000-0000-0000-0000-00000000b002";
 const NUTZER = { ["tok_anna_" + "x".repeat(30)]: A, ["tok_ben__" + "x".repeat(30)]: B }, NAME = { [A]: "Anna", [B]: "Ben" };
@@ -55,25 +58,25 @@ try {
   await stelle(anna, NPC2.brida[0] + 1, NPC2.brida[1]); d = await rede(anna, "brida"); check(d && d.dialog && d.dialog.name === "Brida Wegner" && d.dialog.antworten.some((a) => a.id === "annehmen"), "Brida bietet den Auftrag an");
   await stelle(ben, NPC2.brida[0] + 2, NPC2.brida[1]); await new Promise((r) => setTimeout(r, 200)); check(ben.dialoge.length === 0, "Ben daneben sieht keinen Dialog");
   d = await sag(anna, "brida", "gefahr"); check(d && d.zeilen && d.dialog, "Nachfrage: gefährliche Kreaturen?");
-  await sag(anna, "brida", "annehmen"); await q2warte(anna, "angenommen"); check(anna.q2 === "angenommen" && HELD[A].quests.osthof_der_stille_rain.s === "angenommen", "Quest 2 angenommen (gespeichert)");
+  await sag(anna, "brida", "annehmen"); await q2warte(anna, N("angenommen")); check(anna.q2 === N("angenommen") && HELD[A].quests.osthof_der_stille_rain.s === N("angenommen"), "Quest 2 angenommen (gespeichert)");
   check(ben.q2 === "", "Bens Stand bleibt leer");
   await stelle(anna, ...NPC2.odo); d = await rede(anna, "odo"); check(d && d.dialog && /Brida hat dich/.test(d.dialog.zeilen[0].text), "Odo begrüßt Anna am Hofrain");
-  await sag(anna, "odo", "mooshocker"); await sag(anna, "odo", "auftrag"); await q2warte(anna, "spuren_0_0"); check(anna.q2 === "spuren_0_0", "Auftrag: Bruchstellen und Ruten");
+  await sag(anna, "odo", "mooshocker"); await sag(anna, "odo", "auftrag"); await q2warte(anna, N("spuren_0_0")); check(anna.q2 === N("spuren_0_0"), "Auftrag: Bruchstellen und Ruten");
   /* Abstand */
   await stelle(anna, 6500.5, 6450.5); const n0 = anna.texte.length; sende(anna, { t: "qding", id: "zaun2", x: 6500.5, y: 6450.5 }); await warte(anna, (m) => m.t === "qtext");
-  check(/näher/.test(anna.texte[n0]) && anna.q2 === "spuren_0_0", "Zu weit weg: zählt nicht");
-  let t = await ding(anna, "zaun1"); await q2warte(anna, "spuren_1_0"); check(/Wurzel/.test(t) && /1\/3/.test(t) && anna.q2 === "spuren_1_0", "Bruchstelle 1 untersucht (1/3)");
-  t = await ding(anna, "zaun1"); check(/schon/.test(t) && anna.q2 === "spuren_1_0", "Dieselbe Stelle zählt nicht doppelt");
-  await ding(anna, "rute3"); await q2warte(anna, "spuren_1_4"); check(anna.q2 === "spuren_1_4", "Ruten in beliebiger Reihenfolge (1/4)");
-  await ding(anna, "zaun2"); t = await ding(anna, "zaun3"); await q2warte(anna, "spuren_7_4"); check(/Moosrain/.test(t), "Nach der dritten Bruchstelle: „Die Spuren führen zum Moosrain“");
-  for (const r of ["rute1", "rute2"]) await ding(anna, r); await q2warte(anna, "spuren_7_7"); t = await ding(anna, "rute4"); await q2warte(anna, "abgabe"); check(anna.q2 === "abgabe" && /4\/4/.test(t), "Alles beisammen: zurück zu Odo");
+  check(/näher/.test(anna.texte[n0]) && anna.q2 === N("spuren_0_0"), "Zu weit weg: zählt nicht");
+  let t = await ding(anna, "zaun1"); await q2warte(anna, N("spuren_1_0")); check(/Wurzel/.test(t) && /1\/3/.test(t) && anna.q2 === N("spuren_1_0"), "Bruchstelle 1 untersucht (1/3)");
+  t = await ding(anna, "zaun1"); check(/schon/.test(t) && anna.q2 === N("spuren_1_0"), "Dieselbe Stelle zählt nicht doppelt");
+  await ding(anna, "rute3"); await q2warte(anna, N("spuren_1_4")); check(anna.q2 === N("spuren_1_4"), "Ruten in beliebiger Reihenfolge (1/4)");
+  await ding(anna, "zaun2"); t = await ding(anna, "zaun3"); await q2warte(anna, N("spuren_7_4")); check(/Moosrain/.test(t), "Nach der dritten Bruchstelle: „Die Spuren führen zum Moosrain“");
+  for (const r of ["rute1", "rute2"]) await ding(anna, r); await q2warte(anna, N("spuren_7_7")); t = await ding(anna, "rute4"); await q2warte(anna, N("abgabe")); check(anna.q2 === N("abgabe") && /4\/4/.test(t), "Alles beisammen: zurück zu Odo");
   /* Regionswechsel / Neuanmeldung verliert nichts */
   anna.ws.close(); await new Promise((r) => setTimeout(r, 300)); const anna2 = await spieler("tok_anna_" + "x".repeat(30)); await warte(anna2, (m) => m.t === "quests");
-  check(anna2.q2 === "abgabe", "Nach neuer Anmeldung: Stand bleibt erhalten");
-  await stelle(anna2, ...NPC2.odo); await rede(anna2, "odo"); await sag(anna2, "odo", "abgeben"); await q2warte(anna2, "beobachten"); check(anna2.q2 === "beobachten", "Ruten abgegeben: Mooshocker beobachten");
+  check(anna2.q2 === N("abgabe"), "Nach neuer Anmeldung: Stand bleibt erhalten");
+  await stelle(anna2, ...NPC2.odo); await rede(anna2, "odo"); await sag(anna2, "odo", "abgeben"); await q2warte(anna2, N("beobachten")); check(anna2.q2 === N("beobachten"), "Ruten abgegeben: Mooshocker beobachten");
   /* Untersuchen: nur am Moosrain */
-  await stelle(anna2, 6520.5, 6450.5); sende(anna2, { t: "untersucht", typ: "mooshocker", x: 6520.5, y: 6450.5 }); await new Promise((r) => setTimeout(r, 300)); check(anna2.q2 === "beobachten", "Untersuchen weit weg vom Moosrain zählt nicht");
-  await stelle(anna2, 6576.5, 6412.5); sende(anna2, { t: "untersucht", typ: "mooshocker", x: 6576.5, y: 6412.5 }); await q2warte(anna2, "kampf_0"); check(anna2.q2 === "kampf_0", "Mooshocker untersucht: Kampfphase (0/3)");
+  await stelle(anna2, 6520.5, 6450.5); sende(anna2, { t: "untersucht", typ: "mooshocker", x: 6520.5, y: 6450.5 }); await new Promise((r) => setTimeout(r, 300)); check(anna2.q2 === N("beobachten"), "Untersuchen weit weg vom Moosrain zählt nicht");
+  await stelle(anna2, 6576.5, 6412.5); sende(anna2, { t: "untersucht", typ: "mooshocker", x: 6576.5, y: 6412.5 }); await q2warte(anna2, N("kampf_0")); check(anna2.q2 === N("kampf_0"), "Mooshocker untersucht: Kampfphase (0/3)");
   /* Kämpfe in der Osthof-Zone (echte Simulation): Anna (Level 99) besiegt drei Mooshocker */
   const z = await new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8789/?kampf=welt_osthof&ort=welt_osthof&lx=79.5&ly=11.5", { origin: "http://localhost:8765" }), Z = { ws, w: [], ev: [] };
     ws.on("message", (roh) => { const m = JSON.parse(String(roh)); if (m.t === "z") { Z.w = m.z.w; Z.ich = m.z.ich; for (const e of m.z.ev) Z.ev.push(e); } });
@@ -87,7 +90,7 @@ try {
     if (!ziel) break; z.ws.send(JSON.stringify({ t: "ziel", id: ziel[0] })); const id = ziel[0];
     for (let i = 0; i < 300; i++) { await new Promise((r) => setTimeout(r, 100)); if (z.ev.some((e) => e.a === "tot" && e.id === id)) { siege++; break; } } }
   await new Promise((r) => setTimeout(r, 600));
-  check(siege === 3 && anna2.q2 === "bereit" && HELD[A].quests.osthof_der_stille_rain.s === "bereit", `Drei Mooshocker besiegt: Stand „bereit“ (${siege} Siege in ${Math.round((Date.now() - t0) / 1000)} s, Stand ${anna2.q2})`);
+  check(siege === 3 && anna2.q2 === N("bereit") && HELD[A].quests.osthof_der_stille_rain.s === N("bereit"), `Drei Mooshocker besiegt: Stand „bereit“ (${siege} Siege in ${Math.round((Date.now() - t0) / 1000)} s, Stand ${anna2.q2})`);
   z.ws.close();
   const splitter0 = (HELD[A].inventar.rucksack || []).reduce((n, f) => n + (f && (f.g || f) === "splitter" ? (f.n || 1) : 0), 0);
   await stelle(anna2, ...NPC2.odo); await rede(anna2, "odo"); await sag(anna2, "odo", "wieder"); d = await sag(anna2, "odo", "lohn"); await q2warte(anna2, "fertig");
