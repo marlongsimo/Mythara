@@ -50,6 +50,10 @@ for (const o of bib.objekte.objekte) if (benutzt.has(o.id) && o.vielfalt) for (c
 for (const o of bib.objekte.objekte) if (benutzt.has(o.id)) index.objekte[o.id] = { bild: o.bild, groesse: o.groesse, anker: o.anker, massstab: o.massstab, tiefe: o.tiefe,
   ...(o.durchscheinend ? { durchscheinend: true } : {}), ...(o.animation ? { animation: o.animation } : {}), ...(o.effekte ? { effekte: o.effekte } : {}), ...(o.zustaende ? { zustaende: o.zustaende } : {}), ...(o.interaktion ? { interaktion: o.interaktion } : {}), ...(o.vielfalt ? { vielfalt: o.vielfalt } : {}), ...(o.modell3d ? { modell3d: o.modell3d } : {}),
   ...(o.ebenen ? { ebenen: o.ebenen, raum: o.raum || [], tueren: o.tueren || [] } : {}) };
+/* Symbole der Holzfäller-Lichtungen und Bergbau-Senken in ALLEN Regionen erneuern – auch in denen, die diesmal nicht gebaut wurden
+   (sonst fehlten neue Standorte auf Karte und Minikarte, bis ihre Region neu gebaut wird; 26.11.2026) */
+for (const [n, r] of Object.entries(index.regionen)) { const rest = (r.symbole || []).filter((q) => q.s !== "holzfaellerei" && q.s !== "mine"), neu = SAMMELORTE.filter((l) => l.region === n).map((l) => ({ s: l.s, x: l.x, y: l.y }));
+  if (rest.length + neu.length) r.symbole = [...rest, ...neu]; else delete r.symbole; }
 index.stand = Date.now().toString(36);   /* Kennung dieses Baus: das Spiel hängt sie an die Dateien der Welt (gegen veraltete Bilder im Browser) */
 writeFileSync(indexPfad, JSON.stringify(index));
 console.log(`geschrieben: echtzeit/welt/welt.json (${Object.keys(index.regionen).length} Regionen, ${Object.keys(index.objekte).length} Objekte)`);
