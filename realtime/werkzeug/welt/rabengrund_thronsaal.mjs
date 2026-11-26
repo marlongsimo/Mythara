@@ -1,7 +1,7 @@
 /*
  * World Pipeline – Thronsaal im Rabengrund (Phase 6, 27.11.2026): Halle des Obersten Rabenpriesters, ein eigenes Gebiet (1 Chunk, Chunk 336|300,
  * Untergrund), damit das Spiel sie je Spieler als Instanz kopieren kann. Erreichbar durch das Tor am Splitterbecken.
- *   Runde Halle (Durchmesser ~24 Felder), in der Mitte ein Splitterbecken (r 3), um das der Priester schwebt; vier Säulen als Deckung im Ring
+ *   Runde Halle (Durchmesser ~24 Felder), in der Mitte ein leuchtendes Splitterbecken (Objekt, r 3), um das der Priester schwebt; vier Steinsäulen als Deckung im Ring
  *   zwischen Becken und Wand, ein Thron aus Stein im Norden, Splitter-Obelisken, Federn.
  * Aufruf (im Ordner realtime): node werkzeug/welt/rabengrund_thronsaal.mjs     danach: node werkzeug/welt/bauen.mjs rabengrund_thronsaal
  */
@@ -17,14 +17,20 @@ const BIB = new Map(JSON.parse(readFileSync(join(WELT, "bibliothek", "objekte.js
 const welle = (x, y) => Math.sin(x / 2.3 + y / 3.1) * 0.5 + Math.sin(y / 1.7 - x / 2.9) * 0.35;
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, d = Math.hypot(cx - M[0], cy - M[1]);
   const gang = Math.abs(cx - 16) < 2 + 0.3 * welle(cx, cy) && cy > 24 && cy < 31;
-  z.push(d < 3.0 ? "o" : d < 12 + 0.6 * welle(cx, cy) || gang ? "h" : "F"); } g.push(z); }
+  z.push(d < 12 + 0.6 * welle(cx, cy) || gang ? "h" : "F"); } g.push(z); }
 let n = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(dorf|hoehle|moor|k|wz)_/, "").replace(/_\d+$/, "") + "_" + ++n, objekt, x: +x.toFixed(2), y: +y.toFixed(2), ...mehr });
 export const SAEULEN = [[10, 9], [22, 9], [10, 21], [22, 21]];
-const dinge = [o("k_altar_stein", 16, 5.2), ...SAEULEN.map(([x, y]) => o("k_saeule_gross", x, y)),
-  ...[[16, 10.6], [20.4, 15], [16, 19.4], [11.6, 15]].map(([x, y]) => o("wz_splitter_obelisk", x, y)),
+/* Felsbrocken rund um die Halle (im Fels): machen die Wand in 3D sichtbar */
+const WAND = []; for (let i = 0; i < 28; i++) { const w = (i / 28) * Math.PI * 2, r = 13.0 + 0.4 * Math.sin(i * 1.7); const x = M[0] + Math.cos(w) * r, y = M[1] + Math.sin(w) * r;
+  if (y > 23.5 && Math.abs(x - 16) < 5) continue;   /* Gang zum Eingang frei, und vorn (zur Kamera) keine Wand vor dem Helden */ if (y > 22) continue; WAND.push(o("hoehle_felswand_01", x, y + 0.6, i % 2 ? { spiegeln: true } : {})); }
+const dinge = [o("hoehle_splitterbecken_01", M[0], M[1]), o("k_altar_stein", 16, 5.2), ...SAEULEN.map(([x, y]) => o("hoehle_steinsaeule_01", x, y)),
+  ...[[7.5, 9], [24.5, 9], [5.4, 15], [26.6, 15], [7.5, 21.5], [24.5, 21.5]].map(([x, y]) => o("moor_feuerkorb_01", x, y)),
+  ...[[13, 13], [19, 17], [11, 18], [21, 11], [9, 6.5], [23, 6.5], [16, 23]].map(([x, y], i) => o("hoehle_federn_01", x, y, i % 2 ? { spiegeln: true } : {})),
+  ...[[12.4, 6.6], [19.6, 6.6]].map(([x, y]) => o("wz_splitter_obelisk", x, y)),
   ...[[6, 12], [26, 12], [7, 20], [25, 20], [13, 25], [19, 25]].map(([x, y], i) => o("hoehle_federn_01", x, y, i % 2 ? { spiegeln: true } : {})),
   o("moor_feuerkorb_01", 12.6, 24.2), o("moor_feuerkorb_01", 19.4, 24.2)];
 for (const p of dinge) { if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt); if (g[Math.floor(p.y)][Math.floor(p.x)] === "F") throw new Error("im Fels: " + p.id); }
+dinge.push(...WAND.filter((p) => p.x > 0.5 && p.y > 0.5 && p.x < B - 0.5 && p.y < H - 0.5));
 const lies = (id, x, y, text, mehr = {}) => ({ id, art: mehr.tat ? "eingang" : "lesen", x, y, radius: mehr.tat ? 2.0 : 1.6, abgleich: "keiner", daten: { text, ...mehr } });
 const spiel = { start: [[EINGANG[0] - OX, EINGANG[1] - OY]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
   interaktionen: [lies("thronsaal_ausgang", 16, 30, "Das Tor zurück zum Splitterbecken.", { tat: "thronsaal_zurueck", knopf: "Zurück zum Splitterbecken", ziel: ZURUECK })] };

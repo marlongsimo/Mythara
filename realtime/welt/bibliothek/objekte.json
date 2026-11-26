@@ -10298,6 +10298,87 @@
     "url": "img/objekte3d/handwerk/federn.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "hoehle_splitterbecken_01",
+   "name": "Splitterbecken",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hoehle_splitterbecken_01.webp",
+   "groesse": [
+    312,
+    198
+   ],
+   "anker": [
+    0.5,
+    0.5404
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 3.2
+   },
+   "tiefe": "boden",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/splitterbecken.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_steinsaeule_01",
+   "name": "Steinsäule",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hoehle_steinsaeule_01.webp",
+   "groesse": [
+    56,
+    173
+   ],
+   "anker": [
+    0.5,
+    0.9075
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/steinsaeule.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_felswand_01",
+   "name": "Felswand",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/hoehle_felswand_01.webp",
+   "groesse": [
+    197,
+    188
+   ],
+   "anker": [
+    0.5025,
+    0.8989
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/felswand.glb",
+    "wind": 0
+   }
   }
  ]
 }

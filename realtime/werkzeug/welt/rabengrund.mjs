@@ -25,7 +25,7 @@ const GAENGE = [[[18, 49], [28, 48], [36, 34], [48, 28], [60, 32], [66, 44], [56
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, w = welle(cx, cy); let c = "F";
   const inR = ([x0, y0, x1, y1]) => cx > x0 - 0.8 * w && cx < x1 + 0.8 * w && cy > y0 - 0.8 * w && cy < y1 + 0.8 * w;
   if (inR(EINSTIEG) || inR(KERKER)) c = "h";
-  else if (Math.hypot(cx - BECKEN.x, cy - BECKEN.y) < BECKEN.r + 0.8 * w) c = Math.hypot(cx - BECKEN.x, cy - BECKEN.y) < 4.2 ? "o" : "h";
+  else if (Math.hypot(cx - BECKEN.x, cy - BECKEN.y) < BECKEN.r + 0.8 * w) c = "h";   /* das Becken ist ein Objekt (hoehle_splitterbecken_01) */
   else if (NISCHEN.some(([nx, ny, r]) => Math.hypot(cx - nx, cy - ny) < r + 0.8 * w)) c = "h";
   else if (GAENGE.some((p) => strecke(cx, cy, p) < 1.9 + 0.4 * w)) c = "h";
   z.push(c); } g.push(z); }
@@ -40,7 +40,7 @@ const dinge = [
   o("moor_feuerkorb_01", 36, 38.6), o("moor_feuerkorb_01", 60, 36.8), o("moor_feuerkorb_01", 46, 74.4), o("k_truemmer", 33.6, 31.6), o("k_truemmer", 63.6, 28.6), o("k_truemmer", 41.6, 72.4, { spiegeln: true }),
   /* 3 Kerker */ ...KAEFIGE.map(([x, y]) => o("hoehle_kaefig_01", x, y)), o("hoehle_tisch_01", 95.5, 21.6), o("k_faesser", 98, 17.6), o("moor_feuerkorb_01", 72.6, 22.6), o("moor_feuerkorb_01", 97.6, 24.4),
   o("hoehle_federn_01", 84, 18), o("hoehle_federn_01", 78, 22, { spiegeln: true }),
-  /* 4 Splitterbecken: Splitter-Obelisken im Kreis, Federn */
+  /* 4 Splitterbecken: leuchtendes Becken (r 4), Splitter-Obelisken im Kreis, Federn */ o("hoehle_splitterbecken_01", BECKEN.x, BECKEN.y, { s: 1.35 }),
   ...[0, 1, 2, 3, 4, 5].map((i) => { const w = (i / 6) * Math.PI * 2 + 0.5; return o("wz_splitter_obelisk", BECKEN.x + Math.cos(w) * 8.6, BECKEN.y + Math.sin(w) * 8.6); }),
   o("hoehle_federn_01", 84, 70), o("hoehle_federn_01", 100, 55, { spiegeln: true }), o("moor_feuerkorb_01", 104, 58.6), o("moor_feuerkorb_01", 104, 66.6)];
 for (const p of dinge) { if (!BIB.has(p.objekt)) throw new Error("unbekanntes Objekt " + p.objekt); if (g[Math.floor(p.y)][Math.floor(p.x)] === "F") throw new Error("im Fels: " + p.id); }
