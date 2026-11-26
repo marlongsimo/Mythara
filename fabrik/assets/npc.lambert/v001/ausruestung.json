@@ -4,7 +4,7 @@
   "zeichenfolge": true,
   "stuecke_behalten": true,
   "luecken_schliessen": true,
-  "hinweis": "npc.lambert – Lambert Schilf, alter Angler am Mühlgraben (Weidenhain), aus dem Fischer (npcmann3d): Glatze unter dem Strohhut, grauer Vollbart (#9c978e). Lamberts Rute (Nussholz, Messing) in der rechten Hand.",
+  "hinweis": "npc.lambert – Lambert Schilf, alter Angler am Mühlgraben (Weidenhain), aus dem Fischer (npcmann3d): Glatze unter dem Strohhut, grauer Vollbart (#9c978e). die Angelrute (Grundform) schräg über der Schulter.",
   "haltung": "zivil",
   "bewegungen": [
     "ruhe",
@@ -23,10 +23,10 @@
       ]
     },
     {
-      "id": "werkzeug.lamberts_rute",
+      "id": "werkzeug.angelrute",
       "platz": "hand_r",
       "art": "schwert",
-      "glb": "werkzeug.lamberts_rute/v001/quelle/lamberts_rute.glb",
+      "glb": "werkzeug.angelrute/v001/quelle/angelrute.glb",
       "griff": 0.85,
       "bewegungen": [
         "ruhe",
