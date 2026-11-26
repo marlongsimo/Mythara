@@ -14,6 +14,6 @@
   },
   "phasen": {
     "1 Boden": "img/figuren-echt3d/oberster_rabenpriester3d.glb – ruhe, gehen, doppelhieb, treffer, tod",
-    "2 Flug": "img/figuren-echt3d/oberster_rabenpriester_flug3d.glb – abheben (Übergang aus Phase 1), fliegen (Schweben und Fortbewegung), flug_hieb, flug_treffer, flug_tod (Absturz); gebaut mit fabrik/fluegel.py (Flügelknochen, Schwebehöhe 0,6 m vor der Vergrößerung)"
+    "2 Flug": "img/figuren-echt3d/oberster_rabenpriester_flug3d.glb – abheben (Übergang aus Phase 1), fliegen (Schweben und Fortbewegung), flug_hieb, flug_treffer, flug_tod (Absturz); gebaut mit fabrik/fluegel.py (Flügelknochen, Schwebehöhe 0,6 m vor der Vergrößerung) · neu: sturzraben_rufen (Schwert hoch, Flügel weit gespreizt, steigt; Treffer/Ruf bei Bild 7) und fluegelschlag (zwei harte Flügelschläge, Windstoß, Bild 5) – Grundlage ausruestung-flug.json (mit kampfschrei)"
   }
 }

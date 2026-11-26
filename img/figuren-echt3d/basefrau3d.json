@@ -498,6 +498,18 @@
     "angriff"
    ],
    "datei": "basefrau3d.teile/waffe.fischreuse.glb"
+  },
+  "waffe.sichel": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "angriff"
+   ],
+   "datei": "basefrau3d.teile/waffe.sichel.glb"
   }
  },
  "aktionen": {

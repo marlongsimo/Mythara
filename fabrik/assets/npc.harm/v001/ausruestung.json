@@ -1,0 +1,46 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.harm – Harm, Schmied von Rabenmoor (aus dem Schmied): kurzes braunes Haar, Vollbart, Lederschürze, Hammer.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "werkzeug.hammer",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "werkzeug.hammer/v001/quelle/hammer.glb",
+      "griff": 0.5,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.kurz",
+      "platz": "haar",
+      "glb": "npc.harm/v001/quelle/teile/kopf.haar.kurz.glb"
+    },
+    {
+      "id": "kopf.bart.vollbart",
+      "platz": "bart",
+      "glb": "npc.harm/v001/quelle/teile/kopf.bart.vollbart.glb"
+    },
+    {
+      "id": "kleidung.schuerze",
+      "platz": "schuerze",
+      "glb": "npc.schmied/v001/quelle/teile/kleidung.schuerze.glb",
+      "beine_mitteln": true
+    }
+  ],
+  "arme_eng": 6
+}

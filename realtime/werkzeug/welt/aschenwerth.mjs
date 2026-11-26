@@ -11,6 +11,7 @@
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { WELT } from "./laden.mjs";
+import { UNTEN as RABENGRUND_UNTEN } from "./rabengrund.mjs";
 
 const C = 32, X0 = 192 * C, X1 = 196 * C, Y0 = 198 * C, Y1 = 211 * C, GRENZE = 206 * C;
 let saat = 2511; const wurf = () => (saat = (saat * 1103515245 + 12345) % 2147483648) / 2147483648;
@@ -32,7 +33,7 @@ const INSEL = { x: 6216, y: 6716, rx: 40, ry: 32 };   /* südwestlich von Rabenm
 const welle = (x, y) => 1 + 0.1 * n2(x, y, 9, 3) + 0.06 * n2(x, y, 4, 8);
 const inInsel = (x, y, k = 1) => Math.hypot((x - INSEL.x) / INSEL.rx, (y - INSEL.y) / INSEL.ry) < k * welle(x, y);
 const BRUECKE_Y = 6656 + 45.6;   /* wie in rabenmoor.mjs (dort y = 45.6) */
-const TEILE = ["moor_bruecke_alt_03", "moor_bruecke_alt_02"];   /* mit den vier Teilen in Rabenmoor gut 36 Felder lang */
+const TEILE = ["moor_bruecke_alt_03", "moor_bruecke_morsch_01"];   /* Phase 6: das zweite Teil ist die morsche Stelle (Quest C1, mit Planken reparieren) */   /* mit den vier Teilen in Rabenmoor gut 36 Felder lang */
 const BRUECKE = [6269, 6263].map((x, i) => ({ objekt: TEILE[i], x, y: BRUECKE_Y }));
 const LANDUNG = [6254, BRUECKE_Y - 1.3];   /* Westende der Brücke: hier beginnt die Insel */
 const aufBahn = (x, y, r = 0) => x > LANDUNG[0] - 2 && x < X1 + 1 && y > BRUECKE_Y - 2.6 - r && y < BRUECKE_Y + r;
@@ -104,7 +105,7 @@ for (let y = Y0 + 1.5; y < Y1 - 1; y += 2.4) { const k = kante.get(Math.floor(y)
 lesen.push({ id: "bruecke_west", x: LANDUNG[0] + 2.5, y: LANDUNG[1] + 1.5, text: "Das Westende der alten Brücke. Hinter dir das Moor und die Lichter von Rabenmoor, vor dir Aschenwerth – eine Insel, auf der niemand mehr wohnt." });
 lesen.push({ id: "heiligtum_tor", x: H.tor, y: H.y1 + 2, text: "Das eingestürzte Tor des Heiligtums von Aschenwerth. Über dem Bogen ist ein Zeichen in den Stein geschlagen: ein zerbrochener Kreis." });
 lesen.push({ id: "altar", x: H.tor, y: H.y0 + 7.4, text: "Ein Altar aus schwarzem Stein, rissig von Frost und Feuer. In der Mulde liegt Asche, die nie kalt zu werden scheint." });
-lesen.push({ id: "gruft", x: FRIEDHOF.x, y: FRIEDHOF.y + 0.6, text: "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen." });
+lesen.push({ id: "gruft", x: FRIEDHOF.x, y: FRIEDHOF.y + 0.6, text: "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen.", tat: "abstieg", knopf: "In die Gruft hinabsteigen", ziel: RABENGRUND_UNTEN });   /* Eingang zum Rabengrund, das Spiel öffnet ihn erst nach C2 */
 lesen.push({ id: "steinkreis", x: KREIS.x, y: KREIS.y + 2.4, text: "Sieben Steine im Kreis, mit Spiralen bedeckt wie die beim Schrein im Rabenmoor. Hier ist es still, selbst die Frösche schweigen." });
 
 /* ───── schreiben ───── */
@@ -114,7 +115,7 @@ const REG = [
 for (const R of REG) { const rx0 = R.ursprung[0] * C, ry0 = R.ursprung[1] * C, rb = R.chunks[0] * C, rh = R.chunks[1] * C, drin = (d) => d.x >= rx0 && d.x < rx0 + rb && d.y >= ry0 && d.y < ry0 + rh;
   const zeilen = G.slice(ry0 - Y0, ry0 - Y0 + rh).map((z) => z.join(""));
   let n = 0; const objekte = dinge.filter(drin).map((d) => ({ id: d.objekt.replace(/^(stil|k|moor)_/, "").replace(/_\d+$/, "") + "_" + ++n, ...d, x: +(d.x - rx0).toFixed(2), y: +(d.y - ry0).toFixed(2) })).sort((a, b) => a.y - b.y);
-  const ia = lesen.filter(drin).map((l) => ({ id: l.id, art: "lesen", x: +(l.x - rx0).toFixed(1), y: +(l.y - ry0).toFixed(1), radius: 1.8, abgleich: "keiner", daten: { text: l.text } }));
+  const ia = lesen.filter(drin).map((l) => ({ id: l.id, art: "lesen", x: +(l.x - rx0).toFixed(1), y: +(l.y - ry0).toFixed(1), radius: 1.8, abgleich: "keiner", daten: { text: l.text, ...(l.tat ? { tat: l.tat, knopf: l.knopf, ziel: l.ziel } : {}) } })).map((i) => i.daten.tat ? { ...i, art: "eingang", radius: 2.0 } : i);
   const freigeben = BRUECKE.filter(drin).map((b) => ({ art: "rechteck", x0: +(b.x - 3 - rx0).toFixed(2), y0: +(b.y - 2.6 - ry0).toFixed(2), x1: +(b.x + 3 - rx0).toFixed(2), y1: +(b.y - ry0).toFixed(2) }));
   /* Start (für die Formprüfung): auf der Insel bzw. im Saum am Ostrand */
   const start = R.id === "aschenwerth" ? [H.tor - rx0, H.y1 + 3 - ry0] : (() => { for (let y = 8; y < rh; y++) if (zeilen[y][rb - 2] !== "o") return [rb - 1.5, y + 0.5]; return [rb - 1.5, 8.5]; })();

@@ -1,0 +1,16 @@
+{
+ "id": "rabengrund_thronsaal",
+ "name": "Der Thronsaal",
+ "untertitel": "Der Oberste Rabenpriester",
+ "ursprung": [
+  336,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 8,
+ "ebene": "untergrund"
+}

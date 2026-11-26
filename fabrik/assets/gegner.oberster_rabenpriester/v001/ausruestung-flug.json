@@ -1,0 +1,55 @@
+{
+  "hinweis": "gegner.oberster_rabenpriester v001 – Oberster Rabenpriester (Meshy „Raven King“), zwei Seltene Schwerter (rechts und links); Bewegungen ruhe, gehen, doppelhieb (Doppelschwert-Angriff), treffer, tod. – Grundlage der Flugvariante (fabrik/fluegel.py): zusätzlich kampfschrei, daraus „sturzraben_rufen“.",
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "doppelhieb",
+    "treffer",
+    "tod",
+    "kampfschrei"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.schwert.rechts",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "gegner.oberster_rabenpriester/v001/quelle/teile/waffe.schwert.selten.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "klasse": "einhand",
+      "angriff": "doppelhieb",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "doppelhieb",
+        "treffer",
+        "tod"
+      ]
+    },
+    {
+      "id": "waffe.schwert.links",
+      "platz": "hand_l",
+      "art": "schwert",
+      "glb": "gegner.oberster_rabenpriester/v001/quelle/teile/waffe.schwert.selten.glb",
+      "griff": 0.12,
+      "griff2": 0.05,
+      "klasse": "einhand",
+      "angriff": "doppelhieb",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "doppelhieb",
+        "treffer",
+        "tod"
+      ],
+      "hand": "L"
+    }
+  ],
+  "arm_radius": 0.09
+}

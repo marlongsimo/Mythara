@@ -1,0 +1,16 @@
+{
+ "id": "fl_231_198",
+ "name": "Die Glutsande",
+ "untertitel": "Das erste Festland – noch unbesiedelt",
+ "ursprung": [
+  231,
+  198
+ ],
+ "chunks": [
+  15,
+  13
+ ],
+ "biom": "wueste",
+ "stufe": 3,
+ "nahtlos": "festland"
+}

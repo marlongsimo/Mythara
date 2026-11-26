@@ -43,6 +43,7 @@ export const wieOft = (r: Rezept): number => Math.min(...r.zutaten.map((z) => Ma
 /** Beruf und Level dieser Werkstatt (Esse und Amboss: Schmieden, sonst Handwerk – shared/berufe.ts) */
 const handLevel = (st: StationId) => skillStand((inventar().berufe || {})[berufAn(st)] || 0).L;
 
+const KOCHEN_ST = new Set(["feuer", "backofen", "herd", "kessel", "brunnen"]), momentName = (st: string | null) => (st === "bindestein" ? "Resonanz" : st && KOCHEN_ST.has(st) ? "Garpunkt" : "Glut");
 export class HandwerkWelt {
   /** gerade am Herstellen (Rezept-id) */ aktiv: string | null = null; private station: StationId | null = null; private glutBis = 0; private offen: StationId | null = null;
   private baenke = new Map<string, THREE.Object3D>(); private laedt = new Set<string>();
@@ -58,9 +59,10 @@ export class HandwerkWelt {
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
       if (r) chatSystem(ladungVon(r) ? `Du legst Splitter auf den Bindestein${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Ladungen)` : ""} …` : `Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
     else if (m.tat === "fertig") { const lad = (m as { ladungen?: number; stueck?: number }); if (typeof lad.ladungen === "number") chatSystem(`Der Stein summt: ${lad.stueck && lad.stueck > 1 ? `Resonanz! ${lad.stueck} Ladungen` : "eine Ladung"} – jetzt ${lad.ladungen}.`);
-      else chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
+      else if ((m as { verbrannt?: boolean }).verbrannt) chatSystem(`Zu lange auf dem Feuer – ${m.name || "es"}. Das nächste wird besser.`);
+      else chatSystem(`Du ${this.station && KOCHEN_ST.has(this.station) ? (this.station === "brunnen" ? "schöpfst" : "kochst") : "stellst"} ${m.name || "etwas"}${this.station && KOCHEN_ST.has(this.station) ? "" : " her"}${m.glut ? ` – ${momentName(this.station)}! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
       if (m.aufstieg) chatSystem(`Glückwunsch! ${BERUF_NAME[b] || "Handwerk"} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
-    else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis(this.station === "bindestein" ? "Resonanz! Schnell den Stein antippen" : "Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
+    else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis(this.station === "bindestein" ? "Resonanz! Schnell den Stein antippen" : this.station && KOCHEN_ST.has(this.station) ? "Garpunkt! Schnell antippen – es gelingt sicher" : "Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
     else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; this.werkHalt(); if (f) f.beilWeg();
       if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); else if (m.grund === "werkzeug") chatSystem(this.station === "bindestein" ? "Ohne Wegstein im Rucksack geht es nicht weiter." : "Ohne Hammer im Rucksack geht es nicht weiter."); }
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); this.aktiv = null; this.werkHalt(); } }
@@ -121,7 +123,7 @@ export class HandwerkWelt {
     let best: Werkstatt | null = null, bd = 1.4; for (const W of WERKSTAETTEN) { const d = Math.hypot(W.x - x, W.y - y); if (d < bd) { bd = d; best = W; } } if (!best) return null;
     const W = best, S = { ...STATIONEN[W.station], x: W.x, y: W.y }, o = this.u.ort, dx = o.x - S.x, dy = o.y - S.y, l = Math.hypot(dx, dy) || 1, glut = this.aktiv && performance.now() < this.glutBis;
     const b = benutzt(), bn = b && GEGENSTAENDE[b.g] ? GEGENSTAENDE[b.g].name : "";
-    return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? (W.station === "bindestein" ? "Resonanz!" : "Glut!") : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
+    return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? `${momentName(W.station)}!` : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
       tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (W.schalter && !schalterAn((id) => questStandB(id), W.schalter)) { chatSystem(W.gesperrt || "Das geht hier noch nicht."); return; } if (this.aktiv) handwerkBitten("stop");
         const b = benutzt(); if (b) { benutzen(null); if (!rezepteAn(S.id).some((r) => r.zutaten.some((z) => z.g.includes(b.g)))) { chatSystem("Nichts Interessantes passiert."); return; } this.fenster(S.id, b.g); return; }
         this.fenster(S.id); },

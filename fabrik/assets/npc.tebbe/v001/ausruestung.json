@@ -1,0 +1,27 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.tebbe – Tebbe (Junge an der Wassermühle, Weidenhain; Quest „Wasser auf die Mühle“), aus npc.junge: zerzaustes braunes Haar (#5a3a22) wie im 2D-Bild.",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.zerzaust",
+      "platz": "haar",
+      "glb": "npc.tebbe/v001/quelle/teile/kopf.haar.zerzaust.glb"
+    }
+  ],
+  "kind": {
+    "groesse": 0.68,
+    "kopf": 1.22
+  },
+  "arme_eng": 6
+}

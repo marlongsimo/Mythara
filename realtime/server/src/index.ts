@@ -11,13 +11,14 @@
  */
 import { LP_REGEN_SEK, maxLp, SKILLS, levelAus } from "../../shared/kampfwerte";
 import { SPRINT_TICK, erholungJeTick } from "../../shared/sprint";
+import { wirkungenAktiv } from "../../shared/wirkungen";
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { TICK, ZUSTAND_JE, PROTOKOLL, HELDEN, K, setzeStaerke, STAERKE, HELDENSTUFE, HELDENEP, stufeAusEp } from "../../shared/config";
 import { Sim, Eingabe } from "../../shared/sim";
 import { setzeKarte, karteNehmen, GRUNDKARTE } from "../../shared/karte";
 import { KARTEN, FEIN, darfKaempfen, ORTSTUFE, STRECKEN, WELTZONEN, WELTZONE, weltRegionBei } from "../../shared/karten";
-import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn } from "./welt";
+import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfPruefer, heilenMit, weltOnline, stufeSetzen, belegtAbweisen, systemAn, VOLLES_LEBEN } from "./welt";
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
@@ -67,13 +68,13 @@ xpLiveSetzen((nutzer, xp) => { for (const Z of zonen.values()) for (const p of Z
 heldXpSetzen((nutzer) => { for (const Z of zonen.values()) for (const p of Z.spieler) if (p.v1 && p.kampf && p.kampf.nutzer === nutzer && !p.zoneWeg) return p.v1.xp; return undefined; });
 heilenMit(async (nutzer, v) => {
   for (const Z of zonen.values()) for (const p of Z.spieler) { if (!p.kampf || p.kampf.nutzer !== nutzer || !p.heldId || p.zoneWeg) continue; const h = Z.sim.nach(p.heldId); if (!h || h.tot) continue;
-    const n = trankHeilungBei(v, h.lp, h.max); if (n <= 0) return { fehler: "Du hast schon volles Leben." };
+    const n = trankHeilungBei(v, h.lp, h.max); if (n <= 0) return { fehler: VOLLES_LEBEN };
     return { n, lp: Math.min(h.max, h.lp + n), max: h.max, anwenden: () => { h.lp = Math.min(h.max, h.lp + n); } }; }
   let r: { lp_stand?: { lp?: number; z?: number } | null; skill_lp?: number } | undefined;
   try { r = ((await sb(`/rest/v1/rpg_held?user_id=eq.${nutzer}&select=*`)) as typeof r[])[0]; } catch { return { fehler: "Gerade nicht möglich." }; }
   const max = maxLp(Number(r && r.skill_lp) || 0), ls = r && r.lp_stand, L = lebenJe.get(nutzer) || (ls && typeof ls.lp === "number" && typeof ls.z === "number" ? { lp: ls.lp, zeit: ls.z * 1000 } : undefined);
   const jetzt = L ? Math.min(max, L.lp + Math.floor((Date.now() - L.zeit) / 1000 / LP_REGEN_SEK)) : max;
-  const n = trankHeilungBei(v, jetzt, max); if (n <= 0) return { fehler: "Du hast schon volles Leben." };
+  const n = trankHeilungBei(v, jetzt, max); if (n <= 0) return { fehler: VOLLES_LEBEN };
   return { n, lp: jetzt + n, max, anwenden: () => { const neu = Math.min(max, jetzt + n), voll = neu >= max; if (voll) lebenJe.delete(nutzer); else lebenJe.set(nutzer, { lp: neu, zeit: Date.now() });
     void sb("/rest/v1/rpc/rpg_held_lp_setzen", { method: "POST", body: JSON.stringify({ p_user: nutzer, p_lp: voll ? null : neu }) }).catch((e) => console.error("LP speichern:", (e as Error).message)); } }; });
 /** Einen Spieler in die gemeinsame Welt eines Gebiets setzen (die Zone entsteht beim ersten Spieler) – jede Person nur einmal */
@@ -270,8 +271,8 @@ function kampfVerbindung(ws: WebSocket, req: { url?: string }): void {
         if (STRECKEN.has(karte)) { /* gemeinsame Kampfwelt: alle Spieler auf dieser Strecke teilen sich Simulation und Gegner */
           const [aktiv, profil, v1] = await Promise.all([sb(`/rest/v1/rpg_echtzeit_aktiver_held?user_id=eq.${nutzer}&select=held`).catch(() => []) as Promise<{ held: string }[]>, sb(`/rest/v1/rpg_profiles?user_id=eq.${nutzer}&select=handle`).catch(() => []) as Promise<{ handle: string }[]>, heldV1Lesen(sb, nutzer)]);
           if (v1) { if ((e as { angelegt?: unknown }).angelegt !== undefined) v1.angelegt = angelegtPruefen((e as { angelegt?: unknown }).angelegt, v1.waffe); if (p.stilVorab !== undefined) { v1.stil = stilPruefen(p.stilVorab); p.stilVorab = undefined; } p.v1 = v1; } /* Stil, der während des Ladens kam, gilt (sonst stand Akkurat im Browser, gerechnet wurde Ausgewogen) */ /* Kampfregeln v2: eigener Held mit Skill-XP und geprüfter Ausrüstung */
-          if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
-            p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
+          if (v1) { const iv = await inventarLaden(sb, nutzer); if (iv && p.v1) { p.v1.angelegt = { ...iv.inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(iv.inv.wirkungen); /* die Ausrüstung kommt aus dem Server-Inventar (Migration 043) */
+            p.invAus = inventarHoeren(nutzer, (inv) => { if (!p.v1) return; p.v1.angelegt = { ...inv.angelegt }; p.v1.wirkungen = wirkungenAktiv(inv.wirkungen); if (p.zone && p.heldId) p.zone.sim.kampfwerteSetzen(p.heldId, kampfwerteVon(p.v1)); }); } }
           const typ = aktiv[0] && HELDEN[aktiv[0].held] ? aktiv[0].held : held, name = (profil[0] && profil[0].handle) || "Wanderer";
           /* Während auf die Datenbank gewartet wurde, kann die Seite schon wieder weg sein (Neuladen): dann keinen Helden mehr hineinsetzen – er bliebe sonst als Geist stehen */
           if (ws.readyState !== WebSocket.OPEN || !plaetze.has(p)) { console.log("Welt: Anmeldung verworfen – Verbindung schon zu"); return; }

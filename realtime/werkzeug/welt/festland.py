@@ -157,7 +157,8 @@ kacheln = []
 for (ya, yb) in [(155, 169), (169, 183), (183, 198)]:
     for (xa, xb) in stuecke(186, 261, 5): kacheln.append((xa, ya, xb, yb))
 kacheln.append((186, 198, 192, 211))
-for (xa, xb) in stuecke(212, 261, 3): kacheln.append((xa, 198, xb, 211))
+kacheln.append((212, 198, 216, 200))   # Phase 7: 212–215 × 200–210 ist das Ostufer (eigene Region, werkzeug/welt/ostufer.mjs)
+for (xa, xb) in stuecke(216, 261, 3): kacheln.append((xa, 198, xb, 211))
 for (ya, yb) in [(211, 225), (225, 239), (239, 254)]:
     for (xa, xb) in stuecke(186, 261, 5): kacheln.append((xa, ya, xb, yb))
 for n in os.listdir(os.path.join(WELT, 'regionen')):

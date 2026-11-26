@@ -1,0 +1,16 @@
+{
+ "id": "turm_ebene1",
+ "name": "Der Turm – Wachstube",
+ "untertitel": "Ebene 1",
+ "ursprung": [
+  340,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "innen",
+ "stufe": 3,
+ "ebene": "innen"
+}

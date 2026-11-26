@@ -1,16 +1,16 @@
 {
  "id": "fl_212_198",
- "name": "Die Glutsande",
+ "name": "Das Grenzland",
  "untertitel": "Das erste Festland – noch unbesiedelt",
  "ursprung": [
   212,
   198
  ],
  "chunks": [
-  16,
-  13
+  4,
+  2
  ],
- "biom": "wueste",
+ "biom": "wiese",
  "stufe": 3,
  "nahtlos": "festland"
 }

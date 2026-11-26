@@ -1,0 +1,30 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "bandit3d.schlaeger – Banditen-Variante aus bandit3d (Meshy „Crimson Warden“), Rot umgefärbt mit fabrik/textur_ton.py. Schläger: Kapuze und Umhang fast schwarz, größer und breiter (×1,12), Axt (angriff_axt), Block mit der Waffe.",
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "angriff_axt",
+    "block",
+    "treffer",
+    "tod"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.axt",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "waffen/axt/waffe.axt/v001/quelle/axt.glb",
+      "griff": 0.85,
+      "angriff": "angriff_axt"
+    }
+  ],
+  "block": "waffe"
+}

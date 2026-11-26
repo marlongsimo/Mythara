@@ -1,0 +1,38 @@
+{
+  "hinweis": "gegner.rabenpriester.novize – aus gegner.rabenpriester (Meshy „Raven Archmage“), Textur umgefärbt mit fabrik/textur_ton.py. Novize: schlicht, Kutte erdbraun, nur der einfache Zauberstab.",
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "treffer",
+    "tod",
+    "zauber_stab"
+  ],
+  "huelle": [],
+  "teilnetze": [],
+  "starr": [
+    {
+      "id": "waffe.zauberstab.einfach",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "gegner.rabenpriester/v001/quelle/teile/waffe.zauberstab.einfach.glb",
+      "griff": 0.55,
+      "griff2": 0.35,
+      "klasse": "stab",
+      "angriff": "zauber_stab",
+      "bewegungen": [
+        "ruhe",
+        "gehen",
+        "laufen",
+        "treffer",
+        "tod",
+        "zauber_stab"
+      ]
+    }
+  ],
+  "beine_eng": 0.15
+}

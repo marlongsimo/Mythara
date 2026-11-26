@@ -44,11 +44,12 @@ def gelaende_grund(rid, R, pf):
 
 def karte(rid, index):
     R = index['regionen'][rid]['region']; (ux, uy), (cb, ch) = R['ursprung'], R['chunks']; OBJ = index['objekte']
-    ohne_boden = any(not os.path.exists(os.path.join(WELT, json.load(open(os.path.join(WELT, f'{ux + i}_{uy + j}.json'))).get('boden') or f'{ux + i}_{uy + j}.webp'))
+    GEBACKEN = '--gebacken' in sys.argv          # seit 26.11.2026 (#13): überall aus den Geländefarben; die alten Bodenbilder nur noch auf Wunsch
+    ohne_boden = not GEBACKEN or any(not os.path.exists(os.path.join(WELT, json.load(open(os.path.join(WELT, f'{ux + i}_{uy + j}.json'))).get('boden') or f'{ux + i}_{uy + j}.webp'))
                      for i in range(cb) for j in range(ch) if os.path.exists(os.path.join(WELT, f'{ux + i}_{uy + j}.json')))
     k = 4 if max(cb, ch) <= 4 else 8                      # wie boden.py: kleine Regionen feiner
     n = CHUNK * FELD // k
-    if ohne_boden: n = 16 if R.get('biom') == 'meer' else 96   # aus Geländefarben: 3 Bildpunkte je Feld, reines Meer 0,5
+    if ohne_boden and max(cb, ch) > 8: n = 16 if R.get('biom') == 'meer' else 96   # große Festland-Kacheln: 3 Bildpunkte je Feld, reines Meer 0,5 (kleine Gebiete behalten ihre Auflösung)
     pf = n / CHUNK                                        # Bildpunkte je Chunk und je Feld
     bild = Image.new('RGB', (cb * n, ch * n), (40, 34, 24)); baeume, sonst = [], []
     if ohne_boden: bild = gelaende_grund(rid, R, pf).resize((cb * n, ch * n), Image.LANCZOS)
@@ -105,7 +106,7 @@ def karte(rid, index):
 
 def main():
     index = json.load(open(os.path.join(WELT, 'welt.json')))
-    for rid in (sys.argv[1:] or list(index['regionen'])): karte(rid, index)
+    for rid in ([a for a in sys.argv[1:] if not a.startswith('--')] or list(index['regionen'])): karte(rid, index)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,23 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.ysolde – Ysolde, Geist der Wächterin auf dem Turm am Ostufer (aus npcfrau3d): langes silberweißes Haar; nach dem Export durchscheinend grün leuchtend (fabrik/geist.py).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [],
+  "huelle": [],
+  "teilnetze": [
+    {
+      "id": "kopf.haar.lang",
+      "platz": "haar",
+      "glb": "npc.ysolde/v001/quelle/teile/kopf.haar.lang.glb"
+    }
+  ],
+  "arme_eng": 6
+}

@@ -63,13 +63,19 @@
   },
   {
    "id": "gruft",
-   "art": "lesen",
+   "art": "eingang",
    "x": 44,
    "y": 134.6,
-   "radius": 1.8,
+   "radius": 2,
    "abgleich": "keiner",
    "daten": {
-    "text": "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen."
+    "text": "Eine Gruft, halb im Torf versunken. Die Tür ist mit Ketten verschlossen – von innen.",
+    "tat": "abstieg",
+    "knopf": "In die Gruft hinabsteigen",
+    "ziel": [
+     10572,
+     9650
+    ]
    }
   },
   {

@@ -19,8 +19,11 @@ import { fileURLToPath } from "node:url";
 
 const HIER = dirname(fileURLToPath(import.meta.url)), RT = join(HIER, "..", ".."), REG = join(RT, "welt", "regionen");
 const C = 32, WEG = new Set(["e", "k", "p"]), WASSER = new Set(["~", "w", "o"]), GESPERRT = new Set(["F", "X"]);
-const standorte = [...JSON.parse(readFileSync(join(RT, "shared", "holz_standorte.json"), "utf8")).lichtungen,
-  ...JSON.parse(readFileSync(join(RT, "shared", "bergbau_standorte.json"), "utf8")).senken.map((s) => ({ ...s, baeume: s.adern, senke: true }))];
+const HOLZ = JSON.parse(readFileSync(join(RT, "shared", "holz_standorte.json"), "utf8")).lichtungen, BERG = JSON.parse(readFileSync(join(RT, "shared", "bergbau_standorte.json"), "utf8")).senken;
+/* vorgeschlagene Orte (welt/orte.json, Phase 3): schon freischneiden, bis die Rolle Spiel sie in die Standort-Dateien übernimmt (dann gelten jene) */
+const ORTE = JSON.parse(readFileSync(join(RT, "welt", "orte.json"), "utf8")), schonDa = new Set([...HOLZ, ...BERG].map((l) => l.name));
+const standorte = [...HOLZ, ...(ORTE.lichtungen || []).filter((l) => !schonDa.has(l.name)),
+  ...[...BERG, ...(ORTE.senken || []).filter((l) => !schonDa.has(l.name))].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
 const bib = JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte;
 const kategorie = new Map(bib.map((o) => [o.id, o.kategorie]));
 const istBewuchs = (p) => kategorie.get(p.objekt) === "bewuchs";

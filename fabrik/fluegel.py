@@ -7,10 +7,11 @@ Erwartet eine mit rig.py gebaute Figur (Knochen becken, brust, oberschenkel.*, �
    (weich auslaufend zur Wurzel, damit Rücken und Umhang nicht reißen).
 2. Flugbewegungen, jede aus einer Bodenbewegung abgeleitet (Arme und Oberkörper wie dort), dazu Schwebehöhe, Flügelschlag und hängende Beine:
    abheben (in die Luft, 0,9 s) · fliegen (Schweben und Fortbewegung, Schleife, ein Flügelschlag je 0,7 s) · flug_hieb (Doppelschwert-Angriff in der Luft)
-   · flug_treffer · flug_tod (stürzt mit eingeklappten Flügeln ab und bleibt liegen).
+   · flug_treffer · flug_tod (stürzt mit eingeklappten Flügeln ab und bleibt liegen) · fluegelschlag (zwei harte Schläge, Windstoß)
+   · sturzraben_rufen (nur wenn die Figur „kampfschrei“ hat: Schwert hoch, Flügel weit gespreizt).
 Danach fabrik/kind.py (Größe) und fabrik/export3d.py … echtzeit=1. boden.py NICHT laufen lassen (es stellte die Füße zurück auf den Boden).
 """
-import math, sys
+import json, math, sys
 import numpy as np
 import bpy
 from mathutils import Quaternion, Vector
@@ -81,9 +82,14 @@ bauen("flug_treffer", "treffer", 6, 14, False, lambda t: 1 + (nb("treffer") - 1)
       lambda t: (HOCH - 0.12 * math.sin(math.pi * t), 10 + 25 * math.sin(math.pi * t), 12, 1.0))
 bauen("flug_tod", "tod", 16, 12, False, lambda t: 1 + (nb("tod") - 1) * glatt(max(0.0, (t - 0.45) / 0.55)),
       lambda t: (HOCH * (1 - glatt(min(1.0, t / 0.55))) ** 1.5, 10 - 70 * glatt(min(1.0, t / 0.5)), 12 + 30 * glatt(min(1.0, t / 0.5)), 1 - glatt(max(0.0, (t - 0.45) / 0.4))), '{"halten": 15}')
-for alt in ("ruhe", "gehen", "doppelhieb", "treffer", "tod"):                                     # die Flugvariante hat nur Flugbewegungen
+if "kampfschrei" in bpy.data.actions:                                                               # Sturzraben rufen: Schwert hoch gereckt, Kopf zurück, Flügel weit gespreizt, steigt etwas
+    bauen("sturzraben_rufen", "kampfschrei", 14, 12, False, lambda t: 1 + (nb("kampfschrei") - 1) * t,
+          lambda t: (HOCH + 0.18 * math.sin(math.pi * t), 10 + 50 * math.sin(math.pi * t) + 0.3 * schlag(t, 2), 12 - 22 * math.sin(math.pi * t), 1.0), '{"treffer": 7}')
+bauen("fluegelschlag", "ruhe", 14, 14, False, lambda t: 1,                                         # Flügelschlag: weit ausholen (hoch und zurück), zwei harte Schläge nach unten vorn – Windstoß
+      lambda t: (HOCH + 0.1 * math.sin(math.pi * t) + 0.05 * math.sin(4 * math.pi * t), 10 + 55 * math.sin(4 * math.pi * t) * math.sin(math.pi * t), 12 - 40 * math.sin(4 * math.pi * t) * math.sin(math.pi * t), 1.0), '{"treffer": 5}')
+for alt in ("ruhe", "gehen", "doppelhieb", "treffer", "tod", "kampfschrei"):                                     # die Flugvariante hat nur Flugbewegungen
     if alt in bpy.data.actions: bpy.data.actions.remove(bpy.data.actions[alt])
 arm.animation_data.action = bpy.data.actions["fliegen"]; bpy.context.scene.frame_set(1)
 for o in bpy.data.objects:                                                                          # Waffen: dieselben Bewegungen wie die Figur
-    if o.get("bewegungen"): o["bewegungen"] = '["abheben", "fliegen", "flug_hieb", "flug_treffer", "flug_tod"]'
+    if o.get("bewegungen"): o["bewegungen"] = json.dumps([a.name for a in bpy.data.actions if a.get("bilder")])
 bpy.ops.wm.save_as_mainfile(filepath=ziel); print("geschrieben:", ziel)

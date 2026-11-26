@@ -1,0 +1,10 @@
+{
+ "_hinweis": "Kochen (shared/handwerk.ts, Phase 3b): Werkstätten in Weltfeldern. Feuer und Brunnen stehen schon in der Welt (Erntefeuer Weidenhain, Festfeuer am Rastplatz Osthang, Feuerkorb im Rabenmoor, Brunnen Waldmark und Osthof). Backofen (Bäckerei Waldmark, nach A3) sowie Herd und Kessel (Taverne Waldmark) kommen hinzu, sobald die Welt sie gebaut hat – dann hier eintragen (Issue #25). schalter: nur mit diesem Quest-Schalter nutzbar.",
+ "stellen": [
+  { "id": "feuer_weidenhain", "station": "feuer", "x": 6442, "y": 6687.25, "ort": "weidenhain", "name": "Erntefeuer" },
+  { "id": "feuer_osthang", "station": "feuer", "x": 6626, "y": 6516.75, "ort": "osthang", "name": "Feuer am Rastplatz" },
+  { "id": "feuer_rabenmoor", "station": "feuer", "x": 6325.5, "y": 6723.5, "ort": "rabenmoor", "name": "Torffeuer" },
+  { "id": "brunnen_waldmark", "station": "brunnen", "x": 6448, "y": 6432.85, "ort": "waldmark", "name": "Brunnen" },
+  { "id": "brunnen_osthof", "station": "brunnen", "x": 6529.6, "y": 6431.2, "ort": "osthof", "name": "Brunnen" }
+ ]
+}
