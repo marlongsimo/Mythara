@@ -1,7 +1,7 @@
 """Mythara Fabrik – Beute und Questgegenstände (Phase 4) in Blender bauen (glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   <blender-python> fabrik/beute.py -- <art> <ziel.glb>
-  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb
+  art: karrenbrief | schluesselbund | silberleuchter | apfel | rotes_banner | apfelkorb | rabenfedern | federsiegel | splitterkern | rabenschwinge
 
 karrenbrief: zusammengerollter Frachtbrief mit Schnur und rotem Siegel · schluesselbund: Eisenring mit drei Bartschlüsseln ·
 silberleuchter: dreiarmiger Silberleuchter mit Kerzen · apfel: roter Apfel mit Stiel und Blatt ·
@@ -92,6 +92,47 @@ elif ART == "apfelkorb":
     rohr((-0.14, 0, 0.12), (-0.1, 0, 0.27), 0.008, WEIDE); rohr((-0.1, 0, 0.27), (0.1, 0, 0.27), 0.008, WEIDE); rohr((0.1, 0, 0.27), (0.14, 0, 0.12), 0.008, WEIDE)   # Henkel
     for i in range(9):
         a = random.uniform(0, 6.3); r = random.uniform(0.0, 0.08); apfel((r * math.cos(a), r * math.sin(a), 0.115 + random.uniform(0, 0.02)), 0.035, mat("apfelrot" if i % 3 else "apfelgelb", (190, 35, 30) if i % 3 else (205, 170, 50), 0.35))
+elif ART in ("rabenfedern", "federsiegel", "rabenschwinge"):
+    FED = mat("feder", (30, 30, 38), 0.45, 0.2); SCH = mat("schimmer", (60, 45, 95), 0.35, 0.3); KIEL = mat("kiel", (150, 140, 125), 0.5)
+    def feder(ort, laenge, winkel, breite=0.022, m=FED, z=0.0):
+        a = math.radians(winkel); d = Vector((math.cos(a), math.sin(a), 0)); q = Vector((-d.y, d.x, 0)); o0 = Vector(ort) + Vector((0, 0, z)); pts = []
+        for k in range(9):
+            t = k / 8; w = breite * math.sin(math.pi * min(1.0, t * 1.15)) * (1 - 0.3 * t); pts.append(o0 + d * laenge * t + q * w)
+        for k in range(8, -1, -1):
+            t = k / 8; w = breite * 0.8 * math.sin(math.pi * min(1.0, t * 1.15)) * (1 - 0.3 * t); pts.append(o0 + d * laenge * t - q * w)
+        me = bpy.data.meshes.new("f"); me.from_pydata([tuple(p) for p in pts[1:-1]], [], [tuple(range(len(pts) - 2))]); f = bpy.data.objects.new("f", me); bpy.context.collection.objects.link(f)
+        f.data.materials.append(m); f.modifiers.new("d", "SOLIDIFY").thickness = 0.002
+        rohr(tuple(o0 - d * 0.012), tuple(o0 + d * laenge * 0.9 + Vector((0, 0, 0.002))), 0.0011, KIEL, 5)
+    if ART == "rabenfedern":
+        for k, (w, L, b) in enumerate(((60, 0.2, 0.024), (78, 0.23, 0.027), (95, 0.19, 0.022))): feder((0.0 + 0.012 * k, -0.08, 0.004 * k), L, w, b, SCH if k == 1 else FED)
+        ring((0.003, -0.07, 0.01), 0.01, 0.003, mat("schnur", (150, 110, 60), 0.9))
+    elif ART == "federsiegel":
+        WACHS = mat("wachs", (40, 28, 60), 0.35)
+        dreh("siegel", [(0, 0), (0.05, 0), (0.056, 0.004), (0.052, 0.014), (0.045, 0.018), (0, 0.018)], WACHS, 28)
+        for k in range(8): kugel((0.054 * math.cos(k * 0.8 + 0.3), 0.054 * math.sin(k * 0.8 + 0.3), 0.006), 0.008 + 0.003 * (k % 3), WACHS, (1, 1, 0.6), 8)
+        feder((-0.025, -0.012, 0), 0.05, 35, 0.011, mat("praegung", (95, 70, 140), 0.3), 0.019)
+        bpy.ops.mesh.primitive_plane_add(size=1, location=(0.0, 0.08, 0.001)); o = bpy.context.object; o.scale = (0.05, 0.08, 1); o.data.materials.append(mat("band", (120, 20, 30), 0.7))
+    else:                                                                                          # Rabenschwinge: Einhandschwert, schwarze Klinge mit violettem Schimmer, Parierstange aus Federn, Rabenkopf-Knauf
+        STAHL = mat("klinge", (45, 45, 55), 0.25, 0.9); GOLD = mat("gold", (170, 135, 60), 0.3, 1.0); GRIFF = mat("griff", (40, 30, 30), 0.8)
+        for sx in (-1, 1):                                                                         # Parierstange aus Federn: erst flach (y = oben) bauen, dann aufrichten
+            for j in range(3): feder((sx * 0.015, 0.072 - j * 0.008, 0), 0.15 - j * 0.03, 90 - sx * (80 - j * 18), 0.028 - j * 0.004, GOLD if j == 0 else SCH)
+        for o in list(bpy.context.scene.objects): o.select_set(True)
+        bpy.ops.transform.rotate(value=math.radians(90), orient_axis="X", center_override=(0, 0, 0)); bpy.ops.object.transform_apply(rotation=True, location=True); bpy.ops.object.select_all(action="DESELECT")
+        me = bpy.data.meshes.new("k"); L = 0.62
+        me.from_pydata([(-0.025, 0, 0.08), (0.025, 0, 0.08), (0.022, 0, 0.08 + L * 0.7), (0.0, 0, 0.08 + L), (-0.03, 0, 0.08 + L * 0.62), (0, 0.006, 0.08 + L * 0.4), (0, -0.006, 0.08 + L * 0.4)],
+                       [], [(0, 1, 5), (1, 2, 5), (2, 3, 5), (3, 4, 5), (4, 0, 5), (1, 0, 6), (2, 1, 6), (3, 2, 6), (4, 3, 6), (0, 4, 6)]); k_ = bpy.data.objects.new("k", me); bpy.context.collection.objects.link(k_); k_.data.materials.append(STAHL)
+        rohr((0, 0, 0.1), (0, 0, 0.08 + L * 0.85), 0.003, SCH, 5)                                     # Blutrinne violett
+        rohr((0, 0, -0.1), (0, 0, 0.075), 0.013, GRIFF, 10); kugel((0, 0, -0.115), 0.02, GOLD, (1, 1.3, 1), 10); rohr((0, -0.02, -0.11), (0, -0.05, -0.118), 0.007, GOLD, 6, 0.0)   # Rabenkopf-Knauf mit Schnabel
+elif ART == "splitterkern":
+    KRIST = mat("kristall", (90, 150, 235), 0.1); KERN = mat("kern", (200, 170, 255), 0.05)
+    for m_ in (KRIST, KERN):
+        b = m_.node_tree.nodes["Principled BSDF"]; b.inputs["Emission Color"].default_value = b.inputs["Base Color"].default_value; b.inputs["Emission Strength"].default_value = 0.8 if m_ is KRIST else 2.5
+    kugel((0, 0, 0.06), 0.016, KERN, (1, 1, 1.1), 10)                                            # leuchtender Kern, von Kristallsplittern umschlossen
+    random.seed(9)
+    for k in range(11):
+        a = k / 11 * 2 * math.pi + random.uniform(-0.2, 0.2); e = random.uniform(-0.2, 1.2); d = Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e))); L = random.uniform(0.07, 0.12)
+        o = rohr(tuple(Vector((0, 0, 0.06)) - d * 0.01), tuple(Vector((0, 0, 0.06)) + d * L), 0.022, KRIST, 6, 0.0)
+    dreh("fassung", [(0, 0), (0.04, 0), (0.035, 0.022), (0.0, 0.022)], mat("eisen", (70, 66, 72), 0.4, 0.8), 6)
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
