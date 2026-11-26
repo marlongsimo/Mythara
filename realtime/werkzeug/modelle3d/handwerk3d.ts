@@ -161,6 +161,47 @@ export function wasserrad() {
   return { teile: fest, rad, mitte: MY };
 }
 
+/* ───────── Phase 4: Zelt der Banditen, Fußspuren, verschlossene Tür im Fels ───────── */
+/** Spitzzelt aus grober Plane über zwei Stangen und einem Firstholz, vorn halb offen, rot geflickt; 2,6 × 2,2 m */
+export function zelt() {
+  const t = new Teile("putz"), B = 2.6, T = 2.2, H = 1.75, PLANE = "#8c7a5c", FLICK = "#8a2e24";
+  stab(t, V(0, 0, T / 2 + 0.05), V(0, H + 0.12, T / 2 + 0.05), 0.04, HOLZ_ALT); stab(t, V(0, 0, -T / 2 - 0.05), V(0, H + 0.12, -T / 2 - 0.05), 0.04, HOLZ_ALT);
+  stab(t, V(0, H, -T / 2 - 0.15), V(0, H, T / 2 + 0.15), 0.035, HOLZ_ALT);
+  for (const s of [-1, 1]) { const g = new THREE.BufferGeometry(); const p = new Float32Array([0, H, -T / 2, s * B / 2, 0, -T / 2, s * B / 2, 0, T / 2, 0, H, -T / 2, s * B / 2, 0, T / 2, 0, H, T / 2]);
+    g.setAttribute("position", new THREE.BufferAttribute(p, 3)); g.computeVertexNormals(); t.add(g, PLANE, undefined, { muster: "putz", schwanken: 0.05 }); }
+  t.flaechen([[[0, H, -T / 2], [-B / 2, 0, -T / 2], [B / 2, 0, -T / 2]]], "#7d6c50", { muster: "putz" });                           /* Rückwand */
+  t.flaechen([[[0, H, T / 2], [-B / 2, 0, T / 2], [-0.25, 0, T / 2 + 0.15]]], "#7d6c50", { muster: "putz" });                     /* Vorderseite halb, Eingang offen */
+  t.flaechen([[[0.05, H * 0.95, T / 2 + 0.02], [0.35, 0, T / 2 + 0.45], [B / 2, 0, T / 2]]], "#6e5e44", { muster: "putz" });          /* zurückgeschlagene Klappe */
+  t.box(0.5, 0.35, 0.02, -0.65, 0.4, -T / 2 - 0.01, FLICK, 0, { muster: "putz" }); t.add(new THREE.BoxGeometry(0.45, 0.4, 0.02), FLICK, matrix(0.75, 0.75, 0.2, 0, Math.PI / 2, 0.55), { muster: "putz" });
+  for (const [x, z] of [[-B / 2 - 0.25, -T / 2 + 0.2], [B / 2 + 0.25, -T / 2 + 0.2], [-B / 2 - 0.25, T / 2 - 0.2], [B / 2 + 0.25, T / 2 - 0.2]] as const) { stab(t, V(x, 0, z), V(x * 0.9, 0.25, z), 0.02, HOLZ_ALT); stab(t, V(x * 0.9, 0.22, z), V(x > 0 ? 1.0 : -1.0, 0.6, z), 0.006, "#c8b88a"); }
+  t.box(1.0, 0.08, 0.7, 0, 0, -0.2, "#5a4a3a", 0.1, { muster: "putz" });                                                            /* Lager drinnen */
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Fußspuren im Boden: zwei Paar Stiefel, eine Karrenspur, ein liegengelassener Apfel (flach, ohne Kollision) */
+export function spuren() {
+  const t = new Teile("glatt"), MATSCH = "#4a3a28";
+  for (let i = 0; i < 7; i++) { const z = -1.1 + i * 0.36, x = (i % 2 ? 0.14 : -0.14) - 0.35 + i * 0.03;
+    t.add(new THREE.CylinderGeometry(0.075, 0.07, 0.012, 9), MATSCH, matrix(x, 0.006, z, 0, 0.1, 0, 0.75, 1, 1.35), { muster: "glatt" });
+    t.add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 8), MATSCH, matrix(x, 0.006, z - 0.17, 0, 0, 0, 0.8, 1, 0.8), { muster: "glatt" }); }
+  for (let i = 0; i < 5; i++) { const z = -0.9 + i * 0.42, x = 0.45 + (i % 2 ? 0.12 : -0.12);
+    t.add(new THREE.CylinderGeometry(0.07, 0.065, 0.012, 9), "#3f3122", matrix(x, 0.007, z, 0, -0.15, 0, 0.8, 1, 1.4), { muster: "glatt" }); }
+  for (const x of [-0.95, -0.55]) t.box(0.07, 0.008, 2.4, x, 0, 0, "#54432f", 0.05, { muster: "glatt" });
+  t.add(new THREE.SphereGeometry(0.06, 9, 7), "#b8352c", matrix(0.15, 0.055, 0.85), { muster: "glatt" }); t.add(new THREE.CylinderGeometry(0.006, 0.006, 0.04, 4), "#4a3520", matrix(0.15, 0.12, 0.85), { muster: "holz" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+/** Verschlossene Tür in einem Felsgang: Bohlentür mit Eisenbändern und Schloss in einem Rahmen aus Balken, 3 m breit (füllt den Gang) */
+export function felstuer() {
+  const t = new Teile("holz"), B = 3.0, H = 2.3;
+  t.box(0.35, H + 0.3, 0.5, -B / 2 + 0.17, 0, 0, "#6f6a63", 0, { muster: "stein", schwanken: 0.06 }); t.box(0.35, H + 0.3, 0.5, B / 2 - 0.17, 0, 0, "#6f6a63", 0, { muster: "stein", schwanken: 0.06 });
+  t.box(B, 0.3, 0.5, 0, H, 0, "#5e4128", 0, { muster: "holz" });
+  for (let i = 0; i < 7; i++) t.box((B - 0.7) / 7 - 0.02, H, 0.12, -B / 2 + 0.35 + (i + 0.5) * (B - 0.7) / 7, 0, 0, i % 2 ? "#6a4628" : "#5e3e24", 0, { muster: "holz", schwanken: 0.06 });
+  for (const y of [0.35, 1.15, 1.95]) t.box(B - 0.7, 0.09, 0.03, 0, y, 0.075, EISEN, 0, { muster: "metall" });
+  for (const y of [0.35, 1.15, 1.95]) for (const x of [-1.0, -0.4, 0.2, 0.8]) t.add(new THREE.SphereGeometry(0.025, 6, 4), EISEN_HELL, matrix(x, y + 0.045, 0.1), { muster: "metall" });
+  t.box(0.22, 0.28, 0.06, 0.75, 0.95, 0.09, "#3a3c40", 0, { muster: "metall" }); t.add(new THREE.TorusGeometry(0.07, 0.015, 5, 12), "#8a6a2a", matrix(0.75, 1.0, 0.14), { muster: "metall" });
+  t.add(new THREE.CylinderGeometry(0.018, 0.018, 0.04, 6), "#111111", matrix(0.75, 1.03, 0.12, Math.PI / 2), { muster: "glatt" });
+  return { teile: t, flammen: new Teile("glatt") };
+}
+
 /* ───────── Ausgabe ───────── */
 /** Teile → Mesh mit glTF-tauglichen Materialien (Standard statt Lambert, Farbe ≤ 1; die Aufhellung der Muster steckt in den Eckpunktfarben) */
 const STANDARD = MUSTER.map((m, i) => { const alt = MATERIALIEN[i] as THREE.MeshLambertMaterial;
@@ -172,7 +213,7 @@ function flammenNetz(t: Teile) { const m = new THREE.Mesh(t.geometrie(), new THR
 
 export function alle(): Record<string, THREE.Group> {
   const aus: Record<string, THREE.Group> = {};
-  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen]] as const) {
+  for (const [id, f] of [["kessel", kessel], ["herd", herd], ["backofen", backofen], ["tebbes_schuppen", schuppen], ["zelt", zelt], ["spuren", spuren], ["felstuer", felstuer]] as const) {
     const g = new THREE.Group(); g.name = id; const r = f(); g.add(netz(r.teile, "modell")); if (!r.flammen.leer) g.add(flammenNetz(r.flammen)); aus[id] = g; }
   const w = wasserrad(), g = new THREE.Group(); g.name = "wasserrad"; g.add(netz(w.teile, "modell")); const rad = netz(w.rad, "rad"); rad.position.y = w.mitte; g.add(rad); aus.wasserrad = g;
   return aus;

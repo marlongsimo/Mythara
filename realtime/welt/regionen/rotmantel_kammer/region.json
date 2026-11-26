@@ -1,0 +1,16 @@
+{
+ "id": "rotmantel_kammer",
+ "name": "Die Kammer des Anführers",
+ "untertitel": "Hauptmann Rotmantel",
+ "ursprung": [
+  326,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 5,
+ "ebene": "untergrund"
+}

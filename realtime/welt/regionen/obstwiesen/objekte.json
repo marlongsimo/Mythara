@@ -181,5 +181,11 @@
  {"id":"b0061","objekt":"stil_tanne_02","x":5.5,"y":95.5,"s":1.04},
  {"id":"b0104","objekt":"stil_eiche_02","x":63.5,"y":95.5,"s":0.89,"spiegeln":true},
  {"id":"b0047","objekt":"stil_eiche_01","x":1.5,"y":95.5,"s":0.99,"spiegeln":true},
- {"id":"ort_quellstein","objekt":"moor_menhir_01","x":43.5,"y":36.5}
+ {"id":"ort_quellstein","objekt":"moor_menhir_01","x":43.5,"y":36.5},
+ {"id":"ort_p4_gisbert_kiste_1","objekt":"dorf_kiste_01","x":36.6,"y":32.8},
+ {"id":"ort_p4_gisbert_kiste_2","objekt":"dorf_kiste_01","x":37.4,"y":33.6},
+ {"id":"ort_p4_gisbert_kiste_3","objekt":"dorf_kiste_01","x":33.2,"y":37},
+ {"id":"ort_p4_spur_obst_1","objekt":"welt_spuren_01","x":22.5,"y":44.5},
+ {"id":"ort_p4_spur_obst_2","objekt":"welt_spuren_01","x":13.5,"y":55.5,"spiegeln":true},
+ {"id":"ort_p4_spur_obst_3","objekt":"welt_spuren_01","x":5.5,"y":66.5}
 ]

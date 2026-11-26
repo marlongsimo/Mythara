@@ -1,0 +1,45 @@
+{
+ "start": [
+  [
+   16,
+   26.5
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "kammer_ausgang",
+   "art": "eingang",
+   "x": 16,
+   "y": 28.4,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Gang zurück in die Vorkammer.",
+    "tat": "kammer_zurueck",
+    "knopf": "Zurück in die Vorkammer",
+    "ziel": [
+     10326,
+     9632
+    ]
+   }
+  },
+  {
+   "id": "thron",
+   "art": "lesen",
+   "x": 16,
+   "y": 8.4,
+   "radius": 1.6,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Stuhl des Anführers, aus Fässern und Schilden gezimmert. Dahinter hängt das rote Banner der Bande."
+   }
+  }
+ ]
+}

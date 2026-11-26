@@ -4,7 +4,6 @@
  {"id":"linde_276","objekt":"stil_linde_01","x":109.5,"y":3.5,"s":0.95,"spiegeln":true},
  {"id":"erle_tot_199","objekt":"stil_erle_tot_01","x":14.5,"y":8.5,"s":0.92},
  {"id":"erle_tot_213","objekt":"stil_erle_tot_02","x":92.5,"y":9.5,"s":1},
- {"id":"erle_tot_206","objekt":"stil_erle_tot_01","x":66.5,"y":11.5,"s":0.85,"spiegeln":true},
  {"id":"erle_tot_200","objekt":"stil_erle_tot_01","x":24.5,"y":16.5,"s":0.83},
  {"id":"erle_tot_185","objekt":"stil_erle_tot_01","x":92.5,"y":16.5,"s":1.1,"spiegeln":true},
  {"id":"erle_tot_194","objekt":"stil_erle_tot_02","x":84.5,"y":17.5,"s":1.07,"spiegeln":true},
@@ -18,7 +17,6 @@
  {"id":"erle_tot_184","objekt":"stil_erle_tot_01","x":109.5,"y":22.5,"s":0.97,"spiegeln":true},
  {"id":"erle_tot_183","objekt":"stil_erle_tot_02","x":95.5,"y":23.5,"s":0.86},
  {"id":"schilf_80","objekt":"stil_schilf_02","x":12,"y":23.28,"spiegeln":true},
- {"id":"schilf_90","objekt":"stil_schilf_02","x":67.2,"y":24.08},
  {"id":"erle_tot_209","objekt":"stil_erle_tot_01","x":115.5,"y":24.5,"s":1,"spiegeln":true},
  {"id":"erle_tot_189","objekt":"stil_erle_tot_02","x":85.5,"y":25.5,"s":1.03,"spiegeln":true},
  {"id":"erle_tot_204","objekt":"stil_erle_tot_02","x":61.5,"y":25.5,"s":0.91,"spiegeln":true},
@@ -273,5 +271,11 @@
  {"id":"moorlicht_232","objekt":"stil_moorlicht_01","x":119.41,"y":157.65},
  {"id":"schilf_98","objekt":"stil_schilf_01","x":66.37,"y":158.09},
  {"id":"schilf_173","objekt":"stil_schilf_01","x":26.73,"y":158.39,"spiegeln":true},
- {"id":"ort_ried_kahn","objekt":"moor_kahn_01","x":34.5,"y":38.4}
+ {"id":"ort_ried_kahn","objekt":"moor_kahn_01","x":34.5,"y":38.4},
+ {"id":"ort_p4_moor_zelt_1","objekt":"welt_zelt_01","x":65.5,"y":14.5},
+ {"id":"ort_p4_moor_zelt_2","objekt":"welt_zelt_01","x":73.5,"y":14,"spiegeln":true},
+ {"id":"ort_p4_moor_feuer","objekt":"moor_feuerkorb_01","x":69.5,"y":19.5},
+ {"id":"ort_p4_moor_kiste","objekt":"k_kiste","x":64.4,"y":20},
+ {"id":"ort_p4_moor_faesser","objekt":"k_faesser","x":74.6,"y":20.2},
+ {"id":"ort_p4_moor_banner","objekt":"k_banner_rot","x":69.5,"y":12.5}
 ]

@@ -306,5 +306,7 @@
  {"id":"ort_steg_fass","objekt":"dorf_fass_01","x":55.5,"y":51.5},
  {"id":"ort_steg_kiste","objekt":"dorf_kiste_01","x":49.2,"y":51.6},
  {"id":"ort_kolk_schilf_1","objekt":"stil_schilf_01","x":68.6,"y":52.2},
- {"id":"ort_kolk_schilf_2","objekt":"stil_schilf_02","x":62.4,"y":52.6,"spiegeln":true}
+ {"id":"ort_kolk_schilf_2","objekt":"stil_schilf_02","x":62.4,"y":52.6,"spiegeln":true},
+ {"id":"ort_p4_spur_weg_1","objekt":"welt_spuren_01","x":89.5,"y":65.5,"spiegeln":true},
+ {"id":"ort_p4_spur_weg_2","objekt":"welt_spuren_01","x":43.5,"y":51.5}
 ]

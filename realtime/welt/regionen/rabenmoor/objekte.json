@@ -425,5 +425,7 @@
  {"id":"b0091","objekt":"stil_linde_01","x":122.5,"y":95.5,"s":0.99,"spiegeln":true},
  {"id":"moorlicht_191","objekt":"stil_moorlicht_01","x":2.04,"y":95.7},
  {"id":"b0251","objekt":"stil_tanne_01","x":114.5,"y":95.5,"s":0.88,"spiegeln":true},
- {"id":"b0184","objekt":"stil_eiche_02","x":125.5,"y":95.5,"s":1.02}
+ {"id":"b0184","objekt":"stil_eiche_02","x":125.5,"y":95.5,"s":1.02},
+ {"id":"ort_p4_spur_weg_3","objekt":"welt_spuren_01","x":116.5,"y":46.5,"spiegeln":true},
+ {"id":"ort_p4_spur_weg_4","objekt":"welt_spuren_01","x":62.5,"y":40.5}
 ]
