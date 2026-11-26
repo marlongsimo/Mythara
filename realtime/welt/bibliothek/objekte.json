@@ -8290,6 +8290,64 @@
     "puls_breite": 22,
     "puls_hell": 0.72
    }
+  },
+  {
+   "id": "fanggrund",
+   "name": "Fanggrund",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/fanggrund.webp",
+   "groesse": [
+    113,
+    84
+   ],
+   "anker": [
+    0.3982,
+    0.869
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/fanggrund.py, gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/angeln/fanggrund.glb",
+    "fest": true,
+    "puls_ton": 193,
+    "puls_breite": 20,
+    "puls_hell": 0.6,
+    "wind": 0.03
+   }
+  },
+  {
+   "id": "fanggrund_kolk",
+   "name": "Fanggrund (Wehrkolk)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/fanggrund_kolk.webp",
+   "groesse": [
+    160,
+    108
+   ],
+   "anker": [
+    0.6188,
+    0.8611
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/fanggrund.py art=kolk, gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/angeln/fanggrund_kolk.glb",
+    "fest": true,
+    "puls_ton": 193,
+    "puls_breite": 20,
+    "puls_hell": 0.6,
+    "wind": 0.03
+   }
   }
  ]
 }
