@@ -52,19 +52,37 @@ let verbundenGewesen = sitz("rift_verbunden") === "1";
 /** Für die Kampf-/Weltzonen-Verbindung: dieselbe Geräteregel */
 export function geraetAngaben(): { geraet: string; wieder: boolean } { return { geraet: GERAET, wieder: verbundenGewesen }; }
 /* iPhone: nach dem Zurückkommen in die App sofort neu verbinden, statt die Wartezeit abzusitzen; eine Verbindung, die iOS still geschlossen hat, schließen */
-if (typeof document !== "undefined") document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") return;
-  if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
-  if (!ws) { versuch = 0; void verbinden(); } });
+/* Wachhund (26.11.2026): iOS schließt die Verbindung im Hintergrund oft still – readyState bleibt OPEN, es kommt nur nichts mehr. Darum ein eigenes
+   Lebenszeichen: bei sichtbarer Seite alle 2 s {"t":"puls"}, der Server antwortet sofort (zählt nicht als Aktivität). Kam 5 s lang gar nichts
+   (auch kein Zustand der Kampfwelt), wird neu verbunden – ohne Wartezeit; die Kampfwelt folgt von selbst (kampf.ts). */
+let letzteNachricht = Date.now(), verstecktSeit = 0, pulseOffen = 0;
+/** Die Verbindung gilt als tot: sofort neu (der Kampfkanal hängt daran und verbindet sich danach selbst neu) */
+function neuVerbinden(grund: string): void { const alt = ws; if (!alt) return; console.warn("Welt: neu verbinden –", grund); ws = null; if (kanal) kanal.weg(1006, ""); inventarSender(null);
+  try { alt.close(4000, "stumm"); } catch { /* schon zu */ } versuch = 0; void verbinden(); }
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") { verstecktSeit = Date.now(); return; }
+    const weg = verstecktSeit ? Date.now() - verstecktSeit : 0; verstecktSeit = 0;
+    if (ws && ws.readyState > WebSocket.OPEN) { const alt = ws; ws = null; try { alt.close(); } catch { /* schon zu */ } }
+    if (!ws) { versuch = 0; void verbinden(); return; }
+    if (weg > 3000 && ws.readyState === WebSocket.OPEN) { /* nach dem Hintergrund: sofort fragen – kommt binnen 1,5 s nichts, neu verbinden */
+      const s = ws, vor = Date.now(); letzteNachricht = Math.min(letzteNachricht, vor - 1); try { s.send('{"t":"puls"}'); } catch { /* zu */ }
+      setTimeout(() => { if (ws === s && letzteNachricht < vor) neuVerbinden("keine Antwort nach dem Hintergrund"); }, 1500); } });
+  /* gezählt werden Pulse ohne jede Antwort dazwischen: hängt der Browser selbst (Laden, Grafik), gehen in der Zeit auch keine Pulse hinaus – kein Fehlalarm */
+  setInterval(() => { if (document.visibilityState !== "visible" || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (pulseOffen >= 3 && Date.now() - letzteNachricht > 5000) { neuVerbinden("3 Pulse ohne Antwort"); return; } pulseOffen++; try { ws.send('{"t":"puls"}'); } catch { /* zu */ } }, 2000);
+  /* Netz wieder da: nicht die wachsende Wartezeit absitzen */
+  addEventListener("online", () => { versuch = 0; if (!ws) void verbinden(); else if (ws.readyState === WebSocket.OPEN && Date.now() - letzteNachricht > 2500) neuVerbinden("Netz wieder da"); }); }
 async function verbinden() { if (verbindet || ws) return; verbindet = true; /* nie zwei Verbindungen zugleich: während auf das Token gewartet wird, gibt es noch keine – ein zweiter Aufruf öffnete sonst eine zweite (der Server wirft dann eine hinaus) */
   let token = ""; try { token = kontoName() ? await kontoToken() : ""; } finally { verbindet = false; } if (kontoName() && !token) return; if (ws) return; const g = gruppe(); /* ohne Konto: als Gast */
   const s = new WebSocket(serverAdresse() + "?welt=1&ort=" + encodeURIComponent(ort)); ws = s;
   const austragen = beimAbmelden(() => s.close(1000, "abmelden")); /* Abmelden gibt das Konto auf dem Server frei (sitz.ts) */
   { const puls = setInterval(() => { if (ws !== s || s.readyState > 1) { clearInterval(puls); return; } if (s.readyState === 1 && kuerzlichAktiv()) s.send('{"t":"da"}'); }, 60000); } /* Lebenszeichen gegen die Inaktivität (abmeldung.ts) */
-  s.onopen = () => { versuch = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
-  s.onmessage = (ev) => { const roh = String(ev.data);
+  s.onopen = () => { versuch = 0; letzteNachricht = Date.now(); pulseOffen = 0; s.send(JSON.stringify({ t: "anmeldung", token, held: lokalerHeld(), aussehen: aktiverHeld() || undefined, raum: g ? g.code : "", geraet: GERAET, wieder: verbundenGewesen })); gesendet = { x: NaN, y: NaN, t: 0, l: -1 }; };
+  s.onmessage = (ev) => { if (ws === s) { letzteNachricht = Date.now(); pulseOffen = 0; } const roh = String(ev.data); /* jede Nachricht zählt für den Wachhund, auch Kampfrahmen */
     if (roh.charCodeAt(0) === 75 /* K: Kampfkanal */) { if (roh.charCodeAt(1) === 33) { try { const c = JSON.parse(roh.slice(2)) as { t?: string; code?: number; grund?: string }; if (c.t === "zu" && kanal) kanal.weg(Number(c.code) || 1000, String(c.grund || "")); } catch { /* kaputt */ } } else if (kanal) kanal.rein(roh.slice(1)); return; }
     let m: { t: string; [k: string]: unknown }; try { m = JSON.parse(roh); } catch { return; }
-    if (m.t === "ich") { ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); verbundenGewesen = true; sitz("rift_verbunden", "1"); if (blockiert.size) senden({ t: "blockiert", namen: [...blockiert] }); /* erst nach der Anmeldung – vorher verwirft der Server jede andere Nachricht */ }
+    if (m.t === "puls") return;
+    if (m.t === "ich") { window.dispatchEvent(new CustomEvent("ez-welt-verbunden")); /* die Kampfwelt verbindet sich wieder (kampf.ts) */ ich = m as unknown as Ich; heldMerken(ich.held); if (hand.ich) hand.ich(ich); verbundenGewesen = true; sitz("rift_verbunden", "1"); if (blockiert.size) senden({ t: "blockiert", namen: [...blockiert] }); /* erst nach der Anmeldung – vorher verwirft der Server jede andere Nachricht */ }
     else if (m.t === "stufe") { if (ich && typeof m.stufe === "number") ich.stufe = m.stufe; }
     else if (m.t === "spieler") { fremde = m.liste as Fremder[]; online = Number(m.online) || fremde.length + 1; if (hand.spieler) hand.spieler(fremde); window.dispatchEvent(new CustomEvent("ez-welt-spieler")); }
     else if (m.t === "inventar") { inventarSender(senden); inventarVomServer(m.inv as Parameters<typeof inventarVomServer>[0]); }

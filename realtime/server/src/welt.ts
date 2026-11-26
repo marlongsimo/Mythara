@@ -95,7 +95,8 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   let s: Spieler | null = null; const frist = setTimeout(() => { if (!s) ws.close(4401, "keine anmeldung"); }, 10000); let fenster = Date.now(), n = 0;
   const kanal: { k: Kanal | null } = { k: null }; /* Zonen Stufe 3: die Kampfwelt als Kanal dieser Verbindung */
   ws.on("message", async (roh) => {
-    { const t = String(roh); if (kanalRahmen(ws, t, kanal, (k, q) => { if (H.kanalAuf) H.kanalAuf(k, q); else k.close(4400, "kein kanal"); })) { if (s) s.zuletzt = Date.now(); return; } } /* vor dem Überflutungsschutz: Kampfeingaben haben ihren eigenen */
+    { const t = String(roh); if (t === '{"t":"puls"}') { if (ws.readyState === WebSocket.OPEN) ws.send('{"t":"puls"}'); return; } /* Wachhund des Browsers: sofort antworten, zählt nicht als Aktivität */
+      if (kanalRahmen(ws, t, kanal, (k, q) => { if (H.kanalAuf) H.kanalAuf(k, q); else k.close(4400, "kein kanal"); })) { if (s) s.zuletzt = Date.now(); return; } } /* vor dem Überflutungsschutz: Kampfeingaben haben ihren eigenen */
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
     let e: { typ?: string; rezept?: string; tab?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
@@ -238,7 +239,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
   });
   const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); handwerkWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
   ws.on("close", (code: number, grund: Buffer) => { if (kanal.k) kanal.k.weg(code === 1000 ? 1006 : code, String(grund || "")); weg(); }); ws.on("error", () => { if (kanal.k) kanal.k.weg(1006, ""); weg(); });
-  const lebt = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(lebt); return; } try { ws.ping(); } catch { /* zu */ } }, 25000);
+  /* Herzschlag: alle 15 s ein Ping; bleiben zwei unbeantwortet, ist die Verbindung tot (iOS im Hintergrund) – weg damit, samt Kampfkanal und Gerätesperre */
+  let pingsOffen = 0; ws.on("pong", () => { pingsOffen = 0; });
+  const lebt = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(lebt); return; } if (pingsOffen >= 2) { clearInterval(lebt); console.log("Welt: Verbindung antwortet nicht mehr – getrennt"); try { ws.terminate(); } catch { /* zu */ } return; } pingsOffen++; try { ws.ping(); } catch { /* zu */ } }, 15000);
   const merken = setInterval(() => { if (ws.readyState !== WebSocket.OPEN) { clearInterval(merken); return; } if (!s || s.gast || s.wx === undefined || s.wy === undefined) return; const k = `${s.ort}:${s.wx}:${s.wy}`; if (k === s.gemerkt) return; s.gemerkt = k; void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); }, 120000); /* falls der Server abstürzt */
 }
 
