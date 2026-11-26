@@ -8166,6 +8166,100 @@
    }
   },
   {
+   "id": "wz_seelenlicht_matt",
+   "name": "Mattes Licht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_matt.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (matt)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_matt.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    }
+   }
+  },
+  {
+   "id": "wz_seelenlicht_wiesen",
+   "name": "Wiesenlicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_wiesen.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (wiesen)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_wiesen.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    },
+    "puls_ton": 160
+   }
+  },
+  {
+   "id": "wz_seelenlicht_erloschen",
+   "name": "Erloschenes Seelenlicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht_erloschen.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy), umgefärbt mit fabrik/seelenlicht_varianten.py (erloschen)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht_erloschen.glb",
+    "wind": 0.02,
+    "schweben": {
+     "hoehe": 0.45,
+     "hub": 0.04,
+     "takt": 5.0,
+     "pendel": 0.12
+    }
+   }
+  },
+  {
    "id": "wz_bindestein",
    "name": "Bindestein",
    "kategorie": "sonderort",
