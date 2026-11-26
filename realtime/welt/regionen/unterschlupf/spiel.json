@@ -48,14 +48,31 @@
    }
   },
   {
-   "id": "anfuehrer",
+   "id": "tuer_beutelager",
    "art": "lesen",
-   "x": 86.5,
-   "y": 28,
+   "x": 33,
+   "y": 43.099999999999994,
    "radius": 1.5,
    "abgleich": "keiner",
    "daten": {
-    "text": "Der Stuhl des Anführers. Dahinter hängt das rote Banner der Bande."
+    "text": "Eine schwere Bohlentür mit Eisenbändern. Sie ist verschlossen – ohne den Schlüsselbund der Bande kommst du hier nicht weiter."
+   }
+  },
+  {
+   "id": "kammer_tuer",
+   "art": "eingang",
+   "x": 88.4,
+   "y": 32,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Hinter dem roten Banner liegt die Kammer des Anführers.",
+    "tat": "kammer",
+    "knopf": "Die Kammer des Anführers betreten",
+    "ziel": [
+     10448,
+     9626.5
+    ]
    }
   }
  ],

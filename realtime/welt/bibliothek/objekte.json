@@ -4442,220 +4442,6 @@
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   },
   {
-   "id": "dorf_baeckerei_01",
-   "name": "Bäckerei",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/gesamt.webp",
-   "groesse": [
-    558,
-    583
-   ],
-   "anker": [
-    0.3383,
-    0.8336
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -4,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 2.5,
-      "x1": 4.5,
-      "y0": -3,
-      "y1": -1,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.5,
-      "x1": -0.5,
-      "y": 0
-     }
-    ],
-    "moebel": [
-     {
-      "x0": 0.8,
-      "x1": 1.8,
-      "y0": -3.1,
-      "y1": -2.1
-     },
-     {
-      "x0": -1.8,
-      "x1": 0.6,
-      "y0": -3.2,
-      "y1": -2.6
-     },
-     {
-      "x0": -2.2,
-      "x1": -1.0,
-      "y0": -1.7,
-      "y1": -0.9
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      57,
-      222
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      64,
-      174
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      303,
-      168
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      64,
-      356
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      105,
-      383
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      105,
-      350
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_dach.webp",
-     "tiefe": 0.4,
-     "rolle": "dach",
-     "versatz": [
-      39,
-      167
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vordach.webp",
-     "tiefe": 1.2,
-     "rolle": "vordach",
-     "versatz": [
-      78,
-      353
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "ofen_seite",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_seite.webp",
-     "tiefe": -2.97,
-     "rolle": "seite",
-     "versatz": [
-      414,
-      218
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "ofen_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_vorn.webp",
-     "tiefe": -1,
-     "rolle": "vorn",
-     "versatz": [
-      319,
-      332
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "ofen_dach",
-     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_dach.webp",
-     "tiefe": -0.75,
-     "rolle": "dach",
-     "versatz": [
-      302,
-      197
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -1.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    42,
-    170,
-    470,
-    536
-   ],
-   "interaktion": {
-    "art": "tuer",
-    "dx": -1.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
-  },
-  {
    "id": "weidenhain_kornspeicher_01",
    "name": "Kornspeicher von Weidenhain",
    "kategorie": "gebaeude",
@@ -7660,220 +7446,6 @@
    "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
   },
   {
-   "id": "waldmark_salon_01",
-   "name": "Nias Salon",
-   "kategorie": "gebaeude",
-   "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/gesamt.webp",
-   "groesse": [
-    549,
-    621
-   ],
-   "anker": [
-    0.3496,
-    0.8406
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "gebaeude",
-    "koerper": [
-     {
-      "x0": -2.5,
-      "x1": 2.5,
-      "y0": -4,
-      "y1": 0,
-      "voll": false
-     },
-     {
-      "x0": 2.5,
-      "x1": 4.5,
-      "y0": -2,
-      "y1": 0,
-      "voll": true
-     }
-    ],
-    "tueren": [
-     {
-      "x0": -1.5,
-      "x1": -0.5,
-      "y": 0
-     }
-    ],
-    "moebel": [
-     {
-      "x0": 0.65,
-      "x1": 1.35,
-      "y0": -2.85,
-      "y1": -2.15
-     },
-     {
-      "x0": -1.9,
-      "x1": -0.7,
-      "y0": -3.6,
-      "y1": -3.2
-     },
-     {
-      "x0": -2.0,
-      "x1": -0.8,
-      "y0": -2.1,
-      "y1": -1.3
-     }
-    ]
-   },
-   "tiefe": "fuss",
-   "ebenen": [
-    {
-     "name": "schatten",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/schatten.webp",
-     "tiefe": -1000.0,
-     "rolle": "schatten",
-     "versatz": [
-      61,
-      250
-     ]
-    },
-    {
-     "name": "haupt_innen",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_innen.webp",
-     "tiefe": -3.98,
-     "rolle": "innen",
-     "versatz": [
-      67,
-      196
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_seite",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_seite.webp",
-     "tiefe": -3.97,
-     "rolle": "seite",
-     "versatz": [
-      306,
-      189
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      57,
-      377
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "tuer0_zu",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_zu.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_zu",
-     "versatz": [
-      108,
-      417
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "tuer0_offen",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_offen.webp",
-     "tiefe": 0.002,
-     "rolle": "tuer_offen",
-     "versatz": [
-      108,
-      402
-     ],
-     "koerper": 0,
-     "tuer": 0
-    },
-    {
-     "name": "haupt_dach",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_dach.webp",
-     "tiefe": 0.45,
-     "rolle": "dach",
-     "versatz": [
-      39,
-      96
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "haupt_vordach",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vordach.webp",
-     "tiefe": 1.2,
-     "rolle": "vordach",
-     "versatz": [
-      89,
-      384
-     ],
-     "koerper": 0
-    },
-    {
-     "name": "turm_seite",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_seite.webp",
-     "tiefe": -1.97,
-     "rolle": "seite",
-     "versatz": [
-      402,
-      247
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "turm_vorn",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_vorn.webp",
-     "tiefe": 0,
-     "rolle": "vorn",
-     "versatz": [
-      307,
-      339
-     ],
-     "koerper": 1
-    },
-    {
-     "name": "turm_dach",
-     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_dach.webp",
-     "tiefe": 0.3,
-     "rolle": "dach",
-     "versatz": [
-      287,
-      211
-     ],
-     "koerper": 1
-    }
-   ],
-   "raum": [
-    {
-     "x0": -2.3,
-     "x1": 2.3,
-     "y0": -3.8,
-     "y1": -0.05,
-     "koerper": 0
-    }
-   ],
-   "tueren": [
-    {
-     "x": -1.0,
-     "y": 0.6
-    }
-   ],
-   "sichtbar": [
-    42,
-    99,
-    461,
-    572
-   ],
-   "interaktion": {
-    "art": "lesen",
-    "dx": -1.0,
-    "dy": 0.6,
-    "radius": 1.4
-   },
-   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
-  },
-  {
    "id": "waldmark_rathaus_01",
    "name": "Rathaus",
    "kategorie": "gebaeude",
@@ -9991,6 +9563,824 @@
    }
   },
   {
+   "id": "hand_tebbes_schuppen",
+   "name": "Tebbes Schuppen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hand_tebbes_schuppen.webp",
+   "groesse": [
+    270,
+    237
+   ],
+   "anker": [
+    0.5,
+    0.7975
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.5,
+    "y": -1.7,
+    "b": 5,
+    "h": 1.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/tebbes_schuppen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hand_herd_01",
+   "name": "Herd",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hand_herd_01.webp",
+   "groesse": [
+    80,
+    113
+   ],
+   "anker": [
+    0.5,
+    0.885
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.8,
+    "y": -0.45,
+    "b": 1.6,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/herd.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hand_kessel_01",
+   "name": "Kessel über dem Feuer",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/hand_kessel_01.webp",
+   "groesse": [
+    71,
+    85
+   ],
+   "anker": [
+    0.493,
+    0.7647
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.75
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/kessel.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hand_backofen_01",
+   "name": "Backofen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hand_backofen_01.webp",
+   "groesse": [
+    105,
+    114
+   ],
+   "anker": [
+    0.4762,
+    0.6667
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.0,
+    "y": -0.95,
+    "b": 2.0,
+    "h": 1.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/backofen.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hand_wasserrad_01",
+   "name": "Wasserrad",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/stil/hand_wasserrad_01.webp",
+   "groesse": [
+    172,
+    184
+   ],
+   "anker": [
+    0.5,
+    0.7554
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.7,
+    "y": -0.5,
+    "b": 3.4,
+    "h": 1.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/wasserrad.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "waldmark_salon_01",
+   "name": "Nias Salon",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/gesamt.webp",
+   "groesse": [
+    549,
+    621
+   ],
+   "anker": [
+    0.3496,
+    0.8406
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.5,
+      "x1": 4.5,
+      "y0": -2,
+      "y1": 0,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.65,
+      "x1": 1.35,
+      "y0": -2.85,
+      "y1": -2.15
+     },
+     {
+      "x0": -1.9,
+      "x1": -0.7,
+      "y0": -3.6,
+      "y1": -3.2
+     },
+     {
+      "x0": -2.4,
+      "x1": -1.2,
+      "y0": -2.8,
+      "y1": -2.0
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      61,
+      250
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      67,
+      196
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      306,
+      189
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      57,
+      377
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      108,
+      417
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      108,
+      402
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_dach.webp",
+     "tiefe": 0.45,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      96
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      89,
+      384
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "turm_seite",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_seite.webp",
+     "tiefe": -1.97,
+     "rolle": "seite",
+     "versatz": [
+      402,
+      247
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      307,
+      339
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "turm_dach",
+     "bild": "img/welt/gebaeude/raeumlich/waldmark_salon_01/turm_dach.webp",
+     "tiefe": 0.3,
+     "rolle": "dach",
+     "versatz": [
+      287,
+      211
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    99,
+    461,
+    572
+   ],
+   "interaktion": {
+    "art": "lesen",
+    "dx": -1.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "dorf_baeckerei_01",
+   "name": "Bäckerei",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/gesamt.webp",
+   "groesse": [
+    558,
+    583
+   ],
+   "anker": [
+    0.3383,
+    0.8336
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "gebaeude",
+    "koerper": [
+     {
+      "x0": -2.5,
+      "x1": 2.5,
+      "y0": -4,
+      "y1": 0,
+      "voll": false
+     },
+     {
+      "x0": 2.5,
+      "x1": 4.5,
+      "y0": -3,
+      "y1": -1,
+      "voll": true
+     }
+    ],
+    "tueren": [
+     {
+      "x0": -1.5,
+      "x1": -0.5,
+      "y": 0
+     }
+    ],
+    "moebel": [
+     {
+      "x0": 0.8,
+      "x1": 1.8,
+      "y0": -3.1,
+      "y1": -2.1
+     },
+     {
+      "x0": -1.8,
+      "x1": 0.6,
+      "y0": -3.2,
+      "y1": -2.6
+     },
+     {
+      "x0": 0.7,
+      "x1": 1.9,
+      "y0": -1.4,
+      "y1": -0.6
+     }
+    ]
+   },
+   "tiefe": "fuss",
+   "ebenen": [
+    {
+     "name": "schatten",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/schatten.webp",
+     "tiefe": -1000.0,
+     "rolle": "schatten",
+     "versatz": [
+      57,
+      222
+     ]
+    },
+    {
+     "name": "haupt_innen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_innen.webp",
+     "tiefe": -3.98,
+     "rolle": "innen",
+     "versatz": [
+      64,
+      174
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_seite.webp",
+     "tiefe": -3.97,
+     "rolle": "seite",
+     "versatz": [
+      303,
+      168
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vorn.webp",
+     "tiefe": 0,
+     "rolle": "vorn",
+     "versatz": [
+      64,
+      356
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "tuer0_zu",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_zu.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_zu",
+     "versatz": [
+      105,
+      383
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "tuer0_offen",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/tuer0_offen.webp",
+     "tiefe": 0.002,
+     "rolle": "tuer_offen",
+     "versatz": [
+      105,
+      350
+     ],
+     "koerper": 0,
+     "tuer": 0
+    },
+    {
+     "name": "haupt_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_dach.webp",
+     "tiefe": 0.4,
+     "rolle": "dach",
+     "versatz": [
+      39,
+      167
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "haupt_vordach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/haupt_vordach.webp",
+     "tiefe": 1.2,
+     "rolle": "vordach",
+     "versatz": [
+      78,
+      353
+     ],
+     "koerper": 0
+    },
+    {
+     "name": "ofen_seite",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_seite.webp",
+     "tiefe": -2.97,
+     "rolle": "seite",
+     "versatz": [
+      414,
+      218
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "ofen_vorn",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_vorn.webp",
+     "tiefe": -1,
+     "rolle": "vorn",
+     "versatz": [
+      319,
+      332
+     ],
+     "koerper": 1
+    },
+    {
+     "name": "ofen_dach",
+     "bild": "img/welt/gebaeude/raeumlich/dorf_baeckerei_01/ofen_dach.webp",
+     "tiefe": -0.75,
+     "rolle": "dach",
+     "versatz": [
+      302,
+      197
+     ],
+     "koerper": 1
+    }
+   ],
+   "raum": [
+    {
+     "x0": -2.3,
+     "x1": 2.3,
+     "y0": -3.8,
+     "y1": -0.05,
+     "koerper": 0
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.0,
+     "y": 0.6
+    }
+   ],
+   "sichtbar": [
+    42,
+    170,
+    470,
+    536
+   ],
+   "interaktion": {
+    "art": "tuer",
+    "dx": -1.0,
+    "dy": 0.6,
+    "radius": 1.4
+   },
+   "herkunft": "erzeugt von werkzeug/welt/gebaeude.py (Bauplan welt/bibliothek/bauplaene.json) im Malstil, Texturen selbst gerechnet (gebaeude.py) – frei verwendbar"
+  },
+  {
+   "id": "welt_zelt_01",
+   "name": "Zelt der Banditen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/welt_zelt_01.webp",
+   "groesse": [
+    152,
+    149
+   ],
+   "anker": [
+    0.5,
+    0.7114
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.3,
+    "y": -1.1,
+    "b": 2.6,
+    "h": 2.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/zelt.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "welt_spuren_01",
+   "name": "Spuren im Boden",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/welt_spuren_01.webp",
+   "groesse": [
+    81,
+    71
+   ],
+   "anker": [
+    0.6296,
+    0.5211
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/spuren.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_tuer_01",
+   "name": "Verschlossene Tür",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hoehle_tuer_01.webp",
+   "groesse": [
+    146,
+    116
+   ],
+   "anker": [
+    0.5,
+    0.9397
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": false,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/felstuer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "moor_bruecke_morsch_01",
+   "name": "Alte Moorbrücke (morsche Stelle)",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/gebaeude/moor_bruecke_morsch_01.webp",
+   "groesse": [
+    367,
+    217
+   ],
+   "anker": [
+    0.4414,
+    0.9263
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "erzeugt von werkzeug/welt/haus.py ohne Bildvorlage – frei verwendbar"
+  },
+  {
+   "id": "hoehle_kaefig_01",
+   "name": "Käfig",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hoehle_kaefig_01.webp",
+   "groesse": [
+    82,
+    134
+   ],
+   "anker": [
+    0.5,
+    0.8134
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.85,
+    "y": -0.85,
+    "b": 1.7,
+    "h": 1.7
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/kaefig.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_federn_01",
+   "name": "Rabenfedern",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/hoehle_federn_01.webp",
+   "groesse": [
+    77,
+    32
+   ],
+   "anker": [
+    0.4935,
+    0.625
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "boden",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/federn.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_splitterbecken_01",
+   "name": "Splitterbecken",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/hoehle_splitterbecken_01.webp",
+   "groesse": [
+    312,
+    198
+   ],
+   "anker": [
+    0.5,
+    0.5404
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 3.2
+   },
+   "tiefe": "boden",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/splitterbecken.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_steinsaeule_01",
+   "name": "Steinsäule",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/hoehle_steinsaeule_01.webp",
+   "groesse": [
+    56,
+    173
+   ],
+   "anker": [
+    0.5,
+    0.9075
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/steinsaeule.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "hoehle_felswand_01",
+   "name": "Felswand",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/hoehle_felswand_01.webp",
+   "groesse": [
+    197,
+    188
+   ],
+   "anker": [
+    0.5025,
+    0.8989
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/felswand.glb",
+    "wind": 0
+   }
+  },
+  {
    "id": "wz_seelenlicht",
    "name": "Seelenlicht",
    "kategorie": "sonderort",
@@ -10019,6 +10409,122 @@
      "takt": 3.2,
      "pendel": 0.35
     }
+   }
+  },
+  {
+   "id": "wz_bindestein",
+   "name": "Bindestein",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_bindestein.webp",
+   "groesse": [
+    41,
+    57
+   ],
+   "anker": [
+    0.439,
+    0.8947
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/bindestein (Meshy „Voidstone Sigil“)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/bindestein.glb",
+    "wind": 0,
+    "fest": true,
+    "puls_ton": 272,
+    "puls_breite": 22,
+    "puls_hell": 0.72
+   }
+  },
+  {
+   "id": "graufurt_winde_01",
+   "name": "Winde der Fährkette",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/graufurt_winde_01.webp",
+   "groesse": [
+    94,
+    68
+   ],
+   "anker": [
+    0.5,
+    0.8088
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.9,
+    "y": -0.45,
+    "b": 1.8,
+    "h": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/winde.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "turm_signalfeuer_01",
+   "name": "Signalfeuer",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/turm_signalfeuer_01.webp",
+   "groesse": [
+    61,
+    100
+   ],
+   "anker": [
+    0.4918,
+    0.86
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/signalfeuer.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "turm_gruenlicht_01",
+   "name": "Grünes Licht über dem Turm",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/turm_gruenlicht_01.webp",
+   "groesse": [
+    8,
+    8
+   ],
+   "anker": [
+    0.5,
+    1.0
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "oben",
+   "durchscheinend": false,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "realtime/werkzeug/modelle3d/handwerk3d.ts (aus einfachen Körpern gebaut) – frei verwendbar",
+   "modell3d": {
+    "url": "img/objekte3d/handwerk/gruenlicht.glb",
+    "wind": 0
    }
   },
   {
@@ -10113,38 +10619,6 @@
      "takt": 5.0,
      "pendel": 0.12
     }
-   }
-  },
-  {
-   "id": "wz_bindestein",
-   "name": "Bindestein",
-   "kategorie": "sonderort",
-   "bild": "img/welt/stil/wz_bindestein.webp",
-   "groesse": [
-    41,
-    57
-   ],
-   "anker": [
-    0.439,
-    0.8947
-   ],
-   "massstab": 1,
-   "kollision": {
-    "art": "kreis",
-    "r": 0.35
-   },
-   "tiefe": "fuss",
-   "durchscheinend": true,
-   "interaktion": null,
-   "spiegelbar": true,
-   "herkunft": "fabrik/assets/wahrzeichen/bindestein (Meshy „Voidstone Sigil“)",
-   "modell3d": {
-    "url": "img/objekte3d/wahrzeichen/bindestein.glb",
-    "wind": 0,
-    "fest": true,
-    "puls_ton": 272,
-    "puls_breite": 22,
-    "puls_hell": 0.72
    }
   },
   {

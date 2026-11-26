@@ -32,7 +32,7 @@ def main():
     for cx, cy in chunks:
         d = json.load(open(os.path.join(WELT, f'{cx}_{cy}.json'), encoding='utf8'))
         b = os.path.join(WELT, d.get('boden') or f'{cx}_{cy}.webp')
-        if os.path.exists(b):
+        if os.path.exists(b) and '--gebacken' in sys.argv:
             K.paste(Image.open(b).convert('RGBA').resize((px, px), Image.LANCZOS), ((cx - x0) * px, (cy - y0) * px))
         elif d.get('region') in index['regionen']:   # ohne Bodenbild (Festland): das Stück aus der Übersichtskarte der Region
             R = index['regionen'][d['region']]['region']; kp = os.path.join(WELT, f"karte-{d['region']}.webp")
@@ -41,7 +41,7 @@ def main():
                 ki = karten[kp]; n = ki.width // R['chunks'][0]; i, j = cx - R['ursprung'][0], cy - R['ursprung'][1]
                 K.paste(ki.crop((i * n, j * n, (i + 1) * n, (j + 1) * n)).resize((px, px), Image.LANCZOS), ((cx - x0) * px, (cy - y0) * px))
         dinge += d.get('objekte', [])
-    if '--ohne-dinge' not in sys.argv:
+    if '--ohne-dinge' not in sys.argv and '--gebacken' in sys.argv:   # ohne Bodenbilder stecken Bäume und Gebäude schon in den Regionskarten
         cache = {}
         for p in sorted(dinge, key=lambda p: p['y']):
             o = index['objekte'].get(p['objekt'])

@@ -1,0 +1,51 @@
+{
+ "start": [
+  [
+   16,
+   20.6
+  ]
+ ],
+ "figuren": [],
+ "spawnzonen": [],
+ "ausgaenge": [],
+ "kollision": {
+  "sperren": [],
+  "freigeben": []
+ },
+ "interaktionen": [
+  {
+   "id": "turm_tuer_hinaus",
+   "art": "eingang",
+   "x": 16,
+   "y": 21.4,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Tür mit dem Wappen führt hinaus ans Ostufer.",
+    "tat": "turm_hinaus",
+    "knopf": "Den Turm verlassen",
+    "ziel": [
+     6840,
+     6520.2
+    ]
+   }
+  },
+  {
+   "id": "treppe_hinauf",
+   "art": "eingang",
+   "x": 20.5,
+   "y": 12.5,
+   "radius": 1.5,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Wendeltreppe aus Stein führt nach oben.",
+    "tat": "turm_hinauf",
+    "knopf": "Die Treppe hinaufsteigen",
+    "ziel": [
+     10924.7,
+     9618.3
+    ]
+   }
+  }
+ ]
+}

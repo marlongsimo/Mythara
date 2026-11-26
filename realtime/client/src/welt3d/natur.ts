@@ -61,7 +61,8 @@ const BRETT = "#7a5634", BRETT_HELL = "#8f6a42", STEIN = "#8a857a", EISEN = "#3a
 /** Alte Moorbrücke (25.11.2026): fehlende Bohlen, gebrochenes Geländer (vorn/hinten: wie weit es reicht, kurz: abgebrochener Pfosten) */
 const ALTE_BRUECKE: Record<string, { luecken: number[]; vorn: number; kurzVorn: number; hinten: number; kurzHinten: number }> = {
   moor_bruecke_alt_01: { luecken: [5, 11], vorn: 1, kurzVorn: 2, hinten: 1, kurzHinten: -1 }, moor_bruecke_alt_02: { luecken: [3, 9, 10], vorn: 0.42, kurzVorn: -1, hinten: 1, kurzHinten: 1 },
-  moor_bruecke_alt_03: { luecken: [7], vorn: 0, kurzVorn: -1, hinten: 0.7, kurzHinten: 3 } };
+  moor_bruecke_alt_03: { luecken: [7], vorn: 0, kurzVorn: -1, hinten: 0.7, kurzHinten: 3 },
+  moor_bruecke_morsch_01: { luecken: [2, 6, 7, 8, 9, 10, 13], vorn: 0, kurzVorn: -1, hinten: 0.3, kurzHinten: -1 } };
 function bruecke(laenge: number, breite: number, laengs: boolean, altId = "") {
   /* gebaut entlang x (Ost–West); laengs = Nord–Süd: am Ende um 90° gedreht. Fuß = Mitte der Südkante */
   const t = new Teile("holz"), hoch = 0.85, z0 = laengs ? 0 : -breite / 2, n = Math.round(laenge / 0.42), A = ALTE_BRUECKE[altId];
@@ -138,7 +139,7 @@ function schilf(breit: number) { const t = new Teile("glatt");
   return t.geometrie(); }
 /** Begehbare Flächen (Brücken, Wehr) relativ zum Fuß: x0, z0, x1, z1 (z nach Süden) und die Höhe der Lauffläche über dem Fuß */
 export const STEGE: Record<string, [number, number, number, number, number]> = {
-  dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_02: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_03: [-3.2, -2.7, 3.2, 0.1, 0.85], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1, 0.85], dorf_wehr_01: [-3.5, -1.6, 3.5, -0.1, 1.0] };
+  dorf_bruecke_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_01: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_02: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_alt_03: [-3.2, -2.7, 3.2, 0.1, 0.85], moor_bruecke_morsch_01: [-3.2, -2.7, 3.2, 0.1, 0.85], dorf_bruecke_02: [-1.4, -5.2, 1.4, 0.1, 0.85], dorf_wehr_01: [-3.5, -1.6, 3.5, -0.1, 1.0] };
 
 const SPEICHER = new Map<string, THREE.BufferGeometry | null>();
 /** Geometrie für eine Objektart (Maßstab 1, Fuß im Ursprung) oder null = als Bild zeigen */

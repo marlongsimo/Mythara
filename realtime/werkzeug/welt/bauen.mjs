@@ -1,8 +1,9 @@
 /*
  * World Pipeline – baut Regionen für das Spiel.
- * Aufruf (im Ordner realtime): node werkzeug/welt/bauen.mjs [region …] [--ohne-boden]
+ * Aufruf (im Ordner realtime): node werkzeug/welt/bauen.mjs [region …] [--mit-boden]
  *
- * Schritte je Region: auf Felder ausrichten (ausrichten.mjs) → Formprüfung → Gehraster und Chunk-Dateien → Bodenbilder (werkzeug/welt/boden.py).
+ * Schritte je Region: auf Felder ausrichten (ausrichten.mjs) → Formprüfung → Gehraster und Chunk-Dateien → Übersichtskarte (karte.py, aus den Geländefarben).
+ * Bodenbilder (werkzeug/welt/boden.py) werden seit 26.11.2026 (#13) nicht mehr gebacken – nur noch mit --mit-boden (die 2D-Ersatzwelt nutzt die alten noch).
  * Ergebnis in ../echtzeit/welt/:  welt.json (Regionen, verwendete Objekte) · <cx>_<cy>.json (Chunk) · <cx>_<cy>.webp (Boden)
  * Ohne Angabe werden alle Regionen gebaut. Bricht ab, wenn die Formprüfung Fehler meldet.
  */
@@ -12,7 +13,7 @@ import { join } from "node:path";
 import { gemeinsam, bibliothek, region, regionNamen, formPruefen, WURZEL, REALTIME } from "./laden.mjs";
 import { ausrichten } from "./ausrichten.mjs";
 
-const args = process.argv.slice(2), ohneBoden = args.includes("--ohne-boden"), gewaehlt = args.filter((a) => !a.startsWith("--"));
+const args = process.argv.slice(2), ohneBoden = !args.includes("--mit-boden") /* seit 26.11.2026 (#13): keine Bodenbilder mehr backen, Karten aus den Geländefarben; --mit-boden backt sie wie früher */, gewaehlt = args.filter((a) => !a.startsWith("--"));
 /* Ohne Angabe: alle Regionen außer Entwürfen */
 const namen = gewaehlt.length ? gewaehlt : regionNamen().filter((n) => !region(n).region.entwurf), ziel = join(WURZEL, "echtzeit", "welt");
 /* zuerst alles auf Felder ausrichten (Grundregel: Bild und Kollision decken sich feldgenau) */
@@ -58,4 +59,4 @@ index.stand = Date.now().toString(36);   /* Kennung dieses Baus: das Spiel häng
 writeFileSync(indexPfad, JSON.stringify(index));
 console.log(`geschrieben: echtzeit/welt/welt.json (${Object.keys(index.regionen).length} Regionen, ${Object.keys(index.objekte).length} Objekte)`);
 /* Übersichtskarten (Minimap) mit Baumkronen neu zeichnen, damit der Wald als Wald erkennbar ist (werkzeug/welt/karte.py) */
-if (!ohneBoden) { const r = spawnSync("python3", ["werkzeug/welt/karte.py", ...namen], { cwd: REALTIME, stdio: "inherit" }); if (r.status !== 0) process.exit(r.status || 1); }
+{ const r = spawnSync("python3", ["werkzeug/welt/karte.py", ...namen, ...(ohneBoden ? [] : ["--gebacken"])], { cwd: REALTIME, stdio: "inherit" }); if (r.status !== 0) process.exit(r.status || 1); }
