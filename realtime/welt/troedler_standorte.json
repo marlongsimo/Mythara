@@ -1,24 +1,6 @@
 {
- "hinweis": "Trödler (#88): Standplätze in Weltfeldern. Ringsum 1,8 Felder frei und begehbar, an Wegen bzw. mitten im Dorf, vom Dorf aus erreichbar. variante: karren | bauchladen (Figuren). Erzeugt mit der Standortsuche der Welt-Rolle; Prüfung: test/welt-troedler.test.mjs.",
+ "hinweis": "Trödler (#88): Standplätze in Weltfeldern. Ringsum 1,8 Felder frei und begehbar, an Wegen bzw. mitten im Dorf, vom Dorf aus erreichbar. variante: karren | bauchladen (Figuren). Erzeugt mit der Standortsuche der Welt-Rolle; Prüfung: test/welt-troedler.test.mjs. Entscheidung des Nutzers (#88): kein Trödler im Kreuzwald und in Osthof, der erste steht im Rabenmoor.",
  "standorte": [
-  {
-   "id": "troedler_kreuzwald",
-   "x": 6503.5,
-   "y": 6513.5,
-   "region": "waldweg",
-   "ort": "Am Kreuzweg im Kreuzwald (Steinweg trifft den Feldweg nach Weidenhain)",
-   "variante": "karren",
-   "frei": 1.8
-  },
-  {
-   "id": "troedler_osthof",
-   "x": 6522.5,
-   "y": 6436.5,
-   "region": "osthof",
-   "ort": "Vor dem Hof in Osthof, am Weg",
-   "variante": "bauchladen",
-   "frei": 1.8
-  },
   {
    "id": "troedler_rabenmoor_steg",
    "x": 6327.5,

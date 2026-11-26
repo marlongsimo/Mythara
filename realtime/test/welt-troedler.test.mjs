@@ -15,6 +15,6 @@ for (const s of S) { const r = region(s.region), R = new G.WeltRaster(); for (co
   const st = r.spiel.start[0], f = new Set(), q = [[Math.floor((X + st[0]) * 2), Math.floor((Y + st[1]) * 2)]];
   while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (f.has(k) || nx < X * 2 || ny < Y * 2 || nx >= (X + B) * 2 || ny >= (Y + H) * 2 || !R.begehbar((nx + .5) / 2, (ny + .5) / 2)) continue; f.add(k); q.push([nx, ny]); } }
   const erreichbar = f.has(Math.floor(s.x * 2) + "," + Math.floor(s.y * 2)); if (!drin || !frei || !erreichbar) schlecht.push(`${s.id}: drin ${drin}, frei ${frei}, erreichbar ${erreichbar}`); }
-check(S.length >= 7, `${S.length} Standorte: ${S.map((s) => s.id.replace("troedler_", "")).join(", ")}`);
+check(S.length >= 5, `${S.length} Standorte: ${S.map((s) => s.id.replace("troedler_", "")).join(", ")}`);
 check(!schlecht.length, "alle in ihrer Region, ringsum frei und vom Regionsstart aus erreichbar", schlecht);
 console.log(ok ? "\nTrödler: alles in Ordnung" : "\nTrödler: FEHLER"); process.exit(ok ? 0 : 1);
