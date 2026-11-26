@@ -42,7 +42,7 @@ Alle Befehle im Ordner `realtime/`, nach `node build.mjs` (Integration) bzw. `np
 
 | Rolle | Mindestens |
 |---|---|
-| Integration & Spielsysteme | alle Server-Tests: `bash test/server-tests.sh`; bei Änderungen an Oberfläche oder 3D zusätzlich die passenden `*-ui.test.*` |
+| Integration & Spielsysteme | alle Server-Tests **gleichzeitig**: `node test/parallel.mjs` (ca. 2 min statt 8; nacheinander: `bash test/server-tests.sh`); bei Änderungen an Oberfläche oder 3D zusätzlich nur die **betroffenen** `*-ui.test.*` |
 | Quest-Autor | `node test/questbau.test.mjs` (Prüfer über alle Quests) und der Welt-Test der Quest (`test/questNN-welt.test.mjs`, neu anlegen) |
 | Figuren & 3D | `node test/figuren3d.test.mjs`; Sichtprüfung in `echtzeit/figurentest.html` |
 | Worldbuilding | `node test/welt-daten.test.mjs`, `welt-raster`, `welt-grenzen`, `welt-bau`, `kreuzwald` (dieselben prüft auch die Pipeline) |

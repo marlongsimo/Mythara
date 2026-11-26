@@ -1,7 +1,7 @@
 # Riftmere – Server-Tests nach jedem Push (Arbeitszweige der Claude-Sitzungen und feature/realtime-engine).
 # Prüft Spielserver, Quests, Inventar, Berufe und Welt-Daten ohne Browser. Ergebnis: Haken oder Kreuz neben dem Commit,
 # Einzelheiten unter „Actions“. Ein rotes Kreuz heißt: vor dem Zusammenführen reparieren.
-# Lokal dasselbe:  cd realtime && npm ci && node build.mjs && bash test/server-tests.sh
+# Lokal dasselbe:  cd realtime && npm ci && node build.mjs && node test/parallel.mjs   (nacheinander: bash test/server-tests.sh)
 name: Tests
 
 on:
@@ -47,6 +47,6 @@ jobs:
       - name: Bauen
         working-directory: realtime
         run: node build.mjs
-      - name: Server-Tests
+      - name: Server-Tests (gleichzeitig, wo sich keine Ports teilen)
         working-directory: realtime
-        run: bash test/server-tests.sh
+        run: GLEICHZEITIG=4 node test/parallel.mjs
