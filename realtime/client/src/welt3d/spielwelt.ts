@@ -34,6 +34,7 @@ import { BergWelt } from "./berg3d";
 import { PflanzenWelt } from "./pflanzen3d";
 import { LichterWelt } from "./lichter3d";
 import { FischWelt, WurmWelt } from "./fischen3d";
+import { SPIEL_SYMBOLE } from "../../../shared/kartensymbole";
 import { HandwerkWelt } from "./handwerk3d";
 import { bankZeigen } from "../bank";
 import { istBankschalter } from "../../../shared/bank";
@@ -403,13 +404,13 @@ export class Spielwelt3D implements WeltKern {
   private symbolBilder = new Map<string, HTMLImageElement>();
   private symboleMalen(c: HTMLCanvasElement, felder: number, o: { x: number; y: number }, g: number): void {
     const x = c.getContext("2d"); if (!x || !this.index) return; const n = c.width, k = n / felder, rand = n / 2 / 1.5, gr = Math.max(16, n * 0.09);
-    for (const r of Object.values(this.index.regionen) as { symbole?: { s: string; x: number; y: number }[] }[]) for (const q of r.symbole || []) {
+    for (const r of [...Object.values(this.index.regionen), { symbole: SPIEL_SYMBOLE }] as { symbole?: { s: string; x: number; y: number }[] }[]) for (const q of r.symbole || []) {
       const dx = q.x - o.x, dy = q.y - o.y; if (Math.abs(dx) > felder || Math.abs(dy) > felder) continue;
       const px = (dx * Math.cos(g) + dy * -Math.sin(g)) * k, py = -(dx * -Math.sin(g) + dy * -Math.cos(g)) * k; if (Math.hypot(px, py) > rand - gr / 2) continue;
       let im = this.symbolBilder.get(q.s); if (!im) { im = new Image(); im.src = `${WELT.bild}img/karte/symbole/${q.s}.webp`; im.onload = () => { this.karteZeit = 0; }; this.symbolBilder.set(q.s, im); } /* geladen: beim nächsten Bild zeichnen */
       if (im.complete && im.naturalWidth) x.drawImage(im, n / 2 + px - gr / 2, n / 2 + py - gr / 2, gr, gr); } }
   /** für Tests: welche Symbole die Minikarte gerade zeigen würde */
-  symboleNah(r = 40): { s: string; x: number; y: number }[] { if (!this.index) return []; const o = this.ort; return (Object.values(this.index.regionen) as { symbole?: { s: string; x: number; y: number }[] }[]).flatMap((g) => g.symbole || []).filter((q) => Math.hypot(q.x - o.x, q.y - o.y) < r); }
+  symboleNah(r = 40): { s: string; x: number; y: number }[] { if (!this.index) return []; const o = this.ort; return [...(Object.values(this.index.regionen) as { symbole?: { s: string; x: number; y: number }[] }[]).flatMap((g) => g.symbole || []), ...SPIEL_SYMBOLE].filter((q) => Math.hypot(q.x - o.x, q.y - o.y) < r); }
   private letzterStrom = 0; /** gerechnete Spielzeit in s (für Prüfungen) */ simZeit = 0;
   /** Feldbewegung („Felder und Schräge“, shared/feld.ts): der Held gleitet von Feldmitte zu Feldmitte, 1 Feld je Tick (2/s), im Sprint 2 (4/s);
    *  schräg zählt wie gerade, keine Ecken schneiden. schrittZiel: die Feldmitte, zu der er gerade geht (ein angefangener Schritt wird zu Ende gegangen) */
