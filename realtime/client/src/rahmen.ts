@@ -5,8 +5,8 @@
  * Unten rechts liegen im Kampf die Aktionen 1–4 (links läuft man mit dem Steuerknüppel), unten in der Mitte der Chat (welt.ts).
  */
 import { BERUFE } from "../../shared/berufe";
-import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten } from "./welt";
-import { QUESTS as QUESTS_B } from "../../shared/quests";
+import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten, wegsteinReiben } from "./welt";
+import { QUESTS as QUESTS_B, wegzieleFrei } from "../../shared/quests";
 import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
 import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
@@ -168,10 +168,16 @@ function dingAktionen(wo: string, g: string): { kopf: string; farbe?: string; a:
   if (imRucksack && G.platz) a.push({ text: "Ausrüsten", sym: "🛡️", tat: () => anlegen(g) });
   if (imRucksack && G.trank) a.push(G.art === "Essen" ? { text: "Essen", sym: "🍞", tat: () => trinken(Number(wo.slice(1))) } : { text: "Trinken", sym: "🧪", tat: () => trinken(Number(wo.slice(1))) });
   /* Benutzen wie in OSRS: bei Dingen ohne eigenen Zweck (Stämme, Erze, Leder …) die erste Aktion; danach Werkstatt oder anderen Gegenstand antippen */
-  if (imRucksack && !G.platz && !G.trank && g !== "splitter") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
+  if (imRucksack && g === "wegstein") a.push({ text: "Reiben", sym: "✨", tat: () => setTimeout(wegsteinMenue, 0) /* erst nach dem Schließen dieses Menüs */ });   /* Phase 3a: Ziele wählen, der Server reist */
+  if (imRucksack && !G.platz && !G.trank && g !== "splitter" && g !== "wegstein") a.push({ text: "Benutzen", sym: "✋", tat: () => { benutzen({ wo, g }); chatSystem(`${G.name} benutzen mit … (Werkstatt oder Gegenstand antippen)`); } });
   a.push({ text: "Untersuchen", sym: "🔍", tat: () => untersuchen(g, () => { /* zurück */ }, () => { /* zu */ }) });
   if (imRucksack && inventarAmServer()) a.push({ text: "Fallen lassen", sym: "⬇️", tat: () => fallenLassen(Number(wo.slice(1))) });
   return { kopf: G.name + (n > 1 ? ` ×${n}` : ""), farbe: SELTENHEITEN[G.seltenheit] ? SELTENHEITEN[G.seltenheit].farbe : undefined, a }; }
+/** Wegstein reiben: die freigeschalteten Ziele (shared/wegstein.ts) zur Wahl – oder warum es nicht geht */
+function wegsteinMenue(): void { const l = (inventar().ladungen || {}).wegstein || 0, ziele = wegzieleFrei((id) => questStandB(id));
+  if (!ziele.length) { chatSystem("Der Stein bleibt kalt – er kennt noch keinen Ort. Agnes an der Linde in Weidenhain weiß mehr."); return; }
+  if (!l) { chatSystem("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
+  aktionsMenue(innerWidth / 2, innerHeight / 2, [{ kopf: `Wegstein · ${l} Ladung${l === 1 ? "" : "en"}`, farbe: SELTENHEITEN.selten.farbe, aktionen: ziele.map((z) => ({ text: z.name, sym: "🧭", tat: () => wegsteinReiben(z.id) })) }]); }
 /** Benutzen: Gegenstand a auf b im Rucksack (z. B. Bogensehne auf ungespannten Bogen) – ein Rezept „im Rucksack“ (shared/handwerk.ts), so oft es geht; der Server prüft Level und Zutaten */
 function zusammensetzen(a: string, b: string): void {
   const r = REZEPTE.find((x) => x.station === "hand" && [a, b].every((g) => x.zutaten.some((z) => z.g.includes(g)))); if (!r) { chatSystem("Nichts Interessantes passiert."); return; }

@@ -335,6 +335,6 @@
  {"id":"b0164","objekt":"stil_linde_01","x":5.5,"y":63.5,"s":0.98,"spiegeln":true},
  {"id":"b0192","objekt":"stil_tanne_02","x":9.5,"y":63.5,"s":0.98},
  {"id":"b0010","objekt":"stil_eiche_02","x":86.5,"y":63.5,"s":0.9,"spiegeln":true},
- {"id":"ort_taverne_herd","objekt":"hand_herd_01","x":22.8,"y":27.4},
- {"id":"ort_taverne_kessel","objekt":"hand_kessel_01","x":21.6,"y":30.8}
+ {"id":"ort_taverne_herd","objekt":"hand_herd_01","x":23,"y":27.5},
+ {"id":"ort_taverne_kessel","objekt":"hand_kessel_01","x":21.5,"y":31}
 ]

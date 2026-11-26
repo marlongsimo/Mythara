@@ -25,6 +25,9 @@ export const BERUFE: Beruf[] = [
   { id: "handwerk", name: "Handwerk", symbol: S + "handwerk.webp", symbolKlein: S + "handwerk_klein.webp", stationen: ["werkbank", "hand"],
     wofuer: "Bogensehnen, Garn, Leder, Stoff und Holzwaren an der Werkbank im Osthof – und was sich im Rucksack zusammensetzen lässt (Sehne auf Bogen).",
     aufstieg: "An der Werkbank ein Rezept wählen (oder einen Rohstoff im Rucksack benutzen und die Werkbank antippen): Bogensehne und Garn ab Level 1, Leder und Stoff je Stufe. Jedes Stück braucht seine Ticks, auch bei „Alle“." },
+  { id: "splitterbinden", name: "Splitterbinden", symbol: S + "splitterbinden.webp", symbolKlein: S + "splitterbinden_klein.webp", stationen: ["bindestein"],
+    wofuer: "Splitter tragen Kraft. Am Bindestein legst du sie in den Wegstein: jede Ladung bringt dich einmal zu einem Ziel, das du freigeschaltet hast. Der erste Bindestein steht an der Linde in Weidenhain.",
+    aufstieg: "Am Bindestein den Wegstein laden: 2 Splitter je Ladung (2 XP) – oder 1 Splitter und 1 Seelenlicht. Seelenlichter fängst du ohne Werkzeug: Mattes Licht ab Level 1 um die Linde (8 XP), Wiesenlicht ab 10 in den Riedwiesen und an der Quelle der Obstwiesen (15). Schwingt der Stein (Resonanz), tipp schnell: doppelt so viele Ladungen." },
 ];
 export const beruf = (id: string): Beruf | undefined => BERUFE.find((b) => b.id === id);
 /** Welcher Beruf bekommt die XP an dieser Werkstatt? */

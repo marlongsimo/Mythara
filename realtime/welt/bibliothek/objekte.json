@@ -10379,6 +10379,69 @@
     "url": "img/objekte3d/handwerk/felswand.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "wz_seelenlicht",
+   "name": "Seelenlicht",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_seelenlicht.webp",
+   "groesse": [
+    29,
+    43
+   ],
+   "anker": [
+    0.5517,
+    0.8837
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/seelenlicht (Meshy)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/seelenlicht.glb",
+    "wind": 0.06,
+    "schweben": {
+     "hoehe": 0.9,
+     "hub": 0.12,
+     "takt": 3.2,
+     "pendel": 0.35
+    }
+   }
+  },
+  {
+   "id": "wz_bindestein",
+   "name": "Bindestein",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wz_bindestein.webp",
+   "groesse": [
+    41,
+    57
+   ],
+   "anker": [
+    0.439,
+    0.8947
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/assets/wahrzeichen/bindestein (Meshy „Voidstone Sigil“)",
+   "modell3d": {
+    "url": "img/objekte3d/wahrzeichen/bindestein.glb",
+    "wind": 0,
+    "fest": true,
+    "puls_ton": 272,
+    "puls_breite": 22,
+    "puls_hell": 0.72
+   }
   }
  ]
 }

@@ -8,7 +8,7 @@ import { berufAn, beruf } from "../../../shared/berufe";
 import * as THREE from "three";
 import { gltfLader } from "./gltf";
 import { GEGENSTAENDE } from "../../../shared/gegenstaende";
-import { questDef } from "../../../shared/quests";
+import { questDef, schalterAn } from "../../../shared/quests";
 import { laeuft as laeuftB } from "../../../shared/questbau";
 import { STATIONEN, WERKSTAETTEN, Werkstatt, StationId, WeltStation, WERKZEUG_AN, rezepteAn, rezept, Rezept, HANDWERK_WEIT, werkTat, WerkTat } from "../../../shared/handwerk";
 import { chatSystem, handwerkBitten, tafelZeigen, questStandB } from "../welt";
@@ -16,6 +16,10 @@ import { berufDrop, skillStand, BERUF_NAME } from "../skills";
 import { inventar } from "../inventar";
 import { benutzt, benutzen } from "../benutzen";
 import type { Welt3D } from "./motor";
+/** Ergebnis eines Rezepts zum Anzeigen: „ladung:wegstein“ (Splitterbinden) ist kein Gegenstand, sondern eine Ladung für ihn */
+const ladungVon = (r: { ergebnis: string }): string => (r.ergebnis.startsWith("ladung:") ? r.ergebnis.slice(7) : "");
+const ergName = (r: { ergebnis: string }): string => { const l = ladungVon(r), G = GEGENSTAENDE[l || r.ergebnis]; return G ? (l ? `Ladung für den ${G.name}` : G.name) : r.ergebnis; };
+const ergBild = (r: { ergebnis: string }): string => ladungVon(r) || r.ergebnis;
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; figur: unknown }
 interface Werkzeugfigur { beilHieb(url: string, clip?: string): number; beilWeg(): void; blick(x: number, z: number): void; werken?(wahl: string[], url?: string): number }
@@ -52,12 +56,13 @@ export class HandwerkWelt {
   private nachricht(m: { tat: string; rezept?: string; station?: StationId; name?: string; xp?: number; beruf?: string; glut?: boolean; gespart?: boolean; rest?: number; aufstieg?: number; grund?: string; text?: string; ms?: number }) {
     const f = this.figur, st = m.station || this.station, S = st && st !== "hand" ? STATIONEN[st] : null;
     if (m.tat === "start") { this.aktiv = m.rezept || null; this.station = m.station || null; const r = m.rezept ? rezept(m.rezept) : null; if (r) this.werkLos(r);
-      if (r) chatSystem(`Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
-    else if (m.tat === "fertig") { chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
+      if (r) chatSystem(ladungVon(r) ? `Du legst Splitter auf den Bindestein${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Ladungen)` : ""} …` : `Du stellst ${m.rezept && GEGENSTAENDE[r.ergebnis] ? GEGENSTAENDE[r.ergebnis].name : "etwas"} her${(m as { menge?: number }).menge! > 1 ? ` (${(m as { menge?: number }).menge} Stück)` : ""} …`); }
+    else if (m.tat === "fertig") { const lad = (m as { ladungen?: number; stueck?: number }); if (typeof lad.ladungen === "number") chatSystem(`Der Stein summt: ${lad.stueck && lad.stueck > 1 ? `Resonanz! ${lad.stueck} Ladungen` : "eine Ladung"} – jetzt ${lad.ladungen}.`);
+      else chatSystem(`Du stellst ${m.name || "etwas"} her${m.glut ? ` – Glut! ${m.gespart ? "Eine Zutat gespart, " : ""}50 % mehr XP.` : "."}`); const b = m.beruf || "handwerk"; berufDrop(b, m.xp || 0);
       if (m.aufstieg) chatSystem(`Glückwunsch! ${BERUF_NAME[b] || "Handwerk"} ist jetzt Level ${m.aufstieg}.`); /* Banner oben: skills.ts stufenPruefen */ }
-    else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis("Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
+    else if (m.tat === "glut") { this.glutBis = performance.now() + (m.ms || 1500); this.hinweis(this.station === "bindestein" ? "Resonanz! Schnell den Stein antippen" : "Glut! Schnell die Werkstatt antippen", m.ms || 1500); }
     else if (m.tat === "stop") { this.aktiv = null; this.glutBis = 0; this.werkHalt(); if (f) f.beilWeg();
-      if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); else if (m.grund === "werkzeug") chatSystem("Ohne Hammer im Rucksack geht es nicht weiter."); }
+      if (m.grund === "voll") chatSystem("Dein Rucksack ist voll."); else if (m.grund === "zutaten") chatSystem("Dir sind die Zutaten ausgegangen."); else if (m.grund === "werkzeug") chatSystem(this.station === "bindestein" ? "Ohne Wegstein im Rucksack geht es nicht weiter." : "Ohne Hammer im Rucksack geht es nicht weiter."); }
     else if (m.tat === "nein") { chatSystem(m.text || "Das geht hier nicht."); this.aktiv = null; this.werkHalt(); } }
   /** Solange gearbeitet wird: die Werk-Bewegung immer wieder (Ofen, Hämmern, Weben, Schnitzen, Zusammenfügen; fabrik/werk_bewegungen.py) */
   private werkZeit: ReturnType<typeof setTimeout> | null = null;
@@ -94,18 +99,18 @@ export class HandwerkWelt {
     const mit = (id: string) => { const q = questDef(id); return Boolean(q && laeuftB(q, questStandB(id))); } /* Questrezepte nur, solange die Quest läuft */, rs = rezepteAn(st).filter((r) => (!r.quest || mit(r.quest)) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
     const gruppen = new Map<string, Rezept[]>(); for (const r of rs) { if (!gruppen.has(r.gruppe)) gruppen.set(r.gruppe, []); gruppen.get(r.gruppe)!.push(r); }
     const bild = (g: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild ? `<img src="../${GEGENSTAENDE[g].bild}" alt="" draggable="false">` : "");
-    const ding = (r: Rezept) => { const offen = L >= r.level, n = wieOft(r), G = GEGENSTAENDE[r.ergebnis];
-      return `<button type="button" class="ding ${!offen ? "zu" : n > 0 && !ohne ? "kann" : "fehlt"}" data-r="${r.id}" title="${esc(G ? G.name : r.ergebnis)} – Level ${r.level}" aria-label="${esc(G ? G.name : r.ergebnis)}">${bild(r.ergebnis)}<span class="lv">${r.level}</span></button>`; };
+    const ding = (r: Rezept) => { const offen = L >= r.level, n = wieOft(r), G = { name: ergName(r) };
+      return `<button type="button" class="ding ${!offen ? "zu" : n > 0 && !ohne ? "kann" : "fehlt"}" data-r="${r.id}" title="${esc(G.name)} – Level ${r.level}" aria-label="${esc(G.name)}">${bild(ergBild(r))}<span class="lv">${r.level}</span></button>`; };
     const nurName = nur && GEGENSTAENDE[nur] ? GEGENSTAENDE[nur].name : "";
-    const f = tafelZeigen("handwerk", `<div class="skopf"><img class="skillbild" src="../${B.symbolKlein}" alt="" width="40" height="40"><div><h2>${S.name}</h2><small>${nurName ? `${esc(nurName)} benutzen · ` : ""}${S.tun} · Handwerk Level ${L}${ohne ? ` · <b style="color:#e07a6a">ohne ${esc(GEGENSTAENDE[ohne].name)}</b>` : ""}</small></div></div><div class="zier"></div>
+    const f = tafelZeigen("handwerk", `<div class="skopf"><img class="skillbild" src="../${B.symbolKlein}" alt="" width="40" height="40"><div><h2>${S.name}</h2><small>${nurName ? `${esc(nurName)} benutzen · ` : ""}${S.tun} · ${B.name} Level ${L}${ohne ? ` · <b style="color:#e07a6a">ohne ${esc(GEGENSTAENDE[ohne].name)}</b>` : ""}</small></div></div><div class="zier"></div>
       <div class="raster">${[...gruppen].map(([g, liste]) => `<h3>${esc(g)}</h3><div class="gitter">${liste.map(ding).join("")}</div>`).join("")}</div>
       <div class="info"><small>Tippe ein Bild an: Zutaten und wie viele du herstellen willst.</small></div>`, () => { this.offen = null; });
     const tafel = f.querySelector(".tafel") as HTMLElement, info = tafel.querySelector(".info") as HTMLElement;
-    const zeigen = (r: Rezept) => { const G = GEGENSTAENDE[r.ergebnis], n = wieOft(r), offen = L >= r.level;
+    const zeigen = (r: Rezept) => { const G = { name: ergName(r) }, n = wieOft(r), offen = L >= r.level;
       tafel.querySelectorAll(".ding.wahl").forEach((x) => x.classList.remove("wahl")); tafel.querySelector(`.ding[data-r="${r.id}"]`)?.classList.add("wahl");
       const zut = r.zutaten.map((z) => { const da = sorteDa(z), g = z.g.find((x) => imRucksack(x) >= z.n) || z.g[0]; return `<span>${bild(g)}<i class="${da >= z.n ? "da" : "nicht"}">${da}/${z.n}</i> ${esc(z.g.map((x) => (GEGENSTAENDE[x] ? GEGENSTAENDE[x].name : x)).join(" / "))}</span>`; }).join("");
-      info.innerHTML = `<div class="kopfzeile"><b>${esc(G ? G.name : r.ergebnis)}</b><small>Level ${r.level} · ${r.xp} XP je Stück · ${r.ticks} Ticks</small></div><div class="zeile"><div class="zut">${zut}</div>
-        ${!offen ? `<small class="hinweis">Braucht ${B.name} ${r.level}.</small>` : ohne ? `<small class="hinweis">Braucht einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack.</small>` : n <= 0 ? `<small class="hinweis">Zutaten fehlen.</small>` : `<div class="menge">${[1, 5, 10].filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}</div>`; };
+      info.innerHTML = `<div class="kopfzeile"><b>${esc(G.name)}</b><small>Level ${r.level} · ${r.xp} XP je Stück · ${r.ticks} Ticks</small></div><div class="zeile"><div class="zut">${zut}</div>
+        ${!offen ? `<small class="hinweis">Braucht ${B.name} ${r.level}.</small>` : ohne ? `<small class="hinweis">Braucht einen ${esc(GEGENSTAENDE[ohne].name)} im Rucksack.</small>` : n <= 0 ? `<small class="hinweis">Zutaten fehlen.</small>` : `<div class="menge">${(ladungVon(r) ? [1, 10, 50] : [1, 5, 10]).filter((k) => k < n).map((k) => `<button type="button" data-t="hw" data-r="${r.id}" data-n="${k}">${k}</button>`).join("")}<button type="button" class="haupt" data-t="hw" data-r="${r.id}" data-n="${n}">${n > 1 ? `Alle (${n})` : "Herstellen"}</button></div>`}</div>`; };
     tafel.addEventListener("click", (e) => { const t = e.target as HTMLElement, d = t.closest(".ding") as HTMLElement | null;
       if (d) { e.stopPropagation(); const r = rezept(d.dataset.r!); if (r) zeigen(r); return; }
       const b = t.closest('[data-t="hw"]') as HTMLElement | null; if (!b) return; e.stopPropagation();
@@ -116,11 +121,11 @@ export class HandwerkWelt {
     let best: Werkstatt | null = null, bd = 1.4; for (const W of WERKSTAETTEN) { const d = Math.hypot(W.x - x, W.y - y); if (d < bd) { bd = d; best = W; } } if (!best) return null;
     const W = best, S = { ...STATIONEN[W.station], x: W.x, y: W.y }, o = this.u.ort, dx = o.x - S.x, dy = o.y - S.y, l = Math.hypot(dx, dy) || 1, glut = this.aktiv && performance.now() < this.glutBis;
     const b = benutzt(), bn = b && GEGENSTAENDE[b.g] ? GEGENSTAENDE[b.g].name : "";
-    return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? "Glut!" : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
-      tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (this.aktiv) handwerkBitten("stop");
+    return { x: S.x + (dx / l) * 1.2, y: S.y + (dy / l) * 1.2, text: glut ? (W.station === "bindestein" ? "Resonanz!" : "Glut!") : bn ? `${bn} → ${S.name}` : `${S.name} benutzen`, da: () => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) <= HANDWERK_WEIT,
+      tat: () => { if (glut) { this.glutBis = 0; handwerkBitten("glut"); return; } if (W.schalter && !schalterAn((id) => questStandB(id), W.schalter)) { chatSystem(W.gesperrt || "Das geht hier noch nicht."); return; } if (this.aktiv) handwerkBitten("stop");
         const b = benutzt(); if (b) { benutzen(null); if (!rezepteAn(S.id).some((r) => r.zutaten.some((z) => z.g.includes(b.g)))) { chatSystem("Nichts Interessantes passiert."); return; } this.fenster(S.id, b.g); return; }
         this.fenster(S.id); },
-      mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => chatSystem(`${S.name}: hier wird ${S.tun === "Werken" ? "gewerkt" : S.tun === "Schmelzen" ? "geschmolzen" : "geschmiedet"} (${rezepteAn(S.id).filter((r) => !r.quest).length} Rezepte).`) }] }; }
+      mehr: [{ text: "Untersuchen", sym: "🔍", tat: () => chatSystem(`${S.name}: hier wird ${S.tun === "Werken" ? "gewerkt" : S.tun === "Schmelzen" ? "geschmolzen" : S.tun === "Binden" ? "Kraft in Steine gebunden" : "geschmiedet"} (${rezepteAn(S.id).filter((r) => !r.quest).length} Rezepte).`) }] }; }
   /** Wo die Werkstätten stehen (Antippen am Bildschirm) */
   punkte(): { x: number; y: number; h: number }[] { return WERKSTAETTEN.filter((S) => Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 40).map((S) => ({ x: S.x, y: S.y, h: 1.0 })); }
   schritt(_dt: number): void { for (const S of WERKSTAETTEN) { if (S.station !== "werkbank") continue; const nah = Math.hypot(S.x - this.u.ort.x, S.y - this.u.ort.y) < 60;

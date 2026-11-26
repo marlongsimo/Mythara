@@ -98,6 +98,9 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "adern") window.dispatchEvent(new CustomEvent("ez-adern", { detail: m.weg || [] }));
     else if (m.t === "pflanze") window.dispatchEvent(new CustomEvent("ez-pflanze", { detail: m })); /* Handwerk: Flachs und Hanf (welt3d/pflanzen3d.ts) */
     else if (m.t === "pflanzen") window.dispatchEvent(new CustomEvent("ez-pflanzen", { detail: m.weg || [] }));
+    else if (m.t === "licht") window.dispatchEvent(new CustomEvent("ez-licht", { detail: m })); /* Splitterbinden: Seelenlichter (welt3d/lichter3d.ts) */
+    else if (m.t === "lichter") window.dispatchEvent(new CustomEvent("ez-lichter", { detail: m.weg || [] }));
+    else if (m.t === "wegstein") window.dispatchEvent(new CustomEvent("ez-wegstein", { detail: m })); /* Wegstein: Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "handwerk") window.dispatchEvent(new CustomEvent("ez-handwerk", { detail: m })); /* Handwerk an den Werkstätten (welt3d/handwerk3d.ts) */
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
     else if (m.t === "freunde") window.dispatchEvent(new CustomEvent("ez-freunde", { detail: Array.isArray(m.liste) ? m.liste : [] }));
@@ -154,6 +157,9 @@ export function teleportFragen(antwort: (ok: boolean, rest: number, gast: boolea
   setTimeout(() => { if (teleportWarten === antwort) { teleportWarten = null; ohne(); } }, 3000); }
 export function holzBitten(tat: "start" | "kern" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "holz", tat, ...(id ? { id } : {}) }); }
 export function bergBitten(tat: "start" | "riss" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "berg", tat, ...(id ? { id } : {}) }); }
+export function lichtBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "licht", tat, ...(id ? { id } : {}) }); }
+/** Wegstein reiben: der Server prüft Ziel, Ladung, Kampf und Abklingzeit und antwortet mit „wegstein“ */
+export function wegsteinReiben(ziel: string): void { stelleMelden(); senden({ t: "wegstein", ziel }); }
 export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
 export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { if (tat === "start") stelleMelden(); senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }
 /** Beten an einer heilenden Stelle (shared/heilstellen.ts) – der Server prüft Schalter, Abstand und Abklingzeit */

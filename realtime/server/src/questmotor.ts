@@ -5,10 +5,11 @@
  * (Sammeln, Herstellen, Erlegen, Untersuchen, Aufheben, Betreten, Benutzen), bedingte Beute.
  * Belohnung: erst nachdem rpg_held_quest_abschluss den ersten Abschluss bestätigt hat (true) – Splitter und Gegenstände nie doppelt.
  */
+import { beruf } from "../../shared/berufe";
 import * as QB from "../../shared/questbau";
 import { QUESTS, questDef, schalterAn as schalterAnB } from "../../shared/quests";
 import { levelAus, heldenlevel, SKILLS, type SkillXp, type Skill } from "../../shared/kampfwerte";
-import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, berufXpDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
+import { besitzt, besitztIrgendwo, aufnehmen, anzahlVon, abgeben, bodenDazu, berufXp, berufXpDazu, ladungenDazu, QUESTLOHN, BEDINGUNGEN, AUFGENOMMEN } from "./inventar";
 import { weltRegionBei } from "../../shared/karten";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 
@@ -34,7 +35,7 @@ export function motorVerbinden(f: { melden(nutzer: string): void; xp(nutzer: str
 export const kontext = (nutzer: string): QB.Kontext => ({
   hat: (g) => besitzt(nutzer).includes(g), verloren: (g) => !besitztIrgendwo(nutzer, g), anzahl: (g) => anzahlVon(nutzer, g),
   quest: (id) => { const q = questDef(id); return q ? QB.lage(q, qStand(nutzer, id)).phase : "neu"; },
-  skill: (k) => { const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
+  skill: (k) => { if (beruf(k)) return levelAus(berufXp(nutzer, k)); /* Berufe (Holzfällerei, Handwerk …) aus dem Inventar */ const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
   heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; } });
 async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promise<void> {
   const alt = qStand(nutzer, q.id); if (alt === "fertig" || !s || s === "fertig" || s === alt) return;
@@ -121,6 +122,7 @@ export async function motorAntworten(sb: Sb, nutzer: string, id: string, a: stri
       if (Object.values(X).some((v) => v)) { aus.belohnung = X; try { xpGutschrift(nutzer, X); } catch (e) { console.error("Quest-XP live:", (e as Error).message); } }
       /* Berufe-XP auch im Inventar des Servers (er schreibt es selbst) – dieselbe Summe wie in der Datenbank */
       for (const [b, n] of Object.entries(B.berufe || {})) if (n > 0) berufXpDazu(sb, nutzer, b, Math.min(1000, n));
+      for (const [g, n] of Object.entries(B.ladungen || {})) if (n > 0) ladungenDazu(sb, nutzer, g, n);   /* B1: 10 Ladungen im Wegstein */
       if (q.punkte) { aus.punkte = Math.min(10, q.punkte); if (ohneV2) void punkteAbgleichen(sb, nutzer, -1); /* ohne 048 hat die Buchung keine Punkte geschrieben */ } } }
   else { const r = geben(sb, nutzer, f.geben || [], k); if (r.fehler) return { fehler: r.fehler }; neu = r.neu;
     const n = QB.nachFolge(q, s, f); if (n !== s) await setzen(sb, nutzer, q, n); }

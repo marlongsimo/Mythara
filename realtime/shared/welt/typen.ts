@@ -111,7 +111,8 @@ export interface ObjektDef {
   /** Nur Optik: das Objekt wird (mit 3D-Figuren) live als 3D-Modell gezeichnet – eigene Drehung und Wind je Standort; bild bleibt der Ersatz.
    *  farbton/saett/hell färben nur die grünen Teile (Blätter) um; wind: Ausschlag der Krone in Metern */
   modell3d?: { url: string; farbton?: number; saett?: number; hell?: number; wind?: number; /** graue Stellen (Blattunterseiten) grün färben */ grau?: boolean;
-    /** welche Farbe pulsiert (Farbton in Grad, Standard 210 = Blau) und wie breit der Bereich ist (Standard 28°) */ puls_ton?: number; puls_breite?: number };
+    /** welche Farbe pulsiert (Farbton in Grad, Standard 210 = Blau) und wie breit der Bereich ist (Standard 28°) */ puls_ton?: number; puls_breite?: number; /** ab welcher Helligkeit (0–1) es pulsiert, Standard 0,3 */ puls_hell?: number; /** keine zufällige Drehung: Vorderseite zur Kamera (flache Steine, Schilder) */ fest?: boolean;
+    /** schwebt (flache Lichter, Geister): Höhe über dem Boden und Hub in m, Takt in s, Pendeln in Bogenmaß – zeigt dabei immer zur Kamera */ schweben?: { hoehe: number; hub: number; takt: number; pendel: number } };
   /** Herkunft und Lizenz */
   herkunft: string;
   /** Räumliches Gebäude (Standard, werkzeug/welt/gebaeude.py): die Ebenen; `bild` ist dann nur das Gesamtbild für Katalog und Vorschau */
