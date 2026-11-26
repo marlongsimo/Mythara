@@ -27,7 +27,9 @@ const PFAD = [[0, 115.5], [20, 114], [40, 118], [52, 121], [56, 124]], PFAD2 = [
 const strecke = (x, y, p) => { let d = Infinity; for (let i = 1; i < p.length; i++) { const [x0, y0] = p[i - 1], [x1, y1] = p[i], dx = x1 - x0, dy = y1 - y0, t = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy || 1))); d = Math.min(d, Math.hypot(x - x0 - t * dx, y - y0 - t * dy)); } return d; };
 const wiese = (x, y) => Math.sin(x / 17 + y / 23 + 0.7) + 0.7 * Math.sin(y / 13 - x / 19) + 0.35 * welle(x, y);   /* > 0: Wiese, sonst Wald */
 const g = []; for (let y = 0; y < H; y++) { const z = []; for (let x = 0; x < B; x++) { const cx = x + 0.5, cy = y + 0.5, w = welle(cx, cy), a = FORM.art(X0 + cx, Y0 + cy); let c;
-  if (a === "aussen") c = GRUND[y][x];
+  if (a !== "pass" && x > B - 14 && FORM.passWeg(X0 + cx, Y0 + cy)) c = "e";   /* der Weg läuft bis an den Rand weiter */
+  else if (a === "pass") c = FORM.passWeg(X0 + cx, Y0 + cy) ? "e" : w > 0.5 ? "g" : "y";   /* der Pass in die Glutsande: Weg, Geröll, Steppe */
+  else if (a === "aussen") c = GRUND[y][x];
   else if (a === "F" || a === "g") c = "~wM".includes(GRUND[y][x]) && FORM.abstand(X0 + cx, Y0 + cy) > 0 ? GRUND[y][x] : a;   /* der Grat geht nicht ins Meer hinaus */
   else if (strecke(cx, cy, PFAD) < 1.3 || strecke(cx, cy, PFAD2) < 1.1 || strecke(cx, cy, PFAD3) < 1.1) c = "e";
   else if (Math.hypot(cx - HALDE.x, cy - HALDE.y) < 9 + w) c = "g";

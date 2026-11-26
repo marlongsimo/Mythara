@@ -598,7 +598,7 @@
  {"id":"b1644","objekt":"stil_tanne_01","x":355.5,"y":20.5,"s":0.89},
  {"id":"b0429","objekt":"stil_tanne_02","x":10.5,"y":20.5,"s":1.08,"spiegeln":true},
  {"id":"b1290","objekt":"stil_tanne_02","x":142.5,"y":20.5,"s":0.93,"spiegeln":true},
- {"id":"fels_gross_7","objekt":"k_fels_gross","x":267.5,"y":20.51},
+ {"id":"fels_gross_7","objekt":"k_fels_gross","x":267.5,"y":20.52},
  {"id":"b1030","objekt":"stil_eiche_01","x":145.5,"y":20.5,"s":0.88},
  {"id":"b0501","objekt":"stil_linde_01","x":91.5,"y":20.5,"s":1.03},
  {"id":"b1880","objekt":"stil_eiche_02","x":122.5,"y":20.5,"s":0.99},

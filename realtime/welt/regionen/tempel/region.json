@@ -1,0 +1,16 @@
+{
+ "id": "tempel",
+ "name": "Der versandete Tempel",
+ "untertitel": "Unter den Tafelbergen der Glutsande",
+ "ursprung": [
+  352,
+  300
+ ],
+ "chunks": [
+  3,
+  2
+ ],
+ "biom": "hoehle",
+ "stufe": 9,
+ "ebene": "untergrund"
+}

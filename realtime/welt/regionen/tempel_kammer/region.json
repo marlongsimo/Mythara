@@ -1,0 +1,16 @@
+{
+ "id": "tempel_kammer",
+ "name": "Die Kammer der Sandmutter",
+ "untertitel": "Instanz",
+ "ursprung": [
+  355,
+  300
+ ],
+ "chunks": [
+  1,
+  1
+ ],
+ "biom": "hoehle",
+ "stufe": 10,
+ "ebene": "untergrund"
+}

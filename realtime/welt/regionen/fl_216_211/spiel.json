@@ -10,7 +10,148 @@
  "ausgaenge": [],
  "kollision": {
   "sperren": [],
-  "freigeben": []
+  "freigeben": [
+   {
+    "art": "rechteck",
+    "x0": 243.1,
+    "y0": 242,
+    "x1": 257.6,
+    "y1": 244.6
+   }
+  ]
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "kanal",
+   "art": "lesen",
+   "x": 158,
+   "y": 88,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Kanal aus behauenem Stein, längst ausgetrocknet. Im Sand liegen Scherben von Krügen – und frische Fußspuren."
+   }
+  },
+  {
+   "id": "lager_west",
+   "art": "lesen",
+   "x": 133,
+   "y": 104,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Lager im Kanalbett: Zelte aus Kamelhaar, ein Feuer, Kisten mit fremden Siegeln. Karawanenräuber."
+   }
+  },
+  {
+   "id": "oase",
+   "art": "lesen",
+   "x": 341,
+   "y": 54,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Oase. Am Wasser steht ein Baum, so alt, dass seine Rinde wie Stein aussieht – ein Weltenbaum."
+   }
+  },
+  {
+   "id": "glutbrunn_bank_tuer",
+   "art": "lesen",
+   "x": 248,
+   "y": 180.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Glutbrunn. Dasselbe Konto wie in der Waldmark – nur der Wechsler schwitzt mehr."
+   }
+  },
+  {
+   "id": "glutbrunn_werkstatt",
+   "art": "lesen",
+   "x": 207,
+   "y": 202.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Glutbrunn: Esse, Werkbank und ein Herd, auf dem Glutwels mit Salzkruste gart."
+   }
+  },
+  {
+   "id": "badehaus",
+   "art": "lesen",
+   "x": 264,
+   "y": 223,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Badehaus. Warmes Wasser aus der Tiefe, Dampf und Klatsch aus allen Ländern."
+   }
+  },
+  {
+   "id": "karawanenrast",
+   "art": "lesen",
+   "x": 232,
+   "y": 216.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Karawanenrast: Zelte, Kisten, Kamelglocken. Hier hört man, was im Süden los ist."
+   }
+  },
+  {
+   "id": "glutbrunn_wegstein",
+   "art": "lesen",
+   "x": 256.5,
+   "y": 196.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Glutbrunn."
+   }
+  },
+  {
+   "id": "glutbrunn_bindestein",
+   "art": "lesen",
+   "x": 263.5,
+   "y": 196.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Brunnen."
+   }
+  },
+  {
+   "id": "glutbrunn",
+   "art": "lesen",
+   "x": 248,
+   "y": 200,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Glutbrunn. Palmen, Lehm und Stein, und über allem der Geruch von Fisch und Gewürzen."
+   }
+  },
+  {
+   "id": "hafenmole",
+   "art": "lesen",
+   "x": 249,
+   "y": 241.2,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Hafenmole. Flache Boote liegen im Schlamm; stromab geht es zum Meer – irgendwann."
+   }
+  },
+  {
+   "id": "fischplatz_strom",
+   "art": "lesen",
+   "x": 200.5,
+   "y": 234.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Fischplatz am Strom. Im braunen Wasser zieht ein Glutwels seine Kreise."
+   }
+  }
+ ]
 }

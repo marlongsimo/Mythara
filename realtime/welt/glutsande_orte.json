@@ -1,0 +1,179 @@
+{
+ "hinweis": "Phase 9 (Welt #74): NPC-Plätze, Gegnerlager, Rohstoffe und Questorte als Vorschlag (Weltfelder).",
+ "orte": {
+  "ende_des_grases": [
+   6914,
+   6742
+  ],
+  "glutbrunn": [
+   7160,
+   6956
+  ],
+  "salzpfanne": [
+   7330,
+   6642
+  ],
+  "tempel": [
+   7112,
+   6680
+  ],
+  "oase": [
+   7256,
+   6800
+  ],
+  "lager_west": [
+   7046,
+   6852
+  ],
+  "lager_ost": [
+   7210,
+   6724
+  ]
+ },
+ "npc": [
+  {
+   "id": "ruwen_kehl",
+   "rolle": "Salzsieder (F2)",
+   "x": 7331.5,
+   "y": 6625.5
+  },
+  {
+   "id": "hasim_tal",
+   "rolle": "Gelehrter (F3) – vor dem Tempel",
+   "x": 7114.5,
+   "y": 6698
+  },
+  {
+   "id": "selma_dornfeld",
+   "rolle": "Händlerin, Karawanenrast (F1)",
+   "x": 7142,
+   "y": 6970
+  },
+  {
+   "id": "nalia",
+   "rolle": "Fischerin (F4)",
+   "x": 7114,
+   "y": 6985.4
+  },
+  {
+   "id": "bankier_glutbrunn",
+   "rolle": "Bank",
+   "x": 7160,
+   "y": 6934
+  },
+  {
+   "id": "schmied_glutbrunn",
+   "rolle": "Werkstatt",
+   "x": 7118,
+   "y": 6952
+  },
+  {
+   "id": "haendler_markt_1",
+   "rolle": "Markt",
+   "x": 7134,
+   "y": 6942.6
+  },
+  {
+   "id": "haendler_markt_2",
+   "rolle": "Markt",
+   "x": 7144,
+   "y": 6942.6
+  }
+ ],
+ "lager_west": {
+  "x": 7046,
+  "y": 6852,
+  "r": 9
+ },
+ "lager_ost": {
+  "x": 7210,
+  "y": 6724,
+  "r": 9
+ },
+ "siedepfanne_1": {
+  "x": 7315,
+  "y": 6644
+ },
+ "siedepfanne_2": {
+  "x": 7325,
+  "y": 6644
+ },
+ "siedepfanne_3": {
+  "x": 7335,
+  "y": 6644
+ },
+ "siedepfanne_4": {
+  "x": 7345,
+  "y": 6644
+ },
+ "skorpione_salzpfanne": {
+  "x": 7330,
+  "y": 6646,
+  "r": 22
+ },
+ "adern": [
+  {
+   "id": "ureisen_glut_1",
+   "art": "ureisen",
+   "x": 7088.5,
+   "y": 6674.5
+  },
+  {
+   "id": "ureisen_glut_2",
+   "art": "ureisen",
+   "x": 7133.5,
+   "y": 6672.5
+  },
+  {
+   "id": "ureisen_glut_3",
+   "art": "ureisen",
+   "x": 7135.5,
+   "y": 6685.5
+  }
+ ],
+ "weltenbaum": {
+  "id": "weltenbaum_oase",
+  "art": "weltenbaum",
+  "x": 7263,
+  "y": 6796
+ },
+ "fischplatz": {
+  "id": "fischplatz_strom",
+  "x": 7112.5,
+  "y": 6987.5,
+  "stehplatz": [
+   7112.5,
+   6986.3
+  ]
+ },
+ "spiegelplatten": [
+  {
+   "id": "spiegelplatte_1",
+   "x": 11277,
+   "y": 9619
+  },
+  {
+   "id": "spiegelplatte_2",
+   "x": 11291,
+   "y": 9619
+  },
+  {
+   "id": "spiegelplatte_3",
+   "x": 11277,
+   "y": 9633
+  },
+  {
+   "id": "spiegelplatte_4",
+   "x": 11291,
+   "y": 9633
+  }
+ ],
+ "archiv": {
+  "region": "rathaus_archiv",
+  "eingang": "archiv_tuer (im Ratssaal, rathaus.mjs)",
+  "ziel": [
+   11408.5,
+   9619.5
+  ]
+ }
+}
