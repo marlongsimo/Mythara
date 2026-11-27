@@ -92,15 +92,15 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Ockerlande",
-   "region": "fl_231_225",
+   "region": "fl_216_225",
    "mitte": [
-    7572.5,
+    7172.5,
     7442.5
    ],
    "rechteck": [
-    7512,
+    7112,
     7382,
-    7631,
+    7231,
     7501
    ],
    "meiden": [],

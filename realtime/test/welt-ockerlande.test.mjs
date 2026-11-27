@@ -33,12 +33,29 @@ for (const [name, T] of Object.entries(OK.tafelberge)) { const [cx, cy] = T.mitt
 console.log("\nRotlehm, Brunnenkreis, Rastplätze");
 { const [cx, cy] = OK.orte.rotlehm, geb = OBJ.filter((o) => Math.abs(o.x - cx) < 80 && Math.abs(o.y - cy) < 60 && BIB.get(o.objekt)?.kategorie === "gebaeude").length;
   const hat = (id) => OBJ.some((o) => o.id === id); check(geb >= 40 && geb <= 70 && ["rotlehm_bank", "rotlehm_karawanenhof_tor", "rotlehm_feste_bergfried", "rotlehm_schmiede", "rotlehm_taverne", "rotlehm_wegstein", "rotlehm_bindestein", "rotlehm_brunnen"].every(hat), `Rotlehm: ${geb} Gebäude, Bank, Karawanenhof, Lehmfeste, Werkstatt, Taverne, Wegstein, Bindestein`); }
-{ const ziele = [...[...IA.values()].filter((i) => /^(rotlehm|brunnenkreis|rast_ockerlande|fischplatz_ockerstrom)/.test(i.id)).map((i) => [i.id, i.x, i.y]), ...OK.npc.map((n) => [n.id, n.x, n.y]), ...OK.laeden.map((l) => [l.id, l.x, l.y]), ...OK.stationen.map((s) => [s.id, s.x, s.y]), ...OK.banken.map((b) => [b.id, ...b.schalter])];
+{ const ziele = [...[...IA.values()].filter((i) => /^(rotlehm|brunnenkreis|rast_ockerlande|fischplatz_ockerstrom)/.test(i.id)).map((i) => [i.id, i.x, i.y]), ...OK.npc.map((n) => [n.id, n.x, n.y]), ...OK.laeden.map((l) => [l.id, l.x, l.y]), ...OK.stationen.map((s) => [s.id, s.x, s.y]), ...OK.banken.map((b) => [b.id, ...(b.schalter || b.kiste)])];
   const weg = ziele.filter(([, x, y]) => !da(x, y)).map(([id]) => id); check(ziele.length > 30 && !weg.length, `${ziele.length} Lesestellen, NPC-, Laden-, Stations- und Bankplätze von Glutbrunn aus erreichbar`, weg); }
 { const orte = [GLUTBRUNN, [7108, 6968] /* Westrand von Glutbrunn */, OK.orte.rotlehm, OK.orte.brunnenkreis, ...OK.rastplaetze.map((id) => [IA.get(id).x, IA.get(id).y])], K = OK.wege.at(-1).punkte, luecken = [];
   for (let i = 1; i < K.length; i++) { const [x0, y0] = K[i - 1], [x1, y1] = K[i], L = Math.hypot(x1 - x0, y1 - y0); for (let t = 0; t <= L; t += 5) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (!orte.some(([a, b]) => Math.hypot(a - x, b - y) <= 80)) luecken.push(`${Math.round(x)}|${Math.round(y)}`); } }
   check(!luecken.length, "an der Karawanenstraße höchstens ~150 Felder ohne Ort oder Rastplatz", luecken); }
 check(OK.fischplaetze.every((f) => da(...f.stehplatz, 1) && !R.begehbar(f.x, f.y)), `${OK.fischplaetze.length} Fischplätze am Ockerstrom`);
+
+console.log("\nDornhag, Tafelrast, Höhle, Arbeit");
+for (const [k, name, min] of [["dornhag", "Dornhag", 7], ["tafelrast", "Tafelrast", 5]]) { const [cx, cy] = OK.orte[k], geb = OBJ.filter((o) => Math.hypot(o.x - cx, o.y - cy) < 26 && BIB.get(o.objekt)?.kategorie === "gebaeude").length;
+  const b = OK.banken.find((x) => x.ort === name), l = OK.laeden.find((x) => x.ort === name), st = OK.stationen.some((s) => Math.hypot(s.x - cx, s.y - cy) < 26), ia = [...IA.values()].filter((i) => i.id.startsWith(k)), weg = ia.filter((i) => !da(i.x, i.y)).map((i) => i.id);
+  check(geb >= min && b && l && st && ia.length >= 2 && !weg.length, `${name}: ${geb} Gebäude, ${b?.gebaeude ? "Bank" : "Bankkiste"}, Laden, Station – erreichbar`, weg); }
+{ const e = IA.get("ockerhoehle_eingang"), H = region("ockerhoehle"), [hx, hy] = H.region.ursprung.map((v) => v * 32); const RH = new G.WeltRaster(); for (const c of G.chunksBauen(H, bib.gelaende, bib.objekte).chunks) RH.dazu(c);
+  const seen = new Set(), q = [[Math.floor(e.daten.ziel[0]), Math.floor(e.daten.ziel[1])]]; while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (seen.has(k) || nx < hx || ny < hy || nx >= hx + 32 || ny >= hy + 32 || !RH.begehbar(nx + 0.5, ny + 0.5)) continue; seen.add(k); q.push([nx, ny]); } }
+  const an = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(Math.floor(x + dx) + "," + Math.floor(y + dy)));
+  const ad = lies("sammelstellen.json").senken.filter((s) => s.name.startsWith("Adern in der Höhle im Roten Tisch")).flatMap((s) => s.adern), aw = ad.filter((a) => !an(a.x, a.y)).map((a) => a.id);
+  check(e && da(e.x, e.y) && ad.length >= 4 && ad.some((a) => a.art === "ureisen") && !aw.length, `Höhle im Roten Tisch: Eingang erreichbar, ${ad.length} Adern (Ureisen) drinnen erreichbar`, aw); }
+{ const fw = OK.fischplaetze.filter((f) => !da(...f.stehplatz, 1) || R.begehbar(f.x, f.y)).map((f) => f.id), kw = OK.kraeuter.filter((k) => !da(k.x, k.y, 1)).map((k) => k.id);
+  check(OK.fischplaetze.length >= 6 && !fw.length, `${OK.fischplaetze.length} Fischplätze (Strom, Wasserlöcher, Mündung) erreichbar, Fanggrund im Wasser`, fw); check(OK.kraeuter.length >= 5 && !kw.length, `${OK.kraeuter.length} Kräuter an den Wasserstellen`, kw);
+  const SM = lies("sammelstellen.json"), pts = [...SM.lichtungen.flatMap((l) => l.baeume), ...SM.senken.flatMap((s) => s.adern)].filter((p) => p.y < 9000), alle = [...pts, ...OK.kraeuter, ...OK.fischplaetze.map((f) => ({ x: f.stehplatz[0], y: f.stehplatz[1] }))];
+  const [rx, ry] = OK.orte.rotlehm, luecken = []; for (const w of OK.wege) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
+    for (let t = 0; t <= L; t += 10) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (x > rx - 70 && x < rx + 78 && y > ry - 54 && y < ry + 58) continue; if (!alle.some((p) => Math.hypot(p.x - x, p.y - y) < 45)) luecken.push(`${Math.round(x)}|${Math.round(y)}`); } }
+  check(!luecken.length, "von jedem Weg aus höchstens 45 Felder bis zu Holz, Erz, Kraut oder Fisch", luecken);
+  const unr = pts.filter((p) => p.x > 6660 && p.y > 7070 && p.y < 7800 && !da(p.x, p.y, 2)).map((p) => p.id); check(!unr.length, "alle Bäume und Adern der Ockerlande erreichbar", unr); }
 
 console.log("\nGegner, Namen");
 { const [cx, cy] = OK.orte.rotlehm, gp = lies("gegnerplaetze.json").plaetze.filter((p) => p.x > cx - 66 && p.x < cx + 74 && p.y > cy - 50 && p.y < cy + 54).map((p) => p.id); check(!gp.length, "kein Gegnerplatz in Rotlehm", gp);

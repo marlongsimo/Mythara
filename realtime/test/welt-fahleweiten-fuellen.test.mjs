@@ -35,7 +35,7 @@ check(mit(...platz), "der Platz ist mit Stadtmauer von Heidrast aus erreichbar (
   const lw = FO.grauwacht.laeden.filter((l) => !mit(l.x, l.y, 1.6)).map((l) => l.id); check(!lw.length, "alle Läden erreichbar", lw); }
 
 console.log("\nNeue Orte, Heidrast");
-for (const [k, name] of [["huegelgrund", "Hügelgrund"], ["kohlstatt", "Kohlstatt"], ["brechstein", "Brechstein"], ["wollhag", "Wollhag"], ["weiherhof", "Weiherhof"]]) {
+for (const [k, name] of [["huegelgrund", "Hügelgrund"], ["kohlstatt", "Kohlstatt"], ["brechstein", "Brechstein"], ["wollhag", "Wollhag"], ["weiherhof", "Weiherhof"], ["reifbach", "Reifbach"]]) {
   const [cx, cy] = FO.orte[k], geb = OBJ.filter((o) => Math.hypot(o.x - cx, o.y - cy) < 26 && BIB.get(o.objekt)?.kategorie === "gebaeude").length;
   const bank = FO.banken.find((b) => b.ort === name), laden = FO.laeden.find((l) => l.ort === name), st = FO.stationen.some((s) => Math.hypot(s.x - cx, s.y - cy) < 30);
   const ia = [...IA.values()].filter((i) => i.id.startsWith(k)), weg = ia.filter((i) => !mit(i.x, i.y)).map((i) => i.id);

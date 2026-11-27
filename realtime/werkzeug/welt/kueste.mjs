@@ -58,6 +58,9 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
   for (const [i, dy] of [[1, -10], [2, 2]]) { const [x, y] = kaiAn(cy + dy); steg(x - 1.1, y + 1.3, "kielmund_steg_" + i); }
   { const [x, y] = kaiAn(cy + 14); ding("graufurt_faehre_01", x - 4, y + 2, { id: "kielmund_werft_boot" }); ding("dorf_holzstapel_01", x + 3, y - 1, { id: "kielmund_werft_holz" }); ding("wald_baumstamm_01", x + 4, y + 2.5); ding("k_kiste", x + 6, y - 1);
     lies("werft", x + 2, y + 3.2, "Die Werft von Kielmund. Auf der Helling liegt ein halbfertiger Rumpf, daneben Spanten und Pech."); }
+  { /* zweites Boot im Hafen, sobald die Werft es fertig hat (Quest „Kiel auf Stapel“, Schalter kielmund_neues_boot; Stadtstufe kielmund_boot in shared/stadtstufen.ts) */
+    const [x, y] = kaiAn(cy + 6); ding("graufurt_faehre_01", x - 4, y + 1, { id: "kielmund_neues_boot", ausbau: "kielmund_boot", spiegeln: true });
+    lies("kielmund_neues_boot", x + 1, y + 1.4, "Das neue Boot aus der Werft von Kielmund, frisch geteert. Am Bug steht in weißer Farbe ein Name.", { ausbau: "kielmund_boot" }); }
   { const [x, y] = kaiAn(cy - 4); lies("kai", x + 1.5, y, "Der Kai an der Kiel. Fässer, Taue, Möwen – und der Geruch von Hering."); fischplatz("fischplatz_kai", "hering", 20, x + 0.5, y + 0.5, -1, 0, "Am Kai beißen die Heringe."); }
   /* Häuser und Einrichtungen */
   ding("dorf_taverne_01", cx + 10, cy - 18, { id: "taverne_ankerkraut" }); lies("taverne_ankerkraut", cx + 11.5, cy - 17.4, "Die Taverne „Zum Ankerkraut“. Drinnen singt jemand von einem Schiff, das nie zurückkam.");
