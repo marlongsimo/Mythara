@@ -13820,6 +13820,973 @@
     "url": "img/objekte3d/skilling/kraeuter/splitterlilie-geerntet.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "kueste_kran",
+   "name": "Hafenkran",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kran.webp",
+   "groesse": [
+    195,
+    271
+   ],
+   "anker": [
+    0.5,
+    0.9373
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kran.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_poller",
+   "name": "Poller",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_poller.webp",
+   "groesse": [
+    17,
+    39
+   ],
+   "anker": [
+    0.4706,
+    0.8974
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/poller.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_taurolle",
+   "name": "Taurolle",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_taurolle.webp",
+   "groesse": [
+    48,
+    33
+   ],
+   "anker": [
+    0.4896,
+    0.8182
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/taurolle.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_fischkisten",
+   "name": "Fischkisten",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_fischkisten.webp",
+   "groesse": [
+    72,
+    64
+   ],
+   "anker": [
+    0.3472,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.4,
+    "y": -0.25,
+    "b": 1.2,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/fischkisten.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_ruderboot",
+   "name": "Ruderboot",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/stil/kueste_ruderboot.webp",
+   "groesse": [
+    210,
+    94
+   ],
+   "anker": [
+    0.5,
+    0.8085
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/ruderboot.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_leuchtturm",
+   "name": "Leuchtturm",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/kueste_leuchtturm.webp",
+   "groesse": [
+    255,
+    664
+   ],
+   "anker": [
+    0.498,
+    0.9654
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 2.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/leuchtturm.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_kaimauer_gerade",
+   "name": "Kaimauer (gerade)",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kaimauer_gerade.webp",
+   "groesse": [
+    218,
+    208
+   ],
+   "anker": [
+    0.5,
+    0.9087
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.6,
+    "b": 4.0,
+    "h": 1.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kaimauer_gerade.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_kaimauer_ecke",
+   "name": "Kaimauer (Ecke)",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kaimauer_ecke.webp",
+   "groesse": [
+    155,
+    216
+   ],
+   "anker": [
+    0.5,
+    0.9352
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.6,
+    "b": 2.6,
+    "h": 1.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kaimauer_ecke.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Kollision deckt nur den Schenkel entlang x; den zweiten Schenkel (entlang y, Wasser bei +x) bitte mit kaimauer_gerade gedreht ergänzen oder Kollision im Ort setzen"
+  },
+  {
+   "id": "ocker_zelt_gross",
+   "name": "Karawanenzelt",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/ocker_zelt_gross.webp",
+   "groesse": [
+    375,
+    317
+   ],
+   "anker": [
+    0.5,
+    0.9022
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.5,
+    "y": -2.0,
+    "b": 5.0,
+    "h": 4.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/zelt_gross.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_zelt_rund",
+   "name": "Rundzelt",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/ocker_zelt_rund.webp",
+   "groesse": [
+    219,
+    240
+   ],
+   "anker": [
+    0.5,
+    0.9208
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 2.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/zelt_rund.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_ziehbrunnen",
+   "name": "Ziehbrunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/ocker_ziehbrunnen.webp",
+   "groesse": [
+    159,
+    177
+   ],
+   "anker": [
+    0.5,
+    0.9153
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.0
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/ziehbrunnen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "ocker_akazie",
+   "name": "Akazie",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/ocker_akazie.webp",
+   "groesse": [
+    379,
+    330
+   ],
+   "anker": [
+    0.5,
+    0.9061
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/akazie.glb",
+    "wind": 0.05,
+    "fest": false
+   }
+  },
+  {
+   "id": "ocker_dornenhecke",
+   "name": "Dornenhecke",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/ocker_dornenhecke.webp",
+   "groesse": [
+    178,
+    106
+   ],
+   "anker": [
+    0.5,
+    0.8491
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.3,
+    "b": 3.0,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/glutsande_objekte.py (Ockerlande, #172), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/glutsande/dornenhecke.glb",
+    "wind": 0.03,
+    "fest": false
+   }
+  },
+  {
+   "id": "wegrand_bildstock",
+   "name": "Bildstock",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_bildstock.webp",
+   "groesse": [
+    43,
+    130
+   ],
+   "anker": [
+    0.5,
+    0.9538
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/bildstock.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_feldstein_2",
+   "name": "Feldstein",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/wegrand_feldstein_2.webp",
+   "groesse": [
+    69,
+    55
+   ],
+   "anker": [
+    0.5,
+    0.8545
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.55
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/feldstein_2.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_feldstein_3",
+   "name": "Findling",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/wegrand_feldstein_3.webp",
+   "groesse": [
+    102,
+    87
+   ],
+   "anker": [
+    0.5,
+    0.8851
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/feldstein_3.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_lesesteinhaufen",
+   "name": "Lesesteinhaufen",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/wegrand_lesesteinhaufen.webp",
+   "groesse": [
+    53,
+    48
+   ],
+   "anker": [
+    0.5,
+    0.8542
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/lesesteinhaufen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_zaun_latten",
+   "name": "Lattenzaun",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/wegrand_zaun_latten.webp",
+   "groesse": [
+    146,
+    113
+   ],
+   "anker": [
+    0.5,
+    0.8761
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.1,
+    "b": 3.0,
+    "h": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/zaun_latten.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_zaun_flecht",
+   "name": "Flechtzaun",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/wegrand_zaun_flecht.webp",
+   "groesse": [
+    141,
+    101
+   ],
+   "anker": [
+    0.5,
+    0.8713
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.1,
+    "b": 3.0,
+    "h": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/zaun_flecht.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_zaun_stein",
+   "name": "Trockenmauer",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/wegrand_zaun_stein.webp",
+   "groesse": [
+    154,
+    95
+   ],
+   "anker": [
+    0.5,
+    0.8526
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.5,
+    "y": -0.3,
+    "b": 3.0,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/zaun_stein.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_heuhaufen",
+   "name": "Heuhaufen",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_heuhaufen.webp",
+   "groesse": [
+    122,
+    155
+   ],
+   "anker": [
+    0.5,
+    0.9226
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.9
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/heuhaufen.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_heuballen_rund",
+   "name": "Rundballen",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_heuballen_rund.webp",
+   "groesse": [
+    134,
+    117
+   ],
+   "anker": [
+    0.5,
+    0.8889
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.2,
+    "y": -0.6,
+    "b": 2.5,
+    "h": 1.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/heuballen_rund.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_karren_heu",
+   "name": "Heuwagen",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_karren_heu.webp",
+   "groesse": [
+    144,
+    155
+   ],
+   "anker": [
+    0.5,
+    0.9161
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.8,
+    "y": -1.4,
+    "b": 1.6,
+    "h": 2.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/karren_heu.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_ruine_bogen",
+   "name": "Torbogen-Ruine",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wegrand_ruine_bogen.webp",
+   "groesse": [
+    216,
+    247
+   ],
+   "anker": [
+    0.5,
+    0.9231
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.2,
+    "y": -0.3,
+    "b": 1.4,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/ruine_bogen.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Kollision nur am linken Mauerteil; den rechten Teil (x 0,8–2,2) im Ort ergänzen oder als zweites Rechteck setzen – der Bogen in der Mitte ist begehbar"
+  },
+  {
+   "id": "wegrand_huette_feld",
+   "name": "Feldhütte",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/wegrand_huette_feld.webp",
+   "groesse": [
+    193,
+    211
+   ],
+   "anker": [
+    0.5,
+    0.9194
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.3,
+    "y": -1.1,
+    "b": 2.6,
+    "h": 2.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/huette_feld.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_brunnen_feld",
+   "name": "Feldbrunnen",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/wegrand_brunnen_feld.webp",
+   "groesse": [
+    126,
+    108
+   ],
+   "anker": [
+    0.5,
+    0.8889
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -1.3,
+    "y": -0.4,
+    "b": 2.2,
+    "h": 0.8
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/brunnen_feld.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_wegkreuz_holz",
+   "name": "Wegkreuz (Holz)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_wegkreuz_holz.webp",
+   "groesse": [
+    53,
+    134
+   ],
+   "anker": [
+    0.5,
+    0.9478
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/wegkreuz_holz.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_wegkreuz_stein",
+   "name": "Wegkreuz (Stein)",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_wegkreuz_stein.webp",
+   "groesse": [
+    43,
+    96
+   ],
+   "anker": [
+    0.5,
+    0.9375
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.35
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/wegkreuz_stein.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_feldstein_1",
+   "name": "Feldstein (klein)",
+   "kategorie": "fels",
+   "bild": "img/welt/stil/wegrand_feldstein_1.webp",
+   "groesse": [
+    34,
+    31
+   ],
+   "anker": [
+    0.5,
+    0.8387
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/feldstein_1.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_karren_kaputt",
+   "name": "Umgestürzter Karren",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/wegrand_karren_kaputt.webp",
+   "groesse": [
+    117,
+    156
+   ],
+   "anker": [
+    0.5,
+    0.9295
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.8,
+    "y": -1.2,
+    "b": 1.8,
+    "h": 2.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/karren_kaputt.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "wegrand_ruine_ecke",
+   "name": "Mauerecke (Ruine)",
+   "kategorie": "sonderort",
+   "bild": "img/welt/stil/wegrand_ruine_ecke.webp",
+   "groesse": [
+    155,
+    173
+   ],
+   "anker": [
+    0.5,
+    0.9191
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.3,
+    "b": 2.3,
+    "h": 0.6
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/wegrand.py (Wegrand-Objekte für Grenzland, Waldland, Westmark), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/wegrand/ruine_ecke.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_segelschiff",
+   "name": "Segelschiff",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/stil/kueste_segelschiff.webp",
+   "groesse": [
+    458,
+    724
+   ],
+   "anker": [
+    0.5,
+    0.9475
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Schiffslinien, Ausgabe 2), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/segelschiff.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Ursprung auf der Wasserlinie (z = 0), Kiel −1,1 m. Bug nach Norden (−y), Länge 12 m (+2,2 m Bugspriet), Breite 4 m. Begehbares Deck auf 1,3 m (y −4,9 … +5,5, x ±1,7), Achterkastell-Dach 2,8 m (y 3,0 … 5,4). Gangway-Lücke in der Reling mittschiffs an Steuerbord (+x, y −0,6 … +0,8): dort den Steg anlegen."
   }
  ]
 }
