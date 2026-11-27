@@ -28,8 +28,8 @@ check(L.every((l) => modell(l.modell)), `Modelle aus dem Bestand und von Figuren
 { const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && B.bank === "Bank von Steinhag" && nahAnBank("waldmark", 6969, 5881.5) && modell(B.modell), "die Bank von Steinhag"); }
 
 console.log("\nStationen");
-{ const S = WERKSTAETTEN.filter((w) => /_(steinhag|alm|passwacht|bergwerk)$/.test(w.id)), naechstes = (W) => { for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = Math.floor(W.x) + dx, y = Math.floor(W.y) + dy; if (frei(x, y)) return [x + 0.5, y + 0.5]; } return null; };
-  check(S.length === 11 && S.every((w) => !w.schalter), `elf Stationen, ohne Schalter (${S.map((w) => w.id).join(", ")})`);
+{ const S = WERKSTAETTEN.filter((w) => /_(steinhag|alm|passwacht|bergwerk|einsiedelei)$/.test(w.id)), naechstes = (W) => { for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = Math.floor(W.x) + dx, y = Math.floor(W.y) + dy; if (frei(x, y)) return [x + 0.5, y + 0.5]; } return null; };
+  check(S.length === 15 && S.every((w) => !w.schalter), `fünfzehn Stationen, ohne Schalter (${S.map((w) => w.id).join(", ")})`);
   const weg = S.filter((w) => { const p = naechstes(w); return !p || !werkstattErreichbar(p[0], p[1], w); }).map((w) => w.id); check(!weg.length, `jede ist zu Fuß erreichbar (${weg.join(", ") || "alle"})`); }
 
 console.log("\nBergleute auf dem Erzweg");
