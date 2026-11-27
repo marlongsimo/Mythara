@@ -3,7 +3,7 @@
   python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9] [bein=0.42] [hals=1] [schwanz=1] [bewegungen=ruhe,laufen]
 
 Optionen: bein = Hüfthöhe als Anteil der Höhe (Kuh: 0,5); hals = eigener Halsknochen zwischen Rumpf und Kopf (Kopf zum Boden senken);
-schwanz = Schwanzknochen hinten; bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite).
+schwanz = Schwanzknochen hinten; fluegel = Flügelknochen an den Schultern (Boden-Drache: angelegt, beim Angriff zum Drohen gespreizt); bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite).
 
 Erwartet: Kopf vorn (-y), Länge entlang y, vier Füße am Boden.
 Knochen: wurzel – rumpf – kopf; wurzel – bein.VL/VR/HL/HR (vorn/hinten, links/rechts; je Bein ein steifer Knochen von der Hüfte zum Fuß).
@@ -37,7 +37,8 @@ for S, mx in (("L", boden[:, 0] > xc), ("R", boden[:, 0] <= xc)):
     for V_, my in (("V", boden[:, 1] < yc), ("H", boden[:, 1] >= yc)):
         f = boden[mx & my]; fuesse[V_ + S] = f.mean(0)
 yv = float(y.min()); LG = float(y.max()) - yv; kopf_y = yv + 0.28 * LG                                  # vorderes gutes Viertel: Kopf
-BEIN = float(opt.get("bein", 0.42)); HALS = opt.get("hals") == "1"; SCHWANZ = opt.get("schwanz") == "1"
+BEIN = float(opt.get("bein", 0.42)); HALS = opt.get("hals") == "1"; SCHWANZ = opt.get("schwanz") == "1"; FLUEGEL = opt.get("fluegel") == "1"
+WB = float(np.abs(x).max())                                                                          # halbe Breite (Spannweite bei Flügeln)
 if HALS: hals_y = yv + 0.3 * LG; kopf_y = yv + 0.14 * LG
 ARM = bpy.data.objects.new("skelett", bpy.data.armatures.new("skelett")); bpy.context.collection.objects.link(ARM)
 bpy.context.view_layer.objects.active = ARM; bpy.ops.object.mode_set(mode="EDIT"); E = ARM.data.edit_bones
@@ -53,6 +54,9 @@ else:
     knochen("kopf", (xc, kopf_y, 0.55 * H), (xc, yv, 0.6 * H), "rumpf")
 if SCHWANZ: knochen("schwanz", (xc, float(y.max()) - 0.02 * LG, 0.82 * H), (xc, float(y.max()), 0.35 * H), "rumpf")
 for n, f in fuesse.items(): knochen("bein." + n, (f[0], f[1], BEIN * H), (f[0], f[1], 0.02), "wurzel")
+if FLUEGEL:                                                                                      # Flügel (Boden-Drache): Ansatz an den Schultern, ausgebreitet wie im Modell
+    fl = P[np.abs(x) > 0.5 * WB]; fy = float(np.median(fl[:, 1])) if len(fl) else kopf_y; fz = float(np.median(fl[:, 2])) if len(fl) else 0.8 * H
+    for S, sx in (("L", 1), ("R", -1)): knochen("fluegel." + S, (xc + sx * 0.18 * WB, fy, 0.72 * H), (xc + sx * WB, fy, fz), "rumpf")
 bpy.ops.object.mode_set(mode="OBJECT"); KN = ARM.data.bones; namen = [b.name for b in KN]
 
 # ---------------------------------------------------- Gewichte ----------------------------------------------------
@@ -65,6 +69,8 @@ for n, f in fuesse.items():                                                     
 W[:, namen.index("kopf")] *= np.clip((kopf_y + 0.04 * H - y) / (0.08 * H), 0, 1) * (z > 0.25 * H)
 if HALS: W[:, namen.index("hals")] *= np.clip((hals_y + 0.04 * H - y) / (0.08 * H), 0, 1) * (z > 0.45 * H)
 if SCHWANZ: W[:, namen.index("schwanz")] *= np.clip((y - (float(y.max()) - 0.035 * LG)) / (0.01 * LG), 0, 1)   # nur der hängende Schwanz hinter dem Rumpf
+if FLUEGEL:
+    for S, sx in (("L", 1), ("R", -1)): W[:, namen.index("fluegel." + S)] *= ((x - xc) * sx > 0) * np.clip((np.abs(x - xc) - 0.22 * WB) / (0.08 * WB), 0, 1) * (z > 0.5 * H)
 W[:, namen.index("wurzel")] *= 0.0
 K = np.array([e.vertices[:] for e in me.edges], int)
 for _ in range(6):
@@ -129,8 +135,18 @@ def tod(t):                                                                     
     dreh("wurzel", ((0, 1, 0), 86 * u)); hoch(0.17 * H * u); kopf_runter(-10 * u + 20 * d)
     for n in ("VL", "HL"): dreh("bein." + n, ((0, 1, 0), -12 * u))
     for n in ("VR", "HR"): dreh("bein." + n, ((0, 1, 0), 10 * u))
+def flug(f, schlag=0.0):                                                                             # Flügel: 1 = angelegt (Ruhe, Gehen), 0 = gespreizt (Drohen beim Angriff)
+    if not FLUEGEL: return
+    for S, sx in (("L", 1), ("R", -1)): dreh("fluegel." + S, ((0, 1, 0), sx * (55 * f - schlag)), ((0, 0, 1), -sx * 35 * f))
+def mit_fluegeln(fn, f_fn):
+    def g(t): fn(t); flug(*f_fn(t))
+    return g
 ALLE = {"ruhe": (ruhe, 48, True, {}), "laufen": (laufen, 16, True, {}), "fressen": (fressen, 72, True, {}), "gehen": (gehen, 32, True, {}),
         "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30})}
+if FLUEGEL:                                                                                      # angelegt beim Ruhen/Gehen/Laufen/Treffer/Tod, beim Angriff gespreizt und drohend geschlagen
+    for n_, ff in (("ruhe", lambda t: (1.0, 4 * math.sin(2 * math.pi * t))), ("gehen", lambda t: (1.0, 0)), ("laufen", lambda t: (0.9, 6 * math.sin(4 * math.pi * t))),
+                   ("angriff", lambda t: (max(0.0, 1 - 2.5 * math.sin(math.pi * t)), 25 * math.sin(3 * math.pi * t) * math.sin(math.pi * t))), ("treffer", lambda t: (1.0, -10 * math.sin(math.pi * t))), ("tod", lambda t: (1.0 - 0.6 * t, 0))):
+        fn_, n__, sch_, mehr_ = ALLE[n_]; ALLE[n_] = (mit_fluegeln(fn_, ff), n__, sch_, mehr_)
 AUSWAHL = opt.get("bewegungen", "ruhe,laufen").split(",")
 BEWEGUNGEN = {("ruhe" if n == "fressen" else n): ALLE[n] for n in AUSWAHL}                       # fressen ist die Ruhe der Weidetiere
 ARM.animation_data_create()
