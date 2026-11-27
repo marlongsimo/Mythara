@@ -8,7 +8,7 @@
  {"id":"fwf_schuppen_holz_49","objekt":"dorf_schuppen_holz_01","x":454.5,"y":32},
  {"id":"fwf_holzstapel_50","objekt":"dorf_holzstapel_01","x":471,"y":31},
  {"id":"fwf_holzstapel_51","objekt":"dorf_holzstapel_01","x":464,"y":33},
- {"id":"kohlstatt_bankkiste","objekt":"k_kiste","x":472,"y":25},
+ {"id":"kohlstatt_bankkiste","objekt":"steinhag_bankkiste","x":472,"y":25},
  {"id":"kohlstatt_laden","objekt":"dorf_marktstand_03","x":463,"y":25},
  {"id":"gehoeft_haus","objekt":"weidenhain_bauernhaus_01","x":195,"y":379},
  {"id":"gehoeft_stapel","objekt":"dorf_holzstapel_01","x":203,"y":378},

@@ -36,7 +36,7 @@ function hecke(liste, pre, [x0, y0, x1, y1], tor) { let n = 0; const id = () => 
   const baum = (art, x, y, i) => ({ id: `holzfaellerhof_${art}_${i}`, art, x, y, region: reg });
   holzgruppen.push({ ort: "erlengrund", name: "Hain des Holzfällerhofs: Kernbäume", baeume: [baum("kernbaum", 6393.5, 7013.5, 1), baum("kernbaum", 6399.5, 7014.5, 2), baum("kernbaum", 6405.5, 7013.5, 3), baum("eibe", 6407.5, 7018.5, 4)] },
     { ort: "erlengrund", name: "Hain des Holzfällerhofs: Weltenbaum-Setzlinge", baeume: [baum("weltenbaum", 6394.5, 7019.5, 5), baum("weltenbaum", 6400.5, 7020.5, 6), baum("eibe", 6404.5, 7022.5, 7)] });
-  ding(objekte, "hand_werkbank_01", 6397.5, 7021.8, { id: "holzfaellerhof_werkbank" }); ding(objekte, "k_kiste", 6406, 7023, { id: "holzfaellerhof_bankkiste" }); ding(objekte, "dorf_holzstapel_01", 6402.5, 7023.2, { id: "holzfaellerhof_holz" });
+  ding(objekte, "hand_werkbank_01", 6397.5, 7021.8, { id: "holzfaellerhof_werkbank" }); ding(objekte, "steinhag_bankkiste", 6406, 7023, { id: "holzfaellerhof_bankkiste" }); ding(objekte, "dorf_holzstapel_01", 6402.5, 7023.2, { id: "holzfaellerhof_holz" });
   ding(objekte, "welt_wegweiser_01", 6395, 7007.6, { id: "holzfaellerhof_schild" });
   lies(interaktionen, "holzfaellerhof", 6395.5, 7008.6, "Der Holzfällerhof. Ein Schild am Tor: „Hain der Zunft – nur für Meister der Holzfällerei (ab Stufe 60).“");
   lies(interaktionen, "holzfaellerhof_bankkiste", 6406, 7023.6, "Die Bankkiste der Holzfäller. Was du hier einlegst, liegt auf deinem Konto.");
@@ -49,7 +49,7 @@ function hecke(liste, pre, [x0, y0, x1, y1], tor) { let n = 0; const id = () => 
   for (const [i, x] of [6235, 6238.5, 6242].entries()) { ding(objekte, "hand_herd_01", x, 6962, { id: `kochzunft_herd_${i + 1}` }); st.push({ id: `herd_kochzunft_${i + 1}`, station: "herd", x, y: 6963.4 }); }
   for (const [i, x] of [6235.5, 6239.5].entries()) { ding(objekte, "hand_backofen_01", x, 6967.5, { id: `kochzunft_backofen_${i + 1}` }); st.push({ id: `backofen_kochzunft_${i + 1}`, station: "backofen", x, y: 6969.4 }); }
   ding(objekte, "hand_kessel_01", 6242.4, 6966.8, { id: "kochzunft_kessel" }); st.push({ id: "kessel_kochzunft", station: "kessel", x: 6242.4, y: 6968.2 });
-  ding(objekte, "k_kiste", 6234, 6969.6, { id: "kochzunft_bankkiste" }); ding(objekte, "k_faesser", 6242.4, 6960.6, { id: "kochzunft_faesser" });
+  ding(objekte, "steinhag_bankkiste", 6234, 6969.6, { id: "kochzunft_bankkiste" }); ding(objekte, "k_faesser", 6242.4, 6960.6, { id: "kochzunft_faesser" });
   lies(interaktionen, "kochzunft", 6228.2, 6967.2, "Der Kochhof der Zunft. „Herde und Öfen für Meisterköche – ab Stufe 60 im Kochen.“");
   lies(interaktionen, "kochzunft_bankkiste", 6234, 6969.4, "Die Bankkiste der Kochzunft. Was du hier einlegst, liegt auf deinem Konto.");
   zuenfte.push({ zunft: "kochzunft", name: "Kochzunft", ort: "Haferstedt", beruf: "kochen", ab: 60, region: reg, flaeche: R, tor: feld, wache: [6228, 6965.5], bankkiste: { id: "kochzunft_bankkiste", x: 6234, y: 6969.4 }, stationen: st }); }
@@ -60,7 +60,7 @@ const WM = [];
   const ARTEN = ["ringelblume", "eisenhut", "moorgloeckchen", "nebelkraut", "wegerich", "eisenhut"];
   [[6464.5, 6437.5], [6466.5, 6437.5], [6464.5, 6439.5], [6466.5, 6439.5], [6464.5, 6441.5], [6466.5, 6441.5]].forEach(([x, y], i) => {
     BEET.push([x, y]); kraeuter.push({ id: `kraeutergarten_${ARTEN[i]}_${i + 1}`, art: ARTEN[i], x, y, region: "waldmark" }); });
-  ding(WM, "hand_kessel_01", 6469.4, 6439.6, { id: "kraeutergarten_kessel", s: 0.8 }); ding(WM, "k_kiste", 6469.4, 6437, { id: "kraeutergarten_bankkiste" });
+  ding(WM, "hand_kessel_01", 6469.4, 6439.6, { id: "kraeutergarten_kessel", s: 0.8 }); ding(WM, "steinhag_bankkiste", 6469.4, 6437, { id: "kraeutergarten_bankkiste" });
   lies(WM, "kraeutergarten", 6459.6, 6438, "Der Kräutergarten der Heilkundigen. Mira hat den Schlüssel – „nur für Meister der Kräuterkunde, ab Stufe 60“.");
   lies(WM, "kraeutergarten_bankkiste", 6469.4, 6437.8, "Die Bankkiste der Heilkundigen. Was du hier einlegst, liegt auf deinem Konto.");
   zuenfte.push({ zunft: "kraeutergarten", name: "Kräutergarten der Heilkundigen", ort: "Waldmark", beruf: "kraeuterkunde", ab: 60, region: "waldmark", flaeche: R, tor: feld, wache: [6459.5, 6439.5],

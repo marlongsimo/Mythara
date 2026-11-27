@@ -38,6 +38,7 @@ for (const s of [...(lies("troedler_standorte.json").standorte || []), ...(lies(
 const FWO = lies("fahleweiten_orte.json");
 const ORTE = { ...(FWO.orte || {}), ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, ...lies("hochlande_orte.json").orte };
 const HL = lies("hochlande_orte.json");
+for (const r of HL.reisende || []) for (const [x, y] of r.punkte) hinder.push([x, y, 3]);   /* Wege der Reisenden (Bergleute Steinhag → Erzberg) frei halten */
 const STADT = HL.hauptstadt?.mauer, inStadt = (x, y, r = 0) => STADT && x > STADT[0] - r && x < STADT[2] + r && y > STADT[1] - r && y < STADT[3] + r;   /* Hauptstadt Steinhag (#167): in den Mauern keine Sammelstellen */
 const ORTSRADIUS = { grauwacht: 70, huegelgrund: 30, kohlstatt: 22, brechstein: 20, wollhag: 22, weiherhof: 26, haferstedt: 40, sandquell: 34, glutbrunn: 46, kielmund: 34, netzbucht: 14, steinhag: 58, steinhagsee: 36, spiegelsee: 20, erzberg: 30, alm: 22, hochpass: 16, furt: 30, nordklippen: 10 };
 

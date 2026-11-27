@@ -54,7 +54,7 @@
  {"id":"weiherhof_steg","objekt":"dorf_bruecke_01","x":380.9,"y":437.3},
  {"id":"weiherhof_netze","objekt":"kueste_netze","x":400.5,"y":425.5},
  {"id":"weiherhof_raeucherhuette","objekt":"kueste_raeucherhuette","x":378,"y":428},
- {"id":"weiherhof_bankkiste","objekt":"k_kiste","x":391,"y":425},
+ {"id":"weiherhof_bankkiste","objekt":"steinhag_bankkiste","x":391,"y":425},
  {"id":"weiherhof_laden","objekt":"dorf_marktstand_03","x":385,"y":426.5},
  {"id":"rast_talweg_feuer","objekt":"dorf_festfeuer_01","x":356,"y":384.25},
  {"id":"rast_talweg_stamm","objekt":"wald_baumstamm_01","x":353.5,"y":385.82,"s":0.8}

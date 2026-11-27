@@ -11,10 +11,10 @@ let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "�
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
 const S = lies("sammelstellen.json"), gruppen = [...S.lichtungen.map((l) => ({ ...l, typ: "holz", pts: l.baeume })), ...S.senken.map((s) => ({ ...s, typ: "erz", pts: s.adern }))];
 const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, leuchtturm: [6176, 7036] };
-/* wirksam ist, was die Welt baut: gleichnamige Gruppen aus shared/ (von Integration übernommen) gehen vor (lichtungen.mjs) */
+/* wirksam ist, was die Welt baut: seit 27.11. geht die Fassung der Welt vor (lichtungen.mjs); shared/ bekommt sie von Integration */
 const SH = new Map([...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen, ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken].map((l) => [l.name, l]));
-const wirksam = gruppen.map((g) => SH.has(g.name) ? { ...g, pts: SH.get(g.name).baeume || SH.get(g.name).adern } : g);
-const abweichend = gruppen.filter((g) => SH.has(g.name) && JSON.stringify(g.pts.map((p) => [p.art, p.x, p.y])) !== JSON.stringify(wirksam.find((w) => w.name === g.name).pts.map((p) => [p.art, p.x, p.y]))).map((g) => g.name);
+const wirksam = gruppen;
+const abweichend = gruppen.filter((g) => SH.has(g.name) && JSON.stringify(g.pts.map((p) => [p.art, p.x, p.y])) !== JSON.stringify((SH.get(g.name).baeume || SH.get(g.name).adern).map((p) => [p.art, p.x, p.y]))).map((g) => g.name);
 if (abweichend.length) console.log("  ℹ in shared/ noch die alte Fassung (Integration): " + abweichend.join(", "));
 const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5200, 7700, 6300], NORD = [6000, 5560, 6780, 6360];   /* NORD: Fahle Weiten (#171) */
 const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imNord = (p) => !imUnter(p) && !imHoch(p) && p.x < NORD[2] && p.y < 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p) && !imNord(p);

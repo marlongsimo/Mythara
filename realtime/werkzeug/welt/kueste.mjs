@@ -87,7 +87,7 @@ npc.push({ id: "wache_suedstrasse", rolle: "Wache an der Südstraße (keine Sper
     const fang = [["seeaal", 45, 4], ["seeaal", 45, 6], ["klippenbarsch", 35, 8], ["seeaal", 45, 10], ["seeaal", 45, 12], ["hering", 20, 14]];
     fang.forEach(([f, st, dx], i) => fischplatz("fischerzunft_fang_" + (i + 1), f, st, land - dx + 0.5, i % 2 ? PY - 0.8 : PY - 1.8, 0, i % 2 ? 1 : -1, "Vom Privatsteg der Fischerzunft aus beißen " + { seeaal: "Seeaale", klippenbarsch: "Klippenbarsche", hering: "Heringe" }[f] + "."));
     for (const f of vorschlag.fischplaetze.filter((f) => f.id.startsWith("fischerzunft_fang_"))) if (Math.abs(f.stehplatz[1] - PY) > 2) throw new Error("Fischerzunft: Fangstelle nicht am Steg " + f.id);
-    ding("kueste_raeucherhuette", 6396, 7349.5, { id: "fischerzunft_raeucherhuette" }); ding("kueste_netze", 6393, 7357.5, { id: "fischerzunft_netze" }); ding("k_kiste", 6399, 7357.6, { id: "fischerzunft_bankkiste" });
+    ding("kueste_raeucherhuette", 6396, 7349.5, { id: "fischerzunft_raeucherhuette" }); ding("kueste_netze", 6393, 7357.5, { id: "fischerzunft_netze" }); ding("steinhag_bankkiste", 6399, 7357.6, { id: "fischerzunft_bankkiste" });
     lies("fischerzunft_bankkiste", 6399, 7359, "Die Bankkiste der Fischerzunft. Was du hier einlegst, liegt auf deinem Konto.");
     lies("fischerzunft", X1 + 1.6, TOR - 2.2, "Der Privatsteg der Fischerzunft. „Nur für Meister des Fischens – ab Stufe 60.“");
     weg([[cx - 1, cy + 34], [6416, 7352], [X1 + 1, TOR]], 1.8, "e");
@@ -116,7 +116,7 @@ const HOEHLE_U = [357, 300], KAPITAEN_U = [359, 300];
   for (const [o, dx, dy, id] of [["moor_kate_01", 6, -6, "moewenbucht_kate_1"], ["weidenhain_kate_01", 14, -2, "moewenbucht_kate_2"], ["moor_kate_02", 10, 8, "moewenbucht_kate_3"], ["dorf_huette_holz_01", 0, 6, "raeucherhuette"]]) ding(o, mx + dx, my + dy, { id });
   ding("dorf_festfeuer_01", mx + 4, my + 9, { id: "raeucherhuette_feuer" }); ding("k_faesser", mx + 2, my + 8); ding("moor_kahn_01", mx - 6, my + 2, { id: "moewenbucht_kahn" });
   lies("raeucherhuette", mx + 0.5, my + 6.6, "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.", { station: "raeucherhuette" });
-  ding("k_kiste", mx + 9.5, my - 4.6, { id: "moewenbucht_bankkiste" }); lies("moewenbucht_bankkiste", mx + 9.5, my - 3.2, "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto.");
+  ding("steinhag_bankkiste", mx + 9.5, my - 4.6, { id: "moewenbucht_bankkiste" }); lies("moewenbucht_bankkiste", mx + 9.5, my - 3.2, "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto.");
   lies("moewenbucht", mx + 6, my + 1, "Möwenbucht. Netze trocknen zwischen den Katen, und über allem kreischen die Möwen.");
   let sx = mx, sy = my; while (!"~M".includes(zeichen(sx - 1, sy)) && sx > mx - 30) sx--; steg(sx - 1, sy + 1.3, "moewenbucht_steg");
   fischplatz("fischplatz_moewenbucht", "hering", 20, sx + 1.5, sy - 1.5, -1, 0, "Vom Steg aus fängt man Heringe.");

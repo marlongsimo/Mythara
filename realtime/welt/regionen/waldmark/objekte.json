@@ -196,7 +196,7 @@
  {"id":"zaun_kraeutergarten_22","objekt":"k_hecke","x":72,"y":41.98},
  {"id":"zaun_kraeutergarten_23","objekt":"k_hecke","x":72,"y":41.98},
  {"id":"kraeutergarten_kessel","objekt":"hand_kessel_01","x":69.5,"y":39.5,"s":0.8},
- {"id":"kraeutergarten_bankkiste","objekt":"k_kiste","x":69.4,"y":37},
+ {"id":"kraeutergarten_bankkiste","objekt":"steinhag_bankkiste","x":69.4,"y":37},
  {"id":"ort_taverne_herd","objekt":"hand_herd_01","x":26.2,"y":26},
  {"id":"ort_taverne_kessel","objekt":"hand_kessel_01","x":28.5,"y":26},
  {"id":"ort_d_waldmark_1","objekt":"dorf_holzstapel_01","x":37.1,"y":15},

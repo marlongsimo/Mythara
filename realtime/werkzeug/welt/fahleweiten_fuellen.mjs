@@ -97,7 +97,7 @@ const grauwacht = { mauer: [MAUER.x0, MAUER.y0, null, MAUER.y1], tore: { sued: [
   /* Kaserne im Nordwesten mit Übungsplatz und Bankkiste */
   male(6650, 5740, 6684, 5749, () => "p");
   ding("dorf_heldenhalle_01", 6664, 5736, { id: "grauwacht_kaserne", s: 1.3, ...B }); ding("dorf_wachturm_01", 6651, 5725, { id: "grauwacht_kaserne_turm", ...B });
-  ding("k_kiste", 6671.5, 5736.4, { id: "grauwacht_kaserne_bankkiste", ...B }); ding("k_banner_rot", 6658, 5738.4, B); ding("k_banner_rot", 6670, 5738.4, B);
+  ding("steinhag_bankkiste", 6671.5, 5736.4, { id: "grauwacht_kaserne_bankkiste", ...B }); ding("k_banner_rot", 6658, 5738.4, B); ding("k_banner_rot", 6670, 5738.4, B);
   for (const [x, y] of [[6656, 5744], [6662, 5746], [6668, 5744]]) ding("dorf_heuballen_01", x, y, B);   /* Ziele am Übungsplatz */
   lies("grauwacht_kaserne", 6664, 5737.6, "Die Kaserne der Wacht. Drinnen hängen die Spieße in Reihen, draußen übt die Wache an Strohzielen.", B);
   lies("grauwacht_kaserne_bankkiste", 6671.5, 5737.8, "Die Bankkiste der Kaserne. Was du hier einlegst, liegt auf deinem Konto.", B);
@@ -157,7 +157,7 @@ Object.assign(orte, ORT);
   ding("dorf_festfeuer_01", cx, cy + 1, { id: "kohlstatt_feuer" }); stationen.push({ id: "feuer_kohlstatt", station: "feuer", x: cx, y: cy + 2.6 });
   for (const [o, dx, dy] of [["dorf_huette_holz_01", -12, -5], ["dorf_haus_holz_01", -3, -8], ["dorf_huette_holz_02", 7, -6], ["dorf_haus_holz_03", 14, -2], ["dorf_schuppen_holz_01", -14, 10]]) baue(o, cx + dx, cy + dy);
   baue("dorf_holzstapel_01", cx + 3, cy + 9, { rand: 0 }, 4); baue("dorf_holzstapel_01", cx - 4, cy + 11, { rand: 0 }, 4);
-  const kiste = baue("k_kiste", cx + 4, cy + 3, { id: "kohlstatt_bankkiste", rand: 0 }, 3); lies("kohlstatt_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Köhler – rußig, aber dicht. Was du einlegst, liegt auf deinem Konto.");
+  const kiste = baue("steinhag_bankkiste", cx + 4, cy + 3, { id: "kohlstatt_bankkiste", rand: 0 }, 7); lies("kohlstatt_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Köhler – rußig, aber dicht. Was du einlegst, liegt auf deinem Konto.");
   const laden = baue("dorf_marktstand_03", cx - 5, cy + 3, { id: "kohlstatt_laden", rand: 0 }, 4); laeden.push({ id: "kohlstatt_laden", ort: "Kohlstatt", art: "Marktstand (Holzkohle, Beile)", x: laden.x, y: +(laden.y + 1.2).toFixed(1), blick: [0, -1] });
   lies("kohlstatt", cx + 1.5, cy + 3.4, "Kohlstatt. Die Meiler qualmen Tag und Nacht, und alles hier riecht nach Rauch und Harz.");
   banken.push({ id: "kohlstatt_bankkiste", ort: "Kohlstatt", kiste: [kiste.x, kiste.y + 1.4] });
@@ -171,7 +171,7 @@ Object.assign(orte, ORT);
   const sm = objekte.find((o) => o.id === "brechstein_schmiede"); stationen.push({ id: "esse_brechstein", station: "esse", x: sm.x - 1.5, y: sm.y + 1.4 }, { id: "amboss_brechstein", station: "amboss", x: sm.x + 1.5, y: sm.y + 1.4 });
   lies("brechstein_schmiede", sm.x, sm.y + 1.6, "Die Schmiede der Steinbrecher: Meißel schärfen, Keile richten, Hacken härten.");
   baue("hochland_lore", cx - 8, cy, { id: "brechstein_lore", rand: 0 }, 3); baue("k_truemmer", cx - 10, cy - 4, { rand: 0 }, 3); baue("k_truemmer", cx - 11, cy + 4, { rand: 0, spiegeln: true }, 3);
-  const kiste = baue("k_kiste", cx + 5, cy + 1, { id: "brechstein_bankkiste", rand: 0 }, 3); lies("brechstein_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Steinbrecher. Was du einlegst, liegt auf deinem Konto.");
+  const kiste = baue("steinhag_bankkiste", cx + 5, cy + 1, { id: "brechstein_bankkiste", rand: 0 }, 7); lies("brechstein_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Steinbrecher. Was du einlegst, liegt auf deinem Konto.");
   const laden = baue("dorf_marktstand_01", cx + 2, cy + 3, { id: "brechstein_laden", rand: 0 }, 4); laeden.push({ id: "brechstein_laden", ort: "Brechstein", art: "Marktstand (Hacken, Erz)", x: laden.x, y: +(laden.y + 1.2).toFixed(1), blick: [0, -1] });
   lies("brechstein", cx + 3, cy - 1.4, "Brechstein. Hier wird der Graue Fels Stück für Stück abgetragen – und manchmal kommt eine Ader zum Vorschein.");
   banken.push({ id: "brechstein_bankkiste", ort: "Brechstein", kiste: [kiste.x, kiste.y + 1.4] });
@@ -186,7 +186,7 @@ Object.assign(orte, ORT);
   for (let x = P[0] + 1.2; x <= P[2] - 1.2 + 0.01; x += 2.4) { if (Math.abs(x - (P[0] + P[2]) / 2) > 2) ding("k_zaun", x, P[1]); ding("k_zaun", x, P[3]); }
   male(P[0], P[1], P[2], P[3], (x, y) => (welle(x, y) > 0.3 ? "t" : "."));
   ding("dorf_heuballen_01", P[2] + 2, P[1] + 2); ding("dorf_heuballen_01", P[2] + 2.5, P[1] + 4);
-  const kiste = baue("k_kiste", cx + 3, cy, { id: "wollhag_bankkiste", rand: 0 }, 3); lies("wollhag_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Schäferei. Was du einlegst, liegt auf deinem Konto.");
+  const kiste = baue("steinhag_bankkiste", cx + 3, cy, { id: "wollhag_bankkiste", rand: 0 }, 7); lies("wollhag_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste der Schäferei. Was du einlegst, liegt auf deinem Konto.");
   const laden = baue("dorf_marktstand_02", cx - 3, cy + 1, { id: "wollhag_laden", rand: 0 }, 3); laeden.push({ id: "wollhag_laden", ort: "Wollhag", art: "Marktstand (Wolle, Käse)", x: laden.x, y: +(laden.y + 1.2).toFixed(1), blick: [0, -1] });
   ding("hand_kessel_01", cx + 6, cy + 2, { id: "wollhag_kessel" }); stationen.push({ id: "kessel_wollhag", station: "kessel", x: cx + 6, y: cy + 3.4 });
   lies("wollhag", cx, cy - 0.5, "Wollhag. Eine Schäferei mitten auf der Heide – im Frühjahr wird hier geschoren, dass die Wolle wie Schnee über die Weiten fliegt.");
@@ -204,7 +204,7 @@ Object.assign(orte, ORT);
   for (const [o, dx, dy, id] of [["weidenhain_bauernhaus_01", -6, -6, "weiherhof_hof"], ["moor_fischer_01", 8, -4, "weiherhof_fischerkate"], ["dorf_huette_holz_01", -16, -2], ["moor_kate_01", 16, -8]]) baue(o, cx + dx, cy + dy, id ? { id } : {});
   { let lx = W[0] - W[2]; while (nass(jetzt(lx - 0.5, W[1]))) lx--; const sx = lx - 2 + 4.9; ding("dorf_bruecke_01", sx, W[1] + 1.3, { id: "weiherhof_steg" }); freigeben.push({ art: "rechteck", x0: +(sx - 4.9).toFixed(2), y0: +(W[1] - 1.3).toFixed(2), x1: +(sx + 3).toFixed(2), y1: +(W[1] + 1.3).toFixed(2) }); }   /* Steg vom Westufer hinein */
   ding("kueste_netze", cx + 12, cy - 1, { id: "weiherhof_netze" }); ding("kueste_raeucherhuette", cx - 10, cy + 2, { id: "weiherhof_raeucherhuette" }); stationen.push({ id: "raeucherhuette_weiherhof", station: "raeucherhuette", x: cx - 10, y: cy + 3.6 });
-  const kiste = baue("k_kiste", cx + 3, cy - 1, { id: "weiherhof_bankkiste", rand: 0 }, 3); lies("weiherhof_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste vom Weiherhof. Was du einlegst, liegt auf deinem Konto.");
+  const kiste = baue("steinhag_bankkiste", cx + 3, cy - 1, { id: "weiherhof_bankkiste", rand: 0 }, 7); lies("weiherhof_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste vom Weiherhof. Was du einlegst, liegt auf deinem Konto.");
   const laden = baue("dorf_marktstand_03", cx - 3, cy + 0.5, { id: "weiherhof_laden", rand: 0 }, 3); laeden.push({ id: "weiherhof_laden", ort: "Weiherhof", art: "Marktstand (Fisch, Angeln)", x: laden.x, y: +(laden.y + 1.2).toFixed(1), blick: [0, -1] });
   uferplatz("fischplatz_weiherhof_steg", "moorhecht", 20, W[0] - W[2] - 1, W[1] - 2, "Am Westufer, neben dem Steg, beißen die Moorhechte.");
   uferplatz("fischplatz_weiherhof_ost", "muehlbarsch", 10, W[0] + W[2] + 1, W[1], "Am Ostufer des Weihers ziehen Mühlbarsche.");
@@ -217,7 +217,7 @@ Object.assign(orte, ORT);
 /* ───── Heidrast etwas größer: drei Katen dazu, Bankkiste am Brunnen ───── */
 { const [cx, cy] = [6596, 5872];
   for (const [o, dx, dy] of [["weidenhain_kate_01", -4, -14], ["dorf_huette_holz_02", 17, -2], ["moor_kate_01", -18, -1]]) baue(o, cx + dx, cy + dy, { id: `heidrast_kate_${dx < 0 ? "w" : "o"}_${Math.abs(dy)}` }, 6);
-  const kiste = baue("k_kiste", cx + 3, cy - 2, { id: "heidrast_bankkiste", rand: 0 }, 3); lies("heidrast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Heidrast, an den Brunnen gekettet. Was du einlegst, liegt auf deinem Konto.");
+  const kiste = baue("steinhag_bankkiste", cx + 3, cy - 2, { id: "heidrast_bankkiste", rand: 0 }, 7); lies("heidrast_bankkiste", kiste.x, kiste.y + 1.4, "Die Bankkiste von Heidrast, an den Brunnen gekettet. Was du einlegst, liegt auf deinem Konto.");
   banken.push({ id: "heidrast_bankkiste", ort: "Heidrast", kiste: [kiste.x, kiste.y + 1.4] });
   ["wegerich", "ringelblume"].forEach((a, i) => kraut(`heidrast_${a}_1`, a, cx - 8 + i * 16, cy + 12)); }
 

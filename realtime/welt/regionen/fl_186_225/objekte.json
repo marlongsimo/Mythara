@@ -172,7 +172,7 @@
  {"id":"fischerzunft_steg_3","objekt":"dorf_bruecke_01","x":426.1,"y":153.3},
  {"id":"fischerzunft_raeucherhuette","objekt":"kueste_raeucherhuette","x":444,"y":149.5},
  {"id":"fischerzunft_netze","objekt":"kueste_netze","x":441,"y":157.5},
- {"id":"fischerzunft_bankkiste","objekt":"k_kiste","x":447,"y":157.6},
+ {"id":"fischerzunft_bankkiste","objekt":"steinhag_bankkiste","x":447,"y":157.51},
  {"id":"wrack_rumpf","objekt":"graufurt_faehre_01","x":330,"y":62,"s":1.8},
  {"id":"ks_truemmer_12","objekt":"k_truemmer","x":326.5,"y":64.5},
  {"id":"ks_wald_baumstamm_13","objekt":"wald_baumstamm_02","x":335,"y":61,"spiegeln":true},

@@ -427,8 +427,8 @@
   {
    "id": "heidrast_bankkiste",
    "art": "lesen",
-   "x": 168.5,
-   "y": 13.4,
+   "x": 166,
+   "y": 11.9,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {

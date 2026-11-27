@@ -24,8 +24,11 @@ const HOLZ = JSON.parse(readFileSync(join(RT, "shared", "holz_standorte.json"), 
 const ORTE = JSON.parse(readFileSync(join(RT, "welt", "orte.json"), "utf8")), schonDa = new Set([...HOLZ, ...BERG].map((l) => l.name));
 /* Sammelstellen (#142, werkzeug/welt/sammelstellen.mjs): Baumgruppen und Senken an den Orten im Süden, Westen und in den Glutsande – ebenso Vorschläge */
 const SAMMEL = existsSync(join(RT, "welt", "sammelstellen.json")) ? JSON.parse(readFileSync(join(RT, "welt", "sammelstellen.json"), "utf8")) : { lichtungen: [], senken: [] };
-const standorte = [...HOLZ, ...[...(ORTE.lichtungen || []), ...SAMMEL.lichtungen].filter((l) => !schonDa.has(l.name)),
-  ...[...BERG, ...[...(ORTE.senken || []), ...SAMMEL.senken].filter((l) => !schonDa.has(l.name))].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
+/* die Welt geht vor (27.11.): gleichnamige Gruppen aus welt/sammelstellen.json ersetzen die aus shared/ – Integration übernimmt genau diese Fassung nach shared/,
+   so stehen Bäume und Felsen schon an den Plätzen, die shared/ danach bekommt (vorher umgekehrt: dann fehlten nach dem Abgleich die Objekte) */
+const WELTNAMEN = new Set([...SAMMEL.lichtungen, ...SAMMEL.senken].map((l) => l.name));
+const standorte = [...HOLZ.filter((l) => !WELTNAMEN.has(l.name)), ...(ORTE.lichtungen || []).filter((l) => !schonDa.has(l.name) && !WELTNAMEN.has(l.name)), ...SAMMEL.lichtungen,
+  ...[...BERG.filter((l) => !WELTNAMEN.has(l.name)), ...(ORTE.senken || []).filter((l) => !schonDa.has(l.name) && !WELTNAMEN.has(l.name)), ...SAMMEL.senken].map((s) => ({ ...s, baeume: s.adern, senke: true }))];
 const bib = JSON.parse(readFileSync(join(RT, "welt", "bibliothek", "objekte.json"), "utf8")).objekte;
 const kategorie = new Map(bib.map((o) => [o.id, o.kategorie]));
 const istBewuchs = (p) => kategorie.get(p.objekt) === "bewuchs" && !String(p.id || "").startsWith("zaun_");   /* Hecken als Einhegung (zaun_…, #168) bleiben stehen und sperren den Feldweg */

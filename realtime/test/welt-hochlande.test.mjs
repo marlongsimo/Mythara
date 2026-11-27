@@ -65,6 +65,10 @@ check(gebaeude > haferstedt && gebaeude >= 80 && gebaeude <= 130, `Hauptstadt (#
   check(HO.hauptstadt.banken.length === 2 && HO.hauptstadt.laeden.length >= 5 && !lw.length && !sw.length, `${HO.hauptstadt.laeden.length} neue Ladenplätze, ${HO.hauptstadt.stationen.length} Stationen (Zunft), 2 Banken – erreichbar`, [...lw, ...sw].map((x) => x.id));
   const baum = OBJ.filter((o) => inMauer(o) && /tanne|birke|baum|busch|fels/.test(o.objekt) && !/^steinhag/.test(o.id)); check(!baum.length, "keine Bäume, Büsche und Felsbrocken in den Mauern", baum.map((o) => o.id));
   const sm = lies("sammelstellen.json"), smIn = [...sm.lichtungen, ...sm.senken].filter((g) => (g.baeume || g.adern).some((p) => inMauer(p))); check(!smIn.length, "keine Sammelstelle in den Mauern", smIn.map((g) => g.name)); }
+{ /* Reisende (Bergleute Steinhag → Bergwerk): jedes gerade Stück zwischen zwei Wegpunkten liegt auf begehbaren Feldern */
+  const zu = []; for (const r of HO.reisende) for (let i = 1; i < r.punkte.length; i++) { const [ax, ay] = r.punkte[i - 1], [bx, by] = r.punkte[i];
+    for (let t = 0; t <= 1; t += 0.05) { const x = ax + (bx - ax) * t, y = ay + (by - ay) * t; if (!R.begehbar(x, y)) { zu.push(`${r.id} ${x.toFixed(1)}|${y.toFixed(1)}`); break; } } }
+  check(HO.reisende.length && !zu.length, `Wege der Reisenden begehbar (${HO.reisende.map((r) => r.punkte.length + " Punkte").join(", ")})`, zu); }
 console.log("\nStollen der Bergmannszunft (Untergrund, #167)");
 { const ZS = region("steinhag_zunftstollen"), [ZX, ZY] = ZS.region.ursprung.map((v) => v * 32), ein = IA.get("steinhag_zunftstollen_eingang"), hin = IA.get("zunftstollen_hinaus");
   check(ZS.region.ebene === "untergrund" && R.begehbar(...ein.daten.ziel) && greifbar(...hin.daten.ziel), "Abstieg im Zunftviertel führt hinein, der Ausgang wieder hinauf");
