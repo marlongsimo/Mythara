@@ -8,6 +8,7 @@
  * Alle Koordinaten sind Weltfelder wie in der 2D-Welt und auf dem Server (x Osten, z = y der Welt nach Süden, Höhe nach oben).
  */
 import { daecherAus } from "../skills";
+import { karteDeckt } from "../uebersicht";
 import GELAENDE from "../../../welt/bibliothek/gelaende.json";
 import * as THREE from "three";
 import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
@@ -291,6 +292,7 @@ export class Welt3D {
   /** Die Umgebung des Helden von oben in eine 2D-Leinwand zeichnen: felder = Breite des Ausschnitts in Weltfeldern; oben ist die Blickrichtung der Kamera */
   /** danach: wird gerufen, sobald das Bild in der Leinwand steht (Marken darüber zeichnen) */
   karteZeichnen(ziel: HTMLCanvasElement, felder: number, danach?: () => void): void {
+    if (karteDeckt()) return; /* #183: die Minikarte liegt unter der Weltkarte */
     const n = ziel.width; if (!n || this.karteLiest) return; /* #103: das vorige Bild ist noch unterwegs */ if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
     const H = this.held, k = this.karteKam, h = felder / 2; k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix();
     k.position.set(H.x, this.gelaendeHoehe(H.x, H.z) + 200, H.z); k.up.set(-Math.sin(this.gieren), 0, -Math.cos(this.gieren)); k.lookAt(H.x, 0, H.z);
@@ -377,6 +379,7 @@ export class Welt3D {
       const t = performance.now() / 1000; this.feuerLichter.forEach((l, i) => { const p = nah[i]; if (!p || !unten) { l.intensity = 0; return; } l.position.copy(p); l.intensity = 22 * (0.85 + 0.15 * Math.sin(t * 9 + i * 2.1) * Math.sin(t * 5.3 + i)); }); }
     /* Schattenkarte nur jedes zweite Bild neu (halbiert die teuerste Arbeit je Bild; der Schatten folgt einen Bruchteil später) */
     if (this.r.shadowMap.enabled) { this.bildNr++; this.r.shadowMap.autoUpdate = false; this.r.shadowMap.needsUpdate = this.bildNr % (HANDY ? 3 : 2) === 0; }
+    if (karteDeckt()) return; /* #183: hinter der offenen Weltkarte nicht zeichnen (auf dem Handy ruckelte sonst das Ziehen) */
     this.r.render(this.szene, this.kamera);
   }
   private bildNr = 0;

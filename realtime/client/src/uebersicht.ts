@@ -30,6 +30,8 @@ const PX = 4; /* Bildpunkte je Feld bei Zoom 1 */
 /** So viele Felder zeigt die Karte in der Breite (fester Zoom, #11: von den Riedwiesen bis Graufurt) */
 export const SICHT_FELDER = 750;
 let offen: (() => void) | null = null;
+/** #183: Die Karte deckt den ganzen Schirm – solange zeichnet die 3D-Welt dahinter nicht (welt3d/motor.ts), die Spiellogik läuft weiter */
+export const karteDeckt = (): boolean => offen !== null;
 
 export function uebersichtOffen(): boolean { return !!offen; }
 
@@ -84,9 +86,9 @@ export function uebersicht(o: WeltkarteOpts): void {
   /* dicht beieinanderliegende Symbole je Zoomstufe so weit auseinander, dass jedes ganz zu sehen ist */
   /* Namen ohne Überlappen: wichtige zuerst (Stadt, Dorf, Landschaft, klein), was danach einen schon gesetzten Namen berührt, bleibt aus (einmal je Bildschirmgröße) */
   const RANG: Record<string, number> = { gross: 0, mittel: 1, "": 2, land: 2, klein: 3 }, schilder = [...lw.querySelectorAll<HTMLElement>(".wk-name")].sort((a, b) => (RANG[a.classList[1] || ""] ?? 2) - (RANG[b.classList[1] || ""] ?? 2));
-  let namenZ = -1; const namenOrdnen = () => { if (namenZ === z) return; namenZ = z; const frei: DOMRect[] = [];
+  let namenZ = -1, symZ = -1; const namenOrdnen = () => { if (namenZ === z) return; namenZ = z; const frei: DOMRect[] = [];
     for (const n of schilder) { n.style.visibility = ""; const r = n.getBoundingClientRect(); if (frei.some((q) => r.left < q.right + 4 && r.right > q.left - 4 && r.top < q.bottom + 2 && r.bottom > q.top - 2)) n.style.visibility = "hidden"; else frei.push(r); } };
-  const symbole = [...lw.querySelectorAll<HTMLElement>(".wk-symbol")], ordnen = () => { namenOrdnen(); symboleOrdnen(symbole.map((el) => ({ el, x: parseFloat(el.style.left) * z, y: parseFloat(el.style.top) * z })), 26, z, ` scale(${(1 / z).toFixed(4)})`); };
+  const symbole = [...lw.querySelectorAll<HTMLElement>(".wk-symbol")], ordnen = () => { namenOrdnen(); if (symZ === z) return; symZ = z; /* #183: beim Ziehen ändert sich der Zoom nicht – nicht bei jeder Bewegung alle Symbole neu verteilen */ symboleOrdnen(symbole.map((el) => ({ el, x: parseFloat(el.style.left) * z, y: parseFloat(el.style.top) * z })), 26, z, ` scale(${(1 / z).toFixed(4)})`); };
   const punkt = document.createElement("div"); punkt.className = "wk-ich"; punkt.innerHTML = "<i></i>"; lw.appendChild(punkt);
   document.body.appendChild(hülle);
 
