@@ -9,7 +9,43 @@
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 62,
+    "y0": 30,
+    "x1": 63,
+    "y1": 31
+   },
+   {
+    "art": "rechteck",
+    "x0": 66,
+    "y0": 29,
+    "x1": 67,
+    "y1": 30
+   },
+   {
+    "art": "rechteck",
+    "x0": 71,
+    "y0": 29,
+    "x1": 72,
+    "y1": 30
+   },
+   {
+    "art": "rechteck",
+    "x0": 75,
+    "y0": 31,
+    "x1": 76,
+    "y1": 32
+   },
+   {
+    "art": "rechteck",
+    "x0": 77,
+    "y0": 34,
+    "x1": 78,
+    "y1": 35
+   }
+  ],
   "freigeben": []
  },
  "interaktionen": [
@@ -68,6 +104,29 @@
     "text": "Im Brackwasser der Mangroven ziehen Seeaale.",
     "fisch": "seeaal",
     "stufe": 45
+   }
+  },
+  {
+   "id": "lehmfurt_schmiede",
+   "art": "lesen",
+   "x": 37.5,
+   "y": 42.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die kleine Schmiede von Lehmfurt: Esse und Amboss, Erz aus dem Steinbruch nebenan.",
+    "station": "esse_amboss"
+   }
+  },
+  {
+   "id": "steinbruch",
+   "art": "lesen",
+   "x": 68,
+   "y": 40,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Steinbruch von Lehmfurt. Kupfer, Eisen und an der Kante sogar Schwarzeisen."
    }
   },
   {

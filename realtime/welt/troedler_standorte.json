@@ -45,6 +45,15 @@
    "ort": "In Möwenbucht zwischen den Katen",
    "variante": "bauchladen",
    "frei": 1.8
+  },
+  {
+   "id": "troedler_halber_weg",
+   "x": 6481.5,
+   "y": 7011.5,
+   "ort": "Rastplatz „Halber Weg“ an der Südstraße",
+   "variante": "karren",
+   "region": "fl_201_211",
+   "frei": 1.8
   }
  ]
 }

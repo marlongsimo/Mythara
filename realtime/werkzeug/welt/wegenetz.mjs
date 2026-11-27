@@ -20,7 +20,8 @@ const aufAlt = (x, y) => gebiet(x, y)?.alt ?? false;
 
 /* Orte (Mitte, für Wegweiser-Richtungen) */
 export const ORTE = { Waldmark: [6448, 6434], Weidenhain: [6444, 6716], Osthof: [6522, 6436], Rabenmoor: [6328, 6722], Graufurt: [6689, 6513], Ostufer: [6840, 6520], Glutbrunn: [7160, 6950],
-  Heidrast: [6596, 5872], Grauwacht: [6706, 5748], Kielmund: [6426, 7314], "Möwenbucht": [6214, 7160], Leuchtturm: [6176, 7036], "Hügelgräber": [6462, 5770], Aschenwerth: [6216, 6716] };
+  Heidrast: [6596, 5872], Grauwacht: [6706, 5748], Kielmund: [6426, 7314], "Möwenbucht": [6214, 7160], Leuchtturm: [6176, 7036], "Hügelgräber": [6462, 5770], Aschenwerth: [6216, 6716],
+  Heckenhof: [6490, 6812], Summweide: [6418, 6904], Schilfsee: [6450, 7188], Erlengrund: [6392, 7004], Lehmfurt: [6466, 7244], "Kräuterhof": [6418, 7064] };
 
 /* Wege: [Punkte, Klasse, Breite] */
 const WEGE = [
@@ -72,8 +73,11 @@ const WEGWEISER = [
   ["kielmund_nord", [6440, 7286], ["Weidenhain", "Möwenbucht", "Kielmund"]],
   ["moewenbucht", [6234, 7172], ["Kielmund", "Leuchtturm"]],
   ["glutbrunn_west", [7108, 6934], ["Glutbrunn", "Ostufer", "Graufurt"]],
+  ["halber_weg", [6470, 7003], ["Weidenhain", "Erlengrund", "Kielmund"]],   /* Süden (#120) */
+  ["kreuzstein", [6472, 7092], ["Weidenhain", "Kräuterhof", "Kielmund"]],
+  ["suedstrasse_nord", [6462, 6904], ["Weidenhain", "Summweide", "Kielmund"]],
 ];
-const RICHTUNG = { "nordsaum_knick:Waldmark": [-1, 0.2], "nordsaum_knick:Graufurt": [0, 1], "graufurt_westtor:Glutbrunn": [0.1, 1], "glutstrasse_bruecke:Graufurt": [-0.5, -1], "glutbrunn_west:Graufurt": [-1, -0.2], "glutbrunn_west:Ostufer": [-0.8, -1], "ende_des_grases:Ostufer": [-1, -1], "heidrast:Graufurt": [0, 1], "kielmund_nord:Weidenhain": [0.2, -1] };
+const RICHTUNG = { "halber_weg:Weidenhain": [0, -1], "halber_weg:Kielmund": [0, 1], "kreuzstein:Weidenhain": [0, -1], "kreuzstein:Kielmund": [0, 1], "suedstrasse_nord:Weidenhain": [0, -1], "suedstrasse_nord:Kielmund": [0, 1], "nordsaum_knick:Waldmark": [-1, 0.2], "nordsaum_knick:Graufurt": [0, 1], "graufurt_westtor:Glutbrunn": [0.1, 1], "glutstrasse_bruecke:Graufurt": [-0.5, -1], "glutbrunn_west:Graufurt": [-1, -0.2], "glutbrunn_west:Ostufer": [-0.8, -1], "ende_des_grases:Ostufer": [-1, -1], "heidrast:Graufurt": [0, 1], "kielmund_nord:Weidenhain": [0.2, -1] };
 for (const [id, [x, y], ziele] of WEGWEISER) {
   const zeilen = ziele.map((z) => { const r = RICHTUNG[id + ":" + z]; const [dx, dy] = r || [ORTE[z][0] - x, ORTE[z][1] - y]; return Math.hypot(ORTE[z][0] - x, ORTE[z][1] - y) < 25 && !r ? `${z} (hier)` : `Nach ${z} ${pfeil(dx, dy)}`; });
   const o = { id: "ort_wegweiser_" + id, objekt: "welt_wegweiser_01", x, y }, i = { id: "ort_wegweiser_" + id + "_lesen", x, y: y + 1.2, radius: 1.8, daten: { text: "Ein Wegweiser: " + zeilen.join(" · "), ziele: zeilen } };

@@ -56,6 +56,30 @@
   "Aschenwerth": [
    6216,
    6716
+  ],
+  "Heckenhof": [
+   6490,
+   6812
+  ],
+  "Summweide": [
+   6418,
+   6904
+  ],
+  "Schilfsee": [
+   6450,
+   7188
+  ],
+  "Erlengrund": [
+   6392,
+   7004
+  ],
+  "Lehmfurt": [
+   6466,
+   7244
+  ],
+  "Kräuterhof": [
+   6418,
+   7064
   ]
  },
  "wegweiser": [
@@ -153,6 +177,36 @@
     "Glutbrunn",
     "Ostufer",
     "Graufurt"
+   ]
+  },
+  {
+   "id": "halber_weg",
+   "x": 6470,
+   "y": 7003,
+   "ziele": [
+    "Weidenhain",
+    "Erlengrund",
+    "Kielmund"
+   ]
+  },
+  {
+   "id": "kreuzstein",
+   "x": 6472,
+   "y": 7092,
+   "ziele": [
+    "Weidenhain",
+    "Kräuterhof",
+    "Kielmund"
+   ]
+  },
+  {
+   "id": "suedstrasse_nord",
+   "x": 6462,
+   "y": 6904,
+   "ziele": [
+    "Weidenhain",
+    "Summweide",
+    "Kielmund"
    ]
   }
  ],

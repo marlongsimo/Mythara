@@ -150,6 +150,76 @@
    }
   },
   {
+   "id": "summweide",
+   "art": "lesen",
+   "x": 466,
+   "y": 154,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Summweide. Über der Blumenwiese summt es, und es riecht nach Honig."
+   }
+  },
+  {
+   "id": "bienenstoecke",
+   "art": "lesen",
+   "x": 462,
+   "y": 161,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Bienenstöcke in einer Reihe. Einer fehlt – nur ein heller Fleck im Gras.",
+    "questobjekt": "bienenstock"
+   }
+  },
+  {
+   "id": "saegemuehle",
+   "art": "lesen",
+   "x": 438,
+   "y": 250.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Sägemühle von Erlengrund. Das Rad steht still – die Welle klemmt.",
+    "questobjekt": "saegemuehle_rad"
+   }
+  },
+  {
+   "id": "saegemuehle_werkbank",
+   "art": "lesen",
+   "x": 443,
+   "y": 255.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkbank in der Sägemühle.",
+    "station": "werkbank",
+    "schalter": "saegemuehle_frei"
+   }
+  },
+  {
+   "id": "koehlermeiler",
+   "art": "lesen",
+   "x": 452,
+   "y": 247.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Köhlermeiler. Er qualmt seit drei Tagen."
+   }
+  },
+  {
+   "id": "waldsenke",
+   "art": "lesen",
+   "x": 390,
+   "y": 218.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Senke im Wald. Abgenagte Knochen, Pfotenabdrücke so groß wie ein Teller."
+   }
+  },
+  {
    "id": "wegweiser_moewenbucht_lesen",
    "x": 282,
    "y": 421.2,

@@ -46,5 +46,11 @@
  {"id":"ks_laub_oliv_77","objekt":"stil_laub_oliv","x":1.5,"y":76.5,"s":0.71},
  {"id":"ks_busch_84","objekt":"stil_busch_01","x":14.5,"y":93.5,"s":0.98},
  {"id":"ks_laub_oliv_88","objekt":"stil_laub_oliv","x":10.5,"y":48.5,"s":0.76},
+ {"id":"lehmfurt_schmiede","objekt":"dorf_schmiede_01","x":36,"y":42},
+ {"id":"lehmfurt_kate","objekt":"moor_kate_02","x":27,"y":40},
+ {"id":"lehmfurt_holz","objekt":"dorf_holzstapel_01","x":42,"y":44},
+ {"id":"steinbruch_fels_7","objekt":"hoehle_felswand_01","x":65,"y":38,"s":0.5},
+ {"id":"steinbruch_fels_14","objekt":"hoehle_felswand_01","x":72,"y":39,"s":0.5},
+ {"id":"steinbruch_fels_10","objekt":"hoehle_felswand_01","x":68,"y":34,"s":0.5},
  {"id":"wegweiser_kielmund_nord","objekt":"welt_wegweiser_01","x":8.5,"y":86.5}
 ]

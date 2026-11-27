@@ -9,7 +9,16 @@
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 470,
+    "y0": 44.5,
+    "x1": 478,
+    "y1": 48.5,
+    "schalter": "lehmfurt_trittsteine"
+   }
+  ],
   "freigeben": [
    {
     "art": "rechteck",
@@ -172,6 +181,18 @@
     "text": "Zwischen den Spanten des Wracks lauern Seeaale.",
     "fisch": "seeaal",
     "stufe": 45
+   }
+  },
+  {
+   "id": "furt",
+   "art": "lesen",
+   "x": 478.5,
+   "y": 46.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Eine Furt durch die Kiel. Mit ein paar Trittsteinen käme man trocken hinüber.",
+    "questobjekt": "trittsteine"
    }
   },
   {
