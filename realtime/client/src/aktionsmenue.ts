@@ -32,11 +32,19 @@ export function aktionsMenue(px: number, py: number, gruppen: Gruppe[]): void {
 }
 /** Langes Drücken (oder Rechtsklick) auf einem Element erkennen; true aus beiLang = Menü gezeigt (der folgende Klick wird geschluckt) */
 export function langDruecken(el: HTMLElement, beiLang: (e: { clientX: number; clientY: number; target: EventTarget | null }) => boolean, ms = 450): void {
-  let t = 0, start: { x: number; y: number; id: number } | null = null, gezeigt = false;
-  el.addEventListener("pointerdown", (e) => { gezeigt = false; if (e.button !== 0) return; start = { x: e.clientX, y: e.clientY, id: e.pointerId }; const ziel = e.target;
-    clearTimeout(t); t = window.setTimeout(() => { if (start && beiLang({ clientX: start.x, clientY: start.y, target: ziel })) gezeigt = true; start = null; }, ms); });
+  let t = 0, start: { x: number; y: number; id: number } | null = null, gezeigt = false, langZuletzt = 0, unten = 0;
+  el.addEventListener("pointerdown", (e) => { gezeigt = false; if (e.button !== 0) return; unten = e.timeStamp; start = { x: e.clientX, y: e.clientY, id: e.pointerId }; const ziel = e.target;
+    clearTimeout(t); t = window.setTimeout(() => { if (start && beiLang({ clientX: start.x, clientY: start.y, target: ziel })) { gezeigt = true; langZuletzt = performance.now(); } start = null; }, ms); });
   el.addEventListener("pointermove", (e) => { if (start && e.pointerId === start.id && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 9) { clearTimeout(t); start = null; } });
-  for (const ev of ["pointerup", "pointercancel"]) el.addEventListener(ev, () => { clearTimeout(t); start = null; });
+  for (const ev of ["pointerup", "pointercancel"]) el.addEventListener(ev, (e) => { clearTimeout(t); start = null;
+    /* #136: Ein ruckelndes Gerät liefert das Loslassen erst nach dem nächsten Bild – dann lief der Zeitgeber schon ab und zeigte das Menü,
+       obwohl der Finger nur kurz unten war. Maßgeblich ist die Zeit der Ereignisse selbst: war es kurz, Menü wieder zu und den Klick durchlassen. */
+    if (ev === "pointerup" && gezeigt && (e as PointerEvent).timeStamp - unten < ms) { gezeigt = false; langZuletzt = 0; menueZu(); } });
   el.addEventListener("click", (e) => { if (gezeigt) { gezeigt = false; e.stopPropagation(); e.preventDefault(); } }, true);
-  el.addEventListener("contextmenu", (e) => { e.preventDefault(); clearTimeout(t); start = null; if (beiLang(e)) gezeigt = false; });
+  /* #136: Auf dem Handy feuert der Browser nach dem langen Drücken zusätzlich „contextmenu“ – manchmal erst spät (nach dem nächsten Tipp).
+     Das öffnete das schon gezeigte (oder gerade geschlossene) Menü noch einmal: „daneben tippen schließt nicht“, „kurz tippen rüstet nicht aus“.
+     Darum: contextmenu von Touch/Stift nie, und keins kurz nach einem Menü durch langes Drücken – Rechtsklick mit der Maus bleibt. */
+  el.addEventListener("contextmenu", (e) => { e.preventDefault(); const pt = (e as PointerEvent).pointerType;
+    if (pt === "touch" || pt === "pen" || performance.now() - langZuletzt < 1500) return;
+    clearTimeout(t); start = null; if (beiLang(e)) gezeigt = false; });
 }
