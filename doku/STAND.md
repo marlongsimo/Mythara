@@ -24,6 +24,8 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass – Gegner 46–58 | 🟡 Vorarbeit **live** (Orte, Bergwerk, 145 Bäume/162 Adern, Bewohner, Läden, Tiere); Block H (H1–H4 + Nebenquest, drei Hüter) **freigegeben**, in Arbeit (#159–#162) – `doku/konzepte/phase-11.md` |
 | Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | ✅ live (27.11.): Orte, Gegner, Fleisch/Gerichte, Reisende, S1–S9 |
 | — | Ganze Welt als Kampfwelt, Gegnerplätze über die ganze Welt (#122, #130), 10 neue Gegner aus Modellen des Nutzers (#138) | ✅ live: Kampfwelt, 10 neue Gegner, Streifgebiete (#143), Orte Haferstedt/Netzbucht/Sandquell (#140/#141), 158 Holz-/Erzstellen (#142) |
+| 12 | Ockerland: Ockerlande besiedeln (Rotlehm, Dornhag, Tafelrast) | 🟡 Konzept-Entwurf `doku/konzepte/phase-12.md` |
+| — | Hauptstädte Steinhag (#167) und Kielmund, Zunfthäuser (#168), Fahle Weiten füllen mit Grauwacht als mittlerer Hauptstadt | 🟡 Steinhag im Bau; Konzepte `hauptstaedte.md`, `fahle-weiten.md` |
 
 ## Festland (Weltkonzept)
 
