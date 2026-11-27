@@ -7,8 +7,8 @@
  * QUER: Welche Moorweiden taugen, weiß Gisbert Ast aus den Obstwiesen (B3) – er hat das Holz für die alte Brücke geliefert. Wer das rote Banner aus B4 trägt, dem zeigt Bertold das Rabenzeichen darunter.
  * Lohn: Rabenkapuze, Magie 600, Defense 600, LP 300 XP, 1 Questpunkt. Schalter bruecke_aschenwerth (die Brücke trägt), Wegstein-Ziel „Rabenmoor“.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 6 (Gegner rabenpriester_novize, Rezept brueckenplanke, Gegenstände) und darauf, dass eine Figur
- * in mehreren Quests sprechen kann (Ulf aus A2, Bertold auch in C3). Stellen aus der Welt (#23): rabenmoor (Ursprung 6272 | 6656), aschenwerth (6144 | 6592).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Phase 6, Federmutter #116, Gegenstände ffb6891f).
+ * Figuren in mehreren Quests: Ulf (D1), Bertold (C3), Gisbert (B3). Stellen aus der Welt (#23): rabenmoor (Ursprung 6272 | 6656), aschenwerth (6144 | 6592).
  * Liste: doku/quests/c-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
@@ -18,7 +18,7 @@ export const C1 = "rabenmoor_schwarze_federn";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Rabenmoor: Bertold 48 | 41, Joost 56 | 70,4, Harm 40,5 | 45,6, Brücke 24,6 | 44,3 · Aschenwerth: Steinkreis 98 | 142,4, Westende der Brücke 112,5 | 109,8 */
 const BERTOLD: [number, number] = [6320, 6697], JOOST: [number, number] = [6328, 6726.4], HARM: [number, number] = [6312.5, 6701.6], BRUECKE: [number, number] = [6296.6, 6700.3];
-const GISBERT: [number, number] = [6562.5, 6691.5], WEIDEN: [number, number] = [6305.5, 6712.5], KREIS: [number, number] = [6242, 6734.4], EBBO: [number, number] = [6245.5, 6738.5], UFER: [number, number] = [6254.5, 6703.5];
+const GISBERT: [number, number] = [6562.5, 6691.5], WEIDEN: [number, number] = [6305.5, 6712.5], KREIS: [number, number] = [6242, 6734.4], EBBO: [number, number] = [6245.5, 6736.5] /* 6245,5 · 6738,5 war im Gehraster gesperrt (Steinkreis) */, UFER: [number, number] = [6254.5, 6703.5];
 const HILFE = ["Die Brücke nach Aschenwerth ist morsch. Welche Moorweiden taugen, weiß Gisbert Ast in den Obstwiesen. Vier neue Planken aus Moorweide – Harm hat eine Werkbank, oder er schneidet sie dir für Splitter.",
   "Für die Fugen Pech. Köhler Ulf im Nordwald brennt es dir, wenn du ihm fünf Tannenstämme bringst.",
   "Und drüben: Pass auf. Wer immer da singt, singt nicht für uns. Bring mir Ebbo, wenn du kannst. Und alles, was mir sagt, wer sie sind."];

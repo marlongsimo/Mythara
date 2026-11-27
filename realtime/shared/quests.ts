@@ -21,6 +21,8 @@ import { QUEST_S9 } from "./quest_s9";
 import { QUEST_S2 } from "./quest_s2";
 import { QUEST_MIRA } from "./quest_mira";
 import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
+import { QUEST_C1 } from "./quest_c1";
+import { QUEST_C2 } from "./quest_c2";
 import { QUEST_S1 } from "./quest_s1";
 import { QUEST_S3 } from "./quest_s3";
 import { QUEST_S4 } from "./quest_s4";
@@ -28,7 +30,7 @@ import { QUEST_S6 } from "./quest_s6";
 import { QUEST_S7 } from "./quest_s7";
 import { QUEST_S8 } from "./quest_s8";
 
-export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1, QUEST_SCHILF, QUEST_TAVERNE, QUEST_B2, QUEST_B3, QUEST_B4, QUEST_MIRA, QUEST_KRAEUTERHOF, QUEST_S1, QUEST_S2, QUEST_S3, QUEST_S4, QUEST_S5, QUEST_S6, QUEST_S7, QUEST_S8, QUEST_S9];
+export const QUESTS: QuestDef[] = [QUEST1, QUEST2, QUEST3, QUEST_A1, QUEST_A2, QUEST_A3, QUEST_B1, QUEST_SCHILF, QUEST_TAVERNE, QUEST_B2, QUEST_B3, QUEST_B4, QUEST_MIRA, QUEST_KRAEUTERHOF, QUEST_C1, QUEST_C2, QUEST_S1, QUEST_S2, QUEST_S3, QUEST_S4, QUEST_S5, QUEST_S6, QUEST_S7, QUEST_S8, QUEST_S9];
 export const questDef = (id: string): QuestDef | undefined => QUESTS.find((q) => q.id === id);
 
 /** Ist ein Schalter je Spieler an (irgendeine Quest schaltet ihn ein)? stand: Stand einer Quest für diesen Spieler */
