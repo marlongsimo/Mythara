@@ -57,14 +57,15 @@ function hecke(liste, pre, [x0, y0, x1, y1], tor) { let n = 0; const id = () => 
 /* ═══════ Kräutergarten der Heilkundigen in der Waldmark (Region waldmark): Garten 12 × 8 am Teich neben Mira, Tor im Westen ═══════ */
 const WM = [];
 { const R = [6461, 6435, 6473, 6443], { feld } = hecke(WM, "kraeutergarten", R, ["w", 6439.5, 3]), BEET = [];
-  const ARTEN = ["ringelblume", "eisenhut", "moorgloeckchen", "nebelkraut", "wegerich", "eisenhut"];
-  [[6464.5, 6437.5], [6466.5, 6437.5], [6464.5, 6439.5], [6466.5, 6439.5], [6464.5, 6441.5], [6466.5, 6441.5]].forEach(([x, y], i) => {
-    BEET.push([x, y]); kraeuter.push({ id: `kraeutergarten_${ARTEN[i]}_${i + 1}`, art: ARTEN[i], x, y, region: "waldmark" }); });
-  ding(WM, "hand_kessel_01", 6469.4, 6439.6, { id: "kraeutergarten_kessel", s: 0.8 }); ding(WM, "steinhag_bankkiste", 6469.4, 6437, { id: "kraeutergarten_bankkiste" });
+  /* 3 × 3 Beete: vorn Wegerich, Eisenhut, Nebelkraut (Zutaten der Zunft-Tränke), dahinter je Zunft-Kraut eine Gruppe (#176: Mondsalbei 70, Glutwurz 80, Splitterlilie 90) */
+  const SPALTEN = [6464.3, 6466.3, 6468.3], ZEILEN = [6437.4, 6439.4, 6441.4];
+  const ARTEN = [["wegerich", "eisenhut", "nebelkraut"], ["mondsalbei", "glutwurz", "splitterlilie"], ["mondsalbei", "glutwurz", "splitterlilie"]];
+  ZEILEN.forEach((y, r) => SPALTEN.forEach((x, c) => { const art = ARTEN[r][c], n = kraeuter.filter((k) => k.art === art).length + 1; BEET.push([x, y]); kraeuter.push({ id: `kraeutergarten_${art}_${n}`, art, x, y, region: "waldmark" }); }));
+  ding(WM, "hand_kessel_01", 6470, 6439.6, { id: "kraeutergarten_kessel", s: 0.7 }); ding(WM, "steinhag_bankkiste", 6470, 6437, { id: "kraeutergarten_bankkiste" });
   lies(WM, "kraeutergarten", 6459.6, 6438, "Der Kräutergarten der Heilkundigen. Mira hat den Schlüssel – „nur für Meister der Kräuterkunde, ab Stufe 60“.");
-  lies(WM, "kraeutergarten_bankkiste", 6469.4, 6437.8, "Die Bankkiste der Heilkundigen. Was du hier einlegst, liegt auf deinem Konto.");
+  lies(WM, "kraeutergarten_bankkiste", 6469.6, 6438.2, "Die Bankkiste der Heilkundigen. Was du hier einlegst, liegt auf deinem Konto.");
   zuenfte.push({ zunft: "kraeutergarten", name: "Kräutergarten der Heilkundigen", ort: "Waldmark", beruf: "kraeuterkunde", ab: 60, region: "waldmark", flaeche: R, tor: feld, wache: [6459.5, 6439.5],
-    bankkiste: { id: "kraeutergarten_bankkiste", x: 6469.4, y: 6437.8 }, stationen: [{ id: "kessel_kraeutergarten", station: "kessel", x: 6469.4, y: 6441 }], kraeuter: kraeuter.map((k) => k.id), beete: BEET }); }
+    bankkiste: { id: "kraeutergarten_bankkiste", x: 6469.6, y: 6438.2 }, stationen: [{ id: "kessel_kraeutergarten", station: "kessel", x: 6469.6, y: 6440.8 }], kraeuter: kraeuter.map((k) => k.id), beete: BEET }); }
 
 /* ───── Waldmark: eigene Dinge (zunft-Kennungen) ersetzen; Beete als Acker ───── */
 { const D = join(WELT, "regionen", "waldmark"), [UX, UY] = JSON.parse(readFileSync(join(D, "region.json"), "utf8")).ursprung.map((v) => v * 32), eigen = (id) => /^(kraeutergarten|zaun_kraeutergarten)/.test(id);

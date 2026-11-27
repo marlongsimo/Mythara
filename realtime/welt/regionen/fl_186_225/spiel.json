@@ -12,9 +12,9 @@
   "sperren": [
    {
     "art": "rechteck",
-    "x0": 470,
+    "x0": 473,
     "y0": 44.5,
-    "x1": 478,
+    "x1": 476,
     "y1": 48.5,
     "schalter": "lehmfurt_trittsteine"
    },
@@ -109,6 +109,13 @@
     "x0": 423.4,
     "y0": 150.7,
     "x1": 431.3,
+    "y1": 153.3
+   },
+   {
+    "art": "rechteck",
+    "x0": 416.6,
+    "y0": 150.7,
+    "x1": 424.5,
     "y1": 153.3
    },
    {
@@ -318,6 +325,84 @@
    }
   },
   {
+   "id": "fischerzunft_silberbarsch_1",
+   "art": "lesen",
+   "x": 423.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Silberbarsche.",
+    "fisch": "silberbarsch",
+    "stufe": 70
+   }
+  },
+  {
+   "id": "fischerzunft_silberbarsch_2",
+   "art": "lesen",
+   "x": 422.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Silberbarsche.",
+    "fisch": "silberbarsch",
+    "stufe": 70
+   }
+  },
+  {
+   "id": "fischerzunft_sturmhecht_1",
+   "art": "lesen",
+   "x": 421.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Sturmhechte.",
+    "fisch": "sturmhecht",
+    "stufe": 80
+   }
+  },
+  {
+   "id": "fischerzunft_sturmhecht_2",
+   "art": "lesen",
+   "x": 420.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Sturmhechte.",
+    "fisch": "sturmhecht",
+    "stufe": 80
+   }
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_1",
+   "art": "lesen",
+   "x": 419.5,
+   "y": 151.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Tiefseeaale.",
+    "fisch": "tiefseeaal",
+    "stufe": 90
+   }
+  },
+  {
+   "id": "fischerzunft_tiefseeaal_2",
+   "art": "lesen",
+   "x": 418.5,
+   "y": 152.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ganz draußen am Privatsteg der Fischerzunft ziehen Tiefseeaale.",
+    "fisch": "tiefseeaal",
+    "stufe": 90
+   }
+  },
+  {
    "id": "fischerzunft_bankkiste",
    "art": "lesen",
    "x": 447,
@@ -399,7 +484,7 @@
   {
    "id": "furt",
    "art": "lesen",
-   "x": 478.5,
+   "x": 476.5,
    "y": 46.5,
    "radius": 1.8,
    "abgleich": "keiner",
