@@ -910,6 +910,34 @@
     #ez-gespraech .antworten { display: grid; gap: 1px; justify-items: center; }
     #ez-gespraech .antworten button { border: 0; background: none; padding: 3px 10px; color: #000; font: 15px "Trebuchet MS", Verdana, sans-serif; cursor: pointer; }
     #ez-gespraech .antworten button i { font-style: normal; color: #5a4528; } #ez-gespraech .antworten button:hover, #ez-gespraech .antworten button:focus-visible { color: #fff; text-shadow: 1px 1px 0 #000; outline: none; }
+    /* Oberfläche (#70): Gespräch und Laden im neuen Stil – dunkel mit Goldrand statt Pergament, Bildnis im abgeschrägten Rahmen, Antworten als Zeilen */
+    #ez-gespraech { --f: 7px; }
+    #ez-gespraech .kasten { position: relative; isolation: isolate; min-height: 112px; padding: 10px 40px 10px 12px; gap: 12px; border: 0 !important; border-radius: 0 !important; background: #c99a3c !important; box-shadow: 0 6px 22px rgba(0,0,0,.55) !important; color: #e9dcb8; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-gespraech .kasten::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(#261d12, #16100a); clip-path: inherit; }
+    #ez-gespraech .rahmen { position: relative; isolation: isolate; flex: 0 0 84px; height: 84px; background: #8a6a3a; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); } #ez-gespraech .rahmen::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(#3a2c16, #120d08); clip-path: inherit; }
+    #ez-gespraech .bild { width: 80px; height: 80px; }
+    #ez-gespraech .mitte { justify-items: start; text-align: left; gap: 4px; } #ez-gespraech.ich .mitte { justify-items: end; text-align: right; }
+    #ez-gespraech .name { color: #ffd36a; font: 600 14px Cinzel, Georgia, serif; letter-spacing: .04em; } #ez-gespraech.ich .name { color: #cdb98a; }
+    #ez-gespraech .text { color: #f3e3b5; font: 14px/1.4 Inter, sans-serif; max-width: none; }
+    #ez-gespraech .weiter { color: #c99a3c; font: 600 11.5px Cinzel, Georgia, serif; letter-spacing: .05em; } #ez-gespraech .weiter::after { content: " ▸"; } #ez-gespraech:hover .weiter { color: #ffe08a; text-shadow: none; }
+    #ez-gespraech .zu { right: 8px; top: 8px; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #c99a3c; background: #1c150d; color: #e9cf8e; z-index: 1; }
+    #ez-gespraech .titel { color: #ffd36a; font: 600 13px Cinzel, Georgia, serif; letter-spacing: .05em; text-align: left; margin: 0 0 6px; }
+    #ez-gespraech.wahl .kasten { padding: 10px 40px 10px 12px; }
+    #ez-gespraech .antworten { gap: 4px; justify-items: stretch; }
+    #ez-gespraech .antworten button { position: relative; isolation: isolate; display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px; text-align: left; color: #f3e3b5; font: 14px Inter, sans-serif; background: #6d5632 !important; --f: 6px; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-gespraech .antworten button::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(90deg, #1f1810, #120d08); clip-path: inherit; }
+    #ez-gespraech .antworten button i { color: #c99a3c; font: 700 12px Inter, sans-serif; min-width: 14px; } #ez-gespraech .antworten button:hover, #ez-gespraech .antworten button:focus-visible { background: #ffd36a !important; color: #ffe7b0; text-shadow: none; }
+    #ez-konto .tafel.laden { --f: 6px; width: min(620px, calc(100vw - 20px)); text-align: left; padding-top: 12px; padding-bottom: 12px; }
+    #ez-konto .tafel.laden > h2 { margin: 0; font-size: 18px; text-align: left; padding-right: 40px; } #ez-konto .tafel.laden .lspruch { margin: 0 0 6px; text-align: left; font-size: 12px; } #ez-konto .tafel.laden > .zier { display: none; }
+    #ez-konto .tafel.laden .lkopf { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 0 0 7px; margin: 0 0 8px; font-size: 12.5px; color: #cdb98a; }
+    #ez-konto .tafel.laden .lkopf::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, #c99a3c 15%, #c99a3c 85%, transparent); }
+    #ez-konto .tafel.laden .lgeld { color: #c7a8ff; }
+    #ez-konto .tafel.laden .lraster { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+    #ez-konto .tafel.laden .lware { position: relative; isolation: isolate; padding: 5px 4px 6px; gap: 1px; border: 0 !important; border-radius: 0 !important; background: #b08a3c !important; box-shadow: none !important; clip-path: polygon(var(--f) 0, calc(100% - var(--f)) 0, 100% var(--f), 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, var(--f) 100%, 0 calc(100% - var(--f)), 0 var(--f)); }
+    #ez-konto .tafel.laden .lware::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: radial-gradient(#241b10, #120d08); clip-path: inherit; }
+    #ez-konto .tafel.laden .lware:hover { background: #e0b860 !important; } #ez-konto .tafel.laden .lware.s-selten { background: #4fae58 !important; } #ez-konto .tafel.laden .lware.s-episch { background: #8a63d8 !important; } #ez-konto .tafel.laden .lware.s-legendaer { background: #e0902e !important; }
+    #ez-konto .tafel.laden .lware canvas { width: 52px; height: 52px; } #ez-konto .tafel.laden .lname { font-size: 11px; min-height: 2.4em; }
+    #ez-konto .tafel.laden > p.klein { display: none; }
     .ez-questmarke { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; font: 800 26px Cinzel, Georgia, serif; color: #ffd84a; text-shadow: 0 0 4px #000, 0 2px 3px #000, 0 0 10px rgba(255,200,40,.8); animation: questhuepf 1.2s ease-in-out infinite; }
     @keyframes questhuepf { 0%, 100% { margin-top: 0; } 50% { margin-top: -5px; } }
     .ez-name3d.quest { color: #fff3c8; font-size: 13px; }
