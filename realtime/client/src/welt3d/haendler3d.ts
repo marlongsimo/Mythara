@@ -7,7 +7,7 @@ import { lokalesGespraech } from "../dialog";
 import { ladenZeigen } from "../laden";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
-import type { Welt3D } from "./motor";
+import { type Welt3D, figurWeit } from "./motor";
 
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number } }
 interface Haendler { l: Laden; npc: Npc3D; nm: HTMLElement; /** nur zeichnen, Antippen läuft über die Weltdaten (Handwerker) */ nurBild?: boolean }
@@ -28,7 +28,7 @@ export class HaendlerWelt {
     return { x: l.vor[0], y: l.vor[1] /* vor der Theke, auf der Marktseite */, text: `Mit ${vorname(l)} sprechen`, tat: () => haendlerReden(l), da: () => Math.hypot(l.x - this.u.ort.x, l.y - this.u.ort.y) <= 3.2,
       mehr: [{ text: "Laden ansehen", sym: "🛒", tat: () => ladenZeigen(l.id) }] }; }
   schritt(dt: number): void { const M = this.u.motor, o = this.u.ort;
-    for (const h of this.alle) { const sichtbar = Math.hypot(h.l.x - o.x, h.l.y - o.y) < 40; h.npc.gruppe.visible = sichtbar;
+    for (const h of this.alle) { const sichtbar = Math.hypot(h.l.x - o.x, h.l.y - o.y) < figurWeit(); /* #103 */ h.npc.gruppe.visible = sichtbar;
       if (sichtbar) { h.npc.gruppe.position.set(h.l.x, M.hoehe(h.l.x, h.l.y), h.l.y); h.npc.schritt(dt); }
       h.nm.hidden = !sichtbar || !schildAn(h.nm, M, h.l.x, M.hoehe(h.l.x, h.l.y) + 2.35, h.l.y); } }
   /** Ladensymbole auf der Minikarte (ins Kartenbild gezeichnet wie das Quest-!: Held in der Mitte, felder = Breite, g = Drehung der Kamera) */

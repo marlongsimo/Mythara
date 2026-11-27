@@ -21,7 +21,7 @@ import { tuerenZu } from "../../../shared/boss";
 import { inventar } from "../inventar";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
-import type { Welt3D } from "./motor";
+import { type Welt3D, figurWeit } from "./motor";
 
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
@@ -111,7 +111,7 @@ export class QuestWelt {
     if (TUEREN.some((t) => t.instanz)) { this.tuerT -= dt; if (this.tuerT <= 0) { this.tuerT = 0.5; this.stand(); } }
     for (const f of this.figuren) if (f.n.kommt) this.entgegen(f, dt);
     for (const f of this.figuren) if (f.n.folgt) this.folgen(f, dt);
-    for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
+    for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < figurWeit(); /* #103 */
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
       /* wer im Haus umhergeht (der Bürgermeister im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);

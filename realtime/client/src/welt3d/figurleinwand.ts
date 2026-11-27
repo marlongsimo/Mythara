@@ -9,6 +9,7 @@
 import * as THREE from "three";
 import { Figurbild } from "./figurbild";
 import { Held, ebenenVon, farbeVon, farbMatrix, figurVon, STARTWAFFEN } from "../../../shared/aussehen";
+import { figurFaktor, stufeEndung } from "../figurstufe";
 
 interface Anim { bilder: number; rate: number; schleife: boolean; halten?: number }
 interface Meta { id: string; angriff?: string; bezug?: { haut: number; haar: number; bart: number }; feld: number; fuss: [number, number]; sichtbar_px: number; animationen: Record<string, Anim>; tiefe: Record<string, Record<string, number[][]>>; ebenen: string[]; waffen: string[] }
@@ -36,9 +37,9 @@ function bildFaerben(A: Atlas, name: string, f: Rahmen): HTMLCanvasElement { con
     a[i] = Math.min(255, m[0] * r + m[1] * gg + m[2] * b + m[3] * al + m[4] * 255); a[i + 1] = Math.min(255, m[5] * r + m[6] * gg + m[7] * b + m[8] * al + m[9] * 255); a[i + 2] = Math.min(255, m[10] * r + m[11] * gg + m[12] * b + m[13] * al + m[14] * 255); }
   g.putImageData(d, 0, 0); fertig.set(name, c); return c; }
 /** Ein Atlas einer Ebene, auf Wunsch mit Farbmatrix (4 × 5, wie Phaser ColorMatrix) einmal umgefärbt */
-function atlas(figur: string, ebene: string, matrix?: number[]): Promise<Atlas | null> {
-  const k = figur + "/" + ebene + (matrix ? "|" + matrix.map((v) => v.toFixed(4)).join(",") : ""); let p = atlanten.get(k);
-  if (!p) { p = Promise.all([fetch(BASIS + figur + "/" + ebene + ".json").then((r) => (r.ok ? r.json() : null)), bildLaden(BASIS + figur + "/" + ebene + ".webp")]).then(([j, img]): Atlas | null => {
+function atlas(figur: string, ebene: string, matrix?: number[], x = ""): Promise<Atlas | null> {
+  const k = figur + "/" + ebene + x + (matrix ? "|" + matrix.map((v) => v.toFixed(4)).join(",") : ""); let p = atlanten.get(k);
+  if (!p) { p = Promise.all([fetch(BASIS + figur + "/" + ebene + x + ".json").then((r) => (r.ok ? r.json() : null)), bildLaden(BASIS + figur + "/" + ebene + x + ".webp")]).then(([j, img]): Atlas | null => {
       if (!j) return null; const rahmen: Record<string, Rahmen> = {};
       for (const [n, f] of Object.entries(j.frames as Record<string, { frame: { x: number; y: number; w: number; h: number }; spriteSourceSize: { x: number; y: number } }>)) rahmen[n] = { x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, sx: f.spriteSourceSize.x, sy: f.spriteSourceSize.y };
       return matrix ? { bild: img, rahmen, matrix, filter: FILTER_DA ? farbFilter(matrix) : undefined } : { bild: img, rahmen }; }).catch(() => null); atlanten.set(k, p); }
@@ -59,18 +60,18 @@ export class FigurLeinwand {
     this.fleck = new THREE.Mesh(FLECK, FLECK_MAT); this.fleck.rotation.x = -Math.PI / 2; szene.add(this.fleck);
     if (!spaet) this.jetztLaden();
   }
-  private ladeBeginn = false;
+  private ladeBeginn = false; /** #105: Faktor der Atlanten (0,5 = Mobil-Fassung) */ private k = 1;
   /** Die Bilder der Fabrik laden (bei einer 3D-Figur erst, wenn ihr Modell nicht lädt: spart viele MB und große Bilddekodierungen) */
   jetztLaden(): void { if (this.ladeBeginn) return; this.ladeBeginn = true; void this.laden(this.eigen ? figurVon(this.eigen.aussehen) : this.figur).catch((e) => console.warn("Figur:", e)); }
   private async laden(figur: string) {
     const M0 = await meta(figur), H = this.eigen;
     const ebenen = H ? ebenenVon(H.aussehen) : M0.ebenen.map((e) => ({ ebene: e, faerben: undefined as undefined | "haut" | "haar" | "bart" }));
     this.waffen = H ? (H.ich ? ALLE_WAFFEN : STARTWAFFEN[H.waffe].waffen) : M0.waffen; this.angriffName = H ? STARTWAFFEN[H.waffe].angriff : M0.angriff || "angriff";
-    const auftraege: Promise<void>[] = [];
-    for (const e of ebenen) { const m = H && e.faerben && M0.bezug ? farbMatrix(farbeVon(H.aussehen, e.faerben), M0.bezug[e.faerben]) : undefined; auftraege.push(atlas(figur, e.ebene, m).then((a) => { if (a) this.ebenen.set(e.ebene, a); })); }
-    for (const w of this.waffen) for (const s of [".hinten", ".vorn"]) auftraege.push(atlas(figur, w + s).then((a) => { if (a) this.ebenen.set(w + s, a); }));
+    const auftraege: Promise<void>[] = [], kf = await figurFaktor(figur, M0.ebenen[0]), x = stufeEndung(kf); this.k = kf; /* #105: Handy – Mobil-Atlanten, die Leinwand ist dann entsprechend kleiner */
+    for (const e of ebenen) { const m = H && e.faerben && M0.bezug ? farbMatrix(farbeVon(H.aussehen, e.faerben), M0.bezug[e.faerben]) : undefined; auftraege.push(atlas(figur, e.ebene, m, x).then((a) => { if (a) this.ebenen.set(e.ebene, a); })); }
+    for (const w of this.waffen) for (const s of [".hinten", ".vorn"]) auftraege.push(atlas(figur, w + s, undefined, x).then((a) => { if (a) this.ebenen.set(w + s, a); }));
     await Promise.all(auftraege); this.reihe = ebenen.map((e) => e.ebene);
-    this.leinwand.width = this.leinwand.height = M0.feld; this.M = M0; const gr = M0.feld * this.hoehe / M0.sichtbar_px;
+    this.leinwand.width = this.leinwand.height = Math.round(M0.feld * this.k); this.M = M0; const gr = M0.feld * this.hoehe / M0.sichtbar_px;
     this.bild.setze(this.tex, [1, 1], [0, 0], [gr, gr], [M0.fuss[0], 1 - M0.fuss[1]]); this.bild.gruppe.visible = !this.aus; this.alt = ""; this.zeichnen();
   }
   get geladen(): boolean { return Boolean(this.M); }
@@ -99,7 +100,7 @@ export class FigurLeinwand {
     const an = this.eigen && this.eigen.ich && this.waffenQuelle ? new Set(this.waffenQuelle()) : null, sichtbar = this.waffen.filter((w) => !an || an.has(w));
     const schluessel = name + "|" + sichtbar.join(","); if (schluessel === this.alt) return; this.alt = schluessel;
     const w = [...sichtbar].sort((p, q) => (M.tiefe[q]?.[a]?.[r]?.[b] ?? 0) - (M.tiefe[p]?.[a]?.[r]?.[b] ?? 0));   /* fernste zuerst */
-    const g = this.g; g.clearRect(0, 0, M.feld, M.feld);
+    const g = this.g; g.clearRect(0, 0, this.leinwand.width, this.leinwand.height);
     for (const e of [...w.map((x) => x + ".hinten"), ...this.reihe, ...w.map((x) => x + ".vorn")]) { const A = this.ebenen.get(e), f = A && A.rahmen[name]; if (!A || !f) continue;
       if (A.filter) { g.filter = A.filter; g.drawImage(A.bild, f.x, f.y, f.w, f.h, f.sx, f.sy, f.w, f.h); g.filter = "none"; }
       else if (A.matrix) g.drawImage(bildFaerben(A, name, f), f.sx, f.sy);

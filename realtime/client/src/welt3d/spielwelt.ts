@@ -434,8 +434,8 @@ export class Spielwelt3D implements WeltKern {
     const R = rund.clientWidth, f = k.offsetWidth / (r.region.chunks[0] * C); if (!R || !f) return; const c = this.karteLeinwand, g = this.motor.gieren;
     /* Neu zeichnen nur, wenn nötig: nach Bewegung (> 1 Feld) oder Drehung, höchstens alle 500 ms (Handy 700 ms) – dazwischen gleitet das Bild mit; sonst spätestens alle 2 s (Mitspieler, Marken) */
     const alt = this.karteStand, seit = performance.now() - this.karteZeit, bewegt = !alt || Math.hypot(this.ort.x - alt.x, this.ort.y - alt.y) > 1 || Math.abs(g - alt.g) > 0.03 || alt.massstab !== f;
-    if (!alt || (bewegt && seit > (HANDY_KARTE ? 700 : 500)) || seit > 2000) { this.karteZeit = performance.now();
-      const n = Math.min(320, Math.round(R * KARTE_RAND * Math.min(1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
+    if (!alt || (bewegt && seit > (HANDY_KARTE ? 1200 : 500)) || seit > (HANDY_KARTE ? 4000 : 2000)) { this.karteZeit = performance.now(); /* #103: auf dem Handy seltener (ein zweites Bild der ganzen Szene kostet) */
+      const n = Math.min(HANDY_KARTE ? 200 : 320, Math.round(R * KARTE_RAND * Math.min(HANDY_KARTE ? 1 : 1.5, devicePixelRatio || 1))); if (c.width !== n) { c.width = n; c.height = n; }
       const stand = { x: this.ort.x, y: this.ort.y, g, massstab: f }, felder = (R * KARTE_RAND) / f;
       this.motor.karteZeichnen(c, felder, () => { this.symboleMalen(c, felder, stand, g); if (this.quest) this.quest.karteMarke(c, felder, stand, g); this.karteStand = stand; }); }
     if (!this.karteStand) return;

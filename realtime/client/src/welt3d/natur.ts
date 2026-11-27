@@ -195,6 +195,18 @@ export function modell(t: Typ): THREE.BufferGeometry | null {
   if (g) g.userData.geteilt = true;   /* von allen Chunks benutzt: beim Freigeben nicht wegwerfen */
   SPEICHER.set(t.id, g); return g;
 }
+/** #103: einfache Form für ferne Bäume (Stamm und eine Krone, rund 30 Dreiecke) – null: der Baum hat keine (Kenney-Modelle, tote Bäume) */
+const FERN = new Map<string, THREE.BufferGeometry | null>();
+export function modellFern(t: Typ): THREE.BufferGeometry | null {
+  if (FERN.has(t.id)) return FERN.get(t.id)!; const H = (t.groesse[1] / 48) * t.massstab * 0.85, Bt = (t.groesse[0] / 48) * t.massstab * 0.68, id = t.id; let g: THREE.BufferGeometry | null = null;
+  const laub = (b: number, farbe: string, form = 1, stamm = STAMM) => { const T = new Teile("rinde"); T.add(new THREE.CylinderGeometry(0.18, 0.32, H * 0.55, 5), stamm, matrix(0, H * 0.275, 0));
+    T.add(new THREE.IcosahedronGeometry(1, 0), farbe, matrix(0, H * 0.66, 0, 0, 0, 0, b * 0.62, b * 0.6 * form, b * 0.62), { muster: "laub", verlauf: [0.6, 1.15] }); return T.geometrie(); };
+  if (KENNEY[id]) g = null;
+  else if (/eiche_01/.test(id)) g = laub(Bt, "#4a6e2a"); else if (/eiche_02/.test(id)) g = laub(Bt, "#527a30", 0.9); else if (/linde/.test(id)) g = laub(Bt * 0.9, "#5a8034", 1.25);
+  else if (/herbst/.test(id)) g = laub(Bt, "#c9772e"); else if (/apfel/.test(id)) g = laub(Bt, "#6b9b43", 0.85); else if (/birke/.test(id)) g = laub(Bt * 0.7, "#8aa84a", 1.3, "#d9d4c8");
+  else if (/tanne/.test(id)) { const T = new Teile("rinde"); T.add(new THREE.CylinderGeometry(0.12, 0.22, H * 0.3, 5), STAMM, matrix(0, H * 0.15, 0));
+    T.add(new THREE.ConeGeometry(Bt * 0.5, H * 0.82, 7), "#2f5a34", matrix(0, H * 0.18 + H * 0.41, 0), { muster: "laub", verlauf: [0.6, 1.15] }); g = T.geometrie(); }
+  if (g) g.userData.geteilt = true; FERN.set(t.id, g); return g; }
 /** Bäume drehen sich zufällig, Bauteile (Palisaden, Zäune) richten sich nach ihren Nachbarn */
 export const istBaum = (t: Typ) => t.kategorie === "bewuchs" && !/baumstamm|^k_/.test(t.id);
 export const istReihe = (t: Typ) => /^dorf_(palisade|zaun)/.test(t.id);
