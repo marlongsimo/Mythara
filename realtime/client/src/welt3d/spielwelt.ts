@@ -135,7 +135,7 @@ export class Spielwelt3D implements WeltKern {
     { /* nach dem Drehen (hoch ↔ quer) die Seite auf null zurück und die 3D-Ansicht neu messen – iOS meldet die neue Größe verzögert */
       const neu = () => { scrollTo(0, 0); this.motor.groesse(); }, spaeter = () => { neu(); for (const t of [120, 350, 800]) setTimeout(neu, t); };
       addEventListener("orientationchange", spaeter); addEventListener("resize", spaeter); if (window.visualViewport) window.visualViewport.addEventListener("resize", spaeter); }
-    { const sturm = new Schneesturm(this.motor.szene); this.motor.nachNebel = (dt, fog) => { sturm.schritt(dt, this.ort.x, this.ort.y, this.motor.hoehe(this.ort.x, this.ort.y), stufenAn("frostkrone_frei"), fog); this.sperrHinweis(); }; } /* #186 Schneesturm vor der Frostkrone */
+    { const sturm = new Schneesturm(this.motor); this.motor.nachNebel = (dt, fog) => { sturm.schritt(dt, this.ort.x, this.ort.y, this.motor.hoehe(this.ort.x, this.ort.y), stufenAn("frostkrone_frei"), fog); this.sperrHinweis(); }; } /* #186 Schneesturm vor der Frostkrone */
     this.eingaben(); this.motor.beimBild = (dt) => this.bild(dt); this.motor.beimKlick = (x, z) => { if (!this.gesperrt) this.gehe(x, z); };
     /* erst die ersten Bilder zeichnen (dabei übersetzt der Browser die Shader – das hält die Seite kurz an), dann mit dem Server verbinden:
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
