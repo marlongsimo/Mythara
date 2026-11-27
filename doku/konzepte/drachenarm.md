@@ -1,6 +1,6 @@
 # Der Drachenarm (Großregion, Endgame)
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.* Eigener Riftmere-Entwurf.
+*Entwurf Konzept-Chat, 27.11.2026. **Entschieden (Nutzer, 27.11.):** Rolle als letzte Region mit Raid und Weltenkern; Drachen als Kinder des Risses. **Hauptort aufgeschoben.*** Eigener Riftmere-Entwurf.
 Grundlage: Kanon (Großregion Drachenarm auf der Karte), `endgame.md` (Raid „Sturm auf die Wachtfeste“ und Weltenkern im Drachenarm), `phase-12.md` („Drachenarm bleibt danach“).
 Auf der Karte (Bestandsaufnahme Welt, Issue #181): etwa **106 000 Landfelder**, 72 % begehbar, östlich der Hochlande. Drei Teile:
 **Wurzel** (Dünen, Steppe), **schmaler Hals** (70–80 Felder breit) und **Faust** (Felsmassiv, Dünenhochfläche, zwei Bergseen, höchster Punkt der Nordinsel).
@@ -46,7 +46,7 @@ Achtung: Der Kanon nennt als Großstadt ⑦ **Letzthafen**. Liegt sie im Drachen
 
 ## Offen (Nutzer)
 
-1. Passt die Rolle (letzte Region, Raid und Weltenkern)?
-2. Drachen als „Kinder des Risses“, oder echte uralte Drachen?
-3. Hauptort: **Letzthafen** aus dem Kanon hier, oder ein eigener Ort?
+1. ~~Rolle~~ entschieden: passt.
+2. ~~Drachen~~ entschieden: Kinder des Risses.
+3. Hauptort (Letzthafen oder eigener Ort): **aufgeschoben**.
 4. Ein **Unikat-Boss** am Horst hier, oder alle Unikat-Bosse in der Frostkrone?
