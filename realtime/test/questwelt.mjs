@@ -15,14 +15,17 @@ const ZONEN_DATEI = join(tmpdir(), `riftmere-questwelt-${process.pid}.mjs`);
 await build({ stdin: { contents: 'export { WELTKAMPF } from "./shared/weltzonen"; export { INSTANZEN } from "./shared/bosse";', resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" },
   bundle: true, platform: "node", format: "esm", outfile: ZONEN_DATEI, logLevel: "error" });
 const { WELTKAMPF, INSTANZEN } = await import(pathToFileURL(ZONEN_DATEI).href);
+/** Der Stand einer Quest nach Annehmen und diesen Ereignissen (Meldungen wie im Motor) – für Tests, die mitten in einer Quest beginnen */
+export function standNach(q, meldungen, antworten = []) { let st = QB.nachFolge(q, "", { start: true, zeilen: [] }); for (const m of meldungen) st = QB.ereignis(q, st, m);
+  for (const id of antworten) st = QB.nachFolge(q, st, { erledige: [id], zeilen: [] }); return st; }
 export const gebietBei = (x, y) => WELTKAMPF.find((z) => x >= z.x0 && x < z.x0 + z.b && y >= z.y0 && y < z.y0 + z.h) || null;
 export { QB, QUESTS, xpFuer, INSTANZEN };
 
 export const STARK = 11079266; /* Level 99 */
 export const roh = () => ({ geschlecht: "mann", frisur: "kurz", bart: "ohne", haarfarbe: "braun", hautfarbe: "hell", waffe: "schwert", skill_lp: 0, lp_stand: null, quests: { die_gesperrte_strasse: { s: "fertig" } } });
-/** Ein starker Held (alle Kampfskills 99, Ritterschwert) mit diesen Berufen (Level) und Quests (fertig) */
-export function starkerHeld({ berufe = {}, fertig = [], rucksack = [] } = {}) {
-  const B = Object.fromEntries(Object.entries(berufe).map(([k, l]) => [k, xpFuer(l)])), Q = { die_gesperrte_strasse: { s: "fertig" } }; for (const id of fertig) Q[id] = { s: "fertig" };
+/** Ein starker Held (alle Kampfskills 99, Ritterschwert) mit diesen Berufen (Level), Quests (fertig) und laufenden Quests (staende: id → Stand, z. B. aus standNach) */
+export function starkerHeld({ berufe = {}, fertig = [], rucksack = [], staende = {} } = {}) {
+  const B = Object.fromEntries(Object.entries(berufe).map(([k, l]) => [k, xpFuer(l)])), Q = { die_gesperrte_strasse: { s: "fertig" } }; for (const id of fertig) Q[id] = { s: "fertig" }; for (const [id, st] of Object.entries(staende)) Q[id] = { s: st }; /* laufende Quest mitten im Stand (QB.stand) */
   return { ...roh(), quests: Q, skill_geschick: STARK, skill_staerke: STARK, skill_lp: STARK, skill_defense: STARK, skill_fernkampf: STARK, skill_magie: STARK,
     inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [{ g: "splitter", n: 5000 }, ...rucksack], v: 2, berufe: B } }; }
 

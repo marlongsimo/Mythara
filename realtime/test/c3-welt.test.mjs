@@ -1,6 +1,6 @@
 /*
- * Riftmere – Quest C3 „Der Oberste Rabenpriester“ mit dem Thronsaal (Quest-Fassung, danach rabenpriester_danach) Ende zu Ende: echter Spielserver (localhost:8828), nachgebildete Supabase (localhost:8827), echte Kampfwelt, Lohn mit „abholen“.
- * Block C ist in drei Tests geteilt (unter 400 s je Test): c1-welt, c2-welt, c3-welt – jeder beginnt mit den vorigen Quests als fertig.
+ * Riftmere – Quest C3 „Der Oberste Rabenpriester“, Teil 1: Linde, Rabengrund, Kerkermeister, Käfige, Becken – bis der Thronsaal offen steht Ende zu Ende: echter Spielserver (localhost:8828), nachgebildete Supabase (localhost:8827), echte Kampfwelt, Lohn mit „abholen“.
+ * Block C ist geteilt (unter 400 s je Test): c1-welt, c2-welt, c2b-welt, c3-welt, c3b-welt – jeder beginnt mit den vorigen Quests als fertig.
  * Aufruf: node test/c3-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
 const SB = 8827, SRV = 8828, FERTIG = ["westmark_das_rote_banner", "obstwiesen_fallobst", "rabenmoor_schwarze_federn", "aschenwerth_gesang_der_spiralsteine"];
@@ -30,14 +30,5 @@ try {
     z && z.ws.close(); await schlaf(2500); check(erl(ute, C3, "schluessel"), "Den Kerkerschlüssel vom Kerkermeister erbeutet"); }
   await objekt(ute, C3, "c3_kaefige"); check(erl(ute, C3, "kaefige"), "Die Käfige aufgeschlossen");
   await objekt(ute, C3, "c3_becken"); check(erl(ute, C3, "becken") && an(C3, ute, "becken_getruebt") && an(C3, ute, "rabenpriester_thronsaal"), "Moorwasser ins Becken (getrübt), der Thronsaal steht offen");
-  await ort(ute, "rabengrund_thronsaal", 10768.5, 9625);
-  { const z = await kampf("ute", 10768.5, 9625); await schlaf(1500); const ob = () => z && z.w.find((w) => w[2] === "oberster_rabenpriester");
-    check(Boolean(ob()) && anzahl(ute, "federsiegel") === 0, "Thronsaal: das Federsiegel zerfällt, der Oberste steht in Utes Kopie");
-    await kaempfen(z, ["oberster_rabenpriester", "rabenpriester_akoluth", "rabenpriester_akoluth_speer"], () => erl(ute, C3, "oberster"), 360000);
-    check(erl(ute, C3, "oberster"), "Der Oberste Rabenpriester besiegt (Quest-Fassung)"); z && z.ws.close(); await schlaf(2500); }
-  await ort(ute, "rabenmoor", 6292.5, 6679.5);
-  check(await sprich(ute, C3, "liske", "sprechen") && erl(ute, C3, "liske"), "Liske bei Hedda wiedergesehen");
-  check(await sprich(ute, C3, "bertold", "fest") && fertig(ute, C3) && anzahl(ute, "rabenpanzer") === 1, "C3 fertig: Fest im Langhaus, der Rabenpanzer");
-  check(an(C3, ute, "rabenpriester_danach") && !an(C3, ute, "rabenpriester_thronsaal") && an(C3, ute, "bindestein_becken"), "Danach: rabenpriester_danach an, Quest-Thronsaal zu, Bindestein am Becken");
 } catch (e) { console.error(e); check(false, "Ausnahme: " + e.message); }
-W.ende("C3 „Der Oberste Rabenpriester“");
+W.ende("C3 „Der Oberste Rabenpriester“ (Teil 1)");

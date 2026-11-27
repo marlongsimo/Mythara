@@ -1,6 +1,6 @@
 /*
- * Riftmere – Quest C2 „Der Gesang der Spiralsteine“ mit der Federmutter im Nest (Quest-Fassung, danach federmutter_danach) Ende zu Ende: echter Spielserver (localhost:8826), nachgebildete Supabase (localhost:8825), echte Kampfwelt, Lohn mit „abholen“.
- * Block C ist in drei Tests geteilt (unter 400 s je Test): c1-welt, c2-welt, c3-welt – jeder beginnt mit den vorigen Quests als fertig.
+ * Riftmere – Quest C2 „Der Gesang der Spiralsteine“, Teil 1: Lauschen, Federsiegel, Silben, Spiralsteine – bis das Nest offen steht Ende zu Ende: echter Spielserver (localhost:8826), nachgebildete Supabase (localhost:8825), echte Kampfwelt, Lohn mit „abholen“.
+ * Block C ist geteilt (unter 400 s je Test): c1-welt, c2-welt, c2b-welt, c3-welt, c3b-welt – jeder beginnt mit den vorigen Quests als fertig.
  * Aufruf: node test/c2-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
 const SB = 8825, SRV = 8826, FERTIG = ["westmark_das_rote_banner", "obstwiesen_fallobst", "rabenmoor_schwarze_federn"];
@@ -30,18 +30,10 @@ try {
     z && z.ws.close(); await schlaf(2500);
     check(erl(ute, C2, "siegel"), `Drei Federsiegel von Akoluthen erbeutet (Zähler ${QB.zaehler(C2, ute.b[C2.id] || "", "siegel")})`); }
   check(!(await sprich(ute, C2, "hedda", "reihe_falsch")) || !erl(ute, C2, "silben"), "Falsche Reihenfolge bei Hedda: noch nicht");
+  { const F = C2.figuren.find((x) => x.id === "hedda"); await stelle(ute, F.x + 1, F.y); const d = await rede(ute, "hedda"); console.log("  (Hedda bietet: " + JSON.stringify(d && d.dialog && d.dialog.antworten.map((x) => x.id)) + ", Siegel " + anzahl(ute, "federsiegel") + ", Stand " + ute.b[C2.id] + ")"); }
   check(await sprich(ute, C2, "hedda", "reihe_richtig") && erl(ute, C2, "silben"), "Mit Hedda die Silben zusammengesetzt (Mond, Welle, Feder, Auge)");
   { await objekt(ute, C2, "c2_welle"); check(!erl(ute, C2, "welle"), "Welle vor dem Mond: nur ein Misston");
     for (const k of ["mond", "welle", "feder", "auge"]) await objekt(ute, C2, "c2_" + k);
     check(["mond", "welle", "feder", "auge"].every((k) => erl(ute, C2, k)) && an(C2, ute, "federmutter_kammer"), "Spiralsteine in der richtigen Reihenfolge – das Nest steht offen (federmutter_kammer)"); }
-  await ort(ute, "federmutter_kammer", 11536.5, 9620.5); check(erl(ute, C2, "abstieg"), "Unter den Steinkreis hinabgestiegen");
-  { const z = await kampf("ute", 11536.5, 9620.5); const rv = () => z && z.w.find((w) => w[2] === "federmutter");
-    check(Boolean(rv()), "Ravena steht in Utes Kopie des Nests");
-    await kaempfen(z, ["federmutter", "rabenpriester_akoluth", "rabenpriester_akoluth_speer"], () => erl(ute, C2, "ravena"), 300000);
-    check(erl(ute, C2, "ravena"), "Federmutter Ravena besiegt (Quest-Fassung)"); z && z.ws.close(); await schlaf(2500); }
-  await ort(ute, "rabenmoor", 6290.4, 6677.4);
-  check(await sprich(ute, C2, "hedda", "fertig") && fertig(ute, C2), "C2 fertig bei Hedda, Lohn abgeholt");
-  check(an(C2, ute, "federmutter_danach") && !an(C2, ute, "federmutter_kammer") && an(C2, ute, "gruft_offen"), "Danach: federmutter_danach an, die Quest-Kammer zu, die Gruft offen");
-
 } catch (e) { console.error(e); check(false, "Ausnahme: " + e.message); }
-W.ende("C2 „Der Gesang der Spiralsteine“");
+W.ende("C2 „Der Gesang der Spiralsteine“ (Teil 1)");
