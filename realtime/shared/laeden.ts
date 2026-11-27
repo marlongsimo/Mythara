@@ -134,7 +134,7 @@ ort("steinhag_kraeuter", { name: "Bergkräuter und Tränke", spruch: "Gegen Käl
   gruss: "Oben am Pass wird's kalt. Ein Trank wärmt – von innen.", tschuess: "Bleib warm.", waren: [W("kleiner_heiltrank", 35), W("heiltrank", 150), W("leeres_flaeschchen", 2)] });
 ort("troedler_steinhag", { name: "Trödelstand", spruch: "Ich nehm alles – fast alles.", haendler: "Die Trödlerin", modell: "npc.troedlerin", x: 6974, y: 5894, blick: [1, 0], troedler: true,
   gruss: "Was die Bergleute nicht brauchen, kauf ich. Und was du nicht brauchst, auch.", tschuess: "Komm wieder, wenn der Rucksack drückt." });
-ort("steinhag_vogt", { name: "Bergvögtin", spruch: "", haendler: "Hilde Erzgrund", modell: "npc.kauffrau", x: 6991, y: 5880, nurReden: true,
+ort("steinhag_vogt", { questFigur: "bergvoegtin", name: "Bergvögtin", spruch: "", haendler: "Hilde Erzgrund", modell: "npc.kauffrau", x: 6991, y: 5880, nurReden: true,
   gruss: "Willkommen in Steinhag. Wir haben Erz, Holz und Fisch – und seit Wochen zu viele Trolle.", tschuess: "Glück auf.",
   zeilen: ["Die Passwacht hält kaum noch. Wenn du nach Norden willst, sprich mit den Wächtern am Hochpass.", "Das Bergwerk am Erzberg ist das älteste der Splitterlande. Was unten liegt, weiß keiner so genau."] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
@@ -142,26 +142,28 @@ export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmied
 for (const id of STEINHAG_LAEDEN) Object.assign(LAEDEN[id], { wenn: { quest: H_QUESTS.h1, phase: "fertig" as const },
   zu: "Die Läden sind zu. Seit die Trolle auf den Wegen sind, kommt keine Ware über den Pass – die Bergvögtin sucht jemanden, der hilft." });
 /* Bergwerk am Erzberg, Passwacht am Hochpass, Hohe Alm, Einsiedelei am Spiegelsee, Brücke zur Furt */
-ort("hochland_steiger", { name: "Steiger", spruch: "", haendler: "Steiger Wendel", modell: "npc.bergmann", x: 7124, y: 5811, blick: [1, 0], nurReden: true,
+ort("hochland_steiger", { questFigur: "wendel", name: "Steiger", spruch: "", haendler: "Steiger Wendel", modell: "npc.bergmann", x: 7124, y: 5811, blick: [1, 0], nurReden: true,
   gruss: "Glück auf! Unten liegt Sterneisen, Splittereisen – und ganz tief Ureisen. Wenn du Mut hast.", tschuess: "Glück auf.",
   zeilen: ["In der großen Halle haben wir Knochen gefunden. Zu groß für einen Menschen. Seitdem geht keiner mehr allein runter."] });
 ort("hochland_bergmann", { name: "Bergmann", spruch: "", haendler: "Bergmann Lutz", modell: "npc.bergmann2", x: 7131, y: 5812, blick: [-1, 0], nurReden: true,
   gruss: "Die Lore? Die schiebt sich nicht von allein. Hilf mit oder geh aus dem Weg.", tschuess: "Glück auf.", zeilen: ["Das Licht am Helm geht aus, wenn's unten zieht. Dann heißt es: rauf, und zwar schnell."] });
 ort("hochland_bergfrau", { name: "Bergfrau", spruch: "", haendler: "Bergfrau Gesche", modell: "npc.bergfrau", x: 7116, y: 5821.5, nurReden: true,
   gruss: "Zwanzig Jahre unter Tage. Die Berge reden, wenn man zuhört.", tschuess: "Glück auf.", zeilen: ["Kupfer und Eisen gibt's hier vorn am Eingang. Für das Gute musst du tiefer."] });
-ort("hochland_passwaechterin", { name: "Passwächterin", spruch: "", haendler: "Wächterin Brun", modell: "npcfrau3d", x: 6964, y: 5608.5, nurReden: true,
+ort("hochland_passwaechterin", { questFigur: "brun", name: "Passwächterin", spruch: "", haendler: "Wächterin Brun", modell: "npcfrau3d", x: 6964, y: 5608.5, nurReden: true,
   gruss: "Halt. Hinter dem Pass beginnt die Kälte. Wer weitergeht, tut es auf eigene Gefahr.", tschuess: "Bleib auf dem Weg.",
   zeilen: ["Das Feuer brennt Tag und Nacht. Wärm dich, bevor du weitergehst."] });
-ort("hochland_passwaechter", { name: "Passwächter", spruch: "", haendler: "Wächter Ansgar", modell: "npc.passwaechter", x: 6955, y: 5607.6, nurReden: true,
+ort("hochland_passwaechter", { questFigur: "ansgar", name: "Passwächter", spruch: "", haendler: "Wächter Ansgar", modell: "npc.passwaechter", x: 6955, y: 5607.6, nurReden: true,
   gruss: "Drei von uns, und der Pass ist breit. Die Trolle wissen das.", tschuess: "Mögen die Steine stillhalten.", zeilen: ["Die Schranke hält niemanden auf. Sie ist für die Ordnung."] });
-ort("hochland_sennerin", { name: "Sennerin", spruch: "", haendler: "Sennerin Afra", modell: "npc.sennerin", x: 7199.5, y: 6001.5, nurReden: true,
-  gruss: "Grüß dich! Frische Milch, Käse im Rad – aber erst, wenn die Ziegen wieder da sind.", tschuess: "Pfiat di.", zeilen: ["Der Kessel ist für den Käse. Wenn du was kochen willst – bitte, aber mach ihn sauber."] });
+ort("hochland_sennerin", { questFigur: "afra", name: "Sennerin", spruch: "", haendler: "Sennerin Afra", modell: "npc.sennerin", x: 7199.5, y: 6001.5,
+  gruss: "Grüß dich! Frische Milch, Käse im Rad – aber erst, wenn die Ziegen wieder da sind.", tschuess: "Pfiat di.", zeilen: ["Der Kessel ist für den Käse. Wenn du was kochen willst – bitte, aber mach ihn sauber."],
+  /* #118: Afras Laden öffnet nach H2 „Käse für die Passwacht“ */ waren: [W("ziegenmilch", 6), W("kaeselaib", 45)], wenn: { quest: H_QUESTS.h2, phase: "fertig" },
+  zu: "Afra hat nichts zu verkaufen. Die Ziegen sind weg, und ohne Milch gibt es keinen Käse." });
 ort("hochland_senn", { name: "Senn", spruch: "", haendler: "Senn Bartl", modell: "npc.hirte1", x: 7185, y: 6002.4, nurReden: true,
   gruss: "Hier oben ist die Luft so dünn, dass man die Gedanken hört.", tschuess: "Pfiat di.", zeilen: ["Die Murmeltiere pfeifen, wenn ein Adler kommt. Hör auf sie."] });
-ort("hochland_einsiedler", { name: "Einsiedler", spruch: "", haendler: "Der Einsiedler", modell: "npc.hirte2", x: 7341, y: 5665.4, nurReden: true,
+ort("hochland_einsiedler", { questFigur: "einsiedler", name: "Einsiedler", spruch: "", haendler: "Der Einsiedler", modell: "npc.hirte2", x: 7341, y: 5665.4, nurReden: true,
   gruss: "Ah, ein Wanderer. Setz dich. Der See erzählt dir mehr als ich.", tschuess: "Geh mit den Steinen.",
   zeilen: ["Ich schreibe die Geschichte der Hochlande auf. Sie ist älter als die Splitter.", "Am Grauhorn stehen Steinmänner. Jeder erzählt von einem, der nicht zurückkam."] });
-ort("hochland_furtwache", { name: "Wache an der Furt", spruch: "", haendler: "Wache Odo", modell: "stadtwache3d", x: 6725, y: 5763, blick: [1, 0], nurReden: true,
+ort("hochland_furtwache", { questFigur: "furtwache", name: "Wache an der Furt", spruch: "", haendler: "Wache Odo", modell: "stadtwache3d", x: 6725, y: 5763, blick: [1, 0], nurReden: true,
   gruss: "Die Brücke trägt. Drüben beginnen die Hochlande – und die Trolle.", tschuess: "Pass auf dich auf.", zeilen: ["Früher kamen hier jeden Tag Erzwagen aus Steinhag. Seit Wochen keiner mehr."] });
 export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */

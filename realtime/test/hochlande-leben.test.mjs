@@ -45,7 +45,9 @@ console.log("\nLäden in Steinhag erst nach H1 (Entscheidung des Nutzers, 27.11.
 { const vor = (id) => "laeuft", nach = (id) => (id === H_QUESTS.h1 ? "fertig" : "");
   check(STEINHAG_LAEDEN.length === 5 && STEINHAG_LAEDEN.every((id) => LAEDEN[id] && LAEDEN[id].wenn && LAEDEN[id].wenn.quest === H_QUESTS.h1 && !ladenOffen(LAEDEN[id], vor) && ladenOffen(LAEDEN[id], nach) && LAEDEN[id].zu),
     `Taverne, Schmiede, Bergmarkt, Kräuter und Trödler: zu bis ${H_QUESTS.h1} fertig ist, dann offen`);
-  check(Object.values(LAEDEN).filter((l) => /^hochland_/.test(l.id)).every((l) => !l.wenn), "die übrigen Hochländer (Steiger, Passwacht, Alm …) reden immer");
+  check(Object.values(LAEDEN).filter((l) => /^hochland_/.test(l.id) && l.id !== "hochland_sennerin").every((l) => !l.wenn), "die übrigen Hochländer (Steiger, Passwacht, Alm …) reden immer");
+  /* #118: Afras Laden öffnet erst nach H2 „Käse für die Passwacht“ */
+  check(LAEDEN.hochland_sennerin.wenn && LAEDEN.hochland_sennerin.wenn.quest === H_QUESTS.h2 && LAEDEN.hochland_sennerin.waren.length > 0, "Afras Laden (Sennerin) erst nach H2");
   const B = BANKIERS.find((b) => b.id === "steinhag_bank"); check(B && !B.wenn && !B.quest, "die Bank von Steinhag ist immer offen"); }
 
 console.log(f ? `\nHochlande: ${f} FEHLER` : "\nHochlande: alles in Ordnung");
