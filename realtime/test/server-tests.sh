@@ -58,6 +58,7 @@ TESTS=(
   welt-waldmark
   waldweg
   welt-bau
+  welt-dreh
   welt-daten
   welt-grenzen
   welt-raster

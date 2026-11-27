@@ -9,7 +9,8 @@
  */
 import { daecherAus } from "../skills";
 import * as THREE from "three";
-import { bauen, type Bauplan, type Gebaeude } from "./bauten";
+import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
+import { drehe } from "../../../shared/welt/bau";
 import { modell, modellFern, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
 import { Npc3D, Wanderer, NPC3D, WANDERER, ReisenderFigur } from "./npc3d";
@@ -18,10 +19,10 @@ import { REISENDE } from "../../../shared/reisende";
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?][];
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?, number?][]; /* …, Ausbau-Marke, Drehung in Grad (#148) */
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
 type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][];
-  /** #103: Gebäude, die noch gebaut werden (eins je Bild); Bäume nah (volle Form) und fern (einfache Form) */ plaene?: [number, number, number][]; lod?: { nah: THREE.Object3D[]; fern: THREE.Object3D[] } };
+  /** #103: Gebäude, die noch gebaut werden (eins je Bild); Bäume nah (volle Form) und fern (einfache Form) */ plaene?: [number, number, number, number][]; lod?: { nah: THREE.Object3D[]; fern: THREE.Object3D[] } };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
@@ -143,7 +144,7 @@ export class Welt3D {
     for (let i = 0; i < this.warte.length; i++) { const s = this.st.get(this.warte[i]); if (!s) continue; const d = Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)); if (d <= RADIUS + 0.5 && d < bd) { bd = d; best = i; } }
     if (best < 0) return; const k = this.warte[best], s = this.st.get(k)!; s.stufe = (s.stufe || 0) + 1;
     if (s.stufe === 1) { s.gebaut = true; this.gelaende(s); } else if (s.stufe === 2) { s.plaene = []; this.dinge(s); this.lodSetzen(s); }
-    else if (s.plaene && s.plaene.length) { const [t, x, y] = s.plaene.shift()!; this.planBauen(s, this.ix.typen[t], x, y); s.stufe--; } /* #103: ein Gebäude je Bild */
+    else if (s.plaene && s.plaene.length) { const [t, x, y, dr] = s.plaene.shift()!; this.planBauen(s, this.ix.typen[t], x, y, dr); s.stufe--; } /* #103: ein Gebäude je Bild */
     else { s.plaene = undefined; this.figuren(s); this.warte.splice(best, 1); } }
   /* ───────── #103: Detailstufen der Bäume, Grafikstufe ───────── */
   /** Ab diesem Abstand zum Helden (Felder, Mitte eines Chunk-Viertels) stehen Bäume in einfacher Form – 99: nie */
@@ -210,26 +211,27 @@ export class Welt3D {
 
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
   /** Ein Gebäude nach seinem Bauplan (Teil eines Chunks) */
-  private planBauen(s: Stueck, typ: Typ, x: number, y: number): void {
-    const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
+  private planBauen(s: Stueck, typ: Typ, x: number, y: number, dreh = 0): void {
+    const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); gebaeudeDrehen(b, x, y, dreh); /* #148 */ b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
           if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox!, w = m.getWorldScale(new THREE.Vector3()); m.castShadow = Math.max((g.max.x - g.min.x) * w.x, (g.max.y - g.min.y) * w.y, (g.max.z - g.min.z) * w.z) >= 1.2; }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); }
   dinge(s: Stueck) {
     const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), D = s.d.dinge.filter((d) => !d[5] || this.ausbauDa(d[5])) /* Stadtstufen je Spieler */, reihen = D.filter(([t]) => istReihe(typen[t]));
-    for (const [t, x, y, sk0] of D) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
-      if (typ.plan && this.ix.bauplaene[typ.id]) { if (s.plaene) s.plaene.push([t, x, y]); else this.planBauen(s, typ, x, y); continue; } /* #103: im Spiel ein Gebäude je Bild (bauSchritt) */
+    for (const [t, x, y, sk0, , , dr0] of D) { const typ = typen[t], gy = this.gelaendeHoehe(x, y), dr = dr0 || 0; /* #148: Drehung in Grad */
+      if (typ.plan && this.ix.bauplaene[typ.id]) { if (s.plaene) s.plaene.push([t, x, y, dr]); else this.planBauen(s, typ, x, y, dr); continue; } /* #103: im Spiel ein Gebäude je Bild (bauSchritt) */
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
         else if (istReihe(typ)) { /* Zaun und Palisade: nach Nachbarn ausrichten, die genau in einer Reihe stehen (waagerecht oder senkrecht, höchstens 2,6 Felder) – so stehen an Ecken keine Stücke quer */
           let waag = 99, senk = 99; for (const [, x2, y2] of reihen) { const ax = Math.abs(x2 - x), ay = Math.abs(y2 - y); if (ax + ay < 0.1) continue; if (ay < 0.3 && ax < 2.6) waag = Math.min(waag, ax); if (ax < 0.3 && ay < 2.6) senk = Math.min(senk, ay); }
           if (senk < waag) ry = Math.PI / 2; }
+        ry -= (dr * Math.PI) / 180; /* #148: gedreht, im Uhrzeigersinn von oben */
         const gk = istBaum(typ) && this.lodAb < 99 ? t * 4 + (x - s.d.cx * C >= C / 2 ? 1 : 0) + (y - s.d.cy * C >= C / 2 ? 2 : 0) : t * 4; /* #103: Bäume je Viertel des Chunks (Detailstufe nach Abstand) */
         if (!gruppen.has(gk)) gruppen.set(gk, { m: [], f: [] });
         const sk = sk0 * (istBaum(typ) ? 0.9 + zufall(y, x) * 0.2 : 1), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry);
         gruppen.get(gk)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));
         const hl = 0.88 + zufall(x * 3, y * 5) * 0.24; gruppen.get(gk)!.f.push(new THREE.Color(hl, hl, hl)); continue; }
       if (/nebel/.test(typ.id)) continue;
-      const st = STEGE[typ.id]; if (st) s.stege.push([x + st[0], y + st[1], x + st[2], y + st[3], gy + st[4]]);
+      const st = STEGE[typ.id]; if (st) { const a = drehe(st[0], st[1], dr), b = drehe(st[2], st[3], dr); s.stege.push([x + Math.min(a[0], b[0]), y + Math.min(a[1], b[1]), x + Math.max(a[0], b[0]), y + Math.max(a[1], b[1]), gy + st[4]]); } /* #148: Steg mitgedreht */
       if (/moorlicht/.test(typ.id)) { const gl = new THREE.Sprite(IRRLICHT); gl.position.set(x + 0.08, gy + 1.75, y); gl.scale.setScalar(1.6); this.szene.add(gl); s.obj.push(gl); }
       if (/feuerkorb|festfeuer|fackel|laterne/.test(typ.id)) { const hoch = /festfeuer/.test(typ.id) ? 0.9 : /laterne/.test(typ.id) ? 1.5 : 1.7, p = new THREE.Vector3(x, gy + hoch, y); s.feuer.push(p); const gl = new THREE.Sprite(GLUT); gl.position.copy(p); gl.scale.setScalar(/festfeuer/.test(typ.id) ? 4 : 2.4); this.szene.add(gl); s.obj.push(gl); }
       /* Kein Modell: das gemalte Bild als Billboard (Mischform) */

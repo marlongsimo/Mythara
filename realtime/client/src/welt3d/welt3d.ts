@@ -14,7 +14,7 @@
  * ziehen = Kamera drehen und neigen · Mausrad/zwei Finger = Zoom.
  */
 import * as THREE from "three";
-import { bauen, type Bauplan, type Gebaeude } from "./bauten";
+import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
 import { Figurbild } from "./figurbild";
@@ -23,7 +23,7 @@ import { MODELLE } from "./leute3d";
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; art?: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; art?: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?, number?][]; /* …, Ausbau-Marke, Drehung in Grad (#148) */
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
 type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; feuer: THREE.Vector3[]; stege: number[][]; leute: { fb: Figurbild; n: number; links: boolean; takt: number }[]; modelle: { tick(t: number): void; takt: number }[] };
 
@@ -178,8 +178,8 @@ export class Welt3D {
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
   dinge(s: Stueck) {
     const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
-    for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.hoehe(x, y);
-      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.hoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh && !((o as THREE.Mesh).material as THREE.Material & { isMeshBasicMaterial?: boolean }).isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b);
+    for (const [t, x, y, sk0, , , dr0] of s.d.dinge) { const typ = typen[t], gy = this.hoehe(x, y), dr = dr0 || 0; /* #148 */
+      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.hoehe(x, y - 0.5), y); gebaeudeDrehen(b, x, y, dr); b.gruppe.traverse((o) => { if ((o as THREE.Mesh).isMesh && !((o as THREE.Mesh).material as THREE.Material & { isMeshBasicMaterial?: boolean }).isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b);
         for (const p of b.feuer) { s.feuer.push(p); const gl = new THREE.Sprite(GLUT); gl.position.copy(p); gl.scale.setScalar(2.6); this.szene.add(gl); s.obj.push(gl); } continue; }
       const geo = modell(typ);
       if (geo) { let ry = 0;
@@ -187,6 +187,7 @@ export class Welt3D {
         else if (istReihe(typ)) { /* Zaun und Palisade: nach Nachbarn ausrichten, die genau in einer Reihe stehen (waagerecht oder senkrecht, höchstens 2,6 Felder) – so stehen an Ecken keine Stücke quer */
           let waag = 99, senk = 99; for (const [, x2, y2] of reihen) { const ax = Math.abs(x2 - x), ay = Math.abs(y2 - y); if (ax + ay < 0.1) continue; if (ay < 0.3 && ax < 2.6) waag = Math.min(waag, ax); if (ax < 0.3 && ay < 2.6) senk = Math.min(senk, ay); }
           if (senk < waag) ry = Math.PI / 2; }
+        ry -= (dr * Math.PI) / 180; /* #148 */
         if (!gruppen.has(t)) gruppen.set(t, { m: [], f: [] });
         const sk = sk0 * (istBaum(typ) ? 0.9 + zufall(y, x) * 0.2 : 1), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry);
         gruppen.get(t)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));
