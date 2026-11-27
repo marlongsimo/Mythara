@@ -1,6 +1,6 @@
 # Endgame und der Weg dorthin
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.*
+*Konzept-Chat, 27.11.2026. **Als Idee festgehalten** (Nutzer, 27.11.). Wir arbeiten später weiter daran.*
 Baut auf den **Boss-Regeln** auf (`boss-regeln.md`, im Kanon). Die **Endgame-Ausrüstung** (Uralt 75, Unikate 80, Stufe 90) legt **der Nutzer selbst fest**. Hier steht nur, **wo** sie herkommt.
 
 ## 1. Midgame: ans Bossen heranführen
@@ -93,7 +93,9 @@ Chance auf ein Teil der Stufe 90 = Grundchance × (Punkte ÷ 100) × Faktor des 
 
 ## Offen
 - Mechaniken je Midgame-Boss (Tabelle oben): passt die Verteilung?
-- Raid: Faktoren der Grade, Grundchance; gibt es auf einfach überhaupt Teile der Stufe 90?
+- Raid: **auch auf einfach gibt es Endgame-Teile** (entschieden). Ob Stufe 85 oder 90, ist noch offen. Faktoren der Grade und Grundchance sind Vorschläge.
+- Raid: Es soll **Endgame-Waffen** geben, begehrte Spitzenwaffen mit eigenem Kniff. Die Waffen legt der Nutzer fest.
+- Mechanik-Verteilung der Midgame-Bosse und die Namen sind noch nicht bestätigt.
 - Namen: Wachtfeste, Gefallene, Heerlager, Torhauptmann, Schwingenmarschall, Waffenmeister, Rissprediger, Letzter Kommandant.
 - Freischalt-Quest-Kette.
 - Unikat-Bosse der Frostkrone: Namen und Steckbriefe.
