@@ -52,6 +52,7 @@ TESTS=(
   steinhag-welt
   kielmund-welt
   ockerlande-welt
+  drops-selten
   phase5
   phase8-10
   abholen
