@@ -205,12 +205,14 @@ const FARBE_QUEST = "#ffd86a";
 /** Quest im Detail auf Pergament in der Bildschirmmitte; frischt sich auf, solange es offen ist (erledigte Schritte durchgestrichen, darunter der aktuelle) */
 function questDetails(id: string): void {
   const html = (): string => { const q = questListe().find((x) => x.id === id); if (!q) return "";
-    return `${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}
-      <h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p><div class="zier"></div>
-      ${q.start ? `<h3>So startest du</h3><p class="qstart">${q.start}</p>` : ""}
-      <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
-      <h3>${q.art === "fertig" ? "Verlauf" : "Aufgabe"}</h3><ol class="qschritte">${q.erledigt.map((t) => `<li class="erledigt"><s>${t}</s></li>`).join("")}<li class="${q.art === "fertig" ? "ende" : "jetzt"}">${q.jetzt}</li></ol>
-      ${q.belohnung ? `<p class="qbelohnung">${q.belohnung}${q.art === "fertig" ? " – erhalten" : ""}</p>` : ""}`; };
+    /* Kopf in einer Zeile (Titel, Ort · Stand, Verfolgen), darunter zwei Spalten: links die Aufgabe (aktueller Schritt groß, erledigte darunter), rechts Start, Voraussetzungen, Belohnung */
+    return `<div class="qkopf"><i class="qpunkt ${q.art}" aria-hidden="true"></i><div class="qtitel"><h2>${q.titel}</h2><p class="qort">${q.ort} · ${QART_TEXT[q.art]}</p></div>
+      ${q.art !== "fertig" ? `<button type="button" class="qverfolgen${q.art === "verfolgt" ? " an" : ""}" data-qv="1" aria-pressed="${q.art === "verfolgt"}">🧭 ${q.art === "verfolgt" ? "Wird verfolgt" : "Verfolgen"}</button>` : ""}</div>
+      <div class="qspalten"><div class="qlinks"><h3>${q.art === "fertig" ? "Abschluss" : "Aufgabe"}</h3><p class="qjetzt ${q.art === "fertig" ? "ende" : ""}">${q.jetzt}</p>
+        ${q.erledigt.length ? `<h3>Erledigt <small>${q.erledigt.length}</small></h3><ol class="qschritte">${q.erledigt.map((t) => `<li>${t}</li>`).join("")}</ol>` : ""}</div>
+      <div class="qrechts">${q.start ? `<h3>So startest du</h3><p>${q.start}</p>` : ""}
+        <h3>Voraussetzungen</h3>${q.voraussetzungen.length ? `<ul class="qvor">${q.voraussetzungen.map((v) => `<li>${v}</li>`).join("")}</ul>` : `<p class="qkeine">Keine</p>`}
+        ${q.belohnung ? `<h3>Belohnung${q.art === "fertig" ? " <small>erhalten</small>" : ""}</h3><p class="qbelohnung">${q.belohnung.replace(/^Belohnung:\s*/, "")}</p>` : ""}</div></div>`; };
   let inh: HTMLElement | null = null; const neu = () => { if (!inh) return; if (!inh.isConnected) { removeEventListener("ez-quest", neu); return; } const h = html(); if ((inh as HTMLElement & { _h?: string })._h !== h) { (inh as HTMLElement & { _h?: string })._h = h; inh.innerHTML = h; } };
   const f = tafelZeigen("questinfo", `<div class="qinhalt"></div>`, () => removeEventListener("ez-quest", neu)); inh = f.querySelector(".qinhalt") as HTMLElement;
   inh.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-qv]")) { e.stopPropagation(); questVerfolgen(!questVerfolgt(id), id); } });
