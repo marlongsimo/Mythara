@@ -1,0 +1,8 @@
+{
+  "id": "stamm_weltenbaum",
+  "name": "Weltenbaumstamm (3D)",
+  "kategorie": "skilling-erzeugnis",
+  "aktuell": "v001",
+  "status": "v001: fabrik/stamm.py laenge=0.6 radius=0.16 rinde=#7a5a3c kern=#e8c08a riss=#58c8ff risse=2 – liegender Stamm mit Rinde, Jahresringen und zwei leuchtenden blauen Adern (Punktfarben + selbstleuchtendes Material, ohne Textur); Modell für holz_waldgott (modell3d) und stamm_weltenbaum; Spieldatei img/objekte3d/skilling/holzfaellerei/stamm_weltenbaum.glb",
+  "herkunft": "Fabrik (prozedural)"
+}
