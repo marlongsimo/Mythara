@@ -809,3 +809,31 @@ GEGENSTAENDE.fischernetz = { id: "fischernetz", name: "Fischernetz", art: "Quest
 /* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
 GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
   text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };
+
+/* ───────── #166: feste Rucksackbilder für die Gegenstände, die bisher zur Laufzeit gezeichnet wurden (symbol) – Pfade aus fabrik/vorlagen/rucksackbilder_pfade.json (Figuren) ───────── */
+const RUCKSACKBILDER: Record<string, string> = {
+  splitter: "img/objekte3d/symbole/splitter.webp",
+  kleiner_heiltrank: "img/objekte3d/symbole/kleiner_heiltrank.webp",
+  heiltrank: "img/objekte3d/symbole/heiltrank.webp",
+  hinweispergament: "img/objekte3d/schriften/symbole/hinweispergament.webp",
+  pergament: "img/objekte3d/schriften/symbole/pergament.webp",
+  geweihter_splitter: "img/objekte3d/symbole/geweihter_splitter.webp",
+  federn: "img/objekte3d/rohstoffe/symbole/federn.webp",
+  wolfsfell: "img/objekte3d/rohstoffe/symbole/wolfsfell.webp",
+  chitin: "img/objekte3d/rohstoffe/symbole/chitin.webp",
+  giftdruese: "img/objekte3d/rohstoffe/symbole/giftdruese.webp",
+  hasenfleisch: "img/objekte3d/skilling/kochen/symbole/hasenfleisch.webp",
+  wildschweinfleisch: "img/objekte3d/skilling/kochen/symbole/wildschweinfleisch.webp",
+  wolfsfleisch: "img/objekte3d/skilling/kochen/symbole/wolfsfleisch.webp",
+  fleisch_verbrannt: "img/objekte3d/skilling/kochen/symbole/fleisch_verbrannt.webp",
+  hasenbraten: "img/objekte3d/skilling/kochen/symbole/hasenbraten.webp",
+  rinderbraten: "img/objekte3d/skilling/kochen/symbole/rinderbraten.webp",
+  wildschweinbraten: "img/objekte3d/skilling/kochen/symbole/wildschweinbraten.webp",
+  wolfsgulasch: "img/objekte3d/skilling/kochen/symbole/wolfsgulasch.webp",
+  alter_hecht: "img/objekte3d/skilling/angeln/symbole/alter_hecht.webp",
+  rezeptheft: "img/objekte3d/schriften/symbole/rezeptheft.webp",
+  wildbret: "img/objekte3d/skilling/kochen/symbole/wildbret.webp",
+  wildbretbraten: "img/objekte3d/skilling/kochen/symbole/wildbretbraten.webp",
+  tempelabschrift: "img/objekte3d/schriften/symbole/tempelabschrift.webp",
+};
+for (const [id, b] of Object.entries(RUCKSACKBILDER)) if (GEGENSTAENDE[id]) { GEGENSTAENDE[id].bild = b; delete GEGENSTAENDE[id].symbol; }
