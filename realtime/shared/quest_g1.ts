@@ -3,7 +3,7 @@
  * Grundlage: doku/konzepte/phase-10.md. QUER: Othmar Rehn (Weidenhain) schickte Getreide nach Kielmund, der letzte Wagen kam nie an.
  * Zwei Spuren auf der Südstraße, vier Strandräuber, der umgestürzte Wagen (Frachtbrief), in Kielmund Kaufherr Jasper Kranich vom Küstenhaus.
  * Lohn: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter, 2 Questpunkte; Wegstein-Ziel Kielmund (die Kutsche ist gestrichen, Nutzer 26.11.).
- * Der Weg ist offen (offene Welt) – die Quest belohnt mit der Abkürzung. Alle Namen sind Vorschläge (Jasper Kranich neu).
+ * Der Weg ist offen (offene Welt) – die Quest belohnt mit der Abkürzung.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Strandräuber, Wegstein-Ziel Kielmund). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
  */

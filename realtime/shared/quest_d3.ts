@@ -2,7 +2,7 @@
  * Riftmere – Quest D3 „Wels im Trüben“ (Phase 7, kleine Nebenquest), Daten für den Quest-Baukasten (shared/questbau.ts).
  * Grundlage: doku/konzepte/phase-7.md. Wirtin Alma Furtner, Taverne „Zur Furt“ in Graufurt. Voraussetzung Fischen 45, Kochen 45.
  * 3 Graufurter Welse am Fährhafen, 2 Welspasteten am Herd der Taverne (QUER: Teig aus dem Mehl von Hanne Kalk, Weidenhain, nach B2), Abgabe. Lohn: Fischen- und Kochen-XP, 150 Splitter, 1 Questpunkt;
- * danach verkauft Alma Welspastete (Schalter alma_pastete). Alle neuen Namen sind Vorschläge (doku/KANON.md).
+ * danach verkauft Alma Welspastete (Schalter alma_pastete).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Taverne und Fischplatz aus #36, Alma aus #37, Fischen/Kochen 45 im Spiel).
  * Stellen aus der Welt (#36, Region graufurt). Fischen meldet { art: "sammeln", ziel: "<fischart>" } wie in „Schilf und Schnur“. Liste: doku/quests/d-bausteine.md.

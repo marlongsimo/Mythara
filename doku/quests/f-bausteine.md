@@ -1,6 +1,6 @@
 # Phase 9 – Quests F1–F4 und „Die Karte des Boten“: was dem Baukasten fehlt
 
-Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-9.md` (neuer Grundsatz: Quests über Regionsgrenzen). Alle Namen sind Vorschläge.
+Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-9.md` (neuer Grundsatz: Quests über Regionsgrenzen). Alle Namen sind vom Nutzer bestätigt (27.11.).
 Dateien: `realtime/shared/quest_f1.ts` … `quest_f4.ts`, `quest_karte.ts`, Stellen in `quest_f_orte.ts`. Alle als **Entwurf** in `shared/quest_entwuerfe.ts`.
 Lohn nach Migration 051 (bis 50.000 je Skill), mit Maß: F1–F4 je 2.000–5.000, die Karte des Boten je 6.000 in fünf Kampfskills. Der Prüfer meldet jetzt erst über 50.000.
 

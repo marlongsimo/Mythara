@@ -3,7 +3,7 @@
  * Grundlage: doku/konzepte/phase-9.md. QUER: Start in Graufurt bei Fährmann Kord Weller (Phase 7), Weg über das Ostufer in die Glutsande, Abgabe in Glutbrunn.
  * Kord gibt einen Brief nach Glutbrunn mit – seit die Kette riss, kam keine Antwort. Die Wegmarke „Ende des Grases“, Karawanenräuber am Kanal,
  * Händlerin Selma Dornfeld in der Karawanenrast liest den Brief und lacht: Er ist zwanzig Jahre alt.
- * Lohn: Fernkampf 3.000, Stärke 3.000, Defense 2.000 XP, 600 Splitter, 2 Questpunkte; Wegstein-Ziel Glutbrunn. Alle Namen sind Vorschläge.
+ * Lohn: Fernkampf 3.000, Stärke 3.000, Defense 2.000 XP, 600 Splitter, 2 Questpunkte; Wegstein-Ziel Glutbrunn.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Glutsande, Glutbrunn, Karawanenräuber, Selma) und auf „Figur in mehreren Quests“ (Kord aus D1).
  * Stellen: shared/quest_f_orte.ts. Liste: doku/quests/f-bausteine.md.

@@ -4,7 +4,6 @@
  * Merit gibt die Erlaubnis gegen das Wappen aus A2. 6 Splittereisenerz in der Furtklamm, an der Esse Barren, am Amboss 8 Kettenglieder (Quest-Rezept),
  * das Kettenschloss bei der Schmiedin (QUER: sie braucht Meilerpech gegen den Flussnebel – von Köhler Ulf im Nordwald, wie in C1), die Kette an der Winde des Westanlegers einhängen, erste Überfahrt mit Kord.
  * Lohn: 1.000 Schmieden-XP, 1.000 Bergbau-XP (Grenze aus Migration 048), 400 Splitter, 2 Questpunkte. Schalter faehre_frei (die Fähre fährt: die Abkürzung zum Ostufer – zu Fuß geht es auch, der lange Weg über den Pass in den Glutsanden, #74).
- * Alle neuen Namen sind Vorschläge (doku/KANON.md).
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Figuren #37, Spiel nach Phase 6). Stellen aus der Welt (#36, Region graufurt, Ursprung 6656 | 6400).
  * Liste: doku/quests/d-bausteine.md.

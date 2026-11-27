@@ -1,6 +1,6 @@
 # Phase 8 – Quests E1–E4 und zwei Nebenquests: was dem Baukasten fehlt
 
-Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-8.md`. Alle Namen sind Vorschläge (dazu neu: Schwester Ida in E2, Bolko in E3, nur in Dialogen).
+Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-8.md`. Alle Namen sind vom Nutzer bestätigt (27.11.) (dazu neu: Schwester Ida in E2, Bolko in E3, nur in Dialogen).
 Dateien: `realtime/shared/quest_e1.ts` … `quest_e4.ts`, `quest_e_neben.ts` („Mettes Schafe“, „Ruhelose Gräber“), Stellen in `quest_e_orte.ts`.
 Alle als **Entwurf** in `shared/quest_entwuerfe.ts`. Lohn höchstens 1.000 je Skill (Migration 048).
 

@@ -5,7 +5,7 @@
  * am alten Weg im Nordsaum (drei Ranken). In Heidrast Hirtin Mette Heider, der Rudelführer der Heidewölfe, die Abtei: Äbtissin Gunhild.
  * QUER: Merit schickt dich erst zu Othmar Rehn nach Weidenhain – er kannte Gunhild und gibt dir einen Brief für sie mit (Abgabe in der Abtei).
  * Lohn: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter, 2 Questpunkte. Schalter dornenwall_offen (Abkürzung offen, je Spieler), grauwacht_stufe1 (Abtei bewohnt);
- * Wegstein-Ziel Heidrast. Alle Namen sind Vorschläge.
+ * Wegstein-Ziel Heidrast.
  *
  * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Welt: Fahle Weiten, Heidrast, Abtei; Figuren: Mette, Gunhild; Gegner heidewolf_rudelfuehrer).
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts). Liste: doku/quests/e-bausteine.md.

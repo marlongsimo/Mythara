@@ -1,6 +1,6 @@
 # Phase 10 – Quests G1–G4 und „Der Kräuterhof“: was dem Baukasten fehlt
 
-Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-10.md`. Alle Namen sind Vorschläge – **neu**: Kaufherr **Jasper Kranich** (Küstenhaus), Leuchtturmwärterin **Wiebke Strand**,
+Rolle Quests, 26.11.2026. Grundlage: `doku/konzepte/phase-10.md`. Alle Namen sind vom Nutzer bestätigt (27.11.) – **neu**: Kaufherr **Jasper Kranich** (Küstenhaus), Leuchtturmwärterin **Wiebke Strand**,
 Fischerin **Bente Möller** (Möwenbucht), Kräuterbäuerin **Frieda Saat**. Dateien: `realtime/shared/quest_g1.ts` … `quest_g4.ts`, `quest_kraeuterhof.ts`, Stellen in `quest_g_orte.ts`.
 Alle als **Entwurf** in `shared/quest_entwuerfe.ts`. Lohn für Stufe 20–40: 800–3.000 je Skill.
 
