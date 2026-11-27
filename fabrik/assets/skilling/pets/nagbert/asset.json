@@ -7,8 +7,9 @@
   "aktuell": "v001",
   "hoehe_m": 0.9,
   "spieldatei": "img/figuren-echt3d/pet.nagbert.glb",
-  "bewegungen": "ruhe (nagt an der Nuss, 1 s), gehen (ruhiger Schritt, Hinterbeine abwechselnd, ohne Hüpfer, 0,83 s), laufen (tapselt in kleinen Hüpfern, Schwanz wedelt, 0,5 s)",
+  "bewegungen": "ruhe (nagt an der Nuss, 1 s), gehen (ruhiger Schritt, Hinterbeine abwechselnd, ohne Hüpfer, 0,83 s), laufen (tapselt in kleinen Hüpfern, Schwanz wedelt, 0,5 s), freude (beim Fund: zwei Hüpfer, 1 s, einmal)",
   "status": "Meshy „Acorn Guardian“, hüfthoch (0,9 m); gebaut mit fabrik/rig_nager.py → fabrik/export3d.py; Folgen im Spiel kommt später",
   "herkunft": "Meshy",
-  "mobil": "img/figuren-echt3d/pet.nagbert.mobil.glb"
+  "mobil": "img/figuren-echt3d/pet.nagbert.mobil.glb",
+  "symbol": "img/objekte3d/pets/pet.nagbert.webp"
 }
