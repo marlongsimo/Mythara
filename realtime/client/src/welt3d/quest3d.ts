@@ -98,7 +98,7 @@ export class QuestWelt {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
     if (!best) return this.faehreStelle(x, y) || this.objektStelle(x, y); const f = best, p = this.wo(f)!;
-    const laden = LADEN_LISTE.find((l) => l.questFigur === f.n.id && ladenOffen(l, (id) => questStandB(id)));   /* Questfigur mit Laden (Hanne Kalk nach B2): dazu „Laden ansehen“ */
+    const laden = LADEN_LISTE.find((l) => l.questFigur === f.n.id && ladenOffen(l, (id) => questStandB(id), (x) => schalterAn((id) => questStandB(id), x)));   /* Questfigur mit Laden (Hanne Kalk nach B2): dazu „Laden ansehen“ */
     return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; },
       ...(laden ? { mehr: [{ text: "Laden ansehen", sym: "🛒", tat: () => ladenZeigen(laden.id) }] } : {}) }; }
   /** Fähre (#49): am Anleger „Übersetzen nach …“ – ob sie fährt, entscheidet der Server (Schalter) */

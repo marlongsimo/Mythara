@@ -24,8 +24,8 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass | ✅ live (27.11., main 4186a172): Block H (H1–H4, Einsiedler, drei Hüter mit Boss-Regeln, Rüstung Stufe 70), Steinhag als Hauptstadt, Zunfthäuser, Pets – **bitte testen**. Rest: 7 Sammelgruppen in Steinhag (#177) |
 | Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | ✅ live (27.11.): Orte, Gegner, Fleisch/Gerichte, Reisende, S1–S9 |
 | — | Ganze Welt als Kampfwelt, Gegnerplätze über die ganze Welt (#122, #130), 10 neue Gegner aus Modellen des Nutzers (#138) | ✅ live: Kampfwelt, 10 neue Gegner, Streifgebiete (#143), Orte Haferstedt/Netzbucht/Sandquell (#140/#141), 158 Holz-/Erzstellen (#142) |
-| 12 | Ockerland: Ockerlande besiedeln (Rotlehm, Dornhag, Tafelrast) | 🟡 Konzept-Entwurf `doku/konzepte/phase-12.md` |
-| — | Hauptstädte Steinhag (#167) und Kielmund, Zunfthäuser (#168), Fahle Weiten füllen mit Grauwacht als mittlerer Hauptstadt | 🟡 Steinhag im Bau; Konzepte `hauptstaedte.md`, `fahle-weiten.md` |
+| 12 | Ockerland: Ockerlande besiedeln (Rotlehm, Dornhag, Tafelrast, Brunnenkreis) | 🟡 freigegeben, Welt baut (#172) |
+| — | Hauptstädte Steinhag (#167) und Kielmund (#174), Zunfthäuser (#168), Zunft-Rohstoffe (#176), Fahle Weiten Schritt 1 mit Grauwacht (#171) | ✅ live (27.11., main 4d61e702) – offen: Grauwacht-Läden je Stadtstufe, Kielmund-Stationen (Systeme), Kielmund-Stadtquests (Freigabe), Reifbach (Schritt 2) |
 
 ## Festland (Weltkonzept)
 

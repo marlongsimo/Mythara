@@ -21,7 +21,7 @@ check(n("strandkrabbe") >= 3 && n("heidewolf") >= 5 && n("sandkriecher") >= 1 &&
 check(ms < 15000, `die ganze Kampfwelt ist in ${ms} ms aufgebaut`);
 { /* eine Krabbe ohne Nachbarn (Gegnerplätze haben 1–3 Tiere; bei mehreren trifft oft ein anderes zuerst – das hing von der Reihenfolge der Plätze ab) */
   const k = s.wesen.find((w) => w.typ === "strandkrabbe" && !s.wesen.some((o) => o !== w && !o.tot && Math.hypot(o.x - w.x, o.y - w.y) < 8)), wx = U[0] + k.x, wy = U[1] + k.y;
-  const id = s.beitreten("schildwaechter", 0, { x: k.x + 1, y: k.y }, kampfwerte({ ...NULL_XP, geschick: xpFuer(60), staerke: xpFuer(60), defense: xpFuer(60), lp: xpFuer(60) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e5;
+  const id = s.beitreten("schildwaechter", 0, { x: k.x + 1, y: k.y }, kampfwerte({ ...NULL_XP, geschick: xpFuer(60), staerke: xpFuer(60), defense: xpFuer(1) /* niedrig: sonst hängt „greift an“ am Zufall (Abwehr 60 hält die Krabbe fast immer ab) */, lp: xpFuer(60) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e5;
   const ev = []; for (let i = 0; i < 20 * 120 && !k.tot; i++) { s.schritt(); ev.push(...s.zustand().ev); }
   check(ev.some((e) => e.a === "hieb" && e.id === k.id) && h.lp < 1e5, `die Strandkrabbe bei ${Math.round(wx)}, ${Math.round(wy)} (${weltRegionBei(wx, wy)}) greift an`);
   check(k.tot && ev.some((e) => e.a === "beute" || e.a === "erlegt"), "und fällt (Beute, Sieg)"); }

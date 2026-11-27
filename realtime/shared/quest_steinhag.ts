@@ -1,8 +1,8 @@
 /*
  * Riftmere – kleine Stadt-Quests der Hauptstadt Steinhag (#167, doku/konzepte/hauptstaedte.md), Daten für den Quest-Baukasten (shared/questbau.ts).
- * Entscheidung des Nutzers (27.11.): 3–5 kleine Stadt-Quests, quer zu bekannten Orten. Stellen aus Welts Plan (welt/plaene/steinhag_plan.json, a29fc0ee):
- * Markt (6990 | 5885), Läden an der Hauptgasse, Seeufer mit Stegen und Fischerhäusern, Burgplatz vor der Vogtsburg (7044 | 5868), Ringmauer mit drei Toren,
- * Zunftviertel mit dem Abstieg zum Stollen der Bergmannszunft (7076 | 5948), Taverne mit Herd (7010 | 5879).
+ * Entscheidung des Nutzers (27.11.): 3–5 kleine Stadt-Quests, quer zu bekannten Orten. Stellen aus der gebauten Stadt (Welt 726587099, welt/regionen/fl_216_183):
+ * Bergmarkt (6982 | 5897), Fischerhäuser am Seeufer (6954–6969 | 5862–5865), Burgplatz (7053 | 5865), Ringmauer mit Ecktürmen (6936–7074 × 5861–5951),
+ * Eingang zum Stollen der Bergmannszunft (7066 | 5945), Taverne mit Herd (7010 | 5879).
  *  – „Der Dieb vom Bergmarkt“: Jakob Kiesel vermisst einen Beutel Sterneisen. Drei Spuren durch die Stadt, ein Junge am Steg. QUER: Merit Stahl in Graufurt.
  *  – „Die Burgwache“: Hauptfrau der Vogtsburg – nachts die vier Posten der Ringmauer abgehen, einen schlafenden Wächter wecken. QUER: Bericht an Wigand Fels in Grauwacht.
  *  – „Eintopf für die Kumpel“: Wirt Ruprecht Talg schickt heißen Eintopf zur Zunftwache am Stollen und zu Steiger Wendel am Erzberg (Kochen).
@@ -18,12 +18,12 @@ const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT
 const NACH_H1: Voraussetzung = { text: "„Über den Pass“ abgeschlossen", wenn: { quest: { id: H_QUESTS.h1, phase: ["fertig"] } } };
 
 /* ───── Stellen (Plan der Welt, a29fc0ee) ───── */
-const SPUREN: Feld[] = [[6984, 5898.5], [6968, 5868], [6960, 5840]];          /* hinter dem Bergmarkt · Gasse zum See · Steg West */
-const FENN_XY: Feld = [6951.5, 5834.5];                                      /* bei den Fischerhäusern am Seeufer */
-const POSTEN: Feld[] = [[6937, 5826.5], [7086, 5842], [7086, 5954], [6920, 5954]]; /* Ecken der Ringmauer: Pass-Tor, Burg, Südost, Südwest */
-const SCHLAEFER_XY: Feld = [7084, 5950];
-const BURGPLATZ: Feld = [7044, 5868];
-const ZUNFT_ABSTIEG: Feld = [7076, 5948];
+const SPUREN: Feld[] = [[6984, 5898.5], [6975.5, 5880.5], [6962.5, 5867.5]];   /* hinter dem Bergmarkt · Gasse zum See · bei den Fischerhäusern */
+const FENN_XY: Feld = [6949.5, 5866.5];                                      /* am Fischerhaus am Seeufer */
+const POSTEN: Feld[] = [[6938.5, 5863.5], [7071.5, 5931.5], [7071.5, 5948.5], [6938.5, 5948.5]]; /* Ecktürme der Ringmauer: Nordwest (am See), Ost, Südost, Südwest */
+const SCHLAEFER_XY: Feld = [7069.5, 5946.5];
+const BURGPLATZ: Feld = [7053, 5868];
+const ZUNFT_ABSTIEG: Feld = [7065.5, 5944.5];
 
 /* ───── Figuren (Bewohner aus shared/laeden.ts behalten Namen, Modell und Platz) ───── */
 const JAKOB: QuestFigur = { id: "jakob", name: "Jakob Kiesel", modell: "npc.haendler_sued", x: 6982, y: 5897.4, blick: [0, -1] };        /* steinhag_allerlei */
@@ -121,8 +121,8 @@ export const QUEST_STEINHAG_DIEB: QuestDef = {
 export const STEINHAG_BURGWACHE = "steinhag_die_burgwache";
 const PO = ["posten_1", "posten_2", "posten_3", "posten_4"];
 const POSTEN_TEXT = [
-  "Das Pass-Tor. Der Wind kommt von den Bergen, kalt und still. Nichts rührt sich.",
-  "Der Eckturm unter der Burg. Unten glänzt der See. Ein Fischer rudert spät heim.",
+  "Der Nordwestturm am See. Der Wind kommt vom Pass, kalt und still. Ein Fischer rudert spät heim.",
+  "Der Ostturm beim Erzberg-Tor. In der Ferne glimmen die Laternen am Bergwerk.",
   "Die Südostecke. Hier sollte Kuno stehen.",
   "Die Südwestecke. Von hier sieht man die Laternen am Furt-Tor. Alles ruhig.",
 ];
@@ -137,7 +137,7 @@ export const QUEST_STEINHAG_BURGWACHE: QuestDef = {
   voraussetzungen: [NACH_H1],
   schritte: [
     ...PO.map((id, i) => ({ id, text: "Die vier Posten der Ringmauer abgehen", ereignis: { art: "objekt" as const, id: "bw_" + id }, gruppe: "posten", wo: POSTEN[i],
-      log: "Geh die Ringmauer ab und sieh an jedem der vier Ecktürme nach dem Rechten ({n:posten})." })),
+      log: "Geh die Ringmauer ab und sieh an den vier Ecktürmen nach dem Rechten – Nordwest am See, Ost, Südost, Südwest ({n:posten})." })),
     { id: "kuno", text: "Den schlafenden Wachmann wecken", ereignis: { art: "antwort" }, nach: ["posten_3"], bei: "wachmann_kuno",
       log: "An der Südostecke fehlt der Wachmann. Er kann nicht weit sein." },
     { id: "wigand", text: "Wigand Fels in Grauwacht den Wachbericht bringen", ereignis: { art: "antwort" }, nach: [...PO, "kuno"], bei: "wigand",
@@ -156,10 +156,10 @@ export const QUEST_STEINHAG_BURGWACHE: QuestDef = {
         { wenn: FERTIG, zeilen: ["Wigand schreibt zurück. Zwei Seiten, die Hälfte über das Wetter. Er wird alt.", "Kuno steht jetzt freiwillig an der Südostecke. Er sagt, dort ist der Wind am lautesten."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Du warst in Grauwacht? Was sagt der alte Fels?"], antworten: ["fertig"] },
         { wenn: { ...LAEUFT, erledigt: [...PO, "kuno"] }, zeilen: ["Alle vier Posten, und Kuno ist wach. Gut.", "Jetzt der Bericht. Bring ihn nach Grauwacht, zu Wigand Fels. Über die Furt, die Straße hinunter."], antworten: ["tschuess"] },
-        { zeilen: ["Pass-Tor, Burgturm, Südost, Südwest. In der Reihenfolge, die dir passt."], antworten: ["tschuess"] },
+        { zeilen: ["Nordwest am See, Ost, Südost, Südwest. In der Reihenfolge, die dir passt."], antworten: ["tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich gehe die Mauer ab. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Gut. Vier Ecktürme: am Pass-Tor, unter der Burg, Südost und Südwest.", "Und morgen früh bringst du den Bericht nach Grauwacht. Wigand Fels soll wissen, dass Steinhag wach ist."] } }] },
+        { id: "annehmen", text: "Ich gehe die Mauer ab. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Gut. Vier Ecktürme: Nordwest am See, Ost beim Erzberg-Tor, Südost und Südwest.", "Und morgen früh bringst du den Bericht nach Grauwacht. Wigand Fels soll wissen, dass Steinhag wach ist."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Die Nacht kommt so oder so."] } }] },
         { id: "fertig", text: "Wigand Fels lässt grüßen. Grauwacht hält, und die Furt gehört beiden.", folge: [{ f: { abschluss: true,
           zeilen: ["Ragnhild lacht kurz, zum ersten Mal.", "Der alte Fels. Wir haben zusammen am Pass gestanden, bevor die Wacht zerfiel. …Gut, dass er noch steht.", "Du hast eine gute Nacht gemacht. Die Wache von Steinhag schuldet dir was."] } }] },

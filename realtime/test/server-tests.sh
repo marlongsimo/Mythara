@@ -47,6 +47,9 @@ TESTS=(
   welt-streifgebiete
   welt-hochlande
   welt-zunft
+  welt-fahleweiten
+  welt-kielmund
+  steinhag-welt
   phase5
   phase8-10
   abholen
@@ -86,6 +89,8 @@ TESTS=(
   zunft
   bank-orte
   steinhag-stadt
+  kielmund-stadt
+  laden-stufen
   pets
   pets-welt
   bank-platzhalter

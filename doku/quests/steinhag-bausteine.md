@@ -3,12 +3,13 @@
 Rolle Quests, 27.11.2026. Grundlage: `doku/konzepte/hauptstaedte.md` (Zweig `claude/relaxed-sagan-erl6lf`) und Welts Plan `welt/plaene/steinhag_plan.json` (Commit a29fc0ee).
 
 - **Datei:** `realtime/shared/quest_steinhag.ts`
-- **Stand:** Entwurf in `shared/quest_entwuerfe.ts`. Die Quests kommen ins Spiel, sobald die Stadt nach dem Plan steht. Danach folgt der Welt-Test.
+- **Stand:** Im Spiel (`shared/quests.ts`). Die Stadt steht (Welt 726587099), die Stellen sind an den Bau angepasst.
+- **Welt-Test:** `realtime/test/steinhag-welt.test.mjs` (Ports 8863/8864, etwa 15 s) spielt alle drei durch.
 - **Rahmen:**
   - klein, 5–10 Minuten, je 1 Questpunkt
   - alle nach H1 „Über den Pass“
   - keine neuen Gegenstände
-- **Stellen:** aus dem Plan.
+- **Stellen:** aus der gebauten Stadt.
 
 | Quest | Kennung | Ablauf | Quer | Lohn |
 |---|---|---|---|---|
@@ -26,23 +27,15 @@ Rolle Quests, 27.11.2026. Grundlage: `doku/konzepte/hauptstaedte.md` (Zweig `cla
 
 | Figur | Modell | Ort |
 |---|---|---|
-| Fenn | `npc.junge` | bei den Fischerhäusern am Seeufer, 6951,5 \| 5834,5 |
+| Fenn | `npc.junge` | am Fischerhaus am Seeufer, 6949,5 \| 5866,5 |
 | Hauptfrau Ragnhild | `stadtwache3d` | Burgplatz |
 | Wachmann Kuno | `stadtwache3d` | Südostecke der Mauer |
 | Zunftwächter Bodo | `stadtwache3d` | am Abstieg zum Stollen der Bergmannszunft |
 
 Wenn Systeme dort eine eigene Wache stellt (Zugang ab Stufe 60), bitte mit `questFigur: "zunftwache"` verbinden.
 
-## Was die Welt liefern muss (#167)
+## Stellen in der gebauten Stadt
 
-Die Plätze stehen in `quest_steinhag.ts`. Wo der Bau abweicht, passe ich die Stellen an.
-
-- Seeufer mit Steg West (6960 | 5840) und Fischerhäusern (6944–6966 | 5832–5840)
-- Ringmauer mit vier begehbaren Ecktürmen bzw. Mauerecken:
-  - Pass-Tor 6937 | 5826
-  - unter der Burg 7086 | 5842
-  - Südost 7086 | 5954
-  - Südwest 6920 | 5954
-- Burgplatz vor der Vogtsburg (7044 | 5868)
-- Abstieg zum Zunftstollen (7076 | 5948)
-- Herd der Taverne (7008 | 5879, gibt es schon)
+- Spuren: hinter dem Bergmarkt (6984 | 5898,5), Gasse zum See (6975,5 | 5880,5), Fischerhäuser (6962,5 | 5867,5); Fenn am Fischerhaus (6949,5 | 5866,5)
+- Ecktürme der Ringmauer: Nordwest am See (6938,5 | 5863,5), Ost (7071,5 | 5931,5), Südost (7071,5 | 5948,5), Südwest (6938,5 | 5948,5); Kuno an der Südostecke
+- Burgplatz (7053 | 5868), Zunftwächter am Stolleneingang (7065,5 | 5944,5), Herd der Taverne (7008,2 | 5874)

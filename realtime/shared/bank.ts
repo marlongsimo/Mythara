@@ -38,6 +38,8 @@ export const BANKGEBAEUDE: { id: string; stadt: string; x: number; y: number; ba
 for (const B of BANKGEBAEUDE) BANKSCHALTER.push({ id: B.id + "_bankschalter", ort: "waldmark", x: B.x - 1.4, y: B.y - 1.9, bank: "Bank von " + B.stadt });
 /* #167: die zweite Bank von Steinhag im Zunftviertel (Welt 72658709, hochlande_orte.json → hauptstadt.banken): der Kunde steht vor der Tür und schaut nach Norden,
    die Bankmitarbeiterin steht drinnen hinter dem Schalter */
+/* #174: die Hafenbank von Kielmund (Welt 7a15f6624): Schalter vor der Tür (Süden), der Bankier drinnen */
+BANKSCHALTER.push({ id: "kielmund_hafenbank_bankschalter", ort: "waldmark", x: 6414, y: 7333.4, bank: "Hafenbank von Kielmund" });
 BANKSCHALTER.push({ id: "steinhag_zunftbank_bankschalter", ort: "waldmark", x: 7065, y: 5916.4, bank: "Zunftbank von Steinhag" });
 export const istBankschalter = (id: string): boolean => BANKSCHALTER.some((b) => b.id === id);
 
@@ -51,6 +53,8 @@ export const BANKIERS: Bankier[] = [
 /* #169: je Bankgebäude ein Bankier hinter dem Schalter (Steinhag: Greta Pfand stand bisher vor dem Gebäude, jetzt hinter dem Schalter) */
 for (const B of BANKGEBAEUDE) BANKIERS.push({ id: B.id === "steinhag" ? "steinhag_bank" : B.id + "_bank", name: B.bankier[0], titel: B.bankier[1], ort: "waldmark", modell: "npc.bankmitarbeiter",
   x: B.x - 1.4, y: B.y - 3.7, blick: [0, 1], schalter: B.id + "_bankschalter", bank: "Bank von " + B.stadt });
+BANKIERS.push({ id: "kielmund_hafenbank", name: "Tjalda Münz", titel: "Bankmitarbeiterin", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 6414, y: 7329.5, blick: [0, 1],
+  schalter: "kielmund_hafenbank_bankschalter", bank: "Hafenbank von Kielmund" });
 BANKIERS.push({ id: "steinhag_zunftbank", name: "Barbara Schlägel", titel: "Bankmitarbeiterin", ort: "waldmark", modell: "npc.bankmitarbeiter", x: 7065, y: 5912.6, blick: [0, 1],
   schalter: "steinhag_zunftbank_bankschalter", bank: "Zunftbank von Steinhag" });
 
