@@ -35,7 +35,9 @@ const EPISCH_PREIS = 3000;
 const istLadenWaffe = (id: string) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.platz === "waffe" && (WAFFEN_ARTEN.includes(G.art) || istKurzbogen(id)) && !(G.art === "Bogen" && !istKurzbogen(id)); };
 const waffenEpisch = Object.keys(GEGENSTAENDE).filter((id) => GEGENSTAENDE[id].seltenheit === "episch" && istLadenWaffe(id));
 const ruestungEpisch = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.seltenheit === "episch" && G.platz && G.platz !== "waffe"; });
-const wareEpisch = (g: string): Ware => ({ g, preis: EPISCH_PREIS });
+/** Diese Preise zählen nicht als Grundwert für den Trödler – sonst zahlte er für jedes geschmiedete epische Teil 1.500 statt 240 (Rotlehm kauft seine eigene Ware wie jeder Händler zu 80 % an) */
+const OHNE_GRUNDWERT = new Set<Ware>();
+const wareEpisch = (g: string): Ware => { const w = { g, preis: EPISCH_PREIS }; OHNE_GRUNDWERT.add(w); return w; };
 
 export const LAEDEN: Record<LadenId, Laden> = {
   waffen: { id: "waffen", name: "Zur Scharfen Kante", spruch: "Spitz, schwer oder beides – wir haben's.", haendler: "Brann Hackebeil", modell: "npc.schmied", x: 6439.2, y: 6439.2, blick: [0, -1], vor: [6439.5, 6436.5],
@@ -345,7 +347,7 @@ for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Tr
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
 export const ANKAUF_ANTEIL = 0.8, TROEDLER_ANTEIL = 0.5;
 /** Grundwert eines Gegenstands: der höchste Ladenpreis, sonst GegenstandDef.wert (sonst keiner – dann kauft auch der Trödler nicht) */
-export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g) p = Math.max(p, w.preis);
+export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g && !OHNE_GRUNDWERT.has(w)) p = Math.max(p, w.preis);
   if (p > 0) return p; const G = GEGENSTAENDE[g]; return G && G.wert && G.wert > 0 ? G.wert : G ? standardWert(G) : null; }
 /** Trödler (#88): Grundwert nach Seltenheit für alles ohne Ladenpreis und ohne eigenen wert – Rohstoffe, Fische, Essen, Werkzeug, Ausrüstung (×4), Abfall 1.
  *  Questgegenstände, Zierde, Sammelstücke, Währung und Splitterbinden-Dinge haben keinen – die kauft niemand. */
