@@ -16,6 +16,7 @@ Optionen in der Ausrüstungsliste (alle wahlfrei, ohne sie verhält sich die Fab
   "exklusiv": true           jeder Punkt des Körpers gehört höchstens zu einer Hülle (die erste in der Liste gewinnt) – keine doppelten Schichten
   Hülle "gesicht_frei": true das Gesicht bleibt frei (für Kapuzen und Helme mit offenem Gesicht)
   "vorbereitet": [...]       Teile, die gebaut und eingetragen, aber noch nicht an die Figur gehängt werden (z. B. Bogen: braucht eigene Bewegungen)
+  "schild_lage": 0.85         Schildmitte entlang des linken Unterarms (0 = Ellbogen, 1 = Handgelenk; Standard 0.55) – die Mitte liegt danach noch 4 cm zum Ellbogen hin; Helden: 1.16 = Mitte genau am Handgelenk (Wunsch Nutzer)
   "block": "waffe"           Block ohne Schild: Parade mit der Waffe
   "haltung": "zivil"         ohne Kampfstellung: Arme hängen locker, schwingen beim Gehen (Dorfbewohner)
   "haltung": "stab"          Stab aufrecht in der rechten Hand, linker Arm locker (Priesterin, Magier); Bewegungen zauber, segen, nova
@@ -251,7 +252,7 @@ for t in AUS["starr"]:
         ort = kb.head_local.lerp(kb.tail_local, 1 - t.get("sitz", 0.32)) + ey_ * t.get("versatz", 0.0); an_knochen(o, "kopf", Matrix.Translation(ort) @ R.to_4x4())
     else:                                                                                        # Schild: Vorderseite (-y) zeigt vom Arm weg, oben zeigt zum Ellbogen
         ey = -SCHILD0; ez = -UARM_L; ex = ey.cross(ez); R = Matrix((ex, ey, ez)).transposed(); dicke = max(v.y for v in e) - min(v.y for v in e)
-        mitte = KN["unterarm.L"].head_local.lerp(KN["unterarm.L"].tail_local, 0.55) + SCHILD0 * (0.055 + dicke / 2) - UARM_L * 0.04; an_knochen(o, "unterarm.L", Matrix.Translation(mitte) @ R.to_4x4())
+        mitte = KN["unterarm.L"].head_local.lerp(KN["unterarm.L"].tail_local, float(AUS.get("schild_lage", 0.55))) + SCHILD0 * (0.055 + dicke / 2) - UARM_L * 0.04; an_knochen(o, "unterarm.L", Matrix.Translation(mitte) @ R.to_4x4())
     o["ebene"] = t["id"]; o["platz"] = t["platz"]; o["art"] = "starr"; o["reihe"] = AUS["starr"].index(t); o["angriff"] = t.get("angriff", "angriff"); o["bewegungen"] = json.dumps(t.get("bewegungen", [])); print("starr:", t["id"], "an", o.parent_bone)
 # feste Griffpunkte für die linke Hand bei Zweihandwaffen – gemessen von der rechten Hand entlang der Waffenachse, für JEDE Waffe gleich.
 # So sind die Bewegungen hieb2h/stich2h unabhängig von der Waffe: jede Waffe, deren Griff bis dorthin reicht, passt ohne neue Bewegung.

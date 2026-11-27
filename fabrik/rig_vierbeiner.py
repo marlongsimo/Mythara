@@ -3,7 +3,7 @@
   python3 fabrik/rig_vierbeiner.py -- <meshy.blend> <ziel.blend> [hoehe=0.9] [bein=0.42] [hals=1] [schwanz=1] [bewegungen=ruhe,laufen]
 
 Optionen: bein = Hüfthöhe als Anteil der Höhe (Kuh: 0,5); hals = eigener Halsknochen zwischen Rumpf und Kopf (Kopf zum Boden senken);
-schwanz = Schwanzknochen hinten; fluegel = Flügelknochen an den Schultern (Boden-Drache: angelegt, beim Angriff zum Drohen gespreizt); bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite).
+schwanz = Schwanzknochen hinten; fluegel = Flügelknochen an den Schultern (Boden-Drache: angelegt, beim Angriff zum Drohen gespreizt); bewegungen aus: ruhe (wiegen), laufen, fressen (als ruhe: Kopf runter, kauen), gehen, angriff (Kopfstoß), treffer (zuckt zurück, 0,4 s), tod (kippt zur Seite), freude (Pet beim Fund: zwei Hüpfer, 1 s, einmal).
 
 Erwartet: Kopf vorn (-y), Länge entlang y, vier Füße am Boden.
 Knochen: wurzel – rumpf – kopf; wurzel – bein.VL/VR/HL/HR (vorn/hinten, links/rechts; je Bein ein steifer Knochen von der Hüfte zum Fuß).
@@ -135,6 +135,12 @@ def tod(t):                                                                     
     dreh("wurzel", ((0, 1, 0), 86 * u)); hoch(0.17 * H * u); kopf_runter(-10 * u + 20 * d)
     for n in ("VL", "HL"): dreh("bein." + n, ((0, 1, 0), -12 * u))
     for n in ("VR", "HR"): dreh("bein." + n, ((0, 1, 0), 10 * u))
+def freude(t):                                                                                  # Freude (Pet beim Fund): zwei kleine Hüpfer, Kopf hoch, Schwanz wedelt – einmal, 1 s
+    u = math.sin(math.pi * t); h = abs(math.sin(2 * math.pi * t)); hoch(0.09 * H * h * u)
+    kopf_runter(-14 * u); dreh("rumpf", ((1, 0, 0), -6 * h * u), ((0, 1, 0), 4 * math.sin(4 * math.pi * t) * u))
+    for n in ("VL", "VR"): dreh("bein." + n, ((1, 0, 0), -22 * h * u))
+    for n in ("HL", "HR"): dreh("bein." + n, ((1, 0, 0), 14 * h * u))
+    if SCHWANZ: dreh("schwanz", ((0, 1, 0), 25 * math.sin(2 * math.pi * 4 * t) * u))
 def flug(f, schlag=0.0):                                                                             # Flügel: 1 = angelegt (Ruhe, Gehen), 0 = gespreizt (Drohen beim Angriff)
     if not FLUEGEL: return
     for S, sx in (("L", 1), ("R", -1)): dreh("fluegel." + S, ((0, 1, 0), sx * (55 * f - schlag)), ((0, 0, 1), -sx * 35 * f))
@@ -142,7 +148,7 @@ def mit_fluegeln(fn, f_fn):
     def g(t): fn(t); flug(*f_fn(t))
     return g
 ALLE = {"ruhe": (ruhe, 48, True, {}), "laufen": (laufen, 16, True, {}), "fressen": (fressen, 72, True, {}), "gehen": (gehen, 32, True, {}),
-        "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30})}
+        "angriff": (angriff, 20, False, {"treffer": 10}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30}), "freude": (freude, 24, False, {})}
 if FLUEGEL:                                                                                      # angelegt beim Ruhen/Gehen/Laufen/Treffer/Tod, beim Angriff gespreizt und drohend geschlagen
     for n_, ff in (("ruhe", lambda t: (1.0, 4 * math.sin(2 * math.pi * t))), ("gehen", lambda t: (1.0, 0)), ("laufen", lambda t: (0.9, 6 * math.sin(4 * math.pi * t))),
                    ("angriff", lambda t: (max(0.0, 1 - 2.5 * math.sin(math.pi * t)), 25 * math.sin(3 * math.pi * t) * math.sin(math.pi * t))), ("treffer", lambda t: (1.0, -10 * math.sin(math.pi * t))), ("tod", lambda t: (1.0 - 0.6 * t, 0))):

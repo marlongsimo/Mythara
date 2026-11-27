@@ -3,7 +3,7 @@
   "name": "Sturmschwinge",
   "kategorie": "gegner",
   "aktuell": "v001",
-  "grundform": "Vogel (Flieger, landet)",
-  "status": "v001: Hüterin der Klippen: Riesenadler, sturmgrau, 5,5 m Spannweite – Klippenadler sturmgrau umgefärbt (fabrik/textur_ton.py), fabrik/rig_flieger.py spannweite=5.5 flughoehe=4 bewegungen=kreisen,sturzflug,landen,am_boden,angriff; Bewegungen am_boden, angriff, fliegen, kreisen, landen, sturzflug, tod, treffer – img/figuren-echt3d/sturmschwinge3d.glb (+ .mobil.glb) (Block H #159)",
-  "herkunft": "aus Vorlagen"
+  "grundform": "Flieger (Greif), eigenes Modell",
+  "status": "v001: Modell des Nutzers (uebergabe/figuren/hueter/sturmschwinge.blend, ersetzt die Vorlagen-Fassung aus 940ff531c) – gepanzerter Greif, aufrecht mit erhobenen Flügeln, Spannweite 5,5 m; fabrik/rig_flieger.py flughoehe=4; Bewegungen fliegen, kreisen, sturzflug, landen, am_boden, angriff, treffer, tod – img/figuren-echt3d/sturmschwinge3d.glb (+ .mobil.glb) (Block H #159)",
+  "herkunft": "eigenes Modell (Nutzer)"
 }
