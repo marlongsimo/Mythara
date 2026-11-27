@@ -109,3 +109,24 @@ Diese Dateien hängen an Schaltern oder Adress-Parametern. Löschen hieße, Code
 ## Nur auf `main`: Altlasten
 
 7 alte Bodenbilder `echtzeit/welt/23x_23x.webp` liegen nur noch auf `main`. Sie wurden in Commit 5411de34 umbenannt. Wenn du das Löschen auf `main` freigibst, kommen sie mit auf die Liste.
+
+## Löschen auf `main` (27.11., Entscheidung des Nutzers in #108)
+
+**Entscheidung:** Das Würfelspiel wird komplett entfernt, und Gruppe A gilt auch für `main`. Die Integration setzt das zusammen mit der neuen Startseite (#78) um.
+
+**Genaue Liste:** `doku/aufraeumen-main-liste.txt`. Sie umfasst 674 Dateien (72,7 MB) und ist gegen `origin/main` 5844f65c geprüft.
+- Gruppe A (226 Dateien auf `main`)
+- Würfelspiel-Seiten und -Code (156 Dateien)
+- Bilder, die nur das Würfelspiel nutzt (311 Dateien)
+- Einige Dateien zählen zu zwei Gruppen; die Liste nennt jede nur einmal.
+
+**Nicht auf der Liste:**
+- Alles aus `echtzeit/`, `fonts/`, `vendor/`, `verbindung.js` und `UI/mythara-ui.css`.
+- Jedes Bild, dessen Pfad oder Dateiname irgendwo in Riftmere vorkommt, also in Quellen, gebauten Seiten, Weltdaten, `app/` oder Webmanifest.
+- Bewusst vorsichtig geprüft: Wer einen Treffer hat, bleibt. Deshalb bleiben z. B. einzelne Bilder in `img/rabenmoor`, `img/krone` und `img/hochwacht`.
+
+**Ersetzt die Integration selbst:** `index.html`, `manifest.webmanifest`, `sitemap.xml`, `robots.txt` (Startseite #78, Weiterleitungen).
+
+**Bleibt:** `supabase/` (auch `functions/arena`), die Konzept-`*.md` in der Wurzel, `doku/`, `CNAME`, `render.yaml`.
+
+**Offen, nur auf Wunsch:** die 7 alten Bodenbilder `echtzeit/welt/23x_23x.webp`. Sie sind nicht in der Liste.
