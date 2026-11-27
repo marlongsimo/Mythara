@@ -76,7 +76,7 @@ Alle mit **Querverbindung** zu bekannten Orten (Kanon „Quests über Regionsgre
 
 | Hüter | Ort | stark gegen | schwach gegen | Mechanik | droppt (starke Fassung) |
 |---|---|---|---|---|---|
-| **Grumhold** (uralter Bergtroll mit Steinplatten und Keule) | Trollhalle im Bergwerk | Nahkampf (Steinhaut, −50 %) | **Magie** | Stampf-Ring aus Geröll (angezeigt, ausweichen); wirft Felsbrocken (Schattenkreis); bei halbem Leben rufen zwei Felsbrocken-Wächter Geröll herab – zerschlagen, sonst heilen sie ihn | **Nahkampf-Rüstung Stufe 70** (Helm, Brustplatte, Beinschienen, Turmschild) |
+| **Grumhold** (uralter Bergtroll mit Steinplatten und Keule) | Trollhalle im Bergwerk | Nahkampf (Steinhaut, −50 %) | **Magie** | Stampf-Ring aus Geröll (angezeigt, ausweichen); wirft Felsbrocken (Schattenkreis); bei halbem Leben rufen zwei Felsbrocken-Wächter Geröll herab – zerschlagen, sonst heilen sie ihn | **Nahkampf-Rüstung Stufe 70** (Helm, Torso, Beinschutz – kein Schild, Entscheidung des Nutzers) |
 | **Die Sturmschwinge** (Riesenadler) | Horst auf dem Gipfel des Grauhorns | Magie (Wind lenkt Zauber ab, −50 %) | **Fernkampf** | kreist außer Nahkampf-Reichweite, stößt herab (Schattenkreis); nach dem Sturzflug 4 s am Boden; Sturmböen schieben Spieler über den Gipfel | **Fernkampf-Rüstung Stufe 70** (Haube, Wams, Hose) |
 | **Die Frostwitwe** (Eismagierin) | Eishöhle am Hochpass | Fernkampf (Eiswand fängt Geschosse) | **Nahkampf** | friert Bodenfelder ein (verlangsamt, wer zu lange steht, erstarrt); Eissplitter-Wächter; Frostnova (angezeigt) | **Magie-Rüstung Stufe 70** (Kapuze, Robe, Rock) |
 
