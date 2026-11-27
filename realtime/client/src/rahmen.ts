@@ -406,12 +406,12 @@ function tabZeichnen(): void {
       : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`;
     setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen(), be = inventar().berufe || {};
-    /* ein Raster ohne Scrollen: Reihe 1 die Kampf-Skills und das Heldenlevel, darunter die Berufe; antippen = XP-Leiste unten, lange drücken = Skillbuch */
+    /* ein Raster ohne Scrollen: zuerst die Kampf-Skills, dahinter die Berufe (zwei Reihen, das Heldenlevel steht in der Ausrüstung); antippen = XP-Leiste unten, lange drücken = Skillbuch */
     const kachel = (art: "skill" | "beruf", k: string): string => { const S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0), name = skillName(art, k);
       return `<button type="button" class="skachel${skillWahl === art + ":" + k ? " an" : ""}" data-${art}="${k}" aria-label="${name} ${S.L}" title="${name}: Level ${S.L}">${art === "skill" ? SKILL_ZEICHEN[k as Skill] : BERUF_ZEICHEN[k]}<em>${S.L}</em><u><i style="width:${S.anteil}%"></i></u></button>`; };
     let fuss = ""; if (skillWahl) { const [art, k] = skillWahl.split(":") as ["skill" | "beruf", string], S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0);
       fuss = `<div class="sfuss"><b>${skillName(art, k)} ${S.L}</b><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></div>`; }
-    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${1 + Math.ceil(BERUFE.length / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${heldKachel(heldenlevel(x))}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
+    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${Math.ceil((SKILLS.length + BERUFE.length) / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
     el.classList.toggle("mitfuss", Boolean(fuss)); setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
