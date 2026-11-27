@@ -1,6 +1,6 @@
 # Die neuen Gegnerstufen (berechnet aus den Kampfwerten)
 
-*Konzept-Chat, 27.11.2026. **Entschieden (Nutzer):** Die Gegner bleiben genau so, wie sie sind, ohne Farbe und ohne neue Werte. Um die Stufen der bestehenden Gegner kümmern wir uns nicht weiter.*
+*Konzept-Chat, 27.11.2026. **Entschieden (Nutzer, präzisiert):** Die **berechnete Stufe wird angezeigt**, **mit Farben** (Variante A). An den Werten der Gegner ändert sich nichts. Um die Stufen der bestehenden Gegner kümmern wir uns nicht weiter.*
 Grundlage: Kanon „Gegnerstufe wird berechnet“. Die Stufe kommt aus `kampfwerte.ts` `gegnerStufe()`: dieselbe Formel wie das Heldenlevel, die Lebenspunkte zählen als LP-Level.
 Die Zahlen unten sind mit dem Stand von `feature/realtime-engine` vom 27.11. nachgerechnet. Werte geändert hat dabei niemand, nur die **Anzeige** ist neu.
 
@@ -45,5 +45,5 @@ Je höher die Gegner, desto stärker wächst die Zahl, weil ihre Lebenspunkte vi
 **Empfehlung: A.** Die Anzeige bleibt ehrlich, und die Farbe sagt Spielern ohne Rechnen, woran sie sind.
 
 ## Offen
-- A oder B?
+- ~~A oder B?~~ Entschieden: **A** (berechnete Stufe mit Farben).
 - Bei A: Grenzen der Farben (z. B. nach der geschätzten Zahl der Treffer, die man selbst aushält).
