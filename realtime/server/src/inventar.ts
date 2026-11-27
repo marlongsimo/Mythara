@@ -216,6 +216,9 @@ export function wirkungenVon(nutzer: string): Wirkung[] { const e = je.get(nutze
 /** Eine Wirkung beginnen (ersetzt eine laufende derselben Art, z. B. Essen). Zurück: die laufenden Wirkungen */
 export function wirkungSetzen(sb: Sb, nutzer: string, id: string): Wirkung[] { const e = je.get(nutzer); if (!e) return [];
   const w = wirkungDazu(e.inv.wirkungen, id); if (w.length) e.inv.wirkungen = w; else delete e.inv.wirkungen; geaendert(sb, nutzer, e); return wirkungenAktiv(e.inv.wirkungen); }
+/** Trank-Platz leeren (Lindentau stark, #133: hebt Nebenwirkungen auf) */
+export function trankWirkungWeg(sb: Sb, nutzer: string): Wirkung[] { const e = je.get(nutzer); if (!e) return []; const w = wirkungenAktiv(e.inv.wirkungen).filter((x) => x.art !== "trank");
+  if (w.length) e.inv.wirkungen = w; else delete e.inv.wirkungen; geaendert(sb, nutzer, e); return w; }
 /* ───────── Geladene Waffen (Phase 5b): Ladungen an der angelegten Waffe (angelegtD.waffe.ladungen) ───────── */
 /** Die angelegte Waffe und ihre Ladungen (null: keine Waffe) */
 export function waffeLadung(nutzer: string): { g: string; n: number } | null { const e = je.get(nutzer); const g = e && e.inv.angelegt.waffe; if (!e || !g) return null; return { g, n: (e.inv.angelegtD && e.inv.angelegtD.waffe && e.inv.angelegtD.waffe.ladungen) || 0 }; }

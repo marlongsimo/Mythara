@@ -479,7 +479,9 @@ export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? 
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.
  * Hier stehen schon Werte, Text und Modell (img/objekte3d, fabrik/drehobjekt.py: schwebt und dreht sich, Animation „drehen“). */
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
-export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
+export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string;
+  /** Kräuterkunde (#133): Ausdauer sofort + so viele Prozent · kostet so viele LP beim Trinken (Nebenwirkung) · hebt Trank-Nebenwirkungen auf · gibt das leere Fläschchen zurück */
+  ausdauer?: number; kostet?: number; nebenAuf?: boolean; flaeschchen?: boolean; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
   apfel: { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 2, anteil: 0 }, stapelbar: true, modell: "",
     werte: [["Heilung", "2 (nicht über das maximale Leben)"], ["Stapelbar", "ja"]], text: "Ein Apfel aus Gisberts Obstwiesen." },
@@ -630,3 +632,31 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
   E("wolfsgulasch", "Wolfsgulasch", 9, "wolfsgulasch", "Defense +2 für 5 Minuten", "Wolfsfleisch, im Kessel geschmort.", true);
   GEGENSTAENDE.alter_hecht = { id: "alter_hecht", name: "Der alte Hecht", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
     text: "Ein Hecht, so lang wie ein Arm, mit Narben am Maul. Die Fischerin vom Schilfsee wird staunen – und Lambert erst." }; }
+
+/* ───────── Kräuterkunde (Phase 5c, #133): Kräuter, Sichel, leeres Fläschchen, Trüber Sud und die Tränke (schwach/stark) – Bilder von Figuren (#28) ───────── */
+{ const KS = "img/objekte3d/skilling/kraeuter/symbole/", TS = "img/objekte3d/kraeuterkunde/symbole/", TM = "img/objekte3d/kraeuterkunde/";
+  const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
+    ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
+    ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
+  GEGENSTAENDE.sichel = { id: "sichel", name: "Sichel", art: "Werkzeug", seltenheit: "anfaenger", bild: TS + "sichel.webp", modell3d: "img/figuren-echt3d/basemann3d.teile/waffe.sichel.glb", wert: 10,
+    text: "Eine kleine Sichel für Kräuter. Ohne sie reißt man die Pflanzen nur aus." };
+  GEGENSTAENDE.leeres_flaeschchen = { id: "leeres_flaeschchen", name: "Leeres Fläschchen", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: TS + "leeres_flaeschchen.webp", modell3d: TM + "leeres_flaeschchen.glb", wert: 2,
+    text: "Ein Fläschchen aus grünem Glas. Am Kessel wird ein Trank daraus; getrunken bekommt man es zurück." };
+  GEGENSTAENDE.trueber_sud = { id: "trueber_sud", name: "Trüber Sud", art: "Abfall", seltenheit: "anfaenger", bild: TS + "trueber_sud.webp", modell3d: TM + "trueber_sud.glb", text: "Ein Fläschchen grauer Brühe. Nicht trinkbar." };
+  const T: [string, string, string, number, string | undefined, Partial<Verbrauch>, string][] = [
+    ["atemtrank_schwach", "Atemtrank (schwach)", "gewoehnlich", 0, undefined, { ausdauer: 20 }, "Ausdauer sofort +20 %"],
+    ["atemtrank_stark", "Atemtrank (stark)", "gewoehnlich", 0, undefined, { ausdauer: 40 }, "Ausdauer sofort +40 %"],
+    ["steinhaut_schwach", "Steinhaut (schwach)", "gewoehnlich", 0, "steinhaut_schwach", {}, "Defense +2 für 3 Minuten"],
+    ["steinhaut_stark", "Steinhaut (stark)", "selten", 0, "steinhaut_stark", {}, "Defense +4 für 5 Minuten"],
+    ["moorfeuer_schwach", "Moorfeuer (schwach)", "gewoehnlich", 0, "moorfeuer_schwach", {}, "Stärke +2 für 3 Minuten"],
+    ["moorfeuer_stark", "Moorfeuer (stark)", "selten", 0, "moorfeuer_stark", { kostet: 5 }, "Stärke +5 für 3 Minuten · Nebenwirkung: kostet 5 Lebenspunkte"],
+    ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
+    ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
+    ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"]];
+  for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
+    GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
+    VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",
+      werte: [...(heil ? [["Heilung", `${heil} (nicht über das maximale Leben)`] as [string, string]] : []), ["Wirkung", w], ["Danach", "leeres Fläschchen"]], text: w }; }
+  VERBRAUCH.kleiner_heiltrank.flaeschchen = true; VERBRAUCH.heiltrank.flaeschchen = true; /* getrunkene Tränke geben das Fläschchen zurück */ }

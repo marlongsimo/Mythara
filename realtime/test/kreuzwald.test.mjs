@@ -12,7 +12,7 @@ check(Z.b === 256 && Z.h === 192 && Z.x0 === 6336 && Z.y0 === 6464, "Das Gebiet 
 check(STRECKEN.has("kreuzwald") && darfKaempfen(new Set(), "kreuzwald", "kreuzwald") && ORTSTUFE.kreuzwald === 3, "Immer frei, Gegner der Stufe 3");
 setzeKarte(K, FEIN); setzeStaerke(ORTSTUFE.kreuzwald, 1);
 check(Math.abs(STAERKE.lp - 0.9) < 1e-9, `Stufe 3: Banditen haben ${Math.round(MONSTER.bandit_dolch.lp * STAERKE.lp)} Leben`);
-const s = Sim.welt(11), gegner = () => s.wesen.filter((w) => !w.held);
+const s = Sim.welt(11), gegner = () => s.wesen.filter((w) => !w.held && !w.gp); /* ohne die Gegnerplätze der Welt (#130) */
 check(gegner().length === 4 && gegner().every((w) => w.typ === "bandit_dolch"), "Vier Dolch-Banditen");
 const lichtung = gegner().every((w) => { const wx = Z.x0 + w.x, wy = Z.y0 + w.y; return wx > 6530 && wx < 6575 && wy > 6565 && wy < 6600; }); check(lichtung, "…auf der Lichtung (Weltfelder " + gegner().map((w) => `${(Z.x0 + w.x).toFixed(0)}|${(Z.y0 + w.y).toFixed(0)}`).join(", ") + ")");
 const weit = gegner().map(() => 0); for (let i = 0; i < 30 * 20; i++) { const vor = gegner().map((w) => ({ x: w.x, y: w.y })); s.schritt(); gegner().forEach((w, k) => { weit[k] += Math.hypot(w.x - vor[k].x, w.y - vor[k].y); }); }

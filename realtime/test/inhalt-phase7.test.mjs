@@ -32,7 +32,7 @@ check(FISCHE.wels && FISCHE.wels.level === 45 && FANGGRUENDE.some((g) => g.art =
 console.log("\nLager");
 setzeKarte(KARTEN.welt, FEIN);
 { const s = Sim.welt(1, undefined, true), n = (t) => s.wesen.filter((w) => w.typ === t).length;
-  check(n("schlickkrebs") === 4 && n("splitterreiher") === 5 && n("turmwaechter") === 6 && n("gruenlicht") === 1, `Ostufer: 4 Krebse, 5 Reiher · Turm: 6 Turmwächter, 1 Grünlicht (${NEU.map(n).join("/")})`); }
+  check(n("schlickkrebs") >= 4 && n("splitterreiher") >= 5 && n("turmwaechter") === 6 && n("gruenlicht") === 1, `Ostufer: mindestens 4 Krebse, 5 Reiher (dazu Gegnerplätze #130) · Turm: 6 Turmwächter, 1 Grünlicht (${NEU.map(n).join("/")})`); }
 
 console.log("\nGrünlicht heilt Turmwächter");
 { const s = Sim.welt(2, undefined, true), U = KARTEN.welt.ursprung, P = { x: 6800.5 - U[0], y: 6520.5 - U[1] }; /* Weltfelder am Ostufer (der Ursprung der Kampfwelt hängt von den Gebieten ab, #122) */ s.wesen = s.wesen.filter((w) => w.held); const id = s.beitreten("schildwaechter", 0, { x: P.x, y: P.y }, kampfwerte({ ...NULL_XP, defense: xpFuer(60), lp: xpFuer(70) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e6; s["karte"].MEHRKAMPF = [[0, 0, 1e5, 1e5]];

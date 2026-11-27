@@ -61,7 +61,8 @@ export interface Kampfwerte {
   waffe: { art: Art; schaden: [number, number]; plus: number; bonus: number; ticks: number; takt: number; reich: number; flug?: number; /** mehr Max Hit gegen eine Gegnerfamilie */ gegen?: Record<string, number>; /** Fernkampf: was fliegt (Armbrust: Bolzen, sonst Pfeil) – für die Darstellung bei allen Spielern */ geschoss?: "pfeil" | "bolzen" };
   stil: number; max: number; heldenlevel: number; skills: SkillXp;
   /** Set-Bonus (shared/gegenstaende.ts SETS, Phase 5d): Treffer gegen den Helden heilen mit chance um anteil des Schadens */ set?: { chance: number; anteil: number };
-  /** die Waffe ist geladen (Splitterbinden, Phase 5b): Angriffs- und Schadensboni der Waffe × 1,1, jeder Angriff kostet eine Ladung */ geladen?: boolean }
+  /** die Waffe ist geladen (Splitterbinden, Phase 5b): Angriffs- und Schadensboni der Waffe × 1,1, jeder Angriff kostet eine Ladung */ geladen?: boolean;
+  /** Nebelschleier (#133): Gegner bemerken den Helden erst auf diesem Anteil ihrer Weite */ bemerken?: number }
 
 /** Die Riftmere-Kurve (festgelegt 26.11.2026): kumulierte XP je Level, Index = Level (0 und 1 = 0 XP). Gilt für alle Kampfskills und alle Berufe.
  *  Die Werte sind fest – wer sie ändert, ändert die Level aller gespeicherten Helden. */
@@ -104,7 +105,7 @@ export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: numb
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
 /** wirk: Skill-Level aus Wirkungen (shared/wirkungen.ts, z. B. Fischsuppe Defense +2) – zählt im Kampf, nicht für Heldenlevel oder Anforderungen */
 /** extra.geladen: die angelegte Waffe hat Ladungen (Phase 5b) */
-export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean } = {}): Kampfwerte {
+export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number } = {}): Kampfwerte {
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k) + (wirk[k] || 0)])) as Record<Skill, number>;
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const s = stilIndex(stil, W.art), S = STILE[W.art][s], p = (k: Skill) => S.plus[k] || 0;
@@ -124,7 +125,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
   else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
   return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}), ...(W.gegen ? { gegen: { ...W.gegen } } : {}), ...(W.art === "fern" ? { geschoss: angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].art === "Armbrust" ? "bolzen" as const : "pfeil" as const } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x },
-    ...(lade > 1 ? { geladen: true } : {}), ...(() => { const S0 = aktiveSets(Object.values(angelegt))[0]; return S0 ? { set: { ...S0.heilung } } : {}; })() };
+    ...(lade > 1 ? { geladen: true } : {}), ...(extra.bemerken !== undefined && extra.bemerken !== 1 ? { bemerken: extra.bemerken } : {}), ...(() => { const S0 = aktiveSets(Object.values(angelegt))[0]; return S0 ? { set: { ...S0.heilung } } : {}; })() };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */
 export function schadenWurf(w: Kampfwerte["waffe"], z: number): number { const r = w.schaden[0] + Math.floor(z * (w.schaden[1] - w.schaden[0] + 1));
