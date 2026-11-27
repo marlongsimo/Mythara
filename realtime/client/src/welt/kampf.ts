@@ -113,7 +113,9 @@ export class WeltKampf {
       if ((m.t === "gebucht" || m.t === "gutschrift") && m.ep) try { localStorage.setItem("ez_ep", JSON.stringify(m.ep)); localStorage.setItem("ez_seelen", String(m.seelen || 0)); } catch { /* privat */ } };
     if (!this.hoerDa) { this.hoerDa = true; window.addEventListener("ez-server", hoer); this.hoerer.push(hoer); }
     const n = await verbinde(url, this.s.held, [], (z) => this.zustand(z), (art, grund) => { this.art = art; if (art === "lokal" && url) ohneServerMelden(grund); }, url ? { t: "anmeldung", token, ...geraetAngaben(), ...(aktiverHeld() ? { angelegt: inventar().angelegt } : {}) } : undefined, (grund) => this.verbindungWeg(grund));
-    if (this.vorbei) { n.ende(); return; } if (wieder && n.art !== "server") { n.ende(); return; } /* neu verbinden: nicht auf das Rechnen im Browser ausweichen */ this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; this.betreten(b.x, b.y); }
+    if (this.vorbei) { n.ende(); return; } if (wieder && n.art !== "server") { n.ende(); return; } /* neu verbinden: nicht auf das Rechnen im Browser ausweichen */ this.netz = n; this.v1Start(n); if (this.betretenOffen) { const b = this.betretenOffen; this.betretenOffen = null; this.eingetreten = false; const o = this.s.ort, pf = (this.s as unknown as { pfad?: { x: number; y: number }[] }).pfad;
+      /* #137: ist der Held seitdem selbst gelaufen (nicht gesperrt, nah an der gemerkten Stelle), dort betreten, wo er JETZT steht, mit seinem Laufziel – sonst setzt ihn der Server an den Anfang zurück (Gummiband). Teleport, Tür: die gemerkte Stelle */
+      if (!this.s.gesperrt && Math.hypot(o.x - b.x, o.y - b.y) <= 12) this.betreten(o.x, o.y, pf && pf.length ? pf[pf.length - 1] : null); else this.betreten(b.x, b.y); }
   }
   /** Kampfregeln v1 (eigener Held): beim Rechnen im Browser Held und Gegner umstellen; Ausrüstungswechsel an Server oder Simulation weitergeben */
   v1 = false; private v1Stufen = "";
