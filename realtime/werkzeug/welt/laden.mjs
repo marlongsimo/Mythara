@@ -3,7 +3,7 @@
  * Alle Werkzeuge der Pipeline (Prüfung, Bodenbäcker, Chunk-Bau, Editor-Dienst) holen ihre Daten hierüber.
  */
 import { build } from "esbuild";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, rmSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { join } from "node:path";
 
@@ -12,9 +12,10 @@ export const REALTIME = join(HIER, "..", ".."), WURZEL = join(REALTIME, ".."), W
 
 /** shared/welt (und die Gegnerarten aus shared/config) für Node bündeln und laden */
 export async function gemeinsam() {
-  const aus = join(HIER, ".welt.gebaut.mjs");
+  /* je Prozess eine eigene Datei: parallel laufende Tests überschreiben sich sonst die halb geschriebene Datei */
+  const aus = join(HIER, `.welt.gebaut.${process.pid}.${Date.now()}.mjs`);
   await build({ stdin: { contents: 'export * from "./shared/welt"; export { MONSTER } from "./shared/config"; export * as karte from "./shared/karte";', resolveDir: REALTIME, loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: aus, logLevel: "silent" });
-  return import(pathToFileURL(aus).href + "?t=" + Date.now());
+  try { return await import(pathToFileURL(aus).href); } finally { rmSync(aus, { force: true }); }
 }
 
 const json = (pfad) => { try { return JSON.parse(readFileSync(pfad, "utf8")); } catch (e) { throw new Error(`${pfad}: ${e.message}`); } };
