@@ -88,7 +88,7 @@ export const BOSS_BEUTE_ANTEIL = 0.1;
 export function instanzFassung(d: InstanzDef, an: (schalter: string) => boolean, wahl: BossWahl = BOSS_WAHL_STANDARD): BossFassung | null {
   if (d.danach && an(d.danach)) return wahl === "instanz" ? "stark" : null; if (an(d.schalter)) return "quest"; return d.danach ? "leer" : null; }
 
-export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
+export interface Tuer { /** #160: so heißt der Schalter der Sperre in den Welt-Daten (spiel.json kollision.sperren), falls anders als schalter – dann backt bau.ts sie nicht ins Raster */ weltSchalter?: string; id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
   /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;
   /** Tür vor einer Instanz mit Eintritt (InstanzDef.id): zusätzlich nur offen mit dem Gegenstand dabei – oder wenn man im Raum bzw. in der Tür steht */ instanz?: string;
   /** Eingang der Welt (Interaktion mit Teleport, z. B. „turm_wappentuer“), der nur bei offener Tür geht – sonst der Text zu (Browser) */ eingang?: string }

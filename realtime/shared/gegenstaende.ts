@@ -40,7 +40,9 @@ export function werteVon(G: Gegenstand): [string, string][] {
     if (G.passiv) z.push(["Geladen", `${G.passiv.name}: ${Math.round(G.passiv.chance * 100)} % je Treffer – ${G.passiv.text}`], ["Laden", "Bindestein, 1 Splitter je Ladung (höchstens 1.000) · bindet die Waffe"]); /* #151 */
     if (G.anforderung) z.push(["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`]); return z; }
   if (G.trank && VERBRAUCH[G.trank]) return VERBRAUCH[G.trank].werte;
-  if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
+  if (G.abwehr) return [["Verteidigung Nahkampf", vz(G.abwehr.nah)], ["Verteidigung Fernkampf", vz(G.abwehr.fern)], ["Verteidigung Magie", vz(G.abwehr.magie)], ...(G.bonus && G.bonus.fernAngriff ? [["Fernkampf-Angriff", vz(G.bonus.fernAngriff)] as [string, string]] : []), ...(G.bonus && G.bonus.genau ? [["Magische Genauigkeit", vz(G.bonus.genau)] as [string, string]] : []),
+    /* #160: Angriffsboni an Rüstung und Schild (Stufe 70, Glutsteinschild) */ ...(G.bonus && G.bonus.geschick ? [["Geschick", vz(G.bonus.geschick)] as [string, string]] : []), ...(G.bonus && G.bonus.staerke ? [["Stärke", vz(G.bonus.staerke)] as [string, string]] : []),
+    ...(G.bonus && G.bonus.fernStaerke ? [["Fernkampf-Stärke", vz(G.bonus.fernStaerke)] as [string, string]] : []), ...(G.bonus && G.bonus.magieSchaden ? [["Magieschaden", `+${G.bonus.magieSchaden} %`] as [string, string]] : []), ...(G.anforderung ? [["Benötigt", `${ANF_NAME[G.anforderung.skill]} ${G.anforderung.level}`] as [string, string]] : [])];
   return G.platz === "waffe" ? [["Kampfwerte", "Werte folgen (bis dahin wie Fäuste)"]] : G.platz ? [["Verteidigung", "Werte folgen"]] : [];
 }
 
@@ -250,13 +252,7 @@ export interface SetBonus { id: string; name: string; teile: string[]; text: str
 export const SETS: Record<string, SetBonus> = {
   rabenset: { id: "rabenset", name: "Rabenset", teile: ["rabenkapuze", "rabenpanzer", "rabenbeinschuetzer"], heilung: { chance: 0.15, anteil: 0.5 },
     text: "Alle drei Teile angelegt: Jeder Treffer, der Schaden macht, heilt mit 15 % Wahrscheinlichkeit um 50 % dieses Schadens (nicht über das maximale Leben)." },
-  /* #160: die Sätze der Stufe 70 (Teile in RUESTUNG_STUFE70; der Turmschild gehört zur Steinvogt-Platte, zählt aber nicht für den Bonus) */
-  steinvogt: { id: "steinvogt", name: "Steinvogt-Platte", teile: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen"], bonus: { staerke: 2 },
-    text: "Helm, Brustplatte und Beinschienen angelegt: +2 Stärke." },
-  sturmfeder: { id: "sturmfeder", name: "Sturmfeder", teile: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"], bonus: { fernStaerke: 2 },
-    text: "Haube, Wams und Hose angelegt: +2 Fernkampf-Stärke." },
-  frostschleier: { id: "frostschleier", name: "Frostschleier", teile: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"], bonus: { magieSchaden: 2 },
-    text: "Kapuze, Robe und Rock angelegt: +2 % Magieschaden." },
+  /* #160: die Rüstung der Stufe 70 hat keinen Set-Bonus (Entscheidung des Nutzers, 27.11.) – die Boni stecken in den Teilen */
 };
 /** Aktive Set-Boni bei diesen angelegten Gegenständen */
 export const aktiveSets = (angelegt: (string | undefined)[]) => Object.values(SETS).filter((s) => s.teile.every((t) => angelegt.includes(t)));
@@ -579,44 +575,54 @@ export const WAFFEN_STUFE70 = ["echoschneide", "seelenbogen", "seelenfokus"];
     anforderung: { skill: "magie", level: 70 }, waffe: { art: "magie", ticks: 5, reich: 6, flug: 13, genau: 30, magieStaerke: 216 }, passiv: PASSIVE.seelenbrand,
     text: "Ein Stab mit einem Herz aus kaltem Feuer. Wen er trifft, der brennt von innen. " + T }; }
 /* ───────── #160 (Block H): Rüstung der Stufe 70 – je Hüter der Hochlande ein Satz (doku/konzepte/phase-11.md, Richtwerte aus gipfelgericht.md) ─────────
-   Anforderung Defense 70, etwa +8 % über Mythisch, Set-Bonus bei allen Teilen des Satzes (SETS unten): Steinvogt-Platte +2 Stärke, Sturmfeder +2 Fernkampf-Stärke,
-   Frostschleier +2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
+   Anforderung Defense 70; Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen, kein Set-Bonus, kein Schild –
+   Löwenwacht (Nahkampf, Kennungen steinvogt_*) +2/+3/+3 Stärke, Sturmfeder +2/+3/+3 Fernkampf-Stärke, Frostschleier +1/+2/+2 % Magieschaden (neu, kampfwerte.ts). Nur aus der starken Fassung der Hüter (HUETER_BEUTE in shared/bosse.ts, insgesamt 1 : 75 je Sieg), handelbar.
    Teile und Rucksackbilder von Figuren (#159, abe4736cc: img/figuren-echt3d/<figur>.teile/<ebene>.glb, img/objekte3d/ausruestung/stufe70/<ebene>.webp). Namen sind Vorschläge. */
 export const RUESTUNG_STUFE70: Record<"steinvogt" | "sturmfeder" | "frostschleier", string[]> = {
-  steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen", "steinvogt_turmschild"],
+  steinvogt: ["steinvogt_helm", "steinvogt_platte", "steinvogt_beinschienen"],
   sturmfeder: ["sturmfeder_haube", "sturmfeder_wams", "sturmfeder_hose"],
   frostschleier: ["frostschleier_kapuze", "frostschleier_robe", "frostschleier_rock"] };
-{ const EBENE70: Record<string, string> = { steinvogt_helm: "kopf.helm.steinvogt", steinvogt_platte: "ruestung.brust.steinvogt", steinvogt_beinschienen: "ruestung.beine.steinvogt", steinvogt_turmschild: "schild.turm.steinvogt",
+{ const EBENE70: Record<string, string> = { steinvogt_helm: "kopf.helm.steinvogt", steinvogt_platte: "ruestung.brust.steinvogt", steinvogt_beinschienen: "ruestung.beine.steinvogt",
     sturmfeder_haube: "kopf.helm.sturmfeder", sturmfeder_wams: "ruestung.brust.sturmfeder", sturmfeder_hose: "ruestung.beine.sturmfeder",
     frostschleier_kapuze: "kopf.helm.frostschleier", frostschleier_robe: "ruestung.brust.frostschleier", frostschleier_rock: "ruestung.beine.frostschleier" };
   const T = (id: string, name: string, platz: Platz, art: string, vorbild: string, ab: [number, number, number], bonus: Gegenstand["bonus"], text: string, gruppe: "nahkampf" | "fernkampf" | "magie") => {
     const V = GEGENSTAENDE[vorbild], ebene = EBENE70[id]; /* #159: eigene Teile von Figuren (abe4736cc); sonst die mythischen */
     GEGENSTAENDE[id] = { id, name, platz, art, seltenheit: "mythisch", ebenen: ebene ? [ebene] : V ? V.ebenen : [], ...(ebene ? { bild: "img/objekte3d/ausruestung/stufe70/" + ebene + ".webp" } : V && V.bild ? { bild: V.bild } : {}), anforderung: { skill: "defense", level: 70 },
       abwehr: { nah: ab[0], fern: ab[1], magie: ab[2] }, bonus, text }; RUESTUNGSGRUPPE[id] = gruppe; };
-  const S = "Teil der Steinvogt-Platte – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
-  T("steinvogt_helm", "Steinvogt-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [49, 50, -1], { fernAngriff: -3, genau: -6 }, "Ein Helm aus Bergplatten, schwer wie ein Fels. " + S, "nahkampf");
-  T("steinvogt_platte", "Steinvogt-Brustplatte", "brust", "Schwere Rüstung", "eisenwacht_mythisch", [112, 114, -6], { fernAngriff: -15, genau: -30 }, "Steinplatten, mit Erzadern vernietet. " + S, "nahkampf");
-  T("steinvogt_beinschienen", "Steinvogt-Beinschienen", "beine", "Schwere Rüstung", "eisenbeinschienen_mythisch", [71, 71, -4], { fernAngriff: -11, genau: -21 }, "Beinschienen, die bei jedem Schritt knirschen wie Geröll. " + S, "nahkampf");
-  T("steinvogt_turmschild", "Steinvogt-Turmschild", "nebenhand", "Schild", "sternenschild_mythisch", [64, 65, 0], { fernAngriff: -2, genau: -8 }, "Ein Turmschild aus einer einzigen Felsplatte. " + S, "nahkampf");
-  T("sturmfeder_haube", "Sturmfeder-Haube", "kopf", "Leichte Rüstung", "jaegerkapuze_mythisch", [13, 13, 11], { fernAngriff: 12, genau: -1 }, "Leder mit grauen Schwungfedern, leicht wie ein Windstoß. " + F, "fernkampf");
-  T("sturmfeder_wams", "Sturmfeder-Wams", "brust", "Leichte Rüstung", "jaegerwams_mythisch", [58, 59, 54], { fernAngriff: 32, genau: -15 }, "Federn in Lagen, die jeden Windhauch spüren. " + F, "fernkampf");
-  T("sturmfeder_hose", "Sturmfeder-Hose", "beine", "Leichte Rüstung", "jaegerhose_mythisch", [27, 29, 26], { fernAngriff: 19, genau: -10 }, "Gehärtetes Leder, gesäumt mit Sturmfedern. " + F, "fernkampf");
-  T("frostschleier_kapuze", "Frostschleier-Kapuze", "kopf", "Stoffrüstung", "magierkapuze_mythisch", [16, 16, 7], { genau: 8 }, "Ein Schleier aus Eisfäden, der nie taut. " + E, "magie");
-  T("frostschleier_robe", "Frostschleier-Robe", "brust", "Stoffrüstung", "magierrobe_mythisch", [54, 54, 33], { genau: 32 }, "Eine Robe, auf der Raureif wächst. " + E, "magie");
-  T("frostschleier_rock", "Frostschleier-Rock", "beine", "Stoffrüstung", "magierrock_mythisch", [36, 36, 24], { genau: 24 }, "Weißer Stoff, schwer wie Schnee. " + E, "magie"); }
+  const S = "Teil der Löwenwacht – Grumhold trug sie, ehe der Berg ihn verschluckte.", F = "Teil der Sturmfeder – aus dem Horst der Sturmschwinge.", E = "Teil des Frostschleiers – kalt wie der Atem der Frostwitwe.";
+  /* Entscheidung des Nutzers (27.11.): defensiv etwa 85 % von Mythisch, dafür Angriffsboni in den Teilen (+8 Stärke / +8 Fernkampf-Stärke / +5 % Magieschaden je Satz); Treffer-Boni und Abzüge wie Mythisch */
+  T("steinvogt_helm", "Löwenwacht-Helm", "kopf", "Schwere Rüstung", "eisenwachthelm_mythisch", [38, 39, -1], { fernAngriff: -3, genau: -6, staerke: 2 }, "Ein Helm mit Löwenkopf und Lorbeer, schwer wie ein Fels. " + S, "nahkampf");
+  T("steinvogt_platte", "Löwenwacht-Harnisch", "brust", "Schwere Rüstung", "eisenwacht_mythisch", [88, 90, -6], { fernAngriff: -15, genau: -30, staerke: 3 }, "Ein Harnisch mit Löwenköpfen auf den Schultern, darüber ein roter Umhang. " + S, "nahkampf");
+  T("steinvogt_beinschienen", "Löwenwacht-Beinschutz", "beine", "Schwere Rüstung", "eisenbeinschienen_mythisch", [56, 56, -4], { fernAngriff: -11, genau: -21, staerke: 3 }, "Beinschutz mit goldenem Lorbeer. " + S, "nahkampf");
+  T("sturmfeder_haube", "Sturmfeder-Haube", "kopf", "Leichte Rüstung", "jaegerkapuze_mythisch", [10, 10, 8], { fernAngriff: 10, genau: -1, fernStaerke: 2 }, "Leder mit grauen Schwungfedern, leicht wie ein Windstoß. " + F, "fernkampf");
+  T("sturmfeder_wams", "Sturmfeder-Wams", "brust", "Leichte Rüstung", "jaegerwams_mythisch", [46, 47, 42], { fernAngriff: 30, genau: -15, fernStaerke: 3 }, "Federn in Lagen, die jeden Windhauch spüren. " + F, "fernkampf");
+  T("sturmfeder_hose", "Sturmfeder-Hose", "beine", "Leichte Rüstung", "jaegerhose_mythisch", [21, 23, 20], { fernAngriff: 17, genau: -10, fernStaerke: 3 }, "Gehärtetes Leder, gesäumt mit Sturmfedern. " + F, "fernkampf");
+  T("frostschleier_kapuze", "Frostschleier-Kapuze", "kopf", "Stoffrüstung", "magierkapuze_mythisch", [13, 13, 5], { genau: 6, magieSchaden: 1 }, "Ein Schleier aus Eisfäden, der nie taut. " + E, "magie");
+  T("frostschleier_robe", "Frostschleier-Robe", "brust", "Stoffrüstung", "magierrobe_mythisch", [43, 43, 26], { genau: 30, magieSchaden: 2 }, "Eine Robe, auf der Raureif wächst. " + E, "magie");
+  T("frostschleier_rock", "Frostschleier-Rock", "beine", "Stoffrüstung", "magierrock_mythisch", [28, 28, 19], { genau: 22, magieSchaden: 2 }, "Weißer Stoff, schwer wie Schnee. " + E, "magie"); }
 
-/* #160 (Block H): Bausteine der Hochlande-Quests (shared/hochlande.ts) – Bilder vorerst aus dem Bestand */
-{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
-  GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: GEGENSTAENDE.krug_wasser ? GEGENSTAENDE.krug_wasser.bild : E + "krug_wasser.webp", wert: 5,
-    text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Am Herd der Sennerin wird daraus Käse." };
-  GEGENSTAENDE.kaeserad = { id: "kaeserad", name: "Almkäse", art: "Essen", seltenheit: "selten", bild: GEGENSTAENDE.bauerneintopf ? GEGENSTAENDE.bauerneintopf.bild : K + "bauerneintopf.webp", trank: "kaeserad", wert: 30,
-    text: "Ein Rad Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
-  VERBRAUCH.kaeserad = { id: "kaeserad", name: "Almkäse", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
-    text: "Ein Rad Käse von der Hohen Alm, würzig und fest." };
-  GEGENSTAENDE.grubenholz = { id: "grubenholz", name: "Grubenholz", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 10, bild: E + "stamm_kernbaum.webp",
+/* Glutsteinschild (Entscheidung des Nutzers, 27.11.): seltener Schild, Defense 40, als einziger Schild mit Angriffsboni (+5 Geschick, +3 Stärke), handelbar.
+   Nur von der Sandmutter in der starken Fassung (nach F3), etwa 1 : 100 je Sieg (config.ts). Modell von Figuren (#165, e94e69282): Ebene schild.glutstein. */
+GEGENSTAENDE.glutsteinschild = { id: "glutsteinschild", name: "Glutsteinschild", platz: "nebenhand", art: "Schild", seltenheit: "selten", ebenen: ["schild.glutstein"],
+  bild: "img/objekte3d/ausruestung/stufe40/schild.glutstein.webp", anforderung: { skill: "defense", level: 40 }, abwehr: { nah: 34, fern: 34, magie: -1 }, bonus: { geschick: 5, staerke: 3 },
+  text: "Ein Schild aus Glutstein, in dem noch die Hitze des Tempels glimmt. Er schützt – und er treibt den Arm nach vorn." };
+
+/* #160 (Block H): Bausteine der Hochlande-Quests (shared/hochlande.ts, Kennungen nach doku/quests/h-bausteine.md) – Bilder vorerst aus dem Bestand */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/", P = (g: string, f: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild) || f;
+  GEGENSTAENDE.ziegenmilch = { id: "ziegenmilch", name: "Ziegenmilch", art: "Rohstoff", seltenheit: "gewoehnlich", bild: P("krug_wasser", K + "krug_wasser.webp"), wert: 5,
+    text: "Ein Krug frischer Milch von den Ziegen der Hohen Alm. Mit Lab am Herd wird daraus Käse." };
+  GEGENSTAENDE.lab = { id: "lab", name: "Lab", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("leeres_flaeschchen", E + "leeres_flaeschchen.webp"),
+    text: "Ein Fläschchen Lab von Mette Heider. Ein paar Tropfen, und die Milch wird dick." };
+  GEGENSTAENDE.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", bild: P("bauerneintopf", K + "bauerneintopf.webp"), trank: "kaeselaib", wert: 30,
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest. Die Passwacht schwört darauf. Heilt 15 Lebenspunkte." };
+  VERBRAUCH.kaeselaib = { id: "kaeselaib", name: "Käselaib", art: "Essen", seltenheit: "selten", heilt: { fest: 15, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "15 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]],
+    text: "Ein Laib Käse von der Hohen Alm, würzig und fest." };
+  GEGENSTAENDE.grubenstempel = { id: "grubenstempel", name: "Grubenstempel", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 10, bild: E + "stamm_kernbaum.webp",
     text: "Ein zugeschnittener Stempel aus Kernbaum. Er hält einen Stollen, wenn der Berg drückt." };
-  GEGENSTAENDE.erzprobe_splitterlicht = { id: "erzprobe_splitterlicht", name: "Erzprobe mit Splitterlicht", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
-    text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." }; }
+  GEGENSTAENDE.erzprobe_leuchtend = { id: "erzprobe_leuchtend", name: "Leuchtende Erzprobe", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: E + "erz_splittereisen.webp",
+    text: "Ein Brocken aus der Tiefe des Erzbergs. Im Dunkeln glimmt er – Hedda wird wissen, was das bedeutet." };
+  GEGENSTAENDE.eisrunen_abschrift = { id: "eisrunen_abschrift", name: "Abschrift der Eisrunen", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: P("hinweispergament", E + "pergament.webp"),
+    text: "Die Runen vom Höhlenmund am Hochpass, mit klammen Fingern abgezeichnet. Der Einsiedler kann sie lesen." }; }
 
 /** Vorbereitet für das Minispiel Rissgrube (später): Würfe je Waffe 1 : 100 – noch nicht eingetragen, bleibt inaktiv, bis die Rissgrube gebaut wird (nicht beim Mini-Boss der Hochlande) */
 export const STUFE70_BEUTE = { wurf: WAFFEN_STUFE70.map((g) => ({ g, chance: 1 })) };

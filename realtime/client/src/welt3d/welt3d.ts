@@ -69,7 +69,7 @@ function wasserMaterial(farbe: number, deck: number, tempo: number) {
       #include <opaque_fragment>`); };
   return m; }
 const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x26342c, 0.94, 0.35);
-FARBE.i = FARBE.i || "#c7e5f6"; FARBE.I = FARBE.I || "#8cbbe0"; /* #164: Eisboden der Frostwitwe */
+FARBE.i = FARBE.i || "#c7e5f6"; FARBE.I = FARBE.I || "#8cbbe0"; FARBE.wolke = "#e4ecf3"; /* #164: Eisboden der Frostwitwe, Wolken um den Horst */
 for (const A of (GELAENDE as { arten: { zeichen: string; farbe?: string }[] }).arten) if (A.farbe && !FARBE[A.zeichen]) FARBE[A.zeichen] = A.farbe; /* #164: neue Geländearten der Welt ohne Code-Änderung (eigene Farben oben gehen vor) */
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
@@ -151,9 +151,9 @@ export class Welt3D {
 
   /* ───────── Gelände eines Chunks ───────── */
   gelaende(s: Stueck) {
-    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt";
+    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt" && d.art !== "draussen", wolken = d.art === "draussen";
     const z = (tx: number, ty: number) => d.boden[ty + 1]?.[tx + 1] ?? " ", h = (lx: number, ly: number) => d.hoehe[(ly + 1) * W + lx + 1] / 100;
-    const unter = (q: string) => (AUFLAGE.has(q) ? "." : q);
+    const unter = (q: string) => (AUFLAGE.has(q) ? "." : wolken && (q === "X" || q === " ") ? "wolke" : q); /* #164: um den Horst Wolken statt Schwarz */
     const U: number[][] = []; for (let ly = 0; ly <= C; ly++) for (let lx = 0; lx <= C; lx++) { let r = 0, g = 0, b = 0;
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = farbe(unter(z(lx + dx, ly + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall((lx + x0) * 0.7, (ly + y0) * 1.3) - 0.5) * 0.14 + (zufall(Math.floor((lx + x0) / 3), Math.floor((ly + y0) / 3)) - 0.5) * 0.1 + (zufall(Math.floor((lx + x0) / 9), Math.floor((ly + y0) / 9)) - 0.5) * 0.12;

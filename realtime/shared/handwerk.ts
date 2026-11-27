@@ -235,7 +235,7 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
    Bindestein und Brunnen; Hohe Alm: Kessel der Käserei, Herd und Brunnen; Bergwerk: Esse, Amboss und Feuer; Feuer an der Passwacht; Kessel an der Einsiedelei
    (Welt d344565a, hochlande_orte.json → stationen) */
 WERKSTAETTEN.push({ id: "esse_steinhag", station: "esse", x: 7002.4, y: 5913.8, ort: "fl_216_183" }, { id: "amboss_steinhag", station: "amboss", x: 7005.4, y: 5913.6, ort: "fl_216_183" },
-  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5915.5, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
+  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5916.6 /* Welt: steinhag_werkbank 7011|5915,4, davor stehen */, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
   { id: "kessel_steinhag", station: "kessel", x: 7010.5, y: 5874, ort: "fl_216_183" }, { id: "bindestein_steinhag", station: "bindestein", x: 6996.5, y: 5889.5, ort: "fl_216_183" },
   { id: "brunnen_steinhag", station: "brunnen", x: 6990, y: 5888.35, ort: "fl_216_183" }, { id: "kessel_alm", station: "kessel", x: 7198, y: 6002, ort: "fl_216_183" },
   { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6959, y: 5614.6, ort: "fl_216_169" },
@@ -259,9 +259,9 @@ dazu({ id: "glockenbronze", station: "esse", ergebnis: "barren_glockenbronze", l
 /* #156: gegossen wird am Herd der Abtei, es zählt aber zum Schmieden (E2 setzt Schmieden 45 voraus, nicht Kochen) */
 dazu({ id: "glocke", station: "herd", ergebnis: "glocke_neu", level: 45, zutaten: [{ g: ["barren_glockenbronze"], n: 4 }], xp: 300, ticks: 8, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke", beruf: "schmieden" });
 dazu({ id: "kloeppel", station: "hand", ergebnis: "kloeppel", level: 1, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 80, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
-/* #160 (Block H): Almkäse (H2, Herd der Alm) und Grubenholz (H3) – nur über die Quests (QuestDef.sperren.herstellen; der Käse bleibt nach H2 frei, wenn die Quest es so sperrt) */
-dazu({ id: "kaeserad", station: "kessel" /* Käsekessel der Sennerin (kessel_alm) */, ergebnis: "kaeserad", level: 40, zutaten: [{ g: ["ziegenmilch"], n: 3 }], xp: 140, ticks: 6, stufe: 0, gruppe: "Käse", quest: H_QUESTS.h2, verbrannt: "suppe_verbrannt" });
-dazu({ id: "grubenholz", station: "werkbank", ergebnis: "grubenholz", menge: 2, level: 40, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 90, ticks: 4, stufe: 0, gruppe: "Tiefer als erlaubt", quest: H_QUESTS.h3 });
+/* #160 (Block H, Kennungen nach doku/quests/h-bausteine.md): Käselaib (H2, Herd der Alm) und Grubenstempel (H3) – nur über die Quests (QuestDef.sperren.herstellen; der Käse bleibt nach H2 frei, wenn die Quest es so sperrt) */
+dazu({ id: "kaeselaib", station: "herd", ergebnis: "kaeselaib", level: 45, zutaten: [{ g: ["ziegenmilch"], n: 3 }, { g: ["lab"], n: 1 }], xp: 150, ticks: 6, stufe: 0, gruppe: "Käse", quest: H_QUESTS.h2, verbrannt: "suppe_verbrannt" });
+dazu({ id: "grubenstempel", station: "werkbank", ergebnis: "grubenstempel", level: 45, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 90, ticks: 4, stufe: 0, gruppe: "Tiefer als erlaubt", quest: H_QUESTS.h3 });
 dazu({ id: "hammeleintopf", station: "herd", ergebnis: "hammeleintopf", level: 30, zutaten: [{ g: ["hammelfleisch"], n: 1 }, { g: ["ringelblume"], n: 1 } /* #156: Querverbindung 8 – Ringelblume aus den Obstwiesen */, { g: ["krug_wasser"], n: 1 }], xp: 110, ticks: 6, stufe: 0, gruppe: "Eintopf", verbrannt: "suppe_verbrannt" });
 /* D3 „Wels im Trüben“: Herd und Kessel in der Taverne „Zur Furt“ in Graufurt (dorf_taverne_01 wie in der Waldmark), offen für alle */
 WERKSTAETTEN.push({ id: "herd_zur_furt", station: "herd", x: 6698.2, y: 6536, ort: "graufurt" }, { id: "kessel_zur_furt", station: "kessel", x: 6700.5, y: 6536, ort: "graufurt" });

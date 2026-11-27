@@ -38,6 +38,7 @@ export const INSTANZEN: InstanzDef[] = [
 export const TUEREN: Tuer[] = [
   { id: "beutelager", feld: [10270, 9644, 10276, 9645], schalter: "beutelager_offen", zu: "Die Tür ist verschlossen. Jemand in der Wachstube hat den Schlüsselbund." },
   /* #160 (H3): der eingestürzte Stollen vor der Urkammer (Welt, hochlande_orte.json bergwerk_quest.sperre) – erst offen, wenn H3 ihn freilegt */
+  /* Schalter urkammer_offen setzt H3 (quest_h3.ts); die Sperre der Welt heißt seit f1793f1b genauso */
   { id: "bergwerk_stollen", feld: [11661, 9620, 11671, 9623], schalter: "urkammer_offen", zu: "Grubenholz und Geröll versperren den Gang. Die Bergvögtin hat ihn sperren lassen – hier unten ist etwas aufgewacht." },
 ];
 
