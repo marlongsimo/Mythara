@@ -1,0 +1,10 @@
+{
+  "id": "gegner.ockermutter",
+  "name": "Ockermutter",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "gebiet": "Ockerlande",
+  "grundform": "Vierbeiner Wolf (Hyäne), Boss",
+  "status": "v001: aus der Ockerhyäne abgeleitet – Textur dunkler und röter (fabrik/textur_ton.py), fabrik/rig_vierbeiner.py hoehe=1.6 (statt 0,95), Mähne über Hals und Rücken (fabrik/maehne.py, Ebenen kleidung.maehne.hals/.rumpf); Bewegungen ruhe, gehen, laufen, angriff, sprung (Treffer Bild 14), heulen (2 s), benommen (Schwächefenster, Schleife), treffer, tod – img/figuren-echt3d/ockermutter3d.glb (+ .mobil.glb) (#172, Block I)",
+  "herkunft": "gegner.ockerhyaene (Meshy, Nutzer)"
+}
