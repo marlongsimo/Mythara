@@ -51,11 +51,11 @@ console.log("\nReisende auf der Südstraße");
   check(REISENDE.length === 3 && REISENDE.every((r) => r.datei.startsWith("npc.")), "ein Händler und zwei Wanderer");
   check(c.every((p) => p.y >= 6760 && p.y <= 7290 && Math.abs(p.x - 6460) < 20), "immer auf der Straße zwischen Weidenhain und Kielmund");
   check(Math.hypot(a.x - b.x, a.y - b.y) > 0 || a.steht, "sie bewegen sich mit der Uhr (oder halten)");
-  let halt = 0; for (let t = 0; t < 4000; t += 5) { const p = reiseStelle(R, t); if (p.steht && Math.abs(p.y - 7003) < 1) halt++; } check(halt * 5 >= 200, `der Händler steht lange am Halben Weg (${halt * 5} s je Runde)`); }
+  let halt = 0; for (let t = 0; t < 4000; t += 5) { const p = reiseStelle(R, t); if (p.steht && Math.abs(p.y - 7008) < 1) halt++; } check(halt * 5 >= 200, `der Händler steht lange am Halben Weg (${halt * 5} s je Runde)`); }
 
 console.log("\nLager in der Kampfwelt");
 setzeKarte(KARTEN.welt, FEIN);
-{ const s = Sim.welt(26, undefined, true), n = (t) => s.wesen.filter((w) => w.typ === t).length;
+{ const s = Sim.welt(26, undefined, true), n = (t) => s.wesen.filter((w) => w.typ === t && !w.gp).length;
   check(n("feldhase") >= 2 && n("kraehenschwarm") >= 2 && n("wildschwein") >= 2 && n("steinschlucker") >= 3 && n("graupelz") === 1 && n("wegelagerer_schleuder") >= 3 && n("schaf") >= 3,
     `Hasen ${n("feldhase")}, Krähen ${n("kraehenschwarm")}, Wildschweine ${n("wildschwein")}, Steinschlucker ${n("steinschlucker")}, Graupelz ${n("graupelz")}, Schleuderer ${n("wegelagerer_schleuder")}, Schafe ${n("schaf")}`);
   const w = s.wesen.find((x) => x.typ === "wildschwein"), id = s.beitreten("schildwaechter", 0, { x: w.x + 1, y: w.y }, kampfwerte({ ...NULL_XP, geschick: xpFuer(60), staerke: xpFuer(60), defense: xpFuer(60), lp: xpFuer(60) }, startAusruestung("schwert"), 1)), h = s.nach(id); h.max = h.lp = 1e5;

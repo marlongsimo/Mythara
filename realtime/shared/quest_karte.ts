@@ -141,6 +141,7 @@ export const QUEST_KARTE: QuestDef = {
       ],
     },
   },
+  glueckwunsch: "Die Karte ist ganz. Der Bote ist angekommen – durch dich.",
   belohnungText: "Belohnung: die Reisekarte (alle Wegstein-Ziele, einmal am Tag ein Sprung ohne Ladung), je 6.000 XP Stärke, Geschick, Defense, Fernkampf und Magie, 4.000 LP-XP, 3.000 Splitter",
   belohnung: { xp: { staerke: 6000, geschick: 6000, defense: 6000, fernkampf: 6000, magie: 6000, lp: 4000 }, splitter: 3000, gegenstaende: [{ g: "reisekarte" }] },
   punkte: 4,

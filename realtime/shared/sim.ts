@@ -35,6 +35,8 @@ interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | 
 /** Boss-Baukasten: Stand eines Bosskampfes (Phase, Grundangriffe und Sekunden seit der letzten Ansage, benutzte Heilorte „Phase:Nr“, Beginn des Kampfes) */
 interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<string, number>; seit?: number; /** Schweben bis zu dieser Simulationszeit */ schwebBis?: number; /** eingegraben bis (BossPhase.eingraben) */ grabBis?: number }
 interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
+/** #122/#130: Gegner weiter als so viele Felder von jedem Helden ruhen (werden nicht gerechnet); jeder Spieler sieht Wesen bis SICHT_WEIT Felder */
+export const AKTIV_WEIT = 48, SICHT_WEIT = 56, /** ab so vielen Wesen gilt das auch ohne Server (der Browser rechnet die Welt selbst) */ GROSS = 400;
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
   pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; /** Held: Autoangriff (Standard an) */ auto?: boolean; rx: number; ry: number; fuehrer: number;
   aushol: number; ausholZiel: number; bollwerk: number; betaeubt: number; langsamT: number; langsamF: number; dauer: Dauer[]; dauerRest: number; malT: number; bruchT: number; bruchSperre: number; festSperre: number;
@@ -45,7 +47,7 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /** Schalter dieses Helden, die Gegner kennen (MonsterDef.aggressivNach, setzt der Server je Sekunde) */ schalterAn?: string[];
   /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number;
   /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
-  /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number; /** #116: Schaden mal (Boss in der Quest-Kopie) */ schadenMal?: number;
+  /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number; /** #116: Schaden mal (Boss in der Quest-Kopie) */ schadenMal?: number; /** aus den Gegnerplätzen der Welt (#130) */ gp?: boolean;
   /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean;
   /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage }; trinkT?: number; trinkN?: number;
   /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; /** Heiler: Zeit seit dem letzten Heilen */ heilT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
@@ -97,7 +99,7 @@ export class Sim {
     this.wesen = []; this.geschosse = []; this.beute = []; this.tick = 0; this.zeit = 0; this.phase = "lauf"; this.splitter = 0; this.besiegt = 0; this.lauf = 1;
     const ich = this.neu(true, this.heldTyp, 0, START[0], false);
     this.begleiter.forEach((b, i) => { this.neu(true, b, 0, START[i + 1], true).fuehrer = ich.id; });
-    this.blinzler.clear(); this.erhoben.clear(); for (const l of LAGER) { const m = this.neu(false, l.art, 1, l, true, l.gruppe); if (l.blinzeln) this.blinzler.add(m.id); if (l.aggro !== undefined) m.lagerAggro = l.aggro; if (l.leine !== undefined) m.lagerLeine = l.leine; if (l.wandern !== undefined) m.lagerWandern = l.wandern; if (l.stufe !== undefined) m.lagerStufe = l.stufe; } this.monsterZahl = LAGER.length;
+    this.blinzler.clear(); this.erhoben.clear(); for (const l of LAGER) { const m = this.neu(false, l.art, 1, l, true, l.gruppe); if (l.blinzeln) this.blinzler.add(m.id); if (l.aggro !== undefined) m.lagerAggro = l.aggro; if (l.leine !== undefined) m.lagerLeine = l.leine; if (l.wandern !== undefined) m.lagerWandern = l.wandern; if (l.stufe !== undefined) m.lagerStufe = l.stufe; if (l.gp) m.gp = true; } this.monsterZahl = LAGER.length;
     this.brut.clear(); this.probe = 0; for (const l of SCHUETZ) this.neu(false, l.art, 0, l, true, 0); /* Schützlinge stehen auf der Seite der Helden */
     const S0 = this.karte.SCHLEUSE; this.sl = S0 ? { ...S0, offen: true, fort: 0, warte: S0.erst, raus: 0 } : null;
   }
@@ -408,7 +410,8 @@ export class Sim {
   }
   /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
   private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; if (aggro && o.held && !w.held) { const bis = MONSTER[w.typ] && MONSTER[w.typ].aggroBisLevel; if (bis && (o.kw ? o.kw.heldenlevel : 1) >= bis) continue; const F = MONSTER[w.typ] && MONSTER[w.typ].friedlichMit; if (F && o.angelegt && o.angelegt.some((g) => F.includes(g))) continue; /* Verkleidung (#49) */
-      const GL = MONSTER[w.typ] && MONSTER[w.typ].friedlichBei; if (GL && (o.schalterAn || []).includes(GL)) continue; /* Glocke (#102) */ } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+      const GL = MONSTER[w.typ] && MONSTER[w.typ].friedlichBei; if (GL && (o.schalterAn || []).includes(GL)) continue; /* Glocke (#102) */ } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o);
+      if (aggro && o.held && o.kw && o.kw.bemerken !== undefined && d > weit * o.kw.bemerken) continue; /* Nebelschleier (#133): man wird erst später bemerkt */ if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
@@ -452,7 +455,10 @@ export class Sim {
     if (this.weltZeit) for (const w of this.wesen) if (w.held && !w.tot) { /* Aggro-Zeitmesser: läuft, solange der Held in der Nähe seines Ankers bleibt */
       if (!w.aggroAnker || Math.hypot(w.x - w.aggroAnker.x, w.y - w.aggroAnker.y) >= K.AGGRO_RUECKSETZEN) { w.aggroAnker = { x: w.x, y: w.y }; w.aggroZeit = 0; } else w.aggroZeit = (w.aggroZeit ?? 0) + DT; }
     if (this.inst.size) this.instanzSchritt();
+    /* #122/#130: in der großen Kampfwelt ruhen Gegner fern aller Helden (nicht wach, ohne Ziel, ohne Dauerschaden) – sie werden erst gerechnet, wenn jemand näher als AKTIV_WEIT kommt */
+    const helden = this.weltZeit || this.wesen.length > GROSS ? this.wesen.filter((o) => o.held && !o.tot) : null, ruht = (w: Wesen) => Boolean(helden && helden.length) && !w.held && !w.zielId && !w.dauer.length && !w.helfer && !w.instanz && w.lp >= w.max && helden!.every((o) => Math.abs(o.x - w.x) > AKTIV_WEIT || Math.abs(o.y - w.y) > AKTIV_WEIT);
     for (const w of this.wesen) {
+      if (!w.tot && ruht(w)) continue;
       if (w.tot) { if (w.held) { w.wieder -= DT; if (w.wieder <= 0) { w.tot = false; w.lp = w.max; const p = START[Math.max(0, this.wesen.filter((o) => o.held).indexOf(w))] || START[0]; w.x = p.x; w.y = p.y; w.pfad = []; w.zielId = 0; w.ruhe = 99; } } continue; }
       for (const k of ["cdA", "cdQ", "cdE", "cdR", "cdM", "cdS", "bollwerk", "langsamT", "malT", "bruchT", "bruchSperre", "festSperre", "mrPlusT", "spottT"] as const) if (w[k] > 0) w[k] = Math.max(0, w[k] - DT);
       if (w.schutzT > 0) { w.schutzT -= DT; if (w.schutzT <= 0) w.schutz = 0; }
@@ -519,7 +525,10 @@ export class Sim {
             if (F && !w.pfad.length && w.held && !w.bot && (w.rx || w.ry)) { const n = this.richtungsFeld(w); if (n) { w.pfad = [n]; w.blick = Math.atan2(w.ry, w.rx); } } } else { w.blick = Math.atan2(p.y - w.y, p.x - w.x); w.x += (p.x - w.x) / d * rest; w.y += (p.y - w.y) / d * rest; rest = 0; } } }
     }
     if (this.sl && this.sl.offen && this.phase === "lauf") this.schleuse(this.sl);
-    if (!this.felder) for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) { const a = this.wesen[i], b = this.wesen[j]; if (a.tot || b.tot) continue; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } }
+    const rempeln = (a: Wesen, b: Wesen) => { if (a.tot || b.tot) return; const d = abstand(a, b), soll = a.r + b.r; if (d < soll && d > 1e-4) { const s = (soll - d) / 2, dx = (b.x - a.x) / d, dy = (b.y - a.y) / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; } };
+    if (!this.felder && this.wesen.length <= GROSS) for (let i = 0; i < this.wesen.length; i++) for (let j = i + 1; j < this.wesen.length; j++) rempeln(this.wesen[i], this.wesen[j]);
+    else if (!this.felder) { /* große Welt (#130): nach x sortiert, nur Nachbarn vergleichen (statt aller Paare) */ const L = this.wesen.filter((w) => !w.tot).sort((a, b) => a.x - b.x), R = 2 * Math.max(...L.map((w) => w.r), 0.5);
+      for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length && L[j].x - L[i].x < R; j++) rempeln(L[i], L[j]); }
     if (!this.felder) for (const w of this.wesen) if (!w.tot) schieben(w); /* Feldmodus: keine Rempler, Figuren bleiben auf ihren Feldern */
     for (const w of this.wesen) if (!w.held && !w.tot && MONSTER[w.typ].fest) { w.x = w.heim.x; w.y = w.heim.y; } /* Festes bleibt, wo es ist, auch wenn jemand dagegenläuft */
     for (const g of this.geschosse) { const z = g.zielId ? this.nach(g.zielId) : undefined; if (z && !z.tot) { g.zx = z.x; g.zy = z.y; }
@@ -637,9 +646,11 @@ export class Sim {
       I.pause -= DT; if (I.pause > 0) continue; I.da = true; const ziel = helden.find((h) => !h.tot);
       for (const g of W[I.welle]) { const m = this.instanzGegner(key, g, I.welle); if (m && ziel) { m.wach = true; m.zielId = ziel.id; } } } }
   /** Der Zustand für einen Spieler: ohne die Wesen anderer Kopien (Instanzen), ihre Geschosse und Ereignisse */
-  sichtFuer(z: Zustand, id: number): Zustand { const ich = this.ichVon(id); if (!this.inst.size && !this.wesen.some((w) => w.instanz)) return { ...z, ich };
+  sichtFuer(z: Zustand, id: number): Zustand { const ich = this.ichVon(id), h = this.nach(id);
+    /* #122/#130: nur Gegner in der Nähe (SICHT_WEIT Felder) – die ganze Welt hat Tausende; Helden immer */ const nah = (e: Zustand["w"][number]) => e[1] === 1 || !h || (Math.abs((e[4] as number) - h.x) <= SICHT_WEIT && Math.abs((e[5] as number) - h.y) <= SICHT_WEIT);
+    if (!this.inst.size && !this.wesen.some((w) => w.instanz)) return { ...z, ich, w: this.weltZeit ? z.w.filter(nah) : z.w };
     const k = this.instanzVon(id) || "", fremd = new Set(this.wesen.filter((w) => (w.instanz || "") !== k).map((w) => w.id)), fremdG = new Set(this.geschosse.filter((g) => fremd.has(g.von)).map((g) => g.id));
-    return { ...z, ich, w: z.w.filter((e) => !fremd.has(e[0])), g: z.g.filter((g) => !fremdG.has(g[0])),
+    return { ...z, ich, w: z.w.filter((e) => !fremd.has(e[0]) && (!this.weltZeit || nah(e))), g: z.g.filter((g) => !fremdG.has(g[0])),
       ev: z.ev.filter((e) => !("id" in e) || !fremd.has((e as { id: number }).id)) }; }
 
   /* ---------- Türen (shared/boss.ts): je Held gesperrte Felder ---------- */
@@ -687,7 +698,7 @@ export class Sim {
     const r = (v: number) => Math.round(v * 100) / 100, h = this.ich, ev = this.ev; this.ev = [];
     const bits = (w: Wesen) => (w.bollwerk > 0 ? BIT.bollwerk : 0) | (w.betaeubt > 0 ? BIT.betaeubt : 0) | (w.langsamT > 0 ? BIT.langsam : 0) | (w.dauer.length ? BIT.dauer : 0) | (w.malT > 0 ? BIT.mal : 0) | (w.held && HELDEN[w.typ].modi[w.modus].schild ? BIT.schild : 0) | (w.aushol > 0 ? BIT.aushol : 0) | (w.schutz > 0 ? BIT.schutz : 0);
     return { tick: this.tick, phase: this.phase, zeit: Math.round(this.zeit * 10) / 10, splitter: this.splitter, besiegt: this.besiegt, monster: this.monsterZahl, b: this.beute.map((q) => [q.id, q.x, q.y, q.n]),
-      w: this.wesen.filter((w) => w.held || (!w.tot && !w.vergraben)).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
+      w: ((G) => this.wesen.filter((w) => w.held || (!w.tot && !w.vergraben && (!G || G.some((o) => Math.abs(w.x - o.x) <= SICHT_WEIT && Math.abs(w.y - o.y) <= SICHT_WEIT)))))(this.wesen.length > GROSS ? (this.weltZeit ? this.wesen.filter((o) => o.held) : [h]) : null).map( /* große Welt: nur Wesen in Sicht irgendeines Helden (ohne Server: des eigenen) */ /* ohne Server (Browser rechnet selbst) in der großen Welt: nur die Nähe */(w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
       g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: this.ichVon(h.id),
       pr: this.karte.PROBE ? this.probe : undefined,
       sl: this.sl ? [r(this.sl.x), r(this.sl.y), this.sl.offen ? 1 : 0, r(this.sl.fort)] : undefined,

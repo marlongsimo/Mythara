@@ -4,7 +4,7 @@
  * Drei Mühlbarsche als Köder fangen, den alten Hecht am Steg fangen (seltener Fang, nur mit der Quest), QUER: Lambert Schilf in Weidenhain glaubt es erst, wenn er ihn sieht,
  * dann kommt er als Trophäe an die Wand der Reusenkate (Schalter s3_trophaee). Lohn: Fischen 600 XP, 20 Würmer, 80 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Schilfsee und Reusenkate (Welt #120), Ebba (Figuren #121), seltenen Fang alter_hecht (Systeme). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Einbau Süden #126, Anschlüsse #134). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { SCHILFSEE, EBBA, LAMBERT } from "./quest_s_orte";
@@ -70,7 +70,12 @@ export const QUEST_S3: QuestDef = {
       ],
     },
   },
+  /* Der alte Hecht beißt nur, solange die Quest ihn sucht (shared/fischen.ts: 1 % je Mühlbarsch am Fanggrund schilfsee_steg) */
+  beute: { s3_alter_hecht: { erledigt: ["koeder"], offen: ["hecht"] } },
   schalter: { s3_trophaee: FERTIG },
+  /* Der alte Hecht an der Wand der Reusenkate (6435 | 7184), sichtbar nach der Quest (#134, QuestDef.deko) */
+  deko: [{ id: "trophaee_hecht", glb: "img/objekte3d/sueden/trophaee_hecht.glb", x: 6435, y: 7184, h: 1.6, dreh: 90, sichtbar: FERTIG }],
+  glueckwunsch: "Da hängt er, der Alte. Anderthalb Ellen. Na gut, zwei.",
   belohnungText: "Belohnung: Fischen 600 XP, 20 Würmer, 80 Splitter · danach: der alte Hecht an der Wand der Reusenkate",
   belohnung: { berufe: { fischen: 600 }, splitter: 80, gegenstaende: [{ g: "wurm", n: 20 }] },
   punkte: 1,

@@ -4,7 +4,8 @@
  */
 export interface Punkt { x: number; y: number }
 export interface Lager { art: string; x: number; y: number; gruppe: number; blinzeln?: boolean /* huscht einmal davon, wenn es fast besiegt ist */;
-  /** gemeinsame Kampfwelt (alle Regionen in einer Simulation): Aggro, Leine, Streifen und Stufe des Gebiets, aus dem das Lager stammt – sonst gelten die Werte der Karte */ aggro?: number; leine?: number; wandern?: number; stufe?: number }
+  /** gemeinsame Kampfwelt (alle Regionen in einer Simulation): Aggro, Leine, Streifen und Stufe des Gebiets, aus dem das Lager stammt – sonst gelten die Werte der Karte */ aggro?: number; leine?: number; wandern?: number; stufe?: number;
+  /** aus den Gegnerplätzen der Welt (#130, welt/gegnerplaetze.json) – nicht aus einem gebauten Lager */ gp?: number }
 
 export let KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */

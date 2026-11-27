@@ -29,7 +29,7 @@ try {
   const k = await verbinde("?kampf=kreuzwald&ort=kreuzwald&held=schildwaechter&lx=192&ly=123"); k.ws.send(JSON.stringify({ t: "anmeldung", token: TOKEN, geraet: "test-" + String(TOKEN).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") }));
   const z = await warte(() => { const m = [...k.post].reverse().find((m) => m.t === "z"); return m && m.z; });
   check(Boolean(z), "Der Server lässt in den Kreuzwald (gemeinsames Kampfgebiet)");
-  const ich = z && z.w.find((e) => e[0] === z.ich.id), banditen = z ? z.w.filter((e) => e[3] !== 0) : [];
+  const ich = z && z.w.find((e) => e[0] === z.ich.id), banditen = z && ich ? z.w.filter((e) => { const wx = e[4] - ich[4] + 6528, wy = e[5] - ich[5] + 6587; return e[3] !== 0 && wx > 6522 && wx < 6583 && wy > 6557 && wy < 6608; }) : []; /* die Lichtung (Weltfelder; die Gegnerplätze der Welt #130 stehen weiter weg) */
   check(banditen.length === 4 && banditen.every((e) => e[2] === "bandit_dolch"), `Vier Dolch-Banditen (${banditen.map((e) => e[2]).join(", ")})`);
   check(ich && Math.hypot(ich[4] - 192, ich[5] - 123) < 1.5, `Der Held steht dort, wo er hereinkam (${ich && ich[4].toFixed(1)}, ${ich && ich[5].toFixed(1)})`);
   check(ich && ich[8] === 352, "Stufe aus dem Konto (Torvald mit 300 EP: 352 Leben)");

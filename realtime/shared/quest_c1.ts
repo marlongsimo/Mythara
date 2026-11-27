@@ -175,6 +175,7 @@ export const QUEST_C1: QuestDef = {
     herstellen: { brueckenplanke: [{ wenn: { phase: ["neu", "fertig"] }, text: "Brückenplanken schneidest du nur für die alte Brücke." }, { wenn: { erledigt: ["planken"] }, text: "Harm hat die Planken schon." }] },
   },
   schalter: { bruecke_aschenwerth: [FERTIG, { erledigt: ["bruecke"] }] },
+  glueckwunsch: "Die Brücke steht, und wir wissen, wer die Federn sammelt. Rabenmoor schuldet dir etwas.",
   belohnungText: "Belohnung: die Rabenkapuze, Magie 600, Defense 600, LP 300 XP · danach: die Brücke nach Aschenwerth trägt, Wegstein-Ziel Rabenmoor",
   belohnung: { xp: { magie: 600, defense: 600, lp: 300 }, gegenstaende: [{ g: "rabenkapuze" }] },
   punkte: 1,

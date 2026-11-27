@@ -2,6 +2,7 @@
  * Mythara – Skill-Übersicht der Berufe (wie der Skill Guide in OSRS, in unserem Stil): Skill im Tab antippen →
  * Reiter (Bäume, Werkzeuge, Rezepte …), je Zeile Level, Bild, Name und XP; was man schon kann, leuchtet, der Rest ist abgedunkelt.
  */
+import { KRAEUTER } from "../../shared/kraeuter";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { BAEUME, BEILE } from "../../shared/holz";
 import { ADERN, SPITZHACKEN } from "../../shared/bergbau";
@@ -27,6 +28,7 @@ function reiter(k: string): [string, Zeile[]][] {
   if (k === "bergbau") return [["Adern", Object.values(ADERN).filter((a) => !a.quest).map((a) => ({ level: a.level, g: a.ertrag, name: a.name, text: `${a.xp} XP je Erz` }))], ["Spitzhacken", werkzeugZeilen(SPITZHACKEN, "Baut")]];
   const an = (f: (r: Rezept) => boolean) => nachLevel(REZEPTE.filter((r) => !r.quest && f(r)).map(rezeptZeile)), roh = ["Sehne und Garn", "Leder", "Stoff"];
   if (k === "schmieden") return [["Barren", an((r) => r.station === "esse")], ["Schmieden", an((r) => r.station === "amboss")]];
+  if (k === "kraeuterkunde") return [["Kräuter", Object.values(KRAEUTER).map((a) => ({ level: a.level, g: a.ertrag, name: a.name, text: `${a.xp} XP je Kraut · mit der Sichel` }))], ["Brauen", an((r) => r.beruf === "kraeuterkunde")]]; /* #133 */
   if (k === "handwerk") return [["Rohstoffe", an((r) => roh.includes(r.gruppe))], ["Werkbank", an((r) => (r.station === "werkbank" || r.station === "hand") && !roh.includes(r.gruppe))]];
   if (k === "fischen") return [["Fische", nachLevel(Object.values(FISCHE).filter((f) => !f.quest).map((f) => ({ level: f.level, g: f.ertrag, name: f.name, text: `${f.xp} XP je Fisch · mit ${nameVon(f.werkzeug || "")}${f.koeder ? " und " + nameVon(f.koeder) : ""}` })))],
     ["Geräte", FISCH_GERAETE.map((w) => ({ level: w.level, g: w.g, name: nameVon(w.g), text: w.level > 1 ? "Für Fische, die nicht an die Angel gehen" : "Das erste Gerät" }))]];

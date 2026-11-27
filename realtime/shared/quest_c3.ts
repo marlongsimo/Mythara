@@ -124,6 +124,7 @@ export const QUEST_C3: QuestDef = {
   /* Kerkerschlüssel: vom Kerkermeister, solange er fehlt (Rolle Spiel: chance 100) */
   beute: { c3_kerkerschluessel: { erledigt: ["abstieg"], offen: ["schluessel"] } },
   schalter: { thronsaal_instanz: LAEUFT, becken_trueb: [{ erledigt: ["becken"] }, FERTIG], bindestein_becken: FERTIG, bossing_oberster: FERTIG },
+  glueckwunsch: "Der Oberste ist gefallen, und unsere Leute sind zu Hause. Rabenmoor feiert. Mit dir.",
   belohnungText: "Belohnung: der Rabenpanzer (Set komplett), je 1.000 XP Geschick, Stärke und Defense, 1.000 Splitter · danach: Wegstein-Ziel Aschenwerth, Bindestein am Becken, der Oberste als Boss",
   belohnung: { xp: { geschick: 1000, staerke: 1000, defense: 1000 }, splitter: 1000, gegenstaende: [{ g: "rabenpanzer" }] },
   punkte: 2,

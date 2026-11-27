@@ -89,6 +89,7 @@ export const QUEST_E3: QuestDef = {
     },
   },
   schalter: { grauwacht_burg: FERTIG },
+  glueckwunsch: "Die Burg ist besetzt, die Wacht steht. Für die Wacht – und für dich.",
   belohnungText: "Belohnung: Stärke 1.000, Geschick 600 XP, 400 Splitter · danach: die Burg von Grauwacht ist besetzt, Bank und Waffenladen",
   belohnung: { xp: { staerke: 1000, geschick: 600 }, splitter: 400 },
   punkte: 2,

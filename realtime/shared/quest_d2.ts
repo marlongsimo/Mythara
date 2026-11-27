@@ -109,6 +109,7 @@ export const QUEST_D2: QuestDef = {
   },
   /* Die Wappentür (shared/bosse.ts, TUEREN „turm_wappentuer“) ist offen ab dem Schritt „tuer“ und nach der Quest */
   schalter: { wappentuer_offen: [{ erledigt: ["tuer"] }, FERTIG] },
+  glueckwunsch: "Ysolde hat gewartet. Jetzt nicht mehr. Die Wacht dankt dir – und ich auch.",
   belohnungText: "Belohnung: je 1.000 XP Stärke, Geschick und Defense, 500 LP-XP, 600 Splitter · danach: Wegstein-Ziel Ostufer (Turm)",
   belohnung: { xp: { staerke: 1000, geschick: 1000, defense: 1000, lp: 500 }, splitter: 600 },
   punkte: 2,

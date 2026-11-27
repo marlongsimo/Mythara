@@ -5,8 +5,7 @@
  * das Heft zurück zu Mira. Lohn: Kräuterkunde-XP, 3 Heiltränke, 80 Splitter, 1 Questpunkt; danach kauft Mira deine Tränke an (Schalter mira_ankauf).
  * Das Heft ist Erzählung, kein persönliches Rezeptbuch – Rezepte bleiben fest je Level (Kanon 26.11.).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 5c (Kräuterkunde: Sichel, Sammeln, Kessel, Rezept kleiner_heiltrank). Mira ist heute Händlerin
- * (shared/laeden.ts) – als Questfigur braucht sie Laden und Gespräch zugleich. Liste: doku/quests/c-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Kräuterkunde #133). Mira ist Händlerin (shared/laeden.ts) und Questfigur zugleich. Liste: doku/quests/c-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 
@@ -33,7 +32,7 @@ export const QUEST_MIRA: QuestDef = {
   schritte: [
     { id: "wegerich", text: "Fünf Wegerich sammeln", ereignis: { art: "sammeln", ziel: "wegerich" }, anzahl: 5, wo: WEGERICH,
       log: "Sammel vor der Waldmark fünf Wegerich – mit einer Sichel ({n:wegerich})." },
-    { id: "trank", text: "Einen Kleinen Heiltrank brauen", ereignis: { art: "herstellen", rezept: "kleiner_heiltrank" }, nach: ["wegerich"], wo: KESSEL,
+    { id: "trank", text: "Einen Kleinen Heiltrank brauen", ereignis: { art: "herstellen", rezept: "brauen_kleiner_heiltrank" }, nach: ["wegerich"], wo: KESSEL,
       log: "Brau am Kessel im Kräuterhaus der Waldmark einen Kleinen Heiltrank – Wegerich und ein leeres Fläschchen." },
     { id: "hedda", text: "Mutter Hedda in Rabenmoor um das Heft bitten", ereignis: { art: "antwort" }, nach: ["trank"], bei: "hedda",
       log: "Geh nach Rabenmoor zu Mutter Hedda auf ihre Insel und bitte sie um Miras Rezeptheft." },
@@ -53,9 +52,9 @@ export const QUEST_MIRA: QuestDef = {
         { zeilen: ["Wegerich! Wächst überall, sieht keiner. Schau an den Wegrändern vor der Waldmark."], antworten: ["hilfe", "tschuess"] },
       ],
       optionen: [
-        { id: "annehmen", text: "Ich hole dein Heft. (Quest annehmen)", folge: [{ f: { start: true, zeilen: ["Wirklich? Oh, du bist ein Schatz.",
+        { id: "annehmen", text: "Ich hole dein Heft. (Quest annehmen)", folge: [{ f: { start: true, geben: [{ g: "leeres_flaeschchen", name: "ein leeres Fläschchen" }], zeilen: ["Wirklich? Oh, du bist ein Schatz.",
           "Aber Hedda gibt nichts her, ohne zu prüfen, wer fragt. Zeig ihr, dass du mit Kräutern umgehen kannst: Sammel fünf Wegerich, brau einen Kleinen Heiltrank im Kräuterhaus.",
-          "Und dann ab nach Rabenmoor. Eine Sichel hat der Handwerker vor der Schmiede."] } }] },
+          "Hier, ein Fläschchen für den Trank. Und dann ab nach Rabenmoor. Eine Sichel hat der Handwerker vor der Schmiede."] } }] },
         { id: "hedda_wer", text: "Wer ist Mutter Hedda?", folge: [{ f: { weiter: true, zeilen: ["Die beste Kräuterfrau zwischen hier und dem Meer. Und die mürrischste.",
           "Sie wohnt draußen in Rabenmoor, auf der letzten trockenen Insel. Was ich kann, hab ich von ihr. Das sag ich ihr aber nicht."] } }] },
         { id: "spaeter", text: "Jetzt nicht.", folge: [{ f: { anbieten: true, zeilen: ["Schon gut. Ich such weiter in meinem Kopf. Irgendwo da drin muss es ja sein."] } }] },
@@ -85,6 +84,7 @@ export const QUEST_MIRA: QuestDef = {
     },
   },
   schalter: { mira_ankauf: FERTIG },
+  glueckwunsch: "Mein Heft! Mit allen Flecken! Du bist ein Schatz, weißt du das?",
   belohnungText: "Belohnung: Kräuterkunde-XP, 3 Heiltränke, 80 Splitter · danach: Mira kauft deine Tränke an (halber Ladenpreis)",
   belohnung: { berufe: { kraeuterkunde: 400 }, splitter: 80, gegenstaende: [{ g: "heiltrank", n: 3 }] },
   punkte: 1,

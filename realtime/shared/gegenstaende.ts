@@ -328,7 +328,7 @@ for (const [id, b] of Object.entries(BILDER_AUS_FABRIK)) if (GEGENSTAENDE[id] &&
     text: "Ein Ring mit fünf schweren Schlüsseln. Einer davon passt zur Tür des Beutelagers im Unterschlupf." };
   GEGENSTAENDE.silberleuchter = { id: "silberleuchter", name: "Silberleuchter", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "silberleuchter.webp",
     text: "Zwei silberne Kerzenleuchter, in Sackleinen gewickelt. Die aus Gisberts Karrenbrief – Othmar wird sie zurückhaben wollen." };
-  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "karrenbrief.webp",
+  GEGENSTAENDE.rabenbrief = { id: "rabenbrief", name: "Brief mit Rabensiegel", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: P4 + "rabenbrief.webp",
     text: "Schwarzes Wachs, ein Rabe darin, das Siegel gebrochen. „Für jeden Splitter, den ihr bringt, eine Feder. Die Insel wartet. – Der Oberste.“" };
   GEGENSTAENDE.rotes_banner = { id: "rotes_banner", name: "Rotes Banner", art: "Zierde", seltenheit: "episch", bild: P4 + "rotes_banner.webp",
     text: "Rotmantels Banner, schwerer roter Stoff, an den Rändern verbrannt. Ein Sammelstück – irgendwann hängt es in deinem Haus." };
@@ -479,7 +479,9 @@ export const anzeigeName = (g: string, d?: Daten): string => (GEGENSTAENDE[g] ? 
  * Noch nicht im Rucksack und noch ohne Wirkung im Kampf: das Leben im Kampf rechnet der Spielserver (shared/sim.ts) – das Trinken braucht dort einen eigenen Befehl.
  * Hier stehen schon Werte, Text und Modell (img/objekte3d, fabrik/drehobjekt.py: schwebt und dreht sich, Animation „drehen“). */
 /** Verbrauchsgegenstand. stapelbar: mehrere liegen in einem Rucksackfeld (false = jeder belegt ein eigenes Feld). Heilung nie über das maximale Leben hinaus */
-export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
+export interface Verbrauch { id: string; name: string; art: string; seltenheit: Seltenheit; heilt: { fest: number; anteil: number }; /** Wirkung beim Essen (shared/wirkungen.ts) */ wirkung?: string;
+  /** Kräuterkunde (#133): Ausdauer sofort + so viele Prozent · kostet so viele LP beim Trinken (Nebenwirkung) · hebt Trank-Nebenwirkungen auf · gibt das leere Fläschchen zurück */
+  ausdauer?: number; kostet?: number; nebenAuf?: boolean; flaeschchen?: boolean; stapelbar: boolean; modell: string; werte: [string, string][]; text: string }
 export const VERBRAUCH: Record<string, Verbrauch> = {
   apfel: { id: "apfel", name: "Apfel", art: "Essen", seltenheit: "anfaenger", heilt: { fest: 2, anteil: 0 }, stapelbar: true, modell: "",
     werte: [["Heilung", "2 (nicht über das maximale Leben)"], ["Stapelbar", "ja"]], text: "Ein Apfel aus Gisberts Obstwiesen." },
@@ -526,7 +528,14 @@ export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math
     anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
     text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
   GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
-    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" }; }
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" };
+  /* C1 „Schwarze Federn“ (quest_c1.ts), Meilerpech auch für D1 „Die Fährkette“: Questgegenstände, Bilder aus dem Bestand */
+  GEGENSTAENDE.meilerpech = { id: "meilerpech", name: "Meilerpech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/kohle.webp",
+    text: "Ein Topf schwarzes Pech aus Köhler Ulfs Meiler, noch warm. Es dichtet Fugen, Planken und Ketten – und klebt an allem." };
+  GEGENSTAENDE.novizenkapuze = { id: "novizenkapuze", name: "Novizenkapuze", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: B + "rabenfedern.webp",
+    text: "Eine Kapuze aus schwarzen Federn, sorgfältig vernäht. Innen ist ein Zeichen eingestickt: ein Rabe über einem Kreis aus Steinen." };
+  GEGENSTAENDE.brueckenplanke = { id: "brueckenplanke", name: "Brückenplanke", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: "img/objekte3d/skilling/erzeugnisse/stamm_moorweide.webp",
+    text: "Eine dicke Planke aus Moorweide, an Harms Werkbank geschnitten. Für die alte Brücke nach Aschenwerth." }; }
 
 /* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
 /** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
@@ -630,3 +639,47 @@ GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /*
   E("wolfsgulasch", "Wolfsgulasch", 9, "wolfsgulasch", "Defense +2 für 5 Minuten", "Wolfsfleisch, im Kessel geschmort.", true);
   GEGENSTAENDE.alter_hecht = { id: "alter_hecht", name: "Der alte Hecht", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
     text: "Ein Hecht, so lang wie ein Arm, mit Narben am Maul. Die Fischerin vom Schilfsee wird staunen – und Lambert erst." }; }
+
+/* ───────── Kräuterkunde (Phase 5c, #133): Kräuter, Sichel, leeres Fläschchen, Trüber Sud und die Tränke (schwach/stark) – Bilder von Figuren (#28) ───────── */
+{ const KS = "img/objekte3d/skilling/kraeuter/symbole/", TS = "img/objekte3d/kraeuterkunde/symbole/", TM = "img/objekte3d/kraeuterkunde/";
+  const KR: [string, string, number, string][] = [["wegerich", "Wegerich", 2, "Breite Blätter vom Wegrand. Die Grundlage jedes Heiltranks."], ["ringelblume", "Ringelblume", 4, "Orange Blüten aus den Obstwiesen. Heilt Wunden, sagt Mira."],
+    ["moorgloeckchen", "Moorglöckchen", 8, "Kleine blaue Glocken aus dem Rabenmoor. Wer daran riecht, atmet freier."], ["eisenhut", "Eisenhut", 12, "Dunkle Blüten vom Friedhof im Nordwald. Giftig – nur gebraut zu gebrauchen."],
+    ["nebelkraut", "Nebelkraut", 18, "Ein graues Kraut aus den Nebelfeldern des Rabenmoors. Es riecht nach Regen."], ["lindenbluete", "Lindenblüte", 30, "Eine Blüte der alten Linde in Weidenhain. Sie wächst nur langsam nach."]];
+  for (const [id, name, wert, text] of KR) GEGENSTAENDE[id] = { id, name, art: "Kraut", seltenheit: "anfaenger", bild: KS + id + ".webp", wert, text };
+  /* Questgegenstände um die Kräuter: Miras Rezeptbuch (quest_mira.ts) und der Kräuterhof (quest_kraeuterhof.ts) */
+  GEGENSTAENDE.rezeptheft = { id: "rezeptheft", name: "Miras Rezeptheft", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein dünnes Heft voller Flecken, die Ecken vom Kesseldampf gewellt. Auf dem Umschlag steht „Mira“, darunter: „Nicht für Hedda.“" };
+  GEGENSTAENDE.ringelblumensamen = { id: "ringelblumensamen", name: "Ringelblumensamen", art: "Questgegenstand", seltenheit: "anfaenger", untauschbar: true, bild: KS + "ringelblume.webp",
+    text: "Ein Tütchen Samen, sorgfältig gefaltet. Nicht zu nass halten, steht darauf." };
+  GEGENSTAENDE.moorgloeckchen_ableger = { id: "moorgloeckchen_ableger", name: "Moorglöckchen-Ableger", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: KS + "moorgloeckchen.webp",
+    text: "Drei kleine Pflanzen mit Moorerde an den Wurzeln, in ein feuchtes Tuch geschlagen." };
+  GEGENSTAENDE.sichel = { id: "sichel", name: "Sichel", art: "Werkzeug", seltenheit: "anfaenger", bild: TS + "sichel.webp", modell3d: "img/figuren-echt3d/basemann3d.teile/waffe.sichel.glb", wert: 10,
+    text: "Eine kleine Sichel für Kräuter. Ohne sie reißt man die Pflanzen nur aus." };
+  GEGENSTAENDE.leeres_flaeschchen = { id: "leeres_flaeschchen", name: "Leeres Fläschchen", art: "Rohstoff", seltenheit: "anfaenger", stapel: 1000, bild: TS + "leeres_flaeschchen.webp", modell3d: TM + "leeres_flaeschchen.glb", wert: 2,
+    text: "Ein Fläschchen aus grünem Glas. Am Kessel wird ein Trank daraus; getrunken bekommt man es zurück." };
+  GEGENSTAENDE.trueber_sud = { id: "trueber_sud", name: "Trüber Sud", art: "Abfall", seltenheit: "anfaenger", bild: TS + "trueber_sud.webp", modell3d: TM + "trueber_sud.glb", text: "Ein Fläschchen grauer Brühe. Nicht trinkbar." };
+  const T: [string, string, string, number, string | undefined, Partial<Verbrauch>, string][] = [
+    ["atemtrank_schwach", "Atemtrank (schwach)", "gewoehnlich", 0, undefined, { ausdauer: 20 }, "Ausdauer sofort +20 %"],
+    ["atemtrank_stark", "Atemtrank (stark)", "gewoehnlich", 0, undefined, { ausdauer: 40 }, "Ausdauer sofort +40 %"],
+    ["steinhaut_schwach", "Steinhaut (schwach)", "gewoehnlich", 0, "steinhaut_schwach", {}, "Defense +2 für 3 Minuten"],
+    ["steinhaut_stark", "Steinhaut (stark)", "selten", 0, "steinhaut_stark", {}, "Defense +4 für 5 Minuten"],
+    ["moorfeuer_schwach", "Moorfeuer (schwach)", "gewoehnlich", 0, "moorfeuer_schwach", {}, "Stärke +2 für 3 Minuten"],
+    ["moorfeuer_stark", "Moorfeuer (stark)", "selten", 0, "moorfeuer_stark", { kostet: 5 }, "Stärke +5 für 3 Minuten · Nebenwirkung: kostet 5 Lebenspunkte"],
+    ["nebelschleier_schwach", "Nebelschleier (schwach)", "gewoehnlich", 0, "nebelschleier_schwach", {}, "Gegner bemerken dich ein Viertel später (5 Minuten)"],
+    ["nebelschleier_stark", "Nebelschleier (stark)", "selten", 0, "nebelschleier_stark", {}, "Gegner bemerken dich erst halb so weit (5 Minuten) · Nebenwirkung: Fernkampf −3"],
+    ["lindentau_schwach", "Lindentau (schwach)", "selten", 15, undefined, {}, "heilt 15"],
+    ["lindentau_stark", "Lindentau (stark)", "episch", 20, undefined, { nebenAuf: true }, "heilt 20 und hebt Nebenwirkungen auf"]];
+  for (const [id, name, selt, heil, wirkung, mehr, w] of T) {
+    GEGENSTAENDE[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, bild: TS + id + ".webp", modell3d: TM + id + ".glb", trank: id, text: `${w}.` };
+    VERBRAUCH[id] = { id, name, art: "Trank", seltenheit: selt as Seltenheit, heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), ...mehr, flaeschchen: true, stapelbar: false, modell: TM + id + ".glb",
+      werte: [...(heil ? [["Heilung", `${heil} (nicht über das maximale Leben)`] as [string, string]] : []), ["Wirkung", w], ["Danach", "leeres Fläschchen"]], text: w }; }
+  VERBRAUCH.kleiner_heiltrank.flaeschchen = true; VERBRAUCH.heiltrank.flaeschchen = true; /* getrunkene Tränke geben das Fläschchen zurück */ }
+
+/* ───────── Vorbereitet (#130): Wildbret – Fleisch von Hyäne, Widder, Bär und Elch (einziger neuer Rohstoff der zehn neuen Gegner); Bild folgt (Figuren) ───────── */
+GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", seltenheit: "gewoehnlich", wert: 12, symbol: "kristall", text: "Dunkles Fleisch vom Wild der Hochlande. Am Herd geschmort wird ein kräftiger Braten daraus." };
+GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
+VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };
+
+/* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
+GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
+  text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };
