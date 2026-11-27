@@ -1,0 +1,31 @@
+{
+ "teile": {
+  "koerper": {
+   "art": "koerper",
+   "platz": null,
+   "bewegungen": []
+  }
+ },
+ "aktionen": {
+  "fliegen": {
+   "bilder": 25,
+   "rate": 24,
+   "schleife": true
+  },
+  "sturz": {
+   "bilder": 21,
+   "rate": 24,
+   "schleife": false
+  },
+  "tod": {
+   "bilder": 31,
+   "rate": 24,
+   "schleife": false
+  },
+  "treffer": {
+   "bilder": 11,
+   "rate": 24,
+   "schleife": false
+  }
+ }
+}
