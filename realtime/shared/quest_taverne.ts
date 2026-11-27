@@ -5,7 +5,7 @@
  * Lohn: Kochen-XP, 80 Splitter, 1 Questpunkt; danach Schalter „taverne_offen“ (Herd, Kessel, Verkauf einfacher Gerichte).
  * Damit die Suppe gekocht werden kann, steht die Küche schon während der Quest offen: Schalter „taverne_kueche“ (Herd und Kessel), ab dem Annehmen.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 3b (Issue #4). Erwartete Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
+ * Im Spiel (shared/quests.ts). Als Entwurf wartete die Quest auf Phase 3b (Issue #4). Erwartete Bausteine – Kennungen siehe doku/quests/3b-bausteine.md:
  * Gegenstände brot (vorhanden), fisch_bachling_gebraten, fischsuppe; Stationen Herd und Kessel in der Taverne mit den Schaltern oben.
  */
 import type { QuestDef, Bed } from "./questbau";

@@ -4,7 +4,7 @@
  * „Mettes Schafe“ (QUER: Ringelblume aus den Obstwiesen): Hirtin Mette Heider in Heidrast – fünf Heidewölfe, aus dem gerissenen Schaf einen Hammeleintopf am Herd der Abteiküche (Heidrast hat keinen Herd).
  * „Ruhelose Gräber“: Äbtissin Gunhild – drei Grablichter einfangen (Splitterbinden 35) und in den drei Grabkammern zur Ruhe legen.
  *
- * Stellen aus der Welt (#50, shared/quest_e_orte.ts). ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Spiel: Heidewolf, Grablicht, Rezept hammeleintopf). Liste: doku/quests/e-bausteine.md.
+ * Stellen aus der Welt (#50, shared/quest_e_orte.ts). Im Spiel (shared/quests.ts) seit 27.11. (a34079ee). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E1 } from "./quest_e1";
@@ -102,6 +102,8 @@ export const QUEST_GRAEBER: QuestDef = {
       ],
     },
   },
+  /* Grablichter geben den Questgegenstand grablicht, solange die Quest läuft (server/src/lichter.ts, höchstens 3 im Rucksack) */
+  beute: { graeber_grablicht: { phase: ["laeuft"] } },
   glueckwunsch: "Die Toten schlafen. Und wir auch, endlich.",
   belohnungText: "Belohnung: Splitterbinden 800 XP, 200 Splitter",
   belohnung: { berufe: { splitterbinden: 800 }, splitter: 200 },

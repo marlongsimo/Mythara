@@ -5,7 +5,7 @@
  * Lohn: Stärke 2.000, Fernkampf 2.000, Defense 1.500 XP, 400 Splitter, 2 Questpunkte; Wegstein-Ziel Kielmund (die Kutsche ist gestrichen, Nutzer 26.11.).
  * Der Weg ist offen (offene Welt) – die Quest belohnt mit der Abkürzung.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Strandräuber, Wegstein-Ziel Kielmund). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Stellen aus der Welt (#82). Stellen: shared/quest_g_orte.ts. Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { OTHMAR, SUEDSTRASSE, KIELMUND } from "./quest_g_orte";

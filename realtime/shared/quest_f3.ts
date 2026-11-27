@@ -5,7 +5,7 @@
  * die Inschrift abschreiben, hinter dem Kammertor die Sandmutter (Gebiet tempel_kammer, Instanz). In der Kammer liegt ein Stück der „Karte des Boten“ (quest_karte.ts).
  * Lohn: Magie 5.000, Defense 5.000 XP, 1.500 Splitter, 3 Questpunkte; Zugang zum Ureisen in den Tafelbergen (Schalter ureisen_tafelberge).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Kammer als Instanz, Glutgeist, Sandmutter, Spiegel-Rätsel optisch). Stellen aus der Welt (#74, quest_f_orte.ts).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Stellen aus der Welt (#74, quest_f_orte.ts).
  * Liste: doku/quests/f-bausteine.md.
  */
 import type { QuestDef, QuestObjekt, Bed, Sperre } from "./questbau";
@@ -82,7 +82,8 @@ export const QUEST_F3: QuestDef = {
       ],
     },
   },
-  schalter: { sandmutter_kammer: LAEUFT, ureisen_tafelberge: FERTIG },
+  /* Boss-Regel (#116): in der Quest allein und schwächer, danach öffentlich oder eigene Instanz (die Karte des Boten holt Stück 5 aus der Kammer) */
+  schalter: { sandmutter_kammer: LAEUFT, sandmutter_danach: FERTIG, ureisen_tafelberge: FERTIG },
   glueckwunsch: "Die Sandmutter schläft für immer. Der Tempel spricht wieder. Danke, Fremder.",
   belohnungText: "Belohnung: Magie 5.000, Defense 5.000 XP, 1.500 Splitter · danach: Ureisen in den Tafelbergen; in der Kammer liegt ein Stück der Karte des Boten",
   belohnung: { xp: { magie: 5000, defense: 5000 }, splitter: 1500 },

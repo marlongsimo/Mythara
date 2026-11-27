@@ -7,7 +7,7 @@
  * Abweichung vom Konzept: Tran aus Hering (Fischen 20) statt Seeaal (Fischen 45), damit die Quest in die Küstenstufe 20–40 passt.
  * Lohn: Splitterbinden 1.500, Handwerk 1.500, Fischen 800 XP, 500 Splitter, 2 Questpunkte; Schalter leuchtfeuer_an.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 10 (Leuchtturm, Hering, Rezepte lampenoel und splitterglut). Liste: doku/quests/g-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af). Liste: doku/quests/g-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { G1 } from "./quest_g1";
