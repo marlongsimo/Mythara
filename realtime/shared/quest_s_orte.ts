@@ -25,14 +25,14 @@ export const KREUZSTEIN = { pilgerin: [6475.5, 7100.5] as Feld, stein: [6477, 70
 export const LEHMFURT = { schmied: [6469, 7244] as Feld, bruch: [6500, 7240] as Feld,
   steine: [[6431, 7244.8], [6431, 7245.6], [6431, 7246.4], [6431, 7247.2], [6431, 7248]] as Feld[] };
 
-/* ───────── Figuren des Südens (Modelle vorläufig, bis #121) ───────── */
-export const RIKE: QuestFigur = { id: "rike", name: "Rike Heck", modell: "npcfrau3d", x: HECKENHOF.baeuerin[0], y: HECKENHOF.baeuerin[1], blick: [0, 1] };
+/* ───────── Figuren des Südens (Modelle aus #127; Tamme und Odila noch mit vorhandenen Modellen) ───────── */
+export const RIKE: QuestFigur = { id: "rike", name: "Rike Heck", modell: "npc.baeuerin", x: HECKENHOF.baeuerin[0], y: HECKENHOF.baeuerin[1], blick: [0, 1] };
 export const TAMME: QuestFigur = { id: "tamme", name: "Tamme", modell: "npc.alter_bauer", x: HECKENHOF.schaefer[0], y: HECKENHOF.schaefer[1], blick: [0, 1] };
-export const IMME: QuestFigur = { id: "imme", name: "Imme Sommer", modell: "npcfrau3d", x: SUMMWEIDE.imkerin[0], y: SUMMWEIDE.imkerin[1], blick: [0, 1] };
-export const EBBA: QuestFigur = { id: "ebba", name: "Ebba Ried", modell: "npcfrau3d", x: SCHILFSEE.fischerin[0], y: SCHILFSEE.fischerin[1], blick: [-1, 0] };
-export const BODO: QuestFigur = { id: "bodo", name: "Bodo Span", modell: "npcmann3d", x: ERLENGRUND.saegemueller[0], y: ERLENGRUND.saegemueller[1], blick: [0, 1] };
+export const IMME: QuestFigur = { id: "imme", name: "Imme Sommer", modell: "npc.imkerin", x: SUMMWEIDE.imkerin[0], y: SUMMWEIDE.imkerin[1], blick: [0, 1] };
+export const EBBA: QuestFigur = { id: "ebba", name: "Ebba Ried", modell: "npc.schilffischerin", x: SCHILFSEE.fischerin[0], y: SCHILFSEE.fischerin[1], blick: [-1, 0] };
+export const BODO: QuestFigur = { id: "bodo", name: "Bodo Span", modell: "npc.saegemueller", x: ERLENGRUND.saegemueller[0], y: ERLENGRUND.saegemueller[1], blick: [0, 1] };
 export const ODILA: QuestFigur = { id: "odila", name: "Odila", modell: "npcfrau3d", x: KREUZSTEIN.pilgerin[0], y: KREUZSTEIN.pilgerin[1], blick: [0, 1] };
-export const KUNO: QuestFigur = { id: "kuno", name: "Kuno Lehm", modell: "npc.schmied", x: LEHMFURT.schmied[0], y: LEHMFURT.schmied[1], blick: [0, 1] };
+export const KUNO: QuestFigur = { id: "kuno", name: "Kuno Lehm", modell: "npc.schmied_lehmfurt", x: LEHMFURT.schmied[0], y: LEHMFURT.schmied[1], blick: [0, 1] };
 
 /* ───────── Figuren aus älteren Quests – genau so wie dort ───────── */
 export const LAMBERT: QuestFigur = { id: "lambert", name: "Lambert Schilf", modell: "npc.lambert", x: 6462.5, y: 6687.5, blick: [1, 0] }; /* quest_schilf.ts */

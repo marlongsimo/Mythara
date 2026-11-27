@@ -4,7 +4,7 @@
  * QUER: Tebbe in Weidenhain weiß, wie man Eisenbänder um ein Rad legt (wie das Mühlrad in B2). Vier Eichenstämme, zwei Eisenbänder, das Rad reparieren.
  * Danach ist die Werkbank in der Sägemühle frei (Schalter saegemuehle_frei). Lohn: Holzfällerei 400, Schmieden 300 XP, 2 Eichenstämme, 70 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Erlengrund mit Sägemühle (Welt #120), Bodo (Figuren #121), Rezept eisenbaender auch für S4. Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Einbau Süden #126, Anschlüsse #134). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { ERLENGRUND, BODO, TEBBE } from "./quest_s_orte";
@@ -81,6 +81,10 @@ export const QUEST_S4: QuestDef = {
       ],
     },
   },
+  /* Das Quest-Rezept „eisenbaender“ (B2) ist auch während S4 frei (Rezept.auchQuest, #134): hier steht, wann */
+  sperren: { herstellen: { eisenbaender: [{ wenn: { phase: ["neu", "fertig"] }, text: "Eisenbänder schmiedest du nur für ein Mühlrad, das sie braucht." },
+    { wenn: { offen: ["tebbe"] }, text: "Wie man Eisenbänder um ein Rad legt, weiß Tebbe in Weidenhain. Frag ihn zuerst." },
+    { wenn: { erledigt: ["baender"] }, text: "Zwei Eisenbänder hast du schon." }] } },
   schalter: { saegemuehle_frei: FERTIG },
   belohnungText: "Belohnung: Holzfällerei 400, Schmieden 300 XP, 2 Eichenstämme, 70 Splitter · danach: die Werkbank in der Sägemühle",
   belohnung: { berufe: { holzfaellerei: 400, schmieden: 300 }, splitter: 70, gegenstaende: [{ g: "stamm_eiche", n: 2 }] },
