@@ -15,7 +15,7 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 2 | Waldland: Quests A1–A3, Zielscheibe, Kapelle, Bäckerei, Brot, Golem-Beute, Mühle je Spieler | ✅ live |
 | 3 | Weidenhain & Riedwiesen – 3a Splitterbinden + Wegstein + B1 · 3b Wirkungen, Fischen, Kochen · 3c B2, Werkstatt Weidenhain, Sterneisen/Kernbaum | ✅ live und vom Nutzer getestet (26.11.) |
 | 4 | Westmark & erster Boss: Banditen-Varianten, B3, Boss-Baukasten, Instanzen, B4 Rotmantel | ✅ live (27.11.) – bitte im Spiel testen |
-| **5** | **Vorbereitung Moor**: Kräuterkunde, geladene Waffen, Set-Bonus | ✅ live (27.11., main d4d82d33) – **bitte testen**. Miras Rezeptbuch und Kräuterhof werden gerade scharf geschaltet |
+| **5** | **Vorbereitung Moor**: Kräuterkunde, geladene Waffen, Set-Bonus | ✅ live und vom Nutzer getestet (27.11., „ganz gut“) |
 | 6 | Raben-Trilogie & Aschenwerth: Rabenpriester, C1–C3, Rabengrund, Bossing | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
 | 7 | Graufurt zur Stadt, Fährkette, Ostufer, Grüner Turm | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
 | 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | 🟡 Systeme + Inhalte fertig auf `claude/systeme` (Systeme hat den Einbau übernommen); Quest-Entwürfe verknüpft; wartet aufs Zusammenführen |
