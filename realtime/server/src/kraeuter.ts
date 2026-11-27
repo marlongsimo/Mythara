@@ -5,11 +5,13 @@
  *   · Danach ist die Stelle mit der Chance „fall“ abgeerntet (für alle), bis das Kraut nachwächst.
  * Jedes Kraut meldet der Quest { art: "sammeln", ziel: <Kraut> } (z. B. „wegerich“ für „Miras Rezeptbuch“).
  */
-import { KRAEUTER, KRAUTSTELLEN, krautstelle, SICHELN, BERUF_KRAEUTER, KRAUT_TAKT_MS, KRAUT_WEIT, TAU_CHANCE, TAU_MS } from "../../shared/kraeuter";
+import { HANDWERK_QUEST } from "./handwerk";
+import { KRAEUTER, KRAUTSTELLEN, krautstelle, krautSchalter, SICHELN, BERUF_KRAEUTER, KRAUT_TAKT_MS, KRAUT_WEIT, TAU_CHANCE, TAU_MS } from "../../shared/kraeuter";
 import { sammelBeruf } from "./sammeln";
 
 const K = sammelBeruf({
   beruf: BERUF_KRAEUTER, t: "kraut", liste: "kraeuter", arten: KRAEUTER, ziel: krautstelle, werkzeuge: SICHELN, env: "KRAUT",
+  erlaubt: (nutzer, z) => { const S = krautSchalter(z.id); return S && !HANDWERK_QUEST.schalter(nutzer, S.schalter) ? S.text : null; }, /* Kräuterhof: erst mit kraeuterhof_beete */
   taktMs: KRAUT_TAKT_MS, weit: KRAUT_WEIT, momentChance: TAU_CHANCE, momentMs: TAU_MS, tatErtrag: "ernte", tatMoment: "tau", grundLeer: "leer",
   texte: { gast: "Kräuter sammeln geht mit Konto (Menü → Anmelden).", unbekannt: "Hier wächst nichts.", nah: "Geh näher an die Pflanze.", ohneWerkzeug: "Du brauchst eine Sichel im Rucksack.",
     werkzeugLevel: (l) => `Mit dieser Sichel sammelst du erst ab Kräuterkunde ${l}.`, weg: (a) => `Hier ist schon aller ${a.name} geschnitten. Er wächst bald nach.`,
