@@ -56,7 +56,8 @@ export async function starte({ sb: SB, srv: SRV, helden, env = {} }) {
     ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "quests") { s.b = m.b || {}; s.punkte = m.punkte; } if (m.t === "inventar") s.inv = m.inv; if (m.t === "boden") s.boden = m.liste;
       if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "qtext") s.texte.push(m.text); if (m.t === "dialog") s.dialoge.push(m); if (m.t === "fanggruende") s.ruht = new Set((m.weg || []).map((w) => w[0]));
       (s.msgs[m.t] = s.msgs[m.t] || []).push(m); for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
-    ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: geraet(token) })); fertig(s); }); }).then(async (s) => { await warte(s, (m) => m.t === "inventar"); await schlaf(300); return s; }); }
+    ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token, geraet: geraet(token) })); fertig(s);
+      /* wie der Browser: regelmäßig ein Lebenszeichen, sonst meldet der Server nach einigen Minuten Stille ab */ const t = setInterval(() => { if (ws.readyState === 1) ws.send(JSON.stringify({ t: "da" })); }, 10000); t.unref(); ws.on("close", () => clearInterval(t)); }); }).then(async (s) => { await warte(s, (m) => m.t === "inventar"); await schlaf(300); return s; }); }
   const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
   const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
   const anzahl = (s, g) => (s.inv.rucksack || []).reduce((n, x) => n + ((typeof x === "string" ? x : x.g) === g ? (typeof x === "string" ? 1 : x.n) : 0), 0) + (s.inv.angelegt && Object.values(s.inv.angelegt).filter((x) => (typeof x === "string" ? x : x && x.g) === g).length || 0);

@@ -39,7 +39,8 @@ try {
   check(await sprich(ute, C1, "bertold", "kapuze_zeigen") && fertig(ute, C1), "C1 fertig: Kapuze bei Bertold, Lohn abgeholt");
 
   console.log("C2 „Der Gesang der Spiralsteine“");
-  check(await sprich(ute, C2, "hedda", "annehmen") && stand(ute, C2).phase === "laeuft" && anzahl(ute, "moorwachs") === 1, "Ute nimmt C2 bei Hedda an und bekommt Moorglöckchen-Wachs");
+  { const z = await kampf("ute", 6290.4, 6677.4); /* Kampfskills (Defense 25) kennt der Server aus der Kampfverbindung */
+    check(await sprich(ute, C2, "hedda", "annehmen") && stand(ute, C2).phase === "laeuft" && anzahl(ute, "moorwachs") === 1, "Ute nimmt C2 bei Hedda an und bekommt Moorglöckchen-Wachs"); z && z.ws.close(); await schlaf(2500); }
   await objekt(ute, C2, "c2_kreis_moor"); await objekt(ute, C2, "c2_kreis_insel");
   check(erl(ute, C2, "lauschen_moor") && erl(ute, C2, "lauschen_insel"), "An beiden Steinkreisen gelauscht");
   { const t0 = Date.now(); await stelle(ute, 6243, 6733); const z = await kampf("ute", 6243, 6733); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
@@ -62,7 +63,8 @@ try {
   check(an(C2, ute, "federmutter_danach") && !an(C2, ute, "federmutter_kammer") && an(C2, ute, "gruft_offen"), "Danach: federmutter_danach an, die Quest-Kammer zu, die Gruft offen");
 
   console.log("C3 „Der Oberste Rabenpriester“");
-  check(await sprich(ute, C3, "hedda", "annehmen") && stand(ute, C3).phase === "laeuft" && anzahl(ute, "moorwasser") === 1 && anzahl(ute, "federsiegel") >= 1, "Ute nimmt C3 an: Moorwasser und ein Federsiegel");
+  { const z = await kampf("ute", 6290.4, 6677.4);
+    check(await sprich(ute, C3, "hedda", "annehmen") && stand(ute, C3).phase === "laeuft" && anzahl(ute, "moorwasser") === 1 && anzahl(ute, "federsiegel") >= 1, "Ute nimmt C3 an: Moorwasser und ein Federsiegel"); z && z.ws.close(); await schlaf(2500); }
   await objekt(ute, C3, "c3_linde"); check(erl(ute, C3, "weihen") && anzahl(ute, "moorwasser_geweiht") === 1, "Moorwasser am Bindestein an der Linde geweiht (quer: Weidenhain)");
   await ort(ute, "rabengrund", 10645, 9620); check(erl(ute, C3, "abstieg"), "In den Rabengrund hinabgestiegen");
   { const t0 = Date.now(); const z = await kampf("ute", 10645, 9620);
