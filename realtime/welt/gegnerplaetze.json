@@ -1,7 +1,7 @@
 {
  "hinweis": "Gegnerdichte (#130): Gegnerplätze der ganzen Oberwelt (Weltfelder). Von jedem begehbaren Feld außerhalb der Ausnahmen ist der nächste Platz höchstens ~25 Felder entfernt (vorhandene Lager aus weltzonen.py zählen mit). quelle: vorhanden | vorhanden (Modell in neuer Rolle) | vorhanden (Figuren, noch nicht auf feature) | fehlt (Modell nötig, Entscheidung des Nutzers). Erzeugt von werkzeug/welt/gegnerplaetze.py.",
  "reichweite": 25,
- "vorhandene_lager": 122,
+ "vorhandene_lager": 125,
  "plaetze": [
   {
    "id": "heckenhof_felder",

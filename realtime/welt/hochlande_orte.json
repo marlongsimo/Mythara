@@ -855,9 +855,9 @@
     "y0": 9620,
     "x1": 11671,
     "y1": 9623,
-    "schalter": "urkammer_offen"
+    "schalter": "bergwerk_stollen_frei"
    },
-   "schalter": "urkammer_offen",
+   "schalter": "bergwerk_stollen_frei",
    "verletzte": [
     [
      11658,

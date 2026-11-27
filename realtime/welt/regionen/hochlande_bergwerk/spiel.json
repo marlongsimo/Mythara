@@ -16,7 +16,7 @@
     "y0": 20,
     "x1": 87,
     "y1": 23,
-    "schalter": "urkammer_offen"
+    "schalter": "bergwerk_stollen_frei"
    },
    {
     "art": "rechteck",
