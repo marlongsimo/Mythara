@@ -13,6 +13,7 @@
  *   "fertig"           abgeschlossen und Lohn gebucht (nur über rpg_held_quest_abschluss)
  * Ältere Formate übersetzt die Quest selbst (QuestDef.alt) – beim Laden, gespeicherte Stände bleiben gültig.
  */
+import { ausbauDa } from "./stadtstufen";
 
 export interface Zeile { wer: string; text: string }
 export interface Antwort { id: string; text: string }
@@ -29,6 +30,7 @@ export interface QuestFigur { id: string; name: string; modell: string; x: numbe
   /** Gesprächsweite (Felder), sonst REDE_WEIT */ weit?: number; /** geht umher (Modell des Wanderers in der Welt, z. B. der Bürgermeister im Rathaus) */ wandert?: string;
   /** tritt beiseite, wenn (z. B. die Wachen, sobald der Weg frei ist): um dx/dy versetzt, mit neuer Blickrichtung */ beiseite?: { wenn: Bed; dx: number; dy: number; blick: [number, number] };
   /** läuft dem Spieler in dieser Region entgegen und spricht ihn an, solange die Bedingung gilt (z. B. Jori beim ersten Besuch) */ kommt?: { region: string; wenn: Bed };
+  /** Stadtstufen (shared/stadtstufen.ts, #102): da ab dieser Stufe / nicht mehr ab dieser Stufe (Schalter über Kontext.schalter) */ ausbau?: string; ausbau_bis?: string;
   /** nur da (sichtbar, ansprechbar), wenn das gilt – sonst steht dort niemand (Ysolde erst nach dem Feuer, #49) */ sichtbar?: Bed;
   /** folgt dem Spieler, solange das gilt (Befreite bis zur Treppe, später das Rabenküken – shared/folgen.ts). Nur im eigenen Browser;
    *  ansprechbar bleibt sie, wo sie gerade ist. Das Ziel ist ein gewöhnlicher Schritt (betreten bei …); danach steht sie an ihrer Stelle bzw. beiseite. */
@@ -144,8 +146,9 @@ export interface QuestDef {
   schalter?: Record<string, Bed | Bed[]>;
   /** Rätsel-Reihenfolge je Spieler (#49): der Zähler-Schritt schritt (anzahl = teile.length) zählt Questobjekte (Ids in teile) nur in einer
    *  Reihenfolge, die beim Annehmen zufällig festgelegt und im Stand gespeichert wird. Falsches Objekt: von vorn (Text falsch).
-   *  {reihe} in Texten = die namen (sonst die Objektnamen) in dieser Reihenfolge – z. B. Heddas Silben. */
-  reihenfolge?: { schritt: string; teile: string[]; namen?: string[]; falsch: string };
+   *  {reihe} in Texten = die namen (sonst die Objektnamen) in dieser Reihenfolge – z. B. Heddas Silben.
+   *  fest: die Reihenfolge ist für alle die angegebene (Spiegel-Rätsel, #102: Platten in der richtigen Reihenfolge lenken das Licht). */
+  reihenfolge?: { schritt: string; teile: string[]; namen?: string[]; falsch: string; fest?: boolean };
   /** Drehteile in der Welt (Mühlenflügel) im Umkreis r einer Stelle drehen sich nur, wenn der Schalter an ist – je Spieler */
   drehen?: { schalter: string; x: number; y: number; r: number }[];
 }
@@ -183,7 +186,8 @@ export function moeglich(q: QuestDef, s: string, id: string): boolean { const l 
 
 /** Was der Motor über den Spieler wissen muss (der Server weiß alles; der Browser kennt den Rest nicht – fehlt eine Angabe, gilt die Bedingung nicht) */
 export interface Kontext { hat(g: string): boolean; verloren(g: string): boolean; anzahl?(g: string): number; quest?(id: string): Phase; skill?(k: string): number; heldenlevel?(): number;
-  /** Weltuhr in Sekunden (Server: Date.now() / 1000) – für hoerbar; fehlt sie, ist nie etwas hörbar */ zeit?(): number }
+  /** Weltuhr in Sekunden (Server: Date.now() / 1000) – für hoerbar; fehlt sie, ist nie etwas hörbar */ zeit?(): number;
+  /** Schalter des Spielers (QuestDef.schalter) – für Stadtstufen; fehlt er, gilt die erste Stufe */ schalter?(id: string): boolean }
 const OHNE: Kontext = { hat: () => false, verloren: () => false };
 export function gilt(q: QuestDef, s: string, b: Bed | undefined, k: Kontext = OHNE): boolean { if (!b) return true; const l = lage(q, s);
   if (b.phase && !b.phase.includes(l.phase)) return false;
@@ -230,7 +234,7 @@ export const hoerbarJetzt = (O: QuestObjekt, sek: number): boolean => !O.hoerbar
 /** Gesang: Sekunden bis zum nächsten hörbaren Fenster (0: jetzt) */
 export const hoerbarIn = (O: QuestObjekt, sek: number): number => (!O.hoerbar || hoerbarJetzt(O, sek) ? 0 : Math.ceil(O.hoerbar.alle - (((sek % O.hoerbar.alle) + O.hoerbar.alle) % O.hoerbar.alle)));
 /** Ist die Figur für diesen Spieler da (QuestFigur.sichtbar)? */
-export const figurDa = (q: QuestDef, F: QuestFigur, s: string, k: Kontext = OHNE): boolean => !F.sichtbar || gilt(q, s, F.sichtbar, k);
+export const figurDa = (q: QuestDef, F: QuestFigur, s: string, k: Kontext = OHNE): boolean => (!F.sichtbar || gilt(q, s, F.sichtbar, k)) && ausbauDa(F.ausbau, F.ausbau_bis, (x) => Boolean(k.schalter && k.schalter(x)));
 /** Folgt die Figur diesem Spieler gerade (QuestFigur.folgt)? */
 export const figurFolgt = (q: QuestDef, F: QuestFigur, s: string, k: Kontext = OHNE): boolean => Boolean(F.folgt && gilt(q, s, F.folgt.wenn, k));
 
@@ -268,7 +272,7 @@ export const folgeZeilen = (q: QuestDef, npc: string, s: string, t: Text[]): Zei
 /** Den Stand nach einer Folge (ohne Abschluss – der geht über die Datenbank) */
 export function nachFolge(q: QuestDef, s: string, f: Folge, zufall: () => number = Math.random): string { let l = lage(q, s);
   if (f.anbieten && l.phase === "neu") l = { ...l, angeboten: true };
-  if (f.start && l.phase === "neu") { l = { ...l, phase: "laeuft", bits: 0, angeboten: true }; if (q.reihenfolge) l.r = Math.floor(zufall() * fakultaet(q.reihenfolge.teile.length)) % fakultaet(q.reihenfolge.teile.length); } /* Rätsel: Reihenfolge je Spieler */
+  if (f.start && l.phase === "neu") { l = { ...l, phase: "laeuft", bits: 0, angeboten: true }; if (q.reihenfolge && !q.reihenfolge.fest) l.r = Math.floor(zufall() * fakultaet(q.reihenfolge.teile.length)) % fakultaet(q.reihenfolge.teile.length); } /* Rätsel: Reihenfolge je Spieler */
   if (f.vonVorn && l.phase === "laeuft") l = { ...l, bits: 0, z: l.z.map(() => 0) };
   if (f.erledige && l.phase === "laeuft") for (const id of f.erledige) l = { ...l, bits: l.bits | bit(q, id) };
   return stand(l); }

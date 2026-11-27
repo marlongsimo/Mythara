@@ -10,7 +10,11 @@
  * Standard seit 22.11.2026 – ?welt3d=0 schaltet auf einem Gerät zurück in die 2D-Welt (gemerkt), ?welt3d=1 wieder in die 3D-Welt.
  */
 import { arbeitMelden, arbeitVon } from "../arbeit";
-import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch } from "../welt";
+import { chatSystem, fluestern, ichName, untersuchtMelden, mitKonto, weltIch, questGeladen, questStandB } from "../welt";
+import { markeDa, stufenSchluessel } from "../../../shared/stadtstufen";
+import { schalterAn } from "../../../shared/quests";
+/** Stadtstufen: Schalter dieses Spielers (vor dem Laden der Quests: die erste Stufe) */
+const stufenAn = (s: string): boolean => questGeladen() && schalterAn((id) => questStandB(id), s);
 /** eigenes Heldenlevel (für die Levelfarbe der Gegner im Menü) */
 const eigenesLv = (): number => { const i = weltIch(); return i && i.stufe ? i.stufe : 1; };
 import { MONSTER } from "../../../shared/config";
@@ -125,6 +129,7 @@ export class Spielwelt3D implements WeltKern {
        sonst käme die Anmeldung zu spät und der Server schlösse die Verbindung */
     this.motor.r.compile(this.motor.szene, this.motor.kamera); await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null))));
     if (new URLSearchParams(location.search).get("vorwaermen") !== "0") setTimeout(() => void this.vorwaermen(), 2500); /* Gegner- und Wachenmodelle im Hintergrund laden und ihre Shader übersetzen: kein Haken beim ersten Gegner */
+    this.motor.ausbauDa = (m) => markeDa(m, stufenAn); addEventListener("ez-quest", () => this.stufenPruefen());
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
     this.bank = new BankWelt(this); /* Bankmitarbeiter hinter den Bankschaltern (shared/bank.ts) */
@@ -181,7 +186,12 @@ export class Spielwelt3D implements WeltKern {
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
   quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
-  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : [])]; }
+  alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : []), ...this.ausbauSperren()]; }
+  /** Stadtstufen (#102): Felder der Stufen-Objekte, die für diesen Spieler gerade dastehen */
+  private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
+  private stufenSchl = "";
+  /** Queststand geändert: hat sich eine Stadtstufe geändert, Dinge und Gehraster neu */
+  private stufenPruefen() { const k = stufenSchluessel(stufenAn); if (k === this.stufenSchl) return; const erst = !this.stufenSchl; this.stufenSchl = k; if (erst && k === stufenSchluessel(() => false)) return; this.motor.ausbauNeu(); this.sperrenNeu(); }
   /** Sperren haben sich geändert (die Wachen lassen den Spieler durch): Gehraster der geladenen Chunks neu aufbauen */
   sperrenNeu() { for (const d of this.daten.values()) if (d !== "holt") this.raster.dazu(d); for (const [x0, y0, x1, y1] of this.alleSperren()) this.raster.sperren(x0, y0, x1, y1); }
   /* ───────────── Gehraster: die Daten der Chunks um den Helden ───────────── */

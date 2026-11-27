@@ -69,7 +69,9 @@ export class QuestWelt {
   private wo(f: Figur): { x: number; y: number } | null { if (!this.da(f)) return null; if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
   /** Ist die Figur für diesen Spieler da (QuestFigur.sichtbar, #49)? Vor dem Laden der Stände: nur Figuren ohne Bedingung */
-  private da(f: Figur): boolean { if (!f.n.sichtbar) return true; if (!questGeladen()) return false; const q = questDef(f.q); return Boolean(q && figurDa(q, f.n, questStandB(q.id))); }
+  private da(f: Figur): boolean { if (!f.n.sichtbar && !f.n.ausbau && !f.n.ausbau_bis) return true; const q = questDef(f.q);
+    if (!questGeladen()) return !f.n.sichtbar && Boolean(q) && figurDa(q!, f.n, "", { hat: () => false, verloren: () => false }); /* vor dem Laden: die erste Stadtstufe */
+    return Boolean(q && figurDa(q, f.n, questStandB(q.id), { hat: (g) => inventar().rucksack.includes(g), verloren: () => false, quest: (id) => { const d = questDef(id); return d ? lage(d, questStandB(id)).phase : "neu"; }, schalter: (s) => schalterAn((id) => questStandB(id), s) })); }
   /** Befreite folgen (QuestFigur.folgt, #49): hinter dem Spieler her (shared/folgen.ts); hört es auf, steht die Figur wieder an ihrer Stelle */
   private folgen(f: Figur, dt: number) { const q = questDef(f.q), an = Boolean(q && questGeladen() && this.da(f) && figurFolgt(q, f.n, questStandB(q.id)));
     if (!an) { if (f.folger) { f.folger = undefined; const B = f.n.beiseite; f.x = f.n.x + (f.beiseite && B ? B.dx : 0); f.y = f.n.y + (f.beiseite && B ? B.dy : 0); f.zx = f.zy = undefined; if (f.npc) { f.npc.spiele("ruhe"); f.npc.blick(...(f.beiseite && B ? B.blick : f.n.blick)); } } return; }

@@ -241,7 +241,7 @@ addEventListener("ez-wegstein", (e) => { const m = (e as CustomEvent).detail as 
   if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Der Stein bleibt kalt."); return; }
   const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
   (document.querySelector("#ez-konto .tafel .schliessen") as HTMLElement | null)?.click();
-  chatSystem(`Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
+  chatSystem((m as { reisekarte?: boolean }).reisekarte ? `Die Reisekarte bringt dich nach ${m.name || "Hause"} – der freie Sprung für heute ist verbraucht.` : `Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
   const x = m.x, y = m.y, ms = s.teleportAbreise(); setTimeout(() => w.springen!(x, y), Math.max(0, ms - 250)); });
 /* Fähre (#49): kurze Überfahrt (Blende mit Text), dann springt der Held ans andere Ufer – die Stelle hat der Server schon gesetzt */
 addEventListener("ez-faehre", (e) => { const m = (e as CustomEvent).detail as { ok?: boolean; text?: string; von?: string; nach?: string; x?: number; y?: number; dauer?: number };

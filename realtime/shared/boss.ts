@@ -49,7 +49,8 @@ export interface Heilort { /** Weltfelder */ x: number; y: number; r: number; /*
   /** so oft je Leben (Standard 1) */ mal?: number; /** von selbst hingehen */ hingehen?: boolean; /** so lange steht er dabei (Sekunden, Standard 1,5) */ dauer?: number; text?: string }
 export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erste Phase: 1) */ ab: number; text?: string; ansagen?: Ansage[]; ruf?: Ruf; heilorte?: Heilort[];
   /** Schweben: so viele Sekunden ab Eintritt in die Phase für Nahkampf unerreichbar (schlägt selbst nicht zu) */ schweben?: number; /** Text beim Landen */ landen?: string;
-  /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number }
+  /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number;
+  /** Eingraben (#102, Sandmutter): so viele Sekunden ab Eintritt in die Phase für alles unangreifbar, dann taucht er wieder auf (Ansagen nach sek laufen weiter) */ eingraben?: number }
 export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[] }
 
 export interface InstanzGegner { /** Gegnerart (MONSTER) */ art: string; /** Weltfelder */ x: number; y: number }

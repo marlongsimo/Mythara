@@ -36,7 +36,7 @@ export const kontext = (nutzer: string): QB.Kontext => ({
   hat: (g) => besitzt(nutzer).includes(g), verloren: (g) => !besitztIrgendwo(nutzer, g), anzahl: (g) => anzahlVon(nutzer, g),
   quest: (id) => { const q = questDef(id); return q ? QB.lage(q, qStand(nutzer, id)).phase : "neu"; },
   skill: (k) => { if (beruf(k)) return levelAus(berufXp(nutzer, k)); /* Berufe (Holzfällerei, Handwerk …) aus dem Inventar */ const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
-  heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; }, zeit: () => Date.now() / 1000 /* Weltuhr für den Gesang (QuestObjekt.hoerbar) */ });
+  heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; }, zeit: () => Date.now() / 1000 /* Weltuhr für den Gesang (QuestObjekt.hoerbar) */, schalter: (id) => schalterAn(nutzer, id) /* Stadtstufen */ });
 async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promise<void> {
   const alt = qStand(nutzer, q.id); if (alt === "fertig" || QB.abholbereit(alt) || !s || s === "fertig" || s === alt) return;
   let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, s); gemeldet(nutzer);

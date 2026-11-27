@@ -181,7 +181,9 @@ export class WeltKampf {
     else if (ev.a === "bossphase" && ev.text) zahl(ev.id, ev.text, "#ffb27a");
     else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a");
     else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") zahl(ev.id, ev.text || "landet", "#b9a7ff"); /* Schweben (#49): Flugbild macht die Oberfläche */
-    else if (ev.a === "stil" && (ev.text || ev.name)) zahl(ev.id, ev.text || ev.name!, "#ffb27a"); }
+    else if (ev.a === "stil" && (ev.text || ev.name)) zahl(ev.id, ev.text || ev.name!, "#ffb27a");
+    else if (ev.a === "flackern") zahl(ev.id, "flackert", "#c9b6ff"); else if (ev.a === "eingraben") zahl(ev.id, "gräbt sich ein!", "#e0c27a"); /* #102: Bild macht die Oberfläche */
+    else if (ev.a === "boee" && ev.id === this.ichId) zahl(ev.id, "Eine Böe kommt!", "#cfe3ff"); }
   /** Folgen (#54): Stelle (Weltfelder) eines anderen Helden in diesem Kampfgebiet, nach seinem Namen – null: nicht (mehr) hier */
   heldOrt(name: string): { x: number; y: number } | null { for (const [id, f] of this.figuren) { if (!f.held || f.tot || id === this.ichId) continue; const n = this.namen.get(id); if (n && n.name === name) return { x: this.zone.x0 + f.zx, y: this.zone.y0 + f.zy }; } return null; }
   /** Ansage: diese Felder (Rechenfelder, Mitte) leuchten t Sekunden rot – wer dann noch darauf steht, wird getroffen */

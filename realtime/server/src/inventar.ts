@@ -15,9 +15,13 @@ import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach,
 import { berufeUmstellen, UMSTELLUNG_SCHMIEDEN } from "../../shared/berufe";
 import { Startwaffe } from "../../shared/aussehen";
 import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
+import { REISEKARTE, reiseTag, reiseMerker } from "../../shared/wegstein";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; /** Daten der angelegten Exemplare (Phase 5a: Ladungen der Waffe, gebunden) */ angelegtD?: Partial<Record<Platz, Daten>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge, Daten?] – stapelt bei gleichen Daten */ bank?: BankFach[]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[] }
+export interface Inv { angelegt: Partial<Record<Platz, string>>; /** Daten der angelegten Exemplare (Phase 5a: Ladungen der Waffe, gebunden) */ angelegtD?: Partial<Record<Platz, Daten>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge, Daten?] – stapelt bei gleichen Daten */ bank?: BankFach[]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[];
+  /** Räucherhütte (#102): ein laufender Auftrag – Rezept, Stück, fertig ab (ms) */ warten?: Warten }
+/** Ein Auftrag an einer Station mit Wartezeit (Rezept.warten): die Zutaten sind schon genommen */
+export interface Warten { r: string; n: number; fertig: number }
 const INV_STAND = 2;
 /** Ein Bankfach: Gegenstand, Menge und (Phase 5a) Daten je Exemplar */
 export type BankFach = [string, number] | [string, number, Daten];
@@ -26,7 +30,7 @@ const dKopie = (d?: Daten): Daten | undefined => (d ? { ...d } : undefined);
 const datenFuer = (g: string, d?: Daten): Daten | undefined => { if (!d) return undefined; const G = GEGENSTAENDE[g], x: Daten = { ...d }; if (x.ladungen && !(G && G.waffe && WAFFE_LADEN[G.seltenheit])) delete x.ladungen; return Object.keys(x).length ? x : undefined; };
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}), ...(i.warten ? { warten: { ...i.warten } } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): BankFach[] { const b: BankFach[] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])), d = datenFuer(g, datenPruefen(f[2])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
@@ -52,6 +56,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
   { const l = (o as { ladungen?: unknown }).ladungen; if (l && typeof l === "object") { const la: Record<string, number> = {}; for (const [k, v] of Object.entries(l as Record<string, unknown>)) { const n = Math.floor(Number(v)); if ((LADBAR as readonly string[]).includes(k) && n > 0) la[k] = Math.min(LADUNG_MAX, n); } if (Object.keys(la).length) inv.ladungen = la; } }
   { const w = wirkungenAktiv(wirkungenPruefen((o as { wirkungen?: unknown }).wirkungen)); if (w.length) inv.wirkungen = w; }
+  { const w = (o as { warten?: Record<string, unknown> }).warten; if (w && typeof w === "object" && typeof w.r === "string" && /^[a-z0-9_]{1,40}$/.test(w.r) && Number(w.n) >= 1 && Number.isFinite(Number(w.fertig))) inv.warten = { r: w.r, n: Math.min(1000, Math.floor(Number(w.n))), fertig: Number(w.fertig) }; } /* Räucherhütte */
   /* Einmalige Umstellung der Berufe (shared/berufe.ts): Schmieden startet mit dem Stand des Handwerks – mit Merker, damit es nur einmal geschieht */
   { const m = (o as { merker?: unknown }).merker, merker = Array.isArray(m) ? m.filter((x): x is string => typeof x === "string" && /^[a-z0-9_]{1,30}$/.test(x)).slice(0, 50) : [];
     const u = berufeUmstellen(inv.berufe || {}, merker); if (Object.keys(u.berufe).length) inv.berufe = u.berufe; inv.merker = u.merker; }
@@ -124,6 +129,15 @@ export function hat(nutzer: string, g: string): boolean { const e = je.get(nutze
 export function abgeben(sb: Sb, nutzer: string, g: string): boolean { const e = je.get(nutzer); if (!e) return false; const i = e.inv.rucksack.findIndex((f) => fachG(f) === g); if (i < 0) return false;
   const f = e.inv.rucksack[i]; if (typeof f !== "string" && f.n > 1) f.n--; else e.inv.rucksack.splice(i, 1); geaendert(sb, nutzer, e); return true; }
 
+/** Reisekarte (#102): ist der freie Sprung heute noch frei (Karte im Rucksack oder angelegt)? */
+export function reisekarteFrei(nutzer: string, tag = reiseTag()): boolean { const e = je.get(nutzer); return Boolean(e && besitzt(nutzer).includes(REISEKARTE) && !(e.inv.merker || []).includes(reiseMerker(tag))); }
+/** Den freien Sprung von heute verbrauchen (ältere Merker der Reisekarte gehen). Zurück: ob er frei war */
+export function reisekarteNutzen(sb: Sb, nutzer: string, tag = reiseTag()): boolean { const e = je.get(nutzer); if (!e || !reisekarteFrei(nutzer, tag)) return false;
+  e.inv.merker = [...(e.inv.merker || []).filter((m) => !m.startsWith("reisekarte_")), reiseMerker(tag)]; geaendert(sb, nutzer, e); return true; }
+/** Räucherhütte (#102): der laufende Auftrag (oder null) */
+export function wartenVon(nutzer: string): Warten | null { const e = je.get(nutzer); return e && e.inv.warten ? { ...e.inv.warten } : null; }
+/** Auftrag setzen (null: abgeholt) – gespeichert wie der Rucksack */
+export function wartenSetzen(sb: Sb, nutzer: string, w: Warten | null): void { const e = je.get(nutzer); if (!e) return; if (w) e.inv.warten = { ...w }; else delete e.inv.warten; geaendert(sb, nutzer, e); }
 /** Wie viele davon im Rucksack liegen (alle Fächer zusammen) */
 export function anzahlVon(nutzer: string, g: string): number { const e = je.get(nutzer); return e ? e.inv.rucksack.reduce((n, f) => n + (fachG(f) === g ? fachN(f) : 0), 0) : 0; }
 /** Passt ein weiteres Stück davon in den Rucksack? */

@@ -14,7 +14,7 @@ import KOCHSTELLEN from "./kochstellen.json";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
-export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen";
+export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen" | "raeucherhuette";
 export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
@@ -29,6 +29,8 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   herd: { id: "herd", name: "Herd", x: 0, y: 0, tun: "Kochen" },
   kessel: { id: "kessel", name: "Kessel", x: 0, y: 0, tun: "Kochen" },
   brunnen: { id: "brunnen", name: "Brunnen", x: 6448, y: 6432.85, tun: "Schöpfen" },
+  /* Phase 10 (#102): Räucherhütte der Möwenbucht – Kochstation mit Wartezeit (Rezept.warten); Standort trägt die Integration in kochstellen.json ein */
+  raeucherhuette: { id: "raeucherhuette", name: "Räucherhütte", x: 0, y: 0, tun: "Räuchern" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
@@ -58,7 +60,8 @@ export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: st
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
   /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
-  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string }
+  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string;
+  /** Station mit Wartezeit (Räucherhütte, #102): die Zutaten gehen sofort hinein, nach so vielen Sekunden holt man alles ab (XP beim Abholen, brennt nicht an); ein Auftrag je Spieler */ warten?: number }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";

@@ -163,6 +163,8 @@ export interface Platzierung {
   zustand?: string;
   /** Kollision nur für dieses eine Objekt überschreiben (null = keine) */
   kollision?: Kollision | null;
+  /** Stadtstufen (shared/stadtstufen.ts): zeigt sich ab dieser Stufe / verschwindet mit dieser Stufe – je Spieler */
+  ausbau?: string; ausbau_bis?: string;
 }
 
 /** Wie ein Stück Welt zwischen Server und Spielern abgeglichen wird */
@@ -249,6 +251,8 @@ export interface ChunkDaten {
   geh: string[];
   /** Objekte, deren Fußpunkt in diesem Chunk liegt */
   objekte: Platzierung[];
+  /** Sperrfelder der Objekte mit Stadtstufe (nicht im geh): Marke „ab|bis“ und Felder [i, j] in Weltkoordinaten */
+  ausbau?: { m: string; f: number[][] }[];
   figuren: Figur[];
   interaktionen: Interaktion[];
 }

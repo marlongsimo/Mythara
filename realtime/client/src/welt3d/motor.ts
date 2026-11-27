@@ -17,7 +17,7 @@ import { Npc3D, Wanderer, NPC3D, WANDERER } from "./npc3d";
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
 type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
 
@@ -133,6 +133,10 @@ export class Welt3D {
   freigeben(k: string) { const s = this.st.get(k); if (!s) return; this.st.delete(k); const i = this.warte.indexOf(k); if (i >= 0) this.warte.splice(i, 1);
     for (const o of s.obj) { this.szene.remove(o); o.traverse((q) => { const im = q as THREE.InstancedMesh, m = q as THREE.Mesh; if (im.isInstancedMesh) im.dispose(); else if (m.isMesh && m.geometry && !m.geometry.userData.geteilt) m.geometry.dispose(); }); } }
   bauen(k: string) { const s = this.st.get(k); if (!s || s.gebaut) return; s.gebaut = true; this.gelaende(s); this.dinge(s); this.figuren(s); }
+  /** Stadtstufen (shared/stadtstufen.ts, #102): ist ein Ding mit dieser Marke für den Spieler da? (setzt die Spielwelt) */
+  ausbauDa: (marke: string) => boolean = () => true;
+  /** Die Stufe hat sich geändert: Chunks mit Stufen-Dingen neu bauen (freigeben – nachladen holt sie wieder) */
+  ausbauNeu(): void { for (const [k, s] of [...this.st]) if (s.d.dinge.some((d) => d[5])) this.freigeben(k); this.nachladen(); }
 
   /* ───────── Abfragen in Weltfeldern ───────── */
   /** Höhe eines Eckpunkts (ganze Weltfelder); fehlt der Chunk, hilft der Rand eines Nachbarn */
@@ -180,8 +184,8 @@ export class Welt3D {
 
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
   dinge(s: Stueck) {
-    const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
-    for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
+    const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), D = s.d.dinge.filter((d) => !d[5] || this.ausbauDa(d[5])) /* Stadtstufen je Spieler */, reihen = D.filter(([t]) => istReihe(typen[t]));
+    for (const [t, x, y, sk0] of D) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
       if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
           if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox!, w = m.getWorldScale(new THREE.Vector3()); m.castShadow = Math.max((g.max.x - g.min.x) * w.x, (g.max.y - g.min.y) * w.y, (g.max.z - g.min.z) * w.z) >= 1.2; }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
       const geo = modell(typ);

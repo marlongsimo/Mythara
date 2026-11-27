@@ -11,7 +11,7 @@ import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK
 import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
-import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen } from "./inventar";
+import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen, wartenVon, wartenSetzen } from "./inventar";
 import { LADUNG_MAX, RESONANZ_MAL, AN_WAFFE, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
@@ -60,6 +60,7 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   if (s.gast) return "Handwerk geht mit Konto (Menü → Anmelden).";
   const r = rezept(id); if (!r) return "Dieses Rezept gibt es nicht.";
   if (!nah(s, r) && r.station !== "hand") { const zu = naheWerkstaetten(s, r).find((W) => !offen(s, W)); return zu ? zu.gesperrt || "Das geht hier noch nicht." : `Geh näher an ${ARTIKEL[r.station] || "die"} ${STATIONEN[r.station].name}.`; }
+  if (r.warten && wartenVon(s.nutzer)) return wartenAbholen(s, r); /* läuft schon ein Auftrag: abholen (oder sagen, wie lange noch) */
   const L = handwerkLevel(s.nutzer, r.station); if (L < r.level) return `Dafür brauchst du ${(beruf(berufAn(r.station)) || { name: "Handwerk" }).name} ${r.level}.`;
   if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
@@ -68,9 +69,29 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   else if (!passt(s.nutzer, r)) return ladungZiel(r) ? `Der ${GEGENSTAENDE[ladungZiel(r)!] ? GEGENSTAENDE[ladungZiel(r)!].name : "Stein"} ist voll – mehr als ${LADUNG_MAX} Ladungen hält er nicht.` : "Dein Rucksack ist voll.";
   if (ladungZiel(r) && ladungZiel(r) !== AN_WAFFE && anzahlVon(s.nutzer, ladungZiel(r)!) <= 0) return `Du brauchst deinen ${GEGENSTAENDE[ladungZiel(r)!].name} im Rucksack.`;
   const n = Math.max(1, Math.min(1000, Math.floor(menge) || 1));
+  if (r.warten) return wartenStart(s, r, n); /* Räucherhütte (#102) */
   arbeiten.set(s, { s, r, rest: n, naechst: Date.now() + r.ticks * TICK_MS, glutBis: 0, glut: false });
   senden(s, { t: "handwerk", tat: "start", rezept: r.id, station: r.station, menge: n, ms: r.ticks * TICK_MS }); return null;
 }
+/* ───────── Station mit Wartezeit (Räucherhütte, #102) ───────── */
+/** Hineinlegen: Zutaten für so viele Stück, wie da sind (höchstens n), sofort nehmen; fertig nach r.warten Sekunden */
+function wartenStart(s: HandwerkSpieler, r: Rezept, n: number): string | null { let k = 0;
+  while (k < n && !fehlt(s.nutzer, r)) { for (const z of r.zutaten) { const g = sorte(s.nutzer, z.g, z.n)!; for (let i = 0; i < z.n; i++) abgeben(sb, s.nutzer, g); } k++; }
+  if (!k) return "Dir fehlen die Zutaten.";
+  const fertig = Date.now() + r.warten! * 1000; wartenSetzen(sb, s.nutzer, { r: r.id, n: k, fertig });
+  senden(s, { t: "handwerk", tat: "warten", rezept: r.id, station: r.station, menge: k, fertig, ms: r.warten! * 1000 });
+  senden(s, { t: "chat", kanal: "system", text: `${k} × ${(GEGENSTAENDE[r.ergebnis] || { name: r.ergebnis }).name} hängen jetzt im Rauch – fertig in ${zeitText(r.warten! * 1000)}.`, zeit: Date.now() }); return null; }
+const zeitText = (ms: number): string => { const s = Math.max(1, Math.ceil(ms / 1000)); return s >= 120 ? `${Math.ceil(s / 60)} min` : `${s} s`; };
+/** Abholen: fertig → in den Rucksack (was nicht passt, bleibt hängen), XP je Stück; sonst wie lange noch */
+function wartenAbholen(s: HandwerkSpieler, r0: Rezept): string | null { const W = wartenVon(s.nutzer)!, r = rezept(W.r) || r0, jetzt = Date.now();
+  if (r.station !== r0.station) return `In der ${r.station === "hand" ? "Werkstatt" : STATIONEN[r.station].name} wartet noch etwas auf dich.`;
+  if (jetzt < W.fertig) return `Noch nicht fertig – noch ${zeitText(W.fertig - jetzt)}.`;
+  const je = r.menge || 1; let k = 0; while (k < W.n && aufnehmen(sb, s.nutzer, r.ergebnis, je, false) === je) k++;
+  if (!k) return "Dein Rucksack ist voll.";
+  berufXpDazu(sb, s.nutzer, berufAn(r.station), r.xp * k); if (r.quest) for (let i = 0; i < k; i++) HANDWERK_QUEST.fertig(s.nutzer, r);
+  wartenSetzen(sb, s.nutzer, k < W.n ? { ...W, n: W.n - k } : null);
+  senden(s, { t: "handwerk", tat: "abgeholt", rezept: r.id, menge: k * je, rest: W.n - k });
+  senden(s, { t: "chat", kanal: "system", text: `Du nimmst ${k * je} × ${(GEGENSTAENDE[r.ergebnis] || { name: r.ergebnis }).name} aus dem Rauch.${k < W.n ? " Der Rest hängt noch – dein Rucksack ist voll." : ""}`, zeit: Date.now() }); return null; }
 export function handwerkStop(s: HandwerkSpieler, grund = ""): void { const a = arbeiten.get(s); if (!a) return; arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: a.r.id, grund }); }
 export const handwerkWeg = (s: HandwerkSpieler): void => { arbeiten.delete(s); };
 /** Glut angetippt: gilt für das Stück, an dem gerade gearbeitet wird */

@@ -12,6 +12,12 @@ export const WEGSTEIN_ZIELE: WegZiel[] = [
   { id: "osthof_muehle", name: "Osthof – die Windmühle", x: 6562.5, y: 6429.5, region: "osthof", quest: "osthof_die_muehle_steht_still", wenn: { phase: ["fertig"] }, sperre: "Die Mühle im Osthof steht still – Till Mahler braucht Hilfe." },
 ];
 export const wegZiel = (id: string): WegZiel | undefined => WEGSTEIN_ZIELE.find((z) => z.id === id);
+/** Reisekarte (Phase 9, #102): gebundener Gegenstand – einmal am Tag ein Wegstein-Sprung ohne Ladung (auch ohne Wegstein). Der Tag zählt nach deutscher Zeit. */
+export const REISEKARTE = "reisekarte";
+/** Der Tag (JJJJMMTT, Europe/Berlin) – an ihm hängt der freie Sprung der Reisekarte */
+export function reiseTag(ms = Date.now()): string { try { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(new Date(ms)).replace(/-/g, ""); } catch { return new Date(ms).toISOString().slice(0, 10).replace(/-/g, ""); } }
+/** Merker im Inventar: an diesem Tag ist der freie Sprung verbraucht */
+export const reiseMerker = (tag: string): string => "reisekarte_" + tag;
 /** eigene Abklingzeit des Wegsteins (unabhängig vom Heim-Teleport) */
 export const WEGSTEIN_PAUSE_MS = 2 * 60 * 1000;
 /** Heim-Teleport (Taste T): Startpunkt der Waldmark (wie welt.json regionen.waldmark.start[0], test/wegstein-ui prüft das) */

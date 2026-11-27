@@ -22,7 +22,7 @@ import { questsLaden, questHoeren, reden, antworten, abholen, gespraechEnde, din
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
-import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen } from "./inventar";
+import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
@@ -278,14 +278,16 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "wegstein") { /* Phase 3a: Reiben → Ziel prüfen, Ladung abziehen, Stelle merken, Position vom Server (der Browser springt nur noch hin) */
       const ziel = String(e.ziel || "").slice(0, 40), nein = (text: string, rest = 0) => { if (s) senden(s, { t: "wegstein", ok: false, ziel, text, rest }); };
       if (s.gast) { nein("Der Wegstein geht mit Konto (Menü → Anmelden)."); return; }
-      if (invAnzahl(s.nutzer, "wegstein") <= 0) { nein("Du hast keinen Wegstein im Rucksack."); return; }
+      const karte = reisekarteFrei(s.nutzer); /* Reisekarte (#102): einmal am Tag ohne Ladung, auch ohne Wegstein */
+      if (!karte && invAnzahl(s.nutzer, "wegstein") <= 0) { nein("Du hast keinen Wegstein im Rucksack."); return; }
       const z = wegZiel(ziel); if (!z) { nein("Diesen Ort kennt der Stein nicht."); return; }
       if (!wegzielFrei((id) => questStand(s!.nutzer, id), z)) { nein(z.sperre); return; }
       if (kampfPruefer(s.nutzer)) { nein("Mitten im Kampf schweigt der Stein."); return; }
       { const rest = (wegsteinZuletzt.get(s.nutzer) || 0) + WEGSTEIN_PAUSE - jetzt; if (rest > 0) { nein(`Der Stein ist noch warm – in ${Math.ceil(rest / 1000)} s ruft er wieder.`, rest); return; } }
-      if (!ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
+      const frei = karte && reisekarteNutzen(H.sb, s.nutzer);
+      if (!frei && !ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
       wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, z.x, z.y, z.region); s.wx = z.x; s.wy = z.y;
-      senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein") }); }
+      senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein"), ...(frei ? { reisekarte: true } : {}) }); }
     else if (e.t === "faehre") { /* Phase 7 (#49): Überfahrt wie der Wegstein – der Server prüft und setzt die Stelle, der Browser zeigt die Überfahrt und springt */
       const r = faehreAnfrage(s, e.id, { schalter, imKampf: kampfPruefer, gesperrt: (n, reg) => Boolean(regionGesperrt(n, reg)) }); if (!r.ok) { senden(s, { t: "faehre", ok: false, text: r.text }); return; }
       alleStop(s); teleportZiel(H, s.nutzer, r.x, r.y, r.region); s.wx = r.x; s.wy = r.y;

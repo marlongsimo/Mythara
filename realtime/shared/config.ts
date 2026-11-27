@@ -116,6 +116,14 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
+  friedlichBei?: string;
+  /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
+  gift?: { chance: number; jeSek: number; dauer: number };
+  /** Flackern (#102): im Kampf alle alle Sekunden für dauer Sekunden unangreifbar */
+  flackern?: { alle: number; dauer: number };
+  /** Sand-Auftauchen (#102): liegt eingegraben (unsichtbar, unangreifbar); kommt ein Held auf weit Felder heran, leuchtet sein Feld vorlauf Kampf-Ticks (Standard 2), dann taucht er auf und trifft, wer noch dort steht */
+  eingegraben?: { weit: number; schaden: [number, number]; vorlauf?: number; name?: string };
   /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
   friedlichMit?: string[];
   /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
