@@ -120,6 +120,8 @@ export const QUEST2: QuestDef = {
   },
   belohnungText: "Belohnung: 20 Splitter",
   belohnung: { splitter: 20 },
+  /* #81: wer den Rain befriedet hat, den greifen die Mooshocker danach an (MonsterDef.aggressivNach in shared/config.ts) */
+  schalter: { moosrain_wach: FERTIG },
   punkte: 1,
   alt,
 };

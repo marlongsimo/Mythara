@@ -13,7 +13,23 @@
 set -euo pipefail
 
 ZIEL="feature/realtime-engine"
-QUELLEN="${QUELLEN:-claude/mythara-world-pipeline-z4ynx5 claude/tender-heisenberg-bruby2}"
+QUELLEN="${QUELLEN:-claude/mythara-world-pipeline-z4ynx5 claude/tender-heisenberg-bruby2 claude/riftmere-quests claude/relaxed-sagan-erl6lf}"
+# Zweige mit Änderungen unter diesen Pfaden haben einen Lauf des Workflows „Tests“ (Job „server“) – sie kommen nur mit grünem Lauf
+# auf ihrem Kopf-Commit durch (#22). Zweige, die nur Bilder, Modelle oder Doku ändern, brauchen keinen.
+GETESTET='^(realtime|supabase)/'
+# Ergebnis des Jobs „server“ für einen Commit: success | failure | … | fehlt | laeuft | unbekannt (ohne Token)
+testlauf() {
+  [ -n "${GH_TOKEN:-}" ] || { echo unbekannt; return; }
+  curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/${GITHUB_REPOSITORY:-marlongsimo/Mythara}/commits/$1/check-runs?check_name=server&per_page=20" 2>/dev/null \
+  | python3 -c '
+import sys, json
+try: l = json.load(sys.stdin).get("check_runs", [])
+except Exception: print("unbekannt"); sys.exit()
+if not l: print("fehlt"); sys.exit()
+l.sort(key=lambda r: r.get("started_at") or "", reverse=True); r = l[0]
+print(r.get("conclusion") or "laeuft")' || echo unbekannt
+}
 ERZEUGT='^(echtzeit/(spiel\.js|index\.html|figurentest\.(html|js))|realtime/shared/weltzonen\.ts|realtime/server/dist/.*|realtime/test/sim\.gebaut\.mjs)$'
 NAME="marlongsimo"; MAIL="208301081+marlongsimo@users.noreply.github.com"
 REPO_URL="${REPO_URL:-https://github.com/${GITHUB_REPOSITORY:-marlongsimo/mythara}.git}"
@@ -31,7 +47,15 @@ git fetch -q --filter=blob:none origin "+refs/heads/$ZIEL:refs/remotes/origin/$Z
 NEU=()
 for q in $QUELLEN; do
   git fetch -q --filter=blob:none origin "+refs/heads/$q:refs/remotes/origin/$q" 2>/dev/null || { echo "Zweig $q gibt es nicht (mehr) – übersprungen"; continue; }
-  if git merge-base --is-ancestor "origin/$q" "origin/$ZIEL"; then echo "$q: nichts Neues"; else echo "$q: $(git rev-list --count "origin/$ZIEL..origin/$q") neue Commits"; NEU+=("$q"); fi
+  if git merge-base --is-ancestor "origin/$q" "origin/$ZIEL"; then echo "$q: nichts Neues"; continue; fi
+  echo "$q: $(git rev-list --count "origin/$ZIEL..origin/$q") neue Commits"
+  if git diff --name-only "origin/$ZIEL...origin/$q" | grep -Eq "$GETESTET"; then
+    kopf="$(git rev-parse "origin/$q")"; lauf="$(testlauf "$kopf")"
+    if [ "$lauf" != success ] && [ "${OHNE_TESTPRUEFUNG:-0}" != 1 ]; then
+      echo "::warning::$q übersprungen: Tests für ${kopf:0:8} sind nicht grün ($lauf) – kommt beim nächsten Lauf mit, sobald sie grün sind"; continue; fi
+    echo "$q: Tests für ${kopf:0:8} grün"
+  fi
+  NEU+=("$q")
 done
 
 STAND="origin/$ZIEL"

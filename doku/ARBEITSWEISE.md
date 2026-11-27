@@ -6,7 +6,11 @@ Stand: 26.11.2026. Kurzfassung in `CLAUDE.md` (wird von jeder Sitzung automatisc
 
 | Rolle | Aufgabe | Zweig | Kommt live über |
 |---|---|---|---|
-| **Integration & Spielsysteme** | Fahrplan-Phasen technisch umsetzen (Systeme, Server, Client, Datenbank), Zweige der anderen zusammenführen, bauen, alle Tests, live stellen, kleine Fixes | `claude/welt3d` → `feature/realtime-engine` | führt selbst zusammen |
+| **Integration & Inhalte** | Zweige zusammenführen, bauen, alle Tests, live stellen; Pipeline und Test-Werkzeuge; Inhalte einbauen (Figuren, Gegnerwerte, Beute, NPCs, Symbole, Karten, Quests), Oberfläche, Wünsche, kleine Fixes | `claude/welt3d` → `feature/realtime-engine` | führt selbst zusammen |
+| **Aufräumen** (Chat „Riftmere · Aufräumen“, einmalig, seit 26.11.) | ungenutzten Altbestand finden, Liste zur Freigabe, nach Freigabe löschen | `claude/aufraeumen` | Integration führt zusammen; `main` nur mit Okay des Nutzers |
+| **Oberfläche** (Chat „Riftmere · Oberfläche“, seit 26.11.) | HUD und alle Fenster überarbeiten und bauen: kompakt, einfach, ohne Scrollen (`doku/konzepte/hud.md`) | `claude/oberflaeche` | Integration führt zusammen, wenn „Tests“ grün |
+| **Bugs** (Chat „Riftmere · Bugs“, seit 26.11.) | gemeldete Fehler nachstellen, gezielt beheben, Test je Fehler | `claude/bugs` | Integration führt zusammen, wenn „Tests“ grün |
+| **Systeme** (Chat „Riftmere · Systeme“, seit 26.11.) | neue Spielmechaniken der Fahrplan-Phasen Ende-zu-Ende (Server, Spiellogik, nötige Oberfläche, Migrationen, Tests) | `claude/systeme` | Integration führt zusammen, wenn „Tests“ grün |
 | **Quest-Autor** (Chat „Riftmere · Quests“, seit 26.11.) | Quests als Daten schreiben (`shared/quest*.ts`): Schritte, Dialoge, Figuren, Belohnungen | `claude/riftmere-quests` | Integration führt zusammen (geplant: Pipeline, #22) |
 | **Figuren & 3D** | Modelle, Animationen, Figuren-Fabrik, Objekte | `claude/tender-heisenberg-bruby2` | Pipeline „Welt live“ (alle 15 min automatisch) |
 | **Worldbuilding** | Regionen, Gelände, Festland, Karten | `claude/mythara-world-pipeline-z4ynx5` | Pipeline „Welt live“ (alle 15 min automatisch) |
@@ -42,7 +46,7 @@ Alle Befehle im Ordner `realtime/`, nach `node build.mjs` (Integration) bzw. `np
 
 | Rolle | Mindestens |
 |---|---|
-| Integration & Spielsysteme | alle Server-Tests **gleichzeitig**: `node test/parallel.mjs` (ca. 2 min statt 8; nacheinander: `bash test/server-tests.sh`); bei Änderungen an Oberfläche oder 3D zusätzlich nur die **betroffenen** `*-ui.test.*` |
+| Integration & Inhalte, Systeme | alle Server-Tests **gleichzeitig**: `node test/parallel.mjs` (ca. 2 min statt 8; nacheinander: `bash test/server-tests.sh`); bei Änderungen an Oberfläche oder 3D zusätzlich nur die **betroffenen** `*-ui.test.*` |
 | Quest-Autor | `node test/questbau.test.mjs` (Prüfer über alle Quests) und der Welt-Test der Quest (`test/questNN-welt.test.mjs`, neu anlegen) |
 | Figuren & 3D | `node test/figuren3d.test.mjs`; Sichtprüfung in `echtzeit/figurentest.html` |
 | Worldbuilding | `node test/welt-daten.test.mjs`, `welt-raster`, `welt-grenzen`, `welt-bau`, `kreuzwald` (dieselben prüft auch die Pipeline) |
@@ -54,7 +58,12 @@ Das Ergebnis steht auf GitHub unter **Actions** und als Haken/Kreuz neben dem Co
 
 | Label | Bedeutung |
 |---|---|
-| `rolle:spiel` | Integration & Spielsysteme |
+| `rolle:spiel` | Integration & Inhalte |
+| `rolle:systeme` | Systeme (neue Mechaniken) |
+| `rolle:bugs` | Bugs (Fehler beheben) |
+| `rolle:ui` | Oberfläche (HUD, Fenster) |
+| `rolle:aufraeumen` | Aufräumen (einmalig) |
+| `bug` | Fehlerbericht (zusätzlich zum Rollen-Label) |
 | `rolle:quests` | Quest-Autor |
 | `rolle:figuren` | Figuren & 3D |
 | `rolle:welt` | Worldbuilding |
@@ -76,12 +85,18 @@ Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Da
 
 **Worldbuilding** – wie oben, mit `rolle:welt` und „Sitzung **Worldbuilding**“.
 
-**Integration & Spielsysteme**
-> Du bist die Sitzung **Integration & Spielsysteme** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
+**Integration & Inhalte**
+> Du bist die Sitzung **Integration & Inhalte** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
 > Dauerauftrag: Arbeite offene Issues mit `rolle:spiel` selbstständig ab (Reihenfolge nach Phase, dann Abhängigkeiten).
 > Führe die Zweige der anderen Rollen zusammen, wenn ihr Workflow „Tests“ grün ist, und stelle live wie bisher.
 > Live nur mit grünen Tests. Nach jeder abgeschlossenen Phase: Issue `für-dich` „Phase N bitte im Spiel testen“ anlegen und auf mein Okay warten, bevor die nächste Phase live geht.
-> Solange es keine Sitzung Quest-Autor gibt, übernimmst du auch `rolle:quests`.
+> Führe auch die Zweige `claude/systeme`, `claude/bugs` und `claude/oberflaeche` zusammen, wenn dessen „Tests“ grün sind. Neue Mechaniken baut die Sitzung Systeme – brauchst du eine, lege ein Issue `rolle:systeme` an.
+
+**Systeme**
+> Du bist die Sitzung **Systeme** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md` und die Konzepte in `doku/konzepte/`.
+> Dauerauftrag: Arbeite offene Issues mit `rolle:systeme` selbstständig ab (Reihenfolge nach Phase, dann Abhängigkeiten). Baue neue Mechaniken Ende-zu-Ende mit Tests auf `claude/systeme`;
+> Inhalte (Gegnerwerte, Beute, Figuren-Einbau, Karten) trägt die Integration ein – lege dafür ein Issue `rolle:spiel` an. Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
+> Push nur mit grünen Tests; die Integration führt zusammen und stellt live. Neue Migrationen immer mit Rückbau und Test; das Einspielen ist ein Issue `für-dich`.
 
 **Leitstelle (Konzept, Quests & Fahrplan)**
 > Du bist die **Leitstelle** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
@@ -90,12 +105,20 @@ Jede Sitzung bekommt **einmal vom Nutzer** ihre Rolle und ihren Dauerauftrag. Da
 > Prüfe fertige Arbeit gegen Konzept und Kanon (Befunde als Issue). Führe `doku/STAND.md` und `doku/KANON.md` nach.
 > Wenn eine Phase fertig ist: mir eine kurze Zusammenfassung schicken. Antworten aus `für-dich`-Issues in den Kanon übernehmen.
 
-**Bugs** *(optional)*
-> Du bist die Sitzung **Bugs** für Riftmere. Lies `CLAUDE.md` und `doku/ARBEITSWEISE.md`.
-> Dauerauftrag: Fehlerberichte (von mir, aus dem Spiel-Feedback, aus roten Tests) nachstellen und als Issue mit der zuständigen Rolle,
-> Schritten zum Nachstellen und Dringlichkeit anlegen. Kleine Fehler in Tests oder Doku darfst du selbst beheben; Spielcode nur über Issues.
+**Oberfläche** (Chat „Riftmere · Oberfläche“, seit 26.11.)
+> Du bist die Sitzung **Oberfläche** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`, `doku/konzepte/hud.md`.
+> Dauerauftrag: Arbeite offene Issues mit `rolle:ui` selbstständig ab. HUD und Fenster nach `doku/konzepte/hud.md`: kompakt, einfach, ohne Scrollen, Handy zuerst.
+> **Nichts einfach so ändern:** jede Änderung (auch kleine) zuerst als Vorschau (Bilder, vorher/nachher) zeigen und mit mir zusammen ausarbeiten; erst nach meinem Okay auf `claude/oberflaeche` committen, mit Tests und Bildschirmfotos im Issue.
+> Daten und Ereignisse für neue Fenster liefert Systeme (Issue `rolle:systeme`), Symbole Figuren (Issue `rolle:figuren`). Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
 
-Rollen und Labels: Integration & Spielsysteme (`rolle:spiel`), Quest-Autor (`rolle:quests`), Figuren & 3D (`rolle:figuren`), Worldbuilding (`rolle:welt`), Leitstelle / Konzept & Review (`rolle:review`).
+**Bugs** (Chat „Riftmere · Bugs“, seit 26.11.)
+> Du bist die Sitzung **Bugs** für Riftmere. Lies `CLAUDE.md`, `doku/ARBEITSWEISE.md`, `doku/STAND.md`, `doku/KANON.md`.
+> Dauerauftrag: Arbeite offene Issues mit `rolle:bugs` selbstständig ab (Live-Fehler zuerst, dann nach Alter). Fehler nachstellen, Ursache finden, **gezielt beheben**
+> (Client, Server, Shared – nur so viel wie für den Fehler nötig) und für jeden Fehler einen Test, der ihn künftig fängt. Arbeitszweig `claude/bugs`, Push nur mit grünen Tests;
+> die Integration führt zusammen und stellt live. Ist ein „Fehler“ in Wahrheit eine neue Funktion oder ein Umbau: Issue an `rolle:systeme` oder `rolle:spiel`.
+> Fehler in Welt- oder Figurendaten: Issue an `rolle:welt` bzw. `rolle:figuren`. Hole mindestens täglich `feature/realtime-engine` in deinen Zweig.
+
+Rollen und Labels: Integration & Inhalte (`rolle:spiel`), Systeme (`rolle:systeme`), Bugs (`rolle:bugs`), Oberfläche (`rolle:ui`), Quest-Autor (`rolle:quests`), Figuren & 3D (`rolle:figuren`), Worldbuilding (`rolle:welt`), Leitstelle / Konzept & Review (`rolle:review`).
 
 ## 7. Takt (automatisch)
 

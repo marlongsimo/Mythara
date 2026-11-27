@@ -9,11 +9,13 @@
  */
 import { SammelArt } from "./sammeln";
 import { zwischenteil } from "./gegenstaende";
+import { WAFFE_LADEN, AN_WAFFE } from "./splitterbinden";
 import KOCHSTELLEN from "./kochstellen.json";
+import { WELTKAMPF } from "./weltzonen";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
-export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen";
+export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen" | "raeucherhuette";
 export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
@@ -28,11 +30,14 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   herd: { id: "herd", name: "Herd", x: 0, y: 0, tun: "Kochen" },
   kessel: { id: "kessel", name: "Kessel", x: 0, y: 0, tun: "Kochen" },
   brunnen: { id: "brunnen", name: "Brunnen", x: 6448, y: 6432.85, tun: "Schöpfen" },
+  /* Phase 10 (#102): Räucherhütte der Möwenbucht – Kochstation mit Wartezeit (Rezept.warten); Standort trägt die Integration in kochstellen.json ein */
+  raeucherhuette: { id: "raeucherhuette", name: "Räucherhütte", x: 0, y: 0, tun: "Räuchern" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 /** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
-export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string }
+export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string;
+  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number] }
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
@@ -43,6 +48,22 @@ export const WERKSTAETTEN: Werkstatt[] = [
 /* Kochen (Phase 3b): Feuer, Brunnen – und später Backofen, Herd, Kessel – aus kochstellen.json */
 for (const k of (KOCHSTELLEN as unknown as { stellen: (Werkstatt & { name: string })[] }).stellen) WERKSTAETTEN.push({ id: k.id, station: k.station, x: k.x, y: k.y, ort: k.ort, ...(k.schalter ? { schalter: k.schalter, gesperrt: k.gesperrt } : {}) });
 export const HANDWERK_WEIT = 2.6;           // so nah muss man an der Werkstatt stehen (Felder)
+/** Versperrt das Gehraster der Kampfwelt dieses Weltfeld? (wie karten.ts weltZeilen: frei, wo irgendeine Region frei ist; außerhalb aller Regionen: unbekannt = nicht versperrt) */
+export function versperrt(i: number, j: number): boolean { let drin = false;
+  for (const z of WELTKAMPF) { const x = i - z.x0, y = j - z.y0; if (x < 0 || y < 0 || x >= z.b || y >= z.h) continue; drin = true; if (z.zeilen[y].charCodeAt(x) === 46) return false; } return drin; }
+/** Höchstens so viele Schritte (über freie Felder) vom Helden bis neben die Werkstatt – um eine Mauer herum durch die Tür sind es viel mehr */
+export const WERKSTATT_SCHRITTE = 4;
+/** Keine Wand zwischen Held und Werkstatt (#57): vom Feld des Helden in wenigen Schritten über freie Felder (acht Richtungen, nicht um Ecken schneiden)
+ *  auf ein Feld neben der Station (oder ihr eigenes). So bedient man die Esse nicht durch die Mauer der Schmiede, wohl aber die Werkbank von allen Seiten (Server und Browser gleich) */
+export function werkstattErreichbar(hx: number, hy: number, W: { x: number; y: number; bereich?: [number, number, number, number] }): boolean {
+  if (W.bereich) { const [x0, y0, x1, y1] = W.bereich; return hx >= x0 && hx <= x1 && hy >= y0 && hy <= y1; } /* Stehbereich aus der Welt (#64) */
+  const si = Math.floor(W.x), sj = Math.floor(W.y), neben = (i: number, j: number) => Math.abs(i - si) <= 1 && Math.abs(j - sj) <= 1;
+  let rand: [number, number][] = [[Math.floor(hx), Math.floor(hy)]]; const gesehen = new Set([rand[0].join()]);
+  for (let schritt = 0; schritt <= WERKSTATT_SCHRITTE; schritt++) { const neu: [number, number][] = [];
+    for (const [i, j] of rand) { if (neben(i, j)) return true; if (schritt === WERKSTATT_SCHRITTE) continue;
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const a = i + dx, b = j + dy, k = a + "," + b; if ((!dx && !dy) || gesehen.has(k) || versperrt(a, b) || (dx && dy && (versperrt(i + dx, j) || versperrt(i, j + dy)))) continue; gesehen.add(k); neu.push([a, b]); } }
+    rand = neu; }
+  return false; }
 export const GLUT_CHANCE = 0.12, GLUT_MS = 1500, TICK_MS = 500;
 
 const LV = [1, 10, 20, 35, 45, 65];
@@ -56,7 +77,9 @@ const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
-  /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number }
+  /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
+  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string;
+  /** Station mit Wartezeit (Räucherhütte, #102): die Zutaten gehen sofort hinein, nach so vielen Sekunden holt man alles ab (XP beim Abholen, brennt nicht an); ein Auftrag je Spieler */ warten?: number }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
@@ -141,6 +164,12 @@ export const PFLUECK_TAKT_MS = 1500, PFLUECK_WEIT = 1.8;
 
 /* Phase 3a Splitterbinden (shared/splitterbinden.ts): den Wegstein am Bindestein laden – „ladung:wegstein“ ist kein Gegenstand, sondern zählt die Ladungen im Inventar hoch */
 dazu({ id: "wegstein_laden", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 2 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
+/* Phase 5b: Waffen ab Selten laden – die angelegte Waffe (ladung:@waffe); 2 Splitter oder 1 Splitter + 1 Seelenlicht je Ladung, Stufe und XP nach Seltenheit (Kanon) */
+for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
+  dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
+  dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
+/* Entladen: nur am Bindestein, die Splitter verfallen */
+dazu({ id: "waffe_entladen", station: "bindestein", ergebnis: "entladen:" + AN_WAFFE, level: 1, zutaten: [], xp: 0, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
 /* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */
 dazu({ id: "wegstein_ungeweiht", station: "werkbank", ergebnis: "wegstein_ungeweiht", level: 10, zutaten: [{ g: ["quellstein"], n: 1 }, { g: ["lindenspan"], n: 1 }, { g: ["geweihter_splitter"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Auftrag von Agnes", quest: "weidenhain_der_wegstein" });
@@ -167,4 +196,5 @@ dazu({ id: "schuetztafel", station: "werkbank", ergebnis: "schuetztafel", level:
 dazu({ id: "eisenbaender", station: "amboss", ergebnis: "eisenband", menge: 2, level: 10, zutaten: [{ g: ["barren_eisen"], n: 1 }], xp: 35, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
 dazu({ id: "hanftau", station: "werkbank", ergebnis: "hanftau", level: 15, zutaten: [{ g: ["garn"], n: 4 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
 /* Werkstatt Weidenhain in Tebbes Schuppen: erst nach B2 (Schalter werkstatt_weidenhain); Esse und Amboss folgen, sobald die Welt sie aufstellt (#64) */
-WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält." });
+WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält.",
+  bereich: [6443.5, 6672.9, 6448.5, 6675] /* nur von vorn (Welt, #64): der Schuppen ist im Gehraster ein voller Block, hinten liegt die Rückwand */ });

@@ -6,7 +6,7 @@
  */
 import { QUESTS, zielscheibeFrei as zielscheibeFreiB } from "../../shared/quests";
 import * as QB from "../../shared/questbau";
-import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteAbgleichen, schalterAn, type MotorAntwort } from "./questmotor";
+import { staendeLaden, staendeGeladen, qStand, alleStaende, motorVerbinden, figurDa, motorReden, motorImGespraech, motorAntworten, motorEnde, motorSperre, motorEreignis, motorVergessen, motorObjekt, kontext, questpunkte, punkteAbgleichen, schalterAn, motorAbholen, abholbereitListe, type MotorAntwort, type MotorAbgeholt } from "./questmotor";
 import type { SkillXp } from "../../shared/kampfwerte";
 import { SAMMEL_QUEST } from "./sammeln";
 import { HANDWERK_QUEST } from "./handwerk";
@@ -50,6 +50,10 @@ export function xpLiveSetzen(f: typeof xpLive): void { xpLive = f; }
 export async function antworten(sb: Sb, nutzer: string, id: string, a: string, wo?: { x?: number; y?: number }): Promise<Antwort1> {
   if (!motorImGespraech(nutzer, id)) return { fehler: "Das Gespräch ist vorbei." }; return motorAntworten(sb, nutzer, id, a, wo); }
 export function gespraechEnde(nutzer: string): void { motorEnde(nutzer); }
+/** #77: den Lohn einer abgeschlossenen Quest abholen („Okay“ im Abschlussfenster) – genau einmal */
+export async function abholen(sb: Sb, nutzer: string, id: string, wo?: { x?: number; y?: number }): Promise<MotorAbgeholt> { sbJe.set(nutzer, sb); return motorAbholen(sb, nutzer, id, wo); }
+/** #77: Quests, deren Lohn noch wartet */
+export const abholbereit = (nutzer: string): string[] => abholbereitListe(nutzer);
 
 /* ───────── Questobjekte, Untersuchen, Erlegen, Betreten ───────── */
 /** Ein Questobjekt (Bruchstelle, Rutenbündel …) benutzen – nur nah dran. Zurück: Text für den Spieler */

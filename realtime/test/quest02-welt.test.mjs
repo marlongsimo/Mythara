@@ -44,7 +44,10 @@ const sende = (s, m) => s.ws.send(JSON.stringify(m));
 const NPC = { jori: [6452.5, 6444.5], hagan: [6438.5, 6423.5], fenna: [6534.5, 6438.5], raban: [6442.5, 6643.5], othmar: [6451.5, 6688.5] };
 const hin = async (s, id, d = 1) => { sende(s, { t: "pos", x: 0, y: 0, wx: NPC[id][0] + d, wy: NPC[id][1] }); await new Promise((r) => setTimeout(r, 120)); };
 const rede = async (s, id) => { sende(s, { t: "rede", npc: id }); return warte(s, (m) => m.t === "dialog"); };
-const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); return warte(s, (m) => m.t === "dialog"); };
+const sag = async (s, id, a) => { sende(s, { t: "antwort", npc: id, a }); const d = await warte(s, (m) => m.t === "dialog");
+  /* #77: abgeschlossen – der Lohn wartet aufs Abholen („Okay“ im Abschlussfenster); hier gleich abholen, Lohn wie früher an der Antwort */
+  if (d && d.abholen) { sende(s, { t: "abholen", id: d.abholen }); const g = await warte(s, (m) => m.t === "abgeholt"); if (g) Object.assign(d, { belohnung: g.belohnung, splitter: g.splitter, punkte: g.punkte, amBoden: d.amBoden || Boolean(g.amBoden) }); if (g && g.amBoden) d.zeilen = [...(d.zeilen || []), { wer: "", text: `(Dein Rucksack ist voll – ${g.amBoden} liegen am Boden.)` }]; }
+  return d; };
 
 const NPC2 = { brida: [6452.5, 6462.5], odo: [6546.5, 6441.5], wenzel: [6544.5, 6443.5] };
 const DINGE = { zaun1: [6556.5, 6428.5], zaun2: [6562.5, 6416.5], zaun3: [6560.5, 6409.5], rute1: [6543.5, 6437.5], rute2: [6551.5, 6435.5], rute3: [6559.5, 6431.5], rute4: [6566.5, 6426.5] };
@@ -85,7 +88,7 @@ try {
     ws.on("open", () => { ws.send(JSON.stringify({ t: "anmeldung", token: "tok_anna_" + "x".repeat(30), geraet: "test-" + String("tok_anna_" + "x".repeat(30)).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") })); fertig(Z); }); });
   await new Promise((r) => setTimeout(r, 1500));
   const moos = () => z.w.filter((w) => w[2] === "mooshocker" && !w[10]);
-  check(moos().length === 7, `Am Moosrain stehen sieben Mooshocker (${moos().length})`);
+  check(moos().length === 10, `Am Moosrain stehen zehn Mooshocker (#81) (${moos().length})`);
   const passiv = z.ev.filter((e) => e.a === "hieb").length; check(passiv === 0, "Sie greifen nicht von selbst an");
   let siege = 0; const t0 = Date.now();
   while (siege < 3 && Date.now() - t0 < 120000) { const ich = z.w.find((w) => w[1] === 1); const ziel = moos().sort((a, b) => Math.hypot(a[4] - ich[4], a[5] - ich[5]) - Math.hypot(b[4] - ich[4], b[5] - ich[5]))[0];
@@ -109,7 +112,8 @@ try {
   const bodenTxt = d && (d.zeilen || []).map((z) => z.text).join(" ");
   check(d && d.splitter === 20 && cora.q2 === "fertig" && ABSCHLUSS.filter((a) => a.p_user === C).length === 1 && /am Boden/.test(bodenTxt), "Voller Rucksack: Abschluss gebucht, Hinweis „liegt neben dir am Boden“");
   await new Promise((r) => setTimeout(r, 1500)); const amBoden = cora.boden.filter((x) => x.g === "splitter").reduce((n, x) => n + x.n, 0);
-  check(amBoden === 20 && Math.hypot(cora.boden[0].x - (NPC2.odo[0] + 0), cora.boden[0].y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`);
+  { const sp = cora.boden.find((x) => x.g === "splitter") || cora.boden[0]; /* seit #81 kann auch Mooshocker-Beute in der Liste stehen */
+  check(amBoden === 20 && Math.hypot(sp.x - (NPC2.odo[0] + 0), sp.y - NPC2.odo[1]) < 3, `20 Splitter liegen bei ihr am Boden (${amBoden})`); }
   await new Promise((r) => setTimeout(r, 300)); check(!(anna2.boden || []).some((x) => x.g === "splitter"), "Anna sieht Coras Splitter nicht");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close(); if (f) console.log("404:", [...new Set(FEHLT)].join(" ")); if (f) console.log(log.split("\n").slice(-30).join("\n"));

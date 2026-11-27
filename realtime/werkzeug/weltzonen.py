@@ -21,7 +21,17 @@ US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschl
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
-    "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
+    # Phase 4: die Quelle stellt Dolch-Banditen auf – hier bekommen sie ihre Rolle: Wachstube Schläger + Armbrust, Schlafsaal Schläger + Späher, Beutelager Schläger, Halle gemischt
+    "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"],
+                     "lager": [(art, l[1], l[2]) for art, l in zip(["bandit_schlaeger", "bandit_armbrust", "bandit_schlaeger", "bandit_spaeher", "bandit_schlaeger", "bandit_armbrust", "bandit_schlaeger", "bandit_spaeher"], US["lager"])]},
+    # Phase 4 (#15): Späher-Lager in der Westmark (Zelte der Welt-Pipeline, #21) – Mehrkampf, damit ein fliehender Späher beim Kumpan wirklich Hilfe bekommt
+    "westmark": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6272, 6544, 6298, 6564]],
+                 "lager": [("bandit_spaeher", 6280, 6552), ("bandit_spaeher", 6285, 6550), ("bandit_spaeher", 6290, 6554), ("bandit_spaeher", 6282, 6558), ("bandit_spaeher", 6288, 6558), ("bandit_spaeher", 6278, 6555)]},
+    # Phase 4 (#15): zweites Lager am Moorrand der Riedwiesen (Region Aschenwerth, Nordrand): Späher mit Schläger und Armbrustschütze
+    "aschenwerth": {"aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],
+                    "lager": [("bandit_spaeher", 6206, 6608), ("bandit_spaeher", 6218, 6608), ("bandit_schlaeger", 6212, 6609), ("bandit_armbrust", 6210, 6614), ("bandit_spaeher", 6216, 6614)]},
+    # Phase 4 (#16): Hauptmann Rotmantel als öffentlicher Mini-Boss (3 min Wiederkehr, config.ts) – wer B4 noch hat, ist in seiner eigenen Kopie der Kammer (shared/bosse.ts)
+    "rotmantel_kammer": {"aggro": 3, "leine": 8, "wandern": 0, "mehrkampf": [[10432, 9600, 10463, 9631]], "lager": [("rotmantel", 10448, 9614)]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
     "waldweg": {"karte": "kreuzwald", "stufe": 3, "aggro": 4,
                 "lager": [("bandit_dolch", 6544, 6578), ("bandit_dolch", 6556, 6575), ("bandit_dolch", 6548, 6589), ("bandit_dolch", 6561, 6586)]},
@@ -30,9 +40,9 @@ BESONDERS = {
                  "lager": [("waldgolem", 6314, 6360), ("waldgolem", 6328, 6355), ("waldgolem", 6342, 6366), ("waldgolem", 6322, 6370), ("waldgolem", 6336, 6378)]},
     # Zielscheiben am Südturm der Waldmark (Phase 2 „Waldland“, Quest A1, 26.11.2026): unverwundbare Strohscheiben, greifen nie an (config.ts zielscheibe)
     "waldmark": {"aggro": 0, "leine": 1, "wandern": 0, "lager": [("zielscheibe", 6436, 6460), ("zielscheibe", 6433, 6460)]},
-    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): sieben passive Mooshocker in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
+    # Der Moosrain im Osthof (Quest „Der stille Rain“, 23.11.2026): zehn passive Mooshocker (#81: drei mehr) in lockeren Gruppen nordöstlich der Windmühle, Leine 8, Streifen 2
     "osthof": {"aggro": 0, "leine": 8, "wandern": 2,
-               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408)]
+               "lager": [("mooshocker", 6576, 6418), ("mooshocker", 6578, 6410), ("mooshocker", 6583, 6414), ("mooshocker", 6585, 6406), ("mooshocker", 6589, 6417), ("mooshocker", 6580, 6403), ("mooshocker", 6566, 6408), ("mooshocker", 6572, 6414), ("mooshocker", 6574, 6405), ("mooshocker", 6591, 6409)]  # +3 (#81)
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
                + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }

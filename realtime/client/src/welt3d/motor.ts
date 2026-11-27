@@ -10,19 +10,32 @@
 import { daecherAus } from "../skills";
 import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
-import { modell, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
+import { modell, modellFern, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
 import { Npc3D, Wanderer, NPC3D, WANDERER } from "./npc3d";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number][];
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?][];
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
-type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][] };
+type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][];
+  /** #103: Gebäude, die noch gebaut werden (eins je Bild); Bäume nah (volle Form) und fern (einfache Form) */ plaene?: [number, number, number][]; lod?: { nah: THREE.Object3D[]; fern: THREE.Object3D[] } };
 
 const $ = (s: string) => document.querySelector(s) as HTMLElement;
 const HANDY = matchMedia("(pointer: coarse)").matches, C = 32, BILD = "../", RADIUS = HANDY ? 2 : 3;
+/** #103 Grafikstufe: „flüssig“ (Pixelverhältnis 1, ferne Bäume einfach – Standard auf dem Handy) oder „scharf“ (bis 1,5 auf dem Handy, 2 am Rechner, Bäume voll).
+ *  Einstellung: localStorage „ez_grafik“ (setzt die Oberfläche über motor.grafikSetzen), Test: ?grafik=scharf */
+export type Grafik = "fluessig" | "scharf";
+export const GRAFIK_SCHLUESSEL = "ez_grafik";
+export function grafikStufe(): Grafik { const q = new URLSearchParams(location.search).get("grafik"); if (q === "fluessig" || q === "scharf") return q;
+  try { const g = localStorage.getItem(GRAFIK_SCHLUESSEL); if (g === "fluessig" || g === "scharf") return g; } catch { /* privat */ } return HANDY ? "fluessig" : "scharf"; }
+/** Bäume in einfacher Form ab so vielen Feldern (Mitte eines Chunk-Viertels) – „scharf“: nie */
+const lodAbstand = (g: Grafik): number => (g === "fluessig" ? (HANDY ? 30 : 44) : 99);
+/** Bis zu so vielen Feldern stehen 3D-Figuren (Bewohner, Questfiguren, Händler) – sonst nicht gezeichnet */
+let FIGUR_WEIT = grafikStufe() === "fluessig" && HANDY ? 28 : 40;
+export const figurWeit = (): number => FIGUR_WEIT;
+export const pixelVerhaeltnis = (g: Grafik): number => Math.min(devicePixelRatio || 1, g === "fluessig" ? 1 : HANDY ? 1.5 : 2);
 const P = new URLSearchParams(location.search);
 
 /* Farben des Geländes (etwas kräftiger als die Legende, weil Licht und Schatten sie abdunkeln) */
@@ -81,7 +94,7 @@ export class Welt3D {
   beimBild: ((dt: number) => void) | null = null; beimKlick: ((x: number, z: number) => void) | null = null;
   async start(behaelter: HTMLElement, sx: number, sz: number, laden: (text: string) => void = () => {}) {
     this.r = new THREE.WebGLRenderer({ antialias: !HANDY, powerPreference: "high-performance" });
-    this.r.setPixelRatio(P.get("aufloesung") ? Math.max(0.25, Math.min(2, Number(P.get("aufloesung")) || 1)) : Math.min(devicePixelRatio, HANDY ? 1.5 : 2)); /* ?aufloesung=0.5: nur für Tests auf langsamen Rechnern */ this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.r.setPixelRatio(P.get("aufloesung") ? Math.max(0.25, Math.min(2, Number(P.get("aufloesung")) || 1)) : pixelVerhaeltnis(grafikStufe())); /* #103: Handy „flüssig“ = 1 (Messung #91: +60 % Bilder/s) */ /* ?aufloesung=0.5: nur für Tests auf langsamen Rechnern */ this.r.shadowMap.enabled = !HANDY && P.get("schatten") !== "0"; this.r.shadowMap.type = THREE.PCFSoftShadowMap;
     this.r.toneMapping = THREE.ACESFilmicToneMapping; this.r.toneMappingExposure = 1.12;   /* filmisch und warm wie die Heldenbilder */
     behaelter.appendChild(this.r.domElement); behaelter.appendChild(this.schilder); this.groesse(); addEventListener("resize", () => this.groesse());
     this.szene.fog = new THREE.Fog(0xb9cfe0, 60, 150); this.szene.add(this.himmelLicht, this.licht, this.licht.target, this.fackel);
@@ -128,11 +141,27 @@ export class Welt3D {
   private bauSchritt(): void { const hx = this.held.x / C - 0.5, hz = this.held.z / C - 0.5; let best = -1, bd = Infinity;
     for (let i = 0; i < this.warte.length; i++) { const s = this.st.get(this.warte[i]); if (!s) continue; const d = Math.max(Math.abs(s.d.cx - hx), Math.abs(s.d.cy - hz)); if (d <= RADIUS + 0.5 && d < bd) { bd = d; best = i; } }
     if (best < 0) return; const k = this.warte[best], s = this.st.get(k)!; s.stufe = (s.stufe || 0) + 1;
-    if (s.stufe === 1) { s.gebaut = true; this.gelaende(s); } else if (s.stufe === 2) this.dinge(s); else { this.figuren(s); this.warte.splice(best, 1); } }
+    if (s.stufe === 1) { s.gebaut = true; this.gelaende(s); } else if (s.stufe === 2) { s.plaene = []; this.dinge(s); this.lodSetzen(s); }
+    else if (s.plaene && s.plaene.length) { const [t, x, y] = s.plaene.shift()!; this.planBauen(s, this.ix.typen[t], x, y); s.stufe--; } /* #103: ein Gebäude je Bild */
+    else { s.plaene = undefined; this.figuren(s); this.warte.splice(best, 1); } }
+  /* ───────── #103: Detailstufen der Bäume, Grafikstufe ───────── */
+  /** Ab diesem Abstand zum Helden (Felder, Mitte eines Chunk-Viertels) stehen Bäume in einfacher Form – 99: nie */
+  lodAb = lodAbstand(grafikStufe());
+  private lodBei = { x: 1e9, z: 1e9 };
+  private lodSetzen(s: Stueck): void { if (!s.lod) return; s.lod.nah.forEach((o, i) => { const fern = Math.hypot(o.userData.lodX - this.held.x, o.userData.lodZ - this.held.z) >= this.lodAb; o.visible = !fern; s.lod!.fern[i].visible = fern; }); }
+  /** Der Held ist ein Stück gegangen: Detailstufen neu */
+  private lodPruefen(): void { if (Math.hypot(this.held.x - this.lodBei.x, this.held.z - this.lodBei.z) < 3) return; this.lodBei = { x: this.held.x, z: this.held.z }; for (const s of this.st.values()) this.lodSetzen(s); }
+  /** Grafikstufe ändern (Einstellung der Oberfläche): Pixelverhältnis und Detailstufen sofort */
+  grafikSetzen(g: Grafik): void { try { localStorage.setItem(GRAFIK_SCHLUESSEL, g); } catch { /* privat */ } this.r.setPixelRatio(pixelVerhaeltnis(g)); this.groesse();
+    this.lodAb = lodAbstand(g); FIGUR_WEIT = g === "fluessig" && HANDY ? 28 : 40; for (const s of this.st.values()) this.lodSetzen(s); }
   async holen(k: string) { try { const d = (await (await fetch("welt3d/" + k + ".json?v=" + this.ix.stand)).json()) as ChunkDaten; this.st.set(k, { d, obj: [], bauten: [], boden: null, gebaut: false, feuer: [], stege: [] }); this.warte.push(k); } catch { /* später erneut */ } finally { this.laedt.delete(k); } }
   freigeben(k: string) { const s = this.st.get(k); if (!s) return; this.st.delete(k); const i = this.warte.indexOf(k); if (i >= 0) this.warte.splice(i, 1);
     for (const o of s.obj) { this.szene.remove(o); o.traverse((q) => { const im = q as THREE.InstancedMesh, m = q as THREE.Mesh; if (im.isInstancedMesh) im.dispose(); else if (m.isMesh && m.geometry && !m.geometry.userData.geteilt) m.geometry.dispose(); }); } }
-  bauen(k: string) { const s = this.st.get(k); if (!s || s.gebaut) return; s.gebaut = true; this.gelaende(s); this.dinge(s); this.figuren(s); }
+  bauen(k: string) { const s = this.st.get(k); if (!s || s.gebaut) return; s.gebaut = true; this.gelaende(s); this.dinge(s); this.lodSetzen(s); this.figuren(s); }
+  /** Stadtstufen (shared/stadtstufen.ts, #102): ist ein Ding mit dieser Marke für den Spieler da? (setzt die Spielwelt) */
+  ausbauDa: (marke: string) => boolean = () => true;
+  /** Die Stufe hat sich geändert: Chunks mit Stufen-Dingen neu bauen (freigeben – nachladen holt sie wieder) */
+  ausbauNeu(): void { for (const [k, s] of [...this.st]) if (s.d.dinge.some((d) => d[5])) this.freigeben(k); this.nachladen(); }
 
   /* ───────── Abfragen in Weltfeldern ───────── */
   /** Höhe eines Eckpunkts (ganze Weltfelder); fehlt der Chunk, hilft der Rand eines Nachbarn */
@@ -179,21 +208,25 @@ export class Welt3D {
   }
 
   /* ───────── Bäume, Kleinteile, Gebäude eines Chunks ───────── */
+  /** Ein Gebäude nach seinem Bauplan (Teil eines Chunks) */
+  private planBauen(s: Stueck, typ: Typ, x: number, y: number): void {
+    const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
+          if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox!, w = m.getWorldScale(new THREE.Vector3()); m.castShadow = Math.max((g.max.x - g.min.x) * w.x, (g.max.y - g.min.y) * w.y, (g.max.z - g.min.z) * w.z) >= 1.2; }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); }
   dinge(s: Stueck) {
-    const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), reihen = s.d.dinge.filter(([t]) => istReihe(typen[t]));
-    for (const [t, x, y, sk0] of s.d.dinge) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
-      if (typ.plan && this.ix.bauplaene[typ.id]) { const b = bauen(this.ix.bauplaene[typ.id], x, this.gelaendeHoehe(x, y - 0.5), y); b.gruppe.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.receiveShadow = true; /* Schatten werfen nur die großen Teile (Wände, Dächer, Türme) – nicht Fenster, Möbel und Kleinkram */
-          if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox!, w = m.getWorldScale(new THREE.Vector3()); m.castShadow = Math.max((g.max.x - g.min.x) * w.x, (g.max.y - g.min.y) * w.y, (g.max.z - g.min.z) * w.z) >= 1.2; }); this.szene.add(b.gruppe); s.obj.push(b.gruppe); s.bauten.push(b); continue; }
+    const typen = this.ix.typen, gruppen = new Map<number, { m: THREE.Matrix4[]; f: THREE.Color[] }>(), D = s.d.dinge.filter((d) => !d[5] || this.ausbauDa(d[5])) /* Stadtstufen je Spieler */, reihen = D.filter(([t]) => istReihe(typen[t]));
+    for (const [t, x, y, sk0] of D) { const typ = typen[t], gy = this.gelaendeHoehe(x, y);
+      if (typ.plan && this.ix.bauplaene[typ.id]) { if (s.plaene) s.plaene.push([t, x, y]); else this.planBauen(s, typ, x, y); continue; } /* #103: im Spiel ein Gebäude je Bild (bauSchritt) */
       const geo = modell(typ);
       if (geo) { let ry = 0;
         if (istBaum(typ)) ry = zufall(x, y) * Math.PI * 2;
         else if (istReihe(typ)) { /* Zaun und Palisade: nach Nachbarn ausrichten, die genau in einer Reihe stehen (waagerecht oder senkrecht, höchstens 2,6 Felder) – so stehen an Ecken keine Stücke quer */
           let waag = 99, senk = 99; for (const [, x2, y2] of reihen) { const ax = Math.abs(x2 - x), ay = Math.abs(y2 - y); if (ax + ay < 0.1) continue; if (ay < 0.3 && ax < 2.6) waag = Math.min(waag, ax); if (ax < 0.3 && ay < 2.6) senk = Math.min(senk, ay); }
           if (senk < waag) ry = Math.PI / 2; }
-        if (!gruppen.has(t)) gruppen.set(t, { m: [], f: [] });
+        const gk = istBaum(typ) && this.lodAb < 99 ? t * 4 + (x - s.d.cx * C >= C / 2 ? 1 : 0) + (y - s.d.cy * C >= C / 2 ? 2 : 0) : t * 4; /* #103: Bäume je Viertel des Chunks (Detailstufe nach Abstand) */
+        if (!gruppen.has(gk)) gruppen.set(gk, { m: [], f: [] });
         const sk = sk0 * (istBaum(typ) ? 0.9 + zufall(y, x) * 0.2 : 1), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry);
-        gruppen.get(t)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));
-        const hl = 0.88 + zufall(x * 3, y * 5) * 0.24; gruppen.get(t)!.f.push(new THREE.Color(hl, hl, hl)); continue; }
+        gruppen.get(gk)!.m.push(new THREE.Matrix4().compose(new THREE.Vector3(x, gy - (istBaum(typ) ? 0.1 : 0), y), q, new THREE.Vector3(sk, sk, sk)));
+        const hl = 0.88 + zufall(x * 3, y * 5) * 0.24; gruppen.get(gk)!.f.push(new THREE.Color(hl, hl, hl)); continue; }
       if (/nebel/.test(typ.id)) continue;
       const st = STEGE[typ.id]; if (st) s.stege.push([x + st[0], y + st[1], x + st[2], y + st[3], gy + st[4]]);
       if (/moorlicht/.test(typ.id)) { const gl = new THREE.Sprite(IRRLICHT); gl.position.set(x + 0.08, gy + 1.75, y); gl.scale.setScalar(1.6); this.szene.add(gl); s.obj.push(gl); }
@@ -201,8 +234,11 @@ export class Welt3D {
       /* Kein Modell: das gemalte Bild als Billboard (Mischform) */
       if (!this.bildMat.has(typ.id)) this.bildMat.set(typ.id, new THREE.SpriteMaterial({ map: this.textur(typ.bild), alphaTest: 0.2, toneMapped: false }));
       const sp = new THREE.Sprite(this.bildMat.get(typ.id)!), f = (typ.massstab * sk0) / 48; sp.center.set(typ.anker[0], 1 - typ.anker[1]); sp.scale.set(typ.groesse[0] * f, typ.groesse[1] * f, 1); sp.position.set(x, gy, y); this.szene.add(sp); s.obj.push(sp); }
-    for (const [t, g] of gruppen) { const im = new THREE.InstancedMesh(modell(typen[t])!, MATERIALIEN, g.m.length);
-      g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = !(HANDY && istBaum(typen[t])); /* Handy: Deko-Bäume werfen keinen Schatten (spart viel) */ im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im); s.obj.push(im); }
+    for (const [gk, g] of gruppen) { const t = gk >> 2, im = new THREE.InstancedMesh(modell(typen[t])!, MATERIALIEN, g.m.length);
+      g.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, g.f[i]); }); im.castShadow = !(HANDY && istBaum(typen[t])); /* Handy: Deko-Bäume werfen keinen Schatten (spart viel) */ im.receiveShadow = true; im.computeBoundingSphere(); this.szene.add(im); s.obj.push(im);
+      const fg = istBaum(typen[t]) && this.lodAb < 99 ? modellFern(typen[t]) : null; /* #103: ferne Bäume als einfache Form (rund 30 statt 1.800 Dreiecke) */
+      if (fg) { const fm = new THREE.InstancedMesh(fg, MATERIALIEN, g.m.length); im.userData.lodX = s.d.cx * C + (gk & 1 ? 0.75 : 0.25) * C; im.userData.lodZ = s.d.cy * C + (gk & 2 ? 0.75 : 0.25) * C; g.m.forEach((m, i) => { fm.setMatrixAt(i, m); fm.setColorAt(i, g.f[i]); }); fm.castShadow = false; fm.receiveShadow = true; fm.computeBoundingSphere(); fm.visible = false;
+        this.szene.add(fm); s.obj.push(fm); const L = s.lod || (s.lod = { nah: [], fern: [] }); L.nah.push(im); L.fern.push(fm); } }
   }
   textur(pfad: string, fertig?: (t: THREE.Texture) => void): THREE.Texture { let t = this.bildTex.get(pfad);
     if (!t) { t = this.bilder.load(BILD + pfad, fertig ? (q) => setTimeout(() => fertig(q), 0) : undefined); t.colorSpace = THREE.SRGBColorSpace; this.bildTex.set(pfad, t); }
@@ -248,7 +284,7 @@ export class Welt3D {
   /** Die Umgebung des Helden von oben in eine 2D-Leinwand zeichnen: felder = Breite des Ausschnitts in Weltfeldern; oben ist die Blickrichtung der Kamera */
   /** danach: wird gerufen, sobald das Bild in der Leinwand steht (Marken darüber zeichnen) */
   karteZeichnen(ziel: HTMLCanvasElement, felder: number, danach?: () => void): void {
-    const n = ziel.width; if (!n) return; if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
+    const n = ziel.width; if (!n || this.karteLiest) return; /* #103: das vorige Bild ist noch unterwegs */ if (!this.karteZiel || this.karteZiel.width !== n) { this.karteZiel = new THREE.WebGLRenderTarget(n, n); this.kartePixel = new Uint8Array(n * n * 4); }
     const H = this.held, k = this.karteKam, h = felder / 2; k.left = -h; k.right = h; k.top = h; k.bottom = -h; k.updateProjectionMatrix();
     k.position.set(H.x, this.gelaendeHoehe(H.x, H.z) + 200, H.z); k.up.set(-Math.sin(this.gieren), 0, -Math.cos(this.gieren)); k.lookAt(H.x, 0, H.z);
     const daecher: THREE.Object3D[] = []; for (const s of this.st.values()) for (const b of s.bauten) for (const d of b.daecher) if (d.visible) { d.visible = false; daecher.push(d); }
@@ -261,7 +297,11 @@ export class Welt3D {
     if (nebel) { nebel.near = nah; nebel.far = fern; } this.r.shadowMap.autoUpdate = schatten; this.r.toneMappingExposure = belichtung; this.himmelLicht.intensity = himmel; for (const d of daecher) d.visible = true; for (const f of figuren) f.visible = true;
     const zeigen = () => { const g = ziel.getContext("2d")!, bild = g.createImageData(n, n), q = this.kartePixel!; /* die Grafikkarte liefert die Zeilen von unten nach oben */
       for (let y = 0; y < n; y++) bild.data.set(q.subarray((n - 1 - y) * n * 4, (n - y) * n * 4), y * n * 4); g.putImageData(bild, 0, 0); if (danach) danach(); };
+    /* #103: ohne Warten auf die Grafikkarte zurücklesen (WebGL 2) – das synchrone readPixels hielt jedes Kartenbild an (Messung: 0,1 s je Sekunde auf dem Handy-Profil) */
+    const r = this.r as THREE.WebGLRenderer & { readRenderTargetPixelsAsync?: (t: THREE.WebGLRenderTarget, x: number, y: number, w: number, h: number, b: Uint8Array) => Promise<unknown> };
+    if (r.readRenderTargetPixelsAsync && r.capabilities.isWebGL2) { this.karteLiest = true; r.readRenderTargetPixelsAsync(this.karteZiel, 0, 0, n, n, this.kartePixel!).then(() => { this.karteLiest = false; if (this.kartePixel && this.kartePixel.length === n * n * 4) zeigen(); }, () => { this.karteLiest = false; }); return; }
     this.r.readRenderTargetPixels(this.karteZiel, 0, 0, n, n, this.kartePixel!); zeigen(); }
+  private karteLiest = false;
   /* ───────── Eingaben: nur die Kamera (Laufen und Antippen macht das Spiel) ───────── */
   /** Bildschirmpunkt → Bodenpunkt (Weltfelder) oder null */
   boden(px: number, py: number): { x: number; z: number } | null { const ray = new THREE.Raycaster(), b = this.r.domElement.getBoundingClientRect(); ray.setFromCamera(new THREE.Vector2(((px - b.left) / b.width) * 2 - 1, -((py - b.top) / b.height) * 2 + 1), this.kamera);
@@ -300,9 +340,12 @@ export class Welt3D {
     const dt = Math.min(DT_MAX, this.uhr.getDelta()), H = this.held; ZEIT.value += dt;   /* auf schwachen Geräten bis 0,1 s je Bild – sonst liefe der Held dort langsamer */
     /* fertig geladene Chunks bauen: einer je Bild, damit nichts ruckelt */
     if (this.warte.length) this.bauSchritt();
+    this.lodPruefen();
     if (performance.now() > this.naechsterBlick) { this.naechsterBlick = performance.now() + 300; this.nachladen(); }
     if (this.beimBild) this.beimBild(dt);
-    for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) n.schritt(dt); if (s.wanderer) for (const w of s.wanderer) w.schritt(dt); }
+    { const W = figurWeit(), hx = this.held.x, hz = this.held.z; /* #103: 3D-Figuren (je rund 35.000 Dreiecke) nur in der Nähe – auf dem Handy „flüssig“ bis 28 Felder */
+      for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) { const p = n.gruppe.position, an = Math.hypot(p.x - hx, p.z - hz) < W; n.gruppe.visible = an; if (an) n.schritt(dt); }
+        if (s.wanderer) for (const w of s.wanderer) { w.schritt(dt); w.npc.gruppe.visible = Math.hypot(w.x - hx, w.z - hz) < W; } } }
     const y = this.hoehe(H.x, H.z);
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);

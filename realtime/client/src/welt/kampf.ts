@@ -13,7 +13,13 @@ import { kampfMerken } from "../kampfzeit";
 import { AUSDAUER, ausdauerVomServer } from "../sprintzustand";
 import { NULL_XP as NULL_XP_K } from "../../../shared/kampfwerte";
 import Phaser from "phaser";
-import { chatSystem, geraetAngaben, aufWeltWarten } from "../welt";
+import { chatSystem, geraetAngaben, aufWeltWarten, questStandB } from "../welt";
+import { zielscheibeFrei } from "../../../shared/quests";
+/** Ausschnitt der Minikarte in Weltfeldern: #ez-karte zeigt die Region, in der man steht (anschluss.ts) – null = das Kampfgebiet selbst (#97) */
+let KARTE: { x0: number; y0: number; b: number; h: number } | null = null;
+export function karteRahmen(r: { x0: number; y0: number; b: number; h: number } | null): void { KARTE = r; }
+/** Zielscheibe ohne Freigabe (#55): unsichtbar – also auch nicht antippbar und kein automatisches Ziel */
+const scheibeVerborgen = (typ: unknown): boolean => Boolean((MONSTER[String(typ)] as { zielscheibe?: boolean } | undefined)?.zielscheibe) && !zielscheibeFrei((id) => questStandB(id));
 import { HELDEN, MONSTER, setzeStaerke, HELDENSTUFE, HELDENEP, stufeAusEp, EP_BIS, STUFE_MAX } from "../../../shared/config";
 import { KARTEN, FEIN, WELTZONEN, ORTSTUFE } from "../../../shared/karten";
 import { eigenesBildnis, aktiverHeld } from "../held";
@@ -176,7 +182,20 @@ export class WeltKampf {
     else if (ev.a === "ep" && (ev.id === undefined || ev.id === this.ichId)) zahl(this.ichId, `+${ev.n} EP`, "#8fd0ff");
     else if (ev.a === "stufe" && ev.id === this.ichId) zahl(this.ichId, `Stufe ${ev.s}!`, "#ffd75e");
     else if (ev.a === "text") zahl(ev.id, ev.t, "#ffd98a");
-    else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id); }
+    else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id);
+    else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); this.bewegung(ev.id, "rundumschlag"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
+    else if (ev.a === "bossphase") { if (ev.text) zahl(ev.id, ev.text, "#ffb27a"); this.bewegung(ev.id, "ruf"); }
+    else if (ev.a === "trinken") { zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); this.bewegung(ev.id, "trinken"); }
+    else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") zahl(ev.id, ev.text || "landet", "#b9a7ff"); /* Schweben (#49): Flugbild macht die Oberfläche */
+    else if (ev.a === "stil" && (ev.text || ev.name)) zahl(ev.id, ev.text || ev.name!, "#ffb27a");
+    else if (ev.a === "flackern") zahl(ev.id, "flackert", "#c9b6ff"); else if (ev.a === "eingraben") zahl(ev.id, "gräbt sich ein!", "#e0c27a"); /* #102: Bild macht die Oberfläche */
+    else if (ev.a === "boee" && ev.id === this.ichId) zahl(ev.id, "Eine Böe kommt!", "#cfe3ff"); }
+  /** Folgen (#54): Stelle (Weltfelder) eines anderen Helden in diesem Kampfgebiet, nach seinem Namen – null: nicht (mehr) hier */
+  heldOrt(name: string): { x: number; y: number } | null { for (const [id, f] of this.figuren) { if (!f.held || f.tot || id === this.ichId) continue; const n = this.namen.get(id); if (n && n.name === name) return { x: this.zone.x0 + f.zx, y: this.zone.y0 + f.zy }; } return null; }
+  /** Ansage: diese Felder (Rechenfelder, Mitte) leuchten t Sekunden rot – wer dann noch darauf steht, wird getroffen */
+  protected ansageZeigen(felder: [number, number][], t: number): void { const s = this.s;
+    for (const [x, y] of felder) { const r = s.add.rectangle((this.zone.x0 + x) * FELD_PX, (this.zone.y0 + y) * FELD_PX, FELD_PX - 2, FELD_PX - 2, 0xff3a2a, 0.45).setDepth(2);
+      s.tweens.add({ targets: r, alpha: 0.85, duration: Math.max(100, t * 1000), onComplete: () => r.destroy() }); } }
   /* ---------- Darstellung (2D, Phaser) – die 3D-Welt überschreibt diese Haken (welt3d/kampf3d.ts) ---------- */
   protected bildAufbau(K: (typeof KARTEN)[string]) { const s = this.s; this.ringZiel = s.add.ellipse(0, 0, 54, 27).setStrokeStyle(3, 0xff6a6a, 0.95).setVisible(false); this.ichLb = s.add.graphics().setDepth(1e7);
     for (const l of K.lager || []) figurVorladen(s, l.art); /* Gegnerfiguren gleich laden, nicht erst beim ersten Anblick */ }
@@ -190,6 +209,8 @@ export class WeltKampf {
     const o = s.add.text(p.x, p.y, t, { fontFamily: "Inter, sans-serif", fontSize: "17px", fontStyle: "bold", color: farbe, stroke: "#000", strokeThickness: 4 }).setOrigin(0.5).setDepth(1e7 + 1);
     s.tweens.add({ targets: o, y: p.y - 34, alpha: 0, duration: 900, onComplete: () => o.destroy() }); }
   /** Hitsplat wie in OSRS: Schaden > 0 rot, 0 (verfehlt, geblockt) blau. Die 2D-Welt zeigt weiter Zahlen */
+  /** Eine besondere Bewegung des Modells (Boss: rundumschlag, ruf, trinken) – nur in 3D, wenn das Modell sie hat */
+  protected bewegung(_id: number, _name: string): void { /* 2D: nichts */ }
   protected splat(id: number, n: number): void { this.zahl(id, n > 0 ? String(n) : "0", n > 0 ? (id === this.ichId ? "#ff6a5a" : "#ffe08a") : "#9cc8ff"); }
   /** Der eigene Held schaut in die Richtung des Servers – beim Kämpfen zu seinem Gegner (nur 3D) */ protected eigenerBlick(_winkel: number): void { /* 2D: nichts */ }
   protected hieb(id: number) { const sp = id === this.ichId ? this.s.figur : this.figuren.get(id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); }
@@ -216,7 +237,7 @@ export class WeltKampf {
     /* Minimap: Gegner rot, andere Helden blau – live, alle 200 ms */
     if (performance.now() - this.karteZeit > 200) { this.karteZeit = performance.now(); const k = document.getElementById("ez-karte");
       if (k) for (const [id, f] of this.figuren) { let u = k.querySelector(`u[data-k="${id}"]`) as HTMLElement | null; if (!u) { u = document.createElement("u"); u.dataset.k = String(id); k.appendChild(u); }
-        u.className = (f.team === 0 ? "freund" : "feind") + (f.tot ? " tot" : ""); u.style.left = (100 * f.x / this.zone.b) + "%"; u.style.top = (100 * f.y / this.zone.h) + "%"; }
+        const R = KARTE || this.zone; u.className = (f.team === 0 ? "freund" : "feind") + (f.tot ? " tot" : ""); u.style.left = (100 * (this.zone.x0 + f.x - R.x0) / R.b) + "%"; u.style.top = (100 * (this.zone.y0 + f.y - R.y0) / R.h) + "%"; } /* relativ zur Region der Karte, nicht zur ganzen Kampfwelt (#97) */
       if (k) for (const u of Array.from(k.querySelectorAll<HTMLElement>("u[data-k]"))) if (!this.figuren.has(Number(u.dataset.k))) u.remove(); }
     /* eigenes Leben über dem Kopf und das gewählte Ziel */
     const zf = this.figuren.get(this.z.ich.zielId); this.zielUndLeben(ich ? ich[7] / ich[8] : null, zf && !zf.tot ? zf : null); }
@@ -241,16 +262,16 @@ export class WeltKampf {
   /* ---------- Eingaben ---------- */
   /** Antippen in der Welt: liegt dort ein Gegner (als Heiler: ein Verbündeter), wird er zum Ziel. true = erledigt */
   /** Welcher Gegner steht an dieser Weltstelle? (Aktionsmenü) */
-  zielBei(wx: number, wy: number): { name: string } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
-    for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
-    if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; return { name: `${M && M.name ? M.name : String(best[1][2])}${M && M.stufe ? " · Lv " + M.stufe : ""}` }; }
+  zielBei(wx: number, wy: number): { name: string; stufe: number } | null { if (!this.z) return null; let best: [number, (typeof this.z.w)[number]] | null = null;
+    for (const e of this.z.w) { if (e[3] === 0 || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e]; }
+    if (!best) return null; const M = MONSTER[best[1][2] as string] as { name?: string; stufe?: number } | undefined; return { name: M && M.name ? M.name : String(best[1][2]), stufe: (M && M.stufe) || 1 }; } /* Level getrennt: das Menü färbt es ein (#97) */
   antippen(wx: number, wy: number): boolean { if (!this.netz || !this.z) return false; const ich = this.z.w.find((e) => e[0] === this.ichId), heilt = Boolean(ich && HELDEN[ich[2]].modi[ich[12]].art === "heil");
-    let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
+    let best: [number, number] | null = null; for (const e of this.z.w) { if ((e[3] === 0) !== heilt || e[10] || e[0] === this.ichId || scheibeVerborgen(e[2])) continue; const d = Math.hypot(this.zone.x0 + e[4] - wx, this.zone.y0 + e[5] - 0.6 - wy); if (d < 1.2 && (!best || d < best[0])) best = [d, e[0]]; }
     if (!best) return false; this.netz.sende({ t: "ziel", id: best[1] }); return true; }
   /** 1: den nächsten Gegner angreifen (läuft hin, wenn er zu weit weg ist) */
   angriff() { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return; const W = HELDEN[ich[2]].modi[ich[12]], heilt = W.art === "heil", d = (e: typeof ich) => Math.hypot(e[4] - ich[4], e[5] - ich[5]);
     const z = heilt ? this.z.w.filter((e) => e[3] === 0 && !e[10] && e[0] !== ich[0] && e[7] < e[8] && d(e) < 12).sort((a, b) => a[7] / a[8] - b[7] / b[8])[0]
-      : this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10]) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && d(e) < 15).sort((a, b) => d(a) - d(b))[0]; /* in der offenen Welt etwas weiter als in der Kampfszene */
+      : this.z.w.find((e) => e[0] === this.z!.ich.zielId && e[3] !== 0 && !e[10] && !scheibeVerborgen(e[2])) || this.z.w.filter((e) => e[3] !== 0 && !e[10] && !scheibeVerborgen(e[2]) && d(e) < 15).sort((a, b) => d(a) - d(b))[0]; /* in der offenen Welt etwas weiter als in der Kampfszene */
     if (!z) return; if (d(z) > W.reich + 0.3) this.netz.sende({ t: "lauf", x: z[4], y: z[5] }); this.netz.sende({ t: "ziel", id: z[0] }); }
   /** 2–4: Fähigkeit auf das Ziel, sonst den nächsten Gegner, sonst in Blickrichtung */
   faehig(taste: Taste) { if (!this.netz || !this.z) return; const ich = this.z.w.find((e) => e[0] === this.ichId); if (!ich) return;

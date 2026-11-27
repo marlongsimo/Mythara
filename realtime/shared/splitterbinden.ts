@@ -15,6 +15,16 @@ export type Ladbar = (typeof LADBAR)[number];
 /** Resonanz (Moment-Bonus beim Laden): wie die Glut im Handwerk – 12 % je Stück, 1,5 s Fenster; dann doppelt so viele Ladungen für denselben Preis und +50 % XP */
 export const RESONANZ_MAL = 2;
 
+/* ───── Geladene Waffen (Phase 5b, Kanon): Waffen ab Selten am Bindestein laden – die Ladungen liegen am Exemplar (Fach.d.ladungen, shared/gegenstaende.ts) ───── */
+/** Höchstens so viele Ladungen je Waffe */
+export const WAFFE_LADUNG_MAX = 1000;
+/** Splitterbinden-Level und XP je Ladung nach Seltenheit der Waffe */
+export const WAFFE_LADEN: Record<string, { level: number; xp: number }> = { selten: { level: 20, xp: 3 }, episch: { level: 35, xp: 5 }, legendaer: { level: 45, xp: 8 }, mythisch: { level: 65, xp: 12 } };
+/** So viel stärker schlägt eine geladene Waffe: Angriffs- und Schadensboni der Waffe × 1,1 */
+export const WAFFE_LADUNG_PLUS = 0.1;
+/** Rezept-Ziel „die angelegte Waffe“ (ladung:@waffe, entladen:@waffe) */
+export const AN_WAFFE = "@waffe";
+
 export type LichtArt = "matt" | "wiese";
 export interface LichtDef extends SammelArt { art: LichtArt; /** Farbe des Leuchtens (3D) */ farbe: number; /** Schwebehöhe (Felder) */ hoehe: number }
 /** Seelenlichter in Phase 3: Stufe 1 um die Linde, Stufe 10 in den Riedwiesen und an der Quelle der Obstwiesen (weitere Stufen folgen mit ihren Gebieten) */

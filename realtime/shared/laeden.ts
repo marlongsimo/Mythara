@@ -3,12 +3,12 @@
  * Drei Händler stehen hinter ihren Marktständen (Weltdaten waldmark.mjs: stand_1 rot, stand_2 blau, stand_3 grün; Fuß des Stands = Mitte seiner Südkante,
  * die Theke liegt 0–0,7 Felder nördlich davon). Der Händler steht südlich hinter der Theke und schaut nach Norden auf den Marktplatz, der Kunde davor. Bezahlt wird mit Splittern. Preise und Werte sind vorläufig (Balancing folgt).
  */
-import { GEGENSTAENDE, Seltenheit } from "./gegenstaende";
+import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher";
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen";
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
-  gruss: string; tschuess: string; waren: Ware[]; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
+  gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string }
 /** Währung */
 export const WAEHRUNG = "splitter";
 /** Vorläufige Preise nach Seltenheit (Splitter) */
@@ -43,6 +43,10 @@ export const LAEDEN: Record<LadenId, Laden> = {
   kornspeicher: { id: "kornspeicher", name: "Kornspeicher", spruch: "Mehl aus Weidenhain.", haendler: "Hanne Kalk", modell: "npcfrau3d", x: 6433.4, y: 6679.4, blick: [0, 1], vor: [6433.4, 6680.6], questFigur: "hanne",
     gruss: "Mehl? Endlich wieder. Nimm, so viel du tragen kannst.", tschuess: "Grüß Tebbe von mir.", waren: [{ g: "mehl", preis: 3 }],
     wenn: { quest: "weidenhain_wasser_auf_die_muehle", phase: "fertig" }, zu: "Der Kornspeicher ist leer. Ohne die Mühle gibt es kein Mehl." },
+  /* Phase 4: Gisbert Ast verkauft Äpfel in den Obstwiesen – erst nach B3 „Fallobst“; er ist Questfigur (quest_b3.ts) */
+  obstwiesen: { id: "obstwiesen", name: "Gisberts Äpfel", spruch: "Äpfel aus den Obstwiesen.", haendler: "Gisbert Ast", modell: "npc.gisbert", x: 6562.5, y: 6691.5, blick: [1, 0], vor: [6563.7, 6691.5], questFigur: "gisbert",
+    gruss: "Ein Apfel am Tag, sagt man. Ich sag: zwei. Zum ehrlichen Preis.", tschuess: "Grüß die Kisten vom Großvater, wenn du sie siehst.", waren: [{ g: "apfel", preis: 2 }],
+    wenn: { quest: "obstwiesen_fallobst", phase: "fertig" }, zu: "Gisbert hat nichts zu verkaufen. Seine Kisten sind leer." },
   traenke: { id: "traenke", name: "Schluck auf!", spruch: "Tränke für jedes Wehwehchen.", haendler: "Mira Kräuterlieb", modell: "npc.kraeuterfrau", x: 6456, y: 6441, blick: [0, -1], vor: [6456.5, 6438.5],
     gruss: "Ach, du siehst blass aus, Kindchen. Ein Schlückchen gefällig?", tschuess: "Komm wieder, bevor's wehtut. Hinterher ist's teurer.", waren: [{ g: "kleiner_heiltrank", preis: 35 }, { g: "heiltrank", preis: 150 }] },
 };
@@ -50,6 +54,16 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 /** Ist der Laden für diesen Spieler offen? stand: Stand einer Quest */
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾" };
+export const LADEN_ZEICHEN: Record<LadenId, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎" };
+/* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
+/** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
+export const ANKAUF_ANTEIL = 0.8, TROEDLER_ANTEIL = 0.5;
+/** Grundwert eines Gegenstands: der höchste Ladenpreis, sonst GegenstandDef.wert (sonst keiner – dann kauft auch der Trödler nicht) */
+export function grundwert(g: string): number | null { let p = 0; for (const L of Object.values(LAEDEN)) for (const w of L.waren) if (w.g === g) p = Math.max(p, w.preis);
+  if (p > 0) return p; const G = GEGENSTAENDE[g]; return G && G.wert && G.wert > 0 ? G.wert : null; }
+/** Was dieser Händler für ein Stück zahlt (Splitter, mindestens 1) – null: kauft er nicht (nicht geführt, kein Grundwert, nicht handelbar: Quest, gebunden, geladen „(s)“, Splitter selbst) */
+export function ankaufPreis(L: Laden, g: string, d?: Daten): number | null { if (g === WAEHRUNG || !handelbar(g, d)) return null;
+  if (L.troedler) { const w = grundwert(g); return w === null ? null : Math.max(1, Math.floor(w * TROEDLER_ANTEIL)); }
+  const w = L.waren.find((x) => x.g === g); return w ? Math.max(1, Math.floor(w.preis * ANKAUF_ANTEIL)) : null; }
 /** So nah muss man stehen, um zu kaufen (Felder vom Händler) */
 export const KAUF_WEIT = 4;

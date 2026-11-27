@@ -29,7 +29,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true); /* Buchungen der Kampfzone (XP, Leben) */
   FEHLT.push(req.url); send(404, {}); }); }).listen(8798);
 const FEHLT = [];
-const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8788", SUPABASE_URL: "http://localhost:8798", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765" }, stdio: ["ignore", "pipe", "pipe"] });
+const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, HAENGEN_MS: "12000", PORT: "8788", SUPABASE_URL: "http://localhost:8798", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765" }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 const schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -57,11 +57,11 @@ try {
   const h2 = b2.w.find((w) => w[0] === id); check(h2 && Math.hypot(h2[4] - 20.5, h2[5] - 20.5) > 10, "… und er steht weiter am Moosrain, nicht an der Stelle des neuen Geräts");
   const b3 = await zone(TOK.ben, 79.5, 11.5, BEN); await schlaf(1500);
   check(b2.zu && b2.zu.code === 4409 && b3.ich && b3.ich.id === id && bens(anna).length === 1, `Dieselbe Seite noch einmal (zweiter Tab): die vorige Verbindung bekommt ${b2.zu ? b2.zu.code + " " + b2.zu.grund : "nichts"}, Held bleibt derselbe`);
-  /* wieder in den Kampf, dann Abbruch: bleibt höchstens 60 s */
+  /* wieder in den Kampf, dann Abbruch: bleibt höchstens HAENGEN_MS (im Spiel 60 s, hier 12 s) */
   const z2 = moos()[0] || ziel; b3.ws.send(JSON.stringify({ t: "ziel", id: z2[0] })); await schlaf(2500); const t0 = Date.now(); b3.ws.terminate();
   await schlaf(5000); check(bens(anna).length === 1, "Erneut abgebrochen im Kampf: nach 5 s noch da");
-  while (bens(anna).length && Date.now() - t0 < 70000) await schlaf(500);
-  const s = (Date.now() - t0) / 1000; check(!bens(anna).length && s <= 62, `… und spätestens nach 60 s weg (nach ${s.toFixed(1)} s)`);
+  while (bens(anna).length && Date.now() - t0 < 25000) await schlaf(250);
+  const s = (Date.now() - t0) / 1000; check(!bens(anna).length && s <= 14, `… und spätestens nach 12 s weg (nach ${s.toFixed(1)} s)`);
   /* ohne Kampf: sofort weg */
   const b4 = await zone(TOK.ben, 40.5, 30.5, BEN); await schlaf(1500); check(bens(anna).length === 1, "Ben wieder da (ohne Kampf)");
   const t1 = Date.now(); b4.ws.terminate(); while (bens(anna).length && Date.now() - t1 < 5000) await schlaf(100);

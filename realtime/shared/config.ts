@@ -116,9 +116,24 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
+  friedlichBei?: string;
+  /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
+  gift?: { chance: number; jeSek: number; dauer: number };
+  /** Flackern (#102): im Kampf alle alle Sekunden für dauer Sekunden unangreifbar */
+  flackern?: { alle: number; dauer: number };
+  /** Sand-Auftauchen (#102): liegt eingegraben (unsichtbar, unangreifbar); kommt ein Held auf weit Felder heran, leuchtet sein Feld vorlauf Kampf-Ticks (Standard 2), dann taucht er auf und trifft, wer noch dort steht */
+  eingegraben?: { weit: number; schaden: [number, number]; vorlauf?: number; name?: string };
+  /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
+  friedlichMit?: string[];
+  /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
+  stile?: { sek: number; name?: string; angriff?: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number }; v2?: Partial<GegnerV3>; text?: string }[];
+  /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
+  fliehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
   /** gemeinsame Welt: Sekunden, bis er nach dem Besiegen wieder dasteht (sonst WELT_WIEDERKEHR) */ wiederkehr?: number; /** Gegnerfamilie (Waffen mit „gegen“ treffen sie härter): wald = Waldgolem, Mooshocker */ familie?: string;
-  aggressiv?: boolean; aggroReich?: number; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
+  aggressiv?: boolean; aggroReich?: number;
+  /** sonst friedlich, aber gegen Helden, für die dieser Schalter an ist (QuestDef.schalter, setzt der Server), im Umkreis von weit Feldern aggressiv – z. B. Mooshocker nach ihrer Quest (#81) */ aggressivNach?: { schalter: string; weit: number }; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
   drops?: { nur?: string; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
@@ -170,6 +185,10 @@ export const MONSTER: Record<string, MonsterDef> = {
   /* Mooshocker (Quest „Der stille Rain“, Osthof, 23.11.2026): passiver Trainingsgegner wie die Sand Crab in OSRS – viel Leben, Max Hit 1, langsam, greift nie von selbst an.
      Für Helden um Kampflevel 5–6 gedacht (gut eine Minute je Mooshocker), ab Level 1 machbar. Modell img/figuren-echt3d/mooshocker3d.glb. */
   mooshocker: { name: "Mooshocker", familie: "wald", stufe: 1, bild: "img/echtzeit/bandit.webp", hoehe: 62, lp: 40, tempo: 1.5, angriffswert: { nah: 1, fern: 0, magie: 0 }, abwehr: { nah: 1, fern: 1, magie: 1 }, r: 0.4, aggressiv: false,
+    /* #81: nach „Der stille Rain“ greifen sie den Helden im Umkreis von 8 Feldern an (Schalter aus shared/quest02.ts); ein Wurf Beute, keine Ausrüstung (Wegerich folgt, sobald es den Gegenstand gibt) */
+    aggressivNach: { schalter: "moosrain_wach", weit: 8 },
+    drops: [{ wurf: [{ g: "wurm", chance: 15, anzahl: [1, 3] }, { g: "stamm_eiche", chance: 8, anzahl: [1, 2] }, { g: "stamm_tanne", chance: 4 }, { g: "erz_kupfer", chance: 6, anzahl: [1, 2] },
+      { g: "erz_eisen", chance: 3 }, { g: "seelenlicht", chance: 3 }] }],
     angriff: { name: "Kopfstoß", art: "nah", schaden: [1, 1], takt: 3.0, reich: 1.5, aushol: 0 },
     v2: { geschick: 1, staerke: 1, defense: 1, magie: 1, angriffBonus: -50, ticks: 6, abwehr: { nah: 0, fern: 0, magie: 0 } }, /* trifft selten (Angriffsbonus −50): Simulation – Level 1: 98–100 % Siege, 110–150 s, −2 bis −4 LP · Kampflevel 6–7: 55–70 s (Stab 128 s), −1 LP */
     info: "Ein gedrungenes Wesen mit einem breiten, moosbewachsenen Panzer. Es bewegt sich langsam und sucht feuchte Steine, an denen es seinen Rücken reibt. Es wirkt träge, hält aber erstaunlich viel aus. Bei Bedrängnis stößt es mit dem Kopf nach seinem Angreifer." },
@@ -191,6 +210,45 @@ export const MONSTER: Record<string, MonsterDef> = {
       { wurf: [{ g: "splitter", chance: 50, anzahl: [5, 15] }, { g: "stamm_eiche", chance: 20 }] },
       { nur: "a2_steintafel", wurf: [{ g: "steintafel", chance: 30 }] }] },
   /* Zielscheibe (Phase 2 „Waldland“, A1): Strohscheibe neben dem Südturm der Waldmark – unverwundbar, greift nie an, keine Beute. Fernkampf-XP nur bis Fernkampf 10. */
+  /* Phase 4 „Westmark & erster Boss“ (doku/konzepte/phase-4.md, Beute doku/konzepte/beute.md): drei Banditen-Varianten und Hauptmann Rotmantel.
+     Modelle img/figuren-echt3d/bandit3d_spaeher|_schlaeger|_armbrust.glb und banditenboss3d.glb (#24). Max Hit: Späher 3, Schläger 4, Armbrustschütze 5, Rotmantel 14.
+     Ausrüstung der Stufe „Einfach“ und „Episch“ aus beute.md gibt es noch nicht – dafür steht Trainings- bzw. Selten-Ausrüstung. */
+  bandit_spaeher: { name: "Banditen-Späher", stufe: 18, bild: "img/echtzeit/bandit.webp", hoehe: 84, lp: 22, tempo: 3.2, angriffswert: { nah: 4, fern: 18, magie: 0 }, abwehr: { nah: 10, fern: 14, magie: 4 }, r: 0.3,
+    angriff: { name: "Schleuder", art: "fern", schaden: [1, 3], takt: 2.5, reich: 5.5, aushol: 0.4 }, fliehen: 0.25,
+    v2: { fernkampf: 18, defense: 14, magie: 8, staerkeBonus: 10, ticks: 5, abwehr: { nah: 5, fern: 10, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [3, 10] }] },
+      { wurf: [{ g: "leder_rau", chance: 15 }, { g: "garn", chance: 10, anzahl: [5, 10] }, { g: "apfel", chance: 10, anzahl: [1, 3] }, { g: "kleiner_heiltrank", chance: 8 }] },
+      { wurf: [{ g: "jagdbogen", chance: 1.5 }] },
+      { nur: "b3_karrenbrief", wurf: [{ g: "karrenbrief", chance: 100 }] }], /* B3: der fünfte Späher trägt ihn (Bedingung in quest_b3.ts: Zähler ≥ 4, Brief noch offen) */
+    info: "Ein hagerer Kerl in Grün mit einer Schleuder am Gürtel. Er hält Abstand – und wenn es eng wird, rennt er zu seinen Kumpanen." },
+  bandit_schlaeger: { name: "Bandit-Schläger", stufe: 22, bild: "img/echtzeit/bandit.webp", hoehe: 94, lp: 34, tempo: 2.6, angriffswert: { nah: 22, fern: 0, magie: 0 }, abwehr: { nah: 20, fern: 14, magie: 4 }, r: 0.34,
+    angriff: { name: "Axthieb", art: "nah", schaden: [1, 4], takt: 3.0, reich: 1.5, aushol: 0 },
+    v2: { geschick: 22, staerke: 24, defense: 20, magie: 5, staerkeBonus: 20, ticks: 6, abwehr: { nah: 15, fern: 10, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [5, 12] }] },
+      { wurf: [{ g: "erz_eisen", chance: 15, anzahl: [1, 3] }, { g: "heiltrank", chance: 5 }] },
+      { wurf: [{ g: "eidschwert", chance: 0.2 }, { g: "eiddolch", chance: 0.2 }, { g: "eidzweihaender", chance: 0.2 }, { g: "sternbrecher", chance: 0.2 }] },
+      { nur: "b4_schluessel", wurf: [{ g: "schluesselbund", chance: 100 }] }],
+    info: "Breite Schultern, eine schartige Axt und kein Wort zu viel. Er schlägt langsam, aber wer stehen bleibt, spürt es." },
+  bandit_armbrust: { name: "Armbrustschütze", stufe: 24, bild: "img/echtzeit/bandit.webp", hoehe: 84, lp: 28, tempo: 2.8, angriffswert: { nah: 4, fern: 26, magie: 0 }, abwehr: { nah: 12, fern: 18, magie: 6 }, r: 0.3,
+    angriff: { name: "Bolzen", art: "fern", schaden: [1, 5], takt: 3.0, reich: 6.5, aushol: 0.6 },
+    v2: { fernkampf: 26, defense: 16, magie: 8, staerkeBonus: 30, ticks: 6, abwehr: { nah: 5, fern: 15, magie: 0 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [5, 12] }] },
+      { wurf: [{ g: "stamm_tanne", chance: 15, anzahl: [1, 2] }, { g: "garn", chance: 10, anzahl: [5, 10] }] },
+      { wurf: [{ g: "sternarmbrust", chance: 0.4 }] }],
+    info: "Ocker gekleidet, die Armbrust immer gespannt. Er zielt lange – und trifft dann härter als die anderen." },
+  /* Hauptmann Rotmantel (#16): Stufe 32, 120 LP, Max Hit 14, Zweihänder. Phasen, Rundumschlag, Ruf und Heiltrank stehen in shared/bosse.ts (Boss-Baukasten).
+     Als Questgegner in der eigenen Kopie der Kammer (Instanz), danach öffentlich mit 3 Minuten Wiederkehr. Beute laut beute.md (ohne Episch und Rotmantels Klinge, die es noch nicht gibt). */
+  rotmantel: { name: "Hauptmann Rotmantel", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 100, lp: 120, tempo: 2.6, angriffswert: { nah: 34, fern: 0, magie: 0 }, abwehr: { nah: 30, fern: 24, magie: 8 }, r: 0.38, wiederkehr: 180,
+    angriff: { name: "Zweihandhieb", art: "nah", schaden: [2, 14], takt: 3.0, reich: 1.8, aushol: 0.3 },
+    v2: { geschick: 34, staerke: 50, defense: 30, magie: 10, staerkeBonus: 88, ticks: 6, abwehr: { nah: 25, fern: 20, magie: 5 } },
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [80, 160] }] },
+      { wurf: [{ g: "barren_eisen", chance: 20, anzahl: [3, 5] }, { g: "erz_schwarzeisen", chance: 15, anzahl: [4, 8] }, { g: "leder_weich", chance: 15, anzahl: [2, 4] }, { g: "heiltrank", chance: 15, anzahl: [2, 3] },
+        { g: "garn", chance: 10, anzahl: [20, 40] }, { g: "seelenlicht", chance: 10, anzahl: [3, 5] }, { g: "splitter", chance: 10, anzahl: [150, 250] }] },
+      { wurf: [{ g: "eidschwert", chance: 0.4 }, { g: "eiddolch", chance: 0.4 }, { g: "eidzweihaender", chance: 0.4 }, { g: "sternbrecher", chance: 0.4 }, { g: "sterndorn", chance: 0.4 },
+        { g: "mondlangbogen", chance: 0.4 }, { g: "mondkurzbogen", chance: 0.4 }, { g: "sternarmbrust", chance: 0.4 }, { g: "sternenszepter", chance: 0.4 }, { g: "sternenschild", chance: 0.4 }] },
+      { wurf: [{ g: "rotes_banner", chance: 0.67 }] },
+      { nur: "b4_rabenbrief", wurf: [{ g: "rabenbrief", chance: 100 }] }],
+    info: "Ein Hüne im roten Mantel, der Zweihänder lehnt an seiner Schulter wie ein Spazierstock. Früher Söldner der Wacht – heute der Mann, vor dem die Westmark flüstert." },
   zielscheibe: { name: "Zielscheibe", bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 100, tempo: 0, fest: true, zielscheibe: true, aggressiv: false, angriffswert: { nah: 0, fern: 0, magie: 0 }, abwehr: { nah: 0, fern: 0, magie: 0 }, r: 0.5,
     angriff: { name: "–", art: "nah", schaden: [0, 0], takt: 99, reich: 0, aushol: 0 },
     info: "Eine Strohscheibe auf einem Holzgestell, bemalt mit drei Ringen. Hier üben die Wachen der Waldmark – bis Fernkampf 10 lernst du daran etwas, danach nicht mehr." },

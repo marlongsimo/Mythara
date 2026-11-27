@@ -10,10 +10,12 @@ const UMWEG = 4; /* Felder: so viel länger darf der Umweg eines Gegners sein */
 import { GEHEN_TEMPO, SPRINT_TEMPO_FELDER, feldAbstand, schrittLaenge, nahkampfFeld, kreuzFelder, mitte, inMitte, richtungsSchritt, schrittFrei } from "./feld";
 /** Bis zu diesem Fernkampf-Level lehrt die Zielscheibe etwas (danach keine XP mehr) */
 export const ZIELSCHEIBE_BIS = 10;
-import { Kampfwerte, SkillXp, Art, LP_XP_JE_SCHADEN, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, gegnerWerte, TICK as KAMPF_TICK } from "./kampfwerte";
-import { DT, HELDEN, MONSTER, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
+import { Kampfwerte, SkillXp, Art, LP_XP_JE_SCHADEN, ERHOLUNG, LP_REGEN_SEK, levelAus, NULL_XP, SKILLS, schadenWurf, xpZiel, gegnerWerte, type GegnerV3, TICK as KAMPF_TICK } from "./kampfwerte";
+import { DT, HELDEN, MONSTER, type MonsterDef, K, HELDENREIHE, Modus, Schadensart, STAERKE, HELDENSTUFE, HELDENEP, STUFENBONUS, stufeAusEp } from "./config";
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
+import { BOSSE } from "./bosse";
+import { ansageFelder, phaseBei, INSTANZ_LEER, ANSAGE_VORLAUF, type Ansage, type Ruf, type BossDef, type InstanzDef, type InstanzGegner } from "./boss";
 
 /** Max Hit × (1 + Bonus); der Bruchteil wird zur Chance auf +1 (sonst verpufft der Bonus bei kleinen Max Hits: 3 × 1,15 → 3) */
 const mehrMax = (max: number, bonus: number, z: number): number => { const roh = max * (1 + bonus), g = Math.floor(roh); return g + (z < roh - g ? 1 : 0); };
@@ -30,6 +32,8 @@ export type Eingabe =
   | { t: "neu" };
 
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
+/** Boss-Baukasten: Stand eines Bosskampfes (Phase, Grundangriffe und Sekunden seit der letzten Ansage, benutzte Heilorte „Phase:Nr“, Beginn des Kampfes) */
+interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<string, number>; seit?: number; /** Schweben bis zu dieser Simulationszeit */ schwebBis?: number; /** eingegraben bis (BossPhase.eingraben) */ grabBis?: number }
 interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: number; /* Spezialangriff: Pause, Rest der Ladezeit, Zielfläche */ id: number; held: boolean; typ: string; team: number; bot: boolean; x: number; y: number; r: number; blick: number; lp: number; max: number;
   pfad: Punkt[]; zielId: number; cdA: number; cdQ: number; cdE: number; cdR: number; cdM: number; modus: number; tot: boolean; wieder: number; heim: Punkt; gruppe: number; neuWeg: number; streifT?: number; /** Einzelkampf: mit wem dieses Wesen gerade kämpft, bis wann (Simulationszeit) */ kampfMit?: number; kampfBis?: number; /** Held: Autoangriff (Standard an) */ auto?: boolean; rx: number; ry: number; fuehrer: number;
@@ -38,9 +42,22 @@ export interface Wesen { cdS: number; ladeT: number; ladeX: number; ladeY: numbe
   /* gemeinsame Welt: eigene Stufe und Erfahrung je Spielerheld, Rest der Heil-EP */ stufe?: number; ep?: number; heilRest?: number;
   /** gemeinsame Kampfwelt: Werte des Gebiets, aus dem das Lager stammt (sonst die der Karte) */ lagerAggro?: number; lagerLeine?: number; lagerWandern?: number; lagerStufe?: number;
   /** Zielscheiben: darf dieser Held dort üben (Schalter oder Questschritt, setzt der Server)? */ zielscheibeFrei?: boolean;
-  /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number }
+  /** Schalter dieses Helden, die Gegner kennen (MonsterDef.aggressivNach, setzt der Server je Sekunde) */ schalterAn?: string[];
+  /** eigener Held nach den Kampfregeln v1 (shared/kampfwerte.ts): seine Werte und die seit dem letzten Abholen verdienten Skill-XP */ kw?: Kampfwerte; xpNeu?: SkillXp; /** Bruchteile noch nicht gebuchter XP je Skill */ xpRest?: SkillXp; /** offene Welt: Aggro-Zeitmesser des Helden (Ankerpunkt, Sekunden seit dort) */ aggroAnker?: Punkt; aggroZeit?: number;
+  /** Fliehen (MonsterDef.fliehen): läuft gerade zu diesem Kumpan; geflohen = in diesem Leben schon einmal; heim0 = das eigene Lager (heim zieht zum Kumpan mit) */ flucht?: number; geflohen?: boolean; heim0?: Punkt;
+  /** Instanz (shared/boss.ts): die Kopie, zu der dieses Wesen gehört – es sieht und trifft nur Wesen derselben Kopie; welle: Nummer seiner Welle */ instanz?: string; welle?: number;
+  /** vom Boss gerufen (Kennung des Bosses): kehrt nicht wieder; weg = verschwindet am Ende des Schritts */ helfer?: number; weg?: boolean;
+  /** Boss-Baukasten: Stand des Kampfes; laufende Ansage (Rest in s, Felder, Angriff); Trinken am Heilort (Rest in s, Anteil des Lebens) */ boss?: BossLauf; ansage?: { t: number; felder: [number, number][]; a: Ansage }; trinkT?: number; trinkN?: number;
+  /** #102: unangreifbar bis (Simulationszeit: Flackern, Eingraben des Bosses); Flackern-Takt; eingegraben (Sand-Auftauchen, nicht im Zustand) und die laufende Ansage dazu */ weg0?: number; flackerT?: number; vergraben?: boolean; auftauchen?: { t: number; x: number; y: number };
+  /** Stilwechsel (MonsterDef.stile): der laufende Stil und seine Zeit; Verkleidung: was der Held angelegt hat (setzt der Server, MonsterDef.friedlichMit) */ stil?: number; stilT?: number; angelegt?: string[];
+  /** Türen: für diesen Helden gesperrte Felder (Rechenfelder x0, y0, x1, y1) mit Text; wann zuletzt gemeldet */ sperren?: { f: number[]; t: string }[]; sperrZ?: number }
 export interface Geschoss { id: number; x: number; y: number; zielId: number; zx: number; zy: number; tempo: number; von: number; spec: Spec; knall: number; art: string }
 export type Ereignis = { a: "schaden"; id: number; n: number; art?: string } | { a: "null"; id: number } | { a: "block"; id: number } | { a: "heil"; id: number; n: number } | { a: "hieb"; id: number } | { a: "aushol"; id: number; t: number } | { a: "ep"; x: number; y: number; n: number; id?: number } | { a: "stufe"; id: number; s: number } | { a: "schleuse"; x: number; y: number } | { a: "auftauchen"; id: number; x: number; y: number } | { a: "blinzeln"; id: number; x: number; y: number } | { a: "aufstehen"; id: number; x: number; y: number } | { a: "laden"; id: number; x: number; y: number; r: number; t: number } | { a: "speien"; id: number; x: number; y: number; r: number } | { a: "anlegen"; id: number; t: number }
+  /* Boss-Baukasten und Instanzen (shared/boss.ts): Felder leuchten t Sekunden vorher; neue Phase; trinkt/heilt; Boss besiegt (alle, die Schaden gemacht haben, Kampfdauer); Welle einer Kopie gefallen */
+  | { a: "ansage"; id: number; name: string; felder: [number, number][]; t: number } | { a: "bossphase"; id: number; nr: number; text?: string } | { a: "trinken"; id: number; t: number; text?: string }
+  | { a: "flackern"; id: number; t: number } | { a: "eingraben"; id: number; t: number } | { a: "boee"; id: number; t: number }
+  | { a: "schweben"; id: number; t: number } | { a: "landen"; id: number; text?: string } | { a: "stil"; id: number; nr: number; name?: string; text?: string }
+  | { a: "boss"; typ: string; ids: number[]; sek: number } | { a: "welle"; instanz: string; nr: number; fertig: boolean }
   | { a: "knall"; x: number; y: number; r: number; farbe: string } | { a: "erlegt"; typ: string; besitzer: number } | { a: "treffer"; typ: string; von: number; art: string } | { a: "beute"; x: number; y: number; besitzer: number; /** Gegenstand, Anzahl, Bedingung (nur wenn der Bezwinger sie erfüllt – prüft der Server) */ g: [string, number, string?][] } | { a: "tot"; id: number } | { a: "splitter"; x: number; y: number; n: number } | { a: "stoss"; id: number } | { a: "text"; id: number; t: string };
 /* Merkmale je Wesen im Zustand, als Bits */
 export const BIT = { bollwerk: 1, betaeubt: 2, langsam: 4, dauer: 8, mal: 16, schild: 32, aushol: 64, schutz: 128 };
@@ -73,6 +90,7 @@ export class Sim {
     const lp = held ? Math.round(HELDEN[typ].lp * (1 + STUFENBONUS(HELDENSTUFE[typ] || 1).lp)) : Math.round(MONSTER[typ].lp * STAERKE.lp);
     const w: Wesen = { id: this.lauf++, held, typ, team, bot, x: p.x, y: p.y, r: held ? K.R_HELD : MONSTER[typ].r, blick: 0, lp, max: lp, pfad: [], zielId: 0, cdA: 0, cdQ: 0, cdE: 0, cdR: 0, cdM: 0, cdS: 5, ladeT: 0, ladeX: 0, ladeY: 0, modus: 0, tot: false, wieder: 0, heim: { x: p.x, y: p.y }, gruppe, neuWeg: 0, rx: 0, ry: 0, fuehrer: 0,
       aushol: 0, ausholZiel: 0, bollwerk: 0, betaeubt: 0, langsamT: 0, langsamF: 0, dauer: [], dauerRest: 0, malT: 0, bruchT: 0, bruchSperre: 0, festSperre: 0, schutz: 0, schutzT: 0, mrPlusT: 0, spottT: 0, spottId: 0, giftHiebe: 0, ruhe: 99, wach: false };
+    if (!held && MONSTER[typ].eingegraben) w.vergraben = true; /* Sand-Auftauchen (#102) */
     this.wesen.push(w); return w;
   }
   private aufbau(): void {
@@ -85,6 +103,9 @@ export class Sim {
   }
   get ich(): Wesen { return this.weltZeit ? this.wesen.find((w) => w.held) || this.wesen[0] : this.wesen[0]; }
   /* ---------- Gemeinsame Welt (MMO): beliebig viele Spieler, Gegner kehren zurück, EP nach Schadensanteil ---------- */
+  /** Ursprung der Karte in Weltfeldern: Instanzen, Türen und Heilorte stehen in Weltfeldern (der Server setzt ihn für die Kampfwelt) */ ursprung: [number, number] = [0, 0];
+  /** Instanzen: je Kopie der Raum, die laufende Welle, ob sie steht, Pause bis zur nächsten, Sekunden ohne Spieler, alle Wellen gefallen */
+  private inst = new Map<string, { def: InstanzDef; welle: number; da: boolean; pause: number; leer: number; fertig: boolean }>();
   weltZeit = 0; private anteile = new Map<number, Map<number, number>>(); private wiederkehr: { w: Wesen; t: number; blinz: boolean }[] = []; private splitterJe = new Map<number, number>(); private blinzStart = new Set<number>();
   /** Eine gemeinsame Welt: die Karte mit ihren Lagern, ohne Helden. Spieler kommen mit beitreten() dazu. */
   /** eigeneWerte (Kampfregeln v1, Weltzonen): Gegner mit ihren eigenen Werten aus MONSTER – ohne die Stufen-Skalierung (STAERKE) */
@@ -157,7 +178,25 @@ export class Sim {
   nach(id: number): Wesen | undefined { return this.wesen.find((w) => w.id === id); }
   private wert(w: Wesen) { return w.held ? HELDEN[w.typ] : MONSTER[w.typ]; }
   /** Der Angriff, der gerade gilt: beim Helden der gewählte Waffenmodus */
-  waffe(w: Wesen): Modus | { art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } { if (w.kw) return { name: "Waffe", text: "", ...w.kw.waffe } as Modus; return w.held ? HELDEN[w.typ].modi[w.modus] : MONSTER[w.typ].angriff; }
+  waffe(w: Wesen): Modus | { art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number } { if (w.kw) return { name: "Waffe", text: "", ...w.kw.waffe } as Modus; return w.held ? HELDEN[w.typ].modi[w.modus] : this.angVon(w); }
+  /** Stilwechsel (#49): Angriff und v3-Werte eines Gegners im laufenden Stil */
+  private angVon(w: Wesen): MonsterDef["angriff"] { const D = MONSTER[w.typ], S = D.stile && w.stil !== undefined ? D.stile[w.stil] : undefined; return S && S.angriff ? S.angriff : D.angriff; }
+  private v2Cache = new Map<string, GegnerV3>();
+  v2Von(w: Wesen): GegnerV3 | undefined { if (w.held) return undefined; const D = MONSTER[w.typ]; if (!D) return undefined; const S = D.stile && w.stil !== undefined ? D.stile[w.stil] : undefined;
+    if (!S || !S.v2) return D.v2; const k = w.typ + ":" + w.stil; let v = this.v2Cache.get(k); if (!v) { v = { ...(D.v2 || { ticks: 4, abwehr: { nah: 0, fern: 0, magie: 0 } }), ...S.v2 } as GegnerV3; this.v2Cache.set(k, v); } return v; }
+  /** Schwebt dieser Boss gerade (BossPhase.schweben)? Dann erreicht ihn kein Nahkampf */
+  schwebt(w: Wesen): boolean { return Boolean(w.boss && w.boss.schwebBis !== undefined && w.boss.schwebBis > this.zeit); }
+  /** Gerade für alles unangreifbar (Flackern, eingegraben)? */
+  unangreifbar(w: Wesen): boolean { return Boolean(w.vergraben || (w.weg0 !== undefined && w.weg0 > this.zeit) || (w.boss && w.boss.grabBis !== undefined && w.boss.grabBis > this.zeit)); }
+  /* ---------- Wind (#102): Böe mit Ansage, danach Fernkampf schwächer ---------- */
+  /** liegt diese Stelle (Rechenfelder) im Wind-Gebiet? (setzt der Server nach shared/weltereignisse.ts) */
+  windBei: (x: number, y: number) => boolean = () => false;
+  private wind = { an: -1, bis: -1, minder: 0, dauer: 0 };
+  /** Eine Böe: in vorlauf Sekunden setzt sie ein und schwächt dauer Sekunden lang den Fernkampf um minder (Anteil) */
+  boee(vorlauf: number, dauer: number, minder: number): void { this.wind = { an: this.zeit + vorlauf, bis: this.zeit + vorlauf + dauer, minder, dauer };
+    for (const h of this.wesen) if (h.held && !h.tot && this.windBei(h.x, h.y)) this.ev.push({ a: "boee", id: h.id, t: vorlauf }); }
+  /** Weht gerade Wind an dieser Stelle? */
+  imWind(w: Wesen): boolean { return this.zeit >= this.wind.an && this.zeit < this.wind.bis && this.windBei(w.x, w.y); }
   private tempo(w: Wesen): number { return this.wert(w).tempo * (w.ausdauer ? w.ausdauer.faktor : 1) * (w.langsamT > 0 ? 1 - w.langsamF : 1) * (w.held && !w.kw && HELDEN[w.typ].modi[w.modus].schild ? K.BLOCK.tempo : 1); }
   /* ---------- Einzel- und Mehrkampf (nur in der offenen Welt) ----------
      Einzelkampf (Standard): Ein Gegner kämpft nur mit einem Helden und ein Held nur mit einem Gegner. Wer gebunden ist, kann von anderen
@@ -167,10 +206,16 @@ export class Sim {
   mehrkampfBei(p: Punkt): boolean { return !this.weltZeit || this.karte.MEHRKAMPF.some(([x0, y0, x1, y1]) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1); }
   private gebunden(w: Wesen): Wesen | null { if (!w.kampfMit || (w.kampfBis || 0) <= this.zeit) return null; const p = this.nach(w.kampfMit); return p && !p.tot ? p : null; }
   /** Darf a gegen z kämpfen? (Verbündete: immer – Heilen und Schützen bleiben erlaubt) */
-  darf(a: Wesen, z: Wesen): boolean { if (a.team === z.team || this.mehrkampfBei(z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
-  private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
-  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team !== w.team); }
-  private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team); }
+  /** Gehören zwei Wesen zur selben Welt (dieselbe Kopie oder beide in keiner)? Sonst sehen und treffen sie einander nicht */
+  gleich(a: Wesen, b: Wesen): boolean { return (a.instanz || "") === (b.instanz || ""); }
+  /** Boss-Baukasten und Instanzen: Bosskämpfe (Boss, gerufene Helfer) und alles in einer Kopie sind immer Mehrkampf – keine Bindung an einen Gegner */
+  private ohneBindung(a: Wesen, z: Wesen): boolean { const boss = (w: Wesen) => !w.held && Boolean(MONSTER[w.typ].boss || BOSSE[w.typ]); return Boolean(a.instanz || z.instanz || a.helfer || z.helfer || boss(a) || boss(z)); }
+  darf(a: Wesen, z: Wesen): boolean { if (!this.gleich(a, z)) return false; if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
+  private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z) || this.ohneBindung(a, z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
+  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && !o.vergraben && o.team !== w.team && this.gleich(o, w) && !this.verborgen(w, o)); }
+  /** Zielscheibe (#55): für einen Helden ohne Freigabe gibt es sie nicht – kein Ziel, kein Treffer, kein Gegenangriff (der Browser blendet sie aus) */
+  private verborgen(w: Wesen, o: Wesen): boolean { return w.held && !w.zielscheibeFrei && !o.held && Boolean(MONSTER[o.typ] && MONSTER[o.typ].zielscheibe); }
+  private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team && this.gleich(o, w)); }
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
 
   /** Eine Eingabe des Spielers. Alles wird geprüft und begrenzt – der Client bestimmt nie ein Ergebnis. */
@@ -181,7 +226,7 @@ export class Sim {
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
     if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = this.felder ? h.pfad.slice(0, 1) : []; } }
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = this.wegZu(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || !this.gleich(h, z) || this.verborgen(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
@@ -209,6 +254,7 @@ export class Sim {
       const rest = von.xpRest || (von.xpRest = { ...NULL_XP });
       for (const k of SKILLS) { const rate = (ziel[k] || 0) + (k === "lp" ? LP_XP_JE_SCHADEN : 0); if (!rate) continue; rest[k] += echt * rate; const n = Math.floor(rest[k] + 1e-9); if (n) { rest[k] -= n; von.xpNeu[k] += n; von.kw.skills[k] += n; } } }
     z.lp -= m; z.ruhe = 0; this.ev.push(art ? { a: "schaden", id: z.id, n: m, art } : { a: "schaden", id: z.id, n: m });
+    if (z.held && z.kw && z.kw.set && !art && z.lp > 0 && this.zf() < z.kw.set.chance) this.heilen(z, Math.round(m * z.kw.set.anteil)); /* Set-Bonus (Phase 5d, Rabenset): ein Treffer, der Schaden macht, heilt mit chance um anteil – nie über das Leben */
     if (!z.held) { z.wach = true; if (von && von.held && !z.zielId) z.zielId = von.id; this.wecken(z); }
     if (z.lp > 0 && z.lp < z.max * 0.4 && this.blinzler.delete(z.id)) { /* fast besiegt: huscht ein Stück vom Angreifer weg */ const v = von || this.ich, dx = z.x - v.x, dy = z.y - v.y, l = Math.hypot(dx, dy) || 1, a = Math.atan2(dy / l, dx / l) + (this.zf() - 0.5) * 1.2;
       const p = naechstFrei({ x: z.x + Math.cos(a) * 5, y: z.y + Math.sin(a) * 5 }); z.x = p.x; z.y = p.y; z.pfad = []; z.aushol = 0; this.ev.push({ a: "blinzeln", id: z.id, x: p.x, y: p.y }); }
@@ -221,18 +267,21 @@ export class Sim {
     if (this.weltZeit) { /* Drop-Tabelle: die Beute gehört dem, der am meisten Schaden gemacht hat – bei Gleichstand dem, der den letzten Schlag gemacht hat (der Server legt sie auf den Boden) */
       const D = MONSTER[z.typ].drops, a = this.anteile.get(z.id); let besitzer = von && von.held ? von.id : 0, best = -1;
       if (a) for (const [id, n] of a) if (n > best || (n === best && von && id === von.id)) { best = n; besitzer = id; }
-      if (besitzer) this.ev.push({ a: "erlegt", typ: z.typ, besitzer }); /* Quests zählen Siege (wer am meisten Schaden gemacht hat) */
+      if (besitzer) this.ev.push({ a: "erlegt", typ: z.typ, besitzer });
+      if ((MONSTER[z.typ].boss || BOSSE[z.typ]) && a) { const ids = [...a.keys()].filter((id) => { const h = this.nach(id); return Boolean(h && h.held); }); /* Bosszähler: alle, die Schaden gemacht haben, und wie lange der Kampf ging */
+        if (ids.length) this.ev.push({ a: "boss", typ: z.typ, ids, sek: Math.round((this.zeit - (z.boss && z.boss.seit !== undefined ? z.boss.seit : this.zeit)) * 10) / 10 }); } /* Quests zählen Siege (wer am meisten Schaden gemacht hat) */
       if (D && D.length) {
         const g: [string, number, string?][] = []; for (const R of D) { let z = this.zf() * 100; for (const d of R.wurf) { if (z < d.chance) { const [lo, hi] = d.anzahl || [1, 1], n = lo + Math.floor(this.zf() * (hi - lo + 1)); g.push(R.nur ? [d.g, n, R.nur] : [d.g, n]); break; } z -= d.chance; } } /* je Roll höchstens ein Treffer */
         if (g.length) this.ev.push({ a: "beute", x: z.x, y: z.y, besitzer, g }); } }
     if (STAERKE.ep > 0) { const e = Math.max(1, Math.round(MONSTER[z.typ].lp * STAERKE.ep / 10)); if (this.weltZeit) this.epVerteilen(z, e); else { this.ev.push({ a: "ep", x: z.x, y: z.y, n: e }); this.erfahrung(e); } }
-    if (this.weltZeit) { this.anteile.delete(z.id); this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
+    if (this.weltZeit) { this.anteile.delete(z.id); if (z.helfer) z.weg = true; else if (!z.instanz) this.wiederkehr.push({ w: z, t: MONSTER[z.typ].wiederkehr ?? this.weltZeit, blinz: this.blinzStart.has(z.id) }); } /* Gerufene und Gegner einer Kopie kehren nicht wieder */ /* Schadensanteile gelten nur für dieses Leben */ /* kommt nach einer Weile zurück */
     if (B) this.beute.push({ id: this.lauf++, x: z.x, y: z.y, n }); /* bleibt liegen, bis ein Held darüberläuft */ else { this.splitter += n; this.ev.push({ a: "splitter", x: z.x, y: z.y, n }); }
     if (!this.weltZeit && this.besiegt >= this.monsterZahl && !(this.sl && this.sl.offen)) this.sieg(); /* die Welt hat kein Ende */ /* bei offener Schleuse kommen noch welche */
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
-    if (z.tot) return 0; if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
+    if (z.tot || !this.gleich(von, z) || this.verborgen(von, z)) return 0; if (this.unangreifbar(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } if (s.art === "nah" && this.schwebt(z)) { this.ev.push({ a: "text", id: z.id, t: "unerreichbar" }); return 0; } /* Schweben: Nahkampf reicht nicht hinauf */
+    if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
     // Schild und Bollwerk: von vorn wird Torvald seltener getroffen; Verbündete direkt hinter einem Bollwerk ebenso
     let minder = 0; const winkel = (a: number, b: number) => { let d = Math.abs(a - b) % (2 * Math.PI); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
     if (von.kw || z.kw) { von.ruhe = 0; z.ruhe = 0; } /* Kampfregeln v1: jeder Angriff (auch ein geblockter) zählt als Kampf – keine Erholung */
@@ -242,7 +291,7 @@ export class Sim {
     // 2 Trefferwurf: Angriffswert des Angreifers gegen den Verteidigungswert des Ziels für diese Angriffsart
     const wurf = (!s.sicher || Boolean(von.kw || z.kw)) && K.TREFFERWURF; /* v1: jeder Angriff würfelt */
     if (wurf) {
-      const V2a = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined, V2z = !z.held && MONSTER[z.typ].v2 ? gegnerWerte(MONSTER[z.typ].v2!, "nah") : undefined; /* v3: Gegner nach denselben Regeln wie die Helden (Skills + Ausrüstung) */
+      const v2a = this.v2Von(von), v2z = this.v2Von(z), V2a = v2a ? gegnerWerte(v2a, s.art as Art) : undefined, V2z = v2z ? gegnerWerte(v2z, "nah") : undefined; /* v3: Gegner nach denselben Regeln wie die Helden (Skills + Ausrüstung) */
       const a = von.kw ? von.kw.angriff[s.art as Art] : V2a ? V2a.treffer / (z.kw ? 1 : 64) /* gegen alte Heldentypen ohne Skills: OSRS-Wurf auf die alte Skala */ : (von.held ? HELDEN[von.typ].angriff : MONSTER[von.typ].angriffswert)[s.art] + (z.kw ? 0 : SB(von).angriff);
       let d = z.kw ? z.kw.abwehr[s.art as Art] : V2z ? (V2z.abwehr[s.art as Art] ?? 0) / (von.kw ? 1 : 64) : this.wert(z).abwehr[s.art] + (von.kw ? 0 : SB(z).abwehr); if (s.art === "magie") d += (z.mrPlusT > 0 ? K.SCHUTZKREIS.magie : 0) + (z.held && this.freunde(z).some((o) => o.typ === "lichtbringer" && abstand(o, z) <= K.BEISTAND.radius) ? K.BEISTAND.magie : 0); else if (z.bruchT > 0) d -= K.DURCHBRECHEN.abwehr;
       d = Math.max(0, d) / (1 - minder); // ein Block von 60 % heißt: der Verteidigungswurf reicht 2,5-mal so hoch
@@ -250,20 +299,23 @@ export class Sim {
       if (!(v1 ? this.zf() * a > this.zf() * d : this.zf() * (a + 1) > this.zf() * (d + 1))) { /* v3: ein Block gibt keine Defense-XP mehr (Defense steigt über die Stile) */ this.ev.push(v1 || minder >= 0.4 ? { a: "block", id: z.id } : { a: "null", id: z.id }); if (!z.held) { z.wach = true; if (!z.zielId && von.held) z.zielId = von.id; this.wecken(z); } return 0; }
     }
     // 3 Schadenswurf zwischen Mindest- und Höchstschaden
-    const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; const V3 = !von.held && MONSTER[von.typ].v2 ? gegnerWerte(MONSTER[von.typ].v2!, s.art as Art) : undefined;
+    const min = s.min != null ? s.min : s.grund * K.FAEHIG_MIN; const v3 = this.v2Von(von), V3 = v3 ? gegnerWerte(v3, s.art as Art) : undefined;
     const fam = !z.held && MONSTER[z.typ] ? (MONSTER[z.typ] as { familie?: string }).familie : undefined, gegen = von.kw && von.kw.waffe.gegen && fam ? von.kw.waffe.gegen[fam] || 0 : 0; /* Waldsäbel: mehr Max Hit gegen Wesen des Waldes */
     let m = von.kw ? schadenWurf(gegen ? { ...von.kw.waffe, schaden: [von.kw.waffe.schaden[0], mehrMax(von.kw.waffe.schaden[1], gegen, this.zf())] } : von.kw.waffe, this.zf()) /* Wurf 1 … Max Hit */ : V3 ? 1 + Math.floor(this.zf() * V3.maxHit) /* Gegner v3: 1 … Max Hit aus Stärke und Waffe */ : z.kw ? min + Math.floor(this.zf() * (s.grund - min + 1)) : (min + this.zf() * (s.grund - min)) * (1 + SB(von).schaden);
     // 4 Boni
     if (s.mal && z.malT > 0) m *= 1 + s.mal;
     if (s.wucht && !z.held && MONSTER[z.typ].anfaellig === "wucht") m *= 1 + K.WUCHT;
     if (s.untot && this.untot(z)) m *= 1 + s.untot;
+    if (s.art === "fern" && this.wind.minder && this.imWind(von)) m *= 1 - this.wind.minder; /* Wind (#102): Fernkampf schwächer */
     // 5 ohne Trefferwurf (Flächen, Sprünge) mindert der Schild stattdessen den Schaden
     if (!wurf && minder > 0) { m *= 1 - (s.flaeche ? Math.min(minder, K.BLOCK.flaeche + (z.bollwerk > 0 ? K.BOLLWERK.plus : 0)) : minder); }
     // 6 Leben
-    const vor = z.lp + z.schutz; this.abziehen(z, m, von); return Math.max(0, vor - (z.lp + z.schutz));
+    const vor = z.lp + z.schutz; this.abziehen(z, m, von); const n = Math.max(0, vor - (z.lp + z.schutz));
+    if (n > 0 && !von.held && !z.tot) { const G = MONSTER[von.typ] && MONSTER[von.typ].gift; if (G && this.zf() < G.chance) this.dauerSchaden(z, "gift", G.jeSek, G.dauer, von); } /* Gift (#102) */
+    return n;
   }
   /** Wer ein Monster weckt, weckt seine Gruppe */
-  private wecken(m: Wesen): void { if (!m.gruppe || !m.zielId) return; for (const o of this.wesen) if (!o.tot && !o.held && o.gruppe === m.gruppe && !o.zielId) { o.zielId = m.zielId; o.wach = true; } }
+  private wecken(m: Wesen): void { if (!m.gruppe || !m.zielId) return; for (const o of this.wesen) if (!o.tot && !o.held && o.gruppe === m.gruppe && !o.zielId && this.gleich(o, m)) { o.zielId = m.zielId; o.wach = true; } }
   private langsam(z: Wesen, f: number, t: number): void { if (f >= z.langsamF || z.langsamT <= 0) { z.langsamF = f; z.langsamT = Math.max(z.langsamT, t); } }
   private dauerSchaden(z: Wesen, art: Dauer["art"], jeSek: number, t: number, von: Wesen): void { const d = z.dauer.find((x) => x.art === art); if (d) { d.t = t; d.jeSek = Math.max(d.jeSek, jeSek); d.von = von.id; } else z.dauer.push({ t, jeSek, von: von.id, art }); }
   private stossen(z: Wesen, dx: number, dy: number, weite: number): void { const l = Math.hypot(dx, dy) || 1; for (let s = 0; s < weite; s += 0.15) { const nx = z.x + dx / l * 0.15, ny = z.y + dy / l * 0.15; if (!begehbar(nx + dx / l * z.r, ny + dy / l * z.r)) break; z.x = nx; z.y = ny; } schieben(z); z.pfad = []; z.aushol = 0; }
@@ -318,12 +370,16 @@ export class Sim {
   /** Angriff beginnen: Nahkämpfer treffen sofort, Fernkämpfer und Monster holen erst aus */
   private angriff(w: Wesen, z: Wesen): void {
     const A = this.waffe(w); if (w.held && (A as Modus).schild) return; /* mit erhobenem Schild wird nicht angegriffen */
-    const V2 = !w.held ? MONSTER[w.typ].v2 : undefined, tick = Boolean(w.kw || V2);
+    const V2 = this.v2Von(w), tick = Boolean(w.kw || V2);
     if (tick && !this.aufTick) return; /* v2: Angriffe fallen auf einen Kampf-Tick (0,5 s) – sonst beim nächsten Tick */
     w.cdA = tick ? (V2 ? V2.ticks * KAMPF_TICK : A.takt) - DT / 2 : A.takt; w.blick = Math.atan2(z.y - w.y, z.x - w.x); /* knapp unter dem vollen Takt: der nächste Angriff fällt genau auf seinen Tick */
+    if (w.boss) w.boss.angriffe++; /* Boss-Baukasten: Ansagen nach so vielen Grundangriffen */
     const aus = tick ? 0 /* v2: kein Ausholen */ : w.held ? (A.art === "nah" ? 0 : K.AUSHOLEN_FERN) : (A as { aushol: number }).aushol;
-    if (aus > 0) { w.aushol = aus; w.ausholZiel = z.id; w.pfad = []; this.ev.push({ a: w.held ? "anlegen" : "aushol", id: w.id, t: aus }); } /* Monster: sichtbare Warnung; Helden: die Schuss- oder Heilbewegung beginnt */ else this.ausloesen(w, z);
+    if (aus > 0) { w.aushol = aus; w.ausholZiel = z.id; w.pfad = []; this.ev.push({ a: w.held ? "anlegen" : "aushol", id: w.id, t: aus }); } /* Monster: sichtbare Warnung; Helden: die Schuss- oder Heilbewegung beginnt */
+    else { const n = this.hiebeVon(w); for (let i = 0; i < n; i++) this.ausloesen(w, z); } /* Doppelhieb (BossPhase.hiebe): mehrere Treffer in einem Tick */
   }
+  /** Treffer je Grundangriff: 1, beim Boss nach seiner Phase (BossPhase.hiebe) */
+  private hiebeVon(w: Wesen): number { if (!w.boss) return 1; const B = BOSSE[w.typ], P = B && B.phasen[w.boss.phase]; return Math.max(1, Math.min(5, Math.floor((P && P.hiebe) || 1))); }
   private ausloesen(w: Wesen, z: Wesen): void {
     const A = this.waffe(w); this.ev.push({ a: "hieb", id: w.id });
     if (A.art === "heil") { if (z.team === w.team && abstand(w, z) <= A.reich + 1) this.heilen(z, A.schaden[0] + this.zf() * (A.schaden[1] - A.schaden[0]), w); return; }
@@ -349,7 +405,8 @@ export class Sim {
     w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, this.zielFeld(w, z, nah)); w.neuWeg = 0.3; }
   }
   /** aggro: nur Helden, die der Gegner noch von selbst angreift (offene Welt: höchstens AGGRO_DAUER, dann erst wieder nach 20 Feldern oder neuem Betreten der Region) */
-  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; if (aggro && o.held && !w.held) { const bis = MONSTER[w.typ] && MONSTER[w.typ].aggroBisLevel; if (bis && (o.kw ? o.kw.heldenlevel : 1) >= bis) continue; } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
+  private naechsterGegner(w: Wesen, weit: number, aggro = false): Wesen | null { let best: Wesen | null = null, bd = weit; for (const o of this.feinde(w)) { if (this.weltZeit && !this.darf(w, o)) continue; if (aggro && this.weltZeit && o.held && (o.aggroZeit ?? 0) >= K.AGGRO_DAUER) continue; if (aggro && o.held && !w.held) { const bis = MONSTER[w.typ] && MONSTER[w.typ].aggroBisLevel; if (bis && (o.kw ? o.kw.heldenlevel : 1) >= bis) continue; const F = MONSTER[w.typ] && MONSTER[w.typ].friedlichMit; if (F && o.angelegt && o.angelegt.some((g) => F.includes(g))) continue; /* Verkleidung (#49) */
+      const GL = MONSTER[w.typ] && MONSTER[w.typ].friedlichBei; if (GL && (o.schalterAn || []).includes(GL)) continue; /* Glocke (#102) */ } /* starke Helden lässt er in Ruhe (bis sie angreifen) */ const d = this.felder ? feldAbstand(w, o) : abstand(w, o); if (d < bd && frei(w, o)) { bd = d; best = o; } } return best; }
 
   /* ---------- Begleiter (vom Rechner gespielte Helden) ---------- */
   private begleiterZug(w: Wesen): void {
@@ -387,11 +444,12 @@ export class Sim {
     this.tick++; this.aufTick = this.tick % Math.round(KAMPF_TICK / DT) === 0; if (this.phase !== "lauf" && !STAERKE.beute) return; if (this.phase === "lauf") this.zeit += DT;
     { const P = this.karte.PROBE; if (P && P.art === "schleuse" && this.probe === 0 && this.sl && this.sl.offen && this.zeit > (P.wert || 0)) this.probe = 2; } /* zu spät */
     if (this.beute.length) this.beute = this.beute.filter((b) => { const h = this.wesen.find((w) => w.held && !w.tot && Math.hypot(w.x - b.x, w.y - b.y) < 0.9); if (!h) return true; this.splitter += b.n; if (this.weltZeit) this.splitterJe.set(h.id, this.splitterVon(h.id) + b.n); this.ev.push({ a: "splitter", x: b.x, y: b.y, n: b.n }); return false; });
-    if (this.wiederkehr.length) { for (const q of this.wiederkehr) q.t -= DT; for (const q of this.wiederkehr.filter((x) => x.t <= 0)) { const w = q.w; /* der Gegner steht wieder an seinem Lager */
-        Object.assign(w, { tot: false, lp: w.max, x: w.heim.x, y: w.heim.y, pfad: [], zielId: 0, wach: false, dauer: [], dauerRest: 0, aushol: 0, ladeT: 0, betaeubt: 0, spottT: 0, schutz: 0 }); this.erhoben.delete(w.id); if (q.blinz) this.blinzler.add(w.id); this.ev.push({ a: "auftauchen", id: w.id, x: w.x, y: w.y }); }
+    if (this.wiederkehr.length) { for (const q of this.wiederkehr) q.t -= DT; for (const q of this.wiederkehr.filter((x) => x.t <= 0)) { const w = q.w; /* der Gegner steht wieder an seinem Lager */ if (w.heim0) { w.heim = w.heim0; w.heim0 = undefined; }
+        Object.assign(w, { tot: false, lp: w.max, x: w.heim.x, y: w.heim.y, pfad: [], zielId: 0, wach: false, dauer: [], dauerRest: 0, aushol: 0, ladeT: 0, betaeubt: 0, spottT: 0, schutz: 0, flucht: 0, geflohen: false, boss: undefined, ansage: undefined, trinkT: 0, weg0: undefined, flackerT: 0, auftauchen: undefined, vergraben: Boolean(MONSTER[w.typ].eingegraben) }); this.erhoben.delete(w.id); if (q.blinz) this.blinzler.add(w.id); if (!w.vergraben) this.ev.push({ a: "auftauchen", id: w.id, x: w.x, y: w.y }); }
       this.wiederkehr = this.wiederkehr.filter((x) => x.t > 0); }
     if (this.weltZeit) for (const w of this.wesen) if (w.held && !w.tot) { /* Aggro-Zeitmesser: läuft, solange der Held in der Nähe seines Ankers bleibt */
       if (!w.aggroAnker || Math.hypot(w.x - w.aggroAnker.x, w.y - w.aggroAnker.y) >= K.AGGRO_RUECKSETZEN) { w.aggroAnker = { x: w.x, y: w.y }; w.aggroZeit = 0; } else w.aggroZeit = (w.aggroZeit ?? 0) + DT; }
+    if (this.inst.size) this.instanzSchritt();
     for (const w of this.wesen) {
       if (w.tot) { if (w.held) { w.wieder -= DT; if (w.wieder <= 0) { w.tot = false; w.lp = w.max; const p = START[Math.max(0, this.wesen.filter((o) => o.held).indexOf(w))] || START[0]; w.x = p.x; w.y = p.y; w.pfad = []; w.zielId = 0; w.ruhe = 99; } } continue; }
       for (const k of ["cdA", "cdQ", "cdE", "cdR", "cdM", "cdS", "bollwerk", "langsamT", "malT", "bruchT", "bruchSperre", "festSperre", "mrPlusT", "spottT"] as const) if (w[k] > 0) w[k] = Math.max(0, w[k] - DT);
@@ -403,24 +461,36 @@ export class Sim {
       if (w.ausdauer && w.kw) w.ausdauer.schritt(DT, w.rx !== 0 || w.ry !== 0 || w.pfad.length > 0, levelAus(w.kw.skills.geschick || 0, "geschick")); /* Sprint: Ausdauer im Game-Tick */
       if (w.betaeubt > 0) { w.betaeubt = Math.max(0, w.betaeubt - DT); continue; }
       if (w.ladeT > 0) { w.ladeT -= DT; if (w.ladeT <= 0) { { const P = this.karte.PROBE, Sz = MONSTER[w.typ].spezial!; if (P && P.art === "ausweichen" && this.probe === 0 && this.wesen.some((o) => o.held && !o.tot && Math.hypot(o.x - w.ladeX, o.y - w.ladeY) <= Sz.radius + o.r)) this.probe = 2; } const S = MONSTER[w.typ].spezial!; this.ev.push({ a: "speien", id: w.id, x: w.ladeX, y: w.ladeY, r: S.radius }); this.flaeche(w, { x: w.ladeX, y: w.ladeY }, S.radius, { grund: S.schaden[1] * STAERKE.schaden, min: S.schaden[0] * STAERKE.schaden, art: S.art }); w.cdS = S.alle; } continue; } // wer lädt, steht
-      if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) this.ausloesen(w, z); } continue; } // wer ausholt, steht
+      if (w.ansage) { w.ansage.t -= DT; if (w.ansage.t <= 0) this.ansageTreffen(w); continue; } /* Boss: wer ansagt, steht */
+      if (w.trinkT && w.trinkT > 0) { w.trinkT -= DT; if (w.trinkT <= 0) this.heilen(w, (w.trinkN || 0) * w.max); continue; } /* Heilort: wer trinkt, steht */
+      if (w.aushol > 0) { w.aushol -= DT; if (w.aushol <= 0) { const z = this.nach(w.ausholZiel); if (z) for (let i = this.hiebeVon(w); i > 0; i--) this.ausloesen(w, z); } continue; } // wer ausholt, steht
       let ziel = w.zielId ? this.nach(w.zielId) : undefined; if (ziel && ziel.tot) { ziel = undefined; w.zielId = 0; }
       if (!w.held && MONSTER[w.typ].fest) { const B = MONSTER[w.typ].brut; if (B) this.brueten(w, B); continue; } /* Laich: bewegt sich nicht, greift nicht an, brütet */
       if (!w.held && MONSTER[w.typ].brut && w.wach) this.brueten(w, MONSTER[w.typ].brut!); /* Bosse, die Hilfe rufen */
       if (!w.held) {
         if (ziel && this.weltZeit && !this.darf(w, ziel)) { ziel = undefined; w.zielId = 0; w.pfad = []; } /* Einzelkampf: der Held kämpft schon mit einem anderen */
         const D = MONSTER[w.typ]; if (w.spottT > 0) { const s = this.nach(w.spottId); if (s && !s.tot) { ziel = s; w.zielId = s.id; } }
+        if (w.vergraben || w.auftauchen) { this.grabSchritt(w, D); continue; } /* Sand-Auftauchen (#102) */
+        if (D.friedlichBei) { if (ziel && ziel.held && (ziel.schalterAn || []).includes(D.friedlichBei)) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; } } /* Glocke (#102) */
+        if (D.flackern && ziel) { w.flackerT = (w.flackerT || 0) + DT; if (w.flackerT >= D.flackern.alle) { w.flackerT = 0; w.weg0 = this.zeit + D.flackern.dauer; this.ev.push({ a: "flackern", id: w.id, t: D.flackern.dauer }); } }
+        if (D.stile && D.stile.length) this.stilSchritt(w, D, ziel);
+        if (this.fliehen(w, D, ziel)) { /* läuft zum Kumpan */ }
+        else if (BOSSE[w.typ] && this.bossSchritt(w, BOSSE[w.typ], ziel)) { /* Boss: Ansage, Heilort */ }
+        else {
         const LEINE = w.lagerLeine ?? this.karte.LEINE ?? K.LEINE, WANDERN = w.lagerWandern ?? this.karte.WANDERN;
         if (ziel && (this.felder ? feldAbstand(ziel, w.heim) : abstand(ziel, w.heim)) > LEINE && w.spottT <= 0) { ziel = undefined; w.zielId = 0; w.wach = false; w.pfad = []; }
+        if (!ziel && D.aggressiv === false && D.aggressivNach) { const A = D.aggressivNach; let best: Wesen | null = null, bd = A.weit + 0.01; /* #81: nur gegen Helden mit diesem Schalter */
+          for (const o of this.feinde(w)) { if (!o.held || !(o.schalterAn || []).includes(A.schalter) || (this.weltZeit && !this.darf(w, o))) continue; const d = this.felder ? feldAbstand(o, w) : abstand(o, w); if (d < bd && frei(w, o)) { bd = d; best = o; } }
+          if (best) { ziel = best; w.zielId = best.id; w.wach = true; } }
         if (!ziel && D.aggressiv !== false) { const o = this.naechsterGegner(w, D.aggroReich ?? w.lagerAggro ?? this.karte.AGGRO ?? K.AGGRO, true); if (o && (this.felder ? feldAbstand(o, w.heim) : abstand(o, w.heim)) <= LEINE) { ziel = o; w.zielId = o.id; w.wach = true; this.wecken(w); } }
         if (ziel && D.spezial && w.cdS <= 0 && abstand(w, ziel) <= D.spezial.reich) { w.ladeT = D.spezial.laden; w.ladeX = ziel.x; w.ladeY = ziel.y; w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "laden", id: w.id, x: ziel.x, y: ziel.y, r: D.spezial.radius, t: D.spezial.laden }); }
-        else if (ziel) this.jagen(w, ziel, D.angriff.reich);
+        else if (ziel) this.jagen(w, ziel, this.angVon(w).reich);
         else if (WANDERN > 0 && abstand(w, w.heim) <= WANDERN + 1.5) { /* streifen: ab und zu zu einer neuen Stelle um das Lager, dazwischen stehen bleiben */
           if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * K.HEIM_HEILUNG * DT);
           if (!w.pfad.length) { w.streifT = (w.streifT ?? this.zf() * 3) - DT; if (w.streifT <= 0) { const a = this.zf() * Math.PI * 2, r = this.zf() * WANDERN, p = { x: w.heim.x + Math.cos(a) * r, y: w.heim.y + Math.sin(a) * r };
             if (begehbar(p.x, p.y)) w.pfad = this.wegZu(w, p); w.streifT = 2.5 + this.zf() * 4.5; } } }
         else if (abstand(w, w.heim) > 0.3) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, w.heim); w.neuWeg = 1; } }
-        else if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * (D.boss ? K.HEIM_HEILUNG_BOSS : K.HEIM_HEILUNG) * DT);
+        else if (w.lp < w.max) w.lp = Math.min(w.max, w.lp + w.max * (D.boss ? K.HEIM_HEILUNG_BOSS : K.HEIM_HEILUNG) * DT); }
       } else if (w.bot) this.begleiterZug(w);
       else { // der Held des Spielers: Er läuft nur, wohin gesteuert wird
         const A = this.waffe(w), faehrt = w.rx !== 0 || w.ry !== 0, v = this.tempo(w);
@@ -440,7 +510,7 @@ export class Sim {
       }
       if (this.felder && !w.pfad.length && !inMitte(w) && w.aushol <= 0) w.pfad = [mitte(w)]; /* Feldmodus: wer steht, steht auf einer Feldmitte */
       if (w.pfad.length && w.aushol <= 0) { const F = this.felder; let rest = (F ? this.feldTempo(w) : this.tempo(w)) * DT; // laufen (Wegpunkte; Feldmodus: Schritte, schräg = gerade)
-        while (rest > 1e-9 && w.pfad.length) { const p = w.pfad[0], d = F ? schrittLaenge(w, p) : abstand(w, p); if (d <= rest + 1e-9) { w.x = p.x; w.y = p.y; rest -= d; w.pfad.shift();
+        while (rest > 1e-9 && w.pfad.length) { const p = w.pfad[0]; if (w.sperren && this.gesperrt(w, p) && !this.gesperrt(w, w)) { w.pfad = []; this.sperrMelden(w, p); break; } /* Tür zu (nur für diesen Helden) */ const d = F ? schrittLaenge(w, p) : abstand(w, p); if (d <= rest + 1e-9) { w.x = p.x; w.y = p.y; rest -= d; w.pfad.shift();
             if (F && !w.pfad.length && w.held && !w.bot && (w.rx || w.ry)) { const n = this.richtungsFeld(w); if (n) { w.pfad = [n]; w.blick = Math.atan2(w.ry, w.rx); } } } else { w.blick = Math.atan2(p.y - w.y, p.x - w.x); w.x += (p.x - w.x) / d * rest; w.y += (p.y - w.y) / d * rest; rest = 0; } } }
     }
     if (this.sl && this.sl.offen && this.phase === "lauf") this.schleuse(this.sl);
@@ -454,7 +524,123 @@ export class Sim {
       if (g.knall) { this.ev.push({ a: "knall", x: g.zx, y: g.zy, r: g.knall, farbe: "feuer" }); this.flaeche(von, { x: g.zx, y: g.zy }, g.knall, g.spec, (o) => { if (g.spec.nach === "brand") this.dauerSchaden(o, "brand", K.GLUT.brand, K.GLUT.dauer, von); }); }
       else if (z && !z.tot) { const n = this.treffen(von, z, g.spec); if (n > 0 && !z.tot && g.spec.nach) this.nachTreffer(von, z, g.spec.nach); } }
     this.geschosse = this.geschosse.filter((g) => g.tempo > 0);
+    if (this.wesen.some((w) => w.weg && w.tot)) this.wesen = this.wesen.filter((w) => !(w.weg && w.tot)); /* Gerufene verschwinden nach dem Tod */
   }
+
+  /* ---------- Fliehen (MonsterDef.fliehen, z. B. Banditen-Späher): einmal je Leben zum nächsten Kumpan laufen, dort weiterkämpfen ---------- */
+  /** Der nächste Kumpan (kein Held, nicht fest, greift selbst an, dieselbe Welt), höchstens 20 Felder weit – aus dem eigenen Lager zuerst */
+  private kumpan(w: Wesen): Wesen | null { let best: Wesen | null = null, bd = 20;
+    for (const o of this.freunde(w)) { if (o === w || o.held || o.flucht) continue; const M = MONSTER[o.typ]; if (!M || M.fest || M.zielscheibe || M.aggressiv === false) continue;
+      const d = abstand(w, o) - (w.gruppe && o.gruppe === w.gruppe ? 0.5 : 0); if (d < bd) { bd = d; best = o; } }
+    return best; }
+  /** true: das Wesen flieht gerade (läuft zum Kumpan und greift nicht an) */
+  private fliehen(w: Wesen, D: MonsterDef, ziel: Wesen | undefined): boolean {
+    const nah = (k: Wesen) => (this.felder ? feldAbstand(w, k) : abstand(w, k) - k.r - w.r) <= 1.2;
+    const mitnehmen = (k: Wesen) => { const z = ziel || this.nach(w.zielId); if (z && !z.tot && !k.zielId) { k.zielId = z.id; k.wach = true; } };
+    if (w.flucht) { const k = this.nach(w.flucht);
+      if (!k || k.tot || !this.gleich(w, k)) { w.flucht = 0; return false; }
+      if (nah(k)) { w.flucht = 0; w.pfad = []; mitnehmen(k); this.ev.push({ a: "text", id: k.id, t: "Hilfe!" }); return false; } /* angekommen: der Kumpan kämpft mit */
+      w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, this.felder ? this.zielFeld(w, k, true) : k); w.neuWeg = 0.4; } return true; }
+    if (!D.fliehen || w.geflohen || !ziel || w.lp <= 0 || w.lp / w.max >= D.fliehen) return false;
+    w.geflohen = true; const k = this.kumpan(w); if (!k) return false;
+    if (nah(k)) { mitnehmen(k); return false; }
+    w.flucht = k.id; if (!w.heim0) w.heim0 = { x: w.heim.x, y: w.heim.y }; w.heim = { x: k.heim.x, y: k.heim.y }; /* die Leine gilt jetzt am Lager des Kumpans */
+    w.pfad = []; w.neuWeg = 0; w.aushol = 0; this.ev.push({ a: "text", id: w.id, t: "flieht!" }); return this.fliehen(w, D, ziel); }
+
+  /* ---------- Boss-Baukasten (shared/boss.ts, Daten in shared/bosse.ts): Phasen nach Leben, Ansagen, Helfer, Heilorte ---------- */
+  /** true: der Boss tut gerade etwas Eigenes (eine Ansage beginnt, er läuft zum Heilort oder trinkt) – kein Grundangriff in diesem Schritt */
+  private bossSchritt(w: Wesen, B: BossDef, ziel: Wesen | undefined): boolean {
+    if (!B.phasen.length) return false; const L = w.boss || (w.boss = { phase: 0, angriffe: 0, t: 0, heil: {} });
+    if (!ziel) { if (w.lp >= w.max && (L.phase || L.seit !== undefined)) this.bossZurueck(w); return false; } /* abgeschüttelt und wieder heil: alles von vorn */
+    if (L.seit === undefined) L.seit = this.zeit;
+    const soll = Math.min(B.phasen.length - 1, phaseBei(B, w.lp / w.max));
+    while (L.phase < soll) { L.phase++; const N = B.phasen[L.phase]; this.ev.push(N.text ? { a: "bossphase", id: w.id, nr: L.phase, text: N.text } : { a: "bossphase", id: w.id, nr: L.phase }); if (N.ruf) this.rufen(w, N.ruf); L.angriffe = 0; L.t = 0;
+      if (N.eingraben && N.eingraben > 0) { L.grabBis = this.zeit + N.eingraben; w.pfad = []; w.aushol = 0; this.ev.push({ a: "eingraben", id: w.id, t: N.eingraben }); }
+      if (N.schweben && N.schweben > 0) { L.schwebBis = this.zeit + N.schweben; w.pfad = []; w.aushol = 0; this.ev.push({ a: "schweben", id: w.id, t: N.schweben }); } else L.schwebBis = undefined; }
+    if (L.schwebBis !== undefined && L.schwebBis <= this.zeit) { L.schwebBis = undefined; const T = B.phasen[L.phase].landen; this.ev.push(T ? { a: "landen", id: w.id, text: T } : { a: "landen", id: w.id }); }
+    const P = B.phasen[L.phase]; L.t += DT;
+    for (const [i, H] of (P.heilorte || []).entries()) { const k = L.phase + ":" + i; if ((L.heil[k] || 0) >= (H.mal ?? 1) || w.lp / w.max >= H.unter) continue;
+      const hx = H.x - this.ursprung[0], hy = H.y - this.ursprung[1];
+      if (Math.hypot(w.x - hx, w.y - hy) <= H.r) { L.heil[k] = (L.heil[k] || 0) + 1; w.trinkT = H.dauer ?? 1.5; w.trinkN = H.menge; w.pfad = []; this.ev.push(H.text ? { a: "trinken", id: w.id, t: w.trinkT, text: H.text } : { a: "trinken", id: w.id, t: w.trinkT }); return true; }
+      if (H.hingehen) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, { x: hx, y: hy }); w.neuWeg = 0.5; } return true; } }
+    for (const A of P.ansagen || []) { if (!(A.alle ? L.angriffe >= A.alle : A.sek ? L.t >= A.sek : false)) continue;
+      L.angriffe = 0; L.t = 0; const I = w.instanz ? this.inst.get(w.instanz) : undefined, o = this.ursprung, R = I ? [I.def.feld[0] - o[0], I.def.feld[1] - o[1], I.def.feld[2] - o[0], I.def.feld[3] - o[1]] as [number, number, number, number] : undefined;
+      const t = (A.vorlauf ?? ANSAGE_VORLAUF) * KAMPF_TICK, felder = ansageFelder(A, w.x, w.y, ziel.x, ziel.y, R).filter(([x, y]) => !fels(Math.floor(x), Math.floor(y)) && (!A.deckung || frei(w, { x, y }))); /* Deckung: Windschatten hinter Säulen bleibt frei */
+      w.ansage = { t, felder, a: A }; w.pfad = []; w.aushol = 0; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); this.ev.push({ a: "ansage", id: w.id, name: A.name, felder, t }); return true; }
+    if (this.schwebt(w) || (L.grabBis !== undefined && L.grabBis > this.zeit)) { w.pfad = []; w.blick = Math.atan2(ziel.y - w.y, ziel.x - w.x); return true; } /* schwebt / eingegraben: kein Grundangriff, kein Laufen */
+    if (L.grabBis !== undefined) { L.grabBis = undefined; this.ev.push({ a: "auftauchen", id: w.id, x: w.x, y: w.y }); }
+    return false; }
+  /** Sand-Auftauchen: eingegraben warten, bis ein Held nah ist; dann sein Feld ansagen, auftauchen und treffen */
+  private grabSchritt(w: Wesen, D: MonsterDef): void { const E = D.eingegraben; if (!E) { w.vergraben = false; w.auftauchen = undefined; return; }
+    if (w.auftauchen) { w.auftauchen.t -= DT; if (w.auftauchen.t > 0) return; const A = w.auftauchen; w.auftauchen = undefined; w.vergraben = false; w.x = A.x; w.y = A.y; this.ev.push({ a: "auftauchen", id: w.id, x: w.x, y: w.y }); this.ev.push({ a: "hieb", id: w.id });
+      const mal = this.eigeneWerte ? 1 : STAERKE.schaden, fx = Math.floor(A.x), fy = Math.floor(A.y);
+      for (const o of this.feinde(w)) if (Math.floor(o.x) === fx && Math.floor(o.y) === fy) { this.abziehen(o, Math.round((E.schaden[0] + Math.floor(this.zf() * (E.schaden[1] - E.schaden[0] + 1))) * mal), w); o.ruhe = 0; if (!w.zielId) w.zielId = o.id; }
+      if (!w.zielId) { const o = this.naechsterGegner(w, E.weit + 2); if (o) w.zielId = o.id; } w.wach = true; w.cdA = Math.max(w.cdA, KAMPF_TICK * 2); return; }
+    const o = this.naechsterGegner(w, E.weit, true); if (!o) return; const t = (E.vorlauf ?? ANSAGE_VORLAUF) * KAMPF_TICK, x = Math.floor(o.x) + 0.5, y = Math.floor(o.y) + 0.5;
+    w.auftauchen = { t, x, y }; this.ev.push({ a: "ansage", id: w.id, name: E.name || "Etwas regt sich im Sand", felder: [[x, y]], t }); }
+  /** Stilwechsel: im Kampf reihum die Stile, je sek Sekunden; ohne Ziel und wieder heil zurück zum ersten */
+  private stilSchritt(w: Wesen, D: MonsterDef, ziel: Wesen | undefined): void { const S = D.stile!;
+    if (!ziel) { if (w.stil !== undefined && w.lp >= w.max) { w.stil = undefined; w.stilT = 0; } return; }
+    if (w.stil === undefined) { w.stil = 0; w.stilT = 0; } w.stilT = (w.stilT || 0) + DT; if (w.stilT < S[w.stil].sek) return;
+    w.stilT = 0; w.stil = (w.stil + 1) % S.length; const N = S[w.stil]; w.aushol = 0;
+    const e: Ereignis = { a: "stil", id: w.id, nr: w.stil }; if (N.name) e.name = N.name; if (N.text) e.text = N.text; this.ev.push(e); }
+  /** Die Ansage schlägt zu: jeder Gegner, der noch auf einem der Felder steht, nimmt Schaden (kein Trefferwurf) */
+  private ansageTreffen(w: Wesen): void { const S = w.ansage; w.ansage = undefined; if (!S) return; const A = S.a, [lo, hi] = A.schaden, mal = this.eigeneWerte ? 1 : STAERKE.schaden;
+    const auf = new Set(S.felder.map(([x, y]) => Math.floor(x) + "," + Math.floor(y))); this.ev.push({ a: "hieb", id: w.id });
+    for (const o of this.feinde(w)) if (auf.has(Math.floor(o.x) + "," + Math.floor(o.y))) { this.abziehen(o, Math.round((lo + Math.floor(this.zf() * (hi - lo + 1))) * mal), w); o.ruhe = 0; }
+    w.cdA = Math.max(w.cdA, KAMPF_TICK * 2); }
+  /** Helfer rufen: n Gegner neben dem Boss, mit seinem Ziel; sie kehren nicht wieder */
+  private rufen(w: Wesen, R: Ruf): void { if (!MONSTER[R.art]) return; const z = this.nach(w.zielId);
+    for (let i = 0; i < R.n; i++) { const a = (i / Math.max(1, R.n)) * Math.PI * 2 + this.zf(), r = R.weite ?? 2, p0 = naechstFrei({ x: w.x + Math.cos(a) * r, y: w.y + Math.sin(a) * r }), p = this.felder ? mitte(p0) : p0;
+      const m = this.neu(false, R.art, w.team, p, true, w.gruppe); if (this.eigeneWerte) m.lp = m.max = MONSTER[R.art].lp;
+      Object.assign(m, { helfer: w.id, instanz: w.instanz, heim: { x: w.heim.x, y: w.heim.y }, wach: true, zielId: z && !z.tot ? z.id : 0, lagerAggro: w.lagerAggro, lagerLeine: w.lagerLeine, lagerWandern: 0, lagerStufe: w.lagerStufe });
+      this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); }
+    if (R.text) this.ev.push({ a: "text", id: w.id, t: R.text }); }
+  /** Der Boss ist abgeschüttelt und wieder heil: Phasen, Heilorte und Zeit von vorn, seine Helfer gehen */
+  private bossZurueck(w: Wesen): void { w.boss = undefined; for (const o of this.wesen) if (o.helfer === w.id && !o.tot) { o.tot = true; o.weg = true; this.ev.push({ a: "tot", id: o.id }); } }
+
+  /* ---------- Instanzen (shared/boss.ts): eine Kopie eines Raums je Spieler ---------- */
+  /** Einen Helden in eine Kopie setzen (key) oder zurück in die gemeinsame Welt (undefined). def: der Raum – beim ersten Betreten entstehen seine Gegner.
+   *  Der Server entscheidet, wer in welcher Kopie steht (Raum + Schalter); hier gilt nur: verschiedene Kopien sehen und treffen einander nicht. */
+  instanzSetzen(id: number, key: string | undefined, def?: InstanzDef): void { const h = this.nach(id); if (!h || !h.held) return; key = key || undefined;
+    if (key && def && !this.inst.has(key)) { this.inst.set(key, { def, welle: 0, da: false, pause: 0, leer: 0, fertig: !(def.wellen && def.wellen.length) }); for (const g of def.gegner || []) this.instanzGegner(key, g); }
+    if (h.instanz === key) return; h.instanz = key; h.zielId = 0; h.kampfMit = 0; h.kampfBis = 0;
+    for (const o of this.wesen) { if (o.zielId === h.id && !this.gleich(o, h)) { o.zielId = 0; o.pfad = []; } if (o.spottId === h.id) { o.spottId = 0; o.spottT = 0; } if (o.kampfMit === h.id) { o.kampfMit = 0; o.kampfBis = 0; } }
+    this.geschosse = this.geschosse.filter((g) => g.zielId !== h.id && g.von !== h.id); }
+  /** Die Kopie, in der ein Held steht (undefined: die gemeinsame Welt) */
+  instanzVon(id: number): string | undefined { const h = this.nach(id); return h ? h.instanz : undefined; }
+  /** Eine Kopie sofort abbauen (Instanz mit Eintritt: der Versuch ist vorbei); ihre Helden stehen wieder in der gemeinsamen Welt */
+  instanzWeg(key: string): void { if (!this.inst.has(key)) return; this.inst.delete(key); for (const h of this.wesen) if (h.held && h.instanz === key) this.instanzSetzen(h.id, undefined);
+    this.wesen = this.wesen.filter((w) => w.held || w.instanz !== key); }
+  /** Gibt es diese Kopie (noch)? */
+  instanzDa(key: string): boolean { return this.inst.has(key); }
+  private instanzGegner(key: string, g: InstanzGegner, welle?: number): Wesen | null { if (!MONSTER[g.art]) return null;
+    const p0 = { x: g.x - this.ursprung[0], y: g.y - this.ursprung[1] }, p = this.felder ? mitte(p0) : p0, m = this.neu(false, g.art, 1, p, true, 0);
+    if (this.eigeneWerte) m.lp = m.max = MONSTER[g.art].lp; m.instanz = key; m.heim = { x: p.x, y: p.y }; if (welle !== undefined) m.welle = welle;
+    this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); return m; }
+  /** Je Kopie: Wellen nachschicken (die nächste, wenn die vorige gefallen ist), leere Kopien nach INSTANZ_LEER Sekunden abbauen */
+  private instanzSchritt(): void {
+    for (const [key, I] of [...this.inst]) { const helden = this.wesen.filter((w) => w.held && w.instanz === key);
+      if (!helden.length) { I.leer += DT; if (I.leer >= INSTANZ_LEER) { this.wesen = this.wesen.filter((w) => w.held || w.instanz !== key); this.inst.delete(key); } continue; }
+      if (I.def.eintritt && helden.every((h) => h.tot)) { this.instanzWeg(key); continue; } /* Eintritt je Versuch: wer darin fällt, beginnt von vorn (mit neuem Siegel) */
+      I.leer = 0; const W = I.def.wellen; if (!W || I.fertig) continue;
+      if (I.da) { if (this.wesen.some((w) => !w.held && !w.tot && w.instanz === key && w.welle === I.welle)) continue;
+        I.da = false; I.welle++; I.fertig = I.welle >= W.length; I.pause = I.def.pause ?? 3; this.ev.push({ a: "welle", instanz: key, nr: I.welle, fertig: I.fertig }); continue; }
+      I.pause -= DT; if (I.pause > 0) continue; I.da = true; const ziel = helden.find((h) => !h.tot);
+      for (const g of W[I.welle]) { const m = this.instanzGegner(key, g, I.welle); if (m && ziel) { m.wach = true; m.zielId = ziel.id; } } } }
+  /** Der Zustand für einen Spieler: ohne die Wesen anderer Kopien (Instanzen), ihre Geschosse und Ereignisse */
+  sichtFuer(z: Zustand, id: number): Zustand { const ich = this.ichVon(id); if (!this.inst.size && !this.wesen.some((w) => w.instanz)) return { ...z, ich };
+    const k = this.instanzVon(id) || "", fremd = new Set(this.wesen.filter((w) => (w.instanz || "") !== k).map((w) => w.id)), fremdG = new Set(this.geschosse.filter((g) => fremd.has(g.von)).map((g) => g.id));
+    return { ...z, ich, w: z.w.filter((e) => !fremd.has(e[0])), g: z.g.filter((g) => !fremdG.has(g[0])),
+      ev: z.ev.filter((e) => !("id" in e) || !fremd.has((e as { id: number }).id)) }; }
+
+  /* ---------- Türen (shared/boss.ts): je Held gesperrte Felder ---------- */
+  /** Die für diesen Helden geschlossenen Türen (Weltfelder x0, y0, x1, y1, Ecken eingeschlossen) mit ihrem Text – setzt der Server nach dem Queststand */
+  sperrenSetzen(id: number, tueren: { feld: [number, number, number, number]; zu: string }[]): void { const h = this.nach(id); if (!h || !h.held) return; const [ox, oy] = this.ursprung;
+    h.sperren = tueren.length ? tueren.map((t) => ({ f: [t.feld[0] - ox, t.feld[1] - oy, t.feld[2] - ox, t.feld[3] - oy], t: t.zu })) : undefined; }
+  private sperreBei(w: Wesen, p: Punkt): { f: number[]; t: string } | undefined { const i = Math.floor(p.x), j = Math.floor(p.y); return (w.sperren || []).find(({ f }) => i >= f[0] && i <= f[2] && j >= f[1] && j <= f[3]); }
+  private gesperrt(w: Wesen, p: Punkt): boolean { return Boolean(this.sperreBei(w, p)); }
+  private sperrMelden(w: Wesen, p: Punkt): void { const S = this.sperreBei(w, p); if (!S || !S.t || this.zeit - (w.sperrZ ?? -99) < 3) return; w.sperrZ = this.zeit; this.ev.push({ a: "text", id: w.id, t: S.t }); }
 
   /** Offene Schleuse: Gegner kriechen in Wellen aus dem Wasser und sammeln sich am Hebel. Wer drei Sekunden ungestört am Hebel steht, schließt sie; ein Treffer fängt von vorn an. */
   private schleuse(sl: SchleuseStand & { offen: boolean; fort: number; warte: number; raus: number }): void {
@@ -493,7 +679,7 @@ export class Sim {
     const r = (v: number) => Math.round(v * 100) / 100, h = this.ich, ev = this.ev; this.ev = [];
     const bits = (w: Wesen) => (w.bollwerk > 0 ? BIT.bollwerk : 0) | (w.betaeubt > 0 ? BIT.betaeubt : 0) | (w.langsamT > 0 ? BIT.langsam : 0) | (w.dauer.length ? BIT.dauer : 0) | (w.malT > 0 ? BIT.mal : 0) | (w.held && HELDEN[w.typ].modi[w.modus].schild ? BIT.schild : 0) | (w.aushol > 0 ? BIT.aushol : 0) | (w.schutz > 0 ? BIT.schutz : 0);
     return { tick: this.tick, phase: this.phase, zeit: Math.round(this.zeit * 10) / 10, splitter: this.splitter, besiegt: this.besiegt, monster: this.monsterZahl, b: this.beute.map((q) => [q.id, q.x, q.y, q.n]),
-      w: this.wesen.filter((w) => w.held || !w.tot).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
+      w: this.wesen.filter((w) => w.held || (!w.tot && !w.vergraben)).map((w) => [w.id, w.held ? 1 : 0, w.typ, w.team, r(w.x), r(w.y), r(w.blick), Math.round(w.lp), w.max, bits(w), w.tot ? 1 : 0, Math.round(w.schutz), w.modus]),
       g: this.geschosse.map((g) => [g.id, r(g.x), r(g.y), g.art]), ev, ich: this.ichVon(h.id),
       pr: this.karte.PROBE ? this.probe : undefined,
       sl: this.sl ? [r(this.sl.x), r(this.sl.y), this.sl.offen ? 1 : 0, r(this.sl.fort)] : undefined,
