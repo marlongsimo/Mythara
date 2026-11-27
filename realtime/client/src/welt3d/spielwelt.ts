@@ -101,9 +101,9 @@ export function tatText(t: string): string { let m = /^Mit (.+) sprechen$/.exec(
   m = /^(.+) (fällen|abbauen|benutzen|pflücken|untersuchen|öffnen|betreten|lesen|aufheben)$/.exec(t); if (m) return m[2].charAt(0).toUpperCase() + m[2].slice(1) + ": " + m[1]; return t; }
 /** Oben mittig kurz zeigen, was gerade gemacht wird (wie der Aktionstext in OSRS) */
 let tatUhr = 0;
-export function tatZeigen(text: string): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
+export function tatZeigen(text: string, lv?: { text: string; farbe: string }): void { if (!text || typeof document === "undefined") return; let el = document.getElementById("ez-tat");
   if (!el) { el = document.createElement("div"); el.id = "ez-tat"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = text; el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
+  el.textContent = text; if (lv) { const b = document.createElement("b"); b.className = "lvfarbe"; b.textContent = " " + lv.text; b.style.color = lv.farbe; el.appendChild(b); } /* #98: Gegner-Level in der Farbe des Abstands */ el.classList.add("an"); clearTimeout(tatUhr); tatUhr = window.setTimeout(() => el!.classList.remove("an"), 2200); }
 export class Spielwelt3D implements WeltKern {
   motor = new Welt3D(); index!: WeltIndex; raster = new WeltRaster(); daten = new Map<string, ChunkDaten | "holt">(); gueltig = new Set<string>();
   held = "schildwaechter"; ort = { x: 0, y: 0 }; rx = 0; ry = 0; laeuft = false; pfad: { x: number; y: number }[] = []; tasten: Record<string, boolean> = {};
@@ -229,7 +229,7 @@ export class Spielwelt3D implements WeltKern {
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
         const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); const v = this.vorFigur(stelle, () => {}); if (v.da()) { v.tat(); return; } this.gehe(v.x, v.y); this.vorhaben = this.pfad.length ? v : null; return; } /* Quest-NPC: kurz = nur hingehen, ein Feld davor, und zu ihm drehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
-        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angreifen: ${g.name}`); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
+        { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angriff: ${g.name}`, g.stufe ? { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } : undefined); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
     /* PC: Rechtsklick = Aktionsmenü – aber nicht, wenn mit der rechten Maustaste die Kamera gedreht wurde */
@@ -391,9 +391,9 @@ export class Spielwelt3D implements WeltKern {
       { text: "Untersuchen", sym: "🔍", tat: () => anschluss3D.spielerKarteZeigen(this, d) },
       ...(d.n && d.n !== ichName() ? [{ text: "Folgen", sym: "👣", tat: () => this.folgen(d.n) }, ...(konto ? [{ text: "Handeln", sym: "🤝", tat: () => this.handeln(d.n) }] : [])] : [])] });
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
-        gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
+        gr.push({ kopf: t.name, lv: { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angriff: ${t.name}`, { text: `Lvl ${t.stufe}`, farbe: levelFarbe(t.stufe - eigenesLv()) }); anschluss3D.kampfZiel(t.id); } }, /* den Gegner selbst, nicht die Bildschirmstelle – er kann inzwischen weitergelaufen sein (#109) */
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
-      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `(Level ${g.stufe})`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `Lvl ${g.stufe}`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);
