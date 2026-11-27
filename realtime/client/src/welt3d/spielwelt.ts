@@ -237,7 +237,8 @@ export class Spielwelt3D implements WeltKern {
     el.addEventListener("pointerdown", (e) => { if (e.button === 2) rechts = { x: e.clientX, y: e.clientY, weit: 0 }; });
     el.addEventListener("pointermove", (e) => { if (rechts) rechts.weit = Math.max(rechts.weit, Math.hypot(e.clientX - rechts.x, e.clientY - rechts.y)); });
     el.addEventListener("pointerup", (e) => { if (e.button === 2 && rechts) { if (rechts.weit > 8) menueZu(); rechts = null; } });
-    el.addEventListener("contextmenu", (e) => { e.preventDefault(); if (!this.gesperrt && !(rechts && rechts.weit > 8)) this.menueBei(e.clientX, e.clientY); });
+    el.addEventListener("contextmenu", (e) => { e.preventDefault(); const pt = (e as PointerEvent).pointerType; if (pt === "touch" || pt === "pen") return; /* #136: Touch hat eigenes langes Drücken (oben) – das späte contextmenu öffnete das Menü nach dem nächsten Tipp wieder */
+      if (!this.gesperrt && !(rechts && rechts.weit > 8)) this.menueBei(e.clientX, e.clientY); });
     el.addEventListener("pointerup", los); el.addEventListener("pointercancel", los);
     $("#ez-dorf-knopf").onclick = () => { if (this.nah && !this.gesperrt) this.nah.tat(); };
     /* Antippen auf der Minikarte: dorthin gehen (die Karte zeigt die Region, in der man steht; daneben die Nachbarregionen) */
