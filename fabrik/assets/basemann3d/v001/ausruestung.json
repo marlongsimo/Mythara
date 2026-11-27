@@ -883,5 +883,7 @@
   },
   "beine_eng": 0.15,
   "kampftempo": 0.5,
-  "gangtempo": 0.5
+  "gangtempo": 0.5,
+  "schild_lage": 0.85,
+  "helm_hinweis": "Helme der Helden sitzen 3 cm höher als von helm_anpassen.py eingepasst (fabrik/teil_verschieben.py hoch=0.03, Wunsch Nutzer) – bei neuem Einpassen oben/unten um 0.03 erhöhen"
 }
