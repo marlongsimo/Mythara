@@ -110,7 +110,7 @@ export const HELDEN: Record<string, HeldDef> = {
 };
 export const HELDENREIHE = ["schildwaechter", "elementarist", "lichtbringer", "assassine", "kopfgeldjaeger"];
 
-export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (Anzeige; die Werte stehen fest am Gegner) */ stufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; boss?: boolean;
+export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (Anzeige; die Werte stehen fest am Gegner) */ stufe?: number; bild: string; figur?: string; fuss?: [number, number]; gross?: number; lauf?: string; laufMass?: [number, number, number]; hieb?: string; hiebMass?: [number, number, number]; ruhe?: string; ruheMass?: [number, number, number]; hoehe?: number; links?: boolean; /* links: die Vorlagen blicken nach links */ lp: number; tempo: number; angriffswert: Werte; abwehr: Werte; r: number; untot?: boolean; anfaellig?: "wucht"; /** #160 (Hüter der Hochlande): Schaden je Angriffsart mal (stark: 0,5, schwach: 1,5) */ widerstand?: Partial<Record<Schadensart, number>>; boss?: boolean;
   angriff: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number };
   /* Spezialangriff auf eine Fläche: Der Gegner hält inne und lädt (laden Sekunden), die Fläche ist am Boden zu sehen; dann trifft er jeden, der noch darin steht. alle: Pause bis zum nächsten Mal. */
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
@@ -138,7 +138,7 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /** sonst friedlich, aber gegen Helden, für die dieser Schalter an ist (QuestDef.schalter, setzt der Server), im Umkreis von weit Feldern aggressiv – z. B. Mooshocker nach ihrer Quest (#81) */ aggressivNach?: { schalter: string; weit: number }; /** greift nur Helden unter diesem Heldenlevel von selbst an (stärkere lässt er in Ruhe, bis sie angreifen) */ aggroBisLevel?: number;
   /** Drop-Tabelle (offene Welt) als Rolls: jeder Roll wählt höchstens einen Eintrag (Chancen in Prozent, zusammen ≤ 100; der Rest ist „nichts“).
    *  anzahl [min, max] (Standard 1). nur: der Roll zählt nur, wenn der Bezwinger diese Bedingung erfüllt (z. B. „einsteigerquest“ begonnen) – sonst fällt nichts. */
-  drops?: { nur?: string; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
+  drops?: { nur?: string; /** #160: nur in der starken Fassung eines Bosses (nicht in der Quest-Kopie) */ stark?: boolean; wurf: { g: string; chance: number; anzahl?: [number, number] }[] }[];
   /** Kampfregeln v3 (OSRS-Rechnung): die Skill-Level der Kampfart (Nahkampf: Geschick und Stärke; Fernkampf; Magie), Defense- und Magie-Level und Verteidigungsboni gegen alle drei Angriffsarten.
    *  Würfe und Max Hit rechnet kampfwerte.ts gegnerWerte() wie OSRS für Monster (Level + 9). Angriffstakt in Ticks (1 Tick = 0,5 s). */
   v2?: GegnerV3;
@@ -360,7 +360,7 @@ Object.assign(MONSTER, {
     info: "Eine gerüstete Steinfigur mit dem Wappen der Wacht auf der Brust. Wer den Turm betritt, wird gestellt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [25, 45] }] }, { wurf: [{ g: "wachtstein", chance: 30 }] }, { wurf: [{ g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
   /** Grünlicht: Stufe 60, Irrlicht auf dem Turmdach, heilt Turmwächter in der Nähe */
-  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 90, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
+  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 60 /* #150: 90 → 60, auf dem Dach mit dem Turmwächter zusammen (D2, Heldenlevel 45) */, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
     angriff: { name: "Grünes Feuer", art: "magie", schaden: [1, 10], takt: 2.5, reich: 5, aushol: 0 }, heiler: { alle: 6, anteil: 0.15, radius: 8, nur: "turmwaechter" },
     v2: { magie: 95, geschick: 30, staerke: 10, defense: 60, ticks: 5, abwehr: { nah: 10, fern: -10, magie: 40 } },
     info: "Ein grünes Licht, das schwebt und flüstert. Wo es ist, stehen die Turmwächter wieder auf.",
@@ -602,6 +602,36 @@ Object.assign(MONSTER, {
     v2: { staerke: 110, geschick: 45, defense: 65, magie: 5, ticks: 6, abwehr: { nah: 20, fern: 15, magie: -10 } },
     info: "Ein Troll aus Stein und Moos. Wer ihm zu lange zusieht, bekommt einen Felsbrocken.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [25, 45] }] }, { wurf: [{ g: "erz_splittereisen", chance: 20, anzahl: [1, 3] }, { g: "erz_ureisen", chance: 6 }] }, { wurf: [{ g: "@selten", chance: 100 / 80 }, { g: "@episch", chance: 100 / 600 }] }] },
+  /* ───── #160 (Block H): die drei Hüter der Hochlande (Bosse nach #116, Mechaniken in shared/bosse.ts) und ihre Helfer – Dreieck aus stark und schwach (widerstand).
+     Werte der starken Fassung (Stufe 72); die Quest-Fassung (H4) ist schwächer (QUEST_MILDE in bosse.ts). Rüstung der Stufe 70 nur in der starken Fassung: der letzte Wurf (stark) – insgesamt 1 : 75 je Sieg, welches Teil gleich verteilt (Entscheidung des Nutzers, #160). Modelle vorerst Platzhalter (#159). ───── */
+  /** Grumhold: uralter Bergtroll in der Trollhalle – Steinhaut (Nahkampf −50 %), schwach gegen Magie; Stampf-Ring, Felsbrocken, bei halbem Leben zwei Felsbrocken-Wächter, die ihn heilen */
+  grumhold: { name: "Grumhold", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 230, lp: 450, tempo: 2.4, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 40 }, r: 1.0, boss: true, wiederkehr: 600,
+    angriff: { name: "Keulenhieb", art: "nah", schaden: [1, 18], takt: 3, reich: 2.2, aushol: 0 }, widerstand: { nah: 0.5, magie: 1.5 },
+    v2: { staerke: 130, geschick: 85, defense: 82, magie: 20, staerkeBonus: 35, ticks: 6, abwehr: { nah: 45, fern: 35, magie: -10 } },
+    info: "Der älteste Troll des Erzbergs, mit Steinplatten statt Haut. Klingen prallen an ihm ab – Zauber nicht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "erz_ureisen", chance: 40, anzahl: [2, 5] }, { g: "erz_splittereisen", chance: 60, anzahl: [3, 6] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "steinvogt_helm", chance: 100 / 75 / 4 }, { g: "steinvogt_platte", chance: 100 / 75 / 4 }, { g: "steinvogt_beinschienen", chance: 100 / 75 / 4 }, { g: "steinvogt_turmschild", chance: 100 / 75 / 4 }] }] },
+  /** Felsbrocken-Wächter: stehen still, werfen Geröll und heilen Grumhold, bis man sie zerschlägt */
+  felsbrocken_waechter: { name: "Felsbrocken-Wächter", stufe: 64, bild: "img/echtzeit/bandit.webp", hoehe: 120, lp: 90, tempo: 0, angriffswert: { nah: 0, fern: 50, magie: 0 }, abwehr: { nah: 50, fern: 50, magie: 20 }, r: 0.6,
+    angriff: { name: "Geröll", art: "fern", schaden: [1, 8], takt: 3, reich: 8, aushol: 0 }, heiler: { alle: 4, anteil: 0.03, radius: 14, nur: "grumhold" },
+    v2: { fernkampf: 70, defense: 60, magie: 10, ticks: 6, abwehr: { nah: 30, fern: 30, magie: -20 } },
+    info: "Ein Felsbrocken mit glühenden Adern. Solange er steht, wachsen Grumhold die Platten nach.", drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [10, 20] }] }] },
+  /** Die Sturmschwinge: Riesenadler auf dem Grauhorn – Wind lenkt Zauber ab (Magie −50 %), schwach gegen Fernkampf; kreist außer Nahkampf-Reichweite, Sturzflug, danach 4 s am Boden, Sturmböen schieben */
+  sturmschwinge: { name: "Die Sturmschwinge", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 400, tempo: 4.5, angriffswert: { nah: 72, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 55, magie: 75 }, r: 0.9, boss: true, wiederkehr: 600,
+    angriff: { name: "Krallen", art: "nah", schaden: [1, 16], takt: 2.4, reich: 1.6, aushol: 0 }, widerstand: { magie: 0.5, fern: 1.5 },
+    v2: { geschick: 90, staerke: 115, defense: 72, magie: 40, staerkeBonus: 30, ticks: 4, abwehr: { nah: 30, fern: -5, magie: 45 } },
+    info: "Ein Adler, so groß wie eine Hütte. Wer auf dem Grauhorn steht, sieht zuerst ihren Schatten.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "federn", chance: 100, anzahl: [10, 20] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "sturmfeder_haube", chance: 100 / 75 / 3 }, { g: "sturmfeder_wams", chance: 100 / 75 / 3 }, { g: "sturmfeder_hose", chance: 100 / 75 / 3 }] }] },
+  /** Die Frostwitwe: Eismagierin in der Eishöhle am Hochpass – Eiswand (Fernkampf −50 %), schwach gegen Nahkampf; Eisfelder (verlangsamen, Erstarren), Eissplitter-Wächter, Frostnova */
+  frostwitwe: { name: "Die Frostwitwe", stufe: 72, bild: "img/echtzeit/bandit.webp", hoehe: 150, lp: 380, tempo: 2.8, angriffswert: { nah: 0, fern: 0, magie: 75 }, abwehr: { nah: 55, fern: 80, magie: 80 }, r: 0.6, boss: true, wiederkehr: 600,
+    angriff: { name: "Eislanze", art: "magie", schaden: [1, 16], takt: 3, reich: 6, aushol: 0 }, widerstand: { fern: 0.5, nah: 1.5 },
+    v2: { magie: 120, defense: 70, staerkeBonus: 30, ticks: 5, abwehr: { nah: -10, fern: 50, magie: 50 } },
+    info: "Sie wartet seit dem letzten Winter, der nie zu Ende ging. Pfeile zerspringen an ihrer Eiswand – eine Klinge nicht.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [400, 800] }] }, { wurf: [{ g: "seelenlicht", chance: 80, anzahl: [3, 8] }] }, { wurf: [{ g: "@episch", chance: 100 / 20 }, { g: "@legendaer", chance: 100 / 120 }] }, { stark: true, wurf: [{ g: "frostschleier_kapuze", chance: 100 / 75 / 3 }, { g: "frostschleier_robe", chance: 100 / 75 / 3 }, { g: "frostschleier_rock", chance: 100 / 75 / 3 }] }] },
+  /** Eissplitter-Wächter: kleine Eisfiguren, die die Frostwitwe ruft */
+  eissplitter_waechter: { name: "Eissplitter-Wächter", stufe: 62, bild: "img/echtzeit/bandit.webp", hoehe: 110, lp: 70, tempo: 2.4, angriffswert: { nah: 55, fern: 0, magie: 0 }, abwehr: { nah: 50, fern: 50, magie: 40 }, r: 0.5,
+    angriff: { name: "Eissplitter", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.5, aushol: 0 },
+    v2: { geschick: 70, staerke: 85, defense: 60, ticks: 4, abwehr: { nah: 20, fern: 20, magie: 0 } },
+    info: "Ein Splitter Eis mit Armen. Er zerspringt, wenn man fest genug zuschlägt.", drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [8, 16] }] }] },
   tundraelch: { name: "Tundraelch", stufe: 62, bild: "img/echtzeit/bandit.webp", hoehe: 170, lp: 170, tempo: 3.8, angriffswert: { nah: 62, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 50, magie: 40 }, r: 0.7, aggressiv: false,
     angriff: { name: "Geweih", art: "nah", schaden: [1, 14], takt: 2.6, reich: 1.8, aushol: 0 },
     v2: { staerke: 108, geschick: 60, defense: 62, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } },

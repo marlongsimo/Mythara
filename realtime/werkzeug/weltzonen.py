@@ -27,7 +27,7 @@ BESONDERS = {
     "tempel_kammer": {"leine": 14, "wandern": 0, "mehrkampf": [[11360, 9600, 11391, 9631]], "lager": [("sandmutter", 11376, 9612)]},
     "wrack_kajuete": {"leine": 14, "wandern": 0, "mehrkampf": [[11488, 9600, 11519, 9631]], "lager": [("wrackkapitaen", 11504, 9614)]},
     # #147 (Welt c51186c7): das Erzberg-Bergwerk unter den Hochlanden (Untergrund) – Stollen, Trollhalle, Urkammer; vorerst ohne Gegner und ohne Boss (die Trollhalle für den Mini-Boss später)
-    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "lager": []},
+    "hochlande_bergwerk": {"leine": 10, "wandern": 2, "mehrkampf": [[11595, 9602, 11618, 9624]], "lager": []},  # #160: Trollhalle (Grumhold mit Felsbrocken-Wächtern) als Mehrkampf
     # Phase 10 (#92): Klippenhöhlen (Untergrund, Welt #82) – Strandräuber im Schmugglerversteck, Krabben im Gezeitenbecken; der Wrackkapitän in der Kajüte (Instanz wrack_kajuete)
     "klippenhoehlen": {"leine": 10, "wandern": 2,
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),
@@ -43,8 +43,11 @@ BESONDERS = {
     "fl_216_211": {"leine": 12, "wandern": 3,
                    "lager": [("sandkriecher", 7045, 6856), ("sandkriecher", 7043, 6854), ("glutskorpion", 7045, 6854), ("glutskorpion", 7047, 6854)]},
     "fl_216_198": {"leine": 12, "wandern": 3,
-                   "lager": [("karawanenraeuber_saebel", 7209, 6728), ("karawanenraeuber_saebel", 7207, 6726), ("karawanenraeuber_bogen", 7209, 6726), ("karawanenraeuber_bogen", 7211, 6726),
-                             ("glutskorpion", 7330, 6630), ("glutskorpion", 7328, 6628), ("glutskorpion", 7330, 6628)]},
+                   "lager": [("karawanenraeuber_saebel", 7209, 6728), ("karawanenraeuber_saebel", 7207, 6726), ("karawanenraeuber_bogen", 7209, 6726), ("karawanenraeuber_bogen", 7211, 6726)]},
+    # #155: die Salzpfanne liegt seit dem Neuzuschnitt der Welt in der Kachel fl_228_198 (vorher fl_216_198) – die Glutskorpione für F2 („Fünf Glutskorpione vertreiben“,
+    # SALZPFANNE.skorpione 7330|6646 in shared/quest_f_orte.ts) stehen daher hier, südlich der Salzbecken
+    "fl_228_198": {"leine": 12, "wandern": 3,
+                   "lager": [("glutskorpion", 7330, 6648), ("glutskorpion", 7327, 6650), ("glutskorpion", 7333, 6650), ("glutskorpion", 7325, 6647), ("glutskorpion", 7335, 6647)]},
     # Phase 9 (#86, F3): der versandete Tempel (Untergrund, Welt #79) – Glutgeister und Sandkriecher; die Sandmutter in ihrer Kammer (Instanz tempel_kammer)
     "tempel": {"leine": 10, "wandern": 2, "lager": [("glutgeist", 11294, 9622), ("sandkriecher", 11292, 9620), ("glutgeist", 11328, 9618), ("glutgeist", 11326, 9616), ("sandkriecher", 11312, 9640)]},
     # Phase 8 (#58): die Fahlen Weiten (Festland-Kacheln der Welt #50) – Heidewölfe in der offenen Heide, der Rudelführer mit Rudel (E1),
@@ -68,7 +71,8 @@ BESONDERS = {
     "turm_ebene1": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10896, 9612), ("turmwaechter", 10894, 9610)]},
     "turm_ebene2": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10928, 9612), ("turmwaechter", 10926, 9610)]},
     "turm_ebene3": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10960, 9612)]},
-    "turm_dach": {"leine": 10, "wandern": 1, "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
+    # #150 (D2): auf dem Dach Mehrkampf – sonst bindet der Turmwächter den Helden, und das Grünlicht, das ihn heilt, ist nicht anzugreifen („Kämpft schon mit jemand anderem“)
+    "turm_dach": {"leine": 10, "wandern": 1, "mehrkampf": [[10976, 9600, 11007, 9631]], "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
     # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
     # dazu Phase 4 (#15): Banditenlager am Moorrand im Norden (Späher, Schläger, Armbrustschütze) – Mehrkampf, damit ein fliehender Späher Hilfe bekommt
     "aschenwerth": {"leine": 12, "wandern": 2, "mehrkampf": [[6200, 6600, 6224, 6620]],

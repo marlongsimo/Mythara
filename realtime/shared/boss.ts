@@ -33,7 +33,10 @@
 import type { Schadensart } from "./config";
 
 /** Welche Felder eine Ansage trifft */
-export type AnsageFelder = "rundum" | "ziel" | "raum" | [number, number][];
+export type AnsageFelder = "rundum" | "ziel" | "raum" | "ring" | [number, number][];
+/** #160: was eine Ansage bei jedem Getroffenen außer dem Schaden tut */
+export interface AnsageWirkung { /** so viele Felder vom Boss weg schieben (Sturmböe) */ schieben?: number; /** verlangsamen: [Anteil, Sekunden] (Eisfeld) */ langsam?: [number, number];
+  /** wer schon verlangsamt ist, erstarrt so viele Sekunden (kann nicht laufen und nicht angreifen) */ erstarren?: number }
 export interface Ansage {
   name: string;
   /** nach so vielen Grundangriffen des Bosses … */ alle?: number;
@@ -43,6 +46,8 @@ export interface Ansage {
   /** Schaden je Getroffenem (von–bis, kein Trefferwurf: wer stehen bleibt, wird getroffen) */ schaden: [number, number];
   art?: Schadensart;
   /** Deckung: Felder, die vom Boss aus hinter Fels oder Säule liegen, bleiben frei (Windschatten) */ deckung?: boolean;
+  /** #160: Wirkung auf die Getroffenen */ wirkung?: AnsageWirkung;
+  /** #160: nach dieser Ansage landet ein fliegender Boss (BossPhase.flug) für so viele Sekunden (Sturzflug: 4 s am Boden) */ landen?: number;
 }
 export interface Ruf { /** Gegnerart (MONSTER) */ art: string; n: number; /** Abstand zum Boss in Feldern (Standard 2) */ weite?: number; text?: string }
 export interface Heilort { /** Weltfelder */ x: number; y: number; r: number; /** Anteil des vollen Lebens */ menge: number; /** nur unter diesem Anteil des Lebens */ unter: number;
@@ -51,6 +56,7 @@ export interface Heilort { /** Weltfelder */ x: number; y: number; r: number; /*
 export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erste Phase: 1) */ ab: number; text?: string; ansagen?: Ansage[]; ruf?: Ruf; heilorte?: Heilort[];
   /** Schweben: so viele Sekunden ab Eintritt in die Phase für Nahkampf unerreichbar (schlägt selbst nicht zu) */ schweben?: number; /** Text beim Landen */ landen?: string;
   /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number;
+  /** #160 Flug (Sturmschwinge): der Boss kreist für Nahkampf unerreichbar (wie schweben), bis eine Ansage mit landen ihn landen lässt; danach steigt er wieder auf */ flug?: boolean;
   /** Eingraben (#102, Sandmutter): so viele Sekunden ab Eintritt in die Phase für alles unangreifbar, dann taucht er wieder auf (Ansagen nach sek laufen weiter) */ eingraben?: number }
 export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[] }
 
@@ -65,10 +71,10 @@ export interface InstanzDef { id: string; name: string;
   /** Text beim Betreten der Kopie (Chat) */ text?: string;
   /** Eintritt: dieser Gegenstand wird je Versuch verbraucht (Federsiegel); ohne ihn entsteht keine Kopie */ eintritt?: string; /** Text, wenn er fehlt */ ohne?: string;
   /** #116: Schalter nach der Quest – dann der Boss in der stärkeren Fassung, wählbar öffentlich (offene Welt, kein Eintritt) oder eigene Instanz (allein) */ danach?: string;
-  /** #116: Stärke der Boss-Gegner in der Quest-Kopie (Anteil von Leben und Schaden, Standard QUEST_STAERKE) */ questStaerke?: { leben: number; schaden: number };
+  /** #116: Stärke der Boss-Gegner in der Quest-Kopie (Anteil von Leben und Schaden, Standard QUEST_STAERKE) */ questStaerke?: { leben: number; schaden: number; /** #160: Abwehr mal (Trefferwurf gegen den Boss; Standard 1) */ abwehr?: number };
   /** #116, später: so viele Spieler dürfen in eine Kopie (vorerst immer 1) */ gruppe?: number }
 /** #116: In der Quest kämpft man den Boss allein und gegen eine schwächere Fassung */
-export const QUEST_STAERKE = { leben: 0.7, schaden: 0.85 };
+export const QUEST_STAERKE: { leben: number; schaden: number; abwehr?: number } = { leben: 0.7, schaden: 0.85 };
 /** #116: Fassung einer Kopie – quest (allein, schwächer) oder stark (nach der Quest, eigene Instanz, normale Werte) */
 export type BossFassung = "quest" | "stark" | "leer";
 /** #116: Wahl am Eingang nach der Quest (Standard öffentlich) */
@@ -100,6 +106,7 @@ export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: 
   const w = Math.max(0, Math.floor(A.weite ?? 1)), bi = Math.floor(bx), bj = Math.floor(by), aus: [number, number][] = [];
   if (A.felder === "rundum") { for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) if (dx || dy) aus.push([bi + dx + 0.5, bj + dy + 0.5]); }
   else if (A.felder === "raum") { const R = raum || [bi - w, bj - w, bi + w, bj + w]; for (let i = R[0]; i <= R[2]; i++) for (let j = R[1]; j <= R[3]; j++) if (i !== bi || j !== bj) aus.push([i + 0.5, j + 0.5]); }
+  else if (A.felder === "ring") { for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) if (Math.max(Math.abs(dx), Math.abs(dy)) === w) aus.push([bi + dx + 0.5, bj + dy + 0.5]); } /* #160: Ring im Abstand weite */
   else if (A.felder === "ziel") { const zi = Math.floor(zx), zj = Math.floor(zy); for (let dx = -w; dx <= w; dx++) for (let dy = -w; dy <= w; dy++) aus.push([zi + dx + 0.5, zj + dy + 0.5]); }
   else for (const [dx, dy] of A.felder) aus.push([bi + dx + 0.5, bj + dy + 0.5]);
   return aus; }
