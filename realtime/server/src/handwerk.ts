@@ -45,7 +45,9 @@ const ladungZiel = (r: Rezept): string | null => (r.ergebnis.startsWith("ladung:
 /** Phase 5b: Waffe laden/entladen – die angelegte Waffe passt zum Rezept (Seltenheit)? Zurück: Fehlertext oder null */
 const entladen = (r: Rezept): boolean => r.ergebnis === "entladen:" + AN_WAFFE;
 function waffePasst(nutzer: string, r: Rezept): string | null { const w = waffeLadung(nutzer), G = w && GEGENSTAENDE[w.g]; if (!w || !G || !G.waffe) return "Leg die Waffe an, die du laden willst.";
-  if (entladen(r)) return w.n > 0 ? null : `${G.name} ist nicht geladen.`; if (r.fuer && G.seltenheit !== r.fuer) return `Dieses Binden ist für ${r.fuer === "selten" ? "seltene" : r.fuer === "episch" ? "epische" : r.fuer === "legendaer" ? "legendäre" : "mythische"} Waffen – ${G.name} ist das nicht.`; return null; }
+  if (entladen(r)) return w.n > 0 ? null : `${G.name} ist nicht geladen.`;
+  if (r.fuer === "stufe70" || G.passiv) return r.fuer === "stufe70" && G.passiv ? null : G.passiv ? `${G.name} lädst du mit einem Splitter je Ladung (Waffe der Stufe 70).` : `Dieses Binden ist für Waffen der Stufe 70 – ${G.name} ist keine.`; /* #151 */
+  if (r.fuer && G.seltenheit !== r.fuer) return `Dieses Binden ist für ${r.fuer === "selten" ? "seltene" : r.fuer === "episch" ? "epische" : r.fuer === "legendaer" ? "legendäre" : "mythische"} Waffen – ${G.name} ist das nicht.`; return null; }
 /** Welche Sorte einer Zutat nehmen: die erste, von der genug da ist */
 const sorte = (nutzer: string, g: string[], n: number) => g.find((x) => anzahlVon(nutzer, x) >= n) || null;
 /** Was fehlt für ein Stück (null = alles da); spar: diese Zutat (Index) braucht eine Einheit weniger (Glut) */

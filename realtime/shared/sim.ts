@@ -15,6 +15,7 @@ import { DT, HELDEN, MONSTER, type MonsterDef, K, HELDENREIHE, Modus, Schadensar
 const SB = (w: { held: boolean; typ: string; stufe?: number }) => STUFENBONUS(w.held ? w.stufe || HELDENSTUFE[w.typ] || 1 : 1); /* gemeinsame Welt: jeder Held hat seine eigene Stufe */
 import { karteJetzt, karteNehmen, KartenStand, SchleuseStand, SCHUETZ, Punkt, START, LAGER, abstand, frei, schieben, weg, naechstFrei, begehbar, fels, KB, KH } from "./karte";
 import { BOSSE } from "./bosse";
+import { PASSIVE, SEELENBRAND, type PassivId } from "./gegenstaende"; /* #151 */
 import { ansageFelder, phaseBei, INSTANZ_LEER, ANSAGE_VORLAUF, QUEST_STAERKE, BOSS_BEUTE_ANTEIL, type BossFassung, type Ansage, type Ruf, type BossDef, type InstanzDef, type InstanzGegner } from "./boss";
 
 /** Max Hit × (1 + Bonus); der Bruchteil wird zur Chance auf +1 (sonst verpufft der Bonus bei kleinen Max Hits: 3 × 1,15 → 3) */
@@ -34,7 +35,7 @@ export type Eingabe =
 interface Dauer { t: number; jeSek: number; von: number; art: "blut" | "gift" | "brand" }
 /** Boss-Baukasten: Stand eines Bosskampfes (Phase, Grundangriffe und Sekunden seit der letzten Ansage, benutzte Heilorte „Phase:Nr“, Beginn des Kampfes) */
 interface BossLauf { phase: number; angriffe: number; t: number; heil: Record<string, number>; seit?: number; /** Schweben bis zu dieser Simulationszeit */ schwebBis?: number; /** eingegraben bis (BossPhase.eingraben) */ grabBis?: number }
-interface Spec { grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
+interface Spec { /** #151: der Nachhall selbst (löst keine Passive aus) */ nachhall?: boolean; grund: number; min?: number; /* Höchst- und Mindestschaden; ohne min: FAEHIG_MIN × grund */ art: Schadensart; flaeche?: boolean; wucht?: boolean; sicher?: boolean; mal?: number; untot?: number; nach?: string } // sicher: kein Trefferwurf (räumlich getroffen)
 /** #122/#130: Gegner weiter als so viele Felder von jedem Helden ruhen (werden nicht gerechnet); jeder Spieler sieht Wesen bis SICHT_WEIT Felder */
 /** #143 Streifgebiet: so weit (Felder) liegt das nächste Ziel höchstens, Pause dazwischen (s) */
 /** Folge.angriff: so lange (s) ohne Ziel, dann geht der Gegner */
@@ -340,7 +341,14 @@ export class Sim {
     // 6 Leben
     const vor = z.lp + z.schutz; this.abziehen(z, m, von); const n = Math.max(0, vor - (z.lp + z.schutz));
     if (n > 0 && !von.held && !z.tot) { const G = MONSTER[von.typ] && MONSTER[von.typ].gift; if (G && this.zf() < G.chance) this.dauerSchaden(z, "gift", G.jeSek, G.dauer, von); } /* Gift (#102) */
+    if (n > 0 && von.kw && von.kw.passiv && !s.nachhall && this.zf() < von.kw.passiv.chance) this.passiv(von, z, n, von.kw.passiv.id); /* #151: geladene Stufe-70-Waffe */
     return n;
+  }
+  /** #151 Passive der Stufe-70-Waffen: Nachhall (zweiter Treffer, halber Schaden), Seelenzug (ein Viertel heilt), Seelenbrand (6 s brennen, alle 2 s 3) */
+  private passiv(von: Wesen, z: Wesen, n: number, id: string): void { this.ev.push({ a: "text", id: von.id, t: PASSIVE[id as PassivId] ? PASSIVE[id as PassivId].name : id });
+    if (id === "nachhall" && !z.tot) this.abziehen(z, Math.max(1, Math.round(n / 2)), von);
+    else if (id === "seelenzug") this.heilen(von, Math.max(1, Math.round(n / 4)), von);
+    else if (id === "seelenbrand" && !z.tot) this.dauerSchaden(z, "brand", SEELENBRAND.jeSek, SEELENBRAND.dauer, von);
   }
   /** Wer ein Monster weckt, weckt seine Gruppe */
   private wecken(m: Wesen): void { if (!m.gruppe || !m.zielId) return; for (const o of this.wesen) if (!o.tot && !o.held && o.gruppe === m.gruppe && !o.zielId && this.gleich(o, m)) { o.zielId = m.zielId; o.wach = true; } }
