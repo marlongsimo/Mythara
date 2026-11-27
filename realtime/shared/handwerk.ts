@@ -228,6 +228,11 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
   { id: "herd_haferstedt", station: "herd", x: 6209.2, y: 6967, ort: "fl_186_211" }, { id: "kessel_haferstedt", station: "kessel", x: 6211.5, y: 6967, ort: "fl_186_211" },
   { id: "backofen_haferstedt", station: "backofen", x: 6236.8, y: 6975.4, ort: "fl_186_211" }, { id: "brunnen_haferstedt", station: "brunnen", x: 6215, y: 6977.35, ort: "fl_186_211" },
   { id: "feuer_netzbucht", station: "feuer", x: 6147, y: 6933.25, ort: "fl_186_211" }, { id: "raeucherhuette_netzbucht", station: "raeucherhuette", x: 6132, y: 6932, ort: "fl_186_211" });
+/* Phase 10, G-Quests (#118): G2 Lampenöl im Kessel am Wärterhaus des Leuchtturms und die Splitterglut am Bindestein; G4 das Fischernetz an der Werkbank */
+WERKSTAETTEN.push({ id: "kessel_leuchtturm", station: "kessel", x: 6190, y: 7039.5, ort: "fl_186_211" });
+dazu({ id: "lampenoel", station: "kessel", ergebnis: "lampenoel", level: 1, zutaten: [{ g: ["fisch_hering_roh"], n: 5 }], xp: 60, ticks: 5, stufe: 0, gruppe: "Das Leuchtfeuer", quest: "kueste_das_leuchtfeuer" });
+dazu({ id: "splitterglut", station: "bindestein", ergebnis: "splitterglut", level: 20, zutaten: [{ g: ["seelenlicht"], n: 1 }, { g: ["splitter"], n: 5 }], xp: 80, ticks: 3, stufe: 0, gruppe: "Das Leuchtfeuer", quest: "kueste_das_leuchtfeuer" });
+dazu({ id: "fischernetz", station: "werkbank", ergebnis: "fischernetz", level: 20, zutaten: [{ g: ["garn"], n: 4 }], xp: 90, ticks: 5, stufe: 0, gruppe: "Netze für die Möwenbucht", quest: "kueste_netze_fuer_die_moewenbucht" });
 /* Phase 9, F-Quests (#118): Glutbrunn – Esse und Amboss in der Schmiede (dorf_schmiede_01 wie in der Waldmark), der Herd daneben (Welt: glutbrunn_herd, für F4),
    die Werkbank (glutbrunn_werkbank); F2: das Pfannenblech für Ruwens Siedepfanne (Amboss, Schmieden 50, nur in der Quest) */
 WERKSTAETTEN.push({ id: "esse_glutbrunn", station: "esse", x: 7114.4, y: 6947.8, ort: "fl_216_211" }, { id: "amboss_glutbrunn", station: "amboss", x: 7117.4, y: 6947.6, ort: "fl_216_211" },
