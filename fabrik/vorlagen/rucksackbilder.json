@@ -1,0 +1,13 @@
+{
+ "hinweis": "Sonderfälle für fabrik/rucksackbilder.py: Gegenstände, deren Modell oder Bild anders heißt als die Kennung, oder die eine Abwandlung brauchen. Alles andere findet das Werkzeug selbst (symbole/<id>.webp oder <id>.glb unter img/objekte3d).",
+ "gegenstaende": {
+  "splitter": {"glb": "img/objekte3d/splitter.glb", "ziel": "img/objekte3d/symbole/splitter.webp"},
+  "geweihter_splitter": {"glb": "img/objekte3d/splitter.glb", "ziel": "img/objekte3d/symbole/geweihter_splitter.webp", "ton": 150, "saett": 0.8, "schein": "#ffe6a0"},
+  "kleiner_heiltrank": {"glb": "img/objekte3d/heiltrank-klein.glb", "ziel": "img/objekte3d/symbole/kleiner_heiltrank.webp", "kipp": -15},
+  "heiltrank": {"glb": "img/objekte3d/heiltrank.glb", "ziel": "img/objekte3d/symbole/heiltrank.webp", "kipp": -15},
+  "pergament": {"glb": "img/objekte3d/schriften/pergament.glb", "kipp": -40, "dreh": 20},
+  "hinweispergament": {"glb": "img/objekte3d/schriften/hinweispergament.glb", "kipp": -40, "dreh": 20},
+  "rezeptheft": {"glb": "img/objekte3d/schriften/rezeptheft.glb", "kipp": -40, "dreh": 20},
+  "tempelabschrift": {"glb": "img/objekte3d/schriften/tempelabschrift.glb", "kipp": -40, "dreh": 20}
+ }
+}
