@@ -9813,8 +9813,8 @@
    "id": "gp_fl_216_169_649",
    "region": "fl_216_169",
    "land": "Die Hochlande",
-   "x": 7112.5,
-   "y": 5830.5,
+   "x": 7109.5,
+   "y": 5829.5,
    "gegner": [
     "steppenwolf"
    ],
@@ -10488,8 +10488,8 @@
    "id": "gp_fl_216_183_694",
    "region": "fl_216_183",
    "land": "Die Hochlande",
-   "x": 7094.5,
-   "y": 5864.5,
+   "x": 7099.5,
+   "y": 5863.5,
    "gegner": [
     "steppenwolf"
    ],
@@ -49057,6 +49057,12 @@
    "y": 5377.9,
    "r": 8.863564212655525,
    "grund": "Sammelstelle Adern am Weg (Hochlande 30)"
+  },
+  {
+   "x": 7104.7,
+   "y": 5873.7,
+   "r": 8.912043955712432,
+   "grund": "Sammelstelle Adern am Weg (Hochlande 32)"
   },
   {
    "x": 6626.7,

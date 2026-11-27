@@ -3779,6 +3779,36 @@
    ]
   },
   {
+   "name": "Adern am Weg (Hochlande 32)",
+   "ort": "hlweg_32",
+   "x": 7104.7,
+   "y": 5873.7,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_am_weg_hochlande_32_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 7107.5,
+     "y": 5874.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_32_sterneisen_2",
+     "art": "sterneisen",
+     "x": 7102.5,
+     "y": 5875.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_am_weg_hochlande_32_sterneisen_3",
+     "art": "sterneisen",
+     "x": 7104.5,
+     "y": 5871.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
    "name": "Adern am Weg (Fahle Weiten 2)",
    "ort": "fwweg_alt_2",
    "x": 6626.7,
