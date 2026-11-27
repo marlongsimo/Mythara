@@ -7,7 +7,7 @@ import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende"
 import { H_QUESTS } from "./hochlande";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
@@ -165,11 +165,25 @@ ort("steinhag_burgwache_1", { name: "Burgwache", spruch: "", haendler: "Burgwach
   gruss: "Weiter. Hier gibt's nichts zu sehen.", tschuess: "Weiter.", zeilen: ["Der Bergfried hat noch nie gebrannt. Wir wollen, dass das so bleibt."] });
 ort("steinhag_burgwache_2", { name: "Burgwache", spruch: "", haendler: "Burgwache Ute", modell: "stadtwache3d", x: 7055.5, y: 5857.5, nurReden: true,
   gruss: "Der Burgplatz ist offen. Der Bergfried nicht.", tschuess: "Weiter.", zeilen: ["Von oben sieht man den ganzen See. Und die Trolle am Pass."] });
-ort("steinhag_zunftmeisterin", { name: "Zunftmeisterin", spruch: "", haendler: "Zunftmeisterin Walburga", modell: "npc.bergfrau", x: 7060, y: 5936, nurReden: true,
+ort("steinhag_zunftmeisterin", { name: "Zunftmeisterin", spruch: "", haendler: "Zunftmeisterin Walburga", modell: "npc.bergfrau", x: 7060, y: 5943.5, nurReden: true, /* Welt c29d415b: vor dem Hof der Zunftschmiede, beim Abstieg */
   gruss: "Die Zunft nimmt nur Meister. Bergbau oder Schmieden auf Stufe 60 – dann stehen dir Stollen und Essen offen.", tschuess: "Glück auf.",
   zeilen: ["Unten im Stollen liegt alles von Eisen bis Ureisen, dicht beieinander. Dazu Schmelzofen und Bankkiste – kurze Wege.", "Vier Essen, zwei Ambosse. Wer hier schmiedet, verliert keine Zeit."] });
 ort("steinhag_stollenwache", { name: "Zunftwache", spruch: "", haendler: "Zunftwächter Bodo", modell: "stadtwache3d", x: 7063, y: 5945.5, blick: [1, 0], nurReden: true, questFigur: "zunftwache",
   gruss: "Der Stollen der Bergmannszunft. Nur für Meister – Bergbau ab Stufe 60.", tschuess: "Glück auf.", zeilen: ["Ich frag nicht nach dem Namen. Ich frag nach der Hacke – und wie lange du sie schon schwingst."] });
+/* #168 Zunfthäuser (Welt c29d415b): am Tor jeder Zunft eine Wache (sagt, ab welcher Stufe es offen ist), dazu die Meister der Zunftschmiede und der Fischerzunft */
+for (const [id, zunft, wer, x, y, b, gruss] of [
+  ["zunft_wache_holzfaellerhof", "Holzfällerhof", "Hofwächter Jost", 6397.5, 7007.4, [0, 1], "Der Hain gehört der Zunft. Holzfällerei ab Stufe 60 – dann zeig ich dir die Kernbäume."],
+  ["zunft_wache_kochzunft", "Kochzunft", "Küchenwächterin Rieke", 6228, 6965.5, [-1, 0], "In die Zunftküche kommt nur, wer Kochen auf Stufe 60 hat. Sonst verbrennt hier zu viel."],
+  ["zunft_wache_kraeutergarten", "Kräutergarten der Heilkundigen", "Gärtnerin Lene", 6459.5, 6439.5, [-1, 0], "Die Beete der Heilkundigen. Kräuterkunde ab Stufe 60 – vorher trampelst du mir nur den Eisenhut platt."],
+  ["zunft_wache_fischerzunft", "Fischerzunft", "Stegwächter Hinnerk", 6403.5, 7354.5, [1, 0], "Der Steg gehört der Fischerzunft. Fischen ab Stufe 60, dann darfst du an die Aale."],
+  ["zunft_wache_zunftschmiede", "Zunftschmiede", "Torwächter Gunther", 7055, 5937.6, [0, 1], "Der Hof der Zunftschmiede. Schmieden ab Stufe 60 – dann stehen dir vier Essen offen."],
+] as [LadenId, string, string, number, number, [number, number], string][])
+  ort(id, { name: "Zunftwache", spruch: "", haendler: wer, modell: "stadtwache3d", x, y, blick: b, nurReden: true, gruss, tschuess: "Komm wieder, wenn du so weit bist.",
+    zeilen: [`Ich stehe am Tor der ${zunft}. Wer drin ist, hat kurze Wege: Bankkiste, Stationen, alles dicht beieinander.`] });
+ort("zunft_meisterschmied", { name: "Meisterschmied", spruch: "", haendler: "Meisterschmied Eckhart", modell: "npc.schmied", x: 7062, y: 5930.8, nurReden: true,
+  gruss: "Vier Essen, zwei Ambosse – und keiner wartet auf den anderen. So schmiedet ein Meister.", tschuess: "Glück auf.", zeilen: ["Der Brennofen dort hinten macht Tiegel und Formen. Er schmilzt genauso gut wie die Esse."] });
+ort("zunft_meisterfischer", { name: "Meisterfischer", spruch: "", haendler: "Meisterfischer Klaas", modell: "npc.fischer", x: 6390.5, y: 7352, nurReden: true,
+  gruss: "Sechs Fangstellen, eine Räucherhütte, die Bankkiste am Ende des Stegs. Mehr braucht ein Fischer nicht.", tschuess: "Wind von achtern!", zeilen: ["Die Aale beißen am besten, wenn die Flut kommt. Frag nicht, warum."] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
 export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
   "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];

@@ -44,7 +44,8 @@ console.log("\nZunftschmiede (ab Schmieden 60) und Brennofen");
 const ZS = WERKSTAETTEN.filter((w) => /^(esse|amboss)_zunft_/.test(w.id));
 check(ZS.filter((w) => w.station === "esse").length === 4 && ZS.filter((w) => w.station === "amboss").length === 2 && ZS.every((w) => w.beruf && w.beruf.id === "schmieden" && w.beruf.level === 60 && /Schmieden 60/.test(w.gesperrt)),
   "vier Essen und zwei Ambosse, alle erst ab Schmieden 60 (die Wache sagt, was fehlt)");
-{ const B = WERKSTAETTEN.find((w) => w.id === "brennofen_zunft"); check(B && B.station === "esse" && B.name === "Brennofen" && !B.beruf, "Brennofen im Zunftviertel (wie die Esse, für alle)"); }
+{ const B = WERKSTAETTEN.find((w) => w.id === "brennofen_zunft"); check(B && B.station === "esse" && B.name === "Brennofen" && B.beruf && B.beruf.level === 60, "Brennofen im Hof der Zunftschmiede (wie die Esse)"); }
+{ const T = TUEREN.find((t) => t.id === "zunft_zunftschmiede"); check(T && T.beruf.id === "schmieden" && T.feld.join() === "7056,5934,7059,5935", "der Hof hat ein Tor (Welt c29d415b), ab Schmieden 60"); }
 welt([...ZS, WERKSTAETTEN.find((w) => w.id === "brennofen_zunft")].every((w) => freiBei(w.x, w.y, HANDWERK_WEIT - 0.2)), "alle Stationen sind von freiem Boden aus erreichbar");
 { let ROW = []; const sb = async (p) => (p.includes("rpg_held?") ? ROW : null), laden = async (n, inv) => { ROW = [{ waffe: "schwert", inventar: { angelegt: {}, rucksack: [], v: 2, ...inv } }]; await I.inventarLaden(sb, n); };
   HW.handwerkEinrichten({ sb, senden: () => {} }); HW.HANDWERK_QUEST.schalter = () => true;
