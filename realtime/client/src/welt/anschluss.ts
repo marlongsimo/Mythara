@@ -296,6 +296,8 @@ export const anschluss3D = {
   /** Kampfgebiet: true = der Server bewegt den Helden (wie WELT.fremd in der 2D-Welt) */
   fremd: (s: WeltKern, rx: number, ry: number): boolean => fremd(s, rx, ry),
   /** Antippen eines Bodenpunkts (Weltfelder) im Kampf: ein Gegner wird zum Ziel. true = erledigt */
+  /** Einen bestimmten Gegner angreifen (Aktionsmenü: er kann seit dem Öffnen weitergelaufen sein) */
+  kampfZiel: (id: number): void => { if (kampf && kampf.bereit && kampf.netz) kampf.netz.sende({ t: "ziel", id }); },
   kampfAntippen: (wx: number, wy: number): boolean => Boolean(kampf && kampf.bereit && kampf.antippen(wx, wy)),
   /** Bildschirm statt Boden: die ganze Figur (auch Kopf und Oberkörper) zählt */
   kampfAntippenSchirm: (px: number, py: number): boolean => { const k = kampf as unknown as { bereit?: boolean; antippenSchirm?: (x: number, y: number) => boolean } | null; return Boolean(k && k.bereit && k.antippenSchirm && k.antippenSchirm(px, py)); },
