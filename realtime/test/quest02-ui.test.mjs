@@ -54,6 +54,11 @@ try {
   await anna.waitForTimeout(2500);
   const lage = () => anna.evaluate(() => { const q = window.EZW.welt3d.quest; return { objekte: q.objekte.map((o) => ({ id: o.d.id, sicht: o.g.visible, ring: o.ring.visible, kaputt: o.kaputt ? o.kaputt.visible : null })), figuren: q.figuren.filter((f) => f.q === "osthof_der_stille_rain").map((f) => f.n.name), ort: window.EZW.ort && window.EZW.ort() }; });
   let L = await lage();
+  /* #62: jedes Objekt steht auf dem Boden – auch zaun3 und rute4 im Chunk östlich (x ≥ 6560), der beim Aufbau noch nicht geladen ist */
+  const boden = await anna.waitForFunction(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor, l = q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id));
+    const ab = l.map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2)]); return l.length === 7 && ab.every(([, d]) => Math.abs(d) < 0.05) ? ab : false; }, null, { timeout: 20000, polling: 500 }).then((h) => h.jsonValue(), () => null);
+  const bodenIst = boden || await anna.evaluate(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor; return q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id)).map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2)]); });
+  check(Boolean(boden), `Bruchstellen und Rutenbündel stehen auf dem Gelände, nicht darunter (Abstand zum Boden: ${JSON.stringify(bodenIst)})`);
   check(L.figuren.join() === "Brida Wegner,Odo Kern,Wenzel", `Quest-2-Figuren: ${L.figuren.join(", ")}`);
   const Q2O = L.objekte.filter((o) => /^(zaun|rute)\d/.test(o.id)); check(Q2O.length === 7 && Q2O.every((o) => o.sicht && o.ring) && L.objekte.filter((o) => !Q2O.includes(o)).every((o) => !o.sicht) /* Objekte anderer Quests (A2, A3) bleiben verborgen */, `Drei Bruchstellen und vier Rutenbündel sichtbar und leuchtend (${JSON.stringify(L.objekte.map((o) => o.id + (o.sicht ? "+" : "-")))})`);
   if (BILD) await anna.screenshot({ path: BILD + "q2-osthof.png" });
@@ -77,6 +82,38 @@ try {
   await anna.waitForFunction(() => window.EZK && window.EZK.z && window.EZK.z.w && window.EZK.z.w.some((w) => w[2] === "mooshocker"), null, { timeout: 30000 }).catch(() => {});
   const moos = await anna.evaluate(() => window.EZK && window.EZK.z && window.EZK.z.w ? window.EZK.z.w.filter((w) => w[2] === "mooshocker").length : 0);
   check(moos === 7, `In der Osthof-Zone stehen ${moos} Mooshocker`);
+  /* #97: Mooshocker auf der Minikarte – rote Punkte an ihrer Stelle in der Region der Karte (nicht relativ zur ganzen Kampfwelt) */
+  await anna.waitForTimeout(600);
+  const karte = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK, r = W.regionBei(W.ort.x, W.ort.y).region, C = 32, x0 = r.ursprung[0] * C, y0 = r.ursprung[1] * C, b = r.chunks[0] * C, h = r.chunks[1] * C, l = [];
+    for (const e of K.z.w) { if (e[2] !== "mooshocker") continue; const u = document.querySelector(`#ez-karte u[data-k="${e[0]}"]`); const wx = K.zone.x0 + e[4], wy = K.zone.y0 + e[5];
+      l.push({ rot: Boolean(u && u.classList.contains("feind") && getComputedStyle(u).backgroundColor === "rgb(224, 74, 58)"), dx: u ? Math.abs(parseFloat(u.style.left) - 100 * (wx - x0) / b) : 99, dy: u ? Math.abs(parseFloat(u.style.top) - 100 * (wy - y0) / h) : 99 }); }
+    return l; });
+  check(karte.length === 7 && karte.every((p) => p.rot && p.dx < 2 && p.dy < 2), `Minikarte: sieben rote Punkte an der Stelle der Mooshocker (${JSON.stringify(karte.map((p) => (p.rot ? "rot" : "–") + "/" + p.dx.toFixed(0) + "," + p.dy.toFixed(0)))})`);
+  /* #97: langes Drücken neben einen Mooshocker (Boden, nicht die Figur) – das Level im Menü ist eingefärbt */
+  const lv = await anna.evaluate(async () => { const W = window.EZW.welt3d, K = window.EZK, M = W.motor; window.EZW.welt3d.motor.abstand = 9;
+    for (const e of K.z.w) { if (e[2] !== "mooshocker" || e[10]) continue; const x = K.zone.x0 + e[4], y = K.zone.y0 + e[5];
+      for (const dy of [-1.3, -1.0, 0.4, -0.2]) { const p = M.bildschirm(x, M.hoehe(x, y + dy), y + dy); if (!p || K.amSchirm(p.x, p.y) || !K.zielBei(x, y + dy)) continue;
+        W.menueBei(p.x, p.y); await new Promise((r) => setTimeout(r, 200)); const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((d) => /Mooshocker/.test(d.textContent)), b = k && k.querySelector(".lv");
+        const t = { kopf: k ? k.textContent : null, farbe: b ? b.style.color : "" }; document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); return t; } }
+    return null; });
+  check(lv && lv.farbe && /Level 1/.test(lv.kopf || ""), `Langes Drücken neben einen Mooshocker: „${lv && lv.kopf}“, Level eingefärbt (${lv && lv.farbe})`);
+  await anna.keyboard.press("Escape").catch(() => {});
+  /* #63: Odo ansprechen – der Held bleibt ein Feld vor ihm stehen (nicht auf seinem Feld), schaut zu ihm, das Gespräch öffnet sich */
+  { await anna.keyboard.press("Escape").catch(() => {});
+    await anna.evaluate(() => { const W = window.EZW.welt3d, s = W.anStelle(6546.5, 6441.5); if (s) W.ausfuehren(s, s.tat); });
+    const offen = await anna.waitForFunction(() => /Odo/.test((document.getElementById("ez-gespraech") || {}).textContent || ""), null, { timeout: 45000, polling: 200 }).then(() => true, () => false);
+    await anna.waitForTimeout(800); const h = await anna.evaluate(() => { const W = window.EZW.welt3d; return { x: W.ort.x, y: W.ort.y, blick: W.blick() }; });
+    const fi = Math.floor(h.x) - 6546, fj = Math.floor(h.y) - 6441, w = Math.atan2(6441.5 - h.y, 6546.5 - h.x), dw = Math.abs(Math.atan2(Math.sin(h.blick - w), Math.cos(h.blick - w)));
+    check(offen && Math.max(Math.abs(fi), Math.abs(fj)) === 1, `Odo ansprechen: Gespräch offen (${offen}), der Held steht auf einem Nachbarfeld, nicht auf Odos Feld (${h.x.toFixed(1)}, ${h.y.toFixed(1)}; Blick ${dw.toFixed(2)} rad neben Odo)`);
+    await anna.keyboard.press("Escape").catch(() => {}); await anna.waitForTimeout(400); }
+  /* #62: Ben beginnt weit weg in Weidenhain – die Questobjekte entstehen, bevor Osthof geladen ist – und springt dann nach Osthof: alle stehen auf dem Gelände */
+  { const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6451.5, 6686.5, "weidenhain"]); ben.setDefaultTimeout(90000); await ben.goto(B + S);
+    await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.quest && window.EZW.welt3d.quest.objekte && window.EZW.welt3d.quest.objekte.length >= 7 && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
+    await ben.waitForTimeout(2000); await ben.evaluate(() => window.EZW.welt3d.springen(6555.5, 6429.5));
+    const ab = () => ben.evaluate(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor; return q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id)).map((o) => [o.d.id, +(o.g.position.y - M.hoehe(o.d.x, o.d.y)).toFixed(2), Boolean(M.chunkBei(o.d.x, o.d.y))]); });
+    const ok = await ben.waitForFunction(() => { const q = window.EZW.welt3d.quest, M = window.EZW.welt3d.motor, l = q.objekte.filter((o) => /^(zaun|rute)\d/.test(o.d.id));
+      return l.length === 7 && l.every((o) => M.chunkBei(o.d.x, o.d.y) && Math.abs(o.g.position.y - M.hoehe(o.d.x, o.d.y)) < 0.05); }, null, { timeout: 30000, polling: 500 }).then(() => true, () => false);
+    check(ok, `Start weit weg (Weidenhain), dann Osthof: Bruchstellen und Rutenbündel stehen auf dem Gelände (Abstand zum Boden, Chunk geladen: ${JSON.stringify(await ab())})`); }
   check(!fehlerSeite.length, "Keine Fehler auf der Seite" + (fehlerSeite.length ? ": " + fehlerSeite.join(" | ").slice(0, 300) : ""));
 } catch (e) { console.error(e); fehler++; }
 await br.close(); srv.kill(); sb.close();

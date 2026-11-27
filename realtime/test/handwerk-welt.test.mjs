@@ -58,6 +58,9 @@ try {
   await mach(anna, "leder_rau"); const e3 = await ende(anna); await schlaf(200);
   check(e3 && e3.grund === "fertig" && anzahl(anna, "leder_rau") === 1 && anzahl(anna, "kuhhaut") === 0 && anzahl(anna, "stamm_eiche") === 1, "Kuhhaut + Eichenstamm → Raues Leder");
   check((await mach(anna, "barren_kupfer")).text && /Esse/.test((await mach(anna, "barren_kupfer")).text), "Kupferbarren an der Werkbank: „Geh näher an die Esse.“");
+  /* #57: außen an der Mauer der Schmiede, keine 2 Felder von der Esse – durch die Wand geht es nicht */
+  for (const [x, y, wo] of [[6465.5, 6427.5, "westlich"], [6467.5, 6425.5, "nördlich"]]) { sende(anna, { t: "pos", x: 0, y: 0, wx: x, wy: y }); await schlaf(150);
+    const r = await mach(anna, "barren_kupfer"); check(r.tat === "nein" && /näher an die Esse/.test(r.text || ""), `Außen ${wo} an der Schmiedewand: die Esse geht nicht durch die Mauer (${r.text || r.tat})`); if (r.tat === "start") { sende(anna, { t: "handwerk", tat: "stop" }); await ende(anna); } }
   await bei(anna, ESSE); const s4 = await mach(anna, "barren_kupfer"); const e4 = s4.tat === "start" ? await ende(anna) : null; await schlaf(200);
   check(e4 && e4.grund === "fertig" && anzahl(anna, "barren_kupfer") === 1 && anzahl(anna, "erz_kupfer") === 0, `An der Esse: Kupfererz + Holz → Kupferbarren (${s4.text || s4.tat})`);
   const xp1 = anna.inv.berufe && anna.inv.berufe.handwerk; check(xp1 > 16, `Handwerk-XP der Werkbank im Inventar (berufe.handwerk): ${xp1}`);

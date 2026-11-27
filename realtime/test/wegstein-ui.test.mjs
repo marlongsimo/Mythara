@@ -49,6 +49,10 @@ async function spieler(name, token, stelle) { const ctx = await br.newContext({ 
   return p; }
 const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && window.EZW && window.EZW.welt3d, null, { timeout: 120000 });
 
+/* #53: die eigene Figur nach einem Teleport ohne Neuladen (Wegstein, Freunde) – wieder sichtbar, ohne Lichtsäule, nicht durchsichtig */
+const figurDa = (p) => p.evaluate(() => { const f = window.EZW.welt3d.figur; if (!f || !f.wurzel) return { ok: false, grund: "kein Modell" }; let blass = 0; f.wurzel.traverse((o) => { if (o.isMesh && o.visible && o.material && o.material.opacity < 0.9) blass++; });
+  const ok = f.an !== false && f.bild.gruppe.visible && f.wurzel.visible && !f.effekt && !f.gestorben && blass === 0 && Math.abs(f.wurzel.scale.x - f.wurzel.scale.y) < 1e-3;
+  return { ok, grund: `gruppe=${f.bild.gruppe.visible} wurzel=${f.wurzel.visible} effekt=${Boolean(f.effekt)} gestorben=${f.gestorben} blass=${blass} skala=${f.wurzel.scale.x.toFixed(2)}/${f.wurzel.scale.y.toFixed(2)}` }; });
 const schirm = (p, x, y, h = 1.0) => p.evaluate(([x, y, h]) => { const W = window.EZW.welt3d; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + h, y); }, [x, y, h]);
 
 let wach = null;
@@ -79,6 +83,7 @@ try {
   const da = await anna.waitForFunction(() => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - 6452.5, W.ort.y - 6684.5) < 2.5 && !W.gesperrt; }, null, { timeout: 60000, polling: 250 }).then(() => true, () => false);
   const o = await anna.evaluate(() => ({ gesperrt: window.EZW.welt3d.gesperrt, x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier, lad: (JSON.parse(localStorage.getItem("ez_inventar") || "{}").ladungen || {}).wegstein }));
   check(da && o.lad === 4 && Math.hypot(o.x - 6452.5, o.y - 6684.5) < 3, `Anna ist an der Linde (gesperrt=${o.gesperrt} ${o.x.toFixed(1)}, ${o.y.toFixed(1)}, ${o.hier}), 4 Ladungen übrig (${o.lad})`);
+  { const fd = await figurDa(anna); check(fd.ok, "Wegstein: Annas eigene Figur ist an der Linde wieder sichtbar (" + fd.grund + ")"); }
   await anna.waitForTimeout(4000); void (JSON.stringify(await anna.evaluate(() => { const W = window.EZW.welt3d; return { gesperrt: W.gesperrt, holt: [...W.daten.values()].filter((d) => d === "holt").length, blende: W.blende && W.blende.className }; })));
   const sieht = await ben.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK, l = W.mit && W.mit.figuren ? [...W.mit.figuren.values()].map((f) => f.d.n + "@" + Math.round(f.d.wx) + "," + Math.round(f.d.wy)) : [];
     if (K && K.z) for (const e of K.z.w) if (e[1] === 1 && e[0] !== K.ichId) { const n = K.namen.get(e[0]); if (n) l.push(n.name + "@" + (K.zone.x0 + e[4]).toFixed(0) + "," + (K.zone.y0 + e[5]).toFixed(0)); }
@@ -100,7 +105,15 @@ try {
   if (tp) { await anna.evaluate(() => [...document.querySelectorAll('[data-tp="Ben"]')].find((b) => b.offsetParent).click()); /* die Liste zeichnet sich laufend neu: direkt am Knopf auslösen */
     const da2 = await anna.waitForFunction(([x, y]) => { const W = window.EZW.welt3d; return W.hier === "weidenhain" && Math.hypot(W.ort.x - x, W.ort.y - y) < 3 && !W.gesperrt; }, [bo.x, bo.y], { timeout: 60000, polling: 250 }).then(() => true, () => false);
     await anna.waitForTimeout(8000); const f = await anna.evaluate(() => ({ x: window.EZW.welt3d.ort.x, y: window.EZW.welt3d.ort.y, hier: window.EZW.welt3d.hier }));
+    { const fd = await figurDa(anna); check(fd.ok, "Freunde-Teleport: Annas eigene Figur ist bei Ben sichtbar (" + fd.grund + ")"); }
     check(da2 && Math.hypot(f.x - bo.x, f.y - bo.y) < 3, `Freunde-Teleport: Anna bei Ben (${bo.x.toFixed(1)}, ${bo.y.toFixed(1)}) und bleibt dort (${f.x.toFixed(1)}, ${f.y.toFixed(1)}, ${f.hier})`); }
+  /* #68: öffentlicher Chat nach dem Teleport – der andere sieht die Sprechblase über dem Kopf (in der Kampfwelt zeigt der Kampf die Helden) */
+  if (tp) for (const [von, an, text] of [[anna, ben, "Hallo Ben an der Linde"], [ben, anna, "Hallo Anna"]]) {
+    await an.evaluate((t) => { window.__blase = false; new MutationObserver(() => { if ([...document.querySelectorAll(".ez-blase3d")].some((b) => b.textContent === t)) window.__blase = true; }).observe(document.body, { childList: true, subtree: true }); }, text);
+    await von.evaluate(() => document.activeElement && document.activeElement.blur()); await von.fill("#ez-chat input", text); await von.press("#ez-chat input", "Enter");
+    const da = await an.waitForFunction(() => window.__blase, null, { timeout: 15000 }).then(() => true, () => false);
+    const imChat = await an.evaluate((t) => JSON.stringify(window.EZW.chat ? window.EZW.chat().slice(-3).map((n) => n.text) : []).includes(t), text);
+    check(da, `Sprechblase „${text}“ über dem anderen Helden (Chatbox: ${imChat})`); }
   check(fehlerSeite.length === 0, "Keine Seitenfehler " + fehlerSeite.join(" | "));
 } catch (e) { console.log("✗ Abbruch: " + e.message + " @ " + (e.stack || "").split("\n").find((z) => z.includes("wegstein-ui"))); fehler++; }
 clearInterval(wach); await br.close(); srv.kill(); sb.close();

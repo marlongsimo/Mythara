@@ -10,7 +10,7 @@ import { questStandB, questpunkte, questVerfolgt, questVerfolgen, handwerkBitten
 import { QUESTS as QUESTS_B, wegzieleFrei } from "../../shared/quests";
 import * as QB from "../../shared/questbau";
 import { freundeHtml, freundKlick, freundFormular, freundeBeobachten } from "./freunde";
-import { aktionsMenue, langDruecken, Aktion } from "./aktionsmenue";
+import { aktionsMenue, langDruecken, Aktion, menueZu } from "./aktionsmenue";
 import { chatSystem, tafelZeigen } from "./welt";
 import { QUESTS, merkerVon, sternText } from "./hud";
 import { HELDEN } from "../../shared/config";
@@ -348,7 +348,7 @@ function rucksackZiehen(el: HTMLElement): void {
     if (!z.geist) { if (Math.hypot(e.clientX - z.x, e.clientY - z.y) < 10) return; const f = el.querySelector<HTMLElement>(`.ifeld[data-wo="r${z.von}"]`); if (!f) { z = null; return; }
       const r = f.getBoundingClientRect(), g = f.cloneNode(true) as HTMLElement; const c0 = f.querySelector("canvas"), c1 = g.querySelector("canvas"); if (c0 && c1) (c1 as HTMLCanvasElement).getContext("2d")?.drawImage(c0, 0, 0);
       g.className = "ifeld voll ez-ziehgeist"; g.style.cssText = `position:fixed;left:0;top:0;width:${r.width}px;height:${r.height}px;pointer-events:none;z-index:90;opacity:.85;transform:translate(${e.clientX - r.width / 2}px,${e.clientY - r.height / 2}px) scale(1.1)`;
-      document.body.appendChild(g); z.geist = g; f.classList.add("zieht"); try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } }
+      document.body.appendChild(g); z.geist = g; f.classList.add("zieht"); menueZu(); /* erst gehalten, dann gezogen: das Menü des langen Drückens läge sonst über dem Zielfach (#109) */ try { el.setPointerCapture(e.pointerId); } catch { /* egal */ } }
     e.preventDefault(); const g = z.geist; g.style.transform = `translate(${e.clientX - g.offsetWidth / 2}px,${e.clientY - g.offsetHeight / 2}px) scale(1.1)`;
     const u = fachBei(e.clientX, e.clientY); if (u !== z.ueber) { z.ueber?.classList.remove("ziel"); z.ueber = u; u?.classList.add("ziel"); } });
   const ende = (e: PointerEvent, ok: boolean) => { if (!z || e.pointerId !== z.id) return; const q = z; z = null; if (!q.geist) return;

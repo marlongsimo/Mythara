@@ -211,7 +211,7 @@ export class Spielwelt3D implements WeltKern {
     const los = (e: PointerEvent) => { finger.delete(e.pointerId); const st = this.stick; if (!st || e.pointerId !== st.id) return; this.stick = null; if (st.menue) return;
       if (st.weit < 12 && e.timeStamp - st.t < 500 && !this.gesperrt) { const b = this.motor.boden(e.clientX, e.clientY);
         /* kurz tippen / Linksklick = die erste Aktion (wie OSRS): an einer Stelle mit Handlung (Figur, Treppe, Tür, Ausgang, Gegenstand) hingehen und handeln */
-        const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); this.gehe(stelle.x, stelle.y); return; } /* Quest-NPC: kurz = nur hingehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
+        const stelle = this.stelleAmSchirm(e.clientX, e.clientY, true) || (b ? this.anStelle(b.x, b.z) : null); if (stelle && stelle.npc) { this.wahlWeg(); const v = this.vorFigur(stelle, () => {}); if (v.da()) { v.tat(); return; } this.gehe(v.x, v.y); this.vorhaben = this.pfad.length ? v : null; return; } /* Quest-NPC: kurz = nur hingehen, ein Feld davor, und zu ihm drehen (reden: lange drücken) */ if (stelle) /* kurz: Figuren als ganze Gestalt, Türen/Treppen nur am Boden – sonst erst dorthin gehen */ { this.ausfuehren(stelle, stelle.knoepfe ? stelle.knoepfe[stelle.knoepfe.length - 1].tat : stelle.tat); return; } this.wahlWeg();
         { const g = anschluss3D.kampfAmSchirm(e.clientX, e.clientY); if (anschluss3D.kampfAntippenSchirm(e.clientX, e.clientY) || (b && anschluss3D.kampfAntippen(b.x, b.z))) { if (g && !g.held && g.team !== 0) tatZeigen(`Angreifen: ${g.name}`); return; } } /* Gegner: ganze Figur, sonst der Boden darunter */
         if (anschluss3D.spielerBei(e.clientX, e.clientY)) { this.menueBei(e.clientX, e.clientY); return; } /* Mitspieler: gleich das Menü (Flüstern, Freund hinzufügen …) */
         this.motor.klick(e.clientX, e.clientY); } };
@@ -254,7 +254,7 @@ export class Spielwelt3D implements WeltKern {
   blick() { return this.figur ? this.figur.blickWinkel : 0; }
   szeneStarten(key: string, daten: object) { if (key === "spiel") { const d = daten as { held?: string }; try { if (d.held) localStorage.setItem("ez_held", d.held); } catch { /* privat */ } location.href = "./?los=1" + serverZusatz(); } }
   springen(x: number, y: number) { if (this.gesperrt) return; anschluss3D.springen(); this.halt(); this.gesperrt = true;
-    this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
+    this.abblenden(260, () => { this.ort = { x, y }; this.motor.springen(x, y); { const f = this.figur as { ankunft?: () => void }; if (f.ankunft) f.ankunft(); } /* nach Lichtsäule (Freunde, Wegstein): die eigene Figur wieder zeigen (#53) */ void this.strom(true).then(() => { const f = this.raster.naechstFrei(this.ort); if (f) this.ort = { x: f.x, y: f.y }; this.aufblenden(320); this.gesperrt = false; }); }); }
   umsehen() {
     const o = this.ort, r = this.regionBei(o.x, o.y); let nah: { text: string; tat: () => void } | null = null;
     if (r) for (const a of r.ausgaenge) if (inZone(a.zone, o.x, o.y)) nah = { text: a.text, tat: () => this.reisen(a) };
@@ -328,7 +328,12 @@ export class Spielwelt3D implements WeltKern {
     const p = wer.startsWith("lokal:") ? ((this.haendler && this.haendler.ortVon(wer.slice(6))) || (this.bank && this.bank.ortVon(wer.slice(6))) || null) : this.quest ? this.quest.ortVon(wer) : null;
     if (p && Math.hypot(p.x - this.ort.x, p.y - this.ort.y) > GESPRAECH_WEIT) { dialogSchliessen(true); chatSystem("Du hast dich entfernt – das Gespräch ist beendet."); } }
   /** Hingehen und dort handeln (ist man schon dort, sofort) */
-  ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.npc) { const v = this.vorFigur(s, tat); s = v; tat = v.tat; } if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
+  /** Zu einer Figur (Quest-NPC, Wache): Laufziel ist das freie Nachbarfeld ihres Felds, das dem Helden am nächsten liegt – nicht die Figur selbst; angekommen dreht er sich zu ihr (#63) */
+  private vorFigur(s: Stelle, tat: () => void): Stelle { const fx = s.x, fy = s.y, i0 = Math.floor(fx), j0 = Math.floor(fy), o = this.ort; let ziel: { x: number; y: number } | null = null, bd = Infinity;
+    for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { if (!di && !dj) continue; const p = { x: i0 + di + 0.5, y: j0 + dj + 0.5 }; if (!this.raster.begehbar(p.x, p.y)) continue; const d = Math.hypot(p.x - o.x, p.y - o.y); if (d < bd) { bd = d; ziel = p; } }
+    const z = ziel || { x: fx, y: fy }, nebenan = () => Math.abs(Math.floor(this.ort.x) - i0) <= 1 && Math.abs(Math.floor(this.ort.y) - j0) <= 1 && (Math.floor(this.ort.x) !== i0 || Math.floor(this.ort.y) !== j0);
+    return { ...s, x: z.x, y: z.y, da: () => s.da() && (nebenan() || !ziel) && !this.schrittZiel, tat: () => { this.figur.blick(fx - this.ort.x, fy - this.ort.y); tat(); } }; }
   /** Aktionsmenü (Pergament) für alles an diesem Bildschirmpunkt: Mitspieler, Gegner, Figuren, Gegenstände am Boden, Treppen/Türen/Ausgänge – und „Hierhin gehen“ */
   menueBei(px: number, py: number) { const b = this.motor.boden(px, py), gr: Gruppe[] = [], konto = Boolean(ichName());
     const d = anschluss3D.spielerBei(px, py);
@@ -338,7 +343,7 @@ export class Spielwelt3D implements WeltKern {
     { const t = anschluss3D.kampfAmSchirm(px, py); if (t && t.team !== 0) { const M = t.typ && !t.held ? (MONSTER[t.typ] as { info?: string } | undefined) : undefined; /* Untersuchen (Bestiarium): Text zum Wesen; der Mooshocker zählt für Quest 02 */
         gr.push({ kopf: t.name, lv: { text: `(Level ${t.stufe})`, farbe: levelFarbe(t.stufe - eigenesLv()) }, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { tatZeigen(`Angreifen: ${t.name}`); anschluss3D.kampfAntippenSchirm(px, py); } },
           ...(M && M.info ? [{ text: "Untersuchen", sym: "🔍", tat: () => { chatSystem(`${t.name}: ${M.info}`); window.dispatchEvent(new CustomEvent("ez-qtext", { detail: `${t.name}: ${M.info}` })); untersuchtMelden(t.typ!, { x: this.ort.x, y: this.ort.y }); } }] : [])] }); } /* ganze Figur */
-      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
+      else if (b) { const g = anschluss3D.kampfZielBei(b.x, b.z); if (g) gr.push({ kopf: g.name, lv: { text: `(Level ${g.stufe})`, farbe: levelFarbe(g.stufe - eigenesLv()) } /* wie beim Antippen der Figur (#97) */, farbe: FARBE.gegner, aktionen: [{ text: "Angreifen", sym: "⚔️", tat: () => { anschluss3D.kampfAntippen(b.x, b.z); } }] }); } }
     if (b) {
       const stBoden = this.stelleAmSchirm(px, py, true) || this.anStelle(b.x, b.z), st = stBoden || this.stelleAmSchirm(px, py), gehenZuerst = !stBoden && Boolean(st); /* ganze Figur; Treppe/Tür auch über ihrer Höhe – dann aber „Hierhin gehen“ zuerst */
       if (st) { const boden = this.bodenHier(b.x, b.z);

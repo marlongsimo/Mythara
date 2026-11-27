@@ -169,7 +169,9 @@ export class Sim {
   /** Darf a gegen z kämpfen? (Verbündete: immer – Heilen und Schützen bleiben erlaubt) */
   darf(a: Wesen, z: Wesen): boolean { if (a.team === z.team || this.mehrkampfBei(z)) return true; const ga = this.gebunden(a), gz = this.gebunden(z); return (!ga || ga === z) && (!gz || gz === a); }
   private binden(a: Wesen, z: Wesen): void { if (a.team === z.team || this.mehrkampfBei(z)) return; const bis = this.zeit + Sim.EINZEL_BINDUNG; a.kampfMit = z.id; z.kampfMit = a.id; a.kampfBis = bis; z.kampfBis = bis; }
-  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team !== w.team); }
+  private feinde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team !== w.team && !this.verborgen(w, o)); }
+  /** Zielscheibe (#55): für einen Helden ohne Freigabe gibt es sie nicht – kein Ziel, kein Treffer, kein Gegenangriff (der Browser blendet sie aus) */
+  private verborgen(w: Wesen, o: Wesen): boolean { return w.held && !w.zielscheibeFrei && !o.held && Boolean(MONSTER[o.typ] && MONSTER[o.typ].zielscheibe); }
   private freunde(w: Wesen): Wesen[] { return this.wesen.filter((o) => !o.tot && o.team === w.team); }
   private untot(w: Wesen): boolean { return !w.held && Boolean(MONSTER[w.typ].untot); }
 
@@ -181,7 +183,7 @@ export class Sim {
     const zahl = (v: unknown) => typeof v === "number" && Number.isFinite(v);
     if (e.t === "richtung") { if (!zahl(e.x) || !zahl(e.y)) return; const l = Math.hypot(e.x, e.y); if (l < 0.05) { h.rx = 0; h.ry = 0; } else { const k = Math.min(1, l) / l; h.rx = e.x * k; h.ry = e.y * k; h.pfad = this.felder ? h.pfad.slice(0, 1) : []; } }
     else if (e.t === "lauf") { if (!zahl(e.x) || !zahl(e.y)) return; h.zielId = 0; h.rx = 0; h.ry = 0; h.pfad = this.wegZu(h, { x: e.x, y: e.y }); }
-    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
+    else if (e.t === "ziel") { if (e.id === 0) { h.zielId = 0; return; } const z = this.nach(e.id); if (!z || z.tot || this.verborgen(h, z)) return; if (this.weltZeit && !this.darf(h, z)) { this.ev.push({ a: "text", id: z.id, t: "Kämpft schon mit jemand anderem" }); return; } const heilt = this.waffe(h).art === "heil"; if (z.team !== h.team ? !heilt : heilt) h.zielId = z.id; }
     else if (e.t === "modus") { if (!h.kw) this.wechsel(h); } /* v1: nur Angreifen – kein Waffenwechsel */
     else if (e.t === "auto") { h.auto = e.an !== false; }
     else if (e.t === "halt") { h.pfad = []; h.zielId = 0; h.rx = 0; h.ry = 0; }
@@ -232,7 +234,7 @@ export class Sim {
   }
   /** Ein Angriff trifft auf ein Ziel. Zurück: Schaden (0 = abgewehrt oder verfehlt). */
   treffen(von: Wesen, z: Wesen, s: Spec): number {
-    if (z.tot) return 0; if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
+    if (z.tot || this.verborgen(von, z)) return 0; if (this.weltZeit) { if (!this.darf(von, z)) return 0; this.binden(von, z); } /* Einzelkampf: kein Dritter dazwischen */
     // Schild und Bollwerk: von vorn wird Torvald seltener getroffen; Verbündete direkt hinter einem Bollwerk ebenso
     let minder = 0; const winkel = (a: number, b: number) => { let d = Math.abs(a - b) % (2 * Math.PI); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
     if (von.kw || z.kw) { von.ruhe = 0; z.ruhe = 0; } /* Kampfregeln v1: jeder Angriff (auch ein geblockter) zählt als Kampf – keine Erholung */
