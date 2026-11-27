@@ -2212,6 +2212,519 @@
      "region": "fl_201_183"
     }
    ]
+  },
+  {
+   "name": "Bäume am Reifbach",
+   "ort": "reifbach",
+   "baeume": [
+    {
+     "id": "baume_am_reifbach_tanne_1",
+     "art": "tanne",
+     "x": 6451.5,
+     "y": 5719.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_2",
+     "art": "eibe",
+     "x": 6446.5,
+     "y": 5717.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_reifbach_eibe_3",
+     "art": "eibe",
+     "x": 6450.5,
+     "y": 5713.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Weiden am Ockerstrom",
+   "ort": "rotlehm",
+   "baeume": [
+    {
+     "id": "weiden_am_ockerstrom_moorweide_1",
+     "art": "moorweide",
+     "x": 6890.5,
+     "y": 7279.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "weiden_am_ockerstrom_moorweide_2",
+     "art": "moorweide",
+     "x": 6885.5,
+     "y": 7277.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "weiden_am_ockerstrom_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6889.5,
+     "y": 7273.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Akazien am Brunnenkreis",
+   "ort": "brunnenkreis",
+   "baeume": [
+    {
+     "id": "akazien_am_brunnenkreis_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7097.5,
+     "y": 7171.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "akazien_am_brunnenkreis_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7092.5,
+     "y": 7169.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "akazien_am_brunnenkreis_moorweide_3",
+     "art": "moorweide",
+     "x": 7097.5,
+     "y": 7165.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Akazienhain bei Dornhag",
+   "ort": "dornhag",
+   "baeume": [
+    {
+     "id": "akazienhain_bei_dornhag_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7330.5,
+     "y": 7449.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "akazienhain_bei_dornhag_moorweide_2",
+     "art": "moorweide",
+     "x": 7325.5,
+     "y": 7447.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "akazienhain_bei_dornhag_moorweide_3",
+     "art": "moorweide",
+     "x": 7329.5,
+     "y": 7444.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Akazien unter dem Roten Tisch",
+   "ort": "tafelrast",
+   "baeume": [
+    {
+     "id": "akazien_unter_dem_roten_tisch_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7489.5,
+     "y": 7496.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "akazien_unter_dem_roten_tisch_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7484.5,
+     "y": 7494.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "akazien_unter_dem_roten_tisch_weltenbaum_3",
+     "art": "weltenbaum",
+     "x": 7488.5,
+     "y": 7490.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Fahle Weiten 29)",
+   "ort": "fwweg_alt_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_1",
+     "art": "eiche",
+     "x": 6499.5,
+     "y": 5729.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_eiche_2",
+     "art": "eiche",
+     "x": 6494.5,
+     "y": 5727.5,
+     "region": "fl_201_169"
+    },
+    {
+     "id": "baume_am_weg_fahle_weiten_29_tanne_3",
+     "art": "tanne",
+     "x": 6498.5,
+     "y": 5723.5,
+     "region": "fl_201_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 1)",
+   "ort": "okweg_alt_1",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_1_moorweide_1",
+     "art": "moorweide",
+     "x": 7113.5,
+     "y": 6976.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_1_moorweide_2",
+     "art": "moorweide",
+     "x": 7107.5,
+     "y": 6973.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_1_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7112.5,
+     "y": 6970.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 3)",
+   "ort": "okweg_alt_3",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_3_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7082.5,
+     "y": 7069.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_3_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7077.5,
+     "y": 7067.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_3_moorweide_3",
+     "art": "moorweide",
+     "x": 7081.5,
+     "y": 7063.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 19)",
+   "ort": "okweg_alt_19",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_19_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7010.5,
+     "y": 7593.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_19_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7005.5,
+     "y": 7590.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_19_moorweide_3",
+     "art": "moorweide",
+     "x": 7009.5,
+     "y": 7587.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 21)",
+   "ort": "okweg_alt_21",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_21_moorweide_1",
+     "art": "moorweide",
+     "x": 7030.5,
+     "y": 7192.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_21_moorweide_2",
+     "art": "moorweide",
+     "x": 7025.5,
+     "y": 7190.5,
+     "region": "fl_216_211"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_21_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7030.5,
+     "y": 7186.5,
+     "region": "fl_216_211"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 23)",
+   "ort": "okweg_alt_23",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_23_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6951.5,
+     "y": 7275.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_23_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6946.5,
+     "y": 7273.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_23_moorweide_3",
+     "art": "moorweide",
+     "x": 6950.5,
+     "y": 7269.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 25)",
+   "ort": "okweg_alt_25",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_25_moorweide_1",
+     "art": "moorweide",
+     "x": 7174.5,
+     "y": 7254.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_25_moorweide_2",
+     "art": "moorweide",
+     "x": 7169.5,
+     "y": 7252.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_25_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7173.5,
+     "y": 7248.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 27)",
+   "ort": "okweg_alt_27",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_27_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7250.5,
+     "y": 7335.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_27_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7245.5,
+     "y": 7333.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_27_moorweide_3",
+     "art": "moorweide",
+     "x": 7249.5,
+     "y": 7329.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 29)",
+   "ort": "okweg_alt_29",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_29_moorweide_1",
+     "art": "moorweide",
+     "x": 7384.5,
+     "y": 7450.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_29_moorweide_2",
+     "art": "moorweide",
+     "x": 7378.5,
+     "y": 7448.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_29_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7383.5,
+     "y": 7445.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 31)",
+   "ort": "okweg_alt_31",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_31_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6884.5,
+     "y": 7422.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_31_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6879.5,
+     "y": 7420.5,
+     "region": "fl_201_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_31_moorweide_3",
+     "art": "moorweide",
+     "x": 6883.5,
+     "y": 7416.5,
+     "region": "fl_201_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 33)",
+   "ort": "okweg_alt_33",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_33_moorweide_1",
+     "art": "moorweide",
+     "x": 6936.5,
+     "y": 7506.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_33_moorweide_2",
+     "art": "moorweide",
+     "x": 6931.5,
+     "y": 7504.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_33_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6935.5,
+     "y": 7500.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 35)",
+   "ort": "okweg_alt_35",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_35_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7073.5,
+     "y": 7634.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_35_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7068.5,
+     "y": 7632.5,
+     "region": "fl_216_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_35_moorweide_3",
+     "art": "moorweide",
+     "x": 7072.5,
+     "y": 7628.5,
+     "region": "fl_216_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 37)",
+   "ort": "okweg_alt_37",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_37_moorweide_1",
+     "art": "moorweide",
+     "x": 7513.5,
+     "y": 7561.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_37_moorweide_2",
+     "art": "moorweide",
+     "x": 7508.5,
+     "y": 7559.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_37_kernbaum_3",
+     "art": "kernbaum",
+     "x": 7513.5,
+     "y": 7556.5,
+     "region": "fl_231_225"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Ockerlande 39)",
+   "ort": "okweg_alt_39",
+   "baeume": [
+    {
+     "id": "baume_am_weg_ockerlande_39_kernbaum_1",
+     "art": "kernbaum",
+     "x": 7566.5,
+     "y": 7578.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_39_kernbaum_2",
+     "art": "kernbaum",
+     "x": 7560.5,
+     "y": 7576.5,
+     "region": "fl_231_225"
+    },
+    {
+     "id": "baume_am_weg_ockerlande_39_moorweide_3",
+     "art": "moorweide",
+     "x": 7565.5,
+     "y": 7572.5,
+     "region": "fl_231_225"
+    }
+   ]
   }
  ]
 }

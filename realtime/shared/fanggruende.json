@@ -1003,6 +1003,71 @@
      7356.5
     ]
    ]
+  },
+  {
+   "id": "fischplatz_dornhag",
+   "name": "Teich bei Dornhag",
+   "art": "moorhecht",
+   "region": "fl_216_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7292.5,
+     7382.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_1",
+   "name": "Wasserloch am Brunnenkreis",
+   "art": "moorhecht",
+   "region": "fl_216_211",
+   "aktiv": 1,
+   "felder": [
+    [
+     7072.5,
+     7182.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_3",
+   "name": "Wasserloch im Süden",
+   "art": "moorhecht",
+   "region": "fl_216_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7233.5,
+     7560.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_wasserloch_4",
+   "name": "Wasserloch im Osten",
+   "art": "wels",
+   "region": "fl_231_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     7563.5,
+     7320.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_ockerstrom_muendung",
+   "name": "Mündung des Ockerstroms",
+   "art": "glutwels",
+   "region": "fl_201_239",
+   "aktiv": 1,
+   "felder": [
+    [
+     6793.5,
+     7674.5
+    ]
+   ]
   }
  ],
  "wurmacker": {
