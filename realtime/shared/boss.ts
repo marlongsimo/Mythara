@@ -46,7 +46,8 @@ export interface Ansage {
 }
 export interface Ruf { /** Gegnerart (MONSTER) */ art: string; n: number; /** Abstand zum Boss in Feldern (Standard 2) */ weite?: number; text?: string }
 export interface Heilort { /** Weltfelder */ x: number; y: number; r: number; /** Anteil des vollen Lebens */ menge: number; /** nur unter diesem Anteil des Lebens */ unter: number;
-  /** so oft je Leben (Standard 1) */ mal?: number; /** von selbst hingehen */ hingehen?: boolean; /** so lange steht er dabei (Sekunden, Standard 1,5) */ dauer?: number; text?: string }
+  /** so oft je Leben (Standard 1) */ mal?: number; /** von selbst hingehen */ hingehen?: boolean; /** so lange steht er dabei (Sekunden, Standard 1,5) */ dauer?: number; text?: string;
+  /** nicht, wenn dieser Schalter für sein Ziel an ist (C3: Becken mit Heddas Moorwasser getrübt) */ ausser?: string }
 export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erste Phase: 1) */ ab: number; text?: string; ansagen?: Ansage[]; ruf?: Ruf; heilorte?: Heilort[];
   /** Schweben: so viele Sekunden ab Eintritt in die Phase für Nahkampf unerreichbar (schlägt selbst nicht zu) */ schweben?: number; /** Text beim Landen */ landen?: string;
   /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number;

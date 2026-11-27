@@ -495,3 +495,26 @@ export const ROHSTOFFE: Record<string, Rohstoff> = {
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
 export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math.max(0, Math.min(trankHeilung(v, maxLp), maxLp - lp));
+
+/* ───────── Phase 6 (#17, #18, #26): Beute des Rabenordens – Bilder img/objekte3d/beute/symbole/ (Figuren #20) ───────── */
+{ const B = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.rabenfedern = { id: "rabenfedern", name: "Rabenfedern", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: B + "rabenfedern.webp",
+    text: "Schwarze Federn, länger als eine Hand, mit violettem Schimmer. Am Bindestein werden 25 davon mit 50 Splittern zu einem Federsiegel." };
+  GEGENSTAENDE.federsiegel = { id: "federsiegel", name: "Federsiegel", art: "Splitterbinden", seltenheit: "selten", stapel: 100, bild: B + "federsiegel.webp",
+    text: "Ein Siegel aus gepressten Rabenfedern um einen Splitter. Der Altar vor dem Thronsaal verlangt eines – für jeden Versuch." };
+  GEGENSTAENDE.splitterkern = { id: "splitterkern", name: "Splitterkern", art: "Splitterbinden", seltenheit: "episch", bild: B + "splitterkern.webp",
+    text: "Das pochende Herz eines großen Splitters. Am Bindestein in den Wegstein gesetzt, fasst er 200 statt 100 Ladungen – einmal je Held." };
+  GEGENSTAENDE.rabenschwinge = { id: "rabenschwinge", name: "Rabenschwinge", platz: "waffe", art: "Einhandschwert", seltenheit: "episch", ebenen: ["waffe.eidschwert"], bild: B + "rabenschwinge.webp",
+    anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
+    text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
+  GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" }; }
+
+/* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
+/** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
+export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
+/** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
+export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
+  const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  return L.length ? L[Math.floor(zufall() * L.length)].id : null; }

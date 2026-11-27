@@ -151,6 +151,9 @@ for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
   dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
   dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
 /* Entladen: nur am Bindestein, die Splitter verfallen */
+/* Phase 6 (#17, #18): Federsiegel herstellen (zweiter Weg zum Thronsaal) und den Splitterkern in den Wegstein setzen (200 Ladungen, einmal) */
+dazu({ id: "federsiegel", station: "bindestein", ergebnis: "federsiegel", level: 30, zutaten: [{ g: ["rabenfedern"], n: 25 }, { g: ["splitter"], n: 50 }], xp: 120, ticks: 6, stufe: 2, gruppe: "Siegel" });
+dazu({ id: "splitterkern_einsetzen", station: "bindestein", ergebnis: "merker:splitterkern_wegstein", level: 1, zutaten: [{ g: ["splitterkern"], n: 1 }], xp: 50, ticks: 4, stufe: 2, gruppe: "Wegstein" });
 dazu({ id: "waffe_entladen", station: "bindestein", ergebnis: "entladen:" + AN_WAFFE, level: 1, zutaten: [], xp: 0, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
 /* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */

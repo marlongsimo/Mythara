@@ -10,7 +10,7 @@
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
 import { Wirkung, wirkungenPruefen, wirkungenAktiv, wirkungDazu } from "../../shared/wirkungen";
-import { LADBAR, LADUNG_MAX, WAFFE_LADEN, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
+import { LADBAR, LADUNG_MAX, LADUNG_MAX_KERN, KERN_MERKER, WAFFE_LADEN, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN, fachD, Daten, datenPruefen, datenGleich, geladen, ablegbar, handelbar, anzeigeName } from "../../shared/gegenstaende";
 import { berufeUmstellen, UMSTELLUNG_SCHMIEDEN } from "../../shared/berufe";
 import { Startwaffe } from "../../shared/aussehen";
@@ -54,7 +54,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
       for (const [g, v] of Object.entries(t as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (bank.some((b) => b[0] === g) && n >= 1 && n <= BANK_REITER) tabs[g] = n; }
       if (Object.keys(tabs).length) { inv.bankTabs = tabs; reiterOrdnen(inv); } } }
   { const b = (o as { berufe?: unknown }).berufe; if (b && typeof b === "object") { const be: Record<string, number> = {}; for (const [k, v] of Object.entries(b as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (/^[a-z]{3,20}$/.test(k) && n > 0) be[k] = Math.min(200_000_000, n); } if (Object.keys(be).length) inv.berufe = be; } }
-  { const l = (o as { ladungen?: unknown }).ladungen; if (l && typeof l === "object") { const la: Record<string, number> = {}; for (const [k, v] of Object.entries(l as Record<string, unknown>)) { const n = Math.floor(Number(v)); if ((LADBAR as readonly string[]).includes(k) && n > 0) la[k] = Math.min(LADUNG_MAX, n); } if (Object.keys(la).length) inv.ladungen = la; } }
+  { const l = (o as { ladungen?: unknown }).ladungen; if (l && typeof l === "object") { const la: Record<string, number> = {}; for (const [k, v] of Object.entries(l as Record<string, unknown>)) { const n = Math.floor(Number(v)); if ((LADBAR as readonly string[]).includes(k) && n > 0) la[k] = Math.min(LADUNG_MAX_KERN, n); } if (Object.keys(la).length) inv.ladungen = la; } }
   { const w = wirkungenAktiv(wirkungenPruefen((o as { wirkungen?: unknown }).wirkungen)); if (w.length) inv.wirkungen = w; }
   { const w = (o as { warten?: Record<string, unknown> }).warten; if (w && typeof w === "object" && typeof w.r === "string" && /^[a-z0-9_]{1,40}$/.test(w.r) && Number(w.n) >= 1 && Number.isFinite(Number(w.fertig))) inv.warten = { r: w.r, n: Math.min(1000, Math.floor(Number(w.n))), fertig: Number(w.fertig) }; } /* Räucherhütte */
   /* Einmalige Umstellung der Berufe (shared/berufe.ts): Schmieden startet mit dem Stand des Handwerks – mit Merker, damit es nur einmal geschieht */
@@ -200,9 +200,14 @@ export function trankZurueck(sb: Sb, nutzer: string, g: string): void { aufnehme
 /* ───────── Berufe (Holzfällerei …): XP im Inventar ───────── */
 /** Ladungen (Wegstein …) – Zahl im Inventar, höchstens LADUNG_MAX */
 export function ladungen(nutzer: string, g: string): number { const e = je.get(nutzer); return (e && e.inv.ladungen && e.inv.ladungen[g]) || 0; }
-/** n Ladungen dazu (gekappt bei LADUNG_MAX). Zurück: wie viele wirklich dazukamen */
+/** Höchstzahl Ladungen (der Wegstein mit Splitterkern fasst LADUNG_MAX_KERN) */
+export function ladungMax(nutzer: string, g: string): number { const e = je.get(nutzer); return g === "wegstein" && e && (e.inv.merker || []).includes(KERN_MERKER) ? LADUNG_MAX_KERN : LADUNG_MAX; }
+/** Ein Merker im Inventar (einmalige Dinge: Splitterkern eingesetzt …) */
+export const merkerHat = (nutzer: string, m: string): boolean => { const e = je.get(nutzer); return Boolean(e && (e.inv.merker || []).includes(m)); };
+export function merkerDazu(sb: Sb, nutzer: string, m: string): boolean { const e = je.get(nutzer); if (!e || (e.inv.merker || []).includes(m)) return false; e.inv.merker = [...(e.inv.merker || []), m]; geaendert(sb, nutzer, e); return true; }
+/** n Ladungen dazu (gekappt bei ladungMax). Zurück: wie viele wirklich dazukamen */
 export function ladungenDazu(sb: Sb, nutzer: string, g: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return 0;
-  const l = e.inv.ladungen || (e.inv.ladungen = {}), vorher = l[g] || 0, neu = Math.min(LADUNG_MAX, vorher + Math.floor(n)); l[g] = neu; geaendert(sb, nutzer, e); return neu - vorher; }
+  const l = e.inv.ladungen || (e.inv.ladungen = {}), vorher = l[g] || 0, neu = Math.min(ladungMax(nutzer, g), vorher + Math.floor(n)); l[g] = neu; geaendert(sb, nutzer, e); return neu - vorher; }
 /** eine Ladung verbrauchen. Zurück: ob eine da war */
 /** Laufende Wirkungen (abgelaufene fallen weg) */
 export function wirkungenVon(nutzer: string): Wirkung[] { const e = je.get(nutzer); return e ? wirkungenAktiv(e.inv.wirkungen) : []; }

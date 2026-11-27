@@ -558,6 +558,7 @@ export class Sim {
     if (L.schwebBis !== undefined && L.schwebBis <= this.zeit) { L.schwebBis = undefined; const T = B.phasen[L.phase].landen; this.ev.push(T ? { a: "landen", id: w.id, text: T } : { a: "landen", id: w.id }); }
     const P = B.phasen[L.phase]; L.t += DT;
     for (const [i, H] of (P.heilorte || []).entries()) { const k = L.phase + ":" + i; if ((L.heil[k] || 0) >= (H.mal ?? 1) || w.lp / w.max >= H.unter) continue;
+      if (H.ausser && (ziel.schalterAn || []).includes(H.ausser)) continue; /* Becken getrübt (Schalter des Ziels) */
       const hx = H.x - this.ursprung[0], hy = H.y - this.ursprung[1];
       if (Math.hypot(w.x - hx, w.y - hy) <= H.r) { L.heil[k] = (L.heil[k] || 0) + 1; w.trinkT = H.dauer ?? 1.5; w.trinkN = H.menge; w.pfad = []; this.ev.push(H.text ? { a: "trinken", id: w.id, t: w.trinkT, text: H.text } : { a: "trinken", id: w.id, t: w.trinkT }); return true; }
       if (H.hingehen) { w.neuWeg -= DT; if (w.neuWeg <= 0 || !w.pfad.length) { w.pfad = this.wegZu(w, { x: hx, y: hy }); w.neuWeg = 0.5; } return true; } }
@@ -615,6 +616,7 @@ export class Sim {
   private instanzGegner(key: string, g: InstanzGegner, welle?: number): Wesen | null { if (!MONSTER[g.art]) return null;
     const p0 = { x: g.x - this.ursprung[0], y: g.y - this.ursprung[1] }, p = this.felder ? mitte(p0) : p0, m = this.neu(false, g.art, 1, p, true, 0);
     if (this.eigeneWerte) m.lp = m.max = MONSTER[g.art].lp; m.instanz = key; m.heim = { x: p.x, y: p.y }; if (welle !== undefined) m.welle = welle;
+    { const I = this.inst.get(key); if (I) { const F = I.def.feld; m.lagerLeine = Math.max(14, Math.hypot(F[2] - F[0], F[3] - F[1]) + 2); } } /* in der Kopie: die Leine reicht durch den ganzen Raum (Boss im Thronsaal) */
     this.ev.push({ a: "auftauchen", id: m.id, x: m.x, y: m.y }); return m; }
   /** Je Kopie: Wellen nachschicken (die nächste, wenn die vorige gefallen ist), leere Kopien nach INSTANZ_LEER Sekunden abbauen */
   private instanzSchritt(): void {

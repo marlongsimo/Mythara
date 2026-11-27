@@ -20,6 +20,17 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
+    "aschenwerth": {"leine": 12, "wandern": 2,
+                    "lager": [("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
+                              ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716), ("federmutter", 6214, 6704),
+                              ("moorrabe", 6198, 6688), ("moorrabe", 6200, 6688), ("moorrabe", 6202, 6688)]},
+    # Phase 6 (#17, #26): Rabengrund – Federgänge mit Moorrabenschwärmen und Akoluthen bis zum Kerker; der Oberste wartet im Thronsaal (Instanz, shared/bosse.ts)
+    "rabengrund": {"leine": 10, "wandern": 2, "mehrkampf": [],
+                   "lager": [("moorrabe", 10592, 9643), ("moorrabe", 10590, 9641), ("moorrabe", 10592, 9641),
+                             ("rabenpriester_akoluth", 10600, 9631), ("rabenpriester_akoluth_speer", 10598, 9629),
+                             ("moorrabe", 10622, 9672), ("moorrabe", 10624, 9672), ("moorrabe", 10616, 9674),
+                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("rabenpriester_akoluth_speer", 10645, 9612)]},
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
     "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).
