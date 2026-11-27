@@ -10171,6 +10171,242 @@
     "url": "img/objekte3d/skilling/kraeuter/splitterlilie-geerntet.glb",
     "wind": 0
    }
+  },
+  {
+   "id": "kueste_kran",
+   "name": "Hafenkran",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kran.webp",
+   "groesse": [
+    195,
+    271
+   ],
+   "anker": [
+    0.5,
+    0.9373
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 1.3
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kran.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_poller",
+   "name": "Poller",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_poller.webp",
+   "groesse": [
+    17,
+    39
+   ],
+   "anker": [
+    0.4706,
+    0.8974
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 0.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/poller.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_taurolle",
+   "name": "Taurolle",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_taurolle.webp",
+   "groesse": [
+    48,
+    33
+   ],
+   "anker": [
+    0.4896,
+    0.8182
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/taurolle.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_fischkisten",
+   "name": "Fischkisten",
+   "kategorie": "kleinteil",
+   "bild": "img/welt/stil/kueste_fischkisten.webp",
+   "groesse": [
+    72,
+    64
+   ],
+   "anker": [
+    0.3472,
+    0.875
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -0.4,
+    "y": -0.25,
+    "b": 1.2,
+    "h": 0.5
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/fischkisten.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_ruderboot",
+   "name": "Ruderboot",
+   "kategorie": "wasserbau",
+   "bild": "img/welt/stil/kueste_ruderboot.webp",
+   "groesse": [
+    210,
+    94
+   ],
+   "anker": [
+    0.5,
+    0.8085
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/ruderboot.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_leuchtturm",
+   "name": "Leuchtturm",
+   "kategorie": "gebaeude",
+   "bild": "img/welt/stil/kueste_leuchtturm.webp",
+   "groesse": [
+    255,
+    664
+   ],
+   "anker": [
+    0.498,
+    0.9654
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "kreis",
+    "r": 2.4
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/leuchtturm.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_kaimauer_gerade",
+   "name": "Kaimauer (gerade)",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kaimauer_gerade.webp",
+   "groesse": [
+    218,
+    208
+   ],
+   "anker": [
+    0.5,
+    0.9087
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.6,
+    "b": 4.0,
+    "h": 1.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kaimauer_gerade.glb",
+    "wind": 0,
+    "fest": true
+   }
+  },
+  {
+   "id": "kueste_kaimauer_ecke",
+   "name": "Kaimauer (Ecke)",
+   "kategorie": "bauteil",
+   "bild": "img/welt/stil/kueste_kaimauer_ecke.webp",
+   "groesse": [
+    155,
+    216
+   ],
+   "anker": [
+    0.5,
+    0.9352
+   ],
+   "massstab": 1,
+   "kollision": {
+    "art": "rechteck",
+    "x": -2.0,
+    "y": -0.6,
+    "b": 2.6,
+    "h": 1.2
+   },
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/kueste_objekte.py (Kielmund, #174), gerendert mit fabrik/baum_render.py",
+   "modell3d": {
+    "url": "img/objekte3d/kueste/kaimauer_ecke.glb",
+    "wind": 0,
+    "fest": true
+   },
+   "hinweis": "Kollision deckt nur den Schenkel entlang x; den zweiten Schenkel (entlang y, Wasser bei +x) bitte mit kaimauer_gerade gedreht ergänzen oder Kollision im Ort setzen"
   }
  ]
 }
