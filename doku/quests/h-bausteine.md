@@ -39,7 +39,6 @@ Rolle Quests, 27.11.2026. Grundlage: `doku/konzepte/phase-11.md` (Tabelle Block 
 
 ## Was noch fehlt (#118)
 
-- **Welt:** eine Werkbank in Steinhag für das Grubenholz. Bis dahin geht jede Werkbank.
 - **Integration:**
   - `questFigur` in `laeden.ts` (sonst stehen die Bewohner doppelt da):
     - `hochland_furtwache` → `furtwache`

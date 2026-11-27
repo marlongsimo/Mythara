@@ -46,7 +46,7 @@ try {
   async function spielH3() {
     console.log("H3 „Tiefer als erlaubt“");
     check(await mitHeld(jo, H3, "wendel", "annehmen") && stand(jo, H3).phase === "laeuft", "Jo nimmt H3 bei Steiger Wendel an (nach H1, Bergbau 50, Handwerk 45)");
-    { let r = "ok"; for (let i = 0; i < 4 && r === "ok" && anzahl(jo, "grubenstempel") < 3; i++) r = await herstellen(jo, 6310.7, 6703.5, "grubenstempel"); /* Werkbank im Rabenmoor (neben Harm) */
+    { let r = "ok"; for (let i = 0; i < 4 && r === "ok" && anzahl(jo, "grubenstempel") < 3; i++) r = await herstellen(jo, 7011, 5916.6, "grubenstempel"); /* Werkbank in Steinhag (werkbank_steinhag) */
       check(anzahl(jo, "grubenstempel") >= 3, `Drei Grubenstempel an der Werkbank (${r}, ${anzahl(jo, "grubenstempel")})`); }
     await stelle(jo, 7128, 5808); await ort(jo, "hochlande_bergwerk", 11607.5, 9628); /* durch den Stolleneingang am Erzberg */
     for (const i of [1, 2, 3]) await objekt(jo, H3, "h3_stempel_" + i);
