@@ -1,13 +1,14 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt | wildbret | wildbretbraten
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt | wildbret | wildbretbraten | silberbarsch_gebraten | sturmhecht_kraeuterkruste | tiefseeaal_suppe
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
 mehl: Leinensack, zugebunden, Mehl obenauf und daneben · krug_wasser: Tonkrug mit Henkel, Wasser oben · kessel: eiserner Kessel mit Bügel.
 Phase 9: salz (offener Beutel Salz mit Kristallen) · glutwels_salzkruste (Glutwels in aufgebrochener Salzkruste auf dem Tonteller).
 Süden (#121): hasenfleisch · wildschweinfleisch · wolfsfleisch (Form des Kuhfleischs) · hasenbraten · rinderbraten · wildschweinbraten (auf dem Tonteller) · wolfsgulasch (Schale des Bauerneintopfs)
+Zunft (#176): silberbarsch_gebraten (ganzer Fisch, Grillstreifen, Zitrone) · sturmhecht_kraeuterkruste (wie die Salzkruste, grün) · tiefseeaal_suppe (wie die Aalsuppe, dunkelblau)
 Rucksackbilder (#166): wildbret (mageres, dunkelrotes Stück mit Knochen) · wildbretbraten (Scheiben wie der Rinderbraten, dunkler, mit Preiselbeeren)
 Phase 10: raeucherhering (zwei Räucherheringe auf dem Brett) · barsch_salzkruste (Klippenbarsch in Salzkruste) · aalsuppe (Holzschale mit Aalstücken).
 """
@@ -174,9 +175,10 @@ elif ART == "salz":                                                             
     for k in range(7):
         bpy.ops.mesh.primitive_cube_add(size=random.uniform(0.01, 0.016), location=(random.uniform(0.05, 0.14), random.uniform(-0.1, 0.0), 0.006), rotation=(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 3)))
         bpy.context.object.data.materials.append(KR)
-elif ART in ("glutwels_salzkruste", "barsch_salzkruste"):                                                              # Phase 9: Glutwels in Salzkruste – auf dem Tonteller, Kruste aufgebrochen, Kopf und Schwanz schauen heraus
+elif ART in ("glutwels_salzkruste", "barsch_salzkruste", "sturmhecht_kraeuterkruste"):                                                              # Phase 9: Glutwels in Salzkruste – auf dem Tonteller, Kruste aufgebrochen, Kopf und Schwanz schauen heraus
     TON = mat("tonteller", (120, 62, 36), 0.75); KRUSTE = mat("salzkruste", (252, 248, 236), 0.7); BRAUN = mat("kruste_braun", (214, 162, 96), 0.8)
-    FISCH = mat("fisch_gegart", (196, 92, 40) if ART == "glutwels_salzkruste" else (214, 110, 70), 0.5); FLEISCH = mat("fischfleisch", (250, 226, 200), 0.6); KRAUT = mat("kraut", (70, 120, 50), 0.7); RISS = mat("riss", (120, 100, 80), 0.9)
+    if ART == "sturmhecht_kraeuterkruste": KRUSTE = mat("kraeuterkruste", (120, 146, 72), 0.8); BRAUN = mat("kraeuterkruste_braun", (150, 130, 62), 0.8)   # #176: Kräuterkruste statt Salz
+    FISCH = mat("fisch_gegart", {"glutwels_salzkruste": (196, 92, 40), "sturmhecht_kraeuterkruste": (150, 128, 92)}.get(ART, (214, 110, 70)), 0.5); FLEISCH = mat("fischfleisch", (250, 226, 200), 0.6); KRAUT = mat("kraut", (70, 120, 50), 0.7); RISS = mat("riss", (120, 100, 80), 0.9)
     bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.2, depth=0.014, location=(0, 0, 0.007)); t = bpy.context.object; t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)   # flacher Tonteller
     bpy.ops.mesh.primitive_torus_add(major_radius=0.2, minor_radius=0.009, location=(0, 0, 0.016), major_segments=48, minor_segments=8); t = glatt(bpy.context.object); t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)
     k = kugel((0, 0, 0.03), 0.07, KRUSTE, (2.6, 0.95, 0.62), 24)
@@ -192,6 +194,17 @@ elif ART in ("glutwels_salzkruste", "barsch_salzkruste"):                       
     bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.055, radius2=0.0, depth=0.07, location=(0.21, 0, 0.05), rotation=(0, math.radians(-90), 0)); o = bpy.context.object; o.scale = (1, 1, 0.2); o.data.materials.append(FISCH)   # Schwanz
     for x, y in ((-0.1, 0.07), (-0.05, 0.08), (0.13, 0.07), (0.16, -0.06)): kugel((x, y, 0.03), 0.011, KRAUT, (1.6, 0.8, 0.4), 8).rotation_euler = (0, 0, x * 9)
     for k_ in range(10): kugel((random.uniform(-.2, .2), random.uniform(-.12, .12), 0.028), 0.004, mat("salz", (246, 244, 238), 0.55), (1, 1, 0.7), 6)
+elif ART == "silberbarsch_gebraten":                                                            # #176: gebratener Silberbarsch – ganz auf dem Tonteller, goldbraun mit Grillstreifen, Zitrone, Kräuter
+    TON = mat("tonteller", (120, 62, 36), 0.75); HAUT = mat("barsch_gebraten", (206, 140, 66), 0.45); STREIF = mat("grillstreifen", (90, 50, 22), 0.6)
+    ZI = mat("zitrone", (240, 214, 70), 0.5); KRAUT = mat("kraut", (70, 120, 50), 0.7)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.2, depth=0.014, location=(0, 0, 0.007)); t = bpy.context.object; t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.2, minor_radius=0.009, location=(0, 0, 0.016), major_segments=48, minor_segments=8); t = glatt(bpy.context.object); t.scale = (1.1, 0.72, 1); t.data.materials.append(TON)
+    kugel((0, 0, 0.035), 0.06, HAUT, (2.4, 0.75, 0.75), 24)                                        # hochrückiger Körper
+    for x in (-0.06, -0.02, 0.02, 0.06): kugel((x, 0, 0.078), 0.03, STREIF, (0.12, 1.4, 0.08), 8).rotation_euler = (0, 0, 0.5)
+    kugel((-0.15, 0, 0.035), 0.035, HAUT, (1.2, 0.8, 0.9), 14); kugel((-0.17, 0.02, 0.05), 0.007, mat("auge_gegart", (240, 235, 220), 0.2))
+    bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.05, radius2=0.0, depth=0.06, location=(0.17, 0, 0.04), rotation=(0, math.radians(-90), 0)); o = bpy.context.object; o.scale = (1, 1, 0.22); o.data.materials.append(HAUT)
+    for x, y in ((0.1, 0.09), (0.15, 0.07)): kugel((x, y, 0.024), 0.022, ZI, (1.0, 0.45, 0.35), 12).rotation_euler = (0, 0, x * 8)   # Zitronenspalten
+    for x, y in ((-0.08, -0.08), (-0.02, -0.09), (0.05, -0.085)): kugel((x, y, 0.024), 0.012, KRAUT, (1.6, 0.8, 0.4), 8).rotation_euler = (0, 0, x * 9)
 elif ART == "raeucherhering":                                                                     # Phase 10: zwei Räucherheringe an der Schnur über einem Holzbrett
     BRETT = mat("brett", (150, 110, 70), 0.85); RAUCH = mat("raeucherhaut", (176, 112, 44), 0.35); GOLD_ = mat("raeuchergold", (214, 150, 60), 0.3); SCHN = mat("schnur", (170, 140, 96), 0.9)
     wuerfel((0, 0, 0.01), 0.02, BRETT).scale = (14, 8, 1)
@@ -201,10 +214,11 @@ elif ART == "raeucherhering":                                                   
         bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.03, radius2=0.0, depth=0.04, location=(0.14, y, 0.04), rotation=(0, math.radians(-90), 0)); o = bpy.context.object; o.scale = (1, 1, 0.25); o.data.materials.append(RAUCH)
         kugel((-0.115, y, 0.045), 0.007, mat("auge_gegart", (240, 235, 220), 0.2))
     rohr([(0.12, -0.04, 0.045), (0.14, 0.0, 0.07), (0.12, 0.045, 0.045)], 0.003, SCHN)
-elif ART == "aalsuppe":                                                                          # Phase 10: Aalsuppe – Holzschale, grünliche Brühe, Aalstücke, Kräuter, Löffel
-    inh = schale(mat("holz", (140, 95, 58), 0.8), mat("aalbruehe", (196, 186, 120), 0.25))
+elif ART in ("aalsuppe", "tiefseeaal_suppe"):                                                   # Phase 10: Aalsuppe – Holzschale, grünliche Brühe, Aalstücke, Kräuter, Löffel; #176 Tiefseeaal: dunkelblaue Haut, goldene Brühe
+    TS = ART == "tiefseeaal_suppe"
+    inh = schale(mat("holz", (140, 95, 58), 0.8), mat("tiefsee_bruehe" if TS else "aalbruehe", (214, 168, 92) if TS else (196, 186, 120), 0.25))
     for x, y in ((-0.03, 0.02), (0.025, -0.02), (0.02, 0.035), (-0.035, -0.03)):
-        o = dreh("aalstueck", [(0, 0), (0.016, 0), (0.016, 0.012), (0, 0.012)], mat("aalhaut", (60, 64, 52), 0.4), 16); o.location = (x, y, 0.036); o.rotation_euler = (math.radians(90), 0, x * 20)
+        o = dreh("aalstueck", [(0, 0), (0.016, 0), (0.016, 0.012), (0, 0.012)], mat("tiefseeaal_haut", (30, 42, 80), 0.35) if TS else mat("aalhaut", (60, 64, 52), 0.4), 16); o.location = (x, y, 0.036); o.rotation_euler = (math.radians(90), 0, x * 20)
         kugel((x, y, 0.043), 0.012, mat("aalfleisch", (240, 228, 210), 0.5), (1, 1, 0.3), 10)
     for k in range(6): kugel((random.uniform(-.05, .05), random.uniform(-.05, .05), 0.041), 0.006, mat("kraut", (70, 120, 50), 0.7), (1.5, 0.8, 0.3), 6)
     rohr([(0.05, 0.0, 0.04), (0.09, 0.02, 0.06), (0.14, 0.03, 0.075)], 0.005, mat("holzloeffel", (176, 130, 80), 0.7))
