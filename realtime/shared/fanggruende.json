@@ -1068,6 +1068,45 @@
      7674.5
     ]
    ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach",
+   "name": "Reifbach: am Bach",
+   "art": "bachling",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6393.5,
+     5743.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bach_unten",
+   "name": "Reifbach: unterer Bach",
+   "art": "muehlbarsch",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6402.5,
+     5722.5
+    ]
+   ]
+  },
+  {
+   "id": "fischplatz_reifbach_bucht",
+   "name": "Reifbach: Bucht",
+   "art": "hering",
+   "region": "fl_186_169",
+   "aktiv": 1,
+   "felder": [
+    [
+     6411.5,
+     5704.5
+    ]
+   ]
   }
  ],
  "wurmacker": {

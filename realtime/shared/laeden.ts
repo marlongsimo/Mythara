@@ -29,6 +29,13 @@ const waffen = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE
 const PLATZ_REIHE = ["kopf", "brust", "beine", "nebenhand"];
 const ruestung = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.platz && G.platz !== "waffe" && BIS_SELTEN.includes(G.seltenheit); })
   .sort((a, b) => PLATZ_REIHE.indexOf(GEGENSTAENDE[a].platz!) - PLATZ_REIHE.indexOf(GEGENSTAENDE[b].platz!) || nachSeltenheit(a, b));
+/** Händler-Staffel (Entscheidung des Nutzers, 27.11., Ausgabe 1): je weiter man kommt, desto höher die Stufe – nichts wird weggenommen.
+ *  „Episch“ (Stufe 35) nur in Rotlehm (Ockerlande); Legendär und Mythisch nie im Laden (Handwerk und Drops). */
+const EPISCH_PREIS = 3000;
+const istLadenWaffe = (id: string) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.platz === "waffe" && (WAFFEN_ARTEN.includes(G.art) || istKurzbogen(id)) && !(G.art === "Bogen" && !istKurzbogen(id)); };
+const waffenEpisch = Object.keys(GEGENSTAENDE).filter((id) => GEGENSTAENDE[id].seltenheit === "episch" && istLadenWaffe(id));
+const ruestungEpisch = Object.keys(GEGENSTAENDE).filter((id) => { const G = GEGENSTAENDE[id]; return !G.untauschbar && G.seltenheit === "episch" && G.platz && G.platz !== "waffe"; });
+const wareEpisch = (g: string): Ware => ({ g, preis: EPISCH_PREIS });
 
 export const LAEDEN: Record<LadenId, Laden> = {
   waffen: { id: "waffen", name: "Zur Scharfen Kante", spruch: "Spitz, schwer oder beides – wir haben's.", haendler: "Brann Hackebeil", modell: "npc.schmied", x: 6439.2, y: 6439.2, blick: [0, -1], vor: [6439.5, 6436.5],
@@ -113,10 +120,10 @@ ort("sandquell_herberge", { name: "Herberge Zur kühlen Quelle", spruch: "Schatt
 ort("sandquell_markt", { name: "Wüstenmarkt", spruch: "Was die Karawanen bringen.", haendler: "Tarek Salzer", modell: "npc.kaufmann", x: 7378, y: 6753.4,
   gruss: "Tränke gegen die Hitze, Fläschchen, Äpfel aus dem Westen. Teuer? Sie sind weit gereist.", tschuess: "Möge der Wind dir den Rücken kühlen.",
   waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 3), W("apfel", 3), W("krug", 6)] });
-ort("troedler_sandquell", { name: "Karawanenlager", spruch: "Wir kaufen, was sich tragen lässt.", haendler: "Karawanenmeister Ruben Weit", modell: "npc.karawane", x: 7370, y: 6759.6, troedler: true,
+ort("troedler_sandquell", { questFigur: "ruben", name: "Karawanenlager", spruch: "Wir kaufen, was sich tragen lässt.", haendler: "Karawanenmeister Ruben Weit", modell: "npc.karawane", x: 7370, y: 6759.6, troedler: true,
   gruss: "Alles, was sich auf ein Tier packen lässt, nehme ich. Zum halben Preis – die Reise ist lang.", tschuess: "Wir ziehen morgen weiter. Vielleicht.",
   zeilen: ["Glutbrunn, die Salzpfanne, der Nordstrand – ohne Sandquell kommt keine Karawane durch."] });
-ort("sandquell_quelle", { name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
+ort("sandquell_quelle", { questFigur: "ayla", name: "Quellwächterin", spruch: "", haendler: "Ayla Dünenruh", modell: "npc.glutbrunn_frau", x: 7386, y: 6745, nurReden: true,
   gruss: "Die Quelle gehört niemandem. Darum wache ich über sie.", tschuess: "Geh mit Wasser.",
   zeilen: ["Seit hundert Jahren ist sie nicht versiegt. Wer Sand hineinwirft, bekommt es mit mir zu tun.", "Nachts hört man die Dünen singen. Das ist nur der Wind. Meistens."] });
 /* ───── Phase 11 (doku/konzepte/phase-11.md): die Hochlande – Steinhag, Erzberg, Passwacht, Hohe Alm, Einsiedelei. Plätze der Welt (welt/hochlande_orte.json),
@@ -241,6 +248,9 @@ ort("fahleweiten_brechstein", { name: "Steinbrecherbedarf", spruch: "Hacken für
 ort("fahleweiten_wollhag", { name: "Wollhager Hofladen", spruch: "Milch und Käse von der Heide.", haendler: "Hilla Schur", modell: "npc.sennerin", x: 6567, y: 5740.2, blick: [0, -1],
   gruss: "Die Schafe geben Wolle, die Ziegen Milch – und aus der Milch wird Käse. Probier!", tschuess: "Grüß mir die Grauwacht.",
   waren: [W("ziegenmilch", 6), W("kaeselaib", 45), W("brot", 8)] });
+ort("fahleweiten_reifbach", { name: "Reifbacher Räucherei", spruch: "Räucherfisch und Angelzeug.", haendler: "Fischer Arno", modell: "npc.fischer", x: 6427, y: 5731.2, blick: [0, -1],
+  gruss: "Bachling aus dem Bach, Hering aus der Bucht – und alles, womit man sie fängt.", tschuess: "Petri Heil!",
+  waren: [W("angelrute", 10), W("wurm", 2), W("raeucherhering", 14), W("fisch_muehlbarsch_gebraten", 9)] });
 ort("fahleweiten_weiherhof", { name: "Am Weiher", spruch: "Fisch und Angeln.", haendler: "Jost Reuse", modell: "npc.fischer", x: 6337, y: 5835.7, blick: [0, -1],
   gruss: "Hecht am Steg, Barsch am Ostufer, und im Süden liegt ein alter Wels. Angel und Würmer hab ich da.", tschuess: "Petri Heil!",
   waren: [W("angelrute", 10), W("wurm", 2), W("fisch_muehlbarsch_gebraten", 9), W("fisch_moorhecht_gebraten", 12), W("fisch_wels_gebraten", 25)] });
@@ -274,9 +284,9 @@ ort("rotlehm_stand_1", { name: "Früchte der Ockerlande", spruch: "Was am Strom 
 ort("rotlehm_stand_2", { name: "Heiltränke", spruch: "Gegen Hitze und Wunden.", haendler: "Nabila Salbe", modell: "npc.kraeuterfrau", x: 6835.5, y: 7335.2, blick: [0, -1],
   gruss: "In den Ockerlanden heilt nichts von allein. Ein Trank hilft.", tschuess: "Bleib im Schatten.", waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 2)] });
 ort("rotlehm_waffen", { name: "Klingen von Rotlehm", spruch: "Geschmiedet im roten Lehm.", haendler: "Tariq Schmied", modell: "npc.schmied", x: 6824.5, y: 7349.2, blick: [0, -1],
-  gruss: "Die Karawanen brauchen Schutz – und du eine Klinge.", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
+  gruss: "Die Karawanen brauchen Schutz – und du eine Klinge.", tschuess: "Schlag zuerst.", waren: [...waffen.map(ware), ...waffenEpisch.map(wareEpisch)] });
 ort("rotlehm_ruestung", { name: "Leder und Platten", spruch: "Hält Sonne und Säbel ab.", haendler: "Zahra Niet", modell: "npc.schmiedin", x: 6836.5, y: 7350.7, blick: [0, -1],
-  gruss: "Leichtes Leder für die Hitze, Platten für die Mutigen.", tschuess: "Bleib heil.", waren: ruestung.map(ware) });
+  gruss: "Leichtes Leder für die Hitze, Platten für die Mutigen.", tschuess: "Bleib heil.", waren: [...ruestung.map(ware), ...ruestungEpisch.map(wareEpisch)] });
 ort("rotlehm_karawanenhof_1", { name: "Salz und Vorrat", spruch: "Was die Karawanen brauchen.", haendler: "Karim Salz", modell: "npc.glutbrunn_mann", x: 6786, y: 7309.2, blick: [0, -1],
   gruss: "Salz, Mehl, Wasserkrüge – ohne das zieht keine Karawane los.", tschuess: "Gute Reise.", waren: [W("salz", 6), W("mehl", 3), W("krug_wasser", 2), W("krug", 5)] });
 ort("troedler_rotlehm", { name: "Karawanentausch", spruch: "Wir nehmen, was sich tragen lässt.", haendler: "Händlerin Leyla", modell: "npc.karawane", x: 6806, y: 7309.2, blick: [0, -1], troedler: true,
@@ -328,7 +338,7 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 export const ladenOffen = (L: Laden, stand: (id: string) => string, schalter?: (id: string) => boolean): boolean =>
   (!L.wenn || stand(L.wenn.quest) === L.wenn.phase) && (!L.schalter || Boolean(schalter && schalter(L.schalter)));
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<string, string> = { dornhag_stand: "🧀", tafelrast_stand: "⛏️", rotlehm_stand_1: "🍎", rotlehm_stand_2: "🧪", rotlehm_waffen: "⚔️", rotlehm_ruestung: "🛡️", rotlehm_karawanenhof_1: "🧂", rotlehm_taverne: "🍲", brunnenkreis_stand: "💧", grauwacht_stand_1: "🍞", grauwacht_stand_2: "🧪", grauwacht_taverne: "🍲", grauwacht_waffen: "⚔️", grauwacht_stand_3: "🛡️", grauwacht_stand_4: "🔨", grauwacht_gerberei: "🧶", grauwacht_tischlerei: "🪚", grauwacht_weberei: "🧵", fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
+export const LADEN_ZEICHEN: Record<string, string> = { fahleweiten_reifbach: "🎣", dornhag_stand: "🧀", tafelrast_stand: "⛏️", rotlehm_stand_1: "🍎", rotlehm_stand_2: "🧪", rotlehm_waffen: "⚔️", rotlehm_ruestung: "🛡️", rotlehm_karawanenhof_1: "🧂", rotlehm_taverne: "🍲", brunnenkreis_stand: "💧", grauwacht_stand_1: "🍞", grauwacht_stand_2: "🧪", grauwacht_taverne: "🍲", grauwacht_waffen: "⚔️", grauwacht_stand_3: "🛡️", grauwacht_stand_4: "🔨", grauwacht_gerberei: "🧶", grauwacht_tischlerei: "🪚", grauwacht_weberei: "🧵", fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
   haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", kielmund_fischmarkt: "🐟", kielmund_schiffsbedarf: "🎣", kielmund_rauchfang: "🐟", kielmund_gewuerze: "🧂", kielmund_waffen: "⚔️", kielmund_ruestung: "🛡️", kielmund_werkzeug: "🔨", kielmund_traenke: "🧪", kielmund_baecker: "🍞", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */

@@ -51,6 +51,7 @@ TESTS=(
   welt-kielmund
   steinhag-welt
   kielmund-welt
+  ockerlande-welt
   phase5
   phase8-10
   abholen
