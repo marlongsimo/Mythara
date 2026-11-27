@@ -29,9 +29,12 @@ const lies = (id, x, y, text, mehr = {}) => ({ id, art: mehr.tat ? "eingang" : "
 const spiel = { start: [[EINGANG[0] - OX, EINGANG[1] - OY]], figuren: [], spawnzonen: [], ausgaenge: [], kollision: { sperren: [], freigeben: [] },
   interaktionen: [lies("kammer_ausgang", 16, 28.4, "Der Gang zurück in die Vorkammer.", { tat: "kammer_zurueck", knopf: "Zurück in die Vorkammer", ziel: VORKAMMER }),
     lies("thron", THRON[0], THRON[1] + 1.8, "Der Stuhl des Anführers, aus Fässern und Schilden gezimmert. Dahinter hängt das rote Banner der Bande.")] };
+/* nur beim Aufruf als Werkzeug schreiben (unterschlupf.mjs und Tests importieren die Maße) */
+if (process.argv[1] && process.argv[1].endsWith("rotmantel_kammer.mjs")) {
 const dir = join(WELT, "regionen", "rotmantel_kammer"); mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "region.json"), JSON.stringify({ id: "rotmantel_kammer", name: "Die Kammer des Anführers", untertitel: "Hauptmann Rotmantel", ursprung: URSPRUNG, chunks: [1, 1], biom: "hoehle", stufe: 5, ebene: "untergrund" }, null, 1) + "\n");
 writeFileSync(join(dir, "gelaende.txt"), g.map((z) => z.join("")).join("\n") + "\n");
 writeFileSync(join(dir, "objekte.json"), "[\n" + dinge.map((p) => " " + JSON.stringify(p)).join(",\n") + "\n]\n");
 writeFileSync(join(dir, "spiel.json"), JSON.stringify(spiel, null, 1) + "\n");
 console.log(`rotmantel_kammer: ${B} × ${H} Felder, ${dinge.length} Dinge`);
+}
