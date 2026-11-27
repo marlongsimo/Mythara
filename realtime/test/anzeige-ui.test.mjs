@@ -82,6 +82,8 @@ try {
     check(bb.some((x) => x === true), "Mitspieler im Kampf: Lebensbalken sichtbar " + JSON.stringify(bb)); }
   check(menueLv && /Bandit Lvl 1/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit Lvl 1“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-angreifen.png" });
+  /* Nach den Kampf-Prüfungen Anna aus dem Banditengebiet holen: unter Last stirbt sie dort sonst, und gefallen() leitet (gewollt) auf ./?von=tod weiter – der Rest des Tests liefe ins Leere */
+  await anna.evaluate(() => window.EZW.welt3d.versetzen(6448.5, 6444.5)); await anna.waitForTimeout(1500);
   check(await anna.evaluate(() => { const W = window.EZW.welt3d; return typeof W.ausfuehren === "function"; }), "3D-Welt bereit");
   await anna.evaluate(() => { const W = window.EZW.welt3d; W.ausfuehren({ x: W.ort.x, y: W.ort.y, text: "Eiche fällen", tat: () => {}, da: () => true }, () => {}); });
   check(await anna.evaluate(() => document.getElementById("ez-tat").textContent) === "Fällen: Eiche", "„Eiche fällen“ → „Fällen: Eiche“");
