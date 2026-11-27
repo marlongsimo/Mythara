@@ -62,6 +62,7 @@ SUEDEN_MITTEN = [(x, y) for x in range(6200, 6420, 10) for y in range(6800, 6960
 def bewerte(cx, cy, art, plaetze):
     x0, y0 = int(cx - SEITE / 2) - X0, int(cy - SEITE / 2) - Y0
     if x0 < 2 or y0 < 2 or x0 + SEITE > B - 2 or y0 + SEITE > H - 2: return None
+    if len({REG[y0, x0], REG[y0, x0 + SEITE - 1], REG[y0 + SEITE - 1, x0], REG[y0 + SEITE - 1, x0 + SEITE - 1], REG[y0 + SEITE // 2, x0 + SEITE // 2]}) != 1: return None   # ganz in einem Gebiet (Systeme schneidet sonst ab)
     g = geh[y0:y0 + SEITE, x0:x0 + SEITE]
     if not g[SEITE // 2, SEITE // 2]: return None
     lab, _ = ndimage.label(g); k = lab[SEITE // 2, SEITE // 2]; zus = lab == k
@@ -92,6 +93,7 @@ for art, land, name, anzahl in WUNSCH:
                 if b and (best is None or b[0] > best[0][0]): best = (b, p['x'] + dx, p['y'] + dy)
     if not best: print(f'{name}: kein Gebiet'); continue
     (wert, haupt, mz, (x0, y0)), cx, cy = best
+    # (Ziele wählt Systeme selbst; hier nur zur Prüfung, dass die Fläche zusammenhängt)
     # Ziele: weit verteilt auf dem freien Hauptstück (größter Abstand zueinander, Rand 6 Felder)
     innen = ndimage.binary_erosion(haupt, iterations=4); ys, xs = np.nonzero(innen if innen.any() else haupt)
     pts = list(zip(xs, ys)); ziele = [min(pts, key=lambda q: (q[0] - SEITE / 2) ** 2 + (q[1] - SEITE / 2) ** 2)]
@@ -100,14 +102,12 @@ for art, land, name, anzahl in WUNSCH:
     ziele = [[float(x0 + X0 + x + 0.5), float(y0 + Y0 + y + 0.5)] for x, y in ziele]
     stufe = sorted(p['stufe'] for p in plaetze)[len(plaetze) // 2] if land != 'Süden' else 30; modell = plaetze[0].get('quelle', '')
     gid = 'streifgebiet_' + art + '_' + land.split()[-1].lower().replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
-    gebiete.append({'id': gid, 'name': name, 'gegner': art, 'anzahl': anzahl, 'stufe': stufe, 'land': land,
+    gebiete.append({'id': gid, 'name': name, 'gegner': art, 'anzahl': anzahl[1] if art != 'hochlandbaer' else anzahl[0], 'stufe': stufe, 'land': land,
                     'region': REG[int(cy) - Y0, int(cx) - X0], 'mitte': [round(cx, 1), round(cy, 1)],
-                    'flaeche': [int(x0 + X0), int(y0 + Y0), int(x0 + X0 + SEITE), int(y0 + Y0 + SEITE)], 'ziele': ziele,
-                    'pause': [20, 60], 'meiden': [{'x': round(m[0], 1), 'y': round(m[1], 1), 'r': m[2], 'grund': m[3]} for m in mz],
+                    'rechteck': [int(x0 + X0), int(y0 + Y0), int(x0 + X0 + SEITE - 1), int(y0 + Y0 + SEITE - 1)], 'meiden': [{'x': round(m[0], 1), 'y': round(m[1], 1), 'r': m[2], 'grund': m[3]} for m in mz],
                     'modell': 'vorhanden' if art in MONSTER else 'fehlt'})
     print(f"{name}: Mitte {cx:.0f}|{cy:.0f}, Stufe {stufe}, {len(mz)} Meidekreise, Platzdichte {wert:.1f}")
-json.dump({'hinweis': 'Streifgebiete (#143), erzeugt von werkzeug/welt/streifgebiete.py. Weltfelder. KEIN Rudel: jedes Tier streift einzeln über die Fläche. Je Gebiet: gegner (Art wie in gegnerplaetze.json), '
-           'anzahl [min, max] Tiere, stufe, flaeche [x0, y0, x1, y1] (die Tiere bleiben darin), ziele (Wegpunkte, verbunden begehbar; jedes Tier wählt seine eigenen), pause [s] an einem Ziel, '
-           'meiden (Kreise: Orte, Questorte, Sammelstellen, Bedienstellen – nicht betreten; Wege queren ist erlaubt), modell (vorhanden/fehlt laut gegnerplaetze.json). '
-           'Den Lagertyp baut Systeme.', 'gebiete': gebiete}, open(os.path.join(W, 'streifgebiete.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+json.dump({'hinweis': 'Streifgebiete (#143), erzeugt von werkzeug/welt/streifgebiete.py, gelesen von werkzeug/weltzonen.py (Systeme, 25ac9794). KEIN Rudel: jedes Tier streift einzeln. '
+           'Je Gebiet: id, gegner (Name aus config.ts), anzahl (Tiere), rechteck [x0, y0, x1, y1] in Weltfeldern einschließlich, ganz in region; '
+           'zur Auskunft: name, stufe, land, mitte, modell, meiden (Orte/Questorte/Sammelstellen in der Fläche, Kreise).', 'gebiete': gebiete}, open(os.path.join(W, 'streifgebiete.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 print(f'Streifgebiete: {len(gebiete)}')
