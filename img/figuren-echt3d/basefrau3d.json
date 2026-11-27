@@ -648,6 +648,22 @@
    "platz": "beine",
    "bewegungen": [],
    "datei": "basefrau3d.teile/ruestung.beine.frostschleier.glb"
+  },
+  "schild.glutstein": {
+   "art": "starr",
+   "platz": "arm_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "stich",
+    "block",
+    "zauber_stab",
+    "armbrust1h",
+    "dolchwurf"
+   ],
+   "datei": "basefrau3d.teile/schild.glutstein.glb"
   }
  },
  "aktionen": {

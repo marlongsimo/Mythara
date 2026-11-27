@@ -16,6 +16,10 @@ Bewegungen (24 Bilder/s):
   angriff     – Keulenschlag (Waffe in der rechten Hand): wie faustschlag, der Arm nur bis über die Schulter (Treffer Bild 11 von 21)
   stampfen    – springt, beide Fäuste krachen auf den Boden (Treffer Bild 15 von 25 – Bodenwelle)
   werfen      – hebt mit links einen Fels über den Kopf und wirft ihn nach vorn (Geschoss ab Bild 14 von 25)
+fuss_breite=0.45 · faust_ab=0 · bein_breite=0.52: für breitbeinig stehende Riesen mit Fäusten über dem Boden (Grumhold: fuss_breite=1 faust_ab=0.12 bein_breite=0.85) –
+  Füße bis fuss_breite × halbe Breite nach außen, Fäuste erst ab faust_ab × Höhe, Beingewichte bis bein_breite × halbe Breite
+schlagarm=R: angriff mit dem rechten (R) oder linken (L) Arm – L, wenn das Modell seine Waffe links trägt (Grumhold)
+umhang=<anteil>: Punkte hinter dem Körper (weiter als anteil × halbe Tiefe hinter der Mitte) gehören nicht zu den Armen – für Umhänge, z. B. umhang=0.2
 waffe=<glb>: eine starre Waffe (Knauf/Griff unten, Kopf oben wie fabrik/sueden_objekte.py knueppel) fest in die rechte Faust, entlang des Unterarms
 nach unten verlängert, auf waffe_laenge (m) skaliert – gehört ganz zum Unterarm.
 """
@@ -38,10 +42,11 @@ x, y, z = P[:, 0], P[:, 1], P[:, 2]; ax = np.abs(x); WD = float(ax.max()); yc = 
 
 # ---------------------------------------------------- Knochen aus der Form ----------------------------------------------------
 faeuste, fuesse = {}, {}
+FUSS_BREITE, FAUST_AB, BEIN_BREITE = float(opt.get("fuss_breite", 0.45)), float(opt.get("faust_ab", 0)), float(opt.get("bein_breite", 0.52))
 for S, sx in (("L", 1), ("R", -1)):
     seite = sx * x > 0
-    f = P[seite & (ax > 0.55 * WD) & (z < 0.45 * H)]; faeuste[S] = f.mean(0) if len(f) else np.array([sx * 0.8 * WD, yc, 0.3 * H])
-    b = P[seite & (ax < 0.45 * WD) & (z < 0.06 * H)]; fuesse[S] = b.mean(0) if len(b) else np.array([sx * 0.25 * WD, yc, 0.0])
+    f = P[seite & (ax > 0.55 * WD) & (z < 0.45 * H) & (z >= FAUST_AB * H)]; faeuste[S] = f.mean(0) if len(f) else np.array([sx * 0.8 * WD, yc, 0.3 * H])
+    b = P[seite & (ax < FUSS_BREITE * WD) & (z < 0.06 * H)]; fuesse[S] = b.mean(0) if len(b) else np.array([sx * 0.25 * WD, yc, 0.0])
 SZ = 0.72 * H                                                                                       # Schulterhöhe
 ARM = bpy.data.objects.new("skelett", bpy.data.armatures.new("skelett")); bpy.context.collection.objects.link(ARM)
 bpy.context.view_layer.objects.active = ARM; bpy.ops.object.mode_set(mode="EDIT"); E = ARM.data.edit_bones
@@ -79,8 +84,10 @@ W = 1.0 / (D + 0.02 * H) ** 4
 glatt = lambda v, a, b: np.clip((v - a) / (b - a), 0, 1)
 for S, sx in (("L", 1), ("R", -1)):
     seite = (sx * x > 0).astype(np.float32); aussen = glatt(ax, 0.3 * WD, 0.42 * WD) * seite * glatt(-z, -0.9 * H, -0.8 * H)
+    if "umhang" in opt:                                                                             # Umhang hinter den Schultern bleibt am Rumpf (sonst zieht der Arm ihn in Streifen mit)
+        TY = float(y.max() - yc); u_ = float(opt["umhang"]); aussen = aussen * glatt(-y, -(yc + (u_ + 0.1) * TY), -(yc + u_ * TY))
     W[:, namen.index("oberarm." + S)] *= aussen; W[:, namen.index("unterarm." + S)] *= aussen
-    W[:, namen.index("bein." + S)] *= seite * glatt(-z, -0.42 * H, -0.34 * H) * glatt(-ax, -0.52 * WD, -0.42 * WD)
+    W[:, namen.index("bein." + S)] *= seite * glatt(-z, -0.42 * H, -0.34 * H) * glatt(-ax, -BEIN_BREITE * WD, -(BEIN_BREITE - 0.1) * WD)
 W[:, namen.index("kopf")] *= glatt(z, 0.7 * H, 0.78 * H) * glatt(-ax, -0.34 * WD, -0.26 * WD)
 W[:, namen.index("wurzel")] *= 0.0
 if WAFFE_PUNKTE: W[-WAFFE_PUNKTE:] = 0; W[-WAFFE_PUNKTE:, namen.index("unterarm.R")] = 1   # die Waffe hängt ganz am Unterarm
@@ -126,8 +133,9 @@ def faustschlag(t):                                                             
     dreh("oberarm.L", (X, -rumpf * 1.2)); dreh("kopf", (X, -rumpf * 0.4))
 def angriff(t):                                                                                      # Keulenschlag: Arm nur bis über die Schulter (weniger Dehnung am Rumpf), Rumpf holt mit aus
     arm, ell, rumpf, v = weich([(0, 0, 0, 0, 0), (0.4, -115, -30, -14, -0.03), (0.5, -115, -30, -14, -0.03), (0.6, -30, -5, 18, 0.1), (0.75, -25, -5, 15, 0.08), (1, 0, 0, 0, 0)], t)
-    dreh("oberarm.R", (X, arm), (Y, -10 * min(1, -arm / 90))); dreh("unterarm.R", (X, ell)); dreh("rumpf", (X, rumpf), (Zx, -rumpf * 0.5)); vor(v * H)
-    dreh("oberarm.L", (X, -rumpf * 1.2)); dreh("kopf", (X, -rumpf * 0.4))
+    A_, O_, sg = ("L", "R", -1) if opt.get("schlagarm", "R") == "L" else ("R", "L", 1)                 # schlagarm=L: Waffe des Modells in der linken Hand
+    dreh("oberarm." + A_, (X, arm), (Y, -sg * 10 * min(1, -arm / 90))); dreh("unterarm." + A_, (X, ell)); dreh("rumpf", (X, rumpf), (Zx, -sg * rumpf * 0.5)); vor(v * H)
+    dreh("oberarm." + O_, (X, -rumpf * 1.2)); dreh("kopf", (X, -rumpf * 0.4))
 def treffer(t):
     u = math.sin(math.pi * min(1.0, t / 0.9)) ** 1.5; dreh("rumpf", (X, -10 * u), (Zx, 8 * u)); dreh("kopf", (X, -15 * u)); vor(-0.05 * H * u)
     for S in "LR": dreh("oberarm." + S, (X, 12 * u))

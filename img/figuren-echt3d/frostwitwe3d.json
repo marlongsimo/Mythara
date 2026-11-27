@@ -1,20 +1,5 @@
 {
  "teile": {
-  "kleidung.frostmantel": {
-   "art": "huelle",
-   "platz": "kutte",
-   "bewegungen": []
-  },
-  "kleidung.kopf.eiskrone": {
-   "art": "starr",
-   "platz": "kopf",
-   "bewegungen": []
-  },
-  "kleidung.umhang": {
-   "art": "starr",
-   "platz": "umhang",
-   "bewegungen": []
-  },
   "koerper": {
    "art": "koerper",
    "platz": null,

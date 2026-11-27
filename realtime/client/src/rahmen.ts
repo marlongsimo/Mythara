@@ -22,15 +22,18 @@ import { heldGanzbild } from "./welt3d/heldbild";
 /** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
 /** Freigestelltes Bild (Gegenstand.bild) mittig in das Feld zeichnen */
 const bilder = new Map<string, Promise<HTMLImageElement>>();
-function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { p = new Promise((ok, nein) => { const i = new Image(); i.onload = () => ok(i); i.onerror = nein; i.src = "../" + url; }); bilder.set(url, p); } return p; }
+function bildLaden(url: string): Promise<HTMLImageElement> { let p = bilder.get(url); if (!p) { const q: Promise<HTMLImageElement> = new Promise((ok, nein) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => { if (bilder.get(url) === q) bilder.delete(url); nein(new Error(url)); }; i.src = "../" + url; }); p = q; bilder.set(url, q); } return p; } /* #166: ein gescheiterter Versuch (etwa beim Vorladen während des Einloggens) wird nicht gemerkt – beim nächsten Öffnen wird neu geladen */
 async function bildMalen(c: HTMLCanvasElement, url: string): Promise<void> { try { const i = await bildLaden(url); const x = c.getContext("2d"); if (!x) return; x.clearRect(0, 0, c.width, c.height); x.drawImage(i, 0, 0, c.width, c.height); } catch { /* Bild fehlt: leer */ } }
 /** #139: die Bilder von Rucksack und Ausrüstung einmal malen (unsichtbar), damit sie beim ersten Öffnen schon da sind */
-export async function rucksackVorladen(): Promise<void> { const I = inventar(), ids = new Set([...I.rucksack, ...Object.values(I.angelegt)].filter((g): g is string => Boolean(g)));
-  await Promise.all([...ids].map(async (g) => { const G = GEGENSTAENDE[g]; if (!G || G.symbol) return; const c = document.createElement("canvas"); c.width = c.height = 64; try { await dingBild(c, G); } catch { /* fehlt: beim Öffnen */ } })); }
+export async function rucksackVorladen(): Promise<void> { const I = inventar(), ids = new Set([...I.rucksack, ...Object.values(I.angelegt)].map((x) => (typeof x === "string" ? x : x && (x as { g?: string }).g)).filter((g): g is string => Boolean(g)));
+  await Promise.all([...ids].map((g) => { const G = GEGENSTAENDE[g]; if (!G || !G.bild) return null; return new Promise<void>((ok) => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = "../" + G.bild; }); })); } /* #166: nur die festen Bilder in den Zwischenspeicher des Browsers */
+/** #166 (Notlösung, Entscheidung des Nutzers): kein Zeichnen zur Laufzeit – das feste Bild (bild bzw. BILDER_AUS_FABRIK) als Hintergrund der Fläche, so wie ein img;
+ *  ohne festes Bild ein schlichtes Ersatzsymbol. Vorher: in Canvas gemalt, Rüstungen über WebGL (teilbild) – auf dem iPhone (WKWebView) blieben die Fächer leer. */
+const ERSATZ = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M24 14h16l-4 8c9 4 14 12 14 20 0 8-8 12-18 12s-18-4-18-12c0-8 5-16 14-20z" fill="#5a4426" stroke="#d8b46a" stroke-width="2.5" stroke-linejoin="round"/><path d="M26 22h12" stroke="#d8b46a" stroke-width="2.5" stroke-linecap="round"/></svg>');
+export const dingBildUrl = (G: { bild?: string }): string => (G.bild ? "../" + G.bild : ERSATZ);
 async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }): Promise<void> {
-  if (G.bild) { await bildMalen(c, G.bild); return; }
-  const id = (G.ebenen || [])[0], h = aktiverHeld(); if (id && TEIL_3D.test(id) && (await teilBild(c, h ? h.aussehen.g : "mann", id))) return;
-  await gegenstandBild(c, G.ebenen, G.platz === "brust" || G.platz === "beine" || G.platz === "kopf"); }
+  const x = c.getContext("2d"); if (x) x.clearRect(0, 0, c.width, c.height);
+  c.dataset.url = dingBildUrl(G); c.style.backgroundImage = `url("${dingBildUrl(G)}")`; c.style.backgroundSize = "contain"; c.style.backgroundPosition = "center"; c.style.backgroundRepeat = "no-repeat"; }
 import { inventar, ablegen, anlegen, fallenLassen, tauschenBitten, inventarAmServer, trinken, wirkungenJetzt } from "./inventar";
 import { benutzen, benutzt } from "./benutzen";
 import { REZEPTE } from "../../shared/handwerk";

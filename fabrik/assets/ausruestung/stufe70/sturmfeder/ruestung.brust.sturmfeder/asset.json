@@ -1,0 +1,10 @@
+{
+  "id": "ruestung.brust.sturmfeder",
+  "name": "Sturmfeder – brust",
+  "kategorie": "ruestung",
+  "stufe": 70,
+  "klasse": "Fernkampf",
+  "aktuell": "v001",
+  "status": "v001: Modell des Nutzers (uebergabe/figuren/ruestung70/fern_torso.blend, quelle/meshy.glb), ersetzt die umgefärbte Fassung aus abe4736cc; eingepasst mit fabrik/teil_anpassen.py (Werte wie das Rabenset) auf basemann3d und basefrau3d, über ein Probe-Rig (gleiches Skelett, Bindung geprüft) als Teil ruestung.brust.sturmfeder ausgelagert – Helden-glb unverändert; .mobil.glb und Rucksackbild img/objekte3d/ausruestung/stufe70/ruestung.brust.sturmfeder.webp",
+  "herkunft": "eigenes Modell (Nutzer)"
+}

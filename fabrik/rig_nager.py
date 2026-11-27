@@ -7,6 +7,8 @@ Knochen: wurzel – becken – brust – kopf; brust – pfoten (mit der Nuss); 
 Gewichte nach Abstand zu den Knochen, je Körperbereich begrenzt (Schwanzknochen nur am Schwanz, Kopf nur oben), über das Netz geglättet.
 Bewegungen (24 Bilder/s im Spiel):
   ruhe   – nagt an der Nuss: Kopf nickt in kurzen Bissen zur Nuss, die Pfoten heben sie an, der Schwanz wiegt sich
+  gehen  – ruhiger Schritt hinter dem Spieler her: Hinterbeine abwechselnd, ohne Hüpfer, Schwanz pendelt
+  freude – beim Fund: zwei Hüpfer, Nuss hoch, Schwanz wedelt (einmal, 1 s)
   laufen – tapselt hinterher: kleine Hüpfer, vorgebeugt, Hinterbeine stoßen ab, der Schwanz wedelt kräftig
 Ausgabe für das Spiel danach mit fabrik/export3d.py (der Körper heißt koerper, Ebene koerper).
 """
@@ -94,14 +96,28 @@ def laufen(t):                                                                  
     for i in range(4):
         q1 = Quaternion((0, 1, 0), math.radians(20 * math.sin(2 * math.pi * 2 * t - i * 0.8))); q2 = Quaternion((1, 0, 0), math.radians(-8))
         R = KN[f"schwanz.{i + 1}"].matrix_local.to_quaternion(); PB[f"schwanz.{i + 1}"].rotation_quaternion = R.inverted() @ (q1 @ q2) @ R
-BEWEGUNGEN = {"ruhe": (ruhe, 24), "laufen": (laufen, 12)}                                     # Bilder je Durchgang bei 24 Bildern/s: 1 s nagen, 0,5 s je Hüpfer
+def gehen(t):                                                                                   # ruhiger Schritt: Hinterbeine abwechselnd, kein Hüpfer, der Schwanz pendelt gemächlich
+    s = math.sin(2 * math.pi * t); hoch(0.015 * H * abs(math.sin(2 * math.pi * t)))
+    dreh("becken", (1, 0, 0), 8 + 2 * abs(s)); dreh("kopf", (1, 0, 0), -5 + 3 * math.sin(4 * math.pi * t)); dreh("pfoten", (1, 0, 0), 3 * s)
+    dreh("hinterbein.L", (1, 0, 0), 22 * s); dreh("hinterbein.R", (1, 0, 0), -22 * s); dreh("brust", (0, 0, 1), 4 * s)
+    for i in range(4):
+        q1 = Quaternion((0, 1, 0), math.radians(9 * math.sin(2 * math.pi * t - i * 0.7))); q2 = Quaternion((1, 0, 0), math.radians(-4))
+        R = KN[f"schwanz.{i + 1}"].matrix_local.to_quaternion(); PB[f"schwanz.{i + 1}"].rotation_quaternion = R.inverted() @ (q1 @ q2) @ R
+def freude(t):                                                                                  # Freude beim Fund: zwei Hüpfer, Nuss hoch, Schwanz wedelt wild – einmal, 1 s
+    u = math.sin(math.pi * t); h = abs(math.sin(2 * math.pi * t)); hoch(0.12 * H * h * u)
+    dreh("brust", (1, 0, 0), -8 * u); dreh("kopf", (1, 0, 0), -14 * u); dreh("pfoten", (1, 0, 0), -30 * u)
+    for S in "LR": dreh("hinterbein." + S, (1, 0, 0), 25 * h * u)
+    for i in range(4):
+        q1 = Quaternion((0, 1, 0), math.radians(26 * math.sin(2 * math.pi * 4 * t - i * 0.8) * u)); R = KN[f"schwanz.{i + 1}"].matrix_local.to_quaternion()
+        PB[f"schwanz.{i + 1}"].rotation_quaternion = R.inverted() @ q1 @ R
+BEWEGUNGEN = {"ruhe": (ruhe, 24), "gehen": (gehen, 20), "laufen": (laufen, 12), "freude": (freude, 24, False)}                 # gehen: 0,83 s je Doppelschritt                                     # Bilder je Durchgang bei 24 Bildern/s: 1 s nagen, 0,5 s je Hüpfer
 arm_ob.animation_data_create()
-for name, (fn, n) in BEWEGUNGEN.items():
+for name, (fn, n, *sch) in BEWEGUNGEN.items():
     a = bpy.data.actions.new(name); a.use_fake_user = True; arm_ob.animation_data.action = a
     for i in range(n + 1):                                                                      # letztes Bild = erstes: die Schleife schließt ohne Sprung
         nullen(); fn(i / n)
         for b in PB: b.keyframe_insert("rotation_quaternion", frame=i + 1, group=b.name)
         PB["wurzel"].keyframe_insert("location", frame=i + 1, group="wurzel")
-    a["bilder"] = n + 1; a["rate"] = 24; a["schleife"] = True; a["tempo"] = 1.0; print("Bewegung:", name, n, "Bilder")
+    a["bilder"] = n + 1; a["rate"] = 24; a["schleife"] = sch[0] if sch else True; a["tempo"] = 1.0; print("Bewegung:", name, n, "Bilder")
 arm_ob.animation_data.action = bpy.data.actions["ruhe"]; bpy.context.scene.frame_set(1); arm_ob["pet"] = True; arm_ob["hoehe"] = H
 bpy.ops.wm.save_as_mainfile(filepath=ziel); print("geschrieben:", ziel)

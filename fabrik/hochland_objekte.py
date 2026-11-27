@@ -9,6 +9,9 @@ Pass:     steinbruecke (Bogenbrücke aus Steinblöcken, 7 m, Nord–Süd) · ste
           gipfelkreuz (Holzkreuz auf Steinsockel) · steinmann (aufgeschichtete Steine)
 Brücke (Baukasten West–Ost, #153): bruecke_mitte_ow (6,6 m, ebene Fahrbahn auf 1,4 m, 3 m breit, Mittelpfeiler mit Eisbrechern, je ein halber Bogen –
           Scheitel an den Stoßkanten, nahtlos aneinander) · bruecke_kopf_w / bruecke_kopf_o (Rampe vom Ufer auf die Fahrbahn, Torpfosten; West mit Laternen)
+Steinhag (#167): schmelzofen (Rennofen aus Bruchstein, Glutloch, Blasebalg, Erz, Barrenformen) · brennofen (Ziegelkuppel mit Glut und Schornstein) ·
+          bankkiste (Truhe mit Eisenbändern und Messingschloss auf Steinsockel) · zunftschild_hammer / zunftschild_amboss (Wandarm mit hängendem Schild,
+          Schlägel und Eisen bzw. Amboss – Ursprung am Fuß der Wand, der Arm ragt nach vorn (-y) auf 2,5 m Höhe; wird nicht auf den Boden gesetzt)
 Teil:     eiskrone (Krone der Frostwitwe, art "kopf") · grubenhelm (Lederkappe mit Messinglampe vorn – Kopfteil der Bergleute, art "kopf", Rand bei z = 0)
 """
 import math, os, random, sys
@@ -166,12 +169,65 @@ elif ART == "grubenhelm":
     dreh([(0.0, 0.13), (0.07, 0.125), (0.105, 0.09), (0.115, 0.03), (0.118, 0.0), (0.0, 0.0)], LE, 20)
     ring((0, 0, 0.01), 0.118, 0.008, LE)
     rohr((0, -0.112, 0.06), (0, -0.14, 0.06), 0.022, MESS, 10); kugel((0, -0.145, 0.06), 0.018, LICHT, (1, 0.5, 1), 8)   # Lampe vorn (-y)
+elif ART == "schmelzofen":                                                                          # Rennofen aus Bruchstein: nach oben schmaler, vorn Glutloch, seitlich Blasebalg, Erz und Barrenform
+    GLUT = mat("glut", (255, 120, 30), 0.3, 0, 4.0); RUSS = mat("russ", (40, 36, 34), 0.95)
+    for k in range(7):                                                                               # Schichten aus Bruchsteinen, nach oben enger
+        z = 0.16 + k * 0.3; r = 0.62 - k * 0.045
+        for i in range(8):
+            a = 2 * math.pi * (i + 0.5 * (k % 2)) / 8
+            wuerfel((r * math.cos(a), r * math.sin(a), z), (0.42, 0.2, 0.3), STEIN if (i + k) % 3 else STEIN2, (0, 0, a + math.pi / 2), 0.08)
+    dreh([(0.0, 0.02), (0.55, 0.02), (0.30, 2.2), (0.0, 2.2)], STEIN2, 18)                          # Kern (dicht)
+    ring((0, 0, 2.22), 0.3, 0.06, RUSS); kugel((0, 0, 2.22), 0.24, GLUT, (1, 1, 0.15), 12)             # Gicht oben, glühend
+    wuerfel((0, -0.56, 0.42), (0.42, 0.16, 0.44), RUSS, fase=0.2); wuerfel((0, -0.62, 0.38), (0.3, 0.06, 0.3), GLUT, fase=0.2)   # Glutloch vorn
+    wuerfel((0, -0.9, 0.06), (0.6, 0.5, 0.12), STEIN2, fase=0.15)                                     # Abstich-Platte
+    for i in range(3): wuerfel((-0.15 + i * 0.15, -0.95, 0.15), (0.12, 0.28, 0.06), mat("barrenform", (70, 70, 76), 0.5, 0.6), fase=0.2)
+    wuerfel((0.78, -0.1, 0.55), (0.34, 0.5, 0.12), HOLZ2, (0.3, 0, 0), 0.2); wuerfel((0.78, -0.1, 0.42), (0.34, 0.5, 0.12), HOLZ2, (-0.3, 0, 0), 0.2)   # Blasebalg
+    wuerfel((0.78, -0.12, 0.49), (0.3, 0.44, 0.1), mat("balgleder", (110, 76, 50), 0.8), fase=0.3); rohr((0.6, -0.2, 0.5), (0.52, -0.1, 0.5), 0.04, EIS)
+    for k in range(7): kugel((-0.9 + random.uniform(-.2, .2), -0.4 + random.uniform(-.25, .25), 0.08), random.uniform(0.07, 0.12), ERZ if k % 2 else ERZ2, (1, 0.8, 0.7), 8)
+elif ART == "brennofen":                                                                            # Brennofen (Ziegel/Keramik): Kuppel aus Ziegeln, vorn Bogenöffnung mit Glut, Schornstein hinten
+    ZIEGEL = mat("ziegel", (160, 86, 60), 0.85); GLUT = mat("glut", (255, 120, 30), 0.3, 0, 4.0); RUSS = mat("russ", (40, 36, 34), 0.95)
+    wuerfel((0, 0, 0.15), (1.9, 1.7, 0.3), STEIN2, fase=0.1)                                         # Sockel
+    dreh([(0.0, 0.3), (0.8, 0.3), (0.82, 0.7), (0.74, 1.05), (0.55, 1.35), (0.3, 1.55), (0.0, 1.6)], ZIEGEL, 24)
+    for z in (0.5, 0.8, 1.1, 1.35): ring((0, 0, z), 0.8 - (z - 0.5) * 0.45 if z < 1.2 else 0.5, 0.018, RUSS, sk=(1, 1, 1), seg=(28, 6))
+    rohr((0, -0.7, 0.3), (0, -0.84, 0.3), 0.36, RUSS, 16)                                            # Bogenöffnung (Ziegelrahmen dunkel)
+    rohr((0, -0.76, 0.5), (0, -0.8, 0.5), 0.27, RUSS, 16); rohr((0, -0.8, 0.48), (0, -0.87, 0.48), 0.2, GLUT, 16)
+    rohr((0, 0.45, 1.2), (0, 0.45, 2.3), 0.16, ZIEGEL, 8); ring((0, 0.45, 2.3), 0.16, 0.03, RUSS)
+    for i in range(4): wuerfel((-0.95 + 0.22 * i, -0.85, 0.36), (0.2, 0.1, 0.08), ZIEGEL, fase=0.15)   # gestapelte Ziegel davor
+    for i in range(3): wuerfel((-0.84 + 0.22 * i, -0.85, 0.44), (0.2, 0.1, 0.08), ZIEGEL, fase=0.15)
+    dreh([(0.0, 0.3), (0.1, 0.3), (0.13, 0.42), (0.09, 0.52), (0.0, 0.52)], mat("ton", (196, 150, 108), 0.8), 14).location = (0.9, -0.7, 0)   # ein Krug
+elif ART == "bankkiste":                                                                            # Bankkiste der Zunfthäuser: schwere Truhe mit Eisenbändern, Messingschloss, auf Steinsockel
+    wuerfel((0, 0, 0.08), (1.2, 0.75, 0.16), STEIN2, fase=0.1)
+    wuerfel((0, 0, 0.42), (1.05, 0.62, 0.52), HOLZ2, fase=0.04)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=20, radius=0.31, depth=1.05, location=(0, 0, 0.68), rotation=(0, math.pi / 2, 0)); d = bpy.context.object; d.scale = (0.55, 1, 1); d.data.materials.append(HOLZ2)   # nach der Drehung flacht lokal x die Höhe ab
+    for x in (-0.42, 0, 0.42):                                                                       # Eisenbänder über Truhe und Deckel
+        wuerfel((x, 0, 0.42), (0.06, 0.64, 0.54), EIS, fase=0.1); ring((x, 0, 0.68), 0.31, 0.03, EIS, (0, math.pi / 2, 0), (0.56, 1, 1), (20, 6))
+    for x in (-0.52, 0.52):
+        for y in (-0.31, 0.31): wuerfel((x, y, 0.42), (0.07, 0.07, 0.54), EIS, fase=0.1)
+    wuerfel((0, -0.33, 0.58), (0.2, 0.05, 0.24), MESS, fase=0.2); kugel((0, -0.36, 0.56), 0.035, mat("schlueselloch", (30, 26, 22), 0.9), (1, 0.4, 1.4), 8)
+    for x in (-0.6, 0.6): ring((x, 0, 0.5), 0.07, 0.015, EIS, (0, math.pi / 2, 0))                  # Griffe seitlich
+elif ART in ("zunftschild_hammer", "zunftschild_amboss"):                                          # Zunftschild: Wandarm (Ursprung an der Wand, ragt nach vorn -y), hängendes Brett mit Zeichen
+    SCH = mat("schild_farbe", (60, 70, 86) if ART == "zunftschild_hammer" else (120, 50, 40), 0.7); GOLD = mat("gold_zeichen", (214, 172, 80), 0.35, 0.8)
+    wuerfel((0, 0.03, 2.4), (0.14, 0.06, 0.3), EIS, fase=0.15)                                       # Wandplatte
+    rohr((0, 0.02, 2.48), (0, -0.85, 2.48), 0.022, EIS, 8); rohr((0, 0.02, 2.28), (0, -0.55, 2.48), 0.016, EIS, 8)   # Arm mit Strebe
+    kugel((0, -0.87, 2.48), 0.035, EIS, n=8)
+    for y in (-0.25, -0.75): rohr((0, y, 2.47), (0, y, 2.34), 0.008, EIS, 6)                          # Ketten
+    wuerfel((0, -0.5, 2.06), (0.06, 0.66, 0.56), SCH, fase=0.12); wuerfel((0, -0.5, 2.06), (0.075, 0.7, 0.6), HOLZ2, fase=0.05).scale = (0.065, 0.72, 0.62)
+    if ART == "zunftschild_hammer":                                                                 # Schlägel und Eisen gekreuzt (Bergmannszunft), beidseitig
+        for s in (-1, 1):
+            for sx in (-1, 1):
+                rohr((sx * 0.045, -0.5 - 0.2 * s, 1.88), (sx * 0.045, -0.5 + 0.2 * s, 2.24), 0.016, HOLZ, 6)
+                wuerfel((sx * 0.045, -0.5 + 0.22 * s, 2.26), (0.03, 0.16, 0.07), GOLD, (s * 0.85, 0, 0), 0.15)
+    else:                                                                                            # Amboss mit Hammer (Schmiedezunft), beidseitig
+        for sx in (-1, 1):
+            wuerfel((sx * 0.045, -0.5, 2.0), (0.03, 0.34, 0.07), GOLD, fase=0.1); wuerfel((sx * 0.045, -0.5, 1.93), (0.03, 0.12, 0.08), GOLD, fase=0.1)
+            wuerfel((sx * 0.045, -0.5, 1.87), (0.03, 0.24, 0.04), GOLD, fase=0.1); kristall((sx * 0.045, -0.71, 2.0), 0.035, 0.1, GOLD, (math.pi / 2, 0, 0))
+            rohr((sx * 0.045, -0.36, 2.1), (sx * 0.045, -0.24, 2.26), 0.012, GOLD, 6); wuerfel((sx * 0.045, -0.37, 2.09), (0.03, 0.1, 0.05), GOLD, (0.9, 0, 0), 0.1)
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active = o
     for m in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=m.name)
 for o in bpy.context.scene.objects: o.select_set(True)
 bpy.context.view_layer.objects.active = bpy.context.scene.objects[0]; bpy.ops.object.join(); bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-o = bpy.context.object; lo = min(v.co.z for v in o.data.vertices) 
+o = bpy.context.object; lo = 0.0 if ART.startswith("zunftschild") else min(v.co.z for v in o.data.vertices)   # Schilder behalten ihre Höhe (Arm bei 2,48 m über dem Boden an der Wand) 
 for v in o.data.vertices: v.co.z -= lo
 bpy.ops.export_scene.gltf(filepath=os.path.abspath(ZIEL), export_format="GLB", use_selection=True)
 print("Objekt:", ART, len(o.data.polygons), "Flächen ·", os.path.getsize(ZIEL) // 1024, "KB")
