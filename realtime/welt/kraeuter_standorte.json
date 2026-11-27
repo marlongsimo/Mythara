@@ -4,36 +4,36 @@
   {
    "id": "wegerich_1",
    "art": "wegerich",
-   "x": 6449.5,
-   "y": 6461.5,
+   "x": 6458.5,
+   "y": 6429.5,
    "region": "waldmark"
   },
   {
    "id": "wegerich_2",
    "art": "wegerich",
-   "x": 6453.5,
-   "y": 6436.5,
+   "x": 6449.5,
+   "y": 6461.5,
    "region": "waldmark"
   },
   {
    "id": "wegerich_3",
+   "art": "wegerich",
+   "x": 6453.5,
+   "y": 6437.5,
+   "region": "waldmark"
+  },
+  {
+   "id": "wegerich_4",
    "art": "wegerich",
    "x": 6423.5,
    "y": 6431.5,
    "region": "waldmark"
   },
   {
-   "id": "wegerich_4",
+   "id": "wegerich_5",
    "art": "wegerich",
    "x": 6435.5,
    "y": 6437.5,
-   "region": "waldmark"
-  },
-  {
-   "id": "wegerich_5",
-   "art": "wegerich",
-   "x": 6453.5,
-   "y": 6442.5,
    "region": "waldmark"
   },
   {
@@ -228,7 +228,7 @@
   {
    "id": "lindenbluete_1",
    "art": "lindenbluete",
-   "x": 6452,
+   "x": 6452.0,
    "y": 6680.6,
    "region": "weidenhain"
   },
@@ -277,71 +277,71 @@
   {
    "id": "hochlande_eisenhut_1",
    "art": "eisenhut",
+   "x": 6894.5,
+   "y": 5650.5,
+   "region": "fl_201_169"
+  },
+  {
+   "id": "hochlande_nebelkraut_2",
+   "art": "nebelkraut",
    "x": 7003.5,
    "y": 5543.5,
    "region": "fl_216_169"
   },
   {
-   "id": "hochlande_nebelkraut_2",
-   "art": "nebelkraut",
-   "x": 7107.5,
-   "y": 5799.5,
-   "region": "fl_216_169"
-  },
-  {
    "id": "hochlande_eisenhut_3",
    "art": "eisenhut",
-   "x": 7036.5,
-   "y": 5519.5,
+   "x": 7059.5,
+   "y": 5529.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_4",
    "art": "nebelkraut",
-   "x": 7016.5,
-   "y": 5527.5,
+   "x": 7156.5,
+   "y": 5796.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_5",
    "art": "eisenhut",
-   "x": 6991.5,
-   "y": 5554.5,
+   "x": 7139.5,
+   "y": 5767.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_6",
    "art": "nebelkraut",
-   "x": 7107.5,
-   "y": 5464.5,
+   "x": 7020.5,
+   "y": 5520.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_eisenhut_7",
    "art": "eisenhut",
-   "x": 7030.5,
-   "y": 5505.5,
+   "x": 7167.5,
+   "y": 5782.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_8",
    "art": "nebelkraut",
-   "x": 6947.5,
-   "y": 5642.5,
-   "region": "fl_216_169"
+   "x": 6866.5,
+   "y": 5688.5,
+   "region": "fl_201_169"
   },
   {
    "id": "hochlande_eisenhut_9",
    "art": "eisenhut",
-   "x": 6929.5,
-   "y": 5664.5,
+   "x": 7100.5,
+   "y": 5478.5,
    "region": "fl_216_169"
   },
   {
    "id": "hochlande_nebelkraut_10",
    "art": "nebelkraut",
-   "x": 7062.5,
-   "y": 5528.5,
+   "x": 6999.5,
+   "y": 5596.5,
    "region": "fl_216_169"
   },
   {
@@ -399,6 +399,48 @@
    "x": 7345.5,
    "y": 5671.5,
    "region": "fl_216_169"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_1",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6438.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_1",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6438.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_1",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6438.4,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_mondsalbei_2",
+   "art": "mondsalbei",
+   "x": 6464.3,
+   "y": 6440.8,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_glutwurz_2",
+   "art": "glutwurz",
+   "x": 6466.3,
+   "y": 6440.8,
+   "region": "waldmark"
+  },
+  {
+   "id": "kraeutergarten_splitterlilie_2",
+   "art": "splitterlilie",
+   "x": 6468.3,
+   "y": 6440.8,
+   "region": "waldmark"
   },
   {
    "id": "huegelgrund_wegerich_1",
@@ -581,69 +623,6 @@
    "x": 6411.5,
    "y": 7069.5,
    "region": "fl_186_211"
-  },
-  {
-   "id": "kraeutergarten_wegerich_1",
-   "art": "wegerich",
-   "x": 6464.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_eisenhut_1",
-   "art": "eisenhut",
-   "x": 6466.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_nebelkraut_1",
-   "art": "nebelkraut",
-   "x": 6468.3,
-   "y": 6437.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_mondsalbei_1",
-   "art": "mondsalbei",
-   "x": 6464.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_glutwurz_1",
-   "art": "glutwurz",
-   "x": 6466.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_splitterlilie_1",
-   "art": "splitterlilie",
-   "x": 6468.3,
-   "y": 6439.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_mondsalbei_2",
-   "art": "mondsalbei",
-   "x": 6464.3,
-   "y": 6441.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_glutwurz_2",
-   "art": "glutwurz",
-   "x": 6466.3,
-   "y": 6441.4,
-   "region": "waldmark"
-  },
-  {
-   "id": "kraeutergarten_splitterlilie_2",
-   "art": "splitterlilie",
-   "x": 6468.3,
-   "y": 6441.4,
-   "region": "waldmark"
   }
  ],
  "kessel": [
@@ -672,10 +651,10 @@
   {
    "id": "kessel_kraeuterhof",
    "ort": "vor dem Kräuterhaus am Kräuterhof (Objekt kraeuterhof_kessel)",
-   "x": 6422,
-   "y": 7062,
+   "x": 6422.0,
+   "y": 7062.0,
    "stehen": [
-    6422,
+    6422.0,
     7063.4
    ],
    "region": "fl_186_211"
