@@ -25,7 +25,7 @@ import { faehreAnfrage } from "./faehre";
 import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
 import { aufnehmen, trankWirkungWeg, inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles, bankTauschen, bankPlatzhalterSetzen, bankPlatzhalterEntfernen } from "./inventar";
-import { nahAnBank, BANK_MAX } from "../../shared/bank";
+import { nahAnBank, nahAnBankkiste, KISTE_TATEN, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
 import { pflanzenEinrichten, pflueckStart, pflueckStop, pflueckTakt, pflueckWeg, abgeerntete } from "./pflanzen";
@@ -251,7 +251,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "bank") { /* Bank (shared/bank.ts): nur mit Konto, nur nah an einem Schalter oder Bankmitarbeiter; Mengen prüft inventar.ts */
       if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Eine Bank gibt es mit Konto (Menü → Anmelden).", zeit: jetzt }); return; }
       let fehler: string | null = null; const g = typeof e.g === "string" ? e.g : "", n = Number.isInteger(e.menge) && (e.menge as number) >= 0 && (e.menge as number) <= BANK_MAX ? (e.menge as number) : -1; /* 0 = alle */
-      if (s.wx === undefined || s.wy === undefined || !nahAnBank(s.ort, s.wx, s.wy)) fehler = "Geh näher an einen Bankschalter.";
+      const kiste = s.wx !== undefined && s.wy !== undefined && !nahAnBank(s.ort, s.wx, s.wy) && nahAnBankkiste(s.ort, s.wx, s.wy); /* #167: Bankkiste der Zunft */
+      if (s.wx === undefined || s.wy === undefined || (!nahAnBank(s.ort, s.wx, s.wy) && !kiste)) fehler = "Geh näher an einen Bankschalter.";
+      else if (kiste && !KISTE_TATEN.has(String(e.tat))) fehler = "An der Bankkiste kannst du nur ablegen und abheben.";
       else if (e.tat === "ein" && g && n >= 0) fehler = bankEinzahlen(H.sb, s.nutzer, g, n, Number(e.tab) || 0);
       else if (e.tat === "tab" && g) fehler = bankReiter(H.sb, s.nutzer, g, Number(e.tab));
       else if (e.tat === "ab" && g && n >= 0) fehler = bankAbheben(H.sb, s.nutzer, g, n, Number.isInteger(e.fach) ? Number(e.fach) : undefined); /* fach: welches Bankfach (gleicher Gegenstand mit Daten) */

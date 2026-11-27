@@ -46,6 +46,16 @@ export const BANK_ORT = ["Das ist die Bank der Splitterlande. Was du bei uns ein
   "Dein Konto ist überall dasselbe: hier, in der Bank der Waldmark und am Schalter in Weidenhain."];
 export const BANK_TSCHUESS = "Dann einen schönen Tag noch.";
 
+/* #167/#168: Bankkisten in den Zunfthäusern – nur Ablegen und Abheben (keine Reiter, kein Tauschen, keine Platzhalter). Die Kisten stehen als Interaktionen
+   in den Weltdaten (Welt baut sie, die Kennung steht hier). Ort wie bei den Bankmitarbeitern: die eine Kampfwelt („waldmark“). */
+export interface Bankkiste { id: string; name: string; x: number; y: number; ort: string }
+export const BANKKISTEN: Bankkiste[] = [];
+export const istBankkiste = (id: string): boolean => BANKKISTEN.some((k) => k.id === id);
+/** Steht man an einer Bankkiste (und nicht an einer richtigen Bank)? */
+export const nahAnBankkiste = (ort: string, x: number, y: number): boolean => BANKKISTEN.some((k) => k.ort === ort && Math.hypot(k.x - x, k.y - y) <= BANK_WEIT);
+/** Was an einer Bankkiste geht: ablegen (auch alles) und abheben */
+export const KISTE_TATEN = new Set(["ein", "ab", "alles"]);
+
 /** Steht man nah genug an einer Bank? (Schalter oder Bankmitarbeiter, im selben Ort) */
 export function nahAnBank(ort: string, x: number, y: number): boolean {
   return BANKSCHALTER.some((b) => b.ort === ort && Math.hypot(b.x - x, b.y - y) <= BANK_WEIT) || BANKIERS.some((b) => b.ort === ort && Math.hypot(b.x - x, b.y - y) <= BANK_WEIT);

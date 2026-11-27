@@ -49,7 +49,7 @@ import { FischWelt, WurmWelt } from "./fischen3d";
 import { SPIEL_SYMBOLE } from "../../../shared/kartensymbole";
 import { HandwerkWelt } from "./handwerk3d";
 import { bankZeigen } from "../bank";
-import { istBankschalter } from "../../../shared/bank";
+import { istBankschalter, istBankkiste, BANKKISTEN } from "../../../shared/bank";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { vorlage, gegnerModell } from "./held3d";
@@ -325,6 +325,7 @@ export class Spielwelt3D implements WeltKern {
   interaktion(a: Interaktion): { text: string; tat: () => void } | null {
     const text = a.daten && typeof a.daten.text === "string" ? a.daten.text : "", tat = a.daten && typeof a.daten.tat === "string" ? a.daten.tat : "", knopf = a.daten && typeof a.daten.knopf === "string" ? a.daten.knopf : "";
     const ziel = a.daten && Array.isArray(a.daten.ziel) && a.daten.ziel.length === 2 ? (a.daten.ziel as number[]) : null;
+    if (istBankkiste(a.id)) { const K = BANKKISTEN.find((k) => k.id === a.id)!; return { text: "Bankkiste", tat: () => bankZeigen(K.name, true) }; } /* #167: nur ablegen und abheben */
     if (istBankschalter(a.id)) return { text: "Bank", tat: () => bankZeigen(a.id === "bankschalter" ? "Bankschalter Weidenhain" : "Bank der Waldmark") }; /* Bankschalter (shared/bank.ts): gleich die Bank, wie in OSRS */
     { const zu = this.quest ? this.quest.eingangZu(a.id) : null; if (zu) return { text: knopf || "Betreten", tat: () => { const el = $("#ez-dorf-hilfe"); el.textContent = zu; el.style.display = ""; } }; } /* Wappentür (#40): verschlossen */
     if (ziel) { const S = SPRUENGE[a.id]; /* Phase 4: manche Sprünge erst mit Quest-Schalter (shared/bosse.ts) */
