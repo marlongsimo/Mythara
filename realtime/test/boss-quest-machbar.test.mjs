@@ -19,8 +19,8 @@ let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t
 /* Instanz, empfohlenes Heldenlevel der Quest, Boss */
 const FAELLE = [["federmutter_kammer", 40, "federmutter", "C2"], ["thronsaal", 40, "oberster_rabenpriester", "C3"], ["hauptmann_gruft", 48, "grauer_hauptmann", "E4"],
   ["tempel_kammer", 55, "sandmutter", "F3"], ["wrack_kajuete", 35, "wrackkapitaen", "G3"],
-  ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"], ["horst_sturmschwinge", 60, "sturmschwinge", "H4 (#160, mit Nahkampf – sie fliegt)"],
-  ["eishoehle_frostwitwe", 60, "frostwitwe", "H4 (#160)"]];
+  ["trollhalle", 60, "grumhold", "H4 (#160, mit Nahkampf – gegen den er stark ist)"], ["horst_grauhorn", 60, "sturmschwinge", "H4 (#160, mit Nahkampf – sie fliegt)"],
+  ["eishoehle_hochpass", 60, "frostwitwe", "H4 (#160)"]];
 const LAEUFE = 3, ESSEN = 15, MAX_S = 240, SCHNITT_ESSEN = 11, schnitt = (E) => E.reduce((a, e) => a + e.essen, 0) / E.length;
 for (const [inst, L, boss, quest] of FAELLE) {
   let D = INSTANZEN.find((d) => d.id === inst); const U0 = KARTEN.welt.ursprung, Q = D.questStaerke || QUEST_STAERKE;
