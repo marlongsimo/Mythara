@@ -66,6 +66,11 @@ try {
   check(o1[0] === o0[2] && o1[2] === o0[0] && o1.length === o0.length, `Rucksack: Fach 1 auf Fach 3 gezogen → getauscht (${o0.slice(0, 3).join(",")} → ${o1.slice(0, 3).join(",")})`);
   const leer = await mitte("r" + (o1.length + 3)); const b1 = await mitte("r0"); await anna.mouse.move(b1.x, b1.y); await anna.mouse.down(); await anna.mouse.move(b1.x + 15, b1.y, { steps: 3 }); await anna.mouse.move(leer.x, leer.y, { steps: 8 }); const vorLos = await anna.evaluate(() => ({ geist: !!document.querySelector(".ez-ziehgeist"), ziel: (document.querySelector(".ifeld.ziel") || {}).dataset?.wo, zieht: (document.querySelector(".ifeld.zieht") || {}).dataset?.wo })); await anna.mouse.up();
   const o2 = await warteNeu(o1); check(o2[o2.length - 1] === o1[0] && o2.length === o1.length, `Auf ein leeres Fach gezogen → ans Ende gelegt (${JSON.stringify(vorLos)} ${o1.join(",")} → ${o2.join(",")}; Ziel ${JSON.stringify(leer)})`);
+  /* #109: erst halten (langes Drücken öffnet das Menü), dann ziehen – das Menü geht zu, das Zielfach nimmt den Gegenstand */
+  { const a = await mitte("r0"), c = await mitte("r1"), alt = await ordnung(); await anna.mouse.move(a.x, a.y); await anna.mouse.down(); await anna.waitForTimeout(900);
+    const menue = await anna.evaluate(() => Boolean(document.querySelector(".ez-aktionen"))); await anna.mouse.move(a.x + 15, a.y, { steps: 3 }); await anna.mouse.move(c.x, c.y, { steps: 8 });
+    const offen = await anna.evaluate(() => Boolean(document.querySelector(".ez-aktionen"))); await anna.mouse.up(); const neu = await warteNeu(alt);
+    check(!offen && neu[0] === alt[1] && neu[1] === alt[0], `Gehalten, dann gezogen: Menü ging auf (${menue}) und beim Ziehen wieder zu (${!offen}), Fach 1 und 2 getauscht (${alt.slice(0, 2).join(",")} → ${neu.slice(0, 2).join(",")})`); }
   /* iPhone: dasselbe mit dem Finger (Touch-Ereignisse über CDP) */
   { const cdp = await anna.context().newCDPSession(anna), finger = (type, p) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: p ? [{ x: p.x, y: p.y, id: 1 }] : [] });
     const a = await mitte("r0"), c = await mitte("r1"), alt = await ordnung(); await finger("touchStart", a);
