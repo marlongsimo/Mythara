@@ -34,12 +34,12 @@ Ab einer bestimmten Berufsstufe darf man ins Zunfthaus: dort liegen **viele Stel
 
 | Zunfthaus | Ort | ab Stufe | drinnen | Bauform |
 |---|---|---|---|---|
-| **Stollen der Bergmannszunft** | Steinhag (Zunftviertel → Abstieg) | Bergbau 60 | 20–30 Adern Eisen bis Ureisen, Schmelzofen, Bankkiste | **unterirdisch** (eigenes Untergrund-Gebiet wie das Bergwerk) – nimmt keine Kartenfläche |
-| **Zunftschmiede** | Steinhag (Zunftviertel) | Schmieden 60 | mehrere Essen und Ambosse nebeneinander, Bankkiste | Gebäude, Innenraum |
-| **Holzfällerhof** | Steinhag (Tal unter der Stadt) | Holzfällerei 60 | eingezäunter Hain mit Eibe, Kernbaum und höher, Bankkiste, Werkbank | kleiner eingezäunter Bereich |
-| **Fischerzunft** | Kielmund (Hafen) | Fischen 60 | Privatsteg mit vielen Fangstellen (Küstenfische, Seeaal), Bankkiste, Räucherhütte | Steg am Hafen |
-| **Kräutergarten der Heilkundigen** | Kielmund (Altstadt) | Kräuterkunde 60 | Beete aller vorhandenen Kräuter, Kessel, Bankkiste | ummauerter Garten |
-| **Kochzunft** | Kielmund (Kaufmannsviertel) | Kochen 60 | mehrere Herde und Öfen, Bankkiste | Gebäude |
+| **Stollen der Bergmannszunft** | **Steinhag** / Erzberg (Zunftviertel → Abstieg) | Bergbau 60 | 20–30 Adern Eisen bis Ureisen, Schmelzofen, Bankkiste | **unterirdisch** (eigenes Untergrund-Gebiet) |
+| **Zunftschmiede** | **Steinhag** (Zunftviertel) | Schmieden 60 | mehrere Essen und Ambosse, Bankkiste | Gebäude, Innenraum |
+| **Holzfällerhof** | **Erlengrund** (Süden, bei der Sägemühle) | Holzfällerei 60 | eingezäunter Hain mit Eibe, Kernbaum und höher, Bankkiste, Werkbank | eingezäunter Bereich |
+| **Fischerzunft** | **Kielmund** (Hafen) | Fischen 60 | Privatsteg mit vielen Fangstellen (Küstenfische, Seeaal), Bankkiste, Räucherhütte | Steg am Hafen |
+| **Kräutergarten der Heilkundigen** | **Waldmark** (bei Mira) | Kräuterkunde 60 | Beete aller vorhandenen Kräuter, Kessel, Bankkiste | ummauerter Garten |
+| **Kochzunft** | **Haferstedt** (Marktflecken, bei Bäckerei und Mühle) | Kochen 60 | mehrere Herde und Öfen, Bankkiste | Gebäude |
 
 Später möglich: Splitterbinder-Zunft (Splitterbinden), Handwerkerzunft (Handwerk) – erst wenn die Hauptstädte stehen.
 Regeln: **nur vorhandene Arten** (keine neuen Rohstoffe), Stufen passend zu den Berufen, Gegner haben im Zunfthaus keinen Platz.
