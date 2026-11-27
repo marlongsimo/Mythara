@@ -7,11 +7,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
 const WURZEL = new URL("..", import.meta.url).pathname, datei = join(tmpdir(), `riftmere-pets-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/pets"; export { beruf } from "./shared/berufe";', resolveDir: WURZEL, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
-const { PETS, petFuerBeruf, petNenner, petChance, petAnsage, petFolgen, PET_FOLGE, beruf } = await import(datei);
+await build({ stdin: { contents: 'export * from "./shared/pets"; export { beruf } from "./shared/berufe"; export { GEGENSTAENDE } from "./shared/gegenstaende";', resolveDir: WURZEL, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
+const M = await import(datei), { PETS, petFuerBeruf, petNenner, petChance, petAnsage, petFolgen, PET_FOLGE, beruf } = M;
 let f = 0; const check = (ok, t) => { console.log((ok ? "  ✓ " : "  ✗ ") + t); if (!ok) f++; };
 console.log("\nPets");
 check(petFuerBeruf("holzfaellerei").id === "nagbert" && petFuerBeruf("bergbau").id === "steinbert" && Object.values(PETS).every((p) => beruf(p.beruf)), "Nagbert (Holzfällerei), Steinbert (Bergbau)");
+{ const { GEGENSTAENDE: G, petGegenstand, petAusGegenstand } = M; check(Object.values(PETS).every((p) => { const g = G[petGegenstand(p.id)]; return g && g.art === "Begleiter" && g.untauschbar && g.bild === p.bild && !g.symbol && petAusGegenstand(petGegenstand(p.id)) === p.id; }),
+  "jedes Pet ist ein Gegenstand (KANON fd1014fd0): pet_nagbert, pet_steinbert – gebunden, festes Bild"); }
 check(PETS.nagbert.datei === "pet.nagbert" && PETS.steinbert.datei === "pet.steinbert", `Modelle pet.nagbert / pet.steinbert (Figuren, #170)${Object.values(PETS).every((p) => existsSync(join(WURZEL, "..", "img", "figuren-echt3d", p.datei + ".glb"))) ? "" : " – Dateien kommen mit Figuren (41e453333)"}`);
 console.log("\nChance je Stufe");
 check(petNenner(1) === 59200 && petNenner(40) === 28000 && petNenner(65) === 8000, "Stufe 1 = 1 : 59.200 · Stufe 40 = 1 : 28.000 · Stufe 65 = 1 : 8.000");

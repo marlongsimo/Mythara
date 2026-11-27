@@ -8,6 +8,7 @@
 import { Startwaffe } from "./aussehen";
 import { NAMEN_AUS_DATENBLAETTERN } from "./gegenstand_namen";
 import { BILDER_AUS_FABRIK } from "./gegenstand_bilder";
+import { PETS, petGegenstand } from "./pets";
 
 export type Seltenheit = "anfaenger" | "gewoehnlich" | "set" | "selten" | "episch" | "legendaer" | "mythisch";
 /** Seltenheitsstufen: Name und Farbe (Rahmen im Ausrüstungsfenster) */
@@ -859,3 +860,6 @@ const RUCKSACKBILDER: Record<string, string> = {
   tempelabschrift: "img/objekte3d/schriften/symbole/tempelabschrift.webp",
 };
 for (const [id, b] of Object.entries(RUCKSACKBILDER)) if (GEGENSTAENDE[id]) { GEGENSTAENDE[id].bild = b; delete GEGENSTAENDE[id].symbol; }
+/* ───────── #170 Pets als Gegenstände (KANON fd1014fd0): im Rucksack, „Folgen lassen“ oder „Wegschicken“, in die Bank – gebunden, festes Bild ───────── */
+for (const P of Object.values(PETS)) GEGENSTAENDE[petGegenstand(P.id)] = { id: petGegenstand(P.id), name: P.name, art: "Begleiter", seltenheit: "legendaer", untauschbar: true, bild: P.bild,
+  text: `Ein kleiner Begleiter, gefunden ${P.tat}. Aus dem Rucksack heraus folgt er dir – alle sehen ihn. Gebunden: nicht handelbar.` };
