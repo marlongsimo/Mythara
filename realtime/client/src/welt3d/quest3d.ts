@@ -10,20 +10,23 @@ import * as THREE from "three";
 import { bildnisseVon } from "../dialog"; /* Gesprächsfenster */
 import { kopfbild } from "./kopfbild";
 import { eigenesBildnis, aktiverHeld } from "../held";
-import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest } from "../welt";
+import { questGeladen, rede, questVerfolgt, questStandB, questDing, verfolgteQuest, faehreFahren } from "../welt";
+import { faehreBei, FAEHRE_NAH } from "../../../shared/faehre";
 import { QUESTS as QUESTS_B, questDef, schalterAn } from "../../../shared/quests";
-import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
+import { Folger } from "../../../shared/folgen";
+import { zeichenAlle, ziel as zielB, objektLage, gilt, frei, lage, figurDa, figurFolgt, type QuestObjekt, type QuestFigur, type QuestDef, type Schranke } from "../../../shared/questbau";
 import { STATIONEN } from "../../../shared/handwerk";
-import { TUEREN } from "../../../shared/bosse";
+import { TUEREN, INSTANZEN } from "../../../shared/bosse";
 import { tuerenZu } from "../../../shared/boss";
+import { inventar } from "../inventar";
 import { Npc3D } from "./npc3d";
 import { schildAn } from "./mitspieler";
-import type { Welt3D } from "./motor";
+import { type Welt3D, figurWeit } from "./motor";
 
 /** Was die Welt der Quest zur Verfügung stellt */
 export interface QuestUmgebung { motor: Welt3D; ort: { x: number; y: number }; hier: string; gesperrt: boolean; sperrenNeu(): void }
 /** q: Id der Quest (shared/quests.ts); beiseite: steht gerade zur Seite; laeuft/fertig: entgegenlaufen (kommt) */
-interface Figur { n: QuestFigur; q: string; /** alle Quests, in denen die Figur steht (Othmar: Quest 1, B3, B4) – ein Modell für alle */ qs: string[]; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement; beiseite?: boolean; laeuft?: boolean; fertig?: boolean }
+interface Figur { n: QuestFigur; q: string; /** alle Quests, in denen die Figur steht (Othmar: Quest 1, B3, B4) – ein Modell für alle */ qs: string[]; npc: Npc3D | null; x: number; y: number; nm: HTMLElement; mk: HTMLElement; beiseite?: boolean; laeuft?: boolean; fertig?: boolean; /** folgt dem Spieler (QuestFigur.folgt) */ folger?: Folger; zx?: number; zy?: number }
 interface Objekt { d: QuestObjekt; q: string; g: THREE.Group; kaputt?: THREE.Group; heil?: THREE.Group; ring: THREE.Mesh }
 /** benannte Stellen für den Pfeil (QuestDef-Schritte mit wo: "esse" …) */
 const ORTE: Record<string, [number, number]> = { esse: [STATIONEN.esse.x, STATIONEN.esse.y], amboss: [STATIONEN.amboss.x, STATIONEN.amboss.y] };
@@ -45,7 +48,7 @@ export class QuestWelt {
     /* Mühlenflügel je Spieler (QuestDef.drehen): bei uns steht die Mühle, bis unser Schalter an ist */
     const DREHEN = QUESTS_B.flatMap((q) => q.drehen || []);
     if (DREHEN.length) this.u.motor.drehtHier = (x, z) => { const D = DREHEN.find((d) => Math.hypot(d.x - x, d.y - z) <= d.r); return !D || (questGeladen() && schalterAn((id) => questStandB(id), D.schalter)); };
-    addEventListener("ez-quest", () => this.stand()); this.stand();
+    addEventListener("ez-quest", () => this.stand()); addEventListener("ez-inventar", () => this.stand()); this.stand();
     /* Kopfbilder fürs Gespräch: die Figur aus ihrem 3D-Modell, der eigene Held aus seinem Bildnis (sonst die Grundfigur) */
     bildnisseVon(async (wer) => { if (wer === "Du") { const b = eigenesBildnis(); if (b) return b; const h = aktiverHeld(); return kopfbild(h ? "base" + h.aussehen.g + "3d" : "basemann3d"); }
       const n = QUESTS_B.flatMap((q) => q.figuren).find((x) => x.name === wer || x.name.endsWith(" " + wer) || x.name.startsWith(wer + " ")); if (n) return kopfbild(n.modell);
@@ -59,10 +62,28 @@ export class QuestWelt {
   /** Die gesperrten Felder für diesen Spieler (leer, sobald die Quest sie freigibt) */
   sperren(): number[][] { return [...SCHRANKEN.filter(({ q, s }) => !offenFuer(q, s.id)).map(({ s }) => [...s.feld]), ...this.tuerenZu().map((t) => [t.feld[0], t.feld[1], t.feld[2] + 1, t.feld[3] + 1])]; } /* Türen: Ecken eingeschlossen, das Raster sperrt bis ausschließlich x1/y1 */
   /** Türen (shared/bosse.ts), die für diesen Spieler zu sind – dieselben sperrt der Server in der Kampfwelt */
-  private tuerenZu() { return TUEREN.length && questGeladen() ? tuerenZu(TUEREN, (s) => schalterAn((id) => questStandB(id), s)) : TUEREN; }
+  private tuerenZu() { return TUEREN.length && questGeladen() ? tuerenZu(TUEREN, (s) => schalterAn((id) => questStandB(id), s), { hat: (g) => inventar().rucksack.includes(g), x: this.u.ort.x, y: this.u.ort.y }, INSTANZEN) : TUEREN; }
+  /** Eingang der Welt hinter einer Tür (Tuer.eingang): ihr Text, solange sie für diesen Spieler zu ist – sonst null */
+  eingangZu(id: string): string | null { const t = TUEREN.find((x) => x.eingang === id); if (!t) return null; return this.tuerenZu().some((x) => x.id === t.id) ? t.zu : null; }
+  /** Türen vor Instanzen mit Eintritt hängen an der Stelle (im Raum, in der Tür): zweimal je Sekunde nachsehen */
+  private tuerT = 0;
   /** Wo steht die Figur gerade (wer umhergeht: der Wanderer in der Welt) */
-  private wo(f: Figur): { x: number; y: number } | null { if (!f.n.wandert) return { x: f.x, y: f.y };
+  private wo(f: Figur): { x: number; y: number } | null { if (!this.da(f)) return null; if (!f.n.wandert) return { x: f.x, y: f.y };
     const w = this.u.motor.wandererMit(f.n.wandert); return w ? { x: w.x, y: w.z } : null; }
+  /** Ist die Figur für diesen Spieler da (QuestFigur.sichtbar, #49)? Vor dem Laden der Stände: nur Figuren ohne Bedingung */
+  private da(f: Figur): boolean { if (!f.n.sichtbar && !f.n.ausbau && !f.n.ausbau_bis) return true; const q = questDef(f.q);
+    if (!questGeladen()) return !f.n.sichtbar && Boolean(q) && figurDa(q!, f.n, "", { hat: () => false, verloren: () => false }); /* vor dem Laden: die erste Stadtstufe */
+    return Boolean(q && figurDa(q, f.n, questStandB(q.id), { hat: (g) => inventar().rucksack.includes(g), verloren: () => false, quest: (id) => { const d = questDef(id); return d ? lage(d, questStandB(id)).phase : "neu"; }, schalter: (s) => schalterAn((id) => questStandB(id), s) })); }
+  /** Befreite folgen (QuestFigur.folgt, #49): hinter dem Spieler her (shared/folgen.ts); hört es auf, steht die Figur wieder an ihrer Stelle */
+  private folgen(f: Figur, dt: number) { const q = questDef(f.q), an = Boolean(q && questGeladen() && this.da(f) && figurFolgt(q, f.n, questStandB(q.id)));
+    if (!an) { if (f.folger) { f.folger = undefined; const B = f.n.beiseite; f.x = f.n.x + (f.beiseite && B ? B.dx : 0); f.y = f.n.y + (f.beiseite && B ? B.dy : 0); f.zx = f.zy = undefined; if (f.npc) { f.npc.spiele("ruhe"); f.npc.blick(...(f.beiseite && B ? B.blick : f.n.blick)); } } return; }
+    const o = this.u.ort, ab = f.n.folgt!.abstand ?? 1.5; if (!f.folger) f.folger = new Folger("spieler", { abstand: ab });
+    const t = f.folger.schritt(dt, { x: f.x, y: f.y }, { x: o.x, y: o.y });
+    if (t.tun === "ende") { f.folger = undefined; f.x = o.x - ab; f.y = o.y; f.zx = f.zy = undefined; return; } /* Sprung (Teleport) oder zu weit: wieder beim Spieler */
+    if (t.tun === "gehen") { f.zx = t.x; f.zy = t.y; }
+    if (f.zx === undefined || f.zy === undefined) return; const dx = f.zx - f.x, dy = f.zy - f.y, d = Math.hypot(dx, dy);
+    if (d < 0.05) { if (f.npc && f.laeuft) { f.laeuft = false; f.npc.spiele("ruhe"); } return; }
+    const v = Math.min(d, (d > 4 ? 6 : 3.6) * dt); f.x += dx / d * v; f.y += dy / d * v; if (f.npc) { f.npc.blick(dx, dy); if (!f.laeuft) f.npc.spiele("gehen"); } f.laeuft = true; }
   /** Wo steht die Figur mit dieser Id (Gespräch abbrechen, wenn man sich entfernt) */
   ortVon(id: string): { x: number; y: number } | null { const f = this.figuren.find((x) => x.n.id === id); return f ? this.wo(f) : null; }
   /** Wo die Questfiguren gerade stehen (für das Antippen am Bildschirm: die ganze Figur zählt) */
@@ -71,10 +92,13 @@ export class QuestWelt {
   stelle(x: number, y: number): { npc: boolean; x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr?: { text: string; sym: string; tat: () => void }[] } | null {
     if (!questGeladen()) return null; let best: Figur | null = null, bd = 1.3;
     for (const f of this.figuren) { const p = this.wo(f); if (!p) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = f; } }
-    if (!best) return this.objektStelle(x, y); const f = best, p = this.wo(f)!;
+    if (!best) return this.faehreStelle(x, y) || this.objektStelle(x, y); const f = best, p = this.wo(f)!;
     const laden = LADEN_LISTE.find((l) => l.questFigur === f.n.id && ladenOffen(l, (id) => questStandB(id)));   /* Questfigur mit Laden (Hanne Kalk nach B2): dazu „Laden ansehen“ */
     return { npc: true, x: p.x, y: p.y, text: `Mit ${f.n.name.replace(/^Wacht(mann|frau) /, "").replace(/ (Wegner|Kern)$/, "").replace(/^Förster /, "")} sprechen`, tat: () => rede(f.n.id), da: () => { const q = this.wo(f); return !!q && Math.hypot(q.x - this.u.ort.x, q.y - this.u.ort.y) <= 2.6; },
       ...(laden ? { mehr: [{ text: "Laden ansehen", sym: "🛒", tat: () => ladenZeigen(laden.id) }] } : {}) }; }
+  /** Fähre (#49): am Anleger „Übersetzen nach …“ – ob sie fährt, entscheidet der Server (Schalter) */
+  private faehreStelle(x: number, y: number) { const F = faehreBei(x, y, 1.5); if (!F) return null; const A = F.von;
+    return { npc: false, x: A.x, y: A.y, text: `Übersetzen zum ${F.nach.name}`, tat: () => faehreFahren(F.f.id), da: () => Math.hypot(A.x - this.u.ort.x, A.y - this.u.ort.y) <= FAEHRE_NAH - 0.5 }; }
   /** Figuren mit „kommt“ (z. B. Jori beim ersten Besuch): laufen dem Spieler in ihrer Region entgegen und sprechen ihn an */
   private entgegen(f: Figur, dt: number) { const K = f.n.kommt!, q = questDef(f.q)!;
     if (questGeladen() && gilt(q, questStandB(q.id), K.wenn) && this.u.hier === K.region && !f.fertig && !this.u.gesperrt) {
@@ -86,8 +110,10 @@ export class QuestWelt {
     else if (f.npc && f.laeuft && !f.fertig) { f.laeuft = false; f.npc.spiele("ruhe"); } }
   schritt(dt: number) { const M = this.u.motor;
     this.objekteSchritt();
+    if (TUEREN.some((t) => t.instanz)) { this.tuerT -= dt; if (this.tuerT <= 0) { this.tuerT = 0.5; this.stand(); } }
     for (const f of this.figuren) if (f.n.kommt) this.entgegen(f, dt);
-    for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 40;
+    for (const f of this.figuren) if (f.n.folgt) this.folgen(f, dt);
+    for (const f of this.figuren) { const p = this.wo(f), sichtbar = !!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < figurWeit(); /* #103 */
       if (f.npc) { f.npc.gruppe.visible = sichtbar; if (sichtbar) { f.npc.gruppe.position.set(f.x, M.hoehe(f.x, f.y), f.y); f.npc.schritt(dt); } }
       /* wer im Haus umhergeht (der Bürgermeister im Rathaus): Name und Marker nur aus der Nähe – sonst schweben sie über dem Dach */
       const nah = !f.n.wandert || (!!p && Math.hypot(p.x - this.u.ort.x, p.y - this.u.ort.y) < 7), h = p ? M.hoehe(p.x, p.y) : 0; f.nm.hidden = !sichtbar || !nah || !schildAn(f.nm, M, p!.x, h + 2.35, p!.y);

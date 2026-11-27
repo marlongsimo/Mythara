@@ -23,7 +23,7 @@ export const PLAETZE: { id: Platz; name: string }[] = [{ id: "kopf", name: "Kopf
 export interface WaffenWerte { art: Art; /** Mehr Schaden gegen eine Gegnerfamilie (MONSTER.familie), z. B. { wald: 0.15 } = +15 % Max Hit */ gegen?: Record<string, number>; /** Takt in Ticks (Normal-Stil) */ ticks: number; reich: number; flug?: number; geschick?: number; staerke?: number; /** Fernkampf: Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit, die Pfeile/Bolzen stecken in der Waffe); Magie: genau = magischer Angriffsbonus */ fernAngriff?: number; fernStaerke?: number; genau?: number; /** Magie: Stärkebonus (Max Hit) */ magieStaerke?: number }
 /** platz fehlt: nicht anlegbar (Währung, Questgegenstand). stapel: so viele passen in ein Rucksackfach (mit Zähler). modell3d: 3D-Modell am Boden. symbol: Bild im Rucksack ohne Figurenebene */
 export interface Gegenstand { id: string; name: string; platz?: Platz; art: string; seltenheit: Seltenheit; ebenen?: string[]; waffe?: WaffenWerte; abwehr?: Record<Art, number>; /** Boni von Rüstung/Schmuck auf Trefferwert und Max Hit (v3: die Ausrüstung zählt gesamt) */ bonus?: { geschick?: number; staerke?: number; fernAngriff?: number; fernStaerke?: number; genau?: number; magieStaerke?: number }; text: string;
-  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
+  /** nicht tauschbar (Questgegenstände) */ untauschbar?: boolean; /** Grundwert in Splittern für den Trödler (#88), wenn kein Laden ihn führt */ wert?: number; stapel?: number; modell3d?: string; symbol?: "kristall" | "pergament" | "trank" | "trankrot"; /** Bild im Rucksack (freigestelltes Bild statt Figurenebene) */ bild?: string; /** zum Anlegen nötiges Skill-Level (Balancing 23.11.2026) */ anforderung?: { skill: AnfSkill; level: number }; /** belegt Waffe und Nebenhand (kein Schild) */ zweihand?: boolean; /** Verbrauch: Trank (VERBRAUCH[trank]) – im Rucksack trinken */ trank?: string }
 
 const KAMPFART: Record<Art, string> = { nah: "Nahkampf", fern: "Fernkampf", magie: "Magie" };
 const zahl = (v: number) => String(v).replace(".", ",");
@@ -495,3 +495,48 @@ export const ROHSTOFFE: Record<string, Rohstoff> = {
 export const trankHeilung = (v: Verbrauch, maxLp: number) => Math.round(v.heilt.fest + v.heilt.anteil * maxLp);
 /** Wie viel ein Trank bei diesem Leben tatsächlich heilt: nie über das maximale Leben hinaus (kein Überheilen) */
 export const trankHeilungBei = (v: Verbrauch, lp: number, maxLp: number) => Math.max(0, Math.min(trankHeilung(v, maxLp), maxLp - lp));
+
+/* ───────── Phase 6 (#17, #18, #26): Beute des Rabenordens – Bilder img/objekte3d/beute/symbole/ (Figuren #20) ───────── */
+{ const B = "img/objekte3d/beute/symbole/";
+  GEGENSTAENDE.rabenfedern = { id: "rabenfedern", name: "Rabenfedern", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: B + "rabenfedern.webp",
+    text: "Schwarze Federn, länger als eine Hand, mit violettem Schimmer. Am Bindestein werden 25 davon mit 50 Splittern zu einem Federsiegel." };
+  GEGENSTAENDE.federsiegel = { id: "federsiegel", name: "Federsiegel", art: "Splitterbinden", seltenheit: "selten", stapel: 100, bild: B + "federsiegel.webp",
+    text: "Ein Siegel aus gepressten Rabenfedern um einen Splitter. Der Altar vor dem Thronsaal verlangt eines – für jeden Versuch." };
+  GEGENSTAENDE.splitterkern = { id: "splitterkern", name: "Splitterkern", art: "Splitterbinden", seltenheit: "episch", bild: B + "splitterkern.webp",
+    text: "Das pochende Herz eines großen Splitters. Am Bindestein in den Wegstein gesetzt, fasst er 200 statt 100 Ladungen – einmal je Held." };
+  GEGENSTAENDE.rabenschwinge = { id: "rabenschwinge", name: "Rabenschwinge", platz: "waffe", art: "Einhandschwert", seltenheit: "episch", ebenen: ["waffe.eidschwert"], bild: B + "rabenschwinge.webp",
+    anforderung: { skill: "geschick", level: 35 }, waffe: { art: "nah", ticks: 3, reich: 1, geschick: 30, staerke: 29 }, abwehr: { nah: 0, fern: 0, magie: 12 },
+    text: "Eine Klinge, schwarz wie eine Feder, aus dem Hort des Obersten Rabenpriesters. Sie fängt Zauber, als wären sie Wind." };
+  GEGENSTAENDE.rabenkueken = { id: "rabenkueken", name: "Rabenküken", art: "Sammelstück", seltenheit: "legendaer", bild: B + "rabenkueken.webp",
+    text: "Ein winziger Rabe mit viel zu großen Augen. Er hat sich dich ausgesucht. (Als Begleiter folgt er dir, sobald es Begleiter gibt.)" }; }
+
+/* ───────── Beute „Ausrüstung einer Stufe“ (beute.md ③): Drop-Einträge „@selten“, „@episch:Bogen“ … wählt der Server beim Fallen zufällig ───────── */
+/** Ist das eine Platzhalter-Beute („@<seltenheit>[:<Art>]“)? */
+export const beutePlatzhalter = (g: string): boolean => g.startsWith("@");
+/** Platzhalter auflösen: eine zufällige Waffe oder Rüstung dieser Seltenheit (ohne Werkzeuge, Questlohn und Set-Teile); Art-Filter über GegenstandDef.art (Teilwort) */
+export function beuteAufloesen(g: string, zufall: () => number = Math.random): string | null { if (!beutePlatzhalter(g)) return g;
+  const [sel, art] = g.slice(1).split(":"), werkzeug = /^(holzbeil|spitzhacke|angel)/;
+  const L = Object.values(GEGENSTAENDE).filter((G) => G.seltenheit === sel && G.platz && G.platz !== "nebenhand" && !G.untauschbar && !werkzeug.test(G.id) && !/^raben/.test(G.id) && (!art || (G.art || "").toLowerCase().includes(art.toLowerCase())));
+  return L.length ? L[Math.floor(zufall() * L.length)].id : null; }
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer, Turm – Bilder img/objekte3d/graufurt/symbole/ und Wels img/objekte3d/skilling/angeln/symbole/ (Figuren #37) ───────── */
+{ const G7 = "img/objekte3d/graufurt/symbole/", A7 = "img/objekte3d/skilling/angeln/symbole/";
+  GEGENSTAENDE.kettenglied = { id: "kettenglied", name: "Kettenglied", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 8, bild: G7 + "kettenglied.webp",
+    text: "Ein schweres Glied aus Splittereisen, frisch vom Amboss. Acht davon braucht die Winde am Westanleger." };
+  GEGENSTAENDE.kettenschloss = { id: "kettenschloss", name: "Kettenschloss", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: G7 + "kettenschloss.webp",
+    text: "Ein Schloss, das zwei Kettenenden für immer verbindet. Von der Schmiedin aus Graufurt." };
+  GEGENSTAENDE.splitterkern_gruen = { id: "splitterkern_gruen", name: "Grüner Splitterkern", art: "Questgegenstand", seltenheit: "episch", untauschbar: true, bild: G7 + "splitterkern_gruen.webp",
+    text: "Der Kern des Signalfeuers. Er ist warm und pulsiert grün – als wartete er noch auf eine Antwort." };
+  GEGENSTAENDE.krebsschere = { id: "krebsschere", name: "Krebsschere", art: "Rohstoff", seltenheit: "gewoehnlich", stapel: 1000, bild: G7 + "krebsschere.webp", wert: 6,
+    text: "Die Schere eines Schlickkrebses, hart wie Stein. Köche sagen, das Fleisch darin sei das beste am ganzen Fluss." };
+  GEGENSTAENDE.wachtstein = { id: "wachtstein", name: "Wachtstein", art: "Rohstoff", seltenheit: "selten", stapel: 1000, bild: G7 + "wachtstein.webp", wert: 25,
+    text: "Ein Stück der Steinfiguren aus dem Turm, das Wappen der Wacht noch zu erkennen. Die Wacht in Grauwacht würde dafür bezahlen." };
+  GEGENSTAENDE.fisch_wels_roh = { id: "fisch_wels_roh", name: "Graufurter Wels (roh)", art: "Rohstoff", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_roh.webp",
+    text: "Ein großer Wels aus dem Fährhafen, schwer und glitschig. Am Feuer gebraten heilt er 11 Lebenspunkte – oder er wird zu Almas Welspastete." };
+  GEGENSTAENDE.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", bild: A7 + "fisch_wels_gebraten.webp", trank: "fisch_wels_gebraten",
+    text: "Dick, fett und knusprig. Heilt 11 Lebenspunkte." };
+  GEGENSTAENDE.fisch_wels_verbrannt = { id: "fisch_wels_verbrannt", name: "Verbrannter Wels", art: "Abfall", seltenheit: "anfaenger", bild: A7 + "fisch_wels_verbrannt.webp", text: "Schwarz bis auf die Gräten. Den will niemand essen." };
+  GEGENSTAENDE.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", bild: G7 + "welspastete.webp", trank: "welspastete",
+    text: "Almas Pastete aus Wels und Mehl, das Rezept der Taverne „Zur Furt“. Heilt 14 Lebenspunkte." };
+  VERBRAUCH.fisch_wels_gebraten = { id: "fisch_wels_gebraten", name: "Gebratener Wels", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 11, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "11 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Dick, fett und knusprig." };
+  VERBRAUCH.welspastete = { id: "welspastete", name: "Welspastete", art: "Essen", seltenheit: "selten", heilt: { fest: 14, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "14 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Almas Pastete aus Wels und Mehl." }; }

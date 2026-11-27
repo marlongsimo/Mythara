@@ -47,7 +47,7 @@ check(!(await QM.motorAbholen(sb, "cora", Q.id)).fehler && QM.qStand("cora", Q.i
 await held("dora", Array.from({ length: 24 }, () => "ritterschwert")); await abschliessen("dora"); const r4 = await QM.motorAbholen(sb, "dora", Q.id);
 const B = I.bodenAlle().filter((x) => x.besitzer === "dora");
 check(r4.amBoden >= 1 && B.some((x) => x.g === "heiltrank" && x.d && x.d.gebunden), `voller Rucksack: ${r4.amBoden} Stück liegen gebunden am Boden`);
-check(B.filter((x) => x.d && x.d.gebunden).every((x) => x.offenAb > Date.now() + 1e12) && B.every((x) => x.offenAb - Date.now() > 20 * 3600_000 && x.bis - Date.now() > 20 * 3600_000), "Gebundenes sieht nur der Besitzer, alles liegt einen Tag nur für ihn (auch die Splitter)");
+check(B.filter((x) => x.d && x.d.gebunden).every((x) => x.offenAb > Date.now() + 1e12 && Math.abs(x.bis - Date.now() - (I.FALLEN.privat + I.FALLEN.offen)) < 5000) && B.filter((x) => !(x.d && x.d.gebunden)).every((x) => Math.abs(x.offenAb - Date.now() - I.FALLEN.privat) < 5000), "Zeiten wie Fallengelassenes: Gebundenes sieht nie ein anderer und verschwindet nach privat + offen, die Splitter werden nach der privaten Zeit für alle sichtbar");
 check(I.bodenSicht("", "fremd", Date.now(), { x: ODO.x, y: ODO.y }).length === 0 && I.bodenSicht("", "dora", Date.now(), { x: ODO.x, y: ODO.y }).length >= 1, "ein anderer Spieler sieht sie nicht");
 antwort = false; await held("emil"); await abschliessen("emil"); const r5 = await QM.motorAbholen(sb, "emil", Q.id);
 check(r5.schon && QM.qStand("emil", Q.id) === "fertig" && I.anzahlVon("emil", "splitter") === 0, "in der Datenbank schon gebucht (false): fertig, nichts doppelt");

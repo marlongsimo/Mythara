@@ -36,7 +36,7 @@ export const kontext = (nutzer: string): QB.Kontext => ({
   hat: (g) => besitzt(nutzer).includes(g), verloren: (g) => !besitztIrgendwo(nutzer, g), anzahl: (g) => anzahlVon(nutzer, g),
   quest: (id) => { const q = questDef(id); return q ? QB.lage(q, qStand(nutzer, id)).phase : "neu"; },
   skill: (k) => { if (beruf(k)) return levelAus(berufXp(nutzer, k)); /* Berufe (Holzfällerei, Handwerk …) aus dem Inventar */ const x = heldXp(nutzer); return x && (SKILLS as string[]).includes(k) ? levelAus(x[k as Skill] || 0, k as Skill) : 0; },
-  heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; } });
+  heldenlevel: () => { const x = heldXp(nutzer); return x ? heldenlevel(x) : 0; }, zeit: () => Date.now() / 1000 /* Weltuhr für den Gesang (QuestObjekt.hoerbar) */, schalter: (id) => schalterAn(nutzer, id) /* Stadtstufen */ });
 async function setzen(sb: Sb, nutzer: string, q: QB.QuestDef, s: string): Promise<void> {
   const alt = qStand(nutzer, q.id); if (alt === "fertig" || QB.abholbereit(alt) || !s || s === "fertig" || s === alt) return;
   let m = staende.get(nutzer); if (!m) staende.set(nutzer, (m = new Map())); m.set(q.id, s); gemeldet(nutzer);
@@ -78,8 +78,9 @@ export interface MotorAntwort { dialog?: QB.Dialog; zeilen?: QB.Zeile[]; ende?: 
 export const figurDa = (id: string): boolean => QUESTS.some((q) => q.figuren.some((f) => f.id === id));
 export function motorReden(sb: Sb, nutzer: string, id: string, wx: number | undefined, wy: number | undefined): MotorAntwort {
   { const q = QB.figurQuest(QUESTS, (x) => qStand(nutzer, x), id, kontext(nutzer)), F = q && q.figuren.find((f) => f.id === id); if (!q || !F) return { fehler: "Hier ist niemand." }; /* Figur in mehreren Quests: die, bei der es etwas zu tun gibt */
-    if (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? QB.REDE_WEIT)) return { fehler: `Geh näher an ${F.name} heran.` };
-    const k = kontext(nutzer), s0 = qStand(nutzer, q.id), s = nachziehen(nutzer, q, s0); if (s !== s0) void setzen(sb, nutzer, q, s); /* schon Dabeigehabtes zählt, bevor die Figur spricht */
+    const k0 = kontext(nutzer), s1 = qStand(nutzer, q.id); if (!QB.figurDa(q, F, s1, k0)) return { fehler: "Hier ist niemand." }; /* QuestFigur.sichtbar (#49) */
+    if (!QB.figurFolgt(q, F, s1, k0) && (wx === undefined || wy === undefined || Math.hypot(F.x - wx, F.y - wy) > (F.weit ?? QB.REDE_WEIT))) return { fehler: `Geh näher an ${F.name} heran.` }; /* wer folgt, ist beim Spieler */
+    const k = k0, s0 = s1, s = nachziehen(nutzer, q, s0); if (s !== s0) void setzen(sb, nutzer, q, s); /* schon Dabeigehabtes zählt, bevor die Figur spricht */
     const d = QB.dialog(q, F.id, s, k); if (!d) return { fehler: "Hier ist niemand." };
     const r = QB.rede(q, F.id, s, k); if (r && r.anbieten) { const n = QB.nachFolge(q, s, { zeilen: [], anbieten: true }); if (n !== s) void setzen(sb, nutzer, q, n); }
     offen.set(nutzer, { q: q.id, npc: F.id }); return { dialog: d }; }
@@ -155,6 +156,7 @@ export async function motorObjekt(sb: Sb, nutzer: string, id: string, wx: number
   for (const q of QUESTS) { const O = (q.objekte || []).find((o) => o.id === id); if (!O) continue;
     if (wx === undefined || wy === undefined || Math.hypot(O.x - wx, O.y - wy) > (O.weit ?? 3.2)) return "Geh näher heran.";
     const s = qStand(nutzer, q.id), r = QB.objekt(q, s, id, kontext(nutzer)); if (!r) return "Hier ist nichts.";
+    if (r.falsch) { if (r.stand !== s) await setzen(sb, nutzer, q, r.stand); return r.text; } /* Rätsel: falsche Reihenfolge – von vorn */
     if (r.stand !== s) { /* erledigt: erst nehmen (alles da?), dann geben, dann den Stand */
       for (const N of O.nehmen || []) if (anzahlVon(nutzer, N.g) < (N.n || 1)) return "Dafür fehlt dir noch etwas.";
       for (const N of O.nehmen || []) for (let i = 0; i < (N.n || 1); i++) abgeben(sb, nutzer, N.g);

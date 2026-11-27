@@ -241,8 +241,17 @@ addEventListener("ez-wegstein", (e) => { const m = (e as CustomEvent).detail as 
   if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Der Stein bleibt kalt."); return; }
   const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
   (document.querySelector("#ez-konto .tafel .schliessen") as HTMLElement | null)?.click();
-  chatSystem(`Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
+  chatSystem((m as { reisekarte?: boolean }).reisekarte ? `Die Reisekarte bringt dich nach ${m.name || "Hause"} – der freie Sprung für heute ist verbraucht.` : `Du reibst den Wegstein … er bringt dich nach ${m.name || "Hause"}. (${m.ladungen ?? 0} Ladung${m.ladungen === 1 ? "" : "en"} übrig)`);
   const x = m.x, y = m.y, ms = s.teleportAbreise(); setTimeout(() => w.springen!(x, y), Math.max(0, ms - 250)); });
+/* Fähre (#49): kurze Überfahrt (Blende mit Text), dann springt der Held ans andere Ufer – die Stelle hat der Server schon gesetzt */
+addEventListener("ez-faehre", (e) => { const m = (e as CustomEvent).detail as { ok?: boolean; text?: string; von?: string; nach?: string; x?: number; y?: number; dauer?: number };
+  if (!m.ok || typeof m.x !== "number" || typeof m.y !== "number") { chatSystem(m.text || "Die Fähre legt nicht ab."); return; }
+  const s = zuFreundS, w = s as unknown as { springen?: (x: number, y: number) => void } | null; if (!s || !w || !w.springen) return;
+  const x = m.x, y = m.y, ms = Math.max(1000, (m.dauer || 3) * 1000); chatSystem(`Die Fähre legt ab – hinüber zum ${m.nach || "anderen Ufer"} …`);
+  const b = document.createElement("div"); b.className = "ez-ueberfahrt"; b.textContent = `Überfahrt zum ${m.nach || "anderen Ufer"} …`;
+  b.style.cssText = "position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(10,18,28,.0);color:#e8eef5;font:600 20px/1.4 system-ui,sans-serif;transition:background .6s;pointer-events:none";
+  document.body.appendChild(b); requestAnimationFrame(() => { b.style.background = "rgba(10,18,28,.92)"; });
+  setTimeout(() => w.springen!(x, y), ms - 400); setTimeout(() => { b.style.background = "rgba(10,18,28,0)"; b.textContent = ""; setTimeout(() => b.remove(), 700); }, ms); });
 function menue3D(s: WeltKern) { zuFreundS = s;
     const rucksack = () => { if (!seitenTab("rucksack")) tafel(s, (zu) => taschenTafel("rucksack", s.held, zu, true)); }, ausruestung = () => { if (!seitenTab("ausruestung")) tafel(s, (zu) => taschenTafel("ausruestung", s.held, zu, true)); }; /* mit eigenem Held: Tabs neben der Leiste */
     const knoepfe: RKnopf[] = [{ name: "Karte", zeichen: "karte", taste: "K", tat: () => karteZeigen(s) }, { name: "Sprint", zeichen: "sprint", taste: "Umschalt", tat: () => { const w = s as unknown as { sprint?: () => void }; if (w.sprint) w.sprint(); else chatSystem("Sprinten geht in der 3D-Welt."); } }];

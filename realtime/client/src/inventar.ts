@@ -38,6 +38,8 @@ const bitten = (m: object): boolean => { if (!vomServer || !sender) return false
 export function trinken(i: number): boolean { return bitten({ t: "inv", tat: "trinken", i }); }
 /** Kaufen am Marktplatz (der Server prüft Preis, Nähe und Platz) */
 export function kaufenBitten(laden: string, g: string): boolean { return bitten({ t: "kaufen", laden, g }); }
+/** #87/#88: an einen Händler verkaufen – n Stück aus Rucksackfach i (der Server prüft Nähe, Ware und Preis: shared/laeden.ts ankaufPreis; Antwort „verkauft“) */
+export function verkaufenBitten(laden: string, i: number, n = 1): boolean { return bitten({ t: "verkaufen", laden, i, n }); }
 /** Fallen lassen: aus dem Rucksack auf den Boden (nur mit Server-Inventar) */
 /** Rucksack: Fach i auf Fach j ziehen (tauschen; auf ein leeres Fach: ans Ende) */
 export function tauschenBitten(i: number, j: number): boolean { return bitten({ t: "inv", tat: "tauschen", i, j }); }

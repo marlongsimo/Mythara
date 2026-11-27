@@ -20,6 +20,7 @@ import { gltfLader } from "./gltf";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FigurLeinwand } from "./figurleinwand";
 import { Held, HAARFARBEN, HAUTFARBEN, STARTWAFFEN, STANDARD } from "../../../shared/aussehen";
+import { FIGUR_MOBIL } from "../figurstufe";
 
 const MODELLE = "../img/figuren-echt3d/", P = new URLSearchParams(location.search);
 /* ausgelagerte Teile (Rüstungen, Helme): eigene Dateien <figur>.teile/<id>.glb (Figuren-Fabrik, wie echt3d/darsteller.ts) – erst beim Anlegen geladen */
@@ -30,7 +31,11 @@ const werkzeugTeil = (url: string): string => { const m = /((?:holzbeil|spitzhac
 export const RUHE_TEMPO = 0.5;
 /** Welches Werkzeug der eigene Held angelegt hat (Modell-Adresse oder "") – gesetzt von spielwelt.ts */
 const AUSGELAGERT = /^(ruestung|kopf\.helm|waffe|schild)\./, teilVorlagen = new Map<string, Promise<THREE.Object3D>>();
-const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = gltfLader().loadAsync(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
+const teilVorlage = (url: string): Promise<THREE.Object3D> => { let p = teilVorlagen.get(url); if (!p) { p = glbStufe(url).then((g) => g.scene); teilVorlagen.set(url, p); } return p; };
+/** #112: bei Grafik „flüssig“ (Handy) die einfache Fassung <name>.mobil.glb (gleiches Skelett, rund 5.000 statt 35.000 Dreiecke); fehlt sie, die volle */
+function glbStufe(url: string): Promise<{ scene: THREE.Object3D; animations: THREE.AnimationClip[] }> {
+  if (!FIGUR_MOBIL || !/\.glb$/.test(url)) return gltfLader().loadAsync(url);
+  return gltfLader().loadAsync(url.replace(/\.glb$/, ".mobil.glb")).catch(() => gltfLader().loadAsync(url)); }
 /** Farbe, in der Haare und Bärte gebaut sind (fabrik/frisuren.py, fabrik/bart.py) und Bezugshelligkeit der Haut (img/figuren-fabrik/held.*: bezug.haut) */
 const GEBAUT: Record<string, [number, number, number]> = { mann: [59, 38, 24], frau: [110, 69, 41] }, HAUT_BEZUG: Record<string, number> = { mann: 203, frau: 210.3 };
 const teil = (id: string) => id.replace(/[.[\]:/]/g, ""); /* three.js entfernt diese Zeichen aus Knotennamen */
@@ -42,7 +47,7 @@ export function held3dAn(): boolean { try { if (P.get("held3d") === "0") localSt
 export interface Vorlage { szene: THREE.Object3D; clips: Map<string, THREE.AnimationClip> }
 const vorlagen = new Map<string, Promise<Vorlage>>();
 export function vorlage(g: string): Promise<Vorlage> { let p = vorlagen.get(g);
-  if (!p) { p = gltfLader().loadAsync(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
+  if (!p) { p = glbStufe(MODELLE + g + ".glb").then((x) => ({ szene: x.scene, clips: new Map(x.animations.map((c) => [c.name, c])) })); vorlagen.set(g, p); p.catch(() => vorlagen.delete(g));
     /* Grundfiguren: die Werk-Bewegungen des Handwerks (fabrik/werk_bewegungen.py) liegen in einer eigenen kleinen Datei – danach nachladen, sie kommen in dieselbe Liste */
     if (WERK_BEWEGUNGEN.has(g)) for (const datei of ["werk_", "angeln_"]) /* Angeln (Phase 3b): angeln, angeln_warten, angeln_einholen – fabrik/angel_bewegungen.py */
       void p.then((v) => gltfLader().loadAsync(MODELLE + datei + g + ".glb").then((x) => { for (const c of x.animations) v.clips.set(c.name, c); })).catch(() => { /* ohne: Ersatzbewegungen */ }); }
@@ -67,7 +72,7 @@ export class Held3D {
   private zustand = "ruhe"; private einmal = false; private gestorben = false; private blickW = Math.PI / 2; private dreh = Math.PI / 2; private weg = false; private an = true;
   fertig: (() => void) | null = null; private effekt: TeleportEffekt | null = null; private skala = 1;
   /** held: eigener Held oder Mitspieler (gefärbt, nur getragene Teile); gegner: ein Gegner-Modell (alle Teile, z. B. Dolch und Beuteschild) */
-  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number }) {
+  constructor(private szene: THREE.Scene, private hoehe: number, private held: (Held & { ich?: boolean }) | null, private waffenQuelle?: (() => string[]) | null, private gegner?: { datei: string; angriff: string; ersatz: string; mass?: number; stile?: string[] }) {
     this.ersatz = new FigurLeinwand(szene, gegner ? gegner.ersatz : "", hoehe, held, waffenQuelle, true /* Bilder erst laden, wenn das 3D-Modell scheitert */); this.ersatz.aus = true; /* kein 2D-Bild, während das Modell lädt – nur wenn es nicht lädt */ szene.add(this.bild.gruppe);
     /* angelegte Teile (Waffe, Schild, Rüstung) gleich mitladen – nicht erst nach dem Grundmodell: dann stehen Held und Ausrüstung zusammen da */
     if (!gegner && held) { const ids = held.ich && waffenQuelle ? waffenQuelle() : STARTWAFFEN[held.waffe].waffen; for (const id of ids) if (AUSGELAGERT.test(id)) void teilVorlage(MODELLE + "base" + held.aussehen.g + "3d.teile/" + id + ".glb").catch(() => { /* fehlt: später beim Anlegen gemeldet */ }); }
@@ -117,8 +122,10 @@ export class Held3D {
   blick(wx: number, wz: number): void { if (Math.hypot(wx, wz) > 1e-3) this.blickW = Math.atan2(wz, wx); this.ersatz.blick(wx, wz); }
   get blickWinkel(): number { return this.blickW; }
   setze(z: "ruhe" | "laufen" | "rennen" | "block" | "schild_laufen"): void { this.ersatz.setze(z === "rennen" ? "laufen" : z); if (this.gestorben || z === this.zustand) return; this.zustand = z; if (!this.einmal) this.anwenden(); }
+  /** Stilwechsel (Ereignis „stil“): die Angriffsbewegung des neuen Stils */
+  private stilNr = 0; stil(nr: number): void { this.stilNr = nr; }
   angriff(): void { this.ersatz.angriff(); if (this.gestorben || !this.mixer) return; this.einmal = true; const a = this.gegner ? null : angriffFuer(this.held!.ich && this.waffenQuelle ? this.waffenQuelle() : STARTWAFFEN[this.held!.waffe].waffen); /* Bewegung zur angelegten Waffe */
-    const n = this.gegner ? this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
+    const n = this.gegner ? (this.gegner.stile && this.gegner.stile[this.stilNr]) || this.gegner.angriff : a && this.clips.has(a) ? a : STARTWAFFEN[this.held!.waffe].angriff, c = this.clips.get(n);
     this.spiele(n, true, true, c ? (c.duration * 1000) / HIEB_MS : 1); /* jeder Angriff dauert 2 Ticks, egal wie lang der Clip ist */ }
   /* ───────── Holzfällerei: Hieb mit dem Beil (das Beil liegt im Rucksack; während des Hiebs ist es in der rechten Hand, die angelegte Waffe ist so lange weg) ───────── */
   /** was während eines Werkzeugschlags verschwindet */ private verdeckt = /^waffe/; /** Werken ohne Werkzeug: Waffe und Schild sind weg */ private haendeFrei = false;
@@ -196,11 +203,23 @@ export function heldenFigur3D(szene: THREE.Scene, figur: string, hoehe: number, 
   return held3dAn() ? new Held3D(szene, hoehe, eigen || STANDARD, quelle) : new FigurLeinwand(szene, figur, hoehe, eigen, quelle); }
 export type FigurArt = FigurLeinwand | Held3D;
 /** Gegner mit 3D-Modell (img/figuren-echt3d/): bis geladen das bisherige Bild der Fabrik */
-const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
+const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string; mass?: number; /** Angriffsbewegung je Stil (Stilwechsel) */ stile?: string[] }> = { bandit_dolch: { datei: "bandit3d", angriff: "stich", ersatz: "gegner.bandit.v003" },
   /* Mooshocker: Modell in echter Größe (0,7 m hoch) im Maßstab der Helden (2,0 m statt 1,8 m); die Gegnerhöhe (Name, Lebensbalken) kommt aus MONSTER.hoehe */
   mooshocker: { datei: "mooshocker3d", angriff: "kopfstoss", ersatz: "gegner.bandit.v003", mass: 2.0 },
   waldgolem: { datei: "waldgolem3d", angriff: "faustschlag", ersatz: "gegner.bandit.v003" },
   kuh: { datei: "kuh3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
-  zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
+  zielscheibe: { datei: "zielscheibe3d", angriff: "angriff", ersatz: "gegner.bandit.v003", mass: 2.0 },
+  /* Phase 6 (#26): der Rabenorden (Figuren #20). Federmutter: Angriffsbewegung je Stil (MonsterDef.stile: Stab, Bogen, Speer) */
+  moorrabe: { datei: "moorrabe3d", angriff: "sturz", ersatz: "gegner.bandit.v003" },
+  rabenpriester_novize: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003" },
+  rabenpriester_akoluth: { datei: "rabenpriester_akoluth3d", angriff: "bogen", ersatz: "gegner.bandit.v003" },
+  rabenpriester_akoluth_speer: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  federmutter: { datei: "rabenpriester_federmutter3d", angriff: "zauber_stab", stile: ["zauber_stab", "bogen", "stich2h"], ersatz: "gegner.bandit.v003" },
+  oberster_rabenpriester: { datei: "oberster_rabenpriester3d", angriff: "doppelhieb", ersatz: "gegner.bandit.v003", mass: 2.6 },
+  /* Phase 7 (#40): Graufurt, Ostufer, Turm (Figuren #37) */
+  schlickkrebs: { datei: "schlickkrebs3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  splitterreiher: { datei: "splitterreiher3d", angriff: "angriff", ersatz: "gegner.bandit.v003" },
+  turmwaechter: { datei: "turmwaechter3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  gruenlicht: { datei: "gruenlicht3d", angriff: "angriff", ersatz: "gegner.bandit.v003" } }; /* Zielscheibe (Phase 2): festes Modell in Metern, ohne Bewegungen (fabrik/waldland_dinge.py) */ /* Kuh in echter Größe (Modell in Metern), wie der Mooshocker */
 export function gegnerFigur3D(szene: THREE.Scene, typ: string, ersatz: string, hoehe: number): FigurArt {
   const G = GEGNER3D[typ]; return G && held3dAn() ? new Held3D(szene, hoehe, null, null, G) : new FigurLeinwand(szene, ersatz, hoehe, null); }

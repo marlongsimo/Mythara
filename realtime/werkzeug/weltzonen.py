@@ -20,6 +20,26 @@ import subprocess
 US = json.loads(subprocess.run(["node", "-e", "import('./werkzeug/welt/unterschlupf.mjs').then((m) => console.log(JSON.stringify({ lager: m.LAGER, mehrkampf: m.MEHRKAMPF })))"],
                                cwd=os.path.join(WURZEL, "realtime"), capture_output=True, text=True, check=True).stdout.strip().splitlines()[-1])  # die Quelle meldet zuerst ihren Umfang
 BESONDERS = {
+    # Phase 7 (#40): Ostufer – Schlickkrebse am Westufer, Splitterreiher auf den Wiesen (Stufe 45–60, nur über die Fähre)
+    "ostufer": {"leine": 12, "wandern": 3,
+                "lager": [("schlickkrebs", 6800, 6520), ("schlickkrebs", 6798, 6518), ("schlickkrebs", 6800, 6560), ("schlickkrebs", 6802, 6558),
+                          ("splitterreiher", 6830, 6480), ("splitterreiher", 6828, 6478), ("splitterreiher", 6860, 6540), ("splitterreiher", 6870, 6600), ("splitterreiher", 6868, 6598)]},
+    # Phase 7 (#40, D2): der Turm mit dem grünen Licht – Turmwächter auf den Ebenen, das Grünlicht mit einem Wächter auf dem Dach
+    "turm_ebene1": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10896, 9612), ("turmwaechter", 10894, 9610)]},
+    "turm_ebene2": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10928, 9612), ("turmwaechter", 10926, 9610)]},
+    "turm_ebene3": {"leine": 10, "wandern": 1, "lager": [("turmwaechter", 10960, 9612)]},
+    "turm_dach": {"leine": 10, "wandern": 1, "lager": [("gruenlicht", 10990, 9612), ("turmwaechter", 10988, 9614)]},
+    # Phase 6 (#17, #26): Aschenwerth – drei Novizen am Steinkreis (friedlich mit Rabenkapuze), Akoluthen und die Federmutter im Heiligtum, Moorraben am Moor
+    "aschenwerth": {"leine": 12, "wandern": 2,
+                    "lager": [("rabenpriester_novize", 6240, 6728), ("rabenpriester_novize", 6244, 6728), ("rabenpriester_novize", 6242, 6730),
+                              ("rabenpriester_akoluth", 6212, 6714), ("rabenpriester_akoluth_speer", 6214, 6716), ("federmutter", 6214, 6704),
+                              ("moorrabe", 6198, 6688), ("moorrabe", 6200, 6688), ("moorrabe", 6202, 6688)]},
+    # Phase 6 (#17, #26): Rabengrund – Federgänge mit Moorrabenschwärmen und Akoluthen bis zum Kerker; der Oberste wartet im Thronsaal (Instanz, shared/bosse.ts)
+    "rabengrund": {"leine": 10, "wandern": 2, "mehrkampf": [],
+                   "lager": [("moorrabe", 10592, 9643), ("moorrabe", 10590, 9641), ("moorrabe", 10592, 9641),
+                             ("rabenpriester_akoluth", 10600, 9631), ("rabenpriester_akoluth_speer", 10598, 9629),
+                             ("moorrabe", 10622, 9672), ("moorrabe", 10624, 9672), ("moorrabe", 10616, 9674),
+                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("rabenpriester_akoluth_speer", 10645, 9612)]},
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
     "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"], "lager": [tuple(l) for l in US["lager"]]},
     # Die Banditen-Lichtung im Kreuzwald: vier Dolch-Banditen, Einzelkampf (seit 22.11.2026, vorher Mehrkampf). Karte/Stufe wie bisher (Buchungen laufen als „kreuzwald“).

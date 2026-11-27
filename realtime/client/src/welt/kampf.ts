@@ -179,7 +179,11 @@ export class WeltKampf {
     else if (ev.a === "hieb" || ev.a === "anlegen") this.hieb(ev.id);
     else if (ev.a === "ansage") { this.ansageZeigen(ev.felder, ev.t); zahl(ev.id, ev.name + "!", "#ff7a5a"); } /* Boss-Baukasten: die Felder leuchten, bevor es zuschlägt */
     else if (ev.a === "bossphase" && ev.text) zahl(ev.id, ev.text, "#ffb27a");
-    else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a"); }
+    else if (ev.a === "trinken") zahl(ev.id, ev.text || "heilt sich", "#7dff9a");
+    else if (ev.a === "schweben") zahl(ev.id, "erhebt sich!", "#b9a7ff"); else if (ev.a === "landen") zahl(ev.id, ev.text || "landet", "#b9a7ff"); /* Schweben (#49): Flugbild macht die Oberfläche */
+    else if (ev.a === "stil") { if (ev.text || ev.name) zahl(ev.id, ev.text || ev.name!, "#ffb27a"); this.stil(ev.id, ev.nr); }
+    else if (ev.a === "flackern") zahl(ev.id, "flackert", "#c9b6ff"); else if (ev.a === "eingraben") zahl(ev.id, "gräbt sich ein!", "#e0c27a"); /* #102: Bild macht die Oberfläche */
+    else if (ev.a === "boee" && ev.id === this.ichId) zahl(ev.id, "Eine Böe kommt!", "#cfe3ff"); }
   /** Folgen (#54): Stelle (Weltfelder) eines anderen Helden in diesem Kampfgebiet, nach seinem Namen – null: nicht (mehr) hier */
   heldOrt(name: string): { x: number; y: number } | null { for (const [id, f] of this.figuren) { if (!f.held || f.tot || id === this.ichId) continue; const n = this.namen.get(id); if (n && n.name === name) return { x: this.zone.x0 + f.zx, y: this.zone.y0 + f.zy }; } return null; }
   /** Ansage: diese Felder (Rechenfelder, Mitte) leuchten t Sekunden rot – wer dann noch darauf steht, wird getroffen */
@@ -201,6 +205,8 @@ export class WeltKampf {
   /** Hitsplat wie in OSRS: Schaden > 0 rot, 0 (verfehlt, geblockt) blau. Die 2D-Welt zeigt weiter Zahlen */
   protected splat(id: number, n: number): void { this.zahl(id, n > 0 ? String(n) : "0", n > 0 ? (id === this.ichId ? "#ff6a5a" : "#ffe08a") : "#9cc8ff"); }
   /** Der eigene Held schaut in die Richtung des Servers – beim Kämpfen zu seinem Gegner (nur 3D) */ protected eigenerBlick(_winkel: number): void { /* 2D: nichts */ }
+  /** Stilwechsel eines Gegners (3D: Angriffsbewegung je Stil) */
+  protected stil(_id: number, _nr: number): void { /* 2D: nichts */ }
   protected hieb(id: number) { const sp = id === this.ichId ? this.s.figur : this.figuren.get(id)?.sp; if (sp && "richte" in sp) sp.play("hieb-x"); }
 
   /* ---------- jedes Bild ---------- */

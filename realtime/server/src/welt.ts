@@ -8,6 +8,8 @@
  * Gemerkte Stelle: Spielerkonten melden mit „pos“ auch Weltfelder (wx, wy); beim Gehen (und alle zwei Minuten) speichert der Server sie
  * (rpg_echtzeit_position, Migration 039) und schickt sie beim nächsten Anmelden mit „ich“ (pos) zurück – auch auf einem anderen Gerät.
  */
+import { handelNachricht, handelTakt, handelWeg, handelEinrichten } from "./handel";
+import { ladenVerkauf } from "./verkauf";
 import { arbeitPruefen, type Arbeit } from "../../shared/arbeit";
 import { Kanal, kanalRahmen } from "./kanal";
 import { WebSocket } from "ws";
@@ -19,7 +21,8 @@ import { Held, heldPruefen, satzVon } from "../../shared/aussehen";
 import { questsLaden, questHoeren, reden, antworten, abholen, gespraechEnde, dingTat, untersucht, betreten, regionGesperrt, punkte, questStand, schalter } from "./quests";
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
-import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen } from "./inventar";
+import { faehreAnfrage } from "./faehre";
+import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
 import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
@@ -68,6 +71,8 @@ setInterval(() => { holzTakt(); bergTakt(); pflueckTakt(); lichtTakt(); fischTak
    und sein Gebiet für einen selbst schon freigeschaltet ist) · „freundanfrage“: dem anderen Bescheid geben (die Anfrage selbst stellt der Browser
    mit rpg_request_friend / rpg_answer_friend, Migration 003). Fremde Stellen gibt der Server nur an Freunde heraus. */
 let kampfPruefer: (nutzer: string) => boolean = () => false;
+/* #65: der Handel kennt die Spieler der Welt über ihren Namen (nur echte Konten), ihre Stelle und ob sie kämpfen */
+handelEinrichten({ senden: (x, m) => senden(x as Spieler, m), istDa: (x) => spieler.has(x as Spieler), finde: (name) => { for (const o of spieler) if (!o.gast && o.name === name) return o; return null; }, imKampf: (nutzer) => kampfPruefer(nutzer) });
 /** Heilen (Trank): der Kampfserver kennt die Lebenspunkte (im Kampfgebiet in der Simulation, sonst gemerkt). Zurück: Fehler oder Menge mit anwenden() */
 export type Heilung = { fehler: string } | { n: number; lp: number; max: number; anwenden: () => void };
 let heiler: (nutzer: string, v: Verbrauch) => Promise<Heilung> = async () => ({ fehler: "Gerade nicht möglich." });
@@ -206,6 +211,10 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       else fehler = kaufen(H.sb, s.nutzer, w.g, w.preis, WAEHRUNG);
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt });
       else senden(s, { t: "gekauft", laden: L.id, g: w!.g, preis: w!.preis }); }
+    else if (e.t === "verkaufen") { /* #87/#88: an einen Händler verkaufen – nur was er führt (80 %) bzw. beim Trödler alles Handelbare (50 % des Grundwerts) */
+      if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Verkaufen geht mit Konto (Menü → Anmelden).", zeit: jetzt }); return; } const nutzerK = s.nutzer;
+      const r = ladenVerkauf(H.sb, s.nutzer, e.laden, e.i, (e as { n?: unknown }).n, s.wx, s.wy, (id) => questStand(nutzerK, id));
+      if ("fehler" in r) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); else { senden(s, { t: "verkauft", ...r }); senden(s, { t: "chat", kanal: "system", text: `Verkauft: ${r.n > 1 ? r.n + " × " : ""}${r.name} für ${r.splitter} Splitter.`, zeit: jetzt }); } }
     else if (e.t === "holz") { /* Holzfällerei (holz.ts): fällen, Kernschlag, aufhören */
       if (e.tat === "start" && typeof e.id === "string") { alleStop(s); const f = holzStart(s, e.id); if (f) senden(s, { t: "holz", tat: "nein", id: e.id, text: f }); }
       else if (e.tat === "kern") holzKern(s); else if (e.tat === "stop") holzStop(s); }
@@ -253,6 +262,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const rest = (teleportZuletzt.get(s.nutzer) || 0) + TELEPORT_PAUSE_MS - jetzt; if (rest > 0) { senden(s, { t: "teleport", ok: false, rest }); return; }
       teleportZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, HEIM.x, HEIM.y, HEIM.region); /* der Server setzt die Position, nicht der Browser */ senden(s, { t: "teleport", ok: true }); }
     else if (e.t === "dialogzu") gespraechEnde(s.nutzer);
+    else if (e.t === "handel") handelNachricht(H.sb, s, e as Record<string, unknown>); /* #65: Handel zwischen Spielern (handel.ts) */
     else if (e.t === "abholen") { /* #77: „Okay“ im Abschlussfenster – der Server bucht den Lohn genau einmal */
       if (s.gast) return; const r = await abholen(H.sb, s.nutzer, String((e as { id?: unknown }).id || "").slice(0, 40), { x: s.wx, y: s.wy });
       if (r.fehler) senden(s, { t: "chat", kanal: "system", text: r.fehler, zeit: jetzt }); senden(s, { t: "abgeholt", ...r }); }
@@ -268,14 +278,20 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     else if (e.t === "wegstein") { /* Phase 3a: Reiben → Ziel prüfen, Ladung abziehen, Stelle merken, Position vom Server (der Browser springt nur noch hin) */
       const ziel = String(e.ziel || "").slice(0, 40), nein = (text: string, rest = 0) => { if (s) senden(s, { t: "wegstein", ok: false, ziel, text, rest }); };
       if (s.gast) { nein("Der Wegstein geht mit Konto (Menü → Anmelden)."); return; }
-      if (invAnzahl(s.nutzer, "wegstein") <= 0) { nein("Du hast keinen Wegstein im Rucksack."); return; }
+      const karte = reisekarteFrei(s.nutzer); /* Reisekarte (#102): einmal am Tag ohne Ladung, auch ohne Wegstein */
+      if (!karte && invAnzahl(s.nutzer, "wegstein") <= 0) { nein("Du hast keinen Wegstein im Rucksack."); return; }
       const z = wegZiel(ziel); if (!z) { nein("Diesen Ort kennt der Stein nicht."); return; }
       if (!wegzielFrei((id) => questStand(s!.nutzer, id), z)) { nein(z.sperre); return; }
       if (kampfPruefer(s.nutzer)) { nein("Mitten im Kampf schweigt der Stein."); return; }
       { const rest = (wegsteinZuletzt.get(s.nutzer) || 0) + WEGSTEIN_PAUSE - jetzt; if (rest > 0) { nein(`Der Stein ist noch warm – in ${Math.ceil(rest / 1000)} s ruft er wieder.`, rest); return; } }
-      if (!ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
+      const frei = karte && reisekarteNutzen(H.sb, s.nutzer);
+      if (!frei && !ladungAbziehen(H.sb, s.nutzer, "wegstein")) { nein("Der Wegstein ist leer. Lade ihn am Bindestein an der Linde in Weidenhain – 2 Splitter je Ladung."); return; }
       wegsteinZuletzt.set(s.nutzer, jetzt); alleStop(s); teleportZiel(H, s.nutzer, z.x, z.y, z.region); s.wx = z.x; s.wy = z.y;
-      senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein") }); }
+      senden(s, { t: "wegstein", ok: true, ziel, name: z.name, x: z.x, y: z.y, region: z.region, ladungen: invLadungen(s.nutzer, "wegstein"), ...(frei ? { reisekarte: true } : {}) }); }
+    else if (e.t === "faehre") { /* Phase 7 (#49): Überfahrt wie der Wegstein – der Server prüft und setzt die Stelle, der Browser zeigt die Überfahrt und springt */
+      const r = faehreAnfrage(s, e.id, { schalter, imKampf: kampfPruefer, gesperrt: (n, reg) => Boolean(regionGesperrt(n, reg)) }); if (!r.ok) { senden(s, { t: "faehre", ok: false, text: r.text }); return; }
+      alleStop(s); teleportZiel(H, s.nutzer, r.x, r.y, r.region); s.wx = r.x; s.wy = r.y;
+      senden(s, { t: "faehre", ok: true, id: r.f.id, von: r.von.name, nach: r.nach.name, x: r.x, y: r.y, region: r.region, dauer: r.dauer }); }
     else if (e.t === "zufreund") { const n = String(e.n || "").slice(0, 40), nein = (text: string) => { if (s) senden(s, { t: "zufreund", ok: false, n, text }); };
       if (s.gast) { nein("Freunde gibt es mit Konto."); return; }
       const f = (await freundeVon(H, s.nutzer)).find((x) => x.handle === n); if (!s) return; if (!f) { nein(`${n} ist nicht in deiner Freundesliste.`); return; }
@@ -302,7 +318,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       try { await H.sb("/rest/v1/rpc/rpg_echtzeit_held_setzen", { method: "POST", body: JSON.stringify({ p_user: s.nutzer, p_held: h }) }); } catch (x) { console.error("Held setzen:", (x as Error).message); }
       const ep = await H.epLesen(s.nutzer).catch(() => ({} as Record<string, number>)); s.held = h; s.stufe = stufeAusEp(Number(ep[h]) || 0); s.geaendert = true; senden(s, { t: "ich", id: s.id, name: s.name, held: s.held, stufe: s.stufe, ort: s.ort }); }
   });
-  const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); lichtWeg(s); fischWeg(s); wurmWeg(s); handwerkWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
+  const weg = () => { clearTimeout(frist); if (s) { holzWeg(s); bergWeg(s); pflueckWeg(s); lichtWeg(s); fischWeg(s); wurmWeg(s); handwerkWeg(s); handelWeg(s); } if (s && s.invAus) { s.invAus(); s.invAus = undefined; } if (s && s.questAus) { s.questAus(); s.questAus = undefined; } if (s && !s.gast) inventarSichern(H.sb, s.nutzer); if (s && !s.gast && s.wx !== undefined && s.wy !== undefined) void stelleMerken(H, s.nutzer, s.ort, s.wx, s.wy); /* fürs nächste Anmelden */ if (s && spieler.delete(s)) { system(s.ort, `${s.name} ist weitergezogen.`); for (const o of amOrt(s.ort)) senden(o, { t: "fort", id: s.id }); } };
   ws.on("close", (code: number, grund: Buffer) => { if (kanal.k) kanal.k.weg(code === 1000 ? 1006 : code, String(grund || "")); weg(); }); ws.on("error", () => { if (kanal.k) kanal.k.weg(1006, ""); weg(); });
   /* Herzschlag: alle 15 s ein Ping; bleiben zwei unbeantwortet, ist die Verbindung tot (iOS im Hintergrund) – weg damit, samt Kampfkanal und Gerätesperre */
   let pingsOffen = 0; ws.on("pong", () => { pingsOffen = 0; });
@@ -321,6 +337,7 @@ setInterval(() => { runde++; const jetzt = Date.now(), alle: Spieler[] = [];
     if (!(s.geaendert || key !== s.sichtKey || nah.some((o) => o.geaendert) || runde % 10 === 0)) continue; s.sichtKey = key;
     senden(s, { t: "spieler", liste: nah.map((o) => daten.get(o)), online: spieler.size }); schicken.push(s); }
   for (const s of alle) s.geaendert = false;
+  if (runde % 5 === 0) handelTakt(jetzt); /* #65: Abstand, Kampf, Anfragen verfallen */
   if (runde % 5 === 0) { bodenAufraeumen(jetzt); /* einmal je Sekunde: jedem, was er am Boden sieht (nur wenn es sich geändert hat) */
     for (const s of spieler) { const b = JSON.stringify(bodenSicht(s.ort, s.gast ? "" : s.nutzer, jetzt, s.wx !== undefined && s.wy !== undefined && WELTREGIONEN.includes(s.ort) ? { x: s.wx, y: s.wy } : undefined)); if (b === s.boden) continue; s.boden = b; senden(s, { t: "boden", liste: JSON.parse(b) }); } }
 }, 200);

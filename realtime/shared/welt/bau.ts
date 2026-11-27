@@ -67,7 +67,7 @@ export function gehRaster(d: RegionDaten, gelaende: GelaendeBibliothek, objekte:
   const [B, H] = regionFelder(d.region), art = new Map(gelaende.arten.map((a) => [a.zeichen, a])), def = new Map(objekte.objekte.map((o) => [o.id, o]));
   const g: string[][] = d.gelaende.map((z) => [...z].map((c) => { const a = art.get(c); return !a ? "#" : a.wasser ? "~" : a.begehbar ? "." : "#"; }));
   const setze = (i: number, j: number, c: string) => { if (i >= 0 && j >= 0 && i < B && j < H) g[j][i] = c; };
-  for (const p of d.objekte) for (const [i, j] of sperrFelder(p, def.get(p.objekt))) setze(i, j, "#");
+  for (const p of d.objekte) if (!p.ausbau && !p.ausbau_bis) for (const [i, j] of sperrFelder(p, def.get(p.objekt))) setze(i, j, "#"); /* Stadtstufen: sperren je Spieler (ChunkDaten.ausbau) */
   const flaeche = (z: { x0: number; y0: number; x1: number; y1: number }, c: string) => {
     for (let j = Math.floor(z.y0); j < Math.ceil(z.y1); j++) for (let i = Math.floor(z.x0); i < Math.ceil(z.x1); i++) if (i + 0.5 >= z.x0 && i + 0.5 <= z.x1 && j + 0.5 >= z.y0 && j + 0.5 <= z.y1) setze(i, j, c); };
   for (const z of d.spiel.kollision.sperren) flaeche(z, "#");
@@ -91,6 +91,8 @@ export function chunksBauen(d: RegionDaten, gelaende: GelaendeBibliothek, objekt
     r.ursprung[0] + Math.max(0, Math.min(r.chunks[0] - 1, Math.floor(x / CHUNK_FELDER))), r.ursprung[1] + Math.max(0, Math.min(r.chunks[1] - 1, Math.floor(y / CHUNK_FELDER)))))!;
   const rund = (v: number) => Math.round(v * 100) / 100;
   for (const p of d.objekte) heim(p.x, p.y).objekte.push({ ...p, x: rund(p.x + ox), y: rund(p.y + oy) });
+  { const def = new Map(objekte.objekte.map((o) => [o.id, o])); for (const p of d.objekte) { if (!p.ausbau && !p.ausbau_bis) continue; const f = sperrFelder(p, def.get(p.objekt)); if (!f.length) continue; /* Stadtstufen */
+    const c = heim(p.x, p.y); (c.ausbau || (c.ausbau = [])).push({ m: `${p.ausbau || ""}|${p.ausbau_bis || ""}`, f: f.map(([i, j]) => [i + ox, j + oy]) }); } }
   for (const f of d.spiel.figuren) heim(f.x, f.y).figuren.push({ ...f, x: rund(f.x + ox), y: rund(f.y + oy) } as Figur);
   for (const a of d.spiel.interaktionen) heim(a.x, a.y).interaktionen.push({ ...a, x: rund(a.x + ox), y: rund(a.y + oy) } as Interaktion);
   for (const c of chunks.values()) c.objekte.sort((a, b) => a.y - b.y);

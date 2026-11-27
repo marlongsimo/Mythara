@@ -14,7 +14,7 @@ import KOCHSTELLEN from "./kochstellen.json";
 
 export const BERUF_HAND = "handwerk";
 /** Werkstätten in der Welt; „hand“ = im Rucksack (Benutzen: Sehne auf ungespannten Bogen) */
-export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen";
+export type WeltStation = "esse" | "amboss" | "werkbank" | "bindestein" | "feuer" | "backofen" | "herd" | "kessel" | "brunnen" | "raeucherhuette";
 export type StationId = WeltStation | "hand";
 /** Werkstätten (Weltfelder; Esse und Amboss stehen in der Schmiede der Waldmark, die Werkbank im Osthof beim Kuhgehege) */
 export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: number; y: number; tun: string }> = {
@@ -29,6 +29,8 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
   herd: { id: "herd", name: "Herd", x: 0, y: 0, tun: "Kochen" },
   kessel: { id: "kessel", name: "Kessel", x: 0, y: 0, tun: "Kochen" },
   brunnen: { id: "brunnen", name: "Brunnen", x: 6448, y: 6432.85, tun: "Schöpfen" },
+  /* Phase 10 (#102): Räucherhütte der Möwenbucht – Kochstation mit Wartezeit (Rezept.warten); Standort trägt die Integration in kochstellen.json ein */
+  raeucherhuette: { id: "raeucherhuette", name: "Räucherhütte", x: 0, y: 0, tun: "Räuchern" },
 };
 /** Am Amboss braucht man einen Hammer im Rucksack (wie in OSRS) */
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
@@ -58,7 +60,8 @@ export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: st
 export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
   /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
-  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string }
+  /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string;
+  /** Station mit Wartezeit (Räucherhütte, #102): die Zutaten gehen sofort hinein, nach so vielen Sekunden holt man alles ab (XP beim Abholen, brennt nicht an); ein Auftrag je Spieler */ warten?: number }
 export const REZEPTE: Rezept[] = [];
 /** Welche Bewegung der Held beim Werken macht: Ofen (Esse), Hämmern (Amboss), Weben (Sehne, Garn, Stoff, Leder), Schnitzen (Holzwaren), Zusammenfügen (Rüstung aus Leder und Stoff) */
 export type WerkTat = "ofen" | "haemmern" | "weben" | "schnitzen" | "fuegen";
@@ -148,6 +151,9 @@ for (const [sel, W] of Object.entries(WAFFE_LADEN)) {
   dazu({ id: `waffe_laden_${sel}`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 2 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
   dazu({ id: `waffe_laden_${sel}_licht`, station: "bindestein", ergebnis: "ladung:" + AN_WAFFE, fuer: sel, level: W.level, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: W.xp, ticks: 1, stufe: 0, gruppe: "Waffe laden" }); }
 /* Entladen: nur am Bindestein, die Splitter verfallen */
+/* Phase 6 (#17, #18): Federsiegel herstellen (zweiter Weg zum Thronsaal) und den Splitterkern in den Wegstein setzen (200 Ladungen, einmal) */
+dazu({ id: "federsiegel", station: "bindestein", ergebnis: "federsiegel", level: 30, zutaten: [{ g: ["rabenfedern"], n: 25 }, { g: ["splitter"], n: 50 }], xp: 120, ticks: 6, stufe: 2, gruppe: "Siegel" });
+dazu({ id: "splitterkern_einsetzen", station: "bindestein", ergebnis: "merker:splitterkern_wegstein", level: 1, zutaten: [{ g: ["splitterkern"], n: 1 }], xp: 50, ticks: 4, stufe: 2, gruppe: "Wegstein" });
 dazu({ id: "waffe_entladen", station: "bindestein", ergebnis: "entladen:" + AN_WAFFE, level: 1, zutaten: [], xp: 0, ticks: 1, stufe: 0, gruppe: "Waffe laden" });
 dazu({ id: "wegstein_laden_licht", station: "bindestein", ergebnis: "ladung:wegstein", level: 1, zutaten: [{ g: ["splitter"], n: 1 }, { g: ["seelenlicht"], n: 1 }], xp: 2, ticks: 1, stufe: 0, gruppe: "Wegstein" });
 /* B1 „Der Wegstein“: Quellstein, Lindenspan und geweihter Splitter an der Werkbank zum ungeweihten Wegstein fügen (Handwerk 10) */
@@ -161,6 +167,10 @@ const fisch = (f: string, level: number, xp: number, name: string) => dazu({ id:
 fisch("bachling", 1, 30, "Fisch");
 fisch("muehlbarsch", 10, 50, "Fisch");
 fisch("moorhecht", 20, 80, "Fisch");
+fisch("wels", 45, 140, "Fisch"); /* Phase 7 (#40) */
+/* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
+dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+dazu({ id: "kettenglied", station: "amboss", ergebnis: "kettenglied", level: 45, zutaten: [{ g: ["barren_splittereisen"], n: 1 }], xp: 90, ticks: 5, stufe: 0, gruppe: "Auftrag der Wacht", quest: "graufurt_die_faehrkette" });
 dazu({ id: "krug_wasser", station: "brunnen", ergebnis: "krug_wasser", level: 1, zutaten: [{ g: ["krug"], n: 1 }], xp: 0, ticks: 2, stufe: 0, gruppe: "Wasser" });
 dazu({ id: "brot_backen", station: "backofen", ergebnis: "brot", level: 1, zutaten: [{ g: ["mehl"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 25, ticks: 5, stufe: 0, gruppe: "Brot", verbrannt: "brot_verbrannt" });
 dazu({ id: "fischsuppe", station: "kessel", ergebnis: "fischsuppe", level: 15, zutaten: [{ g: ["fisch_muehlbarsch_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 70, ticks: 5, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });

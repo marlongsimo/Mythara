@@ -116,6 +116,20 @@ export interface MonsterDef { name: string; /** Kampfregeln v1: eigenes Level (A
   /* fest: bewegt sich nicht und greift nicht an (z. B. Laich). unsichtbar: kein eigenes Bild – es ist schon auf die Karte gemalt. brut: bringt alle takt Sekunden ein Junges hervor, höchstens max zugleich und gesamt insgesamt. */
   /* aufstehen: fällt der Gegner, steht er einmal wieder auf – mit diesem Anteil seines Lebens (Moorleichen) */
   aufstehen?: number;
+  /** Heiler (Phase 7, Grünlicht): heilt im Kampf alle alle Sekunden den schwächsten Verbündeten (nur dieser Art, wenn nur) im Umkreis radius um anteil seines Lebens */
+  heiler?: { alle: number; anteil: number; radius: number; nur?: string };
+  /** Glocke (#102): friedlich gegen Helden, für die dieser Schalter an ist (der Server setzt „glocke_laeutet“ eine Minute nach jeder vollen Stunde) – greift sie nicht an und lässt von ihnen ab */
+  friedlichBei?: string;
+  /** Gift (#102): nach einem Treffer mit dieser Chance Schaden über Zeit (jeSek Leben je Sekunde, dauer Sekunden) */
+  gift?: { chance: number; jeSek: number; dauer: number };
+  /** Flackern (#102): im Kampf alle alle Sekunden für dauer Sekunden unangreifbar */
+  flackern?: { alle: number; dauer: number };
+  /** Sand-Auftauchen (#102): liegt eingegraben (unsichtbar, unangreifbar); kommt ein Held auf weit Felder heran, leuchtet sein Feld vorlauf Kampf-Ticks (Standard 2), dann taucht er auf und trifft, wer noch dort steht */
+  eingegraben?: { weit: number; schaden: [number, number]; vorlauf?: number; name?: string };
+  /** Verkleidung (#49): wer einen dieser Gegenstände angelegt hat, wird nicht von selbst angegriffen (Rabenkapuze → Novizen friedlich) – wer angreift, bekommt Gegenwehr */
+  friedlichMit?: string[];
+  /** Stilwechsel (#49): im Kampf reihum diese Stile, je sek Sekunden (Federmutter: Schwerter, dann Federn) – angriff und v2 ersetzen die Grundwerte, v2 Feld für Feld */
+  stile?: { sek: number; name?: string; angriff?: { name: string; art: Schadensart; schaden: [number, number]; takt: number; reich: number; aushol: number }; v2?: Partial<GegnerV3>; text?: string }[];
   /** flieht einmal je Leben unter diesem Anteil seines Lebens zum nächsten Lagerkumpan und kämpft dort weiter (Banditen-Späher: 0,25) – shared/sim.ts fliehen */
   fliehen?: number;
   /** Offene Welt: greift von selbst an (Standard ja) und ab welcher Entfernung in Feldern (Standard: aggro des Gebiets, sonst 5). Nach AGGRO_DAUER greift er einen Helden nicht mehr von selbst an. */
@@ -217,6 +231,92 @@ export const MONSTER: Record<string, MonsterDef> = {
     lp: 520, tempo: 3.0, angriffswert: { nah: 100, fern: 0, magie: 0 }, abwehr: { nah: 85, fern: 70, magie: 50 }, r: 0.55, untot: true, boss: true,
     angriff: { name: "Knochenklinge", art: "nah", schaden: [20, 36], takt: 1.7, reich: 1.9, aushol: 0.6 } },
 };
+
+/* ───────── Phase 6 (#17, #18, #26): der Rabenorden auf Aschenwerth und im Rabengrund – Werte doku/konzepte/phase-6.md, Beute doku/konzepte/beute.md ─────────
+   Kampfrechnung v3 (gegnerWerte): Max Hit aus Stärke/Fernkampf/Magie + Bonus, Treffer aus Geschick bzw. Kampfart. Modelle img/figuren-echt3d/ (Figuren #20). */
+const RABE_INFO = "Ein Diener des Rabenordens.";
+Object.assign(MONSTER, {
+  /** Moorrabe: Stufe 20, 25 LP, Max Hit 4, schnell, in Schwärmen (Federgänge, Moor bei Nacht) */
+  moorrabe: { name: "Moorrabe", stufe: 20, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 25, tempo: 4.2, angriffswert: { nah: 20, fern: 0, magie: 0 }, abwehr: { nah: 15, fern: 10, magie: 15 }, r: 0.35,
+    angriff: { name: "Sturz", art: "nah", schaden: [1, 4], takt: 1.5, reich: 1.3, aushol: 0 },
+    v2: { geschick: 22, staerke: 28, defense: 15, magie: 5, ticks: 3, abwehr: { nah: 0, fern: -5, magie: 5 } }, aggroReich: 5,
+    info: "Ein schwarzer Rabe, größer als jeder Rabe sein dürfte. Wo einer ist, sind mehr.",
+    drops: [{ wurf: [{ g: "splitter", chance: 50, anzahl: [1, 3] }] }, { wurf: [{ g: "rabenfedern", chance: 40 }] }] },
+  /** Rabenpriester-Novize: Stufe 28, 60 LP, Max Hit 7 (Magie), schwach gegen Fernkampf; friedlich gegen Helden mit Rabenkapuze (C2) */
+  rabenpriester_novize: { name: "Novize des Rabenordens", stufe: 28, bild: "img/echtzeit/bandit.webp", hoehe: 118, lp: 60, tempo: 2.8, angriffswert: { nah: 5, fern: 0, magie: 30 }, abwehr: { nah: 20, fern: 10, magie: 35 }, r: 0.4,
+    angriff: { name: "Rabenfluch", art: "magie", schaden: [1, 7], takt: 2.5, reich: 5, aushol: 0 }, friedlichMit: ["rabenkapuze"],
+    v2: { magie: 70, geschick: 10, staerke: 10, defense: 20, ticks: 5, abwehr: { nah: 0, fern: -10, magie: 20 } },
+    info: "Ein junger Priester in schwarzer Kutte. Er murmelt ohne Pause – Silben, die in den Ohren kleben bleiben. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 15] }] }, { wurf: [{ g: "rabenfedern", chance: 50, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10 }] }, /* Moorglöckchen 15 % kommt mit Kräuterkunde (#29) */
+      { wurf: [{ g: "sternenszepter", chance: 100 / 128 }] }] },
+  /** Akoluth mit Bogen: Stufe 35, 85 LP, Max Hit 9 (Fernkampf), hält Abstand */
+  rabenpriester_akoluth: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 85, tempo: 3.0, angriffswert: { nah: 10, fern: 40, magie: 0 }, abwehr: { nah: 35, fern: 35, magie: 25 }, r: 0.4,
+    angriff: { name: "Rabenpfeil", art: "fern", schaden: [1, 9], takt: 2.0, reich: 6, aushol: 0 },
+    v2: { fernkampf: 80, geschick: 30, staerke: 30, defense: 35, magie: 20, ticks: 4, abwehr: { nah: 5, fern: 15, magie: 0 } },
+    info: "Ein Krieger des Ordens mit Langbogen und Federmantel. Er schießt, bevor man ihn sieht. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "rabenfedern", chance: 60, anzahl: [2, 5] }, { g: "seelenlicht", chance: 15 }] },
+      { wurf: [{ g: "@selten:Bogen", chance: 100 / 96 }, { g: "@episch:Bogen", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
+      { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
+  /** Akoluth mit Speer: Stufe 35, 95 LP, Max Hit 10 (Nahkampf), Ansturm */
+  rabenpriester_akoluth_speer: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 95, tempo: 3.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 30, magie: 25 }, r: 0.4,
+    angriff: { name: "Speerstoß", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 90, geschick: 50, defense: 40, magie: 20, ticks: 5, abwehr: { nah: 15, fern: 5, magie: 0 } },
+    info: "Ein Krieger des Ordens mit langem Speer und Federmantel. Er stürmt, sobald er dich sieht. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "rabenfedern", chance: 60, anzahl: [2, 5] }, { g: "seelenlicht", chance: 15 }] },
+      { wurf: [{ g: "@selten:Speer", chance: 100 / 96 }, { g: "@episch:Speer", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
+      { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
+  /** Federmutter Ravena: Mini-Boss, Stufe 40, 200 LP, Max Hit 12; wechselt alle 20 s Stab, Bogen, Speer (Stilwechsel) */
+  federmutter: { name: "Federmutter Ravena", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 200, tempo: 3.0, angriffswert: { nah: 45, fern: 45, magie: 45 }, abwehr: { nah: 45, fern: 45, magie: 45 }, r: 0.45, boss: true, wiederkehr: 300,
+    angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 },
+    v2: { magie: 60, fernkampf: 60, staerke: 60, geschick: 55, defense: 45, staerkeBonus: 50, ticks: 5, abwehr: { nah: 10, fern: 10, magie: 10 } },
+    stile: [{ sek: 20, name: "Stab", angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 }, v2: { ticks: 5 } },
+      { sek: 20, name: "Bogen", text: "greift zum Bogen!", angriff: { name: "Federpfeil", art: "fern", schaden: [1, 12], takt: 2.0, reich: 6, aushol: 0 }, v2: { ticks: 4 } },
+      { sek: 20, name: "Speer", text: "greift zum Speer!", angriff: { name: "Federspeer", art: "nah", schaden: [1, 12], takt: 2.5, reich: 1.9, aushol: 0 }, v2: { ticks: 5 } }],
+    info: "Die Federmutter des Ordens. Ihre Waffe wechselt, kaum dass man sich darauf eingestellt hat – Stab, Bogen, Speer.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [100, 200] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [5, 10] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [3, 6] }] },
+      { wurf: [{ g: "@selten", chance: 5 }] }] },
+  /** Der Oberste Rabenpriester: Boss, Stufe 55, 350 LP, Max Hit 18 (Doppelhieb), Thronsaal als Instanz (shared/bosse.ts) */
+  oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 999999,
+    angriff: { name: "Zwillingsklingen", art: "nah", schaden: [1, 18], takt: 2.0, reich: 2.2, aushol: 0 },
+    v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 64, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 10 } },
+    info: "Der Oberste des Rabenordens. Auf seinem Thron aus Federn und Splittern wartet er seit Jahren darauf, dass jemand kommt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [10, 25] }] },
+      { wurf: [{ g: "barren_sterneisen", chance: 18, anzahl: [3, 6] }, { g: "erz_splittereisen", chance: 12, anzahl: [5, 10] }, { g: "stamm_moorweide", chance: 15, anzahl: [10, 20] }, { g: "stamm_kernbaum", chance: 10, anzahl: [5, 10] },
+        { g: "seelenlicht", chance: 15, anzahl: [10, 20] }, { g: "heiltrank", chance: 10, anzahl: [2, 4] }, { g: "federsiegel", chance: 10, anzahl: [1, 2] }] }, /* Kräuter 35–45 (10 %) und starke Tränke kommen mit Kräuterkunde (#29); bis dahin Heiltränke */
+      { wurf: [{ g: "@selten", chance: 100 / 16 }, { g: "@episch", chance: 100 / 64 }, { g: "@legendaer", chance: 100 / 512 }] },
+      { wurf: [{ g: "splitterkern", chance: 100 / 64 }, { g: "rabenschwinge", chance: 100 / 256 }, { g: "rabenkueken", chance: 100 / 2000 }] }] },
+} as Record<string, MonsterDef>);
+
+/* ───────── Phase 7 (#40): Graufurt, Ostufer und der Turm mit dem grünen Licht – Werte doku/konzepte/phase-7.md (Beute: Vorschläge des Konzepts, beute.md folgt) ───────── */
+Object.assign(MONSTER, {
+  /** Schlickkrebs: Stufe 45, langsam, hohe Defense (Ufer, Schilf) */
+  schlickkrebs: { name: "Schlickkrebs", stufe: 45, bild: "img/echtzeit/bandit.webp", hoehe: 70, lp: 80, tempo: 1.6, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 70, fern: 70, magie: 40 }, r: 0.5,
+    angriff: { name: "Scherenhieb", art: "nah", schaden: [1, 9], takt: 3, reich: 1.5, aushol: 0 },
+    v2: { staerke: 80, geschick: 45, defense: 75, magie: 10, ticks: 6, abwehr: { nah: 40, fern: 35, magie: 0 } }, aggroReich: 3,
+    info: "Ein Krebs so groß wie ein Hund, der Panzer voller Schlick. Langsam – aber an seinen Scheren beißt man sich die Zähne aus.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "krebsschere", chance: 40, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten:Rüstung", chance: 100 / 128 }] }] },
+  /** Splitterreiher: Stufe 50, Fernkampf (Splitter-Stoß), flieht nicht (Ostufer-Wiesen) */
+  splitterreiher: { name: "Splitterreiher", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 110, lp: 75, tempo: 3.4, angriffswert: { nah: 10, fern: 50, magie: 0 }, abwehr: { nah: 45, fern: 50, magie: 35 }, r: 0.45,
+    angriff: { name: "Splitter-Stoß", art: "fern", schaden: [1, 11], takt: 2, reich: 6, aushol: 0 },
+    v2: { fernkampf: 100, geschick: 40, staerke: 20, defense: 50, magie: 20, ticks: 4, abwehr: { nah: 0, fern: 20, magie: 5 } },
+    info: "Ein grauer Reiher mit Splittern statt Federn am Hals. Er schleudert sie, bevor man nah genug ist.",
+    drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [12, 24] }] }, { wurf: [{ g: "erz_splittereisen", chance: 8, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten:Bogen", chance: 100 / 128 }] }] },
+  /** Turmwächter: Stufe 58, gerüstete Steinfigur der Wacht, Rundumschlag mit Ansage (Fläche um sein Ziel) */
+  turmwaechter: { name: "Turmwächter", stufe: 58, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 120, tempo: 2.2, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 80, fern: 70, magie: 45 }, r: 0.55,
+    angriff: { name: "Speerhieb", art: "nah", schaden: [1, 13], takt: 2.5, reich: 1.9, aushol: 0 },
+    spezial: { name: "Rundumschlag", laden: 1, alle: 9, radius: 2.2, reich: 2, schaden: [8, 14], art: "nah" },
+    v2: { staerke: 105, geschick: 70, defense: 85, magie: 20, ticks: 5, abwehr: { nah: 40, fern: 30, magie: -5 } }, aggroReich: 4,
+    info: "Eine gerüstete Steinfigur mit dem Wappen der Wacht auf der Brust. Wer den Turm betritt, wird gestellt.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [15, 30] }] }, { wurf: [{ g: "wachtstein", chance: 35, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }, { g: "@episch", chance: 100 / 512 }] }] },
+  /** Grünlicht: Stufe 60, Irrlicht auf dem Turmdach, heilt Turmwächter in der Nähe */
+  gruenlicht: { name: "Grünlicht", stufe: 60, bild: "img/gegner/irrlicht.jpg", hoehe: 90, lp: 90, tempo: 3.0, angriffswert: { nah: 0, fern: 0, magie: 60 }, abwehr: { nah: 60, fern: 40, magie: 80 }, r: 0.4,
+    angriff: { name: "Grünes Feuer", art: "magie", schaden: [1, 10], takt: 2.5, reich: 5, aushol: 0 }, heiler: { alle: 6, anteil: 0.15, radius: 8, nur: "turmwaechter" },
+    v2: { magie: 95, geschick: 30, staerke: 10, defense: 60, ticks: 5, abwehr: { nah: 10, fern: -10, magie: 40 } },
+    info: "Ein grünes Licht, das schwebt und flüstert. Wo es ist, stehen die Turmwächter wieder auf.",
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "seelenlicht", chance: 60, anzahl: [2, 5] }] }, { wurf: [{ g: "@selten:Stab", chance: 100 / 32 }] }] },
+} as Record<string, MonsterDef>);
+
+
 
 /** Trefferchance aus Angriffs- und Verteidigungswert (beide würfeln 0 bis Wert, der höhere Angriffswurf trifft) */
 export const trefferchance = (a: number, d: number) => (a > d ? 1 - (d + 2) / (2 * (a + 1)) : a / (2 * (d + 1)));
