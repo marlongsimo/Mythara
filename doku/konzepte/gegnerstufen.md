@@ -1,6 +1,6 @@
 # Die neuen Gegnerstufen (berechnet aus den Kampfwerten)
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.*
+*Konzept-Chat, 27.11.2026. **Entschieden (Nutzer):** Die Gegner bleiben genau so, wie sie sind, ohne Farbe und ohne neue Werte. Um die Stufen der bestehenden Gegner kümmern wir uns nicht weiter.*
 Grundlage: Kanon „Gegnerstufe wird berechnet“. Die Stufe kommt aus `kampfwerte.ts` `gegnerStufe()`: dieselbe Formel wie das Heldenlevel, die Lebenspunkte zählen als LP-Level.
 Die Zahlen unten sind mit dem Stand von `feature/realtime-engine` vom 27.11. nachgerechnet. Werte geändert hat dabei niemand, nur die **Anzeige** ist neu.
 

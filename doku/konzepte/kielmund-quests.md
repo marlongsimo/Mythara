@@ -1,6 +1,6 @@
 # Kielmund: kleine Stadt-Quests (Vorschlag)
 
-*Entwurf Konzept-Chat, 27.11.2026, noch nicht abgesegnet.*
+*Konzept-Chat, 27.11.2026. **Vom Nutzer abgesegnet** (27.11.): alle vier Quests.*
 Grundlage: `hauptstaedte.md` (3–5 kleine Stadt-Quests je Hauptstadt; für Kielmund Hafen, Schmuggler, Werft). Vorbild sind die drei Steinhag-Quests (`quest_steinhag.ts`): kurz, quer zu bekannten Orten, möglichst ohne neue Gegenstände.
 Kielmund hat schon: Hafenviertel (Werft, Kai, Fischmarkt), Kaufmannsviertel, Altstadt mit Tempel, Fischerquartier, Leuchtturm-Mole, Haus der Küstenhäuser, Fischerzunft.
 Bekannte Figuren: Jasper Kranich (Kaufherr, G1), Wiebke Strand (Leuchtfeuer, G2), Bente Möller (Möwenbucht, G4).
@@ -34,6 +34,5 @@ Ein Ratsherr im Haus der Küstenhäuser schickt eine versiegelte Nachricht durch
 XP passend zum Beruf oder Kampf der Quest, etwas Splitter, 1 Questpunkt je Quest. Keine neuen Gegenstände außer höchstens dem Rezept der Fischsuppe.
 
 ## Offen
-- Drei oder vier Quests?
 - Namen: Hafenmeisterin, Werftmeister und Priesterin brauchen Namen (Vorschläge auf Wunsch).
 - Fischsuppe als neues Rezept, oder ein vorhandenes Fischgericht?
