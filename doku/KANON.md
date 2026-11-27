@@ -86,7 +86,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Welt lebendiger** (27.11.): Leere Flächen bekommen Orte und Bewuchs (#140, #141). Im Süden und in den neuen Orten gibt es **fällbare Bäume und Erzstellen in Gruppen nahe jedem Ort**, dazu **vereinzelt Stellen einer höheren Stufe** abseits zum Entdecken (#142, nur vorhandene Arten). **Streifgebiete** (#143): Wölfe, Bären und Hyänen laufen **einzeln** (kein Rudel) über eine **größere Fläche**, etwa **5–7 Tiere je Gebiet**.
 
 ## Für später (Ideen, noch nicht geplant)
-- **Rissgrube** (PvM-Minispiel, Idee für später, 27.11.): Weg zu den Uralt-Teilen (Stufe 75) als seltener Drop, Ziel-Kampfstufe 80, 5 Kammern mit Echos und Rissherz, Riss-Segen, Risstruhe; **kein Pech-Schutz**; **hinter einer Quest gesperrt** (Lohn: Zugang + Teleport-Objekt); **Bank im Rissvorraum**. Konzept `doku/konzepte/rissgrube.md`.
+- **Rissgrube** (PvM-Minispiel, Idee für später, 27.11.): Weg zu den Uralt-Teilen (Stufe 75) als seltener Drop, Ziel-Kampfstufe 80, 5 Kammern mit Echos und Rissherz, Riss-Segen, Risstruhe; **kein Pech-Schutz**; **hinter einer Quest gesperrt** (Lohn: Zugang + Teleport-Objekt); **Bank im Rissvorraum**; **allein und in Gruppen (2–4)**; Namen passen; die Uralt-Teile legt der Nutzer selbst fest. Konzept `doku/konzepte/rissgrube.md`.
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
 - **Die ganze Welt ist Kampfwelt** (auch Festland: Fahle Weiten, Glutsande, Smaragdküste, Süden). *(27.11.)*

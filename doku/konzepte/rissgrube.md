@@ -15,7 +15,7 @@ Die Rissgrube ist der **Hauptweg** zu den Uralt-Teilen als **seltener Drop**.
 |---|---|
 | Ziel-Kampfstufe | **80** (Einlass ab 65 mit Warnung „sehr gefährlich“) |
 | Freischalten | nur nach der Quest **„Das Echo im Stollen“** (siehe unten) |
-| Spieler | allein oder Gruppe 2–4, Gegner wachsen mit (Vorschlag, noch offen) |
+| Spieler | **allein oder als Gruppe 2–4** (entschieden 27.11.), Gegner wachsen mit der Gruppe |
 | Dauer | 10–15 min je Durchgang |
 | Ort | Hochlande, **Rissvorraum** im Bergwerk Steinhag; Kammern als eigene Instanz je Durchgang |
 | Tod | Durchgang verloren, **Gegenstände bleiben** (sicheres Minispiel), man erwacht im Rissvorraum |
@@ -86,8 +86,11 @@ Ein ausgebauter Stollenraum vor dem Riss, sicher (kein Kampf):
 | Oberfläche | Segen-Auswahl, Punkte- und Truhenfenster, Sammelbuch – kompakt, ohne Scrollen, mit Vorschau für den Nutzer |
 | Integration | Beutetabellen, Werte, Einbau |
 
-## Offen (Nutzer)
+## Entschieden (27.11.)
 
-- Gruppe 2–4 oder vorerst nur allein (wie die Bosse)?
-- Name „Rissgrube“, „Rissstein“, „Rissmeisterin“, „Das Echo im Stollen“.
-- Endgame-Konzept (welche Uralt-Teile, Werte, handelbar).
+- Allein **und** in Gruppen (2–4). Namen passen (Rissgrube, Rissstein, Rissmeisterin, Das Echo im Stollen).
+- Kein Pech-Schutz; Freischalten über Quest mit Zugang + Teleport-Objekt; Bank im Rissvorraum.
+
+## Offen
+
+- Die Uralt-Teile selbst (Waffen, Rüstung, Werte, handelbar) – **kommen vom Nutzer**.
