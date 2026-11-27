@@ -883,5 +883,8 @@
   },
   "beine_eng": 0.15,
   "kampftempo": 0.5,
-  "gangtempo": 0.5
+  "gangtempo": 0.5,
+  "schild_lage": 1.49,
+  "helm_hinweis": "Helme der Helden sitzen 6 cm höher als von helm_anpassen.py eingepasst (fabrik/teil_verschieben.py hoch=0.03 zweimal, Wunsch Nutzer) – bei neuem Einpassen oben/unten um 0.06 erhöhen",
+  "schild_hinweis": "Schilde der Helden zusätzlich um 90° um die eigene Fläche gedreht, Oberseite aus Sicht der Kamera nach links (fabrik/teil_verschieben.py drehen=flaeche:90 oben_nach=-x; Wachschild mit achse des Sternenschilds) – Wunsch Nutzer"
 }

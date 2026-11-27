@@ -1,0 +1,11 @@
+{
+  "id": "kopf.helm.steinvogt",
+  "name": "Löwenwacht – helm",
+  "kategorie": "ruestung",
+  "stufe": 70,
+  "klasse": "Nahkampf",
+  "aktuell": "v001",
+  "status": "v001: Modell des Nutzers (uebergabe/figuren/ruestung70/nah_helm.blend, quelle/meshy.glb), ersetzt die umgefärbte Fassung aus abe4736cc; eingepasst mit fabrik/helm_anpassen.py oben=0.26 unten=-0.14 abstand=0.01 max_weit=1.1 vor=0.07 (der Helmbusch reicht weit nach hinten und oben – ohne Ausgleich saß die Schale zu weit vorn und zu tief) auf basemann3d und basefrau3d, über ein Probe-Rig (gleiches Skelett, Bindung geprüft) als Teil kopf.helm.steinvogt ausgelagert – Helden-glb unverändert; .mobil.glb und Rucksackbild img/objekte3d/ausruestung/stufe70/kopf.helm.steinvogt.webp",
+  "herkunft": "eigenes Modell (Nutzer)",
+  "hinweis": "Satzname laut Nutzer „Löwenwacht“ (früher Steinvogt-Platte); Dateinamen und Ebenen (*.steinvogt) bleiben."
+}

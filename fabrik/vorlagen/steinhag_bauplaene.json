@@ -1,0 +1,885 @@
+{
+ "hinweis": "Figuren für #167 Steinhag: neue Baupläne im Format von realtime/welt/bibliothek/bauplaene.json (Bruchstein, Schieferdach, Hochland). Welt übernimmt sie in bauplaene.json; der 3D-Client baut sie daraus (welt3d/bauten.ts, wenige Netze je Gebäude), werkzeug/welt/gebaeude.py die gemalten Ebenen.",
+ "bauplaene": [
+  {
+   "id": "hochland_stadthaus_01",
+   "name": "Stadthaus (zweistöckig)",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 4,
+     "h": 4.6,
+     "wand": "stein",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.1,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       92,
+       100,
+       116
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.2,
+     "b": 1,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.0,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -1.2,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 3.0,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.0
+    },
+    {
+     "wand": "ost",
+     "z": 3.0,
+     "b": 0.6,
+     "h": 0.65,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": 1.6,
+     "d": 2.6,
+     "b": 0.6
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": 0.8,
+      "d": 1.6
+     },
+     {
+      "art": "ofen",
+      "x": 1.4,
+      "d": 3.2
+     },
+     {
+      "art": "regal",
+      "x": -1.3,
+      "d": 3.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_stadthaus_02",
+   "name": "Stadthaus mit Giebel zur Gasse",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4,
+     "t": 6,
+     "h": 4.4,
+     "wand": "stein",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.4,
+      "first": "d",
+      "ueber": 0.35,
+      "deckung": "schiefer",
+      "farbe": [
+       84,
+       92,
+       108
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "schmal",
+     "x": -1.2
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": -1.0,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.75,
+     "art": "kreuz",
+     "x": 1.0,
+     "laeden": true
+    },
+    {
+     "wand": "ost",
+     "z": 1.0,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 3.5
+    },
+    {
+     "wand": "ost",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 1.6
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.2,
+     "d": 4.5,
+     "b": 0.6
+    },
+    {
+     "art": "laterne",
+     "x": 1.0,
+     "z": 2.0
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -0.8,
+      "d": 2.0
+     },
+     {
+      "art": "bett",
+      "x": 1.2,
+      "d": 4.6
+     },
+     {
+      "art": "ofen",
+      "x": -1.2,
+      "d": 5.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_stadthaus_03",
+   "name": "Schmales Stadthaus mit Walmdach",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.0,
+     "d": 0,
+     "b": 4,
+     "t": 4,
+     "h": 5.0,
+     "wand": "quader",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.8,
+      "first": "x",
+      "ueber": 0.35,
+      "deckung": "schiefer",
+      "farbe": [
+       100,
+       106,
+       118
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.9,
+     "b": 1,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -1.0
+    },
+    {
+     "wand": "sued",
+     "z": 2.7,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -1.0
+    },
+    {
+     "wand": "sued",
+     "z": 2.7,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 0.9,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 4.1,
+     "b": 0.45,
+     "h": 0.55,
+     "art": "rund",
+     "x": 0.0
+    },
+    {
+     "wand": "ost",
+     "z": 2.7,
+     "b": 0.6,
+     "h": 0.7,
+     "art": "kreuz",
+     "d": 2.0
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -1.2,
+     "d": 2.8,
+     "b": 0.55
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "bett",
+      "x": -1.2,
+      "d": 2.6
+     },
+     {
+      "art": "tisch",
+      "x": 0.8,
+      "d": 2.6
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_stadthaus_04",
+   "name": "Stadthaus mit Anbau",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.0,
+     "d": 0,
+     "b": 5,
+     "t": 4,
+     "h": 4.4,
+     "wand": "stein",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       88,
+       96,
+       110
+      ]
+     }
+    },
+    {
+     "id": "anbau",
+     "x": 2.0,
+     "d": 0.5,
+     "b": 2.5,
+     "t": 3,
+     "h": 2.4,
+     "wand": "stein",
+     "betretbar": false,
+     "dach": {
+      "form": "pult",
+      "hoehe": 1.0,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       88,
+       96,
+       110
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.5,
+     "b": 1,
+     "h": 1.95,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.75,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 0.5,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -1.5
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 0.5,
+     "blumen": true
+    },
+    {
+     "wand": "sued",
+     "z": 1.0,
+     "b": 0.6,
+     "h": 0.6,
+     "art": "schmal",
+     "x": 3.2,
+     "koerper": "anbau"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "kamin",
+     "x": -2.3,
+     "d": 2.6,
+     "b": 0.6
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "tisch",
+      "x": -0.6,
+      "d": 1.8
+     },
+     {
+      "art": "ofen",
+      "x": 1.2,
+      "d": 3.2
+     },
+     {
+      "art": "fass",
+      "x": -2.3,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_ladenhaus_01",
+   "name": "Ladenhaus mit Vordach",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -3.0,
+     "d": 0,
+     "b": 6,
+     "t": 4,
+     "h": 4.2,
+     "wand": "stein",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       92,
+       100,
+       116
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": -1.8,
+     "b": 1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 1.8,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": 1.2
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": -1.8,
+     "laeden": true
+    },
+    {
+     "wand": "sued",
+     "z": 2.9,
+     "b": 0.7,
+     "h": 0.7,
+     "art": "kreuz",
+     "x": 1.2,
+     "laeden": true
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": -0.4,
+     "x1": 2.8,
+     "tiefe": 1.3,
+     "z": 2.2,
+     "deckung": "schindel"
+    },
+    {
+     "art": "schild",
+     "x": -0.9,
+     "z": 2.4,
+     "farbe": [
+      176,
+      140,
+      70
+     ]
+    },
+    {
+     "art": "kamin",
+     "x": 2.2,
+     "d": 2.6,
+     "b": 0.6
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "theke",
+      "x": 0.8,
+      "d": 1.4
+     },
+     {
+      "art": "regal",
+      "x": 0.8,
+      "d": 3.4
+     },
+     {
+      "art": "saecke",
+      "x": -2.0,
+      "d": 3.0
+     },
+     {
+      "art": "fass",
+      "x": 2.4,
+      "d": 3.2
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_ladenhaus_02",
+   "name": "Eckladen mit Auslage",
+   "koerper": [
+    {
+     "id": "haupt",
+     "x": -2.5,
+     "d": 0,
+     "b": 5,
+     "t": 5,
+     "h": 3.2,
+     "wand": "quader",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "walm",
+      "hoehe": 1.8,
+      "first": "x",
+      "ueber": 0.4,
+      "deckung": "schiefer",
+      "farbe": [
+       84,
+       92,
+       108
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 1.3,
+     "b": 1,
+     "h": 2.0,
+     "art": "einfach"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 0.9,
+     "b": 1.6,
+     "h": 1.0,
+     "art": "kreuz",
+     "x": -1.0
+    },
+    {
+     "wand": "ost",
+     "z": 0.9,
+     "b": 1.4,
+     "h": 1.0,
+     "art": "kreuz",
+     "d": 2.5
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "vordach",
+     "x0": -2.3,
+     "x1": 0.4,
+     "tiefe": 1.2,
+     "z": 2.1,
+     "deckung": "schindel"
+    },
+    {
+     "art": "schild",
+     "x": 1.3,
+     "z": 2.5,
+     "farbe": [
+      120,
+      124,
+      132
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": 2.2,
+     "z": 2.0
+    }
+   ],
+   "innen": {
+    "boden": "bretter",
+    "moebel": [
+     {
+      "art": "theke",
+      "x": -0.6,
+      "d": 2.2
+     },
+     {
+      "art": "regal",
+      "x": -1.2,
+      "d": 4.4
+     },
+     {
+      "art": "regal",
+      "x": 1.2,
+      "d": 4.4
+     }
+    ]
+   }
+  },
+  {
+   "id": "hochland_zunfthaus_01",
+   "name": "Zunfthaus der Schmiede (Zunftschmiede)",
+   "koerper": [
+    {
+     "id": "halle",
+     "x": -6.0,
+     "d": 0,
+     "b": 12,
+     "t": 8,
+     "h": 3.8,
+     "wand": "quader",
+     "betretbar": true,
+     "sockel": true,
+     "dach": {
+      "form": "sattel",
+      "hoehe": 3.0,
+      "first": "x",
+      "ueber": 0.5,
+      "deckung": "schiefer",
+      "farbe": [
+       80,
+       88,
+       104
+      ]
+     }
+    },
+    {
+     "id": "turm",
+     "x": 6.0,
+     "d": 4.0,
+     "b": 3,
+     "t": 3,
+     "h": 6.2,
+     "wand": "quader",
+     "betretbar": false,
+     "dach": {
+      "form": "zelt",
+      "hoehe": 2.0,
+      "first": "x",
+      "ueber": 0.3,
+      "deckung": "schiefer",
+      "farbe": [
+       80,
+       88,
+       104
+      ]
+     }
+    }
+   ],
+   "tueren": [
+    {
+     "x": 0.0,
+     "b": 2.4,
+     "h": 2.6,
+     "art": "tor"
+    }
+   ],
+   "fenster": [
+    {
+     "wand": "sued",
+     "z": 1.2,
+     "b": 1.0,
+     "h": 1.0,
+     "art": "glut",
+     "x": -3.8
+    },
+    {
+     "wand": "sued",
+     "z": 1.2,
+     "b": 1.0,
+     "h": 1.0,
+     "art": "glut",
+     "x": 3.8
+    },
+    {
+     "wand": "ost",
+     "z": 1.2,
+     "b": 1.0,
+     "h": 0.9,
+     "art": "glut",
+     "d": 2.5
+    },
+    {
+     "wand": "ost",
+     "z": 1.2,
+     "b": 1.0,
+     "h": 0.9,
+     "art": "glut",
+     "d": 5.5
+    },
+    {
+     "wand": "sued",
+     "z": 4.4,
+     "b": 0.45,
+     "h": 0.8,
+     "art": "schmal",
+     "x": 7.5,
+     "koerper": "turm"
+    }
+   ],
+   "zubehoer": [
+    {
+     "art": "esse",
+     "x0": -5.0,
+     "x1": -2.6,
+     "h": 1.7
+    },
+    {
+     "art": "kamin",
+     "x": -3.8,
+     "d": 6.8,
+     "b": 0.9
+    },
+    {
+     "art": "kamin",
+     "x": 2.5,
+     "d": 6.8,
+     "b": 0.9
+    },
+    {
+     "art": "banner",
+     "x": -1.8,
+     "z": 3.2,
+     "farbe": [
+      150,
+      52,
+      40
+     ]
+    },
+    {
+     "art": "banner",
+     "x": 1.8,
+     "z": 3.2,
+     "farbe": [
+      150,
+      52,
+      40
+     ]
+    },
+    {
+     "art": "schild",
+     "x": 0.0,
+     "z": 3.2,
+     "farbe": [
+      120,
+      124,
+      132
+     ]
+    },
+    {
+     "art": "laterne",
+     "x": -1.6,
+     "z": 2.4
+    },
+    {
+     "art": "laterne",
+     "x": 1.6,
+     "z": 2.4
+    }
+   ],
+   "innen": {
+    "boden": "stein",
+    "moebel": [
+     {
+      "art": "amboss",
+      "x": -3.8,
+      "d": 4.6
+     },
+     {
+      "art": "amboss",
+      "x": -1.2,
+      "d": 4.6
+     },
+     {
+      "art": "amboss",
+      "x": 1.4,
+      "d": 4.6
+     },
+     {
+      "art": "amboss",
+      "x": 3.8,
+      "d": 4.6
+     },
+     {
+      "art": "ofen",
+      "x": 2.5,
+      "d": 7.0
+     },
+     {
+      "art": "ofen",
+      "x": -3.8,
+      "d": 7.0
+     },
+     {
+      "art": "kessel",
+      "x": -0.2,
+      "d": 6.8
+     },
+     {
+      "art": "regal",
+      "x": -5.0,
+      "d": 2.2
+     },
+     {
+      "art": "fass",
+      "x": 5.2,
+      "d": 1.4
+     },
+     {
+      "art": "saecke",
+      "x": 5.0,
+      "d": 2.6
+     },
+     {
+      "art": "bank",
+      "x": 0.0,
+      "d": 2.0
+     }
+    ]
+   }
+  }
+ ]
+}

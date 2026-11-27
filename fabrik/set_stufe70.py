@@ -1,10 +1,12 @@
 """Mythara Fabrik – Rüstungssätze der Stufe 70 (Block H, #159) aus vorhandenen Teilen der Grundfiguren: umgefärbt, Turmschild gestreckt.
+Hinweis: Helm, Brust und Beine aller drei Sätze sind inzwischen durch die Modelle des Nutzers ersetzt (fabrik/assets/ausruestung/stufe70/);
+von hier stammt nur noch schild.turm.steinvogt – laut Nutzer ohne Turmschild in Stufe 70: die Datei bleibt liegen, wird nicht benutzt und nicht weiter gepflegt.
 
   <blender-python> fabrik/set_stufe70.py -- <teil.glb> <ziel.glb> <neue-id> stil=steinvogt|sturmfeder|frostschleier [strecken=1.6,1.15]
 
 Teil = ans Skelett gebundene Teil-Datei aus img/figuren-echt3d/<figur>.teile/ (Skelett und Bindung bleiben, Grundfigur unverändert).
 Farben (Textur, über Farbton/Sättigung/Helligkeit wie fabrik/set_wacht.py):
-  steinvogt     – Nahkampf, passend zu Grumhold: Metall → verwitterter Fels (grau-ocker), dunkle Stellen moosig grün, Messing → alte Bronze
+  steinvogt     – Nahkampf (heute „Löwenwacht“, Ebenen heißen weiter *.steinvogt), passend zu Grumhold: Metall → verwitterter Fels (grau-ocker), dunkle Stellen moosig grün, Messing → alte Bronze
   sturmfeder    – Fernkampf: alles ins Sturmgrau-Blau entsättigt, helle Federn heller, dunkles Leder schiefergrau
   frostschleier – Magie: Stoff → Eisblau, helle Säume → frostweiß-silbern, schwaches blaues Leuchten an den hellsten Stellen
 strecken=h,b: Teil in seiner Höhe (z) und Breite um den eigenen Mittelpunkt strecken (Turmschild aus dem Sternenschild).
