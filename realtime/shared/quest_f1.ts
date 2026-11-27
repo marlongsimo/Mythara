@@ -5,7 +5,7 @@
  * Händlerin Selma Dornfeld in der Karawanenrast liest den Brief und lacht: Er ist zwanzig Jahre alt.
  * Lohn: Fernkampf 3.000, Stärke 3.000, Defense 2.000 XP, 600 Splitter, 2 Questpunkte; Wegstein-Ziel Glutbrunn.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 9 (Glutsande, Glutbrunn, Karawanenräuber, Selma) und auf „Figur in mehreren Quests“ (Kord aus D1).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 9/10, 9c0d16bd und e7f482af).
  * Stellen: shared/quest_f_orte.ts. Liste: doku/quests/f-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";

@@ -7,7 +7,7 @@
  * Lohn: Holzfällerei 800, Stärke 800, Defense 800 XP, 300 Splitter, 2 Questpunkte. Schalter dornenwall_offen (Abkürzung offen, je Spieler), grauwacht_abtei (Stadtstufe „abtei“: die Abtei ist bewohnt, Markt);
  * Wegstein-Ziel Heidrast.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Welt: Fahle Weiten, Heidrast, Abtei; Figuren: Mette, Gunhild; Gegner rudelfuehrer).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 7/8, 806f3060 und a34079ee).
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
