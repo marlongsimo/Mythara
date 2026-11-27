@@ -111,7 +111,7 @@ Zuletzt aktualisiert: 26.11.2026.
 - **Dorfnamen Fahle Weiten bestätigt** (27.11., Konzept-Chat): Kohlstatt, Brechstein, Wollhag, Weiherhof (dazu Hügelgrund, Reifbach).
 - **Kielmund-Stadtquests abgesegnet** (27.11., Konzept-Chat, `doku/konzepte/kielmund-quests.md`), Voraussetzung G1: „Lichter im Nebel“, „Kiel auf Stapel“, „Suppe für die Altstadt“, „Der Brief des Ratsherrn“. Namen der neuen Figuren schlägt Quests vor; Fischsuppe neu oder vorhandenes Gericht offen.
 - **Reihenfolge der nächsten Konzepte** (27.11.): Midgame-Bosse → Gegnerbeute in die Berufe → Drachenarm (Konzept-Chat arbeitet sie aus).
-- **Gegnerstufen** (27.11., Konzept-Chat): Die Gegner bleiben, wie sie sind – keine Gefahrenfarbe, keine neuen Werte; Übersicht in `doku/konzepte/gegnerstufen.md`. (Ob die berechnete Stufe angezeigt wird, siehe Rückfrage.)
+- **Gegnerstufen** (27.11., Konzept-Chat, Rückfrage geklärt): Die **berechnete Stufe wird angezeigt, mit Gefahrenfarbe** (grün/gelb/orange/rot, für den jeweiligen Helden, aus dem Kampf gerechnet – Trefferchancen und Max Hit beider Seiten; Grenzen noch offen). **Gegnerwerte bleiben unverändert.** Übersicht `doku/konzepte/gegnerstufen.md`.
 
 - **Ausnahme Rohstoffe** (27.11.): Für die **Zunfthäuser** gibt es **eigene, höhere Kräuter, höhere Tränke und höhere Fischarten** zum Kochen (über Kräuterkunde 45/65 und Fischen 65 hinaus): Mondsalbei/Glutwurz/Splitterlilie (70/80/90), fünf Tränke 70–90, Silberbarsch/Sturmhecht/Tiefseeaal (70/80/90) mit Heilung **fest + % des Höchstlebens** (≈21/24/27 bei 99 Leben). Sonst bleibt „keine neuen Rohstoffe außer Fleisch“. **Boss-Schaden:** Grundangriff höchstens ~8–15 % des Höchstlebens, nicht ausgewichener Großangriff 30–60 %. Konzept `doku/konzepte/zunft-rohstoffe.md`.
 
