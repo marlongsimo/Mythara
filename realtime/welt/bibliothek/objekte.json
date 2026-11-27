@@ -11825,7 +11825,8 @@
     "url": "img/objekte3d/sueden/trittsteine.glb",
     "wind": 0,
     "fest": true
-   }
+   },
+   "kollision": null
   },
   {
    "id": "sueden_trophaee_hecht",
@@ -11850,7 +11851,8 @@
     "url": "img/objekte3d/sueden/trophaee_hecht.glb",
     "wind": 0,
     "fest": true
-   }
+   },
+   "kollision": null
   },
   {
    "id": "sueden_trophaee_graupelz",
@@ -11875,7 +11877,8 @@
     "url": "img/objekte3d/sueden/trophaee_graupelz.glb",
     "wind": 0,
     "fest": true
-   }
+   },
+   "kollision": null
   }
  ]
 }
