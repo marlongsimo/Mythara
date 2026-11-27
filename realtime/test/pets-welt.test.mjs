@@ -25,10 +25,12 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
 let srv, log = "";
 const starten = async (env) => { srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8871", SUPABASE_URL: "http://localhost:8873", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765", ...env }, stdio: ["ignore", "pipe", "pipe"] });
   srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d)); await new Promise((r) => setTimeout(r, 1200)); };
-function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8785".replace("8785", "8871") + "/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, inv: null, chat: [], berg: [], holz: [], adern: null, warte: [] };
-  ws.on("message", (r) => { const m = JSON.parse(String(r)); if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "adern") s.adern = m.weg; if (m.t === "spieler") s.spieler = m.liste; for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
+function spieler(token, ort) { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8785".replace("8785", "8871") + "/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }), s = { ws, inv: null, chat: [], berg: [], holz: [], adern: null, warte: [], alle: [] };
+  ws.on("message", (r) => { const m = JSON.parse(String(r)); s.alle.push(m); if (m.t === "inventar") s.inv = m.inv; if (m.t === "chat" && m.kanal === "system") s.chat.push(m.text); if (m.t === "holz") s.holz.push(m); if (m.t === "berg") s.berg.push(m); if (m.t === "adern") s.adern = m.weg; if (m.t === "spieler") s.spieler = m.liste; for (const w of [...s.warte]) if (w.f(m)) { s.warte.splice(s.warte.indexOf(w), 1); w.r(m); } });
   ws.on("open", () => { ws.send(JSON.stringify(token ? { t: "anmeldung", token, geraet: "test-" + String(token).slice(4, 12).replace(/[^A-Za-z0-9]/g, "x") } : { t: "anmeldung", gast: true })); fertig(s); }); }); }
-const warte = (s, fn, ms = 4000) => new Promise((r) => { const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
+/** Auf eine Meldung warten; ab: auch schon mitgeschriebene ab diesem Index zählen (unter Last kommt sie sonst, bevor der Test hinsieht) */
+const warte = (s, fn, ms = 4000, ab) => new Promise((r) => { if (ab !== undefined) { const m = s.alle.slice(ab).find(fn); if (m) return r(m); }
+  const t = setTimeout(() => r(null), ms); s.warte.push({ f: fn, r: (m) => { clearTimeout(t); r(m); } }); });
 const sende = (s, m) => s.ws.send(JSON.stringify(m)), schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 const anzahl = (s, g) => (s.inv.rucksack || []).filter((x) => (typeof x === "string" ? x : x.g) === g).length;
 const ST = JSON.parse(readFileSync("shared/bergbau_standorte.json", "utf8")).senken.flatMap((l) => l.adern).filter((b) => b.art !== "waldstein") /* ohne den Questfels (Quest 03) */, KUPFER = ST.find((b) => b.art === "kupfer"), EISEN = ST.find((b) => b.art === "eisen");
@@ -40,8 +42,10 @@ try {
   await starten({ BERG_FALL: "0", BERG_KERN: "0", PET_CHANCE: "1" });
   const anna = await spieler(TA, KUPFER.region), ben = await spieler(TB, KUPFER.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");
   check(!(anna.inv.pets || []).length, "Anna hat noch keinen Begleiter");
-  await bei(anna, KUPFER); await bei(ben, KUPFER, 2); const st = await nein(anna, KUPFER.id); check(st.tat === "start", "Anna baut Kupfer ab");
-  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 40000) /* unter Last (parallel.mjs) dauert der erste Hieb länger */; await schlaf(300);
+  await bei(anna, KUPFER); await bei(ben, KUPFER, 2); const vorAbbau = anna.alle.length, vorBen = ben.alle.length; const st = await nein(anna, KUPFER.id); check(st.tat === "start", "Anna baut Kupfer ab");
+  const fund = await warte(anna, (m) => m.t === "pet" && m.tat === "fund", 40000, vorAbbau) /* von Anfang an mitgeschrieben – unter Last (CI) kommt der Fund schon während des Starts */;
+  await warte(anna, (m) => m.t === "inventar" && (m.inv.pets || []).includes("steinbert"), 10000, vorAbbau); /* der neue Spielerstand */
+  await warte(ben, (m) => m.t === "chat" && /Steinbert/.test(m.text || ""), 10000, vorBen); /* die Ansage auch bei Ben */
   check(fund && fund.id === "steinbert", "beim Abbau gefunden: Steinbert (Bergbau)");
   check((anna.inv.pets || []).join() === "steinbert" && anna.inv.petAktiv === "steinbert", "im Spielerstand (pets, petAktiv) – es folgt sofort");
   check(!(anna.inv.rucksack || []).some((x) => /stein/.test(typeof x === "string" ? x : x.g)), "nicht im Rucksack (gebunden, nicht handelbar, geht nicht verloren)");
