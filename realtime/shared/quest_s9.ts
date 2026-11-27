@@ -5,7 +5,7 @@
  * QUER zu G1 „Die Südstraße“ (kueste_die_suedstrasse): Kranich spricht vom verlorenen Getreidewagen, nach G1 bedankt er sich für den Frachtbrief.
  * Keine neuen Gegenstände: Die Briefe sind nur Text, die Gaben gibt es schon. Lohn: 300 Geschick XP, 100 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf die Orte des Südens (Welt #120) und ihre Figuren (#121). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. Stellen aus der Welt (#120), Figuren vorläufig bis #121. Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed, Option, Rede } from "./questbau";
 import { OTHMAR_F, KRANICH, RIKE, IMME, EBBA, BODO, ODILA, KUNO } from "./quest_s_orte";
@@ -15,12 +15,12 @@ export const S9 = "weidenhain_briefe_nach_sueden";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Empfänger: Figur, Ort, was sie sagt, was sie mitgibt */
 const POST = [
-  { f: RIKE, gruss: "Post? Ich hab keine Zeit für Post. …Gib her.", ort: "auf dem Heckenhof", sagt: ["Von Othmar? Der schreibt, als hätte er Zeit.", "…Er will Kuhfleisch für das Erntefest. Na gut. Hier, Brot für den Weg."], g: "brot", n: 2, name: "zwei Brote" },
-  { f: IMME, gruss: "Mmm? Ein Bote? Für mich?", ort: "in Summweide", sagt: ["Mmm. Ein Brief. Er riecht nach Weidenhain.", "Othmar bestellt Honig. Wie jedes Jahr. Nimm einen kleinen Trank – mit Honig."], g: "kleiner_heiltrank", n: 1, name: "einen kleinen Heiltrank" },
-  { f: EBBA, gruss: "Was hast du da? Papier? Hier draußen?", ort: "am Schilfsee", sagt: ["Post? Für mich? Wer schreibt mir denn?", "…Lambert. Er fragt, ob der Hecht noch lebt. Hier, ein Barsch. Gebraten. Iss ihn, bevor er's tut."], g: "fisch_muehlbarsch_gebraten", n: 1, name: "einen gebratenen Mühlbarsch" },
-  { f: BODO, gruss: "WAS IST DAS? EIN BRIEF?", ort: "in Erlengrund", sagt: ["POST! Ich krieg nie Post!", "Othmar will Bretter für die Scheune! Sag ihm: JA! Und nimm Eiche mit!"], g: "stamm_eiche", n: 2, name: "zwei Eichenstämme" },
-  { f: ODILA, gruss: "Ein Bote. Friede mit dir.", ort: "am Kreuzstein", sagt: ["Ein Brief. Für eine Pilgerin.", "Othmar bittet um ein Gebet für die Ernte. Gern. Nimm ein Licht mit."], g: "seelenlicht", n: 2, name: "zwei Seelenlichter" },
-  { f: KUNO, gruss: "Brief?", ort: "in Lehmfurt", sagt: ["Brief.", "…Nägel. Er will Nägel. Gut. Kupfer. Für dich."], g: "barren_kupfer", n: 2, name: "zwei Kupferbarren" },
+  { f: RIKE, gruss: "Post? Ich hab keine Zeit für Post. …Gib her.", ort: "auf dem Heckenhof", sagt: ["Von Othmar? Der schreibt, als hätte er Zeit.", "…Er will Kuhfleisch für das Erntefest. Na gut. Hier, ein Brot für den Weg."], g: "brot", name: "ein Brot" },
+  { f: IMME, gruss: "Mmm? Ein Bote? Für mich?", ort: "in Summweide", sagt: ["Mmm. Ein Brief. Er riecht nach Weidenhain.", "Othmar bestellt Honig. Wie jedes Jahr. Nimm einen kleinen Trank – mit Honig."], g: "kleiner_heiltrank", name: "einen kleinen Heiltrank" },
+  { f: EBBA, gruss: "Was hast du da? Papier? Hier draußen?", ort: "am Schilfsee", sagt: ["Post? Für mich? Wer schreibt mir denn?", "…Lambert. Er fragt, ob der Hecht noch lebt. Hier, ein Barsch. Gebraten. Iss ihn, bevor er's tut."], g: "fisch_muehlbarsch_gebraten", name: "einen gebratenen Mühlbarsch" },
+  { f: BODO, gruss: "WAS IST DAS? EIN BRIEF?", ort: "in Erlengrund", sagt: ["POST! Ich krieg nie Post!", "Othmar will Bretter für die Scheune! Sag ihm: JA! Und nimm einen Stamm mit!"], g: "stamm_eiche", name: "einen Eichenstamm" },
+  { f: ODILA, gruss: "Ein Bote. Friede mit dir.", ort: "am Kreuzstein", sagt: ["Ein Brief. Für eine Pilgerin.", "Othmar bittet um ein Gebet für die Ernte. Gern. Nimm ein Licht mit."], g: "seelenlicht", name: "ein Seelenlicht" },
+  { f: KUNO, gruss: "Brief?", ort: "in Lehmfurt", sagt: ["Brief.", "…Nägel. Er will Nägel. Gut. Kupfer. Ein Barren. Für dich."], g: "barren_kupfer", name: "einen Kupferbarren" },
 ];
 const IDS = POST.map((p) => "brief_" + p.f.id);
 const HILFE = ["Sechs Briefe: Rike auf dem Heckenhof, Imme in Summweide, Ebba am Schilfsee, Bodo in Erlengrund, Odila am Kreuzstein, Kuno in Lehmfurt.",
@@ -82,12 +82,12 @@ export const QUEST_S9: QuestDef = {
         { zeilen: ["Schön, dich zu sehen."], antworten: ["tschuess"] } as Rede,
       ],
       optionen: [
-        { id: IDS[i], text: `Othmars Brief ${p.ort} abgeben.`, folge: [{ f: { erledige: [IDS[i]], geben: [{ g: p.g, n: p.n, name: p.name }], zeilen: p.sagt } }] } as Option,
+        { id: IDS[i], text: `Othmars Brief ${p.ort} abgeben.`, folge: [{ f: { erledige: [IDS[i]], geben: [{ g: p.g, name: p.name }], zeilen: p.sagt } }] } as Option,
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Gute Reise."] } }] } as Option,
       ],
     }])),
   },
-  belohnungText: "Belohnung: Geschick 300 XP, 100 Splitter · unterwegs: Brot, ein kleiner Heiltrank, ein Barsch, Eichenstämme, Seelenlichter, Kupferbarren",
+  belohnungText: "Belohnung: Geschick 300 XP, 100 Splitter · unterwegs: ein Brot, ein kleiner Heiltrank, ein gebratener Barsch, ein Eichenstamm, ein Seelenlicht, ein Kupferbarren",
   belohnung: { xp: { geschick: 300 }, splitter: 100 },
   punkte: 1,
 };

@@ -5,7 +5,7 @@
  * Offene Welt: Der Kiel ist auch vorher über die Straße zu queren, die Furt ist nur kürzer. Keine neuen Gegenstände: Die Blöcke sind Questobjekte.
  * Lohn: Bergbau 500 XP, 3 Eisenbarren, 80 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Lehmfurt mit Steinbruch und Furt (Welt #120), Kuno (Figuren #121), Trittsteine mit Schalter (Welt-Sperre). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. Stellen aus der Welt (#120), Figuren vorläufig bis #121. Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { LEHMFURT, KUNO } from "./quest_s_orte";
