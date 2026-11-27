@@ -1,6 +1,7 @@
 """Mythara Fabrik – ein fliegendes Tier (Adler, Drakling …) aus einem Meshy-Modell mit ausgebreiteten Flügeln: Skelett, Gewichte, Bewegungen.
 
-  <blender-python> fabrik/rig_flieger.py -- <meshy.blend|glb> <ziel.blend> [spannweite=2.2] [flughoehe=1.4]
+  <blender-python> fabrik/rig_flieger.py -- <meshy.blend|glb> <ziel.blend> [spannweite=2.2] [flughoehe=1.4] [bewegungen=kreisen,sturzflug,landen,am_boden,angriff]
+(zusätzlich zu den vier Grundbewegungen; sturzflug ersetzt sturz – für Hüter wie die Sturmschwinge)
 
 Erwartet: Flügel ausgebreitet entlang x, Kopf nach -y, oben +z (Flugpose). Das Tier schwebt in flughoehe (Ruhelage in der Luft) wie der Moorrabe.
 Knochen: wurzel – rumpf – kopf / schwanz; rumpf – fluegel.L/R – spitze.L/R (innerer und äußerer Flügel).
@@ -84,7 +85,23 @@ def treffer(t):
 def tod(t):
     f = min(1.0, t / 0.7); g = f * f; fluegel(10 + 25 * math.sin(6 * math.pi * f) * (1 - f) - 10 * f, -20 * f, -10 * f)
     ort((0, 0, -(FH - 0.1 * SP) * g)); dreh("rumpf", (Y, 160 * f), (X, 15 * f)); dreh("kopf", (X, 25 * f)); dreh("schwanz", (X, -10 * f))
+UNTEN = 0.93 * float(P[:, 2].min())                                                                   # tiefster Punkt in der Flugpose → am Boden um so viel absenken
+def landen(t):                                                                                      # aus der Luft auf den Boden: Flügel bremsen, Beine vor, absetzen, Flügel anlegen
+    u = 1 - (1 - min(1.0, t / 0.8)) ** 2; ort((0, 0, -UNTEN * u)); fluegel(25 * schlag(t, 2.5) * (1 - u) + 40 * (1 - u) - 30 * max(0.0, (t - 0.8) / 0.2), -20 * u, 15 * u)
+    dreh("rumpf", (X, -20 * math.sin(math.pi * u))); dreh("kopf", (X, 10 * u))
+def am_boden(t):                                                                                    # steht am Boden, Flügel halb angelegt, Kopf dreht sich
+    ort((0, 0, -UNTEN + 0.01 * FH * schlag(t, 2))); fluegel(-30, -25, 20); dreh("kopf", (Zx, 25 * schlag(t)), (X, 5 * schlag(t, 2))); dreh("schwanz", (X, 4 * schlag(t, 2)))
+def angriff(t):                                                                                     # am Boden: Flügel aufreißen, mit dem Schnabel nach vorn hacken (Treffer Bild 11 von 21)
+    a = math.sin(math.pi * min(1.0, t / 0.5)) if t < 0.5 else 0.0; h = math.sin(math.pi * min(1.0, max(0.0, (t - 0.4) / 0.4)))
+    ort((0, -0.15 * FH * h, -UNTEN)); fluegel(-30 + 75 * a, -25 + 40 * a, 20 - 30 * a); dreh("rumpf", (X, -15 * a + 25 * h)); dreh("kopf", (X, -20 * a + 35 * h))
+def kreisen(t):                                                                                     # Kreisen: Gleitflug in leichter Schräglage, selten ein Flügelschlag
+    fluegel(8 + 6 * schlag(t) + 30 * max(0.0, schlag(t, 1)) * (t > 0.75), 6 * schlag(t - 0.1)); dreh("rumpf", (Y, -18), (X, 3 * schlag(t))); dreh("kopf", (Zx, -10)); ort((0, 0, -0.04 * FH * schlag(t)))
 BW = {"fliegen": (fliegen, 24, True, {}), "sturz": (sturz, 20, False, {"treffer": 12}), "treffer": (treffer, 10, False, {}), "tod": (tod, 30, False, {"halten": 30})}
+EXTRA = [b for b in opt.get("bewegungen", "").split(",") if b]                                      # zusätzliche Bewegungen (Sturmschwinge): kreisen, sturzflug, landen, am_boden, angriff
+ZUSATZ = {"kreisen": (kreisen, 32, True, {}), "sturzflug": (sturz, 20, False, {"treffer": 12}), "landen": (landen, 24, False, {"halten": 24}),
+          "am_boden": (am_boden, 32, True, {}), "angriff": (angriff, 20, False, {"treffer": 11})}
+for b in EXTRA: BW[b] = ZUSATZ[b]
+if "sturzflug" in EXTRA: del BW["sturz"]
 ARM.animation_data_create()
 for name, (fn, n, schleife, mehr) in BW.items():
     a = bpy.data.actions.new(name); a.use_fake_user = True; ARM.animation_data.action = a

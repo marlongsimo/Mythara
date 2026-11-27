@@ -1,0 +1,9 @@
+{
+  "id": "gegner.frostwitwe",
+  "name": "Die Frostwitwe",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "grundform": "Mensch (Magierin) aus Eis",
+  "status": "v001: Hüterin der Frostkrone: Eismagierin mit Eiskrone, Frostmantel und Eisstab – npcfrau3d, rig.py haltung=stab (wie die Priesterin), Eisstab, Eiskrone (neu), Umhang; fabrik/geist.py farbe=#7fb8e6 deckung=0.95; Bewegungen gehen, nova, ruhe, tod, treffer, zauber – img/figuren-echt3d/frostwitwe3d.glb (+ .mobil.glb) (Block H #159)",
+  "herkunft": "aus Vorlagen"
+}

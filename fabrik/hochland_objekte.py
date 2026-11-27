@@ -9,7 +9,7 @@ Pass:     steinbruecke (Bogenbrücke aus Steinblöcken, 7 m, Nord–Süd) · ste
           gipfelkreuz (Holzkreuz auf Steinsockel) · steinmann (aufgeschichtete Steine)
 Brücke (Baukasten West–Ost, #153): bruecke_mitte_ow (6,6 m, ebene Fahrbahn auf 1,4 m, 3 m breit, Mittelpfeiler mit Eisbrechern, je ein halber Bogen –
           Scheitel an den Stoßkanten, nahtlos aneinander) · bruecke_kopf_w / bruecke_kopf_o (Rampe vom Ufer auf die Fahrbahn, Torpfosten; West mit Laternen)
-Teil:     grubenhelm (Lederkappe mit Messinglampe vorn – Kopfteil der Bergleute, art "kopf", Rand bei z = 0)
+Teil:     eiskrone (Krone der Frostwitwe, art "kopf") · grubenhelm (Lederkappe mit Messinglampe vorn – Kopfteil der Bergleute, art "kopf", Rand bei z = 0)
 """
 import math, os, random, sys
 import bpy
@@ -155,6 +155,12 @@ elif ART == "steinmann":
     for k in range(7):
         r = 0.42 - k * 0.05; h = 0.16 - k * 0.01; o = kugel((random.uniform(-.03, .03), random.uniform(-.03, .03), z + h / 2), 1, STEIN if k % 2 else STEIN2, (r, r * 0.85, h / 2), 10)
         o.rotation_euler.z = random.uniform(0, 3); z += h * 0.92
+elif ART == "eiskrone":                                                                              # Krone der Frostwitwe (Kopfteil, art "kopf", Rand bei z = 0): Reif mit Eiszacken, vorn die längste
+    EIS_ = mat("eiskristall", (190, 230, 255), 0.1, 0, 0.8); SIL = mat("silber", (200, 206, 214), 0.25, 0.9)
+    ring((0, 0, 0.012), 0.105, 0.01, SIL)
+    for k in range(11):
+        a = 2 * math.pi * k / 11 - math.pi / 2; l = 0.07 + 0.08 * (1 + math.cos(a + math.pi / 2)) / 2
+        kristall((0.105 * math.cos(a), 0.105 * math.sin(a), 0.012 + l / 2), 0.014, l, EIS_, (0.15 * math.sin(a), -0.15 * math.cos(a), 0))
 elif ART == "grubenhelm":
     LE = mat("leder_helm", (70, 52, 38), 0.7)
     dreh([(0.0, 0.13), (0.07, 0.125), (0.105, 0.09), (0.115, 0.03), (0.118, 0.0), (0.0, 0.0)], LE, 20)
