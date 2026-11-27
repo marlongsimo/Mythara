@@ -34,7 +34,11 @@ export interface QuestFigur { id: string; name: string; modell: string; x: numbe
   /** nur da (sichtbar, ansprechbar), wenn das gilt – sonst steht dort niemand (Ysolde erst nach dem Feuer, #49) */ sichtbar?: Bed;
   /** folgt dem Spieler, solange das gilt (Befreite bis zur Treppe, später das Rabenküken – shared/folgen.ts). Nur im eigenen Browser;
    *  ansprechbar bleibt sie, wo sie gerade ist. Das Ziel ist ein gewöhnlicher Schritt (betreten bei …); danach steht sie an ihrer Stelle bzw. beiseite. */
-  folgt?: { wenn: Bed; abstand?: number } }
+  folgt?: { wenn: Bed; abstand?: number };
+  /** Maßstab des Modells (#134; Standard 1): Modelle in echter Größe wie das Schaf (0,8 m) stimmen schon, größer/kleiner nur hiermit */ mass?: number }
+/** Schmuck in der Welt, den eine Quest zeigt (#134: Trophäe an der Wand): ein 3D-Modell (z. B. aus der Bibliothek), sichtbar nur, wenn sichtbar gilt – ohne Antippen */
+export interface QuestDeko { id: string; /** Modell (Pfad ab Spielwurzel, z. B. img/objekte3d/sueden/trophaee_hecht.glb) */ glb: string; /** Weltfelder; h: Höhe über dem Boden (m, an der Wand) */ x: number; y: number; h?: number;
+  /** Drehung um die Hochachse (Grad) und Maßstab */ dreh?: number; mass?: number; sichtbar: Bed }
 /** Baumstamm-Sperre (gesperrte Felder x0, y0, x1, y1; Stämme: Mitte x, y, Länge, Drehung) – offen nach QuestDef.freigaben[id] */
 export interface Schranke { id: string; feld: [number, number, number, number]; staemme: [number, number, number, number][] }
 
@@ -127,7 +131,7 @@ export interface QuestDef {
   figuren: QuestFigur[];
   schritte: Schritt[];
   /** Dialoge je Figur */ dialoge: Record<string, { reden: Rede[]; optionen: Option[] }>;
-  /** Questobjekte in der Welt */ objekte?: QuestObjekt[];
+  /** Questobjekte in der Welt */ objekte?: QuestObjekt[]; /** Schmuck, der nach dem Stand erscheint (#134) */ deko?: QuestDeko[];
   /** Sammelziele und Rezepte, die nur mit der Quest gehen (die erste passende Sperre gilt) */
   sperren?: { sammeln?: Record<string, Sperre[]>; herstellen?: Record<string, Sperre[]> };
   /** bedingte Beute: Name der Bedingung in den Drop-Tabellen (config.ts „nur“) → wann sie gilt */ beute?: Record<string, Bed>;
