@@ -16,7 +16,7 @@ check(FL.length >= 20 && FL.every((z) => WELTREGIONEN.includes(z.region)), `${FL
 check(laufAus("3.2T.") === "...TT." && FL.every((z) => z.zeilen.length === z.h && z.zeilen[0].length === z.b), "Raster in Lauflängen, ausgeschrieben so groß wie das Gebiet");
 check(weltRegionBei(6230, 7150) === "fl_186_211" && weltRegionBei(6480, 6420) !== "fl_186_211", "die Region an einer Stelle: Küste bleibt Küste, die Waldmark Waldmark");
 const t0 = Date.now(); setzeKarte(KARTEN.welt, FEIN); const s = Sim.welt(22, undefined, true), U = KARTEN.welt.ursprung, ms = Date.now() - t0;
-const n = (typ) => s.wesen.filter((w) => w.typ === typ && !w.tot).length;
+const n = (typ) => s.wesen.filter((w) => w.typ === typ && !w.tot && !w.gp).length; /* die gebauten Lager (ohne Gegnerplätze #130) */
 check(n("strandkrabbe") >= 3 && n("heidewolf") >= 5 && n("sandkriecher") >= 1 && n("mangrovenlurch") === 3, `Lager auf dem Festland stehen (Strandkrabben ${n("strandkrabbe")}, Heidewölfe ${n("heidewolf")}, Sandkriecher ${n("sandkriecher")}, Lurche ${n("mangrovenlurch")})`);
 check(ms < 15000, `die ganze Kampfwelt ist in ${ms} ms aufgebaut`);
 { const k = s.wesen.find((w) => w.typ === "strandkrabbe"), wx = U[0] + k.x, wy = U[1] + k.y;

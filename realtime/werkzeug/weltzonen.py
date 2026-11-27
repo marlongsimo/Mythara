@@ -115,8 +115,32 @@ SUEDEN = {
     "fl_201_225": [("steinschlucker", 6500, 7237), ("steinschlucker", 6498, 7235), ("steinschlucker", 6500, 7235)],
 }
 for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern": 3, "lager": []})["lager"] += l
+# #130 Gegnerdichte (Welt, welt/gegnerplaetze.json): spätestens alle ~25 Felder ein Gegnerplatz. Plätze mit quelle „fehlt“ (Modell nötig: Ockerlande, Hochlande,
+# Frostkrone, Drachenarm) vorerst ausgelassen, die des Südens stehen schon oben. Namen der Welt → Gegner (abwechselnd bei Gruppen); unbekannte Gegner fallen weg.
+GP_DATEI = os.path.join(WURZEL, "realtime", "welt", "gegnerplaetze.json")
+GP_ALIAS = {"wolf": ["heidewolf"], "strandraeuber": ["strandraeuber_saebel", "strandraeuber_armbrust"], "karawanenraeuber": ["karawanenraeuber_saebel", "karawanenraeuber_bogen"],
+            "wegelagerer": ["wegelagerer_knueppel", "wegelagerer_schleuder"]}
+import re as _re
+BEKANNT = set(_re.findall(r"^  ([a-z_0-9]+): \{ name:", open(os.path.join(WURZEL, "realtime", "shared", "config.ts"), encoding="utf-8").read(), _re.M))
+GP = {}; GP_AUS = {"fehlt": 0, "unbekannt": 0}
+if os.path.exists(GP_DATEI):
+    for p in json.load(open(GP_DATEI, encoding="utf-8"))["plaetze"]:
+        q = p.get("quelle", "")
+        if q == "fehlt" or q.startswith("Süden"): GP_AUS["fehlt"] += 1 if q == "fehlt" else 0; continue
+        reihe = [a for g in p["gegner"] for a in GP_ALIAS.get(g, [g])]
+        for k in range(max(1, int(p.get("anzahl", 1)))):
+            art = reihe[k % len(reihe)]
+            if art not in BEKANNT: GP_AUS["unbekannt"] += 1; continue
+            dx, dy = [(0, 0), (2, 0), (0, 2), (2, 2), (-2, 0), (0, -2)][k % 6]
+            GP.setdefault(p["region"], []).append((art, int(p["x"]) + dx, int(p["y"]) + dy))
+# Gebaute Lager (Quest- und Trainingsplätze wie Moosrain, Kreuzwald-Lichtung, Westmark) zählen für die Dichte mit (Hinweis der Welt): Gegnerplätze näher als
+# GP_ABSTAND Felder an einem gebauten Lager fallen weg, damit dort nur die geplanten Gegner stehen
+GP_ABSTAND = 20
+_gebaut = [(wx, wy) for z in BESONDERS.values() for (_a, wx, wy) in z.get("lager", [])]
+for rid in list(GP):
+    vor = len(GP[rid]); GP[rid] = [g for g in GP[rid] if all(abs(g[1] - x) > GP_ABSTAND or abs(g[2] - y) > GP_ABSTAND for (x, y) in _gebaut)]; GP_AUS["nah"] = GP_AUS.get("nah", 0) + vor - len(GP[rid])
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
-       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
+       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number; gp?: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "const ROH: Omit<WeltKampfGebiet, \"zeilen\">[] = ["]
 # #122 (Entscheidung des Nutzers, 27.11.): die ganze Welt ist Kampfwelt, auch das Festland. Die Raster stehen in Lauflängen in der Datei (sonst rund 8 MB)
 FESTLAND: set = set()
@@ -139,9 +163,16 @@ for rid, eintrag in welt["regionen"].items():
                 for xx, ch in enumerate(zeile): raster[j * C + yy][i * C + xx] = "." if ch == "." else "T"
     # Lager auf einem gesperrten Feld: übersprungen (mit Hinweis), statt den Bau anzuhalten – so dürfen Lager für Gebiete stehen, die die Welt gerade umbaut (Phase 8: Fahle Weiten)
     alle = z.get("lager", []); frei = [(a, wx, wy) for (a, wx, wy) in alle if 0 <= wy - y0 < H and 0 <= wx - x0 < B and raster[wy - y0][wx - x0] == "."]
+    gp_weg = 0; belegt = {(l[1], l[2]) for l in frei}
+    for (a, wx, wy) in GP.get(rid, []):   # Gegnerplätze (#130): das nächste freie Feld im Umkreis von 4 Feldern
+        f = next(((wx + ox, wy + oy) for r in range(5) for oy in range(-r, r + 1) for ox in range(-r, r + 1) if max(abs(ox), abs(oy)) == r
+                  and 0 <= wy + oy - y0 < H and 0 <= wx + ox - x0 < B and raster[wy + oy - y0][wx + ox - x0] == "." and (wx + ox, wy + oy) not in belegt), None)
+        if f: frei.append((a, f[0], f[1], 1)); belegt.add(f)
+        else: gp_weg += 1
+    if GP.get(rid): print(f"  {rid}: {len(GP[rid]) - gp_weg} Gegner aus den Gegnerplätzen (#130){f', {gp_weg} ohne freies Feld' if gp_weg else ''}")
     for (a, wx, wy) in alle:
         if (a, wx, wy) not in frei: print(f"  Hinweis: {rid}: Lager {a} bei {wx},{wy} liegt nicht auf freiem Feld – übersprungen")
-    lager = [{"art": art, "x": (wx - x0) / 2, "y": (wy - y0) / 2, "gruppe": n + 1} for n, (art, wx, wy) in enumerate(frei)]
+    lager = [{"art": l[0], "x": (l[1] - x0) / 2, "y": (l[2] - y0) / 2, "gruppe": n + 1, **({"gp": 1} if len(l) > 3 else {})} for n, l in enumerate(frei)]  # gp: aus den Gegnerplätzen (#130)
     start = eintrag["start"][0]; karte = z.get("karte", "welt_" + rid)
     aus.append("  " + json.dumps({"region": rid, "karte": karte, "name": R.get("name", rid), "x0": x0, "y0": y0, "b": B, "h": H, "stufe": z.get("stufe", R.get("stufe", 1)),
         "lauf": [lauf("".join(r)) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,

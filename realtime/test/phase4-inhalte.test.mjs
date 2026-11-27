@@ -18,7 +18,7 @@ console.log("Mooshocker (#81)");
   check(D.drops && D.drops.length === 1 && tabelleOk("mooshocker"), "Ein Wurf, Chancen ≤ 100 %, alle Gegenstände gibt es");
   check(!D.drops[0].wurf.some((w) => M.GEGENSTAENDE[w.g].art !== "Rohstoff" && w.g !== "wurm" && w.g !== "seelenlicht"), "Keine Ausrüstung in der Beute");
   check(D.aggressiv === false && D.aggressivNach && D.aggressivNach.weit === 8 && Q2 && Q2.schalter && Q2.schalter[D.aggressivNach.schalter], `Nach der Quest aggressiv in 8 Feldern (Schalter ${D.aggressivNach && D.aggressivNach.schalter} kommt aus „Der stille Rain“)`);
-  const z = M.WELTKAMPF.find((g) => g.region === "osthof"); check(z && z.lager.filter((l) => l.art === "mooshocker").length === 10, "Zehn Mooshocker am Moosrain"); }
+  const z = M.WELTKAMPF.find((g) => g.region === "osthof"); check(z && z.lager.filter((l) => l.art === "mooshocker" && !l.gp).length === 10, "Zehn Mooshocker am Moosrain"); }
 
 console.log("Banditen-Varianten (#15, #24)");
 { const V = ["bandit_spaeher", "bandit_schlaeger", "bandit_armbrust"];
@@ -26,8 +26,8 @@ console.log("Banditen-Varianten (#15, #24)");
   check(M.MONSTER.bandit_spaeher.fliehen === 0.25 && M.MONSTER.bandit_spaeher.angriff.art === "fern" && M.MONSTER.bandit_armbrust.angriff.art === "fern" && M.MONSTER.bandit_schlaeger.angriff.art === "nah", "Späher flieht unter 25 %, Schleuder und Armbrust schießen, der Schläger haut");
   check([18, 22, 24].every((st, i) => M.MONSTER[V[i]].stufe === st), "Stufen 18, 22, 24 wie im Konzept");
   const w = M.WELTKAMPF.find((g) => g.region === "westmark"), a = M.WELTKAMPF.find((g) => g.region === "aschenwerth"), u = M.WELTKAMPF.find((g) => g.region === "unterschlupf");
-  check(w && w.lager.filter((l) => l.art === "bandit_spaeher").length === 6 && w.mehrkampf.length === 1, "Westmark: sechs Späher, das Lager ist Mehrkampf (der Kumpan hilft)");
-  check(a && a.lager.filter((l) => l.art.startsWith("bandit_")).length === 5 && u && u.lager.every((l) => V.includes(l.art)), "Riedwiesen-Lager am Moorrand und der Unterschlupf mit den neuen Banditen");
+  check(w && w.lager.filter((l) => l.art === "bandit_spaeher" && !l.gp).length === 6 && w.mehrkampf.length === 1, "Westmark: sechs Späher, das Lager ist Mehrkampf (der Kumpan hilft)");
+  check(a && a.lager.filter((l) => l.art.startsWith("bandit_") && !l.gp).length === 5 && u && u.lager.every((l) => l.gp || V.includes(l.art)), "Riedwiesen-Lager am Moorrand und der Unterschlupf mit den neuen Banditen");
   check(M.MONSTER.bandit_spaeher.drops.some((r) => r.nur === "b3_karrenbrief") && quest("obstwiesen_fallobst").beute.b3_karrenbrief.zaehler.min === 4, "Karrenbrief: garantiert beim fünften Späher"); }
 
 console.log("B3 „Fallobst“ (#15)");
