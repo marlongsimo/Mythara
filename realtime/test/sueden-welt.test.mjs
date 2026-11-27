@@ -15,7 +15,7 @@ const MERKER = ["schmieden"], viel = (g, n) => Array.from({ length: n }, () => g
 const KAMPF = { skill_staerke: xpFuer(12), skill_geschick: xpFuer(12), skill_defense: xpFuer(12), skill_lp: xpFuer(12), skill_fernkampf: xpFuer(12), skill_magie: xpFuer(12) };
 const HELD = {
   /* Ute: Bergbau 15, Heldenlevel ab 10 – darf S5 und S9 */
-  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", "sichel", { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12), kraeuterkunde: xpFuer(10) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
+  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", "sichel", { g: "leeres_flaeschchen", n: 2 }, { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12), kraeuterkunde: xpFuer(20) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
   /* Bea: ohne Bergbau, Heldenlevel 1 */
   [B]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2, merker: MERKER } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];
@@ -35,7 +35,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true);
   send(404, {}); }); }).listen(8797);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8788", SUPABASE_URL: "http://localhost:8797", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
-  FISCH_KERN: "0", FISCH_FALL: "0", KRAUT_KERN: "0", KRAUT_FALL: "0", KRAUT_TAKT_MS: "200", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
+  FISCH_KERN: "0", FISCH_FALL: "0", KRAUT_KERN: "0", KRAUT_FALL: "0", KRAUT_TAKT_MS: "200", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0", HANDWERK_BRENN: "0" }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8788/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }),
@@ -143,12 +143,44 @@ try {
   check(QB.erledigt(S2, ute.b[S2.id], "stock"), "Dem Summen gefolgt, den Stock aufgerichtet");
   { let i = 0; const t0 = Date.now(); while (anzahl(ute, "ringelblume") < 6 && Date.now() - t0 < 90000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", Math.min(6, anzahl(ute, "ringelblume") + 1), 15000); }
     check(anzahl(ute, "ringelblume") >= 6 && QB.erledigt(S2, ute.b[S2.id], "blumen"), `Sechs Ringelblumen mit der Sichel (${anzahl(ute, "ringelblume")})`); }
-  await zu(ute, fig(S2, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "blumen_mira"); await schlaf(300);
-  check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === 3, "Drei Ringelblumen an Mira in der Waldmark");
-  { const vor = anzahl(ute, "kleiner_heiltrank"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
-    check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === 0 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
+  /* auf langsamen Rechnern kommt beim Sammeln manchmal eine Blume mehr – darum relativ prüfen */
+  { const rb = anzahl(ute, "ringelblume"); await zu(ute, fig(S2, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "blumen_mira"); await schlaf(300);
+    check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === rb - 3, "Drei Ringelblumen an Mira in der Waldmark"); }
+  { const vor = anzahl(ute, "kleiner_heiltrank"), rb = anzahl(ute, "ringelblume"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
+    check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === rb - 3 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
+
+  console.log("Miras Rezeptbuch (Waldmark, Rabenmoor)");
+  { const M = QUESTS.find((q) => q.id === "waldmark_miras_rezeptbuch"), WEG = [[6458.5, 6429.5, "wegerich_1"], [6453.5, 6437.5, "wegerich_3"], [6423.5, 6431.5, "wegerich_4"]];
+    await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "annehmen"); await schlaf(400);
+    check(stand(ute, M).phase === "laeuft" && anzahl(ute, "leeres_flaeschchen") >= 1, "Ute nimmt Miras Rezeptbuch an und bekommt ein leeres Fläschchen");
+    let i = 0; const t0 = Date.now(); while (anzahl(ute, "wegerich") < 5 && Date.now() - t0 < 90000) { const [x, y, id] = WEG[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "wegerich", Math.min(5, anzahl(ute, "wegerich") + 1), 15000); }
+    check(QB.erledigt(M, ute.b[M.id], "wegerich"), `Fünf Wegerich mit der Sichel (${anzahl(ute, "wegerich")})`);
+    const r = await herstellen(ute, 6420.9 - 1.2, 6438.6, "brauen_kleiner_heiltrank");
+    check(r === "ok" && QB.erledigt(M, ute.b[M.id], "trank"), `Kleiner Heiltrank am Kessel im Kräuterhaus (${r})`);
+    await zu(ute, fig(M, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "kraut_blau"); await schlaf(300);
+    check(QB.erledigt(M, ute.b[M.id], "hedda") && anzahl(ute, "rezeptheft") === 1, "Hedda prüft und gibt das Rezeptheft heraus");
+    const ht = anzahl(ute, "heiltrank"); await zu(ute, fig(M, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "abgeben"); await schlaf(600);
+    check(ute.b[M.id] === "fertig" && anzahl(ute, "rezeptheft") === 0 && anzahl(ute, "heiltrank") === ht + 3, `Miras Rezeptbuch fertig, Lohn abgeholt: 3 Heiltränke (${anzahl(ute, "heiltrank") - ht})`); }
+
+  console.log("Der Kräuterhof (Küste, Waldmark, Rabenmoor)");
+  { const K = QUESTS.find((q) => q.id === "kueste_der_kraeuterhof"), kob = (id) => K.objekte.find((o) => o.id === id);
+    await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "annehmen"); await schlaf(400);
+    check(stand(ute, K).phase === "laeuft", "Ute nimmt den Kräuterhof an (nach Miras Rezeptbuch, Kräuterkunde 20)");
+    /* Platz im Rucksack (24) schaffen: Reste aus S4/S9, die der Kräuterhof nicht braucht – ein voller Rucksack verschluckt sonst Questgegenstände (Issue) */
+    for (const g of ["brot", "barren_kupfer", "stamm_eiche", "fisch_muehlbarsch_gebraten"]) { const i = (ute.inv.rucksack || []).findIndex((x) => (typeof x === "string" ? x : x.g) === g); if (i < 0) continue;
+      sende(ute, { t: "inv", tat: "fallen", i }); await warte(ute, (m) => m.t === "inventar"); }
+    await zu(ute, fig(K, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "samen_nehmen"); await schlaf(300);
+    await zu(ute, fig(K, "hedda")); await rede(ute, "hedda"); await sag(ute, "hedda", "ableger_bitten"); await schlaf(300);
+    check(anzahl(ute, "ringelblumensamen") === 1 && anzahl(ute, "moorgloeckchen_ableger") === 1, "Samen von Mira, Ableger von Hedda");
+    for (const id of ["kh_beet_1", "kh_beet_2"]) { const o = kob(id); await stelle(ute, o.x, o.y - 1); await ding(ute, id); }
+    check(QB.erledigt(K, ute.b[K.id], "beet_1") && QB.erledigt(K, ute.b[K.id], "beet_2"), "Beide Beete angelegt");
+    let i = 0; const t0 = Date.now(); while (anzahl(ute, "ringelblume") < 2 && Date.now() - t0 < 60000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", anzahl(ute, "ringelblume") + 1, 15000); }
+    const ht = anzahl(ute, "heiltrank"); const r = await herstellen(ute, 6422 - 1.2, 7063.4, "brauen_heiltrank", 2);
+    check(r === "ok" && QB.erledigt(K, ute.b[K.id], "traenke") && anzahl(ute, "heiltrank") >= ht + 2, `Zwei Heiltränke am Kessel des Kräuterhofs (${r})`);
+    await zu(ute, fig(K, "frieda")); await rede(ute, "frieda"); await sag(ute, "frieda", "abgeben"); await schlaf(600);
+    check(ute.b[K.id] === "fertig", "Der Kräuterhof ist fertig, Lohn abgeholt"); }
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();
-console.log(f ? `\nSüden (S2, S4, S5, S6, S9): ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9): alles in Ordnung");
+console.log(f ? `\nSüden (S2, S4, S5, S6, S9) Miras Rezeptbuch und Kräuterhof: ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9) Miras Rezeptbuch und Kräuterhof: alles in Ordnung");
 process.exit(f ? 1 : 0);

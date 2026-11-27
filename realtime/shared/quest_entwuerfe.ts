@@ -4,13 +4,7 @@
  * Server und Browser lesen diese Liste NICHT. Ist alles da: Quest hier austragen und in shared/quests.ts eintragen.
  */
 import type { QuestDef } from "./questbau";
-import { QUEST_D1 } from "./quest_d1";
-import { QUEST_D2 } from "./quest_d2";
 import { QUEST_D3 } from "./quest_d3";
-import { QUEST_MIRA } from "./quest_mira";
-import { QUEST_C1 } from "./quest_c1";
-import { QUEST_C2 } from "./quest_c2";
-import { QUEST_C3 } from "./quest_c3";
 import { QUEST_E1 } from "./quest_e1";
 import { QUEST_E2 } from "./quest_e2";
 import { QUEST_E3 } from "./quest_e3";
@@ -25,17 +19,10 @@ import { QUEST_G1 } from "./quest_g1";
 import { QUEST_G2 } from "./quest_g2";
 import { QUEST_G3 } from "./quest_g3";
 import { QUEST_G4 } from "./quest_g4";
-import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
-  { q: QUEST_D1, wartet: "Phase 7: Graufurt (#36), Figuren (#37), Fähre und Kettenglied (Spiel)" },
-  { q: QUEST_D2, wartet: "Phase 7: Ostufer und Turm (#36), Ysolde und Turmgegner (#37), Wegstein-Ziel (Spiel)" },
-  { q: QUEST_D3, wartet: "Phase 7: Taverne „Zur Furt“ (#36), Alma (#37), Fischen und Kochen 45 (Spiel)" },
-  { q: QUEST_MIRA, wartet: "Gegenstand rezeptheft (Integration); Kräuterkunde ist da (#133)" },
-  { q: QUEST_C1, wartet: "Phase 6: Novizen, Rezept brueckenplanke, Gegenstände" },
-  { q: QUEST_C2, wartet: "Phase 6: Gesang mit Zeitfenster, Verkleidung, Akoluthen und Federmutter, Zufalls-Reihenfolge" },
-  { q: QUEST_C3, wartet: "Phase 6: Boss und Instanz, Folgen, Kerkermeister, Lohn nach Wahl" },
+  { q: QUEST_D3, wartet: "Herd in der Taverne „Zur Furt“ (Kochstelle) und Almas Laden (alma_pastete) – #123" },
   { q: QUEST_E1, wartet: "Phase 8: Nordsaum-Weg, Heidrast, Abtei (Welt), Mette und Gunhild (Figuren), Rudelführer" },
   { q: QUEST_E2, wartet: "Phase 8: Abtei und Glockenturm, Rezepte glockenbronze/glocke/kloeppel, Glocke als Weltereignis" },
   { q: QUEST_E3, wartet: "Phase 8: Grenzposten, Deserteure, Figur wird Gegner (Tjark), Wahl im Stand" },
@@ -51,5 +38,4 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_G2, wartet: "Phase 10: Leuchtturm, Hering, Rezepte lampenoel und splitterglut" },
   { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
   { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
-  { q: QUEST_KRAEUTERHOF, wartet: "Phase 10: Kräuterhof mit Kessel; Kräuterkunde (5c)" },
 ];

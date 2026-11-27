@@ -5,7 +5,7 @@
 Arten: bachling (kleine Bachforelle, rot-schwarz getupft), muehlbarsch (Barsch: grüngold mit dunklen Querbinden, rote Flossen),
        moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken), wels (Graufurter Wels: dunkelgrau marmoriert, breiter Kopf, Barteln),
        glutwels (Glutwels, Phase 9: glutrot mit dunklen und goldenen Flecken, Barteln),
-       hering (blau-silbern, schlank), klippenbarsch (rot, dunkel gefleckt, Stachelflosse), seeaal (lang, dunkel marmoriert, Flossensaum) – Phase 10.
+       alter_hecht (Süden S3: großer, dunkler Hecht mit Narben und altem Haken im Maul), hering (blau-silbern, schlank), klippenbarsch (rot, dunkel gefleckt, Stachelflosse), seeaal (lang, dunkel marmoriert, Flossensaum) – Phase 10.
 Zustand: roh · gebraten (goldbraun, Grillstreifen) · verbrannt (schwarz verkohlt, Asche).
 Ausgabe: <ziel>/fisch_<art>_<zustand>.webp (und mit glb=1 auch .glb, liegt flach am Boden).
 """
@@ -22,6 +22,7 @@ ARTEN = {   # Länge (m), Höhe/Länge, Breite/Höhe, Kopfspitze, Farben (Rücke
     "hering":     dict(L=0.28, h=0.22, w=0.45, schnabel=0.0, ruecken=(0.12, 0.24, 0.36), seite=(0.72, 0.78, 0.84), bauch=(0.95, 0.95, 0.96), flosse=(0.5, 0.56, 0.62), muster="silber"),   # Phase 10: Hering (Kielmund, Möwenbucht)
     "klippenbarsch": dict(L=0.38, h=0.34, w=0.5, schnabel=0.0, ruecken=(0.45, 0.1, 0.06), seite=(0.86, 0.32, 0.14), bauch=(0.96, 0.76, 0.55), flosse=(0.82, 0.26, 0.12), muster="klippe"),   # Phase 10: Klippenbarsch (Leuchtturm-Klippe)
     "seeaal":     dict(L=0.85, h=0.085, w=0.8, schnabel=0.0, ruecken=(0.16, 0.19, 0.15), seite=(0.38, 0.4, 0.3), bauch=(0.8, 0.76, 0.6), flosse=(0.3, 0.3, 0.24), muster="marmor"),   # Phase 10: Seeaal (Wrack, Mangroven)
+    "alter_hecht": dict(L=0.95, h=0.2, w=0.62, schnabel=0.14, ruecken=(0.05, 0.07, 0.03), seite=(0.18, 0.22, 0.1), bauch=(0.74, 0.72, 0.56), flosse=(0.36, 0.26, 0.14), muster="flecken"),   # Süden S3: „Der alte Hecht“ – größer, dunkler, Narben
     "moorhecht":  dict(L=0.62, h=0.19, w=0.6, schnabel=0.12, ruecken=(0.12, 0.17, 0.08), seite=(0.34, 0.42, 0.18), bauch=(0.86, 0.84, 0.66), flosse=(0.45, 0.35, 0.18), muster="flecken"),
 }
 ZUSTAENDE = ["roh", "gebraten", "verbrannt"]
@@ -90,7 +91,7 @@ def fisch(art, zustand):
         flosse([(x0 + L * 0.45, 0, H * 0.44), (x0 + L * 0.5, 0, H * 0.78), (x0 + L * 0.6, 0, H * 0.7), (x0 + L * 0.68, 0, H * 0.75), (x0 + L * 0.72, 0, H * 0.42)], fm)
     elif art == "seeaal":                                                                # durchgehender Flossensaum oben und unten
         flosse([(x0 + L * 0.2, 0, H * 0.4), (x0 + L * 0.3, 0, H * 0.75), (x0 + L * 0.8, 0, H * 0.7), (x0 + L * 0.88, 0, H * 0.45)], fm); flosse([(x0 + L * 0.05, 0, -H * 0.4), (x0 + L * 0.15, 0, -H * 0.72), (x0 + L * 0.55, 0, -H * 0.65), (x0 + L * 0.62, 0, -H * 0.45)], fm)
-    elif art == "moorhecht":                                                             # Rückenflosse weit hinten
+    elif art in ("moorhecht", "alter_hecht"):                                                             # Rückenflosse weit hinten
         flosse([(x0 + L * 0.18, 0, H * 0.35), (x0 + L * 0.22, 0, H * 0.8), (x0 + L * 0.32, 0, H * 0.4)], fm)
     else: flosse([(x0 + L * 0.42, 0, H * 0.42), (x0 + L * 0.5, 0, H * 0.72), (x0 + L * 0.6, 0, H * 0.4)], fm)
     for sy in (1, -1): flosse([(x0 + L * 0.7, sy * W * 0.4, -H * 0.15), (x0 + L * 0.55, sy * W * 1.3, -H * 0.42), (x0 + L * 0.62, sy * W * 0.4, -H * 0.3)], fm)   # Brustflossen
@@ -102,6 +103,14 @@ def fisch(art, zustand):
         o.data.materials.append(am); teile.append(o)
         bpy.ops.mesh.primitive_uv_sphere_add(radius=H * 0.055, location=(aug_x + H * 0.03, sy * W * 0.5, ah)); o = bpy.context.object
         pm = bpy.data.materials.new("pupille"); pm.use_nodes = True; pm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.01, 0.01, 0.01, 1); o.data.materials.append(pm); teile.append(o)
+    if art == "alter_hecht":                                                             # Narben und ein alter Haken im Maul
+        nm = bpy.data.materials.new("narbe"); nm.use_nodes = True; nm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.55, 0.5, 0.42, 1)
+        for sy in (1, -1):
+            for (x, z, a_) in ((0.45, 0.25, 0.6), (0.55, 0.05, -0.4), (0.35, -0.1, 0.3)):
+                bpy.ops.mesh.primitive_cube_add(size=1, location=(x0 + L * x, sy * W * 0.49, H * z)); o = bpy.context.object; o.scale = (L * 0.14, 0.006, 0.012); o.rotation_euler = (0, a_, 0); o.data.materials.append(nm); teile.append(o)
+        hm = bpy.data.materials.new("haken"); hm.use_nodes = True; hb = hm.node_tree.nodes["Principled BSDF"]; hb.inputs["Base Color"].default_value = (0.45, 0.42, 0.4, 1); hb.inputs["Metallic"].default_value = 0.9
+        bpy.ops.mesh.primitive_torus_add(major_radius=H * 0.16, minor_radius=H * 0.028, location=(x0 + L * 0.95, W * 0.3, -H * 0.2), rotation=(math.radians(90), 0, 0)); o = bpy.context.object; o.data.materials.append(hm); teile.append(o)
+        bpy.ops.mesh.primitive_cylinder_add(radius=H * 0.012, depth=L * 0.07, location=(x0 + L * 0.96, W * 0.3, -H * 0.42), rotation=(0, math.radians(20), 0)); o = bpy.context.object; o.data.materials.append(hm); teile.append(o)   # abgerissene Schnur
     if art in ("wels", "glutwels"):                                                                  # vier Barteln am breiten Maul
         bm_ = bpy.data.materials.new("bartel"); bm_.use_nodes = True; bm_.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (*lin(fl_farbe), 1)
         mx_ = x0 + L * 1.0

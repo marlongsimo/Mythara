@@ -1,7 +1,7 @@
 """Mythara Fabrik – Gegenstände für Fischen und Kochen in Blender bauen (als glb; Rucksackbilder danach mit fabrik/symbol.py).
 
   python3 fabrik/kueche.py -- <art> <ziel.glb>
-  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch
+  art: wuermer | fischsuppe | bauerneintopf | kuhfleisch | mehl | krug_wasser | kessel | krug | suppe_verbrannt | brot_verbrannt | salz | glutwels_salzkruste | raeucherhering | barsch_salzkruste | aalsuppe | hasenfleisch | wildschweinfleisch | wolfsfleisch | hasenbraten | rinderbraten | wildschweinbraten | wolfsgulasch | fleisch_verbrannt
 
 wuermer: Holzschälchen mit Erde und rosa Würmern · fischsuppe: Holzschale, helle Brühe, Fischstücke, Kräuter, Löffel ·
 bauerneintopf: Tonschale, braune Soße, Fleisch, Möhren, Kartoffeln · kuhfleisch: rotes Stück mit Fettrand und Knochen ·
@@ -144,6 +144,13 @@ elif ART == "suppe_verbrannt":                                                  
     for k in range(6): kugel((random.uniform(-.06, .06), random.uniform(-.06, .06), 0.074), 0.012, mat("kohle", (15, 12, 10), 0.9), (1, 1, 0.5), 8)
     for sx in (-1, 1): rohr([(sx * 0.105, 0, 0.07), (sx * 0.14, 0, 0.075), (sx * 0.16, 0, 0.07)], 0.007, EISEN)
     for k, (x, z) in enumerate(((0.0, 0.12), (0.02, 0.17), (-0.01, 0.22))): kugel((x, 0.0, z - 0.02), 0.018 + 0.006 * k, mat("rauch", (175, 172, 168), 1.0), (1, 1, 0.8), 10)
+elif ART == "fleisch_verbrannt":                                                                  # Süden #135: verkohltes Fleisch – Form des Kuhfleischs, schwarz, Risse, Asche
+    bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=0.07, depth=0.035, location=(0, 0, 0.0175)); o = glatt(bpy.context.object); o.scale = (1.35, 1.0, 1); o.data.materials.append(mat("verkohlt", (32, 22, 16), 0.9))
+    for v in o.data.vertices: v.co.x += 0.008 * math.sin(v.co.y * 60); v.co.y += 0.006 * math.sin(v.co.x * 50); v.co.z += 0.003 * math.sin(v.co.x * 120) * (v.co.z > 0.02)
+    for k in range(4): kugel((-0.05 + 0.033 * k, random.uniform(-.02, .02), 0.036), 0.007, mat("riss", (12, 10, 8), 0.95), (0.6, 4.5, 0.3), 8).rotation_euler = (0, 0, 0.4 + 0.3 * k)
+    for k in range(3): kugel((random.uniform(-.06, .06), random.uniform(-.04, .04), 0.037), 0.006, mat("glut", (200, 70, 20), 0.6), (1.4, 1, 0.3), 6)
+    rohr([(-0.11, 0.0, 0.018), (-0.08, 0.0, 0.018), (-0.05, 0.0, 0.018)], 0.011, mat("knochen_verkohlt", (70, 60, 50), 0.8)); kugel((-0.11, 0, 0.018), 0.018, mat("knochen_verkohlt", (70, 60, 50)), (1, 1.2, 1), 10)
+    for k in range(6): kugel((random.uniform(-.12, .12), random.uniform(-.08, .08), 0.003), 0.008, mat("asche", (110, 106, 100), 1.0), (1, 1, 0.3), 6)
 elif ART == "brot_verbrannt":                                                                     # verkohlter Laib mit Rissen
     o = kugel((0, 0, 0.035), 0.06, mat("verbrannt", (35, 24, 16), 0.9), (1.5, 1.0, 0.65), 18)
     for v in o.data.vertices: v.co += Vector((0, 0, 0.004 * math.sin(v.co.x * 90) * (v.co.z > 0.03)))

@@ -1,0 +1,12 @@
+{
+  "id": "gegner.eisgolem",
+  "name": "Eisgolem",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 72,
+  "gebiet": "Frostkrone",
+  "grundform": "Golem / Riese (gebückt)",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_riese.py hoehe=2.5; Bewegungen faustschlag, gehen, ruhe, tod, treffer – img/figuren-echt3d/eisgolem3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Golem / Riese (gebückt)“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_riese.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

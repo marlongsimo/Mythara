@@ -1,0 +1,12 @@
+{
+  "id": "gegner.drakling",
+  "name": "Drakling",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 66,
+  "gebiet": "Drachenarm",
+  "grundform": "Boden-Drache (Vierbeiner mit Flügeln, fliegt nicht)",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_vierbeiner.py hoehe=1.3 bein=0.45 hals=1 schwanz=1 fluegel=1; Bewegungen angriff, gehen, laufen, ruhe, tod, treffer – Flügel angelegt, beim Angriff zum Drohen gespreizt; fliegt nicht (Wunsch des Nutzers) – img/figuren-echt3d/drakling3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Boden-Drache“: für spätere Drachen/Echsen am Boden quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_vierbeiner.py … fluegel=1 neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

@@ -4,7 +4,7 @@
  * Wappentür des Turms, Turmwächter auf Ebene 1 und 2, das Wächterbuch auf Ebene 3, das Grünlicht auf dem Dach, der Splitterkern im Signalfeuer,
  * der Geist der Wächterin Ysolde. Lohn: je 1.000 XP Stärke, Geschick, Defense, 500 LP-XP, 600 Splitter, 2 Questpunkte, Wegstein-Ziel Ostufer (Turm).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Ostufer und Turm aus #36, Ysolde und Gegner aus #37, Spiel nach Phase 6).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 7 #114, meilerpech ffb6891f).
  * Stellen aus der Welt (#36): Ostanleger in graufurt, Wappentür in ostufer (Ursprung 6784 | 6400), Turm turm_ebene1–3 und turm_dach (Ursprung 10880 … 10976 | 9600). Liste: doku/quests/d-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
