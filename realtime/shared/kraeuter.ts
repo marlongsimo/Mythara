@@ -27,6 +27,12 @@ export interface Krautstelle { id: string; art: KrautArt; x: number; y: number; 
 /** Fundstellen (Welt #35) – dazu die des Südens (Summweide, #120), sobald die Welt sie in kraeuter_standorte.json einträgt */
 export const KRAUTSTELLEN: Krautstelle[] = (ORTE as unknown as { stellen: Krautstelle[] }).stellen.filter((s) => s.art in KRAEUTER);
 export const krautstelle = (id: string): Krautstelle | undefined => KRAUTSTELLEN.find((s) => s.id === id);
+/** Stellen, die erst mit einem Quest-Schalter wachsen (Präfix der Stellen-Id → Schalter): die Beete des Kräuterhofs nach „Der Kräuterhof“ (Welt 5100b0fd) */
+export const KRAUT_SCHALTER: { praefix: string; schalter: string; text: string }[] = [
+  { praefix: "kraeuterhof_", schalter: "kraeuterhof_beete", text: "Das Beet liegt brach. Frieda Saat wartet noch auf Samen und Ableger." },
+];
+/** Der Schalter, ohne den an dieser Stelle nichts wächst (null: wächst immer) */
+export const krautSchalter = (id: string): { schalter: string; text: string } | null => { const S = KRAUT_SCHALTER.find((k) => id.startsWith(k.praefix)); return S ? { schalter: S.schalter, text: S.text } : null; };
 /** Die Kessel zum Brauen (Kräuterhaus Waldmark, Heddas Hütte) – als Werkstätten in shared/handwerk.ts */
 export const KESSEL: { id: string; x: number; y: number; region: string }[] = (ORTE as unknown as { kessel: { id: string; x: number; y: number; region: string }[] }).kessel;
 /** Die Sichel: ein Werkzeug ohne Stufen (Laden: Handwerker; Handwerk 1 an der Werkbank) */
