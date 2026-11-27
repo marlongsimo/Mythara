@@ -15,7 +15,7 @@ const MERKER = ["schmieden"], viel = (g, n) => Array.from({ length: n }, () => g
 const KAMPF = { skill_staerke: xpFuer(12), skill_geschick: xpFuer(12), skill_defense: xpFuer(12), skill_lp: xpFuer(12), skill_fernkampf: xpFuer(12), skill_magie: xpFuer(12) };
 const HELD = {
   /* Ute: Bergbau 15, Heldenlevel ab 10 – darf S5 und S9 */
-  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
+  [A]: { ...roh(), ...KAMPF, inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: ["hammer", "sichel", { g: "splitter", n: 20 }], v: 2, merker: MERKER, berufe: { bergbau: xpFuer(15), holzfaellerei: xpFuer(10), schmieden: xpFuer(12), kraeuterkunde: xpFuer(10) } }, quests: { die_gesperrte_strasse: { s: "fertig" }, weidenhain_wasser_auf_die_muehle: { s: "fertig" } } },
   /* Bea: ohne Bergbau, Heldenlevel 1 */
   [B]: { ...roh(), inventar: { angelegt: { waffe: "trainingsschwert" }, rucksack: [{ g: "splitter", n: 20 }], v: 2, merker: MERKER } } };
 const SETZEN = [], ABSCHLUSS = [], GUTSCHRIFT = [];
@@ -35,7 +35,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true);
   send(404, {}); }); }).listen(8797);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8788", SUPABASE_URL: "http://localhost:8797", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
-  FISCH_KERN: "0", FISCH_FALL: "0", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
+  FISCH_KERN: "0", FISCH_FALL: "0", KRAUT_KERN: "0", KRAUT_FALL: "0", KRAUT_TAKT_MS: "200", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8788/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }),
@@ -66,7 +66,8 @@ async function herstellen(s, x, y, rezept, menge = 1) { if (x !== null) await st
   await (s.handwerk.find((m) => m.tat === "stop") || warte(s, (m) => m.t === "handwerk" && m.tat === "stop", 90000)); await schlaf(300); return "ok"; }
 const S5 = QUESTS.find((q) => q.id === "lehmfurt_die_furt"), S9 = QUESTS.find((q) => q.id === "weidenhain_briefe_nach_sueden");
 const S4 = QUESTS.find((q) => q.id === "erlengrund_klemmende_saege"), S6 = QUESTS.find((q) => q.id === "heckenhof_schafe_zaehlen");
-const AMBOSS = [6470.4, 6427.6];
+const AMBOSS = [6470.4, 6427.6], S2 = QUESTS.find((q) => q.id === "summweide_der_verschwundene_stock");
+const RINGEL = [[6410.5, 6914.5, "sueden_ringelblume_1"], [6416.5, 6914.5, "sueden_ringelblume_2"], [6422.5, 6914.5, "sueden_ringelblume_3"]];
 const fig = (Q, id) => Q.figuren.find((x) => x.id === id), obj = (Q, id) => Q.objekte.find((o) => o.id === id);
 const zu = async (s, F) => stelle(s, F.x + 1, F.y);
 /** Kampfverbindung in Weidenhain (Gebiet welt_weidenhain, Ursprung 6400 | 6656) */
@@ -134,8 +135,20 @@ try {
   check(QB.erledigt(S4, ute.b[S4.id], "tebbe"), "Tebbe verrät, wie man Eisenbänder legt");
   { const r = await herstellen(ute, ...AMBOSS, "eisenbaender"); check(r === "ok" && anzahl(ute, "eisenband") === 2 && QB.erledigt(S4, ute.b[S4.id], "baender"), `Eisenbänder am Amboss auch während S4 (${r}, ${anzahl(ute, "eisenband")})`); }
   { const o = obj(S4, "s4_rad"); await stelle(ute, o.x, o.y - 1); const t = await ding(ute, "s4_rad"); check(!QB.erledigt(S4, ute.b[S4.id], "rad") && anzahl(ute, "eisenband") === 2, "Ohne Eichenstämme: das Rad bleibt kaputt, die Bänder bleiben (" + t.slice(0, 40) + ")"); }
+
+  console.log("S2 „Der verschwundene Stock“");
+  await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "annehmen"); await schlaf(400);
+  check(stand(ute, S2).phase === "laeuft", "Ute nimmt S2 an (Kräuterkunde 10)");
+  for (const id of ["s2_summen_1", "s2_summen_2", "s2_summen_3", "s2_stock"]) { const o = S2.objekte.find((x) => x.id === id); await stelle(ute, o.x, o.y - 1); await ding(ute, id); }
+  check(QB.erledigt(S2, ute.b[S2.id], "stock"), "Dem Summen gefolgt, den Stock aufgerichtet");
+  { let i = 0; const t0 = Date.now(); while (anzahl(ute, "ringelblume") < 6 && Date.now() - t0 < 90000) { const [x, y, id] = RINGEL[i++ % 3]; await sammeln(ute, "kraut", id, x, y, "ringelblume", Math.min(6, anzahl(ute, "ringelblume") + 1), 15000); }
+    check(anzahl(ute, "ringelblume") >= 6 && QB.erledigt(S2, ute.b[S2.id], "blumen"), `Sechs Ringelblumen mit der Sichel (${anzahl(ute, "ringelblume")})`); }
+  await zu(ute, fig(S2, "mira")); await rede(ute, "mira"); await sag(ute, "mira", "blumen_mira"); await schlaf(300);
+  check(QB.erledigt(S2, ute.b[S2.id], "mira") && anzahl(ute, "ringelblume") === 3, "Drei Ringelblumen an Mira in der Waldmark");
+  { const vor = anzahl(ute, "kleiner_heiltrank"); await zu(ute, fig(S2, "imme")); await rede(ute, "imme"); await sag(ute, "imme", "abgeben"); await schlaf(600);
+    check(ute.b[S2.id] === "fertig" && anzahl(ute, "ringelblume") === 0 && anzahl(ute, "kleiner_heiltrank") === vor + 1, "S2 fertig, Lohn abgeholt: ein kleiner Heiltrank"); }
   check(!/Server-Fehler|TypeError|ReferenceError/.test(log), "Keine Fehler im Server-Log");
 } catch (e) { console.error(e); f++; }
 srv.kill(); sb.close();
-console.log(f ? `\nSüden (S4, S5, S6, S9): ${f} FEHLER` : "\nSüden (S4, S5, S6, S9): alles in Ordnung");
+console.log(f ? `\nSüden (S2, S4, S5, S6, S9): ${f} FEHLER` : "\nSüden (S2, S4, S5, S6, S9): alles in Ordnung");
 process.exit(f ? 1 : 0);

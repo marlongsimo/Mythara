@@ -4,7 +4,7 @@
  * Dem Summen folgen (drei Stellen), den Stock aufrichten, sechs Ringelblumen pflücken. QUER: Drei davon will Mira Kräuterlieb in der Waldmark für einen Trank.
  * Danach verkauft Imme Heiltränke (LAEDEN.imme an der Questfigur, offen, wenn die Quest fertig ist). Lohn: Kräuterkunde 400 XP, 1 kleiner Heiltrank, 50 Splitter, 1 Questpunkt.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Summweide (Welt #120), Imme (Figuren #121), Ringelblume (Kräuterkunde, Phase 5c). Liste: doku/quests/s-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Kräuterkunde #133). Stellen aus der Welt (#120). Liste: doku/quests/s-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
 import { SUMMWEIDE, IMME, MIRA_F } from "./quest_s_orte";
@@ -13,7 +13,7 @@ export const S2 = "summweide_der_verschwundene_stock";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 const SUMMEN = ["summen_1", "summen_2", "summen_3"];
 const HILFE = ["Hör hin. Die Damen summen, wo ihr Stock liegt. Erst leise, dann lauter. Drei Mal bleibst du stehen und lauschst.",
-  "Den Stock richtest du auf. Vorsichtig. Sie sind beleidigt.", "Dann Ringelblumen, sechs. Drei für mich, drei für Mira in der Waldmark – sie wartet seit dem Frühjahr."];
+  "Den Stock richtest du auf. Vorsichtig. Sie sind beleidigt.", "Dann Ringelblumen, sechs, mit der Sichel. Drei für mich, drei für Mira in der Waldmark – sie wartet seit dem Frühjahr."];
 
 export const QUEST_S2: QuestDef = {
   id: S2, titel: "Der verschwundene Stock", ort: "Summweide · Waldmark", start: "Sprich mit Imme Sommer bei den Bienenstöcken in Summweide.",
@@ -23,14 +23,17 @@ export const QUEST_S2: QuestDef = {
   logFertig: "Der Stock steht wieder bei den anderen. Imme Sommer verkauft dir Heiltränke, und Mira hat ihre Ringelblumen.",
   geber: "imme",
   figuren: [IMME, MIRA_F],
-  voraussetzungen: [{ text: "„Die gesperrte Straße“ abgeschlossen", wenn: { quest: { id: "die_gesperrte_strasse", phase: ["fertig"] } } }],
+  voraussetzungen: [
+    { text: "„Die gesperrte Straße“ abgeschlossen", wenn: { quest: { id: "die_gesperrte_strasse", phase: ["fertig"] } } },
+    { text: "Kräuterkunde 10", wenn: { skill: { k: "kraeuterkunde", min: 10 } } },
+  ],
   schritte: [
     ...SUMMEN.map((id, i) => ({ id, text: "Dem Summen folgen", ereignis: { art: "objekt" as const, id: "s2_" + id }, gruppe: "summen", wo: SUMMWEIDE.summen[i],
       log: "Folg dem Summen über die Wiese von Summweide ({n:summen})." })),
     { id: "stock", text: "Den Bienenstock aufrichten", ereignis: { art: "objekt", id: "s2_stock" }, nach: SUMMEN, wo: SUMMWEIDE.stock,
       log: "Am Ende des Summens liegt der Bienenstock im Gras. Richte ihn auf." },
     { id: "blumen", text: "Sechs Ringelblumen pflücken", ereignis: { art: "sammeln", ziel: "ringelblume" }, anzahl: 6, nach: ["stock"], wo: SUMMWEIDE.wiese,
-      log: "Pflück auf der Wiese von Summweide sechs Ringelblumen ({n:blumen})." },
+      log: "Schneid auf der Wiese von Summweide mit der Sichel sechs Ringelblumen ({n:blumen})." },
     { id: "mira", text: "Mira drei Ringelblumen bringen", ereignis: { art: "antwort" }, nach: ["blumen"], bei: "mira", wo: "mira",
       log: "Bring drei Ringelblumen zu Mira Kräuterlieb in der Waldmark." },
   ],
@@ -50,7 +53,7 @@ export const QUEST_S2: QuestDef = {
       reden: [
         { wenn: { ...NEU, voraussetzungen: true }, zeilen: ["Mmm. Elf. Zwölf. …Elf.", "Der Sturm vorgestern. Er hat mir einen Stock fortgetragen. Die Damen darin sind sicher furchtbar wütend."],
           antworten: ["annehmen", "spaeter"] },
-        { wenn: NEU, zeilen: ["Leise, bitte. Die Damen schlafen."], antworten: ["tschuess"] },
+        { wenn: NEU, zeilen: ["Leise, bitte. Die Damen schlafen.", "Kennst du dich mit Blumen aus? Ringelblumen? Nein? Dann komm wieder, wenn du es tust. Kräuterkunde 10, mit einer Sichel."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Zwölf. Zwölf! Jeden Morgen zähle ich und lächle.", "Brauchst du etwas? Heiltränke, mit Honig. Für dich zum guten Preis."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, alle: true, anzahl: { g: "ringelblume", min: 3 } }, zeilen: ["Riecht nach Sommer. Gib her."], antworten: ["abgeben", "tschuess"] },
         { wenn: { ...LAEUFT, alle: true }, zeilen: ["Mira hat ihre? Gut. Und meine drei?"], antworten: ["hilfe", "tschuess"] },

@@ -26,14 +26,13 @@ import { QUEST_G2 } from "./quest_g2";
 import { QUEST_G3 } from "./quest_g3";
 import { QUEST_G4 } from "./quest_g4";
 import { QUEST_KRAEUTERHOF } from "./quest_kraeuterhof";
-import { QUEST_S2 } from "./quest_s2";
 
 /** Entwurf → worauf er wartet (Issue) */
 export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_D1, wartet: "Phase 7: Graufurt (#36), Figuren (#37), Fähre und Kettenglied (Spiel)" },
   { q: QUEST_D2, wartet: "Phase 7: Ostufer und Turm (#36), Ysolde und Turmgegner (#37), Wegstein-Ziel (Spiel)" },
   { q: QUEST_D3, wartet: "Phase 7: Taverne „Zur Furt“ (#36), Alma (#37), Fischen und Kochen 45 (Spiel)" },
-  { q: QUEST_MIRA, wartet: "Phase 5c: Kräuterkunde (Sichel, Kessel, Rezept kleiner_heiltrank), Mira als Händlerin und Questfigur" },
+  { q: QUEST_MIRA, wartet: "Gegenstand rezeptheft (Integration); Kräuterkunde ist da (#133)" },
   { q: QUEST_C1, wartet: "Phase 6: Novizen, Rezept brueckenplanke, Gegenstände" },
   { q: QUEST_C2, wartet: "Phase 6: Gesang mit Zeitfenster, Verkleidung, Akoluthen und Federmutter, Zufalls-Reihenfolge" },
   { q: QUEST_C3, wartet: "Phase 6: Boss und Instanz, Folgen, Kerkermeister, Lohn nach Wahl" },
@@ -53,5 +52,4 @@ export const ENTWUERFE: { q: QuestDef; wartet: string }[] = [
   { q: QUEST_G3, wartet: "Phase 10: Wrack, Klippenhöhlen mit Instanz, Wrackkapitän" },
   { q: QUEST_G4, wartet: "Phase 10: Möwenbucht, Räucherhütte, Rezepte fischernetz und raeucherhering" },
   { q: QUEST_KRAEUTERHOF, wartet: "Phase 10: Kräuterhof mit Kessel; Kräuterkunde (5c)" },
-  { q: QUEST_S2, wartet: "Süden (#124): Summweide (#120), Imme (#121), Ringelblume (Kräuterkunde 5c), Imme als Händlerin" },
 ];
