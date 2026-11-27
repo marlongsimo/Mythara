@@ -1,0 +1,28 @@
+{
+ "hinweis": "Rucksackbilder (#166) – je Gegenstand ein festes Bild; im Spiel als bild eintragen (Laufzeit-symbol entfernen)",
+ "bilder": {
+  "splitter": "img/objekte3d/symbole/splitter.webp",
+  "kleiner_heiltrank": "img/objekte3d/symbole/kleiner_heiltrank.webp",
+  "heiltrank": "img/objekte3d/symbole/heiltrank.webp",
+  "hinweispergament": "img/objekte3d/schriften/symbole/hinweispergament.webp",
+  "pergament": "img/objekte3d/schriften/symbole/pergament.webp",
+  "geweihter_splitter": "img/objekte3d/symbole/geweihter_splitter.webp",
+  "federn": "img/objekte3d/rohstoffe/symbole/federn.webp",
+  "wolfsfell": "img/objekte3d/rohstoffe/symbole/wolfsfell.webp",
+  "chitin": "img/objekte3d/rohstoffe/symbole/chitin.webp",
+  "giftdruese": "img/objekte3d/rohstoffe/symbole/giftdruese.webp",
+  "hasenfleisch": "img/objekte3d/skilling/kochen/symbole/hasenfleisch.webp",
+  "wildschweinfleisch": "img/objekte3d/skilling/kochen/symbole/wildschweinfleisch.webp",
+  "wolfsfleisch": "img/objekte3d/skilling/kochen/symbole/wolfsfleisch.webp",
+  "fleisch_verbrannt": "img/objekte3d/skilling/kochen/symbole/fleisch_verbrannt.webp",
+  "hasenbraten": "img/objekte3d/skilling/kochen/symbole/hasenbraten.webp",
+  "rinderbraten": "img/objekte3d/skilling/kochen/symbole/rinderbraten.webp",
+  "wildschweinbraten": "img/objekte3d/skilling/kochen/symbole/wildschweinbraten.webp",
+  "wolfsgulasch": "img/objekte3d/skilling/kochen/symbole/wolfsgulasch.webp",
+  "alter_hecht": "img/objekte3d/skilling/angeln/symbole/alter_hecht.webp",
+  "rezeptheft": "img/objekte3d/schriften/symbole/rezeptheft.webp",
+  "wildbret": "img/objekte3d/skilling/kochen/symbole/wildbret.webp",
+  "wildbretbraten": "img/objekte3d/skilling/kochen/symbole/wildbretbraten.webp",
+  "tempelabschrift": "img/objekte3d/schriften/symbole/tempelabschrift.webp"
+ }
+}
