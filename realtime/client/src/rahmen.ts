@@ -327,8 +327,8 @@ export function seitenTab(art: TabArt): boolean {
   for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
   { /* mit dem Finger ziehen = scrollen (die Seite sperrt Wischgesten für die Kamera, deshalb hier selbst); wer gezogen hat, tippt danach nichts an */
     let zug: { id: number; y: number; top: number; weit: number } | null = null, gezogen = false;
-    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" || (art === "rucksack" && (e.target as HTMLElement).closest(".ifeld.voll")) /* auf einem Gegenstand: ziehen = umsortieren, nicht scrollen */ ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
-    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
+    el.addEventListener("pointerdown", (e) => { gezogen = false; zug = e.pointerType === "mouse" || (art === "rucksack" && (e.target as HTMLElement).closest(".ifeld.voll")) /* auf einem Gegenstand: ziehen = umsortieren, nicht scrollen */ ? null : { id: e.pointerId, y: e.clientY, top: (el.querySelector<HTMLElement>(".qliste") || el.querySelector<HTMLElement>(".tinhalt") || el).scrollTop, weit: 0 }; });
+    el.addEventListener("pointermove", (e) => { if (!zug || e.pointerId !== zug.id) return; const dy = e.clientY - zug.y; zug.weit = Math.max(zug.weit, Math.abs(dy)); if (zug.weit > 6) { gezogen = true; const i = el.querySelector<HTMLElement>(".qliste") || el.querySelector<HTMLElement>(".tinhalt") || el; i.scrollTop = zug.top - dy; } });
     const ende = (e: PointerEvent) => { if (zug && e.pointerId === zug.id) zug = null; }; el.addEventListener("pointerup", ende); el.addEventListener("pointercancel", ende);
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   if (art === "rucksack") rucksackZiehen(el);
@@ -393,9 +393,12 @@ function tabZeichnen(): void {
     if (setzen()) el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
-    neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv · ${questpunkte()} Questpunkte</small></div>
-      <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Quests</button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen${fertig.length ? ` (${fertig.length})` : ""}</button></div>
-      ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}">${q.titel}</button></li>`).join("")}</ul>` : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`; setzen(); return; }
+    /* eine Spalte schmaler Zeilen mit vollem Namen; die Liste scrollt (Wunsch des Nutzers), Kopf und Reiter bleiben stehen */
+    neu = `<div class="kopf"><b>Quests</b><small>${questpunkte()} Questpunkt${questpunkte() === 1 ? "" : "e"}</small></div>
+      <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Offen <em>${offen.length}</em></button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen <em>${fertig.length}</em></button></div>
+      ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}"><i class="qpunkt" aria-hidden="true"></i><span>${q.titel}</span></button></li>`).join("")}</ul>`
+      : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`;
+    setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen(), be = inventar().berufe || {};
     /* ein Raster ohne Scrollen: Reihe 1 die Kampf-Skills und das Heldenlevel, darunter die Berufe; antippen = XP-Leiste unten, lange drücken = Skillbuch */
     const kachel = (art: "skill" | "beruf", k: string): string => { const S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0), name = skillName(art, k);
