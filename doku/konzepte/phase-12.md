@@ -1,4 +1,4 @@
-# Phase 12 „Ockerland“ – die Ockerlande besiedeln (Entwurf)
+# Phase 12 „Ockerland“ – die Ockerlande besiedeln (vom Nutzer freigegeben 27.11.)
 
 Konzept vom 27.11.2026 (Leitstelle). Grundlage: Bestandsaufnahme Welt (#169) – die Ockerlande sind riesig (~1,7 Mio. Felder), haben Gegnerplätze, aber **keinen Ort und keinen Arbeitsplatz**. Alle Namen sind **Vorschläge**.
 
@@ -46,5 +46,5 @@ Reihenfolge: nach Steinhag (#167) und den Fahlen Weiten.
 
 ## Offen (Nutzer)
 
-- Freigabe, Namen (Rotlehm, Dornhag, Tafelrast, Brunnenkreis), Größe des Hauptorts, Block I.
+- ~~Freigabe, Namen~~ – freigegeben, Namen passen (27.11.). Block I im Detail folgt mit Quests.
 - Drachenarm bleibt danach.
