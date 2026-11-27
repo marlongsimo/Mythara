@@ -6,7 +6,7 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-phase4-inhalte-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export { MONSTER } from "./shared/config"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { QUESTS } from "./shared/quests"; export { WELTKAMPF } from "./shared/weltzonen"; export { BOSSE, INSTANZEN, TUEREN, SPRUENGE } from "./shared/bosse"; export { LAEDEN } from "./shared/laeden";',
+await build({ stdin: { contents: 'export { MONSTER } from "./shared/config"; export { GEGENSTAENDE } from "./shared/gegenstaende"; export { QUESTS } from "./shared/quests"; export { WELTKAMPF } from "./shared/weltzonen"; export { BOSSE, INSTANZEN, TUEREN, SPRUENGE } from "./shared/bosse"; export { LAEDEN } from "./shared/laeden"; export { WERKSTAETTEN } from "./shared/handwerk";',
   resolveDir: process.cwd(), loader: "ts" }, bundle: true, format: "esm", platform: "node", outfile: datei, logLevel: "error" });
 const M = await import(datei);
 let fehler = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) fehler++; };
@@ -50,6 +50,11 @@ console.log("Rotmantel, Instanzen, Tür, B4 (#16, #60)");
   const kammer = M.WELTKAMPF.find((g) => g.region === "rotmantel_kammer"); check(kammer && kammer.lager.some((l) => l.art === "rotmantel"), "Danach öffentlich: Rotmantel in der Kammer");
   check(Boolean(Q) && ["schluesselbund", "silberleuchter", "rabenbrief", "rotes_banner"].every((g) => M.GEGENSTAENDE[g]), "B4 ist im Spiel, alle Questgegenstände gibt es");
   check(M.MONSTER.bandit_schlaeger.drops.some((r) => r.nur === "b4_schluessel") && R.drops.some((r) => r.nur === "b4_rabenbrief"), "Schlüsselbund vom Schläger, Rabenbrief von Rotmantel (nur in der Quest)"); }
+
+console.log("Phase 5: Bindestein am Obelisk (#80)");
+{ const W = M.WERKSTAETTEN.find((w) => w.id === "bindestein_obelisk"), A2 = quest("waldmark_das_wappen_mit_dem_turm") || M.QUESTS.find((q) => q.titel === "Das Wappen mit dem Turm"), B1 = M.QUESTS.find((q) => (q.figuren || []).some((f) => f.id === "agnes"));
+  check(W && W.station === "bindestein" && A2 && A2.schalter && A2.schalter[W.schalter], "Bindestein am Obelisk (Nordwald), nutzbar nach A2");
+  check(B1 && B1.dialoge.agnes.reden.some((r) => r.wenn && r.wenn.skill && r.wenn.skill.k === "splitterbinden" && r.wenn.skill.min === 20), "Agnes erzählt ab Splitterbinden 20 vom Laden einer Waffe"); }
 
 try { (await import("node:fs")).unlinkSync(datei); } catch { /* egal */ }
 console.log(fehler ? fehler + " Fehler" : "Phase-4-Inhalte: alles in Ordnung"); process.exit(fehler ? 1 : 0);

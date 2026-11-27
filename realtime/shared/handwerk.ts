@@ -43,7 +43,10 @@ export const WERKSTAETTEN: Werkstatt[] = [
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
   { id: "werkbank_osthof", station: "werkbank", x: 6530.5, y: 6426.5, ort: "osthof" },
   { id: "bindestein_linde", station: "bindestein", x: STATIONEN.bindestein.x, y: STATIONEN.bindestein.y, ort: "weidenhain", schalter: "bindestein_linde",
-    gesperrt: "Ein glatter Stein zwischen den Wurzeln der Linde. Agnes weiß, was es mit ihm auf sich hat." },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
+    gesperrt: "Ein glatter Stein zwischen den Wurzeln der Linde. Agnes weiß, was es mit ihm auf sich hat." },
+  /* Phase 5 (#80): zweiter Bindestein am Obelisk auf dem Friedhof im Nordwald (Welt: ort_p5_bindestein_obelisk) – nutzbar nach A2 „Das Wappen mit dem Turm“ (Schalter bindestein_obelisk) */
+  { id: "bindestein_obelisk", station: "bindestein", x: 6371.5, y: 6372.5, ort: "nordwald", schalter: "bindestein_obelisk",
+    gesperrt: "Ein Bindestein am Fuß des Obelisken. Solange der Friedhof keine Ruhe hat, bleibt er kalt." },   /* südlich des Kuhgeheges beim Tor, links neben der Scheune – nicht unter ihrem Dach (handwerk_welt.json) */
 ];
 /* Kochen (Phase 3b): Feuer, Brunnen – und später Backofen, Herd, Kessel – aus kochstellen.json */
 for (const k of (KOCHSTELLEN as unknown as { stellen: (Werkstatt & { name: string })[] }).stellen) WERKSTAETTEN.push({ id: k.id, station: k.station, x: k.x, y: k.y, ort: k.ort, ...(k.schalter ? { schalter: k.schalter, gesperrt: k.gesperrt } : {}) });
