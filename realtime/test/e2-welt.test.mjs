@@ -9,7 +9,7 @@ const E1 = Q("grauwacht_der_weg"), E2 = Q("grauwacht_die_glocke"), E3 = Q("grauw
 const SCHAFE = Q("heidrast_mettes_schafe"), GRAEBER = Q("grauwacht_ruhelose_graeber");
 const BERUFE = { kochen: 90, splitterbinden: 35 }; /* Kochen 90: der Eintopf (Stufe 30) verbrennt dann kaum – Mette gibt das Fleisch nur einmal */
 const viel = (g, n) => Array.from({ length: n }, () => g);
-const SACHEN = ["krug_wasser"]; /* nur, was dieser Teil braucht (ein voller Rucksack nimmt keine Grablichter mehr) */
+const SACHEN = ["krug_wasser", "ringelblume"]; /* #156: der Hammeleintopf braucht Ringelblume (Querverbindung zu den Obstwiesen) – nur, was dieser Teil braucht (ein voller Rucksack nimmt keine Grablichter mehr) */
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
 const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
 const W = await starte({ sb: 8841, srv: 8842, helden: {
