@@ -11,7 +11,7 @@ let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "�
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
 const S = lies("sammelstellen.json"), gruppen = [...S.lichtungen.map((l) => ({ ...l, typ: "holz", pts: l.baeume })), ...S.senken.map((s) => ({ ...s, typ: "erz", pts: s.adern }))];
 const ORTE = { ...lies("sueden_orte.json").orte, ...lies("kueste_orte.json").orte, ...lies("glutsande_orte.json").orte, ...lies("beleben_orte.json").orte, leuchtturm: [6176, 7036] };
-const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5380, 7700, 6300];
+const WEST = [6030, 6650, 6720, 7400], OST = [6860, 6420, 7620, 7680], HOCH = [6780, 5200, 7700, 6300];
 const imUnter = (p) => p.y > 9000, imHoch = (p) => !imUnter(p) && p.x >= HOCH[0] && p.y < 6350, imOst = (p) => !imUnter(p) && p.x >= OST[0] && p.y >= 6350, imWest = (p) => !imUnter(p) && !imHoch(p) && !imOst(p);
 function welt(box, extra = []) {
   const R = new G.WeltRaster();
@@ -25,7 +25,8 @@ const flut = (R, [sx, sy], box) => { const s = 2, seen = new Set(), q = [[Math.f
 
 console.log("\nSammelstellen");
 const SUED_HOLZ = ["eiche", "tanne", "eibe", "moorweide"], SUED_ERZ = ["kupfer", "eisen", "schwarzeisen", "sterneisen"], GLUT = ["moorweide", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];
-const HOCHL = ["eibe", "kernbaum", "weltenbaum", "sterneisen", "splittereisen", "ureisen"];   /* Hochlande (#147): Stufe 40–65 (Eibe laut Konzept dabei) */
+const HOCHL = ["eiche", "tanne", "eibe", "moorweide", "kernbaum", "weltenbaum", "kupfer", "eisen", "schwarzeisen", "sterneisen", "splittereisen", "ureisen"];   /* Hochlande (#147, „Hochlande füllen“): Grundholz und niedrige Erze nahe Steinhag und an den Wegen, Höheres an den Hängen */
+const ureisenOben = gruppen.flatMap((g) => g.pts.filter((p) => imHoch(p) && p.art === "ureisen").map((p) => p.id)); check(!ureisenOben.length, "Hochlande: Ureisen nur unter Tage", ureisenOben);
 const falsch = gruppen.filter((g) => !g.einzeln).flatMap((g) => g.pts.filter((p) => !(imHoch(p) || imUnter(p) ? HOCHL : imOst(p) ? GLUT : g.typ === "holz" ? SUED_HOLZ : SUED_ERZ).includes(p.art)).map((p) => `${g.name}: ${p.art}`));
 check(!falsch.length, "Stufen passen: Süden/Westen Holz 1–35 und Erz 1–35, Glutsande ab 35 (bis Ureisen/Weltenbaum 65), Hochlande 40–65", falsch);
 const pflicht = ["heckenhof", "summweide", "halber_weg", "erlengrund", "kreuzstein", "schilfsee", "lehmfurt", "distelhof", "faehrtenlager", "laemmerhang", "kielmund", "moewenbucht", "haferstedt", "netzbucht", "sandquell", "glutbrunn", "salzpfanne", "nordstrand"];

@@ -10,14 +10,14 @@
    "land": "Die Fahlen Weiten",
    "region": "fl_186_183",
    "mitte": [
-    6272.5,
-    5980.5
+    6352.5,
+    6020.5
    ],
    "rechteck": [
-    6212,
-    5920,
-    6331,
-    6039
+    6292,
+    5960,
+    6411,
+    6079
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -31,14 +31,14 @@
    "land": "Die Hochlande",
    "region": "fl_216_169",
    "mitte": [
-    7132.5,
-    5674.5
+    7192.5,
+    5476.5
    ],
    "rechteck": [
-    7072,
-    5614,
-    7191,
-    5733
+    7132,
+    5416,
+    7251,
+    5535
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -52,14 +52,14 @@
    "land": "Die Glutsande",
    "region": "fl_201_225",
    "mitte": [
-    6572.5,
-    7346.5
+    6492.5,
+    7442.5
    ],
    "rechteck": [
-    6512,
-    7286,
-    6631,
-    7405
+    6432,
+    7382,
+    6551,
+    7501
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -71,16 +71,16 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Glutsande",
-   "region": "fl_201_211",
+   "region": "fl_216_198",
    "mitte": [
-    6772.5,
-    7006.5
+    7132.5,
+    6598.5
    ],
    "rechteck": [
-    6712,
-    6946,
-    6831,
-    7065
+    7072,
+    6538,
+    7191,
+    6657
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -92,15 +92,15 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Ockerlande",
-   "region": "fl_231_225",
+   "region": "fl_216_225",
    "mitte": [
-    7652.5,
+    7132.5,
     7442.5
    ],
    "rechteck": [
-    7592,
+    7072,
     7382,
-    7711,
+    7191,
     7501
    ],
    "meiden": [],
@@ -144,27 +144,6 @@
     5246,
     6651,
     5365
-   ],
-   "meiden": [],
-   "modell": "vorhanden"
-  },
-  {
-   "id": "streifgebiet_heidewolf_sueden",
-   "name": "Die Wölfe des Graupelz",
-   "gegner": "heidewolf",
-   "anzahl": 7,
-   "stufe": 30,
-   "land": "Süden",
-   "region": "fl_186_211",
-   "mitte": [
-    6320,
-    6880
-   ],
-   "rechteck": [
-    6260,
-    6820,
-    6379,
-    6939
    ],
    "meiden": [],
    "modell": "vorhanden"

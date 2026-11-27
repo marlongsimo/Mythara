@@ -47,12 +47,12 @@ const huegel = (cx, cy, rx, ry, h, form = 2) => male(cx - rx, cy - ry, cx + rx, 
 /* Fischplatz am Ufer: das begehbare Feld am nächsten zu (x, y), dessen Nachbar Wasser ist (der Fanggrund) */
 const uferplatz = (id, fisch, stufe, x, y, text) => { let best = null; for (let r = 0; r < 30 && !best; r++) for (let a = 0; a < 6.3; a += 0.05) { const px = Math.floor(x + Math.cos(a) * r) + 0.5, py = Math.floor(y + Math.sin(a) * r) + 0.5;
     if (nass(jetzt(px, py)) || "F".includes(jetzt(px, py))) continue; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (nass(jetzt(px + dx, py + dy)) && nass(jetzt(px + 2 * dx, py + 2 * dy))) { best = [px, py, dx, dy]; break; } if (best) break; }
-  const [px, py, dx, dy] = best; lies(id, px, py, text, { fisch, stufe }); fische.push({ id, fisch, stufe, x: px + dx, y: py + dy, stehplatz: [px, py] }); };
+  if (!best) { console.log("  kein Uferplatz für " + id); return; } const [px, py, dx, dy] = best; lies(id, px, py, text, { fisch, stufe }); fische.push({ id, fisch, stufe, x: px + dx, y: py + dy, stehplatz: [px, py] }); };
 const fischplatz = (id, fisch, stufe, x, y, dx, dy, text) => { let px = x, py = y; for (let i = 0; i < 40 && !nass(jetzt(px + dx, py + dy)); i++) { px += dx; py += dy; }
   lies(id, px, py, text, { fisch, stufe }); fische.push({ id, fisch, stufe, x: +(px + dx).toFixed(1), y: +(py + dy).toFixed(1), stehplatz: [+px.toFixed(1), +py.toFixed(1)] }); };
 
 export const ORTE = { furt: [6800, 5761], steinhag: [6990, 5892], steinhagsee: [6990, 5850], hochpass: [6962, 5608], erzberg: [7146, 5800], bergwerk: [7128, 5808],
-  alm: [7190, 6000], einsiedelei: [7340, 5664], spiegelsee: [7322, 5650], nordklippen: [7250, 5440] };
+  alm: [7190, 6000], einsiedelei: [7340, 5664], spiegelsee: [7322, 5650], nordklippen: [7290, 5300] };
 
 /* ═══════ 1. Brücke zur Furt und die Furt über die Sandbank ═══════ */
 { for (let i = 0; i < 8; i++) ding("hochland_steinbruecke_ow", 6746.2 + i * 6.6, 5761.5, { id: "furtbruecke_" + (i + 3) });   /* zehn Bögen über den Grauen Sund (festland.py überschreibt kein Meer) */
@@ -79,7 +79,7 @@ male(6820, 5420, 7140, 5760, (x, y) => { const t = gratT(x, y), breite = 24 + 9 
 huegel(...ORTE.erzberg, 46, 34, 12); male(7100, 5766, 7192, 5834, (x, y) => { const d = Math.hypot((x - ORTE.erzberg[0]) / 46, (y - ORTE.erzberg[1]) / 34) + 0.12 * breit(x * 0.7, y * 0.7); return d < 1 ? fels(x, y, 12 * (1 - d * d), 9) : null; });
 huegel(...ORTE.alm, 60, 40, 6, 1.6); male(7130, 5960, 7250, 6040, (x, y) => (Math.hypot((x - ORTE.alm[0]) / 60, (y - ORTE.alm[1]) / 40) < 1 && ".T".includes(grund(x, y)) ? (welle(x, y) > 0.9 ? "," : ".") : null));
 /* Klippen zur Nordküste: Felsband am Meer, Geröll dahinter */
-male(7140, 5380, 7380, 5500, (x, y) => { if (nass(grund(x, y))) return null; let m = 99; for (let r = 1; r < 8 && m === 99; r++) for (const [dx, dy] of [[0, -r], [r, -r], [-r, -r]]) if (nass(grund(x + dx, y + dy))) m = r; if (m < 3) { hebe(x, y, 5); return "F"; } if (m < 7) { hebe(x, y, 3); return welle(x, y) > -0.3 ? "g" : null; } return null; });
+male(7140, 5200, 7420, 5340, (x, y) => { if (nass(grund(x, y))) return null; let m = 99; for (let r = 1; r < 8 && m === 99; r++) for (const [dx, dy] of [[0, -r], [r, -r], [-r, -r]]) if (nass(grund(x + dx, y + dy))) m = r; if (m < 3) { hebe(x, y, 5); return "F"; } if (m < 7) { hebe(x, y, 3); return welle(x, y) > -0.3 ? "g" : null; } return null; });
 /* Seen: Steinhagsee und Spiegelsee (Wasser mit Ufer), leicht eingesenkt */
 const see = (cx, cy, rx, ry) => { male(cx - rx - 4, cy - ry - 4, cx + rx + 4, cy + ry + 4, (x, y) => { const d = Math.hypot((x - cx) / rx, (y - cy) / ry) + 0.06 * welle(x, y); if (d < 1.3) hebe(x, y, -0.6 * Math.max(0, 1.3 - d)); return d < 1 ? "w" : d < 1.18 ? (welle(x, y) > 0 ? "s" : "g") : null; }); };
 see(...ORTE.steinhagsee, 32, 13); see(...ORTE.spiegelsee, 16, 10);
@@ -90,6 +90,11 @@ for (let i = 0; i < 70; i++) { const x = 6860 + wurf() * 760, y = 5480 + wurf() 
 const WAELDER = [[7085, 6010, 40, 28], [6900, 5960, 30, 22], [7270, 5900, 36, 26], [7420, 5760, 34, 30], [6930, 6080, 34, 20]];
 for (const [cx, cy, rx, ry] of WAELDER) male(cx - rx, cy - ry, cx + rx, cy + ry, (x, y) => (Math.hypot((x - cx) / rx, (y - cy) / ry) + 0.18 * breit(x * 2, y * 2) < 1 && ".,".includes(jetzt(x, y)) ? "f" : null));
 
+/* Bergbäche (Füllen, #147): vom Grauhorn in den Steinhagsee, vom Erzberg an der Alm vorbei zur Südküste – Wege queren sie als Furt */
+const BAECHE = { grauhornbach: [[7016, 5694], [7008, 5730], [7012, 5770], [7000, 5806], [6998, 5838]], almbach: [[7162, 5846], [7150, 5900], [7158, 5950], [7150, 6040], [7166, 6110], [7160, 6190], [7166, 6250]] };
+for (const b of Object.values(BAECHE)) { const xs = b.map((p) => p[0]), ys = b.map((p) => p[1]);
+  male(Math.min(...xs) - 5, Math.min(...ys) - 5, Math.max(...xs) + 5, Math.max(...ys) + 5, (x, y) => { const d = strecke(x, y, b) + 0.25 * welle(x, y); if (d < 3) hebe(x, y, -0.5 * (1 - d / 3));
+    return nass(grund(x, y)) ? null : d < 1.1 ? "~" : d < 2.2 ? (welle(x, y) > 0.2 ? "s" : "g") : null; }); }
 /* ═══════ 3. Steinhag ═══════ */
 const [SX, SY] = ORTE.steinhag;
 { eben.push([SX - 46, SY - 22, SX + 46, SY + 40]);
@@ -169,12 +174,40 @@ const W_PASS = [[SX - 50, SY + 9], [6934, 5870], [6936, 5810], [6950, 5740], [69
 const W_ERZ = [[SX + 50, SY + 9], [7060, 5880], [7100, 5850], [BX - 2, BY + 6]];
 const W_ALM = [[SX, SY + 44], [7030, 5960], [7100, 5980], [7150, 5996], [ORTE.alm[0] - 10, ORTE.alm[1] + 4]];
 const W_SIEDEL = [[BX + 2, BY + 6], [7200, 5780], [7270, 5720], [7320, 5680], [ORTE.einsiedelei[0] - 2, ORTE.einsiedelei[1] + 4]];
-const W_KLIPPEN = [[7200, 5780], [7230, 5660], [7250, 5560], [ORTE.nordklippen[0], ORTE.nordklippen[1] + 40]];
+const W_KLIPPEN = [[7200, 5780], [7230, 5660], [7250, 5560], [7270, 5440], [ORTE.nordklippen[0], ORTE.nordklippen[1] + 40]];
 for (const w of [W_FURT, W_ERZ, W_ALM]) weg(w, 2.2, "e"); for (const w of [W_PASS, W_SIEDEL, W_KLIPPEN]) weg(w, 1.8, "e");
 for (const [x, y, id, text] of [[6810, 5767, "wegweiser_furt", "Wegweiser: Westen – Grauwacht (über die Furt) · Osten – Steinhag"], [SX - 52, SY + 5, "wegweiser_steinhag_west", "Wegweiser: Norden – Hochpass, Passwacht · Westen – die Furt, Grauwacht"],
   [SX + 52, SY + 5, "wegweiser_steinhag_ost", "Wegweiser: Osten – Erzberg, Bergwerk · Süden – Hohe Alm"], [7204, 5786, "wegweiser_erzberg", "Wegweiser: Nordosten – Einsiedelei am Spiegelsee · Norden – die Nordklippen"]]) {
   ding("welt_wegweiser_01", x, y, { id }); lies(id, x + 0.5, y + 1.4, text); }
 lies("nordklippen", ORTE.nordklippen[0], ORTE.nordklippen[1] + 41.6, "Die Nordklippen. Unten bricht das Meer, oben kreisen die Adler.");
+
+/* ═══════ 8b. Füllen (#147, Konzept „Hochlande füllen“): Stationen, Rastplätze, Steinmänner, Fischplätze, Tiere ═══════ */
+const stationen = [], reisende = [];
+{ /* Stationen (Objekte; die Stationen selbst trägt Systeme ein): Esse und Amboss am Bergwerk, Herd an der Alm, Feuer an der Passwacht, Kessel an der Einsiedelei */
+  ding("dorf_schmiede_01", BX + 13, BY + 15, { id: "bergwerk_schmiede" }); lies("bergwerk_schmiede", BX + 14.5, BY + 16.4, "Die Schmiede am Stollen: Esse und Amboss, damit die Bergleute ihre Hacken gleich vor Ort richten.");
+  stationen.push({ id: "esse_bergwerk", station: "esse", x: BX + 14.5, y: BY + 16 }, { id: "amboss_bergwerk", station: "amboss", x: BX + 12, y: BY + 16 });
+  const [ax, ay] = ORTE.alm; ding("hand_herd_01", ax - 12, ay + 6, { id: "alm_herd" }); stationen.push({ id: "herd_alm", station: "herd", x: ax - 12, y: ay + 7.4 });
+  const [px, py] = PASS; ding("dorf_festfeuer_01", px - 3, py + 5, { id: "passwacht_feuer" }); stationen.push({ id: "feuer_passwacht", station: "feuer", x: px - 3, y: py + 6.6 });
+  const [ex, ey] = ORTE.einsiedelei; ding("hand_kessel_01", ex - 4, ey + 4, { id: "einsiedelei_kessel" }); stationen.push({ id: "kessel_einsiedelei", station: "kessel", x: ex - 4, y: ey + 5.4 });
+  male(ex + 2, ey + 4, ex + 8, ey + 8, () => "a"); ding("dorf_zaun_01", ex + 3, ey + 8.4); ding("dorf_zaun_01", ex + 7, ey + 8.4);   /* der Garten des Einsiedlers */
+  /* Rastplätze an den Wegen und Steinmänner */
+  for (const [id, x, y] of [["rast_passweg", 6942, 5770], ["rast_siedelweg", 7262, 5734], ["rast_klippenweg", 7226, 5620]]) {
+    ding("dorf_festfeuer_01", x, y, { id: id + "_feuer" }); ding("wald_baumstamm_01", x - 2.5, y + 1.5, { id: id + "_stamm_1", s: 0.8 }); ding("wald_baumstamm_02", x + 2.5, y - 1, { id: id + "_stamm_2", s: 0.8, spiegeln: true });
+    lies(id, x + 0.5, y + 2.4, "Ein Rastplatz am Weg. Asche im Steinring – hier ruhen Bergleute und Hirten."); }
+  for (const [i, [x, y]] of [[6955, 5720], [6966, 5650], [7238, 5600], [7262, 5470], [7290, 5700]].entries()) ding("hochland_steinmann", x, y, { id: "steinmann_" + (i + 1) });
+  /* Fischplätze: Bachfische in den Bergbächen, Küstenfische an den Nordklippen (ein Steig führt hinunter) */
+  uferplatz("fischplatz_grauhornbach", "bachling", 1, 7014, 5740, "Im Grauhornbach stehen kleine Bachlinge im kalten Wasser.");
+  uferplatz("fischplatz_grauhornbach_unten", "muehlbarsch", 10, 7002, 5800, "Wo der Grauhornbach in den See fällt, ziehen Mühlbarsche.");
+  uferplatz("fischplatz_almbach", "bachling", 1, 7154, 5920, "Der Almbach. Bachlinge schießen zwischen den Steinen hin und her.");
+  uferplatz("fischplatz_almbach_unten", "muehlbarsch", 10, 7160, 6080, "Unterhalb der Alm wird der Bach breiter – Mühlbarsche.");
+  { const [kx, ky] = ORTE.nordklippen; let sy = ky + 38; while (sy > ky - 30 && !nass(grund(kx + 0.5, sy - 1))) { setze(kx, sy, "g"); setze(kx + 1, sy, "g"); sy--; } setze(kx, sy, "g"); setze(kx + 1, sy, "g");   /* Klippensteig bis ans Wasser */
+    uferplatz("fischplatz_nordklippen", "klippenbarsch", 35, kx, sy + 1, "Unten an den Nordklippen beißen Klippenbarsche in der Brandung.");
+    uferplatz("fischplatz_nordklippen_ost", "hering", 20, kx + 3, sy + 2, "Heringsschwärme ziehen dicht an den Klippen vorbei."); }
+  /* Tiere zur Stimmung (Vorschläge für Figuren/Systeme): Ziegen an den Hängen, Murmeltiere im Geröll */
+  const fest = (x, y) => { for (let r = 0; r < 20; r++) for (let a = 0; a < 6.3; a += 0.4) { const px = Math.floor(x + Math.cos(a) * r) + 0.5, py = Math.floor(y + Math.sin(a) * r) + 0.5; if (!"F~wMS".includes(jetzt(px, py))) return [px, py]; } return [x, y]; };
+  for (const [i, [x, y]] of [[6982, 5700], [6990, 5712], [7120, 5770], [7180, 5760], [7230, 5640]].entries()) { const [a, b] = fest(x, y); npc.push({ id: "ziege_" + (i + 1), rolle: "Ziege (Stimmung)", x: a, y: b }); }
+  for (const [i, [x, y]] of [[6948, 5640], [6976, 5590], [7110, 5790], [7172, 5786], [7280, 5380]].entries()) { const [a, b] = fest(x, y); npc.push({ id: "murmeltier_" + (i + 1), rolle: "Murmeltier (Stimmung)", x: a, y: b }); }
+  reisende.push({ id: "bergleute_steinhag_erzberg", rolle: "Bergleute auf dem Weg zur Schicht (Reisende nach der Uhr)", punkte: W_ERZ.map(([x, y]) => [+x.toFixed(1), +y.toFixed(1)]) }); }
 
 /* ═══════ 9. Bäume, Büsche, Felsen ═══════ */
 const besetzt = (x, y, r) => objekte.some((o) => Math.abs(o.x - x) < r && Math.abs(o.y - y) < r) || interaktionen.some((i) => Math.hypot(i.x - x, i.y - y) < 4);
@@ -197,20 +230,28 @@ for (let i = 0; i < 9000 && (zaehl.Büsche || 0) < 180; i++) { const x = 6840 + 
     const amHang = strecke(x, y, GRAT) < 26 && strecke(x, y, GRAT) > 8 || Math.hypot((x - ORTE.erzberg[0]) / 46, (y - ORTE.erzberg[1]) / 34) < 1.05 && y < ORTE.erzberg[1];
     if (!amHang || !"g,.".includes(jetzt(x, y)) || imOrt(x, y) || wegNah(x, y, 2) || besetzt(x, y, 3) || kraeuter.some((q) => Math.hypot(q.x - x, q.y - y) < 10)) continue;
     kraeuter.push({ id: `hochlande_${art}_${++k}`, art, x: Math.floor(x) + 0.5, y: Math.floor(y) + 0.5, region: regionVon(x, y) }); }
+  /* niedrige Kräuter auf der Alm, ein kleines Beet am Garten des Einsiedlers */
+  const [ax, ay] = ORTE.alm, [ex, ey] = ORTE.einsiedelei;
+  for (const [art, x, y] of [["wegerich", ax - 20, ay - 12], ["wegerich", ax - 16, ay - 14], ["ringelblume", ax + 18, ay - 12], ["ringelblume", ax + 22, ay - 9], ["wegerich", ax + 24, ay + 4],
+    ["moorgloeckchen", ex + 3.5, ey + 5.5], ["ringelblume", ex + 6.5, ey + 5.5], ["moorgloeckchen", ex + 5, ey + 7]]) {
+    if (!"F~wM".includes(jetzt(x, y))) kraeuter.push({ id: `hochlande_${art}_${++k}`, art, x: Math.floor(x) + 0.5, y: Math.floor(y) + 0.5, region: regionVon(x, y) }); }
   /* in die Kräuter-Fundstellen eintragen (frühere hochlande_… ersetzen; kraeuter.py übernimmt sie aus hochlande_orte.json) */
   const KP = join(WELT, "kraeuter_standorte.json"), KS = JSON.parse(readFileSync(KP, "utf8")); KS.stellen = [...KS.stellen.filter((q) => !q.id.startsWith("hochlande_")), ...kraeuter]; writeFileSync(KP, JSON.stringify(KS, null, 1)); }
 
 /* ═══════ 11. Untergrund: das Bergwerk im Erzberg (3 × 2 Chunks) ═══════ */
-const ADERN = [];
+const ADERN = [], ARENA = [];
 { const raster = (B, H, frei) => Array.from({ length: H }, (_, y) => Array.from({ length: B }, (_, x) => (frei(x + 0.5, y + 0.5) ? "h" : "F")));
   const zw = (x, y) => 0.6 * Math.sin(x / 2.3 + y / 3.1) + 0.4 * Math.sin(y / 1.7 - x / 2.9);
   const HAUPT = [[48, 61], [48, 46], [30, 40], [16, 30], [14, 14]], OSTSTOLLEN = [[48, 46], [66, 40], [80, 28], [84, 12]], QUER = [[30, 40], [40, 24], [60, 18], [80, 28]];
-  const HALLE = { x: 22, y: 12, r: 9 }, KAMMER = { x: 86, y: 12, r: 7 }, VORRAUM = { x: 48, y: 52, r: 6 };
+  const HALLE = { x: 23, y: 14, r: 11 }, KAMMER = { x: 86, y: 12, r: 7 }, VORRAUM = { x: 48, y: 52, r: 6 };
   const g = raster(96, 64, (x, y) => strecke(x, y, HAUPT) < 2.4 + 0.4 * zw(x, y) || strecke(x, y, OSTSTOLLEN) < 2.2 + 0.4 * zw(x, y) || strecke(x, y, QUER) < 1.8 + 0.3 * zw(x, y) ||
     Math.hypot(x - HALLE.x, y - HALLE.y) < HALLE.r + 0.6 * zw(x, y) || Math.hypot(x - KAMMER.x, y - KAMMER.y) < KAMMER.r + 0.5 * zw(x, y) || Math.hypot(x - VORRAUM.x, y - VORRAUM.y) < VORRAUM.r + 0.4 * zw(x, y) || (y > 56 && y < 63 && Math.abs(x - 48) < 2.5));
+  /* Trollhalle als Boss-Arena (#116, später): freie Fläche, gut sichtbarer Steinboden, Feuerkörbe nur am Rand */
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 96; x++) if (g[y][x] === "h" && Math.hypot(x + 0.5 - HALLE.x, y + 0.5 - HALLE.y) < HALLE.r - 1.2) g[y][x] = "p";
+  ARENA.push({ region: "hochlande_bergwerk", x: BW_U[0] * 32 + HALLE.x, y: BW_U[1] * 32 + HALLE.y, r: HALLE.r - 1.2, hinweis: "Trollhalle: freie Fläche für den Mini-Boss (Instanz nach #116), Eingang von Osten über den Querschlag" });
   let m = 0; const o = (objekt, x, y, mehr = {}) => ({ id: objekt.replace(/^(k|hoehle|moor|wz|wald|dorf)_/, "").replace(/_\d+$/, "") + "_" + ++m, objekt, x, y, ...mehr });
   const dinge = [o("hoehle_leiter_01", 48, 59.4), o("moor_feuerkorb_01", 44, 52), o("moor_feuerkorb_01", 52, 52), o("hochland_lore", 47, 49, { id: "bergwerk_lore_1" }), o("hochland_lore", 66, 41, { id: "bergwerk_lore_2" }), o("hochland_schienen", 48, 54), o("hochland_schienen", 48, 51.5), o("hochland_schienen", 48, 49),
-    o("hochland_grubenholz", 30, 38), o("hochland_grubenholz", 60, 18.4, { spiegeln: true }), o("hochland_grubenholz", 80, 26), o("hoehle_steinsaeule_01", 18, 10), o("hoehle_steinsaeule_01", 27, 15), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
+    o("hochland_grubenholz", 30, 38), o("hochland_grubenholz", 60, 18.4, { spiegeln: true }), o("hochland_grubenholz", 80, 26), o("moor_feuerkorb_01", 16, 7), o("moor_feuerkorb_01", 30, 7), o("moor_feuerkorb_01", 16, 21), o("moor_feuerkorb_01", 30, 21), o("hoehle_steinsaeule_01", 83, 9), o("k_kiste", 51, 55), o("dorf_holzstapel_01", 40, 26)];
   /* Erzadern an den Stollenwänden: Sterneisen (35) im Hauptstollen, Splittereisen (45) im Querschlag, Ureisen (65) in der Kammer – für sammelstellen.mjs */
   const ader = (id, art, x, y) => { g[Math.floor(y)][Math.floor(x)] = "h"; ADERN.push({ id, art, x: BW_U[0] * 32 + x, y: BW_U[1] * 32 + y, region: "hochlande_bergwerk" }); };
   [[46, 44], [44, 42], [50, 44]].forEach(([x, y], i) => ader("bergwerk_sterneisen_" + (i + 1), "sterneisen", x + 0.5, y + 0.5));
@@ -237,6 +278,6 @@ for (const [k, g] of urs) if (!alt.has(k)) alt.set(k, g);
 writeFileSync(GRUNDDATEI, JSON.stringify({ hinweis: "hochlande.mjs: ursprüngliches Gelände unter den eigenen Flächen (für wiederholte Läufe)", felder: Object.fromEntries(alt) }) + "\n");
 writeFileSync(join(WELT, "hochlande_orte.json"), JSON.stringify({ hinweis: "Phase 11 Vorarbeit (Welt #147): Orte, Ortsnamen, NPC-Plätze (Vorschläge für Figuren #148), Fischplätze, Kräuter, Erzadern im Bergwerk, Wege. Weltfelder.",
   orte: ORTE, namen: [["Die Hochlande", "Landschaft", 7240, 5860], ["Steinhag", "Stadt", SX, SY], ["Hohe Alm", "Gehöft", ...ORTE.alm], ["Erzberg-Bergwerk", "Ort", BX, BY], ["Passwacht", "Ort", ...PASS],
-    ["Einsiedelei", "Ort", ...ORTE.einsiedelei], ["Die Furt", "Wegmarke", ...ORTE.furt], ["Grauhorn", "Landschaft", 6990, 5570], ["Steinhagsee", "Landschaft", 6990, 5846], ["Spiegelsee", "Landschaft", ...ORTE.spiegelsee], ["Die Nordklippen", "Landschaft", 7250, 5452]],
-  npc, fischplaetze: fische, kraeuter, adern: ADERN, wege, zaehlung: zaehl }, null, 1) + "\n");
+    ["Einsiedelei", "Ort", ...ORTE.einsiedelei], ["Die Furt", "Wegmarke", ...ORTE.furt], ["Grauhorn", "Landschaft", 6990, 5570], ["Steinhagsee", "Landschaft", 6990, 5846], ["Spiegelsee", "Landschaft", ...ORTE.spiegelsee], ["Die Nordklippen", "Landschaft", ...ORTE.nordklippen]],
+  npc, fischplaetze: fische, kraeuter, adern: ADERN, stationen, reisende, arena: ARENA[0], baeche: BAECHE, wege, zaehlung: zaehl }, null, 1) + "\n");
 console.log(`Hochlande: ${feld.size} Geländefelder, ${hoehenListe.length} Höhen, ${objekte.length} Objekte, ${interaktionen.length} Lesestellen, ${npc.length} NPC-Plätze, ${fische.length} Fischplätze, ${kraeuter.length} Kräuter –`, JSON.stringify(zaehl));

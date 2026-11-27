@@ -24,10 +24,12 @@ try {
     check(await sprich(ute, C2, "hedda", "annehmen") && stand(ute, C2).phase === "laeuft" && anzahl(ute, "moorwachs") === 1, "Ute nimmt C2 bei Hedda an und bekommt Moorglöckchen-Wachs"); z && z.ws.close(); await schlaf(2500); }
   await objekt(ute, C2, "c2_kreis_moor"); await objekt(ute, C2, "c2_kreis_insel");
   check(erl(ute, C2, "lauschen_moor") && erl(ute, C2, "lauschen_insel"), "An beiden Steinkreisen gelauscht");
-  { const t0 = Date.now(); await stelle(ute, 6243, 6733); const z = await kampf("ute", 6243, 6733); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
+  { let ueber = ""; const t0 = Date.now(); await stelle(ute, 6213, 6716); const z = await kampf("ute", 6213, 6716); const AK = ["rabenpriester_akoluth", "rabenpriester_akoluth_speer"];
     while (!(erl(ute, C2, "siegel") && anzahl(ute, "federsiegel") >= 3) && Date.now() - t0 < 200000) { await kaempfen(z, AK, (n) => n >= 1, 60000); await schlaf(800);
-      for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { await stelle(ute, b.x, b.y); sende(ute, { t: "aufheben", id: b.i }); await schlaf(500); } }
+      for (const b of ute.boden.filter((x) => x.g === "federsiegel")) { await stelle(ute, b.x, b.y); sende(ute, { t: "aufheben", id: b.i }); await schlaf(500);
+        const z = QB.zaehler(C2, ute.b[C2.id] || "", "siegel"), n = anzahl(ute, "federsiegel"); if (!erl(ute, C2, "siegel") && z > n || erl(ute, C2, "siegel") && n < 3 && !ueber) ueber = `Zähler ${z}${erl(ute, C2, "siegel") ? " (erledigt)" : ""} bei ${n} Siegeln im Rucksack`; } } /* #158: je aufgehobenem Siegel genau eins weiter */
     z && z.ws.close(); await schlaf(2500);
+    check(!ueber, "Jedes aufgehobene Federsiegel zählt genau einmal (#158)" + (ueber ? ": " + ueber : ""));
     check(erl(ute, C2, "siegel") && anzahl(ute, "federsiegel") >= 3, `Drei Federsiegel von Akoluthen erbeutet (Zähler ${QB.zaehler(C2, ute.b[C2.id] || "", "siegel")}, im Rucksack ${anzahl(ute, "federsiegel")})`); }
   check(!(await sprich(ute, C2, "hedda", "reihe_falsch")) || !erl(ute, C2, "silben"), "Falsche Reihenfolge bei Hedda: noch nicht");
   { const F = C2.figuren.find((x) => x.id === "hedda"); await stelle(ute, F.x + 1, F.y); const d = await rede(ute, "hedda"); console.log("  (Hedda bietet: " + JSON.stringify(d && d.dialog && d.dialog.antworten.map((x) => x.id)) + ", Siegel " + anzahl(ute, "federsiegel") + ", Stand " + ute.b[C2.id] + ")"); }

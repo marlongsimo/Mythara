@@ -17,6 +17,8 @@ export const C2 = "aschenwerth_gesang_der_spiralsteine";
 const NEU: Bed = { phase: ["neu"] }, FERTIG: Bed = { phase: ["fertig"] }, LAEUFT: Bed = { phase: ["laeuft"] };
 /** Hedda vor ihrer Hütte (rabenmoor 17,4 | 21,4), Steinkreis im Moor (rabenmoor 86 | 19,6), Steinkreis auf Aschenwerth (98 | 142,4), Gruft (44 | 134,6) */
 const HEDDA: [number, number] = [6289.4, 6677.4], KREIS_MOOR: [number, number] = [6358, 6675.6], KREIS_INSEL: [number, number] = [6242, 6734.4];
+/** Akoluthen bei der Gruft auf Aschenwerth (Lager 6212 | 6714, werkzeug/weltzonen.py) */
+const AKOLUTHEN: [number, number] = [6213, 6716];
 /** Einstieg ins Nest im Steinkreis von Aschenwerth (federmutter_abstieg), Ravena im Nest (Region federmutter_kammer, shared/bosse.ts) */
 const ABSTIEG: [number, number] = [6242, 6728.4], NEST: [number, number] = [11536.5, 9611.5];
 /** Die vier Spiralsteine um den Kreis auf Aschenwerth (Vorschlag, die Welt prüft) */
@@ -49,7 +51,7 @@ export const QUEST_C2: QuestDef = {
       log: "Lausch an beiden Steinkreisen, wenn der Orden singt – im Moor und auf Aschenwerth ({n:lauschen}). Mit Wachs in den Ohren und der Kapuze auf dem Kopf." },
     { id: "lauschen_insel", text: "Am Steinkreis auf Aschenwerth lauschen", ereignis: { art: "objekt", id: "c2_kreis_insel" }, gruppe: "lauschen", wo: KREIS_INSEL,
       log: "Lausch an beiden Steinkreisen, wenn der Orden singt – im Moor und auf Aschenwerth ({n:lauschen}). Mit Wachs in den Ohren und der Kapuze auf dem Kopf." },
-    { id: "siegel", text: "Drei Federsiegel von Akoluthen", ereignis: { art: "aufheben", g: "federsiegel" }, anzahl: 3, wo: KREIS_INSEL,
+    { id: "siegel", text: "Drei Federsiegel von Akoluthen", ereignis: { art: "aufheben", g: "federsiegel" }, anzahl: 3, wo: AKOLUTHEN,
       log: "Die Akoluthen auf Aschenwerth tragen Federsiegel. Nimm drei an dich ({n:siegel}). Sie durchschauen deine Kapuze." },
     { id: "silben", text: "Mit Hedda die Silben zusammensetzen", ereignis: { art: "antwort" }, nach: [...LAUSCHEN, "siegel"], bei: "hedda",
       log: "Geh mit dem, was du gehört hast, zu Mutter Hedda. Sie setzt die Silben mit dir zusammen." },
@@ -119,7 +121,8 @@ export const QUEST_C2: QuestDef = {
     },
   },
   /* Federsiegel: in C2 von jedem Akoluthen garantiert, solange noch welche fehlen (Rolle Spiel: chance 100) */
-  beute: { c2_federsiegel: { phase: ["laeuft"], offen: ["siegel"] } },
+  /* fällt, bis Hedda die Silben genommen hat (nicht nur bis der Zähler „siegel“ voll ist: wer ein Siegel verliert, braucht Ersatz; #158) */
+  beute: { c2_federsiegel: { phase: ["laeuft"], offen: ["silben"] } },
   /* Nest der Federmutter (shared/bosse.ts): in der Quest allein und schwächer, danach öffentlich oder eigene Instanz. Die Gruft öffnet sich nach dem Kreis (Abstieg in den Rabengrund, C3). */
   schalter: { gruft_offen: [FERTIG, { erledigt: ["auge"] }], federmutter_kammer: { phase: ["laeuft"], erledigt: ["auge"], offen: ["ravena"] }, federmutter_danach: FERTIG },
   glueckwunsch: "Der Gesang ist still. Gut gemacht, Kind. Das sag ich nicht oft.",
