@@ -44,7 +44,8 @@ check(!groesse.length, "Gruppen von 3–6 Stellen (Ausnahme Phase 9: Ureisen in 
   check(!nahWeg.length, "sie liegen versteckt, mindestens 6 Felder abseits der Wege (kein Feldweg)", nahWeg); }
 const zahl = (o, t) => gruppen.filter((g) => g.ort === o && g.typ === t).length;
 check(zahl("erlengrund", "holz") >= 3 && zahl("lehmfurt", "erz") >= 3, `Schwerpunkte: Erlengrund ${zahl("erlengrund", "holz")} Baumgruppen, Lehmfurt ${zahl("lehmfurt", "erz")} Senken`);
-const ids = gruppen.flatMap((g) => g.pts.map((p) => p.id)), shared = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.flatMap((l) => l.baeume), ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.flatMap((s) => s.adern)].map((p) => p.id);
+/* shared/ ohne die schon eingebauten Gruppen dieser Datei (Integration hängt sie an holz_/bergbau_standorte.json an, #142) */
+const eigene = new Set(gruppen.map((g) => g.name)), ids = gruppen.flatMap((g) => g.pts.map((p) => p.id)), shared = [...JSON.parse(readFileSync(join(REALTIME, "shared", "holz_standorte.json"), "utf8")).lichtungen.filter((l) => !eigene.has(l.name)).flatMap((l) => l.baeume), ...JSON.parse(readFileSync(join(REALTIME, "shared", "bergbau_standorte.json"), "utf8")).senken.filter((s) => !eigene.has(s.name)).flatMap((s) => s.adern)].map((p) => p.id);
 const doppelt = ids.filter((id, i) => ids.indexOf(id) !== i || shared.includes(id)); check(!doppelt.length, `${ids.length} Kennungen eindeutig (auch gegenüber shared/)`, doppelt);
 const region1 = gruppen.filter((g) => new Set(g.pts.map((p) => p.region)).size > 1).map((g) => g.name); check(!region1.length, "jede Gruppe liegt in einem Gebiet", region1);
 const gp = lies("gegnerplaetze.json").plaetze, nah = gruppen.flatMap((g) => g.pts.filter((p) => gp.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 6)).map((p) => `${g.name} ${p.id}`)); check(!nah.length, "keine Gegnerplätze an den Bäumen und Adern", nah);
