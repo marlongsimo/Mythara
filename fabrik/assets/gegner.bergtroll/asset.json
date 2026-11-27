@@ -1,0 +1,12 @@
+{
+  "id": "gegner.bergtroll",
+  "name": "Bergtroll",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 58,
+  "gebiet": "Hochlande",
+  "grundform": "Troll / Riese (gebückt, lange Arme)",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_riese.py hoehe=2.6; Bewegungen faustschlag, gehen, ruhe, tod, treffer – img/figuren-echt3d/bergtroll3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Troll / Riese (gebückt, lange Arme)“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_riese.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}

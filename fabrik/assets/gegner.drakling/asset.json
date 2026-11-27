@@ -1,0 +1,12 @@
+{
+  "id": "gegner.drakling",
+  "name": "Drakling",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "stufe": 66,
+  "gebiet": "Drachenarm",
+  "grundform": "Drache (Flieger mit Schwanz)",
+  "status": "v001: Meshy-Modell des Nutzers (27.11.2026, quelle/meshy.glb), fabrik/rig_flieger.py spannweite=2.6 flughoehe=1.5; Bewegungen fliegen, sturz, tod, treffer – img/figuren-echt3d/drakling3d.glb (+ .mobil.glb)",
+  "vorlage": "Grundform „Drache (Flieger mit Schwanz)“: für spätere Gegner dieser Form quelle/meshy.glb umfärben (fabrik/textur_ton.py) oder mit fabrik/rig_flieger.py neu riggen",
+  "herkunft": "Meshy (Nutzer)"
+}
