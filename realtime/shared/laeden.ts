@@ -7,7 +7,7 @@ import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende"
 import { H_QUESTS } from "./hochlande";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}` | `steinhag_${string}` | `hochland_${string}` | `zunft_${string}` | `fahleweiten_${string}` | `kielmund_${string}` | `grauwacht_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" };
@@ -244,6 +244,30 @@ ort("fahleweiten_wollhag", { name: "Wollhager Hofladen", spruch: "Milch und Käs
 ort("fahleweiten_weiherhof", { name: "Am Weiher", spruch: "Fisch und Angeln.", haendler: "Jost Reuse", modell: "npc.fischer", x: 6337, y: 5835.7, blick: [0, -1],
   gruss: "Hecht am Steg, Barsch am Ostufer, und im Süden liegt ein alter Wels. Angel und Würmer hab ich da.", tschuess: "Petri Heil!",
   waren: [W("angelrute", 10), W("wurm", 2), W("fisch_muehlbarsch_gebraten", 9), W("fisch_moorhecht_gebraten", 12), W("fisch_wels_gebraten", 25)] });
+/* ───── #171 Grauwacht (Welt e5c7f6f1, welt/fahleweiten_orte.json → grauwacht.laeden): Läden je Stadtstufe (Laden.schalter, Systeme 90b8da3da,
+   Zuordnung der Leitstelle): mit der Abtei Stand 1, Stand 2 und die Taverne; mit der Burg Waffenstand, Stand 3, Stand 4, Gerberei, Tischlerei, Weberei. Die Bank ist immer offen. ───── */
+const ABTEI = { schalter: "grauwacht_abtei", zu: "Der Stand ist leer. Erst wenn die Abtei wieder lebt, kommen Händler nach Grauwacht." };
+const BURG = { schalter: "grauwacht_burg", zu: "Hier ist noch zu. Erst wenn die Burg wieder besetzt ist, wagen sich mehr Händler her." };
+ort("grauwacht_stand_1", { ...ABTEI, name: "Brot der Abtei", spruch: "Gebacken im Klosterofen.", haendler: "Bruder Anselm", modell: "npc.bauer", x: 6702, y: 5746.4,
+  gruss: "Die Brüder backen wieder. Brot und Äpfel aus dem Klostergarten.", tschuess: "Geh in Frieden.", waren: [W("brot", 8), W("apfel", 3), W("mehl", 3)] });
+ort("grauwacht_stand_2", { ...ABTEI, name: "Kräuter der Abtei", spruch: "Heilendes aus dem Klostergarten.", haendler: "Schwester Hiltrud", modell: "npc.kraeuterfrau", x: 6710, y: 5746.4,
+  gruss: "Ein Trank für die Wunden? Die Abtei hat immer welche vorrätig.", tschuess: "Bleib heil.", waren: [W("kleiner_heiltrank", 40), W("heiltrank", 170), W("leeres_flaeschchen", 2)] });
+ort("grauwacht_taverne", { ...ABTEI, name: "Zur grauen Glocke", spruch: "Warm, laut und endlich wieder offen.", haendler: "Wirtin Gerlinde", modell: "npc.marktfrau", x: 6729, y: 5752.4,
+  gruss: "Seit die Glocke wieder läutet, kommen die Leute zurück. Setz dich, iss was.", tschuess: "Komm gut nach Hause.",
+  waren: [W("brot", 8), W("bauerneintopf", 20), W("wildbretbraten", 20), W("krug", 5)] });
+ort("grauwacht_waffen", { ...BURG, name: "Waffen der Burgwacht", spruch: "Stahl für die Fahlen Weiten.", haendler: "Waffenmeister Roderich", modell: "npc.schmied", x: 6710.5, y: 5754.4,
+  gruss: "Die Burg ist wieder besetzt – und die Wacht braucht Klingen. Du auch?", tschuess: "Schlag zuerst.", waren: waffen.map(ware) });
+ort("grauwacht_stand_3", { ...BURG, name: "Harnische der Wacht", spruch: "Hält Wolf und Räuber ab.", haendler: "Plattnerin Odila", modell: "npc.schmiedin", x: 6697.5, y: 5756.2, blick: [0, -1],
+  gruss: "Leder für die Weiten, Platten für die Mauer. Probier an.", tschuess: "Bleib heil.", waren: ruestung.map(ware) });
+ort("grauwacht_stand_4", { ...BURG, name: "Werkzeug und Gerät", spruch: "Beil, Hacke, Hammer.", haendler: "Gerold Eisen", modell: "npc.kaufmann", x: 6714.5, y: 5757.7, blick: [0, -1],
+  gruss: "Wer die Weiten bewirtschaften will, braucht gutes Gerät.", tschuess: "Gib auf die Schneide acht.",
+  waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("spitzhacke_training", 10), W("spitzhacke_einfach", 350), W("hammer", 10), W("sichel", 10)] });
+ort("grauwacht_gerberei", { ...BURG, name: "Gerberei", spruch: "Leder aus den Fahlen Weiten.", haendler: "Gerber Wido", modell: "npc.bauer", x: 6722, y: 5798.2, blick: [0, 1],
+  gruss: "Raues Leder, frisch gegerbt. Riecht streng, hält aber.", tschuess: "Und wasch dir die Hände.", waren: [W("leder_rau", 8)] });
+ort("grauwacht_tischlerei", { ...BURG, name: "Tischlerei", spruch: "Holz in Form gebracht.", haendler: "Tischler Benno", modell: "npc.alter_bauer", x: 6731, y: 5798.2, blick: [0, 1],
+  gruss: "Bretter schneidest du selbst. Ein Beil und einen Krug hab ich für dich.", tschuess: "Und immer gerade sägen.", waren: [W("holzbeil_training", 10), W("holzbeil_einfach", 350), W("krug", 5)] });
+ort("grauwacht_weberei", { ...BURG, name: "Weberei", spruch: "Garn und Tuch.", haendler: "Weberin Adelheid", modell: "npc.kauffrau", x: 6740, y: 5798.2, blick: [0, 1],
+  gruss: "Wolle aus Wollhag, gesponnen und gewebt. Was brauchst du?", tschuess: "Bleib warm.", waren: [W("garn", 4), W("stoff_grob", 6)] });
 /* #160: die Läden in Steinhag öffnen erst nach H1 „Über den Pass“ (Entscheidung des Nutzers, 27.11.) – die Bank (shared/bank.ts) und die Bergvögtin bleiben immer da */
 export const STEINHAG_LAEDEN: LadenId[] = ["steinhag_taverne", "steinhag_schmiede", "steinhag_allerlei", "steinhag_kraeuter", "troedler_steinhag",
   "steinhag_waffen", "steinhag_ruestung", "steinhag_backstube", "steinhag_seefisch", "steinhag_stoffe", "steinhag_zunftbedarf", "steinhag_grubenproviant"];
@@ -279,7 +303,7 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 export const ladenOffen = (L: Laden, stand: (id: string) => string, schalter?: (id: string) => boolean): boolean =>
   (!L.wenn || stand(L.wenn.quest) === L.wenn.phase) && (!L.schalter || Boolean(schalter && schalter(L.schalter)));
 /** Symbol je Laden (Minikarte und Karte) */
-export const LADEN_ZEICHEN: Record<string, string> = { fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
+export const LADEN_ZEICHEN: Record<string, string> = { grauwacht_stand_1: "🍞", grauwacht_stand_2: "🧪", grauwacht_taverne: "🍲", grauwacht_waffen: "⚔️", grauwacht_stand_3: "🛡️", grauwacht_stand_4: "🔨", grauwacht_gerberei: "🧶", grauwacht_tischlerei: "🪚", grauwacht_weberei: "🧵", fahleweiten_huegelgrund: "🧺", fahleweiten_kohlstatt: "🪓", fahleweiten_brechstein: "⛏️", fahleweiten_wollhag: "🧀", fahleweiten_weiherhof: "🎣", waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
   haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧", steinhag_taverne: "🍲", kielmund_fischmarkt: "🐟", kielmund_schiffsbedarf: "🎣", kielmund_rauchfang: "🐟", kielmund_gewuerze: "🧂", kielmund_waffen: "⚔️", kielmund_ruestung: "🛡️", kielmund_werkzeug: "🔨", kielmund_traenke: "🧪", kielmund_baecker: "🍞", steinhag_waffen: "⚔️", steinhag_ruestung: "🛡️", steinhag_backstube: "🍞", steinhag_seefisch: "🐟", steinhag_stoffe: "🧵", steinhag_zunftbedarf: "🔨", steinhag_grubenproviant: "🍲", steinhag_schmiede: "🔨", steinhag_allerlei: "🧺", steinhag_kraeuter: "🧪" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
