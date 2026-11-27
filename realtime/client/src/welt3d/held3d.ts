@@ -89,6 +89,8 @@ export class Held3D {
     this.mixer.addEventListener("finished", () => { if (this.einmal) { this.einmal = false; this.anwenden(); const f = this.fertig; if (f) f(); } });
     this.zeigen(); this.anwenden(); this.ersatz.sichtbar(false); this.ersatz.entfernen(this.szene); }
   get geladen(): boolean { return Boolean(this.wurzel) || this.ersatz.geladen; }
+  /** das geladene 3D-Modell (mit den angelegten Teilen) – für das Bild der eigenen Figur in der Werte-Übersicht (welt3d/heldbild.ts) */
+  get modell(): THREE.Object3D | null { return this.wurzel; }
   /** Modell und alle angelegten Ausrüstungsteile sind da (für den Ladebildschirm: erst dann aufdecken) */
   get vollstaendig(): boolean { return Boolean(this.wurzel) && this.ladend.size === 0; }
   /** angelegte Waffen, Frisur und Bart sichtbar, alles andere aus */

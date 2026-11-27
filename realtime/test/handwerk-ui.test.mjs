@@ -67,12 +67,13 @@ try {
     if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "stufe-banner.png" }); }
   await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(400);
   { const b = await anna.$$eval("[data-beruf]", (l) => l.map((x) => x.dataset.beruf).join(",")); check(b === "holzfaellerei,bergbau,schmieden,handwerk", `Skill-Tab: Berufe aus shared/berufe.ts (${b})`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "skills-tab.png" }); }
-  await anna.click('[data-beruf="handwerk"]');
+  await anna.click('[data-beruf="handwerk"]'); check(await anna.evaluate(() => /Handwerk/.test(document.querySelector("#ez-skillstab .sfuss")?.textContent || "") && !!document.querySelector('#ez-skillstab .skachel.an[data-beruf="handwerk"]')), "Beruf kurz antippen: XP-Leiste unten (Name, Level, XP)");
+  await anna.click('[data-beruf="handwerk"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("Skillbuch öffnen")'); /* lange drücken / Rechtsklick: Skillbuch */
   const fu = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
   check(fu && (await anna.$$eval("#ez-konto .fuehrer [data-fr]", (b) => b.map((x) => x.textContent).join(","))) === "Rohstoffe,Werkbank,Info", "Skill-Übersicht Handwerk: Reiter Rohstoffe, Werkbank, Info");
   if (fu) { const z = await anna.$$eval("#ez-konto .fuehrer li", (l) => l.length); check(z === 14, `Rohstoffe (ohne Gesammeltes): ${z} Zeilen mit Level und Bild`); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fuehrer.png" }); await anna.click('#ez-konto [data-t="zu"]'); }
   await anna.click('#ez-leiste [data-l="skills"]').catch(() => {}); await anna.waitForTimeout(300); if (!(await anna.$('[data-beruf="schmieden"]'))) { await anna.click('#ez-leiste [data-l="skills"]'); await anna.waitForTimeout(300); }
-  await anna.click('[data-beruf="schmieden"]'); const fs = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
+  await anna.click('[data-beruf="schmieden"]', { button: "right" }); await anna.click('.ez-aktionen button:has-text("Skillbuch öffnen")'); const fs = await anna.waitForSelector("#ez-konto .tafel.fuehrer", { timeout: 5000 }).then(() => true).catch(() => false);
   check(fs && (await anna.$$eval("#ez-konto .fuehrer [data-fr]", (b) => b.map((x) => x.textContent).join(","))) === "Barren,Schmieden,Info", "Skill-Übersicht Schmieden: Reiter Barren, Schmieden, Info");
   if (fs) { await anna.click('#ez-konto .fuehrer [data-fr="1"]'); check((await anna.$$eval("#ez-konto .fuehrer li", (l) => l.length)) > 30, "Reiter Schmieden zeigt die Amboss-Rezepte"); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "fuehrer-schmieden.png" }); await anna.click('#ez-konto [data-t="zu"]'); }
   await anna.click('#ez-leiste [data-l="quests"]').catch(() => {}); await anna.waitForTimeout(500); if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "quest-tab.png" });

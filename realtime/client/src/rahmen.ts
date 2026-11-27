@@ -17,6 +17,7 @@ import { HELDEN } from "../../shared/config";
 import { GEGENSTAENDE, PLAETZE, Platz, RUCKSACK_PLAETZE, werteVon, SELTENHEITEN, SETS, aktiveSets } from "../../shared/gegenstaende";
 import { aktiverHeld, gegenstandBild } from "./held";
 import { teilBild, TEIL_3D } from "./welt3d/teilbild";
+import { heldGanzbild } from "./welt3d/heldbild";
 /** Bild eines Gegenstands: Rüstungen und Helme aus ihrem 3D-Teil, Waffen und Schilde aus den 2D-Ebenen */
 /** Freigestelltes Bild (Gegenstand.bild) mittig in das Feld zeichnen */
 const bilder = new Map<string, Promise<HTMLImageElement>>();
@@ -332,6 +333,7 @@ export function seitenTab(art: TabArt): boolean {
     el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true); }
   if (art === "rucksack") rucksackZiehen(el);
   langDruecken(el, (e) => { const qz = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-quest]"); if (qz) { questMenue(qz.dataset.quest!, e.clientX, e.clientY); return true; }
+    const sk = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-skill],[data-beruf]"); if (sk) { skillMenue(sk.dataset.skill ? "skill" : "beruf", (sk.dataset.skill || sk.dataset.beruf)!, e.clientX, e.clientY); return true; }
     const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; }); /* lange drücken (Handy, auch iPhone-Safari) oder Rechtsklick = Aktionsmenü */
   el.addEventListener("click", tabKlick); addEventListener("ez-benutzen", () => tabZeichnen()); tabZeichnen(); tabLage(); addEventListener("resize", tabLage);
   for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) addEventListener(t, tabZeichnen);
@@ -358,7 +360,7 @@ function rucksackZiehen(el: HTMLElement): void {
   el.addEventListener("click", (e) => { if (gezogen) { gezogen = false; e.stopPropagation(); e.preventDefault(); } }, true);
   el.style.touchAction = "none"; }
 const TAB_NAME: Record<TabArt, string> = { stil: "Angriffsstil", rucksack: "Rucksack", ausruestung: "Ausrüstung", skills: "Skills", quests: "Quests", freunde: "Freunde" };
-function tabZu(): void { const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
+function tabZu(): void { werteZu(); const el = tabEl(); if (el) el.remove(); if (tabJetzt) document.querySelector(`#ez-leiste [data-l="${tabJetzt}"]`)?.classList.remove("an"); tabJetzt = null;
   removeEventListener("resize", tabLage); for (const t of ["ez-inventar", "ez-skills", "ez-stil", "ez-quest", "ez-freunde-neu"]) removeEventListener(t, tabZeichnen); freundeBeobachten(false); document.querySelector('[aria-label="Freunde"]')?.classList.remove("an"); }
 /** Angriffsstil-Tab (alter Name) */
 export const stilTab = (): void => { seitenTab("stil"); };
@@ -368,6 +370,15 @@ function tabLage(): void {
   const rechts = chat && chat.offsetWidth ? chat.getBoundingClientRect().right : links + 340;
   const h = Math.max(120, unten.bottom - oben.top); Object.assign(el.style, { left: links + "px", top: oben.top + "px", height: h + "px", width: Math.max(200, rechts - links) + "px" }); el.classList.toggle("eng", h < 300); /* niedrig (Handy): ohne Erklärzeilen */ }
 let tabWahl: { wo: string; g: string } | null = null;
+/** gewählter Skill im Skills-Tab ("skill:geschick" / "beruf:fischen"): seine XP-Leiste steht unten */
+let skillWahl: string | null = null;
+const skillName = (art: "skill" | "beruf", k: string): string => art === "skill" ? (k === "lp" ? "Leben" : SKILL_NAME[k as Skill]) : BERUF_NAME[k];
+/** Feld mit dem Heldenlevel (Skills-Tab, Ausrüstung) */
+const heldKachel = (hl: number): string => `<div class="skachel held" title="Heldenlevel ${hl}" aria-label="Heldenlevel ${hl}"><small>Held</small><strong>${hl}</strong></div>`;
+/** Aktionsmenü eines Skills (lange drücken / Rechtsklick): Skillbuch öffnen – Kampf-Skills: Infoblatt, Berufe: Skill-Übersicht (skillfuehrer.ts) */
+function skillMenue(art: "skill" | "beruf", k: string, px: number, py: number): void {
+  const S = art === "skill" ? skillStand(skillsLesen()[k as Skill], k as Skill) : skillStand((inventar().berufe || {})[k] || 0);
+  aktionsMenue(px, py, [{ kopf: skillName(art, k), farbe: "#ffd86a", lv: { text: "Level " + S.L, farbe: "#ffe7b0" }, aktionen: [{ text: "Skillbuch öffnen", sym: "📖", tat: () => { if (art === "skill") skillInfo(k as Skill); else skillFuehrer(k, BERUF_TEXT[k]); } }] }]); }
 function tabZeichnen(): void {
   const el = tabEl(); if (!el || !tabJetzt) return; let neu = "";
   /* nur neu zeichnen, wenn sich der Inhalt ändert – im Kampf kommen ständig XP, sonst würde ein Knopf mitten im Antippen ersetzt */
@@ -382,18 +393,21 @@ function tabZeichnen(): void {
     neu = `<div class="kopf"><b>Quests</b><small>${offen.filter((q) => q.art !== "neu").length} aktiv · ${questpunkte()} Questpunkte</small></div>
       <div class="qreiter" role="tablist"><button type="button" role="tab" data-qr="offen" aria-selected="${questReiter === "offen"}" class="${questReiter === "offen" ? "an" : ""}">Quests</button><button type="button" role="tab" data-qr="fertig" aria-selected="${questReiter === "fertig"}" class="${questReiter === "fertig" ? "an" : ""}">Abgeschlossen${fertig.length ? ` (${fertig.length})` : ""}</button></div>
       ${zeigen.length ? `<ul class="qliste">${zeigen.map((q) => `<li><button type="button" class="qzeile ${q.art}" data-quest="${q.id}" title="${q.titel} – ${QART_TEXT[q.art]}">${q.titel}</button></li>`).join("")}</ul>` : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`; setzen(); return; }
-  if (tabJetzt === "skills") { const x = skillsLesen();
-    neu = `<div class="kopf"><b>Skills</b><small>Heldenlevel ${heldenlevel(x)}</small></div><ul class="tskills">${SKILLS.map((k) => { const S = skillStand(x[k], k);
-      return `<li data-skill="${k}" title="${SKILL_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${SKILL_ZEICHEN[k]}</span><b>${k === "lp" ? "Leben" : SKILL_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>
-      <div class="kopf"><b>Berufe</b><small>zählen nicht ins Heldenlevel</small></div><ul class="tskills">${BERUFE.map((b) => b.id).map((k) => { const S = skillStand((inventar().berufe || {})[k] || 0);
-      return `<li data-beruf="${k}" title="${BERUF_NAME[k]}: ${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}"><span class="sz">${BERUF_ZEICHEN[k]}</span><b>${BERUF_NAME[k]}</b><span class="lv">${S.L}</span><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><span class="lv nach">${S.L < 100 ? S.L + 1 : "–"}</span></li>`; }).join("")}</ul>`; setzen(); return; }
+  if (tabJetzt === "skills") { const x = skillsLesen(), be = inventar().berufe || {};
+    /* ein Raster ohne Scrollen: Reihe 1 die Kampf-Skills und das Heldenlevel, darunter die Berufe; antippen = XP-Leiste unten, lange drücken = Skillbuch */
+    const kachel = (art: "skill" | "beruf", k: string): string => { const S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0), name = skillName(art, k);
+      return `<button type="button" class="skachel${skillWahl === art + ":" + k ? " an" : ""}" data-${art}="${k}" aria-label="${name} ${S.L}" title="${name}: Level ${S.L}">${art === "skill" ? SKILL_ZEICHEN[k as Skill] : BERUF_ZEICHEN[k]}<em>${S.L}</em><u><i style="width:${S.anteil}%"></i></u></button>`; };
+    let fuss = ""; if (skillWahl) { const [art, k] = skillWahl.split(":") as ["skill" | "beruf", string], S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0);
+      fuss = `<div class="sfuss"><b>${skillName(art, k)} ${S.L}</b><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></div>`; }
+    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${1 + Math.ceil(BERUFE.length / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${heldKachel(heldenlevel(x))}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
+    el.classList.toggle("mitfuss", Boolean(fuss)); setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
   let wahl = ""; if (tabWahl) { const G = GEGENSTAENDE[tabWahl.g], angelegt = !tabWahl.wo.startsWith("r"), n = angelegt ? 1 : menge(Number(tabWahl.wo.slice(1)));
     wahl = `<div class="twahl"><b>${G ? G.name : ""}${n > 1 ? " ×" + n : ""}</b><span class="reihe"><button type="button" data-t="untersuchen">Untersuchen</button>${angelegt ? `<button type="button" class="haupt" data-t="ablegen">Ablegen</button>` : `${inventarAmServer() ? `<button type="button" data-t="fallen">Fallen lassen</button>` : ""}${G && G.platz ? `<button type="button" class="haupt" data-t="anlegen">Anlegen</button>` : ""}`}<button type="button" data-t="weg" aria-label="Auswahl schließen">✕</button></span></div>`; }
   if (tabJetzt === "rucksack") neu = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
   else neu = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
-    <div class="tplaetze">${PLAETZE.map((p) => `<div class="tplatz">${feld(inv.angelegt[p.id], p.id, p.id)}<small>${p.name}</small></div>`).join("")}</div>${wahl || `<p class="klein">Antippen: untersuchen oder ablegen · i: Werte der Ausrüstung</p>`}`;
+    <div class="kreuz">${heldKachel(heldenlevel(skillsLesen()))}${PLAETZE.map((p) => feld(inv.angelegt[p.id], p.id, p.id)).join("")}</div>${wahl}`;
   if (!setzen()) return;
   el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
 function tabKlick(e: Event): void {
@@ -405,8 +419,7 @@ function tabKlick(e: Event): void {
   if (tabJetzt === "stil") { const b = t.closest<HTMLElement>("[data-s],[data-auto]"); if (!b) return; if (b.dataset.s) stilSetzen(kampfartJetzt(), Number(b.dataset.s)); else autoSetzen(!autoLesen()); tabZeichnen(); return; }
   { const b = benutzt(); if (b && tabJetzt === "rucksack") { const f2 = t.closest<HTMLElement>(".ifeld"); if (f2) { benutzen(null); if (f2.dataset.wo !== b.wo && f2.dataset.g) zusammensetzen(b.g, f2.dataset.g); tabZeichnen(); return; } } }
   const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); return; } /* Gegenstand kurz antippen: erste Aktion (Ausrüsten / Ablegen / Untersuchen) */
-  const sk = t.closest<HTMLElement>("[data-skill]"); if (sk) { skillInfo(sk.dataset.skill as Skill); return; }
-  const be = t.closest<HTMLElement>("[data-beruf]"); if (be) { skillFuehrer(be.dataset.beruf!, BERUF_TEXT[be.dataset.beruf!]); return; } /* Skill-Übersicht wie in OSRS (skillfuehrer.ts) */
+  { const sk = t.closest<HTMLElement>("[data-skill],[data-beruf]"); if (sk) { const id = sk.dataset.skill ? "skill:" + sk.dataset.skill : "beruf:" + sk.dataset.beruf; skillWahl = skillWahl === id ? null : id; tabZeichnen(); return; } } /* kurz antippen: XP-Leiste unten auf/zu */
   const a = t.closest<HTMLElement>("[data-t]")?.dataset.t; if (!a) return;
   if (a === "werte") { ausruestungsWerte(); return; }
   const w = tabWahl; if (!w) return; const G = GEGENSTAENDE[w.g];
@@ -417,18 +430,47 @@ function tabKlick(e: Event): void {
   else if (a === "fallen") { fallenLassen(Number(w.wo.slice(1))); tabWahl = null; }
   tabZeichnen(); }
 const chatHinweis = (t: string) => { const el = tabEl(); const p = el && el.querySelector(".twahl b"); if (p) p.textContent = t; };
-/** Overlay in der Mitte: die Werte der angelegten Ausrüstung zusammengezählt (nur Gegenstände, ohne Heldenwerte) */
+/* ---------- Werte der Ausrüstung („i“ im Ausrüstungs-Tab), wie „Equip Your Character“ in OSRS ----------
+ * Großes Fenster neben dem Seitenfenster: links die Plätze (antippen = ablegen, lange drücken = Menü), in der Mitte die eigene Figur, rechts die Werte
+ * der Gegenstände zusammengezählt. Dabei wechselt das Seitenfenster auf den Rucksack – so legt man direkt an und sieht die Werte dazu. */
+let werteEl: HTMLElement | null = null;
+const werteNeu = () => werteZeichnen(), werteLageNeu = () => werteLage(), werteEsc = (e: KeyboardEvent) => { if (e.key === "Escape" && werteEl) { e.stopPropagation(); werteZu(); } };
 export function ausruestungsWerte(): void {
-  const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe, z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
-  const ab = { nah: 0, fern: 0, magie: 0 }; for (const G of teile) if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; }
-  const vz = (v: number) => (v < 0 ? "−" + -v : "+" + v), mal = { fern: 0, genau: 0 }; for (const G of teile) if (G.bonus) { mal.fern += G.bonus.fernAngriff || 0; mal.genau += G.bonus.genau || 0; }
-  const angriff: [string, string][] = W ? [["Kampfart", W.art === "nah" ? "Nahkampf" : W.art === "fern" ? "Fernkampf" : "Magie"],
-    ...(W.art === "nah" ? [["Geschick", "+" + (W.geschick || 0)], ["Stärke", "+" + (W.staerke || 0)]] as [string, string][] : W.art === "fern" ? [["Fernkampf-Angriff", "+" + (W.fernAngriff || 0)], ["Fernkampf-Stärke", "+" + (W.fernStaerke || 0)]] as [string, string][] : [["Magische Genauigkeit", "+" + (W.genau || 0)], ["Magie-Stärke", "+" + (W.magieStaerke || 0)]] as [string, string][]),
-    ["Angriffstempo", `${W.ticks} Ticks (${z(W.ticks * TICK)} s)`], ["Reichweite", W.art === "nah" ? "Nahkampf" : z(W.reich) + " Felder"]] : [["Waffe", "keine (Fäuste)"]];
-  const liste = (z: [string, string][]) => `<dl class="iwerte">${z.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
-  tafel("taschen eigen ausruestungswerte", `<h2>Werte der Ausrüstung</h2><div class="zier"></div><p class="klein">${teile.length ? teile.map((G) => G.name).join(" · ") : "Nichts angelegt"}</p>
-    <h3>Angriff</h3>${liste(angriff)}${mal.fern || mal.genau ? `<h3>Rüstung auf den Angriff</h3>${liste([...(mal.fern ? [["Fernkampf-Angriff", vz(mal.fern)]] : []), ...(mal.genau ? [["Magische Genauigkeit", vz(mal.genau)]] : [])] as [string, string][])}` : ""}<h3>Verteidigung</h3>${liste([["Nahkampf", vz(ab.nah)], ["Fernkampf", vz(ab.fern)], ["Magie", vz(ab.magie)]])}
-    <p class="klein">Nur die Gegenstände – deine Skills (Geschick, Defense, Magie …) kommen im Kampf noch dazu.</p>`, () => { /* schließen */ }); }
+  if (!aktiverHeld()) return; if (tabJetzt !== "rucksack") seitenTab("rucksack"); werteZu();
+  const el = document.createElement("aside"); el.id = "ez-wertefenster"; el.className = "wertefenster ausruestungswerte"; el.setAttribute("aria-label", "Werte der Ausrüstung"); document.body.appendChild(el); werteEl = el;
+  for (const t of ["pointerdown", "keydown", "keyup", "wheel"]) el.addEventListener(t, (e) => e.stopPropagation());
+  langDruecken(el, (e) => { const f = (e.target as HTMLElement | null)?.closest<HTMLElement>(".ifeld.voll"); if (!f) return false; dingMenue(f.dataset.wo!, f.dataset.g!, e.clientX, e.clientY); return true; });
+  el.addEventListener("click", (e) => { e.stopPropagation(); const t = e.target as HTMLElement; if (t.closest("[data-wzu]")) { werteZu(); return; }
+    const f = t.closest<HTMLElement>(".ifeld.voll"); if (f) { const d = dingAktionen(f.dataset.wo!, f.dataset.g!); if (d && d.a[0]) d.a[0].tat(); } }); /* kurz antippen: erste Aktion (Ablegen) */
+  addEventListener("ez-inventar", werteNeu); addEventListener("ez-skills", werteNeu); addEventListener("resize", werteLageNeu); addEventListener("keydown", werteEsc, true);
+  werteZeichnen(); werteLage(); }
+function werteZu(): void { if (!werteEl) return; werteEl.remove(); werteEl = null;
+  removeEventListener("ez-inventar", werteNeu); removeEventListener("ez-skills", werteNeu); removeEventListener("resize", werteLageNeu); removeEventListener("keydown", werteEsc, true); }
+/** Lage: rechts neben dem Seitenfenster bis vor die rechte Leiste, unten bündig mit dem Seitenfenster (auf dem Handy die ganze Höhe) */
+function werteLage(): void {
+  const el = werteEl, tab = tabEl(); if (!el || !tab) return; const r = tab.getBoundingClientRect(), lr = document.getElementById("ez-leiste-r")?.getBoundingClientRect();
+  const rechts = (lr && lr.width && lr.left > r.right ? lr.left : innerWidth - 8) - 10, links = r.right + 10, b = Math.min(rechts - links, 660), h = Math.min(innerHeight - 16, 420);
+  const oben = innerHeight < 560 ? 8 : Math.max(8, r.bottom - h);
+  Object.assign(el.style, { left: Math.round(links + (rechts - links - b) / 2) + "px", top: Math.round(oben) + "px", width: Math.round(b) + "px", height: Math.round(innerHeight < 560 ? innerHeight - 16 : h) + "px" });
+  el.classList.toggle("eng", innerHeight < 560 || b < 420); el.classList.toggle("ohneplaetze", b < 330); }
+function werteZeichnen(): void {
+  const el = werteEl; if (!el) return; const an = inventar().angelegt, teile = PLAETZE.map((p) => an[p.id]).filter(Boolean).map((g) => GEGENSTAENDE[g!]).filter(Boolean), W = teile.find((G) => G.waffe)?.waffe;
+  const z = (v: number) => String(Math.round(v * 100) / 100).replace(".", ","), vz = (v: number) => (v < 0 ? "−" + -v : "+" + v);
+  const sum = { geschick: 0, staerke: 0, fernAngriff: 0, fernStaerke: 0, genau: 0, magieStaerke: 0 }, ab = { nah: 0, fern: 0, magie: 0 };
+  for (const G of teile) { for (const k of Object.keys(sum) as (keyof typeof sum)[]) sum[k] += ((G.waffe as Record<string, unknown> | undefined)?.[k] as number || 0) + ((G.bonus as Record<string, number> | undefined)?.[k] || 0);
+    if (G.abwehr) { ab.nah += G.abwehr.nah; ab.fern += G.abwehr.fern; ab.magie += G.abwehr.magie; } }
+  const zeile = (k: string, v: number) => `<span>${k}</span><b class="${v < 0 ? "minus" : v === 0 ? "null" : ""}">${vz(v)}</b>`;
+  const werte = `<dl class="wwerte"><dt>Angriff</dt><dd>${zeile("Geschick", sum.geschick)}${zeile("Stärke", sum.staerke)}${zeile("Fernkampf", sum.fernAngriff)}${sum.fernStaerke ? zeile("Fern-Stärke", sum.fernStaerke) : ""}${zeile("Magie", sum.genau)}${sum.magieStaerke ? zeile("Magie-Stärke", sum.magieStaerke) : ""}</dd>
+    <dt>Abwehr</dt><dd>${zeile("Nahkampf", ab.nah)}${zeile("Fernkampf", ab.fern)}${zeile("Magie", ab.magie)}</dd>
+    <dt>Waffe</dt><dd>${W ? `<span>Tempo</span><b>${W.ticks} Ticks</b><span>Reichweite</span><b>${W.art === "nah" || !(W.reich > 0) ? 1 : z(W.reich)}</b>` : `<span>Fäuste</span><b class="null">–</b>`}</dd></dl>`;
+  const feld = (g: string | undefined, p: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}" data-wo="${p}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : PLAETZE.find((x) => x.id === p)!.name + " (leer)"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : `<span class="leer">${PLATZBILD[p]}</span>`}</button>`;
+  const html = `<div class="kopf"><b>Werte der Ausrüstung</b><button type="button" class="tzu" data-wzu="1" aria-label="Schließen">✕</button></div>
+    <div class="wrumpf"><div class="kreuz">${PLAETZE.map((p) => feld(an[p.id], p.id)).join("")}</div><div class="buehne"><img alt="" hidden><small>Held · Level ${heldenlevel(skillsLesen())}</small></div>${werte}</div>`;
+  if ((el as HTMLElement & { _h?: string })._h !== html) { (el as HTMLElement & { _h?: string })._h = html; el.innerHTML = html;
+    el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
+  /* die Figur: angelegte Teile laden kurz nach – darum noch zweimal nachzeichnen */
+  const bild = () => { const img = el.querySelector<HTMLImageElement>(".buehne img"), url = heldGanzbild(); if (img && url) { img.src = url; img.hidden = false; } };
+  bild(); setTimeout(bild, 600); setTimeout(bild, 1800); }
 /** Skills: die vier Skills mit Level und Fortschritt, dazu Heldenlevel, Leben und Abwehr (Kampfregeln v2) */
 export function skillTafel(zu: () => void): void {
   const x = skillsLesen(), hl = heldenlevel(x), k = kampfwerte(x, inventar().angelegt, 1, skillPlus(wirkungenJetzt())), WAS: Record<string, string> = { geschick: "Nahkampf: Trefferwert", staerke: "Nahkampf: Schaden", fernkampf: "Fernkampf: Trefferwert", magie: "Magie: Trefferwert, Schaden und 70 % der Magieabwehr", lp: "Max-LP = Level (Start 10) · 1,33 XP je Schadenspunkt", defense: "Abwehr gegen alle Angriffe (gegen Magie zu 30 %)" };
