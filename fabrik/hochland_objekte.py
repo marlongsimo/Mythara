@@ -7,6 +7,8 @@ Bergwerk: stolleneingang (Felsportal mit Grubenholz-Rahmen, dunkler Schacht, Lat
 Alm:      kaeserad (Käserad auf einem Brett, ein Stück angeschnitten; Deko, auch als Rucksackbild für einen Käselaib)
 Pass:     steinbruecke (Bogenbrücke aus Steinblöcken, 7 m, Nord–Süd) · steinbruecke_ow (dieselbe, Bogen 6,6 m, West–Ost – Brücke zur Furt) · pass_schranke (Schlagbaum mit Gegengewicht und Pfosten, rot-weiß) ·
           gipfelkreuz (Holzkreuz auf Steinsockel) · steinmann (aufgeschichtete Steine)
+Brücke (Baukasten West–Ost, #153): bruecke_mitte_ow (6,6 m, ebene Fahrbahn auf 1,4 m, 3 m breit, Mittelpfeiler mit Eisbrechern, je ein halber Bogen –
+          Scheitel an den Stoßkanten, nahtlos aneinander) · bruecke_kopf_w / bruecke_kopf_o (Rampe vom Ufer auf die Fahrbahn, Torpfosten; West mit Laternen)
 Teil:     grubenhelm (Lederkappe mit Messinglampe vorn – Kopfteil der Bergleute, art "kopf", Rand bei z = 0)
 """
 import math, os, random, sys
@@ -97,6 +99,47 @@ elif ART in ("steinbruecke", "steinbruecke_ow"):
     for sy in (-1, 1): wuerfel((0, sy * (SP_ / 2 + 0.1), 0.15), (2.8, 0.6, 0.3), STEIN2, fase=0.1)
     if ART == "steinbruecke_ow":
         for o_ in list(bpy.context.scene.objects): o_.location = Vector((-o_.location.y, o_.location.x, o_.location.z)); o_.rotation_mode = "XYZ"; o_.rotation_euler.rotate_axis("Z", 0) if False else None; o_.rotation_euler = (o_.rotation_euler.to_matrix().to_4x4().__rmatmul__(__import__("mathutils").Matrix.Rotation(math.radians(90), 4, "Z"))).to_euler()
+elif ART in ("bruecke_mitte_ow", "bruecke_kopf_w", "bruecke_kopf_o"):                           # Baukasten Brücke zur Furt (#153): West–Ost (x), Stücke 6,6 m, nahtlos aneinander
+    LS, BR_, FB, DK = 3.3, 1.5, 1.4, 0.25                                                          # halbe Länge, halbe Fahrbahnbreite, Fahrbahnhöhe (Oberkante), Deckendicke
+    PFL = mat("pflaster", (122, 118, 110), 0.9)
+    def bruestung(x0, x1, z0, z1):                                                                 # Brüstung beidseitig, von x0 (Höhe z0) bis x1 (Höhe z1)
+        for sy in (-1, 1):
+            n_ = max(1, int(round((x1 - x0) / 0.825)))
+            for k in range(n_):
+                xa, xb = x0 + (x1 - x0) * k / n_, x0 + (x1 - x0) * (k + 1) / n_; za, zb = z0 + (z1 - z0) * k / n_, z0 + (z1 - z0) * (k + 1) / n_
+                wuerfel(((xa + xb) / 2, sy * (BR_ + 0.15), (za + zb) / 2 + 0.25), (xb - xa, 0.3, 0.5), STEIN2 if k % 2 else STEIN, (0, -math.atan2(zb - za, xb - xa), 0), 0.04)
+                wuerfel(((xa + xb) / 2, sy * (BR_ + 0.15), (za + zb) / 2 + 0.53), (xb - xa, 0.38, 0.07), STEIN2, (0, -math.atan2(zb - za, xb - xa), 0), 0)   # Abdeckplatte
+    if ART == "bruecke_mitte_ow":
+        wuerfel((0, 0, FB - DK / 2), (2 * LS, 2 * BR_, DK), PFL, fase=0)                           # ebene Fahrbahn, bündig an den Enden
+        for k in range(8): wuerfel((-LS + 0.4125 + k * 0.825, 0, FB + 0.005), (0.8, 2 * BR_ - 0.1, 0.012), STEIN if k % 2 else STEIN2, fase=0)   # Pflasterreihen
+        bruestung(-LS, LS, FB, FB)
+        wuerfel((0, 0, (FB - DK) / 2), (1.0, 2 * BR_ + 0.3, FB - DK), STEIN2, fase=0.04)           # Pfeiler in der Mitte
+        for sy in (-1, 1):                                                                         # Eisbrecher spitz nach Norden und Süden
+            bpy.ops.mesh.primitive_cone_add(vertices=4, radius1=0.72, radius2=0.0, depth=1.2, location=(0, sy * (BR_ + 0.15 + 0.25), 0.55), rotation=(0, 0, math.radians(45)))
+            o = bpy.context.object; o.scale = (0.7, 0.5, 1.0); o.data.materials.append(STEIN)
+        # halbe Bögen links und rechts: Kämpfer am Pfeiler (|x| = 0,5) auf 0,35 m, Scheitel an der Stoßkante (|x| = 3,3) knapp unter der Fahrbahn
+        R_ = 2.8; ZK = FB - DK - 0.12
+        for sx in (-1, 1):
+            for k in range(14):
+                u0, u1 = k / 14, (k + 1) / 14; xa, xb = 0.5 + 2.8 * u0, 0.5 + 2.8 * u1
+                bogen = lambda x: 0.35 + (ZK - 0.35) * math.sqrt(max(0.0, 1 - ((LS - x) / R_) ** 2))
+                za = bogen((xa + xb) / 2); xm = sx * (xa + xb) / 2
+                wuerfel((xm, 0, (za + FB - DK) / 2), (xb - xa + 0.01, 2 * BR_ + 0.3, max(0.02, FB - DK - za)), STEIN if k % 2 else STEIN2, fase=0)   # Zwickelmauer bis unter die Fahrbahn
+                wuerfel((xm, 0, za - 0.06), (xb - xa + 0.01, 2 * BR_ + 0.36, 0.12), STEIN2, fase=0)                                            # Bogenstein
+    else:                                                                                          # Brückenkopf: Rampe vom Ufer (z = 0) auf die Fahrbahn, Widerlager darunter
+        aussen = -1 if ART == "bruecke_kopf_w" else 1                                              # Uferseite: West = -x, Ost = +x
+        for k in range(12):
+            u0, u1 = k / 12, (k + 1) / 12; xa, xb = aussen * LS * (1 - 2 * u0), aussen * LS * (1 - 2 * u1)
+            za, zb = FB * u0, FB * u1; xm, zm = (xa + xb) / 2, (za + zb) / 2
+            wuerfel((xm, 0, zm / 2), (abs(xb - xa) + 0.01, 2 * BR_ + 0.3, max(0.05, zm)), STEIN2 if k % 2 else STEIN, fase=0)                   # Widerlager
+            wuerfel((xm, 0, zm), (abs(xb - xa) + 0.02, 2 * BR_, 0.06), PFL, (0, math.atan2(FB / 12, abs(xb - xa)) * aussen, 0), 0)             # Rampenbelag
+        x_a, x_i = aussen * LS, -aussen * LS
+        bruestung(min(x_a, x_i), max(x_a, x_i), 0.0 if aussen < 0 else FB, FB if aussen < 0 else 0.0)
+        for sy in (-1, 1):                                                                         # Torpfosten am Ufer, im Westen mit Laternen (Wache Grauwacht)
+            wuerfel((x_a - aussen * 0.3, sy * (BR_ + 0.25), 1.0), (0.6, 0.6, 2.0), STEIN2, fase=0.08); wuerfel((x_a - aussen * 0.3, sy * (BR_ + 0.25), 2.05), (0.7, 0.7, 0.12), STEIN, fase=0.1)
+            if ART == "bruecke_kopf_w":
+                rohr((x_a - aussen * 0.3, sy * (BR_ + 0.25), 2.1), (x_a - aussen * 0.3, sy * (BR_ + 0.25), 2.6), 0.03, EIS, 6)
+                wuerfel((x_a - aussen * 0.3, sy * (BR_ + 0.25), 2.72), (0.22, 0.22, 0.28), LICHT, fase=0.15); wuerfel((x_a - aussen * 0.3, sy * (BR_ + 0.25), 2.9), (0.3, 0.3, 0.06), EIS, fase=0.2)
 elif ART == "pass_schranke":
     for sx in (-1, 1): wuerfel((sx * 2.2, 0, 0.6), (0.3, 0.3, 1.2), HOLZ2, fase=0.1)
     rohr((-2.1, 0, 1.0), (2.1, 0, 1.0), 0.07, mat("weiss", (232, 228, 220), 0.6), 10)
