@@ -81,6 +81,8 @@ Zuletzt aktualisiert: 26.11.2026.
 - **HUD überarbeiten** (26.11., später am Tag): **ja** – kompakt, einfach, möglichst ohne Scrollen; eigener Chat „Oberfläche“, Regeln `doku/konzepte/hud.md`. Die neuen Symbole (#30/#32/#33) bleiben. (Die Gold-UI-Vorlagen von vorher sind kein Muss.) **Nichts einfach so ändern:** jede Oberflächen-Änderung zuerst als Vorschau zeigen und mit dem Nutzer gemeinsam ausarbeiten.
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
 
+- **Gegner-Modelle für spätere Gebiete** (27.11.): Der Nutzer hat die 10 fehlenden Gegner als Blender-Dateien geliefert (Steppenwolf, Ockerhyäne, Hochlandwidder, Hochlandbär, Klippenadler, Bergtroll, Tundraelch, Frostwolf, Drakling, Eisgolem). Sie dienen auch als **Vorlagen für spätere Gegner**. Der **Drakling kann nicht fliegen** (Bodengegner).
+
 ## Für später (Ideen, noch nicht geplant)
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
