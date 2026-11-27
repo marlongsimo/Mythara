@@ -85,6 +85,7 @@ TESTS=(
   bosse-116
   boss-quest-machbar
   hueter
+  gegner-stufe
   zunft-rohstoffe
   zunft
   bank-orte

@@ -6,7 +6,7 @@
 import { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, gegnerWerte, NULL_XP, xpFuer, heldenlevel, startAusruestung } from "./sim.gebaut.mjs";
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const G = MONSTER.waldgolem, g = gegnerWerte(G.v2, "nah");
-check(G && G.lp === 30 && G.stufe === 15 && g.maxHit === 5 && g.treffer === (6 + 9) * 64 && G.v2.ticks === 6 && G.aggroBisLevel === 15, `Waldgolem: 30 LP, Level 15, Max Hit ${g.maxHit} (Stärke 36), Angriffswurf ${g.treffer}, 6 Ticks`);
+check(G && G.lp === 30 && G.planStufe === 15 && g.maxHit === 5 && g.treffer === (6 + 9) * 64 && G.v2.ticks === 6 && G.aggroBisLevel === 15, `Waldgolem: 30 LP, Level 15, Max Hit ${g.maxHit} (Stärke 36), Angriffswurf ${g.treffer}, 6 Ticks`);
 check(g.abwehr.fern > g.abwehr.nah && g.abwehr.magie < g.abwehr.nah, `Holz: schwer für Pfeile, leicht für Magie (Abwehr ${g.abwehr.nah}/${g.abwehr.fern}/${g.abwehr.magie})`);
 const K = KARTEN.welt_nordwald; setzeKarte(K, FEIN);
 const X15 = { ...NULL_XP, geschick: xpFuer(13), staerke: xpFuer(14), defense: xpFuer(12), fernkampf: xpFuer(15), magie: xpFuer(15), lp: xpFuer(14) - xpFuer(10) };

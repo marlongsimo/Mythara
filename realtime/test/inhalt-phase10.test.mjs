@@ -18,7 +18,7 @@ const NEU = ["strandkrabbe", "riesenkrabbe", "seevogel", "strandraeuber_saebel",
 
 console.log("\nGegner, Gegenstände, Rezepte");
 check(NEU.every((t) => MONSTER[t] && MONSTER[t].v2 && MONSTER[t].drops), "sieben Gegner mit Werten (v3) und Beute");
-check(NEU.every((t) => MONSTER[t].stufe >= 20 && MONSTER[t].stufe <= 40), "Stufen 20–40 (Lücke zwischen Grenzland und den schweren Regionen)");
+check(NEU.every((t) => MONSTER[t].planStufe >= 20 && MONSTER[t].planStufe <= 40), "Stufen 20–40 (Lücke zwischen Grenzland und den schweren Regionen)");
 check(NEU.flatMap((t) => MONSTER[t].drops.flatMap((R) => R.wurf.map((w) => w.g))).every((g) => g.startsWith("@") || GEGENSTAENDE[g]), "alle Beute-Gegenstände gibt es");
 check(NEU.every((t) => MONSTER[t].drops.every((R) => R.wurf.reduce((a, w) => a + w.chance, 0) <= 100.0001)), "je Wurf höchstens 100 %");
 check([["hering", 20], ["klippenbarsch", 35], ["seeaal", 45]].every(([a, l]) => FISCHE[a]?.level === l && FANGGRUENDE.some((g) => g.art === a) && rezept(`fisch_${a}_gebraten`) && VERBRAUCH[`fisch_${a}_gebraten`] && GEGENSTAENDE[`fisch_${a}_roh`]), "Hering 20, Klippenbarsch 35, Seeaal 45: Fanggründe, braten, essen");
