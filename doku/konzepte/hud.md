@@ -8,7 +8,7 @@ Zuständig: Chat **„Riftmere · Oberfläche“** (`rolle:ui`). Die neuen Symbo
 1. **Festes Gerüst, die Mitte bleibt frei.** Alles am Rand: Minikarte oben rechts, Leben/Ausdauer daneben, Menüleiste am Rand, Chat unten links. Nichts schwebt frei, nichts überlappt.
 2. **Ein Fensterplatz.** Rucksack, Ausrüstung, Skills, Quests, Freunde, Einstellungen öffnen sich **im selben Kasten** an derselben Stelle (gleiche Größe) – man wechselt nur den Inhalt.
    Große Fenster (Bank, Handel, Läden, Weltkarte) liegen in der Mitte, immer nur eins.
-3. **Kein Scrollen.** Raster und Listen sind so gebaut, dass sie in den Kasten passen (Rucksack 4×7, Skills als Raster, Bank mit Reitern statt langer Liste). Wird es eng: Symbole kleiner, nicht scrollen.
+3. **Kein Scrollen – und nie seitlich.** (Nutzer, 27.11.: nirgends horizontal scrollen; wenn es gar nicht anders geht, nur von oben nach unten.) Raster und Listen sind so gebaut, dass sie in den Kasten passen (Rucksack 4×7, Skills als Raster, Bank mit Reitern statt langer Liste). Wird es eng: Symbole kleiner, nicht scrollen.
    Ausnahme nur, wo es wirklich nicht geht (Chatverlauf, lange Questtexte) – dort schlicht und deutlich.
 4. **Wenige Farben.** Ein Rahmenstil für alles (Gold auf Dunkel). Gold = Rahmen und Text, Farbe = Zustand (rot Leben, gelb Ausdauer, blau/violett Splitter, grün „bereit/angenommen“).
 5. **Verzierung nur im Titel.** Keine Glüh-, Verlaufs- oder Lorbeer-Effekte im Fensterinhalt; Glühen nur am gerade gewählten Feld.
