@@ -95,6 +95,9 @@ Zuletzt aktualisiert: 26.11.2026.
 
 - **Glutsteinschild** (27.11.): seltener Schild (Nebenhand), Anforderung **Defense 40**, Abwehr **34/34/−1** (zwischen Stufe 35 und 45), als **einziger Schild mit Angriffsboni: +5 Geschick, +3 Stärke**; **Drop der Sandmutter** (starke Fassung nach F3, etwa 1 : 100), handelbar. Modell vom Nutzer.
 
+- **Hauptstädte und Zunfthäuser** (27.11.): Hauptstadt Norden **Steinhag**, Süden **Kielmund** – beide auf große Hauptstädte ausbauen (Mauern, Wahrzeichen, Viertel, 2 Banken, viele Läden); **Zunfthäuser** ab Berufsstufe, **Bergbau unterirdisch**; **jede etwas größere Stadt hat mindestens einen Bankschalter**. Konzept `doku/konzepte/hauptstaedte.md`.
+- **Skills-Fenster** (27.11.): Kachel **Heldenlevel** entfernen, wieder **2 Reihen**.
+
 ## Für später (Ideen, noch nicht geplant)
 - **Minispiel für bessere Ausrüstung** (Idee des Nutzers, 27.11., nur im Hinterkopf): Teile mit Zusatzboni je Kampfstil – **Nahkampf: Stärke-Bonus**, **Fernkampf: Fernkampf-Stärke**, **Magie: % Magieschaden** (neu, gibt es heute nicht). Vorschlag Leitstelle: als Gegenstück zur Rissgrube ein **Punkte-Minispiel** (z. B. „Die Passwacht hält“, Verteidigung in Wellen mit Toreparatur über Berufe), Teile **gegen Punkte** statt als Glücks-Drop; eigene Hülle (keine Kopie anderer Spiele).
 - **Rissgrube** (PvM-Minispiel, Idee für später, 27.11.): Weg zu den Uralt-Teilen (Stufe 75) als seltener Drop, Ziel-Kampfstufe 80, 5 Kammern mit Echos und Rissherz, Riss-Segen, Risstruhe; **kein Pech-Schutz**; **hinter einer Quest gesperrt** (Lohn: Zugang + Teleport-Objekt); **Bank im Rissvorraum**; **allein und in Gruppen (2–4)**; Namen passen; die Uralt-Teile legt der Nutzer selbst fest. Konzept `doku/konzepte/rissgrube.md`.
