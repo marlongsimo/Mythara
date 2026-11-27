@@ -73,7 +73,7 @@ try {
   const zeilen = await anna.evaluate(() => [...document.querySelectorAll("#ez-queststab .qzeile")].map((b) => b.textContent + ":" + b.className));
   check(zeilen.some((z) => /^Der stille Rain:.*aktiv/.test(z)), `Quest-Tab: ${zeilen.join(" · ")}`);
   await anna.click('#ez-queststab .qzeile[data-quest="osthof_der_stille_rain"]'); await anna.waitForTimeout(400);
-  const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); return t ? { jetzt: (t.querySelector(".qschritte .jetzt") || {}).textContent || "", start: (t.querySelector(".qstart") || {}).textContent || "" } : null; });
+  const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); return t ? { jetzt: (t.querySelector(".qjetzt") || {}).textContent || "", start: (t.querySelector(".qrechts") || {}).textContent || "" } : null; });
   check(d && /\(1\/3\)/.test(d.jetzt) && /\(0\/4\)/.test(d.jetzt) && /Brida/.test(d.start), `Details: ${d && d.jetzt}`);
   await anna.click("#ez-konto .tafel.questinfo [data-qv]"); await anna.waitForTimeout(600); await anna.keyboard.press("Escape");
   const pf = await anna.evaluate(() => { const z = window.EZW.welt3d.quest.ziel(); return z && [z.x, z.y]; });
@@ -96,7 +96,7 @@ try {
         W.menueBei(p.x, p.y); await new Promise((r) => setTimeout(r, 200)); const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((d) => /Mooshocker/.test(d.textContent)), b = k && k.querySelector(".lv");
         const t = { kopf: k ? k.textContent : null, farbe: b ? b.style.color : "" }; document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); return t; } }
     return null; });
-  check(lv && lv.farbe && /Level 1/.test(lv.kopf || ""), `Langes Drücken neben einen Mooshocker: „${lv && lv.kopf}“, Level eingefärbt (${lv && lv.farbe})`);
+  check(lv && lv.farbe && /Lvl 1/.test(lv.kopf || ""), `Langes Drücken neben einen Mooshocker: „${lv && lv.kopf}“, Level eingefärbt (${lv && lv.farbe})`);
   await anna.keyboard.press("Escape").catch(() => {});
   /* #63: Odo ansprechen – der Held bleibt ein Feld vor ihm stehen (nicht auf seinem Feld), schaut zu ihm, das Gespräch öffnet sich */
   { await anna.keyboard.press("Escape").catch(() => {});

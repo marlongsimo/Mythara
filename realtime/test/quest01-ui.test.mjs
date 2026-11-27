@@ -70,7 +70,7 @@ try {
   { const z = await anna.evaluate(() => { const b = document.querySelector("#ez-queststab .qzeile"); return b ? { text: b.textContent, klasse: b.className, zeilen: Math.round(b.getBoundingClientRect().height / parseFloat(getComputedStyle(b).lineHeight || "20")) <= 2, hell: getComputedStyle(b).color } : null; });
     check(z && z.text === "Die gesperrte Straße" && /aktiv/.test(z.klasse), `Quest-Tab: nur der Titel in einer Zeile, gestartet = dunkel mit heller Schrift (${JSON.stringify(z)})`); }
   await anna.click("#ez-queststab .qzeile"); await anna.waitForTimeout(400);
-  { const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); if (!t) return null; return { vor: /Voraussetzungen\s*Keine/.test(t.textContent), jetzt: (t.querySelector(".qschritte .jetzt") || {}).textContent || "", erledigt: t.querySelectorAll(".qschritte .erledigt").length, knopf: (t.querySelector("[data-qv]") || {}).textContent || "" }; });
+  { const d = await anna.evaluate(() => { const t = document.querySelector("#ez-konto .tafel.questinfo"); if (!t) return null; return { vor: /Voraussetzungen\s*Keine/.test(t.textContent), jetzt: (t.querySelector(".qjetzt") || {}).textContent || "", erledigt: t.querySelectorAll(".qschritte li").length, knopf: (t.querySelector("[data-qv]") || {}).textContent || "" }; });
     check(d && d.vor && /Bürgermeister von Waldmark braucht Hilfe/.test(d.jetzt) && d.erledigt === 0 && /Verfolgen/.test(d.knopf), `Kurz antippen: Details auf Pergament – Voraussetzungen, aktueller Schritt, „Verfolgen“ oben rechts (${JSON.stringify(d)})`); }
   if (BILD) await anna.screenshot({ path: BILD + "quest-details.png" });
   await anna.click("#ez-konto .tafel.questinfo [data-qv]"); await anna.waitForTimeout(500);
