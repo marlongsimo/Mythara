@@ -114,10 +114,13 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   const WG = angelegt.waffe ? GEGENSTAENDE[angelegt.waffe] : undefined, passiv = extra.geladen && WG && WG.passiv ? { id: WG.passiv.id, chance: WG.passiv.chance } : undefined; /* #151: geladen wirkt die Passive statt × 1,1 */
   const lade = extra.geladen && W !== FAEUSTE && !passiv ? 1 + WAFFE_LADUNG_PLUS : 1, wb = (v: number | undefined) => Math.round((v || 0) * lade); /* geladene Waffe: ihre Boni × 1,1 */
   const aus = { geschick: wb(W.geschick), staerke: wb(W.staerke), fernAngriff: wb(W.fernAngriff), fernStaerke: wb(W.fernStaerke), genau: wb(W.genau), magieStaerke: wb(W.magieStaerke) };
-  const ab: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; /* Verteidigungsboni der Ausrüstung je Angriffsart */
+  const ab: Record<Art, number> = { nah: 0, fern: 0, magie: 0 }; /* Verteidigungsboni der Ausrüstung je Angriffsart */ let magieSchaden = 0;
   for (const pl of ["waffe", "kopf", "nebenhand", "brust", "beine"] as Platz[]) { /* auch die Waffe: Zweihänder und Speer haben eine kleine eigene Abwehr */ const G = angelegt[pl] && GEGENSTAENDE[angelegt[pl]!]; if (!G) continue;
     if (G.abwehr) for (const a of ["nah", "fern", "magie"] as Art[]) ab[a] += G.abwehr[a];
-    if (G.bonus) for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += G.bonus[k] || 0; }
+    if (G.bonus) { for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += G.bonus[k] || 0; magieSchaden += G.bonus.magieSchaden || 0; } }
+  /* #160: Set-Boni (alle Teile eines Satzes angelegt): Stärke, Fernkampf-Stärke, % Magieschaden */
+  const sets = aktiveSets(Object.values(angelegt));
+  for (const S0 of sets) if (S0.bonus) { for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += S0.bonus[k] || 0; magieSchaden += S0.bonus.magieSchaden || 0; }
   /* OSRS: Verteidigungswurf = effektives Defense-Level × (Bonus + 64); gegen Magie zählt 70 % Magie-Level und 30 % effektive Defense */
   const effDef = lv.defense + p("defense") + 8;
   const abwehr: Record<Art, number> = { nah: wurfWert(effDef, ab.nah), fern: wurfWert(effDef, ab.fern), magie: wurfWert(Math.floor(0.7 * lv.magie) + Math.floor(0.3 * effDef), ab.magie) };
@@ -125,9 +128,9 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   /* OSRS: Angriffswurf = (Level + Stilbonus + 8) × (Angriffsbonus + 64) */
   if (W.art === "nah") { angriff.nah = wurfWert(lv.geschick + p("geschick") + 8, aus.geschick); schaden = [1, maxHit(lv.staerke, p("staerke"), aus.staerke)]; }
   else if (W.art === "fern") { angriff.fern = wurfWert(lv.fernkampf + p("fernkampf") + 8, aus.fernAngriff); schaden = [1, maxHit(lv.fernkampf, p("fernkampf"), aus.fernStaerke)]; }
-  else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, maxHitMagie(lv.magie, p("magie"), aus.magieStaerke)]; }
+  else { angriff.magie = wurfWert(lv.magie + p("magie") + 8, aus.genau); schaden = [1, Math.round(maxHitMagie(lv.magie, p("magie"), aus.magieStaerke) * (1 + magieSchaden / 100))]; /* #160: % Magieschaden auf den Max Hit (gerundet, damit +2 % schon ab Max Hit 25 zählen) */ }
   return { angriff, abwehr, waffe: { art: W.art, schaden, plus, bonus: 0, ticks, takt: ticks * TICK, reich, ...(W.flug ? { flug: W.flug } : {}), ...(W.gegen ? { gegen: { ...W.gegen } } : {}), ...(W.art === "fern" ? { geschoss: angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].art === "Armbrust" ? "bolzen" as const : "pfeil" as const } : {}) }, stil: s, max: maxLp(x.lp), heldenlevel: hl, skills: { ...NULL_XP, ...x },
-    ...(lade > 1 || passiv ? { geladen: true } : {}), ...(passiv ? { passiv } : {}), ...(extra.bemerken !== undefined && extra.bemerken !== 1 ? { bemerken: extra.bemerken } : {}), ...(() => { const S0 = aktiveSets(Object.values(angelegt))[0]; return S0 ? { set: { ...S0.heilung } } : {}; })() };
+    ...(lade > 1 || passiv ? { geladen: true } : {}), ...(passiv ? { passiv } : {}), ...(extra.bemerken !== undefined && extra.bemerken !== 1 ? { bemerken: extra.bemerken } : {}), ...(() => { const S0 = sets.find((s) => s.heilung); return S0 ? { set: { ...S0.heilung! } } : {}; })() };
 }
 /** Schaden eines Treffers: ganzzahliger Wurf 1 … Max Hit (z = Zufall 0…1); plus ist seit der Magie-Max-Hit-Formel immer 0 */
 export function schadenWurf(w: Kampfwerte["waffe"], z: number): number { const r = w.schaden[0] + Math.floor(z * (w.schaden[1] - w.schaden[0] + 1));

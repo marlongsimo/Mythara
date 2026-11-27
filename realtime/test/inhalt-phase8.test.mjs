@@ -38,9 +38,9 @@ setzeKarte(KARTEN.welt_nordwald, FEIN);
 console.log("\nE-Quests (#118): Gegenstände, Rezepte, Abteiküche, Grablichter");
 check(["othmars_brief", "barren_glockenbronze", "glocke_neu", "tjarks_eid", "hammelfleisch", "hammeleintopf", "grablicht"].every((g) => GEGENSTAENDE[g] && (GEGENSTAENDE[g].bild || GEGENSTAENDE[g].symbol)), "sieben neue Gegenstände mit Bild (Fleisch als einziger neuer Rohstoff)");
 { const B = rezept("glockenbronze"), G = rezept("glocke"), K = rezept("kloeppel"), H = rezept("hammeleintopf");
-  check(B.station === "esse" && B.level === 45 && B.quest === "grauwacht_die_glocke" && G.station === "herd" && G.zutaten[0].n === 4 && G.ergebnis === "glocke_neu" && K.station === "hand" && K.zutaten[0].g[0] === "stamm_kernbaum" && K.quest === G.quest,
-    "E2: Glockenbronze (Esse, Schmieden 45), Glocke (Herd der Abtei, 4 Barren), Klöppel aus Kernbaum – nur in der Quest");
-  check(H.station === "herd" && H.level === 30 && !H.quest && WERKSTAETTEN.filter((w) => /_abtei$/.test(w.id)).every((w) => w.schalter === "grauwacht_abtei"), "Hammeleintopf (Herd, Kochen 30) · Herd und Kessel der Abteiküche ab Stadtstufe „abtei“"); }
+  check(B.station === "esse" && B.level === 45 && B.quest === "grauwacht_die_glocke" && G.station === "herd" && G.beruf === "schmieden" && G.zutaten[0].n === 4 && G.ergebnis === "glocke_neu" && K.station === "hand" && K.zutaten[0].g[0] === "stamm_kernbaum" && K.quest === G.quest,
+    "E2: Glockenbronze (Esse, Schmieden 45), Glocke (Herd der Abtei, 4 Barren, zählt zum Schmieden – #156), Klöppel aus Kernbaum – nur in der Quest");
+  check(H.station === "herd" && H.level === 30 && !H.quest && H.zutaten.some((z) => z.g.includes("ringelblume")) && WERKSTAETTEN.filter((w) => /_abtei$/.test(w.id)).every((w) => w.schalter === "grauwacht_abtei"), "Hammeleintopf (Herd, Kochen 30, mit Ringelblume – #156) · Herd und Kessel der Abteiküche ab Stadtstufe „abtei“"); }
 { const HG = SEELENLICHTER.filter((l) => /^hg_grab_/.test(l.id)); I.BEDINGUNGEN.set(LI.GRABLICHT_BEDINGUNG, (n) => n === "ida");
   await I.inventarLaden(async (p) => (p.includes("rpg_held?") ? [{ waffe: "schwert", inventar: { angelegt: {}, v: 2, rucksack: [] } }] : null), "ida");
   check(HG.length === 5 && HG.every((l) => l.art === "grablicht"), "fünf Grablichter an den Hügelgräbern von Grauwacht");

@@ -8,6 +8,7 @@
  * Alle Koordinaten sind Weltfelder wie in der 2D-Welt und auf dem Server (x Osten, z = y der Welt nach Süden, Höhe nach oben).
  */
 import { daecherAus } from "../skills";
+import GELAENDE from "../../../welt/bibliothek/gelaende.json";
 import * as THREE from "three";
 import { bauen, gebaeudeDrehen, type Bauplan, type Gebaeude } from "./bauten";
 import { drehe } from "../../../shared/welt/bau";
@@ -20,7 +21,7 @@ import { REISENDE } from "../../../shared/reisende";
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
   typen: Typ[]; bauplaene: Record<string, Bauplan>; chunks: string[] };
-type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?, number?][]; /* …, Ausbau-Marke, Drehung in Grad (#148) */
+type ChunkDaten = { cx: number; cy: number; region: string; ebene: string; /** oberwelt, untergrund, innen – #164: draussen (eigenes Gebiet unter freiem Himmel, Horst) */ art?: string; boden: string[]; geh: string[]; hoehe: number[]; dinge: [number, number, number, number, number, string?, number?][]; /* …, Ausbau-Marke, Drehung in Grad (#148) */
   figuren: { figur: string; x: number; y: number }[]; interaktionen: unknown[] };
 type Stueck = { d: ChunkDaten; obj: THREE.Object3D[]; bauten: Gebaeude[]; boden: THREE.Mesh | null; gebaut: boolean; /** Bauschritt im Spiel (1 Gelände, 2 Dinge, 3 Figuren) */ stufe?: number; feuer: THREE.Vector3[]; /** 3D-Dorfbewohner (stehend und umherlaufend) */ npcs?: Npc3D[]; wanderer?: Wanderer[]; /** begehbare Wasserbauten (Brücke, Wehr): [x0, z0, x1, z1, Höhe] */ stege: number[][];
   /** #103: Gebäude, die noch gebaut werden (eins je Bild); Bäume nah (volle Form) und fern (einfache Form) */ plaene?: [number, number, number, number][]; lod?: { nah: THREE.Object3D[]; fern: THREE.Object3D[] } };
@@ -76,6 +77,8 @@ function wasserMaterial(farbe: number, deck: number, tempo: number) {
       #include <opaque_fragment>`); };
   return m; }
 const WASSER = wasserMaterial(0x2c6680, 0.9, 1), MOORWASSER = wasserMaterial(0x26342c, 0.94, 0.35);
+FARBE.i = FARBE.i || "#c7e5f6"; FARBE.I = FARBE.I || "#8cbbe0"; FARBE.wolke = "#e4ecf3"; /* #164: Eisboden der Frostwitwe, Wolken um den Horst */
+for (const A of (GELAENDE as { arten: { zeichen: string; farbe?: string }[] }).arten) if (A.farbe && !FARBE[A.zeichen]) FARBE[A.zeichen] = A.farbe; /* #164: neue Geländearten der Welt ohne Code-Änderung (eigene Farben oben gehen vor) */
 const FARBEN = new Map<string, THREE.Color>(Object.entries(FARBE).map(([k, v]) => [k, new THREE.Color(v)]));
 const farbe = (z: string) => FARBEN.get(z) || FARBEN.get(".")!;
 
@@ -89,7 +92,7 @@ export class Welt3D {
   st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0; private naechsterAnlegen = 0;
   held = { x: 0, z: 0, blick: 1, lauf: 0 }; /** Reisende (Südstraße #126, Erzweg Phase 11) – je Reise angelegt, sobald der Held in die Nähe ihres Weges kommt */ reisende: ReisenderFigur[] | null = null; private reiseDa = new Set<string>(); /** Tiere zur Stimmung (Phase 11), je Platz angelegt */ tiere: TierFigur[] = []; private tierDa = new Set<string>(); pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
-  ebene = "";
+  ebene = ""; art = "oberwelt";
   feuerLichter: THREE.PointLight[] = [];
   bilder = new THREE.TextureLoader(); bildMat = new Map<string, THREE.SpriteMaterial>(); bildTex = new Map<string, THREE.Texture>();
 
@@ -183,9 +186,9 @@ export class Welt3D {
 
   /* ───────── Gelände eines Chunks ───────── */
   gelaende(s: Stueck) {
-    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt";
+    const d = s.d, W = C + 3, x0 = d.cx * C, y0 = d.cy * C, unten = d.ebene !== "oberwelt" && d.art !== "draussen", wolken = d.art === "draussen";
     const z = (tx: number, ty: number) => d.boden[ty + 1]?.[tx + 1] ?? " ", h = (lx: number, ly: number) => d.hoehe[(ly + 1) * W + lx + 1] / 100;
-    const unter = (q: string) => (AUFLAGE.has(q) ? "." : q);
+    const unter = (q: string) => (AUFLAGE.has(q) ? "." : wolken && (q === "X" || q === " ") ? "wolke" : q); /* #164: um den Horst Wolken statt Schwarz */
     const U: number[][] = []; for (let ly = 0; ly <= C; ly++) for (let lx = 0; lx <= C; lx++) { let r = 0, g = 0, b = 0;
       for (const [dx, dy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]]) { const f = farbe(unter(z(lx + dx, ly + dy))); r += f.r; g += f.g; b += f.b; }
       const j = 1 + (zufall((lx + x0) * 0.7, (ly + y0) * 1.3) - 0.5) * 0.14 + (zufall(Math.floor((lx + x0) / 3), Math.floor((ly + y0) / 3)) - 0.5) * 0.1 + (zufall(Math.floor((lx + x0) / 9), Math.floor((ly + y0) / 9)) - 0.5) * 0.12;
@@ -333,8 +336,8 @@ export class Welt3D {
   klick(px: number, py: number) { const p = this.boden(px, py); if (p && this.beimKlick) this.beimKlick(p.x, p.z); }
 
   /** Licht und Himmel je Ebene: Oberwelt am Tag, Untergrund dunkel mit Fackelschein */
-  stimmung(ebene: string) { if (ebene === this.ebene) return; this.ebene = ebene; const unten = ebene !== "oberwelt", f = this.szene.fog as THREE.Fog;
-    const himmel = new THREE.Color(unten ? "#0e0c0a" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
+  stimmung(ebene: string, art = ebene === "oberwelt" ? "oberwelt" : "untergrund") { if (ebene === this.ebene) return; this.ebene = ebene; this.art = art; const unten = art !== "oberwelt" && art !== "draussen" /* #164: der Horst liegt unter freiem Himmel */, f = this.szene.fog as THREE.Fog;
+    const himmel = new THREE.Color(unten ? "#0e0c0a" : art === "draussen" ? "#cfdeea" : "#b9cfe0"); this.szene.background = himmel; f.color.copy(himmel);
     this.himmelLicht.intensity = unten ? 0.62 : 1.1; this.himmelLicht.color.set(unten ? 0xb09a82 : 0xc6dcff); this.licht.intensity = unten ? 0.35 : 2.9; this.fackel.intensity = unten ? 30 : 0; this.fackel.distance = 20; }
 
   /* ───────── Bild für Bild ───────── */
@@ -360,7 +363,7 @@ export class Welt3D {
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);
-    const hier = this.chunkBei(H.x, H.z); this.stimmung(hier ? hier.d.ebene : this.ebene || "oberwelt"); const unten = this.ebene !== "oberwelt", fog = this.szene.fog as THREE.Fog;
+    const hier = this.chunkBei(H.x, H.z); if (hier) this.stimmung(hier.d.ebene, hier.d.art); else this.stimmung(this.ebene || "oberwelt", this.art); const unten = this.art !== "oberwelt" && this.art !== "draussen", fog = this.szene.fog as THREE.Fog;
     const weit = Math.min((RADIUS + 0.4) * C, unten ? 34 + this.abstand : HANDY ? 42 + this.abstand * 1.2 : 60 + this.abstand * 1.8); fog.far = weit; fog.near = unten ? 6 + this.abstand * 0.4 : weit * 0.45; /* Handy: kürzere Sichtweite */
     { const fern = weit + 10; if (Math.abs(this.kamera.far - fern) > 2) { this.kamera.far = fern; this.kamera.updateProjectionMatrix(); } } /* nichts hinter dem Nebel zeichnen */
     this.licht.position.set(this.ziel.x - 30, this.ziel.y + 55, this.ziel.z + 22); this.licht.target.position.copy(this.ziel); this.fackel.position.set(H.x + 0.4, y + 2.6, H.z + 0.6);
