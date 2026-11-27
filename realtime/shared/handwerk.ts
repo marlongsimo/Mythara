@@ -40,7 +40,9 @@ export const STATIONEN: Record<WeltStation, { id: WeltStation; name: string; x: 
 export const WERKZEUG_AN: Partial<Record<StationId, string>> = { amboss: "hammer" };
 /** Die Werkstätten in der Welt: eine Station kann mehrere Standorte haben (die Werkbank steht auch im Osthof) */
 export interface Werkstatt { id: string; station: WeltStation; x: number; y: number; ort: string; /** nutzbar nur mit diesem Quest-Schalter (shared/quests.ts schalterAn) – sonst dieser Text */ schalter?: string; gesperrt?: string;
-  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number] }
+  /** nur von hier aus bedienbar (Weltfelder x0, y0, x1, y1) – wo das Gehraster die Seite nicht kennt, etwa ein Schuppen, der im Raster ein voller Block ist (#57) */ bereich?: [number, number, number, number];
+  /** #167 Zunft: nutzbar erst ab dieser Berufsstufe (sonst gesperrt) */ beruf?: { id: string; level: number };
+  /** eigener Name statt des Stationsnamens (#167: Schmelzofen und Brennofen arbeiten wie die Esse) */ name?: string }
 export const WERKSTAETTEN: Werkstatt[] = [
   { id: "esse", station: "esse", x: STATIONEN.esse.x, y: STATIONEN.esse.y, ort: "waldmark" },
   { id: "amboss", station: "amboss", x: STATIONEN.amboss.x, y: STATIONEN.amboss.y, ort: "waldmark" },
@@ -210,6 +212,10 @@ fisch("glutwels", 65, 220, "Fisch"); /* Phase 9 (#86): Kochen 65 */
   B("moorfeuer_schwach", 45, 95, [["nebelkraut", 1], ["eisenhut", 1]]); B("nebelschleier_schwach", 50, 105, [["nebelkraut", 1], ["moorgloeckchen", 1]]);
   B("moorfeuer_stark", 55, 120, [["nebelkraut", 2], ["eisenhut", 1]]); B("nebelschleier_stark", 60, 135, [["nebelkraut", 2], ["moorgloeckchen", 1]]);
   B("lindentau_schwach", 65, 150, [["lindenbluete", 1], ["seelenlicht", 1]]); B("lindentau_stark", 70, 170, [["lindenbluete", 2], ["seelenlicht", 1]]);
+  /* #176 Zunft-Tränke aus den Kräutern des Kräutergartens (Mondsalbei 70, Glutwurz 80, Splitterlilie 90) */
+  B("mondsalbei_elixier", 70, 190, [["mondsalbei", 1], ["wegerich", 1]]); B("staerketrank_stark", 75, 210, [["mondsalbei", 1], ["eisenhut", 2]]);
+  B("glutwurz_feuertrank", 80, 240, [["glutwurz", 1], ["nebelkraut", 1]]); B("splittersicht", 85, 270, [["glutwurz", 1], ["seelenlicht", 1]]);
+  B("splitterlilien_trank", 90, 300, [["splitterlilie", 1], ["mondsalbei", 1]]);
   for (const K of KESSEL) WERKSTAETTEN.push({ id: K.id, station: "kessel", x: K.x, y: K.y, ort: K.region }); /* Kräuterhaus Waldmark, Heddas Hütte (Welt #35, #45) */
   dazu({ id: "sichel", station: "werkbank", ergebnis: "sichel", level: 1, zutaten: [{ g: ["stamm_eiche"], n: 1 }, { g: ["barren_kupfer"], n: 1 }], xp: 20, ticks: 4, stufe: 0, gruppe: "Werkzeug" }); }
 /* Süden (#126): Fleisch und Gerichte (Heil-Staffel wie die Fische: 3 · 5 · 7 · 9) */
@@ -222,6 +228,10 @@ fisch("hering", 20, 60, "Fisch"); fisch("klippenbarsch", 35, 100, "Fisch"); fisc
 dazu({ id: "raeucherhering", station: "raeucherhuette", ergebnis: "raeucherhering", level: 25, zutaten: [{ g: ["fisch_hering_roh"], n: 1 }], xp: 70, ticks: 2, stufe: 0, gruppe: "Räuchern", warten: 180 });
 dazu({ id: "barsch_salzkruste", station: "feuer", ergebnis: "barsch_salzkruste", level: 40, zutaten: [{ g: ["fisch_klippenbarsch_roh"], n: 1 }, { g: ["salz"], n: 1 }], xp: 130, ticks: 5, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_klippenbarsch_verbrannt" });
 dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutaten: [{ g: ["fisch_seeaal_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 170, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
+/* #176 Zunft-Fische (nur am Steg der Fischerzunft, Fischen 60): Silberbarsch 70 gebraten, Sturmhecht 80 in Kräuterkruste (Herd), Tiefseeaal 90 als Suppe (Kessel) */
+fisch("silberbarsch", 70, 300, "Fisch");
+dazu({ id: "sturmhecht_kraeuterkruste", station: "herd", ergebnis: "sturmhecht_kraeuterkruste", level: 80, zutaten: [{ g: ["fisch_sturmhecht_roh"], n: 1 }, { g: ["wegerich"], n: 2 }], xp: 360, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_sturmhecht_verbrannt" });
+dazu({ id: "tiefseeaal_suppe", station: "kessel", ergebnis: "tiefseeaal_suppe", level: 90, zutaten: [{ g: ["fisch_tiefseeaal_roh"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 420, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" });
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
@@ -235,7 +245,7 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
    Bindestein und Brunnen; Hohe Alm: Kessel der Käserei, Herd und Brunnen; Bergwerk: Esse, Amboss und Feuer; Feuer an der Passwacht; Kessel an der Einsiedelei
    (Welt d344565a, hochlande_orte.json → stationen) */
 WERKSTAETTEN.push({ id: "esse_steinhag", station: "esse", x: 7002.4, y: 5913.8, ort: "fl_216_183" }, { id: "amboss_steinhag", station: "amboss", x: 7005.4, y: 5913.6, ort: "fl_216_183" },
-  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5915.5, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
+  { id: "werkbank_steinhag", station: "werkbank", x: 7011, y: 5916.6 /* Welt: steinhag_werkbank 7011|5915,4, davor stehen */, ort: "fl_216_183" }, { id: "herd_steinhag", station: "herd", x: 7008.2, y: 5874, ort: "fl_216_183" },
   { id: "kessel_steinhag", station: "kessel", x: 7010.5, y: 5874, ort: "fl_216_183" }, { id: "bindestein_steinhag", station: "bindestein", x: 6996.5, y: 5889.5, ort: "fl_216_183" },
   { id: "brunnen_steinhag", station: "brunnen", x: 6990, y: 5888.35, ort: "fl_216_183" }, { id: "kessel_alm", station: "kessel", x: 7198, y: 6002, ort: "fl_216_183" },
   { id: "brunnen_alm", station: "brunnen", x: 7191, y: 6005.35, ort: "fl_216_183" }, { id: "feuer_passwacht", station: "feuer", x: 6959, y: 5614.6, ort: "fl_216_169" },
@@ -259,9 +269,9 @@ dazu({ id: "glockenbronze", station: "esse", ergebnis: "barren_glockenbronze", l
 /* #156: gegossen wird am Herd der Abtei, es zählt aber zum Schmieden (E2 setzt Schmieden 45 voraus, nicht Kochen) */
 dazu({ id: "glocke", station: "herd", ergebnis: "glocke_neu", level: 45, zutaten: [{ g: ["barren_glockenbronze"], n: 4 }], xp: 300, ticks: 8, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke", beruf: "schmieden" });
 dazu({ id: "kloeppel", station: "hand", ergebnis: "kloeppel", level: 1, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 80, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
-/* #160 (Block H): Almkäse (H2, Herd der Alm) und Grubenholz (H3) – nur über die Quests (QuestDef.sperren.herstellen; der Käse bleibt nach H2 frei, wenn die Quest es so sperrt) */
-dazu({ id: "kaeserad", station: "kessel" /* Käsekessel der Sennerin (kessel_alm) */, ergebnis: "kaeserad", level: 40, zutaten: [{ g: ["ziegenmilch"], n: 3 }], xp: 140, ticks: 6, stufe: 0, gruppe: "Käse", quest: H_QUESTS.h2, verbrannt: "suppe_verbrannt" });
-dazu({ id: "grubenholz", station: "werkbank", ergebnis: "grubenholz", menge: 2, level: 40, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 90, ticks: 4, stufe: 0, gruppe: "Tiefer als erlaubt", quest: H_QUESTS.h3 });
+/* #160 (Block H, Kennungen nach doku/quests/h-bausteine.md): Käselaib (H2, Herd der Alm) und Grubenstempel (H3) – nur über die Quests (QuestDef.sperren.herstellen; der Käse bleibt nach H2 frei, wenn die Quest es so sperrt) */
+dazu({ id: "kaeselaib", station: "herd", ergebnis: "kaeselaib", level: 45, zutaten: [{ g: ["ziegenmilch"], n: 3 }, { g: ["lab"], n: 1 }], xp: 150, ticks: 6, stufe: 0, gruppe: "Käse", quest: H_QUESTS.h2, verbrannt: "suppe_verbrannt" });
+dazu({ id: "grubenstempel", station: "werkbank", ergebnis: "grubenstempel", level: 45, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 90, ticks: 4, stufe: 0, gruppe: "Tiefer als erlaubt", quest: H_QUESTS.h3 });
 dazu({ id: "hammeleintopf", station: "herd", ergebnis: "hammeleintopf", level: 30, zutaten: [{ g: ["hammelfleisch"], n: 1 }, { g: ["ringelblume"], n: 1 } /* #156: Querverbindung 8 – Ringelblume aus den Obstwiesen */, { g: ["krug_wasser"], n: 1 }], xp: 110, ticks: 6, stufe: 0, gruppe: "Eintopf", verbrannt: "suppe_verbrannt" });
 /* D3 „Wels im Trüben“: Herd und Kessel in der Taverne „Zur Furt“ in Graufurt (dorf_taverne_01 wie in der Waldmark), offen für alle */
 WERKSTAETTEN.push({ id: "herd_zur_furt", station: "herd", x: 6698.2, y: 6536, ort: "graufurt" }, { id: "kessel_zur_furt", station: "kessel", x: 6700.5, y: 6536, ort: "graufurt" });

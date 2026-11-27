@@ -9,7 +9,7 @@ export interface Reise { id: string; /** Modell (img/figuren-echt3d) */ datei: s
 export const SUEDSTRASSE: [number, number][] = [[6444.5, 6762], [6450.5, 6840], [6456.5, 6904], [6461.5, 6960], [6466, 7008], [6467.5, 7050], [6470, 7092], [6467, 7160], [6461.5, 7230], [6449.5, 7270], [6439.5, 7286]]; /* Straßenmitte (Welt-Abgleich #126); Halt am Halben Weg auf der Kreuzung, nicht auf dem Wegweiser */
 const HALBER_WEG = 4;
 /** Phase 11: der Weg von Steinhag (Marktplatz) zum Bergwerk am Erzberg (Wegenetz der Welt, welt/hochlande_orte.json) */
-export const ERZWEG: [number, number][] = [[6990, 5901], [7040, 5901], [7048, 5901] /* um die Ecke, nicht über das Haus */, [7060, 5880], [7100, 5850], [7122.5, 5815.5]]; /* Halt vor dem Stollen, neben der Lore */
+export const ERZWEG: [number, number][] = [[6990, 5901], [7040, 5901], [7077, 5901] /* #167: durch das Osttor der Ringmauer */, [7090, 5880], [7100, 5850], [7122.5, 5815.5]]; /* Halt vor dem Stollen, neben der Lore */
 export const REISENDE: Reise[] = [
   /* der Händler mit seinem Karren: steht lange am Rastplatz „Halber Weg“ (Trödler-Platz) */
   { id: "haendler_sued", datei: "npc.haendler_sued", punkte: SUEDSTRASSE, halte: { 0: 30, [HALBER_WEG]: 240, [SUEDSTRASSE.length - 1]: 30 }, tempo: 0.9, versatz: 0, karren: "img/objekte3d/troedler/karren.glb" /* der Karren des Trödlers (#88) */ },

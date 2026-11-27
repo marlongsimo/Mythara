@@ -43,7 +43,7 @@ function bitte(tat: "ein" | "ab", g: string, m: Menge) { const n = stueck(m); if
 const mengeName = (m: Menge) => (m === "alle" ? "Alle" : m === "x" ? `X (${xWert})` : String(m));
 
 /** Das Bankfenster zeigen (vom Schalter oder aus dem Gespräch mit einem Bankmitarbeiter) */
-export function bankZeigen(ort = "Bank der Splitterlande"): void {
+export function bankZeigen(ort = "Bank der Splitterlande", kiste = false /* #167: Bankkiste der Zunft – nur ablegen und abheben */): void {
   if (!inventarAmServer()) { chatSystem(keineBank()); return; }
   offen = true; suche = ""; let aus = () => { /* abmelden */ };
   const f = tafelZeigen("bank", `<h2>${esc(ort)}</h2><div class="zier"></div>
@@ -57,6 +57,7 @@ export function bankZeigen(ort = "Bank der Splitterlande"): void {
   { const kopf = f.querySelector(".bkopf") as HTMLElement, feld = f.querySelector(".bsuche") as HTMLInputElement;
     (f.querySelector(".bsuchknopf") as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); const an = !kopf.classList.contains("sucht"); kopf.classList.toggle("sucht", an);
       if (an) feld.focus(); else if (suche) { suche = ""; feld.value = ""; zeichnen(); } }); }
+  if (kiste) { f.classList.add("kiste"); reiter = 0; const R = f.querySelector(".breiter") as HTMLElement | null; if (R) R.style.display = "none"; } /* #167: Bankkiste – keine Reiter */
   const raster = f.querySelector(".braster") as HTMLElement, rs = f.querySelector(".brucksack") as HTMLElement;
   const zeichnen = () => {
     const inv = inventar(), bank = inv.bank || [], q = suche.trim().toLowerCase();

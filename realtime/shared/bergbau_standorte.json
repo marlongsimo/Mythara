@@ -1777,6 +1777,249 @@
      "region": "fl_216_155"
     }
    ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Halle",
+   "ort": "steinhag",
+   "x": 11872.2,
+   "y": 9646.5,
+   "r": 11,
+   "adern": [
+    {
+     "id": "zunftstollen_eisen_1",
+     "art": "eisen",
+     "x": 11868.5,
+     "y": 9650.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_2",
+     "art": "eisen",
+     "x": 11872.5,
+     "y": 9638.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_3",
+     "art": "eisen",
+     "x": 11875.5,
+     "y": 9650.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Nordstollen",
+   "ort": "steinhag",
+   "x": 11867.5,
+   "y": 9622.7,
+   "r": 18,
+   "adern": [
+    {
+     "id": "zunftstollen_eisen_4",
+     "art": "eisen",
+     "x": 11873.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_5",
+     "art": "eisen",
+     "x": 11870.5,
+     "y": 9630.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_6",
+     "art": "eisen",
+     "x": 11870.5,
+     "y": 9624.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_1",
+     "art": "splittereisen",
+     "x": 11867.5,
+     "y": 9619.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_2",
+     "art": "splittereisen",
+     "x": 11860.5,
+     "y": 9616.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_3",
+     "art": "splittereisen",
+     "x": 11862.5,
+     "y": 9608.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Weststollen",
+   "ort": "steinhag",
+   "x": 11854.2,
+   "y": 9627.5,
+   "r": 16,
+   "adern": [
+    {
+     "id": "zunftstollen_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 11864.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 11858.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 11855.5,
+     "y": 9631.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_4",
+     "art": "schwarzeisen",
+     "x": 11849.5,
+     "y": 9626.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_5",
+     "art": "splittereisen",
+     "x": 11846.5,
+     "y": 9616.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_5",
+     "art": "schwarzeisen",
+     "x": 11850.5,
+     "y": 9617.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Oststollen",
+   "ort": "steinhag",
+   "x": 11892.7,
+   "y": 9619.2,
+   "r": 23,
+   "adern": [
+    {
+     "id": "zunftstollen_sterneisen_1",
+     "art": "sterneisen",
+     "x": 11882.5,
+     "y": 9637.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_2",
+     "art": "sterneisen",
+     "x": 11887.5,
+     "y": 9630.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_3",
+     "art": "sterneisen",
+     "x": 11894.5,
+     "y": 9625.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_4",
+     "art": "sterneisen",
+     "x": 11895.5,
+     "y": 9614.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_ureisen_3",
+     "art": "ureisen",
+     "x": 11895.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_5",
+     "art": "sterneisen",
+     "x": 11900.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Urkammer",
+   "ort": "steinhag",
+   "x": 11858.2,
+   "y": 9605.5,
+   "r": 6,
+   "adern": [
+    {
+     "id": "zunftstollen_ureisen_1",
+     "art": "ureisen",
+     "x": 11854.5,
+     "y": 9606.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_ureisen_2",
+     "art": "ureisen",
+     "x": 11858.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_4",
+     "art": "splittereisen",
+     "x": 11861.5,
+     "y": 9606.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern vor dem Osttor",
+   "ort": "steinhag_osttor",
+   "x": 7105.7,
+   "y": 5891.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_vor_dem_osttor_eisen_1",
+     "art": "eisen",
+     "x": 7108.5,
+     "y": 5892.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_vor_dem_osttor_eisen_2",
+     "art": "eisen",
+     "x": 7103.5,
+     "y": 5893.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_vor_dem_osttor_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7105.5,
+     "y": 5889.5,
+     "region": "fl_216_183"
+    }
+   ]
   }
  ]
 }

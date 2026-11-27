@@ -9,6 +9,7 @@
  *   Beute eines Gegners: 30 s nur für den, der den meisten Schaden gemacht hat (bei Gleichstand den letzten Schlag), dann 5 min für alle.
  *   Selbst fallen gelassen: 1 min nur für einen selbst, dann 10 min für alle. Danach verschwindet es.
  */
+import { PETS } from "../../shared/pets";
 import { Wirkung, wirkungenPruefen, wirkungenAktiv, wirkungDazu } from "../../shared/wirkungen";
 import { LADBAR, LADUNG_MAX, LADUNG_MAX_KERN, KERN_MERKER, WAFFE_LADEN, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
 import { GEGENSTAENDE, Platz, PLAETZE, RUCKSACK_PLAETZE, startAusruestung, Fach, fachG, fachN, fachD, Daten, datenPruefen, datenGleich, geladen, ablegbar, handelbar, anzeigeName } from "../../shared/gegenstaende";
@@ -19,7 +20,8 @@ import { REISEKARTE, reiseTag, reiseMerker } from "../../shared/wegstein";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 export interface Inv { angelegt: Partial<Record<Platz, string>>; /** Daten der angelegten Exemplare (Phase 5a: Ladungen der Waffe, gebunden) */ angelegtD?: Partial<Record<Platz, Daten>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge, Daten?] – stapelt bei gleichen Daten */ bank?: BankFach[]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** #117: Platzhalter an – wer alles abhebt, behält das Feld (Menge 0) */ bankPlatzhalter?: boolean; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[];
-  /** Räucherhütte (#102): ein laufender Auftrag – Rezept, Stück, fertig ab (ms) */ warten?: Warten }
+  /** Räucherhütte (#102): ein laufender Auftrag – Rezept, Stück, fertig ab (ms) */ warten?: Warten;
+  /** #170: gefundene Pets (shared/pets.ts, gebunden) und welches gerade folgt */ pets?: string[]; petAktiv?: string }
 /** Ein Auftrag an einer Station mit Wartezeit (Rezept.warten): die Zutaten sind schon genommen */
 export interface Warten { r: string; n: number; fertig: number }
 const INV_STAND = 2;
@@ -30,7 +32,7 @@ const dKopie = (d?: Daten): Daten | undefined => (d ? { ...d } : undefined);
 const datenFuer = (g: string, d?: Daten): Daten | undefined => { if (!d) return undefined; const G = GEGENSTAENDE[g], x: Daten = { ...d }; if (x.ladungen && !(G && G.waffe && WAFFE_LADEN[G.seltenheit])) delete x.ladungen; return Object.keys(x).length ? x : undefined; };
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.bankPlatzhalter ? { bankPlatzhalter: true } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}), ...(i.warten ? { warten: { ...i.warten } } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.bankPlatzhalter ? { bankPlatzhalter: true } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}), ...(i.warten ? { warten: { ...i.warten } } : {}), ...(i.pets ? { pets: [...i.pets] } : {}), ...(i.petAktiv ? { petAktiv: i.petAktiv } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): BankFach[] { const b: BankFach[] = []; if (!Array.isArray(roh)) return b;
   for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])), d = datenFuer(g, datenPruefen(f[2])); if (!GEGENSTAENDE[g] || !(n >= 0)) continue;
@@ -59,6 +61,8 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   { const l = (o as { ladungen?: unknown }).ladungen; if (l && typeof l === "object") { const la: Record<string, number> = {}; for (const [k, v] of Object.entries(l as Record<string, unknown>)) { const n = Math.floor(Number(v)); if ((LADBAR as readonly string[]).includes(k) && n > 0) la[k] = Math.min(LADUNG_MAX_KERN, n); } if (Object.keys(la).length) inv.ladungen = la; } }
   { const w = wirkungenAktiv(wirkungenPruefen((o as { wirkungen?: unknown }).wirkungen)); if (w.length) inv.wirkungen = w; }
   { const w = (o as { warten?: Record<string, unknown> }).warten; if (w && typeof w === "object" && typeof w.r === "string" && /^[a-z0-9_]{1,40}$/.test(w.r) && Number(w.n) >= 1 && Number.isFinite(Number(w.fertig))) inv.warten = { r: w.r, n: Math.min(1000, Math.floor(Number(w.n))), fertig: Number(w.fertig) }; } /* Räucherhütte */
+  { const p = (o as { pets?: unknown }).pets, a = (o as { petAktiv?: unknown }).petAktiv; /* #170: nur bekannte Pets, jedes einmal */
+    if (Array.isArray(p)) { const l = [...new Set(p.filter((x): x is string => typeof x === "string" && x in PETS))]; if (l.length) { inv.pets = l; if (typeof a === "string" && l.includes(a)) inv.petAktiv = a; } } }
   /* Einmalige Umstellung der Berufe (shared/berufe.ts): Schmieden startet mit dem Stand des Handwerks – mit Merker, damit es nur einmal geschieht */
   { const m = (o as { merker?: unknown }).merker, merker = Array.isArray(m) ? m.filter((x): x is string => typeof x === "string" && /^[a-z0-9_]{1,30}$/.test(x)).slice(0, 50) : [];
     const u = berufeUmstellen(inv.berufe || {}, merker); if (Object.keys(u.berufe).length) inv.berufe = u.berufe; inv.merker = u.merker; }
@@ -239,6 +243,16 @@ export function ladungAbziehen(sb: Sb, nutzer: string, g: string): boolean { con
 export function berufXp(nutzer: string, beruf: string): number { const e = je.get(nutzer); return (e && e.inv.berufe && e.inv.berufe[beruf]) || 0; }
 export function berufXpDazu(sb: Sb, nutzer: string, beruf: string, n: number): number { const e = je.get(nutzer); if (!e || !(n > 0)) return berufXp(nutzer, beruf);
   const b = e.inv.berufe || (e.inv.berufe = {}); b[beruf] = Math.min(200_000_000, Math.round((b[beruf] || 0) + n)); geaendert(sb, nutzer, e); return b[beruf]; }
+/* ───────── #170 Skilling-Pets (shared/pets.ts): gebunden im Spielerstand, nicht im Rucksack ───────── */
+export const petsVon = (nutzer: string): string[] => { const e = je.get(nutzer); return (e && e.inv.pets) || []; };
+export const petAktiv = (nutzer: string): string | undefined => { const e = je.get(nutzer); return (e && e.inv.petAktiv) || undefined; };
+/** Ein Pet dazu (es folgt gleich); false, wenn schon da */
+export function petDazu(sb: Sb, nutzer: string, id: string): boolean { const e = je.get(nutzer); if (!e || !(id in PETS)) return false; const l = e.inv.pets || (e.inv.pets = []); if (l.includes(id)) return false;
+  l.push(id); e.inv.petAktiv = id; geaendert(sb, nutzer, e); return true; }
+/** Rufen (id) oder wegschicken (null). Zurück: Fehlertext oder null */
+export function petAktivSetzen(sb: Sb, nutzer: string, id: string | null): string | null { const e = je.get(nutzer); if (!e) return "Ohne Konto keine Begleiter.";
+  if (id !== null && !(e.inv.pets || []).includes(id)) return "Diesen Begleiter hast du noch nicht gefunden.";
+  if (id === null) delete e.inv.petAktiv; else e.inv.petAktiv = id; geaendert(sb, nutzer, e); return null; }
 /** Gegenstände, die der Held trägt (Rucksack und angelegt) – für Werkzeuge */
 /** Hat man es irgendwo – Rucksack, angelegt oder in der Bank (Questgegenstände zurückgeben, wenn verloren) */
 export function besitztIrgendwo(nutzer: string, g: string): boolean { const e = je.get(nutzer); return Boolean(e && (besitzt(nutzer).includes(g) || (e.inv.bank || []).some(([b, n]) => b === g && n > 0))); }

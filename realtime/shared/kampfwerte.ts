@@ -106,7 +106,7 @@ export const maxHitMagie = (level: number, stilbonus: number, magieStaerke: numb
 /** Die Kampfwerte eines Helden aus seinen Skill-XP, der angelegten Ausrüstung und dem Angriffsstil (Index in STILE der Kampfart, 1 = Standard) */
 /** wirk: Skill-Level aus Wirkungen (shared/wirkungen.ts, z. B. Fischsuppe Defense +2) – zählt im Kampf, nicht für Heldenlevel oder Anforderungen */
 /** extra.geladen: die angelegte Waffe hat Ladungen (Phase 5b) */
-export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number } = {}): Kampfwerte {
+export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>, stil = 1, wirk: Partial<Record<Skill, number>> = {}, extra: { geladen?: boolean; bemerken?: number; /** #176: % Magieschaden aus Tränken */ magieSchaden?: number } = {}): Kampfwerte {
   const hl = heldenlevel(x), lv = Object.fromEntries(SKILLS.map((k) => [k, levelAus(x[k] || 0, k) + (wirk[k] || 0)])) as Record<Skill, number>;
   const W = angelegt.waffe && GEGENSTAENDE[angelegt.waffe] && GEGENSTAENDE[angelegt.waffe].waffe ? GEGENSTAENDE[angelegt.waffe].waffe! : FAEUSTE;
   const s = stilIndex(stil, W.art), S = STILE[W.art][s], p = (k: Skill) => S.plus[k] || 0;
@@ -121,6 +121,7 @@ export function kampfwerte(x: SkillXp, angelegt: Partial<Record<Platz, string>>,
   /* #160: Set-Boni (alle Teile eines Satzes angelegt): Stärke, Fernkampf-Stärke, % Magieschaden */
   const sets = aktiveSets(Object.values(angelegt));
   for (const S0 of sets) if (S0.bonus) { for (const k of ["geschick", "staerke", "fernAngriff", "fernStaerke", "genau", "magieStaerke"] as const) aus[k] += S0.bonus[k] || 0; magieSchaden += S0.bonus.magieSchaden || 0; }
+  magieSchaden += extra.magieSchaden || 0; /* #176: Splittersicht */
   /* OSRS: Verteidigungswurf = effektives Defense-Level × (Bonus + 64); gegen Magie zählt 70 % Magie-Level und 30 % effektive Defense */
   const effDef = lv.defense + p("defense") + 8;
   const abwehr: Record<Art, number> = { nah: wurfWert(effDef, ab.nah), fern: wurfWert(effDef, ab.fern), magie: wurfWert(Math.floor(0.7 * lv.magie) + Math.floor(0.3 * effDef), ab.magie) };
@@ -149,6 +150,10 @@ export const trefferChance = (a: number, v: number): number => (a <= 0 ? 0 : v <
  *  Skills fehlen = Level 1, Angriffs- und Stärkebonus fehlen = 0. Lebenspunkte stehen eigens am Gegner (MonsterDef.lp). */
 export interface GegnerV3 { geschick?: number; staerke?: number; fernkampf?: number; magie?: number; defense?: number; /** Angriffsbonus (Trefferwurf) und Stärkebonus (Max Hit) */ angriffBonus?: number; staerkeBonus?: number;
   /** Angriffstakt in Ticks */ ticks: number; /** Verteidigungsboni je Angriffsart */ abwehr: Record<Art, number> }
+/** #175 Boss-Regeln: Stufe eines Gegners aus seinen Werten – wie das Heldenlevel (Combat Level in OSRS), die Lebenspunkte zählen wie das LP-Level.
+ *  Ein Held mit allen Skills auf 100 hat etwa 115; Bosse dürfen weit darüber liegen (viel Leben, hohe Einzelwerte) – besiegbar über ihre Schwäche und Mechanik. */
+export const gegnerStufe = (v: GegnerV3, lp: number): number => { const L = (n?: number) => Math.max(1, n || 1), f = L(v.fernkampf), m = L(v.magie);
+  return Math.floor(0.25 * (L(v.defense) + Math.max(1, lp)) + Math.max(0.325 * (L(v.geschick) + L(v.staerke)), 0.325 * (f + Math.floor(f / 2)), 0.325 * (m + Math.floor(m / 2)))); };
 /** Angriffswurf, Max Hit und Verteidigungswürfe eines Gegners für seine Angriffsart */
 export function gegnerWerte(v: GegnerV3, art: Art): { treffer: number; maxHit: number; abwehr: Record<Art, number> } {
   const L = (n?: number) => Math.max(1, n || 1), aB = v.angriffBonus || 0, sB = v.staerkeBonus || 0;

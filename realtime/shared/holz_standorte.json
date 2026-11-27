@@ -1604,6 +1604,121 @@
      "region": "fl_216_169"
     }
    ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 31)",
+   "ort": "hlweg_31",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_31_tanne_1",
+     "art": "tanne",
+     "x": 7096.5,
+     "y": 5917.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_2",
+     "art": "eibe",
+     "x": 7090.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_3",
+     "art": "eibe",
+     "x": 7095.5,
+     "y": 5911.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume vor dem Westtor",
+   "ort": "steinhag_westtor",
+   "baeume": [
+    {
+     "id": "baume_vor_dem_westtor_eiche_1",
+     "art": "eiche",
+     "x": 6904.5,
+     "y": 5903.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_2",
+     "art": "tanne",
+     "x": 6898.5,
+     "y": 5901.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_3",
+     "art": "tanne",
+     "x": 6903.5,
+     "y": 5897.5,
+     "region": "fl_201_183"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Kernbäume",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_kernbaum_1",
+     "art": "kernbaum",
+     "x": 6393.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_2",
+     "art": "kernbaum",
+     "x": 6399.5,
+     "y": 7014.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_kernbaum_3",
+     "art": "kernbaum",
+     "x": 6405.5,
+     "y": 7013.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_4",
+     "art": "eibe",
+     "x": 6407.5,
+     "y": 7018.5,
+     "region": "fl_186_211"
+    }
+   ]
+  },
+  {
+   "name": "Hain des Holzfällerhofs: Weltenbaum-Setzlinge",
+   "ort": "erlengrund",
+   "baeume": [
+    {
+     "id": "holzfaellerhof_weltenbaum_5",
+     "art": "weltenbaum",
+     "x": 6394.5,
+     "y": 7019.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_weltenbaum_6",
+     "art": "weltenbaum",
+     "x": 6400.5,
+     "y": 7020.5,
+     "region": "fl_186_211"
+    },
+    {
+     "id": "holzfaellerhof_eibe_7",
+     "art": "eibe",
+     "x": 6404.5,
+     "y": 7022.5,
+     "region": "fl_186_211"
+    }
+   ]
   }
  ]
 }

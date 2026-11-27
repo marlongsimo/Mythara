@@ -4,7 +4,7 @@
  */
 import { CHUNK_FELDER, chunkName, regionFelder } from "./typen";
 import { TUEREN } from "../bosse";
-const TUER_SCHALTER = new Set(TUEREN.map((t) => t.schalter));
+const TUER_SCHALTER = new Set(TUEREN.flatMap((t) => [t.schalter, t.weltSchalter].filter((s): s is string => Boolean(s))));
 import type { GelaendeBibliothek, ObjektBibliothek, ObjektDef, RegionDaten, Kollision, Platzierung, ChunkDaten, Figur, Interaktion, Spawnzone, Ausgang, Region, Zone } from "./typen";
 
 /** Liegt der Punkt (in Rechenfeldern, ab dem Fußpunkt gemessen) in der Kollisionsfläche? */

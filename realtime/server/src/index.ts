@@ -22,7 +22,7 @@ import { weltVerbindung, wegsteinZielNehmen, stelleMerken , aussehenJe, imKampfP
 import * as Sitz from "./sitz";
 import { trankHeilungBei } from "../../shared/gegenstaende";
 import { HeldV1, heldV1Lesen, angelegtPruefen, kampfwerteVon, v1Takt, stilPruefen } from "./kampfv1";
-import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen, hat as invHat, abgeben } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarVon, bodenDazu, bedingungErfuellt, LOOT, waffeLadungVerbrauchen, hat as invHat, abgeben, berufXp } from "./inventar";
 import { geladen as istGeladen, beuteAufloesen, GEGENSTAENDE } from "../../shared/gegenstaende";
 import { erlegt, xpLiveSetzen, heldXpSetzen, getroffen, zielscheibeFrei, schalter } from "./quests";
 import { angriffeHolen } from "./questmotor"; /* Folge.angriff (E3) */
@@ -408,7 +408,7 @@ setInterval(() => {
         if (VERKLEIDUNG.size) { const I = inventarVon(q.kampf.nutzer); h.angelegt = I ? Object.values(I.angelegt).filter((g): g is string => Boolean(g) && VERKLEIDUNG.has(g!)) : []; } } } /* Verkleidung (#49): was der Held angelegt hat (nur, was Gegner kennen) */ /* Zielscheibe und Gegner-Schalter (#81): alle 1 s nach dem Queststand */
       if (n % 10 === 0 && q.heldId && q.kampf && q.kampf.nutzer && !q.zoneWeg) { const h = Z.sim.nach(q.heldId), K0 = KARTEN[Z.karte], nu = q.kampf.nutzer; /* Instanzen und Türen je Spieler (shared/boss.ts) nach seinem Queststand */
         if (h && !h.tot && K0 && K0.ursprung) for (const A of angriffeHolen(nu)) Z.sim.angreifer(A.art, { x: A.x - K0.ursprung[0], y: A.y - K0.ursprung[1] }, q.heldId); /* Folge.angriff (E3): die Figur wird Gegner */
-        if (h && !h.tot && K0 && K0.ursprung) { const t = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s), { hat: (g) => invHat(nu, g), abgeben: (g) => abgeben(sb, nu, g) }); if (t) systemAn(nu, t); } }
+        if (h && !h.tot && K0 && K0.ursprung) { const t = weltJeSpieler(Z.sim, q.heldId, nu, K0.ursprung[0] + h.x, K0.ursprung[1] + h.y, (s) => schalter(nu, s), { hat: (g) => invHat(nu, g), abgeben: (g) => abgeben(sb, nu, g), beruf: (b) => levelVon(berufXp(nu, b)) }); if (t) systemAn(nu, t); } } /* #167: Zunft-Türen nach Berufsstufe */
       if (q.ws.readyState === WebSocket.CLOSING || q.ws.readyState === WebSocket.CLOSED) { /* Sicherheitsnetz: keine Helden ohne Verbindung – außer im Kampf, dann bis 10 s Ruhe, höchstens 60 s */
         const h = q.heldId ? Z.sim.nach(q.heldId) : undefined;
         if (!q.haengt || !h || h.tot || q.ersetzt || jetzt - (q.kampfZ || 0) >= KAMPF_RUHE_MS || jetzt - q.haengt >= HAENGEN_MS) { if (q.haengt) console.log("Welt:", q.name || "?", "verlässt die Welt nach dem Kampf"); zoneVerlassen(q); continue; } }

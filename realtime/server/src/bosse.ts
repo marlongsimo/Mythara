@@ -9,6 +9,7 @@
  */
 import type { Sim } from "../../shared/sim";
 import { INSTANZEN, TUEREN, BOSSE } from "../../shared/bosse";
+import "../../shared/zunft"; /* #167: Zunft-Türen (TUEREN) eintragen */
 import { instanzBei, instanzFassung, tuerenZu, imFeld, BOSS_WAHL_STANDARD, type InstanzDef, type BossFassung, type BossWahl } from "../../shared/boss";
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { MONSTER } from "../../shared/config";
@@ -32,7 +33,7 @@ export function bossWahlSetzen(nutzer: string, id: unknown, wahl: unknown, an: (
 export function wahlenVergessen(): void { wahlen.clear(); }
 
 /** Rucksack für den Eintritt: hat er den Gegenstand, einen abgeben */
-export interface Beutel { hat: (g: string) => boolean; abgeben: (g: string) => boolean }
+export interface Beutel { hat: (g: string) => boolean; abgeben: (g: string) => boolean; /** #167: Berufsstufe (Zunft-Türen) */ beruf?: (id: string) => number }
 const OHNE: Beutel = { hat: () => false, abgeben: () => false }, abgewiesen = new Map<number, string>(); /* Held → Kopie, für die der Hinweis „ohne Eintritt“ schon kam */
 /** Jede Sekunde für einen Helden: Kopie und Türen nach seinem Queststand. wx/wy: seine Stelle in Weltfeldern.
  *  Zurück: Text für den Chat (Kopie betreten: InstanzDef.text; Eintritt fehlt: InstanzDef.ohne) oder null */
@@ -46,7 +47,7 @@ export function weltJeSpieler(sim: Sim, heldId: number, nutzer: string, wx: numb
   if (!def || !def.eintritt) { if (!INSTANZEN.some((d) => d.eintritt && imFeld(d.feld, wx, wy))) abgewiesen.delete(heldId); }
   if (key !== vorher || neu) sim.instanzSetzen(heldId, key, def || undefined, fassung);
   if (vorher && vorher !== key) { const A = instanzAus(vorher); if (A && A.def.eintritt) sim.instanzWeg(vorher); } /* hinaus: der Versuch ist vorbei */
-  if (TUEREN.length) sim.sperrenSetzen(heldId, tuerenZu(TUEREN, an, { hat: beutel.hat, x: wx, y: wy, wahl }, INSTANZEN));
+  if (TUEREN.length) sim.sperrenSetzen(heldId, tuerenZu(TUEREN, an, { hat: beutel.hat, x: wx, y: wy, wahl, beruf: beutel.beruf }, INSTANZEN));
   if (def && neu && def.text && fassung !== "leer") text = text ? text + " " + def.text : def.text;
   return text; }
 

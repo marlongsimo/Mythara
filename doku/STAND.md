@@ -1,6 +1,6 @@
 # Stand – wo wir im Fahrplan stehen
 
-Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 10:55 UTC**.
+Gepflegt von der Rolle Konzept & Review. Zuletzt aktualisiert: **27.11.2026, 18:00 UTC**.
 Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzept.pdf` · Arbeitsweise: `doku/ARBEITSWEISE.md`
 
 ## Fahrplan (Grenzland)
@@ -21,9 +21,11 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | 8 | Der Weg nach Grauwacht: Fahle Weiten (W3), Grauwacht im Wiederaufbau, Quests E1–E4, Wachtrüstung | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
 | 9 | Glut und Strom: Glutsande (W2), Glutbrunn, Quests F1–F4, Quer-Quest „Die Karte des Boten“ | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
 | 10 | Salz und Segel: Smaragdküste (W4), Kielmund, Quests G1–G4, Fischen an der Küste | ✅ live (27.11., main e53962ed) – alle Quests im Spiel; Welt-Tests zum Durchspielen folgen (Quests) – **bitte testen** |
-| 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass – Gegner 46–58 | 🟡 Konzept `doku/konzepte/phase-11.md`; Vorarbeit Welt und Figuren (27.11.) |
+| 11 | Über den Pass: Hochlande (W5), Hauptort Steinhag, Bergwerk, Almen, Hochpass | ✅ live (27.11., main 4186a172): Block H (H1–H4, Einsiedler, drei Hüter mit Boss-Regeln, Rüstung Stufe 70), Steinhag als Hauptstadt, Zunfthäuser, Pets – **bitte testen**. Rest: 7 Sammelgruppen in Steinhag (#177) |
 | Süden | Dörfer, Arbeits- und Gegnerplätze, kurze Quests S1–S9 entlang der Südstraße | ✅ live (27.11.): Orte, Gegner, Fleisch/Gerichte, Reisende, S1–S9 |
 | — | Ganze Welt als Kampfwelt, Gegnerplätze über die ganze Welt (#122, #130), 10 neue Gegner aus Modellen des Nutzers (#138) | ✅ live: Kampfwelt, 10 neue Gegner, Streifgebiete (#143), Orte Haferstedt/Netzbucht/Sandquell (#140/#141), 158 Holz-/Erzstellen (#142) |
+| 12 | Ockerland: Ockerlande besiedeln (Rotlehm, Dornhag, Tafelrast) | 🟡 Konzept-Entwurf `doku/konzepte/phase-12.md` |
+| — | Hauptstädte Steinhag (#167) und Kielmund, Zunfthäuser (#168), Fahle Weiten füllen mit Grauwacht als mittlerer Hauptstadt | 🟡 Steinhag im Bau; Konzepte `hauptstaedte.md`, `fahle-weiten.md` |
 
 ## Festland (Weltkonzept)
 
@@ -51,6 +53,7 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | Riftmere · Leitstelle | Konzept, Review, Verteilen, Takt stündlich | `claude/relaxed-sagan-erl6lf` |
 | Riftmere · Integration | Zusammenführen, Live, Inhalte einbauen, Oberfläche | `claude/welt3d` → `feature/realtime-engine` |
 | Riftmere · Aufräumen | Altbestand aufräumen (einmalig, seit 26.11., session_01TxcDgEcDbLo7f245QtC2EJ) | `claude/aufraeumen` |
+| Riftmere · Konzept | Konzepte mit dem Nutzer ausarbeiten; meldet nur Abgesegnetes an die Leitstelle; ändert KANON/STAND nicht (seit 27.11., session_01TxcDgE1pPWKZD7XQMv1y1A) | `claude/konzept` |
 | Riftmere · Oberfläche | HUD und Fenster überarbeiten (seit 26.11., session_01TxcDgB4mevNoCcMXvpgjvs) | `claude/oberflaeche` |
 | Riftmere · Bugs | Fehler beheben (seit 26.11., session_01TxcDgCbmWBUtRdqteuxHgV) | `claude/bugs` |
 | Riftmere · Systeme | neue Mechaniken (seit 26.11., session_01TxcDgE5j3LqSdTzrgFQR7Y) | `claude/systeme` |
@@ -66,3 +69,5 @@ Fahrplan: `doku/quests/5-fahrplan.pdf` · Weltkonzept: `doku/quests/6-weltkonzep
 | Worldbuilding | #25 (Orte für Fischen, Taverne) |
 | Konzept & Review | Takt, Stand, Kanon |
 | Quests | Entwürfe B2, Schilf und Schnur, Taverne (#5, #6) |
+
+- **27.11.:** Neue Startseite riftmere.de live, Würfelspiel entfernt (main 8abfbb68).

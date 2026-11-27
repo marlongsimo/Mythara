@@ -10,7 +10,7 @@ import ORTE from "../welt/kraeuter_standorte.json";
 import type { SammelArt, SammelWerkzeug } from "./sammeln";
 
 export const BERUF_KRAEUTER = "kraeuterkunde";
-export type KrautArt = "wegerich" | "ringelblume" | "moorgloeckchen" | "eisenhut" | "nebelkraut" | "lindenbluete";
+export type KrautArt = "wegerich" | "ringelblume" | "moorgloeckchen" | "eisenhut" | "nebelkraut" | "lindenbluete" | "mondsalbei" | "glutwurz" | "splitterlilie";
 export interface KrautDef extends SammelArt { art: KrautArt; modell: string; leer: string; hoehe: number }
 const M = "img/objekte3d/skilling/kraeuter/";
 const K = (art: KrautArt, name: string, level: number, xp: number, lo: number, hi: number, fall: number, nachwachsen: number, hoehe = 0.6): KrautDef =>
@@ -22,6 +22,10 @@ export const KRAEUTER: Record<KrautArt, KrautDef> = {
   eisenhut: K("eisenhut", "Eisenhut", 35, 50, 50, 200, 0.25, 60, 0.8),
   nebelkraut: K("nebelkraut", "Nebelkraut", 45, 75, 35, 180, 0.3, 90),
   lindenbluete: K("lindenbluete", "Lindenblüte", 65, 110, 20, 150, 0.5, 300, 0.5), /* wenige Blüten an der alten Linde, wachsen langsam nach */
+  /* #176 (doku/konzepte/zunft-rohstoffe.md, Entscheidung des Nutzers): nur im Kräutergarten der Heilkundigen (Zutritt Kräuterkunde 60) – Beete setzt Welt, Modelle macht Figuren */
+  mondsalbei: K("mondsalbei", "Mondsalbei", 70, 130, 18, 140, 0.3, 120, 0.6),
+  glutwurz: K("glutwurz", "Glutwurz", 80, 160, 14, 130, 0.3, 150, 0.5),
+  splitterlilie: K("splitterlilie", "Splitterlilie", 90, 200, 10, 120, 0.35, 180, 0.7), /* leuchtet blau */
 };
 export interface Krautstelle { id: string; art: KrautArt; x: number; y: number; region: string }
 /** Fundstellen (Welt #35) – dazu die des Südens (Summweide, #120), sobald die Welt sie in kraeuter_standorte.json einträgt */

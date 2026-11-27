@@ -3,7 +3,7 @@
  * Block E ist in fünf Tests geteilt (unter 400 s je Test): e-welt (E1, E2), e2-welt (Schafe, Gräber), e3-welt (E3), e4-welt (E4 bis zum Siegel), e4b-welt (E4 ab dem Siegel).
  * Aufruf: node test/e4b-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
-import { starte, starkerHeld, standNach, QUESTS, QB } from "./questwelt.mjs";
+import { starte, starkerHeld, LEGENDAER, standNach, QUESTS, QB } from "./questwelt.mjs";
 const Q = (id) => QUESTS.find((q) => q.id === id);
 const E1 = Q("grauwacht_der_weg"), E2 = Q("grauwacht_die_glocke"), E3 = Q("grauwacht_fahnenflucht"), E4 = Q("grauwacht_grab_des_hauptmanns");
 const SCHAFE = Q("heidrast_mettes_schafe"), GRAEBER = Q("grauwacht_ruhelose_graeber");
@@ -13,7 +13,7 @@ const BERUFE = { holzfaellerei: 40, schmieden: 45, kochen: 45, splitterbinden: 3
 const viel = (g, n) => Array.from({ length: n }, () => g);
 const SACHEN = [];
 /* eine Waffe, wie man sie in dieser Stufe trägt (Heldenlevel 42+), statt des Anfänger-Ritterschwerts */
-const mitWaffe = (H) => { H.inventar.angelegt.waffe = "eidschwert_episch"; return H; };
+const mitWaffe = (H) => { H.inventar.angelegt = { ...LEGENDAER }; return H; }; /* Ausrüstung in passender Stufe für den Grauen Hauptmann */
 const W = await starte({ sb: 8847, srv: 8848, helden: {
   /* Ida: Level 99, mit den Quests vor diesem Teil fertig */
   ida: mitWaffe(starkerHeld({ berufe: BERUFE, fertig: ["ostufer_das_gruene_licht", "grauwacht_der_weg", "grauwacht_die_glocke", "heidrast_mettes_schafe", "grauwacht_ruhelose_graeber", "grauwacht_fahnenflucht"], staende: { grauwacht_grab_des_hauptmanns: SIEGEL }, rucksack: SACHEN })) } }); /* Ports: localhost:8847, localhost:8848 */

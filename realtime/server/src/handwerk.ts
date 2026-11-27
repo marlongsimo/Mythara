@@ -12,6 +12,7 @@ import { REZEPTE, rezept, Rezept, WERKZEUG_AN, STATIONEN, WERKSTAETTEN, HANDWERK
 const TICK_MS = process.env.HANDWERK_TICK_MS !== undefined ? Number(process.env.HANDWERK_TICK_MS) : SPIEL_TICK_MS;
 import { berufAn, beruf } from "../../shared/berufe";
 import { levelAus } from "../../shared/kampfwerte";
+import "../../shared/zunft"; /* #167: Zunft-Stationen und -Türen eintragen */
 import { GEGENSTAENDE } from "../../shared/gegenstaende";
 import { aufnehmen, abgeben, anzahlVon, berufXp, berufXpDazu, platzFuer, ladungen, ladungenDazu, waffeLadung, waffeLadenDazu, waffeEntladen, wartenVon, wartenSetzen, ladungMax, merkerHat, merkerDazu } from "./inventar";
 import { LADUNG_MAX, RESONANZ_MAL, AN_WAFFE, WAFFE_LADUNG_MAX } from "../../shared/splitterbinden";
@@ -37,7 +38,8 @@ export function handwerkEinrichten(o: { sb: Sb; senden: (s: HandwerkSpieler, m: 
 /** Level im Beruf dieser Werkstatt (Schmieden an Esse und Amboss, sonst Handwerk) */
 export const rezeptLevel = (nutzer: string, r: Rezept): number => levelAus(berufXp(nutzer, rezeptBeruf(r))); /* #133: Brauen zählt zur Kräuterkunde */
 export const handwerkLevel = (nutzer: string, station: Rezept["station"] = "werkbank"): number => levelAus(berufXp(nutzer, berufAn(station)));
-const offen = (s: HandwerkSpieler, W: { schalter?: string }) => !W.schalter || HANDWERK_QUEST.schalter(s.nutzer, W.schalter);
+const offen = (s: HandwerkSpieler, W: { schalter?: string; beruf?: { id: string; level: number } }) => (!W.schalter || HANDWERK_QUEST.schalter(s.nutzer, W.schalter))
+  && (!W.beruf || levelAus(berufXp(s.nutzer, W.beruf.id)) >= W.beruf.level); /* #167: Zunft-Stationen erst ab der Berufsstufe */
 const naheWerkstaetten = (s: HandwerkSpieler, r: Rezept) => s.wx !== undefined && s.wy !== undefined ? WERKSTAETTEN.filter((W) => W.station === r.station && Math.hypot(s.wx! - W.x, s.wy! - W.y) <= HANDWERK_WEIT && werkstattErreichbar(s.wx!, s.wy!, W)) : []; /* nicht durch die Wand (#57) */
 const nah = (s: HandwerkSpieler, r: Rezept) => { if (r.station === "hand") return true; /* im Rucksack: überall */ return naheWerkstaetten(s, r).some((W) => offen(s, W)); };   /* irgendein (freigeschalteter) Standort dieser Station */
 /** „ladung:wegstein“ → wegstein (Rezepte, die Ladungen statt eines Gegenstands geben) */

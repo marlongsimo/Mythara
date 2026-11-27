@@ -30,6 +30,8 @@ export async function rucksackVorladen(): Promise<void> { const I = inventar(), 
 /** #166 (Notlösung, Entscheidung des Nutzers): kein Zeichnen zur Laufzeit – das feste Bild (bild bzw. BILDER_AUS_FABRIK) als Hintergrund der Fläche, so wie ein img;
  *  ohne festes Bild ein schlichtes Ersatzsymbol. Vorher: in Canvas gemalt, Rüstungen über WebGL (teilbild) – auf dem iPhone (WKWebView) blieben die Fächer leer. */
 const ERSATZ = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M24 14h16l-4 8c9 4 14 12 14 20 0 8-8 12-18 12s-18-4-18-12c0-8 5-16 14-20z" fill="#5a4426" stroke="#d8b46a" stroke-width="2.5" stroke-linejoin="round"/><path d="M26 22h12" stroke="#d8b46a" stroke-width="2.5" stroke-linecap="round"/></svg>');
+/** #166: jedes Bildfach malen, das noch kein Bild trägt – auch wenn der Reiter sein HTML nicht neu setzt (gleicher Inhalt), sonst bleiben früh gebaute Fächer leer */
+function faecherMalen(wurzel: ParentNode): void { wurzel.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (!G || c.dataset.url === dingBildUrl(G)) return; if (G.symbol) { symbolMalen(c, G.symbol); c.dataset.url = dingBildUrl(G); } else void dingBild(c, G); }); }
 export const dingBildUrl = (G: { bild?: string }): string => (G.bild ? "../" + G.bild : ERSATZ);
 async function dingBild(c: HTMLCanvasElement, G: { ebenen?: string[]; platz?: string; bild?: string }): Promise<void> {
   const x = c.getContext("2d"); if (x) x.clearRect(0, 0, c.width, c.height);
@@ -399,7 +401,7 @@ function tabZeichnen(): void {
     neu = `<div class="kopf"><span class="swaffe">${wid ? `<canvas width="96" height="96" data-bild="${wid}"></canvas>` : `<span class="leer">${PLATZBILD.waffe}</span>`}</span><span class="stitel"><b>${w ? w.name : "Fäuste"}</b><small>${art === "nah" ? "Nahkampf" : art === "fern" ? "Fernkampf" : "Magie"} · Heldenlevel ${heldenlevel(x)}</small></span></div>
       <div class="stile n${n}">${STILE[art].map((_, i) => feld(i)).join("")}</div>
       <button type="button" class="kipp${auto ? " an" : ""}" data-auto="1" role="switch" aria-checked="${auto}"><i></i><span><b>Autoangriff</b><small>${auto ? "Greift dich ein Gegner an, schlägst du sofort zurück." : "Aus: Gegner antippen, um sie anzugreifen."}</small></span></button>`;
-    if (setzen()) el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); return; }
+    setzen(); faecherMalen(el); return; }
   if (tabJetzt === "freunde") { neu = freundeHtml(); setzen(); return; }
   if (tabJetzt === "quests") { const alle = questListe(), fertig = alle.filter((q) => q.art === "fertig"), offen = alle.filter((q) => q.art !== "fertig"), zeigen = questReiter === "fertig" ? fertig : offen;
     /* eine Spalte schmaler Zeilen mit vollem Namen; die Liste scrollt (Wunsch des Nutzers), Kopf und Reiter bleiben stehen */
@@ -409,12 +411,12 @@ function tabZeichnen(): void {
       : `<div class="tleer"><span>${RZEICHEN.quest}</span><p>${questReiter === "fertig" ? "Noch keine Quest abgeschlossen." : "Keine offenen Quests."}</p></div>`}`;
     setzen(); return; }
   if (tabJetzt === "skills") { const x = skillsLesen(), be = inventar().berufe || {};
-    /* ein Raster ohne Scrollen: Reihe 1 die Kampf-Skills und das Heldenlevel, darunter die Berufe; antippen = XP-Leiste unten, lange drücken = Skillbuch */
+    /* ein Raster ohne Scrollen: zuerst die Kampf-Skills, dahinter die Berufe (zwei Reihen, das Heldenlevel steht in der Ausrüstung); antippen = XP-Leiste unten, lange drücken = Skillbuch */
     const kachel = (art: "skill" | "beruf", k: string): string => { const S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0), name = skillName(art, k);
       return `<button type="button" class="skachel${skillWahl === art + ":" + k ? " an" : ""}" data-${art}="${k}" aria-label="${name} ${S.L}" title="${name}: Level ${S.L}">${art === "skill" ? SKILL_ZEICHEN[k as Skill] : BERUF_ZEICHEN[k]}<em>${S.L}</em><u><i style="width:${S.anteil}%"></i></u></button>`; };
     let fuss = ""; if (skillWahl) { const [art, k] = skillWahl.split(":") as ["skill" | "beruf", string], S = art === "skill" ? skillStand(x[k as Skill], k as Skill) : skillStand(be[k] || 0);
       fuss = `<div class="sfuss"><b>${skillName(art, k)} ${S.L}</b><i class="ez-balken"><u style="width:${S.anteil}%"></u></i><small>${S.L < 100 ? `${S.im} / ${S.bis} XP bis Level ${S.L + 1}` : "höchstes Level"}</small></div>`; }
-    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${1 + Math.ceil(BERUFE.length / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${heldKachel(heldenlevel(x))}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
+    neu = `<div class="kopf"><b>Skills</b></div><div class="sraster" style="--zeilen:${Math.ceil((SKILLS.length + BERUFE.length) / 7)}">${SKILLS.map((k) => kachel("skill", k)).join("")}${BERUFE.map((b) => kachel("beruf", b.id)).join("")}</div>${fuss}`;
     el.classList.toggle("mitfuss", Boolean(fuss)); setzen(); return; }
   const inv = inventar(), menge = (i: number) => (inv.anzahl || [])[i] || 1;
   const feld = (g: string | undefined, wo: string, platz?: Platz) => `<button type="button" class="ifeld${g ? " voll" : ""}${tabWahl && tabWahl.wo === wo ? " gewaehlt" : ""}${benutzt() && benutzt()!.wo === wo ? " benutzt" : ""}" data-wo="${wo}"${g ? ` data-g="${g}"` : ""} aria-label="${g ? GEGENSTAENDE[g].name : platz ? PLAETZE.find((p) => p.id === platz)!.name + " (leer)" : "leer"}">${g ? `<canvas width="96" height="96" data-bild="${g}"></canvas>` : platz ? `<span class="leer">${PLATZBILD[platz]}</span>` : ""}${g && wo.startsWith("r") && menge(Number(wo.slice(1))) > 1 ? `<em class="menge">${menge(Number(wo.slice(1)))}</em>` : ""}</button>`;
@@ -423,8 +425,7 @@ function tabZeichnen(): void {
   if (tabJetzt === "rucksack") neu = `<div class="kopf"><b>Rucksack</b><small>${inv.rucksack.length} / ${RUCKSACK_PLAETZE}</small></div><div class="traster">${Array.from({ length: RUCKSACK_PLAETZE }, (_, i) => feld(inv.rucksack[i], "r" + i)).join("")}</div>${wahl}`;
   else neu = `<div class="kopf"><b>Ausrüstung</b><button type="button" class="info" data-t="werte" aria-label="Werte der Ausrüstung" title="Werte der Ausrüstung">i</button></div>
     <div class="kreuz">${heldKachel(heldenlevel(skillsLesen()))}${PLAETZE.map((p) => feld(inv.angelegt[p.id], p.id, p.id)).join("")}</div>${wahl}`;
-  if (!setzen()) return;
-  el.querySelectorAll<HTMLCanvasElement>("canvas[data-bild]").forEach((c) => { const G = GEGENSTAENDE[c.dataset.bild!]; if (G.symbol) symbolMalen(c, G.symbol); else void dingBild(c, G); }); }
+  setzen(); faecherMalen(el); }
 function tabKlick(e: Event): void {
   e.stopPropagation(); const t = e.target as HTMLElement;
   if (t.closest("[data-tzu]")) { tabZu(); return; } /* rotes ✕ oben rechts */

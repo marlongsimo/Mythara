@@ -58,7 +58,13 @@ export interface BossPhase { /** gilt ab diesem Anteil des Lebens abwärts (erst
   /** Treffer je Grundangriff (Doppelhieb: 2) */ hiebe?: number;
   /** #160 Flug (Sturmschwinge): der Boss kreist für Nahkampf unerreichbar (wie schweben), bis eine Ansage mit landen ihn landen lässt; danach steigt er wieder auf */ flug?: boolean;
   /** Eingraben (#102, Sandmutter): so viele Sekunden ab Eintritt in die Phase für alles unangreifbar, dann taucht er wieder auf (Ansagen nach sek laufen weiter) */ eingraben?: number }
-export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[] }
+export interface BossDef { /** Gegnerart in MONSTER */ typ: string; phasen: BossPhase[];
+  /** #175 Boss-Regeln: Schläger (hoher Grundschaden, ein gemeisterter Großangriff macht 0 Schaden) oder Taktiker (schwächere Grundangriffe,
+   *  auch wer ausweicht, bekommt Streifschaden – STREIF_ANTEIL des vollen Treffers, durch Rüstung gemindert). Ohne Angabe wie Schläger. */ art?: "schlaeger" | "taktiker" }
+/** #175: Streifschaden des Taktikers: höchstens dieser Anteil des vollen Treffers; gute Rüstung halbiert ihn (also etwa 7,5–15 %) */
+export const STREIF_ANTEIL = 0.15;
+/** #175: Schwächefenster – nach einem gemeisterten Großangriff (wer bei der Ansage in der Gefahrenzone stand, ist beim Einschlag draußen) nimmt der Boss so lange mehr Schaden */
+export const SCHWAECHE = { sek: 4, mal: 1.25 };
 
 export interface InstanzGegner { /** Gegnerart (MONSTER) */ art: string; /** Weltfelder */ x: number; y: number }
 export interface InstanzDef { id: string; name: string;
@@ -88,8 +94,9 @@ export const BOSS_BEUTE_ANTEIL = 0.1;
 export function instanzFassung(d: InstanzDef, an: (schalter: string) => boolean, wahl: BossWahl = BOSS_WAHL_STANDARD): BossFassung | null {
   if (d.danach && an(d.danach)) return wahl === "instanz" ? "stark" : null; if (an(d.schalter)) return "quest"; return d.danach ? "leer" : null; }
 
-export interface Tuer { id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
-  /** offen, wenn dieser Schalter für den Spieler an ist */ schalter: string; /** Text, wenn man davor steht */ zu: string;
+export interface Tuer { /** #160: so heißt der Schalter der Sperre in den Welt-Daten (spiel.json kollision.sperren), falls anders als schalter – dann backt bau.ts sie nicht ins Raster */ weltSchalter?: string; id: string; /** gesperrte Felder in Weltfeldern: x0, y0, x1, y1 (Ecken eingeschlossen) */ feld: [number, number, number, number];
+  /** offen, wenn dieser Schalter für den Spieler an ist (ohne: nur beruf zählt) */ schalter?: string; /** Text, wenn man davor steht */ zu: string;
+  /** #167/#168 Zunft: nur offen ab dieser Berufsstufe (die Wache prüft; shared/zunft.ts) */ beruf?: { id: string; level: number };
   /** Tür vor einer Instanz mit Eintritt (InstanzDef.id): zusätzlich nur offen mit dem Gegenstand dabei – oder wenn man im Raum bzw. in der Tür steht */ instanz?: string;
   /** Eingang der Welt (Interaktion mit Teleport, z. B. „turm_wappentuer“), der nur bei offener Tür geht – sonst der Text zu (Browser) */ eingang?: string }
 
@@ -114,9 +121,10 @@ export function ansageFelder(A: Ansage, bx: number, by: number, zx: number, zy: 
 export function instanzBei(liste: InstanzDef[], x: number, y: number, an: (schalter: string) => boolean, wahl?: (id: string) => BossWahl): InstanzDef | null {
   return liste.find((d) => imFeld(d.feld, x, y) && instanzFassung(d, an, wahl ? wahl(d.id) : undefined) !== null) || null; }
 /** Für Türen vor einer Instanz mit Eintritt: hat der Spieler den Gegenstand dabei, wo steht er (Weltfelder) */
-export interface TuerLage { hat: (g: string) => boolean; x: number; y: number; /** #116: Wahl am Eingang je Instanz (Standard öffentlich) */ wahl?: (id: string) => BossWahl }
+export interface TuerLage { hat: (g: string) => boolean; x: number; y: number; /** #167: Berufsstufe des Spielers (Zunft-Türen) */ beruf?: (id: string) => number; /** #116: Wahl am Eingang je Instanz (Standard öffentlich) */ wahl?: (id: string) => BossWahl }
 /** Ist die Tür für einen Spieler offen? */
-export function tuerOffen(t: Tuer, an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): boolean { if (!an(t.schalter)) return false;
+export function tuerOffen(t: Tuer, an: (schalter: string) => boolean, L?: TuerLage, instanzen: InstanzDef[] = []): boolean { if (t.schalter && !an(t.schalter)) return false;
+  if (t.beruf && !(L && L.beruf && L.beruf(t.beruf.id) >= t.beruf.level)) return false; /* #167: Zunft – erst ab der Berufsstufe */
   const I = t.instanz ? instanzen.find((d) => d.id === t.instanz) : undefined; if (!I || !I.eintritt) return true;
   if (I.danach && an(I.danach) && (L && L.wahl ? L.wahl(I.id) : BOSS_WAHL_STANDARD) === "oeffentlich") return true; /* #116: öffentlich ohne Eintritt */ if (!L) return false;
   return L.hat(I.eintritt) || imFeld(I.feld, L.x, L.y) || imFeld(t.feld, L.x, L.y); }

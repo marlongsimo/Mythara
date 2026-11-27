@@ -46,6 +46,7 @@ TESTS=(
   welt-sammelstellen
   welt-streifgebiete
   welt-hochlande
+  welt-zunft
   phase5
   phase8-10
   abholen
@@ -81,6 +82,12 @@ TESTS=(
   bosse-116
   boss-quest-machbar
   hueter
+  zunft-rohstoffe
+  zunft
+  bank-orte
+  steinhag-stadt
+  pets
+  pets-welt
   bank-platzhalter
   festland-kampf
   inhalt-sueden
@@ -90,7 +97,7 @@ TESTS=(
   streifgebiete
   belohnung-wahl
   bergwerk-welt
-  # Durchspiel-Tests C–G (Quests bf7b907a, fe4714a0). Noch rot und deshalb erst später aufnehmen: f-welt (#155, Karawanenräuber am Kanal)
+  # Durchspiel-Tests C–H (Quests bf7b907a, fe4714a0, b13ba133)
   c1-welt
   c2-welt
   c2b-welt
@@ -108,6 +115,10 @@ TESTS=(
   c3b-welt
   e4b-welt
   f3b-welt
+  f-welt
+  h-welt
+  h23-welt
+  h4-welt
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

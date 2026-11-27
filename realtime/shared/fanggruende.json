@@ -315,6 +315,57 @@
    ]
   },
   {
+   "id": "fischerzunft_seeaal",
+   "name": "Fischerzunft: Aalsteg",
+   "art": "seeaal",
+   "region": "fl_186_225",
+   "aktiv": 2,
+   "felder": [
+    [
+     6385.5,
+     7350.5
+    ],
+    [
+     6383.5,
+     7353.5
+    ],
+    [
+     6379.5,
+     7353.5
+    ],
+    [
+     6377.5,
+     7350.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_klippenbarsch",
+   "name": "Fischerzunft: Klippenbarsch am Steg",
+   "art": "klippenbarsch",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6381.5,
+     7350.5
+    ]
+   ]
+  },
+  {
+   "id": "fischerzunft_hering",
+   "name": "Fischerzunft: Heringsplatz",
+   "art": "hering",
+   "region": "fl_186_225",
+   "aktiv": 1,
+   "felder": [
+    [
+     6375.5,
+     7353.5
+    ]
+   ]
+  },
+  {
    "id": "moewenbucht_steg",
    "name": "Die Möwenbucht",
    "art": "hering",
