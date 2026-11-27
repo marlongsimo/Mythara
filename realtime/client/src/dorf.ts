@@ -73,7 +73,6 @@ export class Dorf extends Phaser.Scene {
   richtung(sx: number, sy: number) { let x = sx + sy, y = sy - sx; const l = Math.hypot(x, y), k = Math.min(1, Math.hypot(sx, sy)); if (l > 0.01) { x = x / l * k; y = y / l * k; } else { x = 0; y = 0; } this.rx = x; this.ry = y; }
   betreten() { const b = this.nah; if (!b || this.gesperrt) return;
     if (b.tat === "riss") { this.gesperrt = true; this.richtung(0, 0); this.tasten = {}; const wahl = (window as unknown as { EZ_WAHL: Wahl }).EZ_WAHL; wahl((held, mit) => { try { localStorage.setItem("ez_held", held); } catch { /* privat */ } this.scene.start("spiel", { held, mit }); }, () => { this.gesperrt = false; }); }
-    else if (b.tat === "arena") location.href = "../spiel.html";
     else { const k = $("#ez-dorf-knopf"); k.textContent = b.text; k.classList.add("bald"); } }
   update(_t: number, dt: number) {
     const d = Math.min(0.05, dt / 1000), o = this.ort, faehrt = !this.gesperrt && (this.rx !== 0 || this.ry !== 0);
