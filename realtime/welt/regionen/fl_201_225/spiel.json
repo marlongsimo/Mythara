@@ -206,6 +206,131 @@
    }
   },
   {
+   "id": "rotlehm",
+   "art": "lesen",
+   "x": 400.5,
+   "y": 141.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Rotlehm. Eine Stadt aus Lehm und Staub am Ockerstrom – hier enden die Karawanen aus den Glutsanden."
+   }
+  },
+  {
+   "id": "rotlehm_wegstein",
+   "art": "lesen",
+   "x": 392,
+   "y": 144.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Wegstein von Rotlehm."
+   }
+  },
+  {
+   "id": "rotlehm_bindestein",
+   "art": "lesen",
+   "x": 404,
+   "y": 144.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Bindestein am Markt von Rotlehm."
+   }
+  },
+  {
+   "id": "rotlehm_feste",
+   "art": "lesen",
+   "x": 457.5,
+   "y": 115,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Lehmfeste von Rotlehm. Die Mauern sind dick wie ein Mann lang ist – gegen Hitze, Hyänen und Räuber."
+   }
+  },
+  {
+   "id": "rotlehm_karawanenhof",
+   "art": "lesen",
+   "x": 367.5,
+   "y": 115,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Karawanenhof. Kamelglocken, Gewürzsäcke, und im Schatten der Mauer schläft ein Treiber auf seinen Ballen."
+   }
+  },
+  {
+   "id": "rotlehm_bank_tuer",
+   "art": "lesen",
+   "x": 410,
+   "y": 129.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Rotlehm – im kühlsten Haus der Stadt."
+   }
+  },
+  {
+   "id": "rotlehm_werkstatt",
+   "art": "lesen",
+   "x": 382,
+   "y": 157.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Werkstatt von Rotlehm: Esse, Amboss, Werkbank – und Hufeisen für die Lasttiere."
+   }
+  },
+  {
+   "id": "rotlehm_taverne",
+   "art": "lesen",
+   "x": 385.5,
+   "y": 130.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Taverne „Zum Roten Krug“. Es gibt Wasser, Dattelwein und Geschichten über die Tafelberge."
+   }
+  },
+  {
+   "id": "fischplatz_ockerstrom_nord",
+   "art": "lesen",
+   "x": 318.5,
+   "y": 126.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Ufer des Ockerstroms – das Wasser ist trüb, aber die Fische sind fett.",
+    "fisch": "moorhecht",
+    "stufe": 20
+   }
+  },
+  {
+   "id": "fischplatz_ockerstrom_sued",
+   "art": "lesen",
+   "x": 321.5,
+   "y": 156.5,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Am Ufer des Ockerstroms – das Wasser ist trüb, aber die Fische sind fett.",
+    "fisch": "wels",
+    "stufe": 45
+   }
+  },
+  {
+   "id": "rast_ockerlande_5",
+   "art": "lesen",
+   "x": 471.5,
+   "y": 285.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
    "id": "lehmfurt_schmiede",
    "art": "lesen",
    "x": 37.5,

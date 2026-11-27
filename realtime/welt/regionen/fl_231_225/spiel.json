@@ -12,5 +12,17 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "rast_ockerlande_4",
+   "art": "lesen",
+   "x": 11.5,
+   "y": 270.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  }
+ ]
 }

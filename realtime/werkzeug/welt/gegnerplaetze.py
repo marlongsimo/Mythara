@@ -61,7 +61,8 @@ _ho = os.path.join(W, 'hochlande_orte.json')
 _fo = os.path.join(W, 'fahleweiten_orte.json')
 _mauern = ([(json.load(open(_ho, encoding='utf8'))['hauptstadt']['mauer'], 'Stadt Steinhag (Ringmauer)')] if os.path.exists(_ho) and json.load(open(_ho, encoding='utf8')).get('hauptstadt') else []) + \
           ([(json.load(open(_fo, encoding='utf8'))['grauwacht']['mauer'], 'Stadt Grauwacht (Stadtmauer, #171)')] if os.path.exists(_fo) and json.load(open(_fo, encoding='utf8')).get('grauwacht') else []) + \
-          ([([6370] + json.load(open(os.path.join(W, 'kielmund_orte.json'), encoding='utf8'))['mauer'][1:], 'Stadt Kielmund (Stadtmauer und Hafen, #174)')] if os.path.exists(os.path.join(W, 'kielmund_orte.json')) else [])
+          ([([6370] + json.load(open(os.path.join(W, 'kielmund_orte.json'), encoding='utf8'))['mauer'][1:], 'Stadt Kielmund (Stadtmauer und Hafen, #174)')] if os.path.exists(os.path.join(W, 'kielmund_orte.json')) else []) + \
+          ([((lambda c: [c[0] - 66, c[1] - 50, c[0] + 74, c[1] + 54])(json.load(open(os.path.join(W, 'ockerlande_orte.json'), encoding='utf8'))['orte']['rotlehm']), 'Stadt Rotlehm (#172)')] if os.path.exists(os.path.join(W, 'ockerlande_orte.json')) else [])
 for _m, _grund in _mauern:
     for _x in range(int(_m[0]) - 4, int(_m[2]) + 5, 12):
         for _y in range(int(_m[1]) - 4, int(_m[3]) + 5, 12): ausnahmen.append({'x': _x, 'y': _y, 'r': 17, 'grund': _grund})

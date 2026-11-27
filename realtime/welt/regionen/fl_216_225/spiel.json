@@ -12,5 +12,39 @@
   "sperren": [],
   "freigeben": []
  },
- "interaktionen": []
+ "interaktionen": [
+  {
+   "id": "rast_ockerlande_2",
+   "art": "lesen",
+   "x": 52,
+   "y": 60.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
+   "id": "rast_ockerlande_3",
+   "art": "lesen",
+   "x": 273,
+   "y": 83.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  },
+  {
+   "id": "rast_ockerlande_6",
+   "art": "lesen",
+   "x": 111.5,
+   "y": 405.4,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Ein Rastplatz an der Karawanenstraße. Asche, Dattelkerne, ein umgestürzter Krug."
+   }
+  }
+ ]
 }
