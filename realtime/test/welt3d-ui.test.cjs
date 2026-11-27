@@ -26,19 +26,20 @@ const BILD = process.env.BILD || '';
     if (zu0) { await p.click('#ez-chat .klapp'); await p.waitForTimeout(700); }
     { const o = await p.evaluate(() => { const c = document.getElementById('ez-chat').getBoundingClientRect(), k = [...document.querySelectorAll('#ez-leiste button')].map((x) => x.getBoundingClientRect()); return { cb: c.bottom, l: k[0].left, t: k[0].top, unten: k[k.length - 1].bottom, h: innerHeight, g: k[0].width }; });
       check(o.t >= o.cb && o.l < 30 && o.unten <= o.h && Math.abs(o.t - lage.k[0][1]) < 1, `Chat offen: die Leiste bleibt unten links an ihrem Platz und berührt den Chat nicht (${Math.round(o.t - o.cb)} px Luft)`); }
-    const offen = await p.evaluate(() => ({ c: document.getElementById('ez-chat').getBoundingClientRect().bottom, l: document.getElementById('ez-leiste').getBoundingClientRect(), liste: getComputedStyle(document.querySelector('#ez-chat .liste')).backgroundColor, ein: getComputedStyle(document.querySelector('#ez-chat .eingabe input')).backgroundColor }));
-    check(/rgba\(.*0\.5\)/.test(offen.liste) && /rgba\(.*0\.5\)/.test(offen.ein), `Chat offen: Nachrichten und Eingabefeld halb durchsichtig (${offen.liste}, ${offen.ein})`);
+    const offen = await p.evaluate(() => ({ c: document.getElementById('ez-chat').getBoundingClientRect().bottom, l: document.getElementById('ez-leiste').getBoundingClientRect(), liste: (() => { const st = getComputedStyle(document.querySelector('#ez-chat .liste')); return st.backgroundImage !== 'none' ? st.backgroundImage : st.backgroundColor; })(), ein: getComputedStyle(document.querySelector('#ez-chat .eingabe input')).backgroundColor }));
+    const durch = (t) => { const a = [...String(t).matchAll(/rgba\([^)]*,\s*([\d.]+)\)/g)].map((m) => Number(m[1])); return a.length > 0 && a.every((x) => x > 0 && x < 1); }; /* der Chat ist ein Verlauf (linear-gradient) aus halb durchsichtigen Farben (2af130c4) */
+    check(durch(offen.liste) && durch(offen.ein), `Chat offen: Nachrichten und Eingabefeld halb durchsichtig (${offen.liste}, ${offen.ein})`);
     if (BILD) await p.screenshot({ path: BILD + `ui-${art === 'PC' ? 'pc' : 'handy'}-chat-offen.png` });
     await p.click('#ez-chat .klapp'); await p.waitForTimeout(700);
     const zu = await p.evaluate(() => ({ zu: document.getElementById('ez-chat').classList.contains('zu'), c: document.getElementById('ez-chat').getBoundingClientRect(), l: document.getElementById('ez-leiste').getBoundingClientRect() }));
     check(zu.zu && zu.c.top < 30 && zu.c.height < 50 && Math.abs(zu.l.top - offen.l.top) < 1, `Eingeklappt nach oben (nur die Reiter, ${Math.round(zu.c.height)} px hoch); die Leiste bewegt sich nicht`);
-    /* Minikarte: nur Karte und Sprint; Bögen */
-    const karte = await p.evaluate(() => ({ k: [...document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kbogen button')].map((x) => x.getAttribute('aria-label')),
-      links: [...document.querySelectorAll('#ez-kartenrahmen .rknoepfe button, #ez-kbogen button')].filter((x) => ['Teleport', 'Freunde', 'Einstellungen'].includes(x.getAttribute('aria-label'))).every((x) => { const r = x.getBoundingClientRect(), m = document.querySelector('#ez-kartenrahmen .rund').getBoundingClientRect(); return r.right <= m.left + m.width * 0.3 && r.left >= 0 && r.width > 0; }), b: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.lp')?.getAttribute('d'), g: !!document.querySelector('#ez-kartenrahmen .ez-boegen .voll.gelb')?.getAttribute('d'),
-      im: (() => { const r = document.querySelector('#ez-kartenrahmen .ez-boegen').getBoundingClientRect(); return r.right <= innerWidth + 1 && r.top >= -1; })() }));
-    check(karte.k.join(',') === 'Karte,Sprint,Teleport,Freunde,Einstellungen', `An der Minikarte: ${karte.k.join(' · ')}`);
-    check(karte.links, 'Teleport, Freunde und Einstellungen sitzen links neben der Karte');
-    check(karte.b && karte.g && karte.im, 'LP-Bogen und gelber Bogen an der Minikarte, ganz im Bild');
+    /* Minikarte (HUD seit 2af130c4): rechts unten eine Leiste wie links (Karte, Sprint, Teleport, Freunde, Einstellungen), links an der Karte Leben und Laufenergie als stehende Balken */
+    const karte = await p.evaluate(() => { const m = document.querySelector('#ez-kartenrahmen .rund').getBoundingClientRect(), kn = [...document.querySelectorAll('#ez-leiste-r button')], bal = (c) => { const e = document.querySelector('#ez-kartenrahmen .ez-werte .bal.' + c); return e ? e.getBoundingClientRect() : null; };
+      return { k: kn.map((x) => x.getAttribute('aria-label')), unten: kn.every((x) => { const r = x.getBoundingClientRect(); return r.top >= m.bottom && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1 && r.width > 0; }),
+        leben: bal('leben'), lauf: bal('lauf'), mL: m.left }; });
+    check(karte.k.join(',') === 'Karte,Sprint,Teleport,Freunde,Einstellungen', `Rechte Leiste: ${karte.k.join(' · ')}`);
+    check(karte.unten, 'Die rechte Leiste sitzt unter der Minikarte, ganz im Bild');
+    check(karte.leben && karte.lauf && karte.leben.height > 40 && karte.lauf.right <= karte.mL + 1 && karte.leben.left >= 0 && karte.leben.top >= 0, 'Leben und Laufenergie als Balken links an der Minikarte, ganz im Bild');
     await p.evaluate(() => window.__lp && 0); /* Lebenspunkte im Kampf: gleich über die Anzeige selbst prüfen */
     /* Rucksack ohne Verweis auf Ausrüstung */
     const o0 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort }));
@@ -49,20 +50,20 @@ const BILD = process.env.BILD || '';
     await p.click('#ez-leiste [data-l="stil"]'); await p.waitForTimeout(400); /* ein anderer Tab ersetzt den offenen */
     check(await p.evaluate(() => !document.getElementById('ez-rucksacktab') && !!document.getElementById('ez-stiltab')), 'Ein anderer Knopf ersetzt den offenen Tab');
     { const st = await p.evaluate(() => ({ titel: document.getElementById('ez-stiltab') ? 'Angriffsstil' : '', stile: [...document.querySelectorAll('#ez-stiltab .stil b')].map((b) => b.firstChild.textContent), an: document.querySelector('#ez-stiltab .stil.an b')?.firstChild.textContent, werte: document.querySelector('#ez-stiltab .stil.an b em')?.textContent }));
-      check(st.titel === 'Angriffsstil' && st.stile.join() === 'Genau,Normal,Aggressiv' && st.an === 'Normal', `Angriffsstil (Schwert): ${st.stile.join(' · ')}, gewählt ${st.an} – ${st.werte}`);
+      check(st.titel === 'Angriffsstil' && st.stile.join() === 'Akkurat,Ausgewogen,Aggressiv,Verteidigung' && st.an === 'Ausgewogen', `Angriffsstil (Schwert): ${st.stile.join(' · ')}, gewählt ${st.an} – ${st.werte}`);
       if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-stil.png' });
       await p.click('#ez-stiltab .stil[data-s="2"]'); await p.waitForTimeout(300);
       check(await p.evaluate(() => JSON.parse(localStorage.getItem('ez_stil') || '{}').nah === 2 && document.querySelector('#ez-stiltab .stil.an b').firstChild.textContent === 'Aggressiv'), 'Aggressiv gewählt: gemerkt und markiert'); }
     await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(400);
     { const sk = await p.evaluate(() => [...document.querySelectorAll('#ez-skillstab .skachel[data-skill]')].map((l) => (l.querySelector('img') ? '🖼' : '') + l.getAttribute('aria-label') + '/' + l.querySelector('em').textContent));
-      check(sk.join(', ') === '🖼Geschick 1/1, 🖼Stärke 1/1, 🖼Fernkampf 1/1, 🖼Magie 1/1, 🖼Leben 1/1, 🖼Defense 1/1', `Skills-Tab als Raster: Zeichen und Level je Skill: ${sk.join(', ')}`);
+      check(sk.join(', ') === '🖼Geschick 1/1, 🖼Stärke 1/1, 🖼Fernkampf 1/1, 🖼Magie 1/1, 🖼Leben 10/10, 🖼Defense 1/1', `Skills-Tab als Raster: Zeichen und Level je Skill: ${sk.join(', ')}`);
       check(await p.evaluate(() => { const t = document.getElementById('ez-skillstab'), i = t.querySelector('.tinhalt'); const k = [...t.querySelectorAll('.skachel')], reihen = new Set(k.map((x) => Math.round(x.getBoundingClientRect().top))).size; return !t.querySelector('.skachel.held') && reihen === 2 && i.scrollHeight <= i.clientHeight + 1; }), 'Skills-Tab: zwei Reihen (Kampf-Skills und Berufe, kein Heldenlevel-Feld), alles ohne Scrollen'); if (BILD && art === 'PC') await p.screenshot({ path: BILD + 'ui-skills.png' }); }
     await p.click('#ez-leiste [data-l="skills"]'); await p.waitForTimeout(300); check(await p.evaluate(() => !document.querySelector('.seitentab')), 'Nochmal antippen schließt den Tab');
     await p.click('#ez-leiste [data-l="quests"]'); await p.waitForTimeout(300);
-    { const q = await p.evaluate(() => { const t = document.getElementById('ez-queststab'), r = document.getElementById('ez-leiste').querySelectorAll('[data-l]'); if (!t) return null; const a = t.getBoundingClientRect(); return { titel: t.querySelector('.kopf b').textContent, leer: /Noch keine Quests/.test(t.textContent), o: a.top - r[0].getBoundingClientRect().top, u: a.bottom - r[r.length - 1].getBoundingClientRect().bottom }; });
-      check(q && q.titel === 'Quests' && q.leer && Math.abs(q.o) < 1.5 && Math.abs(q.u) < 1.5, `Quests als Tab in gleicher Größe, noch leer (${JSON.stringify(q)})`); }
+    { const q = await p.evaluate(() => { const t = document.getElementById('ez-queststab'), r = document.getElementById('ez-leiste').querySelectorAll('[data-l]'); if (!t) return null; const a = t.getBoundingClientRect(); return { titel: t.querySelector('.kopf b').textContent, inhalt: t.querySelector('.qliste') ? t.querySelectorAll('.qzeile').length + ' Quests' : /Keine offenen Quests/.test(t.textContent) ? 'leer' : '', o: a.top - r[0].getBoundingClientRect().top, u: a.bottom - r[r.length - 1].getBoundingClientRect().bottom }; });
+      check(q && q.titel === 'Quests' && q.inhalt && Math.abs(q.o) < 1.5 && Math.abs(q.u) < 1.5, `Quests als Tab in gleicher Größe, Liste oder „Keine offenen Quests“ (${JSON.stringify(q)})`); }
     await p.click('#ez-leiste [data-l="quests"]'); await p.waitForTimeout(200);
-    await p.click('#ez-kartenrahmen [aria-label="Einstellungen"]'); await p.waitForTimeout(500);
+    await p.click('#ez-leiste-r [aria-label="Einstellungen"]'); await p.waitForTimeout(500);
     check(await p.evaluate(() => !document.getElementById('ez-konto').hidden), 'Einstellungen öffnen das Menü');
     await p.keyboard.press('Escape'); await p.waitForTimeout(300); if (!(await p.evaluate(() => document.getElementById('ez-konto').hidden))) { await p.click('#ez-konto [data-t="zu"]').catch(() => {}); await p.waitForTimeout(300); }
     const o1 = await p.evaluate(() => ({ ...window.EZW.welt3d.ort }));
