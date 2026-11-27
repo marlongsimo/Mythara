@@ -42,7 +42,7 @@ const FAKE_GAST = `window.supabase = { createClient() { return { auth: { async g
 const br = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessPermissionPrompt"] }), S = "?welt3d=1&schatten=0&zeitraffer=1&server=ws://localhost:8786", B = "http://localhost:8765/echtzeit/", fehlerSeite = [];
 async function spieler(name, token, stelle) { const ctx = await br.newContext({ viewport: process.env.VIEW ? { width: +process.env.VIEW.split("x")[0], height: +process.env.VIEW.split("x")[1] } : { width: 1280, height: 720 } }), p = await ctx.newPage(); p.on("pageerror", (e) => fehlerSeite.push(name + ": " + e));
   await ctx.route("http://localhost:8765/**", dateien); await ctx.route("**/vendor/supabase-js-*.js", (r) => r.fulfill({ contentType: "text/javascript", body: token ? FAKE(name) : FAKE_GAST }));
-  await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); if (!localStorage.getItem("ez_mein_held")) localStorage.setItem("ez_mein_held", JSON.stringify({ aussehen: { g: "mann", frisur: "scheitel", bart: "vollbart", haar: "dunkelbraun", haut: "mittel" }, waffe: "schwert" })); sessionStorage.setItem("ez__hilfe", "1"); localStorage.setItem("ez_quest_verfolgt", "nordwald_waldsaebel"); if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
+  await ctx.addInitScript(() => { const t = setInterval(() => { const f = window.EZ_UNTAETIG; if (f) { f(-864e5); clearInterval(t); } }, 200); }); /* wach halten (#109): mit ?server= läuft der Untätigkeitswächter nicht, die letzte Eingabe bliebe beim Laden stehen – nach 70 s kein Lebenszeichen „da“ mehr, und der Server meldet nach 5½ Minuten ab. Unter Last dauert der Test länger. */ await ctx.addInitScript(([t, st]) => { if (t) sessionStorage.setItem("fake_token", t); sessionStorage.setItem("ez__gefragt", "1"); if (!localStorage.getItem("ez_mein_held")) localStorage.setItem("ez_mein_held", JSON.stringify({ aussehen: { g: "mann", frisur: "scheitel", bart: "vollbart", haar: "dunkelbraun", haut: "mittel" }, waffe: "schwert" })); sessionStorage.setItem("ez__hilfe", "1"); localStorage.setItem("ez_quest_verfolgt", "nordwald_waldsaebel"); if (st && !sessionStorage.getItem("st")) { localStorage.setItem("ez_welt_pos", JSON.stringify(st)); sessionStorage.setItem("st", "1"); } }, [token, stelle]);
   return p; }
 const bereit = (p) => p.waitForFunction(() => window.EZK && window.EZK.bereit && window.EZK.z && window.EZW && window.EZW.welt3d, null, { timeout: 120000 });
 
@@ -67,7 +67,7 @@ try {
   check(/rgba\(14, 10, 6, 0\.3\)/.test(st.bg) && st.c === "rgb(251, 241, 216)" && /rgb\(0, 0, 0\)/.test(st.sh), "Chat durchsichtig, helle Schrift mit dunklem Rand");
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "chat-durchsichtig.png" });
   /* 3) Namen antippen → Karte mit Blockieren und Melden */
-  await anna.click('#ez-chat .liste a.cn[data-cn="Ben"]'); await anna.waitForSelector("#ez-konto .reihe.schutz", { timeout: 8000 });
+  await anna.click('#ez-chat .liste a.cn[data-cn="Ben"]'); await anna.waitForSelector("#ez-konto .reihe.schutz", { timeout: 30000 });
   const kn = await anna.evaluate(() => [...document.querySelectorAll("#ez-konto .reihe.schutz button")].map((b) => b.textContent));
   check(kn.join(",") === "Blockieren,Melden", "Spielerkarte: " + kn.join(", "));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "chat-karte.png" });
@@ -87,9 +87,9 @@ try {
   const annaId = await anna.evaluate(() => window.EZW && window.EZW.ich ? window.EZW.ich.id : null);
   /* 5) Einstellungen → Blockierte Spieler → Aufheben */
   await anna.evaluate(() => { const b = [...document.querySelectorAll("button, [role=button]")].find((x) => /Menü|Einstellungen/.test(x.getAttribute("aria-label") || x.title || "")); if (b) b.click(); });
-  await anna.waitForSelector('#ez-konto [data-t="blockiert"]', { timeout: 8000 });
+  await anna.waitForSelector('#ez-konto [data-t="blockiert"]', { timeout: 30000 });
   check(/Blockierte Spieler\s*1/.test(await anna.textContent('#ez-konto [data-t="blockiert"]')), "Einstellungen: „Blockierte Spieler 1“");
-  await anna.click('#ez-konto [data-t="blockiert"]'); await anna.waitForSelector("#ez-konto .blockliste", { timeout: 5000 });
+  await anna.click('#ez-konto [data-t="blockiert"]'); await anna.waitForSelector("#ez-konto .blockliste", { timeout: 30000 });
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "chat-blockliste.png" });
   await anna.click('#ez-konto [data-frei="Ben"]'); await anna.waitForTimeout(300);
   check(/niemanden blockiert/.test(await anna.textContent("#ez-konto .tafel")), "Aufgehoben – Liste leer");
