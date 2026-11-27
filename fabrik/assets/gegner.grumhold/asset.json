@@ -1,0 +1,9 @@
+{
+  "id": "gegner.grumhold",
+  "name": "Grumhold",
+  "kategorie": "gegner",
+  "aktuell": "v001",
+  "grundform": "Troll / Riese (gebückt) mit Waffe",
+  "status": "v001: Hüter der Hochlande: uralter Bergtroll, 3,6 m, große Keule – Bergtroll (quelle: fabrik/assets/gegner.bergtroll/v001/quelle/meshy.glb), fabrik/rig_riese.py hoehe=3.6 waffe=Knüppel ×3,2 m; Bewegungen angriff, gehen, ruhe, stampfen, tod, treffer, werfen – img/figuren-echt3d/grumhold3d.glb (+ .mobil.glb) (Block H #159)",
+  "herkunft": "aus Vorlagen"
+}
