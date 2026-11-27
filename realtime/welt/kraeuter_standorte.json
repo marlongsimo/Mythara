@@ -359,6 +359,62 @@
    "region": "fl_201_169"
   },
   {
+   "id": "hochlande_wegerich_11",
+   "art": "wegerich",
+   "x": 7170.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_12",
+   "art": "wegerich",
+   "x": 7174.5,
+   "y": 5986.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_13",
+   "art": "ringelblume",
+   "x": 7208.5,
+   "y": 5988.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_ringelblume_14",
+   "art": "ringelblume",
+   "x": 7212.5,
+   "y": 5991.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_wegerich_15",
+   "art": "wegerich",
+   "x": 7214.5,
+   "y": 6004.5,
+   "region": "fl_216_183"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_16",
+   "art": "moorgloeckchen",
+   "x": 7343.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_ringelblume_17",
+   "art": "ringelblume",
+   "x": 7346.5,
+   "y": 5669.5,
+   "region": "fl_216_169"
+  },
+  {
+   "id": "hochlande_moorgloeckchen_18",
+   "art": "moorgloeckchen",
+   "x": 7345.5,
+   "y": 5671.5,
+   "region": "fl_216_169"
+  },
+  {
    "id": "sueden_wegerich_1",
    "art": "wegerich",
    "x": 6406.5,

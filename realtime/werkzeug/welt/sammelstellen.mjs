@@ -95,14 +95,22 @@ const PLAN = [
   /* Hochlande (Phase 11, #147): Stufe 40–65 – Bergbau im Bergwerk und an den Geröllhängen, Holz in den Tälern, einzelne alte Bäume */
   ["bergwerk", "festerz", (HL.adern || []).map((p) => ({ ...p })), "Erzadern im Erzberg-Bergwerk"],
   ["erzberg", "erz", ["sterneisen", "sterneisen", "splittereisen", "splittereisen"], "Geröllhang am Erzberg"],
-  ["hochpass", "erz", ["splittereisen", "splittereisen", "ureisen"], "Erzgrat am Hochpass"],
+  ["hochpass", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Erzgrat am Hochpass"],   /* Ureisen nur unter Tage (Konzept „Hochlande füllen“) */
   ["steinhag", "holz", ["kernbaum", "kernbaum", "eibe", "eibe"], "Bergwald unter Steinhag"],
   ["steinhag", "erz", ["sterneisen", "sterneisen", "splittereisen"], "Steinbruch von Steinhag"],
   ["alm", "holz", ["kernbaum", "kernbaum", "kernbaum", "eibe"], "Kernbäume an der Hohen Alm"],
   ["alm", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Felsen an der Hohen Alm"],
   ["einsiedelei", "holz", ["eibe", "kernbaum", "kernbaum"], "Bäume am Spiegelsee"],
   ["einsiedelei", "einzeln", ["weltenbaum"], "Der alte Baum über dem Spiegelsee"],
-  ["nordklippen", "erz", ["ureisen", "splittereisen", "splittereisen"], "Adern in den Nordklippen"],
+  ["nordklippen", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Adern in den Nordklippen"],
+  /* Hochlande füllen (Konzept, 27.11.): Grundholz und niedrige Erze nahe Steinhag und am Stollen, eine versteckte Ader */
+  ["steinhag", "holz", ["eiche", "eiche", "tanne", "tanne"], "Eichen und Tannen bei Steinhag"],
+  ["steinhag", "holz", ["eibe", "eibe", "moorweide"], "Eiben am Steinhagsee"],
+  ["steinhag", "erz", ["kupfer", "kupfer", "eisen", "eisen"], "Kupfer und Eisen bei Steinhag"],
+  ["steinhag", "erz", ["eisen", "schwarzeisen", "schwarzeisen"], "Schwarzeisen am Stadtrand"],
+  ["bergwerk", "erz", ["kupfer", "eisen", "schwarzeisen", "schwarzeisen"], "Halde am Stollen"],
+  ["steinhag", "einzeln", ["splittereisen"], "Splitterfels über dem Steinhagsee"],
+  ["hinterpass", "erz", ["sterneisen", "splittereisen", "splittereisen"], "Felsen hinter dem Hochpass"],
   /* Nachtrag des Nutzers (#142): einzelne Stellen deutlich über der Gegend, sparsam, versteckt abseits der Wege (ohne Feldweg) – zum Entdecken */
   ["heckenhof", "einzeln", ["eibe"], "Einsame Eibe hinter dem Heckenhof"],
   ["summweide", "einzeln", ["moorweide"], "Alte Moorweide im Wiesengrund"],
@@ -112,6 +120,12 @@ const PLAN = [
   ["netzbucht", "einzeln", ["schwarzeisen"], "Schwarzeisen an der Bucht"],
 ];
 ORTE.leuchtturm ??= [6176, 7036];
+ORTE.hinterpass = [6922, 5524];   /* Ende des Passwegs Richtung Frostkrone */
+/* Hochlande füllen: an jedem Weg alle ~70 Felder eine Gruppe in Reichweite – fehlt eine, kommt abwechselnd Holz (Eiche bis Eibe) oder Erz (Eisen bis Sterneisen) dazu */
+{ const nah = (x, y) => PLAN.some(([o]) => ORTE[o] && Math.hypot(ORTE[o][0] - x, ORTE[o][1] - y) < 35); let i = 0;
+  for (const w of (HL.wege || [])) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
+    for (let t = 0; t <= L; t += 30) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (nah(x, y)) continue; const id = "hlweg_" + ++i; ORTE[id] = [Math.round(x), Math.round(y)];
+      PLAN.push(i % 2 ? [id, "holz", i % 4 === 1 ? ["eiche", "tanne", "tanne"] : ["tanne", "eibe", "eibe"], `Bäume am Weg (Hochlande ${i})`] : [id, "erz", i % 4 === 2 ? ["eisen", "eisen", "schwarzeisen"] : ["schwarzeisen", "sterneisen", "sterneisen"], `Adern am Weg (Hochlande ${i})`]); } } }
 
 /* ───── Suche ───── */
 const alt = !process.argv.includes("--neu") && existsSync(DATEI) ? JSON.parse(readFileSync(DATEI, "utf8")) : { lichtungen: [], senken: [] };
@@ -147,7 +161,7 @@ for (const [ort, typ, arten, name] of PLAN) {
       else lichtungen.push({ name: nm, ort, baeume: pts }); gesetzt.push([mx, my, 6]); bericht.push(`${nm}: fest (${t.length})`); });
     continue; }
   const einzeln = typ === "einzeln", erz = typ === "erz" || (einzeln && ERZ_ARTEN.includes(arten[0])), f = suche(ort, arten, erz, einzeln); if (!f) { bericht.push(`${name}: KEIN PLATZ`); continue; }
-  const stamm = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ß/g, "ss").replace(/[^a-z]+/g, "_").replace(/^_|_$/g, "");
+  const stamm = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
   const pts = f.pts.map((p, i) => ({ id: `${stamm}_${p.art}_${i + 1}`, art: p.art, x: p.x, y: p.y, region: f.region }));
   const zusatz = einzeln ? { einzeln: true, ohneWeg: true } : {};
   if (erz) senken.push({ name, ort, x: +f.cx.toFixed(1), y: +f.cy.toFixed(1), r: einzeln ? 3 : 5, adern: pts, ...zusatz }); else lichtungen.push({ name, ort, baeume: pts, ...zusatz });
