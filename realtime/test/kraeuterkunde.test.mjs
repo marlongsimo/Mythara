@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 process.env.HANDWERK_BRENN = "0"; process.env.HANDWERK_GLUT = "0"; /* Brauen ohne Zufall (den Fehlschlag prüft brennChance) */
 const datei = join(tmpdir(), `riftmere-kraeuter-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { WIRKUNGEN, wirkungDazu, bemerkenFaktor, skillPlus } from "./shared/wirkungen"; export { KRAEUTER, KRAUTSTELLEN, KESSEL, SUD_FEHLSCHLAG } from "./shared/kraeuter"; export { rezept, REZEPTE, brennChance, WERKSTAETTEN, rezeptBeruf } from "./shared/handwerk"; export { BERUFE } from "./shared/berufe"; export { LAEDEN } from "./shared/laeden"; export * as I from "./server/src/inventar"; export * as HW from "./server/src/handwerk"; export * as KR from "./server/src/kraeuter"; export { wuerfelSetzen } from "./server/src/sammeln";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, VERBRAUCH } from "./shared/gegenstaende"; export { WIRKUNGEN, wirkungDazu, bemerkenFaktor, skillPlus } from "./shared/wirkungen"; export { KRAEUTER, KRAUTSTELLEN, KESSEL, SUD_FEHLSCHLAG, krautSchalter } from "./shared/kraeuter"; export { rezept, REZEPTE, brennChance, WERKSTAETTEN, rezeptBeruf } from "./shared/handwerk"; export { BERUFE } from "./shared/berufe"; export { LAEDEN } from "./shared/laeden"; export * as I from "./server/src/inventar"; export * as HW from "./server/src/handwerk"; export * as KR from "./server/src/kraeuter"; export { wuerfelSetzen } from "./server/src/sammeln";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const M = await import(datei);
 const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, GEGENSTAENDE, VERBRAUCH, WIRKUNGEN, wirkungDazu, bemerkenFaktor, skillPlus, KRAEUTER, KRAUTSTELLEN, KESSEL, SUD_FEHLSCHLAG, rezept, REZEPTE, brennChance, WERKSTAETTEN, rezeptBeruf, BERUFE, LAEDEN, I, HW, KR, wuerfelSetzen } = M;
@@ -66,6 +66,13 @@ for (const [bem, soll, t] of [[undefined, true, "ohne Trank: der Heidewolf bemer
   const id = s.beitreten("schildwaechter", 0, { x: 60.5, y: 60.5 }, kampfwerte({ ...NULL_XP }, startAusruestung("schwert"), 1, {}, { bemerken: bem })), h = s.nach(id); h.max = h.lp = 1e5; s.eingabe({ t: "auto", an: false }, id);
   const w = s["neu"](false, "heidewolf", 1, { x: 65.5, y: 60.5 }, true, 7); w.lp = w.max = 45; for (let i = 0; i < 20; i++) s.schritt();
   check((w.zielId === id) === soll, t); }
+
+console.log("\nKräuterhof: Beete erst mit dem Schalter kraeuterhof_beete");
+{ const { krautSchalter } = M, HOF = KRAUTSTELLEN.filter((s) => s.id.startsWith("kraeuterhof_"));
+  check(HOF.length === 8 && HOF.every((s) => krautSchalter(s.id)?.schalter === "kraeuterhof_beete") && KRAUTSTELLEN.filter((s) => !s.id.startsWith("kraeuterhof_")).every((s) => !krautSchalter(s.id)), `acht Stellen auf den Beeten hängen am Schalter, alle anderen nicht (${HOF.length})`);
+  const R = HOF.find((s) => s.art === "ringelblume"), alt = HW.HANDWERK_QUEST.schalter; await laden("frieda", { rucksack: ["sichel"], berufe: { kraeuterkunde: 1e6 } }); const S = { nutzer: "frieda", gast: false, wx: R.x, wy: R.y };
+  HW.HANDWERK_QUEST.schalter = () => false; check(/brach/.test(KR.krautStart(S, R.id) || ""), "vor der Quest: das Beet liegt brach");
+  HW.HANDWERK_QUEST.schalter = (_n, sch) => sch === "kraeuterhof_beete"; { const r = KR.krautStart(S, R.id); check(r === null, `nach der Quest: Ringelblume schneiden beginnt (${r})`); } KR.krautStop(S); HW.HANDWERK_QUEST.schalter = alt; }
 
 console.log(f ? `\nKräuterkunde: ${f} FEHLER` : "\nKräuterkunde: alles in Ordnung");
 process.exit(f ? 1 : 0);

@@ -8,7 +8,7 @@ import { build } from "esbuild";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const datei = join(tmpdir(), `riftmere-inhalt6-${process.pid}.mjs`);
-await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, beuteAufloesen } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN } from "./shared/bosse"; export { weltJeSpieler } from "./server/src/bosse"; export * as I from "./server/src/inventar"; export * as HW from "./server/src/handwerk"; export { rezept } from "./shared/handwerk";',
+await build({ stdin: { contents: 'export * from "./shared/sim"; export * from "./shared/config"; export * from "./shared/karte"; export * from "./shared/karten"; export * from "./shared/kampfwerte"; export { startAusruestung, GEGENSTAENDE, beuteAufloesen } from "./shared/gegenstaende"; export { BOSSE, INSTANZEN } from "./shared/bosse"; export { weltJeSpieler } from "./server/src/bosse"; export * as I from "./server/src/inventar"; export * as HW from "./server/src/handwerk"; export { rezept, WERKSTAETTEN, werkstattErreichbar, versperrt } from "./shared/handwerk";',
   resolveDir: new URL("..", import.meta.url).pathname, loader: "ts" }, bundle: true, platform: "node", format: "esm", outfile: datei, logLevel: "error" });
 const M = await import(datei);
 const { Sim, MONSTER, KARTEN, FEIN, setzeKarte, kampfwerte, NULL_XP, xpFuer, startAusruestung, GEGENSTAENDE, beuteAufloesen, BOSSE, INSTANZEN, weltJeSpieler, I, HW, rezept, fels } = M;
@@ -84,6 +84,12 @@ check(T && T.eintritt === "federsiegel" && BOSSE.oberster_rabenpriester.phasen.l
   check(ev.some((e) => e.a === "boss" && e.typ === "oberster_rabenpriester") && ev.some((e) => e.a === "beute"), "besiegt: Bosszähler-Ereignis und Beute");
   weltJeSpieler(s, id, "anna", 10768.5, 9640, () => true, beutel); check(!s.instanzDa("thronsaal:anna"), "hinaus: der Versuch ist vorbei");
   const t2 = weltJeSpieler(s, id, "anna", 10768.5, 9626.5, (x) => x === "rabenpriester_thronsaal", beutel); check(/ohne Federsiegel/.test(t2 || "") && !s.instanzDa("thronsaal:anna"), "noch einmal ohne Siegel: der Thronsaal bleibt zu"); }
+
+console.log("\nC1 „Schwarze Federn“: Meilerpech, Novizenkapuze, Brückenplanken");
+{ const { WERKSTAETTEN, versperrt } = M, P = rezept("brueckenplanke"), W = WERKSTAETTEN.find((w) => w.id === "werkbank_rabenmoor");
+  check(["meilerpech", "novizenkapuze", "brueckenplanke"].every((g) => GEGENSTAENDE[g] && GEGENSTAENDE[g].art === "Questgegenstand" && GEGENSTAENDE[g].untauschbar && GEGENSTAENDE[g].bild), "drei Questgegenstände, untauschbar, mit Bild aus dem Bestand");
+  check(P && P.station === "werkbank" && P.level === 25 && P.quest === "rabenmoor_schwarze_federn" && P.zutaten.length === 1 && P.zutaten[0].g[0] === "stamm_moorweide", "Rezept Brückenplanke: Werkbank, Handwerk 25, nur in C1, aus einem Moorweidenstamm");
+  check(W && !versperrt(Math.floor(W.x), Math.floor(W.y)) && Math.hypot(W.x - 6312.5, W.y - 6701.6) < 4, "Harms Werkbank in Rabenmoor steht frei, neben Harm"); }
 
 console.log(f ? `\nInhalte Phase 6: ${f} FEHLER` : "\nInhalte Phase 6: alles in Ordnung");
 process.exit(f ? 1 : 0);
