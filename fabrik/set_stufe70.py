@@ -1,4 +1,6 @@
 """Mythara Fabrik – Rüstungssätze der Stufe 70 (Block H, #159) aus vorhandenen Teilen der Grundfiguren: umgefärbt, Turmschild gestreckt.
+Hinweis: Helm, Brust und Beine aller drei Sätze sind inzwischen durch die Modelle des Nutzers ersetzt (fabrik/assets/ausruestung/stufe70/);
+von hier stammt nur noch schild.turm.steinvogt.
 
   <blender-python> fabrik/set_stufe70.py -- <teil.glb> <ziel.glb> <neue-id> stil=steinvogt|sturmfeder|frostschleier [strecken=1.6,1.15]
 
