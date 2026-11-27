@@ -100,6 +100,7 @@ export const QUEST_E2: QuestDef = {
     kloeppel: [{ wenn: { phase: ["neu", "fertig"] }, text: "Einen Klöppel schnitzt du nur für die Glocke von Grauwacht." }, { wenn: { erledigt: ["kloeppel"] }, text: "Den Klöppel hast du schon." }],
   } },
   schalter: { glocke_heil: [FERTIG, { erledigt: ["schlag"] }], bindestein_abtei: FERTIG },
+  glueckwunsch: "Die Glocke läutet. Nach all den Jahren. Hörst du, wie weit sie trägt?",
   belohnungText: "Belohnung: Schmieden 1.000 XP, 400 Splitter · danach: die Glocke läutet stündlich für alle, Bindestein in der Abtei",
   belohnung: { berufe: { schmieden: 1000 }, splitter: 400 },
   punkte: 2,

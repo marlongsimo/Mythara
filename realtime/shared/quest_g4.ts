@@ -63,6 +63,7 @@ export const QUEST_G4: QuestDef = {
   },
   sperren: { herstellen: { fischernetz: [{ wenn: { phase: ["neu", "fertig"] }, text: "Ein Fischernetz knüpfst du für Bente in der Möwenbucht." }, { wenn: { erledigt: ["netz_geben"] }, text: "Bente hat ihr Netz schon." }] } },
   schalter: { raeucherhuette_frei: [LAEUFT, FERTIG] },
+  glueckwunsch: "Neue Netze, und es riecht nach Rauch. Die Möwenbucht dankt dir.",
   belohnungText: "Belohnung: Fischen 1.500, Kochen 1.500, Handwerk 800 XP, 250 Splitter · danach: die Räucherhütte der Möwenbucht",
   belohnung: { berufe: { fischen: 1500, kochen: 1500, handwerk: 800 }, splitter: 250 },
   punkte: 1,

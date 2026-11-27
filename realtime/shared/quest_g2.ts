@@ -81,6 +81,7 @@ export const QUEST_G2: QuestDef = {
     splitterglut: [{ wenn: { phase: ["neu", "fertig"] }, text: "Eine Splitterglut bindest du nur für das Leuchtfeuer." }, { wenn: { erledigt: ["glut"] }, text: "Die Glut hast du schon." }],
   } },
   schalter: { leuchtfeuer_an: [FERTIG, { erledigt: ["feuer"] }] },
+  glueckwunsch: "Das Feuer brennt. Die Schiffe sehen Kielmund wieder.",
   belohnungText: "Belohnung: Splitterbinden 1.500, Handwerk 1.500, Fischen 800 XP, 500 Splitter · danach: das Leuchtfeuer über Kielmund brennt",
   belohnung: { berufe: { splitterbinden: 1500, handwerk: 1500, fischen: 800 }, splitter: 500 },
   punkte: 2,

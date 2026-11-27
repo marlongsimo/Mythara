@@ -115,6 +115,7 @@ export const QUEST_C2: QuestDef = {
   /* Federsiegel: in C2 von jedem Akoluthen garantiert, solange noch welche fehlen (Rolle Spiel: chance 100) */
   beute: { c2_federsiegel: { phase: ["laeuft"], offen: ["siegel"] } },
   schalter: { gruft_offen: [FERTIG, { erledigt: ["auge"] }] },
+  glueckwunsch: "Der Gesang ist still. Gut gemacht, Kind. Das sag ich nicht oft.",
   belohnungText: "Belohnung: die Rabenbeinschützer, Fernkampf 800, Magie 600, Defense 800 XP · danach: der Abstieg durch die Gruft in den Rabengrund",
   belohnung: { xp: { fernkampf: 800, magie: 600, defense: 800 }, gegenstaende: [{ g: "rabenbeinschuetzer" }] },
   punkte: 1,
