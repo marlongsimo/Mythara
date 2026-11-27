@@ -613,3 +613,20 @@ export function beuteAufloesen(g: string, zufall: () => number = Math.random): s
   R("chitin", "Chitin", 14, "Panzerplatten eines Sandkriechers, hart wie Horn.");
   R("giftdruese", "Giftdrüse", 18, "Die Drüse aus dem Stachel eines Glutskorpions. Vorsichtig anfassen."); }
 GEGENSTAENDE.splitterkern_gruen.wert = 40; GEGENSTAENDE.rabenfedern.wert = 3; /* Grundwert für den Trödler (#88) */
+
+/* ───────── Süden (#126, doku/konzepte/sueden.md „Fleisch und Gerichte“): Fleisch (einzige neue Rohstoffe), Braten und Gulasch; der alte Hecht (S3). Bilder folgen (Figuren) ───────── */
+{ const R = (id: string, name: string, wert: number, text: string) => { GEGENSTAENDE[id] = { id, name, art: "Rohstoff", seltenheit: "anfaenger", wert, symbol: "kristall", text }; };
+  R("hasenfleisch", "Hasenfleisch", 2, "Mageres Fleisch von einem Feldhasen. Am Feuer gebraten heilt es 3 Lebenspunkte.");
+  R("wildschweinfleisch", "Wildschweinfleisch", 6, "Dunkles, kräftiges Fleisch eines Keilers aus dem Erlengrund.");
+  R("wolfsfleisch", "Wolfsfleisch", 9, "Zähes Fleisch eines Wolfs. Lange im Kessel geschmort wird es ein gutes Gulasch.");
+  GEGENSTAENDE.fleisch_verbrannt = { id: "fleisch_verbrannt", name: "Verbranntes Fleisch", art: "Abfall", seltenheit: "anfaenger", symbol: "kristall", text: "Außen Kohle, innen nichts mehr." };
+  const E = (id: string, name: string, heil: number, wirkung: string | undefined, wtext: string | undefined, text: string, selten = false) => {
+    GEGENSTAENDE[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", symbol: "kristall", trank: id, text: `${text} Heilt ${heil} Lebenspunkte${wtext ? "; " + wtext : ""}.` };
+    VERBRAUCH[id] = { id, name, art: "Essen", seltenheit: selten ? "gewoehnlich" : "anfaenger", heilt: { fest: heil, anteil: 0 }, ...(wirkung ? { wirkung } : {}), stapelbar: false, modell: "",
+      werte: [["Heilung", `${heil} (nicht über das maximale Leben)`], ...(wtext ? [["Wirkung", `${wtext} (ersetzt anderes Essen)`] as [string, string]] : []), ["Stapelbar", "nein"]], text }; };
+  E("hasenbraten", "Hasenbraten", 3, undefined, undefined, "Ein kleiner Braten vom Feuer, knusprig und heiß.");
+  E("rinderbraten", "Rinderbraten", 5, undefined, undefined, "Kuhfleisch, lange auf dem Herd.");
+  E("wildschweinbraten", "Wildschweinbraten", 7, "wildschweinbraten", "Stärke +1 für 5 Minuten", "Kräftiger Braten vom Keiler.", true);
+  E("wolfsgulasch", "Wolfsgulasch", 9, "wolfsgulasch", "Defense +2 für 5 Minuten", "Wolfsfleisch, im Kessel geschmort.", true);
+  GEGENSTAENDE.alter_hecht = { id: "alter_hecht", name: "Der alte Hecht", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Ein Hecht, so lang wie ein Arm, mit Narben am Maul. Die Fischerin vom Schilfsee wird staunen – und Lambert erst." }; }

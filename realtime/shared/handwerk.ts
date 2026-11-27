@@ -78,7 +78,7 @@ const STOFF = ["stoff_hanf", "stoff_grob", "stoff_fein", "stoff_mond", "stoff_sp
 const r5 = (x: number) => (x >= 20 ? 5 * Math.round(x / 5) : Math.round(x));
 
 export interface Zutat { /** eine der Sorten (z. B. jedes Holz ab Eibe) */ g: string[]; n: number }
-export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string;
+export interface Rezept { id: string; station: StationId; ergebnis: string; level: number; zutaten: Zutat[]; xp: number; ticks: number; stufe: number; gruppe: string; /** nur mit dieser Quest (shared/quest03.ts) */ quest?: string; /** … oder mit einer dieser Quests (Süden #126: Eisenbänder auch für S4) */ auchQuest?: string[];
   /** Kochen: kann anbrennen – dann dieser Gegenstand, ohne XP (brennChance) */ verbrannt?: string;
   /** so viele Stück je Herstellen (Standard 1; Eisenbänder: 2 je Barren) */ menge?: number;
   /** Waffe laden (ergebnis „ladung:@waffe“ / „entladen:@waffe“): nur für eine angelegte Waffe dieser Seltenheit (Phase 5b) */ fuer?: string;
@@ -191,6 +191,11 @@ fisch("moorhecht", 20, 80, "Fisch");
 fisch("wels", 45, 140, "Fisch"); /* Phase 7 (#40) */
 fisch("glutwels", 65, 220, "Fisch"); /* Phase 9 (#86): Kochen 65 */
 /* Phase 10 (#92): Küstenfische und -gerichte. Räucherhering in der Räucherhütte der Möwenbucht (Wartezeit statt Anbrennen, nach G4) */
+/* Süden (#126): Fleisch und Gerichte (Heil-Staffel wie die Fische: 3 · 5 · 7 · 9) */
+dazu({ id: "hasenbraten", station: "feuer", ergebnis: "hasenbraten", level: 5, zutaten: [{ g: ["hasenfleisch"], n: 1 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Braten", verbrannt: "fleisch_verbrannt" });
+dazu({ id: "rinderbraten", station: "herd", ergebnis: "rinderbraten", level: 12, zutaten: [{ g: ["kuhfleisch"], n: 1 }], xp: 50, ticks: 5, stufe: 0, gruppe: "Braten", verbrannt: "fleisch_verbrannt" });
+dazu({ id: "wildschweinbraten", station: "feuer", ergebnis: "wildschweinbraten", level: 22, zutaten: [{ g: ["wildschweinfleisch"], n: 1 }], xp: 80, ticks: 5, stufe: 0, gruppe: "Braten", verbrannt: "fleisch_verbrannt" });
+dazu({ id: "wolfsgulasch", station: "kessel", ergebnis: "wolfsgulasch", level: 32, zutaten: [{ g: ["wolfsfleisch"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 110, ticks: 6, stufe: 0, gruppe: "Suppe", verbrannt: "suppe_verbrannt" }); /* „mit Kräutern“ folgt mit der Kräuterkunde (#29) */
 fisch("hering", 20, 60, "Fisch"); fisch("klippenbarsch", 35, 100, "Fisch"); fisch("seeaal", 45, 140, "Fisch");
 dazu({ id: "raeucherhering", station: "raeucherhuette", ergebnis: "raeucherhering", level: 25, zutaten: [{ g: ["fisch_hering_roh"], n: 1 }], xp: 70, ticks: 2, stufe: 0, gruppe: "Räuchern", warten: 180 });
 dazu({ id: "barsch_salzkruste", station: "feuer", ergebnis: "barsch_salzkruste", level: 40, zutaten: [{ g: ["fisch_klippenbarsch_roh"], n: 1 }, { g: ["salz"], n: 1 }], xp: 130, ticks: 5, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_klippenbarsch_verbrannt" });
@@ -210,8 +215,11 @@ dazu({ id: "reuse", station: "werkbank", ergebnis: "reuse", level: 20, zutaten: 
 /* Phase 3c B2 „Wasser auf die Mühle“ (shared/quest_b2.ts): Quest-Rezepte – Schütztafeln und Hanftau an der Werkbank, Eisenbänder am Amboss (1 Barren → 2 Bänder) */
 const B2 = "weidenhain_wasser_auf_die_muehle";
 dazu({ id: "schuetztafel", station: "werkbank", ergebnis: "schuetztafel", level: 15, zutaten: [{ g: ["stamm_tanne"], n: 2 }], xp: 50, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
-dazu({ id: "eisenbaender", station: "amboss", ergebnis: "eisenband", menge: 2, level: 10, zutaten: [{ g: ["barren_eisen"], n: 1 }], xp: 35, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
+dazu({ id: "eisenbaender", station: "amboss", ergebnis: "eisenband", menge: 2, level: 10, zutaten: [{ g: ["barren_eisen"], n: 1 }], xp: 35, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2, auchQuest: ["erlengrund_klemmende_saege"] }); /* S4 (#126): Eisenbänder für das Wasserrad der Sägemühle */
 dazu({ id: "hanftau", station: "werkbank", ergebnis: "hanftau", level: 15, zutaten: [{ g: ["garn"], n: 4 }], xp: 30, ticks: 4, stufe: 0, gruppe: "Auftrag des Müllers", quest: B2 });
 /* Werkstatt Weidenhain in Tebbes Schuppen: erst nach B2 (Schalter werkstatt_weidenhain); Esse und Amboss folgen, sobald die Welt sie aufstellt (#64) */
+/* Süden (#126): Werkbank in der Sägemühle (nach S4: saegemuehle_frei), Esse und Amboss in der Schmiede von Lehmfurt (Stellen aus welt/festland/plan_sueden.json) */
+WERKSTAETTEN.push({ id: "werkbank_saegemuehle", station: "werkbank", x: 6395, y: 7007.6, ort: "fl_186_211", schalter: "saegemuehle_frei", gesperrt: "Bodos Werkbank. Solange das Wasserrad klemmt, steht hier alles still." },
+  { id: "esse_lehmfurt", station: "esse", x: 6468.5, y: 7242.6, ort: "fl_201_225" }, { id: "amboss_lehmfurt", station: "amboss", x: 6470.5, y: 7242.6, ort: "fl_201_225" });
 WERKSTAETTEN.push({ id: "werkbank_weidenhain", station: "werkbank", x: 6447, y: 6671.5, ort: "weidenhain", schalter: "werkstatt_weidenhain", gesperrt: "Tebbes Werkbank. Er lässt erst jemanden ran, wenn das Wehr wieder hält.",
   bereich: [6443.5, 6672.9, 6448.5, 6675] /* nur von vorn (Welt, #64): der Schuppen ist im Gehraster ein voller Block, hinten liegt die Rückwand */ });

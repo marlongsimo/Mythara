@@ -609,7 +609,7 @@ export class Sim {
   /** Einen Helden in eine Kopie setzen (key) oder zurück in die gemeinsame Welt (undefined). def: der Raum – beim ersten Betreten entstehen seine Gegner.
    *  Der Server entscheidet, wer in welcher Kopie steht (Raum + Schalter); hier gilt nur: verschiedene Kopien sehen und treffen einander nicht. */
   instanzSetzen(id: number, key: string | undefined, def?: InstanzDef, fassung: BossFassung = "quest"): void { const h = this.nach(id); if (!h || !h.held) return; key = key || undefined;
-    if (key && def && !this.inst.has(key)) { this.inst.set(key, { def, welle: 0, da: false, pause: 0, leer: 0, fertig: !(def.wellen && def.wellen.length), fassung }); for (const g of def.gegner || []) this.instanzGegner(key, g); }
+    if (key && def && !this.inst.has(key)) { this.inst.set(key, { def, welle: 0, da: false, pause: 0, leer: 0, fertig: !(def.wellen && def.wellen.length) || fassung === "leer", fassung }); if (fassung !== "leer") for (const g of def.gegner || []) this.instanzGegner(key, g); } /* #116: leere Kopie vor der Quest */
     if (h.instanz === key) return; h.instanz = key; h.zielId = 0; h.kampfMit = 0; h.kampfBis = 0;
     for (const o of this.wesen) { if (o.zielId === h.id && !this.gleich(o, h)) { o.zielId = 0; o.pfad = []; } if (o.spottId === h.id) { o.spottId = 0; o.spottT = 0; } if (o.kampfMit === h.id) { o.kampfMit = 0; o.kampfBis = 0; } }
     this.geschosse = this.geschosse.filter((g) => g.zielId !== h.id && g.von !== h.id); }

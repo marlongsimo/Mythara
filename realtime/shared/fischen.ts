@@ -32,6 +32,12 @@ export const FISCH_GERAETE: SammelWerkzeug[] = [{ g: "angelrute", stufe: 0, leve
 
 export interface Fanggrund { id: string; name: string; art: FischArt; region: string; /** so viele Stellen gleichzeitig */ aktiv: number; felder: [number, number][]; /** nur mit diesem Quest-Schalter (Wehrkolk: wehr_heil aus B2) – je Spieler */ schalter?: string }
 export const FANGGRUENDE: Fanggrund[] = (ORTE as unknown as { gruende: Fanggrund[] }).gruende;
+/** Seltener Fang (Süden #126, S3 „Der alte Hecht“): an diesem Fanggrund je gefangenem Fisch mit chance, nur wenn die Beute-Bedingung nur (QuestDef.beute) gilt.
+ *  Gibt den Gegenstand g und meldet der Quest { art: "sammeln", ziel } */
+export interface SeltenerFang { id: string; grund: string; g: string; chance: number; nur: string; ziel: string; text: string }
+export const SELTENE_FAENGE: SeltenerFang[] = [
+  { id: "alter_hecht", grund: "schilfsee_steg", g: "alter_hecht", chance: 0.01, nur: "s3_alter_hecht", ziel: "alter_hecht", text: "Die Schnur reißt fast – das ist kein Mühlbarsch! Du ziehst den alten Hecht aus dem Schilf." },
+];
 /** Eine Stelle auf dem Wasser: „<grund>_<n>“ */
 export interface Fangstelle { id: string; grund: string; art: FischArt; x: number; y: number }
 export const FANGSTELLEN: Fangstelle[] = FANGGRUENDE.flatMap((g) => g.felder.map(([x, y], i) => ({ id: `${g.id}_${i + 1}`, grund: g.id, art: g.art, x, y })));

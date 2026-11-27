@@ -66,7 +66,7 @@ export function handwerkStart(s: HandwerkSpieler, id: string, menge: number): st
   if (!nah(s, r) && r.station !== "hand") { const zu = naheWerkstaetten(s, r).find((W) => !offen(s, W)); return zu ? zu.gesperrt || "Das geht hier noch nicht." : `Geh näher an ${ARTIKEL[r.station] || "die"} ${STATIONEN[r.station].name}.`; }
   if (r.warten && wartenVon(s.nutzer)) return wartenAbholen(s, r); /* läuft schon ein Auftrag: abholen (oder sagen, wie lange noch) */
   const L = handwerkLevel(s.nutzer, r.station); if (L < r.level) return `Dafür brauchst du ${(beruf(berufAn(r.station)) || { name: "Handwerk" }).name} ${r.level}.`;
-  if (r.quest) { const q = HANDWERK_QUEST.pruefen(s.nutzer, r); if (q) return q; }
+  if (r.quest) { let q: string | null = HANDWERK_QUEST.pruefen(s.nutzer, r); for (const id of r.auchQuest || []) if (q) q = HANDWERK_QUEST.pruefen(s.nutzer, { ...r, quest: id }) && q; if (q) return q; } /* auchQuest (#126): eine der Quests genügt */
   { const m = merkerZiel(r); if (m && merkerHat(s.nutzer, m)) return "Dein Wegstein trägt schon einen Splitterkern."; if (m && anzahlVon(s.nutzer, "wegstein") <= 0) return "Du brauchst deinen Wegstein im Rucksack."; }
   const w = WERKZEUG_AN[r.station]; if (w && anzahlVon(s.nutzer, w) <= 0) return `Du brauchst einen ${GEGENSTAENDE[w].name} im Rucksack.`;
   const f = fehlt(s.nutzer, r); if (f) return `Dir fehlt: ${f}.`;
@@ -126,7 +126,7 @@ function fertigStueck(a: Arbeit): boolean {
   else if (merkerZiel(r)) { if (!merkerDazu(sb, s.nutzer, merkerZiel(r)!)) { handwerkStop(s, "fertig"); return false; } a.rest = 1; } /* Splitterkern: einmal */
   else if (!aufnehmen(sb, s.nutzer, r.ergebnis, r.menge || 1)) { handwerkStop(s, "voll"); return false; } else stueck = r.menge || 1;
   const vorher = handwerkLevel(s.nutzer, r.station), xp = Math.round(r.xp * (glut ? 1.5 : 1)), b = berufAn(r.station); berufXpDazu(sb, s.nutzer, b, xp); const nachher = handwerkLevel(s.nutzer, r.station);
-  a.rest--; const G = GEGENSTAENDE[laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { g: "" }).g : laden || r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest && !HANDWERK_QUEST.weiter(s.nutzer, r)) a.rest = 0; /* Questrezept: nur so viele, wie die Quest noch braucht (B2: drei Tafeln) */
+  a.rest--; const G = GEGENSTAENDE[laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { g: "" }).g : laden || r.ergebnis]; HANDWERK_QUEST.fertig(s.nutzer, r); /* jedes Stück zählt für Quests (2 Bogensehnen, 2 Kupferbarren …) */ if (r.quest && ![r.quest, ...(r.auchQuest || [])].some((id) => HANDWERK_QUEST.weiter(s.nutzer, { ...r, quest: id }))) a.rest = 0; /* Questrezept: nur so viele, wie die Quest noch braucht (B2: drei Tafeln) */
   senden(s, { t: "handwerk", tat: "fertig", rezept: r.id, g: r.ergebnis, name: G ? G.name : merkerZiel(r) ? "Splitterkern im Wegstein" : r.ergebnis, xp, beruf: b, glut, gespart: spar >= 0, rest: a.rest, level: nachher, aufstieg: nachher > vorher ? nachher : 0,
     ...(laden ? { ladungen: laden === AN_WAFFE ? (waffeLadung(s.nutzer) || { n: 0 }).n : ladungen(s.nutzer, laden), stueck } : r.menge ? { stueck } : {}) });
   if (a.rest <= 0) { arbeiten.delete(s); senden(s, { t: "handwerk", tat: "stop", rezept: r.id, grund: "fertig" }); return false; }

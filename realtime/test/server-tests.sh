@@ -67,6 +67,10 @@ TESTS=(
   inhalt-phase10
   bosse-116
   bank-platzhalter
+  festland-kampf
+  inhalt-phase6
+  inhalt-phase7
+  inhalt-sueden
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

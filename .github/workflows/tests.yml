@@ -41,6 +41,9 @@ jobs:
       - name: Abhängigkeiten
         working-directory: realtime
         run: npm ci --include=dev
+      - name: Kampfraster aus den Weltdaten (weltzonen.ts, wie die Pipeline „Welt live“)
+        working-directory: realtime
+        run: python3 werkzeug/weltzonen.py > /dev/null
       - name: Typprüfung
         working-directory: realtime
         run: npx tsc --noEmit

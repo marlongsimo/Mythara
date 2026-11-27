@@ -26,6 +26,7 @@ export interface SammelBeruf {
   /** Wandernde Stellen (Fischen, Würmer): je Gruppe sind nur „aktiv“ Ziele da; ist eine Stelle leer gefischt oder nach „ms“, zieht sie zu einer anderen der Gruppe */
   wandern?: { ziele: () => SammelZiel[]; gruppe: (id: string) => string; aktiv: (gruppe: string) => number; ms: number };
   /** Text, wenn der Köder fehlt (SammelArt.koeder) */ ohneKoeder?: (a: SammelArt) => string;
+  /** Seltener Fund je Stück (Süden #126, der alte Hecht): Gegenstand, Questziel („sammeln“) und Text – oder null */ selten?: (nutzer: string, zielId: string) => { g: string; ziel: string; text: string } | null;
   /** Darf dieser Spieler hier sammeln? (Fischen: Wehrkolk erst mit Quest-Schalter) Zurück: Fehlertext oder null */ erlaubt?: (nutzer: string, ziel: SammelZiel) => string | null;
 }
 interface Sitzung { s: SammelSpieler; ziel: SammelZiel; naechst: number; momentBis: number; stufe: number }
@@ -90,6 +91,7 @@ export function sammelBeruf(B: SammelBeruf) {
     const vorher = level(s.nutzer), xp = A.xp * stuecke * (moment ? 1.5 : 1); berufXpDazu(sb, s.nutzer, B.beruf, xp); const nachher = level(s.nutzer);
     senden(s, { t: B.t, tat: B.tatErtrag, id: ziel.id, g: A.ertrag, name: G ? G.name : A.ertrag, n: stuecke, xp, splitter, [B.tatMoment]: moment, level: nachher, aufstieg: nachher > vorher ? nachher : 0 });
     if (!A.quest) for (let i = 0; i < stuecke; i++) SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, ""); /* Quests mit „anzahl“ (2 Flachs, 4 Kupfer …): jedes Stück zählt */
+    if (B.selten) for (let i = 0; i < stuecke; i++) { const R = B.selten(s.nutzer, ziel.id); if (R && aufnehmen(sb, s.nutzer, R.g, 1)) { SAMMEL_QUEST.ertrag(s.nutzer, R.ziel, ""); senden(s, { t: "chat", kanal: "system", text: R.text, zeit: Date.now() }); break; } } /* #126: seltener Fang */
     if (A.quest) { SAMMEL_QUEST.ertrag(s.nutzer, ziel.art, A.quest); stop(s, "fertig"); return false; } /* Questziel: ein Stück, fertig – das Ziel bleibt für andere stehen */
     if (B.wandern && wuerfel() < A.fall * FAKTOR) { weiterziehen(ziel.id, jetzt); allenMelden(); return false; }
     if (wuerfel() < A.fall * FAKTOR) { leer.set(ziel.id, jetzt + A.nachwachsen * 1000); for (const [o, w] of [...sitzungen]) if (w.ziel.id === ziel.id) stop(o, B.grundLeer); allenMelden(); return false; }

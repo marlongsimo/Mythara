@@ -397,6 +397,27 @@
      7590.5
     ]
    ]
+  },
+  {
+   "id": "schilfsee_steg",
+   "name": "Am Steg des Schilfsees",
+   "art": "muehlbarsch",
+   "region": "fl_201_211",
+   "aktiv": 2,
+   "felder": [
+    [
+     6449,
+     7188
+    ],
+    [
+     6451.5,
+     7181.5
+    ],
+    [
+     6459,
+     7188.5
+    ]
+   ]
   }
  ],
  "wurmacker": {

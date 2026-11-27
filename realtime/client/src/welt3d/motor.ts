@@ -12,7 +12,8 @@ import * as THREE from "three";
 import { bauen, type Bauplan, type Gebaeude } from "./bauten";
 import { modell, modellFern, istBaum, istReihe, setzeKenney, STEGE, type Typ, type KenneyModell } from "./natur";
 import { zufall, MATERIALIEN } from "./teile";
-import { Npc3D, Wanderer, NPC3D, WANDERER } from "./npc3d";
+import { Npc3D, Wanderer, NPC3D, WANDERER, ReisenderFigur } from "./npc3d";
+import { REISENDE } from "../../../shared/reisende";
 
 type Gebiet = { id: string; name: string; untertitel: string; ebene: string; biom: string; x: number; y: number; b: number; h: number };
 type Index = { stand: string; chunkFelder: number; start: [number, number]; gebiete: Gebiet[]; arten: Record<string, { id: string; farbe: string; wasser: boolean; begehbar: boolean }>;
@@ -84,7 +85,7 @@ export class Welt3D {
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
   st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0;
-  held = { x: 0, z: 0, blick: 1, lauf: 0 }; pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
+  held = { x: 0, z: 0, blick: 1, lauf: 0 }; /** Reisende auf der Südstraße (#126) */ reisende: ReisenderFigur[] | null = null; pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
   ebene = "";
   feuerLichter: THREE.PointLight[] = [];
@@ -345,7 +346,10 @@ export class Welt3D {
     if (this.beimBild) this.beimBild(dt);
     { const W = figurWeit(), hx = this.held.x, hz = this.held.z; /* #103: 3D-Figuren (je rund 35.000 Dreiecke) nur in der Nähe – auf dem Handy „flüssig“ bis 28 Felder */
       for (const s of this.st.values()) { if (s.npcs) for (const n of s.npcs) { const p = n.gruppe.position, an = Math.hypot(p.x - hx, p.z - hz) < W; n.gruppe.visible = an; if (an) n.schritt(dt); }
-        if (s.wanderer) for (const w of s.wanderer) { w.schritt(dt); w.npc.gruppe.visible = Math.hypot(w.x - hx, w.z - hz) < W; } } }
+        if (s.wanderer) for (const w of s.wanderer) { w.schritt(dt); w.npc.gruppe.visible = Math.hypot(w.x - hx, w.z - hz) < W; } }
+      /* Reisende auf der Südstraße (#126): erst anlegen, wenn der Held in die Nähe der Straße kommt; gehen nur, solange sie nah sind */
+      if (!this.reisende && hz > 6700 && hz < 7350 && Math.abs(hx - 6460) < 160) { this.reisende = REISENDE.map((r) => new ReisenderFigur(this, r)); for (const r of this.reisende) this.szene.add(r.npc.gruppe); }
+      if (this.reisende) for (const r of this.reisende) { r.schritt(Math.hypot(r.x - hx, r.z - hz) < W ? dt : 0); r.npc.gruppe.visible = Math.hypot(r.x - hx, r.z - hz) < W; } }
     const y = this.hoehe(H.x, H.z);
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);

@@ -94,6 +94,22 @@
    "y": 7226.25,
    "ort": "fl_186_225",
    "name": "Rastfeuer am Küstenweg"
+  },
+  {
+   "id": "herd_heckenhof",
+   "station": "herd",
+   "x": 6493,
+   "y": 6812.4,
+   "ort": "fl_201_211",
+   "name": "Herd vor dem Heckenhof"
+  },
+  {
+   "id": "feuer_halber_weg",
+   "station": "feuer",
+   "x": 6469,
+   "y": 7007,
+   "ort": "fl_201_211",
+   "name": "Lagerfeuer am Halben Weg"
   }
  ]
 }

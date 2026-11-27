@@ -15,10 +15,10 @@ import { MONSTER } from "../../shared/config";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
 /** Schlüssel einer Kopie: Raum, Konto (später: Gruppe) und Fassung (#116: quest ohne Zusatz, stark mit „:stark“) */
-export const instanzSchluessel = (def: InstanzDef, nutzer: string, fassung: BossFassung = "quest"): string => def.id + ":" + nutzer + (fassung === "stark" ? ":stark" : "");
+export const instanzSchluessel = (def: InstanzDef, nutzer: string, fassung: BossFassung = "quest"): string => def.id + ":" + nutzer + (fassung === "quest" ? "" : ":" + fassung);
 /** Aus dem Schlüssel einer Kopie: Raum, Konto und Fassung */
 export function instanzAus(key: string): { def: InstanzDef; nutzer: string; fassung: BossFassung } | null { const [id, nutzer, f] = key.split(":"); if (!id || !nutzer) return null;
-  const def = INSTANZEN.find((d) => d.id === id); return def ? { def, nutzer, fassung: f === "stark" ? "stark" : "quest" } : null; }
+  const def = INSTANZEN.find((d) => d.id === id); return def ? { def, nutzer, fassung: f === "stark" || f === "leer" ? f : "quest" } : null; }
 
 /* ───────── #116: Wahl am Eingang nach der Quest (öffentlich · eigene Instanz) – je Konto und Instanz, im Speicher des Servers (Standard öffentlich) ───────── */
 const wahlen = new Map<string, BossWahl>();
@@ -41,13 +41,13 @@ export function weltJeSpieler(sim: Sim, heldId: number, nutzer: string, wx: numb
   const vorher = sim.instanzVon(heldId); let def = INSTANZEN.length ? instanzBei(INSTANZEN, wx, wy, an, wahl) : null; const fassung: BossFassung = def ? instanzFassung(def, an, wahl(def.id)) || "quest" : "quest";
   let key = def ? instanzSchluessel(def, nutzer, fassung) : undefined, text: string | null = null;
   const neu = Boolean(key && (key !== vorher || !sim.instanzDa(key))); /* betritt die Kopie (oder sie ist inzwischen abgebaut: ein neuer Versuch) */
-  if (def && neu && def.eintritt) { if (beutel.abgeben(def.eintritt)) text = `${(GEGENSTAENDE[def.eintritt] || { name: def.eintritt }).name} verbraucht – ein Versuch.`;
+  if (def && neu && def.eintritt && fassung !== "leer") { if (beutel.abgeben(def.eintritt)) text = `${(GEGENSTAENDE[def.eintritt] || { name: def.eintritt }).name} verbraucht – ein Versuch.`;
     else { const d = def; text = abgewiesen.get(heldId) === key ? null : d.ohne || `Ohne ${(GEGENSTAENDE[d.eintritt!] || { name: d.eintritt! }).name} kein Eintritt.`; abgewiesen.set(heldId, key!); def = null; key = undefined; } }
   if (!def || !def.eintritt) { if (!INSTANZEN.some((d) => d.eintritt && imFeld(d.feld, wx, wy))) abgewiesen.delete(heldId); }
   if (key !== vorher || neu) sim.instanzSetzen(heldId, key, def || undefined, fassung);
   if (vorher && vorher !== key) { const A = instanzAus(vorher); if (A && A.def.eintritt) sim.instanzWeg(vorher); } /* hinaus: der Versuch ist vorbei */
   if (TUEREN.length) sim.sperrenSetzen(heldId, tuerenZu(TUEREN, an, { hat: beutel.hat, x: wx, y: wy, wahl }, INSTANZEN));
-  if (def && neu && def.text) text = text ? text + " " + def.text : def.text;
+  if (def && neu && def.text && fassung !== "leer") text = text ? text + " " + def.text : def.text;
   return text; }
 
 /* ───────── Bosszähler ───────── */

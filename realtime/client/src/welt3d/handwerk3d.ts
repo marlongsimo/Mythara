@@ -102,7 +102,7 @@ export class HandwerkWelt {
 #ez-konto .handwerk .zut span { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; padding: 2px 8px 2px 2px; border-radius: 6px; background: rgba(0,0,0,.3); font-size: 12px; white-space: nowrap; }
 #ez-konto .handwerk .zut img { width: 26px; height: 26px; object-fit: contain; } #ez-konto .handwerk .zut .da { color: #9fd08a; } #ez-konto .handwerk .zut .nicht { color: #e07a6a; }
 #ez-konto .handwerk .menge { display: flex; flex: 0 0 auto; gap: 5px; flex-wrap: nowrap; } #ez-konto .handwerk .menge button { min-width: 38px; padding: 6px 8px; font-size: 13px; }`; document.head.appendChild(s); }
-    const mit = (id: string) => { const q = questDef(id); return Boolean(q && laeuftB(q, questStandB(id))); } /* Questrezepte nur, solange die Quest läuft */, rs = rezepteAn(st).filter((r) => (!r.quest || mit(r.quest)) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
+    const mit = (id: string) => { const q = questDef(id); return Boolean(q && laeuftB(q, questStandB(id))); } /* Questrezepte nur, solange die Quest läuft */, rs = rezepteAn(st).filter((r) => (!r.quest || [r.quest, ...(r.auchQuest || [])].some(mit)) && (!nur || r.zutaten.some((z) => z.g.includes(nur))));
     const gruppen = new Map<string, Rezept[]>(); for (const r of rs) { if (!gruppen.has(r.gruppe)) gruppen.set(r.gruppe, []); gruppen.get(r.gruppe)!.push(r); }
     const bild = (g: string) => (GEGENSTAENDE[g] && GEGENSTAENDE[g].bild ? `<img src="../${GEGENSTAENDE[g].bild}" alt="" draggable="false">` : "");
     const ding = (r: Rezept) => { const offen = L >= r.level, n = wieOft(r), G = { name: ergName(r) };

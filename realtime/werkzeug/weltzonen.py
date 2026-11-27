@@ -30,7 +30,6 @@ BESONDERS = {
                        "lager": [("strandraeuber_saebel", 11442, 9618), ("strandraeuber_armbrust", 11444, 9614), ("strandraeuber_saebel", 11470, 9616), ("strandraeuber_armbrust", 11468, 9614),
                                  ("riesenkrabbe", 11450, 9645), ("strandkrabbe", 11448, 9643)]},
     # Phase 10 (#92): Smaragdküste (Festland-Kacheln) – Krabben am Strand und Wrack, Seevögel an den Klippen, Strandräuber am Wrack, Lurche in den Mangroven.
-    # WARTEN wie Phase 8/9: erst wirksam, wenn das Festland Kampfgebiet wird
     "fl_186_211": {"leine": 12, "wandern": 3,
                    "lager": [("strandkrabbe", 6230, 7150), ("strandkrabbe", 6228, 7148), ("strandkrabbe", 6230, 7148),
                              ("seevogel", 6160, 7060), ("seevogel", 6158, 7058), ("seevogel", 6140, 7110)]},
@@ -38,7 +37,6 @@ BESONDERS = {
                    "lager": [("riesenkrabbe", 6290, 7262), ("strandraeuber_saebel", 6288, 7260), ("strandraeuber_armbrust", 6290, 7260), ("strandraeuber_saebel", 6292, 7260)]},
     "fl_201_225": {"leine": 12, "wandern": 3, "lager": [("mangrovenlurch", 6500, 7580), ("mangrovenlurch", 6498, 7578), ("mangrovenlurch", 6500, 7578)]},
     # Phase 9 (#86): die Glutsande (Festland-Kacheln der Welt #79) – Sandkriecher in den Dünen, Glutskorpione an der Salzpfanne, Karawanenräuber am Kanal (F1).
-    # WARTEN wie Phase 8: Festland-Kacheln sind noch kein Kampfgebiet – die Lager wirken, wenn das Festland Teil der Kampfwelt wird
     "fl_216_211": {"leine": 12, "wandern": 3,
                    "lager": [("sandkriecher", 7045, 6856), ("sandkriecher", 7043, 6854), ("glutskorpion", 7045, 6854), ("glutskorpion", 7047, 6854)]},
     "fl_216_198": {"leine": 12, "wandern": 3,
@@ -48,7 +46,7 @@ BESONDERS = {
     "tempel": {"leine": 10, "wandern": 2, "lager": [("glutgeist", 11294, 9622), ("sandkriecher", 11292, 9620), ("glutgeist", 11328, 9618), ("glutgeist", 11326, 9616), ("sandkriecher", 11312, 9640)]},
     # Phase 8 (#58): die Fahlen Weiten (Festland-Kacheln der Welt #50) – Heidewölfe in der offenen Heide, der Rudelführer mit Rudel (E1),
     # Wiedergänger bei den Hügelgräbern (friedlich beim Glockenschlag), Deserteure am Grenzposten (E3).
-    # WARTEN: Festland-Kacheln sind noch kein Kampfgebiet (FESTLAND unten) – diese Lager wirken erst, wenn das Festland Teil der Kampfwelt wird (Entscheidung offen, Größe des Spiels)
+    # Festland-Kacheln: seit #122 Teil der Kampfwelt
     "fl_201_183": {"leine": 12, "wandern": 3,
                    "lager": [("heidewolf", 6560, 5900), ("heidewolf", 6558, 5898), ("heidewolf", 6560, 5898),
                              ("deserteur_schwert", 6640, 6110), ("deserteur_schwert", 6638, 6108), ("deserteur_armbrust", 6640, 6108), ("deserteur_armbrust", 6630, 6122)]},
@@ -104,13 +102,32 @@ BESONDERS = {
                # Kuhgehege (Handwerk, 25.11.2026): zehn friedliche Kühe hinter Zaun (shared/handwerk_welt.json), Kuhhaut für die Werkbank
                + [("kuh", 6522, 6409), ("kuh", 6527, 6408), ("kuh", 6533, 6409), ("kuh", 6539, 6408), ("kuh", 6524, 6412), ("kuh", 6530, 6412), ("kuh", 6536, 6413), ("kuh", 6521, 6416), ("kuh", 6528, 6416), ("kuh", 6538, 6417)]},
 }
+# Süden (#126, welt/sueden_orte.json): Gegnerplätze von Heckenhof bis Lehmfurt (Stufe 2–30), Tiere zur Stimmung; zu den Gebieten oben dazu
+SUEDEN = {
+    "fl_201_211": [("feldhase", 6480, 6821), ("feldhase", 6478, 6819), ("kraehenschwarm", 6480, 6819), ("kraehenschwarm", 6482, 6819),
+                   ("schaf", 6504, 6818), ("schaf", 6502, 6816), ("schaf", 6504, 6816),
+                   ("schilfkroete", 6458, 7198), ("schilfkroete", 6456, 7196), ("ente", 6455, 7194),
+                   ("wegelagerer_knueppel", 6432, 6950), ("wegelagerer_knueppel", 6432, 6948), ("wegelagerer_schleuder", 6434, 6948),
+                   ("wegelagerer_knueppel", 6496, 7166), ("wegelagerer_schleuder", 6496, 7164), ("wegelagerer_schleuder", 6498, 7164)],
+    "fl_186_211": [("wildbienen_schwarm", 6414, 6916), ("wildbienen_schwarm", 6412, 6914),
+                   ("fuchs", 6366, 6998), ("fuchs", 6364, 6996), ("wildschwein", 6366, 6996), ("wildschwein", 6368, 6996),
+                   ("graupelz", 6342, 6968), ("heidewolf", 6340, 6966), ("heidewolf", 6342, 6966)],
+    "fl_201_225": [("steinschlucker", 6500, 7237), ("steinschlucker", 6498, 7235), ("steinschlucker", 6500, 7235)],
+}
+for rid, l in SUEDEN.items(): BESONDERS.setdefault(rid, {"leine": 12, "wandern": 3, "lager": []})["lager"] += l
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
-       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
-       "export const WELTKAMPF: WeltKampfGebiet[] = ["]
-# Das Festland (Entwurf, 26.11.2026: nur Gelände und Höhen, ohne Orte, Wege und Gegner) ist noch kein Kampfgebiet und kein Teil der gemeinsamen Welt
-FESTLAND = {rid for rid, e in welt["regionen"].items() if e["region"].get("nahtlos") == "festland"}
+       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
+       "const ROH: Omit<WeltKampfGebiet, \"zeilen\">[] = ["]
+# #122 (Entscheidung des Nutzers, 27.11.): die ganze Welt ist Kampfwelt, auch das Festland. Die Raster stehen in Lauflängen in der Datei (sonst rund 8 MB)
+FESTLAND: set = set()
+def lauf(zeile):
+    aus, i = [], 0
+    while i < len(zeile):
+        j = i
+        while j < len(zeile) and zeile[j] == zeile[i]: j += 1
+        aus.append((str(j - i) if j - i > 1 else "") + zeile[i]); i = j
+    return "".join(aus)
 for rid, eintrag in welt["regionen"].items():
-    if rid in FESTLAND: continue
     if rid in SICHER: print(f"{rid}: sicherer Ort"); continue
     z = BESONDERS.get(rid, {}); R = eintrag["region"]; ux, uy = R["ursprung"]; bw, bh = R["chunks"]; x0, y0, B, H = ux * C, uy * C, bw * C, bh * C
     raster = [["T"] * B for _ in range(H)]
@@ -127,11 +144,15 @@ for rid, eintrag in welt["regionen"].items():
     lager = [{"art": art, "x": (wx - x0) / 2, "y": (wy - y0) / 2, "gruppe": n + 1} for n, (art, wx, wy) in enumerate(frei)]
     start = eintrag["start"][0]; karte = z.get("karte", "welt_" + rid)
     aus.append("  " + json.dumps({"region": rid, "karte": karte, "name": R.get("name", rid), "x0": x0, "y0": y0, "b": B, "h": H, "stufe": z.get("stufe", R.get("stufe", 1)),
-        "zeilen": ["".join(r) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,
+        "lauf": [lauf("".join(r)) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,
         "mehrkampf": [[a - x0, b - y0, c - x0, d - y0] for (a, b, c, d) in z.get("mehrkampf", [])],
         "aggro": z.get("aggro", 5), "leine": z.get("leine", 14), "wandern": z.get("wandern", 4)}, ensure_ascii=False) + ",")
     print(f"{rid} → {karte}: {B}×{H}, {sum(r.count('.') for r in raster)} frei, {len(lager)} Gegner, {'Mehrkampf-Bereiche: ' + str(len(z['mehrkampf'])) if z.get('mehrkampf') else 'Einzelkampf'}")
 aus.append("];")
+aus.append("export const WELTKAMPF = ROH as WeltKampfGebiet[];")
+aus.append("/** Lauflängen ausschreiben (eine Zeile) */")
+aus.append("export const laufAus = (l: string): string => l.replace(/(\\d+)([^\\d])/g, (_m, n: string, c: string) => c.repeat(Number(n)));")
+aus.append("for (const z of WELTKAMPF) Object.defineProperty(z, \"zeilen\", { configurable: true, enumerable: false, get() { const v = z.lauf.map(laufAus); Object.defineProperty(z, \"zeilen\", { value: v }); return v; } });")
 aus.append("/** Alle Regionen der Welt (auch die sicheren) – der Server lässt dort die gemeinsame Welt zu (Anwesenheit, Chat) */")
 aus.append("export const WELTREGIONEN: string[] = " + json.dumps([r for r in welt["regionen"] if r not in FESTLAND]) + ";")
 open(os.path.join(WURZEL, "realtime", "shared", "weltzonen.ts"), "w").write("\n".join(aus) + "\n")
