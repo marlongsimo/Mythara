@@ -11,10 +11,10 @@ import { join } from "node:path";
 import { gemeinsam, bibliothek, region, WELT, WURZEL } from "../werkzeug/welt/laden.mjs";
 let ok = true; const check = (b, t, e = []) => { console.log(`  ${b ? "✓" : "✗"} ${t}`); if (!b) { ok = false; for (const z of e.slice(0, 12)) console.log("      " + z); } };
 const G = await gemeinsam(), bib = bibliothek(), lies = (f) => JSON.parse(readFileSync(join(WELT, f), "utf8"));
-const HO = lies("hochlande_orte.json"), BOX = [6640, 5200, 7700, 6300];
+const HO = lies("hochlande_orte.json"), BOX = [6640, 5200, 7700, 6300], M = HO.hauptstadt.mauer, inMauer = (o, r = 0) => o.x > M[0] - r && o.x < M[2] + r && o.y > M[1] - r && o.y < M[3] + r;
 const R = new G.WeltRaster(), IA = new Map(), OBJ = [];
 for (const n of readdirSync(join(WELT, "regionen"))) { const rp = join(WELT, "regionen", n, "region.json"); if (!existsSync(rp)) continue; const r = JSON.parse(readFileSync(rp, "utf8")); if (r.entwurf) continue;
-  const x0 = r.ursprung[0] * 32, y0 = r.ursprung[1] * 32, x1 = x0 + r.chunks[0] * 32, y1 = y0 + r.chunks[1] * 32; if (n !== "hochlande_bergwerk" && (x1 < BOX[0] || x0 > BOX[2] || y1 < BOX[1] || y0 > BOX[3])) continue;
+  const x0 = r.ursprung[0] * 32, y0 = r.ursprung[1] * 32, x1 = x0 + r.chunks[0] * 32, y1 = y0 + r.chunks[1] * 32; if (!["hochlande_bergwerk", "steinhag_zunftstollen"].includes(n) && (x1 < BOX[0] || x0 > BOX[2] || y1 < BOX[1] || y0 > BOX[3])) continue;
   const reg = region(n); for (const c of G.chunksBauen(reg, bib.gelaende, bib.objekte).chunks) R.dazu(c);
   for (const i of reg.spiel.interaktionen) IA.set(i.id, { ...i, x: i.x + x0, y: i.y + y0 }); for (const o of reg.objekte) OBJ.push({ ...o, x: o.x + x0, y: o.y + y0, region: n }); }
 const flut = ([sx, sy], box) => { const s = 2, seen = new Set(), q = [[Math.floor(sx * s), Math.floor(sy * s)]];
@@ -37,7 +37,7 @@ check(KR.filter((s) => ["eisenhut", "nebelkraut"].includes(s.art)).length >= 8 &
 console.log("\nHochlande füllen");
 { const SM = lies("sammelstellen.json"), punkte = [...SM.lichtungen.flatMap((l) => l.baeume), ...SM.senken.flatMap((s) => s.adern)].filter((p) => p.x > 6780 && p.y < 6350), alle = [...punkte, ...KR, ...HO.fischplaetze.map((f) => ({ x: f.stehplatz[0], y: f.stehplatz[1] }))];
   const luecken = []; for (const w of HO.wege) for (let j = 1; j < w.punkte.length; j++) { const [x0, y0] = w.punkte[j - 1], [x1, y1] = w.punkte[j], L = Math.hypot(x1 - x0, y1 - y0);
-    for (let t = 0; t <= L; t += 10) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (Math.hypot(x - HO.orte.steinhag[0], y - HO.orte.steinhag[1]) > 50 && !alle.some((p) => Math.hypot(p.x - x, p.y - y) < 45)) luecken.push(`${Math.round(x)}|${Math.round(y)}`); } }
+    for (let t = 0; t <= L; t += 10) { const x = x0 + (x1 - x0) * t / L, y = y0 + (y1 - y0) * t / L; if (!inMauer({ x, y }, 12) && !alle.some((p) => Math.hypot(p.x - x, p.y - y) < 45)) luecken.push(`${Math.round(x)}|${Math.round(y)}`); } }
   check(!luecken.length, `von jedem Weg aus (außerhalb der Stadt Steinhag) höchstens 45 Felder bis zu Holz, Erz, Kraut oder Fisch (${punkte.length} Bäume und Adern, ${KR.length} Kräuter, ${HO.fischplaetze.length} Fischplätze)`, luecken);
   const niedrig = (arten) => punkte.filter((p) => arten.includes(p.art)).length; check(niedrig(["eiche", "tanne"]) >= 8 && niedrig(["kupfer", "eisen", "schwarzeisen"]) >= 10 && niedrig(["kernbaum"]) >= 6 && niedrig(["sterneisen", "splittereisen"]) >= 10, "verschiedene Stufen: Grundholz und Kupfer bis Schwarzeisen, Kernbaum, Sterneisen und Splittereisen");
   const fi = new Set(HO.fischplaetze.map((f) => f.fisch)); check(["bachling", "muehlbarsch", "wels", "klippenbarsch"].every((f) => fi.has(f)), `Fische: ${[...fi].join(", ")} (Bergbäche, Seen, Nordklippen)`);
@@ -46,12 +46,26 @@ console.log("\nHochlande füllen");
 
 
 console.log("\nSteinhag");
-const [SX, SY] = HO.orte.steinhag, imOrt = (o) => Math.hypot(o.x - SX, o.y - SY) < 60;
-const hat = (re) => OBJ.some((o) => imOrt(o) && re.test(o.objekt)), HAUS = /haus|taverne|schmiede|kapelle|scheune|schuppen|kornspeicher|muehle|baeckerei|fachwerk|kate|bergfried|bank_01/;
+const [SX, SY] = HO.orte.steinhag, imOrt = (o) => inMauer(o) || Math.hypot(o.x - SX, o.y - SY) < 60;
+const hat = (re) => OBJ.some((o) => imOrt(o) && re.test(o.objekt)), HAUS = /haus|taverne|schmiede|kapelle|scheune|schuppen|kornspeicher|muehle|baeckerei|fachwerk|kate|bergfried|bank_01|huette|fischer|heldenhalle|turm/;
 const gebaeude = OBJ.filter((o) => imOrt(o) && HAUS.test(o.objekt)).length, ha = lies("beleben_orte.json").orte.haferstedt;
 const haferstedt = lies("festland/plan_beleben.json").objekte.filter((o) => Math.hypot(o.x - ha[0], o.y - ha[1]) < 60 && HAUS.test(o.objekt)).length;
 check(hat(/waldmark_bank/) && hat(/marktstand/) && hat(/dorf_schmiede/) && hat(/hand_werkbank/) && hat(/dorf_taverne/) && hat(/moor_menhir_02/) && hat(/wz_bindestein/) && hat(/graufurt_bergfried/), "Bank, Markt, Schmiede, Werkbank, Taverne, Wegstein, Bindestein, Hof der Bergvögte");
-check(gebaeude > haferstedt && gebaeude < 60, `${gebaeude} Gebäude – größer als Haferstedt (${haferstedt}), kleiner als eine Großstadt`);
+check(gebaeude > haferstedt && gebaeude >= 80 && gebaeude <= 130, `Hauptstadt (#167): ${gebaeude} Gebäude in den Mauern (Haferstedt ${haferstedt}), Viertel ${JSON.stringify(HO.hauptstadt.viertel)}`);
+{ const tore = ["steinhag_tor_west", "steinhag_tor_ost", "steinhag_tor_nordwest"], hat = (id) => OBJ.some((o) => o.id === id);
+  check(tore.every(hat) && OBJ.filter((o) => /^steinhag_mauer_/.test(o.id)).length > 150 && tore.every((id) => greifbar(IA.get(id).x, IA.get(id).y)), "Ringmauer mit Ecktürmen und drei Toren (West: Furt, Nordwest: Pass, Ost: Erzberg und Alm), alle Tore zu Fuß erreichbar");
+  const innen = ["steinhag_vogtsburg", "steinhag_burgplatz", "steinhag_zunftbank_tuer", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang", "steinhag_bank_tuer"], iw = innen.filter((id) => !IA.has(id) || !greifbar(IA.get(id).x, IA.get(id).y));
+  check(["steinhag_vogtsburg_bergfried", "steinhag_vogtsburg_palas", "steinhag_zunftbank", "steinhag_zunftschmiede", "steinhag_brennofen", "steinhag_zunftstollen_eingang"].every(hat) && !iw.length, "Vogtsburg auf dem Fels, zweite Bank, Zunftschmiede, Brennofen und Stollen-Abstieg – erreichbar", iw);
+  const lw = HO.hauptstadt.laeden.filter((l) => !greifbar(l.x, l.y, 1.4)), sw = HO.hauptstadt.stationen.filter((s) => !greifbar(s.x, s.y, 1.6));
+  check(HO.hauptstadt.banken.length === 2 && HO.hauptstadt.laeden.length >= 5 && !lw.length && !sw.length, `${HO.hauptstadt.laeden.length} neue Ladenplätze, ${HO.hauptstadt.stationen.length} Stationen (Zunft), 2 Banken – erreichbar`, [...lw, ...sw].map((x) => x.id));
+  const baum = OBJ.filter((o) => inMauer(o) && /tanne|birke|baum|busch|fels/.test(o.objekt) && !/^steinhag/.test(o.id)); check(!baum.length, "keine Bäume, Büsche und Felsbrocken in den Mauern", baum.map((o) => o.id));
+  const sm = lies("sammelstellen.json"), smIn = [...sm.lichtungen, ...sm.senken].filter((g) => (g.baeume || g.adern).some((p) => inMauer(p))); check(!smIn.length, "keine Sammelstelle in den Mauern", smIn.map((g) => g.name)); }
+console.log("\nStollen der Bergmannszunft (Untergrund, #167)");
+{ const ZS = region("steinhag_zunftstollen"), [ZX, ZY] = ZS.region.ursprung.map((v) => v * 32), ein = IA.get("steinhag_zunftstollen_eingang"), hin = IA.get("zunftstollen_hinaus");
+  check(ZS.region.ebene === "untergrund" && R.begehbar(...ein.daten.ziel) && greifbar(...hin.daten.ziel), "Abstieg im Zunftviertel führt hinein, der Ausgang wieder hinauf");
+  const unten = flut(ein.daten.ziel, [ZX, ZY, ZX + 64, ZY + 64]), ad = lies("sammelstellen.json").senken.filter((s) => s.name.startsWith("Adern im Stollen der Bergmannszunft")).flatMap((s) => s.adern), aw = ad.filter((a) => !unten(a.x, a.y, 1.2));
+  const arten = new Set(ad.map((a) => a.art)); check(ad.length >= 20 && !aw.length && ["eisen", "schwarzeisen", "sterneisen", "splittereisen", "ureisen"].every((a) => arten.has(a)), `${ad.length} Adern (${[...arten].join(", ")}), alle erreichbar`, aw.map((a) => a.id));
+  const ia = ["zunftstollen_schmelzofen", "zunftstollen_bankkiste", "zunftstollen_halle"].filter((id) => !IA.has(id) || !unten(IA.get(id).x, IA.get(id).y)); check(!ia.length, "Zunfthalle mit Schmelzofen und Bankkiste erreichbar", ia); }
 
 console.log("\nBergwerk (Untergrund)");
 const BW = region("hochlande_bergwerk"), [UX, UY] = BW.region.ursprung.map((v) => v * 32), ein = IA.get("bergwerk_eingang"), hin = IA.get("bergwerk_hinaus");
@@ -99,7 +113,7 @@ const GP = lies("gegnerplaetze.json").plaetze.filter((p) => p.land === "Die Hoch
 const fehltArt = ["hochlandwidder", "hochlandbaer", "bergtroll", "steppenwolf"].filter((a) => !arten.has(a));
 check(GP.length > 50 && !fehltArt.length && Math.min(...stufen) >= 44 && Math.max(...stufen) <= 60, `${GP.length} Gegnerplätze der Hochlande, Stufe ${Math.min(...stufen)}–${Math.max(...stufen)}: ${[...arten].join(", ")}`, fehltArt);
 const adler = lies("gegnerplaetze.json").plaetze.filter((p) => p.gegner.includes("klippenadler") && p.x > 6800 && p.y < 6300); check(adler.length > 0, `${adler.length} Plätze der Klippenadler an den Hochlande-Küsten`);
-const inOrt = GP.filter((p) => Math.hypot(p.x - SX, p.y - SY) < 42); check(!inOrt.length, "kein Gegnerplatz in Steinhag", inOrt.map((p) => p.id));
+const inOrt = GP.filter((p) => Math.hypot(p.x - SX, p.y - SY) < 42 || inMauer(p, 10)); check(!inOrt.length, "kein Gegnerplatz in Steinhag (Ringmauer und 10 Felder davor)", inOrt.map((p) => p.id));
 const SG = lies("streifgebiete.json").gebiete.filter((g) => g.land === "Die Hochlande"); check(SG.some((g) => g.gegner === "hochlandbaer") && SG.some((g) => g.gegner === "steppenwolf"), `Streifgebiete der Hochlande: ${SG.map((g) => g.gegner).join(", ")}`);
 const ON = lies("ortsnamen.json").orte.map((o) => o.name), nf = ["Die Hochlande", "Steinhag", "Hohe Alm", "Erzberg-Bergwerk", "Passwacht", "Einsiedelei", "Die Furt"].filter((n) => !ON.includes(n)); check(!nf.length, "Ortsnamen auf der Karte", nf);
 console.log(ok ? "\nHochlande: alles in Ordnung" : "\nHochlande: FEHLER"); process.exit(ok ? 0 : 1);

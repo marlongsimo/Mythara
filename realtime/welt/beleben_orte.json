@@ -52,6 +52,12 @@
    "y": 6981.5
   },
   {
+   "id": "bankier_haferstedt",
+   "rolle": "Bank (Schalter, Systeme)",
+   "x": 6246,
+   "y": 6979.4
+  },
+  {
    "id": "wirtin_haferstedt",
    "rolle": "Wirtin (Taverne)",
    "x": 6211,
@@ -104,6 +110,12 @@
    "rolle": "Quellwächterin",
    "x": 7386,
    "y": 6745
+  },
+  {
+   "id": "bankier_sandquell",
+   "rolle": "Bank (Schalter, Systeme)",
+   "x": 7406.5,
+   "y": 6731.4
   },
   {
    "id": "wirt_sandquell",

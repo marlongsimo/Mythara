@@ -692,29 +692,29 @@
     {
      "id": "bergwald_unter_steinhag_kernbaum_1",
      "art": "kernbaum",
-     "x": 7050.5,
-     "y": 5869.5,
+     "x": 6984.5,
+     "y": 5968.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_kernbaum_2",
      "art": "kernbaum",
-     "x": 7046.5,
-     "y": 5869.5,
+     "x": 6979.5,
+     "y": 5967.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_eibe_3",
      "art": "eibe",
-     "x": 7046.5,
-     "y": 5864.5,
+     "x": 6979.5,
+     "y": 5962.5,
      "region": "fl_216_183"
     },
     {
      "id": "bergwald_unter_steinhag_eibe_4",
      "art": "eibe",
-     "x": 7051.5,
-     "y": 5864.5,
+     "x": 6984.5,
+     "y": 5963.5,
      "region": "fl_216_183"
     }
    ]
@@ -802,30 +802,30 @@
     {
      "id": "eichen_und_tannen_bei_steinhag_eiche_1",
      "art": "eiche",
-     "x": 6933.5,
-     "y": 5920.5,
-     "region": "fl_216_183"
+     "x": 6984.5,
+     "y": 5811.5,
+     "region": "fl_216_169"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_eiche_2",
      "art": "eiche",
-     "x": 6928.5,
-     "y": 5919.5,
-     "region": "fl_216_183"
+     "x": 6979.5,
+     "y": 5810.5,
+     "region": "fl_216_169"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_tanne_3",
      "art": "tanne",
-     "x": 6929.5,
-     "y": 5914.5,
-     "region": "fl_216_183"
+     "x": 6980.5,
+     "y": 5805.5,
+     "region": "fl_216_169"
     },
     {
      "id": "eichen_und_tannen_bei_steinhag_tanne_4",
      "art": "tanne",
-     "x": 6934.5,
-     "y": 5915.5,
-     "region": "fl_216_183"
+     "x": 6984.5,
+     "y": 5806.5,
+     "region": "fl_216_169"
     }
    ]
   },
@@ -836,22 +836,22 @@
     {
      "id": "eiben_am_steinhagsee_eibe_1",
      "art": "eibe",
-     "x": 6959.5,
-     "y": 5949.5,
+     "x": 6965.5,
+     "y": 5974.5,
      "region": "fl_216_183"
     },
     {
      "id": "eiben_am_steinhagsee_eibe_2",
      "art": "eibe",
-     "x": 6954.5,
-     "y": 5947.5,
+     "x": 6960.5,
+     "y": 5972.5,
      "region": "fl_216_183"
     },
     {
      "id": "eiben_am_steinhagsee_moorweide_3",
      "art": "moorweide",
-     "x": 6958.5,
-     "y": 5944.5,
+     "x": 6964.5,
+     "y": 5968.5,
      "region": "fl_216_183"
     }
    ]
@@ -952,33 +952,6 @@
      "x": 7001.5,
      "y": 5956.5,
      "region": "fl_216_183"
-    }
-   ]
-  },
-  {
-   "name": "Bäume am Weg (Hochlande 5)",
-   "ort": "hlweg_5",
-   "baeume": [
-    {
-     "id": "baume_am_weg_hochlande_5_eiche_1",
-     "art": "eiche",
-     "x": 7051.5,
-     "y": 5848.5,
-     "region": "fl_216_169"
-    },
-    {
-     "id": "baume_am_weg_hochlande_5_tanne_2",
-     "art": "tanne",
-     "x": 7046.5,
-     "y": 5846.5,
-     "region": "fl_216_169"
-    },
-    {
-     "id": "baume_am_weg_hochlande_5_tanne_3",
-     "art": "tanne",
-     "x": 7050.5,
-     "y": 5843.5,
-     "region": "fl_216_169"
     }
    ]
   },
@@ -1303,6 +1276,60 @@
      "x": 7288.5,
      "y": 5435.5,
      "region": "fl_216_169"
+    }
+   ]
+  },
+  {
+   "name": "Bäume am Weg (Hochlande 31)",
+   "ort": "hlweg_31",
+   "baeume": [
+    {
+     "id": "baume_am_weg_hochlande_31_tanne_1",
+     "art": "tanne",
+     "x": 7096.5,
+     "y": 5917.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_2",
+     "art": "eibe",
+     "x": 7090.5,
+     "y": 5914.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "baume_am_weg_hochlande_31_eibe_3",
+     "art": "eibe",
+     "x": 7095.5,
+     "y": 5911.5,
+     "region": "fl_216_183"
+    }
+   ]
+  },
+  {
+   "name": "Bäume vor dem Westtor",
+   "ort": "steinhag_westtor",
+   "baeume": [
+    {
+     "id": "baume_vor_dem_westtor_eiche_1",
+     "art": "eiche",
+     "x": 6904.5,
+     "y": 5903.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_2",
+     "art": "tanne",
+     "x": 6898.5,
+     "y": 5901.5,
+     "region": "fl_201_183"
+    },
+    {
+     "id": "baume_vor_dem_westtor_tanne_3",
+     "art": "tanne",
+     "x": 6903.5,
+     "y": 5897.5,
+     "region": "fl_201_183"
     }
    ]
   }
@@ -2115,6 +2142,219 @@
    ]
   },
   {
+   "name": "Adern im Stollen der Bergmannszunft: Halle",
+   "ort": "steinhag",
+   "x": 11872.2,
+   "y": 9646.5,
+   "r": 11,
+   "adern": [
+    {
+     "id": "zunftstollen_eisen_1",
+     "art": "eisen",
+     "x": 11868.5,
+     "y": 9650.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_2",
+     "art": "eisen",
+     "x": 11872.5,
+     "y": 9638.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_3",
+     "art": "eisen",
+     "x": 11875.5,
+     "y": 9650.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Nordstollen",
+   "ort": "steinhag",
+   "x": 11867.5,
+   "y": 9622.7,
+   "r": 18,
+   "adern": [
+    {
+     "id": "zunftstollen_eisen_4",
+     "art": "eisen",
+     "x": 11873.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_5",
+     "art": "eisen",
+     "x": 11870.5,
+     "y": 9630.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_eisen_6",
+     "art": "eisen",
+     "x": 11870.5,
+     "y": 9624.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_1",
+     "art": "splittereisen",
+     "x": 11867.5,
+     "y": 9619.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_2",
+     "art": "splittereisen",
+     "x": 11860.5,
+     "y": 9616.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_3",
+     "art": "splittereisen",
+     "x": 11862.5,
+     "y": 9608.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Weststollen",
+   "ort": "steinhag",
+   "x": 11854.2,
+   "y": 9627.5,
+   "r": 16,
+   "adern": [
+    {
+     "id": "zunftstollen_schwarzeisen_1",
+     "art": "schwarzeisen",
+     "x": 11864.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_2",
+     "art": "schwarzeisen",
+     "x": 11858.5,
+     "y": 9636.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 11855.5,
+     "y": 9631.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_4",
+     "art": "schwarzeisen",
+     "x": 11849.5,
+     "y": 9626.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_5",
+     "art": "splittereisen",
+     "x": 11846.5,
+     "y": 9616.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_schwarzeisen_5",
+     "art": "schwarzeisen",
+     "x": 11850.5,
+     "y": 9617.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Oststollen",
+   "ort": "steinhag",
+   "x": 11892.7,
+   "y": 9619.2,
+   "r": 23,
+   "adern": [
+    {
+     "id": "zunftstollen_sterneisen_1",
+     "art": "sterneisen",
+     "x": 11882.5,
+     "y": 9637.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_2",
+     "art": "sterneisen",
+     "x": 11887.5,
+     "y": 9630.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_3",
+     "art": "sterneisen",
+     "x": 11894.5,
+     "y": 9625.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_4",
+     "art": "sterneisen",
+     "x": 11895.5,
+     "y": 9614.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_ureisen_3",
+     "art": "ureisen",
+     "x": 11895.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_sterneisen_5",
+     "art": "sterneisen",
+     "x": 11900.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
+   "name": "Adern im Stollen der Bergmannszunft: Urkammer",
+   "ort": "steinhag",
+   "x": 11858.2,
+   "y": 9605.5,
+   "r": 6,
+   "adern": [
+    {
+     "id": "zunftstollen_ureisen_1",
+     "art": "ureisen",
+     "x": 11854.5,
+     "y": 9606.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_ureisen_2",
+     "art": "ureisen",
+     "x": 11858.5,
+     "y": 9603.5,
+     "region": "steinhag_zunftstollen"
+    },
+    {
+     "id": "zunftstollen_splittereisen_4",
+     "art": "splittereisen",
+     "x": 11861.5,
+     "y": 9606.5,
+     "region": "steinhag_zunftstollen"
+    }
+   ]
+  },
+  {
    "name": "Geröllhang am Erzberg",
    "ort": "erzberg",
    "x": 7173.8,
@@ -2184,29 +2424,29 @@
   {
    "name": "Steinbruch von Steinhag",
    "ort": "steinhag",
-   "x": 6928,
-   "y": 5891.5,
+   "x": 6922.2,
+   "y": 5921.6,
    "r": 5,
    "adern": [
     {
      "id": "steinbruch_von_steinhag_sterneisen_1",
      "art": "sterneisen",
-     "x": 6930.5,
-     "y": 5892.5,
+     "x": 6924.5,
+     "y": 5922.5,
      "region": "fl_216_183"
     },
     {
      "id": "steinbruch_von_steinhag_sterneisen_2",
      "art": "sterneisen",
-     "x": 6925.5,
-     "y": 5893.5,
+     "x": 6920.5,
+     "y": 5923.5,
      "region": "fl_216_183"
     },
     {
      "id": "steinbruch_von_steinhag_splittereisen_3",
      "art": "splittereisen",
-     "x": 6927.5,
-     "y": 5888.5,
+     "x": 6921.5,
+     "y": 5919.5,
      "region": "fl_216_183"
     }
    ]
@@ -2274,36 +2514,36 @@
   {
    "name": "Kupfer und Eisen bei Steinhag",
    "ort": "steinhag",
-   "x": 6983.2,
-   "y": 5953.6,
+   "x": 7015.1,
+   "y": 5970.1,
    "r": 5,
    "adern": [
     {
      "id": "kupfer_und_eisen_bei_steinhag_kupfer_1",
      "art": "kupfer",
-     "x": 6985.5,
-     "y": 5954.5,
+     "x": 7017.5,
+     "y": 5971.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_kupfer_2",
      "art": "kupfer",
-     "x": 6982.5,
-     "y": 5956.5,
+     "x": 7014.5,
+     "y": 5972.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_eisen_3",
      "art": "eisen",
-     "x": 6980.5,
-     "y": 5952.5,
+     "x": 7012.5,
+     "y": 5969.5,
      "region": "fl_216_183"
     },
     {
      "id": "kupfer_und_eisen_bei_steinhag_eisen_4",
      "art": "eisen",
-     "x": 6984.5,
-     "y": 5951.5,
+     "x": 7016.5,
+     "y": 5967.5,
      "region": "fl_216_183"
     }
    ]
@@ -2311,29 +2551,29 @@
   {
    "name": "Schwarzeisen am Stadtrand",
    "ort": "steinhag",
-   "x": 7040.1,
-   "y": 5928.5,
+   "x": 6921.7,
+   "y": 5940.9,
    "r": 5,
    "adern": [
     {
      "id": "schwarzeisen_am_stadtrand_eisen_1",
      "art": "eisen",
-     "x": 7042.5,
-     "y": 5929.5,
+     "x": 6924.5,
+     "y": 5941.5,
      "region": "fl_216_183"
     },
     {
      "id": "schwarzeisen_am_stadtrand_schwarzeisen_2",
      "art": "schwarzeisen",
-     "x": 7038.5,
-     "y": 5930.5,
+     "x": 6919.5,
+     "y": 5942.5,
      "region": "fl_216_183"
     },
     {
      "id": "schwarzeisen_am_stadtrand_schwarzeisen_3",
      "art": "schwarzeisen",
-     "x": 7039.5,
-     "y": 5925.5,
+     "x": 6921.5,
+     "y": 5938.5,
      "region": "fl_216_183"
     }
    ]
@@ -2378,15 +2618,15 @@
   {
    "name": "Splitterfels über dem Steinhagsee",
    "ort": "steinhag",
-   "x": 7065.2,
-   "y": 5839.1,
+   "x": 7037.1,
+   "y": 5813,
    "r": 3,
    "adern": [
     {
      "id": "splitterfels_uber_dem_steinhagsee_splittereisen_1",
      "art": "splittereisen",
-     "x": 7065.5,
-     "y": 5839.5,
+     "x": 7037.5,
+     "y": 5812.5,
      "region": "fl_216_169"
     }
    ],
@@ -2478,66 +2718,6 @@
    "ohneWeg": true
   },
   {
-   "name": "Adern am Weg (Hochlande 2)",
-   "ort": "hlweg_2",
-   "x": 7047.8,
-   "y": 5914,
-   "r": 5,
-   "adern": [
-    {
-     "id": "adern_am_weg_hochlande_2_eisen_1",
-     "art": "eisen",
-     "x": 7050.5,
-     "y": 5914.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_2_eisen_2",
-     "art": "eisen",
-     "x": 7045.5,
-     "y": 5915.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_2_schwarzeisen_3",
-     "art": "schwarzeisen",
-     "x": 7047.5,
-     "y": 5911.5,
-     "region": "fl_216_183"
-    }
-   ]
-  },
-  {
-   "name": "Adern am Weg (Hochlande 4)",
-   "ort": "hlweg_4",
-   "x": 6951.7,
-   "y": 5840.3,
-   "r": 5,
-   "adern": [
-    {
-     "id": "adern_am_weg_hochlande_4_schwarzeisen_1",
-     "art": "schwarzeisen",
-     "x": 6954.5,
-     "y": 5841.5,
-     "region": "fl_216_169"
-    },
-    {
-     "id": "adern_am_weg_hochlande_4_sterneisen_2",
-     "art": "sterneisen",
-     "x": 6949.5,
-     "y": 5841.5,
-     "region": "fl_216_169"
-    },
-    {
-     "id": "adern_am_weg_hochlande_4_sterneisen_3",
-     "art": "sterneisen",
-     "x": 6951.5,
-     "y": 5837.5,
-     "region": "fl_216_169"
-    }
-   ]
-  },
-  {
    "name": "Adern am Weg (Hochlande 6)",
    "ort": "hlweg_6",
    "x": 6786.5,
@@ -2594,66 +2774,6 @@
      "x": 6890.5,
      "y": 5820.5,
      "region": "fl_201_169"
-    }
-   ]
-  },
-  {
-   "name": "Adern am Weg (Hochlande 10)",
-   "ort": "hlweg_10",
-   "x": 7075.7,
-   "y": 5876.9,
-   "r": 5,
-   "adern": [
-    {
-     "id": "adern_am_weg_hochlande_10_eisen_1",
-     "art": "eisen",
-     "x": 7078.5,
-     "y": 5877.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_10_eisen_2",
-     "art": "eisen",
-     "x": 7073.5,
-     "y": 5878.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_10_schwarzeisen_3",
-     "art": "schwarzeisen",
-     "x": 7075.5,
-     "y": 5874.5,
-     "region": "fl_216_183"
-    }
-   ]
-  },
-  {
-   "name": "Adern am Weg (Hochlande 12)",
-   "ort": "hlweg_12",
-   "x": 7031.7,
-   "y": 5947.9,
-   "r": 5,
-   "adern": [
-    {
-     "id": "adern_am_weg_hochlande_12_schwarzeisen_1",
-     "art": "schwarzeisen",
-     "x": 7034.5,
-     "y": 5948.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_12_sterneisen_2",
-     "art": "sterneisen",
-     "x": 7029.5,
-     "y": 5949.5,
-     "region": "fl_216_183"
-    },
-    {
-     "id": "adern_am_weg_hochlande_12_sterneisen_3",
-     "art": "sterneisen",
-     "x": 7031.5,
-     "y": 5945.5,
-     "region": "fl_216_183"
     }
    ]
   },
@@ -2924,6 +3044,36 @@
      "x": 7297.5,
      "y": 5375.5,
      "region": "fl_216_155"
+    }
+   ]
+  },
+  {
+   "name": "Adern vor dem Osttor",
+   "ort": "steinhag_osttor",
+   "x": 7105.7,
+   "y": 5891.9,
+   "r": 5,
+   "adern": [
+    {
+     "id": "adern_vor_dem_osttor_eisen_1",
+     "art": "eisen",
+     "x": 7108.5,
+     "y": 5892.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_vor_dem_osttor_eisen_2",
+     "art": "eisen",
+     "x": 7103.5,
+     "y": 5893.5,
+     "region": "fl_216_183"
+    },
+    {
+     "id": "adern_vor_dem_osttor_schwarzeisen_3",
+     "art": "schwarzeisen",
+     "x": 7105.5,
+     "y": 5889.5,
+     "region": "fl_216_183"
     }
    ]
   }

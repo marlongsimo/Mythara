@@ -1,15 +1,37 @@
 {
  "start": [
   [
-   240.0,
-   240.0
+   240,
+   240
   ]
  ],
  "figuren": [],
  "spawnzonen": [],
  "ausgaenge": [],
  "kollision": {
-  "sperren": [],
+  "sperren": [
+   {
+    "art": "rechteck",
+    "x0": 472,
+    "y0": 47,
+    "x1": 473,
+    "y1": 48
+   },
+   {
+    "art": "rechteck",
+    "x0": 466,
+    "y0": 45,
+    "x1": 467,
+    "y1": 46
+   },
+   {
+    "art": "rechteck",
+    "x0": 471,
+    "y0": 41,
+    "x1": 472,
+    "y1": 42
+   }
+  ],
   "freigeben": []
  },
  "interaktionen": [

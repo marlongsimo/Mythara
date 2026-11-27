@@ -1,15 +1,15 @@
 [
- {"id":"bl_busch_1410","objekt":"stil_busch_02","x":326.5,"y":1.5},
- {"id":"bl_laub_oliv_1417","objekt":"stil_laub_oliv","x":154.5,"y":0.5},
- {"id":"bl_laub_oliv_1418","objekt":"stil_laub_oliv","x":159.5,"y":3.5},
- {"id":"bl_busch_1419","objekt":"stil_busch_01","x":160.5,"y":4.5},
- {"id":"bl_busch_1420","objekt":"stil_busch_01","x":160.5,"y":3.5},
- {"id":"bl_fels_gross_1607","objekt":"k_fels_gross","x":463.5,"y":3.91,"s":0.7,"spiegeln":true},
- {"id":"bl_fels_klein_1608","objekt":"k_fels_klein","x":467.5,"y":1.97,"s":1.14},
- {"id":"bl_fels_klein_1609","objekt":"k_fels_klein","x":465,"y":2.74,"s":0.72,"spiegeln":true},
- {"id":"bl_fels_breit_1610","objekt":"k_fels_breit","x":464.5,"y":2.18,"s":1.07,"spiegeln":true},
- {"id":"bl_fels_klein_1621","objekt":"k_fels_klein","x":128,"y":0.98,"s":0.86,"spiegeln":true},
- {"id":"bl_erle_tot_1719","objekt":"stil_erle_tot_02","x":10.5,"y":11.5,"s":1.04,"spiegeln":true},
- {"id":"bl_erle_tot_1783","objekt":"stil_erle_tot_01","x":266.5,"y":1.5,"s":1.01},
- {"id":"bl_busch_1821","objekt":"stil_busch_02","x":40.5,"y":0.5}
+ {"id":"bl_busch_1408","objekt":"stil_busch_02","x":326.5,"y":1.5},
+ {"id":"bl_laub_oliv_1415","objekt":"stil_laub_oliv","x":154.5,"y":0.5},
+ {"id":"bl_laub_oliv_1416","objekt":"stil_laub_oliv","x":159.5,"y":3.5},
+ {"id":"bl_busch_1417","objekt":"stil_busch_01","x":160.5,"y":4.5},
+ {"id":"bl_busch_1418","objekt":"stil_busch_01","x":160.5,"y":3.5},
+ {"id":"bl_fels_gross_1605","objekt":"k_fels_gross","x":463.5,"y":3.91,"s":0.7,"spiegeln":true},
+ {"id":"bl_fels_klein_1606","objekt":"k_fels_klein","x":467.5,"y":1.97,"s":1.14},
+ {"id":"bl_fels_klein_1607","objekt":"k_fels_klein","x":465,"y":2.74,"s":0.72,"spiegeln":true},
+ {"id":"bl_fels_breit_1608","objekt":"k_fels_breit","x":464.5,"y":2.18,"s":1.07,"spiegeln":true},
+ {"id":"bl_fels_klein_1619","objekt":"k_fels_klein","x":128,"y":0.98,"s":0.86,"spiegeln":true},
+ {"id":"bl_erle_tot_1717","objekt":"stil_erle_tot_02","x":10.5,"y":11.5,"s":1.04,"spiegeln":true},
+ {"id":"bl_erle_tot_1781","objekt":"stil_erle_tot_01","x":266.5,"y":1.5,"s":1.01},
+ {"id":"bl_busch_1819","objekt":"stil_busch_02","x":40.5,"y":0.5}
 ]

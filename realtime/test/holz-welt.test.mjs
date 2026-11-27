@@ -38,7 +38,9 @@ const bei = async (s, b, d = 1.2) => { sende(s, { t: "pos", x: 0, y: 0, wx: b.x 
 const nein = async (s, id) => { s.holz = []; sende(s, { t: "holz", tat: "start", id }); return (await warte(s, (m) => m.t === "holz" && (m.tat === "nein" || m.tat === "start"))) || {}; };
 try {
   /* die Sammelstellen der Welt (#142) zählen extra – ALT sind die Stellen von vorher */
-  const NEU_IDS = new Set(JSON.parse(readFileSync("welt/sammelstellen.json", "utf8")).lichtungen.flatMap((g) => g.baeume.map((p) => p.id))), ALT = ST.filter((b) => !NEU_IDS.has(b.id));
+  /* Gruppen der Welt: an der ID oder am Namen (auch „am Weg“-Gruppen, die die Welt inzwischen ersetzt hat und die shared/ noch führt) */
+  const SAMMEL = JSON.parse(readFileSync("welt/sammelstellen.json", "utf8")).lichtungen, NAMEN = new Set(SAMMEL.map((g) => g.name)), SHH = JSON.parse(readFileSync("shared/holz_standorte.json", "utf8")).lichtungen;
+  const NEU_IDS = new Set([...SAMMEL.flatMap((g) => g.baeume.map((p) => p.id)), ...SHH.filter((g) => NAMEN.has(g.name) || /am Weg \(Hochlande \d+\)$/.test(g.name)).flatMap((g) => g.baeume.map((p) => p.id))]), ALT = ST.filter((b) => !NEU_IDS.has(b.id));
   check(ALT.length === 33 && ALT.filter((b) => b.art === "linde_totholz").length === 1 && ALT.filter((b) => b.art === "eiche").length === 17 && ALT.filter((b) => b.art === "moorweide").length === 8, `33 Holzfäller-Bäume: 17 Eichen, 6 Tannen, 1 Eibe, 8 Moorweiden, 1 Linden-Totholz (B1) (${ALT.length}, dazu ${ST.length - ALT.length} Sammelstellen aus welt/sammelstellen.json, #142)`);
   await starten({ HOLZ_FALL: "0", HOLZ_KERN: "1" });
   const anna = await spieler(TA, EICHE.region), ben = await spieler(TB, EICHE.region); await warte(anna, (m) => m.t === "inventar"); await warte(ben, (m) => m.t === "inventar");

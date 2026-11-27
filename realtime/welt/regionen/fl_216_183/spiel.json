@@ -201,6 +201,27 @@
    },
    {
     "art": "rechteck",
+    "x0": 184,
+    "y0": 61,
+    "x1": 185,
+    "y1": 62
+   },
+   {
+    "art": "rechteck",
+    "x0": 178,
+    "y0": 58,
+    "x1": 179,
+    "y1": 59
+   },
+   {
+    "art": "rechteck",
+    "x0": 183,
+    "y0": 55,
+    "x1": 184,
+    "y1": 56
+   },
+   {
+    "art": "rechteck",
     "x0": 18,
     "y0": 36,
     "x1": 19,
@@ -373,6 +394,27 @@
     "y0": 118,
     "x1": 204,
     "y1": 119
+   },
+   {
+    "art": "rechteck",
+    "x0": 196,
+    "y0": 36,
+    "x1": 197,
+    "y1": 37
+   },
+   {
+    "art": "rechteck",
+    "x0": 191,
+    "y0": 37,
+    "x1": 192,
+    "y1": 38
+   },
+   {
+    "art": "rechteck",
+    "x0": 193,
+    "y0": 33,
+    "x1": 194,
+    "y1": 34
    }
   ],
   "freigeben": [
@@ -382,6 +424,13 @@
     "y0": 4,
     "x1": 107,
     "y1": 6.6
+   },
+   {
+    "art": "rechteck",
+    "x0": 45.1,
+    "y0": 2.7,
+    "x1": 53,
+    "y1": 5.3
    }
   ]
  },
@@ -479,19 +528,19 @@
   {
    "id": "wegweiser_steinhag_west",
    "art": "lesen",
-   "x": 26.5,
-   "y": 42.4,
+   "x": 13.5,
+   "y": 41.4,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
-    "text": "Wegweiser: Norden – Hochpass, Passwacht · Westen – die Furt, Grauwacht"
+    "text": "Wegweiser: Westen – die Furt, Grauwacht · Norden – um die Mauer zum Nordwesttor, Hochpass"
    }
   },
   {
    "id": "wegweiser_steinhag_ost",
    "art": "lesen",
-   "x": 130.5,
-   "y": 42.4,
+   "x": 173.5,
+   "y": 41.4,
    "radius": 1.8,
    "abgleich": "keiner",
    "daten": {
@@ -522,6 +571,89 @@
     "text": "Unterhalb der Alm wird der Bach breiter – Mühlbarsche.",
     "fisch": "muehlbarsch",
     "stufe": 10
+   }
+  },
+  {
+   "id": "steinhag_tor_west",
+   "art": "lesen",
+   "x": 21,
+   "y": 47.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Westtor von Steinhag. Hinunter zur Furt und über die Brücke nach Grauwacht."
+   }
+  },
+  {
+   "id": "steinhag_tor_ost",
+   "art": "lesen",
+   "x": 165,
+   "y": 47.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Das Osttor von Steinhag. Links zum Erzberg, ausgefahren von Erzwagen – rechts hinauf zur Hohen Alm."
+   }
+  },
+  {
+   "id": "steinhag_burgplatz",
+   "art": "lesen",
+   "x": 141,
+   "y": 8.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Burgplatz von Steinhag. Von hier führt der Burgsteig hinauf zur Vogtsburg."
+   }
+  },
+  {
+   "id": "steinhag_zunftbank_tuer",
+   "art": "lesen",
+   "x": 153,
+   "y": 59.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Zunftbank von Steinhag. Dasselbe Konto wie überall – nur näher an der Grube."
+   }
+  },
+  {
+   "id": "steinhag_zunftschmiede",
+   "art": "lesen",
+   "x": 148,
+   "y": 78.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Zunftschmiede der Bergleute: vier Essen, vier Ambosse, und an der Wand die Meisterstücke der Zunft."
+   }
+  },
+  {
+   "id": "steinhag_brennofen",
+   "art": "lesen",
+   "x": 137,
+   "y": 78,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Brennofen der Zunft. Hier werden Tiegel und Formen gebrannt."
+   }
+  },
+  {
+   "id": "steinhag_zunftstollen_eingang",
+   "art": "eingang",
+   "x": 154,
+   "y": 88.6,
+   "radius": 2,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Der Abstieg in den Stollen der Bergmannszunft. Ein Schild: „Nur für Zunftmitglieder – Meisterschaft ab Stufe 60.“",
+    "tat": "zunftstollen",
+    "knopf": "Hinabsteigen",
+    "ziel": [
+     11872,
+     9657
+    ]
    }
   },
   {
@@ -636,6 +768,12 @@
   {
    "x": 203.7,
    "y": 120.9,
+   "r": 5,
+   "tiefe": 1.1
+  },
+  {
+   "x": 193.7,
+   "y": 35.9,
    "r": 5,
    "tiefe": 1.1
   }

@@ -496,6 +496,17 @@
    }
   },
   {
+   "id": "bl_haferstedt_bank_tuer",
+   "art": "lesen",
+   "x": 294,
+   "y": 226.6,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bank von Haferstedt. Dasselbe Konto wie in der Stadt – und am Markttag eine lange Schlange."
+   }
+  },
+  {
    "id": "bl_netzbucht",
    "art": "lesen",
    "x": 195,
@@ -568,6 +579,17 @@
    "daten": {
     "text": "Die Räucherhütte. Heringe hängen in Reihen im Rauch – hier wird Räucherhering gemacht.",
     "station": "raeucherhuette"
+   }
+  },
+  {
+   "id": "moewenbucht_bankkiste",
+   "art": "lesen",
+   "x": 271.5,
+   "y": 404.8,
+   "radius": 1.8,
+   "abgleich": "keiner",
+   "daten": {
+    "text": "Die Bankkiste der Möwenbucht. Eisenbeschlagen, und der Schlüssel hängt beim Fischer – was du einlegst, liegt auf deinem Konto."
    }
   },
   {

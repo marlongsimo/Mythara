@@ -56,6 +56,12 @@ if os.path.exists(_sm):
         _p = _l.get('baeume') or _l.get('adern'); _mx = _l.get('x', sum(q['x'] for q in _p) / len(_p)); _my = _l.get('y', sum(q['y'] for q in _p) / len(_p))
         ausnahmen.append({'x': _mx, 'y': _my, 'r': max(8, max(math.hypot(q['x'] - _mx, q['y'] - _my) for q in _p) + 6), 'grund': f"Sammelstelle {_l['name']}"})
 for s in json.load(open(os.path.join(W, 'troedler_standorte.json'), encoding='utf8'))['standorte']: ausnahmen.append({'x': s['x'], 'y': s['y'], 'r': 6, 'grund': f"Trödler {s['id']}"})
+# Hauptstadt Steinhag (#167): in der Ringmauer und ~12 Felder davor keine Gegner (Kreise im Raster, damit die Prüfung sie kennt)
+_ho = os.path.join(W, 'hochlande_orte.json')
+if os.path.exists(_ho) and json.load(open(_ho, encoding='utf8')).get('hauptstadt'):
+    _m = json.load(open(_ho, encoding='utf8'))['hauptstadt']['mauer']
+    for _x in range(int(_m[0]) - 4, int(_m[2]) + 5, 12):
+        for _y in range(int(_m[1]) - 4, int(_m[3]) + 5, 12): ausnahmen.append({'x': _x, 'y': _y, 'r': 17, 'grund': 'Stadt Steinhag (Ringmauer)'})
 AUS = np.zeros((H, B), bool); yy, xx = np.mgrid[0:H, 0:B]
 for a in ausnahmen:
     cx, cy, r = int(a['x'] - X0), int(a['y'] - Y0), int(math.ceil(a['r']))

@@ -71,16 +71,16 @@
    "anzahl": 7,
    "stufe": 50,
    "land": "Die Glutsande",
-   "region": "fl_201_225",
+   "region": "fl_216_198",
    "mitte": [
-    6755.5,
-    7586.5
+    7132.5,
+    6598.5
    ],
    "rechteck": [
-    6695,
-    7526,
-    6814,
-    7645
+    7072,
+    6538,
+    7191,
+    6657
    ],
    "meiden": [],
    "modell": "vorhanden"
@@ -116,13 +116,13 @@
    "region": "fl_216_183",
    "mitte": [
     7052.5,
-    6048.5
+    6054.5
    ],
    "rechteck": [
     6992,
-    5988,
+    5994,
     7111,
-    6107
+    6113
    ],
    "meiden": [],
    "modell": "vorhanden"

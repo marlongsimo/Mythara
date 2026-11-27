@@ -40,7 +40,7 @@ const nein = async (s, id, t = "berg") => { s[t] = []; sende(s, { t, tat: "start
 try {
   /* die Sammelstellen der Welt (#142) zählen extra – ALT sind die Stellen von vorher */
   /* Gruppen der Welt erkennt man an der ID oder am Namen – so zählt auch eine Gruppe, die in shared/ noch in älterer Fassung steht (Welt hat sie seitdem geändert) */
-  const SAMMEL = JSON.parse(readFileSync("welt/sammelstellen.json", "utf8")).senken, NAMEN = new Set(SAMMEL.map((g) => g.name));
+  const SAMMEL = JSON.parse(readFileSync("welt/sammelstellen.json", "utf8")).senken, NAMEN = new Set([...SAMMEL.map((g) => g.name), ...JSON.parse(readFileSync("shared/bergbau_standorte.json", "utf8")).senken.map((g) => g.name).filter((n) => /am Weg \(Hochlande \d+\)$/.test(n))]);   /* auch „am Weg“-Gruppen, die die Welt inzwischen ersetzt hat */
   const NEU_IDS = new Set([...SAMMEL.flatMap((g) => g.adern.map((p) => p.id)), ...JSON.parse(readFileSync("shared/bergbau_standorte.json", "utf8")).senken.filter((g) => NAMEN.has(g.name)).flatMap((g) => g.adern.map((p) => p.id))]), ALT = ST.filter((b) => !NEU_IDS.has(b.id));
   check(ALT.length === 17 && ALT.filter((b) => b.art === "kupfer").length === 3 && ALT.filter((b) => b.art === "eisen").length === 8 && ALT.filter((b) => b.art === "schwarzeisen").length === 6, `17 Erzadern: 3 Kupfer, 8 Eisen, 6 Schwarzeisen (${ALT.length}, dazu ${ST.length - ALT.length} Sammelstellen aus welt/sammelstellen.json, #142)`);
   await starten({ BERG_FALL: "0", BERG_KERN: "1" });
