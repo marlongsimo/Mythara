@@ -330,7 +330,7 @@ Object.assign(MONSTER, {
   /** Der Oberste Rabenpriester: Boss, Stufe 55, 350 LP, Max Hit 18 (Doppelhieb), Thronsaal als Instanz (shared/bosse.ts) */
   oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 600,
     angriff: { name: "Zwillingsklingen", art: "nah", schaden: [1, 18], takt: 2.0, reich: 2.2, aushol: 0 },
-    v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 64, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 10 } },
+    v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 40 /* #178 Taktiker: schwächere Grundangriffe */, ticks: 4, abwehr: { nah: -5, fern: 30, magie: 35 } /* #178: Robe – schwach gegen Nahkampf */ },
     info: "Der Oberste des Rabenordens. Auf seinem Thron aus Federn und Splittern wartet er seit Jahren darauf, dass jemand kommt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [300, 600] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [10, 25] }] },
       { wurf: [{ g: "barren_sterneisen", chance: 18, anzahl: [3, 6] }, { g: "erz_splittereisen", chance: 12, anzahl: [5, 10] }, { g: "stamm_moorweide", chance: 15, anzahl: [10, 20] }, { g: "stamm_kernbaum", chance: 10, anzahl: [5, 10] },

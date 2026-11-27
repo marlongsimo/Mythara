@@ -67,15 +67,11 @@ check(T && T.eintritt === "federsiegel" && BOSSE.oberster_rabenpriester.phasen.l
   const t = weltJeSpieler(s, id, "anna", 10768.5, 9626.5, (x) => x === "rabenpriester_thronsaal", beutel), b = s.wesen.find((w) => w.typ === "oberster_rabenpriester");
   check(siegel === 0 && b && b.instanz === "thronsaal:anna" && /Federsiegel/.test(t), "Betreten mit Federsiegel: eigene Kopie mit dem Obersten");
   b.zielId = h.id; b.wach = true; const ev1 = lauf(s, 10); const n = b.boss ? b.boss.angriffe : 0;
-  check(n > 0 && ev1.filter((e) => e.a === "hieb" && e.id === b.id).length === 2 * n, `Phase 1: Doppelhieb (${n} Angriffe)`);
+  check(n > 0 && BOSSE.oberster_rabenpriester.art === "taktiker" && !BOSSE.oberster_rabenpriester.phasen.some((p) => p.hiebe || p.ruf), `#178: Taktiker ohne Doppelhieb und Akoluthen (${n} Angriffe in Phase 1)`);
+  { const M = MONSTER.oberster_rabenpriester.v2.abwehr; check(M.nah < M.fern && M.nah < M.magie, "#178: schwach gegen Nahkampf (Robe)"); }
   h.schalterAn = ["becken_getruebt"]; /* Becken getrübt: er sagt an, statt zu trinken */ b.lp = Math.floor(b.max * 0.55); let ev = lauf(s, 0.3);
-  check(s.schwebt(b) && s.wesen.filter((w) => w.helfer === b.id).length === 2, "Phase 2: er erhebt sich und ruft zwei Akoluthen");
-  ev = lauf(s, 5, (e) => e.some((x) => x.a === "ansage")); check(ev.some((e) => e.a === "ansage" && e.name === "Sturzraben"), "Sturzraben: angesagte Felder");
-  for (const w of s.wesen) if (w.helfer === b.id) { w.tot = true; w.weg = true; }
-  b.lp = Math.floor(b.max * 0.25); lauf(s, 16); ev = lauf(s, 6, (e) => e.some((x) => x.a === "ansage" && x.name === "Schwarzer Flügelschlag")); const A = ev.find((e) => e.a === "ansage" && e.name === "Schwarzer Flügelschlag");
-  const bi = Math.floor(b.x), bj = Math.floor(b.y), zelle = (x, y) => A && A.felder.some(([a, c]) => Math.floor(a) === x && Math.floor(c) === y);
-  let schatten = 0; if (A) for (let j = 0; j < 32; j++) for (let i = 0; i < 32; i++) { const x = 10752 - U[0] + i, y = 9600 - U[1] + j; if (!fels(x, y) && !zelle(x, y)) schatten++; }
-  check(A && A.felder.length > 200 && schatten > 0, `Phase 3: Schwarzer Flügelschlag über den ganzen Saal (${A ? A.felder.length : 0} Felder), ${schatten} Felder im Windschatten`);
+  check(s.schwebt(b) && !s.wesen.some((w) => w.helfer === b.id), "Phase 2: er erhebt sich über das Becken (Schweben: nur Fernkampf und Magie treffen ihn) – ohne Akoluthen");
+  lauf(s, 16); b.lp = Math.floor(b.max * 0.25); lauf(s, 0.3); check(s.schwebt(b), "Phase 3: er steigt noch einmal auf"); lauf(s, 13);
   h.schalterAn = []; b.lp = Math.floor(b.max * 0.2); b.boss.heil = {}; const lp0 = b.lp; ev = lauf(s, 20, (e) => e.some((x) => x.a === "trinken" && x.id === b.id));
   check(ev.some((e) => e.a === "trinken" && e.id === b.id), "er geht zum Becken und trinkt"); lauf(s, 3); check(b.lp > lp0, `und heilt sich (${lp0} → ${b.lp})`);
   b.lp = Math.floor(b.max * 0.2); b.boss.heil = {}; h.schalterAn = ["becken_getruebt"]; ev = lauf(s, 15);
