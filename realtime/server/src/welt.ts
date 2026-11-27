@@ -24,7 +24,7 @@ import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
 import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen } from "./inventar";
-import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles } from "./inventar";
+import { inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles, bankTauschen, bankPlatzhalterSetzen, bankPlatzhalterEntfernen } from "./inventar";
 import { nahAnBank, BANK_MAX } from "../../shared/bank";
 import { holzEinrichten, holzStart, holzStop, holzKern, holzTakt, holzWeg, gefaellte } from "./holz";
 import { bergEinrichten, bergStart, bergStop, bergRiss, bergTakt, bergWeg, leereAdern } from "./bergbau";
@@ -125,7 +125,7 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
     { const t = String(roh); if (t === '{"t":"puls"}') { if (ws.readyState === WebSocket.OPEN) ws.send('{"t":"puls"}'); return; } /* Wachhund des Browsers: sofort antworten, zählt nicht als Aktivität */
       if (kanalRahmen(ws, t, kanal, (k, q) => { if (H.kanalAuf) H.kanalAuf(k, q); else k.close(4400, "kein kanal"); })) { if (s) s.zuletzt = Date.now(); return; } } /* vor dem Überflutungsschutz: Kampfeingaben haben ihren eigenen */
     const jetzt = Date.now(); if (jetzt - fenster > 1000) { fenster = jetzt; n = 0; } if (++n > 30) return; /* Schutz vor Überflutung */
-    let e: { wahl?: unknown; typ?: string; ziel?: string; rezept?: string; tab?: unknown; fach?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
+    let e: { wahl?: unknown; alle?: unknown; platzhalter?: unknown; typ?: string; ziel?: string; rezept?: string; tab?: unknown; fach?: unknown; j?: unknown; laden?: string; g?: string; anName?: string; namen?: unknown; ort?: unknown; geraet?: string; wieder?: boolean; n?: string; menge?: unknown; was?: string; angenommen?: boolean; t?: string; token?: string; held?: string; aussehen?: unknown; raum?: string; x?: number; y?: number; wx?: number; wy?: number; b?: number; l?: number; lp?: number; max?: number; kanal?: string; text?: string; an?: number; tat?: string; i?: number; platz?: string; id?: number; ids?: number[]; npc?: string; a?: string };
     try { e = JSON.parse(String(roh)); } catch { return; }
     if (!s) { if (e.t !== "anmeldung") return;
       if (!e.token) { /* Gast: sichtbar mit selbst gewähltem Helden, ohne Stufe, ohne Chat und ohne Speichern */
@@ -246,6 +246,9 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       else if (e.tat === "tab" && g) fehler = bankReiter(H.sb, s.nutzer, g, Number(e.tab));
       else if (e.tat === "ab" && g && n >= 0) fehler = bankAbheben(H.sb, s.nutzer, g, n, Number.isInteger(e.fach) ? Number(e.fach) : undefined); /* fach: welches Bankfach (gleicher Gegenstand mit Daten) */
       else if (e.tat === "alles" && (e.was === "rucksack" || e.was === "ausruestung")) fehler = bankAlles(H.sb, s.nutzer, e.was);
+      else if (e.tat === "tauschen") fehler = bankTauschen(H.sb, s.nutzer, Number(e.a), Number(e.b)); /* #117: zwei Felder tauschen (Ziehen) */
+      else if (e.tat === "platzhalter") fehler = bankPlatzhalterSetzen(H.sb, s.nutzer, e.platzhalter === true); /* #117: Schalter Platzhalter an/aus */
+      else if (e.tat === "platzhalter_entfernen") fehler = bankPlatzhalterEntfernen(H.sb, s.nutzer, e.alle === true ? undefined : Number(e.fach)); /* #117: eins oder alle */
       else fehler = "Das versteht die Bank nicht.";
       if (fehler) senden(s, { t: "chat", kanal: "system", text: fehler, zeit: jetzt }); }
     else if (e.t === "aufheben") { if (s.gast) { senden(s, { t: "chat", kanal: "system", text: "Zum Aufheben brauchst du ein Konto.", zeit: jetzt }); return; }

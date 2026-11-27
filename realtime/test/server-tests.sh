@@ -56,6 +56,7 @@ TESTS=(
   inhalt-phase9
   inhalt-phase10
   bosse-116
+  bank-platzhalter
 )
 [ $# -gt 0 ] && TESTS=("$@")
 

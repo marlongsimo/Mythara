@@ -18,7 +18,7 @@ import { BANK_PLAETZE, BANK_MAX, BANK_REITER } from "../../shared/bank";
 import { REISEKARTE, reiseTag, reiseMerker } from "../../shared/wegstein";
 
 type Sb = (pfad: string, init?: RequestInit) => Promise<unknown>;
-export interface Inv { angelegt: Partial<Record<Platz, string>>; /** Daten der angelegten Exemplare (Phase 5a: Ladungen der Waffe, gebunden) */ angelegtD?: Partial<Record<Platz, Daten>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge, Daten?] – stapelt bei gleichen Daten */ bank?: BankFach[]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[];
+export interface Inv { angelegt: Partial<Record<Platz, string>>; /** Daten der angelegten Exemplare (Phase 5a: Ladungen der Waffe, gebunden) */ angelegtD?: Partial<Record<Platz, Daten>>; rucksack: Fach[]; v?: number; /** Bank (shared/bank.ts): [Gegenstand, Menge, Daten?] – stapelt bei gleichen Daten */ bank?: BankFach[]; /** Reiter der Bank: Gegenstand → 1 … BANK_REITER (fehlt = ohne Reiter) */ bankTabs?: Record<string, number>; /** #117: Platzhalter an – wer alles abhebt, behält das Feld (Menge 0) */ bankPlatzhalter?: boolean; /** XP der Berufe (Holzfällerei …), nur der Server schreibt */ berufe?: Record<string, number>; /** Ladungen (shared/splitterbinden.ts): Gegenstand → Zahl, z. B. { wegstein: 10 } – nicht am Gegenstand, damit Stapel und Bank einfach bleiben */ ladungen?: Record<string, number>; /** laufende Wirkungen (shared/wirkungen.ts, Phase 3b) */ wirkungen?: Wirkung[]; /** einmalige Umstellungen, die schon geschehen sind (shared/berufe.ts) */ merker?: string[];
   /** Räucherhütte (#102): ein laufender Auftrag – Rezept, Stück, fertig ab (ms) */ warten?: Warten }
 /** Ein Auftrag an einer Station mit Wartezeit (Rezept.warten): die Zutaten sind schon genommen */
 export interface Warten { r: string; n: number; fertig: number }
@@ -30,10 +30,12 @@ const dKopie = (d?: Daten): Daten | undefined => (d ? { ...d } : undefined);
 const datenFuer = (g: string, d?: Daten): Daten | undefined => { if (!d) return undefined; const G = GEGENSTAENDE[g], x: Daten = { ...d }; if (x.ladungen && !(G && G.waffe && WAFFE_LADEN[G.seltenheit])) delete x.ladungen; return Object.keys(x).length ? x : undefined; };
 interface Eintrag { inv: Inv; waffe: Startwaffe; uhr?: ReturnType<typeof setTimeout>; hoerer: Set<(inv: Inv) => void> }
 const je = new Map<string, Eintrag>(), laedt = new Map<string, Promise<Eintrag | null>>();
-const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}), ...(i.warten ? { warten: { ...i.warten } } : {}) });
+const kopie = (i: Inv): Inv => ({ angelegt: { ...i.angelegt }, ...(i.angelegtD ? { angelegtD: Object.fromEntries(Object.entries(i.angelegtD).map(([k, d]) => [k, { ...d }])) } : {}), rucksack: i.rucksack.map((f) => (typeof f === "string" ? f : f.d ? { ...f, d: { ...f.d } } : { ...f })), v: i.v, ...(i.bank ? { bank: i.bank.map((b) => (b[2] ? [b[0], b[1], { ...b[2] }] : [b[0], b[1]]) as BankFach) } : {}), ...(i.bankTabs ? { bankTabs: { ...i.bankTabs } } : {}), ...(i.bankPlatzhalter ? { bankPlatzhalter: true } : {}), ...(i.berufe ? { berufe: { ...i.berufe } } : {}), ...(i.ladungen ? { ladungen: { ...i.ladungen } } : {}), ...(i.wirkungen ? { wirkungen: i.wirkungen.map((w) => ({ ...w, werte: { ...w.werte } })) } : {}), ...(i.merker ? { merker: [...i.merker] } : {}), ...(i.warten ? { warten: { ...i.warten } } : {}) });
 /** Bank aus unbekannter Quelle prüfen: nur bekannte Gegenstände, ganze Mengen 1 … BANK_MAX, jeder Gegenstand einmal, höchstens BANK_PLAETZE */
 function bankPruefen(roh: unknown): BankFach[] { const b: BankFach[] = []; if (!Array.isArray(roh)) return b;
-  for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])), d = datenFuer(g, datenPruefen(f[2])); if (!GEGENSTAENDE[g] || !(n >= 1)) continue;
+  for (const f of roh) { if (!Array.isArray(f)) continue; const g = String(f[0]), n = Math.floor(Number(f[1])), d = datenFuer(g, datenPruefen(f[2])); if (!GEGENSTAENDE[g] || !(n >= 0)) continue;
+    if (n === 0) { if (!b.some((x) => x[0] === g) && b.length < BANK_PLAETZE) b.push([g, 0]); continue; } /* #117: Platzhalter (Menge 0, ohne Daten) */
+    { const p = b.findIndex((x) => x[0] === g && x[1] === 0); if (p >= 0) { b[p] = d ? [g, Math.min(BANK_MAX, n), d] : [g, Math.min(BANK_MAX, n)]; continue; } }
     const da = b.find((x) => x[0] === g && datenGleich(x[2], d)); if (da) da[1] = Math.min(BANK_MAX, da[1] + n); else if (b.length < BANK_PLAETZE) b.push(d ? [g, Math.min(BANK_MAX, n), d] : [g, Math.min(BANK_MAX, n)]); }
   return b; }
 
@@ -49,7 +51,7 @@ export function invPruefen(roh: unknown, waffe: Startwaffe): Inv {
   /* Zweihandwaffe und Nebenhand zugleich (alter Stand, z. B. Bogen mit Schild): die Nebenhand kommt in den Rucksack – passt sie nicht hinein, bleibt sie, wo sie war */
   if (angelegt.waffe && angelegt.nebenhand && GEGENSTAENDE[angelegt.waffe].zweihand && rucksack.length < RUCKSACK_PLAETZE) { const d = angelegtD.nebenhand; rucksack.push(d ? { g: angelegt.nebenhand, n: 1, d } : angelegt.nebenhand); delete angelegt.nebenhand; delete angelegtD.nebenhand; }
   const inv: Inv = { angelegt, ...(Object.keys(angelegtD).length ? { angelegtD } : {}), rucksack: rucksack.slice(0, RUCKSACK_PLAETZE), v: Number((o as { v?: unknown }).v) || 1 };
-  { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank;
+  { const bank = bankPruefen((o as { bank?: unknown }).bank); if (bank.length) inv.bank = bank; if ((o as { bankPlatzhalter?: unknown }).bankPlatzhalter === true) inv.bankPlatzhalter = true;
     const t = (o as { bankTabs?: unknown }).bankTabs; if (t && typeof t === "object" && bank.length) { const tabs: Record<string, number> = {};
       for (const [g, v] of Object.entries(t as Record<string, unknown>)) { const n = Math.floor(Number(v)); if (bank.some((b) => b[0] === g) && n >= 1 && n <= BANK_REITER) tabs[g] = n; }
       if (Object.keys(tabs).length) { inv.bankTabs = tabs; reiterOrdnen(inv); } } }
@@ -234,7 +236,7 @@ export function berufXpDazu(sb: Sb, nutzer: string, beruf: string, n: number): n
   const b = e.inv.berufe || (e.inv.berufe = {}); b[beruf] = Math.min(200_000_000, Math.round((b[beruf] || 0) + n)); geaendert(sb, nutzer, e); return b[beruf]; }
 /** Gegenstände, die der Held trägt (Rucksack und angelegt) – für Werkzeuge */
 /** Hat man es irgendwo – Rucksack, angelegt oder in der Bank (Questgegenstände zurückgeben, wenn verloren) */
-export function besitztIrgendwo(nutzer: string, g: string): boolean { const e = je.get(nutzer); return Boolean(e && (besitzt(nutzer).includes(g) || (e.inv.bank || []).some(([b]) => b === g))); }
+export function besitztIrgendwo(nutzer: string, g: string): boolean { const e = je.get(nutzer); return Boolean(e && (besitzt(nutzer).includes(g) || (e.inv.bank || []).some(([b, n]) => b === g && n > 0))); }
 export function besitzt(nutzer: string): string[] { const e = je.get(nutzer); if (!e) return []; return [...e.inv.rucksack.map(fachG), ...Object.values(e.inv.angelegt).filter((g): g is string => Boolean(g))]; }
 /** Freie Rucksackfächer */
 export function freieFaecher(nutzer: string): number { const e = je.get(nutzer); return e ? RUCKSACK_PLAETZE - e.inv.rucksack.length : 0; }
@@ -261,23 +263,38 @@ function einzahlen(e: Eintrag, g: string, n: number): string | null { const hat 
   const menge = Math.min(n > 0 ? n : hat, hat, BANK_MAX - (fach ? fach[1] : 0)); if (menge <= 0) return "Davon passt nichts mehr in die Bank.";
   /* je Fach mit seinen Daten (Phase 5a): gleiche Daten landen im selben Bankfach; neue Fächer nur, solange Platz ist */
   let rest = menge; for (let i = e.inv.rucksack.length - 1; i >= 0 && rest > 0; i--) { const f = e.inv.rucksack[i]; if (fachG(f) !== g) continue; const d = fachD(f), ziel = B.find((b) => b[0] === g && datenGleich(b[2], d));
-    if (!ziel && B.length >= BANK_PLAETZE) continue; const k = Math.min(fachN(f), rest, BANK_MAX - (ziel ? ziel[1] : 0)); if (k <= 0) continue; rest -= k;
-    if (k >= fachN(f)) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n -= k; if (ziel) ziel[1] += k; else B.push(d ? [g, k, { ...d }] : [g, k]); }
+    const platz = ziel ? -1 : B.findIndex((b) => b[0] === g && b[1] === 0); /* #117: ein Platzhalter nimmt den Gegenstand an seinem Platz auf */
+    if (!ziel && platz < 0 && B.length >= BANK_PLAETZE) continue; const k = Math.min(fachN(f), rest, BANK_MAX - (ziel ? ziel[1] : 0)); if (k <= 0) continue; rest -= k;
+    if (k >= fachN(f)) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n -= k; if (ziel) ziel[1] += k; else if (platz >= 0) B[platz] = d ? [g, k, { ...d }] : [g, k]; else B.push(d ? [g, k, { ...d }] : [g, k]); }
   return rest >= menge ? "Deine Bank ist voll." : null; }
 /** Abheben: n Stück von g aus der Bank in den Rucksack (n ≤ 0 = alle, so viele passen). Zurück: Fehler-/Hinweistext oder null */
 /** fach: Index des Bankfachs (gleicher Gegenstand mit verschiedenen Daten, z. B. zwei geladene Waffen) – sonst das erste mit g */
 export function bankAbheben(sb: Sb, nutzer: string, g: string, n: number, fach?: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
-  const B = bankVon(e), i = fach !== undefined && Number.isInteger(fach) && B[fach] && B[fach][0] === g ? fach : B.findIndex((b) => b[0] === g); if (i < 0) return "Das liegt nicht in deiner Bank.";
+  const B = bankVon(e), i = fach !== undefined && Number.isInteger(fach) && B[fach] && B[fach][0] === g && B[fach][1] > 0 ? fach : B.findIndex((b) => b[0] === g && b[1] > 0); if (i < 0) return "Das liegt nicht in deiner Bank.";
   const will = Math.min(n > 0 ? n : B[i][1], B[i][1]), k = einlegen(e, g, will, B[i][2]); if (!k) return "Dein Rucksack ist voll.";
-  B[i][1] -= k; if (B[i][1] <= 0) { B.splice(i, 1); reiterOrdnen(e.inv); } geaendert(sb, nutzer, e); return k < will ? "Nicht alles passte in den Rucksack." : null; }
+  B[i][1] -= k; if (B[i][1] <= 0) { if (e.inv.bankPlatzhalter && !B.some((b, j) => j !== i && b[0] === g)) B[i] = [g, 0]; /* #117: Platzhalter bleibt stehen */ else { B.splice(i, 1); reiterOrdnen(e.inv); } } geaendert(sb, nutzer, e); return k < will ? "Nicht alles passte in den Rucksack." : null; }
 /** Alles einzahlen: den ganzen Rucksack oder die ganze angelegte Ausrüstung. Zurück: Fehler-/Hinweistext oder null */
 export function bankAlles(sb: Sb, nutzer: string, was: "rucksack" | "ausruestung"): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; let fehler: string | null = null, etwas = false;
   if (was === "rucksack") { for (const g of [...new Set(e.inv.rucksack.map(fachG))]) { const r = einzahlen(e, g, 0); if (r) fehler = r; else etwas = true; } if (!etwas && !fehler) return "Dein Rucksack ist leer."; }
-  else { for (const { id } of PLAETZE) { const g = e.inv.angelegt[id]; if (!g) continue; const d = e.inv.angelegtD && e.inv.angelegtD[id], B = bankVon(e), fach = B.find((b) => b[0] === g && datenGleich(b[2], d));
-      if (!fach && B.length >= BANK_PLAETZE) { fehler = "Deine Bank ist voll."; continue; } if (fach) fach[1] = Math.min(BANK_MAX, fach[1] + 1); else B.push(d ? [g, 1, { ...d }] : [g, 1]); delete e.inv.angelegt[id];
+  else { for (const { id } of PLAETZE) { const g = e.inv.angelegt[id]; if (!g) continue; const d = e.inv.angelegtD && e.inv.angelegtD[id], B = bankVon(e), fach = B.find((b) => b[0] === g && b[1] > 0 && datenGleich(b[2], d)), platz = fach ? -1 : B.findIndex((b) => b[0] === g && b[1] === 0);
+      if (!fach && platz < 0 && B.length >= BANK_PLAETZE) { fehler = "Deine Bank ist voll."; continue; } if (fach) fach[1] = Math.min(BANK_MAX, fach[1] + 1); else if (platz >= 0) B[platz] = d ? [g, 1, { ...d }] : [g, 1]; else B.push(d ? [g, 1, { ...d }] : [g, 1]); delete e.inv.angelegt[id];
       if (e.inv.angelegtD) { delete e.inv.angelegtD[id]; if (!Object.keys(e.inv.angelegtD).length) delete e.inv.angelegtD; } etwas = true; }
     if (!etwas && !fehler) return "Du trägst nichts, was man einzahlen könnte."; }
   if (etwas) geaendert(sb, nutzer, e); return fehler; }
+
+/* ───────── #117: Reihenfolge und Platzhalter der Bank ───────── */
+/** Zwei Felder der Bank tauschen ihre Plätze (Ziehen in der Bank). a, b: Index im Bankfach-Feld */
+export function bankTauschen(sb: Sb, nutzer: string, a: number, b: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const B = bankVon(e);
+  if (!Number.isInteger(a) || !Number.isInteger(b) || a < 0 || b < 0 || a >= B.length || b >= B.length) return "Dieses Feld gibt es nicht."; if (a === b) return null;
+  [B[a], B[b]] = [B[b], B[a]]; geaendert(sb, nutzer, e); return null; }
+/** Platzhalter an oder aus (Schalter in der Bank). Aus: bestehende Platzhalter bleiben, bis man sie entfernt */
+export function bankPlatzhalterSetzen(sb: Sb, nutzer: string, an: boolean): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar.";
+  if (an) e.inv.bankPlatzhalter = true; else delete e.inv.bankPlatzhalter; geaendert(sb, nutzer, e); return null; }
+/** Platzhalter entfernen: ein Feld (Index) oder alle (fach undefined) */
+export function bankPlatzhalterEntfernen(sb: Sb, nutzer: string, fach?: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const B = bankVon(e);
+  if (fach !== undefined) { if (!Number.isInteger(fach) || !B[fach] || B[fach][1] !== 0) return "Hier ist kein Platzhalter."; B.splice(fach, 1); }
+  else { const vor = B.length; e.inv.bank = B.filter((b) => b[1] > 0); if (e.inv.bank.length === vor) return "Es gibt keine Platzhalter."; }
+  reiterOrdnen(e.inv); geaendert(sb, nutzer, e); return null; }
 
 /* ───────── Boden ───────── */
 export interface BodenDing { id: number; g: string; n: number; ort: string; x: number; y: number; besitzer: string; offenAb: number; bis: number; /** Daten je Exemplar (Phase 5a) */ d?: Daten }
