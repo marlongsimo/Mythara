@@ -6,7 +6,7 @@
  * Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter, 3 Questpunkte. Die Klinge aus dem Grab (klinge_hauptmann) bringt man Wigand; er gibt sie geschärft zurück.
  * Schalter hauptmann_gruft (Instanz, solange die Quest läuft: du allein gegen eine schwächere Fassung; danach die stärkere öffentlich oder als eigene Instanz). Haken: die Brücke zur Furt (W5).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Hügelgräber hauptmann_grab und hauptmann_gruft aus #50, Gruft als Instanz, Grabwächter, Grauer Hauptmann, Selten-Langschwert klinge_hauptmann). Liste: doku/quests/e-bausteine.md.
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 7/8, 806f3060 und a34079ee).
  */
 import type { QuestDef, Bed } from "./questbau";
 import { E3 } from "./quest_e3";
@@ -36,10 +36,14 @@ export const QUEST_E4: QuestDef = {
       log: "Brich das Siegel auf dem Sarkophag des Hauptmanns." },
     { id: "hauptmann", text: "Den Grauen Hauptmann besiegen", ereignis: { art: "erlegen", typ: "grauer_hauptmann" }, nach: ["siegel"], wo: GRAB.kampf,
       log: "Hinter dem Gruft-Tor steht der Graue Hauptmann auf. Er ruft Wiedergänger, und hinter den sechs Grabsteinen bist du vor seinem Sturm sicher." },
-    { id: "klinge", text: "Die Klinge des Hauptmanns an dich nehmen", ereignis: { art: "aufheben", g: "klinge_hauptmann" }, nach: ["hauptmann"], wo: GRAB.kampf,
+    { id: "klinge", text: "Die Klinge des Hauptmanns an dich nehmen", ereignis: { art: "objekt", id: "e4_klinge" }, nach: ["hauptmann"], wo: GRAB.kampf,
       log: "Nimm die Klinge des Grauen Hauptmanns an dich." },
   ],
   objekte: [
+    { id: "e4_klinge", name: "Die Klinge des Hauptmanns", x: GRAB.kampf[0], y: GRAB.kampf[1] + 2, modell: "stelle", tat: "aufheben", tatText: "Die Klinge aufheben", weit: 2.5, geben: [{ g: "klinge_hauptmann" }],
+      text: "Wo der Hauptmann fiel, liegt seine Klinge im Staub. Grau wie Nebel – und doch kalt und scharf. Du nimmst sie an dich.",
+      schon: "Hier lag die Klinge des Hauptmanns.", sonst: [{ wenn: NEU, text: "Staub und alte Knochen." }, { wenn: FERTIG, text: "Hier lag die Klinge des Hauptmanns." },
+        { wenn: { offen: ["hauptmann"] }, text: "Der Graue Hauptmann steht noch. Erst er, dann seine Klinge." }] },
     { id: "e4_siegel", name: "Siegel des Hauptmanns", x: GRAB.siegel[0], y: GRAB.siegel[1], modell: "stelle", tat: "benutzen", tatText: "Das Siegel brechen", weit: 2.5,
       text: "Das Wachs springt mit einem Knall. Kälte steigt aus dem Sarkophag, und eine Stimme, die lange nicht gesprochen hat: „Wer weckt die Wacht?“",
       schon: "Das Siegel ist gebrochen.", sonst: [{ wenn: NEU, text: "Ein Sarkophag aus grauem Stein, versiegelt mit dem Turm über drei Wellen." }, { wenn: FERTIG, text: "Der Sarkophag ist leer und still." },
@@ -69,8 +73,7 @@ export const QUEST_E4: QuestDef = {
       ],
     },
   },
-  /* Die Klinge: garantiert vom Grauen Hauptmann in der Quest-Instanz (Rolle Spiel: chance 100) */
-  beute: { e4_klinge: { erledigt: ["hauptmann"], offen: ["klinge"] } },
+  /* Die Klinge liegt nach dem Kampf in der Gruft (Questobjekt e4_klinge) – keine Beute-Tabelle nötig */
   schalter: { hauptmann_gruft: LAEUFT },
   glueckwunsch: "Er ruht. Trag seine Klinge gut. Er hätte nichts anderes gewollt.",
   belohnungText: "Belohnung: die Klinge des Grauen Hauptmanns (seltenes Langschwert), Stärke 1.000, Defense 1.000, LP 500 XP, 600 Splitter",

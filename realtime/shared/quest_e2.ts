@@ -6,7 +6,7 @@
  * mit den Nonnen aufhängen, der erste Schlag – Ysoldes Stimme antwortet von Graufurt aus: „Endlich.“
  * Lohn: Schmieden 1.000 XP, 400 Splitter, 2 Questpunkte. Schalter glocke_heil (die Glocke läutet stündlich, für alle in den Fahlen Weiten – shared/weltereignisse.ts), bindestein_abtei.
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 8 (Abtei, Glockenturm, Rezepte glockenbronze, glocke, kloeppel; Glocke als Weltereignis).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 7/8, 806f3060 und a34079ee).
  * Stellen aus der Welt (#50, shared/quest_e_orte.ts; Lesestelle glocke mit questobjekt „glocke“). Liste: doku/quests/e-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";

@@ -16,7 +16,7 @@ export const ABTEI = { gunhild: [6669, 5765] as Feld, kueche: [6678, 5785.6] as 
 /** Burg: Wigand Fels (wigand_fels, ab Stufe „abtei“) vor dem Bergfried */
 export const BURG = { wigand: [6708, 5706] as Feld };
 /** Grenzposten: Lager der Deserteure (Mitte 6640 | 6112, r 10), Lesestelle grenzposten */
-export const GRENZPOSTEN = { lager: [6638, 6115.2] as Feld, tjark: [6640, 6112] as Feld };
+export const GRENZPOSTEN = { lager: [6638, 6115.2] as Feld, tjark: [6640.5, 6113.5] as Feld /* 6640 · 6112 war im Gehraster gesperrt (Palisade) */ };
 /** Hügelgräber (Lesestelle huegelgraeber), Eingang zum Grab des Hauptmanns, die drei Kammern für „Ruhelose Gräber“ (Särge in grabkammer_1/2, Vorraum im hauptmann_grab) */
 export const GRAEBER = { feld: [6470, 5768] as Feld, hauptmann_eingang: [6466, 5787.8] as Feld,
   kammern: [[11088, 9610.4], [11120, 9610.4], [11168, 9655.5]] as Feld[] };

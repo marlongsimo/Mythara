@@ -4,7 +4,7 @@
  * 3 Graufurter Welse am Fährhafen, 2 Welspasteten am Herd der Taverne (QUER: Teig aus dem Mehl von Hanne Kalk, Weidenhain, nach B2), Abgabe. Lohn: Fischen- und Kochen-XP, 150 Splitter, 1 Questpunkt;
  * danach verkauft Alma Welspastete (Schalter alma_pastete).
  *
- * ENTWURF (shared/quest_entwuerfe.ts): wartet auf Phase 7 (Taverne und Fischplatz aus #36, Alma aus #37, Fischen/Kochen 45 im Spiel).
+ * Im Spiel (shared/quests.ts) seit 27.11. (Inhalte Phase 7/8, 806f3060 und a34079ee).
  * Stellen aus der Welt (#36, Region graufurt). Fischen meldet { art: "sammeln", ziel: "<fischart>" } wie in „Schilf und Schnur“. Liste: doku/quests/d-bausteine.md.
  */
 import type { QuestDef, Bed } from "./questbau";
