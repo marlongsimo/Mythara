@@ -9,6 +9,7 @@ import { BANK_PLAETZE, BANK_REITER } from "../../shared/bank";
 import { tafelZeigen, chatSystem } from "./welt";
 import { kontoName } from "./konto";
 /** Warum es gerade keine Bank gibt: ohne Konto – oder (mit Konto) noch keine Verbindung zum Spielserver */
+const LUPE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg>`;
 const keineBank = (): string => (kontoName() ? "Keine Verbindung zum Spielserver – die Bank öffnet sich, sobald er wieder erreichbar ist. Versuch es gleich noch einmal." : "Eine Bank gibt es mit Konto (Menü → Anmelden).");
 import { inventar, bankBitten, inventarAmServer } from "./inventar";
 import { gegenstandMalen, gegenstandUntersuchen } from "./rahmen";
@@ -47,16 +48,19 @@ export function bankZeigen(ort = "Bank der Splitterlande"): void {
   offen = true; suche = ""; let aus = () => { /* abmelden */ };
   const f = tafelZeigen("bank", `<h2>${esc(ort)}</h2><div class="zier"></div>
     <div class="bkoerper"><div class="blinks">
-    <div class="bkopf"><input type="search" class="bsuche" placeholder="Suchen …" aria-label="In der Bank suchen"><span class="bplatz"></span></div>
-    <div class="breiter" role="tablist" aria-label="Reiter der Bank"></div><div class="braster" role="list" aria-label="Bank"></div>
-    <div class="bleiste"><span>Menge:</span>${([1, 5, 10, "x", "alle"] as Menge[]).map((m) => `<button type="button" class="bmenge" data-m="${m}">${m === "x" ? "X" : m === "alle" ? "Alle" : m}</button>`).join("")}
-      <span class="bluecke"></span><button type="button" class="balles" data-was="rucksack" title="Den ganzen Rucksack einzahlen" aria-label="Rucksack einzahlen">🎒⬆</button><button type="button" class="balles" data-was="ausruestung" title="Alles Angelegte einzahlen" aria-label="Ausrüstung einzahlen">🛡⬆</button></div>
-    </div><div class="brechts"><h3 class="brs">Rucksack</h3><div class="brucksack" role="list" aria-label="Rucksack"></div></div></div>
-    <p class="klein">Antippen: abheben bzw. einzahlen (Menge oben) · lange drücken: alle Mengen und untersuchen</p>`, () => { offen = false; aus(); });
+    <div class="bkopf"><div class="breiter" role="tablist" aria-label="Reiter der Bank"></div><input type="search" class="bsuche" placeholder="Suchen …" aria-label="In der Bank suchen"><span class="bplatz"></span><button type="button" class="bsuchknopf" aria-label="Suchen" title="Suchen">${LUPE}</button></div>
+    <div class="braster" role="list" aria-label="Bank"></div>
+    <div class="bleiste"><span class="bmengen" role="group" aria-label="Menge">${([1, 5, 10, "x", "alle"] as Menge[]).map((m) => `<button type="button" class="bmenge" data-m="${m}">${m === "x" ? "X" : m === "alle" ? "Alle" : m}</button>`).join("")}</span>
+      <span class="bluecke"></span><button type="button" class="balles" data-was="rucksack" title="Den ganzen Rucksack einzahlen" aria-label="Rucksack einzahlen"><img src="../img/echtzeit/leiste/rucksack.webp" alt=""><i>⬆</i></button><button type="button" class="balles" data-was="ausruestung" title="Alles Angelegte einzahlen" aria-label="Ausrüstung einzahlen"><img src="../img/echtzeit/leiste/ausruestung.webp" alt=""><i>⬆</i></button></div>
+    </div><div class="brechts"><h3 class="brs">Rucksack <small class="brzahl"></small></h3><div class="brucksack" role="list" aria-label="Rucksack"></div></div></div>`, () => { offen = false; aus(); });
+  /* Suche: hinter der Lupe (wie in OSRS), damit die Reiter Platz haben; Esc oder leer + Lupe schließt sie */
+  { const kopf = f.querySelector(".bkopf") as HTMLElement, feld = f.querySelector(".bsuche") as HTMLInputElement;
+    (f.querySelector(".bsuchknopf") as HTMLElement).addEventListener("click", (e) => { e.stopPropagation(); const an = !kopf.classList.contains("sucht"); kopf.classList.toggle("sucht", an);
+      if (an) feld.focus(); else if (suche) { suche = ""; feld.value = ""; zeichnen(); } }); }
   const raster = f.querySelector(".braster") as HTMLElement, rs = f.querySelector(".brucksack") as HTMLElement;
   const zeichnen = () => {
     const inv = inventar(), bank = inv.bank || [], q = suche.trim().toLowerCase();
-    (f.querySelector(".bplatz") as HTMLElement).textContent = `${bank.length} / ${BANK_PLAETZE}`;
+    (f.querySelector(".bplatz") as HTMLElement).textContent = `${bank.length} / ${BANK_PLAETZE}`; (f.querySelector(".brzahl") as HTMLElement).textContent = `${inv.rucksack.filter(Boolean).length} / ${RUCKSACK_PLAETZE}`;
     /* Reiter wie in OSRS: „Alle“, je Reiter das Bild seines ersten Gegenstands, „+“ für einen neuen (Gegenstand hineinziehen oder lange drücken) */
     const tabs = inv.bankTabs || {}, anzahlReiter = Math.max(0, ...Object.values(tabs)); if (reiter > anzahlReiter) reiter = 0;
     const erster = (t: number) => (bank.find(([g]) => tabs[g] === t) || [""])[0];
