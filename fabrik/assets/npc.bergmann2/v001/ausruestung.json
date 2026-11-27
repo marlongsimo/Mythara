@@ -1,0 +1,101 @@
+{
+  "koerper_textur": true,
+  "stil": "gemalt",
+  "zeichenfolge": true,
+  "stuecke_behalten": true,
+  "luecken_schliessen": true,
+  "hinweis": "npc.bergmann2 – Junger Bergmann (Steinhag): erdbraunes Arbeitsgewand, Grubenhelm mit Lampe, Spitzhacke (Hochlande #148; aus npc.junger_knecht, Gewand als Hülle, vorhandene Werkzeuge und Fellumhang, neuer Grubenhelm).",
+  "haltung": "zivil",
+  "bewegungen": [
+    "ruhe",
+    "gehen"
+  ],
+  "starr": [
+    {
+      "id": "kleidung.kopf.grubenhelm",
+      "platz": "kopf",
+      "art": "kopf",
+      "glb": "kleidung.kopf.grubenhelm/v001/quelle/grubenhelm.glb",
+      "sitz": 0.28
+    },
+    {
+      "id": "werkzeug.spitzhacke",
+      "platz": "hand_r",
+      "art": "schwert",
+      "glb": "skilling/utensilien/spitzhacke/v001/hand/spitzhacke.glb",
+      "griff": 0.15,
+      "bewegungen": [
+        "ruhe",
+        "gehen"
+      ]
+    }
+  ],
+  "huelle": [
+    {
+      "id": "kleidung.gewand",
+      "platz": "kutte",
+      "farbe": "#5a4834",
+      "dicke": 0.03,
+      "unten": true,
+      "bereich": [
+        [
+          "brust",
+          0,
+          1
+        ],
+        [
+          "bauch",
+          0,
+          1
+        ],
+        [
+          "becken",
+          0,
+          1
+        ],
+        [
+          "oberarm.L",
+          0,
+          1
+        ],
+        [
+          "oberarm.R",
+          0,
+          1
+        ],
+        [
+          "unterarm.L",
+          0,
+          0.8
+        ],
+        [
+          "unterarm.R",
+          0,
+          0.8
+        ],
+        [
+          "oberschenkel.L",
+          0,
+          1
+        ],
+        [
+          "oberschenkel.R",
+          0,
+          1
+        ],
+        [
+          "unterschenkel.L",
+          0,
+          0.95
+        ],
+        [
+          "unterschenkel.R",
+          0,
+          0.95
+        ]
+      ]
+    }
+  ],
+  "teilnetze": [],
+  "arme_eng": 6
+}

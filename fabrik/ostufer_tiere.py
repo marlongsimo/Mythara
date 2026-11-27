@@ -1,6 +1,6 @@
 """Mythara Fabrik – Gegner des Ostufers aus einfachen Formen (wenige Flächen), mit Skelett und Bewegungen (wie fabrik/rabe.py).
 
-  <blender-python> fabrik/ostufer_tiere.py -- <art> <ziel.blend>      art: krebs | reiher | gruenlicht | wolf | rudelfuehrer | fuchs | graupelz | wildschwein | feldhase | schaf | bienen
+  <blender-python> fabrik/ostufer_tiere.py -- <art> <ziel.blend>      art: krebs | reiher | gruenlicht | wolf | rudelfuehrer | fuchs | graupelz | wildschwein | feldhase | schaf | ziege | murmeltier | bienen
 Danach: fabrik/export3d.py <ziel.blend> <spiel.glb> echtzeit=1
 
 krebs      – Schlickkrebs (St. 45): flacher schlammbrauner Panzer (≈ 0,9 m breit), zwei große Scheren, acht Beine, Stielaugen.
@@ -14,6 +14,7 @@ rudelfuehrer – Rudelführer: ×1,22, dunkler, Nackenmähne, gelb glimmende Aug
 Süden (#121), aus der Wolfsform abgeleitet (gleiche Knochen und Bewegungen wie der Wolf):
 fuchs (×0,72, rotorange, weiße Schwanzspitze) · graupelz (Alpha-Wolf ×1,35, hellgrau, Mähne, Narbe, glimmende Augen, heulen) ·
 wildschwein (Borsten, Hauer, Rüssel) · feldhase (Löffel, Blume) · schaf (Wollbausch, schwarzes Gesicht; fressen statt angriff)
+Hochlande (#148): ziege (Hörner, Bart; fressen statt angriff) · murmeltier (kurzbeinig; maennchen statt angriff)
 bienen – Wildbienen-Schwarm (#121): Gerüst und Bewegungen des Grünlichts, statt Flammen 21 Bienen (ohne heilen)
 Gesicht nach -y, oben +z. Jedes Teil hängt starr an einem Knochen.
 """
@@ -104,7 +105,7 @@ elif ART in ("wolf", "rudelfuehrer", "fuchs", "graupelz"):
     knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, 0.35 * G_, Z), (0, -0.35 * G_, Z), "wurzel")
     knochen("kopf", (0, -0.4 * G_, Z + 0.05 * G_), (0, -0.74 * G_, Z + 0.04 * G_), "koerper"); knochen("kiefer", (0, -0.6 * G_, Z), (0, -0.72 * G_, Z - 0.02 * G_), "kopf")
     knochen("schwanz", (0, 0.42 * G_, Z + 0.05 * G_), (0, 0.78 * G_, Z - 0.12 * G_), "koerper")
-elif ART in ("wildschwein", "feldhase", "schaf"):                                                   # gleiche Knochen wie der Wolf → gleiche Bewegungen
+elif ART in ("wildschwein", "feldhase", "schaf", "ziege", "murmeltier"):                                                   # gleiche Knochen wie der Wolf → gleiche Bewegungen
     if ART == "wildschwein":
         FE = mat("borsten", (74, 58, 46), 0.95); BA = mat("schwbauch", (104, 86, 70), 0.9); NA = mat("ruessel", (150, 110, 100), 0.6); HZ = mat("hauer", (236, 228, 206), 0.4); AU = mat("auge_s", (20, 16, 14), 0.3)
         Z = 0.5; L0, LH, R_ = 0.42, 0.62, 0.24
@@ -129,6 +130,27 @@ elif ART in ("wildschwein", "feldhase", "schaf"):                               
         kugel((0, -0.255, Z + 0.06), (0.012, 0.01, 0.01), NA, "kopf", 6, 4); kugel((0, -0.23, Z + 0.03), (0.035, 0.03, 0.025), BA, "kiefer", 6, 4)
         kugel((0, 0.26, Z + 0.02), (0.04, 0.04, 0.04), BA, "schwanz", 8, 5)                                                                      # Blume
         beine = ((0.06, -0.08, 0.02), (0.08, 0.14, 0.035))
+    elif ART == "ziege":                                                                         # Hochlande (#148): Bergziege, braun-weiß, Hörner, Bart
+        FE = mat("ziegenfell", (150, 116, 80), 0.9); BA = mat("ziegenweiss", (226, 218, 200), 0.9); NA = mat("ziegennase", (60, 50, 44), 0.6); AU = mat("auge_z", (200, 170, 70), 0.3); HZ = mat("horn", (120, 104, 84), 0.5)
+        Z = 0.6; L0, LH, R_ = 0.3, 0.4, 0.16
+        kugel((0, 0.05, Z), (0.17, 0.42, 0.2), FE, "koerper", 12, 7); kugel((0, -0.05, Z - 0.08), (0.14, 0.3, 0.1), BA, "koerper", 10, 6)
+        rohr((0, -0.28, Z + 0.06), (0, -0.45, Z + 0.2), 0.07, FE, "kopf", 0.055)                                            # Hals
+        kugel((0, -0.5, Z + 0.2), (0.07, 0.13, 0.08), FE, "kopf", 10, 6); kugel((0, -0.6, Z + 0.17), (0.05, 0.05, 0.05), BA, "kopf", 8, 5)
+        for sx in (-1, 1):
+            kristall((sx * 0.04, -0.44, Z + 0.32), 0.025, 0.2, HZ, "kopf", (math.radians(-35), sx * 0.2, 0)); kugel((sx * 0.06, -0.55, Z + 0.23), (0.012, 0.012, 0.012), AU, "kopf", 6, 4)
+            kugel((sx * 0.08, -0.47, Z + 0.24), (0.05, 0.02, 0.025), FE, "kopf", 6, 4)
+        kristall((0, -0.6, Z + 0.06), 0.025, 0.12, BA, "kiefer", (math.pi, 0, 0))                                              # Bart
+        rohr((0, 0.45, Z + 0.1), (0, 0.52, Z + 0.18), 0.03, BA, "schwanz", 0.01)
+        beine = ((0.09, -0.24, 0.04), (0.09, 0.28, 0.042))
+    elif ART == "murmeltier":                                                                    # Hochlande (#148): dickes braunes Murmeltier mit kurzen Beinen
+        FE = mat("murmelfell", (140, 104, 68), 0.95); BA = mat("murmelbauch", (190, 160, 120), 0.9); NA = mat("murmelnase", (40, 30, 26), 0.5); AU = mat("auge_m", (20, 16, 14), 0.2); HZ = mat("zahn", (240, 230, 200), 0.4)
+        Z = 0.16; L0, LH, R_ = 0.08, 0.17, 0.1
+        kugel((0, 0.03, Z), (0.13, 0.22, 0.13), FE, "koerper", 12, 7); kugel((0, -0.04, Z - 0.03), (0.1, 0.15, 0.08), BA, "koerper", 10, 6)
+        kugel((0, -0.22, Z + 0.06), (0.07, 0.08, 0.065), FE, "kopf", 10, 6); kugel((0, -0.29, Z + 0.05), (0.04, 0.03, 0.03), BA, "kopf", 8, 5)
+        for sx in (-1, 1): kugel((sx * 0.035, -0.27, Z + 0.09), (0.01, 0.01, 0.01), AU, "kopf", 6, 4); kugel((sx * 0.05, -0.2, Z + 0.12), (0.018, 0.01, 0.014), FE, "kopf", 6, 4)
+        kugel((0, -0.315, Z + 0.06), (0.012, 0.008, 0.01), NA, "kopf", 6, 4); kugel((0, -0.31, Z + 0.025), (0.012, 0.006, 0.012), HZ, "kiefer", 6, 4)
+        rohr((0, 0.24, Z), (0, 0.36, Z - 0.03), 0.035, FE, "schwanz", 0.025)
+        beine = ((0.07, -0.1, 0.03), (0.08, 0.13, 0.035))
     else:
         FE = mat("wolle", (232, 226, 210), 0.95); BA = FE; NA = mat("schafgesicht", (46, 40, 38), 0.6); AU = mat("auge_sch", (200, 170, 90), 0.3); HZ = NA
         Z = 0.55; L0, LH, R_ = 0.3, 0.42, 0.18
@@ -144,7 +166,7 @@ elif ART in ("wildschwein", "feldhase", "schaf"):                               
             b = f"bein{v_}.{S}"; rohr((sx * bx, by, Z - R_ * 0.4), (sx * bx, by, 0.02), br, NA if ART == "schaf" else FE, b, br * 0.75); kugel((sx * bx, by - 0.01, 0.015), (br, br * 1.3, br * 0.6), mat("huf", (40, 34, 30), 0.6) if ART != "feldhase" else FE, b, 6, 4)
             knochen(b, (sx * bx, by, Z - R_ * 0.4), (sx * bx, by, 0.0), "koerper")
     knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("koerper", (0, LH, Z), (0, -LH, Z), "wurzel")
-    kopf_y = {"wildschwein": (-0.42, -0.84), "feldhase": (-0.12, -0.26), "schaf": (-0.36, -0.58)}[ART]
+    kopf_y = {"wildschwein": (-0.42, -0.84), "feldhase": (-0.12, -0.26), "schaf": (-0.36, -0.58), "ziege": (-0.38, -0.64), "murmeltier": (-0.16, -0.32)}[ART]
     knochen("kopf", (0, kopf_y[0], Z + 0.04), (0, kopf_y[1], Z + 0.04), "koerper"); knochen("kiefer", (0, kopf_y[1] * 0.85, Z - 0.02), (0, kopf_y[1], Z - 0.03), "kopf")
     knochen("schwanz", (0, LH * 0.85, Z + 0.05), (0, LH * 1.1, Z - 0.05), "koerper")
 elif ART == "bienen":                                                                                # Wildbienen-Schwarm: Gerüst des Grünlichts (kern, flamme, funken), statt Flammen Bienen
@@ -167,7 +189,7 @@ else:
         a = k / 6 * 2 * math.pi; kugel((0.32 * math.cos(a), 0.32 * math.sin(a), Z + 0.05 * math.sin(3 * a)), (0.025, 0.025, 0.025), FU, "funken", 6, 4)
     knochen("wurzel", (0, 0, 0), (0, 0, 0.1)); knochen("kern", (0, 0, Z - 0.15), (0, 0, Z + 0.15), "wurzel"); knochen("flamme", (0, 0, Z + 0.05), (0, 0, Z + 0.4), "kern"); knochen("funken", (0, 0, Z), (0, 0, Z + 0.2), "kern")
 
-VIERBEINER = ("wolf", "rudelfuehrer", "fuchs", "graupelz", "wildschwein", "feldhase", "schaf")
+VIERBEINER = ("wolf", "rudelfuehrer", "fuchs", "graupelz", "wildschwein", "feldhase", "schaf", "ziege", "murmeltier")
 # ---- Skelett, Teile starr an ihre Knochen, ein Netz „koerper“
 arm = bpy.data.objects.new("skelett", bpy.data.armatures.new("skelett")); bpy.context.collection.objects.link(arm)
 bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode="EDIT")
@@ -244,11 +266,15 @@ elif ART in VIERBEINER:
     def treffer(t): w = math.sin(math.pi * t); dreh("koerper", (X, -8 * w), (Y, 10 * w)); dreh("kopf", (X, 12 * w)); ort((0, 0.1 * w, 0))
     def heulen(t): w = math.sin(math.pi * min(1, t / 0.3)) if t < 0.85 else math.sin(math.pi * (1 - t) / 0.3); dreh("kopf", (X, -55 * w)); dreh("kiefer", (X, 25 * w)); dreh("koerper", (X, -10 * w))
     def tod(t): f = glatt(min(1.0, t / 0.6)); dreh("wurzel", (Y, 90 * f)); dreh("kopf", (X, 15 * f)); ort((0, 0, 0.0)); bein(f, 15, 15)
+    def maennchen(t):                                                                                  # aufrichten auf die Hinterbeine, umschauen, wieder runter
+        w = min(1.0, math.sin(math.pi * t) * 1.8); dreh("koerper", (X, -70 * w)); ort((0, 0.05 * w, 0.06 * w)); dreh("kopf", (X, 55 * w), (Zx, 30 * math.sin(4 * math.pi * t) * w))
+        dreh("beinv.L", (X, 50 * w)); dreh("beinv.R", (X, 50 * w)); dreh("beinh.L", (X, 60 * w)); dreh("beinh.R", (X, 60 * w))
     def fressen(t): w = min(1.0, math.sin(math.pi * t) * 1.6); dreh("kopf", (X, 45 * w)); dreh("kiefer", (X, 12 * max(0, s_(t, 4)) * w)); dreh("schwanz", (Zx, 10 * s_(t, 2)))
     BW = {"ruhe": (ruhe, 16, 8, True, {}), "gehen": (gehen, 10, 10, True, {}), "laufen": (laufen, 8, 12, True, {}), "angriff": (angriff, 10, 12, False, {"treffer": 6}),
           "treffer": (treffer, 6, 14, False, {}), "tod": (tod, 12, 12, False, {"halten": 11})}
     if ART in ("rudelfuehrer", "graupelz"): BW["heulen"] = (heulen, 20, 10, False, {})
-    if ART == "schaf": del BW["angriff"]; BW["fressen"] = (fressen, 16, 8, True, {})                    # Stimmungstier: grast statt anzugreifen
+    if ART in ("schaf", "ziege"): del BW["angriff"]; BW["fressen"] = (fressen, 16, 8, True, {})          # Stimmungstiere: grasen statt anzugreifen
+    if ART == "murmeltier": del BW["angriff"]; BW["maennchen"] = (maennchen, 24, 8, True, {})            # Männchen machen und Ausschau halten
 else:
     def flackern(t, f=1.0): gross("flamme", f * (1 + 0.12 * s_(t, 3) + 0.06 * s_(t, 7, 1))); dreh("flamme", (Zx, 40 * s_(t)))
     def ruhe(t): ort((0, 0, 0.1 * s_(t))); flackern(t); dreh("funken", (Zx, 360 * t)); gross("kern", 1 + 0.05 * s_(t, 2))
