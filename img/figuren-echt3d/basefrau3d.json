@@ -695,6 +695,30 @@
    "platz": "helm",
    "bewegungen": [],
    "datei": "basefrau3d.teile/kopf.helm.fellhaube.glb"
+  },
+  "waffe.bogen.hartwig": {
+   "art": "starr",
+   "platz": "hand_l",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "bogen"
+   ],
+   "datei": "basefrau3d.teile/waffe.bogen.hartwig.glb"
+  },
+  "waffe.lindenstab": {
+   "art": "starr",
+   "platz": "hand_r",
+   "bewegungen": [
+    "ruhe",
+    "gehen",
+    "laufen",
+    "tod",
+    "zauber_stab"
+   ],
+   "datei": "basefrau3d.teile/waffe.lindenstab.glb"
   }
  },
  "aktionen": {
