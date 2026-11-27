@@ -5,7 +5,8 @@
 export interface Punkt { x: number; y: number }
 export interface Lager { art: string; x: number; y: number; gruppe: number; blinzeln?: boolean /* huscht einmal davon, wenn es fast besiegt ist */;
   /** gemeinsame Kampfwelt (alle Regionen in einer Simulation): Aggro, Leine, Streifen und Stufe des Gebiets, aus dem das Lager stammt – sonst gelten die Werte der Karte */ aggro?: number; leine?: number; wandern?: number; stufe?: number;
-  /** aus den Gegnerplätzen der Welt (#130, welt/gegnerplaetze.json) – nicht aus einem gebauten Lager */ gp?: number }
+  /** aus den Gegnerplätzen der Welt (#130, welt/gegnerplaetze.json) – nicht aus einem gebauten Lager */ gp?: number;
+  /** #143 Streifgebiet (welt/streifgebiete.json): Rechteck x0, y0, x1, y1 in denselben Einheiten wie x/y – das Tier wandert für sich darin */ streif?: number[] }
 
 export let KB = 33, KH = 20;
 /* Räume und Gänge als Rechtecke [x, y, breite, höhe]; alles andere ist Fels */
@@ -70,7 +71,7 @@ export function setzeKarte(k0: { zeilen: string[]; start: number[][]; lager: Lag
   /* mal: so viele Rechenfelder je gemaltem Feld. Die gemalten Karten sind klein (12 × 9); mit mal 2 passen Reichweiten und Lauftempo zum Bild. */
   /* feinZeilen: das Raster ist schon in Rechenfeldern angegeben (große Karten wie der Waldweg), nur Positionen werden umgerechnet */
   const zm = k0.feinZeilen ? 1 : mal;
-  const k = { zeilen: k0.zeilen.flatMap((z) => { const breit = [...z].map((c) => c.repeat(zm)).join(""); return Array.from({ length: zm }, () => breit); }), start: k0.start, lager: k0.lager.map((l) => ({ ...l, x: l.x * mal, y: l.y * mal })) };
+  const k = { zeilen: k0.zeilen.flatMap((z) => { const breit = [...z].map((c) => c.repeat(zm)).join(""); return Array.from({ length: zm }, () => breit); }), start: k0.start, lager: k0.lager.map((l) => ({ ...l, x: l.x * mal, y: l.y * mal, ...(l.streif ? { streif: l.streif.map((v) => v * mal) } : {}) })) };
   KH = k.zeilen.length; KB = k.zeilen[0].length; FELS = new Uint8Array(KB * KH); WASSER = new Uint8Array(KB * KH);
   k.zeilen.forEach((z, j) => [...z].forEach((c, i) => { if (c === "~") WASSER[j * KB + i] = 1; else if (c !== ".") FELS[j * KB + i] = 1; }));
   START = k.start.map(([x, y]) => ({ x: (x + 0.5) * mal, y: (y + 0.5) * mal })); LAGER = k.lager;

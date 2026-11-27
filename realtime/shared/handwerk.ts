@@ -228,6 +228,15 @@ WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8
   { id: "herd_haferstedt", station: "herd", x: 6209.2, y: 6967, ort: "fl_186_211" }, { id: "kessel_haferstedt", station: "kessel", x: 6211.5, y: 6967, ort: "fl_186_211" },
   { id: "backofen_haferstedt", station: "backofen", x: 6236.8, y: 6975.4, ort: "fl_186_211" }, { id: "brunnen_haferstedt", station: "brunnen", x: 6215, y: 6977.35, ort: "fl_186_211" },
   { id: "feuer_netzbucht", station: "feuer", x: 6147, y: 6933.25, ort: "fl_186_211" }, { id: "raeucherhuette_netzbucht", station: "raeucherhuette", x: 6132, y: 6932, ort: "fl_186_211" });
+/* Phase 8, E-Quests (#118): Glocke von Grauwacht (E2, Quest-Rezepte), Hammeleintopf („Mettes Schafe“); Herd und Kessel der Abteiküche ab Stadtstufe „abtei“ (E1) */
+WERKSTAETTEN.push({ id: "herd_abtei", station: "herd", x: 6684.5, y: 5783.5, ort: "fl_201_169", schalter: "grauwacht_abtei", gesperrt: "Die Küche der Abtei ist kalt. Hier kocht erst wieder jemand, wenn die Schwestern zurück sind." },
+  { id: "kessel_abtei", station: "kessel", x: 6678, y: 5784, ort: "fl_201_169", schalter: "grauwacht_abtei", gesperrt: "Die Küche der Abtei ist kalt. Hier kocht erst wieder jemand, wenn die Schwestern zurück sind." });
+dazu({ id: "glockenbronze", station: "esse", ergebnis: "barren_glockenbronze", level: 45, zutaten: [{ g: ["erz_kupfer"], n: 4 }, { g: ["erz_splittereisen"], n: 1 }], xp: 120, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
+dazu({ id: "glocke", station: "herd", ergebnis: "glocke_neu", level: 45, zutaten: [{ g: ["barren_glockenbronze"], n: 4 }], xp: 300, ticks: 8, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
+dazu({ id: "kloeppel", station: "hand", ergebnis: "kloeppel", level: 1, zutaten: [{ g: ["stamm_kernbaum"], n: 1 }], xp: 80, ticks: 4, stufe: 0, gruppe: "Die Glocke von Grauwacht", quest: "grauwacht_die_glocke" });
+dazu({ id: "hammeleintopf", station: "herd", ergebnis: "hammeleintopf", level: 30, zutaten: [{ g: ["hammelfleisch"], n: 1 }, { g: ["krug_wasser"], n: 1 }], xp: 110, ticks: 6, stufe: 0, gruppe: "Eintopf", verbrannt: "suppe_verbrannt" });
+/* D3 „Wels im Trüben“: Herd und Kessel in der Taverne „Zur Furt“ in Graufurt (dorf_taverne_01 wie in der Waldmark), offen für alle */
+WERKSTAETTEN.push({ id: "herd_zur_furt", station: "herd", x: 6698.2, y: 6536, ort: "graufurt" }, { id: "kessel_zur_furt", station: "kessel", x: 6700.5, y: 6536, ort: "graufurt" });
 /* C1 „Schwarze Federn“: Brückenplanken aus Moorweide an Harms Werkbank in Rabenmoor (Handwerk 25, nur während der Quest) */
 WERKSTAETTEN.push({ id: "werkbank_rabenmoor", station: "werkbank", x: 6309.5, y: 6703.5, ort: "rabenmoor" });
 dazu({ id: "brueckenplanke", station: "werkbank", ergebnis: "brueckenplanke", level: 25, zutaten: [{ g: ["stamm_moorweide"], n: 1 }], xp: 60, ticks: 4, stufe: 0, gruppe: "Auftrag des Schulzen", quest: "rabenmoor_schwarze_federn" });

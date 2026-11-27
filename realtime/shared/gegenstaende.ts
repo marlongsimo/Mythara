@@ -687,6 +687,24 @@ GEGENSTAENDE.wildbret = { id: "wildbret", name: "Wildbret", art: "Rohstoff", sel
 GEGENSTAENDE.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", symbol: "kristall", trank: "wildbretbraten", text: "Ein kräftiger Braten aus den Hochlanden. Heilt 12 Lebenspunkte." };
 VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 12, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "12 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein kräftiger Braten aus den Hochlanden." };
 
+/* ───────── Phase 8, E-Quests (#118): Briefe, Glocke, Tjarks Eid, Mettes Schafe, Grablichter – Bilder aus dem Bestand, wo eines passt ───────── */
+{ const E = "img/objekte3d/skilling/erzeugnisse/", K = "img/objekte3d/skilling/kochen/symbole/";
+  GEGENSTAENDE.othmars_brief = { id: "othmars_brief", name: "Othmars Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein gefaltetes Blatt, oft gestrichen, eng beschrieben. Außen steht nur: „Für Gunhild.“" };
+  GEGENSTAENDE.barren_glockenbronze = { id: "barren_glockenbronze", name: "Glockenbronze", art: "Rohstoff", seltenheit: "selten", untauschbar: true, stapel: 8, bild: E + "barren_kupfer.webp",
+    text: "Vier Teile Kupfer, ein Teil Splittereisen. Wenn man daran klopft, singt der Barren." };
+  GEGENSTAENDE.glocke_neu = { id: "glocke_neu", name: "Neue Glocke", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "kristall",
+    text: "Die neue Glocke von Grauwacht, noch warm aus der Form. Schwer genug, dass man sie mit beiden Armen tragen muss." };
+  GEGENSTAENDE.tjarks_eid = { id: "tjarks_eid", name: "Tjarks Eid", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+    text: "Ein Eid, aufgeschrieben und mit „Tjark Sölde“ unterzeichnet: Die Freien vom Grenzposten kehren zur Wacht zurück." };
+  GEGENSTAENDE.hammelfleisch = { id: "hammelfleisch", name: "Hammelfleisch", art: "Rohstoff", seltenheit: "anfaenger", bild: K + "kuhfleisch.webp", wert: 4,
+    text: "Fleisch von einem der Schafe aus Heidrast. Mit Wasser im Herd wird ein Eintopf daraus." };
+  GEGENSTAENDE.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", bild: K + "bauerneintopf.webp",
+    text: "Ein dicker Eintopf aus Hammelfleisch. Heilt 9 Lebenspunkte." };
+  VERBRAUCH.hammeleintopf = { id: "hammeleintopf", name: "Hammeleintopf", art: "Essen", seltenheit: "gewoehnlich", heilt: { fest: 9, anteil: 0 }, stapelbar: false, modell: "", werte: [["Heilung", "9 (nicht über das maximale Leben)"], ["Stapelbar", "nein"]], text: "Ein dicker Eintopf aus Hammelfleisch." };
+  GEGENSTAENDE.grablicht = { id: "grablicht", name: "Grablicht", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: E + "seelenlicht.webp",
+    text: "Ein kaltes, blasses Licht aus den Hügelgräbern. Es will zurück auf seinen Stein." }; }
+
 /* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
 GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
   text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };

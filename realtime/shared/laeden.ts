@@ -6,7 +6,7 @@
 import { GEGENSTAENDE, Seltenheit, handelbar, type Daten } from "./gegenstaende";
 import TROEDLER_STANDORTE from "../welt/troedler_standorte.json";
 
-export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}`;
+export type LadenId = "waffen" | "ruestung" | "traenke" | "handwerker" | "baeckerei" | "kornspeicher" | "obstwiesen" | "imme" | `troedler_${string}` | `haferstedt_${string}` | `netzbucht_${string}` | `sandquell_${string}` | `graufurt_${string}`;
 export interface Ware { g: string; preis: number }
 export interface Laden { id: LadenId; name: string; spruch: string; haendler: string; modell: string; /** Stelle des Händlers (Weltfelder) und Blickrichtung */ x: number; y: number; blick: [number, number]; /** wo der Kunde steht (vor der Theke, auf der Marktseite) */ vor: [number, number];
   gruss: string; tschuess: string; waren: Ware[]; /** Trödler (#88): kauft alles Handelbare zu TROEDLER_ANTEIL des Grundwerts (sonst kauft ein Händler nur, was er führt, zu ANKAUF_ANTEIL) */ troedler?: boolean; /** nur offen, wenn diese Quest so weit ist (sonst: zu) – Server und Browser prüfen gleich */ wenn?: { quest: string; phase: "fertig" }; /** Text, solange zu */ zu?: string; /** die Figur steht schon in der Welt (spiel.json, leute3d.ts) – keine eigene Händlerfigur */ figurInWelt?: boolean; /** der Laden gehört zu dieser Questfigur (shared/quest*.ts): sie zeichnet die Quest, angetippt gibt es dazu „Laden ansehen“ */ questFigur?: string;
@@ -64,6 +64,10 @@ for (const t of (TROEDLER_STANDORTE as { standorte: { id: string; x: number; y: 
     modell: frau ? "npcfrau3d" : "npcmann3d", x: t.x, y: t.y, blick: [0, 1], vor: [t.x, t.y + 1.2], troedler: true, waren: [],
     gruss: frau ? "Na, was schleppst du da mit dir rum? Zeig her, ich mach dir einen Preis." : "Alles hat seinen Preis. Die Hälfte davon zahl ich dir.",
     tschuess: frau ? "Komm wieder, wenn der Rucksack drückt." : "Gute Wege. Und bring mir, was du nicht brauchst." }; }
+/* D3 „Wels im Trüben“: Alma Furtner vor der Taverne „Zur Furt“ verkauft Welspastete, sobald D3 fertig ist (Schalter alma_pastete); sie ist Questfigur (quest_d3.ts) */
+LAEDEN.graufurt_alma = { id: "graufurt_alma", name: "Zur Furt", spruch: "Welspastete nach Graufurter Art.", haendler: "Alma Furtner", modell: "npc.alma", x: 6700.5, y: 6542.5, blick: [0, 1], vor: [6700.5, 6543.8], questFigur: "alma",
+  gruss: "Pastete? Frisch aus dem Ofen, mit Wels aus dem Fährhafen.", tschuess: "Komm wieder, wenn der Magen knurrt.", waren: [{ g: "welspastete", preis: 45 }, { g: "brot", preis: 8 }],
+  wenn: { quest: "graufurt_wels_im_trueben", phase: "fertig" }, zu: "Alma hat nichts zu verkaufen. Ohne Wels keine Pastete." };
 /* ───── #141: Haferstedt, Netzbucht und Sandquell (Welt #140, 6a116f04, welt/beleben_orte.json) – Bewohner, Läden nur mit vorhandenen Waren, kurze Zeilen.
    Stellen der Händler nach dem Vorschlag der Welt; Modelle vorerst aus dem Bestand (Figuren ordnet sie in #141 zu). ───── */
 type Neu = Omit<Laden, "id" | "waren" | "blick" | "vor"> & { waren?: Ware[]; blick?: [number, number]; vor?: [number, number] };
@@ -118,7 +122,7 @@ export const LADEN_LISTE = Object.values(LAEDEN);
 export const ladenOffen = (L: Laden, stand: (id: string) => string): boolean => !L.wenn || stand(L.wenn.quest) === L.wenn.phase;
 /** Symbol je Laden (Minikarte und Karte) */
 export const LADEN_ZEICHEN: Record<string, string> = { waffen: "⚔️", ruestung: "🛡️", traenke: "🧪", handwerker: "🔨", baeckerei: "🍞", kornspeicher: "🌾", obstwiesen: "🍎", imme: "🍯",
-  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺" };
+  haferstedt_taverne: "🍲", haferstedt_baecker: "🍞", haferstedt_schmiede: "🔨", haferstedt_muehle: "🌾", haferstedt_allerlei: "🧺", haferstedt_kraeuter: "🧪", netzbucht_fischer: "🐟", netzbucht_netze: "🎣", sandquell_herberge: "🍲", sandquell_markt: "🧺", graufurt_alma: "🥧" };
 for (const L of LADEN_LISTE) if (L.troedler) LADEN_ZEICHEN[L.id] = "🪙"; /* Trödler (#88) */
 /* ───── An Händler verkaufen (#87) und Trödler (#88) ───── */
 /** Ein Händler zahlt für seine eigenen Waren so viel von seinem Preis; der Trödler so viel vom Grundwert */
