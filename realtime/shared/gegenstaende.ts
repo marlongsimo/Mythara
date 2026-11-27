@@ -705,6 +705,24 @@ VERBRAUCH.wildbretbraten = { id: "wildbretbraten", name: "Wildbretbraten", art: 
   GEGENSTAENDE.grablicht = { id: "grablicht", name: "Grablicht", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, stapel: 3, bild: E + "seelenlicht.webp",
     text: "Ein kaltes, blasses Licht aus den Hügelgräbern. Es will zurück auf seinen Stein." }; }
 
+/* ───────── Phase 9, F-Quests (#118): Kords Brief, Pfannenblech, Tempelabschrift ───────── */
+GEGENSTAENDE.kords_brief = { id: "kords_brief", name: "Kords Brief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+  text: "Ein Brief von Kord Weller, dem Fährmann aus Graufurt, an seine Schwester in Glutbrunn. Der Umschlag ist voller Sand." };
+GEGENSTAENDE.pfannenblech = { id: "pfannenblech", name: "Pfannenblech", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/barren_splittereisen.webp",
+  text: "Ein breites, dickes Blech aus Splittereisen für Ruwens Siedepfanne. Es hält die Glut aus." };
+GEGENSTAENDE.tempelabschrift = { id: "tempelabschrift", name: "Tempelabschrift", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, symbol: "pergament",
+  text: "Die Inschrift aus dem versandeten Tempel, Zeichen für Zeichen abgeschrieben. Lesen kann sie hier niemand." };
+
+/* ───────── Phase 10, G-Quests (#118): Frachtbrief, Lampenöl, Splitterglut, Fischernetz ───────── */
+GEGENSTAENDE.frachtbrief = { id: "frachtbrief", name: "Frachtbrief", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "pergament",
+  text: "Ein Frachtbrief aus dem umgestürzten Wagen: „Salz und Tuch, von Weidenhain nach Kielmund.“ Darunter ein Siegel der Küstenhäuser." };
+GEGENSTAENDE.lampenoel = { id: "lampenoel", name: "Lampenöl", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, symbol: "trank",
+  text: "Ein Krug trübes, gelbes Öl, aus Heringen ausgekocht. Es riecht streng und brennt lange." };
+GEGENSTAENDE.splitterglut = { id: "splitterglut", name: "Splitterglut", art: "Questgegenstand", seltenheit: "selten", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/seelenlicht.webp",
+  text: "Ein Seelenlicht, mit fünf Splittern zu einer Glut gebunden. Sie wärmt die Hand und erlischt nicht." };
+GEGENSTAENDE.fischernetz = { id: "fischernetz", name: "Fischernetz", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/erzeugnisse/garn.webp",
+  text: "Ein frisch geknüpftes Netz aus Garn, eng und fest. Für Bente in der Möwenbucht." };
+
 /* ───────── C2 „Der Gesang der Spiralsteine“ (#118): Moorglöckchen-Wachs von Hedda – Questgegenstand, nicht handelbar; Bild vorerst das Moorglöckchen ───────── */
 GEGENSTAENDE.moorwachs = { id: "moorwachs", name: "Moorglöckchen-Wachs", art: "Questgegenstand", seltenheit: "gewoehnlich", untauschbar: true, bild: "img/objekte3d/skilling/kraeuter/symbole/moorgloeckchen.webp",
   text: "Ein Klumpen weiches Wachs, das nach Moorglöckchen riecht. Hedda sagt, man solle es sich in die Ohren drücken, bevor die Steine singen." };
