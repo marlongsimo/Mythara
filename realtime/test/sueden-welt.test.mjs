@@ -35,7 +35,7 @@ const sb = createServer((req, res) => { let b = ""; req.on("data", (c) => (b += 
   if (req.url.startsWith("/rest/v1/rpc/")) return send(200, true);
   send(404, {}); }); }).listen(8797);
 const srv = spawn(process.execPath, ["server/dist/server.js"], { env: { ...process.env, PORT: "8788", SUPABASE_URL: "http://localhost:8797", SUPABASE_SERVICE_KEY: "sb_secret_test", ERLAUBTE_HERKUNFT: "http://localhost:8765",
-  FISCH_KERN: "0", FISCH_FALL: "0", KRAUT_KERN: "0", KRAUT_FALL: "0", KRAUT_TAKT_MS: "200", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
+  FISCH_KERN: "0", FISCH_FALL: "0", KRAUT_KERN: "0", KRAUT_FALL: "0", KRAUT_TAKT_MS: "200", FISCH_WANDER_MS: "0", HANDWERK_GLUT: "0", HANDWERK_BRENN: "0" }, stdio: ["ignore", "pipe", "pipe"] });
 let log = ""; srv.stdout.on("data", (d) => (log += d)); srv.stderr.on("data", (d) => (log += d));
 await new Promise((r) => setTimeout(r, 1200));
 function spieler(token, ort = "waldmark") { return new Promise((fertig) => { const ws = new WebSocket("ws://localhost:8788/?welt=1&ort=" + ort, { origin: "http://localhost:8765" }),
