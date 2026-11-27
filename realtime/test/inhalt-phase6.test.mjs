@@ -29,7 +29,7 @@ check(MONSTER.rabenpriester_novize.friedlichMit.includes("rabenkapuze") && MONST
 console.log("\nLager in der Kampfwelt");
 setzeKarte(KARTEN.welt, FEIN);
 { const s = Sim.welt(1, undefined, true), n = (t) => s.wesen.filter((w) => w.typ === t).length;
-  check(n("rabenpriester_novize") === 3 && n("moorrabe") === 9 && n("federmutter") === 1 && n("rabenpriester_akoluth") + n("rabenpriester_akoluth_speer") === 7, `Aschenwerth und Rabengrund: 3 Novizen, 9 Moorraben, 7 Akoluthen, die Federmutter`);
+  check(n("rabenpriester_novize") === 3 && n("moorrabe") === 9 && n("federmutter") === 1 && n("rabenpriester_akoluth") + n("rabenpriester_akoluth_speer") === 6 && n("kerkermeister") === 1, `Aschenwerth und Rabengrund: 3 Novizen, 9 Moorraben, 6 Akoluthen, der Kerkermeister, die Federmutter`);
   check(n("oberster_rabenpriester") === 1, "der Oberste steht öffentlich im Thronsaal (nach der Quest, #116; in der Quest kämpft man in einer Kopie)"); }
 
 console.log("\nBeute über viele Würfe");
@@ -90,6 +90,11 @@ console.log("\nC1 „Schwarze Federn“: Meilerpech, Novizenkapuze, Brückenplan
   check(["meilerpech", "novizenkapuze", "brueckenplanke"].every((g) => GEGENSTAENDE[g] && GEGENSTAENDE[g].art === "Questgegenstand" && GEGENSTAENDE[g].untauschbar && GEGENSTAENDE[g].bild), "drei Questgegenstände, untauschbar, mit Bild aus dem Bestand");
   check(P && P.station === "werkbank" && P.level === 25 && P.quest === "rabenmoor_schwarze_federn" && P.zutaten.length === 1 && P.zutaten[0].g[0] === "stamm_moorweide", "Rezept Brückenplanke: Werkbank, Handwerk 25, nur in C1, aus einem Moorweidenstamm");
   check(W && !versperrt(Math.floor(W.x), Math.floor(W.y)) && Math.hypot(W.x - 6312.5, W.y - 6701.6) < 4, "Harms Werkbank in Rabenmoor steht frei, neben Harm"); }
+
+console.log("\nC3 „Der Oberste Rabenpriester“: Kerkerschlüssel und Moorwasser");
+{ const K = MONSTER.kerkermeister;
+  check(K && K.v2 && K.drops.some((R) => R.nur === "c3_kerkerschluessel" && R.wurf.some((w) => w.g === "kerkerschluessel" && w.chance === 100)), "der Kerkermeister trägt den Schlüssel (nur solange C3 ihn braucht)");
+  check(["kerkerschluessel", "moorwasser", "moorwasser_geweiht"].every((g) => GEGENSTAENDE[g] && GEGENSTAENDE[g].art === "Questgegenstand" && GEGENSTAENDE[g].untauschbar && GEGENSTAENDE[g].bild), "Kerkerschlüssel, Moorwasser und geweihtes Moorwasser: Questgegenstände mit Bild"); }
 
 console.log(f ? `\nInhalte Phase 6: ${f} FEHLER` : "\nInhalte Phase 6: alles in Ordnung");
 process.exit(f ? 1 : 0);

@@ -235,6 +235,7 @@ const GEGNER3D: Record<string, { datei: string; angriff: string; ersatz: string;
   rabenpriester_novize: { datei: "rabenpriester_novize3d", angriff: "zauber_stab", ersatz: "gegner.bandit.v003" },
   rabenpriester_akoluth: { datei: "rabenpriester_akoluth3d", angriff: "bogen", ersatz: "gegner.bandit.v003" },
   rabenpriester_akoluth_speer: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" },
+  kerkermeister: { datei: "rabenpriester_akoluth3d", angriff: "stich2h", ersatz: "gegner.bandit.v003" }, /* C3: vorerst das Akoluth-Modell */
   federmutter: { datei: "rabenpriester_federmutter3d", angriff: "zauber_stab", stile: ["zauber_stab", "bogen", "stich2h"], ersatz: "gegner.bandit.v003" },
   oberster_rabenpriester: { datei: "oberster_rabenpriester3d", angriff: "doppelhieb", ersatz: "gegner.bandit.v003", mass: 2.6 },
   /* Phase 7 (#40): Graufurt, Ostufer, Turm (Figuren #37) */

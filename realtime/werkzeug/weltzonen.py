@@ -79,7 +79,7 @@ BESONDERS = {
                    "lager": [("moorrabe", 10592, 9643), ("moorrabe", 10590, 9641), ("moorrabe", 10592, 9641),
                              ("rabenpriester_akoluth", 10600, 9631), ("rabenpriester_akoluth_speer", 10598, 9629),
                              ("moorrabe", 10622, 9672), ("moorrabe", 10624, 9672), ("moorrabe", 10616, 9674),
-                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("rabenpriester_akoluth_speer", 10645, 9612)]},
+                             ("rabenpriester_akoluth_speer", 10640, 9625), ("rabenpriester_akoluth", 10638, 9623), ("kerkermeister", 10645, 9612)]},  # C3: der Kerkermeister im Kerker trägt den Schlüssel
     # Banditen-Hauptquartier unter der Hütte in der Westmark: neun Dolch-Banditen in sechs Räumen, die Halle ist Mehrkampf; Gegner bleiben in ihren Räumen
     # Phase 4: die Quelle stellt Dolch-Banditen auf – hier bekommen sie ihre Rolle: Wachstube Schläger + Armbrust, Schlafsaal Schläger + Späher, Beutelager Schläger, Halle gemischt
     "unterschlupf": {"karte": "unterschlupf", "stufe": 4, "aggro": 4, "leine": 10, "wandern": 2, "mehrkampf": US["mehrkampf"],
@@ -142,8 +142,18 @@ GP_ABSTAND = 20
 _gebaut = [(wx, wy) for z in BESONDERS.values() for (_a, wx, wy) in z.get("lager", [])]
 for rid in list(GP):
     vor = len(GP[rid]); GP[rid] = [g for g in GP[rid] if all(abs(g[1] - x) > GP_ABSTAND or abs(g[2] - y) > GP_ABSTAND for (x, y) in _gebaut)]; GP_AUS["nah"] = GP_AUS.get("nah", 0) + vor - len(GP[rid])
+# #143 Streifgebiete (Welt, welt/streifgebiete.json): 5–7 Tiere derselben Art, jedes wandert für sich über eine größere Fläche (Rechteck in Weltfeldern).
+# Form: {"gebiete": [{"id": "...", "gegner": "heidewolf", "anzahl": 6, "rechteck": [x0, y0, x1, y1], "region": "fl_..." (sonst die Region der Mitte)}]}
+# Startfelder: zufällig (fest je Gebiet) auf freien Feldern im Rechteck, nicht näher als GP_ABSTAND an einem gebauten Lager (Questorte)
+STREIF_DATEI = os.path.join(WURZEL, "realtime", "welt", "streifgebiete.json")
+STREIF = {}; STREIF_AUS = 0
+if os.path.exists(STREIF_DATEI):
+    for s in json.load(open(STREIF_DATEI, encoding="utf-8")).get("gebiete", []):
+        arten = [a for g in ([s["gegner"]] if isinstance(s["gegner"], str) else s["gegner"]) for a in GP_ALIAS.get(g, [g])]
+        if not all(a in BEKANNT for a in arten): STREIF_AUS += 1; print(f"  Hinweis: Streifgebiet {s.get('id')}: Gegner {s['gegner']} unbekannt – übersprungen"); continue
+        STREIF.setdefault(s.get("region"), []).append({**s, "arten": arten})
 aus = ["/* Erzeugt von werkzeug/weltzonen.py – nicht von Hand ändern. Kampfgebiete der offenen Welt (jede Region außer den sicheren): Gehraster, Start, Lager der Gegner, Mehrkampf-Bereiche. */",
-       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number; gp?: number }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
+       "export interface WeltKampfGebiet { region: string; karte: string; name: string; x0: number; y0: number; b: number; h: number; stufe: number; /** Gehraster je Zeile in Lauflängen („12.3T.“ = 12 frei, 3 gesperrt, 1 frei; #122) */ lauf: string[]; /** dieselben Zeilen ausgeschrieben (erst beim ersten Gebrauch) */ zeilen: string[]; start: number[][]; lager: { art: string; x: number; y: number; gruppe: number; gp?: number; /** #143: Streifgebiet (Rechteck wie x/y) – das Tier wandert für sich darin */ streif?: number[] }[]; mehrkampf: number[][]; aggro: number; leine: number; wandern: number }",
        "const ROH: Omit<WeltKampfGebiet, \"zeilen\">[] = ["]
 # #122 (Entscheidung des Nutzers, 27.11.): die ganze Welt ist Kampfwelt, auch das Festland. Die Raster stehen in Lauflängen in der Datei (sonst rund 8 MB)
 FESTLAND: set = set()
@@ -173,9 +183,18 @@ for rid, eintrag in welt["regionen"].items():
         if f: frei.append((a, f[0], f[1], 1)); belegt.add(f)
         else: gp_weg += 1
     if GP.get(rid): print(f"  {rid}: {len(GP[rid]) - gp_weg} Gegner aus den Gegnerplätzen (#130){f', {gp_weg} ohne freies Feld' if gp_weg else ''}")
+    import random as _zufall
+    for s in STREIF.get(rid, []) + [s for s in STREIF.get(None, []) if x0 <= (s["rechteck"][0] + s["rechteck"][2]) // 2 < x0 + B and y0 <= (s["rechteck"][1] + s["rechteck"][3]) // 2 < y0 + H]:
+        X0, Y0, X1, Y1 = max(s["rechteck"][0], x0), max(s["rechteck"][1], y0), min(s["rechteck"][2], x0 + B - 1), min(s["rechteck"][3], y0 + H - 1)
+        felder = [(x, y) for y in range(Y0, Y1 + 1) for x in range(X0, X1 + 1) if raster[y - y0][x - x0] == "." and (x, y) not in belegt
+                  and all(abs(x - gx) > GP_ABSTAND or abs(y - gy) > GP_ABSTAND for (gx, gy) in _gebaut)]
+        ZF = _zufall.Random(s.get("id", f"{X0},{Y0}")); ZF.shuffle(felder); n = min(int(s.get("anzahl", 6)), len(felder))
+        rechteck = [(X0 - x0) / 2, (Y0 - y0) / 2, (X1 + 1 - x0) / 2, (Y1 + 1 - y0) / 2]
+        for k in range(n): frei.append((s["arten"][k % len(s["arten"])], felder[k][0], felder[k][1], 0, rechteck)); belegt.add(felder[k])
+        print(f"  {rid}: Streifgebiet {s.get('id')}: {n} × {'/'.join(s['arten'])} auf {X1 - X0 + 1} × {Y1 - Y0 + 1} Feldern (#143)")
     for (a, wx, wy) in alle:
         if (a, wx, wy) not in frei: print(f"  Hinweis: {rid}: Lager {a} bei {wx},{wy} liegt nicht auf freiem Feld – übersprungen")
-    lager = [{"art": l[0], "x": (l[1] - x0) / 2, "y": (l[2] - y0) / 2, "gruppe": n + 1, **({"gp": 1} if len(l) > 3 else {})} for n, l in enumerate(frei)]  # gp: aus den Gegnerplätzen (#130)
+    lager = [{"art": l[0], "x": (l[1] - x0) / 2, "y": (l[2] - y0) / 2, "gruppe": n + 1, **({"gp": 1} if len(l) > 3 and l[3] else {}), **({"streif": l[4]} if len(l) > 4 else {})} for n, l in enumerate(frei)]  # gp: aus den Gegnerplätzen (#130)
     start = eintrag["start"][0]; karte = z.get("karte", "welt_" + rid)
     aus.append("  " + json.dumps({"region": rid, "karte": karte, "name": R.get("name", rid), "x0": x0, "y0": y0, "b": B, "h": H, "stufe": z.get("stufe", R.get("stufe", 1)),
         "lauf": [lauf("".join(r)) for r in raster], "start": [[(start[0] - x0) / 2 - 0.5, (start[1] - y0) / 2 - 0.5]], "lager": lager,

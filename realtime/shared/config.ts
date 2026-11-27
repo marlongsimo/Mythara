@@ -308,6 +308,14 @@ Object.assign(MONSTER, {
     drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [10, 20] }] }, { wurf: [{ g: "rabenfedern", chance: 60, anzahl: [2, 5] }, { g: "seelenlicht", chance: 15 }] },
       { wurf: [{ g: "@selten:Speer", chance: 100 / 96 }, { g: "@episch:Speer", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
       { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
+  /** C3 (#118): der Kerkermeister im Kerker des Rabengrunds – ein Akoluth mit Speer, etwas zäher; trägt den Kerkerschlüssel (nur solange C3 ihn braucht) */
+  kerkermeister: { name: "Kerkermeister", stufe: 38, bild: "img/echtzeit/bandit.webp", hoehe: 126, lp: 130, tempo: 3.2, angriffswert: { nah: 44, fern: 0, magie: 0 }, abwehr: { nah: 44, fern: 32, magie: 26 }, r: 0.42,
+    angriff: { name: "Speerstoß", art: "nah", schaden: [1, 11], takt: 2.5, reich: 1.9, aushol: 0 },
+    v2: { staerke: 98, geschick: 52, defense: 46, magie: 20, ticks: 5, abwehr: { nah: 17, fern: 6, magie: 0 } },
+    info: "Er trägt einen schweren Schlüsselring am Gürtel und lacht, wenn die Käfige klirren. " + RABE_INFO,
+    drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [15, 30] }] }, { wurf: [{ g: "rabenfedern", chance: 70, anzahl: [3, 6] }, { g: "seelenlicht", chance: 20 }] },
+      { wurf: [{ g: "@selten:Speer", chance: 100 / 64 }, { g: "@episch:Speer", chance: 100 / 768 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 10 }] },
+      { nur: "c3_kerkerschluessel", wurf: [{ g: "kerkerschluessel", chance: 100 }] }] },
   /** Federmutter Ravena: Mini-Boss, Stufe 40, 200 LP, Max Hit 12; wechselt alle 20 s Stab, Bogen, Speer (Stilwechsel) */
   federmutter: { name: "Federmutter Ravena", stufe: 40, bild: "img/echtzeit/bandit.webp", hoehe: 128, lp: 200, tempo: 3.0, angriffswert: { nah: 45, fern: 45, magie: 45 }, abwehr: { nah: 45, fern: 45, magie: 45 }, r: 0.45, boss: true, wiederkehr: 300,
     angriff: { name: "Rabenstab", art: "magie", schaden: [1, 12], takt: 2.5, reich: 5, aushol: 0 },

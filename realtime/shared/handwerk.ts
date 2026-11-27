@@ -222,6 +222,14 @@ dazu({ id: "aalsuppe", station: "kessel", ergebnis: "aalsuppe", level: 50, zutat
 dazu({ id: "glutwels_salzkruste", station: "herd", ergebnis: "glutwels_salzkruste", level: 65, zutaten: [{ g: ["fisch_glutwels_roh"], n: 1 }, { g: ["salz"], n: 2 }], xp: 260, ticks: 6, stufe: 0, gruppe: "Kruste", verbrannt: "fisch_glutwels_verbrannt" });
 /* Phase 7 (#40): D3 Welspastete am Herd (Kochen 45), D1 Kettenglieder am Amboss (Schmieden 45, Quest-Rezept: 1 Splittereisenbarren → 1 Glied) */
 dazu({ id: "welspastete", station: "herd", ergebnis: "welspastete", level: 45, zutaten: [{ g: ["fisch_wels_roh"], n: 1 }, { g: ["mehl"], n: 1 }], xp: 160, ticks: 6, stufe: 0, gruppe: "Pastete", verbrannt: "fisch_wels_verbrannt" });
+/* #141: Haferstedt und Netzbucht (Welt #140, 6a116f04) – Stationen an denselben Stellen der Baupläne wie in der Waldmark (welt/bedienstellen.json):
+   Schmiede (dorf_schmiede_01) Esse und Amboss, Taverne (dorf_taverne_01) Herd und Kessel, Bäckerei (dorf_baeckerei_01) Backofen, der Brunnen am Markt; Netzbucht Feuer und Räucherhütte */
+WERKSTAETTEN.push({ id: "esse_haferstedt", station: "esse", x: 6201.4, y: 6992.8, ort: "fl_186_211" }, { id: "amboss_haferstedt", station: "amboss", x: 6204.4, y: 6992.6, ort: "fl_186_211" },
+  { id: "herd_haferstedt", station: "herd", x: 6209.2, y: 6967, ort: "fl_186_211" }, { id: "kessel_haferstedt", station: "kessel", x: 6211.5, y: 6967, ort: "fl_186_211" },
+  { id: "backofen_haferstedt", station: "backofen", x: 6236.8, y: 6975.4, ort: "fl_186_211" }, { id: "brunnen_haferstedt", station: "brunnen", x: 6215, y: 6977.35, ort: "fl_186_211" },
+  { id: "feuer_netzbucht", station: "feuer", x: 6147, y: 6933.25, ort: "fl_186_211" }, { id: "raeucherhuette_netzbucht", station: "raeucherhuette", x: 6132, y: 6932, ort: "fl_186_211" });
+/* D3 „Wels im Trüben“: Herd und Kessel in der Taverne „Zur Furt“ in Graufurt (dorf_taverne_01 wie in der Waldmark), offen für alle */
+WERKSTAETTEN.push({ id: "herd_zur_furt", station: "herd", x: 6698.2, y: 6536, ort: "graufurt" }, { id: "kessel_zur_furt", station: "kessel", x: 6700.5, y: 6536, ort: "graufurt" });
 /* C1 „Schwarze Federn“: Brückenplanken aus Moorweide an Harms Werkbank in Rabenmoor (Handwerk 25, nur während der Quest) */
 WERKSTAETTEN.push({ id: "werkbank_rabenmoor", station: "werkbank", x: 6309.5, y: 6703.5, ort: "rabenmoor" });
 dazu({ id: "brueckenplanke", station: "werkbank", ergebnis: "brueckenplanke", level: 25, zutaten: [{ g: ["stamm_moorweide"], n: 1 }], xp: 60, ticks: 4, stufe: 0, gruppe: "Auftrag des Schulzen", quest: "rabenmoor_schwarze_federn" });
