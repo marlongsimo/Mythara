@@ -81,7 +81,19 @@ Zuletzt aktualisiert: 26.11.2026.
 - **HUD überarbeiten** (26.11., später am Tag): **ja** – kompakt, einfach, möglichst ohne Scrollen; eigener Chat „Oberfläche“, Regeln `doku/konzepte/hud.md`. Die neuen Symbole (#30/#32/#33) bleiben. (Die Gold-UI-Vorlagen von vorher sind kein Muss.) **Nichts einfach so ändern:** jede Oberflächen-Änderung zuerst als Vorschau zeigen und mit dem Nutzer gemeinsam ausarbeiten.
 - **Vorarbeit Phase 7** (Graufurt, Fährkette, Ostufer, Grüner Turm) und **Kräuter-Fundstellen (Phase 5)** freigegeben. *(26.11.)*
 
+- **Gegner-Modelle für spätere Gebiete** (27.11.): Der Nutzer hat die 10 fehlenden Gegner als Blender-Dateien geliefert (Steppenwolf, Ockerhyäne, Hochlandwidder, Hochlandbär, Klippenadler, Bergtroll, Tundraelch, Frostwolf, Drakling, Eisgolem). Sie dienen auch als **Vorlagen für spätere Gegner**. Der **Drakling kann nicht fliegen** (Bodengegner).
+
+- **Welt lebendiger** (27.11.): Leere Flächen bekommen Orte und Bewuchs (#140, #141). Im Süden und in den neuen Orten gibt es **fällbare Bäume und Erzstellen in Gruppen nahe jedem Ort**, dazu **vereinzelt Stellen einer höheren Stufe** abseits zum Entdecken (#142, nur vorhandene Arten). **Streifgebiete** (#143): Wölfe, Bären und Hyänen laufen **einzeln** (kein Rudel) über eine **größere Fläche**, etwa **5–7 Tiere je Gebiet**.
+
+- **Balancing Quest-Waffen** (27.11.): **Waldsäbel** etwas gesenkt auf 16/14 (Stufe 5, +15 % gegen Wald bleibt); **Klinge des Grauen Hauptmanns** erhöht auf Geschick 40 mit 33/34 (bleibt gebunden, nur E4). Dazu Fehler behoben: Jäger-Teile Stufe 35 über Stufe 20, Speer Reichweite 2.
+
+- **Waffen der Stufe 70** (27.11.): Echoschneide (Schwert), Seelenbogen (Kurzbogen), Seelenfokus (**Stab**) – Modelle vom Nutzer; stärker als Stufe 65; **Aufladen mit Splittern bindet** die Waffe; je Angriff 1 Ladung; mit Ladung 15 % Chance auf passive Fähigkeit (Nachhall, Seelenzug, Seelenbrand); **Drop beim Mini-Boss der Hochlande**; Laden braucht **Splitterbinden 70**; **kein zusätzliches +10 %** beim Laden (nur die Fähigkeit). Konzept `doku/konzepte/waffen-70.md`.
+
+- **Startseite und Würfelspiel** (27.11.): Die neue Startseite **riftmere.de** (#78) geht live. Das **Würfelspiel wird nicht mehr weiterverfolgt und komplett entfernt** (auch auf `main`, #108). Einladungslinks, App-Start und manifest führen weiter ins Spiel (`echtzeit/`).
+
 ## Für später (Ideen, noch nicht geplant)
+- **Minispiel für bessere Ausrüstung** (Idee des Nutzers, 27.11., nur im Hinterkopf): Teile mit Zusatzboni je Kampfstil – **Nahkampf: Stärke-Bonus**, **Fernkampf: Fernkampf-Stärke**, **Magie: % Magieschaden** (neu, gibt es heute nicht). Vorschlag Leitstelle: als Gegenstück zur Rissgrube ein **Punkte-Minispiel** (z. B. „Die Passwacht hält“, Verteidigung in Wellen mit Toreparatur über Berufe), Teile **gegen Punkte** statt als Glücks-Drop; eigene Hülle (keine Kopie anderer Spiele).
+- **Rissgrube** (PvM-Minispiel, Idee für später, 27.11.): Weg zu den Uralt-Teilen (Stufe 75) als seltener Drop, Ziel-Kampfstufe 80, 5 Kammern mit Echos und Rissherz, Riss-Segen, Risstruhe; **kein Pech-Schutz**; **hinter einer Quest gesperrt** (Lohn: Zugang + Teleport-Objekt); **Bank im Rissvorraum**; **allein und in Gruppen (2–4)**; Namen passen; die Uralt-Teile legt der Nutzer selbst fest. Konzept `doku/konzepte/rissgrube.md`.
 
 - **Strafe beim Tod** einführen (Wunsch des Nutzers, 26.11.) – Art und Härte noch offen; vor einem Konzept mit dem Nutzer klären.
 - **Die ganze Welt ist Kampfwelt** (auch Festland: Fahle Weiten, Glutsande, Smaragdküste, Süden). *(27.11.)*
