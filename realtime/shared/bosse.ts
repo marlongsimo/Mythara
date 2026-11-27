@@ -99,3 +99,11 @@ BOSSE.oberster_rabenpriester = { typ: "oberster_rabenpriester", phasen: [
 INSTANZEN.push({ id: "thronsaal", name: "Der Thronsaal", feld: [10752, 9600, 10783, 9631], schalter: "rabenpriester_thronsaal", danach: "rabenpriester_danach",
   gegner: [{ art: "oberster_rabenpriester", x: 10768.5, y: 9607.5 }], eintritt: "federsiegel",
   ohne: "Der Altar am Tor bleibt kalt – ohne Federsiegel öffnet sich der Thronsaal nicht.", text: "Das Federsiegel zerfällt zu Asche. Der Thronsaal gehört dir – für diesen Versuch." });
+
+/* #156: Stärke der Quest-Fassungen (allein, schwächer – #116), gemessen mit test/boss-quest-machbar.test.mjs: ein Held der empfohlenen Stufe mit passender
+   Ausrüstung bleibt stehen und isst bei halbem Leben (höchstens 15 Mahlzeiten) – jeder Boss fällt in rund 1,5–2,5 Minuten mit 5–11 Mahlzeiten, wie die Federmutter
+   (Standard QUEST_STAERKE). Der Rabenpriester ist Stufe 55 bei empfohlenem Heldenlevel 40, daher am stärksten gemindert. Die gerufenen Helfer teilen die
+   Schadensminderung (shared/sim.ts rufen). Die starke Fassung danach bleibt unverändert. */
+const QUEST_MILDE: Record<string, { leben: number; schaden: number }> = {
+  thronsaal: { leben: 0.25, schaden: 0.2 }, hauptmann_gruft: { leben: 0.4, schaden: 0.5 }, tempel_kammer: { leben: 0.35, schaden: 0.4 }, wrack_kajuete: { leben: 0.4, schaden: 0.4 } };
+for (const D of INSTANZEN) if (QUEST_MILDE[D.id] && !D.questStaerke) D.questStaerke = QUEST_MILDE[D.id];

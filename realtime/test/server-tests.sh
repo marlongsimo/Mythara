@@ -79,6 +79,7 @@ TESTS=(
   inhalt-phase9
   inhalt-phase10
   bosse-116
+  boss-quest-machbar
   bank-platzhalter
   festland-kampf
   inhalt-sueden
