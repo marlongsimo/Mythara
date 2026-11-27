@@ -13,7 +13,7 @@ import { type Welt3D, figurWeit } from "./motor";
 interface Umgebung { motor: Welt3D; ort: { x: number; y: number } }
 interface Figur { b: Bankier; npc: Npc3D; nm: HTMLElement }
 const vorname = (b: Bankier) => b.name.split(" ")[0];
-const bankName = (b: Bankier) => (b.ort === "weidenhain" ? "Bankschalter Weidenhain" : "Bank der Waldmark");
+const bankName = (b: Bankier) => b.bank || (b.ort === "weidenhain" ? "Bankschalter Weidenhain" : "Bank der Waldmark");
 /** Gespräch mit dem Bankmitarbeiter (wie OSRS): Gruß, dann „Konto“, „Was ist das hier?“ oder „Nichts, danke“ */
 export function bankierReden(b: Bankier): void {
   const antworten = BANK_ANTWORTEN.map((a) => ({ ...a }));

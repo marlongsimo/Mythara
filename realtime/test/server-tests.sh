@@ -62,6 +62,7 @@ TESTS=(
   welt-dreh
   speer
   waffen70
+  hochlande-leben
   welt-daten
   welt-grenzen
   welt-raster
