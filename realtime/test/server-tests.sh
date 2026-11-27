@@ -60,6 +60,8 @@ TESTS=(
   waldweg
   welt-bau
   welt-dreh
+  speer
+  waffen70
   welt-daten
   welt-grenzen
   welt-raster
