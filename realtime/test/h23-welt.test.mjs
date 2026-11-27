@@ -1,6 +1,6 @@
 /*
  * Riftmere – Block H (Phase 11, Hochlande): H2 „Käse für die Passwacht“ und H3 „Tiefer als erlaubt“ Ende zu Ende: echter Spielserver (localhost:8860),
- * nachgebildete Supabase (localhost:8859), echte Welt. Bea spielt H2 (vier Ziegen folgen, Gatter, melken, Mettes Kniff, Almkäse am Herd der Alm, Käse zu Brun),
+ * nachgebildete Supabase (localhost:8859), echte Welt. Bea spielt H2 (vier Ziegen folgen, Gatter, melken, Mettes Kniff, Almkäse am Käsekessel, reifen im Käsekeller, Käse zu Brun),
  * Jo zugleich H3 (Grubenholz an der Werkbank, drei Stempel im Bergwerk, Geröll, drei Verschüttete mit Heiltränken, Erzprobe zu Hedda; danach urkammer_offen).
  * Lohn mit „abholen“. Aufruf: node test/h23-welt.test.mjs   (nach node build.mjs und python3 werkzeug/weltzonen.py)
  */
@@ -34,9 +34,12 @@ try {
     await objekt(bea, H2, "h2_gatter"); check(erl(bea, H2, "gatter"), "Gatter am Pferch geschlossen");
     await objekt(bea, H2, "h2_melken"); check(erl(bea, H2, "melken") && anzahl(bea, "ziegenmilch") === 3, `Gemolken: drei Krüge Ziegenmilch (${anzahl(bea, "ziegenmilch")})`);
     check(await sprich(bea, H2, "mette", "lab_holen") && erl(bea, H2, "lab"), "Quer: Mette Heider in Heidrast verrät ihren Käse-Kniff");
-    { let r = await herstellen(bea, 7178 + 1.2, 6007.4, "kaeserad");
-      if (!erl(bea, H2, "kaese")) { await sprich(bea, H2, "afra", "milch_neu"); r = await herstellen(bea, 7178 + 1.2, 6007.4, "kaeserad"); } /* verdorben: Afra gibt neue Milch */
-      check(r === "ok" && erl(bea, H2, "kaese") && anzahl(bea, "kaeserad") === 1, `Almkäse am Herd der Alm (${r}, Käse ${anzahl(bea, "kaeserad")})`); }
+    { let r = await herstellen(bea, 7198 + 1.2, 6002, "kaeserad"); /* Käsekessel der Sennerin (kessel_alm) */
+      if (!erl(bea, H2, "kaese")) { await sprich(bea, H2, "afra", "milch_neu"); r = await herstellen(bea, 7198 + 1.2, 6002, "kaeserad"); } /* verdorben: Afra gibt neue Milch */
+      check(r === "ok" && erl(bea, H2, "kaese") && anzahl(bea, "kaeserad") === 1, `Almkäse am Käsekessel der Alm (${r}, Käse ${anzahl(bea, "kaeserad")})`); }
+    await stelle(bea, 7193.5, 6001.6); await ort(bea, "kaesekeller", 11824, 9613); /* hinab in den Käsekeller an der Almhütte */
+    await objekt(bea, H2, "kaeseregal"); check(erl(bea, H2, "reifen") && anzahl(bea, "kaeserad") === 1, "Im Käsekeller: das Rad ins Regal, ein reifes mitgenommen");
+    await ort(bea, "fl_216_183", 7193.5, 6001.6);
     check(await sprich(bea, H2, "brun", "kaese_geben") && erl(bea, H2, "brun") && anzahl(bea, "kaeserad") === 0, "Wächterin Brun an der Passwacht nimmt den Käse");
     check(await sprich(bea, H2, "afra", "fertig") && fertig(bea, H2) && an(H2, bea, "afra_laden"), "H2 fertig bei Afra, Lohn abgeholt; afra_laden an");
   }

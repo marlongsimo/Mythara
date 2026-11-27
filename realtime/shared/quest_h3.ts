@@ -126,7 +126,8 @@ export const QUEST_H3: QuestDef = {
   sperren: { herstellen: {
     grubenholz: [{ wenn: NEU, text: "Grubenholz macht man nur für den Stollen. Frag den Steiger am Erzberg." }, { wenn: { ...LAEUFT, erledigt: STEMPEL }, text: "Die Stempel stehen alle." }],
   } },
-  schalter: { [H_SCHALTER.urkammer]: FERTIG },
+  /* der eingestürzte Stollen vor der Urkammer: Tür bergwerk_stollen (shared/bosse.ts) und Sperre der Welt – beide Schalter, bis #162 sich auf einen geeinigt hat */
+  schalter: { [H_SCHALTER.stollen]: FERTIG, bergwerk_stollen_frei: FERTIG },
   glueckwunsch: "Alle drei oben. Glück auf, Kumpel – so nennen wir hier nur die, mit denen wir in den Berg gehen.",
   belohnungText: "Belohnung: Bergbau 3.000, Handwerk 2.000 XP, 600 Splitter · danach: die Urkammer mit dem Ureisen steht dir offen",
   belohnung: { berufe: { bergbau: 3000, handwerk: 2000 }, splitter: 600 },

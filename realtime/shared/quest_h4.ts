@@ -56,11 +56,11 @@ export const QUEST_H4: QuestDef = {
       log: "Die Federn führen zum Gipfel, in den Horst. Die Sturmschwinge kreist außer Reichweite und stößt herab – achte auf ihren Schatten. Der Wind lenkt Zauber ab; Pfeile treffen sie, und nach dem Sturzflug ist sie kurz am Boden." },
     /* Frostwitwe */
     { id: "runen", text: "Die Eisrunen am Hochpass lesen", ereignis: { art: "objekt", id: "h4_runen" }, wo: HOCHPASS.runen,
-      log: "Am Hochpass sind Runen ins Eis geritzt, gleich bei der Passwacht. Präg sie dir ein." },
+      log: "Südlich der Passwacht, am Höhlenmund im Eis, sind Runen geritzt. Präg sie dir ein." },
     { id: "einsiedler", text: "Den Einsiedler am Spiegelsee die Runen deuten lassen", ereignis: { art: "antwort" }, nach: ["runen"], bei: "einsiedler",
       log: "Der Einsiedler am Spiegelsee schreibt die Geschichte der Hochlande auf. Er kann die Eisrunen lesen." },
     { id: "frostwitwe", text: "Die Frostwitwe in der Eishöhle besiegen", ereignis: { art: "erlegen", typ: "frostwitwe" }, nach: ["einsiedler"], wo: HOCHPASS.hoehle,
-      log: "Die Runen nennen den Eingang der Eishöhle: hinter der Passwacht, wo der Schnee nie schmilzt. Die Frostwitwe friert den Boden ein – bleib nicht zu lange auf dem Eis stehen. Ihre Eiswand fängt Pfeile ab; geh nah heran." },
+      log: "Die Runen nennen den Eingang der Eishöhle: am Höhlenmund südlich der Passwacht, wo der Schnee nie schmilzt. Die Frostwitwe friert den Boden ein – bleib nicht zu lange auf dem Eis stehen. Ihre Eiswand fängt Pfeile ab; geh nah heran." },
   ],
   objekte: [
     { id: "h4_kern", name: "Leuchten im Boden", x: TROLLHALLE[0], y: TROLLHALLE[1], modell: "stelle", tat: "untersuchen", tatText: "Das Leuchten ansehen", weit: 3,
@@ -140,13 +140,13 @@ export const QUEST_H4: QuestDef = {
         { id: "runen_zeigen", text: "Runen vom Hochpass. (Sie in den Sand zeichnen)", folge: [{ f: { erledige: ["einsiedler"],
           zeilen: ["Der Einsiedler sieht dir zu, wie du die Zeichen in den Sand ziehst. Seine Lippen bewegen sich.", "„Hier ruht, die den Pass hielt, als die Wacht fiel. Wer sie weckt, friert.“",
           "Die Frostwitwe. Sie war eine Wächterin, vor langer Zeit. Die letzte am Pass. Sie wollte nicht gehen – und das Eis hat sie behalten.",
-          "Der Eingang liegt hinter der Passwacht, wo der Schnee nie schmilzt. Geh nah an sie heran; das Eis fängt alles, was fliegt."] } }] },
+          "Der Eingang ist der Höhlenmund südlich der Passwacht, wo der Schnee nie schmilzt. Geh nah an sie heran; das Eis fängt alles, was fliegt."] } }] },
         { id: "tschuess", text: "Auf Wiedersehen.", folge: [{ f: { zeilen: ["Geh mit den Steinen."] } }] },
       ],
     },
     brun: {
       reden: [
-        { wenn: { ...LAEUFT, offen: ["runen"] }, zeilen: ["Die Frostwitwe? …Ich hab sie gesehen. Nachts, wenn der Mond tief steht. Am Eis hinter der Wacht.", "Neben der Schranke sind Zeichen ins Eis geritzt. Keiner von uns kann sie lesen."], antworten: ["tschuess"] },
+        { wenn: { ...LAEUFT, offen: ["runen"] }, zeilen: ["Die Frostwitwe? …Ich hab sie gesehen. Nachts, wenn der Mond tief steht. Am Höhlenmund unterhalb der Wacht.", "Dort sind Zeichen ins Eis geritzt. Keiner von uns kann sie lesen."], antworten: ["tschuess"] },
         { wenn: { ...LAEUFT, erledigt: ["frostwitwe"] }, zeilen: ["Es taut. Hörst du das? Das Eis singt, wenn es schmilzt."], antworten: ["tschuess"] },
         { wenn: FERTIG, zeilen: ["Manchmal friert es wieder, nachts. Dann weiß ich, sie ist zurück."], antworten: ["tschuess"] },
         { zeilen: ["Halt. Hinter dem Pass beginnt die Kälte. Wer weitergeht, tut es auf eigene Gefahr."], antworten: ["tschuess"] },

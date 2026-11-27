@@ -32,10 +32,11 @@ export const STEINHAG: Feld = [6990, 5892];
 export const PASS_TROLLE: Feld = [6946, 5624];
 /** Hohe Alm: entlaufene Ziegen auf den Wiesen rings um die Käserei, das Gatter am Pferch (bei den Schafen) */
 export const ALM = {
-  ziegen: [[7158.5, 5984.5], [7228.5, 5990.5], [7216.5, 6040.5], [7150.5, 6028.5]] as Feld[],
+  ziegen: [[7158.5, 5984.5], [7228.5, 5990.5], [7216.5, 6040.5], [7153.5, 6028.5]] as Feld[], /* die vierte östlich des neuen Zauns (Welt) */
   /** im Pferch, wenn das Gatter zu ist */ pferch_ziegen: [[7184.5, 6019.5], [7189.5, 6021.5], [7196.5, 6019.5], [7201.5, 6021.5]] as Feld[],
   gatter: [7193.5, 6020.5] as Feld,
-  /** Herd der Käserei (Welt: Herd an der Alm, #118) */ herd: [7194, 6004] as Feld,
+  /** Käsekessel der Sennerin (Station kessel_alm, shared/handwerk.ts) */ kessel: [7198, 6002] as Feld,
+  /** Käsekeller unter der Käserei (Region kaesekeller, Abstieg kaesekeller an der Almhütte), Regal mit dem Questobjekt kaeseregal */ keller: [11815.5, 9620] as Feld, regal: [11824, 9611.4] as Feld,
 };
 /** Bergwerk am Erzberg (Unterwelt hochlande_bergwerk): morsche Stempel im Stollen, Geröll vor dem tiefen Stollen, dahinter drei verschüttete Bergleute */
 export const BERGWERK = {
@@ -47,13 +48,13 @@ export const BERGWERK = {
 };
 /** Grauhorn und Hochpass: Federn auf dem Weg zum Horst der Sturmschwinge, Eisrunen am Hochpass, Steinmänner am Grauhorn (Nebenquest) */
 export const GRAUHORN = {
-  federn: [[6975.5, 5590.5], [6985.5, 5578.5], [6995.5, 5566.5]] as Feld[],
-  /** Aufstieg zum Horst (Instanz horst_grauhorn, Welt #162) */ horst: [6990.5, 5560.5] as Feld,
+  /** am Steinmann-Pfad vom Hochpass zum Gipfel (Welt, fl_216_169) */ federn: [[6985.5, 5585.5], [7003.5, 5570.5], [7018.5, 5558.5]] as Feld[],
+  /** Aufstieg zum Horst (Eingang horst_aufstieg → Instanz horst_grauhorn, Welt #162) */ horst: [7028.5, 5549.5] as Feld,
   steinmaenner: [[7010.5, 5585.5], [7030.5, 5560.5], [6960.5, 5545.5]] as Feld[],
 };
 export const HOCHPASS = {
-  runen: [6948.5, 5600.5] as Feld,
-  /** Eingang der Eishöhle (Instanz eishoehle_hochpass, Welt #162) */ hoehle: [6944.5, 5596.5] as Feld,
+  /** Eisrunen am Höhlenmund (Welt: Lesestelle eisrunen) */ runen: [6953.5, 5635.5] as Feld,
+  /** Eingang der Eishöhle (eishoehle_eingang → Instanz eishoehle_hochpass, Welt #162) */ hoehle: [6950.5, 5633.5] as Feld,
 };
 /** Trollhalle im Bergwerk (Instanz trollhalle, shared/bosse.ts: Feld 11595–11618 × 9602–9624, Grumhold bei 11607,5 | 9611,5) */
 export const TROLLHALLE: Feld = [11607.5, 9614.5];
