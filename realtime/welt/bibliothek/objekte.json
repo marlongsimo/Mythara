@@ -12379,6 +12379,156 @@
     "fest": true
    },
    "hinweis": "Wandarm: Ursprung am Fuß der Wand neben der Tür, das Schild ragt 0,9 m nach vorn (Süden) auf 2,0–2,5 m Höhe"
+  },
+  {
+   "id": "samm_mondsalbei_01",
+   "name": "Mondsalbei",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_mondsalbei_01.webp",
+   "groesse": [
+    18,
+    30
+   ],
+   "anker": [
+    0.4444,
+    0.8667
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/mondsalbei.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_mondsalbei_geerntet",
+   "name": "Mondsalbei (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_mondsalbei_geerntet.webp",
+   "groesse": [
+    16,
+    15
+   ],
+   "anker": [
+    0.4688,
+    0.7333
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/mondsalbei-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_glutwurz_01",
+   "name": "Glutwurz",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_glutwurz_01.webp",
+   "groesse": [
+    19,
+    25
+   ],
+   "anker": [
+    0.5,
+    0.84
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/glutwurz.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_glutwurz_geerntet",
+   "name": "Glutwurz (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_glutwurz_geerntet.webp",
+   "groesse": [
+    16,
+    14
+   ],
+   "anker": [
+    0.4688,
+    0.7143
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/glutwurz-geerntet.glb",
+    "wind": 0
+   }
+  },
+  {
+   "id": "samm_splitterlilie_01",
+   "name": "Splitterlilie",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_splitterlilie_01.webp",
+   "groesse": [
+    23,
+    47
+   ],
+   "anker": [
+    0.5217,
+    0.9149
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/splitterlilie.glb",
+    "wind": 0.08
+   }
+  },
+  {
+   "id": "samm_splitterlilie_geerntet",
+   "name": "Splitterlilie (geerntet)",
+   "kategorie": "bewuchs",
+   "bild": "img/welt/stil/samm_splitterlilie_geerntet.webp",
+   "groesse": [
+    16,
+    16
+   ],
+   "anker": [
+    0.4688,
+    0.75
+   ],
+   "massstab": 1,
+   "kollision": null,
+   "tiefe": "fuss",
+   "durchscheinend": true,
+   "interaktion": null,
+   "spiegelbar": true,
+   "herkunft": "fabrik/pflanze.py (in Blender gebaut, Zunft-Kräuter #176)",
+   "modell3d": {
+    "url": "img/objekte3d/skilling/kraeuter/splitterlilie-geerntet.glb",
+    "wind": 0
+   }
   }
  ]
 }

@@ -6,6 +6,7 @@ Arten: bachling (kleine Bachforelle, rot-schwarz getupft), muehlbarsch (Barsch: 
        moorhecht (langer Hecht mit Entenschnabel, olivgrün mit hellen Flecken), wels (Graufurter Wels: dunkelgrau marmoriert, breiter Kopf, Barteln),
        glutwels (Glutwels, Phase 9: glutrot mit dunklen und goldenen Flecken, Barteln),
        alter_hecht (Süden S3: großer, dunkler Hecht mit Narben und altem Haken im Maul), hering (blau-silbern, schlank), klippenbarsch (rot, dunkel gefleckt, Stachelflosse), seeaal (lang, dunkel marmoriert, Flossensaum) – Phase 10.
+Zunft (#176): silberbarsch (silbern, hochrückig) · sturmhecht (sturmgrau-blau, hell gefleckt) · tiefseeaal (lang, tiefblau marmoriert).
 Zustand: roh · gebraten (goldbraun, Grillstreifen) · verbrannt (schwarz verkohlt, Asche).
 Ausgabe: <ziel>/fisch_<art>_<zustand>.webp (und mit glb=1 auch .glb, liegt flach am Boden).
 """
@@ -23,6 +24,9 @@ ARTEN = {   # Länge (m), Höhe/Länge, Breite/Höhe, Kopfspitze, Farben (Rücke
     "klippenbarsch": dict(L=0.38, h=0.34, w=0.5, schnabel=0.0, ruecken=(0.45, 0.1, 0.06), seite=(0.86, 0.32, 0.14), bauch=(0.96, 0.76, 0.55), flosse=(0.82, 0.26, 0.12), muster="klippe"),   # Phase 10: Klippenbarsch (Leuchtturm-Klippe)
     "seeaal":     dict(L=0.85, h=0.085, w=0.8, schnabel=0.0, ruecken=(0.16, 0.19, 0.15), seite=(0.38, 0.4, 0.3), bauch=(0.8, 0.76, 0.6), flosse=(0.3, 0.3, 0.24), muster="marmor"),   # Phase 10: Seeaal (Wrack, Mangroven)
     "alter_hecht": dict(L=0.95, h=0.2, w=0.62, schnabel=0.14, ruecken=(0.05, 0.07, 0.03), seite=(0.18, 0.22, 0.1), bauch=(0.74, 0.72, 0.56), flosse=(0.36, 0.26, 0.14), muster="flecken"),   # Süden S3: „Der alte Hecht“ – größer, dunkler, Narben
+    "silberbarsch": dict(L=0.42, h=0.4, w=0.48, schnabel=0.0, ruecken=(0.22, 0.3, 0.38), seite=(0.8, 0.84, 0.88), bauch=(0.96, 0.96, 0.97), flosse=(0.6, 0.66, 0.78), muster="binden", binde=(0.55, 0.6, 0.7)),   # Zunft #176 (Stufe 70): Silberbarsch, Privatsteg Kielmund
+    "sturmhecht":  dict(L=0.85, h=0.19, w=0.6, schnabel=0.13, ruecken=(0.09, 0.13, 0.2), seite=(0.34, 0.42, 0.54), bauch=(0.86, 0.88, 0.9), flosse=(0.3, 0.4, 0.56), muster="flecken"),   # Zunft #176 (Stufe 80): Sturmhecht, sturmgrau-blau
+    "tiefseeaal":  dict(L=1.0, h=0.085, w=0.8, schnabel=0.0, ruecken=(0.03, 0.05, 0.11), seite=(0.1, 0.16, 0.3), bauch=(0.48, 0.54, 0.62), flosse=(0.08, 0.14, 0.3), muster="marmor"),   # Zunft #176 (Stufe 90): Tiefseeaal, tiefblau
     "moorhecht":  dict(L=0.62, h=0.19, w=0.6, schnabel=0.12, ruecken=(0.12, 0.17, 0.08), seite=(0.34, 0.42, 0.18), bauch=(0.86, 0.84, 0.66), flosse=(0.45, 0.35, 0.18), muster="flecken"),
 }
 ZUSTAENDE = ["roh", "gebraten", "verbrannt"]
@@ -61,7 +65,7 @@ def fisch(art, zustand):
     if A["muster"] == "binden":                                                          # dunkle Querbinden
         wv = nt.nodes.new("ShaderNodeTexWave"); wv.inputs["Scale"].default_value = 2.2 / L * 0.3; wv.inputs["Distortion"].default_value = 1.5; wv.bands_direction = "X"; nt.links.new(tc.outputs["Object"], wv.inputs["Vector"])
         r2 = nt.nodes.new("ShaderNodeMapRange"); r2.inputs["From Min"].default_value = 0.65; r2.inputs["From Max"].default_value = 0.8; nt.links.new(wv.outputs["Fac"], r2.inputs["Value"])
-        mx = nt.nodes.new("ShaderNodeMixRGB"); mx.blend_type = "MULTIPLY"; mx.inputs["Color2"].default_value = (0.25, 0.3, 0.15, 1); nt.links.new(r2.outputs["Result"], mx.inputs["Fac"]); nt.links.new(farbe, mx.inputs["Color1"]); farbe = mx.outputs["Color"]
+        mx = nt.nodes.new("ShaderNodeMixRGB"); mx.blend_type = "MULTIPLY"; mx.inputs["Color2"].default_value = (*A.get("binde", (0.25, 0.3, 0.15)), 1); nt.links.new(r2.outputs["Result"], mx.inputs["Fac"]); nt.links.new(farbe, mx.inputs["Color1"]); farbe = mx.outputs["Color"]
     else:                                                                                # Tupfen (Bachling: rot und schwarz) / helle Flecken (Hecht)
         for skala, farbe_t, schwelle in ({"tupfen": [(38, (0.03, 0.02, 0.02), 0.72), (30, (0.75, 0.08, 0.03), 0.75)], "marmor": [(11, (0.035, 0.035, 0.03), 0.7), (24, (0.06, 0.055, 0.05), 0.7)], "glut": [(12, (0.1, 0.02, 0.012), 0.7), (30, (1.0, 0.62, 0.12), 0.75)], "silber": [(70, (0.92, 0.94, 0.97), 0.7)], "klippe": [(16, (0.35, 0.05, 0.03), 0.7)]}.get(A["muster"]) or [(18, lin((0.85, 0.82, 0.55)), 0.68)]):
             v = nt.nodes.new("ShaderNodeTexVoronoi"); v.inputs["Scale"].default_value = skala; nt.links.new(tc.outputs["Object"], v.inputs["Vector"])
