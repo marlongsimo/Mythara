@@ -293,7 +293,7 @@ Object.assign(MONSTER, {
     drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [8, 15] }] }, { wurf: [{ g: "rabenfedern", chance: 50, anzahl: [1, 3] }, { g: "seelenlicht", chance: 10 }] }, /* Moorglöckchen 15 % kommt mit Kräuterkunde (#29) */
       { wurf: [{ g: "sternenszepter", chance: 100 / 128 }] }] },
   /** Akoluth mit Bogen: Stufe 35, 85 LP, Max Hit 9 (Fernkampf), hält Abstand */
-  rabenpriester_akoluth: { familie: "untot", name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 85, tempo: 3.0, angriffswert: { nah: 10, fern: 40, magie: 0 }, abwehr: { nah: 35, fern: 35, magie: 25 }, r: 0.4,
+  rabenpriester_akoluth: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 85, tempo: 3.0, angriffswert: { nah: 10, fern: 40, magie: 0 }, abwehr: { nah: 35, fern: 35, magie: 25 }, r: 0.4,
     angriff: { name: "Rabenpfeil", art: "fern", schaden: [1, 9], takt: 2.0, reich: 6, aushol: 0 },
     v2: { fernkampf: 80, geschick: 30, staerke: 30, defense: 35, magie: 20, ticks: 4, abwehr: { nah: 5, fern: 15, magie: 0 } },
     info: "Ein Krieger des Ordens mit Langbogen und Federmantel. Er schießt, bevor man ihn sieht. " + RABE_INFO,
@@ -301,7 +301,7 @@ Object.assign(MONSTER, {
       { wurf: [{ g: "@selten:Bogen", chance: 100 / 96 }, { g: "@episch:Bogen", chance: 100 / 1024 }] }, { wurf: [{ g: "federsiegel", chance: 100 / 12 }] },
       { nur: "c2_federsiegel", wurf: [{ g: "federsiegel", chance: 100 }] }] },
   /** Akoluth mit Speer: Stufe 35, 95 LP, Max Hit 10 (Nahkampf), Ansturm */
-  rabenpriester_akoluth_speer: { familie: "untot", name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 95, tempo: 3.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 30, magie: 25 }, r: 0.4,
+  rabenpriester_akoluth_speer: { name: "Akoluth des Rabenordens", stufe: 35, bild: "img/echtzeit/bandit.webp", hoehe: 122, lp: 95, tempo: 3.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 30, magie: 25 }, r: 0.4,
     angriff: { name: "Speerstoß", art: "nah", schaden: [1, 10], takt: 2.5, reich: 1.9, aushol: 0 },
     v2: { staerke: 90, geschick: 50, defense: 40, magie: 20, ticks: 5, abwehr: { nah: 15, fern: 5, magie: 0 } },
     info: "Ein Krieger des Ordens mit langem Speer und Federmantel. Er stürmt, sobald er dich sieht. " + RABE_INFO,
@@ -327,7 +327,7 @@ Object.assign(MONSTER, {
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [100, 200] }] }, { wurf: [{ g: "rabenfedern", chance: 100, anzahl: [5, 10] }] }, { wurf: [{ g: "seelenlicht", chance: 30, anzahl: [3, 6] }] },
       { wurf: [{ g: "@selten", chance: 5 }] }] },
   /** Der Oberste Rabenpriester: Boss, Stufe 55, 350 LP, Max Hit 18 (Doppelhieb), Thronsaal als Instanz (shared/bosse.ts) */
-  oberster_rabenpriester: { familie: "untot", name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 600,
+  oberster_rabenpriester: { name: "Der Oberste Rabenpriester", stufe: 55, bild: "img/echtzeit/bandit.webp", hoehe: 160, lp: 350, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 40 }, abwehr: { nah: 60, fern: 55, magie: 50 }, r: 0.9, boss: true, wiederkehr: 600,
     angriff: { name: "Zwillingsklingen", art: "nah", schaden: [1, 18], takt: 2.0, reich: 2.2, aushol: 0 },
     v2: { staerke: 81, geschick: 70, defense: 60, magie: 60, staerkeBonus: 64, ticks: 4, abwehr: { nah: 20, fern: 15, magie: 10 } },
     info: "Der Oberste des Rabenordens. Auf seinem Thron aus Federn und Splittern wartet er seit Jahren darauf, dass jemand kommt.",
@@ -370,19 +370,19 @@ Object.assign(MONSTER, {
 /* ───────── Phase 8 (#58): die Fahlen Weiten und Grauwacht – Werte doku/konzepte/phase-8.md (Beute: Vorschläge des Konzepts, ohne Wachtrüstung – vorerst nicht, Entscheidung 26.11.) ───────── */
 Object.assign(MONSTER, {
   /** Heidewolf: Stufe 32, im Rudel (offene Heide) */
-  heidewolf: { familie: "wild", name: "Heidewolf", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 45, tempo: 4.4, angriffswert: { nah: 30, fern: 0, magie: 0 }, abwehr: { nah: 25, fern: 20, magie: 20 }, r: 0.45,
+  heidewolf: { name: "Heidewolf", stufe: 32, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 45, tempo: 4.4, angriffswert: { nah: 30, fern: 0, magie: 0 }, abwehr: { nah: 25, fern: 20, magie: 20 }, r: 0.45,
     angriff: { name: "Sprungbiss", art: "nah", schaden: [1, 6], takt: 2, reich: 1.4, aushol: 0 },
     v2: { staerke: 50, geschick: 35, defense: 25, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
     info: "Ein grauer Wolf der Heide, mager und zäh. Wo einer heult, antworten drei.",
     drops: [{ wurf: [{ g: "splitter", chance: 80, anzahl: [6, 14] }] }, { wurf: [{ g: "wolfsfell", chance: 50 }] }, { wurf: [{ g: "wolfsfleisch", chance: 40 }] }] },
   /** Rudelführer: Stufe 36, führt das Rudel (E1) */
-  rudelfuehrer: { familie: "wild", name: "Rudelführer", stufe: 36, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 80, tempo: 4.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.5,
+  rudelfuehrer: { name: "Rudelführer", stufe: 36, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 80, tempo: 4.4, angriffswert: { nah: 40, fern: 0, magie: 0 }, abwehr: { nah: 35, fern: 30, magie: 25 }, r: 0.5,
     angriff: { name: "Reißen", art: "nah", schaden: [1, 8], takt: 2, reich: 1.5, aushol: 0 },
     v2: { staerke: 70, geschick: 45, defense: 35, magie: 5, ticks: 4, abwehr: { nah: 10, fern: 5, magie: 0 } }, aggroReich: 6,
     info: "Der größte Wolf der Heide, das Fell grau wie Asche. Er heult – und das Rudel kommt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [20, 40] }] }, { wurf: [{ g: "leder_gehaertet", chance: 30, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 64 }] }] },
   /** Wiedergänger: Stufe 38, langsam und zäh; friedlich, solange die Glocke läutet (shared/weltereignisse.ts) */
-  wiedergaenger: { familie: "untot", name: "Wiedergänger", stufe: 38, bild: "img/gegner/moorleiche.jpg", hoehe: 118, lp: 110, tempo: 1.4, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 45, magie: 20 }, r: 0.45, untot: true,
+  wiedergaenger: { name: "Wiedergänger", stufe: 38, bild: "img/gegner/moorleiche.jpg", hoehe: 118, lp: 110, tempo: 1.4, angriffswert: { nah: 35, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 45, magie: 20 }, r: 0.45, untot: true,
     angriff: { name: "Rostklinge", art: "nah", schaden: [1, 8], takt: 3, reich: 1.6, aushol: 0 }, friedlichBei: "glocke_laeutet",
     v2: { staerke: 70, geschick: 40, defense: 40, magie: 10, ticks: 6, abwehr: { nah: 15, fern: 25, magie: -10 } }, aggroReich: 4,
     info: "Ein Toter in rostiger Wachtrüstung. Er geht, als hätte er noch einen Befehl. Wenn die Glocke von Grauwacht schlägt, bleibt er stehen und lauscht.",
@@ -406,13 +406,13 @@ Object.assign(MONSTER, {
     info: "Der Anführer der Deserteure. Einst ein guter Wachtmann, sagen sie in Grauwacht.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [120, 220] }] }, { wurf: [{ g: "wachtstein", chance: 60, anzahl: [2, 4] }] }, { wurf: [{ g: "@selten", chance: 10 }, { g: "@episch", chance: 1 }] }] },
   /** Grabwächter: Stufe 48, Steinfigur der Grabkammern, Rundumschlag mit Ansage */
-  grabwaechter: { familie: "untot", name: "Grabwächter", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 105, tempo: 2.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 75, fern: 65, magie: 40 }, r: 0.55,
+  grabwaechter: { name: "Grabwächter", stufe: 48, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 105, tempo: 2.0, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 75, fern: 65, magie: 40 }, r: 0.55,
     angriff: { name: "Steinspeer", art: "nah", schaden: [1, 11], takt: 3, reich: 1.9, aushol: 0 }, spezial: { name: "Rundumschlag", laden: 1, alle: 10, radius: 2.2, reich: 2, schaden: [7, 12], art: "nah" },
     v2: { staerke: 90, geschick: 55, defense: 75, magie: 15, ticks: 6, abwehr: { nah: 35, fern: 30, magie: -5 } }, aggroReich: 4,
     info: "Eine Steinfigur am Eingang einer Grabkammer. Sie hält Wache, seit es keine Wacht mehr gibt.",
     drops: [{ wurf: [{ g: "splitter", chance: 100, anzahl: [18, 35] }] }, { wurf: [{ g: "wachtstein", chance: 25 }] }, { wurf: [{ g: "erz_schwarzeisen", chance: 10, anzahl: [1, 2] }] }, { wurf: [{ g: "@selten", chance: 100 / 80 }] }] },
   /** Der Graue Hauptmann: Mini-Boss, Stufe 52, Geist in Wachtrüstung (Gruft, Instanz – shared/bosse.ts) */
-  grauer_hauptmann: { familie: "untot", name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 600,
+  grauer_hauptmann: { name: "Der Graue Hauptmann", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 135, lp: 260, tempo: 3.0, angriffswert: { nah: 60, fern: 0, magie: 0 }, abwehr: { nah: 60, fern: 55, magie: 45 }, r: 0.55, untot: true, boss: true, wiederkehr: 600,
     angriff: { name: "Geisterklinge", art: "nah", schaden: [1, 15], takt: 2.5, reich: 1.9, aushol: 0 },
     v2: { staerke: 100, geschick: 70, defense: 60, magie: 40, staerkeBonus: 30, ticks: 5, abwehr: { nah: 25, fern: 25, magie: 0 } },
     info: "Der letzte Hauptmann von Grauwacht. Er hat seine Wacht nie beendet – und lässt die Toten nicht ruhen.",
@@ -572,22 +572,22 @@ Object.assign(MONSTER, {
     info: "Eine Ente vom Schilfsee. Sie watschelt, wohin sie will.", drops: [{ wurf: [{ g: "federn", chance: 30 }] }] },
   /* ───── Vorbereitet (#130, Modelle vom Nutzer, Figuren baut sie): zehn Gegner der Ockerlande, Hochlande, Frostkrone und des Drachenarms nach beute.md.
      Noch ohne Lager – die Gegnerplätze mit quelle „fehlt“ bleiben aus, bis Figuren die Modelle liefert und die Gebiete stehen. Neu ist nur Wildbret (Fleisch). ───── */
-  steppenwolf: { familie: "wild", name: "Steppenwolf", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 85, lp: 90, tempo: 4.6, angriffswert: { nah: 46, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 35, magie: 30 }, r: 0.45,
+  steppenwolf: { name: "Steppenwolf", stufe: 46, bild: "img/echtzeit/bandit.webp", hoehe: 85, lp: 90, tempo: 4.6, angriffswert: { nah: 46, fern: 0, magie: 0 }, abwehr: { nah: 40, fern: 35, magie: 30 }, r: 0.45,
     angriff: { name: "Biss", art: "nah", schaden: [1, 9], takt: 2, reich: 1.4, aushol: 0 },
     v2: { staerke: 78, geschick: 60, defense: 42, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
     info: "Ein sandfarbener Wolf der Steppe. Sie jagen zu zweit und kreisen ihre Beute ein.",
     drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [12, 24] }] }, { wurf: [{ g: "wolfsfleisch", chance: 50 }] }, { wurf: [{ g: "wolfsfell", chance: 40 }] }, { wurf: [{ g: "@selten", chance: 100 / 220 }] }] },
-  ockerhyaene: { familie: "wild", name: "Ockerhyäne", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 100, tempo: 4.2, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 38, magie: 32 }, r: 0.45,
+  ockerhyaene: { name: "Ockerhyäne", stufe: 50, bild: "img/echtzeit/bandit.webp", hoehe: 80, lp: 100, tempo: 4.2, angriffswert: { nah: 50, fern: 0, magie: 0 }, abwehr: { nah: 45, fern: 38, magie: 32 }, r: 0.45,
     angriff: { name: "Zerren", art: "nah", schaden: [1, 10], takt: 2.2, reich: 1.4, aushol: 0 }, gift: { chance: 0.15, jeSek: 1, dauer: 5 },
     v2: { staerke: 85, geschick: 62, defense: 48, magie: 5, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 0 } }, aggroReich: 6,
     info: "Eine gefleckte Hyäne der Ockerlande. Ihr Biss entzündet sich, wenn man ihn nicht auswäscht.",
     drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [14, 26] }] }, { wurf: [{ g: "wildbret", chance: 40 }] }, { wurf: [{ g: "leder_gehaertet", chance: 15 }] }, { wurf: [{ g: "@selten", chance: 100 / 200 }] }] },
-  hochlandwidder: { familie: "wild", name: "Hochlandwidder", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 115, tempo: 3.6, angriffswert: { nah: 52, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 45, magie: 35 }, r: 0.5, aggressiv: false,
+  hochlandwidder: { name: "Hochlandwidder", stufe: 52, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 115, tempo: 3.6, angriffswert: { nah: 52, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 45, magie: 35 }, r: 0.5, aggressiv: false,
     angriff: { name: "Rammstoß", art: "nah", schaden: [1, 11], takt: 2.6, reich: 1.5, aushol: 0 }, anfaellig: "wucht",
     v2: { staerke: 90, geschick: 50, defense: 58, magie: 5, ticks: 5, abwehr: { nah: 15, fern: 5, magie: 0 } },
     info: "Ein Widder mit geschwungenen Hörnern. Er lässt einen in Ruhe – bis man ihm zu nahe kommt.",
     drops: [{ wurf: [{ g: "splitter", chance: 85, anzahl: [14, 26] }] }, { wurf: [{ g: "wildbret", chance: 70 }] }, { wurf: [{ g: "garn", chance: 40, anzahl: [4, 10] }] }, { wurf: [{ g: "@selten", chance: 100 / 220 }] }] },
-  hochlandbaer: { familie: "wild", name: "Hochlandbär", stufe: 54, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 150, tempo: 3.2, angriffswert: { nah: 56, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 38 }, r: 0.7,
+  hochlandbaer: { name: "Hochlandbär", stufe: 54, bild: "img/echtzeit/bandit.webp", hoehe: 140, lp: 150, tempo: 3.2, angriffswert: { nah: 56, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 38 }, r: 0.7,
     angriff: { name: "Prankenhieb", art: "nah", schaden: [1, 13], takt: 2.8, reich: 1.7, aushol: 0 },
     v2: { staerke: 100, geschick: 55, defense: 58, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } }, aggroReich: 5,
     info: "Ein Bär mit silbrigem Fell. Im Hochland ist er der König, und er weiß es.",
@@ -637,7 +637,7 @@ Object.assign(MONSTER, {
     v2: { staerke: 108, geschick: 60, defense: 62, magie: 5, ticks: 5, abwehr: { nah: 10, fern: 5, magie: 0 } },
     info: "Ein Elch mit einem Geweih wie ein Baum. Friedlich – solange man ihn friedlich lässt.",
     drops: [{ wurf: [{ g: "splitter", chance: 90, anzahl: [18, 34] }] }, { wurf: [{ g: "wildbret", chance: 90, anzahl: [1, 3] }] }, { wurf: [{ g: "leder_gehaertet", chance: 30 }] }, { wurf: [{ g: "@selten", chance: 100 / 180 }] }] },
-  frostwolf: { familie: "wild", name: "Frostwolf", stufe: 64, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 140, tempo: 4.8, angriffswert: { nah: 64, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 50 }, r: 0.5,
+  frostwolf: { name: "Frostwolf", stufe: 64, bild: "img/echtzeit/bandit.webp", hoehe: 95, lp: 140, tempo: 4.8, angriffswert: { nah: 64, fern: 0, magie: 0 }, abwehr: { nah: 55, fern: 48, magie: 50 }, r: 0.5,
     angriff: { name: "Eisbiss", art: "nah", schaden: [1, 13], takt: 2, reich: 1.4, aushol: 0 },
     v2: { staerke: 112, geschick: 80, defense: 58, magie: 20, ticks: 4, abwehr: { nah: 5, fern: 0, magie: 10 } }, aggroReich: 7,
     info: "Ein weißer Wolf der Frostkrone. Sein Atem gefriert in der Luft.",
@@ -667,6 +667,14 @@ export const trefferchance = (a: number, d: number) => (a > d ? 1 - (d + 2) / (2
 export const stufeVon = (art: string, lp?: number): number => { const M = MONSTER[art]; if (!M) return 1; return M.v2 ? gegnerStufe(M.v2, lp ?? M.lp) : M.stufe ?? 1; };
 /* die gesetzte Stufe bleibt als planStufe (Stufe des Gebiets im Konzept, für die Planung und die Inhaltstests) */
 for (const art of Object.keys(MONSTER)) { const M = MONSTER[art]; if (M.v2) { M.planStufe = M.stufe; M.stufe = stufeVon(art); } }
+/* ───── Ausgabe 1: Gegnerfamilien für die Quest-Waffen (gegen: wild / untot, Quests 9d3174ba2). Hier gesetzt und nicht im Eintrag selbst –
+   Werkzeuge der Welt (gegnerplaetze) und Tests lesen die Einträge als Text und erwarten „name:“ vorn. ───── */
+const FAMILIEN_AUSGABE1: Record<string, string[]> = {
+  wild: ["heidewolf", "steppenwolf", "rudelfuehrer", "hochlandbaer", "hochlandwidder", "ockerhyaene", "frostwolf"],
+  untot: ["wiedergaenger", "grabwaechter", "grauer_hauptmann", "rabenpriester_akoluth", "rabenpriester_akoluth_speer", "oberster_rabenpriester"],
+};
+for (const [familie, arten] of Object.entries(FAMILIEN_AUSGABE1)) for (const art of arten) { const M = MONSTER[art] as { familie?: string } | undefined;
+  if (!M) throw new Error("FAMILIEN_AUSGABE1: unbekannter Gegner " + art); M.familie = familie; }
 /* ───── Ausgabe 1 (Entscheidung des Nutzers, 27.11.): Legendär und Mythisch als seltene Drops – je Kill ein eigener Wurf zusätzlich zu den bestehenden.
    Starke Gegner (Kampfstufe ≥ 100) Legendär 1:400, die drei stärksten zusätzlich Mythisch 1:1.500; mittlere (80–99) Legendär 1:600;
    Bosse (starke Fassung): die sechs mit Legendär zusätzlich Mythisch 1:400, Tjark, Wrackkapitän und Federmutter neu Legendär 1:150. Unter 80 nichts. ───── */
