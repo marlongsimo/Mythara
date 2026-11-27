@@ -22,6 +22,8 @@ import { questsLaden, questHoeren, reden, antworten, abholen, gespraechEnde, din
 import { wegZiel, WEGSTEIN_PAUSE_MS, HEIM } from "../../shared/wegstein";
 import { wegzielFrei } from "../../shared/quests";
 import { faehreAnfrage } from "./faehre";
+import { schiffAnfrage } from "./schiffe";
+import { merkerHat, merkerDazu, bezahlen } from "./inventar";
 import { bossWahlSetzen } from "./bosse";
 import { anzahlVon as invAnzahl, ladungen as invLadungen, ladungAbziehen, reisekarteFrei, reisekarteNutzen , petAktiv, petAktivSetzen } from "./inventar";
 import { aufnehmen, trankWirkungWeg, inventarLaden, inventarHoeren, inventarSichern, inventarVon, anlegen, ablegen, herausnehmen, tauschen, bodenDazu, bodenAufheben, bodenSicht, bodenAufraeumen, FALLEN, kaufen, trankNehmen, wirkungSetzen, bankEinzahlen, bankReiter, bankAbheben, bankAlles, bankTauschen, bankPlatzhalterSetzen, bankPlatzhalterEntfernen } from "./inventar";
@@ -313,6 +315,13 @@ export function weltVerbindung(ws: WebSocket, url: URL, H: WeltHilfen): void {
       const r = faehreAnfrage(s, e.id, { schalter, imKampf: kampfPruefer, gesperrt: (n, reg) => Boolean(regionGesperrt(n, reg)) }); if (!r.ok) { senden(s, { t: "faehre", ok: false, text: r.text }); return; }
       alleStop(s); teleportZiel(H, s.nutzer, r.x, r.y, r.region); s.wx = r.x; s.wy = r.y;
       senden(s, { t: "faehre", ok: true, id: r.f.id, von: r.von.name, nach: r.nach.name, x: r.x, y: r.y, region: r.region, dauer: r.dauer }); }
+    else if (e.t === "schiff") { /* Schiffslinien (Ausgabe 2, shared/schiffe.ts): Ziele am Kapitän (Hafen gilt als besucht) oder Überfahrt – Preis nehmen, Stelle am Ziel setzen */
+      const r = schiffAnfrage(s, e as { tat?: unknown; nach?: unknown }, { kennt: merkerHat, merken: (n, m) => { merkerDazu(H.sb, n, m); }, imKampf: kampfPruefer,
+        bezahlen: (n, k) => bezahlen(H.sb, n, "splitter", k), gesperrt: (n, reg) => Boolean(regionGesperrt(n, reg)) });
+      if (!r.ok) { senden(s, { t: "schiff", ok: false, text: r.text }); return; }
+      if (r.tat === "ziele") { senden(s, { t: "schiff", ok: true, tat: "ziele", von: r.von, kapitaen: r.kapitaen, ziele: r.ziele, neu: r.neu }); return; }
+      alleStop(s); teleportZiel(H, s.nutzer, r.x, r.y, r.region); s.wx = r.x; s.wy = r.y;
+      senden(s, { t: "schiff", ok: true, tat: "fahren", von: r.von.id, nach: r.nach.id, name: r.nach.name, preis: r.preis, dauer: r.dauer, weg: r.weg, x: r.x, y: r.y, region: r.region }); }
     else if (e.t === "zufreund") { const n = String(e.n || "").slice(0, 40), nein = (text: string) => { if (s) senden(s, { t: "zufreund", ok: false, n, text }); };
       if (s.gast) { nein("Freunde gibt es mit Konto."); return; }
       const f = (await freundeVon(H, s.nutzer)).find((x) => x.handle === n); if (!s) return; if (!f) { nein(`${n} ist nicht in deiner Freundesliste.`); return; }

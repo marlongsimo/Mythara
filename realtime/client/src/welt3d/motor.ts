@@ -90,7 +90,7 @@ export class Welt3D {
   ix!: Index; szene = new THREE.Scene(); kamera = new THREE.PerspectiveCamera(42, 1, 0.5, 600); r!: THREE.WebGLRenderer;
   licht = new THREE.DirectionalLight(0xffdcae, 2.9); himmelLicht = new THREE.HemisphereLight(0xc6dcff, 0x5a4a30, 1.1); fackel = new THREE.PointLight(0xffb060, 0, 16, 1.4);
   st = new Map<string, Stueck>(); laedt = new Set<string>(); warte: string[] = []; vorhanden = new Set<string>(); naechsterBlick = 0; private naechsterAnlegen = 0;
-  held = { x: 0, z: 0, blick: 1, lauf: 0 }; /** Reisende (Südstraße #126, Erzweg Phase 11) – je Reise angelegt, sobald der Held in die Nähe ihres Weges kommt */ reisende: ReisenderFigur[] | null = null; private reiseDa = new Set<string>(); /** Tiere zur Stimmung (Phase 11), je Platz angelegt */ tiere: TierFigur[] = []; private tierDa = new Set<string>(); pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
+  held = { x: 0, z: 0, blick: 1, lauf: 0, /** Schiffslinien: Höhe des Helden an Deck (sonst NaN: Boden) */ hy: NaN }; /** Reisende (Südstraße #126, Erzweg Phase 11) – je Reise angelegt, sobald der Held in die Nähe ihres Weges kommt */ reisende: ReisenderFigur[] | null = null; private reiseDa = new Set<string>(); /** Tiere zur Stimmung (Phase 11), je Platz angelegt */ tiere: TierFigur[] = []; private tierDa = new Set<string>(); pfad: { x: number; z: number }[] = []; tasten: Record<string, boolean> = {};
   gieren = 0.6; neigen = 0.95; abstand = 26; ziel = new THREE.Vector3(); uhr = new THREE.Clock();
   ebene = ""; art = "oberwelt";
   feuerLichter: THREE.PointLight[] = [];
@@ -176,6 +176,8 @@ export class Welt3D {
     return 0; }
   /** Bodenhöhe (Weltfelder) – auf einer Brücke die Höhe des Decks */
   hoehe(x: number, z: number) { return this.stehHoehe(x, z); }
+  /** Wasserspiegel an dieser Stelle (wie die Wasserflächen: höchster Boden ringsum + 0,06) – für Schiffe */
+  wasserHoehe(x: number, z: number) { let m = -9; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) m = Math.max(m, this.gelaendeHoehe(Math.floor(x) + dx, Math.floor(z) + dy)); return m + 0.06; }
   gelaendeHoehe(x: number, z: number) { const xi = Math.floor(x), zi = Math.floor(z), fx = x - xi, fz = z - zi;
     const a = this.eck(xi, zi), b = this.eck(xi + 1, zi), c = this.eck(xi, zi + 1), e = this.eck(xi + 1, zi + 1);
     return fx + fz < 1 ? a + (b - a) * fx + (c - a) * fz : e + (c - e) * (1 - fx) + (b - e) * (1 - fz); }
@@ -359,7 +361,7 @@ export class Welt3D {
         for (const p of TIERPLAETZE) if (!this.tierDa.has(p.id) && Math.abs(p.x - hx) < 120 && Math.abs(p.y - hz) < 120) { this.tierDa.add(p.id); for (let i = 0; i < p.anzahl; i++) { const t = new TierFigur(this, p, i); this.tiere.push(t); this.szene.add(t.npc.gruppe); } } }
       if (this.reisende) for (const r of this.reisende) { r.schritt(Math.hypot(r.x - hx, r.z - hz) < W ? dt : 0); r.npc.gruppe.visible = Math.hypot(r.x - hx, r.z - hz) < W; }
       for (const t of this.tiere) { const an = Math.hypot(t.x - hx, t.z - hz) < W; t.npc.gruppe.visible = an; if (an) t.schritt(dt); } /* fern der Helden: nicht gerechnet */ }
-    const y = this.hoehe(H.x, H.z);
+    const y = Number.isFinite(H.hy) ? H.hy : this.hoehe(H.x, H.z);
     /* Kamera folgt; Nebel bis an den Rand der geladenen Chunks */
     this.ziel.lerp(new THREE.Vector3(H.x, y + 1.1, H.z), this.ziel.lengthSq() ? 0.18 : 1);
     const cp = Math.cos(this.neigen), sp = Math.sin(this.neigen); this.kamera.position.set(this.ziel.x + Math.sin(this.gieren) * cp * this.abstand, this.ziel.y + sp * this.abstand, this.ziel.z + Math.cos(this.gieren) * cp * this.abstand); this.kamera.lookAt(this.ziel);

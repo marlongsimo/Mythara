@@ -116,7 +116,8 @@ async function verbinden() { if (verbindet || ws) return; verbindet = true; /* n
     else if (m.t === "kraeuter") window.dispatchEvent(new CustomEvent("ez-kraeuter", { detail: m.weg || [] }));
     else if (m.t === "wurm") window.dispatchEvent(new CustomEvent("ez-wurm", { detail: m }));
     else if (m.t === "wurmacker") window.dispatchEvent(new CustomEvent("ez-wurmacker", { detail: m.weg || [] }));
-    else if (m.t === "faehre") window.dispatchEvent(new CustomEvent("ez-faehre", { detail: m })); /* Fähre (#49): Antwort des Servers (welt/anschluss.ts) */
+    else if (m.t === "faehre") window.dispatchEvent(new CustomEvent("ez-faehre", { detail: m }));
+    else if (m.t === "schiff") window.dispatchEvent(new CustomEvent("ez-schiff", { detail: m })); /* Schiffslinien (Ausgabe 2): Ziele oder Überfahrt (welt3d/schiffe3d.ts) */ /* Fähre (#49): Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "wegstein") window.dispatchEvent(new CustomEvent("ez-wegstein", { detail: m })); /* Wegstein: Antwort des Servers (welt/anschluss.ts) */
     else if (m.t === "handwerk") window.dispatchEvent(new CustomEvent("ez-handwerk", { detail: m })); /* Handwerk an den Werkstätten (welt3d/handwerk3d.ts) */
     else if (m.t === "gekauft") { const G = GEGENSTAENDE[String(m.g)]; chatSystem(`Gekauft: ${G ? G.name : m.g} für ${m.preis} Splitter.`); window.dispatchEvent(new CustomEvent("ez-gekauft", { detail: m })); }
@@ -181,6 +182,8 @@ export function wurmBitten(tat: "start" | "stop", id?: string): void { if (tat =
 export function wegsteinReiben(ziel: string): void { stelleMelden(); senden({ t: "wegstein", ziel }); }
 /** Fähre (#49): übersetzen – der Server prüft Anleger und Schalter und antwortet mit { t: "faehre", ok, … } */
 export function faehreFahren(id: string): void { stelleMelden(); senden({ t: "faehre", id }); }
+/** Schiffslinien (Ausgabe 2): am Kapitän die Ziele erfragen (der Hafen gilt dann als besucht) oder zu einem Hafen fahren */
+export function schiffFragen(tat: "ziele" | "fahren", nach?: string): void { stelleMelden(); senden({ t: "schiff", tat, ...(nach ? { nach } : {}) }); }
 export function krautBitten(tat: "start" | "stop" | "tau", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "kraut", tat, ...(id ? { id } : {}) }); }
 export function pflanzeBitten(tat: "start" | "stop", id?: string): void { if (tat === "start") stelleMelden(); senden({ t: "pflanze", tat, ...(id ? { id } : {}) }); }
 export function handwerkBitten(tat: "start" | "glut" | "stop", rezept?: string, menge?: number): void { if (tat === "start") stelleMelden(); senden({ t: "handwerk", tat, ...(rezept ? { rezept } : {}), ...(menge ? { menge } : {}) }); }

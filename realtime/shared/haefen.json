@@ -1,0 +1,77 @@
+{
+  "_": "Häfen der Schiffslinien (Ausgabe 2; Stellen aus Welt #185, welt/plaene/welt_erlebnis/haefen_vorschlag.json). schiff: Liegeplatz im Wasser (Mitte, Weltfelder), dreh: Bug-Richtung in Grad (0 = Norden, im Uhrzeigersinn). Die Seewege baut werkzeug/seewege.py nach shared/seewege.json. Graufurt ist kein Hafen der Linien: der Fluss erreicht das Meer nur im Osten (Seeweg rund um den Kontinent, über 4000 Felder) – dort bleibt die Fähre (shared/faehre.ts).",
+  "haefen": [
+    {
+      "id": "kielmund",
+      "name": "Kielmund",
+      "kapitaen": {
+        "name": "Kapitän Harm Seewind",
+        "x": 6367,
+        "y": 7337.6,
+        "blick": [
+          0,
+          1
+        ]
+      },
+      "schiff": {
+        "x": 6357,
+        "y": 7346,
+        "dreh": 270
+      }
+    },
+    {
+      "id": "moewenbucht",
+      "name": "Möwenbucht",
+      "kapitaen": {
+        "name": "Kapitänin Wiebke Sand",
+        "x": 6187,
+        "y": 7161.3,
+        "blick": [
+          -1,
+          0
+        ]
+      },
+      "schiff": {
+        "x": 6172,
+        "y": 7161,
+        "dreh": 0
+      }
+    },
+    {
+      "id": "netzbucht",
+      "name": "Netzbucht",
+      "kapitaen": {
+        "name": "Kapitän Ole Tamm",
+        "x": 6122,
+        "y": 6936.3,
+        "blick": [
+          -1,
+          0
+        ]
+      },
+      "schiff": {
+        "x": 6106,
+        "y": 6942,
+        "dreh": 0
+      }
+    },
+    {
+      "id": "grauwacht",
+      "name": "Grauwacht",
+      "kapitaen": {
+        "name": "Kapitän Bertolt Kranz",
+        "x": 6744,
+        "y": 5752.3,
+        "blick": [
+          1,
+          0
+        ]
+      },
+      "schiff": {
+        "x": 6760,
+        "y": 5744,
+        "dreh": 0
+      }
+    }
+  ]
+}

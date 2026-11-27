@@ -149,6 +149,12 @@ export function anzahlVon(nutzer: string, g: string): number { const e = je.get(
 /** Passt ein weiteres Stück davon in den Rucksack? */
 export function platzFuer(nutzer: string, g: string): boolean { const e = je.get(nutzer), G = GEGENSTAENDE[g]; if (!e || !G) return false;
   return e.inv.rucksack.length < RUCKSACK_PLAETZE || Boolean(G.stapel && e.inv.rucksack.some((f) => typeof f !== "string" && f.g === g && f.n < G.stapel!)); }
+/** Bezahlen (Schiffslinien): n Stück der Währung aus dem Rucksack nehmen – alles oder nichts. Zurück: Fehlertext oder null */
+export function bezahlen(sb: Sb, nutzer: string, waehrung: string, n: number): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; const hat = anzahlVon(nutzer, waehrung);
+  if (hat < n) return `Dafür fehlen dir ${n - hat} ${GEGENSTAENDE[waehrung] ? GEGENSTAENDE[waehrung].name : waehrung}.`;
+  let rest = n; for (let i = e.inv.rucksack.length - 1; i >= 0 && rest > 0; i--) { const f = e.inv.rucksack[i]; if (fachG(f) !== waehrung || (typeof f !== "string" && f.d)) continue; const k = Math.min(fachN(f), rest); rest -= k;
+    if (k >= fachN(f)) e.inv.rucksack.splice(i, 1); else (f as { g: string; n: number }).n -= k; }
+  geaendert(sb, nutzer, e); return null; }
 /** Kaufen: preis Stück der Währung abgeben, dann den Gegenstand in den Rucksack (alles oder nichts). Zurück: Fehlertext oder null */
 export function kaufen(sb: Sb, nutzer: string, g: string, preis: number, waehrung: string): string | null { const e = je.get(nutzer); if (!e) return "Kein Inventar."; if (!GEGENSTAENDE[g] || GEGENSTAENDE[g].untauschbar) return "Das gibt es hier nicht."; /* nicht tauschbar: nur als Questbelohnung */
   const hat = anzahlVon(nutzer, waehrung); if (hat < preis) return `Dafür fehlen dir ${preis - hat} ${GEGENSTAENDE[waehrung] ? GEGENSTAENDE[waehrung].name : waehrung}.`;

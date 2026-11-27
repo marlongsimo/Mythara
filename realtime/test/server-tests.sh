@@ -88,6 +88,8 @@ TESTS=(
   gegner-stufe
   gefahr
   sperren
+  schiffe
+  schiffe-welt
   midgame-bosse
   zunft-rohstoffe
   zunft

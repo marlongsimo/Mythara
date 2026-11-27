@@ -41,6 +41,7 @@ const GESPRAECH_WEIT = 5;
 const VORLADEN_WEIT = 80, LADEN_MAX_MS = 12000, VORWAERMEN = ["bandit3d", "mooshocker3d", "waldgolem3d", "banditenboss3d", "stadtwache3d"];
 import { HaendlerWelt } from "./haendler3d";
 import { BankWelt } from "./bank3d";
+import { SchiffWelt, type Fahrt } from "./schiffe3d";
 import { HolzWelt } from "./holz3d";
 import { musikStarten } from "../musik";
 import { BergWelt } from "./berg3d";
@@ -145,6 +146,7 @@ export class Spielwelt3D implements WeltKern {
     this.quest = new QuestWelt(this); this.sperrenNeu(); /* Quest 01 (shared/quest01.ts) */
     this.haendler = new HaendlerWelt(this); /* Händler am Marktplatz (shared/laeden.ts) */
     this.bank = new BankWelt(this); /* Bankmitarbeiter hinter den Bankschaltern (shared/bank.ts) */
+    this.schiffe = new SchiffWelt(this); /* Kapitäne und Schiffe der Häfen (shared/schiffe.ts) */
     this.holz = new HolzWelt(this); /* Holzfällerei: Bäume auf den Lichtungen (shared/holz.ts) */
     this.berg = new BergWelt(this); /* Bergbau: Erzadern in den Senken (shared/bergbau.ts) */
     this.pflanzen = new PflanzenWelt(this); this.kraeuter = new KraeuterWelt(this); /* Kräuterkunde (#133) */ this.lichter = new LichterWelt(this); /* Splitterbinden: Seelenlichter (Phase 3a) */ this.fische = new FischWelt(this); this.wuermer = new WurmWelt(this); /* Fischen (Phase 3b) */ this.handwerk = new HandwerkWelt(this); /* Handwerk: Flachs und Hanf im Osthof, Werkstätten in der Waldmark (shared/handwerk.ts) */
@@ -206,7 +208,7 @@ export class Spielwelt3D implements WeltKern {
     try { const r = M.r as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, k: THREE.Camera, z?: THREE.Scene) => Promise<unknown> }; if (r.compileAsync) await r.compileAsync(g, M.kamera, M.szene); else r.compile(g, M.kamera, M.szene); } catch { /* egal */ }
     await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(() => ok(null)))); /* einmal mitzeichnen (auch in die Schattenkarte) */ M.szene.remove(g); }
   /* ───────────── Quest 01: Figuren, Baumstämme, persönliche Sperre ───────────── */
-  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; kraeuter: KraeuterWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
+  quest: QuestWelt | null = null; haendler: HaendlerWelt | null = null; bank: BankWelt | null = null; /** Schiffslinien (Ausgabe 2): Kapitäne, Schiffe und die laufende Überfahrt */ schiffe: SchiffWelt | null = null; fahrt: Fahrt | null = null; holz: HolzWelt | null = null; berg: BergWelt | null = null; pflanzen: PflanzenWelt | null = null; kraeuter: KraeuterWelt | null = null; lichter: LichterWelt | null = null; fische: FischWelt | null = null; wuermer: WurmWelt | null = null; handwerk: HandwerkWelt | null = null;
   alleSperren(): number[][] { return [...WELT.sperren, ...(this.quest ? this.quest.sperren() : []), ...this.ausbauSperren()]; }
   /** Stadtstufen (#102): Felder der Stufen-Objekte, die für diesen Spieler gerade dastehen */
   private ausbauSperren(): number[][] { const aus: number[][] = []; for (const d of this.daten.values()) if (d !== "holt" && d.ausbau) for (const A of d.ausbau) if (markeDa(A.m, stufenAn)) for (const [i, j] of A.f) aus.push([i, j, i + 1, j + 1]); return aus; }
@@ -354,6 +356,7 @@ export class Spielwelt3D implements WeltKern {
     { const q = this.quest && this.quest.stelle(x, y); if (q) return q; } /* Questfiguren: „Mit … sprechen“ */
     { const h = this.haendler && this.haendler.stelle(x, y); if (h) return h; } /* Händler am Marktplatz: „Mit … sprechen“, dazu „Laden ansehen“ */
     { const b = this.bank && this.bank.stelle(x, y); if (b) return b; } /* Bankmitarbeiter: „Mit … sprechen“, dazu „Bank“ */
+    { const k = this.schiffe && this.schiffe.stelle(x, y); if (k) return k; } /* Kapitän: „Mit … sprechen“, dazu „Überfahrt“ */
     { const h = this.holz && this.holz.stelle(x, y); if (h) return h; }
     { const b = this.berg && this.berg.stelle(x, y); if (b) return b; }
     { const p = this.pflanzen && this.pflanzen.stelle(x, y); if (p) return p; }
@@ -380,7 +383,7 @@ export class Spielwelt3D implements WeltKern {
    *  Säule über ihrem Punkt (so trifft auch ein Tipp auf die obere Treppe oder den Türrahmen). Die vorderste gewinnt. */
   stelleAmSchirm(px: number, py: number, nurFiguren = false): Stelle | null {
     const M = this.motor, o = this.ort, kand: { x: number; y: number; h: number; r: number }[] = [];
-    for (const p of [...(this.quest ? this.quest.punkte() : []), ...(this.haendler ? this.haendler.punkte() : []), ...(this.bank ? this.bank.punkte() : [])]) kand.push({ ...p, h: 2.2, r: 0.45 });
+    for (const p of [...(this.quest ? this.quest.punkte() : []), ...(this.haendler ? this.haendler.punkte() : []), ...(this.bank ? this.bank.punkte() : []), ...(this.schiffe ? this.schiffe.punkte() : [])]) kand.push({ ...p, h: 2.2, r: 0.45 });
     if (this.holz) for (const p of this.holz.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.8 });
     if (this.berg) for (const p of this.berg.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.7 });
     if (this.pflanzen) for (const p of this.pflanzen.punkte()) kand.push({ x: p.x, y: p.y, h: p.h, r: 0.6 });
@@ -399,7 +402,7 @@ export class Spielwelt3D implements WeltKern {
     return best ? this.anStelle(best.k.x, best.k.y) : null; }
   /** Läuft man aus der Reichweite eines Gesprächs, endet es (Quest-Figuren und Händler) */
   private gespraechWeite() { if (!dialogOffen()) return; const wer = gespraechMit(); if (!wer) return;
-    const p = wer.startsWith("lokal:") ? ((this.haendler && this.haendler.ortVon(wer.slice(6))) || (this.bank && this.bank.ortVon(wer.slice(6))) || null) : this.quest ? this.quest.ortVon(wer) : null;
+    const p = wer.startsWith("lokal:") ? ((this.haendler && this.haendler.ortVon(wer.slice(6))) || (this.bank && this.bank.ortVon(wer.slice(6))) || (this.schiffe && this.schiffe.ortVon(wer.slice(6))) || null) : this.quest ? this.quest.ortVon(wer) : null;
     if (p && Math.hypot(p.x - this.ort.x, p.y - this.ort.y) > GESPRAECH_WEIT) { dialogSchliessen(true); chatSystem("Du hast dich entfernt – das Gespräch ist beendet."); } }
   /** Hingehen und dort handeln (ist man schon dort, sofort) */
   ausfuehren(s: Stelle, tat: () => void, was?: string) { this.wahlWeg(); menueZu(); if (this.gesperrt) return; tatZeigen(was || tatText(s.text)); if (s.npc) { const v = this.vorFigur(s, tat); s = v; tat = v.tat; } if (s.da()) { tat(); return; } this.gehe(s.x, s.y); this.vorhaben = this.pfad.length ? { ...s, tat } : null; }
@@ -523,7 +526,15 @@ export class Spielwelt3D implements WeltKern {
     if (this.meinPet && this.meinPet.id !== id) { this.motor.szene.remove(this.meinPet.npc.gruppe); this.meinPet = null; }
     if (id && PETS[id] && !this.meinPet) { this.meinPet = new PetFigur(this.motor, id, this.ort.x, this.ort.y); this.motor.szene.add(this.meinPet.npc.gruppe); }
     if (this.meinPet) this.meinPet.schritt(dt, { x: this.ort.x, z: this.ort.y }); }
-  private bild(dt: number) { this.petSchritt(dt); this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
+  /** Schiffslinien: die Überfahrt beginnt (der Server hat die Stelle am Ziel schon gesetzt) – der Held steht an Deck, gesteuert wird nicht */
+  fahrtStarten(F: Fahrt): void { this.halt(); this.folgenEnde(); this.handelZiel = null; this.pfad = []; this.marke.visible = false; this.gesperrt = true; this.fahrt = F; }
+  /** Ein Bild der Überfahrt: Schiff und Held den Seeweg entlang, die Welt lädt mit (strom), am Ende an Land (Ankunft am Kapitän) */
+  private fahrtBild(dt: number, F: Fahrt) { const r = this.schiffe!.fahrtSchritt(F, dt), M = this.motor; this.ort = { x: r.x, y: r.y };
+    M.held.x = r.x; M.held.z = r.y; M.held.hy = r.deck; this.figur.stelle(r.x, r.deck, r.y); this.figur.blick(r.dx, r.dy); this.figur.setze("ruhe"); this.figur.schritt(dt * 1000, M.gieren);
+    if (performance.now() - this.letzterStrom > 400) { this.letzterStrom = performance.now(); void this.strom(); }
+    this.regionZeigen(); karteDrehen(M.gieren); this.minikarte(); { const t = schildText(this.held); if (this.schild.textContent !== t) this.schild.textContent = t; schildAn(this.schild, M, r.x, r.deck + HOEHE + 0.35, r.y); }
+    if (r.fertig) { this.fahrt = null; M.held.hy = NaN; this.gesperrt = false; chatSystem(`Angelegt in ${F.name}.`); this.springen(F.ziel.x, F.ziel.y); } }
+  private bild(dt: number) { if (this.schiffe) this.schiffe.schritt(dt, this.fahrt); if (this.fahrt) { this.fahrtBild(dt, this.fahrt); return; } this.petSchritt(dt); this.simZeit += dt; this.ladungPruefen(dt); if (this.quest) this.quest.schritt(dt); if (this.haendler) this.haendler.schritt(dt); if (this.bank) this.bank.schritt(dt); if (this.holz) this.holz.schritt(dt); if (this.berg) this.berg.schritt(dt); if (this.pflanzen) this.pflanzen.schritt(dt); if (this.kraeuter) this.kraeuter.schritt(dt); if (this.lichter) this.lichter.schritt(dt); if (this.fische) this.fische.schritt(dt); if (this.wuermer) this.wuermer.schritt(dt); if (this.handwerk) this.handwerk.schritt(dt); this.gespraechWeite();
     const o = this.ort; let [rx, ry] = this.gesperrt ? [0, 0] : this.welt(this.rx, this.ry); const direkt = Math.hypot(rx, ry) > 0.05, richtung: [number, number] | null = direkt ? [rx, ry] : null;
     if (direkt) { this.folgenEnde("selbst"); this.handelZiel = null; } else { this.folgenSchritt(dt); this.handelSchritt(); } /* selbst steuern: Folgen endet; sonst das nächste Laufziel hinter dem anderen */
     if (direkt) { this.pfad = []; this.marke.visible = false; }
