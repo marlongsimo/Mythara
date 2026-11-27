@@ -1,15 +1,15 @@
 /*
  * Riftmere – Schiffslinien Ende zu Ende (Ausgabe 2; shared/schiffe.ts, server/src/schiffe.ts): echter Spielserver, nachgebildete Supabase, Welt-Verbindung.
  * Anna steht am Kapitän in Kielmund: das erste Gespräch merkt den Hafen (gespeichert), Grauwacht kennt sie (Merker), Netzbucht nicht.
- * Fahrt nach Grauwacht: 60 Splitter weg, Seeweg und Ankunft in der Antwort, die Stelle am Ziel gespeichert (wie beim Wegstein).
+ * Überfahrt nach Grauwacht (wie ein Teleport): 60 Splitter weg, Ankunft in der Antwort, die Stelle am Ziel gespeichert (wie beim Wegstein).
  * Aufruf: node test/schiffe-welt.test.mjs   (nach node build.mjs)
  */
 import { createServer } from "node:http"; import { spawn } from "node:child_process"; import { createRequire } from "node:module"; import { readFileSync } from "node:fs";
 const require = createRequire(import.meta.url), WebSocket = require("ws");
 let f = 0; const check = (ok, t) => { console.log((ok ? "✓ " : "✗ ") + t); if (!ok) f++; };
 const A = "00000000-0000-0000-0000-00000000a001", TA = "tok_anna_" + "x".repeat(30), NUTZER = { [TA]: A };
-const HAEFEN = JSON.parse(readFileSync("shared/haefen.json", "utf8")).haefen, SEE = JSON.parse(readFileSync("shared/seewege.json", "utf8")).haefen;
-const K = HAEFEN.find((h) => h.id === "kielmund").kapitaen, G = SEE.grauwacht;
+const HAEFEN = JSON.parse(readFileSync("shared/haefen.json", "utf8")).haefen, SEE = Object.fromEntries(HAEFEN.map((h) => [h.id, h]));
+const K = SEE.kielmund.kapitaen, G = SEE.grauwacht;
 const HELD = { [A]: { geschlecht: "frau", frisur: "zopf", bart: "ohne", haarfarbe: "dunkelbraun", hautfarbe: "mittel", waffe: "schwert", quests: { die_gesperrte_strasse: { s: "fertig" } },
   inventar: { angelegt: { waffe: "ritterschwert" }, rucksack: [{ g: "splitter", n: 70 }], v: 2, merker: ["hafen_grauwacht"] } } }, POS = [];
 const wer = (u) => (/user_id=eq\.([^&]+)/.exec(u) || [])[1];
@@ -44,8 +44,8 @@ try {
   await schlaf(1800); check((HELD[A].inventar.merker || []).includes("hafen_kielmund"), "der besuchte Hafen ist gespeichert (Merker hafen_kielmund)");
   check(!(await frage(anna, { tat: "fahren", nach: "netzbucht" })).ok && splitter(anna) === 70, "nach Netzbucht (unbekannt): keine Fahrt, nichts bezahlt");
   const r = await frage(anna, { tat: "fahren", nach: "grauwacht" }); await warte(anna, (m) => m.t === "inventar", 2000);
-  check(r.ok && r.tat === "fahren" && r.preis === 60 && Array.isArray(r.weg) && r.weg.length > 2 && r.dauer >= 20 && r.dauer <= 60, `Überfahrt nach Grauwacht: 60 Splitter, Seeweg mit ${r.weg ? r.weg.length : 0} Wegpunkten, ${r.dauer ? r.dauer.toFixed(0) : "?"} s`);
-  check(r.x === G.ankunft[0] && r.y === G.ankunft[1] && r.region === G.region, "Ankunft am Kapitän in Grauwacht");
+  check(r.ok && r.tat === "fahren" && r.preis === 60 && r.name === "Grauwacht" && r.weg === undefined, "Überfahrt nach Grauwacht: 60 Splitter, sofort (keine Fahrt an Deck)");
+  check(r.x === G.ankunft[0] && r.y === G.ankunft[1] && r.region === G.region, "Ankunft am Zielsteg in Grauwacht");
   check(splitter(anna) === 10, `Splitter abgezogen (70 → ${splitter(anna)})`);
   check(!(await frage(anna, { tat: "fahren", nach: "grauwacht" })).ok, "die Stelle steht schon in Grauwacht – am Kapitän in Kielmund geht nichts mehr");
   await schlaf(500); const p = POS.map((x) => JSON.stringify(x)).find((t) => t.includes(String(G.ankunft[0])) && t.includes(String(G.ankunft[1])));

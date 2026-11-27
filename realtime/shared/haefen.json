@@ -1,5 +1,5 @@
 {
-  "_": "Häfen der Schiffslinien (Ausgabe 2; Stellen aus Welt #185, welt/plaene/welt_erlebnis/haefen_vorschlag.json). schiff: Liegeplatz im Wasser (Mitte, Weltfelder), dreh: Bug-Richtung in Grad (0 = Norden, im Uhrzeigersinn). Die Seewege baut werkzeug/seewege.py nach shared/seewege.json. Graufurt ist kein Hafen der Linien: der Fluss erreicht das Meer nur im Osten (Seeweg rund um den Kontinent, über 4000 Felder) – dort bleibt die Fähre (shared/faehre.ts).",
+  "_": "Häfen der Schiffslinien (Ausgabe 2; Stellen aus Welt #185, welt/plaene/welt_erlebnis/haefen_vorschlag.json). Überfahrt wie ein Teleport (KANON, Nutzer 27.11.): Kapitän ansprechen, Ziel wählen, zahlen, Ankunft am Zielsteg. schiff: Kulisse am Liegeplatz (Mitte im Wasser, Weltfelder), dreh: Bug-Richtung in Grad (0 = Norden, im Uhrzeigersinn). region: Region am Kapitän, ankunft: freies Feld beim Kapitän (wo man nach der Fahrt steht) – stehen neue Stege, hierher verlegen (der Test schiffe prüft: freier Boden, nah am Kapitän). Graufurt ist kein Hafen der Linien (dort fährt die Fähre, shared/faehre.ts).",
   "haefen": [
     {
       "id": "kielmund",
@@ -17,7 +17,12 @@
         "x": 6357,
         "y": 7346,
         "dreh": 270
-      }
+      },
+      "region": "fl_186_225",
+      "ankunft": [
+        6366.5,
+        7336.5
+      ]
     },
     {
       "id": "moewenbucht",
@@ -35,7 +40,12 @@
         "x": 6172,
         "y": 7161,
         "dreh": 0
-      }
+      },
+      "region": "fl_186_211",
+      "ankunft": [
+        6186.5,
+        7160.5
+      ]
     },
     {
       "id": "netzbucht",
@@ -53,7 +63,12 @@
         "x": 6106,
         "y": 6942,
         "dreh": 0
-      }
+      },
+      "region": "fl_186_211",
+      "ankunft": [
+        6125.5,
+        6936.5
+      ]
     },
     {
       "id": "grauwacht",
@@ -71,7 +86,12 @@
         "x": 6760,
         "y": 5744,
         "dreh": 0
-      }
+      },
+      "region": "fl_201_169",
+      "ankunft": [
+        6741.5,
+        5754.5
+      ]
     }
   ]
 }

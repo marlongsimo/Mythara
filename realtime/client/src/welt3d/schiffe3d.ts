@@ -1,11 +1,11 @@
 /*
  * Riftmere – Schiffslinien im Browser (Ausgabe 2; Regeln: shared/schiffe.ts, Server: server/src/schiffe.ts).
  * Je Hafen ein Kapitän (npc.kapitaen) und ein Segelschiff am Liegeplatz (kueste_segelschiff, sonst ein einfacher Rumpf).
- * Ansprechen: der Kapitän nennt die bekannten Häfen mit Preis; die Wahl schickt { t: "schiff", tat: "fahren" } – bei ok segelt das Schiff mit dem Helden an Deck
- * den Seeweg entlang (kein Ladebildschirm: die Welt lädt unterwegs nach) und legt am Ziel an.
+ * Ansprechen: der Kapitän nennt die bekannten Häfen mit Preis; die Wahl schickt { t: "schiff", tat: "fahren" } – bei ok kurze Blende und Ankunft am Zielsteg
+ * (wie ein Teleport, Entscheidung des Nutzers 27.11.: keine Fahrt an Deck). Das Schiff ist Kulisse am Liegeplatz.
  */
 import * as THREE from "three";
-import { HAEFEN, type Hafen, schiffBei } from "../../../shared/schiffe";
+import { HAEFEN, type Hafen } from "../../../shared/schiffe";
 import { lokalesGespraech } from "../dialog";
 import { schiffFragen, chatSystem } from "../welt";
 import { Npc3D } from "./npc3d";
@@ -13,9 +13,8 @@ import { schildAn } from "./mitspieler";
 import { gltfLader } from "./gltf";
 import { type Welt3D, figurWeit } from "./motor";
 
-const SCHIFF_GLB = "img/objekte3d/kueste/segelschiff.glb", DECK = 1.3;
-interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; fahrtStarten(f: Fahrt): void }
-export interface Fahrt { weg: [number, number][]; dauer: number; ziel: { x: number; y: number }; name: string; schiff: THREE.Object3D; /** Sekunden seit dem Ablegen (nach der Uhr, nicht nach Bildern: auf langsamen Geräten kommt das Schiff pünktlich an) */ t: number; start?: number }
+const SCHIFF_GLB = "img/objekte3d/kueste/segelschiff.glb";
+interface Umgebung { motor: Welt3D; ort: { x: number; y: number }; springen(x: number, y: number): void }
 interface Figur { h: Hafen; npc: Npc3D; nm: HTMLElement; schiff: THREE.Object3D }
 const vorname = (h: Hafen) => h.kapitaen.name.replace(/^(Fähr)?[Kk]apitän(in)?\s+/, "").split(" ")[0];
 
@@ -38,18 +37,16 @@ export class SchiffWelt {
       const schiff = segelschiff(); schiff.rotation.y = kurs(h.schiff.dreh); u.motor.szene.add(schiff); this.alle.push({ h, npc, nm, schiff }); }
     addEventListener("ez-schiff", (e) => this.antwort((e as CustomEvent).detail)); }
   private reden(f: Figur) { this.wartet = f; schiffFragen("ziele"); }
-  private antwort(m: { ok?: boolean; text?: string; tat?: string; von?: string; ziele?: { id: string; name: string; preis: number; dauer: number }[]; neu?: boolean; nach?: string; name?: string; dauer?: number; weg?: [number, number][]; x?: number; y?: number }) {
+  private antwort(m: { ok?: boolean; text?: string; tat?: string; von?: string; ziele?: { id: string; name: string; preis: number }[]; neu?: boolean; nach?: string; name?: string; x?: number; y?: number }) {
     if (!m.ok) { chatSystem(m.text || "Das Schiff legt nicht ab."); return; }
     const f = this.alle.find((x) => x.h.id === m.von) || this.wartet; if (!f) return; const k = f.h.kapitaen.name;
     if (m.tat === "ziele") { const Z = m.ziele || [];
       const gruss = m.neu ? `Willkommen in ${f.h.name}! Merk dir den Hafen – von jedem anderen Kapitän kommst du jetzt hierher.` : `Wohin soll's gehen?`;
       const zeilen = [{ wer: k, text: gruss }, ...(Z.length ? [] : [{ wer: k, text: "Andere Häfen kennst du noch nicht. Reis erst einmal hin – Kielmund, Möwenbucht, Netzbucht und Grauwacht haben Kapitäne." }])];
-      lokalesGespraech(k, zeilen, [...Z.map((z) => ({ id: z.id, text: `Nach ${z.name} (${z.preis} Splitter, etwa ${z.dauer} s)` })), { id: "nichts", text: "Nichts, danke." }],
+      lokalesGespraech(k, zeilen, [...Z.map((z) => ({ id: z.id, text: `Nach ${z.name} (${z.preis} Splitter)` })), { id: "nichts", text: "Nichts, danke." }],
         (id) => { if (id === "nichts") return [{ wer: k, text: "Gute Winde!" }]; schiffFragen("fahren", id); return "zu"; });
       return; }
-    if (m.tat === "fahren" && m.weg && typeof m.x === "number" && typeof m.y === "number") {
-      chatSystem(`Leinen los – ${k} segelt nach ${m.name || "drüben"}.`);
-      this.u.fahrtStarten({ weg: m.weg, dauer: m.dauer || 20, ziel: { x: m.x, y: m.y }, name: m.name || "", schiff: f.schiff, t: 0 }); } }
+    if (m.tat === "fahren" && typeof m.x === "number" && typeof m.y === "number") { chatSystem(`Überfahrt mit ${k} – angelegt in ${m.name || "drüben"}.`); this.u.springen(m.x, m.y); } }
   /** Liegt an diesem Bodenpunkt ein Kapitän? */
   stelle(x: number, y: number): { x: number; y: number; text: string; tat: () => void; da: () => boolean; mehr: { text: string; sym: string; tat: () => void }[] } | null {
     let best: Figur | null = null, bd = 1.3; for (const f of this.alle) { const d = Math.hypot(f.h.kapitaen.x - x, f.h.kapitaen.y - y); if (d < bd) { bd = d; best = f; } } if (!best) return null; const f = best, K = f.h.kapitaen;
@@ -57,17 +54,11 @@ export class SchiffWelt {
       mehr: [{ text: "Überfahrt", sym: "⛵", tat: () => this.reden(f) }] }; }
   /** Liegeplatz eines Schiffs (Wasserhöhe) */
   private liegt(f: Figur) { const M = this.u.motor, s = f.h.schiff; f.schiff.position.set(s.x, M.wasserHoehe(s.x, s.y), s.y); f.schiff.rotation.y = kurs(s.dreh); }
-  schritt(dt: number, fahrt: Fahrt | null): void { const M = this.u.motor, o = this.u.ort;
+  schritt(dt: number): void { const M = this.u.motor, o = this.u.ort;
     for (const f of this.alle) { const K = f.h.kapitaen, sichtbar = Math.hypot(K.x - o.x, K.y - o.y) < figurWeit(); f.npc.gruppe.visible = sichtbar;
       if (sichtbar) { f.npc.gruppe.position.set(K.x, M.hoehe(K.x, K.y), K.y); f.npc.schritt(dt); }
       f.nm.hidden = !sichtbar || !schildAn(f.nm, M, K.x, M.hoehe(K.x, K.y) + 2.35, K.y);
-      if (!fahrt || fahrt.schiff !== f.schiff) { const P = fahrt && fahrt.schiff.position; /* das Schiff am Ziel weicht dem ankommenden */
-        f.schiff.visible = Math.hypot(f.h.schiff.x - o.x, f.h.schiff.y - o.y) < figurWeit() * 2 && !(P && Math.hypot(f.h.schiff.x - P.x, f.h.schiff.y - P.z) < 16); if (f.schiff.visible) this.liegt(f); } } }
-  /** Während der Fahrt: Schiff und Held an Deck (Weltfelder; Deckshöhe) */
-  fahrtSchritt(F: Fahrt, dt: number): { x: number; y: number; deck: number; dx: number; dy: number; fertig: boolean } {
-    if (F.start === undefined) F.start = performance.now() - F.t * 1000; F.t = (performance.now() - F.start) / 1000; void dt; const p = schiffBei(F.weg, F.dauer, F.t), M = this.u.motor, w = M.wasserHoehe(p.x, p.y) + Math.sin(F.t * 1.3) * 0.08;
-    F.schiff.visible = true; F.schiff.position.set(p.x, w, p.y); F.schiff.rotation.y = Math.atan2(p.dx, p.dy); F.schiff.rotation.z = Math.sin(F.t * 0.9) * 0.03;
-    return { x: p.x, y: p.y, deck: w + DECK, dx: p.dx, dy: p.dy, fertig: F.t >= F.dauer }; }
+      f.schiff.visible = Math.hypot(f.h.schiff.x - o.x, f.h.schiff.y - o.y) < figurWeit() * 2; if (f.schiff.visible) this.liegt(f); } }
   /** Kapitäne auf der Karte antippen (die ganze Figur zählt) */
   punkte(): { x: number; y: number }[] { return this.alle.map((f) => ({ x: f.h.kapitaen.x, y: f.h.kapitaen.y })); }
   ortVon(name: string): { x: number; y: number } | null { const f = this.alle.find((x) => x.h.kapitaen.name === name); return f ? { x: f.h.kapitaen.x, y: f.h.kapitaen.y } : null; }
