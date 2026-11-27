@@ -59,12 +59,23 @@ try {
   let menueLv = null;
   const balken = () => anna.evaluate(() => [...document.querySelectorAll(".ez-balken3d")].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0 && !e.classList.contains("eigen")).length);
   check(await balken() === 0, "Gegner außerhalb des Kampfes: kein Lebensbalken");
+  /* #66: Lebensbalken anderer Spieler nur im Kampf – Ben kommt dazu und steht nur herum */
+  const ben = await spieler("Ben", "tok_ben__" + "x".repeat(30), [6537, 6583, "waldweg"]); ben.setDefaultTimeout(90000); await ben.goto(B + S + "&vorwaermen=0"); await ben.waitForFunction(() => window.EZW && window.EZW.welt3d && window.EZW.welt3d.figur && window.EZW.welt3d.figur.geladen, null, { timeout: 120000 });
+  const benBalken = () => anna.evaluate(() => { const K = window.EZK; return [...K.figuren.values()].filter((g) => g.held && !g.tot).map((g) => { const b = K.bilder.get(g); return b ? !b.lb.hidden : null; }); });
+  await anna.waitForFunction(() => [...window.EZK.figuren.values()].some((g) => g.held && !g.tot), null, { timeout: 30000 }).catch(() => {}); await anna.waitForTimeout(5000);
+  { const bb = await benBalken(); check(bb.length >= 1 && bb.every((x) => x === false), "Mitspieler außerhalb des Kampfes: nur Name, kein Lebensbalken " + JSON.stringify(bb)); }
   /* Angreifen per Rechtsklick → Anzeige oben */
   for (let v = 0; v < 3; v++) { const ziel = await anna.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK; const f = [...K.figuren.entries()].find(([, g]) => !g.held && !g.tot); if (!f) return null; const x = K.zone.x0 + f[1].x, y = K.zone.y0 + f[1].y; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + 0.9, y); });
     if (ziel) { await anna.mouse.click(ziel.x, ziel.y, { button: "right" }); await anna.waitForTimeout(400); if (!menueLv && process.env.BILD) await anna.screenshot({ path: process.env.BILD + "menue-level.png" }); if (!menueLv) menueLv = await anna.evaluate(() => { const k = [...document.querySelectorAll(".ez-aktionen .kopf")].find((e) => e.querySelector(".lv")); return k ? { t: k.textContent, c: getComputedStyle(k.querySelector(".lv")).color } : null; }); await anna.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 3000 }).catch(() => {}); await anna.waitForTimeout(300); }
     if (await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return Boolean(e && e.classList.contains("an")); })) break; await anna.keyboard.press("Escape"); }
   const tat = await anna.evaluate(() => { const e = document.getElementById("ez-tat"); return e ? { t: e.textContent, an: e.classList.contains("an") } : null; });
   check(tat && tat.an && /^Angreifen: Bandit/.test(tat.t), "Oben mittig: " + JSON.stringify(tat));
+  /* Ben greift ebenfalls an → Anna sieht seinen Lebensbalken */
+  for (let v = 0; v < 3; v++) { const ziel = await ben.evaluate(() => { const W = window.EZW.welt3d, K = window.EZK; const f = [...K.figuren.entries()].find(([, g]) => !g.held && !g.tot); if (!f) return null; const x = K.zone.x0 + f[1].x, y = K.zone.y0 + f[1].y; return W.motor.bildschirm(x, W.motor.hoehe(x, y) + 0.9, y); });
+    if (ziel) { await ben.mouse.click(ziel.x, ziel.y, { button: "right" }); await ben.waitForTimeout(400); await ben.click('.ez-aktionen button:has-text("Angreifen")', { force: true, timeout: 3000 }).catch(() => {}); await ben.waitForTimeout(300); }
+    if (await ben.evaluate(() => { const e = document.getElementById("ez-tat"); return Boolean(e && e.classList.contains("an")); })) break; await ben.keyboard.press("Escape"); }
+  { let bb = []; for (let i = 0; i < 40 && !bb.some((x) => x === true); i++) { await anna.waitForTimeout(500); bb = await benBalken(); }
+    check(bb.some((x) => x === true), "Mitspieler im Kampf: Lebensbalken sichtbar " + JSON.stringify(bb)); }
   check(menueLv && /Bandit \(Level 1\)/.test(menueLv.t) && /rgb\(\d+, 255, 0\)/.test(menueLv.c), "Gedrückt halten / Rechtsklick: „Bandit (Level 1)“, Level grün (leichter als Anna): " + JSON.stringify(menueLv));
   if (process.env.BILD) await anna.screenshot({ path: process.env.BILD + "anzeige-angreifen.png" });
   check(await anna.evaluate(() => { const W = window.EZW.welt3d; return typeof W.ausfuehren === "function"; }), "3D-Welt bereit");
